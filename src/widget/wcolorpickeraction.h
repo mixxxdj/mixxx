@@ -8,22 +8,14 @@
 #include "widget/wcolorpicker.h"
 
 class WColorPickerAction : public QWidgetAction {
+    Q_OBJECT
   public:
-    explicit WColorPickerAction(QWidget* parent)
-            : QWidgetAction(parent) {
-        m_pColorPicker = make_parented<WColorPicker>(true);
+    explicit WColorPickerAction(QWidget* parent);
 
-        QHBoxLayout* pLayout = new QHBoxLayout();
-        pLayout->addWidget(m_pColorPicker);
+    void setSelectedColor(PredefinedColorPointer pColor = nullptr);
 
-        QWidget* pWidget = new QWidget();
-        pWidget->setLayout(pLayout);
-        setDefaultWidget(pWidget);
-    }
-
-    WColorPicker* colorPicker() {
-        return m_pColorPicker.get();
-    }
+  signals:
+    void colorPicked(PredefinedColorPointer pColor);
 
   private:
     parented_ptr<WColorPicker> m_pColorPicker;

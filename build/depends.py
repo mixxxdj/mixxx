@@ -991,6 +991,7 @@ class MixxxCore(Feature):
                    "src/widget/wcoverartlabel.cpp",
                    "src/widget/wcoverartmenu.cpp",
                    "src/widget/wcolorpicker.cpp",
+                   "src/widget/wcolorpickeraction.cpp",
                    "src/widget/wcuemenupopup.cpp",
                    "src/widget/wsingletoncontainer.cpp",
                    "src/widget/wmainmenubar.cpp",

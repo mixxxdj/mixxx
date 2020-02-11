@@ -632,6 +632,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wbattery.cpp
   src/widget/wbeatspinbox.cpp
   src/widget/wcolorpicker.cpp
+  src/widget/wcolorpickeraction.cpp
   src/widget/wcombobox.cpp
   src/widget/wcoverart.cpp
   src/widget/wcoverartlabel.cpp

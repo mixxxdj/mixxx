@@ -575,9 +575,8 @@ void WTrackTableView::createActions() {
             this, [this] { slotScaleBpm(Beats::THREEHALVES); });
 
     m_pColorPickerAction = new WColorPickerAction(this);
-    m_pColorPickerAction->colorPicker()->setObjectName("TrackColorPicker");
-    connect(m_pColorPickerAction->colorPicker(), &WColorPicker::colorPicked,
-            this, &WTrackTableView::slotColorPicked);
+    m_pColorPickerAction->setObjectName("TrackColorPickerAction");
+    connect(m_pColorPickerAction, &WColorPickerAction::colorPicked, this, &WTrackTableView::slotColorPicked);
 }
 
 // slot
@@ -1114,7 +1113,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 }
             }
 
-            m_pColorPickerAction->colorPicker()->setSelectedColor(predefinedTrackColor);
+            m_pColorPickerAction->setSelectedColor(predefinedTrackColor);
             m_pColorMenu->addAction(m_pColorPickerAction);
             m_pMenu->addMenu(m_pColorMenu);
         }
