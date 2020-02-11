@@ -16,11 +16,9 @@ typedef std::shared_ptr<SeratoMarkersEntry> SeratoMarkersEntryPointer;
 
 class SeratoMarkersEntry {
   public:
-    SeratoMarkersEntry(bool isSet, int startPosition, bool isEnabled, int endPosition, QRgb color, int type, bool isLocked)
+    SeratoMarkersEntry(int startPosition, int endPosition, QRgb color, int type, bool isLocked)
             : m_color(color),
-              m_isEnabled(isEnabled),
               m_isLocked(isLocked),
-              m_isSet(isSet),
               m_endPosition(endPosition),
               m_startPosition(startPosition),
               m_type(type) {
@@ -38,16 +36,8 @@ class SeratoMarkersEntry {
         return m_color;
     }
 
-    bool isEnabled() const {
-        return m_isEnabled;
-    }
-
     bool isLocked() const {
         return m_isLocked;
-    }
-
-    bool isSet() const {
-        return m_isSet;
     }
 
     int getEndPosition() const {

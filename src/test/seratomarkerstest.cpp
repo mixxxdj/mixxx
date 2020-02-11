@@ -12,7 +12,7 @@ namespace {
 
 class SeratoMarkersTest : public testing::Test {
   protected:
-    void parseEntry(const QByteArray inputValue, bool valid, bool isSet, quint32 startPosition, quint32 endPosition, QRgb color, bool isLocked, quint8 type) {
+    void parseEntry(const QByteArray inputValue, bool valid, quint32 startPosition, quint32 endPosition, QRgb color, quint8 type, bool isLocked) {
         const mixxx::SeratoMarkersEntryPointer pEntry = mixxx::SeratoMarkersEntry::parse(inputValue);
         if (!pEntry) {
             EXPECT_FALSE(valid);
@@ -20,7 +20,6 @@ class SeratoMarkersTest : public testing::Test {
         }
         EXPECT_TRUE(valid);
 
-        EXPECT_EQ(isSet, pEntry->isSet());
         EXPECT_EQ(startPosition, pEntry->getStartPosition());
         EXPECT_EQ(endPosition, pEntry->getEndPosition());
         EXPECT_EQ(color, pEntry->getColor());
@@ -43,14 +42,14 @@ class SeratoMarkersTest : public testing::Test {
 };
 
 TEST_F(SeratoMarkersTest, ParseEntry) {
-    parseEntry(QByteArray("\x00\x00\x00\x00\x00\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x06\x30\x00\x00\x01", 21), false, false, -1, -1, QRgb(0x000000), false, 0);
-    parseEntry(QByteArray("\x00\x00\x00\x00\x00\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x06\x30\x00\x00\x01\x00", 22), true, true, 0, -1, QRgb(0xcc0000), false, 1);
-    parseEntry(QByteArray("\x00\x00\x0d\x2a\x58\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x06\x32\x10\x00\x01\x00", 22), true, true, 862808, -1, QRgb(0xcc8800), false, 1);
-    parseEntry(QByteArray("\x00\x00\x03\x54\x64\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x00\x00\x01\x4c\x01\x00", 22), true, true, 218212, -1, QRgb(0x0000cc), false, 1);
-    parseEntry(QByteArray("\x00\x00\x00\x00\x6c\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x06\x33\x18\x00\x01\x00", 22), true, true, 108, -1, QRgb(0xcccc00), false, 1);
-    parseEntry(QByteArray("\x00\x00\x00\x07\x77\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x00\x03\x18\x00\x01\x00", 22), true, true, 1911, -1, QRgb(0x00cc00), false, 1);
-    parseEntry(QByteArray("\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x00\x00\x00\x00\x01\x00", 22), true, false, -1, -1, QRgb(0x000000), false, 1);
-    parseEntry(QByteArray("\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x00\x00\x00\x00\x03\x00", 22), true, false, -1, -1, QRgb(0x000000), false, 3);
+    parseEntry(QByteArray("\x00\x00\x00\x00\x00\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x06\x30\x00\x00\x01", 21), false, -1, -1, QRgb(0x000000), 0, false);
+    parseEntry(QByteArray("\x00\x00\x00\x00\x00\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x06\x30\x00\x00\x01\x00", 22), true, 0, -1, QRgb(0xcc0000), 1, false);
+    parseEntry(QByteArray("\x00\x00\x0d\x2a\x58\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x06\x32\x10\x00\x01\x00", 22), true, 862808, -1, QRgb(0xcc8800), 1, false);
+    parseEntry(QByteArray("\x00\x00\x03\x54\x64\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x00\x00\x01\x4c\x01\x00", 22), true, 218212, -1, QRgb(0x0000cc), 1, false);
+    parseEntry(QByteArray("\x00\x00\x00\x00\x6c\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x06\x33\x18\x00\x01\x00", 22), true, 108, -1, QRgb(0xcccc00), 1, false);
+    parseEntry(QByteArray("\x00\x00\x00\x07\x77\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x00\x03\x18\x00\x01\x00", 22), true, 1911, -1, QRgb(0x00cc00), 1, false);
+    parseEntry(QByteArray("\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x00\x00\x00\x00\x01\x00", 22), true, -1, -1, QRgb(0x000000), 1, false);
+    parseEntry(QByteArray("\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x00\x00\x00\x00\x03\x00", 22), true, -1, -1, QRgb(0x000000), 3, false);
 }
 
 TEST_F(SeratoMarkersTest, ParseMarkersData) {
