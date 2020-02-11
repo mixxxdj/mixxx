@@ -1,7 +1,6 @@
 #include "track/serato/markers.h"
 
 #include <QtEndian>
-#include <QStringLiteral>
 
 namespace {
 
