@@ -786,9 +786,6 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 }
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) {
                 value = mixxx::ReplayGain::ratioToString(value.toDouble());
-            } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
-                mixxx::RgbColor::optional_t color = value.isNull() ? std::nullopt : mixxx::RgbColor::optional_t(mixxx::RgbColor(value.toUInt()));
-                value = toQVariant(color);
             } // Otherwise, just use the column value.
 
             break;
