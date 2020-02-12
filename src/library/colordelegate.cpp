@@ -23,7 +23,6 @@ void ColorDelegate::paintItem(QPainter* painter, const QStyleOptionViewItem& opt
     }
 
     QColor color = mixxx::toQColor(mixxx::RgbColor(index.data().toUInt()));
-    qWarning() << "trackColor" << color;
     painter->fillRect(option.rect, color);
 
     // Paint transparent highlight if row is selected
