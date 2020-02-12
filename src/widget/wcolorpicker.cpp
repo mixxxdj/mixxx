@@ -12,7 +12,7 @@ namespace {
     const int kNumColumns = 4;
 }
 
-WColorPicker::WColorPicker(bool allowNoColor, QWidget* parent)
+WColorPicker::WColorPicker(ColorPickerOption option, QWidget* parent)
         : QWidget(parent) {
     QGridLayout* pLayout = new QGridLayout();
     pLayout->setMargin(0);
@@ -34,7 +34,8 @@ WColorPicker::WColorPicker(bool allowNoColor, QWidget* parent)
     int row = 0;
     int column = 0;
     for (const auto& pColor : Color::kPredefinedColorsSet.allColors) {
-        if (!allowNoColor && pColor == Color::kPredefinedColorsSet.noColor) {
+        if (option != ColorPickerOption::AllowNoColor &&
+                pColor == Color::kPredefinedColorsSet.noColor) {
             continue;
         }
 

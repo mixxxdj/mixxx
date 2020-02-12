@@ -1,8 +1,8 @@
 #include "widget/wcolorpickeraction.h"
 
-WColorPickerAction::WColorPickerAction(QWidget* parent)
+WColorPickerAction::WColorPickerAction(ColorPickerOption option, QWidget* parent)
         : QWidgetAction(parent) {
-    m_pColorPicker = make_parented<WColorPicker>(true);
+    m_pColorPicker = make_parented<WColorPicker>(option);
     connect(m_pColorPicker.get(), &WColorPicker::colorPicked, this, &WColorPickerAction::colorPicked);
 
     QHBoxLayout* pLayout = new QHBoxLayout();
