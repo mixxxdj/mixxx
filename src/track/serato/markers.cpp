@@ -197,9 +197,9 @@ bool SeratoMarkers::parse(SeratoMarkers* seratoMarkers, const QByteArray& data) 
         entries.append(pEntry);
     }
 
-    quint32 trackColorRaw;
-    stream >> trackColorRaw;
-    QRgb trackColor = seratoColorToRgb(trackColorRaw);
+    quint32 trackColorMaskRaw;
+    stream >> trackColorMaskRaw;
+    QRgb trackColorMask = seratoColorToRgb(trackColorMaskRaw);
 
     if (stream.status() != QDataStream::Status::Ok) {
         qWarning() << "Parsing SeratoMarkers_ failed:"
@@ -213,7 +213,7 @@ bool SeratoMarkers::parse(SeratoMarkers* seratoMarkers, const QByteArray& data) 
         return false;
     }
     seratoMarkers->setEntries(std::move(entries));
-    seratoMarkers->setTrackColor(trackColor);
+    seratoMarkers->setTrackColorMask(trackColorMask);
 
     return true;
 }
@@ -230,7 +230,7 @@ QByteArray SeratoMarkers::dump() const {
         SeratoMarkersEntryPointer pEntry = m_entries.at(i);
         stream.writeRawData(pEntry->dump(), kEntrySize);
     }
-    stream << seratoColorFromRgb(m_trackColor);
+    stream << seratoColorFromRgb(m_trackColorMask);
     return data;
 }
 
