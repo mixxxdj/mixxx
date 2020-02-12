@@ -16,11 +16,20 @@ typedef std::shared_ptr<SeratoMarkersEntry> SeratoMarkersEntryPointer;
 
 class SeratoMarkersEntry {
   public:
-    SeratoMarkersEntry(int startPosition, int endPosition, QRgb color, int type, bool isLocked)
+    SeratoMarkersEntry(
+            bool hasStartPosition,
+            int startPosition,
+            bool hasEndPosition,
+            int endPosition,
+            QRgb color,
+            int type,
+            bool isLocked)
             : m_color(color),
+              m_hasStartPosition(hasStartPosition),
+              m_hasEndPosition(hasEndPosition),
               m_isLocked(isLocked),
-              m_endPosition(endPosition),
               m_startPosition(startPosition),
+              m_endPosition(endPosition),
               m_type(type) {
     }
     ~SeratoMarkersEntry() = default;
@@ -40,21 +49,31 @@ class SeratoMarkersEntry {
         return m_isLocked;
     }
 
-    int getEndPosition() const {
-        return m_endPosition;
+    bool hasStartPosition() const {
+        return m_hasStartPosition;
     }
 
-    int getStartPosition() const {
+    quint32 getStartPosition() const {
         return m_startPosition;
+    }
+
+    bool hasEndPosition() const {
+        return m_hasEndPosition;
+    }
+
+    quint32 getEndPosition() const {
+        return m_endPosition;
     }
 
   private:
     QRgb m_color;
-    bool m_isEnabled;
+    bool m_hasStartPosition;
+    bool m_hasEndPosition;
+    ;
     bool m_isLocked;
     bool m_isSet;
-    int m_endPosition;
-    int m_startPosition;
+    quint32 m_startPosition;
+    quint32 m_endPosition;
     int m_type;
 };
 
@@ -67,10 +86,14 @@ inline bool operator!=(const SeratoMarkersEntry& lhs, const SeratoMarkersEntry& 
 }
 
 inline QDebug operator<<(QDebug dbg, const SeratoMarkersEntry& arg) {
-    return dbg << "type =" << arg.type()
-               << "startPosition =" << arg.getStartPosition()
-               << "endPosition =" << arg.getEndPosition()
-               << "color =" << arg.getColor()
+    dbg << "type =" << arg.type();
+    if (arg.hasStartPosition()) {
+        dbg << "startPosition =" << arg.getStartPosition();
+    }
+    if (arg.hasEndPosition()) {
+        dbg << "endPosition =" << arg.getEndPosition();
+    }
+    return dbg << "color =" << arg.getColor()
                << "isLocked =" << arg.isLocked();
 }
 

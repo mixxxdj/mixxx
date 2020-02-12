@@ -64,10 +64,10 @@ QByteArray SeratoMarkersEntry::dump() const {
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
-    stream << (quint8)((m_startPosition == -1) ? 0x7F : 0x00)
-           << (quint32)((m_startPosition == -1) ? 0x7F7F7F7F : m_startPosition)
-           << (quint8)((m_endPosition == -1) ? 0x7F : 0x00)
-           << (quint32)((m_endPosition == -1) ? 0x7F7F7F7F : m_endPosition);
+    stream << (quint8)(m_hasStartPosition ? 0x00 : 0x7F)
+           << (quint32)(m_hasStartPosition ? m_startPosition : 0x7F7F7F7F)
+           << (quint8)(m_hasEndPosition ? 0x00 : 0x7F)
+           << (quint32)(m_hasEndPosition ? m_endPosition : 0x7F7F7F7F);
     stream.writeRawData("\x00\x7F\x7F\x7F\x7F\x7F", 6);
     stream << (quint32)seratoColorFromRgb(m_color)
            << (quint8)m_type
@@ -83,10 +83,10 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parse(const QByteArray& data) {
     }
 
     quint8 type;
-    quint8 startPositionSet;
-    quint8 endPositionSet;
-    quint32 startPositionRaw;
-    quint32 endPositionRaw;
+    quint8 startPositionStatus;
+    quint8 endPositionStatus;
+    quint32 startPosition;
+    quint32 endPosition;
     quint32 colorRaw;
     bool isLocked;
     char buffer[6];
@@ -94,7 +94,7 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parse(const QByteArray& data) {
     QDataStream stream(data);
     stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
-    stream >> startPositionSet >> startPositionRaw >> endPositionSet >> endPositionRaw;
+    stream >> startPositionStatus >> startPosition >> endPositionStatus >> endPosition;
 
     if (stream.readRawData(buffer, sizeof(buffer)) != sizeof(buffer)) {
         qWarning() << "Parsing SeratoMarkersEntry failed:"
@@ -107,31 +107,27 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parse(const QByteArray& data) {
     const QRgb color = seratoColorToRgb(colorRaw);
 
     // Parse Start Position
-    int startPosition = -1;
-    if (startPositionSet == 0x7F) {
+    bool hasStartPosition = (startPositionStatus != 0x7F);
+    if (!hasStartPosition) {
         // Start position not set
-        if (startPositionRaw != 0x7F7F7F7F) {
+        if (startPosition != 0x7F7F7F7F) {
             qWarning() << "Parsing SeratoMarkersEntry failed:"
                        << "startPosition != 0x7F7F7F7F";
 
             return nullptr;
         }
-    } else {
-        startPosition = static_cast<int>(startPositionRaw);
     }
 
     // Parse End Position
-    int endPosition = -1;
-    if (endPositionSet == 0x7F) {
+    bool hasEndPosition = (endPositionStatus != 0x7F);
+    if (!hasEndPosition) {
         // End position not set
-        if (endPositionRaw != 0x7F7F7F7F) {
+        if (endPosition != 0x7F7F7F7F) {
             qWarning() << "Parsing SeratoMarkersEntry failed:"
                        << "endPosition != 0x7F7F7F7F";
 
             return nullptr;
         }
-    } else {
-        endPosition = static_cast<int>(endPositionRaw);
     }
 
     // Make sure that the unknown (and probably unused) bytes have the expected value
@@ -148,7 +144,9 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parse(const QByteArray& data) {
     }
 
     SeratoMarkersEntryPointer pEntry = SeratoMarkersEntryPointer(new SeratoMarkersEntry(
+            hasStartPosition,
             startPosition,
+            hasEndPosition,
             endPosition,
             color,
             type,
