@@ -93,10 +93,10 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pMetadataUpdateExternalCollectionsMenu->setTitle(tr("Update external collections"));
 
     m_pBPMMenu = new QMenu(this);
-    m_pBPMMenu->setTitle(tr("Change BPM"));
+    m_pBPMMenu->setTitle(tr("Adjust BPM"));
 
     m_pColorMenu = new QMenu(this);
-    m_pColorMenu->setTitle(tr("Change Color"));
+    m_pColorMenu->setTitle(tr("Select Color"));
 
     m_pClearMetadataMenu = new QMenu(this);
     //: Reset metadata in right click track context menu in library
