@@ -64,11 +64,16 @@ WColorPicker::WColorPicker(ColorOption colorOption, QWidget* parent)
             row++;
         }
 
-        connect(this, &WColorPicker::colorPicked,
-                this, &WColorPicker::slotColorPicked);
-        connect(pColorButton, &QPushButton::clicked, this, [pColor, this]() {
-            emit colorPicked(pColor);
-        });
+        connect(this,
+                &WColorPicker::colorPicked,
+                this,
+                &WColorPicker::slotColorPicked);
+        connect(pColorButton,
+                &QPushButton::clicked,
+                this,
+                [pColor, this]() {
+                    emit colorPicked(pColor);
+                });
     }
     setLayout(pLayout);
 }
