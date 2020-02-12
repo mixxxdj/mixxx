@@ -143,6 +143,12 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parse(const QByteArray& data) {
         return nullptr;
     }
 
+    if (!stream.atEnd()) {
+        qWarning() << "Parsing SeratoMarkersEntry failed:"
+                   << "Unexpected trailing data";
+        return nullptr;
+    }
+
     SeratoMarkersEntryPointer pEntry = SeratoMarkersEntryPointer(new SeratoMarkersEntry(
             hasStartPosition,
             startPosition,
@@ -201,6 +207,11 @@ bool SeratoMarkers::parse(SeratoMarkers* seratoMarkers, const QByteArray& data) 
         return false;
     }
 
+    if (!stream.atEnd()) {
+        qWarning() << "Parsing SeratoMarkers_ failed:"
+                   << "Unexpected trailing data";
+        return false;
+    }
     seratoMarkers->setEntries(std::move(entries));
     seratoMarkers->setTrackColor(trackColor);
 
