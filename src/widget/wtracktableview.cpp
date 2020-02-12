@@ -576,7 +576,10 @@ void WTrackTableView::createActions() {
 
     m_pColorPickerAction = new WColorPickerAction(ColorPickerOption::AllowNoColor, this);
     m_pColorPickerAction->setObjectName("TrackColorPickerAction");
-    connect(m_pColorPickerAction, &WColorPickerAction::colorPicked, this, &WTrackTableView::slotColorPicked);
+    connect(m_pColorPickerAction,
+            &WColorPickerAction::colorPicked,
+            this,
+            &WTrackTableView::slotColorPicked);
 }
 
 // slot
@@ -1097,7 +1100,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 int row = indices.at(i).row();
                 QModelIndex index = indices.at(i).sibling(row, column);
 
-                if (trackColor  != qvariant_cast<QColor>(index.data())) {
+                if (trackColor != qvariant_cast<QColor>(index.data())) {
                     trackColor = QColor();
                     break;
                 }
