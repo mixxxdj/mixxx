@@ -2528,6 +2528,10 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
             trackMetadata.getTrackInfo().getEncoderSettings());
     writeID3v2GeneralEncapsulatedObjectFrame(
             pTag,
+            "Serato Markers_",
+            trackMetadata.getTrackInfo().getSeratoMarkers().dump());
+    writeID3v2GeneralEncapsulatedObjectFrame(
+            pTag,
             "Serato Markers2",
             trackMetadata.getTrackInfo().getSeratoMarkers2().dump());
 #endif // __EXTRA_METADATA__
