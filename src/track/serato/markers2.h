@@ -350,7 +350,8 @@ class SeratoMarkers2 final {
     SeratoMarkers2() = default;
     explicit SeratoMarkers2(
             QList<std::shared_ptr<SeratoMarkers2Entry>> entries)
-            : m_allocatedSize(0), m_entries(std::move(entries)) {
+            : m_allocatedSize(0),
+              m_entries(std::move(entries)) {
     }
 
     // Parsing and formatting of gain values according to the
