@@ -48,11 +48,12 @@ SeratoMarkers2EntryPointer SeratoMarkers2ColorEntry::parse(const QByteArray& dat
         return nullptr;
     }
 
-    QColor color(static_cast<quint8>(data.at(1)),
+    QRgb colorMask = qRgb(
+            static_cast<quint8>(data.at(1)),
             static_cast<quint8>(data.at(2)),
             static_cast<quint8>(data.at(3)));
 
-    SeratoMarkers2ColorEntry* pEntry = new SeratoMarkers2ColorEntry(color);
+    SeratoMarkers2ColorEntry* pEntry = new SeratoMarkers2ColorEntry(colorMask);
     qDebug() << "SeratoMarkers2ColorEntry" << *pEntry;
     return SeratoMarkers2EntryPointer(pEntry);
 }
@@ -65,9 +66,9 @@ QByteArray SeratoMarkers2ColorEntry::dump() const {
     stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
     stream << (quint8)0
-           << (quint8)m_color.red()
-           << (quint8)m_color.green()
-           << (quint8)m_color.blue();
+           << (quint8)qRed(m_colorMask)
+           << (quint8)qGreen(m_colorMask)
+           << (quint8)qBlue(m_colorMask);
 
     return data;
 }
@@ -107,7 +108,8 @@ SeratoMarkers2EntryPointer SeratoMarkers2CueEntry::parse(const QByteArray& data)
         return nullptr;
     }
 
-    QColor color(static_cast<quint8>(data.at(7)),
+    QRgb color = qRgb(
+            static_cast<quint8>(data.at(7)),
             static_cast<quint8>(data.at(8)),
             static_cast<quint8>(data.at(9)));
 
@@ -149,9 +151,9 @@ QByteArray SeratoMarkers2CueEntry::dump() const {
            << m_index
            << m_position
            << (quint8)0
-           << (quint8)m_color.red()
-           << (quint8)m_color.green()
-           << (quint8)m_color.blue()
+           << (quint8)qRed(m_color)
+           << (quint8)qGreen(m_color)
+           << (quint8)qBlue(m_color)
            << (quint8)0
            << (quint8)0;
 

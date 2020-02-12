@@ -8,6 +8,11 @@
 
 #include "util/types.h"
 
+namespace {
+const QRgb kDefaultTrackColorMask = QRgb(0xFF9999);
+const QRgb kDefaultCueColor = QRgb(0xCC0000);
+} // namespace
+
 namespace mixxx {
 
 class SeratoMarkers2Entry {
@@ -109,12 +114,12 @@ inline QDebug operator<<(QDebug dbg, const SeratoMarkers2BpmlockEntry& arg) {
 
 class SeratoMarkers2ColorEntry : public SeratoMarkers2Entry {
   public:
-    SeratoMarkers2ColorEntry(QColor color)
-            : m_color(color) {
+    SeratoMarkers2ColorEntry(QRgb colorMask)
+            : m_colorMask(colorMask) {
     }
 
     SeratoMarkers2ColorEntry()
-            : m_color(QColor()) {
+            : m_colorMask(kDefaultTrackColorMask) {
     }
 
     static SeratoMarkers2EntryPointer parse(const QByteArray& data);
@@ -125,23 +130,23 @@ class SeratoMarkers2ColorEntry : public SeratoMarkers2Entry {
 
     QByteArray dump() const override;
 
-    QColor getColor() const {
-        return m_color;
+    QRgb getColorMask() const {
+        return m_colorMask;
     }
 
-    void setColor(QColor color) {
-        m_color = color;
+    void setColorMask(QRgb colorMask) {
+        m_colorMask = colorMask;
     }
 
     quint32 length() const override;
 
   private:
-    QColor m_color;
+    QRgb m_colorMask;
 };
 
 inline bool operator==(const SeratoMarkers2ColorEntry& lhs,
         const SeratoMarkers2ColorEntry& rhs) {
-    return (lhs.getColor() == rhs.getColor());
+    return (lhs.getColorMask() == rhs.getColorMask());
 }
 
 inline bool operator!=(const SeratoMarkers2ColorEntry& lhs,
@@ -150,12 +155,12 @@ inline bool operator!=(const SeratoMarkers2ColorEntry& lhs,
 }
 
 inline QDebug operator<<(QDebug dbg, const SeratoMarkers2ColorEntry& arg) {
-    return dbg << "color =" << arg.getColor();
+    return dbg << "color =" << arg.getColorMask();
 }
 
 class SeratoMarkers2CueEntry : public SeratoMarkers2Entry {
   public:
-    SeratoMarkers2CueEntry(quint8 index, quint32 position, QColor color, QString label)
+    SeratoMarkers2CueEntry(quint8 index, quint32 position, QRgb color, QString label)
             : m_index(index),
               m_position(position),
               m_color(color),
@@ -165,7 +170,7 @@ class SeratoMarkers2CueEntry : public SeratoMarkers2Entry {
     SeratoMarkers2CueEntry()
             : m_index(0),
               m_position(0),
-              m_color(QColor()),
+              m_color(kDefaultCueColor),
               m_label(QString("")) {
     }
 
@@ -193,11 +198,11 @@ class SeratoMarkers2CueEntry : public SeratoMarkers2Entry {
         m_position = position;
     }
 
-    QColor getColor() const {
+    QRgb getColor() const {
         return m_color;
     }
 
-    void setColor(QColor color) {
+    void setColor(QRgb color) {
         m_color = color;
     }
 
@@ -214,7 +219,7 @@ class SeratoMarkers2CueEntry : public SeratoMarkers2Entry {
   private:
     quint8 m_index;
     quint32 m_position;
-    QColor m_color;
+    QRgb m_color;
     QString m_label;
 };
 
