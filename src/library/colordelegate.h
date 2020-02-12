@@ -11,5 +11,8 @@ class ColorDelegate : public TableItemDelegate {
   public:
     explicit ColorDelegate(QTableView* pTableView);
 
-    void paintItem(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+    void paintItem(
+            QPainter* painter,
+            const QStyleOptionViewItem& option,
+            const QModelIndex& index) const override;
 };
