@@ -16,6 +16,12 @@ typedef std::shared_ptr<SeratoMarkersEntry> SeratoMarkersEntryPointer;
 
 class SeratoMarkersEntry {
   public:
+    enum class TypeId {
+        Unknown,
+        Cue,
+        Loop,
+    };
+
     SeratoMarkersEntry(
             bool hasStartPosition,
             int startPosition,
@@ -39,6 +45,19 @@ class SeratoMarkersEntry {
 
     int type() const {
         return m_type;
+    }
+
+    SeratoMarkersEntry::TypeId typeId() const {
+        SeratoMarkersEntry::TypeId typeId = SeratoMarkersEntry::TypeId::Unknown;
+        switch (type()) {
+        case 1:
+            typeId = SeratoMarkersEntry::TypeId::Cue;
+            break;
+        case 3:
+            typeId = SeratoMarkersEntry::TypeId::Loop;
+            break;
+        }
+        return typeId;
     }
 
     QRgb getColor() const {

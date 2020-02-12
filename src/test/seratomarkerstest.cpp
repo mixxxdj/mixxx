@@ -20,7 +20,7 @@ class SeratoMarkersTest : public testing::Test {
             bool hasEndPosition,
             quint32 endPosition,
             QRgb color,
-            quint8 type,
+            mixxx::SeratoMarkersEntry::TypeId typeId,
             bool isLocked) {
         const mixxx::SeratoMarkersEntryPointer pEntry = mixxx::SeratoMarkersEntry::parse(inputValue);
         if (!pEntry) {
@@ -34,7 +34,7 @@ class SeratoMarkersTest : public testing::Test {
         EXPECT_EQ(hasEndPosition, pEntry->hasEndPosition());
         EXPECT_EQ(endPosition, pEntry->getEndPosition());
         EXPECT_EQ(color, pEntry->getColor());
-        EXPECT_EQ(type, pEntry->type());
+        EXPECT_EQ(typeId, pEntry->typeId());
         EXPECT_EQ(isLocked, pEntry->isLocked());
 
         EXPECT_EQ(inputValue, pEntry->dump());
@@ -53,14 +53,86 @@ class SeratoMarkersTest : public testing::Test {
 };
 
 TEST_F(SeratoMarkersTest, ParseEntry) {
-    parseEntry(QByteArray("\x00\x00\x00\x00\x00\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x06\x30\x00\x00\x01", 21), false, false, 0x7f7f7f7f, false, -1, QRgb(0x000000), 0, false);
-    parseEntry(QByteArray("\x00\x00\x00\x00\x00\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x06\x30\x00\x00\x01\x00", 22), true, true, 0, false, 0x7f7f7f7f, QRgb(0xcc0000), 1, false);
-    parseEntry(QByteArray("\x00\x00\x0d\x2a\x58\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x06\x32\x10\x00\x01\x00", 22), true, true, 862808, false, 0x7f7f7f7f, QRgb(0xcc8800), 1, false);
-    parseEntry(QByteArray("\x00\x00\x03\x54\x64\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x00\x00\x01\x4c\x01\x00", 22), true, true, 218212, false, 0x7f7f7f7f, QRgb(0x0000cc), 1, false);
-    parseEntry(QByteArray("\x00\x00\x00\x00\x6c\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x06\x33\x18\x00\x01\x00", 22), true, true, 108, false, 0x7f7f7f7f, QRgb(0xcccc00), 1, false);
-    parseEntry(QByteArray("\x00\x00\x00\x07\x77\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x00\x03\x18\x00\x01\x00", 22), true, true, 1911, false, 0x7f7f7f7f, QRgb(0x00cc00), 1, false);
-    parseEntry(QByteArray("\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x00\x00\x00\x00\x01\x00", 22), true, false, 0x7f7f7f7f, false, 0x7f7f7f7f, QRgb(0x000000), 1, false);
-    parseEntry(QByteArray("\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x00\x00\x00\x00\x03\x00", 22), true, false, 0x7f7f7f7f, false, 0x7f7f7f7f, QRgb(0x000000), 3, false);
+    parseEntry(
+            QByteArray("\x00\x00\x00\x00\x00\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x06\x30\x00\x00\x01", 21),
+            false,
+            false,
+            0x7f7f7f7f,
+            false,
+            0x7f7f7f7f,
+            QRgb(0x000000),
+            mixxx::SeratoMarkersEntry::TypeId::Unknown,
+            false);
+    parseEntry(
+            QByteArray("\x00\x00\x00\x00\x00\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x06\x30\x00\x00\x01\x00", 22),
+            true,
+            true,
+            0,
+            false,
+            0x7f7f7f7f,
+            QRgb(0xcc0000),
+            mixxx::SeratoMarkersEntry::TypeId::Cue,
+            false);
+    parseEntry(
+            QByteArray("\x00\x00\x0d\x2a\x58\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x06\x32\x10\x00\x01\x00", 22),
+            true,
+            true,
+            862808,
+            false,
+            0x7f7f7f7f,
+            QRgb(0xcc8800),
+            mixxx::SeratoMarkersEntry::TypeId::Cue,
+            false);
+    parseEntry(
+            QByteArray("\x00\x00\x03\x54\x64\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x00\x00\x01\x4c\x01\x00", 22),
+            true,
+            true,
+            218212,
+            false,
+            0x7f7f7f7f,
+            QRgb(0x0000cc),
+            mixxx::SeratoMarkersEntry::TypeId::Cue,
+            false);
+    parseEntry(
+            QByteArray("\x00\x00\x00\x00\x6c\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x06\x33\x18\x00\x01\x00", 22),
+            true,
+            true,
+            108,
+            false,
+            0x7f7f7f7f,
+            QRgb(0xcccc00),
+            mixxx::SeratoMarkersEntry::TypeId::Cue,
+            false);
+    parseEntry(
+            QByteArray("\x00\x00\x00\x07\x77\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x00\x03\x18\x00\x01\x00", 22),
+            true,
+            true,
+            1911,
+            false,
+            0x7f7f7f7f,
+            QRgb(0x00cc00),
+            mixxx::SeratoMarkersEntry::TypeId::Cue,
+            false);
+    parseEntry(
+            QByteArray("\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x00\x00\x00\x00\x01\x00", 22),
+            true,
+            false,
+            0x7f7f7f7f,
+            false,
+            0x7f7f7f7f,
+            QRgb(0x000000),
+            mixxx::SeratoMarkersEntry::TypeId::Cue,
+            false);
+    parseEntry(
+            QByteArray("\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x00\x00\x00\x00\x03\x00", 22),
+            true,
+            false,
+            0x7f7f7f7f,
+            false,
+            0x7f7f7f7f,
+            QRgb(0x000000),
+            mixxx::SeratoMarkersEntry::TypeId::Loop,
+            false);
 }
 
 TEST_F(SeratoMarkersTest, ParseMarkersData) {
