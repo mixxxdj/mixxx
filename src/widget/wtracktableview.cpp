@@ -1095,7 +1095,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             QModelIndex index = indices.at(0).sibling(indices.at(0).row(), column);
             mixxx::RgbColor::optional_t trackColor = std::nullopt;
             if (!index.data().isNull()) {
-                trackColor = mixxx::RgbColor::optional_t(index.data().toUInt());
+                trackColor = mixxx::RgbColor::optional(index.data().toUInt());
             }
 
             // Check if all other selected tracks have the same color
@@ -1105,7 +1105,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 
                 mixxx::RgbColor::optional_t otherTrackColor = std::nullopt;
                 if (!index.data().isNull()) {
-                    otherTrackColor = mixxx::RgbColor::optional_t(index.data().toUInt());
+                    otherTrackColor = mixxx::RgbColor::optional(index.data().toUInt());
                 }
 
                 if (trackColor != otherTrackColor) {
