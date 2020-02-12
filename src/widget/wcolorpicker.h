@@ -7,15 +7,15 @@
 
 #include "util/color/color.h"
 
-enum class ColorPickerOption {
-    DenyNoColor,
-    AllowNoColor,
-};
-
 class WColorPicker : public QWidget {
     Q_OBJECT
   public:
-    explicit WColorPicker(ColorPickerOption option = ColorPickerOption::DenyNoColor, QWidget* parent = nullptr);
+    enum class ColorOption {
+        DenyNoColor,
+        AllowNoColor,
+    };
+
+    explicit WColorPicker(ColorOption colorOption, QWidget* parent = nullptr);
 
     void setSelectedColor(PredefinedColorPointer pColor = nullptr);
     void useColorSet(PredefinedColorsRepresentation* pColorRepresentation);

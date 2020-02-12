@@ -29,7 +29,7 @@ WCueMenuPopup::WCueMenuPopup(QWidget* parent)
     connect(m_pEditLabel, &QLineEdit::textEdited, this, &WCueMenuPopup::slotEditLabel);
     connect(m_pEditLabel, &QLineEdit::returnPressed, this, &WCueMenuPopup::hide);
 
-    m_pColorPicker = new WColorPicker(ColorPickerOption::DenyNoColor, this);
+    m_pColorPicker = new WColorPicker(WColorPicker::ColorOption::DenyNoColor, this);
     m_pColorPicker->setObjectName("CueColorPicker");
     connect(m_pColorPicker, &WColorPicker::colorPicked, this, &WCueMenuPopup::slotChangeCueColor);
 

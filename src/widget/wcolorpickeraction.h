@@ -11,7 +11,7 @@ class WColorPickerAction : public QWidgetAction {
     Q_OBJECT
   public:
     explicit WColorPickerAction(
-            ColorPickerOption option = ColorPickerOption::DenyNoColor,
+            WColorPicker::ColorOption colorOption,
             QWidget* parent = nullptr);
 
     void setSelectedColor(PredefinedColorPointer pColor = nullptr);
