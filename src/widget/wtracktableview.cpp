@@ -1093,27 +1093,37 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             // Get color of first selected track
             int column = trackModel->fieldIndex(LIBRARYTABLE_COLOR);
             QModelIndex index = indices.at(0).sibling(indices.at(0).row(), column);
-            QColor trackColor = qvariant_cast<QColor>(index.data());
+            mixxx::RgbColor::optional_t trackColor = std::nullopt;
+            if (!index.data().isNull()) {
+                trackColor = mixxx::RgbColor::optional_t(index.data().toUInt());
+            }
 
             // Check if all other selected tracks have the same color
             for (int i = 1; i < indices.size(); ++i) {
                 int row = indices.at(i).row();
                 QModelIndex index = indices.at(i).sibling(row, column);
 
-                if (trackColor != qvariant_cast<QColor>(index.data())) {
-                    trackColor = QColor();
+                mixxx::RgbColor::optional_t otherTrackColor = std::nullopt;
+                if (!index.data().isNull()) {
+                    otherTrackColor = mixxx::RgbColor::optional_t(index.data().toUInt());
+                }
+
+                if (trackColor != otherTrackColor) {
+                    trackColor.reset();
                     break;
                 }
             }
 
             PredefinedColorPointer predefinedTrackColor = nullptr;
-            if (trackColor.isValid()) {
+            if (trackColor) {
                 for (PredefinedColorPointer color : Color::kPredefinedColorsSet.allColors) {
-                    if (color->m_defaultRgba == trackColor) {
+                    if (mixxx::RgbColor(color->m_defaultRgba.rgb()) == trackColor.value()) {
                         predefinedTrackColor = color;
                         break;
                     }
                 }
+            } else {
+                predefinedTrackColor = Color::kPredefinedColorsSet.noColor;
             }
 
             m_pColorPickerAction->setSelectedColor(predefinedTrackColor);
