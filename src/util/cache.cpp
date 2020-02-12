@@ -1,30 +1,31 @@
 #include "util/cache.h"
 
 #include "util/assert.h"
+#include "util/math.h"
 
 namespace mixxx {
 
-cache_key_t calculateCacheKey(const QByteArray& bytes) {
+cache_key_t cacheKeyFromMessageDigest(const QByteArray& messageDigest) {
     cache_key_t key = invalidCacheKey();
     DEBUG_ASSERT(!isValidCacheKey(key));
-    if (bytes.isEmpty()) {
+    if (messageDigest.isEmpty()) {
         return key;
     }
-    // We should not make any assumptions about the significance of
-    // the given bytes, even if they are supposed to be the result of
-    // applying a hash function. Instead of truncating the information
-    // by using only the first sizeof(cache_key_t) bytes we slice the
-    // array into groups of sizeof(cache_key_t) bytes and combine them
-    // with XOR.
-    size_t leftShiftBytes = 0;
-    for (const auto nextByte : bytes) {
+    // Source: FIPS 180-4 Secure Hash Standard (SHS)
+    // SP 800-107
+    // 5 Hash function Usage
+    // 5.1 Truncated Message Digest
+    const auto significantByteCount = math_min(
+            messageDigest.size(),
+            static_cast<int>(sizeof(cache_key_t)));
+    for (auto i = 0; i < significantByteCount; ++i) {
         // Only 8 bits are relevant and we don't want the sign
-        // extension of a (signed) char during conversion.
-        const cache_key_t nextBits =
-                static_cast<unsigned char>(nextByte);
-        DEBUG_ASSERT(nextBits == (nextBits & static_cast<cache_key_t>(0xff)));
-        key ^= nextBits << (leftShiftBytes * 8);
-        leftShiftBytes = (leftShiftBytes + 1) % sizeof(cache_key_t);
+        // extension of a (signed) char during the conversion.
+        const cache_key_t nextByte =
+                static_cast<unsigned char>(messageDigest.at(i));
+        DEBUG_ASSERT(nextByte == (nextByte & 0xFF));
+        key <<= 8;
+        key |= nextByte;
     }
     if (!isValidCacheKey(key)) {
         // Unlikely but possible

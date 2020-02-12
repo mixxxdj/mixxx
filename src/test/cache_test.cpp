@@ -16,26 +16,26 @@ TEST_F(CacheTest, InvalidCacheKey) {
 
 TEST_F(CacheTest, InvalidCacheKeyEmptyByteArray) {
     EXPECT_FALSE(mixxx::isValidCacheKey(
-            mixxx::calculateCacheKey(QByteArray())));
+            mixxx::cacheKeyFromMessageDigest(QByteArray())));
     EXPECT_FALSE(mixxx::isValidCacheKey(
-            mixxx::calculateCacheKey("")));
+            mixxx::cacheKeyFromMessageDigest("")));
     EXPECT_FALSE(mixxx::isValidCacheKey(
-            mixxx::calculateCacheKey("\0")));
+            mixxx::cacheKeyFromMessageDigest("\0")));
 }
 
 TEST_F(CacheTest, ValidCacheKey) {
     EXPECT_TRUE(mixxx::isValidCacheKey(
-            mixxx::calculateCacheKey(QByteArrayLiteral("test"))));
+            mixxx::cacheKeyFromMessageDigest(QByteArrayLiteral("test"))));
 }
 
 TEST_F(CacheTest, ValidCacheKeySingleZeroAscii) {
     EXPECT_TRUE(mixxx::isValidCacheKey(
-            mixxx::calculateCacheKey(QByteArray("0"))));
+            mixxx::cacheKeyFromMessageDigest(QByteArray("0"))));
 }
 
 TEST_F(CacheTest, ValidCacheKeySingleZeroByte) {
     EXPECT_TRUE(mixxx::isValidCacheKey(
-            mixxx::calculateCacheKey(QByteArray("\0", 1))));
+            mixxx::cacheKeyFromMessageDigest(QByteArray("\0", 1))));
 }
 
 } // anonymous namespace

@@ -2,6 +2,7 @@
 
 #include <QByteArray>
 #include <QMetaType>
+#include <type_traits> // static_assert
 
 namespace mixxx {
 
@@ -19,9 +20,16 @@ inline constexpr bool isValidCacheKey(cache_key_t key) {
     return key != invalidCacheKey();
 }
 
-// Transforms a byte array containing a hash result into an
-// unsigned integer number that should be almost unique.
-cache_key_t calculateCacheKey(const QByteArray& bytes);
+inline constexpr cache_key_t signedCacheKey(cache_key_t cacheKey) {
+    static_assert(sizeof(cache_key_t) == sizeof(cache_key_signed_t));
+    return static_cast<cache_key_signed_t>(cacheKey);
+}
+
+// Truncate a message digest to obtain a cache key.
+//
+// The message digest should either be empty or contain at least as many
+// bytes as the size (in bytes) of the cache key.
+cache_key_t cacheKeyFromMessageDigest(const QByteArray& messageDigest);
 
 } // namespace mixxx
 

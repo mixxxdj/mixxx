@@ -13,8 +13,8 @@ namespace {
 // Store hash values as a signed 64-bit integer. Otherwise values greater
 // than 2^63-1 would be converted into a floating point numbers while
 // losing precision!!
-inline mixxx::cache_key_signed_t dbHash(mixxx::cache_key_t hash) {
-    return static_cast<mixxx::cache_key_signed_t>(hash);
+inline constexpr mixxx::cache_key_signed_t dbHash(mixxx::cache_key_t hash) {
+    return mixxx::signedCacheKey(hash);
 }
 
 } // anonymous namespace
