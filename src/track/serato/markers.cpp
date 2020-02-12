@@ -4,6 +4,8 @@
 
 namespace {
 
+const int kNumEntries = 14;
+const int kLoopEntryStartIndex = 5;
 const int kEntrySize = 22;
 const quint16 kVersion = 0x0205;
 
@@ -177,6 +179,12 @@ bool SeratoMarkers::parse(SeratoMarkers* seratoMarkers, const QByteArray& data) 
     quint32 numEntries;
     stream >> numEntries;
 
+    if (numEntries != kNumEntries) {
+        qWarning() << "Parsing SeratoMarkers_ failed:"
+                   << "Expected" << kNumEntries << "entries but found" << numEntries;
+        return false;
+    }
+
     char buffer[kEntrySize];
     QList<SeratoMarkersEntryPointer> entries;
     for (quint32 i = 0; i < numEntries; i++) {
@@ -194,6 +202,21 @@ bool SeratoMarkers::parse(SeratoMarkers* seratoMarkers, const QByteArray& data) 
                        << "Unable to parse entry!";
             return false;
         }
+
+        if (i < kLoopEntryStartIndex &&
+                pEntry->typeId() != SeratoMarkersEntry::TypeId::Cue) {
+            qWarning() << "Parsing SeratoMarkers_ failed:"
+                       << "Expected cue entry but found type" << pEntry->type();
+            return false;
+        }
+
+        if (i >= kLoopEntryStartIndex &&
+                pEntry->typeId() != SeratoMarkersEntry::TypeId::Loop) {
+            qWarning() << "Parsing SeratoMarkers_ failed:"
+                       << "Expected loop entry but found type" << pEntry->type();
+            return false;
+        }
+
         entries.append(pEntry);
     }
 
