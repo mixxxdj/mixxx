@@ -21,7 +21,9 @@ inline constexpr bool isValidCacheKey(cache_key_t key) {
 }
 
 inline constexpr cache_key_t signedCacheKey(cache_key_t cacheKey) {
-    static_assert(sizeof(cache_key_t) == sizeof(cache_key_signed_t));
+    static_assert(
+            sizeof(cache_key_t) == sizeof(cache_key_signed_t),
+            "size mismatch of signed/unsigned cache key types");
     return static_cast<cache_key_signed_t>(cacheKey);
 }
 
