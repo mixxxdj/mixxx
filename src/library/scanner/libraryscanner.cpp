@@ -27,8 +27,7 @@ mixxx::Logger kLogger("LibraryScanner");
 QAtomicInt s_instanceCounter(0);
 
 // Returns the number of affected rows or -1 on error
-int execCleanupQuery(QSqlDatabase database, const QString& statement) {
-    FwdSqlQuery query(database, statement);
+int execCleanupQuery(FwdSqlQuery& query) {
     VERIFY_OR_DEBUG_ASSERT(query.isPrepared()) {
         return -1;
     }
@@ -139,14 +138,19 @@ void LibraryScanner::run() {
         // Clean up the database and fix inconsistencies from previous runs.
         // See also: https://bugs.launchpad.net/mixxx/+bug/1846945
         {
-            kLogger.info() << "Cleaning up database...";
+            kLogger.info()
+                    << "Cleaning up database...";
             PerformanceTimer timer;
             timer.start();
-            const auto sqlCmd =
-                    QString("delete from LibraryHashes where hash <> %1 "
-                            "and directory_path not in (select directory from track_locations)")
-                            .arg(mixxx::invalidCacheKey());
-            auto numRows = execCleanupQuery(dbConnection, sqlCmd);
+            const auto sqlStmt = QStringLiteral(
+                "DELETE FROM LibraryHashes WHERE hash <> :unequalHash "
+                        "AND directory_path NOT IN "
+                        "(SELECT directory FROM track_locations)");
+            FwdSqlQuery query(dbConnection, sqlStmt);
+            query.bindValue(
+                QStringLiteral(":unequalHash"),
+                static_cast<mixxx::cache_key_signed_t>(mixxx::invalidCacheKey()));
+            auto numRows = execCleanupQuery(query);
             if (numRows < 0) {
                 kLogger.warning()
                         << "Failed to delete orphaned directory hashes";
