@@ -50,6 +50,7 @@ class SeratoMarkersEntry {
     SeratoMarkersEntry::TypeId typeId() const {
         SeratoMarkersEntry::TypeId typeId = SeratoMarkersEntry::TypeId::Unknown;
         switch (type()) {
+        case 0:
         case 1:
             typeId = SeratoMarkersEntry::TypeId::Cue;
             break;
