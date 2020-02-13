@@ -1109,7 +1109,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 }
 
                 if (trackColor != otherTrackColor) {
-                    trackColor.reset();
+                    trackColor = std::nullopt;
                     break;
                 }
             }
