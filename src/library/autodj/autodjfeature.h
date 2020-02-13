@@ -61,8 +61,8 @@ class AutoDJFeature : public LibraryFeature {
     void onRightClickChild(const QPoint& globalPos, QModelIndex index) override;
 
   private:
+    TrackPointer m_pSelectedTrack; //qd
     TrackCollection* const m_pTrackCollection;
-
     PlaylistDAO& m_playlistDao;
     // The id of the AutoDJ playlist.
     int m_iAutoDJPlaylistId;
@@ -91,6 +91,8 @@ class AutoDJFeature : public LibraryFeature {
     QIcon m_icon;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 
+    void addRandomTrack(bool bTop, QString sArtist = ""); //qd
+
   private slots:
     // Add a crate to the auto-DJ queue.
     void slotAddCrateToAutoDj(int iCrateId);
@@ -102,6 +104,10 @@ class AutoDJFeature : public LibraryFeature {
 
     // Adds a random track from all loaded crates to the auto-DJ queue.
     void slotAddRandomTrack();
+    void slotInsertRandomTrack(); //qd
+
+    //for track the selected entry in playlist
+    void slotTrackSelected(TrackPointer pTrack); //qd
 
     // Adds a random track from the queue upon hitting minimum number
     // of tracks in the playlist

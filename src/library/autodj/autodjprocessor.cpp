@@ -905,10 +905,12 @@ bool AutoDJProcessor::removeTrackFromTopOfQueue(TrackPointer pTrack) {
             ConfigKey("[Auto DJ]", "EnableRandomQueue")).toInt())) == 1);
 
     int tracksToAdd = minAutoDJCrateTracks - m_pAutoDJTableModel->rowCount();
+#if 0 //got 2 events for 1 title - see AutoDJProcessor::getNextTrackFromQueue()
     if (randomQueueEnabled && (tracksToAdd > 0)) {
         qDebug() << "Randomly adding tracks";
         emit randomTrackRequested(tracksToAdd);
     }
+#endif
 
     return true;
 }

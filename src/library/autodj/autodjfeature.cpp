@@ -23,6 +23,7 @@
 #include "util/dnd.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "mixer/playerinfo.h" //qd
 
 namespace {
 
@@ -51,6 +52,7 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
                              UserSettingsPointer pConfig,
                              PlayerManagerInterface* pPlayerManager)
         : LibraryFeature(pLibrary, pConfig),
+	  m_pSelectedTrack(NULL), //qd
           m_pTrackCollection(pLibrary->trackCollections()->internalCollection()),
           m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
           m_iAutoDJPlaylistId(findOrCrateAutoDjPlaylistId(m_playlistDao)),
@@ -139,6 +141,9 @@ void AutoDJFeature::bindLibraryWidget(
             this,
             &AutoDJFeature::trackSelected);
 
+    connect(this, SIGNAL(trackSelected(TrackPointer)),
+             this, SLOT(slotTrackSelected(TrackPointer))); //qd
+
     // Be informed when the user wants to add another random track.
     connect(m_pAutoDJProcessor,
             &AutoDJProcessor::randomTrackRequested,
@@ -146,8 +151,20 @@ void AutoDJFeature::bindLibraryWidget(
             &AutoDJFeature::slotRandomQueue);
     connect(m_pAutoDJView,
             &DlgAutoDJ::addRandomButton,
-            this,
-            &AutoDJFeature::slotAddRandomTrack);
+            //this,
+            //&AutoDJFeature::slotAddRandomTrack);
+	    this, SLOT(slotInsertRandomTrack())); //qd
+}
+
+//qd
+void AutoDJFeature::slotTrackSelected(TrackPointer pTrack) {
+    m_pSelectedTrack = pTrack;
+    if (pTrack) {
+        qDebug() << "AutoDJFeature::slotTrackSelected():" << pTrack->getId() << ", " << pTrack->getArtist();
+    }
+    else {
+        qDebug() << "AutoDJFeature::slotTrackSelected(): NULL";
+    }
 }
 
 void AutoDJFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
@@ -234,7 +251,27 @@ void AutoDJFeature::slotCrateChanged(CrateId crateId) {
     }
 }
 
+void AutoDJFeature::slotInsertRandomTrack() {
+    QString sArtist = "";
+
+    if (qApp->queryKeyboardModifiers() & Qt::ControlModifier) {
+        TrackPointer pTrack = PlayerInfo::instance().getCurrentPlayingTrack();
+        if (pTrack)
+            sArtist = pTrack->getArtist();
+    }
+    else {
+        if (m_pSelectedTrack)
+            sArtist = m_pSelectedTrack->getArtist();
+    }
+
+    addRandomTrack(true, sArtist);
+}
+
 void AutoDJFeature::slotAddRandomTrack() {
+    addRandomTrack(false);
+}
+
+void AutoDJFeature::addRandomTrack(bool bInsertTop, QString sArtist /*=""*/) {
     if (m_iAutoDJPlaylistId >= 0) {
         TrackPointer pRandomTrack;
         for (int failedRetrieveAttempts = 0;
@@ -244,7 +281,7 @@ void AutoDJFeature::slotAddRandomTrack() {
             if (m_crateList.isEmpty()) {
                 // Fetch Track from Library since we have no assigned crates
                 randomTrackId = m_autoDjCratesDao.getRandomTrackIdFromLibrary(
-                        m_iAutoDJPlaylistId);
+                        m_iAutoDJPlaylistId, sArtist); //qd
             } else {
                 // Fetch track from crates.
                 // We do not fall back to Library if this fails because this
@@ -268,8 +305,16 @@ void AutoDJFeature::slotAddRandomTrack() {
             }
         }
         if (pRandomTrack) {
-            m_pTrackCollection->getPlaylistDAO().appendTrackToPlaylist(
-                    pRandomTrack->getId(), m_iAutoDJPlaylistId);
+            if (bInsertTop) { //qd1
+                m_pTrackCollection->getPlaylistDAO().insertTrackIntoPlaylist(
+                        pRandomTrack->getId(), m_iAutoDJPlaylistId, 0);
+
+            }
+            else {
+                m_pTrackCollection->getPlaylistDAO().appendTrackToPlaylist(
+                        pRandomTrack->getId(), m_iAutoDJPlaylistId);
+            }
+
             m_pAutoDJView->onShow();
             return; // success
         }
