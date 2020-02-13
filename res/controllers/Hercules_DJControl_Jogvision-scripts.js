@@ -1,7 +1,7 @@
 // ****************************************************************************
 // * Mixxx mapping script file for the Hercules DJControl Jogvision.
 // * Author: DJ Phatso, contributions by Kerrick Staley and David TV
-// * Version 1.6 (January 2020)
+// * Version 1.6 (February 2020)
 // * Version 1.5 (January 2020)
 // * Version 1.4 (December 2019)
 // * Version 1.3 (November 2019)
@@ -9,6 +9,10 @@
 // * Version 1.1 (March 2019)
 // * Forum: https://www.mixxx.org/forums/viewtopic.php?f=7&t=12580
 // * Wiki: https://www.mixxx.org/wiki/doku.php/hercules_dj_control_jogvision
+//
+// Changes to v1.6
+// - Vary outer leds rotation speed based on BPM
+// - Very minor style nits
 //
 // Changes to v1.5
 // - Minor code-style changes (use caleCase, use "double quotes" and other if/else styles)
@@ -34,7 +38,7 @@
 //
 // Changes to v1.1
 // - Controller knob/slider values are queried on startup, so MIXXX is synced.
-// - Fixed vinyl button behavior the first time it"s pressed.
+// - Fixed vinyl button behavior the first time it's pressed.
 //
 // v1.0 : Original release
 //
@@ -44,7 +48,7 @@ var on = 0x7F;
 var off = 0x00;
 var alpha = 1.0 / 8;
 var beta = alpha / 16;
-var ledRotationSpeed = 2;
+var ledRotationSpeed = 60;
 var ledRotationTimer = 0;
 var masterLeds = 0x90;
 
@@ -97,33 +101,33 @@ DJCJV.init = function(id) {
     engine.setParameter("[QuickEffectRack1_[Channel2]]", "super1", 0.5);
 
     // Connect the VUMeters and Jog Inner LED
-    engine.connectControl ("[Channel1]", "VuMeter", "DJCJV.vuMeterUpdate");
-    engine.connectControl ("[Channel2]", "VuMeter", "DJCJV.vuMeterUpdate");
-    engine.connectControl ("[Channel1]", "playposition", "DJCJV.wheelInnerUpdate");
-    engine.connectControl ("[Channel2]", "playposition", "DJCJV.wheelInnerUpdate");
+    engine.connectControl("[Channel1]", "VuMeter", "DJCJV.vuMeterUpdate");
+    engine.connectControl("[Channel2]", "VuMeter", "DJCJV.vuMeterUpdate");
+    engine.connectControl("[Channel1]", "playposition", "DJCJV.wheelInnerUpdate");
+    engine.connectControl("[Channel2]", "playposition", "DJCJV.wheelInnerUpdate");
 
     // Connect the beat_active with beat leds
-    engine.connectControl ("[Channel1]", "beat_active", "DJCJV.beatActive");
-    engine.connectControl ("[Channel2]", "beat_active", "DJCJV.beatActive");
-    engine.connectControl ("[Channel1]", "stop", "DJCJV.beatInactive");
-    engine.connectControl ("[Channel2]", "stop", "DJCJV.beatInactive");
+    engine.connectControl("[Channel1]", "beat_active", "DJCJV.beatActive");
+    engine.connectControl("[Channel2]", "beat_active", "DJCJV.beatActive");
+    engine.connectControl("[Channel1]", "stop", "DJCJV.beatInactive");
+    engine.connectControl("[Channel2]", "stop", "DJCJV.beatInactive");
 
     // Set inner jog leds to 0
     midi.sendShortMsg(DJCJV.Channel["[Channel1]"].deck, 0x61, 0);
     midi.sendShortMsg(DJCJV.Channel["[Channel2]"].deck, 0x61, 0);
-    //// Set outer jog leds to 0
+    // Set outer jog leds to 0
     midi.sendShortMsg(DJCJV.Channel["[Channel1]"].deck, 0x60, 1);
     midi.sendShortMsg(DJCJV.Channel["[Channel2]"].deck, 0x60, 1);
 
-    // Enable wheels" outer leds rotation by timer (when channel is playing)
+    // Enable wheel's outer leds rotation by timer (when channel is playing)
     ledRotationTimer = engine.beginTimer(20, function() {
         if (engine.getValue("[Channel1]", "play") === 1) {
             midi.sendShortMsg(DJCJV.Channel["[Channel1]"].deck, 0x60, DJCJV.Channel["[Channel1]"].rotation);
-            DJCJV.Channel["[Channel1]"].rotation = DJCJV.Channel["[Channel1]"].rotation >= 127 ? 1 : DJCJV.Channel["[Channel1]"].rotation + ledRotationSpeed;
+            DJCJV.Channel["[Channel1]"].rotation = DJCJV.Channel["[Channel1]"].rotation >= 127 ? 1 : DJCJV.Channel["[Channel1]"].rotation + ( engine.getValue("[Channel1]", "bpm") / ledRotationSpeed );
         }
         if (engine.getValue("[Channel2]", "play") === 1) {
             midi.sendShortMsg(DJCJV.Channel["[Channel2]"].deck, 0x60, DJCJV.Channel["[Channel2]"].rotation);
-            DJCJV.Channel["[Channel2]"].rotation = DJCJV.Channel["[Channel2]"].rotation >= 127 ? 1 : DJCJV.Channel["[Channel2]"].rotation + ledRotationSpeed;
+            DJCJV.Channel["[Channel2]"].rotation = DJCJV.Channel["[Channel2]"].rotation >= 127 ? 1 : DJCJV.Channel["[Channel2]"].rotation + ( engine.getValue("[Channel2]", "bpm") / ledRotationSpeed );
         }
     });
 
@@ -135,13 +139,14 @@ DJCJV.init = function(id) {
 
 // Finalization
 DJCJV.shutdown = function() {
-    //Set all LED states to off
-    midi.sendShortMsg(DJCJV.Channel["[Channel1]"].deck, 0x7F, off);
-    midi.sendShortMsg(DJCJV.Channel["[Channel2]"].deck, 0x7F, off);
+	// Shutdown the outer leds rotation timer
     if (ledRotationTimer) {
         engine.stopTimer(ledRotationTimer);
         ledRotationTimer = 0;
     }
+    //Set all LED states to off
+    midi.sendShortMsg(DJCJV.Channel["[Channel1]"].deck, 0x7F, off);
+    midi.sendShortMsg(DJCJV.Channel["[Channel2]"].deck, 0x7F, off);
 };
 
 // Beat led ACTIVATE (move)
@@ -166,12 +171,12 @@ DJCJV.beatInactive = function(value, group, _control) {
     DJCJV.Channel[group].beatPosition = 1;
 };
 
-//Jogwheels inner LED display - Play position
+// Jogwheels inner LED display - Play position
 DJCJV.wheelInnerUpdate = function(value, group, _control) {
     var playPos = value * 127;
     midi.sendShortMsg(DJCJV.Channel[group].deck, 0x61, playPos);
     if (engine.getValue(group, "end_of_track")) {
-        // Let Mixxx"s engine turn flashing red automatically
+        // Let Mixxx's engine turn flashing red automatically
         return;
     } else if (playPos > 64) {
         // Turn "track" led to orange if position is beyond the half
@@ -182,7 +187,7 @@ DJCJV.wheelInnerUpdate = function(value, group, _control) {
     }
 };
 
-//Vu Meter
+// Vu Meter
 DJCJV.vuMeterUpdate = function(value, group, _control) {
     midi.sendShortMsg(DJCJV.Channel[group].central, 0x44, value * 6);
 };
