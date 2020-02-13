@@ -67,26 +67,35 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     // Assume the qss border is at least 1px wide
     m_frameWidth = 1;
     m_clearButton->hide();
-    connect(m_clearButton, &QAbstractButton::clicked,
-            this, &WSearchLineEdit::clearSearch);
+    connect(m_clearButton,
+            &QAbstractButton::clicked,
+            this,
+            &WSearchLineEdit::clearSearch);
 
     setFocusPolicy(Qt::ClickFocus);
     QShortcut* setFocusShortcut = new QShortcut(QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
-    connect(setFocusShortcut, &QShortcut::activated,
-            this, &WSearchLineEdit::setShortcutFocus);
+    connect(setFocusShortcut,
+            &QShortcut::activated,
+            this,
+            &WSearchLineEdit::setShortcutFocus);
 
     // Set up a timer to search after a few hundred milliseconds timeout.  This
     // stops us from thrashing the database if you type really fast.
     m_debouncingTimer.setSingleShot(true);
-    connect(&m_debouncingTimer, &QTimer::timeout,
-            this, &WSearchLineEdit::triggerSearch);
+    connect(&m_debouncingTimer,
+            &QTimer::timeout,
+            this,
+            &WSearchLineEdit::triggerSearch);
     connect(this,
-            SIGNAL(textChanged(const QString&)),
-            this, SLOT(updateText(const QString&)));
+            &QLineEdit::textChanged,
+            this,
+            &WSearchLineEdit::updateText);
 
     // When you hit enter, it will trigger the search.
-    connect(this, &WSearchLineEdit::returnPressed,
-            this, &WSearchLineEdit::triggerSearch);
+    connect(this,
+            &QLineEdit::returnPressed,
+            this,
+            &WSearchLineEdit::triggerSearch);
 
     QSize clearButtonSize = m_clearButton->sizeHint();
     // Ensures the text does not obscure the clear image.
