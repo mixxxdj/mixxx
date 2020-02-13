@@ -2,7 +2,7 @@
 
 #include <QtEndian>
 
-#include "util/color/rgbcolor.h"
+#include "track/serato/tags.h"
 
 namespace {
 
@@ -10,7 +10,6 @@ const int kNumEntries = 14;
 const int kLoopEntryStartIndex = 5;
 const int kEntrySize = 22;
 const quint16 kVersion = 0x0205;
-constexpr mixxx::RgbColor kDefaultTrackColor = mixxx::RgbColor(0xFF9999);
 
 // These functions conversion between the 4-byte "Serato Markers_" color format
 // and RgbColor (3-Byte RGB, transparency disabled).
@@ -262,7 +261,7 @@ QByteArray SeratoMarkers::dump() const {
         SeratoMarkersEntryPointer pEntry = m_entries.at(i);
         stream.writeRawData(pEntry->dump(), kEntrySize);
     }
-    stream << seratoColorFromRgb(m_trackColor.value_or(kDefaultTrackColor));
+    stream << seratoColorFromRgb(m_trackColor.value_or(SeratoTags::kDefaultTrackColor));
     return data;
 }
 
