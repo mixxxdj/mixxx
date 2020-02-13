@@ -26,7 +26,7 @@ class SeratoMarkers2Test : public testing::Test {
         EXPECT_EQ(inputValue, bpmlockEntry->dump());
     }
 
-    void parseColorEntry(const QByteArray inputValue, bool valid, QRgb colorMask) {
+    void parseColorEntry(const QByteArray inputValue, bool valid, QRgb color) {
         const mixxx::SeratoMarkers2EntryPointer parsedEntry = mixxx::SeratoMarkers2ColorEntry::parse(inputValue);
         if (!parsedEntry) {
             EXPECT_FALSE(valid);
@@ -35,7 +35,7 @@ class SeratoMarkers2Test : public testing::Test {
         EXPECT_TRUE(valid);
         const mixxx::SeratoMarkers2ColorEntry *colorEntry = static_cast<mixxx::SeratoMarkers2ColorEntry*>(parsedEntry.get());
 
-        EXPECT_EQ(colorMask, colorEntry->getColorMask());
+        EXPECT_EQ(color, colorEntry->getColor());
 
         EXPECT_EQ(inputValue, colorEntry->dump());
     }

@@ -148,16 +148,16 @@ class SeratoMarkers final {
         m_entries = entries;
     }
 
-    QRgb getTrackColorMask() const {
-        return m_trackColorMask;
+    QRgb getTrackColor() const {
+        return m_trackColor;
     }
-    void setTrackColorMask(QRgb colorMask) {
-        m_trackColorMask = colorMask;
+    void setTrackColor(QRgb color) {
+        m_trackColor = color;
     }
 
   private:
     QList<SeratoMarkersEntryPointer> m_entries;
-    QRgb m_trackColorMask;
+    QRgb m_trackColor;
 };
 
 inline bool operator==(const SeratoMarkers& lhs, const SeratoMarkers& rhs) {

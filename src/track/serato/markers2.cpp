@@ -48,12 +48,12 @@ SeratoMarkers2EntryPointer SeratoMarkers2ColorEntry::parse(const QByteArray& dat
         return nullptr;
     }
 
-    QRgb colorMask = qRgb(
+    QRgb color = qRgb(
             static_cast<quint8>(data.at(1)),
             static_cast<quint8>(data.at(2)),
             static_cast<quint8>(data.at(3)));
 
-    SeratoMarkers2ColorEntry* pEntry = new SeratoMarkers2ColorEntry(colorMask);
+    SeratoMarkers2ColorEntry* pEntry = new SeratoMarkers2ColorEntry(color);
     qDebug() << "SeratoMarkers2ColorEntry" << *pEntry;
     return SeratoMarkers2EntryPointer(pEntry);
 }
@@ -66,9 +66,9 @@ QByteArray SeratoMarkers2ColorEntry::dump() const {
     stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
     stream << (quint8)0
-           << (quint8)qRed(m_colorMask)
-           << (quint8)qGreen(m_colorMask)
-           << (quint8)qBlue(m_colorMask);
+           << (quint8)qRed(m_color)
+           << (quint8)qGreen(m_color)
+           << (quint8)qBlue(m_color);
 
     return data;
 }

@@ -9,7 +9,7 @@
 #include "util/types.h"
 
 namespace {
-const QRgb kDefaultTrackColorMask = QRgb(0xFF9999);
+const QRgb kDefaultTrackColor = QRgb(0xFF9999);
 const QRgb kDefaultCueColor = QRgb(0xCC0000);
 } // namespace
 
@@ -133,12 +133,12 @@ inline QDebug operator<<(QDebug dbg, const SeratoMarkers2BpmlockEntry& arg) {
 
 class SeratoMarkers2ColorEntry : public SeratoMarkers2Entry {
   public:
-    SeratoMarkers2ColorEntry(QRgb colorMask)
-            : m_colorMask(colorMask) {
+    SeratoMarkers2ColorEntry(QRgb color)
+            : m_color(color) {
     }
 
     SeratoMarkers2ColorEntry()
-            : m_colorMask(kDefaultTrackColorMask) {
+            : m_color(kDefaultTrackColor) {
     }
 
     static SeratoMarkers2EntryPointer parse(const QByteArray& data);
@@ -153,23 +153,23 @@ class SeratoMarkers2ColorEntry : public SeratoMarkers2Entry {
 
     QByteArray dump() const override;
 
-    QRgb getColorMask() const {
-        return m_colorMask;
+    QRgb getColor() const {
+        return m_color;
     }
 
-    void setColorMask(QRgb colorMask) {
-        m_colorMask = colorMask;
+    void setColor(QRgb color) {
+        m_color = color;
     }
 
     quint32 length() const override;
 
   private:
-    QRgb m_colorMask;
+    QRgb m_color;
 };
 
 inline bool operator==(const SeratoMarkers2ColorEntry& lhs,
         const SeratoMarkers2ColorEntry& rhs) {
-    return (lhs.getColorMask() == rhs.getColorMask());
+    return (lhs.getColor() == rhs.getColor());
 }
 
 inline bool operator!=(const SeratoMarkers2ColorEntry& lhs,
@@ -178,7 +178,7 @@ inline bool operator!=(const SeratoMarkers2ColorEntry& lhs,
 }
 
 inline QDebug operator<<(QDebug dbg, const SeratoMarkers2ColorEntry& arg) {
-    return dbg << "color =" << arg.getColorMask();
+    return dbg << "color =" << arg.getColor();
 }
 
 class SeratoMarkers2CueEntry : public SeratoMarkers2Entry {
