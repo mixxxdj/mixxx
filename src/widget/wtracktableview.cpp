@@ -1093,21 +1093,14 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             // Get color of first selected track
             int column = trackModel->fieldIndex(LIBRARYTABLE_COLOR);
             QModelIndex index = indices.at(0).sibling(indices.at(0).row(), column);
-            mixxx::RgbColor::optional_t trackColor = std::nullopt;
-            if (!index.data().isNull()) {
-                trackColor = mixxx::RgbColor::optional(index.data().toUInt());
-            }
+            mixxx::RgbColor::optional_t trackColor = mixxx::RgbColor::optional(index.data());
 
             // Check if all other selected tracks have the same color
             for (int i = 1; i < indices.size(); ++i) {
                 int row = indices.at(i).row();
                 QModelIndex index = indices.at(i).sibling(row, column);
 
-                mixxx::RgbColor::optional_t otherTrackColor = std::nullopt;
-                if (!index.data().isNull()) {
-                    otherTrackColor = mixxx::RgbColor::optional(index.data().toUInt());
-                }
-
+                mixxx::RgbColor::optional_t otherTrackColor = mixxx::RgbColor::optional(index.data());
                 if (trackColor != otherTrackColor) {
                     trackColor = std::nullopt;
                     break;
