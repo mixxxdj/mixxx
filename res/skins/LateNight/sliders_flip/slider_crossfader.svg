@@ -1,5 +1,5 @@
 <svg width="141" height="46" version="1.1" xmlns="http://www.w3.org/2000/svg">
-	<path d="m 134.00001,20 v 4 H 7 v -4 z" color="#000000" fill="#050505" stroke-width=".99999994"/>
+	<path d="m 134.00001,20 v 4 H 7 v -4 z" color="#000000" fill="#000" stroke-width=".99999994"/>
 	<g transform="translate(0 -.5)" fill="#050505" stroke-width=".99979782">
 		<path d="m70.999796 26.5-2e-4 9h-.999596l2e-4-9z" color="#000000"/>
 		<path d="m70.999796 8.5-2e-4 9h-.999596l2e-4-9z" color="#000000"/>
@@ -12,12 +12,12 @@
 		<path d="m86.999796 26.5 2e-6 7h-.999596l-2e-6-7z" color="#000000"/>
 		<path d="m86.999998 10.5-.000402 7h-.999596l.000402-7z" color="#000000"/>
 	</g>
-	<path d="m6 19v6h129v-6zm1 1h127v4h-127z" fill="#4b4b4b" style="paint-order:fill markers stroke"/>
-	<g fill="#636363" stroke-width=".99979782">
+	<path d="m6 19v6h129v-6zm1 1h127v4h-127z" fill="#505050" style="paint-order:fill markers stroke"/>
+	<g fill="#858585" stroke-width=".99979782">
 		<path d="m70.999796 9-2e-4 9h-.999596l2e-4-9z" color="#000000"/>
 		<path d="m70.999596 36 2e-4-9h-.999596l-2e-4 9z" color="#000000"/>
 	</g>
-	<g fill="#4b4b4b" stroke-width=".99979782">
+	<g fill="#505050" stroke-width=".99979782">
 		<path d="m7.999796 9-2e-4 9h-.999596l2e-4-9z" color="#000000"/>
 		<path d="m7.999596 36 2e-4-9h-.999596l-2e-4 9z" color="#000000"/>
 		<path d="m133.9998 9-2e-4 9h-.9996l2e-4-9z" color="#000000"/>
