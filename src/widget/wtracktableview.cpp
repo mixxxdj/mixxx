@@ -1096,6 +1096,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             mixxx::RgbColor::optional_t trackColor = mixxx::RgbColor::optional(index.data());
 
             // Check if all other selected tracks have the same color
+            bool multipleTrackColors = false;
             for (int i = 1; i < indices.size(); ++i) {
                 int row = indices.at(i).row();
                 QModelIndex index = indices.at(i).sibling(row, column);
@@ -1103,19 +1104,26 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 mixxx::RgbColor::optional_t otherTrackColor = mixxx::RgbColor::optional(index.data());
                 if (trackColor != otherTrackColor) {
                     trackColor = std::nullopt;
+                    multipleTrackColors = true;
                     break;
                 }
             }
 
+            // Get the predefined color of the selected tracks. If they have
+            // different colors, do not preselect a color (by using nullptr
+            // instead).
             PredefinedColorPointer predefinedTrackColor = nullptr;
-            if (trackColor) {
+
+            if (trackColor.has_value()) {
+                // All tracks have the same color
                 for (PredefinedColorPointer color : Color::kPredefinedColorsSet.allColors) {
                     if (mixxx::RgbColor(color->m_defaultRgba.rgb()) == *trackColor) {
                         predefinedTrackColor = color;
                         break;
                     }
                 }
-            } else {
+            } else if (!multipleTrackColors) {
+                // All tracks have no color
                 predefinedTrackColor = Color::kPredefinedColorsSet.noColor;
             }
 
