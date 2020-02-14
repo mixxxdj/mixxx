@@ -1117,7 +1117,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             PredefinedColorPointer predefinedTrackColor = nullptr;
             if (trackColor) {
                 for (PredefinedColorPointer color : Color::kPredefinedColorsSet.allColors) {
-                    if (mixxx::RgbColor(color->m_defaultRgba.rgb()) == trackColor.value()) {
+                    if (mixxx::RgbColor(color->m_defaultRgba.rgb()) == *trackColor) {
                         predefinedTrackColor = color;
                         break;
                     }
