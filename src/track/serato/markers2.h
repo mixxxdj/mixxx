@@ -6,11 +6,12 @@
 #include <QList>
 #include <memory>
 
+#include "util/color/rgbcolor.h"
 #include "util/types.h"
 
 namespace {
-const QRgb kDefaultTrackColor = QRgb(0xFF9999);
-const QRgb kDefaultCueColor = QRgb(0xCC0000);
+constexpr mixxx::RgbColor kDefaultTrackColor = mixxx::RgbColor(0xFF9999);
+constexpr mixxx::RgbColor kDefaultCueColor = mixxx::RgbColor(0xCC0000);
 } // namespace
 
 namespace mixxx {
@@ -133,7 +134,7 @@ inline QDebug operator<<(QDebug dbg, const SeratoMarkers2BpmlockEntry& arg) {
 
 class SeratoMarkers2ColorEntry : public SeratoMarkers2Entry {
   public:
-    SeratoMarkers2ColorEntry(QRgb color)
+    SeratoMarkers2ColorEntry(RgbColor color)
             : m_color(color) {
     }
 
@@ -153,18 +154,18 @@ class SeratoMarkers2ColorEntry : public SeratoMarkers2Entry {
 
     QByteArray dump() const override;
 
-    QRgb getColor() const {
+    RgbColor getColor() const {
         return m_color;
     }
 
-    void setColor(QRgb color) {
+    void setColor(RgbColor color) {
         m_color = color;
     }
 
     quint32 length() const override;
 
   private:
-    QRgb m_color;
+    RgbColor m_color;
 };
 
 inline bool operator==(const SeratoMarkers2ColorEntry& lhs,
@@ -183,7 +184,7 @@ inline QDebug operator<<(QDebug dbg, const SeratoMarkers2ColorEntry& arg) {
 
 class SeratoMarkers2CueEntry : public SeratoMarkers2Entry {
   public:
-    SeratoMarkers2CueEntry(quint8 index, quint32 position, QRgb color, QString label)
+    SeratoMarkers2CueEntry(quint8 index, quint32 position, RgbColor color, QString label)
             : m_index(index),
               m_position(position),
               m_color(color),
@@ -225,11 +226,11 @@ class SeratoMarkers2CueEntry : public SeratoMarkers2Entry {
         m_position = position;
     }
 
-    QRgb getColor() const {
+    RgbColor getColor() const {
         return m_color;
     }
 
-    void setColor(QRgb color) {
+    void setColor(RgbColor color) {
         m_color = color;
     }
 
@@ -246,7 +247,7 @@ class SeratoMarkers2CueEntry : public SeratoMarkers2Entry {
   private:
     quint8 m_index;
     quint32 m_position;
-    QRgb m_color;
+    RgbColor m_color;
     QString m_label;
 };
 

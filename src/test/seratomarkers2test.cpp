@@ -26,7 +26,7 @@ class SeratoMarkers2Test : public testing::Test {
         EXPECT_EQ(inputValue, bpmlockEntry->dump());
     }
 
-    void parseColorEntry(const QByteArray inputValue, bool valid, QRgb color) {
+    void parseColorEntry(const QByteArray inputValue, bool valid, mixxx::RgbColor color) {
         const mixxx::SeratoMarkers2EntryPointer parsedEntry = mixxx::SeratoMarkers2ColorEntry::parse(inputValue);
         if (!parsedEntry) {
             EXPECT_FALSE(valid);
@@ -40,7 +40,7 @@ class SeratoMarkers2Test : public testing::Test {
         EXPECT_EQ(inputValue, colorEntry->dump());
     }
 
-    void parseCueEntry(const QByteArray inputValue, bool valid, quint8 index, quint32 position, QRgb color, QString label) {
+    void parseCueEntry(const QByteArray inputValue, bool valid, quint8 index, quint32 position, mixxx::RgbColor color, QString label) {
         const mixxx::SeratoMarkers2EntryPointer parsedEntry = mixxx::SeratoMarkers2CueEntry::parse(inputValue);
         if (!parsedEntry) {
             EXPECT_FALSE(valid);
@@ -93,17 +93,17 @@ TEST_F(SeratoMarkers2Test, ParseBpmlockEntry) {
 }
 
 TEST_F(SeratoMarkers2Test, ParseColorEntry) {
-    parseColorEntry(QByteArray("\x00\xcc\x00\x00", 4), true, qRgb(0xcc, 0, 0));
-    parseColorEntry(QByteArray("\x00\x00\xcc\x00", 4), true, qRgb(0, 0xcc, 0));
-    parseColorEntry(QByteArray("\x00\x00\x00\xcc", 4), true, qRgb(0, 0, 0xcc));
-    parseColorEntry(QByteArray("\x00\x89\xab\xcd", 4), true, qRgb(0x89, 0xab, 0xcd));
+    parseColorEntry(QByteArray("\x00\xcc\x00\x00", 4), true, mixxx::RgbColor(qRgb(0xcc, 0, 0)));
+    parseColorEntry(QByteArray("\x00\x00\xcc\x00", 4), true, mixxx::RgbColor(qRgb(0, 0xcc, 0)));
+    parseColorEntry(QByteArray("\x00\x00\x00\xcc", 4), true, mixxx::RgbColor(qRgb(0, 0, 0xcc)));
+    parseColorEntry(QByteArray("\x00\x89\xab\xcd", 4), true, mixxx::RgbColor(qRgb(0x89, 0xab, 0xcd)));
 
     // Invalid value
-    parseColorEntry(QByteArray("\x01\xff\x00\x00", 1), false, qRgb(0, 0, 0));
+    parseColorEntry(QByteArray("\x01\xff\x00\x00", 1), false, mixxx::RgbColor(qRgb(0, 0, 0)));
 
     // Invalid size
-    parseColorEntry(QByteArray("\x00", 1), false, qRgb(0, 0, 0));
-    parseColorEntry(QByteArray("\x00\xff\x00\x00\x00", 5), false, qRgb(0, 0, 0));
+    parseColorEntry(QByteArray("\x00", 1), false, mixxx::RgbColor(qRgb(0, 0, 0)));
+    parseColorEntry(QByteArray("\x00\xff\x00\x00\x00", 5), false, mixxx::RgbColor(qRgb(0, 0, 0)));
 }
 
 TEST_F(SeratoMarkers2Test, ParseCueEntry) {
@@ -112,28 +112,28 @@ TEST_F(SeratoMarkers2Test, ParseCueEntry) {
             true,
             0,
             0,
-            qRgb(0, 0, 0),
+            mixxx::RgbColor(qRgb(0, 0, 0)),
             QString(""));
     parseCueEntry(
             QByteArray("\x00\x01\x00\x00\x10\x00\x00\xcc\x00\x00\x00\x00Test\x00", 17),
             true,
             1,
             4096,
-            qRgb(0xcc, 0, 0),
+            mixxx::RgbColor(qRgb(0xcc, 0, 0)),
             QString("Test"));
     parseCueEntry(
             QByteArray("\x00\x02\x00\x00\x00\xff\x00\x00\xcc\x00\x00\x00\xc3\xa4\xc3\xbc\xc3\xb6\xc3\x9f\xc3\xa9\xc3\xa8!\x00", 26),
             true,
             2,
             255,
-            qRgb(0, 0xcc, 0),
+            mixxx::RgbColor(qRgb(0, 0xcc, 0)),
             QString("äüößéè!"));
     parseCueEntry(
             QByteArray("\x00\x03\x02\x03\x04\x05\x00\x06\x07\x08\x00\x00Hello World\x00", 24),
             true,
             3,
             33752069,
-            qRgb(0x06, 0x07, 0x08),
+            mixxx::RgbColor(qRgb(0x06, 0x07, 0x08)),
             QString("Hello World"));
 
     // Invalid value
@@ -142,28 +142,28 @@ TEST_F(SeratoMarkers2Test, ParseCueEntry) {
             false,
             0,
             0,
-            qRgb(0, 0, 0),
+            mixxx::RgbColor(qRgb(0, 0, 0)),
             QString());
     parseCueEntry(
             QByteArray("\x00\x05\x00\x00\x10\x00\x01\xcc\x00\x00\x00\x00Test\x00", 17),
             false,
             0,
             0,
-            qRgb(0, 0, 0),
+            mixxx::RgbColor(qRgb(0, 0, 0)),
             QString());
     parseCueEntry(
             QByteArray("\x00\x06\x00\x00\x10\x00\x00\xcc\x00\x00\x01\x00Test\x00", 17),
             false,
             0,
             0,
-            qRgb(0, 0, 0),
+            mixxx::RgbColor(qRgb(0, 0, 0)),
             QString());
     parseCueEntry(
             QByteArray("\x00\x07\x00\x00\x10\x00\x00\xcc\x00\x00\x00\x01Test\x00", 17),
             false,
             0,
             0,
-            qRgb(0, 0, 0),
+            mixxx::RgbColor(qRgb(0, 0, 0)),
             QString());
 
     // Missing null terminator
@@ -172,7 +172,7 @@ TEST_F(SeratoMarkers2Test, ParseCueEntry) {
             false,
             0,
             0,
-            qRgb(0, 0, 0),
+            mixxx::RgbColor(qRgb(0, 0, 0)),
             QString());
 
     //Invalid size
@@ -181,14 +181,14 @@ TEST_F(SeratoMarkers2Test, ParseCueEntry) {
             false,
             0,
             0,
-            qRgb(0, 0, 0),
+            mixxx::RgbColor(qRgb(0, 0, 0)),
             QString());
     parseCueEntry(
             QByteArray("\x00\x0a\x00\x00\x10\x00\x00\xcc\x00\x00\x00\x00\x00\x00", 14),
             false,
             0,
             0,
-            qRgb(0, 0, 0),
+            mixxx::RgbColor(qRgb(0, 0, 0)),
             QString());
 }
 

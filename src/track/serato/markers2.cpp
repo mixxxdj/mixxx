@@ -48,10 +48,10 @@ SeratoMarkers2EntryPointer SeratoMarkers2ColorEntry::parse(const QByteArray& dat
         return nullptr;
     }
 
-    QRgb color = qRgb(
+    RgbColor color = RgbColor(qRgb(
             static_cast<quint8>(data.at(1)),
             static_cast<quint8>(data.at(2)),
-            static_cast<quint8>(data.at(3)));
+            static_cast<quint8>(data.at(3))));
 
     SeratoMarkers2ColorEntry* pEntry = new SeratoMarkers2ColorEntry(color);
     qDebug() << "SeratoMarkers2ColorEntry" << *pEntry;
@@ -108,10 +108,10 @@ SeratoMarkers2EntryPointer SeratoMarkers2CueEntry::parse(const QByteArray& data)
         return nullptr;
     }
 
-    QRgb color = qRgb(
+    RgbColor color = RgbColor(qRgb(
             static_cast<quint8>(data.at(7)),
             static_cast<quint8>(data.at(8)),
-            static_cast<quint8>(data.at(9)));
+            static_cast<quint8>(data.at(9))));
 
     // Unknown field(s), make sure it's 0 in case it's a
     // null-terminated string
