@@ -2,6 +2,23 @@
 
 #include <QtEndian>
 
+namespace {
+QString zeroTerminatedUtf8StringtoQString(QDataStream* stream) {
+    DEBUG_ASSERT(stream);
+
+    QByteArray data;
+    quint8 byte = '\xFF';
+    while (byte != '\x00') {
+        *stream >> byte;
+        data.append(byte);
+        if (stream->status() != QDataStream::Status::Ok) {
+            return QString();
+        }
+    }
+    return QString::fromUtf8(data);
+}
+} // namespace
+
 namespace mixxx {
 
 SeratoMarkers2EntryPointer SeratoMarkers2BpmlockEntry::parse(const QByteArray& data) {
@@ -84,54 +101,62 @@ SeratoMarkers2EntryPointer SeratoMarkers2CueEntry::parse(const QByteArray& data)
         return nullptr;
     }
 
+    // CUE entry fields in order of appearance
+    quint8 unknownField1;
+    quint8 index;
+    quint32 position;
+    quint8 unknownField2;
+    quint8 rawRgbRed;
+    quint8 rawRgbGreen;
+    quint8 rawRgbBlue;
+    quint16 unknownField3;
+
+    QDataStream stream(data);
+    stream.setVersion(QDataStream::Qt_5_0);
+    stream.setByteOrder(QDataStream::BigEndian);
+
+    stream >> unknownField1;
+
     // Unknown field, make sure it's 0 in case it's a
     // null-terminated string
-    if (data.at(0) != '\x00') {
+    if (unknownField1 != '\x00') {
         qWarning() << "Parsing SeratoMarkers2CueEntry failed:"
                    << "Byte 0: " << data.at(0) << "!= '\\0'";
         return nullptr;
     }
 
-    const quint8 index = data.at(1);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
-    const auto position = qFromBigEndian<quint32>(data.mid(2, 6));
-#else
-    const auto position = qFromBigEndian<quint32>(
-            reinterpret_cast<const uchar*>(data.mid(2, 6).constData()));
-#endif
+    stream >> index >> position >> unknownField2;
 
     // Unknown field, make sure it's 0 in case it's a
     // null-terminated string
-    if (data.at(6) != '\x00') {
+    if (unknownField2 != '\x00') {
         qWarning() << "Parsing SeratoMarkers2CueEntry failed:"
                    << "Byte 6: " << data.at(6) << "!= '\\0'";
         return nullptr;
     }
 
-    RgbColor color = RgbColor(qRgb(
-            static_cast<quint8>(data.at(7)),
-            static_cast<quint8>(data.at(8)),
-            static_cast<quint8>(data.at(9))));
+    stream >> rawRgbRed >> rawRgbGreen >> rawRgbBlue >> unknownField3;
+    RgbColor color = RgbColor(qRgb(rawRgbRed, rawRgbGreen, rawRgbBlue));
 
     // Unknown field(s), make sure it's 0 in case it's a
     // null-terminated string
-    if (data.at(10) != '\x00' || data.at(11) != '\x00') {
+    if (unknownField3 != 0x0000) {
         qWarning() << "Parsing SeratoMarkers2CueEntry failed:"
-                   << "Bytes 10-11:" << data.mid(10, 2) << "!= \"\\0\\0\"";
+                   << "Bytes 10-11:" << unknownField3 << "!= \"\\0\\0\"";
         return nullptr;
     }
 
-    int labelEndPos = data.indexOf('\x00', 12);
-    if (labelEndPos < 0) {
-        qWarning() << "Parsing SeratoMarkers2CueEntry failed:"
-                   << "Label end position not found";
+    QString label = zeroTerminatedUtf8StringtoQString(&stream);
+
+    if (stream.status() != QDataStream::Status::Ok) {
+        qWarning() << "Parsing SeratoMarkersEntry failed:"
+                   << "Stream read failed with status" << stream.status();
         return nullptr;
     }
-    QString label(data.mid(12, labelEndPos - 12));
 
-    if (data.length() > labelEndPos + 1) {
-        qWarning() << "Parsing SeratoMarkers2CueEntry failed:"
-                   << "Trailing content" << data.mid(labelEndPos + 1);
+    if (!stream.atEnd()) {
+        qWarning() << "Parsing SeratoMarkersEntry failed:"
+                   << "Unexpected trailing data";
         return nullptr;
     }
 
@@ -175,63 +200,70 @@ SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray& data
         return nullptr;
     }
 
+    // LOOP entry fields in order of appearance
+    quint8 unknownField1;
+    quint8 index;
+    quint32 startPosition;
+    quint32 endPosition;
+    quint32 unknownField2;
+    quint32 unknownField3;
+    quint8 unknownField4;
+    bool locked;
+
+    QDataStream stream(data);
+    stream.setVersion(QDataStream::Qt_5_0);
+    stream.setByteOrder(QDataStream::BigEndian);
+
+    stream >> unknownField1;
     // Unknown field, make sure it's 0 in case it's a
     // null-terminated string
-    if (data.at(0) != '\x00') {
+    if (unknownField1 != '\x00') {
         qWarning() << "Parsing SeratoMarkers2LoopEntry failed:"
-                   << "Byte 0: " << data.at(0) << "!= '\\0'";
+                   << "Byte 0: " << unknownField1 << "!= '\\0'";
         return nullptr;
     }
 
-    const quint8 index = data.at(1);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
-    const auto startposition = qFromBigEndian<quint32>(data.mid(2, 6));
-    const auto endposition = qFromBigEndian<quint32>(data.mid(6, 10));
-#else
-    const auto startposition = qFromBigEndian<quint32>(
-            reinterpret_cast<const uchar*>(data.mid(2, 6).constData()));
-    const auto endposition = qFromBigEndian<quint32>(
-            reinterpret_cast<const uchar*>(data.mid(6, 10).constData()));
-#endif
+    stream >> index >> startPosition >> endPosition >> unknownField2;
     // Unknown field, make sure it contains the expected "default" value
-    if (data.at(10) != '\xff' ||
-            data.at(11) != '\xff' ||
-            data.at(12) != '\xff' ||
-            data.at(13) != '\xff' ||
-            data.at(14) != '\x00' ||
-            data.at(15) != '\x27' ||
-            data.at(16) != '\xaa' ||
-            data.at(17) != '\xe1') {
+    if (unknownField2 != 0xffffffff) {
         qWarning() << "Parsing SeratoMarkers2LoopEntry failed:"
-                   << "Invalid magic value " << data.mid(10, 16);
+                   << "Invalid magic value" << unknownField2 << "at offset 10";
         return nullptr;
     }
 
+    stream >> unknownField3;
+    // Unknown field, make sure it contains the expected "default" value
+    if (unknownField3 != 0x0027aae1) {
+        qWarning() << "Parsing SeratoMarkers2LoopEntry failed:"
+                   << "Invalid magic value" << unknownField3 << "at offset 14";
+        return nullptr;
+    }
+
+    stream >> unknownField4;
     // Unknown field, make sure it's 0 in case it's a
     // null-terminated string
-    if (data.at(18) != '\x00') {
+    if (unknownField4 != '\x00') {
         qWarning() << "Parsing SeratoMarkers2LoopEntry failed:"
-                   << "Byte 18:" << data.at(18) << "!= '\\0'";
+                   << "Byte 18:" << unknownField4 << "!= '\\0'";
         return nullptr;
     }
 
-    const bool locked = data.at(19);
+    stream >> locked;
+    QString label = zeroTerminatedUtf8StringtoQString(&stream);
 
-    int labelEndPos = data.indexOf('\x00', 20);
-    if (labelEndPos < 0) {
-        qWarning() << "Parsing SeratoMarkers2LoopEntry failed:"
-                   << "Label end position not found";
-        return nullptr;
-    }
-    QString label(data.mid(20, labelEndPos - 20));
-
-    if (data.length() > labelEndPos + 1) {
-        qWarning() << "Parsing SeratoMarkers2LoopEntry failed:"
-                   << "Trailing content" << data.mid(labelEndPos + 1);
+    if (stream.status() != QDataStream::Status::Ok) {
+        qWarning() << "Parsing SeratoMarkersEntry failed:"
+                   << "Stream read failed with status" << stream.status();
         return nullptr;
     }
 
-    SeratoMarkers2LoopEntry* pEntry = new SeratoMarkers2LoopEntry(index, startposition, endposition, locked, label);
+    if (!stream.atEnd()) {
+        qWarning() << "Parsing SeratoMarkersEntry failed:"
+                   << "Unexpected trailing data";
+        return nullptr;
+    }
+
+    SeratoMarkers2LoopEntry* pEntry = new SeratoMarkers2LoopEntry(index, startPosition, endPosition, locked, label);
     qDebug() << "SeratoMarkers2LoopEntry" << *pEntry;
     return SeratoMarkers2EntryPointer(pEntry);
 }
