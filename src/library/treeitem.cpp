@@ -25,22 +25,15 @@
  * - *feature.cpp
  */
 
-TreeItem::TreeItem()
-    : m_pFeature(nullptr),
-      m_pParent(nullptr),
-      m_bold(false) {
-}
-
 TreeItem::TreeItem(
         LibraryFeature* pFeature,
-        const QString& label,
-        const QVariant& data)
+        QString label,
+        QVariant data)
     : m_pFeature(pFeature),
       m_pParent(nullptr),
-      m_label(label),
-      m_data(data),
+      m_label(std::move(label)),
+      m_data(std::move(data)),
       m_bold(false) {
-    DEBUG_ASSERT(m_pFeature != nullptr);
 }
 
 TreeItem::~TreeItem() {
@@ -64,12 +57,27 @@ TreeItem* TreeItem::child(int row) const {
 }
 
 void TreeItem::appendChild(TreeItem* pChild) {
-    DEBUG_ASSERT(feature() != nullptr);
-    DEBUG_ASSERT(pChild != nullptr);
-    DEBUG_ASSERT(pChild->feature() == feature());
-    DEBUG_ASSERT(!pChild->hasParent());
+    DEBUG_ASSERT(pChild);
+    DEBUG_ASSERT(!pChild->m_pParent);
+    DEBUG_ASSERT(!pChild->m_pFeature ||
+            pChild->m_pFeature == m_pFeature);
     m_children.append(pChild);
     pChild->m_pParent = this;
+    pChild->initFeatureRecursively(m_pFeature);
+}
+
+void TreeItem::initFeatureRecursively(LibraryFeature* pFeature) {
+    DEBUG_ASSERT(!m_pFeature ||
+            m_pFeature == pFeature);
+    DEBUG_ASSERT(!m_pParent ||
+            m_pParent->m_pFeature == pFeature);
+    if (m_pFeature == pFeature) {
+        return;
+    }
+    m_pFeature = pFeature;
+    for (auto* pChild : qAsConst(m_children)) {
+        pChild->initFeatureRecursively(pFeature);
+    }
 }
 
 TreeItem* TreeItem::appendChild(std::unique_ptr<TreeItem> pChild) {
@@ -78,9 +86,9 @@ TreeItem* TreeItem::appendChild(std::unique_ptr<TreeItem> pChild) {
 }
 
 TreeItem* TreeItem::appendChild(
-        const QString& label,
-        const QVariant& data) {
-    auto pNewChild = std::make_unique<TreeItem>(feature(), label, data);
+        QString label,
+        QVariant data) {
+    auto pNewChild = std::make_unique<TreeItem>(std::move(label), std::move(data));
     TreeItem* pChild = pNewChild.get();
     appendChild(pChild); // transfer ownership
     pNewChild.release(); // release ownership (afterwards)

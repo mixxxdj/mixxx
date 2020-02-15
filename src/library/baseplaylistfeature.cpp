@@ -677,7 +677,7 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
         }
 
         // Create the TreeItem whose parent is the invisible root item
-        TreeItem* item = new TreeItem(this, playlistLabel, playlistId);
+        TreeItem* item = new TreeItem(playlistLabel, playlistId);
         item->setBold(m_playlistsSelectedTrackIsIn.contains(playlistId));
 
         decorateChild(item, playlistId);
