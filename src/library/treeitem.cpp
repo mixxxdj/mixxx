@@ -101,15 +101,11 @@ void TreeItem::removeChild(int row) {
     delete m_children.takeAt(row);
 }
 
-void TreeItem::insertChildren(QList<TreeItem*>& children, int row, int count) {
-    DEBUG_ASSERT(feature() != nullptr);
-    DEBUG_ASSERT(count >= 0);
-    DEBUG_ASSERT(count <= children.size());
+void TreeItem::insertChildren(QList<TreeItem*>& children, int row) {
     Q_UNUSED(row); // only used in DEBUG_ASSERT
     DEBUG_ASSERT(row >= 0);
     DEBUG_ASSERT(row <= m_children.size());
-    for (int counter = 0; counter < count; ++counter) {
-        DEBUG_ASSERT(!children.empty());
+    while (!children.isEmpty()) {
         TreeItem* pChild = children.front();
         appendChild(pChild);
         children.pop_front();

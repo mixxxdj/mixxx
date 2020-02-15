@@ -92,11 +92,7 @@ class TreeItem final {
     void removeChild(int row);
 
     // multiple child items
-    void insertChildren(QList<TreeItem*> children, int row) {
-        insertChildren(children, row, children.size());
-        DEBUG_ASSERT(children.isEmpty()); // took ownership
-    }
-    void insertChildren(QList<TreeItem*>& children, int row, int count); // take ownership
+    void insertChildren(QList<TreeItem*>& children, int row); // take ownership
     void removeChildren(int row, int count);
 
 
