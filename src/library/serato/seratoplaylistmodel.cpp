@@ -3,7 +3,13 @@
 SeratoPlaylistModel::SeratoPlaylistModel(QObject* parent,
         TrackCollectionManager* trackCollectionManager,
         QSharedPointer<BaseTrackCache> trackSource)
-        : BaseExternalPlaylistModel(parent, trackCollectionManager, "mixxx.db.model.serato.playlistmodel", "serato_playlists", "serato_playlist_tracks", trackSource) {
+        : BaseExternalPlaylistModel(
+                  parent,
+                  trackCollectionManager,
+                  "mixxx.db.model.serato.playlistmodel",
+                  "serato_playlists",
+                  "serato_playlist_tracks",
+                  trackSource) {
 }
 
 void SeratoPlaylistModel::initSortColumnMapping() {
