@@ -2,15 +2,18 @@
 
 #include <QtEndian>
 
+#include "util/color/rgbcolor.h"
+
 namespace {
 
 const int kNumEntries = 14;
 const int kLoopEntryStartIndex = 5;
 const int kEntrySize = 22;
 const quint16 kVersion = 0x0205;
+constexpr mixxx::RgbColor kDefaultTrackColor = mixxx::RgbColor(0xFF9999);
 
 // These functions conversion between the 4-byte "Serato Markers_" color format
-// and QRgb (3-Byte RGB, transparency disabled).
+// and RgbColor (3-Byte RGB, transparency disabled).
 //
 // Serato's custom color format that is used here also represents RGB colors,
 // but inserts a single null bit after every 7 payload bits, starting from the
@@ -29,14 +32,14 @@ const quint16 kVersion = 0x0205;
 // See this for details:
 // https://github.com/Holzhaus/serato-tags/blob/master/docs/serato_markers_.md#color-format
 
-QRgb seratoColorToRgb(quint8 w, quint8 x, quint8 y, quint8 z) {
+mixxx::RgbColor seratoColorToRgb(quint8 w, quint8 x, quint8 y, quint8 z) {
     quint8 b = (z & 0x7F) | ((y & 0x01) << 7);
     quint8 g = ((y & 0x7F) >> 1) | ((x & 0x03) << 6);
     quint8 r = ((x & 0x7F) >> 2) | ((w & 0x07) << 5);
-    return QRgb(r << 16) | (g << 8) | b;
+    return mixxx::RgbColor((r << 16) | (g << 8) | b);
 }
 
-QRgb seratoColorToRgb(quint32 color) {
+mixxx::RgbColor seratoColorToRgb(quint32 color) {
     return seratoColorToRgb(
             (color >> 24) & 0xFF,
             (color >> 16) & 0xFF,
@@ -52,8 +55,11 @@ quint32 seratoColorFromRgb(quint8 r, quint8 g, quint8 b) {
     return (w << 24) | (x << 16) | (y << 8) | z;
 }
 
-quint32 seratoColorFromRgb(QRgb rgb) {
-    return seratoColorFromRgb(qRed(rgb), qGreen(rgb), qBlue(rgb));
+quint32 seratoColorFromRgb(mixxx::RgbColor rgb) {
+    return seratoColorFromRgb(
+            (rgb >> 16) & 0xFF,
+            (rgb >> 8) & 0xFF,
+            rgb & 0xFF);
 }
 }
 
@@ -106,7 +112,7 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parse(const QByteArray& data) {
 
     stream >> colorRaw >> type >> isLocked;
 
-    const QRgb color = seratoColorToRgb(colorRaw);
+    const RgbColor color = seratoColorToRgb(colorRaw);
 
     // Parse Start Position
     bool hasStartPosition = (startPositionStatus != 0x7F);
@@ -222,7 +228,7 @@ bool SeratoMarkers::parse(SeratoMarkers* seratoMarkers, const QByteArray& data) 
 
     quint32 trackColorRaw;
     stream >> trackColorRaw;
-    QRgb trackColor = seratoColorToRgb(trackColorRaw);
+    RgbColor trackColor = seratoColorToRgb(trackColorRaw);
 
     if (stream.status() != QDataStream::Status::Ok) {
         qWarning() << "Parsing SeratoMarkers_ failed:"
@@ -253,7 +259,7 @@ QByteArray SeratoMarkers::dump() const {
         SeratoMarkersEntryPointer pEntry = m_entries.at(i);
         stream.writeRawData(pEntry->dump(), kEntrySize);
     }
-    stream << seratoColorFromRgb(m_trackColor);
+    stream << seratoColorFromRgb(m_trackColor.value_or(kDefaultTrackColor));
     return data;
 }
 

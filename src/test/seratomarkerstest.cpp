@@ -19,7 +19,7 @@ class SeratoMarkersTest : public testing::Test {
             quint32 startPosition,
             bool hasEndPosition,
             quint32 endPosition,
-            QRgb color,
+            mixxx::RgbColor color,
             mixxx::SeratoMarkersEntry::TypeId typeId,
             bool isLocked) {
         const mixxx::SeratoMarkersEntryPointer pEntry = mixxx::SeratoMarkersEntry::parse(inputValue);
@@ -60,7 +60,7 @@ TEST_F(SeratoMarkersTest, ParseEntry) {
             0x7f7f7f7f,
             false,
             0x7f7f7f7f,
-            QRgb(0x000000),
+            mixxx::RgbColor(0x000000),
             mixxx::SeratoMarkersEntry::TypeId::Unknown,
             false);
     parseEntry(
@@ -70,7 +70,7 @@ TEST_F(SeratoMarkersTest, ParseEntry) {
             0,
             false,
             0x7f7f7f7f,
-            QRgb(0xcc0000),
+            mixxx::RgbColor(0xcc0000),
             mixxx::SeratoMarkersEntry::TypeId::Cue,
             false);
     parseEntry(
@@ -80,7 +80,7 @@ TEST_F(SeratoMarkersTest, ParseEntry) {
             862808,
             false,
             0x7f7f7f7f,
-            QRgb(0xcc8800),
+            mixxx::RgbColor(0xcc8800),
             mixxx::SeratoMarkersEntry::TypeId::Cue,
             false);
     parseEntry(
@@ -90,7 +90,7 @@ TEST_F(SeratoMarkersTest, ParseEntry) {
             218212,
             false,
             0x7f7f7f7f,
-            QRgb(0x0000cc),
+            mixxx::RgbColor(0x0000cc),
             mixxx::SeratoMarkersEntry::TypeId::Cue,
             false);
     parseEntry(
@@ -100,7 +100,7 @@ TEST_F(SeratoMarkersTest, ParseEntry) {
             108,
             false,
             0x7f7f7f7f,
-            QRgb(0xcccc00),
+            mixxx::RgbColor(0xcccc00),
             mixxx::SeratoMarkersEntry::TypeId::Cue,
             false);
     parseEntry(
@@ -110,7 +110,7 @@ TEST_F(SeratoMarkersTest, ParseEntry) {
             1911,
             false,
             0x7f7f7f7f,
-            QRgb(0x00cc00),
+            mixxx::RgbColor(0x00cc00),
             mixxx::SeratoMarkersEntry::TypeId::Cue,
             false);
     parseEntry(
@@ -120,7 +120,7 @@ TEST_F(SeratoMarkersTest, ParseEntry) {
             0x7f7f7f7f,
             false,
             0x7f7f7f7f,
-            QRgb(0x000000),
+            mixxx::RgbColor(0x000000),
             mixxx::SeratoMarkersEntry::TypeId::Cue,
             false);
     parseEntry(
@@ -130,7 +130,7 @@ TEST_F(SeratoMarkersTest, ParseEntry) {
             0x7f7f7f7f,
             false,
             0x7f7f7f7f,
-            QRgb(0x000000),
+            mixxx::RgbColor(0x000000),
             mixxx::SeratoMarkersEntry::TypeId::Loop,
             false);
 }

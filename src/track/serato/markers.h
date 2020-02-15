@@ -6,6 +6,7 @@
 #include <QList>
 #include <memory>
 
+#include "util/color/rgbcolor.h"
 #include "util/types.h"
 
 namespace mixxx {
@@ -27,7 +28,7 @@ class SeratoMarkersEntry {
             int startPosition,
             bool hasEndPosition,
             int endPosition,
-            QRgb color,
+            RgbColor color,
             int type,
             bool isLocked)
             : m_color(color),
@@ -61,7 +62,7 @@ class SeratoMarkersEntry {
         return typeId;
     }
 
-    QRgb getColor() const {
+    RgbColor getColor() const {
         return m_color;
     }
 
@@ -86,7 +87,7 @@ class SeratoMarkersEntry {
     }
 
   private:
-    QRgb m_color;
+    RgbColor m_color;
     bool m_hasStartPosition;
     bool m_hasEndPosition;
     ;
@@ -138,7 +139,7 @@ class SeratoMarkers final {
     QByteArray dump() const;
 
     bool isEmpty() const {
-        return m_entries.isEmpty();
+        return m_entries.isEmpty() && !m_trackColor;
     }
 
     const QList<SeratoMarkersEntryPointer>& getEntries() const {
@@ -148,16 +149,16 @@ class SeratoMarkers final {
         m_entries = entries;
     }
 
-    QRgb getTrackColor() const {
+    RgbColor::optional_t getTrackColor() const {
         return m_trackColor;
     }
-    void setTrackColor(QRgb color) {
+    void setTrackColor(RgbColor::optional_t color) {
         m_trackColor = color;
     }
 
   private:
     QList<SeratoMarkersEntryPointer> m_entries;
-    QRgb m_trackColor;
+    RgbColor::optional_t m_trackColor;
 };
 
 inline bool operator==(const SeratoMarkers& lhs, const SeratoMarkers& rhs) {
