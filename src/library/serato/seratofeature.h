@@ -18,24 +18,9 @@
 #include <fstream>
 
 #include "library/baseexternallibraryfeature.h"
-#include "library/baseexternalplaylistmodel.h"
 #include "library/baseexternaltrackmodel.h"
+#include "library/serato/seratoplaylistmodel.h"
 #include "library/treeitemmodel.h"
-
-class TrackCollectionManager;
-class BaseExternalPlaylistModel;
-
-class SeratoPlaylistModel : public BaseExternalPlaylistModel {
-  public:
-    SeratoPlaylistModel(QObject* parent,
-            TrackCollectionManager* pTrackCollectionManager,
-            QSharedPointer<BaseTrackCache> trackSource);
-    TrackPointer getTrack(const QModelIndex& index) const override;
-    bool isColumnHiddenByDefault(int column) override;
-
-  protected:
-    void initSortColumnMapping() override;
-};
 
 class SeratoFeature : public BaseExternalLibraryFeature {
     Q_OBJECT

@@ -1082,6 +1082,7 @@ class MixxxCore(Feature):
                    "src/library/itunes/itunesfeature.cpp",
                    "src/library/traktor/traktorfeature.cpp",
                    "src/library/serato/seratofeature.cpp",
+                   "src/library/serato/seratoplaylistmodel.cpp",
 
                    "src/library/rekordbox/rekordboxfeature.cpp",
                    "src/library/rekordbox/rekordbox_pdb.cpp",
