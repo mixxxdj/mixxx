@@ -56,12 +56,14 @@ TreeItem* TreeItem::child(int row) const {
     return m_children[row];
 }
 
-void TreeItem::appendChild(TreeItem* pChild) {
+void TreeItem::insertChild(int row, TreeItem* pChild) {
     DEBUG_ASSERT(pChild);
     DEBUG_ASSERT(!pChild->m_pParent);
     DEBUG_ASSERT(!pChild->m_pFeature ||
             pChild->m_pFeature == m_pFeature);
-    m_children.append(pChild);
+    DEBUG_ASSERT(row >= 0);
+    DEBUG_ASSERT(row <= m_children.size());
+    m_children.insert(row, pChild);
     pChild->m_pParent = this;
     pChild->initFeatureRecursively(m_pFeature);
 }
@@ -80,19 +82,19 @@ void TreeItem::initFeatureRecursively(LibraryFeature* pFeature) {
     }
 }
 
-TreeItem* TreeItem::appendChild(std::unique_ptr<TreeItem> pChild) {
-    appendChild(pChild.get());
+TreeItem* TreeItem::appendChild(
+        std::unique_ptr<TreeItem> pChild) {
+    insertChild(m_children.size(), pChild.get()); // transfer ownership
     return pChild.release();
 }
 
 TreeItem* TreeItem::appendChild(
         QString label,
         QVariant data) {
-    auto pNewChild = std::make_unique<TreeItem>(std::move(label), std::move(data));
-    TreeItem* pChild = pNewChild.get();
-    appendChild(pChild); // transfer ownership
-    pNewChild.release(); // release ownership (afterwards)
-    return pChild;
+    auto pNewChild = std::make_unique<TreeItem>(
+            std::move(label),
+            std::move(data));
+    return appendChild(std::move(pNewChild));
 }
 
 void TreeItem::removeChild(int row) {
@@ -101,13 +103,12 @@ void TreeItem::removeChild(int row) {
     delete m_children.takeAt(row);
 }
 
-void TreeItem::insertChildren(QList<TreeItem*>& children, int row) {
-    Q_UNUSED(row); // only used in DEBUG_ASSERT
+void TreeItem::insertChildren(int row, QList<TreeItem*>& children) {
     DEBUG_ASSERT(row >= 0);
     DEBUG_ASSERT(row <= m_children.size());
     while (!children.isEmpty()) {
         TreeItem* pChild = children.front();
-        appendChild(pChild);
+        insertChild(row++, pChild);
         children.pop_front();
     }
 }
