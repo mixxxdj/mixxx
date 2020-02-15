@@ -136,7 +136,7 @@ int insertTrackIntoPlaylist(const QSqlDatabase& database, int playlistId, int tr
     return query.lastInsertId().toInt();
 }
 
-inline QString bytesToQString(const QByteArray& data, const quint32 size) {
+inline QString utf16beToQString(const QByteArray& data, const quint32 size) {
     return QTextCodec::codecForName("UTF-16BE")->toUnicode(data, size);
 }
 
@@ -180,65 +180,65 @@ inline bool parseTrack(serato_track_t* track, QIODevice* buffer) {
         // Parse field data
         switch (static_cast<FieldId>(fieldId)) {
         case FieldId::FileType:
-            track->filetype = bytesToQString(data, fieldSize);
+            track->filetype = utf16beToQString(data, fieldSize);
             break;
         case FieldId::FilePath:
-            track->location = bytesToQString(data, fieldSize);
+            track->location = utf16beToQString(data, fieldSize);
             break;
         case FieldId::SongTitle:
-            track->title = bytesToQString(data, fieldSize);
+            track->title = utf16beToQString(data, fieldSize);
             break;
         case FieldId::Artist:
-            track->artist = bytesToQString(data, fieldSize);
+            track->artist = utf16beToQString(data, fieldSize);
             break;
         case FieldId::Album:
-            track->album = bytesToQString(data, fieldSize);
+            track->album = utf16beToQString(data, fieldSize);
             break;
         case FieldId::Genre:
-            track->genre = bytesToQString(data, fieldSize);
+            track->genre = utf16beToQString(data, fieldSize);
             break;
         case FieldId::Length: {
             bool ok;
-            int duration = bytesToQString(data, fieldSize).toInt(&ok);
+            int duration = utf16beToQString(data, fieldSize).toInt(&ok);
             if (ok) {
                 track->duration = duration;
             }
             break;
         }
         case FieldId::Bitrate:
-            track->bitrate = bytesToQString(data, fieldSize);
+            track->bitrate = utf16beToQString(data, fieldSize);
             break;
         case FieldId::SampleRate:
-            track->samplerate = bytesToQString(data, fieldSize);
+            track->samplerate = utf16beToQString(data, fieldSize);
             break;
         case FieldId::Bpm: {
             bool ok;
-            double bpm = bytesToQString(data, fieldSize).toDouble(&ok);
+            double bpm = utf16beToQString(data, fieldSize).toDouble(&ok);
             if (ok) {
                 track->bpm = bpm;
             }
             break;
         }
         case FieldId::Comment:
-            track->comment = bytesToQString(data, fieldSize);
+            track->comment = utf16beToQString(data, fieldSize);
             break;
         case FieldId::Grouping:
-            track->grouping = bytesToQString(data, fieldSize);
+            track->grouping = utf16beToQString(data, fieldSize);
             break;
         case FieldId::Label:
-            track->label = bytesToQString(data, fieldSize);
+            track->label = utf16beToQString(data, fieldSize);
             break;
         case FieldId::Year: {
             // 4-digit year as string (YYYY)
             bool ok;
-            int year = bytesToQString(data, fieldSize).toInt(&ok);
+            int year = utf16beToQString(data, fieldSize).toInt(&ok);
             if (ok) {
                 track->year = year;
             }
             break;
         }
         case FieldId::Key:
-            track->key = bytesToQString(data, fieldSize);
+            track->key = utf16beToQString(data, fieldSize);
             break;
         case FieldId::BeatgridLocked:
             track->beatgridlocked = bytesToBoolean(data);
@@ -318,7 +318,7 @@ inline QString parseCrateTrackPath(QIODevice* buffer) {
         // Parse field data
         switch (static_cast<FieldId>(fieldId)) {
         case FieldId::TrackPath:
-            location = bytesToQString(data, fieldSize);
+            location = utf16beToQString(data, fieldSize);
             break;
         default: {
             QString fieldName = QString(headerData.mid(0, sizeof(quint32)));
@@ -398,7 +398,7 @@ QString parseCrate(
         // Parse field data
         switch (static_cast<FieldId>(fieldId)) {
         case FieldId::Version: {
-            QString version = bytesToQString(data, fieldSize);
+            QString version = utf16beToQString(data, fieldSize);
             qDebug() << "Serato Database Version: "
                      << version;
             break;
@@ -565,7 +565,7 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
         // Parse field data
         switch (static_cast<FieldId>(fieldId)) {
         case FieldId::Version: {
-            QString version = bytesToQString(data, fieldSize);
+            QString version = utf16beToQString(data, fieldSize);
             qDebug() << "Serato Database Version: "
                      << version;
             break;
