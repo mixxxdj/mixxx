@@ -1143,8 +1143,6 @@ void SeratoFeature::onSeratoDatabasesFound() {
 
     if (foundDatabases.size() == 0) {
         // No Serato databases found
-        ScopedTransaction transaction(database);
-        transaction.commit();
 
         if (root->childRows() > 0) {
             // Devices have since been unmounted
