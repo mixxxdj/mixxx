@@ -15,7 +15,7 @@ ColorDelegate::ColorDelegate(QTableView* pTableView)
 void ColorDelegate::paintItem(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const {
     const auto color = mixxx::RgbColor::optional(index.data());
 
-    if (!color.has_value()) {
+    if (!color) {
         // Filter out track color that is hidden
         if (option.state & QStyle::State_Selected) {
             painter->fillRect(option.rect, option.palette.highlight());
