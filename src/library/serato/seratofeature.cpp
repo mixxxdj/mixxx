@@ -662,11 +662,9 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
 }
 
 // This function is executed in a separate thread other than the main thread
-QList<TreeItem*> findSeratoDatabases(SeratoFeature* seratoFeature) {
+QList<TreeItem*> findSeratoDatabases() {
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
-
-    QList<TreeItem*> foundDatabases;
 
     // Build a list of directories that could contain the _Serato_ directory
     QFileInfoList databaseLocations;
@@ -712,6 +710,7 @@ QList<TreeItem*> findSeratoDatabases(SeratoFeature* seratoFeature) {
             volumesDir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot));
 #endif
 
+    QList<TreeItem*> foundDatabases;
     foreach (QFileInfo databaseLocation, databaseLocations) {
         QDir databaseDir = QDir(databaseLocation.filePath());
         if (!databaseDir.cd(kDatabaseDirectory)) {
@@ -722,19 +721,19 @@ QList<TreeItem*> findSeratoDatabases(SeratoFeature* seratoFeature) {
             continue;
         }
 
-        TreeItem* foundDatabase = new TreeItem(seratoFeature);
-
         QString displayPath = databaseLocation.filePath();
         if (displayPath.endsWith("/")) {
             displayPath.chop(1);
         }
 
-        foundDatabase->setLabel(displayPath);
 
         QList<QVariant> data;
         data << QVariant(databaseDir.filePath(kDatabaseFilename))
              << QVariant(false);
-        foundDatabase->setData(data);
+
+        TreeItem* foundDatabase = new TreeItem(
+                std::move(displayPath),
+                QVariant(data));
 
         foundDatabases << foundDatabase;
     }
@@ -908,7 +907,7 @@ SeratoFeature::SeratoFeature(
             &SeratoFeature::onTracksFound);
 
     // initialize the model
-    m_childModel.setRootItem(std::make_unique<TreeItem>(this));
+    m_childModel.setRootItem(TreeItem::newRoot(this));
 }
 
 SeratoFeature::~SeratoFeature() {
@@ -999,7 +998,7 @@ void SeratoFeature::activate() {
     qDebug() << "SeratoFeature::activate()";
 
     // Let a worker thread do the parsing
-    m_databasesFuture = QtConcurrent::run(findSeratoDatabases, this);
+    m_databasesFuture = QtConcurrent::run(findSeratoDatabases);
     m_databasesFutureWatcher.setFuture(m_databasesFuture);
     m_title = tr("(loading) Serato");
     //calls a slot in the sidebar model such that 'Serato (isLoading)' is displayed.
