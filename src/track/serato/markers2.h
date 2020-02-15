@@ -35,9 +35,7 @@ class SeratoMarkers2Entry {
 
     virtual QByteArray dump() const = 0;
 
-    virtual quint32 length() const {
-        return dump().length();
-    }
+    virtual quint32 length() const = 0;
 };
 
 typedef std::shared_ptr<SeratoMarkers2Entry> SeratoMarkers2EntryPointer;
@@ -75,6 +73,10 @@ class SeratoMarkers2UnknownEntry : public SeratoMarkers2Entry {
 
     QByteArray dump() const override {
         return m_data;
+    }
+
+    quint32 length() const override {
+        return dump().length();
     }
 
   private:
