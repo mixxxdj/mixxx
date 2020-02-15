@@ -16,6 +16,7 @@
       <WidgetGroup>
         <ObjectName>HotcueGrid</ObjectName>
         <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
           <Template src="skin:hotcue_button.xml">
             <SetVariable name="hotcue">1</SetVariable>
@@ -29,6 +30,7 @@
       <WidgetGroup>
         <ObjectName>HotcueGrid</ObjectName>
         <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
           <Template src="skin:hotcue_button.xml">
             <SetVariable name="hotcue">3</SetVariable>
@@ -58,6 +60,7 @@
       <WidgetGroup>
         <ObjectName>HotcueGrid</ObjectName>
         <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
           <Template src="skin:hotcue_button.xml">
             <SetVariable name="hotcue">1</SetVariable>
@@ -77,6 +80,7 @@
       <WidgetGroup>
         <ObjectName>HotcueGrid</ObjectName>
         <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
           <Template src="skin:hotcue_button.xml">
             <SetVariable name="hotcue">5</SetVariable>

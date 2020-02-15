@@ -643,7 +643,7 @@ void ITunesFeature::parseTrack(QXmlStreamReader& xml, QSqlQuery& query) {
 
 TreeItem* ITunesFeature::parsePlaylists(QXmlStreamReader& xml) {
     qDebug() << "Parse iTunes playlists";
-    TreeItem* rootItem = new TreeItem(this);
+    std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     QSqlQuery query_insert_to_playlists(m_database);
     query_insert_to_playlists.prepare("INSERT INTO itunes_playlists (id, name) "
                                       "VALUES (:id, :name)");
@@ -660,7 +660,7 @@ TreeItem* ITunesFeature::parsePlaylists(QXmlStreamReader& xml) {
             parsePlaylist(xml,
                           query_insert_to_playlists,
                           query_insert_to_playlist_tracks,
-                          rootItem);
+                          pRootItem.get());
             continue;
         }
         if (xml.isEndElement()) {
@@ -668,7 +668,7 @@ TreeItem* ITunesFeature::parsePlaylists(QXmlStreamReader& xml) {
                 break;
         }
     }
-    return rootItem;
+    return pRootItem.release();
 }
 
 bool ITunesFeature::readNextStartElement(QXmlStreamReader& xml) {

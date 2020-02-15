@@ -1315,8 +1315,10 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
     pLibraryWidget->setup(node, *m_pContext);
 
     // Connect Library search signals to the WLibrary
-    connect(m_pLibrary, SIGNAL(search(const QString&)),
-            pLibraryWidget, SLOT(search(const QString&)));
+    connect(m_pLibrary,
+            &Library::search,
+            pLibraryWidget,
+            &WLibrary::search);
 
     m_pLibrary->bindLibraryWidget(pLibraryWidget, m_pKeyboard);
 

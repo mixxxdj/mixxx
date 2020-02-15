@@ -121,23 +121,19 @@ void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
     // have permission so that we can access the folder on future runs. We need
     // to canonicalize the path so we first wrap the directory string with a
     // QDir.
-    QDir directory(newDir);
-    Sandbox::createSecurityToken(directory);
+    Sandbox::createSecurityToken(QDir(newDir));
 
     SqlTransaction transaction(m_database);
-    QList<TrackRef> movedTrackRefs =
+    QList<RelocatedTrack> relocatedTracks =
             m_directoryDao.relocateDirectory(oldDir, newDir);
     transaction.commit();
 
-    QList<QPair<TrackRef, TrackRef>> replacedTrackRefs;
-    replacedTrackRefs.reserve(movedTrackRefs.size());
-    for (const auto& movedTrackRef : movedTrackRefs) {
-        auto removedTrackRef = movedTrackRef;
-        // The actual new location is unknown, only the id remains the same
-        auto changedTrackRef = TrackRef::fromFileInfo(TrackFile(), movedTrackRef.getId());
-        replacedTrackRefs.append(qMakePair(removedTrackRef, changedTrackRef));
+    if (relocatedTracks.isEmpty()) {
+        // No tracks moved
+        return;
     }
-    m_trackDao.databaseTracksReplaced(std::move(replacedTrackRefs));
+
+    m_trackDao.databaseTracksRelocated(std::move(relocatedTracks));
 
     GlobalTrackCacheLocker().relocateCachedTracks(&m_trackDao);
 }

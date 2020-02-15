@@ -1,4 +1,5 @@
 <Template>
+  <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
   <WidgetGroup>
     <Size>0e,0min</Size>
     <Layout>horizontal</Layout>
@@ -38,7 +39,7 @@
                             <TooltipId>coverart</TooltipId>
                             <ObjectName>DeckCoverArt</ObjectName>
                             <Size>35f,35f</Size>
-                            <Group>[Channel<Variable name="channum"/>]</Group>
+                            <Group><Variable name="group"/></Group>
                           </CoverArt>
                         </Children>
                       </WidgetGroup>
@@ -100,7 +101,7 @@
                                   padding-top: 4px;
                                 }
                                 </Style>
-                                <Group>[Channel<Variable name="channum"/>]</Group>
+                                <Group><Variable name="group"/></Group>
                                 <Alignment>right</Alignment>
                               </NumberPos>
                             </Children>
@@ -242,7 +243,7 @@
                             </State>
                             <Pos>22,1</Pos>
                             <Connection>
-                              <ConfigKey>[Channel<Variable name="channum"/>],repeat</ConfigKey>
+                              <ConfigKey><Variable name="group"/>,repeat</ConfigKey>
                             </Connection>
                           </PushButton>
                           <PushButton>
@@ -255,7 +256,7 @@
                             </State>
                             <Pos>43,1</Pos>
                             <Connection>
-                              <ConfigKey>[Channel<Variable name="channum"/>],eject</ConfigKey>
+                              <ConfigKey><Variable name="group"/>,eject</ConfigKey>
                               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                               <ButtonState>LeftButton</ButtonState>
                               <ConnectValueToWidget>false</ConnectValueToWidget>
@@ -271,12 +272,12 @@
                             </State>
                             <Pos>1,20</Pos>
                             <Connection>
-                              <ConfigKey>[Channel<Variable name="channum"/>],beats_translate_curpos</ConfigKey>
+                              <ConfigKey><Variable name="group"/>,beats_translate_curpos</ConfigKey>
                               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                               <ButtonState>LeftButton</ButtonState>
                             </Connection>
                             <Connection>
-                              <ConfigKey>[Channel<Variable name="channum"/>],beats_translate_match_alignment</ConfigKey>
+                              <ConfigKey><Variable name="group"/>,beats_translate_match_alignment</ConfigKey>
                               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                               <ButtonState>RightButton</ButtonState>
                             </Connection>
@@ -297,7 +298,7 @@
                             </State>
                             <Pos>22,20</Pos>
                             <Connection>
-                              <ConfigKey>[Channel<Variable name="channum"/>],quantize</ConfigKey>
+                              <ConfigKey><Variable name="group"/>,quantize</ConfigKey>
                               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                               <ButtonState>LeftButton</ButtonState>
                             </Connection>
@@ -317,7 +318,7 @@
                             </State>
                             <Pos>43,20</Pos>
                             <Connection>
-                              <ConfigKey>[Channel<Variable name="channum"/>],keylock</ConfigKey>
+                              <ConfigKey><Variable name="group"/>,keylock</ConfigKey>
                             </Connection>
                           </PushButton>
 
@@ -347,11 +348,11 @@
                     </State>
                     <Pos>3,15</Pos>
                     <Connection>
-                      <ConfigKey>[Channel<Variable name="channum"/>],sync_enabled</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,sync_enabled</ConfigKey>
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey>[Channel<Variable name="channum"/>],beatsync_tempo</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,beatsync_tempo</ConfigKey>
                       <ButtonState>RightButton</ButtonState>
                     </Connection>
                   </PushButton>
@@ -371,11 +372,11 @@
                     </State>
                     <Pos>27,15</Pos>
                     <Connection>
-                      <ConfigKey>[Channel<Variable name="channum"/>],sync_key</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,sync_key</ConfigKey>
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey>[Channel<Variable name="channum"/>],reset_key</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,reset_key</ConfigKey>
                       <ButtonState>RightButton</ButtonState>
                     </Connection>
                   </PushButton>
@@ -385,7 +386,7 @@
                     <Pos>3,30</Pos>
                     <Size>47f,26f</Size>
                     <Style>QLabel {
-                        font: bold 9px sans-serif;
+                        font: bold 12px sans-serif;
                         font-family: "Open Sans";
                         background-color: transparent;
                         color: #191F24;
@@ -400,7 +401,7 @@
                         <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
                         <Alignment>center</Alignment>
                         <Connection>
-                          <ConfigKey>[Channel<Variable name="channum"/>],visual_bpm</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
                         </Connection>
                       </NumberBpm>
                       <Key>
@@ -409,7 +410,7 @@
                         <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
                         <Alignment>center</Alignment>
                         <Connection>
-                          <ConfigKey>[Channel<Variable name="channum"/>],visual_key</ConfigKey>
+                          <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
                         </Connection>
                       </Key>
 
@@ -421,7 +422,7 @@
                     <Pos>18,55</Pos>
                     <Horizontal>true</Horizontal>
                     <Connection>
-                      <ConfigKey>[Channel<Variable name="channum"/>],visual_key_distance</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,visual_key_distance</ConfigKey>
                       <EmitOnDownPress>false</EmitOnDownPress>
                     </Connection>
                   </SliderComposed>
@@ -436,11 +437,11 @@
                     </State>
                     <Pos>5,52</Pos>
                     <Connection>
-                      <ConfigKey>[Channel<Variable name="channum"/>],pitch_down</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,pitch_down</ConfigKey>
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey>[Channel<Variable name="channum"/>],pitch_down_small</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,pitch_down_small</ConfigKey>
                       <ButtonState>RightButton</ButtonState>
                     </Connection>
                   </PushButton>
@@ -455,11 +456,11 @@
                     </State>
                     <Pos>38,52</Pos>
                     <Connection>
-                      <ConfigKey>[Channel<Variable name="channum"/>],pitch_up</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,pitch_up</ConfigKey>
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey>[Channel<Variable name="channum"/>],pitch_up_small</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,pitch_up_small</ConfigKey>
                       <ButtonState>RightButton</ButtonState>
                     </Connection>
                   </PushButton>
@@ -471,7 +472,7 @@
                     <Pos>18,58</Pos>
                     <Horizontal>true</Horizontal>
                     <Connection>
-                      <ConfigKey>[Channel<Variable name="channum"/>],pitch</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,pitch</ConfigKey>
                       <EmitOnDownPress>false</EmitOnDownPress>
                     </Connection>
                   </SliderComposed>
@@ -483,7 +484,7 @@
                     <Pos>20,62</Pos>
                     <Horizontal>false</Horizontal>
                     <Connection>
-                      <ConfigKey>[Channel<Variable name="channum"/>],rate</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,rate</ConfigKey>
                       <EmitOnDownPress>false</EmitOnDownPress>
                     </Connection>
                   </SliderComposed>
@@ -498,12 +499,12 @@
                     </State>
                     <Pos>36,148</Pos>
                     <Connection>
-                      <ConfigKey>[Channel<Variable name="channum"/>],rate_temp_up</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,rate_temp_up</ConfigKey>
                       <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey>[Channel<Variable name="channum"/>],rate_temp_up_small</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,rate_temp_up_small</ConfigKey>
                       <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                       <ButtonState>RightButton</ButtonState>
                     </Connection>
@@ -519,12 +520,12 @@
                     </State>
                     <Pos>7,148</Pos>
                     <Connection>
-                      <ConfigKey>[Channel<Variable name="channum"/>],rate_temp_down</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,rate_temp_down</ConfigKey>
                       <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey>[Channel<Variable name="channum"/>],rate_temp_down_small</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,rate_temp_down_small</ConfigKey>
                       <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                       <ButtonState>RightButton</ButtonState>
                     </Connection>
