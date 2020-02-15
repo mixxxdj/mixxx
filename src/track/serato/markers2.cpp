@@ -339,15 +339,20 @@ bool SeratoMarkers2::parse(SeratoMarkers2* seratoMarkers2, const QByteArray& out
 }
 
 QByteArray SeratoMarkers2::dump() const {
-    QByteArray data("\x01\x01", 2);
+    QByteArray data;
+    QDataStream stream(&data, QIODevice::WriteOnly);
+    stream.setVersion(QDataStream::Qt_5_0);
+    stream.setByteOrder(QDataStream::BigEndian);
+    stream << (quint16)0x0101;
 
     for (int i = 0; i < m_entries.size(); i++) {
         SeratoMarkers2EntryPointer entry = m_entries.at(i);
-        quint32 lengthBE = qToBigEndian(entry->length());
-        data.append(entry->type().toUtf8());
-        data.append('\0');
-        data.append((const char*)&lengthBE, 4);
-        data.append(entry->dump());
+        QByteArray entryName = entry->type().toUtf8();
+        QByteArray entryData = entry->dump();
+        stream.writeRawData(entryName.constData(), entryName.length());
+        stream << (qint8)'\0' // terminating null-byte
+               << entryData.length();
+        stream.writeRawData(entryData.constData(), entryData.length());
     }
     data.append('\0');
 
