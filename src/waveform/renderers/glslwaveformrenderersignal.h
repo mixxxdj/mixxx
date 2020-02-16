@@ -6,6 +6,8 @@
 #include <QtOpenGL>
 #include <QOpenGLFunctions_2_1>
 
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+
 #include "track/track.h"
 #include "util/memory.h"
 #include "waveform/renderers/waveformrenderersignalbase.h"
@@ -71,5 +73,7 @@ class GLSLWaveformRendererRGBSignal : public GLSLWaveformRendererSignal {
         : GLSLWaveformRendererSignal(waveformWidgetRenderer, true) {}
     ~GLSLWaveformRendererRGBSignal() override {}
 };
+
+#endif // QT_NO_OPENGL && !QT_OPENGL_ES_2
 
 #endif // GLWAVEFORMRENDERERSIGNALSHADER_H

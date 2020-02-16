@@ -3,6 +3,8 @@
 
 #include <QOpenGLFunctions_2_1>
 
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+
 #include "waveformrenderersignalbase.h"
 
 class ControlObject;
@@ -17,5 +19,7 @@ public:
     virtual void onSetup(const QDomNode &node);
     virtual void draw(QPainter* painter, QPaintEvent* event);
 };
+
+#endif // QT_NO_OPENGL && !QT_OPENGL_ES_2
 
 #endif // GLWAVEFROMRENDERERFILTEREDSIGNAL_H

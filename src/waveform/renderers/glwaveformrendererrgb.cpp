@@ -6,6 +6,8 @@
 #include "widget/wskincolor.h"
 #include "util/math.h"
 
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+
 GLWaveformRendererRGB::GLWaveformRendererRGB(
         WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererSignalBase(waveformWidgetRenderer) {
@@ -192,3 +194,5 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     painter->endNativePainting();
 }
+
+#endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)

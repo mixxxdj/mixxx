@@ -6,6 +6,8 @@
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+
 GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer,
                                                        bool rgbShader)
         : WaveformRendererSignalBase(waveformWidgetRenderer),
@@ -448,3 +450,5 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
 
     painter->endNativePainting();
 }
+
+#endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)

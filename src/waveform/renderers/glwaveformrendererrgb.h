@@ -3,6 +3,8 @@
 
 #include <QOpenGLFunctions_2_1>
 
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+
 #include "waveformrenderersignalbase.h"
 
 class ControlObject;
@@ -20,5 +22,7 @@ class GLWaveformRendererRGB: public WaveformRendererSignalBase,
   private:
     DISALLOW_COPY_AND_ASSIGN(GLWaveformRendererRGB);
 };
+
+#endif // QT_NO_OPENGL && !QT_OPENGL_ES_2
 
 #endif // GLWAVEFORMRENDERERRGB_H

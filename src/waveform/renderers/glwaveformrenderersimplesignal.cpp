@@ -6,6 +6,7 @@
 #include "waveform/waveformwidgetfactory.h"
 #include "util/math.h"
 
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 GLWaveformRendererSimpleSignal::GLWaveformRendererSimpleSignal(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -158,3 +159,5 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
 
     painter->endNativePainting();
 }
+
+#endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
