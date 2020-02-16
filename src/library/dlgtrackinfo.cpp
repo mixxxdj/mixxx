@@ -555,11 +555,13 @@ void DlgTrackInfo::unloadTrack(bool save) {
 }
 
 void DlgTrackInfo::clear() {
-    disconnect(m_pLoadedTrack.get(),
-            &Track::changed,
-            this,
-            &DlgTrackInfo::slotTrackChanged);
-    m_pLoadedTrack.reset();
+    if (m_pLoadedTrack) {
+        disconnect(m_pLoadedTrack.get(),
+                &Track::changed,
+                this,
+                &DlgTrackInfo::slotTrackChanged);
+        m_pLoadedTrack.reset();
+    }
 
     txtTrackName->setText("");
     txtArtist->setText("");
