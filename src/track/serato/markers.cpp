@@ -52,7 +52,10 @@ quint32 seratoColorFromRgb(quint8 r, quint8 g, quint8 b) {
     quint8 y = ((b >> 7) | (g << 1)) & 0x7F;
     quint8 x = ((g >> 6) | (r << 2)) & 0x7F;
     quint8 w = (r >> 5);
-    return (w << 24) | (x << 16) | (y << 8) | z;
+    return (static_cast<quint32>(w) << 24) |
+            (static_cast<quint32>(x) << 16) |
+            (static_cast<quint32>(y) << 8) |
+            static_cast<quint32>(z);
 }
 
 quint32 seratoColorFromRgb(mixxx::RgbColor rgb) {
