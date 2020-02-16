@@ -271,7 +271,7 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
     connect(pTrack.get(),
             &Track::changed,
             this,
-            &DlgTrackInfo::updateTrackMetadata);
+            &DlgTrackInfo::slotTrackChanged);
 }
 
 void DlgTrackInfo::slotCoverFound(const QObject* pRequestor,
@@ -448,7 +448,7 @@ void DlgTrackInfo::saveTrack() {
     disconnect(m_pLoadedTrack.get(),
             &Track::changed,
             this,
-            &DlgTrackInfo::updateTrackMetadata);
+            &DlgTrackInfo::slotTrackChanged);
 
     m_pLoadedTrack->setTitle(txtTrackName->text());
     m_pLoadedTrack->setArtist(txtArtist->text());
@@ -540,7 +540,7 @@ void DlgTrackInfo::saveTrack() {
     connect(m_pLoadedTrack.get(),
             &Track::changed,
             this,
-            &DlgTrackInfo::updateTrackMetadata);
+            &DlgTrackInfo::slotTrackChanged);
 }
 
 void DlgTrackInfo::unloadTrack(bool save) {
@@ -558,7 +558,7 @@ void DlgTrackInfo::clear() {
     disconnect(m_pLoadedTrack.get(),
             &Track::changed,
             this,
-            &DlgTrackInfo::updateTrackMetadata);
+            &DlgTrackInfo::slotTrackChanged);
     m_pLoadedTrack.reset();
 
     txtTrackName->setText("");
@@ -742,8 +742,8 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
     }
 }
 
-void DlgTrackInfo::updateTrackMetadata() {
-    if (m_pLoadedTrack) {
+void DlgTrackInfo::slotTrackChanged(TrackId trackId) {
+    if (m_pLoadedTrack && m_pLoadedTrack->getId() == trackId) {
         populateFields(*m_pLoadedTrack);
     }
 }

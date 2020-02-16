@@ -300,63 +300,57 @@ QStringList TrackDAO::getTrackLocations(const QList<TrackId>& ids) {
 
 void TrackDAO::saveTrack(Track* pTrack) {
     DEBUG_ASSERT(pTrack);
-    if (pTrack->isDirty()) {
-        const TrackId trackId = pTrack->getId();
-        // Only update the database if the track has already been added!
-        if (trackId.isValid()) {
-            qDebug() << "TrackDAO: Saving track"
-                    << trackId
-                    << pTrack->getFileInfo();
-            if (updateTrack(pTrack)) {
-                // BaseTrackCache must be informed separately, because the
-                // track has already been disconnected and TrackDAO does
-                // not receive any signals that are usually forwarded to
-                // BaseTrackCache.
-                DEBUG_ASSERT(!pTrack->isDirty());
-                emit trackClean(trackId);
-            }
-        }
+    if (!pTrack->isDirty()) {
+        return;
+    }
+    const TrackId trackId = pTrack->getId();
+    // Only update the database if the track has already been added!
+    if (!trackId.isValid()) {
+        return;
+    }
+    qDebug() << "TrackDAO: Saving track"
+            << trackId
+            << pTrack->getFileInfo();
+    if (updateTrack(pTrack)) {
+        // BaseTrackCache must be informed separately, because the
+        // track has already been disconnected and TrackDAO does
+        // not receive any signals that are usually forwarded to
+        // BaseTrackCache.
+        DEBUG_ASSERT(!pTrack->isDirty());
+        emit trackClean(trackId);
     }
 }
 
-void TrackDAO::slotTrackDirty(Track* pTrack) {
-    // Should not be possible.
-    VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
-        return;
-    }
-
-    // qDebug() << "TrackDAO::slotTrackDirty" << pTrack << "ID"
-    //          << pTrack->getId() << pTrack->getInfo();
+void TrackDAO::slotTrackDirty(TrackId trackId) {
     // This is a private slot that is connected to TIO's created by this
     // TrackDAO. It is a way for the track to notify us that it has been
     // dirtied. It is invoked via a DirectConnection so we are sure that the
     // Track* has not been deleted when this is invoked. The flip side
     // of this is that this method runs in whatever thread the track was dirtied
     // from.
-    TrackId trackId(pTrack->getId());
-    if (trackId.isValid()) {
-        emit trackDirty(trackId);
-    }
+    DEBUG_ASSERT(trackId.isValid());
+    emit trackDirty(trackId);
 }
 
-void TrackDAO::slotTrackClean(Track* pTrack) {
-    // Should not be possible.
-    VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
-        return;
-    }
-
-    // qDebug() << "TrackDAO::slotTrackClean" << pTrack << "ID"
-    //          << pTrack->getId() << pTrack->getInfo();
+void TrackDAO::slotTrackClean(TrackId trackId) {
     // This is a private slot that is connected to TIO's created by this
     // TrackDAO. It is a way for the track to notify us that it has been cleaned
     // (typically after it has been saved to the database). It is invoked via a
     // DirectConnection so we are sure that the Track* has not been
     // deleted when this is invoked. The flip side of this is that this method
     // runs in whatever thread the track was cleaned from.
-    TrackId trackId(pTrack->getId());
-    if (trackId.isValid()) {
-        emit trackClean(trackId);
-    }
+    DEBUG_ASSERT(trackId.isValid());
+    emit trackClean(trackId);
+}
+
+void TrackDAO::slotTrackChanged(TrackId trackId) {
+    // This is a private slot that is connected to TIO's created by this
+    // TrackDAO. It is a way for the track to notify us that it changed.  It is
+    // invoked via a DirectConnection so we are sure that the Track*
+    // has not been deleted when this is invoked. The flip side of this is that
+    // this method runs in whatever thread the track was changed from.
+    DEBUG_ASSERT(trackId.isValid());
+    emit trackChanged(trackId);
 }
 
 void TrackDAO::databaseTrackAdded(TrackPointer pTrack) {
@@ -393,25 +387,6 @@ void TrackDAO::databaseTracksRelocated(QList<RelocatedTrack> relocatedTracks) {
         emit tracksRemoved(removedTrackIds);
     }
     databaseTracksChanged(changedTrackIds);
-}
-
-void TrackDAO::slotTrackChanged(Track* pTrack) {
-    // Should not be possible.
-    VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
-        return;
-    }
-
-    // qDebug() << "TrackDAO::slotTrackChanged" << pTrack << "ID"
-    //          << pTrack->getId() << pTrack->getInfo();
-    // This is a private slot that is connected to TIO's created by this
-    // TrackDAO. It is a way for the track to notify us that it changed.  It is
-    // invoked via a DirectConnection so we are sure that the Track*
-    // has not been deleted when this is invoked. The flip side of this is that
-    // this method runs in whatever thread the track was changed from.
-    TrackId trackId(pTrack->getId());
-    if (trackId.isValid()) {
-        emit trackChanged(trackId);
-    }
 }
 
 void TrackDAO::addTracksPrepare() {

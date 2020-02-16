@@ -58,7 +58,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotImportMetadataFromFile();
     void slotImportMetadataFromMusicBrainz();
 
-    void updateTrackMetadata();
+    void slotTrackChanged(TrackId trackId);
     void slotOpenInFileBrowser();
 
     void slotCoverFound(const QObject* pRequestor,
