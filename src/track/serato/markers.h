@@ -51,11 +51,11 @@ class SeratoMarkersEntry {
     SeratoMarkersEntry::TypeId typeId() const {
         SeratoMarkersEntry::TypeId typeId = SeratoMarkersEntry::TypeId::Unknown;
         switch (type()) {
-        case 0:
-        case 1:
+        case 0: // This seems to be an unset Hotcue (i.e. without a position)
+        case 1: // Hotcue
             typeId = SeratoMarkersEntry::TypeId::Cue;
             break;
-        case 3:
+        case 3: // Saved Loop
             typeId = SeratoMarkersEntry::TypeId::Loop;
             break;
         }
