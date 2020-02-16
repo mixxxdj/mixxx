@@ -40,7 +40,13 @@ class SeratoMarkers2Test : public testing::Test {
         EXPECT_EQ(inputValue, colorEntry->dump());
     }
 
-    void parseCueEntry(const QByteArray inputValue, bool valid, quint8 index, quint32 position, mixxx::RgbColor color, QString label) {
+    void parseCueEntry(
+            const QByteArray inputValue,
+            bool valid,
+            quint8 index,
+            quint32 position,
+            mixxx::RgbColor color,
+            QString label) {
         const mixxx::SeratoMarkers2EntryPointer parsedEntry = mixxx::SeratoMarkers2CueEntry::parse(inputValue);
         if (!parsedEntry) {
             EXPECT_FALSE(valid);
@@ -57,7 +63,13 @@ class SeratoMarkers2Test : public testing::Test {
         EXPECT_EQ(inputValue, cueEntry->dump());
     }
 
-    void parseLoopEntry(const QByteArray inputValue, bool valid, quint8 index, quint32 startposition, quint32 endposition, bool locked, QString label) {
+    void parseLoopEntry(const QByteArray inputValue,
+            bool valid,
+            quint8 index,
+            quint32 startposition,
+            quint32 endposition,
+            bool locked,
+            QString label) {
         const mixxx::SeratoMarkers2EntryPointer parsedEntry = mixxx::SeratoMarkers2LoopEntry::parse(inputValue);
         if (!parsedEntry) {
             EXPECT_FALSE(valid);
@@ -73,7 +85,7 @@ class SeratoMarkers2Test : public testing::Test {
         EXPECT_EQ(label, loopEntry->getLabel());
 
         EXPECT_EQ(inputValue, loopEntry->dump());
-   }
+    }
 
     void parseMarkers2Data(const QByteArray inputValue, bool valid) {
         mixxx::SeratoMarkers2 seratoMarkers2;
