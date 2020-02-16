@@ -1082,6 +1082,8 @@ class MixxxCore(Feature):
 
                    "src/library/itunes/itunesfeature.cpp",
                    "src/library/traktor/traktorfeature.cpp",
+                   "src/library/serato/seratofeature.cpp",
+                   "src/library/serato/seratoplaylistmodel.cpp",
 
                    "src/library/rekordbox/rekordboxfeature.cpp",
                    "src/library/rekordbox/rekordbox_pdb.cpp",
@@ -1207,7 +1209,8 @@ class MixxxCore(Feature):
                    "src/track/keyutils.cpp",
                    "src/track/playcounter.cpp",
                    "src/track/replaygain.cpp",
-                   "src/track/seratomarkers2.cpp",
+                   "src/track/serato/markers.cpp",
+                   "src/track/serato/markers2.cpp",
                    "src/track/track.cpp",
                    "src/track/globaltrackcache.cpp",
                    "src/track/trackfile.cpp",
