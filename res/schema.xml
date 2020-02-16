@@ -480,5 +480,5 @@ METADATA
         position INTEGER
         );
     </sql>
-  </revision>  
+  </revision>
 </schema>
