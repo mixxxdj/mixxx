@@ -1,12 +1,12 @@
-#include "glwaveformrenderersimplesignal.h"
-
-#include "waveformwidgetrenderer.h"
-#include "waveform/waveform.h"
-
-#include "waveform/waveformwidgetfactory.h"
-#include "util/math.h"
+#include <QtCore/qglobal.h>
 
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+
+#include "glwaveformrenderersimplesignal.h"
+#include "util/math.h"
+#include "waveform/waveform.h"
+#include "waveform/waveformwidgetfactory.h"
+#include "waveformwidgetrenderer.h"
 
 GLWaveformRendererSimpleSignal::GLWaveformRendererSimpleSignal(
         WaveformWidgetRenderer* waveformWidgetRenderer)

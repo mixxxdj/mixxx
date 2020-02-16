@@ -1,9 +1,10 @@
-#ifndef GLWAVEFORMRENDERERSIMPLESIGNAL_H
-#define GLWAVEFORMRENDERERSIMPLESIGNAL_H
+#pragma once
 
-#include <QOpenGLFunctions_2_1>
+#include <QtCore/qglobal.h>
 
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+
+#include <QOpenGLFunctions_2_1>
 
 #include "waveformrenderersignalbase.h"
 
@@ -19,5 +20,3 @@ public:
 };
 
 #endif // QT_NO_OPENGL && !QT_OPENGL_ES_2
-
-#endif // GLWAVEFORMRENDERERSIMPLESIGNAL_H

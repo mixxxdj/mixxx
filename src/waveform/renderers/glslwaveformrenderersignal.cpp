@@ -1,3 +1,7 @@
+#include <QtCore/qglobal.h>
+
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+
 #include <QGLFramebufferObject>
 
 #include "waveform/renderers/glslwaveformrenderersignal.h"
@@ -5,8 +9,6 @@
 
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
-
-#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer,
                                                        bool rgbShader)

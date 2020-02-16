@@ -1,11 +1,13 @@
+#include <QtCore/qglobal.h>
+
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+
 #include "waveform/renderers/glvsynctestrenderer.h"
 
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "util/performancetimer.h"
-
-#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 GLVSyncTestRenderer::GLVSyncTestRenderer(
         WaveformWidgetRenderer* waveformWidgetRenderer)

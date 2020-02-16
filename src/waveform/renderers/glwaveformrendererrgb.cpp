@@ -1,3 +1,7 @@
+#include <QtCore/qglobal.h>
+
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+
 #include "glwaveformrendererrgb.h"
 #include "waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
@@ -5,8 +9,6 @@
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
 #include "util/math.h"
-
-#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 GLWaveformRendererRGB::GLWaveformRendererRGB(
         WaveformWidgetRenderer* waveformWidgetRenderer)
