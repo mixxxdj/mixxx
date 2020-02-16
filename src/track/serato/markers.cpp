@@ -75,14 +75,14 @@ QByteArray SeratoMarkersEntry::dump() const {
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
-    stream << (quint8)(m_hasStartPosition ? 0x00 : 0x7F)
-           << (quint32)(m_hasStartPosition ? m_startPosition : 0x7F7F7F7F)
-           << (quint8)(m_hasEndPosition ? 0x00 : 0x7F)
-           << (quint32)(m_hasEndPosition ? m_endPosition : 0x7F7F7F7F);
+    stream << static_cast<quint8>((m_hasStartPosition ? 0x00 : 0x7F))
+           << static_cast<quint32>((m_hasStartPosition ? m_startPosition : 0x7F7F7F7F))
+           << static_cast<quint8>((m_hasEndPosition ? 0x00 : 0x7F))
+           << static_cast<quint32>((m_hasEndPosition ? m_endPosition : 0x7F7F7F7F));
     stream.writeRawData("\x00\x7F\x7F\x7F\x7F\x7F", 6);
-    stream << (quint32)seratoColorFromRgb(m_color)
-           << (quint8)m_type
-           << (quint8)m_isLocked;
+    stream << static_cast<quint32>(seratoColorFromRgb(m_color))
+           << static_cast<quint8>(m_type)
+           << static_cast<quint8>(m_isLocked);
     return data;
 }
 

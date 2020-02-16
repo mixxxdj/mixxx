@@ -41,7 +41,7 @@ QByteArray SeratoMarkers2BpmlockEntry::dump() const {
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
-    stream << (quint8)m_locked;
+    stream << static_cast<quint8>(m_locked);
 
     return data;
 }
@@ -82,10 +82,10 @@ QByteArray SeratoMarkers2ColorEntry::dump() const {
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
-    stream << (quint8)0
-           << (quint8)qRed(m_color)
-           << (quint8)qGreen(m_color)
-           << (quint8)qBlue(m_color);
+    stream << static_cast<quint8>('\x00')
+           << static_cast<quint8>(qRed(m_color))
+           << static_cast<quint8>(qGreen(m_color))
+           << static_cast<quint8>(qBlue(m_color));
 
     return data;
 }
@@ -172,19 +172,19 @@ QByteArray SeratoMarkers2CueEntry::dump() const {
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
-    stream << (quint8)0
+    stream << static_cast<quint8>('\x00')
            << m_index
            << m_position
-           << (quint8)0
-           << (quint8)qRed(m_color)
-           << (quint8)qGreen(m_color)
-           << (quint8)qBlue(m_color)
-           << (quint8)0
-           << (quint8)0;
+           << static_cast<quint8>('\x00')
+           << static_cast<quint8>(qRed(m_color))
+           << static_cast<quint8>(qGreen(m_color))
+           << static_cast<quint8>(qBlue(m_color))
+           << static_cast<quint8>('\x00')
+           << static_cast<quint8>('\x00');
 
     QByteArray labelData = m_label.toUtf8();
     stream.writeRawData(labelData.constData(), labelData.length());
-    stream << (qint8)'\0'; // terminating null-byte
+    stream << static_cast<quint8>('\x00'); // terminating null-byte
 
     return data;
 }
@@ -275,19 +275,19 @@ QByteArray SeratoMarkers2LoopEntry::dump() const {
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
-    stream << (quint8)0
+    stream << static_cast<quint8>('\x00')
            << m_index
            << m_startposition
            << m_endposition;
 
     stream.writeRawData("\xff\xff\xff\xff\x00\x27\xaa\xe1", 8);
 
-    stream << (quint8)0
-           << (quint8)m_locked;
+    stream << static_cast<quint8>('\x00')
+           << static_cast<quint8>(m_locked);
 
     QByteArray labelData = m_label.toUtf8();
     stream.writeRawData(labelData.constData(), labelData.length());
-    stream << (qint8)'\0'; // terminating null-byte
+    stream << static_cast<quint8>('\x00'); // terminating null-byte
 
     return data;
 }
@@ -375,14 +375,14 @@ QByteArray SeratoMarkers2::dump() const {
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
-    stream << (quint16)0x0101;
+    stream << static_cast<quint16>(0x0101);
 
     for (int i = 0; i < m_entries.size(); i++) {
         SeratoMarkers2EntryPointer entry = m_entries.at(i);
         QByteArray entryName = entry->type().toUtf8();
         QByteArray entryData = entry->dump();
         stream.writeRawData(entryName.constData(), entryName.length());
-        stream << (qint8)'\0' // terminating null-byte
+        stream << static_cast<quint8>('\x00') // terminating null-byte
                << entryData.length();
         stream.writeRawData(entryData.constData(), entryData.length());
     }
