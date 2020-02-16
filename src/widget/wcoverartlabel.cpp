@@ -77,4 +77,3 @@ void WCoverArtLabel::mousePressEvent(QMouseEvent* event) {
         }
     }
 }
-
