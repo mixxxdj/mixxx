@@ -321,38 +321,6 @@ void TrackDAO::saveTrack(Track* pTrack) {
     }
 }
 
-void TrackDAO::slotTrackDirty(TrackId trackId) {
-    // This is a private slot that is connected to TIO's created by this
-    // TrackDAO. It is a way for the track to notify us that it has been
-    // dirtied. It is invoked via a DirectConnection so we are sure that the
-    // Track* has not been deleted when this is invoked. The flip side
-    // of this is that this method runs in whatever thread the track was dirtied
-    // from.
-    DEBUG_ASSERT(trackId.isValid());
-    emit trackDirty(trackId);
-}
-
-void TrackDAO::slotTrackClean(TrackId trackId) {
-    // This is a private slot that is connected to TIO's created by this
-    // TrackDAO. It is a way for the track to notify us that it has been cleaned
-    // (typically after it has been saved to the database). It is invoked via a
-    // DirectConnection so we are sure that the Track* has not been
-    // deleted when this is invoked. The flip side of this is that this method
-    // runs in whatever thread the track was cleaned from.
-    DEBUG_ASSERT(trackId.isValid());
-    emit trackClean(trackId);
-}
-
-void TrackDAO::slotTrackChanged(TrackId trackId) {
-    // This is a private slot that is connected to TIO's created by this
-    // TrackDAO. It is a way for the track to notify us that it changed.  It is
-    // invoked via a DirectConnection so we are sure that the Track*
-    // has not been deleted when this is invoked. The flip side of this is that
-    // this method runs in whatever thread the track was changed from.
-    DEBUG_ASSERT(trackId.isValid());
-    emit trackChanged(trackId);
-}
-
 void TrackDAO::databaseTrackAdded(TrackPointer pTrack) {
     DEBUG_ASSERT(pTrack);
     emit dbTrackAdded(pTrack);
@@ -1343,22 +1311,25 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
         SoundSourceProxy(pTrack).updateTrackFromSource();
     }
 
-    // Listen to dirty and changed signals
+    // Listen to dirty and changed signals from Track objects.
+    // These signal/signal connections are required to forward signals
+    // from Track objects to BaseTrackCache and AutoDJ.
+    // Since only the TrackId is sent it doesn't matter if the signal
+    // gets sent from another thread and the Track object itself has
+    // already deleted in memory when receiving this signal. Using
+    // a Qt::DirectConnection for this purpose would be unsafe!!
     connect(pTrack.get(),
             &Track::dirty,
             this,
-            &TrackDAO::slotTrackDirty,
-            Qt::DirectConnection);
+            &TrackDAO::trackDirty);
     connect(pTrack.get(),
             &Track::clean,
             this,
-            &TrackDAO::slotTrackClean,
-            Qt::DirectConnection);
+            &TrackDAO::trackClean);
     connect(pTrack.get(),
             &Track::changed,
             this,
-            &TrackDAO::slotTrackChanged,
-            Qt::DirectConnection);
+            &TrackDAO::trackChanged);
 
     // BaseTrackCache cares about track trackDirty/trackClean notifications
     // from TrackDAO that are triggered by the track itself. But the preceding
