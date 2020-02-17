@@ -43,7 +43,6 @@ class WStrobe : public QGLWidget, public WBaseWidget, public TrackDropTarget {
   protected:
     //QWidget:
     void paintEvent(QPaintEvent* /*unused*/) override;
-    void resizeEvent(QResizeEvent* /*unused*/) override;
     void showEvent(QShowEvent* event) override;
     void hideEvent(QHideEvent* event) override;
     bool event(QEvent* pEvent) override;

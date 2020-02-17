@@ -31,7 +31,6 @@ constexpr int kDotsPerRound33Neg = 223; // 103.24 %
 
 } // anonymous namespace
 
-// The SampleBuffers format enables antialiasing.
 WStrobe::WStrobe(
         QWidget* parent,
         const QString& group,
@@ -255,22 +254,6 @@ void WStrobe::render(VSyncThread* vSyncThread) {
         }
         left += dot33NegWidth;
     }
-
-    /*
-    if (m_dGhostAngleCurrentPlaypos != m_dGhostAngleLastPlaypos) {
-        m_fGhostAngle = calculateAngle(m_dGhostAngleCurrentPlaypos);
-        m_dGhostAngleLastPlaypos = m_dGhostAngleCurrentPlaypos;
-    }
-    */
-
-    /*
-    if (m_pFgImage && !m_pFgImage->isNull()) {
-        // Now rotate the image and draw it on the screen.
-        p.rotate(m_fAngle);
-        p.drawImage(-(m_fgImageScaled.width() / 2),
-                    -(m_fgImageScaled.height() / 2), m_fgImageScaled);
-    }
-    */
 }
 
 void WStrobe::swap() {
@@ -284,19 +267,10 @@ void WStrobe::swap() {
     swapBuffers();
 }
 
-void WStrobe::resizeEvent(QResizeEvent* /*unused*/) {
-    /*
-    if (m_pFgImage && !m_pFgImage->isNull()) {
-        m_fgImageScaled = m_pFgImage->scaled(
-                size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    }
-    */
-}
-
-/* Convert between a normalized playback position (0.0 - 1.0) and an angle
-   in our polar coordinate system.
-   Returns an angle clamped between -180 and 180 degrees. */
 double WStrobe::calculateAngle(double playpos) {
+    // Convert between a normalized playback position (0.0 - 1.0) and an angle
+    // in our polar coordinate system.
+    // Returns an angle clamped between -180 and 180 degrees.
     double trackFrames = m_pTrackSamples->get() / 2;
     double trackSampleRate = m_pTrackSampleRate->get();
     if (isnan(playpos) || isnan(trackFrames) || isnan(trackSampleRate) ||
@@ -339,23 +313,6 @@ double WStrobe::calculateAngle(double playpos) {
     }
     return angle;
 }
-
-/*
-int WStrobe::calculateFullRotations(double playpos) {
-    if (isnan(playpos)) {
-        return 0;
-    }
-    //Convert playpos to seconds.
-    double t = playpos * (m_pTrackSamples->get() / 2 /  // Stereo audio!
-                          m_pTrackSampleRate->get());
-
-    //33 RPM is approx. 0.5 rotations per second.
-    //qDebug() << t;
-    double angle = 360 * m_dRotationsPerSecond * t;
-
-    return ((static_cast<int>(angle) + 180) / 360);
-}
-*/
 
 void WStrobe::showEvent(QShowEvent* event) {
     Q_UNUSED(event);
