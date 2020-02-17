@@ -18,6 +18,19 @@
 #include "widget/wstrobe.h"
 #include "wimagestore.h"
 
+namespace {
+
+constexpr double kBbigDotHeightFactor = 0.34;
+constexpr double kBigDotWidthFactor = 0.40;
+constexpr double smallDotHeightFactor = 0.23;
+// The dots per round are taken from a real turn table
+constexpr int kDotsPerRound60Pos = 203; // 93.98 %
+constexpr int kDotsPerRound33Pos = 209; // 96.76 %
+constexpr int kDotsPerRoundUnity = 216; // 100.00 %
+constexpr int kDotsPerRound33Neg = 223; // 103.24 %
+
+} // anonymous namespace
+
 // The SampleBuffers format enables antialiasing.
 WStrobe::WStrobe(
         QWidget* parent,
@@ -161,18 +174,31 @@ void WStrobe::render(VSyncThread* vSyncThread) {
     p.setRenderHint(QPainter::HighQualityAntialiasing);
     p.setRenderHint(QPainter::SmoothPixmapTransform);
 
-    double smallHight = height() * 0.23;
-    double bigHight = height() * 0.34;
-    double dot60PosWidth = height() * 0.40 / 216 * 203;
-    double dot33PosWidth = height() * 0.40 / 216 * 209;
-    double dotUnityWidth = height() * 0.40 / 216 * 216;
-    double dot33NegWidth = height() * 0.40 / 216 * 223;
+    double smallHight = height() * smallDotHeightFactor;
+    double bigHight = height() * kBbigDotHeightFactor;
+    double dot60PosWidth = height() *
+            kBigDotWidthFactor /
+            kDotsPerRoundUnity *
+            kDotsPerRound60Pos;
+    double dot33PosWidth = height() *
+            kBigDotWidthFactor /
+            kDotsPerRoundUnity *
+            kDotsPerRound33Pos;
+    double dotUnityWidth = height() *
+            kBigDotWidthFactor /
+            kDotsPerRoundUnity *
+            kDotsPerRoundUnity;
+    double dot33NegWidth = height() *
+            kBigDotWidthFactor /
+            kDotsPerRoundUnity *
+            kDotsPerRound33Neg;
 
     double maxWidth = width();
 
     qDebug() << m_fAngle;
 
-    double left = m_fAngle / 360 * 203;
+    // Calc how much of the left most dot is visible
+    double left = m_fAngle / 360 * kDotsPerRound60Pos;
     left -= floor(left);
     left = -1 - left;
     left *= dot60PosWidth;
@@ -185,7 +211,8 @@ void WStrobe::render(VSyncThread* vSyncThread) {
         left += dot60PosWidth;
     }
 
-    left = m_fAngle / 360 * 209;
+    // Calc how much of the left most dot is visible
+    left = m_fAngle / 360 * kDotsPerRound33Pos;
     left -= floor(left);
     left = -1 - left;
     left *= dot33PosWidth;
@@ -199,7 +226,8 @@ void WStrobe::render(VSyncThread* vSyncThread) {
         left += dot33PosWidth;
     }
 
-    left = m_fAngle / 360 * 216;
+    // Calc how much of the left most dot is visible
+    left = m_fAngle / 360 * kDotsPerRoundUnity;
     left -= floor(left);
     left = -1 - left;
     left *= dotUnityWidth;
@@ -213,7 +241,8 @@ void WStrobe::render(VSyncThread* vSyncThread) {
         left += dotUnityWidth;
     }
 
-    left = m_fAngle / 360 * 223;
+    // Calc how much of the left most dot is visible
+    left = m_fAngle / 360 * kDotsPerRound33Neg;
     left -= floor(left);
     left = -1 - left;
     left *= dot33NegWidth;
@@ -223,7 +252,6 @@ void WStrobe::render(VSyncThread* vSyncThread) {
             p.drawImage(QRectF(left, smallHight * 2 + bigHight, dot33NegWidth, smallHight),
                     *m_pDot33NegImage,
                     QRectF(m_pDot33NegImage->rect()));
-            ;
         }
         left += dot33NegWidth;
     }
