@@ -68,17 +68,14 @@
 
                 </Children>
               </WidgetGroup>
-              <WidgetGroup>
-                <!-- Library Table-->
-                <Layout>vertical</Layout>
-                <Children>
-                  <Library>
-                    <BgColor>#585858</BgColor>
-                    <FgColor>#eece33</FgColor>
-                    <ShowButtonText>false</ShowButtonText>
-                  </Library>
-                </Children>
-              </WidgetGroup>
+
+              <!-- Library Table-->
+              <Library>
+                <BgColor>#585858</BgColor>
+                <FgColor>#eece33</FgColor>
+                <ShowButtonText>false</ShowButtonText>
+              </Library>
+
             </Children>
           </Splitter>
 
@@ -91,7 +88,7 @@
           </WidgetGroup>
 
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- LibraryContainer -->
     </Children>
   </WidgetGroup>
 </Template>

@@ -10,6 +10,7 @@
         <Children>
           <Template src="skin:knob_textless.xml">
             <SetVariable name="Size">40f,34f</SetVariable>
+            <SetVariable name="ObjectName">SuperMixKnob</SetVariable>
             <SetVariable name="Color">green</SetVariable>
             <SetVariable name="type">regular</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
@@ -31,6 +32,7 @@
         <Children>
           <Template src="skin:knob_textless.xml">
             <SetVariable name="Size">40f,34f</SetVariable>
+            <SetVariable name="ObjectName">SuperMixKnob</SetVariable>
             <SetVariable name="Color">green</SetVariable>
             <SetVariable name="type">regular</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
@@ -52,6 +54,7 @@
         <Children>
           <Template src="skin:knob_textless.xml">
             <SetVariable name="Size">40f,34f</SetVariable>
+            <SetVariable name="ObjectName">SuperMixKnob</SetVariable>
             <SetVariable name="Color">red</SetVariable>
             <SetVariable name="type">regular</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
@@ -73,6 +76,7 @@
         <Children>
           <Template src="skin:knob_textless.xml">
             <SetVariable name="Size">40f,34f</SetVariable>
+            <SetVariable name="ObjectName">SuperMixKnob</SetVariable>
             <SetVariable name="Color">red</SetVariable>
             <SetVariable name="type">regular</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>

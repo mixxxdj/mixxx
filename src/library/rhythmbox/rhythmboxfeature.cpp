@@ -216,7 +216,7 @@ TreeItem* RhythmboxFeature::importPlaylists() {
             "INSERT INTO rhythmbox_playlist_tracks (playlist_id, track_id, position) "
             "VALUES (:playlist_id, :track_id, :position)");
     //The tree structure holding the playlists
-    TreeItem* rootItem = new TreeItem(this);
+    std::unique_ptr<TreeItem> rootItem = TreeItem::newRoot(this);
 
     QXmlStreamReader xml(&db);
     while (!xml.atEnd() && !m_cancelImport) {
@@ -253,13 +253,11 @@ TreeItem* RhythmboxFeature::importPlaylists() {
         // do error handling
         qDebug() << "Cannot process Rhythmbox music collection";
         qDebug() << "XML ERROR: " << xml.errorString();
-        delete rootItem;
-        return NULL;
+        return nullptr;
     }
     db.close();
 
-    return rootItem;
-
+    return rootItem.release();
 }
 
 void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query) {

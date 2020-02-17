@@ -138,8 +138,10 @@
                         <TooltipId>visual_key</TooltipId>
                         <Size>30min,18f</Size>
                         <Style>QLabel {
+                          font: bold 13px sans-serif;
+                          font-family: "Open Sans";
                           text-align: left;
-                          padding: 3px 1px 0px 0px;
+                          padding: 3px 1px 3px 0px;
                         }
                         </Style>
                         <Channel><Variable name="channum"/></Channel>
@@ -158,9 +160,11 @@
 
                       <NumberBpm>
                         <TooltipId>visual_bpm</TooltipId>
-                        <Size>38f,18f</Size>
+                        <Size>42f,18f</Size>
                         <Style>QLabel {
-                          padding: 3px 1px 0px 0px;
+                          font: bold 13px sans-serif;
+                          font-family: "Open Sans";
+                          padding: 3px 1px 3px 0px;
                         }
                         </Style>
                         <Channel><Variable name="channum"/></Channel>

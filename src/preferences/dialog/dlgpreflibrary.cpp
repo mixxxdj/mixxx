@@ -171,6 +171,8 @@ void DlgPrefLibrary::slotUpdate() {
             ConfigKey("[Library]","ShowTraktorLibrary"), true));
     checkBox_show_rekordbox->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","ShowRekordboxLibrary"), true));
+    checkBox_show_serato->setChecked(m_pConfig->getValue(
+            ConfigKey("[Library]", "ShowSeratoLibrary"), true));
 
     switch (m_pConfig->getValue<int>(
             ConfigKey("[Library]","TrackLoadAction"), LOAD_TO_DECK)) {
@@ -311,6 +313,8 @@ void DlgPrefLibrary::slotApply() {
                 ConfigValue((int)checkBox_show_traktor->isChecked()));
     m_pConfig->set(ConfigKey("[Library]","ShowRekordboxLibrary"),
                 ConfigValue((int)checkBox_show_rekordbox->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]", "ShowSeratoLibrary"),
+            ConfigValue((int)checkBox_show_serato->isChecked()));
     int dbclick_status;
     if (radioButton_dbclick_bottom->isChecked()) {
             dbclick_status = ADD_TO_AUTODJ_BOTTOM;

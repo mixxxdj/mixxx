@@ -445,19 +445,19 @@
         <Pos>197,14</Pos>
         <Size>43f,43f</Size>
         <Children>
-          <Template src="skin:deck_hotcue_button.xml">
+          <Template src="skin:hotcue_button.xml">
             <SetVariable name="hotcue">1</SetVariable>
             <SetVariable name="pos">0,0</SetVariable>
           </Template>
-          <Template src="skin:deck_hotcue_button.xml">
+          <Template src="skin:hotcue_button.xml">
             <SetVariable name="hotcue">2</SetVariable>
             <SetVariable name="pos">21,0</SetVariable>
           </Template>
-          <Template src="skin:deck_hotcue_button.xml">
+          <Template src="skin:hotcue_button.xml">
             <SetVariable name="hotcue">3</SetVariable>
             <SetVariable name="pos">0,21</SetVariable>
           </Template>
-          <Template src="skin:deck_hotcue_button.xml">
+          <Template src="skin:hotcue_button.xml">
             <SetVariable name="hotcue">4</SetVariable>
             <SetVariable name="pos">21,21</SetVariable>
           </Template>

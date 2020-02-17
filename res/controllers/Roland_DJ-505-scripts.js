@@ -297,21 +297,21 @@ DJ505.sortLibrary = function(channel, control, value, _status, _group) {
 
     var sortColumn;
     switch (control) {
-        case 0x12:  // SONG
-            sortColumn = 1;
-            break;
-        case 0x13:  // BPM
-            sortColumn = 14;
-            break;
-        case 0x14:  // ARTIST
-            sortColumn = 0;
-            break;
-        case 0x1E:  // KEY
-            sortColumn = 19;
-            break;
-        default:
-            // unknown sort column
-            return;
+    case 0x12:  // SONG
+        sortColumn = 1;
+        break;
+    case 0x13:  // BPM
+        sortColumn = 14;
+        break;
+    case 0x14:  // ARTIST
+        sortColumn = 0;
+        break;
+    case 0x1E:  // KEY
+        sortColumn = 19;
+        break;
+    default:
+        // unknown sort column
+        return;
     }
     engine.setValue("[Library]", "sort_column_toggle", sortColumn);
 };
@@ -438,6 +438,44 @@ DJ505.Deck = function(deckNumbers, offset) {
         }
     };
 
+    /* Platter Spin LED Indicator on Jog Wheels
+     *
+     * The Controller features a LED indicator that imitates a spinning
+     * platter when the deck is playing and also shows to position inside a
+     * bar.
+     *
+     * LED indicator values:
+     * - 0x00 - 0x1F: Beat 0 (downbeat) to 1
+     * - 0x20 - 0x3F: Beat 1 to 2
+     * - 0x40 - 0x5F: Beat 2 to 3
+     * - 0x60 - 0x7F: Beat 3 (upbeat) to 0 (next downbeat)
+     *
+     * TODO: Add proper bar support for the LED indicators
+     *
+     * Mixx currently does not support bar detection, so we don't know which
+     * of the 4 beats in a we are on. This has been worked around by counting
+     * beats manually, but this is error prone and does not support moving
+     * backwards in a track, has problems with loops, does not detect hotcue
+     * jumps and does not indicate the downbeat (obviously).
+     *
+     * See Launchpad issue: https://bugs.launchpad.net/mixxx/+bug/419155
+     */
+    this.beatIndex = 0;
+    this.lastBeatDistance = 0;
+    engine.makeConnection(this.currentDeck, "beat_distance", function(value) {
+        // Check if we're already in front of the next beat.
+        if (value < this.lastBeatDistance) {
+            this.beatIndex = (this.beatIndex + 1) % 4;
+        }
+        this.lastBeatDistance = value;
+
+        // Since deck indices start with 1, we use 0xAF + deck for the status
+        // byte, so that we 0xB0 for the first deck.
+        var status = 0xAF + script.deckFromGroup(this.currentDeck);
+
+        // Send a value between 0x00 and 0x7F to set jog wheel LED indicator
+        midi.sendShortMsg(status, 0x06, Math.round(0x1f * value + 0x20 * this.beatIndex));
+    });
 
     // ========================== LOOP SECTION ==============================
 
@@ -1113,24 +1151,24 @@ DJ505.PadSection.prototype.paramButtonPressed = function(channel, control, value
     }
     var button;
     switch (control) {
-        case 0x2A: // PARAMETER 2 -
-            if (this.currentMode.param2MinusButton) {
-                button = this.currentMode.param2MinusButton;
-                break;
-            }
-            /* falls through */
-        case 0x28: // PARAMETER -
-            button = this.currentMode.paramMinusButton;
+    case 0x2A: // PARAMETER 2 -
+        if (this.currentMode.param2MinusButton) {
+            button = this.currentMode.param2MinusButton;
             break;
-        case 0x2B: // PARAMETER 2 +
-            if (this.currentMode.param2PlusButton) {
-                button = this.currentMode.param2PlusButton;
-                break;
-            }
-            /* falls through */
-        case 0x29: // PARAMETER +
-            button = this.currentMode.paramPlusButton;
+        }
+        /* falls through */
+    case 0x28: // PARAMETER -
+        button = this.currentMode.paramMinusButton;
+        break;
+    case 0x2B: // PARAMETER 2 +
+        if (this.currentMode.param2PlusButton) {
+            button = this.currentMode.param2PlusButton;
             break;
+        }
+        /* falls through */
+    case 0x29: // PARAMETER +
+        button = this.currentMode.paramPlusButton;
+        break;
     }
     if (button) {
         button.input(channel, control, value, status, group);
@@ -1499,7 +1537,7 @@ DJ505.RollMode.prototype.setLoopSize = function(loopSize) {
         padLoopSize = (this.loopSize * Math.pow(2, i));
         this.pads[i].inKey = "beatlooproll_" + padLoopSize + "_activate";
         this.pads[i].outKey = "beatloop_" + padLoopSize + "_enabled";
-        this.pads[i].off = (padLoopSize === 0.25) ? DJ505.PadColor.TURQUOISE : ((padLoopSize === 4) ? DJ505.PadColor.AQUAMARINE : (this.pads[i].color + DJ505.PadColor.DIM_MODIFIER));
+        this.pads[i].off = (padLoopSize === 0.25) ? DJ505.PadColor.TURQUOISE : ((padLoopSize === 4) ? DJ505.PadColor.AQUAMARINE : (this.color + DJ505.PadColor.DIM_MODIFIER));
     }
     this.reconnectComponents();
 };

@@ -49,7 +49,7 @@ PlaylistFeature::PlaylistFeature(
             "mixxx.db.model.playlist"));
 
     //construct child model
-    auto pRootItem = std::make_unique<TreeItem>(this);
+    std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     m_childModel.setRootItem(std::move(pRootItem));
     constructChildModel(-1);
 }

@@ -166,11 +166,11 @@
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Text>     SETTINGS</Text>
+          <Text>      SETTINGS</Text>
         </State>
         <State>
           <Number>1</Number>
-          <Text>     SETTINGS</Text>
+          <Text>      SETTINGS</Text>
         </State>
         <Connection>
           <ConfigKey persist="true">[Master],skin_settings</ConfigKey>

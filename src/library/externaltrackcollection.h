@@ -5,7 +5,7 @@
 #include <QString>
 
 #include "preferences/usersettings.h"
-#include "track/trackref.h"
+#include "library/relocatedtrack.h"
 
 class Library;
 class LibraryFeature;
@@ -92,17 +92,10 @@ Q_OBJECT
     virtual /*async*/ void purgeAllTracks(
             const QDir& rootDir) = 0;
 
-    // Duplications have been resolved by removing the duplicate track
-    // and replacing any references with the corresponding replacement
-    // track.
-    // The default implementation first purges all duplicate tracks that
-    // have been removed and then updates all the replaced tracks.
-    struct DuplicateTrack {
-        TrackRef removed;
-        TrackRef replacedBy;
-    };
-    virtual /*async*/ void deduplicateTracks(
-            const QList<DuplicateTrack>& duplicateTracks);
+    // The default implementation first purges all missing track
+    // locations and then updates all merged tracks.
+    virtual /*async*/ void relocateTracks(
+            const QList<RelocatedTrack>& relocatedTracks);
 
     // A new track has been added to the internal track collection or the
     // modified metadata of an existing track has just been saved.

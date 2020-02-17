@@ -69,7 +69,7 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
     m_playlistDao.setAutoDJProcessor(m_pAutoDJProcessor);
 
     // Create the "Crates" tree-item under the root item.
-    auto pRootItem = std::make_unique<TreeItem>(this);
+    std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     m_pCratesTreeItem = pRootItem->appendChild(tr("Crates"));
     m_pCratesTreeItem->setIcon(QIcon(":/images/library/ic_library_crates.svg"));
 
@@ -215,7 +215,7 @@ void AutoDJFeature::slotCrateChanged(CrateId crateId) {
         // No child item for crate found
         // -> Create and append a new child item for this crate
         QList<TreeItem*> rows;
-        rows.append(new TreeItem(this, crate.getName(), crate.getId().toVariant()));
+        rows.append(new TreeItem(crate.getName(), crate.getId().toVariant()));
         QModelIndex parentIndex = m_childModel.index(0, 0);
         m_childModel.insertTreeItemRows(rows, m_crateList.length(), parentIndex);
         DEBUG_ASSERT(rows.isEmpty()); // ownership passed to m_childModel

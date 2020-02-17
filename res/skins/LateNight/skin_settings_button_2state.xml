@@ -15,12 +15,12 @@ Variables:
     <NumberStates>2</NumberStates>
     <State>
       <Number>0</Number>
-      <Text>&#9744;  <Variable name="text"/></Text>
+      <Text>&#8202;&#8202;&#8202;&#9744;  <Variable name="text"/></Text>
       <Alignment>left</Alignment>
     </State>
     <State>
       <Number>1</Number>
-      <Text> &#10004; <Variable name="text"/></Text>
+      <Text>&#8202;&#8202;&#8202;&#8202;&#10004;&#8202;&#8202; <Variable name="text"/></Text>
       <Alignment>left</Alignment>
     </State>
     <Connection>

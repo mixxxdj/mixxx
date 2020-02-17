@@ -75,6 +75,7 @@ bool TrackInfo::compareEq(
 #endif // __EXTRA_METADATA__
             (getReplayGain() == trackInfo.getReplayGain()) &&
 #if defined(__EXTRA_METADATA__)
+            (getSeratoMarkers() == trackInfo.getSeratoMarkers()) &&
             (getSeratoMarkers2() == trackInfo.getSeratoMarkers2()) &&
             (getSubtitle() == trackInfo.getSubtitle()) &&
 #endif // __EXTRA_METADATA__

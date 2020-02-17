@@ -52,7 +52,7 @@ CrateFeature::CrateFeature(Library* pLibrary,
     initActions();
 
     // construct child model
-    m_childModel.setRootItem(std::make_unique<TreeItem>(this));
+    m_childModel.setRootItem(TreeItem::newRoot(this));
     rebuildChildModel();
 
     connectLibrary(pLibrary);
@@ -192,7 +192,7 @@ QString CrateFeature::formatRootViewHtml() const {
 
 std::unique_ptr<TreeItem> CrateFeature::newTreeItemForCrateSummary(
         const CrateSummary& crateSummary) {
-    auto pTreeItem = std::make_unique<TreeItem>(this);
+    auto pTreeItem = TreeItem::newRoot(this);
     updateTreeItemForCrateSummary(pTreeItem.get(), crateSummary);
     return pTreeItem;
 }

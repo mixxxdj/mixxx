@@ -9,7 +9,7 @@
       <WidgetGroup>
         <ObjectName>PreviewDeck</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <Size>100min,66f</Size>
         <Children>
 
           <!-- PreviewDeck left: Play, text, overview -->

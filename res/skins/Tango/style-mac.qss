@@ -6,7 +6,13 @@
   padding-right: 27px;
 }
 
-
+/* Previously necessary hack around text getting cut off with scaled checkbox on Macs with Retina screens
 WEffectSelector QAbstractItemView {
-  padding: 0px 0px 0px -20px;
-}
+	margin: 0px 0px 0px -27px;
+} */
+
+/* just in case there is a partial checkmark shown on some untested screen, hide
+the checkmark
+WEffectSelector::indicator {
+    border: 0;
+} */

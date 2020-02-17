@@ -1,0 +1,34 @@
+<Template>
+  <PushButton>
+    <TooltipId>hotcue</TooltipId>
+    <ObjectName>HotcueButton</ObjectName>
+    <Pos><Variable name="pos"/></Pos>
+    <NumberStates>2</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Pressed>skin:/btn/btn_hotcue_<Variable name="hotcue"/>_down.png</Pressed>
+      <Unpressed>skin:/btn/btn_hotcue_<Variable name="hotcue"/>.png</Unpressed>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Pressed>skin:/btn/btn_hotcue_<Variable name="hotcue"/>_overdown.png</Pressed>
+      <Unpressed>skin:/btn/btn_hotcue_<Variable name="hotcue"/>_over.png</Unpressed>
+    </State>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_activate</ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_clear</ConfigKey>
+      <ButtonState>RightButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_enabled</ConfigKey>
+      <ConnectValueFromWidget>false</ConnectValueFromWidget>
+    </Connection>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_color_id</ConfigKey>
+      <BindProperty>highlight</BindProperty>
+    </Connection>
+  </PushButton>
+</Template>

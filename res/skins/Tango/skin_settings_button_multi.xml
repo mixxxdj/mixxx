@@ -13,7 +13,7 @@ Variables:
   <PushButton>
     <ObjectName>SkinSettingsButtonMulti</ObjectName>
     <MinimumSize><Variable name="width"/>,13</MinimumSize>
-    <MaximumSize><Variable name="width"/>,17</MaximumSize>
+    <MaximumSize><Variable name="width"/>,15</MaximumSize>
     <SizePolicy>me,me</SizePolicy>
     <NumberStates>2</NumberStates>
     <State>

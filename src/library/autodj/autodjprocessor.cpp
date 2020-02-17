@@ -38,8 +38,8 @@ DeckAttributes::DeckAttributes(int index,
           m_introEndPos(group, "intro_end_position"),
           m_outroStartPos(group, "outro_start_position"),
           m_outroEndPos(group, "outro_end_position"),
+          m_trackSamples(group, "track_samples"),
           m_sampleRate(group, "track_samplerate"),
-          m_duration(group, "duration"),
           m_rateRatio(group, "rate_ratio"),
           m_pPlayer(pPlayer) {
     connect(m_pPlayer, &BaseTrackPlayer::newTrackLoaded,
@@ -104,14 +104,6 @@ void DeckAttributes::slotRateChanged(double v) {
 
 TrackPointer DeckAttributes::getLoadedTrack() const {
     return m_pPlayer != NULL ? m_pPlayer->getLoadedTrack() : TrackPointer();
-}
-
-double DeckAttributes::trackTime() const {
-    return trackDuration() / rateRatio();
-}
-
-double DeckAttributes::timeElapsed() const {
-    return playPosition() * trackTime();
 }
 
 AutoDJProcessor::AutoDJProcessor(
@@ -254,13 +246,20 @@ void AutoDJProcessor::fadeNow() {
     pFromDeck->isFromDeck = true;
     pToDeck->isFromDeck = false;
 
-    double fromDeckCurrentPosition = pFromDeck->timeElapsed();
-    double toDeckCurrentPosition = pToDeck->timeElapsed();
+    const double fromDeckEndSecond = getEndSecond(pFromDeck);
+    const double toDeckEndSecond = getEndSecond(pToDeck);
+    // Since the end position is measured in seconds from 0:00 it is also
+    // the track duration. Use this alias for better readability.
+    const double fromDeckDuration = fromDeckEndSecond;
+    const double toDeckDuration = toDeckEndSecond;
+    // playPosition() is in the range of 0..1
+    const double fromDeckCurrentSecond = fromDeckDuration * pFromDeck->playPosition();
+    const double toDeckCurrentSecond = toDeckDuration * pToDeck->playPosition();
 
-    pFromDeck->fadeBeginPos = fromDeckCurrentPosition;
+    pFromDeck->fadeBeginPos = fromDeckCurrentSecond;
     // Do not seek to a calculated start point; start the to deck from wherever
     // it is if the user has seeked since loading the track.
-    pToDeck->startPos = toDeckCurrentPosition;
+    pToDeck->startPos = toDeckCurrentSecond;
 
     // If the user presses "Fade now", assume they want to fade *now*, not later.
     // So if the spinbox time is negative, do not insert silence.
@@ -274,15 +273,15 @@ void AutoDJProcessor::fadeNow() {
         // there and do not seek back to the intro start. If they have seeked
         // past the introEnd or the introEnd is not marked, fall back to the
         // spinbox time.
-        double outroEnd = getOutroEndPosition(pFromDeck);
-        double introEnd = getIntroEndPosition(pToDeck);
-        double introStart = getIntroStartPosition(pToDeck);
-        double timeUntilOutroEnd = outroEnd - fromDeckCurrentPosition;
+        double outroEnd = getOutroEndSecond(pFromDeck);
+        double introEnd = getIntroEndSecond(pToDeck);
+        double introStart = getIntroStartSecond(pToDeck);
+        double timeUntilOutroEnd = outroEnd - fromDeckCurrentSecond;
 
-        if (toDeckCurrentPosition >= introStart &&
-                toDeckCurrentPosition <= introEnd &&
+        if (toDeckCurrentSecond >= introStart &&
+                toDeckCurrentSecond <= introEnd &&
                 introEnd >= 0) {
-            double timeUntilIntroEnd = introEnd - toDeckCurrentPosition;
+            double timeUntilIntroEnd = introEnd - toDeckCurrentSecond;
             // The fade must end by the outro end at the latest.
             fadeTime = math_min(timeUntilIntroEnd, timeUntilOutroEnd);
         } else {
@@ -297,14 +296,18 @@ void AutoDJProcessor::fadeNow() {
         fadeTime = spinboxTime;
     }
 
-    double timeUntilEndOfFromTrack = pFromDeck->trackTime() - fromDeckCurrentPosition;
+    double timeUntilEndOfFromTrack = fromDeckEndSecond - fromDeckCurrentSecond;
     fadeTime = math_min(fadeTime, timeUntilEndOfFromTrack);
-    pFromDeck->fadeEndPos = fromDeckCurrentPosition + fadeTime;
+    pFromDeck->fadeEndPos = fromDeckCurrentSecond + fadeTime;
 
     // These are expected to be a fraction of the track length.
-    pFromDeck->fadeBeginPos /= pFromDeck->trackTime();
-    pFromDeck->fadeEndPos /= pFromDeck->trackTime();
-    pToDeck->startPos /= pToDeck->trackTime();
+    pFromDeck->fadeBeginPos /= fromDeckDuration;
+    pFromDeck->fadeEndPos /= fromDeckDuration;
+    pToDeck->startPos /= toDeckDuration;
+
+    VERIFY_OR_DEBUG_ASSERT(pFromDeck->fadeBeginPos <= 1) {
+        pFromDeck->fadeBeginPos = 1;
+    }
 }
 
 AutoDJProcessor::AutoDJError AutoDJProcessor::skipNext() {
@@ -624,6 +627,8 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
         return;
     }
 
+    // Note: this can be a delayed call of playerPositionChanged() where
+    // the track was playing, but is now stopped.
     bool thisDeckPlaying = thisDeck->isPlaying();
     bool otherDeckPlaying = otherDeck->isPlaying();
 
@@ -644,10 +649,12 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             leftDeck = otherDeck;
         }
 
+        // Note: If a playing deck has reached the end the play state is already reset
         bool leftDeckPlaying = leftDeck->isPlaying();
         bool rightDeckPlaying = rightDeck->isPlaying();
+        bool leftDeckReachesEnd = thisDeck->isLeft() && thisPlayPosition >= 1.0;
 
-        if (leftDeckPlaying || rightDeckPlaying) {
+        if (leftDeckPlaying || rightDeckPlaying || leftDeckReachesEnd) {
             // One of left and right is playing. Switch to IDLE mode and make
             // sure our thresholds are configured (by calling calculateFadeThresholds
             // for the playing deck).
@@ -916,6 +923,12 @@ void AutoDJProcessor::playerPlayChanged(DeckAttributes* thisDeck, bool playing) 
         return;
     }
 
+    if (thisDeck->loading) {
+        // Note: When loading a new deck this signal arrives before the
+        // playerTrackLoaded();
+        return;
+    }
+
     DeckAttributes* otherDeck = getOtherDeck(thisDeck);
     if (!otherDeck) {
         // This happens if all decks have center orientation
@@ -1009,47 +1022,47 @@ void AutoDJProcessor::playerOutroEndChanged(DeckAttributes* pAttributes, double 
     calculateTransition(fromDeck, getOtherDeck(fromDeck), false);
 }
 
-double AutoDJProcessor::getIntroStartPosition(DeckAttributes* pDeck) {
+double AutoDJProcessor::getIntroStartSecond(DeckAttributes* pDeck) {
     double introStartSample = pDeck->introStartPosition();
     if (introStartSample == Cue::kNoPosition) {
-        return getFirstSoundPosition(pDeck);
+        return getFirstSoundSecond(pDeck);
     }
     return samplePositionToSeconds(introStartSample, pDeck);
 }
 
-double AutoDJProcessor::getIntroEndPosition(DeckAttributes* pDeck) {
+double AutoDJProcessor::getIntroEndSecond(DeckAttributes* pDeck) {
     double introEndSample = pDeck->introEndPosition();
     if (introEndSample == Cue::kNoPosition) {
         // Assume a zero length intro if introEnd is not set.
         // The introStart is automatically placed by AnalyzerSilence, so use
         // that as a fallback if the user has not placed outroStart. If it has
         // not been placed, getIntroStartPosition will return 0:00.
-        return getIntroStartPosition(pDeck);
+        return getIntroStartSecond(pDeck);
     }
     return samplePositionToSeconds(introEndSample, pDeck);
 }
 
-double AutoDJProcessor::getOutroStartPosition(DeckAttributes* pDeck) {
+double AutoDJProcessor::getOutroStartSecond(DeckAttributes* pDeck) {
     double outroStartSample = pDeck->outroStartPosition();
     if (outroStartSample == Cue::kNoPosition) {
         // Assume a zero length outro if outroStart is not set.
         // The outroEnd is automatically placed by AnalyzerSilence, so use
         // that as a fallback if the user has not placed outroStart. If it has
         // not been placed, getOutroEndPosition will return the end of the track.
-        return getOutroEndPosition(pDeck);
+        return getOutroEndSecond(pDeck);
     }
     return samplePositionToSeconds(outroStartSample, pDeck);
 }
 
-double AutoDJProcessor::getOutroEndPosition(DeckAttributes* pDeck) {
+double AutoDJProcessor::getOutroEndSecond(DeckAttributes* pDeck) {
     double outroEndSample = pDeck->outroEndPosition();
     if (outroEndSample == Cue::kNoPosition) {
-        return getLastSoundPosition(pDeck);
+        return getLastSoundSecond(pDeck);
     }
     return samplePositionToSeconds(outroEndSample, pDeck);;
 }
 
-double AutoDJProcessor::getFirstSoundPosition(DeckAttributes* pDeck) {
+double AutoDJProcessor::getFirstSoundSecond(DeckAttributes* pDeck) {
     TrackPointer pTrack = pDeck->getLoadedTrack();
     if (!pTrack) {
         return 0.0;
@@ -1065,7 +1078,7 @@ double AutoDJProcessor::getFirstSoundPosition(DeckAttributes* pDeck) {
     return 0.0;
 }
 
-double AutoDJProcessor::getLastSoundPosition(DeckAttributes* pDeck) {
+double AutoDJProcessor::getLastSoundSecond(DeckAttributes* pDeck) {
     TrackPointer pTrack = pDeck->getLoadedTrack();
     if (!pTrack) {
         return 0.0;
@@ -1078,7 +1091,17 @@ double AutoDJProcessor::getLastSoundPosition(DeckAttributes* pDeck) {
             return samplePositionToSeconds(lastSound, pDeck);
         }
     }
-    return pDeck->trackTime();
+    return getEndSecond(pDeck);
+}
+
+double AutoDJProcessor::getEndSecond(DeckAttributes* pDeck) {
+    TrackPointer pTrack = pDeck->getLoadedTrack();
+    if (!pTrack) {
+        return 0.0;
+    }
+
+    double endSamplePosition = pDeck->trackSamples();
+    return samplePositionToSeconds(endSamplePosition, pDeck);
 }
 
 double AutoDJProcessor::samplePositionToSeconds(double samplePosition, DeckAttributes* pDeck) {
@@ -1110,10 +1133,14 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         return;
     }
 
-    double fromTrackTime = pFromDeck->trackTime();
-    double toTrackTime = pToDeck->trackTime();
+    const double fromDeckEndPosition = getEndSecond(pFromDeck);
+    const double toDeckEndPosition = getEndSecond(pToDeck);
+    // Since the end position is measured in seconds from 0:00 it is also
+    // the track duration. Use this alias for better readability.
+    const double fromDeckDuration = fromDeckEndPosition;
+    const double toDeckDuration = toDeckEndPosition;
 
-    VERIFY_OR_DEBUG_ASSERT(fromTrackTime > 0) {
+    VERIFY_OR_DEBUG_ASSERT(fromDeckDuration > 0) {
         // Playing Track has no duration. This should not happen, because short
         // tracks are skipped after load. Play ToDeck immediately.
         pFromDeck->fadeBeginPos = 0;
@@ -1121,7 +1148,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         pToDeck->startPos = kKeepPosition;
         return;
     }
-    if (toTrackTime <= 0) {
+    if (toDeckDuration <= 0) {
         // Playing Track has no duration. This should not happen, because short
         // tracks are skipped after load.
         loadNextTrackFromQueue(*pToDeck, false);
@@ -1131,12 +1158,12 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     // Within this function, the outro refers to the outro of the currently
     // playing track and the intro refers to the intro of the next track.
 
-    double outroEnd = getOutroEndPosition(pFromDeck);
-    double outroStart = getOutroStartPosition(pFromDeck);
-    double fromDeckPosition = pFromDeck->timeElapsed();
+    double outroEnd = getOutroEndSecond(pFromDeck);
+    double outroStart = getOutroStartSecond(pFromDeck);
+    const double fromDeckPosition = fromDeckDuration * pFromDeck->playPosition();
 
-    VERIFY_OR_DEBUG_ASSERT(outroEnd <= fromTrackTime) {
-        outroEnd = fromTrackTime;
+    VERIFY_OR_DEBUG_ASSERT(outroEnd <= fromDeckEndPosition) {
+        outroEnd = fromDeckEndPosition;
     }
 
     if (fromDeckPosition > outroStart) {
@@ -1144,31 +1171,31 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         // This can happen if we have just enabled auto DJ
         outroStart = fromDeckPosition;
         if (fromDeckPosition > outroEnd) {
-            outroEnd = math_min(outroStart + fabs(m_transitionTime), fromTrackTime);
+            outroEnd = math_min(outroStart + fabs(m_transitionTime), fromDeckEndPosition);
         }
     }
     double outroLength = outroEnd - outroStart;
 
-    double toDeckPosition = pToDeck->timeElapsed();
+    double toDeckPositionSeconds = toDeckDuration * pToDeck->playPosition();
     // Store here a possible fadeBeginPos for the transition after next
     // This is used to check if it will be possible or a re-cue is required.
     // here it is done for FullIntroOutro and FadeAtOutroStart.
     // It is adjusted below for the other modes.
-    pToDeck->fadeBeginPos = getOutroStartPosition(pToDeck);
-    pToDeck->fadeEndPos = getOutroEndPosition(pToDeck);
+    pToDeck->fadeBeginPos = getOutroStartSecond(pToDeck);
+    pToDeck->fadeEndPos = getOutroEndSecond(pToDeck);
 
     double introStart;
-    if (seekToStartPoint || toDeckPosition >= pToDeck->fadeBeginPos) {
+    if (seekToStartPoint || toDeckPositionSeconds >= pToDeck->fadeBeginPos) {
         // toDeckPosition >= pToDeck->fadeBeginPos happens when the
         // user has seeked or played the to track behind fadeBeginPos of
         // the fade after the next.
         // In this case we recue the track just before the transition.
-        introStart = getIntroStartPosition(pToDeck);
+        introStart = getIntroStartSecond(pToDeck);
     } else {
-        introStart = toDeckPosition;
+        introStart = toDeckPositionSeconds;
     }
 
-    double introEnd = getIntroEndPosition(pToDeck);
+    double introEnd = getIntroEndSecond(pToDeck);
     if (introEnd < introStart) {
         // introEnd is invalid. Assume a zero length intro.
         // The introStart is automatically placed by AnalyzerSilence, so use
@@ -1293,47 +1320,47 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         break;
     case TransitionMode::FixedSkipSilence: {
         double startPoint;
-        pToDeck->fadeBeginPos = getLastSoundPosition(pToDeck);
-        if (seekToStartPoint || toDeckPosition >= pToDeck->fadeBeginPos) {
+        pToDeck->fadeBeginPos = getLastSoundSecond(pToDeck);
+        if (seekToStartPoint || toDeckPositionSeconds >= pToDeck->fadeBeginPos) {
             // toDeckPosition >= pToDeck->fadeBeginPos happens when the
             // user has seeked or played the to track behind fadeBeginPos of
             // the fade after the next.
             // In this case we recue the track just before the transition.
-            startPoint = getFirstSoundPosition(pToDeck);
+            startPoint = getFirstSoundSecond(pToDeck);
         } else {
-            startPoint = toDeckPosition;
+            startPoint = toDeckPositionSeconds;
         }
-        useFixedFadeTime(pFromDeck, pToDeck, fromDeckPosition, getLastSoundPosition(pFromDeck), startPoint);
+        useFixedFadeTime(pFromDeck, pToDeck, fromDeckPosition, getLastSoundSecond(pFromDeck), startPoint);
     } break;
     case TransitionMode::FixedFullTrack:
     default: {
         double startPoint;
-        pToDeck->fadeBeginPos = toTrackTime;
-        if (seekToStartPoint || toDeckPosition >= pToDeck->fadeBeginPos) {
+        pToDeck->fadeBeginPos = toDeckEndPosition;
+        if (seekToStartPoint || toDeckPositionSeconds >= pToDeck->fadeBeginPos) {
             // toDeckPosition >= pToDeck->fadeBeginPos happens when the
             // user has seeked or played the to track behind fadeBeginPos of
             // the fade after the next.
             // In this case we recue the track just before the transition.
             startPoint = 0.0;
         } else {
-            startPoint = toDeckPosition;
+            startPoint = toDeckPositionSeconds;
         }
-        useFixedFadeTime(pFromDeck, pToDeck, fromDeckPosition, fromTrackTime, startPoint);
+        useFixedFadeTime(pFromDeck, pToDeck, fromDeckPosition, fromDeckEndPosition, startPoint);
         }
     }
 
     // These are expected to be a fraction of the track length.
-    pFromDeck->fadeBeginPos /= fromTrackTime;
-    pFromDeck->fadeEndPos /= fromTrackTime;
-    pToDeck->startPos /= toTrackTime;
-    pToDeck->fadeBeginPos /= toTrackTime;
-    pToDeck->fadeEndPos /= toTrackTime;
+    pFromDeck->fadeBeginPos /= fromDeckDuration;
+    pFromDeck->fadeEndPos /= fromDeckDuration;
+    pToDeck->startPos /= toDeckDuration;
+    pToDeck->fadeBeginPos /= toDeckDuration;
+    pToDeck->fadeEndPos /= toDeckDuration;
 
     pFromDeck->isFromDeck = true;
     pToDeck->isFromDeck = false;
 
     VERIFY_OR_DEBUG_ASSERT(pFromDeck->fadeBeginPos <= 1) {
-        pFromDeck->fadeBeginPos = 0;
+        pFromDeck->fadeBeginPos = 1;
     }
 
     if (sDebug) {
@@ -1343,11 +1370,12 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     }
 }
 
-void AutoDJProcessor::useFixedFadeTime(DeckAttributes* pFromDeck,
+void AutoDJProcessor::useFixedFadeTime(
+        DeckAttributes* pFromDeck,
         DeckAttributes* pToDeck,
-        double fromDeckPosition,
-        double endPoint,
-        double startPoint) {
+        double fromDeckSecond,
+        double fadeEndSecond,
+        double toDeckStartSecond) {
     if (m_transitionTime > 0.0) {
         // Guard against the next track being too short. This transition must finish
         // before the next transition starts.
@@ -1356,32 +1384,32 @@ void AutoDJProcessor::useFixedFadeTime(DeckAttributes* pFromDeck,
             // no outro defined, the toDeck will also use the transition time
             toDeckOutroStart -= m_transitionTime;
         }
-        if (toDeckOutroStart <= startPoint) {
+        if (toDeckOutroStart <= toDeckStartSecond) {
             // we are already too late
             // Check OutroEnd as alternative, which is for all transition mode
             // better than directly default to duration()
-            double end = getOutroEndPosition(pToDeck);
-            if (end <= startPoint) {
-                end = pToDeck->trackTime();
-                VERIFY_OR_DEBUG_ASSERT(end > startPoint) {
+            double end = getOutroEndSecond(pToDeck);
+            if (end <= toDeckStartSecond) {
+                end = getEndSecond(pToDeck);
+                VERIFY_OR_DEBUG_ASSERT(end > toDeckStartSecond) {
                     // as last resort move start point
                     // The caller makes sure that this never happens
-                    startPoint = pToDeck->trackTime() - 1;
+                    toDeckStartSecond = end - 1;
                 }
             }
             // use the remaining time for fading
-            toDeckOutroStart = (end - startPoint) / 2 + startPoint;
+            toDeckOutroStart = (end - toDeckStartSecond) / 2 + toDeckStartSecond;
         }
-        double transitionTime = math_min(toDeckOutroStart - startPoint,
+        double transitionTime = math_min(toDeckOutroStart - toDeckStartSecond,
                 m_transitionTime);
 
-        pFromDeck->fadeBeginPos = math_max(endPoint - transitionTime, fromDeckPosition);
-        pFromDeck->fadeEndPos = endPoint;
-        pToDeck->startPos = startPoint;
+        pFromDeck->fadeBeginPos = math_max(fadeEndSecond - transitionTime, fromDeckSecond);
+        pFromDeck->fadeEndPos = fadeEndSecond;
+        pToDeck->startPos = toDeckStartSecond;
     } else {
-        pFromDeck->fadeBeginPos = endPoint;
-        pFromDeck->fadeEndPos = endPoint;
-        pToDeck->startPos = startPoint + m_transitionTime;
+        pFromDeck->fadeBeginPos = fadeEndSecond;
+        pFromDeck->fadeEndPos = fadeEndSecond;
+        pToDeck->startPos = toDeckStartSecond + m_transitionTime;
     }
 }
 
@@ -1393,7 +1421,9 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
 
     pDeck->loading = false;
 
-    double duration = pTrack->getDuration();
+    // Since the end position is measured in seconds from 0:00 it is also
+    // the track duration.
+    double duration = getEndSecond(pDeck);
     if (duration < 0.2) {
         qWarning() << "Skip track with" << duration << "Duration"
                    << pTrack->getLocation();
@@ -1416,6 +1446,11 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
                     // Note: this seek will trigger the playerPositionChanged slot
                     // which may calls the calculateTransition() again without seek = true;
                     pDeck->setPlayPosition(pDeck->startPos);
+                }
+                // we are her in the relative domain 0..1
+                if (!fromDeck->isPlaying() && fromDeck->playPosition() >= 1.0) {
+                    // repeat a probably missed update
+                    playerPositionChanged(fromDeck, 1.0);
                 }
             }
         }

@@ -63,7 +63,7 @@ void clearTable(QSqlDatabase& database, QString tableName) {
 }
 
 // This function is executed in a separate thread other than the main thread
-QList<TreeItem*> findRekordboxDevices(RekordboxFeature* rekordboxFeature) {
+QList<TreeItem*> findRekordboxDevices() {
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
 
@@ -86,20 +86,16 @@ QList<TreeItem*> findRekordboxDevices(RekordboxFeature* rekordboxFeature) {
         QFileInfo rbDBFileInfo(drive.filePath() + kPdbPath);
 
         if (rbDBFileInfo.exists() && rbDBFileInfo.isFile()) {
-            TreeItem* foundDevice = new TreeItem(rekordboxFeature);
-            QList<QString> data;
-
             QString displayPath = drive.filePath();
             if (displayPath.endsWith("/")) {
                 displayPath.chop(1);
             }
-
+            QList<QString> data;
             data << drive.filePath();
             data << IS_RECORDBOX_DEVICE;
-
-            foundDevice->setLabel(displayPath);
-            foundDevice->setData(QVariant(data));
-
+            TreeItem* foundDevice = new TreeItem(
+                    std::move(displayPath),
+                    QVariant(data));
             foundDevices << foundDevice;
         }
     }
@@ -126,15 +122,12 @@ QList<TreeItem*> findRekordboxDevices(RekordboxFeature* rekordboxFeature) {
         QFileInfo rbDBFileInfo(device.filePath() + QStringLiteral("/") + kPdbPath);
 
         if (rbDBFileInfo.exists() && rbDBFileInfo.isFile()) {
-            TreeItem* foundDevice = new TreeItem(rekordboxFeature);
             QList<QString> data;
-
             data << device.filePath();
             data << IS_RECORDBOX_DEVICE;
-
-            foundDevice->setLabel(device.fileName());
-            foundDevice->setData(QVariant(data));
-
+            TreeItem* foundDevice = new TreeItem(
+                    device.fileName(),
+                    QVariant(data));
             foundDevices << foundDevice;
         }
     }
@@ -145,15 +138,12 @@ QList<TreeItem*> findRekordboxDevices(RekordboxFeature* rekordboxFeature) {
         QFileInfo rbDBFileInfo(device.filePath() + QStringLiteral("/") + kPdbPath);
 
         if (rbDBFileInfo.exists() && rbDBFileInfo.isFile()) {
-            TreeItem* foundDevice = new TreeItem(rekordboxFeature);
             QList<QString> data;
-
             data << device.filePath();
             data << IS_RECORDBOX_DEVICE;
-
-            foundDevice->setLabel(device.fileName());
-            foundDevice->setData(QVariant(data));
-
+            auto* foundDevice = new TreeItem(
+                    device.fileName(),
+                    QVariant(data));
             foundDevices << foundDevice;
         }
     }
@@ -1063,7 +1053,7 @@ RekordboxFeature::RekordboxFeature(
     connect(&m_devicesFutureWatcher, SIGNAL(finished()), this, SLOT(onRekordboxDevicesFound()));
     connect(&m_tracksFutureWatcher, SIGNAL(finished()), this, SLOT(onTracksFound()));
     // initialize the model
-    m_childModel.setRootItem(std::make_unique<TreeItem>(this));
+    m_childModel.setRootItem(TreeItem::newRoot(this));
 }
 
 RekordboxFeature::~RekordboxFeature() {
@@ -1150,7 +1140,7 @@ void RekordboxFeature::activate() {
     qDebug() << "RekordboxFeature::activate()";
 
     // Let a worker thread do the XML parsing
-    m_devicesFuture = QtConcurrent::run(findRekordboxDevices, this);
+    m_devicesFuture = QtConcurrent::run(findRekordboxDevices);
     m_devicesFutureWatcher.setFuture(m_devicesFuture);
     m_title = tr("(loading) Rekordbox");
     //calls a slot in the sidebar model such that 'Rekordbox (isLoading)' is displayed.

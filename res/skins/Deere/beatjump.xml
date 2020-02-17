@@ -8,12 +8,13 @@
 <Template>
   <WidgetGroup>
     <Layout>vertical</Layout>
-    <SizePolicy>f,min</SizePolicy>
+    <SizePolicy>min,min</SizePolicy>
     <Children>
 
       <BeatSpinBox>
         <ObjectName>BeatjumpSizeSpinBox</ObjectName>
         <TooltipId>beatjump_size</TooltipId>
+        <Size>54f,25f</Size>
         <Value><Variable name="group"/>,beatjump_size</Value>
       </BeatSpinBox>
 

@@ -76,9 +76,9 @@ TrackCollectionManager::TrackCollectionManager(
             this,
             &TrackCollectionManager::slotScanTracksUpdated);
     connect(&m_scanner,
-            &LibraryScanner::tracksReplaced,
+            &LibraryScanner::tracksRelocated,
             this,
-            &TrackCollectionManager::slotScanTracksReplaced);
+            &TrackCollectionManager::slotScanTracksRelocated);
 
     GlobalTrackCache::createInstance(this, deleteTrackFn);
 }
@@ -138,6 +138,9 @@ void TrackCollectionManager::saveEvictedTrack(Track* pTrack) noexcept {
 void TrackCollectionManager::saveTrack(
         Track* pTrack,
         TrackMetadataExportMode mode) {
+    DEBUG_ASSERT(pTrack);
+    DEBUG_ASSERT(pTrack->getDateAdded().isValid());
+
     // The metadata must be exported while the cache is locked to
     // ensure that we have exclusive (write) access on the file
     // and not reader or writer is accessing the same file
@@ -359,6 +362,8 @@ TrackPointer TrackCollectionManager::getOrAddTrack(
 
 void TrackCollectionManager::slotScanTrackAdded(TrackPointer pTrack) {
     DEBUG_ASSERT(pTrack);
+    DEBUG_ASSERT(pTrack->getDateAdded().isValid());
+
     // Already added to m_pInternalCollection
     if (m_externalCollections.isEmpty()) {
         return;
@@ -413,26 +418,19 @@ void TrackCollectionManager::slotScanTracksUpdated(QSet<TrackId> updatedTrackIds
     }
 }
 
-void TrackCollectionManager::slotScanTracksReplaced(QList<QPair<TrackRef, TrackRef>> replacedTracks) {
+void TrackCollectionManager::slotScanTracksRelocated(
+        QList<RelocatedTrack> relocatedTracks) {
     // Already replaced in m_pInternalCollection
     if (m_externalCollections.isEmpty()) {
         return;
     }
-    QList<ExternalTrackCollection::DuplicateTrack> duplicateTracks;
-    duplicateTracks.reserve(replacedTracks.size());
-    for (const auto& replacedTrack : replacedTracks) {
-        ExternalTrackCollection::DuplicateTrack duplicateTrack;
-        duplicateTrack.removed = replacedTrack.first;
-        duplicateTrack.replacedBy = replacedTrack.second;
-        duplicateTracks.append(duplicateTrack);
-    }
     kLogger.debug()
-            << "Deduplicating"
-            << duplicateTracks.size()
-            << "replaced track(s) in"
+            << "Relocating"
+            << relocatedTracks.size()
+            << "track(s) in"
             << m_externalCollections.size()
             << "external collection(s)";
     for (const auto& externalTrackCollection : m_externalCollections) {
-        externalTrackCollection->deduplicateTracks(duplicateTracks);
+        externalTrackCollection->relocateTracks(relocatedTracks);
     }
 }

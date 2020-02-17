@@ -70,7 +70,25 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
         }
     }
 
-    // Load pixmaps for associated states
+    // Adds an ellipsis to truncated text
+    QString elide;
+    if (context.hasNodeSelectString(node, "Elide", &elide)) {
+        elide = elide.toLower();
+        if (elide == "right") {
+            m_elideMode = Qt::ElideRight;
+        } else if (elide == "middle") {
+            m_elideMode = Qt::ElideMiddle;
+        } else if (elide == "left") {
+            m_elideMode = Qt::ElideLeft;
+        } else if (elide == "none") {
+            m_elideMode = Qt::ElideNone;
+        } else {
+            qDebug() << "WPushButton::setup(): Elide =" << elide <<
+                    "unknown, use right, middle, left or none.";
+        }
+    }
+
+    // Load pixmaps and set texts for associated states
     QDomNode state = context.selectNode(node, "State");
     while (!state.isNull()) {
         if (state.isElement() && state.nodeName() == "State") {
@@ -227,8 +245,10 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
 }
 
 void WPushButton::setStates(int iStates) {
+    m_bHovered = false;
     m_bPressed = false;
     m_iNoStates = iStates;
+    m_elideMode = Qt::ElideNone;
     m_activeTouchButton = Qt::NoButton;
 
     m_pressedPixmaps.resize(iStates);
@@ -337,8 +357,28 @@ void WPushButton::paintEvent(QPaintEvent* e) {
 
     QString text = m_text.at(idx);
     if (!text.isEmpty()) {
-        p.drawText(rect(), m_align.at(idx), text);
+        QFontMetrics metrics(font());
+        // ToDo(ronso0) Consider css padding for buttons with border images
+        // * read QWidget::style()->property("padding-left");
+        // * adjust width()
+        // * transform rect()
+//        int textWidth = width() - lPad - rPad;
+//        QRect textRect = rect().adjust(x1, y1, x2, y2);
+        QString elidedText = metrics.elidedText(text, m_elideMode, width());
+        p.drawText(rect(), m_align.at(idx), elidedText);
     }
+}
+
+void WPushButton::enterEvent(QEvent *event) {
+    m_bHovered = true;
+    restyleAndRepaint();
+    return QWidget::enterEvent(event);
+}
+
+void WPushButton::leaveEvent(QEvent *event) {
+    m_bHovered = false;
+    restyleAndRepaint();
+    return QWidget::leaveEvent(event);
 }
 
 void WPushButton::mousePressEvent(QMouseEvent * e) {
@@ -431,7 +471,7 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
 
     if (rightClick) {
         // This is the secondary clickButton function,
-        // due the lack of visual feedback we do not allow a toggle
+        // due the leak of visual feedback we do not allow a toggle
         // function
         m_bPressed = false;
         if (m_rightButtonMode == ControlPushButton::PUSH

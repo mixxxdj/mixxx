@@ -91,7 +91,7 @@ void BansheeFeature::activate() {
 
         m_isActivated =  true;
 
-        auto pRootItem = std::make_unique<TreeItem>(this);
+        std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
         QList<BansheeDbConnection::Playlist> playlists = m_connection.getPlaylists();
         for (const BansheeDbConnection::Playlist& playlist: playlists) {
             qDebug() << playlist.name;

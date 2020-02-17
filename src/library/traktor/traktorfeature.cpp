@@ -390,8 +390,8 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 
     QString delimiter = "-->";
 
-    TreeItem *rootItem = new TreeItem(this);
-    TreeItem * parent = rootItem;
+    std::unique_ptr<TreeItem> rootItem = TreeItem::newRoot(this);
+    TreeItem* parent = rootItem.get();
 
     QSqlQuery query_insert_to_playlists(m_database);
     query_insert_to_playlists.prepare("INSERT INTO traktor_playlists (name) "
@@ -452,7 +452,7 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
             }
         }
     }
-    return rootItem;
+    return rootItem.release();
 }
 
 void TraktorFeature::parsePlaylistEntries(

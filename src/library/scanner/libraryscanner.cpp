@@ -84,9 +84,9 @@ LibraryScanner::LibraryScanner(
             trackDao,
             &TrackDAO::databaseTracksChanged);
     connect(this,
-            &LibraryScanner::tracksReplaced,
+            &LibraryScanner::tracksRelocated,
             trackDao,
-            &TrackDAO::databaseTracksReplaced);
+            &TrackDAO::databaseTracksRelocated);
 
     m_pProgressDlg.reset(new LibraryScannerDlg());
     connect(this,
@@ -338,20 +338,21 @@ void LibraryScanner::cleanUpScan() {
     // and if so, do some magic to update all our tables.
     kLogger.debug() << "Detecting moved files";
     {
-        QList<QPair<TrackRef, TrackRef>> replacedTracks;
-        if (!m_trackDao.detectMovedTracks(&replacedTracks,
+        QList<RelocatedTrack> relocatedTracks;
+        if (!m_trackDao.detectMovedTracks(
+                &relocatedTracks,
                 m_scannerGlobal->addedTracks(),
                 m_scannerGlobal->shouldCancelPointer())) {
             kLogger.info()
                     << "Detecting moved files has been canceled or aborted";
             return;
         }
-        if (!replacedTracks.isEmpty()) {
+        if (!relocatedTracks.isEmpty()) {
             kLogger.info()
                     << "Found"
-                    << replacedTracks.size()
+                    << relocatedTracks.size()
                     << "moved track(s)";
-            emit tracksReplaced(replacedTracks);
+            emit tracksRelocated(relocatedTracks);
         }
     }
 

@@ -84,6 +84,7 @@
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
+                  <WidgetGroup><Size>0min,1f</Size></WidgetGroup>
                   <WidgetGroup><!-- Rate buttons for up=faster -->
                     <Layout>vertical</Layout>
                     <SizePolicy>min,min</SizePolicy>

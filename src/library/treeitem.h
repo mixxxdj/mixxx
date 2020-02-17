@@ -1,5 +1,4 @@
-#ifndef MIXXX_TREEITEM_H
-#define MIXXX_TREEITEM_H
+#pragma once
 
 #include <QList>
 #include <QString>
@@ -11,14 +10,31 @@
 
 
 class TreeItem final {
-  public:
-    static const int kInvalidRow = -1;
+    struct PrivateRootTag {};
 
-    TreeItem();
+  public:
+    static constexpr int kInvalidRow = -1;
+
+    static std::unique_ptr<TreeItem> newRoot(
+            LibraryFeature* pFeature) {
+        DEBUG_ASSERT(pFeature);
+        return std::make_unique<TreeItem>(pFeature, PrivateRootTag{});
+    }
+
     explicit TreeItem(
+            QString label = QString(),
+            QVariant data = QVariant())
+            : TreeItem(nullptr, std::move(label), std::move(data)) {
+    }
+    // This constructor should actually be private. But that wouldn't
+    // work for std::make_unique(). The private, nested tag essentially
+    // makes this constructor unavailable for everyone else.
+    TreeItem(
             LibraryFeature* pFeature,
-            const QString& label = QString(),
-            const QVariant& data = QVariant());
+            PrivateRootTag)
+            : TreeItem(pFeature) {
+    }
+
     ~TreeItem();
 
 
@@ -27,6 +43,9 @@ class TreeItem final {
     /////////////////////////////////////////////////////////////////////////
 
     LibraryFeature* feature() const {
+        DEBUG_ASSERT(
+                !m_pParent ||
+                m_pParent->m_pFeature == m_pFeature);
         return m_pFeature;
     }
 
@@ -68,12 +87,13 @@ class TreeItem final {
     TreeItem* appendChild(
             std::unique_ptr<TreeItem> pChild);
     TreeItem* appendChild(
-            const QString& label,
-            const QVariant& data = QVariant());
+            QString label,
+            QVariant data = QVariant());
     void removeChild(int row);
 
     // multiple child items
-    void insertChildren(QList<TreeItem*>& children, int row, int count); // take ownership
+    // take ownership of children items
+    void insertChildren(int row, QList<TreeItem*>& children);
     void removeChildren(int row, int count);
 
 
@@ -110,11 +130,21 @@ class TreeItem final {
     }
 
   private:
-    void appendChild(TreeItem* pChild);
+    explicit TreeItem(
+            LibraryFeature* pFeature,
+            QString label = QString(),
+            QVariant data = QVariant());
 
+    void insertChild(int row, TreeItem* pChild);
+    void initFeatureRecursively(LibraryFeature* pFeature);
+
+    // The library feature is inherited from the parent.
+    // For all child items this is just a shortcut to the
+    // library feature of the root item!
     LibraryFeature* m_pFeature;
 
     TreeItem* m_pParent;
+
     QList<TreeItem*> m_children; // owned child items
 
     QString m_label;
@@ -122,5 +152,3 @@ class TreeItem final {
     QIcon m_icon;
     bool m_bold;
 };
-
-#endif // MIXXX_TREEITEM_H

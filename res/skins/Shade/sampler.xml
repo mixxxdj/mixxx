@@ -1,16 +1,17 @@
 <Template>
+  <SetVariable name="group">[Sampler<Variable name="samplernum"/>]</SetVariable>
   <WidgetGroup>
     <ObjectName>Sampler</ObjectName>
-    <Size>i,103f</Size>
+    <Size>i,95f</Size>
     <Layout>horizontal</Layout>
     <Children>
       <WidgetGroup>
         <ObjectName>SamplerLeftBorder</ObjectName>
-        <Size>5f,100f</Size>
+        <Size>5f,92f</Size>
         <BackPath>style/style_bg_deck_border.png</BackPath>
       </WidgetGroup>
       <WidgetGroup>
-        <Size>0e,103f</Size>
+        <Size>0e,95f</Size>
         <Layout>vertical</Layout>
         <Children>
           <WidgetGroup>
@@ -29,7 +30,7 @@
                     padding-left: 1px;
                     padding-top: 6px;}
                 </Style>
-                <Group>[Sampler<Variable name="samplernum"/>]</Group>
+                <Group><Variable name="group"/></Group>
                 <SizePolicy>me,max</SizePolicy>
                 <Elide>right</Elide>
               </Text>
@@ -44,7 +45,7 @@
                     padding-left: 1px; }
                 </Style>
                 <Property>title</Property>
-                <Group>[Sampler<Variable name="samplernum"/>]</Group>
+                <Group><Variable name="group"/></Group>
                 <SizePolicy>me,max</SizePolicy>
                 <Elide>right</Elide>
               </TrackProperty>
@@ -63,11 +64,11 @@
                     </Style>
                     <Size>35f,24f</Size>
                     <Pos>0,2</Pos>
-                    <Group>[Sampler<Variable name="samplernum"/>]</Group>
+                    <Group><Variable name="group"/></Group>
                     <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
                     <Alignment>right</Alignment>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],visual_bpm</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
                     </Connection>
                   </Number>
                   <!-- Little trickery here:
@@ -87,7 +88,7 @@
                       <Unpressed>skin:/btn/btn_tap_sampler.png</Unpressed>
                     </State>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],bpm_tap</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,bpm_tap</ConfigKey>
                       <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                     </Connection>
                   </PushButton>
@@ -122,15 +123,15 @@
                     </State>
                     <Pos>3,7</Pos>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,cue_gotoandplay</ConfigKey>
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_default</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
                       <ButtonState>RightButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],play_indicator</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
                     </Connection>
                   </PushButton>
                 </Children>
@@ -144,7 +145,7 @@
                 <Children>
                   <Overview>
                     <TooltipId>waveform_overview</TooltipId>
-                    <Group>[Sampler<Variable name="samplernum"/>]</Group>
+                    <Group><Variable name="group"/></Group>
                     <Pos>0,0</Pos>
                     <Size>0e,35f</Size>
                     <BgColor>#8D98A3</BgColor>
@@ -169,7 +170,7 @@
                       <TextColor>#000000</TextColor>
                     </Mark>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],playposition</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
                       <EmitOnDownPress>false</EmitOnDownPress>
                     </Connection>
                   </Overview>
@@ -196,7 +197,7 @@
                     </State>
                     <Pos>1,0</Pos>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],repeat</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,repeat</ConfigKey>
                     </Connection>
                   </PushButton>
                   <PushButton>
@@ -209,7 +210,7 @@
                     </State>
                     <Pos>22,0</Pos>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],eject</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,eject</ConfigKey>
                       <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                       <ButtonState>LeftButton</ButtonState>
                       <ConnectValueToWidget>false</ConnectValueToWidget>
@@ -235,7 +236,7 @@
                     </State>
                     <Pos>1,17</Pos>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],orientation</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,orientation</ConfigKey>
                       <EmitOnDownPress>true</EmitOnDownPress>
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
@@ -255,7 +256,7 @@
                     </State>
                     <Pos>21,17</Pos>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],keylock</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,keylock</ConfigKey>
                     </Connection>
                   </PushButton>
                 </Children>
@@ -264,17 +265,14 @@
           </WidgetGroup>
           <WidgetGroup>
             <ObjectName>SamplerBottom</ObjectName>
-            <Size>0e,40f</Size>
+            <Size>0e,32f</Size>
             <BackPath>style/style_bg_sampler_bottom.png</BackPath>
             <Layout>horizontal</Layout>
             <Children>
+              <WidgetGroup><Size>0e,0min</Size></WidgetGroup>
               <WidgetGroup>
                 <ObjectName>SamplerBottom</ObjectName>
-                <Size>0e,40f</Size>
-              </WidgetGroup>
-              <WidgetGroup>
-                <ObjectName>SamplerBottom</ObjectName>
-                <Size>204f,40f</Size>
+                <Size>204f,32f</Size>
                 <Children>
                   <PushButton>
                     <TooltipId>beatsync_beatsync_tempo</TooltipId>
@@ -284,151 +282,36 @@
                       <Pressed>skin:/btn/btn_sync_sampler_overdown.png</Pressed>
                       <Unpressed>skin:/btn/btn_sync_sampler.png</Unpressed>
                     </State>
-                    <Pos>3,8</Pos>
+                    <Pos>3,4</Pos>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],beatsync</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,beatsync</ConfigKey>
                       <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],beatsync_tempo</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,beatsync_tempo</ConfigKey>
                       <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                       <ButtonState>RightButton</ButtonState>
                     </Connection>
                   </PushButton>
 
-                  <PushButton>
-                    <TooltipId>hotcue</TooltipId>
-                    <NumberStates>2</NumberStates>
-                    <LeftClickIsPushButton>true</LeftClickIsPushButton>
-                    <RightClickIsPushButton>true</RightClickIsPushButton>
-                    <State>
-                      <Number>0</Number>
-                      <Pressed>skin:/btn/btn_hotcue_1_down.png</Pressed>
-                      <Unpressed>skin:/btn/btn_hotcue_1.png</Unpressed>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Pressed>skin:/btn/btn_hotcue_1_overdown.png</Pressed>
-                      <Unpressed>skin:/btn/btn_hotcue_1_over.png</Unpressed>
-                    </State>
-                    <Pos>47,8</Pos>
-                    <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_1_activate</ConfigKey>
-                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                      <ButtonState>LeftButton</ButtonState>
-                      <ConnectValueToWidget>false</ConnectValueToWidget>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_1_clear</ConfigKey>
-                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                      <ButtonState>RightButton</ButtonState>
-                      <ConnectValueToWidget>false</ConnectValueToWidget>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_1_enabled</ConfigKey>
-                      <ConnectValueFromWidget>false</ConnectValueFromWidget>
-                    </Connection>
-                  </PushButton>
-                  <PushButton>
-                    <TooltipId>hotcue</TooltipId>
-                    <NumberStates>2</NumberStates>
-                    <LeftClickIsPushButton>true</LeftClickIsPushButton>
-                    <RightClickIsPushButton>true</RightClickIsPushButton>
-                    <State>
-                      <Number>0</Number>
-                      <Pressed>skin:/btn/btn_hotcue_2_down.png</Pressed>
-                      <Unpressed>skin:/btn/btn_hotcue_2.png</Unpressed>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Pressed>skin:/btn/btn_hotcue_2_overdown.png</Pressed>
-                      <Unpressed>skin:/btn/btn_hotcue_2_over.png</Unpressed>
-                    </State>
-                    <Pos>68,8</Pos>
-                    <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_2_activate</ConfigKey>
-                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                      <ButtonState>LeftButton</ButtonState>
-                      <ConnectValueToWidget>false</ConnectValueToWidget>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_2_clear</ConfigKey>
-                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                      <ButtonState>RightButton</ButtonState>
-                      <ConnectValueToWidget>false</ConnectValueToWidget>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_2_enabled</ConfigKey>
-                      <ConnectValueFromWidget>false</ConnectValueFromWidget>
-                    </Connection>
-                  </PushButton>
-                  <PushButton>
-                    <TooltipId>hotcue</TooltipId>
-                    <NumberStates>2</NumberStates>
-                    <LeftClickIsPushButton>true</LeftClickIsPushButton>
-                    <RightClickIsPushButton>true</RightClickIsPushButton>
-                    <State>
-                      <Number>0</Number>
-                      <Pressed>skin:/btn/btn_hotcue_3_down.png</Pressed>
-                      <Unpressed>skin:/btn/btn_hotcue_3.png</Unpressed>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Pressed>skin:/btn/btn_hotcue_3_overdown.png</Pressed>
-                      <Unpressed>skin:/btn/btn_hotcue_3_over.png</Unpressed>
-                    </State>
-                    <Pos>89,8</Pos>
-                    <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_3_activate</ConfigKey>
-                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                      <ButtonState>LeftButton</ButtonState>
-                      <ConnectValueToWidget>false</ConnectValueToWidget>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_3_clear</ConfigKey>
-                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                      <ButtonState>RightButton</ButtonState>
-                      <ConnectValueToWidget>false</ConnectValueToWidget>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_3_enabled</ConfigKey>
-                      <ConnectValueFromWidget>false</ConnectValueFromWidget>
-                    </Connection>
-                  </PushButton>
-                  <PushButton>
-                    <TooltipId>hotcue</TooltipId>
-                    <NumberStates>2</NumberStates>
-                    <LeftClickIsPushButton>true</LeftClickIsPushButton>
-                    <RightClickIsPushButton>true</RightClickIsPushButton>
-                    <State>
-                      <Number>0</Number>
-                      <Pressed>skin:/btn/btn_hotcue_4_down.png</Pressed>
-                      <Unpressed>skin:/btn/btn_hotcue_4.png</Unpressed>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Pressed>skin:/btn/btn_hotcue_4_overdown.png</Pressed>
-                      <Unpressed>skin:/btn/btn_hotcue_4_over.png</Unpressed>
-                    </State>
-                    <Pos>110,8</Pos>
-                    <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_4_activate</ConfigKey>
-                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                      <ButtonState>LeftButton</ButtonState>
-                      <ConnectValueToWidget>false</ConnectValueToWidget>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_4_clear</ConfigKey>
-                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                      <ButtonState>RightButton</ButtonState>
-                      <ConnectValueToWidget>false</ConnectValueToWidget>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_4_enabled</ConfigKey>
-                      <ConnectValueFromWidget>false</ConnectValueFromWidget>
-                    </Connection>
-                  </PushButton>
+                  <Template src="skin:hotcue_button.xml">
+                    <SetVariable name="hotcue">1</SetVariable>
+                    <SetVariable name="pos">47,4</SetVariable>
+                  </Template>
+                  <Template src="skin:hotcue_button.xml">
+                    <SetVariable name="hotcue">2</SetVariable>
+                    <SetVariable name="pos">68,4</SetVariable>
+                  </Template>
+                  <Template src="skin:hotcue_button.xml">
+                    <SetVariable name="hotcue">3</SetVariable>
+                    <SetVariable name="pos">89,4</SetVariable>
+                  </Template>
+                  <Template src="skin:hotcue_button.xml">
+                    <SetVariable name="hotcue">4</SetVariable>
+                    <SetVariable name="pos">110,4</SetVariable>
+                  </Template>
+
                   <PushButton>
                     <TooltipId>pfl</TooltipId>
                     <NumberStates>2</NumberStates>
@@ -442,30 +325,30 @@
                       <Pressed>skin:/btn/btn_pfl_sampler_overdown.png</Pressed>
                       <Unpressed>skin:/btn/btn_pfl_sampler_over.png</Unpressed>
                     </State>
-                    <Pos>134,8</Pos>
+                    <Pos>134,4</Pos>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],pfl</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,pfl</ConfigKey>
                     </Connection>
                   </PushButton>
                   <Knob>
                     <TooltipId>pregain</TooltipId>
                     <NumberStates>64</NumberStates>
                     <Path>knobs/knob_rotary_s%1.png</Path>
-                    <Pos>168,6</Pos>
+                    <Pos>168,2</Pos>
                     <Connection>
-                      <ConfigKey>[Sampler<Variable name="samplernum"/>],pregain</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,pregain</ConfigKey>
                     </Connection>
                   </Knob>
                 </Children>
               </WidgetGroup>
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- SamplerBottom -->
         </Children>
       </WidgetGroup>
       <WidgetGroup>
         <ObjectName>SamplerVUMeter</ObjectName>
-        <Size>8f,100f</Size>
-        <BackPath>style/style_bg_sampler_vu.png</BackPath>
+        <Size>8f,92f</Size>
+        <BackPath>style/style_bg_sampler_right.png</BackPath>
         <Children>
           <StatusLight>
             <TooltipId>sampler_PeakIndicator</TooltipId>
@@ -473,7 +356,7 @@
             <PathBack>skin:/style/volume_clipping_sampler.png</PathBack>
             <Pos>3,7</Pos>
             <Connection>
-              <ConfigKey>[Sampler<Variable name="samplernum"/>],PeakIndicator</ConfigKey>
+              <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
             </Connection>
           </StatusLight>
           <VuMeter>
@@ -487,37 +370,37 @@
             <PeakFallTime>50</PeakFallTime>
             <PeakFallStep>2</PeakFallStep>
             <Connection>
-              <ConfigKey>[Sampler<Variable name="samplernum"/>],VuMeter</ConfigKey>
+              <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
             </Connection>
           </VuMeter>
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- SamplerVUMeter -->
       <WidgetGroup>
         <ObjectName>SamplerPitch</ObjectName>
-        <Size>21f,100f</Size>
+        <Size>21f,92f</Size>
         <BackPath>style/style_bg_sampler_right.png</BackPath>
         <Children>
           <SliderComposed>
             <TooltipId>rate</TooltipId>
             <Handle>knob_pitch_sampler.png</Handle>
             <Slider>slider_pitch_sampler.png</Slider>
-            <Pos>3,8</Pos>
+            <Pos>3,7</Pos>
             <Horizontal>false</Horizontal>
             <Connection>
-              <ConfigKey>[Sampler<Variable name="samplernum"/>],rate</ConfigKey>
+              <ConfigKey><Variable name="group"/>,rate</ConfigKey>
               <EmitOnDownPress>false</EmitOnDownPress>
             </Connection>
           </SliderComposed>
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- SamplerPitch -->
       <WidgetGroup>
         <ObjectName>SamplerRightBorder</ObjectName>
-        <Size>5f,100f</Size>
+        <Size>5f,92f</Size>
         <BackPath>style/style_bg_deck_border.png</BackPath>
       </WidgetGroup>
       <WidgetGroup>
         <ObjectName>SamplerRightBorder</ObjectName>
-        <Size>3f,100f</Size>
+        <Size>3f,92f</Size>
       </WidgetGroup>
     </Children>
   </WidgetGroup>

@@ -34,8 +34,7 @@ SetlogFeature::SetlogFeature(
             /*show-all-tracks*/ true));
 
     //construct child model
-    auto pRootItem = std::make_unique<TreeItem>(this);
-    m_childModel.setRootItem(std::move(pRootItem));
+    m_childModel.setRootItem(TreeItem::newRoot(this));
     constructChildModel(-1);
 
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
