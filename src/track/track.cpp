@@ -532,6 +532,18 @@ void Track::updatePlayCounter(bool bPlayed) {
     }
 }
 
+mixxx::RgbColor::optional_t Track::getColor() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_record.getColor();
+}
+
+void Track::setColor(mixxx::RgbColor::optional_t color) {
+    QMutexLocker lock(&m_qMutex);
+    if (compareAndSet(&m_record.refColor(), color)) {
+        markDirtyAndUnlock(&lock);
+    }
+}
+
 QString Track::getComment() const {
     QMutexLocker lock(&m_qMutex);
     return m_record.getMetadata().getTrackInfo().getComment();

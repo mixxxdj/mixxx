@@ -7,6 +7,7 @@
 #include "library/basesqltablemodel.h"
 
 #include "library/bpmdelegate.h"
+#include "library/colordelegate.h"
 #include "library/coverartdelegate.h"
 #include "library/locationdelegate.h"
 #include "library/previewbuttondelegate.h"
@@ -118,6 +119,8 @@ void BaseSqlTableModel::initHeaderData() {
                         tr("Preview"), 50);
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_COVERART,
                         tr("Cover Art"), 90);
+    setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_COLOR,
+                        tr("Color"), 10);
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN,
                         tr("ReplayGain"), 50);
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE,
@@ -150,6 +153,7 @@ void BaseSqlTableModel::initSortColumnMapping() {
     m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_RATING] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING);
     m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_KEY] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY);
     m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_PREVIEW] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COLOR] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR);
     m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COVERART] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART);
     m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_SAMPLERATE] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE);
 
@@ -795,6 +799,8 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 if (value.canConvert(QMetaType::Int)) {
                     value = QVariant::fromValue(StarRating(value.toInt()));
                 }
+            } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
+                value = QString();
             }
             break;
         case Qt::CheckStateRole:
@@ -1135,6 +1141,8 @@ QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject
         return new PreviewButtonDelegate(pTableView, i);
     } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION)) {
         return new LocationDelegate(pTableView);
+    } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
+        return new ColorDelegate(pTableView);
     } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
         CoverArtDelegate* pCoverDelegate = new CoverArtDelegate(pTableView);
         connect(pCoverDelegate,
