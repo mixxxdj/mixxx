@@ -1316,8 +1316,7 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     // from Track objects to BaseTrackCache and AutoDJ.
     // Since only the TrackId is sent it doesn't matter if the signal
     // gets sent from another thread and the Track object itself has
-    // already deleted in memory when receiving this signal. Using
-    // a Qt::DirectConnection for this purpose would be unsafe!!
+    // already deleted in memory when receiving this signal.
     connect(pTrack.get(),
             &Track::dirty,
             this,
