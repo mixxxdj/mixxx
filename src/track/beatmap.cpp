@@ -805,3 +805,39 @@ void BeatMap::setSignature(mixxx::Signature sig, double dSample) {
     locker.unlock();
     emit(updated());
 }
+
+void BeatMap::setBar(double dSample) {
+    QMutexLocker locker(&m_mutex);
+    if (!isValid())
+        return;
+
+    // Moves to the beat before the sample
+    BeatList::iterator beat = m_beats.begin();
+    for(; beat != m_beats.end() && beat->frame_position() < dSample ; ++beat)
+        ;
+
+
+    // If at the end, change nothing
+    if ( beat == m_beats.end()) {
+        return;
+    }
+
+    // Set the proper type for the remaining beats on the track
+    int beat_counter = 0;
+    while(beat < m_beats.end()) {
+        switch(beat->type()) {
+        case mixxx::track::io::Type::BEAT:
+        case mixxx::track::io::Type::BAR:
+            beat->set_type(
+                beat_counter%getSignature(beat->frame_position()).getBeats() == 0
+                    ? mixxx::track::io::Type::BAR
+                    : mixxx::track::io::Type::BEAT);
+            break;
+        case mixxx::track::io::Type::PHRASE:
+            // TODO(JVC) - What do we do with phrases??
+            break;
+        }
+        beat_counter++;
+        beat++;
+    }
+}

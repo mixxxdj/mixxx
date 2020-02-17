@@ -462,6 +462,9 @@ WWidgetGroup {
   #BeatgridCurpos {
     image: url(skin:/buttons/btn_beats_curpos.svg) no-repeat center center;
   }
+  #BeatgridSetBarBeat {
+    image: url(skin:/buttons/btn_beats_set_bar_beat.svg) no-repeat center center;
+  }
   #BeatgridSlower {
     image: url(skin:/buttons/btn_beats_slower.svg) no-repeat center center;
   }

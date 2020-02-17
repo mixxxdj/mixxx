@@ -396,3 +396,8 @@ mixxx::Signature BeatGrid::getSignature(double dSample) const {
                 m_grid.first_beat().signature().note_value());
     }
 }
+
+void BeatGrid::setBar(double dSample) {
+    qDebug() << "STUB BeatGrid::setBar at " << dSample;
+    // TODO(JVC) - STUB must change the initial bar
+}

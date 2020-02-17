@@ -83,6 +83,10 @@ BpmControl::BpmControl(QString group,
     connect(m_pTranslateBeatsLater, &ControlObject::valueChanged,
             this, &BpmControl::slotTranslateBeatsLater,
             Qt::DirectConnection);
+    m_pBeatsSetBarBeat = new ControlPushButton(ConfigKey(group, "beats_set_bar_beat"), false);
+    connect(m_pBeatsSetBarBeat, &ControlObject::valueChanged,
+            this, &BpmControl::slotBeatsSetBarBeat,
+            Qt::DirectConnection);
 
     // Pick a wide range (kBpmRangeMin to kBpmRangeMax) and allow out of bounds sets. This lets you
     // map a soft-takeover MIDI knob to the BPM. This also creates bpm_up and
@@ -216,6 +220,13 @@ void BpmControl::slotTranslateBeatsLater(double v) {
         // TODO(rryan): Track::getSampleRate is possibly inaccurate!
         const int translate_dist = getSampleOfTrack().rate * .01;
         pBeats->translate(translate_dist);
+    }
+}
+
+void BpmControl::slotBeatsSetBarBeat(double v) {
+    BeatsPointer pBeats = m_pBeats;
+    if (v > 0 && pBeats) {
+        pBeats->setBar(getSampleOfTrack().current);
     }
 }
 

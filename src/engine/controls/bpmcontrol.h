@@ -88,6 +88,7 @@ class BpmControl : public EngineControl {
     void slotUpdatedTrackBeats();
     void slotBeatsTranslate(double);
     void slotBeatsTranslateMatchAlignment(double);
+    void slotBeatsSetBarBeat(double);
 
   private:
     SyncMode getSyncMode() const {
@@ -143,6 +144,8 @@ class BpmControl : public EngineControl {
     ControlPushButton* m_pTranslateBeats;
     // Button that translates beats to match another playing deck
     ControlPushButton* m_pBeatsTranslateMatchAlignment;
+    // Button to set the nearest beat as a bar beat
+    ControlPushButton* m_pBeatsSetBarBeat;
 
     ControlProxy* m_pThisBeatDistance;
     ControlValueAtomic<double> m_dSyncTargetBeatDistance;

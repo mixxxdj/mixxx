@@ -38,7 +38,8 @@ class Beats : public QObject {
         BEATSCAP_TRANSLATE     = 0x0002, // Move all beat markers earlier or later
         BEATSCAP_SCALE         = 0x0004, // Scale beat distance by a fixed ratio
         BEATSCAP_MOVEBEAT      = 0x0008, // Move a single Beat
-        BEATSCAP_SETBPM        = 0x0010  // Set new bpm, beat grid only
+        BEATSCAP_SETBPM        = 0x0010, // Set new bpm, beat grid only
+        BEATSCAP_HASBAR        = 0x0020  // Manage Bar beats
     };
     typedef int CapabilitiesFlags; // Allows us to do ORing
 
@@ -139,11 +140,14 @@ class Beats : public QObject {
         return kMaxBpm;
     }
 
-    /// Sets the track signature from a specific sample
+    /// Sets the track signature at the nearest sample
     virtual void setSignature( mixxx::Signature signature, double dSample = 0) = 0;
 
     /// Return the track signature at the given sample
     virtual mixxx::Signature getSignature(double dSample = 0) const = 0;
+
+    /// Sets the nearest beat as a bar beat
+    virtual void setBar(double dSample = 0) = 0;
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat mutations

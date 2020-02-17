@@ -42,7 +42,7 @@ class BeatMap final : public Beats {
 
     Beats::CapabilitiesFlags getCapabilities() const override {
         return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_ADDREMOVE |
-                BEATSCAP_MOVEBEAT;
+                BEATSCAP_MOVEBEAT | BEATSCAP_HASBAR;
     }
 
     QByteArray toByteArray() const override;
@@ -86,6 +86,7 @@ class BeatMap final : public Beats {
 
     virtual void setSignature(mixxx::Signature, double dBeat = 0);
     virtual mixxx::Signature getSignature(double dBeat = 0) const;
+    virtual void setBar(double dBeat = 0);
 
   private:
     BeatMap(const BeatMap& other);

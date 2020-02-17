@@ -6,7 +6,6 @@
 namespace mixxx {
 
 // Musical Time signature
-// For an explanation of the meaning look at https://en.wikipedia.org/wiki/Time_signature
 // Right now is to be used for bar detection only, so only the beats per bar is useful
 class Signature final {
   private:

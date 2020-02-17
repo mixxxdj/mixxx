@@ -131,7 +131,7 @@ Variables:
         <Layout>vertical</Layout>
         <!-- Horizontal size is 82px and we'll add the WaveformContainer's negative margin
             (shifts waveform center mark) so that all buttons are visible -->
-        <Size>82f,50me</Size>
+        <Size>107f,50me</Size>
         <Children>
           <WidgetGroup><Size>1me,0me</Size></WidgetGroup>
           <WidgetGroup><Size>1me,1f</Size></WidgetGroup>
@@ -148,6 +148,28 @@ Variables:
                 <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_curpos</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beats_translate_match_alignment</SetVariable>
               </Template>
+
+              <WidgetGroup><!-- Set Bar and Phrase beat -->
+                <Layout>vertical</Layout>
+                <SizePolicy>f,f</SizePolicy>
+                <Children>
+                  <Template src="skin:button_1state.xml">
+                    <SetVariable name="TooltipId">beats_set_bar_beat</SetVariable>
+                    <SetVariable name="ObjectName">BeatgridSetBarBeat</SetVariable>
+                    <SetVariable name="Size">28f,24f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,beats_set_bar_beat</SetVariable>
+                  </Template>
+
+                  <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
+
+                  <Template src="skin:button_1state.xml">
+                    <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
+                    <SetVariable name="ObjectName">BeatgridFaster</SetVariable>
+                    <SetVariable name="Size">28f,24f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,beats_adjust_faster</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup><!-- Set Bar and Phrase beat -->
 
               <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
 
