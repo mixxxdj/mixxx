@@ -883,6 +883,36 @@ QList<TrackId> TrackDAO::getAllTrackIds(const QDir& rootDir) {
     return trackIds;
 }
 
+QList<TrackRef> TrackDAO::getAllTrackRefs(const QDir& rootDir) {
+    // Capture entries that start with the directory prefix dir.
+    // dir needs to end in a slash otherwise we might match other
+    // directories.
+    const QString dirPath = rootDir.absolutePath();
+    QString likeClause = SqlLikeWildcardEscaper::apply(dirPath + "/", kSqlLikeMatchAll) + kSqlLikeMatchAll;
+
+    QSqlQuery query(m_database);
+    query.prepare(QString("SELECT library.id, track_locations.location "
+                          "FROM library INNER JOIN track_locations "
+                          "ON library.location = track_locations.id "
+                          "WHERE track_locations.location LIKE %1 ESCAPE '%2'")
+                  .arg(SqlStringFormatter::format(m_database, likeClause), kSqlLikeMatchAll));
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << dirPath;
+    }
+
+    QList<TrackRef> trackRefs;
+    const int idColumn = query.record().indexOf("id");
+    const int locationColumn = query.record().indexOf("location");
+    while (query.next()) {
+        auto trackId = TrackId(query.value(idColumn));
+        auto trackFile = TrackFile(query.value(locationColumn).toString());
+        trackRefs.append(TrackRef::fromFileInfo(trackFile, trackId));
+    }
+
+    return trackRefs;
+}
+
 bool TrackDAO::onPurgingTracks(
         const QList<TrackId>& trackIds) {
     if (trackIds.empty()) {
