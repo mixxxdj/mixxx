@@ -530,6 +530,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/audiosignal.cpp
   src/util/autohidpi.cpp
   src/util/battery/battery.cpp
+  src/util/cache.cpp
   src/util/cmdlineargs.cpp
   src/util/color/color.cpp
   src/util/color/predefinedcolor.cpp
@@ -918,6 +919,7 @@ add_executable(mixxx-test
   src/test/bpmcontrol_test.cpp
   src/test/broadcastprofile_test.cpp
   src/test/broadcastsettings_test.cpp
+  src/test/cache_test.cpp
   src/test/channelhandle_test.cpp
   src/test/configobject_test.cpp
   src/test/controller_preset_validation_test.cpp

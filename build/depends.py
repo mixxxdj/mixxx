@@ -1274,6 +1274,7 @@ class MixxxCore(Feature):
                    "src/util/xml.cpp",
                    "src/util/tapfilter.cpp",
                    "src/util/movinginterquartilemean.cpp",
+                   "src/util/cache.cpp",
                    "src/util/console.cpp",
                    "src/util/color/color.cpp",
                    "src/util/db/dbconnection.cpp",
