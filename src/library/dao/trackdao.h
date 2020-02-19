@@ -53,8 +53,6 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
 
     TrackId getTrackIdByRef(
             const TrackRef& trackRef) const;
-    QList<TrackId> getAllTrackIds(
-            const QDir& rootDir);
     QList<TrackRef> getAllTrackRefs(
             const QDir& rootDir);
 
@@ -64,7 +62,6 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     // Returns a set of all track locations in the library.
     QSet<QString> getTrackLocations();
     QString getTrackLocation(TrackId trackId);
-    QStringList getTrackLocations(const QList<TrackId>& trackIds);
 
     // Only used by friend class LibraryScanner, but public for testing!
     bool detectMovedTracks(

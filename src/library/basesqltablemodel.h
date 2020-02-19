@@ -101,6 +101,8 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     TrackCollectionManager* const m_pTrackCollectionManager;
 
   protected:
+    QList<TrackRef> getTrackRefs(const QModelIndexList& indices) const;
+
     QSqlDatabase m_database;
 
     QString m_previewDeckGroup;

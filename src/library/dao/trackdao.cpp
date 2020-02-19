@@ -267,37 +267,6 @@ QString TrackDAO::getTrackLocation(TrackId trackId) {
     return trackLocation;
 }
 
-QStringList TrackDAO::getTrackLocations(const QList<TrackId>& ids) {
-    QString stmt =
-            "SELECT track_locations.location FROM track_locations "
-            "INNER JOIN library on library.location=track_locations.id "
-            "WHERE library.id IN (%1)";
-    {
-        QStringList idList;
-        idList.reserve(ids.size());
-        for (const auto& id : ids) {
-            idList.append(id.toString());
-        }
-        stmt = stmt.arg(idList.join(","));
-    }
-    FwdSqlQuery query(m_database, stmt);
-    VERIFY_OR_DEBUG_ASSERT(!query.hasError()) {
-        return QStringList();
-    }
-    if (!query.execPrepared()) {
-        return QStringList();
-    }
-    QStringList locations;
-    locations.reserve(ids.size());
-    const int locationColumn = query.record().indexOf("location");
-    DEBUG_ASSERT(locationColumn >= 0);
-    while (query.next()) {
-        locations.append(query.fieldValue(locationColumn).toString());
-    }
-    DEBUG_ASSERT(locations.size() <= ids.size());
-    return locations;
-}
-
 void TrackDAO::saveTrack(Track* pTrack) {
     DEBUG_ASSERT(pTrack);
     if (pTrack->isDirty()) {
@@ -855,32 +824,6 @@ void TrackDAO::afterUnhidingTracks(
 #else
     emit tracksAdded(QSet<TrackId>::fromList(trackIds));
 #endif
-}
-
-QList<TrackId> TrackDAO::getAllTrackIds(const QDir& rootDir) {
-    // Capture entries that start with the directory prefix dir.
-    // dir needs to end in a slash otherwise we might match other
-    // directories.
-    const QString dirPath = rootDir.absolutePath();
-    QString likeClause = SqlLikeWildcardEscaper::apply(dirPath + "/", kSqlLikeMatchAll) + kSqlLikeMatchAll;
-
-    QSqlQuery query(m_database);
-    query.prepare(QString("SELECT library.id FROM library INNER JOIN track_locations "
-                          "ON library.location = track_locations.id "
-                          "WHERE track_locations.location LIKE %1 ESCAPE '%2'")
-                  .arg(SqlStringFormatter::format(m_database, likeClause), kSqlLikeMatchAll));
-
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << dirPath;
-    }
-
-    QList<TrackId> trackIds;
-    const int idColumn = query.record().indexOf("id");
-    while (query.next()) {
-        trackIds.append(TrackId(query.value(idColumn)));
-    }
-
-    return trackIds;
 }
 
 QList<TrackRef> TrackDAO::getAllTrackRefs(const QDir& rootDir) {

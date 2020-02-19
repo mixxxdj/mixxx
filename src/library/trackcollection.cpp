@@ -309,7 +309,13 @@ bool TrackCollection::purgeTracks(
 
 bool TrackCollection::purgeAllTracks(
         const QDir& rootDir) {
-    QList<TrackId> trackIds = m_trackDao.getAllTrackIds(rootDir);
+    QList<TrackRef> trackRefs = m_trackDao.getAllTrackRefs(rootDir);
+    QList<TrackId> trackIds;
+    trackIds.reserve(trackRefs.size());
+    for (const auto trackRef : trackRefs) {
+        DEBUG_ASSERT(trackRef.hasId());
+        trackIds.append(trackRef.getId());
+    }
     return purgeTracks(trackIds);
 }
 

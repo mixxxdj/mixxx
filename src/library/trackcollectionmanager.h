@@ -46,7 +46,7 @@ class TrackCollectionManager: public QObject,
     bool unhideTracks(const QList<TrackId>& trackIds);
     void hideAllTracks(const QDir& rootDir);
 
-    void purgeTracks(const QList<TrackId>& trackIds);
+    void purgeTracks(const QList<TrackRef>& trackRefs);
     void purgeAllTracks(const QDir& rootDir);
 
     bool addDirectory(const QString& dir);
