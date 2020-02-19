@@ -228,7 +228,7 @@ QList<TrackId> TrackDAO::resolveTrackIds(
     return trackIds;
 }
 
-QSet<QString> TrackDAO::getTrackLocations() {
+QSet<QString> TrackDAO::getAllTrackLocations() {
     QSet<QString> locations;
     QSqlQuery query(m_database);
     query.prepare("SELECT track_locations.location FROM track_locations "

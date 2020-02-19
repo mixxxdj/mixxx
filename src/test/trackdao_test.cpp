@@ -52,6 +52,6 @@ TEST_F(TrackDAOTest, detectMovedTracks) {
     EXPECT_THAT(updatedTrackIds, UnorderedElementsAre(oldId));
     EXPECT_THAT(removedTrackIds, UnorderedElementsAre(newId));
 
-    QSet<QString> trackLocations = trackDAO.getTrackLocations();
+    QSet<QString> trackLocations = trackDAO.getAllTrackLocations();
     EXPECT_THAT(trackLocations, UnorderedElementsAre(newFile.location(), otherFile.location()));
 }

@@ -60,7 +60,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             const TrackRef& trackRef) const;
 
     // Returns a set of all track locations in the library.
-    QSet<QString> getTrackLocations();
+    QSet<QString> getAllTrackLocations();
     QString getTrackLocation(TrackId trackId);
 
     // Only used by friend class LibraryScanner, but public for testing!
