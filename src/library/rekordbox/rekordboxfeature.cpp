@@ -243,7 +243,6 @@ void insertTrack(
     QString comment = getText(track->comment());
     QString tracknumber = QString::number(track->track_number());
     QString anlzPath = devicePath + getText(track->analyze_path());
-
     query.bindValue(":rb_id", rbID);
     query.bindValue(":artist", artist);
     query.bindValue(":title", title);
@@ -989,12 +988,17 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
 }
 
 bool RekordboxPlaylistModel::isColumnHiddenByDefault(int column) {
-    if (
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID)) {
+    if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE)) {
         return true;
     }
     return BaseSqlTableModel::isColumnHiddenByDefault(column);
+}
+
+bool RekordboxPlaylistModel::isColumnInternal(int column) {
+    if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ANALYZE_PATH)) {
+        return true;
+    }
+    return BaseExternalPlaylistModel::isColumnInternal(column);
 }
 
 RekordboxFeature::RekordboxFeature(
