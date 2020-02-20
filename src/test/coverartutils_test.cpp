@@ -142,7 +142,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     // stuff below.
 
     result.trackLocation = kTrackLocationTest;
-    const QImage img = CoverArtUtils::loadCover(result);
+    const QImage img = result.loadImage();
     EXPECT_EQ(img.isNull(), false);
 
     QString trackBaseName = "cover-test";

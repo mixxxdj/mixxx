@@ -81,6 +81,48 @@ QDebug operator<<(QDebug dbg, const CoverInfoRelative& infoRelative) {
             .arg(coverInfoRelativeToString(infoRelative));
 }
 
+QImage CoverInfo::loadImage(
+        const SecurityTokenPointer& pTrackLocationToken) const {
+    if (type == CoverInfo::METADATA) {
+        if (trackLocation.isEmpty()) {
+            qDebug() << "CoverArtUtils::loadCover METADATA cover with empty trackLocation.";
+            return QImage();
+        }
+        return CoverArtUtils::extractEmbeddedCover(
+                TrackFile(trackLocation),
+                pTrackLocationToken);
+    } else if (type == CoverInfo::FILE) {
+        if (trackLocation.isEmpty()) {
+            qDebug() << "CoverArtUtils::loadCover FILE cover with empty trackLocation."
+                     << "Relative paths will not work.";
+            SecurityTokenPointer pToken =
+                    Sandbox::openSecurityToken(
+                            QFileInfo(coverLocation),
+                            true);
+            return QImage(coverLocation);
+        }
+
+        const QFileInfo coverFile(
+                TrackFile(trackLocation).directory(),
+                coverLocation);
+        const QString coverFilePath = coverFile.filePath();
+        if (!coverFile.exists()) {
+            qDebug() << "CoverArtUtils::loadCover FILE cover does not exist:"
+                     << coverFilePath;
+            return QImage();
+        }
+        SecurityTokenPointer pToken =
+                Sandbox::openSecurityToken(coverFile, true);
+        return QImage(coverFilePath);
+    } else if (type == CoverInfo::NONE) {
+        return QImage();
+    } else {
+        qDebug() << "CoverArtUtils::loadCover unhandled type";
+        DEBUG_ASSERT(false);
+        return QImage();
+    }
+}
+
 bool operator==(const CoverInfo& a, const CoverInfo& b) {
     return static_cast<const CoverInfoRelative&>(a) ==
                     static_cast<const CoverInfoRelative&>(b) &&

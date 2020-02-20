@@ -4,6 +4,8 @@
 #include <QString>
 #include <QtDebug>
 
+#include "util/sandbox.h"
+
 class CoverImageUtils {
   public:
     static quint16 calculateHash(
@@ -75,6 +77,9 @@ class CoverInfo : public CoverInfoRelative {
     virtual ~CoverInfo() override = default;
     CoverInfo(CoverInfo&&) = default;
     CoverInfo& operator=(CoverInfo&&) = default;
+
+    QImage loadImage(
+            const SecurityTokenPointer& pTrackLocationToken = SecurityTokenPointer()) const;
 
     QString trackLocation;
 };

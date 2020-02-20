@@ -26,8 +26,6 @@ class CoverArtUtils {
             TrackFile trackFile,
             SecurityTokenPointer pToken);
 
-    static QImage loadCover(const CoverInfo& info);
-
     static QStringList supportedCoverArtExtensions();
     static QString supportedCoverArtExtensionsRegex();
 
