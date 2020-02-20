@@ -1,13 +1,11 @@
 #pragma once
 
-#include <QtCore/qglobal.h>
-
+#include <QOpenGLFunctions_2_1>
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 #include <QGLFramebufferObject>
 #include <QGLShaderProgram>
 #include <QtOpenGL>
-#include <QOpenGLFunctions_2_1>
 
 #include "track/track.h"
 #include "util/memory.h"

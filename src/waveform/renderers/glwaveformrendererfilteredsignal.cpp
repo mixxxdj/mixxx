@@ -1,10 +1,8 @@
-#include <QtCore/qglobal.h>
-
+#include "glwaveformrendererfilteredsignal.h"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 #include <QDomNode>
 
-#include "glwaveformrendererfilteredsignal.h"
 #include "track/track.h"
 #include "waveform/waveform.h"
 #include "waveformwidgetrenderer.h"

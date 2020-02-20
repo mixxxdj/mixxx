@@ -1,8 +1,6 @@
-#include <QtCore/qglobal.h>
-
+#include "waveform/renderers/glwaveformrendererrgb.h"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
-#include "glwaveformrendererrgb.h"
 #include "waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"

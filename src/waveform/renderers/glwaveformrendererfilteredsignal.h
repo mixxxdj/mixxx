@@ -1,11 +1,9 @@
 #pragma once
 
-#include <QtCore/qglobal.h>
-
+#include <QOpenGLFunctions_2_1>
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 #include <QDomNode>
-#include <QOpenGLFunctions_2_1>
 
 #include "waveformrenderersignalbase.h"
 
