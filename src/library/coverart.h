@@ -1,11 +1,23 @@
-#ifndef COVERART_H
-#define COVERART_H
+#pragma once
 
 #include <QImage>
 #include <QString>
-#include <QObject>
 #include <QtDebug>
-#include <QtGlobal>
+
+class CoverImageUtils {
+  public:
+    static quint16 calculateHash(
+            const QImage& image);
+
+    static constexpr quint16 defaultHash() {
+        return 0;
+    }
+
+    static constexpr bool isValidHash(
+            quint16 hash) {
+        return hash != defaultHash();
+    }
+};
 
 class CoverInfoRelative {
   public:
@@ -89,12 +101,10 @@ class CoverArt : public CoverInfo {
     CoverArt(CoverArt&&) = default;
     CoverArt& operator=(CoverArt&&) = default;
 
-    // it is not a QPixmap, because it is not safe to use pixmaps 
+    // it is not a QPixmap, because it is not safe to use pixmaps
     // outside the GUI thread
-    QImage image; 
+    QImage image;
     int resizedToWidth;
 };
 
 QDebug operator<<(QDebug dbg, const CoverArt& art);
-
-#endif /* COVERART_H */

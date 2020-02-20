@@ -43,12 +43,26 @@ QString coverInfoToString(const CoverInfo& info) {
 }
 } // anonymous namespace
 
+//static
+quint16 CoverImageUtils::calculateHash(
+        const QImage& image) {
+    const auto hash = qChecksum(
+            reinterpret_cast<const char*>(image.constBits()),
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+            image.sizeInBytes()
+#else
+            image.byteCount()
+#endif
+            );
+    DEBUG_ASSERT(image.isNull() || isValidHash(hash));
+    DEBUG_ASSERT(!image.isNull() || hash == defaultHash());
+    return hash;
+}
+
 CoverInfoRelative::CoverInfoRelative()
         : source(UNKNOWN),
           type(NONE),
-          hash(0) {
-    // The default hash value should match the calculated hash for a null image
-    DEBUG_ASSERT(CoverArtUtils::calculateHash(QImage()) == hash);
+          hash(CoverImageUtils::defaultHash()) {
 }
 
 bool operator==(const CoverInfoRelative& a, const CoverInfoRelative& b) {
