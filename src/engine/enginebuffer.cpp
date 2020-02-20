@@ -741,7 +741,14 @@ void EngineBuffer::processTrackLocked(
     // pass for every 1 real second). Depending on whether
     // keylock is enabled, this is applied to either the rate or the tempo.
     double speed = m_pRateControl->calculateSpeed(
-            baserate, tempoRatio, paused, iBufferSize, &is_scratching, &is_reverse, m_filepos_play);
+            baserate,
+            tempoRatio,
+            paused,
+            iBufferSize,
+            &is_scratching,
+            &is_reverse);
+
+    qDebug() << "speed" << speed;
 
     bool useIndependentPitchAndTempoScaling = false;
 
@@ -1194,15 +1201,14 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     // values from the first update.
     double local_bpm = m_pBpmControl->updateLocalBpm();
     double beat_distance = m_pBpmControl->updateBeatDistance();
+    m_pSyncControl->setLocalBpm(local_bpm);
     SyncMode mode = m_pSyncControl->getSyncMode();
     if (mode == SYNC_MASTER) {
-        m_pSyncControl->setLocalBpm(local_bpm);
         m_pEngineSync->notifyBeatDistanceChanged(m_pSyncControl, beat_distance);
     } else if (mode == SYNC_FOLLOWER) {
         // Report our speed to SyncControl.  If we are master, we already did this.
-        m_pSyncControl->setLocalBpm(local_bpm);
         m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
-        m_pSyncControl->setBeatDistance(beat_distance);
+        m_pSyncControl->updateTargetBeatDistance();
     }
 
     // Update all the indicators that EngineBuffer publishes to allow

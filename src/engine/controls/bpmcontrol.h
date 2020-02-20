@@ -31,7 +31,7 @@ class BpmControl : public EngineControl {
     // that value is added to the rate by bpmcontrol.  The rate may be
     // further adjusted if bpmcontrol discovers that the tracks have fallen
     // out of sync.
-    double calcSyncedRate(double userTweak, double dThisPosition);
+    double calcSyncedRate(double userTweak);
     // Get the phase offset from the specified position.
     double getNearestPositionInPhase(double dThisPosition, bool respectLoops, bool playing);
     double getBeatMatchPosition(double dThisPosition, bool respectLoops, bool playing);
@@ -72,6 +72,7 @@ class BpmControl : public EngineControl {
     static double shortestPercentageChange(const double& current_percentage,
                                            const double& target_percentage);
     double getRateRatio() const;
+    void notifySeek(double dNewPlaypos) override;
     void trackLoaded(TrackPointer pNewTrack) override;
 
   private slots:
@@ -99,7 +100,7 @@ class BpmControl : public EngineControl {
         return toSynchronized(getSyncMode());
     }
     bool syncTempo();
-    double calcSyncAdjustment(double my_percentage, bool userTweakingSync);
+    double calcSyncAdjustment(bool userTweakingSync);
 
     friend class SyncControl;
 

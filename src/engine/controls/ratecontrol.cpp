@@ -382,8 +382,7 @@ SyncMode RateControl::getSyncMode() const {
 double RateControl::calculateSpeed(double baserate, double speed, bool paused,
                                    int iSamplesPerBuffer,
                                    bool* pReportScratching,
-                                   bool* pReportReverse,
-                                   double filepos_play) {
+                                   bool* pReportReverse) {
     *pReportScratching = false;
     *pReportReverse = false;
 
@@ -468,7 +467,7 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
                     // Only report user tweak if the user is not scratching.
                     userTweak = getTempRate() + wheelFactor + jogFactor;
                 }
-                rate = m_pBpmControl->calcSyncedRate(userTweak, filepos_play);
+                rate = m_pBpmControl->calcSyncedRate(userTweak);
             }
             // If we are reversing (and not scratching,) flip the rate.  This is ok even when syncing.
             // Reverse with vinyl is only ok if absolute mode isn't on.
@@ -590,6 +589,7 @@ void RateControl::resetRateTemp(void)
 
 void RateControl::notifySeek(double playPos) {
     m_pScratchController->notifySeek(playPos);
+    EngineControl::notifySeek(playPos);
 }
 
 bool RateControl::isReverseButtonPressed() {

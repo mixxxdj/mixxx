@@ -379,12 +379,14 @@ double BpmControl::shortestPercentageChange(const double& current_percentage,
     }
 }
 
-double BpmControl::calcSyncedRate(double userTweak, double dThisPosition) {
+double BpmControl::calcSyncedRate(double userTweak) {
     double rate = 1.0;
     // Don't know what to do if there's no bpm.
     if (m_pLocalBpm->get() != 0.0) {
         rate = m_dSyncInstantaneousBpm / m_pLocalBpm->get();
     }
+
+    qDebug() << "rate" << rate;
 
     // If we are not quantized, or there are no beats, or we're master,
     // or we're in reverse, just return the rate as-is.
@@ -394,16 +396,15 @@ double BpmControl::calcSyncedRate(double userTweak, double dThisPosition) {
         return rate + userTweak;
     }
 
-    // Now we need to get our beat distance so we can figure out how
-    // out of phase we are.
-    double dBeatLength;
-    double my_percentage;
-    if (!BpmControl::getBeatContextNoLookup(dThisPosition,
-                                            m_pPrevBeat->get(), m_pNextBeat->get(),
-                                            &dBeatLength, &my_percentage)) {
+    const double dPrevBeat = m_pPrevBeat->get();
+    const double dNextBeat = m_pNextBeat->get();
+
+    if (dPrevBeat == -1 || dNextBeat == -1) {
         m_resetSyncAdjustment = true;
         return rate + userTweak;
     }
+
+    double dBeatLength = dNextBeat - dPrevBeat;
 
     // Now that we have our beat distance we can also check how large the
     // current loop is.  If we are in a <1 beat loop, don't worry about offset.
@@ -417,11 +418,11 @@ double BpmControl::calcSyncedRate(double userTweak, double dThisPosition) {
     }
 
     // Now we have all we need to calculate the sync adjustment if any.
-    double adjustment = calcSyncAdjustment(my_percentage, userTweak != 0.0);
+    double adjustment = calcSyncAdjustment(userTweak != 0.0);
     return (rate + userTweak) * adjustment;
 }
 
-double BpmControl::calcSyncAdjustment(double my_percentage, bool userTweakingSync) {
+double BpmControl::calcSyncAdjustment(bool userTweakingSync) {
     int resetSyncAdjustment = m_resetSyncAdjustment.fetchAndStoreRelaxed(0);
     if (resetSyncAdjustment) {
         m_dLastSyncAdjustment = 1.0;
@@ -440,13 +441,14 @@ double BpmControl::calcSyncAdjustment(double my_percentage, bool userTweakingSyn
     // than modular 1.0 beat fractions. This will allow sync to work across loop
     // boundaries too.
 
-    double master_percentage = m_dSyncTargetBeatDistance.getValue();
+    double syncTargetBeatDistance = m_dSyncTargetBeatDistance.getValue();
+    double thisBeatDistance = m_pThisBeatDistance->get();
     double shortest_distance = shortestPercentageChange(
-        master_percentage, my_percentage);
+            syncTargetBeatDistance, thisBeatDistance);
 
     // qDebug() << m_group << "****************";
-    // qDebug() << "master beat distance:" << master_percentage;
-    // qDebug() << "my     beat distance:" << my_percentage;
+    // qDebug() << "master beat distance:" << syncTargetBeatDistance;
+    // qDebug() << "my     beat distance:" << thisBeatDistance;
     // qDebug() << "error               :" << (shortest_distance - m_dUserOffset.getValue());
     // qDebug() << "user offset         :" << m_dUserOffset.getValue();
 
@@ -884,6 +886,11 @@ void BpmControl::slotUpdateRateSlider(double value) {
 
     double dRateRatio = m_pEngineBpm->get() / localBpm;
     m_pRateRatio->set(dRateRatio);
+}
+
+void BpmControl::notifySeek(double dNewPlaypos) {
+    EngineControl::notifySeek(dNewPlaypos);
+    updateBeatDistance();
 }
 
 // called from an engine worker thread

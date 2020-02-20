@@ -1141,6 +1141,12 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
               m_pChannel1->getEngineBuffer()->m_pSyncControl->m_masterBpmAdjustFactor);
     EXPECT_EQ(1.0,
               m_pChannel2->getEngineBuffer()->m_pSyncControl->m_masterBpmAdjustFactor);
+    EXPECT_FLOAT_EQ(m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance(),
+              m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance());
+    EXPECT_EQ(0, ControlObject::get(ConfigKey(m_sGroup1, "rate")));
+    EXPECT_EQ(70, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_EQ(0, ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    EXPECT_EQ(140, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     // Do lots of processing to make sure we get over the 0.5 beat_distance barrier.
     for (int i = 0; i < 50; ++i) {
