@@ -105,8 +105,7 @@ QList<TreeItem*> findRekordboxDevices() {
     QFileInfoList devices;
 
     // Add folders under /media to devices.
-    devices += QDir(QStringLiteral("/media")).entryInfoList(
-            QDir::AllDirs | QDir::NoDotAndDotDot);
+    devices += QDir(QStringLiteral("/media")).entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
 
     // Add folders under /media/$USER to devices.
     QDir mediaUserDir(QStringLiteral("/media/") + QString::fromLocal8Bit(qgetenv("USER")));
@@ -243,6 +242,45 @@ void insertTrack(
     QString comment = getText(track->comment());
     QString tracknumber = QString::number(track->track_number());
     QString anlzPath = devicePath + getText(track->analyze_path());
+    mixxx::RgbColor::optional_t color = mixxx::RgbColor::nullopt();
+
+    switch (track->color_id()) {
+    case 1:
+        // Pink
+        color = mixxx::RgbColor::optional(QColor(248, 112, 248));
+        break;
+    case 2:
+        // Red
+        color = mixxx::RgbColor::optional(QColor(248, 0, 0));
+        break;
+    case 3:
+        // Orange
+        color = mixxx::RgbColor::optional(QColor(248, 160, 48));
+        break;
+    case 4:
+        // Yellow
+        color = mixxx::RgbColor::optional(QColor(248, 227, 49));
+        break;
+    case 5:
+        // Green
+        color = mixxx::RgbColor::optional(QColor(30, 124, 0));
+        break;
+    case 6:
+        // Aqua
+        color = mixxx::RgbColor::optional(QColor(22, 192, 248));
+        break;
+    case 7:
+        // Blue
+        color = mixxx::RgbColor::optional(QColor(1, 80, 248));
+        break;
+    case 8:
+        // Purple
+        color = mixxx::RgbColor::optional(QColor(152, 8, 248));
+        break;
+    default:
+        break;
+    }
+
     query.bindValue(":rb_id", rbID);
     query.bindValue(":artist", artist);
     query.bindValue(":title", title);
@@ -259,6 +297,8 @@ void insertTrack(
     query.bindValue(":bitrate", bitrate);
     query.bindValue(":analyze_path", anlzPath);
     query.bindValue(":device", device);
+    query.bindValue(":color", toQVariant(color));
+    qDebug() << "EVAN color_id:" << track->color_id() << "title:" << title;
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -335,9 +375,9 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
     query.prepare(
             "INSERT INTO rekordbox_library (rb_id, artist, title, album, year,"
             "genre,comment,tracknumber,bpm, bitrate,duration, location,"
-            "rating,key,analyze_path,device) VALUES (:rb_id, :artist, :title, :album, :year,:genre,"
+            "rating,key,analyze_path,device,color) VALUES (:rb_id, :artist, :title, :album, :year,:genre,"
             ":comment, :tracknumber,:bpm, :bitrate,:duration, :location,"
-            ":rating,:key,:analyze_path,:device)");
+            ":rating,:key,:analyze_path,:device,:color)");
 
     int audioFilesCount = 0;
 
@@ -914,6 +954,7 @@ void RekordboxPlaylistModel::initSortColumnMapping() {
     m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_RATING] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING);
     m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_KEY] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY);
     m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_PREVIEW] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COLOR] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR);
     m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COVERART] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART);
     m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_POSITION] = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
 
@@ -984,6 +1025,8 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
     // and prevent the AnalyzerKey from re-analyzing.
     track->setKeys(KeyFactory::makeBasicKeysFromText(index.sibling(index.row(), fieldIndex("key")).data().toString(), mixxx::track::io::key::USER));
 
+    track->setColor(mixxx::RgbColor::optional(index.sibling(index.row(), fieldIndex("color")).data().toInt()));
+
     return track;
 }
 
@@ -1023,7 +1066,8 @@ RekordboxFeature::RekordboxFeature(
             << "bitrate"
             << "bpm"
             << "key"
-            << "analyze_path";
+            << "analyze_path"
+            << "color";
     m_trackSource = QSharedPointer<BaseTrackCache>(
             new BaseTrackCache(m_pTrackCollection, tableName, idColumn, columns, false));
     QStringList searchColumns;

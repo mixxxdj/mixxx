@@ -489,4 +489,12 @@ METADATA
       ALTER TABLE library ADD COLUMN color INTEGER;
     </sql>
   </revision>
+  <revision version="32" min_compatible="3">
+    <description>
+      Add Rekordbox track color support.
+    </description>
+    <sql>
+      ALTER TABLE rekordbox_library ADD COLUMN color INTEGER;
+    </sql>
+  </revision>
 </schema>
