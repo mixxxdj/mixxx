@@ -3,8 +3,11 @@
 #include "library/coverart.h"
 #include "library/coverartutils.h"
 #include "util/debug.h"
+#include "util/logger.h"
 
 namespace {
+
+mixxx::Logger kLogger("CoverArt");
 
 QString sourceToString(CoverInfo::Source source) {
     switch (source) {
@@ -84,17 +87,23 @@ QDebug operator<<(QDebug dbg, const CoverInfoRelative& infoRelative) {
 QImage CoverInfo::loadImage(
         const SecurityTokenPointer& pTrackLocationToken) const {
     if (type == CoverInfo::METADATA) {
-        if (trackLocation.isEmpty()) {
-            qDebug() << "CoverArtUtils::loadCover METADATA cover with empty trackLocation.";
+        VERIFY_OR_DEBUG_ASSERT(!trackLocation.isEmpty()) {
+            kLogger.warning()
+                    << "loadImage"
+                    << type
+                    << "cover with empty trackLocation";
             return QImage();
         }
         return CoverArtUtils::extractEmbeddedCover(
                 TrackFile(trackLocation),
                 pTrackLocationToken);
     } else if (type == CoverInfo::FILE) {
-        if (trackLocation.isEmpty()) {
-            qDebug() << "CoverArtUtils::loadCover FILE cover with empty trackLocation."
-                     << "Relative paths will not work.";
+        VERIFY_OR_DEBUG_ASSERT(!trackLocation.isEmpty()) {
+            kLogger.warning()
+                    << "loadImage"
+                    << type
+                    << "cover with empty trackLocation."
+                    << "Relative paths will not work.";
             SecurityTokenPointer pToken =
                     Sandbox::openSecurityToken(
                             QFileInfo(coverLocation),
@@ -107,8 +116,11 @@ QImage CoverInfo::loadImage(
                 coverLocation);
         const QString coverFilePath = coverFile.filePath();
         if (!coverFile.exists()) {
-            qDebug() << "CoverArtUtils::loadCover FILE cover does not exist:"
-                     << coverFilePath;
+            kLogger.warning()
+                    << "loadImage"
+                    << type
+                    << "cover does not exist:"
+                    << coverFilePath;
             return QImage();
         }
         SecurityTokenPointer pToken =
@@ -117,8 +129,7 @@ QImage CoverInfo::loadImage(
     } else if (type == CoverInfo::NONE) {
         return QImage();
     } else {
-        qDebug() << "CoverArtUtils::loadCover unhandled type";
-        DEBUG_ASSERT(false);
+        DEBUG_ASSERT(!"unhandled CoverInfo::Type");
         return QImage();
     }
 }
