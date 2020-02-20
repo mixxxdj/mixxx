@@ -298,7 +298,6 @@ void insertTrack(
     query.bindValue(":analyze_path", anlzPath);
     query.bindValue(":device", device);
     query.bindValue(":color", toQVariant(color));
-    qDebug() << "EVAN color_id:" << track->color_id() << "title:" << title;
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
