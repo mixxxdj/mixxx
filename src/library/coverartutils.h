@@ -26,17 +26,6 @@ class CoverArtUtils {
             TrackFile trackFile,
             SecurityTokenPointer pToken);
 
-    static QImage loadCover(const CoverInfo& info);
-    static quint16 calculateHash(const QImage& image) {
-        return qChecksum(reinterpret_cast<const char*>(image.constBits()),
-#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
-                         image.sizeInBytes()
-#else
-                         image.byteCount()
-#endif
-                );
-    }
-
     static QStringList supportedCoverArtExtensions();
     static QString supportedCoverArtExtensionsRegex();
 
