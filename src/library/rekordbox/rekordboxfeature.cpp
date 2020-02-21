@@ -44,14 +44,14 @@ const QString kPLaylistPathDelimiter = QStringLiteral("-->");
 const double kLongestPosition = 999999999.0;
 
 enum TrackColor {
-	TRACK_COLOR_PINK = 1,
-	TRACK_COLOR_RED,
-	TRACK_COLOR_ORANGE,
-	TRACK_COLOR_YELLOW,
-	TRACK_COLOR_GREEN,
-	TRACK_COLOR_AQUA,
-	TRACK_COLOR_BLUE,
-	TRACK_COLOR_PURPLE
+    TRACK_COLOR_PINK = 1,
+    TRACK_COLOR_RED,
+    TRACK_COLOR_ORANGE,
+    TRACK_COLOR_YELLOW,
+    TRACK_COLOR_GREEN,
+    TRACK_COLOR_AQUA,
+    TRACK_COLOR_BLUE,
+    TRACK_COLOR_PURPLE
 };
 
 constexpr mixxx::RgbColor::optional_t kPinkTrackColor = mixxx::RgbColor::optional(0xF870F8);
