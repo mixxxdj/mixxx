@@ -516,8 +516,6 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
     bool folderOrPlaylistFound = false;
 
     for (int tableOrderIndex = 0; tableOrderIndex < totalTables; tableOrderIndex++) {
-        //       bool done = false;
-
         for (
                 std::vector<rekordbox_pdb_t::table_t*>::iterator table = reckordboxDB.tables()->begin();
                 table != reckordboxDB.tables()->end();
