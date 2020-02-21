@@ -17,6 +17,8 @@ namespace {
 
 const mixxx::Logger kLogger("MixxxDb");
 
+const QString kDefaultFileName = QStringLiteral("mixxxdb.sqlite");
+
 // The connection parameters for the main Mixxx DB
 mixxx::DbConnection::Params dbConnectionParams(
         const UserSettingsPointer& pConfig,
@@ -24,7 +26,16 @@ mixxx::DbConnection::Params dbConnectionParams(
     mixxx::DbConnection::Params params;
     params.type = "QSQLITE";
     params.hostName = "localhost";
-    params.filePath = inMemoryConnection ? QString(":memory:") : QDir(pConfig->getSettingsPath()).filePath("mixxxdb.sqlite");
+    params.filePath = QDir(pConfig->getSettingsPath()).filePath(kDefaultFileName);
+    // Allow multiple connections to the same in-memory database by
+    // using a named connection. This is needed to make the database
+    // connection pool work correctly even during tests.
+    //
+    // See also:
+    // https://www.sqlite.org/inmemorydb.html
+    if (inMemoryConnection) {
+        params.filePath += "?mode=memory";
+    }
     params.userName = "mixxx";
     params.password = "mixxx";
     return params;
