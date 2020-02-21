@@ -43,6 +43,26 @@ const QString kPdbPath = QStringLiteral("PIONEER/rekordbox/export.pdb");
 const QString kPLaylistPathDelimiter = QStringLiteral("-->");
 const double kLongestPosition = 999999999.0;
 
+enum TrackColor {
+	TRACK_COLOR_PINK = 1,
+	TRACK_COLOR_RED,
+	TRACK_COLOR_ORANGE,
+	TRACK_COLOR_YELLOW,
+	TRACK_COLOR_GREEN,
+	TRACK_COLOR_AQUA,
+	TRACK_COLOR_BLUE,
+	TRACK_COLOR_PURPLE
+};
+
+constexpr mixxx::RgbColor::optional_t kPinkTrackColor = mixxx::RgbColor::optional(0xF870F8);
+constexpr mixxx::RgbColor::optional_t kRedTrackColor = mixxx::RgbColor::optional(0xF870900);
+constexpr mixxx::RgbColor::optional_t kOrangeTrackColor = mixxx::RgbColor::optional(0xF8A030);
+constexpr mixxx::RgbColor::optional_t kYellowTrackColor = mixxx::RgbColor::optional(0xF8E331);
+constexpr mixxx::RgbColor::optional_t kGreenTrackColor = mixxx::RgbColor::optional(0x1EE000);
+constexpr mixxx::RgbColor::optional_t kAquaTrackColor = mixxx::RgbColor::optional(0x16C0F8);
+constexpr mixxx::RgbColor::optional_t kBlueTrackColor = mixxx::RgbColor::optional(0x0150F8);
+constexpr mixxx::RgbColor::optional_t kPurpleTrackColor = mixxx::RgbColor::optional(0x9808F8);
+
 void clearTable(QSqlDatabase& database, QString tableName) {
     QSqlQuery query(database);
     query.prepare("delete from " + tableName);
@@ -245,37 +265,29 @@ void insertTrack(
     mixxx::RgbColor::optional_t color = mixxx::RgbColor::nullopt();
 
     switch (track->color_id()) {
-    case 1:
-        // Pink
-        color = mixxx::RgbColor::optional(QColor(248, 112, 248));
+    case TRACK_COLOR_PINK:
+        color = kPinkTrackColor;
         break;
-    case 2:
-        // Red
-        color = mixxx::RgbColor::optional(QColor(248, 0, 0));
+    case TRACK_COLOR_RED:
+        color = kRedTrackColor;
         break;
-    case 3:
-        // Orange
-        color = mixxx::RgbColor::optional(QColor(248, 160, 48));
+    case TRACK_COLOR_ORANGE:
+        color = kOrangeTrackColor;
         break;
-    case 4:
-        // Yellow
-        color = mixxx::RgbColor::optional(QColor(248, 227, 49));
+    case TRACK_COLOR_YELLOW:
+        color = kYellowTrackColor;
         break;
-    case 5:
-        // Green
-        color = mixxx::RgbColor::optional(QColor(30, 124, 0));
+    case TRACK_COLOR_GREEN:
+        color = kGreenTrackColor;
         break;
-    case 6:
-        // Aqua
-        color = mixxx::RgbColor::optional(QColor(22, 192, 248));
+    case TRACK_COLOR_AQUA:
+        color = kAquaTrackColor;
         break;
-    case 7:
-        // Blue
-        color = mixxx::RgbColor::optional(QColor(1, 80, 248));
+    case TRACK_COLOR_BLUE:
+        color = kBlueTrackColor;
         break;
-    case 8:
-        // Purple
-        color = mixxx::RgbColor::optional(QColor(152, 8, 248));
+    case TRACK_COLOR_PURPLE:
+        color = kPurpleTrackColor;
         break;
     default:
         break;
@@ -1024,7 +1036,7 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
     // and prevent the AnalyzerKey from re-analyzing.
     track->setKeys(KeyFactory::makeBasicKeysFromText(index.sibling(index.row(), fieldIndex("key")).data().toString(), mixxx::track::io::key::USER));
 
-    track->setColor(mixxx::RgbColor::optional(index.sibling(index.row(), fieldIndex("color")).data().toInt()));
+    track->setColor(mixxx::RgbColor::optional(index.sibling(index.row(), fieldIndex("color")).data()));
 
     return track;
 }
