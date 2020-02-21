@@ -20,36 +20,29 @@ BaseExternalLibraryFeature::BaseExternalLibraryFeature(
         UserSettingsPointer pConfig)
         : LibraryFeature(pLibrary, pConfig),
           m_pTrackCollection(pLibrary->trackCollections()->internalCollection()) {
-    m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
+    m_pAddToAutoDJAction = make_parented<QAction>(tr("Add to Auto DJ Queue (bottom)"), this);
     connect(m_pAddToAutoDJAction,
             &QAction::triggered,
             this,
             &BaseExternalLibraryFeature::slotAddToAutoDJ);
 
-    m_pAddToAutoDJTopAction = new QAction(tr("Add to Auto DJ Queue (top)"), this);
+    m_pAddToAutoDJTopAction = make_parented<QAction>(tr("Add to Auto DJ Queue (top)"), this);
     connect(m_pAddToAutoDJTopAction,
             &QAction::triggered,
             this,
             &BaseExternalLibraryFeature::slotAddToAutoDJTop);
 
-    m_pAddToAutoDJReplaceAction = new QAction(tr("Add to Auto DJ Queue (replace)"), this);
+    m_pAddToAutoDJReplaceAction = make_parented<QAction>(tr("Add to Auto DJ Queue (replace)"), this);
     connect(m_pAddToAutoDJReplaceAction,
             &QAction::triggered,
             this,
             &BaseExternalLibraryFeature::slotAddToAutoDJReplace);
 
-    m_pImportAsMixxxPlaylistAction = new QAction(tr("Import Playlist"), this);
+    m_pImportAsMixxxPlaylistAction = make_parented<QAction>(tr("Import Playlist"), this);
     connect(m_pImportAsMixxxPlaylistAction,
             &QAction::triggered,
             this,
             &BaseExternalLibraryFeature::slotImportAsMixxxPlaylist);
-}
-
-BaseExternalLibraryFeature::~BaseExternalLibraryFeature() {
-    delete m_pAddToAutoDJAction;
-    delete m_pAddToAutoDJTopAction;
-    delete m_pAddToAutoDJReplaceAction;
-    delete m_pImportAsMixxxPlaylistAction;
 }
 
 void BaseExternalLibraryFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
