@@ -7,6 +7,13 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "widget/wlibrarysidebar.h"
+#include "util/logger.h"
+
+namespace {
+
+const mixxx::Logger kLogger("BaseExternalLibraryFeature");
+
+}
 
 BaseExternalLibraryFeature::BaseExternalLibraryFeature(
         Library* pLibrary,
@@ -147,21 +154,26 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
     // Copy Tracks
     int rows = pPlaylistModelToAdd->rowCount();
     for (int i = 0; i < rows; ++i) {
-        QModelIndex index = pPlaylistModelToAdd->index(i,0);
-        if (index.isValid()) {
-            qDebug() << pPlaylistModelToAdd->getTrackLocation(index);
-            TrackPointer track = pPlaylistModelToAdd->getTrack(index);
-            if (!track) {
-                continue;
-            }
-
-            TrackId trackId(track->getId());
-            if (!trackId.isValid()) {
-                continue;
-            }
-
-            trackIds->append(trackId);
+        QModelIndex index = pPlaylistModelToAdd->index(i, 0);
+        VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
+            continue;
         }
+        const TrackId trackId = pPlaylistModelToAdd->getTrackId(index);
+        if (!trackId.isValid()) {
+            kLogger.warning()
+                    << "Failed to add track"
+                    << pPlaylistModelToAdd->getTrackLocation(index)
+                    << "to playlist"
+                    << *pPlaylist;
+            continue;
+        }
+        if (kLogger.traceEnabled()) {
+            kLogger.trace()
+                    << "Adding track"
+                    << pPlaylistModelToAdd->getTrackLocation(index)
+                    << "to playlist"
+                    << *pPlaylist;
+        }
+        trackIds->append(trackId);
     }
 }
-
