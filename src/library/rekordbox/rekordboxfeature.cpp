@@ -1353,9 +1353,16 @@ void RekordboxFeature::onRekordboxDevicesFound() {
     if (foundDevices.size() == 0) {
         // No Rekordbox devices found
         ScopedTransaction transaction(database);
+
         dropTable(database, kRekordboxPlaylistTracksTable);
         dropTable(database, kRekordboxPlaylistsTable);
         dropTable(database, kRekordboxLibraryTable);
+
+        // Create new temporary Rekordbox database tables
+        createLibraryTable(database, kRekordboxLibraryTable);
+        createPlaylistsTable(database, kRekordboxPlaylistsTable);
+        createPlaylistTracksTable(database, kRekordboxPlaylistTracksTable);
+
         transaction.commit();
 
         if (root->childRows() > 0) {
