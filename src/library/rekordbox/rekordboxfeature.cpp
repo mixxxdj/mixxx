@@ -54,14 +54,14 @@ enum TrackColor {
     TRACK_COLOR_PURPLE
 };
 
-constexpr mixxx::RgbColor::optional_t kPinkTrackColor = mixxx::RgbColor::optional(0xF870F8);
-constexpr mixxx::RgbColor::optional_t kRedTrackColor = mixxx::RgbColor::optional(0xF870900);
-constexpr mixxx::RgbColor::optional_t kOrangeTrackColor = mixxx::RgbColor::optional(0xF8A030);
-constexpr mixxx::RgbColor::optional_t kYellowTrackColor = mixxx::RgbColor::optional(0xF8E331);
-constexpr mixxx::RgbColor::optional_t kGreenTrackColor = mixxx::RgbColor::optional(0x1EE000);
-constexpr mixxx::RgbColor::optional_t kAquaTrackColor = mixxx::RgbColor::optional(0x16C0F8);
-constexpr mixxx::RgbColor::optional_t kBlueTrackColor = mixxx::RgbColor::optional(0x0150F8);
-constexpr mixxx::RgbColor::optional_t kPurpleTrackColor = mixxx::RgbColor::optional(0x9808F8);
+constexpr mixxx::RgbColor kPinkTrackColor(0xF870F8);
+constexpr mixxx::RgbColor kRedTrackColor(0xF870900);
+constexpr mixxx::RgbColor kOrangeTrackColor(0xF8A030);
+constexpr mixxx::RgbColor kYellowTrackColor(0xF8E331);
+constexpr mixxx::RgbColor kGreenTrackColor(0x1EE000);
+constexpr mixxx::RgbColor kAquaTrackColor(0x16C0F8);
+constexpr mixxx::RgbColor kBlueTrackColor(0x0150F8);
+constexpr mixxx::RgbColor kPurpleTrackColor(0x9808F8);
 
 void clearTable(QSqlDatabase& database, QString tableName) {
     QSqlQuery query(database);
