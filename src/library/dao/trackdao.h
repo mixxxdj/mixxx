@@ -89,11 +89,6 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     void databaseTracksChanged(QSet<TrackId> changedTracks);
     void databaseTracksRelocated(QList<RelocatedTrack> relocatedTracks);
 
-  private slots:
-    void slotTrackDirty(Track* pTrack);
-    void slotTrackChanged(Track* pTrack);
-    void slotTrackClean(Track* pTrack);
-
   private:
     friend class LibraryScanner;
     friend class TrackCollection;

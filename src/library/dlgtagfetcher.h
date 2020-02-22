@@ -19,7 +19,6 @@ class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
 
   public slots:
     void loadTrack(const TrackPointer& track);
-    void updateTrackMetadata(Track* pTIO);
 
   signals:
     void next();
@@ -30,6 +29,7 @@ class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
     void resultSelected();
     void fetchTagProgress(QString);
     void slotNetworkResult(int httpStatus, QString app, QString message, int code);
+    void slotTrackChanged(TrackId trackId);
     void apply();
     void quit();
 

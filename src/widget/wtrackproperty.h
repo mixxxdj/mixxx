@@ -27,12 +27,14 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
   private slots:
-    void updateLabel(Track*);
+    void slotTrackChanged(TrackId);
 
   private:
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
+
+    void updateLabel();
 
     const char* m_pGroup;
     UserSettingsPointer m_pConfig;

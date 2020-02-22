@@ -318,9 +318,10 @@ class Track : public QObject {
     void keysUpdated();
     void ReplayGainUpdated(mixxx::ReplayGain replayGain);
     void cuesUpdated();
-    void changed(Track* pTrack);
-    void dirty(Track* pTrack);
-    void clean(Track* pTrack);
+
+    void changed(TrackId trackId);
+    void dirty(TrackId trackId);
+    void clean(TrackId trackId);
 
   private slots:
     void slotCueUpdated();
