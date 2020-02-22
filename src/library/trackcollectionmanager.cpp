@@ -68,16 +68,20 @@ TrackCollectionManager::TrackCollectionManager(
         // Exclude the library scanner from tests
         kLogger.info() << "Libary scanner is disabled in test mode";
     } else {
-        m_pScanner = make_parented<LibraryScanner>(pDbConnectionPool, m_pInternalCollection, pConfig);
+        m_pScanner = make_parented<LibraryScanner>(pDbConnectionPool, pConfig, this);
+
         // Forward signals
         connect(m_pScanner.get(),
                 &LibraryScanner::scanStarted,
                 this,
-                &TrackCollectionManager::libraryScanStarted);
+                &TrackCollectionManager::libraryScanStarted,
+                /*signal-to-signal*/ Qt::DirectConnection);
         connect(m_pScanner.get(),
                 &LibraryScanner::scanFinished,
                 this,
-                &TrackCollectionManager::libraryScanFinished);
+                &TrackCollectionManager::libraryScanFinished,
+                /*signal-to-signal*/ Qt::DirectConnection);
+
         // Handle signals
         connect(m_pScanner.get(),
                 &LibraryScanner::trackAdded,
@@ -91,10 +95,38 @@ TrackCollectionManager::TrackCollectionManager(
                 &LibraryScanner::tracksRelocated,
                 this,
                 &TrackCollectionManager::slotScanTracksRelocated);
+
+        // Force the GUI thread's Track cache to be cleared when a library
+        // scan is finished, because we might have modified the database directly
+        // when we detected moved files, and the TIOs corresponding to the moved
+        // files would then have the wrong track location.
+        TrackDAO* pTrackDAO = &(m_pInternalCollection->getTrackDAO());
+        connect(m_pScanner.get(),
+                &LibraryScanner::trackAdded,
+                pTrackDAO,
+                &TrackDAO::databaseTrackAdded);
+        connect(m_pScanner.get(),
+                &LibraryScanner::tracksChanged,
+                pTrackDAO,
+                &TrackDAO::databaseTracksChanged);
+        connect(m_pScanner.get(),
+                &LibraryScanner::tracksRelocated,
+                pTrackDAO,
+                &TrackDAO::databaseTracksRelocated);
+
+        kLogger.info() << "Starting library scanner thread";
+        m_pScanner->start();
     }
 }
 
 TrackCollectionManager::~TrackCollectionManager() {
+    if (m_pScanner && m_pScanner->isRunning()) {
+        kLogger.info() << "Stopping library scanner thread";
+        m_pScanner->quit();
+        m_pScanner->wait();
+        kLogger.info() << "Stopped library scanner thread";
+    }
+
     const auto pWeakTrackSource = m_pInternalCollection->disconnectTrackSource();
     VERIFY_OR_DEBUG_ASSERT(pWeakTrackSource.isNull()) {
         kLogger.warning() << "BaseTrackCache is still in use";
