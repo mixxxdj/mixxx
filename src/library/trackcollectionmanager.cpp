@@ -14,9 +14,20 @@ namespace {
 
 const mixxx::Logger kLogger("TrackCollectionManager");
 
-const QString kConfigGroup("[TrackCollection]");
+const QString kConfigGroup = QStringLiteral("[TrackCollection]");
 
 const ConfigKey kConfigKeyRepairDatabaseOnNextRestart(kConfigGroup, "RepairDatabaseOnNextRestart");
+
+inline
+parented_ptr<TrackCollection> createInternalTrackCollection(
+        TrackCollectionManager* parent,
+        const UserSettingsPointer& pConfig,
+        deleteTrackFn_t deleteTrackFn) {
+    // Ensure that GlobalTrackCache is ready before creating
+    // the internal TrackCollection.
+    GlobalTrackCache::createInstance(parent, deleteTrackFn);
+    return make_parented<TrackCollection>(parent, pConfig);
+}
 
 } // anonymous namespace
 
@@ -27,29 +38,29 @@ TrackCollectionManager::TrackCollectionManager(
         deleteTrackFn_t /*only-needed-for-testing*/ deleteTrackForTestingFn)
     : QObject(parent),
       m_pConfig(pConfig),
-      m_pInternalCollection(make_parented<TrackCollection>(this, pConfig)) {
+      m_pInternalCollection(createInternalTrackCollection(this, pConfig, deleteTrackForTestingFn)) {
     const QSqlDatabase dbConnection = mixxx::DbConnectionPooled(pDbConnectionPool);
 
     // TODO(XXX): Add a checkbox in the library preferences for checking
     // and repairing the database on the next restart of the application.
     if (pConfig->getValue(kConfigKeyRepairDatabaseOnNextRestart, false)) {
-        kLogger.info() << "Checking and repairing database (if necessary)";
         m_pInternalCollection->repairDatabase(dbConnection);
         // Reset config value
         pConfig->setValue(kConfigKeyRepairDatabaseOnNextRestart, false);
     }
 
-    kLogger.info() << "Connecting database";
     m_pInternalCollection->connectDatabase(dbConnection);
 
     if (deleteTrackForTestingFn) {
         kLogger.info() << "External collections are disabled in test mode";
     } else {
         // TODO: Add external collections
-        for (const auto& externalCollection : m_externalCollections) {
-            kLogger.info() << "Connecting" << externalCollection->name();
-            externalCollection->establishConnection();
-        }
+    }
+    for (const auto& externalCollection : m_externalCollections) {
+        kLogger.info()
+                << "Connecting to"
+                << externalCollection->name();
+        externalCollection->establishConnection();
     }
 
     // TODO: Extract and decouple LibraryScanner from TrackCollectionManager
@@ -81,8 +92,6 @@ TrackCollectionManager::TrackCollectionManager(
                 this,
                 &TrackCollectionManager::slotScanTracksRelocated);
     }
-
-    GlobalTrackCache::createInstance(this, deleteTrackForTestingFn);
 }
 
 TrackCollectionManager::~TrackCollectionManager() {
@@ -94,18 +103,18 @@ TrackCollectionManager::~TrackCollectionManager() {
     // Evict all remaining tracks from the cache to trigger
     // updating of modified tracks. We assume that no other
     // components are accessing those files at this point.
-    kLogger.info() << "Deactivating GlobalTrackCache";
     GlobalTrackCacheLocker().deactivateCache();
 
-    if (!m_externalCollections.isEmpty()) {
-        kLogger.info() << "Disconnecting from external track collections";
-        for (const auto& externalCollection : m_externalCollections) {
-            kLogger.info() << "Disconnecting from" << externalCollection->name();
-            externalCollection->finishPendingTasksAndDisconnect();
-        }
+    for (const auto& externalCollection : m_externalCollections) {
+        kLogger.info()
+                << "Disconnecting from"
+                << externalCollection->name();
+        // TODO: Disconnecting from external track collections
+        // should be done asynchrously. The manager should poll
+        // the track collections until all have been disconnected.
+        externalCollection->finishPendingTasksAndDisconnect(); // synchronous
     }
 
-    kLogger.info() << "Disconnecting internal track collection from database";
     m_pInternalCollection->disconnectDatabase();
 
     GlobalTrackCache::destroyInstance();
