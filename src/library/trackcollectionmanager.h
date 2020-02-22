@@ -4,6 +4,8 @@
 #include <QList>
 #include <QSet>
 
+#include <memory>
+
 #include "library/relocatedtrack.h"
 #include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
@@ -99,5 +101,5 @@ class TrackCollectionManager: public QObject,
     QList<ExternalTrackCollection*> m_externalCollections;
 
     // TODO: Extract and decouple LibraryScanner from TrackCollectionManager
-    parented_ptr<LibraryScanner> m_pScanner;
+    std::unique_ptr<LibraryScanner> m_pScanner;
 };

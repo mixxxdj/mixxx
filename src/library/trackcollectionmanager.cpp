@@ -67,7 +67,7 @@ TrackCollectionManager::TrackCollectionManager(
         // Exclude the library scanner from tests
         kLogger.info() << "Libary scanner is disabled in test mode";
     } else {
-        m_pScanner = make_parented<LibraryScanner>(pDbConnectionPool, pConfig, this);
+        m_pScanner = std::make_unique<LibraryScanner>(pDbConnectionPool, pConfig);
 
         // Forward signals
         connect(m_pScanner.get(),
@@ -119,11 +119,16 @@ TrackCollectionManager::TrackCollectionManager(
 }
 
 TrackCollectionManager::~TrackCollectionManager() {
-    if (m_pScanner && m_pScanner->isRunning()) {
-        kLogger.info() << "Stopping library scanner thread";
-        m_pScanner->quit();
-        m_pScanner->wait();
-        kLogger.info() << "Stopped library scanner thread";
+    if (m_pScanner) {
+        while (m_pScanner->isRunning()) {
+            kLogger.info() << "Stopping library scanner thread";
+            m_pScanner->quit();
+            if (m_pScanner->wait()) {
+                kLogger.info() << "Stopped library scanner thread";
+            }
+        }
+        DEBUG_ASSERT(m_pScanner->isFinished());
+        m_pScanner.reset();
     }
 
     const auto pWeakTrackSource = m_pInternalCollection->disconnectTrackSource();

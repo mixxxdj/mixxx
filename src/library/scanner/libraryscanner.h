@@ -29,8 +29,7 @@ class LibraryScanner : public QThread {
   public:
     LibraryScanner(
             mixxx::DbConnectionPoolPtr pDbConnectionPool,
-            const UserSettingsPointer& pConfig,
-            QObject* parent = nullptr);
+            const UserSettingsPointer& pConfig);
     ~LibraryScanner() override;
 
   public slots:

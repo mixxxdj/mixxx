@@ -40,10 +40,8 @@ int execCleanupQuery(FwdSqlQuery& query) {
 
 LibraryScanner::LibraryScanner(
         mixxx::DbConnectionPoolPtr pDbConnectionPool,
-        const UserSettingsPointer& pConfig,
-        QObject* parent)
-        : QThread(parent),
-          m_pDbConnectionPool(std::move(pDbConnectionPool)),
+        const UserSettingsPointer& pConfig)
+        : m_pDbConnectionPool(std::move(pDbConnectionPool)),
           m_analysisDao(pConfig),
           m_trackDao(m_cueDao, m_playlistDao,
                   m_analysisDao, m_libraryHashDao,
