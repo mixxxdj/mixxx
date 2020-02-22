@@ -45,7 +45,7 @@ mixxx::DbConnection::Params dbConnectionParams(
     if (!absFilePath.startsWith(QChar('/'))) {
         params.filePath += QChar('/');
     }
-    params.filePath = kUriPrefix + absFilePath;
+    params.filePath += absFilePath;
     // Allow multiple connections to the same in-memory database by
     // using a named connection. This is needed to make the database
     // connection pool work correctly even during tests.
