@@ -54,6 +54,22 @@ class BeatMapIterator : public BeatIterator {
         return beat;
     }
 
+    virtual bool isBar() const {
+       return m_currentBeat->type() == mixxx::track::io::BAR;
+    }
+
+    virtual bool isPhrase() const {
+       return m_currentBeat->type() == mixxx::track::io::PHRASE;
+    }
+
+    virtual void makeBeat() {
+        const_cast<mixxx::track::io::Beat &>(*m_currentBeat).set_type(mixxx::track::io::BEAT);
+    }
+
+    virtual void makeBar() {
+        const_cast<mixxx::track::io::Beat &>(*m_currentBeat).set_type(mixxx::track::io::BAR);
+    }
+
   private:
     BeatList::const_iterator m_currentBeat;
     BeatList::const_iterator m_endBeat;
@@ -811,33 +827,25 @@ void BeatMap::setBar(double dSample) {
     if (!isValid())
         return;
 
-    // Moves to the beat before the sample
-    BeatList::iterator beat = m_beats.begin();
-    for(; beat != m_beats.end() && beat->frame_position() < dSample ; ++beat)
-        ;
+    double closest_sample = findClosestBeat(dSample);
 
-
-    // If at the end, change nothing
-    if ( beat == m_beats.end()) {
-        return;
-    }
-
-    // Set the proper type for the remaining beats on the track
+    // Set the proper type for the remaining beats on the track or to the next phrasebeat
     int beat_counter = 0;
-    while(beat < m_beats.end()) {
-        switch(beat->type()) {
-        case mixxx::track::io::Type::BEAT:
-        case mixxx::track::io::Type::BAR:
-            beat->set_type(
-                beat_counter%getSignature(beat->frame_position()).getBeats() == 0
-                    ? mixxx::track::io::Type::BAR
-                    : mixxx::track::io::Type::BEAT);
+    std::unique_ptr<BeatIterator> beat = findBeats(closest_sample, (m_beats.last().frame_position()-1)*kFrameSize);
+    while(beat->hasNext()) {
+        beat->next();
+        if(beat->isPhrase())
             break;
-        case mixxx::track::io::Type::PHRASE:
-            // TODO(JVC) - What do we do with phrases??
-            break;
+        if(beat_counter%4 == 0) {
+            beat->makeBar();
         }
+        else {
+            beat->makeBeat();
+        }
+
         beat_counter++;
-        beat++;
     }
+    onBeatlistChanged();
+    locker.unlock();
+    emit(updated());
 }

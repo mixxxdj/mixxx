@@ -30,6 +30,24 @@ class BeatGridIterator : public BeatIterator {
         return beat;
     }
 
+    virtual bool isBar() const {
+        // TODO(JVC) - Stub
+        return false;
+    }
+
+    virtual bool isPhrase() const {
+        // TODO(JVC) - Stub
+        return false;
+    }
+
+    virtual void makeBeat() {
+        // TODO(JVC) - Stub
+    }
+
+    virtual void makeBar() {
+        // TODO(JVC) - Stub
+    }
+
   private:
     double m_dBeatLength;
     double m_dCurrentSample;

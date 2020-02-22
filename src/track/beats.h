@@ -21,6 +21,10 @@ class BeatIterator {
     virtual ~BeatIterator() {}
     virtual bool hasNext() const = 0;
     virtual double next() = 0;
+    virtual bool isBar() const = 0;
+    virtual bool isPhrase() const = 0;
+    virtual void makeBeat() = 0;
+    virtual void makeBar() = 0;
 };
 
 // Beats is a pure abstract base class for BPM and beat management classes. It
