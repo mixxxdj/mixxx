@@ -31,6 +31,7 @@ QSqlDatabase createDatabase(
 
     QSqlDatabase database =
             QSqlDatabase::addDatabase(params.type, connectionName);
+    database.setConnectOptions(params.connectOptions);
     database.setHostName(params.hostName);
     database.setDatabaseName(params.filePath);
     database.setUserName(params.userName);
