@@ -1311,24 +1311,25 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
         SoundSourceProxy(pTrack).updateTrackFromSource();
     }
 
-    // Listen to dirty and changed signals from Track objects.
-    // These signal/signal connections are required to forward signals
-    // from Track objects to BaseTrackCache and AutoDJ.
-    // Since only the TrackId is sent it doesn't matter if the signal
-    // gets sent from another thread and the Track object itself has
-    // already deleted in memory when receiving this signal.
+    // Listen to signals from Track objects and forward them to
+    // receivers. TrackDAO works as a relay for selected track signals
+    // that allows receivers to use permament connections with
+    // TrackDAO instead of connecting to individual Track objects.
     connect(pTrack.get(),
             &Track::dirty,
             this,
-            &TrackDAO::trackDirty);
+            &TrackDAO::trackDirty,
+            /*signal-to-signal*/ Qt::DirectConnection);
     connect(pTrack.get(),
             &Track::clean,
             this,
-            &TrackDAO::trackClean);
+            &TrackDAO::trackClean,
+            /*signal-to-signal*/ Qt::DirectConnection);
     connect(pTrack.get(),
             &Track::changed,
             this,
-            &TrackDAO::trackChanged);
+            &TrackDAO::trackChanged,
+            /*signal-to-signal*/ Qt::DirectConnection);
 
     // BaseTrackCache cares about track trackDirty/trackClean notifications
     // from TrackDAO that are triggered by the track itself. But the preceding
