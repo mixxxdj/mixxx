@@ -34,8 +34,7 @@ SetlogFeature::SetlogFeature(
             /*show-all-tracks*/ true));
 
     //construct child model
-    auto pRootItem = std::make_unique<TreeItem>(this);
-    m_childModel.setRootItem(std::move(pRootItem));
+    m_childModel.setRootItem(TreeItem::newRoot(this));
     constructChildModel(-1);
 
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
@@ -225,7 +224,7 @@ void SetlogFeature::slotGetNewPlaylist() {
     }
 
     slotPlaylistTableChanged(m_playlistId); // For moving selection
-    emit(showTrackModel(m_pPlaylistTableModel));
+    emit showTrackModel(m_pPlaylistTableModel);
 }
 
 void SetlogFeature::slotJoinWithPrevious() {
@@ -273,7 +272,7 @@ void SetlogFeature::slotJoinWithPrevious() {
                 if (m_playlistDao.copyPlaylistTracks(currentPlaylistId, previousPlaylistId)) {
                     m_playlistDao.deletePlaylist(currentPlaylistId);
                     slotPlaylistTableChanged(previousPlaylistId); // For moving selection
-                    emit(showTrackModel(m_pPlaylistTableModel));
+                    emit showTrackModel(m_pPlaylistTableModel);
                 }
             }
         }

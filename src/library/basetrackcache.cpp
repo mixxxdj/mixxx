@@ -169,7 +169,7 @@ void BaseTrackCache::slotTrackChanged(TrackId trackId) {
     }
     QSet<TrackId> trackIds;
     trackIds.insert(trackId);
-    emit(tracksChanged(trackIds));
+    emit tracksChanged(trackIds);
 }
 
 void BaseTrackCache::slotTrackClean(TrackId trackId) {
@@ -407,7 +407,7 @@ void BaseTrackCache::updateTracksInIndex(const QSet<TrackId>& trackIds) {
         qDebug() << "updateTracksInIndex failed!";
         return;
     }
-    emit(tracksChanged(trackIds));
+    emit tracksChanged(trackIds);
 }
 
 void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
@@ -469,6 +469,8 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         trackValue.setValue(static_cast<int>(pTrack->getKey()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
         trackValue.setValue(pTrack->isBpmLocked());
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR) == column) {
+        trackValue.setValue(toQVariant(pTrack->getColor()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) == column) {
         trackValue.setValue(pTrack->getCoverInfo().coverLocation);
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column ||

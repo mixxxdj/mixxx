@@ -1,4 +1,5 @@
-language: c++
+language: cpp
+os: linux
 
 
 # Build flags common to OS X and Linux.
@@ -16,21 +17,39 @@ env:
 
 jobs:
   include:
-    - name: qsscheck
+    - name: pre-commit
+      if: type != pull_request
       os: linux
       dist: xenial
+      language: python
+      python: 3.7
+      # There are too many files in the repo that have formatting issues. We'll
+      # disable these checks for now when pushing directly (but still run these
+      # on Pull Requests!).
+      env: SKIP=end-of-file-fixer,trailing-whitespace,clang-format,eslint
+      cache:
+        directories:
+          - $HOME/.cache/pre-commit
       before_install:
-        - pip3 install tinycss
+        - pip install pre-commit==2.0.1
       script:
-        - ./scripts/qsscheck.py .
-      addons:
-        apt:
-          packages:
-            - python3
-            - python3-pip
-            - python3-pyqt5
-            - python3-setuptools
-            - python3-wheel
+        - pre-commit run --all-files
+      addons: []
+
+    - name: pre-commit-pr
+      if: type == pull_request
+      os: linux
+      dist: xenial
+      language: python
+      python: 3.7
+      cache:
+        directories:
+          - $HOME/.cache/pre-commit
+      before_install:
+        - pip install pre-commit==2.0.1
+      script:
+        - pre-commit run --origin HEAD --source origin/HEAD --show-diff-on-failure
+      addons: []
 
     - name: Ubuntu/gcc/SCons build
       os: linux
@@ -55,8 +74,10 @@ jobs:
       # Ubuntu Xenial build prerequisites
       env: CMAKEFLAGS_EXTRA="-DLOCALECOMPARE=ON"
       before_install:
-        - sudo apt-get install -y cmake
         - export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
+        - export CTEST_PARALLEL_LEVEL="$(nproc)"
+        - export PATH="$HOME/.local/bin:$PATH"
+        - pip install --user cmake
         - cmake --version
         - ccache -s
       install:
@@ -64,14 +85,15 @@ jobs:
         - cd cmake_build
         - cmake -L $CMAKEFLAGS $CMAKEFLAGS_EXTRA ..
         - cmake --build .
-        - sudo cmake --build . --target install
+        - sudo env "PATH=$PATH" cmake --build . --target install
       script:
         # Run tests and benchmarks
-        - cmake --build . --target test
+        - ctest
         - cmake --build . --target benchmark
 
     - name: OSX/clang/SCons build
       os: osx
+      osx_image: xcode11
       compiler: clang
       cache:
         directories:
@@ -107,6 +129,7 @@ jobs:
 
     - name: OSX/clang/CMake build
       os: osx
+      osx_image: xcode11
       compiler: clang
       cache:
         ccache: true
@@ -120,6 +143,7 @@ jobs:
         CMAKEFLAGS_EXTRA="-DLOCALECOMPARE=OFF -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5/"
         DISPLAY=:99.0
         CMAKE_BUILD_PARALLEL_LEVEL=4
+        CTEST_PARALLEL_LEVEL=1
       before_install:
         - brew install ccache
         - export PATH="/usr/local/opt/ccache/bin:$PATH"
@@ -133,7 +157,7 @@ jobs:
         - sudo cmake --build . --target install
       script:
         # Run tests and benchmarks
-        - cmake --build . --target test
+        - ctest
         - cmake --build . --target benchmark
       before_cache:
         # Avoid indefinite cache growth

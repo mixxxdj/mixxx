@@ -91,7 +91,7 @@ void BansheeFeature::activate() {
 
         m_isActivated =  true;
 
-        auto pRootItem = std::make_unique<TreeItem>(this);
+        std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
         QList<BansheeDbConnection::Playlist> playlists = m_connection.getPlaylists();
         for (const BansheeDbConnection::Playlist& playlist: playlists) {
             qDebug() << playlist.name;
@@ -107,12 +107,12 @@ void BansheeFeature::activate() {
 
         //calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
         m_title = tr("Banshee");
-        emit(featureLoadingFinished(this));
+        emit featureLoadingFinished(this);
     }
 
     m_pBansheePlaylistModel->setTableModel(0); // Gets the master playlist
-    emit(showTrackModel(m_pBansheePlaylistModel));
-    emit(enableCoverArtDisplay(false));
+    emit showTrackModel(m_pBansheePlaylistModel);
+    emit enableCoverArtDisplay(false);
 }
 
 void BansheeFeature::activateChild(const QModelIndex& index) {
@@ -121,8 +121,8 @@ void BansheeFeature::activateChild(const QModelIndex& index) {
     if (playlistID > 0) {
         qDebug() << "Activating " << item->getLabel();
         m_pBansheePlaylistModel->setTableModel(playlistID);
-        emit(showTrackModel(m_pBansheePlaylistModel));
-        emit(enableCoverArtDisplay(false));
+        emit showTrackModel(m_pBansheePlaylistModel);
+        emit enableCoverArtDisplay(false);
     }
 }
 

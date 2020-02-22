@@ -485,7 +485,7 @@ void BeatMap::addBeat(double dBeatSample) {
     m_beats.insert(it, beat);
     onBeatlistChanged();
     locker.unlock();
-    emit(updated());
+    emit updated();
 }
 
 void BeatMap::removeBeat(double dBeatSample) {
@@ -503,7 +503,7 @@ void BeatMap::removeBeat(double dBeatSample) {
     }
     onBeatlistChanged();
     locker.unlock();
-    emit(updated());
+    emit updated();
 }
 
 void BeatMap::moveBeat(double dBeatSample, double dNewBeatSample) {
@@ -533,7 +533,7 @@ void BeatMap::moveBeat(double dBeatSample, double dNewBeatSample) {
     }
     onBeatlistChanged();
     locker.unlock();
-    emit(updated());
+    emit updated();
 }
 
 void BeatMap::translate(double dNumSamples) {
@@ -556,7 +556,7 @@ void BeatMap::translate(double dNumSamples) {
     }
     onBeatlistChanged();
     locker.unlock();
-    emit(updated());
+    emit updated();
 }
 
 void BeatMap::scale(enum BPMScale scale) {
@@ -605,7 +605,7 @@ void BeatMap::scale(enum BPMScale scale) {
     }
     onBeatlistChanged();
     locker.unlock();
-    emit(updated());
+    emit updated();
 }
 
 void BeatMap::scaleDouble() {

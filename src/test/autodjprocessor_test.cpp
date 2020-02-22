@@ -39,7 +39,7 @@ class FakeDeck : public BaseTrackPlayer {
   public:
     FakeDeck(const QString& group)
             : BaseTrackPlayer(NULL, group),
-              duration(ConfigKey(group, "duration")),
+              trackSamples(ConfigKey(group, "track_samples")),
               samplerate(ConfigKey(group, "track_samplerate")),
               rateratio(ConfigKey(group, "rate_ratio"), true, false, false, 1.0),
               playposition(ConfigKey(group, "playposition"), 0.0, 1.0, 0, 0, true),
@@ -55,9 +55,9 @@ class FakeDeck : public BaseTrackPlayer {
 
     void fakeTrackLoadedEvent(TrackPointer pTrack) {
         loadedTrack = pTrack;
-        duration.set(pTrack->getDuration());
+        trackSamples.set(pTrack->getDuration() * pTrack->getSampleRate() * 2);
         samplerate.set(pTrack->getSampleRate());
-        emit(newTrackLoaded(pTrack));
+        emit newTrackLoaded(pTrack);
     }
 
     void fakeTrackLoadFailedEvent(TrackPointer pTrack) {
@@ -69,12 +69,12 @@ class FakeDeck : public BaseTrackPlayer {
 
     void fakeUnloadingTrackEvent(TrackPointer pTrack) {
         play.set(0.0);
-        emit(loadingTrack(TrackPointer(), pTrack));
+        emit loadingTrack(TrackPointer(), pTrack);
         loadedTrack.reset();
-        emit(playerEmpty());
+        emit playerEmpty();
     }
 
-    TrackPointer getLoadedTrack() const {
+    TrackPointer getLoadedTrack() const override {
         return loadedTrack;
     }
 
@@ -85,7 +85,6 @@ class FakeDeck : public BaseTrackPlayer {
     // fakeTrackLoadFailedEvent.
     void slotLoadTrack(TrackPointer pTrack, bool bPlay) override {
         loadedTrack = pTrack;
-        duration.set(pTrack->getDuration());
         samplerate.set(pTrack->getSampleRate());
         play.set(bPlay);
     }
@@ -94,7 +93,7 @@ class FakeDeck : public BaseTrackPlayer {
     MOCK_METHOD0(slotCloneDeck, void());
 
     TrackPointer loadedTrack;
-    ControlObject duration;
+    ControlObject trackSamples;
     ControlObject samplerate;
     ControlObject rateratio;
     ControlLinPotmeter playposition;
@@ -1484,7 +1483,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Pause_Transition) {
     deck2.slotLoadTrack(pTrack, false);
     deck2.fakeTrackLoadedEvent(pTrack);
 
-    // The newly loaded track should have been seeked back by the duration of transition.
+    // The newly loaded track should have been seeked back by the trackSamples of transition.
     EXPECT_DOUBLE_EQ(-0.1, deck2.playposition.get());
 
     // No change to the mode, crossfader or play states.

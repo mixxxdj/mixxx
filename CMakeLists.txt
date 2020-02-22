@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9.0)
+cmake_minimum_required(VERSION 3.13.0)
 project(mixxx VERSION 2.3.0)
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
 set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everything you need to perform live mixes.")
@@ -13,7 +13,7 @@ if(POLICY CMP0071)
   cmake_policy(SET CMP0071 NEW)
 endif()
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 # Speed up builds on HDDs
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") # GNU is GNU GCC
@@ -117,7 +117,11 @@ else()
   message(STATUS "Support for ccache: ${CCACHE_SUPPORT}")
 endif()
 
+set_property(DIRECTORY APPEND
+    PROPERTY CMAKE_CONFIGURE_DEPENDS
+    "${CMAKE_SOURCE_DIR}/.git/index")
 
+# uses GIT_BRANCH and GIT_COMMIT_COUNT
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/src/build.h.template"
   "${CMAKE_CURRENT_BINARY_DIR}/src/build.h"
@@ -328,6 +332,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/browse/browsetablemodel.cpp
   src/library/browse/browsethread.cpp
   src/library/browse/foldertreemodel.cpp
+  src/library/colordelegate.cpp
   src/library/columncache.cpp
   src/library/coverart.cpp
   src/library/coverartcache.cpp
@@ -394,6 +399,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/scanner/scannertask.cpp
   src/library/searchquery.cpp
   src/library/searchqueryparser.cpp
+  src/library/serato/seratofeature.cpp
+  src/library/serato/seratoplaylistmodel.cpp
   src/library/setlogfeature.cpp
   src/library/sidebarmodel.cpp
   src/library/songdownloader.cpp
@@ -510,7 +517,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/keyutils.cpp
   src/track/playcounter.cpp
   src/track/replaygain.cpp
-  src/track/seratomarkers2.cpp
+  src/track/serato/markers.cpp
+  src/track/serato/markers2.cpp
   src/track/track.cpp
   src/track/trackfile.cpp
   src/track/trackinfo.cpp
@@ -522,6 +530,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/audiosignal.cpp
   src/util/autohidpi.cpp
   src/util/battery/battery.cpp
+  src/util/cache.cpp
   src/util/cmdlineargs.cpp
   src/util/color/color.cpp
   src/util/color/predefinedcolor.cpp
@@ -627,6 +636,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wbattery.cpp
   src/widget/wbeatspinbox.cpp
   src/widget/wcolorpicker.cpp
+  src/widget/wcolorpickeraction.cpp
   src/widget/wcombobox.cpp
   src/widget/wcoverart.cpp
   src/widget/wcoverartlabel.cpp
@@ -691,16 +701,19 @@ if(UNIX AND NOT APPLE)
 endif()
 
 # Disable warnings in generated source files
-set_property(
-  SOURCE src/library/rekordbox/rekordbox_anlz.cpp
-  APPEND_STRING
-  PROPERTY COMPILE_OPTIONS -Wno-unused-parameter
-)
-set_property(
-  SOURCE src/library/rekordbox/rekordbox_pdb.cpp
-  APPEND_STRING
-  PROPERTY COMPILE_OPTIONS -Wno-unused-parameter -Wno-switch
-)
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" # GNU is GNU GCC
+  OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+  set_property(
+    SOURCE src/library/rekordbox/rekordbox_anlz.cpp
+    APPEND_STRING
+    PROPERTY COMPILE_OPTIONS -Wno-unused-parameter
+  )
+  set_property(
+    SOURCE src/library/rekordbox/rekordbox_pdb.cpp
+    APPEND_STRING
+    PROPERTY COMPILE_OPTIONS -Wno-unused-parameter -Wno-switch
+  )
+endif()
 
 option(WARNINGS_PEDANTIC "Let the compiler show even more warnings" OFF)
 if(MSVC)
@@ -765,7 +778,7 @@ if(WIN32)
   target_link_libraries(mixxx-lib PUBLIC shell32)
 
   if(MSVC)
-    if(NOT STATIC_DEPS OR DEBUG)
+    if(NOT STATIC_DEPS OR CMAKE_BUILD_TYPE STREQUAL "Debug")
       target_link_options(mixxx-lib PUBLIC /nodefaultlib:LIBCMT.lib /nodefaultlib:LIBCMTd.lib)
     endif()
     target_link_options(mixxx-lib PUBLIC /entry:mainCRTStartup)
@@ -880,6 +893,20 @@ include(CPack)
 #
 # Tests
 #
+
+# CMake + googletest: https://crascit.com/2015/07/25/cmake-gtest/
+
+# Prevent GoogleTest from overriding our compiler/linker options
+# when building with Visual Studio
+set(gtest_force_shared_crt ON CACHE BOOL "Pass Mixxx compiler/linker options to GoogleTest" FORCE)
+
+# Add googletest directly to our build. This adds the following targets:
+# gtest, gtest_main, gmock and gmock_main
+add_subdirectory(
+  "${CMAKE_CURRENT_SOURCE_DIR}/lib/googletest-1.8.x"
+  "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest-1.8.x"
+)
+
 add_executable(mixxx-test
   src/test/analyserwaveformtest.cpp
   src/test/analyzersilence_test.cpp
@@ -892,6 +919,7 @@ add_executable(mixxx-test
   src/test/bpmcontrol_test.cpp
   src/test/broadcastprofile_test.cpp
   src/test/broadcastsettings_test.cpp
+  src/test/cache_test.cpp
   src/test/channelhandle_test.cpp
   src/test/configobject_test.cpp
   src/test/controller_preset_validation_test.cpp
@@ -940,10 +968,12 @@ add_executable(mixxx-test
   src/test/readaheadmanager_test.cpp
   src/test/replaygaintest.cpp
   src/test/rescalertest.cpp
+  src/test/rgbcolor_test.cpp
   src/test/samplebuffertest.cpp
   src/test/sampleutiltest.cpp
   src/test/schemamanager_test.cpp
   src/test/searchqueryparsertest.cpp
+  src/test/seratomarkerstest.cpp
   src/test/seratomarkers2test.cpp
   src/test/signalpathtest.cpp
   src/test/skincontext_test.cpp
@@ -960,73 +990,12 @@ add_executable(mixxx-test
   src/test/tracknumberstest.cpp
   src/test/trackreftest.cpp
   src/test/trackupdate_test.cpp
+  src/test/wbatterytest.cpp
   src/test/wpushbutton_test.cpp
   src/test/wwidgetstack_test.cpp
 )
 set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
-target_link_libraries(mixxx-test PUBLIC mixxx-lib)
-
-set(GTEST_CMAKE_ARGS "")
-set(GMOCK_CMAKE_ARGS "")
-if(MSVC)
-  # Since Visual Studio 17 15.5 (Tools Update 2), the use of std::tr1 has
-  # been deprecated and throws a warning. If /W3 is used, this causes an
-  # error. This suppresses the warning/error until we pull in the fixes from
-  # upstream.
-  # See this for details: https://github.com/google/googletest/issues/1111
-  set(GTEST_CMAKE_ARGS "-DCMAKE_CXX_FLAGS=/D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING")
-  set(GMOCK_CMAKE_ARGS "-DCMAKE_CXX_FLAGS=/D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING")
-
-  # Use shared CRT when linking gtest to prevent error LNK2038: mismatch
-  # detected for 'RuntimeLibrary': value 'MT_StaticRelease' doesn't match value
-  # 'MD_DynamicRelease'
-  set(GTEST_CMAKE_ARGS ${GTEST_CMAKE_ARGS} "-Dgtest_force_shared_crt=ON")
-  set(GMOCK_CMAKE_ARGS ${GMOCK_CMAKE_ARGS} "-Dgtest_force_shared_crt=ON")
-
-  # Work around the Release/Debug subdirectories on Windows
-  foreach(OUTPUT_CONFIG ${CMAKE_CONFIGURATION_TYPES})
-    string(TOUPPER "${OUTPUT_CONFIG}" OUTPUT_CONFIG)
-    set(GTEST_CMAKE_ARGS ${GTEST_CMAKE_ARGS} "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUT_CONFIG}=${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0")
-    set(GMOCK_CMAKE_ARGS ${GMOCK_CMAKE_ARGS} "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUT_CONFIG}=${CMAKE_CURRENT_BINARY_DIR}/lib/gmock-1.7.0")
-  endforeach()
-elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"
-       OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-  set(GMOCK_CMAKE_ARGS ${GMOCK_CMAKE_ARGS} "-DCMAKE_CXX_FLAGS=-Wno-deprecated-copy")
-endif()
-
-# gtest
-ExternalProject_Add(mixxx-gtest
-  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/gtest-1.7.0"
-  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0"
-  INSTALL_COMMAND ""
-  CMAKE_ARGS "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" "${GTEST_CMAKE_ARGS}"
-  BUILD_BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}"
-)
-set_target_properties(mixxx-gtest PROPERTIES EXCLUDE_FROM_ALL TRUE)
-add_dependencies(mixxx-test mixxx-gtest)
-target_include_directories(mixxx-test SYSTEM PUBLIC
-  "${CMAKE_CURRENT_SOURCE_DIR}/lib/gtest-1.7.0/include"
-)
-target_link_libraries(mixxx-test PUBLIC
-  "${CMAKE_CURRENT_BINARY_DIR}/lib/gtest-1.7.0/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}"
-)
-
-# gmock
-ExternalProject_Add(mixxx-gmock
-  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/gmock-1.7.0"
-  BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/gmock-1.7.0"
-  INSTALL_COMMAND ""
-  CMAKE_ARGS "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" "${GMOCK_CMAKE_ARGS}"
-  BUILD_BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/lib/gmock-1.7.0/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX}"
-)
-set_target_properties(mixxx-gmock PROPERTIES EXCLUDE_FROM_ALL TRUE)
-add_dependencies(mixxx-test mixxx-gmock)
-target_include_directories(mixxx-test SYSTEM PUBLIC
-  "${CMAKE_CURRENT_SOURCE_DIR}/lib/gmock-1.7.0/include"
-)
-target_link_libraries(mixxx-test PUBLIC
-  "${CMAKE_CURRENT_BINARY_DIR}/lib/gmock-1.7.0/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX}"
-)
+target_link_libraries(mixxx-test PUBLIC mixxx-lib gtest gmock)
 
 # Benchmark
 add_library(gbenchmark STATIC EXCLUDE_FROM_ALL
@@ -1229,16 +1198,10 @@ endif()
 add_library(FpClassify STATIC EXCLUDE_FROM_ALL src/util/fpclassify.cpp)
 target_link_libraries(mixxx-lib PUBLIC FpClassify)
 
-# gtest
-target_include_directories(mixxx-lib SYSTEM PUBLIC lib/gtest-1.7.0/include)
-if(MSVC)
-  # Since Visual Studio 17 15.5 (Tools Update 2), the use of std::tr1 has
-  # been deprecated and throws a warning. If /W3 is used, this causes an
-  # error. This suppresses the warning/error until we pull in the fixes from
-  # upstream.
-  # See this for details: https://github.com/google/googletest/issues/1111
-  target_compile_definitions(mixxx-lib PUBLIC _SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING)
-endif()
+# googletest
+# Required to use the macro FRIEND_TEST from <gtest/gtest_prod.h>
+# in production code
+target_include_directories(mixxx-lib SYSTEM PUBLIC "${gtest_SOURCE_DIR}/include")
 
 # LAME
 find_package(LAME REQUIRED)
@@ -1259,6 +1222,9 @@ add_library(MP3GuessEnc STATIC EXCLUDE_FROM_ALL
   lib/mp3guessenc-0.27.4/decode.c
   lib/mp3guessenc-0.27.4/bit_utils.c
 )
+if(WIN32)
+  target_compile_definitions(MP3GuessEnc PRIVATE __WINDOWS__)
+endif()
 target_include_directories(MP3GuessEnc SYSTEM PUBLIC lib/mp3guessenc-0.27.4)
 target_link_libraries(mixxx-lib PUBLIC MP3GuessEnc)
 
@@ -1330,7 +1296,7 @@ target_link_libraries(mixxx-lib PUBLIC
   Qt5::Test
   Qt5::Widgets
   Qt5::Xml)
-target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT)
+target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT QT_USE_QSTRINGBUILDER)
 if(UNIX AND NOT APPLE)
   find_package(X11 REQUIRED)
   find_package(Qt5 COMPONENTS X11Extras DBus REQUIRED)

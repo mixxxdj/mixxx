@@ -325,7 +325,6 @@ void WSpinny::render(VSyncThread* vSyncThread) {
 
     QPainter p(this);
     p.setRenderHint(QPainter::Antialiasing);
-    p.setRenderHint(QPainter::HighQualityAntialiasing);
     p.setRenderHint(QPainter::SmoothPixmapTransform);
 
     if (m_pBgImage) {
@@ -372,13 +371,6 @@ void WSpinny::render(VSyncThread* vSyncThread) {
         m_dGhostAngleLastPlaypos = m_dGhostAngleCurrentPlaypos;
     }
 
-    if (m_pFgImage && !m_pFgImage->isNull()) {
-        // Now rotate the image and draw it on the screen.
-        p.rotate(m_fAngle);
-        p.drawImage(-(m_fgImageScaled.width() / 2),
-                    -(m_fgImageScaled.height() / 2), m_fgImageScaled);
-    }
-
     if (paintGhost) {
         p.restore();
         p.save();
@@ -389,6 +381,13 @@ void WSpinny::render(VSyncThread* vSyncThread) {
         //Rotate back to the playback position (not the ghost position),
         //and draw the beat marks from there.
         p.restore();
+    }
+
+    if (m_pFgImage && !m_pFgImage->isNull()) {
+        // Now rotate the image and draw it on the screen.
+        p.rotate(m_fAngle);
+        p.drawImage(-(m_fgImageScaled.width() / 2),
+                    -(m_fgImageScaled.height() / 2), m_fgImageScaled);
     }
 }
 

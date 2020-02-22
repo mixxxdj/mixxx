@@ -12,11 +12,11 @@ class TrackDAOTest : public LibraryTest {
 TEST_F(TrackDAOTest, detectMovedTracks) {
     TrackDAO& trackDAO = internalCollection()->getTrackDAO();
 
-    QString filename("file.mp3");
+    QString filename = QStringLiteral("file.mp3");
 
-    TrackFile oldFile(QDir::tempPath() + "/old/dir1", filename);
-    TrackFile newFile(QDir::tempPath() + "/new/dir1", filename);
-    TrackFile otherFile(QDir::tempPath() + "/new", filename);
+    TrackFile oldFile(QDir(QDir::tempPath() + QStringLiteral("/old/dir1")), filename);
+    TrackFile newFile(QDir(QDir::tempPath() + QStringLiteral("/new/dir1")), filename);
+    TrackFile otherFile(QDir(QDir::tempPath() + QStringLiteral("/new")), filename);
 
     TrackPointer pOldTrack = Track::newTemporary(oldFile);
     TrackPointer pNewTrack = Track::newTemporary(newFile);
@@ -37,20 +37,20 @@ TEST_F(TrackDAOTest, detectMovedTracks) {
     query.bindValue(":location", oldFile.location());
     query.exec();
 
-    QList<QPair<TrackRef, TrackRef>> replacedTracks;
+    QList<RelocatedTrack> relocatedTracks;
     QStringList addedTracks(newFile.location());
     bool cancel = false;
-    trackDAO.detectMovedTracks(&replacedTracks, addedTracks, &cancel);
+    trackDAO.detectMovedTracks(&relocatedTracks, addedTracks, &cancel);
 
+    QSet<TrackId> updatedTrackIds;
     QSet<TrackId> removedTrackIds;
-    QSet<TrackId> addedTrackIds;
-    for (const auto& replacedTrack : replacedTracks) {
-        removedTrackIds += replacedTrack.first.getId();
-        addedTrackIds += replacedTrack.second.getId();
+    for (const auto& relocatedTrack : relocatedTracks) {
+        updatedTrackIds.insert(relocatedTrack.updatedTrackRef().getId());
+        removedTrackIds.insert(relocatedTrack.deletedTrackId());
     }
 
-    EXPECT_THAT(removedTrackIds, UnorderedElementsAre(oldId));
-    EXPECT_THAT(addedTrackIds, UnorderedElementsAre(newId));
+    EXPECT_THAT(updatedTrackIds, UnorderedElementsAre(oldId));
+    EXPECT_THAT(removedTrackIds, UnorderedElementsAre(newId));
 
     QSet<QString> trackLocations = trackDAO.getTrackLocations();
     EXPECT_THAT(trackLocations, UnorderedElementsAre(newFile.location(), otherFile.location()));

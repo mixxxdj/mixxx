@@ -11,9 +11,18 @@
 * Add Opus streaming and recording support. [lp:1338413](https://bugs.launchpad.net/mixxx/+bug/1338413)
 * Add mapping for Roland DJ-505
 
+## [2.2.4](https://launchpad.net/mixxx/+milestone/2.2.4) (Unreleased)
+
+* Store default recording format after "Restore Defaults" lp:1857806 #2414
+* Prevent infinite loop when decoding corrupt MP3 files #2417
+* Add workaround for broken libshout versions #2040 #2438
+* Speed up purging of tracks lp:1845837 #2393
+* Prevent infinite loop when decoding corrupt MP3 files #2417
+* Add controller mapping for Native Instruments Traktor Kontrol S2 MK3 #2348
+* Add controller mapping for Soundless joyMIDI #2425
+
 ## [2.2.3](https://launchpad.net/mixxx/+milestone/2.2.3) (2019-11-24)
 
-==== 2.2.3 2019-11-24 ====
 * Don't make users reconfigure sound hardware when it has not changed #2253
 * Fix MusicBrainz metadata lookup lp:1848887 #2328
 * Fix high DPI scaling of cover art #2247

@@ -13,6 +13,7 @@
 
 #include <mp3guessenc.h>
 
+#include "engine/engine.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/missingtablemodel.h"
@@ -37,8 +38,9 @@
 #define IS_NOT_RECORDBOX_DEVICE "::isNotRecordboxDevice::"
 
 namespace {
-const QString kPDBPath = "PIONEER/rekordbox/export.pdb";
-const QString kPLaylistPathDelimiter = "-->";
+
+const QString kPdbPath = QStringLiteral("PIONEER/rekordbox/export.pdb");
+const QString kPLaylistPathDelimiter = QStringLiteral("-->");
 const double kLongestPosition = 999999999.0;
 
 void clearTable(QSqlDatabase& database, QString tableName) {
@@ -61,7 +63,7 @@ void clearTable(QSqlDatabase& database, QString tableName) {
 }
 
 // This function is executed in a separate thread other than the main thread
-QList<TreeItem*> findRekordboxDevices(RekordboxFeature* rekordboxFeature) {
+QList<TreeItem*> findRekordboxDevices() {
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
 
@@ -81,23 +83,19 @@ QList<TreeItem*> findRekordboxDevices(RekordboxFeature* rekordboxFeature) {
         // drive.filePath() doesn't make any access to the filesystem and consequently
         // shorten the delay
 
-        QFileInfo rbDBFileInfo(drive.filePath() + kPDBPath);
+        QFileInfo rbDBFileInfo(drive.filePath() + kPdbPath);
 
         if (rbDBFileInfo.exists() && rbDBFileInfo.isFile()) {
-            TreeItem* foundDevice = new TreeItem(rekordboxFeature);
-            QList<QString> data;
-
             QString displayPath = drive.filePath();
             if (displayPath.endsWith("/")) {
                 displayPath.chop(1);
             }
-
+            QList<QString> data;
             data << drive.filePath();
             data << IS_RECORDBOX_DEVICE;
-
-            foundDevice->setLabel(displayPath);
-            foundDevice->setData(QVariant(data));
-
+            TreeItem* foundDevice = new TreeItem(
+                    std::move(displayPath),
+                    QVariant(data));
             foundDevices << foundDevice;
         }
     }
@@ -107,51 +105,45 @@ QList<TreeItem*> findRekordboxDevices(RekordboxFeature* rekordboxFeature) {
     QFileInfoList devices;
 
     // Add folders under /media to devices.
-    devices += QDir("/media").entryInfoList(
+    devices += QDir(QStringLiteral("/media")).entryInfoList(
             QDir::AllDirs | QDir::NoDotAndDotDot);
 
     // Add folders under /media/$USER to devices.
-    QDir mediaUserDir("/media/" + qgetenv("USER"));
+    QDir mediaUserDir(QStringLiteral("/media/") + QString::fromLocal8Bit(qgetenv("USER")));
     devices += mediaUserDir.entryInfoList(
             QDir::AllDirs | QDir::NoDotAndDotDot);
 
     // Add folders under /run/media/$USER to devices.
-    QDir runMediaUserDir("/run/media/" + qgetenv("USER"));
+    QDir runMediaUserDir(QStringLiteral("/run/media/") + QString::fromLocal8Bit(qgetenv("USER")));
     devices += runMediaUserDir.entryInfoList(
             QDir::AllDirs | QDir::NoDotAndDotDot);
 
     foreach (QFileInfo device, devices) {
-        QFileInfo rbDBFileInfo(device.filePath() + "/" + kPDBPath);
+        QFileInfo rbDBFileInfo(device.filePath() + QStringLiteral("/") + kPdbPath);
 
         if (rbDBFileInfo.exists() && rbDBFileInfo.isFile()) {
-            TreeItem* foundDevice = new TreeItem(rekordboxFeature);
             QList<QString> data;
-
             data << device.filePath();
             data << IS_RECORDBOX_DEVICE;
-
-            foundDevice->setLabel(device.fileName());
-            foundDevice->setData(QVariant(data));
-
+            TreeItem* foundDevice = new TreeItem(
+                    device.fileName(),
+                    QVariant(data));
             foundDevices << foundDevice;
         }
     }
 #else // __APPLE__
-    QFileInfoList devices = QDir("/Volumes").entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
+    QFileInfoList devices = QDir(QStringLiteral("/Volumes")).entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
 
     foreach (QFileInfo device, devices) {
-        QFileInfo rbDBFileInfo(device.filePath() + "/" + kPDBPath);
+        QFileInfo rbDBFileInfo(device.filePath() + QStringLiteral("/") + kPdbPath);
 
         if (rbDBFileInfo.exists() && rbDBFileInfo.isFile()) {
-            TreeItem* foundDevice = new TreeItem(rekordboxFeature);
             QList<QString> data;
-
             data << device.filePath();
             data << IS_RECORDBOX_DEVICE;
-
-            foundDevice->setLabel(device.fileName());
-            foundDevice->setData(QVariant(data));
-
+            auto* foundDevice = new TreeItem(
+                    device.fileName(),
+                    QVariant(data));
             foundDevices << foundDevice;
         }
     }
@@ -316,7 +308,7 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
 
     qDebug() << "parseDeviceDB device: " << device << " devicePath: " << devicePath;
 
-    QString dbPath = devicePath + "/" + kPDBPath;
+    QString dbPath = devicePath + QStringLiteral("/") + kPdbPath;
 
     if (!QFile(dbPath).exists()) {
         return devicePath;
@@ -748,7 +740,8 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
 
     rekordbox_anlz_t anlz = rekordbox_anlz_t(&ks);
 
-    double sampleRateFrames = sampleRate * 2.0;
+    double sampleRateKhz = sampleRate / 1000.0;
+    double samples = sampleRateKhz * mixxx::kEngineChannelCount;
 
     double cueLoadPosition = kLongestPosition;
     QString cueLoadComment;
@@ -772,7 +765,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                 if (time < 1) {
                     time = 1;
                 }
-                beats << (sampleRate * static_cast<double>(time));
+                beats << (sampleRateKhz * static_cast<double>(time));
             }
 
             QHash<QString, QString> extraVersionInfo;
@@ -795,7 +788,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                 if (time < 1) {
                     time = 1;
                 }
-                double position = sampleRateFrames * static_cast<double>(time);
+                double position = samples * static_cast<double>(time);
 
                 switch (cuesTag->type()) {
                 case rekordbox_anlz_t::CUE_LIST_TYPE_MEMORY_CUES: {
@@ -815,7 +808,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                             if (endTime < 1) {
                                 endTime = 1;
                             }
-                            cueLoopEndPosition = sampleRateFrames * static_cast<double>(endTime);
+                            cueLoopEndPosition = samples * static_cast<double>(endTime);
                         }
                     } break;
                     }
@@ -835,7 +828,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                 if (time < 1) {
                     time = 1;
                 }
-                double position = sampleRateFrames * static_cast<double>(time);
+                double position = samples * static_cast<double>(time);
 
                 switch (cuesExtendedTag->type()) {
                 case rekordbox_anlz_t::CUE_LIST_TYPE_MEMORY_CUES: {
@@ -856,7 +849,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                             if (endTime < 1) {
                                 endTime = 1;
                             }
-                            cueLoopEndPosition = sampleRateFrames * static_cast<double>(endTime);
+                            cueLoopEndPosition = samples * static_cast<double>(endTime);
                         }
                     } break;
                     }
@@ -981,7 +974,7 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
         }
     }
 
-    double sampleRate = static_cast<double>(track->getSampleRate()) / 1000.0;
+    double sampleRate = static_cast<double>(track->getSampleRate());
 
     QString anlzPath = index.sibling(index.row(), fieldIndex("analyze_path")).data().toString();
     readAnalyze(track, sampleRate, timingOffset, false, anlzPath);
@@ -1060,7 +1053,7 @@ RekordboxFeature::RekordboxFeature(
     connect(&m_devicesFutureWatcher, SIGNAL(finished()), this, SLOT(onRekordboxDevicesFound()));
     connect(&m_tracksFutureWatcher, SIGNAL(finished()), this, SLOT(onTracksFound()));
     // initialize the model
-    m_childModel.setRootItem(std::make_unique<TreeItem>(this));
+    m_childModel.setRootItem(TreeItem::newRoot(this));
 }
 
 RekordboxFeature::~RekordboxFeature() {
@@ -1147,14 +1140,14 @@ void RekordboxFeature::activate() {
     qDebug() << "RekordboxFeature::activate()";
 
     // Let a worker thread do the XML parsing
-    m_devicesFuture = QtConcurrent::run(findRekordboxDevices, this);
+    m_devicesFuture = QtConcurrent::run(findRekordboxDevices);
     m_devicesFutureWatcher.setFuture(m_devicesFuture);
     m_title = tr("(loading) Rekordbox");
     //calls a slot in the sidebar model such that 'Rekordbox (isLoading)' is displayed.
-    emit(featureIsLoading(this, true));
+    emit featureIsLoading(this, true);
 
-    emit(enableCoverArtDisplay(true));
-    emit(switchToView("REKORDBOXHOME"));
+    emit enableCoverArtDisplay(true);
+    emit switchToView("REKORDBOXHOME");
 }
 
 void RekordboxFeature::activateChild(const QModelIndex& index) {
@@ -1194,7 +1187,7 @@ void RekordboxFeature::activateChild(const QModelIndex& index) {
     } else {
         qDebug() << "Activate Rekordbox Playlist: " << playlist;
         m_pRekordboxPlaylistModel->setPlaylist(playlist);
-        emit(showTrackModel(m_pRekordboxPlaylistModel));
+        emit showTrackModel(m_pRekordboxPlaylistModel);
     }
 }
 
@@ -1265,7 +1258,7 @@ void RekordboxFeature::onRekordboxDevicesFound() {
 
     // calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
     m_title = tr("Rekordbox");
-    emit(featureLoadingFinished(this));
+    emit featureLoadingFinished(this);
 }
 
 void RekordboxFeature::onTracksFound() {
@@ -1277,5 +1270,5 @@ void RekordboxFeature::onTracksFound() {
     qDebug() << "Show Rekordbox Device Playlist: " << devicePlaylist;
 
     m_pRekordboxPlaylistModel->setPlaylist(devicePlaylist);
-    emit(showTrackModel(m_pRekordboxPlaylistModel));
+    emit showTrackModel(m_pRekordboxPlaylistModel);
 }

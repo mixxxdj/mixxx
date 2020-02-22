@@ -1,4 +1,4 @@
-﻿// cuecontrol.h
+// cuecontrol.h
 // Created 11/5/2009 by RJ Ryan (rryan@mit.edu)
 
 #ifndef CUECONTROL_H
@@ -36,7 +36,6 @@ enum class SeekOnLoadMode {
 
 inline SeekOnLoadMode seekOnLoadModeFromDouble(double value) {
     return static_cast<SeekOnLoadMode>(int(value));
-    ;
 }
 
 class HotcueControl : public QObject {
@@ -148,6 +147,9 @@ class CueControl : public EngineControl {
     void hotcueClear(HotcueControl* pControl, double v);
     void hotcuePositionChanged(HotcueControl* pControl, double newPosition);
 
+    void hotcueFocusColorNext(double v);
+    void hotcueFocusColorPrev(double v);
+
     void cueSet(double v);
     void cueClear(double v);
     void cueGoto(double v);
@@ -175,12 +177,6 @@ class CueControl : public EngineControl {
     void outroEndActivate(double v);
 
   private:
-    enum class QuantizeMode {
-        ClosestBeat,
-        PreviousBeat,
-        NextBeat,
-    };
-
     enum class TrackAt {
         Cue,
         End,
@@ -193,8 +189,8 @@ class CueControl : public EngineControl {
     void detachCue(HotcueControl* pControl);
     void loadCuesFromTrack();
     void reloadCuesFromTrack();
-    double quantizeCuePoint(double position, QuantizeMode mode);
-    double quantizeCurrentPosition(QuantizeMode mode);
+    double quantizeCuePoint(double position);
+    double getQuantizedCurrentPosition();
     TrackAt getTrackAt() const;
 
     bool m_bPreviewing;
@@ -202,8 +198,6 @@ class CueControl : public EngineControl {
     ControlObject* m_pStopButton;
     int m_iCurrentlyPreviewingHotcues;
     ControlObject* m_pQuantizeEnabled;
-    ControlObject* m_pPrevBeat;
-    ControlObject* m_pNextBeat;
     ControlObject* m_pClosestBeat;
     bool m_bypassCueSetByPlay;
 
@@ -252,6 +246,10 @@ class CueControl : public EngineControl {
 
     ControlProxy* m_pVinylControlEnabled;
     ControlProxy* m_pVinylControlMode;
+
+    ControlObject* m_pHotcueFocus;
+    ControlObject* m_pHotcueFocusColorNext;
+    ControlObject* m_pHotcueFocusColorPrev;
 
     TrackPointer m_pLoadedTrack; // is written from an engine worker thread
 

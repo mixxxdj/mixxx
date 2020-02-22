@@ -110,7 +110,7 @@ void DlgPrefLibrary::slotHide() {
     msgBox.exec();
 
     if (msgBox.clickedButton() == scanButton) {
-        emit(scanLibrary());
+        emit scanLibrary();
         return;
     }
 }
@@ -171,6 +171,8 @@ void DlgPrefLibrary::slotUpdate() {
             ConfigKey("[Library]","ShowTraktorLibrary"), true));
     checkBox_show_rekordbox->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","ShowRekordboxLibrary"), true));
+    checkBox_show_serato->setChecked(m_pConfig->getValue(
+            ConfigKey("[Library]", "ShowSeratoLibrary"), true));
 
     switch (m_pConfig->getValue<int>(
             ConfigKey("[Library]","TrackLoadAction"), LOAD_TO_DECK)) {
@@ -208,7 +210,7 @@ void DlgPrefLibrary::slotAddDir() {
         this, tr("Choose a music directory"),
         QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
     if (!fd.isEmpty()) {
-        emit(requestAddDir(fd));
+        emit requestAddDir(fd);
         slotUpdate();
         m_bAddedDirectory = true;
     }
@@ -266,7 +268,7 @@ void DlgPrefLibrary::slotRemoveDir() {
         removalType = Library::HideTracks;
     }
 
-    emit(requestRemoveDir(fd, removalType));
+    emit requestRemoveDir(fd, removalType);
     slotUpdate();
 }
 
@@ -289,7 +291,7 @@ void DlgPrefLibrary::slotRelocateDir() {
         this, tr("Relink music directory to new location"), startDir);
 
     if (!fd.isEmpty()) {
-        emit(requestRelocateDir(currentFd, fd));
+        emit requestRelocateDir(currentFd, fd);
         slotUpdate();
     }
 }
@@ -311,6 +313,8 @@ void DlgPrefLibrary::slotApply() {
                 ConfigValue((int)checkBox_show_traktor->isChecked()));
     m_pConfig->set(ConfigKey("[Library]","ShowRekordboxLibrary"),
                 ConfigValue((int)checkBox_show_rekordbox->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]", "ShowSeratoLibrary"),
+            ConfigValue((int)checkBox_show_serato->isChecked()));
     int dbclick_status;
     if (radioButton_dbclick_bottom->isChecked()) {
             dbclick_status = ADD_TO_AUTODJ_BOTTOM;

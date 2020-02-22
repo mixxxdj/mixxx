@@ -321,10 +321,10 @@ void EffectsManager::setEffectVisibility(EffectManifestPointer pManifest, bool v
                                                 m_visibleEffectManifests.end(),
                                                 pManifest, alphabetizeEffectManifests);
         m_visibleEffectManifests.insert(insertion_point, pManifest);
-        emit(visibleEffectsUpdated());
+        emit visibleEffectsUpdated();
     } else if (!visible) {
         m_visibleEffectManifests.removeOne(pManifest);
-        emit(visibleEffectsUpdated());
+        emit visibleEffectsUpdated();
     }
 }
 

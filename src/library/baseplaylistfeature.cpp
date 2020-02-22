@@ -163,9 +163,9 @@ int BasePlaylistFeature::playlistIdFromIndex(QModelIndex index) {
 }
 
 void BasePlaylistFeature::activate() {
-    emit(switchToView(m_rootViewName));
+    emit switchToView(m_rootViewName);
     emit disableSearch();
-    emit(enableCoverArtDisplay(true));
+    emit enableCoverArtDisplay(true);
 }
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
@@ -176,8 +176,8 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     int playlistId = playlistIdFromIndex(index);
     if (playlistId != -1) {
         m_pPlaylistTableModel->setTableModel(playlistId);
-        emit(showTrackModel(m_pPlaylistTableModel));
-        emit(enableCoverArtDisplay(true));
+        emit showTrackModel(m_pPlaylistTableModel);
+        emit enableCoverArtDisplay(true);
     }
 }
 
@@ -189,10 +189,10 @@ void BasePlaylistFeature::activatePlaylist(int playlistId) {
     QModelIndex index = indexFromPlaylistId(playlistId);
     if (playlistId != -1 && index.isValid()) {
         m_pPlaylistTableModel->setTableModel(playlistId);
-        emit(showTrackModel(m_pPlaylistTableModel));
-        emit(enableCoverArtDisplay(true));
+        emit showTrackModel(m_pPlaylistTableModel);
+        emit enableCoverArtDisplay(true);
         // Update selection
-        emit(featureSelect(this, m_lastRightClickedIndex));
+        emit featureSelect(this, m_lastRightClickedIndex);
         activateChild(m_lastRightClickedIndex);
     }
 }
@@ -627,7 +627,7 @@ void BasePlaylistFeature::slotAnalyzePlaylist() {
         int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
         if (playlistId >= 0) {
             QList<TrackId> ids = m_playlistDao.getTrackIds(playlistId);
-            emit(analyzeTracks(ids));
+            emit analyzeTracks(ids);
         }
     }
 }
@@ -677,7 +677,7 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
         }
 
         // Create the TreeItem whose parent is the invisible root item
-        TreeItem* item = new TreeItem(this, playlistLabel, playlistId);
+        TreeItem* item = new TreeItem(playlistLabel, playlistId);
         item->setBold(m_playlistsSelectedTrackIsIn.contains(playlistId));
 
         decorateChild(item, playlistId);
