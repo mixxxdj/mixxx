@@ -46,7 +46,7 @@ mixxx::DbConnection::Params dbConnectionParams(
     // See also:
     // https://www.sqlite.org/inmemorydb.html
     if (inMemoryConnection) {
-        params.filePath += QStringLiteral("?mode=memory");
+        params.filePath += QStringLiteral("?mode=memory&cache=shared");
     }
     params.userName = kUserName;
     params.password = kPassword;
