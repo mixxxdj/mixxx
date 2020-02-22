@@ -24,13 +24,11 @@ TrackCollectionManager::TrackCollectionManager(
         QObject* parent,
         UserSettingsPointer pConfig,
         mixxx::DbConnectionPoolPtr pDbConnectionPool,
-        deleteTrackFn_t /*only-needed-for-testing*/ deleteTrackFn)
+        deleteTrackFn_t /*only-needed-for-testing*/ deleteTrackForTestingFn)
     : QObject(parent),
       m_pConfig(pConfig),
-      m_pInternalCollection(make_parented<TrackCollection>(this, pConfig)),
-      m_scanner(pDbConnectionPool, m_pInternalCollection, pConfig) {
-
-    const QSqlDatabase dbConnection = mixxx::DbConnectionPooled(std::move(pDbConnectionPool));
+      m_pInternalCollection(make_parented<TrackCollection>(this, pConfig)) {
+    const QSqlDatabase dbConnection = mixxx::DbConnectionPooled(pDbConnectionPool);
 
     // TODO(XXX): Add a checkbox in the library preferences for checking
     // and repairing the database on the next restart of the application.
@@ -44,43 +42,47 @@ TrackCollectionManager::TrackCollectionManager(
     kLogger.info() << "Connecting database";
     m_pInternalCollection->connectDatabase(dbConnection);
 
-    if (deleteTrackFn) {
-        kLogger.info() << "External collections are not available in test mode";
+    if (deleteTrackForTestingFn) {
+        kLogger.info() << "External collections are disabled in test mode";
     } else {
         // TODO: Add external collections
+        for (const auto& externalCollection : m_externalCollections) {
+            kLogger.info() << "Connecting" << externalCollection->name();
+            externalCollection->establishConnection();
+        }
     }
 
-    kLogger.info() << "Connecting external collections";
-    for (const auto& externalCollection : m_externalCollections) {
-        kLogger.info() << "Connecting" << externalCollection->name();
-        externalCollection->establishConnection();
+    // TODO: Extract and decouple LibraryScanner from TrackCollectionManager
+    if (deleteTrackForTestingFn) {
+        // Exclude the library scanner from tests
+        kLogger.info() << "Libary scanner is disabled in test mode";
+    } else {
+        m_pScanner = make_parented<LibraryScanner>(pDbConnectionPool, m_pInternalCollection, pConfig);
+        // Forward signals
+        connect(m_pScanner.get(),
+                &LibraryScanner::scanStarted,
+                this,
+                &TrackCollectionManager::libraryScanStarted);
+        connect(m_pScanner.get(),
+                &LibraryScanner::scanFinished,
+                this,
+                &TrackCollectionManager::libraryScanFinished);
+        // Handle signals
+        connect(m_pScanner.get(),
+                &LibraryScanner::trackAdded,
+                this,
+                &TrackCollectionManager::slotScanTrackAdded);
+        connect(m_pScanner.get(),
+                &LibraryScanner::tracksChanged,
+                this,
+                &TrackCollectionManager::slotScanTracksUpdated);
+        connect(m_pScanner.get(),
+                &LibraryScanner::tracksRelocated,
+                this,
+                &TrackCollectionManager::slotScanTracksRelocated);
     }
 
-    // Forward signals
-    connect(&m_scanner,
-            &LibraryScanner::scanStarted,
-            this,
-            &TrackCollectionManager::libraryScanStarted);
-    connect(&m_scanner,
-            &LibraryScanner::scanFinished,
-            this,
-            &TrackCollectionManager::libraryScanFinished);
-
-    // Handle signals
-    connect(&m_scanner,
-            &LibraryScanner::trackAdded,
-            this,
-            &TrackCollectionManager::slotScanTrackAdded);
-    connect(&m_scanner,
-            &LibraryScanner::tracksChanged,
-            this,
-            &TrackCollectionManager::slotScanTracksUpdated);
-    connect(&m_scanner,
-            &LibraryScanner::tracksRelocated,
-            this,
-            &TrackCollectionManager::slotScanTracksRelocated);
-
-    GlobalTrackCache::createInstance(this, deleteTrackFn);
+    GlobalTrackCache::createInstance(this, deleteTrackForTestingFn);
 }
 
 TrackCollectionManager::~TrackCollectionManager() {
@@ -110,11 +112,13 @@ TrackCollectionManager::~TrackCollectionManager() {
 }
 
 void TrackCollectionManager::startLibraryScan() {
-    m_scanner.scan();
+    DEBUG_ASSERT(m_pScanner);
+    m_pScanner->scan();
 }
 
 void TrackCollectionManager::stopLibraryScan() {
-    m_scanner.slotCancel();
+    DEBUG_ASSERT(m_pScanner);
+    m_pScanner->slotCancel();
 }
 
 bool TrackCollectionManager::saveTrack(const TrackPointer& pTrack) {

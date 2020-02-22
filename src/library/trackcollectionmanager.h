@@ -31,7 +31,7 @@ class TrackCollectionManager: public QObject,
             QObject* parent,
             UserSettingsPointer pConfig,
             mixxx::DbConnectionPoolPtr pDbConnectionPool,
-            deleteTrackFn_t deleteTrackFn = nullptr);
+            deleteTrackFn_t deleteTrackForTestingFn = nullptr);
     ~TrackCollectionManager() override;
 
     TrackCollection* internalCollection() {
@@ -98,5 +98,6 @@ class TrackCollectionManager: public QObject,
 
     QList<ExternalTrackCollection*> m_externalCollections;
 
-    LibraryScanner m_scanner;
+    // TODO: Extract and decouple LibraryScanner from TrackCollectionManager
+    parented_ptr<LibraryScanner> m_pScanner;
 };
