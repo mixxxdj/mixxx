@@ -77,30 +77,7 @@ void BaseTrackCache::connectTrackDAO(TrackDAO* pTrackDAO) {
 }
 
 void BaseTrackCache::disconnectTrackDAO(TrackDAO* pTrackDAO) {
-    disconnect(pTrackDAO,
-            &TrackDAO::trackDirty,
-            this,
-            &BaseTrackCache::slotTrackDirty);
-    disconnect(pTrackDAO,
-            &TrackDAO::trackClean,
-            this,
-            &BaseTrackCache::slotTrackClean);
-    disconnect(pTrackDAO,
-            &TrackDAO::trackChanged,
-            this,
-            &BaseTrackCache::slotTrackChanged);
-    disconnect(pTrackDAO,
-            &TrackDAO::tracksAdded,
-            this,
-            &BaseTrackCache::slotTracksAdded);
-    disconnect(pTrackDAO,
-            &TrackDAO::tracksRemoved,
-            this,
-            &BaseTrackCache::slotTracksRemoved);
-    disconnect(pTrackDAO,
-            &TrackDAO::dbTrackAdded,
-            this,
-            &BaseTrackCache::slotDbTrackAdded);
+    disconnect(pTrackDAO);
 }
 
 BaseTrackCache::~BaseTrackCache() {
