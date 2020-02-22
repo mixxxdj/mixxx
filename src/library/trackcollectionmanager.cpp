@@ -1,9 +1,8 @@
-#include "database/mixxxdb.h"
-
 #include "library/trackcollectionmanager.h"
 
-#include "library/trackcollection.h"
 #include "library/externaltrackcollection.h"
+#include "library/scanner/libraryscanner.h"
+#include "library/trackcollection.h"
 
 #include "sources/soundsourceproxy.h"
 #include "util/db/dbconnectionpooled.h"

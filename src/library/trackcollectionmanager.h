@@ -2,15 +2,15 @@
 
 #include <QDir>
 #include <QList>
-#include <QObject>
 #include <QSet>
 
-#include "library/scanner/libraryscanner.h"
+#include "library/relocatedtrack.h"
 #include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/parented_ptr.h"
 
+class LibraryScanner;
 class TrackCollection;
 class ExternalTrackCollection;
 
