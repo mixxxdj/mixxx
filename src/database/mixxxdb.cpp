@@ -21,6 +21,8 @@ const QString kType = QStringLiteral("QSQLITE");
 
 const QString kConnectOptions = QStringLiteral("QSQLITE_OPEN_URI");
 
+const QString kUriPrefix = QStringLiteral("file://");
+
 const QString kDefaultFileName = QStringLiteral("mixxxdb.sqlite");
 
 const QString kUserName = QStringLiteral("mixxx");
@@ -34,11 +36,16 @@ mixxx::DbConnection::Params dbConnectionParams(
     mixxx::DbConnection::Params params;
     params.type = kType;
     params.connectOptions = kConnectOptions;
-    QString filePath = QDir(pConfig->getSettingsPath()).filePath(kDefaultFileName);
-    if (!filePath.startsWith(QStringLiteral("/"))) {
-        filePath = QStringLiteral("/") + filePath;
+    params.filePath = kUriPrefix;
+    const QString absFilePath =
+            QDir(pConfig->getSettingsPath()).absoluteFilePath(kDefaultFileName);
+    // On Windows absFilePath starts with a drive letter instead of
+    // the leading '/' as required.
+    // https://www.sqlite.org/c3ref/open.html#urifilenameexamples
+    if (!absFilePath.startsWith(QChar('/'))) {
+        params.filePath += QChar('/');
     }
-    params.filePath = QString(QStringLiteral("file://%1")).arg(filePath);
+    params.filePath = kUriPrefix + absFilePath;
     // Allow multiple connections to the same in-memory database by
     // using a named connection. This is needed to make the database
     // connection pool work correctly even during tests.
