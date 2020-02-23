@@ -1003,6 +1003,7 @@ class MixxxCore(Feature):
                    "src/musicbrainz/acoustidclient.cpp",
                    "src/musicbrainz/chromaprinter.cpp",
                    "src/musicbrainz/musicbrainzclient.cpp",
+                   "src/musicbrainz/web/acoustidlookuptask.cpp",
 
                    "src/widget/wtracktableview.cpp",
                    "src/widget/wtracktableviewheader.cpp",
