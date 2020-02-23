@@ -70,27 +70,27 @@ void TrackCollection::connectTrackSource(QSharedPointer<BaseTrackCache> pTrackSo
     m_pTrackSource = pTrackSource;
     connect(&m_trackDao,
             &TrackDAO::trackDirty,
-            m_pTrackSource.get(),
+            m_pTrackSource.data(),
             &BaseTrackCache::slotTrackDirty);
     connect(&m_trackDao,
             &TrackDAO::trackClean,
-            m_pTrackSource.get(),
+            m_pTrackSource.data(),
             &BaseTrackCache::slotTrackClean);
     connect(&m_trackDao,
             &TrackDAO::trackChanged,
-            m_pTrackSource.get(),
+            m_pTrackSource.data(),
             &BaseTrackCache::slotTrackChanged);
     connect(&m_trackDao,
             &TrackDAO::tracksAdded,
-            m_pTrackSource.get(),
+            m_pTrackSource.data(),
             &BaseTrackCache::slotTracksAdded);
     connect(&m_trackDao,
             &TrackDAO::tracksRemoved,
-            m_pTrackSource.get(),
+            m_pTrackSource.data(),
             &BaseTrackCache::slotTracksRemoved);
     connect(&m_trackDao,
             &TrackDAO::dbTrackAdded,
-            m_pTrackSource.get(),
+            m_pTrackSource.data(),
             &BaseTrackCache::slotDbTrackAdded);
 }
 
@@ -100,7 +100,7 @@ QWeakPointer<BaseTrackCache> TrackCollection::disconnectTrackSource() {
     auto pWeakPtr = m_pTrackSource.toWeakRef();
     if (m_pTrackSource) {
         kLogger.info() << "Disconnecting track source";
-        m_trackDao.disconnect(m_pTrackSource.get());
+        m_trackDao.disconnect(m_pTrackSource.data());
         m_pTrackSource.reset();
     }
     return pWeakPtr;
