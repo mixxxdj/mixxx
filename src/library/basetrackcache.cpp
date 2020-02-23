@@ -49,37 +49,6 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
     }
 }
 
-void BaseTrackCache::connectTrackDAO(TrackDAO* pTrackDAO) {
-    connect(pTrackDAO,
-            &TrackDAO::trackDirty,
-            this,
-            &BaseTrackCache::slotTrackDirty);
-    connect(pTrackDAO,
-            &TrackDAO::trackClean,
-            this,
-            &BaseTrackCache::slotTrackClean);
-    connect(pTrackDAO,
-            &TrackDAO::trackChanged,
-            this,
-            &BaseTrackCache::slotTrackChanged);
-    connect(pTrackDAO,
-            &TrackDAO::tracksAdded,
-            this,
-            &BaseTrackCache::slotTracksAdded);
-    connect(pTrackDAO,
-            &TrackDAO::tracksRemoved,
-            this,
-            &BaseTrackCache::slotTracksRemoved);
-    connect(pTrackDAO,
-            &TrackDAO::dbTrackAdded,
-            this,
-            &BaseTrackCache::slotDbTrackAdded);
-}
-
-void BaseTrackCache::disconnectTrackDAO(TrackDAO* pTrackDAO) {
-    disconnect(pTrackDAO);
-}
-
 BaseTrackCache::~BaseTrackCache() {
     // Required to allow forward declarations of (managed pointer) members
     // in header file
