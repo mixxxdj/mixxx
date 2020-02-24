@@ -6,7 +6,6 @@
 #include "library/scanner/scannertask.h"
 #include "library/queryutil.h"
 #include "library/coverartutils.h"
-#include "library/trackcollection.h"
 #include "util/logger.h"
 #include "util/trace.h"
 #include "util/file.h"
@@ -41,10 +40,8 @@ int execCleanupQuery(FwdSqlQuery& query) {
 
 LibraryScanner::LibraryScanner(
         mixxx::DbConnectionPoolPtr pDbConnectionPool,
-        TrackCollection* pTrackCollection,
         const UserSettingsPointer& pConfig)
         : m_pDbConnectionPool(std::move(pDbConnectionPool)),
-          m_pTrackCollection(pTrackCollection),
           m_analysisDao(pConfig),
           m_trackDao(m_cueDao, m_playlistDao,
                   m_analysisDao, m_libraryHashDao,
@@ -53,7 +50,6 @@ LibraryScanner::LibraryScanner(
           m_state(IDLE) {
     // Move LibraryScanner to its own thread so that our signals/slots will
     // queue to our event loop.
-    kLogger.debug() << "Starting thread";
     moveToThread(this);
     m_pool.moveToThread(this);
 
@@ -65,24 +61,6 @@ LibraryScanner::LibraryScanner(
     // Listen to signals from our public methods (invoked by other threads) and
     // connect them to our slots to run the command on the scanner thread.
     connect(this, &LibraryScanner::startScan, this, &LibraryScanner::slotStartScan);
-
-    // Force the GUI thread's Track cache to be cleared when a library
-    // scan is finished, because we might have modified the database directly
-    // when we detected moved files, and the TIOs corresponding to the moved
-    // files would then have the wrong track location.
-    TrackDAO* trackDao = &(m_pTrackCollection->getTrackDAO());
-    connect(this,
-            &LibraryScanner::trackAdded,
-            trackDao,
-            &TrackDAO::databaseTrackAdded);
-    connect(this,
-            &LibraryScanner::tracksChanged,
-            trackDao,
-            &TrackDAO::databaseTracksChanged);
-    connect(this,
-            &LibraryScanner::tracksRelocated,
-            trackDao,
-            &TrackDAO::databaseTracksRelocated);
 
     m_pProgressDlg.reset(new LibraryScannerDlg());
     connect(this,
@@ -113,8 +91,6 @@ LibraryScanner::LibraryScanner(
             &TrackDAO::progressCoverArt,
             m_pProgressDlg.data(),
             &LibraryScannerDlg::slotUpdateCover);
-
-    start();
 }
 
 LibraryScanner::~LibraryScanner() {

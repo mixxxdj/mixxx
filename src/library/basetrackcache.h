@@ -17,7 +17,6 @@
 #include "util/string.h"
 
 class SearchQueryParser;
-class TrackDAO;
 class TrackCollection;
 
 class SortColumn {
