@@ -48,15 +48,15 @@ const QString kPdbPath = QStringLiteral("PIONEER/rekordbox/export.pdb");
 const QString kPLaylistPathDelimiter = QStringLiteral("-->");
 const double kLongestPosition = 999999999.0;
 
-enum TrackColor {
-    TRACK_COLOR_PINK = 1,
-    TRACK_COLOR_RED,
-    TRACK_COLOR_ORANGE,
-    TRACK_COLOR_YELLOW,
-    TRACK_COLOR_GREEN,
-    TRACK_COLOR_AQUA,
-    TRACK_COLOR_BLUE,
-    TRACK_COLOR_PURPLE
+enum class TrackColor {
+    TrackColorPink = 1,
+    TrackColorRed,
+    TrackColorOrange,
+    TrackColorYellow,
+    TrackColorGreen,
+    TrackColorAqua,
+    TrackColorBlue,
+    TrackColorPurple
 };
 
 constexpr mixxx::RgbColor kPinkTrackColor(0xF870F8);
@@ -340,29 +340,29 @@ void insertTrack(
     QString anlzPath = devicePath + getText(track->analyze_path());
     mixxx::RgbColor::optional_t color = mixxx::RgbColor::nullopt();
 
-    switch (track->color_id()) {
-    case TRACK_COLOR_PINK:
+    switch (static_cast<TrackColor>(track->color_id())) {
+    case TrackColor::TrackColorPink:
         color = kPinkTrackColor;
         break;
-    case TRACK_COLOR_RED:
+    case TrackColor::TrackColorRed:
         color = kRedTrackColor;
         break;
-    case TRACK_COLOR_ORANGE:
+    case TrackColor::TrackColorOrange:
         color = kOrangeTrackColor;
         break;
-    case TRACK_COLOR_YELLOW:
+    case TrackColor::TrackColorYellow:
         color = kYellowTrackColor;
         break;
-    case TRACK_COLOR_GREEN:
+    case TrackColor::TrackColorGreen:
         color = kGreenTrackColor;
         break;
-    case TRACK_COLOR_AQUA:
+    case TrackColor::TrackColorAqua:
         color = kAquaTrackColor;
         break;
-    case TRACK_COLOR_BLUE:
+    case TrackColor::TrackColorBlue:
         color = kBlueTrackColor;
         break;
-    case TRACK_COLOR_PURPLE:
+    case TrackColor::TrackColorPurple:
         color = kPurpleTrackColor;
         break;
     default:
