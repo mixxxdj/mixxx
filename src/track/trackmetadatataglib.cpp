@@ -3,6 +3,7 @@
 #include "track/tracknumbers.h"
 
 #include "util/assert.h"
+#include "util/compatibility.h"
 #include "util/duration.h"
 #include "util/logger.h"
 #include "util/memory.h"
@@ -264,24 +265,8 @@ inline TagLib::ByteVector toTagLibByteVector(const QByteArray& bytearray) {
     }
 }
 
-inline QString formatUuid(const QUuid& uuid) {
-    if (uuid.isNull()) {
-        return QString();
-    } else {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
-        return uuid.toString(QUuid::WithoutBraces);
-#else
-        QString uuidWithBraces = uuid.toString();
-        DEBUG_ASSERT(uuidWithBraces.size() == 38);
-        DEBUG_ASSERT(uuidWithBraces.startsWith('{'));
-        DEBUG_ASSERT(uuidWithBraces.endsWith('}'));
-        return uuidWithBraces.mid(1, 36);
-#endif
-    }
-}
-
 inline TagLib::String toTagLibString(const QUuid& uuid) {
-    return toTagLibString(formatUuid(uuid));
+    return toTagLibString(uuidToStringWithoutBraces(uuid));
 }
 #endif // __EXTRA_METADATA__
 
@@ -2434,7 +2419,7 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
     writeID3v2UserTextIdentificationFrame(
             pTag,
             "MusicBrainz Artist Id",
-            formatUuid(trackMetadata.getTrackInfo().getMusicBrainzArtistId()),
+            uuidToStringWithoutBraces(trackMetadata.getTrackInfo().getMusicBrainzArtistId()),
             false);
     {
         QByteArray identifier = trackMetadata.getTrackInfo().getMusicBrainzRecordingId().toByteArray();
@@ -2453,27 +2438,27 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
     writeID3v2UserTextIdentificationFrame(
             pTag,
             "MusicBrainz Release Track Id",
-            formatUuid(trackMetadata.getTrackInfo().getMusicBrainzReleaseId()),
+            uuidToStringWithoutBraces(trackMetadata.getTrackInfo().getMusicBrainzReleaseId()),
             false);
     writeID3v2UserTextIdentificationFrame(
             pTag,
             "MusicBrainz Work Id",
-            formatUuid(trackMetadata.getTrackInfo().getMusicBrainzWorkId()),
+            uuidToStringWithoutBraces(trackMetadata.getTrackInfo().getMusicBrainzWorkId()),
             false);
     writeID3v2UserTextIdentificationFrame(
             pTag,
             "MusicBrainz Album Artist Id",
-            formatUuid(trackMetadata.getAlbumInfo().getMusicBrainzArtistId()),
+            uuidToStringWithoutBraces(trackMetadata.getAlbumInfo().getMusicBrainzArtistId()),
             false);
     writeID3v2UserTextIdentificationFrame(
             pTag,
             "MusicBrainz Album Id",
-            formatUuid(trackMetadata.getAlbumInfo().getMusicBrainzReleaseId()),
+            uuidToStringWithoutBraces(trackMetadata.getAlbumInfo().getMusicBrainzReleaseId()),
             false);
     writeID3v2UserTextIdentificationFrame(
             pTag,
             "MusicBrainz Release Group Id",
-            formatUuid(trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId()),
+            uuidToStringWithoutBraces(trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId()),
             false);
 
     writeID3v2TextIdentificationFrame(
