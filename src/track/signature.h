@@ -41,4 +41,9 @@ class Signature final {
     }
 };
 
+// Invalid Signature
+const Signature null_signature = Signature(0,0);
+// Default Signature 4/4
+const Signature default_signature = Signature(4,4);
+
 } // namespace mixxx

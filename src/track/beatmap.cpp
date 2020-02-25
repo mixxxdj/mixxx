@@ -772,9 +772,9 @@ double BeatMap::calculateBpm(const Beat& startBeat, const Beat& stopBeat) const 
 mixxx::Signature BeatMap::getSignature(double dSample) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid())
-        return mixxx::Signature(0,0);
+        return mixxx::null_signature;
 
-    auto result = mixxx::Signature(4,4);
+    auto result = mixxx::default_signature;
 
     // Special case, when looking for initial Signature
     if(dSample == 0) {
