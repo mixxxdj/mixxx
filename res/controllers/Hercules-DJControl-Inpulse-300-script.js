@@ -70,6 +70,7 @@ DJCi300.vuMeterUpdateDeck = function(value, group, _control) {
 };
 
 DJCi300.init = function() {
+	
     DJCi300.scratchButtonState = true;
     DJCi300.scratchAction = {
         1: DJCi300.kScratchActionNone,
@@ -83,6 +84,15 @@ DJCi300.init = function() {
     //Turn On Browser button LED
     midi.sendShortMsg(0x90, 0x04, 0x05);
 
+   //Array for the MSB bits of pitch change
+   DJCi300.pitchMsbValue = [0x40, 0x40];
+
+   //Softtakeover for Pitch fader
+   engine.softTakeover("[Channel1]", "rate", true);
+   engine.softTakeover("[Channel2]", "rate", true);
+   engine.softTakeoverIgnoreNextValue("[Channel1]", "rate");
+   engine.softTakeoverIgnoreNextValue("[Channel2]", "rate");
+	
     // Connect the VUMeters
     engine.connectControl("[Channel1]", "VuMeter", "DJCi300.vuMeterUpdateDeck");
 	engine.getValue("[Channel1]", "VuMeter", "DJCi300.vuMeterUpdateDeck");
@@ -96,6 +106,18 @@ DJCi300.init = function() {
     // Ask the controller to send all current knob/slider values over MIDI, which will update
     // the corresponding GUI controls in MIXXX.
     midi.sendShortMsg(0xB0, 0x7F, 0x7F);
+};
+
+DJCi300.deckRateMsb = function(_channel, _control, value, status, _group) {
+        var invertval = 127-value;
+        //Calculating this always, or else the first time will not work
+        //(which is precisely when the controller reports the initial positions)
+        DJCi300.pitchMsbValue[deck - 1] = value;  
+};
+
+DJCi300.deckRateLsb = function(_channel, _control, value, status, _group) {
+        var invertval = 127-value;
+        var msbval = DJCi300.pitchMsbValue[deck - 1];
 };
 
 // The Vinyl button, used to enable or disable scratching on the jog wheels (One per deck).
