@@ -1841,24 +1841,24 @@
 			<output>
 				<group>[Library]</group>
 				<key>MoveFocus</key>
-				<description>Browser LED (Green)</description>
-				<minimum>0.5</minimum>
-				<maximum>1</maximum>
-				<status>0x90</status>
-				<midino>0x05</midino>
-				<on>0x10</on>
-				<off>0x05</off>
-			</output>
-			<output>
-				<group>[Master]</group>
-				<key>maximize_library</key>
 				<description>Browser LED (BLUE)</description>
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
 				<status>0x90</status>
-				<midino>0x05</midino>
+				<midino>0x04</midino>
 				<on>0x05</on>
-				<off>0x10</off>
+				<off>0x07</off>
+			</output>
+			<output>
+				<group>[Master]</group>
+				<key>maximize_library</key>
+				<description>Browser LED (GREEN)</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x90</status>
+				<midino>0x04</midino>
+				<on>0x07</on>
+				<off>0x05</off>
 			</output>
       <!-- LED Assitant button-->
 			<output>
