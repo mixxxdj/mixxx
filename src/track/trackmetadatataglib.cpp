@@ -266,21 +266,8 @@ inline TagLib::ByteVector toTByteVector(const QByteArray& bytearray) {
 }
 
 inline
-QString uuidToQStringWithoutBracesNullable(const QUuid& uuid) {
-    if (uuid.isNull()) {
-        return QString();
-    } else {
-        return uuidToStringWithoutBraces(uuid);
-    }
-}
-
-inline
-TagLib::String uuidToTStringWithoutBracesNullable(const QUuid& uuid) {
-    if (uuid.isNull()) {
-        return TagLib::String::null;
-    } else {
-        return toTString(uuidToStringWithoutBraces(uuid));
-    }
+TagLib::String uuidToTString(const QUuid& uuid) {
+    return toTString(uuidToNullableStringWithoutBraces(uuid));
 }
 
 #endif // __EXTRA_METADATA__
@@ -2434,7 +2421,7 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
     writeID3v2UserTextIdentificationFrame(
             pTag,
             "MusicBrainz Artist Id",
-            uuidToQStringWithoutBracesNullable(trackMetadata.getTrackInfo().getMusicBrainzArtistId()),
+            uuidToNullableStringWithoutBraces(trackMetadata.getTrackInfo().getMusicBrainzArtistId()),
             false);
     {
         QByteArray identifier = trackMetadata.getTrackInfo().getMusicBrainzRecordingId().toByteArray();
@@ -2453,27 +2440,27 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
     writeID3v2UserTextIdentificationFrame(
             pTag,
             "MusicBrainz Release Track Id",
-            uuidToQStringWithoutBracesNullable(trackMetadata.getTrackInfo().getMusicBrainzReleaseId()),
+            uuidToNullableStringWithoutBraces(trackMetadata.getTrackInfo().getMusicBrainzReleaseId()),
             false);
     writeID3v2UserTextIdentificationFrame(
             pTag,
             "MusicBrainz Work Id",
-            uuidToQStringWithoutBracesNullable(trackMetadata.getTrackInfo().getMusicBrainzWorkId()),
+            uuidToNullableStringWithoutBraces(trackMetadata.getTrackInfo().getMusicBrainzWorkId()),
             false);
     writeID3v2UserTextIdentificationFrame(
             pTag,
             "MusicBrainz Album Artist Id",
-            uuidToQStringWithoutBracesNullable(trackMetadata.getAlbumInfo().getMusicBrainzArtistId()),
+            uuidToNullableStringWithoutBraces(trackMetadata.getAlbumInfo().getMusicBrainzArtistId()),
             false);
     writeID3v2UserTextIdentificationFrame(
             pTag,
             "MusicBrainz Album Id",
-            uuidToQStringWithoutBracesNullable(trackMetadata.getAlbumInfo().getMusicBrainzReleaseId()),
+            uuidToNullableStringWithoutBraces(trackMetadata.getAlbumInfo().getMusicBrainzReleaseId()),
             false);
     writeID3v2UserTextIdentificationFrame(
             pTag,
             "MusicBrainz Release Group Id",
-            uuidToQStringWithoutBracesNullable(trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId()),
+            uuidToNullableStringWithoutBraces(trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId()),
             false);
 
     writeID3v2TextIdentificationFrame(
@@ -2588,19 +2575,19 @@ bool exportTrackMetadataIntoAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& 
             toTString(formatAlbumPeak(trackMetadata)));
 
     writeAPEItem(pTag, "MUSICBRAINZ_ARTISTID",
-            uuidToTStringWithoutBracesNullable(trackMetadata.getTrackInfo().getMusicBrainzArtistId()));
+            uuidToTString(trackMetadata.getTrackInfo().getMusicBrainzArtistId()));
     writeAPEItem(pTag, "MUSICBRAINZ_TRACKID",
-            uuidToTStringWithoutBracesNullable(trackMetadata.getTrackInfo().getMusicBrainzRecordingId()));
+            uuidToTString(trackMetadata.getTrackInfo().getMusicBrainzRecordingId()));
     writeAPEItem(pTag, "MUSICBRAINZ_RELEASETRACKID",
-            uuidToTStringWithoutBracesNullable(trackMetadata.getTrackInfo().getMusicBrainzReleaseId()));
+            uuidToTString(trackMetadata.getTrackInfo().getMusicBrainzReleaseId()));
     writeAPEItem(pTag, "MUSICBRAINZ_WORKID",
-            uuidToTStringWithoutBracesNullable(trackMetadata.getTrackInfo().getMusicBrainzWorkId()));
+            uuidToTString(trackMetadata.getTrackInfo().getMusicBrainzWorkId()));
     writeAPEItem(pTag, "MUSICBRAINZ_ALBUMARTISTID",
-            uuidToTStringWithoutBracesNullable(trackMetadata.getAlbumInfo().getMusicBrainzArtistId()));
+            uuidToTString(trackMetadata.getAlbumInfo().getMusicBrainzArtistId()));
     writeAPEItem(pTag, "MUSICBRAINZ_ALBUMID",
-            uuidToTStringWithoutBracesNullable(trackMetadata.getAlbumInfo().getMusicBrainzReleaseId()));
+            uuidToTString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseId()));
     writeAPEItem(pTag, "MUSICBRAINZ_RELEASEGROUPID",
-            uuidToTStringWithoutBracesNullable(trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId()));
+            uuidToTString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId()));
 
     writeAPEItem(pTag, "Conductor",
             toTString(trackMetadata.getTrackInfo().getConductor()));
@@ -2723,19 +2710,19 @@ bool exportTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
             toTString(formatAlbumPeak(trackMetadata)));
 
     writeXiphCommentField(pTag, "MUSICBRAINZ_ARTISTID",
-            uuidToTStringWithoutBracesNullable(trackMetadata.getTrackInfo().getMusicBrainzArtistId()));
+            uuidToTString(trackMetadata.getTrackInfo().getMusicBrainzArtistId()));
     writeXiphCommentField(pTag, "MUSICBRAINZ_TRACKID",
-            uuidToTStringWithoutBracesNullable(trackMetadata.getTrackInfo().getMusicBrainzRecordingId()));
+            uuidToTString(trackMetadata.getTrackInfo().getMusicBrainzRecordingId()));
     writeXiphCommentField(pTag, "MUSICBRAINZ_RELEASETRACKID",
-            uuidToTStringWithoutBracesNullable(trackMetadata.getTrackInfo().getMusicBrainzReleaseId()));
+            uuidToTString(trackMetadata.getTrackInfo().getMusicBrainzReleaseId()));
     writeXiphCommentField(pTag, "MUSICBRAINZ_WORKID",
-            uuidToTStringWithoutBracesNullable(trackMetadata.getTrackInfo().getMusicBrainzWorkId()));
+            uuidToTString(trackMetadata.getTrackInfo().getMusicBrainzWorkId()));
     writeXiphCommentField(pTag, "MUSICBRAINZ_ALBUMARTISTID",
-            uuidToTStringWithoutBracesNullable(trackMetadata.getAlbumInfo().getMusicBrainzArtistId()));
+            uuidToTString(trackMetadata.getAlbumInfo().getMusicBrainzArtistId()));
     writeXiphCommentField(pTag, "MUSICBRAINZ_ALBUMID",
-            uuidToTStringWithoutBracesNullable(trackMetadata.getAlbumInfo().getMusicBrainzReleaseId()));
+            uuidToTString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseId()));
     writeXiphCommentField(pTag, "MUSICBRAINZ_RELEASEGROUPID",
-            uuidToTStringWithoutBracesNullable(trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId()));
+            uuidToTString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId()));
 
     writeXiphCommentField(pTag, "CONDUCTOR",
             toTString(trackMetadata.getTrackInfo().getConductor()));
@@ -2856,19 +2843,19 @@ bool exportTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& 
             toTString(formatAlbumPeak(trackMetadata)));
 
     writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Artist Id",
-            uuidToTStringWithoutBracesNullable(trackMetadata.getTrackInfo().getMusicBrainzArtistId()));
+            uuidToTString(trackMetadata.getTrackInfo().getMusicBrainzArtistId()));
     writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Track Id",
-            uuidToTStringWithoutBracesNullable(trackMetadata.getTrackInfo().getMusicBrainzRecordingId()));
+            uuidToTString(trackMetadata.getTrackInfo().getMusicBrainzRecordingId()));
     writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Release Track Id",
-            uuidToTStringWithoutBracesNullable(trackMetadata.getTrackInfo().getMusicBrainzReleaseId()));
+            uuidToTString(trackMetadata.getTrackInfo().getMusicBrainzReleaseId()));
     writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Work Id",
-            uuidToTStringWithoutBracesNullable(trackMetadata.getTrackInfo().getMusicBrainzWorkId()));
+            uuidToTString(trackMetadata.getTrackInfo().getMusicBrainzWorkId()));
     writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Album Artist Id",
-            uuidToTStringWithoutBracesNullable(trackMetadata.getAlbumInfo().getMusicBrainzArtistId()));
+            uuidToTString(trackMetadata.getAlbumInfo().getMusicBrainzArtistId()));
     writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Album Id",
-            uuidToTStringWithoutBracesNullable(trackMetadata.getAlbumInfo().getMusicBrainzReleaseId()));
+            uuidToTString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseId()));
     writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Release Group Id",
-            uuidToTStringWithoutBracesNullable(trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId()));
+            uuidToTString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId()));
 
     writeMP4Atom(pTag, "----:com.apple.iTunes:CONDUCTOR",
             toTString(trackMetadata.getTrackInfo().getConductor()));

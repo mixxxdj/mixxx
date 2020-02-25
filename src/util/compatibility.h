@@ -114,6 +114,15 @@ QString uuidToStringWithoutBraces(const QUuid& uuid) {
 #endif
 }
 
+inline
+QString uuidToNullableStringWithoutBraces(const QUuid& uuid) {
+    if (uuid.isNull()) {
+        return QString();
+    } else {
+        return uuidToStringWithoutBraces(uuid);
+    }
+}
+
 template <typename T>
 inline T atomicLoadAcquire(const QAtomicInteger<T>& atomicInt) {
     // TODO: QBasicAtomicInteger<T>::load() is deprecated and should be
