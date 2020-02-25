@@ -17,7 +17,7 @@ enum Type {
   PHRASE = 2;
 }
 
-message Signature {
+message TimeSignature {
   required int32 beats = 1;
   required int32 note_value = 2;
 }
@@ -27,7 +27,7 @@ message Beat {
   optional bool enabled = 2 [ default = true ];
   optional Source source = 3 [ default = ANALYZER ];
   optional Type type = 4 [ default = BEAT ];
-  optional Signature signature = 5;
+  optional TimeSignature signature = 5;
 }
 
 message Bpm {

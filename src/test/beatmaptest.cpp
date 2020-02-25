@@ -309,26 +309,26 @@ TEST_F(BeatMapTest, TestBpmAround) {
 
 TEST_F(BeatMapTest, TestSignature) {
 
-    // Undefined signature must be 4/4
-    EXPECT_TRUE(m_pMap->getSignature() == mixxx::Signature(4,4)) << "If no signature defined, signature must be 4/4";
+    // Undefined time signature must be default
+    EXPECT_TRUE(m_pMap->getSignature() == mixxx::default_time_signature) << "If no Time Signature defined, it must be default(4/4)";
 
-    // Add signature to the beginning
-    m_pMap->setSignature(mixxx::Signature(3,4));
+    // Add tieme signature to the beginning
+    m_pMap->setSignature(mixxx::TimeSignature(3,4));
 
-    // Add signature in beats not at the beginning
-    m_pMap->setSignature(mixxx::Signature(5,4), 1000);
-    m_pMap->setSignature(mixxx::Signature(5,3), 5000);
+    // Add time signature in beats not at the beginning
+    m_pMap->setSignature(mixxx::TimeSignature(5,4), 1000);
+    m_pMap->setSignature(mixxx::TimeSignature(5,3), 5000);
 
-    EXPECT_TRUE(m_pMap->getSignature() == mixxx::Signature(3,4)) << "Starting Signature must be 3/4";
-    EXPECT_TRUE(m_pMap->getSignature(500) == mixxx::Signature(3,4)) << "Signature at 500 must be 3/4";
-    EXPECT_TRUE(m_pMap->getSignature(1000) == mixxx::Signature(5,4)) << "Signature at 1000 must be 5/4";
-    EXPECT_TRUE(m_pMap->getSignature(5000) == mixxx::Signature(5,3)) << "Signature at 5000 must be 5/3";
-    EXPECT_TRUE(m_pMap->getSignature(100000) == mixxx::Signature(5,3)) << "Signature at 100000 must be 5/3";
+    EXPECT_TRUE(m_pMap->getSignature() == mixxx::TimeSignature(3,4)) << "Starting Time Signature must be 3/4";
+    EXPECT_TRUE(m_pMap->getSignature(500) == mixxx::TimeSignature(3,4)) << "Time Signature at 500 must be 3/4";
+    EXPECT_TRUE(m_pMap->getSignature(1000) == mixxx::TimeSignature(5,4)) << "Time Signature at 1000 must be 5/4";
+    EXPECT_TRUE(m_pMap->getSignature(5000) == mixxx::TimeSignature(5,3)) << "Time Signature at 5000 must be 5/3";
+    EXPECT_TRUE(m_pMap->getSignature(100000) == mixxx::TimeSignature(5,3)) << "Time Signature at 100000 must be 5/3";
 
 
     // Add a signature past the end of the track, must have no effect, and check
-    m_pMap->setSignature(mixxx::Signature(6,4), 100000);
-    EXPECT_TRUE(m_pMap->getSignature(100000) == mixxx::Signature(5,3)) << "Signature set after the end of track must have no effect";
+    m_pMap->setSignature(mixxx::TimeSignature(6,4), 100000);
+    EXPECT_TRUE(m_pMap->getSignature(100000) == mixxx::TimeSignature(5,3)) << "Time Signature set after the end of track must have no effect";
 }
 
 }  // namespace

@@ -210,13 +210,13 @@ TEST_F(BeatGridTest, TestNthBeatWhenNotOnBeat) {
 
 TEST_F(BeatGridTest, TestSignature) {
     // Undefined signature must be 4/4
-    EXPECT_TRUE(m_pGrid->getSignature() == mixxx::Signature(4,4)) << "If no signature defined, signature must be 4/4";
+    EXPECT_TRUE(m_pGrid->getSignature() == mixxx::TimeSignature(4,4)) << "If no signature defined, signature must be 4/4";
 
     // Add signatures and test change
-    m_pGrid->setSignature(mixxx::Signature(3,4));
-    EXPECT_TRUE(m_pGrid->getSignature() == mixxx::Signature(3,4)) << "Signature must be 3/4";
-    m_pGrid->setSignature(mixxx::Signature(5,3));
-    EXPECT_TRUE(m_pGrid->getSignature() == mixxx::Signature(5,3)) << "Signature must be 3/4";
+    m_pGrid->setSignature(mixxx::TimeSignature(3,4));
+    EXPECT_TRUE(m_pGrid->getSignature() == mixxx::TimeSignature(3,4)) << "Signature must be 3/4";
+    m_pGrid->setSignature(mixxx::TimeSignature(5,3));
+    EXPECT_TRUE(m_pGrid->getSignature() == mixxx::TimeSignature(5,3)) << "Signature must be 3/4";
 }
 
 }  // namespace

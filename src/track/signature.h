@@ -7,18 +7,18 @@ namespace mixxx {
 
 // Musical Time signature
 // Right now is to be used for bar detection only, so only the beats per bar is useful
-class Signature final {
+class TimeSignature final {
   private:
     int m_beats;
     int m_noteValue;
 
   public:
-    inline Signature(int beats, int noteValue) {
+    inline TimeSignature(int beats, int noteValue) {
         m_beats = beats;
         m_noteValue = noteValue;
     }
 
-    virtual ~Signature() {}
+    virtual ~TimeSignature() {}
 
     inline void setBeats(int beats) {
         m_beats = beats;
@@ -36,14 +36,14 @@ class Signature final {
         return m_noteValue;
     }
 
-    inline bool operator==(const Signature& signature) const {
+    inline bool operator==(const TimeSignature& signature) const {
         return(signature.m_beats == m_beats && signature.m_noteValue == m_noteValue);
     }
 };
 
 // Invalid Signature
-const Signature null_signature = Signature(0,0);
+const TimeSignature null_time_signature = TimeSignature(0,0);
 // Default Signature 4/4
-const Signature default_signature = Signature(4,4);
+const TimeSignature default_time_signature = TimeSignature(4,4);
 
 } // namespace mixxx

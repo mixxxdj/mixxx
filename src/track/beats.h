@@ -145,10 +145,10 @@ class Beats : public QObject {
     }
 
     /// Sets the track signature at the nearest sample
-    virtual void setSignature( mixxx::Signature signature, double dSample = 0) = 0;
+    virtual void setSignature( mixxx::TimeSignature signature, double dSample = 0) = 0;
 
     /// Return the track signature at the given sample
-    virtual mixxx::Signature getSignature(double dSample = 0) const = 0;
+    virtual mixxx::TimeSignature getSignature(double dSample = 0) const = 0;
 
     /// Sets the nearest beat as a bar beat
     virtual void setBar(double dSample = 0) = 0;

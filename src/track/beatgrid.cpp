@@ -389,7 +389,7 @@ void BeatGrid::setBpm(double dBpm) {
     emit updated();
 }
 
-void BeatGrid::setSignature(mixxx::Signature sig, double dSample) {
+void BeatGrid::setSignature(mixxx::TimeSignature sig, double dSample) {
     Q_UNUSED(dSample);
     QMutexLocker locker(&m_mutex);
     if (!isValid())
@@ -399,17 +399,17 @@ void BeatGrid::setSignature(mixxx::Signature sig, double dSample) {
     m_grid.mutable_first_beat()->mutable_signature()->set_note_value(sig.getNoteValue());
 }
 
-mixxx::Signature BeatGrid::getSignature(double dSample) const {
+mixxx::TimeSignature BeatGrid::getSignature(double dSample) const {
     Q_UNUSED(dSample);
     QMutexLocker locker(&m_mutex);
     if (!isValid())
-        return mixxx::Signature(0,0);
+        return mixxx::TimeSignature(0,0);
 
     // If no signature assume 4/4
     if (!m_grid.first_beat().has_signature()) {
-        return mixxx::Signature(4,4);
+        return mixxx::TimeSignature(4,4);
     } else {
-        return mixxx::Signature(
+        return mixxx::TimeSignature(
                 m_grid.first_beat().signature().beats(),
                 m_grid.first_beat().signature().note_value());
     }

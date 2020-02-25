@@ -769,14 +769,14 @@ double BeatMap::calculateBpm(const Beat& startBeat, const Beat& stopBeat) const 
     return BeatUtils::calculateBpm(beatvect, m_iSampleRate, 0, 9999);
 }
 
-mixxx::Signature BeatMap::getSignature(double dSample) const {
+mixxx::TimeSignature BeatMap::getSignature(double dSample) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid())
-        return mixxx::null_signature;
+        return mixxx::null_time_signature;
 
-    auto result = mixxx::default_signature;
+    auto result = mixxx::default_time_signature;
 
-    // Special case, when looking for initial Signature
+    // Special case, when looking for initial TimeSignature
     if(dSample == 0) {
         auto beat = m_beats.cbegin();
         if (beat->has_signature()) {
@@ -784,7 +784,7 @@ mixxx::Signature BeatMap::getSignature(double dSample) const {
             result.setNoteValue(beat->signature().note_value());
         }
     } else {
-        // Scans the list of beats to find the last signature change before the sample
+        // Scans the list of beats to find the last time signature change before the sample
         for( auto beat = m_beats.begin() ; beat != m_beats.end() && beat->frame_position() < dSample ; beat++) {
            if(beat->has_signature()) {
                result.setBeats(beat->signature().beats());
@@ -795,7 +795,7 @@ mixxx::Signature BeatMap::getSignature(double dSample) const {
     return result;
 }
 
-void BeatMap::setSignature(mixxx::Signature sig, double dSample) {
+void BeatMap::setSignature(mixxx::TimeSignature sig, double dSample) {
     QMutexLocker locker(&m_mutex);
     if (!isValid())
         return;
@@ -815,7 +815,7 @@ void BeatMap::setSignature(mixxx::Signature sig, double dSample) {
             beat--;
     }
 
-    // Sets the Signature value
+    // Sets the TimeSignature value
     beat->mutable_signature()->set_beats(sig.getBeats());
     beat->mutable_signature()->set_note_value(sig.getNoteValue());
     locker.unlock();

@@ -84,8 +84,8 @@ class BeatMap final : public Beats {
     // Signature related
     ////////////////////////////////////////////////////////////////////////////
 
-    virtual void setSignature(mixxx::Signature, double dBeat = 0);
-    virtual mixxx::Signature getSignature(double dBeat = 0) const;
+    virtual void setSignature(mixxx::TimeSignature, double dBeat = 0);
+    virtual mixxx::TimeSignature getSignature(double dBeat = 0) const;
     virtual void setBar(double dBeat = 0);
 
   private:
