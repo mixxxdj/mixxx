@@ -51,16 +51,10 @@ DJCi300.kScratchActionScratch = 1;
 DJCi300.kScratchActionSeek = 2;
 DJCi300.kScratchActionBend = 3;
 
-DJCi300.vuMeterUpdateMaster = function(value, group, control) {
+DJCi300.vuMeterUpdateMaster = function(value,_group, control) {
     value = (value * 122) + 5;
-    switch (control) {
-    case "VuMeterL":
-        midi.sendShortMsg(0xB0, 0x40, value);
-        break;
-    case "VuMeterR":
-        midi.sendShortMsg(0xB0, 0x41, value);
-        break;
-    }
+    var status = (control === "[VuMeterL]") ? 0x40 : 0x41;
+    midi.sendShortMsg(0xB0, control, value);
 };
 
 DJCi300.vuMeterUpdateDeck = function(value, group, _control) {
