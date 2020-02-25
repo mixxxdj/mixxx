@@ -3,7 +3,7 @@
 // ***************************************************************************
 // * Mixxx mapping script file for the Hercules DJControl Inpulse 300.
 // * Author: DJ Phatso, contributions by Kerrick Staley
-// * Version 1.2 (December 2019)
+// * Version 1.2 (March 2020)
 // * Forum: https://www.mixxx.org/forums/viewtopic.php?f=7&t=12599
 // * Wiki: https://mixxx.org/wiki/doku.php/hercules_djcontrol_inpulse_300
 //
@@ -81,7 +81,7 @@ DJCi300.init = function() {
     midi.sendShortMsg(0x92, 0x03, 0x7F);
 
     //Turn On Browser button LED
-    midi.sendShortMsg(0x90, 0x05, 0x10);
+    midi.sendShortMsg(0x90, 0x04, 0x05);
 
     // Connect the VUMeters
     engine.connectControl("[Channel1]", "VuMeter", "DJCi300.vuMeterUpdateDeck");
@@ -92,10 +92,6 @@ DJCi300.init = function() {
     engine.connectControl("[Master]", "VuMeterR", "DJCi300.vuMeterUpdateMaster");
 	engine.getValue("[Master]", "VuMeterL", "DJCi300.vuMeterUpdateMaster");
     engine.getValue("[Master]", "VuMeterR", "DJCi300.vuMeterUpdateMaster");
-
-    // Connect the Browser LEDs
-    engine.getValue("[Library]", "MoveFocus");
-    engine.getValue("[Master]", "maximize_library");
 
     // Ask the controller to send all current knob/slider values over MIDI, which will update
     // the corresponding GUI controls in MIXXX.
