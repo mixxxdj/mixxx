@@ -133,7 +133,7 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
                  << info << desiredWidth << signalWhenDone;
     }
 
-    QImage image = CoverArtUtils::loadCover(info);
+    QImage image = info.loadImage();
 
     // TODO(XXX) Should we re-hash here? If the cover file (or track metadata)
     // has changed then info.hash may be incorrect. The fix

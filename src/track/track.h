@@ -189,6 +189,10 @@ class Track : public QObject {
     QString getGenre() const;
     // Set genre
     void setGenre(const QString&);
+    // Returns the track color
+    mixxx::RgbColor::optional_t getColor() const;
+    // Sets the track color
+    void setColor(mixxx::RgbColor::optional_t);
     // Returns the user comment
     QString getComment() const;
     // Sets the user commnet
@@ -314,9 +318,10 @@ class Track : public QObject {
     void keysUpdated();
     void ReplayGainUpdated(mixxx::ReplayGain replayGain);
     void cuesUpdated();
-    void changed(Track* pTrack);
-    void dirty(Track* pTrack);
-    void clean(Track* pTrack);
+
+    void changed(TrackId trackId);
+    void dirty(TrackId trackId);
+    void clean(TrackId trackId);
 
   private slots:
     void slotCueUpdated();

@@ -37,6 +37,7 @@ const QString LIBRARYTABLE_KEY = "key";
 const QString LIBRARYTABLE_KEY_ID = "key_id";
 const QString LIBRARYTABLE_BPM_LOCK = "bpm_lock";
 const QString LIBRARYTABLE_PREVIEW = "preview";
+const QString LIBRARYTABLE_COLOR = "color";
 const QString LIBRARYTABLE_COVERART = "coverart";
 const QString LIBRARYTABLE_COVERART_SOURCE = "coverart_source";
 const QString LIBRARYTABLE_COVERART_TYPE = "coverart_type";

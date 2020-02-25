@@ -44,23 +44,28 @@ void DlgTagFetcher::loadTrack(const TrackPointer& track) {
         return;
     }
     results->clear();
-    disconnect(track.get(), &Track::changed,
-            this, &DlgTagFetcher::updateTrackMetadata);
+    disconnect(track.get(),
+            &Track::changed,
+            this,
+            &DlgTagFetcher::slotTrackChanged);
 
     m_track = track;
     m_data = Data();
     m_networkResult = NetworkResult::Ok;
     m_tagFetcher.startFetch(m_track);
 
-    connect(track.get(), &Track::changed,
-            this, &DlgTagFetcher::updateTrackMetadata);
+    connect(track.get(),
+            &Track::changed,
+            this,
+            &DlgTagFetcher::slotTrackChanged);
 
     updateStack();
 }
 
-void DlgTagFetcher::updateTrackMetadata(Track* pTIO) {
-    Q_UNUSED(pTIO);
-    updateStack();
+void DlgTagFetcher::slotTrackChanged(TrackId trackId) {
+    if (m_track && m_track->getId() == trackId) {
+        updateStack();
+    }
 }
 
 void DlgTagFetcher::apply() {

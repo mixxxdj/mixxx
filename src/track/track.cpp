@@ -532,6 +532,18 @@ void Track::updatePlayCounter(bool bPlayed) {
     }
 }
 
+mixxx::RgbColor::optional_t Track::getColor() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_record.getColor();
+}
+
+void Track::setColor(mixxx::RgbColor::optional_t color) {
+    QMutexLocker lock(&m_qMutex);
+    if (compareAndSet(&m_record.refColor(), color)) {
+        markDirtyAndUnlock(&lock);
+    }
+}
+
 QString Track::getComment() const {
     QMutexLocker lock(&m_qMutex);
     return m_record.getMetadata().getTrackInfo().getComment();
@@ -795,19 +807,23 @@ void Track::setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty) {
     const bool dirtyChanged = m_bDirty != bDirty;
     m_bDirty = bDirty;
 
+    const auto trackId = m_record.getId();
+
     // Unlock before emitting any signals!
     pLock->unlock();
 
-    if (dirtyChanged) {
-        if (bDirty) {
-            emit dirty(this);
-        } else {
-            emit clean(this);
+    if (trackId.isValid()) {
+        if (dirtyChanged) {
+            if (bDirty) {
+                emit dirty(trackId);
+            } else {
+                emit clean(trackId);
+            }
         }
-    }
-    if (bDirty) {
-        // Emit a changed signal regardless if this attempted to set us dirty.
-        emit changed(this);
+        if (bDirty) {
+            // Emit a changed signal regardless if this attempted to set us dirty.
+            emit changed(trackId);
+        }
     }
 }
 

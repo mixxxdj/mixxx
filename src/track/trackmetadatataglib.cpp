@@ -427,6 +427,19 @@ bool parseAlbumPeak(
     return isPeakValid;
 }
 
+bool parseSeratoMarkers(
+        TrackMetadata* pTrackMetadata,
+        const QByteArray& data) {
+    DEBUG_ASSERT(pTrackMetadata);
+
+    SeratoMarkers seratoMarkers(pTrackMetadata->getTrackInfo().getSeratoMarkers());
+    bool isValid = SeratoMarkers::parse(&seratoMarkers, data);
+    if (isValid) {
+        pTrackMetadata->refTrackInfo().setSeratoMarkers(seratoMarkers);
+    }
+    return isValid;
+}
+
 bool parseSeratoMarkers2(
         TrackMetadata* pTrackMetadata,
         const QByteArray& data) {
@@ -1645,6 +1658,11 @@ void importTrackMetadataFromID3v2Tag(
         pTrackMetadata->refTrackInfo().setEncoderSettings(toQStringFirstNotEmpty(encoderSettingsFrames));
     }
     // Serato tags
+    QByteArray seratoMarkers = readFirstGeneralEncapsulatedObjectFrame(tag, "Serato Markers_");
+    if (!seratoMarkers.isEmpty()) {
+        parseSeratoMarkers(pTrackMetadata, seratoMarkers);
+    }
+
     QByteArray seratoMarkers2 = readFirstGeneralEncapsulatedObjectFrame(tag, "Serato Markers2");
     if (!seratoMarkers2.isEmpty()) {
         parseSeratoMarkers2(pTrackMetadata, seratoMarkers2);
@@ -2510,8 +2528,12 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
             trackMetadata.getTrackInfo().getEncoderSettings());
     writeID3v2GeneralEncapsulatedObjectFrame(
             pTag,
+            "Serato Markers_",
+            trackMetadata.getTrackInfo().getSeratoMarkers().dump());
+    writeID3v2GeneralEncapsulatedObjectFrame(
+            pTag,
             "Serato Markers2",
-            trackMetadata.getTrackInfo().getSeratoMarkers2().data());
+            trackMetadata.getTrackInfo().getSeratoMarkers2().dump());
 #endif // __EXTRA_METADATA__
 
     return true;

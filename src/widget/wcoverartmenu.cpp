@@ -83,7 +83,7 @@ void WCoverArtMenu::slotChange() {
     coverInfo.source = CoverInfo::USER_SELECTED;
     coverInfo.coverLocation = selectedCoverPath;
     // TODO() here we may introduce a duplicate hash code
-    coverInfo.hash = CoverArtUtils::calculateHash(image);
+    coverInfo.hash = CoverImageUtils::calculateHash(image);
     qDebug() << "WCoverArtMenu::slotChange emit" << coverInfo;
     emit coverInfoSelected(coverInfo);
 }

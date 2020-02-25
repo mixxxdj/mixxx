@@ -117,7 +117,11 @@ else()
   message(STATUS "Support for ccache: ${CCACHE_SUPPORT}")
 endif()
 
+set_property(DIRECTORY APPEND
+    PROPERTY CMAKE_CONFIGURE_DEPENDS
+    "${CMAKE_SOURCE_DIR}/.git/index")
 
+# uses GIT_BRANCH and GIT_COMMIT_COUNT
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/src/build.h.template"
   "${CMAKE_CURRENT_BINARY_DIR}/src/build.h"
@@ -328,6 +332,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/browse/browsetablemodel.cpp
   src/library/browse/browsethread.cpp
   src/library/browse/foldertreemodel.cpp
+  src/library/colordelegate.cpp
   src/library/columncache.cpp
   src/library/coverart.cpp
   src/library/coverartcache.cpp
@@ -394,6 +399,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/scanner/scannertask.cpp
   src/library/searchquery.cpp
   src/library/searchqueryparser.cpp
+  src/library/serato/seratofeature.cpp
+  src/library/serato/seratoplaylistmodel.cpp
   src/library/setlogfeature.cpp
   src/library/sidebarmodel.cpp
   src/library/songdownloader.cpp
@@ -510,7 +517,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/keyutils.cpp
   src/track/playcounter.cpp
   src/track/replaygain.cpp
-  src/track/seratomarkers2.cpp
+  src/track/serato/markers.cpp
+  src/track/serato/markers2.cpp
   src/track/track.cpp
   src/track/trackfile.cpp
   src/track/trackinfo.cpp
@@ -522,6 +530,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/audiosignal.cpp
   src/util/autohidpi.cpp
   src/util/battery/battery.cpp
+  src/util/cache.cpp
   src/util/cmdlineargs.cpp
   src/util/color/color.cpp
   src/util/color/predefinedcolor.cpp
@@ -627,6 +636,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wbattery.cpp
   src/widget/wbeatspinbox.cpp
   src/widget/wcolorpicker.cpp
+  src/widget/wcolorpickeraction.cpp
   src/widget/wcombobox.cpp
   src/widget/wcoverart.cpp
   src/widget/wcoverartlabel.cpp
@@ -909,6 +919,7 @@ add_executable(mixxx-test
   src/test/bpmcontrol_test.cpp
   src/test/broadcastprofile_test.cpp
   src/test/broadcastsettings_test.cpp
+  src/test/cache_test.cpp
   src/test/channelhandle_test.cpp
   src/test/configobject_test.cpp
   src/test/controller_preset_validation_test.cpp
@@ -957,10 +968,12 @@ add_executable(mixxx-test
   src/test/readaheadmanager_test.cpp
   src/test/replaygaintest.cpp
   src/test/rescalertest.cpp
+  src/test/rgbcolor_test.cpp
   src/test/samplebuffertest.cpp
   src/test/sampleutiltest.cpp
   src/test/schemamanager_test.cpp
   src/test/searchqueryparsertest.cpp
+  src/test/seratomarkerstest.cpp
   src/test/seratomarkers2test.cpp
   src/test/signalpathtest.cpp
   src/test/skincontext_test.cpp

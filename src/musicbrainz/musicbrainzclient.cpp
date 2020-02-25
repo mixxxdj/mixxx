@@ -126,19 +126,34 @@ void MusicBrainzClient::replyFinished() {
     const QByteArray body(reply->readAll());
     QXmlStreamReader reader(body);
 
-    // MusicBrainz returns 404 when the MBID is not in their database. We treat
-    // a status of 404 the same as a 200 but it will produce an empty list of
-    // results.
-    if (status != 200 && status != 404) {
-        qDebug() << "MusicBrainzClient POST reply status:" << status << "body:" << body;
-        QJsonDocument jsonResponse = QJsonDocument::fromJson(body);
-        QJsonObject jsonObject = jsonResponse.object();
-        QString message = jsonObject["error"].toString();
-        QStringList propertyNames;
-        QStringList propertyKeys;
+    // HTTP status of successful results:
+    // 200: Found
+    // 301: Found, but UUID moved permanently in database
+    // 404: Not found in database, i.e. empty result
+    if (status != 200 && status != 301 && status != 404) {
+        qDebug()
+                << "MusicBrainzClient GET reply"
+                << "status:" << status
+                << "body:" << body;
+        QString errorMessage;
+        int errorCode = kDefaultErrorCode;
+        while (!reader.atEnd()) {
+            if (reader.readNext() == QXmlStreamReader::StartElement) {
+                const QStringRef name = reader.name();
+                if (name == QStringLiteral("message")) {
+                    errorMessage = reader.readElementText();
+                } else if (name == QStringLiteral("code")) {
+                    bool ok;
+                    int code = reader.readElementText().toInt(&ok);
+                    if (ok) {
+                        errorCode = code;
+                    }
+                }
+            }
+        }
         emit networkError(
              reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
-             "MusicBrainz", message, kDefaultErrorCode);
+             "MusicBrainz", errorMessage, errorCode);
         return;
     }
 
