@@ -51,7 +51,7 @@ DJCi300.kScratchActionScratch = 1;
 DJCi300.kScratchActionSeek = 2;
 DJCi300.kScratchActionBend = 3;
 
-DJCi300.vuMeterUpdateMaster = function(value,_group, control) {
+DJCi300.vuMeterUpdateMaster = function(value, _group, control) {
     value = (value * 122) + 5;
     var status = (control === "[VuMeterL]") ? 0x40 : 0x41;
     midi.sendShortMsg(0xB0, control, value);
@@ -64,7 +64,6 @@ DJCi300.vuMeterUpdateDeck = function(value, group, _control) {
 };
 
 DJCi300.init = function() {
-	
     DJCi300.scratchButtonState = true;
     DJCi300.scratchAction = {
         1: DJCi300.kScratchActionNone,
@@ -86,8 +85,8 @@ DJCi300.init = function() {
    engine.softTakeover("[Channel2]", "rate", true);
    engine.softTakeoverIgnoreNextValue("[Channel1]", "rate");
    engine.softTakeoverIgnoreNextValue("[Channel2]", "rate");
-	
-    // Connect the VUMeters
+   
+   // Connect the VUMeters
     engine.connectControl("[Channel1]", "VuMeter", "DJCi300.vuMeterUpdateDeck");
 	engine.getValue("[Channel1]", "VuMeter", "DJCi300.vuMeterUpdateDeck");
     engine.connectControl("[Channel2]", "VuMeter", "DJCi300.vuMeterUpdateDeck");
@@ -102,16 +101,10 @@ DJCi300.init = function() {
     midi.sendShortMsg(0xB0, 0x7F, 0x7F);
 };
 
-DJCi300.deckRateMsb = function(_channel, _control, value, status, _group) {
-        var invertval = 127-value;
-        //Calculating this always, or else the first time will not work
-        //(which is precisely when the controller reports the initial positions)
-        DJCi300.pitchMsbValue[deck - 1] = value;  
+DJCi300.deckRateMsb = function(_channel, _control, value, _status, _group) {
 };
 
-DJCi300.deckRateLsb = function(_channel, _control, value, status, _group) {
-        var invertval = 127-value;
-        var msbval = DJCi300.pitchMsbValue[deck - 1];
+DJCi300.deckRateLsb = function(_channel, _control, value, _status, _group) {
 };
 
 // The Vinyl button, used to enable or disable scratching on the jog wheels (One per deck).
