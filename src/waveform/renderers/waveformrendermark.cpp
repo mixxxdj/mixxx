@@ -123,7 +123,7 @@ void WaveformRenderMark::slotCuesUpdated() {
         }
 
         QString newLabel = pCue->getLabel();
-        QColor newColor = pCue->getColor();
+        QColor newColor = mixxx::RgbColor::toQColor(pCue->getColor());
         if (pMark->m_text.isNull() || newLabel != pMark->m_text ||
                 !pMark->fillColor().isValid() || newColor != pMark->fillColor()) {
             pMark->m_text = newLabel;

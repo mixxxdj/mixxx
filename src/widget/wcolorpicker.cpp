@@ -36,7 +36,7 @@ WColorPicker::WColorPicker(ColorOption colorOption, QWidget* parent)
     int column = 0;
 
     if (m_colorOption == ColorOption::AllowNoColor) {
-        addColorButton(QColor(), pLayout, row, column);
+        addColorButton(std::nullopt, pLayout, row, column);
         column++;
     }
 
@@ -50,17 +50,17 @@ WColorPicker::WColorPicker(ColorOption colorOption, QWidget* parent)
     }
 }
 
-void WColorPicker::addColorButton(const QColor& color, QGridLayout* pLayout, int row, int column) {
+void WColorPicker::addColorButton(const mixxx::RgbColor::optional_t& color, QGridLayout* pLayout, int row, int column) {
     setLayout(pLayout);
     parented_ptr<QPushButton> pColorButton = make_parented<QPushButton>("", this);
     if (m_pStyle) {
         pColorButton->setStyle(m_pStyle);
     }
 
-    if (color.isValid()) {
+    if (color) {
         // Set the background color of the button. This can't be overridden in skin stylesheets.
         pColorButton->setStyleSheet(
-                QString("QPushButton { background-color: %1; }").arg(color.name()));
+                QString("QPushButton { background-color: %1; }").arg(mixxx::RgbColor::toQString(color)));
     } else {
         pColorButton->setProperty("noColor", true);
     }
@@ -85,10 +85,13 @@ void WColorPicker::addColorButton(const QColor& color, QGridLayout* pLayout, int
 void WColorPicker::resetSelectedColor() {
     // Unset currently selected color
     int i;
-    if (m_colorOption == ColorOption::AllowNoColor && !m_selectedColor.isValid()) {
+    if (!m_selectedColor) {
+        if (m_colorOption != ColorOption::AllowNoColor) {
+            return;
+        }
         i = 0;
     } else {
-        i = m_palette.indexOf(m_selectedColor);
+        i = m_palette.indexOf(m_selectedColor.value());
         if (i == -1) {
             return;
         }
@@ -109,16 +112,19 @@ void WColorPicker::resetSelectedColor() {
     pButton->style()->polish(pButton);
 }
 
-void WColorPicker::setSelectedColor(const QColor& color) {
+void WColorPicker::setSelectedColor(const mixxx::RgbColor::optional_t& color) {
     resetSelectedColor();
 
     m_selectedColor = color;
 
     int i;
-    if (m_colorOption == ColorOption::AllowNoColor && !color.isValid()) {
+    if (!color) {
+        if (m_colorOption != ColorOption::AllowNoColor) {
+            return;
+        }
         i = 0;
     } else {
-        i = m_palette.indexOf(color);
+        i = m_palette.indexOf(color.value());
         if (i == -1) {
             return;
         }
@@ -153,11 +159,10 @@ void WColorPicker::useColorSet(const ColorPalette& palette) {
         // Set the background color of the button. This can't be overridden in skin stylesheets.
         m_colorButtons.at(j)->setStyleSheet(
                 QString("QPushButton { background-color: %1; }")
-                .arg(palette.at(i).name()));
+                        .arg(mixxx::RgbColor::toQString(palette.at(i))));
     }
 }
 
-
-void WColorPicker::slotColorPicked(const QColor& color) {
+void WColorPicker::slotColorPicked(const mixxx::RgbColor::optional_t& color) {
     setSelectedColor(color);
 }

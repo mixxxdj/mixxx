@@ -1110,7 +1110,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             if (multipleTrackColors) {
                 m_pColorPickerAction->resetSelectedColor();
             } else {
-                m_pColorPickerAction->setSelectedColor(toQColor(trackColor));
+                m_pColorPickerAction->setSelectedColor(trackColor);
             }
             m_pColorMenu->addAction(m_pColorPickerAction);
             m_pMenu->addMenu(m_pColorMenu);
@@ -1970,7 +1970,7 @@ void WTrackTableView::lockBpm(bool lock) {
     }
 }
 
-void WTrackTableView::slotColorPicked(const QColor& color) {
+void WTrackTableView::slotColorPicked(const mixxx::RgbColor::optional_t& color) {
     TrackModel* trackModel = getTrackModel();
     if (trackModel == nullptr) {
         return;
@@ -1980,7 +1980,7 @@ void WTrackTableView::slotColorPicked(const QColor& color) {
     // TODO: This should be done in a thread for large selections
     for (const auto& index : selectedTrackIndices) {
         TrackPointer track = trackModel->getTrack(index);
-        track->setColor(mixxx::RgbColor::optional(color));
+        track->setColor(color);
     }
 
     m_pMenu->hide();

@@ -1,11 +1,12 @@
 #ifndef MIXXX_CUE_H
 #define MIXXX_CUE_H
 
-#include <QObject>
-#include <QMutex>
 #include <QColor>
+#include <QMutex>
+#include <QObject>
 
 #include "track/trackid.h"
+#include "util/color/rgbcolor.h"
 #include "util/memory.h"
 
 class CuePosition;
@@ -53,8 +54,8 @@ class Cue : public QObject {
     QString getLabel() const;
     void setLabel(QString label);
 
-    QColor getColor() const;
-    void setColor(const QColor& color);
+    mixxx::RgbColor getColor() const;
+    void setColor(const mixxx::RgbColor& color);
 
     double getEndPosition() const;
 
@@ -70,7 +71,7 @@ class Cue : public QObject {
             double length,
             int hotCue,
             QString label,
-            QColor color);
+            mixxx::RgbColor color);
     void setDirty(bool dirty);
     void setId(int id);
     void setTrackId(TrackId trackId);
@@ -85,7 +86,7 @@ class Cue : public QObject {
     double m_sampleEndPosition;
     int m_iHotCue;
     QString m_label;
-    QColor m_color;
+    mixxx::RgbColor m_color;
 
     friend class Track;
     friend class CueDAO;

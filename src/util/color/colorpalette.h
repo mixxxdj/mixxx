@@ -1,15 +1,16 @@
 #pragma once
 
-#include <QColor>
 #include <QList>
+
+#include "util/color/rgbcolor.h"
 
 class ColorPalette {
   public:
-    ColorPalette(QList<QColor> colorList)
+    ColorPalette(QList<mixxx::RgbColor> colorList)
             : m_colorList(colorList) {
     }
 
-    QColor at(int i) const {
+    mixxx::RgbColor at(int i) const {
         return m_colorList.at(i);
     }
 
@@ -17,21 +18,21 @@ class ColorPalette {
         return m_colorList.size();
     }
 
-    int indexOf(QColor color) const {
+    int indexOf(mixxx::RgbColor color) const {
         return m_colorList.indexOf(color);
     }
 
-    QList<QColor>::const_iterator begin() const {
+    QList<mixxx::RgbColor>::const_iterator begin() const {
         return m_colorList.begin();
     }
 
-    QList<QColor>::const_iterator end() const {
+    QList<mixxx::RgbColor>::const_iterator end() const {
         return m_colorList.end();
     }
 
     static const ColorPalette mixxxPalette;
 
-    QList<QColor> m_colorList;
+    QList<mixxx::RgbColor> m_colorList;
 };
 
 inline bool operator==(

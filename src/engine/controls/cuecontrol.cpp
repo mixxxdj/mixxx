@@ -318,7 +318,7 @@ void CueControl::detachCue(HotcueControl* pControl) {
     disconnect(pCue.get(), 0, this, 0);
     pControl->resetCue();
     // Reset the color CO to -1
-    pControl->setColor(QColor());
+    pControl->setColor(std::nullopt);
 }
 
 void CueControl::trackLoaded(TrackPointer pNewTrack) {
@@ -1694,8 +1694,11 @@ void CueControl::hotcueFocusColorPrev(double v) {
         return;
     }
 
-    QColor color = pControl->getColor();
-    DEBUG_ASSERT(color.isValid());
+    mixxx::RgbColor::optional_t controlColor = pControl->getColor();
+    if (!controlColor) {
+        return;
+    }
+    mixxx::RgbColor color = controlColor.value();
 
     HotcueColorPaletteSettings m_colorPaletteSettings(m_pConfig);
     ColorPalette colorPalette = m_colorPaletteSettings.getHotcueColorPalette();
@@ -1725,8 +1728,11 @@ void CueControl::hotcueFocusColorNext(double v) {
         return;
     }
 
-    QColor color = pControl->getColor();
-    DEBUG_ASSERT(color.isValid());
+    mixxx::RgbColor::optional_t controlColor = pControl->getColor();
+    if (!controlColor) {
+        return;
+    }
+    mixxx::RgbColor color = controlColor.value();
 
     HotcueColorPaletteSettings colorPaletteSettings(m_pConfig);
     ColorPalette colorPalette = colorPaletteSettings.getHotcueColorPalette();
@@ -1857,7 +1863,7 @@ void HotcueControl::slotHotcuePositionChanged(double newPosition) {
 }
 
 void HotcueControl::slotHotcueColorChanged(double newColor) {
-    m_pCue->setColor(QColor::fromRgba(newColor));
+    m_pCue->setColor(mixxx::RgbColor(newColor));
     emit(hotcueColorChanged(this, newColor));
 }
 
@@ -1872,16 +1878,20 @@ void HotcueControl::setCue(CuePointer pCue) {
     // because we have a null check for valid data else where in the code
     m_pCue = pCue;
 }
-QColor HotcueControl::getColor() const {
-    return QColor::fromRgba(m_hotcueColor->get());
+mixxx::RgbColor::optional_t HotcueControl::getColor() const {
+    double value = m_hotcueColor->get();
+    if (value < 0) {
+        return std::nullopt;
+    }
+    return mixxx::RgbColor(value);
 }
 
-void HotcueControl::setColor(const QColor& newColor) {
-    if (newColor.isValid()) {
-        m_hotcueColor->set(newColor.rgba());
-    } else {
-        m_hotcueColor->set(-1);
+void HotcueControl::setColor(const mixxx::RgbColor::optional_t& newColor) {
+    if (newColor) {
+        m_hotcueColor->set(newColor.value());
+        return;
     }
+    m_hotcueColor->set(-1);
 }
 void HotcueControl::resetCue() {
     // clear pCue first because we have a null check for valid data else where

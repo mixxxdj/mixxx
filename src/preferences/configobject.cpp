@@ -1,14 +1,15 @@
 #include "preferences/configobject.h"
 
-#include <QIODevice>
-#include <QTextStream>
 #include <QApplication>
 #include <QDir>
+#include <QIODevice>
+#include <QTextStream>
 #include <QtDebug>
 
-#include "widget/wwidget.h"
 #include "util/cmdlineargs.h"
+#include "util/color/rgbcolor.h"
 #include "util/xml.h"
+#include "widget/wwidget.h"
 
 // TODO(rryan): Move to a utility file.
 namespace {
@@ -285,8 +286,19 @@ void ConfigObject<ConfigValue>::setValue(
 template<>
 template<>
 void ConfigObject<ConfigValue>::setValue(
-        const ConfigKey& key, const QColor& value) {
-    set(key, ConfigValue(value.name(QColor::NameFormat::HexArgb)));
+        const ConfigKey& key, const mixxx::RgbColor::optional_t& value) {
+    if (!value) {
+        set(key, ConfigValue(""));
+        return;
+    }
+    set(key, ConfigValue(mixxx::toQColor(value.value()).name(QColor::NameFormat::HexArgb)));
+}
+
+template<>
+template<>
+void ConfigObject<ConfigValue>::setValue(
+        const ConfigKey& key, const mixxx::RgbColor& value) {
+    set(key, ConfigValue(mixxx::toQColor(value).name(QColor::NameFormat::HexArgb)));
 }
 
 template <> template <>
@@ -327,20 +339,41 @@ double ConfigObject<ConfigValue>::getValue(
 
 template<>
 template<>
-QColor ConfigObject<ConfigValue>::getValue(
-        const ConfigKey& key, const QColor& default_value) const {
+mixxx::RgbColor::optional_t ConfigObject<ConfigValue>::getValue(
+        const ConfigKey& key, const mixxx::RgbColor::optional_t& default_value) const {
     const ConfigValue value = get(key);
     if (value.isNull()) {
         return default_value;
     }
-    auto color = QColor(value.value);
-    return color.isValid() ? color : default_value;
+    QColor parsedColor(value.value);
+    if (!parsedColor.isValid()) {
+        return default_value;
+    }
+    auto color = mixxx::RgbColor::optional_t(parsedColor.rgb());
+    return color ? color : default_value;
 }
 
 template<>
 template<>
-QColor ConfigObject<ConfigValue>::getValue(const ConfigKey& key) const {
-    return getValue(key, QColor());
+mixxx::RgbColor::optional_t ConfigObject<ConfigValue>::getValue(const ConfigKey& key) const {
+    return getValue(key, mixxx::RgbColor::optional_t(std::nullopt));
+}
+
+template<>
+template<>
+mixxx::RgbColor ConfigObject<ConfigValue>::getValue(
+        const ConfigKey& key, const mixxx::RgbColor& default_value) const {
+    const mixxx::RgbColor::optional_t value = getValue(key, mixxx::RgbColor::optional_t(std::nullopt));
+    if (!value) {
+        return default_value;
+    }
+    return *value;
+}
+
+template<>
+template<>
+mixxx::RgbColor ConfigObject<ConfigValue>::getValue(const ConfigKey& key) const {
+    return getValue(key, mixxx::RgbColor(0));
 }
 
 // For string literal default

@@ -17,6 +17,6 @@ void WColorPickerAction::resetSelectedColor() {
     m_pColorPicker->resetSelectedColor();
 }
 
-void WColorPickerAction::setSelectedColor(QColor color) {
+void WColorPickerAction::setSelectedColor(mixxx::RgbColor::optional_t color) {
     m_pColorPicker->setSelectedColor(color);
 }

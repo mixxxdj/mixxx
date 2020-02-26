@@ -1,45 +1,35 @@
 #include <gtest/gtest.h>
-#include <QColor>
 
+#include "preferences/hotcuecolorpalettesettings.h"
 #include "test/mixxxtest.h"
-
-#include <preferences/hotcuecolorpalettesettings.h>
-#include <util/color/colorpalette.h>
+#include "util/color/colorpalette.h"
+#include "util/color/rgbcolor.h"
 
 class ColorConfigTest : public MixxxTest {};
 
-TEST_F(ColorConfigTest, SavingColorWithoutAlpha) {
+TEST_F(ColorConfigTest, SavingColor) {
     ConfigKey key("[Color]", "color");
-    QColor originalColor("#FF9900");
+    mixxx::RgbColor originalColor(0xFF9900);
     config()->setValue(key, originalColor);
     saveAndReloadConfig();
-    QColor colorFromConfig = config()->getValue(key);
-    ASSERT_EQ(originalColor, colorFromConfig);
-}
-
-TEST_F(ColorConfigTest, SavingColorWithAlpha) {
-    ConfigKey key("[Color]", "color");
-    QColor originalColor("#66FF9900");
-    config()->setValue(key, originalColor);
-    saveAndReloadConfig();
-    QColor colorFromConfig = config()->getValue(key);
+    mixxx::RgbColor colorFromConfig = config()->getValue(key, mixxx::RgbColor(0));
     ASSERT_EQ(originalColor, colorFromConfig);
 }
 
 TEST_F(ColorConfigTest, GetDefaultColorWhenNoStoredColor) {
     ConfigKey key("[Color]", "color");
-    QColor defaultColor("#66FF9900");
-    QColor colorFromConfig = config()->getValue(key, defaultColor);
+    mixxx::RgbColor defaultColor(0x66FF99);
+    mixxx::RgbColor colorFromConfig = config()->getValue(key, defaultColor);
     ASSERT_EQ(defaultColor, colorFromConfig);
 }
 
 TEST_F(ColorConfigTest, SaveColorPalette) {
     HotcueColorPaletteSettings colorPaletteSettings(config());
-    ColorPalette originalColorPalette(QList<QColor>{
-            QColor("#66FF9900"),
-            QColor("#FF9900"),
-            QColor("#00000000"),
-            QColor("#FFFFFF"),
+    ColorPalette originalColorPalette(QList<mixxx::RgbColor>{
+            mixxx::RgbColor(0x66FF99),
+            mixxx::RgbColor(0xFF9900),
+            mixxx::RgbColor(0x000000),
+            mixxx::RgbColor(0xFFFFFF),
     });
     ConfigKey key("[ColorPalette]", "colorPalette");
     colorPaletteSettings.setHotcueColorPalette(originalColorPalette);
@@ -51,15 +41,15 @@ TEST_F(ColorConfigTest, SaveColorPalette) {
 
 TEST_F(ColorConfigTest, ReplaceColorPalette) {
     HotcueColorPaletteSettings colorPaletteSettings(config());
-    ColorPalette colorPalette1(QList<QColor>{
-            QColor("#66FF9900"),
-            QColor("#FF9900"),
-            QColor("#00000000"),
-            QColor("#FFFFFF"),
+    ColorPalette colorPalette1(QList<mixxx::RgbColor>{
+            mixxx::RgbColor(0x66FF99),
+            mixxx::RgbColor(0xFF9900),
+            mixxx::RgbColor(0x000000),
+            mixxx::RgbColor(0xFFFFFF),
     });
-    ColorPalette colorPalette2(QList<QColor>{
-            QColor("#0000FF"),
-            QColor("#FF0000"),
+    ColorPalette colorPalette2(QList<mixxx::RgbColor>{
+            mixxx::RgbColor(0x0000FF),
+            mixxx::RgbColor(0xFF0000),
     });
     ConfigKey key("[ColorPalette]", "colorPalette");
     colorPaletteSettings.setHotcueColorPalette(colorPalette1);
@@ -75,5 +65,5 @@ TEST_F(ColorConfigTest, DefaultColorPalette) {
     HotcueColorPaletteSettings colorPaletteSettings(config());
     ColorPalette colorPaletteFromConfig =
             colorPaletteSettings.getHotcueColorPalette();
-    ASSERT_EQ(ColorPalette::mixxxHotcuesPalette, colorPaletteFromConfig);
+    ASSERT_EQ(ColorPalette::mixxxPalette, colorPaletteFromConfig);
 }

@@ -1,11 +1,12 @@
 #include "colorpalette.h"
 
 const ColorPalette ColorPalette::mixxxPalette =
-        ColorPalette(QList<QColor>{QColor("#c50a08"),
-                QColor("#32be44"),
-                QColor("#0044ff"),
-                QColor("#f8d200"),
-                QColor("#42d4f4"),
-                QColor("#af00cc"),
-                QColor("#fca6d7"),
-                QColor("#f2f2ff")});
+        ColorPalette(QList<mixxx::RgbColor>{
+                mixxx::RgbColor(0xC50A08),
+                mixxx::RgbColor(0x32BE44),
+                mixxx::RgbColor(0x0044FF),
+                mixxx::RgbColor(0xF8D200),
+                mixxx::RgbColor(0x42D4F4),
+                mixxx::RgbColor(0xAF00CC),
+                mixxx::RgbColor(0xFCA6D7),
+                mixxx::RgbColor(0xF2F2FF)});

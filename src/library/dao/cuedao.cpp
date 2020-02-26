@@ -1,15 +1,17 @@
 // cuedao.cpp
 // Created 10/26/2009 by RJ Ryan (rryan@mit.edu)
 
+#include "library/dao/cuedao.h"
+
+#include <QVariant>
 #include <QtDebug>
 #include <QtSql>
-#include <QVariant>
 
-#include "library/dao/cuedao.h"
+#include "library/queryutil.h"
 #include "track/cue.h"
 #include "track/track.h"
-#include "library/queryutil.h"
 #include "util/assert.h"
+#include "util/color/rgbcolor.h"
 #include "util/performancetimer.h"
 
 int CueDAO::cueCount() {
@@ -52,7 +54,7 @@ CuePointer CueDAO::cueFromRow(const QSqlQuery& query) const {
     int hotcue = record.value(record.indexOf("hotcue")).toInt();
     QString label = record.value(record.indexOf("label")).toString();
     uint colorValue = record.value(record.indexOf("color")).toUInt();
-    QColor color = QColor::fromRgba(colorValue);
+    mixxx::RgbColor color = mixxx::RgbColor(colorValue);
     CuePointer pCue(new Cue(id,
             trackId,
             (Cue::Type)type,
@@ -152,7 +154,7 @@ bool CueDAO::saveCue(Cue* cue) {
         query.bindValue(":length", cue->getLength());
         query.bindValue(":hotcue", cue->getHotCue());
         query.bindValue(":label", cue->getLabel());
-        query.bindValue(":color", cue->getColor().rgba());
+        query.bindValue(":color", static_cast<quint32>(cue->getColor()));
 
         if (query.exec()) {
             int id = query.lastInsertId().toInt();
@@ -180,7 +182,7 @@ bool CueDAO::saveCue(Cue* cue) {
         query.bindValue(":length", cue->getLength());
         query.bindValue(":hotcue", cue->getHotCue());
         query.bindValue(":label", cue->getLabel());
-        query.bindValue(":color", cue->getColor().rgba());
+        query.bindValue(":color", static_cast<quint32>(cue->getColor()));
 
         if (query.exec()) {
             cue->setDirty(false);
