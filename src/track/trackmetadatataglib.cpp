@@ -199,10 +199,10 @@ inline QString toQString(const TagLib::String& tString) {
 }
 
 inline TagLib::String toTString(const QString& str) {
-    const QByteArray qba(str.toUtf8());
     if (str.isNull()) {
         return TagLib::String::null;
     } else {
+        const QByteArray qba(str.toUtf8());
         return TagLib::String(qba.constData(), TagLib::String::UTF8);
     }
 }
