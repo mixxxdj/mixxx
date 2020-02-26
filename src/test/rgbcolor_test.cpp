@@ -6,12 +6,12 @@
 
 namespace mixxx {
 
-TEST(RgbColorTest, OptionalRgbColorFromInvalidQColor) {
+TEST(RgbColorTest, fromInvalidQColor) {
     EXPECT_FALSE(RgbColor::optional(QColor()));
     EXPECT_EQ(RgbColor::nullopt(), RgbColor::optional(QColor()));
 }
 
-TEST(RgbColorTest, OptionalRgbColorFromQColorWithoutAlpha) {
+TEST(RgbColorTest, fromQColorWithoutAlpha) {
     EXPECT_TRUE(RgbColor::optional(QColor::fromRgb(0x000000)));
     EXPECT_EQ(0x000000, *RgbColor::optional(QColor::fromRgb(0x000000)));
     EXPECT_TRUE(RgbColor::optional(QColor::fromRgb(0xFF0000)));
@@ -24,7 +24,7 @@ TEST(RgbColorTest, OptionalRgbColorFromQColorWithoutAlpha) {
     EXPECT_EQ(RgbColor::optional(0xFFFFFF), RgbColor::optional(QColor::fromRgb(0xFFFFFF)));
 }
 
-TEST(RgbColorTest, OptionalRgbColorFromQColorWithAlpha) {
+TEST(RgbColorTest, fromQColorWithAlpha) {
     EXPECT_TRUE(RgbColor::optional(QColor::fromRgba(0xAA000000)));
     EXPECT_EQ(RgbColor::optional(0x000000), RgbColor::optional(QColor::fromRgba(0xAA000000)));
     EXPECT_TRUE(RgbColor::optional(QColor::fromRgba(0xAAFF0000)));
@@ -37,11 +37,11 @@ TEST(RgbColorTest, OptionalRgbColorFromQColorWithAlpha) {
     EXPECT_EQ(RgbColor::optional(0xFFFFFF), RgbColor::optional(QColor::fromRgba(0xAAFFFFFF)));
 }
 
-TEST(RgbColorTest, RgbColorToQColor) {
+TEST(RgbColorTest, toQColor) {
     EXPECT_EQ(QColor::fromRgb(0x123456), toQColor(RgbColor(0x123456)));
 }
 
-TEST(RgbColorTest, OptionalRgbColorToQColor) {
+TEST(RgbColorTest, toQColorOptional) {
     EXPECT_EQ(QColor(), toQColor(RgbColor::nullopt()));
     EXPECT_EQ(QColor::fromRgba(0xAABBCCDD),
             toQColor(RgbColor::nullopt(), QColor::fromRgba(0xAABBCCDD)));
@@ -51,11 +51,11 @@ TEST(RgbColorTest, OptionalRgbColorToQColor) {
             toQColor(RgbColor::optional(QColor::fromRgba(0xAA123456)), QColor::fromRgba(0xAABBCCDD)));
 }
 
-TEST(RgbColorTest, RgbColorToQVariant) {
+TEST(RgbColorTest, toQVariant) {
     EXPECT_EQ(QVariant(0x123456), toQVariant(RgbColor(0x123456)));
 }
 
-TEST(RgbColorTest, OptionalRgbColorToQVariant) {
+TEST(RgbColorTest, toQVariantOptional) {
     EXPECT_EQ(QVariant(), toQVariant(RgbColor::nullopt()));
     EXPECT_EQ(QVariant(0x123456),
             toQVariant(RgbColor::optional(QColor::fromRgba(0xAA123456))));
@@ -65,7 +65,7 @@ TEST(RgbColorTest, toQString) {
     EXPECT_EQ(QString("#123456"), toQString(RgbColor(0x123456)));
 }
 
-TEST(RgbColorTest, toNullableQString) {
+TEST(RgbColorTest, toQStringOptional) {
     EXPECT_EQ(QString(), toQString(RgbColor::nullopt()));
     EXPECT_EQ(QString("#123456"),
             toQString(RgbColor::optional(QColor::fromRgba(0xAA123456))));
