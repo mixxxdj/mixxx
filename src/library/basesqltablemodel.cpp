@@ -723,6 +723,15 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
     // role
     switch (role) {
         case Qt::ToolTipRole:
+            if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
+                const auto color = mixxx::RgbColor::optional(value);
+                if (color) {
+                    value = mixxx::toQColor(color).name();
+                } else {
+                    value = QString();
+                }
+            }
+            [[fallthrough]];
         case Qt::DisplayRole:
             if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION)) {
                 int duration = value.toInt();
@@ -799,8 +808,6 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 if (value.canConvert(QMetaType::Int)) {
                     value = QVariant::fromValue(StarRating(value.toInt()));
                 }
-            } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
-                value = QString();
             }
             break;
         case Qt::CheckStateRole:
@@ -896,13 +903,14 @@ Qt::ItemFlags BaseSqlTableModel::readWriteFlags(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) {
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
         return defaultFlags;
-    } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED))  {
+    } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
         return defaultFlags | Qt::ItemIsUserCheckable;
     } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)) {
         return defaultFlags | Qt::ItemIsUserCheckable;
-    } else if(column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
+    } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
         // Allow checking of the BPM-locked indicator.
         defaultFlags |= Qt::ItemIsUserCheckable;
         // Disable editing of BPM field when BPM is locked
