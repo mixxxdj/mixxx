@@ -64,22 +64,26 @@ class RgbColor {
     static constexpr optional_t optional(RgbColor color) {
         return std::make_optional(color);
     }
-    static optional_t optional(QColor color) {
+    static optional_t optional(
+            QColor color,
+            optional_t defaultColor = nullopt()) {
         if (color.isValid()) {
             return optional(validateCode(color.rgb()));
         } else {
-            return nullopt();
+            return defaultColor;
         }
     }
-    static optional_t optional(const QVariant& varCode) {
+    static optional_t optional(
+            const QVariant& varCode,
+            optional_t defaultColor = nullopt()) {
         if (varCode.isNull()) {
-            return nullopt();
+            return defaultColor;
         } else {
             DEBUG_ASSERT(varCode.canConvert(QMetaType::UInt));
             bool ok = false;
             const auto code = varCode.toUInt(&ok);
             VERIFY_OR_DEBUG_ASSERT(ok) {
-                return nullopt();
+                return defaultColor;
             }
             return optional(static_cast<code_t>(code));
         }
@@ -125,15 +129,18 @@ inline QColor toQColor(
 // Explicit conversion of both non-optional and optional
 // RgbColor values to QVariant as overloaded free functions.
 
-inline QVariant toQVariant(RgbColor color) {
+inline QVariant toQVariant(
+        RgbColor color) {
     return QVariant(static_cast<RgbColor::code_t>(color));
 }
 
-inline QVariant toQVariant(RgbColor::optional_t optional) {
+inline QVariant toQVariant(
+        RgbColor::optional_t optional,
+        const QVariant& defaultVariant = QVariant()) {
     if (optional) {
         return toQVariant(*optional);
     } else {
-        return QVariant();
+        return defaultVariant;
     }
 }
 
