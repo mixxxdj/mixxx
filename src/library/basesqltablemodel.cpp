@@ -24,6 +24,7 @@
 #include "util/duration.h"
 #include "util/assert.h"
 #include "util/performancetimer.h"
+#include "util/platform.h"
 #include "widget/wlibrarytableview.h"
 
 namespace {
@@ -726,7 +727,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
                 value = toQString(mixxx::RgbColor::optional(value));
             }
-            [[fallthrough]];
+            M_FALLTHROUGH_INTENDED;
         case Qt::DisplayRole:
             if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION)) {
                 int duration = value.toInt();
