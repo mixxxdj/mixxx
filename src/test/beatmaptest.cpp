@@ -310,7 +310,7 @@ TEST_F(BeatMapTest, TestBpmAround) {
 TEST_F(BeatMapTest, TestSignature) {
 
     // Undefined time signature must be default
-    EXPECT_TRUE(m_pMap->getSignature() == mixxx::default_time_signature) << "If no Time Signature defined, it must be default(4/4)";
+    EXPECT_TRUE(m_pMap->getSignature() == mixxx::kDefaultTimeSignature) << "If no Time Signature defined, it must be default(4/4)";
 
     // Add tieme signature to the beginning
     m_pMap->setSignature(mixxx::TimeSignature(3,4));

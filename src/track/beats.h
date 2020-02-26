@@ -1,5 +1,6 @@
 #pragma once
 
+#include <track/timesignature.h>
 #include <QObject>
 #include <QString>
 #include <QList>
@@ -7,7 +8,6 @@
 #include <QSharedPointer>
 
 #include "util/memory.h"
-#include "track/signature.h"
 
 namespace {
     double kMaxBpm = 500;
