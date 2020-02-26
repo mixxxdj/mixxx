@@ -112,7 +112,9 @@ inline QColor toQColor(RgbColor color) {
     return QColor::fromRgb(color);
 }
 
-inline QColor toQColor(RgbColor::optional_t optional, QColor defaultColor = QColor()) {
+inline QColor toQColor(
+        RgbColor::optional_t optional,
+        QColor defaultColor = QColor()) {
     if (optional) {
         return toQColor(*optional);
     } else {
@@ -139,16 +141,19 @@ inline QVariant toQVariant(RgbColor::optional_t optional) {
 // RgbColor values to QString with the format #RRGGBB,
 // e.g. for tool.
 
-inline QString toQString(mixxx::RgbColor color) {
+inline QString toQString(
+        mixxx::RgbColor color) {
     return mixxx::toQColor(color).name();
 }
 
 // String representation #RRGGBB, e.g. for tool.
-inline QString toQString(mixxx::RgbColor::optional_t color) {
+inline QString toQString(
+        mixxx::RgbColor::optional_t color,
+        const QString& defaultString = QString()) {
     if (color) {
         return toQString(*color);
     } else {
-        return QString();
+        return defaultString;
     }
 }
 

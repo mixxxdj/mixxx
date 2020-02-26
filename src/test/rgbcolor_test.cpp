@@ -66,9 +66,14 @@ TEST(RgbColorTest, toQString) {
 }
 
 TEST(RgbColorTest, toQStringOptional) {
-    EXPECT_EQ(QString(), toQString(RgbColor::nullopt()));
+    EXPECT_EQ(QString(),
+            toQString(RgbColor::nullopt()));
+    EXPECT_EQ(QString("None"),
+            toQString(RgbColor::nullopt(), QStringLiteral("None")));
     EXPECT_EQ(QString("#123456"),
             toQString(RgbColor::optional(QColor::fromRgba(0xAA123456))));
+    EXPECT_EQ(QString("#123456"),
+            toQString(RgbColor::optional(QColor::fromRgba(0xAA123456)), QStringLiteral("None")));
 }
 
 } // namespace mixxx
