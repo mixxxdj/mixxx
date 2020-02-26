@@ -135,6 +135,23 @@ inline QVariant toQVariant(RgbColor::optional_t optional) {
     }
 }
 
+// Explicit conversion of both non-optional and optional
+// RgbColor values to QString with the format #RRGGBB,
+// e.g. for tool.
+
+inline QString toQString(mixxx::RgbColor color) {
+    return mixxx::toQColor(color).name();
+}
+
+// String representation #RRGGBB, e.g. for tool.
+inline QString toQString(mixxx::RgbColor::optional_t color) {
+    if (color) {
+        return toQString(*color);
+    } else {
+        return QString();
+    }
+}
+
 // Debug output stream operators
 
 inline QDebug operator<<(QDebug dbg, RgbColor color) {

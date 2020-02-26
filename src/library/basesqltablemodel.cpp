@@ -724,12 +724,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
     switch (role) {
         case Qt::ToolTipRole:
             if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
-                const auto color = mixxx::RgbColor::optional(value);
-                if (color) {
-                    value = mixxx::toQColor(color).name();
-                } else {
-                    value = QString();
-                }
+                value = toQString(mixxx::RgbColor::optional(value));
             }
             [[fallthrough]];
         case Qt::DisplayRole:
