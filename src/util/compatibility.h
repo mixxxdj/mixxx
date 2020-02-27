@@ -206,3 +206,14 @@ inline void atomicStoreRelaxed(QAtomicPointer<T>& atomicPtr, T* newValue) {
     atomicPtr.store(newValue);
 #endif
 }
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 6, 0)
+template<typename T>
+inline uint qHash(const QList<T>& key, uint seed = 0) {
+    uint hash = 0;
+    for (const auto& elem : key) {
+        hash ^= qHash(elem, seed);
+    }
+    return hash;
+}
+#endif

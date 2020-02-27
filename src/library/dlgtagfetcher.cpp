@@ -2,6 +2,36 @@
 #include <QtDebug>
 
 #include "library/dlgtagfetcher.h"
+#include "track/tracknumbers.h"
+
+namespace {
+
+QStringList track2row(const Track& track) {
+    const auto trackNumbers = TrackNumbers::joinStrings(
+            track.getTrackNumber(),
+            track.getTrackTotal());
+    QStringList row;
+    row.reserve(6);
+    row
+            << track.getYear()
+            << track.getAlbum()
+            << track.getAlbumArtist()
+            << trackNumbers
+            << track.getTitle()
+            << track.getArtist();
+    return row;
+}
+
+void addTrack(
+        const QStringList& trackRow,
+        int resultIndex,
+        QTreeWidget* parent) {
+    QTreeWidgetItem* item = new QTreeWidgetItem(parent, trackRow);
+    item->setData(0, Qt::UserRole, resultIndex);
+    item->setData(0, Qt::TextAlignmentRole, Qt::AlignRight);
+}
+
+} // anonymous namespace
 
 DlgTagFetcher::DlgTagFetcher(QWidget *parent)
         : QDialog(parent),
@@ -32,11 +62,12 @@ void DlgTagFetcher::init() {
             this, &DlgTagFetcher::slotNetworkResult);
 
     // Resize columns, this can't be set in the ui file
-    results->setColumnWidth(0, 50);  // Track column
-    results->setColumnWidth(1, 50);  // Year column
-    results->setColumnWidth(2, 160); // Title column
-    results->setColumnWidth(3, 160); // Artist column
-    results->setColumnWidth(4, 160); // Album column
+    results->setColumnWidth(0, 50);  // Year column
+    results->setColumnWidth(1, 160); // Album column
+    results->setColumnWidth(2, 160); // Album artist column
+    results->setColumnWidth(3, 50);  // Track (numbers) column
+    results->setColumnWidth(4, 160); // Title column
+    results->setColumnWidth(5, 160); // Artist column
 }
 
 void DlgTagFetcher::loadTrack(const TrackPointer& track) {
@@ -71,23 +102,71 @@ void DlgTagFetcher::slotTrackChanged(TrackId trackId) {
 void DlgTagFetcher::apply() {
     int resultIndex = m_data.m_selectedResult;
     if (resultIndex > -1) {
-        if (!m_data.m_results[resultIndex]->getAlbum().isEmpty()) {
-            m_track->setAlbum(m_data.m_results[resultIndex]->getAlbum());
+        mixxx::TrackMetadata importedMetadata;
+        m_data.m_results[resultIndex]->readTrackMetadata(&importedMetadata);
+        mixxx::TrackMetadata updatedMetadata;
+        m_track->readTrackMetadata(&updatedMetadata);
+        if (!importedMetadata.getTrackInfo().getArtist().isEmpty()) {
+            updatedMetadata.refTrackInfo().setArtist(
+                    importedMetadata.getTrackInfo().getArtist());
         }
-        if (!m_data.m_results[resultIndex]->getArtist().isEmpty()) {
-            m_track->setArtist(m_data.m_results[resultIndex]->getArtist());
+        if (!importedMetadata.getTrackInfo().getTitle().isEmpty()) {
+            updatedMetadata.refTrackInfo().setTitle(
+                    importedMetadata.getTrackInfo().getTitle());
         }
-        if (!m_data.m_results[resultIndex]->getTitle().isEmpty()) {
-            m_track->setTitle(m_data.m_results[resultIndex]->getTitle());
+        if (!importedMetadata.getTrackInfo().getTrackNumber().isEmpty()) {
+            updatedMetadata.refTrackInfo().setTrackNumber(
+                    importedMetadata.getTrackInfo().getTrackNumber()
+            );
         }
-        if (!m_data.m_results[resultIndex]->getYear().isEmpty() &&
-             m_data.m_results[resultIndex]->getYear() != "0") {
-            m_track->setYear(m_data.m_results[resultIndex]->getYear());
+        if (!importedMetadata.getTrackInfo().getTrackTotal().isEmpty()) {
+            updatedMetadata.refTrackInfo().setTrackTotal(
+                    importedMetadata.getTrackInfo().getTrackTotal()
+            );
         }
-        if (!m_data.m_results[resultIndex]->getTrackNumber().isEmpty() &&
-             m_data.m_results[resultIndex]->getTrackNumber() != "0") {
-            m_track->setTrackNumber(m_data.m_results[resultIndex]->getTrackNumber());
+        if (!importedMetadata.getTrackInfo().getYear().isEmpty()) {
+            updatedMetadata.refTrackInfo().setYear(
+                    importedMetadata.getTrackInfo().getYear());
         }
+        if (!importedMetadata.getAlbumInfo().getArtist().isEmpty()) {
+            updatedMetadata.refAlbumInfo().setArtist(
+                    importedMetadata.getAlbumInfo().getArtist());
+        }
+        if (!importedMetadata.getAlbumInfo().getTitle().isEmpty()) {
+            updatedMetadata.refAlbumInfo().setTitle(
+                    importedMetadata.getAlbumInfo().getTitle());
+        }
+#if defined(__EXTRA_METADATA__)
+        if (!importedMetadata.getTrackInfo().getMusicBrainzArtistId().isNull()) {
+            updatedMetadata.refTrackInfo().setMusicBrainzArtistId(
+                    importedMetadata.getTrackInfo().getMusicBrainzArtistId()
+            );
+        }
+        if (!importedMetadata.getTrackInfo().getMusicBrainzRecordingId().isNull()) {
+            updatedMetadata.refTrackInfo().setMusicBrainzRecordingId(
+                    importedMetadata.getTrackInfo().getMusicBrainzRecordingId()
+            );
+        }
+        if (!importedMetadata.getTrackInfo().getMusicBrainzReleaseId().isNull()) {
+            updatedMetadata.refTrackInfo().setMusicBrainzReleaseId(
+                    importedMetadata.getTrackInfo().getMusicBrainzReleaseId()
+            );
+        }
+        if (!importedMetadata.getAlbumInfo().getMusicBrainzArtistId().isNull()) {
+            updatedMetadata.refAlbumInfo().setMusicBrainzArtistId(
+                    importedMetadata.getAlbumInfo().getMusicBrainzArtistId()
+            );
+        }
+        if (!importedMetadata.getAlbumInfo().getMusicBrainzReleaseId().isNull()) {
+            updatedMetadata.refAlbumInfo().setMusicBrainzReleaseId(
+                    importedMetadata.getAlbumInfo().getMusicBrainzReleaseId());
+        }
+        if (!importedMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId().isNull()) {
+            updatedMetadata.refAlbumInfo().setMusicBrainzReleaseGroupId(
+                    importedMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId());
+        }
+#endif // __EXTRA_METADATA__
+        m_track->importMetadata(std::move(updatedMetadata));
     }
 }
 
@@ -147,13 +226,21 @@ void DlgTagFetcher::updateStack() {
     results->clear();
 
     addDivider(tr("Original tags"), results);
-    addTrack(m_track, -1, results);
+    addTrack(track2row(*m_track), -1, results);
 
     addDivider(tr("Suggested tags"), results);
-
-    int trackIndex = 0;
-    foreach (const TrackPointer track, m_data.m_results) {
-        addTrack(track, trackIndex++, results);
+    {
+        int trackIndex = 0;
+        QSet<QStringList> trackRows;
+        foreach (const TrackPointer track, m_data.m_results) {
+            const auto trackRow = track2row(*track);
+            // Ignore duplicate results
+            if (!trackRows.contains(trackRow)) {
+                trackRows.insert(trackRow);
+                addTrack(trackRow, trackIndex, results);
+            }
+            ++trackIndex;
+        }
     }
 
     // Find the item that was selected last time
@@ -165,17 +252,6 @@ void DlgTagFetcher::updateStack() {
             break;
         }
     }
-}
-
-void DlgTagFetcher::addTrack(const TrackPointer track, int resultIndex,
-                             QTreeWidget* parent) const {
-    QStringList values;
-    values << track->getTrackNumber() << track->getYear() << track->getTitle()
-           << track->getArtist() << track->getAlbum();
-
-    QTreeWidgetItem* item = new QTreeWidgetItem(parent, values);
-    item->setData(0, Qt::UserRole, resultIndex);
-    item->setData(0, Qt::TextAlignmentRole, Qt::AlignRight);
 }
 
 void DlgTagFetcher::addDivider(const QString& text, QTreeWidget* parent) const {

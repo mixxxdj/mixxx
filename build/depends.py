@@ -996,15 +996,12 @@ class MixxxCore(Feature):
                    "src/widget/wsingletoncontainer.cpp",
                    "src/widget/wmainmenubar.cpp",
 
-                   "src/musicbrainz/network.cpp",
                    "src/musicbrainz/tagfetcher.cpp",
                    "src/musicbrainz/gzip.cpp",
                    "src/musicbrainz/crc.c",
-                   "src/musicbrainz/acoustidclient.cpp",
                    "src/musicbrainz/chromaprinter.cpp",
                    "src/musicbrainz/musicbrainz.cpp",
                    "src/musicbrainz/musicbrainzxml.cpp",
-                   "src/musicbrainz/musicbrainzclient.cpp",
                    "src/musicbrainz/web/acoustidlookuptask.cpp",
                    "src/musicbrainz/web/musicbrainzrecordingstask.cpp",
 
