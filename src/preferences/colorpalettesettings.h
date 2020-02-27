@@ -12,8 +12,12 @@ class ColorPaletteSettings {
     ColorPalette getHotcueColorPalette() const;
     void setHotcueColorPalette(const ColorPalette& colorPalette);
 
+    ColorPalette getTrackColorPalette() const;
+    void setTrackColorPalette(const ColorPalette& colorPalette);
+
   private:
     static const QString hotcueColorPaletteGroup;
+    static const QString trackColorPaletteGroup;
 
     ColorPalette getColorPalette(const QString& group, const ColorPalette& defaultPalette) const;
     void setColorPalette(const QString& group, const ColorPalette& colorPalette);

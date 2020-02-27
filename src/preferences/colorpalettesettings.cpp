@@ -1,6 +1,7 @@
 #include "preferences/colorpalettesettings.h"
 
 const QString ColorPaletteSettings::hotcueColorPaletteGroup = QStringLiteral("[HotcueColorPalette]");
+const QString ColorPaletteSettings::trackColorPaletteGroup = QStringLiteral("[TrackColorPalette]");
 
 ColorPalette ColorPaletteSettings::getColorPalette(
         const QString& group, const ColorPalette& defaultPalette) const {
@@ -40,4 +41,12 @@ ColorPalette ColorPaletteSettings::getHotcueColorPalette() const {
 
 void ColorPaletteSettings::setHotcueColorPalette(const ColorPalette& colorPalette) {
     setColorPalette(hotcueColorPaletteGroup, colorPalette);
+}
+
+ColorPalette ColorPaletteSettings::getTrackColorPalette() const {
+    return getColorPalette(trackColorPaletteGroup, ColorPalette::mixxxHotcuePalette);
+}
+
+void ColorPaletteSettings::setTrackColorPalette(const ColorPalette& colorPalette) {
+    setColorPalette(trackColorPaletteGroup, colorPalette);
 }
