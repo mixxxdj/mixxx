@@ -1700,7 +1700,7 @@ void CueControl::hotcueFocusColorPrev(double v) {
     if (!controlColor) {
         return;
     }
-    mixxx::RgbColor color = controlColor.value();
+    mixxx::RgbColor color = *controlColor;
 
     HotcueColorPaletteSettings m_colorPaletteSettings(m_pConfig);
     ColorPalette colorPalette = m_colorPaletteSettings.getHotcueColorPalette();
@@ -1734,7 +1734,7 @@ void CueControl::hotcueFocusColorNext(double v) {
     if (!controlColor) {
         return;
     }
-    mixxx::RgbColor color = controlColor.value();
+    mixxx::RgbColor color = *controlColor;
 
     HotcueColorPaletteSettings colorPaletteSettings(m_pConfig);
     ColorPalette colorPalette = colorPaletteSettings.getHotcueColorPalette();
@@ -1890,7 +1890,7 @@ mixxx::RgbColor::optional_t HotcueControl::getColor() const {
 
 void HotcueControl::setColor(const mixxx::RgbColor::optional_t& newColor) {
     if (newColor) {
-        m_hotcueColor->set(newColor.value());
+        m_hotcueColor->set(*newColor);
         return;
     }
     m_hotcueColor->set(kNoColorControlValue);

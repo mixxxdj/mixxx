@@ -291,7 +291,7 @@ void ConfigObject<ConfigValue>::setValue(
         set(key, ConfigValue(""));
         return;
     }
-    set(key, ConfigValue(mixxx::toQColor(value.value()).name(QColor::NameFormat::HexArgb)));
+    set(key, ConfigValue(mixxx::toQColor(*value).name(QColor::NameFormat::HexArgb)));
 }
 
 template<>
