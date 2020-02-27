@@ -1869,6 +1869,8 @@ void HotcueControl::slotHotcueColorChanged(double newColor) {
         qWarning() << "slotHotcueColorChanged got invalid value:" << newColor;
         return;
     }
+
+    DEBUG_ASSERT(newColor == mixxx::RgbColor::validateCode(static_cast<mixxx::RgbColor::code_t>(newColor)));
     m_pCue->setColor(mixxx::RgbColor(static_cast<mixxx::RgbColor::code_t>(newColor)));
     emit(hotcueColorChanged(this, newColor));
 }
@@ -1889,6 +1891,8 @@ mixxx::RgbColor::optional_t HotcueControl::getColor() const {
     if (value < 0) {
         return std::nullopt;
     }
+
+    DEBUG_ASSERT(value == mixxx::RgbColor::validateCode(static_cast<mixxx::RgbColor::code_t>(value)));
     return mixxx::RgbColor(static_cast<mixxx::RgbColor::code_t>(value));
 }
 
