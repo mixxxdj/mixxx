@@ -1723,7 +1723,7 @@ void CueControl::hotcueFocusColorPrev(double v) {
 
     // Get previous color in color set
     int iColorIndex = colorPalette.indexOf(color) - 1;
-    if (iColorIndex <= 0) {
+    if (iColorIndex < 0) {
         iColorIndex = colorPalette.size() - 1;
     }
     color = colorPalette.at(iColorIndex);
