@@ -416,7 +416,7 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
         trackValue.setValue(pTrack->isBpmLocked());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR) == column) {
-        trackValue.setValue(toQVariant(pTrack->getColor()));
+        trackValue.setValue(mixxx::RgbColor::toQVariant(pTrack->getColor()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) == column) {
         trackValue.setValue(pTrack->getCoverInfo().coverLocation);
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column ||
