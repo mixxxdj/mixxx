@@ -1,5 +1,6 @@
 {
   "globals": {
+    "ColorMapper": "readonly",
     "_": "readonly",
     "color": "readonly",
     "components": "readonly",
