@@ -971,22 +971,22 @@ DJ505.PadColor = {
 };
 
 DJ505.PadColorMap = new ColorMapper({
-    '#FFCC0000': DJ505.PadColor.RED,
-    '#FFCC4400': DJ505.PadColor.CORAL,
-    '#FFCC8800': DJ505.PadColor.ORANGE,
-    '#FFCCCC00': DJ505.PadColor.YELLOW,
-    '#FF88CC00': DJ505.PadColor.GREEN,
-    '#FF00CC00': DJ505.PadColor.APPLEGREEN,
-    '#FF00CC88': DJ505.PadColor.AQUAMARINE,
-    '#FF00CCCC': DJ505.PadColor.TURQUOISE,
-    '#FF0088CC': DJ505.PadColor.CELESTE,
-    '#FF0000CC': DJ505.PadColor.BLUE,
-    '#FF4400CC': DJ505.PadColor.AZURE,
-    '#FF8800CC': DJ505.PadColor.PURPLE,
-    '#FFCC00CC': DJ505.PadColor.MAGENTA,
-    '#FFCC0044': DJ505.PadColor.RED,
-    '#FFFFCCCC': DJ505.PadColor.APRICOT,
-    '#FFFFFFFF': DJ505.PadColor.WHITE,
+    "#FFCC0000": DJ505.PadColor.RED,
+    "#FFCC4400": DJ505.PadColor.CORAL,
+    "#FFCC8800": DJ505.PadColor.ORANGE,
+    "#FFCCCC00": DJ505.PadColor.YELLOW,
+    "#FF88CC00": DJ505.PadColor.GREEN,
+    "#FF00CC00": DJ505.PadColor.APPLEGREEN,
+    "#FF00CC88": DJ505.PadColor.AQUAMARINE,
+    "#FF00CCCC": DJ505.PadColor.TURQUOISE,
+    "#FF0088CC": DJ505.PadColor.CELESTE,
+    "#FF0000CC": DJ505.PadColor.BLUE,
+    "#FF4400CC": DJ505.PadColor.AZURE,
+    "#FF8800CC": DJ505.PadColor.PURPLE,
+    "#FFCC00CC": DJ505.PadColor.MAGENTA,
+    "#FFCC0044": DJ505.PadColor.RED,
+    "#FFFFCCCC": DJ505.PadColor.APRICOT,
+    "#FFFFFFFF": DJ505.PadColor.WHITE,
 });
 
 DJ505.PadSection = function(deck, offset) {
