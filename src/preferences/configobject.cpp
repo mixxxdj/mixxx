@@ -349,7 +349,7 @@ mixxx::RgbColor::optional_t ConfigObject<ConfigValue>::getValue(
     if (!parsedColor.isValid()) {
         return default_value;
     }
-    auto color = mixxx::RgbColor::optional_t(parsedColor.rgb());
+    auto color = mixxx::RgbColor::optional(parsedColor.rgb());
     return color ? color : default_value;
 }
 
