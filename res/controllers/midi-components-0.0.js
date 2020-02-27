@@ -295,7 +295,7 @@
             return;
         }
         if (options.colorMapper !== undefined || options.sendRGB !== undefined) {
-            this.colorKey = 'hotcue_' + options.number + '_color';
+            this.colorKey = "hotcue_" + options.number + "_color";
         }
         this.number = options.number;
         this.outKey = "hotcue_" + this.number + "_enabled";
@@ -310,7 +310,7 @@
         },
         getColor: function() {
             if (this.colorKey !== undefined) {
-                return color.colorFromHexCode(engine.getValue(this.group,this.colorKey));
+                return color.colorFromHexCode(engine.getValue(this.group, this.colorKey));
             } else {
                 return null;
             }
@@ -327,7 +327,7 @@
                 this.send(outval);
             }
         },
-        outputColor: function (colorCode) {
+        outputColor: function(colorCode) {
             if (this.colorMapper !== undefined) {
                 var nearestColorValue = this.colorMapper.getNearestValue(colorCode);
                 this.send(nearestColorValue);
@@ -342,8 +342,8 @@
         connect: function() {
             Button.prototype.connect.call(this); // call parent connect
             if (undefined !== this.group && this.colorKey !== undefined) {
-                this.connections[1] = engine.makeConnection(this.group, this.colorKey, function (id) {
-                    if (engine.getValue(this.group,this.outKey)) {
+                this.connections[1] = engine.makeConnection(this.group, this.colorKey, function(id) {
+                    if (engine.getValue(this.group, this.outKey)) {
                         this.outputColor(id);
                     }
                 });
@@ -725,14 +725,14 @@
                 if (engine.getValue(eu.group, "show_focus") > 0) {
                     engine.setValue(eu.group, "show_focus", 0);
                     eu.previouslyFocusedEffect = engine.getValue(eu.group,
-                                                                  "focused_effect");
+                        "focused_effect");
                     engine.setValue(eu.group, "focused_effect", 0);
                 }
             } else {
                 engine.setValue(eu.group, "show_focus", 1);
                 if (eu.previouslyFocusedEffect !== undefined) {
                     engine.setValue(eu.group, "focused_effect",
-                                    eu.previouslyFocusedEffect);
+                        eu.previouslyFocusedEffect);
                 }
             }
             if (eu.enableButtons !== undefined) {
@@ -763,8 +763,8 @@
                 // show_focus is always in the correct state, even if the user
                 // presses the skin button for show_parameters.
                 this.showParametersConnection = engine.makeConnection(this.group,
-                                                    "show_parameters",
-                                                    this.onShowParametersChange);
+                    "show_parameters",
+                    this.onShowParametersChange);
                 this.showParametersConnection.trigger();
             }
 
@@ -909,7 +909,7 @@
             outKey: "focused_effect",
             connect: function() {
                 this.connections[0] = engine.makeConnection(eu.group, "focused_effect",
-                                                            this.onFocusChange);
+                    this.onFocusChange);
             },
             disconnect: function() {
                 engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
@@ -972,7 +972,7 @@
 
                 this.connect = function() {
                     this.connections[0] = engine.makeConnection(eu.group, "focused_effect",
-                                                                this.onFocusChange);
+                        this.onFocusChange);
                     // this.onFocusChange sets this.group and this.outKey, so trigger it
                     // before making the connection for LED output
                     this.connections[0].trigger();
@@ -1019,8 +1019,8 @@
                     // of assigning to this.connections[0] to avoid
                     // Component.prototype.trigger() triggering the disconnected connection.
                     this.connections = [engine.makeConnection(eu.group,
-                                                              "focused_effect",
-                                                              this.output)];
+                        "focused_effect",
+                        this.output)];
                 };
             },
         });
@@ -1062,8 +1062,8 @@
                     var showParameters = engine.getValue(this.group, "show_parameters");
                     if (this.isPress(channel, control, value, status)) {
                         this.longPressTimer = engine.beginTimer(this.longPressTimeout,
-                                                      this.startEffectFocusChooseMode,
-                                                      true);
+                            this.startEffectFocusChooseMode,
+                            true);
                         if (!showParameters) {
                             if (!allowFocusWhenParametersHidden) {
                                 engine.setValue(this.group, "show_parameters", 1);
@@ -1086,11 +1086,11 @@
                             eu.focusChooseModeActive = false;
                         } else {
                             if (!showParameters && allowFocusWhenParametersHidden) {
-                                  engine.setValue(this.group, "show_parameters", 1);
+                                engine.setValue(this.group, "show_parameters", 1);
                             } else if (showParameters && !this.pressedWhenParametersHidden) {
-                                  engine.setValue(this.group, "show_parameters", 0);
-                                  // eu.onShowParametersChange will save the focused effect,
-                                  // unfocus, and hide focus buttons in skin
+                                engine.setValue(this.group, "show_parameters", 0);
+                                // eu.onShowParametersChange will save the focused effect,
+                                // unfocus, and hide focus buttons in skin
                             }
                         }
                         this.pressedWhenParametersHidden = false;
