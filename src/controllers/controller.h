@@ -101,7 +101,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // To be called in sub-class' close() functions after stopping any input
     // polling/processing but before closing the device.
     void stopEngine();
-    
+
     // To be called when receiving events
     void triggerActivity();
 
