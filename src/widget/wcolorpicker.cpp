@@ -8,7 +8,30 @@
 #include "util/parented_ptr.h"
 
 namespace {
-    const int kNumColumns = 4;
+constexpr int kNumColumnsCandidates[] = {5, 4, 3};
+}
+
+// Determine the best number of columns for items in a QGridView.
+//
+// Ideally, numItems % numColumn == 0 holds true. Rows that are almost
+// empty do not look good, so if the we can't find the ideal column count,
+// we fall back to a column count with the biggest number of elements in
+// the last row.
+inline int idealColumnCount(int numItems) {
+    int numColumns = 4; // Default in case kNumColumnsCandidates is empty
+    int numColumnsRemainder = -1;
+    for (const int numColumnsCandidate : kNumColumnsCandidates) {
+        int remainder = numItems % numColumnsCandidate;
+        if (remainder == 0) {
+            numColumns = numColumnsCandidate;
+            break;
+        } else if (remainder > numColumnsRemainder) {
+            numColumnsRemainder = numColumnsCandidate;
+            numColumns = numColumnsCandidate;
+        }
+    }
+
+    return numColumns;
 }
 
 WColorPicker::WColorPicker(ColorOption colorOption, const ColorPalette& palette, QWidget* parent)
@@ -35,6 +58,12 @@ WColorPicker::WColorPicker(ColorOption colorOption, const ColorPalette& palette,
     int row = 0;
     int column = 0;
 
+    int numColors = m_palette.size();
+    if (m_colorOption == ColorOption::AllowNoColor) {
+        numColors++;
+    }
+
+    int numColumns = idealColumnCount(numColors);
     if (m_colorOption == ColorOption::AllowNoColor) {
         addColorButton(std::nullopt, pLayout, row, column);
         column++;
@@ -43,7 +72,7 @@ WColorPicker::WColorPicker(ColorOption colorOption, const ColorPalette& palette,
     for (const auto& color : m_palette) {
         addColorButton(color, pLayout, row, column);
         column++;
-        if (column == kNumColumns) {
+        if (column == numColumns) {
             column = 0;
             row++;
         }
