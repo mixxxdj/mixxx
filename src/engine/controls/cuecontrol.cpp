@@ -1892,7 +1892,7 @@ mixxx::RgbColor::optional_t HotcueControl::getColor() const {
     return mixxx::RgbColor(static_cast<mixxx::RgbColor::code_t>(value));
 }
 
-void HotcueControl::setColor(const mixxx::RgbColor::optional_t& newColor) {
+void HotcueControl::setColor(const mixxx::RgbColor::optional_t newColor) {
     if (newColor) {
         m_hotcueColor->set(*newColor);
         return;
