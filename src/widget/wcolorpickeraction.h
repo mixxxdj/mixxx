@@ -12,6 +12,7 @@ class WColorPickerAction : public QWidgetAction {
   public:
     explicit WColorPickerAction(
             WColorPicker::ColorOption colorOption,
+            const ColorPalette& palette,
             QWidget* parent = nullptr);
 
     void resetSelectedColor();

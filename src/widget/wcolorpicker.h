@@ -17,7 +17,7 @@ class WColorPicker : public QWidget {
         AllowNoColor,
     };
 
-    explicit WColorPicker(ColorOption colorOption, QWidget* parent = nullptr);
+    explicit WColorPicker(ColorOption colorOption, const ColorPalette& palette, QWidget* parent = nullptr);
 
     void resetSelectedColor();
     void setSelectedColor(const mixxx::RgbColor::optional_t& color);

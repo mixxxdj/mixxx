@@ -55,7 +55,7 @@ WOverview::WOverview(
           m_group(group),
           m_pConfig(pConfig),
           m_endOfTrack(false),
-          m_pCueMenuPopup(std::make_unique<WCueMenuPopup>(this)),
+          m_pCueMenuPopup(std::make_unique<WCueMenuPopup>(pConfig, this)),
           m_bShowCueTimes(true),
           m_iPosSeconds(0),
           m_bLeftClickDragging(false),

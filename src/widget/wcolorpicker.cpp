@@ -11,10 +11,10 @@ namespace {
     const int kNumColumns = 4;
 }
 
-WColorPicker::WColorPicker(ColorOption colorOption, QWidget* parent)
+WColorPicker::WColorPicker(ColorOption colorOption, const ColorPalette& palette, QWidget* parent)
         : QWidget(parent),
           m_colorOption(colorOption),
-          m_palette(ColorPalette::mixxxPalette) {
+          m_palette(palette) {
     QGridLayout* pLayout = new QGridLayout();
     pLayout->setMargin(0);
     pLayout->setContentsMargins(0, 0, 0, 0);
@@ -146,6 +146,8 @@ void WColorPicker::setSelectedColor(const mixxx::RgbColor::optional_t& color) {
 }
 
 void WColorPicker::useColorSet(const ColorPalette& palette) {
+    resetSelectedColor();
+
     for (int i = 0; i < m_colorButtons.size(); ++i) {
         int j = i;
         if (m_colorOption == ColorOption::AllowNoColor) {

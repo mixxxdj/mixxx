@@ -1,44 +1,45 @@
-#include <QModelIndex>
-#include <QInputDialog>
-#include <QDesktopServices>
-#include <QUrl>
-#include <QDrag>
-#include <QShortcut>
-#include <QWidgetAction>
-#include <QCheckBox>
-#include <QLinkedList>
-#include <QScrollBar>
-
 #include "widget/wtracktableview.h"
 
+#include <QCheckBox>
+#include <QDesktopServices>
+#include <QDrag>
+#include <QInputDialog>
+#include <QLinkedList>
+#include <QModelIndex>
+#include <QScrollBar>
+#include <QShortcut>
+#include <QUrl>
+#include <QWidgetAction>
+
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
+#include "library/coverartcache.h"
+#include "library/crate/cratefeaturehelper.h"
+#include "library/dao/trackschema.h"
+#include "library/dlgtagfetcher.h"
+#include "library/dlgtrackinfo.h"
+#include "library/dlgtrackmetadataexport.h"
+#include "library/externaltrackcollection.h"
+#include "library/librarytablemodel.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
+#include "mixer/playermanager.h"
+#include "preferences/dialog/dlgpreflibrary.h"
+#include "preferences/hotcuecolorpalettesettings.h"
+#include "sources/soundsourceproxy.h"
+#include "track/track.h"
+#include "track/trackref.h"
+#include "util/assert.h"
+#include "util/desktophelper.h"
+#include "util/dnd.h"
+#include "util/parented_ptr.h"
+#include "util/time.h"
+#include "waveform/guitick.h"
 #include "widget/wcolorpickeraction.h"
 #include "widget/wcoverartmenu.h"
 #include "widget/wskincolor.h"
 #include "widget/wtracktableviewheader.h"
 #include "widget/wwidget.h"
-#include "library/coverartcache.h"
-#include "library/dlgtagfetcher.h"
-#include "library/dlgtrackinfo.h"
-#include "library/librarytablemodel.h"
-#include "library/crate/cratefeaturehelper.h"
-#include "library/dao/trackschema.h"
-#include "library/dlgtrackmetadataexport.h"
-#include "library/externaltrackcollection.h"
-#include "library/trackcollection.h"
-#include "library/trackcollectionmanager.h"
-#include "control/controlobject.h"
-#include "control/controlproxy.h"
-#include "track/track.h"
-#include "track/trackref.h"
-#include "sources/soundsourceproxy.h"
-#include "mixer/playermanager.h"
-#include "preferences/dialog/dlgpreflibrary.h"
-#include "waveform/guitick.h"
-#include "util/dnd.h"
-#include "util/time.h"
-#include "util/assert.h"
-#include "util/parented_ptr.h"
-#include "util/desktophelper.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  UserSettingsPointer pConfig,
@@ -573,7 +574,8 @@ void WTrackTableView::createActions() {
     connect(m_pBpmThreeHalvesAction, &QAction::triggered,
             this, [this] { slotScaleBpm(Beats::THREEHALVES); });
 
-    m_pColorPickerAction = new WColorPickerAction(WColorPicker::ColorOption::AllowNoColor, this);
+    HotcueColorPaletteSettings colorPaletteSettings(m_pConfig);
+    m_pColorPickerAction = new WColorPickerAction(WColorPicker::ColorOption::AllowNoColor, colorPaletteSettings.getHotcueColorPalette(), this);
     m_pColorPickerAction->setObjectName("TrackColorPickerAction");
     connect(m_pColorPickerAction,
             &WColorPickerAction::colorPicked,

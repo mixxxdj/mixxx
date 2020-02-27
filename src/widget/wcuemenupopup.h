@@ -11,7 +11,7 @@
 class WCueMenuPopup : public QWidget {
     Q_OBJECT
   public:
-    WCueMenuPopup(QWidget* parent = nullptr);
+    WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent = nullptr);
 
     ~WCueMenuPopup() {
         delete m_pCueNumber;
