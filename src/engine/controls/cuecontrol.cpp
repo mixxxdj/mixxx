@@ -25,6 +25,22 @@ static const double CUE_MODE_CUP = 5.0;
 
 constexpr double kNoColorControlValue = -1;
 
+namespace {
+
+// Helper function to convert doubles into RgbColor instances (or nullopt)
+inline mixxx::RgbColor::optional_t doubleToRgbColor(double value) {
+    if (value < 0) {
+        return std::nullopt;
+    }
+    mixxx::RgbColor::code_t colorCode = static_cast<mixxx::RgbColor::code_t>(value);
+    if (value != mixxx::RgbColor::validateCode(colorCode)) {
+        return std::nullopt;
+    }
+    return mixxx::RgbColor::optional(colorCode);
+}
+
+} // namespace
+
 CueControl::CueControl(QString group,
         UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
@@ -1865,13 +1881,13 @@ void HotcueControl::slotHotcuePositionChanged(double newPosition) {
 }
 
 void HotcueControl::slotHotcueColorChanged(double newColor) {
-    if (newColor < 0) {
+    mixxx::RgbColor::optional_t color = doubleToRgbColor(newColor);
+    if (!color) {
         qWarning() << "slotHotcueColorChanged got invalid value:" << newColor;
         return;
     }
 
-    DEBUG_ASSERT(newColor == mixxx::RgbColor::validateCode(static_cast<mixxx::RgbColor::code_t>(newColor)));
-    m_pCue->setColor(mixxx::RgbColor(static_cast<mixxx::RgbColor::code_t>(newColor)));
+    m_pCue->setColor(*color);
     emit(hotcueColorChanged(this, newColor));
 }
 
@@ -1887,21 +1903,15 @@ void HotcueControl::setCue(CuePointer pCue) {
     m_pCue = pCue;
 }
 mixxx::RgbColor::optional_t HotcueControl::getColor() const {
-    double value = m_hotcueColor->get();
-    if (value < 0) {
-        return std::nullopt;
-    }
-
-    DEBUG_ASSERT(value == mixxx::RgbColor::validateCode(static_cast<mixxx::RgbColor::code_t>(value)));
-    return mixxx::RgbColor(static_cast<mixxx::RgbColor::code_t>(value));
+    return doubleToRgbColor(m_hotcueColor->get());
 }
 
 void HotcueControl::setColor(const mixxx::RgbColor::optional_t newColor) {
-    if (newColor) {
-        m_hotcueColor->set(*newColor);
+    if (!newColor) {
+        m_hotcueColor->set(kNoColorControlValue);
         return;
     }
-    m_hotcueColor->set(kNoColorControlValue);
+    m_hotcueColor->set(*newColor);
 }
 void HotcueControl::resetCue() {
     // clear pCue first because we have a null check for valid data else where
