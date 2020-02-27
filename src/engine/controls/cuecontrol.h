@@ -9,7 +9,7 @@
 
 #include "control/controlproxy.h"
 #include "engine/controls/enginecontrol.h"
-#include "preferences/hotcuecolorpalettesettings.h"
+#include "preferences/colorpalettesettings.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
 
@@ -195,7 +195,7 @@ class CueControl : public EngineControl {
     TrackAt getTrackAt() const;
 
     UserSettingsPointer m_pConfig;
-    HotcueColorPaletteSettings m_colorPaletteSettings;
+    ColorPaletteSettings m_colorPaletteSettings;
     bool m_bPreviewing;
     ControlObject* m_pPlay;
     ControlObject* m_pStopButton;

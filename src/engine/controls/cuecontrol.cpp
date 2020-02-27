@@ -1,15 +1,15 @@
 // cuecontrol.cpp
 // Created 11/5/2009 by RJ Ryan (rryan@mit.edu)
 
-#include <QMutexLocker>
-
-#include "engine/enginebuffer.h"
 #include "engine/controls/cuecontrol.h"
+
+#include <QMutexLocker>
 
 #include "control/controlindicator.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
-#include "preferences/hotcuecolorpalettesettings.h"
+#include "engine/enginebuffer.h"
+#include "preferences/colorpalettesettings.h"
 #include "util/color/color.h"
 #include "util/sample.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -26,20 +26,20 @@ static const double CUE_MODE_CUP = 5.0;
 constexpr double kNoColorControlValue = -1;
 
 CueControl::CueControl(QString group,
-                       UserSettingsPointer pConfig) :
-        EngineControl(group, pConfig),
-        m_pConfig(pConfig),
-        m_colorPaletteSettings(HotcueColorPaletteSettings(pConfig)),
-        m_bPreviewing(false),
-        // m_pPlay->toBoo() -> engine play state
-        // m_pPlay->set(1.0) -> emulate play button press
-        m_pPlay(ControlObject::getControl(ConfigKey(group, "play"))),
-        m_pStopButton(ControlObject::getControl(ConfigKey(group, "stop"))),
-        m_iCurrentlyPreviewingHotcues(0),
-        m_bypassCueSetByPlay(false),
-        m_iNumHotCues(NUM_HOT_CUES),
-        m_pLoadedTrack(),
-        m_mutex(QMutex::Recursive) {
+        UserSettingsPointer pConfig)
+        : EngineControl(group, pConfig),
+          m_pConfig(pConfig),
+          m_colorPaletteSettings(ColorPaletteSettings(pConfig)),
+          m_bPreviewing(false),
+          // m_pPlay->toBoo() -> engine play state
+          // m_pPlay->set(1.0) -> emulate play button press
+          m_pPlay(ControlObject::getControl(ConfigKey(group, "play"))),
+          m_pStopButton(ControlObject::getControl(ConfigKey(group, "stop"))),
+          m_iCurrentlyPreviewingHotcues(0),
+          m_bypassCueSetByPlay(false),
+          m_iNumHotCues(NUM_HOT_CUES),
+          m_pLoadedTrack(),
+          m_mutex(QMutex::Recursive) {
     // To silence a compiler warning about CUE_MODE_PIONEER.
     Q_UNUSED(CUE_MODE_PIONEER);
     createControls();
@@ -1702,7 +1702,7 @@ void CueControl::hotcueFocusColorPrev(double v) {
     }
     mixxx::RgbColor color = *controlColor;
 
-    HotcueColorPaletteSettings m_colorPaletteSettings(m_pConfig);
+    ColorPaletteSettings m_colorPaletteSettings(m_pConfig);
     ColorPalette colorPalette = m_colorPaletteSettings.getHotcueColorPalette();
 
     // Get previous color in color set
@@ -1736,7 +1736,7 @@ void CueControl::hotcueFocusColorNext(double v) {
     }
     mixxx::RgbColor color = *controlColor;
 
-    HotcueColorPaletteSettings colorPaletteSettings(m_pConfig);
+    ColorPaletteSettings colorPaletteSettings(m_pConfig);
     ColorPalette colorPalette = colorPaletteSettings.getHotcueColorPalette();
 
     // Get previous color in color set

@@ -10,22 +10,23 @@
 //
 //
 
+#include "woverview.h"
+
 #include <QBrush>
-#include <QtDebug>
+#include <QMimeData>
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPainter>
-#include <QtDebug>
 #include <QPixmap>
 #include <QUrl>
-#include <QMimeData>
+#include <QtDebug>
 
 #include "analyzer/analyzerprogress.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "engine/engine.h"
 #include "mixer/playermanager.h"
-#include "preferences/hotcuecolorpalettesettings.h"
+#include "preferences/colorpalettesettings.h"
 #include "track/track.h"
 #include "util/color/color.h"
 #include "util/compatibility.h"
@@ -34,12 +35,10 @@
 #include "util/math.h"
 #include "util/painterscope.h"
 #include "util/timer.h"
-#include "widget/controlwidgetconnection.h"
-#include "woverview.h"
-#include "wskincolor.h"
-
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
+#include "widget/controlwidgetconnection.h"
+#include "wskincolor.h"
 
 WOverview::WOverview(
         const char* group,
@@ -133,7 +132,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     // setup hotcues and cue and loop(s)
     m_marks.setup(m_group, node, context, m_signalColors);
 
-    HotcueColorPaletteSettings colorPaletteSettings(m_pConfig);
+    ColorPaletteSettings colorPaletteSettings(m_pConfig);
     auto colorPalette = colorPaletteSettings.getHotcueColorPalette();
     m_pCueMenuPopup->useColorSet(colorPalette);
 

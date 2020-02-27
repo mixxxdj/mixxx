@@ -24,8 +24,8 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
+#include "preferences/colorpalettesettings.h"
 #include "preferences/dialog/dlgpreflibrary.h"
-#include "preferences/hotcuecolorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "track/trackref.h"
@@ -574,7 +574,7 @@ void WTrackTableView::createActions() {
     connect(m_pBpmThreeHalvesAction, &QAction::triggered,
             this, [this] { slotScaleBpm(Beats::THREEHALVES); });
 
-    HotcueColorPaletteSettings colorPaletteSettings(m_pConfig);
+    ColorPaletteSettings colorPaletteSettings(m_pConfig);
     m_pColorPickerAction = new WColorPickerAction(WColorPicker::ColorOption::AllowNoColor, colorPaletteSettings.getHotcueColorPalette(), this);
     m_pColorPickerAction->setObjectName("TrackColorPickerAction");
     connect(m_pColorPickerAction,

@@ -1,10 +1,10 @@
 #include "controllers/colorjsproxy.h"
 
-#include "preferences/hotcuecolorpalettesettings.h"
+#include "preferences/colorpalettesettings.h"
 #include "util/color/rgbcolor.h"
 
 ColorJSProxy::ColorJSProxy(QScriptEngine* pScriptEngine,
-        HotcueColorPaletteSettings colorPaletteSettings)
+        ColorPaletteSettings colorPaletteSettings)
         : m_pScriptEngine(pScriptEngine),
           m_JsHotcueColorPalette(
                   makeHotcueColorPalette(pScriptEngine, colorPaletteSettings)),
@@ -28,7 +28,7 @@ QScriptValue ColorJSProxy::colorFromHexCode(uint colorCode) {
 }
 
 QScriptValue ColorJSProxy::makeHotcueColorPalette(QScriptEngine* pScriptEngine,
-        HotcueColorPaletteSettings colorPaletteSettings) {
+        ColorPaletteSettings colorPaletteSettings) {
     // TODO: make sure we get notified when the palette changes
     QList<mixxx::RgbColor> colorList = colorPaletteSettings.getHotcueColorPalette().m_colorList;
     int numColors = colorList.length();

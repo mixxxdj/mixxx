@@ -216,7 +216,7 @@ void ControllerEngine::initializeScriptEngine() {
     }
 
     m_pColorJSProxy = std::make_unique<ColorJSProxy>(
-            m_pEngine, HotcueColorPaletteSettings(m_pConfig));
+            m_pEngine, ColorPaletteSettings(m_pConfig));
     engineGlobalObject.setProperty("color", m_pEngine->newQObject(m_pColorJSProxy.get()));
 
     QScriptValue constructor = m_pEngine->newFunction(ColorMapperJSProxyConstructor);

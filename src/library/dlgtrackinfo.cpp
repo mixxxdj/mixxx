@@ -1,13 +1,13 @@
+#include "library/dlgtrackinfo.h"
+
 #include <QComboBox>
 #include <QDesktopServices>
 #include <QStringBuilder>
-#include <QComboBox>
 #include <QtDebug>
 
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
-#include "library/dlgtrackinfo.h"
-#include "preferences/hotcuecolorpalettesettings.h"
+#include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
 #include "track/beatfactory.h"
 #include "track/cue.h"

@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "preferences/hotcuecolorpalettesettings.h"
+#include "preferences/colorpalettesettings.h"
 #include "test/mixxxtest.h"
 #include "util/color/colorpalette.h"
 #include "util/color/rgbcolor.h"
@@ -24,7 +24,7 @@ TEST_F(ColorConfigTest, GetDefaultColorWhenNoStoredColor) {
 }
 
 TEST_F(ColorConfigTest, SaveColorPalette) {
-    HotcueColorPaletteSettings colorPaletteSettings(config());
+    ColorPaletteSettings colorPaletteSettings(config());
     ColorPalette originalColorPalette(QList<mixxx::RgbColor>{
             mixxx::RgbColor(0x66FF99),
             mixxx::RgbColor(0xFF9900),
@@ -40,7 +40,7 @@ TEST_F(ColorConfigTest, SaveColorPalette) {
 }
 
 TEST_F(ColorConfigTest, ReplaceColorPalette) {
-    HotcueColorPaletteSettings colorPaletteSettings(config());
+    ColorPaletteSettings colorPaletteSettings(config());
     ColorPalette colorPalette1(QList<mixxx::RgbColor>{
             mixxx::RgbColor(0x66FF99),
             mixxx::RgbColor(0xFF9900),
@@ -62,8 +62,8 @@ TEST_F(ColorConfigTest, ReplaceColorPalette) {
 }
 
 TEST_F(ColorConfigTest, DefaultColorPalette) {
-    HotcueColorPaletteSettings colorPaletteSettings(config());
+    ColorPaletteSettings colorPaletteSettings(config());
     ColorPalette colorPaletteFromConfig =
             colorPaletteSettings.getHotcueColorPalette();
-    ASSERT_EQ(ColorPalette::mixxxPalette, colorPaletteFromConfig);
+    ASSERT_EQ(ColorPalette::mixxxHotcuePalette, colorPaletteFromConfig);
 }

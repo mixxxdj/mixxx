@@ -5,7 +5,7 @@
 #include <QVBoxLayout>
 
 #include "engine/engine.h"
-#include "preferences/hotcuecolorpalettesettings.h"
+#include "preferences/colorpalettesettings.h"
 #include "util/color/color.h"
 
 WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
@@ -31,7 +31,7 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
     connect(m_pEditLabel, &QLineEdit::textEdited, this, &WCueMenuPopup::slotEditLabel);
     connect(m_pEditLabel, &QLineEdit::returnPressed, this, &WCueMenuPopup::hide);
 
-    HotcueColorPaletteSettings colorPaletteSettings(pConfig);
+    ColorPaletteSettings colorPaletteSettings(pConfig);
     m_pColorPicker = new WColorPicker(WColorPicker::ColorOption::DenyNoColor, colorPaletteSettings.getHotcueColorPalette(), this);
     m_pColorPicker->setObjectName("CueColorPicker");
     connect(m_pColorPicker, &WColorPicker::colorPicked, this, &WCueMenuPopup::slotChangeCueColor);

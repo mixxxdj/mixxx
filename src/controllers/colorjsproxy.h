@@ -5,14 +5,14 @@
 #include <QScriptEngine>
 #include <QScriptValue>
 
-#include "preferences/hotcuecolorpalettesettings.h"
+#include "preferences/colorpalettesettings.h"
 #include "util/color/color.h"
 
 class ColorJSProxy final : public QObject {
     Q_OBJECT
   public:
     ColorJSProxy(QScriptEngine* pScriptEngine,
-            HotcueColorPaletteSettings colorPaletteSettings);
+            ColorPaletteSettings colorPaletteSettings);
 
     ~ColorJSProxy() override;
 
@@ -24,10 +24,10 @@ class ColorJSProxy final : public QObject {
 
   private:
     QScriptValue makeHotcueColorPalette(QScriptEngine* pScriptEngine,
-            HotcueColorPaletteSettings colorPaletteSettings);
+            ColorPaletteSettings colorPaletteSettings);
     QScriptEngine* m_pScriptEngine;
     QScriptValue m_JsHotcueColorPalette;
-    HotcueColorPaletteSettings m_colorPaletteSettings;
+    ColorPaletteSettings m_colorPaletteSettings;
 };
 
 #endif /* COLORJSPROXY_H */

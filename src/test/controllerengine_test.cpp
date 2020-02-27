@@ -620,7 +620,7 @@ TEST_F(ControllerEngineTest, connectionExecutesWithCorrectThisObject) {
 }
 
 TEST_F(ControllerEngineTest, colorProxyTestMixxxPalette) {
-    QList<mixxx::RgbColor> allColors = ColorPalette::mixxxPalette.m_colorList;
+    QList<mixxx::RgbColor> allColors = ColorPalette::mixxxHotcuePalette.m_colorList;
     for (int i = 0; i < allColors.length(); ++i) {
         mixxx::RgbColor color = allColors[i];
         qDebug() << "Testing color " << mixxx::RgbColor::toQString(color);

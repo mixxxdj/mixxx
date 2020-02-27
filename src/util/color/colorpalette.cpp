@@ -9,7 +9,7 @@ constexpr mixxx::RgbColor kColorMixxxPurple = mixxx::RgbColor(0xAF00CC);
 constexpr mixxx::RgbColor kColorMixxxPink = mixxx::RgbColor(0xFCA6D7);
 constexpr mixxx::RgbColor kColorMixxxWhite = mixxx::RgbColor(0xF2F2FF);
 
-const ColorPalette ColorPalette::mixxxPalette =
+const ColorPalette ColorPalette::mixxxHotcuePalette =
         ColorPalette(QList<mixxx::RgbColor>{
                 kColorMixxxRed,
                 kColorMixxxYellow,

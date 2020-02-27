@@ -30,7 +30,7 @@ class ColorPalette {
         return m_colorList.end();
     }
 
-    static const ColorPalette mixxxPalette;
+    static const ColorPalette mixxxHotcuePalette;
 
     QList<mixxx::RgbColor> m_colorList;
 };
