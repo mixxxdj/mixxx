@@ -91,7 +91,7 @@ void WColorPicker::resetSelectedColor() {
         }
         i = 0;
     } else {
-        i = m_palette.indexOf(m_selectedColor.value());
+        i = m_palette.indexOf(*m_selectedColor);
         if (i == -1) {
             return;
         }
@@ -124,7 +124,7 @@ void WColorPicker::setSelectedColor(const mixxx::RgbColor::optional_t& color) {
         }
         i = 0;
     } else {
-        i = m_palette.indexOf(color.value());
+        i = m_palette.indexOf(*color);
         if (i == -1) {
             return;
         }
