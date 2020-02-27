@@ -23,6 +23,8 @@ static const double CUE_MODE_NUMARK = 3.0;
 static const double CUE_MODE_MIXXX_NO_BLINK = 4.0;
 static const double CUE_MODE_CUP = 5.0;
 
+constexpr double kNoColorControlValue = -1;
+
 CueControl::CueControl(QString group,
                        UserSettingsPointer pConfig) :
         EngineControl(group, pConfig),
@@ -1891,7 +1893,7 @@ void HotcueControl::setColor(const mixxx::RgbColor::optional_t& newColor) {
         m_hotcueColor->set(newColor.value());
         return;
     }
-    m_hotcueColor->set(-1);
+    m_hotcueColor->set(kNoColorControlValue);
 }
 void HotcueControl::resetCue() {
     // clear pCue first because we have a null check for valid data else where
