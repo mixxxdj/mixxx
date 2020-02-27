@@ -46,27 +46,27 @@ const QString kRekordboxPlaylistTracksTable = QStringLiteral("rekordbox_playlist
 
 const QString kPdbPath = QStringLiteral("PIONEER/rekordbox/export.pdb");
 const QString kPLaylistPathDelimiter = QStringLiteral("-->");
-const double kLongestPosition = 999999999.0;
+constexpr double kLongestPosition = 999999999.0;
 
-enum class TrackColor {
-    TrackColorPink = 1,
-    TrackColorRed,
-    TrackColorOrange,
-    TrackColorYellow,
-    TrackColorGreen,
-    TrackColorAqua,
-    TrackColorBlue,
-    TrackColorPurple
+enum class TrackColor : uint8_t {
+    Pink = 1,
+    Red,
+    Orange,
+    Yellow,
+    Green,
+    Aqua,
+    Blue,
+    Purple
 };
 
-constexpr mixxx::RgbColor kPinkTrackColor(0xF870F8);
-constexpr mixxx::RgbColor kRedTrackColor(0xF870900);
-constexpr mixxx::RgbColor kOrangeTrackColor(0xF8A030);
-constexpr mixxx::RgbColor kYellowTrackColor(0xF8E331);
-constexpr mixxx::RgbColor kGreenTrackColor(0x1EE000);
-constexpr mixxx::RgbColor kAquaTrackColor(0x16C0F8);
-constexpr mixxx::RgbColor kBlueTrackColor(0x0150F8);
-constexpr mixxx::RgbColor kPurpleTrackColor(0x9808F8);
+constexpr mixxx::RgbColor kTrackColorPink(0xF870F8);
+constexpr mixxx::RgbColor kTrackColorRed(0xF870900);
+constexpr mixxx::RgbColor kTrackColorOrange(0xF8A030);
+constexpr mixxx::RgbColor kTrackColorYellow(0xF8E331);
+constexpr mixxx::RgbColor kTrackColorGreen(0x1EE000);
+constexpr mixxx::RgbColor kTrackColorAqua(0x16C0F8);
+constexpr mixxx::RgbColor kTrackColorBlue(0x0150F8);
+constexpr mixxx::RgbColor kTrackColorPurple(0x9808F8);
 
 bool createLibraryTable(QSqlDatabase& database, const QString& tableName) {
     qDebug() << "Creating Rekordbox library table: " << tableName;
@@ -341,29 +341,29 @@ void insertTrack(
     mixxx::RgbColor::optional_t color = mixxx::RgbColor::nullopt();
 
     switch (static_cast<TrackColor>(track->color_id())) {
-    case TrackColor::TrackColorPink:
-        color = kPinkTrackColor;
+    case TrackColor::Pink:
+        color = kTrackColorPink;
         break;
-    case TrackColor::TrackColorRed:
-        color = kRedTrackColor;
+    case TrackColor::Red:
+        color = kTrackColorRed;
         break;
-    case TrackColor::TrackColorOrange:
-        color = kOrangeTrackColor;
+    case TrackColor::Orange:
+        color = kTrackColorOrange;
         break;
-    case TrackColor::TrackColorYellow:
-        color = kYellowTrackColor;
+    case TrackColor::Yellow:
+        color = kTrackColorYellow;
         break;
-    case TrackColor::TrackColorGreen:
-        color = kGreenTrackColor;
+    case TrackColor::Green:
+        color = kTrackColorGreen;
         break;
-    case TrackColor::TrackColorAqua:
-        color = kAquaTrackColor;
+    case TrackColor::Aqua:
+        color = kTrackColorAqua;
         break;
-    case TrackColor::TrackColorBlue:
-        color = kBlueTrackColor;
+    case TrackColor::Blue:
+        color = kTrackColorBlue;
         break;
-    case TrackColor::TrackColorPurple:
-        color = kPurpleTrackColor;
+    case TrackColor::Purple:
+        color = kTrackColorPurple;
         break;
     default:
         break;
