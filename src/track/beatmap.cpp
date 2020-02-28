@@ -836,7 +836,7 @@ void BeatMap::setBar(double dSample) {
         beat->next();
         if(beat->isPhrase())
             break;
-        if(beat_counter%4 == 0) {
+        if(beat_counter%getSignature(dSample).getBeats() == 0) {
             beat->makeBar();
         }
         else {
