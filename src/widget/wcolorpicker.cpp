@@ -93,6 +93,7 @@ void WColorPicker::addColorButton(const mixxx::RgbColor::optional_t color, QGrid
     } else {
         pColorButton->setProperty("noColor", true);
     }
+    pColorButton->setToolTip(mixxx::RgbColor::toQString(color, tr("No Color")));
 
     pColorButton->setCheckable(true);
     m_colorButtons.append(pColorButton);
@@ -191,6 +192,7 @@ void WColorPicker::useColorSet(const ColorPalette& palette) {
         m_colorButtons.at(j)->setStyleSheet(
                 QString("QPushButton { background-color: %1; }")
                         .arg(mixxx::RgbColor::toQString(palette.at(i))));
+        m_colorButtons.at(j)->setToolTip(mixxx::RgbColor::toQString(palette.at(i), tr("No Color")));
     }
 }
 
