@@ -17,6 +17,7 @@ class SeratoTags final {
 
     static RgbColor::optional_t storedToDisplayedTrackColor(RgbColor color);
     static RgbColor displayedToStoredTrackColor(RgbColor::optional_t color);
+    static double findTimingOffsetMillis(const QString& filePath);
 
     bool isEmpty() const {
         return m_seratoMarkers.isEmpty() && m_seratoMarkers2.isEmpty();
@@ -38,7 +39,7 @@ class SeratoTags final {
         return m_seratoMarkers2.dump();
     }
 
-    QList<CueInfo> getCues() const;
+    QList<CueInfo> getCues(const QString& filePath) const;
 
     RgbColor::optional_t getTrackColor() const;
     bool isBpmLocked() const;

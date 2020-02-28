@@ -59,14 +59,23 @@ RgbColor SeratoTags::displayedToStoredTrackColor(RgbColor::optional_t color) {
     return RgbColor(colorCode);
 }
 
-QList<CueInfo> SeratoTags::getCues() const {
+double SeratoTags::findTimingOffsetMillis(const QString& filePath) {
+    // TODO: Find timing offset using mp3guessenc
+    Q_UNUSED(filePath);
+
+    return 0;
+}
+
+QList<CueInfo> SeratoTags::getCues(const QString& filePath) const {
     // Import "Serato Markers2" first, then overwrite values with those
     // from "Serato Markers_". This is what Serato does too (i.e. if
     // "Serato Markers_" and "Serato Markers2" contradict each other,
     // Serato will use the values from "Serato Markers_").
 
+    double timingOffsetMillis = SeratoTags::findTimingOffsetMillis(filePath);
+
     QMap<int, CueInfo> cueMap;
-    for (const CueInfo& cueInfo : m_seratoMarkers2.getCues()) {
+    for (const CueInfo& cueInfo : m_seratoMarkers2.getCues(timingOffsetMillis)) {
         DEBUG_ASSERT(cueInfo.getHotCueNumber());
         int index = *cueInfo.getHotCueNumber();
         DEBUG_ASSERT(index >= 0);
@@ -75,7 +84,7 @@ QList<CueInfo> SeratoTags::getCues() const {
 
     // TODO: If a hotcue is set in SeratoMarkers2, but not in SeratoMarkers_,
     // we could remove it from the output. We'll just leave it in for now.
-    for (const CueInfo& cueInfo : m_seratoMarkers.getCues()) {
+    for (const CueInfo& cueInfo : m_seratoMarkers.getCues(timingOffsetMillis)) {
         DEBUG_ASSERT(cueInfo.getHotCueNumber());
         int index = *cueInfo.getHotCueNumber();
         DEBUG_ASSERT(index >= 0);

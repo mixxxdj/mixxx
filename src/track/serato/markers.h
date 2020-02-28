@@ -155,7 +155,7 @@ class SeratoMarkers final {
         m_trackColor = color;
     }
 
-    QList<CueInfo> getCues() const;
+    QList<CueInfo> getCues(double timingOffsetMillis) const;
 
   private:
     QList<SeratoMarkersEntryPointer> m_entries;

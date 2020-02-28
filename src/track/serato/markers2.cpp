@@ -438,7 +438,7 @@ QByteArray SeratoMarkers2::dump() const {
     return outerData.leftJustified(size, '\0');
 }
 
-QList<CueInfo> SeratoMarkers2::getCues() const {
+QList<CueInfo> SeratoMarkers2::getCues(double timingOffsetMillis) const {
     qDebug() << "Reading cues from 'Serato Markers2' tag data...";
     QList<CueInfo> cueInfos;
     for (auto& pEntry : m_entries) {
@@ -448,7 +448,7 @@ QList<CueInfo> SeratoMarkers2::getCues() const {
             const SeratoMarkers2CueEntry* pCueEntry = static_cast<SeratoMarkers2CueEntry*>(pEntry.get());
             CueInfo cueInfo(
                     CueType::HotCue,
-                    pCueEntry->getPosition(),
+                    pCueEntry->getPosition() + timingOffsetMillis,
                     std::nullopt,
                     pCueEntry->getIndex(),
                     pCueEntry->getLabel(),
