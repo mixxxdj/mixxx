@@ -356,7 +356,7 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
             }
 
             int hotcueNumber = currentCue->getHotCue();
-            if (currentCue->getType() == Cue::Type::HotCue && hotcueNumber != Cue::kNoHotCue) {
+            if (currentCue->getType() == mixxx::CueType::HotCue && hotcueNumber != Cue::kNoHotCue) {
                 // Prepend the hotcue number to hotcues' labels
                 QString newLabel = currentCue->getLabel();
                 if (newLabel.isEmpty()) {
@@ -1096,7 +1096,7 @@ double WOverview::samplePositionToSeconds(double sample) {
 }
 
 void WOverview::resizeEvent(QResizeEvent* pEvent) {
-    Q_UNUSED(pEvent);   
+    Q_UNUSED(pEvent);
     // Play-position potmeters range from 0 to 1 but they allow out-of-range
     // sets. This is to give VC access to the pre-roll area.
     const double kMaxPlayposRange = 1.0;

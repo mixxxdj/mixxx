@@ -672,7 +672,7 @@ void setHotCue(TrackPointer track, double position, int id, QString label, int /
         pCue = CuePointer(track->createAndAddCue());
     }
 
-    pCue->setType(Cue::Type::HotCue);
+    pCue->setType(mixxx::CueType::HotCue);
     pCue->setStartPosition(position);
     pCue->setHotCue(id);
 
@@ -867,7 +867,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
 
     if (cueLoadPosition < kLongestPosition) {
         track->setCuePoint(CuePosition(cueLoadPosition));
-        CuePointer pLoadCue = track->findCueByType(Cue::Type::MainCue);
+        CuePointer pLoadCue = track->findCueByType(mixxx::CueType::MainCue);
         if (!cueLoadComment.isNull()) {
             pLoadCue->setLabel(cueLoadComment);
         }
@@ -876,7 +876,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
         CuePointer pCue(track->createAndAddCue());
         pCue->setStartPosition(cueLoopStartPosition);
         pCue->setEndPosition(cueLoopEndPosition);
-        pCue->setType(Cue::Type::Loop);
+        pCue->setType(mixxx::CueType::Loop);
     }
 }
 

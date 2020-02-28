@@ -251,9 +251,9 @@ class Track : public QObject {
 
     // Calls for managing the track's cue points
     CuePointer createAndAddCue();
-    CuePointer findCueByType(Cue::Type type) const; // NOTE: Cannot be used for hotcues.
+    CuePointer findCueByType(mixxx::CueType type) const; // NOTE: Cannot be used for hotcues.
     void removeCue(const CuePointer& pCue);
-    void removeCuesOfType(Cue::Type);
+    void removeCuesOfType(mixxx::CueType);
     QList<CuePointer> getCuePoints() const;
     void setCuePoints(const QList<CuePointer>& cuePoints);
 
