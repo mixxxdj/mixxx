@@ -1176,3 +1176,15 @@ void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
     // there.
     select(); //Repopulate the data model.
 }
+
+QList<TrackRef> BaseSqlTableModel::getTrackRefs(
+        const QModelIndexList& indices) const {
+    QList<TrackRef> trackRefs;
+    trackRefs.reserve(indices.size());
+    foreach (QModelIndex index, indices) {
+        trackRefs.append(TrackRef::fromFileInfo(
+                TrackFile(getTrackLocation(index)),
+                getTrackId(index)));
+    }
+    return trackRefs;
+}

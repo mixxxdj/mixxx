@@ -228,7 +228,7 @@ QList<TrackId> TrackDAO::resolveTrackIds(
     return trackIds;
 }
 
-QSet<QString> TrackDAO::getTrackLocations() {
+QSet<QString> TrackDAO::getAllTrackLocations() {
     QSet<QString> locations;
     QSqlQuery query(m_database);
     query.prepare("SELECT track_locations.location FROM track_locations "
@@ -265,37 +265,6 @@ QString TrackDAO::getTrackLocation(TrackId trackId) {
     }
 
     return trackLocation;
-}
-
-QStringList TrackDAO::getTrackLocations(const QList<TrackId>& ids) {
-    QString stmt =
-            "SELECT track_locations.location FROM track_locations "
-            "INNER JOIN library on library.location=track_locations.id "
-            "WHERE library.id IN (%1)";
-    {
-        QStringList idList;
-        idList.reserve(ids.size());
-        for (const auto& id : ids) {
-            idList.append(id.toString());
-        }
-        stmt = stmt.arg(idList.join(","));
-    }
-    FwdSqlQuery query(m_database, stmt);
-    VERIFY_OR_DEBUG_ASSERT(!query.hasError()) {
-        return QStringList();
-    }
-    if (!query.execPrepared()) {
-        return QStringList();
-    }
-    QStringList locations;
-    locations.reserve(ids.size());
-    const int locationColumn = query.record().indexOf("location");
-    DEBUG_ASSERT(locationColumn >= 0);
-    while (query.next()) {
-        locations.append(query.fieldValue(locationColumn).toString());
-    }
-    DEBUG_ASSERT(locations.size() <= ids.size());
-    return locations;
 }
 
 void TrackDAO::saveTrack(Track* pTrack) {
@@ -800,7 +769,7 @@ void TrackDAO::afterUnhidingTracks(
 #endif
 }
 
-QList<TrackId> TrackDAO::getAllTrackIds(const QDir& rootDir) {
+QList<TrackRef> TrackDAO::getAllTrackRefs(const QDir& rootDir) {
     // Capture entries that start with the directory prefix dir.
     // dir needs to end in a slash otherwise we might match other
     // directories.
@@ -808,7 +777,8 @@ QList<TrackId> TrackDAO::getAllTrackIds(const QDir& rootDir) {
     QString likeClause = SqlLikeWildcardEscaper::apply(dirPath + "/", kSqlLikeMatchAll) + kSqlLikeMatchAll;
 
     QSqlQuery query(m_database);
-    query.prepare(QString("SELECT library.id FROM library INNER JOIN track_locations "
+    query.prepare(QString("SELECT library.id, track_locations.location "
+                          "FROM library INNER JOIN track_locations "
                           "ON library.location = track_locations.id "
                           "WHERE track_locations.location LIKE %1 ESCAPE '%2'")
                   .arg(SqlStringFormatter::format(m_database, likeClause), kSqlLikeMatchAll));
@@ -817,13 +787,16 @@ QList<TrackId> TrackDAO::getAllTrackIds(const QDir& rootDir) {
         LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << dirPath;
     }
 
-    QList<TrackId> trackIds;
+    QList<TrackRef> trackRefs;
     const int idColumn = query.record().indexOf("id");
+    const int locationColumn = query.record().indexOf("location");
     while (query.next()) {
-        trackIds.append(TrackId(query.value(idColumn)));
+        auto trackId = TrackId(query.value(idColumn));
+        auto trackFile = TrackFile(query.value(locationColumn).toString());
+        trackRefs.append(TrackRef::fromFileInfo(trackFile, trackId));
     }
 
-    return trackIds;
+    return trackRefs;
 }
 
 bool TrackDAO::onPurgingTracks(

@@ -320,47 +320,42 @@ void TrackCollectionManager::hideAllTracks(const QDir& rootDir) {
     m_pInternalCollection->hideAllTracks(rootDir);
 }
 
-void TrackCollectionManager::purgeTracks(const QList<TrackId>& trackIds) {
-    if (trackIds.isEmpty()) {
+void TrackCollectionManager::purgeTracks(const QList<TrackRef>& trackRefs) {
+    if (trackRefs.isEmpty()) {
         return;
     }
-    // Collect the corresponding track locations BEFORE purging the
-    // tracks from the internal collection!
-    QList<QString> trackLocations;
-    if (!m_externalCollections.isEmpty()) {
-        trackLocations =
-                m_pInternalCollection->getTrackDAO().getTrackLocations(trackIds);
-    }
-    DEBUG_ASSERT(trackLocations.size() <= trackIds.size());
     kLogger.debug()
-            << "Purging"
-            << trackIds.size()
+            << "trackRefs"
+            << trackRefs.size()
             << "tracks from internal collection";
-    if (!m_pInternalCollection->purgeTracks(trackIds)) {
-        kLogger.warning()
-                << "Failed to purge tracks from internal collection";
-        return;
+    {
+        QList<TrackId> trackIds;
+        trackIds.reserve(trackRefs.size());
+        for (const auto trackRef : trackRefs) {
+            DEBUG_ASSERT(trackRef.hasId());
+            trackIds.append(trackRef.getId());
+        }
+        if (!m_pInternalCollection->purgeTracks(trackIds)) {
+            kLogger.warning()
+                    << "Failed to purge tracks from internal collection";
+            return;
+        }
     }
     if (m_externalCollections.isEmpty()) {
         return;
     }
-    VERIFY_OR_DEBUG_ASSERT(trackLocations.size() == trackIds.size()) {
-        kLogger.warning()
-                << "Purging only"
-                << trackLocations.size()
-                << "of"
-                << trackIds.size()
-                << "tracks from"
-                << m_externalCollections.size()
-                << "external collection(s)";
-    } else {
-        kLogger.debug()
-                << "Purging"
-                << trackLocations.size()
-                << "tracks from"
-                << m_externalCollections.size()
-                << "external collection(s)";
+    QList<QString> trackLocations;
+    trackLocations.reserve(trackLocations.size());
+    for (const auto trackRef : trackRefs) {
+        DEBUG_ASSERT(trackRef.hasLocation());
+        trackLocations.append(trackRef.getLocation());
     }
+    kLogger.debug()
+            << "Purging"
+            << trackLocations.size()
+            << "tracks from"
+            << m_externalCollections.size()
+            << "external collection(s)";
     for (const auto& externalTrackCollection : m_externalCollections) {
         externalTrackCollection->purgeTracks(trackLocations);
     }
