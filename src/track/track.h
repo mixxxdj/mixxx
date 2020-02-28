@@ -256,6 +256,7 @@ class Track : public QObject {
     void removeCuesOfType(mixxx::CueType);
     QList<CuePointer> getCuePoints() const;
     void setCuePoints(const QList<CuePointer>& cuePoints);
+    void importCuePoints(const QList<mixxx::CueInfo>& cueInfos);
 
     bool isDirty();
 

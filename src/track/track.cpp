@@ -788,6 +788,23 @@ void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
     emit cuesUpdated();
 }
 
+void Track::importCuePoints(const QList<mixxx::CueInfo>& cueInfos) {
+    TrackId trackId;
+    mixxx::AudioSignal::SampleRate sampleRate;
+    {
+        QMutexLocker lock(&m_qMutex);
+        trackId = m_record.getId();
+        sampleRate = m_record.getMetadata().getSampleRate();
+    } // implicitly unlocked when leaving scope
+
+    QList<CuePointer> cuePoints;
+    for (const mixxx::CueInfo& cueInfo : cueInfos) {
+        CuePointer pCue(new Cue(trackId, sampleRate, cueInfo));
+        cuePoints.append(pCue);
+    }
+    setCuePoints(cuePoints);
+}
+
 void Track::markDirty() {
     QMutexLocker lock(&m_qMutex);
     setDirtyAndUnlock(&lock, true);
