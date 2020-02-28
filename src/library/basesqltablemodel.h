@@ -66,6 +66,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     ///////////////////////////////////////////////////////////////////////////
     bool isColumnHiddenByDefault(int column) override;
     TrackPointer getTrack(const QModelIndex& index) const override;
+    TrackPointer getTrackByRef(const TrackRef& trackRef) const override;
     TrackId getTrackId(const QModelIndex& index) const override;
     const QLinkedList<int> getTrackRows(TrackId trackId) const override {
         return m_trackIdToRows.value(trackId);
