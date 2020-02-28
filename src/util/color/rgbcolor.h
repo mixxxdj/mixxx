@@ -20,7 +20,7 @@ class RgbColor {
     // without an an alpha channel.
     // We are using a separate typedef, because QRgb implicitly
     // includes an alpha channel whereas this type does not!
-    typedef quint32 code_t;
+    typedef QRgb code_t;
 
     static constexpr code_t validateCode(code_t code) {
         return code & kRgbCodeMask;
