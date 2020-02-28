@@ -291,14 +291,14 @@ void ConfigObject<ConfigValue>::setValue(
         set(key, ConfigValue(""));
         return;
     }
-    set(key, ConfigValue(mixxx::toQColor(*value).name(QColor::NameFormat::HexArgb)));
+    set(key, ConfigValue(mixxx::RgbColor::toQString(value)));
 }
 
 template<>
 template<>
 void ConfigObject<ConfigValue>::setValue(
         const ConfigKey& key, const mixxx::RgbColor& value) {
-    set(key, ConfigValue(mixxx::toQColor(value).name(QColor::NameFormat::HexArgb)));
+    set(key, ConfigValue(mixxx::RgbColor::toQString(value)));
 }
 
 template <> template <>
@@ -345,12 +345,7 @@ mixxx::RgbColor::optional_t ConfigObject<ConfigValue>::getValue(
     if (value.isNull()) {
         return default_value;
     }
-    QColor parsedColor(value.value);
-    if (!parsedColor.isValid()) {
-        return default_value;
-    }
-    auto color = mixxx::RgbColor::optional(parsedColor.rgb());
-    return color ? color : default_value;
+    return mixxx::RgbColor::fromQString(value.value, default_value);
 }
 
 template<>
