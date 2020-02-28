@@ -46,6 +46,7 @@ class CoverArtDelegate : public TableItemDelegate {
 
   private:
     QTableView* m_pTableView;
+    TrackModel* m_pTrackModel;
     bool m_bOnlyCachedCover;
     int m_iCoverColumn;
     int m_iCoverSourceColumn;

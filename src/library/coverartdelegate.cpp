@@ -18,6 +18,7 @@ const mixxx::Logger kLogger("CoverArtDelegate");
 CoverArtDelegate::CoverArtDelegate(WLibraryTableView* parent)
         : TableItemDelegate(parent),
           m_pTableView(parent),
+          m_pTrackModel(nullptr),
           m_bOnlyCachedCover(false),
           m_iCoverColumn(-1),
           m_iCoverSourceColumn(-1),
@@ -40,26 +41,25 @@ CoverArtDelegate::CoverArtDelegate(WLibraryTableView* parent)
                 &CoverArtDelegate::slotCoverFound);
     }
 
-    TrackModel* pTrackModel = nullptr;
     QTableView* pTableView = qobject_cast<QTableView*>(parent);
     if (pTableView) {
-        pTrackModel = dynamic_cast<TrackModel*>(pTableView->model());
+        m_pTrackModel = dynamic_cast<TrackModel*>(pTableView->model());
     }
 
-    if (pTrackModel) {
-        m_iCoverColumn = pTrackModel->fieldIndex(
+    if (m_pTrackModel) {
+        m_iCoverColumn = m_pTrackModel->fieldIndex(
             LIBRARYTABLE_COVERART);
-        m_iCoverSourceColumn = pTrackModel->fieldIndex(
+        m_iCoverSourceColumn = m_pTrackModel->fieldIndex(
             LIBRARYTABLE_COVERART_SOURCE);
-        m_iCoverTypeColumn = pTrackModel->fieldIndex(
+        m_iCoverTypeColumn = m_pTrackModel->fieldIndex(
             LIBRARYTABLE_COVERART_TYPE);
-        m_iCoverHashColumn = pTrackModel->fieldIndex(
+        m_iCoverHashColumn = m_pTrackModel->fieldIndex(
             LIBRARYTABLE_COVERART_HASH);
-        m_iCoverLocationColumn = pTrackModel->fieldIndex(
+        m_iCoverLocationColumn = m_pTrackModel->fieldIndex(
             LIBRARYTABLE_COVERART_LOCATION);
-        m_iTrackLocationColumn = pTrackModel->fieldIndex(
+        m_iTrackLocationColumn = m_pTrackModel->fieldIndex(
             TRACKLOCATIONSTABLE_LOCATION);
-        m_iIdColumn = pTrackModel->fieldIndex(
+        m_iIdColumn = m_pTrackModel->fieldIndex(
             LIBRARYTABLE_ID);
     }
 }
@@ -83,14 +83,24 @@ void CoverArtDelegate::slotCoverFound(
         const QPixmap& pixmap,
         quint16 requestedHash,
         bool coverInfoUpdated) {
-    Q_UNUSED(coverInfo);
     Q_UNUSED(pixmap);
-    Q_UNUSED(coverInfoUpdated);
-    if (pRequestor == this) {
-        const QLinkedList<int> rows =
-                m_hashToRow.take(requestedHash);
-        foreach(int row, rows) {
-            emit coverReadyForCell(row, m_iCoverColumn);
+    if (pRequestor != this) {
+        return;
+    }
+    const QLinkedList<int> rows =
+            m_hashToRow.take(requestedHash);
+    foreach(int row, rows) {
+        emit coverReadyForCell(row, m_iCoverColumn);
+    }
+    if (m_pTrackModel && coverInfoUpdated) {
+        const auto pTrack =
+                m_pTrackModel->getTrackByRef(
+                        TrackRef::fromFileInfo(coverInfo.trackLocation));
+        if (pTrack) {
+            kLogger.info()
+                    << "Updating cover info of track"
+                    << coverInfo.trackLocation;
+            pTrack->setCoverInfo(coverInfo);
         }
     }
 }
