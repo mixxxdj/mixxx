@@ -16,7 +16,7 @@
 #include "widget/wskincolor.h"
 #include "widget/wtracktableviewheader.h"
 #include "widget/wwidget.h"
-#include "library/coverartcache.h"
+#include "library/coverartutils.h"
 #include "library/dlgtagfetcher.h"
 #include "library/dlgtrackinfo.h"
 #include "library/librarytablemodel.h"
@@ -2177,21 +2177,22 @@ void WTrackTableView::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) 
 
 void WTrackTableView::slotReloadCoverArt() {
     TrackModel* trackModel = getTrackModel();
-    if (trackModel == nullptr) {
+    if (!trackModel) {
+        return;
+    }
+    const QModelIndexList selection = selectionModel()->selectedRows();
+    if (selection.isEmpty()) {
         return;
     }
     QList<TrackPointer> selectedTracks;
-    const QModelIndexList selection = selectionModel()->selectedRows();
+    selectedTracks.reserve(selection.size());
     for (const QModelIndex& index : selection) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
             selectedTracks.append(pTrack);
         }
     }
-    CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache) {
-        pCache->requestGuessCovers(selectedTracks);
-    }
+    guessTrackCoversConcurrently(selectedTracks);
 }
 
 void WTrackTableView::slotSortingChanged(int headerSection, Qt::SortOrder order) {

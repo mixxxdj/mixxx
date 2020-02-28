@@ -1,11 +1,20 @@
-#include <QDir>
-#include <QDirIterator>
-
 #include "library/coverartutils.h"
 
+#include <QDir>
+#include <QDirIterator>
+#include <QtConcurrentRun>
+
 #include "sources/soundsourceproxy.h"
+#include "util/compatibility.h"
+#include "util/logger.h"
 #include "util/regex.h"
 
+
+namespace {
+
+mixxx::Logger kLogger("CoverArtUtils");
+
+} // anonymous namespace
 
 //static
 QString CoverArtUtils::defaultCoverLocation() {
@@ -23,15 +32,6 @@ QStringList CoverArtUtils::supportedCoverArtExtensions() {
 QString CoverArtUtils::supportedCoverArtExtensionsRegex() {
     QStringList extensions = supportedCoverArtExtensions();
     return RegexUtils::fileExtensionsRegex(extensions);
-}
-
-//static
-QImage CoverArtUtils::extractEmbeddedCover(
-        TrackFile trackFile) {
-    SecurityTokenPointer pToken = Sandbox::openSecurityToken(
-            trackFile.asFileInfo(), true);
-    return extractEmbeddedCover(
-            std::move(trackFile), std::move(pToken));
 }
 
 //static
@@ -181,10 +181,41 @@ CoverInfoRelative CoverInfoGuesser::guessCoverInfo(
 CoverInfoRelative CoverInfoGuesser::guessCoverInfoForTrack(
         const Track& track) {
     const auto trackFile = track.getFileInfo();
+    if (kLogger.debugEnabled()) {
+        kLogger.debug()
+                << "Guessing cover art for track"
+                << trackFile;
+    }
     return guessCoverInfo(
             trackFile,
             track.getAlbum(),
             CoverArtUtils::extractEmbeddedCover(
                     trackFile,
                     track.getSecurityToken()));
+}
+
+void guessTrackCoverConcurrently(
+        TrackPointer pTrack) {
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
+        return;
+    }
+    QtConcurrent::run([pTrack] {
+        CoverInfoGuesser().guessAndSetCoverInfoForTrack(*pTrack);
+    });
+}
+
+void guessTrackCoversConcurrently(
+        QList<TrackPointer> tracks) {
+    if (tracks.isEmpty()) {
+        return;
+    }
+    QtConcurrent::run([tracks] {
+        CoverInfoGuesser coverInfoGuesser;
+        for (const auto& pTrack : qAsConst(tracks)) {
+            VERIFY_OR_DEBUG_ASSERT(pTrack) {
+                continue;
+            }
+            coverInfoGuesser.guessAndSetCoverInfoForTrack(*pTrack);
+        }
+    });
 }

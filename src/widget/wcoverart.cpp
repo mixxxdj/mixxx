@@ -32,11 +32,11 @@ WCoverArt::WCoverArt(QWidget* parent,
     setAcceptDrops(!m_group.isEmpty());
 
     CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != nullptr) {
-        connect(pCache, SIGNAL(coverFound(const QObject*,
-                                          const CoverInfoRelative&, QPixmap, bool)),
-                this, SLOT(slotCoverFound(const QObject*,
-                                          const CoverInfoRelative&, QPixmap, bool)));
+    if (pCache) {
+        connect(pCache,
+                &CoverArtCache::coverFound,
+                this,
+                &WCoverArt::slotCoverFound);
     }
     connect(m_pMenu, SIGNAL(coverInfoSelected(const CoverInfoRelative&)),
             this, SLOT(slotCoverInfoSelected(const CoverInfoRelative&)));
@@ -98,12 +98,10 @@ void WCoverArt::setup(const QDomNode& node, const SkinContext& context) {
 }
 
 void WCoverArt::slotReloadCoverArt() {
-    if (m_loadedTrack) {
-        CoverArtCache* pCache = CoverArtCache::instance();
-        if (pCache) {
-            pCache->requestGuessCover(m_loadedTrack);
-        }
+    if (!m_loadedTrack) {
+        return;
     }
+    guessTrackCoverConcurrently(m_loadedTrack);
 }
 
 void WCoverArt::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
@@ -131,8 +129,11 @@ void WCoverArt::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
 
 void WCoverArt::slotReset() {
     if (m_loadedTrack) {
-        disconnect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
-                   this, SLOT(slotTrackCoverArtUpdated()));
+        disconnect(
+                m_loadedTrack.get(),
+                &Track::coverArtUpdated,
+                this,
+                &WCoverArt::slotTrackCoverArtUpdated);
     }
     m_loadedTrack.reset();
     m_lastRequestedCover = CoverInfo();
@@ -176,8 +177,10 @@ void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
     m_loadedCoverScaled = QPixmap();
     m_loadedTrack = pTrack;
     if (m_loadedTrack) {
-        connect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
-                this, SLOT(slotTrackCoverArtUpdated()));
+        connect(m_loadedTrack.get(),
+                &Track::coverArtUpdated,
+                this,
+                &WCoverArt::slotTrackCoverArtUpdated);
     }
 
     if (!m_bEnable) {

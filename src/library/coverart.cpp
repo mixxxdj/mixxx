@@ -1,6 +1,5 @@
-#include <QtDebug>
-
 #include "library/coverart.h"
+
 #include "library/coverartutils.h"
 #include "util/debug.h"
 #include "util/logger.h"
@@ -98,8 +97,12 @@ QImage CoverInfo::loadImage(
                 TrackFile(trackLocation),
                 pTrackLocationToken);
     } else if (type == CoverInfo::FILE) {
-        VERIFY_OR_DEBUG_ASSERT(!trackLocation.isEmpty()) {
-            kLogger.warning()
+        // NOTE(uklotzde): I have not idea when the trackLocation might ever
+        // become empty here?? But there is a test especially for this case!
+        // We cannot use VERIFY_OR_DEBUG_ASSERT unless someone is able to
+        // rule out this strange use case.
+        if (trackLocation.isEmpty()) {
+            kLogger.debug()
                     << "loadImage"
                     << type
                     << "cover with empty trackLocation."

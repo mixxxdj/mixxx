@@ -14,11 +14,11 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlay
           m_pPlayer(pPlayer),
           m_pCoverMenu(make_parented<WCoverArtMenu>(this)) {
     CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != nullptr) {
-        connect(pCache, SIGNAL(coverFound(const QObject*,
-                                          const CoverInfoRelative&, QPixmap, bool)),
-                this, SLOT(slotCoverFound(const QObject*,
-                                          const CoverInfoRelative&, QPixmap, bool)));
+    if (pCache) {
+        connect(pCache,
+                &CoverArtCache::coverFound,
+                this,
+                &DlgCoverArtFullSize::slotCoverFound);
     }
 
     setContextMenuPolicy(Qt::CustomContextMenu);

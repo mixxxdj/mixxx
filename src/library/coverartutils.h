@@ -18,10 +18,7 @@ class CoverArtUtils {
   public:
     static QString defaultCoverLocation();
 
-    // Extracts the first cover art image embedded within the file at
-    // fileInfo. If no security token is provided a new one is created.
-    static QImage extractEmbeddedCover(
-            TrackFile trackFile);
+    // Extracts the first cover art image embedded within the file.
     static QImage extractEmbeddedCover(
             TrackFile trackFile,
             SecurityTokenPointer pToken);
@@ -79,8 +76,18 @@ class CoverInfoGuesser {
     // the cover art for the provided track.
     CoverInfoRelative guessCoverInfoForTrack(
             const Track& track);
+    void guessAndSetCoverInfoForTrack(
+            Track& track) {
+        track.setCoverInfo(guessCoverInfoForTrack(track));
+    }
 
   private:
     QString m_cachedFolder;
     QList<QFileInfo> m_cachedPossibleCoversInFolder;
 };
+
+// Guesses the cover art for the provided tracks by searching the tracks'
+// metadata and folders for image files. All I/O is done in a separate
+// thread.
+void guessTrackCoverConcurrently(TrackPointer pTrack);
+void guessTrackCoversConcurrently(QList<TrackPointer> tracks);

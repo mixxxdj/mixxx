@@ -8,6 +8,7 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "library/coverartcache.h"
+#include "library/coverartutils.h"
 #include "util/compatibility.h"
 #include "util/dnd.h"
 #include "waveform/sharedglcontext.h"
@@ -76,11 +77,11 @@ WSpinny::WSpinny(
     }
 
     CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != nullptr) {
-        connect(pCache, SIGNAL(coverFound(const QObject*,
-                                          const CoverInfoRelative&, QPixmap, bool)),
-                this, SLOT(slotCoverFound(const QObject*,
-                                          const CoverInfoRelative&, QPixmap, bool)));
+    if (pCache) {
+        connect(pCache,
+                &CoverArtCache::coverFound,
+                this,
+                &WSpinny::slotCoverFound);
     }
 
     if (m_pPlayer != nullptr) {
@@ -292,12 +293,10 @@ void WSpinny::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
 }
 
 void WSpinny::slotReloadCoverArt() {
-    if (m_loadedTrack != nullptr) {
-        CoverArtCache* pCache = CoverArtCache::instance();
-        if (pCache) {
-            pCache->requestGuessCover(m_loadedTrack);
-        }
+    if (!m_loadedTrack) {
+        return;
     }
+    guessTrackCoverConcurrently(m_loadedTrack);
 }
 
 void WSpinny::paintEvent(QPaintEvent *e) {

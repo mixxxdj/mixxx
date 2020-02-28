@@ -24,7 +24,6 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
 #include "library/dao/libraryhashdao.h"
-#include "library/coverartcache.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
 #include "track/keyfactory.h"
@@ -1919,9 +1918,12 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
             continue;
         }
 
+        SecurityTokenPointer pToken = Sandbox::openSecurityToken(
+                trackFile.asFileInfo(), true);
         const auto embeddedCover =
                 CoverArtUtils::extractEmbeddedCover(
-                        trackFile);
+                        trackFile,
+                        pToken);
         const auto coverInfo =
                 coverInfoGuesser.guessCoverInfo(
                         trackFile,
@@ -1986,11 +1988,7 @@ TrackPointer TrackDAO::getOrAddTrack(
 
     // If the track wasn't in the library already then it has not yet
     // been checked for cover art.
-    CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache) {
-        // Process cover art asynchronously
-        pCache->requestGuessCover(pTrack);
-    }
+    guessTrackCoverConcurrently(pTrack);
 
     return pTrack;
 }

@@ -192,36 +192,3 @@ void CoverArtCache::coverLoaded() {
         emit coverFound(res.pRequestor, res.cover, pixmap, false);
     }
 }
-
-void CoverArtCache::requestGuessCovers(QList<TrackPointer> tracks) {
-    QtConcurrent::run(this, &CoverArtCache::guessCovers, tracks);
-}
-
-void CoverArtCache::requestGuessCover(TrackPointer pTrack) {
-    QtConcurrent::run(this, &CoverArtCache::guessCover, pTrack);
-}
-
-void CoverArtCache::guessCover(TrackPointer pTrack) {
-    VERIFY_OR_DEBUG_ASSERT(pTrack) {
-        return;
-    }
-    if (kLogger.debugEnabled()) {
-        kLogger.debug()
-                << "Guessing cover art for"
-                << pTrack->getFileInfo();
-    }
-    pTrack->setCoverInfo(
-            CoverInfoGuesser().guessCoverInfoForTrack(*pTrack));
-}
-
-void CoverArtCache::guessCovers(QList<TrackPointer> tracks) {
-    if (kLogger.debugEnabled()) {
-        kLogger.debug()
-                << "Guessing cover art for"
-                << tracks.size()
-                << "track(s)";
-    }
-    for (TrackPointer pTrack : qAsConst(tracks)) {
-        guessCover(pTrack);
-    }
-}
