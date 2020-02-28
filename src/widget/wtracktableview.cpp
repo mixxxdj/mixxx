@@ -1093,7 +1093,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             // Get color of first selected track
             int column = trackModel->fieldIndex(LIBRARYTABLE_COLOR);
             QModelIndex index = indices.at(0).sibling(indices.at(0).row(), column);
-            mixxx::RgbColor::optional_t trackColor = mixxx::RgbColor::optional(index.data());
+            auto trackColor = mixxx::RgbColor::fromQVariant(index.data());
 
             // Check if all other selected tracks have the same color
             bool multipleTrackColors = false;
@@ -1101,9 +1101,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 int row = indices.at(i).row();
                 QModelIndex index = indices.at(i).sibling(row, column);
 
-                mixxx::RgbColor::optional_t otherTrackColor = mixxx::RgbColor::optional(index.data());
-                if (trackColor != otherTrackColor) {
-                    trackColor = std::nullopt;
+                if (trackColor != mixxx::RgbColor::fromQVariant(index.data())) {
+                    trackColor = mixxx::RgbColor::nullopt();
                     multipleTrackColors = true;
                     break;
                 }
@@ -1996,7 +1995,7 @@ void WTrackTableView::slotColorPicked(PredefinedColorPointer pColor) {
     // TODO: This should be done in a thread for large selections
     for (const auto& index : selectedTrackIndices) {
         TrackPointer track = trackModel->getTrack(index);
-        track->setColor(mixxx::RgbColor::optional(pColor->m_defaultRgba));
+        track->setColor(mixxx::RgbColor::fromQColor(pColor->m_defaultRgba));
     }
 
     m_pMenu->hide();
