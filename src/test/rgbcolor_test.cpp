@@ -84,24 +84,24 @@ TEST(RgbColorTest, toQStringOptional) {
 
 TEST(RgbColorTest, fromControlValue) {
     EXPECT_EQ(RgbColor::nullopt(),
-            control::valueToRgbColor(control::kInvalidRgbColor));
+            control::doubleToRgbColor(control::kInvalidRgbColor));
     EXPECT_EQ(RgbColor::optional(0),
-            control::valueToRgbColor(0));
+            control::doubleToRgbColor(0));
     EXPECT_EQ(RgbColor::optional(0xFEDCBA),
-            control::valueToRgbColor(0xFEDCBA));
+            control::doubleToRgbColor(0xFEDCBA));
 }
 
 TEST(RgbColorTest, toControlValue) {
     EXPECT_EQ(control::kInvalidRgbColor,
-            control::valueFromRgbColor(RgbColor::nullopt()));
+            control::doubleFromRgbColor(RgbColor::nullopt()));
     EXPECT_EQ(0.0,
-            control::valueFromRgbColor(RgbColor(0)));
+            control::doubleFromRgbColor(RgbColor(0)));
     EXPECT_EQ(0.0,
-            control::valueFromRgbColor(RgbColor::optional(0)));
+            control::doubleFromRgbColor(RgbColor::optional(0)));
     EXPECT_EQ(16702650.0,
-            control::valueFromRgbColor(RgbColor::optional(0xFEDCBA)));
+            control::doubleFromRgbColor(RgbColor::optional(0xFEDCBA)));
     EXPECT_EQ(16702650.0,
-            control::valueFromRgbColor(RgbColor::optional(0xFEDCBA)));
+            control::doubleFromRgbColor(RgbColor::optional(0xFEDCBA)));
 }
 
 } // namespace mixxx

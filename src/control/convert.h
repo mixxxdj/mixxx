@@ -7,23 +7,21 @@ namespace mixxx {
 
 namespace control {
 
-typedef double value_t;
+constexpr double kInvalidRgbColor = -1.0;
 
-constexpr value_t kInvalidRgbColor = -1.0;
-
-inline value_t valueFromRgbColor(RgbColor color) {
+inline double doubleFromRgbColor(RgbColor color) {
     return static_cast<RgbColor::code_t>(color);
 }
 
-inline value_t valueFromRgbColor(RgbColor::optional_t color) {
+inline double doubleFromRgbColor(RgbColor::optional_t color) {
     if (color) {
-        return valueFromRgbColor(*color);
+        return doubleFromRgbColor(*color);
     } else {
         return kInvalidRgbColor;
     }
 }
 
-inline RgbColor::optional_t valueToRgbColor(value_t value) {
+inline RgbColor::optional_t doubleToRgbColor(double value) {
     if (value >= 0) {
         const auto code = static_cast<RgbColor::code_t>(value);
         // If value is out of range then unused bits will be
