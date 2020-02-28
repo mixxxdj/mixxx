@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 #include "test/mixxxtest.h"
+#include "control/convert.h"
 
 namespace mixxx {
 
@@ -79,6 +80,28 @@ TEST(RgbColorTest, toQStringOptional) {
             RgbColor::toQString(RgbColor::fromQColor(QColor::fromRgba(0xAA123456))));
     EXPECT_EQ(QString("#123456"),
             RgbColor::toQString(RgbColor::fromQColor(QColor::fromRgba(0xAA123456)), QStringLiteral("None")));
+}
+
+TEST(RgbColorTest, fromControlValue) {
+    EXPECT_EQ(RgbColor::nullopt(),
+            control::valueToRgbColor(control::kInvalidRgbColor));
+    EXPECT_EQ(RgbColor::optional(0),
+            control::valueToRgbColor(0));
+    EXPECT_EQ(RgbColor::optional(0xFEDCBA),
+            control::valueToRgbColor(0xFEDCBA));
+}
+
+TEST(RgbColorTest, toControlValue) {
+    EXPECT_EQ(control::kInvalidRgbColor,
+            control::valueFromRgbColor(RgbColor::nullopt()));
+    EXPECT_EQ(0.0,
+            control::valueFromRgbColor(RgbColor(0)));
+    EXPECT_EQ(0.0,
+            control::valueFromRgbColor(RgbColor::optional(0)));
+    EXPECT_EQ(16702650.0,
+            control::valueFromRgbColor(RgbColor::optional(0xFEDCBA)));
+    EXPECT_EQ(16702650.0,
+            control::valueFromRgbColor(RgbColor::optional(0xFEDCBA)));
 }
 
 } // namespace mixxx
