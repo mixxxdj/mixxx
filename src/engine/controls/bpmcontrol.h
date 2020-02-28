@@ -103,21 +103,21 @@ class BpmControl : public EngineControl {
     friend class SyncControl;
 
     // ControlObjects that come from EngineBuffer
-    ControlProxy* m_pPlayButton;
+    std::unique_ptr<ControlProxy> m_pPlayButton;
     QAtomicInt m_oldPlayButton;
-    ControlProxy* m_pReverseButton;
-    ControlProxy* m_pRateRatio;
+    std::unique_ptr<ControlProxy> m_pReverseButton;
+    std::unique_ptr<ControlProxy> m_pRateRatio;
     ControlObject* m_pQuantize;
 
     // ControlObjects that come from QuantizeControl
-    QScopedPointer<ControlProxy> m_pNextBeat;
-    QScopedPointer<ControlProxy> m_pPrevBeat;
-    QScopedPointer<ControlProxy> m_pClosestBeat;
+    std::unique_ptr<ControlProxy> m_pNextBeat;
+    std::unique_ptr<ControlProxy> m_pPrevBeat;
+    std::unique_ptr<ControlProxy> m_pClosestBeat;
 
     // ControlObjects that come from LoopingControl
-    ControlProxy* m_pLoopEnabled;
-    ControlProxy* m_pLoopStartPosition;
-    ControlProxy* m_pLoopEndPosition;
+    std::unique_ptr<ControlProxy> m_pLoopEnabled;
+    std::unique_ptr<ControlProxy> m_pLoopStartPosition;
+    std::unique_ptr<ControlProxy> m_pLoopEndPosition;
 
     // The current loaded file's detected BPM
     ControlObject* m_pFileBpm;
@@ -147,11 +147,11 @@ class BpmControl : public EngineControl {
     // Button to set the nearest beat as a bar beat
     ControlPushButton* m_pBeatsSetBarBeat;
 
-    ControlProxy* m_pThisBeatDistance;
+    std::unique_ptr<ControlProxy> m_pThisBeatDistance;
     ControlValueAtomic<double> m_dSyncTargetBeatDistance;
     ControlValueAtomic<double> m_dUserOffset;
     QAtomicInt m_resetSyncAdjustment;
-    ControlProxy* m_pSyncMode;
+    std::unique_ptr<ControlProxy> m_pSyncMode;
 
     TapFilter m_tapFilter; // threadsafe
 
