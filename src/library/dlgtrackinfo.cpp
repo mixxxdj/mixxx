@@ -225,10 +225,7 @@ void DlgTrackInfo::populateFields(const Track& track) {
 
     m_loadedCoverInfo = track.getCoverInfoWithLocation();
     m_pWCoverArtLabel->setCoverArt(m_loadedCoverInfo, QPixmap());
-    CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != NULL) {
-        pCache->requestCover(m_loadedCoverInfo, this, 0, false, true);
-    }
+    CoverArtCache::requestCover(this, m_loadedCoverInfo);
 }
 
 void DlgTrackInfo::reloadTrackBeats(const Track& track) {
@@ -274,15 +271,19 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
             &DlgTrackInfo::slotTrackChanged);
 }
 
-void DlgTrackInfo::slotCoverFound(const QObject* pRequestor,
-                                  const CoverInfoRelative& info,
-                                  QPixmap pixmap, bool fromCache) {
-    Q_UNUSED(fromCache);
-    if (pRequestor == this && m_pLoadedTrack &&
-            m_loadedCoverInfo.hash == info.hash) {
-        qDebug() << "DlgTrackInfo::slotPixmapFound" << pRequestor << info
-                 << pixmap.size();
-        m_pWCoverArtLabel->setCoverArt(m_loadedCoverInfo, pixmap);
+void DlgTrackInfo::slotCoverFound(
+        const QObject* pRequestor,
+        const CoverInfo& coverInfo,
+        const QPixmap& pixmap,
+        quint16 requestedHash,
+        bool coverInfoUpdated) {
+    Q_UNUSED(requestedHash);
+    Q_UNUSED(coverInfoUpdated);
+    if (pRequestor == this &&
+            m_pLoadedTrack &&
+            m_loadedCoverInfo.trackLocation == coverInfo.trackLocation) {
+        m_loadedCoverInfo = coverInfo;
+        m_pWCoverArtLabel->setCoverArt(coverInfo, pixmap);
     }
 }
 
@@ -301,10 +302,7 @@ void DlgTrackInfo::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
         return;
     }
     m_loadedCoverInfo = CoverInfo(coverInfo, m_pLoadedTrack->getLocation());
-    CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache) {
-        pCache->requestCover(m_loadedCoverInfo, this, 0, false, true);
-    }
+    CoverArtCache::requestCover(this, m_loadedCoverInfo);
 }
 
 void DlgTrackInfo::slotOpenInFileBrowser() {

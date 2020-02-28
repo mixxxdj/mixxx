@@ -265,20 +265,21 @@ void WSpinny::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
 
 void WSpinny::slotTrackCoverArtUpdated() {
     if (m_loadedTrack) {
-        CoverArtCache::requestCover(*m_loadedTrack, this);
+        CoverArtCache::requestTrackCover(this, m_loadedTrack);
     }
 }
 
-void WSpinny::slotCoverFound(const QObject* pRequestor,
-                             const CoverInfoRelative& info, QPixmap pixmap,
-                             bool fromCache) {
-    Q_UNUSED(info);
-    Q_UNUSED(fromCache);
-
-    if (pRequestor == this && m_loadedTrack &&
-            m_loadedTrack->getCoverHash() == info.hash) {
-        qDebug() << "WSpinny::slotCoverFound" << pRequestor << info
-                 << pixmap.size();
+void WSpinny::slotCoverFound(
+        const QObject* pRequestor,
+        const CoverInfo& coverInfo,
+        const QPixmap& pixmap,
+        quint16 requestedHash,
+        bool coverInfoUpdated) {
+    Q_UNUSED(requestedHash);
+    Q_UNUSED(coverInfoUpdated);
+    if (pRequestor == this &&
+            m_loadedTrack &&
+            m_loadedTrack->getLocation() == coverInfo.trackLocation) {
         m_loadedCover = pixmap;
         m_loadedCoverScaled = scaledCoverArt(pixmap);
         update();

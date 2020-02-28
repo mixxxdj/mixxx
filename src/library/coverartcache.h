@@ -1,8 +1,10 @@
-#ifndef COVERARTCACHE_H
-#define COVERARTCACHE_H
+#pragma once
 
 #include <QObject>
+#include <QPair>
 #include <QPixmap>
+#include <QSet>
+#include <QtDebug>
 
 #include "library/coverart.h"
 #include "util/singleton.h"
@@ -11,6 +13,14 @@
 class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     Q_OBJECT
   public:
+    static void requestCover(
+            const QObject* pRequestor,
+            const CoverInfo& coverInfo,
+            const TrackPointer& pTrack = TrackPointer());
+    static void requestTrackCover(
+            const QObject* pRequestor,
+            const TrackPointer& pTrack);
+
     /* This method is used to request a cover art pixmap.
      *
      * @param pRequestor : an arbitrary pointer (can be any number you'd like,
@@ -23,48 +33,78 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
      *      In this way, the method will just look into CoverCache and return
      *      a Pixmap if it is already loaded in the QPixmapCache.
      */
-    QPixmap requestCover(const CoverInfo& info,
-                         const QObject* pRequestor,
-                         const int desiredWidth,
-                         const bool onlyCached,
-                         const bool signalWhenDone);
+    enum class Loading {
+        CachedOnly,
+        NoSignal,
+        Default, // signal when done
+    };
+    QPixmap tryLoadCover(
+            const QObject* pRequestor,
+            const CoverInfo& info,
+            int desiredWidth = 0, // <= 0: original size
+            Loading loading = Loading::Default) {
+        return tryLoadCover(
+                pRequestor,
+                TrackPointer(),
+                info,
+                desiredWidth,
+                loading);
+    }
 
-    static void requestCover(const Track& track,
-                             const QObject* pRequestor);
-
+    // Only public for testing
     struct FutureResult {
         FutureResult()
-                : pRequestor(NULL),
-                  signalWhenDone(false) {
+                : pRequestor(nullptr),
+                  requestedHash(CoverImageUtils::defaultHash()),
+                  signalWhenDone(false),
+                  coverInfoUpdated(false) {
         }
 
-        CoverArt cover;
         const QObject* pRequestor;
+        quint16 requestedHash;
         bool signalWhenDone;
-    };
 
-  public slots:
+        CoverArt cover;
+        bool coverInfoUpdated;
+    };
+    // Load cover from path indicated in coverInfo. WARNING: This is run in a
+    // worker thread.
+    static FutureResult loadCover(
+            const QObject* pRequestor,
+            TrackPointer pTrack,
+            CoverInfo coverInfo,
+            int desiredWidth,
+            bool emitSignals);
+
+  private slots:
     // Called when loadCover is complete in the main thread.
     void coverLoaded();
 
   signals:
-    void coverFound(const QObject* requestor,
-                    const CoverInfoRelative& info, QPixmap pixmap, bool fromCache);
+    void coverFound(
+            const QObject* requestor,
+            const CoverInfo& coverInfo,
+            const QPixmap& pixmap,
+            quint16 requestedHash,
+            bool coverInfoUpdated);
 
   protected:
     CoverArtCache();
-    virtual ~CoverArtCache();
+    ~CoverArtCache() override = default;
     friend class Singleton<CoverArtCache>;
 
-    // Load cover from path indicated in coverInfo. WARNING: This is run in a
-    // worker thread.
-    FutureResult loadCover(const CoverInfo& coverInfo,
-                           const QObject* pRequestor,
-                           const int desiredWidth,
-                           const bool emitSignals);
-
   private:
+    QPixmap tryLoadCover(
+            const QObject* pRequestor,
+            const TrackPointer& pTrack,
+            const CoverInfo& info,
+            int desiredWidth,
+            Loading loading);
+
     QSet<QPair<const QObject*, quint16> > m_runningRequests;
 };
 
-#endif // COVERARTCACHE_H
+inline
+QDebug operator<<(QDebug dbg, CoverArtCache::Loading loading) {
+    return dbg << static_cast<int>(loading);
+}

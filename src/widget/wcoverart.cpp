@@ -144,23 +144,26 @@ void WCoverArt::slotReset() {
 
 void WCoverArt::slotTrackCoverArtUpdated() {
     if (m_loadedTrack) {
-        CoverArtCache::requestCover(*m_loadedTrack, this);
+        CoverArtCache::requestTrackCover(this, m_loadedTrack);
     }
 }
 
-void WCoverArt::slotCoverFound(const QObject* pRequestor,
-                               const CoverInfoRelative& info, QPixmap pixmap,
-                               bool fromCache) {
-    Q_UNUSED(info);
-    Q_UNUSED(fromCache);
+void WCoverArt::slotCoverFound(
+        const QObject* pRequestor,
+        const CoverInfo& coverInfo,
+        const QPixmap& pixmap,
+        quint16 requestedHash,
+        bool coverInfoUpdated) {
+    Q_UNUSED(requestedHash);
+    Q_UNUSED(coverInfoUpdated);
     if (!m_bEnable) {
         return;
     }
 
-    if (pRequestor == this && m_loadedTrack &&
-            m_loadedTrack->getCoverHash() == info.hash) {
-        qDebug() << "WCoverArt::slotCoverFound" << pRequestor << info
-                 << pixmap.size();
+    if (pRequestor == this &&
+            m_loadedTrack &&
+            m_loadedTrack->getLocation() == coverInfo.trackLocation) {
+        m_lastRequestedCover = coverInfo;
         m_loadedCover = pixmap;
         m_loadedCoverScaled = scaledCoverArt(pixmap);
         update();

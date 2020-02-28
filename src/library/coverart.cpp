@@ -137,6 +137,32 @@ QImage CoverInfo::loadImage(
     }
 }
 
+bool CoverInfo::refreshImageHash(
+        const QImage& loadedImage,
+        const SecurityTokenPointer& pTrackLocationToken) {
+    if (CoverImageUtils::isValidHash(hash)) {
+        // Trust that a valid hash has been calculated from the
+        // corresponding image. Otherwise we would refresh all
+        // hashes over and over again.
+        return false;
+    }
+    QImage image = loadedImage;
+    if (loadedImage.isNull()) {
+        image = loadImage(pTrackLocationToken);
+    }
+    if (image.isNull() && type != CoverInfo::NONE) {
+        kLogger.warning()
+                << "Resetting cover info"
+                << *this;
+        reset();
+        return true;
+    }
+    hash = CoverImageUtils::calculateHash(image);
+    DEBUG_ASSERT(image.isNull() || CoverImageUtils::isValidHash(hash));
+    DEBUG_ASSERT(!image.isNull() || hash == CoverImageUtils::defaultHash());
+    return true;
+}
+
 bool operator==(const CoverInfo& a, const CoverInfo& b) {
     return static_cast<const CoverInfoRelative&>(a) ==
                     static_cast<const CoverInfoRelative&>(b) &&

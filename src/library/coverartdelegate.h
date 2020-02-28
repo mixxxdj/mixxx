@@ -7,7 +7,7 @@
 
 #include "library/tableitemdelegate.h"
 
-class CoverInfoRelative;
+class CoverInfo;
 class TrackModel;
 class WLibraryTableView;
 
@@ -37,9 +37,12 @@ class CoverArtDelegate : public TableItemDelegate {
     // which could bring performance issues.
     void slotOnlyCachedCoverArt(bool b);
 
-    void slotCoverFound(const QObject* pRequestor,
-                        const CoverInfoRelative& info,
-                        QPixmap pixmap, bool fromCache);
+    void slotCoverFound(
+            const QObject* pRequestor,
+            const CoverInfo& coverInfo,
+            const QPixmap& pixmap,
+            quint16 requestedHash,
+            bool coverInfoUpdated);
 
   private:
     QTableView* m_pTableView;
