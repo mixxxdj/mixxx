@@ -1972,7 +1972,7 @@ void WTrackTableView::lockBpm(bool lock) {
     }
 }
 
-void WTrackTableView::slotColorPicked(const mixxx::RgbColor::optional_t& color) {
+void WTrackTableView::slotColorPicked(const mixxx::RgbColor::optional_t color) {
     TrackModel* trackModel = getTrackModel();
     if (trackModel == nullptr) {
         return;

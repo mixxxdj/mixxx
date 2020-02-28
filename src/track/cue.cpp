@@ -165,7 +165,7 @@ mixxx::RgbColor Cue::getColor() const {
     return m_color;
 }
 
-void Cue::setColor(const mixxx::RgbColor& color) {
+void Cue::setColor(const mixxx::RgbColor color) {
     QMutexLocker lock(&m_mutex);
     m_color = color;
     m_bDirty = true;
