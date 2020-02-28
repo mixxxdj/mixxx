@@ -1318,6 +1318,9 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
         SoundSourceProxy(pTrack).updateTrackFromSource();
     }
 
+    // Validate and refresh cover image hash values if needed.
+    pTrack->refreshCoverImageHash();
+
     // Listen to signals from Track objects and forward them to
     // receivers. TrackDAO works as a relay for selected track signals
     // that allows receivers to use permament connections with
