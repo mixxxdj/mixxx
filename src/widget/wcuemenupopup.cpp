@@ -117,7 +117,7 @@ void WCueMenuPopup::slotChangeCueColor(const mixxx::RgbColor::optional_t& color)
     VERIFY_OR_DEBUG_ASSERT(color) {
         return;
     }
-    m_pCue->setColor(color.value());
+    m_pCue->setColor(*color);
     m_pColorPicker->setSelectedColor(color);
     hide();
 }
