@@ -129,21 +129,8 @@ void Track::importMetadata(
     const auto newKey = importedMetadata.getTrackInfo().getKey();
     const auto newReplayGain = importedMetadata.getTrackInfo().getReplayGain();
 #ifdef __EXTRA_METADATA__
-    const auto newSeratoMarkers = importedMetadata.getTrackInfo().getSeratoMarkers();
-    const auto newSeratoMarkers2 = importedMetadata.getTrackInfo().getSeratoMarkers2();
-    {
-        // enter locking scope
-        QMutexLocker lock(&m_qMutex);
-        // Import "Serato Markers2" first, then overwrite values with those
-        // from "Serato Markers_". This is what Serato does too (i.e. if
-        // "Serato Markers_" and "Serato Markers2" contradict each other,
-        // Serato will use the values from "Serato Markers_").
-        newSeratoMarkers2.syncToTrackObject(this);
-        newSeratoMarkers.syncToTrackObject(this, true);
-        // implicitly unlocked when leaving scope
-    }
+    const auto newSeratoTags = importedMetadata.getTrackInfo().getSeratoTags();
 #endif // __EXTRA_METADATA__
-
     {
         // enter locking scope
         QMutexLocker lock(&m_qMutex);
@@ -166,6 +153,12 @@ void Track::importMetadata(
                 emit ReplayGainUpdated(newReplayGain);
             }
         }
+
+#ifdef __EXTRA_METADATA__
+        setColor(newSeratoTags.getTrackColor());
+        setBpmLocked(newSeratoTags.isBpmLocked());
+#endif // __EXTRA_METADATA__
+
         // implicitly unlocked when leaving scope
     }
 
@@ -794,6 +787,8 @@ void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
     // connect new cue points
     for (const auto& pCue: m_cuePoints) {
         connect(pCue.get(), &Cue::updated, this, &Track::slotCueUpdated);
+        // Enure that the track IDs are correct
+        pCue->setTrackId(m_record.getId());
         // update main cue point
         if (pCue->getType() == Cue::Type::MainCue) {
             m_record.setCuePoint(CuePosition(pCue->getPosition()));
