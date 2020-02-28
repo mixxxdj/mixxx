@@ -13,7 +13,7 @@
 class LibraryTest : public MixxxTest {
   protected:
     LibraryTest();
-    ~LibraryTest() override = default;
+    ~LibraryTest() override;
 
     const mixxx::DbConnectionPoolPtr& dbConnectionPool() const {
         return m_dbConnectionPooler;
