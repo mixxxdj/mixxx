@@ -182,13 +182,11 @@ class RgbColor {
         if (varCode.isNull()) {
             return defaultColor;
         }
-        DEBUG_ASSERT(varCode.canConvert(QMetaType::UInt));
-        bool ok = false;
-        const auto code = varCode.toUInt(&ok);
-        VERIFY_OR_DEBUG_ASSERT(ok) {
+        VERIFY_OR_DEBUG_ASSERT(varCode.canConvert(QMetaType::UInt)) {
             return defaultColor;
         }
-        return optional(static_cast<code_t>(code));
+        const auto value = varCode.value<code_t>();
+        return RgbColor::optional(value);
     }
 
     static optional_t fromQVariantColor(
@@ -197,7 +195,9 @@ class RgbColor {
         if (varColor.isNull()) {
             return defaultColor;
         }
-        DEBUG_ASSERT(varColor.canConvert(QMetaType::QColor));
+        VERIFY_OR_DEBUG_ASSERT(varColor.canConvert(QMetaType::QColor)) {
+            return defaultColor;
+        }
         const auto value = varColor.value<QColor>();
         return fromQColor(value);
     }
@@ -208,7 +208,9 @@ class RgbColor {
         if (varString.isNull()) {
             return defaultColor;
         }
-        DEBUG_ASSERT(varString.canConvert(QMetaType::QString));
+        VERIFY_OR_DEBUG_ASSERT(varString.canConvert(QMetaType::QString)) {
+            return defaultColor;
+        }
         const auto value = varString.value<QString>();
         return fromQString(value);
     }
