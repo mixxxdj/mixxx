@@ -5,6 +5,7 @@
 
 #include "predefinedcolorsrepresentation.h"
 #include "util/color/predefinedcolor.h"
+#include "util/color/rgbcolor.h"
 
 // This class defines a set of predefined colors and provides some handy functions to work with them.
 // A single global instance is create in the Color namespace.

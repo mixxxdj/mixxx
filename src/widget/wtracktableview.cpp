@@ -1112,15 +1112,9 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             // different colors, do not preselect a color (by using nullptr
             // instead).
             PredefinedColorPointer predefinedTrackColor = nullptr;
-
             if (trackColor) {
                 // All tracks have the same color
-                for (PredefinedColorPointer color : Color::kPredefinedColorsSet.allColors) {
-                    if (mixxx::RgbColor(color->m_defaultRgba.rgb()) == *trackColor) {
-                        predefinedTrackColor = color;
-                        break;
-                    }
-                }
+                predefinedTrackColor = Color::kPredefinedColorsSet.predefinedColorFromRgbColor(trackColor);
             } else if (!multipleTrackColors) {
                 // All tracks have no color
                 predefinedTrackColor = Color::kPredefinedColorsSet.noColor;
