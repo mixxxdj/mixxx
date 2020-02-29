@@ -38,6 +38,8 @@ class SeratoTags final {
         return m_seratoMarkers2.dump();
     }
 
+    QList<CueInfo> getCues() const;
+
     RgbColor::optional_t getTrackColor() const;
     bool isBpmLocked() const;
 

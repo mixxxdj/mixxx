@@ -59,6 +59,41 @@ RgbColor SeratoTags::displayedToStoredTrackColor(RgbColor::optional_t color) {
     return RgbColor(colorCode);
 }
 
+QList<CueInfo> SeratoTags::getCues() const {
+    // Import "Serato Markers2" first, then overwrite values with those
+    // from "Serato Markers_". This is what Serato does too (i.e. if
+    // "Serato Markers_" and "Serato Markers2" contradict each other,
+    // Serato will use the values from "Serato Markers_").
+
+    QMap<int, CueInfo> cueMap;
+    for (const CueInfo& cueInfo : m_seratoMarkers2.getCues()) {
+        DEBUG_ASSERT(cueInfo.getHotCueNumber());
+        int index = *cueInfo.getHotCueNumber();
+        DEBUG_ASSERT(index >= 0);
+        cueMap.insert(index, cueInfo);
+    };
+
+    // TODO: If a hotcue is set in SeratoMarkers2, but not in SeratoMarkers_,
+    // we could remove it from the output. We'll just leave it in for now.
+    for (const CueInfo& cueInfo : m_seratoMarkers.getCues()) {
+        DEBUG_ASSERT(cueInfo.getHotCueNumber());
+        int index = *cueInfo.getHotCueNumber();
+        DEBUG_ASSERT(index >= 0);
+
+        CueInfo existingCueInfo = cueMap.value(index);
+        if (!existingCueInfo.getHotCueNumber()) {
+            cueMap.insert(index, cueInfo);
+            continue;
+        }
+
+        existingCueInfo.setType(cueInfo.getType());
+        existingCueInfo.setStartPositionMillis(cueInfo.getStartPositionMillis());
+        existingCueInfo.setEndPositionMillis(cueInfo.getEndPositionMillis());
+    }
+
+    return cueMap.values();
+}
+
 RgbColor::optional_t SeratoTags::getTrackColor() const {
     RgbColor::optional_t color = m_seratoMarkers.getTrackColor();
 
