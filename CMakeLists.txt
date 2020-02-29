@@ -977,6 +977,7 @@ add_executable(mixxx-test
   src/test/searchqueryparsertest.cpp
   src/test/seratomarkerstest.cpp
   src/test/seratomarkers2test.cpp
+  src/test/seratotagstest.cpp
   src/test/signalpathtest.cpp
   src/test/skincontext_test.cpp
   src/test/softtakeover_test.cpp
