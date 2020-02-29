@@ -19,6 +19,9 @@ const QString kConfigGroup = QStringLiteral("[TrackCollection]");
 
 const ConfigKey kConfigKeyRepairDatabaseOnNextRestart(kConfigGroup, "RepairDatabaseOnNextRestart");
 
+// Prevent infinite delays during shutdown. Long enough to finish
+// the pending tasks and short enough to prevent users from killing
+// the process.
 constexpr int kThreadPoolTimeoutMillisOnShutdown = 30000; // 30 sec
 
 inline
