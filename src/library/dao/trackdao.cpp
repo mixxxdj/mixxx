@@ -1964,7 +1964,7 @@ TrackPointer TrackDAO::getOrAddTrack(
 
     // If the track wasn't in the library already then it has not yet
     // been checked for cover art.
-    guessTrackCoverConcurrently(pTrack);
+    guessTrackCoverInfoConcurrently(pTrack);
 
     return pTrack;
 }

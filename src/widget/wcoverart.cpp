@@ -101,7 +101,7 @@ void WCoverArt::slotReloadCoverArt() {
     if (!m_loadedTrack) {
         return;
     }
-    guessTrackCoverConcurrently(m_loadedTrack);
+    guessTrackCoverInfoConcurrently(m_loadedTrack);
 }
 
 void WCoverArt::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {

@@ -297,7 +297,7 @@ void WSpinny::slotReloadCoverArt() {
     if (!m_loadedTrack) {
         return;
     }
-    guessTrackCoverConcurrently(m_loadedTrack);
+    guessTrackCoverInfoConcurrently(m_loadedTrack);
 }
 
 void WSpinny::paintEvent(QPaintEvent *e) {

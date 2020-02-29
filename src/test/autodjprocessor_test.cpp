@@ -212,7 +212,7 @@ class AutoDJProcessorTest : public LibraryTest {
 
     TrackId addTrackToCollection(const QString& trackLocation) {
         TrackPointer pTrack =
-                getOrAddTrackByLocationBlocking(trackLocation);
+                getOrAddTrackByLocation(trackLocation);
         return pTrack ? pTrack->getId() : TrackId();
     }
 

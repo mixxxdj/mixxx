@@ -14,6 +14,10 @@ namespace {
 
 mixxx::Logger kLogger("CoverArtUtils");
 
+// The concurrent guessing of cover art in background tasks
+// is enabled, unless it is explicitly disabled during tests!
+volatile bool s_enableConcurrentGuessingOfTrackCoverInfo = true;
+
 } // anonymous namespace
 
 //static
@@ -194,28 +198,45 @@ CoverInfoRelative CoverInfoGuesser::guessCoverInfoForTrack(
                     track.getSecurityToken()));
 }
 
-void guessTrackCoverConcurrently(
+void CoverInfoGuesser::guessAndSetCoverInfoForTracks(
+        const QList<TrackPointer>& tracks) {
+    for (const auto& pTrack : tracks) {
+        VERIFY_OR_DEBUG_ASSERT(pTrack) {
+            continue;
+        }
+        guessAndSetCoverInfoForTrack(*pTrack);
+    }
+}
+
+void guessTrackCoverInfoConcurrently(
         TrackPointer pTrack) {
     VERIFY_OR_DEBUG_ASSERT(pTrack) {
         return;
     }
-    QtConcurrent::run([pTrack] {
+    if (s_enableConcurrentGuessingOfTrackCoverInfo) {
+        QtConcurrent::run([pTrack] {
+            CoverInfoGuesser().guessAndSetCoverInfoForTrack(*pTrack);
+        });
+    } else {
+        // Disabled only during tests
         CoverInfoGuesser().guessAndSetCoverInfoForTrack(*pTrack);
-    });
+    }
 }
 
-void guessTrackCoversConcurrently(
+void guessTrackCoverInfoConcurrently(
         QList<TrackPointer> tracks) {
     if (tracks.isEmpty()) {
         return;
     }
-    QtConcurrent::run([tracks] {
-        CoverInfoGuesser coverInfoGuesser;
-        for (const auto& pTrack : qAsConst(tracks)) {
-            VERIFY_OR_DEBUG_ASSERT(pTrack) {
-                continue;
-            }
-            coverInfoGuesser.guessAndSetCoverInfoForTrack(*pTrack);
-        }
-    });
+    if (s_enableConcurrentGuessingOfTrackCoverInfo) {
+        QtConcurrent::run([tracks] {
+            CoverInfoGuesser().guessAndSetCoverInfoForTracks(tracks);
+        });
+    } else {
+        CoverInfoGuesser().guessAndSetCoverInfoForTracks(tracks);
+    }
+}
+
+void disableConcurrentGuessingOfTrackCoverInfoDuringTests() {
+    s_enableConcurrentGuessingOfTrackCoverInfo = false;
 }

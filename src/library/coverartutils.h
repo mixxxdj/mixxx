@@ -76,10 +76,13 @@ class CoverInfoGuesser {
     // the cover art for the provided track.
     CoverInfoRelative guessCoverInfoForTrack(
             const Track& track);
+
     void guessAndSetCoverInfoForTrack(
             Track& track) {
         track.setCoverInfo(guessCoverInfoForTrack(track));
     }
+    void guessAndSetCoverInfoForTracks(
+            const QList<TrackPointer>& tracks);
 
   private:
     QString m_cachedFolder;
@@ -89,5 +92,9 @@ class CoverInfoGuesser {
 // Guesses the cover art for the provided tracks by searching the tracks'
 // metadata and folders for image files. All I/O is done in a separate
 // thread.
-void guessTrackCoverConcurrently(TrackPointer pTrack);
-void guessTrackCoversConcurrently(QList<TrackPointer> tracks);
+void guessTrackCoverInfoConcurrently(TrackPointer pTrack);
+void guessTrackCoverInfoConcurrently(QList<TrackPointer> tracks);
+
+// Concurrent guessing of track covers during short running
+// tests may cause spurious test failures due to timing issues.
+void disableConcurrentGuessingOfTrackCoverInfoDuringTests();

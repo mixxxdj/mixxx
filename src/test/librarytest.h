@@ -13,7 +13,7 @@
 class LibraryTest : public MixxxTest {
   protected:
     LibraryTest();
-    ~LibraryTest() override;
+    ~LibraryTest() override = default;
 
     const mixxx::DbConnectionPoolPtr& dbConnectionPool() const {
         return m_dbConnectionPooler;
@@ -31,10 +31,7 @@ class LibraryTest : public MixxxTest {
         return trackCollections()->internalCollection();
     }
 
-    // Blocks until all background tasks after adding the
-    // track (like cover art guessing) have been finished.
-    // Otherwise timing issues may cause test failures!
-    TrackPointer getOrAddTrackByLocationBlocking(
+    TrackPointer getOrAddTrackByLocation(
             const QString& trackLocation);
 
   private:

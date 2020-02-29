@@ -2191,7 +2191,7 @@ void WTrackTableView::slotReloadCoverArt() {
             selectedTracks.append(pTrack);
         }
     }
-    guessTrackCoversConcurrently(selectedTracks);
+    guessTrackCoverInfoConcurrently(selectedTracks);
 }
 
 void WTrackTableView::slotSortingChanged(int headerSection, Qt::SortOrder order) {

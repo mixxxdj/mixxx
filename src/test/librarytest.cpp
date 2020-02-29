@@ -1,7 +1,5 @@
 #include "test/librarytest.h"
 
-#include <QThreadPool>
-
 namespace {
 
 const bool kInMemoryDbConnection = true;
@@ -34,17 +32,8 @@ LibraryTest::LibraryTest()
       m_pTrackCollectionManager(newTrackCollectionManager(config(), m_dbConnectionPooler)) {
 }
 
-LibraryTest::~LibraryTest() {
-    // Ensure that all concurrent tasks have finished before
-    // exiting. Otherwise test cases may fail with a SEGFAULT!
-    QThreadPool::globalInstance()->clear();
-    QThreadPool::globalInstance()->waitForDone();
-}
-
-TrackPointer LibraryTest::getOrAddTrackByLocationBlocking(
+TrackPointer LibraryTest::getOrAddTrackByLocation(
         const QString& trackLocation) {
-    TrackPointer pTrack = internalCollection()->getOrAddTrack(
+    return m_pTrackCollectionManager->getOrAddTrack(
             TrackRef::fromFileInfo(trackLocation));
-    QThreadPool::globalInstance()->waitForDone();
-    return pTrack;
 }
