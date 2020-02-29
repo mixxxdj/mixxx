@@ -13,7 +13,6 @@ QScriptValue ColorMapperJSProxy::getNearestColor(uint colorCode) {
     jsColor.setProperty("red", qRed(result.first));
     jsColor.setProperty("green", qGreen(result.first));
     jsColor.setProperty("blue", qBlue(result.first));
-    jsColor.setProperty("alpha", qAlpha(result.first));
     return jsColor;
 }
 
