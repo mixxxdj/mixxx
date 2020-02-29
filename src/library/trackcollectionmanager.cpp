@@ -1,5 +1,7 @@
 #include "library/trackcollectionmanager.h"
 
+#include <QThreadPool>
+
 #include "library/externaltrackcollection.h"
 #include "library/scanner/libraryscanner.h"
 #include "library/trackcollection.h"
@@ -16,6 +18,8 @@ const mixxx::Logger kLogger("TrackCollectionManager");
 const QString kConfigGroup = QStringLiteral("[TrackCollection]");
 
 const ConfigKey kConfigKeyRepairDatabaseOnNextRestart(kConfigGroup, "RepairDatabaseOnNextRestart");
+
+constexpr int kThreadPoolTimeoutMillisOnShutdown = 30000; // 30 sec
 
 inline
 parented_ptr<TrackCollection> createInternalTrackCollection(
@@ -136,9 +140,23 @@ TrackCollectionManager::~TrackCollectionManager() {
         kLogger.warning() << "BaseTrackCache is still in use";
     }
 
+    // Ensure that all pending, concurrent tasks have been either
+    // cancelled or finished to prevent access to tracks in
+    // GlobalTrackCache before it gets deactivated.
+    kLogger.info()
+            << "Stopping all pending tasks in worker threads";
+    QThreadPool::globalInstance()->clear();
+    if (!QThreadPool::globalInstance()->waitForDone(
+            kThreadPoolTimeoutMillisOnShutdown)) {
+        kLogger.warning()
+                << "Failed to stop pending tasks in worker threads";
+    }
+
     // Evict all remaining tracks from the cache to trigger
     // updating of modified tracks. We assume that no other
     // components are accessing those files at this point.
+    kLogger.info()
+            << "Deactivating global track cache";
     GlobalTrackCacheLocker().deactivateCache();
 
     for (const auto& externalCollection : m_externalCollections) {
@@ -153,6 +171,8 @@ TrackCollectionManager::~TrackCollectionManager() {
 
     m_pInternalCollection->disconnectDatabase();
 
+    kLogger.info()
+            << "Destroying global track cache";
     GlobalTrackCache::destroyInstance();
 }
 
