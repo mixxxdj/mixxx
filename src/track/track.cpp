@@ -716,7 +716,9 @@ CuePointer Track::createAndAddCue() {
 CuePointer Track::findCueByType(mixxx::CueType type) const {
     // This method cannot be used for hotcues because there can be
     // multiple hotcues and this function returns only a single CuePointer.
-    DEBUG_ASSERT(type != mixxx::CueType::HotCue);
+    VERIFY_OR_DEBUG_ASSERT(type != mixxx::CueType::HotCue) {
+        return CuePointer();
+    }
     QMutexLocker lock(&m_qMutex);
     for (const CuePointer& pCue: m_cuePoints) {
         if (pCue->getType() == type) {
