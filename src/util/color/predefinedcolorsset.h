@@ -110,6 +110,23 @@ class PredefinedColorsSet final {
         return noColor;
     };
 
+    PredefinedColorPointer predefinedColorFromRgbColor(mixxx::RgbColor color) const {
+        for (PredefinedColorPointer pColor : allColors) {
+            if (mixxx::RgbColor(pColor->m_defaultRgba.rgb()) == color) {
+                return pColor;
+                break;
+            }
+        }
+        return noColor;
+    };
+
+    PredefinedColorPointer predefinedColorFromRgbColor(mixxx::RgbColor::optional_t color) const {
+        if (!color) {
+            return noColor;
+        }
+        return predefinedColorFromRgbColor(*color);
+    };
+
     // The default color representation, i.e. maps each predefined color to its default Rgba.
     PredefinedColorsRepresentation defaultRepresentation() const {
         return m_defaultRepresentation;
