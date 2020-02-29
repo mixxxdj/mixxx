@@ -97,6 +97,7 @@ class PredefinedColorsSet final {
                 return color;
             }
         }
+        qWarning() << "No color matches name" << name;
         return noColor;
     };
 
@@ -108,6 +109,7 @@ class PredefinedColorsSet final {
                 return color;
             }
         }
+        qWarning() << "No color matches id" << iId;
         return noColor;
     };
 
@@ -118,6 +120,7 @@ class PredefinedColorsSet final {
                 break;
             }
         }
+        qWarning() << "No color matches RgbColor" << color;
         return noColor;
     };
 
