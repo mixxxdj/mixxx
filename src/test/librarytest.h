@@ -31,6 +31,12 @@ class LibraryTest : public MixxxTest {
         return trackCollections()->internalCollection();
     }
 
+    // Blocks until all background tasks after adding the
+    // track (like cover art guessing) have been finished.
+    // Otherwise timing issues may cause test failures!
+    TrackPointer getOrAddTrackByLocationBlocking(
+            const QString& trackLocation);
+
   private:
     const MixxxDb m_mixxxDb;
     const mixxx::DbConnectionPooler m_dbConnectionPooler;

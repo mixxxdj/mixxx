@@ -211,8 +211,8 @@ class AutoDJProcessorTest : public LibraryTest {
     }
 
     TrackId addTrackToCollection(const QString& trackLocation) {
-        TrackPointer pTrack = internalCollection()->getOrAddTrack(
-                TrackRef::fromFileInfo(trackLocation));
+        TrackPointer pTrack =
+                getOrAddTrackByLocationBlocking(trackLocation);
         return pTrack ? pTrack->getId() : TrackId();
     }
 

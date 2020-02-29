@@ -40,3 +40,11 @@ LibraryTest::~LibraryTest() {
     QThreadPool::globalInstance()->clear();
     QThreadPool::globalInstance()->waitForDone();
 }
+
+TrackPointer LibraryTest::getOrAddTrackByLocationBlocking(
+        const QString& trackLocation) {
+    TrackPointer pTrack = internalCollection()->getOrAddTrack(
+            TrackRef::fromFileInfo(trackLocation));
+    QThreadPool::globalInstance()->waitForDone();
+    return pTrack;
+}
