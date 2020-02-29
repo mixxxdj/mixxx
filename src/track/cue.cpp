@@ -54,6 +54,47 @@ Cue::Cue(int id, TrackId trackId, mixxx::CueType type, double position, double l
         m_sampleEndPosition = Cue::kNoPosition;
     }
 }
+
+Cue::Cue(TrackId trackId, mixxx::AudioSignal::SampleRate sampleRate, const mixxx::CueInfo& cueInfo)
+        : m_bDirty(false),
+          m_iId(-1),
+          m_trackId(trackId),
+          m_type(cueInfo.getType()),
+          m_sampleStartPosition(Cue::kNoPosition),
+          m_sampleEndPosition(Cue::kNoPosition),
+          m_iHotCue(Cue::kNoHotCue),
+          m_label(cueInfo.getLabel()),
+          m_color(Color::kPredefinedColorsSet.noColor) {
+    DEBUG_ASSERT(!m_label.isNull());
+    DEBUG_ASSERT(sampleRate.valid());
+
+    const double sampleRateKhz = sampleRate / 1000.0;
+    const double millisecsToSamplesFactor = sampleRateKhz * mixxx::kEngineChannelCount;
+    DEBUG_ASSERT(millisecsToSamplesFactor > 0);
+
+    if (cueInfo.getStartPositionMillis()) {
+        m_sampleStartPosition = (*cueInfo.getStartPositionMillis()) * millisecsToSamplesFactor;
+    }
+
+    if (cueInfo.getEndPositionMillis()) {
+        m_sampleEndPosition = (*cueInfo.getEndPositionMillis()) * millisecsToSamplesFactor;
+    }
+
+    if (cueInfo.getHotCueNumber()) {
+        m_iHotCue = *cueInfo.getHotCueNumber();
+    }
+
+    mixxx::RgbColor::optional_t color = cueInfo.getColor();
+    if (color) {
+        for (PredefinedColorPointer pColor : Color::kPredefinedColorsSet.allColors) {
+            if (mixxx::RgbColor(pColor->m_defaultRgba.rgb()) == *color) {
+                m_color = pColor;
+                break;
+            }
+        }
+    }
+}
+
 int Cue::getId() const {
     QMutexLocker lock(&m_mutex);
     return m_iId;
