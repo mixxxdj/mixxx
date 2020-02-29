@@ -6,7 +6,7 @@
 #include <QList>
 #include <memory>
 
-#include "util/color/rgbcolor.h"
+#include "track/cueinfo.h"
 #include "util/types.h"
 
 namespace mixxx {
@@ -154,6 +154,8 @@ class SeratoMarkers final {
     void setTrackColor(RgbColor::optional_t color) {
         m_trackColor = color;
     }
+
+    QList<CueInfo> getCues() const;
 
   private:
     QList<SeratoMarkersEntryPointer> m_entries;
