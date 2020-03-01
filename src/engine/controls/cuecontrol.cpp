@@ -1789,7 +1789,7 @@ HotcueControl::HotcueControl(QString group, int i)
 
     // The rgba value  of the color assigned to this color.
     m_hotcueColor = new ControlObject(keyForControl(i, "color"));
-    m_hotcueColor->set(-1);
+    m_hotcueColor->set(kNoColorControlValue);
     connect(m_hotcueColor,
             &ControlObject::valueChanged,
             this,
