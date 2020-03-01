@@ -251,6 +251,11 @@ bool SeratoMarkers::parse(SeratoMarkers* seratoMarkers, const QByteArray& data) 
 
 QByteArray SeratoMarkers::dump() const {
     QByteArray data;
+    if (isEmpty()) {
+        // Return empty QByteArray
+        return data;
+    }
+
     data.resize(sizeof(quint16) + 2 * sizeof(quint32) + kEntrySize * m_entries.size());
 
     QDataStream stream(&data, QIODevice::WriteOnly);

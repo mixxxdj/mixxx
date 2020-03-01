@@ -372,6 +372,11 @@ bool SeratoMarkers2::parse(SeratoMarkers2* seratoMarkers2, const QByteArray& out
 
 QByteArray SeratoMarkers2::dump() const {
     QByteArray data;
+    if (isEmpty() && getAllocatedSize() == 0) {
+        // Return empty QByteArray
+        return data;
+    }
+
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
