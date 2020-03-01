@@ -8,6 +8,7 @@ class ColorPalette {
   public:
     ColorPalette(QList<mixxx::RgbColor> colorList)
             : m_colorList(colorList) {
+        DEBUG_ASSERT(m_colorList.size() != 0);
     }
 
     mixxx::RgbColor at(int i) const {
