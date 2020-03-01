@@ -599,11 +599,9 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
         }
 
         TrackPointer pTrack = trackModel->getTrack(index);
-        VERIFY_OR_DEBUG_ASSERT(pTrack) {
-            return;
+        if (pTrack) {
+            emit loadTrack(pTrack);
         }
-
-        emit loadTrack(pTrack);
     } else if (doubleClickAction == DlgPrefLibrary::ADD_TO_AUTODJ_BOTTOM
         && modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
         addToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
@@ -1959,13 +1957,11 @@ void WTrackTableView::slotScaleBpm(int scale) {
 
     const QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
     for (const auto& index : selectedTrackIndices) {
-        TrackPointer track = trackModel->getTrack(index);
-        if (!track->isBpmLocked()) { // bpm is not locked
-            BeatsPointer beats = track->getBeats();
-            if (beats != nullptr) {
-                beats->scale(static_cast<Beats::BPMScale>(scale));
-            } else {
-                continue;
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (pTrack && !pTrack->isBpmLocked()) {
+            BeatsPointer pBeats = pTrack->getBeats();
+            if (pBeats) {
+                pBeats->scale(static_cast<Beats::BPMScale>(scale));
             }
         }
     }
@@ -1980,8 +1976,10 @@ void WTrackTableView::lockBpm(bool lock) {
     const QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
     // TODO: This should be done in a thread for large selections
     for (const auto& index : selectedTrackIndices) {
-        TrackPointer track = trackModel->getTrack(index);
-        track->setBpmLocked(lock);
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (pTrack) {
+            pTrack->setBpmLocked(lock);
+        }
     }
 }
 
@@ -2012,9 +2010,9 @@ void WTrackTableView::slotClearBeats() {
     const QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
     // TODO: This should be done in a thread for large selections
     for (const auto& index : selectedTrackIndices) {
-        TrackPointer track = trackModel->getTrack(index);
-        if (!track->isBpmLocked()) {
-            track->setBeats(BeatsPointer());
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (pTrack && !pTrack->isBpmLocked()) {
+            pTrack->setBeats(BeatsPointer());
         }
     }
 }
