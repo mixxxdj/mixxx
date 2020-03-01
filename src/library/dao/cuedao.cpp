@@ -154,7 +154,7 @@ bool CueDAO::saveCue(Cue* cue) {
         query.bindValue(":length", cue->getLength());
         query.bindValue(":hotcue", cue->getHotCue());
         query.bindValue(":label", cue->getLabel());
-        query.bindValue(":color", static_cast<mixxx::RgbColor::code_t>(cue->getColor()));
+        query.bindValue(":color", mixxx::RgbColor::toQVariant(cue->getColor()));
 
         if (query.exec()) {
             int id = query.lastInsertId().toInt();
@@ -182,7 +182,7 @@ bool CueDAO::saveCue(Cue* cue) {
         query.bindValue(":length", cue->getLength());
         query.bindValue(":hotcue", cue->getHotCue());
         query.bindValue(":label", cue->getLabel());
-        query.bindValue(":color", static_cast<mixxx::RgbColor::code_t>(cue->getColor()));
+        query.bindValue(":color", mixxx::RgbColor::toQVariant(cue->getColor()));
 
         if (query.exec()) {
             cue->setDirty(false);
