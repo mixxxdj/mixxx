@@ -53,8 +53,10 @@ CuePointer CueDAO::cueFromRow(const QSqlQuery& query) const {
     int length = record.value(record.indexOf("length")).toInt();
     int hotcue = record.value(record.indexOf("hotcue")).toInt();
     QString label = record.value(record.indexOf("label")).toString();
-    uint colorValue = record.value(record.indexOf("color")).toUInt();
-    mixxx::RgbColor color = mixxx::RgbColor(colorValue);
+    mixxx::RgbColor::optional_t color = mixxx::RgbColor::fromQVariant(record.indexOf("color"));
+    VERIFY_OR_DEBUG_ASSERT(color) {
+        return CuePointer();
+    }
     CuePointer pCue(new Cue(id,
             trackId,
             (Cue::Type)type,
@@ -62,7 +64,7 @@ CuePointer CueDAO::cueFromRow(const QSqlQuery& query) const {
             length,
             hotcue,
             label,
-            color));
+            *color));
     m_cues[id] = pCue;
     return pCue;
 }
