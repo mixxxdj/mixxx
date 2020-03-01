@@ -110,7 +110,7 @@ void WCueMenuPopup::slotEditLabel() {
     m_pCue->setLabel(m_pEditLabel->text());
 }
 
-void WCueMenuPopup::slotChangeCueColor(const mixxx::RgbColor::optional_t color) {
+void WCueMenuPopup::slotChangeCueColor(mixxx::RgbColor::optional_t color) {
     VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
         return;
     }

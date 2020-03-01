@@ -51,7 +51,7 @@ class HotcueControl : public QObject {
     void setCue(CuePointer pCue);
     void resetCue();
     void setPosition(double position);
-    void setColor(const mixxx::RgbColor::optional_t newColor);
+    void setColor(mixxx::RgbColor::optional_t newColor);
     mixxx::RgbColor::optional_t getColor() const;
 
     // Used for caching the preview state of this hotcue control.

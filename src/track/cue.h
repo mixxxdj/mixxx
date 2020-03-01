@@ -55,7 +55,7 @@ class Cue : public QObject {
     void setLabel(QString label);
 
     mixxx::RgbColor getColor() const;
-    void setColor(const mixxx::RgbColor color);
+    void setColor(mixxx::RgbColor color);
 
     double getEndPosition() const;
 

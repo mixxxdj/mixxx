@@ -79,7 +79,7 @@ WColorPicker::WColorPicker(ColorOption colorOption, const ColorPalette& palette,
     }
 }
 
-void WColorPicker::addColorButton(const mixxx::RgbColor::optional_t color, QGridLayout* pLayout, int row, int column) {
+void WColorPicker::addColorButton(mixxx::RgbColor::optional_t color, QGridLayout* pLayout, int row, int column) {
     setLayout(pLayout);
     parented_ptr<QPushButton> pColorButton = make_parented<QPushButton>("", this);
     if (m_pStyle) {
@@ -142,7 +142,7 @@ void WColorPicker::resetSelectedColor() {
     pButton->style()->polish(pButton);
 }
 
-void WColorPicker::setSelectedColor(const mixxx::RgbColor::optional_t color) {
+void WColorPicker::setSelectedColor(mixxx::RgbColor::optional_t color) {
     resetSelectedColor();
 
     m_selectedColor = color;
@@ -196,6 +196,6 @@ void WColorPicker::useColorSet(const ColorPalette& palette) {
     }
 }
 
-void WColorPicker::slotColorPicked(const mixxx::RgbColor::optional_t color) {
+void WColorPicker::slotColorPicked(mixxx::RgbColor::optional_t color) {
     setSelectedColor(color);
 }

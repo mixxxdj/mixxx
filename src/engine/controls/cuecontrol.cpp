@@ -1904,7 +1904,7 @@ mixxx::RgbColor::optional_t HotcueControl::getColor() const {
     return doubleToRgbColor(m_hotcueColor->get());
 }
 
-void HotcueControl::setColor(const mixxx::RgbColor::optional_t newColor) {
+void HotcueControl::setColor(mixxx::RgbColor::optional_t newColor) {
     if (!newColor) {
         m_hotcueColor->set(kNoColorControlValue);
         return;
