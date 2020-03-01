@@ -33,10 +33,15 @@ class ColorPalette {
 
     static const ColorPalette mixxxHotcuePalette;
 
+    const QList<mixxx::RgbColor>& getColorList() const {
+        return m_colorList;
+    }
+
+  private:
     QList<mixxx::RgbColor> m_colorList;
 };
 
 inline bool operator==(
         const ColorPalette& lhs, const ColorPalette& rhs) {
-    return lhs.m_colorList == rhs.m_colorList;
+    return lhs.getColorList() == rhs.getColorList();
 }
