@@ -15,7 +15,7 @@
 
 class FakeController : public Controller {
   public:
-    FakeController(UserSettingsPointer pConfig);
+    explicit FakeController(UserSettingsPointer pConfig);
     ~FakeController() override;
 
     QString presetExtension() override {

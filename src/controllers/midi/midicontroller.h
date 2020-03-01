@@ -23,7 +23,7 @@
 class MidiController : public Controller {
     Q_OBJECT
   public:
-    MidiController(UserSettingsPointer pConfig);
+    explicit MidiController(UserSettingsPointer pConfig);
     ~MidiController() override;
 
     QString presetExtension() override;

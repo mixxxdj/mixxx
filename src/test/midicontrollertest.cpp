@@ -12,7 +12,8 @@
 
 class MockMidiController : public MidiController {
   public:
-    MockMidiController(UserSettingsPointer pConfig) : MidiController(pConfig) {
+    explicit MockMidiController(UserSettingsPointer pConfig)
+            : MidiController(pConfig) {
     }
     ~MockMidiController() override { }
 

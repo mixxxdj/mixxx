@@ -23,7 +23,7 @@
 class Controller : public QObject, ConstControllerPresetVisitor {
     Q_OBJECT
   public:
-    Controller(UserSettingsPointer pConfig);
+    explicit Controller(UserSettingsPointer pConfig);
     ~Controller() override;  // Subclass should call close() at minimum.
 
     // Returns the extension for the controller (type) preset files.  This is

@@ -13,7 +13,7 @@
 class PortMidiEnumerator : public MidiEnumerator {
     Q_OBJECT
   public:
-    PortMidiEnumerator(UserSettingsPointer pConfig);
+    explicit PortMidiEnumerator(UserSettingsPointer pConfig);
     virtual ~PortMidiEnumerator();
 
     QList<Controller*> queryDevices();

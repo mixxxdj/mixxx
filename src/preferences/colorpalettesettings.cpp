@@ -16,7 +16,7 @@ ColorPalette ColorPaletteSettings::getColorPalette(
         return defaultPalette;
     }
 
-    return colorList;
+    return ColorPalette(colorList);
 }
 
 void ColorPaletteSettings::setColorPalette(

@@ -12,7 +12,7 @@
 
 class HidEnumerator : public ControllerEnumerator {
   public:
-    HidEnumerator(UserSettingsPointer pConfig);
+    explicit HidEnumerator(UserSettingsPointer pConfig);
     virtual ~HidEnumerator();
 
     QList<Controller*> queryDevices();

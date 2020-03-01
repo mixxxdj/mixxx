@@ -14,7 +14,7 @@ struct libusb_context;
 
 class BulkEnumerator : public ControllerEnumerator {
   public:
-    BulkEnumerator(UserSettingsPointer pConfig);
+    explicit BulkEnumerator(UserSettingsPointer pConfig);
     virtual ~BulkEnumerator();
 
     QList<Controller*> queryDevices();

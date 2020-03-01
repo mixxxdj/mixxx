@@ -6,7 +6,7 @@
 
 class ColorPalette {
   public:
-    ColorPalette(QList<mixxx::RgbColor> colorList)
+    explicit ColorPalette(QList<mixxx::RgbColor> colorList)
             : m_colorList(colorList) {
         DEBUG_ASSERT(m_colorList.size() != 0);
     }
