@@ -12,8 +12,6 @@ RgbColor::optional_t SeratoTags::storedToDisplayedTrackColor(RgbColor color) {
     // See this for details:
     // https://github.com/Holzhaus/serato-tags/blob/master/docs/colors.md#track-colors
 
-    quint32 value = static_cast<quint32>(color);
-
     if (color == 0xFFFFFF) {
         return RgbColor::nullopt();
     }
@@ -26,8 +24,9 @@ RgbColor::optional_t SeratoTags::storedToDisplayedTrackColor(RgbColor color) {
         return RgbColor::optional(0x333333);
     }
 
-    value = (value < 0x666666) ? value + 0x99999A : value - 0x666666;
-    return RgbColor::optional(value);
+    RgbColor::code_t colorCode = color;
+    colorCode = (colorCode < 0x666666) ? colorCode + 0x99999A : colorCode - 0x666666;
+    return RgbColor::optional(colorCode);
 }
 
 RgbColor SeratoTags::displayedToStoredTrackColor(RgbColor::optional_t color) {
@@ -35,29 +34,29 @@ RgbColor SeratoTags::displayedToStoredTrackColor(RgbColor::optional_t color) {
         return RgbColor(0xFFFFFF);
     }
 
-    quint32 value = static_cast<quint32>(*color);
+    RgbColor::code_t colorCode = *color;
 
-    if (value == 0x090909) {
+    if (colorCode == 0x090909) {
         return RgbColor(0x999999);
     }
 
-    if (value == 0x333333) {
+    if (colorCode == 0x333333) {
         return RgbColor(0x000000);
     }
 
     // Special case: 0x999999 and 0x99999a are not representable as Serato
     // track color We'll just modify them a little, so that the look the
     // same in Serato.
-    if (value == 0x999999) {
+    if (colorCode == 0x999999) {
         return RgbColor(0x999998);
     }
 
-    if (value == 0x99999a) {
+    if (colorCode == 0x99999a) {
         return RgbColor(0x99999b);
     }
 
-    value = (value < 0x99999A) ? value + 0x666666 : value - 0x99999A;
-    return RgbColor(value);
+    colorCode = (colorCode < 0x99999A) ? colorCode + 0x666666 : colorCode - 0x99999A;
+    return RgbColor(colorCode);
 }
 
 RgbColor::optional_t SeratoTags::getTrackColor() const {
