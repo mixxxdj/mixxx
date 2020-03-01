@@ -308,12 +308,20 @@
         shift: function() {
             this.inKey = "hotcue_" + this.number + "_clear";
         },
-        getColor: function() {
-            if (this.colorKey !== undefined) {
-                return color.colorFromHexCode(engine.getValue(this.group, this.colorKey));
-            } else {
-                return null;
+        getColor: function(colorCode) {
+            if (colorCode === undefined && this.colorKey !== undefined) {
+                colorCode = engine.getValue(this.group, this.colorKey);
             }
+
+            if (colorCode !== undefined) {
+                return {
+                    "red": (colorCode >> 16) & 0xFF,
+                    "green": (colorCode >> 8) & 0xFF,
+                    "blue": colorCode & 0xFF,
+                };
+            }
+
+            return null;
         },
         output: function(value) {
             var outval = this.outValueScale(value);
@@ -336,7 +344,7 @@
                     print("ERROR: no function defined for sending RGB colors");
                     return;
                 }
-                this.sendRGB(color.colorFromHexCode(colorCode));
+                this.sendRGB(this.getColor(colorCode));
             }
         },
         connect: function() {
