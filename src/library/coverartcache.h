@@ -15,8 +15,9 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
   public:
     static void requestCover(
             const QObject* pRequestor,
-            const CoverInfo& coverInfo,
-            const TrackPointer& pTrack = TrackPointer());
+            const CoverInfo& coverInfo) {
+        requestCover(pRequestor, coverInfo, TrackPointer());
+    }
     static void requestTrackCover(
             const QObject* pRequestor,
             const TrackPointer& pTrack);
@@ -94,6 +95,11 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     friend class Singleton<CoverArtCache>;
 
   private:
+    static void requestCover(
+            const QObject* pRequestor,
+            const CoverInfo& coverInfo,
+            const TrackPointer& /*optional*/ pTrack);
+
     QPixmap tryLoadCover(
             const QObject* pRequestor,
             const TrackPointer& pTrack,
