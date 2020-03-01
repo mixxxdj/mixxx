@@ -1905,11 +1905,11 @@ mixxx::RgbColor::optional_t HotcueControl::getColor() const {
 }
 
 void HotcueControl::setColor(mixxx::RgbColor::optional_t newColor) {
-    if (!newColor) {
+    if (newColor) {
+        m_hotcueColor->set(*newColor);
+    } else {
         m_hotcueColor->set(kNoColorControlValue);
-        return;
     }
-    m_hotcueColor->set(*newColor);
 }
 void HotcueControl::resetCue() {
     // clear pCue first because we have a null check for valid data else where
