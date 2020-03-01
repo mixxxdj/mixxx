@@ -23,8 +23,8 @@ void ColorPaletteSettings::setColorPalette(
         const QString& group, const ColorPalette& colorPalette) {
     removePalette(group);
 
-    for (int index = 0; index < colorPalette.m_colorList.count(); ++index) {
-        mixxx::RgbColor color = colorPalette.m_colorList[index];
+    for (int index = 0; index < colorPalette.size(); ++index) {
+        mixxx::RgbColor color = colorPalette.at(index);
         m_pConfig->setValue<mixxx::RgbColor>(keyForIndex(group, index), color);
     }
 }
