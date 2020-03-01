@@ -15,8 +15,8 @@ class SeratoTags final {
 
     SeratoTags() = default;
 
-    static RgbColor colorToStoredTrackColor(RgbColor::optional_t color);
-    static RgbColor::optional_t colorFromStoredTrackColor(RgbColor color);
+    static RgbColor::optional_t storedToDisplayedTrackColor(RgbColor color);
+    static RgbColor displayedToStoredTrackColor(RgbColor::optional_t color);
 
     bool isEmpty() const {
         return m_seratoMarkers.isEmpty() && m_seratoMarkers2.isEmpty();

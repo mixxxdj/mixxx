@@ -2,7 +2,7 @@
 
 namespace mixxx {
 
-RgbColor::optional_t SeratoTags::colorFromStoredTrackColor(RgbColor color) {
+RgbColor::optional_t SeratoTags::storedToDisplayedTrackColor(RgbColor color) {
     // Serato stores Track colors differently from how they are displayed in
     // the library column. Instead of the color from the library view, the
     // value from the color picker is stored instead (which is different).
@@ -30,7 +30,7 @@ RgbColor::optional_t SeratoTags::colorFromStoredTrackColor(RgbColor color) {
     return RgbColor::optional(value);
 }
 
-RgbColor SeratoTags::colorToStoredTrackColor(RgbColor::optional_t color) {
+RgbColor SeratoTags::displayedToStoredTrackColor(RgbColor::optional_t color) {
     if (!color) {
         return RgbColor(0xFFFFFF);
     }
@@ -69,7 +69,7 @@ RgbColor::optional_t SeratoTags::getTrackColor() const {
     }
 
     if (color) {
-        color = SeratoTags::colorFromStoredTrackColor(*color);
+        color = SeratoTags::storedToDisplayedTrackColor(*color);
     }
 
     return color;

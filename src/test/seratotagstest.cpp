@@ -6,11 +6,11 @@ namespace {
 
 class SeratoTagsTest : public testing::Test {
   protected:
-    void trackColorRoundtrip(mixxx::RgbColor storedColor, mixxx::RgbColor::optional_t parsedColor) {
-        mixxx::RgbColor::optional_t actualParsedColor = mixxx::SeratoTags::colorFromStoredTrackColor(storedColor);
-        EXPECT_EQ(parsedColor, actualParsedColor);
+    void trackColorRoundtrip(mixxx::RgbColor storedColor, mixxx::RgbColor::optional_t displayedColor) {
+        mixxx::RgbColor::optional_t actualDisplayedColor = mixxx::SeratoTags::storedToDisplayedTrackColor(storedColor);
+        EXPECT_EQ(displayedColor, actualDisplayedColor);
 
-        mixxx::RgbColor actualStoredColor = mixxx::SeratoTags::colorToStoredTrackColor(actualParsedColor);
+        mixxx::RgbColor actualStoredColor = mixxx::SeratoTags::displayedToStoredTrackColor(actualDisplayedColor);
         EXPECT_EQ(actualStoredColor, storedColor);
     }
 };
