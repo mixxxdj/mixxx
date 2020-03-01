@@ -1886,7 +1886,7 @@ void HotcueControl::slotHotcueColorChanged(double newColor) {
     }
 
     m_pCue->setColor(*color);
-    emit(hotcueColorChanged(this, newColor));
+    emit hotcueColorChanged(this, newColor);
 }
 
 double HotcueControl::getPosition() const {
