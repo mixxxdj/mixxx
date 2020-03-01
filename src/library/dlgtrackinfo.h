@@ -18,7 +18,7 @@
 class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     Q_OBJECT
   public:
-    DlgTrackInfo(QWidget* parent, UserSettingsPointer pConfig);
+    DlgTrackInfo(UserSettingsPointer pConfig, QWidget* parent);
     virtual ~DlgTrackInfo();
 
   public slots:
