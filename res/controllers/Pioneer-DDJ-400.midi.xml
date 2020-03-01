@@ -1047,7 +1047,7 @@
 
             <control>
                 <description>BEAT LEFT - press - select the FX Slot to the left</description>
-                <group>[EffectRack1_EffectUnit3]</group>
+                <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJ400.beatFxLeftPressed</key>
                 <status>0x94</status>
                 <midino>0x4A</midino>
@@ -1058,7 +1058,7 @@
             <!--
       <control>
                 <description>BEAT LEFT +SHIFT - press - BPM auto mode for FX on</description>
-                <group>[EffectRack1_EffectUnit3]</group>
+                <group>[EffectRack1_EffectUnit1]</group>
                 <key></key>
                 <status>0x94</status>
                 <midino>0x66</midino>
@@ -1069,7 +1069,7 @@
             -->
             <control>
                 <description>BEAT RIGHT - press - select the FX Slot to the right</description>
-                <group>[EffectRack1_EffectUnit3]</group>
+                <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJ400.beatFxRightPressed</key>
                 <status>0x94</status>
                 <midino>0x4B</midino>
@@ -1080,7 +1080,7 @@
             <!--
       <control>
                 <description>BEAT RIGHT +SHIFT - press - BPM TAP mode for FX on</description>
-                <group>[EffectRack1_EffectUnit3]</group>
+                <group>[EffectRack1_EffectUnit1]</group>
                 <key></key>
                 <status>0x94</status>
                 <midino>0x6B</midino>
@@ -1092,7 +1092,7 @@
 
             <control>
                 <description>BEAT FX SELECT - press - next FX in the selected Slot</description>
-                <group>[EffectRack1_EffectUnit3]</group>
+                <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJ400.beatFxSelectPressed</key>
                 <status>0x94</status>
                 <midino>0x63</midino>
@@ -1102,7 +1102,7 @@
             </control>
             <control>
                 <description>BEAT FX SELECT +SHIFT - press - prev FX in the selected Slot</description>
-                <group>[EffectRack1_EffectUnit3]</group>
+                <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJ400.beatFxSelectShiftPressed</key>
                 <status>0x94</status>
                 <midino>0x64</midino>
@@ -1114,7 +1114,7 @@
             <!-- Beat Fx channel selector -->
             <control>
                 <description>BEAT FX CH SELECT CH1 - slide - Select FX on DECK 1</description>
-                <group>[EffectRack1_EffectUnit3]</group>
+                <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJ400.beatFxChannel</key>
                 <status>0x94</status>
                 <midino>0x10</midino>
@@ -1124,7 +1124,7 @@
             </control>
             <control>
                 <description>BEAT FX CH SELECT CH2 - slide - Select FX on DECK 2</description>
-                <group>[EffectRack1_EffectUnit3]</group>
+                <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJ400.beatFxChannel</key>
                 <status>0x94</status>
                 <midino>0x11</midino>
@@ -1134,7 +1134,7 @@
             </control>
             <control>
                 <description>BEAT FX CH SELECT MASTER - slide - Select FX on Master</description>
-                <group>[EffectRack1_EffectUnit3]</group>
+                <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJ400.beatFxChannel</key>
                 <status>0x94</status>
                 <midino>0x14</midino>
@@ -1147,7 +1147,7 @@
                 <description>BEAT FX LEVEL/DEPTH - rotate (MSB) - Adjust FX Level (mix) and BEAT FX Depth (meta) in the
                     selected slot
                 </description>
-                <group>[EffectRack1_EffectUnit3]</group>
+                <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJ400.beatFxLevelDepthRotate</key>
                 <status>0xB4</status>
                 <midino>0x02</midino>
@@ -1158,7 +1158,7 @@
 
             <control>
                 <description>BEAT FX ON/OFF - press - Toggle FX in the selected Slot</description>
-                <group>[EffectRack1_EffectUnit3]</group>
+                <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJ400.beatFxOnOffPressed</key>
                 <status>0x94</status>
                 <midino>0x47</midino>
@@ -1168,7 +1168,7 @@
             </control>
             <control>
                 <description>BEAT FX ON/OFF +SHIFT - press - Disable all enabled Beat FX Slots</description>
-                <group>[EffectRack1_EffectUnit3]</group>
+                <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJ400.beatFxOnOffShiftPressed</key>
                 <status>0x94</status>
                 <midino>0x43</midino>
