@@ -1994,8 +1994,10 @@ void WTrackTableView::slotColorPicked(PredefinedColorPointer pColor) {
     const QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
     // TODO: This should be done in a thread for large selections
     for (const auto& index : selectedTrackIndices) {
-        TrackPointer track = trackModel->getTrack(index);
-        track->setColor(mixxx::RgbColor::fromQColor(pColor->m_defaultRgba));
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (pTrack) {
+            pTrack->setColor(mixxx::RgbColor::fromQColor(pColor->m_defaultRgba));
+        }
     }
 
     m_pMenu->hide();
