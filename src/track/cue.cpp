@@ -10,7 +10,7 @@
 
 namespace {
     const QString kDefaultLabel = ""; // empty string, not null
-    const mixxx::RgbColor kDefaultCueColor = mixxx::RgbColor(0xFFF2F2FF); // white
+    const mixxx::RgbColor kDefaultCueColor = mixxx::RgbColor(0xF2F2FF); // white
 }
 
 //static
