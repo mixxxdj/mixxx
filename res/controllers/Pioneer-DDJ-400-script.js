@@ -121,6 +121,18 @@ PioneerDDJ400.loopout = [false, false]; // out loop is pressed
 PioneerDDJ400.loopAdjustMultiply = 5;
 
 
+// Wrapper to easily ignore the function when the button is released.
+var ignoreRelease = function(fn) {
+    "use strict";
+    return function(channel, control, value, status, group) {
+        if (value === 0) { // This means the button is released.
+            return;
+        }
+        return fn(channel, control, value, status, group);
+    };
+};
+
+
 PioneerDDJ400.init = function() {
     "use strict";
     // init controller
@@ -128,14 +140,10 @@ PioneerDDJ400.init = function() {
     engine.setValue("[Channel1]", "rateRange", PioneerDDJ400.tempoRanges[1]);
     engine.setValue("[Channel2]", "rateRange", PioneerDDJ400.tempoRanges[1]);
 
-    // enable effect focus on FX3 for Effect Section
-    engine.setValue("[EffectRack1_EffectUnit1]", "show_focus", 0);
-    engine.setValue("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", 1);
-
+    // show focus buttons on Effect Ract 1 only
+    engine.setValue("[EffectRack1_EffectUnit1]", "show_focus", 1);
     engine.setValue("[EffectRack1_EffectUnit2]", "show_focus", 0);
-    engine.setValue("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", 1);
-
-    engine.setValue("[EffectRack1_EffectUnit3]", "show_focus", 1);
+    engine.setValue("[EffectRack1_EffectUnit3]", "show_focus", 0);
 
     // Connect the VU-Meter LEDS
     engine.connectControl("[Channel1]", "VuMeter", "PioneerDDJ400.vuMeterUpdate");
@@ -144,6 +152,10 @@ PioneerDDJ400.init = function() {
     // reset vumeter
     PioneerDDJ400.toggleLight(LightsPioneerDDJ400.deck1.vuMeter, false);
     PioneerDDJ400.toggleLight(LightsPioneerDDJ400.deck2.vuMeter, false);
+	
+	// poll the controller for current control positions on startup
+	// note that for some reason, the tempo sliders are always reported to be in their center positions, regardless of the current physical position of the slider
+	midi.sendSysexMsg([0xF0,0x00,0x40,0x05,0x00,0x00,0x02,0x06,0x00,0x03,0x01,0xf7], 12);
 };
 
 PioneerDDJ400.toggleLight = function(midiIn, active) {
@@ -453,18 +465,15 @@ PioneerDDJ400.numFxSlots = 3;
 Object.defineProperty(PioneerDDJ400, "selectedFxSlot", {
     get: function() {
         "use strict";
-        return engine.getValue("[EffectRack1_EffectUnit3]", "focused_effect");
+        return engine.getValue("[EffectRack1_EffectUnit1]", "focused_effect");
     },
     set: function(value) {
         "use strict";
-        if (value <= 0 || value > PioneerDDJ400.numFxSlots) {
+        if (value < 0 || value > PioneerDDJ400.numFxSlots) {
             return;
         }
-
-        engine.setValue("[EffectRack1_EffectUnit3]", "focused_effect", value);
-
+        engine.setValue("[EffectRack1_EffectUnit1]", "focused_effect", value);
         var isEffectEnabled = engine.getValue(PioneerDDJ400.selectedFxGroup, "enabled");
-
         PioneerDDJ400.toggleLight(LightsPioneerDDJ400.beatFx, isEffectEnabled);
     },
 });
@@ -472,7 +481,7 @@ Object.defineProperty(PioneerDDJ400, "selectedFxSlot", {
 Object.defineProperty(PioneerDDJ400, "selectedFxGroup", {
     get: function() {
         "use strict";
-        return "[EffectRack1_EffectUnit3_Effect" + PioneerDDJ400.selectedFxSlot + "]";
+        return "[EffectRack1_EffectUnit1_Effect" + PioneerDDJ400.selectedFxSlot + "]";
     },
 });
 
@@ -484,47 +493,51 @@ PioneerDDJ400.beatFxLevelDepthRotate = function(_channel, _control, value) {
     if (effectOn) {
         engine.setValue(PioneerDDJ400.selectedFxGroup, "meta", newVal);
     } else {
-        engine.setValue("[EffectRack1_EffectUnit3]", "mix", newVal);
+        engine.setValue("[EffectRack1_EffectUnit1]", "mix", newVal);
     }
 };
 
-PioneerDDJ400.beatFxSelectPressed = function(_channel, _control, value) {
+PioneerDDJ400.beatFxSelectPressed = ignoreRelease(function() {
     "use strict";
-    engine.setValue(PioneerDDJ400.selectedFxGroup, "next_effect", value);
-};
+	if (PioneerDDJ400.selectedFxSlot == 3) {
+		PioneerDDJ400.selectedFxSlot = 0;
+	} else {
+		PioneerDDJ400.selectedFxSlot = 3;
+	}
+});
 
 PioneerDDJ400.beatFxSelectShiftPressed = function(_channel, _control, value) {
     "use strict";
-    engine.setValue(PioneerDDJ400.selectedFxGroup, "prev_effect", value);
-};
+    //engine.setValue(PioneerDDJ400.selectedFxGroup, "prev_effect", value);
 
-// Wrapper to easily ignore the function when the button is released.
-var ignoreRelease = function(fn) {
-    "use strict";
-    return function(channel, control, value, status, group) {
-        if (value === 0) { // This means the button is released.
-            return;
-        }
-        return fn(channel, control, value, status, group);
-    };
 };
 
 PioneerDDJ400.beatFxLeftPressed = ignoreRelease(function() {
     "use strict";
-    PioneerDDJ400.selectedFxSlot -= 1;
+	if (PioneerDDJ400.selectedFxSlot == 1) {
+		PioneerDDJ400.selectedFxSlot = 0;
+	} else {
+		PioneerDDJ400.selectedFxSlot = 1;
+	}
 });
 
 PioneerDDJ400.beatFxRightPressed = ignoreRelease(function() {
     "use strict";
-    PioneerDDJ400.selectedFxSlot += 1;
+	if (PioneerDDJ400.selectedFxSlot == 2) {
+		PioneerDDJ400.selectedFxSlot = 0;
+	} else {
+		PioneerDDJ400.selectedFxSlot = 2;
+	}
 });
 
 PioneerDDJ400.beatFxOnOffPressed = ignoreRelease(function() {
     "use strict";
+	var selectedSlot = PioneerDDJ400.selectedFxSlot;
+    if (selectedSlot <= 0 || selectedSlot > PioneerDDJ400.numFxSlots) {
+	    return;
+    }
     var isEnabled = !engine.getValue(PioneerDDJ400.selectedFxGroup, "enabled");
-
     engine.setValue(PioneerDDJ400.selectedFxGroup, "enabled", isEnabled);
-
     PioneerDDJ400.toggleLight(LightsPioneerDDJ400.beatFx, isEnabled);
 });
 
