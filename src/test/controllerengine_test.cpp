@@ -618,25 +618,3 @@ TEST_F(ControllerEngineTest, connectionExecutesWithCorrectThisObject) {
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
-
-TEST_F(ControllerEngineTest, colorProxyTestMixxxPalette) {
-    QList<mixxx::RgbColor> allColors = ColorPalette::mixxxHotcuePalette.m_colorList;
-    for (int i = 0; i < allColors.length(); ++i) {
-        mixxx::RgbColor color = allColors[i];
-        qDebug() << "Testing color " << mixxx::RgbColor::toQString(color);
-        QString colorCode = QString::number(color);
-        QScriptValue jsColor = pScriptEngine->evaluate(
-                "color.colorFromHexCode(" + colorCode + ")");
-        EXPECT_EQ(jsColor.property("red").toInt32(), qRed(color));
-        EXPECT_EQ(jsColor.property("green").toInt32(), qGreen(color));
-        EXPECT_EQ(jsColor.property("blue").toInt32(), qBlue(color));
-        EXPECT_EQ(jsColor.property("alpha").toInt32(), qAlpha(color));
-
-        QScriptValue jsColor2 = pScriptEngine->evaluate(
-                "color.hotcueColorPalette()[" + QString::number(i) + "]");
-        EXPECT_EQ(jsColor2.property("red").toInt32(), qRed(color));
-        EXPECT_EQ(jsColor2.property("green").toInt32(), qGreen(color));
-        EXPECT_EQ(jsColor2.property("blue").toInt32(), qBlue(color));
-        EXPECT_EQ(jsColor2.property("alpha").toInt32(), qAlpha(color));
-    }
-}
