@@ -117,7 +117,6 @@ class PredefinedColorsSet final {
         for (PredefinedColorPointer pColor : allColors) {
             if (mixxx::RgbColor(pColor->m_defaultRgba.rgb()) == color) {
                 return pColor;
-                break;
             }
         }
         qWarning() << "No color matches RgbColor" << color;
