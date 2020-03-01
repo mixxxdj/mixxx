@@ -23,6 +23,9 @@ class ColorPalette {
         return m_colorList.indexOf(color);
     }
 
+    mixxx::RgbColor nextColor(mixxx::RgbColor color) const;
+    mixxx::RgbColor previousColor(mixxx::RgbColor color) const;
+
     QList<mixxx::RgbColor>::const_iterator begin() const {
         return m_colorList.begin();
     }

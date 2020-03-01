@@ -22,3 +22,22 @@ const ColorPalette ColorPalette::mixxxHotcuePalette =
                 kColorMixxxPink,
                 kColorMixxxWhite,
         });
+
+mixxx::RgbColor ColorPalette::nextColor(mixxx::RgbColor color) const {
+    //  Return first color if color not in palette ((-1 + 1) % size)
+    return at((indexOf(color) + 1) % size());
+}
+
+mixxx::RgbColor ColorPalette::previousColor(mixxx::RgbColor color) const {
+    int iIndex = indexOf(color);
+    if (iIndex < 0) {
+        // Return first color if color not in palette
+        iIndex = 0;
+    } else {
+        iIndex = (iIndex - 1) % size();
+        if (iIndex < 0) {
+            iIndex += size();
+        }
+    }
+    return at(iIndex);
+}
