@@ -620,12 +620,12 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
 
     auto hotcueColorPalette = m_colorPaletteSettings.getHotcueColorPalette();
     ConfigKey autoHotcueColorsKey("[Controls]", "auto_hotcue_colors");
+    int iColorIndex = 0;
     if (getConfig()->getValue(autoHotcueColorsKey, false)) {
-        auto colors = hotcueColorPalette.m_colorList;
-        pCue->setColor(colors.at(hotcue % colors.count()));
-    } else {
-        pCue->setColor(hotcueColorPalette.m_colorList.first());
+        // For hotcue n, get nth color from palette
+        iColorIndex = (hotcue % hotcueColorPalette.size());
     };
+    pCue->setColor(hotcueColorPalette.at(iColorIndex));
 
     // TODO(XXX) deal with spurious signals
     attachCue(pCue, pControl);
