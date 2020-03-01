@@ -1718,7 +1718,6 @@ void CueControl::hotcueFocusColorPrev(double v) {
     }
     mixxx::RgbColor color = *controlColor;
 
-    ColorPaletteSettings m_colorPaletteSettings(m_pConfig);
     ColorPalette colorPalette = m_colorPaletteSettings.getHotcueColorPalette();
 
     // Get previous color in color set
@@ -1752,8 +1751,7 @@ void CueControl::hotcueFocusColorNext(double v) {
     }
     mixxx::RgbColor color = *controlColor;
 
-    ColorPaletteSettings colorPaletteSettings(m_pConfig);
-    ColorPalette colorPalette = colorPaletteSettings.getHotcueColorPalette();
+    ColorPalette colorPalette = m_colorPaletteSettings.getHotcueColorPalette();
 
     // Get previous color in color set
     int iColorIndex = colorPalette.indexOf(color) + 1;
