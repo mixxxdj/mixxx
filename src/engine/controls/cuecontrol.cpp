@@ -32,7 +32,7 @@ inline mixxx::RgbColor::optional_t doubleToRgbColor(double value) {
     if (value < 0) {
         return std::nullopt;
     }
-    mixxx::RgbColor::code_t colorCode = static_cast<mixxx::RgbColor::code_t>(value);
+    auto colorCode = static_cast<mixxx::RgbColor::code_t>(value);
     if (value != mixxx::RgbColor::validateCode(colorCode)) {
         return std::nullopt;
     }
