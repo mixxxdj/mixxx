@@ -34,10 +34,7 @@ mixxx::RgbColor ColorPalette::previousColor(mixxx::RgbColor color) const {
         // Return first color if color not in palette
         iIndex = 0;
     } else {
-        iIndex = (iIndex - 1) % size();
-        if (iIndex < 0) {
-            iIndex += size();
-        }
+        iIndex = (iIndex + size() - 1) % size();
     }
     return at(iIndex);
 }
