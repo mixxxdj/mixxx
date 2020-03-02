@@ -115,18 +115,18 @@ void WColorPicker::addColorButton(mixxx::RgbColor::optional_t color, QGridLayout
 void WColorPicker::resetSelectedColor() {
     // Unset currently selected color
     int i;
-    if (!m_selectedColor) {
-        if (m_colorOption != ColorOption::AllowNoColor) {
-            return;
-        }
-        i = 0;
-    } else {
+    if (m_selectedColor) {
         i = m_palette.indexOf(*m_selectedColor);
         if (i == -1) {
             return;
         }
         if (m_colorOption == ColorOption::AllowNoColor) {
             i++;
+        }
+    } else {
+        i = 0;
+        if (m_colorOption != ColorOption::AllowNoColor) {
+            return;
         }
     }
 
@@ -148,18 +148,18 @@ void WColorPicker::setSelectedColor(mixxx::RgbColor::optional_t color) {
     m_selectedColor = color;
 
     int i;
-    if (!color) {
-        if (m_colorOption != ColorOption::AllowNoColor) {
-            return;
-        }
-        i = 0;
-    } else {
+    if (color) {
         i = m_palette.indexOf(*color);
         if (i == -1) {
             return;
         }
         if (m_colorOption == ColorOption::AllowNoColor) {
             i++;
+        }
+    } else {
+        i = 0;
+        if (m_colorOption != ColorOption::AllowNoColor) {
+            return;
         }
     }
 
