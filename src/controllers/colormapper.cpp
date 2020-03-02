@@ -14,10 +14,10 @@ double colorDistance(QRgb a, QRgb b) {
     // of costly computations. In contrast, this is a low-cost
     // approximation and should be sufficently accurate.
     // More details: https://www.compuphase.com/cmetric.htm
-    long mean_red = ((long)qRed(a) + (long)qRed(b)) / 2;
-    long delta_red = (long)qRed(a) - (long)qRed(b);
-    long delta_green = (long)qGreen(a) - (long)qGreen(b);
-    long delta_blue = (long)qBlue(a) - (long)qBlue(b);
+    long mean_red = (static_cast<long>(qRed(a)) + static_cast<long>(qRed(b))) / 2;
+    long delta_red = static_cast<long>(qRed(a)) - static_cast<long>(qRed(b));
+    long delta_green = static_cast<long>(qGreen(a)) - static_cast<long>(qGreen(b));
+    long delta_blue = static_cast<long>(qBlue(a)) - static_cast<long>(qBlue(b));
     return sqrt(
             (((512 + mean_red) * delta_red * delta_red) >> 8) +
             (4 * delta_green * delta_green) +
