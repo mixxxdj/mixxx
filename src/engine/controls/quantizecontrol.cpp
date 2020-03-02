@@ -69,11 +69,6 @@ void QuantizeControl::slotBeatsUpdated() {
 void QuantizeControl::setCurrentSample(const double dCurrentSample,
                                        const double dTotalSamples,
                                        const double dTrackSampleRate) {
-    if (dCurrentSample == getSampleOfTrack().current) {
-        // No need to recalculate.
-        return;
-    }
-
     EngineControl::setCurrentSample(dCurrentSample, dTotalSamples, dTrackSampleRate);
     // We only need to update the prev or next if the current sample is
     // out of range of the existing beat positions or if we've been forced to

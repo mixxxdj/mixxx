@@ -55,7 +55,6 @@ BpmControl::BpmControl(QString group,
 
     m_pPrevBeat.reset(new ControlProxy(group, "beat_prev"));
     m_pNextBeat.reset(new ControlProxy(group, "beat_next"));
-    m_pClosestBeat.reset(new ControlProxy(group, "beat_closest"));
 
     m_pLoopEnabled = new ControlProxy(group, "loop_enabled", this);
     m_pLoopStartPosition = new ControlProxy(group, "loop_start_position", this);
@@ -385,8 +384,6 @@ double BpmControl::calcSyncedRate(double userTweak) {
     if (m_pLocalBpm->get() != 0.0) {
         rate = m_dSyncInstantaneousBpm / m_pLocalBpm->get();
     }
-
-    qDebug() << "rate" << rate;
 
     // If we are not quantized, or there are no beats, or we're master,
     // or we're in reverse, just return the rate as-is.

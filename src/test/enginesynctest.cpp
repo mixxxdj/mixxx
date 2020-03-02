@@ -1567,9 +1567,10 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
     EXPECT_DOUBLE_EQ(100, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
     EXPECT_DOUBLE_EQ(100, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
-    EXPECT_DOUBLE_EQ(
+    EXPECT_NEAR(
             ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")),
-            ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
+            ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")),
+            10e-15);
 
     // Reset Deck 1 Tempo
     pButtonSyncEnabled1->set(0.0);
@@ -1579,7 +1580,7 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
 
     // Now the deck should be running normaly
     EXPECT_DOUBLE_EQ(130, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
-    EXPECT_DOUBLE_EQ(0.10255479969765684, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
+    EXPECT_DOUBLE_EQ(0.10255479969765675, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
 
     EXPECT_DOUBLE_EQ(100, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     EXPECT_DOUBLE_EQ(0.096749811035525324, ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
@@ -1587,14 +1588,14 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
     pButtonBeatsyncPhase1->set(1.0);
     ProcessBuffer();
 
-    // check if the just passed beats are alligned:
+    // check if the next beat will be aligned:
 
     EXPECT_DOUBLE_EQ(130, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
     EXPECT_DOUBLE_EQ(100, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     EXPECT_DOUBLE_EQ(
-            ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")) / 130 * 100,
-            ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
+            (2 - ControlObject::get(ConfigKey(m_sGroup1, "beat_distance"))) / 130 * 100,
+            1 - ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
 }
 
 TEST_F(EngineSyncTest, SeekStayInPhase) {
@@ -1615,7 +1616,7 @@ TEST_F(EngineSyncTest, SeekStayInPhase) {
     ProcessBuffer();
 
     // We expect to be two buffers aherad in a beat near 0.2
-    EXPECT_DOUBLE_EQ(0.050309901738473183, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
+    EXPECT_DOUBLE_EQ(0.050309901738472822, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
     EXPECT_DOUBLE_EQ(0.18925937554508981, ControlObject::get(ConfigKey(m_sGroup1, "playposition")));
 }
 
@@ -1685,8 +1686,8 @@ TEST_F(EngineSyncTest, QuantizeHotCueActivate) {
     ProcessBuffer();
 
     EXPECT_DOUBLE_EQ(
-            ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")) / 130 * 100,
-            ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
+            (1 - ControlObject::get(ConfigKey(m_sGroup1, "beat_distance"))) / 130 * 100,
+            1 - ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
 
     pHotCue2Activate->set(0.0);
     ProcessBuffer();

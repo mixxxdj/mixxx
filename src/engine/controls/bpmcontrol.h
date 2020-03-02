@@ -114,7 +114,6 @@ class BpmControl : public EngineControl {
     // ControlObjects that come from QuantizeControl
     QScopedPointer<ControlProxy> m_pNextBeat;
     QScopedPointer<ControlProxy> m_pPrevBeat;
-    QScopedPointer<ControlProxy> m_pClosestBeat;
 
     // ControlObjects that come from LoopingControl
     ControlProxy* m_pLoopEnabled;
