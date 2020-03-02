@@ -21,7 +21,8 @@ void CuePointer::deleteLater(Cue* pCue) {
     }
 }
 
-Cue::Cue(TrackId trackId)
+Cue::Cue(
+        TrackId trackId)
         : m_bDirty(false),
           m_iId(-1),
           m_trackId(trackId),
@@ -34,7 +35,15 @@ Cue::Cue(TrackId trackId)
     DEBUG_ASSERT(!m_label.isNull());
 }
 
-Cue::Cue(int id, TrackId trackId, mixxx::CueType type, double position, double length, int hotCue, QString label, PredefinedColorPointer color)
+Cue::Cue(
+        int id,
+        TrackId trackId,
+        mixxx::CueType type,
+        double position,
+        double length,
+        int hotCue,
+        QString label,
+        PredefinedColorPointer color)
         : m_bDirty(false),
           m_iId(id),
           m_trackId(trackId),
@@ -55,7 +64,10 @@ Cue::Cue(int id, TrackId trackId, mixxx::CueType type, double position, double l
     }
 }
 
-Cue::Cue(TrackId trackId, mixxx::AudioSignal::SampleRate sampleRate, const mixxx::CueInfo& cueInfo)
+Cue::Cue(
+        TrackId trackId,
+        mixxx::AudioSignal::SampleRate sampleRate,
+        const mixxx::CueInfo& cueInfo)
         : m_bDirty(false),
           m_iId(-1),
           m_trackId(trackId),

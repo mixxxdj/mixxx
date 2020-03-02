@@ -52,10 +52,24 @@ class Cue : public QObject {
     void updated();
 
   private:
-    explicit Cue(TrackId trackId);
-    explicit Cue(TrackId trackId, mixxx::AudioSignal::SampleRate sampleRate, const mixxx::CueInfo& cueInfo);
-    Cue(int id, TrackId trackId, mixxx::CueType type, double position, double length, int hotCue, QString label, PredefinedColorPointer color);
+    explicit Cue(
+            TrackId trackId);
+    Cue(
+            TrackId trackId,
+            mixxx::AudioSignal::SampleRate sampleRate,
+            const mixxx::CueInfo& cueInfo);
+    Cue(
+            int id,
+            TrackId trackId,
+            mixxx::CueType type,
+            double position,
+            double length,
+            int hotCue,
+            QString label,
+            PredefinedColorPointer color);
+
     void setDirty(bool dirty);
+
     void setId(int id);
     void setTrackId(TrackId trackId);
 
