@@ -1,10 +1,12 @@
 // cue.cpp
 // Created 10/26/2009 by RJ Ryan (rryan@mit.edu)
 
+#include "track/cue.h"
+
 #include <QMutexLocker>
 #include <QtDebug>
 
-#include "track/cue.h"
+#include "engine/engine.h"
 #include "util/assert.h"
 #include "util/color/color.h"
 
@@ -23,7 +25,7 @@ Cue::Cue(TrackId trackId)
         : m_bDirty(false),
           m_iId(-1),
           m_trackId(trackId),
-          m_type(Cue::Type::Invalid),
+          m_type(mixxx::CueType::Invalid),
           m_sampleStartPosition(Cue::kNoPosition),
           m_sampleEndPosition(Cue::kNoPosition),
           m_iHotCue(-1),
@@ -32,8 +34,7 @@ Cue::Cue(TrackId trackId)
     DEBUG_ASSERT(!m_label.isNull());
 }
 
-Cue::Cue(int id, TrackId trackId, Cue::Type type, double position, double length,
-         int hotCue, QString label, PredefinedColorPointer color)
+Cue::Cue(int id, TrackId trackId, mixxx::CueType type, double position, double length, int hotCue, QString label, PredefinedColorPointer color)
         : m_bDirty(false),
           m_iId(id),
           m_trackId(trackId),
@@ -53,6 +54,37 @@ Cue::Cue(int id, TrackId trackId, Cue::Type type, double position, double length
         m_sampleEndPosition = Cue::kNoPosition;
     }
 }
+
+Cue::Cue(TrackId trackId, mixxx::AudioSignal::SampleRate sampleRate, const mixxx::CueInfo& cueInfo)
+        : m_bDirty(false),
+          m_iId(-1),
+          m_trackId(trackId),
+          m_type(cueInfo.getType()),
+          m_sampleStartPosition(Cue::kNoPosition),
+          m_sampleEndPosition(Cue::kNoPosition),
+          m_iHotCue(Cue::kNoHotCue),
+          m_label(cueInfo.getLabel()),
+          m_color(Color::kPredefinedColorsSet.predefinedColorFromRgbColor(cueInfo.getColor())) {
+    DEBUG_ASSERT(!m_label.isNull());
+    DEBUG_ASSERT(sampleRate.valid());
+
+    const double sampleRateKhz = sampleRate / 1000.0;
+    const double millisecsToSamplesFactor = sampleRateKhz * mixxx::kEngineChannelCount;
+    DEBUG_ASSERT(millisecsToSamplesFactor > 0);
+
+    if (cueInfo.getStartPositionMillis()) {
+        m_sampleStartPosition = (*cueInfo.getStartPositionMillis()) * millisecsToSamplesFactor;
+    }
+
+    if (cueInfo.getEndPositionMillis()) {
+        m_sampleEndPosition = (*cueInfo.getEndPositionMillis()) * millisecsToSamplesFactor;
+    }
+
+    if (cueInfo.getHotCueNumber()) {
+        m_iHotCue = *cueInfo.getHotCueNumber();
+    }
+}
+
 int Cue::getId() const {
     QMutexLocker lock(&m_mutex);
     return m_iId;
@@ -79,12 +111,12 @@ void Cue::setTrackId(TrackId trackId) {
     emit updated();
 }
 
-Cue::Type Cue::getType() const {
+mixxx::CueType Cue::getType() const {
     QMutexLocker lock(&m_mutex);
     return m_type;
 }
 
-void Cue::setType(Cue::Type type) {
+void Cue::setType(mixxx::CueType type) {
     QMutexLocker lock(&m_mutex);
     m_type = type;
     m_bDirty = true;

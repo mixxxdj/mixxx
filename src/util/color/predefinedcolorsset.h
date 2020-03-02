@@ -5,6 +5,7 @@
 
 #include "predefinedcolorsrepresentation.h"
 #include "util/color/predefinedcolor.h"
+#include "util/color/rgbcolor.h"
 
 // This class defines a set of predefined colors and provides some handy functions to work with them.
 // A single global instance is create in the Color namespace.
@@ -96,6 +97,7 @@ class PredefinedColorsSet final {
                 return color;
             }
         }
+        qWarning() << "No color matches name" << name;
         return noColor;
     };
 
@@ -106,6 +108,24 @@ class PredefinedColorsSet final {
             if (color->m_iId == iId) {
                 return color;
             }
+        }
+        qWarning() << "No color matches id" << iId;
+        return noColor;
+    };
+
+    PredefinedColorPointer predefinedColorFromRgbColor(mixxx::RgbColor color) const {
+        for (PredefinedColorPointer pColor : allColors) {
+            if (mixxx::RgbColor(pColor->m_defaultRgba.rgb()) == color) {
+                return pColor;
+            }
+        }
+        qWarning() << "No color matches RgbColor" << color;
+        return noColor;
+    };
+
+    PredefinedColorPointer predefinedColorFromRgbColor(mixxx::RgbColor::optional_t color) const {
+        if (color) {
+            return predefinedColorFromRgbColor(*color);
         }
         return noColor;
     };

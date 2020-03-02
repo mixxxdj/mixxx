@@ -514,6 +514,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/beatutils.cpp
   src/track/bpm.cpp
   src/track/cue.cpp
+  src/track/cueinfo.cpp
   src/track/globaltrackcache.cpp
   src/track/keyfactory.cpp
   src/track/keys.cpp
