@@ -1110,15 +1110,9 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             // different colors, do not preselect a color (by using nullptr
             // instead).
             PredefinedColorPointer predefinedTrackColor = nullptr;
-
             if (trackColor) {
                 // All tracks have the same color
-                for (PredefinedColorPointer color : Color::kPredefinedColorsSet.allColors) {
-                    if (mixxx::RgbColor(color->m_defaultRgba.rgb()) == *trackColor) {
-                        predefinedTrackColor = color;
-                        break;
-                    }
-                }
+                predefinedTrackColor = Color::kPredefinedColorsSet.predefinedColorFromRgbColor(trackColor);
             } else if (!multipleTrackColors) {
                 // All tracks have no color
                 predefinedTrackColor = Color::kPredefinedColorsSet.noColor;
@@ -2028,7 +2022,7 @@ void WTrackTableView::slotClearMainCue() {
     for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->removeCuesOfType(Cue::Type::MainCue);
+            pTrack->removeCuesOfType(mixxx::CueType::MainCue);
         }
     }
 }
@@ -2044,7 +2038,7 @@ void WTrackTableView::slotClearHotCues() {
     for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->removeCuesOfType(Cue::Type::HotCue);
+            pTrack->removeCuesOfType(mixxx::CueType::HotCue);
         }
     }
 }
@@ -2060,7 +2054,7 @@ void WTrackTableView::slotClearIntroCue() {
     for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->removeCuesOfType(Cue::Type::Intro);
+            pTrack->removeCuesOfType(mixxx::CueType::Intro);
         }
     }
 }
@@ -2076,7 +2070,7 @@ void WTrackTableView::slotClearOutroCue() {
     for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->removeCuesOfType(Cue::Type::Outro);
+            pTrack->removeCuesOfType(mixxx::CueType::Outro);
         }
     }
 }
@@ -2092,7 +2086,7 @@ void WTrackTableView::slotClearLoop() {
     for (const QModelIndex& index : indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            pTrack->removeCuesOfType(Cue::Type::Loop);
+            pTrack->removeCuesOfType(mixxx::CueType::Loop);
         }
     }
 }
