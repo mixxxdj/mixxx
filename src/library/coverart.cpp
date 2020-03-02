@@ -107,8 +107,9 @@ QImage CoverInfo::loadImage(
                 kLogger.warning()
                         << "loadImage"
                         << type
-                        << "cover with empty trackLocation."
-                        << "Relative paths will not work.";
+                        << "cover with empty track location"
+                        << "and relative file path:"
+                        << coverFile.filePath();
                 return QImage();
             }
             // Compose track directory with relative path
@@ -124,7 +125,7 @@ QImage CoverInfo::loadImage(
                     << "loadImage"
                     << type
                     << "cover does not exist:"
-                    << coverFile;
+                    << coverFile.filePath();
             return QImage();
         }
         SecurityTokenPointer pToken =
