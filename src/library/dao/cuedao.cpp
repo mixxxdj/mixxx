@@ -59,7 +59,7 @@ CuePointer CueDAO::cueFromRow(const QSqlQuery& query) const {
     }
     CuePointer pCue(new Cue(id,
             trackId,
-            (Cue::Type)type,
+            static_cast<mixxx::CueType>(type),
             position,
             length,
             hotcue,
