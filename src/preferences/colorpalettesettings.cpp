@@ -1,7 +1,9 @@
 #include "preferences/colorpalettesettings.h"
 
-const QString ColorPaletteSettings::hotcueColorPaletteGroup = QStringLiteral("[HotcueColorPalette]");
-const QString ColorPaletteSettings::trackColorPaletteGroup = QStringLiteral("[TrackColorPalette]");
+namespace {
+const QString kHotcueColorPaletteGroup = QStringLiteral("[HotcueColorPalette]");
+const QString kTrackColorPaletteGroup = QStringLiteral("[TrackColorPalette]");
+} // anonymous namespace
 
 ColorPalette ColorPaletteSettings::getColorPalette(
         const QString& group, const ColorPalette& defaultPalette) const {
@@ -36,17 +38,17 @@ void ColorPaletteSettings::removePalette(const QString& group) {
 }
 
 ColorPalette ColorPaletteSettings::getHotcueColorPalette() const {
-    return getColorPalette(hotcueColorPaletteGroup, ColorPalette::mixxxHotcuePalette);
+    return getColorPalette(kHotcueColorPaletteGroup, ColorPalette::mixxxHotcuePalette);
 }
 
 void ColorPaletteSettings::setHotcueColorPalette(const ColorPalette& colorPalette) {
-    setColorPalette(hotcueColorPaletteGroup, colorPalette);
+    setColorPalette(kHotcueColorPaletteGroup, colorPalette);
 }
 
 ColorPalette ColorPaletteSettings::getTrackColorPalette() const {
-    return getColorPalette(trackColorPaletteGroup, ColorPalette::mixxxHotcuePalette);
+    return getColorPalette(kTrackColorPaletteGroup, ColorPalette::mixxxHotcuePalette);
 }
 
 void ColorPaletteSettings::setTrackColorPalette(const ColorPalette& colorPalette) {
-    setColorPalette(trackColorPaletteGroup, colorPalette);
+    setColorPalette(kTrackColorPaletteGroup, colorPalette);
 }
