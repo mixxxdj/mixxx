@@ -11,7 +11,21 @@
 #include "util/color/color.h"
 
 namespace {
-    const QString kDefaultLabel = ""; // empty string, not null
+
+const QString kDefaultLabel = ""; // empty string, not null
+
+inline std::optional<double> samplePositionToMillis(
+        double samplePosition,
+        mixxx::AudioSignal::SampleRate sampleRate) {
+    DEBUG_ASSERT(sampleRate.valid());
+    if (samplePosition == Cue::kNoPosition) {
+        return std::nullopt;
+    }
+    const auto sampleRateKhz = sampleRate / 1000.0;
+    DEBUG_ASSERT(sampleRateKhz > 0.0);
+    return samplePosition / (sampleRateKhz * mixxx::kEngineChannelCount);
+}
+
 }
 
 //static
@@ -94,6 +108,24 @@ Cue::Cue(
 
     if (cueInfo.getHotCueNumber()) {
         m_iHotCue = *cueInfo.getHotCueNumber();
+    }
+}
+
+void Cue::readInfo(
+        mixxx::AudioSignal::SampleRate sampleRate,
+        mixxx::CueInfo* pCueInfo,
+        bool* pDirty) const {
+    DEBUG_ASSERT(pCueInfo);
+    QMutexLocker lock(&m_mutex);
+    *pCueInfo = mixxx::CueInfo(
+            m_type,
+            samplePositionToMillis(m_sampleStartPosition, sampleRate),
+            samplePositionToMillis(m_sampleEndPosition, sampleRate),
+            m_iHotCue == kNoHotCue ? std::nullopt : std::make_optional(m_iHotCue),
+            m_label,
+            m_color ? mixxx::RgbColor::fromQColor(m_color->m_defaultRgba) : std::nullopt);
+    if (pDirty) {
+        *pDirty = m_bDirty;
     }
 }
 
