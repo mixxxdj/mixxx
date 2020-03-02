@@ -321,9 +321,8 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
     QListIterator<CuePointer> it(cuePoints);
     while (it.hasNext()) {
         CuePointer pCue = it.next();
-        Cue::Type type = pCue->getType();
-        if (type == Cue::Type::HotCue || type == Cue::Type::MainCue || type == Cue::Type::Intro
-                || type == Cue::Type::Outro) {
+        mixxx::CueType type = pCue->getType();
+        if (type == mixxx::CueType::HotCue || type == mixxx::CueType::MainCue || type == mixxx::CueType::Intro || type == mixxx::CueType::Outro) {
             listPoints.push_back(pCue);
         }
     }
@@ -374,32 +373,32 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         // Decode cue type to display text
         QString cueType;
         switch (pCue->getType()) {
-            case Cue::Type::Invalid:
-                cueType = "?";
-                break;
-            case Cue::Type::HotCue:
-                cueType = "Hotcue";
-                break;
-            case Cue::Type::MainCue:
-                cueType = "Main Cue";
-                break;
-            case Cue::Type::Beat:
-                cueType = "Beat";
-                break;
-            case Cue::Type::Loop:
-                cueType = "Loop";
-                break;
-            case Cue::Type::Jump:
-                cueType = "Jump";
-                break;
-            case Cue::Type::Intro:
-                cueType = "Intro";
-                break;
-            case Cue::Type::Outro:
-                cueType = "Outro";
-                break;
-            default:
-                break;
+        case mixxx::CueType::Invalid:
+            cueType = "?";
+            break;
+        case mixxx::CueType::HotCue:
+            cueType = "Hotcue";
+            break;
+        case mixxx::CueType::MainCue:
+            cueType = "Main Cue";
+            break;
+        case mixxx::CueType::Beat:
+            cueType = "Beat";
+            break;
+        case mixxx::CueType::Loop:
+            cueType = "Loop";
+            break;
+        case mixxx::CueType::Jump:
+            cueType = "Jump";
+            break;
+        case mixxx::CueType::Intro:
+            cueType = "Intro";
+            break;
+        case mixxx::CueType::Outro:
+            cueType = "Outro";
+            break;
+        default:
+            break;
         }
 
         QTableWidgetItem* typeItem = new QTableWidgetItem(cueType);
@@ -502,7 +501,7 @@ void DlgTrackInfo::saveTrack() {
             pCue->setHotCue(-1);
         }
 
-        if (pCue->getType() == Cue::Type::HotCue) {
+        if (pCue->getType() == mixxx::CueType::HotCue) {
             auto colorComboBox = qobject_cast<QComboBox*>(colorWidget);
             if (colorComboBox) {
                 PredefinedColorPointer color = Color::kPredefinedColorsSet.allColors.at(colorComboBox->currentIndex());

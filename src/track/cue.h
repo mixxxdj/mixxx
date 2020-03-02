@@ -1,11 +1,13 @@
 #ifndef MIXXX_CUE_H
 #define MIXXX_CUE_H
 
-#include <QObject>
-#include <QMutex>
 #include <QColor>
+#include <QMutex>
+#include <QObject>
 
+#include "track/cueinfo.h"
 #include "track/trackid.h"
+#include "util/audiosignal.h"
 #include "util/color/predefinedcolor.h"
 #include "util/memory.h"
 
@@ -17,21 +19,8 @@ class Cue : public QObject {
     Q_OBJECT
 
   public:
-    enum class Type {
-        Invalid = 0,
-        HotCue  = 1,
-        MainCue = 2,
-        Beat    = 3, // unused (what is this for?)
-        Loop    = 4,
-        Jump    = 5,
-        Intro   = 6,
-        Outro   = 7,
-        AudibleSound = 8, // range that covers beginning and end of audible sound;
-                          // not shown to user
-    };
-
     static constexpr double kNoPosition = -1.0;
-    static const int kNoHotCue = -1;
+    static constexpr int kNoHotCue = -1;
 
     ~Cue() override = default;
 
@@ -39,8 +28,8 @@ class Cue : public QObject {
     int getId() const;
     TrackId getTrackId() const;
 
-    Cue::Type getType() const;
-    void setType(Cue::Type type);
+    mixxx::CueType getType() const;
+    void setType(mixxx::CueType type);
 
     double getPosition() const;
     void setStartPosition(double samplePosition);
@@ -64,8 +53,8 @@ class Cue : public QObject {
 
   private:
     explicit Cue(TrackId trackId);
-    Cue(int id, TrackId trackId, Cue::Type type, double position, double length,
-        int hotCue, QString label, PredefinedColorPointer color);
+    explicit Cue(TrackId trackId, mixxx::AudioSignal::SampleRate sampleRate, const mixxx::CueInfo& cueInfo);
+    Cue(int id, TrackId trackId, mixxx::CueType type, double position, double length, int hotCue, QString label, PredefinedColorPointer color);
     void setDirty(bool dirty);
     void setId(int id);
     void setTrackId(TrackId trackId);
@@ -75,7 +64,7 @@ class Cue : public QObject {
     bool m_bDirty;
     int m_iId;
     TrackId m_trackId;
-    Cue::Type m_type;
+    mixxx::CueType m_type;
     double m_sampleStartPosition;
     double m_sampleEndPosition;
     int m_iHotCue;

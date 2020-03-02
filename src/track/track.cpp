@@ -1,15 +1,15 @@
+#include "track/track.h"
+
 #include <QDirIterator>
 #include <QMutexLocker>
-
 #include <atomic>
 
-#include "track/track.h"
-#include "track/trackref.h"
+#include "engine/engine.h"
 #include "track/beatfactory.h"
-
+#include "track/trackref.h"
 #include "util/assert.h"
+#include "util/color/color.h"
 #include "util/logger.h"
-
 
 namespace {
 
@@ -671,12 +671,12 @@ void Track::setCuePoint(CuePosition cue) {
     }
 
     // Store the cue point in a load cue
-    CuePointer pLoadCue = findCueByType(Cue::Type::MainCue);
+    CuePointer pLoadCue = findCueByType(mixxx::CueType::MainCue);
     double position = cue.getPosition();
     if (position != -1.0) {
         if (!pLoadCue) {
             pLoadCue = CuePointer(new Cue(m_record.getId()));
-            pLoadCue->setType(Cue::Type::MainCue);
+            pLoadCue->setType(mixxx::CueType::MainCue);
             connect(pLoadCue.get(),
                     &Cue::updated,
                     this,
@@ -713,10 +713,12 @@ CuePointer Track::createAndAddCue() {
     return pCue;
 }
 
-CuePointer Track::findCueByType(Cue::Type type) const {
+CuePointer Track::findCueByType(mixxx::CueType type) const {
     // This method cannot be used for hotcues because there can be
     // multiple hotcues and this function returns only a single CuePointer.
-    DEBUG_ASSERT(type != Cue::Type::HotCue);
+    VERIFY_OR_DEBUG_ASSERT(type != mixxx::CueType::HotCue) {
+        return CuePointer();
+    }
     QMutexLocker lock(&m_qMutex);
     for (const CuePointer& pCue: m_cuePoints) {
         if (pCue->getType() == type) {
@@ -734,14 +736,14 @@ void Track::removeCue(const CuePointer& pCue) {
     QMutexLocker lock(&m_qMutex);
     disconnect(pCue.get(), 0, this, 0);
     m_cuePoints.removeOne(pCue);
-    if (pCue->getType() == Cue::Type::MainCue) {
+    if (pCue->getType() == mixxx::CueType::MainCue) {
         m_record.setCuePoint(CuePosition());
     }
     markDirtyAndUnlock(&lock);
     emit cuesUpdated();
 }
 
-void Track::removeCuesOfType(Cue::Type type) {
+void Track::removeCuesOfType(mixxx::CueType type) {
     QMutexLocker lock(&m_qMutex);
     bool dirty = false;
     QMutableListIterator<CuePointer> it(m_cuePoints);
@@ -780,12 +782,29 @@ void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
     for (const auto& pCue: m_cuePoints) {
         connect(pCue.get(), &Cue::updated, this, &Track::slotCueUpdated);
         // update main cue point
-        if (pCue->getType() == Cue::Type::MainCue) {
+        if (pCue->getType() == mixxx::CueType::MainCue) {
             m_record.setCuePoint(CuePosition(pCue->getPosition()));
         }
     }
     markDirtyAndUnlock(&lock);
     emit cuesUpdated();
+}
+
+void Track::importCuePoints(const QList<mixxx::CueInfo>& cueInfos) {
+    TrackId trackId;
+    mixxx::AudioSignal::SampleRate sampleRate;
+    {
+        QMutexLocker lock(&m_qMutex);
+        trackId = m_record.getId();
+        sampleRate = m_record.getMetadata().getSampleRate();
+    } // implicitly unlocked when leaving scope
+
+    QList<CuePointer> cuePoints;
+    for (const mixxx::CueInfo& cueInfo : cueInfos) {
+        CuePointer pCue(new Cue(trackId, sampleRate, cueInfo));
+        cuePoints.append(pCue);
+    }
+    setCuePoints(cuePoints);
 }
 
 void Track::markDirty() {
