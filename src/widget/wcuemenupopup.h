@@ -4,6 +4,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 
+#include "preferences/colorpalettesettings.h"
 #include "track/cue.h"
 #include "track/track.h"
 #include "widget/wcolorpicker.h"
@@ -42,6 +43,7 @@ class WCueMenuPopup : public QWidget {
     }
 
     void show() {
+        setColorPalette(m_colorPaletteSettings.getHotcueColorPalette());
         m_pEditLabel->setFocus();
         emit aboutToShow();
         QWidget::show();
@@ -57,6 +59,7 @@ class WCueMenuPopup : public QWidget {
     void slotChangeCueColor(mixxx::RgbColor::optional_t color);
 
   private:
+    ColorPaletteSettings m_colorPaletteSettings;
     CuePointer m_pCue;
     TrackPointer m_pTrack;
 
