@@ -17,6 +17,7 @@ class WColorPickerAction : public QWidgetAction {
 
     void resetSelectedColor();
     void setSelectedColor(mixxx::RgbColor::optional_t color);
+    void setColorPalette(const ColorPalette& palette);
 
   signals:
     void colorPicked(mixxx::RgbColor::optional_t color);

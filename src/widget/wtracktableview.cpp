@@ -1089,6 +1089,9 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 
         // Track color menu only appears if at least one track is selected
         if (indices.size()) {
+            m_pColorPickerAction->setColorPalette(
+                    ColorPaletteSettings(m_pConfig).getTrackColorPalette());
+
             // Get color of first selected track
             int column = trackModel->fieldIndex(LIBRARYTABLE_COLOR);
             QModelIndex index = indices.at(0).sibling(indices.at(0).row(), column);
