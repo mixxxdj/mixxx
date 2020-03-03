@@ -1570,7 +1570,7 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
     EXPECT_NEAR(
             ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")),
             ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")),
-            10e-15);
+            1e-15);
 
     // Reset Deck 1 Tempo
     pButtonSyncEnabled1->set(0.0);
@@ -1580,7 +1580,10 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
 
     // Now the deck should be running normaly
     EXPECT_DOUBLE_EQ(130, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
-    EXPECT_DOUBLE_EQ(0.10255479969765675, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
+    EXPECT_NEAR(
+            0.10255479969765675,
+            ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")),
+            1e-15);
 
     EXPECT_DOUBLE_EQ(100, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     EXPECT_DOUBLE_EQ(0.096749811035525324, ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
