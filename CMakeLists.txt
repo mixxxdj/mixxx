@@ -466,6 +466,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefautodjdlg.ui
   src/preferences/dialog/dlgprefbeats.cpp
   src/preferences/dialog/dlgprefbeatsdlg.ui
+  src/preferences/dialog/dlgprefcolors.cpp
+  src/preferences/dialog/dlgprefcolorsdlg.ui
   src/preferences/dialog/dlgprefcrossfader.cpp
   src/preferences/dialog/dlgprefcrossfaderdlg.ui
   src/preferences/dialog/dlgprefdeck.cpp
