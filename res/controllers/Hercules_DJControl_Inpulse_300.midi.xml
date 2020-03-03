@@ -1408,20 +1408,20 @@
       <!--Pitch sliders-->
 			<control>
 				<group>[Channel1]</group>
-				<key>DJCi300.deckRateMsb</key>
+				<key>rate</key>
 				<status>0xB1</status>
 				<midino>0x08</midino>
 				<options>
-					<script-binding />
+					<fourteen-bit-msb />
 				</options>
 			</control>
 			<control>
 				<group>[Channel1]</group>
-				<key>DJCi300.deckRateLsb</key>
+				<key>rate</key>
 				<status>0xB1</status>
 				<midino>0x28</midino>
 				<options>
-					<script-binding />
+					<fourteen-bit-lsb />
 				</options>
 			</control>
 	  <!--Jog wheel	-->
@@ -1548,20 +1548,20 @@
       <!--Pitch sliders-->
 			<control>
 				<group>[Channel2]</group>
-				<key>DJCi300.deckRateMsb</key>
+				<key>rate</key>
 				<status>0xB2</status>
 				<midino>0x08</midino>
 				<options>
-					<script-binding />
+					<fourteen-bit-msb />
 				</options>
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>DJCi300.deckRateLsb</key>
+				<key>rate</key>
 				<status>0xB2</status>
 				<midino>0x28</midino>
 				<options>
-					<script-binding />
+					<fourteen-bit-lsb />
 				</options>
 			</control>
 	  <!--Jog wheel--> 
