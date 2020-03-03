@@ -54,6 +54,30 @@ WColorPicker::WColorPicker(ColorOption colorOption, const ColorPalette& palette,
     // better than having buttons without any colors (which would make the
     // color picker unusable).
     m_pStyle = QStyleFactory::create(QString("fusion"));
+    setLayout(pLayout);
+    addColorButtons();
+}
+
+void WColorPicker::removeColorButtons() {
+    QGridLayout* pLayout = static_cast<QGridLayout*>(layout());
+    VERIFY_OR_DEBUG_ASSERT(pLayout) {
+        qWarning() << "Color Picker has no layout!";
+        return;
+    }
+
+    while (!m_colorButtons.isEmpty()) {
+        QPushButton* pColorButton = m_colorButtons.takeLast();
+        pLayout->removeWidget(pColorButton);
+        delete pColorButton;
+    }
+}
+
+void WColorPicker::addColorButtons() {
+    QGridLayout* pLayout = static_cast<QGridLayout*>(layout());
+    VERIFY_OR_DEBUG_ASSERT(pLayout) {
+        qWarning() << "Color Picker has no layout!";
+        return;
+    }
 
     int row = 0;
     int column = 0;
@@ -80,7 +104,6 @@ WColorPicker::WColorPicker(ColorOption colorOption, const ColorPalette& palette,
 }
 
 void WColorPicker::addColorButton(mixxx::RgbColor::optional_t color, QGridLayout* pLayout, int row, int column) {
-    setLayout(pLayout);
     parented_ptr<QPushButton> pColorButton = make_parented<QPushButton>("", this);
     if (m_pStyle) {
         pColorButton->setStyle(m_pStyle);
@@ -175,25 +198,15 @@ void WColorPicker::setSelectedColor(mixxx::RgbColor::optional_t color) {
     pButton->style()->polish(pButton);
 }
 
-void WColorPicker::useColorSet(const ColorPalette& palette) {
-    resetSelectedColor();
-
-    for (int i = 0; i < m_colorButtons.size(); ++i) {
-        int j = i;
-        if (m_colorOption == ColorOption::AllowNoColor) {
-            j++;
-        }
-
-        if (i >= palette.size() || j >= m_colorButtons.size()) {
-            return;
-        }
-
-        // Set the background color of the button. This can't be overridden in skin stylesheets.
-        m_colorButtons.at(j)->setStyleSheet(
-                QString("QPushButton { background-color: %1; }")
-                        .arg(mixxx::RgbColor::toQString(palette.at(i))));
-        m_colorButtons.at(j)->setToolTip(mixxx::RgbColor::toQString(palette.at(i), tr("No Color")));
+void WColorPicker::setColorPalette(const ColorPalette& palette) {
+    if (m_palette == palette) {
+        return;
     }
+
+    resetSelectedColor();
+    removeColorButtons();
+    m_palette = palette;
+    addColorButtons();
 }
 
 void WColorPicker::slotColorPicked(mixxx::RgbColor::optional_t color) {

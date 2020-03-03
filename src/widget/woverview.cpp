@@ -134,7 +134,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
 
     ColorPaletteSettings colorPaletteSettings(m_pConfig);
     auto colorPalette = colorPaletteSettings.getHotcueColorPalette();
-    m_pCueMenuPopup->useColorSet(colorPalette);
+    m_pCueMenuPopup->setColorPalette(colorPalette);
 
     for (const auto& pMark: m_marks) {
         if (pMark->isValid()) {

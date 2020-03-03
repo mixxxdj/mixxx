@@ -21,7 +21,7 @@ class WColorPicker : public QWidget {
 
     void resetSelectedColor();
     void setSelectedColor(mixxx::RgbColor::optional_t color);
-    void useColorSet(const ColorPalette& palette);
+    void setColorPalette(const ColorPalette& palette);
 
   signals:
     void colorPicked(mixxx::RgbColor::optional_t color);
@@ -30,6 +30,8 @@ class WColorPicker : public QWidget {
     void slotColorPicked(mixxx::RgbColor::optional_t color);
 
   private:
+    void addColorButtons();
+    void removeColorButtons();
     void addColorButton(mixxx::RgbColor::optional_t color, QGridLayout* pLayout, int row, int column);
     ColorOption m_colorOption;
     mixxx::RgbColor::optional_t m_selectedColor;
