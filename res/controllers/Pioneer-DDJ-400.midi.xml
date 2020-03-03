@@ -323,47 +323,43 @@
             </control>
 
             <control>
-                <description>TEMPO (DECK1) - fader - Tempo control</description>
+                <description>TEMPO (DECK1) - fader - Tempo control LSB</description>
                 <group>[Channel1]</group>
-                <key>rate</key>
+                <key>PioneerDDJ400.tempoSliderLSB</key>
                 <status>0xB0</status>
                 <midino>0x20</midino>
                 <options>
-                    <fourteen-bit-lsb/>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <description>TEMPO (DECK1) - fader - Tempo control</description>
+                <description>TEMPO (DECK1) - fader - Tempo control MSB</description>
                 <group>[Channel1]</group>
-                <key>rate</key>
+                <key>PioneerDDJ400.tempoSliderMSB</key>
                 <status>0xB0</status>
                 <midino>0x00</midino>
                 <options>
-                    <fourteen-bit-msb/>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <description>TEMPO (DECK2) - fader - Tempo control</description>
+                <description>TEMPO (DECK2) - fader - Tempo control LSB</description>
                 <group>[Channel2]</group>
-                <key>rate</key>
+                <key>PioneerDDJ400.tempoSliderLSB</key>
                 <status>0xB1</status>
                 <midino>0x20</midino>
                 <options>
-                    <fourteen-bit-lsb/>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <description>TEMPO (DECK2) - fader - Tempo control</description>
+                <description>TEMPO (DECK2) - fader - Tempo control MSB</description>
                 <group>[Channel2]</group>
-                <key>rate</key>
+                <key>PioneerDDJ400.tempoSliderMSB</key>
                 <status>0xB1</status>
                 <midino>0x00</midino>
                 <options>
-                    <fourteen-bit-msb/>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
 

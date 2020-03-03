@@ -217,6 +217,34 @@ PioneerDDJ400.jogTouch = function(channel, _control, value) {
     }
 };
 
+///////////////////////////////////////////////////////////////
+//            HIGH RESOLUTION MIDI INPUT HANDLERS            //
+///////////////////////////////////////////////////////////////
+
+PioneerDDJ400.highResMSB = {
+    '[Channel1]': {},
+    '[Channel2]': {},
+    '[Channel3]': {},
+    '[Channel4]': {}
+};
+
+
+PioneerDDJ400.tempoSliderMSB = function (channel, control, value, status, group) {
+    PioneerDDJ400.highResMSB[group].tempoSlider = value;
+};
+
+PioneerDDJ400.tempoSliderLSB = function (channel, control, value, status, group) {
+    var fullValue = (PioneerDDJ400.highResMSB[group].tempoSlider << 7) + value;
+
+    engine.setValue(
+        group,
+        'rate',
+        ((0x4000 - fullValue) - 0x2000) / 0x2000
+    );
+ 
+ 
+};
+
 PioneerDDJ400.cycleTempoRange = function(_channel, _control, value, _status, group) {
     "use strict";
     if (value === 0) return; // ignore release
