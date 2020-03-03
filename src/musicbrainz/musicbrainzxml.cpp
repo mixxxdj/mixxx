@@ -65,6 +65,10 @@ void consumeCurrentElement(QXmlStreamReader& reader) {
             }
             --level;
             break;
+        case QXmlStreamReader::Characters:
+        case QXmlStreamReader::Comment:
+        case QXmlStreamReader::ProcessingInstruction:
+            // ignore token types
         default:
             DEBUG_ASSERT(reader.tokenType() != QXmlStreamReader::NoToken);
             DEBUG_ASSERT(reader.tokenType() != QXmlStreamReader::Invalid);
@@ -72,7 +76,6 @@ void consumeCurrentElement(QXmlStreamReader& reader) {
             DEBUG_ASSERT(reader.tokenType() != QXmlStreamReader::EndDocument);
             DEBUG_ASSERT(reader.tokenType() != QXmlStreamReader::DTD);
             DEBUG_ASSERT(reader.tokenType() != QXmlStreamReader::EntityReference);
-            // ignore other token types
         }
     }
 }
