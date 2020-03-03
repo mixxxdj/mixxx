@@ -51,7 +51,6 @@ DJCi300.kScratchActionBend = 3;
 
 DJCi300.vuMeterUpdateMaster = function(value, group, control) {
     value = (value * 122) + 5;
-    var control = (group === "[VuMeterL]") ? 0x40 : 0x41;
     midi.sendShortMsg(0xB0, control, value);
 };
 
@@ -62,7 +61,9 @@ DJCi300.vuMeterUpdateDeck = function(value, group, _control, _status) {
 };
 
 DJCi300.init = function() {
+    // Scratch button state
     DJCi300.scratchButtonState = true;
+    // Scratch Action
     DJCi300.scratchAction = {
     1: DJCi300.kScratchActionNone,
     2: DJCi300.kScratchActionNone
