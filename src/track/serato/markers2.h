@@ -363,7 +363,9 @@ inline QDebug operator<<(QDebug dbg, const SeratoMarkers2LoopEntry& arg) {
 //
 class SeratoMarkers2 final {
   public:
-    SeratoMarkers2() = default;
+    SeratoMarkers2()
+            : m_allocatedSize(0) {
+    }
     explicit SeratoMarkers2(
             QList<std::shared_ptr<SeratoMarkers2Entry>> entries)
             : m_allocatedSize(0),
