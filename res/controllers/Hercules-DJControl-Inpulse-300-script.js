@@ -18,7 +18,7 @@
 //
 // v1.0 : Original forum release
 //
-// TODO: Functions that could be implemented to the script:
+// TO DO: Functions that could be implemented to the script:
 //
 // * ROLL: Keep SLIP active (if already enabled) when exiting from rolls
 //
@@ -27,9 +27,7 @@
 // * TONEPLAY
 //
 // * FX:
-//	- Potentially use 1 FX rack for FX pads and another for the Controlled FX
-//  - See how to preselect effects for a rack
-// * Fix behavior when adjusting tempo slider after pressing [Sync] (tempo adjustment should be relative, not absolute).
+//  	- See how to preselect effects for a rack
 // ****************************************************************************
 var DJCi300 = {};
 ///////////////////////////////////////////////////////////////
@@ -77,9 +75,6 @@ DJCi300.init = function() {
     //Turn On Browser button LED
     midi.sendShortMsg(0x90, 0x04, 0x05);
 
-   //Array for the MSB bits of pitch change
-   DJCi300.pitchMsbValue = [0x40, 0x40];
-
    //Softtakeover for Pitch fader
    engine.softTakeover("[Channel1]", "rate", true);
    engine.softTakeover("[Channel2]", "rate", true);
@@ -99,12 +94,6 @@ DJCi300.init = function() {
     // Ask the controller to send all current knob/slider values over MIDI, which will update
     // the corresponding GUI controls in MIXXX.
     midi.sendShortMsg(0xB0, 0x7F, 0x7F);
-};
-
-DJCi300.deckRateMsb = function(_channel, _control, value, _status, _group) {
-};
-
-DJCi300.deckRateLsb = function(_channel, _control, value, _status, _group) {
 };
 
 // The Vinyl button, used to enable or disable scratching on the jog wheels (One per deck).
