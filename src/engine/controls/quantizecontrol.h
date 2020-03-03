@@ -20,6 +20,7 @@ class QuantizeControl : public EngineControl {
 
     void setCurrentSample(const double dCurrentSample,
             const double dTotalSamples, const double dTrackSampleRate) override;
+    void notifySeek(double dNewPlaypos) override;
     void trackLoaded(TrackPointer pNewTrack) override;
 
   private slots:
@@ -31,6 +32,7 @@ class QuantizeControl : public EngineControl {
     // Update position of the closest beat based on existing previous and
     // next beat values.  Usually callers will call lookupBeatPositions first.
     void updateClosestBeat(double dCurrentSample);
+    void playPosChanged(double dNewPlaypos);
 
     ControlPushButton* m_pCOQuantizeEnabled;
     ControlObject* m_pCONextBeat;
