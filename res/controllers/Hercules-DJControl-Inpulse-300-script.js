@@ -55,7 +55,7 @@ DJCi300.vuMeterUpdateMaster = function(value, _group, control) {
     midi.sendShortMsg(0xB0, control, value);
 };
 
-DJCi300.vuMeterUpdateDeck = function(value, group, _control) {
+DJCi300.vuMeterUpdateDeck = function(value, group, _control, _status) {
     value = (value * 122) + 5;
     var status = (group === "[Channel1]") ? 0xB1 : 0xB2;
     midi.sendShortMsg(status, 0x40, value);
@@ -64,8 +64,8 @@ DJCi300.vuMeterUpdateDeck = function(value, group, _control) {
 DJCi300.init = function() {
     DJCi300.scratchButtonState = true;
     DJCi300.scratchAction = {
-        1: DJCi300.kScratchActionNone,
-        2: DJCi300.kScratchActionNone
+    1: DJCi300.kScratchActionNone,
+    2: DJCi300.kScratchActionNone
     };
 
     // Turn On Vinyl buttons LED(one for each deck).
