@@ -7,7 +7,7 @@
 namespace {
 
 QStringList track2row(const Track& track) {
-    const auto trackNumbers = TrackNumbers::joinStrings(
+    const QString trackNumberAndTotal = TrackNumbers::joinAsString(
             track.getTrackNumber(),
             track.getTrackTotal());
     QStringList row;
@@ -16,7 +16,7 @@ QStringList track2row(const Track& track) {
             << track.getYear()
             << track.getAlbum()
             << track.getAlbumArtist()
-            << trackNumbers
+            << trackNumberAndTotal
             << track.getTitle()
             << track.getArtist();
     return row;
