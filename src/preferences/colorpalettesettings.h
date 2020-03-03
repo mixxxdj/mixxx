@@ -15,12 +15,12 @@ class ColorPaletteSettings {
     ColorPalette getTrackColorPalette() const;
     void setTrackColorPalette(const ColorPalette& colorPalette);
 
+    ColorPalette getColorPalette(const QString& name, const ColorPalette& defaultPalette) const;
+    void setColorPalette(const QString& name, const ColorPalette& colorPalette);
+    void removePalette(const QString& name);
+    QSet<QString> getColorPaletteNames();
+
   private:
-    ColorPalette getColorPalette(const QString& group, const ColorPalette& defaultPalette) const;
-    void setColorPalette(const QString& group, const ColorPalette& colorPalette);
-
-    void removePalette(const QString& group);
-
     ConfigKey keyForIndex(const QString& group, int index) {
         return ConfigKey(group, QString::number(index));
     }

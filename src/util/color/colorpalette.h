@@ -6,8 +6,9 @@
 
 class ColorPalette {
   public:
-    explicit ColorPalette(QList<mixxx::RgbColor> colorList)
-            : m_colorList(colorList) {
+    explicit ColorPalette(QString name, QList<mixxx::RgbColor> colorList)
+            : m_name(name),
+              m_colorList(colorList) {
         DEBUG_ASSERT(m_colorList.size() != 0);
     }
 
@@ -34,6 +35,14 @@ class ColorPalette {
         return m_colorList.end();
     }
 
+    QString getName() const {
+        return m_name;
+    }
+
+    void setName(const QString name) {
+        m_name = name;
+    }
+
     static const ColorPalette mixxxHotcuePalette;
 
     const QList<mixxx::RgbColor>& getColorList() const {
@@ -41,10 +50,12 @@ class ColorPalette {
     }
 
   private:
+    QString m_name;
     QList<mixxx::RgbColor> m_colorList;
 };
 
 inline bool operator==(
         const ColorPalette& lhs, const ColorPalette& rhs) {
-    return lhs.getColorList() == rhs.getColorList();
+    return lhs.getName() == rhs.getName() &&
+            lhs.getColorList() == rhs.getColorList();
 }

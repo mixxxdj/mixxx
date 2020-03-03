@@ -12,16 +12,18 @@ constexpr mixxx::RgbColor kColorMixxxWhite = mixxx::RgbColor(0xF2F2FF);
 } // anonymous namespace
 
 const ColorPalette ColorPalette::mixxxHotcuePalette =
-        ColorPalette(QList<mixxx::RgbColor>{
-                kColorMixxxRed,
-                kColorMixxxYellow,
-                kColorMixxxGreen,
-                kColorMixxxCeleste,
-                kColorMixxxBlue,
-                kColorMixxxPurple,
-                kColorMixxxPink,
-                kColorMixxxWhite,
-        });
+        ColorPalette(
+                QStringLiteral("Mixxx Hotcue Colors"),
+                QList<mixxx::RgbColor>{
+                        kColorMixxxRed,
+                        kColorMixxxYellow,
+                        kColorMixxxGreen,
+                        kColorMixxxCeleste,
+                        kColorMixxxBlue,
+                        kColorMixxxPurple,
+                        kColorMixxxPink,
+                        kColorMixxxWhite,
+                });
 
 mixxx::RgbColor ColorPalette::nextColor(mixxx::RgbColor color) const {
     //  Return first color if color not in palette ((-1 + 1) % size)

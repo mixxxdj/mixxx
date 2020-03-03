@@ -25,13 +25,13 @@ TEST_F(ColorConfigTest, GetDefaultColorWhenNoStoredColor) {
 
 TEST_F(ColorConfigTest, SaveColorPalette) {
     ColorPaletteSettings colorPaletteSettings(config());
-    ColorPalette originalColorPalette(QList<mixxx::RgbColor>{
-            mixxx::RgbColor(0x66FF99),
-            mixxx::RgbColor(0xFF9900),
-            mixxx::RgbColor(0x000000),
-            mixxx::RgbColor(0xFFFFFF),
-    });
-    ConfigKey key("[ColorPalette]", "colorPalette");
+    ColorPalette originalColorPalette(
+            "SaveColorPaletteTest", QList<mixxx::RgbColor>{
+                                            mixxx::RgbColor(0x66FF99),
+                                            mixxx::RgbColor(0xFF9900),
+                                            mixxx::RgbColor(0x000000),
+                                            mixxx::RgbColor(0xFFFFFF),
+                                    });
     colorPaletteSettings.setHotcueColorPalette(originalColorPalette);
     saveAndReloadConfig();
     ColorPalette colorPaletteFromConfig =
@@ -41,17 +41,18 @@ TEST_F(ColorConfigTest, SaveColorPalette) {
 
 TEST_F(ColorConfigTest, ReplaceColorPalette) {
     ColorPaletteSettings colorPaletteSettings(config());
-    ColorPalette colorPalette1(QList<mixxx::RgbColor>{
-            mixxx::RgbColor(0x66FF99),
-            mixxx::RgbColor(0xFF9900),
-            mixxx::RgbColor(0x000000),
-            mixxx::RgbColor(0xFFFFFF),
-    });
-    ColorPalette colorPalette2(QList<mixxx::RgbColor>{
-            mixxx::RgbColor(0x0000FF),
-            mixxx::RgbColor(0xFF0000),
-    });
-    ConfigKey key("[ColorPalette]", "colorPalette");
+    ColorPalette colorPalette1(
+            "ReplaceColorPaletteTest", QList<mixxx::RgbColor>{
+                                               mixxx::RgbColor(0x66FF99),
+                                               mixxx::RgbColor(0xFF9900),
+                                               mixxx::RgbColor(0x000000),
+                                               mixxx::RgbColor(0xFFFFFF),
+                                       });
+    ColorPalette colorPalette2(
+            "ReplaceColorPaletteTest", QList<mixxx::RgbColor>{
+                                               mixxx::RgbColor(0x0000FF),
+                                               mixxx::RgbColor(0xFF0000),
+                                       });
     colorPaletteSettings.setHotcueColorPalette(colorPalette1);
     saveAndReloadConfig();
     colorPaletteSettings.setHotcueColorPalette(colorPalette2);
@@ -59,6 +60,38 @@ TEST_F(ColorConfigTest, ReplaceColorPalette) {
     ColorPalette colorPaletteFromConfig =
             colorPaletteSettings.getHotcueColorPalette();
     ASSERT_EQ(colorPalette2, colorPaletteFromConfig);
+}
+
+TEST_F(ColorConfigTest, LoadSavePalettes) {
+    ColorPaletteSettings colorPaletteSettings(config());
+    ColorPalette colorPalette1(
+            "Custom Palette No. 1", QList<mixxx::RgbColor>{
+                                            mixxx::RgbColor(0x66FF99),
+                                            mixxx::RgbColor(0xFF9900),
+                                            mixxx::RgbColor(0x000000),
+                                            mixxx::RgbColor(0xFFFFFF),
+                                    });
+    colorPaletteSettings.setColorPalette(colorPalette1.getName(), colorPalette1);
+    ColorPalette colorPalette2(
+            "My Custom Palette 2", QList<mixxx::RgbColor>{
+                                           mixxx::RgbColor(0x0000FF),
+                                           mixxx::RgbColor(0xFF0000),
+                                   });
+    colorPaletteSettings.setColorPalette(colorPalette2.getName(), colorPalette2);
+    ColorPalette colorPalette3(
+            "I'm blue, da ba dee", QList<mixxx::RgbColor>{
+                                           mixxx::RgbColor(0x0000FF),
+                                           mixxx::RgbColor(0x123456),
+                                           mixxx::RgbColor(0x000080),
+                                   });
+    colorPaletteSettings.setColorPalette(colorPalette3.getName(), colorPalette3);
+    saveAndReloadConfig();
+    QSet<QString> expectedNames{
+            colorPalette1.getName(),
+            colorPalette2.getName(),
+            colorPalette3.getName(),
+    };
+    ASSERT_EQ(expectedNames, colorPaletteSettings.getColorPaletteNames());
 }
 
 TEST_F(ColorConfigTest, DefaultColorPalette) {

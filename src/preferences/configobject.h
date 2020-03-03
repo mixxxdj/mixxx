@@ -187,6 +187,7 @@ template <class ValueType> class ConfigObject {
         return m_settingsPath;
     }
 
+    QSet<QString> getGroups();
     QList<ConfigKey> getKeysWithGroup(QString group);
 
   protected:

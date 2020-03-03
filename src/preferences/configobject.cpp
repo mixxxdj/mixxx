@@ -217,6 +217,16 @@ template <class ValueType> void ConfigObject<ValueType>::save() {
 }
 
 template<class ValueType>
+QSet<QString> ConfigObject<ValueType>::getGroups() {
+    QWriteLocker lock(&m_valuesLock);
+    QSet<QString> groups;
+    for (const ConfigKey& key : m_values.uniqueKeys()) {
+        groups.insert(key.group);
+    }
+    return groups;
+}
+
+template<class ValueType>
 QList<ConfigKey> ConfigObject<ValueType>::getKeysWithGroup(QString group) {
     QWriteLocker lock(&m_valuesLock);
     QList<ConfigKey> filteredList;
