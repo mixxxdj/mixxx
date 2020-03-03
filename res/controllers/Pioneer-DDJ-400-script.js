@@ -120,6 +120,7 @@ PioneerDDJ400.loopin4beat = [false, false]; // inn4loop is pressed
 PioneerDDJ400.loopout = [false, false]; // out loop is pressed
 PioneerDDJ400.loopAdjustMultiply = 5;
 
+PioneerDDJ400.samplerCallbacks = [];
 
 // Wrapper to easily ignore the function when the button is released.
 var ignoreRelease = function(fn) {
@@ -153,9 +154,20 @@ PioneerDDJ400.init = function() {
     PioneerDDJ400.toggleLight(LightsPioneerDDJ400.deck1.vuMeter, false);
     PioneerDDJ400.toggleLight(LightsPioneerDDJ400.deck2.vuMeter, false);
 	
-	// poll the controller for current control positions on startup
-	// note that for some reason, the tempo sliders are always reported to be in their center positions, regardless of the current physical position of the slider
-	midi.sendSysexMsg([0xF0,0x00,0x40,0x05,0x00,0x00,0x02,0x06,0x00,0x03,0x01,0xf7], 12);
+    // DJ3730:  added
+    // enable soft takeover for rate controls
+    engine.softTakeover("[Channel1]", "rate", true);
+    engine.softTakeover("[Channel2]", "rate", true);
+
+
+    // DJ3730:  added
+    // Sampler callbacks
+    for (i = 1; i <= 16; ++i) {
+        PioneerDDJ400.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "play", PioneerDDJ400.samplerPlayOutputCallbackFunction));
+    }
+
+    // poll the controller for current control positions on startup
+    midi.sendSysexMsg([0xF0,0x00,0x40,0x05,0x00,0x00,0x02,0x06,0x00,0x03,0x01,0xf7], 12);
 };
 
 PioneerDDJ400.toggleLight = function(midiIn, active) {
@@ -215,6 +227,34 @@ PioneerDDJ400.jogTouch = function(channel, _control, value) {
         // on release jog (value === 0) disable pitch bend mode or scratch mode
         engine.scratchDisable(deckNum);
     }
+};
+
+///////////////////////////////////////////////////////////////
+//            HIGH RESOLUTION MIDI INPUT HANDLERS            //
+///////////////////////////////////////////////////////////////
+
+PioneerDDJ400.highResMSB = {
+    '[Channel1]': {},
+    '[Channel2]': {},
+    '[Channel3]': {},
+    '[Channel4]': {}
+};
+
+
+PioneerDDJ400.tempoSliderMSB = function (channel, control, value, status, group) {
+    PioneerDDJ400.highResMSB[group].tempoSlider = value;
+};
+
+PioneerDDJ400.tempoSliderLSB = function (channel, control, value, status, group) {
+    var fullValue = (PioneerDDJ400.highResMSB[group].tempoSlider << 7) + value;
+
+    engine.setValue(
+        group,
+        'rate',
+        ((0x4000 - fullValue) - 0x2000) / 0x2000
+    );
+ 
+ 
 };
 
 PioneerDDJ400.cycleTempoRange = function(_channel, _control, value, _status, group) {
@@ -597,6 +637,18 @@ PioneerDDJ400.vuMeterUpdate = function(value, group) {
     }
 };
 
+//
+// SAMPLERS
+//
+
+// DJ3730: blink pad when sample playback starts
+PioneerDDJ400.samplerPlayOutputCallbackFunction = function (value, group, control) {
+    if (value === 1) {
+        var curPad = group.match(script.samplerRegEx)[1];
+        startSamplerBlink((0x97 + (curPad > 8 ? 2 : 0)), (0x30 + ((curPad > 8 ? curPad-8 : curPad)-1)), group);
+    }
+};
+
 PioneerDDJ400.samplerModePadPressed = ignoreRelease(function(_channel, control, _value, status, group) {
     "use strict";
     var isLoaded = engine.getValue(group, "track_loaded") === 1;
@@ -607,9 +659,81 @@ PioneerDDJ400.samplerModePadPressed = ignoreRelease(function(_channel, control, 
     engine.setValue(group, "cue_gotoandplay", 1);
 });
 
+
+PioneerDDJ400.samplerModeShiftPadPressed = function(_channel, _control, value, _status, group){
+    "use strict";
+    if(value == 0) {
+        return; // ignore release
+    }
+    var playing = engine.getValue(group, 'play');
+    // when playing stop and return to start/cue point
+    if(playing > 0){
+        engine.setValue(group, 'cue_gotoandstop', 1);
+    }
+    else{ // load selected track
+        // engine.setValue(group, 'LoadSelectedTrack', 1);
+    }
+};
+
+const TimersPioneerDDJ400 = {};
+
+function startSamplerBlink(channel, control, group) {
+    "use strict";
+    var val = 0x7f;
+
+    // print('channel ' + channel + ' +1= ' + (channel+1));
+    
+    stopSamplerBlink(channel, control);
+    TimersPioneerDDJ400[channel][control] = engine.beginTimer(250, function() {
+        val = 0x7f - val;
+
+        // blink the appropriate pad
+        midi.sendShortMsg(channel, control, val);
+        // also blink the pad while SHIFT is pressed
+        midi.sendShortMsg((channel+1), control, val);
+
+        const isPlaying = engine.getValue(group, 'play') === 1;
+
+        if (!isPlaying) {
+            // kill timer
+            stopSamplerBlink(channel, control);
+            // set the pad LED to ON
+            midi.sendShortMsg(channel, control, 0x7f);
+            // set the pad LED to ON while SHIFT is pressed
+            midi.sendShortMsg((channel+1), control, 0x7f);
+        }
+    });
+}
+
+function stopSamplerBlink(channel, control) {
+    "use strict";
+    TimersPioneerDDJ400[channel] = TimersPioneerDDJ400[channel] || {};
+
+    if (TimersPioneerDDJ400[channel][control] !== undefined) {
+        engine.stopTimer(TimersPioneerDDJ400[channel][control]);
+        TimersPioneerDDJ400[channel][control] = undefined;
+    }
+}
+
 PioneerDDJ400.shutdown = function() {
     "use strict";
     // reset vumeter
     PioneerDDJ400.toggleLight(LightsPioneerDDJ400.deck1.vuMeter, false);
     PioneerDDJ400.toggleLight(LightsPioneerDDJ400.deck2.vuMeter, false);
+
+    // housekeeping
+    // turn off all Sampler LEDs
+    for (i = 0; i <= 7; ++i) {
+        midi.sendShortMsg(0x97, 0x30 + i, 0x00);	// Deck 1 pads
+        midi.sendShortMsg(0x98, 0x30 + i, 0x00);	// Deck 1 pads with SHIFT
+        midi.sendShortMsg(0x99, 0x30 + i, 0x00);	// Deck 2 pads
+        midi.sendShortMsg(0x9A, 0x30 + i, 0x00);	// Deck 2 pads with SHIFT
+    }
+    // turn off all Hotcue LEDs 
+    for (i = 0; i <= 7; ++i) {
+        midi.sendShortMsg(0x97, 0x00 + i, 0x00);	// Deck 1 pads
+        midi.sendShortMsg(0x98, 0x00 + i, 0x00);	// Deck 1 pads with SHIFT
+        midi.sendShortMsg(0x99, 0x00 + i, 0x00);	// Deck 2 pads
+        midi.sendShortMsg(0x9A, 0x00 + i, 0x00);	// Deck 2 pads with SHIFT
+    }
 };
