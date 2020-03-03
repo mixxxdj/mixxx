@@ -1,5 +1,7 @@
 #include "preferences/colorpalettesettings.h"
 
+#include "util/color/predefinedcolorpalettes.h"
+
 namespace {
 const mixxx::RgbColor kColorBlack(0x000000);
 const QString kColorPaletteConfigGroup = QStringLiteral("[Config]");
@@ -25,9 +27,11 @@ ConfigKey keyForIndex(const QString& group, int index, int numDigits) {
 
 ColorPalette ColorPaletteSettings::getColorPalette(
         const QString& name, const ColorPalette& defaultPalette) const {
-    QList<mixxx::RgbColor> colorList;
-
+    if (name.isEmpty()) {
+        return defaultPalette;
+    }
     const QString group = kColorPaletteGroupStart + name + kColorPaletteGroupEnd;
+    QList<mixxx::RgbColor> colorList;
     for (const ConfigKey& key : m_pConfig->getKeysWithGroup(group)) {
         mixxx::RgbColor color = mixxx::RgbColor(m_pConfig->getValue<mixxx::RgbColor>(key, kColorBlack));
         colorList.append(color);
@@ -72,10 +76,7 @@ void ColorPaletteSettings::removePalette(const QString& name) {
 
 ColorPalette ColorPaletteSettings::getHotcueColorPalette() const {
     QString name = m_pConfig->getValueString(kHotcueColorPaletteConfigKey);
-    if (name.isEmpty()) {
-        return ColorPalette::mixxxHotcuePalette;
-    }
-    return getColorPalette(name, ColorPalette::mixxxHotcuePalette);
+    return getColorPalette(name, mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette);
 }
 
 void ColorPaletteSettings::setHotcueColorPalette(const ColorPalette& colorPalette) {
@@ -90,10 +91,7 @@ void ColorPaletteSettings::setHotcueColorPalette(const ColorPalette& colorPalett
 
 ColorPalette ColorPaletteSettings::getTrackColorPalette() const {
     QString name = m_pConfig->getValueString(kTrackColorPaletteConfigKey);
-    if (name.isEmpty()) {
-        return ColorPalette::mixxxHotcuePalette;
-    }
-    return getColorPalette(name, ColorPalette::mixxxHotcuePalette);
+    return getColorPalette(name, mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette);
 }
 
 void ColorPaletteSettings::setTrackColorPalette(const ColorPalette& colorPalette) {

@@ -11,6 +11,7 @@
 #include "engine/enginebuffer.h"
 #include "preferences/colorpalettesettings.h"
 #include "util/color/color.h"
+#include "util/color/predefinedcolorpalettes.h"
 #include "util/sample.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
@@ -622,7 +623,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
         auto hotcueColorPalette = m_colorPaletteSettings.getHotcueColorPalette();
         pCue->setColor(hotcueColorPalette.colorForHotcueIndex(hotcue));
     } else {
-        pCue->setColor(ColorPalette::kDefaultCueColor);
+        pCue->setColor(mixxx::PredefinedColorPalettes::kDefaultCueColor);
     }
 
     // TODO(XXX) deal with spurious signals

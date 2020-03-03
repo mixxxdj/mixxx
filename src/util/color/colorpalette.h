@@ -44,9 +44,6 @@ class ColorPalette final {
         m_name = name;
     }
 
-    static const ColorPalette mixxxHotcuePalette;
-    static const mixxx::RgbColor kDefaultCueColor;
-
     const QList<mixxx::RgbColor>& getColorList() const {
         return m_colorList;
     }
