@@ -28,6 +28,25 @@ constexpr mixxx::RgbColor kTraktorProTrackColorBlue(0x0187FF);
 constexpr mixxx::RgbColor kTraktorProTrackColorViolet(0xA669FF);
 constexpr mixxx::RgbColor kTraktorProTrackColorMagenta(0xFE55EA);
 
+constexpr mixxx::RgbColor kSeratoDJProHotcueColorRed1(0xC02626);
+constexpr mixxx::RgbColor kSeratoDJProHotcueColorOrange1(0xDB4E27);
+constexpr mixxx::RgbColor kSeratoDJProHotcueColorOrange2(0xF8821A);
+constexpr mixxx::RgbColor kSeratoDJProHotcueColorYellow(0xFAC313);
+constexpr mixxx::RgbColor kSeratoDJProHotcueColorGreen1(0x4EB648);
+constexpr mixxx::RgbColor kSeratoDJProHotcueColorGreen2(0x006838);
+constexpr mixxx::RgbColor kSeratoDJProHotcueColorGreen3(0x1FAD26);
+constexpr mixxx::RgbColor kSeratoDJProHotcueColorGreen4(0x8DC63F);
+constexpr mixxx::RgbColor kSeratoDJProHotcueColorBlue1(0x2B3673);
+constexpr mixxx::RgbColor kSeratoDJProHotcueColorCyan(0x1DBEBD);
+constexpr mixxx::RgbColor kSeratoDJProHotcueColorBlue2(0x173BA2);
+constexpr mixxx::RgbColor kSeratoDJProHotcueColorDarkBlue1(0x173BA2);
+constexpr mixxx::RgbColor kSeratoDJProHotcueColorDarkBlue2(0x173BA2);
+constexpr mixxx::RgbColor kSeratoDJProHotcueColorViolet1(0x5C3F97);
+constexpr mixxx::RgbColor kSeratoDJProHotcueColorViolet2(0x6823B6);
+constexpr mixxx::RgbColor kSeratoDJProHotcueColorMagenta(0xCE359E);
+constexpr mixxx::RgbColor kSeratoDJProHotcueColorPurple(0xDC1D49);
+constexpr mixxx::RgbColor kSeratoDJProHotcueColorRed2(0xC71136);
+
 constexpr mixxx::RgbColor kSeratoDJProTrackColorGrey1(0x333333);
 constexpr mixxx::RgbColor kSeratoDJProTrackColorGrey2(0x555555);
 constexpr mixxx::RgbColor kSeratoDJProTrackColorPink1(0x993399);
@@ -77,6 +96,44 @@ const ColorPalette PredefinedColorPalettes::kMixxxHotcueColorPalette =
                         kColorMixxxPurple,
                         kColorMixxxPink,
                         kColorMixxxWhite,
+                });
+
+const ColorPalette PredefinedColorPalettes::kSeratoDJLiteHotcueColorPalette =
+        ColorPalette(
+                QStringLiteral("Serato DJ Lite Hotcue Colors"),
+                QList<mixxx::RgbColor>{
+                        kSeratoDJProHotcueColorRed1,
+                        kSeratoDJProHotcueColorOrange2,
+                        kSeratoDJProHotcueColorDarkBlue2,
+                        kSeratoDJProHotcueColorYellow,
+                        kSeratoDJProHotcueColorGreen3,
+                        kSeratoDJProHotcueColorMagenta,
+                        kSeratoDJProHotcueColorCyan,
+                        kSeratoDJProHotcueColorViolet2,
+                });
+
+const ColorPalette PredefinedColorPalettes::kSeratoDJProHotcueColorPalette =
+        ColorPalette(
+                QStringLiteral("Serato DJ Pro Hotcue Colors"),
+                QList<mixxx::RgbColor>{
+                        kSeratoDJProHotcueColorRed1,
+                        kSeratoDJProHotcueColorOrange1,
+                        kSeratoDJProHotcueColorOrange2,
+                        kSeratoDJProHotcueColorYellow,
+                        kSeratoDJProHotcueColorGreen1,
+                        kSeratoDJProHotcueColorGreen2,
+                        kSeratoDJProHotcueColorGreen3,
+                        kSeratoDJProHotcueColorGreen4,
+                        kSeratoDJProHotcueColorBlue1,
+                        kSeratoDJProHotcueColorCyan,
+                        kSeratoDJProHotcueColorBlue2,
+                        kSeratoDJProHotcueColorDarkBlue1,
+                        kSeratoDJProHotcueColorDarkBlue2,
+                        kSeratoDJProHotcueColorViolet1,
+                        kSeratoDJProHotcueColorViolet2,
+                        kSeratoDJProHotcueColorMagenta,
+                        kSeratoDJProHotcueColorPurple,
+                        kSeratoDJProHotcueColorRed2,
                 });
 
 const ColorPalette PredefinedColorPalettes::kRekordboxTrackColorPalette =
@@ -152,7 +209,12 @@ const ColorPalette PredefinedColorPalettes::kDefaultTrackColorPalette =
         mixxx::PredefinedColorPalettes::kMixxxHotcueColorPalette;
 
 const QList<ColorPalette> PredefinedColorPalettes::kPalettes{
+        // Hotcue Color Palettes
         mixxx::PredefinedColorPalettes::kMixxxHotcueColorPalette,
+        mixxx::PredefinedColorPalettes::kSeratoDJLiteHotcueColorPalette,
+        mixxx::PredefinedColorPalettes::kSeratoDJProHotcueColorPalette,
+
+        // Track Color Palettes
         mixxx::PredefinedColorPalettes::kRekordboxTrackColorPalette,
         mixxx::PredefinedColorPalettes::kSeratoDJProTrackColorPalette,
         mixxx::PredefinedColorPalettes::kTraktorProTrackColorPalette,
