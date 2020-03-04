@@ -4,7 +4,7 @@
 
 #include "util/color/rgbcolor.h"
 
-class ColorPalette {
+class ColorPalette final {
   public:
     explicit ColorPalette(QString name, QList<mixxx::RgbColor> colorList)
             : m_name(name),
