@@ -130,7 +130,7 @@ void WColorPicker::addColorButton(mixxx::RgbColor::optional_t color, QGridLayout
     connect(pColorButton,
             &QPushButton::clicked,
             this,
-            [color, this]() {
+            [this, color]() {
                 emit colorPicked(color);
             });
 }
