@@ -335,7 +335,6 @@ void CueControl::detachCue(HotcueControl* pControl) {
     }
     disconnect(pCue.get(), 0, this, 0);
     pControl->resetCue();
-    // Reset the color CO to -1
     pControl->setColor(std::nullopt);
 }
 
