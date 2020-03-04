@@ -298,7 +298,7 @@ template<>
 void ConfigObject<ConfigValue>::setValue(
         const ConfigKey& key, const mixxx::RgbColor::optional_t& value) {
     if (!value) {
-        set(key, ConfigValue(""));
+        remove(key);
         return;
     }
     set(key, ConfigValue(mixxx::RgbColor::toQString(value)));
