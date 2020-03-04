@@ -425,13 +425,16 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/mixer/samplerbank.cpp
   src/mixxx.cpp
   src/mixxxapplication.cpp
-  src/musicbrainz/acoustidclient.cpp
   src/musicbrainz/chromaprinter.cpp
   src/musicbrainz/crc.c
   src/musicbrainz/gzip.cpp
-  src/musicbrainz/musicbrainzclient.cpp
-  src/musicbrainz/network.cpp
+  src/musicbrainz/musicbrainz.cpp
+  src/musicbrainz/musicbrainzxml.cpp
   src/musicbrainz/tagfetcher.cpp
+  src/musicbrainz/web/acoustidlookuptask.cpp
+  src/musicbrainz/web/musicbrainzrecordingstask.cpp
+  src/network/jsonwebtask.cpp
+  src/network/webtask.cpp
   src/preferences/broadcastprofile.cpp
   src/preferences/broadcastsettings.cpp
   src/preferences/broadcastsettings_legacy.cpp
