@@ -28,8 +28,8 @@ class TagFetcher : public QObject {
 
   signals:
     void resultAvailable(
-            TrackPointer originalTrack,
-            QList<TrackPointer> tracksGuessed);
+            mixxx::musicbrainz::TrackRelease originalTrackRelease,
+            QList<mixxx::musicbrainz::TrackRelease> guessedTrackReleases);
     void fetchProgress(
             QString message);
     void networkError(
@@ -52,7 +52,7 @@ class TagFetcher : public QObject {
             QByteArray errorContent);
 
     void slotMusicBrainzTaskSucceeded(
-            QList<mixxx::musicbrainz::TrackRelease> trackReleases);
+            QList<mixxx::musicbrainz::TrackRelease> guessedTrackReleases);
     void slotMusicBrainzTaskFailed(
             mixxx::network::WebResponse response,
             int errorCode,
