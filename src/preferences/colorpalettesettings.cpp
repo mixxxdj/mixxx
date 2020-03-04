@@ -1,6 +1,7 @@
 #include "preferences/colorpalettesettings.h"
 
 namespace {
+const mixxx::RgbColor kColorBlack(0x000000);
 const QString kColorPaletteConfigGroup = QStringLiteral("[Config]");
 const QString kColorPaletteGroup = QStringLiteral("[ColorPalette %1]");
 const QRegExp kColorPaletteGroupNameRegex("^\\[ColorPalette (.+)\\]$");
@@ -14,7 +15,7 @@ ColorPalette ColorPaletteSettings::getColorPalette(
 
     const QString group = kColorPaletteGroup.arg(name);
     for (const ConfigKey& key : m_pConfig->getKeysWithGroup(group)) {
-        mixxx::RgbColor color = mixxx::RgbColor(m_pConfig->getValue<mixxx::RgbColor>(key, mixxx::RgbColor(0)));
+        mixxx::RgbColor color = mixxx::RgbColor(m_pConfig->getValue<mixxx::RgbColor>(key, kColorBlack));
         colorList.append(color);
     }
 
