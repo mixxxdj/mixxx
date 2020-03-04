@@ -8,8 +8,7 @@
 
 #include "util/assert.h"
 
-class ColorMapper final : public QObject {
-    Q_OBJECT
+class ColorMapper final {
   public:
     ColorMapper() = delete;
     ColorMapper(const QMap<QRgb, QVariant> availableColors)
