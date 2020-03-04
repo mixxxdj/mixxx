@@ -471,14 +471,16 @@ WWidgetGroup {
 #BeatgridSlower,
 #BeatgridFaster,
 #BeatgridEarlier,
-#BeatgridLater {
+#BeatgridLater,
+#BeatgridSetBarBeat {
   background-color: #333;
   }
   #BeatgridCurpos:hover,
   #BeatgridSlower:hover,
   #BeatgridFaster:hover,
   #BeatgridEarlier:hover,
-  #BeatgridLater:hover {
+  #BeatgridLater:hover,
+  #BeatgridSetBarBeat:hover {
     background-color: #0f0f0f;
   }
   #BeatgridCurpos {

@@ -83,7 +83,7 @@ BpmControl::BpmControl(QString group,
     connect(m_pTranslateBeatsLater, &ControlObject::valueChanged,
             this, &BpmControl::slotTranslateBeatsLater,
             Qt::DirectConnection);
-    m_pBeatsSetBarBeat = new ControlPushButton(ConfigKey(group, "beats_set_bar_beat"), false);
+    m_pBeatsSetBarBeat = new ControlPushButton(ConfigKey(group, "beats_set_bar_beat"));
     connect(m_pBeatsSetBarBeat, &ControlObject::valueChanged,
             this, &BpmControl::slotBeatsSetBarBeat,
             Qt::DirectConnection);
