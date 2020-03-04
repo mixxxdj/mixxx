@@ -803,13 +803,28 @@ double BpmControl::getBeatMatchPosition(
     double thisDivSec = (dThisNextBeat - dThisPosition)
             / dThisSampleRate / dThisRateRatio;
 
+    if (dOtherBeatFraction < 1.0/8) {
+        // the user has probably pressed play too late, sync the previous beat
+        dOtherBeatFraction += 1.0;
+    }
+
     // dOtherBeatFraction =+ m_dUserOffset;
     double otherDivSec = (1 - dOtherBeatFraction) * dOtherBeatLength
             / otherBeats->getSampleRate() / pOtherEngineBuffer->getRateRatio();
 
-    double dNewPlaypos = dThisPosition +
-            (thisDivSec - otherDivSec) *
+
+    // This matches the next beat in of both tracks.
+    double seekMatch = (thisDivSec - otherDivSec) *
             dThisSampleRate * dThisRateRatio;
+
+    if (dThisBeatLength / 2 < seekMatch) {
+        // seek to previous beat, because of shorter distance
+        seekMatch -= dThisBeatLength;
+    } else if (dThisBeatLength / 2 < -seekMatch) {
+        // seek to beat after next, because of shorter distance
+        seekMatch += dThisBeatLength;
+    }
+    double dNewPlaypos = dThisPosition + seekMatch;
 
     if (respectLoops) {
         // We might be seeking outside the loop.
