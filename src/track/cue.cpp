@@ -111,22 +111,16 @@ Cue::Cue(
     }
 }
 
-void Cue::readInfo(
-        mixxx::AudioSignal::SampleRate sampleRate,
-        mixxx::CueInfo* pCueInfo,
-        bool* pDirty) const {
-    DEBUG_ASSERT(pCueInfo);
+mixxx::CueInfo Cue::getCueInfo(
+        mixxx::AudioSignal::SampleRate sampleRate) const {
     QMutexLocker lock(&m_mutex);
-    *pCueInfo = mixxx::CueInfo(
+    return mixxx::CueInfo(
             m_type,
             samplePositionToMillis(m_sampleStartPosition, sampleRate),
             samplePositionToMillis(m_sampleEndPosition, sampleRate),
             m_iHotCue == kNoHotCue ? std::nullopt : std::make_optional(m_iHotCue),
             m_label,
             m_color ? mixxx::RgbColor::fromQColor(m_color->m_defaultRgba) : std::nullopt);
-    if (pDirty) {
-        *pDirty = m_bDirty;
-    }
 }
 
 int Cue::getId() const {

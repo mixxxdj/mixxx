@@ -48,10 +48,8 @@ class Cue : public QObject {
 
     double getEndPosition() const;
 
-    void readInfo(
-            mixxx::AudioSignal::SampleRate sampleRate,
-            mixxx::CueInfo* pCueInfo,
-            bool* pDirty = nullptr) const;
+    mixxx::CueInfo getCueInfo(
+            mixxx::AudioSignal::SampleRate sampleRate) const;
 
   signals:
     void updated();
