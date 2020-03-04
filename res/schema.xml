@@ -491,7 +491,7 @@ METADATA
   </revision>
   <revision version="32" min_compatible="3">
     <description>
-      Convert the PredefinedColor ID to the actual RGBA value.
+      Convert the PredefinedColor ID to the actual RGB value.
     </description>
     <sql>
       <!-- No Color becomes white-->
