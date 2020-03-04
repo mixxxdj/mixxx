@@ -996,13 +996,14 @@ class MixxxCore(Feature):
                    "src/widget/wsingletoncontainer.cpp",
                    "src/widget/wmainmenubar.cpp",
 
-                   "src/musicbrainz/network.cpp",
                    "src/musicbrainz/tagfetcher.cpp",
                    "src/musicbrainz/gzip.cpp",
                    "src/musicbrainz/crc.c",
-                   "src/musicbrainz/acoustidclient.cpp",
                    "src/musicbrainz/chromaprinter.cpp",
-                   "src/musicbrainz/musicbrainzclient.cpp",
+                   "src/musicbrainz/musicbrainz.cpp",
+                   "src/musicbrainz/musicbrainzxml.cpp",
+                   "src/musicbrainz/web/acoustidlookuptask.cpp",
+                   "src/musicbrainz/web/musicbrainzrecordingstask.cpp",
 
                    "src/widget/wtracktableview.cpp",
                    "src/widget/wtracktableviewheader.cpp",
@@ -1127,6 +1128,9 @@ class MixxxCore(Feature):
                    "src/library/parsercsv.cpp",
 
                    "src/library/trackloader.cpp",
+
+                   "src/network/jsonwebtask.cpp",
+                   "src/network/webtask.cpp",
 
                    "src/widget/wwaveformviewer.cpp",
 
