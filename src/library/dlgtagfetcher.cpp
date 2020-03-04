@@ -114,6 +114,7 @@ void DlgTagFetcher::apply() {
     if (!trackRelease.trackNumber.isEmpty()) {
         trackMetadata.refTrackInfo().setTrackNumber(
                 trackRelease.trackNumber);
+    }
     if (!trackRelease.trackTotal.isEmpty()) {
         trackMetadata.refTrackInfo().setTrackTotal(
                 trackRelease.trackTotal);
@@ -131,7 +132,7 @@ void DlgTagFetcher::apply() {
                 trackRelease.albumTitle);
     }
 #if defined(__EXTRA_METADATA__)
-    if (!trackRelease.artistId.isNull())
+    if (!trackRelease.artistId.isNull()) {
         trackMetadata.refTrackInfo().setMusicBrainzArtistId(
                 trackRelease.artistId);
     }
