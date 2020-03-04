@@ -1021,6 +1021,7 @@ class MixxxCore(Feature):
                    "src/library/externaltrackcollection.cpp",
                    "src/library/basesqltablemodel.cpp",
                    "src/library/basetrackcache.cpp",
+                   "src/library/basetracktablemodel.cpp",
                    "src/library/columncache.cpp",
                    "src/library/librarytablemodel.cpp",
                    "src/library/searchquery.cpp",

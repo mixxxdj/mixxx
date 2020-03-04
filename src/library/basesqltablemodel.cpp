@@ -9,6 +9,7 @@
 #include "library/bpmdelegate.h"
 #include "library/colordelegate.h"
 #include "library/coverartdelegate.h"
+#include "library/dao/trackschema.h"
 #include "library/locationdelegate.h"
 #include "library/previewbuttondelegate.h"
 #include "library/trackcollection.h"
@@ -45,11 +46,14 @@ constexpr int kTrackColorRowBackgroundOpacity = 0x20; // 12.5% opacity
 
 } // anonymous namespace
 
-BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
-                                     TrackCollectionManager* pTrackCollectionManager,
-                                     const char* settingsNamespace)
-        : QAbstractTableModel(pParent),
-          TrackModel(pTrackCollectionManager->internalCollection()->database(), settingsNamespace),
+BaseSqlTableModel::BaseSqlTableModel(
+        QObject* parent,
+        TrackCollectionManager* pTrackCollectionManager,
+        const char* settingsNamespace)
+        : BaseTrackTableModel(
+                  pTrackCollectionManager->internalCollection()->database(),
+                  settingsNamespace,
+                  parent),
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_database(pTrackCollectionManager->internalCollection()->database()),
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
@@ -1172,19 +1176,30 @@ QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject
     } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
         return new ColorDelegate(pTableView);
     } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
-        CoverArtDelegate* pCoverDelegate = new CoverArtDelegate(pTableView);
-        connect(pCoverDelegate,
-                &CoverArtDelegate::coverReadyForCell,
+        auto* pCoverArtDelegate =
+                new CoverArtDelegate(pTableView);
+        connect(pTableView,
+                &WLibraryTableView::onlyCachedCoverArt,
+                pCoverArtDelegate,
+                &CoverArtDelegate::slotInhibitLazyLoading);
+        connect(pCoverArtDelegate,
+                &CoverArtDelegate::rowsChanged,
                 this,
-                &BaseSqlTableModel::refreshCell);
-        return pCoverDelegate;
+                &BaseSqlTableModel::slotRefreshCoverRows);
+        return pCoverArtDelegate;
     }
     return nullptr;
 }
 
-void BaseSqlTableModel::refreshCell(int row, int column) {
-    QModelIndex coverIndex = index(row, column);
-    emit dataChanged(coverIndex, coverIndex);
+void BaseSqlTableModel::slotRefreshCoverRows(QList<int> rows) {
+    if (rows.isEmpty()) {
+        return;
+    }
+    const int column = fieldIndex(LIBRARYTABLE_COVERART);
+    VERIFY_OR_DEBUG_ASSERT(column >= 0) {
+        return;
+    }
+    emitDataChangedForMultipleRowsSingleColumn(rows, column);
 }
 
 void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {

@@ -1,42 +1,50 @@
-#ifndef COVERARTDELEGATE_H
-#define COVERARTDELEGATE_H
+#pragma once
 
 #include <QHash>
 #include <QList>
-#include <QLinkedList>
+#include <QTableView>
 
 #include "library/tableitemdelegate.h"
+#include "track/track.h"
+#include "util/cache.h"
 
-class CoverInfo;
+class CoverArtCache;
 class TrackModel;
-class WLibraryTableView;
 
 class CoverArtDelegate : public TableItemDelegate {
     Q_OBJECT
+
   public:
-    explicit CoverArtDelegate(WLibraryTableView* parent);
+    explicit CoverArtDelegate(
+            QTableView* parent);
     ~CoverArtDelegate() override = default;
 
-    void paintItem(QPainter* painter,
-               const QStyleOptionViewItem& option,
-               const QModelIndex& index) const override;
+    void paintItem(
+            QPainter* painter,
+            const QStyleOptionViewItem& option,
+            const QModelIndex& index) const final;
 
   signals:
-    void coverReadyForCell(int row, int column);
+    // Sent when rows need to be refreshed
+    void rowsChanged(
+            QList<int> rows);
 
-  private slots:
-    // If it is true, it must not try to load and search covers.
-    //
-    // It means that in this cases it will just draw
-    // covers which are already in the pixmapcache.
+  public slots:
+    // Advise the delegate to temporarily inhibit lazy loading
+    // of cover images and to only display those cover images
+    // that have already been cached. Otherwise only the solid
+    // (background) color is painted.
     //
     // It is useful to handle cases when the user scroll down
-    // very fast or when they hold an arrow key, because
-    // in these cases 'paint()' would be called very often
-    // and it might make CoverDelegate starts many searches,
-    // which could bring performance issues.
-    void slotOnlyCachedCoverArt(bool b);
+    // very fast or when they hold an arrow key. In thise case
+    // it is NOT desirable to start multiple expensive file
+    // system operations in worker threads for loading and
+    // scaling cover images that are not even displayed after
+    // scrolling beyond them.
+    void slotInhibitLazyLoading(
+            bool inhibitLazyLoading);
 
+  private slots:
     void slotCoverFound(
             const QObject* pRequestor,
             const CoverInfo& coverInfo,
@@ -45,21 +53,29 @@ class CoverArtDelegate : public TableItemDelegate {
             bool coverInfoUpdated);
 
   private:
-    QTableView* m_pTableView;
-    TrackModel* m_pTrackModel;
-    bool m_bOnlyCachedCover;
-    int m_iCoverColumn;
+    void emitRowsChanged(
+            QList<int>&& rows);
+
+    TrackPointer loadTrackByLocation(
+            const QString& trackLocation) const;
+
+    CoverInfo coverInfoForIndex(
+            const QModelIndex& index) const;
+
+    TrackModel* const m_pTrackModel;
+
+    CoverArtCache* const m_pCache;
+    bool m_inhibitLazyLoading;
+
+    // We need to record rows in paint() (which is const) so
+    // these are marked mutable.
+    mutable QList<int> m_cacheMissRows;
+    mutable QHash<mixxx::cache_key_t, int> m_pendingCacheRows;
+
     int m_iCoverSourceColumn;
     int m_iCoverTypeColumn;
     int m_iCoverLocationColumn;
     int m_iCoverHashColumn;
+    int m_iTrackIdColumn;
     int m_iTrackLocationColumn;
-    int m_iIdColumn;
-
-    // We need to record rows in paint() (which is const) so these are marked
-    // mutable.
-    mutable QList<int> m_cacheMissRows;
-    mutable QHash<quint16, QLinkedList<int> > m_hashToRow;
 };
-
-#endif // COVERARTDELEGATE_H

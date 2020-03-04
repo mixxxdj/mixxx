@@ -5,7 +5,7 @@
 
 #include "library/basetrackcache.h"
 #include "library/dao/trackdao.h"
-#include "library/trackmodel.h"
+#include "library/basetracktablemodel.h"
 #include "library/columncache.h"
 #include "util/class.h"
 
@@ -13,12 +13,13 @@ class TrackCollectionManager;
 
 // BaseSqlTableModel is a custom-written SQL-backed table which aggressively
 // caches the contents of the table and supports lightweight updates.
-class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
+class BaseSqlTableModel : public BaseTrackTableModel {
     Q_OBJECT
   public:
-    BaseSqlTableModel(QObject* pParent,
-                      TrackCollectionManager* pTrackCollectionManager,
-                      const char* settingsNamespace);
+    BaseSqlTableModel(
+            QObject* parent,
+            TrackCollectionManager* pTrackCollectionManager,
+            const char* settingsNamespace);
     ~BaseSqlTableModel() override;
 
     // Returns true if the BaseSqlTableModel has been initialized. Calling data
@@ -115,7 +116,8 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
   private slots:
     virtual void tracksChanged(QSet<TrackId> trackIds);
     virtual void trackLoaded(QString group, TrackPointer pTrack);
-    void refreshCell(int row, int column);
+
+    void slotRefreshCoverRows(QList<int> rows);
 
   private:
     // A simple helper function for initializing header title and width.  Note
