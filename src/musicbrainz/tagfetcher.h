@@ -28,7 +28,7 @@ class TagFetcher : public QObject {
 
   signals:
     void resultAvailable(
-            mixxx::musicbrainz::TrackRelease originalTrackRelease,
+            TrackPointer pTrack,
             QList<mixxx::musicbrainz::TrackRelease> guessedTrackReleases);
     void fetchProgress(
             QString message);

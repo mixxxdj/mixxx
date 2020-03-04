@@ -11,32 +11,6 @@ constexpr int kAcoustIdTimeoutMillis = 5000; // msec
 
 constexpr int kMusicBrainzTimeoutMillis = 5000; // msec
 
-mixxx::musicbrainz::TrackRelease trackReleaseFromTrack(
-        const Track& track) {
-    mixxx::TrackMetadata trackMetadata;
-    track.readTrackMetadata(&trackMetadata);
-    mixxx::musicbrainz::TrackRelease trackRelease;
-    trackRelease.title = trackMetadata.getTrackInfo().getTitle();
-    trackRelease.artist = trackMetadata.getTrackInfo().getArtist();
-    trackRelease.trackNumber = trackMetadata.getTrackInfo().getTrackNumber();
-    trackRelease.trackTotal = trackMetadata.getTrackInfo().getTrackTotal();
-    trackRelease.date = trackMetadata.getTrackInfo().getYear();
-    trackRelease.albumTitle = trackMetadata.getAlbumInfo().getTitle();
-    trackRelease.albumArtist = trackMetadata.getAlbumInfo().getArtist();
-#if defined(__EXTRA_METADATA__)
-    trackRelease.discNumber = trackMetadata.getTrackInfo().getDiscNumber();
-    trackRelease.discTotal = trackMetadata.getTrackInfo().getDiscTotal();
-    trackRelease.artistId = trackMetadata.getTrackInfo().getMusicBrainzArtistId();
-    trackRelease.recordingId = trackMetadata.getTrackInfo().getMusicBrainzRecordingId();
-    trackRelease.trackReleaseId = trackMetadata.getTrackInfo().getMusicBrainzReleaseId();
-    trackRelease.albumArtistId = trackMetadata.getAlbumInfo().getMusicBrainzArtistId();
-    trackRelease.albumReleaseId = trackMetadata.getAlbumInfo().getMusicBrainzReleaseId();
-    trackRelease.releaseGroupId = trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId();
-#endif // __EXTRA_METADATA__
-    trackRelease.duration = trackMetadata.getDuration();
-    return trackRelease;
-}
-
 } // anonymous namespace
 
 TagFetcher::TagFetcher(QObject* parent)
@@ -95,7 +69,7 @@ void TagFetcher::slotFingerprintReady() {
     const QString fingerprint = m_fingerprintWatcher.result();
     if (fingerprint.isEmpty()) {
         emit resultAvailable(
-                trackReleaseFromTrack(*m_pTrack),
+                m_pTrack,
                 QList<mixxx::musicbrainz::TrackRelease>());
         return;
     }
@@ -134,7 +108,7 @@ void TagFetcher::slotAcoustIdTaskSucceeded(
 
     if (recordingIds.isEmpty()) {
         emit resultAvailable(
-                trackReleaseFromTrack(*m_pTrack),
+                m_pTrack,
                 QList<mixxx::musicbrainz::TrackRelease>());
         return;
     }
@@ -221,9 +195,7 @@ void TagFetcher::slotMusicBrainzTaskSucceeded(
         // aborted
         return;
     }
-    const mixxx::musicbrainz::TrackRelease originalTrackRelease =
-            trackReleaseFromTrack(*pOriginalTrack);
     emit resultAvailable(
-            std::move(originalTrackRelease),
+            pOriginalTrack,
             std::move(guessedTrackReleases));
 }

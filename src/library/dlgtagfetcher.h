@@ -26,7 +26,7 @@ class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
 
   private slots:
     void fetchTagFinished(
-            mixxx::musicbrainz::TrackRelease originalTrackRelease,
+            TrackPointer pTrack,
             QList<mixxx::musicbrainz::TrackRelease> guessedTrackReleases);
     void resultSelected();
     void fetchTagProgress(QString);
@@ -48,7 +48,6 @@ class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
 
         bool m_pending;
         int m_selectedResult;
-        mixxx::musicbrainz::TrackRelease m_original;
         QList<mixxx::musicbrainz::TrackRelease> m_results;
     };
     Data m_data;

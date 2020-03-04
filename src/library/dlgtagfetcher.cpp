@@ -7,6 +7,25 @@
 
 namespace {
 
+QStringList trackColumnValues(
+        const Track& track) {
+    mixxx::TrackMetadata trackMetadata;
+    track.readTrackMetadata(&trackMetadata);
+    const QString trackNumberAndTotal = TrackNumbers::joinAsString(
+            trackMetadata.getTrackInfo().getTrackNumber(),
+            trackMetadata.getTrackInfo().getTrackTotal());
+    QStringList columnValues;
+    columnValues.reserve(6);
+    columnValues
+            << trackMetadata.getTrackInfo().getYear()
+            << trackMetadata.getAlbumInfo().getTitle()
+            << trackMetadata.getAlbumInfo().getArtist()
+            << trackNumberAndTotal
+            << trackMetadata.getTrackInfo().getTitle()
+            << trackMetadata.getTrackInfo().getArtist();
+    return columnValues;
+}
+
 QStringList trackReleaseColumnValues(
         const mixxx::musicbrainz::TrackRelease& trackRelease) {
     const QString trackNumberAndTotal = TrackNumbers::joinAsString(
@@ -171,10 +190,12 @@ void DlgTagFetcher::fetchTagProgress(QString text) {
 }
 
 void DlgTagFetcher::fetchTagFinished(
-        mixxx::musicbrainz::TrackRelease originalTrackRelease,
+        TrackPointer pTrack,
         QList<mixxx::musicbrainz::TrackRelease> guessedTrackReleases) {
+    VERIFY_OR_DEBUG_ASSERT(pTrack == m_track) {
+        return;
+    }
     m_data.m_pending = false;
-    m_data.m_original = originalTrackRelease;
     m_data.m_results = guessedTrackReleases;
     // qDebug() << "number of results = " << guessedTrackReleases.size();
     updateStack();
@@ -212,8 +233,12 @@ void DlgTagFetcher::updateStack() {
 
     results->clear();
 
+    VERIFY_OR_DEBUG_ASSERT(m_track) {
+        return;
+    }
+
     addDivider(tr("Original tags"), results);
-    addTrack(trackReleaseColumnValues(m_data.m_original), -1, results);
+    addTrack(trackColumnValues(*m_track), -1, results);
 
     addDivider(tr("Suggested tags"), results);
     {
