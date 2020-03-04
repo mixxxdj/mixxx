@@ -9,10 +9,10 @@
 #include "engine/engine.h"
 #include "util/assert.h"
 #include "util/color/color.h"
+#include "util/color/colorpalette.h"
 
 namespace {
     const QString kDefaultLabel = ""; // empty string, not null
-    const mixxx::RgbColor kDefaultCueColor = mixxx::RgbColor(0xF2F2FF); // white
 }
 
 //static
@@ -31,7 +31,7 @@ Cue::Cue(TrackId trackId)
           m_sampleEndPosition(Cue::kNoPosition),
           m_iHotCue(-1),
           m_label(kDefaultLabel),
-          m_color(kDefaultCueColor) {
+          m_color(ColorPalette::kDefaultCueColor) {
     DEBUG_ASSERT(!m_label.isNull());
 }
 
@@ -72,7 +72,7 @@ Cue::Cue(TrackId trackId, mixxx::AudioSignal::SampleRate sampleRate, const mixxx
           m_sampleEndPosition(Cue::kNoPosition),
           m_iHotCue(Cue::kNoHotCue),
           m_label(cueInfo.getLabel()),
-          m_color(cueInfo.getColor().value_or(kDefaultCueColor)) {
+          m_color(cueInfo.getColor().value_or(ColorPalette::kDefaultCueColor)) {
     DEBUG_ASSERT(!m_label.isNull());
     DEBUG_ASSERT(sampleRate.valid());
 
