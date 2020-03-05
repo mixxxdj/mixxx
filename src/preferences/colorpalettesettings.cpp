@@ -47,6 +47,12 @@ void ColorPaletteSettings::setColorPalette(const QString& name, const ColorPalet
         return;
     }
 
+    foreach (const ColorPalette& palette, mixxx::PredefinedColorPalettes::kPalettes) {
+        if (name == palette.getName()) {
+            qWarning() << "Color Palette" << name << "is a built-in palette, not writing to config!";
+            return;
+        }
+    }
     removePalette(name);
     const QString group = kColorPaletteGroupStart + name + kColorPaletteGroupEnd;
 
