@@ -98,20 +98,6 @@ const ColorPalette PredefinedColorPalettes::kMixxxHotcueColorPalette =
                         kColorMixxxWhite,
                 });
 
-const ColorPalette PredefinedColorPalettes::kSeratoDJLiteHotcueColorPalette =
-        ColorPalette(
-                QStringLiteral("Serato DJ Lite Hotcue Colors"),
-                QList<mixxx::RgbColor>{
-                        kSeratoDJProHotcueColorRed1,
-                        kSeratoDJProHotcueColorOrange2,
-                        kSeratoDJProHotcueColorDarkBlue2,
-                        kSeratoDJProHotcueColorYellow,
-                        kSeratoDJProHotcueColorGreen3,
-                        kSeratoDJProHotcueColorMagenta,
-                        kSeratoDJProHotcueColorCyan,
-                        kSeratoDJProHotcueColorViolet2,
-                });
-
 const ColorPalette PredefinedColorPalettes::kSeratoDJProHotcueColorPalette =
         ColorPalette(
                 QStringLiteral("Serato DJ Pro Hotcue Colors"),
@@ -134,7 +120,8 @@ const ColorPalette PredefinedColorPalettes::kSeratoDJProHotcueColorPalette =
                         kSeratoDJProHotcueColorMagenta,
                         kSeratoDJProHotcueColorPurple,
                         kSeratoDJProHotcueColorRed2,
-                });
+                },
+                QList<unsigned int>{0, 2, 12, 3, 6, 15, 9, 14});
 
 const ColorPalette PredefinedColorPalettes::kRekordboxTrackColorPalette =
         ColorPalette(
@@ -211,7 +198,6 @@ const ColorPalette PredefinedColorPalettes::kDefaultTrackColorPalette =
 const QList<ColorPalette> PredefinedColorPalettes::kPalettes{
         // Hotcue Color Palettes
         mixxx::PredefinedColorPalettes::kMixxxHotcueColorPalette,
-        mixxx::PredefinedColorPalettes::kSeratoDJLiteHotcueColorPalette,
         mixxx::PredefinedColorPalettes::kSeratoDJProHotcueColorPalette,
 
         // Track Color Palettes
