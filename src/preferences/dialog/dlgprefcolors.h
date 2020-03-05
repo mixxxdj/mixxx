@@ -24,6 +24,7 @@ class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
 
   private:
     void loadSettings();
+    void loadPaletteIntoEditor(const ColorPalette& palette);
 
     // Pointer to config object
     UserSettingsPointer m_config;

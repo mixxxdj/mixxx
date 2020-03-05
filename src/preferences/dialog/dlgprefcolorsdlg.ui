@@ -21,7 +21,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <widget class="QGroupBox" name="groupBox">
+    <widget class="QGroupBox" name="groupBoxPalettes">
      <property name="title">
       <string>Colors</string>
      </property>
@@ -70,6 +70,18 @@
     </widget>
    </item>
    <item>
+    <widget class="QGroupBox" name="groupBoxPaletteEditor">
+     <property name="title">
+      <string>Palette Editor</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="ColorPaletteEditor" name="colorPaletteEditor" native="true"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <spacer>
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -85,6 +97,14 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>ColorPaletteEditor</class>
+   <extends>QWidget</extends>
+   <header>preferences/colorpaletteeditor.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

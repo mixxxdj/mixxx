@@ -1,5 +1,7 @@
 #include "preferences/dialog/dlgprefcolors.h"
 
+#include <QColorDialog>
+#include <QStandardItemModel>
 #include <QtDebug>
 
 #include "control/controlobject.h"
@@ -11,8 +13,20 @@ DlgPrefColors::DlgPrefColors(
           m_config(config),
           m_colorPaletteSettings(ColorPaletteSettings(config)) {
     setupUi(this);
+    colorPaletteEditor->setConfig(config);
 
     loadSettings();
+
+    connect(colorPaletteEditor,
+            &ColorPaletteEditor::paletteChanged,
+            [this] {
+                loadSettings();
+            });
+    connect(colorPaletteEditor,
+            &ColorPaletteEditor::paletteRemoved,
+            [this] {
+                loadSettings();
+            });
 }
 
 DlgPrefColors::~DlgPrefColors() {
@@ -20,6 +34,8 @@ DlgPrefColors::~DlgPrefColors() {
 
 // Loads the config keys and sets the widgets in the dialog to match
 void DlgPrefColors::loadSettings() {
+    comboBoxHotcueColors->clear();
+    comboBoxTrackColors->clear();
     foreach (const ColorPalette& palette, mixxx::PredefinedColorPalettes::kPalettes) {
         QString paletteName = palette.getName();
         comboBoxHotcueColors->addItem(paletteName);
@@ -35,6 +51,7 @@ void DlgPrefColors::loadSettings() {
             m_colorPaletteSettings.getHotcueColorPalette().getName());
     comboBoxTrackColors->setCurrentText(
             m_colorPaletteSettings.getTrackColorPalette().getName());
+
     slotApply();
 }
 

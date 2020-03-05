@@ -791,6 +791,8 @@ class MixxxCore(Feature):
                    "src/preferences/effectsettingsmodel.cpp",
                    "src/preferences/broadcastprofile.cpp",
                    "src/preferences/upgrade.cpp",
+                   "src/preferences/colorpaletteeditor.cpp",
+                   "src/preferences/colorpaletteeditortableview.cpp",
                    "src/preferences/colorpalettesettings.cpp",
                    "src/preferences/dlgpreferencepage.cpp",
 
