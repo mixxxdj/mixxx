@@ -30,6 +30,15 @@ ColorPalette ColorPaletteSettings::getColorPalette(
     if (name.isEmpty()) {
         return defaultPalette;
     }
+
+    // If we find a predefined palette with this name, return it
+    foreach (const ColorPalette& palette, mixxx::PredefinedColorPalettes::kPalettes) {
+        if (name == palette.getName()) {
+            return palette;
+        }
+    }
+
+    // Read colors from configuration
     const QString group = kColorPaletteGroupStart + name + kColorPaletteGroupEnd;
     QList<mixxx::RgbColor> colorList;
     for (const ConfigKey& key : m_pConfig->getKeysWithGroup(group)) {
