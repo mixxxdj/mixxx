@@ -43,7 +43,7 @@ Cue::Cue(
           m_type(mixxx::CueType::Invalid),
           m_sampleStartPosition(Cue::kNoPosition),
           m_sampleEndPosition(Cue::kNoPosition),
-          m_iHotCue(-1),
+          m_iHotCue(Cue::kNoHotCue),
           m_label(kDefaultLabel),
           m_color(Color::kPredefinedColorsSet.noColor) {
     DEBUG_ASSERT(!m_label.isNull());
