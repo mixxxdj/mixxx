@@ -12,8 +12,6 @@
 
 namespace {
 
-const QString kDefaultLabel = ""; // empty string, not null
-
 inline std::optional<double> samplePositionToMillis(
         double samplePosition,
         mixxx::AudioSignal::SampleRate sampleRate) {
@@ -44,7 +42,6 @@ Cue::Cue(
           m_sampleStartPosition(Cue::kNoPosition),
           m_sampleEndPosition(Cue::kNoPosition),
           m_iHotCue(Cue::kNoHotCue),
-          m_label(kDefaultLabel),
           m_color(Color::kPredefinedColorsSet.noColor) {
     DEBUG_ASSERT(!m_label.isNull());
 }
