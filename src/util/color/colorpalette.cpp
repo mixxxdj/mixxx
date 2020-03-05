@@ -42,3 +42,8 @@ mixxx::RgbColor ColorPalette::previousColor(mixxx::RgbColor color) const {
     }
     return at(iIndex);
 }
+
+mixxx::RgbColor ColorPalette::colorForHotcueIndex(unsigned int index) const {
+    // For hotcue n, get nth color from palette
+    return at(index % size());
+}
