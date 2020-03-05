@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>427</width>
+    <width>524</width>
     <height>333</height>
    </rect>
   </property>
@@ -23,13 +23,13 @@
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Color Palettes</string>
+      <string>Colors</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
        <widget class="QLabel" name="labelHotcueColors">
         <property name="text">
-         <string>Hotcue Colors:</string>
+         <string>Hotcues:</string>
         </property>
        </widget>
       </item>
@@ -39,12 +39,32 @@
       <item row="1" column="0">
        <widget class="QLabel" name="labelTrackColors">
         <property name="text">
-         <string>Track Colors:</string>
+         <string>Track:</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
        <widget class="QComboBox" name="comboBoxTrackColors"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelAutoHotcueColors">
+        <property name="text">
+         <string>Auto hotcue colors</string>
+        </property>
+        <property name="buddy">
+         <cstring>checkBoxAssignHotcueColors</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QCheckBox" name="checkBoxAssignHotcueColors">
+        <property name="toolTip">
+         <string>Automatically assigns a predefined color to a newly created hotcue point, based on its index.</string>
+        </property>
+        <property name="text">
+         <string>Assign predefined colors to newly created hotcue points</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

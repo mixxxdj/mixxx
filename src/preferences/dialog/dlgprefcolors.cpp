@@ -76,4 +76,8 @@ void DlgPrefColors::slotApply() {
                 m_colorPaletteSettings.getColorPalette(trackColorPaletteName,
                         m_colorPaletteSettings.getTrackColorPalette()));
     }
+
+    m_config->setValue(
+            ConfigKey("[Controls]", "auto_hotcue_colors"),
+            checkBoxAssignHotcueColors->isChecked());
 }
