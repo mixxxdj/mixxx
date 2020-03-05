@@ -75,8 +75,7 @@ bool TrackInfo::compareEq(
 #endif // __EXTRA_METADATA__
             (getReplayGain() == trackInfo.getReplayGain()) &&
 #if defined(__EXTRA_METADATA__)
-            (getSeratoMarkers() == trackInfo.getSeratoMarkers()) &&
-            (getSeratoMarkers2() == trackInfo.getSeratoMarkers2()) &&
+            (getSeratoTags() == trackInfo.getSeratoTags()) &&
             (getSubtitle() == trackInfo.getSubtitle()) &&
 #endif // __EXTRA_METADATA__
             (getTitle() == trackInfo.getTitle()) &&
@@ -120,7 +119,7 @@ QDebug operator<<(QDebug dbg, const TrackInfo& arg) {
 #endif // __EXTRA_METADATA__
     arg.dbgReplayGain(dbg);
 #if defined(__EXTRA_METADATA__)
-    arg.dbgSeratoMarkers2(dbg);
+    arg.dbgSeratoTags(dbg);
     arg.dbgSubtitle(dbg);
 #endif // __EXTRA_METADATA__
     arg.dbgTitle(dbg);
