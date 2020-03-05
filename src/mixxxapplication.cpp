@@ -9,6 +9,7 @@
 #include "soundio/soundmanagerutil.h"
 #include "track/track.h"
 #include "track/trackref.h"
+#include "util/cache.h"
 #include "util/color/rgbcolor.h"
 #include "util/math.h"
 
@@ -66,6 +67,7 @@ void MixxxApplication::registerMetaTypes() {
     qRegisterMetaType<QList<CrateId>>();
     qRegisterMetaType<TrackPointer>();
     qRegisterMetaType<mixxx::ReplayGain>("mixxx::ReplayGain");
+    qRegisterMetaType<mixxx::cache_key_t>("mixxx::cache_key_t");
     qRegisterMetaType<mixxx::Bpm>("mixxx::Bpm");
     qRegisterMetaType<mixxx::Duration>("mixxx::Duration");
     qRegisterMetaType<std::optional<mixxx::RgbColor>>("std::optional<mixxx::RgbColor>");

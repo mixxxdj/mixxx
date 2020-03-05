@@ -49,60 +49,6 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
     }
 }
 
-void BaseTrackCache::connectTrackDAO(TrackDAO* pTrackDAO) {
-    connect(pTrackDAO,
-            &TrackDAO::trackDirty,
-            this,
-            &BaseTrackCache::slotTrackDirty);
-    connect(pTrackDAO,
-            &TrackDAO::trackClean,
-            this,
-            &BaseTrackCache::slotTrackClean);
-    connect(pTrackDAO,
-            &TrackDAO::trackChanged,
-            this,
-            &BaseTrackCache::slotTrackChanged);
-    connect(pTrackDAO,
-            &TrackDAO::tracksAdded,
-            this,
-            &BaseTrackCache::slotTracksAdded);
-    connect(pTrackDAO,
-            &TrackDAO::tracksRemoved,
-            this,
-            &BaseTrackCache::slotTracksRemoved);
-    connect(pTrackDAO,
-            &TrackDAO::dbTrackAdded,
-            this,
-            &BaseTrackCache::slotDbTrackAdded);
-}
-
-void BaseTrackCache::disconnectTrackDAO(TrackDAO* pTrackDAO) {
-    disconnect(pTrackDAO,
-            &TrackDAO::trackDirty,
-            this,
-            &BaseTrackCache::slotTrackDirty);
-    disconnect(pTrackDAO,
-            &TrackDAO::trackClean,
-            this,
-            &BaseTrackCache::slotTrackClean);
-    disconnect(pTrackDAO,
-            &TrackDAO::trackChanged,
-            this,
-            &BaseTrackCache::slotTrackChanged);
-    disconnect(pTrackDAO,
-            &TrackDAO::tracksAdded,
-            this,
-            &BaseTrackCache::slotTracksAdded);
-    disconnect(pTrackDAO,
-            &TrackDAO::tracksRemoved,
-            this,
-            &BaseTrackCache::slotTracksRemoved);
-    disconnect(pTrackDAO,
-            &TrackDAO::dbTrackAdded,
-            this,
-            &BaseTrackCache::slotDbTrackAdded);
-}
-
 BaseTrackCache::~BaseTrackCache() {
     // Required to allow forward declarations of (managed pointer) members
     // in header file
@@ -470,7 +416,7 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
         trackValue.setValue(pTrack->isBpmLocked());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR) == column) {
-        trackValue.setValue(toQVariant(pTrack->getColor()));
+        trackValue.setValue(mixxx::RgbColor::toQVariant(pTrack->getColor()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) == column) {
         trackValue.setValue(pTrack->getCoverInfo().coverLocation);
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column ||

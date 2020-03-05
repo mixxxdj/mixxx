@@ -228,7 +228,7 @@ QList<TrackId> TrackDAO::resolveTrackIds(
     return trackIds;
 }
 
-QSet<QString> TrackDAO::getTrackLocations() {
+QSet<QString> TrackDAO::getAllTrackLocations() {
     QSet<QString> locations;
     QSqlQuery query(m_database);
     query.prepare("SELECT track_locations.location FROM track_locations "
@@ -267,94 +267,25 @@ QString TrackDAO::getTrackLocation(TrackId trackId) {
     return trackLocation;
 }
 
-QStringList TrackDAO::getTrackLocations(const QList<TrackId>& ids) {
-    QString stmt =
-            "SELECT track_locations.location FROM track_locations "
-            "INNER JOIN library on library.location=track_locations.id "
-            "WHERE library.id IN (%1)";
-    {
-        QStringList idList;
-        idList.reserve(ids.size());
-        for (const auto& id : ids) {
-            idList.append(id.toString());
-        }
-        stmt = stmt.arg(idList.join(","));
-    }
-    FwdSqlQuery query(m_database, stmt);
-    VERIFY_OR_DEBUG_ASSERT(!query.hasError()) {
-        return QStringList();
-    }
-    if (!query.execPrepared()) {
-        return QStringList();
-    }
-    QStringList locations;
-    locations.reserve(ids.size());
-    const int locationColumn = query.record().indexOf("location");
-    DEBUG_ASSERT(locationColumn >= 0);
-    while (query.next()) {
-        locations.append(query.fieldValue(locationColumn).toString());
-    }
-    DEBUG_ASSERT(locations.size() <= ids.size());
-    return locations;
-}
-
 void TrackDAO::saveTrack(Track* pTrack) {
     DEBUG_ASSERT(pTrack);
-    if (pTrack->isDirty()) {
-        const TrackId trackId = pTrack->getId();
-        // Only update the database if the track has already been added!
-        if (trackId.isValid()) {
-            qDebug() << "TrackDAO: Saving track"
-                    << trackId
-                    << pTrack->getFileInfo();
-            if (updateTrack(pTrack)) {
-                // BaseTrackCache must be informed separately, because the
-                // track has already been disconnected and TrackDAO does
-                // not receive any signals that are usually forwarded to
-                // BaseTrackCache.
-                DEBUG_ASSERT(!pTrack->isDirty());
-                emit trackClean(trackId);
-            }
-        }
-    }
-}
-
-void TrackDAO::slotTrackDirty(Track* pTrack) {
-    // Should not be possible.
-    VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
+    if (!pTrack->isDirty()) {
         return;
     }
-
-    // qDebug() << "TrackDAO::slotTrackDirty" << pTrack << "ID"
-    //          << pTrack->getId() << pTrack->getInfo();
-    // This is a private slot that is connected to TIO's created by this
-    // TrackDAO. It is a way for the track to notify us that it has been
-    // dirtied. It is invoked via a DirectConnection so we are sure that the
-    // Track* has not been deleted when this is invoked. The flip side
-    // of this is that this method runs in whatever thread the track was dirtied
-    // from.
-    TrackId trackId(pTrack->getId());
-    if (trackId.isValid()) {
-        emit trackDirty(trackId);
-    }
-}
-
-void TrackDAO::slotTrackClean(Track* pTrack) {
-    // Should not be possible.
-    VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
+    const TrackId trackId = pTrack->getId();
+    // Only update the database if the track has already been added!
+    if (!trackId.isValid()) {
         return;
     }
-
-    // qDebug() << "TrackDAO::slotTrackClean" << pTrack << "ID"
-    //          << pTrack->getId() << pTrack->getInfo();
-    // This is a private slot that is connected to TIO's created by this
-    // TrackDAO. It is a way for the track to notify us that it has been cleaned
-    // (typically after it has been saved to the database). It is invoked via a
-    // DirectConnection so we are sure that the Track* has not been
-    // deleted when this is invoked. The flip side of this is that this method
-    // runs in whatever thread the track was cleaned from.
-    TrackId trackId(pTrack->getId());
-    if (trackId.isValid()) {
+    qDebug() << "TrackDAO: Saving track"
+            << trackId
+            << pTrack->getFileInfo();
+    if (updateTrack(pTrack)) {
+        // BaseTrackCache must be informed separately, because the
+        // track has already been disconnected and TrackDAO does
+        // not receive any signals that are usually forwarded to
+        // BaseTrackCache.
+        DEBUG_ASSERT(!pTrack->isDirty());
         emit trackClean(trackId);
     }
 }
@@ -393,25 +324,6 @@ void TrackDAO::databaseTracksRelocated(QList<RelocatedTrack> relocatedTracks) {
         emit tracksRemoved(removedTrackIds);
     }
     databaseTracksChanged(changedTrackIds);
-}
-
-void TrackDAO::slotTrackChanged(Track* pTrack) {
-    // Should not be possible.
-    VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
-        return;
-    }
-
-    // qDebug() << "TrackDAO::slotTrackChanged" << pTrack << "ID"
-    //          << pTrack->getId() << pTrack->getInfo();
-    // This is a private slot that is connected to TIO's created by this
-    // TrackDAO. It is a way for the track to notify us that it changed.  It is
-    // invoked via a DirectConnection so we are sure that the Track*
-    // has not been deleted when this is invoked. The flip side of this is that
-    // this method runs in whatever thread the track was changed from.
-    TrackId trackId(pTrack->getId());
-    if (trackId.isValid()) {
-        emit trackChanged(trackId);
-    }
 }
 
 void TrackDAO::addTracksPrepare() {
@@ -520,7 +432,7 @@ namespace {
         pTrackLibraryQuery->bindValue(":tracknumber", track.getTrackNumber());
         pTrackLibraryQuery->bindValue(":tracktotal", track.getTrackTotal());
         pTrackLibraryQuery->bindValue(":filetype", track.getType());
-        pTrackLibraryQuery->bindValue(":color", toQVariant(track.getColor()));
+        pTrackLibraryQuery->bindValue(":color", mixxx::RgbColor::toQVariant(track.getColor()));
         pTrackLibraryQuery->bindValue(":comment", track.getComment());
         pTrackLibraryQuery->bindValue(":url", track.getURL());
         pTrackLibraryQuery->bindValue(":duration", track.getDuration());
@@ -857,7 +769,7 @@ void TrackDAO::afterUnhidingTracks(
 #endif
 }
 
-QList<TrackId> TrackDAO::getAllTrackIds(const QDir& rootDir) {
+QList<TrackRef> TrackDAO::getAllTrackRefs(const QDir& rootDir) {
     // Capture entries that start with the directory prefix dir.
     // dir needs to end in a slash otherwise we might match other
     // directories.
@@ -865,7 +777,8 @@ QList<TrackId> TrackDAO::getAllTrackIds(const QDir& rootDir) {
     QString likeClause = SqlLikeWildcardEscaper::apply(dirPath + "/", kSqlLikeMatchAll) + kSqlLikeMatchAll;
 
     QSqlQuery query(m_database);
-    query.prepare(QString("SELECT library.id FROM library INNER JOIN track_locations "
+    query.prepare(QString("SELECT library.id, track_locations.location "
+                          "FROM library INNER JOIN track_locations "
                           "ON library.location = track_locations.id "
                           "WHERE track_locations.location LIKE %1 ESCAPE '%2'")
                   .arg(SqlStringFormatter::format(m_database, likeClause), kSqlLikeMatchAll));
@@ -874,13 +787,16 @@ QList<TrackId> TrackDAO::getAllTrackIds(const QDir& rootDir) {
         LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << dirPath;
     }
 
-    QList<TrackId> trackIds;
+    QList<TrackRef> trackRefs;
     const int idColumn = query.record().indexOf("id");
+    const int locationColumn = query.record().indexOf("location");
     while (query.next()) {
-        trackIds.append(TrackId(query.value(idColumn)));
+        auto trackId = TrackId(query.value(idColumn));
+        auto trackFile = TrackFile(query.value(locationColumn).toString());
+        trackRefs.append(TrackRef::fromFileInfo(trackFile, trackId));
     }
 
-    return trackIds;
+    return trackRefs;
 }
 
 bool TrackDAO::onPurgingTracks(
@@ -1042,7 +958,7 @@ bool setTrackTotal(const QSqlRecord& record, const int column,
 
 bool setTrackColor(const QSqlRecord& record, const int column,
                    TrackPointer pTrack) {
-    pTrack->setColor(mixxx::RgbColor::optional(record.value(column)));
+    pTrack->setColor(mixxx::RgbColor::fromQVariant(record.value(column)));
     return false;
 }
 
@@ -1376,22 +1292,25 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
         SoundSourceProxy(pTrack).updateTrackFromSource();
     }
 
-    // Listen to dirty and changed signals
+    // Listen to signals from Track objects and forward them to
+    // receivers. TrackDAO works as a relay for selected track signals
+    // that allows receivers to use permament connections with
+    // TrackDAO instead of connecting to individual Track objects.
     connect(pTrack.get(),
             &Track::dirty,
             this,
-            &TrackDAO::slotTrackDirty,
-            Qt::DirectConnection);
+            &TrackDAO::trackDirty,
+            /*signal-to-signal*/ Qt::DirectConnection);
     connect(pTrack.get(),
             &Track::clean,
             this,
-            &TrackDAO::slotTrackClean,
-            Qt::DirectConnection);
+            &TrackDAO::trackClean,
+            /*signal-to-signal*/ Qt::DirectConnection);
     connect(pTrack.get(),
             &Track::changed,
             this,
-            &TrackDAO::slotTrackChanged,
-            Qt::DirectConnection);
+            &TrackDAO::trackChanged,
+            /*signal-to-signal*/ Qt::DirectConnection);
 
     // BaseTrackCache cares about track trackDirty/trackClean notifications
     // from TrackDAO that are triggered by the track itself. But the preceding

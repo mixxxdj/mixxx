@@ -277,4 +277,12 @@ TEST_F(SeratoMarkers2Test, ParseMarkers2Data) {
     }
 }
 
+TEST_F(SeratoMarkers2Test, ParseEmptyData) {
+    QByteArray inputValue;
+    mixxx::SeratoMarkers2 seratoMarkers2;
+    mixxx::SeratoMarkers2::parse(&seratoMarkers2, inputValue);
+    QByteArray outputValue = seratoMarkers2.dump();
+    EXPECT_EQ(inputValue, outputValue);
+}
+
 }  // namespace

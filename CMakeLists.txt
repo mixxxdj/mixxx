@@ -425,13 +425,16 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/mixer/samplerbank.cpp
   src/mixxx.cpp
   src/mixxxapplication.cpp
-  src/musicbrainz/acoustidclient.cpp
   src/musicbrainz/chromaprinter.cpp
   src/musicbrainz/crc.c
   src/musicbrainz/gzip.cpp
-  src/musicbrainz/musicbrainzclient.cpp
-  src/musicbrainz/network.cpp
+  src/musicbrainz/musicbrainz.cpp
+  src/musicbrainz/musicbrainzxml.cpp
   src/musicbrainz/tagfetcher.cpp
+  src/musicbrainz/web/acoustidlookuptask.cpp
+  src/musicbrainz/web/musicbrainzrecordingstask.cpp
+  src/network/jsonwebtask.cpp
+  src/network/webtask.cpp
   src/preferences/broadcastprofile.cpp
   src/preferences/broadcastsettings.cpp
   src/preferences/broadcastsettings_legacy.cpp
@@ -511,6 +514,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/beatutils.cpp
   src/track/bpm.cpp
   src/track/cue.cpp
+  src/track/cueinfo.cpp
   src/track/globaltrackcache.cpp
   src/track/keyfactory.cpp
   src/track/keys.cpp
@@ -519,6 +523,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/replaygain.cpp
   src/track/serato/markers.cpp
   src/track/serato/markers2.cpp
+  src/track/serato/tags.cpp
   src/track/track.cpp
   src/track/trackfile.cpp
   src/track/trackinfo.cpp
@@ -530,6 +535,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/audiosignal.cpp
   src/util/autohidpi.cpp
   src/util/battery/battery.cpp
+  src/util/cache.cpp
   src/util/cmdlineargs.cpp
   src/util/color/color.cpp
   src/util/color/predefinedcolor.cpp
@@ -918,7 +924,9 @@ add_executable(mixxx-test
   src/test/bpmcontrol_test.cpp
   src/test/broadcastprofile_test.cpp
   src/test/broadcastsettings_test.cpp
+  src/test/cache_test.cpp
   src/test/channelhandle_test.cpp
+  src/test/compatibility_test.cpp
   src/test/configobject_test.cpp
   src/test/controller_preset_validation_test.cpp
   src/test/controllerengine_test.cpp
@@ -973,6 +981,7 @@ add_executable(mixxx-test
   src/test/searchqueryparsertest.cpp
   src/test/seratomarkerstest.cpp
   src/test/seratomarkers2test.cpp
+  src/test/seratotagstest.cpp
   src/test/signalpathtest.cpp
   src/test/skincontext_test.cpp
   src/test/softtakeover_test.cpp

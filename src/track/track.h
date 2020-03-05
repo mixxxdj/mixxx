@@ -251,11 +251,12 @@ class Track : public QObject {
 
     // Calls for managing the track's cue points
     CuePointer createAndAddCue();
-    CuePointer findCueByType(Cue::Type type) const; // NOTE: Cannot be used for hotcues.
+    CuePointer findCueByType(mixxx::CueType type) const; // NOTE: Cannot be used for hotcues.
     void removeCue(const CuePointer& pCue);
-    void removeCuesOfType(Cue::Type);
+    void removeCuesOfType(mixxx::CueType);
     QList<CuePointer> getCuePoints() const;
     void setCuePoints(const QList<CuePointer>& cuePoints);
+    void importCuePoints(const QList<mixxx::CueInfo>& cueInfos);
 
     bool isDirty();
 
@@ -284,7 +285,7 @@ class Track : public QObject {
     // Set/get track metadata and cover art (optional) all at once.
     void importMetadata(
             mixxx::TrackMetadata importedMetadata,
-            QDateTime metadataSynchronized);
+            QDateTime metadataSynchronized = QDateTime());
     // Merge additional metadata that is not (yet) stored in the database
     // and only available from file tags.
     void mergeImportedMetadata(
@@ -318,9 +319,10 @@ class Track : public QObject {
     void keysUpdated();
     void ReplayGainUpdated(mixxx::ReplayGain replayGain);
     void cuesUpdated();
-    void changed(Track* pTrack);
-    void dirty(Track* pTrack);
-    void clean(Track* pTrack);
+
+    void changed(TrackId trackId);
+    void dirty(TrackId trackId);
+    void clean(TrackId trackId);
 
   private slots:
     void slotCueUpdated();

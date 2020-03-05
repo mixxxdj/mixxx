@@ -6,8 +6,7 @@
 #include "sources/audiosource.h"
 #include "track/bpm.h"
 #include "track/replaygain.h"
-#include "track/serato/markers.h"
-#include "track/serato/markers2.h"
+#include "track/serato/tags.h"
 #include "util/duration.h"
 #include "util/macros.h"
 
@@ -45,8 +44,7 @@ class TrackInfo final {
 #endif // __EXTRA_METADATA__
     PROPERTY_SET_BYVAL_GET_BYREF(ReplayGain, replayGain,           ReplayGain)
 #if defined(__EXTRA_METADATA__)
-    PROPERTY_SET_BYVAL_GET_BYREF(SeratoMarkers, seratoMarkers, SeratoMarkers)
-    PROPERTY_SET_BYVAL_GET_BYREF(SeratoMarkers2, seratoMarkers2,   SeratoMarkers2)
+    PROPERTY_SET_BYVAL_GET_BYREF(SeratoTags, seratoTags,           SeratoTags)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    subtitle,             Subtitle)
 #endif // __EXTRA_METADATA__
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    title,                Title)

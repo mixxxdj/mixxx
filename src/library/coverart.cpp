@@ -3,8 +3,11 @@
 #include "library/coverart.h"
 #include "library/coverartutils.h"
 #include "util/debug.h"
+#include "util/logger.h"
 
 namespace {
+
+mixxx::Logger kLogger("CoverArt");
 
 QString sourceToString(CoverInfo::Source source) {
     switch (source) {
@@ -43,12 +46,26 @@ QString coverInfoToString(const CoverInfo& info) {
 }
 } // anonymous namespace
 
+//static
+quint16 CoverImageUtils::calculateHash(
+        const QImage& image) {
+    const auto hash = qChecksum(
+            reinterpret_cast<const char*>(image.constBits()),
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+            image.sizeInBytes()
+#else
+            image.byteCount()
+#endif
+            );
+    DEBUG_ASSERT(image.isNull() || isValidHash(hash));
+    DEBUG_ASSERT(!image.isNull() || hash == defaultHash());
+    return hash;
+}
+
 CoverInfoRelative::CoverInfoRelative()
         : source(UNKNOWN),
           type(NONE),
-          hash(0) {
-    // The default hash value should match the calculated hash for a null image
-    DEBUG_ASSERT(CoverArtUtils::calculateHash(QImage()) == hash);
+          hash(CoverImageUtils::defaultHash()) {
 }
 
 bool operator==(const CoverInfoRelative& a, const CoverInfoRelative& b) {
@@ -65,6 +82,56 @@ bool operator!=(const CoverInfoRelative& a, const CoverInfoRelative& b) {
 QDebug operator<<(QDebug dbg, const CoverInfoRelative& infoRelative) {
     return dbg.maybeSpace() << QString("CoverInfoRelative(%1)")
             .arg(coverInfoRelativeToString(infoRelative));
+}
+
+QImage CoverInfo::loadImage(
+        const SecurityTokenPointer& pTrackLocationToken) const {
+    if (type == CoverInfo::METADATA) {
+        VERIFY_OR_DEBUG_ASSERT(!trackLocation.isEmpty()) {
+            kLogger.warning()
+                    << "loadImage"
+                    << type
+                    << "cover with empty trackLocation";
+            return QImage();
+        }
+        return CoverArtUtils::extractEmbeddedCover(
+                TrackFile(trackLocation),
+                pTrackLocationToken);
+    } else if (type == CoverInfo::FILE) {
+        VERIFY_OR_DEBUG_ASSERT(!trackLocation.isEmpty()) {
+            kLogger.warning()
+                    << "loadImage"
+                    << type
+                    << "cover with empty trackLocation."
+                    << "Relative paths will not work.";
+            SecurityTokenPointer pToken =
+                    Sandbox::openSecurityToken(
+                            QFileInfo(coverLocation),
+                            true);
+            return QImage(coverLocation);
+        }
+
+        const QFileInfo coverFile(
+                TrackFile(trackLocation).directory(),
+                coverLocation);
+        const QString coverFilePath = coverFile.filePath();
+        if (!coverFile.exists()) {
+            kLogger.warning()
+                    << "loadImage"
+                    << type
+                    << "cover does not exist:"
+                    << coverFilePath;
+            return QImage();
+        }
+        SecurityTokenPointer pToken =
+                Sandbox::openSecurityToken(coverFile, true);
+        return QImage(coverFilePath);
+    } else if (type == CoverInfo::NONE) {
+        return QImage();
+    } else {
+        DEBUG_ASSERT(!"unhandled CoverInfo::Type");
+        return QImage();
+    }
 }
 
 bool operator==(const CoverInfo& a, const CoverInfo& b) {

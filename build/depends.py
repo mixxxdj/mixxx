@@ -996,13 +996,14 @@ class MixxxCore(Feature):
                    "src/widget/wsingletoncontainer.cpp",
                    "src/widget/wmainmenubar.cpp",
 
-                   "src/musicbrainz/network.cpp",
                    "src/musicbrainz/tagfetcher.cpp",
                    "src/musicbrainz/gzip.cpp",
                    "src/musicbrainz/crc.c",
-                   "src/musicbrainz/acoustidclient.cpp",
                    "src/musicbrainz/chromaprinter.cpp",
-                   "src/musicbrainz/musicbrainzclient.cpp",
+                   "src/musicbrainz/musicbrainz.cpp",
+                   "src/musicbrainz/musicbrainzxml.cpp",
+                   "src/musicbrainz/web/acoustidlookuptask.cpp",
+                   "src/musicbrainz/web/musicbrainzrecordingstask.cpp",
 
                    "src/widget/wtracktableview.cpp",
                    "src/widget/wtracktableviewheader.cpp",
@@ -1128,6 +1129,9 @@ class MixxxCore(Feature):
 
                    "src/library/trackloader.cpp",
 
+                   "src/network/jsonwebtask.cpp",
+                   "src/network/webtask.cpp",
+
                    "src/widget/wwaveformviewer.cpp",
 
                    "src/waveform/sharedglcontext.cpp",
@@ -1204,6 +1208,7 @@ class MixxxCore(Feature):
                    "src/track/beats.cpp",
                    "src/track/bpm.cpp",
                    "src/track/cue.cpp",
+                   "src/track/cueinfo.cpp",
                    "src/track/keyfactory.cpp",
                    "src/track/keys.cpp",
                    "src/track/keyutils.cpp",
@@ -1211,6 +1216,7 @@ class MixxxCore(Feature):
                    "src/track/replaygain.cpp",
                    "src/track/serato/markers.cpp",
                    "src/track/serato/markers2.cpp",
+                   "src/track/serato/tags.cpp",
                    "src/track/track.cpp",
                    "src/track/globaltrackcache.cpp",
                    "src/track/trackfile.cpp",
@@ -1274,6 +1280,7 @@ class MixxxCore(Feature):
                    "src/util/xml.cpp",
                    "src/util/tapfilter.cpp",
                    "src/util/movinginterquartilemean.cpp",
+                   "src/util/cache.cpp",
                    "src/util/console.cpp",
                    "src/util/color/color.cpp",
                    "src/util/db/dbconnection.cpp",
