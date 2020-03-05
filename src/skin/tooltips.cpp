@@ -387,8 +387,8 @@ void Tooltips::addStandardTooltips() {
             << QString("%1: %2").arg(rightClick, tr("Adjust beatgrid to match another playing deck."));
 
     add("beats_set_bar_beat")
-            << tr("Set Bar/Phrase beat")
-            << QString("%1: %2").arg(leftClick, tr("Sets the nearest beat as a bar beat."))
+            << tr("Set Downbeat / Phrase beat")
+            << QString("%1: %2").arg(leftClick, tr("Sets the nearest beat as a downbeat."))
             << QString("%1: %2").arg(rightClick, tr("Sets the nearest beat as a phase beat"));
 
     add("beats_translate_match_alignment")

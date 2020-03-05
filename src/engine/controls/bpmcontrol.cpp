@@ -85,7 +85,7 @@ BpmControl::BpmControl(QString group,
             Qt::DirectConnection);
     m_pBeatsSetBarBeat = new ControlPushButton(ConfigKey(group, "beats_set_bar_beat"));
     connect(m_pBeatsSetBarBeat, &ControlObject::valueChanged,
-            this, &BpmControl::slotBeatsSetBarBeat,
+            this, &BpmControl::slotSetDownbeatOnClosestBeat,
             Qt::DirectConnection);
 
     // Pick a wide range (kBpmRangeMin to kBpmRangeMax) and allow out of bounds sets. This lets you
@@ -224,7 +224,7 @@ void BpmControl::slotTranslateBeatsLater(double v) {
     }
 }
 
-void BpmControl::slotBeatsSetBarBeat(double v) {
+void BpmControl::slotSetDownbeatOnClosestBeat(double v) {
     BeatsPointer pBeats = m_pBeats;
     if (v > 0 && pBeats) {
         pBeats->setBar(getSampleOfTrack().current);

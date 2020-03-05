@@ -18,8 +18,8 @@ enum Type {
 }
 
 message TimeSignature {
-  required int32 beats = 1;
-  required int32 note_value = 2;
+  required int32 beats = 1 [ default = 4];
+  required int32 note_value = 2 [ default = 4 ];
 }
 
 message Beat {

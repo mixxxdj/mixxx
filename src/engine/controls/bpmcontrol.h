@@ -88,7 +88,7 @@ class BpmControl : public EngineControl {
     void slotUpdatedTrackBeats();
     void slotBeatsTranslate(double);
     void slotBeatsTranslateMatchAlignment(double);
-    void slotBeatsSetBarBeat(double);
+    void slotSetDownbeatOnClosestBeat(double);
 
   private:
     SyncMode getSyncMode() const {
