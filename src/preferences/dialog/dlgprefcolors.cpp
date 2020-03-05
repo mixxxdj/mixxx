@@ -26,8 +26,9 @@ void DlgPrefColors::loadSettings() {
         comboBoxTrackColors->addItem(paletteName);
     }
 
-    foreach (const QString& value, m_colorPaletteSettings.getColorPaletteNames()) {
-        qDebug() << value;
+    foreach (const QString& paletteName, m_colorPaletteSettings.getColorPaletteNames()) {
+        comboBoxHotcueColors->addItem(paletteName);
+        comboBoxTrackColors->addItem(paletteName);
     }
 
     comboBoxHotcueColors->setCurrentText(
