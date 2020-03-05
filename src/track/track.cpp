@@ -128,7 +128,9 @@ void Track::importMetadata(
     const auto newBpm = importedMetadata.getTrackInfo().getBpm();
     const auto newKey = importedMetadata.getTrackInfo().getKey();
     const auto newReplayGain = importedMetadata.getTrackInfo().getReplayGain();
-
+#ifdef __EXTRA_METADATA__
+    const auto newSeratoTags = importedMetadata.getTrackInfo().getSeratoTags();
+#endif // __EXTRA_METADATA__
     {
         // enter locking scope
         QMutexLocker lock(&m_qMutex);
@@ -151,6 +153,12 @@ void Track::importMetadata(
                 emit ReplayGainUpdated(newReplayGain);
             }
         }
+
+#ifdef __EXTRA_METADATA__
+        setColor(newSeratoTags.getTrackColor());
+        setBpmLocked(newSeratoTags.isBpmLocked());
+#endif // __EXTRA_METADATA__
+
         // implicitly unlocked when leaving scope
     }
 
@@ -781,6 +789,8 @@ void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
     // connect new cue points
     for (const auto& pCue: m_cuePoints) {
         connect(pCue.get(), &Cue::updated, this, &Track::slotCueUpdated);
+        // Enure that the track IDs are correct
+        pCue->setTrackId(m_record.getId());
         // update main cue point
         if (pCue->getType() == mixxx::CueType::MainCue) {
             m_record.setCuePoint(CuePosition(pCue->getPosition()));
