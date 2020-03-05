@@ -49,6 +49,10 @@ class ColorPalette final {
         return m_colorList;
     }
 
+    QList<unsigned int> getHotcueIndices() const {
+        return m_hotcueColorIndices;
+    }
+
   private:
     QString m_name;
     QList<mixxx::RgbColor> m_colorList;

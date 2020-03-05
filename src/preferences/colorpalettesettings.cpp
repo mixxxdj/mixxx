@@ -8,6 +8,9 @@ const QString kColorPaletteConfigGroup = QStringLiteral("[Config]");
 const QString kColorPaletteGroupStart = QStringLiteral("[ColorPalette ");
 const QString kColorPaletteGroupEnd = QStringLiteral("]");
 const QRegExp kColorPaletteGroupNameRegex(QStringLiteral("^\\[ColorPalette (.+)\\]$"));
+const QString kColorPaletteHotcueIndicesConfigItem = QStringLiteral("hotcue_indices");
+const QString kColorPaletteHotcueIndicesConfigSeparator = QStringLiteral(" ");
+const QString kColorPaletteGroup = QStringLiteral("[ColorPalette %1]");
 const ConfigKey kHotcueColorPaletteConfigKey(kColorPaletteConfigGroup, QStringLiteral("HotcueColorPalette"));
 const ConfigKey kTrackColorPaletteConfigKey(kColorPaletteConfigGroup, QStringLiteral("TrackColorPalette"));
 
@@ -41,9 +44,21 @@ ColorPalette ColorPaletteSettings::getColorPalette(
     // Read colors from configuration
     const QString group = kColorPaletteGroupStart + name + kColorPaletteGroupEnd;
     QList<mixxx::RgbColor> colorList;
+    QList<unsigned int> hotcueIndices;
     for (const ConfigKey& key : m_pConfig->getKeysWithGroup(group)) {
-        mixxx::RgbColor color = mixxx::RgbColor(m_pConfig->getValue<mixxx::RgbColor>(key, kColorBlack));
-        colorList.append(color);
+        if (key.item == kColorPaletteHotcueIndicesConfigItem) {
+            foreach (const QString& stringIndex,
+                    m_pConfig->getValueString(key).split(kColorPaletteHotcueIndicesConfigSeparator, QString::SkipEmptyParts)) {
+                bool ok;
+                int index = stringIndex.toInt(&ok);
+                if (ok && index >= 0) {
+                    hotcueIndices << static_cast<unsigned int>(index);
+                }
+            }
+        } else {
+            mixxx::RgbColor color = mixxx::RgbColor(m_pConfig->getValue<mixxx::RgbColor>(key, kColorBlack));
+            colorList.append(color);
+        }
     }
 
     // If no palette is defined in the settings, we use the default one.
@@ -51,7 +66,7 @@ ColorPalette ColorPaletteSettings::getColorPalette(
         return defaultPalette;
     }
 
-    return ColorPalette(name, colorList);
+    return ColorPalette(name, colorList, hotcueIndices);
 }
 
 void ColorPaletteSettings::setColorPalette(const QString& name, const ColorPalette& colorPalette) {
@@ -73,6 +88,16 @@ void ColorPaletteSettings::setColorPalette(const QString& name, const ColorPalet
     for (int index = 0; index < colorPalette.size(); ++index) {
         mixxx::RgbColor color = colorPalette.at(index);
         m_pConfig->setValue<mixxx::RgbColor>(keyForIndex(group, index, numDigits), color);
+    }
+
+    QStringList stringIndices;
+    foreach (const unsigned int index, colorPalette.getHotcueIndices()) {
+        stringIndices << QString::number(index);
+    }
+    if (!stringIndices.isEmpty()) {
+        m_pConfig->setValue(
+                ConfigKey(group, kColorPaletteHotcueIndicesConfigItem),
+                stringIndices.join(kColorPaletteHotcueIndicesConfigSeparator));
     }
 }
 
