@@ -385,7 +385,7 @@ void insertTrack(
     query.bindValue(":bitrate", bitrate);
     query.bindValue(":analyze_path", anlzPath);
     query.bindValue(":device", device);
-    query.bindValue(":color", toQVariant(color));
+    query.bindValue(":color", mixxx::RgbColor::toQVariant(color));
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -1114,7 +1114,7 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
     // and prevent the AnalyzerKey from re-analyzing.
     track->setKeys(KeyFactory::makeBasicKeysFromText(index.sibling(index.row(), fieldIndex("key")).data().toString(), mixxx::track::io::key::USER));
 
-    track->setColor(mixxx::RgbColor::optional(index.sibling(index.row(), fieldIndex("color")).data()));
+    track->setColor(mixxx::RgbColor::fromQVariant(index.sibling(index.row(), fieldIndex("color")).data()));
 
     return track;
 }
