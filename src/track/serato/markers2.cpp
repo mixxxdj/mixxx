@@ -372,6 +372,13 @@ bool SeratoMarkers2::parse(SeratoMarkers2* seratoMarkers2, const QByteArray& out
 
 QByteArray SeratoMarkers2::dump() const {
     QByteArray data;
+
+    // To reduce disk fragmentation, Serato pre-allocates at least 470 bytes
+    // for the "Markers2" tag. Unused bytes are filled with null-bytes.
+    // Hence, it's possible to have a valid tag that does not contain actual
+    // marker information. The allocated size is set after successfully parsing
+    // the tag, so if the tag is valid but does not contain entries we
+    // shouldn't delete the tag content.
     if (isEmpty() && getAllocatedSize() == 0) {
         // Return empty QByteArray
         return data;
