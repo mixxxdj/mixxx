@@ -6,9 +6,10 @@
 
 class ColorPalette final {
   public:
-    explicit ColorPalette(QString name, QList<mixxx::RgbColor> colorList)
+    explicit ColorPalette(QString name, QList<mixxx::RgbColor> colorList, QList<unsigned int> hotcueColorIndices = {})
             : m_name(name),
-              m_colorList(colorList) {
+              m_colorList(colorList),
+              m_hotcueColorIndices(hotcueColorIndices) {
         DEBUG_ASSERT(m_colorList.size() != 0);
     }
 
@@ -51,6 +52,7 @@ class ColorPalette final {
   private:
     QString m_name;
     QList<mixxx::RgbColor> m_colorList;
+    QList<unsigned int> m_hotcueColorIndices;
 };
 
 inline bool operator==(

@@ -16,7 +16,14 @@ mixxx::RgbColor ColorPalette::previousColor(mixxx::RgbColor color) const {
     return at(iIndex);
 }
 
-mixxx::RgbColor ColorPalette::colorForHotcueIndex(unsigned int index) const {
-    // For hotcue n, get nth color from palette
-    return at(index % size());
+mixxx::RgbColor ColorPalette::colorForHotcueIndex(unsigned int hotcueIndex) const {
+    int colorIndex;
+    if (m_hotcueColorIndices.isEmpty()) {
+        // For hotcue n, get nth color from palette
+        colorIndex = hotcueIndex;
+    } else {
+        // For hotcue n, get nth color from palette
+        colorIndex = m_hotcueColorIndices.at(hotcueIndex % m_hotcueColorIndices.size());
+    }
+    return at(colorIndex % size());
 }
