@@ -7,6 +7,15 @@ const QString kColorPaletteGroup = QStringLiteral("[ColorPalette %1]");
 const QRegExp kColorPaletteGroupNameRegex("^\\[ColorPalette (.+)\\]$");
 const ConfigKey kHotcueColorPaletteConfigKey(kColorPaletteConfigGroup, QStringLiteral("HotcueColorPalette"));
 const ConfigKey kTrackColorPaletteConfigKey(kColorPaletteConfigGroup, QStringLiteral("TrackColorPalette"));
+
+int numberOfDecimalDigits(int number) {
+    int numDigits = 1;
+    while (number /= 10) {
+        numDigits++;
+    }
+    return numDigits;
+}
+
 } // anonymous namespace
 
 ColorPalette ColorPaletteSettings::getColorPalette(
@@ -31,9 +40,10 @@ void ColorPaletteSettings::setColorPalette(const QString& name, const ColorPalet
     removePalette(name);
     const QString group = kColorPaletteGroup.arg(name);
 
+    int maxDigits = numberOfDecimalDigits(colorPalette.size() - 1);
     for (int index = 0; index < colorPalette.size(); ++index) {
         mixxx::RgbColor color = colorPalette.at(index);
-        m_pConfig->setValue<mixxx::RgbColor>(keyForIndex(group, index), color);
+        m_pConfig->setValue<mixxx::RgbColor>(keyForIndex(group, index, maxDigits), color);
     }
 }
 
@@ -90,4 +100,8 @@ QSet<QString> ColorPaletteSettings::getColorPaletteNames() {
         }
     }
     return names;
+}
+
+ConfigKey ColorPaletteSettings::keyForIndex(const QString& group, int index, int maxDigits) {
+    return ConfigKey(group, QString::number(index).rightJustified(maxDigits, '0'));
 }
