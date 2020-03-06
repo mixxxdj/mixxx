@@ -14,7 +14,6 @@ class ColorPaletteEditorModel : public QStandardItemModel {
     bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
 
     void setColor(int row, const QColor& color);
-    void setHotcueIndex(int row, int hotcueIndex);
     void appendRow(const QColor& color, int hotcueIndex = kNoHotcueIndex);
 
     void setDirty(bool bDirty) {

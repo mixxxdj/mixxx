@@ -78,13 +78,6 @@ void ColorPaletteEditorModel::setColor(int row, const QColor& color) {
     }
 }
 
-void ColorPaletteEditorModel::setHotcueIndex(int row, int hotcueIndex) {
-    QStandardItem* pItem = item(row, 1);
-    if (pItem) {
-        pItem->setText(QString::number(hotcueIndex));
-    }
-}
-
 void ColorPaletteEditorModel::appendRow(const QColor& color, int hotcueIndex) {
     QStandardItem* pColorItem = new QStandardItem(toQIcon(color), color.name());
     pColorItem->setEditable(false);
