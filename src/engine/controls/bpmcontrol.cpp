@@ -594,7 +594,7 @@ double BpmControl::getNearestPositionInPhase(
     double dThisBeatLength;
     if (dThisPosition > dThisNextBeat || dThisPosition < dThisPrevBeat) {
         qDebug() << "BpmControl::getNearestPositionInPhase out of date"
-                << dThisPosition << dThisNextBeat << dThisPrevBeat;
+                 << dThisPosition << dThisNextBeat << dThisPrevBeat;
         // This happens if dThisPosition is the target position of a requested
         // seek command
         if (!getBeatContext(pBeats, dThisPosition,
@@ -740,18 +740,25 @@ double BpmControl::getBeatMatchPosition(
     double dThisBeatLength;
     if (dThisPosition > dThisNextBeat || dThisPosition < dThisPrevBeat) {
         qDebug() << "BpmControl::getNearestPositionInPhase out of date"
-                << dThisPosition << dThisNextBeat << dThisPrevBeat;
+                 << dThisPosition << dThisNextBeat << dThisPrevBeat;
         // This happens if dThisPosition is the target position of a requested
         // seek command
-        if (!getBeatContext(m_pBeats, dThisPosition,
-                            &dThisPrevBeat, &dThisNextBeat,
-                            &dThisBeatLength, nullptr)) {
+        if (!getBeatContext(
+                    m_pBeats,
+                    dThisPosition,
+                    &dThisPrevBeat,
+                    &dThisNextBeat,
+                    &dThisBeatLength,
+                    nullptr)) {
             return dThisPosition;
         }
     } else {
-        if (!getBeatContextNoLookup(dThisPosition,
-                                    dThisPrevBeat, dThisNextBeat,
-                                    &dThisBeatLength, nullptr)) {
+        if (!getBeatContextNoLookup(
+                    dThisPosition,
+                    dThisPrevBeat,
+                    dThisNextBeat,
+                    &dThisBeatLength,
+                    nullptr)) {
             return dThisPosition;
         }
     }
@@ -789,8 +796,13 @@ double BpmControl::getBeatMatchPosition(
 
     double dOtherPosition = pOtherEngineBuffer->getExactPlayPos();
 
-    if (!BpmControl::getBeatContext(otherBeats, dOtherPosition,
-                  &dOtherPrevBeat, &dOtherNextBeat, &dOtherBeatLength, &dOtherBeatFraction)) {
+    if (!BpmControl::getBeatContext(
+                otherBeats,
+                dOtherPosition,
+                &dOtherPrevBeat,
+                &dOtherNextBeat,
+                &dOtherBeatLength,
+                &dOtherBeatFraction)) {
         return dThisPosition;
     }
 
@@ -800,18 +812,17 @@ double BpmControl::getBeatMatchPosition(
     // Seek our next beat to the other next beat
     // This is the only thing we can do if the track has different BPM,
     // playing the next beat together.
-    double thisDivSec = (dThisNextBeat - dThisPosition)
-            / dThisSampleRate / dThisRateRatio;
+    double thisDivSec = (dThisNextBeat - dThisPosition) /
+            dThisSampleRate / dThisRateRatio;
 
-    if (dOtherBeatFraction < 1.0/8) {
+    if (dOtherBeatFraction < 1.0 / 8) {
         // the user has probably pressed play too late, sync the previous beat
         dOtherBeatFraction += 1.0;
     }
 
     // dOtherBeatFraction =+ m_dUserOffset;
-    double otherDivSec = (1 - dOtherBeatFraction) * dOtherBeatLength
-            / otherBeats->getSampleRate() / pOtherEngineBuffer->getRateRatio();
-
+    double otherDivSec = (1 - dOtherBeatFraction) *
+            dOtherBeatLength / otherBeats->getSampleRate() / pOtherEngineBuffer->getRateRatio();
 
     // This matches the next beat in of both tracks.
     double seekMatch = (thisDivSec - otherDivSec) *
@@ -845,7 +856,6 @@ double BpmControl::getBeatMatchPosition(
         // If sync target is 50% through the beat,
         // If we are at the loop end point and hit sync, jump forward X samples.
 
-
         // TODO(rryan): Revise this with something that keeps a broader number of
         // cases in sync. This at least prevents breaking out of the loop.
         if (loop_enabled &&
@@ -872,8 +882,6 @@ double BpmControl::getBeatMatchPosition(
     return dNewPlaypos;
 }
 
-
-
 double BpmControl::getPhaseOffset(double dThisPosition) {
     // This does not respect looping
     double dNewPlaypos = getNearestPositionInPhase(dThisPosition, false, false);
@@ -881,15 +889,15 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
 }
 
 void BpmControl::slotUpdateEngineBpm(double value) {
-    Q_UNUSED(value);    
+    Q_UNUSED(value);
     // Adjust playback bpm in response to a rate_ration update
     double dRate = m_pRateRatio->get();
     m_pEngineBpm->set(m_pLocalBpm->get() * dRate);
 }
 
 void BpmControl::slotUpdateRateSlider(double value) {
-   Q_UNUSED(value); 
-   // Adjust rate slider position response to a change in rate range or m_pEngineBpm
+    Q_UNUSED(value);
+    // Adjust rate slider position response to a change in rate range or m_pEngineBpm
 
     double localBpm = m_pLocalBpm->get();
     if (localBpm == 0.0) {
@@ -1022,7 +1030,7 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
 
         // Note: dThisBeatLength is fractional frames count * 2 (stereo samples)
 	double sotPerSec = kSamplesPerFrame * sot.rate * m_pRateRatio->get();
-	if (sotPerSec != 0.0) { 
+        if (sotPerSec != 0.0) {
             pGroupFeatures->beat_length_sec = dThisBeatLength / sotPerSec;
             pGroupFeatures->has_beat_length_sec = true;
 	} else {

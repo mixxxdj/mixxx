@@ -1142,7 +1142,7 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
     EXPECT_EQ(1.0,
               m_pChannel2->getEngineBuffer()->m_pSyncControl->m_masterBpmAdjustFactor);
     EXPECT_FLOAT_EQ(m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance(),
-              m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance());
+            m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance());
     EXPECT_EQ(0, ControlObject::get(ConfigKey(m_sGroup1, "rate")));
     EXPECT_EQ(70, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
     EXPECT_EQ(0, ControlObject::get(ConfigKey(m_sGroup2, "rate")));
@@ -1254,16 +1254,16 @@ TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
     ProcessBuffer();
 
     EXPECT_FLOAT_EQ((m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance()),
-               (m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance()));
+            (m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance()));
 
     ProcessBuffer();
     ProcessBuffer();
 
     EXPECT_FLOAT_EQ(87.5,
-                ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+            ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 
     EXPECT_FLOAT_EQ((m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance()),
-              (m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance()));
+            (m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance()));
 
     ProcessBuffer();
     ProcessBuffer();
@@ -1702,7 +1702,6 @@ TEST_F(EngineSyncTest, QuantizeHotCueActivate) {
 
     // Expect that the first track has advanced 6 buffers in the mean time
     EXPECT_DOUBLE_EQ(0.15092970521541951, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
-
 }
 
 TEST_F(EngineSyncTest, ChangeBeatGrid) {
@@ -1769,4 +1768,3 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
     EXPECT_FLOAT_EQ(65.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 }
-

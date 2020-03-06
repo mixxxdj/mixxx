@@ -955,9 +955,9 @@ void EngineBuffer::processTrackLocked(
                             m_filepos_play, samplesRead);
         }
         // Note: The last buffer of a track is padded with silence.
-        // This silence is played together with the last samples in the last 
-        // callback and the m_filepos_play is advanced behind the end of the track. 
-          
+        // This silence is played together with the last samples in the last
+        // callback and the m_filepos_play is advanced behind the end of the track.
+
         if (m_bCrossfadeReady) {
            SampleUtil::linearCrossfadeBuffers(
                     pOutput, m_pCrossfadeBuffer, pOutput, iBufferSize);
@@ -1373,7 +1373,7 @@ void EngineBuffer::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     }
 }
 
-double  EngineBuffer::getRateRatio() const {
+double EngineBuffer::getRateRatio() const {
     if (m_pBpmControl != NULL) {
         return m_pBpmControl->getRateRatio();
     }
