@@ -40,10 +40,10 @@ void ColorPaletteSettings::setColorPalette(const QString& name, const ColorPalet
     removePalette(name);
     const QString group = kColorPaletteGroup.arg(name);
 
-    int maxDigits = numberOfDecimalDigits(colorPalette.size() - 1);
+    int numDigits = numberOfDecimalDigits(colorPalette.size() - 1);
     for (int index = 0; index < colorPalette.size(); ++index) {
         mixxx::RgbColor color = colorPalette.at(index);
-        m_pConfig->setValue<mixxx::RgbColor>(keyForIndex(group, index, maxDigits), color);
+        m_pConfig->setValue<mixxx::RgbColor>(keyForIndex(group, index, numDigits), color);
     }
 }
 
@@ -102,6 +102,6 @@ QSet<QString> ColorPaletteSettings::getColorPaletteNames() {
     return names;
 }
 
-ConfigKey ColorPaletteSettings::keyForIndex(const QString& group, int index, int maxDigits) {
-    return ConfigKey(group, QString::number(index).rightJustified(maxDigits, '0'));
+ConfigKey ColorPaletteSettings::keyForIndex(const QString& group, int index, int numDigits) {
+    return ConfigKey(group, QString::number(index).rightJustified(numDigits, '0'));
 }
