@@ -494,8 +494,8 @@ METADATA
       Convert the PredefinedColor ID to the actual RGB value.
     </description>
     <sql>
-      <!-- No Color becomes white-->
-      UPDATE cues SET color=0xF2F2FF WHERE color=0;
+      <!-- No Color becomes Orange (not in default palette) -->
+      UPDATE cues SET color=0xFF8000 WHERE color=0;
       <!-- Red -->
       UPDATE cues SET color=0xC50A08 WHERE color=1;
       <!-- Green -->
