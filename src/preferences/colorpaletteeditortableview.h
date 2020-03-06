@@ -1,25 +1,8 @@
 #pragma once
-#include <QStandardItemModel>
 #include <QTableView>
 
-#include "util/color/rgbcolor.h"
-
-class ColorPaletteEditorModel : public QStandardItemModel {
-    Q_OBJECT
-  public:
-    ColorPaletteEditorModel(int rows, int columns, QObject* parent = nullptr)
-            : QStandardItemModel(rows, columns, parent) {
-    }
-    ColorPaletteEditorModel(QObject* parent = nullptr)
-            : QStandardItemModel(parent) {
-    }
-
-    bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) override {
-        // Always move the entire row, and don't allow column "shifting"
-        Q_UNUSED(column);
-        return QStandardItemModel::dropMimeData(data, action, row, 0, parent);
-    }
-};
+#include "preferences/colorpaletteeditormodel.h"
+#include "util/color/colorpalette.h"
 
 class ColorPaletteEditorTableView : public QTableView {
     Q_OBJECT
@@ -42,8 +25,8 @@ class ColorPaletteEditorTableView : public QTableView {
         return m_bDirty;
     }
 
-    QList<mixxx::RgbColor> getColors() const;
-    void setColors(const QList<mixxx::RgbColor>& colors);
+    ColorPalette getColorPalette(const QString& name) const;
+    void setColorPalette(const ColorPalette& palette);
 
   signals:
     void dirtyChanged(bool bDirty);

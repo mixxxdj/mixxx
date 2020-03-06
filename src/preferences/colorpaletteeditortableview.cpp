@@ -6,13 +6,7 @@
 
 namespace {
 const QColor kDefaultPaletteColor(0, 0, 0);
-
-QIcon toQIcon(const QColor& color) {
-    QPixmap pixmap(50, 50);
-    pixmap.fill(color);
-    return QIcon(pixmap);
 }
-} // namespace
 
 ColorPaletteEditorTableView::ColorPaletteEditorTableView(QWidget* parent)
         : QTableView(parent),
@@ -24,9 +18,12 @@ ColorPaletteEditorTableView::ColorPaletteEditorTableView(QWidget* parent)
     setDragDropMode(QAbstractItemView::InternalMove);
     setDragDropOverwriteMode(false);
     setContextMenuPolicy(Qt::CustomContextMenu);
-    horizontalHeader()->setVisible(false);
+
     // Set our custom model - this prevents row "shifting"
     setModel(m_model);
+    m_model->setColumnCount(2);
+    m_model->setHeaderData(0, Qt::Horizontal, tr("Color"), Qt::DisplayRole);
+    m_model->setHeaderData(1, Qt::Horizontal, tr("Assign to Hotcue"), Qt::DisplayRole);
 
     connect(m_model,
             &ColorPaletteEditorModel::rowsMoved,
@@ -46,14 +43,13 @@ ColorPaletteEditorTableView::ColorPaletteEditorTableView(QWidget* parent)
     connect(this,
             &ColorPaletteEditorTableView::doubleClicked,
             [this](const QModelIndex& index) {
-                QStandardItem* item = m_model->itemFromIndex(index);
-                if (!item) {
-                    return;
+                if (index.isValid() && index.column() == 0) {
+                    QColor color = QColorDialog::getColor();
+                    if (color.isValid()) {
+                        m_model->setColor(index.row(), color);
+                        setDirty(true);
+                    }
                 }
-                QColor color = QColorDialog::getColor();
-                item->setIcon(toQIcon(color));
-                item->setText(color.name());
-                setDirty(true);
             });
     connect(this, &ColorPaletteEditorTableView::customContextMenuRequested, [this](const QPoint& pos) {
         QMenu menu(this);
@@ -62,11 +58,7 @@ ColorPaletteEditorTableView::ColorPaletteEditorTableView(QWidget* parent)
         QAction* pRemoveAction = menu.addAction("Remove");
         QAction* pAction = menu.exec(viewport()->mapToGlobal(pos));
         if (pAction == pAddAction) {
-            QStandardItem* item = new QStandardItem(
-                    toQIcon(kDefaultPaletteColor), kDefaultPaletteColor.name());
-            item->setEditable(false);
-            item->setDropEnabled(false);
-            m_model->appendRow(item);
+            m_model->appendRow(kDefaultPaletteColor);
         } else if (pAction == pRemoveAction) {
             QModelIndexList selection = selectionModel()->selectedRows();
 
@@ -80,30 +72,11 @@ ColorPaletteEditorTableView::ColorPaletteEditorTableView(QWidget* parent)
         }
     });
 }
-
-void ColorPaletteEditorTableView::setColors(const QList<mixxx::RgbColor>& colors) {
-    m_model->clear();
-    foreach (const mixxx::RgbColor rgbColor, colors) {
-        QColor color = mixxx::RgbColor::toQColor(rgbColor);
-        QIcon icon = toQIcon(color);
-        QString colorName = color.name();
-
-        QStandardItem* item = new QStandardItem(icon, colorName);
-        item->setEditable(false);
-        item->setDropEnabled(false);
-        m_model->appendRow(item);
-    }
+void ColorPaletteEditorTableView::setColorPalette(const ColorPalette& palette) {
+    m_model->setColorPalette(palette);
     setDirty(false);
 }
 
-QList<mixxx::RgbColor> ColorPaletteEditorTableView::getColors() const {
-    QList<mixxx::RgbColor> colors;
-    for (int i = 0; i < m_model->rowCount(); i++) {
-        QStandardItem* item = m_model->item(i, 0);
-        mixxx::RgbColor::optional_t color = mixxx::RgbColor::fromQString(item->text());
-        if (color) {
-            colors << *color;
-        }
-    }
-    return colors;
+ColorPalette ColorPaletteEditorTableView::getColorPalette(const QString& name) const {
+    return m_model->getColorPalette(name);
 }

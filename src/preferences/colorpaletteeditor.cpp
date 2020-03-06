@@ -55,12 +55,12 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
                         foreach (const ColorPalette& palette, mixxx::PredefinedColorPalettes::kPalettes) {
                             if (text == palette.getName()) {
                                 bPaletteFound = true;
-                                m_pTableView->setColors(palette.getColorList());
+                                m_pTableView->setColorPalette(palette);
                                 break;
                             }
                         }
                         if (!bPaletteFound) {
-                            m_pTableView->setColors(colorPaletteSettings.getColorPalette(text, mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette).getColorList());
+                            m_pTableView->setColorPalette(colorPaletteSettings.getColorPalette(text, mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette));
                         }
                     }
                 } else {
@@ -84,7 +84,7 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
             [this] {
                 QString paletteName = m_pPaletteNameComboBox->currentText();
                 ColorPaletteSettings colorPaletteSettings(m_pConfig);
-                colorPaletteSettings.setColorPalette(paletteName, ColorPalette(paletteName, m_pTableView->getColors()));
+                colorPaletteSettings.setColorPalette(paletteName, m_pTableView->getColorPalette(paletteName));
                 m_pTableView->setDirty(false);
                 reset();
                 m_pPaletteNameComboBox->setCurrentText(paletteName);

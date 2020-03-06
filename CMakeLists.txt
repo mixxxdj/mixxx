@@ -501,6 +501,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dlgpreferencepage.cpp
   src/preferences/effectsettingsmodel.cpp
   src/preferences/colorpaletteeditor.cpp
+  src/preferences/colorpaletteeditormodel.cpp
   src/preferences/colorpaletteeditortableview.cpp
   src/preferences/colorpalettesettings.cpp
   src/preferences/replaygainsettings.cpp
