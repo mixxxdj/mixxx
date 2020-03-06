@@ -622,7 +622,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
         auto hotcueColorPalette = m_colorPaletteSettings.getHotcueColorPalette();
         pCue->setColor(hotcueColorPalette.colorForHotcueIndex(hotcue));
     } else {
-        pCue->setColor(hotcueColorPalette.at(0));
+        pCue->setColor(ColorPalette::kDefaultCueColor);
     }
 
     // TODO(XXX) deal with spurious signals
