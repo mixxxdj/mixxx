@@ -2,10 +2,6 @@
 
 #include "util/assert.h"
 
-namespace {
-const QString kDefaultLabel = QStringLiteral(""); // empty string, not null
-} // anonymous namespace
-
 namespace mixxx {
 
 CueInfo::CueInfo()
@@ -13,9 +9,7 @@ CueInfo::CueInfo()
           m_startPositionMillis(std::nullopt),
           m_endPositionMillis(std::nullopt),
           m_hotCueNumber(std::nullopt),
-          m_label(kDefaultLabel),
           m_color(std::nullopt) {
-    DEBUG_ASSERT(!m_label.isNull());
 }
 
 CueInfo::CueInfo(
@@ -31,7 +25,6 @@ CueInfo::CueInfo(
           m_hotCueNumber(hotCueNumber),
           m_label(label),
           m_color(color) {
-    DEBUG_ASSERT(!m_label.isNull());
 }
 
 CueType CueInfo::getType() const {

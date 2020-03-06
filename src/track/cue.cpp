@@ -43,7 +43,6 @@ Cue::Cue(
           m_sampleEndPosition(Cue::kNoPosition),
           m_iHotCue(Cue::kNoHotCue),
           m_color(Color::kPredefinedColorsSet.noColor) {
-    DEBUG_ASSERT(!m_label.isNull());
 }
 
 Cue::Cue(
@@ -63,7 +62,6 @@ Cue::Cue(
           m_iHotCue(hotCue),
           m_label(label),
           m_color(color) {
-    DEBUG_ASSERT(!m_label.isNull());
     if (length) {
         if (position != Cue::kNoPosition) {
             m_sampleEndPosition = position + length;
@@ -88,7 +86,6 @@ Cue::Cue(
           m_iHotCue(Cue::kNoHotCue),
           m_label(cueInfo.getLabel()),
           m_color(Color::kPredefinedColorsSet.predefinedColorFromRgbColor(cueInfo.getColor())) {
-    DEBUG_ASSERT(!m_label.isNull());
     DEBUG_ASSERT(sampleRate.valid());
 
     const double sampleRateKhz = sampleRate / 1000.0;
