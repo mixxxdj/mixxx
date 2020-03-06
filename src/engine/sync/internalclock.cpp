@@ -27,6 +27,7 @@ InternalClock::InternalClock(const char* pGroup, SyncableListener* pEngineSync)
             this, &InternalClock::slotBpmChanged,
             Qt::DirectConnection);
 
+    // The relative position between two beats in the range 0.0 ... 1.0
     m_pClockBeatDistance.reset(new ControlObject(ConfigKey(m_group, "beat_distance")));
     connect(m_pClockBeatDistance.data(), &ControlObject::valueChanged,
             this, &InternalClock::slotBeatDistanceChanged,
@@ -43,7 +44,7 @@ InternalClock::InternalClock(const char* pGroup, SyncableListener* pEngineSync)
 InternalClock::~InternalClock() {
 }
 
-void InternalClock::notifySyncModeChanged(SyncMode mode) {
+void InternalClock::setSyncMode(SyncMode mode) {
     // Syncable has absolutely no say in the matter. This is what EngineSync
     // requires. Bypass confirmation by using setAndConfirm.
     m_mode = mode;
