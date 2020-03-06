@@ -1,0 +1,700 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.11.0+"> <!-- Schema version number to help compatibility, should the MIDI format change -->
+    <info>
+        <name>Numark Party Mix</name>
+        <author>Ryli Dunlap</author>
+        <description>
+            Full Mappings for Numark Party Mix including selectable pad modes
+        </description>
+        <wiki><!-- Encoded URL to Mixxx wiki page documenting this controller mapping (coming soon!) --></wiki>
+        <forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=9232</forums>
+    </info>
+    <controller id="Numark Party Mix">
+        <scriptfiles>
+            <file filename="Numark-Party-Mix-scripts.js" functionprefix="NumarkPartyMix" />
+        </scriptfiles>
+
+        <controls>
+
+            <!-- Begin Playlist Controls -->
+            <control>
+                <!-- TODO Deprecated. this has changed to [Library], MoveVertical in 2.1 -->
+                <group>[Library]</group>
+                <key>NumarkPartyMix.moveVertical</key>
+                <status>0xBF</status>
+                <midino>0x00</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+            <control>
+                <!-- TODO Deprecated. this has changed to [Library], MoveVertical in 2.1 -->
+                <group>[Library]</group>
+                <key>NumarkPartyMix.toggleView</key>
+                <status>0x9F</status>
+                <midino>0x00</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- TODO Deprecated. this has changed to [Library], MoveVertical in 2.1 -->
+                <group>[Library]</group>
+                <key>NumarkPartyMix.toggleView</key>
+                <status>0x8F</status>
+                <midino>0x00</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+
+            <!-- End Playlist Controls -->
+
+            <!-- Begin Master Controls -->
+            <control>
+                <group>[Master]</group>
+                <key>gain</key>
+                <status>0xBF</status>
+                <midino>0x0A</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>headMix</key>
+                <status>0xBF</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>headGain</key>
+                <status>0xBF</status>
+                <midino>0x0C</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>crossfader</key>
+                <status>0xBF</status>
+                <midino>0x08</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <!-- End Master Controls -->
+
+            <!-- Begin Deck/Channel 1 Controls -->
+            <control>
+                <group>[Channel1]</group>
+                <key>sync_enabled</key>
+                <status>0x90</status>
+                <midino>0x02</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>sync_enabled</key>
+                <status>0x80</status>
+                <midino>0x02</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>cue_default</key>
+                <status>0x90</status>
+                <midino>0x01</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>cue_default</key>
+                <status>0x80</status>
+                <midino>0x01</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>play</key>
+                <status>0x90</status>
+                <midino>0x00</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>play</key>
+                <status>0x80</status>
+                <midino>0x00</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>play</key>
+                <status>0x80</status>
+                <midino>0x00</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>rate</key>
+                <status>0xB0</status>
+                <midino>0x09</midino>
+                <options>
+                    <Soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>volume</key>
+                <status>0xB0</status>
+                <midino>0x1C</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkPartyMix.handlePfl</key>
+                <status>0x90</status>
+                <midino>0x1B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkPartyMix.handlePfl</key>
+                <status>0x80</status>
+                <midino>0x1B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>LoadSelectedTrack</key>
+                <status>0x9F</status>
+                <midino>0x02</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkPartyMix.scratch</key>
+                <status>0x90</status>
+                <midino>0x07</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkPartyMix.scratch</key>
+                <status>0x80</status>
+                <midino>0x07</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>pregain</key>
+                <status>0xB0</status>
+                <midino>0x17</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter1</key>
+                <status>0xB0</status>
+                <midino>0x19</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter3</key>
+                <status>0xB0</status>
+                <midino>0x18</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkPartyMix.wheelTurn</key>
+                <status>0xB0</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkPartyMix.setPadMode</key>
+                <status>0x94</status>
+                <midino>0x00</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkPartyMix.setPadMode</key>
+                <status>0x94</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkPartyMix.setPadMode</key>
+                <status>0x94</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkPartyMix.setPadMode</key>
+                <status>0x94</status>
+                <midino>0x18</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkPartyMix.handlePad</key>
+                <status>0x94</status>
+                <midino>0x14</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkPartyMix.handlePad</key>
+                <status>0x84</status>
+                <midino>0x14</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkPartyMix.handlePad</key>
+                <status>0x94</status>
+                <midino>0x15</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkPartyMix.handlePad</key>
+                <status>0x84</status>
+                <midino>0x15</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkPartyMix.handlePad</key>
+                <status>0x94</status>
+                <midino>0x16</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkPartyMix.handlePad</key>
+                <status>0x84</status>
+                <midino>0x16</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkPartyMix.handlePad</key>
+                <status>0x94</status>
+                <midino>0x17</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkPartyMix.handlePad</key>
+                <status>0x84</status>
+                <midino>0x17</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <!-- End Deck/Channel 1 Controls -->
+
+            <!-- Begin Deck/Channel 2 Controls -->
+            <control>
+                <group>[Channel2]</group>
+                <key>sync_enabled</key>
+                <status>0x91</status>
+                <midino>0x02</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>sync_enabled</key>
+                <status>0x81</status>
+                <midino>0x02</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>cue_default</key>
+                <status>0x91</status>
+                <midino>0x01</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>cue_default</key>
+                <status>0x81</status>
+                <midino>0x01</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>play</key>
+                <status>0x91</status>
+                <midino>0x00</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>play</key>
+                <status>0x81</status>
+                <midino>0x00</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>rate</key>
+                <status>0xB1</status>
+                <midino>0x09</midino>
+                <options>
+                    <Soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>volume</key>
+                <status>0xB1</status>
+                <midino>0x1C</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkPartyMix.handlePfl</key>
+                <status>0x91</status>
+                <midino>0x1B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkPartyMix.handlePfl</key>
+                <status>0x81</status>
+                <midino>0x1B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>LoadSelectedTrack</key>
+                <status>0x9F</status>
+                <midino>0x03</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkPartyMix.scratch</key>
+                <status>0x91</status>
+                <midino>0x07</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkPartyMix.scratch</key>
+                <status>0x81</status>
+                <midino>0x07</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>pregain</key>
+                <status>0xB1</status>
+                <midino>0x17</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter1</key>
+                <status>0xB1</status>
+                <midino>0x19</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter3</key>
+                <status>0xB1</status>
+                <midino>0x18</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkPartyMix.wheelTurn</key>
+                <status>0xB1</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkPartyMix.setPadMode</key>
+                <status>0x95</status>
+                <midino>0x00</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkPartyMix.setPadMode</key>
+                <status>0x95</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkPartyMix.setPadMode</key>
+                <status>0x95</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkPartyMix.setPadMode</key>
+                <status>0x95</status>
+                <midino>0x18</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkPartyMix.handlePad</key>
+                <status>0x95</status>
+                <midino>0x14</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkPartyMix.handlePad</key>
+                <status>0x85</status>
+                <midino>0x14</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkPartyMix.handlePad</key>
+                <status>0x95</status>
+                <midino>0x15</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkPartyMix.handlePad</key>
+                <status>0x85</status>
+                <midino>0x15</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkPartyMix.handlePad</key>
+                <status>0x95</status>
+                <midino>0x16</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkPartyMix.handlePad</key>
+                <status>0x85</status>
+                <midino>0x16</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkPartyMix.handlePad</key>
+                <status>0x95</status>
+                <midino>0x17</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkPartyMix.handlePad</key>
+                <status>0x85</status>
+                <midino>0x17</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <!-- End Deck/Channel 2 Controls -->
+        </controls>
+
+        <outputs>
+            <!-- Begin Deck/Channel 1 Outputs -->
+            <output>
+                <group>[Channel1]</group>
+                <key>sync_enabled</key>
+                <status>0x90</status>  <!-- First byte sent to device -->
+                <midino>0x02</midino>  <!-- Second byte -->
+                <on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+                <off>0x01</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+                <maximum>1</maximum>  <!-- Optional upper value for the Mixxx control, above which the 'off' value is sent. 1.0 is the default. -->
+                <minimum>1</minimum>   <!-- Lower value for the Mixxx control, below which the 'off' value is sent -->
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>cue_indicator</key>
+                <status>0x90</status>  <!-- First byte sent to device -->
+                <midino>0x01</midino>  <!-- Second byte -->
+                <on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+                <off>0x01</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+                <maximum>1</maximum>  <!-- Optional upper value for the Mixxx control, above which the 'off' value is sent. 1.0 is the default. -->
+                <minimum>1</minimum>   <!-- Lower value for the Mixxx control, below which the 'off' value is sent -->
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>play_indicator</key>
+                <status>0x90</status>  <!-- First byte sent to device -->
+                <midino>0x00</midino>  <!-- Second byte -->
+                <on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+                <off>0x01</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+                <maximum>1</maximum>  <!-- Optional upper value for the Mixxx control, above which the 'off' value is sent. 1.0 is the default. -->
+                <minimum>1</minimum>   <!-- Lower value for the Mixxx control, below which the 'off' value is sent -->
+            </output>
+            <!-- End Deck/Channel 1 Outputs -->
+
+            <!-- Begin Deck/Channel 2 Outputs -->
+            <output>
+                <group>[Channel2]</group>
+                <key>sync_enabled</key>
+                <status>0x91</status>  <!-- First byte sent to device -->
+                <midino>0x02</midino>  <!-- Second byte -->
+                <on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+                <off>0x01</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+                <maximum>1</maximum>  <!-- Optional upper value for the Mixxx control, above which the 'off' value is sent. 1.0 is the default. -->
+                <minimum>1</minimum>   <!-- Lower value for the Mixxx control, below which the 'off' value is sent -->
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>cue_indicator</key>
+                <status>0x91</status>  <!-- First byte sent to device -->
+                <midino>0x01</midino>  <!-- Second byte -->
+                <on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+                <off>0x01</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+                <maximum>1</maximum>  <!-- Optional upper value for the Mixxx control, above which the 'off' value is sent. 1.0 is the default. -->
+                <minimum>1</minimum>   <!-- Lower value for the Mixxx control, below which the 'off' value is sent -->
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>play_indicator</key>
+                <status>0x91</status>  <!-- First byte sent to device -->
+                <midino>0x00</midino>  <!-- Second byte -->
+                <on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+                <off>0x01</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+                <maximum>1</maximum>  <!-- Optional upper value for the Mixxx control, above which the 'off' value is sent. 1.0 is the default. -->
+                <minimum>1</minimum>   <!-- Lower value for the Mixxx control, below which the 'off' value is sent -->
+            </output>
+            <!-- End Deck/Channel 2 Outputs -->
+        </outputs>
+    </controller>
+</MixxxMIDIPreset>
