@@ -793,7 +793,6 @@ class MixxxCore(Feature):
                    "src/preferences/upgrade.cpp",
                    "src/preferences/colorpaletteeditor.cpp",
                    "src/preferences/colorpaletteeditormodel.cpp",
-                   "src/preferences/colorpaletteeditortableview.cpp",
                    "src/preferences/colorpalettesettings.cpp",
                    "src/preferences/dlgpreferencepage.cpp",
 

@@ -1,12 +1,19 @@
 #include "preferences/colorpaletteeditor.h"
 
+#include <QColorDialog>
 #include <QHBoxLayout>
+#include <QHeaderView>
 #include <QLabel>
+#include <QMenu>
 #include <QStandardItemModel>
 #include <QTableView>
 
 #include "preferences/colorpalettesettings.h"
 #include "util/color/predefinedcolorpalettes.h"
+
+namespace {
+const QColor kDefaultPaletteColor(0, 0, 0);
+}
 
 ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
         : QWidget(parent),
@@ -14,7 +21,8 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
           m_pSaveButton(make_parented<QPushButton>("Save")),
           m_pDeleteButton(make_parented<QPushButton>("Delete")),
           m_pResetButton(make_parented<QPushButton>("Reset")),
-          m_pTableView(make_parented<ColorPaletteEditorTableView>()) {
+          m_pTableView(make_parented<QTableView>()),
+          m_pModel(make_parented<ColorPaletteEditorModel>()) {
     m_pPaletteNameComboBox->setEditable(true);
 
     QHBoxLayout* pTopLayout = new QHBoxLayout();
@@ -29,6 +37,65 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
     pLayout->addWidget(m_pTableView, 1);
     setLayout(pLayout);
     setContentsMargins(0, 0, 0, 0);
+
+    // Set up model
+    m_pModel->setColumnCount(2);
+    m_pModel->setHeaderData(0, Qt::Horizontal, tr("Color"), Qt::DisplayRole);
+    m_pModel->setHeaderData(1, Qt::Horizontal, tr("Assign to Hotcue"), Qt::DisplayRole);
+    connect(m_pModel,
+            &ColorPaletteEditorModel::dirtyChanged,
+            [this](bool bDirty) {
+                m_pResetButton->setEnabled(bDirty);
+            });
+
+    connect(m_pModel,
+            &ColorPaletteEditorModel::emptyChanged,
+            [this](bool bDirty) {
+                m_pResetButton->setEnabled(bDirty);
+            });
+
+    // Setup up table view
+    m_pTableView->setShowGrid(false);
+    m_pTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_pTableView->setSelectionMode(QAbstractItemView::SingleSelection);
+    m_pTableView->setDragDropMode(QAbstractItemView::InternalMove);
+    m_pTableView->setDragDropOverwriteMode(false);
+    m_pTableView->setContextMenuPolicy(Qt::CustomContextMenu);
+    m_pTableView->setModel(m_pModel);
+
+    connect(m_pTableView,
+            &QTableView::doubleClicked,
+            [this](const QModelIndex& index) {
+                if (index.isValid() && index.column() == 0) {
+                    QColor color = QColorDialog::getColor();
+                    if (color.isValid()) {
+                        m_pModel->setColor(index.row(), color);
+                    }
+                }
+            });
+
+    connect(m_pTableView,
+            &QTableView::customContextMenuRequested,
+            [this](const QPoint& pos) {
+                QMenu menu(this);
+
+                QAction* pAddAction = menu.addAction("Add");
+                QAction* pRemoveAction = menu.addAction("Remove");
+                QAction* pAction = menu.exec(m_pTableView->viewport()->mapToGlobal(pos));
+                if (pAction == pAddAction) {
+                    m_pModel->appendRow(kDefaultPaletteColor);
+                } else if (pAction == pRemoveAction) {
+                    QModelIndexList selection = m_pTableView->selectionModel()->selectedRows();
+
+                    if (selection.count() > 0) {
+                        QModelIndex index = selection.at(0);
+
+                        //row selected
+                        int row = index.row();
+                        m_pModel->removeRow(row);
+                    }
+                }
+            });
 
     connect(m_pPaletteNameComboBox,
             &QComboBox::editTextChanged,
@@ -49,18 +116,18 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
                 }
 
                 if (bPaletteExists) {
-                    m_pResetButton->setEnabled(m_pTableView->isDirty());
-                    if (!m_pTableView->isDirty()) {
+                    m_pResetButton->setEnabled(m_pModel->isDirty());
+                    if (!m_pModel->isDirty()) {
                         bool bPaletteFound = false;
                         foreach (const ColorPalette& palette, mixxx::PredefinedColorPalettes::kPalettes) {
                             if (text == palette.getName()) {
                                 bPaletteFound = true;
-                                m_pTableView->setColorPalette(palette);
+                                m_pModel->setColorPalette(palette);
                                 break;
                             }
                         }
                         if (!bPaletteFound) {
-                            m_pTableView->setColorPalette(colorPaletteSettings.getColorPalette(text, mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette));
+                            m_pModel->setColorPalette(colorPaletteSettings.getColorPalette(text, mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette));
                         }
                     }
                 } else {
@@ -84,8 +151,8 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
             [this] {
                 QString paletteName = m_pPaletteNameComboBox->currentText();
                 ColorPaletteSettings colorPaletteSettings(m_pConfig);
-                colorPaletteSettings.setColorPalette(paletteName, m_pTableView->getColorPalette(paletteName));
-                m_pTableView->setDirty(false);
+                colorPaletteSettings.setColorPalette(paletteName, m_pModel->getColorPalette(paletteName));
+                m_pModel->setDirty(false);
                 reset();
                 m_pPaletteNameComboBox->setCurrentText(paletteName);
                 emit paletteChanged(paletteName);
@@ -104,16 +171,11 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
                         }
                     }
                 }
-                m_pTableView->setDirty(false);
+                m_pModel->setDirty(false);
                 reset();
                 if (bPaletteExists) {
                     m_pPaletteNameComboBox->setCurrentText(paletteName);
                 }
-            });
-    connect(m_pTableView,
-            &ColorPaletteEditorTableView::dirtyChanged,
-            [this](bool bDirty) {
-                m_pResetButton->setEnabled(bDirty);
             });
 }
 

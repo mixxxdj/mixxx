@@ -2,9 +2,10 @@
 
 #include <QComboBox>
 #include <QPushButton>
+#include <QTableView>
 #include <QWidget>
 
-#include "preferences/colorpaletteeditortableview.h"
+#include "preferences/colorpaletteeditormodel.h"
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 
@@ -28,5 +29,6 @@ class ColorPaletteEditor : public QWidget {
     parented_ptr<QPushButton> m_pSaveButton;
     parented_ptr<QPushButton> m_pDeleteButton;
     parented_ptr<QPushButton> m_pResetButton;
-    parented_ptr<ColorPaletteEditorTableView> m_pTableView;
+    parented_ptr<QTableView> m_pTableView;
+    parented_ptr<ColorPaletteEditorModel> m_pModel;
 };

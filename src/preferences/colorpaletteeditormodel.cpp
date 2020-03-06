@@ -10,6 +10,35 @@ QIcon toQIcon(const QColor& color) {
 
 } // namespace
 
+ColorPaletteEditorModel::ColorPaletteEditorModel(QObject* parent)
+        : QStandardItemModel(parent),
+          m_bEmpty(true),
+          m_bDirty(false) {
+    connect(this,
+            &ColorPaletteEditorModel::rowsRemoved,
+            [this] {
+                if (rowCount() == 0) {
+                    m_bEmpty = true;
+                    emit emptyChanged(true);
+                }
+                setDirty(true);
+            });
+    connect(this,
+            &ColorPaletteEditorModel::rowsInserted,
+            [this] {
+                if (m_bEmpty && rowCount() != 0) {
+                    m_bEmpty = false;
+                    emit emptyChanged(true);
+                }
+                setDirty(true);
+            });
+    connect(this,
+            &ColorPaletteEditorModel::rowsMoved,
+            [this] {
+                setDirty(true);
+            });
+}
+
 bool ColorPaletteEditorModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) {
     // Always move the entire row, and don't allow column "shifting"
     Q_UNUSED(column);
@@ -17,6 +46,7 @@ bool ColorPaletteEditorModel::dropMimeData(const QMimeData* data, Qt::DropAction
 }
 
 bool ColorPaletteEditorModel::setData(const QModelIndex& modelIndex, const QVariant& value, int role) {
+    setDirty(true);
     if (modelIndex.isValid() && modelIndex.column() == 1) {
         bool ok;
         int hotcueIndex = value.toInt(&ok);
@@ -89,6 +119,8 @@ void ColorPaletteEditorModel::setColorPalette(const ColorPalette& palette) {
         int colorIndex = hotcueColorIndicesMap.value(i, kNoHotcueIndex);
         appendRow(color, colorIndex);
     }
+
+    setDirty(false);
 }
 
 ColorPalette ColorPaletteEditorModel::getColorPalette(const QString& name) const {
