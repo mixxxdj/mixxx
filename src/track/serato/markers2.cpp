@@ -372,6 +372,18 @@ bool SeratoMarkers2::parse(SeratoMarkers2* seratoMarkers2, const QByteArray& out
 
 QByteArray SeratoMarkers2::dump() const {
     QByteArray data;
+
+    // To reduce disk fragmentation, Serato pre-allocates at least 470 bytes
+    // for the "Markers2" tag. Unused bytes are filled with null-bytes.
+    // Hence, it's possible to have a valid tag that does not contain actual
+    // marker information. The allocated size is set after successfully parsing
+    // the tag, so if the tag is valid but does not contain entries we
+    // shouldn't delete the tag content.
+    if (isEmpty() && getAllocatedSize() == 0) {
+        // Return empty QByteArray
+        return data;
+    }
+
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
@@ -424,6 +436,36 @@ QByteArray SeratoMarkers2::dump() const {
     }
 
     return outerData.leftJustified(size, '\0');
+}
+
+RgbColor::optional_t SeratoMarkers2::getTrackColor() const {
+    qDebug() << "Reading track color from 'Serato Markers2' tag data...";
+
+    for (auto& pEntry : m_entries) {
+        DEBUG_ASSERT(pEntry);
+        if (pEntry->typeId() != SeratoMarkers2Entry::TypeId::Color) {
+            continue;
+        }
+        const SeratoMarkers2ColorEntry* pColorEntry = static_cast<SeratoMarkers2ColorEntry*>(pEntry.get());
+        return RgbColor::optional(pColorEntry->getColor());
+    }
+
+    return std::nullopt;
+}
+
+bool SeratoMarkers2::isBpmLocked() const {
+    qDebug() << "Reading bpmlock state from 'Serato Markers2' tag data...";
+
+    for (auto& pEntry : m_entries) {
+        DEBUG_ASSERT(pEntry);
+        if (pEntry->typeId() != SeratoMarkers2Entry::TypeId::Bpmlock) {
+            continue;
+        }
+        const SeratoMarkers2BpmlockEntry* pBpmlockEntry = static_cast<SeratoMarkers2BpmlockEntry*>(pEntry.get());
+        return pBpmlockEntry->isLocked();
+    }
+
+    return false;
 }
 
 } //namespace mixxx

@@ -24,6 +24,7 @@
 #include "util/duration.h"
 #include "util/assert.h"
 #include "util/performancetimer.h"
+#include "util/platform.h"
 #include "widget/wlibrarytableview.h"
 
 namespace {
@@ -723,6 +724,10 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
     // role
     switch (role) {
         case Qt::ToolTipRole:
+            if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
+                value = mixxx::RgbColor::toQString(mixxx::RgbColor::fromQVariant(value));
+            }
+            M_FALLTHROUGH_INTENDED;
         case Qt::DisplayRole:
             if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION)) {
                 int duration = value.toInt();
@@ -799,8 +804,6 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 if (value.canConvert(QMetaType::Int)) {
                     value = QVariant::fromValue(StarRating(value.toInt()));
                 }
-            } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
-                value = QString();
             }
             break;
         case Qt::CheckStateRole:
@@ -896,13 +899,14 @@ Qt::ItemFlags BaseSqlTableModel::readWriteFlags(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) {
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
         return defaultFlags;
-    } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED))  {
+    } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
         return defaultFlags | Qt::ItemIsUserCheckable;
     } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)) {
         return defaultFlags | Qt::ItemIsUserCheckable;
-    } else if(column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
+    } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
         // Allow checking of the BPM-locked indicator.
         defaultFlags |= Qt::ItemIsUserCheckable;
         // Disable editing of BPM field when BPM is locked
@@ -1171,4 +1175,16 @@ void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.
     select(); //Repopulate the data model.
+}
+
+QList<TrackRef> BaseSqlTableModel::getTrackRefs(
+        const QModelIndexList& indices) const {
+    QList<TrackRef> trackRefs;
+    trackRefs.reserve(indices.size());
+    foreach (QModelIndex index, indices) {
+        trackRefs.append(TrackRef::fromFileInfo(
+                TrackFile(getTrackLocation(index)),
+                getTrackId(index)));
+    }
+    return trackRefs;
 }

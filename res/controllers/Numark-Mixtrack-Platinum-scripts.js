@@ -1230,7 +1230,7 @@ MixtrackPlatinum.scratchEnable = function (deck) {
     var alpha = 1.0/8;
     var beta = alpha/32;
 
-    engine.scratchEnable(deck, 1011, 33+1/3, alpha, beta);
+    engine.scratchEnable(deck, 1240, 33+1/3, alpha, beta);
     MixtrackPlatinum.stopScratchTimer(deck);
 };
 

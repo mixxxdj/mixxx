@@ -9,11 +9,6 @@
 #include "util/color/rgbcolor.h"
 #include "util/types.h"
 
-namespace {
-constexpr mixxx::RgbColor kDefaultTrackColor = mixxx::RgbColor(0xFF9999);
-constexpr mixxx::RgbColor kDefaultCueColor = mixxx::RgbColor(0xCC0000);
-} // namespace
-
 namespace mixxx {
 
 // Enum values need to appear in the same order as the corresponding entries
@@ -61,6 +56,7 @@ class SeratoMarkers2UnknownEntry : public SeratoMarkers2Entry {
             : m_type(std::move(type)),
               m_data(std::move(data)) {
     }
+    SeratoMarkers2UnknownEntry() = delete;
     ~SeratoMarkers2UnknownEntry() override = default;
 
     QString type() const override {
@@ -89,10 +85,7 @@ class SeratoMarkers2BpmlockEntry : public SeratoMarkers2Entry {
     SeratoMarkers2BpmlockEntry(bool locked)
             : m_locked(locked) {
     }
-
-    SeratoMarkers2BpmlockEntry()
-            : m_locked(false) {
-    }
+    SeratoMarkers2BpmlockEntry() = delete;
 
     static SeratoMarkers2EntryPointer parse(const QByteArray& data);
 
@@ -139,10 +132,7 @@ class SeratoMarkers2ColorEntry : public SeratoMarkers2Entry {
     SeratoMarkers2ColorEntry(RgbColor color)
             : m_color(color) {
     }
-
-    SeratoMarkers2ColorEntry()
-            : m_color(kDefaultTrackColor) {
-    }
+    SeratoMarkers2ColorEntry() = delete;
 
     static SeratoMarkers2EntryPointer parse(const QByteArray& data);
 
@@ -192,13 +182,7 @@ class SeratoMarkers2CueEntry : public SeratoMarkers2Entry {
               m_color(color),
               m_label(label) {
     }
-
-    SeratoMarkers2CueEntry()
-            : m_index(0),
-              m_position(0),
-              m_color(kDefaultCueColor),
-              m_label(QString("")) {
-    }
+    SeratoMarkers2CueEntry() = delete;
 
     static SeratoMarkers2EntryPointer parse(const QByteArray& data);
 
@@ -282,14 +266,7 @@ class SeratoMarkers2LoopEntry : public SeratoMarkers2Entry {
               m_locked(locked),
               m_label(label) {
     }
-
-    SeratoMarkers2LoopEntry()
-            : m_index(0),
-              m_startposition(0),
-              m_endposition(0),
-              m_locked(false),
-              m_label(QString("")) {
-    }
+    SeratoMarkers2LoopEntry() = delete;
 
     static SeratoMarkers2EntryPointer parse(const QByteArray& data);
 
@@ -386,7 +363,9 @@ inline QDebug operator<<(QDebug dbg, const SeratoMarkers2LoopEntry& arg) {
 //
 class SeratoMarkers2 final {
   public:
-    SeratoMarkers2() = default;
+    SeratoMarkers2()
+            : m_allocatedSize(0) {
+    }
     explicit SeratoMarkers2(
             QList<std::shared_ptr<SeratoMarkers2Entry>> entries)
             : m_allocatedSize(0),
@@ -418,6 +397,9 @@ class SeratoMarkers2 final {
     void setEntries(QList<std::shared_ptr<SeratoMarkers2Entry>> entries) {
         m_entries = std::move(entries);
     }
+
+    RgbColor::optional_t getTrackColor() const;
+    bool isBpmLocked() const;
 
   private:
     int m_allocatedSize;
