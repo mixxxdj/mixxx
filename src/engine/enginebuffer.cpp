@@ -748,8 +748,6 @@ void EngineBuffer::processTrackLocked(
             &is_scratching,
             &is_reverse);
 
-    qDebug() << "speed" << speed;
-
     bool useIndependentPitchAndTempoScaling = false;
 
     // TODO(owen): Maybe change this so that rubberband doesn't disable

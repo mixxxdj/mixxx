@@ -593,8 +593,8 @@ double BpmControl::getNearestPositionInPhase(
     double dThisNextBeat = m_pNextBeat->get();
     double dThisBeatLength;
     if (dThisPosition > dThisNextBeat || dThisPosition < dThisPrevBeat) {
-        qDebug() << "BpmControl::getNearestPositionInPhase out of date"
-                 << dThisPosition << dThisNextBeat << dThisPrevBeat;
+        // qDebug() << "BpmControl::getNearestPositionInPhase out of date"
+        //         << dThisPosition << dThisNextBeat << dThisPrevBeat;
         // This happens if dThisPosition is the target position of a requested
         // seek command
         if (!getBeatContext(pBeats, dThisPosition,
@@ -739,8 +739,8 @@ double BpmControl::getBeatMatchPosition(
     double dThisNextBeat = m_pNextBeat->get();
     double dThisBeatLength;
     if (dThisPosition > dThisNextBeat || dThisPosition < dThisPrevBeat) {
-        qDebug() << "BpmControl::getNearestPositionInPhase out of date"
-                 << dThisPosition << dThisNextBeat << dThisPrevBeat;
+        //qDebug() << "BpmControl::getNearestPositionInPhase out of date"
+        //         << dThisPosition << dThisNextBeat << dThisPrevBeat;
         // This happens if dThisPosition is the target position of a requested
         // seek command
         if (!getBeatContext(

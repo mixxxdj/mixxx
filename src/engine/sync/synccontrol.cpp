@@ -139,7 +139,6 @@ void SyncControl::setSyncMode(SyncMode mode) {
     }
     if (mode == SYNC_MASTER) {
         // Make sure all the followers update based on our current rate.
-        //qDebug() << getGroup() << "SyncControl::slotRateChanged" << rate << bpm;
         double bpm = m_pBpm->get();
         if (bpm > 0) {
             // When reporting our bpm, remove the multiplier so the masters all
@@ -265,8 +264,6 @@ double SyncControl::determineBpmMultiplier(double myBpm, double targetBpm) const
 
 void SyncControl::updateTargetBeatDistance() {
     double targetDistance = m_unmultipliedTargetBeatDistance;
-
-    qDebug() << "m_masterBpmAdjustFactor" << m_masterBpmAdjustFactor;
 
     // Determining the target distance is not as simple as x2 or /2.  Since one
     // of the beats is twice the length of the other, we need to know if the
@@ -463,7 +460,7 @@ void SyncControl::reportPlayerSpeed(double speed, bool scratching) {
 }
 
 void SyncControl::notifySeek(double dNewPlaypos) {
-    qDebug() << "SyncControl::notifySeek" << dNewPlaypos;
+    // qDebug() << "SyncControl::notifySeek" << dNewPlaypos;
     EngineControl::notifySeek(dNewPlaypos);
     m_pBpmControl->notifySeek(dNewPlaypos);
     updateTargetBeatDistance();
