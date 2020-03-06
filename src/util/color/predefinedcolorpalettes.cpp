@@ -2,6 +2,7 @@
 
 namespace {
 
+// Default Mixxx Hotcue Color Palette
 constexpr mixxx::RgbColor kColorMixxxRed(0xC50A08);
 constexpr mixxx::RgbColor kColorMixxxYellow(0x32BE44);
 constexpr mixxx::RgbColor kColorMixxxGreen(0x42D4F4);
@@ -11,6 +12,7 @@ constexpr mixxx::RgbColor kColorMixxxPurple(0xAF00CC);
 constexpr mixxx::RgbColor kColorMixxxPink(0xFCA6D7);
 constexpr mixxx::RgbColor kColorMixxxWhite(0xF2F2FF);
 
+// Rekordbox Track Color Palette
 constexpr mixxx::RgbColor kRekordboxTrackColorPink(0xF870F8);
 constexpr mixxx::RgbColor kRekordboxTrackColorRed(0xF870900);
 constexpr mixxx::RgbColor kRekordboxTrackColorOrange(0xF8A030);
@@ -20,6 +22,7 @@ constexpr mixxx::RgbColor kRekordboxTrackColorAqua(0x16C0F8);
 constexpr mixxx::RgbColor kRekordboxTrackColorBlue(0x0150F8);
 constexpr mixxx::RgbColor kRekordboxTrackColorPurple(0x9808F8);
 
+// Traktor Track Color Palette
 constexpr mixxx::RgbColor kTraktorProTrackColorRed(0xFA4B35);
 constexpr mixxx::RgbColor kTraktorProTrackColorOrange(0xFF8402);
 constexpr mixxx::RgbColor kTraktorProTrackColorYellow(0xFFF700);
@@ -28,6 +31,7 @@ constexpr mixxx::RgbColor kTraktorProTrackColorBlue(0x0187FF);
 constexpr mixxx::RgbColor kTraktorProTrackColorViolet(0xA669FF);
 constexpr mixxx::RgbColor kTraktorProTrackColorMagenta(0xFE55EA);
 
+// Serato DJ Pro Hotcue Color Palette
 constexpr mixxx::RgbColor kSeratoDJProHotcueColorRed1(0xC02626);
 constexpr mixxx::RgbColor kSeratoDJProHotcueColorOrange1(0xDB4E27);
 constexpr mixxx::RgbColor kSeratoDJProHotcueColorOrange2(0xF8821A);
@@ -47,6 +51,7 @@ constexpr mixxx::RgbColor kSeratoDJProHotcueColorMagenta(0xCE359E);
 constexpr mixxx::RgbColor kSeratoDJProHotcueColorPurple(0xDC1D49);
 constexpr mixxx::RgbColor kSeratoDJProHotcueColorRed2(0xC71136);
 
+// Serato DJ Pro Track Color Palette (as shown in library column)
 constexpr mixxx::RgbColor kSeratoDJProTrackColorGrey1(0x333333);
 constexpr mixxx::RgbColor kSeratoDJProTrackColorGrey2(0x555555);
 constexpr mixxx::RgbColor kSeratoDJProTrackColorPink1(0x993399);
@@ -68,6 +73,7 @@ constexpr mixxx::RgbColor kSeratoDJProTrackColorPurple1(0x333399);
 constexpr mixxx::RgbColor kSeratoDJProTrackColorPurple2(0x553399);
 constexpr mixxx::RgbColor kSeratoDJProTrackColorPurple3(0x773399);
 
+// VirtualDJ Track Color Palette
 constexpr mixxx::RgbColor kVirtualDJTrackColorRed(0xFF0000);
 constexpr mixxx::RgbColor kVirtualDJTrackColorYellow(0xFFFF00);
 constexpr mixxx::RgbColor kVirtualDJTrackColorGreen(0x00FF00);
