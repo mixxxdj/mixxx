@@ -28,6 +28,10 @@ class ColorPaletteEditorModel : public QStandardItemModel {
         return m_bDirty;
     }
 
+    bool isEmpty() {
+        return m_bEmpty;
+    }
+
     void setColorPalette(const ColorPalette& palette);
     ColorPalette getColorPalette(const QString& name) const;
 

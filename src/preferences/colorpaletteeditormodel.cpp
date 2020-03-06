@@ -76,6 +76,7 @@ void ColorPaletteEditorModel::setColor(int row, const QColor& color) {
         pItem->setIcon(toQIcon(color));
         pItem->setText(color.name());
     }
+    setDirty(true);
 }
 
 void ColorPaletteEditorModel::appendRow(const QColor& color, int hotcueIndex) {

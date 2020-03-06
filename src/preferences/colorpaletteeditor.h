@@ -23,7 +23,13 @@ class ColorPaletteEditor : public QWidget {
     void paletteChanged(QString name);
     void paletteRemoved(QString name);
 
+  private slots:
+    void slotUpdateButtons();
+
   private:
+    bool m_bPaletteExists;
+    bool m_bPaletteIsReadOnly;
+
     UserSettingsPointer m_pConfig;
     parented_ptr<QComboBox> m_pPaletteNameComboBox;
     parented_ptr<QPushButton> m_pSaveButton;

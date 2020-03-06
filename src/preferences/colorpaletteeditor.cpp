@@ -17,6 +17,8 @@ const QColor kDefaultPaletteColor(0, 0, 0);
 
 ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
         : QWidget(parent),
+          m_bPaletteExists(false),
+          m_bPaletteIsReadOnly(false),
           m_pPaletteNameComboBox(make_parented<QComboBox>()),
           m_pSaveButton(make_parented<QPushButton>("Save")),
           m_pDeleteButton(make_parented<QPushButton>("Delete")),
@@ -44,15 +46,12 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
     m_pModel->setHeaderData(1, Qt::Horizontal, tr("Assign to Hotcue"), Qt::DisplayRole);
     connect(m_pModel,
             &ColorPaletteEditorModel::dirtyChanged,
-            [this](bool bDirty) {
-                m_pResetButton->setEnabled(bDirty);
-            });
-
+            this,
+            &ColorPaletteEditor::slotUpdateButtons);
     connect(m_pModel,
             &ColorPaletteEditorModel::emptyChanged,
-            [this](bool bDirty) {
-                m_pResetButton->setEnabled(bDirty);
-            });
+            this,
+            &ColorPaletteEditor::slotUpdateButtons);
 
     // Setup up table view
     m_pTableView->setShowGrid(false);
@@ -116,7 +115,6 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
                 }
 
                 if (bPaletteExists) {
-                    m_pResetButton->setEnabled(m_pModel->isDirty());
                     if (!m_pModel->isDirty()) {
                         bool bPaletteFound = false;
                         foreach (const ColorPalette& palette, mixxx::PredefinedColorPalettes::kPalettes) {
@@ -130,11 +128,11 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
                             m_pModel->setColorPalette(colorPaletteSettings.getColorPalette(text, mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette));
                         }
                     }
-                } else {
-                    m_pResetButton->setEnabled(true);
                 }
-                m_pSaveButton->setEnabled(!text.isEmpty() && !bPaletteIsReadOnly);
-                m_pDeleteButton->setEnabled(bPaletteExists && !bPaletteIsReadOnly);
+
+                m_bPaletteExists = bPaletteExists;
+                m_bPaletteIsReadOnly = bPaletteIsReadOnly;
+                slotUpdateButtons();
             });
 
     connect(m_pDeleteButton,
@@ -189,4 +187,12 @@ void ColorPaletteEditor::reset() {
     foreach (const QString& paletteName, colorPaletteSettings.getColorPaletteNames()) {
         m_pPaletteNameComboBox->addItem(paletteName);
     }
+}
+
+void ColorPaletteEditor::slotUpdateButtons() {
+    bool bDirty = m_pModel->isDirty();
+    bool bEmpty = m_pModel->isEmpty();
+    m_pResetButton->setEnabled(bDirty);
+    m_pSaveButton->setEnabled(!m_bPaletteExists || (!m_bPaletteIsReadOnly && bDirty && !bEmpty));
+    m_pDeleteButton->setEnabled(m_bPaletteExists && !m_bPaletteIsReadOnly);
 }
