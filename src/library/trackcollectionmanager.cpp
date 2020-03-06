@@ -1,9 +1,8 @@
-#include "database/mixxxdb.h"
-
 #include "library/trackcollectionmanager.h"
 
-#include "library/trackcollection.h"
 #include "library/externaltrackcollection.h"
+#include "library/scanner/libraryscanner.h"
+#include "library/trackcollection.h"
 
 #include "sources/soundsourceproxy.h"
 #include "util/db/dbconnectionpooled.h"
@@ -14,9 +13,20 @@ namespace {
 
 const mixxx::Logger kLogger("TrackCollectionManager");
 
-const QString kConfigGroup("[TrackCollection]");
+const QString kConfigGroup = QStringLiteral("[TrackCollection]");
 
 const ConfigKey kConfigKeyRepairDatabaseOnNextRestart(kConfigGroup, "RepairDatabaseOnNextRestart");
+
+inline
+parented_ptr<TrackCollection> createInternalTrackCollection(
+        TrackCollectionManager* parent,
+        const UserSettingsPointer& pConfig,
+        deleteTrackFn_t deleteTrackFn) {
+    // Ensure that GlobalTrackCache is ready before creating
+    // the internal TrackCollection.
+    GlobalTrackCache::createInstance(parent, deleteTrackFn);
+    return make_parented<TrackCollection>(parent, pConfig);
+}
 
 } // anonymous namespace
 
@@ -24,66 +34,103 @@ TrackCollectionManager::TrackCollectionManager(
         QObject* parent,
         UserSettingsPointer pConfig,
         mixxx::DbConnectionPoolPtr pDbConnectionPool,
-        deleteTrackFn_t /*only-needed-for-testing*/ deleteTrackFn)
+        deleteTrackFn_t /*only-needed-for-testing*/ deleteTrackForTestingFn)
     : QObject(parent),
       m_pConfig(pConfig),
-      m_pInternalCollection(make_parented<TrackCollection>(this, pConfig)),
-      m_scanner(pDbConnectionPool, m_pInternalCollection, pConfig) {
-
-    const QSqlDatabase dbConnection = mixxx::DbConnectionPooled(std::move(pDbConnectionPool));
+      m_pInternalCollection(createInternalTrackCollection(this, pConfig, deleteTrackForTestingFn)) {
+    const QSqlDatabase dbConnection = mixxx::DbConnectionPooled(pDbConnectionPool);
 
     // TODO(XXX): Add a checkbox in the library preferences for checking
     // and repairing the database on the next restart of the application.
     if (pConfig->getValue(kConfigKeyRepairDatabaseOnNextRestart, false)) {
-        kLogger.info() << "Checking and repairing database (if necessary)";
         m_pInternalCollection->repairDatabase(dbConnection);
         // Reset config value
         pConfig->setValue(kConfigKeyRepairDatabaseOnNextRestart, false);
     }
 
-    kLogger.info() << "Connecting database";
     m_pInternalCollection->connectDatabase(dbConnection);
 
-    if (deleteTrackFn) {
-        kLogger.info() << "External collections are not available in test mode";
+    if (deleteTrackForTestingFn) {
+        kLogger.info() << "External collections are disabled in test mode";
     } else {
         // TODO: Add external collections
     }
-
-    kLogger.info() << "Connecting external collections";
     for (const auto& externalCollection : m_externalCollections) {
-        kLogger.info() << "Connecting" << externalCollection->name();
+        kLogger.info()
+                << "Connecting to"
+                << externalCollection->name();
         externalCollection->establishConnection();
     }
 
-    // Forward signals
-    connect(&m_scanner,
-            &LibraryScanner::scanStarted,
-            this,
-            &TrackCollectionManager::libraryScanStarted);
-    connect(&m_scanner,
-            &LibraryScanner::scanFinished,
-            this,
-            &TrackCollectionManager::libraryScanFinished);
+    // TODO: Extract and decouple LibraryScanner from TrackCollectionManager
+    if (deleteTrackForTestingFn) {
+        // Exclude the library scanner from tests
+        kLogger.info() << "Libary scanner is disabled in test mode";
+    } else {
+        m_pScanner = std::make_unique<LibraryScanner>(pDbConnectionPool, pConfig);
 
-    // Handle signals
-    connect(&m_scanner,
-            &LibraryScanner::trackAdded,
-            this,
-            &TrackCollectionManager::slotScanTrackAdded);
-    connect(&m_scanner,
-            &LibraryScanner::tracksChanged,
-            this,
-            &TrackCollectionManager::slotScanTracksUpdated);
-    connect(&m_scanner,
-            &LibraryScanner::tracksReplaced,
-            this,
-            &TrackCollectionManager::slotScanTracksReplaced);
+        // Forward signals
+        connect(m_pScanner.get(),
+                &LibraryScanner::scanStarted,
+                this,
+                &TrackCollectionManager::libraryScanStarted,
+                /*signal-to-signal*/ Qt::DirectConnection);
+        connect(m_pScanner.get(),
+                &LibraryScanner::scanFinished,
+                this,
+                &TrackCollectionManager::libraryScanFinished,
+                /*signal-to-signal*/ Qt::DirectConnection);
 
-    GlobalTrackCache::createInstance(this, deleteTrackFn);
+        // Handle signals
+        connect(m_pScanner.get(),
+                &LibraryScanner::trackAdded,
+                this,
+                &TrackCollectionManager::slotScanTrackAdded);
+        connect(m_pScanner.get(),
+                &LibraryScanner::tracksChanged,
+                this,
+                &TrackCollectionManager::slotScanTracksUpdated);
+        connect(m_pScanner.get(),
+                &LibraryScanner::tracksRelocated,
+                this,
+                &TrackCollectionManager::slotScanTracksRelocated);
+
+        // Force the GUI thread's Track cache to be cleared when a library
+        // scan is finished, because we might have modified the database directly
+        // when we detected moved files, and the TIOs corresponding to the moved
+        // files would then have the wrong track location.
+        TrackDAO* pTrackDAO = &(m_pInternalCollection->getTrackDAO());
+        connect(m_pScanner.get(),
+                &LibraryScanner::trackAdded,
+                pTrackDAO,
+                &TrackDAO::databaseTrackAdded);
+        connect(m_pScanner.get(),
+                &LibraryScanner::tracksChanged,
+                pTrackDAO,
+                &TrackDAO::databaseTracksChanged);
+        connect(m_pScanner.get(),
+                &LibraryScanner::tracksRelocated,
+                pTrackDAO,
+                &TrackDAO::databaseTracksRelocated);
+
+        kLogger.info() << "Starting library scanner thread";
+        m_pScanner->start();
+    }
 }
 
 TrackCollectionManager::~TrackCollectionManager() {
+    if (m_pScanner) {
+        while (m_pScanner->isRunning()) {
+            kLogger.info() << "Stopping library scanner thread";
+            m_pScanner->quit();
+            if (m_pScanner->wait()) {
+                kLogger.info() << "Stopped library scanner thread";
+            }
+        }
+        DEBUG_ASSERT(m_pScanner->isFinished());
+        m_pScanner.reset();
+    }
+
     const auto pWeakTrackSource = m_pInternalCollection->disconnectTrackSource();
     VERIFY_OR_DEBUG_ASSERT(pWeakTrackSource.isNull()) {
         kLogger.warning() << "BaseTrackCache is still in use";
@@ -92,29 +139,31 @@ TrackCollectionManager::~TrackCollectionManager() {
     // Evict all remaining tracks from the cache to trigger
     // updating of modified tracks. We assume that no other
     // components are accessing those files at this point.
-    kLogger.info() << "Deactivating GlobalTrackCache";
     GlobalTrackCacheLocker().deactivateCache();
 
-    if (!m_externalCollections.isEmpty()) {
-        kLogger.info() << "Disconnecting from external track collections";
-        for (const auto& externalCollection : m_externalCollections) {
-            kLogger.info() << "Disconnecting from" << externalCollection->name();
-            externalCollection->finishPendingTasksAndDisconnect();
-        }
+    for (const auto& externalCollection : m_externalCollections) {
+        kLogger.info()
+                << "Disconnecting from"
+                << externalCollection->name();
+        // TODO: Disconnecting from external track collections
+        // should be done asynchrously. The manager should poll
+        // the track collections until all have been disconnected.
+        externalCollection->finishPendingTasksAndDisconnect(); // synchronous
     }
 
-    kLogger.info() << "Disconnecting internal track collection from database";
     m_pInternalCollection->disconnectDatabase();
 
     GlobalTrackCache::destroyInstance();
 }
 
 void TrackCollectionManager::startLibraryScan() {
-    m_scanner.scan();
+    DEBUG_ASSERT(m_pScanner);
+    m_pScanner->scan();
 }
 
 void TrackCollectionManager::stopLibraryScan() {
-    m_scanner.slotCancel();
+    DEBUG_ASSERT(m_pScanner);
+    m_pScanner->slotCancel();
 }
 
 bool TrackCollectionManager::saveTrack(const TrackPointer& pTrack) {
@@ -138,6 +187,9 @@ void TrackCollectionManager::saveEvictedTrack(Track* pTrack) noexcept {
 void TrackCollectionManager::saveTrack(
         Track* pTrack,
         TrackMetadataExportMode mode) {
+    DEBUG_ASSERT(pTrack);
+    DEBUG_ASSERT(pTrack->getDateAdded().isValid());
+
     // The metadata must be exported while the cache is locked to
     // ensure that we have exclusive (write) access on the file
     // and not reader or writer is accessing the same file
@@ -268,47 +320,42 @@ void TrackCollectionManager::hideAllTracks(const QDir& rootDir) {
     m_pInternalCollection->hideAllTracks(rootDir);
 }
 
-void TrackCollectionManager::purgeTracks(const QList<TrackId>& trackIds) {
-    if (trackIds.isEmpty()) {
+void TrackCollectionManager::purgeTracks(const QList<TrackRef>& trackRefs) {
+    if (trackRefs.isEmpty()) {
         return;
     }
-    // Collect the corresponding track locations BEFORE purging the
-    // tracks from the internal collection!
-    QList<QString> trackLocations;
-    if (!m_externalCollections.isEmpty()) {
-        trackLocations =
-                m_pInternalCollection->getTrackDAO().getTrackLocations(trackIds);
-    }
-    DEBUG_ASSERT(trackLocations.size() <= trackIds.size());
     kLogger.debug()
-            << "Purging"
-            << trackIds.size()
+            << "trackRefs"
+            << trackRefs.size()
             << "tracks from internal collection";
-    if (!m_pInternalCollection->purgeTracks(trackIds)) {
-        kLogger.warning()
-                << "Failed to purge tracks from internal collection";
-        return;
+    {
+        QList<TrackId> trackIds;
+        trackIds.reserve(trackRefs.size());
+        for (const auto trackRef : trackRefs) {
+            DEBUG_ASSERT(trackRef.hasId());
+            trackIds.append(trackRef.getId());
+        }
+        if (!m_pInternalCollection->purgeTracks(trackIds)) {
+            kLogger.warning()
+                    << "Failed to purge tracks from internal collection";
+            return;
+        }
     }
     if (m_externalCollections.isEmpty()) {
         return;
     }
-    VERIFY_OR_DEBUG_ASSERT(trackLocations.size() == trackIds.size()) {
-        kLogger.warning()
-                << "Purging only"
-                << trackLocations.size()
-                << "of"
-                << trackIds.size()
-                << "tracks from"
-                << m_externalCollections.size()
-                << "external collection(s)";
-    } else {
-        kLogger.debug()
-                << "Purging"
-                << trackLocations.size()
-                << "tracks from"
-                << m_externalCollections.size()
-                << "external collection(s)";
+    QList<QString> trackLocations;
+    trackLocations.reserve(trackLocations.size());
+    for (const auto trackRef : trackRefs) {
+        DEBUG_ASSERT(trackRef.hasLocation());
+        trackLocations.append(trackRef.getLocation());
     }
+    kLogger.debug()
+            << "Purging"
+            << trackLocations.size()
+            << "tracks from"
+            << m_externalCollections.size()
+            << "external collection(s)";
     for (const auto& externalTrackCollection : m_externalCollections) {
         externalTrackCollection->purgeTracks(trackLocations);
     }
@@ -359,6 +406,8 @@ TrackPointer TrackCollectionManager::getOrAddTrack(
 
 void TrackCollectionManager::slotScanTrackAdded(TrackPointer pTrack) {
     DEBUG_ASSERT(pTrack);
+    DEBUG_ASSERT(pTrack->getDateAdded().isValid());
+
     // Already added to m_pInternalCollection
     if (m_externalCollections.isEmpty()) {
         return;
@@ -413,26 +462,19 @@ void TrackCollectionManager::slotScanTracksUpdated(QSet<TrackId> updatedTrackIds
     }
 }
 
-void TrackCollectionManager::slotScanTracksReplaced(QList<QPair<TrackRef, TrackRef>> replacedTracks) {
+void TrackCollectionManager::slotScanTracksRelocated(
+        QList<RelocatedTrack> relocatedTracks) {
     // Already replaced in m_pInternalCollection
     if (m_externalCollections.isEmpty()) {
         return;
     }
-    QList<ExternalTrackCollection::DuplicateTrack> duplicateTracks;
-    duplicateTracks.reserve(replacedTracks.size());
-    for (const auto& replacedTrack : replacedTracks) {
-        ExternalTrackCollection::DuplicateTrack duplicateTrack;
-        duplicateTrack.removed = replacedTrack.first;
-        duplicateTrack.replacedBy = replacedTrack.second;
-        duplicateTracks.append(duplicateTrack);
-    }
     kLogger.debug()
-            << "Deduplicating"
-            << duplicateTracks.size()
-            << "replaced track(s) in"
+            << "Relocating"
+            << relocatedTracks.size()
+            << "track(s) in"
             << m_externalCollections.size()
             << "external collection(s)";
     for (const auto& externalTrackCollection : m_externalCollections) {
-        externalTrackCollection->deduplicateTracks(duplicateTracks);
+        externalTrackCollection->relocateTracks(relocatedTracks);
     }
 }

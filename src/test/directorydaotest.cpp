@@ -14,7 +14,7 @@
 
 #include "test/librarytest.h"
 
-using ::testing::ElementsAre;
+using ::testing::UnorderedElementsAre;
 
 namespace {
 
@@ -143,13 +143,13 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
     internalCollection()->addTrack(Track::newTemporary(TrackFile(test2, "c" + m_supportedFileExt)), false);
     internalCollection()->addTrack(Track::newTemporary(TrackFile(test2, "d" + m_supportedFileExt)), false);
 
-    QList<TrackRef> refs = directoryDao.relocateDirectory(testdir, testnew);
-    EXPECT_EQ(2, refs.size());
+    QList<RelocatedTrack> relocatedTracks =
+            directoryDao.relocateDirectory(testdir, testnew);
+    EXPECT_EQ(2, relocatedTracks.size());
 
     QStringList dirs = directoryDao.getDirs();
     EXPECT_EQ(2, dirs.size());
-    std::sort(dirs.begin(), dirs.end());
-    EXPECT_THAT(dirs, ElementsAre(test2, testnew));
+    EXPECT_THAT(dirs, UnorderedElementsAre(test2, testnew));
 }
 
 }  // namespace

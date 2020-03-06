@@ -8,7 +8,7 @@
 <Template>
   <WidgetGroup>
     <Layout>horizontal</Layout>
-    <ObjectName>KnobCentered</ObjectName>
+    <ObjectName><Variable name="ObjectName"/></ObjectName>
     <Children>
       <KnobComposed>
         <TooltipId><Variable name="TooltipId"/></TooltipId>

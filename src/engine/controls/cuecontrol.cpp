@@ -353,7 +353,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
 
     CuePointer pMainCue;
     for (const CuePointer& pCue : m_pLoadedTrack->getCuePoints()) {
-        if (pCue->getType() == Cue::Type::MainCue) {
+        if (pCue->getType() == mixxx::CueType::MainCue) {
             DEBUG_ASSERT(!pMainCue);
             pMainCue = pCue;
         }
@@ -366,7 +366,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
 
     // Because of legacy, we store the (load) cue point twice and need to
     // sync both values.
-    // The Cue::Type::MainCue from getCuePoints() has the priority
+    // The mixxx::CueType::MainCue from getCuePoints() has the priority
     CuePosition mainCuePoint;
     if (pMainCue) {
         mainCuePoint.setPosition(pMainCue->getPosition());
@@ -380,7 +380,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         CuePointer pCue(pNewTrack->createAndAddCue());
         pCue->setStartPosition(mainCuePoint.getPosition());
         pCue->setHotCue(Cue::kNoHotCue);
-        pCue->setType(Cue::Type::MainCue);
+        pCue->setType(mixxx::CueType::MainCue);
     }
     m_pCuePoint->set(mainCuePoint.getPosition());
 
@@ -390,7 +390,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     // Seek track according to SeekOnLoadMode.
     SeekOnLoadMode seekOnLoadMode = getSeekOnLoadPreference();
 
-    CuePointer pAudibleSound = pNewTrack->findCueByType(Cue::Type::AudibleSound);
+    CuePointer pAudibleSound = pNewTrack->findCueByType(mixxx::CueType::AudibleSound);
     double firstSound = Cue::kNoPosition;
     if (pAudibleSound) {
         firstSound = pAudibleSound->getPosition();
@@ -447,16 +447,16 @@ void CueControl::loadCuesFromTrack() {
         return;
 
     for (const CuePointer& pCue: m_pLoadedTrack->getCuePoints()) {
-        if (pCue->getType() == Cue::Type::MainCue) {
+        if (pCue->getType() == mixxx::CueType::MainCue) {
             DEBUG_ASSERT(!pLoadCue); // There should be only one MainCue cue
             pLoadCue = pCue;
-        } else if (pCue->getType() == Cue::Type::Intro) {
+        } else if (pCue->getType() == mixxx::CueType::Intro) {
             DEBUG_ASSERT(!pIntroCue); // There should be only one Intro cue
             pIntroCue = pCue;
-        } else if (pCue->getType() == Cue::Type::Outro) {
+        } else if (pCue->getType() == mixxx::CueType::Outro) {
             DEBUG_ASSERT(!pOutroCue); // There should be only one Outro cue
             pOutroCue = pCue;
-        } else if (pCue->getType() == Cue::Type::HotCue && pCue->getHotCue() != Cue::kNoHotCue) {
+        } else if (pCue->getType() == mixxx::CueType::HotCue && pCue->getHotCue() != Cue::kNoHotCue) {
             int hotcue = pCue->getHotCue();
             HotcueControl* pControl = m_hotcueControls.value(hotcue, NULL);
 
@@ -593,7 +593,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     pCue->setStartPosition(cuePosition);
     pCue->setHotCue(hotcue);
     pCue->setLabel("");
-    pCue->setType(Cue::Type::HotCue);
+    pCue->setType(mixxx::CueType::HotCue);
     // TODO(XXX) deal with spurious signals
     attachCue(pCue, pControl);
 
@@ -1158,10 +1158,10 @@ void CueControl::introStartSet(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Intro);
+        CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Intro);
         if (!pCue) {
             pCue = pLoadedTrack->createAndAddCue();
-            pCue->setType(Cue::Type::Intro);
+            pCue->setType(mixxx::CueType::Intro);
         }
         pCue->setStartPosition(position);
         pCue->setEndPosition(introEnd);
@@ -1179,7 +1179,7 @@ void CueControl::introStartClear(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Intro);
+        CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Intro);
         if (introEnd != Cue::kNoPosition) {
             pCue->setStartPosition(Cue::kNoPosition);
             pCue->setEndPosition(introEnd);
@@ -1234,10 +1234,10 @@ void CueControl::introEndSet(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Intro);
+        CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Intro);
         if (!pCue) {
             pCue = pLoadedTrack->createAndAddCue();
-            pCue->setType(Cue::Type::Intro);
+            pCue->setType(mixxx::CueType::Intro);
         }
         pCue->setStartPosition(introStart);
         pCue->setEndPosition(position);
@@ -1255,7 +1255,7 @@ void CueControl::introEndClear(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Intro);
+        CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Intro);
         if (introStart != Cue::kNoPosition) {
             pCue->setStartPosition(introStart);
             pCue->setEndPosition(Cue::kNoPosition);
@@ -1310,10 +1310,10 @@ void CueControl::outroStartSet(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Outro);
+        CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Outro);
         if (!pCue) {
             pCue = pLoadedTrack->createAndAddCue();
-            pCue->setType(Cue::Type::Outro);
+            pCue->setType(mixxx::CueType::Outro);
         }
         pCue->setStartPosition(position);
         pCue->setEndPosition(outroEnd);
@@ -1331,7 +1331,7 @@ void CueControl::outroStartClear(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Outro);
+        CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Outro);
         if (outroEnd != Cue::kNoPosition) {
             pCue->setStartPosition(Cue::kNoPosition);
             pCue->setEndPosition(outroEnd);
@@ -1386,10 +1386,10 @@ void CueControl::outroEndSet(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Outro);
+        CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Outro);
         if (!pCue) {
             pCue = pLoadedTrack->createAndAddCue();
-            pCue->setType(Cue::Type::Outro);
+            pCue->setType(mixxx::CueType::Outro);
         }
         pCue->setStartPosition(outroStart);
         pCue->setEndPosition(position);
@@ -1407,7 +1407,7 @@ void CueControl::outroEndClear(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Outro);
+        CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Outro);
         if (outroStart != Cue::kNoPosition) {
             pCue->setStartPosition(outroStart);
             pCue->setEndPosition(Cue::kNoPosition);

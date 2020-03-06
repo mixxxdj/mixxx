@@ -98,7 +98,7 @@
               <Label>
                 <ObjectName>RecDot</ObjectName>
                 <Size>15f,20f</Size>
-              </Label>  
+              </Label>
 
               <RecordingDuration>
                 <ObjectName>RecDuration</ObjectName>
@@ -166,11 +166,11 @@
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Text>     SETTINGS</Text>
+          <Text>      SETTINGS</Text>
         </State>
         <State>
           <Number>1</Number>
-          <Text>     SETTINGS</Text>
+          <Text>      SETTINGS</Text>
         </State>
         <Connection>
           <ConfigKey persist="true">[Master],skin_settings</ConfigKey>
@@ -238,7 +238,6 @@
             <ObjectName>Battery</ObjectName>
             <Size>24,24</Size>
             <SizePolicy>f,f</SizePolicy>
-            <PixmapUnknown scalemode="STRETCH_ASPECT">skin:/style_<Variable name="style_scheme"/>/batt/ic_battery_unknown.svg</PixmapUnknown>
             <PixmapCharged scalemode="STRETCH_ASPECT">skin:/style_<Variable name="style_scheme"/>/batt/ic_battery_charged.svg</PixmapCharged>
             <NumberStates>8</NumberStates>
             <PixmapsCharging scalemode="STRETCH_ASPECT">skin:/style_<Variable name="style_scheme"/>/batt/ic_battery_charging_%1.svg</PixmapsCharging>

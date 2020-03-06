@@ -117,7 +117,11 @@ else()
   message(STATUS "Support for ccache: ${CCACHE_SUPPORT}")
 endif()
 
+set_property(DIRECTORY APPEND
+    PROPERTY CMAKE_CONFIGURE_DEPENDS
+    "${CMAKE_SOURCE_DIR}/.git/index")
 
+# uses GIT_BRANCH and GIT_COMMIT_COUNT
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/src/build.h.template"
   "${CMAKE_CURRENT_BINARY_DIR}/src/build.h"
@@ -328,6 +332,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/browse/browsetablemodel.cpp
   src/library/browse/browsethread.cpp
   src/library/browse/foldertreemodel.cpp
+  src/library/colordelegate.cpp
   src/library/columncache.cpp
   src/library/coverart.cpp
   src/library/coverartcache.cpp
@@ -394,6 +399,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/scanner/scannertask.cpp
   src/library/searchquery.cpp
   src/library/searchqueryparser.cpp
+  src/library/serato/seratofeature.cpp
+  src/library/serato/seratoplaylistmodel.cpp
   src/library/setlogfeature.cpp
   src/library/sidebarmodel.cpp
   src/library/songdownloader.cpp
@@ -418,13 +425,16 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/mixer/samplerbank.cpp
   src/mixxx.cpp
   src/mixxxapplication.cpp
-  src/musicbrainz/acoustidclient.cpp
   src/musicbrainz/chromaprinter.cpp
   src/musicbrainz/crc.c
   src/musicbrainz/gzip.cpp
-  src/musicbrainz/musicbrainzclient.cpp
-  src/musicbrainz/network.cpp
+  src/musicbrainz/musicbrainz.cpp
+  src/musicbrainz/musicbrainzxml.cpp
   src/musicbrainz/tagfetcher.cpp
+  src/musicbrainz/web/acoustidlookuptask.cpp
+  src/musicbrainz/web/musicbrainzrecordingstask.cpp
+  src/network/jsonwebtask.cpp
+  src/network/webtask.cpp
   src/preferences/broadcastprofile.cpp
   src/preferences/broadcastsettings.cpp
   src/preferences/broadcastsettings_legacy.cpp
@@ -504,13 +514,16 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/beatutils.cpp
   src/track/bpm.cpp
   src/track/cue.cpp
+  src/track/cueinfo.cpp
   src/track/globaltrackcache.cpp
   src/track/keyfactory.cpp
   src/track/keys.cpp
   src/track/keyutils.cpp
   src/track/playcounter.cpp
   src/track/replaygain.cpp
-  src/track/seratomarkers2.cpp
+  src/track/serato/markers.cpp
+  src/track/serato/markers2.cpp
+  src/track/serato/tags.cpp
   src/track/track.cpp
   src/track/trackfile.cpp
   src/track/trackinfo.cpp
@@ -522,6 +535,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/audiosignal.cpp
   src/util/autohidpi.cpp
   src/util/battery/battery.cpp
+  src/util/cache.cpp
   src/util/cmdlineargs.cpp
   src/util/color/color.cpp
   src/util/color/predefinedcolor.cpp
@@ -627,6 +641,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wbattery.cpp
   src/widget/wbeatspinbox.cpp
   src/widget/wcolorpicker.cpp
+  src/widget/wcolorpickeraction.cpp
   src/widget/wcombobox.cpp
   src/widget/wcoverart.cpp
   src/widget/wcoverartlabel.cpp
@@ -691,16 +706,19 @@ if(UNIX AND NOT APPLE)
 endif()
 
 # Disable warnings in generated source files
-set_property(
-  SOURCE src/library/rekordbox/rekordbox_anlz.cpp
-  APPEND_STRING
-  PROPERTY COMPILE_OPTIONS -Wno-unused-parameter
-)
-set_property(
-  SOURCE src/library/rekordbox/rekordbox_pdb.cpp
-  APPEND_STRING
-  PROPERTY COMPILE_OPTIONS -Wno-unused-parameter -Wno-switch
-)
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" # GNU is GNU GCC
+  OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+  set_property(
+    SOURCE src/library/rekordbox/rekordbox_anlz.cpp
+    APPEND_STRING
+    PROPERTY COMPILE_OPTIONS -Wno-unused-parameter
+  )
+  set_property(
+    SOURCE src/library/rekordbox/rekordbox_pdb.cpp
+    APPEND_STRING
+    PROPERTY COMPILE_OPTIONS -Wno-unused-parameter -Wno-switch
+  )
+endif()
 
 option(WARNINGS_PEDANTIC "Let the compiler show even more warnings" OFF)
 if(MSVC)
@@ -906,7 +924,9 @@ add_executable(mixxx-test
   src/test/bpmcontrol_test.cpp
   src/test/broadcastprofile_test.cpp
   src/test/broadcastsettings_test.cpp
+  src/test/cache_test.cpp
   src/test/channelhandle_test.cpp
+  src/test/compatibility_test.cpp
   src/test/configobject_test.cpp
   src/test/controller_preset_validation_test.cpp
   src/test/controllerengine_test.cpp
@@ -954,11 +974,14 @@ add_executable(mixxx-test
   src/test/readaheadmanager_test.cpp
   src/test/replaygaintest.cpp
   src/test/rescalertest.cpp
+  src/test/rgbcolor_test.cpp
   src/test/samplebuffertest.cpp
   src/test/sampleutiltest.cpp
   src/test/schemamanager_test.cpp
   src/test/searchqueryparsertest.cpp
+  src/test/seratomarkerstest.cpp
   src/test/seratomarkers2test.cpp
+  src/test/seratotagstest.cpp
   src/test/signalpathtest.cpp
   src/test/skincontext_test.cpp
   src/test/softtakeover_test.cpp
@@ -1206,6 +1229,9 @@ add_library(MP3GuessEnc STATIC EXCLUDE_FROM_ALL
   lib/mp3guessenc-0.27.4/decode.c
   lib/mp3guessenc-0.27.4/bit_utils.c
 )
+if(WIN32)
+  target_compile_definitions(MP3GuessEnc PRIVATE __WINDOWS__)
+endif()
 target_include_directories(MP3GuessEnc SYSTEM PUBLIC lib/mp3guessenc-0.27.4)
 target_link_libraries(mixxx-lib PUBLIC MP3GuessEnc)
 

@@ -373,6 +373,7 @@ class EngineBuffer : public EngineObject {
     FRIEND_TEST(EngineBufferTest, VinylScalerRampZero);
     FRIEND_TEST(EngineBufferTest, ReadFadeOut);
     FRIEND_TEST(EngineBufferTest, RateTempTest);
+    FRIEND_TEST(EngineBufferTest, RatePermTest);
     EngineBufferScale* m_pScaleVinyl;
     // The keylock engine is configurable, so it could flip flop between
     // ScaleST and ScaleRB during a single callback.

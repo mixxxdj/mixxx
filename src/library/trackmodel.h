@@ -79,6 +79,8 @@ class TrackModel {
         SORTCOLUMN_FILENAME,
         SORTCOLUMN_FILE_MODIFIED_TIME,
         SORTCOLUMN_FILE_CREATION_TIME,
+        SORTCOLUMN_SAMPLERATE,
+        SORTCOLUMN_COLOR,
 
         // NUM_SORTCOLUMNS should always be the last item.
         NUM_SORTCOLUMNIDS

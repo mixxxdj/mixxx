@@ -10,9 +10,9 @@ constexpr float kSilenceThreshold = 0.001;
 //constexpr float kSilenceThreshold = db2ratio(-60.0f);
 
 bool shouldAnalyze(TrackPointer pTrack) {
-    CuePointer pIntroCue = pTrack->findCueByType(Cue::Type::Intro);
-    CuePointer pOutroCue = pTrack->findCueByType(Cue::Type::Outro);
-    CuePointer pAudibleSound = pTrack->findCueByType(Cue::Type::AudibleSound);
+    CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);
+    CuePointer pOutroCue = pTrack->findCueByType(mixxx::CueType::Outro);
+    CuePointer pAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
 
     if (!pIntroCue || !pOutroCue || !pAudibleSound || pAudibleSound->getLength() <= 0) {
         return true;
@@ -92,10 +92,10 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
     double firstSound = mixxx::kAnalysisChannels * m_iSignalStart;
     double lastSound = mixxx::kAnalysisChannels * m_iSignalEnd;
 
-    CuePointer pAudibleSound = pTrack->findCueByType(Cue::Type::AudibleSound);
+    CuePointer pAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
     if (pAudibleSound == nullptr) {
         pAudibleSound = pTrack->createAndAddCue();
-        pAudibleSound->setType(Cue::Type::AudibleSound);
+        pAudibleSound->setType(mixxx::CueType::AudibleSound);
     }
     // The user has no way to directly edit the AudibleSound cue. If the user
     // has deleted the Intro or Outro Cue, this analysis will be rerun when
@@ -106,7 +106,7 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
     pAudibleSound->setStartPosition(firstSound);
     pAudibleSound->setEndPosition(lastSound);
 
-    CuePointer pIntroCue = pTrack->findCueByType(Cue::Type::Intro);
+    CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);
 
     double mainCue = pTrack->getCuePoint().getPosition();
     double introStart = firstSound;
@@ -126,15 +126,15 @@ void AnalyzerSilence::storeResults(TrackPointer pTrack) {
 
     if (pIntroCue == nullptr) {
         pIntroCue = pTrack->createAndAddCue();
-        pIntroCue->setType(Cue::Type::Intro);
+        pIntroCue->setType(mixxx::CueType::Intro);
         pIntroCue->setStartPosition(introStart);
         pIntroCue->setEndPosition(Cue::kNoPosition);
     }
 
-    CuePointer pOutroCue = pTrack->findCueByType(Cue::Type::Outro);
+    CuePointer pOutroCue = pTrack->findCueByType(mixxx::CueType::Outro);
     if (pOutroCue == nullptr) {
         pOutroCue = pTrack->createAndAddCue();
-        pOutroCue->setType(Cue::Type::Outro);
+        pOutroCue->setType(mixxx::CueType::Outro);
         pOutroCue->setStartPosition(Cue::kNoPosition);
         pOutroCue->setEndPosition(lastSound);
     }
