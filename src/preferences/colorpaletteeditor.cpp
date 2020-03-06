@@ -1,6 +1,7 @@
 #include "preferences/colorpaletteeditor.h"
 
 #include <QColorDialog>
+#include <QDialogButtonBox>
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QLabel>
@@ -20,19 +21,19 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
           m_bPaletteExists(false),
           m_bPaletteIsReadOnly(false),
           m_pPaletteNameComboBox(make_parented<QComboBox>()),
-          m_pSaveButton(make_parented<QPushButton>("Save")),
-          m_pDeleteButton(make_parented<QPushButton>("Delete")),
-          m_pResetButton(make_parented<QPushButton>("Reset")),
           m_pTableView(make_parented<QTableView>()),
           m_pModel(make_parented<ColorPaletteEditorModel>()) {
     m_pPaletteNameComboBox->setEditable(true);
 
+    QDialogButtonBox* pButtonBox = new QDialogButtonBox();
+    m_pSaveButton = pButtonBox->addButton(QDialogButtonBox::Save);
+    m_pResetButton = pButtonBox->addButton(QDialogButtonBox::Reset);
+    m_pDiscardButton = pButtonBox->addButton(QDialogButtonBox::Discard);
+
     QHBoxLayout* pTopLayout = new QHBoxLayout();
     pTopLayout->addWidget(new QLabel("Name:"));
     pTopLayout->addWidget(m_pPaletteNameComboBox, 1);
-    pTopLayout->addWidget(m_pSaveButton);
-    pTopLayout->addWidget(m_pDeleteButton);
-    pTopLayout->addWidget(m_pResetButton);
+    pTopLayout->addWidget(pButtonBox);
 
     QVBoxLayout* pLayout = new QVBoxLayout();
     pLayout->addLayout(pTopLayout);
@@ -135,7 +136,7 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
                 slotUpdateButtons();
             });
 
-    connect(m_pDeleteButton,
+    connect(m_pDiscardButton,
             &QPushButton::clicked,
             [this] {
                 QString paletteName = m_pPaletteNameComboBox->currentText();
@@ -194,5 +195,5 @@ void ColorPaletteEditor::slotUpdateButtons() {
     bool bEmpty = m_pModel->isEmpty();
     m_pResetButton->setEnabled(bDirty);
     m_pSaveButton->setEnabled(!m_bPaletteExists || (!m_bPaletteIsReadOnly && bDirty && !bEmpty));
-    m_pDeleteButton->setEnabled(m_bPaletteExists && !m_bPaletteIsReadOnly);
+    m_pDiscardButton->setEnabled(m_bPaletteExists && !m_bPaletteIsReadOnly);
 }
