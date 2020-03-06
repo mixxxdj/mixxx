@@ -465,4 +465,109 @@ METADATA
       ALTER TABLE library ADD COLUMN color INTEGER;
     </sql>
   </revision>
+  <revision version="32" min_compatible="3">
+    <description>
+      Fix wrong foraging key constraints in track_analysis and library tables
+    </description>
+    <sql>
+      CREATE TABLE "track_analysis_tmp" (
+        "id"  INTEGER PRIMARY KEY AUTOINCREMENT,
+        "track_id"  INTEGER NOT NULL,
+        "type"  varchar(512),
+        "description" varchar(1024),
+        "version" varchar(512),
+        "created" TEXT DEFAULT CURRENT_TIMESTAMP,
+        "data_checksum" varchar(512),
+        FOREIGN KEY("track_id") REFERENCES "library"("id")
+      );
+      INSERT INTO track_analysis_tmp SELECT * FROM track_analysis;
+      DROP TABLE track_analysis;
+      ALTER TABLE track_analysis_tmp RENAME TO track_analysis;
+
+      CREATE TABLE "library_tmp" (
+        "id"  INTEGER PRIMARY KEY AUTOINCREMENT,
+        "artist"  varchar(64),
+        "title" varchar(64),
+        "album" varchar(64),
+        "year"  varchar(16),
+        "genre" varchar(64),
+        "tracknumber" varchar(3),
+        "location"  integer,
+        "comment" varchar(256),
+        "url" varchar(256),
+        "duration"  integer,
+        "bitrate" integer,
+        "samplerate"  integer,
+        "cuepoint"  integer,
+        "bpm" float,
+        "wavesummaryhex"  blob,
+        "channels"  integer,
+        "datetime_added"  TEXT DEFAULT CURRENT_TIMESTAMP,
+        "mixxx_deleted" integer,
+        "played"  integer,
+        "header_parsed" integer DEFAULT 0,
+        "filetype"  varchar(8) DEFAULT "?",
+        "replaygain"  float DEFAULT 0,
+        "timesplayed" integer DEFAULT 0,
+        "rating"  integer DEFAULT 0,
+        "key" varchar(8) DEFAULT "",
+        "beats" BLOB,
+        "beats_version" TEXT,
+        "composer"  varchar(64) DEFAULT "",
+        "bpm_lock"  INTEGER DEFAULT 0,
+        "beats_sub_version" TEXT DEFAULT '',
+        "keys"  BLOB,
+        "keys_version"  TEXT,
+        "keys_sub_version"  TEXT,
+        "key_id"  INTEGER DEFAULT 0,
+        "grouping"  TEXT DEFAULT "",
+        "album_artist"  TEXT DEFAULT "",
+        "coverart_source" INTEGER DEFAULT 0,
+        "coverart_type" INTEGER DEFAULT 0,
+        "coverart_location" TEXT DEFAULT "",
+        "coverart_hash" INTEGER DEFAULT 0,
+        "replaygain_peak" REAL DEFAULT -1.0,
+        "tracktotal"  TEXT DEFAULT '//',
+        "color"  integer,
+        FOREIGN KEY("location") REFERENCES "track_locations"("id")
+      );
+      INSERT INTO library_tmp SELECT * FROM library;
+      DROP TABLE library;
+      ALTER TABLE library_tmp RENAME TO library;
+      
+      CREATE TABLE cues_tmp (
+        id integer PRIMARY KEY AUTOINCREMENT,
+        track_id integer NOT NULL REFERENCES "library"(id),
+        type integer DEFAULT 0 NOT NULL,
+        position integer DEFAULT -1 NOT NULL,
+        length integer DEFAULT 0 NOT NULL,
+        hotcue integer DEFAULT -1 NOT NULL,
+        label text DEFAULT '' NOT NULL,
+        color INTEGER DEFAULT 4294901760 NOT NULL
+      );
+      INSERT INTO cues_tmp SELECT * FROM cues;
+      DROP TABLE cues;
+      ALTER TABLE cues_tmp RENAME TO cues;
+
+      CREATE TABLE PlaylistTracks_tmp (
+        id INTEGER primary key,
+        playlist_id INTEGER REFERENCES Playlists(id),
+        track_id INTEGER REFERENCES "library"(id),
+        position INTEGER,
+        pl_datetime_added
+      );
+      INSERT INTO PlaylistTracks_tmp SELECT * FROM PlaylistTracks;
+      DROP TABLE PlaylistTracks;
+      ALTER TABLE PlaylistTracks_tmp RENAME TO PlaylistTracks;
+
+
+      CREATE TABLE crate_tracks_tmp (
+        crate_id integer NOT NULL REFERENCES crates(id),
+        track_id integer NOT NULL REFERENCES "library"(id),
+        UNIQUE (crate_id, track_id));
+      INSERT INTO crate_tracks_tmp SELECT * FROM crate_tracks;
+      DROP TABLE crate_tracks;
+      ALTER TABLE crate_tracks_tmp RENAME TO crate_tracks;
+    </sql>
+  </revision>
 </schema>
