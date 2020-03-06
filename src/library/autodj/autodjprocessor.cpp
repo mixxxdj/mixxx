@@ -681,10 +681,12 @@ bool AutoDJProcessor::removeTrackFromTopOfQueue(TrackPointer pTrack) {
     }
 
     maybeFillRandomTracks();
+
     return true;
 }
 
 void AutoDJProcessor::maybeFillRandomTracks() {
+
     int minAutoDJCrateTracks = m_pConfig->getValueString(
             ConfigKey(kConfigKey, "RandomQueueMinimumAllowed")).toInt();
     bool randomQueueEnabled = (((m_pConfig->getValueString(
