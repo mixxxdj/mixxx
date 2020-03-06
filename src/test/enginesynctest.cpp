@@ -1407,9 +1407,6 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
 
-
-    EXPECT_FLOAT_EQ(0.8, ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get());
-
     // What seems to be happening is a seek is queued when a track is loaded, so all these tracks
     // seek to 0, thus resetting the beat distance.
     ProcessBuffer();

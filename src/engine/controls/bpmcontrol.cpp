@@ -590,12 +590,6 @@ double BpmControl::getNearestPositionInPhase(
 
     SyncMode syncMode = getSyncMode();
 
-    // Master buffer is always in sync!
-    // XXX: Owen isn't sure about this
-    if (syncMode == SYNC_MASTER) {
-        return dThisPosition;
-    }
-
     // Get the current position of this deck.
     double dThisPrevBeat = m_pPrevBeat->get();
     double dThisNextBeat = m_pNextBeat->get();
@@ -604,9 +598,9 @@ double BpmControl::getNearestPositionInPhase(
         if (BPM_DEBUG) {
             qDebug() << "BpmControl::getNearestPositionInPhase out of date"
                  << dThisPosition << dThisNextBeat << dThisPrevBeat;
-            // This happens if dThisPosition is the target position of a requested
-            // seek command
         }
+        // This happens if dThisPosition is the target position of a requested
+        // seek command
         if (!getBeatContext(pBeats, dThisPosition,
                             &dThisPrevBeat, &dThisNextBeat,
                             &dThisBeatLength, NULL)) {
@@ -739,18 +733,16 @@ double BpmControl::getBeatMatchPosition(
     if (!m_pBeats) {
         return dThisPosition;
     }
-    // Master buffer is always in sync!
-    if (getSyncMode() == SYNC_MASTER) {
-        return dThisPosition;
-    }
 
     // Get the current position of this deck.
     double dThisPrevBeat = m_pPrevBeat->get();
     double dThisNextBeat = m_pNextBeat->get();
     double dThisBeatLength;
     if (dThisPosition > dThisNextBeat || dThisPosition < dThisPrevBeat) {
-        //qDebug() << "BpmControl::getNearestPositionInPhase out of date"
-        //         << dThisPosition << dThisNextBeat << dThisPrevBeat;
+        if (BPM_DEBUG) {
+            qDebug() << "BpmControl::getNearestPositionInPhase out of date"
+                     << dThisPosition << dThisNextBeat << dThisPrevBeat;
+        }
         // This happens if dThisPosition is the target position of a requested
         // seek command
         if (!getBeatContext(
@@ -980,7 +972,6 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
 }
 
 double BpmControl::updateLocalBpm() {
-    if (BPM_DEBUG) qDebug() << getGroup() << "BpmControl::updateLocalBpm";
     double prev_local_bpm = m_pLocalBpm->get();
     double local_bpm = 0;
     BeatsPointer pBeats = m_pBeats;
@@ -994,6 +985,7 @@ double BpmControl::updateLocalBpm() {
         local_bpm = m_pFileBpm->get();
     }
     if (local_bpm != prev_local_bpm) {
+        if (BPM_DEBUG) qDebug() << getGroup() << "BpmControl::updateLocalBpm" << local_bpm;
         m_pLocalBpm->set(local_bpm);
         slotUpdateEngineBpm();
     }

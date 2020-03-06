@@ -45,6 +45,7 @@
 #endif
 
 namespace {
+constexpr bool ENGINE_DEBUG = false;
 
 const double kLinearScalerElipsis = 1.00058; // 2^(0.01/12): changes < 1 cent allows a linear scaler
 
@@ -437,7 +438,7 @@ void EngineBuffer::seekCloneBuffer(EngineBuffer* pOtherBuffer) {
 // WARNING: This method is not thread safe and must not be called from outside
 // the engine callback!
 void EngineBuffer::setNewPlaypos(double newpos) {
-    //qDebug() << m_group << "engine new pos " << newpos;
+    if (ENGINE_DEBUG) qDebug() << m_group << "EngineBuffer::setNewPlaypos" << newpos;
 
     m_filepos_play = newpos;
 
@@ -501,7 +502,7 @@ void EngineBuffer::loadFakeTrack(TrackPointer pTrack, bool bPlay) {
 void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
                                    int iTrackSampleRate,
                                    int iTrackNumSamples) {
-    //qDebug() << getGroup() << "EngineBuffer::slotTrackLoaded";
+    if (ENGINE_DEBUG) qDebug() << getGroup() << "EngineBuffer::slotTrackLoaded";
     TrackPointer pOldTrack = m_pCurrentTrack;
 
     m_pause.lock();
@@ -545,7 +546,7 @@ bool EngineBuffer::isReverse() {
 
 void EngineBuffer::ejectTrack() {
     // clear track values in any case, this may fix Bug #1450424
-    //qDebug() << "EngineBuffer::ejectTrack()";
+    if (ENGINE_DEBUG) qDebug() << "EngineBuffer::ejectTrack()";
     m_pause.lock();
     m_iTrackLoading = 0;
     m_pTrackLoaded->forceSet(0);
@@ -1183,11 +1184,15 @@ void EngineBuffer::processSeek(bool paused) {
     }
 
     if (!paused && (seekType & SEEK_PHASE)) {
+        if (ENGINE_DEBUG) qDebug() << "EngineBuffer::processSeek Seeking phase";
         double requestedPosition = position;
         double syncPosition = m_pBpmControl->getBeatMatchPosition(position, true, true);
         position = m_pLoopingControl->getSyncPositionInsideLoop(requestedPosition, syncPosition);
+        if (ENGINE_DEBUG)
+            qDebug() << "EngineBuffer::processSeek seek info: " << m_filepos_play << " " << position;
     }
     if (position != m_filepos_play) {
+        if (ENGINE_DEBUG) qDebug() << "EngineBuffer::processSeek Seek to" << position;
         setNewPlaypos(position);
     }
     m_iSeekQueued.storeRelease(SEEK_NONE);
