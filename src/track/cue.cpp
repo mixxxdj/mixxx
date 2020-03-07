@@ -12,16 +12,30 @@
 
 namespace {
 
-inline std::optional<double> samplePositionToMillis(
-        double samplePosition,
+inline std::optional<double> positionSamplesToMillis(
+        double positionSamples,
         mixxx::AudioSignal::SampleRate sampleRate) {
-    DEBUG_ASSERT(sampleRate.valid());
-    if (samplePosition == Cue::kNoPosition) {
+    VERIFY_OR_DEBUG_ASSERT(sampleRate.valid()) {
+        return Cue::kNoPosition;
+    }
+    if (positionSamples == Cue::kNoPosition) {
         return std::nullopt;
     }
-    const auto sampleRateKhz = sampleRate / 1000.0;
-    DEBUG_ASSERT(sampleRateKhz > 0.0);
-    return samplePosition / (sampleRateKhz * mixxx::kEngineChannelCount);
+    // Try to avoid rounding errors
+    return (positionSamples * 1000) / (sampleRate * mixxx::kEngineChannelCount);
+}
+
+inline double positionMillisToSamples(
+        std::optional<double> positionMillis,
+        mixxx::AudioSignal::SampleRate sampleRate) {
+    VERIFY_OR_DEBUG_ASSERT(sampleRate.valid()) {
+        return Cue::kNoPosition;
+    }
+    if (!positionMillis) {
+        return Cue::kNoPosition;
+    }
+    // Try to avoid rounding errors
+    return (*positionMillis * sampleRate * mixxx::kEngineChannelCount) / 1000;
 }
 
 }
@@ -33,11 +47,9 @@ void CuePointer::deleteLater(Cue* pCue) {
     }
 }
 
-Cue::Cue(
-        TrackId trackId)
+Cue::Cue()
         : m_bDirty(false),
           m_iId(-1),
-          m_trackId(trackId),
           m_type(mixxx::CueType::Invalid),
           m_sampleStartPosition(Cue::kNoPosition),
           m_sampleEndPosition(Cue::kNoPosition),
@@ -74,35 +86,22 @@ Cue::Cue(
 }
 
 Cue::Cue(
-        TrackId trackId,
-        mixxx::AudioSignal::SampleRate sampleRate,
-        const mixxx::CueInfo& cueInfo)
+        const mixxx::CueInfo& cueInfo,
+        mixxx::AudioSignal::SampleRate sampleRate)
         : m_bDirty(false),
           m_iId(-1),
-          m_trackId(trackId),
           m_type(cueInfo.getType()),
-          m_sampleStartPosition(Cue::kNoPosition),
-          m_sampleEndPosition(Cue::kNoPosition),
-          m_iHotCue(Cue::kNoHotCue),
+          m_sampleStartPosition(
+                  positionMillisToSamples(
+                          cueInfo.getStartPositionMillis(),
+                          sampleRate)),
+          m_sampleEndPosition(
+                  positionMillisToSamples(
+                          cueInfo.getEndPositionMillis(),
+                          sampleRate)),
+          m_iHotCue(cueInfo.getHotCueNumber() ? *cueInfo.getHotCueNumber() : kNoHotCue),
           m_label(cueInfo.getLabel()),
           m_color(Color::kPredefinedColorsSet.predefinedColorFromRgbColor(cueInfo.getColor())) {
-    DEBUG_ASSERT(sampleRate.valid());
-
-    const double sampleRateKhz = sampleRate / 1000.0;
-    const double millisecsToSamplesFactor = sampleRateKhz * mixxx::kEngineChannelCount;
-    DEBUG_ASSERT(millisecsToSamplesFactor > 0);
-
-    if (cueInfo.getStartPositionMillis()) {
-        m_sampleStartPosition = (*cueInfo.getStartPositionMillis()) * millisecsToSamplesFactor;
-    }
-
-    if (cueInfo.getEndPositionMillis()) {
-        m_sampleEndPosition = (*cueInfo.getEndPositionMillis()) * millisecsToSamplesFactor;
-    }
-
-    if (cueInfo.getHotCueNumber()) {
-        m_iHotCue = *cueInfo.getHotCueNumber();
-    }
 }
 
 mixxx::CueInfo Cue::getCueInfo(
@@ -110,8 +109,8 @@ mixxx::CueInfo Cue::getCueInfo(
     QMutexLocker lock(&m_mutex);
     return mixxx::CueInfo(
             m_type,
-            samplePositionToMillis(m_sampleStartPosition, sampleRate),
-            samplePositionToMillis(m_sampleEndPosition, sampleRate),
+            positionSamplesToMillis(m_sampleStartPosition, sampleRate),
+            positionSamplesToMillis(m_sampleEndPosition, sampleRate),
             m_iHotCue == kNoHotCue ? std::nullopt : std::make_optional(m_iHotCue),
             m_label,
             m_color ? mixxx::RgbColor::fromQColor(m_color->m_defaultRgba) : std::nullopt);

@@ -76,4 +76,15 @@ void CueInfo::setColor(RgbColor::optional_t color) {
     m_color = color;
 }
 
+bool operator==(
+        const CueInfo& lhs,
+        const CueInfo& rhs) {
+    return lhs.getType() == rhs.getType() &&
+            lhs.getStartPositionMillis() == rhs.getStartPositionMillis() &&
+            lhs.getEndPositionMillis() == rhs.getEndPositionMillis() &&
+            lhs.getHotCueNumber() == rhs.getHotCueNumber() &&
+            lhs.getLabel() == rhs.getLabel() &&
+            lhs.getColor() == rhs.getColor();
+}
+
 } // namespace mixxx

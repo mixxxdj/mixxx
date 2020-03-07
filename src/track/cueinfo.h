@@ -58,4 +58,14 @@ class CueInfo {
     RgbColor::optional_t m_color;
 };
 
+bool operator==(
+        const CueInfo& lhs,
+        const CueInfo& rhs);
+
+inline bool operator!=(
+        const CueInfo& lhs,
+        const CueInfo& rhs) {
+    return !(lhs == rhs);
+}
+
 } // namespace mixxx

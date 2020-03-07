@@ -930,6 +930,7 @@ add_executable(mixxx-test
   src/test/coverartcache_test.cpp
   src/test/coverartutils_test.cpp
   src/test/cratestorage_test.cpp
+  src/test/cue_test.cpp
   src/test/cuecontrol_test.cpp
   src/test/dbconnectionpool_test.cpp
   src/test/dbidtest.cpp
