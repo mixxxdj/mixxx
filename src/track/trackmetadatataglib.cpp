@@ -1,5 +1,7 @@
 #include "track/trackmetadatataglib.h"
 
+#include <taglib/tpropertymap.h>
+
 #include "track/tracknumbers.h"
 
 #include "util/assert.h"
@@ -16,6 +18,10 @@
 // TagLib has support for has<TagType>() style functions since version 1.9
 #define TAGLIB_HAS_TAG_CHECK \
     (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
+
+// TagLib has support for MP4::File::hasMP4Tag() and MP4::Tag::isEmpty() version 1.10
+#define TAGLIB_HAS_MP4TAG_CHECK_AND_IS_EMPTY \
+    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 10))
 
 // TagLib has support for length in milliseconds since version 1.10
 #define TAGLIB_HAS_LENGTH_IN_MILLISECONDS \
@@ -158,6 +164,33 @@ bool hasAPETag(TagLib::WavPack::File& file) {
     return file.hasAPETag();
 #else
     return file.APETag() != nullptr;
+#endif
+}
+
+bool hasID3v2Tag(TagLib::RIFF::WAV::File& file) {
+#if (TAGLIB_HAS_WAV_ID3V2TAG)
+    return file.hasID3v2Tag();
+#else
+    return file.tag() != nullptr;
+#endif
+}
+
+bool hasID3v2Tag(TagLib::RIFF::AIFF::File& file) {
+#if (TAGLIB_HAS_AIFF_HAS_ID3V2TAG)
+    return file.hasID3v2Tag();
+#else
+    return file.tag() != nullptr;
+#endif
+}
+
+bool hasMP4Tag(TagLib::MP4::File& file) {
+    // Note (TagLib 1.11.1): For MP4 files without file tags
+    // TagLib still reports that the MP4 tag exists. Additionally
+    // we need to check that the tag itself is not empty.
+#if (TAGLIB_HAS_MP4TAG_CHECK_AND_IS_EMPTY)
+    return file.hasMP4Tag() && !file.tag()->isEmpty();
+#else
+    return file.tag() != nullptr;
 #endif
 }
 

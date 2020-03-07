@@ -6,8 +6,11 @@
 #include <taglib/mp4tag.h>
 #include <taglib/infotag.h>
 
+#include <taglib/aifffile.h>
 #include <taglib/flacfile.h>
+#include <taglib/mp4file.h>
 #include <taglib/mpegfile.h>
+#include <taglib/wavfile.h>
 #include <taglib/wavpackfile.h>
 
 // TagLib has support for the Ogg Opus file format since version 1.9
@@ -141,6 +144,9 @@ bool hasAPETag(TagLib::MPEG::File& file);
 bool hasID3v2Tag(TagLib::FLAC::File& file);
 bool hasXiphComment(TagLib::FLAC::File& file);
 bool hasAPETag(TagLib::WavPack::File& file);
+bool hasID3v2Tag(TagLib::RIFF::WAV::File& file);
+bool hasID3v2Tag(TagLib::RIFF::AIFF::File& file);
+bool hasMP4Tag(TagLib::MP4::File& file);
 
 } // namespace taglib
 
