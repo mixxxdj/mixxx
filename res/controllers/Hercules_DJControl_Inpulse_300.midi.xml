@@ -1622,7 +1622,7 @@
       <!--Jog wheel-->
 			<control>
 				<group>[Channel1]</group>
-				<key>DJCi300.scratchWheelShift </key>
+				<key>DJCi300.scratchWheel</key>
 				<description>SHIFT + Scratch Deck A (Jog-Wheel)</description>
 				<status>0xB4</status>
 				<midino>0x0A</midino>
@@ -1635,7 +1635,7 @@
       <!--Jog wheel-->
 			<control>
 				<group>[Channel2]</group>
-				<key>DJCi300.scratchWheelShift </key>
+				<key>DJCi300.scratchWheel</key>
 				<description>SHIFT + Scratch Deck B (Jog-Wheel)</description>
 				<status>0xB5</status>
 				<midino>0x0A</midino>

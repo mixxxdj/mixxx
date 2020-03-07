@@ -156,7 +156,20 @@ DJCi300.wheelTouchShift = function(channel, control, value, _status, _group) {
 };
 
 // Scratching on the jog wheel (rotating it while pressing the top surface)
-DJCi300._scratchWheelImpl = function(deck, value) {
+DJCi300.scratchWheel = function(channel, control, value, status, _group) {
+    var deck;
+    switch (status) {
+    case 0xB1:
+    case 0xB4:
+        deck  = 1;
+        break;
+    case 0xB2:
+    case 0xB5:
+        deck  = 2;
+        break;
+    default:
+        return;
+    }
     var interval = DJCi300._convertWheelRotation(value);
     var scratchAction = DJCi300.scratchAction[deck];
     if (scratchAction === DJCi300.kScratchActionScratch) {
@@ -168,18 +181,6 @@ DJCi300._scratchWheelImpl = function(deck, value) {
     } else {
         DJCi300._bendWheelImpl(deck, value);
     }
-};
-
-// Scratching on the jog wheel (rotating it while pressing the top surface)
-DJCi300.scratchWheel = function(channel, control, value, _status, _group) {
-    var deck = channel;
-    DJCi300._scratchWheelImpl(deck, value);
-};
-
-// Seeking on the jog wheel (rotating it while pressing the top surface and holding Shift)
-DJCi300.scratchWheelShift = function(channel, control, value, _status, _group) {
-    var deck = channel - 3;
-    DJCi300._scratchWheelImpl(deck, value);
 };
 
 DJCi300._bendWheelImpl = function(deck, value) {
