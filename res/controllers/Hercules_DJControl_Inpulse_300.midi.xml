@@ -4,7 +4,7 @@
 		<name>Hercules DJControl Inpulse 300</name>
 		<author>DJ Phatso for Hercules Technical Support</author>
 		<description>MIDI Preset for Hercules DJControl Inpulse 300</description>
-		<wiki>https://www.mixxx.org/wiki/doku.php/hercules_djcontrol_inpulse_300</wiki>											
+		<wiki>https://www.mixxx.org/wiki/doku.php/hercules_djcontrol_inpulse_300</wiki>
 		<forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=12599</forums>
 	</info>
 	<controller id="DJControl Inpulse 300">
@@ -17,7 +17,7 @@
 			<!--Note Number (NN) - Buttons/switches/Encoders -->
 			<!-- NN's MIDI Channel 1 (0x90)-->
 
-	  <!--Browser section (Encoder button)-->
+			<!--Browser section (Encoder button)-->
 			<control>
 				<group>[Library]</group>
 				<key>MoveFocus</key>
@@ -29,7 +29,7 @@
 				</options>
 			</control>
 
-	  <!--Assistant-->
+			<!--Assistant-->
 			<control>
 				<group>[AutoDJ]</group>
 				<key>enabled</key>
@@ -41,7 +41,7 @@
 
 			<!-- NN's MIDI Channel 2 (0x91 Deck A - Standard MODE)-->
 
-	  <!--Play-->
+			<!--Play-->
 			<control>
 				<group>[Channel1]</group>
 				<key>play</key>
@@ -52,7 +52,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--CUE-->
+			<!--CUE-->
 			<control>
 				<group>[Channel1]</group>
 				<key>cue_default</key>
@@ -63,7 +63,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--Sync-->
+			<!--Sync-->
 			<control>
 				<group>[Channel1]</group>
 				<key>sync_enabled</key>
@@ -74,7 +74,7 @@
 					<normal />
 				</options>
 			</control>
-      <!-- PFL-->
+			<!-- PFL-->
 			<control>
 				<group>[Channel1]</group>
 				<key>pfl</key>
@@ -85,7 +85,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--LOAD A-->
+			<!--LOAD A-->
 			<control>
 				<group>[Channel1]</group>
 				<key>LoadSelectedTrack</key>
@@ -96,7 +96,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--SLIP A-->
+			<!--SLIP A-->
 			<control>
 				<group>[Channel1]</group>
 				<key>slip_enabled</key>
@@ -107,7 +107,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--Q A-->
+			<!--Q A-->
 			<control>
 				<group>[Channel1]</group>
 				<key>keylock</key>
@@ -118,8 +118,8 @@
 					<normal />
 				</options>
 			</control>
-			
-      <!--Vinyl button-->
+
+			<!--Vinyl button-->
 			<control>
 				<group>[Channel1]</group>
 				<key>DJCi300.vinylButton</key>
@@ -130,8 +130,8 @@
 					<script-binding />
 				</options>
 			</control>
-			
-      <!--Jog Touch A-->
+
+			<!--Jog Touch A-->
 			<control>
 				<group>[Channel1]</group>
 				<key>DJCi300.wheelTouch</key>
@@ -142,8 +142,8 @@
 					<script-binding />
 				</options>
 			</control>
-			
-      <!--Loop In/Out-->
+
+			<!--Loop In/Out-->
 			<control>
 				<group>[Channel1]</group>
 				<key>beatloop_4_activate</key>
@@ -164,8 +164,8 @@
 					<normal />
 				</options>
 			</control>
-			
-      <!--FX section button-->
+
+			<!--FX section button-->
 			<control>
 				<group>[EffectRack1_EffectUnit1_Effect3]</group>
 				<key>enabled</key>
@@ -179,7 +179,7 @@
 
 			<!-- NN's MIDI Channel 3 (0x92 Deck B - Standard MODE)-->
 
-	 <!--Play-->
+			<!--Play-->
 			<control>
 				<group>[Channel2]</group>
 				<key>play</key>
@@ -190,7 +190,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--CUE-->
+			<!--CUE-->
 			<control>
 				<group>[Channel2]</group>
 				<key>cue_default</key>
@@ -201,7 +201,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--Sync-->
+			<!--Sync-->
 			<control>
 				<group>[Channel2]</group>
 				<key>sync_enabled</key>
@@ -212,7 +212,7 @@
 					<normal />
 				</options>
 			</control>
-      <!-- PFL-->
+			<!-- PFL-->
 			<control>
 				<group>[Channel2]</group>
 				<key>pfl</key>
@@ -223,7 +223,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--LOAD B-->
+			<!--LOAD B-->
 			<control>
 				<group>[Channel2]</group>
 				<key>LoadSelectedTrack</key>
@@ -234,7 +234,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--SLIP B-->
+			<!--SLIP B-->
 			<control>
 				<group>[Channel2]</group>
 				<key>slip_enabled</key>
@@ -245,7 +245,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--Q B-->
+			<!--Q B-->
 			<control>
 				<group>[Channel2]</group>
 				<key>keylock</key>
@@ -256,7 +256,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--Vinyl button-->
+			<!--Vinyl button-->
 			<control>
 				<group>[Channel2]</group>
 				<key>DJCi300.vinylButton</key>
@@ -267,7 +267,7 @@
 					<script-binding />
 				</options>
 			</control>
-      <!--Jog Touch B -->
+			<!--Jog Touch B -->
 			<control>
 				<group>[Channel2]</group>
 				<key>DJCi300.wheelTouch</key>
@@ -278,7 +278,7 @@
 					<script-binding />
 				</options>
 			</control>
-      <!--Loop In/Out-->			  
+			<!--Loop In/Out-->
 			<control>
 				<group>[Channel2]</group>
 				<key>beatloop_4_activate</key>
@@ -299,7 +299,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--FX Section Button-->
+			<!--FX Section Button-->
 
 			<control>
 				<group>[EffectRack1_EffectUnit2_Effect3]</group>
@@ -314,7 +314,7 @@
 
 			<!-- NN's MIDI Channel 4 (0x93 - SHIFT MODE)-->
 
-	  <!--Browser section (Encoder button)-->
+			<!--Browser section (Encoder button)-->
 			<control>
 				<group>[Master]</group>
 				<key>maximize_library</key>
@@ -327,7 +327,7 @@
 			</control>
 
 			<!-- NN's MIDI Channel 5 (0x94 Deck A - SHIFT MODE)-->
-	  <!--Jog Touch A-->
+			<!--Jog Touch A-->
 			<control>
 				<group>[Channel1]</group>
 				<key>DJCi300.wheelTouchShift</key>
@@ -339,7 +339,7 @@
 				</options>
 			</control>
 
-	  <!--Play-->
+			<!--Play-->
 			<control>
 				<group>[Channel1]</group>
 				<key>play_stutter</key>
@@ -350,7 +350,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--CUE-->
+			<!--CUE-->
 			<control>
 				<group>[Channel1]</group>
 				<key>start_play</key>
@@ -361,7 +361,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--Sync-->
+			<!--Sync-->
 			<control>
 				<group>[Channel1]</group>
 				<key>sync_master</key>
@@ -372,7 +372,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--Loop In/Out-->
+			<!--Loop In/Out-->
 			<control>
 				<group>[Channel1]</group>
 				<key>loop_halve</key>
@@ -393,7 +393,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--Effect-->
+			<!--Effect-->
 			<control>
 				<group>[EffectRack1_EffectUnit1_Effect3]</group>
 				<key>next_effect</key>
@@ -406,7 +406,7 @@
 			</control>
 
 			<!-- NN's MIDI Channel 6 (0x95 Deck B - SHIFT MODE)-->
-	  <!--Jog Touch B-->
+			<!--Jog Touch B-->
 			<control>
 				<group>[Channel2]</group>
 				<key>DJCi300.wheelTouchShift</key>
@@ -429,7 +429,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--CUE-->
+			<!--CUE-->
 			<control>
 				<group>[Channel2]</group>
 				<key>start_play</key>
@@ -440,7 +440,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--Sync-->
+			<!--Sync-->
 			<control>
 				<group>[Channel2]</group>
 				<key>sync_master</key>
@@ -451,7 +451,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--Loop In/Out-->
+			<!--Loop In/Out-->
 			<control>
 				<group>[Channel2]</group>
 				<key>loop_halve</key>
@@ -472,7 +472,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--Effect-->
+			<!--Effect-->
 			<control>
 				<group>[EffectRack1_EffectUnit2_Effect3]</group>
 				<key>next_effect</key>
@@ -486,7 +486,7 @@
 
 			<!-- NN's MIDI Channel 7 (0x96  Deck A - Pads)-->
 
-	 <!--Hot Cues (SET)-->
+			<!--Hot Cues (SET)-->
 			<control>
 				<group>[Channel1]</group>
 				<key>hotcue_1_activate</key>
@@ -567,7 +567,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--Hot-Cue buttons (SHIFT mode)-->
+			<!--Hot-Cue buttons (SHIFT mode)-->
 			<control>
 				<group>[Channel1]</group>
 				<key>hotcue_1_clear</key>
@@ -648,7 +648,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--Roll-->
+			<!--Roll-->
 			<control>
 				<group>[Channel1]</group>
 				<key>beatlooproll_0.125_activate</key>
@@ -729,7 +729,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--Sampler-->
+			<!--Sampler-->
 			<control>
 				<group>[Sampler1]</group>
 				<key>cue_gotoandplay</key>
@@ -810,13 +810,13 @@
 					<normal />
 				</options>
 			</control>
-      <!--Slicer  Not assigned: 0x20 to 0x27-->
+			<!--Slicer  Not assigned: 0x20 to 0x27-->
 
-	  <!--Toneplay  Not assigned: 0x40 to 0x47-->
+			<!--Toneplay  Not assigned: 0x40 to 0x47-->
 
-	  <!--Slicer LOOP  Not assigned: 0x60 to 0x67-->
+			<!--Slicer LOOP  Not assigned: 0x60 to 0x67-->
 
-	  <!--Beatjump-->
+			<!--Beatjump-->
 			<control>
 				<group>[Channel1]</group>
 				<key>beatjump_1_backward</key>
@@ -901,7 +901,7 @@
 			<!-- NN's MIDI Channel 8 (0x97 Deck B - Pads)-->
 
 
-	  <!--Hot Cues (SET)-->
+			<!--Hot Cues (SET)-->
 			<control>
 				<group>[Channel2]</group>
 				<key>hotcue_1_activate</key>
@@ -982,7 +982,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--Hot-Cue buttons (SHIFT mode)-->
+			<!--Hot-Cue buttons (SHIFT mode)-->
 			<control>
 				<group>[Channel2]</group>
 				<key>hotcue_1_clear</key>
@@ -1063,7 +1063,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--Roll-->
+			<!--Roll-->
 			<control>
 				<group>[Channel2]</group>
 				<key>beatlooproll_0.125_activate</key>
@@ -1144,7 +1144,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--Sampler-->
+			<!--Sampler-->
 			<control>
 				<group>[Sampler1]</group>
 				<key>cue_gotoandplay</key>
@@ -1225,13 +1225,13 @@
 					<normal />
 				</options>
 			</control>
-      <!--Slicer  Not assigned: 0x20 to 0x27-->
+			<!--Slicer  Not assigned: 0x20 to 0x27-->
 
-	  <!--Toneplay  Not assigned: 0x40 to 0x47-->
+			<!--Toneplay  Not assigned: 0x40 to 0x47-->
 
-	  <!--Slicer LOOP  Not assigned : 0x60 to 0x67-->
+			<!--Slicer LOOP  Not assigned : 0x60 to 0x67-->
 
-	  <!--Beatjump-->
+			<!--Beatjump-->
 			<control>
 				<group>[Channel2]</group>
 				<key>beatjump_1_backward</key>
@@ -1312,11 +1312,11 @@
 					<normal />
 				</options>
 			</control>
-			
+
 			<!--Continuous Controllers (CC) - Faders/knobs -->
 			<!-- CC's MIDI Channel 1 (0xB0 Standard mode)-->
 
-	  <!--Crossfader-->
+			<!--Crossfader-->
 			<control>
 				<group>[Master]</group>
 				<key>crossfader</key>
@@ -1327,7 +1327,7 @@
 					<normal />
 				</options>
 			</control>
-	  <!--Browser encoder-->
+			<!--Browser encoder-->
 			<control>
 				<group>[Library]</group>
 				<key>MoveVertical</key>
@@ -1341,7 +1341,7 @@
 
 			<!-- CC's MIDI Channel 2 (0xB1 Deck A - Standard mode)-->
 
-	  <!-- Volume-->
+			<!-- Volume-->
 			<control>
 				<group>[Channel1]</group>
 				<key>volume</key>
@@ -1352,7 +1352,7 @@
 					<normal />
 				</options>
 			</control>
-	  <!--EQ-->
+			<!--EQ-->
 			<control>
 				<group>[EqualizerRack1_[Channel1]_Effect1]</group>
 				<key>parameter1</key>
@@ -1383,7 +1383,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--Gain-->
+			<!--Gain-->
 			<control>
 				<group>[Channel1]</group>
 				<key>pregain</key>
@@ -1394,7 +1394,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--Filter-->
+			<!--Filter-->
 			<control>
 				<group>[QuickEffectRack1_[Channel1]]</group>
 				<key>super1</key>
@@ -1405,7 +1405,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--Pitch sliders-->
+			<!--Pitch sliders-->
 			<control>
 				<group>[Channel1]</group>
 				<key>rate</key>
@@ -1424,7 +1424,7 @@
 					<fourteen-bit-lsb />
 				</options>
 			</control>
-	  <!--Jog wheel	-->
+			<!--Jog wheel	-->
 			<control>
 				<group>[Channel1]</group>
 				<key>DJCi300.scratchWheel</key>
@@ -1455,8 +1455,7 @@
 					<script-binding />
 				</options>
 			</control>
-      <!--FX section-->
-
+			<!--FX section-->
 			<control>
 				<group>[EffectRack1_EffectUnit1_Effect3]</group>
 				<key>meta</key>
@@ -1481,7 +1480,7 @@
 			<!-- CC's MIDI Channel 3 (0xB2  Deck B - Standard mode)-->
 
 
-	  <!-- Volume-->
+			<!-- Volume-->
 			<control>
 				<group>[Channel2]</group>
 				<key>volume</key>
@@ -1492,7 +1491,7 @@
 					<normal />
 				</options>
 			</control>
-	  <!--EQ-->
+			<!--EQ-->
 			<control>
 				<group>[EqualizerRack1_[Channel2]_Effect1]</group>
 				<key>parameter1</key>
@@ -1523,7 +1522,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--Gain-->
+			<!--Gain-->
 			<control>
 				<group>[Channel2]</group>
 				<key>pregain</key>
@@ -1534,7 +1533,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--Filter-->
+			<!--Filter-->
 			<control>
 				<group>[QuickEffectRack1_[Channel2]]</group>
 				<key>super1</key>
@@ -1545,7 +1544,7 @@
 					<normal />
 				</options>
 			</control>
-      <!--Pitch sliders-->
+			<!--Pitch sliders-->
 			<control>
 				<group>[Channel2]</group>
 				<key>rate</key>
@@ -1564,7 +1563,7 @@
 					<fourteen-bit-lsb />
 				</options>
 			</control>
-	  <!--Jog wheel--> 
+			<!--Jog wheel-->
 			<control>
 				<group>[Channel2]</group>
 				<key>DJCi300.scratchWheel</key>
@@ -1595,7 +1594,7 @@
 					<script-binding />
 				</options>
 			</control>
-      <!--FX section-->
+			<!--FX section-->
 
 			<control>
 				<group>[EffectRack1_EffectUnit2_Effect3]</group>
@@ -1619,7 +1618,7 @@
 			</control>
 
 			<!-- CC's MIDI Channel 5 (0xB4  Deck B - SHIFT mode)-->
-      <!--Jog wheel-->
+			<!--Jog wheel-->
 			<control>
 				<group>[Channel1]</group>
 				<key>DJCi300.scratchWheel</key>
@@ -1632,7 +1631,7 @@
 			</control>
 
 			<!-- CC's MIDI Channel 6 (0xB5  Deck B - SHIFT mode)-->
-      <!--Jog wheel-->
+			<!--Jog wheel-->
 			<control>
 				<group>[Channel2]</group>
 				<key>DJCi300.scratchWheel</key>
@@ -1647,7 +1646,7 @@
 
 		<!--LED Outputs -->
 		<outputs>
-      <!--LED Transport-->
+			<!--LED Transport-->
 			<output>
 				<group>[Channel1]</group>
 				<key>play_indicator</key>
@@ -1791,7 +1790,7 @@
 				<on>0x7f</on>
 				<off>0x0</off>
 			</output>
-      <!-- LED LOOP-->
+			<!-- LED LOOP-->
 			<output>
 				<group>[Channel1]</group>
 				<key>beatloop_4_enabled</key>
@@ -1814,7 +1813,7 @@
 				<on>0x7f</on>
 				<off>0x00</off>
 			</output>
-      <!-- LED PFL buttons-->
+			<!-- LED PFL buttons-->
 			<output>
 				<group>[Channel1]</group>
 				<key>pfl</key>
@@ -1837,7 +1836,7 @@
 				<on>0x7f</on>
 				<off>0x0</off>
 			</output>
-      <!-- LED Browser button-->
+			<!-- LED Browser button-->
 			<output>
 				<group>[Library]</group>
 				<key>MoveFocus</key>
@@ -1860,7 +1859,7 @@
 				<on>0x07</on>
 				<off>0x05</off>
 			</output>
-      <!-- LED Assitant button-->
+			<!-- LED Assitant button-->
 			<output>
 				<group>[AutoDJ]</group>
 				<key>enabled</key>
@@ -1872,7 +1871,7 @@
 				<on>0x7f</on>
 				<off>0x0</off>
 			</output>
-      <!-- Effect Unit On-->
+			<!-- Effect Unit On-->
 			<output>
 				<group>[EffectRack1_EffectUnit1_Effect3]</group>
 				<key>enabled</key>
@@ -1895,7 +1894,7 @@
 				<on>0x7f</on>
 				<off>0x0</off>
 			</output>
-      <!-- LED Beat Align (Track end warning)-->
+			<!-- LED Beat Align (Track end warning)-->
 			<output>
 				<group>[Channel1]</group>
 				<key>end_of_track</key>
@@ -1940,7 +1939,7 @@
 				<on>0x7f</on>
 				<off>0x0</off>
 			</output>
-      <!--LED HOT CUE (Normal Mode)-->
+			<!--LED HOT CUE (Normal Mode)-->
 			<output>
 				<group>[Channel1]</group>
 				<key>hotcue_1_enabled</key>
@@ -2085,7 +2084,7 @@
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
 			</output>
-      <!--LED HOT CUE (SHIFT Mode)-->
+			<!--LED HOT CUE (SHIFT Mode)-->
 			<output>
 				<group>[Channel1]</group>
 				<key>hotcue_1_enabled</key>
@@ -2230,7 +2229,7 @@
 				<on>0x7E</on>
 				<minimum>0.5</minimum>
 			</output>
-      <!--LED Roll-->
+			<!--LED Roll-->
 			<output>
 				<group>[Channel1]</group>
 				<key>beatlooproll_0.125_activate</key>
@@ -2375,7 +2374,7 @@
 				<on>0x7F</on>
 				<minimum>0.5</minimum>
 			</output>
-      <!--LED SAMPLE-->
+			<!--LED SAMPLE-->
 			<output>
 				<group>[Sampler1]</group>
 				<key>play_indicator</key>
@@ -2520,7 +2519,7 @@
 				<on>0x7F</on>
 				<minimum>0.5</minimum>
 			</output>
-      <!--LED BEATJUMP-->
+			<!--LED BEATJUMP-->
 			<output>
 				<group>[Channel1]</group>
 				<key>beatjump_1_backward</key>
