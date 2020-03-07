@@ -107,7 +107,8 @@ def build_dmg(target, source, env):
     """
     # TODO: make emit_dmg emit that we are making the Dmg that we are making
 
-    # since we are building into a single .dmg, coerce target to point at the actual name
+    # since we are building into a single .dmg, coerce target to point at the
+    # actual name
     assert len(target) == 1
     target = target[0]
 
@@ -343,7 +344,7 @@ def build_app(target, source, env):
     binary_rpaths = otool.rpaths(str(binary))
     otool_local_paths = binary_rpaths + otool_local_paths
     for ref, path in otool.embed_dependencies(
-        tr(binary), LOCAL=otool_local_paths, SYSTEM=otool_system_paths
+        str(binary), LOCAL=otool_local_paths, SYSTEM=otool_system_paths
     ):
         locals[ref] = (path, embed_lib(path))
 
@@ -411,7 +412,7 @@ def build_app(target, source, env):
         print("installing", real_p, "to", embedded_p)
         # NOTE(rryan): p can be a symlink. we want to copy the binary it is
         # pointing to. os.path.realpath does this for us.
-        Execute(Copy(embedded_p, real_p))  #:/
+        Execute(Copy(embedded_p, real_p))  # :/
         patch_lib(str(embedded_p))
 
 
@@ -504,9 +505,9 @@ def emit_app(target, source, env):
     # idea: hide these in the env[]?
     bundle = Dir(str(bundle))  # coerce the bundle target into being a Dir
     contents = Dir(os.path.join(str(bundle), "Contents"))
-    frameworks = Dir(
-        os.path.join(str(contents), "Frameworks")
-    )  # we put both frameworks and standard unix sharedlibs in here
+    # frameworks = Dir(
+    #     os.path.join(str(contents), "Frameworks")
+    # )  # we put both frameworks and standard unix sharedlibs in here
 
     env["APP_RESOURCES"] = Dir(os.path.join(str(contents), "Resources"))
 
@@ -614,7 +615,7 @@ def do_codesign(target, source, env):
 
     keychain = env.get("CODESIGN_KEYCHAIN", None)
     keychain_password = env.get("CODESIGN_KEYCHAIN_PASSWORD", None)
-    installer_identity = env.get("CODESIGN_INSTALLER_IDENTITY", None)
+    # installer_identity = env.get("CODESIGN_INSTALLER_IDENTITY", None)
     application_identity = env.get("CODESIGN_APPLICATION_IDENTITY", None)
     entitlements = env.get("CODESIGN_ENTITLEMENTS", None)
     if application_identity is not None:
