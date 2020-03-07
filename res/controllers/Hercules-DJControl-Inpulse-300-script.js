@@ -179,20 +179,16 @@ DJCi300.scratchWheel = function(channel, control, value, status, _group) {
             interval *  DJCi300.scratchScale *
             DJCi300.scratchShiftMultiplier);
     } else {
-        DJCi300._bendWheelImpl(deck, value);
+        engine.setValue(
+            "[Channel" + deck + "]", "jog", interval * DJCi300.bendScale);
     }
-};
-
-DJCi300._bendWheelImpl = function(deck, value) {
-    var interval = DJCi300._convertWheelRotation(value);
-    engine.setValue("[Channel" + deck + "]", "jog",
-        interval * DJCi300.bendScale);
 };
 
 // Bending on the jog wheel (rotating using the edge)
 DJCi300.bendWheel = function(channel, control, value, _status, _group) {
-    var deck = channel;
-    DJCi300._bendWheelImpl(deck, value);
+    var interval = DJCi300._convertWheelRotation(value);
+    engine.setValue(
+        "[Channel" + channel + "]", "jog", interval * DJCi300.bendScale);
 };
 
 DJCi300.shutdown = function() {
