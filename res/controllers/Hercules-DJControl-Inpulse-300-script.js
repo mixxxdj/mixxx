@@ -81,7 +81,7 @@ DJCi300.init = function() {
    engine.softTakeover("[Channel2]", "rate", true);
    engine.softTakeoverIgnoreNextValue("[Channel1]", "rate");
    engine.softTakeoverIgnoreNextValue("[Channel2]", "rate");
-   
+
    // Connect the VUMeters
     engine.connectControl("[Channel1]", "VuMeter", "DJCi300.vuMeterUpdateDeck");
 	engine.getValue("[Channel1]", "VuMeter", "DJCi300.vuMeterUpdateDeck");
