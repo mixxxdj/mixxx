@@ -13,7 +13,7 @@ constexpr mixxx::RgbColor kColorMixxxWhite(0xF2F2FF);
 
 // Replaces "no color" values and is used for new cues if auto_hotcue_colors is
 // disabled
-constexpr mixxx::RgbColor kSchemaMigrationReplacementColor(0xFF8000);
+constexpr mixxx::RgbColor kSchemaMigrationReplacementColor(0xFF8C00);
 
 } // anonymous namespace
 
