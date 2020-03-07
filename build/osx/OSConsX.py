@@ -505,6 +505,7 @@ def emit_app(target, source, env):
     # idea: hide these in the env[]?
     bundle = Dir(str(bundle))  # coerce the bundle target into being a Dir
     contents = Dir(os.path.join(str(bundle), "Contents"))
+    # Following variable is unused
     # frameworks = Dir(
     #     os.path.join(str(contents), "Frameworks")
     # )  # we put both frameworks and standard unix sharedlibs in here
@@ -615,6 +616,7 @@ def do_codesign(target, source, env):
 
     keychain = env.get("CODESIGN_KEYCHAIN", None)
     keychain_password = env.get("CODESIGN_KEYCHAIN_PASSWORD", None)
+    # Following variable is unused
     # installer_identity = env.get("CODESIGN_INSTALLER_IDENTITY", None)
     application_identity = env.get("CODESIGN_APPLICATION_IDENTITY", None)
     entitlements = env.get("CODESIGN_ENTITLEMENTS", None)
