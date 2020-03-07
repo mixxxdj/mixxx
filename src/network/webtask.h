@@ -151,7 +151,8 @@ class WebTask : public QObject {
 
     // All member variables must only be accessed from
     // the event loop thread!!
-    QPointer<QNetworkAccessManager> m_networkAccessManager;
+    const QPointer<QNetworkAccessManager> m_networkAccessManager;
+
     int m_timeoutTimerId;
     bool m_abort;
 };

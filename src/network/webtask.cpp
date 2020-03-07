@@ -163,11 +163,9 @@ void WebTask::slotStart(int timeoutMillis) {
                 << "No network access";
         return;
     }
-    VERIFY_OR_DEBUG_ASSERT(!m_abort) {
-        kLogger.warning()
-                << "Task has already been aborted";
-        return;
-    }
+    // The task might be restarted after it has been aborted
+    // or finished.
+    m_abort = false;
 
     kLogger.debug()
             << "Starting...";
@@ -176,13 +174,13 @@ void WebTask::slotStart(int timeoutMillis) {
                 << "Start aborted";
         return;
     }
-    // Task can only be started once
-    m_networkAccessManager = nullptr;
 
     if (m_abort) {
         onAborted();
         return;
     }
+
+    DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
     if (timeoutMillis > 0) {
         m_timeoutTimerId = startTimer(timeoutMillis);
         DEBUG_ASSERT(m_timeoutTimerId != kInvalidTimerId);
@@ -192,7 +190,12 @@ void WebTask::slotStart(int timeoutMillis) {
 void WebTask::slotAbort() {
     DEBUG_ASSERT(thread() == QThread::currentThread());
     if (m_abort) {
+        DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
         return;
+    }
+    if (m_timeoutTimerId != kInvalidTimerId) {
+        killTimer(m_timeoutTimerId);
+        m_timeoutTimerId = kInvalidTimerId;
     }
     m_abort = true;
     kLogger.debug()
@@ -208,8 +211,6 @@ void WebTask::timerEvent(QTimerEvent* event) {
         // ignore
         return;
     }
-    killTimer(timerId);
-    m_timeoutTimerId = kInvalidTimerId;
     kLogger.info()
             << "Timed out";
     slotAbort();
@@ -223,6 +224,11 @@ QPair<QNetworkReply*, HttpStatusCode> WebTask::receiveNetworkReply() {
         return qMakePair(nullptr, statusCode);
     }
     networkReply->deleteLater();
+
+    if (m_timeoutTimerId != kInvalidTimerId) {
+        killTimer(m_timeoutTimerId);
+        m_timeoutTimerId = kInvalidTimerId;
+    }
 
     if (m_abort) {
         onAborted();
