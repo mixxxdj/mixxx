@@ -592,7 +592,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     double cuePosition = getQuantizedCurrentPosition();
     pCue->setStartPosition(cuePosition);
     pCue->setHotCue(hotcue);
-    pCue->setLabel("");
+    pCue->setLabel();
     pCue->setType(mixxx::CueType::HotCue);
     // TODO(XXX) deal with spurious signals
     attachCue(pCue, pControl);

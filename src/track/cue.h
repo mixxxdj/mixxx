@@ -44,7 +44,7 @@ class Cue : public QObject {
     void setHotCue(int hotCue);
 
     QString getLabel() const;
-    void setLabel(QString label);
+    void setLabel(QString label = QString());
 
     PredefinedColorPointer getColor() const;
     void setColor(PredefinedColorPointer color);
