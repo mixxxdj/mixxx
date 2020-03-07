@@ -234,7 +234,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::skipNext() {
     } else if (!rightDeck.isPlaying()) {
         removeLoadedTrackFromTopOfQueue(rightDeck);
         loadNextTrackFromQueue(rightDeck);
-    } else { 
+    } else {
         // If both decks are playing remove next track in playlist
         TrackId nextId = m_pAutoDJTableModel->getTrackId(m_pAutoDJTableModel->index(0, 0));
         TrackId leftId = leftDeck.getLoadedTrack()->getId();
