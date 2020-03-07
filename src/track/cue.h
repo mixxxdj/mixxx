@@ -35,16 +35,20 @@ class Cue : public QObject {
     void setType(mixxx::CueType type);
 
     double getPosition() const;
-    void setStartPosition(double samplePosition);
-    void setEndPosition(double samplePosition);
+    void setStartPosition(
+            double samplePosition = kNoPosition);
+    void setEndPosition(
+            double samplePosition = kNoPosition);
 
     double getLength() const;
 
     int getHotCue() const;
-    void setHotCue(int hotCue);
+    void setHotCue(
+            int hotCue = kNoHotCue);
 
     QString getLabel() const;
-    void setLabel(QString label = QString());
+    void setLabel(
+            QString label = QString());
 
     PredefinedColorPointer getColor() const;
     void setColor(PredefinedColorPointer color);

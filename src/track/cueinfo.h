@@ -34,20 +34,25 @@ class CueInfo {
     CueType getType() const;
     void setType(CueType type);
 
-    void setStartPositionMillis(std::optional<double> positionMillis);
     std::optional<double> getStartPositionMillis() const;
+    void setStartPositionMillis(
+            std::optional<double> positionMillis = std::nullopt);
 
-    void setEndPositionMillis(std::optional<double> positionMillis);
     std::optional<double> getEndPositionMillis() const;
+    void setEndPositionMillis(
+            std::optional<double> positionMillis = std::nullopt);
 
     std::optional<int> getHotCueNumber() const;
-    void setHotCueNumber(std::optional<int> hotCueNumber);
+    void setHotCueNumber(
+            std::optional<int> hotCueNumber = std::nullopt);
 
     QString getLabel() const;
-    void setLabel(QString label);
+    void setLabel(
+            QString label = QString());
 
     mixxx::RgbColor::optional_t getColor() const;
-    void setColor(mixxx::RgbColor::optional_t color);
+    void setColor(
+            mixxx::RgbColor::optional_t color = std::nullopt);
 
   private:
     CueType m_type;
