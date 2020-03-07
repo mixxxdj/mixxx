@@ -64,7 +64,6 @@ QString CueInfo::getLabel() const {
 }
 
 void CueInfo::setLabel(QString label) {
-    DEBUG_ASSERT(!label.isNull());
     m_label = label;
 }
 

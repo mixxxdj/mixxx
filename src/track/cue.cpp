@@ -207,8 +207,6 @@ QString Cue::getLabel() const {
 }
 
 void Cue::setLabel(const QString label) {
-    //qDebug() << "setLabel()" << m_label << "-" << label;
-    DEBUG_ASSERT(!label.isNull());
     QMutexLocker lock(&m_mutex);
     m_label = label;
     m_bDirty = true;
