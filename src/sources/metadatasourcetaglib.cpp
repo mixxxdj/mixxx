@@ -167,23 +167,34 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         if (!taglib::readAudioProperties(pTrackMetadata, file)) {
             break;
         }
-        // Read cover art directly from the file first. Will be
-        // overwritten with cover art contained in on of the tags.
-        if (pCoverImage) {
-            *pCoverImage = taglib::importCoverImageFromVorbisCommentPictureList(file.pictureList());
-        }
+        bool importSucceeded = false;
+        bool coverImageImported = false;
         // VorbisComment tag takes precedence over ID3v2 tag
         if (taglib::hasXiphComment(file)) {
             TagLib::Ogg::XiphComment* pTag = file.xiphComment();
             DEBUG_ASSERT(pTag);
             taglib::importTrackMetadataFromVorbisCommentTag(pTrackMetadata, *pTag);
-            taglib::importCoverImageFromVorbisCommentTag(pCoverImage, *pTag);
-            return afterImport(ImportResult::Succeeded);
+            coverImageImported = taglib::importCoverImageFromVorbisCommentTag(pCoverImage, *pTag);
+            importSucceeded = true;
         } else if (taglib::hasID3v2Tag(file)) {
             const TagLib::ID3v2::Tag* pTag = file.ID3v2Tag();
             DEBUG_ASSERT(pTag);
             taglib::importTrackMetadataFromID3v2Tag(pTrackMetadata, *pTag);
-            taglib::importCoverImageFromID3v2Tag(pCoverImage, *pTag);
+            coverImageImported = taglib::importCoverImageFromID3v2Tag(pCoverImage, *pTag);
+            importSucceeded = true;
+        }
+        // Only import cover images from picture list as a fallback if file tags
+        // are available but no cover image has been found yet! Otherwise until
+        // file tags have been successfully imported once, Mixxx would retry to
+        // import the missing file tags over and over again when loading the
+        // cover image.
+        if (pCoverImage && // cover image is requested
+                importSucceeded &&
+                !coverImageImported) { // no cover image found in file tags
+            // Read cover art directly from the file as a fallback
+            *pCoverImage = taglib::importCoverImageFromVorbisCommentPictureList(file.pictureList());
+        }
+        if (importSucceeded) {
             return afterImport(ImportResult::Succeeded);
         }
         break;

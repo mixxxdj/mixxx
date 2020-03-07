@@ -56,10 +56,10 @@ bool readAudioProperties(
         TrackMetadata* pTrackMetadata,
         const TagLib::File& file);
 
-void importCoverImageFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& tag);
-void importCoverImageFromAPETag(QImage* pCoverArt, const TagLib::APE::Tag& tag);
-void importCoverImageFromVorbisCommentTag(QImage* pCoverArt, TagLib::Ogg::XiphComment& tag);
-void importCoverImageFromMP4Tag(QImage* pCoverArt, const TagLib::MP4::Tag& tag);
+bool importCoverImageFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& tag);
+bool importCoverImageFromAPETag(QImage* pCoverArt, const TagLib::APE::Tag& tag);
+bool importCoverImageFromVorbisCommentTag(QImage* pCoverArt, TagLib::Ogg::XiphComment& tag);
+bool importCoverImageFromMP4Tag(QImage* pCoverArt, const TagLib::MP4::Tag& tag);
 
 QImage importCoverImageFromVorbisCommentPictureList(const TagLib::List<TagLib::FLAC::Picture*>& pictures);
 
