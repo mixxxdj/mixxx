@@ -15,13 +15,14 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "library/stardelegate.h"
 
+#include <QPainter>
 #include <QtDebug>
 
-#include "library/tableitemdelegate.h"
-#include "library/stardelegate.h"
 #include "library/stareditor.h"
 #include "library/starrating.h"
+#include "library/tableitemdelegate.h"
 
 StarDelegate::StarDelegate(QTableView* pTableView)
         : TableItemDelegate(pTableView),
@@ -38,6 +39,8 @@ void StarDelegate::paintItem(
     if (index == m_currentEditedCellIndex) {
         return;
     }
+
+    paintItemBackground(painter, option, index);
 
     StarRating starRating = index.data().value<StarRating>();
     starRating.paint(painter, option.rect);
