@@ -3,8 +3,8 @@
 #include "controllers/colormapperjsproxy.h"
 
 ColorMapperJSProxy::ColorMapperJSProxy(QScriptEngine* pScriptEngine, QMap<QRgb, QVariant> availableColors)
-    : m_pScriptEngine(pScriptEngine) {
-        m_colorMapper = new ColorMapper(availableColors);
+        : m_pScriptEngine(pScriptEngine),
+          m_colorMapper(new ColorMapper(availableColors)) {
 }
 
 QScriptValue ColorMapperJSProxy::getNearestColor(uint colorCode) {

@@ -11,7 +11,7 @@ class ColorMapperJSProxy final : public QObject {
     ColorMapperJSProxy() = delete;
     ColorMapperJSProxy(QScriptEngine* pScriptEngine, QMap<QRgb, QVariant> availableColors);
 
-    ~ColorMapperJSProxy() {
+    ~ColorMapperJSProxy() override {
         delete m_colorMapper;
     };
 
