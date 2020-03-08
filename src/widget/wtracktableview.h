@@ -41,6 +41,8 @@ class WTrackTableView : public WLibraryTableView {
     void keyPressEvent(QKeyEvent* event) override;
     void loadSelectedTrack() override;
     void loadSelectedTrackToGroup(QString group, bool play) override;
+    void assignNextTrackColor() override;
+    void assignPreviousTrackColor() override;
     QList<TrackId> getSelectedTrackIds() const;
     void setSelectedTracks(const QList<TrackId>& tracks);
     void saveCurrentVScrollBarPos();

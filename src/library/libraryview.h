@@ -36,6 +36,11 @@ class LibraryView {
     // increased or decreased by the provided delta. For example, for a value of
     // 1, the view should move to the next selection in the list.
     virtual void moveSelection(int delta) {Q_UNUSED(delta);}
+
+    // If applicable, requests that the LibraryView changes the track color of
+    // the selected track. Does nothing otherwise.
+    virtual void assignPreviousTrackColor(){};
+    virtual void assignNextTrackColor(){};
 };
 
 #endif /* LIBRARYVIEW_H */

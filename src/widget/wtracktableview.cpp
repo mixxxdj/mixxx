@@ -635,6 +635,42 @@ void WTrackTableView::loadSelectionToGroup(QString group, bool play) {
     }
 }
 
+void WTrackTableView::assignPreviousTrackColor() {
+    QModelIndexList indices = selectionModel()->selectedRows();
+    if (indices.size() <= 0) {
+        return;
+    }
+
+    QModelIndex index = indices.at(0);
+    TrackModel* trackModel = getTrackModel();
+    TrackPointer pTrack;
+    if (trackModel &&
+            (pTrack = trackModel->getTrack(index))) {
+        ColorPaletteSettings colorPaletteSettings(m_pConfig);
+        ColorPalette colorPalette = colorPaletteSettings.getTrackColorPalette();
+        mixxx::RgbColor::optional_t color = pTrack->getColor();
+        pTrack->setColor(colorPalette.previousColor(color));
+    }
+}
+
+void WTrackTableView::assignNextTrackColor() {
+    QModelIndexList indices = selectionModel()->selectedRows();
+    if (indices.size() <= 0) {
+        return;
+    }
+
+    QModelIndex index = indices.at(0);
+    TrackModel* trackModel = getTrackModel();
+    TrackPointer pTrack;
+    if (trackModel &&
+            (pTrack = trackModel->getTrack(index))) {
+        ColorPaletteSettings colorPaletteSettings(m_pConfig);
+        ColorPalette colorPalette = colorPaletteSettings.getTrackColorPalette();
+        mixxx::RgbColor::optional_t color = pTrack->getColor();
+        pTrack->setColor(colorPalette.nextColor(color));
+    }
+}
+
 void WTrackTableView::slotRemove() {
     QModelIndexList indices = selectionModel()->selectedRows();
     if (indices.size() > 0) {
