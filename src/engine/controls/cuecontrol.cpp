@@ -47,8 +47,6 @@ CueControl::CueControl(QString group,
           m_pConfig(pConfig),
           m_colorPaletteSettings(ColorPaletteSettings(pConfig)),
           m_bPreviewing(false),
-          // m_pPlay->toBoo() -> engine play state
-          // m_pPlay->set(1.0) -> emulate play button press
           m_pPlay(ControlObject::getControl(ConfigKey(group, "play"))),
           m_pStopButton(ControlObject::getControl(ConfigKey(group, "stop"))),
           m_iCurrentlyPreviewingHotcues(0),
