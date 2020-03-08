@@ -683,7 +683,8 @@ void Track::setCuePoint(CuePosition cue) {
     double position = cue.getPosition();
     if (position != -1.0) {
         if (!pLoadCue) {
-            pLoadCue = CuePointer(new Cue(m_record.getId()));
+            pLoadCue = CuePointer(new Cue());
+            pLoadCue->setTrackId(m_record.getId());
             pLoadCue->setType(mixxx::CueType::MainCue);
             connect(pLoadCue.get(),
                     &Cue::updated,
@@ -713,7 +714,8 @@ void Track::slotCueUpdated() {
 
 CuePointer Track::createAndAddCue() {
     QMutexLocker lock(&m_qMutex);
-    CuePointer pCue(new Cue(m_record.getId()));
+    CuePointer pCue(new Cue());
+    pCue->setTrackId(m_record.getId());
     connect(pCue.get(), &Cue::updated, this, &Track::slotCueUpdated);
     m_cuePoints.push_back(pCue);
     markDirtyAndUnlock(&lock);
@@ -811,7 +813,8 @@ void Track::importCuePoints(const QList<mixxx::CueInfo>& cueInfos) {
 
     QList<CuePointer> cuePoints;
     for (const mixxx::CueInfo& cueInfo : cueInfos) {
-        CuePointer pCue(new Cue(trackId, sampleRate, cueInfo));
+        CuePointer pCue(new Cue(cueInfo, sampleRate));
+        pCue->setTrackId(trackId);
         cuePoints.append(pCue);
     }
     setCuePoints(cuePoints);
