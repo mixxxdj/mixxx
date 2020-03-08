@@ -87,6 +87,8 @@ void CoverArtDelegate::slotCoverFound(const QObject* pRequestor,
 void CoverArtDelegate::paintItem(QPainter *painter,
                              const QStyleOptionViewItem &option,
                              const QModelIndex &index) const {
+    paintItemBackground(painter, option, index);
+
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache == NULL || m_iIdColumn == -1 || m_iCoverSourceColumn == -1 ||
             m_iCoverTypeColumn == -1 || m_iCoverLocationColumn == -1 ||
