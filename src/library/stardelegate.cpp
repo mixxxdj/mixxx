@@ -30,17 +30,10 @@ StarDelegate::StarDelegate(QTableView* pTableView)
     connect(pTableView, &QTableView::entered, this, &StarDelegate::cellEntered);
 }
 
-void StarDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
-                         const QModelIndex& index) const {
-    // let the editor do the painting if this cell is currently being edited
-    if (index == m_currentEditedCellIndex) {
-        return;
-    }
-    TableItemDelegate::paint(painter, option, index);
-}
-
-void StarDelegate::paintItem(QPainter* painter, const QStyleOptionViewItem& option,
-                         const QModelIndex& index) const {
+void StarDelegate::paintItem(
+        QPainter* painter,
+        const QStyleOptionViewItem& option,
+        const QModelIndex& index) const {
     // let the editor do the painting if this cell is currently being edited
     if (index == m_currentEditedCellIndex) {
         return;
