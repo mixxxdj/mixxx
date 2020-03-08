@@ -26,3 +26,8 @@ class TableItemDelegate : public QStyledItemDelegate {
   private:
     QTableView* m_pTableView;
 };
+
+void paintItemBackground(
+        QPainter* painter,
+        const QStyleOptionViewItem& option,
+        const QModelIndex& index);
