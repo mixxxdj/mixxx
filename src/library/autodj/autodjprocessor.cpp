@@ -329,6 +329,18 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::skipNext() {
     } else if (!rightDeck.isPlaying()) {
         removeLoadedTrackFromTopOfQueue(rightDeck);
         loadNextTrackFromQueue(rightDeck);
+    } else {
+        // If both decks are playing remove next track in playlist
+        TrackId nextId = m_pAutoDJTableModel->getTrackId(m_pAutoDJTableModel->index(0, 0));
+        TrackId leftId = leftDeck.getLoadedTrack()->getId();
+        TrackId rightId = rightDeck.getLoadedTrack()->getId();
+        if (nextId == leftId || nextId == rightId) {
+        // One of the playing tracks is still on top of playlist, remove second item
+            m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(1, 0));
+        } else {
+            m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(0, 0));
+        }
+        maybeFillRandomTracks();
     }
     return ADJ_OK;
 }
@@ -898,7 +910,11 @@ bool AutoDJProcessor::removeTrackFromTopOfQueue(TrackPointer pTrack) {
         m_pAutoDJTableModel->appendTrack(nextId);
     }
 
-    // Fill random tracks if configured
+    maybeFillRandomTracks();
+    return true;
+}
+
+void AutoDJProcessor::maybeFillRandomTracks() {
     int minAutoDJCrateTracks = m_pConfig->getValueString(
             ConfigKey(kConfigKey, "RandomQueueMinimumAllowed")).toInt();
     bool randomQueueEnabled = (((m_pConfig->getValueString(
@@ -909,8 +925,6 @@ bool AutoDJProcessor::removeTrackFromTopOfQueue(TrackPointer pTrack) {
         qDebug() << "Randomly adding tracks";
         emit randomTrackRequested(tracksToAdd);
     }
-
-    return true;
 }
 
 void AutoDJProcessor::playerPlayChanged(DeckAttributes* thisDeck, bool playing) {
