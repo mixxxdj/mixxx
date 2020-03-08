@@ -11,12 +11,10 @@
 class ColorMapper final {
   public:
     ColorMapper() = delete;
-    ColorMapper(const QMap<QRgb, QVariant> availableColors)
+    explicit ColorMapper(QMap<QRgb, QVariant> availableColors)
             : m_availableColors(availableColors) {
         DEBUG_ASSERT(!m_availableColors.isEmpty());
     }
-
-    ~ColorMapper() = default;
 
     QPair<QRgb, QVariant> getNearestColor(QRgb desiredColor);
 
