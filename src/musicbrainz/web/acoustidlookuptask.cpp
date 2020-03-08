@@ -147,19 +147,19 @@ void AcoustIdLookupTask::onFinished(
     }
 
     QList<QUuid> recordingIds;
-    DEBUG_ASSERT(jsonObject.value(QStringLiteral("results")).isArray());
-    const QJsonArray results = jsonObject.value(QStringLiteral("results")).toArray();
+    DEBUG_ASSERT(jsonObject.value(QLatin1String("results")).isArray());
+    const QJsonArray results = jsonObject.value(QLatin1String("results")).toArray();
     double maxScore = -1.0; // uninitialized (< 0)
     // Results are expected to be ordered by score (descending)
     for (const auto result : results) {
         DEBUG_ASSERT(result.isObject());
         const auto resultObject = result.toObject();
         const auto resultId =
-                resultObject.value(QStringLiteral("id")).toString();
+                resultObject.value(QLatin1String("id")).toString();
         DEBUG_ASSERT(!resultId.isEmpty());
         // The default score is 1.0 if missing
         const double score =
-                resultObject.value(QStringLiteral("score")).toDouble(1.0);
+                resultObject.value(QLatin1String("score")).toDouble(1.0);
         DEBUG_ASSERT(score >= 0.0);
         DEBUG_ASSERT(score <= 1.0);
         if (maxScore < 0.0) {
@@ -172,7 +172,7 @@ void AcoustIdLookupTask::onFinished(
             // than the maximum score
             break;
         }
-        const auto recordings = result.toObject().value(QStringLiteral("recordings"));
+        const auto recordings = result.toObject().value(QLatin1String("recordings"));
         if (recordings.isUndefined()) {
             if (kLogger.debugEnabled()) {
                 kLogger.debug()
@@ -198,7 +198,7 @@ void AcoustIdLookupTask::onFinished(
                 DEBUG_ASSERT(recording.isObject());
                 const auto recordingObject = recording.toObject();
                 const auto recordingId =
-                        QUuid(recordingObject.value(QStringLiteral("id")).toString());
+                        QUuid(recordingObject.value(QLatin1String("id")).toString());
                 VERIFY_OR_DEBUG_ASSERT(!recordingId.isNull()) {
                      continue;
                 }
