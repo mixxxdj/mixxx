@@ -12,7 +12,32 @@
 #include "util/color/colorpalette.h"
 
 namespace {
-    const QString kDefaultLabel = ""; // empty string, not null
+
+inline std::optional<double> positionSamplesToMillis(
+        double positionSamples,
+        mixxx::AudioSignal::SampleRate sampleRate) {
+    VERIFY_OR_DEBUG_ASSERT(sampleRate.valid()) {
+        return Cue::kNoPosition;
+    }
+    if (positionSamples == Cue::kNoPosition) {
+        return std::nullopt;
+    }
+    // Try to avoid rounding errors
+    return (positionSamples * 1000) / (sampleRate * mixxx::kEngineChannelCount);
+}
+
+inline double positionMillisToSamples(
+        std::optional<double> positionMillis,
+        mixxx::AudioSignal::SampleRate sampleRate) {
+    VERIFY_OR_DEBUG_ASSERT(sampleRate.valid()) {
+        return Cue::kNoPosition;
+    }
+    if (!positionMillis) {
+        return Cue::kNoPosition;
+    }
+    // Try to avoid rounding errors
+    return (*positionMillis * sampleRate * mixxx::kEngineChannelCount) / 1000;
+}
 }
 
 //static
@@ -22,20 +47,18 @@ void CuePointer::deleteLater(Cue* pCue) {
     }
 }
 
-Cue::Cue(TrackId trackId)
+Cue::Cue()
         : m_bDirty(false),
           m_iId(-1),
-          m_trackId(trackId),
           m_type(mixxx::CueType::Invalid),
           m_sampleStartPosition(Cue::kNoPosition),
           m_sampleEndPosition(Cue::kNoPosition),
-          m_iHotCue(-1),
-          m_label(kDefaultLabel),
+          m_iHotCue(Cue::kNoHotCue),
           m_color(ColorPalette::kDefaultCueColor) {
-    DEBUG_ASSERT(!m_label.isNull());
 }
 
-Cue::Cue(int id,
+Cue::Cue(
+        int id,
         TrackId trackId,
         mixxx::CueType type,
         double position,
@@ -51,7 +74,6 @@ Cue::Cue(int id,
           m_iHotCue(hotCue),
           m_label(label),
           m_color(color) {
-    DEBUG_ASSERT(!m_label.isNull());
     if (length) {
         if (position != Cue::kNoPosition) {
             m_sampleEndPosition = position + length;
@@ -63,34 +85,35 @@ Cue::Cue(int id,
     }
 }
 
-Cue::Cue(TrackId trackId, mixxx::AudioSignal::SampleRate sampleRate, const mixxx::CueInfo& cueInfo)
+Cue::Cue(
+        const mixxx::CueInfo& cueInfo,
+        mixxx::AudioSignal::SampleRate sampleRate)
         : m_bDirty(false),
           m_iId(-1),
-          m_trackId(trackId),
           m_type(cueInfo.getType()),
-          m_sampleStartPosition(Cue::kNoPosition),
-          m_sampleEndPosition(Cue::kNoPosition),
-          m_iHotCue(Cue::kNoHotCue),
+          m_sampleStartPosition(
+                  positionMillisToSamples(
+                          cueInfo.getStartPositionMillis(),
+                          sampleRate)),
+          m_sampleEndPosition(
+                  positionMillisToSamples(
+                          cueInfo.getEndPositionMillis(),
+                          sampleRate)),
+          m_iHotCue(cueInfo.getHotCueNumber() ? *cueInfo.getHotCueNumber() : kNoHotCue),
           m_label(cueInfo.getLabel()),
           m_color(cueInfo.getColor().value_or(ColorPalette::kDefaultCueColor)) {
-    DEBUG_ASSERT(!m_label.isNull());
-    DEBUG_ASSERT(sampleRate.valid());
+}
 
-    const double sampleRateKhz = sampleRate / 1000.0;
-    const double millisecsToSamplesFactor = sampleRateKhz * mixxx::kEngineChannelCount;
-    DEBUG_ASSERT(millisecsToSamplesFactor > 0);
-
-    if (cueInfo.getStartPositionMillis()) {
-        m_sampleStartPosition = (*cueInfo.getStartPositionMillis()) * millisecsToSamplesFactor;
-    }
-
-    if (cueInfo.getEndPositionMillis()) {
-        m_sampleEndPosition = (*cueInfo.getEndPositionMillis()) * millisecsToSamplesFactor;
-    }
-
-    if (cueInfo.getHotCueNumber()) {
-        m_iHotCue = *cueInfo.getHotCueNumber();
-    }
+mixxx::CueInfo Cue::getCueInfo(
+        mixxx::AudioSignal::SampleRate sampleRate) const {
+    QMutexLocker lock(&m_mutex);
+    return mixxx::CueInfo(
+            m_type,
+            positionSamplesToMillis(m_sampleStartPosition, sampleRate),
+            positionSamplesToMillis(m_sampleEndPosition, sampleRate),
+            m_iHotCue == kNoHotCue ? std::nullopt : std::make_optional(m_iHotCue),
+            m_label,
+            m_color);
 }
 
 int Cue::getId() const {
@@ -184,8 +207,6 @@ QString Cue::getLabel() const {
 }
 
 void Cue::setLabel(const QString label) {
-    //qDebug() << "setLabel()" << m_label << "-" << label;
-    DEBUG_ASSERT(!label.isNull());
     QMutexLocker lock(&m_mutex);
     m_label = label;
     m_bDirty = true;

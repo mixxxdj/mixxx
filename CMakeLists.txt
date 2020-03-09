@@ -426,13 +426,16 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/mixer/samplerbank.cpp
   src/mixxx.cpp
   src/mixxxapplication.cpp
-  src/musicbrainz/acoustidclient.cpp
   src/musicbrainz/chromaprinter.cpp
   src/musicbrainz/crc.c
   src/musicbrainz/gzip.cpp
-  src/musicbrainz/musicbrainzclient.cpp
-  src/musicbrainz/network.cpp
+  src/musicbrainz/musicbrainz.cpp
+  src/musicbrainz/musicbrainzxml.cpp
   src/musicbrainz/tagfetcher.cpp
+  src/musicbrainz/web/acoustidlookuptask.cpp
+  src/musicbrainz/web/musicbrainzrecordingstask.cpp
+  src/network/jsonwebtask.cpp
+  src/network/webtask.cpp
   src/preferences/broadcastprofile.cpp
   src/preferences/broadcastsettings.cpp
   src/preferences/broadcastsettings_legacy.cpp
@@ -522,6 +525,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/replaygain.cpp
   src/track/serato/markers.cpp
   src/track/serato/markers2.cpp
+  src/track/serato/tags.cpp
   src/track/track.cpp
   src/track/trackfile.cpp
   src/track/trackinfo.cpp
@@ -934,6 +938,7 @@ add_executable(mixxx-test
   src/test/coverartcache_test.cpp
   src/test/coverartutils_test.cpp
   src/test/cratestorage_test.cpp
+  src/test/cue_test.cpp
   src/test/cuecontrol_test.cpp
   src/test/dbconnectionpool_test.cpp
   src/test/dbidtest.cpp
@@ -981,6 +986,7 @@ add_executable(mixxx-test
   src/test/searchqueryparsertest.cpp
   src/test/seratomarkerstest.cpp
   src/test/seratomarkers2test.cpp
+  src/test/seratotagstest.cpp
   src/test/signalpathtest.cpp
   src/test/skincontext_test.cpp
   src/test/softtakeover_test.cpp

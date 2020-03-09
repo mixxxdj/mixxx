@@ -614,7 +614,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     double cuePosition = getQuantizedCurrentPosition();
     pCue->setStartPosition(cuePosition);
     pCue->setHotCue(hotcue);
-    pCue->setLabel("");
+    pCue->setLabel();
     pCue->setType(mixxx::CueType::HotCue);
 
     ConfigKey autoHotcueColorsKey("[Controls]", "auto_hotcue_colors");

@@ -11,7 +11,6 @@
 
 namespace mixxx {
 
-// Forward declaration
 class SeratoMarkersEntry;
 typedef std::shared_ptr<SeratoMarkersEntry> SeratoMarkersEntryPointer;
 

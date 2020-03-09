@@ -419,10 +419,10 @@ bool parseSeratoMarkers(
         const QByteArray& data) {
     DEBUG_ASSERT(pTrackMetadata);
 
-    SeratoMarkers seratoMarkers(pTrackMetadata->getTrackInfo().getSeratoMarkers());
-    bool isValid = SeratoMarkers::parse(&seratoMarkers, data);
+    SeratoTags seratoTags(pTrackMetadata->getTrackInfo().getSeratoTags());
+    bool isValid = seratoTags.parseMarkers(data);
     if (isValid) {
-        pTrackMetadata->refTrackInfo().setSeratoMarkers(seratoMarkers);
+        pTrackMetadata->refTrackInfo().setSeratoTags(seratoTags);
     }
     return isValid;
 }
@@ -432,10 +432,10 @@ bool parseSeratoMarkers2(
         const QByteArray& data) {
     DEBUG_ASSERT(pTrackMetadata);
 
-    SeratoMarkers2 seratoMarkers2(pTrackMetadata->getTrackInfo().getSeratoMarkers2());
-    bool isValid = SeratoMarkers2::parse(&seratoMarkers2, data);
+    SeratoTags seratoTags(pTrackMetadata->getTrackInfo().getSeratoTags());
+    bool isValid = seratoTags.parseMarkers2(data);
     if (isValid) {
-        pTrackMetadata->refTrackInfo().setSeratoMarkers2(seratoMarkers2);
+        pTrackMetadata->refTrackInfo().setSeratoTags(seratoTags);
     }
     return isValid;
 }
@@ -2312,7 +2312,7 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
     writeID3v2CommentsFrameWithoutDescription(pTag, trackMetadata.getTrackInfo().getComment());
 
     writeID3v2TextIdentificationFrame(pTag, "TRCK",
-            TrackNumbers::joinStrings(
+            TrackNumbers::joinAsString(
                     trackMetadata.getTrackInfo().getTrackNumber(),
                     trackMetadata.getTrackInfo().getTrackTotal()));
 
@@ -2403,7 +2403,7 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
             true);
 
 #if defined(__EXTRA_METADATA__)
-    writeID3v2TextIdentificationFrame(pTag, "TPOS", TrackNumbers::joinStrings(
+    writeID3v2TextIdentificationFrame(pTag, "TPOS", TrackNumbers::joinAsString(
             trackMetadata.getTrackInfo().getDiscNumber(),
             trackMetadata.getTrackInfo().getDiscTotal()));
 
@@ -2516,11 +2516,11 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
     writeID3v2GeneralEncapsulatedObjectFrame(
             pTag,
             "Serato Markers_",
-            trackMetadata.getTrackInfo().getSeratoMarkers().dump());
+            trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers());
     writeID3v2GeneralEncapsulatedObjectFrame(
             pTag,
             "Serato Markers2",
-            trackMetadata.getTrackInfo().getSeratoMarkers2().dump());
+            trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2());
 #endif // __EXTRA_METADATA__
 
     return true;
@@ -2538,7 +2538,7 @@ bool exportTrackMetadataIntoAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& 
     // part of the tag with the custom string from the track metadata
     // (pass-through without any further validation)
     writeAPEItem(pTag, "Track",
-            toTString(TrackNumbers::joinStrings(
+            toTString(TrackNumbers::joinAsString(
                     trackMetadata.getTrackInfo().getTrackNumber(),
                     trackMetadata.getTrackInfo().getTrackTotal())));
 
@@ -2564,7 +2564,7 @@ bool exportTrackMetadataIntoAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& 
             toTString(formatTrackPeak(trackMetadata)));
 
 #if defined(__EXTRA_METADATA__)
-    auto discNumbers = TrackNumbers::joinStrings(
+    auto discNumbers = TrackNumbers::joinAsString(
             trackMetadata.getTrackInfo().getDiscNumber(),
             trackMetadata.getTrackInfo().getDiscTotal());
     writeAPEItem(pTag, "Disc", toTString(discNumbers));
@@ -2781,7 +2781,7 @@ bool exportTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& 
         break;
     default:
         kLogger.warning() << "Invalid track numbers:"
-            << TrackNumbers::joinStrings(
+            << TrackNumbers::joinAsString(
                     trackMetadata.getTrackInfo().getTrackNumber(),
                     trackMetadata.getTrackInfo().getTrackTotal());
     }
@@ -2832,7 +2832,7 @@ bool exportTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& 
             break;
         default:
             kLogger.warning() << "Invalid disc numbers:"
-                              << TrackNumbers::joinStrings(
+                              << TrackNumbers::joinAsString(
                                          trackMetadata.getTrackInfo().getDiscNumber(),
                                          trackMetadata.getTrackInfo().getDiscTotal());
     }

@@ -279,13 +279,19 @@ class Track : public QObject {
     void setCoverInfo(const CoverInfoRelative& coverInfo);
     CoverInfoRelative getCoverInfo() const;
     CoverInfo getCoverInfoWithLocation() const;
+    // Verify the cover image hash and update it if necessary.
+    // If the corresponding image has already been loaded it
+    // could be provided as a parameter to avoid reloading
+    // if actually needed.
+    bool refreshCoverImageHash(
+            const QImage& loadedImage = QImage());
 
     quint16 getCoverHash() const;
 
     // Set/get track metadata and cover art (optional) all at once.
     void importMetadata(
             mixxx::TrackMetadata importedMetadata,
-            QDateTime metadataSynchronized);
+            QDateTime metadataSynchronized = QDateTime());
     // Merge additional metadata that is not (yet) stored in the database
     // and only available from file tags.
     void mergeImportedMetadata(

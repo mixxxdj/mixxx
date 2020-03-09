@@ -101,7 +101,7 @@ public:
             QString* pActualText = nullptr,
             QString* pTotalText = nullptr);
     // Joins the actual and total strings
-    static QString joinStrings(
+    static QString joinAsString(
             const QString& actualText,
             const QString& totalText);
 

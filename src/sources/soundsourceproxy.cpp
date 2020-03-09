@@ -464,7 +464,7 @@ QImage SoundSourceProxy::importCoverImage() const {
             return coverImg;
         }
     }
-    // Failed ore unavailable
+    // Failed or unavailable
     return QImage();
 }
 
