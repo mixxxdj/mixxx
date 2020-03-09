@@ -23,21 +23,34 @@ QScriptValue ColorMapperJSProxy::getNearestValue(uint colorCode) {
 
 QScriptValue ColorMapperJSProxyConstructor(QScriptContext* pScriptContext, QScriptEngine* pScriptEngine) {
     QMap<QRgb, QVariant> availableColors;
-    DEBUG_ASSERT(pScriptContext->argumentCount() == 1);
-    QScriptValueIterator it(pScriptContext->argument(0));
+    if (pScriptContext->argumentCount() != 1) {
+        pScriptContext->throwError(
+                QStringLiteral("Failed to create ColorMapper object: constructor takes exactly one argument!"));
+        return pScriptEngine->undefinedValue();
+    }
+    QScriptValue argument = pScriptContext->argument(0);
+    if (!argument.isValid() || !argument.isObject()) {
+        pScriptContext->throwError(
+                QStringLiteral("Failed to create ColorMapper object: argument needs to be an object!"));
+        return pScriptEngine->undefinedValue();
+    }
+
+    QScriptValueIterator it(argument);
     while (it.hasNext()) {
         it.next();
-        DEBUG_ASSERT(!it.value().isObject());
         QColor color(it.name());
-        VERIFY_OR_DEBUG_ASSERT(color.isValid()) {
-            qWarning() << "Received invalid color name from controller script:" << it.name();
+        if (color.isValid()) {
+            availableColors.insert(color.rgb(), it.value().toVariant());
+        } else {
+            pScriptContext->throwError(
+                    QStringLiteral("Invalid color name passed to ColorMapper: ") + it.name());
             continue;
         }
-        availableColors.insert(color.rgb(), it.value().toVariant());
     }
 
     if (availableColors.isEmpty()) {
-        qWarning() << "Failed to create ColorMapper object: available colors mustn't be empty!";
+        pScriptContext->throwError(
+                QStringLiteral("Failed to create ColorMapper object: available colors mustn't be empty!"));
         return pScriptEngine->undefinedValue();
     }
 
