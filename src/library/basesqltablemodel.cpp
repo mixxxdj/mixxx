@@ -40,6 +40,9 @@ const int kMaxSortColumns = 3;
 // Constant for getModelSetting(name)
 const QString COLUMNS_SORTING = QStringLiteral("ColumnsSorting");
 
+// Alpha value for row color background (range 0 - 255)
+constexpr int kTrackColorRowBackgroundOpacity = 0x20; // 12.5% opacity
+
 } // anonymous namespace
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
@@ -732,7 +735,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
         QColor color = mixxx::RgbColor::toQColor(
                 mixxx::RgbColor::fromQVariant(getBaseValue(colorIndex, role)));
         if (color.isValid()) {
-            color.setAlpha(32); // Make this 12.5% opaque
+            color.setAlpha(kTrackColorRowBackgroundOpacity);
             value = QBrush(color);
         }
         break;
