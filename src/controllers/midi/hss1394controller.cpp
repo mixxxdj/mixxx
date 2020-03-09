@@ -65,7 +65,7 @@ void DeviceChannelListener::Reconnected() {
 }
 
 Hss1394Controller::Hss1394Controller(
-        const hss1394::TNodeInfo deviceInfo,
+        const hss1394::TNodeInfo& deviceInfo,
         int deviceIndex,
         UserSettingsPointer pConfig)
         : MidiController(pConfig),
