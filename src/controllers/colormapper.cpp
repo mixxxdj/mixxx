@@ -3,9 +3,12 @@
 #include <cmath>
 #include <cstdint>
 
-#include "util/debug.h"
+#include "util/logger.h"
 
 namespace {
+
+const mixxx::Logger kLogger("ColorMapper");
+
 double colorDistance(QRgb a, QRgb b) {
     // This algorithm calculates the distance between two colors. In
     // contrast to the L2 norm, this also tries take the human perception
@@ -23,6 +26,7 @@ double colorDistance(QRgb a, QRgb b) {
             (4 * delta_green * delta_green) +
             (((767 - mean_red) * delta_blue * delta_blue) >> 8));
 }
+
 } // namespace
 
 QPair<QRgb, QVariant> ColorMapper::getNearestColor(QRgb desiredColor) {
@@ -32,9 +36,10 @@ QPair<QRgb, QVariant> ColorMapper::getNearestColor(QRgb desiredColor) {
     if (i != m_cache.constEnd()) {
         j = m_availableColors.find(i.value());
         DEBUG_ASSERT(j != m_availableColors.constEnd());
-        qDebug() << "ColorMapper cache hit for" << desiredColor << ":"
-                 << "Color =" << j.key() << ","
-                 << "Value =" << j.value();
+        kLogger.trace()
+                << "ColorMapper cache hit for" << desiredColor << ":"
+                << "Color =" << j.key() << ","
+                << "Value =" << j.value();
         return QPair<QRgb, QVariant>(j.key(), j.value());
     }
 
@@ -51,9 +56,10 @@ QPair<QRgb, QVariant> ColorMapper::getNearestColor(QRgb desiredColor) {
     }
 
     DEBUG_ASSERT(nearestColorDistance < qInf());
-    qDebug() << "ColorMapper found matching color for" << desiredColor << ":"
-             << "Color =" << nearestColorIterator.key() << ","
-             << "Value =" << nearestColorIterator.value();
+    kLogger.trace()
+            << "ColorMapper found matching color for" << desiredColor << ":"
+            << "Color =" << nearestColorIterator.key() << ","
+            << "Value =" << nearestColorIterator.value();
     m_cache.insert(desiredColor, nearestColorIterator.key());
     return QPair<QRgb, QVariant>(nearestColorIterator.key(), nearestColorIterator.value());
 }
