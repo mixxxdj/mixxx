@@ -19,6 +19,8 @@ class ColorMapperJSProxy final : public QObject {
     };
 
   public slots:
+    // These slots have a return value, because they are callable from
+    // controller scripts
     QScriptValue getNearestColor(uint ColorCode);
     QScriptValue getNearestValue(uint ColorCode);
 
