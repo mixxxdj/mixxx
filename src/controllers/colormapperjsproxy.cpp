@@ -8,7 +8,7 @@ ColorMapperJSProxy::ColorMapperJSProxy(QScriptEngine* pScriptEngine, QMap<QRgb, 
 }
 
 QScriptValue ColorMapperJSProxy::getNearestColor(uint colorCode) {
-    QPair<QRgb, QVariant> result = m_colorMapper->getNearestColor(static_cast<QRgb>(colorCode));
+    auto result = m_colorMapper->getNearestColor(static_cast<QRgb>(colorCode));
     QScriptValue jsColor = m_pScriptEngine->newObject();
     jsColor.setProperty("red", qRed(result.first));
     jsColor.setProperty("green", qGreen(result.first));
