@@ -24,7 +24,6 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
 #include "library/dao/libraryhashdao.h"
-#include "library/coverartcache.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
 #include "track/keyfactory.h"
@@ -1292,6 +1291,9 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
         SoundSourceProxy(pTrack).updateTrackFromSource();
     }
 
+    // Validate and refresh cover image hash values if needed.
+    pTrack->refreshCoverImageHash();
+
     // Listen to signals from Track objects and forward them to
     // receivers. TrackDAO works as a relay for selected track signals
     // that allows receivers to use permament connections with
@@ -1892,9 +1894,12 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
             continue;
         }
 
+        SecurityTokenPointer pToken = Sandbox::openSecurityToken(
+                trackFile.asFileInfo(), true);
         const auto embeddedCover =
                 CoverArtUtils::extractEmbeddedCover(
-                        trackFile);
+                        trackFile,
+                        pToken);
         const auto coverInfo =
                 coverInfoGuesser.guessCoverInfo(
                         trackFile,
@@ -1959,11 +1964,7 @@ TrackPointer TrackDAO::getOrAddTrack(
 
     // If the track wasn't in the library already then it has not yet
     // been checked for cover art.
-    CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache) {
-        // Process cover art asynchronously
-        pCache->requestGuessCover(pTrack);
-    }
+    guessTrackCoverInfoConcurrently(pTrack);
 
     return pTrack;
 }

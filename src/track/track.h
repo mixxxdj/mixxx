@@ -279,6 +279,12 @@ class Track : public QObject {
     void setCoverInfo(const CoverInfoRelative& coverInfo);
     CoverInfoRelative getCoverInfo() const;
     CoverInfo getCoverInfoWithLocation() const;
+    // Verify the cover image hash and update it if necessary.
+    // If the corresponding image has already been loaded it
+    // could be provided as a parameter to avoid reloading
+    // if actually needed.
+    bool refreshCoverImageHash(
+            const QImage& loadedImage = QImage());
 
     quint16 getCoverHash() const;
 

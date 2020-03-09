@@ -960,16 +960,20 @@ TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
     return m_pTrackCollectionManager->internalCollection()->getTrackById(getTrackId(index));
 }
 
+TrackPointer BaseSqlTableModel::getTrackByRef(
+        const TrackRef& trackRef) const {
+    return m_pTrackCollectionManager->internalCollection()->getTrackByRef(trackRef);
+}
+
 QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
     if (!index.isValid()) {
-        return "";
+        return QString();
     }
     QString nativeLocation =
             index.sibling(index.row(),
                     fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION))
                             .data().toString();
-    QString location = QDir::fromNativeSeparators(nativeLocation);
-    return location;
+    return QDir::fromNativeSeparators(nativeLocation);
 }
 
 void BaseSqlTableModel::trackLoaded(QString group, TrackPointer pTrack) {
