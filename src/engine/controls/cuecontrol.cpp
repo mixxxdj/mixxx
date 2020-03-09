@@ -27,7 +27,9 @@ constexpr double kNoColorControlValue = -1;
 
 namespace {
 
-// Helper function to convert doubles into RgbColor instances (or nullopt)
+// Helper function to convert control values (i.e. doubles) into RgbColor
+// instances (or nullopt if value < 0). This happens by using the integer
+// component as RGB color codes (e.g. 0xFF0000).
 inline mixxx::RgbColor::optional_t doubleToRgbColor(double value) {
     if (value < 0) {
         return std::nullopt;

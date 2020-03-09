@@ -5,6 +5,9 @@
 
 #include "controllers/colormapper.h"
 
+// This is a wrapper class that exposes ColorMapper via the QScriptEngine and
+// makes it possible to create and use ColorMapper object from JavaScript
+// controller mappings.
 class ColorMapperJSProxy final : public QObject {
     Q_OBJECT
   public:
