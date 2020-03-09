@@ -929,6 +929,7 @@ add_executable(mixxx-test
   src/test/cache_test.cpp
   src/test/channelhandle_test.cpp
   src/test/colorconfig_test.cpp
+  src/test/colormapperjsproxy_test.cpp
   src/test/colorpalette_test.cpp
   src/test/compatibility_test.cpp
   src/test/configobject_test.cpp
