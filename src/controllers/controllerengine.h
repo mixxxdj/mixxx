@@ -197,7 +197,7 @@ class ControllerEngine : public QObject {
     double getDeckRate(const QString& group);
 
     Controller* m_pController;
-    UserSettingsPointer m_pConfig;
+    const UserSettingsPointer m_pConfig;
     bool m_bPopups;
     QList<QString> m_scriptFunctionPrefixes;
     QMap<QString, QStringList> m_scriptErrors;
