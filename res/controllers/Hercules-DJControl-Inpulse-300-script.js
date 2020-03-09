@@ -49,7 +49,7 @@ DJCi300.kScratchActionScratch = 1;
 DJCi300.kScratchActionSeek = 2;
 DJCi300.kScratchActionBend = 3;
 
-DJCi300.vuMeterUpdateMaster = function(value, group, control) {
+DJCi300.vuMeterUpdateMaster = function(value, _group, _control) {
     value = (value * 122) + 5;
     midi.sendShortMsg(0xB0, 0x40, value);
     midi.sendShortMsg(0xB0, 0x41, value);
