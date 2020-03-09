@@ -52,6 +52,13 @@ class CoverInfoRelative {
     CoverInfoRelative(CoverInfoRelative&&) = default;
     CoverInfoRelative& operator=(CoverInfoRelative&&) = default;
 
+    /*non-virtual*/ void reset() {
+        // Slicing when invoked from a subclass is intended!
+        // Only the contents of this base class are supposed
+        // to be reset, i.e. trackLocation should be preserved.
+        *this = CoverInfoRelative();
+    }
+
     Source source;
     Type type;
     QString coverLocation; // relative path, from track location
@@ -80,6 +87,14 @@ class CoverInfo : public CoverInfoRelative {
 
     QImage loadImage(
             const SecurityTokenPointer& pTrackLocationToken = SecurityTokenPointer()) const;
+
+    // Verify the image hash and update it if necessary.
+    // If the corresponding image has already been loaded it
+    // could be provided as a parameter to avoid reloading
+    // if actually needed.
+    bool refreshImageHash(
+            const QImage& loadedImage = QImage(),
+            const SecurityTokenPointer& pTrackLocationToken = SecurityTokenPointer());
 
     QString trackLocation;
 };
