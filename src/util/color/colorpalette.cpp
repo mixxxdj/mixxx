@@ -4,9 +4,9 @@ namespace {
 
 constexpr mixxx::RgbColor kColorMixxxRed(0xC50A08);
 constexpr mixxx::RgbColor kColorMixxxYellow(0x32BE44);
-constexpr mixxx::RgbColor kColorMixxxGreen(0x0044FF);
+constexpr mixxx::RgbColor kColorMixxxGreen(0x42D4F4);
 constexpr mixxx::RgbColor kColorMixxxCeleste(0xF8D200);
-constexpr mixxx::RgbColor kColorMixxxBlue(0x42D4F4);
+constexpr mixxx::RgbColor kColorMixxxBlue(0x0044FF);
 constexpr mixxx::RgbColor kColorMixxxPurple(0xAF00CC);
 constexpr mixxx::RgbColor kColorMixxxPink(0xFCA6D7);
 constexpr mixxx::RgbColor kColorMixxxWhite(0xF2F2FF);
