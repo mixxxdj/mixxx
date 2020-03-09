@@ -175,6 +175,7 @@ void WebTask::slotStart(int timeoutMillis) {
         return;
     }
 
+    // The task could be aborted immediately while being started.
     if (m_abort) {
         onAborted();
         return;
