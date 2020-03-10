@@ -1060,6 +1060,10 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
     TrackPointer track = BaseExternalPlaylistModel::getTrack(index);
     QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
 
+    if (!QFile(location).exists()) {
+        return track;
+    }
+
     // The following code accounts for timing offsets required to
     // correctly align timing information (cue points, loops, beatgrids)
     // exported from Rekordbox. This is caused by different MP3
