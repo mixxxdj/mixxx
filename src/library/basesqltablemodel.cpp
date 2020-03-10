@@ -737,6 +737,8 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
         if (color.isValid()) {
             color.setAlpha(kTrackColorRowBackgroundOpacity);
             value = QBrush(color);
+        } else {
+            value = QVariant();
         }
         break;
     }
