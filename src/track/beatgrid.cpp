@@ -312,13 +312,6 @@ void BeatGrid::removeBeat(double dBeatSample) {
     return;
 }
 
-void BeatGrid::moveBeat(double dBeatSample, double dNewBeatSample) {
-    Q_UNUSED(dBeatSample);
-    Q_UNUSED(dNewBeatSample);
-    //QMutexLocker locker(&m_mutex);
-    return;
-}
-
 void BeatGrid::translate(double dNumSamples) {
     QMutexLocker locker(&m_mutex);
     if (!isValid()) {
