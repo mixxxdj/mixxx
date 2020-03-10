@@ -9,6 +9,16 @@
 * Remove VAMP plugin support. vamp-plugin-sdk and vamp-hostsdk are no longer required dependencies.
 * Remove SoundSource plugin support. [lp:1792747](https://bugs.launchpad.net/mixxx/+bug/1792747)
 * Add Opus streaming and recording support. [lp:1338413](https://bugs.launchpad.net/mixxx/+bug/1338413)
+* Improve synchronization of track metadata and file tags #2406
+* Add support for track colors [lp:1100882](https://bugs.launchpad.net/mixxx/+bug/1100882) #2470
+* Fix error prone recording settings preferences design [lp:1861421](https://bugs.launchpad.net/mixxx/+bug/1861421) #2478
+* Add Serato removable library feature #2480
+* Library Scanner: Improve hashing of directory contents #2497
+* Make Mixxx compile even though QT_NO_OPENGL or QT_OPENGL_ES_2 is defined (fixes build on RPi) [lp:1863440](https://bugs.launchpad.net/mixxx/+bug/1863440) #2504
+* Rework of Cover Image Hashing [lp:1607097](https://bugs.launchpad.net/mixxx/+bug/1607097) #2507 #2508
+* MusicBrainz: Handle 301 status response #2510
+* MusicBrainz: Add extended metadata support [lp:1581256](https://bugs.launchpad.net/mixxx/+bug/1581256) #2522
+* TagLib: Fix detection of empty or missing file tags [lp:1865957](https://bugs.launchpad.net/mixxx/+bug/1865957) #2535
 * Add mapping for Roland DJ-505 #2111
 
 ## [2.2.4](https://launchpad.net/mixxx/+milestone/2.2.4) (Unreleased)
