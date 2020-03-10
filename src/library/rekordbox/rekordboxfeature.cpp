@@ -14,6 +14,7 @@
 #include <mp3guessenc.h>
 
 #include "engine/engine.h"
+#include "library/dao/trackschema.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/missingtablemodel.h"
@@ -39,27 +40,121 @@
 
 namespace {
 
+const QString kRekordboxLibraryTable = QStringLiteral("rekordbox_library");
+const QString kRekordboxPlaylistsTable = QStringLiteral("rekordbox_playlists");
+const QString kRekordboxPlaylistTracksTable = QStringLiteral("rekordbox_playlist_tracks");
+
 const QString kPdbPath = QStringLiteral("PIONEER/rekordbox/export.pdb");
 const QString kPLaylistPathDelimiter = QStringLiteral("-->");
-const double kLongestPosition = 999999999.0;
+constexpr double kLongestPosition = 999999999.0;
 
-void clearTable(QSqlDatabase& database, QString tableName) {
+enum class TrackColor : uint8_t {
+    Pink = 1,
+    Red,
+    Orange,
+    Yellow,
+    Green,
+    Aqua,
+    Blue,
+    Purple
+};
+
+constexpr mixxx::RgbColor kTrackColorPink(0xF870F8);
+constexpr mixxx::RgbColor kTrackColorRed(0xF870900);
+constexpr mixxx::RgbColor kTrackColorOrange(0xF8A030);
+constexpr mixxx::RgbColor kTrackColorYellow(0xF8E331);
+constexpr mixxx::RgbColor kTrackColorGreen(0x1EE000);
+constexpr mixxx::RgbColor kTrackColorAqua(0x16C0F8);
+constexpr mixxx::RgbColor kTrackColorBlue(0x0150F8);
+constexpr mixxx::RgbColor kTrackColorPurple(0x9808F8);
+
+bool createLibraryTable(QSqlDatabase& database, const QString& tableName) {
+    qDebug() << "Creating Rekordbox library table: " << tableName;
+
     QSqlQuery query(database);
-    query.prepare("delete from " + tableName);
+    query.prepare(
+            "CREATE TABLE IF NOT EXISTS " + tableName +
+            " ("
+            "    id INTEGER PRIMARY KEY AUTOINCREMENT,"
+            "    rb_id INTEGER,"
+            "    artist TEXT,"
+            "    title TEXT,"
+            "    album TEXT,"
+            "    year INTEGER,"
+            "    genre TEXT,"
+            "    tracknumber TEXT,"
+            "    location TEXT UNIQUE,"
+            "    comment TEXT,"
+            "    duration INTEGER,"
+            "    bitrate TEXT,"
+            "    bpm FLOAT,"
+            "    key TEXT,"
+            "    rating INTEGER,"
+            "    analyze_path TEXT UNIQUE,"
+            "    device TEXT,"
+            "    color INTEGER"
+            ");");
 
     if (!query.exec()) {
-        LOG_FAILED_QUERY(query)
-                << "tableName:" << tableName;
-    } else {
-        query.prepare("delete from sqlite_sequence where name='" + tableName + "'");
-
-        if (!query.exec()) {
-            LOG_FAILED_QUERY(query)
-                    << "tableName:" << tableName;
-        } else {
-            qDebug() << "Rekordbox table entries of '" << tableName << "' have been cleared.";
-        }
+        LOG_FAILED_QUERY(query);
+        return false;
     }
+
+    return true;
+}
+
+bool createPlaylistsTable(QSqlDatabase& database, const QString& tableName) {
+    qDebug() << "Creating Rekordbox playlists table: " << tableName;
+
+    QSqlQuery query(database);
+    query.prepare(
+            "CREATE TABLE IF NOT EXISTS " + tableName +
+            " ("
+            "    id INTEGER PRIMARY KEY,"
+            "    name TEXT UNIQUE"
+            ");");
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
+
+    return true;
+}
+
+bool createPlaylistTracksTable(QSqlDatabase& database, const QString& tableName) {
+    qDebug() << "Creating Rekordbox playlist tracks table: " << tableName;
+
+    QSqlQuery query(database);
+    query.prepare(
+            "CREATE TABLE IF NOT EXISTS " + tableName +
+            " ("
+            "    id INTEGER PRIMARY KEY AUTOINCREMENT,"
+            "    playlist_id INTEGER REFERENCES rekordbox_playlists(id),"
+            "    track_id INTEGER REFERENCES rekordbox_library(id),"
+            "    position INTEGER"
+            ");");
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
+
+    return true;
+}
+
+bool dropTable(QSqlDatabase& database, QString tableName) {
+    qDebug() << "Dropping Rekordbox table: " << tableName;
+
+    QSqlQuery query(database);
+    query.prepare("DROP TABLE IF EXISTS " + tableName);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
+
+    return true;
 }
 
 // This function is executed in a separate thread other than the main thread
@@ -105,8 +200,7 @@ QList<TreeItem*> findRekordboxDevices() {
     QFileInfoList devices;
 
     // Add folders under /media to devices.
-    devices += QDir(QStringLiteral("/media")).entryInfoList(
-            QDir::AllDirs | QDir::NoDotAndDotDot);
+    devices += QDir(QStringLiteral("/media")).entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
 
     // Add folders under /media/$USER to devices.
     QDir mediaUserDir(QStringLiteral("/media/") + QString::fromLocal8Bit(qgetenv("USER")));
@@ -188,7 +282,8 @@ int createDevicePlaylist(QSqlDatabase& database, QString devicePath) {
 
     QSqlQuery queryInsertIntoDevicePlaylist(database);
     queryInsertIntoDevicePlaylist.prepare(
-            "INSERT INTO rekordbox_playlists (name) "
+            "INSERT INTO " + kRekordboxPlaylistsTable +
+            " (name) "
             "VALUES (:name)");
 
     queryInsertIntoDevicePlaylist.bindValue(":name", devicePath);
@@ -200,7 +295,7 @@ int createDevicePlaylist(QSqlDatabase& database, QString devicePath) {
     }
 
     QSqlQuery idQuery(database);
-    idQuery.prepare("select id from rekordbox_playlists where name=:path");
+    idQuery.prepare("select id from " + kRekordboxPlaylistsTable + " where name=:path");
     idQuery.bindValue(":path", devicePath);
 
     if (!idQuery.exec()) {
@@ -243,6 +338,36 @@ void insertTrack(
     QString comment = getText(track->comment());
     QString tracknumber = QString::number(track->track_number());
     QString anlzPath = devicePath + getText(track->analyze_path());
+    mixxx::RgbColor::optional_t color = mixxx::RgbColor::nullopt();
+
+    switch (static_cast<TrackColor>(track->color_id())) {
+    case TrackColor::Pink:
+        color = kTrackColorPink;
+        break;
+    case TrackColor::Red:
+        color = kTrackColorRed;
+        break;
+    case TrackColor::Orange:
+        color = kTrackColorOrange;
+        break;
+    case TrackColor::Yellow:
+        color = kTrackColorYellow;
+        break;
+    case TrackColor::Green:
+        color = kTrackColorGreen;
+        break;
+    case TrackColor::Aqua:
+        color = kTrackColorAqua;
+        break;
+    case TrackColor::Blue:
+        color = kTrackColorBlue;
+        break;
+    case TrackColor::Purple:
+        color = kTrackColorPurple;
+        break;
+    default:
+        break;
+    }
 
     query.bindValue(":rb_id", rbID);
     query.bindValue(":artist", artist);
@@ -260,6 +385,7 @@ void insertTrack(
     query.bindValue(":bitrate", bitrate);
     query.bindValue(":analyze_path", anlzPath);
     query.bindValue(":device", device);
+    query.bindValue(":color", mixxx::RgbColor::toQVariant(color));
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -267,7 +393,7 @@ void insertTrack(
 
     int trackID = -1;
     QSqlQuery finderQuery(database);
-    finderQuery.prepare("select id from rekordbox_library where rb_id=:rb_id and device=:device");
+    finderQuery.prepare("select id from " + kRekordboxLibraryTable + " where rb_id=:rb_id and device=:device");
     finderQuery.bindValue(":rb_id", rbID);
     finderQuery.bindValue(":device", device);
 
@@ -334,11 +460,12 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
 
     QSqlQuery query(database);
     query.prepare(
-            "INSERT INTO rekordbox_library (rb_id, artist, title, album, year,"
+            "INSERT INTO " + kRekordboxLibraryTable +
+            " (rb_id, artist, title, album, year,"
             "genre,comment,tracknumber,bpm, bitrate,duration, location,"
-            "rating,key,analyze_path,device) VALUES (:rb_id, :artist, :title, :album, :year,:genre,"
+            "rating,key,analyze_path,device,color) VALUES (:rb_id, :artist, :title, :album, :year,:genre,"
             ":comment, :tracknumber,:bpm, :bitrate,:duration, :location,"
-            ":rating,:key,:analyze_path,:device)");
+            ":rating,:key,:analyze_path,:device,:color)");
 
     int audioFilesCount = 0;
 
@@ -347,7 +474,8 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
 
     QSqlQuery queryInsertIntoDevicePlaylistTracks(database);
     queryInsertIntoDevicePlaylistTracks.prepare(
-            "INSERT INTO rekordbox_playlist_tracks (playlist_id, track_id, position) "
+            "INSERT INTO " + kRekordboxPlaylistTracksTable +
+            " (playlist_id, track_id, position) "
             "VALUES (:playlist_id, :track_id, :position)");
 
     queryInsertIntoDevicePlaylistTracks.bindValue(":playlist_id", playlistID);
@@ -388,8 +516,6 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
     bool folderOrPlaylistFound = false;
 
     for (int tableOrderIndex = 0; tableOrderIndex < totalTables; tableOrderIndex++) {
-        //       bool done = false;
-
         for (
                 std::vector<rekordbox_pdb_t::table_t*>::iterator table = reckordboxDB.tables()->begin();
                 table != reckordboxDB.tables()->end();
@@ -518,7 +644,8 @@ void buildPlaylistTree(
         // Create a playlist for this child
         QSqlQuery queryInsertIntoPlaylist(database);
         queryInsertIntoPlaylist.prepare(
-                "INSERT INTO rekordbox_playlists (name) "
+                "INSERT INTO " + kRekordboxPlaylistsTable +
+                " (name) "
                 "VALUES (:name)");
 
         queryInsertIntoPlaylist.bindValue(":name", currentPath);
@@ -530,7 +657,7 @@ void buildPlaylistTree(
         }
 
         QSqlQuery idQuery(database);
-        idQuery.prepare("select id from rekordbox_playlists where name=:path");
+        idQuery.prepare("select id from " + kRekordboxPlaylistsTable + " where name=:path");
         idQuery.bindValue(":path", currentPath);
 
         if (!idQuery.exec()) {
@@ -546,7 +673,8 @@ void buildPlaylistTree(
 
         QSqlQuery queryInsertIntoPlaylistTracks(database);
         queryInsertIntoPlaylistTracks.prepare(
-                "INSERT INTO rekordbox_playlist_tracks (playlist_id, track_id, position) "
+                "INSERT INTO " + kRekordboxPlaylistTracksTable +
+                " (playlist_id, track_id, position) "
                 "VALUES (:playlist_id, :track_id, :position)");
 
         if (playlistTrackMap.count(childID)) {
@@ -556,7 +684,7 @@ void buildPlaylistTree(
 
                 int trackID = -1;
                 QSqlQuery finderQuery(database);
-                finderQuery.prepare("select id from rekordbox_library where rb_id=:rb_id and device=:device");
+                finderQuery.prepare("select id from " + kRekordboxLibraryTable + " where rb_id=:rb_id and device=:device");
                 finderQuery.bindValue(":rb_id", rbTrackID);
                 finderQuery.bindValue(":device", device);
 
@@ -599,14 +727,14 @@ void clearDeviceTables(QSqlDatabase& database, TreeItem* child) {
     int trackID = -1;
     int playlistID = -1;
     QSqlQuery tracksQuery(database);
-    tracksQuery.prepare("select id from rekordbox_library where device=:device");
+    tracksQuery.prepare("select id from " + kRekordboxLibraryTable + " where device=:device");
     tracksQuery.bindValue(":device", child->getLabel());
 
     QSqlQuery deletePlaylistsQuery(database);
-    deletePlaylistsQuery.prepare("delete from rekordbox_playlists where id=:id");
+    deletePlaylistsQuery.prepare("delete from " + kRekordboxPlaylistsTable + " where id=:id");
 
     QSqlQuery deletePlaylistTracksQuery(database);
-    deletePlaylistTracksQuery.prepare("delete from rekordbox_playlist_tracks where playlist_id=:playlist_id");
+    deletePlaylistTracksQuery.prepare("delete from " + kRekordboxPlaylistTracksTable + " where playlist_id=:playlist_id");
 
     if (!tracksQuery.exec()) {
         LOG_FAILED_QUERY(tracksQuery)
@@ -617,7 +745,7 @@ void clearDeviceTables(QSqlDatabase& database, TreeItem* child) {
         trackID = tracksQuery.value(tracksQuery.record().indexOf("id")).toInt();
 
         QSqlQuery playlistTracksQuery(database);
-        playlistTracksQuery.prepare("select playlist_id from rekordbox_playlist_tracks where track_id=:track_id");
+        playlistTracksQuery.prepare("select playlist_id from " + kRekordboxPlaylistTracksTable + " where track_id=:track_id");
         playlistTracksQuery.bindValue(":track_id", trackID);
 
         if (!playlistTracksQuery.exec()) {
@@ -645,7 +773,7 @@ void clearDeviceTables(QSqlDatabase& database, TreeItem* child) {
     }
 
     QSqlQuery deleteTracksQuery(database);
-    deleteTracksQuery.prepare("delete from rekordbox_library where device=:device");
+    deleteTracksQuery.prepare("delete from " + kRekordboxLibraryTable + " where device=:device");
     deleteTracksQuery.bindValue(":device", child->getLabel());
 
     if (!deleteTracksQuery.exec()) {
@@ -885,7 +1013,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
 RekordboxPlaylistModel::RekordboxPlaylistModel(QObject* parent,
         TrackCollectionManager* trackCollectionManager,
         QSharedPointer<BaseTrackCache> trackSource)
-        : BaseExternalPlaylistModel(parent, trackCollectionManager, "mixxx.db.model.rekordbox.playlistmodel", "rekordbox_playlists", "rekordbox_playlist_tracks", trackSource) {
+        : BaseExternalPlaylistModel(parent, trackCollectionManager, "mixxx.db.model.rekordbox.playlistmodel", kRekordboxPlaylistsTable, kRekordboxPlaylistTracksTable, trackSource) {
 }
 
 void RekordboxPlaylistModel::initSortColumnMapping() {
@@ -915,6 +1043,7 @@ void RekordboxPlaylistModel::initSortColumnMapping() {
     m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_RATING] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING);
     m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_KEY] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY);
     m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_PREVIEW] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COLOR] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR);
     m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COVERART] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART);
     m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_POSITION] = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
 
@@ -930,6 +1059,10 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
 
     TrackPointer track = BaseExternalPlaylistModel::getTrack(index);
     QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
+
+    if (!QFile(location).exists()) {
+        return track;
+    }
 
     // The following code accounts for timing offsets required to
     // correctly align timing information (cue points, loops, beatgrids)
@@ -985,16 +1118,23 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
     // and prevent the AnalyzerKey from re-analyzing.
     track->setKeys(KeyFactory::makeBasicKeysFromText(index.sibling(index.row(), fieldIndex("key")).data().toString(), mixxx::track::io::key::USER));
 
+    track->setColor(mixxx::RgbColor::fromQVariant(index.sibling(index.row(), fieldIndex("color")).data()));
+
     return track;
 }
 
 bool RekordboxPlaylistModel::isColumnHiddenByDefault(int column) {
-    if (
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID)) {
+    if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE)) {
         return true;
     }
     return BaseSqlTableModel::isColumnHiddenByDefault(column);
+}
+
+bool RekordboxPlaylistModel::isColumnInternal(int column) {
+    if (column == fieldIndex(ColumnCache::COLUMN_REKORDBOX_ANALYZE_PATH)) {
+        return true;
+    }
+    return BaseExternalPlaylistModel::isColumnInternal(column);
 }
 
 RekordboxFeature::RekordboxFeature(
@@ -1002,52 +1142,58 @@ RekordboxFeature::RekordboxFeature(
         UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig),
           m_icon(":/images/library/ic_library_rekordbox.svg") {
-    QString tableName = "rekordbox_library";
-    QString idColumn = "id";
+    QString tableName = kRekordboxLibraryTable;
+    QString idColumn = LIBRARYTABLE_ID;
     QStringList columns;
-    columns << "id"
-            << "artist"
-            << "title"
-            << "album"
-            << "year"
-            << "genre"
-            << "tracknumber"
-            << "location"
-            << "comment"
-            << "rating"
-            << "duration"
-            << "bitrate"
-            << "bpm"
-            << "key"
-            << "analyze_path";
+    columns << LIBRARYTABLE_ID
+            << LIBRARYTABLE_ARTIST
+            << LIBRARYTABLE_TITLE
+            << LIBRARYTABLE_ALBUM
+            << LIBRARYTABLE_YEAR
+            << LIBRARYTABLE_GENRE
+            << LIBRARYTABLE_TRACKNUMBER
+            << LIBRARYTABLE_LOCATION
+            << LIBRARYTABLE_COMMENT
+            << LIBRARYTABLE_RATING
+            << LIBRARYTABLE_DURATION
+            << LIBRARYTABLE_BITRATE
+            << LIBRARYTABLE_BPM
+            << LIBRARYTABLE_KEY
+            << LIBRARYTABLE_COLOR
+            << REKORDBOX_ANALYZE_PATH;
     m_trackSource = QSharedPointer<BaseTrackCache>(
             new BaseTrackCache(m_pTrackCollection, tableName, idColumn, columns, false));
     QStringList searchColumns;
     searchColumns
-            << "artist"
-            << "title"
-            << "album"
-            << "year"
-            << "genre"
-            << "tracknumber"
-            << "location"
-            << "comment"
-            << "duration"
-            << "bitrate"
-            << "bpm"
-            << "key";
+            << LIBRARYTABLE_ARTIST
+            << LIBRARYTABLE_TITLE
+            << LIBRARYTABLE_ALBUM
+            << LIBRARYTABLE_YEAR
+            << LIBRARYTABLE_GENRE
+            << LIBRARYTABLE_TRACKNUMBER
+            << LIBRARYTABLE_LOCATION
+            << LIBRARYTABLE_COMMENT
+            << LIBRARYTABLE_DURATION
+            << LIBRARYTABLE_BITRATE
+            << LIBRARYTABLE_BPM
+            << LIBRARYTABLE_KEY;
     m_trackSource->setSearchColumns(searchColumns);
 
     m_pRekordboxPlaylistModel = new RekordboxPlaylistModel(this, pLibrary->trackCollections(), m_trackSource);
 
     m_title = tr("Rekordbox");
 
-    //Clear any previous Rekordbox device entries if they exist
     QSqlDatabase database = m_pTrackCollection->database();
     ScopedTransaction transaction(database);
-    clearTable(database, "rekordbox_playlist_tracks");
-    clearTable(database, "rekordbox_library");
-    clearTable(database, "rekordbox_playlists");
+    // Drop any leftover temporary Rekordbox database tables if they exist
+    dropTable(database, kRekordboxPlaylistTracksTable);
+    dropTable(database, kRekordboxPlaylistsTable);
+    dropTable(database, kRekordboxLibraryTable);
+
+    // Create new temporary Rekordbox database tables
+    createLibraryTable(database, kRekordboxLibraryTable);
+    createPlaylistsTable(database, kRekordboxPlaylistsTable);
+    createPlaylistTracksTable(database, kRekordboxPlaylistTracksTable);
     transaction.commit();
 
     connect(&m_devicesFutureWatcher, SIGNAL(finished()), this, SLOT(onRekordboxDevicesFound()));
@@ -1059,6 +1205,15 @@ RekordboxFeature::RekordboxFeature(
 RekordboxFeature::~RekordboxFeature() {
     m_devicesFuture.waitForFinished();
     m_tracksFuture.waitForFinished();
+
+    // Drop temporary Rekordbox database tables on shutdown
+    QSqlDatabase database = m_pTrackCollection->database();
+    ScopedTransaction transaction(database);
+    dropTable(database, kRekordboxPlaylistTracksTable);
+    dropTable(database, kRekordboxPlaylistsTable);
+    dropTable(database, kRekordboxLibraryTable);
+    transaction.commit();
+
     delete m_pRekordboxPlaylistModel;
 }
 
@@ -1200,9 +1355,16 @@ void RekordboxFeature::onRekordboxDevicesFound() {
     if (foundDevices.size() == 0) {
         // No Rekordbox devices found
         ScopedTransaction transaction(database);
-        clearTable(database, "rekordbox_playlist_tracks");
-        clearTable(database, "rekordbox_library");
-        clearTable(database, "rekordbox_playlists");
+
+        dropTable(database, kRekordboxPlaylistTracksTable);
+        dropTable(database, kRekordboxPlaylistsTable);
+        dropTable(database, kRekordboxLibraryTable);
+
+        // Create new temporary Rekordbox database tables
+        createLibraryTable(database, kRekordboxLibraryTable);
+        createPlaylistsTable(database, kRekordboxPlaylistsTable);
+        createPlaylistTracksTable(database, kRekordboxPlaylistTracksTable);
+
         transaction.commit();
 
         if (root->childRows() > 0) {
