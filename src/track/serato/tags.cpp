@@ -1,5 +1,21 @@
 #include "track/serato/tags.h"
 
+#include <mp3guessenc.h>
+
+namespace {
+
+#ifdef __COREAUDIO__
+const QString kDecoderName(QStringLiteral("CoreAudio"));
+#elif defined(__MAD__)
+const QString kDecoderName(QStringLiteral("MAD"));
+#elif defined(__FFMPEG__)
+const QString kDecoderName(QStringLiteral("FFMPEG"));
+#else
+const QString kDecoderName(QStringLiteral("Unknown"));
+#endif
+
+} // namespace
+
 namespace mixxx {
 
 RgbColor::optional_t SeratoTags::storedToDisplayedTrackColor(RgbColor color) {
@@ -60,10 +76,38 @@ RgbColor SeratoTags::displayedToStoredTrackColor(RgbColor::optional_t color) {
 }
 
 double SeratoTags::findTimingOffsetMillis(const QString& filePath) {
-    // TODO: Find timing offset using mp3guessenc
-    Q_UNUSED(filePath);
+    // The following code accounts for timing offsets required to
+    // correctly align timing information (e.g. cue points) exported from
+    // Serato. This is caused by different MP3 decoders treating MP3s encoded
+    // in a variety of different cases differently. The mp3guessenc library is
+    // used to determine which case the MP3 is clasified in. See the following
+    // PR for more detailed information:
+    // https://github.com/mixxxdj/mixxx/pull/2119
 
-    return 0;
+    double timingOffset = 0;
+    if (filePath.toLower().endsWith(".mp3")) {
+        int timingShiftCase = mp3guessenc_timing_shift_case(filePath.toStdString().c_str());
+
+        // TODO: Find missing timing offsets
+        switch (timingShiftCase) {
+#if defined(__MAD__)
+        case EXIT_CODE_CASE_D:
+            timingOffset = -16;
+            break;
+#endif
+        }
+        qDebug()
+                << "Detected timing offset "
+                << timingOffset
+                << "("
+                << kDecoderName
+                << ", case"
+                << timingShiftCase
+                << ") for MP3 file:"
+                << filePath;
+    }
+
+    return timingOffset;
 }
 
 QList<CueInfo> SeratoTags::getCues(const QString& filePath) const {
