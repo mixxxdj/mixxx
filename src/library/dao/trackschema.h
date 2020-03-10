@@ -43,8 +43,6 @@ const QString LIBRARYTABLE_COVERART_SOURCE = "coverart_source";
 const QString LIBRARYTABLE_COVERART_TYPE = "coverart_type";
 const QString LIBRARYTABLE_COVERART_LOCATION = "coverart_location";
 const QString LIBRARYTABLE_COVERART_HASH = "coverart_hash";
-// Internal field for Rekordbox library feature
-const QString LIBRARYTABLE_ANALYZE_PATH = "analyze_path";
 
 const QString TRACKLOCATIONSTABLE_ID = "id";
 const QString TRACKLOCATIONSTABLE_LOCATION = "location";
@@ -53,5 +51,7 @@ const QString TRACKLOCATIONSTABLE_DIRECTORY = "directory";
 const QString TRACKLOCATIONSTABLE_FILESIZE = "filesize";
 const QString TRACKLOCATIONSTABLE_FSDELETED = "fs_deleted";
 const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = "needs_verification";
+
+const QString REKORDBOX_ANALYZE_PATH = "analyze_path";
 
 #endif //MIXXX_TRACKSCHEMA_H

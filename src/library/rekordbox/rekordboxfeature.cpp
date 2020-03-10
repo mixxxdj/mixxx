@@ -1127,7 +1127,7 @@ bool RekordboxPlaylistModel::isColumnHiddenByDefault(int column) {
 }
 
 bool RekordboxPlaylistModel::isColumnInternal(int column) {
-    if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ANALYZE_PATH)) {
+    if (column == fieldIndex(ColumnCache::COLUMN_REKORDBOX_ANALYZE_PATH)) {
         return true;
     }
     return BaseExternalPlaylistModel::isColumnInternal(column);
@@ -1155,8 +1155,8 @@ RekordboxFeature::RekordboxFeature(
             << LIBRARYTABLE_BITRATE
             << LIBRARYTABLE_BPM
             << LIBRARYTABLE_KEY
-            << LIBRARYTABLE_ANALYZE_PATH
-            << LIBRARYTABLE_COLOR;
+            << LIBRARYTABLE_COLOR
+            << REKORDBOX_ANALYZE_PATH;
     m_trackSource = QSharedPointer<BaseTrackCache>(
             new BaseTrackCache(m_pTrackCollection, tableName, idColumn, columns, false));
     QStringList searchColumns;
