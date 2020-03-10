@@ -10,6 +10,8 @@
     "arrayContains": "readonly",
     "secondstominutes": "readonly",
     "msecondstominutes": "readonly",
+    "colorCodeToColor": "readonly",
+    "colorToColorCode": "readonly",
     "script": "readonly",
     "bpm": "readonly",
     "ButtonState": "readonly",

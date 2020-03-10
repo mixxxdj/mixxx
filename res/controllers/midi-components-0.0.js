@@ -308,21 +308,6 @@
         shift: function() {
             this.inKey = "hotcue_" + this.number + "_clear";
         },
-        getColor: function(colorCode) {
-            if (colorCode === undefined && this.colorKey !== undefined) {
-                colorCode = engine.getValue(this.group, this.colorKey);
-            }
-
-            if (colorCode !== undefined) {
-                return {
-                    "red": (colorCode >> 16) & 0xFF,
-                    "green": (colorCode >> 8) & 0xFF,
-                    "blue": colorCode & 0xFF,
-                };
-            }
-
-            return null;
-        },
         output: function(value) {
             var outval = this.outValueScale(value);
             // WARNING: outputColor only handles hotcueColors
@@ -344,7 +329,7 @@
                     print("ERROR: no function defined for sending RGB colors");
                     return;
                 }
-                this.sendRGB(this.getColor(colorCode));
+                this.sendRGB(colorCodeToColor(colorCode));
             }
         },
         connect: function() {

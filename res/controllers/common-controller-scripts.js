@@ -5,6 +5,8 @@
        arrayContains:off
        secondstominutes:off
        msecondstominutes:off
+       colorCodeToColor:off
+       colorToColorCode:off
        script:off
        bpm:off
        ButtonState:off
@@ -97,6 +99,20 @@ var msecondstominutes = function(msecs) {
         + (secs < 10 ? "0" + secs : secs)
         + "."
         + (msecs < 10 ? "0" + msecs : msecs);
+};
+
+// eslint-disable-next-line no-unused-vars
+var colorToColorCode = function(color) {
+    return ((color.red & 0xFF) << 16 | (color.green & 0xFF) << 8 | (color.blue & 0xFF));
+};
+
+// eslint-disable-next-line no-unused-vars
+var colorCodeToColor = function(colorCode) {
+    return {
+        "red": (colorCode >> 16) & 0xFF,
+        "green": (colorCode >> 8) & 0xFF,
+        "blue": colorCode & 0xFF,
+    };
 };
 
 var script = function() {
