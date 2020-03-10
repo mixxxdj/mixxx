@@ -28,8 +28,12 @@ class DlgCoverArtFullSize
 
   public slots:
     void slotLoadTrack(TrackPointer);
-    void slotCoverFound(const QObject* pRequestor,
-            const CoverInfoRelative& info, QPixmap pixmap, bool fromCache);
+    void slotCoverFound(
+            const QObject* pRequestor,
+            const CoverInfo& coverInfo,
+            const QPixmap& pixmap,
+            quint16 requestedHash,
+            bool coverInfoUpdated);
     void slotTrackCoverArtUpdated();
 
     // slots that handle signals from WCoverArtMenu

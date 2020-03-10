@@ -47,6 +47,10 @@ TrackPointer ProxyTrackModel::getTrack(const QModelIndex& index) const {
     return m_pTrackModel ? m_pTrackModel->getTrack(indexSource) : TrackPointer();
 }
 
+TrackPointer ProxyTrackModel::getTrackByRef(const TrackRef& trackRef) const {
+    return m_pTrackModel ? m_pTrackModel->getTrackByRef(trackRef) : TrackPointer();
+}
+
 QString ProxyTrackModel::getTrackLocation(const QModelIndex& index) const {
     QModelIndex indexSource = mapToSource(index);
     return m_pTrackModel ? m_pTrackModel->getTrackLocation(indexSource) : QString();
