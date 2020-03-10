@@ -21,13 +21,13 @@ class TableItemDelegate : public QStyledItemDelegate {
             const QModelIndex &index) const = 0;
 
   protected:
+    static void paintItemBackground(
+            QPainter* painter,
+            const QStyleOptionViewItem& option,
+            const QModelIndex& index);
+
     int columnWidth(const QModelIndex &index) const;
 
   private:
     QTableView* m_pTableView;
 };
-
-void paintItemBackground(
-        QPainter* painter,
-        const QStyleOptionViewItem& option,
-        const QModelIndex& index);

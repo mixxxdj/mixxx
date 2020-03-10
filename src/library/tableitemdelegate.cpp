@@ -55,7 +55,7 @@ int TableItemDelegate::columnWidth(const QModelIndex &index) const {
     return m_pTableView->columnWidth(index.column());
 }
 
-void paintItemBackground(
+void TableItemDelegate::paintItemBackground(
         QPainter* painter,
         const QStyleOptionViewItem& option,
         const QModelIndex& index) {
