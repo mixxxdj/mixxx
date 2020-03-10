@@ -13,16 +13,16 @@
 
 ## [2.2.4](https://launchpad.net/mixxx/+milestone/2.2.4) (Unreleased)
 
-* Store default recording format after "Restore Defaults" lp:1857806 #2414
+* Store default recording format after "Restore Defaults" [lp:1857806](https://bugs.launchpad.net/mixxx/+bug/1857806) #2414
 * Prevent infinite loop when decoding corrupt MP3 files #2417
 * Add workaround for broken libshout versions #2040 #2438
-* Speed up purging of tracks lp:1845837 #2393
+* Speed up purging of tracks [lp:1845837](https://bugs.launchpad.net/mixxx/+bug/1845837) #2393
 * Prevent infinite loop when decoding corrupt MP3 files #2417
-* Store default recording format after "Restore Defaults" lp:1857806 #2414
+* Store default recording format after "Restore Defaults" [lp:1857806](https://bugs.launchpad.net/mixxx/+bug/1857806) #2414
 * Don't stop playback if vinyl passthrough input is configured and PASS button is pressed #2474
-* Fix debug assertion for invalid crate names lp:1861431 #2477
+* Fix debug assertion for invalid crate names [lp:1861431](https://bugs.launchpad.net/mixxx/+bug/1861431) #2477
 * Fix crashes when executing actions on tracks that already disappeared from the DB #2527
-* AutoDJ: Skip next track when both deck are playing lp:1399974 #2531
+* AutoDJ: Skip next track when both deck are playing [lp:1399974](https://bugs.launchpad.net/mixxx/+bug/1399974) #2531
 * Tweak scratch parameters for Mixtrack Platinum #2028
 * Add controller mapping for Native Instruments Traktor Kontrol S2 MK3 #2348
 * Add controller mapping for Soundless joyMIDI #2425
@@ -31,21 +31,21 @@
 ## [2.2.3](https://launchpad.net/mixxx/+milestone/2.2.3) (2019-11-24)
 
 * Don't make users reconfigure sound hardware when it has not changed #2253
-* Fix MusicBrainz metadata lookup lp:1848887 #2328
+* Fix MusicBrainz metadata lookup [lp:1848887](https://bugs.launchpad.net/mixxx/+bug/1848887) #2328
 * Fix high DPI scaling of cover art #2247
 * Fix high DPI scaling of cue point labels on scrolling waveforms #2331
 * Fix high DPI scaling of sliders in Tango skin #2318
-* Fix sound dropping out during recording lp:1842679 #2265 #2305 #2308 #2309
+* Fix sound dropping out during recording [lp:1842679](https://bugs.launchpad.net/mixxx/+bug/1842679) #2265 #2305 #2308 #2309
 * Fix rare crash on application shutdown #2293
-* Workaround various rare bugs caused by database inconsistencies lp:1846971 #2321
+* Workaround various rare bugs caused by database inconsistencies [lp:1846971](https://bugs.launchpad.net/mixxx/+bug/1846971) #2321
 * Improve handling of corrupt FLAC files #2315
-* Don't immediately jump to loop start when loop_out is pressed in quantized mode lp:1837077 #2269
-* Preserve order of tracks when dragging and dropping from AutoDJ to playlist lp:1829601 #2237
-* Explicitly use X11 Qt platform plugin instead of Wayland in .desktop launcher lp:1850729 #2340
+* Don't immediately jump to loop start when loop_out is pressed in quantized mode [lp:1837077](https://bugs.launchpad.net/mixxx/+bug/1837077) #2269
+* Preserve order of tracks when dragging and dropping from AutoDJ to playlist [lp:1829601](https://bugs.launchpad.net/mixxx/+bug/1829601) #2237
+* Explicitly use X11 Qt platform plugin instead of Wayland in .desktop launcher [lp:1850729](https://bugs.launchpad.net/mixxx/+bug/1850729) #2340
 * Pioneer DDJ-SX: fix delayed sending of MIDI messages with low audio buffer sizes #2326
-* Enable modplug support on Linux by default lp:1840537 #2244 #2272
-* Fix keyboard shortcut for View > Skin Preferences lp:1851993 #2358 #2372
-* Reloop Terminal Mix: Fix mapping of sampler buttons 5-8 lp:1846966 #2330
+* Enable modplug support on Linux by default [lp:1840537](https://bugs.launchpad.net/mixxx/+bug/1840537) #2244 #2272
+* Fix keyboard shortcut for View > Skin Preferences [lp:1851993](https://bugs.launchpad.net/mixxx/+bug/1851993) #2358 #2372
+* Reloop Terminal Mix: Fix mapping of sampler buttons 5-8 [lp:1846966](https://bugs.launchpad.net/mixxx/+bug/1846966) #2330
 
 ## [2.2.2](https://launchpad.net/mixxx/+milestone/2.2.2) (2019-08-10)
 
