@@ -20,7 +20,7 @@
 //
 // TO DO: Functions that could be implemented to the script:
 //
-//  FX:		
+//  FX:
 //  - See how to preselect effects for a rack
 //
 //*************************************************************************
@@ -66,7 +66,7 @@ DJCi200.init = function() {
    engine.softTakeover("[Channel2]", "rate", true);
    engine.softTakeoverIgnoreNextValue("[Channel1]", "rate");
    engine.softTakeoverIgnoreNextValue("[Channel2]", "rate");
-   
+
     //Set effects Levels - Dry/Wet
     engine.setParameter("[EffectRack1_EffectUnit1_Effect1]", "meta", 0.6);
     engine.setParameter("[EffectRack1_EffectUnit1_Effect2]", "meta", 0.6);
@@ -76,7 +76,7 @@ DJCi200.init = function() {
     engine.setParameter("[EffectRack1_EffectUnit2_Effect3]", "meta", 0.6);
     engine.setParameter("[EffectRack1_EffectUnit1]", "mix", 1);
     engine.setParameter("[EffectRack1_EffectUnit2]", "mix", 1);
-	
+
 	// Ask the controller to send all current knob/slider values over MIDI, which will update
     // the corresponding GUI controls in MIXXX.
     midi.sendShortMsg(0xB0, 0x7F, 0x7F);
@@ -178,5 +178,5 @@ DJCi200.bendWheel = function(channel, control, value, _status, _group) {
 
 DJCi200.shutdown = function() {
     midi.sendShortMsg(0xB0, 0x7F, 0x7E);
-	midi.sendShortMsg(0x90, 0x04, 0x00)
+    midi.sendShortMsg(0x90, 0x04, 0x00);
 };
