@@ -4,9 +4,15 @@
 * Add workaround for broken libshout versions #2040 #2438
 * Speed up purging of tracks lp:1845837 #2393
 * Prevent infinite loop when decoding corrupt MP3 files #2417
+* Store default recording format after "Restore Defaults" lp:1857806 #2414
+* Don't stop playback if vinyl passthrough input is configured and PASS button is pressed #2474
+* Fix debug assertion for invalid crate names lp:1861431 #2477
+* Fix crashes when executing actions on tracks that already disappeared from the DB #2527
+* AutoDJ: Skip next track when both deck are playing lp:1399974 #2531
+* Tweak scratch parameters for Mixtrack Platinum #2028
 * Add controller mapping for Native Instruments Traktor Kontrol S2 MK3 #2348
 * Add controller mapping for Soundless joyMIDI #2425
-* AutoDJ skip next track when both deck are playing lp:1399974 #2531
+* Add controller mapping for Hercules DJControl Inpulse 300 #2465
 
 ==== 2.2.3 2019-11-24 ====
 * Don't make users reconfigure sound hardware when it has not changed #2253
