@@ -5,6 +5,18 @@
     "components": "readonly",
     "engine": "readonly",
     "midi": "readonly",
-    "script": "readonly"
+    "printObject": "readonly",
+    "stringifyObject": "readonly",
+    "arrayContains": "readonly",
+    "secondstominutes": "readonly",
+    "msecondstominutes": "readonly",
+    "script": "readonly",
+    "bpm": "readonly",
+    "ButtonState": "readonly",
+    "LedState": "readonly",
+    "Controller": "readonly",
+    "Button": "readonly",
+    "Control": "readonly",
+    "Deck": "readonly"
   }
 }
