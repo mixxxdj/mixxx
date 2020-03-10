@@ -126,6 +126,20 @@ void WMainMenuBar::initialize() {
 
     pLibraryMenu->addSeparator();
 
+    QString colorReplaceTitle = tr("&Replace Colors");
+    QString colorReplaceText = tr("Mass replace cue and track colors.");
+    auto pLibraryColorReplace = new QAction(colorReplaceTitle, this);
+    pLibraryColorReplace->setStatusTip(colorReplaceText);
+    pLibraryColorReplace->setWhatsThis(buildWhatsThis(colorReplaceTitle, colorReplaceText));
+    pLibraryColorReplace->setCheckable(false);
+    connect(pLibraryColorReplace,
+            &QAction::triggered,
+            this,
+            &WMainMenuBar::showReplaceColor);
+    pLibraryMenu->addAction(pLibraryColorReplace);
+
+    pLibraryMenu->addSeparator();
+
     QString createPlaylistTitle = tr("Create &New Playlist");
     QString createPlaylistText = tr("Create a new playlist");
     auto pLibraryCreatePlaylist = new QAction(createPlaylistTitle, this);

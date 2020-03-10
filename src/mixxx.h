@@ -87,6 +87,8 @@ class MixxxMainWindow : public QMainWindow {
     void slotOptionsKeyboard(bool toggle);
     // Preference dialog
     void slotOptionsPreferences();
+    // Replace Color dialog
+    void slotReplaceColor();
     // shows an about dlg
     void slotHelpAbout();
     // toggle full screen mode
@@ -189,6 +191,9 @@ class MixxxMainWindow : public QMainWindow {
 
     /** Pointer to preference dialog */
     DlgPreferences* m_pPrefDlg;
+
+    // Pointer to color replace dialog
+    QDialog* m_pColorReplaceDlg;
 
     ConfigObject<ConfigValueKbd>* m_pKbdConfig;
     ConfigObject<ConfigValueKbd>* m_pKbdConfigEmpty;

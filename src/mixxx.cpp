@@ -161,6 +161,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pMenuBar(nullptr),
           m_pDeveloperToolsDlg(nullptr),
           m_pPrefDlg(nullptr),
+          m_pColorReplaceDlg(nullptr),
           m_pKbdConfig(nullptr),
           m_pKbdConfigEmpty(nullptr),
           m_toolTipsCfg(mixxx::TooltipsPreference::TOOLTIPS_ON),
@@ -466,6 +467,9 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
                                     m_pSettingsManager, m_pLibrary);
     m_pPrefDlg->setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     m_pPrefDlg->setHidden(true);
+
+    m_pColorReplaceDlg = new QDialog(this);
+    m_pColorReplaceDlg->setHidden(true);
 
     launchProgress(60);
 
@@ -1103,6 +1107,10 @@ void MixxxMainWindow::connectMenuBar() {
             this,
             &MixxxMainWindow::slotOptionsPreferences);
     connect(m_pMenuBar,
+            &WMainMenuBar::showReplaceColor,
+            this,
+            &MixxxMainWindow::slotReplaceColor);
+    connect(m_pMenuBar,
             &WMainMenuBar::loadTrackToDeck,
             this,
             &MixxxMainWindow::slotFileLoadSongPlayer);
@@ -1329,6 +1337,12 @@ void MixxxMainWindow::slotOptionsPreferences() {
     m_pPrefDlg->show();
     m_pPrefDlg->raise();
     m_pPrefDlg->activateWindow();
+}
+
+void MixxxMainWindow::slotReplaceColor() {
+    m_pColorReplaceDlg->show();
+    m_pColorReplaceDlg->raise();
+    m_pColorReplaceDlg->activateWindow();
 }
 
 void MixxxMainWindow::slotNoVinylControlInputConfigured() {
