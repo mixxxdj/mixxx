@@ -321,15 +321,24 @@
             }
         },
         outputColor: function(colorCode) {
+            // Sends the color from the colorCode to the controller. This
+            // method will not be called if no colorKey has been specified.
             if (colorCode === undefined || colorCode < 0) {
                 print("Ignoring invalid color code in outputColor()");
                 return;
             }
 
             if (this.colorMapper !== undefined) {
+                // This HotcueButton holds a reference to a ColorMapper. This means
+                // that the controller only supports a fixed set of colors, so we
+                // get the MIDI value for the nearest supported color and send it.
                 var nearestColorValue = this.colorMapper.getValueForNearestColor(colorCode);
                 this.send(nearestColorValue);
             } else {
+                // Since outputColor has been called but no ColorMapper is
+                // available, we can assume that controller supports arbitrary
+                // RGB color output. The user needs to specify a sendRGB()
+                // function, because the procedure is controller-dependent.
                 if (this.sendRGB === undefined) {
                     throw Error("sendRGB(color) not defined - unable to send RGB colors!");
                 }
