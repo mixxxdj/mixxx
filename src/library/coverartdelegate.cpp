@@ -3,10 +3,9 @@
 #include "library/dao/trackschema.h"
 #include "library/trackmodel.h"
 #include "util/assert.h"
-#include "widget/wlibrarytableview.h"
 
 CoverArtDelegate::CoverArtDelegate(
-        WLibraryTableView* parent)
+        QTableView* parent)
         : BaseCoverArtDelegate(parent),
           m_iCoverSourceColumn(m_pTrackModel->fieldIndex(
                   LIBRARYTABLE_COVERART_SOURCE)),

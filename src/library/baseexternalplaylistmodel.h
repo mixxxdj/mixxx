@@ -28,10 +28,11 @@ class BaseExternalPlaylistModel : public BaseSqlTableModel {
     TrackId getTrackId(const QModelIndex& index) const override;
     bool isColumnInternal(int column) override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
-    void trackLoaded(QString group, TrackPointer pTrack) override;
     CapabilitiesFlags getCapabilities() const override;
 
   private:
+    TrackId doGetTrackId(const TrackPointer& pTrack) const override;
+
     QString m_playlistsTable;
     QString m_playlistTracksTable;
     QSharedPointer<BaseTrackCache> m_trackSource;

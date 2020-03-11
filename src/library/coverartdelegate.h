@@ -2,14 +2,12 @@
 
 #include "library/basecoverartdelegate.h"
 
-class WLibraryTableView;
-
 class CoverArtDelegate : public BaseCoverArtDelegate {
     Q_OBJECT
 
   public:
     explicit CoverArtDelegate(
-            WLibraryTableView* parent);
+            QTableView* parent);
     ~CoverArtDelegate() final = default;
 
   private:

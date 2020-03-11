@@ -145,34 +145,19 @@ void BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
     setSearch("");
 }
 
-void BaseExternalPlaylistModel::trackLoaded(QString group, TrackPointer pTrack) {
-    if (group == m_previewDeckGroup) {
-        // If there was a previously loaded track, refresh its rows so the
-        // preview state will update.
-        if (m_previewDeckTrackId.isValid()) {
-            const int numColumns = columnCount();
-            QLinkedList<int> rows = getTrackRows(m_previewDeckTrackId);
-            m_previewDeckTrackId = TrackId(); // invalidate
-            foreach (int row, rows) {
-                QModelIndex left = index(row, 0);
-                QModelIndex right = index(row, numColumns);
-                emit dataChanged(left, right);
-            }
-        }
-        if (pTrack) {
-            // The external table has foreign Track IDs, so we need to compare
-            // by location
-            for (int row = 0; row < rowCount(); ++row) {
-                QString nativeLocation = index(row, fieldIndex("location")).data().toString();
-                QString location = QDir::fromNativeSeparators(nativeLocation);
-                if (location == pTrack->getLocation()) {
-                    m_previewDeckTrackId = TrackId(index(row, 0).data());
-                    //Debug() << "foreign track id" << m_previewDeckTrackId;
-                    break;
-                }
+TrackId BaseExternalPlaylistModel::doGetTrackId(const TrackPointer& pTrack) const {
+    if (pTrack) {
+        // The external table has foreign Track IDs, so we need to compare
+        // by location
+        for (int row = 0; row < rowCount(); ++row) {
+            QString nativeLocation = index(row, fieldIndex("location")).data().toString();
+            QString location = QDir::fromNativeSeparators(nativeLocation);
+            if (location == pTrack->getLocation()) {
+                return TrackId(index(row, 0).data());
             }
         }
     }
+    return TrackId();
 }
 
 TrackModel::CapabilitiesFlags BaseExternalPlaylistModel::getCapabilities() const {
