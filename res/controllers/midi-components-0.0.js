@@ -337,13 +337,14 @@
             } else {
                 // Since outputColor has been called but no ColorMapper is
                 // available, we can assume that controller supports arbitrary
-                // RGB color output. The user needs to specify a sendRGB()
-                // function, because the procedure is controller-dependent.
-                if (this.sendRGB === undefined) {
-                    throw Error("sendRGB(color) not defined - unable to send RGB colors!");
-                }
+                // RGB color output.
                 this.sendRGB(colorCodeToObject(colorCode));
             }
+        },
+        sendRGB: function(_colorObject) {
+            // This method needs to be overridden in controller mappings,
+            // because the procedure is controller-dependent.
+            throw Error("sendRGB(colorObject) not implemented - unable to send RGB colors!");
         },
         connect: function() {
             Button.prototype.connect.call(this); // call parent connect
