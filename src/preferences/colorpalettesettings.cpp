@@ -56,7 +56,6 @@ void ColorPaletteSettings::removePalette(const QString& name) {
 
 ColorPalette ColorPaletteSettings::getHotcueColorPalette() const {
     QString name = m_pConfig->getValueString(kHotcueColorPaletteConfigKey);
-    qWarning() << "name" << name;
     if (name.isEmpty()) {
         return ColorPalette::mixxxHotcuePalette;
     }
