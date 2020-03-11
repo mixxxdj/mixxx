@@ -18,8 +18,17 @@ class ColorMapperJSProxy final : public QObject {
         delete m_colorMapper;
     };
 
-    // These method callable from controller scripts
+    // Q_INVOKABLE is need here because these methods callable from controller
+    // scripts
+
+    // For a given RGB color code (e.g. 0xFF0000), this finds the nearest
+    // available color and returns a JS object with properties "red", "green",
+    // "blue" (each with value range 0-255).
     Q_INVOKABLE QScriptValue getNearestColor(uint ColorCode);
+
+    // For a given RGB color code (e.g. 0xFF0000), this finds the nearest
+    // available color, then returns the value associated with that color
+    // (which could be a MIDI byte value for example).
     Q_INVOKABLE QScriptValue getNearestValue(uint ColorCode);
 
   private:
