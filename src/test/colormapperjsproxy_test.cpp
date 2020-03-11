@@ -105,15 +105,15 @@ TEST_F(ColorMapperJSProxyTest, GetNearestValue) {
             "    '#F2F2FF': 8,"
             "});"
             "/* red */"
-            "if (mapper.getNearestValue(0xFF0000) != 1) {"
+            "if (mapper.getValueForNearestColor(0xFF0000) != 1) {"
             "    throw Error();"
             "};"
             "/* blue */"
-            "if (mapper.getNearestValue(0x0000AA) != 5) {"
+            "if (mapper.getValueForNearestColor(0x0000AA) != 5) {"
             "    throw Error();"
             "};"
             "/* white */"
-            "if (mapper.getNearestValue(0xFFFFFF) != 8) {"
+            "if (mapper.getValueForNearestColor(0xFFFFFF) != 8) {"
             "    throw Error();"
             "};");
     EXPECT_FALSE(pEngine->hasUncaughtException());

@@ -322,7 +322,7 @@
         },
         outputColor: function(colorCode) {
             if (this.colorMapper !== undefined) {
-                var nearestColorValue = this.colorMapper.getNearestValue(colorCode);
+                var nearestColorValue = this.colorMapper.getValueForNearestColor(colorCode);
                 this.send(nearestColorValue);
             } else {
                 if (this.sendRGB === undefined) {

@@ -29,7 +29,7 @@ class ColorMapperJSProxy final : public QObject {
     // For a given RGB color code (e.g. 0xFF0000), this finds the nearest
     // available color, then returns the value associated with that color
     // (which could be a MIDI byte value for example).
-    Q_INVOKABLE QScriptValue getNearestValue(uint ColorCode);
+    Q_INVOKABLE QScriptValue getValueForNearestColor(uint ColorCode);
 
   private:
     QScriptEngine* m_pScriptEngine;

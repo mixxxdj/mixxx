@@ -16,7 +16,7 @@ QScriptValue ColorMapperJSProxy::getNearestColor(uint colorCode) {
     return jsColor;
 }
 
-QScriptValue ColorMapperJSProxy::getNearestValue(uint colorCode) {
+QScriptValue ColorMapperJSProxy::getValueForNearestColor(uint colorCode) {
     return m_pScriptEngine->toScriptValue(
             m_colorMapper->getValueForNearestColor(static_cast<QRgb>(colorCode)));
 }
