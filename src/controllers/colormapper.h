@@ -3,7 +3,6 @@
 #include <QColor>
 #include <QMap>
 #include <QObject>
-#include <QPair>
 #include <QVariant>
 
 #include "util/assert.h"
@@ -19,7 +18,8 @@ class ColorMapper final {
         DEBUG_ASSERT(!m_availableColors.isEmpty());
     }
 
-    QPair<QRgb, QVariant> getNearestColor(QRgb desiredColor);
+    QRgb getNearestColor(QRgb desiredColor);
+    QVariant getValueForNearestColor(QRgb desiredColor);
 
   private:
     const QMap<QRgb, QVariant> m_availableColors;
