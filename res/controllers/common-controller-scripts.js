@@ -5,8 +5,8 @@
        arrayContains:off
        secondstominutes:off
        msecondstominutes:off
-       colorCodeToColor:off
-       colorToColorCode:off
+       colorCodeToObject:off
+       colorCodeFromObject:off
        script:off
        bpm:off
        ButtonState:off
@@ -104,13 +104,17 @@ var msecondstominutes = function(msecs) {
         + (msecs < 10 ? "0" + msecs : msecs);
 };
 
+// Converts an object with "red", "green" and "blue" properties (value range
+// 0-255) into an RGB color code (e.g. 0xFF0000).
 // eslint-disable-next-line no-unused-vars
-var colorToColorCode = function(color) {
+var colorCodeFromObject = function(color) {
     return ((color.red & 0xFF) << 16 | (color.green & 0xFF) << 8 | (color.blue & 0xFF));
 };
 
+// Converts an RGB color code (e.g. 0xFF0000) into an object with "red",
+// "green" and "blue" properties (value range 0-255).
 // eslint-disable-next-line no-unused-vars
-var colorCodeToColor = function(colorCode) {
+var colorCodeToObject = function(colorCode) {
     return {
         "red": (colorCode >> 16) & 0xFF,
         "green": (colorCode >> 8) & 0xFF,

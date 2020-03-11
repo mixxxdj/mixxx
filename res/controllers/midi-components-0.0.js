@@ -329,7 +329,7 @@
                     print("ERROR: no function defined for sending RGB colors");
                     return;
                 }
-                this.sendRGB(colorCodeToColor(colorCode));
+                this.sendRGB(colorCodeToObject(colorCode));
             }
         },
         connect: function() {
