@@ -41,8 +41,8 @@ mixxx::RgbColor ColorPalette::nextColor(mixxx::RgbColor color) const {
 mixxx::RgbColor ColorPalette::previousColor(mixxx::RgbColor color) const {
     int iIndex = indexOf(color);
     if (iIndex < 0) {
-        // Return first color if color not in palette
-        iIndex = 0;
+        // Return last color if color not in palette
+        iIndex = size() - 1;
     } else {
         iIndex = (iIndex + size() - 1) % size();
     }
