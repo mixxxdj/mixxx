@@ -50,14 +50,17 @@ var stringifyObject = function(obj, maxdepth, checked, prefix) {
             checked = [];
         if (!prefix)
             prefix = "";
-        if (maxdepth > 0 && typeof obj === "object" && obj !== null && Object.getPrototypeOf(obj) !== "" && !arrayContains(checked, obj)) {
+        if (maxdepth > 0 && typeof obj === "object" && obj !== null &&
+            Object.getPrototypeOf(obj) !== "" && !arrayContains(checked, obj)) {
             checked.push(obj);
             var output = "{\n";
             for (var property in obj) {
                 var value = obj[property];
                 if (typeof value === "function")
                     continue;
-                output += prefix + property + ": " + stringifyObject(value, maxdepth - 1, checked, prefix + "  ") + "\n";
+                output += prefix + property + ": "
+                    + stringifyObject(value, maxdepth - 1, checked, prefix + "  ")
+                    + "\n";
             }
             return output + prefix.substr(2) + "}";
         }
@@ -331,10 +334,12 @@ script.absoluteNonLinInverse = function(value, low, mid, high, min, max) {
 script.crossfaderCurve = function(value, min, max) {
     if (engine.getValue("[Mixer Profile]", "xFaderMode") === 1) {
         // Constant Power
-        engine.setValue("[Mixer Profile]", "xFaderCalibration", script.absoluteLin(value, 0.5, 0.962, min, max));
+        engine.setValue("[Mixer Profile]", "xFaderCalibration",
+            script.absoluteLin(value, 0.5, 0.962, min, max));
     } else {
         // Additive
-        engine.setValue("[Mixer Profile]", "xFaderCurve", script.absoluteLin(value, 1, 2, min, max));
+        engine.setValue("[Mixer Profile]", "xFaderCurve",
+            script.absoluteLin(value, 1, 2, min, max));
     }
 };
 
@@ -397,7 +402,9 @@ script.spinback = function(channel, control, value, status, group, factor, rate)
         rate = -10;
     }
     // disable on note-off or zero value note/cc
-    engine.spinback(parseInt(group.substring(8, 9)), ((status & 0xF0) !== 0x80 && value > 0), factor, rate);
+    engine.spinback(
+        parseInt(group.substring(8, 9)), ((status & 0xF0) !== 0x80 && value > 0),
+        factor, rate);
 };
 
 /* -------- ------------------------------------------------------
@@ -414,7 +421,9 @@ script.brake = function(channel, control, value, status, group, factor) {
         factor = 1;
     }
     // disable on note-off or zero value note/cc, use default decay rate '1'
-    engine.brake(parseInt(group.substring(8, 9)), ((status & 0xF0) !== 0x80 && value > 0), factor);
+    engine.brake(
+        parseInt(group.substring(8, 9)), ((status & 0xF0) !== 0x80 && value > 0),
+        factor);
 };
 
 /* -------- ------------------------------------------------------
@@ -432,7 +441,9 @@ script.softStart = function(channel, control, value, status, group, factor) {
         factor = 1;
     }
     // disable on note-off or zero value note/cc, use default increase rate '1'
-    engine.softStart(parseInt(group.substring(8, 9)), ((status & 0xF0) !== 0x80 && value > 0), factor);
+    engine.softStart(
+        parseInt(group.substring(8, 9)), ((status & 0xF0) !== 0x80 && value > 0),
+        factor);
 };
 
 // bpm - Used for tapping the desired BPM for a deck
@@ -472,7 +483,9 @@ bpm.tapButton = function(deck) {
     // Adjust the rate:
     fRateScale = (fRateScale - 1.) / engine.getValue("[Channel" + deck + "]", "rateRange");
 
-    engine.setValue("[Channel" + deck + "]", "rate", fRateScale * engine.getValue("[Channel" + deck + "]", "rate_dir"));
+    engine.setValue(
+        "[Channel" + deck + "]", "rate",
+        fRateScale * engine.getValue("[Channel" + deck + "]", "rate_dir"));
 //     print("Script: BPM="+average+" setting to "+fRateScale);
 };
 
@@ -542,19 +555,28 @@ var Control = function(mappedFunction, softMode) {
 Control.prototype.setValue = function(group, inputValue) {
     var outputValue = 0;
     if (inputValue <= this.midInput) {
-        outputValue = this.minOutput + ((inputValue - this.minInput) / (this.midInput - this.minInput)) * (this.midOutput - this.minOutput);
+        outputValue = this.minOutput
+            + ((inputValue - this.minInput) / (this.midInput - this.minInput))
+            * (this.midOutput - this.minOutput);
     } else {
-        outputValue = this.midOutput + ((inputValue - this.midInput) / (this.maxInput - this.midInput)) * (this.maxOutput - this.midOutput);
+        outputValue = this.midOutput
+            + ((inputValue - this.midInput) / (this.maxInput - this.midInput))
+            * (this.maxOutput - this.midOutput);
     }
     if (this.softMode) {
         var currentValue = engine.getValue(group, this.mappedFunction);
         var currentRelative = 0.0;
         if (currentValue <= this.midOutput) {
-            currentRelative = this.minInput + ((currentValue - this.minOutput) / (this.midOutput - this.minOutput)) * (this.midInput - this.minInput);
+            currentRelative = this.minInput
+                + ((currentValue - this.minOutput) / (this.midOutput - this.minOutput))
+                * (this.midInput - this.minInput);
         } else {
-            currentRelative = this.midInput + ((currentValue - this.midOutput) / (this.maxOutput - this.midOutput)) * (this.maxInput - this.midInput);
+            currentRelative = this.midInput
+                + ((currentValue - this.midOutput) / (this.maxOutput - this.midOutput))
+                * (this.maxInput - this.midInput);
         }
-        if (inputValue > currentRelative - this.maxJump && inputValue < currentRelative + this.maxJump) {
+        if (inputValue > currentRelative - this.maxJump
+                && inputValue < currentRelative + this.maxJump) {
             engine.setValue(group, this.mappedFunction, outputValue);
         }
     } else {
