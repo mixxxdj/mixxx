@@ -159,7 +159,7 @@
                 <SizePolicy>min,me</SizePolicy>
                 <Children>
                   <Template src="skin:button_2state.xml">
-                    <SetVariable name="TooltipId">master</SetVariable>
+                    <SetVariable name="TooltipId">master_enable</SetVariable>
                     <SetVariable name="ObjectName">AuxPlayButton</SetVariable>
                     <SetVariable name="Size">42f,26f</SetVariable>
                     <SetVariable name="btn_type">embedded</SetVariable>
