@@ -331,8 +331,7 @@
                 this.send(nearestColorValue);
             } else {
                 if (this.sendRGB === undefined) {
-                    print("ERROR: no function defined for sending RGB colors");
-                    return;
+                    throw Error("sendRGB(color) not defined - unable to send RGB colors!");
                 }
                 this.sendRGB(colorCodeToObject(colorCode));
             }
