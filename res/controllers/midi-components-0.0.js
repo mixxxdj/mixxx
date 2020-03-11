@@ -321,6 +321,11 @@
             }
         },
         outputColor: function(colorCode) {
+            if (colorCode === undefined || colorCode < 0) {
+                print("Ignoring invalid color code in outputColor()");
+                return;
+            }
+
             if (this.colorMapper !== undefined) {
                 var nearestColorValue = this.colorMapper.getValueForNearestColor(colorCode);
                 this.send(nearestColorValue);
