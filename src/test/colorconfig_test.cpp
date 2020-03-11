@@ -63,33 +63,36 @@ TEST_F(ColorConfigTest, ReplaceColorPalette) {
 }
 
 TEST_F(ColorConfigTest, LoadSavePalettes) {
+    const QString kName1 = QStringLiteral("Custom Palette No. 1");
+    const QString kName2 = QStringLiteral("My Custom Palette 2");
+    const QString kName3 = QStringLiteral("I'm blue, da ba dee");
     ColorPaletteSettings colorPaletteSettings(config());
     ColorPalette colorPalette1(
-            "Custom Palette No. 1", QList<mixxx::RgbColor>{
-                                            mixxx::RgbColor(0x66FF99),
-                                            mixxx::RgbColor(0xFF9900),
-                                            mixxx::RgbColor(0x000000),
-                                            mixxx::RgbColor(0xFFFFFF),
-                                    });
+            kName1, QList<mixxx::RgbColor>{
+                            mixxx::RgbColor(0x66FF99),
+                            mixxx::RgbColor(0xFF9900),
+                            mixxx::RgbColor(0x000000),
+                            mixxx::RgbColor(0xFFFFFF),
+                    });
     colorPaletteSettings.setColorPalette(colorPalette1.getName(), colorPalette1);
     ColorPalette colorPalette2(
-            "My Custom Palette 2", QList<mixxx::RgbColor>{
-                                           mixxx::RgbColor(0x0000FF),
-                                           mixxx::RgbColor(0xFF0000),
-                                   });
+            kName2, QList<mixxx::RgbColor>{
+                            mixxx::RgbColor(0x0000FF),
+                            mixxx::RgbColor(0xFF0000),
+                    });
     colorPaletteSettings.setColorPalette(colorPalette2.getName(), colorPalette2);
     ColorPalette colorPalette3(
-            "I'm blue, da ba dee", QList<mixxx::RgbColor>{
-                                           mixxx::RgbColor(0x0000FF),
-                                           mixxx::RgbColor(0x123456),
-                                           mixxx::RgbColor(0x000080),
-                                   });
+            kName3, QList<mixxx::RgbColor>{
+                            mixxx::RgbColor(0x0000FF),
+                            mixxx::RgbColor(0x123456),
+                            mixxx::RgbColor(0x000080),
+                    });
     colorPaletteSettings.setColorPalette(colorPalette3.getName(), colorPalette3);
     saveAndReloadConfig();
     QSet<QString> expectedNames{
-            colorPalette1.getName(),
-            colorPalette2.getName(),
-            colorPalette3.getName(),
+            kName1,
+            kName2,
+            kName3,
     };
     ASSERT_EQ(expectedNames, colorPaletteSettings.getColorPaletteNames());
 }
