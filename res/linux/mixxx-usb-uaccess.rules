@@ -1,0 +1,26 @@
+# This udev rule allows Mixxx to access HID and USB Bulk controllers when running as a normal user
+
+# Note that the udev rule must match on the USB device level; matching the USB interface
+# descriptor with bInterfaceClass does not work.
+
+# Install and execute before 70-uaccess.rules, e.g. .../udev/rules.d/69-mixxx-usb-uaccess.rules
+
+# Native Instruments
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="17cc", TAG+="uaccess"
+# Hercules
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="06f8", TAG+="uaccess"
+# Pioneer
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="08e4", TAG+="uaccess"
+# Numark (may be needed for NS7 & V7)
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="15e4", TAG+="uaccess"
+# Eks
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="1157", TAG+="uaccess"
+# Nintendo
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="057e", TAG+="uaccess"
+# Sony
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="054c", TAG+="uaccess"
+# Gemini
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="23c7", TAG+="uaccess"
+
+# Only some distribuions require the below
+KERNEL=="hiddev*", NAME="usb/%k", GROUP="uaccess"
