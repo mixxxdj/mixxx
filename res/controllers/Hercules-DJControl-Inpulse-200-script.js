@@ -50,8 +50,8 @@ DJCi200.init = function() {
     DJCi200.scratchButtonState = true;
     // Scratch Action
     DJCi200.scratchAction = {
-    1: DJCi200.kScratchActionNone,
-    2: DJCi200.kScratchActionNone
+        1: DJCi200.kScratchActionNone,
+        2: DJCi200.kScratchActionNone
     };
 
     //Turn On Vinyl buttons LED(one for each deck).
@@ -61,11 +61,11 @@ DJCi200.init = function() {
     //Turn On Browser button LED
     midi.sendShortMsg(0x90, 0x04, 0x05);
 
-   //Softtakeover for Pitch fader
-   engine.softTakeover("[Channel1]", "rate", true);
-   engine.softTakeover("[Channel2]", "rate", true);
-   engine.softTakeoverIgnoreNextValue("[Channel1]", "rate");
-   engine.softTakeoverIgnoreNextValue("[Channel2]", "rate");
+    //Softtakeover for Pitch fader
+    engine.softTakeover("[Channel1]", "rate", true);
+    engine.softTakeover("[Channel2]", "rate", true);
+    engine.softTakeoverIgnoreNextValue("[Channel1]", "rate");
+    engine.softTakeoverIgnoreNextValue("[Channel2]", "rate");
 
     //Set effects Levels - Dry/Wet
     engine.setParameter("[EffectRack1_EffectUnit1_Effect1]", "meta", 0.6);
@@ -77,7 +77,7 @@ DJCi200.init = function() {
     engine.setParameter("[EffectRack1_EffectUnit1]", "mix", 1);
     engine.setParameter("[EffectRack1_EffectUnit2]", "mix", 1);
 
-	// Ask the controller to send all current knob/slider values over MIDI, which will update
+    // Ask the controller to send all current knob/slider values over MIDI, which will update
     // the corresponding GUI controls in MIXXX.
     midi.sendShortMsg(0xB0, 0x7F, 0x7F);
 };
