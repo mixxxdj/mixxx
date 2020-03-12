@@ -324,7 +324,7 @@
             // Sends the color from the colorCode to the controller. This
             // method will not be called if no colorKey has been specified.
             if (colorCode === undefined || colorCode < 0) {
-                print("Ignoring invalid color code in outputColor()");
+                print("Ignoring invalid color code '" + colorCode + "' in outputColor()");
                 return;
             }
 
