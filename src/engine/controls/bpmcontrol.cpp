@@ -11,11 +11,12 @@
 #include "engine/enginemaster.h"
 #include "control/controlproxy.h"
 #include "util/assert.h"
+#include "util/logger.h"
 #include "util/math.h"
 #include "util/duration.h"
 
 namespace {
-constexpr bool BPM_DEBUG = false;
+const mixxx::Logger kLogger("BpmControl");
 
 constexpr double kBpmRangeMin = 1.0;
 // TODO(XXX): Change to mixxx::Bpm::kValueMax? This would affect mappings!
@@ -164,7 +165,7 @@ void BpmControl::slotFileBpmChanged(double file_bpm) {
     // Adjust the file-bpm with the current setting of the rate to get the
     // engine BPM. We only do this for SYNC_NONE decks because EngineSync will
     // set our BPM if the file BPM changes. See SyncControl::fileBpmChanged().
-    if (BPM_DEBUG) qDebug() << getGroup() << "BpmControl::slotFileBpmChanged" << file_bpm;
+    kLogger.trace() << getGroup() << "BpmControl::slotFileBpmChanged" << file_bpm;
     BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
         const double beats_bpm =
@@ -380,7 +381,7 @@ double BpmControl::shortestPercentageChange(const double& current_percentage,
 }
 
 double BpmControl::calcSyncedRate(double userTweak) {
-    if (BPM_DEBUG) qDebug() << getGroup() << "BpmControl::calcSyncedRate, tweak " << userTweak;
+    kLogger.trace() << getGroup() << "BpmControl::calcSyncedRate, tweak " << userTweak;
     m_dUserTweakingSync = userTweak != 0.0;
     double rate = 1.0;
     // Don't know what to do if there's no bpm.
@@ -446,13 +447,11 @@ double BpmControl::calcSyncAdjustment(bool userTweakingSync) {
     double shortest_distance = shortestPercentageChange(
             syncTargetBeatDistance, thisBeatDistance);
 
-    if (BPM_DEBUG) {
-        qDebug() << m_group << "****************";
-        qDebug() << "master beat distance:" << syncTargetBeatDistance;
-        qDebug() << "my     beat distance:" << thisBeatDistance;
-        qDebug() << "error               :" << (shortest_distance - m_dUserOffset.getValue());
-        qDebug() << "user offset         :" << m_dUserOffset.getValue();
-    }
+    kLogger.trace() << m_group << "****************";
+    kLogger.trace() << "master beat distance:" << syncTargetBeatDistance;
+    kLogger.trace() << "my     beat distance:" << thisBeatDistance;
+    kLogger.trace() << "error               :" << (shortest_distance - m_dUserOffset.getValue());
+    kLogger.trace() << "user offset         :" << m_dUserOffset.getValue();
 
     double adjustment = 1.0;
 
@@ -503,8 +502,7 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
     // is used in synccontrol to update the internal clock beat distance, and if
     // we don't adjust the reported distance the track will try to adjust
     // sync against itself.
-    if (BPM_DEBUG)
-        qDebug() << getGroup() << "BpmControl::calcRawBeatDistance" << dThisPosition;
+    kLogger.trace() << getGroup() << "BpmControl::calcRawBeatDistance" << dThisPosition;
     double dPrevBeat = m_pPrevBeat->get();
     double dNextBeat = m_pNextBeat->get();
 
@@ -595,10 +593,8 @@ double BpmControl::getNearestPositionInPhase(
     double dThisNextBeat = m_pNextBeat->get();
     double dThisBeatLength;
     if (dThisPosition > dThisNextBeat || dThisPosition < dThisPrevBeat) {
-        if (BPM_DEBUG) {
-            qDebug() << "BpmControl::getNearestPositionInPhase out of date"
-                 << dThisPosition << dThisNextBeat << dThisPrevBeat;
-        }
+        kLogger.trace() << "BpmControl::getNearestPositionInPhase out of date"
+                        << dThisPosition << dThisNextBeat << dThisPrevBeat;
         // This happens if dThisPosition is the target position of a requested
         // seek command
         if (!getBeatContext(pBeats, dThisPosition,
@@ -739,10 +735,8 @@ double BpmControl::getBeatMatchPosition(
     double dThisNextBeat = m_pNextBeat->get();
     double dThisBeatLength;
     if (dThisPosition > dThisNextBeat || dThisPosition < dThisPrevBeat) {
-        if (BPM_DEBUG) {
-            qDebug() << "BpmControl::getNearestPositionInPhase out of date"
-                     << dThisPosition << dThisNextBeat << dThisPrevBeat;
-        }
+        kLogger.trace() << "BpmControl::getNearestPositionInPhase out of date"
+                        << dThisPosition << dThisNextBeat << dThisPrevBeat;
         // This happens if dThisPosition is the target position of a requested
         // seek command
         if (!getBeatContext(
@@ -917,7 +911,7 @@ void BpmControl::notifySeek(double dNewPlaypos) {
 
 // called from an engine worker thread
 void BpmControl::trackLoaded(TrackPointer pNewTrack) {
-    if (BPM_DEBUG) qDebug() << getGroup() << "BpmControl::trackLoaded";
+    kLogger.trace() << getGroup() << "BpmControl::trackLoaded";
     if (m_pTrack) {
         disconnect(m_pTrack.get(), &Track::beatsUpdated,
                    this, &BpmControl::slotUpdatedTrackBeats);
@@ -985,7 +979,7 @@ double BpmControl::updateLocalBpm() {
         local_bpm = m_pFileBpm->get();
     }
     if (local_bpm != prev_local_bpm) {
-        if (BPM_DEBUG) qDebug() << getGroup() << "BpmControl::updateLocalBpm" << local_bpm;
+        kLogger.trace() << getGroup() << "BpmControl::updateLocalBpm" << local_bpm;
         m_pLocalBpm->set(local_bpm);
         slotUpdateEngineBpm();
     }
@@ -998,8 +992,7 @@ double BpmControl::updateBeatDistance() {
     if (!isSynchronized()) {
         m_dUserOffset.setValue(0.0);
     }
-    if (BPM_DEBUG)
-        qDebug() << getGroup() << "BpmControl::updateBeatDistance" << beat_distance;
+    kLogger.trace() << getGroup() << "BpmControl::updateBeatDistance" << beat_distance;
     return beat_distance;
 }
 
@@ -1016,7 +1009,7 @@ void BpmControl::setInstantaneousBpm(double instantaneousBpm) {
 }
 
 void BpmControl::resetSyncAdjustment() {
-    if (BPM_DEBUG) qDebug() << getGroup() << "BpmControl::resetSyncAdjustment";
+    kLogger.trace() << getGroup() << "BpmControl::resetSyncAdjustment";
     // Immediately edit the beat distance to reflect the new reality.
     double new_distance = m_pThisBeatDistance->get() + m_dUserOffset.getValue();
     m_pThisBeatDistance->set(new_distance);

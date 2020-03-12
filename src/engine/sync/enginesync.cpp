@@ -25,8 +25,11 @@
 #include "engine/sync/internalclock.h"
 #include "util/assert.h"
 #include "util/defs.h"
+#include "util/logger.h"
 
-const bool SYNC_DEBUG = false;
+namespace {
+const mixxx::Logger kLogger("EngineSync");
+}  // namespace
 
 EngineSync::EngineSync(UserSettingsPointer pConfig)
         : BaseSyncableListener(pConfig) {
@@ -89,7 +92,7 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
 }
 
 void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
-    if (SYNC_DEBUG) qDebug() << "EngineSync::requestSyncMode" << pSyncable->getGroup() << mode;
+    kLogger.trace() << "EngineSync::requestSyncMode" << pSyncable->getGroup() << mode;
     // Based on the call hierarchy I don't think this is possible. (Famous last words.)
     VERIFY_OR_DEBUG_ASSERT(pSyncable) {
         return;
@@ -188,7 +191,7 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
 }
 
 void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
-    if (SYNC_DEBUG) qDebug() << "EngineSync::requestEnableSync " << pSyncable->getGroup() << bEnabled;
+    kLogger.trace() << "EngineSync::requestEnableSync " << pSyncable->getGroup() << bEnabled;
     // Sync disable request, hand off to a different function
     if (!bEnabled) {
         // Already disabled?  Do nothing.
@@ -250,7 +253,7 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
 
 void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
     Q_UNUSED(playing);
-    if (SYNC_DEBUG) qDebug() << "EngineSync::notifyPlaying" << pSyncable->getGroup() << playing;
+    kLogger.trace() << "EngineSync::notifyPlaying" << pSyncable->getGroup() << playing;
     // For now we don't care if the deck is now playing or stopping.
     if (!pSyncable->isSynchronized()) {
         return;
@@ -269,7 +272,7 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
 }
 
 void EngineSync::notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) {
-    if (SYNC_DEBUG) qDebug() << "EngineSync::notifyTrackLoaded";
+    kLogger.trace() << "EngineSync::notifyTrackLoaded";
     // If there are no other sync decks, initialize master based on this.
     // If there is, make sure to set our rate based on that.
 
@@ -391,7 +394,7 @@ void EngineSync::activateMaster(Syncable* pSyncable) {
 }
 
 void EngineSync::deactivateSync(Syncable* pSyncable) {
-    if (SYNC_DEBUG) qDebug() << "EngineSync::deactivateSync" << pSyncable->getGroup();
+    kLogger.trace() << "EngineSync::deactivateSync" << pSyncable->getGroup();
     bool wasMaster = pSyncable->getSyncMode() == SYNC_MASTER;
     if (wasMaster) {
         m_pMasterSyncable = nullptr;
