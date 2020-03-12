@@ -812,10 +812,7 @@ void setHotCue(TrackPointer track, double position, int id, QString label, int /
     pCue->setType(mixxx::CueType::HotCue);
     pCue->setStartPosition(position);
     pCue->setHotCue(id);
-
-    if (!label.isNull()) {
-        pCue->setLabel(label);
-    }
+    pCue->setLabel(label);
 
     /*
     TODO(ehendrikd):
@@ -1025,9 +1022,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
         memory_cue_t firstCue = memoryCues[0];
         track->setCuePoint(CuePosition(firstCue.position));
         CuePointer pLoadCue = track->findCueByType(mixxx::CueType::MainCue);
-        if (!firstCue.comment.isNull()) {
-            pLoadCue->setLabel(firstCue.comment);
-        }
+        pLoadCue->setLabel(firstCue.comment);
 
         // Add remaining memory cues as hot cues (after actual found hotcues) as Mixxx can only have 1 cue
         for (int memoryCueIndex = 1; memoryCueIndex < memoryCues.size(); memoryCueIndex++) {
