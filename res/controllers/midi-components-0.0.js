@@ -310,7 +310,7 @@
         },
         output: function(value) {
             var outval = this.outValueScale(value);
-            // WARNING: outputColor only handles hotcueColors
+            // NOTE: outputColor only handles hotcueColors
             // and there is no hotcueColor for turning the LED
             // off. So the `send()` function is responsible for turning the
             // actual LED off.
