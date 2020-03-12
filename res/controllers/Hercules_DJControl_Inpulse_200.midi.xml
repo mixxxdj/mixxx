@@ -790,7 +790,7 @@
                     <normal />
                 </options>
             </control>
-            
+
             <!--Continuous Controllers (CC) - Faders/knobs -->
             <!-- CC's MIDI Channel 1 (0xB0 Standard mode)-->
             <!--Crossfader-->
