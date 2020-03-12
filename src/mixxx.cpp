@@ -18,26 +18,27 @@
 #include "mixxx.h"
 
 #include <QDesktopServices>
-#include <QStandardPaths>
 #include <QDesktopWidget>
 #include <QFileDialog>
+#include <QGLFormat>
 #include <QGLWidget>
-#include <QUrl>
-#include <QtDebug>
-#include <QLocale>
 #include <QGuiApplication>
 #include <QInputMethod>
-#include <QGLFormat>
+#include <QLocale>
 #include <QScreen>
+#include <QStandardPaths>
+#include <QUrl>
+#include <QtDebug>
 
 #include "dialog/dlgabout.h"
-#include "preferences/dialog/dlgpreferences.h"
-#include "preferences/dialog/dlgprefeq.h"
-#include "preferences/constants.h"
 #include "dialog/dlgdevelopertools.h"
-#include "engine/enginemaster.h"
-#include "effects/effectsmanager.h"
+#include "dialog/dlgreplacecolor.h"
 #include "effects/builtin/builtinbackend.h"
+#include "effects/effectsmanager.h"
+#include "engine/enginemaster.h"
+#include "preferences/constants.h"
+#include "preferences/dialog/dlgprefeq.h"
+#include "preferences/dialog/dlgpreferences.h"
 #ifdef __LILV__
 #include "effects/lv2/lv2backend.h"
 #endif
@@ -468,7 +469,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pPrefDlg->setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     m_pPrefDlg->setHidden(true);
 
-    m_pColorReplaceDlg = new QDialog(this);
+    m_pColorReplaceDlg = new DlgReplaceColor(this);
     m_pColorReplaceDlg->setHidden(true);
 
     launchProgress(60);
