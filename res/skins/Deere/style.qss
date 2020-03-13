@@ -1586,6 +1586,7 @@ WPushButton[value="2"]:hover {
 /* Hotcue Color: Green */
 #HotcueButton[value="1"][highlight="2"],
 #HotcueButton[value="2"][highlight="2"] {
+    color: #3B3B3B;
     background-color: #32be44;
     border-color: #32be44;
 }
@@ -1610,13 +1611,13 @@ WPushButton[value="2"]:hover {
 /* Hotcue Color: Yellow */
 #HotcueButton[value="1"][highlight="4"],
 #HotcueButton[value="2"][highlight="4"] {
-    color: #4B4B4B;
+    color: #3B3B3B;
     background-color: #f8d200;
     border-color: #f8d200;
 }
 #HotcueButton[value="1"][highlight="4"]:hover,
 #HotcueButton[value="2"][highlight="4"]:hover {
-    color: #4B4B4B;
+    color: #3B3B3B;
     background-color: #f8f200;
     border-color: #f8f200;
 }
@@ -1624,13 +1625,13 @@ WPushButton[value="2"]:hover {
 /* Hotcue Color: Celeste */
 #HotcueButton[value="1"][highlight="5"],
 #HotcueButton[value="2"][highlight="5"] {
-    color: #4B4B4B;
+    color: #3B3B3B;
     background-color: #42d4f4;
     border-color: #42d4f4;
 }
 #HotcueButton[value="1"][highlight="5"]:hover,
 #HotcueButton[value="2"][highlight="5"]:hover {
-    color: #4B4B4B;
+    color: #3B3B3B;
     background-color: #62f4f4;
     border-color: #62f4f4;
 }
