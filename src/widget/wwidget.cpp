@@ -39,10 +39,10 @@ WWidget::~WWidget() {
 }
 
 double WWidget::getBackgroundColorRgba() const {
-    if (m_backgroundColorRgba >= 0) {
-        return m_backgroundColorRgba;
+    if (m_backgroundColorRgba < 0) {
+        return -1;
     }
-    return -1;
+    return m_backgroundColorRgba;
 }
 
 void WWidget::setBackgroundColorRgba(double rgba) {
