@@ -344,7 +344,8 @@ WCueMenuPopup QLabel {
   selection-background-color: #ccc;
   padding: 2px;
 }
-#CueColorPicker QPushButton {
+#CueColorPicker QPushButton,
+WLibrary WColorPicker QPushButton {
   width: 38px;
   height: 20px;
   border: 1px solid #060613;
