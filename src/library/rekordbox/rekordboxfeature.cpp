@@ -1013,11 +1013,11 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
         }
     }
 
-    std::sort(memoryCues.begin(), memoryCues.end(), [](const memory_cue_t& a, const memory_cue_t& b) -> bool {
-        return a.position < b.position;
-    });
-
     if (memoryCues.size() > 0) {
+        std::sort(memoryCues.begin(), memoryCues.end(), [](const memory_cue_t& a, const memory_cue_t& b) -> bool {
+            return a.position < b.position;
+        });
+
         // Set first chronological memory cue as Mixxx MainCue
         memory_cue_t firstCue = memoryCues[0];
         track->setCuePoint(CuePosition(firstCue.position));
