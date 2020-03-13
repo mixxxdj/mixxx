@@ -1,7 +1,7 @@
 // Pioneer-DDJ-400-script.js
 // ****************************************************************************
 // * Mixxx mapping script file for the Pioneer DDJ-400.
-// * Author: Warker, nschloe
+// * Author: Warker, nschloe, dj3730
 // * Forum: https://mixxx.org/forums/viewtopic.php?f=7&t=12113
 // * Wiki: https://www.mixxx.org/wiki/doku.php/pioneer_ddj-400
 //
@@ -16,19 +16,20 @@
 //                 * Beat Sync
 //                 * Beat Loop Mode
 //                 * Sampler Mode
+//                 * BeatFX (controls Effect Unit 1.  LEFT selects EFFECT1, RIGHT selects EFFECT2, FX_SELECT selects EFFECT3.
+//                   ON/OFF toggles selected effect slot.  SHIFT+ON/OFF disables all three effect slots.
+//                 * Hot Cue Mode
 //
 //             Partially:
-//                 * Beatjump mode (no lighting, shift mode)
+//                 * Beatjump mode (no lighting, shift mode(adjust jump size))
 //                 * PAD FX (only slots A-H, Q-P)
-//                 * Effect Section (without Beat FX left + Right - no equivalent function found)
 //                 * Output (lights)
+//                 * Loop Section: Loop in / Out, Call, Double, Half 
+//                   (loop adjust not working, '4 beat loop' doesnt work correctly - see comments in PioneerDDJ400.loopin4beatPressedLong)
 //
 //             Testing:
 //                 * Keyboard Mode (check pitch value)
 //                 * Keyshift Mode (check pitch value)
-//                 * Hot Cue Mode (including loops)
-//                 * Loop Section: Loop in / Out + Adjust, Call, Double, Half
-//                 * Effect Section (Beat FX left + Right - select the Effect Slot (not Effect BPM))
 //
 //             Not working/implemented:
 //                 * Channel & Crossfader Start
@@ -93,7 +94,7 @@ PioneerDDJ400.shiftState = [0, 0];
 PioneerDDJ400.vinylMode = true;
 PioneerDDJ400.alpha = 1.0/8;
 PioneerDDJ400.beta = PioneerDDJ400.alpha/32;
-PioneerDDJ400.highspeedScale = 20;
+PioneerDDJ400.highspeedScale = 20; // multiplier for fast seek through track using SHIFT+JOGWHEEL
 PioneerDDJ400.bendScale = 0.5;
 
 PioneerDDJ400.pointJumpSpace = 0.005; // amount in percent of the Song we can jump back to previous Cue or loop point
@@ -153,7 +154,7 @@ PioneerDDJ400.init = function() {
     // reset vumeter
     PioneerDDJ400.toggleLight(LightsPioneerDDJ400.deck1.vuMeter, false);
     PioneerDDJ400.toggleLight(LightsPioneerDDJ400.deck2.vuMeter, false);
-	
+    
     // DJ3730:  added
     // enable soft takeover for rate controls
     engine.softTakeover("[Channel1]", "rate", true);
@@ -451,7 +452,6 @@ PioneerDDJ400.samplerModeShiftPadPressed = function(_channel, _control, value, _
     } else { // load selected track
         engine.setValue(group, "LoadSelectedTrack", 1);
     }
-    // TODO: while playing a sample blink playing PAD?
 };
 
 
@@ -481,6 +481,9 @@ PioneerDDJ400.loopin4beatPressed = function(channel, _control, value, _status, g
 };
 
 PioneerDDJ400.loopin4beatPressedLong = function(_channel, _control, value, _status, group) {
+    // problematic - loop gets set to the playback position where the 'long press' was recognized
+	// and not to the point at which the button was initially pressed
+	// as a result, the loop is not set where one would expect
     "use strict";
     var loopEnabled = engine.getValue(group, "loop_enabled");
     if (!loopEnabled && value > 0) {
@@ -538,43 +541,46 @@ PioneerDDJ400.beatFxLevelDepthRotate = function(_channel, _control, value) {
 };
 
 PioneerDDJ400.beatFxSelectPressed = ignoreRelease(function() {
+    // focus Effect Slot 3 in Effect Unit 1, or clear focus if it is currently focused
     "use strict";
-	if (PioneerDDJ400.selectedFxSlot == 3) {
-		PioneerDDJ400.selectedFxSlot = 0;
-	} else {
-		PioneerDDJ400.selectedFxSlot = 3;
-	}
+    if (PioneerDDJ400.selectedFxSlot == 3) {
+        PioneerDDJ400.selectedFxSlot = 0;
+    } else {
+        PioneerDDJ400.selectedFxSlot = 3;
+    }
 });
 
 PioneerDDJ400.beatFxSelectShiftPressed = function(_channel, _control, value) {
     "use strict";
     //engine.setValue(PioneerDDJ400.selectedFxGroup, "prev_effect", value);
-
 };
 
 PioneerDDJ400.beatFxLeftPressed = ignoreRelease(function() {
+    // focus Effect Slot 1 in Effect Unit 1, or clear focus if it is currently focused
     "use strict";
-	if (PioneerDDJ400.selectedFxSlot == 1) {
-		PioneerDDJ400.selectedFxSlot = 0;
-	} else {
-		PioneerDDJ400.selectedFxSlot = 1;
-	}
+    if (PioneerDDJ400.selectedFxSlot == 1) {
+        PioneerDDJ400.selectedFxSlot = 0;
+    } else {
+        PioneerDDJ400.selectedFxSlot = 1;
+    }
 });
 
 PioneerDDJ400.beatFxRightPressed = ignoreRelease(function() {
+    // focus Effect Slot 2 in Effect Unit 1, or clear focus if it is currently focused
     "use strict";
-	if (PioneerDDJ400.selectedFxSlot == 2) {
-		PioneerDDJ400.selectedFxSlot = 0;
-	} else {
-		PioneerDDJ400.selectedFxSlot = 2;
-	}
+    if (PioneerDDJ400.selectedFxSlot == 2) {
+        PioneerDDJ400.selectedFxSlot = 0;
+    } else {
+        PioneerDDJ400.selectedFxSlot = 2;
+    }
 });
 
 PioneerDDJ400.beatFxOnOffPressed = ignoreRelease(function() {
+    // toggle the currently focused effect slot in Effect Unit 1 (if any)
     "use strict";
-	var selectedSlot = PioneerDDJ400.selectedFxSlot;
+    var selectedSlot = PioneerDDJ400.selectedFxSlot;
     if (selectedSlot <= 0 || selectedSlot > PioneerDDJ400.numFxSlots) {
-	    return;
+        return;
     }
     var isEnabled = !engine.getValue(PioneerDDJ400.selectedFxGroup, "enabled");
     engine.setValue(PioneerDDJ400.selectedFxGroup, "enabled", isEnabled);
@@ -582,6 +588,7 @@ PioneerDDJ400.beatFxOnOffPressed = ignoreRelease(function() {
 });
 
 PioneerDDJ400.beatFxOnOffShiftPressed = ignoreRelease(function() {
+    // turn off all three effect slots in Effect Unit 1
     "use strict";
     for (var i = 1; i <= PioneerDDJ400.numFxSlots; i += 1) {
         engine.setValue("[EffectRack1_EffectUnit1_Effect" + i + "]", "enabled", 0);
@@ -724,16 +731,16 @@ PioneerDDJ400.shutdown = function() {
     // housekeeping
     // turn off all Sampler LEDs
     for (i = 0; i <= 7; ++i) {
-        midi.sendShortMsg(0x97, 0x30 + i, 0x00);	// Deck 1 pads
-        midi.sendShortMsg(0x98, 0x30 + i, 0x00);	// Deck 1 pads with SHIFT
-        midi.sendShortMsg(0x99, 0x30 + i, 0x00);	// Deck 2 pads
-        midi.sendShortMsg(0x9A, 0x30 + i, 0x00);	// Deck 2 pads with SHIFT
+        midi.sendShortMsg(0x97, 0x30 + i, 0x00);    // Deck 1 pads
+        midi.sendShortMsg(0x98, 0x30 + i, 0x00);    // Deck 1 pads with SHIFT
+        midi.sendShortMsg(0x99, 0x30 + i, 0x00);    // Deck 2 pads
+        midi.sendShortMsg(0x9A, 0x30 + i, 0x00);    // Deck 2 pads with SHIFT
     }
     // turn off all Hotcue LEDs 
     for (i = 0; i <= 7; ++i) {
-        midi.sendShortMsg(0x97, 0x00 + i, 0x00);	// Deck 1 pads
-        midi.sendShortMsg(0x98, 0x00 + i, 0x00);	// Deck 1 pads with SHIFT
-        midi.sendShortMsg(0x99, 0x00 + i, 0x00);	// Deck 2 pads
-        midi.sendShortMsg(0x9A, 0x00 + i, 0x00);	// Deck 2 pads with SHIFT
+        midi.sendShortMsg(0x97, 0x00 + i, 0x00);    // Deck 1 pads
+        midi.sendShortMsg(0x98, 0x00 + i, 0x00);    // Deck 1 pads with SHIFT
+        midi.sendShortMsg(0x99, 0x00 + i, 0x00);    // Deck 2 pads
+        midi.sendShortMsg(0x9A, 0x00 + i, 0x00);    // Deck 2 pads with SHIFT
     }
 };

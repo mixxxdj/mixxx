@@ -4167,7 +4167,7 @@
             </output>
 
             <!-- SAMPLER Mode Pads (while SHIFT is NOT pressed)-->
-			<!-- Deck 1 pads -->
+            <!-- Deck 1 pads -->
             <output>
                 <group>[Sampler1]</group>
                 <key>track_loaded</key>
@@ -4233,7 +4233,7 @@
                 <minimum>0.5</minimum>
             </output>
             <!-- SAMPLER Mode Pads (while SHIFT is NOT pressed)-->
-			<!-- Deck 2 pads -->
+            <!-- Deck 2 pads -->
             <output>
                 <group>[Sampler9]</group>
                 <key>track_loaded</key>
@@ -4298,10 +4298,10 @@
                 <on>0x7F</on>
                 <minimum>0.5</minimum>
             </output>
-			
+            
             <!-- SAMPLER Mode Pads (while SHIFT IS pressed)-->
-			<!-- Deck 1 pads -->
-			
+            <!-- Deck 1 pads -->
+            
             <output>
                 <group>[Sampler1]</group>
                 <key>track_loaded</key>
@@ -4366,10 +4366,10 @@
                 <on>0x7F</on>
                 <minimum>0.5</minimum>
             </output>
-			
+            
             <!-- SAMPLER Mode Pads (while SHIFT IS pressed)-->
-			<!-- Deck 2 pads -->
-			
+            <!-- Deck 2 pads -->
+            
             <output>
                 <group>[Sampler9]</group>
                 <key>track_loaded</key>
