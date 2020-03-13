@@ -126,17 +126,17 @@ void WMainMenuBar::initialize() {
 
     pLibraryMenu->addSeparator();
 
-    QString colorReplaceTitle = tr("&Replace Colors");
-    QString colorReplaceText = tr("Mass replace cue and track colors.");
-    auto pLibraryColorReplace = new QAction(colorReplaceTitle, this);
-    pLibraryColorReplace->setStatusTip(colorReplaceText);
-    pLibraryColorReplace->setWhatsThis(buildWhatsThis(colorReplaceTitle, colorReplaceText));
-    pLibraryColorReplace->setCheckable(false);
-    connect(pLibraryColorReplace,
+    QString replaceCueColorTitle = tr("&Replace Cue Colors");
+    QString replaceCueColorText = tr("Mass replace cue and track colors.");
+    auto pLibraryReplaceCueColor = new QAction(replaceCueColorTitle, this);
+    pLibraryReplaceCueColor->setStatusTip(replaceCueColorText);
+    pLibraryReplaceCueColor->setWhatsThis(buildWhatsThis(replaceCueColorTitle, replaceCueColorText));
+    pLibraryReplaceCueColor->setCheckable(false);
+    connect(pLibraryReplaceCueColor,
             &QAction::triggered,
             this,
-            &WMainMenuBar::showReplaceColor);
-    pLibraryMenu->addAction(pLibraryColorReplace);
+            &WMainMenuBar::showReplaceCueColor);
+    pLibraryMenu->addAction(pLibraryReplaceCueColor);
 
     pLibraryMenu->addSeparator();
 

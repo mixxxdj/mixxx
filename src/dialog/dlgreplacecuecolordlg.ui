@@ -1,43 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DlgReplaceColor</class>
- <widget class="QDialog" name="DlgReplaceColor">
+ <class>DlgReplaceCueColor</class>
+ <widget class="QDialog" name="DlgReplaceCueColor">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>300</height>
+    <height>174</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Replace Color</string>
+   <string>Replace Hotcue Color</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QLabel" name="labelNewColor">
+   <item row="0" column="1">
+    <widget class="QPushButton" name="pushButtonNewColor">
      <property name="text">
-      <string>Set color to:</string>
+      <string/>
      </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="labelColorType">
-     <property name="text">
-      <string>For all:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QComboBox" name="comboBoxColorType">
-     <item>
-      <property name="text">
-       <string>Tracks</string>
-      </property>
-     </item>
     </widget>
    </item>
    <item row="2" column="0" colspan="2">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="1" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBoxConditions">
      <property name="title">
       <string>If all of these conditions are true:</string>
@@ -46,7 +43,7 @@
       <item row="0" column="0">
        <widget class="QCheckBox" name="checkBoxCurrentColorCondition">
         <property name="text">
-         <string>Current color</string>
+         <string>Current Cue Color</string>
         </property>
        </widget>
       </item>
@@ -108,7 +105,7 @@
      </layout>
     </widget>
    </item>
-   <item row="4" column="0" colspan="2">
+   <item row="3" column="0" colspan="2">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -118,25 +115,12 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
-    <widget class="QPushButton" name="pushButtonNewColor">
+   <item row="0" column="0">
+    <widget class="QLabel" name="labelNewColor">
      <property name="text">
-      <string/>
+      <string>Set Cue color to:</string>
      </property>
     </widget>
-   </item>
-   <item row="3" column="0" colspan="2">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>

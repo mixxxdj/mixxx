@@ -231,8 +231,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/dialog/dlgaboutdlg.ui
   src/dialog/dlgdevelopertools.cpp
   src/dialog/dlgdevelopertoolsdlg.ui
-  src/dialog/dlgreplacecolor.cpp
-  src/dialog/dlgreplacecolordlg.ui
+  src/dialog/dlgreplacecuecolor.cpp
+  src/dialog/dlgreplacecuecolordlg.ui
   src/effects/builtin/autopaneffect.cpp
   src/effects/builtin/balanceeffect.cpp
   src/effects/builtin/bessel4lvmixeqeffect.cpp

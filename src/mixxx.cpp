@@ -32,7 +32,7 @@
 
 #include "dialog/dlgabout.h"
 #include "dialog/dlgdevelopertools.h"
-#include "dialog/dlgreplacecolor.h"
+#include "dialog/dlgreplacecuecolor.h"
 #include "effects/builtin/builtinbackend.h"
 #include "effects/effectsmanager.h"
 #include "engine/enginemaster.h"
@@ -162,7 +162,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pMenuBar(nullptr),
           m_pDeveloperToolsDlg(nullptr),
           m_pPrefDlg(nullptr),
-          m_pColorReplaceDlg(nullptr),
+          m_pReplaceCueColorDlg(nullptr),
           m_pKbdConfig(nullptr),
           m_pKbdConfigEmpty(nullptr),
           m_toolTipsCfg(mixxx::TooltipsPreference::TOOLTIPS_ON),
@@ -469,8 +469,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pPrefDlg->setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     m_pPrefDlg->setHidden(true);
 
-    m_pColorReplaceDlg = new DlgReplaceColor(this);
-    m_pColorReplaceDlg->setHidden(true);
+    m_pReplaceCueColorDlg = new DlgReplaceCueColor(m_pLibrary->dbConnectionPool(), this);
+    m_pReplaceCueColorDlg->setHidden(true);
 
     launchProgress(60);
 
@@ -1108,9 +1108,9 @@ void MixxxMainWindow::connectMenuBar() {
             this,
             &MixxxMainWindow::slotOptionsPreferences);
     connect(m_pMenuBar,
-            &WMainMenuBar::showReplaceColor,
+            &WMainMenuBar::showReplaceCueColor,
             this,
-            &MixxxMainWindow::slotReplaceColor);
+            &MixxxMainWindow::slotReplaceCueColor);
     connect(m_pMenuBar,
             &WMainMenuBar::loadTrackToDeck,
             this,
@@ -1340,10 +1340,10 @@ void MixxxMainWindow::slotOptionsPreferences() {
     m_pPrefDlg->activateWindow();
 }
 
-void MixxxMainWindow::slotReplaceColor() {
-    m_pColorReplaceDlg->show();
-    m_pColorReplaceDlg->raise();
-    m_pColorReplaceDlg->activateWindow();
+void MixxxMainWindow::slotReplaceCueColor() {
+    m_pReplaceCueColorDlg->show();
+    m_pReplaceCueColorDlg->raise();
+    m_pReplaceCueColorDlg->activateWindow();
 }
 
 void MixxxMainWindow::slotNoVinylControlInputConfigured() {
