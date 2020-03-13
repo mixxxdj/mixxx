@@ -18,24 +18,10 @@ class CoverArtUtils {
   public:
     static QString defaultCoverLocation();
 
-    // Extracts the first cover art image embedded within the file at
-    // fileInfo. If no security token is provided a new one is created.
-    static QImage extractEmbeddedCover(
-            TrackFile trackFile);
+    // Extracts the first cover art image embedded within the file.
     static QImage extractEmbeddedCover(
             TrackFile trackFile,
             SecurityTokenPointer pToken);
-
-    static QImage loadCover(const CoverInfo& info);
-    static quint16 calculateHash(const QImage& image) {
-        return qChecksum(reinterpret_cast<const char*>(image.constBits()),
-#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
-                         image.sizeInBytes()
-#else
-                         image.byteCount()
-#endif
-                );
-    }
 
     static QStringList supportedCoverArtExtensions();
     static QString supportedCoverArtExtensionsRegex();
@@ -91,7 +77,24 @@ class CoverInfoGuesser {
     CoverInfoRelative guessCoverInfoForTrack(
             const Track& track);
 
+    void guessAndSetCoverInfoForTrack(
+            Track& track) {
+        track.setCoverInfo(guessCoverInfoForTrack(track));
+    }
+    void guessAndSetCoverInfoForTracks(
+            const QList<TrackPointer>& tracks);
+
   private:
     QString m_cachedFolder;
     QList<QFileInfo> m_cachedPossibleCoversInFolder;
 };
+
+// Guesses the cover art for the provided tracks by searching the tracks'
+// metadata and folders for image files. All I/O is done in a separate
+// thread.
+void guessTrackCoverInfoConcurrently(TrackPointer pTrack);
+void guessTrackCoverInfoConcurrently(QList<TrackPointer> tracks);
+
+// Concurrent guessing of track covers during short running
+// tests may cause spurious test failures due to timing issues.
+void disableConcurrentGuessingOfTrackCoverInfoDuringTests();

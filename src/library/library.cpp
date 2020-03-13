@@ -20,6 +20,7 @@
 #include "library/trackcollectionmanager.h"
 #include "library/trackmodel.h"
 
+#include "library/analysisfeature.h"
 #include "library/autodj/autodjfeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/browse/browsefeature.h"
@@ -28,11 +29,11 @@
 #include "library/mixxxlibraryfeature.h"
 #include "library/playlistfeature.h"
 #include "library/recording/recordingfeature.h"
+#include "library/rekordbox/rekordboxfeature.h"
 #include "library/rhythmbox/rhythmboxfeature.h"
+#include "library/serato/seratofeature.h"
 #include "library/setlogfeature.h"
 #include "library/traktor/traktorfeature.h"
-#include "library/rekordbox/rekordboxfeature.h"
-#include "library/analysisfeature.h"
 
 #include "mixer/playermanager.h"
 
@@ -168,6 +169,10 @@ Library::Library(
         addFeature(new RekordboxFeature(this, m_pConfig));
     }
 
+    if (m_pConfig->getValue(ConfigKey(kConfigGroup, "ShowSeratoLibrary"), true)) {
+        addFeature(new SeratoFeature(this, m_pConfig));
+    }
+
     for (const auto& externalTrackCollection : m_pTrackCollectionManager->externalCollections()) {
         auto feature = externalTrackCollection->newLibraryFeature(this, m_pConfig);
         if (feature) {
@@ -228,14 +233,14 @@ void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
             &WSearchLineEdit::search,
             this,
             &Library::search);
-    connect(pSearchboxWidget,
-            &WSearchLineEdit::disableSearch,
-            this,
-            &Library::disableSearch);
-    connect(pSearchboxWidget,
-            &WSearchLineEdit::restoreSearch,
-            this,
-            &Library::restoreSearch);
+    connect(this,
+            &Library::disableSearch,
+            pSearchboxWidget,
+            &WSearchLineEdit::disableSearch);
+    connect(this,
+            &Library::restoreSearch,
+            pSearchboxWidget,
+            &WSearchLineEdit::restoreSearch);
     connect(this,
             &Library::setTrackTableFont,
             pSearchboxWidget,
@@ -371,11 +376,11 @@ void Library::addFeature(LibraryFeature* feature) {
     connect(feature,
             &LibraryFeature::restoreSearch,
             this,
-            &Library::slotRestoreSearch);
+            &Library::restoreSearch); // forward signal
     connect(feature,
             &LibraryFeature::disableSearch,
             this,
-            &Library::slotDisableSearch);
+            &Library::disableSearch); // forward signal
     connect(feature,
             &LibraryFeature::enableCoverArtDisplay,
             this,
@@ -433,14 +438,6 @@ void Library::slotLoadLocationToPlayer(QString location, QString group) {
 
 void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
     emit loadTrackToPlayer(pTrack, group, play);
-}
-
-void Library::slotRestoreSearch(const QString& text) {
-    emit restoreSearch(text);
-}
-
-void Library::slotDisableSearch() {
-    emit disableSearch();
 }
 
 void Library::slotRefreshLibraryModels() {

@@ -84,7 +84,8 @@ class WPushButton : public WWidget {
     void onConnectedControlChanged(double dParameter, double dValue) override;
 
   protected:
-    void paintEvent(QPaintEvent* /*unused*/) override;
+    bool event(QEvent* e) override;
+    void paintEvent(QPaintEvent* e) override;
     void mousePressEvent(QMouseEvent* e) override;
     void mouseReleaseEvent(QMouseEvent* e) override;
     void enterEvent(QEvent *event) override;

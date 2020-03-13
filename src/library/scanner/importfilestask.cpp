@@ -8,7 +8,7 @@ ImportFilesTask::ImportFilesTask(LibraryScanner* pScanner,
                                  const ScannerGlobalPointer scannerGlobal,
                                  const QString& dirPath,
                                  const bool prevHashExists,
-                                 const int newHash,
+                                 const mixxx::cache_key_t newHash,
                                  const QLinkedList<QFileInfo>& filesToImport,
                                  const QLinkedList<QFileInfo>& possibleCovers,
                                  SecurityTokenPointer pToken)

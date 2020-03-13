@@ -95,8 +95,6 @@ class Library: public QObject {
     void slotLoadTrack(TrackPointer pTrack);
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play);
     void slotLoadLocationToPlayer(QString location, QString group);
-    void slotRestoreSearch(const QString& text);
-    void slotDisableSearch();
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();

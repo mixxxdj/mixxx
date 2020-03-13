@@ -11,6 +11,7 @@ WCueMenuPopup::WCueMenuPopup(QWidget* parent)
         : QWidget(parent) {
     QWidget::hide();
     setWindowFlags(Qt::Popup);
+    setAttribute(Qt::WA_StyledBackground);
     setObjectName("WCueMenuPopup");
 
     m_pCueNumber = new QLabel(this);
@@ -29,7 +30,7 @@ WCueMenuPopup::WCueMenuPopup(QWidget* parent)
     connect(m_pEditLabel, &QLineEdit::textEdited, this, &WCueMenuPopup::slotEditLabel);
     connect(m_pEditLabel, &QLineEdit::returnPressed, this, &WCueMenuPopup::hide);
 
-    m_pColorPicker = new WColorPicker(this);
+    m_pColorPicker = new WColorPicker(WColorPicker::ColorOption::DenyNoColor, this);
     m_pColorPicker->setObjectName("CueColorPicker");
     connect(m_pColorPicker, &WColorPicker::colorPicked, this, &WCueMenuPopup::slotChangeCueColor);
 
@@ -115,7 +116,6 @@ void WCueMenuPopup::slotChangeCueColor(PredefinedColorPointer pColor) {
         return;
     }
     m_pCue->setColor(pColor);
-    m_pColorPicker->setSelectedColor(pColor);
     hide();
 }
 

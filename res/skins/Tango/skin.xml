@@ -174,8 +174,16 @@
         #DeckOverviewRow1, #DeckOverviewRow2 { background-color: #3A0440;}
         #DeckOverviewRow3, #DeckOverviewRow4 { background-color: #001D33;}
         <!-- brighter, broader library focus borders -->
-        QTreeView, QTableView { border-width: 2px;}
-        QTreeView:focus, QTableView:focus, WSearchLineEdit:focus {
+        #LibraryContainer QTreeView,
+        #LibraryContainer QTableView {
+          border-width: 2px;}
+        #LibraryContainer QTreeView:focus,
+        #LibraryContainer QTableView:focus,
+        #LibraryContainer WSearchLineEdit:focus,
+        WBeatSpinBox:focus,
+        QSpinBox#spinBoxTransition:focus,
+        WLibrary QLineEdit,
+        #LibraryBPMSpinBox {
           border-color: #ff8800;}
       </Style>
     </Scheme>

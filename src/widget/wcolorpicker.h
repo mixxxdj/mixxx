@@ -10,13 +10,21 @@
 class WColorPicker : public QWidget {
     Q_OBJECT
   public:
-    WColorPicker(QWidget* parent = nullptr);
+    enum class ColorOption {
+        DenyNoColor,
+        AllowNoColor,
+    };
+
+    explicit WColorPicker(ColorOption colorOption, QWidget* parent = nullptr);
 
     void setSelectedColor(PredefinedColorPointer pColor = nullptr);
     void useColorSet(PredefinedColorsRepresentation* pColorRepresentation);
 
   signals:
     void colorPicked(PredefinedColorPointer pColor);
+
+  private slots:
+    void slotColorPicked(PredefinedColorPointer pColor);
 
   private:
     QMap<PredefinedColorPointer, QPushButton*> m_pColorButtons;

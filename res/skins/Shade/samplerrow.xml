@@ -143,18 +143,18 @@
 				<Size>3f,0e</Size>
 			</WidgetGroup>
 			<WidgetGroup>
-				<Size>26f,103f</Size>
+				<Size>26f,95f</Size>
 				<Layout>horizontal</Layout>
 				<Children>
 
 					<WidgetGroup>
 						<ObjectName>SamplerLeftBorder</ObjectName>
-						<Size>5f,100f</Size>
+						<Size>5f,92f</Size>
 						<BackPath>style/style_bg_deck_border.png</BackPath>
 					</WidgetGroup>
 
 					<WidgetGroup>
-						<Size>0e,100f</Size>
+						<Size>0e,92f</Size>
 						<BackPath>style/style_bg_sampler_right.png</BackPath>
 						<Children>
 							<PushButton>
@@ -179,7 +179,7 @@
 					</WidgetGroup>
 					<WidgetGroup>
 						<ObjectName>EffectRightBorder</ObjectName>
-						<Size>5f,100f</Size>
+						<Size>5f,92f</Size>
 						<BackPath>style/style_bg_deck_border.png</BackPath>
 					</WidgetGroup>	
 					<WidgetGroup>
@@ -201,18 +201,18 @@
 		      <SetVariable name="samplernum"><Variable name="samplernum4"/></SetVariable>
 		    </Template>
 			<WidgetGroup>
-				<Size>26f,103f</Size>
+				<Size>26f,95f</Size>
 				<Layout>horizontal</Layout>
 				<Children>
 
 					<WidgetGroup>
 						<ObjectName>SamplerLeftBorder</ObjectName>
-						<Size>5f,100f</Size>
+						<Size>5f,92f</Size>
 						<BackPath>style/style_bg_deck_border.png</BackPath>
 					</WidgetGroup>
 
 					<WidgetGroup>
-						<Size>0e,100f</Size>
+						<Size>0e,92f</Size>
 						<BackPath>style/style_bg_sampler_right.png</BackPath>
 						<Children>
 							<PushButton>
@@ -245,7 +245,7 @@
 					</WidgetGroup>
 					<WidgetGroup>
 						<ObjectName>EffectRightBorder</ObjectName>
-						<Size>5f,100f</Size>
+						<Size>5f,92f</Size>
 						<BackPath>style/style_bg_deck_border.png</BackPath>
 					</WidgetGroup>	
 					<WidgetGroup>
@@ -267,12 +267,5 @@
 		  </Connection>
 		</WidgetGroup>
 	  </Children>
-	   <Connection>
-		 <ConfigKey>[Master],maximize_library</ConfigKey>
-		 <BindProperty>visible</BindProperty>
-		 <Transform>
-		   <Not/>
-		 </Transform>
-	   </Connection>
 	</WidgetGroup>
 </Template>

@@ -30,6 +30,10 @@ WCueMenuPopup #CueDeleteButton {
   qproperty-icon: url(:/images/ic_delete.svg);
 }
 
+WColorPicker QPushButton[noColor="true"] {
+  background-color: black;
+}
+
 WColorPicker QPushButton[checked="false"] {
   qproperty-icon: none;
 }

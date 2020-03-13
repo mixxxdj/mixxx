@@ -23,7 +23,7 @@ class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
     mixxx::Duration render() override;
 
   private:
-    GLSLWaveformRendererSignal* signalRenderer_;
+    GLSLWaveformRendererSignal* m_signalRenderer;
 
     friend class WaveformWidgetFactory;
 };

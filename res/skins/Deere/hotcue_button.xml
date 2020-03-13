@@ -11,9 +11,9 @@
   <PushButton>
     <TooltipId>hotcue</TooltipId>
     <ObjectName>HotcueButton</ObjectName>
-    <MinimumSize><Variable name="SquareButtonMinimumSize"/></MinimumSize>
-    <MaximumSize><Variable name="SquareButtonMaximumSize"/></MaximumSize>
-    <SizePolicy><Variable name="SquareButtonSizePolicy"/></SizePolicy>
+    <MinimumSize>18,22</MinimumSize>
+    <MaximumSize>22,22</MaximumSize>
+    <SizePolicy>me,f</SizePolicy>
     <NumberStates>2</NumberStates>
     <LeftClickIsPushButton><Variable name="LeftClickIsPushButton"/></LeftClickIsPushButton>
     <RightClickIsPushButton><Variable name="RightClickIsPushButton"/></RightClickIsPushButton>

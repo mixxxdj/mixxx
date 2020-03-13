@@ -10,6 +10,7 @@
 #include "library/trackmodel.h" // Can't forward declare enums
 #include "track/track.h"
 #include "util/duration.h"
+#include "widget/wcolorpickeraction.h"
 #include "widget/wlibrarytableview.h"
 
 class ControlProxy;
@@ -81,6 +82,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotLockBpm();
     void slotUnlockBpm();
     void slotScaleBpm(int);
+    void slotColorPicked(PredefinedColorPointer pColor);
 
     void slotClearBeats();
     void slotClearPlayCount();
@@ -154,6 +156,7 @@ class WTrackTableView : public WLibraryTableView {
     QMenu *m_pMetadataUpdateExternalCollectionsMenu;
     QMenu *m_pClearMetadataMenu;
     QMenu *m_pBPMMenu;
+    QMenu *m_pColorMenu;
 
 
     WCoverArtMenu* m_pCoverMenu;
@@ -194,6 +197,9 @@ class WTrackTableView : public WLibraryTableView {
     QAction *m_pBpmThreeFourthsAction;
     QAction *m_pBpmFourThirdsAction;
     QAction *m_pBpmThreeHalvesAction;
+
+    // Track color
+    WColorPickerAction *m_pColorPickerAction;
 
     // Clear track metadata actions
     QAction* m_pClearBeatsAction;
