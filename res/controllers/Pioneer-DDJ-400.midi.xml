@@ -121,9 +121,9 @@
                 </options>
             </control>
             <control>
-                <description>PLAY/PAUSE +SHIFT (DECK1) - press - Play/Pause</description>
+                <description>PLAY/PAUSE +SHIFT (DECK1) - press - Reverse playback in Slip Mode while held (Censor)</description>
                 <group>[Channel1]</group>
-                <key>play</key>
+                <key>reverseroll</key>
                 <status>0x90</status>
                 <midino>0x47</midino>
                 <options>
@@ -141,9 +141,9 @@
                 </options>
             </control>
             <control>
-                <description>PLAY/PAUSE +SHIFT (DECK2) - press - Play/Pause</description>
+                <description>PLAY/PAUSE +SHIFT (DECK2) - press - Reverse playback in Slip Mode while held (Censor)</description>
                 <group>[Channel2]</group>
-                <key>play</key>
+                <key>reverseroll</key>
                 <status>0x91</status>
                 <midino>0x47</midino>
                 <options>
