@@ -78,6 +78,8 @@ void ColumnCache::setColumns(const QStringList& columns) {
     m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_TITLE] = fieldIndex(PLAYLISTTRACKSTABLE_TITLE);
     m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED] = fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED);
 
+    m_columnIndexByEnum[COLUMN_REKORDBOX_ANALYZE_PATH] = fieldIndex(REKORDBOX_ANALYZE_PATH);
+
     const QString sortInt("cast(%1 as integer)");
     const QString sortNoCase("lower(%1)");
 
