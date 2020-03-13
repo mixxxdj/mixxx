@@ -220,7 +220,7 @@ WCoverArtMenu {
   /* unchecked menu checkbox */
   #LibraryContainer QMenu QCheckBox::indicator:enabled:!checked,
   #LibraryContainer QMenu::indicator:!checked {
-    border-color: #1a2025;/* 
+    border-color: #1a2025;/*
     background-color: #7e868b;
     remove OS focus indicator */
     outline: none;
