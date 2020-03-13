@@ -40,6 +40,9 @@ const int kMaxSortColumns = 3;
 // Constant for getModelSetting(name)
 const QString COLUMNS_SORTING = QStringLiteral("ColumnsSorting");
 
+// Alpha value for row color background (range 0 - 255)
+constexpr int kTrackColorRowBackgroundOpacity = 0x20; // 12.5% opacity
+
 } // anonymous namespace
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
@@ -706,10 +709,12 @@ int BaseSqlTableModel::fieldIndex(const QString& fieldName) const {
 
 QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
     //qDebug() << this << "data()";
-    if (!index.isValid() || (role != Qt::DisplayRole &&
-                             role != Qt::EditRole &&
-                             role != Qt::CheckStateRole &&
-                             role != Qt::ToolTipRole)) {
+    if (!index.isValid() || (
+                role != Qt::BackgroundRole &&
+                role != Qt::DisplayRole &&
+                role != Qt::EditRole &&
+                role != Qt::CheckStateRole &&
+                role != Qt::ToolTipRole)) {
         return QVariant();
     }
 
@@ -723,6 +728,20 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
     // Format the value based on whether we are in a tooltip, display, or edit
     // role
     switch (role) {
+    case Qt::BackgroundRole: {
+        QModelIndex colorIndex = index.sibling(
+                index.row(),
+                fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR));
+        QColor color = mixxx::RgbColor::toQColor(
+                mixxx::RgbColor::fromQVariant(getBaseValue(colorIndex, role)));
+        if (color.isValid()) {
+            color.setAlpha(kTrackColorRowBackgroundOpacity);
+            value = QBrush(color);
+        } else {
+            value = QVariant();
+        }
+        break;
+    }
         case Qt::ToolTipRole:
             if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
                 value = mixxx::RgbColor::toQString(mixxx::RgbColor::fromQVariant(value));
@@ -1054,7 +1073,8 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
 
 QVariant BaseSqlTableModel::getBaseValue(
     const QModelIndex& index, int role) const {
-    if (role != Qt::DisplayRole &&
+    if (role != Qt::BackgroundRole &&
+        role != Qt::DisplayRole &&
         role != Qt::ToolTipRole &&
         role != Qt::EditRole) {
         return QVariant();

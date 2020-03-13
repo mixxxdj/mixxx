@@ -108,6 +108,8 @@ void CoverArtDelegate::slotCoverFound(
 void CoverArtDelegate::paintItem(QPainter *painter,
                              const QStyleOptionViewItem &option,
                              const QModelIndex &index) const {
+    paintItemBackground(painter, option, index);
+
     if (m_iIdColumn < 0 ||
         m_iCoverSourceColumn == -1 ||
             m_iCoverTypeColumn == -1 ||
