@@ -1859,6 +1859,10 @@ void HotcueControl::slotHotcuePositionChanged(double newPosition) {
 }
 
 void HotcueControl::slotHotcueColorChanged(double newColor) {
+    if (!m_pCue) {
+        return;
+    }
+
     mixxx::RgbColor::optional_t color = doubleToRgbColor(newColor);
     if (!color) {
         qWarning() << "slotHotcueColorChanged got invalid value:" << newColor;
