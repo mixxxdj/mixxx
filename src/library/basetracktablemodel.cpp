@@ -513,7 +513,7 @@ QVariant BaseTrackTableModel::roleValue(
         } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER)) {
             const auto trackNumber = rawValue.toInt(0);
             if (trackNumber > 0) {
-                return rawValue;
+                return std::move(rawValue);
             } else {
                 // clear invalid values
                 return QVariant();
@@ -521,7 +521,7 @@ QVariant BaseTrackTableModel::roleValue(
         } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE)) {
             int bitrateValue = rawValue.toInt(0);
             if (bitrateValue > 0) {
-                return rawValue;
+                return std::move(rawValue);
             } else {
                 // clear invalid values
                 return QVariant();
@@ -588,7 +588,7 @@ QVariant BaseTrackTableModel::roleValue(
         DEBUG_ASSERT(!"unexpected role");
         break;
     }
-    return rawValue;
+    return std::move(rawValue);
 
 }
 
