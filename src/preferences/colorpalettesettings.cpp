@@ -3,7 +3,8 @@
 namespace {
 const mixxx::RgbColor kColorBlack(0x000000);
 const QString kColorPaletteConfigGroup = QStringLiteral("[Config]");
-const QString kColorPaletteGroup = QStringLiteral("[ColorPalette %1]");
+const QString kColorPaletteGroupStart = QStringLiteral("[ColorPalette ");
+const QString kColorPaletteGroupEnd = QStringLiteral("]");
 const QRegExp kColorPaletteGroupNameRegex(QStringLiteral("^\\[ColorPalette (.+)\\]$"));
 const ConfigKey kHotcueColorPaletteConfigKey(kColorPaletteConfigGroup, QStringLiteral("HotcueColorPalette"));
 const ConfigKey kTrackColorPaletteConfigKey(kColorPaletteConfigGroup, QStringLiteral("TrackColorPalette"));
@@ -22,7 +23,7 @@ ColorPalette ColorPaletteSettings::getColorPalette(
         const QString& name, const ColorPalette& defaultPalette) const {
     QList<mixxx::RgbColor> colorList;
 
-    const QString group = kColorPaletteGroup.arg(name);
+    const QString group = kColorPaletteGroupStart + name + kColorPaletteGroupEnd;
     for (const ConfigKey& key : m_pConfig->getKeysWithGroup(group)) {
         mixxx::RgbColor color = mixxx::RgbColor(m_pConfig->getValue<mixxx::RgbColor>(key, kColorBlack));
         colorList.append(color);
@@ -38,7 +39,7 @@ ColorPalette ColorPaletteSettings::getColorPalette(
 
 void ColorPaletteSettings::setColorPalette(const QString& name, const ColorPalette& colorPalette) {
     removePalette(name);
-    const QString group = kColorPaletteGroup.arg(name);
+    const QString group = kColorPaletteGroupStart + name + kColorPaletteGroupEnd;
 
     int numDigits = numberOfDecimalDigits(colorPalette.size() - 1);
     for (int index = 0; index < colorPalette.size(); ++index) {
@@ -48,7 +49,7 @@ void ColorPaletteSettings::setColorPalette(const QString& name, const ColorPalet
 }
 
 void ColorPaletteSettings::removePalette(const QString& name) {
-    const QString group = kColorPaletteGroup.arg(name);
+    const QString group = kColorPaletteGroupStart + name + kColorPaletteGroupEnd;
     for (const ConfigKey& key : m_pConfig->getKeysWithGroup(group)) {
         m_pConfig->remove(key);
     }
