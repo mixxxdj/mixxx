@@ -14,6 +14,31 @@
 #include "util/color/rgbcolor.h"
 #include "util/performancetimer.h"
 
+namespace {
+
+// The label column is not nullable!
+const QVariant kEmptyLabel = QVariant(QStringLiteral(""));
+
+inline const QVariant labelToQVariant(const QString& label) {
+    if (label.isNull()) {
+        return kEmptyLabel; // null -> empty
+    } else {
+        return label;
+    }
+}
+
+// Empty labels are read as null strings
+inline QString labelFromQVariant(const QVariant& value) {
+    const auto label = value.toString();
+    if (label.isEmpty()) {
+        return QString(); // empty -> null
+    } else {
+        return label;
+    }
+}
+
+} // namespace
+
 int CueDAO::cueCount() {
     qDebug() << "CueDAO::cueCount" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
@@ -52,7 +77,7 @@ CuePointer CueDAO::cueFromRow(const QSqlQuery& query) const {
     int position = record.value(record.indexOf("position")).toInt();
     int length = record.value(record.indexOf("length")).toInt();
     int hotcue = record.value(record.indexOf("hotcue")).toInt();
-    QString label = record.value(record.indexOf("label")).toString();
+    QString label = labelFromQVariant(record.value(record.indexOf("label")));
     mixxx::RgbColor::optional_t color = mixxx::RgbColor::fromQVariant(record.indexOf("color"));
     VERIFY_OR_DEBUG_ASSERT(color) {
         return CuePointer();
@@ -155,7 +180,7 @@ bool CueDAO::saveCue(Cue* cue) {
         query.bindValue(":position", cue->getPosition());
         query.bindValue(":length", cue->getLength());
         query.bindValue(":hotcue", cue->getHotCue());
-        query.bindValue(":label", cue->getLabel());
+        query.bindValue(":label", labelToQVariant(cue->getLabel()));
         query.bindValue(":color", mixxx::RgbColor::toQVariant(cue->getColor()));
 
         if (query.exec()) {
@@ -183,7 +208,7 @@ bool CueDAO::saveCue(Cue* cue) {
         query.bindValue(":position", cue->getPosition());
         query.bindValue(":length", cue->getLength());
         query.bindValue(":hotcue", cue->getHotCue());
-        query.bindValue(":label", cue->getLabel());
+        query.bindValue(":label", labelToQVariant(cue->getLabel()));
         query.bindValue(":color", mixxx::RgbColor::toQVariant(cue->getColor()));
 
         if (query.exec()) {
