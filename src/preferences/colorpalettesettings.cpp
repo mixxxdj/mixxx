@@ -38,6 +38,11 @@ ColorPalette ColorPaletteSettings::getColorPalette(
 }
 
 void ColorPaletteSettings::setColorPalette(const QString& name, const ColorPalette& colorPalette) {
+    VERIFY_OR_DEBUG_ASSERT(!name.isEmpty()) {
+        qWarning() << "Palette name must not be empty!";
+        return;
+    }
+
     removePalette(name);
     const QString group = kColorPaletteGroupStart + name + kColorPaletteGroupEnd;
 
