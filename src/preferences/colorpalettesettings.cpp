@@ -4,7 +4,7 @@ namespace {
 const mixxx::RgbColor kColorBlack(0x000000);
 const QString kColorPaletteConfigGroup = QStringLiteral("[Config]");
 const QString kColorPaletteGroup = QStringLiteral("[ColorPalette %1]");
-const QRegExp kColorPaletteGroupNameRegex("^\\[ColorPalette (.+)\\]$");
+const QRegExp kColorPaletteGroupNameRegex(QStringLiteral("^\\[ColorPalette (.+)\\]$"));
 const ConfigKey kHotcueColorPaletteConfigKey(kColorPaletteConfigGroup, QStringLiteral("HotcueColorPalette"));
 const ConfigKey kTrackColorPaletteConfigKey(kColorPaletteConfigGroup, QStringLiteral("TrackColorPalette"));
 
