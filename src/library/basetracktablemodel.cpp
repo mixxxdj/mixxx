@@ -400,6 +400,9 @@ QVariant BaseTrackTableModel::data(
         QModelIndex colorIndex = index.sibling(
                 index.row(),
                 fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR));
+        if (!colorIndex.isValid()) {
+            return QVariant();
+        }
         QColor color = mixxx::RgbColor::toQColor(
                 mixxx::RgbColor::fromQVariant(rawValue(colorIndex)));
         if (color.isValid()) {
