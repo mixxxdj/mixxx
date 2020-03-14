@@ -78,7 +78,7 @@ CuePointer CueDAO::cueFromRow(const QSqlQuery& query) const {
     int length = record.value(record.indexOf("length")).toInt();
     int hotcue = record.value(record.indexOf("hotcue")).toInt();
     QString label = labelFromQVariant(record.value(record.indexOf("label")));
-    mixxx::RgbColor::optional_t color = mixxx::RgbColor::fromQVariant(record.indexOf("color"));
+    mixxx::RgbColor::optional_t color = mixxx::RgbColor::fromQVariant(record.value(record.indexOf("color")));
     VERIFY_OR_DEBUG_ASSERT(color) {
         return CuePointer();
     }
