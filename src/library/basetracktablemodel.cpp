@@ -403,12 +403,16 @@ QVariant BaseTrackTableModel::data(
         if (!colorIndex.isValid()) {
             return QVariant();
         }
-        QColor color = mixxx::RgbColor::toQColor(
-                mixxx::RgbColor::fromQVariant(rawValue(colorIndex)));
-        if (color.isValid()) {
-            color.setAlpha(kTrackColorRowBackgroundOpacity);
+        const auto trackColor =
+                mixxx::RgbColor::fromQVariant(
+                        rawValue(colorIndex));
+        if (!trackColor) {
+            return QVariant();
         }
-        return color;
+        auto bgColor = mixxx::RgbColor::toQColor(trackColor);
+        DEBUG_ASSERT(bgColor.isValid());
+        bgColor.setAlpha(kTrackColorRowBackgroundOpacity);
+        return QBrush(bgColor);
     }
 
     // Only retrieve a value for supported roles
