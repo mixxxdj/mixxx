@@ -132,7 +132,6 @@ MC7000.init = function() {
     // engine.setValue("[Master]", "gain", 0.85);
 
     // VU meters
-    print(typeof MC7000.VuMeter);
     engine.makeConnection("[Channel1]", "VuMeter", MC7000.VuMeter);
     engine.makeConnection("[Channel2]", "VuMeter", MC7000.VuMeter);
     engine.makeConnection("[Channel3]", "VuMeter", MC7000.VuMeter);
