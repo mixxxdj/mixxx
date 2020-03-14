@@ -25,7 +25,8 @@ inline int idealColumnCount(int numItems) {
         if (remainder == 0) {
             numColumns = numColumnsCandidate;
             break;
-        } else if (remainder > numColumnsRemainder) {
+        }
+        if (remainder > numColumnsRemainder) {
             numColumnsRemainder = numColumnsCandidate;
             numColumns = numColumnsCandidate;
         }
