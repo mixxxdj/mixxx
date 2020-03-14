@@ -31,9 +31,9 @@ endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # using regular Clang or AppleClang
-  set(CLANG true)
+  set(LLVM_CLANG true)
 else()
-  set(CLANG false)
+  set(LLVM_CLANG false)
 endif()
 
 # CMake implicitly sets the variable MSVC to true for Microsoft
@@ -135,7 +135,7 @@ else()
   endif()
   cmake_dependent_option(CCACHE_SUPPORT "Enable ccache support" ON "CCACHE_EXECUTABLE" OFF)
   if(CCACHE_SUPPORT)
-    if(GNU_GCC OR CLANG)
+    if(GNU_GCC OR LLVM_CLANG)
       # without this compiler messages in `make` backend would be uncolored
       set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fdiagnostics-color=auto")
     endif()
@@ -727,7 +727,7 @@ if(UNIX AND NOT APPLE)
 endif()
 
 # Disable warnings in generated source files
-if(GNU_GCC OR CLANG)
+if(GNU_GCC OR LLVM_CLANG)
   set_property(
     SOURCE src/library/rekordbox/rekordbox_anlz.cpp
     APPEND_STRING
@@ -1609,7 +1609,7 @@ endif()
 # Clang Color Diagnostics
 option(CLANG_COLORDIAG "Clang color diagnostics" OFF)
 if(CLANG_COLORDIAG)
-  if(NOT CLANG)
+  if(NOT LLVM_CLANG)
     message(FATAL_ERROR "Color Diagnostics are only available when using Clang.")
   endif()
   target_compile_options(mixxx-lib PUBLIC -fcolor-diagnostics)
@@ -1630,7 +1630,7 @@ if(CLANG_TSAN)
   list(APPEND CLANG_SANITIZERS "thread")
 endif()
 if(NOT CLANG_SANITIZERS STREQUAL "")
-  if(NOT CLANG)
+  if(NOT LLVM_CLANG)
     message(FATAL_ERROR "Clang Sanitizers are only available when using Clang.")
   endif()
   list(JOIN CLANG_SANITIZERS "," CLANG_SANITZERS_JOINED)
