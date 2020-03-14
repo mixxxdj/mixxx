@@ -13,6 +13,12 @@ if(POLICY CMP0071)
   cmake_policy(SET CMP0071 NEW)
 endif()
 
+# CMAKE_CXX_COMPILER_ID: Distinguish between "AppleClang" and "Clang"
+if(POLICY CMP0025)
+  cmake_policy(SET CMP0025 NEW)
+endif()
+set(CMAKE_POLICY_WARNING_CMP0025 ON)
+
 set(CMAKE_CXX_STANDARD 17)
 
 # Speed up builds on HDDs
@@ -107,7 +113,7 @@ else()
   cmake_dependent_option(CCACHE_SUPPORT "Enable ccache support" ON "CCACHE_EXECUTABLE" OFF)
   if(CCACHE_SUPPORT)
     if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" # GNU is GNU GCC
-      OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+      OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang") # either "AppleClang" or "Clang"
       # without this compiler messages in `make` backend would be uncolored
       set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fdiagnostics-color=auto")
     endif()
@@ -131,7 +137,7 @@ if(CMAKE_VERSION VERSION_LESS "3.7.0")
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif()
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "[Cc]lang")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # using regular Clang or AppleClang
   set(CLANG ON)
 else()
@@ -707,7 +713,7 @@ endif()
 
 # Disable warnings in generated source files
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" # GNU is GNU GCC
-  OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+  OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang") # either "AppleClang" or "Clang"
   set_property(
     SOURCE src/library/rekordbox/rekordbox_anlz.cpp
     APPEND_STRING
