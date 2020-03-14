@@ -21,7 +21,7 @@ inline int idealColumnCount(int numItems) {
     int numColumns = 4; // Default in case kNumColumnsCandidates is empty
     int numColumnsRemainder = -1;
     for (const int numColumnsCandidate : kNumColumnsCandidates) {
-        int remainder = numItems % numColumnsCandidate;
+        const int remainder = numItems % numColumnsCandidate;
         if (remainder == 0) {
             numColumns = numColumnsCandidate;
             break;
