@@ -94,7 +94,7 @@ PioneerDDJ400.shiftState = [0, 0];
 PioneerDDJ400.vinylMode = true;
 PioneerDDJ400.alpha = 1.0/8;
 PioneerDDJ400.beta = PioneerDDJ400.alpha/32;
-PioneerDDJ400.highspeedScale = 20; // multiplier for fast seek through track using SHIFT+JOGWHEEL
+PioneerDDJ400.highspeedScale = 150; // multiplier for fast seek through track using SHIFT+JOGWHEEL
 PioneerDDJ400.bendScale = 0.5;
 
 PioneerDDJ400.pointJumpSpace = 0.005; // amount in percent of the Song we can jump back to previous Cue or loop point
