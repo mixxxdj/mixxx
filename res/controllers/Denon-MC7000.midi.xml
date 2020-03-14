@@ -253,7 +253,7 @@
                 <options>
                     <script-binding/>
                 </options>
-            </control>            
+            </control>
             <control>
                 <group>[Channel1]</group>
                 <key>MC7000.padModeSlicerLoop</key>
@@ -293,7 +293,7 @@
                 <options>
                     <script-binding/>
                 </options>
-            </control>  
+            </control>
             <control>
                 <group>[Channel1]</group>
                 <key>MC7000.padModeSampler</key>
@@ -373,7 +373,7 @@
                 <options>
                     <script-binding/>
                 </options>
-            </control>  
+            </control>
             <control>
                 <group>[Channel1]</group>
                 <key>MC7000.padModePitch</key>
@@ -413,7 +413,7 @@
                 <options>
                     <script-binding/>
                 </options>
-            </control>  
+            </control>
     <!--  PITCH FADER POSITION  -->
             <control>
                 <group>[Channel1]</group>
@@ -457,7 +457,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>MC7000.pitchFaderLSB</key>
+                <key>MC7000.pitchFaderMSB</key>
                 <description>MIDI Learned from 180 messages.</description>
                 <status>0xB0</status>
                 <midino>0x09</midino>
@@ -467,7 +467,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>MC7000.pitchFaderLSB</key>
+                <key>MC7000.pitchFaderMSB</key>
                 <description>MIDI Learned from 144 messages.</description>
                 <status>0xB1</status>
                 <midino>0x09</midino>
@@ -477,7 +477,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>MC7000.pitchFaderLSB</key>
+                <key>MC7000.pitchFaderMSB</key>
                 <description>MIDI Learned from 150 messages.</description>
                 <status>0xB2</status>
                 <midino>0x09</midino>
@@ -487,7 +487,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>MC7000.pitchFaderLSB</key>
+                <key>MC7000.pitchFaderMSB</key>
                 <description>MIDI Learned from 128 messages.</description>
                 <status>0xB3</status>
                 <midino>0x09</midino>
@@ -681,7 +681,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>MC7000.needleSearchLSB</key>
+                <key>MC7000.needleSearchMSB</key>
                 <description>Jump to track position (Needle Search)</description>
                 <status>0xB0</status>
                 <midino>0x2B</midino>
@@ -721,7 +721,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>MC7000.needleSearchLSB</key>
+                <key>MC7000.needleSearchMSB</key>
                 <description>Jump to track position (Needle Search)</description>
                 <status>0xB1</status>
                 <midino>0x2B</midino>
@@ -761,7 +761,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>MC7000.needleSearchLSB</key>
+                <key>MC7000.needleSearchMSB</key>
                 <description>Jump to track position (Needle Search)</description>
                 <status>0xB2</status>
                 <midino>0x2B</midino>
@@ -801,7 +801,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>MC7000.needleSearchLSB</key>
+                <key>MC7000.needleSearchMSB</key>
                 <description>Jump to track position (Needle Search)</description>
                 <status>0xB3</status>
                 <midino>0x2B</midino>
@@ -1058,7 +1058,7 @@
                 <options>
                     <normal/>
                 </options>
-            </control> 
+            </control>
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
                 <key>parameter1</key>
@@ -1078,7 +1078,7 @@
                 <options>
                     <normal/>
                 </options>
-            </control>         
+            </control>
             <control>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
                 <key>parameter1</key>
@@ -1179,7 +1179,7 @@
                 <options>
                     <normal/>
                 </options>
-            </control>			
+            </control>
             <control>
                 <group>[Channel1]</group>
                 <key>volume</key>
@@ -1270,7 +1270,7 @@
                     <normal/>
                 </options>
             </control>
-<!--  PLAY / CUE / SYNC  --> 
+<!--  PLAY / CUE / SYNC  -->
 			<control>
                 <group>[Channel1]</group>
                 <key>play</key>
@@ -1440,7 +1440,7 @@
                 <options>
                     <normal/>
                 </options>
-            </control>    
+            </control>
             <control>
                 <group>[Channel1]</group>
                 <key>sync_enabled</key>
@@ -1470,7 +1470,7 @@
                 <options>
                     <normal/>
                 </options>
-            </control>            
+            </control>
             <control>
                 <group>[Channel4]</group>
                 <key>sync_enabled</key>
@@ -1744,7 +1744,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>loop_in</key>  
+                <key>loop_in</key>
                 <description>Loop in Ch3</description>
                 <status>0x96</status>
                 <midino>0x38</midino>
@@ -1761,7 +1761,7 @@
                 <options>
                     <normal/>
                 </options>
-            </control>      
+            </control>
             <control>
                 <group>[Channel1]</group>
                 <key>loop_out</key>
@@ -1784,7 +1784,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>loop_out</key>  
+                <key>loop_out</key>
                 <description>Loop out Ch3</description>
                 <status>0x96</status>
                 <midino>0x39</midino>
@@ -1824,7 +1824,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>reloop_toggle</key>  
+                <key>reloop_toggle</key>
                 <description>Reloop Ch3</description>
                 <status>0x96</status>
                 <midino>0x33</midino>
@@ -2206,7 +2206,7 @@
                     <normal/>
                 </options>
             </control>
-    <!-- FX1 -->          
+    <!-- FX1 -->
             <control>
                 <group>[EffectRack1_EffectUnit1_Effect1]</group>
                 <key>enabled</key>
@@ -2267,7 +2267,7 @@
                     <normal/>
                 </options>
             </control>
-    <!-- FX2 -->          
+    <!-- FX2 -->
             <control>
                 <group>[EffectRack1_EffectUnit2_Effect1]</group>
                 <key>enabled</key>
@@ -2430,7 +2430,7 @@
                     <normal/>
                 </options>
             </control>
-<!-- SLIP / CENSOR / REVERSE --> 
+<!-- SLIP / CENSOR / REVERSE -->
 	  		<control>
                 <group>[Channel1]</group>
                 <key>slip_enabled</key>
@@ -2473,7 +2473,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>MC7000.brake_button</key>
+                <key>MC7000.censor</key>
                 <description>Backspin Ch1</description>
                 <status>0x90</status>
                 <midino>0x10</midino>
@@ -2483,7 +2483,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>MC7000.brake_button</key>
+                <key>MC7000.censor</key>
                 <description>Backspin Ch2</description>
                 <status>0x91</status>
                 <midino>0x10</midino>
@@ -2493,7 +2493,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>MC7000.brake_button</key>
+                <key>MC7000.censor</key>
                 <description>Backspin Ch3</description>
                 <status>0x92</status>
                 <midino>0x10</midino>
@@ -2503,7 +2503,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>MC7000.brake_button</key>
+                <key>MC7000.censor</key>
                 <description>Backspin Ch4</description>
                 <status>0x93</status>
                 <midino>0x10</midino>
@@ -3434,9 +3434,9 @@
                 <options>
                     <script-binding/>
                 </options>
-            </control>            
+            </control>
         </controls>
-<!-- GET THE LEDs WORKING -->        
+<!-- GET THE LEDs WORKING -->
         <outputs>
             <output>
                 <group>[Channel1]</group>
@@ -3767,7 +3767,7 @@
                 <minimum>0.5</minimum>
             </output>
 <!-- PAD LEDs -->
-            
+
 <!-- ASSIGN EFECT RACK TO DECK -->
             <output>
                 <group>[EffectRack1_EffectUnit1]</group>
@@ -3841,7 +3841,7 @@
                 <off>0x01</off>
                 <minimum>0.5</minimum>
             </output>
-  <!-- FX1 -->          
+  <!-- FX1 -->
             <output>
                 <group>[EffectRack1_EffectUnit1_Effect1]</group>
                 <key>enabled</key>
