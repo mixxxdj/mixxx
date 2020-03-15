@@ -96,7 +96,7 @@ void ColorPaletteSettings::setTrackColorPalette(const ColorPalette& colorPalette
     setColorPalette(name, colorPalette);
 }
 
-QSet<QString> ColorPaletteSettings::getColorPaletteNames() {
+QSet<QString> ColorPaletteSettings::getColorPaletteNames() const {
     QSet<QString> names;
     for (const QString& group : m_pConfig->getGroups()) {
         int pos = kColorPaletteGroupNameRegex.indexIn(group);
@@ -107,6 +107,6 @@ QSet<QString> ColorPaletteSettings::getColorPaletteNames() {
     return names;
 }
 
-ConfigKey ColorPaletteSettings::keyForIndex(const QString& group, int index, int numDigits) {
+ConfigKey ColorPaletteSettings::keyForIndex(const QString& group, int index, int numDigits) const {
     return ConfigKey(group, QString::number(index).rightJustified(numDigits, '0'));
 }

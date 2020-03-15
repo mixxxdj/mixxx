@@ -18,9 +18,9 @@ class ColorPaletteSettings {
     ColorPalette getColorPalette(const QString& name, const ColorPalette& defaultPalette) const;
     void setColorPalette(const QString& name, const ColorPalette& colorPalette);
     void removePalette(const QString& name);
-    QSet<QString> getColorPaletteNames();
+    QSet<QString> getColorPaletteNames() const;
 
   private:
-    ConfigKey keyForIndex(const QString& group, int index, int maxDigits);
+    ConfigKey keyForIndex(const QString& group, int index, int maxDigits) const;
     UserSettingsPointer m_pConfig;
 };
