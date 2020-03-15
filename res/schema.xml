@@ -489,6 +489,10 @@ METADATA
       UPDATE cues SET color=0xFCA6D7 WHERE color=7;
       <!-- White -->
       UPDATE cues SET color=0xF2F2FF WHERE color=8;
+      <!-- Remove alpha channel from cues that were updated by
+           previous, in-development schema migrations
+        -->
+      UPDATE cues SET color = (color &amp; 0xFFFFFF) WHERE color > 0xFFFFFF;
     </sql>
   </revision>
 </schema>
