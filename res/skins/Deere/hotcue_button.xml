@@ -14,43 +14,16 @@
     <MinimumSize>18,22</MinimumSize>
     <MaximumSize>22,22</MaximumSize>
     <SizePolicy>me,f</SizePolicy>
-    <NumberStates>2</NumberStates>
     <Group><Variable name="group"/></Group>
     <Hotcue><Variable name="hotcue"/></Hotcue>
-
-    <LeftClickIsPushButton><Variable name="LeftClickIsPushButton"/></LeftClickIsPushButton>
-    <RightClickIsPushButton><Variable name="RightClickIsPushButton"/></RightClickIsPushButton>
+    <NumberStates>2</NumberStates>
     <State>
       <Number>0</Number>
       <Text><Variable name="hotcue"/></Text>
-      <Pressed scalemode="STRETCH_ASPECT"></Pressed>
-      <Unpressed scalemode="STRETCH_ASPECT"></Unpressed>
     </State>
     <State>
       <Number>1</Number>
       <Text><Variable name="hotcue"/></Text>
-      <Pressed scalemode="STRETCH_ASPECT"></Pressed>
-      <Unpressed scalemode="STRETCH_ASPECT"></Unpressed>
     </State>
-    <Connection>
-      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_activate</ConfigKey>
-      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-      <ButtonState>LeftButton</ButtonState>
-      <ConnectValueToWidget>false</ConnectValueToWidget>
-    </Connection>
-    <Connection>
-      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_clear</ConfigKey>
-      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-      <ButtonState>RightButton</ButtonState>
-      <ConnectValueToWidget>false</ConnectValueToWidget>
-    </Connection>
-    <Connection>
-      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_enabled</ConfigKey>
-      <ConnectValueFromWidget>false</ConnectValueFromWidget>
-    </Connection>
-    <Connection>
-      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_color</ConfigKey>
-      <BindProperty>backgroundColorRgba</BindProperty>
-    </Connection>
   </HotcueButton>
 </Template>

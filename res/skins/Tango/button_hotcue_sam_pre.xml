@@ -15,9 +15,9 @@ Variables:
     <MinimumSize>14,18</MinimumSize>
     <MaximumSize>20,18</MaximumSize>
     <SizePolicy>me,f</SizePolicy>
-    <NumberStates>2</NumberStates>
     <Group><Variable name="group"/></Group>
     <Hotcue><Variable name="HotCue"/></Hotcue>
+    <NumberStates>2</NumberStates>
     <State>
       <Number>0</Number>
       <Text><Variable name="HotCue"/></Text>
@@ -28,17 +28,5 @@ Variables:
       <Text><Variable name="HotCue"/></Text>
       <Alignment>center</Alignment>
     </State>
-    <Connection>
-      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="HotCue"/>_activate</ConfigKey>
-      <ButtonState>LeftButton</ButtonState>
-    </Connection>
-    <Connection>
-      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="HotCue"/>_clear</ConfigKey>
-      <ButtonState>RightButton</ButtonState>
-    </Connection>
-    <Connection>
-      <ConfigKey><Variable name="group"/>,hotcue_<Variable name="HotCue"/>_enabled</ConfigKey>
-      <ConnectValueFromWidget>false</ConnectValueFromWidget>
-    </Connection>
   </HotcueButton>
 </Template>

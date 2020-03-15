@@ -19,8 +19,15 @@ class WHotcueButton : public WPushButton {
   protected:
     void mousePressEvent(QMouseEvent* e) override;
 
+  private slots:
+    void slotColorChanged(double color);
+
   private:
+    ConfigKey createConfigKey(const QString& name);
+
     QString m_group;
     int m_hotcue;
+    QColor m_cueColor;
+    parented_ptr<ControlProxy> m_pCoColor;
     parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
 };

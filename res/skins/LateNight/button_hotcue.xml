@@ -13,10 +13,9 @@
         <MinimumSize>26,26</MinimumSize>
         <MaximumSize>26,26</MaximumSize>
         <SizePolicy>me,f</SizePolicy>
-        <NumberStates>2</NumberStates>
         <Group><Variable name="group"/></Group>
         <Hotcue><Variable name="number"/></Hotcue>
-
+        <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
           <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square.svg</Unpressed>
@@ -27,22 +26,6 @@
           <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square_set.svg</Unpressed>
           <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square_active.svg</Pressed>
         </State>
-        <Connection>
-          <ConfigKey><Variable name="group"/>,hotcue_<Variable name="number"/>_activate</ConfigKey>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-          <ConfigKey><Variable name="group"/>,hotcue_<Variable name="number"/>_clear</ConfigKey>
-          <ButtonState>RightButton</ButtonState>
-        </Connection>
-        <Connection>
-          <ConfigKey><Variable name="group"/>,hotcue_<Variable name="number"/>_enabled</ConfigKey>
-          <ConnectValueFromWidget>false</ConnectValueFromWidget>
-        </Connection>
-        <Connection>
-          <ConfigKey><Variable name="group"/>,hotcue_<Variable name="number"/>_color</ConfigKey>
-          <BindProperty>backgroundColorRgba</BindProperty>
-        </Connection>
       </HotcueButton>
     </Children>
   </WidgetGroup>
