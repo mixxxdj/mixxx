@@ -21,6 +21,5 @@ class ColorPaletteSettings {
     QSet<QString> getColorPaletteNames() const;
 
   private:
-    ConfigKey keyForIndex(const QString& group, int index, int maxDigits) const;
     UserSettingsPointer m_pConfig;
 };

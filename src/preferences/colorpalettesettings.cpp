@@ -17,6 +17,10 @@ int numberOfDecimalDigits(int number) {
     return numDigits;
 }
 
+ConfigKey keyForIndex(const QString& group, int index, int numDigits) {
+    return ConfigKey(group, QString::number(index).rightJustified(numDigits, '0'));
+}
+
 } // anonymous namespace
 
 ColorPalette ColorPaletteSettings::getColorPalette(
@@ -105,8 +109,4 @@ QSet<QString> ColorPaletteSettings::getColorPaletteNames() const {
         }
     }
     return names;
-}
-
-ConfigKey ColorPaletteSettings::keyForIndex(const QString& group, int index, int numDigits) const {
-    return ConfigKey(group, QString::number(index).rightJustified(numDigits, '0'));
 }
