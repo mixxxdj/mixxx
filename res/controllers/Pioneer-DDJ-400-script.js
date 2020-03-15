@@ -651,7 +651,7 @@ PioneerDDJ400.vuMeterUpdate = function(value, group) {
 // DJ3730: blink pad when sample playback starts
 PioneerDDJ400.samplerPlayOutputCallbackFunction = function (value, group, control) {
     if (value === 1) {
-        var curPad = group.match(script.samplerRegEx)[1];
+        var curPad = group.match(/^\[Sampler(\d+)\]$/)[1];   // for some reason, using script.samplerRegEx here results in an error under Linux
         startSamplerBlink((0x97 + (curPad > 8 ? 2 : 0)), (0x30 + ((curPad > 8 ? curPad-8 : curPad)-1)), group);
     }
 };
