@@ -227,7 +227,7 @@ QSet<QString> ConfigObject<ValueType>::getGroups() {
 }
 
 template<class ValueType>
-QList<ConfigKey> ConfigObject<ValueType>::getKeysWithGroup(QString group) {
+QList<ConfigKey> ConfigObject<ValueType>::getKeysWithGroup(QString group) const {
     QWriteLocker lock(&m_valuesLock);
     QList<ConfigKey> filteredList;
     for (const ConfigKey& key : m_values.uniqueKeys()) {
