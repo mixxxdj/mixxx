@@ -20,6 +20,12 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <widget class="QTreeWidget" name="contentsTreeWidget">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="minimumSize">
        <size>
         <width>0</width>
@@ -28,7 +34,7 @@
       </property>
       <property name="maximumSize">
        <size>
-        <width>170</width>
+        <width>16777215</width>
         <height>16777215</height>
        </size>
       </property>
@@ -51,6 +57,18 @@
       <layout class="QVBoxLayout">
        <item>
         <widget class="QStackedWidget" name="pagesWidget">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="baseSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
          <widget class="QWidget" name="page"/>
         </widget>
        </item>
