@@ -107,6 +107,9 @@ MC7000.PADModeSampler = [false, false, false, false];
 MC7000.PADModeVelSamp = [false, false, false, false];
 MC7000.PADModePitch = [false, false, false, false];
 
+// Define the MIDI signal for red LED at VU Meters
+MC7000.VuMeterLEDPeakValue = 0x76;
+
 // PAD Mode Colors
 MC7000.padColor = {
     "alloff": 0x01,         // switch off completely
@@ -160,6 +163,13 @@ MC7000.init = function() {
         engine.makeConnection("[Channel3]", "hotcue_"+i+"_enabled", MC7000.HotCueLED);
         engine.makeConnection("[Channel4]", "hotcue_"+i+"_enabled", MC7000.HotCueLED);
     }
+
+    // Sampler Mode LED indicator
+    for (i = 1; i <= 8; i++) {
+        engine.makeConnection("[Sampler"+i+"]", "track_loaded", MC7000.SamplerLED);
+        engine.makeConnection("[Sampler"+i+"]", "play", MC7000.SamplerLED);
+    }
+
 
     // Sampler Volume Control
     MC7000.samplerLevel = function(channel, control, value) {
@@ -360,8 +370,7 @@ MC7000.Deck = function() {
                 midi.sendShortMsg(0x94 + deckNumber - 1, 0x14 + i -1, MC7000.padColor.samplerplay);
             } else if (engine.getValue("[Sampler"+i+"]", "track_loaded") === 0) {
                 midi.sendShortMsg(0x94 + deckNumber - 1, 0x14 + i -1, MC7000.padColor.sampleroff);
-            } else if (engine.getValue("[Sampler"+i+"]", "track_loaded") === 1
-                    && engine.getValue("[Sampler"+i+"]", "play") === 0) {
+            } else if (engine.getValue("[Sampler"+i+"]", "track_loaded") === 1 && engine.getValue("[Sampler"+i+"]", "play") === 0) {
                 midi.sendShortMsg(0x94 + deckNumber - 1, 0x14 + i -1, MC7000.padColor.samplerloaded);
             }
         }
@@ -487,29 +496,19 @@ MC7000.Deck = function() {
         } else if (MC7000.PADModeSampler[deckNumber]) {
             for (i = 1; i <= 8; i++) {
                 if (control === 0x14 + i -1 && value >= 0x01) {
-                    // 1st - check if track is loaded
                     if (engine.getValue("[Sampler"+i+"]", "track_loaded") === 0) {
                         engine.setValue("[Sampler"+i+"]", "LoadSelectedTrack", 1);
-                        midi.sendShortMsg(0x94 + deckNumber - 1, 0x14 + i -1, MC7000.padColor.samplerloaded);
-                    }
-                    // 2nd - if track is playing then stop it
-                    else if (engine.getValue("[Sampler"+i+"]", "play") === 1) {
-                        engine.setValue("[Sampler"+i+"]", "start_stop", 1);
-                        midi.sendShortMsg(0x94 + deckNumber - 1, 0x14 + i -1, MC7000.padColor.samplerloaded);
-                    }
-                    // 3rd - if track is loaded but not playing
-                    else if (engine.getValue("[Sampler"+i+"]", "track_loaded") === 1) {
-
-                        engine.setValue("[Sampler"+i+"]", "start_play", 1);
-                        midi.sendShortMsg(0x94 + deckNumber - 1, 0x14 + i -1, MC7000.padColor.samplerplay);
-                        //    var samplerlength = engine.getValue("[Sampler"+i+"]", "duration");
-
+                    } else if (engine.getValue("[Sampler"+i+"]", "track_loaded") === 1) {
+                        engine.setValue("[Sampler"+i+"]", "cue_gotoandplay", 1);
                     }
                 } else if (control === 0x1C + i -1 && value >= 0x01) {
-                    engine.setValue("[Sampler"+i+"]", "play", 0);
-                    engine.setValue("[Sampler"+i+"]", "eject", 1);
-                    midi.sendShortMsg(0x94 + deckNumber - 1, 0x1C + i -1, MC7000.padColor.sampleroff);
-                    engine.setValue("[Sampler"+i+"]", "eject", 0);
+                    if (engine.getValue("[Sampler"+i+"]", "play") === 1) {
+                        engine.setValue("[Sampler"+i+"]", "cue_gotoandstop", 1);
+                    } else {
+                        engine.setValue("[Sampler"+i+"]", "eject", 1);
+                        midi.sendShortMsg(0x94 + deckNumber - 1, 0x1C + i -1, MC7000.padColor.sampleroff);
+                        engine.setValue("[Sampler"+i+"]", "eject", 0);
+                    }
                 }
             }
             // TODO: check for the actual status of LEDs again on other decks
@@ -628,17 +627,12 @@ MC7000.Deck = function() {
 
     // Assign Channel to Crossfader
     MC7000.crossfaderAssign = function(channel, control, value, status, group) {
-        // Centre position
         if (value === 0x00) {
-            engine.setValue(group, "orientation", 1);
-        }
-        // Left position
-        else if (value === 0x01) {
-            engine.setValue(group, "orientation", 0);
-        }
-        // Right position
-        else if (value === 0x02) {
-            engine.setValue(group, "orientation", 2);
+            engine.setValue(group, "orientation", 1); // Centre position
+        } else if (value === 0x01) {
+            engine.setValue(group, "orientation", 0); // Right position
+        } else if (value === 0x02) {
+            engine.setValue(group, "orientation", 2); // Left position
         }
     };
 
@@ -694,8 +688,7 @@ MC7000.getPrevRateRange = function(currRateRange) {
 /* LEDs for VuMeter */
 // VuMeters only for Channel 1-4 / Master is on Hardware
 MC7000.VuMeter = function(value, group) {
-    var VuMeterLEDPeakValue = 0x76,
-        VULevelOutValue = engine.getValue(group, "PeakIndicator") ? VuMeterLEDPeakValue : value*value*value*value*0x69,
+    var VULevelOutValue = engine.getValue(group, "PeakIndicator") ? MC7000.VuMeterLEDPeakValue : value*value*value*value*0x69,
         deckNumber = script.deckFromGroup(group);
 
     midi.sendShortMsg(0xB0 + deckNumber - 1, 0x1F, VULevelOutValue);
@@ -728,6 +721,25 @@ MC7000.HotCueLED = function(value, group) {
             } else {
                 if (engine.getValue(group, "hotcue_"+i+"_enabled") === 0) {
                     midi.sendShortMsg(0x94 + deckNumber - 1, 0x14 + i - 1, MC7000.padColor.hotcueoff);
+                }
+            }
+        }
+    }
+};
+
+// Sampler LED
+MC7000.SamplerLED = function() {
+    for (var j = 1; j <= 4; j++) {
+        for (var i = 1; i <= 8; i++) {
+            if (MC7000.PADModeSampler[j]) {
+                if (engine.getValue("[Sampler"+i+"]", "track_loaded") === 1) {
+                    if (engine.getValue("[Sampler"+i+"]", "play") === 0) {
+                        midi.sendShortMsg(0x94 + j - 1, 0x14 + i - 1, MC7000.padColor.samplerloaded);
+                    } else {
+                        midi.sendShortMsg(0x94 + j - 1, 0x14 + i - 1, MC7000.padColor.samplerplay);
+                    }
+                } else if (engine.getValue("[Sampler"+i+"]", "track_loaded") === 0) {
+                    midi.sendShortMsg(0x94 + j - 1, 0x1C + i - 1, MC7000.padColor.sampleroff);
                 }
             }
         }
