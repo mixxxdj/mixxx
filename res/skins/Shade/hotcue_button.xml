@@ -1,9 +1,11 @@
 <Template>
-  <PushButton>
+  <HotcueButton>
     <TooltipId>hotcue</TooltipId>
     <ObjectName>HotcueButton</ObjectName>
     <Pos><Variable name="pos"/></Pos>
     <NumberStates>2</NumberStates>
+    <Group><Variable name="group"/></Group>
+    <Hotcue><Variable name="hotcue"/></Hotcue>
     <State>
       <Number>0</Number>
       <Pressed>skin:/btn/btn_hotcue_<Variable name="hotcue"/>.png</Pressed>
@@ -30,5 +32,5 @@
       <ConfigKey><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_color</ConfigKey>
       <BindProperty>backgroundColorRgba</BindProperty>
     </Connection>
-  </PushButton>
+  </HotcueButton>
 </Template>

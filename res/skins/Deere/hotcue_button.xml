@@ -8,13 +8,16 @@
     SmallSquareButtonSize: the button size
 -->
 <Template>
-  <PushButton>
+  <HotcueButton>
     <TooltipId>hotcue</TooltipId>
     <ObjectName>HotcueButton</ObjectName>
     <MinimumSize>18,22</MinimumSize>
     <MaximumSize>22,22</MaximumSize>
     <SizePolicy>me,f</SizePolicy>
     <NumberStates>2</NumberStates>
+    <Group><Variable name="group"/></Group>
+    <Hotcue><Variable name="hotcue"/></Hotcue>
+
     <LeftClickIsPushButton><Variable name="LeftClickIsPushButton"/></LeftClickIsPushButton>
     <RightClickIsPushButton><Variable name="RightClickIsPushButton"/></RightClickIsPushButton>
     <State>
@@ -49,5 +52,5 @@
       <ConfigKey><Variable name="group"/>,hotcue_<Variable name="hotcue"/>_color</ConfigKey>
       <BindProperty>backgroundColorRgba</BindProperty>
     </Connection>
-  </PushButton>
+  </HotcueButton>
 </Template>
