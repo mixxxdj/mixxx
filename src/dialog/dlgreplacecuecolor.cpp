@@ -151,5 +151,11 @@ void DlgReplaceCueColor::slotApply() {
 
 void DlgReplaceCueColor::slotTransactionFinished() {
     int numAffectedRows = m_dbFuture.result();
-    QMessageBox::information(this, QString("Colors Replaced!"), QString("Done! %1 rows were affected.").arg(numAffectedRows));
+    if (numAffectedRows < 0) {
+        QMessageBox::critical(this, tr("Error occured!"), tr("Database update failed. Please check the logs."));
+    } else if (numAffectedRows == 0) {
+        QMessageBox::warning(this, tr("No colors changed!"), tr("No database rows matched the specified criteria."));
+    } else {
+        QMessageBox::information(this, tr("Colors Replaced!"), tr("Done! %1 rows were affected.").arg(numAffectedRows));
+    }
 }
