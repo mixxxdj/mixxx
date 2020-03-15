@@ -13,10 +13,39 @@ if(POLICY CMP0071)
   cmake_policy(SET CMP0071 NEW)
 endif()
 
+# CMAKE_CXX_COMPILER_ID: Distinguish between "AppleClang" and "Clang"
+if(POLICY CMP0025)
+  cmake_policy(SET CMP0025 NEW)
+endif()
+set(CMAKE_POLICY_WARNING_CMP0025 ON)
+
+#######################################################################
+# Compilers and toolchains
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  # GNU is GNU GCC
+  set(GNU_GCC true)
+else()
+  set(GNU_GCC false)
+endif()
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  # using regular Clang or AppleClang
+  set(LLVM_CLANG true)
+else()
+  set(LLVM_CLANG false)
+endif()
+
+# CMake implicitly sets the variable MSVC to true for Microsoft
+# Visual C++ or another compiler simulating Visual C++.
+# https://cmake.org/cmake/help/latest/variable/MSVC.html
+
+#######################################################################
+
 set(CMAKE_CXX_STANDARD 17)
 
 # Speed up builds on HDDs
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") # GNU is GNU GCC
+if(GNU_GCC)
   add_compile_options(-pipe)
 endif()
 
@@ -106,8 +135,7 @@ else()
   endif()
   cmake_dependent_option(CCACHE_SUPPORT "Enable ccache support" ON "CCACHE_EXECUTABLE" OFF)
   if(CCACHE_SUPPORT)
-    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" # GNU is GNU GCC
-      OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    if(GNU_GCC OR LLVM_CLANG)
       # without this compiler messages in `make` backend would be uncolored
       set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fdiagnostics-color=auto")
     endif()
@@ -129,13 +157,6 @@ configure_file(
 
 if(CMAKE_VERSION VERSION_LESS "3.7.0")
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
-endif()
-
-if(CMAKE_CXX_COMPILER_ID MATCHES "[Cc]lang")
-  # using regular Clang or AppleClang
-  set(CLANG ON)
-else()
-  set(CLANG OFF)
 endif()
 
 # Mixxx itself
@@ -706,8 +727,7 @@ if(UNIX AND NOT APPLE)
 endif()
 
 # Disable warnings in generated source files
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" # GNU is GNU GCC
-  OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+if(GNU_GCC OR LLVM_CLANG)
   set_property(
     SOURCE src/library/rekordbox/rekordbox_anlz.cpp
     APPEND_STRING
@@ -1589,7 +1609,7 @@ endif()
 # Clang Color Diagnostics
 option(CLANG_COLORDIAG "Clang color diagnostics" OFF)
 if(CLANG_COLORDIAG)
-  if(NOT CLANG)
+  if(NOT LLVM_CLANG)
     message(FATAL_ERROR "Color Diagnostics are only available when using Clang.")
   endif()
   target_compile_options(mixxx-lib PUBLIC -fcolor-diagnostics)
@@ -1610,7 +1630,7 @@ if(CLANG_TSAN)
   list(APPEND CLANG_SANITIZERS "thread")
 endif()
 if(NOT CLANG_SANITIZERS STREQUAL "")
-  if(NOT CLANG)
+  if(NOT LLVM_CLANG)
     message(FATAL_ERROR "Clang Sanitizers are only available when using Clang.")
   endif()
   list(JOIN CLANG_SANITIZERS "," CLANG_SANITZERS_JOINED)
@@ -2043,7 +2063,7 @@ if(NOT OPTIMIZE STREQUAL "off")
     else()
       message(FATAL_ERROR "Invalid value passed to OPTIMIZE option: ${OPTIMIZE}")
     endif()
-  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  elseif(GNU_GCC)
     # Common flags to all optimizations.
     # -ffast-math will prevent a performance penalty by denormals
     # (floating point values almost Zero are treated as Zero)

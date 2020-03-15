@@ -27,6 +27,7 @@ WCueMenuPopup::WCueMenuPopup(QWidget* parent)
     m_pEditLabel = new QLineEdit(this);
     m_pEditLabel->setToolTip(tr("Edit cue label"));
     m_pEditLabel->setObjectName("CueLabelEdit");
+    m_pEditLabel->setPlaceholderText(tr("Label..."));
     connect(m_pEditLabel, &QLineEdit::textEdited, this, &WCueMenuPopup::slotEditLabel);
     connect(m_pEditLabel, &QLineEdit::returnPressed, this, &WCueMenuPopup::hide);
 
