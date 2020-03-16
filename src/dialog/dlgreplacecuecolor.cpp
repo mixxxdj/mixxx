@@ -89,28 +89,65 @@ DlgReplaceCueColor::DlgReplaceCueColor(
         QWidget* pParent)
         : QDialog(pParent),
           m_pConfig(pConfig),
-          m_pDbConnectionPool(dbConnectionPool) {
+          m_pDbConnectionPool(dbConnectionPool),
+          m_pNewColorMenu(new QMenu(this)),
+          m_pCurrentColorMenu(new QMenu(this)) {
     setupUi(this);
 
+    // Set up new color button
     ColorPaletteSettings colorPaletteSettings(pConfig);
     mixxx::RgbColor firstColor = colorPaletteSettings.getHotcueColorPalette().at(0);
     setButtonColor(pushButtonNewColor, mixxx::RgbColor::toQColor(firstColor));
+
+    // Add menu for new color button
+    m_pNewColorPickerAction = new WColorPickerAction(WColorPicker::ColorOption::DenyNoColor, colorPaletteSettings.getHotcueColorPalette(), this);
+    m_pNewColorPickerAction->setObjectName("HotcueColorPickerAction");
+    m_pNewColorPickerAction->setSelectedColor(firstColor);
+    connect(m_pNewColorPickerAction,
+            &WColorPickerAction::colorPicked,
+            [this](mixxx::RgbColor::optional_t color) {
+                if (color) {
+                    setButtonColor(pushButtonNewColor, mixxx::RgbColor::toQColor(*color));
+                }
+            });
+    m_pNewColorMenu->addAction(m_pNewColorPickerAction);
+    m_pNewColorMenu->addSeparator();
+    m_pNewColorMenu->addAction("Other Color...", [this] {
+        QColor initialColor = QColor(pushButtonNewColor->text());
+        QColor color = QColorDialog::getColor(initialColor, this);
+        setButtonColor(pushButtonNewColor, color);
+        m_pNewColorPickerAction->setSelectedColor(mixxx::RgbColor::fromQColor(color));
+    });
+    pushButtonNewColor->setMenu(m_pNewColorMenu);
+
+    // Set up current color button
     setButtonColor(pushButtonCurrentColor, mixxx::RgbColor::toQColor(ColorPalette::kDefaultCueColor));
+
+    // Add menu for current color button
+    m_pCurrentColorPickerAction = new WColorPickerAction(WColorPicker::ColorOption::DenyNoColor, colorPaletteSettings.getHotcueColorPalette(), this);
+    m_pCurrentColorPickerAction->setObjectName("HotcueColorPickerAction");
+    m_pNewColorPickerAction->setSelectedColor(ColorPalette::kDefaultCueColor);
+    connect(m_pCurrentColorPickerAction,
+            &WColorPickerAction::colorPicked,
+            [this](mixxx::RgbColor::optional_t color) {
+                if (color) {
+                    setButtonColor(pushButtonCurrentColor, mixxx::RgbColor::toQColor(*color));
+                }
+            });
+    m_pCurrentColorMenu->addAction(m_pCurrentColorPickerAction);
+    m_pCurrentColorMenu->addSeparator();
+    m_pCurrentColorMenu->addAction("Other Color...", [this] {
+        QColor initialColor = QColor(pushButtonCurrentColor->text());
+        QColor color = QColorDialog::getColor(initialColor, this);
+        setButtonColor(pushButtonCurrentColor, color);
+        m_pCurrentColorPickerAction->setSelectedColor(mixxx::RgbColor::fromQColor(color));
+    });
+    pushButtonCurrentColor->setMenu(m_pCurrentColorMenu);
 
     connect(&m_dbFutureWatcher,
             &QFutureWatcher<int>::finished,
             this,
             &DlgReplaceCueColor::slotTransactionFinished);
-    connect(pushButtonNewColor,
-            &QPushButton::clicked,
-            [this] {
-                slotSelectColor(pushButtonNewColor);
-            });
-    connect(pushButtonCurrentColor,
-            &QPushButton::clicked,
-            [this] {
-                slotSelectColor(pushButtonCurrentColor);
-            });
     connect(buttonBox,
             &QDialogButtonBox::clicked,
             [this](QAbstractButton* button) {
@@ -129,12 +166,6 @@ DlgReplaceCueColor::DlgReplaceCueColor(
 
 DlgReplaceCueColor::~DlgReplaceCueColor() {
     m_dbFuture.waitForFinished();
-}
-
-void DlgReplaceCueColor::slotSelectColor(QPushButton* button) {
-    QColor initialColor = QColor(button->text());
-    QColor color = QColorDialog::getColor(initialColor, this);
-    setButtonColor(button, color);
 }
 
 void DlgReplaceCueColor::slotApply() {
