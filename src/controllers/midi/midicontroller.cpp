@@ -17,8 +17,8 @@
 #include "util/math.h"
 #include "util/screensaver.h"
 
-MidiController::MidiController()
-        : Controller() {
+MidiController::MidiController(UserSettingsPointer pConfig)
+        : Controller(pConfig) {
     setDeviceCategory(tr("MIDI Controller"));
 }
 

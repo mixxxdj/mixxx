@@ -170,25 +170,32 @@ WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
   #LibraryContainer QHeaderView::down-arrow {
     image: url(skin:/btn/btn_lib_sort_down_green.png)
   }
-
-WLibrary QPushButton:enabled {
+#DlgMissing > QPushButton:enabled,
+#DlgHidden > QPushButton:enabled,
+#DlgAutoDJ > QPushButton:enabled,
+#DlgRecording > QPushButton:enabled,
+#DlgAnalysis > QPushButton:enabled {
   background-color: #5C5B5D;
   border: 1px solid #5C5B5D;
   }
-  WLibrary QPushButton:!enabled {
+  #DlgMissing > QPushButton:!enabled,
+  #DlgHidden > QPushButton:!enabled,
+  #DlgAutoDJ > QPushButton:!enabled,
+  #DlgRecording > QPushButton:!enabled,
+  #DlgAnalysis > QPushButton:!enabled {
     background-color: #3D3E3F;
     border: 1px solid #3D3E3F;
   }
-  WLibrary QPushButton:checked {
+  #DlgMissing > QPushButton:checked,
+  #DlgHidden > QPushButton:checked,
+  #DlgAutoDJ > QPushButton:checked,
+  #DlgRecording > QPushButton:checked,
+  #DlgAnalysis > QPushButton:checked {
     color: #000;
     background-color: #B79E00;
+    border: 1px solid #B79E00;
   }
 
 WLibrary QRadioButton::indicator:checked {
  image: url(skin:/btn/btn_lib_radio_button_on_mustard.svg) center center;
-}
-
-/* Hotcue Color: No Color */
-#HotcueButton[highlight="0"] {
-    background-color: #b39a00;
 }
