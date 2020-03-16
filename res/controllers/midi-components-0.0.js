@@ -323,7 +323,7 @@
         outputColor: function(colorCode) {
             // Sends the color from the colorCode to the controller. This
             // method will not be called if no colorKey has been specified.
-            if (colorCode === undefined || colorCode < 0) {
+            if (colorCode === undefined || colorCode < 0 || colorCode > 0xFFFFFF) {
                 print("Ignoring invalid color code '" + colorCode + "' in outputColor()");
                 return;
             }
