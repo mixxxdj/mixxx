@@ -122,7 +122,9 @@ WLibrary QRadioButton::indicator:checked {
   image: url(skin:/btn/btn_lib_radio_button_on_neongreen.svg) center center;
 }
 
-/* Hotcue Color: No Color */
-#HotcueButton[highlight="0"] {
-    background-color: #52f904;
-}
+/* 'Enable AutoDJ' button	*/
+QPushButton#pushButtonAutoDJ:hover,
+QPushButton#pushButtonRecording:hover,
+QPushButton#pushButtonAnalyze:hover {
+   border: 1px solid #52F904;
+  }

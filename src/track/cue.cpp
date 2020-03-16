@@ -9,6 +9,7 @@
 #include "engine/engine.h"
 #include "util/assert.h"
 #include "util/color/color.h"
+#include "util/color/colorpalette.h"
 
 namespace {
 
@@ -37,7 +38,6 @@ inline double positionMillisToSamples(
     // Try to avoid rounding errors
     return (*positionMillis * sampleRate * mixxx::kEngineChannelCount) / 1000;
 }
-
 }
 
 //static
@@ -54,7 +54,7 @@ Cue::Cue()
           m_sampleStartPosition(Cue::kNoPosition),
           m_sampleEndPosition(Cue::kNoPosition),
           m_iHotCue(Cue::kNoHotCue),
-          m_color(Color::kPredefinedColorsSet.noColor) {
+          m_color(ColorPalette::kDefaultCueColor) {
 }
 
 Cue::Cue(
@@ -65,7 +65,7 @@ Cue::Cue(
         double length,
         int hotCue,
         QString label,
-        PredefinedColorPointer color)
+        mixxx::RgbColor color)
         : m_bDirty(false),
           m_iId(id),
           m_trackId(trackId),
@@ -101,7 +101,7 @@ Cue::Cue(
                           sampleRate)),
           m_iHotCue(cueInfo.getHotCueNumber() ? *cueInfo.getHotCueNumber() : kNoHotCue),
           m_label(cueInfo.getLabel()),
-          m_color(Color::kPredefinedColorsSet.predefinedColorFromRgbColor(cueInfo.getColor())) {
+          m_color(cueInfo.getColor().value_or(ColorPalette::kDefaultCueColor)) {
 }
 
 mixxx::CueInfo Cue::getCueInfo(
@@ -113,7 +113,7 @@ mixxx::CueInfo Cue::getCueInfo(
             positionSamplesToMillis(m_sampleEndPosition, sampleRate),
             m_iHotCue == kNoHotCue ? std::nullopt : std::make_optional(m_iHotCue),
             m_label,
-            m_color ? mixxx::RgbColor::fromQColor(m_color->m_defaultRgba) : std::nullopt);
+            m_color);
 }
 
 int Cue::getId() const {
@@ -214,12 +214,12 @@ void Cue::setLabel(const QString label) {
     emit updated();
 }
 
-PredefinedColorPointer Cue::getColor() const {
+mixxx::RgbColor Cue::getColor() const {
     QMutexLocker lock(&m_mutex);
     return m_color;
 }
 
-void Cue::setColor(const PredefinedColorPointer color) {
+void Cue::setColor(mixxx::RgbColor color) {
     QMutexLocker lock(&m_mutex);
     m_color = color;
     m_bDirty = true;

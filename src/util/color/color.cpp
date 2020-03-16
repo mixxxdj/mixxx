@@ -4,8 +4,6 @@
 
 namespace Color {
 
-const PredefinedColorsSet kPredefinedColorsSet = PredefinedColorsSet();
-
 // algorithm by http://www.nbdtech.com/Blog/archive/2008/04/27/Calculating-the-Perceived-Brightness-of-a-Color.aspx
 // NOTE(Swiftb0y): please suggest if I should you use other methods
 // (like the W3C algorithm) or if this approach is to to performance hungry
