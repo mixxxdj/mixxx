@@ -15,6 +15,7 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
     Q_OBJECT
   public:
     DlgReplaceCueColor(
+            UserSettingsPointer pConfig,
             mixxx::DbConnectionPoolPtr dbConnectionPool,
             QWidget* pParent);
     ~DlgReplaceCueColor();
@@ -25,6 +26,7 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
     void slotTransactionFinished();
 
   private:
+    const UserSettingsPointer m_pConfig;
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
     QFutureWatcher<int> m_dbFutureWatcher;
     QFuture<int> m_dbFuture;

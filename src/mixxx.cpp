@@ -469,7 +469,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pPrefDlg->setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     m_pPrefDlg->setHidden(true);
 
-    m_pReplaceCueColorDlg = new DlgReplaceCueColor(m_pLibrary->dbConnectionPool(), this);
+    m_pReplaceCueColorDlg = new DlgReplaceCueColor(pConfig, m_pLibrary->dbConnectionPool(), this);
     m_pReplaceCueColorDlg->setHidden(true);
 
     launchProgress(60);

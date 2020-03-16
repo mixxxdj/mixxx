@@ -9,7 +9,7 @@
 
 #include "library/dao/cuedao.h"
 #include "library/queryutil.h"
-#include "util/color/rgbcolor.h"
+#include "preferences/colorpalettesettings.h"
 
 namespace {
 
@@ -84,14 +84,18 @@ int updateCueColors(
 } // namespace
 
 DlgReplaceCueColor::DlgReplaceCueColor(
+        UserSettingsPointer pConfig,
         mixxx::DbConnectionPoolPtr dbConnectionPool,
         QWidget* pParent)
         : QDialog(pParent),
+          m_pConfig(pConfig),
           m_pDbConnectionPool(dbConnectionPool) {
     setupUi(this);
 
-    setButtonColor(pushButtonNewColor, QColor(0, 0, 0));
-    setButtonColor(pushButtonCurrentColor, QColor(0, 0, 0));
+    ColorPaletteSettings colorPaletteSettings(pConfig);
+    mixxx::RgbColor firstColor = colorPaletteSettings.getHotcueColorPalette().at(0);
+    setButtonColor(pushButtonNewColor, mixxx::RgbColor::toQColor(firstColor));
+    setButtonColor(pushButtonCurrentColor, mixxx::RgbColor::toQColor(ColorPalette::kDefaultCueColor));
 
     connect(&m_dbFutureWatcher,
             &QFutureWatcher<int>::finished,
