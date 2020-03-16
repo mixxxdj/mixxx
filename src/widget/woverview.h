@@ -169,7 +169,6 @@ class WOverview : public WWidget, public TrackDropTarget {
     QColor m_labelBackgroundColor;
     QColor m_endOfTrackColor;
 
-    PredefinedColorsRepresentation m_predefinedColorsRepresentation;
     // All WaveformMarks
     WaveformMarkSet m_marks;
     // List of visible WaveformMarks sorted by the order they appear in the track
