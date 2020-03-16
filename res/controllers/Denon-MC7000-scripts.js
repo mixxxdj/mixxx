@@ -37,12 +37,15 @@ var MC7000 = {};
 // can be true or false (recommended: false)
 MC7000.needleSearchPlay = false;
 
-// Pitch Fader ranges to cycle through with the "RANGE" buttons.
-var lowest = 4;   // lowest value in % (default: 4)
-var low = 6;      // next value in % (default: 6)
-var middle = 10;  // next value in % (default: 10)
-var high = 16;    // next value in % (default: 16)
-var highest = 24; // highest value in % (default: 24)
+// Possible pitchfader rateranges given in percent.
+// can be cycled through be the RANGE buttons.
+MC7000.rateRanges = [
+    4/100,  // default: 4/100
+    6/100,  // default: 6/100
+    10/100, // default: 10/100
+    16/100, // default: 16/100
+    24/100, // default: 24/100
+];
 
 // Platter Ring LED mode
 // Mode 0 = Single "off" LED chase (all others "on")
@@ -82,15 +85,15 @@ MC7000.jogParams = {
 // The physical resolution seems to be around 1100
 MC7000.jogWheelTicksPerRevolution = 894;
 
-// Pitch faders up and down values (see above for user input)
-MC7000.posRateRanges = [lowest/100, low/100, middle/100, high/100, highest/100];
-MC7000.negRateRanges = [highest/100, high/100, middle/100, low/100, lowest/100];
-
 // must be "true" for Needle Search to be active
 MC7000.needleSearchTouched = [true, true, true, true];
 
 // initial value for VINYL mode per Deck (see above for user input)
 MC7000.isVinylMode = [MC7000.VinylModeOn, MC7000.VinylModeOn, MC7000.VinylModeOn, MC7000.VinylModeOn];
+
+// used to keep track of which the rateRange of each slider.
+// value used as an index to MC7000.rateRanges
+MC7000.currentRateRangeIndex = [0, 0, 0, 0];
 
 // initialize the "factor" function for Spinback
 MC7000.factor = [];
@@ -132,7 +135,7 @@ MC7000.init = function() {
     MC7000.rightDeck = new MC7000.Deck(2, 4);
 
     // set default Master Volume to 85% to give a little head room for mixing
-    // engine.setValue("[Master]", "gain", 0.85);
+    engine.setValue("[Master]", "gain", 0.85);
 
     // VU meters
     engine.makeConnection("[Channel1]", "VuMeter", MC7000.VuMeter);
@@ -169,7 +172,6 @@ MC7000.init = function() {
         engine.makeConnection("[Sampler"+i+"]", "track_loaded", MC7000.SamplerLED);
         engine.makeConnection("[Sampler"+i+"]", "play", MC7000.SamplerLED);
     }
-
 
     // Sampler Volume Control
     MC7000.samplerLevel = function(channel, control, value) {
@@ -605,15 +607,23 @@ MC7000.Deck = function() {
     // Next Rate range toggle
     MC7000.nextRateRange = function(midichan, control, value, status, group) {
         if (value === 0) return;     // don't respond to note off messages
-        var currRateRange = engine.getValue(group, "rateRange");
-        engine.setValue(group, "rateRange", MC7000.getNextRateRange(currRateRange));
+        var deckNumber = script.deckFromGroup(group);
+        // increment currentRateRangeIndex and check for overflow
+        if (++MC7000.currentRateRangeIndex[deckNumber-1] === MC7000.rateRanges.length) {
+            MC7000.currentRateRangeIndex[deckNumber-1] = 0;
+        }
+        engine.setValue(group, "rateRange", MC7000.rateRanges[MC7000.currentRateRangeIndex[deckNumber-1]]);
     };
 
     // Previous Rate range toggle
     MC7000.prevRateRange = function(midichan, control, value, status, group) {
         if (value === 0) return;     // don't respond to note off messages
-        var currRateRange = engine.getValue(group, "rateRange");
-        engine.setValue(group, "rateRange", MC7000.getPrevRateRange(currRateRange));
+        var deckNumber = script.deckFromGroup(group);
+        // decrement currentRateRangeIndex and check for underflow
+        if (--MC7000.currentRateRangeIndex[deckNumber-1] < 0) {
+            MC7000.currentRateRangeIndex[deckNumber-1] = MC7000.rateRanges.length - 1;
+        }
+        engine.setValue(group, "rateRange", MC7000.rateRanges[MC7000.currentRateRangeIndex[deckNumber-1]]);
     };
 
     // Key Select
@@ -663,26 +673,8 @@ MC7000.fxWetDry = function(midichan, control, value, status, group) {
     var numTicks = (value < 0x64) ? value: (value - 128);
     var newVal = engine.getValue(group, "mix") + numTicks/64*2;
     engine.setValue(group, "mix", Math.max(0, Math.min(1, newVal)));
-};
 
-/* Next Rate range calculation */
-MC7000.getNextRateRange = function(currRateRange) {
-    for (var i = 0; i < MC7000.posRateRanges.length; i++) {
-        if (MC7000.posRateRanges[i] > currRateRange) {
-            return MC7000.posRateRanges[i];
-        }
-    }
-    return MC7000.posRateRanges[0];
-};
 
-/* Previous Rate range calculation */
-MC7000.getPrevRateRange = function(currRateRange) {
-    for (var i = 0; i < MC7000.negRateRanges.length; i++) {
-        if (MC7000.negRateRanges[i] < currRateRange) {
-            return MC7000.negRateRanges[i];
-        }
-    }
-    return MC7000.negRateRanges[0];
 };
 
 /* LEDs for VuMeter */
