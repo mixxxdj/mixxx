@@ -16,8 +16,9 @@
 #include "controllers/controllerdebug.h"
 #include "util/time.h"
 
-HidController::HidController(const hid_device_info deviceInfo)
-        : m_pHidDevice(NULL) {
+HidController::HidController(const hid_device_info& deviceInfo, UserSettingsPointer pConfig)
+        : Controller(pConfig),
+          m_pHidDevice(NULL) {
     // Copy required variables from deviceInfo, which will be freed after
     // this class is initialized by caller.
     hid_vendor_id = deviceInfo.vendor_id;

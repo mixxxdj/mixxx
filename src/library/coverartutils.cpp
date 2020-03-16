@@ -1,11 +1,24 @@
-#include <QDir>
-#include <QDirIterator>
-
 #include "library/coverartutils.h"
 
+#include <QDir>
+#include <QDirIterator>
+#include <QtConcurrentRun>
+
 #include "sources/soundsourceproxy.h"
+#include "util/compatibility.h"
+#include "util/logger.h"
 #include "util/regex.h"
 
+
+namespace {
+
+mixxx::Logger kLogger("CoverArtUtils");
+
+// The concurrent guessing of cover art in background tasks
+// is enabled, unless it is explicitly disabled during tests!
+volatile bool s_enableConcurrentGuessingOfTrackCoverInfo = true;
+
+} // anonymous namespace
 
 //static
 QString CoverArtUtils::defaultCoverLocation() {
@@ -23,15 +36,6 @@ QStringList CoverArtUtils::supportedCoverArtExtensions() {
 QString CoverArtUtils::supportedCoverArtExtensionsRegex() {
     QStringList extensions = supportedCoverArtExtensions();
     return RegexUtils::fileExtensionsRegex(extensions);
-}
-
-//static
-QImage CoverArtUtils::extractEmbeddedCover(
-        TrackFile trackFile) {
-    SecurityTokenPointer pToken = Sandbox::openSecurityToken(
-            trackFile.asFileInfo(), true);
-    return extractEmbeddedCover(
-            std::move(trackFile), std::move(pToken));
 }
 
 //static
@@ -181,10 +185,58 @@ CoverInfoRelative CoverInfoGuesser::guessCoverInfo(
 CoverInfoRelative CoverInfoGuesser::guessCoverInfoForTrack(
         const Track& track) {
     const auto trackFile = track.getFileInfo();
+    if (kLogger.debugEnabled()) {
+        kLogger.debug()
+                << "Guessing cover art for track"
+                << trackFile;
+    }
     return guessCoverInfo(
             trackFile,
             track.getAlbum(),
             CoverArtUtils::extractEmbeddedCover(
                     trackFile,
                     track.getSecurityToken()));
+}
+
+void CoverInfoGuesser::guessAndSetCoverInfoForTracks(
+        const QList<TrackPointer>& tracks) {
+    for (const auto& pTrack : tracks) {
+        VERIFY_OR_DEBUG_ASSERT(pTrack) {
+            continue;
+        }
+        guessAndSetCoverInfoForTrack(*pTrack);
+    }
+}
+
+void guessTrackCoverInfoConcurrently(
+        TrackPointer pTrack) {
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
+        return;
+    }
+    if (s_enableConcurrentGuessingOfTrackCoverInfo) {
+        QtConcurrent::run([pTrack] {
+            CoverInfoGuesser().guessAndSetCoverInfoForTrack(*pTrack);
+        });
+    } else {
+        // Disabled only during tests
+        CoverInfoGuesser().guessAndSetCoverInfoForTrack(*pTrack);
+    }
+}
+
+void guessTrackCoverInfoConcurrently(
+        QList<TrackPointer> tracks) {
+    if (tracks.isEmpty()) {
+        return;
+    }
+    if (s_enableConcurrentGuessingOfTrackCoverInfo) {
+        QtConcurrent::run([tracks] {
+            CoverInfoGuesser().guessAndSetCoverInfoForTracks(tracks);
+        });
+    } else {
+        CoverInfoGuesser().guessAndSetCoverInfoForTracks(tracks);
+    }
+}
+
+void disableConcurrentGuessingOfTrackCoverInfoDuringTests() {
+    s_enableConcurrentGuessingOfTrackCoverInfo = false;
 }

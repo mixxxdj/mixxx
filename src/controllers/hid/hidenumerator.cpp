@@ -11,7 +11,8 @@
 #include "controllers/hid/hidenumerator.h"
 #include "controllers/hid/hidblacklist.h"
 
-HidEnumerator::HidEnumerator() : ControllerEnumerator() {
+HidEnumerator::HidEnumerator(UserSettingsPointer pConfig)
+        : ControllerEnumerator(), m_pConfig(pConfig) {
 }
 
 HidEnumerator::~HidEnumerator() {
@@ -98,7 +99,7 @@ QList<Controller*> HidEnumerator::queryDevices() {
             continue;
         }
 
-        HidController* currentDevice = new HidController(*cur_dev);
+        HidController* currentDevice = new HidController(*cur_dev, m_pConfig);
         m_devices.push_back(currentDevice);
     }
     hid_free_enumeration(devs);
