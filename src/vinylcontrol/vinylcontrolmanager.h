@@ -11,10 +11,10 @@
 #include <QString>
 #include <QTimerEvent>
 
-#include "soundio/soundmanagerutil.h"
 #include "preferences/usersettings.h"
-#include "vinylcontrol/vinylsignalquality.h"
+#include "soundio/soundmanagerutil.h"
 #include "util/defs.h"
+#include "vinylcontrol/vinylsignalquality.h"
 
 class ControlProxy;
 class ControlPushButton;

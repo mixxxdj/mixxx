@@ -1,12 +1,12 @@
 #include "engine/sync/synccontrol.h"
 
 #include "control/controlobject.h"
-#include "control/controlpushbutton.h"
 #include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
+#include "engine/channels/enginechannel.h"
 #include "engine/controls/bpmcontrol.h"
 #include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
-#include "engine/channels/enginechannel.h"
 #include "util/assert.h"
 #include "util/logger.h"
 #include "util/math.h"
@@ -19,7 +19,7 @@ const double SyncControl::kBpmDouble = 2.0;
 
 namespace {
 const mixxx::Logger kLogger("SyncControl");
-}  // namespace
+} // namespace
 
 SyncControl::SyncControl(const QString& group, UserSettingsPointer pConfig,
                          EngineChannel* pChannel, SyncableListener* pEngineSync)

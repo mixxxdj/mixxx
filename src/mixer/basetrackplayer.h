@@ -52,15 +52,15 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     Q_OBJECT
   public:
     BaseTrackPlayerImpl(QObject* pParent,
-                        UserSettingsPointer pConfig,
-                        EngineMaster* pMixingEngine,
-                        EffectsManager* pEffectsManager,
-                        VisualsManager* pVisualsManager,
-                        EngineChannel::ChannelOrientation defaultOrientation,
-                        const QString& group,
-                        bool defaultMaster,
-                        bool defaultHeadphones,
-                        bool primaryDeck);
+            UserSettingsPointer pConfig,
+            EngineMaster* pMixingEngine,
+            EffectsManager* pEffectsManager,
+            VisualsManager* pVisualsManager,
+            EngineChannel::ChannelOrientation defaultOrientation,
+            const QString& group,
+            bool defaultMaster,
+            bool defaultHeadphones,
+            bool primaryDeck);
     virtual ~BaseTrackPlayerImpl();
 
     TrackPointer getLoadedTrack() const final;

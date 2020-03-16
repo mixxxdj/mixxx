@@ -21,9 +21,10 @@
 #include "control/controlpushbutton.h"
 
 EngineChannel::EngineChannel(const ChannelHandleAndGroup& handle_group,
-                             EngineChannel::ChannelOrientation defaultOrientation,
-                             EffectsManager* pEffectsManager, bool isTalkoverChannel,
-                             bool isPrimaryDeck)
+        EngineChannel::ChannelOrientation defaultOrientation,
+        EffectsManager* pEffectsManager,
+        bool isTalkoverChannel,
+        bool isPrimaryDeck)
         : m_group(handle_group),
           m_pEffectsManager(pEffectsManager),
           m_vuMeter(getGroup()),

@@ -40,10 +40,7 @@ class ControlPushButton;
 class EngineDeck : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
-    EngineDeck(const ChannelHandleAndGroup& handle_group, UserSettingsPointer pConfig,
-               EngineMaster* pMixingEngine, EffectsManager* pEffectsManager,
-               EngineChannel::ChannelOrientation defaultOrientation,
-               bool primaryDeck);
+    EngineDeck(const ChannelHandleAndGroup& handle_group, UserSettingsPointer pConfig, EngineMaster* pMixingEngine, EffectsManager* pEffectsManager, EngineChannel::ChannelOrientation defaultOrientation, bool primaryDeck);
     virtual ~EngineDeck();
 
     virtual void process(CSAMPLE* pOutput, const int iBufferSize);

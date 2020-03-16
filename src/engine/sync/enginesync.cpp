@@ -20,8 +20,8 @@
 
 #include <QStringList>
 
-#include "engine/enginebuffer.h"
 #include "engine/channels/enginechannel.h"
+#include "engine/enginebuffer.h"
 #include "engine/sync/internalclock.h"
 #include "util/assert.h"
 #include "util/defs.h"
@@ -29,7 +29,7 @@
 
 namespace {
 const mixxx::Logger kLogger("EngineSync");
-}  // namespace
+} // namespace
 
 EngineSync::EngineSync(UserSettingsPointer pConfig)
         : BaseSyncableListener(pConfig) {
@@ -53,7 +53,7 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
         }
     }
 
-    for (const auto& pSyncable: m_syncables) {
+    for (const auto& pSyncable : m_syncables) {
         if (pSyncable == enabling_syncable) {
             continue;
         }
@@ -155,7 +155,7 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
     Syncable* stoppedTarget = nullptr;
     bool foundTargetBpm = false;
 
-    for (const auto& pOtherSyncable: m_syncables) {
+    for (const auto& pOtherSyncable : m_syncables) {
         if (pOtherSyncable == requester) {
             continue;
         }
@@ -232,8 +232,7 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
     if (newMaster != nullptr && newMaster != m_pMasterSyncable) {
         activateMaster(newMaster);
         if (targetSyncable == nullptr) {
-            setMasterParams(newMaster, newMaster->getBeatDistance(), newMaster->getBaseBpm(),
-                            newMaster->getBpm());
+            setMasterParams(newMaster, newMaster->getBeatDistance(), newMaster->getBaseBpm(), newMaster->getBpm());
         }
     }
 
@@ -243,8 +242,7 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
     }
 
     if (targetSyncable != nullptr) {
-        setMasterParams(targetSyncable, targetSyncable->getBeatDistance(),
-                        targetSyncable->getBaseBpm(), targetSyncable->getBpm());
+        setMasterParams(targetSyncable, targetSyncable->getBeatDistance(), targetSyncable->getBaseBpm(), targetSyncable->getBpm());
         if (targetSyncable != pSyncable) {
             pSyncable->requestSync();
         }
@@ -264,8 +262,7 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
 
     if (newMaster != nullptr && newMaster != m_pMasterSyncable) {
         activateMaster(newMaster);
-        setMasterParams(newMaster, newMaster->getBeatDistance(), newMaster->getBaseBpm(),
-                        newMaster->getBpm());
+        setMasterParams(newMaster, newMaster->getBeatDistance(), newMaster->getBaseBpm(), newMaster->getBpm());
     }
 
     pSyncable->requestSync();
@@ -416,7 +413,6 @@ void EngineSync::deactivateSync(Syncable* pSyncable) {
     if (newMaster != nullptr && m_pMasterSyncable != newMaster) {
         activateMaster(newMaster);
     }
-
 }
 
 EngineChannel* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const {

@@ -53,8 +53,9 @@ class EngineSyncTest : public MockedEngineBackendTest {
     void assertIsFollower(QString group) {
         if (group == m_sInternalClockGroup) {
             ASSERT_EQ(0,
-                      ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
-                                                          "sync_master"))->get());
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
+                                                      "sync_master"))
+                            ->get());
         } else {
             ASSERT_EQ(SYNC_FOLLOWER, ControlObject::getControl(ConfigKey(group, "sync_mode"))->get());
             ASSERT_EQ(1, ControlObject::getControl(ConfigKey(group, "sync_enabled"))->get());
@@ -654,7 +655,6 @@ TEST_F(EngineSyncTest, EnableOneDeckInitsMaster) {
                     ControlObject::get(ConfigKey(m_sInternalClockGroup,
                                                         "beat_distance")));
 }
-
 
 TEST_F(EngineSyncTest, EnableOneDeckInitializesMaster) {
     // Enabling sync on a deck causes it to be master, and sets bpm and clock.

@@ -40,10 +40,10 @@ class EngineChannel : public EngineObject {
     };
 
     EngineChannel(const ChannelHandleAndGroup& handle_group,
-                  ChannelOrientation defaultOrientation,
-                  EffectsManager* pEffectsManager,
-                  bool isTalkoverChannel,
-                  bool isPrimaryDeck);
+            ChannelOrientation defaultOrientation,
+            EffectsManager* pEffectsManager,
+            bool isTalkoverChannel,
+            bool isPrimaryDeck);
     virtual ~EngineChannel();
 
     virtual ChannelOrientation getOrientation() const;
@@ -64,7 +64,9 @@ class EngineChannel : public EngineObject {
     void setTalkover(bool enabled);
     virtual bool isTalkoverEnabled() const;
     inline bool isTalkoverChannel() { return m_bIsTalkoverChannel; };
-    inline bool isPrimaryDeck() { return m_bIsPrimaryDeck; };
+    inline bool isPrimaryDeck() {
+        return m_bIsPrimaryDeck;
+    };
 
     virtual void process(CSAMPLE* pOut, const int iBufferSize) = 0;
     virtual void collectFeatures(GroupFeatureState* pGroupFeatures) const = 0;

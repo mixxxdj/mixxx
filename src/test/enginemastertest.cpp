@@ -20,10 +20,9 @@ namespace {
 class EngineChannelMock : public EngineChannel {
   public:
     EngineChannelMock(const QString& group,
-                      ChannelOrientation defaultOrientation,
-                      EngineMaster* pMaster)
-            : EngineChannel(pMaster->registerChannelGroup(group), defaultOrientation,
-                            nullptr, /*isTalkoverChannel*/ false, /*isPrimarydeck*/ true) {
+            ChannelOrientation defaultOrientation,
+            EngineMaster* pMaster)
+            : EngineChannel(pMaster->registerChannelGroup(group), defaultOrientation, nullptr, /*isTalkoverChannel*/ false, /*isPrimarydeck*/ true) {
     }
 
     void applyVolume(CSAMPLE* pBuff, const int iBufferSize) {

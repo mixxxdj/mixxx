@@ -1,16 +1,18 @@
 #include "engine/enginebuffer.h"
 
+#include <QtDebug>
 #include <cfloat>
 
-#include <QtDebug>
-
-#include "engine/cachingreader/cachingreader.h"
-#include "preferences/usersettings.h"
 #include "control/controlindicator.h"
 #include "control/controllinpotmeter.h"
-#include "control/controlproxy.h"
 #include "control/controlpotmeter.h"
+#include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
+#include "engine/bufferscalers/enginebufferscalelinear.h"
+#include "engine/bufferscalers/enginebufferscalerubberband.h"
+#include "engine/bufferscalers/enginebufferscalest.h"
+#include "engine/cachingreader/cachingreader.h"
+#include "engine/channels/enginechannel.h"
 #include "engine/controls/bpmcontrol.h"
 #include "engine/controls/clockcontrol.h"
 #include "engine/controls/cuecontrol.h"
@@ -19,15 +21,12 @@
 #include "engine/controls/loopingcontrol.h"
 #include "engine/controls/quantizecontrol.h"
 #include "engine/controls/ratecontrol.h"
-#include "engine/bufferscalers/enginebufferscalelinear.h"
-#include "engine/bufferscalers/enginebufferscalerubberband.h"
-#include "engine/bufferscalers/enginebufferscalest.h"
-#include "engine/channels/enginechannel.h"
 #include "engine/enginemaster.h"
 #include "engine/engineworkerscheduler.h"
 #include "engine/readaheadmanager.h"
 #include "engine/sync/enginesync.h"
 #include "engine/sync/synccontrol.h"
+#include "preferences/usersettings.h"
 #include "track/beatfactory.h"
 #include "track/keyutils.h"
 #include "track/track.h"

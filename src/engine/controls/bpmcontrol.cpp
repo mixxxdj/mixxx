@@ -1,19 +1,19 @@
+#include "engine/controls/bpmcontrol.h"
+
 #include <QStringList>
 
-#include "control/controlobject.h"
-#include "control/controlpushbutton.h"
 #include "control/controllinpotmeter.h"
-
-#include "engine/enginebuffer.h"
-#include "engine/controls/bpmcontrol.h"
-#include "waveform/visualplayposition.h"
-#include "engine/channels/enginechannel.h"
-#include "engine/enginemaster.h"
+#include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
+#include "engine/channels/enginechannel.h"
+#include "engine/enginebuffer.h"
+#include "engine/enginemaster.h"
 #include "util/assert.h"
+#include "util/duration.h"
 #include "util/logger.h"
 #include "util/math.h"
-#include "util/duration.h"
+#include "waveform/visualplayposition.h"
 
 namespace {
 const mixxx::Logger kLogger("BpmControl");
