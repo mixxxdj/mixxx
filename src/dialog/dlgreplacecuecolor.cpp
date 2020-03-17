@@ -14,7 +14,7 @@
 
 namespace {
 
-enum ReplaceColorConditionFlag {
+enum class ReplaceColorConditionFlag {
     NoConditions = 0,
     CurrentColorCheck = 1,
     CurrentColorNotEqual = 1 << 1,
