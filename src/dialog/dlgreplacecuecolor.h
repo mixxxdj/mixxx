@@ -18,6 +18,7 @@
 #include "util/db/dbconnectionpooler.h"
 #include "widget/wcolorpickeraction.h"
 
+// Dialog for bulk replacing colors of cues in the Database.
 class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
     Q_OBJECT
   public:
