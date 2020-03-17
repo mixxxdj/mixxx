@@ -31,12 +31,15 @@ class WColorPicker : public QWidget {
     void slotColorPicked(mixxx::RgbColor::optional_t color);
 
   private:
+    void setColorButtonChecked(mixxx::RgbColor::optional_t color, bool checked);
     void addColorButtons();
     void removeColorButtons();
-    void addColorButton(mixxx::RgbColor::optional_t color, QGridLayout* pLayout, int row, int column);
+    void addColorButton(mixxx::RgbColor color, QGridLayout* pLayout, int row, int column);
+    void addNoColorButton(QGridLayout* pLayout, int row, int column);
     Options m_options;
     mixxx::RgbColor::optional_t m_selectedColor;
     ColorPalette m_palette;
+    QPushButton* m_pNoColorButton;
     QList<QPushButton*> m_colorButtons;
     QStyle* m_pStyle;
 };
