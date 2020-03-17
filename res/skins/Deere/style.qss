@@ -1559,15 +1559,8 @@ WPushButton[value="2"]:hover {
 }
 
 #HotcueButton {
-    qproperty-shouldHighlightBackgroundOnHover: true;
-}
-
-#HotcueButton[backgroundIsDark=true][hasBackgroundColor=true] {
-    color: #FDFDFD;
-}
-
-#HotcueButton[backgroundIsDark=false][hasBackgroundColor=true] {
-    color: #1f1e1e;
+    qproperty-light: #FDFDFD;
+    qproperty-dark: #1f1e1e;
 }
 
 #PlayToggle[value="0"] {

@@ -1,11 +1,15 @@
 #include "widget/whotcuebutton.h"
 
+#include <QStyleOption>
+#include <QStylePainter>
 #include <QtDebug>
+
 #include "mixer/playerinfo.h"
 
 WHotcueButton::WHotcueButton(QWidget* pParent)
         : WPushButton(pParent),
           m_hotcue(Cue::kNoHotCue),
+          m_hoverCueColor(false),
           m_pCoColor(nullptr) {
 }
 
@@ -21,6 +25,7 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
     } else {
         SKIN_WARNING(node, context) << "Hotcue value invalid";
     }
+    m_hoverCueColor = context.selectBool(node, QStringLiteral("Hover"), false);
 
     m_pCueMenuPopup = make_parented<WCueMenuPopup>(context.getConfig(), this);
     ColorPaletteSettings colorPaletteSettings(context.getConfig());
@@ -96,9 +101,50 @@ ConfigKey WHotcueButton::createConfigKey(const QString& name) {
 }
 
 void WHotcueButton::slotColorChanged(double color) {
-    if (color > 0 && color <= 0xFFFFFF) {
-        m_cueColor = color;
+    if (color < 0 && color > 0xFFFFFF) {
+        return;
     }
-    setBackgroundColorRgba(color);
-    //restyleAndRepaint();
+    m_cueColor = QColor::fromRgb(color);
+    updateStyleSheet();
+}
+
+void WHotcueButton::setLightTextColorChanged(QColor color) {
+    if (m_lightTextColor != color) {
+        m_lightTextColor = color;
+        updateStyleSheet();
+    }
+}
+
+void WHotcueButton::setDarkTextColorColorChanged(QColor color) {
+    if (m_darkTextColor != color) {
+        m_darkTextColor = color;
+        updateStyleSheet();
+    }
+}
+
+void WHotcueButton::updateStyleSheet() {
+    if (!m_cueColor.isValid()) {
+        return;
+    }
+    QColor textColor = Color::isDimmColor(m_cueColor) ? m_lightTextColor : m_darkTextColor;
+
+    QString style =
+            QStringLiteral("WWidget[displayValue=\"1\"] { background-color: ") +
+            m_cueColor.name() +
+            (textColor.isValid() ? (QStringLiteral("; color: ") +
+                                           textColor.name())
+                                 : QString()) +
+            QStringLiteral("; }");
+
+    if (m_hoverCueColor) {
+        style +=
+                QStringLiteral("WWidget[displayValue=\"1\"]:hover { background-color: ") +
+                m_cueColor.lighter().name() +
+                (textColor.isValid() ? (QStringLiteral("; color: ") +
+                                               textColor.name())
+                                     : QString()) +
+                QStringLiteral("; }");
+    }
+
+    setStyleSheet(style);
 }

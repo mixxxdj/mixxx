@@ -684,12 +684,12 @@ QPushButton#pushButtonRecording:checked,
 #RecFeedback[displayValue="2"],
 #BeatgridButtons WPushButton[value="1"],
 #KeyMatchButton[displayValue="1"],
-#KeyUpButton[displayValue="1"], #KeyDownButton[displayValue="1"],
-#HotcueButton[displayValue="1"][highlight="0"],
-#HotcueButton[displayValue="2"][highlight="0"],
-#HotcueButton[displayValue="1"][highlight="1"],
-#HotcueButton[displayValue="2"][highlight="1"] {
+#KeyUpButton[displayValue="1"],
+#KeyDownButton[displayValue="1"],
+#HotcueButton[displayValue="1"] {
   background-color: #db0000;
+  qproperty-light: #FDFDFD;
+  qproperty-dark: #1f1e1e;
 }
 
 #BroadcastButton[displayValue="3"] {

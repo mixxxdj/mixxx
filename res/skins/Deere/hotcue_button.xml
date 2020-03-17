@@ -16,6 +16,7 @@
     <SizePolicy>me,f</SizePolicy>
     <Group><Variable name="group"/></Group>
     <Hotcue><Variable name="hotcue"/></Hotcue>
+    <Hover>true</Hover>
     <NumberStates>2</NumberStates>
     <State>
       <Number>0</Number>
