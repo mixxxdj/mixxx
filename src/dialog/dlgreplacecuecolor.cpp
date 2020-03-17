@@ -61,6 +61,7 @@ DlgReplaceCueColor::DlgReplaceCueColor(
                 if (color) {
                     setButtonColor(pushButtonNewColor, mixxx::RgbColor::toQColor(*color));
                 }
+                m_pNewColorMenu->hide();
             });
     m_pNewColorMenu->addAction(m_pNewColorPickerAction);
     m_pNewColorMenu->addSeparator();
@@ -85,6 +86,7 @@ DlgReplaceCueColor::DlgReplaceCueColor(
                 if (color) {
                     setButtonColor(pushButtonCurrentColor, mixxx::RgbColor::toQColor(*color));
                 }
+                m_pCurrentColorMenu->hide();
             });
     m_pCurrentColorMenu->addAction(m_pCurrentColorPickerAction);
     m_pCurrentColorMenu->addSeparator();
