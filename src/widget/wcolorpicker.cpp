@@ -35,9 +35,9 @@ inline int idealColumnCount(int numItems) {
     return numColumns;
 }
 
-WColorPicker::WColorPicker(ColorOption colorOption, const ColorPalette& palette, QWidget* parent)
+WColorPicker::WColorPicker(Options options, const ColorPalette& palette, QWidget* parent)
         : QWidget(parent),
-          m_colorOption(colorOption),
+          m_options(options),
           m_palette(palette) {
     QGridLayout* pLayout = new QGridLayout();
     pLayout->setMargin(0);
@@ -84,12 +84,12 @@ void WColorPicker::addColorButtons() {
     int column = 0;
 
     int numColors = m_palette.size();
-    if (m_colorOption == ColorOption::AllowNoColor) {
+    if (m_options.testFlag(Option::AllowNoColor)) {
         numColors++;
     }
 
     int numColumns = idealColumnCount(numColors);
-    if (m_colorOption == ColorOption::AllowNoColor) {
+    if (m_options.testFlag(Option::AllowNoColor)) {
         addColorButton(std::nullopt, pLayout, row, column);
         column++;
     }
@@ -144,10 +144,10 @@ void WColorPicker::resetSelectedColor() {
         if (i == -1) {
             return;
         }
-        if (m_colorOption == ColorOption::AllowNoColor) {
+        if (m_options.testFlag(Option::AllowNoColor)) {
             i++;
         }
-    } else if (m_colorOption != ColorOption::AllowNoColor) {
+    } else if (!m_options.testFlag(Option::AllowNoColor)) {
         return;
     }
 
@@ -174,10 +174,10 @@ void WColorPicker::setSelectedColor(mixxx::RgbColor::optional_t color) {
         if (i == -1) {
             return;
         }
-        if (m_colorOption == ColorOption::AllowNoColor) {
+        if (m_options.testFlag(Option::AllowNoColor)) {
             i++;
         }
-    } else if (m_colorOption != ColorOption::AllowNoColor) {
+    } else if (!m_options.testFlag(Option::AllowNoColor)) {
         return;
     }
 
