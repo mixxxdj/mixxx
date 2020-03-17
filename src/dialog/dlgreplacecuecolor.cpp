@@ -292,24 +292,26 @@ void DlgReplaceCueColor::updateCues(QSet<int> cueIds, QSet<TrackId> trackIds, mi
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
 
-    QVariant color = mixxx::RgbColor::toQVariant(newColor);
-    QVariantList colorVariants;
-    QVariantList cueIdVariants;
-    for (auto i = cueIds.constBegin(); i != cueIds.constEnd(); i++) {
-        cueIdVariants << QVariant(*i);
-        colorVariants << color;
-    }
-
     ScopedTransaction transaction(database);
     QSqlQuery query(database);
     query.prepare("UPDATE " CUE_TABLE " SET color=:color WHERE id=:id");
-    query.bindValue(":color", colorVariants);
-    query.bindValue(":id", cueIdVariants);
+    query.bindValue(":color", mixxx::RgbColor::toQVariant(newColor));
 
-    if (!query.execBatch()) {
-        LOG_FAILED_QUERY(query);
+    bool queryFailed = false;
+    for (const auto& id : cueIds) {
+        query.bindValue(":id", id);
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+            queryFailed = true;
+            break;
+        }
+    }
+
+    if (queryFailed) {
+        transaction.rollback();
         return;
     }
+
     transaction.commit();
     emit databaseTracksChanged(trackIds);
 }
