@@ -167,9 +167,40 @@ PioneerDDJ400.init = function() {
         PioneerDDJ400.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "play", PioneerDDJ400.samplerPlayOutputCallbackFunction));
     }
 
+	   // DJ3730:  added
+   // trigger "track loaded" animations when a track is loaded
+   for (i=1; i<=2; i++) {
+        engine.connectControl("[Channel"+i+"]","track_loaded", "PioneerDDJ400.trackLoadedLED"+i);
+        engine.trigger("[Channel"+i+"]","track_loaded");
+    }
+
+	// DJ3730:  added
+	// eye candy : play the "track loaded" animation on both decks at startup
+	midi.sendShortMsg(0x9F,0x00,0x7F);	
+	midi.sendShortMsg(0x9F,0x01,0x7F);
+
     // poll the controller for current control positions on startup
     midi.sendSysexMsg([0xF0,0x00,0x40,0x05,0x00,0x00,0x02,0x06,0x00,0x03,0x01,0xf7], 12);
 };
+
+PioneerDDJ400.trackLoadedLED1 = function (loaded) {
+	print('CH1 Loaded');
+   PioneerDDJ400.trackLoadedLED(1, loaded);
+}
+PioneerDDJ400.trackLoadedLED2 = function (loaded) {
+	print('CH2 Loaded');
+   PioneerDDJ400.trackLoadedLED(2, loaded);
+}
+
+PioneerDDJ400.trackLoadedLED = function (channel, loaded) {
+	print('Loaded LED func');
+   if (loaded) {
+      var value = 0x7F;
+   } else {
+      var value = 0x00;
+   }
+   midi.sendShortMsg(0x9F,0x00+(channel-1),value);
+}
 
 PioneerDDJ400.toggleLight = function(midiIn, active) {
     "use strict";
