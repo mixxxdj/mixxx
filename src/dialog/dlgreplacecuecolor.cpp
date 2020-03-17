@@ -7,6 +7,7 @@
 #include <QMessageBox>
 #include <QtConcurrent>
 
+#include "engine/controls/cuecontrol.h"
 #include "library/dao/cuedao.h"
 #include "library/queryutil.h"
 #include "preferences/colorpalettesettings.h"
@@ -16,7 +17,9 @@ namespace {
 enum ReplaceColorConditionFlag {
     NoConditions = 0,
     CurrentColorCheck = 1,
-    CurrentColorNotEqual = 2,
+    CurrentColorNotEqual = 1 << 1,
+    HotcueIndexCheck = 1 << 2,
+    HotcueIndexNotEqual = 1 << 3,
 };
 Q_DECLARE_FLAGS(ReplaceColorConditions, ReplaceColorConditionFlag);
 Q_DECLARE_OPERATORS_FOR_FLAGS(ReplaceColorConditions);
@@ -40,6 +43,7 @@ int updateCueColors(
         mixxx::DbConnectionPoolPtr dbConnectionPool,
         mixxx::RgbColor::optional_t newColor,
         mixxx::RgbColor::optional_t currentColor,
+        int hotcueIndex,
         ReplaceColorConditions conditions) {
     // The pooler limits the lifetime all thread-local connections,
     // that should be closed immediately before exiting this function.
@@ -57,20 +61,37 @@ int updateCueColors(
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
 
-    ScopedTransaction transaction(database);
-    QSqlQuery query(database);
-
+    // Build query string
+    QMap<QString, QVariant> queryValues;
+    QStringList queryStringConditions;
     if (conditions.testFlag(ReplaceColorConditionFlag::CurrentColorCheck)) {
-        query.prepare(
-                QStringLiteral("UPDATE " CUE_TABLE " SET color=:new_color WHERE color") +
+        queryStringConditions << QString(
+                QStringLiteral("color") +
                 (conditions.testFlag(ReplaceColorConditionFlag::CurrentColorNotEqual) ? QStringLiteral("!=") : QStringLiteral("=")) +
                 QStringLiteral(":current_color"));
-        query.bindValue(":current_color", mixxx::RgbColor::toQVariant(currentColor));
-    } else {
-        query.prepare(
-                QStringLiteral("UPDATE " CUE_TABLE " SET =:new_color"));
+        queryValues.insert(QStringLiteral(":current_color"), mixxx::RgbColor::toQVariant(currentColor));
     }
-    query.bindValue(":new_color", mixxx::RgbColor::toQVariant(newColor));
+    if (conditions.testFlag(ReplaceColorConditionFlag::HotcueIndexCheck)) {
+        queryStringConditions << QString(
+                QStringLiteral("hotcue") +
+                (conditions.testFlag(ReplaceColorConditionFlag::HotcueIndexNotEqual) ? QStringLiteral("!=") : QStringLiteral("=")) +
+                QStringLiteral(":hotcue"));
+        queryValues.insert(QStringLiteral(":hotcue"), QVariant(hotcueIndex));
+    }
+
+    QString queryString = QStringLiteral("UPDATE " CUE_TABLE " SET color=:new_color");
+    if (!queryStringConditions.isEmpty()) {
+        queryString += QStringLiteral(" WHERE ") + queryStringConditions.join(QStringLiteral(" AND "));
+    }
+
+    // Execute query
+    ScopedTransaction transaction(database);
+    QSqlQuery query(database);
+    query.prepare(queryString);
+    query.bindValue(QStringLiteral(":new_color"), mixxx::RgbColor::toQVariant(newColor));
+    for (auto i = queryValues.constBegin(); i != queryValues.constEnd(); i++) {
+        query.bindValue(i.key(), i.value());
+    }
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -93,6 +114,8 @@ DlgReplaceCueColor::DlgReplaceCueColor(
           m_pNewColorMenu(new QMenu(this)),
           m_pCurrentColorMenu(new QMenu(this)) {
     setupUi(this);
+
+    spinBoxHotcueIndex->setMaximum(NUM_HOT_CUES);
 
     // Set up new color button
     ColorPaletteSettings colorPaletteSettings(pConfig);
@@ -177,10 +200,24 @@ void DlgReplaceCueColor::slotApply() {
         conditions |= ReplaceColorConditionFlag::CurrentColorNotEqual;
     }
 
+    if (checkBoxHotcueIndexCondition->isChecked()) {
+        conditions |= ReplaceColorConditionFlag::HotcueIndexCheck;
+    }
+    if (comboBoxHotcueIndexCompare->currentText() == "is not") {
+        conditions |= ReplaceColorConditionFlag::HotcueIndexNotEqual;
+    }
+
     mixxx::RgbColor::optional_t newColor = mixxx::RgbColor::fromQString(pushButtonNewColor->text());
     mixxx::RgbColor::optional_t currentColor = mixxx::RgbColor::fromQString(pushButtonCurrentColor->text());
+    int hotcueIndex = spinBoxHotcueIndex->value() - 1;
 
-    m_dbFuture = QtConcurrent::run(updateCueColors, m_pDbConnectionPool, newColor, currentColor, conditions);
+    m_dbFuture = QtConcurrent::run(
+            updateCueColors,
+            m_pDbConnectionPool,
+            newColor,
+            currentColor,
+            hotcueIndex,
+            conditions);
     m_dbFutureWatcher.setFuture(m_dbFuture);
 }
 

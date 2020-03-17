@@ -50,7 +50,10 @@
       <item row="1" column="2">
        <widget class="QSpinBox" name="spinBoxHotcueIndex">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
+        </property>
+        <property name="minimum">
+         <number>1</number>
         </property>
        </widget>
       </item>
@@ -64,7 +67,7 @@
       <item row="1" column="0">
        <widget class="QCheckBox" name="checkBoxHotcueIndexCondition">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="text">
          <string>Hotcue Index</string>
@@ -74,7 +77,7 @@
       <item row="1" column="1">
        <widget class="QComboBox" name="comboBoxHotcueIndexCompare">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <item>
          <property name="text">
