@@ -42,44 +42,45 @@
 #ifdef __LILV__
 #include "effects/lv2/lv2backend.h"
 #endif
+#include "broadcast/broadcastmanager.h"
+#include "control/controlpushbutton.h"
+#include "controllers/controllermanager.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
+#include "database/mixxxdb.h"
 #include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
+#include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
-#include "controllers/controllermanager.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
+#include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "preferences/settingsmanager.h"
 #include "recording/recordingmanager.h"
-#include "broadcast/broadcastmanager.h"
+#include "skin/launchimage.h"
 #include "skin/legacyskinparser.h"
 #include "skin/skinloader.h"
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
-#include "waveform/waveformwidgetfactory.h"
-#include "waveform/visualsmanager.h"
-#include "waveform/sharedglcontext.h"
-#include "database/mixxxdb.h"
+#include "util/compatibility.h"
+#include "util/db/dbconnectionpooled.h"
 #include "util/debug.h"
-#include "util/statsmanager.h"
-#include "util/timer.h"
-#include "util/time.h"
-#include "util/version.h"
-#include "control/controlpushbutton.h"
-#include "util/sandbox.h"
-#include "mixer/playerinfo.h"
-#include "waveform/guitick.h"
-#include "util/math.h"
 #include "util/experiment.h"
 #include "util/font.h"
-#include "util/translations.h"
-#include "skin/launchimage.h"
-#include "preferences/settingsmanager.h"
-#include "widget/wmainmenubar.h"
-#include "util/compatibility.h"
-#include "util/screensaver.h"
 #include "util/logger.h"
-#include "util/db/dbconnectionpooled.h"
+#include "util/math.h"
+#include "util/sandbox.h"
+#include "util/screensaver.h"
+#include "util/statsmanager.h"
+#include "util/time.h"
+#include "util/timer.h"
+#include "util/translations.h"
+#include "util/version.h"
+#include "waveform/guitick.h"
+#include "waveform/sharedglcontext.h"
+#include "waveform/visualsmanager.h"
+#include "waveform/waveformwidgetfactory.h"
+#include "widget/wmainmenubar.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrolmanager.h"
@@ -469,7 +470,11 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pPrefDlg->setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     m_pPrefDlg->setHidden(true);
 
-    m_pReplaceCueColorDlg = new DlgReplaceCueColor(pConfig, m_pLibrary->dbConnectionPool(), this);
+    m_pReplaceCueColorDlg = new DlgReplaceCueColor(
+            pConfig,
+            &(m_pTrackCollectionManager->internalCollection()->getTrackDAO()),
+            m_pLibrary->dbConnectionPool(),
+            this);
     m_pReplaceCueColorDlg->setHidden(true);
 
     launchProgress(60);

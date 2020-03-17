@@ -33,10 +33,12 @@ void setButtonColor(QPushButton* button, const QColor& color) {
 
 DlgReplaceCueColor::DlgReplaceCueColor(
         UserSettingsPointer pConfig,
+        TrackDAO* pTrackDAO,
         mixxx::DbConnectionPoolPtr dbConnectionPool,
         QWidget* pParent)
         : QDialog(pParent),
           m_pConfig(pConfig),
+          m_pTrackDAO(pTrackDAO),
           m_pDbConnectionPool(dbConnectionPool),
           m_pNewColorMenu(new QMenu(this)),
           m_pCurrentColorMenu(new QMenu(this)) {
@@ -102,6 +104,10 @@ DlgReplaceCueColor::DlgReplaceCueColor(
             &QFutureWatcher<int>::finished,
             this,
             &DlgReplaceCueColor::slotDatabaseUpdated);
+    connect(this,
+            &DlgReplaceCueColor::databaseTracksChanged,
+            m_pTrackDAO,
+            &TrackDAO::databaseTracksChanged);
 
     connect(buttonBox,
             &QDialogButtonBox::clicked,
@@ -303,6 +309,7 @@ void DlgReplaceCueColor::updateCues(QSet<int> cueIds, QSet<TrackId> trackIds, mi
         return;
     }
     transaction.commit();
+    emit databaseTracksChanged(trackIds);
 }
 
 void DlgReplaceCueColor::slotDatabaseUpdated() {

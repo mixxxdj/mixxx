@@ -10,6 +10,7 @@
 #include <QSet>
 
 #include "dialog/ui_dlgreplacecuecolordlg.h"
+#include "library/dao/trackdao.h"
 #include "preferences/usersettings.h"
 #include "track/trackid.h"
 #include "util/color/rgbcolor.h"
@@ -31,9 +32,13 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
 
     DlgReplaceCueColor(
             UserSettingsPointer pConfig,
+            TrackDAO* pTrackDAO,
             mixxx::DbConnectionPoolPtr dbConnectionPool,
             QWidget* pParent);
     ~DlgReplaceCueColor();
+
+  signals:
+    void databaseTracksChanged(QSet<TrackId> Trackids);
 
   private slots:
     void slotApply();
@@ -49,6 +54,7 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
     void updateCues(QSet<int> cueIds, QSet<TrackId> trackIds, mixxx::RgbColor newColor);
 
     const UserSettingsPointer m_pConfig;
+    const TrackDAO* m_pTrackDAO;
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
     QMenu* m_pNewColorMenu;
     QMenu* m_pCurrentColorMenu;
