@@ -23,8 +23,6 @@ static const double CUE_MODE_NUMARK = 3.0;
 static const double CUE_MODE_MIXXX_NO_BLINK = 4.0;
 static const double CUE_MODE_CUP = 5.0;
 
-constexpr double kNoColorControlValue = -1;
-
 namespace {
 
 // Helper function to convert control values (i.e. doubles) into RgbColor
@@ -335,7 +333,6 @@ void CueControl::detachCue(HotcueControl* pControl) {
     }
     disconnect(pCue.get(), 0, this, 0);
     pControl->resetCue();
-    pControl->setColor(std::nullopt);
 }
 
 void CueControl::trackLoaded(TrackPointer pNewTrack) {
@@ -1769,7 +1766,7 @@ HotcueControl::HotcueControl(QString group, int i)
 
     // The rgba value  of the color assigned to this color.
     m_hotcueColor = new ControlObject(keyForControl(i, "color"));
-    m_hotcueColor->set(kNoColorControlValue);
+    m_hotcueColor->set(QRgb(ColorPalette::kDefaultCueColor));
     connect(m_hotcueColor,
             &ControlObject::valueChanged,
             this,
@@ -1892,7 +1889,7 @@ void HotcueControl::setColor(mixxx::RgbColor::optional_t newColor) {
     if (newColor) {
         m_hotcueColor->set(*newColor);
     } else {
-        m_hotcueColor->set(kNoColorControlValue);
+        m_hotcueColor->set(QRgb(ColorPalette::kDefaultCueColor));
     }
 }
 void HotcueControl::resetCue() {
