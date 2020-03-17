@@ -16,6 +16,9 @@
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
     <widget class="QSplitter" name="splitter">
+    <property name="childrenCollapsible">
+        <bool>false</bool>
+    </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
