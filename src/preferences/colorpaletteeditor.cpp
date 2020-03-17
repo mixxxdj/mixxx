@@ -65,117 +65,24 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
 
     connect(m_pTableView,
             &QTableView::doubleClicked,
-            [this](const QModelIndex& index) {
-                if (index.isValid() && index.column() == 0) {
-                    QColor color = QColorDialog::getColor();
-                    if (color.isValid()) {
-                        m_pModel->setColor(index.row(), color);
-                    }
-                }
-            });
-
+            this,
+            &ColorPaletteEditor::slotTableViewDoubleClicked);
     connect(m_pTableView,
             &QTableView::customContextMenuRequested,
-            [this](const QPoint& pos) {
-                QMenu menu(this);
-
-                QAction* pAddAction = menu.addAction("Add");
-                QAction* pRemoveAction = menu.addAction("Remove");
-                QAction* pAction = menu.exec(m_pTableView->viewport()->mapToGlobal(pos));
-                if (pAction == pAddAction) {
-                    m_pModel->appendRow(kDefaultPaletteColor);
-                } else if (pAction == pRemoveAction) {
-                    QModelIndexList selection = m_pTableView->selectionModel()->selectedRows();
-
-                    if (selection.count() > 0) {
-                        QModelIndex index = selection.at(0);
-
-                        //row selected
-                        int row = index.row();
-                        m_pModel->removeRow(row);
-                    }
-                }
-            });
-
+            this,
+            &ColorPaletteEditor::slotTableViewContextMenuRequested);
     connect(m_pPaletteNameComboBox,
             &QComboBox::editTextChanged,
-            [this](const QString& text) {
-                bool bPaletteIsReadOnly = false;
-                bool bPaletteExists = false;
-                foreach (const ColorPalette& palette, mixxx::PredefinedColorPalettes::kPalettes) {
-                    if (text == palette.getName()) {
-                        bPaletteExists = true;
-                        bPaletteIsReadOnly = true;
-                        break;
-                    }
-                }
-
-                ColorPaletteSettings colorPaletteSettings(m_pConfig);
-                if (!bPaletteIsReadOnly) {
-                    bPaletteExists = colorPaletteSettings.getColorPaletteNames().contains(text);
-                }
-
-                if (bPaletteExists) {
-                    if (!m_pModel->isDirty()) {
-                        bool bPaletteFound = false;
-                        foreach (const ColorPalette& palette, mixxx::PredefinedColorPalettes::kPalettes) {
-                            if (text == palette.getName()) {
-                                bPaletteFound = true;
-                                m_pModel->setColorPalette(palette);
-                                break;
-                            }
-                        }
-                        if (!bPaletteFound) {
-                            m_pModel->setColorPalette(colorPaletteSettings.getColorPalette(text, mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette));
-                        }
-                    }
-                }
-
-                m_bPaletteExists = bPaletteExists;
-                m_bPaletteIsReadOnly = bPaletteIsReadOnly;
-                slotUpdateButtons();
-            });
-
+            this,
+            &ColorPaletteEditor::slotPaletteNameChanged);
     connect(m_pDiscardButton,
             &QPushButton::clicked,
-            [this] {
-                QString paletteName = m_pPaletteNameComboBox->currentText();
-                ColorPaletteSettings colorPaletteSettings(m_pConfig);
-                colorPaletteSettings.removePalette(paletteName);
-                reset();
-                emit paletteRemoved(paletteName);
-            });
+            this,
+            &ColorPaletteEditor::slotDiscardButtonClicked);
     connect(m_pSaveButton,
             &QPushButton::clicked,
-            [this] {
-                QString paletteName = m_pPaletteNameComboBox->currentText();
-                ColorPaletteSettings colorPaletteSettings(m_pConfig);
-                colorPaletteSettings.setColorPalette(paletteName, m_pModel->getColorPalette(paletteName));
-                m_pModel->setDirty(false);
-                reset();
-                m_pPaletteNameComboBox->setCurrentText(paletteName);
-                emit paletteChanged(paletteName);
-            });
-    connect(m_pResetButton,
-            &QPushButton::clicked,
-            [this] {
-                QString paletteName = m_pPaletteNameComboBox->currentText();
-                ColorPaletteSettings colorPaletteSettings(m_pConfig);
-                bool bPaletteExists = colorPaletteSettings.getColorPaletteNames().contains(paletteName);
-                if (!bPaletteExists) {
-                    foreach (const ColorPalette& palette, mixxx::PredefinedColorPalettes::kPalettes) {
-                        if (paletteName == palette.getName()) {
-                            bPaletteExists = true;
-                            break;
-                        }
-                    }
-                }
-                m_pModel->setDirty(false);
-                reset();
-                if (bPaletteExists) {
-                    m_pPaletteNameComboBox->setCurrentText(paletteName);
-                }
-            });
+            this,
+            &ColorPaletteEditor::slotSaveButtonClicked);
 }
 
 void ColorPaletteEditor::reset() {
@@ -196,4 +103,108 @@ void ColorPaletteEditor::slotUpdateButtons() {
     m_pResetButton->setEnabled(bDirty);
     m_pSaveButton->setEnabled(!m_bPaletteExists || (!m_bPaletteIsReadOnly && bDirty && !bEmpty));
     m_pDiscardButton->setEnabled(m_bPaletteExists && !m_bPaletteIsReadOnly);
+}
+
+void ColorPaletteEditor::slotTableViewDoubleClicked(const QModelIndex& index) {
+    if (index.isValid() && index.column() == 0) {
+        QColor color = QColorDialog::getColor();
+        if (color.isValid()) {
+            m_pModel->setColor(index.row(), color);
+        }
+    }
+}
+
+void ColorPaletteEditor::slotTableViewContextMenuRequested(const QPoint& pos) {
+    QMenu menu(this);
+
+    QAction* pAddAction = menu.addAction("Add");
+    QAction* pRemoveAction = menu.addAction("Remove");
+    QAction* pAction = menu.exec(m_pTableView->viewport()->mapToGlobal(pos));
+    if (pAction == pAddAction) {
+        m_pModel->appendRow(kDefaultPaletteColor);
+    } else if (pAction == pRemoveAction) {
+        QModelIndexList selection = m_pTableView->selectionModel()->selectedRows();
+
+        if (selection.count() > 0) {
+            QModelIndex index = selection.at(0);
+
+            //row selected
+            int row = index.row();
+            m_pModel->removeRow(row);
+        }
+    }
+}
+
+void ColorPaletteEditor::slotPaletteNameChanged(const QString& text) {
+    bool bPaletteIsReadOnly = false;
+    bool bPaletteExists = false;
+    foreach (const ColorPalette& palette, mixxx::PredefinedColorPalettes::kPalettes) {
+        if (text == palette.getName()) {
+            bPaletteExists = true;
+            bPaletteIsReadOnly = true;
+            break;
+        }
+    }
+
+    ColorPaletteSettings colorPaletteSettings(m_pConfig);
+    if (!bPaletteIsReadOnly) {
+        bPaletteExists = colorPaletteSettings.getColorPaletteNames().contains(text);
+    }
+
+    if (bPaletteExists) {
+        if (!m_pModel->isDirty()) {
+            bool bPaletteFound = false;
+            foreach (const ColorPalette& palette, mixxx::PredefinedColorPalettes::kPalettes) {
+                if (text == palette.getName()) {
+                    bPaletteFound = true;
+                    m_pModel->setColorPalette(palette);
+                    break;
+                }
+            }
+            if (!bPaletteFound) {
+                m_pModel->setColorPalette(colorPaletteSettings.getColorPalette(text, mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette));
+            }
+        }
+    }
+
+    m_bPaletteExists = bPaletteExists;
+    m_bPaletteIsReadOnly = bPaletteIsReadOnly;
+    slotUpdateButtons();
+}
+
+void ColorPaletteEditor::slotDiscardButtonClicked() {
+    QString paletteName = m_pPaletteNameComboBox->currentText();
+    ColorPaletteSettings colorPaletteSettings(m_pConfig);
+    colorPaletteSettings.removePalette(paletteName);
+    reset();
+    emit paletteRemoved(paletteName);
+}
+
+void ColorPaletteEditor::slotSaveButtonClicked() {
+    QString paletteName = m_pPaletteNameComboBox->currentText();
+    ColorPaletteSettings colorPaletteSettings(m_pConfig);
+    colorPaletteSettings.setColorPalette(paletteName, m_pModel->getColorPalette(paletteName));
+    m_pModel->setDirty(false);
+    reset();
+    m_pPaletteNameComboBox->setCurrentText(paletteName);
+    emit paletteChanged(paletteName);
+}
+
+void ColorPaletteEditor::slotResetButtonClicked() {
+    QString paletteName = m_pPaletteNameComboBox->currentText();
+    ColorPaletteSettings colorPaletteSettings(m_pConfig);
+    bool bPaletteExists = colorPaletteSettings.getColorPaletteNames().contains(paletteName);
+    if (!bPaletteExists) {
+        foreach (const ColorPalette& palette, mixxx::PredefinedColorPalettes::kPalettes) {
+            if (paletteName == palette.getName()) {
+                bPaletteExists = true;
+                break;
+            }
+        }
+    }
+    m_pModel->setDirty(false);
+    reset();
+    if (bPaletteExists) {
+        m_pPaletteNameComboBox->setCurrentText(paletteName);
+    }
 }

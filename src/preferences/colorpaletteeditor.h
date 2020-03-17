@@ -25,6 +25,12 @@ class ColorPaletteEditor : public QWidget {
 
   private slots:
     void slotUpdateButtons();
+    void slotTableViewDoubleClicked(const QModelIndex& index);
+    void slotTableViewContextMenuRequested(const QPoint& pos);
+    void slotPaletteNameChanged(const QString& text);
+    void slotDiscardButtonClicked();
+    void slotSaveButtonClicked();
+    void slotResetButtonClicked();
 
   private:
     bool m_bPaletteExists;
