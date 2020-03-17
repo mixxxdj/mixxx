@@ -121,9 +121,9 @@
                 </options>
             </control>
             <control>
-                <description>PLAY/PAUSE +SHIFT (DECK1) - press - Play/Pause</description>
+                <description>PLAY/PAUSE +SHIFT (DECK1) - press - Reverse playback in Slip Mode while held (Censor)</description>
                 <group>[Channel1]</group>
-                <key>play</key>
+                <key>reverseroll</key>
                 <status>0x90</status>
                 <midino>0x47</midino>
                 <options>
@@ -141,9 +141,9 @@
                 </options>
             </control>
             <control>
-                <description>PLAY/PAUSE +SHIFT (DECK2) - press - Play/Pause</description>
+                <description>PLAY/PAUSE +SHIFT (DECK2) - press - Reverse playback in Slip Mode while held (Censor)</description>
                 <group>[Channel2]</group>
-                <key>play</key>
+                <key>reverseroll</key>
                 <status>0x91</status>
                 <midino>0x47</midino>
                 <options>
@@ -4167,7 +4167,7 @@
             </output>
 
             <!-- SAMPLER Mode Pads (while SHIFT is NOT pressed)-->
-			<!-- Deck 1 pads -->
+            <!-- Deck 1 pads -->
             <output>
                 <group>[Sampler1]</group>
                 <key>track_loaded</key>
@@ -4233,7 +4233,7 @@
                 <minimum>0.5</minimum>
             </output>
             <!-- SAMPLER Mode Pads (while SHIFT is NOT pressed)-->
-			<!-- Deck 2 pads -->
+            <!-- Deck 2 pads -->
             <output>
                 <group>[Sampler9]</group>
                 <key>track_loaded</key>
@@ -4298,10 +4298,10 @@
                 <on>0x7F</on>
                 <minimum>0.5</minimum>
             </output>
-			
+            
             <!-- SAMPLER Mode Pads (while SHIFT IS pressed)-->
-			<!-- Deck 1 pads -->
-			
+            <!-- Deck 1 pads -->
+            
             <output>
                 <group>[Sampler1]</group>
                 <key>track_loaded</key>
@@ -4366,10 +4366,10 @@
                 <on>0x7F</on>
                 <minimum>0.5</minimum>
             </output>
-			
+            
             <!-- SAMPLER Mode Pads (while SHIFT IS pressed)-->
-			<!-- Deck 2 pads -->
-			
+            <!-- Deck 2 pads -->
+            
             <output>
                 <group>[Sampler9]</group>
                 <key>track_loaded</key>
