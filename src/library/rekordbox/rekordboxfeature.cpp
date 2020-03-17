@@ -71,7 +71,6 @@ constexpr mixxx::RgbColor kTrackColorPurple(0x9808F8);
 struct memory_cue_t {
     double position;
     QString comment;
-    int colorCode;
     int colorRed;
     int colorGreen;
     int colorBlue;
@@ -793,7 +792,7 @@ void clearDeviceTables(QSqlDatabase& database, TreeItem* child) {
     transaction.commit();
 }
 
-void setHotCue(TrackPointer track, double position, int id, QString label, int colorCode, int colorRed, int colorGreen, int colorBlue) {
+void setHotCue(TrackPointer track, double position, int id, QString label, int colorRed, int colorGreen, int colorBlue) {
     CuePointer pCue;
     bool hotCueFound = false;
 
@@ -884,7 +883,6 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_MEMORY_CUE: {
                         memory_cue_t memoryCue;
                         memoryCue.position = position;
-                        memoryCue.colorCode = -1;
                         memoryCue.colorRed = -1;
                         memoryCue.colorGreen = -1;
                         memoryCue.colorBlue = -1;
@@ -909,7 +907,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                     if (hotCueIndex > lastHotCueIndex) {
                         lastHotCueIndex = hotCueIndex;
                     }
-                    setHotCue(track, position, hotCueIndex, QString(), -1, -1, -1, -1);
+                    setHotCue(track, position, hotCueIndex, QString(), -1, -1, -1);
                 } break;
                 }
             }
@@ -932,7 +930,6 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                         memory_cue_t memoryCue;
                         memoryCue.position = position;
                         memoryCue.comment = toUnicode((*cueExtendedEntry)->comment());
-                        memoryCue.colorCode = static_cast<int>((*cueExtendedEntry)->color_code());
                         memoryCue.colorRed = static_cast<int>((*cueExtendedEntry)->color_red());
                         memoryCue.colorGreen = static_cast<int>((*cueExtendedEntry)->color_green());
                         memoryCue.colorBlue = static_cast<int>((*cueExtendedEntry)->color_blue());
@@ -957,7 +954,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                     if (hotCueIndex > lastHotCueIndex) {
                         lastHotCueIndex = hotCueIndex;
                     }
-                    setHotCue(track, position, hotCueIndex, toUnicode((*cueExtendedEntry)->comment()), static_cast<int>((*cueExtendedEntry)->color_code()), static_cast<int>((*cueExtendedEntry)->color_red()), static_cast<int>((*cueExtendedEntry)->color_green()), static_cast<int>((*cueExtendedEntry)->color_blue()));
+                    setHotCue(track, position, hotCueIndex, toUnicode((*cueExtendedEntry)->comment()), static_cast<int>((*cueExtendedEntry)->color_red()), static_cast<int>((*cueExtendedEntry)->color_green()), static_cast<int>((*cueExtendedEntry)->color_blue()));
                 } break;
                 }
             }
@@ -981,7 +978,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
         // Add remaining memory cues as hot cues (after actual found hotcues) as Mixxx can only have 1 cue
         for (int memoryCueIndex = 1; memoryCueIndex < memoryCues.size(); memoryCueIndex++) {
             memory_cue_t memoryCue = memoryCues[memoryCueIndex];
-            setHotCue(track, memoryCue.position, lastHotCueIndex + memoryCueIndex, memoryCue.comment, memoryCue.colorCode, memoryCue.colorRed, memoryCue.colorGreen, memoryCue.colorBlue);
+            setHotCue(track, memoryCue.position, lastHotCueIndex + memoryCueIndex, memoryCue.comment, memoryCue.colorRed, memoryCue.colorGreen, memoryCue.colorBlue);
         }
     }
 
