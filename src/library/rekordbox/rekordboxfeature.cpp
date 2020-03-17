@@ -812,7 +812,7 @@ void setHotCue(TrackPointer track, double position, int id, QString label, int c
     pCue->setStartPosition(position);
     pCue->setHotCue(id);
     pCue->setLabel(label);
-    pCue->setColor(*mixxx::RgbColor::fromQColor(QColor(colorRed, colorGreen, colorBlue)));
+    pCue->setColor(mixxx::RgbColor(qRgb(colorRed, colorGreen, colorBlue)));
 }
 
 void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool ignoreBeatsAndLegacyCues, QString anlzPath) {
