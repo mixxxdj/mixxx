@@ -1,5 +1,6 @@
 #include "widget/wcolorpicker.h"
 
+#include <QColorDialog>
 #include <QMapIterator>
 #include <QPushButton>
 #include <QStyle>
@@ -39,7 +40,8 @@ WColorPicker::WColorPicker(Options options, const ColorPalette& palette, QWidget
         : QWidget(parent),
           m_options(options),
           m_palette(palette),
-          m_pNoColorButton(nullptr) {
+          m_pNoColorButton(nullptr),
+          m_pCustomColorButton(nullptr) {
     QGridLayout* pLayout = new QGridLayout();
     pLayout->setMargin(0);
     pLayout->setContentsMargins(0, 0, 0, 0);
@@ -72,6 +74,11 @@ void WColorPicker::removeColorButtons() {
         return;
     }
 
+    if (m_pCustomColorButton) {
+        pLayout->removeWidget(m_pCustomColorButton);
+        delete m_pCustomColorButton;
+    }
+
     while (!m_colorButtons.isEmpty()) {
         QPushButton* pColorButton = m_colorButtons.takeLast();
         pLayout->removeWidget(pColorButton);
@@ -98,6 +105,9 @@ void WColorPicker::addColorButtons() {
     if (m_options.testFlag(Option::AllowNoColor)) {
         numColors++;
     }
+    if (m_options.testFlag(Option::AllowCustomColor)) {
+        numColors++;
+    }
 
     int numColumns = idealColumnCount(numColors);
     if (m_options.testFlag(Option::AllowNoColor)) {
@@ -112,6 +122,11 @@ void WColorPicker::addColorButtons() {
             column = 0;
             row++;
         }
+    }
+
+    if (m_options.testFlag(Option::AllowCustomColor)) {
+        addCustomColorButton(pLayout, row, column);
+        column++;
     }
 }
 
@@ -155,6 +170,31 @@ void WColorPicker::addNoColorButton(QGridLayout* pLayout, int row, int column) {
                     emit colorPicked(std::nullopt);
                 });
         m_pNoColorButton = pButton;
+    }
+    pLayout->addWidget(pButton, row, column);
+}
+
+void WColorPicker::addCustomColorButton(QGridLayout* pLayout, int row, int column) {
+    QPushButton* pButton = m_pCustomColorButton;
+    if (!pButton) {
+        pButton = make_parented<QPushButton>("", this);
+        if (m_pStyle) {
+            pButton->setStyle(m_pStyle);
+        }
+
+        pButton->setProperty("customColor", true);
+        pButton->setToolTip(tr("Custom color"));
+        pButton->setCheckable(true);
+        connect(pButton,
+                &QPushButton::clicked,
+                this,
+                [this]() {
+                    QColor color = QColorDialog::getColor();
+                    if (color.isValid()) {
+                        emit colorPicked(mixxx::RgbColor::fromQColor(color));
+                    }
+                });
+        m_pCustomColorButton = pButton;
     }
     pLayout->addWidget(pButton, row, column);
 }

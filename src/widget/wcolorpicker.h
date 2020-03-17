@@ -15,6 +15,7 @@ class WColorPicker : public QWidget {
     enum class Option {
         NoOptions = 0,
         AllowNoColor = 1,
+        AllowCustomColor = 1 << 1,
     };
     Q_DECLARE_FLAGS(Options, Option);
 
@@ -36,10 +37,12 @@ class WColorPicker : public QWidget {
     void removeColorButtons();
     void addColorButton(mixxx::RgbColor color, QGridLayout* pLayout, int row, int column);
     void addNoColorButton(QGridLayout* pLayout, int row, int column);
+    void addCustomColorButton(QGridLayout* pLayout, int row, int column);
     Options m_options;
     mixxx::RgbColor::optional_t m_selectedColor;
     ColorPalette m_palette;
     QPushButton* m_pNoColorButton;
+    QPushButton* m_pCustomColorButton;
     QList<QPushButton*> m_colorButtons;
     QStyle* m_pStyle;
 };
