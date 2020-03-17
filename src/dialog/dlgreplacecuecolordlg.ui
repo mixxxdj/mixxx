@@ -45,6 +45,9 @@
         <property name="text">
          <string>Current Cue Color</string>
         </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
       <item row="1" column="2">
