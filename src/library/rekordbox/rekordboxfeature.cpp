@@ -793,7 +793,7 @@ void clearDeviceTables(QSqlDatabase& database, TreeItem* child) {
     transaction.commit();
 }
 
-void setHotCue(TrackPointer track, double position, int id, QString label, int /*colorCode*/, int /*colorRed*/, int /*colorGreen*/, int /*colorBlue*/) {
+void setHotCue(TrackPointer track, double position, int id, QString label, int colorCode, int colorRed, int colorGreen, int colorBlue) {
     CuePointer pCue;
     bool hotCueFound = false;
 
@@ -813,53 +813,7 @@ void setHotCue(TrackPointer track, double position, int id, QString label, int /
     pCue->setStartPosition(position);
     pCue->setHotCue(id);
     pCue->setLabel(label);
-
-    /*
-    TODO(ehendrikd):
-    Update setting hotcue colors once proposed PR is merged
-    allowing custom hotcue colors/palette
-    See:
-       https://github.com/mixxxdj/mixxx/pull/2119
-       https://github.com/mixxxdj/mixxx/pull/2345
-
-    // Map 17 possible Rekordbox hotcue colors to closest Mixxx hotcue colors
-    switch (colorCode) {
-    case 38:
-    case 42:
-        pCue->setColor(Color::kPredefinedColorsSet.red);
-        break;
-    case 0:
-    case 14:
-    case 18:
-    case 22:
-    case 26:
-        pCue->setColor(Color::kPredefinedColorsSet.green);
-        break;
-    case 30:
-    case 32:
-        pCue->setColor(Color::kPredefinedColorsSet.yellow);
-        break;
-    case 1:
-    case 5:
-    case 62:
-        pCue->setColor(Color::kPredefinedColorsSet.blue);
-        break;
-    case 9:
-        pCue->setColor(Color::kPredefinedColorsSet.cyan);
-        break;
-    case 56:
-    case 60:
-        pCue->setColor(Color::kPredefinedColorsSet.magenta);
-        break;
-    case 45:
-    case 49:
-        pCue->setColor(Color::kPredefinedColorsSet.pink);
-        break;
-    default:
-        pCue->setColor(Color::kPredefinedColorsSet.noColor);
-        break;
-    }
-*/
+    pCue->setColor(*mixxx::RgbColor::fromQColor(QColor(colorRed, colorGreen, colorBlue)));
 }
 
 void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool ignoreBeatsAndLegacyCues, QString anlzPath) {
