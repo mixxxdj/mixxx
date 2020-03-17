@@ -188,7 +188,7 @@ QMap<int, int> DlgReplaceCueColor::selectCues(
         return {};
     }
 
-    //Give thread a low priority
+    // Give thread a low priority
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
 
