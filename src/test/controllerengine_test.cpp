@@ -1,13 +1,14 @@
-#include <QtDebug>
 #include <QThread>
+#include <QtDebug>
 
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
-#include "preferences/usersettings.h"
-#include "controllers/controllerengine.h"
 #include "controllers/controllerdebug.h"
+#include "controllers/controllerengine.h"
 #include "controllers/softtakeover.h"
+#include "preferences/usersettings.h"
 #include "test/mixxxtest.h"
+#include "util/color/colorpalette.h"
 #include "util/memory.h"
 #include "util/time.h"
 
@@ -17,7 +18,7 @@ class ControllerEngineTest : public MixxxTest {
         mixxx::Time::setTestMode(true);
         mixxx::Time::setTestElapsedTime(mixxx::Duration::fromMillis(10));
         QThread::currentThread()->setObjectName("Main");
-        cEngine = new ControllerEngine(nullptr);
+        cEngine = new ControllerEngine(nullptr, config());
         pScriptEngine = cEngine->m_pEngine;
         ControllerDebug::enable();
         cEngine->setPopups(false);
@@ -616,26 +617,4 @@ TEST_F(ControllerEngineTest, connectionExecutesWithCorrectThisObject) {
     application()->processEvents();
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
-}
-
-TEST_F(ControllerEngineTest, colorProxy) {
-    QList<PredefinedColorPointer> allColors = Color::kPredefinedColorsSet.allColors;
-    for (int i = 0; i < allColors.length(); ++i) {
-        PredefinedColorPointer color = allColors[i];
-        qDebug() << "Testing color " << color->m_sName;
-        QScriptValue jsColor = pScriptEngine->evaluate("color.predefinedColorFromId(" + QString::number(color->m_iId) + ")");
-        EXPECT_EQ(jsColor.property("red").toInt32(), color->m_defaultRgba.red());
-        EXPECT_EQ(jsColor.property("green").toInt32(), color->m_defaultRgba.green());
-        EXPECT_EQ(jsColor.property("blue").toInt32(), color->m_defaultRgba.blue());
-        EXPECT_EQ(jsColor.property("alpha").toInt32(), color->m_defaultRgba.alpha());
-        EXPECT_EQ(jsColor.property("id").toInt32(), color->m_iId);
-
-        QScriptValue jsColor2 = pScriptEngine->evaluate("color.predefinedColorsList()["
-                                                        + QString::number(i) + "]");
-        EXPECT_EQ(jsColor2.property("red").toInt32(), color->m_defaultRgba.red());
-        EXPECT_EQ(jsColor2.property("green").toInt32(), color->m_defaultRgba.green());
-        EXPECT_EQ(jsColor2.property("blue").toInt32(), color->m_defaultRgba.blue());
-        EXPECT_EQ(jsColor2.property("alpha").toInt32(), color->m_defaultRgba.alpha());
-        EXPECT_EQ(jsColor2.property("id").toInt32(), color->m_iId);
-    }
 }
