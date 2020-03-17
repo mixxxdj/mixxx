@@ -57,6 +57,11 @@ WColorPicker::WColorPicker(Options options, const ColorPalette& palette, QWidget
     m_pStyle = QStyleFactory::create(QString("fusion"));
     setLayout(pLayout);
     addColorButtons();
+
+    connect(this,
+            &WColorPicker::colorPicked,
+            this,
+            &WColorPicker::slotColorPicked);
 }
 
 void WColorPicker::removeColorButtons() {
@@ -124,10 +129,6 @@ void WColorPicker::addColorButton(mixxx::RgbColor::optional_t color, QGridLayout
 
     pLayout->addWidget(pColorButton, row, column);
 
-    connect(this,
-            &WColorPicker::colorPicked,
-            this,
-            &WColorPicker::slotColorPicked);
     connect(pColorButton,
             &QPushButton::clicked,
             this,
