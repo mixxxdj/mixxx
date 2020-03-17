@@ -14,16 +14,6 @@
 
 namespace {
 
-enum class ReplaceColorConditionFlag {
-    NoConditions = 0,
-    CurrentColorCheck = 1,
-    CurrentColorNotEqual = 1 << 1,
-    HotcueIndexCheck = 1 << 2,
-    HotcueIndexNotEqual = 1 << 3,
-};
-Q_DECLARE_FLAGS(ReplaceColorConditions, ReplaceColorConditionFlag);
-Q_DECLARE_OPERATORS_FOR_FLAGS(ReplaceColorConditions);
-
 constexpr int kColorButtonLightnessThreshold = 0x80;
 const QString kColorButtonStyleSheetLight = QStringLiteral(
         "QPushButton { background-color: %1; }");
@@ -37,69 +27,6 @@ void setButtonColor(QPushButton* button, const QColor& color) {
                     ? kColorButtonStyleSheetLight
                     : kColorButtonStyleSheetDark)
                                   .arg(color.name()));
-}
-
-int updateCueColors(
-        mixxx::DbConnectionPoolPtr dbConnectionPool,
-        mixxx::RgbColor::optional_t newColor,
-        mixxx::RgbColor::optional_t currentColor,
-        int hotcueIndex,
-        ReplaceColorConditions conditions) {
-    // The pooler limits the lifetime all thread-local connections,
-    // that should be closed immediately before exiting this function.
-    const mixxx::DbConnectionPooler dbConnectionPooler(dbConnectionPool);
-    QSqlDatabase database = mixxx::DbConnectionPooled(dbConnectionPool);
-
-    //Open the database connection in this thread.
-    VERIFY_OR_DEBUG_ASSERT(database.isOpen()) {
-        qWarning() << "Failed to open database for Serato parser."
-                   << database.lastError();
-        return -1;
-    }
-
-    //Give thread a low priority
-    QThread* thisThread = QThread::currentThread();
-    thisThread->setPriority(QThread::LowPriority);
-
-    // Build query string
-    QMap<QString, QVariant> queryValues;
-    QStringList queryStringConditions;
-    if (conditions.testFlag(ReplaceColorConditionFlag::CurrentColorCheck)) {
-        queryStringConditions << QString(
-                QStringLiteral("color") +
-                (conditions.testFlag(ReplaceColorConditionFlag::CurrentColorNotEqual) ? QStringLiteral("!=") : QStringLiteral("=")) +
-                QStringLiteral(":current_color"));
-        queryValues.insert(QStringLiteral(":current_color"), mixxx::RgbColor::toQVariant(currentColor));
-    }
-    if (conditions.testFlag(ReplaceColorConditionFlag::HotcueIndexCheck)) {
-        queryStringConditions << QString(
-                QStringLiteral("hotcue") +
-                (conditions.testFlag(ReplaceColorConditionFlag::HotcueIndexNotEqual) ? QStringLiteral("!=") : QStringLiteral("=")) +
-                QStringLiteral(":hotcue"));
-        queryValues.insert(QStringLiteral(":hotcue"), QVariant(hotcueIndex));
-    }
-
-    QString queryString = QStringLiteral("UPDATE " CUE_TABLE " SET color=:new_color");
-    if (!queryStringConditions.isEmpty()) {
-        queryString += QStringLiteral(" WHERE ") + queryStringConditions.join(QStringLiteral(" AND "));
-    }
-
-    // Execute query
-    ScopedTransaction transaction(database);
-    QSqlQuery query(database);
-    query.prepare(queryString);
-    query.bindValue(QStringLiteral(":new_color"), mixxx::RgbColor::toQVariant(newColor));
-    for (auto i = queryValues.constBegin(); i != queryValues.constEnd(); i++) {
-        query.bindValue(i.key(), i.value());
-    }
-
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        return -1;
-    }
-    transaction.commit();
-
-    return query.numRowsAffected();
 }
 
 } // namespace
@@ -192,19 +119,19 @@ DlgReplaceCueColor::~DlgReplaceCueColor() {
 }
 
 void DlgReplaceCueColor::slotApply() {
-    ReplaceColorConditions conditions = ReplaceColorConditionFlag::NoConditions;
+    Conditions conditions = ConditionFlag::NoConditions;
     if (checkBoxCurrentColorCondition->isChecked()) {
-        conditions |= ReplaceColorConditionFlag::CurrentColorCheck;
+        conditions |= ConditionFlag::CurrentColorCheck;
     }
     if (comboBoxCurrentColorCompare->currentText() == "is not") {
-        conditions |= ReplaceColorConditionFlag::CurrentColorNotEqual;
+        conditions |= ConditionFlag::CurrentColorNotEqual;
     }
 
     if (checkBoxHotcueIndexCondition->isChecked()) {
-        conditions |= ReplaceColorConditionFlag::HotcueIndexCheck;
+        conditions |= ConditionFlag::HotcueIndexCheck;
     }
     if (comboBoxHotcueIndexCompare->currentText() == "is not") {
-        conditions |= ReplaceColorConditionFlag::HotcueIndexNotEqual;
+        conditions |= ConditionFlag::HotcueIndexNotEqual;
     }
 
     mixxx::RgbColor::optional_t newColor = mixxx::RgbColor::fromQString(pushButtonNewColor->text());
@@ -212,8 +139,8 @@ void DlgReplaceCueColor::slotApply() {
     int hotcueIndex = spinBoxHotcueIndex->value() - 1;
 
     m_dbFuture = QtConcurrent::run(
-            updateCueColors,
-            m_pDbConnectionPool,
+            this,
+            &DlgReplaceCueColor::updateCueColors,
             newColor,
             currentColor,
             hotcueIndex,
@@ -230,4 +157,66 @@ void DlgReplaceCueColor::slotTransactionFinished() {
     } else {
         QMessageBox::information(this, tr("Colors Replaced!"), tr("Done! %1 rows were affected.").arg(numAffectedRows));
     }
+}
+
+int DlgReplaceCueColor::updateCueColors(
+        mixxx::RgbColor::optional_t newColor,
+        mixxx::RgbColor::optional_t currentColor,
+        int hotcueIndex,
+        Conditions conditions) {
+    // The pooler limits the lifetime all thread-local connections,
+    // that should be closed immediately before exiting this function.
+    const mixxx::DbConnectionPooler dbConnectionPooler(m_pDbConnectionPool);
+    QSqlDatabase database = mixxx::DbConnectionPooled(m_pDbConnectionPool);
+
+    //Open the database connection in this thread.
+    VERIFY_OR_DEBUG_ASSERT(database.isOpen()) {
+        qWarning() << "Failed to open database for Serato parser."
+                   << database.lastError();
+        return -1;
+    }
+
+    //Give thread a low priority
+    QThread* thisThread = QThread::currentThread();
+    thisThread->setPriority(QThread::LowPriority);
+
+    // Build query string
+    QMap<QString, QVariant> queryValues;
+    QStringList queryStringConditions;
+    if (conditions.testFlag(ConditionFlag::CurrentColorCheck)) {
+        queryStringConditions << QString(
+                QStringLiteral("color") +
+                (conditions.testFlag(ConditionFlag::CurrentColorNotEqual) ? QStringLiteral("!=") : QStringLiteral("=")) +
+                QStringLiteral(":current_color"));
+        queryValues.insert(QStringLiteral(":current_color"), mixxx::RgbColor::toQVariant(currentColor));
+    }
+    if (conditions.testFlag(ConditionFlag::HotcueIndexCheck)) {
+        queryStringConditions << QString(
+                QStringLiteral("hotcue") +
+                (conditions.testFlag(ConditionFlag::HotcueIndexNotEqual) ? QStringLiteral("!=") : QStringLiteral("=")) +
+                QStringLiteral(":hotcue"));
+        queryValues.insert(QStringLiteral(":hotcue"), QVariant(hotcueIndex));
+    }
+
+    QString queryString = QStringLiteral("UPDATE " CUE_TABLE " SET color=:new_color");
+    if (!queryStringConditions.isEmpty()) {
+        queryString += QStringLiteral(" WHERE ") + queryStringConditions.join(QStringLiteral(" AND "));
+    }
+
+    // Execute query
+    ScopedTransaction transaction(database);
+    QSqlQuery query(database);
+    query.prepare(queryString);
+    query.bindValue(QStringLiteral(":new_color"), mixxx::RgbColor::toQVariant(newColor));
+    for (auto i = queryValues.constBegin(); i != queryValues.constEnd(); i++) {
+        query.bindValue(i.key(), i.value());
+    }
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return -1;
+    }
+    transaction.commit();
+
+    return query.numRowsAffected();
 }
