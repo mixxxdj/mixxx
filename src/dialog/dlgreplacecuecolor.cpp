@@ -176,8 +176,8 @@ QMap<int, int> DlgReplaceCueColor::selectCues(
         mixxx::RgbColor::optional_t currentColor,
         int hotcueIndex,
         Conditions conditions) {
-    // The pooler limits the lifetime all thread-local connections,
-    // that should be closed immediately before exiting this function.
+    // The pooler limits the lifetime of all thread-local connections. It will
+    // be closed by its destructor when it goes out of scope
     const mixxx::DbConnectionPooler dbConnectionPooler(m_pDbConnectionPool);
     QSqlDatabase database = mixxx::DbConnectionPooled(m_pDbConnectionPool);
 
@@ -276,8 +276,8 @@ void DlgReplaceCueColor::slotDatabaseIdsSelected() {
 }
 
 void DlgReplaceCueColor::updateCues(QSet<int> cueIds, QSet<TrackId> trackIds, mixxx::RgbColor newColor) {
-    // The pooler limits the lifetime all thread-local connections,
-    // that should be closed immediately before exiting this function.
+    // The pooler limits the lifetime of all thread-local connections. It will
+    // be closed by its destructor when it goes out of scope
     const mixxx::DbConnectionPooler dbConnectionPooler(m_pDbConnectionPool);
     QSqlDatabase database = mixxx::DbConnectionPooled(m_pDbConnectionPool);
 
