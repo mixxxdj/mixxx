@@ -36,6 +36,7 @@ class ControlPushButton;
 class ControllerManager;
 class DlgDeveloperTools;
 class DlgPreferences;
+class DlgReplaceCueColor;
 class EffectsManager;
 class EngineMaster;
 class GuiTick;
@@ -193,7 +194,7 @@ class MixxxMainWindow : public QMainWindow {
     DlgPreferences* m_pPrefDlg;
 
     // Pointer to color replace dialog
-    QDialog* m_pReplaceCueColorDlg;
+    DlgReplaceCueColor* m_pReplaceCueColorDlg;
 
     ConfigObject<ConfigValueKbd>* m_pKbdConfig;
     ConfigObject<ConfigValueKbd>* m_pKbdConfigEmpty;

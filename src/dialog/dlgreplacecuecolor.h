@@ -33,7 +33,6 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
 
     DlgReplaceCueColor(
             UserSettingsPointer pConfig,
-            TrackDAO* pTrackDAO,
             mixxx::DbConnectionPoolPtr dbConnectionPool,
             QWidget* pParent);
     ~DlgReplaceCueColor();
@@ -55,7 +54,6 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
     void updateCues(QSet<int> cueIds, QSet<TrackId> trackIds, mixxx::RgbColor newColor);
 
     const UserSettingsPointer m_pConfig;
-    const TrackDAO* m_pTrackDAO;
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
     QMenu* m_pNewColorMenu;
     QMenu* m_pCurrentColorMenu;

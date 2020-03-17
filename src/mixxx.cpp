@@ -472,10 +472,13 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     m_pReplaceCueColorDlg = new DlgReplaceCueColor(
             pConfig,
-            &(m_pTrackCollectionManager->internalCollection()->getTrackDAO()),
             m_pLibrary->dbConnectionPool(),
             this);
     m_pReplaceCueColorDlg->setHidden(true);
+    connect(m_pReplaceCueColorDlg,
+            &DlgReplaceCueColor::databaseTracksChanged,
+            &(m_pTrackCollectionManager->internalCollection()->getTrackDAO()),
+            &TrackDAO::databaseTracksChanged);
 
     launchProgress(60);
 
