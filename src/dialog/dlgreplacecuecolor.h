@@ -3,12 +3,15 @@
 #include <QDialog>
 #include <QFuture>
 #include <QFutureWatcher>
+#include <QMap>
 #include <QMenu>
 #include <QProgressDialog>
 #include <QPushButton>
+#include <QSet>
 
 #include "dialog/ui_dlgreplacecuecolordlg.h"
 #include "preferences/usersettings.h"
+#include "track/trackid.h"
 #include "util/color/rgbcolor.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
@@ -34,14 +37,16 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
 
   private slots:
     void slotApply();
-    void slotTransactionFinished();
+    void slotDatabaseIdsSelected();
+    void slotDatabaseUpdated();
 
   private:
-    int updateCueColors(
-            mixxx::RgbColor::optional_t newColor,
+    void setApplyButtonEnabled(bool enabled);
+    QMap<int, int> selectCues(
             mixxx::RgbColor::optional_t currentColor,
             int hotcueIndex,
             Conditions conditions);
+    void updateCues(QSet<int> cueIds, QSet<TrackId> trackIds, mixxx::RgbColor newColor);
 
     const UserSettingsPointer m_pConfig;
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
@@ -49,7 +54,9 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
     QMenu* m_pCurrentColorMenu;
     WColorPickerAction* m_pNewColorPickerAction;
     WColorPickerAction* m_pCurrentColorPickerAction;
-    QFutureWatcher<int> m_dbFutureWatcher;
-    QFuture<int> m_dbFuture;
+    QFutureWatcher<QMap<int, int>> m_dbSelectFutureWatcher;
+    QFuture<QMap<int, int>> m_dbSelectFuture;
+    QFutureWatcher<void> m_dbUpdateFutureWatcher;
+    QFuture<void> m_dbUpdateFuture;
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(DlgReplaceCueColor::Conditions);
