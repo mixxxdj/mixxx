@@ -46,12 +46,15 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
     void slotDatabaseUpdated();
 
   private:
+    typedef struct {
+        int id;
+        TrackId trackId;
+        mixxx::RgbColor color;
+    } CueDatabaseRow;
+
     void setApplyButtonEnabled(bool enabled);
-    QMap<int, int> selectCues(
-            mixxx::RgbColor::optional_t currentColor,
-            int hotcueIndex,
-            Conditions conditions);
-    void updateCues(QSet<int> cueIds, QSet<TrackId> trackIds, mixxx::RgbColor newColor);
+    QList<CueDatabaseRow> selectCues(mixxx::RgbColor::optional_t currentColor, int hotcueIndex, Conditions conditions);
+    void updateCues(QList<CueDatabaseRow> rows, mixxx::RgbColor newColor);
 
     const UserSettingsPointer m_pConfig;
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
@@ -59,8 +62,8 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
     QMenu* m_pCurrentColorMenu;
     WColorPickerAction* m_pNewColorPickerAction;
     WColorPickerAction* m_pCurrentColorPickerAction;
-    QFutureWatcher<QMap<int, int>> m_dbSelectFutureWatcher;
-    QFuture<QMap<int, int>> m_dbSelectFuture;
+    QFutureWatcher<QList<CueDatabaseRow>> m_dbSelectFutureWatcher;
+    QFuture<QList<CueDatabaseRow>> m_dbSelectFuture;
     QFutureWatcher<void> m_dbUpdateFutureWatcher;
     QFuture<void> m_dbUpdateFuture;
 };

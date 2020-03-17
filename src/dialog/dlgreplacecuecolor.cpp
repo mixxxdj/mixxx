@@ -165,7 +165,7 @@ void DlgReplaceCueColor::setApplyButtonEnabled(bool enabled) {
     }
 }
 
-QMap<int, int> DlgReplaceCueColor::selectCues(
+QList<DlgReplaceCueColor::CueDatabaseRow> DlgReplaceCueColor::selectCues(
         mixxx::RgbColor::optional_t currentColor,
         int hotcueIndex,
         Conditions conditions) {
@@ -203,7 +203,7 @@ QMap<int, int> DlgReplaceCueColor::selectCues(
         queryValues.insert(QStringLiteral(":hotcue"), QVariant(hotcueIndex));
     }
 
-    QString queryString = QStringLiteral("SELECT id, track_id FROM " CUE_TABLE);
+    QString queryString = QStringLiteral("SELECT id, track_id, color FROM " CUE_TABLE);
     if (!queryStringConditions.isEmpty()) {
         queryString += QStringLiteral(" WHERE ") + queryStringConditions.join(QStringLiteral(" AND "));
     }
@@ -219,36 +219,45 @@ QMap<int, int> DlgReplaceCueColor::selectCues(
         LOG_FAILED_QUERY(query);
         return {};
     }
-    QMap<int, int> ids;
     int idColumn = query.record().indexOf("id");
     int trackIdColumn = query.record().indexOf("track_id");
+    int colorColumn = query.record().indexOf("color");
+
+    QList<CueDatabaseRow> rows;
     while (query.next()) {
-        ids.insert(query.value(idColumn).toInt(), query.value(trackIdColumn).toInt());
+        mixxx::RgbColor::optional_t color = mixxx::RgbColor::fromQVariant(query.value(colorColumn));
+        VERIFY_OR_DEBUG_ASSERT(color) {
+            continue;
+        }
+        CueDatabaseRow row = {
+                .id = query.value(idColumn).toInt(),
+                .trackId = TrackId(query.value(trackIdColumn).toInt()),
+                .color = *color,
+        };
+        rows << row;
     }
 
-    return ids;
+    return rows;
 }
 
 void DlgReplaceCueColor::slotDatabaseIdsSelected() {
-    QMap<int, int> ids = m_dbSelectFuture.result();
+    QList<CueDatabaseRow> rows = m_dbSelectFuture.result();
 
-    if (ids.size() == 0) {
+    if (rows.size() == 0) {
         QMessageBox::warning(this, tr("No colors changed!"), tr("No cues matched the specified criteria."));
         setApplyButtonEnabled(true);
         return;
     }
 
-    QSet<int> cueIds;
     QSet<TrackId> trackIds;
-    for (auto i = ids.constBegin(); i != ids.constEnd(); i++) {
-        cueIds << i.key();
-        trackIds << TrackId(i.value());
+    for (const auto& row : rows) {
+        trackIds << row.trackId;
     }
 
     if (QMessageBox::question(
                 this,
                 tr("Really replace colors?"),
-                tr("Really replace the colors of %1 cues in %2 tracks? This change cannot be undone!").arg(QString::number(cueIds.size()), QString::number(trackIds.size()))) == QMessageBox::No) {
+                tr("Really replace the colors of %1 cues in %2 tracks? This change cannot be undone!").arg(QString::number(rows.size()), QString::number(trackIds.size()))) == QMessageBox::No) {
         setApplyButtonEnabled(true);
         return;
     }
@@ -262,13 +271,12 @@ void DlgReplaceCueColor::slotDatabaseIdsSelected() {
     m_dbUpdateFuture = QtConcurrent::run(
             this,
             &DlgReplaceCueColor::updateCues,
-            cueIds,
-            trackIds,
+            rows,
             *newColor);
     m_dbUpdateFutureWatcher.setFuture(m_dbUpdateFuture);
 }
 
-void DlgReplaceCueColor::updateCues(QSet<int> cueIds, QSet<TrackId> trackIds, mixxx::RgbColor newColor) {
+void DlgReplaceCueColor::updateCues(QList<CueDatabaseRow> rows, mixxx::RgbColor newColor) {
     // The pooler limits the lifetime of all thread-local connections. It will
     // be closed by its destructor when it goes out of scope
     const mixxx::DbConnectionPooler dbConnectionPooler(m_pDbConnectionPool);
@@ -287,16 +295,23 @@ void DlgReplaceCueColor::updateCues(QSet<int> cueIds, QSet<TrackId> trackIds, mi
 
     ScopedTransaction transaction(database);
     QSqlQuery query(database);
-    query.prepare("UPDATE " CUE_TABLE " SET color=:color WHERE id=:id");
-    query.bindValue(":color", mixxx::RgbColor::toQVariant(newColor));
+    query.prepare("UPDATE " CUE_TABLE " SET color=:new_color WHERE id=:id AND track_id=:track_id AND color=:current_color");
+    query.bindValue(":new_color", mixxx::RgbColor::toQVariant(newColor));
 
     bool queryFailed = false;
-    for (const auto& id : cueIds) {
-        query.bindValue(":id", id);
+    QSet<TrackId> trackIds;
+    for (const auto& row : rows) {
+        query.bindValue(":id", row.id);
+        query.bindValue(":track_id", row.trackId.value());
+        query.bindValue(":current_color", mixxx::RgbColor::toQVariant(row.color));
         if (!query.exec()) {
             LOG_FAILED_QUERY(query);
             queryFailed = true;
             break;
+        }
+
+        if (query.numRowsAffected() > 0) {
+            trackIds << row.trackId;
         }
     }
 
