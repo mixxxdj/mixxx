@@ -87,12 +87,12 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
 
 void ColorPaletteEditor::reset() {
     m_pPaletteNameComboBox->clear();
-    foreach (const ColorPalette& palette, mixxx::PredefinedColorPalettes::kPalettes) {
+    for (const ColorPalette& palette : mixxx::PredefinedColorPalettes::kPalettes) {
         m_pPaletteNameComboBox->addItem(palette.getName());
     }
     m_pPaletteNameComboBox->insertSeparator(mixxx::PredefinedColorPalettes::kPalettes.size());
     ColorPaletteSettings colorPaletteSettings(m_pConfig);
-    foreach (const QString& paletteName, colorPaletteSettings.getColorPaletteNames()) {
+    for (const QString& paletteName : colorPaletteSettings.getColorPaletteNames()) {
         m_pPaletteNameComboBox->addItem(paletteName);
     }
 }
@@ -138,7 +138,7 @@ void ColorPaletteEditor::slotTableViewContextMenuRequested(const QPoint& pos) {
 void ColorPaletteEditor::slotPaletteNameChanged(const QString& text) {
     bool bPaletteIsReadOnly = false;
     bool bPaletteExists = false;
-    foreach (const ColorPalette& palette, mixxx::PredefinedColorPalettes::kPalettes) {
+    for (const ColorPalette& palette : mixxx::PredefinedColorPalettes::kPalettes) {
         if (text == palette.getName()) {
             bPaletteExists = true;
             bPaletteIsReadOnly = true;
@@ -154,7 +154,7 @@ void ColorPaletteEditor::slotPaletteNameChanged(const QString& text) {
     if (bPaletteExists) {
         if (!m_pModel->isDirty()) {
             bool bPaletteFound = false;
-            foreach (const ColorPalette& palette, mixxx::PredefinedColorPalettes::kPalettes) {
+            for (const ColorPalette& palette : mixxx::PredefinedColorPalettes::kPalettes) {
                 if (text == palette.getName()) {
                     bPaletteFound = true;
                     m_pModel->setColorPalette(palette);
@@ -195,7 +195,7 @@ void ColorPaletteEditor::slotResetButtonClicked() {
     ColorPaletteSettings colorPaletteSettings(m_pConfig);
     bool bPaletteExists = colorPaletteSettings.getColorPaletteNames().contains(paletteName);
     if (!bPaletteExists) {
-        foreach (const ColorPalette& palette, mixxx::PredefinedColorPalettes::kPalettes) {
+        for (const ColorPalette& palette : mixxx::PredefinedColorPalettes::kPalettes) {
             if (paletteName == palette.getName()) {
                 bPaletteExists = true;
                 break;
