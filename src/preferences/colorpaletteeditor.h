@@ -9,6 +9,8 @@
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 
+// Widget for viewing, adding, editing and removing color palettes that can be
+// used for track/hotcue colors.
 class ColorPaletteEditor : public QWidget {
     Q_OBJECT
   public:

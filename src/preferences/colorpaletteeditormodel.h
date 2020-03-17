@@ -3,6 +3,9 @@
 
 #include "util/color/colorpalette.h"
 
+// Model that is used by the QTableView of the ColorPaletteEditor.
+// Takes of displaying palette colors and provides a getter/setter for
+// ColorPalette instances.
 class ColorPaletteEditorModel : public QStandardItemModel {
     Q_OBJECT
   public:
