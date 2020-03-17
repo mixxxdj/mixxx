@@ -142,6 +142,7 @@ QList<CueInfo> SeratoTags::getCues(const QString& filePath) const {
         existingCueInfo.setType(cueInfo.getType());
         existingCueInfo.setStartPositionMillis(cueInfo.getStartPositionMillis());
         existingCueInfo.setEndPositionMillis(cueInfo.getEndPositionMillis());
+        existingCueInfo.setColor(cueInfo.getColor());
     }
 
     return cueMap.values();
