@@ -85,7 +85,7 @@ class ControllerManager : public QObject {
     void stopPolling();
     void maybeStartOrStopPolling();
 
-    static QString presetFilenameFromName(QString name) {
+    static QString sanitizeString(QString name) {
         return name.replace(" ", "_").replace("/", "_").replace("\\", "_");
     }
 

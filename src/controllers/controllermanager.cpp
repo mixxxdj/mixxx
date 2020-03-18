@@ -218,7 +218,7 @@ void ControllerManager::slotSetUpDevices() {
         }
 
         // The filename for this device name.
-        QString presetBaseName = presetFilenameFromName(name);
+        QString presetBaseName = sanitizeString(name);
 
         // The first unique filename for this device (appends numbers at the end
         // if we have already seen a controller by this name on this run of
@@ -347,8 +347,8 @@ void ControllerManager::openController(Controller* pController) {
         pController->applyPreset(getPresetPaths(m_pConfig), true);
 
         // Update configuration to reflect controller is enabled.
-        m_pConfig->setValue(ConfigKey(
-            "[Controller]", presetFilenameFromName(pController->getName())), 1);
+        m_pConfig->setValue(
+                ConfigKey("[Controller]", sanitizeString(pController->getName())), 1);
     }
 }
 
@@ -359,8 +359,8 @@ void ControllerManager::closeController(Controller* pController) {
     pController->close();
     maybeStartOrStopPolling();
     // Update configuration to reflect controller is disabled.
-    m_pConfig->setValue(ConfigKey(
-        "[Controller]", presetFilenameFromName(pController->getName())), 0);
+    m_pConfig->setValue(
+            ConfigKey("[Controller]", sanitizeString(pController->getName())), 0);
 }
 
 bool ControllerManager::loadPreset(Controller* pController,
@@ -372,9 +372,8 @@ bool ControllerManager::loadPreset(Controller* pController,
     // Save the file path/name in the config so it can be auto-loaded at
     // startup next time
     m_pConfig->set(
-        ConfigKey("[ControllerPreset]",
-                  presetFilenameFromName(pController->getName())),
-        preset->filePath());
+            ConfigKey("[ControllerPreset]", sanitizeString(pController->getName())),
+            preset->filePath());
     return true;
 }
 
@@ -391,7 +390,7 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
         }
         QString name = pController->getName();
         QString filename = firstAvailableFilename(
-            filenames, presetFilenameFromName(name));
+                filenames, sanitizeString(name));
         QString presetPath = userPresetsPath(m_pConfig) + filename
                 + pController->presetExtension();
         if (!pController->savePreset(presetPath)) {
