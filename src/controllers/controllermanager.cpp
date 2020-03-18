@@ -218,24 +218,24 @@ void ControllerManager::slotSetUpDevices() {
         }
 
         // The filename for this device name.
-        QString presetBaseName = sanitizeString(name);
+        QString deviceName = sanitizeString(name);
 
-        // The first unique filename for this device (appends numbers at the end
-        // if we have already seen a controller by this name on this run of
-        // Mixxx.
-        presetBaseName = firstAvailableFilename(filenames, presetBaseName);
-
-        ControllerPresetPointer pPreset =
-                ControllerPresetFileHandler::loadPreset(
-                    presetBaseName + pController->presetExtension(),
-                    getPresetPaths(m_pConfig));
-
-        if (!loadPreset(pController, pPreset)) {
-            // TODO(XXX) : auto load midi preset here.
+        if (m_pConfig->getValueString(ConfigKey("[Controller]", deviceName)) != "1") {
             continue;
         }
 
-        if (m_pConfig->getValueString(ConfigKey("[Controller]", presetBaseName)) != "1") {
+        QString presetFile = m_pConfig->getValueString(
+                ConfigKey("[ControllerPreset]", deviceName));
+        if (presetFile.isEmpty()) {
+            continue;
+        }
+
+        ControllerPresetPointer pPreset = ControllerPresetFileHandler::loadPreset(
+                presetFile,
+                getPresetPaths(m_pConfig));
+
+        if (!loadPreset(pController, pPreset)) {
+            // TODO(XXX) : auto load midi preset here.
             continue;
         }
 
