@@ -29,6 +29,12 @@ void setButtonColor(QPushButton* button, const QColor& color) {
                                   .arg(color.name()));
 }
 
+typedef struct {
+    int id;
+    TrackId trackId;
+    mixxx::RgbColor color;
+} CueDatabaseRow;
+
 } // namespace
 
 DlgReplaceCueColor::DlgReplaceCueColor(

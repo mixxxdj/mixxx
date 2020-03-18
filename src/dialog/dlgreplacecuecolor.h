@@ -42,12 +42,6 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
     void slotApply();
 
   private:
-    typedef struct {
-        int id;
-        TrackId trackId;
-        mixxx::RgbColor color;
-    } CueDatabaseRow;
-
     void setApplyButtonEnabled(bool enabled);
 
     const UserSettingsPointer m_pConfig;
