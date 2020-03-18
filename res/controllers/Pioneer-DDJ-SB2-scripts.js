@@ -180,7 +180,7 @@ PioneerDDJSB2.init = function(_id) {
     PioneerDDJSB2.initDeck("[Channel4]");
 
     if (PioneerDDJSB2.twinkleVumeterAutodjOn) {
-        PioneerDDJSB2.vu_meter_timer = engine.beginTimer(100, "PioneerDDJSB2.vuMeterTwinkle()");
+        PioneerDDJSB2.vuMeterTimer = engine.beginTimer(100, "PioneerDDJSB2.vuMeterTwinkle()");
     }
 
     // request the positions of the knobs and faders from the controller
@@ -511,7 +511,7 @@ PioneerDDJSB2.bindDeckControlConnections = function(channelGroup, isUnbinding) {
         };
 
     if (PioneerDDJSB2.invertVinylSlipButton) {
-        controlsToFunctions.slip_enabled = "PioneerDDJSB2.slipLed";
+        controlsToFunctions.slipEnabled = "PioneerDDJSB2.slipLed";
     }
 
     for (i = 1; i <= 8; i++) {
