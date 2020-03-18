@@ -2,10 +2,10 @@
 #define MIXER_MICROPHONE_H
 
 #include <QObject>
-#include <QScopedPointer>
 #include <QString>
 
 #include "mixer/baseplayer.h"
+#include "util/parented_ptr.h"
 
 class ControlProxy;
 class EffectsManager;
@@ -30,8 +30,8 @@ class Microphone : public BasePlayer {
     void slotTalkoverEnabled(double v);
 
   private:
-    QScopedPointer<ControlProxy> m_pInputConfigured;
-    QScopedPointer<ControlProxy> m_pTalkoverEnabled;
+    parented_ptr<ControlProxy> m_pInputConfigured;
+    parented_ptr<ControlProxy> m_pTalkoverEnabled;
 };
 
 #endif /* MIXER_MICROPHONE_H */

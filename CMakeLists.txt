@@ -838,38 +838,51 @@ target_link_libraries(mixxx PUBLIC mixxx-lib)
 #
 include(GNUInstallDirs)
 install(
-  TARGETS mixxx
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  TARGETS
+    mixxx
+  RUNTIME DESTINATION
+    ${CMAKE_INSTALL_BINDIR}
 )
 
 # Skins
 install(
-  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/res/skins
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/mixxx
+  DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/skins
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/mixxx
 )
 
 # Controller mappings
 install(
-  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/res/controllers
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/mixxx
+  DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/controllers
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/mixxx
 )
 
 # Translation files
 install(
-  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/res/translations
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/mixxx
-  FILES_MATCHING PATTERN "*.qm"
+  DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/translations
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/mixxx
+  FILES_MATCHING PATTERN
+    "*.qm"
 )
 # Font files
 install(
-  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/res/fonts
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/mixxx
+  DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/fonts
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/mixxx
 )
 
 # Keyboard mapping(s)
 install(
-  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/res/keyboard
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/mixxx
+  DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/keyboard
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/mixxx
 )
 
 # Documentation
@@ -878,31 +891,40 @@ install(
     ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
     ${CMAKE_CURRENT_SOURCE_DIR}/README
     ${CMAKE_CURRENT_SOURCE_DIR}/Mixxx-Manual.pdf
-  DESTINATION ${CMAKE_INSTALL_DOCDIR}/mixxx
+  DESTINATION
+    ${CMAKE_INSTALL_DOCDIR}
 )
 
 # .desktop file for KDE/GNOME menu
 install(
-  FILES ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.desktop
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/applications/mixxx
+  FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.desktop
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/applications
 )
 
 # Icon file for menu entry
 install(
-  FILES ${CMAKE_CURRENT_SOURCE_DIR}/res/images/mixxx_icon.svg
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/pixmaps/rules.d
+  FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/images/mixxx_icon.svg
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/pixmaps
 )
 
 # .appdata.xml file for KDE/GNOME AppStream initiative
 install(
-  FILES ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.appdata.xml
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/appdata
+  FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.appdata.xml
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/appdata
 )
 
 # udev rule file for USB HID and Bulk controllers
 install(
-  FILES ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.usb.rules
-  DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/udev/rules.d
+  FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.usb.rules
+  DESTINATION
+    ${CMAKE_INSTALL_SYSCONFDIR}/udev/rules.d
 )
 
 # Packaging

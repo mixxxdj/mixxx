@@ -1397,52 +1397,45 @@ WStarRating {
 }
 
 #MicAuxRack {
-  background-color: #333333;
+  background-color: #222;
+  margin-bottom: 4px;
   qproperty-layoutSpacing: 3;
-  padding-left: 2px;
-  border-bottom: 4px solid #222222;
 }
 
-#MicLabelContainer,
+#MicAuxLabelContainer,
 #DuckingLabelContainer {
   qproperty-layoutAlignment: 'AlignHCenter';
 }
 
-#MicrophoneContainer, #MicDuckingContainer, #AuxiliaryContainer {
-  padding: 4px 4px;
+#MicAuxContainer, #MicDuckingContainer {
   margin: 0px;
+  background-color: #333;
 }
 
-#MicrophoneContainer, #MicDuckingContainer {
-  border: 3px solid #222222;
-  border-width: 0px 3px 0px 0px;
+#MicAuxContainer {
+  padding: 4px 3px;
 }
-
 #MicDuckingContainer {
-  qproperty-layoutSpacing: 2;
+  padding: 4px;
 }
 
-#AuxiliaryContainer {
-  border: 3px solid #222222;
-  border-width: 0px 0px 0px 3px;
-}
-
-#MicrophoneContainer, #AuxiliaryContainer,
-#MicrophoneControlButtons, #AuxiliaryControlButtons,
-#MicDuckingControls {
+#MicAuxContainer {
   qproperty-layoutSpacing: 3;
 }
 
-#MicrophoneControls, #AuxiliaryControls {
-  qproperty-layoutSpacing: 4;
+#MicDuckingControls {
+  qproperty-layoutSpacing: 1;
 }
 
-#AuxLabel, #MicLabel, #DuckingLabel {
+#MicAuxLabel, #DuckingLabel {
   font-weight: bold;
 }
 
-#MicrophoneButtonsAndMeter, #AuxiliaryButtonsAndMeter {
+#MicAuxButtons {
   qproperty-layoutSpacing: 3;
+}
+
+#OrientationButtonAux {
 }
 
 #LibraryContainer {
