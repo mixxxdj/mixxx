@@ -648,21 +648,25 @@ DJ505.Deck = function(deckNumbers, offset) {
     });
 
     this.tapBPM = new components.Button({
-        input: function(channel, control, value, status, group) {
-            if (this.isPress(channel, control, value, status, group)) {
-                script.triggerControl(group, "beats_translate_curpos");
-                script.triggerControl(group, "bpm_tap", 1);
-                this.longPressTimer = engine.beginTimer(
-                    this.longPressTimeout,
-                    function() {
-                        script.triggerControl(group, "beats_translate_match_alignment");
-                    },
-                    true
-                );
-            } else {
+        input: function(_channel, _control, value, _status, group) {
+            if (value) {
+                this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
+                    this.onLongPress(group);
+                    this.longPressTimer = 0;
+                }, true);
+            } else if (this.longPressTimer !== 0) {
+                // Button released after short press
                 engine.stopTimer(this.longPressTimer);
+                this.longPressTimer = 0;
+                this.onShortPress(group);
             }
-        }
+        },
+        onShortPress: function(group) {
+            script.triggerControl(group, "beats_translate_curpos");
+        },
+        onLongPress: function(group) {
+            script.triggerControl(group, "beats_translate_match_alignment");
+        },
     });
 
     this.volume = new components.Pot({
