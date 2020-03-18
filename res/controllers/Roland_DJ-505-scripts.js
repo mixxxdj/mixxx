@@ -585,23 +585,26 @@ DJ505.Deck = function(deckNumbers, offset) {
         midi: [0x90 + offset, 0x02],
         outKey: "sync_enabled",
         output: function(value, _group, _control) {
-            midi.sendShortMsg(this.midi[0], value ? 0x02 : 0x03, 0x7F);
+            midi.sendShortMsg(this.midi[0], value ? 0x02 : 0x03, this.on);
+        },
+        onShortPress: function() {
+            script.triggerControl(this.group, "beatsync", 1);
+        },
+        onLongPress: function() {
+            engine.setValue(this.group, "sync_enabled", 1);
         },
         unshift: function() {
-            this.input = function(channel, control, value, status, _group) {
-                if (this.isPress(channel, control, value, status)) {
-                    script.triggerControl(this.group, "beatsync", 1);
-                    if (engine.getValue(this.group, "sync_enabled") === 0) {
-                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
-                            engine.setValue(this.group, "sync_enabled", 1);
-                            this.longPressTimer = 0;
-                        }, true);
-                    }
-                } else {
-                    if (this.longPressTimer !== 0) {
-                        engine.stopTimer(this.longPressTimer);
+            this.input = function(channel, control, value, _status, _group) {
+                if (value) {
+                    this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
+                        this.onLongPress();
                         this.longPressTimer = 0;
-                    }
+                    }, true);
+                } else if (this.longPressTimer !== 0) {
+                    // Button released after short press
+                    engine.stopTimer(this.longPressTimer);
+                    this.longPressTimer = 0;
+                    this.onShortPress();
                 }
             };
         },
