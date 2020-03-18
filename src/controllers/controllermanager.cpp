@@ -119,11 +119,8 @@ void ControllerManager::slotInitialize() {
 
     // Initialize preset info parsers. This object is only for use in the main
     // thread. Do not touch it from within ControllerManager.
-    QStringList presetSearchPaths;
-    presetSearchPaths << userPresetsPath(m_pConfig)
-                      << resourcePresetsPath(m_pConfig);
     m_pMainThreadPresetEnumerator = QSharedPointer<PresetInfoEnumerator>(
-        new PresetInfoEnumerator(presetSearchPaths));
+            new PresetInfoEnumerator(getPresetPaths(m_pConfig)));
 
     // Instantiate all enumerators. Enumerators can take a long time to
     // construct since they interact with host MIDI APIs.
