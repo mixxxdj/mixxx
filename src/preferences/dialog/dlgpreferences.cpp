@@ -65,6 +65,7 @@
 #include "controllers/controllermanager.h"
 #include "skin/skinloader.h"
 #include "library/library.h"
+#include "library/trackcollectionmanager.h"
 #include "util/compatibility.h"
 
 DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
@@ -96,8 +97,10 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_soundPage);
     m_libraryPage = new DlgPrefLibrary(this, m_pConfig, pLibrary);
     addPageWidget(m_libraryPage);
-    connect(m_libraryPage, SIGNAL(scanLibrary()),
-            pLibrary, SLOT(scan()));
+    connect(m_libraryPage,
+            &DlgPrefLibrary::scanLibrary,
+            pLibrary->trackCollections(),
+            &TrackCollectionManager::startLibraryScan);
     m_controllersPage = new DlgPrefControllers(this, m_pConfig, controllers,
                                             m_pControllerTreeItem);
     addPageWidget(m_controllersPage);

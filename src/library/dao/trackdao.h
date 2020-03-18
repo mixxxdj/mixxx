@@ -10,6 +10,7 @@
 
 #include "preferences/usersettings.h"
 #include "library/dao/dao.h"
+#include "library/relocatedtrack.h"
 #include "track/globaltrackcache.h"
 #include "util/class.h"
 #include "util/memory.h"
@@ -19,7 +20,6 @@ class PlaylistDAO;
 class AnalysisDao;
 class CueDAO;
 class LibraryHashDAO;
-
 
 class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackCacheRelocator {
     Q_OBJECT
@@ -53,21 +53,21 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
 
     TrackId getTrackIdByRef(
             const TrackRef& trackRef) const;
-    QList<TrackId> getAllTrackIds(
+    QList<TrackRef> getAllTrackRefs(
             const QDir& rootDir);
 
     TrackPointer getTrackByRef(
             const TrackRef& trackRef) const;
 
     // Returns a set of all track locations in the library.
-    QSet<QString> getTrackLocations();
+    QSet<QString> getAllTrackLocations();
     QString getTrackLocation(TrackId trackId);
-    QStringList getTrackLocations(const QList<TrackId>& trackIds);
 
     // Only used by friend class LibraryScanner, but public for testing!
-    bool detectMovedTracks(QList<QPair<TrackRef, TrackRef>>* pReplacedTracks,
-                          const QStringList& addedTracks,
-                          volatile const bool* pCancel);
+    bool detectMovedTracks(
+            QList<RelocatedTrack>* pRelocatedTracks,
+            const QStringList& addedTracks,
+            volatile const bool* pCancel);
 
     // Only used by friend class TrackCollection, but public for testing!
     void saveTrack(Track* pTrack);
@@ -85,13 +85,8 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
 
   public slots:
     void databaseTrackAdded(TrackPointer pTrack);
-    void databaseTracksChanged(QSet<TrackId> tracksChanged);
-    void databaseTracksReplaced(QList<QPair<TrackRef, TrackRef>> replacedTracks);
-
-  private slots:
-    void slotTrackDirty(Track* pTrack);
-    void slotTrackChanged(Track* pTrack);
-    void slotTrackClean(Track* pTrack);
+    void databaseTracksChanged(QSet<TrackId> changedTracks);
+    void databaseTracksRelocated(QList<RelocatedTrack> relocatedTracks);
 
   private:
     friend class LibraryScanner;

@@ -13,14 +13,15 @@
 #include "controllers/defs_controllers.h"
 #include "util/screensaver.h"
 
-Controller::Controller()
+Controller::Controller(UserSettingsPointer pConfig)
         : QObject(),
           m_pEngine(NULL),
           m_bIsOutputDevice(false),
           m_bIsInputDevice(false),
           m_bIsOpen(false),
-          m_bLearning(false) {
-        m_userActivityInhibitTimer.start();
+          m_bLearning(false),
+          m_pConfig(pConfig) {
+    m_userActivityInhibitTimer.start();
 }
 
 Controller::~Controller() {
@@ -35,7 +36,7 @@ void Controller::startEngine()
         qWarning() << "Controller: Engine already exists! Restarting:";
         stopEngine();
     }
-    m_pEngine = new ControllerEngine(this);
+    m_pEngine = new ControllerEngine(this, m_pConfig);
 }
 
 void Controller::stopEngine() {

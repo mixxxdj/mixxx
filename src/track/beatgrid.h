@@ -66,10 +66,13 @@ class BeatGrid final : public Beats {
 
     void addBeat(double dBeatSample) override;
     void removeBeat(double dBeatSample) override;
-    virtual void moveBeat(double dBeatSample, double dNewBeatSample);
     void translate(double dNumSamples) override;
     void scale(enum BPMScale scale) override;
     void setBpm(double dBpm) override;
+
+    SINT getSampleRate() const override {
+        return m_iSampleRate;
+    }
 
   private:
     BeatGrid(const BeatGrid& other);

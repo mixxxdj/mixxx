@@ -6,8 +6,8 @@
     email                : spappalardo@mixxx.org
  ***************************************************************************/
 
+#include "controllers/colormapperjsproxy.h"
 #include "controllers/controllerengine.h"
-
 #include "controllers/controller.h"
 #include "controllers/controllerdebug.h"
 #include "control/controlobject.h"
@@ -29,9 +29,11 @@ const int kDecks = 16;
 const int kScratchTimerMs = 1;
 const double kAlphaBetaDt = kScratchTimerMs / 1000.0;
 
-ControllerEngine::ControllerEngine(Controller* controller)
+ControllerEngine::ControllerEngine(
+        Controller* controller, UserSettingsPointer pConfig)
         : m_pEngine(nullptr),
           m_pController(controller),
+          m_pConfig(pConfig),
           m_bPopups(false),
           m_pBaClass(nullptr) {
     // Handle error dialog buttons
@@ -185,7 +187,6 @@ void ControllerEngine::gracefulShutdown() {
         ++it;
     }
 
-    m_pColorJSProxy.reset();
     delete m_pBaClass;
     m_pBaClass = nullptr;
 }
@@ -213,8 +214,9 @@ void ControllerEngine::initializeScriptEngine() {
         engineGlobalObject.setProperty("midi", m_pEngine->newQObject(m_pController));
     }
 
-    m_pColorJSProxy = std::make_unique<ColorJSProxy>(m_pEngine);
-    engineGlobalObject.setProperty("color", m_pEngine->newQObject(m_pColorJSProxy.get()));
+    QScriptValue constructor = m_pEngine->newFunction(ColorMapperJSProxyConstructor);
+    QScriptValue metaObject = m_pEngine->newQMetaObject(&ColorMapperJSProxy::staticMetaObject, constructor);
+    engineGlobalObject.setProperty("ColorMapper", metaObject);
 
     m_pBaClass = new ByteArrayClass(m_pEngine);
     engineGlobalObject.setProperty("ByteArray", m_pBaClass->constructor());

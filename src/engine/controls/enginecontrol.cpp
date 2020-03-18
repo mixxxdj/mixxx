@@ -86,7 +86,9 @@ void EngineControl::seek(double sample) {
 }
 
 void EngineControl::notifySeek(double dNewPlaypos) {
-    Q_UNUSED(dNewPlaypos);
+    SampleOfTrack sot = m_sampleOfTrack.getValue();
+    sot.current = dNewPlaypos;
+    m_sampleOfTrack.setValue(sot);
 }
 
 EngineBuffer* EngineControl::pickSyncTarget() {

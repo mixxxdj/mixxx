@@ -325,6 +325,7 @@ void RateControl::slotControlRatePermDown(double v) {
     if (v > 0.0) {
         m_pRateSlider->set(m_pRateSlider->get() -
                 m_pRateDir->get() * m_dPermanentRateChangeCoarse.getValue() / (100 * m_pRateRange->get()));
+        slotRateSliderChanged(m_pRateSlider->get());
     }
 }
 
@@ -333,6 +334,7 @@ void RateControl::slotControlRatePermDownSmall(double v) {
     if (v > 0.0) {
         m_pRateSlider->set(m_pRateSlider->get() -
                 m_pRateDir->get() * m_dPermanentRateChangeFine.getValue() / (100. * m_pRateRange->get()));
+        slotRateSliderChanged(m_pRateSlider->get());
     }
 }
 
@@ -341,6 +343,7 @@ void RateControl::slotControlRatePermUp(double v) {
     if (v > 0.0) {
         m_pRateSlider->set(m_pRateSlider->get() +
                 m_pRateDir->get() * m_dPermanentRateChangeCoarse.getValue() / (100. * m_pRateRange->get()));
+        slotRateSliderChanged(m_pRateSlider->get());
     }
 }
 
@@ -349,6 +352,7 @@ void RateControl::slotControlRatePermUpSmall(double v) {
     if (v > 0.0) {
         m_pRateSlider->set(m_pRateSlider->get() +
                            m_pRateDir->get() * m_dPermanentRateChangeFine.getValue() / (100. * m_pRateRange->get()));
+        slotRateSliderChanged(m_pRateSlider->get());
     }
 }
 
@@ -589,6 +593,7 @@ void RateControl::resetRateTemp(void)
 
 void RateControl::notifySeek(double playPos) {
     m_pScratchController->notifySeek(playPos);
+    EngineControl::notifySeek(playPos);
 }
 
 bool RateControl::isReverseButtonPressed() {

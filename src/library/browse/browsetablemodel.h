@@ -51,6 +51,7 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     void setPath(const MDir& path);
 
     TrackPointer getTrack(const QModelIndex& index) const override;
+    TrackPointer getTrackByRef(const TrackRef& trackRef) const override;
     TrackModel::CapabilitiesFlags getCapabilities() const override;
 
     QString getTrackLocation(const QModelIndex& index) const override;

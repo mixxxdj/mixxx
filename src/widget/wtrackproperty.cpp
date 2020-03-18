@@ -24,9 +24,11 @@ void WTrackProperty::setup(const QDomNode& node, const SkinContext& context) {
 void WTrackProperty::slotTrackLoaded(TrackPointer track) {
     if (track) {
         m_pCurrentTrack = track;
-        connect(track.get(), SIGNAL(changed(Track*)),
-                this, SLOT(updateLabel(Track*)));
-        updateLabel(track.get());
+        connect(track.get(),
+                &Track::changed,
+                this,
+                &WTrackProperty::slotTrackChanged);
+        updateLabel();
     }
 }
 
@@ -37,16 +39,23 @@ void WTrackProperty::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldT
         disconnect(m_pCurrentTrack.get(), nullptr, this, nullptr);
     }
     m_pCurrentTrack.reset();
-    setText("");
+    updateLabel();
 }
 
-void WTrackProperty::updateLabel(Track* /*unused*/) {
+void WTrackProperty::slotTrackChanged(TrackId trackId) {
+    Q_UNUSED(trackId);
+    updateLabel();
+}
+
+void WTrackProperty::updateLabel() {
     if (m_pCurrentTrack) {
         QVariant property = m_pCurrentTrack->property(m_property.toUtf8().constData());
         if (property.isValid() && property.canConvert(QMetaType::QString)) {
             setText(property.toString());
+            return;
         }
     }
+    setText("");
 }
 
 void WTrackProperty::mouseMoveEvent(QMouseEvent *event) {

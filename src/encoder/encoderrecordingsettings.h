@@ -17,18 +17,13 @@ class EncoderRecordingSettings : public EncoderSettings {
         return false;
     }
 
-    // Indicates that it uses the radio button section of the preferences.
-    virtual bool usesOptionGroups() const {
-        return false;
-    }
-
     virtual void setQualityByIndex(int qualityIndex) {
         Q_UNUSED(qualityIndex);
         DEBUG_ASSERT(!"unimplemented");
     }
 
     // Sets the compression level
-    virtual void setCompression(int compression) {
+    void setCompression(int compression) override {
         Q_UNUSED(compression);
         DEBUG_ASSERT(!"unimplemented");
     }

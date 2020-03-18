@@ -177,7 +177,8 @@ void TreeItemModel::insertTreeItemRows(
     DEBUG_ASSERT(pParentItem != nullptr);
 
     beginInsertRows(parent, position, position + rows.size() - 1);
-    pParentItem->insertChildren(rows, position, rows.size());
+    pParentItem->insertChildren(position, rows);
+    DEBUG_ASSERT(rows.isEmpty());
     endInsertRows();
 }
 

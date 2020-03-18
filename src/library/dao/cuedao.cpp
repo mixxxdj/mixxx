@@ -1,18 +1,43 @@
 // cuedao.cpp
 // Created 10/26/2009 by RJ Ryan (rryan@mit.edu)
 
+#include "library/dao/cuedao.h"
+
+#include <QVariant>
 #include <QtDebug>
 #include <QtSql>
-#include <QVariant>
 
-#include "library/dao/cuedao.h"
+#include "library/queryutil.h"
 #include "track/cue.h"
 #include "track/track.h"
-#include "library/queryutil.h"
 #include "util/assert.h"
+#include "util/color/rgbcolor.h"
 #include "util/performancetimer.h"
-#include "util/color/color.h"
-#include "util/color/predefinedcolor.h"
+
+namespace {
+
+// The label column is not nullable!
+const QVariant kEmptyLabel = QVariant(QStringLiteral(""));
+
+inline const QVariant labelToQVariant(const QString& label) {
+    if (label.isNull()) {
+        return kEmptyLabel; // null -> empty
+    } else {
+        return label;
+    }
+}
+
+// Empty labels are read as null strings
+inline QString labelFromQVariant(const QVariant& value) {
+    const auto label = value.toString();
+    if (label.isEmpty()) {
+        return QString(); // empty -> null
+    } else {
+        return label;
+    }
+}
+
+} // namespace
 
 int CueDAO::cueCount() {
     qDebug() << "CueDAO::cueCount" << QThread::currentThread() << m_database.connectionName();
@@ -52,10 +77,19 @@ CuePointer CueDAO::cueFromRow(const QSqlQuery& query) const {
     int position = record.value(record.indexOf("position")).toInt();
     int length = record.value(record.indexOf("length")).toInt();
     int hotcue = record.value(record.indexOf("hotcue")).toInt();
-    QString label = record.value(record.indexOf("label")).toString();
-    int iColorId = record.value(record.indexOf("color")).toInt();
-    PredefinedColorPointer color = Color::kPredefinedColorsSet.predefinedColorFromId(iColorId);
-    CuePointer pCue(new Cue(id, trackId, (Cue::Type)type, position, length, hotcue, label, color));
+    QString label = labelFromQVariant(record.value(record.indexOf("label")));
+    mixxx::RgbColor::optional_t color = mixxx::RgbColor::fromQVariant(record.value(record.indexOf("color")));
+    VERIFY_OR_DEBUG_ASSERT(color) {
+        return CuePointer();
+    }
+    CuePointer pCue(new Cue(id,
+            trackId,
+            static_cast<mixxx::CueType>(type),
+            position,
+            length,
+            hotcue,
+            label,
+            *color));
     m_cues[id] = pCue;
     return pCue;
 }
@@ -146,8 +180,8 @@ bool CueDAO::saveCue(Cue* cue) {
         query.bindValue(":position", cue->getPosition());
         query.bindValue(":length", cue->getLength());
         query.bindValue(":hotcue", cue->getHotCue());
-        query.bindValue(":label", cue->getLabel());
-        query.bindValue(":color", cue->getColor()->m_iId);
+        query.bindValue(":label", labelToQVariant(cue->getLabel()));
+        query.bindValue(":color", mixxx::RgbColor::toQVariant(cue->getColor()));
 
         if (query.exec()) {
             int id = query.lastInsertId().toInt();
@@ -174,8 +208,8 @@ bool CueDAO::saveCue(Cue* cue) {
         query.bindValue(":position", cue->getPosition());
         query.bindValue(":length", cue->getLength());
         query.bindValue(":hotcue", cue->getHotCue());
-        query.bindValue(":label", cue->getLabel());
-        query.bindValue(":color", cue->getColor()->m_iId);
+        query.bindValue(":label", labelToQVariant(cue->getLabel()));
+        query.bindValue(":color", mixxx::RgbColor::toQVariant(cue->getColor()));
 
         if (query.exec()) {
             cue->setDirty(false);

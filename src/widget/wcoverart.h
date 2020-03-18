@@ -38,8 +38,12 @@ class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
     void cloneDeck(QString source_group, QString target_group) override;
 
   private slots:
-    void slotCoverFound(const QObject* pRequestor,
-                        const CoverInfoRelative& info, QPixmap pixmap, bool fromCache);
+    void slotCoverFound(
+            const QObject* pRequestor,
+            const CoverInfo& coverInfo,
+            const QPixmap& pixmap,
+            quint16 requestedHash,
+            bool coverInfoUpdated);
     void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
     void slotTrackCoverArtUpdated();
@@ -53,6 +57,7 @@ class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
+    bool event(QEvent* pEvent) override;
 
   private:
     QPixmap scaledCoverArt(const QPixmap& normal);

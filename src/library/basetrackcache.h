@@ -17,7 +17,6 @@
 #include "util/string.h"
 
 class SearchQueryParser;
-class TrackDAO;
 class TrackCollection;
 
 class SortColumn {
@@ -84,10 +83,6 @@ class BaseTrackCache : public QObject {
     void slotDbTrackAdded(TrackPointer pTrack);
 
   private:
-    friend class TrackCollection;
-    void connectTrackDAO(TrackDAO* pTrackDAO);
-    void disconnectTrackDAO(TrackDAO* pTrackDAO);
-
     const TrackPointer& getRecentTrack(TrackId trackId) const;
     void replaceRecentTrack(TrackPointer pTrack) const;
     void replaceRecentTrack(TrackId trackId, TrackPointer pTrack) const;

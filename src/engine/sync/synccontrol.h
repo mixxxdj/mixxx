@@ -29,13 +29,14 @@ class SyncControl : public EngineControl, public Syncable {
     double getBpm() const override;
 
     SyncMode getSyncMode() const override;
-    void notifySyncModeChanged(SyncMode mode) override;
+    void setSyncMode(SyncMode mode) override;
     void notifyOnlyPlayingSyncable() override;
     void requestSync() override;
     bool isPlaying() const override;
 
+    double adjustSyncBeatDistance(double beatDistance) const;
     double getBeatDistance() const override;
-    void setBeatDistance(double beatDistance);
+    void updateTargetBeatDistance();
     double getBaseBpm() const override;
     void setLocalBpm(double local_bpm);
 
@@ -57,6 +58,7 @@ class SyncControl : public EngineControl, public Syncable {
 
     void reportTrackPosition(double fractionalPlaypos);
     void reportPlayerSpeed(double speed, bool scratching);
+    void notifySeek(double dNewPlaypos) override;
     void trackLoaded(TrackPointer pNewTrack) override;
 
   private slots:
@@ -90,7 +92,6 @@ class SyncControl : public EngineControl, public Syncable {
     // best factor for multiplying the master bpm to get a bpm this syncable
     // should match against.
     double determineBpmMultiplier(double myBpm, double targetBpm) const;
-    void updateTargetBeatDistance();
 
     QString m_sGroup;
     // The only reason we have this pointer is an optimzation so that the
@@ -111,13 +112,12 @@ class SyncControl : public EngineControl, public Syncable {
     // It is handy to store the raw reported target beat distance in case the
     // multiplier changes and we need to recalculate the target distance.
     double m_unmultipliedTargetBeatDistance;
-    double m_beatDistance;
     ControlValueAtomic<double> m_prevLocalBpm;
 
     QScopedPointer<ControlPushButton> m_pSyncMode;
     QScopedPointer<ControlPushButton> m_pSyncMasterEnabled;
     QScopedPointer<ControlPushButton> m_pSyncEnabled;
-    QScopedPointer<ControlObject> m_pSyncBeatDistance;
+    QScopedPointer<ControlObject> m_pBeatDistance;
 
     // These ControlProxys are created as parent to this and deleted by
     // the Qt object tree. This helps that they are deleted by the creating
