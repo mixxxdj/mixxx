@@ -1,8 +1,6 @@
 #pragma once
 
 #include <QDialog>
-#include <QFuture>
-#include <QFutureWatcher>
 #include <QMap>
 #include <QMenu>
 #include <QProgressDialog>
@@ -42,8 +40,6 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
 
   private slots:
     void slotApply();
-    void slotDatabaseIdsSelected();
-    void slotDatabaseUpdated();
 
   private:
     typedef struct {
@@ -53,8 +49,6 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
     } CueDatabaseRow;
 
     void setApplyButtonEnabled(bool enabled);
-    QList<CueDatabaseRow> selectCues(mixxx::RgbColor::optional_t currentColor, int hotcueIndex, Conditions conditions);
-    void updateCues(QList<CueDatabaseRow> rows, mixxx::RgbColor newColor);
 
     const UserSettingsPointer m_pConfig;
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
@@ -62,9 +56,5 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
     QMenu* m_pCurrentColorMenu;
     WColorPickerAction* m_pNewColorPickerAction;
     WColorPickerAction* m_pCurrentColorPickerAction;
-    QFutureWatcher<QList<CueDatabaseRow>> m_dbSelectFutureWatcher;
-    QFuture<QList<CueDatabaseRow>> m_dbSelectFuture;
-    QFutureWatcher<void> m_dbUpdateFutureWatcher;
-    QFuture<void> m_dbUpdateFuture;
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(DlgReplaceCueColor::Conditions);

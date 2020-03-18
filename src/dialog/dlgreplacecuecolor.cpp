@@ -96,14 +96,6 @@ DlgReplaceCueColor::DlgReplaceCueColor(
     });
     pushButtonCurrentColor->setMenu(m_pCurrentColorMenu);
 
-    connect(&m_dbSelectFutureWatcher,
-            &QFutureWatcher<int>::finished,
-            this,
-            &DlgReplaceCueColor::slotDatabaseIdsSelected);
-    connect(&m_dbUpdateFutureWatcher,
-            &QFutureWatcher<int>::finished,
-            this,
-            &DlgReplaceCueColor::slotDatabaseUpdated);
     connect(buttonBox,
             &QDialogButtonBox::clicked,
             [this](QAbstractButton* button) {
@@ -121,11 +113,17 @@ DlgReplaceCueColor::DlgReplaceCueColor(
 }
 
 DlgReplaceCueColor::~DlgReplaceCueColor() {
-    m_dbSelectFuture.waitForFinished();
-    m_dbUpdateFuture.waitForFinished();
 }
 
 void DlgReplaceCueColor::slotApply() {
+    setApplyButtonEnabled(false);
+
+    // Get values for SELECT query
+    QProgressDialog progress("Selecting database rows...", "Cancel", 0, 0, this);
+    progress.setWindowModality(Qt::WindowModal);
+    progress.setAutoReset(false);
+    progress.setValue(0);
+
     Conditions conditions = ConditionFlag::NoConditions;
     if (checkBoxCurrentColorCondition->isChecked()) {
         conditions |= ConditionFlag::CurrentColorCheck;
@@ -143,49 +141,32 @@ void DlgReplaceCueColor::slotApply() {
 
     mixxx::RgbColor::optional_t currentColor = mixxx::RgbColor::fromQString(pushButtonCurrentColor->text());
     VERIFY_OR_DEBUG_ASSERT(currentColor) {
+        setApplyButtonEnabled(true);
+        return;
+    }
+
+    mixxx::RgbColor::optional_t newColor = mixxx::RgbColor::fromQString(pushButtonNewColor->text());
+    VERIFY_OR_DEBUG_ASSERT(newColor) {
+        setApplyButtonEnabled(true);
         return;
     }
 
     int hotcueIndex = spinBoxHotcueIndex->value() - 1;
 
-    setApplyButtonEnabled(false);
-    m_dbSelectFuture = QtConcurrent::run(
-            this,
-            &DlgReplaceCueColor::selectCues,
-            *currentColor,
-            hotcueIndex,
-            conditions);
-    m_dbSelectFutureWatcher.setFuture(m_dbSelectFuture);
-}
-
-void DlgReplaceCueColor::setApplyButtonEnabled(bool enabled) {
-    QPushButton* button = buttonBox->button(QDialogButtonBox::Apply);
-    if (button) {
-        button->setEnabled(enabled);
-    }
-}
-
-QList<DlgReplaceCueColor::CueDatabaseRow> DlgReplaceCueColor::selectCues(
-        mixxx::RgbColor::optional_t currentColor,
-        int hotcueIndex,
-        Conditions conditions) {
     // The pooler limits the lifetime of all thread-local connections. It will
     // be closed by its destructor when it goes out of scope
     const mixxx::DbConnectionPooler dbConnectionPooler(m_pDbConnectionPool);
     QSqlDatabase database = mixxx::DbConnectionPooled(m_pDbConnectionPool);
 
-    //Open the database connection in this thread.
+    // Open the database connection in this thread.
     VERIFY_OR_DEBUG_ASSERT(database.isOpen()) {
         qWarning() << "Failed to open database for cue color replace dialog."
                    << database.lastError();
-        return {};
+        setApplyButtonEnabled(true);
+        return;
     }
 
-    // Give thread a low priority
-    QThread* thisThread = QThread::currentThread();
-    thisThread->setPriority(QThread::LowPriority);
-
-    // Build query string
+    // Build SELECT query string
     QMap<QString, QVariant> queryValues;
     QStringList queryStringConditions;
     if (conditions.testFlag(ConditionFlag::CurrentColorCheck)) {
@@ -209,49 +190,48 @@ QList<DlgReplaceCueColor::CueDatabaseRow> DlgReplaceCueColor::selectCues(
     }
 
     // Select affected queues
-    QSqlQuery query(database);
-    query.prepare(queryString);
+    QSqlQuery selectQuery(database);
+    selectQuery.prepare(queryString);
     for (auto i = queryValues.constBegin(); i != queryValues.constEnd(); i++) {
-        query.bindValue(i.key(), i.value());
+        selectQuery.bindValue(i.key(), i.value());
     }
 
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        return {};
+    if (!selectQuery.exec()) {
+        LOG_FAILED_QUERY(selectQuery);
+        return;
     }
-    int idColumn = query.record().indexOf("id");
-    int trackIdColumn = query.record().indexOf("track_id");
-    int colorColumn = query.record().indexOf("color");
+    int idColumn = selectQuery.record().indexOf("id");
+    int trackIdColumn = selectQuery.record().indexOf("track_id");
+    int colorColumn = selectQuery.record().indexOf("color");
 
     QList<CueDatabaseRow> rows;
-    while (query.next()) {
-        mixxx::RgbColor::optional_t color = mixxx::RgbColor::fromQVariant(query.value(colorColumn));
+    QSet<TrackId> trackIds;
+    while (selectQuery.next()) {
+        QCoreApplication::processEvents();
+        if (progress.wasCanceled()) {
+            setApplyButtonEnabled(true);
+            return;
+        }
+        mixxx::RgbColor::optional_t color = mixxx::RgbColor::fromQVariant(selectQuery.value(colorColumn));
         VERIFY_OR_DEBUG_ASSERT(color) {
             continue;
         }
         CueDatabaseRow row = {
-                .id = query.value(idColumn).toInt(),
-                .trackId = TrackId(query.value(trackIdColumn).toInt()),
+                .id = selectQuery.value(idColumn).toInt(),
+                .trackId = TrackId(selectQuery.value(trackIdColumn).toInt()),
                 .color = *color,
         };
         rows << row;
+        trackIds << row.trackId;
     }
 
-    return rows;
-}
-
-void DlgReplaceCueColor::slotDatabaseIdsSelected() {
-    QList<CueDatabaseRow> rows = m_dbSelectFuture.result();
+    // Cue Selection finished
+    progress.reset();
 
     if (rows.size() == 0) {
         QMessageBox::warning(this, tr("No colors changed!"), tr("No cues matched the specified criteria."));
         setApplyButtonEnabled(true);
         return;
-    }
-
-    QSet<TrackId> trackIds;
-    for (const auto& row : rows) {
-        trackIds << row.trackId;
     }
 
     if (QMessageBox::question(
@@ -262,51 +242,29 @@ void DlgReplaceCueColor::slotDatabaseIdsSelected() {
         return;
     }
 
-    mixxx::RgbColor::optional_t newColor = mixxx::RgbColor::fromQString(pushButtonNewColor->text());
-    VERIFY_OR_DEBUG_ASSERT(newColor) {
-        setApplyButtonEnabled(true);
-        return;
-    }
-
-    m_dbUpdateFuture = QtConcurrent::run(
-            this,
-            &DlgReplaceCueColor::updateCues,
-            rows,
-            *newColor);
-    m_dbUpdateFutureWatcher.setFuture(m_dbUpdateFuture);
-}
-
-void DlgReplaceCueColor::updateCues(QList<CueDatabaseRow> rows, mixxx::RgbColor newColor) {
-    // The pooler limits the lifetime of all thread-local connections. It will
-    // be closed by its destructor when it goes out of scope
-    const mixxx::DbConnectionPooler dbConnectionPooler(m_pDbConnectionPool);
-    QSqlDatabase database = mixxx::DbConnectionPooled(m_pDbConnectionPool);
-
-    //Open the database connection in this thread.
-    VERIFY_OR_DEBUG_ASSERT(database.isOpen()) {
-        qWarning() << "Failed to open database for cue color replace dialog."
-                   << database.lastError();
-        return;
-    }
-
-    //Give thread a low priority
-    QThread* thisThread = QThread::currentThread();
-    thisThread->setPriority(QThread::LowPriority);
+    // Update Cues
+    progress.setLabelText("Updating cues...");
+    progress.setValue(0);
 
     ScopedTransaction transaction(database);
     QSqlQuery query(database);
     query.prepare("UPDATE " CUE_TABLE " SET color=:new_color WHERE id=:id AND track_id=:track_id AND color=:current_color");
     query.bindValue(":new_color", mixxx::RgbColor::toQVariant(newColor));
 
-    bool queryFailed = false;
-    QSet<TrackId> trackIds;
+    bool canceled = false;
+    trackIds.clear();
     for (const auto& row : rows) {
+        QCoreApplication::processEvents();
+        if (progress.wasCanceled()) {
+            canceled = true;
+            break;
+        }
         query.bindValue(":id", row.id);
         query.bindValue(":track_id", row.trackId.value());
         query.bindValue(":current_color", mixxx::RgbColor::toQVariant(row.color));
         if (!query.exec()) {
             LOG_FAILED_QUERY(query);
-            queryFailed = true;
+            canceled = true;
             break;
         }
 
@@ -315,15 +273,20 @@ void DlgReplaceCueColor::updateCues(QList<CueDatabaseRow> rows, mixxx::RgbColor 
         }
     }
 
-    if (queryFailed) {
+    if (canceled) {
         transaction.rollback();
-        return;
+    } else {
+        transaction.commit();
+        emit databaseTracksChanged(trackIds);
     }
 
-    transaction.commit();
-    emit databaseTracksChanged(trackIds);
+    progress.reset();
+    setApplyButtonEnabled(true);
 }
 
-void DlgReplaceCueColor::slotDatabaseUpdated() {
-    setApplyButtonEnabled(true);
+void DlgReplaceCueColor::setApplyButtonEnabled(bool enabled) {
+    QPushButton* button = buttonBox->button(QDialogButtonBox::Apply);
+    if (button) {
+        button->setEnabled(enabled);
+    }
 }
