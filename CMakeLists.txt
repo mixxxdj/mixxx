@@ -963,6 +963,7 @@ add_subdirectory(
   "${CMAKE_CURRENT_SOURCE_DIR}/lib/googletest-1.8.x"
   "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest-1.8.x"
 )
+set_target_properties(gtest PROPERTIES INSTALL_GTEST OFF)
 
 add_executable(mixxx-test
   src/test/analyserwaveformtest.cpp
