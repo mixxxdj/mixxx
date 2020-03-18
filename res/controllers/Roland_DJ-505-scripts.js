@@ -587,32 +587,33 @@ DJ505.Deck = function(deckNumbers, offset) {
         output: function(value, _group, _control) {
             midi.sendShortMsg(this.midi[0], value ? 0x02 : 0x03, this.on);
         },
-        onShortPress: function() {
-            script.triggerControl(this.group, "beatsync", 1);
-        },
-        onLongPress: function() {
-            engine.setValue(this.group, "sync_enabled", 1);
+        input: function(channel, control, value, _status, _group) {
+            if (value) {
+                this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
+                    this.onLongPress();
+                    this.longPressTimer = 0;
+                }, true);
+            } else if (this.longPressTimer !== 0) {
+                // Button released after short press
+                engine.stopTimer(this.longPressTimer);
+                this.longPressTimer = 0;
+                this.onShortPress();
+            }
         },
         unshift: function() {
-            this.input = function(channel, control, value, _status, _group) {
-                if (value) {
-                    this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
-                        this.onLongPress();
-                        this.longPressTimer = 0;
-                    }, true);
-                } else if (this.longPressTimer !== 0) {
-                    // Button released after short press
-                    engine.stopTimer(this.longPressTimer);
-                    this.longPressTimer = 0;
-                    this.onShortPress();
-                }
+            this.onShortPress = function() {
+                script.triggerControl(this.group, "beatsync", 1);
+            };
+            this.onLongPress = function() {
+                engine.setValue(this.group, "sync_enabled", 1);
             };
         },
         shift: function() {
-            this.input = function(channel, control, value, _status, _group) {
-                if (value) {
-                    engine.setValue(this.group, "sync_enabled", 0);
-                }
+            this.onShortPress = function() {
+                engine.setValue(this.group, "sync_enabled", 0);
+            };
+            this.onLongPress = function() {
+                script.toggleControl(this.group, "quantize");
             };
         },
     });
