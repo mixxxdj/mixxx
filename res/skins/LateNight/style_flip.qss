@@ -916,7 +916,7 @@ WEffectSelector {
 WLibrary,
 #SidebarBox {
 /* only 1px padding to compensate the 2px border of inner widgets
-  (QTreeView, QTableView, QTextBrowser) */ 
+  (QTreeView, QTableView, QTextBrowser) */
   padding: 1px 1px 0px 1px;
   border-bottom: 0px;
   border-left: 1px solid qlineargradient(

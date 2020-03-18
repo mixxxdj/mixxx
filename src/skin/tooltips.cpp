@@ -967,7 +967,7 @@ void Tooltips::addStandardTooltips() {
     add("SaveSamplerBank")
             << tr("Save Sampler Bank")
             << tr("Save the collection of samples loaded in the samplers.");
-    
+
     add("LoadSamplerBank")
             << tr("Load Sampler Bank")
             << tr("Load a previously saved collection of samples into the samplers.");

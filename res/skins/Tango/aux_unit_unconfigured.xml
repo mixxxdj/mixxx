@@ -1,7 +1,7 @@
 <!--
 Description:
   Container that's shown when the auxiliary [auxNum] is not configured.
-  Contains an Add button that shows a popup when pressed. 
+  Contains an Add button that shows a popup when pressed.
 Variables:
   auxNum : text shown on talkover button and internal auxiliary number
 -->

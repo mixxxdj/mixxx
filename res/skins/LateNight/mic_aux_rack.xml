@@ -91,7 +91,7 @@
           </WidgetGroup><!-- MicDuckingContainer -->
         </Children>
       </WidgetGroup><!-- MicRack -->
-      
+
       <WidgetGroup>
         <ObjectName>AuxRack</ObjectName>
         <Layout>horizontal</Layout>
