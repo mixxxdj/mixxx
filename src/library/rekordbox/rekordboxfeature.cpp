@@ -810,7 +810,7 @@ void setHotCue(TrackPointer track, double position, int id, QString label, mixxx
     pCue->setStartPosition(position);
     pCue->setHotCue(id);
     pCue->setLabel(label);
-    if (color != mixxx::RgbColor::nullopt()) {
+    if (color) {
         pCue->setColor(*color);
     }
 }
