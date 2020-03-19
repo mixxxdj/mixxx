@@ -340,9 +340,6 @@ void DlgPrefController::slotApply() {
         // the same preset.
         emit loadPreset(m_pController, m_pPreset);
 
-        //Select the "..." item again in the combobox.
-        m_ui.comboBoxPreset->setCurrentIndex(0);
-
         bool wantEnabled = m_ui.chkEnabledDevice->isChecked();
         bool enabled = m_pController->isOpen();
         if (wantEnabled && !enabled) {
