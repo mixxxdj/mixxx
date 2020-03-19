@@ -100,7 +100,7 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
 
     const bool channelIsMaster = m_pMasterSyncable == pSyncable;
 
-    if (mode == SYNC_MASTER) {
+    if (isMaster(mode)) {
         activateMaster(pSyncable);
         if (pSyncable->getBaseBpm() > 0) {
             setMasterParams(pSyncable, pSyncable->getBeatDistance(),
@@ -327,7 +327,7 @@ void EngineSync::requestBpmUpdate(Syncable* pSyncable, double bpm) {
 
 void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) {
     //qDebug() << "EngineSync::notifyInstantaneousBpmChanged" << pSyncable->getGroup() << bpm;
-    if (pSyncable->getSyncMode() != SYNC_MASTER) {
+    if (!isMaster(pSyncable->getSyncMode())) {
         return;
     }
 
@@ -338,7 +338,7 @@ void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) 
 
 void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beat_distance) {
     //qDebug() << "EngineSync::notifyBeatDistanceChanged" << pSyncable->getGroup() << beat_distance;
-    if (pSyncable->getSyncMode() != SYNC_MASTER) {
+    if (!isMaster(pSyncable->getSyncMode())) {
         return;
     }
 
@@ -365,7 +365,7 @@ void EngineSync::activateMaster(Syncable* pSyncable) {
     // Already master, no need to do anything.
     if (m_pMasterSyncable == pSyncable) {
         // Sanity check.
-        if (m_pMasterSyncable->getSyncMode() != SYNC_MASTER) {
+        if (!isMaster(m_pMasterSyncable->getSyncMode())) {
             qWarning() << "WARNING: Logic Error: m_pMasterSyncable is a syncable that does not think it is master.";
         }
         return;
@@ -392,7 +392,7 @@ void EngineSync::activateMaster(Syncable* pSyncable) {
 
 void EngineSync::deactivateSync(Syncable* pSyncable) {
     kLogger.trace() << "EngineSync::deactivateSync" << pSyncable->getGroup();
-    bool wasMaster = pSyncable->getSyncMode() == SYNC_MASTER;
+    bool wasMaster = isMaster(pSyncable->getSyncMode());
     if (wasMaster) {
         m_pMasterSyncable = nullptr;
     }

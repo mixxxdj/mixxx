@@ -1073,7 +1073,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     }
 #endif
 
-    if (m_pSyncControl->getSyncMode() == SYNC_MASTER) {
+    if (isMaster(m_pSyncControl->getSyncMode())) {
         // Report our speed to SyncControl immediately instead of waiting
         // for postProcess so we can broadcast this update to followers.
         m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
@@ -1205,7 +1205,7 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     double beat_distance = m_pBpmControl->updateBeatDistance();
     m_pSyncControl->setLocalBpm(local_bpm);
     SyncMode mode = m_pSyncControl->getSyncMode();
-    if (mode == SYNC_MASTER) {
+    if (isMaster(mode)) {
         m_pEngineSync->notifyBeatDistanceChanged(m_pSyncControl, beat_distance);
     } else if (mode == SYNC_FOLLOWER) {
         // Report our speed to SyncControl.  If we are master, we already did this.

@@ -9,7 +9,8 @@ enum SyncMode {
     SYNC_INVALID = -1,
     SYNC_NONE = 0,
     SYNC_FOLLOWER = 1,
-    SYNC_MASTER = 2,
+    SYNC_MASTER_SOFT = 2,
+    SYNC_MASTER = 3,
     SYNC_NUM_MODES
 };
 
@@ -24,6 +25,10 @@ inline SyncMode syncModeFromDouble(double value) {
 
 inline bool toSynchronized(SyncMode mode) {
     return mode > SYNC_NONE;
+}
+
+inline bool isMaster(SyncMode mode) {
+    return (mode == SYNC_MASTER || mode == SYNC_MASTER_SOFT);
 }
 
 class Syncable {

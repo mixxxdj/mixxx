@@ -142,7 +142,7 @@ void SyncControl::setSyncMode(SyncMode mode) {
                       "must disable passthrough";
         m_pPassthroughEnabled->set(0.0);
     }
-    if (mode == SYNC_MASTER) {
+    if (isMaster(mode)) {
         // Make sure all the followers update based on our current rate.
         double bpm = m_pBpm->get();
         if (bpm > 0) {
@@ -309,7 +309,7 @@ void SyncControl::setInstantaneousBpm(double bpm) {
 void SyncControl::reportTrackPosition(double fractionalPlaypos) {
     // If we're close to the end, and master, disable master so we don't stop
     // the party.
-    if (getSyncMode() == SYNC_MASTER &&
+    if (isMaster(getSyncMode()) &&
             fractionalPlaypos > kTrackPositionMasterHandoff) {
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_NONE);
     }
@@ -317,7 +317,7 @@ void SyncControl::reportTrackPosition(double fractionalPlaypos) {
 
 void SyncControl::trackLoaded(TrackPointer pNewTrack) {
     kLogger.trace() << getGroup() << "SyncControl::trackLoaded";
-    if (getSyncMode() == SYNC_MASTER) {
+    if (isMaster(getSyncMode())) {
         // If we change or remove a new track while master, hand off.
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
     }
@@ -373,7 +373,7 @@ void SyncControl::slotSyncModeChangeRequest(double state) {
 }
 
 void SyncControl::slotSyncMasterEnabledChangeRequest(double state) {
-    bool currentlyMaster = getSyncMode() == SYNC_MASTER;
+    bool currentlyMaster = isMaster(getSyncMode());
 
     if (state > 0.0) {
         if (currentlyMaster) {
@@ -427,7 +427,7 @@ void SyncControl::setLocalBpm(double local_bpm) {
         // master bpm, our bpm value is adopted.
         m_pEngineSync->requestBpmUpdate(this, bpm);
     } else {
-        DEBUG_ASSERT(syncMode == SYNC_MASTER);
+        DEBUG_ASSERT(isMaster(syncMode));
         m_pEngineSync->notifyBpmChanged(this, bpm);
     }
 }

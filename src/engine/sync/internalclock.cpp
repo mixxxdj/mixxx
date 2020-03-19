@@ -60,7 +60,7 @@ void InternalClock::requestSync() {
 }
 
 void InternalClock::slotSyncMasterEnabledChangeRequest(double state) {
-    bool currentlyMaster = getSyncMode() == SYNC_MASTER;
+    bool currentlyMaster = isMaster(getSyncMode());
 
     if (state > 0.0) {
         if (currentlyMaster) {
