@@ -45,9 +45,11 @@ ControllerPresetPointer ControllerPresetFileHandler::loadPreset(const QString& p
         return ControllerPresetPointer();
     }
 
-    // NOTE(rryan): We don't provide a device name. It's unused currently.
-    // TODO(rryan): Delete pHandler.
-    return pHandler->load(scriptPath, QString());
+    ControllerPresetPointer pPreset = pHandler->load(scriptPath, QString());
+    if (pPreset) {
+        pPreset->setDirty(false);
+    }
+    return pPreset;
 }
 
 ControllerPresetPointer ControllerPresetFileHandler::load(const QString path,

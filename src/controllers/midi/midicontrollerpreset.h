@@ -41,10 +41,12 @@ class MidiControllerPreset : public ControllerPreset {
 
     void addInputMapping(uint16_t key, MidiInputMapping mapping) {
         m_inputMappings.insertMulti(key, mapping);
+        setDirty(true);
     }
 
     void removeInputMapping(uint16_t key) {
         m_inputMappings.remove(key);
+        setDirty(true);
     }
 
     const QHash<uint16_t, MidiInputMapping>& getInputMappings() const {
@@ -55,15 +57,18 @@ class MidiControllerPreset : public ControllerPreset {
         if (m_inputMappings != mappings) {
             m_inputMappings.clear();
             m_inputMappings.unite(mappings);
+            setDirty(true);
         }
     }
 
     void addOutputMapping(ConfigKey key, MidiOutputMapping mapping) {
         m_outputMappings.insertMulti(key, mapping);
+        setDirty(true);
     }
 
     void removeOutputMapping(ConfigKey key) {
         m_outputMappings.remove(key);
+        setDirty(true);
     }
 
     const QHash<ConfigKey, MidiOutputMapping>& getOutputMappings() const {
@@ -74,6 +79,7 @@ class MidiControllerPreset : public ControllerPreset {
         if (m_outputMappings != mappings) {
             m_outputMappings.clear();
             m_outputMappings.unite(mappings);
+            setDirty(true);
         }
     }
 

@@ -392,7 +392,17 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
         if (onlyActive && !pController->isOpen()) {
             continue;
         }
+        ControllerPresetPointer pPreset = pController->getPreset();
+        DEBUG_ASSERT(!pPreset);
+
         QString deviceName = sanitizeString(pController->getName());
+        if (!pPreset->isDirty()) {
+            qWarning()
+                    << "Preset for device" << deviceName
+                    << "is not dirty, no need to save it to the user presets.";
+            continue;
+        }
+
         QString filename = firstAvailableFilename(filenames, deviceName);
         QString presetPath = userPresetsPath(m_pConfig) + filename
                 + pController->presetExtension();

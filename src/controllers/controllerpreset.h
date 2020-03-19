@@ -21,7 +21,9 @@ class ConstControllerPresetVisitor;
 
 class ControllerPreset {
   public:
-    ControllerPreset() {}
+    ControllerPreset()
+            : m_bDirty(false) {
+    }
     virtual ~ControllerPreset() {}
 
     struct ScriptFileInfo {
@@ -47,10 +49,20 @@ class ControllerPreset {
         info.functionPrefix = functionprefix;
         info.builtin = builtin;
         scripts.append(info);
+        setDirty(true);
+    }
+
+    inline void setDirty(bool bDirty) {
+        m_bDirty = bDirty;
+    }
+
+    inline bool isDirty() const {
+        return m_bDirty;
     }
 
     inline void setDeviceId(const QString id) {
         m_deviceId = id;
+        setDirty(true);
     }
 
     inline QString deviceId() const {
@@ -59,6 +71,7 @@ class ControllerPreset {
 
     inline void setFilePath(const QString filePath) {
         m_filePath = filePath;
+        setDirty(true);
     }
 
     inline QString filePath() const {
@@ -67,6 +80,7 @@ class ControllerPreset {
 
     inline void setName(const QString name) {
         m_name = name;
+        setDirty(true);
     }
 
     inline QString name() const {
@@ -75,6 +89,7 @@ class ControllerPreset {
 
     inline void setAuthor(const QString author) {
         m_author = author;
+        setDirty(true);
     }
 
     inline QString author() const {
@@ -83,6 +98,7 @@ class ControllerPreset {
 
     inline void setDescription(const QString description) {
         m_description = description;
+        setDirty(true);
     }
 
     inline QString description() const {
@@ -91,6 +107,7 @@ class ControllerPreset {
 
     inline void setForumLink(const QString forumlink) {
         m_forumlink = forumlink;
+        setDirty(true);
     }
 
     inline QString forumlink() const {
@@ -99,6 +116,7 @@ class ControllerPreset {
 
     inline void setWikiLink(const QString wikilink) {
         m_wikilink = wikilink;
+        setDirty(true);
     }
 
     inline QString wikilink() const {
@@ -107,6 +125,7 @@ class ControllerPreset {
 
     inline void setSchemaVersion(const QString schemaVersion) {
         m_schemaVersion = schemaVersion;
+        setDirty(true);
     }
 
     inline QString schemaVersion() const {
@@ -115,6 +134,7 @@ class ControllerPreset {
 
     inline void setMixxxVersion(const QString mixxxVersion) {
         m_mixxxVersion = mixxxVersion;
+        setDirty(true);
     }
 
     inline QString mixxxVersion() const {
@@ -123,6 +143,7 @@ class ControllerPreset {
 
     inline void addProductMatch(QHash<QString,QString> match) {
         m_productMatches.append(match);
+        setDirty(true);
     }
 
     virtual void accept(ControllerPresetVisitor* visitor) = 0;
@@ -134,6 +155,8 @@ class ControllerPreset {
     QList< QHash<QString,QString> > m_productMatches;
 
   private:
+    bool m_bDirty;
+
     QString m_deviceId;
     QString m_filePath;
     QString m_name;
