@@ -152,7 +152,6 @@ TEST_F(EngineSyncTest, ExplicitMasterPersists) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     pButtonMasterSync1->slotSet(SYNC_MASTER_EXPLICIT);
     ProcessBuffer();
-
     // The master sync should now be channel 1.
     assertIsExplicitMaster(m_sGroup1);
 
@@ -160,7 +159,12 @@ TEST_F(EngineSyncTest, ExplicitMasterPersists) {
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
     pButtonMasterSync2->set(1.0);
     ProcessBuffer();
+    assertIsExplicitMaster(m_sGroup1);
+    assertIsFollower(m_sGroup2);
 
+    // Stop deck 2, and restart it, no change.
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(0.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
     assertIsExplicitMaster(m_sGroup1);
     assertIsFollower(m_sGroup2);
 }

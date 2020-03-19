@@ -39,6 +39,11 @@ EngineSync::~EngineSync() {
 }
 
 Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
+    // If there is an explicit master, and it is playing, keep it.
+    if (m_pMasterSyncable && m_pMasterSyncable->getSyncMode() == SYNC_MASTER_EXPLICIT && m_pMasterSyncable->isPlaying()) {
+        return m_pMasterSyncable;
+    }
+
     std::vector<Syncable*> stopped_sync_decks;
     std::vector<Syncable*> playing_sync_decks;
 
@@ -226,25 +231,19 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
         }
     }
 
-    if (m_pMasterSyncable && m_pMasterSyncable->getSyncMode() == SYNC_MASTER_EXPLICIT) {
-        // Current master is explicit, we just become follower.
-        targetSyncable = m_pMasterSyncable;
+    // Now go through and possible pick a new master deck if we can find one.
+    Syncable* newMaster = pickMaster(pSyncable);
+
+    if (newMaster != nullptr && newMaster != m_pMasterSyncable) {
+        activateMaster(newMaster, false);
+        if (targetSyncable == nullptr) {
+            setMasterParams(newMaster, newMaster->getBeatDistance(), newMaster->getBaseBpm(), newMaster->getBpm());
+        }
+    }
+
+    if (newMaster != pSyncable) {
         activateFollower(pSyncable);
-    } else {
-        // Now go through and possible pick a new master deck if we can find one.
-        Syncable* newMaster = pickMaster(pSyncable);
-
-        if (newMaster != nullptr && newMaster != m_pMasterSyncable) {
-            activateMaster(newMaster, false);
-            if (targetSyncable == nullptr) {
-                setMasterParams(newMaster, newMaster->getBeatDistance(), newMaster->getBaseBpm(), newMaster->getBpm());
-            }
-        }
-
-        if (newMaster != pSyncable) {
-            activateFollower(pSyncable);
-            pSyncable->requestSync();
-        }
+        pSyncable->requestSync();
     }
 
     if (targetSyncable != nullptr) {
