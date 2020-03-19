@@ -35,7 +35,7 @@ ColorPalette ColorPaletteSettings::getColorPalette(
     }
 
     // If we find a predefined palette with this name, return it
-    foreach (const ColorPalette& palette, mixxx::PredefinedColorPalettes::kPalettes) {
+    for (const ColorPalette& palette : mixxx::PredefinedColorPalettes::kPalettes) {
         if (name == palette.getName()) {
             return palette;
         }
@@ -47,7 +47,7 @@ ColorPalette ColorPaletteSettings::getColorPalette(
     QList<unsigned int> hotcueIndices;
     for (const ConfigKey& key : m_pConfig->getKeysWithGroup(group)) {
         if (key.item == kColorPaletteHotcueIndicesConfigItem) {
-            foreach (const QString& stringIndex,
+            for (const QString& stringIndex :
                     m_pConfig->getValueString(key).split(kColorPaletteHotcueIndicesConfigSeparator, QString::SkipEmptyParts)) {
                 bool ok;
                 int index = stringIndex.toInt(&ok);
@@ -75,7 +75,7 @@ void ColorPaletteSettings::setColorPalette(const QString& name, const ColorPalet
         return;
     }
 
-    foreach (const ColorPalette& palette, mixxx::PredefinedColorPalettes::kPalettes) {
+    for (const ColorPalette& palette : mixxx::PredefinedColorPalettes::kPalettes) {
         if (name == palette.getName()) {
             qWarning() << "Color Palette" << name << "is a built-in palette, not writing to config!";
             return;
@@ -91,7 +91,7 @@ void ColorPaletteSettings::setColorPalette(const QString& name, const ColorPalet
     }
 
     QStringList stringIndices;
-    foreach (const unsigned int index, colorPalette.getHotcueIndices()) {
+    for (const unsigned int index : colorPalette.getHotcueIndices()) {
         stringIndices << QString::number(index);
     }
     if (!stringIndices.isEmpty()) {
