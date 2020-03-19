@@ -1139,10 +1139,18 @@ if(UNIX)
     COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res"
     COMMENT "Symlinking resources to build directory..."
   )
+  add_custom_target(mixxx-script
+    COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/script" "${CMAKE_CURRENT_BINARY_DIR}/script"
+    COMMENT "Symlinking to build directory..."
+  )
 else()
   add_custom_target(mixxx-res
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/"
     COMMENT "Copying resources to build directory..."
+  )
+  add_custom_target(mixxx-script
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/script" "${CMAKE_CURRENT_BINARY_DIR}/"
+    COMMENT "Copying QScriptEngine extensions to build directory..."
   )
 endif()
 add_dependencies(mixxx-lib mixxx-res)
