@@ -202,6 +202,10 @@ QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, boo
     return filteredDeviceList;
 }
 
+QString ControllerManager::getConfiguredPresetFileForDevice(QString name) {
+    return m_pConfig->getValueString(ConfigKey("[ControllerPreset]", sanitizeString(name)));
+}
+
 void ControllerManager::slotSetUpDevices() {
     qDebug() << "ControllerManager: Setting up devices";
 
@@ -219,13 +223,11 @@ void ControllerManager::slotSetUpDevices() {
 
         // The filename for this device name.
         QString deviceName = sanitizeString(name);
-
         if (m_pConfig->getValueString(ConfigKey("[Controller]", deviceName)) != "1") {
             continue;
         }
 
-        QString presetFile = m_pConfig->getValueString(
-                ConfigKey("[ControllerPreset]", deviceName));
+        QString presetFile = getConfiguredPresetFileForDevice(deviceName);
         if (presetFile.isEmpty()) {
             continue;
         }

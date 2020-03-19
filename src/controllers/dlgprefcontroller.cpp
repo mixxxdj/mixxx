@@ -261,12 +261,18 @@ void DlgPrefController::enumeratePresets() {
         }
     }
 
-    // Jump to matching device in list if it was found.
-    if (match.isValid()) {
-        int index = m_ui.comboBoxPreset->findText(match.getName());
-        if (index != -1) {
-            m_ui.comboBoxPreset->setCurrentIndex(index);
-        }
+    QString configuredPresetFile = m_pControllerManager->getConfiguredPresetFileForDevice(
+            m_pController->getName());
+
+    // Preselect configured or matching preset
+    int index = -1;
+    if (!configuredPresetFile.isEmpty()) {
+        index = m_ui.comboBoxPreset->findData(configuredPresetFile);
+    } else if (match.isValid()) {
+        index = m_ui.comboBoxPreset->findText(match.getName());
+    }
+    if (index != -1) {
+        m_ui.comboBoxPreset->setCurrentIndex(index);
     }
 }
 
