@@ -122,7 +122,7 @@ SyncMode SyncControl::getSyncMode() const {
 }
 
 void SyncControl::setSyncMode(SyncMode mode) {
-    kLogger.trace() << "SyncControl::notifySyncModeChanged" << getGroup() << mode;
+    kLogger.trace() << "SyncControl::setSyncMode" << getGroup() << mode;
     // SyncControl has absolutely no say in the matter. This is what EngineSync
     // requires. Bypass confirmation by using setAndConfirm.
     m_masterBpmAdjustFactor = kBpmUnity;

@@ -226,19 +226,25 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
         }
     }
 
-    // Now go through and possible pick a new master deck if we can find one.
-    Syncable* newMaster = pickMaster(pSyncable);
-
-    if (newMaster != nullptr && newMaster != m_pMasterSyncable) {
-        activateMaster(newMaster, false);
-        if (targetSyncable == nullptr) {
-            setMasterParams(newMaster, newMaster->getBeatDistance(), newMaster->getBaseBpm(), newMaster->getBpm());
-        }
-    }
-
-    if (newMaster != pSyncable) {
+    if (m_pMasterSyncable && m_pMasterSyncable->getSyncMode() == SYNC_MASTER_EXPLICIT) {
+        // Current master is explicit, we just become follower.
+        targetSyncable = m_pMasterSyncable;
         activateFollower(pSyncable);
-        pSyncable->requestSync();
+    } else {
+        // Now go through and possible pick a new master deck if we can find one.
+        Syncable* newMaster = pickMaster(pSyncable);
+
+        if (newMaster != nullptr && newMaster != m_pMasterSyncable) {
+            activateMaster(newMaster, false);
+            if (targetSyncable == nullptr) {
+                setMasterParams(newMaster, newMaster->getBeatDistance(), newMaster->getBaseBpm(), newMaster->getBpm());
+            }
+        }
+
+        if (newMaster != pSyncable) {
+            activateFollower(pSyncable);
+            pSyncable->requestSync();
+        }
     }
 
     if (targetSyncable != nullptr) {

@@ -140,6 +140,31 @@ TEST_F(EngineSyncTest, SetMasterSuccess) {
     assertIsFollower(m_sGroup2);
 }
 
+TEST_F(EngineSyncTest, ExplicitMasterPersists) {
+    // If we set an explicit master, enabling sync or pressing play on other decks
+    // doesn't cause the master to move around.
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
+    pFileBpm1->set(120.0);
+    pFileBpm2->set(124.0);
+
+    auto pButtonMasterSync1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    pButtonMasterSync1->slotSet(SYNC_MASTER_EXPLICIT);
+    ProcessBuffer();
+
+    // The master sync should now be channel 1.
+    assertIsExplicitMaster(m_sGroup1);
+
+    auto pButtonMasterSync2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+    pButtonMasterSync2->set(1.0);
+    ProcessBuffer();
+
+    assertIsExplicitMaster(m_sGroup1);
+    assertIsFollower(m_sGroup2);
+}
+
 TEST_F(EngineSyncTest, SetMasterWhilePlaying) {
     // Make sure we don't get two master lights if we change masters while playing.
 
