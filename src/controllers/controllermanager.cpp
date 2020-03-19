@@ -392,15 +392,15 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
         if (onlyActive && !pController->isOpen()) {
             continue;
         }
-        QString name = pController->getName();
-        QString filename = firstAvailableFilename(
-                filenames, sanitizeString(name));
+        QString deviceName = sanitizeString(pController->getName());
+        QString filename = firstAvailableFilename(filenames, deviceName);
         QString presetPath = userPresetsPath(m_pConfig) + filename
                 + pController->presetExtension();
         if (!pController->savePreset(presetPath)) {
             qWarning() << "Failed to write preset for device"
-                       << name << "to" << presetPath;
+                       << deviceName << "to" << presetPath;
         }
+        m_pConfig->set(ConfigKey("[ControllerPreset]", deviceName), presetPath);
     }
 }
 
