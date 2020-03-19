@@ -27,11 +27,11 @@ class ColorPaletteEditorModel : public QStandardItemModel {
         emit dirtyChanged(m_bDirty);
     }
 
-    bool isDirty() {
+    bool isDirty() const {
         return m_bDirty;
     }
 
-    bool isEmpty() {
+    bool isEmpty() const {
         return m_bEmpty;
     }
 
