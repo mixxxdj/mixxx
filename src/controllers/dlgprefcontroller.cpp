@@ -239,25 +239,45 @@ void DlgPrefController::enumeratePresets() {
     // user has their controller plugged in)
     m_ui.comboBoxPreset->addItem("...");
 
-    // Ask the controller manager for a list of applicable presets
-    QSharedPointer<PresetInfoEnumerator> pie =
-            m_pControllerManager->getMainThreadPresetEnumerator();
+    QList<PresetInfo> presets;
+    PresetInfo match;
 
-    // Not ready yet. Should be rare. We will re-enumerate on the next open of
-    // the preferences.
-    if (pie.isNull()) {
-        return;
+    // Ask the controller manager for a list of applicable user presets
+    QSharedPointer<PresetInfoEnumerator> userPresetEnumerator =
+            m_pControllerManager->getMainThreadUserPresetEnumerator();
+    // Check if enumerator is ready. Should be rare. We will re-enumerate on
+    // the next open of the preferences.
+    if (!userPresetEnumerator.isNull()) {
+        // Making the list of presets in the alphabetical order
+        QList<PresetInfo> userPresets = userPresetEnumerator->getPresetsByExtension(
+                m_pController->presetExtension());
+
+        for (const PresetInfo& preset : userPresets) {
+            m_ui.comboBoxPreset->addItem(preset.getName(), preset.getPath());
+            if (m_pController->matchPreset(preset)) {
+                match = preset;
+            }
+        }
     }
 
-    // Making the list of presets in the alphabetical order
-    QList<PresetInfo> presets = pie->getPresetsByExtension(
-        m_pController->presetExtension());
+    // Insert a separator between user presets (+ dummy item) and system presets
+    m_ui.comboBoxPreset->insertSeparator(m_ui.comboBoxPreset->count());
 
-    PresetInfo match;
-    for (const PresetInfo& preset : presets) {
-        m_ui.comboBoxPreset->addItem(preset.getName(), preset.getPath());
-        if (m_pController->matchPreset(preset)) {
-            match = preset;
+    // Ask the controller manager for a list of applicable system presets
+    QSharedPointer<PresetInfoEnumerator> systemPresetEnumerator =
+            m_pControllerManager->getMainThreadSystemPresetEnumerator();
+    // Check if enumerator is ready. Should be rare. We will re-enumerate on
+    // the next open of the preferences.
+    if (!systemPresetEnumerator.isNull()) {
+        // Making the list of presets in the alphabetical order
+        QList<PresetInfo> systemPresets = systemPresetEnumerator->getPresetsByExtension(
+                m_pController->presetExtension());
+
+        for (const PresetInfo& preset : systemPresets) {
+            m_ui.comboBoxPreset->addItem(preset.getName(), preset.getPath());
+            if (m_pController->matchPreset(preset)) {
+                match = preset;
+            }
         }
     }
 

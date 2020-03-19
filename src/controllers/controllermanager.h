@@ -33,8 +33,11 @@ class ControllerManager : public QObject {
     QList<Controller*> getControllers() const;
     QList<Controller*> getControllerList(bool outputDevices=true, bool inputDevices=true);
     ControllerLearningEventFilter* getControllerLearningEventFilter() const;
-    QSharedPointer<PresetInfoEnumerator> getMainThreadPresetEnumerator() {
-        return m_pMainThreadPresetEnumerator;
+    QSharedPointer<PresetInfoEnumerator> getMainThreadUserPresetEnumerator() {
+        return m_pMainThreadUserPresetEnumerator;
+    }
+    QSharedPointer<PresetInfoEnumerator> getMainThreadSystemPresetEnumerator() {
+        return m_pMainThreadSystemPresetEnumerator;
     }
     QString getConfiguredPresetFileForDevice(QString name);
 
@@ -98,7 +101,8 @@ class ControllerManager : public QObject {
     QList<ControllerEnumerator*> m_enumerators;
     QList<Controller*> m_controllers;
     QThread* m_pThread;
-    QSharedPointer<PresetInfoEnumerator> m_pMainThreadPresetEnumerator;
+    QSharedPointer<PresetInfoEnumerator> m_pMainThreadUserPresetEnumerator;
+    QSharedPointer<PresetInfoEnumerator> m_pMainThreadSystemPresetEnumerator;
     bool m_skipPoll;
 };
 
