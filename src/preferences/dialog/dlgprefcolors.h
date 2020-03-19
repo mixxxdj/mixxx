@@ -11,7 +11,7 @@
 class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
     Q_OBJECT
   public:
-    DlgPrefColors(QWidget* parent, UserSettingsPointer _config);
+    DlgPrefColors(QWidget* parent, UserSettingsPointer pConfig);
     virtual ~DlgPrefColors();
 
   public slots:
@@ -26,7 +26,6 @@ class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
     void loadSettings();
     void loadPaletteIntoEditor(const ColorPalette& palette);
 
-    // Pointer to config object
-    UserSettingsPointer m_config;
+    const UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;
 };

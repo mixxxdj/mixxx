@@ -8,12 +8,12 @@
 #include "util/color/predefinedcolorpalettes.h"
 
 DlgPrefColors::DlgPrefColors(
-        QWidget* parent, UserSettingsPointer config)
+        QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
-          m_config(config),
-          m_colorPaletteSettings(ColorPaletteSettings(config)) {
+          m_pConfig(pConfig),
+          m_colorPaletteSettings(ColorPaletteSettings(pConfig)) {
     setupUi(this);
-    colorPaletteEditor->setConfig(config);
+    colorPaletteEditor->setConfig(pConfig);
 
     loadSettings();
 
@@ -94,7 +94,7 @@ void DlgPrefColors::slotApply() {
                         m_colorPaletteSettings.getTrackColorPalette()));
     }
 
-    m_config->setValue(
+    m_pConfig->setValue(
             ConfigKey("[Controls]", "auto_hotcue_colors"),
             checkBoxAssignHotcueColors->isChecked());
 }
