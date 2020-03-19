@@ -67,7 +67,7 @@ class EngineSync : public BaseSyncableListener {
     Syncable* findBpmMatchTarget(Syncable* requester);
 
     // Activate a specific syncable as master.
-    void activateMaster(Syncable* pSyncable);
+    void activateMaster(Syncable* pSyncable, bool explicitMaster);
 
     // Activate a specific channel as Follower. Sets the syncable's bpm and
     // beat_distance to match the master.

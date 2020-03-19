@@ -9,8 +9,13 @@ enum SyncMode {
     SYNC_INVALID = -1,
     SYNC_NONE = 0,
     SYNC_FOLLOWER = 1,
+    // SYNC_MASTER_SOFT is a master that Mixxx has chosen automatically.
+    // depending on how decks stop and start, it may reassign soft master at will.
     SYNC_MASTER_SOFT = 2,
-    SYNC_MASTER = 3,
+    // SYNC_MASTER_EXPLICIT represents an explicit request that the synacable be
+    // master. Mixxx will only remove a SYNC_MASTER_SOFT if the track is stopped or
+    // ejected.
+    SYNC_MASTER_EXPLICIT = 3,
     SYNC_NUM_MODES
 };
 
@@ -28,7 +33,7 @@ inline bool toSynchronized(SyncMode mode) {
 }
 
 inline bool isMaster(SyncMode mode) {
-    return (mode == SYNC_MASTER || mode == SYNC_MASTER_SOFT);
+    return (mode == SYNC_MASTER_SOFT || mode == SYNC_MASTER_EXPLICIT);
 }
 
 class Syncable {

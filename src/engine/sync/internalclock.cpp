@@ -48,7 +48,7 @@ void InternalClock::setSyncMode(SyncMode mode) {
     // Syncable has absolutely no say in the matter. This is what EngineSync
     // requires. Bypass confirmation by using setAndConfirm.
     m_mode = mode;
-    m_pSyncMasterEnabled->setAndConfirm(mode == SYNC_MASTER);
+    m_pSyncMasterEnabled->setAndConfirm(isMaster(mode));
 }
 
 void InternalClock::notifyOnlyPlayingSyncable() {
@@ -67,7 +67,10 @@ void InternalClock::slotSyncMasterEnabledChangeRequest(double state) {
             // Already master.
             return;
         }
-        m_pEngineSync->requestSyncMode(this, SYNC_MASTER);
+        // Internal clock can never be explicit master.  If we ever have something like a
+        // midi clock, *that* can be explicit master, but the internal clock is just around
+        // to hand off and coordinate other decks.
+        m_pEngineSync->requestSyncMode(this, SYNC_MASTER_SOFT);
     } else {
         // Turning off master goes back to follower mode.
         if (!currentlyMaster) {

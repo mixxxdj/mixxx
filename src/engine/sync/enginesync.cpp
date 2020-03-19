@@ -101,7 +101,7 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     const bool channelIsMaster = m_pMasterSyncable == pSyncable;
 
     if (isMaster(mode)) {
-        activateMaster(pSyncable);
+        activateMaster(pSyncable, mode == SYNC_MASTER_EXPLICIT);
         if (pSyncable->getBaseBpm() > 0) {
             setMasterParams(pSyncable, pSyncable->getBeatDistance(),
                             pSyncable->getBaseBpm(), pSyncable->getBpm());
@@ -111,7 +111,7 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
             if (syncDeckExists()) {
                 // Internal clock cannot be set to follower if there are other decks
                 // with sync on. Notify them that their mode has not changed.
-                pSyncable->setSyncMode(SYNC_MASTER);
+                pSyncable->setSyncMode(SYNC_MASTER_SOFT);
             } else {
                 // No sync deck exists. Allow the clock to go inactive. This
                 // case does not happen in practice since the logic in
@@ -126,10 +126,10 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
             activateFollower(pSyncable);
             // Hand off to the internal clock and keep the current BPM and beat
             // distance.
-            activateMaster(m_pInternalClock);
+            activateMaster(m_pInternalClock, false);
         } else if (m_pMasterSyncable == nullptr) {
             // If no master active, activate the internal clock.
-            activateMaster(m_pInternalClock);
+            activateMaster(m_pInternalClock, false);
             if (pSyncable->getBaseBpm() > 0) {
                 setMasterParams(pSyncable, pSyncable->getBeatDistance(),
                                 pSyncable->getBaseBpm(), pSyncable->getBpm());
@@ -143,7 +143,7 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
                 syncDeckExists()) {
             // Internal clock cannot be disabled if there are other decks with
             // sync on. Notify them that their mode has not changed.
-            pSyncable->setSyncMode(SYNC_MASTER);
+            pSyncable->setSyncMode(SYNC_MASTER_SOFT);
         } else {
             deactivateSync(pSyncable);
         }
@@ -230,7 +230,7 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
     Syncable* newMaster = pickMaster(pSyncable);
 
     if (newMaster != nullptr && newMaster != m_pMasterSyncable) {
-        activateMaster(newMaster);
+        activateMaster(newMaster, false);
         if (targetSyncable == nullptr) {
             setMasterParams(newMaster, newMaster->getBeatDistance(), newMaster->getBaseBpm(), newMaster->getBpm());
         }
@@ -261,7 +261,7 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
     Syncable* newMaster = pickMaster(playing ? pSyncable : nullptr);
 
     if (newMaster != nullptr && newMaster != m_pMasterSyncable) {
-        activateMaster(newMaster);
+        activateMaster(newMaster, false);
         setMasterParams(newMaster, newMaster->getBeatDistance(), newMaster->getBaseBpm(), newMaster->getBpm());
     }
 
@@ -356,7 +356,7 @@ void EngineSync::activateFollower(Syncable* pSyncable) {
     pSyncable->setInstantaneousBpm(masterBpm());
 }
 
-void EngineSync::activateMaster(Syncable* pSyncable) {
+void EngineSync::activateMaster(Syncable* pSyncable, bool explicitMaster) {
     if (pSyncable == nullptr) {
         qWarning() << "WARNING: Logic Error: Called activateMaster on a nullptr Syncable.";
         return;
@@ -381,7 +381,11 @@ void EngineSync::activateMaster(Syncable* pSyncable) {
 
     //qDebug() << "Setting up master " << pSyncable->getGroup();
     m_pMasterSyncable = pSyncable;
-    pSyncable->setSyncMode(SYNC_MASTER);
+    if (explicitMaster) {
+        pSyncable->setSyncMode(SYNC_MASTER_EXPLICIT);
+    } else {
+        pSyncable->setSyncMode(SYNC_MASTER_SOFT);
+    }
     if (m_pMasterSyncable != m_pInternalClock) {
         activateFollower(m_pInternalClock);
     }
@@ -411,7 +415,7 @@ void EngineSync::deactivateSync(Syncable* pSyncable) {
     Syncable* newMaster = pickMaster(nullptr);
 
     if (newMaster != nullptr && m_pMasterSyncable != newMaster) {
-        activateMaster(newMaster);
+        activateMaster(newMaster, false);
     }
 }
 
