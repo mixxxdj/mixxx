@@ -885,6 +885,14 @@ install(
     ${CMAKE_INSTALL_DATADIR}/mixxx
 )
 
+# QScriptEngine extensions
+install(
+  DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}/script
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/mixxx
+)
+
 # Licenses
 install(
   FILES
