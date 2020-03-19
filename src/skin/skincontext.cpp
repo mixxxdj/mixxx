@@ -222,7 +222,7 @@ QScriptValue SkinContext::evaluateScript(const QString& expression,
 QScriptValue SkinContext::importScriptExtension(const QString& extensionName) {
     QScriptValue out = m_pSharedState->scriptEngine.importExtension(extensionName);
     if (m_pSharedState->scriptEngine.hasUncaughtException()) {
-        qDebug() << out.toString();
+        qWarning() << out.toString();
     }
     return out;
 }
