@@ -21,8 +21,9 @@ SkinContext::SkinContext(UserSettingsPointer pConfig,
 
     // the extensions are imported once and will be passed to the children
     // global object as properties of the parent's global object.
-    importScriptExtension("console");
-    importScriptExtension("svg");
+    // TODO: Enable script extensions
+    //importScriptExtension("console");
+    //importScriptExtension("svg");
     m_pSharedState->scriptEngine.installTranslatorFunctions();
 
     // Retrieving hooks pattern from script extension
