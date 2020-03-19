@@ -77,7 +77,7 @@ void ColorPaletteSettings::setColorPalette(const QString& name, const ColorPalet
 
     for (const ColorPalette& palette : mixxx::PredefinedColorPalettes::kPalettes) {
         if (name == palette.getName()) {
-            qWarning() << "Color Palette" << name << "is a built-in palette, not writing to config!";
+            qDebug() << "Color Palette" << name << "is a built-in palette, not writing to config!";
             return;
         }
     }
