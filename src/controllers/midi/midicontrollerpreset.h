@@ -39,9 +39,48 @@ class MidiControllerPreset : public ControllerPreset {
         return true;
     }
 
+    void addInputMapping(uint16_t key, MidiInputMapping mapping) {
+        m_inputMappings.insertMulti(key, mapping);
+    }
+
+    void removeInputMapping(uint16_t key) {
+        m_inputMappings.remove(key);
+    }
+
+    const QHash<uint16_t, MidiInputMapping>& getInputMappings() const {
+        return m_inputMappings;
+    }
+
+    void setInputMappings(const QHash<uint16_t, MidiInputMapping>& mappings) {
+        if (m_inputMappings != mappings) {
+            m_inputMappings.clear();
+            m_inputMappings.unite(mappings);
+        }
+    }
+
+    void addOutputMapping(ConfigKey key, MidiOutputMapping mapping) {
+        m_outputMappings.insertMulti(key, mapping);
+    }
+
+    void removeOutputMapping(ConfigKey key) {
+        m_outputMappings.remove(key);
+    }
+
+    const QHash<ConfigKey, MidiOutputMapping>& getOutputMappings() const {
+        return m_outputMappings;
+    }
+
+    void setOutputMappings(const QHash<ConfigKey, MidiOutputMapping>& mappings) {
+        if (m_outputMappings != mappings) {
+            m_outputMappings.clear();
+            m_outputMappings.unite(mappings);
+        }
+    }
+
+  private:
     // MIDI input and output mappings.
-    QHash<uint16_t, MidiInputMapping> inputMappings;
-    QHash<ConfigKey, MidiOutputMapping> outputMappings;
+    QHash<uint16_t, MidiInputMapping> m_inputMappings;
+    QHash<ConfigKey, MidiOutputMapping> m_outputMappings;
 };
 
 #endif
