@@ -89,6 +89,8 @@ class ControllerManager : public QObject {
     void stopPolling();
     void maybeStartOrStopPolling();
 
+    // Sanitize string (e.g. a device name) for using it as ConfigKey or
+    // filename.
     static QString sanitizeString(QString name) {
         return name.replace(" ", "_").replace("/", "_").replace("\\", "_");
     }
