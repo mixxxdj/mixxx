@@ -85,6 +85,12 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
             &ColorPaletteEditor::slotSaveButtonClicked);
 }
 
+void ColorPaletteEditor::initialize(UserSettingsPointer pConfig) {
+    DEBUG_ASSERT(!m_pConfig);
+    m_pConfig = pConfig;
+    reset();
+}
+
 void ColorPaletteEditor::reset() {
     m_pPaletteNameComboBox->clear();
     for (const ColorPalette& palette : mixxx::PredefinedColorPalettes::kPalettes) {

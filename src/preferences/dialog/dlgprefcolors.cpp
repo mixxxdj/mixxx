@@ -13,7 +13,7 @@ DlgPrefColors::DlgPrefColors(
           m_pConfig(pConfig),
           m_colorPaletteSettings(ColorPaletteSettings(pConfig)) {
     setupUi(this);
-    colorPaletteEditor->setConfig(pConfig);
+    colorPaletteEditor->initialize(pConfig);
 
     loadSettings();
 

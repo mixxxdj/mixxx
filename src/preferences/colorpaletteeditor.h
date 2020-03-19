@@ -15,10 +15,7 @@ class ColorPaletteEditor : public QWidget {
     Q_OBJECT
   public:
     ColorPaletteEditor(QWidget* parent = nullptr);
-    void setConfig(UserSettingsPointer pConfig) {
-        m_pConfig = pConfig;
-        reset();
-    }
+    void initialize(UserSettingsPointer pConfig);
     void reset();
 
   signals:
