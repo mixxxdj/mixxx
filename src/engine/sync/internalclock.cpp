@@ -91,7 +91,7 @@ double InternalClock::getBeatDistance() const {
 
 void InternalClock::setMasterBeatDistance(double beatDistance) {
     //qDebug() << "InternalClock::setMasterBeatDistance" << beatDistance;
-    m_bClockUpdated.store(true);
+    m_bClockUpdated.fetchAndStoreAcquire(true);
     m_dClockPosition = beatDistance * m_dBeatLength;
     m_pClockBeatDistance->set(beatDistance);
     // Make sure followers have an up-to-date beat distance.
@@ -189,7 +189,7 @@ void InternalClock::updateBeatLength(int sampleRate, double bpm) {
 void InternalClock::onCallbackStart(int sampleRate, int bufferSize) {
     Q_UNUSED(sampleRate)
     Q_UNUSED(bufferSize)
-    m_bClockUpdated.store(false);
+    m_bClockUpdated.fetchAndStoreAcquire(false);
     m_pEngineSync->notifyInstantaneousBpmChanged(this, getBpm());
 }
 
