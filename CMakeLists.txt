@@ -885,10 +885,18 @@ install(
     ${CMAKE_INSTALL_DATADIR}/mixxx
 )
 
-# Documentation
+# Licenses
 install(
   FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
+    ${CMAKE_CURRENT_SOURCE_DIR}/COPYING
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/licenses/mixxx
+)
+
+# Documentation
+install(
+  FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/README
     ${CMAKE_CURRENT_SOURCE_DIR}/Mixxx-Manual.pdf
   DESTINATION
@@ -948,6 +956,9 @@ include(CPack)
 # Prevent GoogleTest from overriding our compiler/linker options
 # when building with Visual Studio
 set(gtest_force_shared_crt ON CACHE BOOL "Pass Mixxx compiler/linker options to GoogleTest" FORCE)
+
+# Prevent installation of GoogleTest libraries
+set(INSTALL_GTEST OFF CACHE BOOL "Disable installation of GoogleTest" FORCE)
 
 # Add googletest directly to our build. This adds the following targets:
 # gtest, gtest_main, gmock and gmock_main
