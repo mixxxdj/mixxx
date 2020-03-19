@@ -164,7 +164,9 @@ TEST_F(EngineSyncTest, ExplicitMasterPersists) {
 
     // Stop deck 2, and restart it, no change.
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(0.0);
+    ProcessBuffer();
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+    ProcessBuffer();
     assertIsExplicitMaster(m_sGroup1);
     assertIsFollower(m_sGroup2);
 }
