@@ -104,7 +104,7 @@ ConfigKey WHotcueButton::createConfigKey(const QString& name) {
 }
 
 void WHotcueButton::slotColorChanged(double color) {
-    if (color < 0 && color > 0xFFFFFF) {
+    VERIFY_OR_DEBUG_ASSERT(color >= 0 && color <= 0xFFFFFF) {
         return;
     }
     QColor cueColor = QColor::fromRgb(color);

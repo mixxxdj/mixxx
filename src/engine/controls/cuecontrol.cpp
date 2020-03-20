@@ -1766,6 +1766,10 @@ HotcueControl::HotcueControl(QString group, int i)
 
     // The rgba value  of the color assigned to this color.
     m_hotcueColor = new ControlObject(keyForControl(i, "color"));
+    m_hotcueColor->connectValueChangeRequest(
+            this,
+            &HotcueControl::slotHotcueColorChangeRequest,
+            Qt::DirectConnection);
     connect(m_hotcueColor,
             &ControlObject::valueChanged,
             this,
@@ -1854,14 +1858,21 @@ void HotcueControl::slotHotcuePositionChanged(double newPosition) {
     emit hotcuePositionChanged(this, newPosition);
 }
 
+void HotcueControl::slotHotcueColorChangeRequest(double color) {
+    if (color < 0 || color > 0xFFFFFF) {
+        qWarning() << "slotHotcueColorChanged got invalid value:" << color;
+        return;
+    }
+    m_hotcueColor->setAndConfirm(color);
+}
+
 void HotcueControl::slotHotcueColorChanged(double newColor) {
     if (!m_pCue) {
         return;
     }
 
     mixxx::RgbColor::optional_t color = doubleToRgbColor(newColor);
-    if (!color) {
-        qWarning() << "slotHotcueColorChanged got invalid value:" << newColor;
+    VERIFY_OR_DEBUG_ASSERT(color) {
         return;
     }
 
