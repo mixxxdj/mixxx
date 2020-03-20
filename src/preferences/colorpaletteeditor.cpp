@@ -22,7 +22,7 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
           m_bPaletteIsReadOnly(false),
           m_pPaletteNameComboBox(make_parented<QComboBox>()),
           m_pTableView(make_parented<QTableView>()),
-          m_pModel(new ColorPaletteEditorModel(m_pTableView)) {
+          m_pModel(make_parented<ColorPaletteEditorModel>()) {
     m_pPaletteNameComboBox->setEditable(true);
 
     QDialogButtonBox* pButtonBox = new QDialogButtonBox();
