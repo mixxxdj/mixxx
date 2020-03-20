@@ -41,7 +41,7 @@
 
 exclude: ^lib/.*$
 default_language_version:
-  python: python3.7
+  python: python3
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v2.3.0
