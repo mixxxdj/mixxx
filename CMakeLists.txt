@@ -935,7 +935,7 @@ install(
 # udev rule file for USB HID and Bulk controllers
 install(
   FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.usb.rules
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx-usb-uaccess.rules
   DESTINATION
     ${CMAKE_INSTALL_SYSCONFDIR}/udev/rules.d
 )
