@@ -1766,7 +1766,6 @@ HotcueControl::HotcueControl(QString group, int i)
 
     // The rgba value  of the color assigned to this color.
     m_hotcueColor = new ControlObject(keyForControl(i, "color"));
-    m_hotcueColor->set(QRgb(ColorPalette::kDefaultCueColor));
     connect(m_hotcueColor,
             &ControlObject::valueChanged,
             this,
@@ -1888,8 +1887,6 @@ mixxx::RgbColor::optional_t HotcueControl::getColor() const {
 void HotcueControl::setColor(mixxx::RgbColor::optional_t newColor) {
     if (newColor) {
         m_hotcueColor->set(*newColor);
-    } else {
-        m_hotcueColor->set(QRgb(ColorPalette::kDefaultCueColor));
     }
 }
 void HotcueControl::resetCue() {
