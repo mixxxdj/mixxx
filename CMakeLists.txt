@@ -19,6 +19,8 @@ if(POLICY CMP0025)
 endif()
 set(CMAKE_POLICY_WARNING_CMP0025 ON)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 #######################################################################
 # Compilers and toolchains
 
