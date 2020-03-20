@@ -98,6 +98,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     void onMarkChanged(double v);
     void onMarkRangeChange(double v);
     void onRateRatioChange(double v);
+    void onPassthroughChange(double v);
     void receiveCuesUpdated();
 
     void slotWaveformSummaryUpdated();
@@ -132,10 +133,12 @@ class WOverview : public WWidget, public TrackDropTarget {
     UserSettingsPointer m_pConfig;
     ControlProxy* m_endOfTrackControl;
     bool m_endOfTrack;
+    bool m_bPassthroughEnabled;
     ControlProxy* m_pRateRatioControl;
     ControlProxy* m_trackSampleRateControl;
     ControlProxy* m_trackSamplesControl;
     ControlProxy* m_playpositionControl;
+    ControlProxy* m_pPassthroughControl;
 
     // Current active track
     TrackPointer m_pCurrentTrack;

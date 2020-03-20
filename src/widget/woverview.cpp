@@ -54,6 +54,7 @@ WOverview::WOverview(
           m_group(group),
           m_pConfig(pConfig),
           m_endOfTrack(false),
+          m_bPassthroughEnabled(false),
           m_pCueMenuPopup(std::make_unique<WCueMenuPopup>(pConfig, this)),
           m_bShowCueTimes(true),
           m_iPosSeconds(0),
@@ -80,6 +81,9 @@ WOverview::WOverview(
     m_trackSamplesControl =
             new ControlProxy(m_group, "track_samples", this);
     m_playpositionControl = new ControlProxy(m_group, "playposition", this);
+    m_pPassthroughControl =
+            new ControlProxy(m_group, "passthrough", this);
+    m_pPassthroughControl->connectValueChanged(this, &WOverview::onPassthroughChange);
     setAcceptDrops(true);
 
     setMouseTracking(true);
@@ -236,6 +240,12 @@ void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
 
 void WOverview::slotWaveformSummaryUpdated() {
     //qDebug() << "WOverview::slotWaveformSummaryUpdated()";
+
+    // Do not draw the waveform when passthrough is enabled
+    if (m_bPassthroughEnabled) {
+        return;
+    }
+
     TrackPointer pTrack(m_pCurrentTrack);
     if (!pTrack) {
         return;
@@ -340,6 +350,16 @@ void WOverview::onMarkRangeChange(double v) {
 void WOverview::onRateRatioChange(double v) {
     Q_UNUSED(v);
     update();
+}
+
+void WOverview::onPassthroughChange(double v) {
+    m_bPassthroughEnabled = static_cast<bool>(v);
+
+    if (m_bPassthroughEnabled) {
+        update();
+    } else {
+        slotWaveformSummaryUpdated();
+    }
 }
 
 void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
@@ -538,6 +558,11 @@ void WOverview::paintEvent(QPaintEvent* pEvent) {
 
     if (!m_backgroundPixmap.isNull()) {
         painter.drawPixmap(rect(), m_backgroundPixmap);
+    }
+
+    if (m_bPassthroughEnabled) {
+        paintText(tr("Passthrough"), &painter);
+        return;
     }
 
     if (m_pCurrentTrack) {
