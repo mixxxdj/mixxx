@@ -9,7 +9,7 @@
 #include "engine/engine.h"
 #include "util/assert.h"
 #include "util/color/color.h"
-#include "util/color/colorpalette.h"
+#include "util/color/predefinedcolorpalettes.h"
 
 namespace {
 
@@ -54,7 +54,7 @@ Cue::Cue()
           m_sampleStartPosition(Cue::kNoPosition),
           m_sampleEndPosition(Cue::kNoPosition),
           m_iHotCue(Cue::kNoHotCue),
-          m_color(ColorPalette::kDefaultCueColor) {
+          m_color(mixxx::PredefinedColorPalettes::kDefaultCueColor) {
 }
 
 Cue::Cue(
@@ -101,7 +101,7 @@ Cue::Cue(
                           sampleRate)),
           m_iHotCue(cueInfo.getHotCueNumber() ? *cueInfo.getHotCueNumber() : kNoHotCue),
           m_label(cueInfo.getLabel()),
-          m_color(cueInfo.getColor().value_or(ColorPalette::kDefaultCueColor)) {
+          m_color(cueInfo.getColor().value_or(mixxx::PredefinedColorPalettes::kDefaultCueColor)) {
 }
 
 mixxx::CueInfo Cue::getCueInfo(
