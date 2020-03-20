@@ -1161,7 +1161,7 @@ else()
     COMMENT "Copying QScriptEngine extensions to build directory..."
   )
 endif()
-add_dependencies(mixxx-lib mixxx-res)
+add_dependencies(mixxx-lib mixxx-res mixxx-script)
 
 # Windows-only resource file
 if(WIN32)
