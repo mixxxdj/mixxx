@@ -290,7 +290,7 @@ WSearchLineEdit {
 #GuiToggleButton[displayValue="0"], #RecFeedback[displayValue="0"],
 #BroadcastButton[displayValue="0"], #SettingsButton[displayValue="0"],
 #DeckRow_5_LoopCuesTransport WPushButton[value="0"],
-#HotcueButton[displayValue="0"],
+#HotcueButton,
 #FxAssignButton[displayValue="0"], #FxFocusButton[displayValue="0"],
 #FxToggleButton[displayValue="0"], #FxParameterButton[displayValue="0"],
 #SplitCueButton[value="0"],
@@ -909,7 +909,7 @@ WEffectSelector {
 WLibrary,
 #SidebarBox {
 /* only 1px padding to compensate the 2px border of inner widgets
-  (QTreeView, QTableView, QTextBrowser) */ 
+  (QTreeView, QTableView, QTextBrowser) */
   padding: 1px 1px 0px 1px;
   border-bottom: 0px;
   border-left: 1px solid qlineargradient(

@@ -638,7 +638,7 @@ QPushButton#pushButtonAutoDJ:enabled:!checked,
       brighter bg color to enhance contrast in darker containers
       and with small size respectively */
 #DeckRow_5_LoopCuesTransport WPushButton[value="0"],
-#HotcueButton[displayValue="0"],
+#HotcueButton,
 #FxAssignButton[displayValue="0"], #FxFocusButton[displayValue="0"],
 #FxToggleButton[displayValue="0"], #FxParameterButton[displayValue="0"],
 #SplitCueButton[value="0"],
@@ -686,11 +686,6 @@ QPushButton#pushButtonRecording:checked,
 #KeyMatchButton[displayValue="1"],
 #KeyUpButton[displayValue="1"],
 #KeyDownButton[displayValue="1"],
-#HotcueButton[displayValue="1"] {
-  background-color: #db0000;
-  qproperty-light: #FDFDFD;
-  qproperty-dark: #1f1e1e;
-}
 
 #BroadcastButton[displayValue="3"] {
   /* pink */

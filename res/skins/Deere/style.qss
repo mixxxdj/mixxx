@@ -1558,9 +1558,8 @@ WPushButton[value="2"]:hover {
     border: 1px solid #0080BE;
 }
 
-#HotcueButton {
-    qproperty-light: #FDFDFD;
-    qproperty-dark: #1f1e1e;
+#HotcueButton[light="true"] {
+    color: #1f1e1e;
 }
 
 #PlayToggle[value="0"] {

@@ -1006,12 +1006,12 @@ WLabel#TrackComment {
     border: 1px solid #eeeeee;
     }
 
-#HotcueButton[backgroundIsDark=true][hasBackgroundColor=true] {
-    color: #eeeeee;
+#HotcueButton[light="true"] {
+    color: #0f0f0f;
 }
 
-#HotcueButton[backgroundIsDark=false][hasBackgroundColor=true] {
-    color: #0f0f0f;
+#HotcueButton[light="true"]:hover {
+    border: 1px solid #0f0f0f;
 }
 
 #CueButton {

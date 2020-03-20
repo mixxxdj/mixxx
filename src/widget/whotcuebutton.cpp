@@ -10,7 +10,10 @@ WHotcueButton::WHotcueButton(QWidget* pParent)
         : WPushButton(pParent),
           m_hotcue(Cue::kNoHotCue),
           m_hoverCueColor(false),
-          m_pCoColor(nullptr) {
+          m_pCoColor(nullptr),
+          m_cueColorDimmed(false),
+          m_isCueColorLight(false),
+          m_isCueColorDark(false) {
 }
 
 void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
@@ -104,47 +107,35 @@ void WHotcueButton::slotColorChanged(double color) {
     if (color < 0 && color > 0xFFFFFF) {
         return;
     }
-    m_cueColor = QColor::fromRgb(color);
-    updateStyleSheet();
-}
-
-void WHotcueButton::setLightTextColorChanged(QColor color) {
-    if (m_lightTextColor != color) {
-        m_lightTextColor = color;
-        updateStyleSheet();
-    }
-}
-
-void WHotcueButton::setDarkTextColorColorChanged(QColor color) {
-    if (m_darkTextColor != color) {
-        m_darkTextColor = color;
-        updateStyleSheet();
-    }
-}
-
-void WHotcueButton::updateStyleSheet() {
-    if (!m_cueColor.isValid()) {
-        return;
-    }
-    QColor textColor = Color::isDimmColor(m_cueColor) ? m_lightTextColor : m_darkTextColor;
+    QColor cueColor = QColor::fromRgb(color);
+    m_cueColorDimmed = Color::isDimmColor(cueColor);
 
     QString style =
             QStringLiteral("WWidget[displayValue=\"1\"] { background-color: ") +
-            m_cueColor.name() +
-            (textColor.isValid() ? (QStringLiteral("; color: ") +
-                                           textColor.name())
-                                 : QString()) +
+            cueColor.name() +
             QStringLiteral("; }");
 
     if (m_hoverCueColor) {
         style +=
                 QStringLiteral("WWidget[displayValue=\"1\"]:hover { background-color: ") +
-                m_cueColor.lighter().name() +
-                (textColor.isValid() ? (QStringLiteral("; color: ") +
-                                               textColor.name())
-                                     : QString()) +
+                cueColor.lighter(m_cueColorDimmed ? 120 : 80).name() +
                 QStringLiteral("; }");
     }
 
     setStyleSheet(style);
+    restyleAndRepaint();
+}
+
+void WHotcueButton::restyleAndRepaint() {
+    if (readDisplayValue()) {
+        // Adjust properties for Qss file
+        m_isCueColorLight = !m_cueColorDimmed;
+        m_isCueColorDark = m_cueColorDimmed;
+    } else {
+        // We are now at the background set by qss.
+        // Since we don't know the color reset both
+        m_isCueColorLight = false;
+        m_isCueColorDark = false;
+    }
+    WPushButton::restyleAndRepaint();
 }
