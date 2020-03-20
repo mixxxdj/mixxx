@@ -596,7 +596,7 @@ WEffectSelector:open {
 #SplitCueButton,
 #PlayButtonPreview,
 #BeatgridButtons WPushButton,
-#MicTalkButton, #AuxPlayButton, #MicDuckingButton {
+#MicTalkButton, #AuxPlayButton, #MicAuxAddButton, #MicDuckingButton {
   /* limit background to button surface resulting from SVG backpath.
     border width wouldn't be applied.
     otoh, margin would set in the colored background area and not
@@ -617,7 +617,7 @@ WEffectSelector:open {
 #FxExpandCollapseButton,
 #PlayButtonSampler[displayValue="0"], #PlayButtonDeckMini[displayValue="0"],
 #SamplerSyncButton[displayValue="0"],
-#MicTalkButton[value="0"], #AuxPlayButton[value="0"],
+#MicTalkButton[value="0"], #AuxPlayButton[value="0"], #MicAuxAddButton,
 #MicDuckingButton[value="0"],
 #PlayButtonPreview[displayValue="0"],
 QPushButton#pushButtonAutoDJ:enabled:!checked,
@@ -995,6 +995,9 @@ QPushButton#pushButtonAutoDJ:checked,
 }
 #AuxPlayButton {
   image: url(skin:/buttons_classic/btn__aux_play.svg) no-repeat center center;
+}
+#MicAuxAddButton {
+  image: url(skin:/buttons_classic/btn__plus.svg) no-repeat center center;
 }
 #MicDuckingButton[value="0"] {
   image: url(skin:/buttons_classic/btn__mic_duck_off.svg) no-repeat center center;
@@ -1651,6 +1654,9 @@ WBeatSpinBox,
       }
       #MicAuxPlayButtonBox {
         margin: 0px 0px 2px 1px;
+      }
+      #MicAuxAddBox {
+        margin: 6px 0px 8px 1px;
       }
 
   #MicAuxSubControlsFrame {

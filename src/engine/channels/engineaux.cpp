@@ -23,9 +23,10 @@ EngineAux::EngineAux(const ChannelHandleAndGroup& handle_group, EffectsManager* 
     ControlDoublePrivate::insertAlias(ConfigKey(getGroup(), "enabled"),
                                       ConfigKey(getGroup(), "input_configured"));
 
-    // by default Aux is enabled on the master and disabled on PFL. User
+    // by default Aux is disabled on the master and disabled on PFL. User
     // can over-ride by setting the "pfl" or "master" controls.
-    setMaster(true);
+    // Skins can change that during initialisation, if the master control is not provided.
+    setMaster(false);
 }
 
 EngineAux::~EngineAux() {

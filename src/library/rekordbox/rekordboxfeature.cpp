@@ -71,10 +71,7 @@ constexpr mixxx::RgbColor kTrackColorPurple(0x9808F8);
 struct memory_cue_t {
     double position;
     QString comment;
-    int colorCode;
-    int colorRed;
-    int colorGreen;
-    int colorBlue;
+    mixxx::RgbColor::optional_t color;
 };
 
 bool createLibraryTable(QSqlDatabase& database, const QString& tableName) {
@@ -793,7 +790,7 @@ void clearDeviceTables(QSqlDatabase& database, TreeItem* child) {
     transaction.commit();
 }
 
-void setHotCue(TrackPointer track, double position, int id, QString label, int /*colorCode*/, int /*colorRed*/, int /*colorGreen*/, int /*colorBlue*/) {
+void setHotCue(TrackPointer track, double position, int id, QString label, mixxx::RgbColor::optional_t color) {
     CuePointer pCue;
     bool hotCueFound = false;
 
@@ -813,53 +810,9 @@ void setHotCue(TrackPointer track, double position, int id, QString label, int /
     pCue->setStartPosition(position);
     pCue->setHotCue(id);
     pCue->setLabel(label);
-
-    /*
-    TODO(ehendrikd):
-    Update setting hotcue colors once proposed PR is merged
-    allowing custom hotcue colors/palette
-    See:
-       https://github.com/mixxxdj/mixxx/pull/2119
-       https://github.com/mixxxdj/mixxx/pull/2345
-
-    // Map 17 possible Rekordbox hotcue colors to closest Mixxx hotcue colors
-    switch (colorCode) {
-    case 38:
-    case 42:
-        pCue->setColor(Color::kPredefinedColorsSet.red);
-        break;
-    case 0:
-    case 14:
-    case 18:
-    case 22:
-    case 26:
-        pCue->setColor(Color::kPredefinedColorsSet.green);
-        break;
-    case 30:
-    case 32:
-        pCue->setColor(Color::kPredefinedColorsSet.yellow);
-        break;
-    case 1:
-    case 5:
-    case 62:
-        pCue->setColor(Color::kPredefinedColorsSet.blue);
-        break;
-    case 9:
-        pCue->setColor(Color::kPredefinedColorsSet.cyan);
-        break;
-    case 56:
-    case 60:
-        pCue->setColor(Color::kPredefinedColorsSet.magenta);
-        break;
-    case 45:
-    case 49:
-        pCue->setColor(Color::kPredefinedColorsSet.pink);
-        break;
-    default:
-        pCue->setColor(Color::kPredefinedColorsSet.noColor);
-        break;
+    if (color) {
+        pCue->setColor(*color);
     }
-*/
 }
 
 void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool ignoreBeatsAndLegacyCues, QString anlzPath) {
@@ -930,10 +883,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_MEMORY_CUE: {
                         memory_cue_t memoryCue;
                         memoryCue.position = position;
-                        memoryCue.colorCode = -1;
-                        memoryCue.colorRed = -1;
-                        memoryCue.colorGreen = -1;
-                        memoryCue.colorBlue = -1;
+                        memoryCue.color = mixxx::RgbColor::nullopt();
                         memoryCues << memoryCue;
                     } break;
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_LOOP: {
@@ -955,7 +905,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                     if (hotCueIndex > lastHotCueIndex) {
                         lastHotCueIndex = hotCueIndex;
                     }
-                    setHotCue(track, position, hotCueIndex, QString(), -1, -1, -1, -1);
+                    setHotCue(track, position, hotCueIndex, QString(), mixxx::RgbColor::nullopt());
                 } break;
                 }
             }
@@ -978,10 +928,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                         memory_cue_t memoryCue;
                         memoryCue.position = position;
                         memoryCue.comment = toUnicode((*cueExtendedEntry)->comment());
-                        memoryCue.colorCode = static_cast<int>((*cueExtendedEntry)->color_code());
-                        memoryCue.colorRed = static_cast<int>((*cueExtendedEntry)->color_red());
-                        memoryCue.colorGreen = static_cast<int>((*cueExtendedEntry)->color_green());
-                        memoryCue.colorBlue = static_cast<int>((*cueExtendedEntry)->color_blue());
+                        memoryCue.color = mixxx::RgbColor(qRgb(static_cast<int>((*cueExtendedEntry)->color_red()), static_cast<int>((*cueExtendedEntry)->color_green()), static_cast<int>((*cueExtendedEntry)->color_blue())));
                         memoryCues << memoryCue;
                     } break;
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_LOOP: {
@@ -1003,7 +950,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                     if (hotCueIndex > lastHotCueIndex) {
                         lastHotCueIndex = hotCueIndex;
                     }
-                    setHotCue(track, position, hotCueIndex, toUnicode((*cueExtendedEntry)->comment()), static_cast<int>((*cueExtendedEntry)->color_code()), static_cast<int>((*cueExtendedEntry)->color_red()), static_cast<int>((*cueExtendedEntry)->color_green()), static_cast<int>((*cueExtendedEntry)->color_blue()));
+                    setHotCue(track, position, hotCueIndex, toUnicode((*cueExtendedEntry)->comment()), mixxx::RgbColor(qRgb(static_cast<int>((*cueExtendedEntry)->color_red()), static_cast<int>((*cueExtendedEntry)->color_green()), static_cast<int>((*cueExtendedEntry)->color_blue()))));
                 } break;
                 }
             }
@@ -1027,7 +974,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
         // Add remaining memory cues as hot cues (after actual found hotcues) as Mixxx can only have 1 cue
         for (int memoryCueIndex = 1; memoryCueIndex < memoryCues.size(); memoryCueIndex++) {
             memory_cue_t memoryCue = memoryCues[memoryCueIndex];
-            setHotCue(track, memoryCue.position, lastHotCueIndex + memoryCueIndex, memoryCue.comment, memoryCue.colorCode, memoryCue.colorRed, memoryCue.colorGreen, memoryCue.colorBlue);
+            setHotCue(track, memoryCue.position, lastHotCueIndex + memoryCueIndex, memoryCue.comment, memoryCue.color);
         }
     }
 

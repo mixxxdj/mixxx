@@ -29,8 +29,15 @@ Description:
               <Template src="skin:mic_unit.xml">
                 <SetVariable name="micLabel">1</SetVariable>
               </Template>
+              <Template src="skin:mic_unit_unconfigured.xml">
+                <SetVariable name="micLabel">1</SetVariable>
+              </Template>
 
               <Template src="skin:mic_unit.xml">
+                <SetVariable name="micLabel">2</SetVariable>
+                <SetVariable name="micNum">2</SetVariable>
+              </Template>
+              <Template src="skin:mic_unit_unconfigured.xml">
                 <SetVariable name="micLabel">2</SetVariable>
                 <SetVariable name="micNum">2</SetVariable>
               </Template>
@@ -39,8 +46,16 @@ Description:
                 <SetVariable name="micLabel">3</SetVariable>
                 <SetVariable name="micNum">3</SetVariable>
               </Template>
+              <Template src="skin:mic_unit_unconfigured.xml">
+                <SetVariable name="micLabel">3</SetVariable>
+                <SetVariable name="micNum">3</SetVariable>
+              </Template>
 
               <Template src="skin:mic_unit.xml">
+                <SetVariable name="micLabel">4</SetVariable>
+                <SetVariable name="micNum">4</SetVariable>
+              </Template>
+              <Template src="skin:mic_unit_unconfigured.xml">
                 <SetVariable name="micLabel">4</SetVariable>
                 <SetVariable name="micNum">4</SetVariable>
               </Template>
@@ -128,16 +143,28 @@ Description:
               <Template src="skin:aux_unit.xml">
                 <SetVariable name="auxNum">1</SetVariable>
               </Template>
+              <Template src="skin:aux_unit_unconfigured.xml">
+                <SetVariable name="auxNum">1</SetVariable>
+              </Template>
 
               <Template src="skin:aux_unit.xml">
+                <SetVariable name="auxNum">2</SetVariable>
+              </Template>
+              <Template src="skin:aux_unit_unconfigured.xml">
                 <SetVariable name="auxNum">2</SetVariable>
               </Template>
 
               <Template src="skin:aux_unit.xml">
                 <SetVariable name="auxNum">3</SetVariable>
               </Template>
+              <Template src="skin:aux_unit_unconfigured.xml">
+                <SetVariable name="auxNum">3</SetVariable>
+              </Template>
 
               <Template src="skin:aux_unit.xml">
+                <SetVariable name="auxNum">4</SetVariable>
+              </Template>
+              <Template src="skin:aux_unit_unconfigured.xml">
                 <SetVariable name="auxNum">4</SetVariable>
               </Template>
 
