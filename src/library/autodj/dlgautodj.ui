@@ -180,6 +180,9 @@
       </widget>
      </item>
      <item>
+      <widget class="QComboBox" name="faderModeComboBox"/>
+     </item>
+     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
