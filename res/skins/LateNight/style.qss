@@ -685,7 +685,9 @@ QPushButton#pushButtonRecording:checked,
 #BeatgridButtons WPushButton[value="1"],
 #KeyMatchButton[displayValue="1"],
 #KeyUpButton[displayValue="1"],
-#KeyDownButton[displayValue="1"],
+#KeyDownButton[displayValue="1"] {
+  background-color: #db0000;
+}
 
 #BroadcastButton[displayValue="3"] {
   /* pink */
