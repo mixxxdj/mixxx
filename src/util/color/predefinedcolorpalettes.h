@@ -6,6 +6,7 @@ namespace mixxx {
 class PredefinedColorPalettes {
   public:
     static const ColorPalette kMixxxHotcueColorPalette;
+    static const ColorPalette kMixxxHotcueColorPaletteWithDefaultColor;
     static const ColorPalette kSeratoDJIntroHotcueColorPalette;
     static const ColorPalette kSeratoDJProHotcueColorPalette;
 

@@ -123,6 +123,22 @@ const ColorPalette PredefinedColorPalettes::kMixxxHotcueColorPalette =
                         kColorMixxxWhite,
                 });
 
+const ColorPalette PredefinedColorPalettes::kMixxxHotcueColorPaletteWithDefaultColor =
+        ColorPalette(
+                QStringLiteral("Mixxx Hotcue Colors (with default color)"),
+                QList<mixxx::RgbColor>{
+                        kColorMixxxRed,
+                        kColorMixxxYellow,
+                        kColorMixxxGreen,
+                        kColorMixxxCeleste,
+                        kColorMixxxBlue,
+                        kColorMixxxPurple,
+                        kColorMixxxPink,
+                        kColorMixxxWhite,
+                        kSchemaMigrationReplacementColor,
+                },
+                QList<unsigned int>{8});
+
 const ColorPalette PredefinedColorPalettes::kSeratoDJIntroHotcueColorPalette =
         ColorPalette(
                 QStringLiteral("Serato DJ Intro Hotcue Colors"),
@@ -248,6 +264,7 @@ const ColorPalette PredefinedColorPalettes::kDefaultTrackColorPalette =
 const QList<ColorPalette> PredefinedColorPalettes::kPalettes{
         // Hotcue Color Palettes
         mixxx::PredefinedColorPalettes::kMixxxHotcueColorPalette,
+        mixxx::PredefinedColorPalettes::kMixxxHotcueColorPaletteWithDefaultColor,
         mixxx::PredefinedColorPalettes::kSeratoDJProHotcueColorPalette,
         mixxx::PredefinedColorPalettes::kSeratoDJIntroHotcueColorPalette,
 
