@@ -466,6 +466,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefautodjdlg.ui
   src/preferences/dialog/dlgprefbeats.cpp
   src/preferences/dialog/dlgprefbeatsdlg.ui
+  src/preferences/dialog/dlgprefcolors.cpp
+  src/preferences/dialog/dlgprefcolorsdlg.ui
   src/preferences/dialog/dlgprefcrossfader.cpp
   src/preferences/dialog/dlgprefcrossfaderdlg.ui
   src/preferences/dialog/dlgprefdeck.cpp
@@ -498,6 +500,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefwaveformdlg.ui
   src/preferences/dlgpreferencepage.cpp
   src/preferences/effectsettingsmodel.cpp
+  src/preferences/colorpaletteeditor.cpp
+  src/preferences/colorpaletteeditormodel.cpp
   src/preferences/colorpalettesettings.cpp
   src/preferences/replaygainsettings.cpp
   src/preferences/settingsmanager.cpp
@@ -562,6 +566,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/cmdlineargs.cpp
   src/util/color/color.cpp
   src/util/color/colorpalette.cpp
+  src/util/color/predefinedcolorpalettes.cpp
   src/util/console.cpp
   src/util/db/dbconnection.cpp
   src/util/db/dbconnectionpool.cpp
