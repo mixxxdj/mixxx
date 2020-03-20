@@ -1063,30 +1063,21 @@ add_executable(mixxx-test
 set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
 target_link_libraries(mixxx-test PUBLIC mixxx-lib gtest gmock)
 
-# Benchmark
-add_library(gbenchmark STATIC EXCLUDE_FROM_ALL
-  lib/benchmark/src/benchmark.cc
-  lib/benchmark/src/colorprint.cc
-  lib/benchmark/src/commandlineflags.cc
-  lib/benchmark/src/console_reporter.cc
-  lib/benchmark/src/csv_reporter.cc
-  lib/benchmark/src/json_reporter.cc
-  lib/benchmark/src/log.cc
-  lib/benchmark/src/reporter.cc
-  lib/benchmark/src/sleep.cc
-  lib/benchmark/src/string_util.cc
-  lib/benchmark/src/sysinfo.cc
-  lib/benchmark/src/walltime.cc
-  lib/benchmark/src/re_std.cc
+#
+# Benchmark tests
+#
+
+# Disable testing of google/benchmark
+set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
+
+# Prevent installation of google/benchmark artifacts
+set(BENCHMARK_ENABLE_INSTALL OFF CACHE BOOL "Disable installation of google/benchmark" FORCE)
+
+add_subdirectory(
+  "${CMAKE_CURRENT_SOURCE_DIR}/lib/benchmark"
+  "${CMAKE_CURRENT_BINARY_DIR}/lib/benchmark"
 )
-target_compile_definitions(gbenchmark PRIVATE HAVE_STD_REGEX)
-find_package(Threads REQUIRED)
-target_link_libraries(gbenchmark ${CMAKE_THREAD_LIBS_INIT})
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  target_link_libraries(gbenchmark Shlwapi)
-endif()
-target_include_directories(gbenchmark SYSTEM PUBLIC lib/benchmark/include)
-target_link_libraries(mixxx-test PUBLIC gbenchmark)
+target_link_libraries(mixxx-test PUBLIC benchmark)
 
 # Test Suite
 include(CTest)
@@ -1100,13 +1091,13 @@ gtest_add_tests(
 set_tests_properties(${testsuite} PROPERTIES TIMEOUT 30)
 
 # Benchmarking
-add_custom_target(benchmark
+add_custom_target(mixxx-benchmark
   COMMAND $<TARGET_FILE:mixxx-test> --benchmark
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
   COMMENT "Mixxx Benchmarks"
   VERBATIM
 )
-add_dependencies(benchmark mixxx-test)
+add_dependencies(mixxx-benchmark mixxx-test)
 
 if(UNIX)
   add_custom_target(mixxx-testdata
