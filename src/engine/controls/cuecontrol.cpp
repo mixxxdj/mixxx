@@ -618,13 +618,8 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     pCue->setLabel();
     pCue->setType(mixxx::CueType::HotCue);
 
-    ConfigKey autoHotcueColorsKey("[Controls]", "auto_hotcue_colors");
-    if (getConfig()->getValue(autoHotcueColorsKey, false)) {
-        auto hotcueColorPalette = m_colorPaletteSettings.getHotcueColorPalette();
-        pCue->setColor(hotcueColorPalette.colorForHotcueIndex(hotcue));
-    } else {
-        pCue->setColor(mixxx::PredefinedColorPalettes::kDefaultCueColor);
-    }
+    auto hotcueColorPalette = m_colorPaletteSettings.getHotcueColorPalette();
+    pCue->setColor(hotcueColorPalette.colorForHotcueIndex(hotcue));
 
     // TODO(XXX) deal with spurious signals
     attachCue(pCue, pControl);

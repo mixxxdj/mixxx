@@ -102,8 +102,7 @@ constexpr mixxx::RgbColor kVirtualDJTrackColorBlue(0x0000FF);
 constexpr mixxx::RgbColor kVirtualDJTrackColorFuchsia(0xFF00FF);
 constexpr mixxx::RgbColor kVirtualDJTrackColorWhite(0xFFFFFF);
 
-// Replaces "no color" values and is used for new cues if auto_hotcue_colors is
-// disabled
+// Replaces "no color" values
 constexpr mixxx::RgbColor kSchemaMigrationReplacementColor(0xFF8000);
 
 } // anonymous namespace
