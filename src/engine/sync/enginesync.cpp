@@ -44,11 +44,12 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
         return m_pMasterSyncable;
     }
 
-    std::vector<Syncable*> stopped_sync_decks;
-    std::vector<Syncable*> playing_sync_decks;
-
+    static std::vector<Syncable*> stopped_sync_decks;
+    static std::vector<Syncable*> playing_sync_decks;
     stopped_sync_decks.reserve(kMaxNumberOfDecks);
     playing_sync_decks.reserve(kMaxNumberOfDecks);
+    stopped_sync_decks.clear();
+    playing_sync_decks.clear();
 
     if (enabling_syncable != nullptr && enabling_syncable->getBaseBpm() != 0.0) {
         if (enabling_syncable->isPlaying()) {
