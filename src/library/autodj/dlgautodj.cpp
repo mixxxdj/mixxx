@@ -140,6 +140,15 @@ DlgAutoDJ::DlgAutoDJ(
             "Play the whole track except for silence at the beginning and end.\n"
             "Begin crossfading from the selected number of seconds before the\n"
             "last sound.");
+    // TODO(c3n7) Describe this better
+    QString faderModeTooltip = tr(
+            "Auto DJFader Modes\n"
+            "\n"
+            "Crossfader\n"
+            "Use the crossfader when fading to new tracks"
+            "Volume fader\n"
+            "Use the volume faders instead of the crossfader when fading\n"
+            "into new tracks.");
 
     pushButtonFadeNow->setToolTip(fadeBtnTooltip);
     pushButtonSkipNext->setToolTip(skipBtnTooltip);
@@ -149,6 +158,7 @@ DlgAutoDJ::DlgAutoDJ(
     spinBoxTransition->setToolTip(spinBoxTransitionTooltip);
     labelTransitionAppendix->setToolTip(labelTransitionTooltip);
     fadeModeCombobox->setToolTip(fadeModeTooltip);
+    faderModeCombobox->setToolTip(faderModeTooltip);
 
     connect(spinBoxTransition,
             QOverload<int>::of(&QSpinBox::valueChanged),
@@ -169,6 +179,17 @@ DlgAutoDJ::DlgAutoDJ(
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgAutoDJ::slotTransitionModeChanged);
+
+    faderModeCombobox->addItem(tr("Crossfader"),
+            static_cast<int>(AutoDJProcessor::FaderMode::Crossfader));
+    faderModeCombobox->addItem(tr("Volume Faders"),
+            static_cast<int>(AutoDJProcessor::FaderMode::VolumeFaders));
+    faderModeCombobox->setCurrentIndex(
+            faderModeCombobox->findData(static_cast<int>(m_pAutoDJProcessor->getFaderMode())));
+    connect(faderModeCombobox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgAutoDJ::slotFaderModeChanged);
 
     connect(pushButtonRepeatPlaylist,
             &QPushButton::toggled,
@@ -327,6 +348,12 @@ void DlgAutoDJ::slotRepeatPlaylistChanged(int checkState) {
     bool checked = static_cast<bool>(checkState);
     m_pConfig->setValue(ConfigKey(kPreferenceGroupName, kRepeatPlaylistPreference),
             checked);
+}
+
+// TODO(c3n7) Check this out later
+void DlgAutoDJ::slotFaderModeChanged(int comboboxIndex) {
+    m_pAutoDJProcessor->setFaderMode(static_cast<AutoDJProcessor::FaderMode>(
+            faderModeCombobox->itemData(comboboxIndex).toInt()));
 }
 
 void DlgAutoDJ::updateSelectionInfo() {

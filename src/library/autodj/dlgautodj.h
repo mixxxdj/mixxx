@@ -45,6 +45,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void updateSelectionInfo();
     void slotTransitionModeChanged(int comboboxIndex);
     void slotRepeatPlaylistChanged(int checkedState);
+    void slotFaderModeChanged(int comboboxIndex);
 
   signals:
     void addRandomButton(bool buttonChecked);

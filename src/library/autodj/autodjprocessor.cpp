@@ -12,6 +12,7 @@
 namespace {
 const char* kTransitionPreferenceName = "Transition";
 const char* kTransitionModePreferenceName = "TransitionMode";
+const char* kFaderModePreferenceName = "FaderMode";
 const double kTransitionPreferenceDefault = 10.0;
 const double kKeepPosition = -1.0;
 
@@ -174,6 +175,11 @@ AutoDJProcessor::AutoDJProcessor(
             ConfigKey(kConfigKey, kTransitionModePreferenceName),
             static_cast<int>(TransitionMode::FullIntroOutro));
     m_transitionMode = static_cast<TransitionMode>(configuredTransitionMode);
+    // TODO(c3n7) Check this out later
+    int configuredFaderMode = m_pConfig->getValue(
+            ConfigKey(kConfigKey, kFaderModePreferenceName),
+            static_cast<int>(FaderMode::Crossfader));
+    m_faderMode = static_cast<FaderMode>(configuredFaderMode);
 }
 
 AutoDJProcessor::~AutoDJProcessor() {
@@ -1595,6 +1601,12 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
         // user has manually started the other deck or stopped both.
         // don't know what to do.
     }
+}
+
+//TODO(c3n7) Read more on this and edit this function accordingly
+void AutoDJProcessor::setFaderMode(FaderMode newMode) {
+    m_pConfig->set(ConfigKey(kConfigKey, kFaderModePreferenceName),
+            ConfigValue(static_cast<int>(newMode)));
 }
 
 DeckAttributes* AutoDJProcessor::getOtherDeck(
