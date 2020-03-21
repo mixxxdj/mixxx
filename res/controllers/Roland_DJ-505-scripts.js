@@ -583,6 +583,7 @@ DJ505.Deck = function(deckNumbers, offset) {
 
     this.sync = new components.Button({
         midi: [0x90 + offset, 0x02],
+        group: "[Channel" + deckNumbers + "]",
         outKey: "sync_enabled",
         output: function(value, _group, _control) {
             midi.sendShortMsg(this.midi[0], value ? 0x02 : 0x03, this.on);
