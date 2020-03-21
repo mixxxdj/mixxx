@@ -12,33 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "re.h"
+#ifndef BENCHMARK_COUNTER_H_
+#define BENCHMARK_COUNTER_H_
+
+#include "benchmark/benchmark.h"
 
 namespace benchmark {
 
-Regex::Regex() : init_(false) { }
-
-bool Regex::Init(const std::string& spec, std::string* error) {
-  try {
-    re_ = std::regex(spec, std::regex_constants::extended);
-
-    init_ = true;
-  } catch (const std::regex_error& e) {
-    if (error) {
-      *error = e.what();
-    }
-  }
-  return init_;
-}
-
-Regex::~Regex() { }
-
-bool Regex::Match(const std::string& str) {
-  if (!init_) {
-    return false;
-  }
-
-  return std::regex_search(str, re_);
-}
+// these counter-related functions are hidden to reduce API surface.
+namespace internal {
+void Finish(UserCounters* l, IterationCount iterations, double time,
+            double num_threads);
+void Increment(UserCounters* l, UserCounters const& r);
+bool SameNames(UserCounters const& l, UserCounters const& r);
+}  // end namespace internal
 
 }  // end namespace benchmark
+
+#endif  // BENCHMARK_COUNTER_H_
