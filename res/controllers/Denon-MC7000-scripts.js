@@ -116,15 +116,23 @@ MC7000.VuMeterLEDPeakValue = 0x76;
 // PAD Mode Colors
 MC7000.padColor = {
     "alloff": 0x01,         // switch off completely
-    "hotcueoff": 0x02,      // lightblue Hot Cue inactive
+    // Hot Cue
     "hotcueon": 0x04,       // darkblue Hot Cue active
-    "sampleroff": 0x27,     // light pink Sampler standard colour
+    "hotcueoff": 0x02,      // lightblue Hot Cue inactive
+    // Cue Loop
+    "cueloopon": 0x0D,      // Cueloop colour for activated cue point
+    "cueloopoff": 0x1A,     // Cueloop colour inactive
+    // Roll
+    "rollon": 0x20,         // BeatloopRoll active colour
+    "rolloff": 0x06,        // BeatloopRoll off colour
+    // Slicer
+    "sliceron": 0x11,       // activated Slicer
+    "slicerJumpFwd": 0x31,  // Sliver forward jump
+    "slicerJumpBack": 0x31, // Sliver backward jump
+    // Sampler
     "samplerloaded": 0x38,  // dark pink Sampler loaded colour
     "samplerplay": 0x09,    // green Sampler playing
-    "rollon": 0x10,         // BeatloopRoll active colour
-    "rolloff": 0x1B,        // BeatloopRoll off colour
-    "cueloopon": 0x0D,      // Cueloop colour for activated cue point
-    "cueloopoff": 0x1A      // Cueloop colour inactive
+    "sampleroff": 0x12     // light pink Sampler standard colour
 };
 
 /* DECK INITIALIZATION */
@@ -135,7 +143,7 @@ MC7000.init = function() {
     MC7000.rightDeck = new MC7000.Deck(2, 4);
 
     // set default Master Volume to 85% to give a little head room for mixing
-    engine.setValue("[Master]", "gain", 0.85);
+    // engine.setValue("[Master]", "gain", 0.85);
 
     // VU meters
     engine.makeConnection("[Channel1]", "VuMeter", MC7000.VuMeter);
@@ -267,7 +275,7 @@ MC7000.Deck = function() {
             MC7000.PADModePitch[deckNumber] = false;
         }
         for (var i = 1; i <= 8; i++) {
-            midi.sendShortMsg(0x94 + deckNumber -1, 0x14 + i -1, MC7000.padColor.alloff);
+            midi.sendShortMsg(0x94 + deckNumber -1, 0x1C + i -1, MC7000.padColor.alloff);
         }
     };
     // PAD Mode Roll
@@ -327,7 +335,7 @@ MC7000.Deck = function() {
             MC7000.PADModePitch[deckNumber] = false;
         }
         for (var i = 1; i <= 8; i++) {
-            midi.sendShortMsg(0x94 + deckNumber -1, 0x14 + i -1, MC7000.padColor.alloff);
+            midi.sendShortMsg(0x94 + deckNumber -1, 0x14 + i -1, MC7000.padColor.sliceron);
         }
     };
     // PAD Mode Slicer Loop
@@ -397,7 +405,7 @@ MC7000.Deck = function() {
             midi.sendShortMsg(0x94 + deckNumber -1, 0x14 + i -1, MC7000.padColor.alloff);
         }
     };
-    // PAD Mode Slicer
+    // PAD Mode Pitch
     MC7000.padModePitch = function(channel, control, value, status, group) {
         var deckNumber = script.deckFromGroup(group);
         if (value === 0x00) return;     // don't respond to note off messages
@@ -415,6 +423,7 @@ MC7000.Deck = function() {
         }
         for (var i = 1; i <= 8; i++) {
             midi.sendShortMsg(0x94 + deckNumber -1, 0x14 + i -1, MC7000.padColor.alloff);
+            midi.sendShortMsg(0x94 + deckNumber -1, 0x1C + i -1, MC7000.padColor.alloff);
         }
     };
 
@@ -492,7 +501,55 @@ MC7000.Deck = function() {
         } else if (MC7000.PADModeSavedLoop[deckNumber]) {
             return;
         } else if (MC7000.PADModeSlicer[deckNumber]) {
-            return;
+            if (control === 0x14 && value >= 0x01) {
+                engine.setValue(group, "beatjump_1_forward", true);
+                midi.sendShortMsg(0x94 + deckNumber -1, 0x14, MC7000.padColor.slicerJumpFwd);
+            } else if (control === 0x14 && value >= 0x00) {
+                engine.setValue(group, "beatjump_1_forward", false);
+                midi.sendShortMsg(0x94 + deckNumber -1, 0x14, MC7000.padColor.sliceron);
+            } else if (control === 0x15 && value >= 0x01) {
+                engine.setValue(group, "beatjump_2_forward", true);
+                midi.sendShortMsg(0x94 + deckNumber -1, 0x15, MC7000.padColor.slicerJumpFwd);
+            } else if (control === 0x15 && value >= 0x00) {
+                engine.setValue(group, "beatjump_2_forward", false);
+                midi.sendShortMsg(0x94 + deckNumber -1, 0x15, MC7000.padColor.sliceron);
+            } else if (control === 0x16 && value >= 0x01) {
+                engine.setValue(group, "beatjump_4_forward", true);
+                midi.sendShortMsg(0x94 + deckNumber -1, 0x16, MC7000.padColor.slicerJumpFwd);
+            } else if (control === 0x16 && value >= 0x00) {
+                engine.setValue(group, "beatjump_4_forward", false);
+                midi.sendShortMsg(0x94 + deckNumber -1, 0x16, MC7000.padColor.sliceron);
+            } else if (control === 0x17 && value >= 0x01) {
+                engine.setValue(group, "beatjump_8_forward", true);
+                midi.sendShortMsg(0x94 + deckNumber -1, 0x17, MC7000.padColor.slicerJumpFwd);
+            } else if (control === 0x17 && value >= 0x00) {
+                engine.setValue(group, "beatjump_8_forward", false);
+                midi.sendShortMsg(0x94 + deckNumber -1, 0x17, MC7000.padColor.sliceron);
+            } else if (control === 0x18 && value >= 0x01) {
+                engine.setValue(group, "beatjump_1_backward", true);
+                midi.sendShortMsg(0x94 + deckNumber -1, 0x18, MC7000.padColor.slicerJumpBack);
+            } else if (control === 0x18 && value >= 0x00) {
+                engine.setValue(group, "beatjump_1_backward", false);
+                midi.sendShortMsg(0x94 + deckNumber -1, 0x18, MC7000.padColor.sliceron);
+            } else if (control === 0x19 && value >= 0x01) {
+                engine.setValue(group, "beatjump_2_backward", true);
+                midi.sendShortMsg(0x94 + deckNumber -1, 0x19, MC7000.padColor.slicerJumpBack);
+            } else if (control === 0x19 && value >= 0x00) {
+                engine.setValue(group, "beatjump_2_backward", false);
+                midi.sendShortMsg(0x94 + deckNumber -1, 0x19, MC7000.padColor.sliceron);
+            } else if (control === 0x1A && value >= 0x01) {
+                engine.setValue(group, "beatjump_4_backward", true);
+                midi.sendShortMsg(0x94 + deckNumber -1, 0x1A, MC7000.padColor.slicerJumpBack);
+            } else if (control === 0x1A && value >= 0x00) {
+                engine.setValue(group, "beatjump_4_backward", false);
+                midi.sendShortMsg(0x94 + deckNumber -1, 0x1A, MC7000.padColor.sliceron);
+            } else if (control === 0x1B && value >= 0x01) {
+                engine.setValue(group, "beatjump_8_backward", true);
+                midi.sendShortMsg(0x94 + deckNumber -1, 0x1B, MC7000.padColor.slicerJumpBack);
+            } else if (control === 0x1B && value >= 0x00) {
+                engine.setValue(group, "beatjump_8_backward", false);
+                midi.sendShortMsg(0x94 + deckNumber -1, 0x1B, MC7000.padColor.sliceron);
+            }
         } else if (MC7000.PADModeSlicerLoop[deckNumber]) {
             return;
         } else if (MC7000.PADModeSampler[deckNumber]) {
@@ -506,6 +563,7 @@ MC7000.Deck = function() {
                 } else if (control === 0x1C + i -1 && value >= 0x01) {
                     if (engine.getValue("[Sampler"+i+"]", "play") === 1) {
                         engine.setValue("[Sampler"+i+"]", "cue_gotoandstop", 1);
+                        midi.sendShortMsg(0x94 + deckNumber - 1, 0x1C + i - 1, MC7000.padColor.samplerloaded);
                     } else {
                         engine.setValue("[Sampler"+i+"]", "eject", 1);
                         midi.sendShortMsg(0x94 + deckNumber - 1, 0x1C + i -1, MC7000.padColor.sampleroff);
@@ -513,7 +571,6 @@ MC7000.Deck = function() {
                     }
                 }
             }
-            // TODO: check for the actual status of LEDs again on other decks
         } else if (MC7000.PADModeVelSamp[deckNumber]) {
             return;
         } else if (MC7000.PADModePitch[deckNumber]) {
@@ -731,7 +788,7 @@ MC7000.SamplerLED = function() {
                         midi.sendShortMsg(0x94 + j - 1, 0x14 + i - 1, MC7000.padColor.samplerplay);
                     }
                 } else if (engine.getValue("[Sampler"+i+"]", "track_loaded") === 0) {
-                    midi.sendShortMsg(0x94 + j - 1, 0x1C + i - 1, MC7000.padColor.sampleroff);
+                    midi.sendShortMsg(0x94 + j - 1, 0x14 + i - 1, MC7000.padColor.sampleroff);
                 }
             }
         }
