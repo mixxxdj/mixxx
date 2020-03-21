@@ -87,7 +87,7 @@ class EngineChannel : public EngineObject {
 
     // If set to true, this engine channel represents one of the primary playback decks.
     // It is used to check for valid bpm targets by the sync code.
-    const bool m_bIsPrimaryDeck = false;
+    const bool m_bIsPrimaryDeck;
 
   private slots:
     void slotOrientationLeft(double v);
