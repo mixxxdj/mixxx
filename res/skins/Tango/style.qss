@@ -1011,7 +1011,7 @@ WLabel#TrackComment {
 }
 
 #HotcueButton[light="true"]:hover {
-    border: 1px solid #0f0f0f;
+    border: 1px solid #808080;
 }
 
 #CueButton {
