@@ -1620,7 +1620,7 @@ DJ505.PitchPlayMode = function(deck, offset) {
         off: DJ505.PadColor.OFF,
         outputColor: function(colorCode) {
             // For colored hotcues (shifted only)
-            var midiColor = this.colorMapper.getNearestValue(colorCode);
+            var midiColor = this.colorMapper.getValueForNearestColor(colorCode);
             this.send((this.mode.cuepoint === this.number) ? midiColor : (midiColor + DJ505.PadColor.DIM_MODIFIER));
         },
         unshift: function() {
