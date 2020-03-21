@@ -1266,7 +1266,6 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(2.0));
 
     for (int i=0; i<50; ++i) {
-        qDebug() << "bpm test loop 2 iter" << i;
         ProcessBuffer();
         EXPECT_FLOAT_EQ(m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance(),
                   m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance());
@@ -1626,14 +1625,14 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
     ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
     ProcessBuffer();
 
-    // Beat length: 40707,692307692; Buffer size is 1024
-    // Expected beat_distance = 0.032701436
-    //40707,692307692
+    // Beat length: 40707.692307692; Buffer size is 1024
+    // Expected beat_distance = 1024/40707 = 0.025155
+    qDebug() << "ok so what's the deal";
     EXPECT_DOUBLE_EQ(130, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
     EXPECT_DOUBLE_EQ(0.025154950869236584, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
 
     // Beat length: 52920; Buffer size is 1024
-    // Expected beat_distance = 0,02515495086
+    // Expected beat_distance = 0.01935
     EXPECT_DOUBLE_EQ(100, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     EXPECT_DOUBLE_EQ(0.019349962207105064, ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
 
@@ -1654,9 +1653,8 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
     ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 1.0);
     ProcessBuffer();
 
-    // Quantize only has no effect here, both decks are running feely.
+    // Quantize only has no effect here, both decks are running freely.
 
-    // The next buffer should be normally at 0,063854875
     EXPECT_DOUBLE_EQ(100, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
     EXPECT_DOUBLE_EQ(0.069659863945578229, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
 
@@ -1683,7 +1681,7 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
     ControlObject::set(ConfigKey(m_sGroup1, "rate_ratio"), 1.0);
     ProcessBuffer();
 
-    // Now the deck should be running normaly
+    // Now the deck should be running normally
     EXPECT_DOUBLE_EQ(130, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
     EXPECT_NEAR(
             0.10255479969765675,
