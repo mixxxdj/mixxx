@@ -291,8 +291,7 @@
 
     var HotcueButton = function(options) {
         if (options.number === undefined) {
-            print("ERROR: No hotcue number specified for new HotcueButton.");
-            return;
+            throw Error("No hotcue number specified for new HotcueButton.");
         }
         if (options.colorMapper !== undefined || options.sendRGB !== undefined) {
             this.colorKey = "hotcue_" + options.number + "_color";
@@ -359,8 +358,7 @@
     });
     var SamplerButton = function(options) {
         if (options.number === undefined) {
-            print("ERROR: No sampler number specified for new SamplerButton.");
-            return;
+            throw Error("No sampler number specified for new SamplerButton.");
         }
         this.volumeByVelocity = options.volumeByVelocity;
         this.number = options.number;
@@ -509,8 +507,7 @@
     ComponentContainer.prototype = {
         forEachComponent: function(operation, recursive) {
             if (typeof operation !== "function") {
-                print("ERROR: ComponentContainer.forEachComponent requires a function argument");
-                return;
+                throw Error("ComponentContainer.forEachComponent requires a function argument");
             }
             if (recursive === undefined) { recursive = true; }
 
@@ -535,8 +532,7 @@
         },
         forEachComponentContainer: function(operation, recursive) {
             if (typeof operation !== "function") {
-                print("ERROR: ComponentContainer.forEachComponentContainer requires a function argument");
-                return;
+                throw Error("ComponentContainer.forEachComponentContainer requires a function argument");
             }
             if (recursive === undefined) { recursive = true; }
 
@@ -677,8 +673,7 @@
                 this.deckNumbers = [deckNumbers];
             }
         } else {
-            print("ERROR! new Deck() called without specifying any deck numbers");
-            return;
+            throw Error("new Deck() called without specifying any deck numbers");
         }
     };
     Deck.prototype = new ComponentContainer({
@@ -827,8 +822,7 @@
                 this.setCurrentUnit(unitNumbers);
             }
         } else {
-            print("ERROR! new EffectUnit() called without specifying any unit numbers!");
-            return;
+            throw Error("new EffectUnit() called without specifying any unit numbers!");
         }
 
         this.dryWetKnob = new Pot({
