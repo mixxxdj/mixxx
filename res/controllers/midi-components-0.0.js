@@ -333,17 +333,17 @@
                 // get the MIDI value for the nearest supported color and send it.
                 var nearestColorValue = this.colorMapper.getValueForNearestColor(colorCode);
                 this.send(nearestColorValue);
-            } else {
+            } else if (this.sendRGB !== undefined) {
                 // Since outputColor has been called but no ColorMapper is
                 // available, we can assume that controller supports arbitrary
                 // RGB color output.
                 this.sendRGB(colorCodeToObject(colorCode));
+            } else {
+                throw Error(
+                    "HotcueButton is unable to send RGB color: colorKey has " +
+                    "been set, but no color mapper was specified and the " +
+                    "sendRGB(colorObject) method is not implemented!");
             }
-        },
-        sendRGB: function(_colorObject) {
-            // This method needs to be overridden in controller mappings,
-            // because the procedure is controller-dependent.
-            throw Error("sendRGB(colorObject) not implemented - unable to send RGB colors!");
         },
         connect: function() {
             Button.prototype.connect.call(this); // call parent connect
