@@ -20,7 +20,7 @@ jobs:
     - name: pre-commit
       if: type != pull_request
       os: linux
-      dist: xenial
+      dist: bionic
       language: python
       python: 3.7
       # There are too many files in the repo that have formatting issues. We'll
@@ -39,7 +39,7 @@ jobs:
     - name: pre-commit-pr
       if: type == pull_request
       os: linux
-      dist: xenial
+      dist: bionic
       language: python
       python: 3.7
       cache:
@@ -53,9 +53,9 @@ jobs:
 
     - name: Ubuntu/gcc/SCons build
       os: linux
-      dist: xenial
+      dist: bionic
       compiler: gcc
-      # Ubuntu Xenial build prerequisites
+      # Ubuntu Bionic build prerequisites
       before_install:
         - sudo apt-get install -y scons
       install:
@@ -68,10 +68,10 @@ jobs:
 
     - name: Ubuntu/gcc/CMake build
       os: linux
-      dist: xenial
+      dist: bionic
       compiler: gcc
       cache: ccache
-      # Ubuntu Xenial build prerequisites
+      # Ubuntu Bionic build prerequisites
       env: CMAKEFLAGS_EXTRA="-DLOCALECOMPARE=ON"
       before_install:
         - export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
