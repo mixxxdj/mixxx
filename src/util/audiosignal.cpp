@@ -2,7 +2,6 @@
 
 #include "util/logger.h"
 
-
 namespace mixxx {
 
 namespace {
@@ -11,73 +10,61 @@ const Logger kLogger("AudioSignal");
 
 } // anonymous namespace
 
-bool AudioSignal::setChannelCount(ChannelCount channelCount) {
-    if (channelCount < ChannelCount()) {
+bool AudioSignal::setChannelCount(audio::ChannelCount channelCount) {
+    if (channelCount < audio::ChannelCount()) {
         kLogger.warning()
                 << "Invalid channel count"
                 << channelCount;
         return false; // abort
     } else {
-        m_channelCount = channelCount;
+        m_signalInfo.setChannelCount(channelCount);
         return true;
     }
 }
 
-bool AudioSignal::setSampleRate(SampleRate sampleRate) {
-    if (sampleRate < SampleRate()) {
+bool AudioSignal::setSampleRate(audio::SampleRate sampleRate) {
+    if (sampleRate < audio::SampleRate()) {
         kLogger.warning()
                 << "Invalid sample rate"
                 << sampleRate;
         return false; // abort
     } else {
-        m_sampleRate = sampleRate;
+        m_signalInfo.setSampleRate(sampleRate);
         return true;
     }
 }
 
 bool AudioSignal::verifyReadable() const {
     bool result = true;
-    if (!channelCount().valid()) {
+    if (!channelCount().isValid()) {
         kLogger.warning()
                 << "Invalid number of channels:"
                 << channelCount()
                 << "is out of range ["
-                << ChannelCount::min()
+                << audio::ChannelCount::min()
                 << ","
-                << ChannelCount::max()
+                << audio::ChannelCount::max()
                 << "]";
         result = false;
     }
-    if (!sampleRate().valid()) {
+    if (!sampleRate().isValid()) {
         kLogger.warning()
-                << "Invalid sample rate [Hz]:"
+                << "Invalid sample rate:"
                 << sampleRate()
                 << "is out of range ["
-                << SampleRate::min()
+                << audio::SampleRate::min()
                 << ","
-                << SampleRate::max()
+                << audio::SampleRate::max()
                 << "]";
         result = false;
     }
     return result;
 }
 
-QDebug operator<<(QDebug dbg, AudioSignal::SampleLayout arg) {
-    switch (arg) {
-    case AudioSignal::SampleLayout::Planar:
-        return dbg << "Planar";
-    case AudioSignal::SampleLayout::Interleaved:
-        return dbg << "Interleaved";
-    }
-    DEBUG_ASSERT(!"unreachable code");
-    return dbg;
-}
-
 QDebug operator<<(QDebug dbg, const AudioSignal& arg) {
-    return dbg << "AudioSignal{"
-            << "sampleLayout:" << arg.sampleLayout()
-            << "channelCount:" << arg.channelCount()
-            << "sampleRate:" << arg.sampleRate()
+    return dbg
+            << "AudioSignal{"
+            << arg.getSignalInfo()
             << "}";
 }
 

@@ -28,26 +28,12 @@ EngineBufferScaleRubberBand::EngineBufferScaleRubberBand(
           m_bBackwards(false) {
     m_retrieve_buffer[0] = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_retrieve_buffer[1] = SampleUtil::alloc(MAX_BUFFER_LEN);
-    initRubberBand();
 }
 
 EngineBufferScaleRubberBand::~EngineBufferScaleRubberBand() {
     SampleUtil::free(m_buffer_back);
     SampleUtil::free(m_retrieve_buffer[0]);
     SampleUtil::free(m_retrieve_buffer[1]);
-}
-
-void EngineBufferScaleRubberBand::initRubberBand() {
-    m_pRubberBand = std::make_unique<RubberBandStretcher>(
-            getAudioSignal().sampleRate(),
-            getAudioSignal().channelCount(),
-            RubberBandStretcher::OptionProcessRealTime);
-    m_pRubberBand->setMaxProcessSize(kRubberBandBlockSize);
-    // Setting the time ratio to a very high value will cause RubberBand
-    // to preallocate buffers large enough to (almost certainly)
-    // avoid memory reallocations during playback.
-    m_pRubberBand->setTimeRatio(2.0);
-    m_pRubberBand->setTimeRatio(1.0);
 }
 
 void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
@@ -111,12 +97,27 @@ void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
     m_dPitchRatio = *pPitchRatio;
 }
 
-void EngineBufferScaleRubberBand::setSampleRate(SINT iSampleRate) {
-    EngineBufferScale::setSampleRate(iSampleRate);
-    initRubberBand();
+void EngineBufferScaleRubberBand::onSampleRateChanged() {
+    if (!getAudioSignal().isValid()) {
+        m_pRubberBand.reset();
+        return;
+    }
+    m_pRubberBand = std::make_unique<RubberBandStretcher>(
+            getAudioSignal().getSampleRate(),
+            getAudioSignal().getChannelCount(),
+            RubberBandStretcher::OptionProcessRealTime);
+    m_pRubberBand->setMaxProcessSize(kRubberBandBlockSize);
+    // Setting the time ratio to a very high value will cause RubberBand
+    // to preallocate buffers large enough to (almost certainly)
+    // avoid memory reallocations during playback.
+    m_pRubberBand->setTimeRatio(2.0);
+    m_pRubberBand->setTimeRatio(1.0);
 }
 
 void EngineBufferScaleRubberBand::clear() {
+    VERIFY_OR_DEBUG_ASSERT(m_pRubberBand) {
+        return;
+    }
     m_pRubberBand->reset();
 }
 

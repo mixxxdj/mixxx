@@ -29,27 +29,14 @@ const SINT kSeekOffsetFrames = 519;
 EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
     : m_pReadAheadManager(pReadAheadManager),
       m_pSoundTouch(std::make_unique<soundtouch::SoundTouch>()),
-      buffer_back_size(getAudioSignal().frames2samples(kSeekOffsetFrames)),
-      buffer_back(SampleUtil::alloc(buffer_back_size)),
       m_bBackwards(false) {
-    DEBUG_ASSERT(getAudioSignal().verifyReadable());
-    m_pSoundTouch->setChannels(getAudioSignal().channelCount());
-    m_pSoundTouch->setSampleRate(getAudioSignal().sampleRate());
+    m_pSoundTouch->setChannels(getAudioSignal().getChannelCount());
     m_pSoundTouch->setRate(m_dBaseRate);
     m_pSoundTouch->setPitch(1.0);
     m_pSoundTouch->setSetting(SETTING_USE_QUICKSEEK, 1);
-
-    // Setting the tempo to a very low value will force SoundTouch
-    // to preallocate buffers large enough to (almost certainly)
-    // avoid memory reallocations during playback.
-    m_pSoundTouch->setTempo(0.1);
-    m_pSoundTouch->putSamples(buffer_back, kSeekOffsetFrames);
-    m_pSoundTouch->clear();
-    m_pSoundTouch->setTempo(m_dTempoRatio);
 }
 
 EngineBufferScaleST::~EngineBufferScaleST() {
-    SampleUtil::free(buffer_back);
 }
 
 void EngineBufferScaleST::setScaleParameters(double base_rate,
@@ -98,17 +85,32 @@ void EngineBufferScaleST::setScaleParameters(double base_rate,
     // changed direction. I removed it because this is handled by EngineBuffer.
 }
 
-void EngineBufferScaleST::setSampleRate(SINT iSampleRate) {
-    EngineBufferScale::setSampleRate(iSampleRate);
-    m_pSoundTouch->setSampleRate(iSampleRate);
+void EngineBufferScaleST::onSampleRateChanged() {
+    buffer_back.clear();
+    if (!getAudioSignal().isValid()) {
+        return;
+    }
+    m_pSoundTouch->setSampleRate(getAudioSignal().getSampleRate());
+    const auto bufferSize = getAudioSignal().frames2samples(kSeekOffsetFrames);
+    if (bufferSize > buffer_back.size()) {
+        // grow buffer
+        buffer_back = mixxx::SampleBuffer(bufferSize);
+    }
+    // Setting the tempo to a very low value will force SoundTouch
+    // to preallocate buffers large enough to (almost certainly)
+    // avoid memory reallocations during playback.
+    m_pSoundTouch->setTempo(0.1);
+    m_pSoundTouch->putSamples(buffer_back.data(), kSeekOffsetFrames);
+    m_pSoundTouch->clear();
+    m_pSoundTouch->setTempo(m_dTempoRatio);
 }
 
 void EngineBufferScaleST::clear() {
     m_pSoundTouch->clear();
 
     // compensate seek offset for a rate of 1.0
-    SampleUtil::clear(buffer_back, getAudioSignal().frames2samples(kSeekOffsetFrames));
-    m_pSoundTouch->putSamples(buffer_back, kSeekOffsetFrames);
+    SampleUtil::clear(buffer_back.data(), buffer_back.size());
+    m_pSoundTouch->putSamples(buffer_back.data(), kSeekOffsetFrames);
 }
 
 double EngineBufferScaleST::scaleBuffer(
@@ -140,14 +142,14 @@ double EngineBufferScaleST::scaleBuffer(
                         // The value doesn't matter here. All that matters is we
                         // are going forward or backward.
                         (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempoRatio,
-                        buffer_back,
-                        buffer_back_size);
+                        buffer_back.data(),
+                        buffer_back.size());
             SINT iAvailFrames = getAudioSignal().samples2frames(iAvailSamples);
 
             if (iAvailFrames > 0) {
                 last_read_failed = false;
                 total_read_frames += iAvailFrames;
-                m_pSoundTouch->putSamples(buffer_back, iAvailFrames);
+                m_pSoundTouch->putSamples(buffer_back.data(), iAvailFrames);
             } else {
                 if (last_read_failed) {
                     m_pSoundTouch->flush();

@@ -357,7 +357,19 @@ void Track::setDateAdded(const QDateTime& dateAdded) {
 
 void Track::setDuration(mixxx::Duration duration) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_record.refMetadata().refDuration(), duration)) {
+    VERIFY_OR_DEBUG_ASSERT(!m_streamInfo ||
+            m_streamInfo->getDuration() <= mixxx::Duration::empty() ||
+            m_streamInfo->getDuration() == duration) {
+        kLogger.warning()
+                << "Cannot override stream duration:"
+                << m_streamInfo->getDuration()
+                << "->"
+                << duration;
+        return;
+    }
+    if (compareAndSet(
+            &m_record.refMetadata().refDuration(),
+            duration)) {
         markDirtyAndUnlock(&lock);
     }
 }
@@ -576,28 +588,14 @@ void Track::setType(const QString& sType) {
     }
 }
 
-void Track::setSampleRate(int iSampleRate) {
-    QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_record.refMetadata().refSampleRate(), mixxx::AudioSignal::SampleRate(iSampleRate))) {
-        markDirtyAndUnlock(&lock);
-    }
-}
-
 int Track::getSampleRate() const {
     QMutexLocker lock(&m_qMutex);
     return m_record.getMetadata().getSampleRate();
 }
 
-void Track::setChannels(int iChannels) {
-    QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_record.refMetadata().refChannels(), mixxx::AudioSignal::ChannelCount(iChannels))) {
-        markDirtyAndUnlock(&lock);
-    }
-}
-
 int Track::getChannels() const {
     QMutexLocker lock(&m_qMutex);
-    return m_record.getMetadata().getChannels();
+    return m_record.getMetadata().getChannelCount();
 }
 
 int Track::getBitrate() const {
@@ -611,7 +609,20 @@ QString Track::getBitrateText() const {
 
 void Track::setBitrate(int iBitrate) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_record.refMetadata().refBitrate(), mixxx::AudioSource::Bitrate(iBitrate))) {
+    const mixxx::audio::Bitrate bitrate(iBitrate);
+    VERIFY_OR_DEBUG_ASSERT(!m_streamInfo ||
+            !m_streamInfo->getBitrate().isValid() ||
+            m_streamInfo->getBitrate() == bitrate) {
+        kLogger.warning()
+                << "Cannot override stream bitrate:"
+                << m_streamInfo->getBitrate()
+                << "->"
+                << bitrate;
+        return;
+    }
+    if (compareAndSet(
+            &m_record.refMetadata().refBitrate(),
+            bitrate)) {
         markDirtyAndUnlock(&lock);
     }
 }
@@ -804,7 +815,7 @@ void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
 
 void Track::importCuePoints(const QList<mixxx::CueInfo>& cueInfos) {
     TrackId trackId;
-    mixxx::AudioSignal::SampleRate sampleRate;
+    mixxx::audio::SampleRate sampleRate;
     {
         QMutexLocker lock(&m_qMutex);
         trackId = m_record.getId();
@@ -1120,5 +1131,58 @@ ExportTrackMetadataResult Track::exportMetadata(
                 << "Failed to export track metadata:"
                 << getLocation();
         return ExportTrackMetadataResult::Failed;
+    }
+}
+
+void Track::setAudioProperties(
+        mixxx::audio::ChannelCount channelCount,
+        mixxx::audio::SampleRate sampleRate,
+        mixxx::audio::Bitrate bitrate,
+        mixxx::Duration duration) {
+    QMutexLocker lock(&m_qMutex);
+    DEBUG_ASSERT(!m_streamInfo);
+    bool dirty = false;
+    if (compareAndSet(
+                &m_record.refMetadata().refChannelCount(),
+                channelCount)) {
+        dirty = true;
+    }
+    if (compareAndSet(
+                &m_record.refMetadata().refSampleRate(),
+                sampleRate)) {
+        dirty = true;
+    }
+    if (compareAndSet(
+                &m_record.refMetadata().refBitrate(),
+                bitrate)) {
+        dirty = true;
+    }
+    if (compareAndSet(
+                &m_record.refMetadata().refDuration(),
+                duration)) {
+        dirty = true;
+    }
+    if (dirty) {
+        markDirtyAndUnlock(&lock);
+    }
+}
+
+void Track::updateAudioPropertiesFromStream(
+        mixxx::audio::StreamInfo&& streamInfo) {
+    QMutexLocker lock(&m_qMutex);
+    VERIFY_OR_DEBUG_ASSERT(!m_streamInfo ||
+            *m_streamInfo == streamInfo) {
+        kLogger.warning()
+                << "Varying stream properties:"
+                << *m_streamInfo
+                << "->"
+                << streamInfo;
+    }
+    bool updated = m_record.refMetadata().updateAudioPropertiesFromStream(
+            streamInfo);
+    m_streamInfo = std::make_optional(std::move(streamInfo));
+    // TODO: Continue deferred import of pending CueInfo objects
+    if (updated) {
+        markDirtyAndUnlock(&lock);
     }
 }

@@ -92,12 +92,12 @@ double EngineBufferScaleLinear::scaleBuffer(
         // if the buffer has extra samples, do a read so RAMAN ends up back where
         // it should be
         SINT iCurSample = getAudioSignal().frames2samples(static_cast<SINT>(ceil(m_dCurrentFrame)));
-        SINT extra_samples = m_bufferIntSize - iCurSample - getAudioSignal().channelCount();
+        SINT extra_samples = m_bufferIntSize - iCurSample - getAudioSignal().getChannelCount();
         if (extra_samples > 0) {
-            if (extra_samples % getAudioSignal().channelCount() != 0) {
+            if (extra_samples % getAudioSignal().getChannelCount() != 0) {
                 // extra samples should include the whole frame
-                extra_samples -= extra_samples % getAudioSignal().channelCount();
-                extra_samples += getAudioSignal().channelCount();
+                extra_samples -= extra_samples % getAudioSignal().getChannelCount();
+                extra_samples += getAudioSignal().getChannelCount();
             }
             //qDebug() << "extra samples" << extra_samples;
 
@@ -339,7 +339,7 @@ SINT EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
         // samples. This prevents the change from being discontinuous and helps
         // improve sound quality.
         rate_add += rate_delta_abs;
-        i += getAudioSignal().channelCount();
+        i += getAudioSignal().getChannelCount();
     }
 
     SampleUtil::clear(&buf[i], buf_size - i);

@@ -1,7 +1,8 @@
 #pragma once
 
+#include "audio/streaminfo.h"
+#include "engine/engine.h"
 #include "sources/urlresource.h"
-
 #include "util/audiosignal.h"
 #include "util/indexrange.h"
 #include "util/memory.h"
@@ -149,7 +150,7 @@ class AudioSource : public UrlResource, public AudioSignal, public virtual /*imp
     // A frame for a mono signal contains a single sample. A frame
     // for a stereo signal contains a pair of samples, one for the
     // left and right channel respectively.
-    static constexpr SampleLayout kSampleLayout = SampleLayout::Interleaved;
+    static constexpr audio::SampleLayout kSampleLayout = mixxx::kEngineSampleLayout;
 
     enum class OpenMode {
         // In Strict mode the opening operation should be aborted
@@ -186,13 +187,26 @@ class AudioSource : public UrlResource, public AudioSignal, public virtual /*imp
         OpenParams()
                 : AudioSignal(kSampleLayout) {
         }
-        OpenParams(ChannelCount channelCount, SampleRate sampleRate)
-                : AudioSignal(kSampleLayout, channelCount, sampleRate) {
+        OpenParams(
+                audio::ChannelCount channelCount,
+                audio::SampleRate sampleRate)
+                : AudioSignal(
+                          audio::SignalInfo(
+                                  channelCount,
+                                  sampleRate,
+                                  kSampleLayout)) {
         }
 
         using AudioSignal::setChannelCount;
         using AudioSignal::setSampleRate;
     };
+
+    audio::StreamInfo getStreamInfo() const {
+        return audio::StreamInfo(
+                getSignalInfo(),
+                m_bitrate,
+                Duration::fromSeconds(getDuration()));
+    }
 
     // Opens the AudioSource for reading audio data.
     //
@@ -245,43 +259,14 @@ class AudioSource : public UrlResource, public AudioSignal, public virtual /*imp
     // The actual duration in seconds.
     // Well defined only for valid files!
     inline bool hasDuration() const {
-        return sampleRate().valid();
+        return sampleRate().isValid();
     }
     inline double getDuration() const {
         DEBUG_ASSERT(hasDuration()); // prevents division by zero
         return double(frameLength()) / double(sampleRate());
     }
 
-    // The bitrate is optional and measured in kbit/s (kbps).
-    // It depends on the metadata and decoder if a value for the
-    // bitrate is available.
-    class Bitrate {
-      private:
-        static constexpr SINT kValueDefault = 0;
-
-      public:
-        static constexpr const char* unit() {
-            return "kbps";
-        }
-
-        explicit constexpr Bitrate(SINT value = kValueDefault)
-                : m_value(value) {
-        }
-
-        bool valid() const {
-            return m_value > kValueDefault;
-        }
-
-        /*implicit*/ operator SINT() const {
-            DEBUG_ASSERT(m_value >= kValueDefault); // unsigned value
-            return m_value;
-        }
-
-      private:
-        SINT m_value;
-    };
-
-    Bitrate bitrate() const {
+    audio::Bitrate bitrate() const {
         return m_bitrate;
     }
 
@@ -309,9 +294,9 @@ class AudioSource : public UrlResource, public AudioSignal, public virtual /*imp
         that.adjustFrameIndexRange(frameIndexRange);
     }
 
-    bool initBitrateOnce(Bitrate bitrate);
+    bool initBitrateOnce(audio::Bitrate bitrate);
     bool initBitrateOnce(SINT bitrate) {
-        return initBitrateOnce(Bitrate(bitrate));
+        return initBitrateOnce(audio::Bitrate(bitrate));
     }
 
     // Tries to open the AudioSource for reading audio data according
@@ -353,7 +338,7 @@ class AudioSource : public UrlResource, public AudioSignal, public virtual /*imp
 
     IndexRange m_frameIndexRange;
 
-    Bitrate m_bitrate;
+    audio::Bitrate m_bitrate;
 };
 
 typedef std::shared_ptr<AudioSource> AudioSourcePointer;

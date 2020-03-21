@@ -1,5 +1,6 @@
 #include "sources/soundsourceopus.h"
 
+#include "audio/streaminfo.h"
 #include "util/logger.h"
 
 namespace mixxx {
@@ -9,7 +10,7 @@ namespace {
 const Logger kLogger("SoundSourceOpus");
 
 // Decoded output of opusfile has a fixed sample rate of 48 kHz (fullband)
-constexpr AudioSignal::SampleRate kSampleRate = AudioSignal::SampleRate(48000);
+constexpr audio::SampleRate kSampleRate = audio::SampleRate(48000);
 
 // http://opus-codec.org
 //  - Sample rate 48 kHz (fullband)
@@ -121,13 +122,17 @@ SoundSourceOpus::importTrackMetadataAndCoverImage(
         return imported;
     }
 
-    pTrackMetadata->setChannels(ChannelCount(op_channel_count(pOggOpusFile, -1)));
-    pTrackMetadata->setSampleRate(kSampleRate);
-    pTrackMetadata->setBitrate(Bitrate(op_bitrate(pOggOpusFile, -1) / 1000));
+    pTrackMetadata->setChannelCount(
+            audio::ChannelCount(op_channel_count(pOggOpusFile, -1)));
+    pTrackMetadata->setSampleRate(
+            kSampleRate);
+    pTrackMetadata->setBitrate(
+            audio::Bitrate(op_bitrate(pOggOpusFile, -1) / 1000));
     // Cast to double is required for duration with sub-second precision
     const double dTotalFrames = op_pcm_total(pOggOpusFile, -1);
-    pTrackMetadata->setDuration(Duration::fromMicros(
-            1000000 * dTotalFrames / pTrackMetadata->getSampleRate()));
+    const auto duration = Duration::fromMicros(
+            1000000 * dTotalFrames / pTrackMetadata->getSampleRate());
+    pTrackMetadata->setDuration(duration);
 
 #ifndef TAGLIB_HAS_OPUSFILE
     const OpusTags* l_ptrOpusTags = op_tags(pOggOpusFile, -1);
@@ -224,7 +229,7 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(
     if (0 < streamChannelCount) {
         // opusfile supports to enforce stereo decoding
         bool enforceStereoDecoding =
-                params.channelCount().valid() &&
+                params.channelCount().isValid() &&
                 (params.channelCount() <= 2) &&
                 // preserve mono signals if stereo signal is not requested explicitly
                 ((params.channelCount() == 2) || (streamChannelCount > 2));
@@ -241,7 +246,7 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(
     }
 
     // Reserve enough capacity for buffering a stereo signal!
-    const auto prefetchChannelCount = std::min(channelCount(), ChannelCount(2));
+    const auto prefetchChannelCount = std::min(channelCount(), audio::ChannelCount(2));
     SampleBuffer(prefetchChannelCount * kNumberOfPrefetchFrames).swap(m_prefetchSampleBuffer);
 
     const ogg_int64_t pcmTotal = op_pcm_total(m_pOggOpusFile, kEntireStreamLink);

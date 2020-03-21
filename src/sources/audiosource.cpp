@@ -56,14 +56,14 @@ bool AudioSource::initFrameIndexRangeOnce(
     return true;
 }
 
-bool AudioSource::initBitrateOnce(Bitrate bitrate) {
-    if (bitrate < Bitrate()) {
+bool AudioSource::initBitrateOnce(audio::Bitrate bitrate) {
+    if (bitrate < audio::Bitrate()) {
         kLogger.warning()
                 << "Invalid bitrate"
                 << bitrate;
         return false; // abort
     }
-    VERIFY_OR_DEBUG_ASSERT(!m_bitrate.valid() || (m_bitrate == bitrate)) {
+    VERIFY_OR_DEBUG_ASSERT(!m_bitrate.isValid() || (m_bitrate == bitrate)) {
         kLogger.warning()
                 << "Bitrate has already been initialized to"
                 << m_bitrate
@@ -83,10 +83,10 @@ bool AudioSource::verifyReadable() const {
         // Don't set the result to false, even if reading from an empty source
         // is pointless!
     }
-    if (m_bitrate != Bitrate()) {
-        VERIFY_OR_DEBUG_ASSERT(m_bitrate.valid()) {
+    if (m_bitrate != audio::Bitrate()) {
+        VERIFY_OR_DEBUG_ASSERT(m_bitrate.isValid()) {
             kLogger.warning()
-                    << "Invalid bitrate [kbps]:"
+                    << "Invalid bitrate"
                     << m_bitrate;
             // Don't set the result to false, because bitrate is only
             // an informational property that does not effect the ability

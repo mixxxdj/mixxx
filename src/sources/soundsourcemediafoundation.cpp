@@ -365,7 +365,7 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
             VERIFY_OR_DEBUG_ASSERT(m_currentFrameIndex == readerFrameIndex) {
                 kLogger.debug()
                         << "streamPos [100 ns] =" << streamPos
-                        << ", sampleRate [Hz] =" << sampleRate();
+                        << ", sampleRate =" << sampleRate();
                 kLogger.warning()
                         << "Stream position (in sample frames) while reading is inaccurate:"
                         << "expected =" << m_currentFrameIndex

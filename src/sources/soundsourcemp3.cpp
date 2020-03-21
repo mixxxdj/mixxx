@@ -20,7 +20,7 @@ const SINT kMaxBytesPerMp3Frame = 1441;
 // mp3 supports 9 different sample rates
 const int kSampleRateCount = 9;
 
-int getIndexBySampleRate(AudioSignal::SampleRate sampleRate) {
+int getIndexBySampleRate(audio::SampleRate sampleRate) {
     switch (sampleRate) {
     case 8000:
         return 0;
@@ -46,29 +46,29 @@ int getIndexBySampleRate(AudioSignal::SampleRate sampleRate) {
     }
 }
 
-AudioSignal::SampleRate getSampleRateByIndex(int sampleRateIndex) {
+audio::SampleRate getSampleRateByIndex(int sampleRateIndex) {
     switch (sampleRateIndex) {
     case 0:
-        return AudioSignal::SampleRate(8000);
+        return audio::SampleRate(8000);
     case 1:
-        return AudioSignal::SampleRate(11025);
+        return audio::SampleRate(11025);
     case 2:
-        return AudioSignal::SampleRate(12000);
+        return audio::SampleRate(12000);
     case 3:
-        return AudioSignal::SampleRate(16000);
+        return audio::SampleRate(16000);
     case 4:
-        return AudioSignal::SampleRate(22050);
+        return audio::SampleRate(22050);
     case 5:
-        return AudioSignal::SampleRate(24000);
+        return audio::SampleRate(24000);
     case 6:
-        return AudioSignal::SampleRate(32000);
+        return audio::SampleRate(32000);
     case 7:
-        return AudioSignal::SampleRate(44100);
+        return audio::SampleRate(44100);
     case 8:
-        return AudioSignal::SampleRate(48000);
+        return audio::SampleRate(48000);
     default:
         // index out of range
-        return AudioSignal::SampleRate();
+        return audio::SampleRate();
     }
 }
 
@@ -192,8 +192,7 @@ void SoundSourceMp3::finishDecoding() {
 SoundSource::OpenResult SoundSourceMp3::tryOpen(
         OpenMode /*mode*/,
         const OpenParams& /*config*/) {
-    DEBUG_ASSERT(!channelCount().valid());
-    DEBUG_ASSERT(!sampleRate().valid());
+    DEBUG_ASSERT(!getSignalInfo().isValid());
 
     DEBUG_ASSERT(!m_file.isOpen());
     if (!m_file.open(QIODevice::ReadOnly)) {
@@ -238,7 +237,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
     mad_header madHeader;
     mad_header_init(&madHeader);
 
-    ChannelCount maxChannelCount = channelCount();
+    auto maxChannelCount = audio::ChannelCount();
     do {
         if (!decodeFrameHeader(&madHeader, &m_madStream, true)) {
             if (isStreamValid(m_madStream)) {
@@ -267,9 +266,9 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
             continue;
         }
 
-        const ChannelCount madChannelCount(MAD_NCHANNELS(&madHeader));
-        if (madChannelCount.valid()) {
-            if (maxChannelCount.valid() && (madChannelCount != maxChannelCount)) {
+        const audio::ChannelCount madChannelCount(MAD_NCHANNELS(&madHeader));
+        if (madChannelCount.isValid()) {
+            if (maxChannelCount.isValid() && (madChannelCount != maxChannelCount)) {
                 kLogger.warning()
                         << "Differing number of channels"
                         << madChannelCount << "<>" << maxChannelCount
@@ -283,7 +282,8 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
                     << m_file.fileName();
         }
 
-        const int sampleRateIndex = getIndexBySampleRate(SampleRate(madSampleRate));
+        const int sampleRateIndex = getIndexBySampleRate(
+                audio::SampleRate(madSampleRate));
         if (sampleRateIndex >= kSampleRateCount) {
             kLogger.warning() << "Invalid sample rate:" << m_file.fileName()
                               << madSampleRate;
@@ -297,7 +297,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
         addSeekFrame(m_curFrameIndex, m_madStream.this_frame);
 
         // Accumulate data from the header
-        if (Bitrate(madHeader.bitrate).valid()) {
+        if (audio::Bitrate(madHeader.bitrate).isValid()) {
             // Accumulate the bitrate per decoded sample frame to calculate
             // a weighted average for the whole file (see below)
             sumBitrateFrames += static_cast<quint64>(madHeader.bitrate) * static_cast<quint64>(madFrameLength);
@@ -368,7 +368,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
         return OpenResult::Failed;
     }
     setSampleRate(getSampleRateByIndex(mostCommonSampleRateIndex));
-    if (!maxChannelCount.valid() || (maxChannelCount > kChannelCountMax)) {
+    if (!maxChannelCount.isValid() || (maxChannelCount > kChannelCountMax)) {
         kLogger.warning()
                 << "Invalid number of channels"
                 << maxChannelCount

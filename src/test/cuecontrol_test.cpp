@@ -28,7 +28,13 @@ class CueControlTest : public BaseSignalPathTest {
 
     TrackPointer createTestTrack() const {
         const QString kTrackLocationTest = QDir::currentPath() + "/src/test/sine-30.wav";
-        return Track::newTemporary(kTrackLocationTest, SecurityTokenPointer());
+        const auto pTrack = Track::newTemporary(kTrackLocationTest, SecurityTokenPointer());
+        pTrack->setAudioProperties(
+                mixxx::audio::ChannelCount(2),
+                mixxx::audio::SampleRate(44100),
+                mixxx::audio::Bitrate(),
+                mixxx::Duration::fromSeconds(180));
+        return pTrack;
     }
 
     void loadTrack(TrackPointer pTrack) {
@@ -163,7 +169,6 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeEnabled) {
     m_pQuantizeEnabled->set(1);
 
     TrackPointer pTrack = createTestTrack();
-    pTrack->setSampleRate(44100);
     pTrack->setBpm(120.0);
 
     const int frameSize = 2;
@@ -196,7 +201,6 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeEnabledNoBeats) {
     m_pQuantizeEnabled->set(1);
 
     TrackPointer pTrack = createTestTrack();
-    pTrack->setSampleRate(44100);
     pTrack->setBpm(0.0);
 
     pTrack->setCuePoint(CuePosition(100.0));
@@ -224,7 +228,6 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeDisabled) {
     m_pQuantizeEnabled->set(0);
 
     TrackPointer pTrack = createTestTrack();
-    pTrack->setSampleRate(44100);
     pTrack->setBpm(120.0);
 
     pTrack->setCuePoint(CuePosition(240.0));

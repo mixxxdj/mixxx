@@ -514,7 +514,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
 
     // Request output format
     pavCodecContext->request_sample_fmt = kavSampleFormat;
-    if (params.channelCount().valid()) {
+    if (params.channelCount().isValid()) {
         // A dedicated number of channels for the output signal
         // has been requested. Forward this to FFmpeg to avoid
         // manual resampling or post-processing after decoding.
@@ -556,8 +556,8 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
                 << '}';
     }
 
-    ChannelCount channelCount;
-    SampleRate sampleRate;
+    audio::ChannelCount channelCount;
+    audio::SampleRate sampleRate;
     if (!initResampling(&channelCount, &sampleRate)) {
         return OpenResult::Failed;
     }
@@ -575,8 +575,8 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     }
 
     const auto streamBitrate =
-            Bitrate(m_pavStream->codecpar->bit_rate / 1000); // kbps
-    if (streamBitrate.valid() && !initBitrateOnce(streamBitrate)) {
+            audio::Bitrate(m_pavStream->codecpar->bit_rate / 1000); // kbps
+    if (streamBitrate.isValid() && !initBitrateOnce(streamBitrate)) {
         kLogger.warning()
                 << "Failed to initialize bitrate"
                 << streamBitrate;
@@ -641,12 +641,12 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
 }
 
 bool SoundSourceFFmpeg::initResampling(
-        ChannelCount* pResampledChannelCount,
-        SampleRate* pResampledSampleRate) {
+        audio::ChannelCount* pResampledChannelCount,
+        audio::SampleRate* pResampledSampleRate) {
     const auto avStreamChannelLayout =
             getStreamChannelLayout(*m_pavStream);
     const auto streamChannelCount =
-            ChannelCount(m_pavStream->codecpar->channels);
+            audio::ChannelCount(m_pavStream->codecpar->channels);
     // NOTE(uklotzde, 2017-09-26): Resampling to a different number of
     // channels like upsampling a mono to stereo signal breaks various
     // tests in the EngineBufferE2ETest suite!! SoundSource decoding tests
@@ -668,7 +668,7 @@ bool SoundSourceFFmpeg::initResampling(
     // the channels and to transform the decoded audio data into the sample
     // format that is used by Mixxx.
     const auto streamSampleRate =
-            SampleRate(m_pavStream->codecpar->sample_rate);
+            audio::SampleRate(m_pavStream->codecpar->sample_rate);
     const auto resampledSampleRate = streamSampleRate;
     if ((resampledChannelCount != streamChannelCount) ||
             (avResampledChannelLayout != avStreamChannelLayout) ||

@@ -1,5 +1,6 @@
 #include "sources/soundsourcemodplug.h"
 
+#include "audio/streaminfo.h"
 #include "track/trackmetadata.h"
 #include "util/logger.h"
 #include "util/sample.h"
@@ -82,10 +83,10 @@ SoundSourceModPlug::importTrackMetadataAndCoverImage(
 
         pTrackMetadata->refTrackInfo().setComment(QString(ModPlug::ModPlug_GetMessage(pModFile)));
         pTrackMetadata->refTrackInfo().setTitle(QString(ModPlug::ModPlug_GetName(pModFile)));
-        pTrackMetadata->setChannels(ChannelCount(kChannelCount));
-        pTrackMetadata->setSampleRate(SampleRate(kSampleRate));
+        pTrackMetadata->setChannelCount(audio::ChannelCount(kChannelCount));
+        pTrackMetadata->setSampleRate(audio::SampleRate(kSampleRate));
+        pTrackMetadata->setBitrate(audio::Bitrate(8));
         pTrackMetadata->setDuration(Duration::fromMillis(ModPlug::ModPlug_GetLength(pModFile)));
-        pTrackMetadata->setBitrate(Bitrate(8)); // not really, but fill in something...
         ModPlug::ModPlug_Unload(pModFile);
 
         return std::make_pair(ImportResult::Succeeded, QFileInfo(modFile).lastModified());
