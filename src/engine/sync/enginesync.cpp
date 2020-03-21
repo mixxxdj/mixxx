@@ -98,7 +98,9 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
 }
 
 void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
-    kLogger.trace() << "EngineSync::requestSyncMode" << pSyncable->getGroup() << mode;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "EngineSync::requestSyncMode" << pSyncable->getGroup() << mode;
+    }
     // Based on the call hierarchy I don't think this is possible. (Famous last words.)
     VERIFY_OR_DEBUG_ASSERT(pSyncable) {
         return;
@@ -197,7 +199,9 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
 }
 
 void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
-    kLogger.trace() << "EngineSync::requestEnableSync " << pSyncable->getGroup() << bEnabled;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "EngineSync::requestEnableSync " << pSyncable->getGroup() << bEnabled;
+    }
     // Sync disable request, hand off to a different function
     if (!bEnabled) {
         // Already disabled?  Do nothing.
@@ -257,7 +261,9 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
 
 void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
     Q_UNUSED(playing);
-    kLogger.trace() << "EngineSync::notifyPlaying" << pSyncable->getGroup() << playing;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "EngineSync::notifyPlaying" << pSyncable->getGroup() << playing;
+    }
     // For now we don't care if the deck is now playing or stopping.
     if (!pSyncable->isSynchronized()) {
         return;
@@ -275,7 +281,9 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
 }
 
 void EngineSync::notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) {
-    kLogger.trace() << "EngineSync::notifyTrackLoaded";
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "EngineSync::notifyTrackLoaded";
+    }
     // If there are no other sync decks, initialize master based on this.
     // If there is, make sure to set our rate based on that.
 
@@ -401,7 +409,9 @@ void EngineSync::activateMaster(Syncable* pSyncable, bool explicitMaster) {
 }
 
 void EngineSync::deactivateSync(Syncable* pSyncable) {
-    kLogger.trace() << "EngineSync::deactivateSync" << pSyncable->getGroup();
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "EngineSync::deactivateSync" << pSyncable->getGroup();
+    }
     bool wasMaster = isMaster(pSyncable->getSyncMode());
     if (wasMaster) {
         m_pMasterSyncable = nullptr;

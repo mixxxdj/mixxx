@@ -438,7 +438,9 @@ void EngineBuffer::seekCloneBuffer(EngineBuffer* pOtherBuffer) {
 // WARNING: This method is not thread safe and must not be called from outside
 // the engine callback!
 void EngineBuffer::setNewPlaypos(double newpos) {
-    kLogger.trace() << m_group << "EngineBuffer::setNewPlaypos" << newpos;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << m_group << "EngineBuffer::setNewPlaypos" << newpos;
+    }
 
     m_filepos_play = newpos;
 
@@ -502,7 +504,9 @@ void EngineBuffer::loadFakeTrack(TrackPointer pTrack, bool bPlay) {
 void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
                                    int iTrackSampleRate,
                                    int iTrackNumSamples) {
-    kLogger.trace() << getGroup() << "EngineBuffer::slotTrackLoaded";
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "EngineBuffer::slotTrackLoaded";
+    }
     TrackPointer pOldTrack = m_pCurrentTrack;
 
     m_pause.lock();
@@ -546,7 +550,9 @@ bool EngineBuffer::isReverse() {
 
 void EngineBuffer::ejectTrack() {
     // clear track values in any case, this may fix Bug #1450424
-    kLogger.trace() << "EngineBuffer::ejectTrack()";
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "EngineBuffer::ejectTrack()";
+    }
     m_pause.lock();
     m_iTrackLoading = 0;
     m_pTrackLoaded->forceSet(0);
@@ -1184,14 +1190,20 @@ void EngineBuffer::processSeek(bool paused) {
     }
 
     if (!paused && (seekType & SEEK_PHASE)) {
-        kLogger.trace() << "EngineBuffer::processSeek Seeking phase";
+        if (kLogger.traceEnabled()) {
+            kLogger.trace() << "EngineBuffer::processSeek Seeking phase";
+        }
         double requestedPosition = position;
         double syncPosition = m_pBpmControl->getBeatMatchPosition(position, true, true);
         position = m_pLoopingControl->getSyncPositionInsideLoop(requestedPosition, syncPosition);
-        kLogger.trace() << "EngineBuffer::processSeek seek info: " << m_filepos_play << " " << position;
+        if (kLogger.traceEnabled()) {
+            kLogger.trace() << "EngineBuffer::processSeek seek info: " << m_filepos_play << " " << position;
+        }
     }
     if (position != m_filepos_play) {
-        kLogger.trace() << "EngineBuffer::processSeek Seek to" << position;
+        if (kLogger.traceEnabled()) {
+            kLogger.trace() << "EngineBuffer::processSeek Seek to" << position;
+        }
         setNewPlaypos(position);
     }
     m_iSeekQueued.storeRelease(SEEK_NONE);

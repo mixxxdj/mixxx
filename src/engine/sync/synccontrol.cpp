@@ -122,7 +122,9 @@ SyncMode SyncControl::getSyncMode() const {
 }
 
 void SyncControl::setSyncMode(SyncMode mode) {
-    kLogger.trace() << "SyncControl::setSyncMode" << getGroup() << mode;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SyncControl::setSyncMode" << getGroup() << mode;
+    }
     // SyncControl has absolutely no say in the matter. This is what EngineSync
     // requires. Bypass confirmation by using setAndConfirm.
     m_masterBpmAdjustFactor = kBpmUnity;
@@ -162,7 +164,9 @@ void SyncControl::notifyOnlyPlayingSyncable() {
 }
 
 void SyncControl::requestSync() {
-    kLogger.trace() << "SyncControl::requestSync" << this->getGroup() << isPlaying() << m_pQuantize->toBool();
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SyncControl::requestSync" << this->getGroup() << isPlaying() << m_pQuantize->toBool();
+    }
     if (isPlaying() && m_pQuantize->toBool()) {
         // only sync phase if the deck is playing and if quantize is enabled.
         // this way the it is up to the user to decide if a seek is desired or not.
@@ -208,7 +212,9 @@ double SyncControl::getBaseBpm() const {
 }
 
 void SyncControl::setMasterBeatDistance(double beatDistance) {
-    kLogger.trace() << getGroup() << "SyncControl::setMasterBeatDistance" << beatDistance;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "SyncControl::setMasterBeatDistance" << beatDistance;
+    }
     // Set the BpmControl target beat distance to beatDistance, adjusted by
     // the multiplier if in effect.  This way all of the multiplier logic
     // is contained in this single class.
@@ -219,13 +225,17 @@ void SyncControl::setMasterBeatDistance(double beatDistance) {
 
 void SyncControl::setMasterBaseBpm(double bpm) {
     m_masterBpmAdjustFactor = determineBpmMultiplier(m_pFileBpm->get(), bpm);
-    kLogger.trace() << "SyncControl::setMasterBaseBpm" << getGroup() << bpm << m_masterBpmAdjustFactor;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SyncControl::setMasterBaseBpm" << getGroup() << bpm << m_masterBpmAdjustFactor;
+    }
     // Update the target beat distance in case the multiplier changed.
     updateTargetBeatDistance();
 }
 
 void SyncControl::setMasterBpm(double bpm) {
-    kLogger.trace() << getGroup() << "SyncControl::setMasterBpm" << bpm;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "SyncControl::setMasterBpm" << bpm;
+    }
 
     if (!isSynchronized()) {
         qDebug() << "WARNING: Logic Error: setBpm called on SYNC_NONE syncable.";
@@ -273,7 +283,9 @@ double SyncControl::determineBpmMultiplier(double myBpm, double targetBpm) const
 
 void SyncControl::updateTargetBeatDistance() {
     double targetDistance = m_unmultipliedTargetBeatDistance;
-    kLogger.trace() << getGroup() << "SyncControl::updateTargetBeatDistance, unmult distance" << targetDistance;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "SyncControl::updateTargetBeatDistance, unmult distance" << targetDistance;
+    }
 
     // Determining the target distance is not as simple as x2 or /2.  Since one
     // of the beats is twice the length of the other, we need to know if the
@@ -291,13 +303,17 @@ void SyncControl::updateTargetBeatDistance() {
             targetDistance += 0.5;
         }
     }
-    kLogger.trace() << getGroup() << "SyncControl::updateTargetBeatDistance, adjusted target is" << targetDistance;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "SyncControl::updateTargetBeatDistance, adjusted target is" << targetDistance;
+    }
     m_pBpmControl->setTargetBeatDistance(targetDistance);
     m_pBpmControl->setSyncAdjustFactor(m_masterBpmAdjustFactor);
 }
 
 double SyncControl::getBpm() const {
-    kLogger.trace() << getGroup() << "SyncControl::getBpm()" << m_pBpm->get();
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "SyncControl::getBpm()" << m_pBpm->get();
+    }
     return m_pBpm->get();
 }
 
@@ -316,7 +332,9 @@ void SyncControl::reportTrackPosition(double fractionalPlaypos) {
 }
 
 void SyncControl::trackLoaded(TrackPointer pNewTrack) {
-    kLogger.trace() << getGroup() << "SyncControl::trackLoaded";
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "SyncControl::trackLoaded";
+    }
     if (isMaster(getSyncMode())) {
         // If we change or remove a new track while master, hand off.
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
@@ -435,7 +453,9 @@ void SyncControl::setLocalBpm(double local_bpm) {
 void SyncControl::slotFileBpmChanged() {
     // This slot is fired by a new file is loaded or if the user
     // has adjusted the beatgrid.
-    kLogger.trace() << "SyncControl::slotFileBpmChanged";
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SyncControl::slotFileBpmChanged";
+    }
 
     // Note: bpmcontrol has updated local_bpm just before
     double local_bpm = m_pLocalBpm ? m_pLocalBpm->get() : 0.0;
@@ -450,7 +470,9 @@ void SyncControl::slotFileBpmChanged() {
 
 void SyncControl::slotRateChanged() {
     double bpm = m_pLocalBpm ? m_pLocalBpm->get() * m_pRateRatio->get() : 0.0;
-    kLogger.trace() << getGroup() << "SyncControl::slotRateChanged" << m_pRateRatio->get() << bpm;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "SyncControl::slotRateChanged" << m_pRateRatio->get() << bpm;
+    }
     if (bpm > 0 && isSynchronized()) {
         // When reporting our bpm, remove the multiplier so the masters all
         // think the followers have the same bpm.
