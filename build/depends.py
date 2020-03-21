@@ -902,6 +902,10 @@ class MixxxCore(Feature):
                    "src/analyzer/plugins/analyzerqueenmarykey.cpp",
                    "src/analyzer/plugins/buffering_utils.cpp",
 
+                   "src/audio/types.cpp",
+                   "src/audio/signalinfo.cpp",
+                   "src/audio/streaminfo.cpp",
+
                    "src/controllers/controller.cpp",
                    "src/controllers/controllerdebug.cpp",
                    "src/controllers/controllerengine.cpp",

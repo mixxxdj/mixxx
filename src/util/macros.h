@@ -14,7 +14,7 @@
 // classes.
 #define PROPERTY_SET_BYVAL_GET_BYREF(TYPE, NAME, CAP_NAME) \
 public: void set##CAP_NAME(TYPE NAME) { m_##NAME = std::move(NAME); } \
-public: TYPE const& get##CAP_NAME() const { return m_##NAME; } \
-public: TYPE& ref##CAP_NAME() { return m_##NAME; } \
+public: constexpr TYPE const& get##CAP_NAME() const { return m_##NAME; } \
+public: constexpr TYPE& ref##CAP_NAME() { return m_##NAME; } \
 public: QDebug dbg##CAP_NAME(QDebug dbg) const { return dbg << #NAME ":" << m_##NAME; } \
 private: TYPE m_##NAME;
