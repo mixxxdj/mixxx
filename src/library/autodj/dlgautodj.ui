@@ -180,7 +180,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="faderModeComboBox"/>
+      <widget class="QComboBox" name="faderModeCombobox"/>
      </item>
      <item>
       <spacer name="horizontalSpacer">
