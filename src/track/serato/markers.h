@@ -91,7 +91,6 @@ class SeratoMarkersEntry {
     bool m_hasEndPosition;
     ;
     bool m_isLocked;
-    bool m_isSet;
     quint32 m_startPosition;
     quint32 m_endPosition;
     int m_type;
