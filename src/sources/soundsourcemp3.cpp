@@ -360,14 +360,6 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
     }
 
     // Initialize the AudioSource
-    if (mostCommonSampleRateIndex > kSampleRateCount) {
-        kLogger.warning()
-                << "Unknown sample rate in MP3 file:"
-                << m_file.fileName();
-        // Abort
-        return OpenResult::Failed;
-    }
-    setSampleRate(getSampleRateByIndex(mostCommonSampleRateIndex));
     if (!maxChannelCount.isValid() || (maxChannelCount > kChannelCountMax)) {
         kLogger.warning()
                 << "Invalid number of channels"
@@ -377,10 +369,18 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
         // Abort
         return OpenResult::Failed;
     }
-    setChannelCount(maxChannelCount);
+    initChannelCountOnce(maxChannelCount);
+    if (mostCommonSampleRateIndex > kSampleRateCount) {
+        kLogger.warning()
+                << "Unknown sample rate in MP3 file:"
+                << m_file.fileName();
+        // Abort
+        return OpenResult::Failed;
+    }
+    initSampleRateOnce(getSampleRateByIndex(mostCommonSampleRateIndex));
     initFrameIndexRangeOnce(IndexRange::forward(0, m_curFrameIndex));
 
-    // Calculate average values
+    // Calculate average bitrate values
     DEBUG_ASSERT(m_seekFrameList.size() > 0); // see above
     m_avgSeekFrameCount = frameLength() / m_seekFrameList.size();
     if (cntBitrateFrames > 0) {
@@ -678,9 +678,9 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
 
 #ifndef QT_NO_DEBUG_OUTPUT
             const SINT madFrameChannelCount = MAD_NCHANNELS(&m_madFrame.header);
-            if (madFrameChannelCount != channelCount()) {
+            if (madFrameChannelCount != getSignalInfo().getChannelCount()) {
                 kLogger.warning() << "MP3 frame header with mismatching number of channels"
-                                  << madFrameChannelCount << "<>" << channelCount()
+                                  << madFrameChannelCount << "<>" << getSignalInfo().getChannelCount()
                                   << " - aborting";
                 abortReading = true;
             }
@@ -690,9 +690,9 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
             mad_synth_frame(&m_madSynth, &m_madFrame);
 #ifndef QT_NO_DEBUG_OUTPUT
             const SINT madSynthSampleRate = m_madSynth.pcm.samplerate;
-            if (madSynthSampleRate != sampleRate()) {
+            if (madSynthSampleRate != getSignalInfo().getSampleRate()) {
                 kLogger.warning() << "Reading MP3 data with different sample rate"
-                                  << madSynthSampleRate << "<>" << sampleRate()
+                                  << madSynthSampleRate << "<>" << getSignalInfo().getSampleRate()
                                   << " - aborting";
                 abortReading = true;
             }
@@ -716,14 +716,14 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
             DEBUG_ASSERT(madSynthOffset < m_madSynth.pcm.length);
             const SINT madSynthChannelCount = m_madSynth.pcm.channels;
             DEBUG_ASSERT(0 < madSynthChannelCount);
-            DEBUG_ASSERT(madSynthChannelCount <= channelCount());
-            if (madSynthChannelCount != channelCount()) {
+            DEBUG_ASSERT(madSynthChannelCount <= getSignalInfo().getChannelCount());
+            if (madSynthChannelCount != getSignalInfo().getChannelCount()) {
                 kLogger.warning() << "Reading MP3 data with different number of channels"
-                                  << madSynthChannelCount << "<>" << channelCount();
+                                  << madSynthChannelCount << "<>" << getSignalInfo().getChannelCount();
             }
             if (madSynthChannelCount == 1) {
                 // MP3 frame contains a mono signal
-                if (channelCount() == 2) {
+                if (getSignalInfo().getChannelCount() == 2) {
                     // The reader explicitly requested a stereo signal
                     // or the AudioSource itself provides a stereo signal.
                     // Mono -> Stereo: Copy 1st channel twice
@@ -747,7 +747,7 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
                 // If the MP3 frame contains a stereo signal then the whole
                 // AudioSource must also provide 2 channels, because the
                 // maximum channel count of all MP3 frames is used.
-                DEBUG_ASSERT(channelCount() == 2);
+                DEBUG_ASSERT(getSignalInfo().getChannelCount() == 2);
                 // Stereo -> Stereo: Copy 1st + 2nd channel
                 for (SINT i = 0; i < synthReadCount; ++i) {
                     *pSampleBuffer++ = madScaleSampleValue(
@@ -770,7 +770,7 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
             IndexRange::forward(firstFrameIndex, numberOfFrames),
             SampleBuffer::ReadableSlice(
                     writableSampleFrames.writableData(),
-                    std::min(writableSampleFrames.writableLength(), frames2samples(numberOfFrames))));
+                    std::min(writableSampleFrames.writableLength(), getSignalInfo().frames2samples(numberOfFrames))));
 }
 
 QString SoundSourceProviderMp3::getName() const {

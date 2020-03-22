@@ -1,7 +1,6 @@
 #pragma once
 
 #include "engine/engine.h"
-#include "util/audiosignal.h"
 
 namespace mixxx {
 

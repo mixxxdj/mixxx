@@ -1313,7 +1313,6 @@ class MixxxCore(Feature):
                    "src/util/logger.cpp",
                    "src/util/logging.cpp",
                    "src/util/cmdlineargs.cpp",
-                   "src/util/audiosignal.cpp",
                    "src/util/widgethider.cpp",
                    "src/util/autohidpi.cpp",
                    "src/util/screensaver.cpp",

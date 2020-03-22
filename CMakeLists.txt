@@ -562,7 +562,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/tracknumbers.cpp
   src/track/trackrecord.cpp
   src/track/trackref.cpp
-  src/util/audiosignal.cpp
   src/util/autohidpi.cpp
   src/util/battery/battery.cpp
   src/util/cache.cpp

@@ -66,7 +66,9 @@ mixxx::IndexRange CachingReaderChunk::bufferSampleFrames(
     mixxx::AudioSourceStereoProxy audioSourceProxy(
             pAudioSource,
             tempOutputBuffer);
-    DEBUG_ASSERT(audioSourceProxy.channelCount() == kChannels);
+    DEBUG_ASSERT(
+            audioSourceProxy.getSignalInfo().getChannelCount() ==
+            kChannels);
     m_bufferedSampleFrames =
             audioSourceProxy.readSampleFrames(
                     mixxx::WritableSampleFrames(

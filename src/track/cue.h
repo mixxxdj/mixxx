@@ -4,9 +4,9 @@
 #include <QMutex>
 #include <QObject>
 
+#include "audio/types.h"
 #include "track/cueinfo.h"
 #include "track/trackid.h"
-#include "util/audiosignal.h"
 #include "util/color/rgbcolor.h"
 #include "util/memory.h"
 

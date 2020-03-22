@@ -164,12 +164,12 @@ SoundSource::OpenResult SoundSourceModPlug::tryOpen(
                     << m_sampleBuf.capacity() - m_sampleBuf.size()
                     << " samples unused capacity.";
 
-    setChannelCount(kChannelCount);
-    setSampleRate(kSampleRate);
+    initChannelCountOnce(kChannelCount);
+    initSampleRateOnce(kSampleRate);
     initFrameIndexRangeOnce(
             IndexRange::forward(
                     0,
-                    samples2frames(m_sampleBuf.size())));
+                    getSignalInfo().samples2frames(m_sampleBuf.size())));
 
     return OpenResult::Succeeded;
 }
@@ -183,8 +183,8 @@ void SoundSourceModPlug::close() {
 
 ReadableSampleFrames SoundSourceModPlug::readSampleFramesClamped(
         WritableSampleFrames writableSampleFrames) {
-    const SINT readOffset = frames2samples(writableSampleFrames.frameIndexRange().start());
-    const SINT readSamples = frames2samples(writableSampleFrames.frameLength());
+    const SINT readOffset = getSignalInfo().frames2samples(writableSampleFrames.frameIndexRange().start());
+    const SINT readSamples = getSignalInfo().frames2samples(writableSampleFrames.frameLength());
     SampleUtil::convertS16ToFloat32(
             writableSampleFrames.writableData(),
             &m_sampleBuf[readOffset],

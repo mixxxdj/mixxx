@@ -265,8 +265,8 @@ bool SoundSourceM4A::openDecoder() {
     LibFaadLoader::Configuration* pDecoderConfig = m_pFaad->GetCurrentConfiguration(
             m_hDecoder);
     pDecoderConfig->outputFormat = FAAD_FMT_FLOAT;
-    if ((m_openParams.channelCount() == 1) ||
-            (m_openParams.channelCount() == 2)) {
+    if ((m_openParams.getSignalInfo().getChannelCount() == 1) ||
+            (m_openParams.getSignalInfo().getChannelCount() == 2)) {
         pDecoderConfig->downMatrix = 1;
     } else {
         pDecoderConfig->downMatrix = 0;
@@ -304,15 +304,15 @@ bool SoundSourceM4A::openDecoder() {
             (kNumberOfPrefetchFrames + (m_framesPerSampleBlock - 1)) /
             m_framesPerSampleBlock;
 
-    setChannelCount(channelCount);
-    setSampleRate(sampleRate);
+    initChannelCountOnce(channelCount);
+    initSampleRateOnce(sampleRate);
     initFrameIndexRangeOnce(
             mixxx::IndexRange::forward(
                     0,
                     ((m_maxSampleBlockId - kSampleBlockIdMin) + 1) * m_framesPerSampleBlock));
 
     const SINT sampleBufferCapacity =
-            frames2samples(m_framesPerSampleBlock);
+            getSignalInfo().frames2samples(m_framesPerSampleBlock);
     if (m_sampleBuffer.capacity() < sampleBufferCapacity) {
         m_sampleBuffer.adjustCapacity(sampleBufferCapacity);
     }
@@ -419,7 +419,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
     }
     DEBUG_ASSERT(m_curFrameIndex == firstFrameIndex);
 
-    const SINT numberOfSamplesTotal = frames2samples(writableSampleFrames.frameLength());
+    const SINT numberOfSamplesTotal = getSignalInfo().frames2samples(writableSampleFrames.frameLength());
 
     SINT numberOfSamplesRemaining = numberOfSamplesTotal;
     SINT outputSampleOffset = 0;
@@ -435,7 +435,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
                         readableSlice.length());
                 outputSampleOffset += readableSlice.length();
             }
-            m_curFrameIndex += samples2frames(readableSlice.length());
+            m_curFrameIndex += getSignalInfo().samples2frames(readableSlice.length());
             DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
             DEBUG_ASSERT(numberOfSamplesRemaining >= readableSlice.length());
             numberOfSamplesRemaining -= readableSlice.length();
@@ -478,7 +478,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
         // we need to use a temporary buffer.
         CSAMPLE* pDecodeBuffer; // in/out parameter
         SINT decodeBufferCapacity;
-        const SINT decodeBufferCapacityMin = frames2samples(m_framesPerSampleBlock);
+        const SINT decodeBufferCapacityMin = getSignalInfo().frames2samples(m_framesPerSampleBlock);
         if (writableSampleFrames.writableData() &&
                 (decodeBufferCapacityMin <= numberOfSamplesRemaining)) {
             // Decode samples directly into the output buffer
@@ -510,18 +510,18 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
         DEBUG_ASSERT(pDecodeResult == pDecodeBuffer); // verify the in/out parameter
 
         // Verify the decoded sample data for consistency
-        VERIFY_OR_DEBUG_ASSERT(channelCount() == decFrameInfo.channels) {
+        VERIFY_OR_DEBUG_ASSERT(getSignalInfo().getChannelCount() == decFrameInfo.channels) {
             kLogger.critical()
                     << "Corrupt or unsupported AAC file:"
                     << "Unexpected number of channels" << decFrameInfo.channels
-                    << "<>" << channelCount();
+                    << "<>" << getSignalInfo().getChannelCount();
             break; // abort
         }
-        VERIFY_OR_DEBUG_ASSERT(sampleRate() == SINT(decFrameInfo.samplerate)) {
+        VERIFY_OR_DEBUG_ASSERT(getSignalInfo().getSampleRate() == SINT(decFrameInfo.samplerate)) {
             kLogger.critical()
                     << "Corrupt or unsupported AAC file:"
                     << "Unexpected sample rate" << decFrameInfo.samplerate
-                    << "<>" << sampleRate();
+                    << "<>" << getSignalInfo().getSampleRate();
             break; // abort
         }
 
@@ -565,7 +565,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
         // at the end of the file! When the end of the file has been
         // reached decoding can be restarted by seeking to a new
         // position.
-        m_curFrameIndex += samples2frames(numberOfSamplesRead);
+        m_curFrameIndex += getSignalInfo().samples2frames(numberOfSamplesRead);
         numberOfSamplesRemaining -= numberOfSamplesRead;
     }
 
@@ -573,7 +573,9 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
     DEBUG_ASSERT(numberOfSamplesTotal >= numberOfSamplesRemaining);
     const SINT numberOfSamples = numberOfSamplesTotal - numberOfSamplesRemaining;
     return ReadableSampleFrames(
-            IndexRange::forward(firstFrameIndex, samples2frames(numberOfSamples)),
+            IndexRange::forward(
+                    firstFrameIndex,
+                    getSignalInfo().samples2frames(numberOfSamples)),
             SampleBuffer::ReadableSlice(
                     writableSampleFrames.writableData(),
                     std::min(writableSampleFrames.writableLength(), numberOfSamples)));
