@@ -16,13 +16,10 @@
 #include "library/baseexternalplaylistmodel.h"
 #include "library/treeitemmodel.h"
 
-class TrackCollection;
-class BaseExternalPlaylistModel;
-
 class TraktorTrackModel : public BaseExternalTrackModel {
   public:
     TraktorTrackModel(QObject* parent,
-                      TrackCollection* pTrackCollection,
+                      TrackCollectionManager* pTrackCollectionManager,
                       QSharedPointer<BaseTrackCache> trackSource);
     virtual bool isColumnHiddenByDefault(int column);
 };
@@ -30,7 +27,7 @@ class TraktorTrackModel : public BaseExternalTrackModel {
 class TraktorPlaylistModel : public BaseExternalPlaylistModel {
   public:
     TraktorPlaylistModel(QObject* parent,
-                         TrackCollection* pTrackCollection,
+                         TrackCollectionManager* pTrackCollectionManager,
                          QSharedPointer<BaseTrackCache> trackSource);
     virtual bool isColumnHiddenByDefault(int column);
 };
@@ -38,23 +35,23 @@ class TraktorPlaylistModel : public BaseExternalPlaylistModel {
 class TraktorFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
   public:
-    TraktorFeature(QObject* parent, TrackCollection*);
+    TraktorFeature(Library* pLibrary, UserSettingsPointer pConfig);
     virtual ~TraktorFeature();
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
+    QIcon getIcon() override;
     static bool isSupported();
 
-    TreeItemModel* getChildModel();
+    TreeItemModel* getChildModel() override;
 
   public slots:
-    void activate();
-    void activateChild(const QModelIndex& index);
+    void activate() override;
+    void activateChild(const QModelIndex& index) override;
     void refreshLibraryModels();
     void onTrackCollectionLoaded();
 
   private:
-    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist);
+    BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist) override;
     TreeItem* importLibrary(QString file);
     // parses a track in the music collection
     void parseTrack(QXmlStreamReader &xml, QSqlQuery &query);
@@ -67,7 +64,6 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     static QString getTraktorMusicDatabase();
     // private fields
     TreeItemModel m_childModel;
-    TrackCollection* m_pTrackCollection;
     // A separate db connection for the worker parsing thread
     QSqlDatabase m_database;
     TraktorTrackModel* m_pTraktorTableModel;
@@ -80,6 +76,7 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     QString m_title;
 
     QSharedPointer<BaseTrackCache> m_trackSource;
+    QIcon m_icon;
 };
 
 #endif // TRAKTOR_FEATURE_H

@@ -28,6 +28,7 @@
 
 #include "library/stareditor.h"
 #include "library/starrating.h"
+#include "util/painterscope.h"
 
 /*
  * We enable mouse tracking on the widget so we can follow the cursor even
@@ -37,7 +38,7 @@
  */
 StarEditor::StarEditor(QWidget *parent, QTableView* pTableView,
                        const QModelIndex& index,
-                       const QStyleOptionViewItemV4& option)
+                       const QStyleOptionViewItem& option)
         : QWidget(parent),
           m_pTableView(pTableView),
           m_index(index),
@@ -52,9 +53,10 @@ QSize StarEditor::sizeHint() const {
 // static
 void StarEditor::renderHelper(QPainter* painter,
                               QTableView* pTableView,
-                              const QStyleOptionViewItemV4& option,
+                              const QStyleOptionViewItem& option,
                               StarRating* pStarRating) {
-    painter->save();
+    PainterScope painterScope(painter);
+
     painter->setClipRect(option.rect);
 
     if (pTableView != NULL) {
@@ -80,7 +82,6 @@ void StarEditor::renderHelper(QPainter* painter,
     }
 
     pStarRating->paint(painter, option.rect);
-    painter->restore();
 }
 
 void StarEditor::paintEvent(QPaintEvent*) {

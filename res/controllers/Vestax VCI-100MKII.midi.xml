@@ -3,7 +3,7 @@
   <info>
     <name>Vestax VCI-100MKII</name>
     <author>Takeshi Soejima</author>
-    <description>2018-3-27</description>
+    <description>2018-4-15</description>
     <wiki>http://www.mixxx.org/wiki/doku.php/vestax_vci-100mkii</wiki>
   </info>
   <controller id="VCI-100MKII">
@@ -73,7 +73,7 @@
       </control>
       <control>
         <group>[Library]</group>
-        <key>ChooseItem</key>
+        <key>GoToItem</key>
         <status>0x94</status>
         <midino>0x36</midino>
       </control>

@@ -3,16 +3,10 @@
 
 WAnalysisLibraryTableView::WAnalysisLibraryTableView(QWidget* parent,
                                                    UserSettingsPointer pConfig,
-                                                   TrackCollection* pTrackCollection)
-        : WTrackTableView(parent, pConfig, pTrackCollection) {
+                                                   TrackCollectionManager* pTrackCollectionManager)
+        : WTrackTableView(parent, pConfig, pTrackCollectionManager, true) {
     setDragDropMode(QAbstractItemView::DragOnly);
     setDragEnabled(true); //Always enable drag for now (until we have a model that doesn't support this.)
-}
-
-void WAnalysisLibraryTableView::onSearchStarting() {
-}
-
-void WAnalysisLibraryTableView::onSearchCleared() {
 }
 
 void WAnalysisLibraryTableView::onSearch(const QString& text) {

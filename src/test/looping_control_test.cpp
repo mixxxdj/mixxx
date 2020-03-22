@@ -7,7 +7,7 @@
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "control/controlproxy.h"
-#include "engine/loopingcontrol.h"
+#include "engine/controls/loopingcontrol.h"
 #include "test/mockedenginebackendtest.h"
 #include "util/memory.h"
 
@@ -50,6 +50,7 @@ class LoopingControlTest : public MockedEngineBackendTest {
         m_pButtonBeatMoveBackward = std::make_unique<ControlProxy>(m_sGroup1, "loop_move_1_backward");
         m_pButtonBeatLoop2Activate = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_2_activate");
         m_pButtonBeatLoop4Activate = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_4_activate");
+        m_pBeatLoop1Enabled = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_1_enabled");
         m_pBeatLoop2Enabled = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_2_enabled");
         m_pBeatLoop4Enabled = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_4_enabled");
         m_pBeatLoop64Enabled = std::make_unique<ControlProxy>(m_sGroup1, "beatloop_64_enabled");
@@ -59,6 +60,9 @@ class LoopingControlTest : public MockedEngineBackendTest {
         m_pBeatJumpSize = std::make_unique<ControlProxy>(m_sGroup1, "beatjump_size");
         m_pButtonBeatJumpForward = std::make_unique<ControlProxy>(m_sGroup1, "beatjump_forward");
         m_pButtonBeatJumpBackward = std::make_unique<ControlProxy>(m_sGroup1, "beatjump_backward");
+        m_pButtonBeatLoopRoll1Activate = std::make_unique<ControlProxy>(m_sGroup1, "beatlooproll_1_activate");
+        m_pButtonBeatLoopRoll2Activate = std::make_unique<ControlProxy>(m_sGroup1, "beatlooproll_2_activate");
+        m_pButtonBeatLoopRoll4Activate = std::make_unique<ControlProxy>(m_sGroup1, "beatlooproll_4_activate");
     }
 
     bool isLoopEnabled() {
@@ -92,6 +96,7 @@ class LoopingControlTest : public MockedEngineBackendTest {
     std::unique_ptr<ControlProxy> m_pButtonBeatMoveBackward;
     std::unique_ptr<ControlProxy> m_pButtonBeatLoop2Activate;
     std::unique_ptr<ControlProxy> m_pButtonBeatLoop4Activate;
+    std::unique_ptr<ControlProxy> m_pBeatLoop1Enabled;
     std::unique_ptr<ControlProxy> m_pBeatLoop2Enabled;
     std::unique_ptr<ControlProxy> m_pBeatLoop4Enabled;
     std::unique_ptr<ControlProxy> m_pBeatLoop64Enabled;
@@ -101,6 +106,9 @@ class LoopingControlTest : public MockedEngineBackendTest {
     std::unique_ptr<ControlProxy> m_pBeatJumpSize;
     std::unique_ptr<ControlProxy> m_pButtonBeatJumpForward;
     std::unique_ptr<ControlProxy> m_pButtonBeatJumpBackward;
+    std::unique_ptr<ControlProxy> m_pButtonBeatLoopRoll1Activate;
+    std::unique_ptr<ControlProxy> m_pButtonBeatLoopRoll2Activate;
+    std::unique_ptr<ControlProxy> m_pButtonBeatLoopRoll4Activate;
 };
 
 TEST_F(LoopingControlTest, LoopSet) {
@@ -279,10 +287,13 @@ TEST_F(LoopingControlTest, LoopInOutButtons_QuantizeEnabled) {
     m_pButtonBeatJumpForward->set(1);
     m_pButtonBeatJumpForward->set(0);
     ProcessBuffer();
+    EXPECT_DOUBLE_EQ(m_pPlayPosition->get() * kTrackLengthSamples, (44100 * 2 * 4) + 500);
     m_pButtonLoopOut->set(1);
     m_pButtonLoopOut->set(0);
     ProcessBuffer();
-    EXPECT_EQ(m_pClosestBeat->get(), m_pLoopEndPoint->get());
+    EXPECT_EQ(m_pLoopEndPoint->get(), 44100 * 2 * 4);
+    EXPECT_DOUBLE_EQ(m_pPlayPosition->get() * kTrackLengthSamples, (44100 * 2 * 4) + 500);
+
     EXPECT_EQ(4, m_pBeatLoopSize->get());
     EXPECT_TRUE(m_pBeatLoop4Enabled->toBool());
 
@@ -336,7 +347,7 @@ TEST_F(LoopingControlTest, ReloopToggleButton_DoesNotJumpAhead) {
     m_pButtonReloopToggle->slotSet(1);
     m_pButtonReloopToggle->slotSet(0);
     seekToSampleAndProcess(50);
-    EXPECT_LE(m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample(), m_pLoopStartPoint->get());
+    EXPECT_LE(m_pChannel1->getEngineBuffer()->m_pLoopingControl->getSampleOfTrack().current, m_pLoopStartPoint->get());
 }
 
 TEST_F(LoopingControlTest, ReloopAndStopButton) {
@@ -348,7 +359,7 @@ TEST_F(LoopingControlTest, ReloopAndStopButton) {
     m_pButtonReloopAndStop->slotSet(1);
     m_pButtonReloopAndStop->slotSet(0);
     ProcessBuffer();
-    EXPECT_EQ(m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample(), m_pLoopStartPoint->get());
+    EXPECT_EQ(m_pChannel1->getEngineBuffer()->m_pLoopingControl->getSampleOfTrack().current, m_pLoopStartPoint->get());
     EXPECT_TRUE(m_pLoopEnabled->toBool());
 }
 
@@ -375,7 +386,7 @@ TEST_F(LoopingControlTest, LoopScale_HalvesLoop) {
     seekToSampleAndProcess(1800);
     EXPECT_EQ(0, m_pLoopStartPoint->get());
     EXPECT_EQ(2000, m_pLoopEndPoint->get());
-    EXPECT_EQ(1800, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    EXPECT_EQ(1800, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getSampleOfTrack().current);
     EXPECT_FALSE(isLoopEnabled());
     m_pLoopScale->set(0.5);
     ProcessBuffer();
@@ -384,7 +395,7 @@ TEST_F(LoopingControlTest, LoopScale_HalvesLoop) {
 
     // The loop was not enabled so halving the loop should not move the playhead
     // even though it is outside the loop.
-    EXPECT_EQ(1800, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    EXPECT_EQ(1800, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getSampleOfTrack().current);
 
     m_pButtonReloopToggle->slotSet(1);
     EXPECT_TRUE(isLoopEnabled());
@@ -512,7 +523,7 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     EXPECT_TRUE(isLoopEnabled());
     EXPECT_EQ(0, m_pLoopStartPoint->get());
     EXPECT_EQ(300, m_pLoopEndPoint->get());
-    EXPECT_EQ(10, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    EXPECT_EQ(10, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getSampleOfTrack().current);
 
     // Move the loop out from under the playposition.
     m_pButtonBeatMoveForward->set(1.0);
@@ -522,7 +533,7 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     EXPECT_EQ(44400, m_pLoopEndPoint->get());
     ProcessBuffer();
     // Should seek to the corresponding offset within the moved loop
-    EXPECT_EQ(44110, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    EXPECT_EQ(44110, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getSampleOfTrack().current);
 
     // Move backward so that the current position is outside the new location of the loop
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(44300, EngineBuffer::SEEK_STANDARD);
@@ -534,7 +545,7 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     EXPECT_NEAR(300, m_pLoopEndPoint->get(), kLoopPositionMaxAbsError);
     ProcessBuffer();
     EXPECT_NEAR(200,
-            m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample(),
+            m_pChannel1->getEngineBuffer()->m_pLoopingControl->getSampleOfTrack().current,
             kLoopPositionMaxAbsError);
 
      // Now repeat the test with looping disabled (should not affect the
@@ -550,7 +561,7 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     EXPECT_EQ(44400, m_pLoopEndPoint->get());
     // Should not seek inside the moved loop when the loop is disabled
     EXPECT_NEAR(200,
-            m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample(),
+            m_pChannel1->getEngineBuffer()->m_pLoopingControl->getSampleOfTrack().current,
             kLoopPositionMaxAbsError);
 
     // Move backward so that the current position is outside the new location of the loop
@@ -562,7 +573,7 @@ TEST_F(LoopingControlTest, LoopMoveTest) {
     EXPECT_EQ(0, m_pLoopStartPoint->get());
     EXPECT_NEAR(300, m_pLoopEndPoint->get(), kLoopPositionMaxAbsError);
     EXPECT_NEAR(500,
-            m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample(),
+            m_pChannel1->getEngineBuffer()->m_pLoopingControl->getSampleOfTrack().current,
             kLoopPositionMaxAbsError);
 }
 
@@ -582,7 +593,7 @@ TEST_F(LoopingControlTest, LoopResizeSeek) {
     EXPECT_TRUE(isLoopEnabled());
     EXPECT_EQ(0, m_pLoopStartPoint->get());
     EXPECT_EQ(600, m_pLoopEndPoint->get());
-    EXPECT_EQ(500, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    EXPECT_EQ(500, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getSampleOfTrack().current);
 
     // Activate a shorter loop
     m_pButtonBeatLoop2Activate->set(1.0);
@@ -594,7 +605,7 @@ TEST_F(LoopingControlTest, LoopResizeSeek) {
     EXPECT_EQ(0, m_pLoopStartPoint->get());
     EXPECT_EQ(450, m_pLoopEndPoint->get());
     ProcessBuffer();
-    EXPECT_EQ(50, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    EXPECT_EQ(50, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getSampleOfTrack().current);
 
     // But if looping is not enabled, no warping occurs.
     m_pLoopStartPoint->slotSet(0);
@@ -604,14 +615,14 @@ TEST_F(LoopingControlTest, LoopResizeSeek) {
     EXPECT_FALSE(isLoopEnabled());
     EXPECT_EQ(0, m_pLoopStartPoint->get());
     EXPECT_EQ(600, m_pLoopEndPoint->get());
-    EXPECT_EQ(500, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    EXPECT_EQ(500, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getSampleOfTrack().current);
 
     m_pButtonBeatLoop2Activate->set(1.0);
     ProcessBuffer();
 
     EXPECT_EQ(500, m_pLoopStartPoint->get());
     EXPECT_EQ(950, m_pLoopEndPoint->get());
-    EXPECT_EQ(500, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    EXPECT_EQ(500, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getSampleOfTrack().current);
 }
 
 TEST_F(LoopingControlTest, BeatLoopSize_SetAndToggle) {
@@ -789,11 +800,11 @@ TEST_F(LoopingControlTest, Beatjump_JumpsByBeats) {
     m_pButtonBeatJumpForward->set(1.0);
     m_pButtonBeatJumpForward->set(0.0);
     ProcessBuffer();
-    EXPECT_EQ(beatLength * 4, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    EXPECT_EQ(beatLength * 4, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getSampleOfTrack().current);
     m_pButtonBeatJumpBackward->set(1.0);
     m_pButtonBeatJumpBackward->set(0.0);
     ProcessBuffer();
-    EXPECT_EQ(0, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getCurrentSample());
+    EXPECT_EQ(0, m_pChannel1->getEngineBuffer()->m_pLoopingControl->getSampleOfTrack().current);
 }
 
 TEST_F(LoopingControlTest, Beatjump_MovesActiveLoop) {
@@ -862,7 +873,7 @@ TEST_F(LoopingControlTest, LoopEscape) {
     m_pButtonReloopToggle->set(0.0);
     ProcessBuffer();
     EXPECT_TRUE(isLoopEnabled());
-    // seek outside a loop schould disable it
+    // seek outside a loop should disable it
     seekToSampleAndProcess(300);
     EXPECT_FALSE(isLoopEnabled());
 
@@ -870,7 +881,113 @@ TEST_F(LoopingControlTest, LoopEscape) {
     m_pButtonReloopToggle->set(0.0);
     ProcessBuffer();
     EXPECT_TRUE(isLoopEnabled());
-    // seek outside a loop schould disable it
+    // seek outside a loop should disable it
     seekToSampleAndProcess(50);
     EXPECT_FALSE(isLoopEnabled());
+}
+
+TEST_F(LoopingControlTest, BeatLoopRoll_Activation) {
+    m_pTrack1->setBpm(120.0);
+
+    m_pButtonBeatLoopRoll2Activate->set(1.0);
+    EXPECT_TRUE(m_pLoopEnabled->toBool());
+    EXPECT_TRUE(m_pBeatLoop2Enabled->toBool());
+
+    m_pButtonBeatLoopRoll2Activate->set(0.0);
+    EXPECT_FALSE(m_pLoopEnabled->toBool());
+    EXPECT_FALSE(m_pBeatLoop2Enabled->toBool());
+}
+
+TEST_F(LoopingControlTest, BeatLoopRoll_Overlap) {
+    m_pTrack1->setBpm(120.0);
+
+    m_pButtonBeatLoopRoll2Activate->set(1.0);
+    EXPECT_TRUE(m_pLoopEnabled->toBool());
+    EXPECT_TRUE(m_pBeatLoop2Enabled->toBool());
+
+    m_pButtonBeatLoopRoll4Activate->set(1.0);
+    EXPECT_TRUE(m_pLoopEnabled->toBool());
+    EXPECT_TRUE(m_pBeatLoop4Enabled->toBool());
+    EXPECT_FALSE(m_pBeatLoop2Enabled->toBool());
+
+    m_pButtonBeatLoopRoll2Activate->set(0.0);
+    EXPECT_TRUE(m_pLoopEnabled->toBool());
+    EXPECT_TRUE(m_pBeatLoop4Enabled->toBool());
+    EXPECT_FALSE(m_pBeatLoop2Enabled->toBool());
+
+    m_pButtonBeatLoopRoll4Activate->set(0.0);
+    EXPECT_FALSE(m_pLoopEnabled->toBool());
+    EXPECT_FALSE(m_pBeatLoop4Enabled->toBool());
+}
+
+TEST_F(LoopingControlTest, BeatLoopRoll_OverlapStackUnwind) {
+    m_pTrack1->setBpm(120.0);
+
+    // start a 2 beat loop roll
+    m_pButtonBeatLoopRoll2Activate->set(1.0);
+    EXPECT_TRUE(m_pLoopEnabled->toBool());
+    EXPECT_TRUE(m_pBeatLoop2Enabled->toBool());
+
+    // start a 4 beat loop roll on top of the previous loop
+    m_pButtonBeatLoopRoll4Activate->set(1.0);
+    EXPECT_TRUE(m_pLoopEnabled->toBool());
+    EXPECT_TRUE(m_pBeatLoop4Enabled->toBool());
+    EXPECT_FALSE(m_pBeatLoop2Enabled->toBool());
+
+    // start a 1 beat loop roll on top of the previous loop
+    m_pButtonBeatLoopRoll1Activate->set(1.0);
+    EXPECT_TRUE(m_pLoopEnabled->toBool());
+    EXPECT_TRUE(m_pBeatLoop1Enabled->toBool());
+    EXPECT_FALSE(m_pBeatLoop4Enabled->toBool());
+
+    // stop the 4 beat loop roll, the 1 beat roll should continue
+    m_pButtonBeatLoopRoll4Activate->set(0.0);
+    EXPECT_TRUE(m_pLoopEnabled->toBool());
+    EXPECT_TRUE(m_pBeatLoop1Enabled->toBool());
+
+    // stop the 1 beat loop roll, the 2 beat roll should continue
+    m_pButtonBeatLoopRoll1Activate->set(0.0);
+    EXPECT_TRUE(m_pLoopEnabled->toBool());
+    EXPECT_TRUE(m_pBeatLoop2Enabled->toBool());
+    EXPECT_FALSE(m_pBeatLoop1Enabled->toBool());
+
+    // stop the 2 beat loop roll
+    m_pButtonBeatLoopRoll2Activate->set(0.0);
+    EXPECT_FALSE(m_pLoopEnabled->toBool());
+    EXPECT_FALSE(m_pBeatLoop2Enabled->toBool());
+}
+
+TEST_F(LoopingControlTest, BeatLoopRoll_StartPoint) {
+    m_pTrack1->setBpm(120.0);
+
+    // start a 4 beat loop roll, start point should be overridden to play position
+    m_pLoopStartPoint->slotSet(8);
+    m_pButtonBeatLoopRoll4Activate->set(1.0);
+    EXPECT_TRUE(m_pLoopEnabled->toBool());
+    EXPECT_TRUE(m_pBeatLoop4Enabled->toBool());
+    EXPECT_EQ(0, m_pLoopStartPoint->get());
+
+    // move the start point, activate a 1 beat loop roll, new start point be preserved
+    m_pLoopStartPoint->slotSet(8);
+    m_pButtonBeatLoopRoll1Activate->set(1.0);
+    EXPECT_TRUE(m_pLoopEnabled->toBool());
+    EXPECT_TRUE(m_pBeatLoop1Enabled->toBool());
+    EXPECT_EQ(8, m_pLoopStartPoint->get());
+
+    // end the 1 beat loop roll
+    m_pButtonBeatLoopRoll1Activate->set(0.0);
+    EXPECT_TRUE(m_pLoopEnabled->toBool());
+    EXPECT_EQ(8, m_pLoopStartPoint->get());
+    EXPECT_TRUE(m_pBeatLoop4Enabled->toBool());
+
+    // end the 4 beat loop roll
+    m_pButtonBeatLoopRoll4Activate->set(0.0);
+    EXPECT_FALSE(m_pLoopEnabled->toBool());
+    EXPECT_FALSE(m_pBeatLoop4Enabled->toBool());
+
+    // new loop should start back at 0
+    m_pButtonBeatLoopRoll4Activate->set(1.0);
+    EXPECT_TRUE(m_pLoopEnabled->toBool());
+    EXPECT_TRUE(m_pBeatLoop4Enabled->toBool());
+    EXPECT_EQ(0, m_pLoopStartPoint->get());
 }

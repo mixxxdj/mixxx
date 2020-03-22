@@ -6,8 +6,8 @@
     email                : spappalardo@mixxx.org
  ***************************************************************************/
 
+#include "controllers/colormapperjsproxy.h"
 #include "controllers/controllerengine.h"
-
 #include "controllers/controller.h"
 #include "controllers/controllerdebug.h"
 #include "control/controlobject.h"
@@ -29,9 +29,11 @@ const int kDecks = 16;
 const int kScratchTimerMs = 1;
 const double kAlphaBetaDt = kScratchTimerMs / 1000.0;
 
-ControllerEngine::ControllerEngine(Controller* controller)
+ControllerEngine::ControllerEngine(
+        Controller* controller, UserSettingsPointer pConfig)
         : m_pEngine(nullptr),
           m_pController(controller),
+          m_pConfig(pConfig),
           m_bPopups(false),
           m_pBaClass(nullptr) {
     // Handle error dialog buttons
@@ -113,10 +115,8 @@ QScriptValue ControllerEngine::wrapFunctionCode(const QString& codeSnippet,
                                                 int numberOfArgs) {
     QScriptValue wrappedFunction;
 
-    QHash<QString, QScriptValue>::const_iterator i =
-            m_scriptWrappedFunctionCache.find(codeSnippet);
-
-    if (i != m_scriptWrappedFunctionCache.end()) {
+    auto i = m_scriptWrappedFunctionCache.constFind(codeSnippet);
+    if (i != m_scriptWrappedFunctionCache.constEnd()) {
         wrappedFunction = i.value();
     } else {
         QStringList wrapperArgList;
@@ -214,6 +214,10 @@ void ControllerEngine::initializeScriptEngine() {
         engineGlobalObject.setProperty("midi", m_pEngine->newQObject(m_pController));
     }
 
+    QScriptValue constructor = m_pEngine->newFunction(ColorMapperJSProxyConstructor);
+    QScriptValue metaObject = m_pEngine->newQMetaObject(&ColorMapperJSProxy::staticMetaObject, constructor);
+    engineGlobalObject.setProperty("ColorMapper", metaObject);
+
     m_pBaClass = new ByteArrayClass(m_pEngine);
     engineGlobalObject.setProperty("ByteArray", m_pBaClass->constructor());
 }
@@ -242,7 +246,7 @@ bool ControllerEngine::loadScriptFiles(const QList<QString>& scriptPaths,
     connect(&m_scriptWatcher, SIGNAL(fileChanged(QString)),
             this, SLOT(scriptHasChanged(QString)));
 
-    emit(initialized());
+    emit initialized();
 
     return result && m_scriptErrors.isEmpty();
 }
@@ -296,7 +300,7 @@ void ControllerEngine::initializeScripts(const QList<ControllerPreset::ScriptFil
     // Call the init method for all the prefixes.
     callFunctionOnObjects(m_scriptFunctionPrefixes, "init", args);
 
-    emit(initialized());
+    emit initialized();
 }
 
 /* -------- ------------------------------------------------------
@@ -529,7 +533,7 @@ void ControllerEngine::errorDialogButton(const QString& key, QMessageBox::Standa
                SLOT(errorDialogButton(QString, QMessageBox::StandardButton)));
 
     if (button == QMessageBox::Retry) {
-        emit(resetController());
+        emit resetController();
     }
 }
 
@@ -762,19 +766,22 @@ void ScriptConnection::executeCallback(double value) const {
    Purpose: (Dis)connects a ScriptConnection
    Input:   the ScriptConnection to disconnect
    -------- ------------------------------------------------------ */
-void ControllerEngine::removeScriptConnection(const ScriptConnection connection) {
+bool ControllerEngine::removeScriptConnection(const ScriptConnection connection) {
     ControlObjectScript* coScript = getControlObjectScript(connection.key.group,
                                                            connection.key.item);
 
     if (m_pEngine == nullptr || coScript == nullptr) {
-        return;
+        return false;
     }
 
-    coScript->removeScriptConnection(connection);
+    return coScript->removeScriptConnection(connection);
 }
 
-void ScriptConnectionInvokableWrapper::disconnect() {
-    m_scriptConnection.controllerEngine->removeScriptConnection(m_scriptConnection);
+bool ScriptConnectionInvokableWrapper::disconnect() {
+    // if the removeScriptConnection succeeded, the connection has been successfully disconnected
+    bool success = m_scriptConnection.controllerEngine->removeScriptConnection(m_scriptConnection);
+    m_isConnected = !success;
+    return success;
 }
 
 /* -------- ------------------------------------------------------
@@ -1104,8 +1111,8 @@ void ControllerEngine::timerEvent(QTimerEvent *event) {
         return;
     }
 
-    QHash<int, TimerInfo>::const_iterator it = m_timers.find(timerId);
-    if (it == m_timers.end()) {
+    auto it = m_timers.constFind(timerId);
+    if (it == m_timers.constEnd()) {
         qWarning() << "Timer" << timerId << "fired but there's no function mapped to it!";
         return;
     }
@@ -1129,21 +1136,10 @@ void ControllerEngine::timerEvent(QTimerEvent *event) {
 
 double ControllerEngine::getDeckRate(const QString& group) {
     double rate = 0.0;
-    ControlObjectScript* pRate = getControlObjectScript(group, "rate");
-    if (pRate != nullptr) {
-        rate = pRate->get();
+    ControlObjectScript* pRateRatio = getControlObjectScript(group, "rate_ratio");
+    if (pRateRatio != nullptr) {
+        rate = pRateRatio->get();
     }
-    ControlObjectScript* pRateDir = getControlObjectScript(group, "rate_dir");
-    if (pRateDir != nullptr) {
-        rate *= pRateDir->get();
-    }
-    ControlObjectScript* pRateRange = getControlObjectScript(group, "rateRange");
-    if (pRateRange != nullptr) {
-        rate *= pRateRange->get();
-    }
-
-    // Add 1 since the deck is playing
-    rate += 1.0;
 
     // See if we're in reverse play
     ControlObjectScript* pReverse = getControlObjectScript(group, "reverse");
@@ -1379,8 +1375,7 @@ void ControllerEngine::scratchDisable(int deck, bool ramp) {
 bool ControllerEngine::isScratching(int deck) {
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
-    // Don't report that we are scratching if we're ramping.
-    return getValue(group, "scratch2_enable") > 0 && !m_ramp[deck];
+    return getValue(group, "scratch2_enable") > 0;
 }
 
 /*  -------- ------------------------------------------------------
@@ -1524,7 +1519,7 @@ void ControllerEngine::softStart(int deck, bool activate, double factor) {
     double initRate = 0.0;
 
     if (activate) {
-        // aquire deck rate
+        // acquire deck rate
         m_rampTo[deck] = getDeckRate(group);
 
         // if brake()ing, get current rate from filter

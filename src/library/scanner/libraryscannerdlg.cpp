@@ -26,7 +26,7 @@
 LibraryScannerDlg::LibraryScannerDlg(QWidget* parent, Qt::WindowFlags f)
         : QWidget(parent, f),
           m_bCancelled(false) {
-    setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
+    setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
 
     QVBoxLayout* pLayout = new QVBoxLayout(this);
 
@@ -35,8 +35,10 @@ LibraryScannerDlg::LibraryScannerDlg(QWidget* parent, Qt::WindowFlags f)
     pLayout->addWidget(pLabel);
 
     QPushButton* pCancel = new QPushButton(tr("Cancel"), this);
-    connect(pCancel, SIGNAL(clicked()),
-            this, SLOT(slotCancel()));
+    connect(pCancel,
+            &QPushButton::clicked,
+            this,
+            &LibraryScannerDlg::slotCancel);
     pLayout->addWidget(pCancel);
 
     QLabel* pCurrent = new QLabel(this);
@@ -44,8 +46,7 @@ LibraryScannerDlg::LibraryScannerDlg(QWidget* parent, Qt::WindowFlags f)
     pCurrent->setMaximumWidth(600);
     pCurrent->setFixedHeight(this->fontMetrics().height());
     pCurrent->setWordWrap(true);
-    connect(this, SIGNAL(progress(QString)),
-            pCurrent, SLOT(setText(QString)));
+    connect(this, &LibraryScannerDlg::progress, pCurrent, &QLabel::setText);
     pLayout->addWidget(pCurrent);
     setLayout(pLayout);
 }
@@ -61,7 +62,7 @@ void LibraryScannerDlg::slotUpdate(QString path) {
 
     if (isVisible()) {
         QString status = tr("Scanning: ") + path;
-        emit(progress(status));
+        emit progress(status);
     }
 }
 
@@ -75,14 +76,14 @@ void LibraryScannerDlg::slotUpdateCover(QString path) {
         QString status = QString("%1: %2")
                 .arg(tr("Scanning cover art (safe to cancel)"))
                 .arg(path);
-        emit(progress(status));
+        emit progress(status);
     }
 }
 
 void LibraryScannerDlg::slotCancel() {
     qDebug() << "Cancelling library scan...";
     m_bCancelled = true;
-    emit(scanCancelled());
+    emit scanCancelled();
     hide();
 }
 

@@ -73,7 +73,7 @@ QString KeyFactory::getPreferredSubVersion(
             it.key(), kSubVersionKeyValueSeparator, it.value());
     }
 
-    qSort(fragments);
+    std::sort(fragments.begin(), fragments.end());
     return (fragments.size() > 0) ? fragments.join(kSubVersionFragmentSeparator) : "";
 }
 
@@ -89,8 +89,8 @@ Keys KeyFactory::makePreferredKeys(
 
     if (version == KEY_MAP_VERSION) {
         KeyMap key_map;
-        for (KeyChangeList::const_iterator it = key_changes.begin();
-             it != key_changes.end(); ++it) {
+        for (auto it = key_changes.constBegin();
+             it != key_changes.constEnd(); ++it) {
             // Key position is in frames. Do not accept fractional frames.
             double frame = floor(it->second);
 
@@ -98,7 +98,7 @@ Keys KeyFactory::makePreferredKeys(
             pChange->set_key(it->first);
             pChange->set_frame_position(frame);
         }
-        key_map.set_global_key(KeyUtils::calculateGlobalKey(key_changes, iTotalSamples));
+        key_map.set_global_key(KeyUtils::calculateGlobalKey(key_changes, iTotalSamples, iSampleRate));
         key_map.set_source(mixxx::track::io::key::ANALYZER);
         Keys keys(key_map);
         keys.setSubVersion(subVersion);

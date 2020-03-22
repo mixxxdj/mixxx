@@ -1,12 +1,12 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: Mixxx
 Upstream-Contact:
- RJ Ryan <rryan@mixxx.org>
-Source: http://downloads.mixxx.org/
+ RJ Skerry-Ryan <rryan@mixxx.org>
+Source: https://downloads.mixxx.org/
 
 Files: *
 Copyright:
- 2001-2018 Mixxx development team
+ 2001-2020 Mixxx development team
 License: GPL-2+
 
 License: GPL-2+

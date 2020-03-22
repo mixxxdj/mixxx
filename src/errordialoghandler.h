@@ -20,7 +20,6 @@
 
 #include <QObject>
 #include <QMessageBox>
-#include <QSignalMapper>
 #include <QMutex>
 #include <QString>
 #include <QList>
@@ -46,10 +45,10 @@ typedef enum {
 class ErrorDialogProperties {
   public:
     /** Set the window title. ("Mixxx" is always prepended.) */
-    void setTitle(QString title);
+    void setTitle(const QString& title);
 
     /** Set a key to prevent multiple dialogs until the first is closed */
-    inline void setKey(QString key) {
+    inline void setKey(const QString& key) {
         m_key = key;
     }
 
@@ -58,18 +57,18 @@ class ErrorDialogProperties {
     }
 
     /** Set the primary window text */
-    void setText(QString text);
+    void setText(const QString& text);
     QString getText() const {
         return m_text;
     }
 
     /** Set additional window text */
-    inline void setInfoText(QString text) {
+    inline void setInfoText(const QString& text) {
         m_infoText = text;
     }
 
     /** Set detailed text (causes "Show Details" button to appear.) */
-    inline void setDetails(QString text) {
+    inline void setDetails(const QString& text) {
         m_details = text;
     }
 
@@ -152,7 +151,7 @@ class ErrorDialogHandler : public QObject {
     // (or title if no key) is already displayed. If shouldQuit is true, Mixxx
     // will shut down.
     bool requestErrorDialog(DialogType type, QString message,
-                            bool shouldQuit=false);
+                            bool shouldQuit = false);
     bool requestErrorDialog(ErrorDialogProperties* props);
 
     // Allows a means for main() to skip exec() if there was a critical or fatal
@@ -166,7 +165,7 @@ class ErrorDialogHandler : public QObject {
   private slots:
     /** Actually displays the box */
     void errorDialog(ErrorDialogProperties* props);
-    void boxClosed(QString key);
+    void boxClosed(QString key, QMessageBox* msgBox);
 
   private:
     // Private constructor
@@ -177,7 +176,6 @@ class ErrorDialogHandler : public QObject {
 
     bool m_errorCondition;
     QList<QString> m_dialogKeys;
-    QSignalMapper m_signalMapper;
     QMutex m_mutex;
 
     DISALLOW_COPY_AND_ASSIGN(ErrorDialogHandler);

@@ -9,7 +9,6 @@
   <WidgetGroup>
     <ObjectName>LoopContainer</ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>f,min</SizePolicy>
     <Children>
 
       <WidgetGroup><!-- SpinBox + loop_activate -->
@@ -19,13 +18,12 @@
           <BeatSpinBox>
             <ObjectName>BeatloopSizeSpinBox</ObjectName>
             <TooltipId>beatloop_size</TooltipId>
+            <Size>54f,25f</Size>
             <Value><Variable name="group"/>,beatloop_size</Value>
           </BeatSpinBox>
 
           <!-- Workaround for layout spacing -->
-          <Template src="skin:spacer_hx.xml">
-            <SetVariable name="width">2f,</SetVariable>
-          </Template>
+          <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
 
           <Template src="skin:left_right_2state_button.xml">
             <SetVariable name="TooltipId">beatloop_activate</SetVariable>
@@ -47,18 +45,12 @@
       </WidgetGroup><!-- SpinBox + loop_activate -->
 
       <!-- Workaround for layout spacing -->
-      <Template src="skin:spacer_vx.xml">
-        <SetVariable name="height">,2f</SetVariable>
-      </Template>
+      <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
 
       <WidgetGroup><!-- loop_in, loop_out, reloop -->
         <Layout>horizontal</Layout>
         <Children>
-
-          <!-- Workaround for layout spacing -->
-          <Template src="skin:spacer_hx.xml">
-            <SetVariable name="width">6f,</SetVariable>
-          </Template>
+          <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
 
           <Template src="skin:left_right_1state_button.xml">
             <SetVariable name="TooltipId">loop_in</SetVariable>
@@ -74,9 +66,7 @@
           </Template>
 
           <!-- Workaround for layout spacing -->
-          <Template src="skin:spacer_hx.xml">
-            <SetVariable name="width">2f,</SetVariable>
-          </Template>
+          <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
 
           <Template src="skin:left_right_1state_button.xml">
             <SetVariable name="TooltipId">loop_out</SetVariable>
@@ -92,9 +82,7 @@
           </Template>
 
           <!-- Workaround for layout spacing -->
-          <Template src="skin:spacer_hx.xml">
-            <SetVariable name="width">8f,</SetVariable>
-          </Template>
+          <WidgetGroup><Size>5f,0min</Size></WidgetGroup>
 
           <Template src="skin:left_right_display_2state_button.xml">
             <SetVariable name="TooltipId">reloop_toggle</SetVariable>

@@ -23,7 +23,8 @@ class MixxxDb : public QObject {
             int schemaVersion = kRequiredSchemaVersion);
 
     explicit MixxxDb(
-            const UserSettingsPointer& pConfig);
+            const UserSettingsPointer& pConfig,
+            bool inMemoryConnection = false);
 
     mixxx::DbConnectionPoolPtr connectionPool() const {
         return m_pDbConnectionPool;

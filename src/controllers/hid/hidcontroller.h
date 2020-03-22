@@ -17,31 +17,10 @@
 #include "controllers/hid/hidcontrollerpresetfilehandler.h"
 #include "util/duration.h"
 
-class HidReader : public QThread {
+class HidController final : public Controller {
     Q_OBJECT
   public:
-    HidReader(hid_device* device);
-    virtual ~HidReader();
-
-    void stop() {
-        m_stop = 1;
-    }
-
-  signals:
-    void incomingData(QByteArray data, mixxx::Duration timestamp);
-
-  protected:
-    void run();
-
-  private:
-    hid_device* m_pHidDevice;
-    QAtomicInt m_stop;
-};
-
-class HidController : public Controller {
-    Q_OBJECT
-  public:
-    HidController(const hid_device_info deviceInfo);
+    HidController(const hid_device_info& deviceInfo, UserSettingsPointer pConfig);
     ~HidController() override;
 
     QString presetExtension() override;
@@ -78,6 +57,9 @@ class HidController : public Controller {
     int open() override;
     int close() override;
 
+    bool poll() override;
+    bool isPolling() const override;
+
   private:
     // For devices which only support a single report, reportID must be set to
     // 0x0.
@@ -107,8 +89,9 @@ class HidController : public Controller {
 
     QString m_sUID;
     hid_device* m_pHidDevice;
-    HidReader* m_pReader;
     HidControllerPreset m_preset;
+
+    unsigned char m_pPollData[255];
 };
 
 #endif

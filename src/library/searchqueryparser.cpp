@@ -1,5 +1,7 @@
 #include "library/searchqueryparser.h"
 
+#include "util/compatibility.h"
+
 #include "track/keyutils.h"
 
 const char* kNegatePrefix = "-";
@@ -29,6 +31,7 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
                      << "dateadded"
                      << "datetime_added"
                      << "date_added";
+    m_ignoredColumns << "crate";
 
     m_fieldToSqlColumns["artist"] << "artist" << "album_artist";
     m_fieldToSqlColumns["album_artist"] << "album_artist";
@@ -67,7 +70,7 @@ QString SearchQueryParser::getTextArgument(QString argument,
                                            QStringList* tokens) const {
     // If the argument is empty, assume the user placed a space after an
     // advanced search command. Consume another token and treat that as the
-    // argument. TODO(XXX) support quoted search phrases as arguments
+    // argument.
     argument = argument.trimmed();
     if (argument.length() == 0) {
         if (tokens->length() > 0) {
@@ -99,8 +102,14 @@ QString SearchQueryParser::getTextArgument(QString argument,
             tokens->push_front(remaining);
         }
 
-        // Slice off the quote and everything after.
-        argument = argument.left(quote_index);
+        if (quote_index == 0) {
+            // We have found an explicit empty string ""
+            // return it as "" to distinguish it from an unfinished empty string
+            argument = kMissingFieldSearchTerm;
+        } else {
+            // Slice off the quote and everything after.
+            argument = argument.left(quote_index);
+        }
     }
 
     return argument;
@@ -109,6 +118,18 @@ QString SearchQueryParser::getTextArgument(QString argument,
 void SearchQueryParser::parseTokens(QStringList tokens,
                                     QStringList searchColumns,
                                     AndNode* pQuery) const {
+    // we need to create a filtered columns list that are handled differently
+    auto queryColumns = QStringList();
+    queryColumns.reserve(searchColumns.count());
+
+    for (const auto& column: qAsConst(searchColumns)) {
+        if (m_ignoredColumns.contains(column)) {
+            continue;
+        }
+        queryColumns << column;
+    }
+
+
     while (tokens.size() > 0) {
         QString token = tokens.takeFirst().trimmed();
         if (token.length() == 0) {
@@ -123,15 +144,27 @@ void SearchQueryParser::parseTokens(QStringList tokens,
         } else if (m_textFilterMatcher.indexIn(token) != -1) {
             QString field = m_textFilterMatcher.cap(1);
             QString argument = getTextArgument(
-                m_textFilterMatcher.cap(2), &tokens).trimmed();
+                    m_textFilterMatcher.cap(2), &tokens);
 
-            if (!argument.isEmpty()) {
+            if (argument == kMissingFieldSearchTerm) {
+                qDebug() << "argument explicit empty";
+                if (field == "crate") {
+                    pNode = std::make_unique<NoCrateFilterNode>(
+                          &m_pTrackCollection->crates());
+                    qDebug() << pNode->toSql();
+                } else {
+                    pNode = std::make_unique<NullOrEmptyTextFilterNode>(
+                          m_pTrackCollection->database(), m_fieldToSqlColumns[field]);
+                    qDebug() << pNode->toSql();
+                }
+            } else if (!argument.isEmpty()) {
                 if (field == "crate") {
                     pNode = std::make_unique<CrateFilterNode>(
-                          &m_pTrackCollection->crates(), argument);
+                            &m_pTrackCollection->crates(), argument);
                 } else {
                     pNode = std::make_unique<TextFilterNode>(
-                          m_pTrackCollection->database(), m_fieldToSqlColumns[field], argument);
+                            m_pTrackCollection->database(),
+                            m_fieldToSqlColumns[field], argument);
                 }
             }
         } else if (m_numericFilterMatcher.indexIn(token) != -1) {
@@ -140,8 +173,13 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                 m_numericFilterMatcher.cap(2), &tokens).trimmed();
 
             if (!argument.isEmpty()) {
-                pNode = std::make_unique<NumericFilterNode>(
-                     m_fieldToSqlColumns[field], argument);
+                if (argument == kMissingFieldSearchTerm) {
+                    pNode = std::make_unique<NullNumericFilterNode>(
+                         m_fieldToSqlColumns[field]);
+                } else {
+                    pNode = std::make_unique<NumericFilterNode>(
+                         m_fieldToSqlColumns[field], argument);
+                }
             }
         } else if (m_specialFilterMatcher.indexIn(token) != -1) {
             bool fuzzy = token.startsWith(kFuzzyPrefix);
@@ -153,8 +191,13 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                     mixxx::track::io::key::ChromaticKey key =
                             KeyUtils::guessKeyFromText(argument);
                     if (key == mixxx::track::io::key::INVALID) {
-                        pNode = std::make_unique<TextFilterNode>(
-                                m_pTrackCollection->database(), m_fieldToSqlColumns[field], argument);
+                        if (argument == kMissingFieldSearchTerm) {
+                            pNode = std::make_unique<NullOrEmptyTextFilterNode>(
+                                    m_pTrackCollection->database(), m_fieldToSqlColumns[field]);
+                        } else {
+                            pNode = std::make_unique<TextFilterNode>(
+                                    m_pTrackCollection->database(), m_fieldToSqlColumns[field], argument);
+                        }
                     } else {
                         pNode = std::make_unique<KeyFilterNode>(key, fuzzy);
                     }
@@ -177,8 +220,23 @@ void SearchQueryParser::parseTokens(QStringList tokens,
             }
             // Don't trigger on a lone minus sign.
             if (!token.isEmpty()) {
-                pNode = std::make_unique<TextFilterNode>(
-                                m_pTrackCollection->database(), searchColumns, token);
+                QString argument = getTextArgument(token, &tokens);
+                // For untagged strings we search the track fields as well
+                // as the crate names the track is in. This allows the user
+                // to use crates like tags
+                if (searchColumns.contains("crate")) {
+                    std::unique_ptr<OrNode> gNode = std::make_unique<OrNode>();
+
+                    gNode->addNode(std::make_unique<CrateFilterNode>(
+                                    &m_pTrackCollection->crates(), argument));
+                    gNode->addNode(std::make_unique<TextFilterNode>(
+                                    m_pTrackCollection->database(), queryColumns, argument));
+
+                    pNode = std::move(gNode);
+                } else {
+                    pNode = std::make_unique<TextFilterNode>(
+                             m_pTrackCollection->database(), queryColumns, argument);
+                }
             }
         }
         if (pNode) {
@@ -204,5 +262,5 @@ std::unique_ptr<QueryNode> SearchQueryParser::parseQuery(const QString& query,
         parseTokens(tokens, searchColumns, pQuery.get());
     }
 
-    return std::move(pQuery);
+    return pQuery;
 }

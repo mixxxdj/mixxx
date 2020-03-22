@@ -3,32 +3,47 @@
 
 #include "library/dao/settingsdao.h"
 
+#include "util/logger.h"
+#include "util/assert.h"
+
+namespace {
+
+mixxx::Logger kLogger("SettingsDAO");
+
+} // anonymous namespace
+
 SettingsDAO::SettingsDAO(const QSqlDatabase& db)
         : m_db(db) {
-}
-
-SettingsDAO::~SettingsDAO() {
-
-}
-
-void SettingsDAO::initialize() {
 }
 
 QString SettingsDAO::getValue(const QString& name, QString defaultValue) const {
     QSqlQuery query(m_db);
 
-    query.prepare("SELECT value FROM settings WHERE name = :name");
-    query.bindValue(":name", name);
-
-    QString value = defaultValue;
-    if (query.exec() && query.first()) {
-        value = query.value(query.record().indexOf("value")).toString();
+    if (query.prepare("SELECT value FROM settings WHERE name = :name")) {
+        query.bindValue(":name", name);
+        if (query.exec() && query.first()) {
+            QVariant value = query.value(query.record().indexOf("value"));
+            VERIFY_OR_DEBUG_ASSERT(value.isValid()) {
+                kLogger.warning() << "Invalid value:" << value;
+            } else {
+                return value.toString();
+            }
+        }
+    } else {
+        // Prepare is expected to fail for a fresh database
+        // when the schema is still empty!
+        kLogger.info()
+                << "Failed to prepare query:"
+                << "Returning default value"
+                << defaultValue
+                << "for"
+                << name;
     }
-    return value;
+    return defaultValue;
 }
 
 bool SettingsDAO::setValue(const QString& name, const QVariant& value) {
-    if (!qVariantCanConvert<QString>(value)) {
+    if (!value.canConvert(QMetaType::QString)) {
         return false;
     }
 

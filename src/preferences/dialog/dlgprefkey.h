@@ -5,8 +5,10 @@
 #include <QWidget>
 #include <QMap>
 
+#include "analyzer/plugins/analyzerplugin.h"
 #include "control/controlproxy.h"
 #include "preferences/dialog/ui_dlgprefkeydlg.h"
+#include "preferences/keydetectionsettings.h"
 #include "preferences/usersettings.h"
 #include "track/keyutils.h"
 #include "preferences/dlgpreferencepage.h"
@@ -31,19 +33,19 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
 
     void setNotation(KeyUtils::KeyNotation notation);
     void setNotationOpenKey(bool);
+    void setNotationOpenKeyAndTraditional(bool);
     void setNotationLancelot(bool);
+    void setNotationLancelotAndTraditional(bool);
     void setNotationTraditional(bool);
     void setNotationCustom(bool);
 
   private:
-    void populate();
     void loadSettings();
 
-    UserSettingsPointer m_pConfig;
+    KeyDetectionSettings m_keySettings;
     QMap<mixxx::track::io::key::ChromaticKey, QLineEdit*> m_keyLineEdits;
-    QList<QString> m_listName;
-    QList<QString> m_listLibrary, m_listIdentifier;
-    QString m_selectedAnalyzer;
+    QList<mixxx::AnalyzerPluginInfo> m_availablePlugins;
+    QString m_selectedAnalyzerId;
     ControlProxy* m_pKeyNotation;
     bool m_bAnalyzerEnabled;
     bool m_bFastAnalysisEnabled;

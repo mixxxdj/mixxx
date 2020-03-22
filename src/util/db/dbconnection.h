@@ -3,9 +3,9 @@
 
 
 #include <QSqlDatabase>
-
 #include <QtDebug>
 
+#include "util/string.h"
 
 namespace mixxx {
 
@@ -22,8 +22,11 @@ class DbConnection final {
         QString* string,
         QChar esc);
 
+    static void makeStringLatinLow(QString* string);
+
     struct Params {
         QString type;
+        QString connectOptions;
         QString hostName;
         QString filePath;
         QString userName;
@@ -61,6 +64,7 @@ class DbConnection final {
     DbConnection(const DbConnection&&) = delete;
 
     QSqlDatabase m_sqlDatabase;
+    StringCollator m_collator;
 };
 
 } // namespace mixxx

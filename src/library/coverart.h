@@ -1,11 +1,25 @@
-#ifndef COVERART_H
-#define COVERART_H
+#pragma once
 
 #include <QImage>
 #include <QString>
-#include <QObject>
 #include <QtDebug>
-#include <QtGlobal>
+
+#include "util/sandbox.h"
+
+class CoverImageUtils {
+  public:
+    static quint16 calculateHash(
+            const QImage& image);
+
+    static constexpr quint16 defaultHash() {
+        return 0;
+    }
+
+    static constexpr bool isValidHash(
+            quint16 hash) {
+        return hash != defaultHash();
+    }
+};
 
 class CoverInfoRelative {
   public:
@@ -35,11 +49,15 @@ class CoverInfoRelative {
     CoverInfoRelative(const CoverInfoRelative&) = default;
     CoverInfoRelative& operator=(const CoverInfoRelative&) = default;
     virtual ~CoverInfoRelative() = default;
-// Visual Studio does not support default generated move constructors yet
-#if !defined(_MSC_VER) || _MSC_VER > 1900
     CoverInfoRelative(CoverInfoRelative&&) = default;
     CoverInfoRelative& operator=(CoverInfoRelative&&) = default;
-#endif
+
+    /*non-virtual*/ void reset() {
+        // Slicing when invoked from a subclass is intended!
+        // Only the contents of this base class are supposed
+        // to be reset, i.e. trackLocation should be preserved.
+        *this = CoverInfoRelative();
+    }
 
     Source source;
     Type type;
@@ -64,11 +82,19 @@ class CoverInfo : public CoverInfoRelative {
     CoverInfo(const CoverInfo&) = default;
     CoverInfo& operator=(const CoverInfo&) = default;
     virtual ~CoverInfo() override = default;
-// Visual Studio does not support default generated move constructors yet
-#if !defined(_MSC_VER) || _MSC_VER > 1900
     CoverInfo(CoverInfo&&) = default;
     CoverInfo& operator=(CoverInfo&&) = default;
-#endif
+
+    QImage loadImage(
+            const SecurityTokenPointer& pTrackLocationToken = SecurityTokenPointer()) const;
+
+    // Verify the image hash and update it if necessary.
+    // If the corresponding image has already been loaded it
+    // could be provided as a parameter to avoid reloading
+    // if actually needed.
+    bool refreshImageHash(
+            const QImage& loadedImage = QImage(),
+            const SecurityTokenPointer& pTrackLocationToken = SecurityTokenPointer());
 
     QString trackLocation;
 };
@@ -92,18 +118,13 @@ class CoverArt : public CoverInfo {
     // all-default memory management
     CoverArt(const CoverArt&) = default;
     virtual ~CoverArt() override = default;
-// Visual Studio does not support default generated move constructors yet
-#if !defined(_MSC_VER) || _MSC_VER > 1900
     CoverArt(CoverArt&&) = default;
     CoverArt& operator=(CoverArt&&) = default;
-#endif
 
-    // it is not a QPixmap, because it is not safe to use pixmaps 
+    // it is not a QPixmap, because it is not safe to use pixmaps
     // outside the GUI thread
-    QImage image; 
+    QImage image;
     int resizedToWidth;
 };
 
 QDebug operator<<(QDebug dbg, const CoverArt& art);
-
-#endif /* COVERART_H */

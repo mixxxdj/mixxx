@@ -9,7 +9,7 @@ EngineEffectChain::EngineEffectChain(const QString& id,
                                      const QSet<ChannelHandleAndGroup>& registeredOutputChannels)
         : m_id(id),
           m_enableState(EffectEnableState::Enabled),
-          m_insertionType(EffectChainInsertionType::Insert),
+          m_mixMode(EffectChainMixMode::DrySlashWet),
           m_dMix(0),
           m_buffer1(MAX_BUFFER_LEN),
           m_buffer2(MAX_BUFFER_LEN) {
@@ -76,7 +76,7 @@ bool EngineEffectChain::removeEffect(EngineEffect* pEffect, int iIndex) {
 // this is called from the engine thread onCallbackStart()
 bool EngineEffectChain::updateParameters(const EffectsRequest& message) {
     // TODO(rryan): Parameter interpolation.
-    m_insertionType = message.SetEffectChainParameters.insertion_type;
+    m_mixMode = message.SetEffectChainParameters.mix_mode;
     m_dMix = message.SetEffectChainParameters.mix;
 
     if (m_enableState != EffectEnableState::Disabled && !message.SetEffectParameters.enabled) {
@@ -141,7 +141,7 @@ bool EngineEffectChain::processEffectsRequest(EffectsRequest& message,
         default:
             return false;
     }
-    pResponsePipe->writeMessages(&response, 1);
+    pResponsePipe->writeMessage(response);
     return true;
 }
 
@@ -152,7 +152,7 @@ bool EngineEffectChain::enableForInputChannel(const ChannelHandle* inputHandle,
     }
     auto& outputMap = m_chainStatusForChannelMatrix[*inputHandle];
     for (auto&& outputChannelStatus : outputMap) {
-        VERIFY_OR_DEBUG_ASSERT(outputChannelStatus.enable_state !=
+        VERIFY_OR_DEBUG_ASSERT(outputChannelStatus.enableState !=
                 EffectEnableState::Enabled) {
             for (auto&& pStatesMap : *statesForEffectsInChain) {
                 for (auto&& pState : pStatesMap) {
@@ -161,7 +161,7 @@ bool EngineEffectChain::enableForInputChannel(const ChannelHandle* inputHandle,
             }
             return false;
         }
-        outputChannelStatus.enable_state = EffectEnableState::Enabling;
+        outputChannelStatus.enableState = EffectEnableState::Enabling;
     }
     for (int i = 0; i < m_effects.size(); ++i) {
         if (m_effects[i] != nullptr) {
@@ -182,14 +182,14 @@ bool EngineEffectChain::enableForInputChannel(const ChannelHandle* inputHandle,
 bool EngineEffectChain::disableForInputChannel(const ChannelHandle* inputHandle) {
     auto& outputMap = m_chainStatusForChannelMatrix[*inputHandle];
     for (auto&& outputChannelStatus : outputMap) {
-        if (outputChannelStatus.enable_state != EffectEnableState::Disabled) {
-            outputChannelStatus.enable_state = EffectEnableState::Disabling;
+        if (outputChannelStatus.enableState != EffectEnableState::Disabled) {
+            outputChannelStatus.enableState = EffectEnableState::Disabling;
         }
     }
     // Do not call deleteStatesForInputChannel here because the EngineEffects'
     // process() method needs to run one last time before deleting the states.
     // deleteStatesForInputChannel needs to be called from the main thread after
-    // the succesful EffectsResponse is returned by the MessagePipe FIFO.
+    // the successful EffectsResponse is returned by the MessagePipe FIFO.
     return true;
 }
 
@@ -210,7 +210,7 @@ void EngineEffectChain::deleteStatesForInputChannel(const ChannelHandle* inputCh
     // enableForInputChannel(), or disableForInputChannel().
     auto& outputMap = m_chainStatusForChannelMatrix[*inputChannel];
     for (auto&& outputChannelStatus : outputMap) {
-        outputChannelStatus.enable_state = EffectEnableState::Disabled;
+        outputChannelStatus.enableState = EffectEnableState::Disabled;
     }
     for (EngineEffect* pEffect : m_effects) {
         if (pEffect != nullptr) {
@@ -241,14 +241,19 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
     // when it gets the intermediate disabling signal.
 
     ChannelStatus& channelStatus = m_chainStatusForChannelMatrix[inputHandle][outputHandle];
-    EffectEnableState effectiveChainEnableState = channelStatus.enable_state;
+    EffectEnableState effectiveChainEnableState = channelStatus.enableState;
 
-    if (m_enableState != EffectEnableState::Enabled) {
-        effectiveChainEnableState = m_enableState;
+    // If the channel is fully disabled, do not let intermediate
+    // enabling/disabing signals from the chain's enable switch override
+    // the channel's state.
+    if (effectiveChainEnableState != EffectEnableState::Disabled) {
+        if (m_enableState != EffectEnableState::Enabled) {
+            effectiveChainEnableState = m_enableState;
+        }
     }
 
-    CSAMPLE currentWetGain = m_dMix;
-    CSAMPLE lastCallbackWetGain = channelStatus.old_gain;
+    CSAMPLE currentMixKnob = m_dMix;
+    CSAMPLE lastCallbackMixKnob = channelStatus.oldMixKnob;
 
     bool processingOccured = false;
     if (effectiveChainEnableState != EffectEnableState::Disabled) {
@@ -258,6 +263,7 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
         // requires that the input buffer does not get modified.
         CSAMPLE* pIntermediateInput = pIn;
         CSAMPLE* pIntermediateOutput;
+        bool firstAddDryToWetEffectProcessed = false;
 
         for (EngineEffect* pEffect: m_effects) {
             if (pEffect != nullptr) {
@@ -272,6 +278,29 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
                                      pIntermediateInput, pIntermediateOutput,
                                      numSamples, sampleRate,
                                      effectiveChainEnableState, groupFeatures)) {
+                    if (pEffect->getManifest()->addDryToWet()) {
+                        // Skip adding the dry signal to the effect's wet output
+                        // when it is the first addDryToWet type effect in
+                        // a DryPlusWet mode chain. This allows effects after
+                        // it to process only the wet output. For example,
+                        // when chaining Echo then Reverb in DryPlusWet mode,
+                        // the Reverb effect will get only the wet output of
+                        // Echo to process instead of the echoed signal mixed
+                        // with the input to Echo. The dry signal that entered
+                        // the first effect in the chain will be mixed back in
+                        // below after all effects in the chain have been processed.
+                        bool skipAddingDry = !firstAddDryToWetEffectProcessed
+                                && m_mixMode == EffectChainMixMode::DryPlusWet;
+
+                        if (!skipAddingDry) {
+                            for (SINT i = 0; i <= static_cast<SINT>(numSamples); ++i) {
+                                pIntermediateOutput[i] += pIntermediateInput[i];
+                            }
+                        }
+
+                        firstAddDryToWetEffectProcessed = true;
+                    }
+
                     processingOccured = true;
                     // Output of this effect becomes the input of the next effect
                     pIntermediateInput = pIntermediateOutput;
@@ -282,31 +311,31 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
         if (processingOccured) {
             // pIntermediateInput is the output of the last processed effect. It would be the
             // intermediate input of the next effect if there was one.
-            if (m_insertionType == EffectChainInsertionType::Insert) {
-                // INSERT mode: output = input * (1-wet) + effect(input) * wet
+            if (m_mixMode == EffectChainMixMode::DrySlashWet) {
+                // Dry/Wet mode: output = (input * (1-mix knob)) + (wet * mix knob)
                 SampleUtil::copy2WithRampingGain(
                         pOut,
-                        pIn, 1.0 - lastCallbackWetGain, 1.0 - currentWetGain,
-                        pIntermediateInput, lastCallbackWetGain, currentWetGain,
+                        pIn, 1.0 - lastCallbackMixKnob, 1.0 - currentMixKnob,
+                        pIntermediateInput, lastCallbackMixKnob, currentMixKnob,
                         numSamples);
             } else {
-                // SEND mode: output = input + effect(input) * wet
+                // Dry+Wet mode: output = input + (wet * mix knob)
                 SampleUtil::copy2WithRampingGain(
                         pOut,
                         pIn, 1.0, 1.0,
-                        pIntermediateInput, lastCallbackWetGain, currentWetGain,
+                        pIntermediateInput, lastCallbackMixKnob, currentMixKnob,
                         numSamples);
             }
         }
     }
 
-    channelStatus.old_gain = currentWetGain;
+    channelStatus.oldMixKnob = currentMixKnob;
 
     // If the EffectProcessors have been sent a signal for the intermediate
     // enabling/disabling state, set the channel state or chain state
     // to the fully enabled/disabled state for the next engine callback.
 
-    EffectEnableState& chainOnChannelEnableState = channelStatus.enable_state;
+    EffectEnableState& chainOnChannelEnableState = channelStatus.enableState;
     if (chainOnChannelEnableState == EffectEnableState::Disabling) {
         chainOnChannelEnableState = EffectEnableState::Disabled;
     } else if (chainOnChannelEnableState == EffectEnableState::Enabling) {

@@ -7,6 +7,7 @@
 #include "widget/wwidget.h"
 #include "track/track.h"
 #include "util/math.h"
+#include "util/painterscope.h"
 
 #include <QLinearGradient>
 
@@ -58,7 +59,7 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         return;
     }
 
-    painter->save();
+    PainterScope PainterScope(painter);
 
     painter->setRenderHint(QPainter::Antialiasing);
     painter->resetTransform();
@@ -205,7 +206,7 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         }
     }
 
-    //If channel are not displayed separatly we nne to close the loop properly
+    //If channel are not displayed separately we need to close the loop properly
     if (channelSeparation == 1) {
         m_polygon.append(QPointF(m_waveformRenderer->getLength(), 0.0));
     }
@@ -214,8 +215,6 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
     painter->setBrush(m_brush);
 
     painter->drawPolygon(&m_polygon[0], m_polygon.size());
-
-    painter->restore();
 }
 
 void QtWaveformRendererSimpleSignal::onResize() {

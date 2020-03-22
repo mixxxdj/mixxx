@@ -645,7 +645,7 @@
                 <midino>0x2d</midino>
                 <group>[Master]</group>
                 <key>HerculesAir.spinback</key>
-                <description>Use Scratch Button to toogle spinback effect</description>
+                <description>Use Scratch Button to toggle spinback effect</description>
                 <options>
                     <script-binding/>
                 </options>

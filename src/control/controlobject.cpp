@@ -29,8 +29,22 @@ ControlObject::ControlObject() {
 }
 
 ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack,
-                             bool bPersist, double defaultValue) {
-    initialize(key, bIgnoreNops, bTrack, bPersist, defaultValue);
+                             bool bPersist, double defaultValue)
+        : m_key(key) {
+    // Don't bother looking up the control if key is NULL. Prevents log spew.
+    if (!m_key.isNull()) {
+        m_pControl = ControlDoublePrivate::getControl(m_key, true, this,
+                bIgnoreNops, bTrack, bPersist, defaultValue);
+    }
+
+    // getControl can fail and return a NULL control even with the create flag.
+    if (m_pControl) {
+        connect(m_pControl.data(),
+                &ControlDoublePrivate::valueChanged,
+                this,
+                &ControlObject::privateValueChanged,
+                Qt::DirectConnection);
+    }
 }
 
 ControlObject::~ControlObject() {
@@ -39,32 +53,11 @@ ControlObject::~ControlObject() {
     }
 }
 
-void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack,
-                               bool bPersist, double defaultValue) {
-    m_key = key;
-
-    // Don't bother looking up the control if key is NULL. Prevents log spew.
-    if (!m_key.isNull()) {
-        m_pControl = ControlDoublePrivate::getControl(m_key, true, this,
-                                                      bIgnoreNops, bTrack,
-                                                      bPersist, defaultValue);
-    }
-
-    // getControl can fail and return a NULL control even with the create flag.
-    if (m_pControl) {
-        connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
-                this, SLOT(privateValueChanged(double, QObject*)),
-                Qt::DirectConnection);
-    }
-}
-
 // slot
 void ControlObject::privateValueChanged(double dValue, QObject* pSender) {
     // Only emit valueChanged() if we did not originate this change.
     if (pSender != this) {
-        emit(valueChanged(dValue));
-    } else {
-        emit(valueChangedFromEngine(dValue));
+        emit valueChanged(dValue);
     }
 }
 
@@ -126,18 +119,8 @@ void ControlObject::set(const ConfigKey& key, const double& value) {
     }
 }
 
-bool ControlObject::connectValueChangeRequest(const QObject* receiver,
-                                              const char* method,
-                                              Qt::ConnectionType type) {
-    bool ret = false;
-    if (m_pControl) {
-        ret = m_pControl->connectValueChangeRequest(receiver, method, type);
-    }
-    return ret;
-}
-
 void ControlObject::setReadOnly() {
-    connectValueChangeRequest(this, SLOT(readOnlyHandler(double)),
+    connectValueChangeRequest(this, &ControlObject::readOnlyHandler,
                               Qt::DirectConnection);
 }
 

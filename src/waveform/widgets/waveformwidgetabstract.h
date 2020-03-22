@@ -14,7 +14,7 @@ class VSyncThread;
 // NOTE(vRince) This class represent objects the waveformwidgetfactory can
 // holds, IMPORTANT all WaveformWidgetAbstract MUST inherist QWidget too !!  we
 // can't do it here because QWidget and QGLWidget are both QWidgets so they
-// already have a common QWidget base class (ambigous polymorphism)
+// already have a common QWidget base class (ambiguous polymorphism)
 
 class WaveformWidgetAbstract : public WaveformWidgetRenderer {
   public:
@@ -32,7 +32,6 @@ class WaveformWidgetAbstract : public WaveformWidgetRenderer {
 
     virtual void preRender(VSyncThread* vsyncThread);
     virtual mixxx::Duration render();
-
     virtual void resize(int width, int height);
 
   protected:

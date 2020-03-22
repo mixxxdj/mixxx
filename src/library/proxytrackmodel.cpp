@@ -23,6 +23,16 @@ ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
 ProxyTrackModel::~ProxyTrackModel() {
 }
 
+TrackModel::SortColumnId ProxyTrackModel::sortColumnIdFromColumnIndex(int index) {
+    return (m_pTrackModel ? m_pTrackModel->sortColumnIdFromColumnIndex(index)
+            : TrackModel::sortColumnIdFromColumnIndex(index));
+}
+
+int ProxyTrackModel::columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) {
+    return (m_pTrackModel ? m_pTrackModel->columnIndexFromSortColumnId(sortColumn)
+            : TrackModel::columnIndexFromSortColumnId(sortColumn));
+}
+
 TrackId ProxyTrackModel::getTrackId(const QModelIndex& index) const {
     QModelIndex indexSource = mapToSource(index);
     return m_pTrackModel ? m_pTrackModel->getTrackId(indexSource) : TrackId();
@@ -35,6 +45,10 @@ const QLinkedList<int> ProxyTrackModel::getTrackRows(TrackId trackId) const {
 TrackPointer ProxyTrackModel::getTrack(const QModelIndex& index) const {
     QModelIndex indexSource = mapToSource(index);
     return m_pTrackModel ? m_pTrackModel->getTrack(indexSource) : TrackPointer();
+}
+
+TrackPointer ProxyTrackModel::getTrackByRef(const TrackRef& trackRef) const {
+    return m_pTrackModel ? m_pTrackModel->getTrackByRef(trackRef) : TrackPointer();
 }
 
 QString ProxyTrackModel::getTrackLocation(const QModelIndex& index) const {
@@ -116,8 +130,8 @@ bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
         int i = iter.next();
         QModelIndex index = itemModel->index(sourceRow, i, sourceParent);
         QVariant data = itemModel->data(index);
-        if (qVariantCanConvert<QString>(data)) {
-            QString strData = qVariantValue<QString>(data);
+        if (data.canConvert(QMetaType::QString)) {
+            QString strData = data.toString();
             if (strData.contains(filter))
                 rowMatches = true;
         }
@@ -144,4 +158,3 @@ void ProxyTrackModel::sort(int column, Qt::SortOrder order) {
         QSortFilterProxyModel::sort(column, order);
     }
 }
-

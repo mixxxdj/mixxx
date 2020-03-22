@@ -50,7 +50,7 @@ QWidget* MidiOptionsDelegate::createEditor(QWidget* parent,
 QString MidiOptionsDelegate::displayText(const QVariant& value,
                                          const QLocale& locale) const {
     Q_UNUSED(locale);
-    MidiOptions options = qVariantValue<MidiOptions>(value);
+    MidiOptions options = value.value<MidiOptions>();
     QStringList optionStrs;
     MidiOption option = static_cast<MidiOption>(1);
     while (option < MIDI_OPTION_MASK) {
@@ -64,7 +64,7 @@ QString MidiOptionsDelegate::displayText(const QVariant& value,
 
 void MidiOptionsDelegate::setEditorData(QWidget* editor,
                                         const QModelIndex& index) const {
-    MidiOptions options = qVariantValue<MidiOptions>(index.data(Qt::EditRole));
+    MidiOptions options = index.data(Qt::EditRole).value<MidiOptions>();
 
     QComboBox* pComboBox = dynamic_cast<QComboBox*>(editor);
     if (pComboBox == NULL) {
@@ -87,5 +87,5 @@ void MidiOptionsDelegate::setModelData(QWidget* editor,
         return;
     }
     options.all = pComboBox->itemData(pComboBox->currentIndex()).toInt();
-    model->setData(index, qVariantFromValue(options), Qt::EditRole);
+    model->setData(index, QVariant::fromValue(options), Qt::EditRole);
 }

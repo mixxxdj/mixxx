@@ -17,6 +17,13 @@ enum class LogLevel {
 constexpr LogLevel kLogLevelDefault = LogLevel::Warning;
 constexpr LogLevel kLogFlushLevelDefault = LogLevel::Critical;
 
+// Almost constant, i.e. initialized once at startup
+// TODO(XXX): Remove this ugly "extern" hack after getting rid of
+// the broken plugin architecture. Both globals should (again)
+// become static members of the class Logging.
+extern LogLevel g_logLevel;
+extern LogLevel g_logFlushLevel;
+
 class Logging {
   public:
     // These are not thread safe. Only call them on Mixxx startup and shutdown.
@@ -29,10 +36,10 @@ class Logging {
     static void flushLogFile();
 
     static bool enabled(LogLevel logLevel) {
-        return s_logLevel >= logLevel;
+        return g_logLevel >= logLevel;
     }
     static bool flushing(LogLevel logFlushLevel) {
-        return s_logFlushLevel >= logFlushLevel;
+        return g_logFlushLevel >= logFlushLevel;
     }
     static bool traceEnabled() {
         return enabled(LogLevel::Trace);
@@ -46,9 +53,6 @@ class Logging {
 
   private:
     Logging() = delete;
-
-    static LogLevel s_logLevel;
-    static LogLevel s_logFlushLevel;
 };
 
 }  // namespace mixxx

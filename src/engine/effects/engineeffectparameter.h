@@ -9,17 +9,17 @@
 
 class EngineEffectParameter {
   public:
-    EngineEffectParameter(const EffectManifestParameter& parameter)
-            : m_parameter(parameter) {
+    EngineEffectParameter(EffectManifestParameterPointer parameter)
+            : m_pParameter(parameter) {
         // NOTE(rryan): This is just to set the parameter values to sane
         // defaults. When an effect is loaded into the engine it is supposed to
         // immediately send a parameter update. Some effects will go crazy if
         // their parameters are not within the manifest's minimum/maximum bounds
         // so just to be safe we read the min/max/default from the manifest
         // here.
-        m_minimum = m_parameter.getMinimum();
-        m_maximum = m_parameter.getMaximum();
-        m_defaultValue = m_parameter.getDefault();
+        m_minimum = m_pParameter->getMinimum();
+        m_maximum = m_pParameter->getMaximum();
+        m_defaultValue = m_pParameter->getDefault();
         m_value = m_defaultValue;
     }
     virtual ~EngineEffectParameter() { }
@@ -29,13 +29,13 @@ class EngineEffectParameter {
     ///////////////////////////////////////////////////////////////////////////
 
     const QString& id() const {
-        return m_parameter.id();
+        return m_pParameter->id();
     }
     const QString& name() const {
-        return m_parameter.name();
+        return m_pParameter->name();
     }
     const QString& description() const {
-        return m_parameter.description();
+        return m_pParameter->description();
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -77,7 +77,7 @@ class EngineEffectParameter {
     }
 
   private:
-    EffectManifestParameter m_parameter;
+    EffectManifestParameterPointer m_pParameter;
     double m_value;
     double m_defaultValue;
     double m_minimum;

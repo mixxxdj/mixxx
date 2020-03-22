@@ -11,9 +11,9 @@ class QFile;
 
 namespace mixxx {
 
-class SoundSourceOggVorbis: public SoundSource {
+class SoundSourceOggVorbis final : public SoundSource {
   public:
-    explicit SoundSourceOggVorbis(const QUrl& url);
+    explicit SoundSourceOggVorbis(const QUrl &url);
     ~SoundSourceOggVorbis() override;
 
     void close() override;
@@ -25,10 +25,9 @@ class SoundSourceOggVorbis: public SoundSource {
   private:
     OpenResult tryOpen(
             OpenMode mode,
-            const OpenParams& params) override;
+            const OpenParams &params) override;
 
-    static size_t ReadCallback(void *ptr, size_t size, size_t nmemb,
-            void *datasource);
+    static size_t ReadCallback(void *ptr, size_t size, size_t nmemb, void *datasource);
     static int SeekCallback(void *datasource, ogg_int64_t offset, int whence);
     static int CloseCallback(void *datasource);
     static long TellCallback(void *datasource);
@@ -41,13 +40,16 @@ class SoundSourceOggVorbis: public SoundSource {
     SINT m_curFrameIndex;
 };
 
-class SoundSourceProviderOggVorbis: public SoundSourceProvider {
+class SoundSourceProviderOggVorbis : public SoundSourceProvider {
   public:
     QString getName() const override;
 
     QStringList getSupportedFileExtensions() const override;
 
-    SoundSourcePointer newSoundSource(const QUrl& url) override {
+    SoundSourceProviderPriority getPriorityHint(
+            const QString& supportedFileExtension) const override;
+
+    SoundSourcePointer newSoundSource(const QUrl &url) override {
         return newSoundSourceFromUrl<SoundSourceOggVorbis>(url);
     }
 };

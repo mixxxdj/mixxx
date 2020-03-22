@@ -39,8 +39,10 @@ class DlgPreferences;
 class EffectsManager;
 class EngineMaster;
 class GuiTick;
+class VisualsManager;
 class LaunchImage;
 class Library;
+class TrackCollectionManager;
 class KeyboardEventFilter;
 class PlayerManager;
 class RecordingManager;
@@ -60,7 +62,7 @@ typedef QSharedPointer<SettingsManager> SettingsManagerPointer;
 class MixxxMainWindow : public QMainWindow {
     Q_OBJECT
   public:
-    // Construtor. files is a list of command line arguments
+    // Constructor. files is a list of command line arguments
     MixxxMainWindow(QApplication *app, const CmdlineArgs& args);
     ~MixxxMainWindow() override;
 
@@ -81,13 +83,13 @@ class MixxxMainWindow : public QMainWindow {
     void rebootMixxxView();
 
     void slotFileLoadSongPlayer(int deck);
-    // toogle keyboard on-off
+    // toggle keyboard on-off
     void slotOptionsKeyboard(bool toggle);
     // Preference dialog
     void slotOptionsPreferences();
     // shows an about dlg
     void slotHelpAbout();
-    // toogle full screen mode
+    // toggle full screen mode
     void slotViewFullScreen(bool toggle);
     // Open the developer tools dialog.
     void slotDeveloperTools(bool enable);
@@ -98,6 +100,7 @@ class MixxxMainWindow : public QMainWindow {
 
     // Warn the user when inputs are not configured.
     void slotNoMicrophoneInputConfigured();
+    void slotNoAuxiliaryInputConfigured();
     void slotNoDeckPassthroughInputConfigured();
     void slotNoVinylControlInputConfigured();
 
@@ -110,9 +113,9 @@ class MixxxMainWindow : public QMainWindow {
 
   protected:
     // Event filter to block certain events (eg. tooltips if tooltips are disabled)
-    virtual bool eventFilter(QObject *obj, QEvent *event);
-    virtual void closeEvent(QCloseEvent *event);
-    virtual bool event(QEvent* e);
+    bool eventFilter(QObject *obj, QEvent *event) override;
+    void closeEvent(QCloseEvent *event) override;
+    bool event(QEvent* e) override;
 
   private:
     void initialize(QApplication *app, const CmdlineArgs& args);
@@ -166,6 +169,7 @@ class MixxxMainWindow : public QMainWindow {
     ControllerManager* m_pControllerManager;
 
     GuiTick* m_pGuiTick;
+    VisualsManager* m_pVisualsManager;
 
     VinylControlManager* m_pVCManager;
 
@@ -173,6 +177,8 @@ class MixxxMainWindow : public QMainWindow {
 
     // The Mixxx database connection pool
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
+
+    TrackCollectionManager* m_pTrackCollectionManager;
 
     // The library management object
     Library* m_pLibrary;

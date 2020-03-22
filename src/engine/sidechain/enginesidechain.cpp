@@ -34,8 +34,6 @@
 #include "util/timer.h"
 #include "util/trace.h"
 
-#define SIDECHAIN_BUFFER_SIZE 65536
-
 EngineSideChain::EngineSideChain(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
           m_bStopThread(false),
@@ -108,16 +106,16 @@ void EngineSideChain::run() {
     // factor this out somehow), -kousu 2/2009
     unsigned static id = 0;
     QThread::currentThread()->setObjectName(QString("EngineSideChain %1").arg(++id));
-
-    Event::start("EngineSideChain");
+    static const QString tag("EngineSideChain");
+    Event::start(tag);
     while (!m_bStopThread) {
         // Sleep until samples are available.
         m_waitLock.lock();
 
-        Event::end("EngineSideChain");
+        Event::end(tag);
         m_waitForSamples.wait(&m_waitLock);
         m_waitLock.unlock();
-        Event::start("EngineSideChain");
+        Event::start(tag);
 
         int samples_read;
         while ((samples_read = m_sampleFifo.read(m_pWorkBuffer,

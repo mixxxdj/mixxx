@@ -11,7 +11,7 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QDesktopServices>
-#include <QtAlgorithms>
+#include <QStandardPaths>
 
 #include "controllers/dlgprefcontroller.h"
 #include "controllers/controllerlearningeventfilter.h"
@@ -148,7 +148,7 @@ void DlgPrefController::showLearningWizard() {
     connect(m_pDlgControllerLearning, SIGNAL(inputMappingsLearned(MidiInputMappings)),
             this, SLOT(midiInputMappingsLearned(MidiInputMappings)));
 
-    emit(mappingStarted());
+    emit mappingStarted();
     connect(m_pDlgControllerLearning, SIGNAL(stopLearning()),
             this, SIGNAL(mappingEnded()));
 }
@@ -332,7 +332,7 @@ void DlgPrefController::slotApply() {
         // Load the resulting preset (which has been mutated by the input/output
         // table models). The controller clones the preset so we aren't touching
         // the same preset.
-        emit(loadPreset(m_pController, m_pPreset));
+        emit loadPreset(m_pController, m_pPreset);
 
         //Select the "..." item again in the combobox.
         m_ui.comboBoxPreset->setCurrentIndex(0);
@@ -395,7 +395,7 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
     // TODO(rryan): We really should not load the preset here. We should load it
     // into the preferences GUI and then load it to the actual controller once
     // the user hits apply.
-    emit(loadPreset(m_pController, pPreset));
+    emit loadPreset(m_pController, pPreset);
     slotDirty();
 }
 
@@ -515,7 +515,7 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
     m_ui.m_pScriptsTableWidget->setHorizontalHeaderItem(
         2, new QTableWidgetItem(tr("Built-in")));
     m_ui.m_pScriptsTableWidget->horizontalHeader()
-            ->setResizeMode(QHeaderView::Stretch);
+            ->setSectionResizeMode(QHeaderView::Stretch);
 
     for (int i = 0; i < preset->scripts.length(); ++i) {
         const ControllerPreset::ScriptFileInfo& script = preset->scripts.at(i);
@@ -546,16 +546,16 @@ void DlgPrefController::slotEnableDevice(bool enable) {
     slotDirty();
 
     // Set tree item text to normal/bold.
-    emit(controllerEnabled(this, enable));
+    emit controllerEnabled(this, enable);
 }
 
 void DlgPrefController::enableDevice() {
-    emit(openController(m_pController));
+    emit openController(m_pController);
     //TODO: Should probably check if open() actually succeeded.
 }
 
 void DlgPrefController::disableDevice() {
-    emit(closeController(m_pController));
+    emit closeController(m_pController);
     //TODO: Should probably check if close() actually succeeded.
 }
 
@@ -644,7 +644,7 @@ void DlgPrefController::clearAllOutputMappings() {
 void DlgPrefController::addScript() {
     QString scriptFile = QFileDialog::getOpenFileName(
         this, tr("Add Script"),
-        QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation),
+        QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation),
         tr("Controller Script Files (*.js)"));
 
     if (scriptFile.isNull()) {
@@ -696,7 +696,7 @@ void DlgPrefController::removeScript() {
     foreach (QModelIndex index, selectedIndices) {
         selectedRows.append(index.row());
     }
-    qSort(selectedRows);
+    std::sort(selectedRows.begin(), selectedRows.end());
 
     int lastRow = -1;
     while (!selectedRows.empty()) {
@@ -744,5 +744,3 @@ void DlgPrefController::openScript() {
         }
     }
 }
-
-

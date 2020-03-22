@@ -2,7 +2,9 @@
 #include <QStyleOption>
 #include <QTransform>
 
+#include "util/duration.h"
 #include "widget/wknobcomposed.h"
+#include "widget/wskincolor.h"
 
 WKnobComposed::WKnobComposed(QWidget* pParent)
         : WWidget(pParent),
@@ -10,7 +12,11 @@ WKnobComposed::WKnobComposed(QWidget* pParent)
           m_dMinAngle(-230.0),
           m_dMaxAngle(50.0),
           m_dKnobCenterXOffset(0),
-          m_dKnobCenterYOffset(0) {
+          m_dKnobCenterYOffset(0),
+          m_renderTimer(mixxx::Duration::fromMillis(20),
+                        mixxx::Duration::fromSeconds(1)) {
+    connect(&m_renderTimer, SIGNAL(update()),
+            this, SLOT(update()));
 }
 
 void WKnobComposed::setup(const QDomNode& node, const SkinContext& context) {
@@ -40,9 +46,18 @@ void WKnobComposed::setup(const QDomNode& node, const SkinContext& context) {
     context.hasNodeSelectDouble(node, "MaxAngle", &m_dMaxAngle);
     context.hasNodeSelectDouble(node, "KnobCenterXOffset", &m_dKnobCenterXOffset);
     context.hasNodeSelectDouble(node, "KnobCenterYOffset", &m_dKnobCenterYOffset);
+    m_dArcThickness = context.selectDouble(node, "ArcThickness");
+
+    if (m_dArcThickness > 0.0) {
+        m_arcColor = WSkinColor::getCorrectColor(context.selectColor(node, "ArcColor"));
+        m_arcUnipolar = context.selectBool(node, "ArcUnipolar", false);
+    }
 
     m_dKnobCenterXOffset *= scaleFactor;
     m_dKnobCenterYOffset *= scaleFactor;
+    m_dArcThickness *= scaleFactor;
+
+    setFocusPolicy(Qt::NoFocus);
 }
 
 void WKnobComposed::clear() {
@@ -96,6 +111,16 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
         m_pPixmapBack->draw(rect(), &p, m_pPixmapBack->rect());
     }
 
+    if ((!m_pKnob.isNull() && !m_pKnob->isNull()) || m_dArcThickness > 0.0) {
+        // We update m_dCurrentAngle since onConnectedControlChanged uses it for
+        // no-op detection.
+        m_dCurrentAngle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * getControlParameterDisplay();
+    }
+
+    if (m_dArcThickness > 0.0) {
+        drawArc(rect(), &p);
+    }
+
     QTransform transform;
     if (!m_pKnob.isNull() && !m_pKnob->isNull()) {
         qreal tx = m_dKnobCenterXOffset + width() / 2.0;
@@ -103,15 +128,27 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
         transform.translate(-tx, -ty);
         p.translate(tx, ty);
 
-        // We update m_dCurrentAngle since onConnectedControlChanged uses it for
-        // no-op detection.
-        m_dCurrentAngle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * getControlParameterDisplay();
         p.rotate(m_dCurrentAngle);
 
-        // Need to convert from QRect to a QRectF to avoid losing precison.
+        // Need to convert from QRect to a QRectF to avoid losing precision.
         QRectF targetRect = rect();
         m_pKnob->drawCentered(transform.mapRect(targetRect), &p,
                               m_pKnob->rect());
+    }
+}
+
+void WKnobComposed::drawArc(const QRectF& targetRect, QPainter* pPainter) {
+    QMargins margins = QMargins();
+    margins += m_dArcThickness / 2.0;
+    QRectF rect = targetRect.marginsRemoved(margins);
+    QPen pen = QPen(m_arcColor);
+    pen.setWidth(m_dArcThickness);
+    pen.setCapStyle(Qt::FlatCap);
+    pPainter->setPen(pen);
+    if (m_arcUnipolar) {
+        pPainter->drawArc(rect, 90 * 16 - m_dMinAngle * 16, (m_dCurrentAngle - m_dMinAngle) * -16);
+    } else {
+        pPainter->drawArc(rect, 90 * 16, m_dCurrentAngle * -16);
     }
 }
 
@@ -129,4 +166,12 @@ void WKnobComposed::mouseReleaseEvent(QMouseEvent* e) {
 
 void WKnobComposed::wheelEvent(QWheelEvent* e) {
     m_handler.wheelEvent(this, e);
+}
+
+void WKnobComposed::inputActivity() {
+#ifdef __APPLE__
+    m_renderTimer.activity();
+#else
+    update();
+#endif
 }

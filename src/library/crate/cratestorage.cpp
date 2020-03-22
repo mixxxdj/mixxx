@@ -2,6 +2,7 @@
 
 #include "library/crate/crateschema.h"
 #include "library/dao/trackschema.h"
+#include "library/queryutil.h"
 
 #include "util/db/dbconnection.h"
 
@@ -128,6 +129,9 @@ CrateTrackQueryFields::CrateTrackQueryFields(const FwdSqlQuery& query)
       m_iTrackId(query.fieldIndex(CRATETRACKSTABLE_TRACKID)) {
 }
 
+TrackQueryFields::TrackQueryFields(const FwdSqlQuery& query)
+    : m_iTrackId(query.fieldIndex(CRATETRACKSTABLE_TRACKID)) {
+}
 
 CrateSummaryQueryFields::CrateSummaryQueryFields(const FwdSqlQuery& query)
     : CrateQueryFields(query),
@@ -303,8 +307,11 @@ bool CrateStorage::readCrateByName(const QString& name, Crate* pCrate) const {
             }
             return true;
         } else {
-            kLogger.debug()
-                    << "Crate not found by name:" << name;
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Crate not found by name:"
+                        << name;
+            }
         }
     }
     return false;
@@ -444,19 +451,30 @@ QString CrateStorage::formatSubselectQueryForCrateTrackIds(
             crateId.toString());
 }
 
-
-//static
 QString CrateStorage::formatQueryForTrackIdsByCrateNameLike(
-        const QString& crateNameLike) {
-    return QString("SELECT DISTINCT %1 FROM %2 JOIN %3 ON %4=%5 WHERE %6 LIKE '%7' ORDER BY %1").arg(
+        const QString& crateNameLike) const {
+    FieldEscaper escaper(m_database);
+    QString escapedCrateNameLike = escaper.escapeString(kSqlLikeMatchAll + crateNameLike + kSqlLikeMatchAll);
+    return QString("SELECT DISTINCT %1 FROM %2 JOIN %3 ON %4=%5 WHERE %6 LIKE %7 ORDER BY %1").arg(
             CRATETRACKSTABLE_TRACKID,
             CRATE_TRACKS_TABLE,
             CRATE_TABLE,
             CRATETRACKSTABLE_CRATEID,
             CRATETABLE_ID,
             CRATETABLE_NAME,
-            kSqlLikeMatchAll + crateNameLike + kSqlLikeMatchAll);
+            escapedCrateNameLike);
 }
+
+//static
+QString CrateStorage::formatQueryForTrackIdsWithCrate() {
+    return QString("SELECT DISTINCT %1 FROM %2 JOIN %3 ON %4=%5 ORDER BY %1").arg(
+            CRATETRACKSTABLE_TRACKID,
+            CRATE_TRACKS_TABLE,
+            CRATE_TABLE,
+            CRATETRACKSTABLE_CRATEID,
+            CRATETABLE_ID);
+}
+
 
 
 CrateTrackSelectResult CrateStorage::selectCrateTracksSorted(CrateId crateId) const {
@@ -510,8 +528,6 @@ CrateSummarySelectResult CrateStorage::selectCratesWithTrackCount(const QList<Tr
     }
 }
 
-
-
 CrateTrackSelectResult CrateStorage::selectTracksSortedByCrateNameLike(const QString& crateNameLike) const {
     FwdSqlQuery query(m_database, QString(
             "SELECT %1,%2 FROM %3 JOIN %4 ON %5 = %6 WHERE %7 LIKE :crateNameLike ORDER BY %1").arg(
@@ -522,7 +538,7 @@ CrateTrackSelectResult CrateStorage::selectTracksSortedByCrateNameLike(const QSt
                     CRATETABLE_ID,
                     CRATETRACKSTABLE_CRATEID,
                     CRATETABLE_NAME));
-    query.bindValue(":crateNameLike", kSqlLikeMatchAll + crateNameLike + kSqlLikeMatchAll);
+    query.bindValue(":crateNameLike", QVariant(kSqlLikeMatchAll + crateNameLike + kSqlLikeMatchAll));
 
     if (query.execPrepared()) {
         return CrateTrackSelectResult(std::move(query));
@@ -531,6 +547,17 @@ CrateTrackSelectResult CrateStorage::selectTracksSortedByCrateNameLike(const QSt
     }
 }
 
+TrackSelectResult CrateStorage::selectAllTracksSorted() const {
+    FwdSqlQuery query(m_database, QString(
+            "SELECT DISTINCT %1 FROM %2 ORDER BY %1").arg(
+                    CRATETRACKSTABLE_TRACKID, // %1
+                    CRATE_TRACKS_TABLE)); // %2
+    if (query.execPrepared()) {
+        return TrackSelectResult(std::move(query));
+    } else {
+        return TrackSelectResult();
+    }
+}
 
 QSet<CrateId> CrateStorage::collectCrateIdsOfTracks(const QList<TrackId>& trackIds) const {
     // NOTE(uklotzde): One query per track id. This could be optimized
@@ -538,7 +565,7 @@ QSet<CrateId> CrateStorage::collectCrateIdsOfTracks(const QList<TrackId>& trackI
     QSet<CrateId> trackCrates;
     for (const auto& trackId: trackIds) {
         // NOTE(uklotzde): The query result does not need to be sorted by crate id
-        // here. But since the coresponding FK column is indexed the impact on the
+        // here. But since the corresponding FK column is indexed the impact on the
         // performance should be negligible. By reusing an existing query we reduce
         // the amount of code and the number of prepared SQL queries.
         CrateTrackSelectResult crateTracks(selectTrackCratesSorted(trackId));
@@ -647,8 +674,11 @@ bool CrateStorage::onDeletingCrate(
             return false;
         }
         if (query.numRowsAffected() <= 0) {
-            kLogger.debug()
-                    << "Deleting empty crate with id" << crateId;
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Deleting empty crate with id"
+                        << crateId;
+            }
         }
     }
     {
@@ -697,9 +727,11 @@ bool CrateStorage::onAddingCrateTracks(
         }
         if (query.numRowsAffected() == 0) {
             // track is already in crate
-            kLogger.debug()
-                    << "Track" << trackId
-                    << "not added to crate" << crateId;
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Track" << trackId
+                        << "not added to crate" << crateId;
+            }
         } else {
             DEBUG_ASSERT(query.numRowsAffected() == 1);
         }
@@ -729,9 +761,11 @@ bool CrateStorage::onRemovingCrateTracks(
         }
         if (query.numRowsAffected() == 0) {
             // track not found in crate
-            kLogger.debug()
-                    << "Track" << trackId
-                    << "not removed from crate" << crateId;
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Track" << trackId
+                        << "not removed from crate" << crateId;
+            }
         } else {
             DEBUG_ASSERT(query.numRowsAffected() == 1);
         }

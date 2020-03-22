@@ -25,10 +25,6 @@ const int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
 // Which results in case of ogg in a dynamic latency from 0.14 ms to to 185 ms
 // Now we have switched to a fixed latency of 8192 frames (stereo samples) =
 // which is 185 @ 44100 ms and twice the maximum of the max mixxx audio buffer
-const int kBufferFrames = kNetworkLatencyFrames * 4; // 743 ms @ 44100 Hz
-// normally * 2 is sufficient.
-// We allow to buffer two extra chunks for a CPU overload case, when
-// the broadcast thread is not scheduled in time.
 
 const mixxx::Logger kLogger("SoundDeviceNetwork");
 }
@@ -38,16 +34,14 @@ SoundDeviceNetwork::SoundDeviceNetwork(UserSettingsPointer config,
                                        QSharedPointer<EngineNetworkStream> pNetworkStream)
         : SoundDevice(config, sm),
           m_pNetworkStream(pNetworkStream),
-          m_outputDrift(false),
           m_inputDrift(false),
           m_framesSinceAudioLatencyUsageUpdate(0),
           m_denormals(false),
-          m_targetTime(0),
-          m_lastCallbackEntrytoDacSecs(0) {
+          m_targetTime(0) {
     // Setting parent class members:
     m_hostAPI = "Network stream";
     m_dSampleRate = 44100.0;
-    m_strInternalName = kNetworkDeviceInternalName;
+    m_deviceId.name = kNetworkDeviceInternalName;
     m_strDisplayName = QObject::tr("Network stream");
     m_iNumInputChannels = pNetworkStream->getNumInputChannels();
     m_iNumOutputChannels = pNetworkStream->getNumOutputChannels();
@@ -61,7 +55,7 @@ SoundDeviceNetwork::~SoundDeviceNetwork() {
 
 SoundDeviceError SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) {
     Q_UNUSED(syncBuffers);
-    kLogger.debug() << "open:" << getInternalName();
+    kLogger.debug() << "open:" << m_deviceId.name;
 
     // Sample rate
     if (m_dSampleRate <= 0) {
@@ -272,7 +266,7 @@ void SoundDeviceNetwork::writeProcess() {
     QVector<NetworkOutputStreamWorkerPtr> workers =
             m_pNetworkStream->outputWorkers();
     for(auto pWorker : workers) {
-        if(pWorker.isNull()) {
+        if (pWorker.isNull()) {
             continue;
         }
 
@@ -333,7 +327,7 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
         }
 
         QSharedPointer<FIFO<CSAMPLE>> pFifo = pWorker->getOutputFifo();
-        if(pFifo) {
+        if (pFifo) {
             // interval = copyCount
             // Check for desired kNetworkLatencyFrames + 1/2 interval to
             // avoid big jitter due to interferences with sync code
@@ -357,7 +351,7 @@ void SoundDeviceNetwork::workerWrite(NetworkOutputStreamWorkerPtr pWorker,
         int writeAvailable = pFifo->writeAvailable();
         int writeRequired = frames * m_iNumOutputChannels;
         if (writeAvailable < writeRequired) {
-            kLogger.warning() << "write: worker buffer full, loosing samples";
+            kLogger.warning() << "write: worker buffer full, losing samples";
             pWorker->incOverflowCount();
         }
 
@@ -380,11 +374,11 @@ void SoundDeviceNetwork::workerWriteSilence(NetworkOutputStreamWorkerPtr pWorker
     }
 
     QSharedPointer<FIFO<CSAMPLE>> pFifo = pWorker->getOutputFifo();
-    if(pFifo) {
+    if (pFifo) {
         int writeAvailable = pFifo->writeAvailable();
         int writeRequired = frames * m_iNumOutputChannels;
         if (writeAvailable < writeRequired) {
-            kLogger.warning() << "writeSilence: worker buffer full, loosing samples";
+            kLogger.warning() << "writeSilence: worker buffer full, losing samples";
             pWorker->incOverflowCount();
         }
 
@@ -414,7 +408,7 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
     updateCallbackEntryToDacTime();
 
     Trace trace("SoundDeviceNetwork::callbackProcessClkRef %1",
-                getInternalName());
+                m_deviceId.name);
 
 
     if (!m_denormals) {
@@ -453,7 +447,7 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
 
     {
         ScopedTimer t("SoundDevicePortAudio::callbackProcess prepare %1",
-                getInternalName());
+                m_deviceId.name);
         m_pSoundManager->onDeviceOutputCallback(m_framesPerBuffer);
     }
 

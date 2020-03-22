@@ -1,6 +1,8 @@
 #ifndef CONTROLOBJECTSCRIPT_H
 #define CONTROLOBJECTSCRIPT_H
 
+#include <QVector>
+
 #include "controllers/controllerengine.h"
 #include "controllers/controllerdebug.h"
 #include "control/controlproxy.h"
@@ -13,7 +15,7 @@ class ControlObjectScript : public ControlProxy {
 
     bool addScriptConnection(const ScriptConnection& conn);
 
-    void removeScriptConnection(const ScriptConnection& conn);
+    bool removeScriptConnection(const ScriptConnection& conn);
 
     // Required for legacy behavior of ControllerEngine::connectControl
     inline int countConnections() {
@@ -24,7 +26,7 @@ class ControlObjectScript : public ControlProxy {
 
     // Called from update();
     void emitValueChanged() override {
-        emit(trigger(get(), this));
+        emit trigger(get(), this);
     }
 
   signals:

@@ -31,7 +31,7 @@ const char* kStreamWebsite = "stream_website";
 }
 
 void BroadcastSettings::loadLegacySettings(BroadcastProfilePtr profile) {
-    if(!profile)
+    if (!profile)
         return;
 
     // For each value, the current value is kept if it can't be found in the

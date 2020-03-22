@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+#include <QStandardPaths>
+
 #include "util/cmdlineargs.h"
 #include "util/version.h"
 
@@ -21,7 +23,7 @@ CmdlineArgs::CmdlineArgs()
 #else
     // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
     // to QDir::filePath elsewhere in the code. This is candidate for removal.
-    m_settingsPath(QDesktopServices::storageLocation(QDesktopServices::DataLocation).append("/")) {
+    m_settingsPath(QStandardPaths::writableLocation(QStandardPaths::DataLocation).append("/")) {
 #endif
 }
 
@@ -88,7 +90,7 @@ warnings and errors to the console unless this is set properly.\n", stdout);
                 m_logFlushLevel = mixxx::LogLevel::Critical;
             } else {
                 fputs("\nlogFushLevel argument wasn't 'trace', 'debug', 'info', 'warning', or 'critical'! Mixxx will only flush messages to mixxx.log\n\
-when a critical error occours unless this is set properly.\n", stdout);
+when a critical error occurs unless this is set properly.\n", stdout);
             }
             i++;
         } else if (QString::fromLocal8Bit(argv[i]).contains("--midiDebug", Qt::CaseInsensitive) ||

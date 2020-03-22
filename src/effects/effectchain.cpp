@@ -20,7 +20,7 @@ EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id,
           m_bEnabled(true),
           m_id(id),
           m_name(""),
-          m_insertionType(EffectChainInsertionType::Insert),
+          m_mixMode(EffectChainMixMode::DrySlashWet),
           m_dMix(0),
           m_pEngineEffectChain(nullptr),
           m_bAddedToEngine(false) {
@@ -111,8 +111,8 @@ EffectChainPointer EffectChain::clone(EffectChainPointer pChain) {
             // Insert empty effect to preserve chain order
             pClonedEffect = EffectPointer();
         } else {
-            pClonedEffect = pChain->m_pEffectsManager
-                    ->instantiateEffect(pEffect->getManifest().id());
+            pClonedEffect = pChain->m_pEffectsManager->instantiateEffect(
+                    pEffect->getManifest()->id());
         }
         pClone->addEffect(pClonedEffect);
     }
@@ -133,7 +133,7 @@ const QString& EffectChain::name() const {
 
 void EffectChain::setName(const QString& name) {
     m_name = name;
-    emit(nameChanged(name));
+    emit nameChanged(name);
 }
 
 QString EffectChain::description() const {
@@ -142,7 +142,7 @@ QString EffectChain::description() const {
 
 void EffectChain::setDescription(const QString& description) {
     m_description = description;
-    emit(descriptionChanged(description));
+    emit descriptionChanged(description);
 }
 
 bool EffectChain::enabled() const {
@@ -152,7 +152,7 @@ bool EffectChain::enabled() const {
 void EffectChain::setEnabled(bool enabled) {
     m_bEnabled = enabled;
     sendParameterUpdate();
-    emit(enabledChanged(enabled));
+    emit enabledChanged(enabled);
 }
 
 void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handle_group) {
@@ -208,7 +208,7 @@ void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handle_grou
     request->EnableInputChannelForChain.pEffectStatesMapArray = pEffectStatesMapArray;
 
     m_pEffectsManager->writeRequest(request);
-    emit(channelStatusChanged(handle_group.name(), true));
+    emit channelStatusChanged(handle_group.name(), true);
 }
 
 bool EffectChain::enabledForChannel(const ChannelHandleAndGroup& handle_group) const {
@@ -226,7 +226,7 @@ void EffectChain::disableForInputChannel(const ChannelHandleAndGroup& handle_gro
         request->DisableInputChannelForChain.pChannelHandle = &handle_group.handle();
         m_pEffectsManager->writeRequest(request);
 
-        emit(channelStatusChanged(handle_group.name(), false));
+        emit channelStatusChanged(handle_group.name(), false);
     }
 }
 
@@ -237,17 +237,17 @@ double EffectChain::mix() const {
 void EffectChain::setMix(const double& dMix) {
     m_dMix = dMix;
     sendParameterUpdate();
-    emit(mixChanged(dMix));
+    emit mixChanged(dMix);
 }
 
-EffectChainInsertionType EffectChain::insertionType() const {
-    return m_insertionType;
+EffectChainMixMode EffectChain::mixMode() const {
+    return m_mixMode;
 }
 
-void EffectChain::setInsertionType(EffectChainInsertionType insertionType) {
-    m_insertionType = insertionType;
+void EffectChain::setMixMode(EffectChainMixMode mixMode) {
+    m_mixMode = mixMode;
     sendParameterUpdate();
-    emit(insertionTypeChanged(insertionType));
+    emit mixModeChanged(mixMode);
 }
 
 void EffectChain::addEffect(EffectPointer pEffect) {
@@ -267,7 +267,7 @@ void EffectChain::addEffect(EffectPointer pEffect) {
     if (m_bAddedToEngine) {
         pEffect->addToEngine(m_pEngineEffectChain, m_effects.size() - 1, m_enabledInputChannels);
     }
-    emit(effectChanged(m_effects.size() - 1));
+    emit effectChanged(m_effects.size() - 1);
 }
 
 void EffectChain::replaceEffect(unsigned int effectSlotNumber,
@@ -294,11 +294,17 @@ void EffectChain::replaceEffect(unsigned int effectSlotNumber,
         }
     }
 
-    emit(effectChanged(effectSlotNumber));
+    emit effectChanged(effectSlotNumber);
 }
 
 void EffectChain::removeEffect(unsigned int effectSlotNumber) {
     replaceEffect(effectSlotNumber, EffectPointer());
+}
+
+void EffectChain::refreshAllEffects() {
+    for (int i = 0; i < m_effects.size(); ++i) {
+        emit effectChanged(i);
+    }
 }
 
 unsigned int EffectChain::numEffects() const {
@@ -321,7 +327,7 @@ void EffectChain::sendParameterUpdate() {
     pRequest->type = EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS;
     pRequest->pTargetChain = m_pEngineEffectChain;
     pRequest->SetEffectChainParameters.enabled = m_bEnabled;
-    pRequest->SetEffectChainParameters.insertion_type = m_insertionType;
+    pRequest->SetEffectChainParameters.mix_mode = m_mixMode;
     pRequest->SetEffectChainParameters.mix = m_dMix;
     m_pEffectsManager->writeRequest(pRequest);
 }
@@ -340,15 +346,15 @@ EffectChainPointer EffectChain::createFromXml(EffectsManager* pEffectsManager,
                                                EffectXml::ChainName);
     QString description = XmlParse::selectNodeQString(element,
                                                       EffectXml::ChainDescription);
-    QString insertionTypeStr = XmlParse::selectNodeQString(element,
-                                                           EffectXml::ChainInsertionType);
+    QString mixModeStr = XmlParse::selectNodeQString(element,
+                                                           EffectXml::ChainMixMode);
 
     EffectChainPointer pChain(new EffectChain(pEffectsManager, id));
     pChain->setName(name);
     pChain->setDescription(description);
-    EffectChainInsertionType insertionType = insertionTypeFromString(insertionTypeStr);
-    if (insertionType != EffectChainInsertionType::Num_Insertion_Types) {
-        pChain->setInsertionType(insertionType);
+    EffectChainMixMode mixMode = mixModeFromString(mixModeStr);
+    if (mixMode < EffectChainMixMode::NumMixModes) {
+        pChain->setMixMode(mixMode);
     }
 
     QDomElement effects = XmlParse::selectElement(element, EffectXml::EffectsRoot);

@@ -18,13 +18,18 @@
 #include "mixxx.h"
 
 #include <QDesktopServices>
+#include <QStandardPaths>
 #include <QDesktopWidget>
 #include <QFileDialog>
 #include <QGLWidget>
 #include <QUrl>
 #include <QtDebug>
+#include <QLocale>
+#include <QGuiApplication>
+#include <QInputMethod>
+#include <QGLFormat>
+#include <QScreen>
 
-#include "analyzer/analyzerqueue.h"
 #include "dialog/dlgabout.h"
 #include "preferences/dialog/dlgpreferences.h"
 #include "preferences/dialog/dlgprefeq.h"
@@ -32,10 +37,14 @@
 #include "dialog/dlgdevelopertools.h"
 #include "engine/enginemaster.h"
 #include "effects/effectsmanager.h"
-#include "effects/native/nativebackend.h"
+#include "effects/builtin/builtinbackend.h"
+#ifdef __LILV__
+#include "effects/lv2/lv2backend.h"
+#endif
 #include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
+#include "library/trackcollectionmanager.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "mixer/playermanager.h"
@@ -47,6 +56,7 @@
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "waveform/waveformwidgetfactory.h"
+#include "waveform/visualsmanager.h"
 #include "waveform/sharedglcontext.h"
 #include "database/mixxxdb.h"
 #include "util/debug.h"
@@ -55,7 +65,6 @@
 #include "util/time.h"
 #include "util/version.h"
 #include "control/controlpushbutton.h"
-#include "util/compatibility.h"
 #include "util/sandbox.h"
 #include "mixer/playerinfo.h"
 #include "waveform/guitick.h"
@@ -66,6 +75,7 @@
 #include "skin/launchimage.h"
 #include "preferences/settingsmanager.h"
 #include "widget/wmainmenubar.h"
+#include "util/compatibility.h"
 #include "util/screensaver.h"
 #include "util/logger.h"
 #include "util/db/dbconnectionpooled.h"
@@ -78,9 +88,48 @@
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif
 
+#if defined(Q_OS_LINUX)
+#include <QtX11Extras/QX11Info>
+#include <X11/Xlib.h>
+#include <X11/Xlibint.h>
+// Xlibint.h predates C++ and defines macros which conflict
+// with references to std::max and std::min
+#undef max
+#undef min
+#endif
+
 namespace {
 
 const mixxx::Logger kLogger("MixxxMainWindow");
+
+// hack around https://gitlab.freedesktop.org/xorg/lib/libx11/issues/25
+// https://bugs.launchpad.net/mixxx/+bug/1805559
+#if defined(Q_OS_LINUX)
+typedef Bool (*WireToErrorType)(Display*, XErrorEvent*, xError*);
+
+const int NUM_HANDLERS = 256;
+WireToErrorType __oldHandlers[NUM_HANDLERS] = {0};
+
+Bool __xErrorHandler(Display* display, XErrorEvent* event, xError* error) {
+    // Call any previous handler first in case it needs to do real work.
+    auto code = static_cast<int>(event->error_code);
+    if (__oldHandlers[code] != NULL) {
+        __oldHandlers[code](display, event, error);
+    }
+
+    // Always return false so the error does not get passed to the normal
+    // application defined handler.
+    return False;
+}
+
+#endif
+
+inline QLocale inputLocale() {
+    // Use the default config for local keyboard
+    QInputMethod* pInputMethod = QGuiApplication::inputMethod();
+    return pInputMethod ? pInputMethod->locale() :
+            QLocale(QLocale::English);
+}
 
 } // anonymous namespace
 
@@ -147,12 +196,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     setCentralWidget(m_pWidgetParent);
 
     show();
-#if defined(Q_WS_X11)
-    // In asynchronous X11, the window will be mapped to screen
-    // some time after being asked to show itself on the screen.
-    extern void qt_x11_wait_for_window_manager(QWidget *mainWin);
-    qt_x11_wait_for_window_manager(this);
-#endif
     pApp->processEvents();
 
     initialize(pApp, args);
@@ -165,6 +208,15 @@ MixxxMainWindow::~MixxxMainWindow() {
 
 void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     ScopedTimer t("MixxxMainWindow::initialize");
+
+#if defined(Q_OS_LINUX)
+    // XESetWireToError will segfault if running as a Wayland client
+    if (pApp->platformName() == QStringLiteral("xcb")) {
+        for (auto i = 0; i < NUM_HANDLERS; ++i) {
+            XESetWireToError(QX11Info::display(), i, &__xErrorHandler);
+        }
+    }
+#endif
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
 
@@ -186,6 +238,18 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     m_pChannelHandleFactory = new ChannelHandleFactory();
 
+    m_pDbConnectionPool = MixxxDb(pConfig).connectionPool();
+    if (!m_pDbConnectionPool) {
+        // TODO(XXX) something a little more elegant
+        exit(-1);
+    }
+    // Create a connection for the main thread
+    m_pDbConnectionPool->createThreadLocalConnection();
+    if (!initializeDatabase()) {
+        // TODO(XXX) something a little more elegant
+        exit(-1);
+    }
+
     // Create the Effects subsystem.
     m_pEffectsManager = new EffectsManager(this, pConfig, m_pChannelHandleFactory);
 
@@ -195,8 +259,14 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Create effect backends. We do this after creating EngineMaster to allow
     // effect backends to refer to controls that are produced by the engine.
-    NativeBackend* pNativeBackend = new NativeBackend(m_pEffectsManager);
-    m_pEffectsManager->addEffectsBackend(pNativeBackend);
+    BuiltInBackend* pBuiltInBackend = new BuiltInBackend(m_pEffectsManager);
+    m_pEffectsManager->addEffectsBackend(pBuiltInBackend);
+#ifdef __LILV__
+    LV2Backend* pLV2Backend = new LV2Backend(m_pEffectsManager);
+    m_pEffectsManager->addEffectsBackend(pLV2Backend);
+#else
+    LV2Backend* pLV2Backend = nullptr;
+#endif
 
     // Sets up the EffectChains and EffectRacks (long)
     m_pEffectsManager->setup();
@@ -220,6 +290,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Needs to be created before CueControl (decks) and WTrackTableView.
     m_pGuiTick = new GuiTick();
+    m_pVisualsManager = new VisualsManager();
 
 #ifdef __VINYLCONTROL__
     m_pVCManager = new VinylControlManager(this, pConfig, m_pSoundManager);
@@ -229,13 +300,23 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Create the player manager. (long)
     m_pPlayerManager = new PlayerManager(pConfig, m_pSoundManager,
-                                         m_pEffectsManager, m_pEngine);
-    connect(m_pPlayerManager, SIGNAL(noMicrophoneInputConfigured()),
-            this, SLOT(slotNoMicrophoneInputConfigured()));
-    connect(m_pPlayerManager, SIGNAL(noDeckPassthroughInputConfigured()),
-            this, SLOT(slotNoDeckPassthroughInputConfigured()));
-    connect(m_pPlayerManager, SIGNAL(noVinylControlInputConfigured()),
-            this, SLOT(slotNoVinylControlInputConfigured()));
+            m_pEffectsManager, m_pVisualsManager, m_pEngine);
+    connect(m_pPlayerManager,
+            &PlayerManager::noMicrophoneInputConfigured,
+            this,
+            &MixxxMainWindow::slotNoMicrophoneInputConfigured);
+    connect(m_pPlayerManager,
+            &PlayerManager::noAuxiliaryInputConfigured,
+            this,
+            &MixxxMainWindow::slotNoAuxiliaryInputConfigured);
+    connect(m_pPlayerManager,
+            &PlayerManager::noDeckPassthroughInputConfigured,
+            this,
+            &MixxxMainWindow::slotNoDeckPassthroughInputConfigured);
+    connect(m_pPlayerManager,
+            &PlayerManager::noVinylControlInputConfigured,
+            this,
+            &MixxxMainWindow::slotNoVinylControlInputConfigured);
 
     for (int i = 0; i < kMicrophoneCount; ++i) {
         m_pPlayerManager->addMicrophone();
@@ -270,17 +351,12 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     CoverArtCache::createInstance();
 
-    m_pDbConnectionPool = MixxxDb(pConfig).connectionPool();
-    if (!m_pDbConnectionPool) {
-        // TODO(XXX) something a little more elegant
-        exit(-1);
-    }
-    // Create a connection for the main thread
-    m_pDbConnectionPool->createThreadLocalConnection();
-    if (!initializeDatabase()) {
-        // TODO(XXX) something a little more elegant
-        exit(-1);
-    }
+    launchProgress(30);
+
+    m_pTrackCollectionManager = new TrackCollectionManager(
+            this,
+            pConfig,
+            m_pDbConnectionPool);
 
     launchProgress(35);
 
@@ -288,12 +364,9 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             this,
             pConfig,
             m_pDbConnectionPool,
+            m_pTrackCollectionManager,
             m_pPlayerManager,
             m_pRecordingManager);
-    // Create the singular GlobalTrackCache instance immediately after
-    // the Library has been created and BEFORE binding the
-    // PlayerManager to it!
-    GlobalTrackCache::createInstance(m_pLibrary);
 
     // Binding the PlayManager to the Library may already trigger
     // loading of tracks which requires that the GlobalTrackCache has
@@ -311,13 +384,13 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         // TODO(XXX) this needs to be smarter, we can't distinguish between an empty
         // path return value (not sure if this is normally possible, but it is
         // possible with the Windows 7 "Music" library, which is what
-        // QDesktopServices::storageLocation(QDesktopServices::MusicLocation)
+        // QStandardPaths::writableLocation(QStandardPaths::MusicLocation)
         // resolves to) and a user hitting 'cancel'. If we get a blank return
         // but the user didn't hit cancel, we need to know this and let the
         // user take some course of action -- bkgood
         QString fd = QFileDialog::getExistingDirectory(
             this, tr("Choose music library directory"),
-            QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+            QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
         if (!fd.isEmpty()) {
             // adds Folder to database.
             m_pLibrary->slotRequestAddDir(fd);
@@ -335,14 +408,46 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     launchProgress(47);
 
+    // Before creating the first skin we need to create a QGLWidget so that all
+    // the QGLWidget's we create can use it as a shared QGLContext.
+    if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
+        QGLFormat glFormat;
+        glFormat.setDirectRendering(true);
+        glFormat.setDoubleBuffer(true);
+        glFormat.setDepth(false);
+        // Disable waiting for vertical Sync
+        // This can be enabled when using a single Threads for each QGLContext
+        // Setting 1 causes QGLContext::swapBuffer to sleep until the next VSync
+#if defined(__APPLE__)
+        // On OS X, syncing to vsync has good performance FPS-wise and
+        // eliminates tearing.
+        glFormat.setSwapInterval(1);
+#else
+        // Otherwise, turn VSync off because it could cause horrible FPS on
+        // Linux.
+        // TODO(XXX): Make this configurable.
+        // TODO(XXX): What should we do on Windows?
+        glFormat.setSwapInterval(0);
+#endif
+        glFormat.setRgba(true);
+        QGLFormat::setDefaultFormat(glFormat);
+
+        QGLWidget* pContextWidget = new QGLWidget(this);
+        pContextWidget->setGeometry(QRect(0, 0, 3, 3));
+        pContextWidget->hide();
+        SharedGLContext::setWidget(pContextWidget);
+    }
+
     WaveformWidgetFactory::createInstance(); // takes a long time
-    WaveformWidgetFactory::instance()->startVSync(m_pGuiTick);
     WaveformWidgetFactory::instance()->setConfig(pConfig);
+    WaveformWidgetFactory::instance()->startVSync(m_pGuiTick, m_pVisualsManager);
 
     launchProgress(52);
 
-    connect(this, SIGNAL(newSkinLoaded()),
-            m_pLibrary, SLOT(onSkinLoadFinished()));
+    connect(this,
+            &MixxxMainWindow::newSkinLoaded,
+            m_pLibrary,
+            &Library::onSkinLoadFinished);
 
     // Inhibit the screensaver if the option is set. (Do it before creating the preferences dialog)
     int inhibit = pConfig->getValue<int>(ConfigKey("[Config]","InhibitScreensaver"),-1);
@@ -357,9 +462,9 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
-                                    m_pControllerManager, m_pVCManager, m_pEffectsManager,
+                                    m_pControllerManager, m_pVCManager, pLV2Backend, m_pEffectsManager,
                                     m_pSettingsManager, m_pLibrary);
-    m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
+    m_pPrefDlg->setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     m_pPrefDlg->setHidden(true);
 
     launchProgress(60);
@@ -368,15 +473,20 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // and emit newSkinLoaded.
     connectMenuBar();
 
-    // Before creating the first skin we need to create a QGLWidget so that all
-    // the QGLWidget's we create can use it as a shared QGLContext.
-    QGLWidget* pContextWidget = new QGLWidget(this);
-    pContextWidget->hide();
-    SharedGLContext::setWidget(pContextWidget);
-
     launchProgress(63);
 
     QWidget* oldWidget = m_pWidgetParent;
+
+    // Load default styles that can be overridden by skins
+    QFile file(":/skins/default.qss");
+    if (file.open(QIODevice::ReadOnly)) {
+        QByteArray fileBytes = file.readAll();
+        QString style = QString::fromLocal8Bit(fileBytes.constData(),
+                                               fileBytes.length());
+        setStyleSheet(style);
+    } else {
+        qWarning() << "Failed to load default skin styles!";
+    }
 
     // Load skin to a QWidget that we set as the central widget. Assignment
     // intentional in next line.
@@ -417,7 +527,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     if (args.getStartInFullscreen() || fullscreenPref) {
         slotViewFullScreen(true);
     }
-    emit(newSkinLoaded());
+    emit newSkinLoaded();
 
 
     // Wait until all other ControlObjects are set up before initializing
@@ -428,12 +538,30 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     bool rescan = pConfig->getValue<bool>(
             ConfigKey("[Library]","RescanOnStartup"));
     // rescan the library if we get a new plugin
-    QSet<QString> prev_plugins = QSet<QString>::fromList(
-            pConfig->getValueString(
-                    ConfigKey("[Library]", "SupportedFileExtensions")).split(
-                    ",", QString::SkipEmptyParts));
-    QSet<QString> curr_plugins = QSet<QString>::fromList(
-        SoundSourceProxy::getSupportedFileExtensions());
+    QList<QString> prev_plugins_list = pConfig->getValueString(
+        ConfigKey("[Library]", "SupportedFileExtensions")).split(
+        ",", QString::SkipEmptyParts);
+
+    // TODO: QSet<T>::fromList(const QList<T>&) is deprecated and should be
+    // replaced with QSet<T>(list.begin(), list.end()).
+    // However, the proposed alternative has just been introduced in Qt
+    // 5.14. Until the minimum required Qt version of Mixx is increased,
+    // we need a version check here
+    QSet<QString> prev_plugins =
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+        QSet<QString>(prev_plugins_list.begin(), prev_plugins_list.end());
+#else
+        QSet<QString>::fromList(prev_plugins_list);
+#endif
+
+    QList<QString> curr_plugins_list = SoundSourceProxy::getSupportedFileExtensions();
+    QSet<QString> curr_plugins =
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+        QSet<QString>(curr_plugins_list.begin(), curr_plugins_list.end());
+#else
+        QSet<QString>::fromList(curr_plugins_list);
+#endif
+
     rescan = rescan || (prev_plugins != curr_plugins);
     pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"),
             QStringList(SoundSourceProxy::getSupportedFileExtensions()).join(","));
@@ -441,7 +569,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // Scan the library directory. Do this after the skinloader has
     // loaded a skin, see Bug #1047435
     if (rescan || hasChanged_MusicDir || m_pSettingsManager->shouldRescanLibrary()) {
-        m_pLibrary->scan();
+        m_pTrackCollectionManager->startLibraryScan();
     }
 
     // This has to be done before m_pSoundManager->setupDevices()
@@ -492,12 +620,14 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     }
 
     connect(&PlayerInfo::instance(),
-            SIGNAL(currentPlayingTrackChanged(TrackPointer)),
-            this, SLOT(slotUpdateWindowTitle(TrackPointer)));
+            &PlayerInfo::currentPlayingTrackChanged,
+            this,
+            &MixxxMainWindow::slotUpdateWindowTitle);
 
     connect(&PlayerInfo::instance(),
-            SIGNAL(currentPlayingDeckChanged(int)),
-            this, SLOT(slotChangedPlayingDeck(int)));
+            &PlayerInfo::currentPlayingDeckChanged,
+            this,
+            &MixxxMainWindow::slotChangedPlayingDeck);
 
     // this has to be after the OpenGL widgets are created or depending on a
     // million different variables the first waveform may be horribly
@@ -516,6 +646,10 @@ void MixxxMainWindow::finalize() {
         mixxx::ScreenSaverHelper::uninhibit();
     }
 
+    // Stop all pending library operations
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "stopping pending Library tasks";
+    m_pTrackCollectionManager->stopLibraryScan();
+    m_pLibrary->stopPendingTasks();
 
    // Save the current window state (position, maximized, etc)
     m_pSettingsManager->settings()->set(ConfigKey("[MainWindow]", "geometry"),
@@ -582,21 +716,16 @@ void MixxxMainWindow::finalize() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting PlayerManager";
     delete m_pPlayerManager;
 
-    // Evict all remaining tracks from the cache to trigger
-    // updating of modified tracks. We assume that no other
-    // components are accessing those files at this point.
-    qDebug() << t.elapsed(false) << "deactivating GlobalTrackCache";
-    GlobalTrackCacheLocker().deactivateCache();
+    // Destroy PlayerInfo explicitly to release the track
+    // pointers of tracks that were still loaded in decks
+    // or samplers when PlayerManager was destroyed!
+    PlayerInfo::destroy();
 
     // Delete the library after the view so there are no dangling pointers to
     // the data models.
     // Depends on RecordingManager and PlayerManager
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting Library";
     delete m_pLibrary;
-
-    qDebug() << t.elapsed(false).debugMillisWithUnit() << "closing database connection(s)";
-    m_pDbConnectionPool->destroyThreadLocalConnection();
-    m_pDbConnectionPool.reset(); // should drop the last reference
 
     // RecordingManager depends on config, engine
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting RecordingManager";
@@ -621,10 +750,10 @@ void MixxxMainWindow::finalize() {
 
     delete m_pTouchShift;
 
-    PlayerInfo::destroy();
     WaveformWidgetFactory::destroy();
 
     delete m_pGuiTick;
+    delete m_pVisualsManager;
 
     // Check for leaked ControlObjects and give warnings.
     QList<QSharedPointer<ControlDoublePrivate> > leakedControls;
@@ -661,6 +790,16 @@ void MixxxMainWindow::finalize() {
         }
         leakedControls.clear();
     }
+
+    // Delete the track collections after all internal track pointers
+    // in other components have been released by deleting those components
+    // beforehand!
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "detaching all track collections";
+    delete m_pTrackCollectionManager;
+
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "closing database connection(s)";
+    m_pDbConnectionPool->destroyThreadLocalConnection();
+    m_pDbConnectionPool.reset(); // should drop the last reference
 
     // HACK: Save config again. We saved it once before doing some dangerous
     // stuff. We only really want to save it here, but the first one was just
@@ -705,12 +844,12 @@ void MixxxMainWindow::initializeWindow() {
 
     QPalette Pal(palette());
     // safe default QMenuBar background
-    QColor MenuBarBackground(m_pMenuBar->palette().color(QPalette::Background));
-    Pal.setColor(QPalette::Background, QColor(0x202020));
+    QColor MenuBarBackground(m_pMenuBar->palette().color(QPalette::Window));
+    Pal.setColor(QPalette::Window, QColor(0x202020));
     setAutoFillBackground(true);
     setPalette(Pal);
     // restore default QMenuBar background
-    Pal.setColor(QPalette::Background, MenuBarBackground);
+    Pal.setColor(QPalette::Window, MenuBarBackground);
     m_pMenuBar->setPalette(Pal);
 
     // Restore the current window state (position, maximized, etc)
@@ -719,7 +858,7 @@ void MixxxMainWindow::initializeWindow() {
     restoreState(QByteArray::fromBase64(m_pSettingsManager->settings()->getValueString(
         ConfigKey("[MainWindow]", "state")).toUtf8()));
 
-    setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
+    setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     slotUpdateWindowTitle(TrackPointer());
 }
 
@@ -733,7 +872,7 @@ void MixxxMainWindow::initializeKeyboard() {
 
     // Read keyboard configuration and set kdbConfig object in WWidget
     // Check first in user's Mixxx directory
-    QString userKeyboard = QDir(m_cmdLineArgs.getSettingsPath()).filePath("Custom.kbd.cfg");
+    QString userKeyboard = QDir(pConfig->getSettingsPath()).filePath("Custom.kbd.cfg");
 
     // Empty keyboard configuration
     m_pKbdConfigEmpty = new ConfigObject<ConfigValueKbd>(QString());
@@ -749,6 +888,7 @@ void MixxxMainWindow::initializeKeyboard() {
         QString defaultKeyboard = QString(resourcePath).append("keyboard/");
         defaultKeyboard += locale.name();
         defaultKeyboard += ".kbd.cfg";
+        qDebug() << "Found and will use default keyboard preset" << defaultKeyboard;
 
         if (!QFile::exists(defaultKeyboard)) {
             qDebug() << defaultKeyboard << " not found, using en_US.kbd.cfg";
@@ -951,82 +1091,126 @@ void MixxxMainWindow::createMenuBar() {
 
 void MixxxMainWindow::connectMenuBar() {
     ScopedTimer t("MixxxMainWindow::connectMenuBar");
-    connect(this, SIGNAL(newSkinLoaded()),
-            m_pMenuBar, SLOT(onNewSkinLoaded()));
+    connect(this,
+            &MixxxMainWindow::newSkinLoaded,
+            m_pMenuBar,
+            &WMainMenuBar::onNewSkinLoaded);
 
     // Misc
-    connect(m_pMenuBar, SIGNAL(quit()), this, SLOT(close()));
-    connect(m_pMenuBar, SIGNAL(showPreferences()),
-            this, SLOT(slotOptionsPreferences()));
-    connect(m_pMenuBar, SIGNAL(loadTrackToDeck(int)),
-            this, SLOT(slotFileLoadSongPlayer(int)));
+    connect(m_pMenuBar, &WMainMenuBar::quit, this, &MixxxMainWindow::close);
+    connect(m_pMenuBar,
+            &WMainMenuBar::showPreferences,
+            this,
+            &MixxxMainWindow::slotOptionsPreferences);
+    connect(m_pMenuBar,
+            &WMainMenuBar::loadTrackToDeck,
+            this,
+            &MixxxMainWindow::slotFileLoadSongPlayer);
 
     // Fullscreen
-    connect(m_pMenuBar, SIGNAL(toggleFullScreen(bool)),
-            this, SLOT(slotViewFullScreen(bool)));
-    connect(this, SIGNAL(fullScreenChanged(bool)),
-            m_pMenuBar, SLOT(onFullScreenStateChange(bool)));
+    connect(m_pMenuBar,
+            &WMainMenuBar::toggleFullScreen,
+            this,
+            &MixxxMainWindow::slotViewFullScreen);
+    connect(this,
+            &MixxxMainWindow::fullScreenChanged,
+            m_pMenuBar,
+            &WMainMenuBar::onFullScreenStateChange);
 
     // Keyboard shortcuts
-    connect(m_pMenuBar, SIGNAL(toggleKeyboardShortcuts(bool)),
-            this, SLOT(slotOptionsKeyboard(bool)));
+    connect(m_pMenuBar,
+            &WMainMenuBar::toggleKeyboardShortcuts,
+            this,
+            &MixxxMainWindow::slotOptionsKeyboard);
 
     // Help
-    connect(m_pMenuBar, SIGNAL(showAbout()),
-            this, SLOT(slotHelpAbout()));
+    connect(m_pMenuBar,
+            &WMainMenuBar::showAbout,
+            this,
+            &MixxxMainWindow::slotHelpAbout);
 
     // Developer
-    connect(m_pMenuBar, SIGNAL(reloadSkin()),
-            this, SLOT(rebootMixxxView()));
-    connect(m_pMenuBar, SIGNAL(toggleDeveloperTools(bool)),
-            this, SLOT(slotDeveloperTools(bool)));
+    connect(m_pMenuBar,
+            &WMainMenuBar::reloadSkin,
+            this,
+            &MixxxMainWindow::rebootMixxxView);
+    connect(m_pMenuBar,
+            &WMainMenuBar::toggleDeveloperTools,
+            this,
+            &MixxxMainWindow::slotDeveloperTools);
 
     if (m_pRecordingManager) {
-        connect(m_pRecordingManager, SIGNAL(isRecording(bool)),
-                m_pMenuBar, SLOT(onRecordingStateChange(bool)));
-        connect(m_pMenuBar, SIGNAL(toggleRecording(bool)),
-                m_pRecordingManager, SLOT(slotSetRecording(bool)));
+        connect(m_pRecordingManager,
+                &RecordingManager::isRecording,
+                m_pMenuBar,
+                &WMainMenuBar::onRecordingStateChange);
+        connect(m_pMenuBar,
+                &WMainMenuBar::toggleRecording,
+                m_pRecordingManager,
+                &RecordingManager::slotSetRecording);
         m_pMenuBar->onRecordingStateChange(m_pRecordingManager->isRecordingActive());
     }
 
 #ifdef __BROADCAST__
     if (m_pBroadcastManager) {
-        connect(m_pBroadcastManager, SIGNAL(broadcastEnabled(bool)),
-                m_pMenuBar, SLOT(onBroadcastingStateChange(bool)));
-        connect(m_pMenuBar, SIGNAL(toggleBroadcasting(bool)),
-                m_pBroadcastManager, SLOT(setEnabled(bool)));
+        connect(m_pBroadcastManager,
+                &BroadcastManager::broadcastEnabled,
+                m_pMenuBar,
+                &WMainMenuBar::onBroadcastingStateChange);
+        connect(m_pMenuBar,
+                &WMainMenuBar::toggleBroadcasting,
+                m_pBroadcastManager,
+                &BroadcastManager::setEnabled);
         m_pMenuBar->onBroadcastingStateChange(m_pBroadcastManager->isEnabled());
     }
 #endif
 
 #ifdef __VINYLCONTROL__
     if (m_pVCManager) {
-        connect(m_pMenuBar, SIGNAL(toggleVinylControl(int)),
-                m_pVCManager, SLOT(toggleVinylControl(int)));
-        connect(m_pVCManager, SIGNAL(vinylControlDeckEnabled(int, bool)),
-                m_pMenuBar, SLOT(onVinylControlDeckEnabledStateChange(int, bool)));
+        connect(m_pMenuBar,
+                &WMainMenuBar::toggleVinylControl,
+                m_pVCManager,
+                &VinylControlManager::toggleVinylControl);
+        connect(m_pVCManager,
+                &VinylControlManager::vinylControlDeckEnabled,
+                m_pMenuBar,
+                &WMainMenuBar::onVinylControlDeckEnabledStateChange);
     }
 #endif
 
     if (m_pPlayerManager) {
-        connect(m_pPlayerManager, SIGNAL(numberOfDecksChanged(int)),
-                m_pMenuBar, SLOT(onNumberOfDecksChanged(int)));
+        connect(m_pPlayerManager,
+                &PlayerManager::numberOfDecksChanged,
+                m_pMenuBar,
+                &WMainMenuBar::onNumberOfDecksChanged);
         m_pMenuBar->onNumberOfDecksChanged(m_pPlayerManager->numberOfDecks());
     }
 
-    if (m_pLibrary) {
-        connect(m_pMenuBar, SIGNAL(createCrate()),
-                m_pLibrary, SLOT(slotCreateCrate()));
-        connect(m_pMenuBar, SIGNAL(createPlaylist()),
-                m_pLibrary, SLOT(slotCreatePlaylist()));
-        connect(m_pLibrary, SIGNAL(scanStarted()),
-                m_pMenuBar, SLOT(onLibraryScanStarted()));
-        connect(m_pLibrary, SIGNAL(scanFinished()),
-                m_pMenuBar, SLOT(onLibraryScanFinished()));
-        connect(m_pMenuBar, SIGNAL(rescanLibrary()),
-                m_pLibrary, SLOT(scan()));
+    if (m_pTrackCollectionManager) {
+        connect(m_pMenuBar,
+                &WMainMenuBar::rescanLibrary,
+                m_pTrackCollectionManager,
+                &TrackCollectionManager::startLibraryScan);
+        connect(m_pTrackCollectionManager,
+                &TrackCollectionManager::libraryScanStarted,
+                m_pMenuBar,
+                &WMainMenuBar::onLibraryScanStarted);
+        connect(m_pTrackCollectionManager,
+                &TrackCollectionManager::libraryScanFinished,
+                m_pMenuBar,
+                &WMainMenuBar::onLibraryScanFinished);
     }
 
+    if (m_pLibrary) {
+        connect(m_pMenuBar,
+                &WMainMenuBar::createCrate,
+                m_pLibrary,
+                &Library::slotCreateCrate);
+        connect(m_pMenuBar,
+                &WMainMenuBar::createPlaylist,
+                m_pLibrary,
+                &Library::slotCreatePlaylist);
+    }
 }
 
 void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
@@ -1089,18 +1273,24 @@ void MixxxMainWindow::slotDeveloperTools(bool visible) {
         if (m_pDeveloperToolsDlg == nullptr) {
             UserSettingsPointer pConfig = m_pSettingsManager->settings();
             m_pDeveloperToolsDlg = new DlgDeveloperTools(this, pConfig);
-            connect(m_pDeveloperToolsDlg, SIGNAL(destroyed()),
-                    this, SLOT(slotDeveloperToolsClosed()));
-            connect(this, SIGNAL(closeDeveloperToolsDlgChecked(int)),
-                    m_pDeveloperToolsDlg, SLOT(done(int)));
-            connect(m_pDeveloperToolsDlg, SIGNAL(destroyed()),
-                    m_pMenuBar, SLOT(onDeveloperToolsHidden()));
+            connect(m_pDeveloperToolsDlg,
+                    &DlgDeveloperTools::destroyed,
+                    this,
+                    &MixxxMainWindow::slotDeveloperToolsClosed);
+            connect(this,
+                    &MixxxMainWindow::closeDeveloperToolsDlgChecked,
+                    m_pDeveloperToolsDlg,
+                    &DlgDeveloperTools::done);
+            connect(m_pDeveloperToolsDlg,
+                    &DlgDeveloperTools::destroyed,
+                    m_pMenuBar,
+                    &WMainMenuBar::onDeveloperToolsHidden);
         }
         m_pMenuBar->onDeveloperToolsShown();
         m_pDeveloperToolsDlg->show();
         m_pDeveloperToolsDlg->activateWindow();
     } else {
-        emit(closeDeveloperToolsDlgChecked(0));
+        emit closeDeveloperToolsDlgChecked(0);
     }
 }
 
@@ -1132,7 +1322,7 @@ void MixxxMainWindow::slotViewFullScreen(bool toggle) {
 #endif
         showNormal();
     }
-    emit(fullScreenChanged(toggle));
+    emit fullScreenChanged(toggle);
 }
 
 void MixxxMainWindow::slotOptionsPreferences() {
@@ -1142,36 +1332,55 @@ void MixxxMainWindow::slotOptionsPreferences() {
 }
 
 void MixxxMainWindow::slotNoVinylControlInputConfigured() {
-    QMessageBox::warning(
+    QMessageBox::StandardButton btn = QMessageBox::warning(
         this,
         Version::applicationName(),
         tr("There is no input device selected for this vinyl control.\n"
            "Please select an input device in the sound hardware preferences first."),
-        QMessageBox::Ok, QMessageBox::Ok);
-    m_pPrefDlg->show();
-    m_pPrefDlg->showSoundHardwarePage();
+        QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (btn == QMessageBox::Ok) {
+        m_pPrefDlg->show();
+        m_pPrefDlg->showSoundHardwarePage();
+    }
 }
 
 void MixxxMainWindow::slotNoDeckPassthroughInputConfigured() {
-    QMessageBox::warning(
+    QMessageBox::StandardButton btn = QMessageBox::warning(
         this,
         Version::applicationName(),
         tr("There is no input device selected for this passthrough control.\n"
            "Please select an input device in the sound hardware preferences first."),
-        QMessageBox::Ok, QMessageBox::Ok);
-    m_pPrefDlg->show();
-    m_pPrefDlg->showSoundHardwarePage();
+        QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (btn == QMessageBox::Ok) {
+        m_pPrefDlg->show();
+        m_pPrefDlg->showSoundHardwarePage();
+    }
 }
 
 void MixxxMainWindow::slotNoMicrophoneInputConfigured() {
-    QMessageBox::warning(
+    QMessageBox::StandardButton btn = QMessageBox::question(
         this,
         Version::applicationName(),
         tr("There is no input device selected for this microphone.\n"
-           "Please select an input device in the sound hardware preferences first."),
-        QMessageBox::Ok, QMessageBox::Ok);
-    m_pPrefDlg->show();
-    m_pPrefDlg->showSoundHardwarePage();
+           "Do you want to select an input device?"),
+        QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (btn == QMessageBox::Ok) {
+        m_pPrefDlg->show();
+        m_pPrefDlg->showSoundHardwarePage();
+    }
+}
+
+void MixxxMainWindow::slotNoAuxiliaryInputConfigured() {
+    QMessageBox::StandardButton btn = QMessageBox::question(
+        this,
+        Version::applicationName(),
+        tr("There is no input device selected for this auxiliary.\n"
+           "Do you want to select an input device?"),
+        QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (btn == QMessageBox::Ok) {
+        m_pPrefDlg->show();
+        m_pPrefDlg->showSoundHardwarePage();
+    }
 }
 
 void MixxxMainWindow::slotChangedPlayingDeck(int deck) {
@@ -1257,13 +1466,19 @@ void MixxxMainWindow::rebootMixxxView() {
         // Not all OSs and/or window managers keep the window inside of the screen, so force it.
         int newX = initPosition.x() + (initSize.width() - m_pWidgetParent->width()) / 2;
         int newY = initPosition.y() + (initSize.height() - m_pWidgetParent->height()) / 2;
-        newX = std::max(0, std::min(newX, QApplication::desktop()->screenGeometry().width() - m_pWidgetParent->width()));
-        newY = std::max(0, std::min(newY, QApplication::desktop()->screenGeometry().height() - m_pWidgetParent->height()));
-        move(newX,newY);
+
+        const QScreen* primaryScreen = getPrimaryScreen();
+        if (primaryScreen) {
+            newX = std::max(0, std::min(newX, primaryScreen->geometry().width() - m_pWidgetParent->width()));
+            newY = std::max(0, std::min(newY, primaryScreen->geometry().height() - m_pWidgetParent->height()));
+            move(newX,newY);
+        } else {
+            qWarning() << "Unable to move window inside screen borders.";
+        }
     }
 
     qDebug() << "rebootMixxxView DONE";
-    emit(newSkinLoaded());
+    emit newSkinLoaded();
 }
 
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
@@ -1306,6 +1521,9 @@ bool MixxxMainWindow::event(QEvent* e) {
 }
 
 void MixxxMainWindow::closeEvent(QCloseEvent *event) {
+    // WARNING: We can receive a CloseEvent while only partially
+    // initialized. This is because we call QApplication::processEvents to
+    // render LaunchImage progress in the constructor.
     if (!confirmExit()) {
         event->ignore();
         return;
@@ -1331,7 +1549,7 @@ void MixxxMainWindow::checkDirectRendering() {
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
 
-    if (!factory->isOpenGLAvailable() &&
+    if (!factory->isOpenGlAvailable() && !factory->isOpenGlesAvailable() &&
         pConfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes")) {
         QMessageBox::warning(
             0, tr("OpenGL Direct Rendering"),
@@ -1340,10 +1558,7 @@ void MixxxMainWindow::checkDirectRendering() {
                "<b>slow and may tax your CPU heavily</b>. Either update your<br>"
                "configuration to enable direct rendering, or disable<br>"
                "the waveform displays in the Mixxx preferences by selecting<br>"
-               "\"Empty\" as the waveform display in the 'Interface' section.<br><br>"
-               "NOTE: If you use NVIDIA hardware,<br>"
-               "direct rendering may not be present, but you should<br>"
-               "not experience degraded performance."));
+               "\"Empty\" as the waveform display in the 'Interface' section."));
         pConfig->set(ConfigKey("[Direct Rendering]", "Warned"), QString("yes"));
     }
 }
@@ -1384,7 +1599,7 @@ bool MixxxMainWindow::confirmExit() {
             return false;
         }
     }
-    if (m_pPrefDlg->isVisible()) {
+    if (m_pPrefDlg && m_pPrefDlg->isVisible()) {
         QMessageBox::StandardButton btn = QMessageBox::question(
             this, tr("Confirm Exit"),
             tr("The preferences window is still open.") + "<br>" +

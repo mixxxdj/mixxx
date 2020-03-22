@@ -23,7 +23,7 @@
 
 #include <cstdint>
 
-#include "benchmark/macros.h"
+#include "benchmark/benchmark.h"
 #include "internal_macros.h"
 
 #if defined(BENCHMARK_OS_MACOSX)
@@ -41,8 +41,13 @@ extern "C" uint64_t __rdtsc();
 #pragma intrinsic(__rdtsc)
 #endif
 
-#ifndef BENCHMARK_OS_WINDOWS
+#if !defined(BENCHMARK_OS_WINDOWS) || defined(BENCHMARK_OS_MINGW)
 #include <sys/time.h>
+#include <time.h>
+#endif
+
+#ifdef BENCHMARK_OS_EMSCRIPTEN
+#include <emscripten.h>
 #endif
 
 namespace benchmark {
@@ -65,6 +70,10 @@ inline BENCHMARK_ALWAYS_INLINE int64_t Now() {
   // counter pauses; it does not continue counting, nor does it
   // reset to zero.
   return mach_absolute_time();
+#elif defined(BENCHMARK_OS_EMSCRIPTEN)
+  // this goes above x86-specific code because old versions of Emscripten
+  // define __x86_64__, although they have nothing to do with it.
+  return static_cast<int64_t>(emscripten_get_now() * 1e+6);
 #elif defined(__i386__)
   int64_t ret;
   __asm__ volatile("rdtsc" : "=A"(ret));
@@ -79,7 +88,7 @@ inline BENCHMARK_ALWAYS_INLINE int64_t Now() {
   asm("mftbu %0" : "=r"(tbu0));
   asm("mftb  %0" : "=r"(tbl));
   asm("mftbu %0" : "=r"(tbu1));
-  tbl &= -static_cast<int64>(tbu0 == tbu1);
+  tbl &= -static_cast<int64_t>(tbu0 == tbu1);
   // high 32 bits in tbu1; low 32 bits in tbl  (tbu0 is garbage)
   return (tbu1 << 32) | tbl;
 #elif defined(__sparc__)
@@ -99,17 +108,43 @@ inline BENCHMARK_ALWAYS_INLINE int64_t Now() {
   _asm rdtsc
 #elif defined(COMPILER_MSVC)
   return __rdtsc();
+#elif defined(BENCHMARK_OS_NACL)
+  // Native Client validator on x86/x86-64 allows RDTSC instructions,
+  // and this case is handled above. Native Client validator on ARM
+  // rejects MRC instructions (used in the ARM-specific sequence below),
+  // so we handle it here. Portable Native Client compiles to
+  // architecture-agnostic bytecode, which doesn't provide any
+  // cycle counter access mnemonics.
+
+  // Native Client does not provide any API to access cycle counter.
+  // Use clock_gettime(CLOCK_MONOTONIC, ...) instead of gettimeofday
+  // because is provides nanosecond resolution (which is noticable at
+  // least for PNaCl modules running on x86 Mac & Linux).
+  // Initialize to always return 0 if clock_gettime fails.
+  struct timespec ts = {0, 0};
+  clock_gettime(CLOCK_MONOTONIC, &ts);
+  return static_cast<int64_t>(ts.tv_sec) * 1000000000 + ts.tv_nsec;
+#elif defined(__aarch64__)
+  // System timer of ARMv8 runs at a different frequency than the CPU's.
+  // The frequency is fixed, typically in the range 1-50MHz.  It can be
+  // read at CNTFRQ special register.  We assume the OS has set up
+  // the virtual timer properly.
+  int64_t virtual_timer_value;
+  asm volatile("mrs %0, cntvct_el0" : "=r"(virtual_timer_value));
+  return virtual_timer_value;
 #elif defined(__ARM_ARCH)
-#if (__ARM_ARCH >= 6)  // V6 is the earliest arch that has a standard cyclecount
+  // V6 is the earliest arch that has a standard cyclecount
+  // Native Client validator doesn't allow MRC instructions.
+#if (__ARM_ARCH >= 6)
   uint32_t pmccntr;
   uint32_t pmuseren;
   uint32_t pmcntenset;
   // Read the user mode perf monitor counter access permissions.
-  asm("mrc p15, 0, %0, c9, c14, 0" : "=r"(pmuseren));
+  asm volatile("mrc p15, 0, %0, c9, c14, 0" : "=r"(pmuseren));
   if (pmuseren & 1) {  // Allows reading perfmon counters for user mode code.
-    asm("mrc p15, 0, %0, c9, c12, 1" : "=r"(pmcntenset));
+    asm volatile("mrc p15, 0, %0, c9, c12, 1" : "=r"(pmcntenset));
     if (pmcntenset & 0x80000000ul) {  // Is it counting?
-      asm("mrc p15, 0, %0, c9, c13, 0" : "=r"(pmccntr));
+      asm volatile("mrc p15, 0, %0, c9, c13, 0" : "=r"(pmccntr));
       // The counter is set up to count every 64th cycle
       return static_cast<int64_t>(pmccntr) * 64;  // Should optimize to << 6
     }
@@ -124,6 +159,26 @@ inline BENCHMARK_ALWAYS_INLINE int64_t Now() {
   struct timeval tv;
   gettimeofday(&tv, nullptr);
   return static_cast<int64_t>(tv.tv_sec) * 1000000 + tv.tv_usec;
+#elif defined(__s390__)  // Covers both s390 and s390x.
+  // Return the CPU clock.
+  uint64_t tsc;
+  asm("stck %0" : "=Q"(tsc) : : "cc");
+  return tsc;
+#elif defined(__riscv) // RISC-V
+  // Use RDCYCLE (and RDCYCLEH on riscv32)
+#if __riscv_xlen == 32
+  uint64_t cycles_low, cycles_hi0, cycles_hi1;
+  asm("rdcycleh %0" : "=r"(cycles_hi0));
+  asm("rdcycle %0" : "=r"(cycles_lo));
+  asm("rdcycleh %0" : "=r"(cycles_hi1));
+  // This matches the PowerPC overflow detection, above
+  cycles_lo &= -static_cast<int64_t>(cycles_hi0 == cycles_hi1);
+  return (cycles_hi1 << 32) | cycles_lo;
+#else
+  uint64_t cycles;
+  asm("rdcycle %0" : "=r"(cycles));
+  return cycles;
+#endif
 #else
 // The soft failover to a generic implementation is automatic only for ARM.
 // For other platforms the developer is expected to make an attempt to create

@@ -6,13 +6,8 @@
 <Template>
   <WidgetGroup>
     <Layout>vertical</Layout>
-    <!-- I don't now why this works but a WidgetGroup wrapper around a
-         WidgetStack with a 'fixed' size policy makes the group track the
-         minimum size of the current stack widget. -->
     <SizePolicy>me,f</SizePolicy>
-
     <Children>
-
       <WidgetGroup>
         <ObjectName>MicAuxRack</ObjectName>
         <SizePolicy>me,min</SizePolicy>
@@ -26,86 +21,54 @@
             to the preferences pane for easy set up. Once Mic 1 is
             set up, this widget hides itself. -->
 
+          <Template src="skin:microphone.xml"/>
+          <Template src="skin:microphone_unconfigured.xml"/>
+
           <Template src="skin:microphone.xml">
-            <SetVariable name="i"></SetVariable>
+            <SetVariable name="i">2</SetVariable>
+          </Template>
+          <Template src="skin:microphone_unconfigured.xml">
+            <SetVariable name="i">2</SetVariable>
+          </Template>
+
+          <Template src="skin:microphone.xml">
+            <SetVariable name="i">3</SetVariable>
+          </Template>
+          <Template src="skin:microphone_unconfigured.xml">
+            <SetVariable name="i">3</SetVariable>
+          </Template>
+
+          <Template src="skin:microphone.xml">
+            <SetVariable name="i">4</SetVariable>
+          </Template>
+          <Template src="skin:microphone_unconfigured.xml">
+            <SetVariable name="i">4</SetVariable>
           </Template>
 
           <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <SizePolicy>max,me</SizePolicy>
-            <Children>
-              <Template src="skin:microphone.xml">
-                <SetVariable name="i">2</SetVariable>
-              </Template>
-            </Children>
-            <Connection>
-              <ConfigKey>[Microphone2],enabled</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <SizePolicy>max,me</SizePolicy>
-            <Children>
-              <Template src="skin:microphone.xml">
-                <SetVariable name="i">3</SetVariable>
-              </Template>
-            </Children>
-            <Connection>
-              <ConfigKey>[Microphone3],enabled</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <SizePolicy>max,me</SizePolicy>
-            <Children>
-              <Template src="skin:microphone.xml">
-                <SetVariable name="i">4</SetVariable>
-              </Template>
-            </Children>
-            <Connection>
-              <ConfigKey>[Microphone4],enabled</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-
-          <WidgetGroup>
             <ObjectName>MicDuckingContainer</ObjectName>
-            <Layout>horizontal</Layout>
+            <Layout>vertical</Layout>
             <SizePolicy>max,me</SizePolicy>
             <Children>
 
               <WidgetGroup>
-                <ObjectName>MicDuckingControls</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>min,me</SizePolicy>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
                 <Children>
+                  <Label>
+                    <ObjectName>DuckingLabel</ObjectName>
+                    <Text>DUCKING</Text>
+                  </Label>
+                </Children>
+              </WidgetGroup>
 
-                  <Template src="skin:spacer_vx.xml">
-                    <SetVariable name="height">,0f</SetVariable>
-                  </Template>
-
-                  <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>min,min</SizePolicy>
-                    <Children>
-                      <Label>
-                        <ObjectName>DuckingLabel</ObjectName>
-                        <Text>DUCKING</Text>
-                      </Label>
-                    </Children>
-                  </WidgetGroup>
-
-                  <Template src="skin:spacer_vx.xml">
-                    <SetVariable name="height">,2f</SetVariable>
-                  </Template>
-
+              <WidgetGroup>
+                <ObjectName>MicDuckingControls</ObjectName>
+                <Layout>horizontal</Layout>
+                <Children>
                   <PushButton>
                     <TooltipId>talkover_duck_mode</TooltipId>
-                    <Size>66f,20f</Size>
+                    <Size>46f,20f</Size>
                     <NumberStates>3</NumberStates>
                     <State>
                       <Number>0</Number>
@@ -117,7 +80,7 @@
                     </State>
                     <State>
                       <Number>2</Number>
-                      <Text>MANUAL</Text>
+                      <Text>MAN</Text>
                     </State>
                     <Connection>
                       <ConfigKey>[Master],talkoverDucking</ConfigKey>
@@ -125,33 +88,24 @@
                     </Connection>
                   </PushButton>
 
-                  <Template src="skin:spacer_vx.xml">
-                    <SetVariable name="height">,2me</SetVariable>
+                  <!-- knob_with_label.xml template will not work here because
+                  "Strength" label exceeds width of knob. -->
+                  <Template src="skin:knob.xml">
+                    <SetVariable name="group">[Master]</SetVariable>
+                    <SetVariable name="control">duckStrength</SetVariable>
+                    <SetVariable name="TooltipId">talkover_duck_strength</SetVariable>
+                    <SetVariable name="color">blue</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup>
 
-              <!-- knob_with_label.xml template will not work here because
-              "Strength" label exceeds width of knob. -->
               <WidgetGroup>
-                <ObjectName>MicDuckingControls</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>min,me</SizePolicy>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
                 <Children>
-
-                  <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <Children>
-                      <Template src="skin:knob.xml">
-                        <SetVariable name="group">[Master]</SetVariable>
-                        <SetVariable name="control">duckStrength</SetVariable>
-                        <SetVariable name="TooltipId">talkover_duck_strength</SetVariable>
-                        <SetVariable name="color">blue</SetVariable>
-                      </Template>
-                    </Children>
-                  </WidgetGroup>
-
+                  <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
                   <Label>
+                    <Size>52f,12f</Size>
                     <ObjectName>KnobLabel</ObjectName>
                     <Text>Strength</Text>
                   </Label>
@@ -161,52 +115,40 @@
             </Children>
           </WidgetGroup>
 
-          <Template src="skin:spacer_h.xml"/>
+          <WidgetGroup>
+            <ObjectName>Spacer33</ObjectName>
+            <SizePolicy>min,me</SizePolicy>
+          </WidgetGroup>
 
           <!-- Auxiliary input controls -->
 
           <Template src="skin:auxiliary.xml">
             <SetVariable name="i">1</SetVariable>
           </Template>
+          <Template src="skin:auxiliary_unconfigured.xml">
+            <SetVariable name="i">1</SetVariable>
+          </Template>
 
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <Children>
-              <Template src="skin:auxiliary.xml">
-                <SetVariable name="i">2</SetVariable>
-              </Template>
-            </Children>
-            <Connection>
-              <ConfigKey>[Auxiliary2],enabled</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
+          <Template src="skin:auxiliary.xml">
+            <SetVariable name="i">2</SetVariable>
+          </Template>
+          <Template src="skin:auxiliary_unconfigured.xml">
+            <SetVariable name="i">2</SetVariable>
+          </Template>
 
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <Children>
-              <Template src="skin:auxiliary.xml">
-                <SetVariable name="i">3</SetVariable>
-              </Template>
-            </Children>
-            <Connection>
-              <ConfigKey>[Auxiliary3],enabled</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
+          <Template src="skin:auxiliary.xml">
+            <SetVariable name="i">3</SetVariable>
+          </Template>
+          <Template src="skin:auxiliary_unconfigured.xml">
+            <SetVariable name="i">3</SetVariable>
+          </Template>
 
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <Children>
-              <Template src="skin:auxiliary.xml">
-                <SetVariable name="i">4</SetVariable>
-              </Template>
-            </Children>
-            <Connection>
-              <ConfigKey>[Auxiliary4],enabled</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
+          <Template src="skin:auxiliary.xml">
+            <SetVariable name="i">4</SetVariable>
+          </Template>
+          <Template src="skin:auxiliary_unconfigured.xml">
+            <SetVariable name="i">4</SetVariable>
+          </Template>
 
         </Children>
       </WidgetGroup>

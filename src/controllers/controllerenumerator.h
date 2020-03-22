@@ -24,7 +24,7 @@ class ControllerEnumerator : public QObject {
     virtual QList<Controller*> queryDevices() = 0;
 
     // Sub-classes return true here if their devices must be polled to get data
-    // from the controler.
+    // from the controller.
     virtual bool needPolling() {
         return false;
     }

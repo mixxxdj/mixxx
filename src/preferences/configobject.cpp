@@ -1,14 +1,15 @@
 #include "preferences/configobject.h"
 
-#include <QIODevice>
-#include <QTextStream>
 #include <QApplication>
 #include <QDir>
+#include <QIODevice>
+#include <QTextStream>
 #include <QtDebug>
 
-#include "widget/wwidget.h"
 #include "util/cmdlineargs.h"
+#include "util/color/rgbcolor.h"
 #include "util/xml.h"
+#include "widget/wwidget.h"
 
 // TODO(rryan): Move to a utility file.
 namespace {
@@ -49,7 +50,7 @@ QString computeResourcePath() {
 #endif
 #ifdef __APPLE__
         else if (mixxxDir.cdUp() && mixxxDir.cd("Resources")) {
-            // Release configuraton
+            // Release configuration
             qResourcePath = mixxxDir.absolutePath();
         } else {
             // TODO(rryan): What should we do here?
@@ -81,20 +82,6 @@ QString computeSettingsPath(const QString& configFilename) {
 }
 
 }  // namespace
-
-ConfigKey::ConfigKey() {
-}
-
-ConfigKey::ConfigKey(const ConfigKey& key)
-    : group(key.group),
-      item(key.item) {
-}
-
-ConfigKey::ConfigKey(const QString& g, const QString& i)
-    : group(g),
-      item(i) {
-}
-
 // static
 ConfigKey ConfigKey::parseCommaSeparated(const QString& key) {
     int comma = key.indexOf(",");
@@ -102,48 +89,17 @@ ConfigKey ConfigKey::parseCommaSeparated(const QString& key) {
     return configKey;
 }
 
-ConfigValue::ConfigValue() {
-}
-
-ConfigValue::ConfigValue(const QString& stValue)
-    : value(stValue) {
-}
-
 ConfigValue::ConfigValue(int iValue)
     : value(QString::number(iValue)) {
 }
 
-void ConfigValue::valCopy(const ConfigValue& configValue) {
-    value = configValue.value;
+ConfigValue::ConfigValue(double dValue)
+    : value(QString::number(dValue)) {
 }
 
-
-ConfigValueKbd::ConfigValueKbd() {
-}
-
-ConfigValueKbd::ConfigValueKbd(const QString& value)
-        : ConfigValue(value) {
-    m_qKey = QKeySequence(value);
-}
-
-ConfigValueKbd::ConfigValueKbd(const QKeySequence& key) {
-    m_qKey = key;
-    QTextStream(&value) << m_qKey.toString();
-    // qDebug() << "value" << value;
-}
-
-void ConfigValueKbd::valCopy(const ConfigValueKbd& v) {
-    m_qKey = v.m_qKey;
-    QTextStream(&value) << m_qKey.toString();
-}
-
-bool operator==(const ConfigValue& s1, const ConfigValue& s2) {
-    return (s1.value.toUpper() == s2.value.toUpper());
-}
-
-bool operator==(const ConfigValueKbd& s1, const ConfigValueKbd& s2) {
-    //qDebug() << s1.m_qKey << "==" << s2.m_qKey;
-    return (s1.m_qKey == s2.m_qKey);
+ConfigValueKbd::ConfigValueKbd(const QKeySequence& keys)
+        : m_keys(std::move(keys)) {
+    QTextStream(&value) << m_keys.toString();
 }
 
 template <class ValueType> ConfigObject<ValueType>::ConfigObject(const QString& file)
@@ -245,8 +201,7 @@ template <class ValueType> void ConfigObject<ValueType>::save() {
 
         QString grp = "";
 
-        typename QMap<ConfigKey, ValueType>::const_iterator i;
-        for (i = m_values.begin(); i != m_values.end(); ++i) {
+        for (auto i = m_values.constBegin(); i != m_values.constEnd(); ++i) {
             //qDebug() << "group:" << it.key().group << "item" << it.key().item << "val" << it.value()->value;
             if (i.key().group != grp) {
                 grp = i.key().group;
@@ -261,12 +216,34 @@ template <class ValueType> void ConfigObject<ValueType>::save() {
     }
 }
 
+template<class ValueType>
+QSet<QString> ConfigObject<ValueType>::getGroups() {
+    QWriteLocker lock(&m_valuesLock);
+    QSet<QString> groups;
+    for (const ConfigKey& key : m_values.uniqueKeys()) {
+        groups.insert(key.group);
+    }
+    return groups;
+}
+
+template<class ValueType>
+QList<ConfigKey> ConfigObject<ValueType>::getKeysWithGroup(QString group) const {
+    QWriteLocker lock(&m_valuesLock);
+    QList<ConfigKey> filteredList;
+    for (const ConfigKey& key : m_values.uniqueKeys()) {
+        if (key.group == group) {
+            filteredList.append(key);
+        }
+    }
+    return filteredList;
+}
+
 template <class ValueType> ConfigObject<ValueType>::ConfigObject(const QDomNode& node) {
     if (!node.isNull() && node.isElement()) {
         QDomNode ctrl = node.firstChild();
 
         while (!ctrl.isNull()) {
-            if(ctrl.nodeName() == "control") {
+            if (ctrl.nodeName() == "control") {
                 QString group = XmlParse::selectNodeQString(ctrl, "group");
                 QString key = XmlParse::selectNodeQString(ctrl, "key");
                 ConfigKey k(group, key);
@@ -283,8 +260,7 @@ QMultiHash<ValueType, ConfigKey> ConfigObject<ValueType>::transpose() const {
     QReadLocker lock(&m_valuesLock);
 
     QMultiHash<ValueType, ConfigKey> transposedHash;
-    for (typename QMap<ConfigKey, ValueType>::const_iterator it =
-            m_values.begin(); it != m_values.end(); ++it) {
+    for (auto it = m_values.constBegin(); it != m_values.constEnd(); ++it) {
         transposedHash.insert(it.value(), it.key());
     }
     return transposedHash;
@@ -315,6 +291,24 @@ template <> template <>
 void ConfigObject<ConfigValue>::setValue(
         const ConfigKey& key, const double& value) {
     set(key, ConfigValue(QString::number(value)));
+}
+
+template<>
+template<>
+void ConfigObject<ConfigValue>::setValue(
+        const ConfigKey& key, const mixxx::RgbColor::optional_t& value) {
+    if (!value) {
+        remove(key);
+        return;
+    }
+    set(key, ConfigValue(mixxx::RgbColor::toQString(value)));
+}
+
+template<>
+template<>
+void ConfigObject<ConfigValue>::setValue(
+        const ConfigKey& key, const mixxx::RgbColor& value) {
+    set(key, ConfigValue(mixxx::RgbColor::toQString(value)));
 }
 
 template <> template <>
@@ -351,6 +345,40 @@ double ConfigObject<ConfigValue>::getValue(
     bool ok;
     auto result = value.value.toDouble(&ok);
     return ok ? result : default_value;
+}
+
+template<>
+template<>
+mixxx::RgbColor::optional_t ConfigObject<ConfigValue>::getValue(
+        const ConfigKey& key, const mixxx::RgbColor::optional_t& default_value) const {
+    const ConfigValue value = get(key);
+    if (value.isNull()) {
+        return default_value;
+    }
+    return mixxx::RgbColor::fromQString(value.value, default_value);
+}
+
+template<>
+template<>
+mixxx::RgbColor::optional_t ConfigObject<ConfigValue>::getValue(const ConfigKey& key) const {
+    return getValue(key, mixxx::RgbColor::optional_t(std::nullopt));
+}
+
+template<>
+template<>
+mixxx::RgbColor ConfigObject<ConfigValue>::getValue(
+        const ConfigKey& key, const mixxx::RgbColor& default_value) const {
+    const mixxx::RgbColor::optional_t value = getValue(key, mixxx::RgbColor::optional_t(std::nullopt));
+    if (!value) {
+        return default_value;
+    }
+    return *value;
+}
+
+template<>
+template<>
+mixxx::RgbColor ConfigObject<ConfigValue>::getValue(const ConfigKey& key) const {
+    return getValue(key, mixxx::RgbColor(0));
 }
 
 // For string literal default

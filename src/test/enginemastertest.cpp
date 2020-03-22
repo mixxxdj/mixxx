@@ -4,7 +4,7 @@
 #include <QtDebug>
 
 #include "control/controlproxy.h"
-#include "engine/enginechannel.h"
+#include "engine/channels/enginechannel.h"
 #include "engine/enginemaster.h"
 #include "test/mixxxtest.h"
 #include "test/signalpathtest.h"

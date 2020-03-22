@@ -21,7 +21,9 @@ class DirectoryDAO : public DAO {
 
     int addDirectory(const QString& dir);
     int removeDirectory(const QString& dir);
-    QSet<TrackId> relocateDirectory(const QString& oldFolder, const QString& newFolder);
+    QList<RelocatedTrack> relocateDirectory(
+            const QString& oldFolder,
+            const QString& newFolder);
     QStringList getDirs();
 
   private:

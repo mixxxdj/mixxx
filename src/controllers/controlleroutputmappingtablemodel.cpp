@@ -1,6 +1,5 @@
-#include <QtAlgorithms>
-
 #include "controllers/controlleroutputmappingtablemodel.h"
+
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midiutils.h"
 #include "controllers/delegates/controldelegate.h"
@@ -76,7 +75,7 @@ void ControllerOutputMappingTableModel::removeMappings(QModelIndexList indices) 
     foreach (const QModelIndex& index, indices) {
         rows.append(index.row());
     }
-    qSort(rows);
+    std::sort(rows.begin(), rows.end());
 
     int lastRow = -1;
     while (!rows.empty()) {
@@ -152,7 +151,6 @@ QVariant ControllerOutputMappingTableModel::data(const QModelIndex& index,
         }
 
         const MidiOutputMapping& mapping = m_midiOutputMappings.at(row);
-        QString value;
         switch (column) {
             case MIDI_COLUMN_CHANNEL:
                 return MidiUtils::channelFromStatus(mapping.output.status);
@@ -171,9 +169,9 @@ QVariant ControllerOutputMappingTableModel::data(const QModelIndex& index,
             case MIDI_COLUMN_ACTION:
                 if (role == Qt::UserRole) {
                     // TODO(rryan): somehow get the delegate display text?
-                    return mapping.controlKey.group + "," + mapping.controlKey.item;
+                    return QVariant(mapping.controlKey.group + QStringLiteral(",") + mapping.controlKey.item);
                 }
-                return qVariantFromValue(mapping.controlKey);
+                return QVariant::fromValue(mapping.controlKey);
             case MIDI_COLUMN_COMMENT:
                 return mapping.description;
             default:
@@ -204,41 +202,41 @@ bool ControllerOutputMappingTableModel::setData(const QModelIndex& index,
                 mapping.output.status = static_cast<unsigned char>(
                     MidiUtils::opCodeFromStatus(mapping.output.status)) |
                         static_cast<unsigned char>(value.toInt());
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_OPCODE:
                 mapping.output.status = static_cast<unsigned char>(
                     MidiUtils::channelFromStatus(mapping.output.status)) |
                         static_cast<unsigned char>(value.toInt());
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_CONTROL:
                 mapping.output.control = static_cast<unsigned char>(value.toInt());
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_ON:
                 mapping.output.on = static_cast<unsigned char>(value.toInt());
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_OFF:
                 mapping.output.off = static_cast<unsigned char>(value.toInt());
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_MIN:
                 mapping.output.min = value.toDouble();
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_MAX:
                 mapping.output.max = value.toDouble();
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_ACTION:
-                mapping.controlKey = qVariantValue<ConfigKey>(value);
-                emit(dataChanged(index, index));
+                mapping.controlKey = value.value<ConfigKey>();
+                emit dataChanged(index, index);
                 return true;
             case MIDI_COLUMN_COMMENT:
                 mapping.description = value.toString();
-                emit(dataChanged(index, index));
+                emit dataChanged(index, index);
                 return true;
             default:
                 return false;

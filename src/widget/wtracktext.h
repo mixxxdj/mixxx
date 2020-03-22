@@ -7,27 +7,31 @@
 
 #include "preferences/usersettings.h"
 #include "track/track.h"
+#include "widget/trackdroptarget.h"
 #include "widget/wlabel.h"
 
-class WTrackText : public WLabel {
+class WTrackText : public WLabel, public TrackDropTarget {
     Q_OBJECT
   public:
     WTrackText(const char* group, UserSettingsPointer pConfig, QWidget *pParent);
 
   signals:
-    void trackDropped(QString fileName, QString group);
+    void trackDropped(QString fileName, QString group) override;
+    void cloneDeck(QString source_group, QString target_group) override;
 
   public slots:
     void slotTrackLoaded(TrackPointer track);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
   private slots:
-    void updateLabel(Track*);
+    void slotTrackChanged(TrackId);
 
   private:
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
+
+    void updateLabel();
 
     const char* m_pGroup;
     UserSettingsPointer m_pConfig;

@@ -9,7 +9,7 @@
 namespace {
 
 TEST(BroadcastProfileTest, ConstructWithName) {
-    // instanciate BroadcastProfile with a specific name and
+    // instantiate BroadcastProfile with a specific name and
     // assert its case-sensitive equality when getting it from getProfileName
     QString name("unit testing profile");
     BroadcastProfile profile(name);
@@ -57,6 +57,25 @@ TEST(BroadcastProfileTest, SaveAndLoadXML) {
     BroadcastProfilePtr savedProfile = BroadcastProfile::loadFromFile(filename);
     ASSERT_NE(savedProfile, nullptr);
     ASSERT_TRUE(savedProfile->getStreamName() == streamName);
+}
+
+TEST(BroadcastProfileTest, SaveAndLoadXMLDotName) {
+    QString profileName("profile has a dot. (in the name)");
+
+    BroadcastProfile profile(profileName);
+
+    QString filename = profile.getProfileName() + QString(".bcp.xml");
+
+    // Call save() on a profile and assert it actually exists
+    QFile::remove(filename); // First, make sure it doesn't exists
+    profile.save(filename);
+    ASSERT_TRUE(QFile::exists(filename));
+
+    // Load XML file using static loadFromFile and assert
+    // the discriminating value is present
+    BroadcastProfilePtr savedProfile = BroadcastProfile::loadFromFile(filename);
+    ASSERT_NE(savedProfile, nullptr);
+    ASSERT_TRUE(savedProfile->getProfileName() == profileName);
 }
 
 TEST(BroadcastProfileTest, SetGetValues) {

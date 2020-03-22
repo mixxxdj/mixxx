@@ -11,7 +11,7 @@
  * 1. argument represents a name shown in the sidebar view later on
  * 2. argument represents the absolute path of this tree item
  * 3. argument is a library feature object.
- *    This is necessary because in sidebar.cpp we hanlde 'activateChid' events
+ *    This is necessary because in sidebar.cpp we handle 'activateChid' events
  * 4. the parent TreeItem object
  *    The constructor does not add this TreeItem object to the parent's child list
  *
@@ -83,7 +83,7 @@ bool TreeItemModel::setData(const QModelIndex &a_rIndex,
         return false;
     }
 
-    emit(dataChanged(a_rIndex, a_rIndex));
+    emit dataChanged(a_rIndex, a_rIndex);
     return true;
 }
 
@@ -155,8 +155,9 @@ int TreeItemModel::rowCount(const QModelIndex& parent) const {
  * Call this method first, before you do call any other methods.
  */
 TreeItem* TreeItemModel::setRootItem(std::unique_ptr<TreeItem> pRootItem) {
+    beginResetModel();
     m_pRootItem = std::move(pRootItem);
-    reset();
+    endResetModel();
     return getRootItem();
 }
 
@@ -164,7 +165,10 @@ TreeItem* TreeItemModel::setRootItem(std::unique_ptr<TreeItem> pRootItem) {
  * Before you can resize the data model dynamically by using 'insertRows' and 'removeRows'
  * make sure you have initialized
  */
-void TreeItemModel::insertTreeItemRows(QList<TreeItem*>& rows, int position, const QModelIndex& parent) {
+void TreeItemModel::insertTreeItemRows(
+        QList<TreeItem*>& rows,
+        int position,
+        const QModelIndex& parent) {
     if (rows.isEmpty()) {
         return;
     }
@@ -173,7 +177,8 @@ void TreeItemModel::insertTreeItemRows(QList<TreeItem*>& rows, int position, con
     DEBUG_ASSERT(pParentItem != nullptr);
 
     beginInsertRows(parent, position, position + rows.size() - 1);
-    pParentItem->insertChildren(rows, position, rows.size());
+    pParentItem->insertChildren(position, rows);
+    DEBUG_ASSERT(rows.isEmpty());
     endInsertRows();
 }
 
@@ -201,11 +206,11 @@ TreeItem* TreeItemModel::getItem(const QModelIndex &index) const {
 }
 
 void TreeItemModel::triggerRepaint(const QModelIndex& index) {
-    emit(dataChanged(index, index));
+    emit dataChanged(index, index);
 }
 
 void TreeItemModel::triggerRepaint() {
     QModelIndex left = index(0, 0);
     QModelIndex right = index(rowCount() - 1, columnCount() - 1);
-    emit(dataChanged(left, right));
+    emit dataChanged(left, right);
 }

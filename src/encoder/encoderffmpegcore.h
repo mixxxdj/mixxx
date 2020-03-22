@@ -25,7 +25,7 @@ extern "C" {
 #include <libavutil/avutil.h>
 #endif
 
-// Compability
+// Compatibility
 #include <libavutil/mathematics.h>
 #include <libavutil/opt.h>
 }

@@ -24,6 +24,7 @@
 #include "widget/controlwidgetconnection.h"
 #include "widget/wpixmapstore.h"
 #include "util/debug.h"
+#include "util/duration.h"
 #include "util/math.h"
 
 WSliderComposed::WSliderComposed(QWidget * parent)
@@ -33,7 +34,11 @@ WSliderComposed::WSliderComposed(QWidget * parent)
       m_dSliderLength(0.0),
       m_bHorizontal(false),
       m_pSlider(nullptr),
-      m_pHandle(nullptr) {
+      m_pHandle(nullptr),
+      m_renderTimer(mixxx::Duration::fromMillis(20),
+                    mixxx::Duration::fromSeconds(1)) {
+    connect(&m_renderTimer, SIGNAL(update()),
+            this, SLOT(update()));
 }
 
 WSliderComposed::~WSliderComposed() {
@@ -84,6 +89,8 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
             }
         }
     }
+
+    setFocusPolicy(Qt::NoFocus);
 }
 
 void WSliderComposed::setSliderPixmap(PixmapSource sourceSlider,
@@ -225,4 +232,12 @@ double WSliderComposed::calculateHandleLength() {
         }
     }
     return 0;
+}
+
+void WSliderComposed::inputActivity() {
+#ifdef __APPLE__
+    m_renderTimer.activity();
+#else
+    update();
+#endif
 }

@@ -1,39 +1,39 @@
 <MixxxMIDIPreset mixxxVersion="1.8.2+" schemaVersion="1">
-	<info>
+    <info>
           <name>Denon DN SC2000</name>
           <author>Jan Riewe, Moba</author>
           <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=2048</forums>
-	</info>
+    </info>
     <controller id="Denon DN-SC2000">
-		<scriptfiles>
-		   <file filename="Denon-DN-SC2000.midi.js" functionprefix="DenonDNSC2000"/>
-		</scriptfiles>
+        <scriptfiles>
+           <file filename="Denon-DN-SC2000.midi.js" functionprefix="DenonDNSC2000"/>
+        </scriptfiles>
         <controls>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x03</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.changeDeck</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x51</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.jogTouch</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x80</status>
                 <midino>0x51</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.jogTouch</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
@@ -42,7 +42,7 @@
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.jog</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
@@ -51,91 +51,91 @@
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.shift</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x80</status>
                 <midino>0x60</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.shift</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x17</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x18</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x19</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x20</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x21</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x22</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x23</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x24</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			 <control>
+             <control>
                 <status>0x90</status>
                 <midino>0x37</midino>
                 <group>[Channel1]</group>
@@ -150,91 +150,91 @@
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x1D</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x80</status>
                 <midino>0x17</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x80</status>
                 <midino>0x18</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x80</status>
                 <midino>0x19</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x80</status>
                 <midino>0x20</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x80</status>
                 <midino>0x21</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x80</status>
                 <midino>0x22</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x80</status>
                 <midino>0x23</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x80</status>
                 <midino>0x24</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			 <control>
+             <control>
                 <status>0x80</status>
                 <midino>0x37</midino>
                 <group>[Channel1]</group>
@@ -249,73 +249,73 @@
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x69</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.moveLoopLeft</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x6A</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.moveLoopRight</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0xb0</status>
                 <midino>0x5D</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.resizeLoop</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x30</midino>
                 <group>[Playlist]</group>
                 <key>SelectPrevPlaylist</key>
                 <options>
-					<normal/>
+                    <normal/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x29</midino>
                 <group>[Playlist]</group>
                 <key>SelectNextPlaylist</key>
                 <options>
-					<normal/>
+                    <normal/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x28</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.loadSelectedTrack</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0xb0</status>
                 <midino>0x54</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.selectTrack</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x10</midino>
                 <group>[Channel1]</group>
@@ -333,7 +333,7 @@
                     <normal/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x80</status>
                 <midino>0x10</midino>
                 <group>[Channel1]</group>
@@ -351,7 +351,7 @@
                     <normal/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x43</midino>
                 <group>[Channel1]</group>
@@ -360,7 +360,7 @@
                     <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x80</status>
                 <midino>0x43</midino>
                 <group>[Channel1]</group>
@@ -369,13 +369,13 @@
                     <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x42</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.cue</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
@@ -384,19 +384,19 @@
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.cue</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x06</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.keyLock</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0xe0</status>
                 <midino>0x5f</midino>
                 <group>[Channel1]</group>
@@ -423,122 +423,122 @@
                     <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0xb0</status>
                 <midino>0x56</midino>
                 <group>[Flanger]</group>
                 <key>DenonDNSC2000.changeDepth</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0xb0</status>
                 <midino>0x57</midino>
                 <group>[Flanger]</group>
                 <key>DenonDNSC2000.changeDelay</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0xb0</status>
                 <midino>0x58</midino>
                 <group>[Flanger]</group>
                 <key>DenonDNSC2000.changeLFO</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x12</midino>
                 <group>[Flanger]</group>
                 <key>DenonDNSC2000.resetDepth</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x13</midino>
                 <group>[Flanger]</group>
                 <key>DenonDNSC2000.resetDelay</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x14</midino>
                 <group>[Flanger]</group>
                 <key>DenonDNSC2000.resetLFO</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x0D</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.pitchBend</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x80</status>
                 <midino>0x0D</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.pitchBend</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x0C</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.pitchBend</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x80</status>
                 <midino>0x0C</midino>
                 <group>[Channel1]</group>
                 <key>DenonDNSC2000.pitchBend</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
 <!-- Channel 2 -->
-			<control>
+            <control>
                 <status>0x91</status>
                 <midino>0x03</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.changeDeck</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x91</status>
                 <midino>0x51</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.jogTouch</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x81</status>
                 <midino>0x51</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.jogTouch</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
@@ -547,7 +547,7 @@
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.jog</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
@@ -556,91 +556,91 @@
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.shift</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x81</status>
                 <midino>0x60</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.shift</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x91</status>
                 <midino>0x17</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x91</status>
                 <midino>0x18</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x91</status>
                 <midino>0x19</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x91</status>
                 <midino>0x20</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x91</status>
                 <midino>0x21</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x91</status>
                 <midino>0x22</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x91</status>
                 <midino>0x23</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x91</status>
                 <midino>0x24</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			 <control>
+             <control>
                 <status>0x91</status>
                 <midino>0x37</midino>
                 <group>[Channel2]</group>
@@ -655,91 +655,91 @@
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x91</status>
                 <midino>0x1D</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x81</status>
                 <midino>0x17</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x81</status>
                 <midino>0x18</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x81</status>
                 <midino>0x19</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x81</status>
                 <midino>0x20</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x81</status>
                 <midino>0x21</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x81</status>
                 <midino>0x22</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x81</status>
                 <midino>0x23</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x81</status>
                 <midino>0x24</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			 <control>
+             <control>
                 <status>0x81</status>
                 <midino>0x37</midino>
                 <group>[Channel2]</group>
@@ -754,73 +754,73 @@
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.loopOrHotcues</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x91</status>
                 <midino>0x69</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.moveLoopLeft</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x91</status>
                 <midino>0x6A</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.moveLoopRight</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0xb1</status>
                 <midino>0x5D</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.resizeLoop</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x91</status>
                 <midino>0x30</midino>
                 <group>[Playlist]</group>
                 <key>SelectPrevPlaylist</key>
                 <options>
-					<normal/>
+                    <normal/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x91</status>
                 <midino>0x29</midino>
                 <group>[Playlist]</group>
                 <key>SelectNextPlaylist</key>
                 <options>
-					<normal/>
+                    <normal/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x91</status>
                 <midino>0x28</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.loadSelectedTrack</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0xb1</status>
                 <midino>0x54</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.selectTrack</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x91</status>
                 <midino>0x10</midino>
                 <group>[Channel2]</group>
@@ -838,7 +838,7 @@
                     <normal/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x81</status>
                 <midino>0x10</midino>
                 <group>[Channel2]</group>
@@ -856,7 +856,7 @@
                     <normal/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x91</status>
                 <midino>0x43</midino>
                 <group>[Channel2]</group>
@@ -865,7 +865,7 @@
                     <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x81</status>
                 <midino>0x43</midino>
                 <group>[Channel2]</group>
@@ -874,13 +874,13 @@
                     <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x91</status>
                 <midino>0x42</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.cue</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
@@ -889,19 +889,19 @@
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.cue</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x91</status>
                 <midino>0x06</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.keyLock</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0xe1</status>
                 <midino>0x5f</midino>
                 <group>[Channel2]</group>
@@ -928,97 +928,97 @@
                     <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0xb1</status>
                 <midino>0x56</midino>
                 <group>[Flanger]</group>
                 <key>DenonDNSC2000.changeDepth</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0xb1</status>
                 <midino>0x57</midino>
                 <group>[Flanger]</group>
                 <key>DenonDNSC2000.changeDelay</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0xb1</status>
                 <midino>0x58</midino>
                 <group>[Flanger]</group>
                 <key>DenonDNSC2000.changeLFO</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x91</status>
                 <midino>0x12</midino>
                 <group>[Flanger]</group>
                 <key>DenonDNSC2000.resetDepth</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x91</status>
                 <midino>0x13</midino>
                 <group>[Flanger]</group>
                 <key>DenonDNSC2000.resetDelay</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x91</status>
                 <midino>0x14</midino>
                 <group>[Flanger]</group>
                 <key>DenonDNSC2000.resetLFO</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x91</status>
                 <midino>0x0D</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.pitchBend</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x81</status>
                 <midino>0x0D</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.pitchBend</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x91</status>
                 <midino>0x0C</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.pitchBend</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x81</status>
                 <midino>0x0C</midino>
                 <group>[Channel2]</group>
                 <key>DenonDNSC2000.pitchBend</key>
                 <options>
-					<Script-Binding/>
+                    <Script-Binding/>
                 </options>
             </control>
-		</controls>
-		<outputs/>
-	</controller>
+        </controls>
+        <outputs/>
+    </controller>
 </MixxxMIDIPreset>

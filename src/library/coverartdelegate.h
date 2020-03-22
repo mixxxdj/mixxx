@@ -1,23 +1,25 @@
 #ifndef COVERARTDELEGATE_H
 #define COVERARTDELEGATE_H
 
-#include <QObject>
-#include <QPainter>
-#include <QStyledItemDelegate>
 #include <QHash>
+#include <QList>
 #include <QLinkedList>
 
-#include "library/trackmodel.h"
+#include "library/tableitemdelegate.h"
 
-class CoverArtDelegate : public QStyledItemDelegate {
+class CoverInfo;
+class TrackModel;
+class WLibraryTableView;
+
+class CoverArtDelegate : public TableItemDelegate {
     Q_OBJECT
   public:
-    explicit CoverArtDelegate(QObject* parent = NULL);
-    virtual ~CoverArtDelegate();
+    explicit CoverArtDelegate(WLibraryTableView* parent);
+    ~CoverArtDelegate() override = default;
 
-    void paint(QPainter *painter,
-               const QStyleOptionViewItem &option,
-               const QModelIndex &index) const;
+    void paintItem(QPainter* painter,
+               const QStyleOptionViewItem& option,
+               const QModelIndex& index) const override;
 
   signals:
     void coverReadyForCell(int row, int column);
@@ -28,18 +30,23 @@ class CoverArtDelegate : public QStyledItemDelegate {
     // It means that in this cases it will just draw
     // covers which are already in the pixmapcache.
     //
-    // It is useful to handle cases when the user scoll down
+    // It is useful to handle cases when the user scroll down
     // very fast or when they hold an arrow key, because
     // in these cases 'paint()' would be called very often
     // and it might make CoverDelegate starts many searches,
     // which could bring performance issues.
     void slotOnlyCachedCoverArt(bool b);
 
-    void slotCoverFound(const QObject* pRequestor,
-                        const CoverInfoRelative& info,
-                        QPixmap pixmap, bool fromCache);
+    void slotCoverFound(
+            const QObject* pRequestor,
+            const CoverInfo& coverInfo,
+            const QPixmap& pixmap,
+            quint16 requestedHash,
+            bool coverInfoUpdated);
 
   private:
+    QTableView* m_pTableView;
+    TrackModel* m_pTrackModel;
     bool m_bOnlyCachedCover;
     int m_iCoverColumn;
     int m_iCoverSourceColumn;

@@ -4,20 +4,20 @@
 #include "util/defs.h"
 #include "util/sample.h"
 
-EngineEffect::EngineEffect(const EffectManifest& manifest,
+EngineEffect::EngineEffect(EffectManifestPointer pManifest,
                            const QSet<ChannelHandleAndGroup>& activeInputChannels,
                            EffectsManager* pEffectsManager,
                            EffectInstantiatorPointer pInstantiator)
-        : m_manifest(manifest),
-          m_parameters(manifest.parameters().size()),
+        : m_pManifest(pManifest),
+          m_parameters(pManifest->parameters().size()),
           m_pEffectsManager(pEffectsManager) {
-    const QList<EffectManifestParameter>& parameters = m_manifest.parameters();
+    const QList<EffectManifestParameterPointer>& parameters = m_pManifest->parameters();
     for (int i = 0; i < parameters.size(); ++i) {
-        const EffectManifestParameter& parameter = parameters.at(i);
+        EffectManifestParameterPointer param = parameters.at(i);
         EngineEffectParameter* pParameter =
-                new EngineEffectParameter(parameter);
+                new EngineEffectParameter(param);
         m_parameters[i] = pParameter;
-        m_parametersById[parameter.id()] = pParameter;
+        m_parametersById[param->id()] = pParameter;
     }
 
     for (const ChannelHandleAndGroup& inputChannel :
@@ -31,13 +31,13 @@ EngineEffect::EngineEffect(const EffectManifest& manifest,
     }
 
     // Creating the processor must come last.
-    m_pProcessor = pInstantiator->instantiate(this, manifest);
+    m_pProcessor = pInstantiator->instantiate(this, pManifest);
     //TODO: get actual configuration of engine
     const mixxx::EngineParameters bufferParameters(
           mixxx::AudioSignal::SampleRate(96000),
           MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
     m_pProcessor->initialize(activeInputChannels, pEffectsManager, bufferParameters);
-    m_effectRampsFromDry = manifest.effectRampsFromDry();
+    m_effectRampsFromDry = pManifest->effectRampsFromDry();
 }
 
 EngineEffect::~EngineEffect() {
@@ -104,7 +104,7 @@ bool EngineEffect::processEffectsRequest(EffectsRequest& message,
             }
 
             response.success = true;
-            pResponsePipe->writeMessages(&response, 1);
+            pResponsePipe->writeMessage(response);
             return true;
             break;
         case EffectsRequest::SET_PARAMETER_PARAMETERS:
@@ -128,7 +128,7 @@ bool EngineEffect::processEffectsRequest(EffectsRequest& message,
                 response.success = false;
                 response.status = EffectsResponse::NO_SUCH_PARAMETER;
             }
-            pResponsePipe->writeMessages(&response, 1);
+            pResponsePipe->writeMessage(response);
             return true;
         default:
             break;

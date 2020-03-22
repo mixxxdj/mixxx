@@ -10,7 +10,7 @@
 
 #include "util/types.h"
 #include "util/math.h"
-#include "engine/cachingreader.h"
+#include "engine/cachingreader/cachingreader.h"
 
 class LoopingControl;
 class RateControl;
@@ -56,12 +56,9 @@ class ReadAheadManager {
     // indicate that the given portion of a song is about to be read.
     virtual void hintReader(double dRate, HintVector* hintList);
 
-    virtual double getFilePlaypositionFromLog(double currentFilePlayposition,
-                                                       double numConsumedSamples);
-
-    virtual void setReader(CachingReader* pReader) {
-        m_pReader = pReader;
-    }
+    virtual double getFilePlaypositionFromLog(
+            double currentFilePlayposition,
+            double numConsumedSamples);
 
   private:
     // An entry in the read log indicates the virtual playposition the read
@@ -125,6 +122,7 @@ class ReadAheadManager {
     double m_currentPosition;
     CachingReader* m_pReader;
     CSAMPLE* m_pCrossFadeBuffer;
+    bool m_cacheMissHappened;
 };
 
 #endif // READAHEADMANGER_H

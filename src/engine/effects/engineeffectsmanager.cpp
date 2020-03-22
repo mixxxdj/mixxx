@@ -21,7 +21,7 @@ EngineEffectsManager::~EngineEffectsManager() {
 
 void EngineEffectsManager::onCallbackStart() {
     EffectsRequest* request = NULL;
-    while (m_pResponsePipe->readMessages(&request, 1) > 0) {
+    while (m_pResponsePipe->readMessage(&request)) {
         EffectsResponse response(*request);
         bool processed = false;
         switch (request->type) {
@@ -114,7 +114,7 @@ void EngineEffectsManager::onCallbackStart() {
         }
 
         if (!processed) {
-            m_pResponsePipe->writeMessages(&response, 1);
+            m_pResponsePipe->writeMessage(response);
         }
     }
 }
@@ -198,7 +198,7 @@ void EngineEffectsManager::processInner(
         // 2. Process temporary buffer with each effect rack in series
         // 3. Mix the temporary buffer into pOut
         //    ChannelMixer::applyEffectsAndMixChannels use
-        //    this to mix channels into pOut regardless of whether any effects were processsed.
+        //    this to mix channels into pOut regardless of whether any effects were processed.
         CSAMPLE* pIntermediateInput = m_buffer1.data();
         if (oldGain == CSAMPLE_GAIN_ONE && newGain == CSAMPLE_GAIN_ONE) {
             // Avoid an unnecessary copy. EngineEffectRack::process does not modify the
@@ -275,6 +275,6 @@ bool EngineEffectsManager::processEffectsRequest(EffectsRequest& message,
         default:
             return false;
     }
-    pResponsePipe->writeMessages(&response, 1);
+    pResponsePipe->writeMessage(response);
     return true;
 }

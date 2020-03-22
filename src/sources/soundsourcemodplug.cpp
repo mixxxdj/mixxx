@@ -1,9 +1,9 @@
 #include "sources/soundsourcemodplug.h"
 
 #include "track/trackmetadata.h"
-#include "util/timer.h"
-#include "util/sample.h"
 #include "util/logger.h"
+#include "util/sample.h"
+#include "util/timer.h"
 
 #include <QFile>
 
@@ -50,7 +50,7 @@ unsigned int SoundSourceModPlug::s_bufferSizeLimit = 0;
 
 // reserve some static space for settings...
 void SoundSourceModPlug::configure(unsigned int bufferSizeLimit,
-        const ModPlug::ModPlug_Settings &settings) {
+        const ModPlug::ModPlug_Settings& settings) {
     s_bufferSizeLimit = bufferSizeLimit;
     ModPlug::ModPlug_SetSettings(&settings);
 }
@@ -158,10 +158,10 @@ SoundSource::OpenResult SoundSourceModPlug::tryOpen(
         }
     }
     kLogger.debug() << "Filled Sample buffer with " << m_sampleBuf.size()
-            << " samples.";
+                    << " samples.";
     kLogger.debug() << "Sample buffer has "
-            << m_sampleBuf.capacity() - m_sampleBuf.size()
-            << " samples unused capacity.";
+                    << m_sampleBuf.capacity() - m_sampleBuf.size()
+                    << " samples unused capacity.";
 
     setChannelCount(kChannelCount);
     setSampleRate(kSampleRate);

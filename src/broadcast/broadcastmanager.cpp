@@ -29,8 +29,10 @@ BroadcastManager::BroadcastManager(SettingsManager* pSettingsManager,
     m_pBroadcastEnabled = new ControlPushButton(
             ConfigKey(BROADCAST_PREF_KEY,"enabled"), persist);
     m_pBroadcastEnabled->setButtonMode(ControlPushButton::TOGGLE);
-    connect(m_pBroadcastEnabled, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlEnabled(double)));
+    connect(m_pBroadcastEnabled,
+            &ControlPushButton::valueChanged,
+            this,
+            &BroadcastManager::slotControlEnabled);
 
     m_pStatusCO = new ControlObject(ConfigKey(BROADCAST_PREF_KEY, "status"));
     m_pStatusCO->setReadOnly();
@@ -48,12 +50,18 @@ BroadcastManager::BroadcastManager(SettingsManager* pSettingsManager,
     // Connect add/remove profiles signals.
     // Passing the raw pointer from QSharedPointer to connect() is fine, since
     // connect is trusted that it won't delete the pointer
-    connect(m_pBroadcastSettings.data(), SIGNAL(profileAdded(BroadcastProfilePtr)),
-            this, SLOT(slotProfileAdded(BroadcastProfilePtr)));
-    connect(m_pBroadcastSettings.data(), SIGNAL(profileRemoved(BroadcastProfilePtr)),
-            this, SLOT(slotProfileRemoved(BroadcastProfilePtr)));
-    connect(m_pBroadcastSettings.data(), SIGNAL(profilesChanged()),
-            this, SLOT(slotProfilesChanged()));
+    connect(m_pBroadcastSettings.data(),
+            &BroadcastSettings::profileAdded,
+            this,
+            &BroadcastManager::slotProfileAdded);
+    connect(m_pBroadcastSettings.data(),
+            &BroadcastSettings::profileRemoved,
+            this,
+            &BroadcastManager::slotProfileRemoved);
+    connect(m_pBroadcastSettings.data(),
+            &BroadcastSettings::profilesChanged,
+            this,
+            &BroadcastManager::slotProfilesChanged);
 }
 
 BroadcastManager::~BroadcastManager() {
@@ -86,22 +94,22 @@ void BroadcastManager::slotControlEnabled(double v) {
         // since the status button has 4 states, but this CO is bool
         v = 0.0;
         m_pBroadcastEnabled->set(v);
-        emit(broadcastEnabled(v));
+        emit broadcastEnabled(v);
     }
 
     if (v > 0.0) {
         bool atLeastOneEnabled = false;
         QList<BroadcastProfilePtr> profiles = m_pBroadcastSettings->profiles();
         for(BroadcastProfilePtr profile : profiles) {
-            if(profile->getEnabled()) {
+            if (profile->getEnabled()) {
                 atLeastOneEnabled = true;
                 break;
             }
         }
 
-        if(!atLeastOneEnabled) {
+        if (!atLeastOneEnabled) {
             m_pBroadcastEnabled->set(false);
-            emit(broadcastEnabled(0.0));
+            emit broadcastEnabled(0.0);
             QMessageBox::warning(nullptr, tr("Action failed"),
                                 tr("Please enable at least one connection to use Live Broadcasting."));
             return;
@@ -112,13 +120,13 @@ void BroadcastManager::slotControlEnabled(double v) {
         m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
         QList<BroadcastProfilePtr> profiles = m_pBroadcastSettings->profiles();
         for(BroadcastProfilePtr profile : profiles) {
-           if(profile->connectionStatus() == BroadcastProfile::STATUS_FAILURE) {
+           if (profile->connectionStatus() == BroadcastProfile::STATUS_FAILURE) {
                profile->setConnectionStatus(BroadcastProfile::STATUS_UNCONNECTED);
            }
         }
     }
 
-    emit(broadcastEnabled(v > 0.0));
+    emit broadcastEnabled(v > 0.0);
 }
 
 void BroadcastManager::slotProfileAdded(BroadcastProfilePtr profile) {
@@ -133,9 +141,9 @@ void BroadcastManager::slotProfilesChanged() {
     QVector<NetworkOutputStreamWorkerPtr> workers = m_pNetworkStream->outputWorkers();
     for(NetworkOutputStreamWorkerPtr pWorker : workers) {
         ShoutConnectionPtr connection = qSharedPointerCast<ShoutConnection>(pWorker);
-        if(connection) {
+        if (connection) {
             BroadcastProfilePtr profile = connection->profile();
-            if(profile->connectionStatus() == BroadcastProfile::STATUS_FAILURE
+            if (profile->connectionStatus() == BroadcastProfile::STATUS_FAILURE
                     && !profile->getEnabled()) {
                 profile->setConnectionStatus(BroadcastProfile::STATUS_UNCONNECTED);
             }
@@ -145,18 +153,20 @@ void BroadcastManager::slotProfilesChanged() {
 }
 
 bool BroadcastManager::addConnection(BroadcastProfilePtr profile) {
-    if(!profile)
+    if (!profile)
         return false;
 
-    if(findConnectionForProfile(profile).isNull() == false) {
+    if (findConnectionForProfile(profile).isNull() == false) {
         return false;
     }
 
     ShoutConnectionPtr connection(new ShoutConnection(profile, m_pConfig));
     m_pNetworkStream->addOutputWorker(connection);
 
-    connect(profile.data(), SIGNAL(connectionStatusChanged(int)),
-            this, SLOT(slotConnectionStatusChanged(int)));
+    connect(profile.data(),
+            &BroadcastProfile::connectionStatusChanged,
+            this,
+            &BroadcastManager::slotConnectionStatusChanged);
 
     kLogger.debug() << "addConnection: created connection for profile"
                     << profile->getProfileName();
@@ -164,13 +174,15 @@ bool BroadcastManager::addConnection(BroadcastProfilePtr profile) {
 }
 
 bool BroadcastManager::removeConnection(BroadcastProfilePtr profile) {
-    if(!profile)
+    if (!profile)
         return false;
 
     ShoutConnectionPtr connection = findConnectionForProfile(profile);
-    if(connection) {
-        disconnect(profile.data(), SIGNAL(connectionStatusChanged(int)),
-                   this, SLOT(slotConnectionStatusChanged(int)));
+    if (connection) {
+        disconnect(profile.data(),
+                &BroadcastProfile::connectionStatusChanged,
+                this,
+                &BroadcastManager::slotConnectionStatusChanged);
 
         // Disabling the profile tells ShoutOutput's thread to disconnect
         connection->profile()->setEnabled(false);
@@ -188,10 +200,10 @@ ShoutConnectionPtr BroadcastManager::findConnectionForProfile(BroadcastProfilePt
     QVector<NetworkOutputStreamWorkerPtr> workers = m_pNetworkStream->outputWorkers();
     for(NetworkOutputStreamWorkerPtr pWorker : workers) {
         ShoutConnectionPtr connection = qSharedPointerCast<ShoutConnection>(pWorker);
-        if(connection.isNull())
+        if (connection.isNull())
             continue;
 
-        if(connection->profile() == profile) {
+        if (connection->profile() == profile) {
             return connection;
         }
     }
@@ -207,7 +219,7 @@ void BroadcastManager::slotConnectionStatusChanged(int newState) {
     // Collect status info
     QList<BroadcastProfilePtr> profiles = m_pBroadcastSettings->profiles();
     for (BroadcastProfilePtr profile : profiles) {
-        if(!profile->getEnabled()) {
+        if (!profile->getEnabled()) {
             continue;
         }
         enabledCount++;

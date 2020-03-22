@@ -1,3 +1,4 @@
+#include <QStyle>
 #include "widget/controlwidgetconnection.h"
 
 #include "widget/wbasewidget.h"
@@ -13,7 +14,7 @@ ControlWidgetConnection::ControlWidgetConnection(
         : m_pWidget(pBaseWidget),
           m_pValueTransformer(pTransformer) {
     m_pControl = new ControlProxy(key, this);
-    m_pControl->connectValueChanged(SLOT(slotControlValueChanged(double)));
+    m_pControl->connectValueChanged(this, &ControlWidgetConnection::slotControlValueChanged);
 }
 
 void ControlWidgetConnection::setControlParameter(double parameter) {
@@ -97,7 +98,7 @@ ControlWidgetPropertyConnection::ControlWidgetPropertyConnection(
         WBaseWidget* pBaseWidget, const ConfigKey& key,
         ValueTransformer* pTransformer, const QString& propertyName)
         : ControlWidgetConnection(pBaseWidget, key, pTransformer),
-          m_propertyName(propertyName.toAscii()) {
+          m_propertyName(propertyName.toLatin1()) {
     slotControlValueChanged(m_pControl->get());
 }
 
@@ -125,4 +126,12 @@ void ControlWidgetPropertyConnection::slotControlValueChanged(double v) {
         qDebug() << "Setting property" << m_propertyName
                 << "to widget failed. Value:" << parameter;
     }
+
+    // According to http://stackoverflow.com/a/3822243 this is the least
+    // expensive way to restyle just this widget.
+    pWidget->style()->unpolish(pWidget);
+    pWidget->style()->polish(pWidget);
+
+    // These calls don't always trigger the repaint, so call it explicitly.
+    pWidget->repaint();
 }

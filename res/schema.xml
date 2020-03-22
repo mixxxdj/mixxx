@@ -386,7 +386,7 @@ METADATA
   <revision version="24" min_compatible="3">
     <description>
       Add cover art support. Default source is UNKNOWN and default type is NONE.
-      See library/coverart.h.
+      <!-- See library/coverart.h. -->
     </description>
     <sql>
       ALTER TABLE library ADD COLUMN coverart_source INTEGER DEFAULT 0;
@@ -419,11 +419,80 @@ METADATA
   <revision version="27" min_compatible="3">
     <description>
       Add cue color support. Default color is #FF0000.
-      See library/dao/cue.h.
+      <!-- See track/cue.h. -->
     </description>
     <sql>
       <!-- Default color is #FFFF0000 (in base 10) -->
       ALTER TABLE cues ADD COLUMN color INTEGER DEFAULT 4294901760 NOT NULL;
+    </sql>
+  </revision>
+  <revision version="28" min_compatible="3">
+    <description>
+      Reset replay gain info for all FLAC files after fixing a decoding bug in version 2.1.0.
+      <!-- The value of 'replaygain_peak' is not yet calculated by any Mixxx analyzer, -->
+      <!-- so we should leave it untouched and don't need to reset it here!            -->
+      <!-- See also: https://bugs.launchpad.net/mixxx/+bug/1766042                     -->
+    </description>
+    <sql>
+      <!-- Reset replay gain to default value -->
+      UPDATE library SET replaygain=0.0 WHERE filetype='flac' COLLATE NOCASE;
+    </sql>
+  </revision>
+  <revision version="29" min_compatible="3">
+    <description>
+      This was used in the development of 2.3 to track whether cues were placed
+      manually or automatically. However, this turned out to be unnecessary.
+      This version is left as a placeholder so users who were using the master
+      branch will have their database updated correctly for the subsequent
+      schema change.
+    </description>
+    <sql/>
+  </revision>
+  <revision version="30" min_compatible="3">
+    <description>
+      This was used in the development of 2.3 for permanent Rekordbox
+      library feature tables, which have since been replaced by
+      dynamic temporary tables, similar to the Serato library
+      feature.
+    </description>
+    <sql/>
+  </revision>
+  <revision version="31" min_compatible="3">
+    <description>
+      Add track color support.
+    </description>
+    <sql>
+      ALTER TABLE library ADD COLUMN color INTEGER;
+    </sql>
+  </revision>
+  <revision version="32" min_compatible="3">
+    <description>
+      Convert the PredefinedColor ID to the actual RGB value.
+    </description>
+    <sql>
+      <!-- No Color becomes Orange (not in default palette) -->
+      UPDATE cues SET color=0xFF8C00 WHERE color=0;
+      <!-- Mixx Hotcue Color Palette (also defined in src/util/color/colorpalette.h) -->
+      <!-- Red -->
+      UPDATE cues SET color=0xC50A08 WHERE color=1;
+      <!-- Green -->
+      UPDATE cues SET color=0x32BE44 WHERE color=2;
+      <!-- Blue -->
+      UPDATE cues SET color=0x0044FF WHERE color=3;
+      <!-- Yellow -->
+      UPDATE cues SET color=0xF8D200 WHERE color=4;
+      <!-- Celeste -->
+      UPDATE cues SET color=0x42D4F4 WHERE color=5;
+      <!-- Magenta -->
+      UPDATE cues SET color=0xAF00CC WHERE color=6;
+      <!-- Pink -->
+      UPDATE cues SET color=0xFCA6D7 WHERE color=7;
+      <!-- White -->
+      UPDATE cues SET color=0xF2F2FF WHERE color=8;
+      <!-- Remove alpha channel from cues that were updated by
+           previous, in-development schema migrations
+        -->
+      UPDATE cues SET color = (color &amp; 0xFFFFFF) WHERE color > 0xFFFFFF;
     </sql>
   </revision>
 </schema>

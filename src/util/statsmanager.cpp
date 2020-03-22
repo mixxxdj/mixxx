@@ -5,8 +5,8 @@
 #include <QMetaType>
 
 #include "util/statsmanager.h"
-#include "util/compatibility.h"
 #include "util/cmdlineargs.h"
+#include "util/compatibility.h"
 
 // In practice we process stats pipes about once a minute @1ms latency.
 const int kStatsPipeSize = 1 << 10;
@@ -16,8 +16,8 @@ const int kProcessLength = kStatsPipeSize * 4 / 5;
 bool StatsManager::s_bStatsManagerEnabled = false;
 
 StatsPipe::StatsPipe(StatsManager* pManager)
-        : FIFO<StatReport>(kStatsPipeSize),
-          m_pManager(pManager) {
+        : m_pManager(pManager),
+          m_queue(kStatsPipeSize) {
     qRegisterMetaType<Stat>("Stat");
 }
 
@@ -45,8 +45,8 @@ StatsManager::~StatsManager() {
     qDebug() << "=====================================";
     qDebug() << "ALL STATS";
     qDebug() << "=====================================";
-    for (QMap<QString, Stat>::const_iterator it = m_stats.begin();
-         it != m_stats.end(); ++it) {
+    for (auto it = m_stats.constBegin();
+         it != m_stats.constEnd(); ++it) {
         qDebug() << it.value();
     }
 
@@ -54,8 +54,8 @@ StatsManager::~StatsManager() {
         qDebug() << "=====================================";
         qDebug() << "BASE STATS";
         qDebug() << "=====================================";
-        for (QMap<QString, Stat>::const_iterator it = m_baseStats.begin();
-             it != m_baseStats.end(); ++it) {
+        for (auto it = m_baseStats.constBegin();
+             it != m_baseStats.constEnd(); ++it) {
             qDebug() << it.value();
         }
     }
@@ -64,8 +64,8 @@ StatsManager::~StatsManager() {
         qDebug() << "=====================================";
         qDebug() << "EXPERIMENT STATS";
         qDebug() << "=====================================";
-        for (QMap<QString, Stat>::const_iterator it = m_experimentStats.begin();
-             it != m_experimentStats.end(); ++it) {
+        for (auto it = m_experimentStats.constBegin();
+             it != m_experimentStats.constEnd(); ++it) {
             qDebug() << it.value();
         }
     }
@@ -116,13 +116,12 @@ void StatsManager::writeTimeline(const QString& filename) {
     }
 
     // Sort by time.
-    qSort(m_events.begin(), m_events.end(), OrderByTime());
+    std::sort(m_events.begin(), m_events.end(), OrderByTime());
 
     mixxx::Duration last_time = m_events[0].m_time;
 
     QMap<QString, qint64> startTimes;
     QMap<QString, qint64> endTimes;
-    QMap<QString, Stat> tagStats;
 
     QTextStream out(&timeline);
     foreach (const Event& event, m_events) {
@@ -179,14 +178,13 @@ StatsPipe* StatsManager::getStatsPipeForThread() {
     return pResult;
 }
 
-bool StatsManager::maybeWriteReport(const StatReport& report) {
+bool StatsManager::maybeWriteReport(StatReport report) {
     StatsPipe* pStatsPipe = getStatsPipeForThread();
-    if (pStatsPipe == NULL) {
+    if (!pStatsPipe) {
         return false;
     }
-    bool success = pStatsPipe->write(&report, 1) == 1;
-    int space = pStatsPipe->writeAvailable();
-    if (space < kProcessLength) {
+    bool success = pStatsPipe->enqueue(std::move(report));
+    if (pStatsPipe->remainingCapacity() < kProcessLength) {
         m_statsPipeCondition.wakeAll();
     }
     static bool warnedAboutOverflow = false;
@@ -201,14 +199,14 @@ bool StatsManager::maybeWriteReport(const StatReport& report) {
 void StatsManager::processIncomingStatReports() {
     StatReport report;
     foreach (StatsPipe* pStatsPipe, m_statsPipes) {
-        while (pStatsPipe->read(&report, 1) == 1) {
-            QString tag = QString::fromUtf8(report.tag);
+        while (pStatsPipe->dequeue(&report)) {
+            QString tag = report.tag;
             Stat& info = m_stats[tag];
             info.m_tag = tag;
             info.m_type = report.type;
             info.m_compute = report.compute;
             info.processReport(report);
-            emit(statUpdated(info));
+            emit statUpdated(info);
 
             if (report.compute & Stat::STATS_EXPERIMENT) {
                 Stat& experiment = m_experimentStats[tag];
@@ -234,7 +232,6 @@ void StatsManager::processIncomingStatReports() {
                 event.m_time = mixxx::Duration::fromNanos(report.time);
                 m_events.append(event);
             }
-            free(report.tag);
         }
     }
 }
@@ -249,15 +246,15 @@ void StatsManager::run() {
         processIncomingStatReports();
         m_statsPipeLock.unlock();
 
-        if (load_atomic(m_emitAllStats) == 1) {
-            for (QMap<QString, Stat>::const_iterator it = m_stats.begin();
-                 it != m_stats.end(); ++it) {
-                emit(statUpdated(it.value()));
+        if (atomicLoadAcquire(m_emitAllStats) == 1) {
+            for (auto it = m_stats.constBegin();
+                 it != m_stats.constEnd(); ++it) {
+                emit statUpdated(it.value());
             }
             m_emitAllStats = 0;
         }
 
-        if (load_atomic(m_quit) == 1) {
+        if (atomicLoadAcquire(m_quit) == 1) {
             qDebug() << "StatsManager thread shutting down.";
             break;
         }

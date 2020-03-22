@@ -6,17 +6,18 @@
 #include "util/assert.h"
 
 EffectParameter::EffectParameter(Effect* pEffect, EffectsManager* pEffectsManager,
-                                 int iParameterNumber, const EffectManifestParameter& parameter)
+                                 int iParameterNumber,
+                                 EffectManifestParameterPointer pParameter)
         : QObject(), // no parent
           m_pEffect(pEffect),
           m_pEffectsManager(pEffectsManager),
           m_iParameterNumber(iParameterNumber),
-          m_parameter(parameter),
+          m_pParameter(pParameter),
           m_bAddedToEngine(false) {
     // qDebug() << debugString() << "Constructing new EffectParameter from EffectManifestParameter:"
     //          << m_parameter.id();
-     m_minimum = m_parameter.getMinimum();
-     m_maximum = m_parameter.getMaximum();
+     m_minimum = m_pParameter->getMinimum();
+     m_maximum = m_pParameter->getMaximum();
      // Sanity check the maximum and minimum
      if (m_minimum > m_maximum) {
          qWarning() << debugString() << "WARNING: Parameter maximum is less than the minimum.";
@@ -25,7 +26,7 @@ EffectParameter::EffectParameter(Effect* pEffect, EffectsManager* pEffectsManage
 
      // If the parameter specifies a default, set that. Otherwise use the minimum
      // value.
-     m_default = m_parameter.getDefault();
+     m_default = m_pParameter->getDefault();
      if (m_default < m_minimum || m_default > m_maximum) {
          qWarning() << debugString() << "WARNING: Parameter default is outside of minimum/maximum range.";
          m_default = m_minimum;
@@ -39,24 +40,24 @@ EffectParameter::~EffectParameter() {
     //qDebug() << debugString() << "destroyed";
 }
 
-const EffectManifestParameter& EffectParameter::manifest() const {
-    return m_parameter;
+EffectManifestParameterPointer EffectParameter::manifest() const {
+    return m_pParameter;
 }
 
-const QString EffectParameter::id() const {
-    return m_parameter.id();
+const QString& EffectParameter::id() const {
+    return m_pParameter->id();
 }
 
-const QString EffectParameter::name() const {
-    return m_parameter.name();
+const QString& EffectParameter::name() const {
+    return m_pParameter->name();
 }
 
-const QString EffectParameter::shortName() const {
-    return m_parameter.shortName();
+const QString& EffectParameter::shortName() const {
+    return m_pParameter->shortName();
 }
 
-const QString EffectParameter::description() const {
-    return m_parameter.description();
+const QString& EffectParameter::description() const {
+    return m_pParameter->description();
 }
 
 // static
@@ -89,15 +90,15 @@ bool EffectParameter::clampRanges() {
 }
 
 EffectManifestParameter::LinkType EffectParameter::getDefaultLinkType() const {
-    return m_parameter.defaultLinkType();
+    return m_pParameter->defaultLinkType();
 }
 
 EffectManifestParameter::LinkInversion EffectParameter::getDefaultLinkInversion() const {
-    return m_parameter.defaultLinkInversion();
+    return m_pParameter->defaultLinkInversion();
 }
 
 double EffectParameter::getNeutralPointOnScale() const {
-    return m_parameter.neutralPointOnScale();
+    return m_pParameter->neutralPointOnScale();
 }
 
 double EffectParameter::getValue() const {
@@ -112,10 +113,8 @@ void EffectParameter::setValue(double value) {
         qWarning() << debugString() << "WARNING: Value was outside of limits, clamped.";
     }
 
-    m_value = value;
-
     updateEngineState();
-    emit(valueChanged(m_value));
+    emit valueChanged(m_value);
 }
 
 double EffectParameter::getDefault() const {
@@ -144,14 +143,14 @@ void EffectParameter::setMinimum(double minimum) {
     // value is currently below the manifest minimum. Since similar
     // guards exist in the setMaximum call, this should not be able to
     // happen.
-    VERIFY_OR_DEBUG_ASSERT(m_minimum >= m_parameter.getMinimum()) {
+    VERIFY_OR_DEBUG_ASSERT(m_minimum >= m_pParameter->getMinimum()) {
         return;
     }
 
     m_minimum = minimum;
-    if (m_minimum < m_parameter.getMinimum()) {
+    if (m_minimum < m_pParameter->getMinimum()) {
         qWarning() << debugString() << "WARNING: Minimum value is less than plugin's absolute minimum, clamping.";
-        m_minimum = m_parameter.getMinimum();
+        m_minimum = m_pParameter->getMinimum();
     }
 
     if (m_minimum > m_maximum) {
@@ -180,14 +179,14 @@ void EffectParameter::setMaximum(double maximum) {
     // value is currently above the manifest maximum. Since similar
     // guards exist in the setMinimum call, this should not be able to
     // happen.
-    VERIFY_OR_DEBUG_ASSERT(m_maximum <= m_parameter.getMaximum()) {
+    VERIFY_OR_DEBUG_ASSERT(m_maximum <= m_pParameter->getMaximum()) {
         return;
     }
 
     m_maximum = maximum;
-    if (m_maximum > m_parameter.getMaximum()) {
+    if (m_maximum > m_pParameter->getMaximum()) {
         qWarning() << debugString() << "WARNING: Maximum value is less than plugin's absolute maximum, clamping.";
-        m_maximum = m_parameter.getMaximum();
+        m_maximum = m_pParameter->getMaximum();
     }
 
     if (m_maximum < m_minimum) {
@@ -207,7 +206,7 @@ void EffectParameter::setMaximum(double maximum) {
 }
 
 EffectManifestParameter::ControlHint EffectParameter::getControlHint() const {
-    return m_parameter.controlHint();
+    return m_pParameter->controlHint();
 }
 
 void EffectParameter::updateEngineState() {

@@ -1,16 +1,20 @@
 // Created by RJ Ryan (rryan@mit.edu) 1/29/2010
 
-#include <QtAlgorithms>
+#include <algorithm>
 #include <QtDebug>
 #include <QUrl>
 
 #include "library/basesqltablemodel.h"
 
+#include "library/bpmdelegate.h"
+#include "library/colordelegate.h"
 #include "library/coverartdelegate.h"
+#include "library/locationdelegate.h"
+#include "library/previewbuttondelegate.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/stardelegate.h"
 #include "library/starrating.h"
-#include "library/bpmdelegate.h"
-#include "library/previewbuttondelegate.h"
 #include "library/queryutil.h"
 #include "mixer/playermanager.h"
 #include "mixer/playerinfo.h"
@@ -18,36 +22,48 @@
 #include "track/trackmetadata.h"
 #include "util/db/dbconnection.h"
 #include "util/duration.h"
-#include "util/dnd.h"
 #include "util/assert.h"
 #include "util/performancetimer.h"
+#include "util/platform.h"
+#include "widget/wlibrarytableview.h"
 
-static const bool sDebug = false;
+namespace {
+
+const bool sDebug = false;
 
 // The logic in the following code relies to a track column = 0
 // Do not change it without changing the logic
 // Column 0 is skipped when calculating the the columns of the view table
-static const int kIdColumn = 0;
-static const int kMaxSortColumns = 3;
+const int kIdColumn = 0;
+const int kMaxSortColumns = 3;
 
 // Constant for getModelSetting(name)
-static const char* COLUMNS_SORTING = "ColumnsSorting";
+const QString COLUMNS_SORTING = QStringLiteral("ColumnsSorting");
+
+// Alpha value for row color background (range 0 - 255)
+constexpr int kTrackColorRowBackgroundOpacity = 0x20; // 12.5% opacity
+
+} // anonymous namespace
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
-                                     TrackCollection* pTrackCollection,
+                                     TrackCollectionManager* pTrackCollectionManager,
                                      const char* settingsNamespace)
         : QAbstractTableModel(pParent),
-          TrackModel(pTrackCollection->database(), settingsNamespace),
-          m_pTrackCollection(pTrackCollection),
-          m_database(pTrackCollection->database()),
+          TrackModel(pTrackCollectionManager->internalCollection()->database(), settingsNamespace),
+          m_pTrackCollectionManager(pTrackCollectionManager),
+          m_database(pTrackCollectionManager->internalCollection()->database()),
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
           m_bInitialized(false),
           m_currentSearch("") {
-    DEBUG_ASSERT(m_pTrackCollection);
-    connect(&PlayerInfo::instance(), SIGNAL(trackLoaded(QString, TrackPointer)),
-            this, SLOT(trackLoaded(QString, TrackPointer)));
-    connect(&m_pTrackCollection->getTrackDAO(), SIGNAL(forceModelUpdate()),
-            this, SLOT(select()));
+    connect(&PlayerInfo::instance(),
+            &PlayerInfo::trackLoaded,
+            this,
+            &BaseSqlTableModel::trackLoaded);
+    connect(&pTrackCollectionManager->internalCollection()->getTrackDAO(),
+            &TrackDAO::forceModelUpdate,
+            this,
+            &BaseSqlTableModel::select);
+    // TODO(rryan): This is a virtual function call from a constructor.
     trackLoaded(m_previewDeckGroup, PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
 }
 
@@ -107,8 +123,49 @@ void BaseSqlTableModel::initHeaderData() {
                         tr("Preview"), 50);
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_COVERART,
                         tr("Cover Art"), 90);
+    setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_COLOR,
+                        tr("Color"), 10);
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN,
                         tr("ReplayGain"), 50);
+    setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE,
+                        tr("Samplerate"), 50);
+}
+
+void BaseSqlTableModel::initSortColumnMapping() {
+    // Add a bijective mapping between the SortColumnIds and column indices
+    for (int i = 0; i < TrackModel::SortColumnId::NUM_SORTCOLUMNIDS; ++i) {
+        m_columnIndexBySortColumnId[i] = -1;
+    }
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_ARTIST] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_TITLE] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_ALBUM] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUM);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_ALBUMARTIST] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_YEAR] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_GENRE] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COMPOSER] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_GROUPING] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_TRACKNUMBER] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_FILETYPE] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_NATIVELOCATION] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COMMENT] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_DURATION] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_BITRATE] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_BPM] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_REPLAYGAIN] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_DATETIMEADDED] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_TIMESPLAYED] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_RATING] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_KEY] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_PREVIEW] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COLOR] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COVERART] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART);
+    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_SAMPLERATE] = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE);
+
+    m_sortColumnIdByColumnIndex.clear();
+    for (int i = 0; i < TrackModel::SortColumnId::NUM_SORTCOLUMNIDS; ++i) {
+        TrackModel::SortColumnId sortColumn = static_cast<TrackModel::SortColumnId>(i);
+        m_sortColumnIdByColumnIndex.insert(m_columnIndexBySortColumnId[sortColumn], sortColumn);
+    }
 }
 
 void BaseSqlTableModel::setHeaderProperties(
@@ -137,7 +194,7 @@ bool BaseSqlTableModel::setHeaderData(int section, Qt::Orientation orientation,
     }
 
     m_headerInfo[section][role] = value;
-    emit(headerDataChanged(orientation, section, section));
+    emit headerDataChanged(orientation, section, section);
     return true;
 }
 
@@ -176,7 +233,9 @@ bool BaseSqlTableModel::isColumnHiddenByDefault(int column) {
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST)) ||
-            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN))) {
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) ||
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)) ||
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE))) {
         return true;
     }
     return false;
@@ -332,7 +391,7 @@ void BaseSqlTableModel::select() {
     // end so we can easily slice off rows that are no longer present. Stable
     // sort is necessary because the tracks may be in pre-sorted order so we
     // should not disturb that if we are only removing tracks.
-    qStableSort(rowInfos.begin(), rowInfos.end());
+    std::stable_sort(rowInfos.begin(), rowInfos.end());
 
     TrackId2Rows trackIdToRows;
     // We expect almost all rows to be valid and that only a few tracks
@@ -376,8 +435,10 @@ void BaseSqlTableModel::setTable(const QString& tableName,
     m_tableColumns = tableColumns;
 
     if (m_trackSource) {
-        disconnect(m_trackSource.data(), SIGNAL(tracksChanged(QSet<TrackId>)),
-                   this, SLOT(tracksChanged(QSet<TrackId>)));
+        disconnect(m_trackSource.data(),
+                &BaseTrackCache::tracksChanged,
+                this,
+                &BaseSqlTableModel::tracksChanged);
     }
     m_trackSource = trackSource;
     if (m_trackSource) {
@@ -388,17 +449,34 @@ void BaseSqlTableModel::setTable(const QString& tableName,
         // TODO: A better fix is to have cache and trackpointers defer saving
         // and deleting, so those operations only take place at the top of
         // the call stack.
-        connect(m_trackSource.data(), SIGNAL(tracksChanged(QSet<TrackId>)),
-                this, SLOT(tracksChanged(QSet<TrackId>)), Qt::QueuedConnection);
+        connect(m_trackSource.data(),
+                &BaseTrackCache::tracksChanged,
+                this,
+                &BaseSqlTableModel::tracksChanged,
+                Qt::QueuedConnection);
     }
 
     // Build a map from the column names to their indices, used by fieldIndex()
     m_tableColumnCache.setColumns(m_tableColumns);
 
     initHeaderData();
+    initSortColumnMapping();
 
     m_bInitialized = true;
 }
+
+int BaseSqlTableModel::columnIndexFromSortColumnId(TrackModel::SortColumnId column) {
+    if (column == TrackModel::SortColumnId::SORTCOLUMN_INVALID) {
+        return -1;
+    }
+
+    return m_columnIndexBySortColumnId[column];
+}
+
+TrackModel::SortColumnId BaseSqlTableModel::sortColumnIdFromColumnIndex(int index) {
+    return m_sortColumnIdByColumnIndex.value(index, TrackModel::SortColumnId::SORTCOLUMN_INVALID);
+}
+
 
 const QString BaseSqlTableModel::currentSearch() const {
     return m_currentSearch;
@@ -512,7 +590,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
 
     // we have two selects for sorting, since keeping the select history
     // across the two selects is hard, we do this only for the trackSource
-    // this is OK, because the colums of the table are virtual in case of
+    // this is OK, because the columns of the table are virtual in case of
     // preview column or individual like playlist track number so that we
     // do not need the history anyway.
 
@@ -631,10 +709,12 @@ int BaseSqlTableModel::fieldIndex(const QString& fieldName) const {
 
 QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
     //qDebug() << this << "data()";
-    if (!index.isValid() || (role != Qt::DisplayRole &&
-                             role != Qt::EditRole &&
-                             role != Qt::CheckStateRole &&
-                             role != Qt::ToolTipRole)) {
+    if (!index.isValid() || (
+                role != Qt::BackgroundRole &&
+                role != Qt::DisplayRole &&
+                role != Qt::EditRole &&
+                role != Qt::CheckStateRole &&
+                role != Qt::ToolTipRole)) {
         return QVariant();
     }
 
@@ -648,20 +728,38 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
     // Format the value based on whether we are in a tooltip, display, or edit
     // role
     switch (role) {
+    case Qt::BackgroundRole: {
+        QModelIndex colorIndex = index.sibling(
+                index.row(),
+                fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR));
+        QColor color = mixxx::RgbColor::toQColor(
+                mixxx::RgbColor::fromQVariant(getBaseValue(colorIndex, role)));
+        if (color.isValid()) {
+            color.setAlpha(kTrackColorRowBackgroundOpacity);
+            value = QBrush(color);
+        } else {
+            value = QVariant();
+        }
+        break;
+    }
         case Qt::ToolTipRole:
+            if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
+                value = mixxx::RgbColor::toQString(mixxx::RgbColor::fromQVariant(value));
+            }
+            M_FALLTHROUGH_INTENDED;
         case Qt::DisplayRole:
             if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION)) {
                 int duration = value.toInt();
                 if (duration > 0) {
-                    value = mixxx::Duration::formatSeconds(duration);
+                    value = mixxx::Duration::formatTime(duration);
                 } else {
                     value = QString();
                 }
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
-                if (qVariantCanConvert<int>(value))
-                    value = qVariantFromValue(StarRating(value.toInt()));
+                if (value.canConvert(QMetaType::Int))
+                    value = QVariant::fromValue(StarRating(value.toInt()));
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
-                if (qVariantCanConvert<int>(value))
+                if (value.canConvert(QMetaType::Int))
                     value =  QString("(%1)").arg(value.toInt());
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED)) {
                 value = value.toBool();
@@ -673,6 +771,11 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 QDateTime gmtDate = value.toDateTime();
                 gmtDate.setTimeSpec(Qt::UTC);
                 value = gmtDate.toLocalTime();
+            } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
+                if (role == Qt::DisplayRole) {
+                    value = value.toDouble() == 0.0
+                            ? "-" : QString("%1").arg(value.toDouble(), 0, 'f', 1);
+                }
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)) {
                 value = value.toBool();
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR)) {
@@ -717,8 +820,8 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 value = index.sibling(
                     row, fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED)).data().toBool();
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
-                if (qVariantCanConvert<int>(value)) {
-                    value = qVariantFromValue(StarRating(value.toInt()));
+                if (value.canConvert(QMetaType::Int)) {
+                    value = QVariant::fromValue(StarRating(value.toInt()));
                 }
             }
             break;
@@ -779,7 +882,7 @@ bool BaseSqlTableModel::setData(
 
     // TODO(rryan) ugly and only works because the mixxx library tables are the
     // only ones that aren't read-only. This should be moved into BTC.
-    TrackPointer pTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
+    TrackPointer pTrack = m_pTrackCollectionManager->internalCollection()->getTrackById(trackId);
     if (!pTrack) {
         return false;
     }
@@ -815,13 +918,14 @@ Qt::ItemFlags BaseSqlTableModel::readWriteFlags(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) {
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
         return defaultFlags;
-    } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED))  {
+    } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
         return defaultFlags | Qt::ItemIsUserCheckable;
     } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)) {
         return defaultFlags | Qt::ItemIsUserCheckable;
-    } else if(column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
+    } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
         // Allow checking of the BPM-locked indicator.
         defaultFlags |= Qt::ItemIsUserCheckable;
         // Disable editing of BPM field when BPM is locked
@@ -855,19 +959,23 @@ TrackId BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
 }
 
 TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
-    return m_pTrackCollection->getTrackDAO().getTrack(getTrackId(index));
+    return m_pTrackCollectionManager->internalCollection()->getTrackById(getTrackId(index));
+}
+
+TrackPointer BaseSqlTableModel::getTrackByRef(
+        const TrackRef& trackRef) const {
+    return m_pTrackCollectionManager->internalCollection()->getTrackByRef(trackRef);
 }
 
 QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
     if (!index.isValid()) {
-        return "";
+        return QString();
     }
     QString nativeLocation =
             index.sibling(index.row(),
                     fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION))
                             .data().toString();
-    QString location = QDir::fromNativeSeparators(nativeLocation);
-    return location;
+    return QDir::fromNativeSeparators(nativeLocation);
 }
 
 void BaseSqlTableModel::trackLoaded(QString group, TrackPointer pTrack) {
@@ -881,7 +989,7 @@ void BaseSqlTableModel::trackLoaded(QString group, TrackPointer pTrack) {
             foreach (int row, rows) {
                 QModelIndex left = index(row, 0);
                 QModelIndex right = index(row, numColumns);
-                emit(dataChanged(left, right));
+                emit dataChanged(left, right);
             }
         }
         m_previewDeckTrackId = pTrack ? pTrack->getId() : TrackId();
@@ -900,7 +1008,7 @@ void BaseSqlTableModel::tracksChanged(QSet<TrackId> trackIds) {
             //qDebug() << "Row in this result set was updated. Signalling update. track:" << trackId << "row:" << row;
             QModelIndex left = index(row, 0);
             QModelIndex right = index(row, numColumns);
-            emit(dataChanged(left, right));
+            emit dataChanged(left, right);
         }
     }
 }
@@ -946,7 +1054,7 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
             pTrack->resetPlayCounter();
         }
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING) == column) {
-        StarRating starRating = qVariantValue<StarRating>(value);
+        StarRating starRating = value.value<StarRating>();
         pTrack->setRating(starRating.starCount());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY) == column) {
         pTrack->setKeyText(value.toString(),
@@ -965,7 +1073,8 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
 
 QVariant BaseSqlTableModel::getBaseValue(
     const QModelIndex& index, int role) const {
-    if (role != Qt::DisplayRole &&
+    if (role != Qt::BackgroundRole &&
+        role != Qt::DisplayRole &&
         role != Qt::ToolTipRole &&
         role != Qt::EditRole) {
         return QVariant();
@@ -1037,7 +1146,7 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
             continue;
         }
         rows.insert(index.row());
-        QUrl url = DragAndDropHelper::urlFromLocation(getTrackLocation(index));
+        QUrl url = TrackFile(getTrackLocation(index)).toUrl();
         if (!url.isValid()) {
             qDebug() << this << "ERROR: invalid url" << url;
             continue;
@@ -1049,24 +1158,33 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
 }
 
 QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject* pParent) {
+    auto* pTableView = qobject_cast<WLibraryTableView*>(pParent);
+    DEBUG_ASSERT(pTableView);
+
     if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
-        return new StarDelegate(pParent);
+        return new StarDelegate(pTableView);
     } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
-        return new BPMDelegate(pParent);
+        return new BPMDelegate(pTableView);
     } else if (PlayerManager::numPreviewDecks() > 0 && i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
-        return new PreviewButtonDelegate(pParent, i);
+        return new PreviewButtonDelegate(pTableView, i);
+    } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION)) {
+        return new LocationDelegate(pTableView);
+    } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
+        return new ColorDelegate(pTableView);
     } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
-        CoverArtDelegate* pCoverDelegate = new CoverArtDelegate(pParent);
-        connect(pCoverDelegate, SIGNAL(coverReadyForCell(int, int)),
-                this, SLOT(refreshCell(int, int)));
+        CoverArtDelegate* pCoverDelegate = new CoverArtDelegate(pTableView);
+        connect(pCoverDelegate,
+                &CoverArtDelegate::coverReadyForCell,
+                this,
+                &BaseSqlTableModel::refreshCell);
         return pCoverDelegate;
     }
-    return NULL;
+    return nullptr;
 }
 
 void BaseSqlTableModel::refreshCell(int row, int column) {
     QModelIndex coverIndex = index(row, column);
-    emit(dataChanged(coverIndex, coverIndex));
+    emit dataChanged(coverIndex, coverIndex);
 }
 
 void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
@@ -1076,9 +1194,21 @@ void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
         trackIds.append(trackId);
     }
 
-    m_pTrackCollection->hideTracks(trackIds);
+    m_pTrackCollectionManager->hideTracks(trackIds);
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.
     select(); //Repopulate the data model.
+}
+
+QList<TrackRef> BaseSqlTableModel::getTrackRefs(
+        const QModelIndexList& indices) const {
+    QList<TrackRef> trackRefs;
+    trackRefs.reserve(indices.size());
+    foreach (QModelIndex index, indices) {
+        trackRefs.append(TrackRef::fromFileInfo(
+                TrackFile(getTrackLocation(index)),
+                getTrackId(index)));
+    }
+    return trackRefs;
 }

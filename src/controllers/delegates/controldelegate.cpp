@@ -31,7 +31,7 @@ void ControlDelegate::paint(QPainter* painter,
     if (m_iMidiOptionsColumn != -1) {
         QModelIndex optionsColumn = index.sibling(index.row(),
                                                   m_iMidiOptionsColumn);
-        MidiOptions options = qVariantValue<MidiOptions>(optionsColumn.data());
+        MidiOptions options = optionsColumn.data().value<MidiOptions>();
         m_bIsIndexScript = options.script;
     }
 
@@ -41,7 +41,7 @@ void ControlDelegate::paint(QPainter* painter,
 QString ControlDelegate::displayText(const QVariant& value,
                                      const QLocale& locale) const {
     Q_UNUSED(locale);
-    ConfigKey key = qVariantValue<ConfigKey>(value);
+    ConfigKey key = value.value<ConfigKey>();
 
     if (key.group.isEmpty() && key.item.isEmpty()) {
         return tr("No control chosen.");
@@ -61,7 +61,7 @@ QString ControlDelegate::displayText(const QVariant& value,
 
 void ControlDelegate::setEditorData(QWidget* editor,
                                     const QModelIndex& index) const {
-    ConfigKey key = qVariantValue<ConfigKey>(index.data(Qt::EditRole));
+    ConfigKey key = index.data(Qt::EditRole).value<ConfigKey>();
 
     QLineEdit* pLineEdit = dynamic_cast<QLineEdit*>(editor);
     if (pLineEdit == NULL) {
@@ -85,7 +85,7 @@ void ControlDelegate::setModelData(QWidget* editor,
 
     QStringList keyStrs = pLineEdit->text().split(",");
     if (keyStrs.size() == 2) {
-        model->setData(index, qVariantFromValue(
+        model->setData(index, QVariant::fromValue(
             ConfigKey(keyStrs.at(0), keyStrs.at(1))), Qt::EditRole);
     }
 }

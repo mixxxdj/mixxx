@@ -8,19 +8,18 @@
 <Template>
   <WidgetGroup>
     <Layout>vertical</Layout>
-    <SizePolicy>f,min</SizePolicy>
+    <SizePolicy>min,min</SizePolicy>
     <Children>
 
       <BeatSpinBox>
         <ObjectName>BeatjumpSizeSpinBox</ObjectName>
         <TooltipId>beatjump_size</TooltipId>
+        <Size>54f,25f</Size>
         <Value><Variable name="group"/>,beatjump_size</Value>
       </BeatSpinBox>
 
       <!-- Workaround for layout spacing -->
-      <Template src="skin:spacer_vx.xml">
-        <SetVariable name="height">,2f</SetVariable>
-      </Template>
+      <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
 
       <WidgetGroup><!-- backward + forward -->
         <Layout>horizontal</Layout>
@@ -40,9 +39,7 @@
           </Template>
 
           <!-- Workaround for layout spacing -->
-          <Template src="skin:spacer_hx.xml">
-            <SetVariable name="width">2f,</SetVariable>
-          </Template>
+          <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
 
           <Template src="skin:left_right_1state_button.xml">
             <SetVariable name="TooltipId">beatjump_forward</SetVariable>

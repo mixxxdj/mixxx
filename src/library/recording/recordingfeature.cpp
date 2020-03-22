@@ -6,25 +6,22 @@
 #include "library/treeitem.h"
 #include "library/recording/recordingfeature.h"
 #include "library/library.h"
-#include "library/trackcollection.h"
 #include "widget/wlibrary.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
+#include "recording/recordingmanager.h"
 
-const QString RecordingFeature::m_sRecordingViewName = QString("Recording");
+namespace {
+
+const QString kViewName = QStringLiteral("Recording");
+
+} // anonymous namespace
 
 RecordingFeature::RecordingFeature(Library* pLibrary,
                                    UserSettingsPointer pConfig,
-                                   TrackCollection* pTrackCollection,
                                    RecordingManager* pRecordingManager)
-        : LibraryFeature(pLibrary),
-          m_pConfig(pConfig),
-          m_pLibrary(pLibrary),
-          m_pTrackCollection(pTrackCollection),
-          m_pRecordingManager(pRecordingManager) {
-}
-
-RecordingFeature::~RecordingFeature() {
-
+        : LibraryFeature(pLibrary, pConfig),
+          m_pRecordingManager(pRecordingManager),
+          m_icon(":/images/library/ic_library_recordings.svg") {
 }
 
 QVariant RecordingFeature::title() {
@@ -32,41 +29,50 @@ QVariant RecordingFeature::title() {
 }
 
 QIcon RecordingFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_recordings.png");
+    return m_icon;
 }
 
 TreeItemModel* RecordingFeature::getChildModel() {
     return &m_childModel;
 }
-void RecordingFeature::bindWidget(WLibrary* pLibraryWidget,
+void RecordingFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
                                   KeyboardEventFilter *keyboard) {
     //The view will be deleted by LibraryWidget
     DlgRecording* pRecordingView = new DlgRecording(pLibraryWidget,
                                                     m_pConfig,
                                                     m_pLibrary,
-                                                    m_pTrackCollection,
                                                     m_pRecordingManager,
                                                     keyboard);
 
     pRecordingView->installEventFilter(keyboard);
-    pLibraryWidget->registerView(m_sRecordingViewName, pRecordingView);
-    connect(pRecordingView, SIGNAL(loadTrack(TrackPointer)),
-            this, SIGNAL(loadTrack(TrackPointer)));
-    connect(pRecordingView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
-    connect(this, SIGNAL(refreshBrowseModel()),
-            pRecordingView, SLOT(refreshBrowseModel()));
-    connect(this, SIGNAL(requestRestoreSearch()),
-            pRecordingView, SLOT(slotRestoreSearch()));
-    connect(pRecordingView, SIGNAL(restoreSearch(QString)),
-            this, SIGNAL(restoreSearch(QString)));
+    pLibraryWidget->registerView(kViewName, pRecordingView);
+    connect(pRecordingView,
+            &DlgRecording::loadTrack,
+            this,
+            &RecordingFeature::loadTrack);
+    connect(pRecordingView,
+            &DlgRecording::loadTrackToPlayer,
+            this,
+            &RecordingFeature::loadTrackToPlayer);
+    connect(this,
+            &RecordingFeature::refreshBrowseModel,
+            pRecordingView,
+            &DlgRecording::refreshBrowseModel);
+    connect(this,
+            &RecordingFeature::requestRestoreSearch,
+            pRecordingView,
+            &DlgRecording::slotRestoreSearch);
+    connect(pRecordingView,
+            &DlgRecording::restoreSearch,
+            this,
+            &RecordingFeature::restoreSearch);
 }
 
 
 void RecordingFeature::activate() {
-    emit(refreshBrowseModel());
-    emit(switchToView(m_sRecordingViewName));
+    emit refreshBrowseModel();
+    emit switchToView(kViewName);
     // Ask the view to emit a restoreSearch signal.
-    emit(requestRestoreSearch());
-    emit(enableCoverArtDisplay(false));
+    emit requestRestoreSearch();
+    emit enableCoverArtDisplay(false);
 }

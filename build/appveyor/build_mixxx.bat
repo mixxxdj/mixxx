@@ -1,5 +1,5 @@
-@echo on
-SETLOCAL
+@echo off
+SETLOCAL ENABLEDELAYEDEXPANSION
 
 REM ==================================
 REM Path setup and  initial checks
@@ -13,52 +13,38 @@ SET "PROGRAMFILES_PATH=%ProgramFiles(x86)%"
 )
 
 rem ====== Edit to suit your environment =========
-SET VCVERSION=140
-SET "MSVC_PATH=%PROGRAMFILES_PATH%\Microsoft Visual Studio 14.0\VC"
-SET "BUILDTOOLS_PATH=%PROGRAMFILES_PATH%\Microsoft Visual C++ Build Tools"
-set "MSSDK_DIR=%PROGRAMFILES_PATH%\Microsoft SDKs\Windows\v7.1A"
+SET VCVERSION=141
+SET PARAM_VCVARSVER=14.1
+SET "BUILDTOOLS_PATH=%PROGRAMFILES_PATH%\Microsoft Visual Studio\2017\BuildTools\VC"
+SET BUILDTOOLS_SCRIPT=Auxiliary\Build\vcvarsall.bat
 
-REM XP Compatibility requires the v7.1A SDK
-set "MSSDK_DIR=%PROGRAMFILES_PATH%\Microsoft SDKs\Windows\v7.1A"
-
-if NOT EXIST "%MSSDK_DIR%" (
-echo.
-echo Could not find "%MSSDK_DIR%".
-echo Edit the build_mixxx.bat file and/or install the required software
-echo https://www.microsoft.com/en-us/download/details.aspx?id=8279
-exit /b 1
-)
-
-IF EXIST "%MSVC_PATH%" (
-SET "BUILDTOOLS_PATH=%MSVC_PATH%"
-SET BUILDTOOLS_SCRIPT=vcvarsall.bat
-
-REM Check whether we have a 64-bit compiler available.
-IF EXIST "%MSVC_PATH%\VC\bin\amd64\cl.exe" (
-SET COMPILER_X86=amd64_x86
-SET COMPILER_X64=amd64
-) ELSE (
-SET COMPILER_X86=x86
-SET COMPILER_X64=x86_amd64
-)
-
-) ELSE (
 IF EXIST "%BUILDTOOLS_PATH%" (
-SET BUILDTOOLS_SCRIPT=vcbuildtools.bat
-
-SET COMPILER_X86=amd64_x86
-SET COMPILER_X64=amd64
+echo Building with preconfigured path at: "%BUILDTOOLS_PATH%"
 ) ELSE (
+call :function_get_product
+IF ERRORLEVEL 1 (
 echo.
-echo Could not find "%MSVC_PATH%" nor "%BUILDTOOLS_PATH%".
-echo Edit the build_environment.bat file and/or install the required software
+echo Could not find "%BUILDTOOLS_PATH%" and the detection of product didn't work
+echo Edit the %~nx0 file and/or install the required software
 echo http://landinghub.visualstudio.com/visual-cpp-build-tools
 echo https://www.microsoft.com/en-us/download/details.aspx?id=8279
 exit /b 1
 )
-REM END EXIST BUILDTOOLS
+REM END NO PRODUCT
 )
-REM END EXIST VISUALSTUDIO
+REM END EXIST BUILDTOOLS_PATH
+
+REM Check whether we have a 64-bit compiler available.
+call :function_has_64bit
+IF ERRORLEVEL 1 (
+echo Using 32-bit compiler.
+SET COMPILER_X86=x86
+SET COMPILER_X64=x86_amd64
+) ELSE (
+echo Using 64-bit compiler.
+SET COMPILER_X86=amd64_x86
+SET COMPILER_X64=amd64
+)
 
 REM ==================================
 REM Parameter reading and variable setup
@@ -67,29 +53,49 @@ REM ^ is the escape character.
 if "%3" == "" (
   echo Missing parameters. Usage: ^(Note: keep same case and order^)
   echo.
-  echo build_mixxx.bat x64^|x86 debug^|release^|release-fastbuild ^<winlib-path^>
+  echo build_mixxx.bat x64^|x86 debug^|release^|release-fastbuild ^<winlib-path^> [skiptest] [skipinstaller]
   echo.
-  echo Example: build_mixxx.bat x64 release c:\mixxx\environments\msvc15-static-x86-release
+  echo skiptest means that we don't want to build and execute the mixxx-test.
+  echo skipinstaller means that we don't want to generate the installer after the build.
+  echo.
+  echo Example: build_mixxx.bat x64 release c:\mixxx\environments\2.3-j00013-x64-release-static-36f44bd2-minimal
   exit /b 1
 )
 
 set MACHINE_X86="%1" == "x86"
 if "%2" == "release" (
   set CONFIG_RELEASE=1==1
+  set PARAM_OPTIMIZE=portable
 )
 if "%2" == "release-fastbuild" (
   set CONFIG_RELEASE=1==1
+  set PARAM_OPTIMIZE=fastbuild
 )
 if "%2" == "debug" (
   set CONFIG_RELEASE=0==1
+  set PARAM_OPTIMIZE=portable
 )
-
+if "%4" == "skiptest" (
+  set PARAM_TEST=0
+) else (
+  set PARAM_TEST=1
+)
+if "%4" == "skipinstaller" (
+   set PARAM_INSTALLER=
+) else (
+    if "%5" == "skipinstaller" (
+       set PARAM_INSTALLER=
+    ) else (
+       set PARAM_INSTALLER=makerelease 
+    )
+)
 set WINLIB_DIR=%3
 
 SET BIN_DIR=%WINLIB_DIR%\bin
 SET LIB_DIR=%WINLIB_DIR%\lib
 SET INCLUDE_DIR=%WINLIB_DIR%\include
-set QT_VERSION=4.8.7
+REM TODO(rryan): Remove hard-coding of Qt version.
+set QT_VERSION=5.12.0
 SET QTDIR=%WINLIB_DIR%\Qt-%QT_VERSION%
 
 if NOT EXIST "%BIN_DIR%\scons.py" (
@@ -105,14 +111,14 @@ echo Could not find Qt %QT_VERSION% at "%QT_DIR%".
 exit /b 1
 )
 
-REM Everyting prepared. Setup the compiler.
+REM Everything prepared. Setup the compiler.
 if %MACHINE_X86% (
-call "%BUILDTOOLS_PATH%\%BUILDTOOLS_SCRIPT%" %COMPILER_X86%
+call "%BUILDTOOLS_PATH%\%BUILDTOOLS_SCRIPT%" %COMPILER_X86% -vcvars_ver=%PARAM_VCVARSVER%
+set MACHINE_TYPE=x86
 ) else (
-call "%BUILDTOOLS_PATH%\%BUILDTOOLS_SCRIPT%" %COMPILER_X64%
+call "%BUILDTOOLS_PATH%\%BUILDTOOLS_SCRIPT%" %COMPILER_X64% -vcvars_ver=%PARAM_VCVARSVER%
+set MACHINE_TYPE=x86_64
 )
-
-REM Now build Mixxx.
 
 if %CONFIG_RELEASE% (
 set BUILD_TYPE=release
@@ -120,27 +126,15 @@ set BUILD_TYPE=release
 set BUILD_TYPE=debug
 )
 
-if %MACHINE_X86% (
-set MACHINE_TYPE=x86
-set DISTDIR=dist32
-) else (
-set MACHINE_TYPE=x86_64
-set DISTDIR=dist64
-)
-
-REM Clean up after old builds.
-REM del /q /f *.exe *.msi 2>NUL
-REM rmdir /s /q %DISTDIR%
-
 rem /MP Use all CPU cores.
 rem /FS force synchronous PDB writes (prevents PDB corruption with /MP)
 rem /EHsc Do not handle SEH in try / except blocks.
-rem /Zc:threadSafeInit- disable C++11 magic static support (Bug #1653368)
-set CXXFLAGS=/MP /FS /EHsc /Zc:threadSafeInit-
-set CFLAGS=/MP /FS /EHsc /Zc:threadSafeInit-
+set CXXFLAGS=/MP /FS /EHsc
+set CFLAGS=/MP /FS /EHsc
 
+REM Now build Mixxx.
 set PATH=%BIN_DIR%;%PATH%
-scons.py mixxx makerelease toolchain=msvs winlib=%WINLIB_DIR% build=%BUILD_TYPE% staticlibs=1 staticqt=1 debug_assertions_fatal=1 verbose=0 machine=%MACHINE_TYPE% qtdir=%QTDIR% hss1394=1 mediafoundation=1 opus=1 localecompare=1 optimize=fastbuild virtualize=0 test=1 qt_sqlite_plugin=0 mssdk_dir="%MSSDK_DIR%" build_number_in_title_bar=0 bundle_pdbs=1
+scons.py %SCONS_NUMBER_PROCESSORS% mixxx %PARAM_INSTALLER% toolchain=msvs winlib=%WINLIB_DIR% build=%BUILD_TYPE% staticlibs=1 staticqt=1 debug_assertions_fatal=1 verbose=0 machine=%MACHINE_TYPE% qtdir=%QTDIR% hss1394=1 mediafoundation=1 opus=1 localecompare=1 optimize=%PARAM_OPTIMIZE% virtualize=0 test=%PARAM_TEST% qt_sqlite_plugin=0 build_number_in_title_bar=0 bundle_pdbs=0
 
 IF ERRORLEVEL 1 (
 echo ==============================
@@ -156,3 +150,35 @@ exit /b 1
 echo Mixxx built successfully
 ENDLOCAL
 )
+EXIT /b 0
+
+:function_get_product
+FOR %%Y IN (2019,2017) DO (
+  FOR %%P IN (Community,Professional,Enterprise) DO (
+    SET "LOCAL_VS_PATH=%PROGRAMFILES_PATH%\Microsoft Visual Studio\%%Y\%%P\VC"
+    IF EXIST "!LOCAL_VS_PATH!" (
+      SET "BUILDTOOLS_PATH=!LOCAL_VS_PATH!"
+      ECHO Using Visual Studio %%Y %%P at: !LOCAL_VS_PATH!
+      EXIT /B 0
+    )
+  )
+  REM FOR
+  SET "LOCAL_BT_PATH=%PROGRAMFILES_PATH%\Microsoft Visual Studio\%%Y\BuildTools\VC"
+  IF EXIST "!LOCAL_BT_PATH!" (
+    SET "BUILDTOOLS_PATH=!LOCAL_BT_PATH!"
+    ECHO Using BuildTools %%Y at: !LOCAL_BT_PATH!
+    EXIT /B 0
+  )
+  REM BT
+)
+REM FOR
+EXIT /B 1
+
+:function_has_64bit
+FOR /F %%G IN ('dir "%BUILDTOOLS_PATH%\Tools\MSVC\%PARAM_VCVARSVER%*" /b /ad-h /o-n') DO (
+  set "LOCAL_64_CL=%BUILDTOOLS_PATH%\Tools\MSVC\%%G\bin\Hostx64\x64\cl.exe"
+  if EXIST "!LOCAL_64_CL!" (
+    EXIT /B 0
+  ) 
+)
+EXIT /B 1

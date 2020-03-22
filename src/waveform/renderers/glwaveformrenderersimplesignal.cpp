@@ -1,17 +1,15 @@
-#include "glwaveformrenderersimplesignal.h"
+#include "waveform/renderers/glwaveformrenderersimplesignal.h"
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
-#include "waveformwidgetrenderer.h"
-#include "waveform/waveform.h"
-
-#include "waveform/waveformwidgetfactory.h"
 #include "util/math.h"
-
-#include <qgl.h>
+#include "waveform/waveform.h"
+#include "waveform/waveformwidgetfactory.h"
+#include "waveformwidgetrenderer.h"
 
 GLWaveformRendererSimpleSignal::GLWaveformRendererSimpleSignal(
         WaveformWidgetRenderer* waveformWidgetRenderer)
-    : WaveformRendererSignalBase(waveformWidgetRenderer) {
-
+        : WaveformRendererSignalBase(waveformWidgetRenderer) {
+    initializeOpenGLFunctions();
 }
 
 GLWaveformRendererSimpleSignal::~GLWaveformRendererSimpleSignal() {
@@ -59,8 +57,6 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
 
     // Reset device for native painting
     painter->beginNativePainting();
-
-#ifndef __OPENGLES__
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -159,7 +155,7 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
 
-#endif
-
     painter->endNativePainting();
 }
+
+#endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)

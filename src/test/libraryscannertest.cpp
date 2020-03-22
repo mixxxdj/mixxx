@@ -8,7 +8,7 @@
 class LibraryScannerTest : public LibraryTest {
   protected:
     LibraryScannerTest()
-        : m_libraryScanner(dbConnectionPool(), collection(), config()) {
+        : m_libraryScanner(dbConnectionPool(), config()) {
     }
     LibraryScanner m_libraryScanner;
 };
@@ -30,7 +30,7 @@ TEST_F(LibraryScannerTest, ScannerRoundtrip) {
     m_libraryScanner.changeScannerState(LibraryScanner::IDLE);
     EXPECT_EQ(m_libraryScanner.m_state, LibraryScanner::IDLE);
 
-    // Cancel during scaning:
+    // Cancel during scanning:
     EXPECT_EQ(m_libraryScanner.m_state, LibraryScanner::IDLE);
     m_libraryScanner.changeScannerState(LibraryScanner::STARTING);
     EXPECT_EQ(m_libraryScanner.m_state, LibraryScanner::STARTING);

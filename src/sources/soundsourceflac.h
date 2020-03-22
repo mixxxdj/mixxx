@@ -11,7 +11,7 @@
 
 namespace mixxx {
 
-class SoundSourceFLAC: public SoundSource {
+class SoundSourceFLAC final : public SoundSource {
   public:
     explicit SoundSourceFLAC(const QUrl& url);
     ~SoundSourceFLAC() override;
@@ -24,7 +24,7 @@ class SoundSourceFLAC: public SoundSource {
     FLAC__StreamDecoderTellStatus flacTell(FLAC__uint64* offset);
     FLAC__StreamDecoderLengthStatus flacLength(FLAC__uint64* length);
     FLAC__bool flacEOF();
-    FLAC__StreamDecoderWriteStatus flacWrite(const FLAC__Frame *frame,
+    FLAC__StreamDecoderWriteStatus flacWrite(const FLAC__Frame* frame,
             const FLAC__int32* const buffer[]);
     void flacMetadata(const FLAC__StreamMetadata* metadata);
     void flacError(FLAC__StreamDecoderErrorStatus status);
@@ -40,7 +40,7 @@ class SoundSourceFLAC: public SoundSource {
 
     QFile m_file;
 
-    FLAC__StreamDecoder *m_decoder;
+    FLAC__StreamDecoder* m_decoder;
     // misc bits about the flac format:
     // flac encodes from and decodes to LPCM in blocks, each block is made up of
     // subblocks (one for each chan)
@@ -48,8 +48,6 @@ class SoundSourceFLAC: public SoundSource {
     // of subframes (one for each channel)
     SINT m_maxBlocksize; // in time samples (audio samples = time samples * chanCount)
     SINT m_bitsPerSample;
-
-    CSAMPLE m_sampleScaleFactor;
 
     ReadAheadSampleBuffer m_sampleBuffer;
 
@@ -60,11 +58,14 @@ class SoundSourceFLAC: public SoundSource {
     SINT m_curFrameIndex;
 };
 
-class SoundSourceProviderFLAC: public SoundSourceProvider {
+class SoundSourceProviderFLAC : public SoundSourceProvider {
   public:
     QString getName() const override;
 
     QStringList getSupportedFileExtensions() const override;
+
+    SoundSourceProviderPriority getPriorityHint(
+            const QString& supportedFileExtension) const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
         return newSoundSourceFromUrl<SoundSourceFLAC>(url);

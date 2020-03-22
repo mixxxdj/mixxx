@@ -52,7 +52,6 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     void slotSetSkin(int);
     void slotSetScheme(int);
     void slotUpdateSchemes();
-    void slotSetLocale(int);
     void slotSetScaleFactor(double newValue);
     void slotSetScaleFactorAuto(bool checked);
 
@@ -76,7 +75,6 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     QString m_skin;
     QString m_skinOnUpdate;
     QString m_colorScheme;
-    QString m_locale;
     QString m_localeOnUpdate;
     mixxx::TooltipsPreference m_tooltipMode;
     double m_dScaleFactorAuto;

@@ -37,6 +37,8 @@ class BroadcastProfile : public QObject {
     static bool validName(const QString& str);
     static QString stripForbiddenChars(const QString& str);
 
+    QString getLastFilename() const;
+
     void setConnectionStatus(int newState);
     int connectionStatus();
 
@@ -109,6 +111,15 @@ class BroadcastProfile : public QObject {
     QString getStreamWebsite() const;
     void setStreamWebsite(const QString& value);
 
+    QString getStreamIRC() const;
+    void setStreamIRC(const QString& value);
+
+    QString getStreamAIM() const;
+    void setStreamAIM(const QString& value);
+
+    QString getStreamICQ() const;
+    void setStreamICQ(const QString& value);
+
     bool getEnableMetadata() const;
     void setEnableMetadata(bool value);
 
@@ -140,12 +151,14 @@ class BroadcastProfile : public QObject {
     void adoptDefaultValues();
     bool loadValues(const QString& filename);
 
-    bool setSecurePassword(QString login, QString password);
-    QString getSecurePassword(QString login);
+    bool setSecurePassword(const QString& login, const QString& password);
+    QString getSecurePassword(const QString& login);
 
-    void errorDialog(QString text, QString detailedError);
+    void errorDialog(const QString& text, const QString& detailedError);
 
     bool m_secureCredentials;
+
+    QString m_filename;
 
     QString m_profileName;
     bool m_enabled;
@@ -169,6 +182,9 @@ class BroadcastProfile : public QObject {
     QString m_streamGenre;
     bool m_streamPublic;
     QString m_streamWebsite;
+    QString m_streamIRC;
+    QString m_streamAIM;
+    QString m_streamICQ;
 
     QString m_format;
     int m_bitrate;
