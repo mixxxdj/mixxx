@@ -34,7 +34,7 @@ ControllerEngine::ControllerEngine(
         : m_pEngine(nullptr),
           m_pController(controller),
           m_pConfig(pConfig),
-          m_bPopups(false),
+          m_bPopups(true),
           m_pBaClass(nullptr) {
     // Handle error dialog buttons
     qRegisterMetaType<QMessageBox::StandardButton>("QMessageBox::StandardButton");
