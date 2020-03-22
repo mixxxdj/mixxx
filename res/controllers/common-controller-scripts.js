@@ -470,30 +470,32 @@ bpm.tap = [];   // Tap sample values
 bpm.tapButton = function(deck) {
     var now = new Date() / 1000;   // Current time in seconds
     var tapDelta = now - bpm.tapTime;
-    bpm.tapTime=now;
-    if (bpm.tap.length<1.0) {
-        bpm.previousTapDelta=tapDelta;
+    bpm.tapTime = now;
+    if (bpm.tap.length < 1) {
+        bpm.previousTapDelta = tapDelta;
     }
     // assign tapDelta in cases where the button has not been pressed previously
-    if (tapDelta>2.0) { // reset if longer than two seconds between taps
-        bpm.tap=[];
+    if (tapDelta > 2.0) { // reset if longer than two seconds between taps
+        bpm.tap = [];
         return;
     }
-    if ((tapDelta > bpm.previousTapDelta*1.8)||(tapDelta<bpm.previousTapDelta*0.4)) {
+    // reject occurences of accidental double or missed taps
+    // a tap is considered missed when the delta of this press is 80% longer than the previous one
+    // and a tap is considered double when the delta is shorter than 40% of the previous one.
+    // these numbers are just guesses that produced good results in practice
+    if ((tapDelta > bpm.previousTapDelta*1.8)||(tapDelta < bpm.previousTapDelta*0.4)) {
         return;
     }
-    bpm.previousTapDelta=tapDelta;
-    // the if-case is meant to be a filter to reject accidental double presses
-    // or when the button was missed for some reason.
-    bpm.tap.push(60/tapDelta);
-    if (bpm.tap.length>8) bpm.tap.shift();  // Keep the last 8 samples for averaging
+    bpm.previousTapDelta = tapDelta;
+    bpm.tap.push(60 / tapDelta);
+    if (bpm.tap.length > 8) bpm.tap.shift();  // Keep the last 8 samples for averaging
     var sum = 0;
     for (var i = 0; i < bpm.tap.length; i++) {
         sum += bpm.tap[i];
     }
     var average = sum / bpm.tap.length;
 
-    var fRateScale = average/engine.getValue("[Channel"+deck+"]", "file_bpm");
+    var fRateScale = average/engine.getValue("[Channel" + deck + "]", "file_bpm");
     // "bpm" was changed in 1.10 to reflect the *adjusted* bpm, but I presume it
     // was supposed to return the tracks bpm (which it did before the change).
     // "file_bpm" is supposed to return the set BPM of the loaded track of the
