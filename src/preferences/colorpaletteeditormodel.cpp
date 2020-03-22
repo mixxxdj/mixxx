@@ -103,9 +103,15 @@ void ColorPaletteEditorModel::setColorPalette(const ColorPalette& palette) {
     // Make a map of hotcue indices
     QMap<int, int> hotcueColorIndicesMap;
     QList<unsigned int> hotcueColorIndices = palette.getHotcueIndices();
-    for (int i = 0; i < hotcueColorIndices.size(); i++) {
-        int colorIndex = hotcueColorIndices.at(i);
-        hotcueColorIndicesMap.insert(colorIndex, i);
+    if (hotcueColorIndices.size()) {
+        for (int i = 0; i < hotcueColorIndices.size(); i++) {
+            int colorIndex = hotcueColorIndices.at(i);
+            hotcueColorIndicesMap.insert(colorIndex, i);
+        }
+    } else {
+        for (int i = 0; i < palette.size(); i++) {
+            hotcueColorIndicesMap.insert(i, i);
+        }
     }
 
     for (int i = 0; i < palette.size(); i++) {
