@@ -82,6 +82,10 @@ Output:  -
 -------- ------------------------------------------------------ */
 void ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefixes,
                                              const QString& function, QScriptValueList args) {
+    if (m_pEngine == nullptr) {
+        return;
+    }
+
     const QScriptValue global = m_pEngine->globalObject();
 
     for (const QString& prefixName : scriptFunctionPrefixes) {
@@ -113,6 +117,10 @@ Output:  QScriptValue of JS snippet wrapped in an anonymous function
 ------------------------------------------------------------------- */
 QScriptValue ControllerEngine::wrapFunctionCode(const QString& codeSnippet,
                                                 int numberOfArgs) {
+    VERIFY_OR_DEBUG_ASSERT(m_pEngine != nullptr) {
+        return QScriptValue();
+    }
+
     QScriptValue wrappedFunction;
 
     auto i = m_scriptWrappedFunctionCache.constFind(codeSnippet);
@@ -134,6 +142,10 @@ QScriptValue ControllerEngine::wrapFunctionCode(const QString& codeSnippet,
 }
 
 QScriptValue ControllerEngine::getThisObjectInFunctionCall() {
+    VERIFY_OR_DEBUG_ASSERT(m_pEngine != nullptr) {
+        return QScriptValue();
+    }
+
     QScriptContext *ctxt = m_pEngine->currentContext();
     // Our current context is a function call. We want to grab the 'this'
     // from the caller's context, so we walk up the stack.
@@ -150,6 +162,10 @@ Input:   -
 Output:  -
 -------- ------------------------------------------------------ */
 void ControllerEngine::gracefulShutdown() {
+    if (m_pEngine == nullptr) {
+        return;
+    }
+
     qDebug() << "ControllerEngine shutting down...";
 
     // Stop all timers
