@@ -266,9 +266,15 @@ bool ControllerEngine::loadScriptFiles(const QList<QString>& scriptPaths,
     connect(&m_scriptWatcher, SIGNAL(fileChanged(QString)),
             this, SLOT(scriptHasChanged(QString)));
 
-    emit initialized();
+    bool success = result && m_scriptErrors.isEmpty();
+    if (!success) {
+        gracefulShutdown();
+        uninitializeScriptEngine();
+    } else {
+        emit initialized();
+    }
 
-    return result && m_scriptErrors.isEmpty();
+    return success;
 }
 
 // Slot to run when a script file has changed
@@ -284,7 +290,9 @@ void ControllerEngine::scriptHasChanged(const QString& scriptFilename) {
     uninitializeScriptEngine();
 
     initializeScriptEngine();
-    loadScriptFiles(m_lastScriptPaths, pPreset->scripts);
+    if (!loadScriptFiles(m_lastScriptPaths, pPreset->scripts)) {
+        return;
+    }
 
     qDebug() << "Re-initializing scripts";
     initializeScripts(pPreset->scripts);

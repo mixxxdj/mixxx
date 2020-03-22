@@ -67,7 +67,8 @@ bool Controller::applyPreset(QList<QString> scriptPaths, bool initializeScripts)
     }
 
     bool success = m_pEngine->loadScriptFiles(scriptPaths, pPreset->scripts);
-    if (initializeScripts) {
+
+    if (success && initializeScripts) {
         m_pEngine->initializeScripts(pPreset->scripts);
     }
     return success;
