@@ -31,7 +31,7 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
     m_pDiscardButton = pButtonBox->addButton(QDialogButtonBox::Discard);
 
     QHBoxLayout* pTopLayout = new QHBoxLayout();
-    pTopLayout->addWidget(new QLabel("Name:"));
+    pTopLayout->addWidget(new QLabel(tr("Name")));
     pTopLayout->addWidget(m_pPaletteNameComboBox, 1);
     pTopLayout->addWidget(pButtonBox);
 
