@@ -178,6 +178,7 @@ class ControllerEngine : public QObject {
     bool internalExecute(QScriptValue thisObject, QScriptValue functionObject,
                          QScriptValueList arguments);
     void initializeScriptEngine();
+    void uninitializeScriptEngine();
 
     void scriptErrorDialog(const QString& detailedError);
     void generateScriptFunctions(const QString& code);

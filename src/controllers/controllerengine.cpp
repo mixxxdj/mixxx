@@ -66,13 +66,7 @@ ControllerEngine::~ControllerEngine() {
         m_scratchFilters[i] = nullptr;
     }
 
-    // Delete the script engine, first clearing the pointer so that
-    // other threads will not get the dead pointer after we delete it.
-    if (m_pEngine != nullptr) {
-        QScriptEngine *engine = m_pEngine;
-        m_pEngine = nullptr;
-        engine->deleteLater();
-    }
+    uninitializeScriptEngine();
 }
 
 /* -------- ------------------------------------------------------
@@ -238,6 +232,16 @@ void ControllerEngine::initializeScriptEngine() {
     engineGlobalObject.setProperty("ByteArray", m_pBaClass->constructor());
 }
 
+void ControllerEngine::uninitializeScriptEngine() {
+    // Delete the script engine, first clearing the pointer so that
+    // other threads will not get the dead pointer after we delete it.
+    if (m_pEngine != nullptr) {
+        QScriptEngine* engine = m_pEngine;
+        m_pEngine = nullptr;
+        engine->deleteLater();
+    }
+}
+
 /* -------- ------------------------------------------------------
    Purpose: Load all script files given in the supplied list
    Input:   List of script paths and file names to load
@@ -277,14 +281,7 @@ void ControllerEngine::scriptHasChanged(const QString& scriptFilename) {
                this, SLOT(scriptHasChanged(QString)));
 
     gracefulShutdown();
-
-    // Delete the script engine, first clearing the pointer so that
-    // other threads will not get the dead pointer after we delete it.
-    if (m_pEngine != nullptr) {
-        QScriptEngine *engine = m_pEngine;
-        m_pEngine = nullptr;
-        engine->deleteLater();
-    }
+    uninitializeScriptEngine();
 
     initializeScriptEngine();
     loadScriptFiles(m_lastScriptPaths, pPreset->scripts);
