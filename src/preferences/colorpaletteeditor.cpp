@@ -33,18 +33,19 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
     QHBoxLayout* pTopLayout = new QHBoxLayout();
     pTopLayout->addWidget(new QLabel(tr("Name")));
     pTopLayout->addWidget(m_pPaletteNameComboBox, 1);
-    pTopLayout->addWidget(pButtonBox);
 
     QVBoxLayout* pLayout = new QVBoxLayout();
     pLayout->addLayout(pTopLayout);
     pLayout->addWidget(m_pTableView, 1);
+    pLayout->addWidget(pButtonBox);
     setLayout(pLayout);
     setContentsMargins(0, 0, 0, 0);
 
     // Set up model
-    m_pModel->setColumnCount(2);
+    m_pModel->setColumnCount(3);
     m_pModel->setHeaderData(0, Qt::Horizontal, tr("Color"), Qt::DisplayRole);
-    m_pModel->setHeaderData(1, Qt::Horizontal, tr("Assign to Hotcue"), Qt::DisplayRole);
+    m_pModel->setHeaderData(1, Qt::Horizontal, tr("Assign to Hotcue Number"), Qt::DisplayRole);
+    m_pModel->setHeaderData(2, Qt::Horizontal, QString(), Qt::DisplayRole);
     connect(m_pModel,
             &ColorPaletteEditorModel::dirtyChanged,
             this,
@@ -62,6 +63,10 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
     m_pTableView->setDragDropOverwriteMode(false);
     m_pTableView->setContextMenuPolicy(Qt::CustomContextMenu);
     m_pTableView->setModel(m_pModel);
+
+    m_pTableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    m_pTableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+    m_pTableView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
 
     connect(m_pTableView,
             &QTableView::doubleClicked,
