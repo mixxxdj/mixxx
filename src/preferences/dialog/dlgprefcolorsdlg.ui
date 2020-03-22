@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>524</width>
+    <width>656</width>
     <height>333</height>
    </rect>
   </property>
@@ -29,27 +29,41 @@
       <item row="0" column="0">
        <widget class="QLabel" name="labelHotcueColors">
         <property name="text">
-         <string>Hotcues:</string>
+         <string>Hotcue Palette</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QComboBox" name="comboBoxHotcueColors"/>
+       <widget class="QComboBox" name="comboBoxHotcueColors">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="labelTrackColors">
         <property name="text">
-         <string>Track:</string>
+         <string>Track Palette</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QComboBox" name="comboBoxTrackColors"/>
+       <widget class="QComboBox" name="comboBoxTrackColors">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="labelAutoHotcueColors">
         <property name="text">
-         <string>Auto hotcue colors</string>
+         <string>Cycle hotcue colors</string>
         </property>
         <property name="buddy">
          <cstring>checkBoxAssignHotcueColors</cstring>
@@ -62,7 +76,7 @@
          <string>Automatically assigns a predefined color to a newly created hotcue point, based on its index.</string>
         </property>
         <property name="text">
-         <string>Assign predefined colors to newly created hotcue points</string>
+         <string>Select consecutive palette colors for new hotcues</string>
         </property>
        </widget>
       </item>
