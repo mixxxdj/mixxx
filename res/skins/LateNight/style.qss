@@ -711,8 +711,10 @@ QPushButton#pushButtonAutoDJ:checked,
 #MicDuckingButton[value="2"] {
   background-color: #d09300;
 }
-/* ToDo
-  * orange Play button when playing from Cue / Hotcue */
+
+#SpecialCueButton[value="1"] {
+  background-color: #0044ff;
+}
 
 
 /************** Button icons **************************************************/
