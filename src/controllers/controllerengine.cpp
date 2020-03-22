@@ -494,8 +494,8 @@ void ControllerEngine::scriptErrorDialog(const QString& detailedError) {
     qWarning() << "ControllerEngine:" << detailedError;
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
-    props->setTitle(tr("Controller script error"));
-    props->setText(tr("A control you just used is not working properly."));
+    props->setTitle(tr("Controller Mapping Error"));
+    props->setText(QString(tr("A control you just used on your controller \"%1\" is not working properly.")).arg(m_pController->getName()));
     props->setInfoText("<html>"+tr("The script code needs to be fixed.")+
         "<p>"+tr("For now, you can: Ignore this error for this session but you may experience erratic behavior.")+
         "<br>"+tr("Try to recover by resetting your controller.")+"</p>"+"</html>");
@@ -969,9 +969,10 @@ bool ControllerEngine::evaluate(const QString& scriptName, QList<QString> script
             // Set up error dialog
             ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
             props->setType(DLG_WARNING);
-            props->setTitle("Controller script file problem");
-            props->setText(QString("There was a problem opening the controller script file %1.").arg(filename));
-            props->setInfoText(input.errorString());
+            props->setTitle(tr("Controller Mapping File Problem"));
+            props->setText(tr("The mapping for controller \"%1\" cannot be opened.").arg(m_pController->getName()));
+            props->setInfoText(tr("The functionality provided by this controller mapping will be disabled until the issue has been resolved."));
+            props->setDetails(QString(tr("File: %1\n\n")).arg(filename) + input.errorString());
 
             // Ask above layer to display the dialog & handle user response
             ErrorDialogHandler::instance()->requestErrorDialog(props);
@@ -1007,11 +1008,10 @@ bool ControllerEngine::evaluate(const QString& scriptName, QList<QString> script
         if (m_bPopups) {
             ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
             props->setType(DLG_WARNING);
-            props->setTitle("Controller script file error");
-            props->setText(QString("There was an error in the controller script file %1.").arg(filename));
-            props->setInfoText("The functionality provided by this script file will be disabled.");
-            props->setDetails(error);
-
+            props->setTitle(tr("Controller Mapping Error"));
+            props->setText(QString(tr("The controller mapping for \"%1\" caused an error.")).arg(m_pController->getName()));
+            props->setInfoText(tr("The functionality provided by this controller mapping will be disabled until the issue has been resolved."));
+            props->setDetails(QString(tr("File: %1\n\n")).arg(filename) + error);
             ErrorDialogHandler::instance()->requestErrorDialog(props);
         }
         return false;
