@@ -513,7 +513,7 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
     // we don't adjust the reported distance the track will try to adjust
     // sync against itself.
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "BpmControl::calcRawBeatDistance" << dThisPosition;
+        kLogger.trace() << getGroup() << "BpmControl::getBeatDistance" << dThisPosition;
     }
     double dPrevBeat = m_pPrevBeat->get();
     double dNextBeat = m_pNextBeat->get();
@@ -599,6 +599,11 @@ double BpmControl::getNearestPositionInPhase(
     }
 
     SyncMode syncMode = getSyncMode();
+
+    // Explicit master buffer is always in sync!
+    if (syncMode == SYNC_MASTER_EXPLICIT) {
+        return dThisPosition;
+    }
 
     // Get the current position of this deck.
     double dThisPrevBeat = m_pPrevBeat->get();
@@ -741,6 +746,10 @@ double BpmControl::getBeatMatchPosition(
         double dThisPosition, bool respectLoops, bool playing) {
     // Without a beatgrid, we don't know the phase offset.
     if (!m_pBeats) {
+        return dThisPosition;
+    }
+    // Explicit master buffer is always in sync!
+    if (getSyncMode() == SYNC_MASTER_EXPLICIT) {
         return dThisPosition;
     }
 
@@ -943,7 +952,6 @@ void BpmControl::trackLoaded(TrackPointer pNewTrack) {
         m_pBeats = m_pTrack->getBeats();
         connect(m_pTrack.get(), &Track::beatsUpdated,
                 this, &BpmControl::slotUpdatedTrackBeats);
-        slotUpdateEngineBpm();
     } else {
         m_pTrack.reset();
         m_pBeats.clear();
@@ -1020,10 +1028,6 @@ double BpmControl::updateBeatDistance() {
 
 void BpmControl::setTargetBeatDistance(double beatDistance) {
     m_dSyncTargetBeatDistance.setValue(beatDistance);
-}
-
-void BpmControl::setSyncAdjustFactor(double adjustFactor) {
-    m_dSyncAdjustFactor.setValue(adjustFactor);
 }
 
 void BpmControl::setInstantaneousBpm(double instantaneousBpm) {

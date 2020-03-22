@@ -44,18 +44,22 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
         return m_pMasterSyncable;
     }
 
-    static std::vector<Syncable*> stopped_sync_decks;
-    static std::vector<Syncable*> playing_sync_decks;
-    stopped_sync_decks.reserve(kMaxNumberOfDecks);
-    playing_sync_decks.reserve(kMaxNumberOfDecks);
-    stopped_sync_decks.clear();
-    playing_sync_decks.clear();
+    Syncable* first_stopped_deck = nullptr;
+    Syncable* first_playing_deck = nullptr;
+    int stopped_deck_count = 0;
+    int playing_deck_count = 0;
 
     if (enabling_syncable != nullptr && enabling_syncable->getBaseBpm() != 0.0) {
         if (enabling_syncable->isPlaying()) {
-            playing_sync_decks.push_back(enabling_syncable);
+            if (playing_deck_count == 0) {
+                first_playing_deck = enabling_syncable;
+            }
+            playing_deck_count++;
         } else {
-            stopped_sync_decks.push_back(enabling_syncable);
+            if (stopped_deck_count == 0) {
+                first_stopped_deck = enabling_syncable;
+            }
+            stopped_deck_count++;
         }
     }
 
@@ -74,22 +78,28 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
         }
 
         if (pSyncable->isPlaying()) {
-            playing_sync_decks.push_back(pSyncable);
+            if (playing_deck_count == 0) {
+                first_playing_deck = pSyncable;
+            }
+            playing_deck_count++;
         } else {
-            stopped_sync_decks.push_back(pSyncable);
+            if (stopped_deck_count == 0) {
+                first_stopped_deck = pSyncable;
+            }
+            stopped_deck_count++;
         }
     }
 
-    if (playing_sync_decks.size() == 1) {
-        return playing_sync_decks.front();
-    } else if (playing_sync_decks.size() > 1) {
+    if (playing_deck_count == 1) {
+        return first_playing_deck;
+    } else if (playing_deck_count > 1) {
         return m_pInternalClock;
     }
 
     // No valid playing sync decks
-    if (stopped_sync_decks.size() == 1) {
-        return stopped_sync_decks.front();
-    } else if (stopped_sync_decks.size() > 1) {
+    if (stopped_deck_count == 1) {
+        return first_stopped_deck;
+    } else if (stopped_deck_count > 1) {
         return m_pInternalClock;
     }
 
@@ -163,7 +173,7 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
     Syncable* stoppedTarget = nullptr;
     bool foundTargetBpm = false;
 
-    for (const auto& pOtherSyncable : m_syncables) {
+    for (const auto& pOtherSyncable : qAsConst(m_syncables)) {
         if (pOtherSyncable == requester) {
             continue;
         }
@@ -306,6 +316,7 @@ void EngineSync::notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) {
     if (!sync_deck_exists) {
         setMasterBpm(pSyncable, suggested_bpm);
     } else {
+        qDebug() << "from trackloaded";
         pSyncable->setMasterBpm(masterBpm());
     }
 }
@@ -317,7 +328,9 @@ void EngineSync::notifyScratching(Syncable* pSyncable, bool scratching) {
 }
 
 void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm) {
-    //qDebug() << "EngineSync::notifyBpmChanged" << pSyncable->getGroup() << bpm;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "EngineSync::notifyBpmChanged" << pSyncable->getGroup() << bpm;
+    }
 
     // Master Base BPM shouldn't be updated for every random deck that twiddles
     // the rate.
@@ -325,7 +338,9 @@ void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm) {
 }
 
 void EngineSync::requestBpmUpdate(Syncable* pSyncable, double bpm) {
-    //qDebug() << "EngineSync::requestBpmUpdate" << pSyncable->getGroup() << bpm;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "EngineSync::requestBpmUpdate" << pSyncable->getGroup() << bpm;
+    }
 
     double mbaseBpm = masterBaseBpm();
     double mbpm = masterBpm();
@@ -340,7 +355,9 @@ void EngineSync::requestBpmUpdate(Syncable* pSyncable, double bpm) {
 }
 
 void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) {
-    //qDebug() << "EngineSync::notifyInstantaneousBpmChanged" << pSyncable->getGroup() << bpm;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "EngineSync::notifyInstantaneousBpmChanged" << pSyncable->getGroup() << bpm;
+    }
     if (!isMaster(pSyncable->getSyncMode())) {
         return;
     }
@@ -351,7 +368,9 @@ void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) 
 }
 
 void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beat_distance) {
-    //qDebug() << "EngineSync::notifyBeatDistanceChanged" << pSyncable->getGroup() << beat_distance;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "EngineSync::notifyBeatDistanceChanged" << pSyncable->getGroup() << beat_distance;
+    }
     if (!isMaster(pSyncable->getSyncMode())) {
         return;
     }

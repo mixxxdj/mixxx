@@ -157,7 +157,7 @@ void Logging::initialize(const QDir& settingsDir,
         return;
     }
 
-    g_logLevel = logLevel;
+    setLogLevel(logLevel);
     g_logFlushLevel = logFlushLevel;
 
     QString logFileName;
@@ -201,6 +201,11 @@ void Logging::initialize(const QDir& settingsDir,
     // Ubuntu: https://bugs.launchpad.net/ubuntu/+source/qtbase-opensource-src/+bug/1731646
     QLoggingCategory::setFilterRules("*.debug=true\n"
                                      "qt.*.debug=false");
+}
+
+// static
+void Logging::setLogLevel(LogLevel logLevel) {
+    g_logLevel = logLevel;
 }
 
 // static

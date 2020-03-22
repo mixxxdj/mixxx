@@ -1605,7 +1605,6 @@ TEST_F(EngineSyncTest, ZeroBpmNaturalRate) {
 }
 
 TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
-    auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
     auto pButtonBeatsync1 = std::make_unique<ControlProxy>(m_sGroup1, "beatsync");
     auto pButtonBeatsyncPhase1 = std::make_unique<ControlProxy>(m_sGroup1, "beatsync_phase");
 
@@ -1614,7 +1613,6 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
     BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 130, 0.0);
     m_pTrack1->setBeats(pBeats1);
 
-    auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
     auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     ControlObject::set(ConfigKey(m_sGroup2, "rate"), getRateSliderValue(1.0));
     BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 100, 0.0);
@@ -1637,18 +1635,21 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
     EXPECT_DOUBLE_EQ(0.019349962207105064, ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
 
     // first test without quantization
-    pButtonSyncEnabled1->set(1.0);
+    qDebug() << "turning on sync";
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_mode"), SYNC_FOLLOWER);
+    qDebug() << "process!!!";
     ProcessBuffer();
 
     // Deck 1 continues with 100 bpm
+    EXPECT_DOUBLE_EQ(100, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
     EXPECT_DOUBLE_EQ(100, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
-    EXPECT_DOUBLE_EQ(0.050309901738473169, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
+    EXPECT_DOUBLE_EQ(0.044504913076341648, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
 
     // Deck 2 continues normally
     EXPECT_DOUBLE_EQ(100, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     EXPECT_DOUBLE_EQ(0.038699924414210128, ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
 
-    pButtonSyncEnabled1->set(0.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_enabled"), 0);
 
     ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 1.0);
     ProcessBuffer();
@@ -1662,7 +1663,7 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
     EXPECT_DOUBLE_EQ(100, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     EXPECT_DOUBLE_EQ(0.058049886621315196, ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
 
-    pButtonSyncEnabled1->set(1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_enabled"), 1);
     ProcessBuffer();
 
     // normally the deck would be at 0.083204837, due to quantize it has been seeked
@@ -1676,7 +1677,7 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
             1e-15);
 
     // Reset Deck 1 Tempo
-    pButtonSyncEnabled1->set(0.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_enabled"), 0);
     ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 0.0);
     ControlObject::set(ConfigKey(m_sGroup1, "rate_ratio"), 1.0);
     ProcessBuffer();

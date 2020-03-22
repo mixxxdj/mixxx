@@ -1,7 +1,8 @@
 #include <benchmark/benchmark.h>
 
-#include "mixxxtest.h"
 #include "errordialoghandler.h"
+#include "mixxxtest.h"
+#include "util/logging.h"
 
 int main(int argc, char **argv) {
     // We never want to popup error dialogs when running tests.
@@ -20,6 +21,8 @@ int main(int argc, char **argv) {
     } else {
         testing::InitGoogleTest(&argc, argv);
     }
+
+    mixxx::Logging::setLogLevel(mixxx::LogLevel::Trace);
 
     // Otherwise, run the test suite:
     MixxxTest::ApplicationScope applicationScope(argc, argv);

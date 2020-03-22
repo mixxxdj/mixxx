@@ -39,7 +39,6 @@ class BpmControl : public EngineControl {
     double getBeatDistance(double dThisPosition) const;
 
     void setTargetBeatDistance(double beatDistance);
-    void setSyncAdjustFactor(double adjustFactor);
     void setInstantaneousBpm(double instantaneousBpm);
     void resetSyncAdjustment();
     double updateLocalBpm();
@@ -149,7 +148,6 @@ class BpmControl : public EngineControl {
 
     ControlProxy* m_pThisBeatDistance;
     ControlValueAtomic<double> m_dSyncTargetBeatDistance;
-    ControlValueAtomic<double> m_dSyncAdjustFactor;
     ControlValueAtomic<double> m_dUserOffset;
     QAtomicInt m_resetSyncAdjustment;
     ControlProxy* m_pSyncMode;

@@ -307,7 +307,6 @@ void SyncControl::updateTargetBeatDistance() {
         kLogger.trace() << getGroup() << "SyncControl::updateTargetBeatDistance, adjusted target is" << targetDistance;
     }
     m_pBpmControl->setTargetBeatDistance(targetDistance);
-    m_pBpmControl->setSyncAdjustFactor(m_masterBpmAdjustFactor);
 }
 
 double SyncControl::getBpm() const {
@@ -382,6 +381,9 @@ void SyncControl::slotEjectPushed(double enabled) {
 }
 
 void SyncControl::slotSyncModeChangeRequest(double state) {
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "SyncControl::slotSyncModeChangeRequest";
+    }
     SyncMode mode(syncModeFromDouble(state));
     if (m_pPassthroughEnabled->get() && mode != SYNC_NONE) {
         qDebug() << "Disallowing enabling of sync mode when passthrough active";

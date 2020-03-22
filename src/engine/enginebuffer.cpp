@@ -409,6 +409,9 @@ void EngineBuffer::requestEnableSync(bool enabled) {
 
 void EngineBuffer::requestSyncMode(SyncMode mode) {
     // If we're not playing, the queued event won't get processed so do it now.
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "EngineBuffer::requestSyncMode";
+    }
     if (m_playButton->get() == 0.0) {
         m_pEngineSync->requestSyncMode(m_pSyncControl, mode);
     } else {
@@ -1213,6 +1216,9 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     // The order of events here is very delicate.  It's necessary to update
     // some values before others, because the later updates may require
     // values from the first update.
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "EngineBuffer::postProcess";
+    }
     double local_bpm = m_pBpmControl->updateLocalBpm();
     double beat_distance = m_pBpmControl->updateBeatDistance();
     m_pSyncControl->setLocalBpm(local_bpm);
