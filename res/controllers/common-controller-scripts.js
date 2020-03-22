@@ -468,14 +468,16 @@ bpm.tap = [];   // Tap sample values
    Output:  -
    -------- ------------------------------------------------------ */
 bpm.tapButton = function(deck) {
-    var now = new Date() / 1000;   // Current time in seconds
+    var now = new Date() / 1000; // Current time in seconds
     var tapDelta = now - bpm.tapTime;
     bpm.tapTime = now;
+
+    // assign tapDelta in cases where the button has not been pressed previously
     if (bpm.tap.length < 1) {
         bpm.previousTapDelta = tapDelta;
     }
-    // assign tapDelta in cases where the button has not been pressed previously
-    if (tapDelta > 2.0) { // reset if longer than two seconds between taps
+    // reset if longer than two seconds between taps
+    if (tapDelta > 2.0) {
         bpm.tap = [];
         return;
     }
@@ -488,18 +490,19 @@ bpm.tapButton = function(deck) {
     }
     bpm.previousTapDelta = tapDelta;
     bpm.tap.push(60 / tapDelta);
-    if (bpm.tap.length > 8) bpm.tap.shift();  // Keep the last 8 samples for averaging
+    // Keep the last 8 samples for averaging
+    if (bpm.tap.length > 8) bpm.tap.shift();
     var sum = 0;
     for (var i = 0; i < bpm.tap.length; i++) {
         sum += bpm.tap[i];
     }
     var average = sum / bpm.tap.length;
 
-    var fRateScale = average/engine.getValue("[Channel" + deck + "]", "file_bpm");
     // "bpm" was changed in 1.10 to reflect the *adjusted* bpm, but I presume it
     // was supposed to return the tracks bpm (which it did before the change).
     // "file_bpm" is supposed to return the set BPM of the loaded track of the
     // channel.
+    var fRateScale = average/engine.getValue("[Channel" + deck + "]", "file_bpm");
 
     // Adjust the rate:
     fRateScale = (fRateScale - 1.) / engine.getValue("[Channel" + deck + "]", "rateRange");
@@ -507,7 +510,6 @@ bpm.tapButton = function(deck) {
     engine.setValue(
         "[Channel" + deck + "]", "rate",
         fRateScale * engine.getValue("[Channel" + deck + "]", "rate_dir"));
-//     print("Script: BPM="+average+" setting to "+fRateScale);
 };
 
 // ----------------- Common regular expressions --------------------------
