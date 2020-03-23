@@ -1560,16 +1560,61 @@ TEST_F(EngineSyncTest, UserTweakBeatDistance) {
     // Play a buffer, which is enough to see if the beat distances align.
     ProcessBuffer();
 
-    // Ah, floating point.
-    double difference = fabs(ControlObject::getControl(ConfigKey(m_sGroup1,
-                                                               "beat_distance"))
-                                     ->get() -
-            ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
-                                              "beat_distance"))
-                    ->get());
-    EXPECT_LT(difference, .00001);
+    EXPECT_NEAR(ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
+            ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "beat_distance"))->get(),
+            .00001);
 
     EXPECT_FLOAT_EQ(0.0, m_pChannel1->getEngineBuffer()->m_pBpmControl->m_dUserOffset.getValue());
+}
+
+TEST_F(EngineSyncTest, UserTweakPreservedInSeek) {
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
+    pFileBpm1->set(128.0);
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
+    pFileBpm2->set(128.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 128, 0.0);
+    m_pTrack1->setBeats(pBeats1);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 130, 0.0);
+    m_pTrack2->setBeats(pBeats2);
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "quantize"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(1);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(1);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "quantize"), 1.0);
+
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(0.025154950869236584, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
+    EXPECT_DOUBLE_EQ(0.0023582766439909299, ControlObject::get(ConfigKey(m_sGroup1, "playposition")));
+
+    ControlObject::set(ConfigKey(m_sGroup1, "playposition"), 0.2);
+    ProcessBuffer();
+
+    // We expect to be two buffers ahead in a beat near 0.2
+    EXPECT_DOUBLE_EQ(0.050309901738473183, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
+    EXPECT_DOUBLE_EQ(0.19221655328798187, ControlObject::get(ConfigKey(m_sGroup1, "playposition")));
+
+    // Apply a small amount of offset
+    // Spin the wheel, causing the useroffset for group1 to get set.
+    ControlObject::getControl(ConfigKey(m_sGroup1, "wheel"))->set(0.4);
+    for (int i = 0; i < 2; ++i) {
+        ProcessBuffer();
+    }
+    ProcessBuffer();
+
+    // Seek back to 0.2
+    ControlObject::set(ConfigKey(m_sGroup1, "playposition"), 0.2);
+    ProcessBuffer();
+
+    // The location is now different
+    EXPECT_DOUBLE_EQ(0.1707440665154954, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
+    EXPECT_DOUBLE_EQ(0.20350725623582769, ControlObject::get(ConfigKey(m_sGroup1, "playposition")));
 }
 
 TEST_F(EngineSyncTest, MasterBpmNeverZero) {
@@ -1721,7 +1766,7 @@ TEST_F(EngineSyncTest, SeekStayInPhase) {
     ControlObject::set(ConfigKey(m_sGroup1, "playposition"), 0.2);
     ProcessBuffer();
 
-    // We expect to be two buffers aherad in a beat near 0.2
+    // We expect to be two buffers ahead in a beat near 0.2
     EXPECT_DOUBLE_EQ(0.050309901738473183, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
     EXPECT_DOUBLE_EQ(0.18925937554508981, ControlObject::get(ConfigKey(m_sGroup1, "playposition")));
 }

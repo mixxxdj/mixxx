@@ -842,7 +842,7 @@ double BpmControl::getBeatMatchPosition(
         dOtherBeatFraction += 1.0;
     }
 
-    // dOtherBeatFraction =+ m_dUserOffset;
+    dOtherBeatFraction += m_dUserOffset.getValue();
     double otherDivSec = (1 - dOtherBeatFraction) *
             dOtherBeatLength / otherBeats->getSampleRate() / pOtherEngineBuffer->getRateRatio();
 
