@@ -213,14 +213,14 @@ double AutoDJProcessor::getCrossfader() const {
 double AutoDJProcessor::getVolumeFader() {
     // TODO(c3n7) Check if this can be done better
     double faderPos;
-    double volumeFaderPositions[2] ={m_pVolumeFader[0]->get(), m_pVolumeFader[1]->get()};
+    double volumeFaderPositions[2] = {m_pVolumeFader[0]->get(), m_pVolumeFader[1]->get()};
     DeckAttributes* pFromDeck = getFromDeck();
 
-    if (pFromDeck->isLeft()  && volumeFaderPositions[0] >= 0) {
+    if (pFromDeck->isLeft() && volumeFaderPositions[0] >= 0) {
         // y = -2x + 1
         // faderPos = -2(volumePos) + 1
         faderPos = (-2 * volumeFaderPositions[0]) + 1;
-    } else if (pFromDeck->isRight()  && volumeFaderPositions[1] >= 0) {
+    } else if (pFromDeck->isRight() && volumeFaderPositions[1] >= 0) {
         // y = 2x - 1
         faderPos = (2 * volumeFaderPositions[1]) - 1;
     } else {
