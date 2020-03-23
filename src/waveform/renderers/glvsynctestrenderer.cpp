@@ -1,4 +1,5 @@
 #include "waveform/renderers/glvsynctestrenderer.h"
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
@@ -125,3 +126,5 @@ void GLVSyncTestRenderer::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     //qDebug() << timer.restart(); // 129,498 ns
 }
+
+#endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)

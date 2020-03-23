@@ -26,6 +26,7 @@ class DbConnection final {
 
     struct Params {
         QString type;
+        QString connectOptions;
         QString hostName;
         QString filePath;
         QString userName;

@@ -40,6 +40,8 @@
 # because it won't prevent catching other, unrelated issues.
 
 exclude: ^lib/.*$
+default_language_version:
+  python: python3
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v2.3.0
@@ -75,6 +77,7 @@ repos:
   - id: clang-format
     entry: git clang-format
     args: []
+    require_serial: true
     stages:
     - commit
     - manual

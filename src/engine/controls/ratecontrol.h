@@ -54,7 +54,16 @@ public:
     // Returns the current engine rate.  "reportScratching" is used to tell
     // the caller that the user is currently scratching, and this is used to
     // disable keylock.
-    double calculateSpeed(double baserate, double speed, bool paused, bool brake, int iSamplesPerBuffer, bool* pReportScratching, bool* pReportReverse, bool* pReportBrakeStop);
+
+    double calculateSpeed(
+            double baserate,
+            double speed,
+            bool paused,
+            bool brake,
+            int iSamplesPerBuffer,
+            bool* pReportScratching,
+            bool* pReportReverse,
+            bool* pReportBrakeStop);
 
     // Set rate change when temp rate button is pressed
     static void setTemporaryRateChangeCoarseAmount(double v);

@@ -24,6 +24,7 @@
 #include "util/duration.h"
 #include "util/assert.h"
 #include "util/performancetimer.h"
+#include "util/platform.h"
 #include "widget/wlibrarytableview.h"
 
 namespace {
@@ -38,6 +39,9 @@ const int kMaxSortColumns = 3;
 
 // Constant for getModelSetting(name)
 const QString COLUMNS_SORTING = QStringLiteral("ColumnsSorting");
+
+// Alpha value for row color background (range 0 - 255)
+constexpr int kTrackColorRowBackgroundOpacity = 0x20; // 12.5% opacity
 
 } // anonymous namespace
 
@@ -705,10 +709,12 @@ int BaseSqlTableModel::fieldIndex(const QString& fieldName) const {
 
 QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
     //qDebug() << this << "data()";
-    if (!index.isValid() || (role != Qt::DisplayRole &&
-                             role != Qt::EditRole &&
-                             role != Qt::CheckStateRole &&
-                             role != Qt::ToolTipRole)) {
+    if (!index.isValid() || (
+                role != Qt::BackgroundRole &&
+                role != Qt::DisplayRole &&
+                role != Qt::EditRole &&
+                role != Qt::CheckStateRole &&
+                role != Qt::ToolTipRole)) {
         return QVariant();
     }
 
@@ -722,7 +728,25 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
     // Format the value based on whether we are in a tooltip, display, or edit
     // role
     switch (role) {
+    case Qt::BackgroundRole: {
+        QModelIndex colorIndex = index.sibling(
+                index.row(),
+                fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR));
+        QColor color = mixxx::RgbColor::toQColor(
+                mixxx::RgbColor::fromQVariant(getBaseValue(colorIndex, role)));
+        if (color.isValid()) {
+            color.setAlpha(kTrackColorRowBackgroundOpacity);
+            value = QBrush(color);
+        } else {
+            value = QVariant();
+        }
+        break;
+    }
         case Qt::ToolTipRole:
+            if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
+                value = mixxx::RgbColor::toQString(mixxx::RgbColor::fromQVariant(value));
+            }
+            M_FALLTHROUGH_INTENDED;
         case Qt::DisplayRole:
             if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION)) {
                 int duration = value.toInt();
@@ -799,8 +823,6 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 if (value.canConvert(QMetaType::Int)) {
                     value = QVariant::fromValue(StarRating(value.toInt()));
                 }
-            } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
-                value = QString();
             }
             break;
         case Qt::CheckStateRole:
@@ -896,13 +918,14 @@ Qt::ItemFlags BaseSqlTableModel::readWriteFlags(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) {
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
         return defaultFlags;
-    } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED))  {
+    } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
         return defaultFlags | Qt::ItemIsUserCheckable;
     } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)) {
         return defaultFlags | Qt::ItemIsUserCheckable;
-    } else if(column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
+    } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
         // Allow checking of the BPM-locked indicator.
         defaultFlags |= Qt::ItemIsUserCheckable;
         // Disable editing of BPM field when BPM is locked
@@ -939,16 +962,20 @@ TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
     return m_pTrackCollectionManager->internalCollection()->getTrackById(getTrackId(index));
 }
 
+TrackPointer BaseSqlTableModel::getTrackByRef(
+        const TrackRef& trackRef) const {
+    return m_pTrackCollectionManager->internalCollection()->getTrackByRef(trackRef);
+}
+
 QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
     if (!index.isValid()) {
-        return "";
+        return QString();
     }
     QString nativeLocation =
             index.sibling(index.row(),
                     fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION))
                             .data().toString();
-    QString location = QDir::fromNativeSeparators(nativeLocation);
-    return location;
+    return QDir::fromNativeSeparators(nativeLocation);
 }
 
 void BaseSqlTableModel::trackLoaded(QString group, TrackPointer pTrack) {
@@ -1046,7 +1073,8 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
 
 QVariant BaseSqlTableModel::getBaseValue(
     const QModelIndex& index, int role) const {
-    if (role != Qt::DisplayRole &&
+    if (role != Qt::BackgroundRole &&
+        role != Qt::DisplayRole &&
         role != Qt::ToolTipRole &&
         role != Qt::EditRole) {
         return QVariant();
@@ -1171,4 +1199,16 @@ void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.
     select(); //Repopulate the data model.
+}
+
+QList<TrackRef> BaseSqlTableModel::getTrackRefs(
+        const QModelIndexList& indices) const {
+    QList<TrackRef> trackRefs;
+    trackRefs.reserve(indices.size());
+    foreach (QModelIndex index, indices) {
+        trackRefs.append(TrackRef::fromFileInfo(
+                TrackFile(getTrackLocation(index)),
+                getTrackId(index)));
+    }
+    return trackRefs;
 }

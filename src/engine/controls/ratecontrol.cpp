@@ -621,6 +621,7 @@ void RateControl::resetRateTemp(void)
 
 void RateControl::notifySeek(double playPos) {
     m_pScratchController->notifySeek(playPos);
+    EngineControl::notifySeek(playPos);
 }
 
 bool RateControl::isReverseButtonPressed() {

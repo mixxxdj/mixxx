@@ -277,7 +277,7 @@ class AutoDJProcessor : public QObject {
     // Removes the provided track from the top of the AutoDJ queue if it is
     // present.
     bool removeTrackFromTopOfQueue(TrackPointer pTrack);
-
+    void maybeFillRandomTracks();
     UserSettingsPointer m_pConfig;
     PlayerManagerInterface* m_pPlayerManager;
     PlaylistTableModel* m_pAutoDJTableModel;

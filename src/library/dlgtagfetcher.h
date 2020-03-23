@@ -25,7 +25,9 @@ class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
     void previous();
 
   private slots:
-    void fetchTagFinished(const TrackPointer,const QList<TrackPointer>& tracks);
+    void fetchTagFinished(
+            TrackPointer pTrack,
+            QList<mixxx::musicbrainz::TrackRelease> guessedTrackReleases);
     void resultSelected();
     void fetchTagProgress(QString);
     void slotNetworkResult(int httpStatus, QString app, QString message, int code);
@@ -36,8 +38,6 @@ class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
   private:
     void updateStack();
     void addDivider(const QString& text, QTreeWidget* parent) const;
-    void addTrack(const TrackPointer track, int resultIndex,
-                  QTreeWidget* parent) const;
 
     TagFetcher m_tagFetcher;
 
@@ -48,7 +48,7 @@ class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
 
         bool m_pending;
         int m_selectedResult;
-        QList<TrackPointer> m_results;
+        QList<mixxx::musicbrainz::TrackRelease> m_results;
     };
     Data m_data;
 

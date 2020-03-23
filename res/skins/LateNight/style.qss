@@ -596,7 +596,7 @@ WEffectSelector:open {
 #SplitCueButton,
 #PlayButtonPreview,
 #BeatgridButtons WPushButton,
-#MicTalkButton, #AuxPlayButton, #MicDuckingButton {
+#MicTalkButton, #AuxPlayButton, #MicAuxAddButton, #MicDuckingButton {
   /* limit background to button surface resulting from SVG backpath.
     border width wouldn't be applied.
     otoh, margin would set in the colored background area and not
@@ -617,7 +617,7 @@ WEffectSelector:open {
 #FxExpandCollapseButton,
 #PlayButtonSampler[displayValue="0"], #PlayButtonDeckMini[displayValue="0"],
 #SamplerSyncButton[displayValue="0"],
-#MicTalkButton[value="0"], #AuxPlayButton[value="0"],
+#MicTalkButton[value="0"], #AuxPlayButton[value="0"], #MicAuxAddButton,
 #MicDuckingButton[value="0"],
 #PlayButtonPreview[displayValue="0"],
 QPushButton#pushButtonAutoDJ:enabled:!checked,
@@ -716,44 +716,6 @@ QPushButton#pushButtonAutoDJ:checked,
 }
 /* ToDo
   * orange Play button when playing from Cue / Hotcue */
-/* Hotcue Color: Green */
-#HotcueButton[displayValue="1"][highlight="2"],
-#HotcueButton[displayValue="2"][highlight="2"] {
-  background-color: #32be44;
-}
-/* Hotcue Color: Blue */
-#HotcueButton[displayValue="1"][highlight="3"],
-#HotcueButton[displayValue="2"][highlight="3"],
-#SpecialCueButton[value="1"] {
-  background-color: #0044ff;
-}
-/* Hotcue Color: Yellow */
-#HotcueButton[displayValue="1"][highlight="4"],
-#HotcueButton[displayValue="2"][highlight="4"] {
-  background-color: #f8d200;
-}
-/* Hotcue Color: Celeste */
-#HotcueButton[displayValue="1"][highlight="5"],
-#HotcueButton[displayValue="2"][highlight="5"] {
-  background-color: #42d4f4;
-}
-/* Hotcue Color: Purple */
-#HotcueButton[displayValue="1"][highlight="6"],
-#HotcueButton[displayValue="2"][highlight="6"] {
-  background-color: #af00cc;
-}
-/* Hotcue Color: Pink */
-#HotcueButton[displayValue="1"][highlight="7"],
-#HotcueButton[displayValue="2"][highlight="7"] {
-  background-color: #fca6d7;
-}
-/* Hotcue Color: White */
-#HotcueButton[displayValue="1"][highlight="8"],
-#HotcueButton[displayValue="2"][highlight="8"] {
-  background-color: #f2f2ff;
-}
-/************** Button borders & backgrounds **********************************/
-
 
 
 /************** Button icons **************************************************/
@@ -1034,6 +996,9 @@ QPushButton#pushButtonAutoDJ:checked,
 #AuxPlayButton {
   image: url(skin:/buttons_classic/btn__aux_play.svg) no-repeat center center;
 }
+#MicAuxAddButton {
+  image: url(skin:/buttons_classic/btn__plus.svg) no-repeat center center;
+}
 #MicDuckingButton[value="0"] {
   image: url(skin:/buttons_classic/btn__mic_duck_off.svg) no-repeat center center;
   }
@@ -1112,7 +1077,7 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
   padding: 3px 6px; */
   qproperty-icon: url(skin:/buttons_classic/btn__delete.svg);
   /* color buttons are 42x24 px.
-  To get the final size for the Delete button consider border width. 
+  To get the final size for the Delete button consider border width.
   wide button:
   width: 38px;
   height: 20px;
@@ -1690,6 +1655,9 @@ WBeatSpinBox,
       #MicAuxPlayButtonBox {
         margin: 0px 0px 2px 1px;
       }
+      #MicAuxAddBox {
+        margin: 6px 0px 8px 1px;
+      }
 
   #MicAuxSubControlsFrame {
     margin: 3px 0px;
@@ -2216,7 +2184,7 @@ WCueMenuPopup QPushButton:focus {
     padding-right: 3px;
     border-right: 1px solid #000;
     /* gradient colors should match those of QHeaderView gradient,
-      with a litte transparency added to not cut off the header label */ 
+      with a litte transparency added to not cut off the header label */
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
       stop:0 rgba(34,34,34,190),
       stop:1 rgba(17,17,17,190));
@@ -2561,7 +2529,7 @@ WEffectSelector,
   #fadeModeCombobox {
     height: 19px;
     padding: 0px 0px 1px 5px;
-    margin: 0px 1px 2px 1px; 
+    margin: 0px 1px 2px 1px;
   }
   WEffectSelector::down-arrow,
   #fadeModeCombobox::down-arrow {
@@ -2584,7 +2552,7 @@ WEffectSelector,
   WEffectSelector::indicator:checked,
   #fadeModeCombobox::indicator:checked {
     /* checkbox container is 28 x 22px;
-      use margin + border to create a square checkbox sized like kill buttons */ 
+      use margin + border to create a square checkbox sized like kill buttons */
     margin: 2px;
     image: url(skin:/buttons_classic/btn__lib_checkmark_orange.svg);
   }
@@ -2633,7 +2601,7 @@ WEffectSelector,
     padding: 5px 12px 5px 26px;
   }
   /* Icons in QLineEdit menus:
-   beatsize spinbox, searchbox, editable track properties */ 
+   beatsize spinbox, searchbox, editable track properties */
   WBeatSpinBox QMenu::icon,
   #LibraryContainer QMenu::icon,
   WCueMenuPopup QMenu::icon,
@@ -2774,7 +2742,3 @@ WEffectSelector,
 #Border58 {
   border: 1px solid #585858;
 }
-
-
-
-

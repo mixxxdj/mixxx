@@ -95,6 +95,7 @@
       <attribute persist="true" config_key="[Skin],sampler_row_8_expanded">0</attribute>
 
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
+
       <!-- Library -->
       <attribute config_key="[Master],maximize_library">0</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>

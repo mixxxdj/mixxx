@@ -13,10 +13,39 @@ if(POLICY CMP0071)
   cmake_policy(SET CMP0071 NEW)
 endif()
 
+# CMAKE_CXX_COMPILER_ID: Distinguish between "AppleClang" and "Clang"
+if(POLICY CMP0025)
+  cmake_policy(SET CMP0025 NEW)
+endif()
+set(CMAKE_POLICY_WARNING_CMP0025 ON)
+
+#######################################################################
+# Compilers and toolchains
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  # GNU is GNU GCC
+  set(GNU_GCC true)
+else()
+  set(GNU_GCC false)
+endif()
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  # using regular Clang or AppleClang
+  set(LLVM_CLANG true)
+else()
+  set(LLVM_CLANG false)
+endif()
+
+# CMake implicitly sets the variable MSVC to true for Microsoft
+# Visual C++ or another compiler simulating Visual C++.
+# https://cmake.org/cmake/help/latest/variable/MSVC.html
+
+#######################################################################
+
 set(CMAKE_CXX_STANDARD 17)
 
 # Speed up builds on HDDs
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") # GNU is GNU GCC
+if(GNU_GCC)
   add_compile_options(-pipe)
 endif()
 
@@ -106,8 +135,7 @@ else()
   endif()
   cmake_dependent_option(CCACHE_SUPPORT "Enable ccache support" ON "CCACHE_EXECUTABLE" OFF)
   if(CCACHE_SUPPORT)
-    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" # GNU is GNU GCC
-      OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    if(GNU_GCC OR LLVM_CLANG)
       # without this compiler messages in `make` backend would be uncolored
       set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fdiagnostics-color=auto")
     endif()
@@ -129,13 +157,6 @@ configure_file(
 
 if(CMAKE_VERSION VERSION_LESS "3.7.0")
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
-endif()
-
-if(CMAKE_CXX_COMPILER_ID MATCHES "[Cc]lang")
-  # using regular Clang or AppleClang
-  set(CLANG ON)
-else()
-  set(CLANG OFF)
 endif()
 
 # Mixxx itself
@@ -168,7 +189,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/control/controlplaybutton.cpp
   src/control/controlpushbutton.cpp
   src/control/controlttrotary.cpp
-  src/controllers/colorjsproxy.cpp
+  src/controllers/colormapper.cpp
+  src/controllers/colormapperjsproxy.cpp
   src/controllers/controller.cpp
   src/controllers/controllerdebug.cpp
   src/controllers/controllerengine.cpp
@@ -314,7 +336,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/errordialoghandler.cpp
   src/library/analysisfeature.cpp
   src/library/analysislibrarytablemodel.cpp
-  src/library/trackloader.cpp
   src/library/autodj/autodjfeature.cpp
   src/library/autodj/autodjprocessor.cpp
   src/library/autodj/dlgautodj.cpp
@@ -411,6 +432,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/tableitemdelegate.cpp
   src/library/trackcollection.cpp
   src/library/trackcollectionmanager.cpp
+  src/library/trackloader.cpp
   src/library/traktor/traktorfeature.cpp
   src/library/treeitem.cpp
   src/library/treeitemmodel.cpp
@@ -426,13 +448,16 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/mixer/samplerbank.cpp
   src/mixxx.cpp
   src/mixxxapplication.cpp
-  src/musicbrainz/acoustidclient.cpp
   src/musicbrainz/chromaprinter.cpp
   src/musicbrainz/crc.c
   src/musicbrainz/gzip.cpp
-  src/musicbrainz/musicbrainzclient.cpp
-  src/musicbrainz/network.cpp
+  src/musicbrainz/musicbrainz.cpp
+  src/musicbrainz/musicbrainzxml.cpp
   src/musicbrainz/tagfetcher.cpp
+  src/musicbrainz/web/acoustidlookuptask.cpp
+  src/musicbrainz/web/musicbrainzrecordingstask.cpp
+  src/network/jsonwebtask.cpp
+  src/network/webtask.cpp
   src/preferences/broadcastprofile.cpp
   src/preferences/broadcastsettings.cpp
   src/preferences/broadcastsettings_legacy.cpp
@@ -442,6 +467,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefautodjdlg.ui
   src/preferences/dialog/dlgprefbeats.cpp
   src/preferences/dialog/dlgprefbeatsdlg.ui
+  src/preferences/dialog/dlgprefcolors.cpp
+  src/preferences/dialog/dlgprefcolorsdlg.ui
   src/preferences/dialog/dlgprefcrossfader.cpp
   src/preferences/dialog/dlgprefcrossfaderdlg.ui
   src/preferences/dialog/dlgprefdeck.cpp
@@ -474,6 +501,9 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefwaveformdlg.ui
   src/preferences/dlgpreferencepage.cpp
   src/preferences/effectsettingsmodel.cpp
+  src/preferences/colorpaletteeditor.cpp
+  src/preferences/colorpaletteeditormodel.cpp
+  src/preferences/colorpalettesettings.cpp
   src/preferences/replaygainsettings.cpp
   src/preferences/settingsmanager.cpp
   src/preferences/upgrade.cpp
@@ -512,6 +542,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/beatutils.cpp
   src/track/bpm.cpp
   src/track/cue.cpp
+  src/track/cueinfo.cpp
   src/track/globaltrackcache.cpp
   src/track/keyfactory.cpp
   src/track/keys.cpp
@@ -520,6 +551,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/replaygain.cpp
   src/track/serato/markers.cpp
   src/track/serato/markers2.cpp
+  src/track/serato/tags.cpp
   src/track/track.cpp
   src/track/trackfile.cpp
   src/track/trackinfo.cpp
@@ -534,7 +566,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/cache.cpp
   src/util/cmdlineargs.cpp
   src/util/color/color.cpp
-  src/util/color/predefinedcolor.cpp
+  src/util/color/colorpalette.cpp
+  src/util/color/predefinedcolorpalettes.cpp
   src/util/console.cpp
   src/util/db/dbconnection.cpp
   src/util/db/dbconnectionpool.cpp
@@ -702,8 +735,7 @@ if(UNIX AND NOT APPLE)
 endif()
 
 # Disable warnings in generated source files
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" # GNU is GNU GCC
-  OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+if(GNU_GCC OR LLVM_CLANG)
   set_property(
     SOURCE src/library/rekordbox/rekordbox_anlz.cpp
     APPEND_STRING
@@ -812,71 +844,109 @@ target_link_libraries(mixxx PUBLIC mixxx-lib)
 #
 include(GNUInstallDirs)
 install(
-  TARGETS mixxx
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  TARGETS
+    mixxx
+  RUNTIME DESTINATION
+    ${CMAKE_INSTALL_BINDIR}
 )
 
 # Skins
 install(
-  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/res/skins
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/mixxx
+  DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/skins
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/mixxx
 )
 
 # Controller mappings
 install(
-  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/res/controllers
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/mixxx
+  DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/controllers
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/mixxx
 )
 
 # Translation files
 install(
-  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/res/translations
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/mixxx
-  FILES_MATCHING PATTERN "*.qm"
+  DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/translations
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/mixxx
+  FILES_MATCHING PATTERN
+    "*.qm"
 )
 # Font files
 install(
-  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/res/fonts
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/mixxx
+  DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/fonts
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/mixxx
 )
 
 # Keyboard mapping(s)
 install(
-  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/res/keyboard
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/mixxx
+  DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/keyboard
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/mixxx
+)
+
+# QScriptEngine extensions
+install(
+  DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}/script
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/mixxx
+)
+
+# Licenses
+install(
+  FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
+    ${CMAKE_CURRENT_SOURCE_DIR}/COPYING
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/licenses/mixxx
 )
 
 # Documentation
 install(
   FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
     ${CMAKE_CURRENT_SOURCE_DIR}/README
     ${CMAKE_CURRENT_SOURCE_DIR}/Mixxx-Manual.pdf
-  DESTINATION ${CMAKE_INSTALL_DOCDIR}/mixxx
+  DESTINATION
+    ${CMAKE_INSTALL_DOCDIR}
 )
 
 # .desktop file for KDE/GNOME menu
 install(
-  FILES ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.desktop
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/applications/mixxx
+  FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.desktop
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/applications
 )
 
 # Icon file for menu entry
 install(
-  FILES ${CMAKE_CURRENT_SOURCE_DIR}/res/images/mixxx_icon.svg
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/pixmaps/rules.d
+  FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/images/mixxx_icon.svg
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/pixmaps
 )
 
 # .appdata.xml file for KDE/GNOME AppStream initiative
 install(
-  FILES ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.appdata.xml
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/appdata
+  FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.appdata.xml
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/appdata
 )
 
 # udev rule file for USB HID and Bulk controllers
 install(
-  FILES ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.usb.rules
-  DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/udev/rules.d
+  FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx-usb-uaccess.rules
+  DESTINATION
+    ${CMAKE_INSTALL_SYSCONFDIR}/udev/rules.d
 )
 
 # Packaging
@@ -901,6 +971,9 @@ include(CPack)
 # when building with Visual Studio
 set(gtest_force_shared_crt ON CACHE BOOL "Pass Mixxx compiler/linker options to GoogleTest" FORCE)
 
+# Prevent installation of GoogleTest libraries
+set(INSTALL_GTEST OFF CACHE BOOL "Disable installation of GoogleTest" FORCE)
+
 # Add googletest directly to our build. This adds the following targets:
 # gtest, gtest_main, gmock and gmock_main
 add_subdirectory(
@@ -922,6 +995,10 @@ add_executable(mixxx-test
   src/test/broadcastsettings_test.cpp
   src/test/cache_test.cpp
   src/test/channelhandle_test.cpp
+  src/test/colorconfig_test.cpp
+  src/test/colormapperjsproxy_test.cpp
+  src/test/colorpalette_test.cpp
+  src/test/compatibility_test.cpp
   src/test/configobject_test.cpp
   src/test/controller_preset_validation_test.cpp
   src/test/controllerengine_test.cpp
@@ -929,6 +1006,7 @@ add_executable(mixxx-test
   src/test/coverartcache_test.cpp
   src/test/coverartutils_test.cpp
   src/test/cratestorage_test.cpp
+  src/test/cue_test.cpp
   src/test/cuecontrol_test.cpp
   src/test/dbconnectionpool_test.cpp
   src/test/dbidtest.cpp
@@ -976,6 +1054,7 @@ add_executable(mixxx-test
   src/test/searchqueryparsertest.cpp
   src/test/seratomarkerstest.cpp
   src/test/seratomarkers2test.cpp
+  src/test/seratotagstest.cpp
   src/test/signalpathtest.cpp
   src/test/skincontext_test.cpp
   src/test/softtakeover_test.cpp
@@ -998,30 +1077,21 @@ add_executable(mixxx-test
 set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
 target_link_libraries(mixxx-test PUBLIC mixxx-lib gtest gmock)
 
-# Benchmark
-add_library(gbenchmark STATIC EXCLUDE_FROM_ALL
-  lib/benchmark/src/benchmark.cc
-  lib/benchmark/src/colorprint.cc
-  lib/benchmark/src/commandlineflags.cc
-  lib/benchmark/src/console_reporter.cc
-  lib/benchmark/src/csv_reporter.cc
-  lib/benchmark/src/json_reporter.cc
-  lib/benchmark/src/log.cc
-  lib/benchmark/src/reporter.cc
-  lib/benchmark/src/sleep.cc
-  lib/benchmark/src/string_util.cc
-  lib/benchmark/src/sysinfo.cc
-  lib/benchmark/src/walltime.cc
-  lib/benchmark/src/re_std.cc
+#
+# Benchmark tests
+#
+
+# Disable testing of google/benchmark
+set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
+
+# Prevent installation of google/benchmark artifacts
+set(BENCHMARK_ENABLE_INSTALL OFF CACHE BOOL "Disable installation of google/benchmark" FORCE)
+
+add_subdirectory(
+  "${CMAKE_CURRENT_SOURCE_DIR}/lib/benchmark"
+  "${CMAKE_CURRENT_BINARY_DIR}/lib/benchmark"
 )
-target_compile_definitions(gbenchmark PRIVATE HAVE_STD_REGEX)
-find_package(Threads REQUIRED)
-target_link_libraries(gbenchmark ${CMAKE_THREAD_LIBS_INIT})
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  target_link_libraries(gbenchmark Shlwapi)
-endif()
-target_include_directories(gbenchmark SYSTEM PUBLIC lib/benchmark/include)
-target_link_libraries(mixxx-test PUBLIC gbenchmark)
+target_link_libraries(mixxx-test PUBLIC benchmark)
 
 # Test Suite
 include(CTest)
@@ -1035,13 +1105,13 @@ gtest_add_tests(
 set_tests_properties(${testsuite} PROPERTIES TIMEOUT 30)
 
 # Benchmarking
-add_custom_target(benchmark
+add_custom_target(mixxx-benchmark
   COMMAND $<TARGET_FILE:mixxx-test> --benchmark
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
   COMMENT "Mixxx Benchmarks"
   VERBATIM
 )
-add_dependencies(benchmark mixxx-test)
+add_dependencies(mixxx-benchmark mixxx-test)
 
 if(UNIX)
   add_custom_target(mixxx-testdata
@@ -1074,13 +1144,21 @@ if(UNIX)
     COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res"
     COMMENT "Symlinking resources to build directory..."
   )
+  add_custom_target(mixxx-script
+    COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/script" "${CMAKE_CURRENT_BINARY_DIR}/script"
+    COMMENT "Symlinking to build directory..."
+  )
 else()
   add_custom_target(mixxx-res
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/"
     COMMENT "Copying resources to build directory..."
   )
+  add_custom_target(mixxx-script
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/script" "${CMAKE_CURRENT_BINARY_DIR}/"
+    COMMENT "Copying QScriptEngine extensions to build directory..."
+  )
 endif()
-add_dependencies(mixxx-lib mixxx-res)
+add_dependencies(mixxx-lib mixxx-res mixxx-script)
 
 # Windows-only resource file
 if(WIN32)
@@ -1582,7 +1660,7 @@ endif()
 # Clang Color Diagnostics
 option(CLANG_COLORDIAG "Clang color diagnostics" OFF)
 if(CLANG_COLORDIAG)
-  if(NOT CLANG)
+  if(NOT LLVM_CLANG)
     message(FATAL_ERROR "Color Diagnostics are only available when using Clang.")
   endif()
   target_compile_options(mixxx-lib PUBLIC -fcolor-diagnostics)
@@ -1603,7 +1681,7 @@ if(CLANG_TSAN)
   list(APPEND CLANG_SANITIZERS "thread")
 endif()
 if(NOT CLANG_SANITIZERS STREQUAL "")
-  if(NOT CLANG)
+  if(NOT LLVM_CLANG)
     message(FATAL_ERROR "Clang Sanitizers are only available when using Clang.")
   endif()
   list(JOIN CLANG_SANITIZERS "," CLANG_SANITZERS_JOINED)
@@ -2036,7 +2114,7 @@ if(NOT OPTIMIZE STREQUAL "off")
     else()
       message(FATAL_ERROR "Invalid value passed to OPTIMIZE option: ${OPTIMIZE}")
     endif()
-  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  elseif(GNU_GCC)
     # Common flags to all optimizations.
     # -ffast-math will prevent a performance penalty by denormals
     # (floating point values almost Zero are treated as Zero)

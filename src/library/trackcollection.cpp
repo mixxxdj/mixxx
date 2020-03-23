@@ -36,12 +36,14 @@ TrackCollection::~TrackCollection() {
 void TrackCollection::repairDatabase(QSqlDatabase database) {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
 
+    kLogger.info() << "Repairing database";
     m_crates.repairDatabase(database);
 }
 
 void TrackCollection::connectDatabase(QSqlDatabase database) {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
 
+    kLogger.info() << "Connecting database";
     m_database = database;
     m_trackDao.initialize(database);
     m_playlistDao.initialize(database);
@@ -55,6 +57,7 @@ void TrackCollection::connectDatabase(QSqlDatabase database) {
 void TrackCollection::disconnectDatabase() {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
 
+    kLogger.info() << "Disconnecting database";
     m_database = QSqlDatabase();
     m_trackDao.finish();
     m_crates.disconnectDatabase();
@@ -67,6 +70,7 @@ void TrackCollection::connectTrackSource(QSharedPointer<BaseTrackCache> pTrackSo
         kLogger.warning() << "Track source has already been connected";
         return;
     }
+    kLogger.info() << "Connecting track source";
     m_pTrackSource = pTrackSource;
     connect(&m_trackDao,
             &TrackDAO::trackDirty,
@@ -333,7 +337,13 @@ bool TrackCollection::purgeTracks(
 
 bool TrackCollection::purgeAllTracks(
         const QDir& rootDir) {
-    QList<TrackId> trackIds = m_trackDao.getAllTrackIds(rootDir);
+    QList<TrackRef> trackRefs = m_trackDao.getAllTrackRefs(rootDir);
+    QList<TrackId> trackIds;
+    trackIds.reserve(trackRefs.size());
+    for (const auto trackRef : trackRefs) {
+        DEBUG_ASSERT(trackRef.hasId());
+        trackIds.append(trackRef.getId());
+    }
     return purgeTracks(trackIds);
 }
 

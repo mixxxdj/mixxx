@@ -22,7 +22,6 @@
 
 class ScannerTask;
 class LibraryScannerDlg;
-class TrackCollection;
 
 class LibraryScanner : public QThread {
     FRIEND_TEST(LibraryScannerTest, ScannerRoundtrip);
@@ -30,7 +29,6 @@ class LibraryScanner : public QThread {
   public:
     LibraryScanner(
             mixxx::DbConnectionPoolPtr pDbConnectionPool,
-            TrackCollection* pTrackCollection,
             const UserSettingsPointer& pConfig);
     ~LibraryScanner() override;
 
@@ -99,10 +97,6 @@ class LibraryScanner : public QThread {
     void cleanUpScan();
 
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
-
-    // The library trackcollection. Do not touch this from the library scanner
-    // thread.
-    TrackCollection* m_pTrackCollection;
 
     // The pool of threads used for worker tasks.
     QThreadPool m_pool;

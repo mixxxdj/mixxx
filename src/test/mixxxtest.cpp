@@ -1,5 +1,6 @@
 #include "test/mixxxtest.h"
 
+#include "library/coverartutils.h"
 #include "sources/soundsourceproxy.h"
 
 namespace {
@@ -22,11 +23,15 @@ MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
     s_pApplication.reset(new MixxxApplication(argc, argv));
 
     SoundSourceProxy::registerSoundSourceProviders();
+
+    // All guessing of cover art should be done synchronously
+    // in the same thread during tests to prevent test failures
+    // due to timing issues.
+    disableConcurrentGuessingOfTrackCoverInfoDuringTests();
 }
 
 MixxxTest::ApplicationScope::~ApplicationScope() {
     DEBUG_ASSERT(s_pApplication);
-
     s_pApplication.reset();
 }
 

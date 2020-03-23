@@ -531,12 +531,7 @@ WWidgetGroup {
     image: url(skin:/buttons/btn_aux_unit.svg) no-repeat center left;
   }
   #MicUnitLabel, #AuxUnitLabel {
-    /* not applied
-    border-left: 1px solid #453117;
-    background-color: #456411;
-    margin-left: -2px;
-    background-color: #911669; */
-    padding-bottom: 10px;
+    padding-bottom: 8px;
     color: #b4b4b4;
     font-size: 16px/22px;
     font-weight: bold;
@@ -920,7 +915,7 @@ WLabel#TrackComment {
 }
 
 #MicTalkover,
-#AuxMute {
+#AuxEnable {
   background-color: transparent;
   image: url(skin:/buttons/btn_mic_aux_mute.svg) no-repeat center center;
 }
@@ -928,7 +923,8 @@ WLabel#TrackComment {
 #PlayCue[displayValue="0"]:hover,
 #SamplerPlayCue[displayValue="0"]:hover,
 #MicTalkover[displayValue="0"]:hover,
-#AuxMute[displayValue="1"]:hover {
+#AuxEnable[displayValue="0"]:hover,
+#MicAuxAdd[displayValue="0"]:hover {
   border: 1px solid #ff9900;
   }
   #SamplerPlayCue[displayValue="0"]:hover {
@@ -942,7 +938,7 @@ WLabel#TrackComment {
 #PlayCue[displayValue="1"],
 #SamplerPlayCue[displayValue="1"],
 #MicTalkover[displayValue="1"],
-#AuxMute[displayValue="0"],
+#AuxEnable[displayValue="1"],
 #PassthroughPlayCover,
 #LoopIndicator {
   background-color: #ff8000;
@@ -951,12 +947,13 @@ WLabel#TrackComment {
   #PlayCue[displayValue="1"]:hover,
   #SamplerPlayCue[displayValue="1"]:hover,
   #MicTalkover[displayValue="1"]:hover,
-  #AuxMute[displayValue="0"]:hover {
+  #AuxEnable[displayValue="1"]:hover {
     border: 1px solid #eeeeee;
   }
 
 #MicTalkover[displayValue="0"],
-#AuxMute[displayValue="1"] {
+#AuxEnable[displayValue="0"],
+#MicAuxAdd[displayValue="0"] {
   background-color: #777;
   border: 1px solid #0f0f0f;
   }
@@ -967,6 +964,12 @@ WLabel#TrackComment {
   #PlayUnderlay[displayValue="1"] {
     border: 1px solid #ff8000;
   }
+
+#MicAuxAdd {
+  font: 17px;
+  font-weight: bold;
+  color: #0f0f0f;
+}
 
 #HotCues_Sampler_Preview {
   qproperty-layoutAlignment: 'AlignBottom';
@@ -1006,63 +1009,12 @@ WLabel#TrackComment {
     border: 1px solid #eeeeee;
     }
 
-/* Hotcue Color: No Color */
-#HotcueButton[displayValue="1"][highlight="0"],
-#HotcueButton[displayValue="2"][highlight="0"] {
-    background-color: #666;
+#HotcueButton[backgroundIsDark=true][hasBackgroundColor=true] {
+    color: #eeeeee;
 }
 
-/* Hotcue Color: Red */
-#HotcueButton[displayValue="1"][highlight="1"],
-#HotcueButton[displayValue="2"][highlight="1"] {
-    background-color: #c50a08;
-}
-
-/* Hotcue Color: Green */
-#HotcueButton[displayValue="1"][highlight="2"],
-#HotcueButton[displayValue="2"][highlight="2"] {
-    background-color: #32be44;
-    color: #111;
-}
-
-/* Hotcue Color: Blue */
-#HotcueButton[displayValue="1"][highlight="3"],
-#HotcueButton[displayValue="2"][highlight="3"] {
-    background-color: #0044ff;
-}
-
-/* Hotcue Color: Yellow */
-#HotcueButton[displayValue="1"][highlight="4"],
-#HotcueButton[displayValue="2"][highlight="4"] {
-    color: #222;
-    background-color: #f8d200;
-}
-
-/* Hotcue Color: Celeste */
-#HotcueButton[displayValue="1"][highlight="5"],
-#HotcueButton[displayValue="2"][highlight="5"] {
-    color: #111;
-    background-color: #42d4f4;
-}
-
-/* Hotcue Color: Purple */
-#HotcueButton[displayValue="1"][highlight="6"],
-#HotcueButton[displayValue="2"][highlight="6"] {
-    background-color: #af00cc;
-}
-
-/* Hotcue Color: Pink */
-#HotcueButton[displayValue="1"][highlight="7"],
-#HotcueButton[displayValue="2"][highlight="7"] {
-    color: #333;
-    background-color: #fca6d7;
-}
-
-/* Hotcue Color: White */
-#HotcueButton[displayValue="1"][highlight="8"],
-#HotcueButton[displayValue="2"][highlight="8"] {
-    color: #222;
-    background-color: #f2f2ff;
+#HotcueButton[backgroundIsDark=false][hasBackgroundColor=true] {
+    color: #0f0f0f;
 }
 
 #CueButton {

@@ -1,10 +1,10 @@
-#ifndef COMPATABILITY_H
-#define COMPATABILITY_H
+#pragma once
 
 #include <QCoreApplication>
 #include <QGuiApplication>
 #include <QList>
 #include <QScreen>
+#include <QUuid>
 #include <QWindow>
 #include <QWidget>
 
@@ -100,6 +100,29 @@ inline QScreen* getPrimaryScreen() {
     return nullptr;
 }
 
+inline
+QString uuidToStringWithoutBraces(const QUuid& uuid) {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
+    return uuid.toString(QUuid::WithoutBraces);
+#else
+    QString withBraces = uuid.toString();
+    DEBUG_ASSERT(withBraces.size() == 38);
+    DEBUG_ASSERT(withBraces.startsWith('{'));
+    DEBUG_ASSERT(withBraces.endsWith('}'));
+    // We need to strip off the heading/trailing curly braces after formatting
+    return withBraces.mid(1, 36);
+#endif
+}
+
+inline
+QString uuidToNullableStringWithoutBraces(const QUuid& uuid) {
+    if (uuid.isNull()) {
+        return QString();
+    } else {
+        return uuidToStringWithoutBraces(uuid);
+    }
+}
+
 template <typename T>
 inline T atomicLoadAcquire(const QAtomicInteger<T>& atomicInt) {
     // TODO: QBasicAtomicInteger<T>::load() is deprecated and should be
@@ -184,4 +207,13 @@ inline void atomicStoreRelaxed(QAtomicPointer<T>& atomicPtr, T* newValue) {
 #endif
 }
 
-#endif /* COMPATABILITY_H */
+#if QT_VERSION < QT_VERSION_CHECK(5, 6, 0)
+template<typename T>
+inline uint qHash(const QList<T>& key, uint seed = 0) {
+    uint hash = 0;
+    for (const auto& elem : key) {
+        hash ^= qHash(elem, seed);
+    }
+    return hash;
+}
+#endif

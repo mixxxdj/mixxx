@@ -469,6 +469,11 @@ void Tooltips::addStandardTooltips() {
             << tr("Mute")
             << tr("Mutes the selected channel's audio in the master output.");
 
+    add("master_enable")
+            << tr("Master enable")
+            << tr("Hold or short click for latching to")
+            << tr("mix this input into the master output.");
+
     add("back_start")
             << tr("Fast Rewind")
             << QString("%1: %2").arg(leftClick, tr("Fast rewind through the track."))
@@ -962,7 +967,7 @@ void Tooltips::addStandardTooltips() {
     add("SaveSamplerBank")
             << tr("Save Sampler Bank")
             << tr("Save the collection of samples loaded in the samplers.");
-    
+
     add("LoadSamplerBank")
             << tr("Load Sampler Bank")
             << tr("Load a previously saved collection of samples into the samplers.");

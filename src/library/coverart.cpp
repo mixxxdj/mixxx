@@ -1,6 +1,5 @@
-#include <QtDebug>
-
 #include "library/coverart.h"
+
 #include "library/coverartutils.h"
 #include "util/debug.h"
 #include "util/logger.h"
@@ -98,40 +97,74 @@ QImage CoverInfo::loadImage(
                 TrackFile(trackLocation),
                 pTrackLocationToken);
     } else if (type == CoverInfo::FILE) {
-        VERIFY_OR_DEBUG_ASSERT(!trackLocation.isEmpty()) {
-            kLogger.warning()
-                    << "loadImage"
-                    << type
-                    << "cover with empty trackLocation."
-                    << "Relative paths will not work.";
-            SecurityTokenPointer pToken =
-                    Sandbox::openSecurityToken(
-                            QFileInfo(coverLocation),
-                            true);
-            return QImage(coverLocation);
+        auto coverFile = QFileInfo(coverLocation);
+        if (coverFile.isRelative()) {
+            VERIFY_OR_DEBUG_ASSERT(!trackLocation.isEmpty()) {
+                // This is not expected to happen, because every track
+                // must have a valid location, i.e. a file path. Most
+                // likely a programming error, but might also be caused
+                // by yet unknown circumstances.
+                kLogger.warning()
+                        << "loadImage"
+                        << type
+                        << "cover with empty track location"
+                        << "and relative file path:"
+                        << coverFile.filePath();
+                return QImage();
+            }
+            // Compose track directory with relative path
+            const auto trackFile = TrackFile(trackLocation);
+            DEBUG_ASSERT(trackFile.asFileInfo().isAbsolute());
+            coverFile = QFileInfo(
+                    trackFile.directory(),
+                    coverLocation);
         }
-
-        const QFileInfo coverFile(
-                TrackFile(trackLocation).directory(),
-                coverLocation);
-        const QString coverFilePath = coverFile.filePath();
+        DEBUG_ASSERT(coverFile.isAbsolute());
         if (!coverFile.exists()) {
             kLogger.warning()
                     << "loadImage"
                     << type
                     << "cover does not exist:"
-                    << coverFilePath;
+                    << coverFile.filePath();
             return QImage();
         }
         SecurityTokenPointer pToken =
-                Sandbox::openSecurityToken(coverFile, true);
-        return QImage(coverFilePath);
+                Sandbox::openSecurityToken(
+                        coverFile,
+                        true);
+        return QImage(coverFile.filePath());
     } else if (type == CoverInfo::NONE) {
         return QImage();
     } else {
         DEBUG_ASSERT(!"unhandled CoverInfo::Type");
         return QImage();
     }
+}
+
+bool CoverInfo::refreshImageHash(
+        const QImage& loadedImage,
+        const SecurityTokenPointer& pTrackLocationToken) {
+    if (CoverImageUtils::isValidHash(hash)) {
+        // Trust that a valid hash has been calculated from the
+        // corresponding image. Otherwise we would refresh all
+        // hashes over and over again.
+        return false;
+    }
+    QImage image = loadedImage;
+    if (loadedImage.isNull()) {
+        image = loadImage(pTrackLocationToken);
+    }
+    if (image.isNull() && type != CoverInfo::NONE) {
+        kLogger.warning()
+                << "Resetting cover info"
+                << *this;
+        reset();
+        return true;
+    }
+    hash = CoverImageUtils::calculateHash(image);
+    DEBUG_ASSERT(image.isNull() || CoverImageUtils::isValidHash(hash));
+    DEBUG_ASSERT(!image.isNull() || hash == CoverImageUtils::defaultHash());
+    return true;
 }
 
 bool operator==(const CoverInfo& a, const CoverInfo& b) {

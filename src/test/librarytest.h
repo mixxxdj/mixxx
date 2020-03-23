@@ -31,6 +31,9 @@ class LibraryTest : public MixxxTest {
         return trackCollections()->internalCollection();
     }
 
+    TrackPointer getOrAddTrackByLocation(
+            const QString& trackLocation);
+
   private:
     const MixxxDb m_mixxxDb;
     const mixxx::DbConnectionPooler m_dbConnectionPooler;
