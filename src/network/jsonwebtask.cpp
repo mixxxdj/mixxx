@@ -236,6 +236,12 @@ bool JsonWebTask::doStart(
             &JsonWebTask::slotNetworkReplyFinished,
             Qt::UniqueConnection);
 
+    connect(m_pendingNetworkReply,
+            QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error),
+            this,
+            &JsonWebTask::slotNetworkReplyFinished,
+            Qt::UniqueConnection);
+
     return true;
 }
 

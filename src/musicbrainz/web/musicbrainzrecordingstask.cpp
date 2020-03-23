@@ -115,6 +115,12 @@ bool MusicBrainzRecordingsTask::doStart(
             &MusicBrainzRecordingsTask::slotNetworkReplyFinished,
             Qt::UniqueConnection);
 
+    connect(m_pendingNetworkReply,
+            QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error),
+            this,
+            &MusicBrainzRecordingsTask::slotNetworkReplyFinished,
+            Qt::UniqueConnection);
+
     return true;
 }
 
