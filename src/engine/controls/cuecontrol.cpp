@@ -1711,13 +1711,18 @@ void CueControl::hotcueFocusColorPrev(double v) {
         return;
     }
 
-    mixxx::RgbColor::optional_t controlColor = pControl->getColor();
-    if (!controlColor) {
+    CuePointer pCue = pControl->getCue();
+    if (!pCue) {
+        return;
+    }
+
+    mixxx::RgbColor::optional_t color = pCue->getColor();
+    if (!color) {
         return;
     }
 
     ColorPalette colorPalette = m_colorPaletteSettings.getHotcueColorPalette();
-    pControl->setColor(colorPalette.previousColor(*controlColor));
+    pCue->setColor(colorPalette.previousColor(*color));
 }
 
 void CueControl::hotcueFocusColorNext(double v) {
@@ -1735,13 +1740,18 @@ void CueControl::hotcueFocusColorNext(double v) {
         return;
     }
 
-    mixxx::RgbColor::optional_t controlColor = pControl->getColor();
-    if (!controlColor) {
+    CuePointer pCue = pControl->getCue();
+    if (!pCue) {
+        return;
+    }
+
+    mixxx::RgbColor::optional_t color = pCue->getColor();
+    if (!color) {
         return;
     }
 
     ColorPalette colorPalette = m_colorPaletteSettings.getHotcueColorPalette();
-    pControl->setColor(colorPalette.nextColor(*controlColor));
+    pCue->setColor(colorPalette.nextColor(*color));
 }
 
 

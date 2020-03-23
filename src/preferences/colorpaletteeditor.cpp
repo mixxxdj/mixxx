@@ -75,6 +75,10 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
             &QComboBox::editTextChanged,
             this,
             &ColorPaletteEditor::slotPaletteNameChanged);
+    connect(m_pResetButton,
+            &QPushButton::clicked,
+            this,
+            &ColorPaletteEditor::slotResetButtonClicked);
     connect(m_pDiscardButton,
             &QPushButton::clicked,
             this,
