@@ -91,6 +91,10 @@ void TagFetcher::slotFingerprintReady() {
             this,
             &TagFetcher::slotAcoustIdTaskFailed);
     connect(m_pAcoustIdTask,
+            &mixxx::AcoustIdLookupTask::aborted,
+            this,
+            &TagFetcher::slotAcoustIdTaskAborted);
+    connect(m_pAcoustIdTask,
             &mixxx::AcoustIdLookupTask::networkError,
             this,
             &TagFetcher::slotAcoustIdTaskNetworkError);
@@ -126,6 +130,10 @@ void TagFetcher::slotAcoustIdTaskSucceeded(
             this,
             &TagFetcher::slotMusicBrainzTaskFailed);
     connect(m_pMusicBrainzTask,
+            &mixxx::MusicBrainzRecordingsTask::aborted,
+            this,
+            &TagFetcher::slotMusicBrainzTaskAborted);
+    connect(m_pMusicBrainzTask,
             &mixxx::MusicBrainzRecordingsTask::networkError,
             this,
             &TagFetcher::slotMusicBrainzTaskNetworkError);
@@ -143,6 +151,10 @@ void TagFetcher::slotAcoustIdTaskFailed(
             -1);
 }
 
+void TagFetcher::slotAcoustIdTaskAborted() {
+    abortAcoustIdTask();
+}
+
 void TagFetcher::slotAcoustIdTaskNetworkError(
         QUrl requestUrl,
         QNetworkReply::NetworkError errorCode,
@@ -156,6 +168,10 @@ void TagFetcher::slotAcoustIdTaskNetworkError(
             "AcoustID",
             errorString,
             errorCode);
+}
+
+void TagFetcher::slotMusicBrainzTaskAborted() {
+    abortMusicBrainzTask();
 }
 
 void TagFetcher::slotMusicBrainzTaskNetworkError(

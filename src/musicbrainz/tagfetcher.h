@@ -45,6 +45,7 @@ class TagFetcher : public QObject {
             QList<QUuid> recordingIds);
     void slotAcoustIdTaskFailed(
             mixxx::network::JsonWebResponse response);
+    void slotAcoustIdTaskAborted();
     void slotAcoustIdTaskNetworkError(
             QUrl requestUrl,
             QNetworkReply::NetworkError errorCode,
@@ -57,6 +58,7 @@ class TagFetcher : public QObject {
             mixxx::network::WebResponse response,
             int errorCode,
             QString errorMessage);
+    void slotMusicBrainzTaskAborted();
     void slotMusicBrainzTaskNetworkError(
             QUrl requestUrl,
             QNetworkReply::NetworkError errorCode,
