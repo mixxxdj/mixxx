@@ -179,7 +179,12 @@ void MusicBrainzRecordingsTask::slotNetworkReplyFinished() {
     if (!recordingsResult.second) {
         kLogger.warning()
                 << "Failed to parse XML response";
-        slotAbort();
+        emitFailed(
+                network::WebResponse(
+                        networkReply->url(),
+                        statusCode),
+                -1,
+                "Failed to parse XML response");
         return;
     }
 
