@@ -148,9 +148,15 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
         } else if (m_pMasterSyncable == nullptr) {
             // If no master active, activate the internal clock.
             activateMaster(m_pInternalClock, false);
-            if (pSyncable->getBaseBpm() > 0) {
-                setMasterParams(pSyncable, pSyncable->getBeatDistance(),
-                                pSyncable->getBaseBpm(), pSyncable->getBpm());
+            Syncable* targetSyncable = findBpmMatchTarget(pSyncable);
+            if (targetSyncable == nullptr) {
+                targetSyncable = pSyncable;
+            }
+            if (targetSyncable->getBaseBpm() > 0) {
+                setMasterParams(targetSyncable,
+                        targetSyncable->getBeatDistance(),
+                        targetSyncable->getBaseBpm(),
+                        targetSyncable->getBpm());
             }
             activateFollower(pSyncable);
         } else {

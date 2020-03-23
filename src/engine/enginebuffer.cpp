@@ -726,6 +726,9 @@ void EngineBuffer::processTrackLocked(
         baserate = m_trackSampleRateOld / sample_rate;
     }
 
+    // Sync requests can affect rate, so process those first.
+    processSyncRequests();
+
     // Note: play is also active during cue preview
     bool paused = !m_playButton->toBool();
     KeyControl::PitchTempoRatio pitchTempoRatio = m_pKeyControl->getPitchTempoRatio();
@@ -741,7 +744,6 @@ void EngineBuffer::processTrackLocked(
 
     // Update the slipped position and seek if it was disabled.
     processSlip(iBufferSize);
-    processSyncRequests();
 
     // Note: This may effects the m_filepos_play, play, scaler and crossfade buffer
     processSeek(paused);
@@ -1137,7 +1139,7 @@ void EngineBuffer::processSyncRequests() {
     }
     if (mode_request != SYNC_INVALID) {
         m_pEngineSync->requestSyncMode(m_pSyncControl,
-                                       static_cast<SyncMode>(mode_request));
+                static_cast<SyncMode>(mode_request));
     }
 }
 
