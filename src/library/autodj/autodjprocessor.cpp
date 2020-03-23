@@ -164,6 +164,9 @@ AutoDJProcessor::AutoDJProcessor(
 
     m_pCOCrossfader = new ControlProxy("[Master]", "crossfader");
     m_pCOCrossfaderReverse = new ControlProxy("[Mixer Profile]", "xFaderReverse");
+    for (int i = 0; i < 4; i++) {
+        m_pVolumeFader[i] = new ControlProxy(tr("[Channel%1]").arg(i + 1), "volume");
+    }
 
     QString str_autoDjTransition = m_pConfig->getValueString(
             ConfigKey(kConfigKey, kTransitionPreferenceName));
@@ -187,6 +190,9 @@ AutoDJProcessor::~AutoDJProcessor() {
     m_decks.clear();
     delete m_pCOCrossfader;
     delete m_pCOCrossfaderReverse;
+    for (int i = 0; i < 4; i++) {
+        delete m_pVolumeFader[i];
+    }
 
     delete m_pSkipNext;
     delete m_pShufflePlaylist;
@@ -200,14 +206,57 @@ double AutoDJProcessor::getCrossfader() const {
     if (m_pCOCrossfaderReverse->toBool()) {
         return m_pCOCrossfader->get() * -1.0;
     }
+
     return m_pCOCrossfader->get();
 }
 
-void AutoDJProcessor::setCrossfader(double value) {
-    if (m_pCOCrossfaderReverse->toBool()) {
-        value *= -1.0;
+double AutoDJProcessor::getVolumeFader() {
+    // TODO(c3n7) Check if this can be done better
+    double faderPos;
+    double volumeFaderPositions[2] ={m_pVolumeFader[0]->get(), m_pVolumeFader[1]->get()};
+    DeckAttributes* pFromDeck = getFromDeck();
+
+    if (pFromDeck->isLeft()  && volumeFaderPositions[0] >= 0) {
+        // y = -2x + 1
+        // faderPos = -2(volumePos) + 1
+        faderPos = (-2 * volumeFaderPositions[0]) + 1;
+    } else if (pFromDeck->isRight()  && volumeFaderPositions[1] >= 0) {
+        // y = 2x - 1
+        faderPos = (2 * volumeFaderPositions[1]) - 1;
+    } else {
+        // TODO(c3n7) Find out if and how this state is reached
+        faderPos = 0;
     }
-    m_pCOCrossfader->set(value);
+
+    return faderPos;
+}
+
+double AutoDJProcessor::getFader() {
+    if (m_faderMode == FaderMode::Crossfader) {
+        return getCrossfader();
+    } else {
+        return getVolumeFader();
+    }
+}
+
+void AutoDJProcessor::setCrossfader(double value) {
+    // TODO(c3n7) Separate the crossfader and the volume faders to their own functions
+    if (m_faderMode == FaderMode::Crossfader) {
+        if (m_pCOCrossfaderReverse->toBool()) {
+            value *= -1.0;
+        }
+        m_pCOCrossfader->set(value);
+        m_pVolumeFader[0]->set(1.0);
+        m_pVolumeFader[1]->set(1.0);
+    } else {
+        // x = (1 - y) / 2
+        double valueFader0 = (1.0 - value) / 2.0;
+        // x = (y + 1) / 2
+        double valueFader1 = (value + 1.0) / 2.0;
+        m_pVolumeFader[0]->set(valueFader0);
+        m_pVolumeFader[1]->set(valueFader1);
+        m_pCOCrossfader->set(0);
+    }
 }
 
 AutoDJProcessor::AutoDJError AutoDJProcessor::shufflePlaylist(
@@ -230,7 +279,8 @@ void AutoDJProcessor::fadeNow() {
         return;
     }
 
-    double crossfader = getCrossfader();
+    // TODO(c3n7) Rename the variable
+    double crossfader = getFader();
     DeckAttributes* pLeftDeck = m_decks[0];
     DeckAttributes* pRightDeck = m_decks[1];
     DeckAttributes* pFromDeck;
@@ -554,6 +604,8 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         deck1->disconnect(this);
         deck2->disconnect(this);
         m_pCOCrossfader->set(0);
+        m_pVolumeFader[0]->set(1.0);
+        m_pVolumeFader[1]->set(1.0);
         emitAutoDJStateChanged(m_eState);
     }
     return ADJ_OK;
@@ -791,7 +843,8 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             return;
         }
 
-        double currentCrossfader = getCrossfader();
+        // TODO(c3n7) Rename the variable
+        double currentCrossfader = getFader();
 
         if (currentCrossfader == crossfaderTarget) {
             // We are done, the fading (from) track is silenced.
@@ -1603,10 +1656,16 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
     }
 }
 
-//TODO(c3n7) Read more on this and edit this function accordingly
 void AutoDJProcessor::setFaderMode(FaderMode newMode) {
     m_pConfig->set(ConfigKey(kConfigKey, kFaderModePreferenceName),
             ConfigValue(static_cast<int>(newMode)));
+    // Get the position of the currently set fader before switching to a new one
+    double faderPos = getFader();
+    m_faderMode = newMode;
+
+    if (m_eState != ADJ_DISABLED) {
+        setCrossfader(faderPos);
+    }
 }
 
 DeckAttributes* AutoDJProcessor::getOtherDeck(
@@ -1660,7 +1719,8 @@ bool AutoDJProcessor::nextTrackLoaded() {
         loadedTrack = rightDeck.getLoadedTrack();
     } else if (!leftDeckPlaying && rightDeckPlaying) {
         loadedTrack = leftDeck.getLoadedTrack();
-    } else if (getCrossfader() < 0.0) {
+    } else if (getFader() < 0.0) {
+        // TODO(c3n7) Delete this comment
         loadedTrack = rightDeck.getLoadedTrack();
     } else {
         loadedTrack = leftDeck.getLoadedTrack();

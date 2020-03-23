@@ -256,6 +256,9 @@ class AutoDJProcessor : public QObject {
     double getCrossfader() const;
     void setCrossfader(double value);
 
+    double getVolumeFader();
+    double getFader();
+
     // Following functions return seconds computed from samples or -1 if
     // track in deck has invalid sample rate (<= 0)
     double getIntroStartSecond(DeckAttributes* pDeck);
@@ -303,8 +306,7 @@ class AutoDJProcessor : public QObject {
 
     ControlProxy* m_pCOCrossfader;
     ControlProxy* m_pCOCrossfaderReverse;
-    ControlProxy* m_pVolumeDeck1;
-    ControlProxy* m_pVolumeDeck2;
+    ControlProxy* m_pVolumeFader[4];
 
     ControlPushButton* m_pSkipNext;
     ControlPushButton* m_pFadeNow;
