@@ -322,7 +322,6 @@ void EngineSync::notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) {
     if (!sync_deck_exists) {
         setMasterBpm(pSyncable, suggested_bpm);
     } else {
-        qDebug() << "from trackloaded";
         pSyncable->setMasterBpm(masterBpm());
     }
 }

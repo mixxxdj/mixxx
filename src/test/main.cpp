@@ -13,6 +13,8 @@ int main(int argc, char **argv) {
         if (strcmp(argv[i], "--benchmark") == 0) {
             run_benchmarks = true;
             break;
+        } else if (strcmp(argv[i], "--trace") == 0) {
+            mixxx::Logging::setLogLevel(mixxx::LogLevel::Trace);
         }
     }
 
@@ -21,8 +23,6 @@ int main(int argc, char **argv) {
     } else {
         testing::InitGoogleTest(&argc, argv);
     }
-
-    mixxx::Logging::setLogLevel(mixxx::LogLevel::Trace);
 
     // Otherwise, run the test suite:
     MixxxTest::ApplicationScope applicationScope(argc, argv);

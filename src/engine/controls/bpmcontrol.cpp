@@ -43,7 +43,8 @@ BpmControl::BpmControl(QString group,
         : EngineControl(group, pConfig),
           m_tapFilter(this, kBpmTapFilterLength, kBpmTapMaxInterval),
           m_dSyncInstantaneousBpm(0.0),
-          m_dLastSyncAdjustment(1.0) {
+          m_dLastSyncAdjustment(1.0),
+          m_dUserTweakingSync(false) {
     m_dSyncTargetBeatDistance.setValue(0.0);
     m_dUserOffset.setValue(0.0);
 
