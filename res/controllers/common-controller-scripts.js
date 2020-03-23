@@ -405,8 +405,9 @@ script.softStart = function(channel, control, value, status, group, factor) {
 bpm = function() {
 }
 
-bpm.tapTime = 0.0
-bpm.tap = []   // Tap sample values
+bpm.tapTime = 0.0;
+bpm.previousTapDelta = 0.0;
+bpm.tap = [];   // Tap sample values
 
 /* -------- ------------------------------------------------------
         bpm.tapButton
@@ -418,18 +419,28 @@ bpm.tap = []   // Tap sample values
    Output:  -
    -------- ------------------------------------------------------ */
 bpm.tapButton = function(deck) {
-    var now = new Date() / 1000   // Current time in seconds
-    var tapDelta = now - bpm.tapTime
-    bpm.tapTime = now
-    if (tapDelta > 2.0) { // reset if longer than two seconds between taps
-        bpm.tap = []
-        return
+    var now = new Date()/1000;   // Current time in seconds
+    var tapDelta = now - bpm.tapTime;
+    bpm.tapTime=now;
+    if (bpm.tap.lenght<1.0) {
+      bpm.previousTapDelta=tapDelta;
     }
-    bpm.tap.push(60 / tapDelta)
-    if (bpm.tap.length > 8) bpm.tap.shift()  // Keep the last 8 samples for averaging
-    var sum = 0
-    for (i = 0; i < bpm.tap.length; i++) {
-        sum += bpm.tap[i]
+    // assign tapDelta in cases where the button has not been pressed previously
+    if (tapDelta>2.0) { // reset if longer than two seconds between taps
+        bpm.tap=[];
+        return;
+    }
+    if ((tapDelta > bpm.previousTapDelta*1.8)||(tapDelta<bpm.previousTapDelta*0.4)) {
+      return;
+    }
+    bpm.previousTapDelta=tapDelta;
+    // the if-case is meant to be a filter to reject accidental double presses
+    // or when the button was missed for some reason.
+    bpm.tap.push(60/tapDelta);
+    if (bpm.tap.length>8) bpm.tap.shift();  // Keep the last 8 samples for averaging
+    var sum = 0;
+    for (i=0; i<bpm.tap.length; i++) {
+        sum += bpm.tap[i];
     }
     var average = sum / bpm.tap.length
 
