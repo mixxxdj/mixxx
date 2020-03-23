@@ -84,6 +84,8 @@ WOverview::WOverview(
     m_pPassthroughControl =
             new ControlProxy(m_group, "passthrough", this);
     m_pPassthroughControl->connectValueChanged(this, &WOverview::onPassthroughChange);
+    onPassthroughChange(m_pPassthroughControl->get());
+
     setAcceptDrops(true);
 
     setMouseTracking(true);
