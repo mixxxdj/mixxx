@@ -2,11 +2,11 @@
 
 #include <QFutureWatcher>
 #include <QObject>
+#include <QPointer>
 
 #include "musicbrainz/web/acoustidlookuptask.h"
 #include "musicbrainz/web/musicbrainzrecordingstask.h"
 #include "track/track.h"
-#include "util/parented_ptr.h"
 
 class TagFetcher : public QObject {
   Q_OBJECT
@@ -71,9 +71,9 @@ class TagFetcher : public QObject {
 
     QFutureWatcher<QString> m_fingerprintWatcher;
 
-    parented_ptr<mixxx::AcoustIdLookupTask> m_pAcoustIdTask;
+    QPointer<mixxx::AcoustIdLookupTask> m_pAcoustIdTask;
 
-    parented_ptr<mixxx::MusicBrainzRecordingsTask> m_pMusicBrainzTask;
+    QPointer<mixxx::MusicBrainzRecordingsTask> m_pMusicBrainzTask;
 
     TrackPointer m_pTrack;
 };

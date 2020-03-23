@@ -53,8 +53,7 @@ class JsonWebTask : public WebTask {
     JsonWebTask(
             QNetworkAccessManager* networkAccessManager,
             QUrl baseUrl,
-            JsonWebRequest request,
-            QObject* parent = nullptr);
+            JsonWebRequest request);
     ~JsonWebTask() override;
 
   signals:

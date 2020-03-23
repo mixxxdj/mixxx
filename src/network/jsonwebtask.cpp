@@ -87,9 +87,8 @@ QNetworkRequest newRequest(
 JsonWebTask::JsonWebTask(
         QNetworkAccessManager* networkAccessManager,
         QUrl baseUrl,
-        JsonWebRequest request,
-        QObject* parent)
-        : WebTask(networkAccessManager, parent),
+        JsonWebRequest request)
+        : WebTask(networkAccessManager),
           m_baseUrl(std::move(baseUrl)),
           m_request(std::move(request)),
           m_pendingNetworkReply(nullptr) {

@@ -81,13 +81,24 @@ struct CustomWebResponse : public WebResponse {
     QByteArray content;
 };
 
+// A transient task for performing a single HTTP network request
+// asynchronously.
+//
+// The results are transmitted by emitting signals. Only a single
+// receiver can be connected to each signal by using Qt::UniqueConnection.
+// The receiver of the signal is responsible for destroying the task
+// by invoking QObject::deleteLater(). If no receiver is connected to
+// a signal the task will destroy itself.
+//
+// Instances of this class must not be parented due to their built-in
+// self-destruction mechanism. All pointers to tasks should be wrapped
+// into QPointer. Otherwise plain pointers might become dangling!
 class WebTask : public QObject {
     Q_OBJECT
 
   public:
     explicit WebTask(
-            QNetworkAccessManager* networkAccessManager,
-            QObject* parent = nullptr);
+            QNetworkAccessManager* networkAccessManager);
     ~WebTask() override;
 
     // timeoutMillis <= 0: No timeout (unlimited)

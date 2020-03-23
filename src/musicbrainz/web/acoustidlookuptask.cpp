@@ -67,13 +67,11 @@ network::JsonWebRequest lookupRequest() {
 AcoustIdLookupTask::AcoustIdLookupTask(
         QNetworkAccessManager* networkAccessManager,
         const QString& fingerprint,
-        int duration,
-        QObject* parent)
+        int duration)
         : network::JsonWebTask(
                   networkAccessManager,
                   kBaseUrl,
-                  lookupRequest(),
-                  parent),
+                  lookupRequest()),
           m_urlQuery(lookupUrlQuery(fingerprint, duration)) {
 }
 

@@ -38,7 +38,7 @@ void TagFetcher::startFetch(
 
 void TagFetcher::abortAcoustIdTask() {
     if (m_pAcoustIdTask) {
-        disconnect(m_pAcoustIdTask.get());
+        disconnect(m_pAcoustIdTask);
         m_pAcoustIdTask->deleteBeforeFinished();
         m_pAcoustIdTask = nullptr;
     }
@@ -46,7 +46,7 @@ void TagFetcher::abortAcoustIdTask() {
 
 void TagFetcher::abortMusicBrainzTask() {
     if (m_pMusicBrainzTask) {
-        disconnect(m_pMusicBrainzTask.get());
+        disconnect(m_pMusicBrainzTask);
         m_pMusicBrainzTask->deleteBeforeFinished();
         m_pMusicBrainzTask = nullptr;
     }
@@ -78,20 +78,19 @@ void TagFetcher::slotFingerprintReady() {
 
     emit fetchProgress(tr("Identifying track through Acoustid"));
     DEBUG_ASSERT(!m_pAcoustIdTask);
-    m_pAcoustIdTask = make_parented<mixxx::AcoustIdLookupTask>(
+    m_pAcoustIdTask = new mixxx::AcoustIdLookupTask(
             &m_network,
             fingerprint,
-            m_pTrack->getDurationInt(),
-            this);
-    connect(m_pAcoustIdTask.get(),
+            m_pTrack->getDurationInt());
+    connect(m_pAcoustIdTask,
             &mixxx::AcoustIdLookupTask::succeeded,
             this,
             &TagFetcher::slotAcoustIdTaskSucceeded);
-    connect(m_pAcoustIdTask.get(),
+    connect(m_pAcoustIdTask,
             &mixxx::AcoustIdLookupTask::failed,
             this,
             &TagFetcher::slotAcoustIdTaskFailed);
-    connect(m_pAcoustIdTask.get(),
+    connect(m_pAcoustIdTask,
             &mixxx::AcoustIdLookupTask::networkError,
             this,
             &TagFetcher::slotAcoustIdTaskNetworkError);
@@ -115,19 +114,18 @@ void TagFetcher::slotAcoustIdTaskSucceeded(
 
     emit fetchProgress(tr("Retrieving metadata from MusicBrainz"));
     DEBUG_ASSERT(!m_pMusicBrainzTask);
-    m_pMusicBrainzTask = make_parented<mixxx::MusicBrainzRecordingsTask>(
+    m_pMusicBrainzTask = new mixxx::MusicBrainzRecordingsTask(
             &m_network,
-            std::move(recordingIds),
-            this);
-    connect(m_pMusicBrainzTask.get(),
+            std::move(recordingIds));
+    connect(m_pMusicBrainzTask,
             &mixxx::MusicBrainzRecordingsTask::succeeded,
             this,
             &TagFetcher::slotMusicBrainzTaskSucceeded);
-    connect(m_pMusicBrainzTask.get(),
+    connect(m_pMusicBrainzTask,
             &mixxx::MusicBrainzRecordingsTask::failed,
             this,
             &TagFetcher::slotMusicBrainzTaskFailed);
-    connect(m_pMusicBrainzTask.get(),
+    connect(m_pMusicBrainzTask,
             &mixxx::MusicBrainzRecordingsTask::networkError,
             this,
             &TagFetcher::slotMusicBrainzTaskNetworkError);

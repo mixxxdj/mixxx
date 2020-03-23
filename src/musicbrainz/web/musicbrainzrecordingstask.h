@@ -17,8 +17,7 @@ class MusicBrainzRecordingsTask : public network::WebTask {
   public:
     MusicBrainzRecordingsTask(
             QNetworkAccessManager* networkAccessManager,
-            QList<QUuid>&& recordingIds,
-            QObject* parent = nullptr);
+            QList<QUuid>&& recordingIds);
     ~MusicBrainzRecordingsTask() override = default;
 
   signals:

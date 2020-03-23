@@ -65,11 +65,9 @@ QNetworkRequest createNetworkRequest(
 
 MusicBrainzRecordingsTask::MusicBrainzRecordingsTask(
         QNetworkAccessManager* networkAccessManager,
-        QList<QUuid>&& recordingIds,
-        QObject* parent)
+        QList<QUuid>&& recordingIds)
         : network::WebTask(
-                  networkAccessManager,
-                  parent),
+                  networkAccessManager),
           m_queuedRecordingIds(std::move(recordingIds)),
           m_parentTimeoutMillis(0) {
     musicbrainz::registerMetaTypesOnce();
