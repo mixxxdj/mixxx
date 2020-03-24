@@ -276,7 +276,7 @@ WSearchLineEdit {
 #FxExpandCollapseButton,
 #PlayButtonSampler[displayValue="0"], #PlayButtonDeckMini[displayValue="0"],
 #SamplerSyncButton[displayValue="0"],
-#MicTalkButton[value="0"], #AuxPlayButton[value="0"],
+#MicTalkButton[value="0"], #AuxPlayButton[value="0"], #MicAuxAddButton,
 #MicDuckingButton[value="0"],
 #PlayButtonPreview[displayValue="0"],
 #DlgMissing > QPushButton:enabled:!checked,
@@ -290,7 +290,7 @@ WSearchLineEdit {
 #GuiToggleButton[displayValue="0"], #RecFeedback[displayValue="0"],
 #BroadcastButton[displayValue="0"], #SettingsButton[displayValue="0"],
 #DeckRow_5_LoopCuesTransport WPushButton[value="0"],
-#HotcueButton[displayValue="0"],
+#HotcueButton,
 #FxAssignButton[displayValue="0"], #FxFocusButton[displayValue="0"],
 #FxToggleButton[displayValue="0"], #FxParameterButton[displayValue="0"],
 #SplitCueButton[value="0"],
@@ -592,6 +592,9 @@ WBeatSpinBox#Spinbox_embedded:focus,
 #AuxPlayButton {
   image: url(skin:/buttons_flip/btn__aux_play.svg) no-repeat center center;
 }
+#MicAuxAddButton {
+  image: url(skin:/buttons_flip/btn__plus.svg) no-repeat center center;
+}
 #MicDuckingButton[value="0"] {
   image: url(skin:/buttons_flip/btn__mic_duck_off.svg) no-repeat center center;
   }
@@ -871,6 +874,10 @@ WEffectSelector {
   qproperty-layoutSpacing: 0px;
 }
 
+#MicAuxRackFiller {
+  margin: 2px 0px;
+}
+
   #MicAuxPlayButtonBox {
     margin: 0px 1px 1px 1px;
   }
@@ -888,7 +895,7 @@ WEffectSelector {
 #MicDuckingContainer {
   qproperty-layoutAlignment: 'AlignCenter | AlignTop';
   padding: 2px 1px 0px 2px;
-  margin-left: 3px;
+  margin-left: 5px;
   }
 
 /************** Mic Aux *******************************************************/
@@ -909,7 +916,7 @@ WEffectSelector {
 WLibrary,
 #SidebarBox {
 /* only 1px padding to compensate the 2px border of inner widgets
-  (QTreeView, QTableView, QTextBrowser) */ 
+  (QTreeView, QTableView, QTextBrowser) */
   padding: 1px 1px 0px 1px;
   border-bottom: 0px;
   border-left: 1px solid qlineargradient(

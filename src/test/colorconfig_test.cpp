@@ -3,6 +3,7 @@
 #include "preferences/colorpalettesettings.h"
 #include "test/mixxxtest.h"
 #include "util/color/colorpalette.h"
+#include "util/color/predefinedcolorpalettes.h"
 #include "util/color/rgbcolor.h"
 
 class ColorConfigTest : public MixxxTest {};
@@ -99,7 +100,8 @@ TEST_F(ColorConfigTest, LoadSavePalettes) {
 
 TEST_F(ColorConfigTest, DefaultColorPalette) {
     ColorPaletteSettings colorPaletteSettings(config());
-    ColorPalette colorPaletteFromConfig =
-            colorPaletteSettings.getHotcueColorPalette();
-    ASSERT_EQ(ColorPalette::mixxxHotcuePalette, colorPaletteFromConfig);
+    ASSERT_EQ(mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette,
+            colorPaletteSettings.getHotcueColorPalette());
+    ASSERT_EQ(mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette,
+            colorPaletteSettings.getTrackColorPalette());
 }

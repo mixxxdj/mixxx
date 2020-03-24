@@ -466,6 +466,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefautodjdlg.ui
   src/preferences/dialog/dlgprefbeats.cpp
   src/preferences/dialog/dlgprefbeatsdlg.ui
+  src/preferences/dialog/dlgprefcolors.cpp
+  src/preferences/dialog/dlgprefcolorsdlg.ui
   src/preferences/dialog/dlgprefcrossfader.cpp
   src/preferences/dialog/dlgprefcrossfaderdlg.ui
   src/preferences/dialog/dlgprefdeck.cpp
@@ -498,6 +500,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefwaveformdlg.ui
   src/preferences/dlgpreferencepage.cpp
   src/preferences/effectsettingsmodel.cpp
+  src/preferences/colorpaletteeditor.cpp
+  src/preferences/colorpaletteeditormodel.cpp
   src/preferences/colorpalettesettings.cpp
   src/preferences/replaygainsettings.cpp
   src/preferences/settingsmanager.cpp
@@ -562,6 +566,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/cmdlineargs.cpp
   src/util/color/color.cpp
   src/util/color/colorpalette.cpp
+  src/util/color/predefinedcolorpalettes.cpp
   src/util/console.cpp
   src/util/db/dbconnection.cpp
   src/util/db/dbconnectionpool.cpp
@@ -680,6 +685,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/weffectparameterknobcomposed.cpp
   src/widget/weffectpushbutton.cpp
   src/widget/weffectselector.cpp
+  src/widget/whotcuebutton.cpp
   src/widget/wimagestore.cpp
   src/widget/wkey.cpp
   src/widget/wknob.cpp
@@ -838,71 +844,109 @@ target_link_libraries(mixxx PUBLIC mixxx-lib)
 #
 include(GNUInstallDirs)
 install(
-  TARGETS mixxx
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  TARGETS
+    mixxx
+  RUNTIME DESTINATION
+    ${CMAKE_INSTALL_BINDIR}
 )
 
 # Skins
 install(
-  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/res/skins
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/mixxx
+  DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/skins
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/mixxx
 )
 
 # Controller mappings
 install(
-  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/res/controllers
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/mixxx
+  DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/controllers
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/mixxx
 )
 
 # Translation files
 install(
-  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/res/translations
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/mixxx
-  FILES_MATCHING PATTERN "*.qm"
+  DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/translations
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/mixxx
+  FILES_MATCHING PATTERN
+    "*.qm"
 )
 # Font files
 install(
-  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/res/fonts
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/mixxx
+  DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/fonts
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/mixxx
 )
 
 # Keyboard mapping(s)
 install(
-  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/res/keyboard
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/mixxx
+  DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/keyboard
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/mixxx
+)
+
+# QScriptEngine extensions
+install(
+  DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}/script
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/mixxx
+)
+
+# Licenses
+install(
+  FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
+    ${CMAKE_CURRENT_SOURCE_DIR}/COPYING
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/licenses/mixxx
 )
 
 # Documentation
 install(
   FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
     ${CMAKE_CURRENT_SOURCE_DIR}/README
     ${CMAKE_CURRENT_SOURCE_DIR}/Mixxx-Manual.pdf
-  DESTINATION ${CMAKE_INSTALL_DOCDIR}/mixxx
+  DESTINATION
+    ${CMAKE_INSTALL_DOCDIR}
 )
 
 # .desktop file for KDE/GNOME menu
 install(
-  FILES ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.desktop
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/applications/mixxx
+  FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.desktop
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/applications
 )
 
 # Icon file for menu entry
 install(
-  FILES ${CMAKE_CURRENT_SOURCE_DIR}/res/images/mixxx_icon.svg
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/pixmaps/rules.d
+  FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/images/mixxx_icon.svg
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/pixmaps
 )
 
 # .appdata.xml file for KDE/GNOME AppStream initiative
 install(
-  FILES ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.appdata.xml
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/appdata
+  FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.appdata.xml
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/appdata
 )
 
 # udev rule file for USB HID and Bulk controllers
 install(
-  FILES ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.usb.rules
-  DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/udev/rules.d
+  FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx-usb-uaccess.rules
+  DESTINATION
+    ${CMAKE_INSTALL_SYSCONFDIR}/udev/rules.d
 )
 
 # Packaging
@@ -926,6 +970,9 @@ include(CPack)
 # Prevent GoogleTest from overriding our compiler/linker options
 # when building with Visual Studio
 set(gtest_force_shared_crt ON CACHE BOOL "Pass Mixxx compiler/linker options to GoogleTest" FORCE)
+
+# Prevent installation of GoogleTest libraries
+set(INSTALL_GTEST OFF CACHE BOOL "Disable installation of GoogleTest" FORCE)
 
 # Add googletest directly to our build. This adds the following targets:
 # gtest, gtest_main, gmock and gmock_main
@@ -1030,30 +1077,21 @@ add_executable(mixxx-test
 set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
 target_link_libraries(mixxx-test PUBLIC mixxx-lib gtest gmock)
 
-# Benchmark
-add_library(gbenchmark STATIC EXCLUDE_FROM_ALL
-  lib/benchmark/src/benchmark.cc
-  lib/benchmark/src/colorprint.cc
-  lib/benchmark/src/commandlineflags.cc
-  lib/benchmark/src/console_reporter.cc
-  lib/benchmark/src/csv_reporter.cc
-  lib/benchmark/src/json_reporter.cc
-  lib/benchmark/src/log.cc
-  lib/benchmark/src/reporter.cc
-  lib/benchmark/src/sleep.cc
-  lib/benchmark/src/string_util.cc
-  lib/benchmark/src/sysinfo.cc
-  lib/benchmark/src/walltime.cc
-  lib/benchmark/src/re_std.cc
+#
+# Benchmark tests
+#
+
+# Disable testing of google/benchmark
+set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
+
+# Prevent installation of google/benchmark artifacts
+set(BENCHMARK_ENABLE_INSTALL OFF CACHE BOOL "Disable installation of google/benchmark" FORCE)
+
+add_subdirectory(
+  "${CMAKE_CURRENT_SOURCE_DIR}/lib/benchmark"
+  "${CMAKE_CURRENT_BINARY_DIR}/lib/benchmark"
 )
-target_compile_definitions(gbenchmark PRIVATE HAVE_STD_REGEX)
-find_package(Threads REQUIRED)
-target_link_libraries(gbenchmark ${CMAKE_THREAD_LIBS_INIT})
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  target_link_libraries(gbenchmark Shlwapi)
-endif()
-target_include_directories(gbenchmark SYSTEM PUBLIC lib/benchmark/include)
-target_link_libraries(mixxx-test PUBLIC gbenchmark)
+target_link_libraries(mixxx-test PUBLIC benchmark)
 
 # Test Suite
 include(CTest)
@@ -1067,13 +1105,13 @@ gtest_add_tests(
 set_tests_properties(${testsuite} PROPERTIES TIMEOUT 30)
 
 # Benchmarking
-add_custom_target(benchmark
+add_custom_target(mixxx-benchmark
   COMMAND $<TARGET_FILE:mixxx-test> --benchmark
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
   COMMENT "Mixxx Benchmarks"
   VERBATIM
 )
-add_dependencies(benchmark mixxx-test)
+add_dependencies(mixxx-benchmark mixxx-test)
 
 if(UNIX)
   add_custom_target(mixxx-testdata
@@ -1106,13 +1144,21 @@ if(UNIX)
     COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res"
     COMMENT "Symlinking resources to build directory..."
   )
+  add_custom_target(mixxx-script
+    COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/script" "${CMAKE_CURRENT_BINARY_DIR}/script"
+    COMMENT "Symlinking to build directory..."
+  )
 else()
   add_custom_target(mixxx-res
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/"
     COMMENT "Copying resources to build directory..."
   )
+  add_custom_target(mixxx-script
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/script" "${CMAKE_CURRENT_BINARY_DIR}/"
+    COMMENT "Copying QScriptEngine extensions to build directory..."
+  )
 endif()
-add_dependencies(mixxx-lib mixxx-res)
+add_dependencies(mixxx-lib mixxx-res mixxx-script)
 
 # Windows-only resource file
 if(WIN32)

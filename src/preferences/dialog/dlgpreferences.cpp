@@ -37,11 +37,12 @@
 #include "preferences/dialog/dlgprefnovinyl.h"
 #endif
 
-#include "preferences/dialog/dlgprefinterface.h"
-#include "preferences/dialog/dlgprefwaveform.h"
+#include "preferences/dialog/dlgprefcolors.h"
+#include "preferences/dialog/dlgprefcrossfader.h"
 #include "preferences/dialog/dlgprefdeck.h"
 #include "preferences/dialog/dlgprefeq.h"
-#include "preferences/dialog/dlgprefcrossfader.h"
+#include "preferences/dialog/dlgprefinterface.h"
+#include "preferences/dialog/dlgprefwaveform.h"
 #ifdef __LILV__
 #include "preferences/dialog/dlgpreflv2.h"
 #endif /* __LILV__ */
@@ -121,6 +122,8 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_waveformPage);
     m_deckPage = new DlgPrefDeck(this, mixxx, pPlayerManager, m_pConfig);
     addPageWidget(m_deckPage);
+    m_colorsPage = new DlgPrefColors(this, m_pConfig);
+    addPageWidget(m_colorsPage);
     m_equalizerPage = new DlgPrefEQ(this, pEffectsManager, m_pConfig);
     addPageWidget(m_equalizerPage);
     m_crossfaderPage = new DlgPrefCrossfader(this, m_pConfig);
@@ -234,6 +237,12 @@ void DlgPreferences::createIcons() {
     m_pDecksButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pDecksButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
+    m_pColorsButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pColorsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_colors.svg"));
+    m_pColorsButton->setText(0, tr("Colors"));
+    m_pColorsButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pColorsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
     m_pEqButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pEqButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_equalizers.svg"));
     m_pEqButton->setText(0, tr("Equalizers"));
@@ -334,6 +343,8 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
         switchToPage(m_waveformPage);
     } else if (current == m_pDecksButton) {
         switchToPage(m_deckPage);
+    } else if (current == m_pColorsButton) {
+        switchToPage(m_colorsPage);
     } else if (current == m_pEqButton) {
         switchToPage(m_equalizerPage);
     } else if (current == m_pCrossfaderButton) {
