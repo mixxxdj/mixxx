@@ -177,7 +177,12 @@ void DlgTagFetcher::apply() {
                 trackRelease.releaseGroupId);
     }
 #endif // __EXTRA_METADATA__
-    m_track->importMetadata(std::move(trackMetadata));
+    m_track->importMetadata(
+            std::move(trackMetadata),
+            // Prevent re-import of outdated metadata from file tags
+            // by explicitly setting the synchronization time stamp
+            // to the current time.
+            QDateTime::currentDateTimeUtc());
 }
 
 void DlgTagFetcher::quit() {
