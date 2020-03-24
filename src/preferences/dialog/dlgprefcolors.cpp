@@ -55,13 +55,28 @@ void DlgPrefColors::loadSettings() {
     comboBoxTrackColors->clear();
     for (const auto& palette : qAsConst(mixxx::PredefinedColorPalettes::kPalettes)) {
         QString paletteName = palette.getName();
+        QIcon paletteIcon = drawPaletteIcon(paletteName);
         comboBoxHotcueColors->addItem(paletteName);
+        comboBoxHotcueColors->setItemIcon(
+                comboBoxHotcueColors->count() - 1,
+                paletteIcon);
+
         comboBoxTrackColors->addItem(paletteName);
+        comboBoxTrackColors->setItemIcon(
+                comboBoxTrackColors->count() - 1,
+                paletteIcon);
     }
 
     for (const auto& paletteName : m_colorPaletteSettings.getColorPaletteNames()) {
+        QIcon paletteIcon = drawPaletteIcon(paletteName);
         comboBoxHotcueColors->addItem(paletteName);
+        comboBoxHotcueColors->setItemIcon(
+                comboBoxHotcueColors->count() - 1,
+                paletteIcon);
         comboBoxTrackColors->addItem(paletteName);
+        comboBoxTrackColors->setItemIcon(
+                comboBoxHotcueColors->count() - 1,
+                paletteIcon);
     }
 
     const ColorPalette hotcuePalette =
@@ -147,6 +162,23 @@ QPixmap DlgPrefColors::drawPalettePreview(const QString& paletteName) {
     return QPixmap();
 }
 
+QIcon DlgPrefColors::drawPaletteIcon(const QString& paletteName) {
+    QPixmap pixmap(16, 16);
+    QPainter painter(&pixmap);
+    pixmap.fill(Qt::black);
+
+    ColorPalette palette = m_colorPaletteSettings.getHotcueColorPalette(paletteName);
+    if (paletteName == palette.getName()) {
+        for (int i = 0; i < palette.size() && i < 4; ++i) {
+            painter.setPen(mixxx::RgbColor::toQColor(palette.at(i)));
+            painter.setBrush(mixxx::RgbColor::toQColor(palette.at(i)));
+            painter.drawRect(0, i * 4, 16, 4);
+        }
+        return QIcon(pixmap);
+    }
+    return QIcon();
+}
+
 void DlgPrefColors::slotTrackPaletteChanged(const QString& paletteName) {
     QPixmap pixmap = drawPalettePreview(paletteName);
     labelTrackPalette->setPixmap(pixmap);
@@ -161,18 +193,11 @@ void DlgPrefColors::slotHotcuePaletteChanged(const QString& paletteName) {
 
     comboBoxHotcueDefaultColor->clear();
 
-    QPixmap pixmap(80, 80);
-    QPainter painter(&pixmap);
-    pixmap.fill(Qt::black);
-
     comboBoxHotcueDefaultColor->addItem(tr("By hotcue number"), -1);
-    for (int i = 0; i < palette.size() && i < 4; ++i) {
-        painter.setPen(mixxx::RgbColor::toQColor(palette.at(i)));
-        painter.setBrush(mixxx::RgbColor::toQColor(palette.at(i)));
-        painter.drawRect(0, i * 20, 80, 20);
-    }
-    comboBoxHotcueDefaultColor->setItemIcon(0, QIcon(pixmap));
+    QIcon icon = drawPaletteIcon(paletteName);
+    comboBoxHotcueDefaultColor->setItemIcon(0, icon);
 
+    QPixmap pixmap(16, 16);
     for (int i = 0; i < palette.size(); ++i) {
         QColor color = mixxx::RgbColor::toQColor(palette.at(i));
         comboBoxHotcueDefaultColor->addItem(

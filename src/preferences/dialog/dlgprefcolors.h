@@ -30,6 +30,7 @@ class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
     void loadSettings();
     void loadPaletteIntoEditor(const ColorPalette& palette);
     QPixmap drawPalettePreview(const QString& paletteName);
+    QIcon drawPaletteIcon(const QString& paletteName);
 
     const UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;
