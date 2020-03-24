@@ -20,7 +20,8 @@ mixxx::RgbColor ColorPalette::colorForHotcueIndex(unsigned int hotcueIndex) cons
     int colorIndex;
     if (m_hotcueColorIndices.isEmpty()) {
         // For hotcue n, get nth color from palette
-        colorIndex = hotcueIndex;
+        // But use only  8 to avoid odd apearances on Hercules P32 or similar
+        colorIndex = hotcueIndex % 8;
     } else {
         // For hotcue n, get nth color from palette
         colorIndex = m_hotcueColorIndices.at(hotcueIndex % m_hotcueColorIndices.size());
