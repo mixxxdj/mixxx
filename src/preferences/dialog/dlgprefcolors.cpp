@@ -83,7 +83,8 @@ void DlgPrefColors::slotResetToDefaults() {
             mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette.getName());
     comboBoxTrackColors->setCurrentText(
             mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette.getName());
-    comboBoxHotcueDefaultColor->setCurrentIndex(1);
+    comboBoxHotcueDefaultColor->setCurrentIndex(
+            mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette.size());
     slotApply();
 }
 
@@ -156,7 +157,7 @@ void DlgPrefColors::slotHotcuePaletteChanged(const QString& paletteName) {
     QPixmap preview = drawPalettePreview(paletteName);
     labelHotcuePalette->setPixmap(preview);
 
-    ColorPalette palette = mixxx::PredefinedColorPalettes::kPalettes[0];
+    ColorPalette palette = mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette;
     foreach (const ColorPalette& pal, mixxx::PredefinedColorPalettes::kPalettes) {
         if (paletteName == pal.getName()) {
             palette = pal;
