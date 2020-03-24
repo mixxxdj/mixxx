@@ -54,6 +54,9 @@
        <property name="text">
         <string>New</string>
        </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
       </widget>
      </item>
      <item>
@@ -63,6 +66,9 @@
        </property>
        <property name="text">
         <string>All</string>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
        </property>
       </widget>
      </item>
@@ -74,6 +80,9 @@
        <property name="text">
         <string>Select All</string>
        </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
       </widget>
      </item>
      <item>
@@ -83,6 +92,9 @@
        </property>
        <property name="text">
         <string>Analyze</string>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
        </property>
       </widget>
      </item>
