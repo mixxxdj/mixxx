@@ -180,10 +180,15 @@ void DlgPrefColors::slotHotcuePaletteChanged(const QString& paletteName) {
     comboBoxHotcueDefaultColor->setItemIcon(0, QIcon(pixmap));
 
     for (int i = 0; i < palette.size(); ++i) {
-        comboBoxHotcueDefaultColor->addItem(tr("Palette") +
-                        QStringLiteral(" ") + QString::number(i + 1),
+        QColor color = mixxx::RgbColor::toQColor(palette.at(i));
+        comboBoxHotcueDefaultColor->addItem(
+                tr("Color") +
+                        QStringLiteral(" ") +
+                        QString::number(i + 1) +
+                        QStringLiteral(": ") +
+                        color.name(),
                 i);
-        pixmap.fill(mixxx::RgbColor::toQColor(palette.at(i)));
+        pixmap.fill(color);
         comboBoxHotcueDefaultColor->setItemIcon(i + 1, QIcon(pixmap));
     }
 
