@@ -124,10 +124,29 @@ bool MusicBrainzRecordingsTask::doStart(
     return true;
 }
 
-void MusicBrainzRecordingsTask::doAbort() {
+QUrl MusicBrainzRecordingsTask::doAbort() {
+    QUrl requestUrl;
     if (m_pendingNetworkReply) {
-        m_pendingNetworkReply->abort();
+        requestUrl = abortPendingNetworkReply(m_pendingNetworkReply);
+        if (requestUrl.isValid()) {
+            // Already finished
+            m_pendingNetworkReply->deleteLater();
+            m_pendingNetworkReply = nullptr;
+        }
     }
+    return requestUrl;
+}
+
+QUrl MusicBrainzRecordingsTask::doTimeOut() {
+    DEBUG_ASSERT(thread() == QThread::currentThread());
+    QUrl requestUrl;
+    if (m_pendingNetworkReply) {
+        requestUrl = timeOutPendingNetworkReply(m_pendingNetworkReply);
+        // Don't wait until finished
+        m_pendingNetworkReply->deleteLater();
+        m_pendingNetworkReply = nullptr;
+    }
+    return requestUrl;
 }
 
 void MusicBrainzRecordingsTask::slotNetworkReplyFinished() {

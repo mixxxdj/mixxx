@@ -86,7 +86,8 @@ class JsonWebTask : public WebTask {
     bool doStart(
             QNetworkAccessManager* networkAccessManager,
             int parentTimeoutMillis) override;
-    void doAbort() override;
+    QUrl doAbort() override;
+    QUrl doTimeOut() override;
 
     // All member variables must only be accessed from
     // the event loop thread!!

@@ -62,7 +62,7 @@ WebTask::WebTask(
         QNetworkAccessManager* networkAccessManager)
         : m_networkAccessManager(networkAccessManager),
           m_timeoutTimerId(kInvalidTimerId),
-          m_abort(false) {
+          m_status(Status::Idle) {
     std::call_once(registerMetaTypesOnceFlag, registerMetaTypesOnce);
     DEBUG_ASSERT(m_networkAccessManager);
     s_instanceCounter.increment(1);
@@ -72,15 +72,38 @@ WebTask::~WebTask() {
     s_instanceCounter.increment(-1);
 }
 
-void WebTask::onAborted() {
-    DEBUG_ASSERT(m_abort);
+void WebTask::onAborted(
+        QUrl requestUrl) {
+    DEBUG_ASSERT(m_status == Status::Aborted);
     const auto signal = QMetaMethod::fromSignal(
             &WebTask::aborted);
     if (isSignalConnected(signal)) {
         emit aborted();
     } else {
         kLogger.info()
-                << "Request aborted";
+                << "Request aborted"
+                << requestUrl;
+        deleteAfterFinished();
+    }
+}
+
+void WebTask::onTimedOut(
+        QUrl requestUrl) {
+    DEBUG_ASSERT(m_status == Status::TimedOut);
+    const auto signal = QMetaMethod::fromSignal(
+            &WebTask::networkError);
+    if (isSignalConnected(signal)) {
+        emit networkError(
+                std::move(requestUrl),
+                QNetworkReply::TimeoutError,
+                QStringLiteral("Client-side timeout"),
+                QByteArray());
+    } else {
+        kLogger.warning()
+                << "Aborting request after client-side timeout"
+                << requestUrl;
+        // Do not abort the request before deleting it,
+        // i.e. pretend it already has been finished.
         deleteAfterFinished();
     }
 }
@@ -156,14 +179,12 @@ void WebTask::deleteAfterFinished() {
 
 void WebTask::slotStart(int timeoutMillis) {
     DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT(m_status == Status::Idle);
     VERIFY_OR_DEBUG_ASSERT(m_networkAccessManager) {
         kLogger.warning()
                 << "No network access";
         return;
     }
-    // The task might be restarted after it has been aborted
-    // or finished.
-    m_abort = false;
 
     kLogger.debug()
             << "Starting...";
@@ -174,10 +195,11 @@ void WebTask::slotStart(int timeoutMillis) {
     }
 
     // The task could be aborted immediately while being started.
-    if (m_abort) {
-        onAborted();
+    if (m_status == Status::Aborted) {
+        onAborted(doAbort());
         return;
     }
+    m_status = Status::Pending;
 
     DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
     if (timeoutMillis > 0) {
@@ -186,9 +208,33 @@ void WebTask::slotStart(int timeoutMillis) {
     }
 }
 
+QUrl WebTask::abortPendingNetworkReply(
+        QNetworkReply* pendingNetworkReply) {
+    DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT(pendingNetworkReply);
+    if (pendingNetworkReply->isRunning()) {
+        pendingNetworkReply->abort();
+        // Suspend until finished
+        return QUrl();
+    }
+    return pendingNetworkReply->request().url();
+}
+
+QUrl WebTask::timeOutPendingNetworkReply(
+        QNetworkReply* pendingNetworkReply) {
+    DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT(pendingNetworkReply);
+    if (pendingNetworkReply->isRunning()) {
+        //pendingNetworkReply->abort();
+        // Don't suspend until finished, i.e. abort and then
+        // delete the pending network request instantly
+    }
+    return pendingNetworkReply->request().url();
+}
+
 void WebTask::slotAbort() {
     DEBUG_ASSERT(thread() == QThread::currentThread());
-    if (m_abort) {
+    if (m_status != Status::Pending) {
         DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
         return;
     }
@@ -196,10 +242,10 @@ void WebTask::slotAbort() {
         killTimer(m_timeoutTimerId);
         m_timeoutTimerId = kInvalidTimerId;
     }
-    m_abort = true;
+    m_status = Status::Aborted;
     kLogger.debug()
             << "Aborting...";
-    doAbort();
+    onAborted(doAbort());
 }
 
 void WebTask::timerEvent(QTimerEvent* event) {
@@ -210,13 +256,19 @@ void WebTask::timerEvent(QTimerEvent* event) {
         // ignore
         return;
     }
-    kLogger.info()
+    killTimer(m_timeoutTimerId);
+    m_timeoutTimerId = kInvalidTimerId;
+    if (m_status != Status::Aborted) {
+        m_status = Status::TimedOut;
+    }
+    kLogger.debug()
             << "Timed out";
-    slotAbort();
+    onTimedOut(doTimeOut());
 }
 
 QPair<QNetworkReply*, HttpStatusCode> WebTask::receiveNetworkReply() {
     DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT(m_status != Status::Idle);
     auto* const networkReply = qobject_cast<QNetworkReply*>(sender());
     HttpStatusCode statusCode = kHttpStatusCodeInvalid;
     VERIFY_OR_DEBUG_ASSERT(networkReply) {
@@ -229,10 +281,11 @@ QPair<QNetworkReply*, HttpStatusCode> WebTask::receiveNetworkReply() {
         m_timeoutTimerId = kInvalidTimerId;
     }
 
-    if (m_abort) {
-        onAborted();
+    if (m_status == Status::Aborted) {
+        onAborted(networkReply->request().url());
         return qMakePair(nullptr, statusCode);
     }
+    m_status = Status::Finished;
 
     if (networkReply->error() != QNetworkReply::NetworkError::NoError) {
         onNetworkError(

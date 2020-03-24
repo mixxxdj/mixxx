@@ -136,12 +136,28 @@ class WebTask : public QObject {
             QByteArray errorContent);
 
   protected:
-    void timerEvent(QTimerEvent* event) override;
+    void timerEvent(QTimerEvent* event) final;
 
-    // Handle an aborted request and ensure that the task eventually
+    enum class Status {
+        Idle,
+        Pending,
+        Aborted,
+        TimedOut,
+        Finished,
+    };
+
+    // Handle status changes and ensure that the task eventually
     // gets deleted. The default implementation simply deletes the
     // task.
-    virtual void onAborted();
+    virtual void onAborted(
+            QUrl requestUrl);
+    virtual void onTimedOut(
+            QUrl requestUrl);
+
+    QUrl abortPendingNetworkReply(
+            QNetworkReply* pendingNetworkReply);
+    QUrl timeOutPendingNetworkReply(
+            QNetworkReply* pendingNetworkReply);
 
     // Handle the abort and ensure that the task eventually
     // gets deleted. The default implementation logs a warning
@@ -158,14 +174,16 @@ class WebTask : public QObject {
     virtual bool doStart(
             QNetworkAccessManager* networkAccessManager,
             int parentTimeoutMillis) = 0;
-    virtual void doAbort() = 0;
+    // Handle status change requests and return the request URL
+    virtual QUrl doAbort() = 0;
+    virtual QUrl doTimeOut() = 0;
 
     // All member variables must only be accessed from
     // the event loop thread!!
     const QPointer<QNetworkAccessManager> m_networkAccessManager;
 
     int m_timeoutTimerId;
-    bool m_abort;
+    Status m_status;
 };
 
 } // namespace network
