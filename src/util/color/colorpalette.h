@@ -6,7 +6,10 @@
 
 class ColorPalette final {
   public:
-    explicit ColorPalette(QString name, QList<mixxx::RgbColor> colorList, QList<unsigned int> hotcueColorIndices = {})
+    ColorPalette(
+            QString name,
+            QList<mixxx::RgbColor> colorList,
+            QList<unsigned int> hotcueColorIndices = {})
             : m_name(name),
               m_colorList(colorList),
               m_hotcueColorIndices(hotcueColorIndices) {

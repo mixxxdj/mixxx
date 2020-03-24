@@ -9,13 +9,17 @@ class ColorPaletteSettings {
             : m_pConfig(pConfig) {
     }
 
+    ColorPalette getHotcueColorPalette(const QString& name) const;
     ColorPalette getHotcueColorPalette() const;
     void setHotcueColorPalette(const ColorPalette& colorPalette);
 
+    ColorPalette getTrackColorPalette(const QString& name) const;
     ColorPalette getTrackColorPalette() const;
     void setTrackColorPalette(const ColorPalette& colorPalette);
 
-    ColorPalette getColorPalette(const QString& name, const ColorPalette& defaultPalette) const;
+    ColorPalette getColorPalette(
+            const QString& name,
+            const ColorPalette& defaultPalette) const;
     void setColorPalette(const QString& name, const ColorPalette& colorPalette);
     void removePalette(const QString& name);
     QSet<QString> getColorPaletteNames() const;

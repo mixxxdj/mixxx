@@ -110,7 +110,14 @@ void ColorPaletteSettings::removePalette(const QString& name) {
 
 ColorPalette ColorPaletteSettings::getHotcueColorPalette() const {
     QString name = m_pConfig->getValueString(kHotcueColorPaletteConfigKey);
-    return getColorPalette(name, mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette);
+    return getHotcueColorPalette(name);
+}
+
+ColorPalette ColorPaletteSettings::getHotcueColorPalette(
+        const QString& name) const {
+    return getColorPalette(
+            name,
+            mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette);
 }
 
 void ColorPaletteSettings::setHotcueColorPalette(const ColorPalette& colorPalette) {
@@ -123,9 +130,16 @@ void ColorPaletteSettings::setHotcueColorPalette(const ColorPalette& colorPalett
     setColorPalette(name, colorPalette);
 }
 
+ColorPalette ColorPaletteSettings::getTrackColorPalette(
+        const QString& name) const {
+    return getColorPalette(
+            name,
+            mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette);
+}
+
 ColorPalette ColorPaletteSettings::getTrackColorPalette() const {
     QString name = m_pConfig->getValueString(kTrackColorPaletteConfigKey);
-    return getColorPalette(name, mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette);
+    return getTrackColorPalette(name);
 }
 
 void ColorPaletteSettings::setTrackColorPalette(const ColorPalette& colorPalette) {
