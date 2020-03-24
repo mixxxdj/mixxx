@@ -11,6 +11,9 @@
 #include <mutex> // std::once_flag
 
 #include "util/assert.h"
+#if QT_VERSION < QT_VERSION_CHECK(5, 7, 0)
+#include "util/compatibility.h"
+#endif
 #include "util/counter.h"
 #include "util/logger.h"
 
@@ -237,7 +240,11 @@ bool JsonWebTask::doStart(
             Qt::UniqueConnection);
 
     connect(m_pendingNetworkReply,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+            qOverload<QNetworkReply::NetworkError>(&QNetworkReply::error),
+#else
             QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error),
+#endif
             this,
             &JsonWebTask::slotNetworkReplyFinished,
             Qt::UniqueConnection);
