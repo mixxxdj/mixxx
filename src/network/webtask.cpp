@@ -179,7 +179,7 @@ void WebTask::deleteAfterFinished() {
 
 void WebTask::slotStart(int timeoutMillis) {
     DEBUG_ASSERT(thread() == QThread::currentThread());
-    DEBUG_ASSERT(m_status == Status::Idle);
+    DEBUG_ASSERT(m_status != Status::Pending);
     VERIFY_OR_DEBUG_ASSERT(m_networkAccessManager) {
         kLogger.warning()
                 << "No network access";
@@ -188,6 +188,7 @@ void WebTask::slotStart(int timeoutMillis) {
 
     kLogger.debug()
             << "Starting...";
+    m_status = Status::Idle;
     if (!doStart(m_networkAccessManager, timeoutMillis)) {
         kLogger.warning()
                 << "Start aborted";
