@@ -122,6 +122,7 @@ const ColorPalette PredefinedColorPalettes::kMixxxHotcueColorPalette =
                         kColorMixxxPurple,
                         kColorMixxxPink,
                         kColorMixxxWhite,
+                        kSchemaMigrationReplacementColor,
                 });
 
 const ColorPalette PredefinedColorPalettes::kSeratoDJIntroHotcueColorPalette =
