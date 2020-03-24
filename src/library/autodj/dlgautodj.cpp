@@ -356,5 +356,5 @@ void DlgAutoDJ::updateSelectionInfo() {
 }
 
 bool DlgAutoDJ::hasFocus() const {
-    return QWidget::hasFocus();
+    return m_pTrackTableView->hasFocus();
 }

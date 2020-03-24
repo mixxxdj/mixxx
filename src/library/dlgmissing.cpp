@@ -81,5 +81,5 @@ void DlgMissing::selectionChanged(const QItemSelection &selected,
 }
 
 bool DlgMissing::hasFocus() const {
-    return QWidget::hasFocus();
+    return m_pTrackTableView->hasFocus();
 }

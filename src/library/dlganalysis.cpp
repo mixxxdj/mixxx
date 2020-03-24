@@ -97,7 +97,7 @@ void DlgAnalysis::onShow() {
 }
 
 bool DlgAnalysis::hasFocus() const {
-    return QWidget::hasFocus();
+    return m_pAnalysisLibraryTableView->hasFocus();
 }
 
 void DlgAnalysis::onSearch(const QString& text) {
