@@ -22,9 +22,14 @@ class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
   signals:
     void apply(const QString&);
 
+  private slots:
+    void slotTrackPaletteChanged(const QString& palette);
+    void slotHotcuePaletteChanged(const QString& palette);
+
   private:
     void loadSettings();
     void loadPaletteIntoEditor(const ColorPalette& palette);
+    QPixmap drawPalettePreview(const QString& paletteName);
 
     const UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;

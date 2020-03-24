@@ -7,6 +7,8 @@
 
 #include "control/controlobject.h"
 #include "util/color/predefinedcolorpalettes.h"
+#include "util/compatibility.h"
+#include "util/math.h"
 
 namespace {
 
@@ -26,14 +28,22 @@ DlgPrefColors::DlgPrefColors(
 
     connect(colorPaletteEditor,
             &ColorPaletteEditor::paletteChanged,
-            [this] {
-                loadSettings();
-            });
+            this,
+            &DlgPrefColors::loadSettings);
     connect(colorPaletteEditor,
             &ColorPaletteEditor::paletteRemoved,
-            [this] {
-                loadSettings();
-            });
+            this,
+            &DlgPrefColors::loadSettings);
+
+    connect(comboBoxTrackColors,
+            QOverload<const QString&>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefColors::slotTrackPaletteChanged);
+
+    connect(comboBoxHotcueColors,
+            QOverload<const QString&>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefColors::slotHotcuePaletteChanged);
 }
 
 DlgPrefColors::~DlgPrefColors() {
@@ -54,44 +64,17 @@ void DlgPrefColors::loadSettings() {
         comboBoxTrackColors->addItem(paletteName);
     }
 
-    const ColorPalette hotcuePalette = m_colorPaletteSettings.getHotcueColorPalette();
-
+    const ColorPalette hotcuePalette =
+            m_colorPaletteSettings.getHotcueColorPalette();
     comboBoxHotcueColors->setCurrentText(
             hotcuePalette.getName());
+    slotHotcuePaletteChanged(hotcuePalette.getName());
+
+    const ColorPalette trackPalette =
+            m_colorPaletteSettings.getTrackColorPalette();
     comboBoxTrackColors->setCurrentText(
-            m_colorPaletteSettings.getTrackColorPalette().getName());
-
-    QPixmap pixmap(80, 80);
-    QPainter painter(&pixmap);
-    pixmap.fill(Qt::black);
-
-    comboBoxHotcueDefaultColor->addItem(tr("By hotcue number"), -1);
-
-    for (int i = 0; i < hotcuePalette.size() && i < 4; ++i) {
-        painter.setBrush(mixxx::RgbColor::toQColor(hotcuePalette.at(i)));
-        painter.drawRect(0, i * 20, 80, 20);
-    }
-    comboBoxHotcueDefaultColor->setItemIcon(0, QIcon(pixmap));
-
-    for (int i = 0; i < hotcuePalette.size(); ++i) {
-        comboBoxHotcueDefaultColor->addItem(tr("Palette") +
-                        QStringLiteral(" ") + QString::number(i + 1),
-                i);
-        pixmap.fill(mixxx::RgbColor::toQColor(hotcuePalette.at(i)));
-        comboBoxHotcueDefaultColor->setItemIcon(i + 1, QIcon(pixmap));
-    }
-
-    bool autoHotcueColors =
-            m_pConfig->getValue(ConfigKey("[Controls]", "auto_hotcue_colors"), false);
-    if (autoHotcueColors) {
-        comboBoxHotcueDefaultColor->setCurrentIndex(0);
-    } else {
-        int hotcueDefaultColorIndex = m_pConfig->getValue(ConfigKey("[Controls]", "HotcueDefaultColorIndex"), kHotcueDefaultColorIndex);
-        if (hotcueDefaultColorIndex < 0 || hotcueDefaultColorIndex >= hotcuePalette.size()) {
-            hotcueDefaultColorIndex = hotcuePalette.size() - 1; // default to last color (orange)
-        }
-        comboBoxHotcueDefaultColor->setCurrentIndex(hotcueDefaultColorIndex + 1);
-    }
+            trackPalette.getName());
+    slotTrackPaletteChanged(trackPalette.getName());
 }
 
 // Set the default values for all the widgets
@@ -142,5 +125,76 @@ void DlgPrefColors::slotApply() {
     } else {
         m_pConfig->setValue(ConfigKey("[Controls]", "auto_hotcue_colors"), true);
         m_pConfig->setValue(ConfigKey("[Controls]", "HotcueDefaultColorIndex"), -1);
+    }
+}
+
+QPixmap DlgPrefColors::drawPalettePreview(const QString& paletteName) {
+    foreach (const ColorPalette& palette, mixxx::PredefinedColorPalettes::kPalettes) {
+        if (paletteName == palette.getName()) {
+            int count = math_max(palette.size(), 1);
+            int width = math_min((200 / count), 16);
+            QPixmap pixmap(count * width, 16);
+            pixmap.fill(Qt::black);
+            QPainter painter(&pixmap);
+            for (int i = 0; i < palette.size(); ++i) {
+                painter.setPen(mixxx::RgbColor::toQColor(palette.at(i)));
+                painter.setBrush(mixxx::RgbColor::toQColor(palette.at(i)));
+                painter.drawRect(i * width, 0, width, 16);
+            }
+            return pixmap;
+        }
+    }
+    return QPixmap();
+}
+
+void DlgPrefColors::slotTrackPaletteChanged(const QString& paletteName) {
+    QPixmap pixmap = drawPalettePreview(paletteName);
+    labelTrackPalette->setPixmap(pixmap);
+}
+
+void DlgPrefColors::slotHotcuePaletteChanged(const QString& paletteName) {
+    QPixmap preview = drawPalettePreview(paletteName);
+    labelHotcuePalette->setPixmap(preview);
+
+    ColorPalette palette = mixxx::PredefinedColorPalettes::kPalettes[0];
+    foreach (const ColorPalette& pal, mixxx::PredefinedColorPalettes::kPalettes) {
+        if (paletteName == pal.getName()) {
+            palette = pal;
+            break;
+        }
+    }
+
+    comboBoxHotcueDefaultColor->clear();
+
+    QPixmap pixmap(80, 80);
+    QPainter painter(&pixmap);
+    pixmap.fill(Qt::black);
+
+    comboBoxHotcueDefaultColor->addItem(tr("By hotcue number"), -1);
+    for (int i = 0; i < palette.size() && i < 4; ++i) {
+        painter.setPen(mixxx::RgbColor::toQColor(palette.at(i)));
+        painter.setBrush(mixxx::RgbColor::toQColor(palette.at(i)));
+        painter.drawRect(0, i * 20, 80, 20);
+    }
+    comboBoxHotcueDefaultColor->setItemIcon(0, QIcon(pixmap));
+
+    for (int i = 0; i < palette.size(); ++i) {
+        comboBoxHotcueDefaultColor->addItem(tr("Palette") +
+                        QStringLiteral(" ") + QString::number(i + 1),
+                i);
+        pixmap.fill(mixxx::RgbColor::toQColor(palette.at(i)));
+        comboBoxHotcueDefaultColor->setItemIcon(i + 1, QIcon(pixmap));
+    }
+
+    bool autoHotcueColors =
+            m_pConfig->getValue(ConfigKey("[Controls]", "auto_hotcue_colors"), false);
+    if (autoHotcueColors) {
+        comboBoxHotcueDefaultColor->setCurrentIndex(0);
+    } else {
+        int hotcueDefaultColorIndex = m_pConfig->getValue(ConfigKey("[Controls]", "HotcueDefaultColorIndex"), kHotcueDefaultColorIndex);
+        if (hotcueDefaultColorIndex < 0 || hotcueDefaultColorIndex >= palette.size()) {
+            hotcueDefaultColorIndex = palette.size() - 1; // default to last color (orange)
+        }
+        comboBoxHotcueDefaultColor->setCurrentIndex(hotcueDefaultColorIndex + 1);
     }
 }
