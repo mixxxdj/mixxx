@@ -13,6 +13,7 @@ class Library;
 class LibraryControl;
 class WLibrary;
 class WLibrarySidebar;
+class WSearchLineEdit;
 class KeyboardEventFilter;
 
 class LoadToGroupController : public QObject {
@@ -42,14 +43,18 @@ class LibraryControl : public QObject {
 
     void bindLibraryWidget(WLibrary* pLibrary, KeyboardEventFilter* pKeyboard);
     void bindSidebarWidget(WLibrarySidebar* pLibrarySidebar);
+    void bindSearchboxWidget(WSearchLineEdit* pSearchbox);
 
   public slots:
     // Deprecated navigation slots
     void slotLoadSelectedTrackToGroup(QString group, bool play);
+  signals:
+    void clearSearch();
 
   private slots:
     void libraryWidgetDeleted();
     void sidebarWidgetDeleted();
+    void searchboxWidgetDeleted();
 
     void slotMoveUp(double);
     void slotMoveDown(double);
@@ -95,7 +100,9 @@ class LibraryControl : public QObject {
     // Simulate pressing a key on the keyboard
     void emitKeyEvent(QKeyEvent&& event);
     // Give the keyboard focus to the main library pane
-    void setLibraryFocus();
+    void focusLibraryView();
+    // Test if the main library feature has focus
+    bool libraryViewHasFocus();
 
     // Controls to navigate vertically within currently focused widget (up/down buttons)
     std::unique_ptr<ControlPushButton> m_pMoveUp;
@@ -147,6 +154,7 @@ class LibraryControl : public QObject {
     // Library widgets
     WLibrary* m_pLibraryWidget;
     WLibrarySidebar* m_pSidebarWidget;
+    WSearchLineEdit* m_pSearchbox;
 
     // Other variables
     ControlProxy m_numDecks;

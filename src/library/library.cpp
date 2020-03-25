@@ -241,6 +241,10 @@ void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
             &Library::restoreSearch,
             pSearchboxWidget,
             &WSearchLineEdit::restoreSearch);
+    connect(m_pLibraryControl,
+            &LibraryControl::clearSearch,
+            pSearchboxWidget,
+            &WSearchLineEdit::clearSearch);
     connect(this,
             &Library::setTrackTableFont,
             pSearchboxWidget,
