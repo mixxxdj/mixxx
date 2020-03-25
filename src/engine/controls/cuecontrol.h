@@ -138,6 +138,7 @@ class CueControl : public EngineControl {
     void quantizeChanged(double v);
 
     void cueUpdated();
+    void trackAnalyzed();
     void trackCuesUpdated();
     void trackBeatsUpdated();
     void hotcueSet(HotcueControl* pControl, double v);

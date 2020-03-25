@@ -702,6 +702,10 @@ void Track::setCuePoint(CuePosition cue) {
     emit cuesUpdated();
 }
 
+void Track::analysisFinished() {
+    emit analyzed();
+}
+
 CuePosition Track::getCuePoint() const {
     QMutexLocker lock(&m_qMutex);
     return m_record.getCuePoint();

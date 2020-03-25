@@ -273,8 +273,9 @@ TEST_F(CueControlTest, SeekOnLoadMainCue) {
     EXPECT_DOUBLE_EQ(100.0, m_pCuePoint->get());
     EXPECT_DOUBLE_EQ(100.0, getCurrentSample());
 
-    // Move cue and check if track is following it.
+    // Move cue like silence analysis does and check if track is following it
     pTrack->setCuePoint(CuePosition(200.0));
+    pTrack->analysisFinished();
     ProcessBuffer();
 
     EXPECT_DOUBLE_EQ(200.0, m_pCuePoint->get());
@@ -292,12 +293,55 @@ TEST_F(CueControlTest, SeekOnLoadDefault_CueInPreroll) {
     EXPECT_DOUBLE_EQ(-100.0, m_pCuePoint->get());
     EXPECT_DOUBLE_EQ(-100.0, getCurrentSample());
 
-    // Move cue and check if track is following it.
+    // Move cue like silence analysis does and check if track is following it
     pTrack->setCuePoint(CuePosition(-200.0));
+    pTrack->analysisFinished();
     ProcessBuffer();
 
     EXPECT_DOUBLE_EQ(-200.0, m_pCuePoint->get());
     EXPECT_DOUBLE_EQ(-200.0, getCurrentSample());
+}
+
+TEST_F(CueControlTest, FollowCueOnQuantize) {
+    config()->set(ConfigKey("[Controls]", "CueRecall"),
+            ConfigValue(static_cast<int>(SeekOnLoadMode::MainCue)));
+    TrackPointer pTrack = createTestTrack();
+    pTrack->setSampleRate(44100);
+    pTrack->setBpm(120.0);
+
+    const int frameSize = 2;
+    const int sampleRate = pTrack->getSampleRate();
+    const double bpm = pTrack->getBpm();
+    const double beatLength = (60.0 * sampleRate / bpm) * frameSize;
+    double cuePos = 1.8*beatLength;
+    double quantizedCuePos = 2.0*beatLength;
+    pTrack->setCuePoint(cuePos);
+
+    loadTrack(pTrack);
+
+    EXPECT_DOUBLE_EQ(cuePos, m_pCuePoint->get());
+    EXPECT_DOUBLE_EQ(cuePos, getCurrentSample());
+
+    // enable quantization and expect current position to follow
+    m_pQuantizeEnabled->set(1);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(quantizedCuePos, m_pCuePoint->get());
+    EXPECT_DOUBLE_EQ(quantizedCuePos, getCurrentSample());
+
+    // move current position to track start
+    m_pQuantizeEnabled->set(0);
+    ProcessBuffer();
+    setCurrentSample(0.0);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(0.0, getCurrentSample());
+
+    // enable quantization again and expect play position to stay at track start
+    m_pQuantizeEnabled->set(1);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(quantizedCuePos, m_pCuePoint->get());
+    EXPECT_DOUBLE_EQ(0.0, getCurrentSample());
+
+
 }
 
 TEST_F(CueControlTest, IntroCue_SetStartEnd_ClearStartEnd) {

@@ -363,6 +363,10 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     }
     m_pLoadedTrack = pNewTrack;
 
+    connect(m_pLoadedTrack.get(), &Track::analyzed,
+            this, &CueControl::trackAnalyzed,
+            Qt::DirectConnection);
+
     connect(m_pLoadedTrack.get(), &Track::cuesUpdated,
             this, &CueControl::trackCuesUpdated,
             Qt::DirectConnection);
@@ -551,13 +555,14 @@ void CueControl::reloadCuesFromTrack() {
     if (!m_pLoadedTrack)
         return;
 
-    // Determine current playing position of the track.
-    TrackAt trackAt = getTrackAt();
-    bool wasTrackAtZeroPos = isTrackAtZeroPos();
-    bool wasTrackAtIntroCue = isTrackAtIntroCue();
-
     // Update COs with cues from track.
     loadCuesFromTrack();
+}
+
+void CueControl::trackAnalyzed() {
+    if (!m_pLoadedTrack) {
+        return;
+    }
 
     // Retrieve current position of cues from COs.
     double cue = m_pCuePoint->get();
@@ -567,11 +572,11 @@ void CueControl::reloadCuesFromTrack() {
     SeekOnLoadMode seekOnLoadMode = getSeekOnLoadPreference();
 
     if (seekOnLoadMode == SeekOnLoadMode::MainCue) {
-        if ((trackAt == TrackAt::Cue || wasTrackAtZeroPos) && cue != Cue::kNoPosition) {
+        if (cue != Cue::kNoPosition) {
             seekExact(cue);
         }
     } else if (seekOnLoadMode == SeekOnLoadMode::IntroStart) {
-        if ((wasTrackAtIntroCue || wasTrackAtZeroPos) && intro != Cue::kNoPosition) {
+        if (intro != Cue::kNoPosition) {
             seekExact(intro);
         }
     }
@@ -588,7 +593,22 @@ void CueControl::trackBeatsUpdated() {
 void CueControl::quantizeChanged(double v) {
     Q_UNUSED(v);
 
+    // check if we were at the cue point before
+    bool wasTrackAtCue = getTrackAt() == TrackAt::Cue;
+    bool wasTrackAtIntro = isTrackAtIntroCue();
+
     reloadCuesFromTrack();
+
+    // Retrieve new cue pos and follow
+    double cue = m_pCuePoint->get();
+    if (wasTrackAtCue && cue != Cue::kNoPosition) {
+        seekExact(cue);
+    }
+    // Retrieve new intro start pos and follow
+    double intro = m_pIntroStartPosition->get();
+    if(wasTrackAtIntro && intro != Cue::kNoPosition) {
+        seekExact(intro);
+    }
 }
 
 void CueControl::hotcueSet(HotcueControl* pControl, double v) {

@@ -248,6 +248,8 @@ class Track : public QObject {
     CuePosition getCuePoint() const;
     // Set the track's main cue point
     void setCuePoint(CuePosition cue);
+    // Call when analysis is done.
+    void analysisFinished();
 
     // Calls for managing the track's cue points
     CuePointer createAndAddCue();
@@ -325,6 +327,7 @@ class Track : public QObject {
     void keysUpdated();
     void ReplayGainUpdated(mixxx::ReplayGain replayGain);
     void cuesUpdated();
+    void analyzed();
 
     void changed(TrackId trackId);
     void dirty(TrackId trackId);
