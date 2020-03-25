@@ -171,10 +171,17 @@ class WebTask : public QObject {
     QPair<QNetworkReply*, HttpStatusCode> receiveNetworkReply();
 
   private:
+    // Try to compose and send the actual network request. If
+    // true is returned than the network request is running
+    // and a reply is pending.
     virtual bool doStart(
             QNetworkAccessManager* networkAccessManager,
             int parentTimeoutMillis) = 0;
-    // Handle status change requests and return the request URL
+
+    // Handle status change requests by aborting a running request
+    // and return the request URL. If no request is running or if
+    // the request has already been finished tha QUrl() must be
+    // returned.
     virtual QUrl doAbort() = 0;
     virtual QUrl doTimeOut() = 0;
 
