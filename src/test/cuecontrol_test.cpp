@@ -313,8 +313,8 @@ TEST_F(CueControlTest, FollowCueOnQuantize) {
     const int sampleRate = pTrack->getSampleRate();
     const double bpm = pTrack->getBpm();
     const double beatLength = (60.0 * sampleRate / bpm) * frameSize;
-    double cuePos = 1.8*beatLength;
-    double quantizedCuePos = 2.0*beatLength;
+    double cuePos = 1.8 * beatLength;
+    double quantizedCuePos = 2.0 * beatLength;
     pTrack->setCuePoint(cuePos);
 
     loadTrack(pTrack);
@@ -340,8 +340,6 @@ TEST_F(CueControlTest, FollowCueOnQuantize) {
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(quantizedCuePos, m_pCuePoint->get());
     EXPECT_DOUBLE_EQ(0.0, getCurrentSample());
-
-
 }
 
 TEST_F(CueControlTest, IntroCue_SetStartEnd_ClearStartEnd) {

@@ -363,9 +363,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     }
     m_pLoadedTrack = pNewTrack;
 
-    connect(m_pLoadedTrack.get(), &Track::analyzed,
-            this, &CueControl::trackAnalyzed,
-            Qt::DirectConnection);
+    connect(m_pLoadedTrack.get(), &Track::analyzed, this, &CueControl::trackAnalyzed, Qt::DirectConnection);
 
     connect(m_pLoadedTrack.get(), &Track::cuesUpdated,
             this, &CueControl::trackCuesUpdated,
@@ -564,6 +562,11 @@ void CueControl::trackAnalyzed() {
         return;
     }
 
+    // if we are playing (no matter what reason for) do not seek
+    if (m_pPlay->toBool()) {
+        return;
+    }
+
     // Retrieve current position of cues from COs.
     double cue = m_pCuePoint->get();
     double intro = m_pIntroStartPosition->get();
@@ -599,6 +602,11 @@ void CueControl::quantizeChanged(double v) {
 
     reloadCuesFromTrack();
 
+    // if we are playing (no matter what reason for) do not seek
+    if (m_pPlay->toBool()) {
+        return;
+    }
+
     // Retrieve new cue pos and follow
     double cue = m_pCuePoint->get();
     if (wasTrackAtCue && cue != Cue::kNoPosition) {
@@ -606,7 +614,7 @@ void CueControl::quantizeChanged(double v) {
     }
     // Retrieve new intro start pos and follow
     double intro = m_pIntroStartPosition->get();
-    if(wasTrackAtIntro && intro != Cue::kNoPosition) {
+    if (wasTrackAtIntro && intro != Cue::kNoPosition) {
         seekExact(intro);
     }
 }
