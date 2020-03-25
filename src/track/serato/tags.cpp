@@ -2,6 +2,8 @@
 
 #include <mp3guessenc.h>
 
+#include "util/color/predefinedcolorpalettes.h"
+
 namespace {
 
 #ifdef __COREAUDIO__
@@ -13,6 +15,18 @@ const QString kDecoderName(QStringLiteral("FFMPEG"));
 #else
 const QString kDecoderName(QStringLiteral("Unknown"));
 #endif
+
+mixxx::RgbColor getColorFromOtherPalette(
+        const ColorPalette& source,
+        const ColorPalette& dest,
+        mixxx::RgbColor color) {
+    DEBUG_ASSERT(source.size() == dest.size());
+    int sourceIndex = source.indexOf(color);
+    if (sourceIndex >= 0 && sourceIndex < dest.size()) {
+        return dest.at(sourceIndex);
+    }
+    return color;
+}
 
 } // namespace
 
@@ -75,6 +89,20 @@ RgbColor SeratoTags::displayedToStoredTrackColor(RgbColor::optional_t color) {
     return RgbColor(colorCode);
 }
 
+RgbColor SeratoTags::storedToDisplayedSeratoDJProCueColor(RgbColor color) {
+    return getColorFromOtherPalette(
+            PredefinedColorPalettes::kSeratoTrackMetadataHotcueColorPalette,
+            PredefinedColorPalettes::kSeratoDJProHotcueColorPalette,
+            color);
+}
+
+RgbColor SeratoTags::displayedToStoredSeratoDJProCueColor(RgbColor color) {
+    return getColorFromOtherPalette(
+            PredefinedColorPalettes::kSeratoDJProHotcueColorPalette,
+            PredefinedColorPalettes::kSeratoTrackMetadataHotcueColorPalette,
+            color);
+}
+
 double SeratoTags::findTimingOffsetMillis(const QString& filePath) {
     // The following code accounts for timing offsets required to
     // correctly align timing information (e.g. cue points) exported from
@@ -123,7 +151,16 @@ QList<CueInfo> SeratoTags::getCues(const QString& filePath) const {
         DEBUG_ASSERT(cueInfo.getHotCueNumber());
         int index = *cueInfo.getHotCueNumber();
         DEBUG_ASSERT(index >= 0);
-        cueMap.insert(index, cueInfo);
+
+        RgbColor::optional_t color = cueInfo.getColor();
+        if (color) {
+            // TODO: Make this conversion configurable
+            CueInfo newCueInfo = cueInfo;
+            newCueInfo.setColor(storedToDisplayedSeratoDJProCueColor(*color));
+            cueMap.insert(index, newCueInfo);
+        } else {
+            cueMap.insert(index, cueInfo);
+        }
     };
 
     // TODO: If a hotcue is set in SeratoMarkers2, but not in SeratoMarkers_,
@@ -142,7 +179,14 @@ QList<CueInfo> SeratoTags::getCues(const QString& filePath) const {
         existingCueInfo.setType(cueInfo.getType());
         existingCueInfo.setStartPositionMillis(cueInfo.getStartPositionMillis());
         existingCueInfo.setEndPositionMillis(cueInfo.getEndPositionMillis());
-        existingCueInfo.setColor(cueInfo.getColor());
+
+        RgbColor::optional_t color = cueInfo.getColor();
+        if (color) {
+            // TODO: Make this conversion configurable
+            existingCueInfo.setColor(storedToDisplayedSeratoDJProCueColor(*color));
+        } else {
+            existingCueInfo.setColor(color);
+        }
     }
 
     return cueMap.values();

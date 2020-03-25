@@ -17,6 +17,8 @@ class SeratoTags final {
 
     static RgbColor::optional_t storedToDisplayedTrackColor(RgbColor color);
     static RgbColor displayedToStoredTrackColor(RgbColor::optional_t color);
+    static RgbColor storedToDisplayedSeratoDJProCueColor(RgbColor color);
+    static RgbColor displayedToStoredSeratoDJProCueColor(RgbColor color);
     static double findTimingOffsetMillis(const QString& filePath);
 
     bool isEmpty() const {
