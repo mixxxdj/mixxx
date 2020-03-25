@@ -11,6 +11,7 @@
 #include "mixer/playermanager.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wsearchlineedit.h"
 #include "widget/wtracktableview.h"
 #include "library/library.h"
 #include "library/libraryview.h"
@@ -55,6 +56,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
           m_pLibrary(pLibrary),
           m_pLibraryWidget(nullptr),
           m_pSidebarWidget(nullptr),
+          m_pSearchbox(nullptr),
           m_numDecks("[Master]", "num_decks", this),
           m_numSamplers("[Master]", "num_samplers", this),
           m_numPreviewDecks("[Master]", "num_preview_decks", this) {
@@ -313,12 +315,33 @@ void LibraryControl::bindLibraryWidget(WLibrary* pLibraryWidget, KeyboardEventFi
             &LibraryControl::libraryWidgetDeleted);
 }
 
+void LibraryControl::bindSearchboxWidget(WSearchLineEdit* pSearchbox) {
+    if (m_pSearchbox) {
+        disconnect(m_pSearchbox, 0, this, 0);
+    }
+    m_pSearchbox = pSearchbox;
+    connect(this,
+            &LibraryControl::clearSearch,
+            m_pSearchbox,
+            &WSearchLineEdit::clearSearch);
+    connect(m_pSearchbox,
+            &WSearchLineEdit::destroyed,
+            this,
+            &LibraryControl::libraryWidgetDeleted);
+}
+
+
+
 void LibraryControl::libraryWidgetDeleted() {
     m_pLibraryWidget = nullptr;
 }
 
 void LibraryControl::sidebarWidgetDeleted() {
     m_pSidebarWidget = nullptr;
+}
+
+void LibraryControl::searchboxWidgetDeleted() {
+    m_pSearchbox = nullptr;
 }
 
 void LibraryControl::slotLoadSelectedTrackToGroup(QString group, bool play) {
@@ -545,28 +568,41 @@ void LibraryControl::slotToggleSelectedSidebarItem(double v) {
 }
 
 void LibraryControl::slotGoToItem(double v) {
-    if (!m_pLibraryWidget) {
+    VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
         return;
     }
-    // Load current track if a LibraryView object has focus
-    const auto activeView = m_pLibraryWidget->getActiveView();
-    if (activeView && activeView->hasFocus()) {
-        return slotLoadSelectedIntoFirstStopped(v);
+    VERIFY_OR_DEBUG_ASSERT(m_pLibraryWidget) {
+        return;
     }
 
-    // Focus the library if this is a leaf node in the tree
-    if (m_pSidebarWidget && m_pSidebarWidget->hasFocus()) {
-        if (v > 0 && m_pSidebarWidget->isLeafNodeSelected()) {
-            setLibraryFocus();
-        } else {
-            // Otherwise toggle the sidebar item expanded state
-            slotToggleSelectedSidebarItem(v);
+    if (v > 0) {
+
+        // Focus the library if this is a leaf node in the tree
+        if (m_pSidebarWidget->hasFocus()) {
+            // ToDo can't expand Tracks and AutoDJ, always returns false for those root items
+            if (m_pSidebarWidget->isLeafNodeSelected()) {
+                return setLibraryFocus();
+            } else {
+                // Otherwise toggle the sidebar item expanded state
+                slotToggleSelectedSidebarItem(v);
+            }
         }
-    }
-    // TODO(xxx) instead of remote control the widgets individual, we should 
-    // translate this into Alt+Return and handle it at each library widget 
-    // individual https://bugs.launchpad.net/mixxx/+bug/1758618
+
+        // Load current track if a LibraryView object has focus
+        if (m_pLibraryWidget->hasFocus()) {
+            return slotLoadSelectedIntoFirstStopped(v);
+        }
+
+        // Clear the search if the searchbox has focus
+        if (m_pSearchbox->clearBtnHasFocus()) {
+            return emit clearSearch();
+        }
+
+    // TODO(xxx) instead of remote control the widgets individual, we should
+    // translate this into Alt+Return and handle it at each library widget
+    // individually https://bugs.launchpad.net/mixxx/+bug/1758618
     //emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Return, Qt::AltModifier});
+    }
 }
 
 void LibraryControl::slotSortColumn(double v) {

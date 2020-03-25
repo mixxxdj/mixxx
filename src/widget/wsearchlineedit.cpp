@@ -72,6 +72,9 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
             this,
             &WSearchLineEdit::clearSearch);
 
+    // This prevents the searchbox from being focused by Tab key (real or emulated)
+    // so it is skipped when using the library controls 'MoveFocus[...]'
+    // The Clear button can still be focused by Tab.
     setFocusPolicy(Qt::ClickFocus);
     QShortcut* setFocusShortcut = new QShortcut(QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
     connect(setFocusShortcut,
@@ -299,6 +302,11 @@ bool WSearchLineEdit::event(QEvent* pEvent) {
         updateTooltip();
     }
     return QLineEdit::event(pEvent);
+}
+
+// slot
+bool WSearchLineEdit::clearBtnHasFocus() const {
+    return m_clearButton->hasFocus();
 }
 
 // slot
