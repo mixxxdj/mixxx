@@ -794,6 +794,39 @@ QList<CuePointer> Track::getCuePoints() const {
 void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
     //qDebug() << "setCuePoints" << cuePoints.length();
     QMutexLocker lock(&m_qMutex);
+    setCuePointsMarkDirtyAndUnlock(
+            &lock,
+            cuePoints);
+}
+
+void Track::importCues(
+        const QList<mixxx::CueInfo>& cueInfos) {
+    QMutexLocker lock(&m_qMutex);
+    if (m_streamInfo) {
+        // Replace existing cue points with imported cue
+        // points immediately
+        importCuesMarkDirtyAndUnlock(
+                &lock,
+                cueInfos);
+    } else {
+        kLogger.debug()
+                << "Deferring import of"
+                << cueInfos.size()
+                << "cue(s) until actual sample rate becomes available";
+        m_importCuesPending.append(cueInfos);
+        // Clear all existing cue points, that are supposed
+        // to be replaced with the imported cue points soon.
+        setCuePointsMarkDirtyAndUnlock(
+                &lock,
+                QList<CuePointer>{});
+    }
+}
+
+void Track::setCuePointsMarkDirtyAndUnlock(
+        QMutexLocker* pLock,
+        const QList<CuePointer>& cuePoints) {
+    DEBUG_ASSERT(pLock);
+    DEBUG_ASSERT(m_importCuesPending.isEmpty());
     // disconnect existing cue points
     for (const auto& pCue: m_cuePoints) {
         disconnect(pCue.get(), 0, this, 0);
@@ -809,26 +842,34 @@ void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
             m_record.setCuePoint(CuePosition(pCue->getPosition()));
         }
     }
-    markDirtyAndUnlock(&lock);
+    markDirtyAndUnlock(pLock);
     emit cuesUpdated();
 }
 
-void Track::importCuePoints(const QList<mixxx::CueInfo>& cueInfos) {
-    TrackId trackId;
-    mixxx::audio::SampleRate sampleRate;
-    {
-        QMutexLocker lock(&m_qMutex);
-        trackId = m_record.getId();
-        sampleRate = m_record.getMetadata().getSampleRate();
-    } // implicitly unlocked when leaving scope
-
+void Track::importCuesMarkDirtyAndUnlock(
+        QMutexLocker* pLock,
+        const QList<mixxx::CueInfo>& cueInfos) {
+    DEBUG_ASSERT(pLock);
+    DEBUG_ASSERT(m_importCuesPending.isEmpty());
+    // The sample rate can only be trusted after the audio
+    // stream has been openend.
+    DEBUG_ASSERT(m_streamInfo);
+    const auto sampleRate =
+            m_streamInfo->getSignalInfo().getSampleRate();
+    // The sample rate is supposed to be consistent
+    DEBUG_ASSERT(sampleRate ==
+            m_record.getMetadata().getSampleRate());
+    const auto trackId = m_record.getId();
     QList<CuePointer> cuePoints;
-    for (const mixxx::CueInfo& cueInfo : cueInfos) {
+    cuePoints.reserve(cueInfos.size());
+    for (const auto& cueInfo : cueInfos) {
         CuePointer pCue(new Cue(cueInfo, sampleRate));
         pCue->setTrackId(trackId);
         cuePoints.append(pCue);
     }
-    setCuePoints(cuePoints);
+    setCuePointsMarkDirtyAndUnlock(
+            pLock,
+            cuePoints);
 }
 
 void Track::markDirty() {
@@ -1181,8 +1222,21 @@ void Track::updateAudioPropertiesFromStream(
     bool updated = m_record.refMetadata().updateAudioPropertiesFromStream(
             streamInfo);
     m_streamInfo = std::make_optional(std::move(streamInfo));
-    // TODO: Continue deferred import of pending CueInfo objects
-    if (updated) {
-        markDirtyAndUnlock(&lock);
+    if (m_importCuesPending.isEmpty()) {
+        // Nothing more to do
+        if (updated) {
+            markDirtyAndUnlock(&lock);
+        }
+        return;
     }
+    DEBUG_ASSERT(m_cuePoints.isEmpty());
+    const auto cueInfos = std::move(m_importCuesPending);
+    DEBUG_ASSERT(m_importCuesPending.isEmpty());
+    kLogger.debug()
+            << "Finishing deferred import of"
+            << cueInfos.size()
+            << "cue(s)";
+    importCuesMarkDirtyAndUnlock(
+            &lock,
+            cueInfos);
 }

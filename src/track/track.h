@@ -252,8 +252,9 @@ class Track : public QObject {
     void removeCue(const CuePointer& pCue);
     void removeCuesOfType(mixxx::CueType);
     QList<CuePointer> getCuePoints() const;
+
     void setCuePoints(const QList<CuePointer>& cuePoints);
-    void importCuePoints(const QList<mixxx::CueInfo>& cueInfos);
+    void importCues(const QList<mixxx::CueInfo>& cueInfos);
 
     bool isDirty();
 
@@ -360,6 +361,13 @@ class Track : public QObject {
 
     void afterKeysUpdated(QMutexLocker* pLock);
 
+    void setCuePointsMarkDirtyAndUnlock(
+            QMutexLocker* pLock,
+            const QList<CuePointer>& cuePoints);
+    void importCuesMarkDirtyAndUnlock(
+            QMutexLocker* pLock,
+            const QList<mixxx::CueInfo>& cueInfos);
+
     enum class DurationRounding {
         SECONDS, // rounded to full seconds
         NONE     // unmodified
@@ -408,6 +416,8 @@ class Track : public QObject {
     //Visual waveform data
     ConstWaveformPointer m_waveform;
     ConstWaveformPointer m_waveformSummary;
+
+    QList<mixxx::CueInfo> m_importCuesPending;
 
     friend class TrackDAO;
     friend class GlobalTrackCache;
