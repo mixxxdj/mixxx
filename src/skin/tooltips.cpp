@@ -560,8 +560,7 @@ void Tooltips::addStandardTooltips() {
             << QString("%1: %2").arg(leftClick, tr("If hotcue is set, jumps to the hotcue."))
             << tr("If hotcue is not set, sets the hotcue to the current play position.")
             << quantizeSnap
-            << QString("%1: %2").arg(rightClick, tr("If hotcue is set, clears the hotcue."))
-            << tr("Right click hotcues on the overview waveform to edit their labels and colors.");
+            << QString("%1: %2").arg(rightClick, tr("Opens a menu to clear hotcues or edit their labels and colors."));
 
     // Status displays and toggle buttons
     add("toggle_recording")

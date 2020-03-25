@@ -12,24 +12,23 @@
 #ifndef WOVERVIEW_H
 #define WOVERVIEW_H
 
-#include <QPaintEvent>
-#include <QMouseEvent>
-#include <QPixmap>
 #include <QColor>
 #include <QList>
+#include <QMouseEvent>
+#include <QPaintEvent>
+#include <QPixmap>
 
 #include "analyzer/analyzerprogress.h"
-#include "track/track.h"
-#include "widget/wcuemenupopup.h"
-#include "widget/trackdroptarget.h"
-#include "widget/wwidget.h"
-
-#include "util/color/color.h"
-
-#include "waveform/renderers/waveformsignalcolors.h"
-#include "waveform/renderers/waveformmarkset.h"
-#include "waveform/renderers/waveformmarkrange.h"
 #include "skin/skincontext.h"
+#include "track/track.h"
+#include "util/color/color.h"
+#include "util/parented_ptr.h"
+#include "waveform/renderers/waveformmarkrange.h"
+#include "waveform/renderers/waveformmarkset.h"
+#include "waveform/renderers/waveformsignalcolors.h"
+#include "widget/trackdroptarget.h"
+#include "widget/wcuemenupopup.h"
+#include "widget/wwidget.h"
 
 class PlayerManager;
 class PainterScope;
@@ -144,7 +143,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     TrackPointer m_pCurrentTrack;
     ConstWaveformPointer m_pWaveform;
 
-    std::unique_ptr<WCueMenuPopup> m_pCueMenuPopup;
+    parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
     bool m_bShowCueTimes;
 
     int m_iPosSeconds;
