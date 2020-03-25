@@ -26,14 +26,7 @@
       <string>Colors</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="3" column="1">
-       <widget class="QLabel" name="labelHotcuePalette">
-        <property name="text">
-         <string>Hotcue Palette</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
+      <item row="1" column="0">
        <widget class="QLabel" name="labelHotcueColors">
         <property name="text">
          <string>Hotcue palette</string>
@@ -41,21 +34,7 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QComboBox" name="comboBoxHotcueColors">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="labelHotcueDefaultColor">
-        <property name="text">
-         <string>Hotcue default color</string>
-        </property>
-       </widget>
+       <widget class="QComboBox" name="comboBoxHotcueDefaultColor"/>
       </item>
       <item row="0" column="0">
        <widget class="QLabel" name="labelTrackColors">
@@ -74,13 +53,20 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
-       <widget class="QComboBox" name="comboBoxHotcueDefaultColor"/>
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelHotcueDefaultColor">
+        <property name="text">
+         <string>Hotcue default color</string>
+        </property>
+       </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLabel" name="labelTrackPalette">
-        <property name="text">
-         <string>Track Palette</string>
+       <widget class="QComboBox" name="comboBoxHotcueColors">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
        </widget>
       </item>
