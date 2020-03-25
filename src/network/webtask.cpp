@@ -190,16 +190,18 @@ void WebTask::slotStart(int timeoutMillis) {
             << "Starting...";
     m_status = Status::Idle;
     if (!doStart(m_networkAccessManager, timeoutMillis)) {
+        // Still idle, because we are in the same thread.
+        // The callee is not supposed to abort a request
+        // before it has beeen started successfully.
+        DEBUG_ASSERT(m_status == Status::Idle);
         kLogger.warning()
                 << "Start aborted";
         return;
     }
-
-    // The task could be aborted immediately while being started.
-    if (m_status == Status::Aborted) {
-        onAborted(doAbort());
-        return;
-    }
+    // Still idle after the request has been started
+    // successfully, i.e. nothing happend yet in this
+    // thread.
+    DEBUG_ASSERT(m_status == Status::Idle);
     m_status = Status::Pending;
 
     DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
