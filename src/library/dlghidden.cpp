@@ -112,5 +112,5 @@ void DlgHidden::selectionChanged(const QItemSelection &selected,
 }
 
 bool DlgHidden::hasFocus() const {
-    return QWidget::hasFocus();
+    return m_pTrackTableView->hasFocus();
 }
