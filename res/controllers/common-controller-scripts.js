@@ -449,18 +449,20 @@ bpm.tapButton = function(deck) {
     }
     var average = sum / bpm.tap.length
 
+    var group = "[Channel" + deck + "]";
+
     // "bpm" was changed in 1.10 to reflect the *adjusted* bpm, but I presume it
     // was supposed to return the tracks bpm (which it did before the change).
     // "file_bpm" is supposed to return the set BPM of the loaded track of the
     // channel.
-    var fRateScale = average/engine.getValue("[Channel" + deck + "]", "file_bpm");
+    var fRateScale = average/engine.getValue(group, "file_bpm");
 
     // Adjust the rate:
-    fRateScale = (fRateScale - 1.) / engine.getValue("[Channel" + deck + "]", "rateRange")
+    fRateScale = (fRateScale - 1.) / engine.getValue(group, "rateRange")
 
     engine.setValue(
-        "[Channel" + deck + "]", "rate",
-        fRateScale * engine.getValue("[Channel" + deck + "]", "rate_dir"));
+        group, "rate",
+        fRateScale * engine.getValue(group, "rate_dir"));
 };
 
 // ----------------- Common regular expressions --------------------------
