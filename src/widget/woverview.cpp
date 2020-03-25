@@ -357,11 +357,12 @@ void WOverview::onRateRatioChange(double v) {
 void WOverview::onPassthroughChange(double v) {
     m_bPassthroughEnabled = static_cast<bool>(v);
 
-    if (m_bPassthroughEnabled) {
-        update();
-    } else {
+    if (!m_bPassthroughEnabled) {
         slotWaveformSummaryUpdated();
     }
+
+    // Always call this to trigger a repaint even if not track is loaded
+    update();
 }
 
 void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
