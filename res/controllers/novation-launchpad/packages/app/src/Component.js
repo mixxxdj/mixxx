@@ -4,13 +4,13 @@ import EventEmitter from 'eventemitter3'
 
 export default class Component extends EventEmitter {
   mount () {
-    this.onMount(this)
-    this.emit(`mount`, this)
+    this.onMount()
+    this.emit('mount', this)
   }
 
   unmount () {
-    this.onUnmount(this)
-    this.emit(`unmount`, this)
+    this.onUnmount()
+    this.emit('unmount', this)
   }
 
   onMount () { }
