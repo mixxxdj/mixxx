@@ -15,7 +15,6 @@ class WColorPicker : public QWidget {
     enum class Option {
         NoOptions = 0,
         AllowNoColor = 1,
-        AllowCustomColor = 1 << 1,
     };
     Q_DECLARE_FLAGS(Options, Option);
 

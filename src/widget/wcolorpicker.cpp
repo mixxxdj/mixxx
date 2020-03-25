@@ -102,10 +102,8 @@ void WColorPicker::addColorButtons() {
     int column = 0;
 
     int numColors = m_palette.size();
+    numColors++; // for custom color button
     if (m_options.testFlag(Option::AllowNoColor)) {
-        numColors++;
-    }
-    if (m_options.testFlag(Option::AllowCustomColor)) {
         numColors++;
     }
 
@@ -124,10 +122,8 @@ void WColorPicker::addColorButtons() {
         }
     }
 
-    if (m_options.testFlag(Option::AllowCustomColor)) {
-        addCustomColorButton(pLayout, row, column);
-        column++;
-    }
+    addCustomColorButton(pLayout, row, column);
+    column++;
 }
 
 void WColorPicker::addColorButton(mixxx::RgbColor color, QGridLayout* pLayout, int row, int column) {
