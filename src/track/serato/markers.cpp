@@ -279,14 +279,16 @@ QList<CueInfo> SeratoMarkers::getCues(double timingOffsetMillis) const {
         DEBUG_ASSERT(pEntry);
         switch (pEntry->typeId()) {
         case SeratoMarkersEntry::TypeId::Cue: {
-            CueInfo cueInfo(
-                    CueType::HotCue,
-                    pEntry->getStartPosition() + timingOffsetMillis,
-                    std::nullopt,
-                    cueIndex,
-                    "",
-                    pEntry->getColor());
-            cueInfos.append(cueInfo);
+            if (pEntry->hasStartPosition()) {
+                CueInfo cueInfo(
+                        CueType::HotCue,
+                        pEntry->getStartPosition() + timingOffsetMillis,
+                        std::nullopt,
+                        cueIndex,
+                        "",
+                        pEntry->getColor());
+                cueInfos.append(cueInfo);
+            }
             cueIndex++;
             break;
         }
