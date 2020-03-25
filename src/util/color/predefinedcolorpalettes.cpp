@@ -123,7 +123,11 @@ const ColorPalette PredefinedColorPalettes::kMixxxHotcueColorPalette =
                         kColorMixxxPink,
                         kColorMixxxWhite,
                         kSchemaMigrationReplacementColor,
-                });
+                },
+                // Exclude kSchemaMigrationReplacementColor from the colors assigned to hotcues.
+                // If there were 9 colors assigned to hotcues, that would look weird on
+                // controllers with >8 hotcue buttons, for example a Novation Launchpad.
+                QList<unsigned int>{0, 1, 2, 3, 4, 5, 6, 7});
 
 const ColorPalette PredefinedColorPalettes::kSeratoDJIntroHotcueColorPalette =
         ColorPalette(

@@ -19,11 +19,8 @@ mixxx::RgbColor ColorPalette::previousColor(mixxx::RgbColor color) const {
 mixxx::RgbColor ColorPalette::colorForHotcueIndex(unsigned int hotcueIndex) const {
     int colorIndex;
     if (m_hotcueColorIndices.isEmpty()) {
-        // For hotcue n, get nth color from palette
-        // But use only  8 to avoid odd apearances on Hercules P32 or similar
-        colorIndex = hotcueIndex % 8;
+        colorIndex = hotcueIndex;
     } else {
-        // For hotcue n, get nth color from palette
         colorIndex = m_hotcueColorIndices.at(hotcueIndex % m_hotcueColorIndices.size());
     }
     return at(colorIndex % size());
