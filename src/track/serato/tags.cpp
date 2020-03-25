@@ -119,8 +119,11 @@ double SeratoTags::findTimingOffsetMillis(const QString& filePath) {
         // TODO: Find missing timing offsets
         switch (timingShiftCase) {
 #if defined(__MAD__)
+        case EXIT_CODE_CASE_A:
+        case EXIT_CODE_CASE_B:
+        case EXIT_CODE_CASE_C:
         case EXIT_CODE_CASE_D:
-            timingOffset = -16;
+            timingOffset = -18;
             break;
 #endif
         }
