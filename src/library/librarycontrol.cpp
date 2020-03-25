@@ -495,7 +495,7 @@ void LibraryControl::slotMoveFocus(double v) {
 }
 
 void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
-    // Ensure a valid library widget has the keyboard focus.
+    // Ensure there's a valid library widget that can receive keyboard focus.
     // QApplication::focusWidget() is not sufficient here because it
     // would return any focused widget like WOverview, WWaveform, QSpinBox
     VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
@@ -504,17 +504,26 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
     VERIFY_OR_DEBUG_ASSERT(m_pLibraryWidget) {
         return;
     }
-    if (!m_pLibraryWidget->hasFocus() && !m_pSidebarWidget->hasFocus()) {
-        setLibraryFocus();
+
+    Qt::Key key = static_cast<Qt::Key>(event.key());
+
+//    qDebug() << "|   key  " << key;
+
+    // Any widget can receive Tab. Other keys should be sent to library widgets only
+    // to not accidentally alter spinboxes etc.
+    if ((key != Qt::Key_Tab) && !m_pSidebarWidget->hasFocus() && !libraryViewHasFocus()) {
+        focusLibraryView();
     }
-    auto focusWidget = QApplication::focusWidget();
-    VERIFY_OR_DEBUG_ASSERT(focusWidget) {
-        return;
+    // If the Mixxx window has focus but there's no widget focused yet,
+    // focus the sidebar
+    if (!QApplication::focusWidget() && QApplication::focusWindow()) {
+		m_pSidebarWidget->setFocus();
     }
     // Send the event pointer to the currently focused widget
-    for (auto i = 0; i < event.count(); ++i) {
-        QApplication::sendEvent(focusWidget, &event);
-    }
+    auto focusWidget = QApplication::focusWidget();
+	for (auto i = 0; i < event.count(); ++i) {
+		QApplication::sendEvent(focusWidget, &event);
+	}
 }
 
 void LibraryControl::focusLibraryView() {
