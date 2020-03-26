@@ -25,6 +25,7 @@
 #include "widget/wwidget.h"
 
 #include "util/color/color.h"
+#include "util/parented_ptr.h"
 
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/renderers/waveformmarkset.h"
@@ -141,7 +142,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     TrackPointer m_pCurrentTrack;
     ConstWaveformPointer m_pWaveform;
 
-    std::unique_ptr<WCueMenuPopup> m_pCueMenuPopup;
+    parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
     bool m_bShowCueTimes;
 
     int m_iPosSeconds;

@@ -466,6 +466,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefautodjdlg.ui
   src/preferences/dialog/dlgprefbeats.cpp
   src/preferences/dialog/dlgprefbeatsdlg.ui
+  src/preferences/dialog/dlgprefcolors.cpp
+  src/preferences/dialog/dlgprefcolorsdlg.ui
   src/preferences/dialog/dlgprefcrossfader.cpp
   src/preferences/dialog/dlgprefcrossfaderdlg.ui
   src/preferences/dialog/dlgprefdeck.cpp
@@ -498,6 +500,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefwaveformdlg.ui
   src/preferences/dlgpreferencepage.cpp
   src/preferences/effectsettingsmodel.cpp
+  src/preferences/colorpaletteeditor.cpp
+  src/preferences/colorpaletteeditormodel.cpp
   src/preferences/colorpalettesettings.cpp
   src/preferences/replaygainsettings.cpp
   src/preferences/settingsmanager.cpp
@@ -562,6 +566,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/cmdlineargs.cpp
   src/util/color/color.cpp
   src/util/color/colorpalette.cpp
+  src/util/color/predefinedcolorpalettes.cpp
   src/util/console.cpp
   src/util/db/dbconnection.cpp
   src/util/db/dbconnectionpool.cpp
@@ -680,6 +685,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/weffectparameterknobcomposed.cpp
   src/widget/weffectpushbutton.cpp
   src/widget/weffectselector.cpp
+  src/widget/whotcuebutton.cpp
   src/widget/wimagestore.cpp
   src/widget/wkey.cpp
   src/widget/wknob.cpp
@@ -885,6 +891,14 @@ install(
     ${CMAKE_INSTALL_DATADIR}/mixxx
 )
 
+# QScriptEngine extensions
+install(
+  DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}/script
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/mixxx
+)
+
 # Licenses
 install(
   FILES
@@ -930,7 +944,7 @@ install(
 # udev rule file for USB HID and Bulk controllers
 install(
   FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.usb.rules
+    ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx-usb-uaccess.rules
   DESTINATION
     ${CMAKE_INSTALL_SYSCONFDIR}/udev/rules.d
 )
@@ -1130,13 +1144,21 @@ if(UNIX)
     COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res"
     COMMENT "Symlinking resources to build directory..."
   )
+  add_custom_target(mixxx-script
+    COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/script" "${CMAKE_CURRENT_BINARY_DIR}/script"
+    COMMENT "Symlinking to build directory..."
+  )
 else()
   add_custom_target(mixxx-res
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/"
     COMMENT "Copying resources to build directory..."
   )
+  add_custom_target(mixxx-script
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/script" "${CMAKE_CURRENT_BINARY_DIR}/"
+    COMMENT "Copying QScriptEngine extensions to build directory..."
+  )
 endif()
-add_dependencies(mixxx-lib mixxx-res)
+add_dependencies(mixxx-lib mixxx-res mixxx-script)
 
 # Windows-only resource file
 if(WIN32)

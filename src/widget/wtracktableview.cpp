@@ -575,7 +575,7 @@ void WTrackTableView::createActions() {
             this, [this] { slotScaleBpm(Beats::THREEHALVES); });
 
     ColorPaletteSettings colorPaletteSettings(m_pConfig);
-    m_pColorPickerAction = new WColorPickerAction(WColorPicker::ColorOption::AllowNoColor, colorPaletteSettings.getTrackColorPalette(), this);
+    m_pColorPickerAction = new WColorPickerAction(WColorPicker::Option::AllowNoColor, colorPaletteSettings.getTrackColorPalette(), this);
     m_pColorPickerAction->setObjectName("TrackColorPickerAction");
     connect(m_pColorPickerAction,
             &WColorPickerAction::colorPicked,

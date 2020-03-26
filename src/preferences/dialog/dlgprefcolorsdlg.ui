@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DlgPrefColorsDlg</class>
+ <widget class="QWidget" name="DlgPrefColorsDlg">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>524</width>
+    <height>333</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Color Preferences</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <widget class="QGroupBox" name="groupBoxPalettes">
+     <property name="title">
+      <string>Colors</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelHotcueColors">
+        <property name="text">
+         <string>Hotcues:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="comboBoxHotcueColors"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelTrackColors">
+        <property name="text">
+         <string>Track:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="comboBoxTrackColors"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelAutoHotcueColors">
+        <property name="text">
+         <string>Auto hotcue colors</string>
+        </property>
+        <property name="buddy">
+         <cstring>checkBoxAssignHotcueColors</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QCheckBox" name="checkBoxAssignHotcueColors">
+        <property name="toolTip">
+         <string>Automatically assigns a predefined color to a newly created hotcue point, based on its index.</string>
+        </property>
+        <property name="text">
+         <string>Assign predefined colors to newly created hotcue points</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBoxPaletteEditor">
+     <property name="title">
+      <string>Palette Editor</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="ColorPaletteEditor" name="colorPaletteEditor" native="true"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer>
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>ColorPaletteEditor</class>
+   <extends>QWidget</extends>
+   <header>preferences/colorpaletteeditor.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
