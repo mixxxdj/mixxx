@@ -14,8 +14,8 @@ class Singleton {
     }
 
     static T* instance() {
-        if (m_instance == NULL) {
-            qWarning() << "Singleton class has not been created yet, returning NULL";
+        if (m_instance == nullptr) {
+            qWarning() << "Singleton class has not been created yet, returning nullptr";
         }
         return m_instance;
     }
@@ -23,6 +23,7 @@ class Singleton {
     static void destroy() {
         if (m_instance) {
             delete m_instance;
+            m_instance = nullptr;
         }
     }
 
@@ -38,6 +39,7 @@ class Singleton {
     static T* m_instance;
 };
 
-template<class T> T* Singleton<T>::m_instance = NULL;
+template<class T>
+T* Singleton<T>::m_instance = nullptr;
 
 #endif // SINGLETON_H
