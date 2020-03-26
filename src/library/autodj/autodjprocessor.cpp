@@ -165,7 +165,7 @@ AutoDJProcessor::AutoDJProcessor(
     m_pCOCrossfader = new ControlProxy("[Master]", "crossfader");
     m_pCOCrossfaderReverse = new ControlProxy("[Mixer Profile]", "xFaderReverse");
     for (int i = 0; i < 4; i++) {
-        m_pVolumeFader[i] = new ControlProxy(QStringLiteral("[Channel" )+ QString::number(i + 1) + QStringLiteral("]"), "volume");
+        m_pVolumeFader[i] = make_parented<ControlProxy>(ConfigKey(QStringLiteral("[Channel") + QString::number(i + 1) + QStringLiteral("]"), "volume"), this);
     }
 
     QString str_autoDjTransition = m_pConfig->getValueString(
@@ -190,9 +190,6 @@ AutoDJProcessor::~AutoDJProcessor() {
     m_decks.clear();
     delete m_pCOCrossfader;
     delete m_pCOCrossfaderReverse;
-    for (int i = 0; i < 4; i++) {
-        delete m_pVolumeFader[i];
-    }
 
     delete m_pSkipNext;
     delete m_pShufflePlaylist;

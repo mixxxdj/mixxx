@@ -1,17 +1,18 @@
 #ifndef AUTODJPROCESSOR_H
 #define AUTODJPROCESSOR_H
 
+#include <QModelIndexList>
 #include <QObject>
 #include <QString>
-#include <QModelIndexList>
 
-#include "preferences/usersettings.h"
 #include "control/controlproxy.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/controls/cuecontrol.h"
 #include "library/playlisttablemodel.h"
+#include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/class.h"
+#include "util/parented_ptr.h"
 
 class ControlPushButton;
 class TrackCollectionManager;
@@ -306,7 +307,7 @@ class AutoDJProcessor : public QObject {
 
     ControlProxy* m_pCOCrossfader;
     ControlProxy* m_pCOCrossfaderReverse;
-    ControlProxy* m_pVolumeFader[4];
+    parented_ptr<ControlProxy> m_pVolumeFader[4];
 
     ControlPushButton* m_pSkipNext;
     ControlPushButton* m_pFadeNow;
