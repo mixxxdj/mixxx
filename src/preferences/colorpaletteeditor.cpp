@@ -20,23 +20,34 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
         : QWidget(parent),
           m_bPaletteExists(false),
           m_bPaletteIsReadOnly(false),
-          m_pPaletteNameComboBox(make_parented<QComboBox>()),
+          m_pPaletteTemplateComboBox(make_parented<QComboBox>()),
+          m_pSaveAsComboBox(make_parented<QComboBox>()),
           m_pTableView(make_parented<QTableView>()),
           m_pModel(make_parented<ColorPaletteEditorModel>(m_pTableView)) {
-    m_pPaletteNameComboBox->setEditable(true);
+    m_pSaveAsComboBox->setEditable(true);
+
+    m_pResetButton = make_parented<QPushButton>(tr("Reset"), this);
 
     QDialogButtonBox* pButtonBox = new QDialogButtonBox();
+    m_pRemoveButton = pButtonBox->addButton(
+            tr("Remove Palette"),
+            QDialogButtonBox::DestructiveRole);
     m_pSaveButton = pButtonBox->addButton(QDialogButtonBox::Save);
-    m_pResetButton = pButtonBox->addButton(QDialogButtonBox::Reset);
     m_pCloseButton = pButtonBox->addButton(QDialogButtonBox::Close);
 
     QHBoxLayout* pTopLayout = new QHBoxLayout();
     pTopLayout->addWidget(new QLabel(tr("Name")));
-    pTopLayout->addWidget(m_pPaletteNameComboBox, 1);
+    pTopLayout->addWidget(m_pSaveAsComboBox, 1);
+
+    QHBoxLayout* pBottomLayout = new QHBoxLayout();
+    pBottomLayout->addWidget(new QLabel(tr("Reset to")));
+    pBottomLayout->addWidget(m_pPaletteTemplateComboBox, 1);
+    pBottomLayout->addWidget(m_pResetButton.get());
 
     QVBoxLayout* pLayout = new QVBoxLayout();
     pLayout->addLayout(pTopLayout);
     pLayout->addWidget(m_pTableView, 1);
+    pLayout->addLayout(pBottomLayout);
     pLayout->addWidget(pButtonBox);
     setLayout(pLayout);
     setContentsMargins(0, 0, 0, 0);
@@ -76,7 +87,7 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
             &QTableView::customContextMenuRequested,
             this,
             &ColorPaletteEditor::slotTableViewContextMenuRequested);
-    connect(m_pPaletteNameComboBox,
+    connect(m_pSaveAsComboBox,
             &QComboBox::editTextChanged,
             this,
             &ColorPaletteEditor::slotPaletteNameChanged);
@@ -92,6 +103,10 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
             &QPushButton::clicked,
             this,
             &ColorPaletteEditor::slotSaveButtonClicked);
+    connect(m_pRemoveButton,
+            &QPushButton::clicked,
+            this,
+            &ColorPaletteEditor::slotRemoveButtonClicked);
 }
 
 void ColorPaletteEditor::initialize(UserSettingsPointer pConfig) {
@@ -101,22 +116,34 @@ void ColorPaletteEditor::initialize(UserSettingsPointer pConfig) {
 }
 
 void ColorPaletteEditor::reset() {
-    m_pPaletteNameComboBox->clear();
+    m_pPaletteTemplateComboBox->clear();
+    m_pSaveAsComboBox->clear();
+
     for (const ColorPalette& palette : mixxx::PredefinedColorPalettes::kPalettes) {
-        m_pPaletteNameComboBox->addItem(palette.getName());
+        m_pPaletteTemplateComboBox->addItem(palette.getName());
     }
-    m_pPaletteNameComboBox->insertSeparator(mixxx::PredefinedColorPalettes::kPalettes.size());
+
     ColorPaletteSettings colorPaletteSettings(m_pConfig);
-    for (const QString& paletteName : colorPaletteSettings.getColorPaletteNames()) {
-        m_pPaletteNameComboBox->addItem(paletteName);
+    if (colorPaletteSettings.getColorPaletteNames().count()) {
+        for (const QString& paletteName : colorPaletteSettings.getColorPaletteNames()) {
+            m_pSaveAsComboBox->addItem(paletteName);
+            m_pPaletteTemplateComboBox->addItem(paletteName);
+        }
+    } else {
+        m_pSaveAsComboBox->addItem(tr("Custom Color Palette"));
+        slotResetButtonClicked();
     }
 }
 
 void ColorPaletteEditor::slotUpdateButtons() {
     bool bDirty = m_pModel->isDirty();
     bool bEmpty = m_pModel->isEmpty();
-    m_pResetButton->setEnabled(bDirty);
-    m_pSaveButton->setEnabled(!m_bPaletteExists || (!m_bPaletteIsReadOnly && bDirty && !bEmpty));
+    m_pSaveButton->setEnabled(
+            !m_pSaveAsComboBox->currentText().isEmpty() &&
+            (!m_bPaletteExists || (!m_bPaletteIsReadOnly && bDirty && !bEmpty)));
+    m_pRemoveButton->setEnabled(
+            m_bPaletteExists &&
+            !m_bPaletteIsReadOnly);
 }
 
 void ColorPaletteEditor::slotTableViewDoubleClicked(const QModelIndex& index) {
@@ -191,7 +218,7 @@ void ColorPaletteEditor::slotCloseButtonClicked() {
 }
 
 void ColorPaletteEditor::slotRemoveButtonClicked() {
-    QString paletteName = m_pPaletteNameComboBox->currentText();
+    QString paletteName = m_pSaveAsComboBox->currentText();
     ColorPaletteSettings colorPaletteSettings(m_pConfig);
     colorPaletteSettings.removePalette(paletteName);
     reset();
@@ -199,30 +226,22 @@ void ColorPaletteEditor::slotRemoveButtonClicked() {
 }
 
 void ColorPaletteEditor::slotSaveButtonClicked() {
-    QString paletteName = m_pPaletteNameComboBox->currentText();
+    QString paletteName = m_pSaveAsComboBox->currentText();
     ColorPaletteSettings colorPaletteSettings(m_pConfig);
     colorPaletteSettings.setColorPalette(paletteName, m_pModel->getColorPalette(paletteName));
     m_pModel->setDirty(false);
     reset();
-    m_pPaletteNameComboBox->setCurrentText(paletteName);
+    m_pSaveAsComboBox->setCurrentText(paletteName);
     emit paletteChanged(paletteName);
 }
 
 void ColorPaletteEditor::slotResetButtonClicked() {
-    QString paletteName = m_pPaletteNameComboBox->currentText();
+    QString paletteName = m_pPaletteTemplateComboBox->currentText();
     ColorPaletteSettings colorPaletteSettings(m_pConfig);
-    bool bPaletteExists = colorPaletteSettings.getColorPaletteNames().contains(paletteName);
-    if (!bPaletteExists) {
-        for (const ColorPalette& palette : mixxx::PredefinedColorPalettes::kPalettes) {
-            if (paletteName == palette.getName()) {
-                bPaletteExists = true;
-                break;
-            }
-        }
-    }
-    m_pModel->setDirty(false);
-    reset();
-    if (bPaletteExists) {
-        m_pPaletteNameComboBox->setCurrentText(paletteName);
-    }
+    ColorPalette palette = colorPaletteSettings.getColorPalette(
+            paletteName,
+            mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette);
+    m_pModel->setColorPalette(palette);
+    m_pModel->setDirty(true);
+    slotUpdateButtons();
 }

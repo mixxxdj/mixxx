@@ -38,10 +38,12 @@ class ColorPaletteEditor : public QWidget {
     bool m_bPaletteIsReadOnly;
 
     UserSettingsPointer m_pConfig;
-    parented_ptr<QComboBox> m_pPaletteNameComboBox;
+    parented_ptr<QComboBox> m_pPaletteTemplateComboBox;
+    parented_ptr<QComboBox> m_pSaveAsComboBox;
     parented_ptr<QTableView> m_pTableView;
     parented_ptr<ColorPaletteEditorModel> m_pModel;
     QPushButton* m_pSaveButton;
     QPushButton* m_pCloseButton;
-    QPushButton* m_pResetButton;
+    QPushButton* m_pRemoveButton;
+    parented_ptr<QPushButton>(m_pResetButton);
 };
