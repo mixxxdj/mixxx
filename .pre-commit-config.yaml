@@ -64,7 +64,7 @@ repos:
     - manual
   - id: no-commit-to-branch
 - repo: https://github.com/pre-commit/mirrors-eslint
-  rev: v6.8.0
+  rev: master
   hooks:
   - id: eslint
     args: [--fix, --report-unused-disable-directives]
