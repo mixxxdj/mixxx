@@ -24,6 +24,8 @@ DlgPrefColors::DlgPrefColors(
     setupUi(this);
     colorPaletteEditor->initialize(pConfig);
 
+    groupBoxPaletteEditor->hide();
+
     loadSettings();
 
     connect(colorPaletteEditor,
@@ -34,6 +36,10 @@ DlgPrefColors::DlgPrefColors(
             &ColorPaletteEditor::paletteRemoved,
             this,
             &DlgPrefColors::loadSettings);
+    connect(colorPaletteEditor,
+            &ColorPaletteEditor::closeButtonClicked,
+            this,
+            &DlgPrefColors::slotCloseClicked);
 
     connect(comboBoxTrackColors,
             QOverload<const QString&>::of(&QComboBox::currentIndexChanged),
@@ -44,6 +50,11 @@ DlgPrefColors::DlgPrefColors(
             QOverload<const QString&>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefColors::slotHotcuePaletteChanged);
+
+    connect(pushButtonEdit,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefColors::slotEditClicked);
 }
 
 DlgPrefColors::~DlgPrefColors() {
@@ -222,4 +233,18 @@ void DlgPrefColors::slotHotcuePaletteChanged(const QString& paletteName) {
         }
         comboBoxHotcueDefaultColor->setCurrentIndex(hotcueDefaultColorIndex + 1);
     }
+}
+
+void DlgPrefColors::slotEditClicked() {
+    pushButtonEdit->hide();
+    labelCustomPalette->hide();
+    widgetSpacer->hide();
+    groupBoxPaletteEditor->show();
+}
+
+void DlgPrefColors::slotCloseClicked() {
+    groupBoxPaletteEditor->hide();
+    widgetSpacer->show();
+    pushButtonEdit->show();
+    labelCustomPalette->show();
 }

@@ -28,7 +28,7 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
     QDialogButtonBox* pButtonBox = new QDialogButtonBox();
     m_pSaveButton = pButtonBox->addButton(QDialogButtonBox::Save);
     m_pResetButton = pButtonBox->addButton(QDialogButtonBox::Reset);
-    m_pDiscardButton = pButtonBox->addButton(QDialogButtonBox::Discard);
+    m_pCloseButton = pButtonBox->addButton(QDialogButtonBox::Close);
 
     QHBoxLayout* pTopLayout = new QHBoxLayout();
     pTopLayout->addWidget(new QLabel(tr("Name")));
@@ -84,10 +84,10 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
             &QPushButton::clicked,
             this,
             &ColorPaletteEditor::slotResetButtonClicked);
-    connect(m_pDiscardButton,
+    connect(m_pCloseButton,
             &QPushButton::clicked,
             this,
-            &ColorPaletteEditor::slotDiscardButtonClicked);
+            &ColorPaletteEditor::slotCloseButtonClicked);
     connect(m_pSaveButton,
             &QPushButton::clicked,
             this,
@@ -117,7 +117,6 @@ void ColorPaletteEditor::slotUpdateButtons() {
     bool bEmpty = m_pModel->isEmpty();
     m_pResetButton->setEnabled(bDirty);
     m_pSaveButton->setEnabled(!m_bPaletteExists || (!m_bPaletteIsReadOnly && bDirty && !bEmpty));
-    m_pDiscardButton->setEnabled(m_bPaletteExists && !m_bPaletteIsReadOnly);
 }
 
 void ColorPaletteEditor::slotTableViewDoubleClicked(const QModelIndex& index) {
@@ -187,7 +186,11 @@ void ColorPaletteEditor::slotPaletteNameChanged(const QString& text) {
     slotUpdateButtons();
 }
 
-void ColorPaletteEditor::slotDiscardButtonClicked() {
+void ColorPaletteEditor::slotCloseButtonClicked() {
+    emit closeButtonClicked();
+}
+
+void ColorPaletteEditor::slotRemoveButtonClicked() {
     QString paletteName = m_pPaletteNameComboBox->currentText();
     ColorPaletteSettings colorPaletteSettings(m_pConfig);
     colorPaletteSettings.removePalette(paletteName);

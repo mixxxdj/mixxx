@@ -18,6 +18,8 @@ class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
     // Apply changes to widget
     void slotApply();
     void slotResetToDefaults();
+    void slotEditClicked();
+    void slotCloseClicked();
 
   signals:
     void apply(const QString&);
