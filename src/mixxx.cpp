@@ -188,6 +188,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
+    finalize();
     // SkinLoader depends on Config;
     delete m_pSkinLoader;
 }
@@ -1387,7 +1388,6 @@ void MixxxMainWindow::closeEvent(QCloseEvent *event) {
         event->ignore();
         return;
     }
-    finalize();
     QMainWindow::closeEvent(event);
 }
 
