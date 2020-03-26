@@ -165,7 +165,7 @@ AutoDJProcessor::AutoDJProcessor(
     m_pCOCrossfader = new ControlProxy("[Master]", "crossfader");
     m_pCOCrossfaderReverse = new ControlProxy("[Mixer Profile]", "xFaderReverse");
     for (int i = 0; i < 4; i++) {
-        m_pVolumeFader[i] = new ControlProxy(tr("[Channel%1]").arg(i + 1), "volume");
+        m_pVolumeFader[i] = new ControlProxy(QStringLiteral("[Channel" )+ QString::number(i + 1) + QStringLiteral("]"), "volume");
     }
 
     QString str_autoDjTransition = m_pConfig->getValueString(
