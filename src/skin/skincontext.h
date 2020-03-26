@@ -257,6 +257,10 @@ class SkinContext {
         return m_scaleFactor;
     }
 
+    UserSettingsPointer getConfig() const {
+        return m_pConfig;
+    }
+
   private:
     PixmapSource getPixmapSourceInner(const QString& filename) const;
 
