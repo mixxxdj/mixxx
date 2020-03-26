@@ -43,9 +43,11 @@ DlgReplaceCueColor::DlgReplaceCueColor(
         : QDialog(pParent),
           m_pConfig(pConfig),
           m_pDbConnectionPool(dbConnectionPool),
+          m_bDatabaseChanged(false),
           m_pNewColorMenu(new QMenu(this)),
           m_pCurrentColorMenu(new QMenu(this)) {
     setupUi(this);
+    setWindowModality(Qt::ApplicationModal);
 
     spinBoxHotcueIndex->setMaximum(NUM_HOT_CUES);
 
@@ -92,7 +94,7 @@ DlgReplaceCueColor::DlgReplaceCueColor(
             [this](QAbstractButton* button) {
                 switch (buttonBox->buttonRole(button)) {
                 case QDialogButtonBox::RejectRole:
-                    hide();
+                    reject();
                     break;
                 case QDialogButtonBox::ApplyRole:
                     slotApply();
@@ -111,7 +113,7 @@ void DlgReplaceCueColor::slotApply() {
 
     // Get values for SELECT query
     QProgressDialog progress("Selecting database rows...", "Cancel", 0, 0, this);
-    progress.setWindowModality(Qt::WindowModal);
+    progress.setWindowModality(Qt::ApplicationModal);
     progress.setAutoReset(false);
     progress.setValue(0);
 
@@ -269,6 +271,7 @@ void DlgReplaceCueColor::slotApply() {
     } else {
         transaction.commit();
         emit databaseTracksChanged(trackIds);
+        m_bDatabaseChanged = true;
     }
 
     progress.reset();
@@ -279,5 +282,15 @@ void DlgReplaceCueColor::setApplyButtonEnabled(bool enabled) {
     QPushButton* button = buttonBox->button(QDialogButtonBox::Apply);
     if (button) {
         button->setEnabled(enabled);
+    }
+}
+
+void DlgReplaceCueColor::reject() {
+    if (m_bDatabaseChanged) {
+        QDialog::accept();
+        qWarning() << "DlgReplaceCueColor::accept";
+    } else {
+        QDialog::reject();
+        qWarning() << "DlgReplaceCueColor::reject";
     }
 }
