@@ -1,0 +1,116 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    PREVIEWDECK DEVICE BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>PreviewDeck</ObjectName>
+        <Size>me,100f</Size>
+        <Layout>vertical</Layout>
+        <Children>
+
+            <WidgetGroup>
+                <Layout>stacked</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+
+                    <!-- Hack for BUG https://github.com/22degrees/RoundCorners/issues/4 -->
+                    <Template src="skin:shared/confighack.xml"/>
+
+                    <Template src="skin:device/previewdeck/config.xml"/>
+
+                    <WidgetGroup>
+                        <Layout>vertical</Layout>
+                        <Children>
+
+                            <Template src="skin:device/previewdeck/border_top.xml"/>
+
+                            <WidgetGroup>
+                                <ObjectName>Rectangle</ObjectName>
+                                <Layout>vertical</Layout>
+                                <SizePolicy>me,me</SizePolicy>
+                                <Children>
+
+                                    <Template src="skin:device/previewdeck/trackinfo.xml"/>
+
+                                    <WidgetGroup>
+                                        <Layout>horizontal</Layout>
+                                        <SizePolicy>me,f</SizePolicy>
+                                        <MinimumSize>-1,45</MinimumSize>
+                                        <MaximumSize>-1,45</MaximumSize>
+                                        <Children>
+
+                                            <WidgetGroup><!-- margin-left -->
+                                                <MinimumSize>10,-1</MinimumSize>
+                                                <MaximumSize>10,-1</MaximumSize>
+                                            </WidgetGroup>
+
+                                            <WidgetGroup>
+                                                <ObjectName>Rectangle</ObjectName>
+                                                <Layout>vertical</Layout>
+                                                <SizePolicy>me,me</SizePolicy>
+                                                <Children>
+
+                                                    <WidgetGroup>
+                                                        <ObjectName>Line</ObjectName>
+                                                        <MinimumSize>-1,2</MinimumSize>
+                                                        <MaximumSize>-1,2</MaximumSize>
+                                                    </WidgetGroup>
+
+                                                    <Template src="skin:device/previewdeck/overview.xml">
+                                                        <SetVariable name="Number">1</SetVariable>
+                                                        <SetVariable name="Group">[PreviewDeck1]</SetVariable>
+                                                        <SetVariable name="Widget">[PreviewDeck1]</SetVariable>
+                                                        <SetVariable name="SignalHighColor">#d4ddd7</SetVariable>
+                                                        <SetVariable name="SignalMidColor">#a4aba6</SetVariable>
+                                                        <SetVariable name="SignalLowColor">#737875</SetVariable>
+                                                        <SetVariable name="MarkRangeColor">#417587</SetVariable>
+                                                        <SetVariable name="MarkRangeDisabledColor">#979a9c</SetVariable>
+                                                        <SetVariable name="Size">me,41f</SetVariable>
+                                                    </Template>
+
+                                                    <WidgetGroup>
+                                                        <ObjectName>Line</ObjectName>
+                                                        <MinimumSize>-1,2</MinimumSize>
+                                                        <MaximumSize>-1,2</MaximumSize>
+                                                    </WidgetGroup>
+
+                                                </Children>
+                                            </WidgetGroup>
+
+                                            <Template src="skin:device/previewdeck/knob_small.xml">
+                                                <SetVariable name="ObjectName">Gain</SetVariable>
+                                                <SetVariable name="TooltipId">pregain</SetVariable>
+                                                <SetVariable name="ConfigKey">[PreviewDeck1],pregain</SetVariable>
+                                            </Template>
+
+                                        </Children>
+                                    </WidgetGroup>
+
+                                </Children>
+                            </WidgetGroup>
+
+                            <Template src="skin:device/previewdeck/border_bottom.xml"/>
+
+                        </Children>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetGroup>
+
+        </Children>
+        <Connection>
+            <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    PREVIEWDECK DEVICE END
+    **************************************************************************************
+    -->
+
+</Template>

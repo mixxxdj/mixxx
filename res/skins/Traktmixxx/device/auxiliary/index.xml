@@ -1,0 +1,44 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    AUXILIARY DEVICE BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>stacked</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+
+            <!-- Hack for BUG https://github.com/22degrees/RoundCorners/issues/4 -->
+            <Template src="skin:shared/confighack.xml"/>
+
+            <Template src="skin:device/auxiliary/config.xml"/>
+
+            <WidgetGroup>
+                <ObjectName>Auxiliary<Variable name="Number"/></ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,max</SizePolicy>
+                <Children>
+
+                    <Template src="skin:device/auxiliary/border_top.xml"/>
+
+                    <Template src="skin:device/auxiliary/controls.xml"/>
+
+                    <Template src="skin:device/auxiliary/vu.xml"/>
+
+                    <Template src="skin:device/auxiliary/border_bottom.xml"/>
+
+                </Children>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    AUXILIARY DEVICE END
+    **************************************************************************************
+    -->
+
+</Template>

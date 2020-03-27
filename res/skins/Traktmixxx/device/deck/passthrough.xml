@@ -1,0 +1,25 @@
+<!DOCTYPE template>
+<Template>
+
+    <WidgetGroup>
+        <ObjectName>OuterPassthroughBox</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+
+            <Label>
+                <ObjectName>ConfigHeadline</ObjectName>
+                <Size>300f,25f</Size>
+                <Elide>middle</Elide>
+                <Alignment>center</Alignment>
+                <Text>Passthrough on Deck <Variable name="Number"/> is active.</Text>
+            </Label>
+
+        </Children>
+        <Connection>
+            <ConfigKey>[Channel<Variable name="Number"/>],passthrough</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+
+</Template>

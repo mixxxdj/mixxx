@@ -1,0 +1,173 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    DECK GUTTER BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,f</SizePolicy>
+        <MinimumSize>-1,165</MinimumSize>
+        <MaximumSize>-1,165</MaximumSize>
+        <Children>
+
+            <WidgetGroup><!-- margin-left -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,165</MinimumSize>
+                <MaximumSize>-1,165</MaximumSize>
+                <Children>
+
+                    <WidgetGroup>
+                        <ObjectName>Line</ObjectName>
+                        <MinimumSize>-1,2</MinimumSize>
+                        <MaximumSize>-1,2</MaximumSize>
+                    </WidgetGroup>
+
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,f</SizePolicy>
+                        <MinimumSize>-1,161</MinimumSize>
+                        <MaximumSize>-1,161</MaximumSize>
+                        <Children>
+
+                            <Template src="skin:device/deck/spinny.xml"/>
+
+                            <WidgetGroup>
+                                <Layout>vertical</Layout>
+                                <SizePolicy>me,f</SizePolicy>
+                                <MinimumSize>-1,161</MinimumSize>
+                                <MaximumSize>-1,161</MaximumSize>
+                                <Children>
+
+                                    <Template src="skin:device/deck/waveform.xml"/>
+
+                                    <WidgetGroup>
+                                        <ObjectName>Line</ObjectName>
+                                        <MinimumSize>-1,2</MinimumSize>
+                                        <MaximumSize>-1,2</MaximumSize>
+                                    </WidgetGroup>
+
+                                    <Template src="skin:device/deck/overview.xml">
+                                        <SetVariable name="Size">me,55f</SetVariable>
+                                    </Template>
+
+                                </Children>
+                            </WidgetGroup>
+
+                            <Template src="skin:device/deck/pitch.xml"/>
+
+                        </Children>
+                    </WidgetGroup>
+
+                    <WidgetGroup>
+                        <ObjectName>Line</ObjectName>
+                        <MinimumSize>-1,2</MinimumSize>
+                        <MaximumSize>-1,2</MaximumSize>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup><!-- margin-right -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+        </Children>
+        <Connection>
+            <ConfigKey persist="true">[Visuals],show_row</ConfigKey>
+            <BindProperty>visible</BindProperty>
+            <Transform>
+                <Not/>
+            </Transform>
+        </Connection>
+    </WidgetGroup>
+
+    <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,f</SizePolicy>
+        <MinimumSize>-1,110</MinimumSize>
+        <MaximumSize>-1,110</MaximumSize>
+        <Children>
+
+            <WidgetGroup><!-- margin-left -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,110</MinimumSize>
+                <MaximumSize>-1,110</MaximumSize>
+                <Children>
+
+                    <WidgetGroup>
+                        <ObjectName>Line</ObjectName>
+                        <MinimumSize>-1,2</MinimumSize>
+                        <MaximumSize>-1,2</MaximumSize>
+                    </WidgetGroup>
+
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,f</SizePolicy>
+                        <MinimumSize>-1,106</MinimumSize>
+                        <MaximumSize>-1,106</MaximumSize>
+                        <Children>
+
+                            <Template src="skin:device/deck/spinny_small.xml"/>
+
+                            <WidgetGroup>
+                                <Layout>vertical</Layout>
+                                <SizePolicy>me,f</SizePolicy>
+                                <MinimumSize>-1,106</MinimumSize>
+                                <MaximumSize>-1,106</MaximumSize>
+                                <Children>
+
+                                    <Template src="skin:device/deck/overview.xml">
+                                        <SetVariable name="Size">me,106f</SetVariable>
+                                    </Template>
+
+                                </Children>
+                            </WidgetGroup>
+
+                            <Template src="skin:device/deck/pitch.xml"/>
+
+                        </Children>
+                    </WidgetGroup>
+
+                    <WidgetGroup>
+                        <ObjectName>Line</ObjectName>
+                        <MinimumSize>-1,2</MinimumSize>
+                        <MaximumSize>-1,2</MaximumSize>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup><!-- margin-right -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+        </Children>
+        <Connection>
+            <ConfigKey persist="true">[Visuals],show_row</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    DECK GUTTER END
+    **************************************************************************************
+    -->
+
+</Template>

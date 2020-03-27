@@ -1,0 +1,274 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    MENUBAR DEVICE EGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>Rectangle</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+
+            <WidgetGroup><!-- spacer -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,45</MinimumSize>
+                <MaximumSize>-1,45</MaximumSize>
+                <Children>
+
+                    <Template src="skin:device/menubar/button.xml">
+                        <SetVariable name="ObjectName">Btn-btlr</SetVariable>
+                        <SetVariable name="Size">120me,23f</SetVariable>
+                        <SetVariable name="icon">Visuals</SetVariable>
+                        <SetVariable name="control">[Visuals],show_row</SetVariable>
+                        <SetVariable name="text">VISUALS</SetVariable>
+                    </Template>
+
+                    <Template src="skin:device/menubar/button.xml">
+                        <SetVariable name="ObjectName">Btn-bblr</SetVariable>
+                        <SetVariable name="Size">120me,23f</SetVariable>
+                        <SetVariable name="icon">Settings</SetVariable>
+                        <SetVariable name="control">[Master],skin_settings</SetVariable>
+                        <SetVariable name="text">SETTINGS</SetVariable>
+                    </Template>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,45</MinimumSize>
+                <MaximumSize>-1,45</MaximumSize>
+                <Children>
+
+                    <Template src="skin:device/menubar/button.xml">
+                        <SetVariable name="ObjectName">Btn-nbr-bisected</SetVariable>
+                        <SetVariable name="Size">126me,23f</SetVariable>
+                        <SetVariable name="icon">Decks</SetVariable>
+                        <SetVariable name="control">[DeckRow1],show_row</SetVariable>
+                        <SetVariable name="text">DECK 1+2</SetVariable>
+                    </Template>
+
+                    <Template src="skin:device/menubar/button.xml">
+                        <SetVariable name="ObjectName">Btn-nbr-bisected</SetVariable>
+                        <SetVariable name="Size">126me,23f</SetVariable>
+                        <SetVariable name="icon">Mixer</SetVariable>
+                        <SetVariable name="control">[Mixer1],show_mixer</SetVariable>
+                        <SetVariable name="text">MIXER 1</SetVariable>
+                    </Template>
+
+                </Children>
+                <Connection>
+                    <ConfigKey persist="true">[DeckRow1],show_row</ConfigKey>
+                    <BindProperty>visible</BindProperty>
+                </Connection>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,45</MinimumSize>
+                <MaximumSize>-1,45</MaximumSize>
+                <Children>
+
+                    <Template src="skin:device/menubar/button.xml">
+                        <SetVariable name="ObjectName">Btn-nbr</SetVariable>
+                        <SetVariable name="Size">126me,45f</SetVariable>
+                        <SetVariable name="icon">Decks</SetVariable>
+                        <SetVariable name="control">[DeckRow1],show_row</SetVariable>
+                        <SetVariable name="text">DECK 1+2</SetVariable>
+                    </Template>
+
+                </Children>
+                <Connection>
+                    <ConfigKey persist="true">[DeckRow1],show_row</ConfigKey>
+                    <Transform>
+                        <Not/>
+                    </Transform>
+                    <BindProperty>visible</BindProperty>
+                </Connection>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,45</MinimumSize>
+                <MaximumSize>-1,45</MaximumSize>
+                <Children>
+
+                    <Template src="skin:device/menubar/button.xml">
+                        <SetVariable name="ObjectName">Btn-nbr-bisected</SetVariable>
+                        <SetVariable name="Size">126me,23f</SetVariable>
+                        <SetVariable name="icon">Decks</SetVariable>
+                        <SetVariable name="control">[DeckRow2],show_row</SetVariable>
+                        <SetVariable name="text">DECK 3+4</SetVariable>
+                    </Template>
+
+                    <Template src="skin:device/menubar/button.xml">
+                        <SetVariable name="ObjectName">Btn-nbr-bisected</SetVariable>
+                        <SetVariable name="Size">126me,23f</SetVariable>
+                        <SetVariable name="icon">Mixer</SetVariable>
+                        <SetVariable name="control">[Mixer2],show_mixer</SetVariable>
+                        <SetVariable name="text">MIXER 2</SetVariable>
+                    </Template>
+
+                </Children>
+                <Connection>
+                    <ConfigKey persist="true">[DeckRow2],show_row</ConfigKey>
+                    <BindProperty>visible</BindProperty>
+                </Connection>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,45</MinimumSize>
+                <MaximumSize>-1,45</MaximumSize>
+                <Children>
+
+                    <Template src="skin:device/menubar/button.xml">
+                        <SetVariable name="ObjectName">Btn-nbr</SetVariable>
+                        <SetVariable name="Size">126me,45f</SetVariable>
+                        <SetVariable name="icon">Decks</SetVariable>
+                        <SetVariable name="control">[DeckRow2],show_row</SetVariable>
+                        <SetVariable name="text">DECK 3+4</SetVariable>
+                    </Template>
+
+                </Children>
+                <Connection>
+                    <ConfigKey persist="true">[DeckRow2],show_row</ConfigKey>
+                    <Transform>
+                        <Not/>
+                    </Transform>
+                    <BindProperty>visible</BindProperty>
+                </Connection>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,45</MinimumSize>
+                <MaximumSize>-1,45</MaximumSize>
+                <Children>
+
+                    <Template src="skin:device/menubar/button.xml">
+                        <SetVariable name="ObjectName">Btn-nbr-bisected</SetVariable>
+                        <SetVariable name="Size">126me,23f</SetVariable>
+                        <SetVariable name="icon">Samplers</SetVariable>
+                        <SetVariable name="control">[Samplers],show_samplers</SetVariable>
+                        <SetVariable name="text">SAMPLERS</SetVariable>
+                    </Template>
+
+                    <Template src="skin:device/menubar/button.xml">
+                        <SetVariable name="ObjectName">Btn-nbr-bisected</SetVariable>
+                        <SetVariable name="Size">126me,23f</SetVariable>
+                        <SetVariable name="icon">Effects</SetVariable>
+                        <SetVariable name="control">[EffectRack1],show</SetVariable>
+                        <SetVariable name="text">EFFECTS</SetVariable>
+                    </Template>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,45</MinimumSize>
+                <MaximumSize>-1,45</MaximumSize>
+                <Children>
+
+                    <Template src="skin:device/menubar/button.xml">
+                        <SetVariable name="ObjectName">Btn-nbr-bisected</SetVariable>
+                        <SetVariable name="Size">160me,23f</SetVariable>
+                        <SetVariable name="icon">Main</SetVariable>
+                        <SetVariable name="control">[Main],show_main</SetVariable>
+                        <SetVariable name="text">MAIN</SetVariable>
+                    </Template>
+
+                    <Template src="skin:device/menubar/button.xml">
+                        <SetVariable name="ObjectName">Btn-nbr-bisected</SetVariable>
+                        <SetVariable name="Size">160me,23f</SetVariable>
+                        <SetVariable name="icon">Internalclock</SetVariable>
+                        <SetVariable name="control">[InternalClock],show_internalclock</SetVariable>
+                        <SetVariable name="text">INTERNAL CLOCK</SetVariable>
+                    </Template>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,45</MinimumSize>
+                <MaximumSize>-1,45</MaximumSize>
+                <Children>
+
+                    <Template src="skin:device/menubar/button.xml">
+                        <SetVariable name="ObjectName">Btn-nbr-bisected</SetVariable>
+                        <SetVariable name="Size">144me,23f</SetVariable>
+                        <SetVariable name="icon">Headphones</SetVariable>
+                        <SetVariable name="control">[Headphone],show_headphone</SetVariable>
+                        <SetVariable name="text">HEADPHONE</SetVariable>
+                    </Template>
+
+                    <Template src="skin:device/menubar/button.xml">
+                        <SetVariable name="ObjectName">Btn-nbr-bisected</SetVariable>
+                        <SetVariable name="Size">144me,23f</SetVariable>
+                        <SetVariable name="icon">Clock</SetVariable>
+                        <SetVariable name="control">[Clock],show_clock</SetVariable>
+                        <SetVariable name="text">CLOCK</SetVariable>
+                    </Template>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,45</MinimumSize>
+                <MaximumSize>-1,45</MaximumSize>
+                <Children>
+
+                    <Template src="skin:device/menubar/button.xml">
+                        <SetVariable name="ObjectName">Btn-btrr</SetVariable>
+                        <SetVariable name="Size">180me,23f</SetVariable>
+                        <SetVariable name="icon">Vinylcontrols</SetVariable>
+                        <SetVariable name="control">[VinylControl],show_vinylcontrol</SetVariable>
+                        <SetVariable name="text">VINYL CONTROLS</SetVariable>
+                    </Template>
+
+                    <Template src="skin:device/menubar/button.xml">
+                        <SetVariable name="ObjectName">Btn-bbrr</SetVariable>
+                        <SetVariable name="Size">180me,23f</SetVariable>
+                        <SetVariable name="icon">Microphones</SetVariable>
+                        <SetVariable name="control">[Microphone],show_microphone</SetVariable>
+                        <SetVariable name="text">MICROPHONES</SetVariable>
+                    </Template>
+
+                </Children>
+            </WidgetGroup>
+
+
+            <WidgetGroup><!-- spacer -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    MENUBAR DEVICE END
+    **************************************************************************************
+    -->
+
+</Template>

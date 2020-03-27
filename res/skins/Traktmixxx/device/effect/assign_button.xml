@@ -1,0 +1,34 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    EFFECT-BUTTON BEGIN
+    **************************************************************************************
+    -->
+    <PushButton>
+        <ObjectName><Variable name="ObjectName"/></ObjectName>
+        <TooltipId></TooltipId>
+        <NumberStates>2</NumberStates>
+        <Size>15me,23f</Size>
+        <State>
+            <Number>0</Number>
+            <Text><Variable name="Name"/></Text>
+        </State>
+        <State>
+            <Number>1</Number>
+            <Text><Variable name="Name"/></Text>
+        </State>
+        <Connection>
+            <ConfigKey>[EffectRack<Variable name="EffectRackNumber"/>_EffectUnit<Variable name="EffectUnitNumber"/>],group_<Variable name="Group"/>_enable</ConfigKey>
+            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+            <ButtonState>LeftButton</ButtonState>
+        </Connection>
+    </PushButton>
+    <!--
+    **************************************************************************************
+    EFFECT-BUTTON END
+    **************************************************************************************
+    -->
+
+</Template>

@@ -1,0 +1,368 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    OVERVIEW BEGIN
+    **************************************************************************************
+    -->
+    <Overview>
+        <TooltipId>waveform_overview</TooltipId>
+        <Group><Variable name="Group"/></Group>
+        <Size><Variable name="Size"/></Size>
+        <BgColor>#121212</BgColor>
+        <SignalHighColor><Variable name="SignalHighColor"/></SignalHighColor>
+        <SignalMidColor><Variable name="SignalMidColor"/></SignalMidColor>
+        <SignalLowColor><Variable name="SignalLowColor"/></SignalLowColor>
+        <SignalRGBHighColor><Variable name="SignalHighColor"/></SignalRGBHighColor>
+        <SignalRGBMidColor><Variable name="SignalMidColor"/></SignalRGBMidColor>
+        <SignalRGBLowColor><Variable name="SignalLowColor"/></SignalRGBLowColor>
+        <PlayedOverlayColor>#c8121212</PlayedOverlayColor>
+        <SignalColor><Variable name="SignalHighColor"/></SignalColor>
+        <PlayPosColor>#ffffff</PlayPosColor>
+        <EndOfTrackColor>#ff3b37</EndOfTrackColor>
+        <AxesColor><Variable name="SignalHighColor"/></AxesColor>
+
+        <Mark>
+            <Control>cue_point</Control>
+            <Pixmap>marker/cue_point.svg</Pixmap>
+            <Text> CUE</Text>
+            <Align>top|right</Align>
+            <Color>#ff3b37</Color>
+            <TextColor>#ff3b37</TextColor>
+        </Mark>
+
+        <Mark>
+            <Control>hotcue_1_position</Control>
+            <Pixmap>marker/hotcue_1.svg</Pixmap>
+            <Text> 1</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_2_position</Control>
+            <Pixmap>marker/hotcue_2.svg</Pixmap>
+            <Text> 2</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_3_position</Control>
+            <Pixmap>marker/hotcue_3.svg</Pixmap>
+            <Text> 3</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_4_position</Control>
+            <Pixmap>marker/hotcue_4.svg</Pixmap>
+            <Text> 4</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_5_position</Control>
+            <Pixmap>marker/hotcue_5.svg</Pixmap>
+            <Text> 5</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_6_position</Control>
+            <Pixmap>marker/hotcue_6.svg</Pixmap>
+            <Text> 6</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_7_position</Control>
+            <Pixmap>marker/hotcue_7.svg</Pixmap>
+            <Text> 7</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_8_position</Control>
+            <Pixmap>marker/hotcue_8.svg</Pixmap>
+            <Text> 8</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_9_position</Control>
+            <Pixmap>marker/hotcue_9.svg</Pixmap>
+            <Text> 9</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_10_position</Control>
+            <Pixmap>marker/hotcue_10.svg</Pixmap>
+            <Text> 10</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_11_position</Control>
+            <Pixmap>marker/hotcue_11.svg</Pixmap>
+            <Text> 11</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_12_position</Control>
+            <Pixmap>marker/hotcue_12.svg</Pixmap>
+            <Text> 12</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_13_position</Control>
+            <Pixmap>marker/hotcue_13.svg</Pixmap>
+            <Text> 13</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_14_position</Control>
+            <Pixmap>marker/hotcue_14.svg</Pixmap>
+            <Text> 14</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_15_position</Control>
+            <Pixmap>marker/hotcue_15.svg</Pixmap>
+            <Text> 15</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_16_position</Control>
+            <Pixmap>marker/hotcue_16.svg</Pixmap>
+            <Text> 16</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_17_position</Control>
+            <Pixmap>marker/hotcue_17.svg</Pixmap>
+            <Text> 17</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_18_position</Control>
+            <Pixmap>marker/hotcue_18.svg</Pixmap>
+            <Text> 18</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_19_position</Control>
+            <Pixmap>marker/hotcue_19.svg</Pixmap>
+            <Text> 19</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_20_position</Control>
+            <Pixmap>marker/hotcue_20.svg</Pixmap>
+            <Text> 20</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_21_position</Control>
+            <Pixmap>marker/hotcue_21.svg</Pixmap>
+            <Text> 21</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_22_position</Control>
+            <Pixmap>marker/hotcue_22.svg</Pixmap>
+            <Text> 22</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_23_position</Control>
+            <Pixmap>marker/hotcue_23.svg</Pixmap>
+            <Text> 23</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_24_position</Control>
+            <Pixmap>marker/hotcue_24.svg</Pixmap>
+            <Text> 24</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_25_position</Control>
+            <Pixmap>marker/hotcue_25.svg</Pixmap>
+            <Text> 25</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_26_position</Control>
+            <Pixmap>marker/hotcue_26.svg</Pixmap>
+            <Text> 26</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_27_position</Control>
+            <Pixmap>marker/hotcue_27.svg</Pixmap>
+            <Text> 27</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_28_position</Control>
+            <Pixmap>marker/hotcue_28.svg</Pixmap>
+            <Text> 28</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_29_position</Control>
+            <Pixmap>marker/hotcue_29.svg</Pixmap>
+            <Text> 29</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_30_position</Control>
+            <Pixmap>marker/hotcue_30.svg</Pixmap>
+            <Text> 30</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_31_position</Control>
+            <Pixmap>marker/hotcue_31.svg</Pixmap>
+            <Text> 31</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_32_position</Control>
+            <Pixmap>marker/hotcue_32.svg</Pixmap>
+            <Text> 32</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_33_position</Control>
+            <Pixmap>marker/hotcue_33.svg</Pixmap>
+            <Text> 33</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_34_position</Control>
+            <Pixmap>marker/hotcue_34.svg</Pixmap>
+            <Text> 34</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_35_position</Control>
+            <Pixmap>marker/hotcue_35.svg</Pixmap>
+            <Text> 35</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_36_position</Control>
+            <Pixmap>marker/hotcue_36.svg</Pixmap>
+            <Text> 36</Text>
+            <Align>top|right</Align>
+            <Color>#4bffff</Color>
+            <TextColor>#4bffff</TextColor>
+        </Mark>
+
+        <MarkRange>
+            <StartControl>loop_start_position</StartControl>
+            <EndControl>loop_end_position</EndControl>
+            <EnabledControl>loop_enabled</EnabledControl>
+            <Color>#00FF00</Color>
+            <DisabledColor>#FFFFFF</DisabledColor>
+        </MarkRange>
+
+        <Mark>
+            <Control>loop_start_position</Control>
+            <Pixmap>marker/loop_in.svg</Pixmap>
+            <Text>IN </Text>
+            <Align>top|left</Align>
+            <Color>#00FF00</Color>
+            <TextColor>#00FF00</TextColor>
+        </Mark>
+        <Mark>
+            <Control>loop_end_position</Control>
+            <Pixmap>marker/loop_out.svg</Pixmap>
+            <Text> OUT</Text>
+            <Align>top|right</Align>
+            <Color>#00FF00</Color>
+            <TextColor>#00FF00</TextColor>
+        </Mark>
+
+        <Connection>
+            <ConfigKey><Variable name="Group"/>,playposition</ConfigKey>
+            <EmitOnDownPress>false</EmitOnDownPress>
+        </Connection>
+        <Connection>
+            <ConfigKey persist="true"><Variable name="Widget"/>,show_advanced_markers</ConfigKey>
+            <Transform>
+                <Not/>
+            </Transform>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+
+    </Overview>
+    <!--
+    **************************************************************************************
+    OVERVIEW END
+    **************************************************************************************
+    -->
+
+</Template>

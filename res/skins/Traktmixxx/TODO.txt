@@ -1,0 +1,5 @@
+Waveform editor
+Waveform samples
+Tooltips
+Right click menus
+Configuration overlays

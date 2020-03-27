@@ -1,0 +1,333 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    HOTCUE BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,f</SizePolicy>
+        <MinimumSize>-1,45</MinimumSize>
+        <MaximumSize>-1,45</MaximumSize>
+        <Children>
+
+            <WidgetGroup><!-- margin left -->
+                <SizePolicy>f,f</SizePolicy>
+                <MinimumSize>10,45</MinimumSize>
+                <MaximumSize>10,45</MaximumSize>
+            </WidgetGroup>
+
+            <PushButton>
+                <ObjectName>Btn-blr</ObjectName>
+                <Size>28f,45f</Size>
+                <NumberStates>1</NumberStates>
+                <State>
+                    <Number>0</Number>
+                    <Text>&lt;</Text>
+                </State>
+                <Connection>
+                    <ConfigKey><Variable name="Widget"/>,hotcuepage_prev</ConfigKey>
+                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                    <ButtonState>LeftButton</ButtonState>
+                </Connection>
+            </PushButton>
+
+            <WidgetStack>
+                <NextControl><Variable name="Widget"/>,hotcuepage_next</NextControl>
+                <PrevControl><Variable name="Widget"/>,hotcuepage_prev</PrevControl>
+                <Children>
+
+                    <WidgetGroup>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>me,f</SizePolicy>
+                        <MinimumSize>-1,45</MinimumSize>
+                        <MaximumSize>-1,45</MaximumSize>
+                        <Children>
+
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>me,f</SizePolicy>
+                                <MinimumSize>-1,23</MinimumSize>
+                                <MaximumSize>-1,23</MaximumSize>
+                                <Children>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">1</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">2</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">3</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">4</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">5</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">6</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">7</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">8</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">9</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">10</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">11</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">12</SetVariable>
+                                    </Template>
+
+                                </Children>
+                            </WidgetGroup>
+
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>me,f</SizePolicy>
+                                <MinimumSize>-1,22</MinimumSize>
+                                <MaximumSize>-1,22</MaximumSize>
+                                <Children>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">13</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">14</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">15</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">16</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">17</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">18</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">19</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">20</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">21</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">22</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">23</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">24</SetVariable>
+                                    </Template>
+
+                                </Children>
+                            </WidgetGroup>
+
+                        </Children>
+                    </WidgetGroup>
+
+                    <WidgetGroup>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>me,f</SizePolicy>
+                        <MinimumSize>-1,45</MinimumSize>
+                        <MaximumSize>-1,45</MaximumSize>
+                        <Children>
+
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>me,f</SizePolicy>
+                                <MinimumSize>-1,23</MinimumSize>
+                                <MaximumSize>-1,23</MaximumSize>
+                                <Children>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">13</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">14</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">15</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">16</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">17</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">18</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">19</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">20</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">21</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">22</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">23</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">24</SetVariable>
+                                    </Template>
+
+                                </Children>
+                            </WidgetGroup>
+
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>me,f</SizePolicy>
+                                <MinimumSize>-1,22</MinimumSize>
+                                <MaximumSize>-1,22</MaximumSize>
+                                <Children>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">25</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">26</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">27</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">28</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">29</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">30</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">31</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">32</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">33</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">34</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">35</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/deck/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">36</SetVariable>
+                                    </Template>
+
+                                </Children>
+                            </WidgetGroup>
+
+                        </Children>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetStack>
+
+            <PushButton>
+                <ObjectName>Btn-brr</ObjectName>
+                <Size>28f,45f</Size>
+                <NumberStates>1</NumberStates>
+                <State>
+                    <Number>0</Number>
+                    <Text>&gt;</Text>
+                </State>
+                <Connection>
+                    <ConfigKey><Variable name="Widget"/>,hotcuepage_next</ConfigKey>
+                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                    <ButtonState>LeftButton</ButtonState>
+                </Connection>
+            </PushButton>
+
+            <WidgetGroup><!-- margin right -->
+                <SizePolicy>f,f</SizePolicy>
+                <MinimumSize>10,45</MinimumSize>
+                <MaximumSize>10,45</MaximumSize>
+            </WidgetGroup>
+
+        </Children>
+        <Connection>
+            <ConfigKey persist="true"><Variable name="Widget"/>,show_advanced_markers</ConfigKey>
+            <Transform>
+                <Not/>
+            </Transform>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    HOTCUE END
+    **************************************************************************************
+    -->
+
+</Template>

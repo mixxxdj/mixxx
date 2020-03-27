@@ -1,0 +1,86 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    SCREEN INDEX BEGIN
+    **************************************************************************************
+    -->
+    <WidgetStack>
+        <Children>
+                
+            <WidgetGroup on_hide_select="0">
+                <MinimumSize>1024,-1</MinimumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+
+                    <Template src="skin:screen/default.xml"/>
+
+                </Children>
+            </WidgetGroup>
+            
+            <WidgetGroup trigger="[Master],maximize_library" on_hide_select="0">
+                <MinimumSize>1024,-1</MinimumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+
+                    <Template src="skin:screen/library.xml"/>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup trigger="[Deck1],show_editmode" on_hide_select="0">
+                <MinimumSize>1024,-1</MinimumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+
+                    <Template src="skin:screen/editdeck1.xml"/>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup trigger="[Deck2],show_editmode" on_hide_select="0">
+                <MinimumSize>1024,-1</MinimumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+
+                    <Template src="skin:screen/editdeck2.xml"/>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup trigger="[Deck3],show_editmode" on_hide_select="0">
+                <MinimumSize>1024,-1</MinimumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+
+                    <Template src="skin:screen/editdeck3.xml"/>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup trigger="[Deck4],show_editmode" on_hide_select="0">
+                <MinimumSize>1024,-1</MinimumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+
+                    <Template src="skin:screen/editdeck4.xml"/>
+
+                </Children>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetStack>
+    <!--
+    **************************************************************************************
+    SCREEN INDEX END
+    **************************************************************************************
+    -->
+
+</Template>

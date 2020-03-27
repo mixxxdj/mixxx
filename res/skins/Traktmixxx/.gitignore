@@ -1,0 +1,16 @@
+RoundedCorners.sublime-project
+RoundedCorners.sublime-workspace
+
+.directory
+*.diff
+*.log
+*.o
+*.orig
+*.os
+*.patch
+!build/appveyor/NSIS.patch
+*.pyc
+*.rej
+*_build
+*~
+.#*

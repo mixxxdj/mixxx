@@ -1,0 +1,63 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    KNOB BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>vertical</Layout>
+        <Size>50f,45f</Size>
+        <Children>
+
+            <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Size>50f,30f</Size>
+                <Children>
+
+                    <WidgetGroup><!-- margin-left -->
+                        <MinimumSize>10,-1</MinimumSize>
+                        <MaximumSize>10,-1</MaximumSize>
+                    </WidgetGroup>
+
+                    <KnobComposed>
+                        <TooltipId><Variable name="TooltipId"/></TooltipId>
+                        <ObjectName><Variable name="ObjectName"/></ObjectName>
+                        <Size>30f,30f</Size>
+                        <Knob>knob/knob_deck1_2.svg</Knob>
+                        <MinAngle>-135</MinAngle>
+                        <MaxAngle>135</MaxAngle>
+                        <Connection>
+                            <ConfigKey><Variable name="ConfigKey"/></ConfigKey>
+                        </Connection>
+                    </KnobComposed>
+
+                    <WidgetGroup><!-- margin-right -->
+                        <MinimumSize>10,-1</MinimumSize>
+                        <MaximumSize>10,-1</MaximumSize>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <MinimumSize>-1,3</MinimumSize>
+                <MaximumSize>-1,3</MaximumSize>
+            </WidgetGroup>
+
+            <Label>
+                <Size>50f,12f</Size>
+                <ObjectName>KnobLabel</ObjectName>
+                <Text><Variable name="ObjectName"/></Text>
+            </Label>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    KNOB END
+    **************************************************************************************
+    -->
+
+</Template>

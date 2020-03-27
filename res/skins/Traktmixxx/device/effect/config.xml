@@ -1,0 +1,48 @@
+<!DOCTYPE template>
+<Template>
+
+    <WidgetGroup>
+        <ObjectName>OuterConfigBox</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+
+            <WidgetGroup>
+                <ObjectName>InnerConfigBox</ObjectName>
+                <Layout>vertical</Layout>
+                <Size>130f,80f</Size>
+                <Children>
+
+                    <Label>
+                        <ObjectName>ConfigHeadline</ObjectName>
+                        <Size>100f,25f</Size>
+                        <Elide>left</Elide>
+                        <Alignment>left</Alignment>
+                        <Text>Effect Unit <Variable name="Number"/></Text>
+                    </Label>
+
+                    <Template src="skin:device/effect/config_controls.xml">
+                        <SetVariable name="Tooltip">Show/hide the Controls.</SetVariable>
+                        <SetVariable name="Label">Controls</SetVariable>
+                        <SetVariable name="Group">[EffectUnit]</SetVariable>
+                        <SetVariable name="Widget">show_controls</SetVariable>
+                    </Template>
+
+                    <Template src="skin:device/effect/config_controls.xml">
+                        <SetVariable name="Tooltip">Show/hide more Effects.</SetVariable>
+                        <SetVariable name="Label">Chain</SetVariable>
+                        <SetVariable name="Group">[EffectUnit]</SetVariable>
+                        <SetVariable name="Widget">show_chain</SetVariable>
+                    </Template>
+
+                </Children>
+            </WidgetGroup>
+
+        </Children>
+        <Connection>
+            <ConfigKey>[Master],skin_settings</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+
+</Template>

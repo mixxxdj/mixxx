@@ -1,0 +1,300 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    LOOP BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>Rectangle</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,f</SizePolicy>
+        <MinimumSize>-1,45</MinimumSize>
+        <MaximumSize>-1,45</MaximumSize>
+        <Children>
+
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,45</MinimumSize>
+                <MaximumSize>-1,45</MaximumSize>
+                <Children>
+
+                    <WidgetGroup>
+                        <ObjectName>BeatLoopButtons</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,f</SizePolicy>
+                        <MinimumSize>-1,23</MinimumSize>
+                        <MaximumSize>-1,23</MaximumSize>
+                        <Children>
+
+                            <Template src="skin:device/deck/loop_button.xml">
+                                <SetVariable name="ObjectName">Btn-btlr</SetVariable>
+                                <SetVariable name="loop_x">0.03125</SetVariable>
+                                <SetVariable name="show_loop_x">1&#8260;32</SetVariable>
+                            </Template>
+
+                            <Template src="skin:device/deck/loop_button.xml">
+                                <SetVariable name="ObjectName">Btn-nbr-bisected</SetVariable>
+                                <SetVariable name="loop_x">0.0625</SetVariable>
+                                <SetVariable name="show_loop_x">1&#8260;16</SetVariable>
+                            </Template>
+
+                            <Template src="skin:device/deck/loop_button.xml">
+                                <SetVariable name="ObjectName">Btn-nbr-bisected</SetVariable>
+                                <SetVariable name="loop_x">0.125</SetVariable>
+                                <SetVariable name="show_loop_x">1&#8260;8</SetVariable>
+                            </Template>
+
+                            <Template src="skin:device/deck/loop_button.xml">
+                                <SetVariable name="ObjectName">Btn-nbr-bisected</SetVariable>
+                                <SetVariable name="loop_x">0.25</SetVariable>
+                                <SetVariable name="show_loop_x">1&#8260;4</SetVariable>
+                            </Template>
+
+                            <Template src="skin:device/deck/loop_button.xml">
+                                <SetVariable name="ObjectName">Btn-nbr-bisected</SetVariable>
+                                <SetVariable name="loop_x">0.5</SetVariable>
+                                <SetVariable name="show_loop_x">1&#8260;2</SetVariable>
+                            </Template>
+
+                            <Template src="skin:device/deck/loop_button.xml">
+                                <SetVariable name="ObjectName">Btn-btrr</SetVariable>
+                                <SetVariable name="loop_x">1</SetVariable>
+                                <SetVariable name="show_loop_x">1</SetVariable>
+                            </Template>
+
+                        </Children>
+                    </WidgetGroup>
+
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,f</SizePolicy>
+                        <MinimumSize>-1,23</MinimumSize>
+                        <MaximumSize>-1,23</MaximumSize>
+                        <Children>
+
+                            <Template src="skin:device/deck/loop_button.xml">
+                                <SetVariable name="ObjectName">Btn-bblr</SetVariable>
+                                <SetVariable name="loop_x">2</SetVariable>
+                                <SetVariable name="show_loop_x">2</SetVariable>
+                            </Template>
+
+                            <Template src="skin:device/deck/loop_button.xml">
+                                <SetVariable name="ObjectName">Btn-nbr-bisected</SetVariable>
+                                <SetVariable name="loop_x">4</SetVariable>
+                                <SetVariable name="show_loop_x">4</SetVariable>
+                            </Template>
+
+                            <Template src="skin:device/deck/loop_button.xml">
+                                <SetVariable name="ObjectName">Btn-nbr-bisected</SetVariable>
+                                <SetVariable name="loop_x">8</SetVariable>
+                                <SetVariable name="show_loop_x">8</SetVariable>
+                            </Template>
+
+                            <Template src="skin:device/deck/loop_button.xml">
+                                <SetVariable name="ObjectName">Btn-nbr-bisected</SetVariable>
+                                <SetVariable name="loop_x">16</SetVariable>
+                                <SetVariable name="show_loop_x">16</SetVariable>
+                            </Template>
+
+                            <Template src="skin:device/deck/loop_button.xml">
+                                <SetVariable name="ObjectName">Btn-nbr-bisected</SetVariable>
+                                <SetVariable name="loop_x">32</SetVariable>
+                                <SetVariable name="show_loop_x">32</SetVariable>
+                            </Template>
+
+                            <Template src="skin:device/deck/loop_button.xml">
+                                <SetVariable name="ObjectName">Btn-bbrr</SetVariable>
+                                <SetVariable name="loop_x">64</SetVariable>
+                                <SetVariable name="show_loop_x">64</SetVariable>
+                            </Template>
+
+                        </Children>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup><!-- margin-right -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,45</MinimumSize>
+                <MaximumSize>-1,45</MaximumSize>
+                <Children>
+
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,f</SizePolicy>
+                        <MinimumSize>-1,45</MinimumSize>
+                        <MaximumSize>-1,45</MaximumSize>
+                        <Children>
+
+                            <PushButton>
+                                <ObjectName>Btn-blr</ObjectName>
+                                <TooltipId>loop_halve</TooltipId>
+                                <Size>15me,45f</Size>
+                                <NumberStates>1</NumberStates>
+                                <State>
+                                    <Number>0</Number>
+                                    <Text>&#247;2</Text>
+                                </State>
+                                <Connection>
+                                    <ConfigKey><Variable name="Group"/>,loop_halve</ConfigKey>
+                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                    <ButtonState>LeftButton</ButtonState>
+                                </Connection>
+                            </PushButton>
+
+                            <PushButton>
+                                <ObjectName>Btn-brr</ObjectName>
+                                <TooltipId>loop_double</TooltipId>
+                                <Size>15me,45f</Size>
+                                <NumberStates>1</NumberStates>
+                                <State>
+                                    <Number>0</Number>
+                                    <Text>&#215;2</Text>
+                                </State>
+                                <Connection>
+                                    <ConfigKey><Variable name="Group"/>,loop_double</ConfigKey>
+                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                    <ButtonState>LeftButton</ButtonState>
+                                </Connection>
+                            </PushButton>
+
+                        </Children>
+                    </WidgetGroup>
+
+                    <WidgetGroup><!-- margin-right -->
+                        <MinimumSize>10,-1</MinimumSize>
+                        <MaximumSize>10,-1</MaximumSize>
+                    </WidgetGroup>
+
+                    <WidgetStack>
+                        <SizePolicy>me,f</SizePolicy>
+                        <MinimumSize>-1,45</MinimumSize>
+                        <MaximumSize>-1,45</MaximumSize>
+                        <NextControl><Variable name="Widget"/>,loopmove_nextpage</NextControl>
+                        <PrevControl><Variable name="Widget"/>,loopmove_prevpage</PrevControl>
+                        <Children>
+
+                            <Template src="skin:device/deck/loopmove.xml">
+                                <SetVariable name="Beats">2</SetVariable>
+                            </Template>
+
+                            <Template src="skin:device/deck/loopmove.xml">
+                                <SetVariable name="Beats">4</SetVariable>
+                            </Template>
+
+                            <Template src="skin:device/deck/loopmove.xml">
+                                <SetVariable name="Beats">8</SetVariable>
+                            </Template>
+
+                            <Template src="skin:device/deck/loopmove.xml">
+                                <SetVariable name="Beats">16</SetVariable>
+                            </Template>
+
+                            <Template src="skin:device/deck/loopmove.xml">
+                                <SetVariable name="Beats">32</SetVariable>
+                            </Template>
+
+                        </Children>
+                    </WidgetStack>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup><!-- margin-right -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,45</MinimumSize>
+                <MaximumSize>-1,45</MaximumSize>
+                <Children>
+
+                    <PushButton>
+                        <ObjectName>Btn-blr</ObjectName>
+                        <TooltipId>loop_in</TooltipId>
+                        <Size>15me,45f</Size>
+                        <NumberStates>1</NumberStates>
+                        <State>
+                            <Number>0</Number>
+                            <Text>IN</Text>
+                        </State>
+                        <Connection>
+                            <ConfigKey><Variable name="Group"/>,loop_in</ConfigKey>
+                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                            <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                    </PushButton>
+
+                    <PushButton>
+                        <ObjectName>Btn-nbr</ObjectName>
+                        <TooltipId>loop_out</TooltipId>
+                        <Size>15me,45f</Size>
+                        <NumberStates>1</NumberStates>
+                        <State>
+                            <Number>0</Number>
+                            <Text>OUT</Text>
+                        </State>
+                        <Connection>
+                            <ConfigKey><Variable name="Group"/>,loop_out</ConfigKey>
+                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                            <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                    </PushButton>
+
+                    <PushButton>
+                        <ObjectName>Btn-brr</ObjectName>
+                        <TooltipId>loop_exit</TooltipId>
+                        <Size>15me,45f</Size>
+                        <NumberStates>2</NumberStates>
+                        <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                        <State>
+                            <Number>0</Number>
+                            <Text>RELOOP</Text>
+                        </State>
+                        <State>
+                            <Number>1</Number>
+                            <Text>RELOOP</Text>
+                        </State>
+                        <Connection>
+                            <ConfigKey><Variable name="Group"/>,reloop_exit</ConfigKey>
+                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                            <ButtonState>LeftButton</ButtonState>
+                            <ConnectValueToWidget>false</ConnectValueToWidget>
+                        </Connection>
+                        <Connection>
+                            <ConfigKey><Variable name="Group"/>,loop_enabled</ConfigKey>
+                            <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                        </Connection>
+                    </PushButton>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup><!-- margin right -->
+                <SizePolicy>f,f</SizePolicy>
+                <MinimumSize>10,45</MinimumSize>
+                <MaximumSize>10,45</MaximumSize>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    LOOP END
+    **************************************************************************************
+    -->
+
+</Template>

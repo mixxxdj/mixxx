@@ -1,0 +1,93 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    EDITDECK DEVICE BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>stacked</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+
+            <WidgetGroup>
+                <ObjectName>Deck<Variable name="Number"/></ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+
+                    <Template src="skin:device/editdeck/border_top.xml"/>
+
+                    <WidgetGroup> 
+                        <ObjectName>Rectangle</ObjectName>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>me,me</SizePolicy>
+                        <Children>
+
+                            <Template src="skin:device/editdeck/trackinfo.xml"/>
+
+                            <Template src="skin:device/editdeck/gutter.xml"/>
+
+                        </Children>
+                    </WidgetGroup>
+
+                    <WidgetGroup>
+                        <ObjectName>Rectangle</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <Children>
+
+                            <WidgetGroup>
+                                <Layout>vertical</Layout>
+                                <Children>
+
+                                    <Template src="skin:device/editdeck/transport.xml"/>
+
+                                    <Template src="skin:device/editdeck/beatgrid.xml"/>
+
+                                    <Template src="skin:device/editdeck/hotcue_row.xml"/>
+
+                                    <Template src="skin:device/editdeck/loop.xml"/>
+
+                                </Children>
+                            </WidgetGroup>
+
+                            <WidgetGroup>
+                                <Layout>vertical</Layout>
+                                <Children>
+
+                                    <Template src="skin:device/editdeck/pitch.xml"/>
+
+                                    <Template src="skin:device/editdeck/pitch_controls.xml"/>
+
+                                </Children>
+                            </WidgetGroup>
+
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <Children>
+
+                                    <Template src="skin:device/editdeck/slider.xml"/>
+
+                                    <Template src="skin:device/editdeck/vu.xml"/>
+
+                                </Children>
+                            </WidgetGroup>
+
+                        </Children>
+                    </WidgetGroup>
+
+                    <Template src="skin:device/editdeck/border_bottom.xml"/>
+
+                </Children>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    EDITDECK DEVICE END
+    **************************************************************************************
+    -->
+
+</Template>

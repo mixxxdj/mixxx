@@ -1,0 +1,49 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    EFFECTINFO BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,max</SizePolicy>
+        <Size>-1,17</Size>
+        <Children>
+
+            <WidgetGroup><!-- margin-left -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+            <Label>
+                <Size>23f,17f</Size>
+                <ObjectName>EffectLabel</ObjectName>
+                <Alignment>center</Alignment>
+                <Text><Variable name="Number"/></Text>
+            </Label>
+
+            <EffectChainName>
+                <Size>me,17f</Size>
+                <!-- CSS alignments not respected see bug lp:605530 , lets call <Alignment> -->
+                <Alignment>center</Alignment>
+                <ObjectName>EffectChainName</ObjectName>
+                <EffectRack><Variable name="EffectRackNumber"/></EffectRack>
+                <EffectUnit><Variable name="EffectUnitNumber"/></EffectUnit>
+            </EffectChainName>
+
+            <WidgetGroup><!-- margin-right -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    EFFECTINFO END
+    **************************************************************************************
+    -->
+
+</Template>

@@ -1,0 +1,108 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    MIXER SLIDER BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup><!-- spacer -->
+        <Layout>horizontal</Layout>
+        <Size>68,max</Size>
+        <Children>
+
+            <WidgetGroup><!-- dyn margin-top -->
+                <Size>me,10f</Size>
+                <Connection>
+                    <ConfigKey persist="true"><Variable name="Widget"/>,show_filter</ConfigKey>
+                    <BindProperty>visible</BindProperty>
+                </Connection>
+            </WidgetGroup>
+
+            <WidgetGroup><!-- dyn margin-top -->
+                <Size>me,10f</Size>
+                <Connection>
+                    <ConfigKey persist="true"><Variable name="Widget"/>,show_eq</ConfigKey>
+                    <BindProperty>visible</BindProperty>
+                </Connection>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+
+    <SizeAwareStack>
+        <Children>
+
+            <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <MinimumSize>68,0</MinimumSize>
+                <MaximumSize>68,45</MaximumSize>
+                <Children>
+
+                    <WidgetGroup><!-- margin-left -->
+                        <MinimumSize>15,-1</MinimumSize>
+                        <MaximumSize>15,-1</MaximumSize>
+                    </WidgetGroup>
+
+                    <KnobComposed>
+                        <TooltipId>channel_volume</TooltipId>
+                        <Size>38f,38f</Size>
+                        <Knob>knob/knob_deck<Variable name="Number"/>_1.svg</Knob>
+                        <MinAngle>-135</MinAngle>
+                        <MaxAngle>135</MaxAngle>
+                        <Connection>
+                            <ConfigKey><Variable name="Group"/>,volume</ConfigKey>
+                        </Connection>
+                    </KnobComposed>
+                                
+                    <WidgetGroup><!-- margin-right -->
+                        <MinimumSize>15,-1</MinimumSize>
+                        <MaximumSize>15,-1</MaximumSize>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <MinimumSize>68,46</MinimumSize>
+                <MaximumSize>68,-1</MaximumSize>
+                <Children>
+
+                    <WidgetGroup>
+                        <ObjectName>SliderTop</ObjectName>
+                        <MinimumSize>68,8</MinimumSize>
+                        <MaximumSize>68,8</MaximumSize>
+                    </WidgetGroup>
+
+                    <SliderComposed>
+                        <ObjectName>Slider</ObjectName>
+                        <TooltipId>channel_volume</TooltipId>
+                        <SizePolicy>min,me</SizePolicy>
+                        <MinimumSize>68,-1</MinimumSize>
+                        <MaximumSize>68,-1</MaximumSize>
+                        <Handle>knob/knob_3_sliderhandle.svg</Handle>
+                        <Horizontal>false</Horizontal>
+                        <Connection>
+                            <ConfigKey><Variable name="Group"/>,volume</ConfigKey>
+                        </Connection>
+                    </SliderComposed>
+
+                    <WidgetGroup>
+                        <ObjectName>SliderBottom</ObjectName>
+                        <MinimumSize>68,8</MinimumSize>
+                        <MaximumSize>68,8</MaximumSize>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetGroup>
+
+        </Children>
+    </SizeAwareStack>
+    <!--
+    **************************************************************************************
+    MIXER SLIDER END
+    **************************************************************************************
+    -->
+
+</Template>

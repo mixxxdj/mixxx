@@ -1,0 +1,51 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    SKIN CONFIG ROW BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Size>100f,20f</Size>
+        <Children>
+
+            <Label>
+                <Size>88f,20f</Size>
+                <Tooltip><Variable name="Tooltip"/></Tooltip>
+                <ObjectName><Variable name="ObjectName"/>ConfigLabel</ObjectName>
+                <Text><Variable name="Label"/></Text>
+            </Label>
+
+            <PushButton>
+                <Tooltip><Variable name="Tooltip"/></Tooltip>
+                <NumberStates>2</NumberStates>
+                <State>
+                    <Number>0</Number>
+                    <Pressed>style/unchecked.svg</Pressed>
+                    <Unpressed>style/unchecked.svg</Unpressed>
+                    <!-- <Text>off</Text> -->
+                </State>
+                <State>
+                    <Number>1</Number>
+                    <Pressed>style/checked.svg</Pressed>
+                    <Unpressed>style/checked.svg</Unpressed>
+                    <!-- <Text>on</Text> -->
+                </State>
+                <Connection>
+                    <ConfigKey persist="true"><Variable name="Group"/>,<Variable name="Widget"/></ConfigKey>
+                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                    <ButtonState>LeftButton</ButtonState>
+                </Connection>
+            </PushButton>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    SKIN CONFIG ROW END
+    **************************************************************************************
+    -->
+
+</Template>

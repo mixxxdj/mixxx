@@ -1,0 +1,171 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    TRANSPORT BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>Rectangle</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,f</SizePolicy>
+        <MinimumSize>-1,45</MinimumSize>
+        <MaximumSize>-1,45</MaximumSize>
+        <Children>
+
+            <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,45</MinimumSize>
+                <MaximumSize>-1,45</MaximumSize>
+                <Children>
+
+                    <PushButton>
+                        <ObjectName>Btn-blr</ObjectName>
+                        <TooltipId>cue_default_cue_gotoandstop</TooltipId>
+                        <Size>35me,45f</Size>
+                        <NumberStates>1</NumberStates>
+                        <State>
+                            <Number>0</Number>
+                            <Text>CUE</Text>
+                        </State>
+                        <Connection>
+                            <ConfigKey><Variable name="Group"/>,cue_default</ConfigKey>
+                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                            <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                            <ConfigKey><Variable name="Group"/>,cue_gotoandstop</ConfigKey>
+                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                            <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                    </PushButton>
+
+                    <PushButton>
+                        <ObjectName>Btn-brr</ObjectName>
+                        <Size>35me,45f</Size>
+                        <NumberStates>2</NumberStates>
+                        <RightClickIsPushButton>true</RightClickIsPushButton>
+                        <State>
+                            <Number>0</Number>
+                            <Text>▶/||</Text>
+                        </State>
+                        <State>
+                            <Number>1</Number>
+                            <Text>▶/||</Text>
+                        </State>
+                        <Connection>
+                            <ConfigKey><Variable name="Group"/>,play</ConfigKey>
+                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                            <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                            <ConfigKey><Variable name="Group"/>,cue_set</ConfigKey>
+                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                            <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                    </PushButton>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup><!-- spacer -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,45</MinimumSize>
+                <MaximumSize>-1,45</MaximumSize>
+                <Children>
+
+                    <PushButton>
+                        <ObjectName>Btn-blr</ObjectName>
+                        <Size>25me,45f</Size>
+                        <NumberStates>1</NumberStates>
+                        <State>
+                            <Number>0</Number>
+                            <Text>&lt;&lt;</Text>
+                        </State>
+                        <Connection>
+                            <ConfigKey><Variable name="Group"/>,back</ConfigKey>
+                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                            <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                            <ConfigKey><Variable name="Group"/>,start</ConfigKey>
+                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                            <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                    </PushButton>
+
+                    <PushButton>
+                        <ObjectName>Btn-brr</ObjectName>
+                        <Size>25me,45f</Size>
+                        <NumberStates>1</NumberStates>
+                        <State>
+                            <Number>0</Number>
+                            <Text>&gt;&gt;</Text>
+                        </State>
+                        <Connection>
+                            <ConfigKey><Variable name="Group"/>,fwd</ConfigKey>
+                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                            <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                            <ConfigKey><Variable name="Group"/>,end</ConfigKey>
+                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                            <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                    </PushButton>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup><!-- spacer -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+            <WidgetStack>
+                <NextControl><Variable name="Widget"/>,beatjump_nextpage</NextControl>
+                <PrevControl><Variable name="Widget"/>,beatjump_prevpage</PrevControl>
+                <Children>
+
+                    <Template src="skin:device/editdeck/beatjump.xml">
+                        <SetVariable name="Beats">2</SetVariable>
+                    </Template>
+
+                    <Template src="skin:device/editdeck/beatjump.xml">
+                        <SetVariable name="Beats">4</SetVariable>
+                    </Template>
+
+                    <Template src="skin:device/editdeck/beatjump.xml">
+                        <SetVariable name="Beats">8</SetVariable>
+                    </Template>
+
+                    <Template src="skin:device/editdeck/beatjump.xml">
+                        <SetVariable name="Beats">16</SetVariable>
+                    </Template>
+
+                    <Template src="skin:device/editdeck/beatjump.xml">
+                        <SetVariable name="Beats">32</SetVariable>
+                    </Template>
+
+                </Children>
+            </WidgetStack>
+
+            <Template src="skin:device/editdeck/pitch_controls.xml"/>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    TRANSPORT END
+    **************************************************************************************
+    -->
+
+</Template>

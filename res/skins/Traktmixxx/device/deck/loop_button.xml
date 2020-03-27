@@ -1,0 +1,43 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    LOOP-BUTTON BEGIN
+    **************************************************************************************
+    -->
+    <PushButton>
+        <ObjectName><Variable name="ObjectName"/></ObjectName>
+        <TooltipId>beatloop_size</TooltipId>
+        <NumberStates>2</NumberStates>
+        <Size>15me,23f</Size>
+        <State>
+            <Number>0</Number>
+            <Text><Variable name="show_loop_x"/></Text>
+        </State>
+        <State>
+            <Number>1</Number>
+            <Text><Variable name="show_loop_x"/></Text>
+        </State>
+        <Connection>
+            <ConfigKey><Variable name="Group"/>,beatloop_<Variable name="loop_x"/>_toggle</ConfigKey>
+            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+            <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+            <ConfigKey><Variable name="Group"/>,beatlooproll_<Variable name="loop_x"/>_activate</ConfigKey>
+            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+            <ButtonState>RightButton</ButtonState>
+        </Connection>
+        <Connection>
+            <ConfigKey><Variable name="Group"/>,beatloop_<Variable name="loop_x"/>_enabled</ConfigKey>
+            <ConnectValueFromWidget>false</ConnectValueFromWidget>
+        </Connection>
+    </PushButton>
+    <!--
+    **************************************************************************************
+    LOOP-BUTTON END
+    **************************************************************************************
+    -->
+
+</Template>

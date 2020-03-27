@@ -1,0 +1,62 @@
+<!DOCTYPE template>
+<Template>
+
+    <WidgetGroup>
+        <ObjectName>OuterConfigBox</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+
+            <WidgetGroup>
+                <ObjectName>InnerConfigBox</ObjectName>
+                <Layout>vertical</Layout>
+                <Size>130f,120f</Size>
+                <Children>
+
+                    <Label>
+                        <ObjectName>ConfigHeadline</ObjectName>
+                        <Size>100f,25f</Size>
+                        <Elide>left</Elide>
+                        <Alignment>left</Alignment>
+                        <Text>Mixer <Variable name="Number"/></Text>
+                    </Label>
+
+                    <Template src="skin:device/mixer/config_controls.xml">
+                        <SetVariable name="Tooltip">Show/hide the Filter Section.</SetVariable>
+                        <SetVariable name="Label">Filter</SetVariable>
+                        <SetVariable name="Group"><Variable name="Widget"/></SetVariable>
+                        <SetVariable name="Widget">show_filter</SetVariable>
+                    </Template>
+
+                    <Template src="skin:device/mixer/config_controls.xml">
+                        <SetVariable name="Tooltip">Show/hide the Equalizer Section.</SetVariable>
+                        <SetVariable name="Label">Equalizer</SetVariable>
+                        <SetVariable name="Group"><Variable name="Widget"/></SetVariable>
+                        <SetVariable name="Widget">show_eq</SetVariable>
+                    </Template>
+
+                    <Template src="skin:device/mixer/config_controls.xml">
+                        <SetVariable name="Tooltip">Show/hide the Channel Volume Fader.</SetVariable>
+                        <SetVariable name="Label">Volume-Fader</SetVariable>
+                        <SetVariable name="Group"><Variable name="Widget"/></SetVariable>
+                        <SetVariable name="Widget">show_fader</SetVariable>
+                    </Template>
+
+                    <Template src="skin:device/mixer/config_controls.xml">
+                        <SetVariable name="Tooltip">Show/hide the Channel Volume Meter.</SetVariable>
+                        <SetVariable name="Label">VU-Meter</SetVariable>
+                        <SetVariable name="Group"><Variable name="Widget"/></SetVariable>
+                        <SetVariable name="Widget">show_vu</SetVariable>
+                    </Template>
+
+                </Children>
+            </WidgetGroup>
+
+        </Children>
+        <Connection>
+            <ConfigKey>[Master],skin_settings</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+
+</Template>

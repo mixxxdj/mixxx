@@ -1,0 +1,424 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    MAIN DEVICE BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>Main</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <MinimumSize>300,-1</MinimumSize>
+        <MaximumSize>460,-1</MaximumSize>
+        <Children>
+
+            <Template src="skin:device/main/border_top.xml"/>
+
+            <WidgetGroup>
+                <ObjectName>Rectangle</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+
+                    <WidgetGroup><!-- margin-right -->
+                        <MinimumSize>10,-1</MinimumSize>
+                        <MaximumSize>10,-1</MaximumSize>
+                    </WidgetGroup>
+
+                    <Template src="skin:device/main/knob_small.xml">
+                        <SetVariable name="ObjectName">Master</SetVariable>
+                        <SetVariable name="TooltipId">master_volume</SetVariable>
+                        <SetVariable name="ConfigKey">[Master],volume</SetVariable>
+                    </Template>
+
+                    <Template src="skin:device/main/knob_small.xml">
+                        <SetVariable name="ObjectName">Balance</SetVariable>
+                        <SetVariable name="TooltipId">balance</SetVariable>
+                        <SetVariable name="ConfigKey">[Master],balance</SetVariable>
+                    </Template>
+
+                    <WidgetGroup>
+                        <ObjectName>MasterVuBottom</ObjectName>
+                        <MinimumSize>3,45</MinimumSize>
+                        <MaximumSize>3,45</MaximumSize>
+                    </WidgetGroup>
+
+                    <SizeAwareStack>
+                        <Children>
+
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <MinimumSize>0,45</MinimumSize>
+                                <MaximumSize>68,45</MaximumSize>
+                                <Children>
+
+                                    <WidgetGroup>
+                                        <ObjectName>MasterVu</ObjectName>
+                                        <Layout>vertical</Layout>
+                                        <!--<Size>68f,122f</Size>-->
+                                        <Size>me,45f</Size>
+                                        <Children>
+
+                                            <VuMeter>
+                                                <!-- <SizePolicy>min,max</SizePolicy> -->
+                                                <Size>me,22f</Size>
+                                                <TooltipId>master_VuMeterL</TooltipId>
+                                                <PathVu>background/bg_4_vu_left_on.svg</PathVu>
+                                                <Horizontal>true</Horizontal>
+                                                <PeakHoldSize>4</PeakHoldSize>
+                                                <PeakHoldTime>500</PeakHoldTime>
+                                                <PeakFallTime>50</PeakFallTime>
+                                                <PeakFallStep>2</PeakFallStep>
+                                                <Connection>
+                                                    <ConfigKey>[Master],VuMeterL</ConfigKey>
+                                                </Connection>
+                                            </VuMeter>
+
+                                            <VuMeter>
+                                                <!-- <SizePolicy>min,max</SizePolicy> -->
+                                                <Size>me,23f</Size>
+                                                <TooltipId>master_VuMeterR</TooltipId>
+                                                <PathVu>background/bg_4_vu_right_on.svg</PathVu>
+                                                <Horizontal>true</Horizontal>
+                                                <PeakHoldSize>4</PeakHoldSize>
+                                                <PeakHoldTime>500</PeakHoldTime>
+                                                <PeakFallTime>50</PeakFallTime>
+                                                <PeakFallStep>2</PeakFallStep>
+                                                <Connection>
+                                                    <ConfigKey>[Master],VuMeterR</ConfigKey>
+                                                </Connection>
+                                            </VuMeter>
+
+                                        </Children>
+                                    </WidgetGroup>
+
+                                    <WidgetGroup>
+                                        <ObjectName>MasterPeakIndicator</ObjectName>
+                                        <Layout>vertical</Layout>
+                                        <!--<Size>68f,122f</Size>-->
+                                        <Size>13,45</Size>
+                                        <Children>
+
+                                            <StatusLight>
+                                                <Size>13,22</Size>
+                                                <TooltipId>master_PeakIndicatorL</TooltipId>
+                                                <PathStatusLight>background/bg_6_clipping_left_on.svg</PathStatusLight>
+                                                <PathBack>background/bg_6_clipping_left_off.svg</PathBack>
+                                                <Connection>
+                                                    <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
+                                                </Connection>
+                                            </StatusLight>
+
+                                            <StatusLight>
+                                                <Size>13,23</Size>
+                                                <TooltipId>master_PeakIndicatorR</TooltipId>
+                                                <PathStatusLight>background/bg_6_clipping_right_on.svg</PathStatusLight>
+                                                <PathBack>background/bg_6_clipping_right_off.svg</PathBack>
+                                                <Connection>
+                                                    <ConfigKey>[Master],PeakIndicatorR</ConfigKey>
+                                                </Connection>
+                                            </StatusLight>
+
+                                        </Children>
+                                    </WidgetGroup>
+
+                                </Children>
+                            </WidgetGroup>
+
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <MinimumSize>69,45</MinimumSize>
+                                <MaximumSize>136,45</MaximumSize>
+                                <Children>
+
+                                    <WidgetGroup>
+                                        <ObjectName>MasterVu</ObjectName>
+                                        <Layout>vertical</Layout>
+                                        <!--<Size>68f,122f</Size>-->
+                                        <Size>me,45f</Size>
+                                        <Children>
+
+                                            <VuMeter>
+                                                <!-- <SizePolicy>min,max</SizePolicy> -->
+                                                <Size>me,22f</Size>
+                                                <TooltipId>master_VuMeterL</TooltipId>
+                                                <PathVu>background/bg_4_vu_left_on.svg</PathVu>
+                                                <Horizontal>true</Horizontal>
+                                                <PeakHoldSize>4</PeakHoldSize>
+                                                <PeakHoldTime>500</PeakHoldTime>
+                                                <PeakFallTime>50</PeakFallTime>
+                                                <PeakFallStep>2</PeakFallStep>
+                                                <Connection>
+                                                    <ConfigKey>[Master],VuMeterL</ConfigKey>
+                                                </Connection>
+                                            </VuMeter>
+
+                                            <VuMeter>
+                                                <!-- <SizePolicy>min,max</SizePolicy> -->
+                                                <Size>me,23f</Size>
+                                                <TooltipId>master_VuMeterR</TooltipId>
+                                                <PathVu>background/bg_4_vu_right_on.svg</PathVu>
+                                                <Horizontal>true</Horizontal>
+                                                <PeakHoldSize>4</PeakHoldSize>
+                                                <PeakHoldTime>500</PeakHoldTime>
+                                                <PeakFallTime>50</PeakFallTime>
+                                                <PeakFallStep>2</PeakFallStep>
+                                                <Connection>
+                                                    <ConfigKey>[Master],VuMeterR</ConfigKey>
+                                                </Connection>
+                                            </VuMeter>
+
+                                        </Children>
+                                    </WidgetGroup>
+
+                                    <WidgetGroup>
+                                        <ObjectName>MasterPeakIndicator</ObjectName>
+                                        <Layout>vertical</Layout>
+                                        <!--<Size>68f,122f</Size>-->
+                                        <Size>23,45</Size>
+                                        <Children>
+
+                                            <StatusLight>
+                                                <Size>23,22</Size>
+                                                <TooltipId>master_PeakIndicatorL</TooltipId>
+                                                <PathStatusLight>background/bg_5_clipping_left_on.svg</PathStatusLight>
+                                                <PathBack>background/bg_5_clipping_left_off.svg</PathBack>
+                                                <Connection>
+                                                    <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
+                                                </Connection>
+                                            </StatusLight>
+
+                                            <StatusLight>
+                                                <Size>23,23</Size>
+                                                <TooltipId>master_PeakIndicatorR</TooltipId>
+                                                <PathStatusLight>background/bg_5_clipping_right_on.svg</PathStatusLight>
+                                                <PathBack>background/bg_5_clipping_right_off.svg</PathBack>
+                                                <Connection>
+                                                    <ConfigKey>[Master],PeakIndicatorR</ConfigKey>
+                                                </Connection>
+                                            </StatusLight>
+
+                                        </Children>
+                                    </WidgetGroup>
+
+                                </Children>
+                            </WidgetGroup>
+
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <MinimumSize>137,45</MinimumSize>
+                                <MaximumSize>-1,45</MaximumSize>
+                                <Children>
+
+                                    <WidgetGroup>
+                                        <ObjectName>MasterVu</ObjectName>
+                                        <Layout>vertical</Layout>
+                                        <!--<Size>68f,122f</Size>-->
+                                        <Size>me,45f</Size>
+                                        <Children>
+
+                                            <VuMeter>
+                                                <!-- <SizePolicy>min,max</SizePolicy> -->
+                                                <Size>me,22f</Size>
+                                                <TooltipId>master_VuMeterL</TooltipId>
+                                                <PathVu>background/bg_4_vu_left_on.svg</PathVu>
+                                                <Horizontal>true</Horizontal>
+                                                <PeakHoldSize>4</PeakHoldSize>
+                                                <PeakHoldTime>500</PeakHoldTime>
+                                                <PeakFallTime>50</PeakFallTime>
+                                                <PeakFallStep>2</PeakFallStep>
+                                                <Connection>
+                                                    <ConfigKey>[Master],VuMeterL</ConfigKey>
+                                                </Connection>
+                                            </VuMeter>
+
+                                            <VuMeter>
+                                                <!-- <SizePolicy>min,max</SizePolicy> -->
+                                                <Size>me,23f</Size>
+                                                <TooltipId>master_VuMeterR</TooltipId>
+                                                <PathVu>background/bg_4_vu_right_on.svg</PathVu>
+                                                <Horizontal>true</Horizontal>
+                                                <PeakHoldSize>4</PeakHoldSize>
+                                                <PeakHoldTime>500</PeakHoldTime>
+                                                <PeakFallTime>50</PeakFallTime>
+                                                <PeakFallStep>2</PeakFallStep>
+                                                <Connection>
+                                                    <ConfigKey>[Master],VuMeterR</ConfigKey>
+                                                </Connection>
+                                            </VuMeter>
+
+                                        </Children>
+                                    </WidgetGroup>
+
+                                    <WidgetGroup>
+                                        <ObjectName>MasterPeakIndicator</ObjectName>
+                                        <Layout>vertical</Layout>
+                                        <!--<Size>68f,122f</Size>-->
+                                        <Size>33,45</Size>
+                                        <Children>
+
+                                            <StatusLight>
+                                                <Size>33,22</Size>
+                                                <TooltipId>master_PeakIndicatorL</TooltipId>
+                                                <PathStatusLight>background/bg_4_clipping_left_on.svg</PathStatusLight>
+                                                <PathBack>background/bg_4_clipping_left_off.svg</PathBack>
+                                                <Connection>
+                                                    <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
+                                                </Connection>
+                                            </StatusLight>
+
+                                            <StatusLight>
+                                                <Size>33,23</Size>
+                                                <TooltipId>master_PeakIndicatorR</TooltipId>
+                                                <PathStatusLight>background/bg_4_clipping_right_on.svg</PathStatusLight>
+                                                <PathBack>background/bg_4_clipping_right_off.svg</PathBack>
+                                                <Connection>
+                                                    <ConfigKey>[Master],PeakIndicatorR</ConfigKey>
+                                                </Connection>
+                                            </StatusLight>
+
+                                        </Children>
+                                    </WidgetGroup>
+
+                                </Children>
+                            </WidgetGroup>
+                        
+                        </Children>
+                    </SizeAwareStack>
+
+                    <WidgetGroup><!-- margin-right -->
+                        <MinimumSize>10,-1</MinimumSize>
+                        <MaximumSize>10,-1</MaximumSize>
+                    </WidgetGroup>
+
+                    <PushButton>
+                        <ObjectName>Btn-br</ObjectName>
+                        <TooltipId>toggle_recording</TooltipId>
+                        <Size>50f,45f</Size>
+                        <NumberStates>3</NumberStates>
+                        <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                        <RightClickIsPushButton>true</RightClickIsPushButton>
+                        <State>
+                            <!-- RECORD OFF -->
+                            <Number>0</Number>
+							<Pressed>button/btn_rec1.svg</Pressed>
+					        <Unpressed>button/btn_rec1.svg</Unpressed>
+                            <Text></Text>
+                        </State>
+                        <State>
+                            <!-- RECORD READY-->
+                            <Number>1</Number>
+							<Pressed>button/btn_rec2.svg</Pressed>
+					        <Unpressed>button/btn_rec2.svg</Unpressed>
+                            <Text></Text>
+                        </State>
+                        <State>
+                            <!-- RECORD ON-->
+                            <Number>2</Number>
+							<Pressed>button/btn_rec2.svg</Pressed>
+					        <Unpressed>button/btn_rec2.svg</Unpressed>
+                            <Text></Text>
+                        </State>
+                        <Connection>
+                            <ConfigKey>[Recording],toggle_recording</ConfigKey>
+                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                            <ButtonState>LeftButton</ButtonState>
+                            <ConnectValueToWidget>false</ConnectValueToWidget>
+                        </Connection>
+                        <Connection>
+                            <ConfigKey>[Recording],status</ConfigKey>
+                            <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                        </Connection>
+                    </PushButton>
+
+                    <WidgetGroup><!-- margin-right -->
+                        <MinimumSize>10,-1</MinimumSize>
+                        <MaximumSize>10,-1</MaximumSize>
+                    </WidgetGroup>
+
+                    <RecordingDuration>
+                        <ObjectName>RecordingDuration</ObjectName>
+                        <TooltipId>recording_duration</TooltipId>
+                        <Size>45f,45f</Size>
+                        <Style>QLabel { text-align: left; padding-left: 0; }</Style>
+                        <!-- CSS alignments not respected see bug lp:605530 , lets call <Alignment> -->
+                        <Alignment>right</Alignment>
+                         <Connection>
+                            <ConfigKey>[Recording],status</ConfigKey>
+                            <BindProperty>visible</BindProperty>
+                        </Connection>
+                    </RecordingDuration>
+
+                    <WidgetGroup><!-- margin-right -->
+                        <SizePolicy>f,f</SizePolicy>
+                        <MinimumSize>10,45</MinimumSize>
+                        <MaximumSize>10,45</MaximumSize>
+                        <Connection>
+                            <ConfigKey>[Recording],status</ConfigKey>
+                            <BindProperty>visible</BindProperty>
+                        </Connection>
+                    </WidgetGroup>
+
+                    <PushButton>
+                        <ObjectName>Btn-br</ObjectName>
+                        <TooltipId>broadcast_enabled</TooltipId>
+                        <Size>50f,45f</Size>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                            <!-- BROADCAST OFF -->
+                            <Number>0</Number>
+							<Pressed>button/btn_broadcast1.svg</Pressed>
+					        <Unpressed>button/btn_broadcast1.svg</Unpressed>
+                            <Text></Text>
+                        </State>
+                        <State>
+                            <!-- BROADCAST ON-->
+                            <Number>1</Number>
+							<Pressed>button/btn_broadcast2.svg</Pressed>
+					        <Unpressed>button/btn_broadcast2.svg</Unpressed>
+                            <Text></Text>
+                        </State>
+                        <Connection>
+                            <ConfigKey>[Shoutcast],enabled</ConfigKey>
+                            <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                            <ConfigKey>[Shoutcast],status</ConfigKey>
+                            <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                        </Connection>
+                    </PushButton>
+
+                    <WidgetGroup><!-- margin-right -->
+                        <MinimumSize>10,-1</MinimumSize>
+                        <MaximumSize>10,-1</MaximumSize>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetGroup>
+
+            <Template src="skin:device/main/border_bottom.xml"/>
+
+        </Children>
+        <Connection>
+            <ConfigKey persist="true">[Main],show_main</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+
+    <WidgetGroup><!-- margin-right -->
+        <MinimumSize>4,-1</MinimumSize>
+        <MaximumSize>4,-1</MaximumSize>
+        <Connection>
+            <ConfigKey persist="true">[Main],show_main</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    MAIN DEVICE END
+    **************************************************************************************
+    -->
+
+</Template>

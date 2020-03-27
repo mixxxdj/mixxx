@@ -1,0 +1,40 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    SPINNY BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>f,f</SizePolicy>
+        <MaximumSize>165,155</MaximumSize>
+        <Children>
+
+            <Spinny>
+                <TooltipId>spinny</TooltipId>
+                <Channel><Variable name="Number"/></Channel>
+                <PathBackground>background/bg_deck<Variable name="Number"/>_1_vinyl.svg</PathBackground>
+                <PathForeground>knob/knob_deck<Variable name="Number"/>_1_vinyl.svg</PathForeground>
+                <PathGhost>knob/knob_deck<Variable name="Number"/>_2_vinyl.svg</PathGhost>
+            </Spinny>
+
+            <WidgetGroup><!-- margin-left -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+        </Children>
+        <Connection>
+            <ConfigKey persist="true"><Variable name="Widget"/>,show_spinny</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    SPINNY END
+    **************************************************************************************
+    -->
+
+</Template>

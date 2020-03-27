@@ -1,0 +1,54 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    EDITDECK SLIDER BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>vertical</Layout>
+        <SizePolicy>f,p</SizePolicy>
+        <MinimumSize>56,-1</MinimumSize>
+        <MaximumSize>56,-1</MaximumSize>
+        <Children>
+
+            <WidgetGroup>
+                <ObjectName>PitchSliderTop</ObjectName>
+                <Size>56f,16f</Size>
+            </WidgetGroup>
+
+            <SliderComposed>
+                <ObjectName>PitchSlider</ObjectName>
+                <TooltipId>channel_volume</TooltipId>
+                <SizePolicy>min,me</SizePolicy>
+                <MinimumSize>56,-1</MinimumSize>
+                <MaximumSize>56,-1</MaximumSize>
+                <Handle>knob/knob_3_sliderhandle.svg</Handle>
+                <Horizontal>false</Horizontal>
+                <Connection>
+                    <ConfigKey><Variable name="Group"/>,volume</ConfigKey>
+                </Connection>
+            </SliderComposed>
+
+            <WidgetGroup>
+                <ObjectName>PitchSliderBottom</ObjectName>
+                <Size>56f,16f</Size>
+            </WidgetGroup>
+
+            <Template src="skin:device/editdeck/button.xml">
+                <SetVariable name="ObjectName">Btn-br</SetVariable>
+                <SetVariable name="TooltipId">pfl</SetVariable>
+                <SetVariable name="Label">CUE</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="Group"/>,pfl</SetVariable>
+            </Template>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    EDITDECK SLIDER END
+    **************************************************************************************
+    -->
+
+</Template>

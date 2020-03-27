@@ -1,0 +1,94 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    HEADPHONE DEVICE BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>Headphone</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>f,me</SizePolicy>
+        <MinimumSize>170,-1</MinimumSize>
+        <MaximumSize>170,-1</MaximumSize>
+        <Children>
+
+            <Template src="skin:device/headphone/border_top.xml"/>
+
+            <WidgetGroup>
+                <ObjectName>Rectangle</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+
+                    <WidgetGroup><!-- margin-left -->
+                        <SizePolicy>f,f</SizePolicy>
+                        <MinimumSize>10,45</MinimumSize>
+                        <MaximumSize>10,45</MaximumSize>
+                    </WidgetGroup>
+
+                    <Template src="skin:device/headphone/knob_small.xml">
+                        <SetVariable name="ObjectName">Gain</SetVariable>
+                        <SetVariable name="TooltipId">headphone_gain</SetVariable>
+                        <SetVariable name="ConfigKey">[Master],headGain</SetVariable>
+                    </Template>
+
+                    <Template src="skin:device/headphone/knob_small.xml">
+                        <SetVariable name="ObjectName">Cue Mix</SetVariable>
+                        <SetVariable name="TooltipId">headMix</SetVariable>
+                        <SetVariable name="ConfigKey">[Master],headMix</SetVariable>
+                    </Template>
+
+                    <PushButton>
+                        <ObjectName>Btn-br</ObjectName>
+                        <TooltipId>headSplit</TooltipId>
+                        <Size>50f,45f</Size>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                            <Number>0</Number>
+                            <Text>SPLIT</Text>
+                        </State>
+                        <State>
+                            <Number>1</Number>
+                            <Text>SPLIT</Text>
+                        </State>
+                        <Connection>
+                            <ConfigKey>[Master],headSplit</ConfigKey>
+                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                            <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                    </PushButton>
+
+                    <WidgetGroup><!-- margin-right -->
+                        <MinimumSize>10,-1</MinimumSize>
+                        <MaximumSize>10,-1</MaximumSize>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetGroup>
+
+            <Template src="skin:device/headphone/border_bottom.xml"/>
+
+        </Children>
+        <Connection>
+            <ConfigKey persist="true">[Headphone],show_headphone</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+
+    <WidgetGroup><!-- margin-right -->
+        <MinimumSize>4,-1</MinimumSize>
+        <MaximumSize>4,-1</MaximumSize>
+        <Connection>
+            <ConfigKey persist="true">[Headphone],show_headphone</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    HEADPHONE DEVICE END
+    **************************************************************************************
+    -->
+
+</Template>

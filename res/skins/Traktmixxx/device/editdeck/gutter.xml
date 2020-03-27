@@ -1,0 +1,90 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    EDITDECK GUTTER BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,f</SizePolicy>
+        <MinimumSize>-1,265</MinimumSize>
+        <MaximumSize>-1,265</MaximumSize>
+        <Children>
+
+            <WidgetGroup><!-- margin-left -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,265</MinimumSize>
+                <MaximumSize>-1,265</MaximumSize>
+                <Children>
+
+                    <WidgetGroup>
+                        <ObjectName>Line</ObjectName>
+                        <MinimumSize>-1,2</MinimumSize>
+                        <MaximumSize>-1,2</MaximumSize>
+                    </WidgetGroup>
+
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,f</SizePolicy>
+                        <MinimumSize>-1,261</MinimumSize>
+                        <MaximumSize>-1,261</MaximumSize>
+                        <Children>
+
+                            <WidgetGroup>
+                                <Layout>vertical</Layout>
+                                <SizePolicy>me,f</SizePolicy>
+                                <MinimumSize>-1,261</MinimumSize>
+                                <MaximumSize>-1,261</MaximumSize>
+                                <Children>
+
+                                    <Template src="skin:device/editdeck/waveform.xml"/>
+
+                                    <WidgetGroup>
+                                        <ObjectName>Line</ObjectName>
+                                        <MinimumSize>-1,2</MinimumSize>
+                                        <MaximumSize>-1,2</MaximumSize>
+                                    </WidgetGroup>
+
+                                    <Template src="skin:device/editdeck/overview.xml">
+                                        <SetVariable name="Size">me,55f</SetVariable>
+                                    </Template>
+
+                                </Children>
+                            </WidgetGroup>
+
+                            
+
+                        </Children>
+                    </WidgetGroup>
+
+                    <WidgetGroup>
+                        <ObjectName>Line</ObjectName>
+                        <MinimumSize>-1,2</MinimumSize>
+                        <MaximumSize>-1,2</MaximumSize>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup><!-- margin-right -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    EDITDECK GUTTER END
+    **************************************************************************************
+    -->
+
+</Template>

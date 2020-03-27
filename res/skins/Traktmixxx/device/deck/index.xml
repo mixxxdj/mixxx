@@ -1,0 +1,66 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    DECK DEVICE BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>stacked</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+
+            <!-- Hack for BUG https://github.com/22degrees/RoundCorners/issues/4 -->
+            <Template src="skin:shared/confighack.xml"/>
+
+            <Template src="skin:device/deck/config.xml"/>
+
+            <Template src="skin:device/deck/passthrough.xml"/>
+
+            <WidgetGroup>
+                <ObjectName>Deck<Variable name="Number"/></ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+
+                    <Template src="skin:device/deck/border_top.xml"/>
+
+                    <WidgetGroup>
+                        <ObjectName>Rectangle</ObjectName>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>me,me</SizePolicy>
+                        <Children>
+
+                            <Template src="skin:device/deck/trackinfo.xml"/>
+
+                            <Template src="skin:device/deck/gutter.xml"/>
+
+                        </Children>
+                    </WidgetGroup>
+
+                    <Template src="skin:device/deck/transport.xml"/>
+
+                    <Template src="skin:device/deck/hotcue_row.xml"/>
+
+                    <Template src="skin:device/deck/loop.xml"/>
+
+                    <WidgetGroup><!-- dyn.expander -->
+                        <ObjectName>TransportRow</ObjectName>
+                        <Size>me,me</Size>
+                    </WidgetGroup>
+
+                    <Template src="skin:device/deck/border_bottom.xml"/>
+
+                </Children>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    DECK DEVICE END
+    **************************************************************************************
+    -->
+
+</Template>

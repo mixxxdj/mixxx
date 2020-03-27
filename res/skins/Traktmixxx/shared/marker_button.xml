@@ -1,0 +1,47 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    MARKER-BUTTON BEGIN
+    **************************************************************************************
+    -->
+    <PushButton>
+        <ObjectName>Btn-nbr-bisected</ObjectName>
+        <TooltipId>hotcue</TooltipId>
+        <NumberStates>2</NumberStates>
+        <Size>15me,23f</Size>
+        <LeftClickIsPushButton>true</LeftClickIsPushButton>
+        <RightClickIsPushButton>true</RightClickIsPushButton>
+        <State>
+            <Number>0</Number>
+            <Text><Variable name="label"/></Text>
+        </State>
+        <State>
+            <Number>1</Number>
+            <Text><Variable name="label"/></Text>
+        </State>
+        <Connection>
+            <ConfigKey><Variable name="Group"/>,hotcue_<Variable name="hotcue_x"/>_activate</ConfigKey>
+            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+            <ButtonState>LeftButton</ButtonState>
+            <ConnectValueToWidget>false</ConnectValueToWidget>
+        </Connection>
+        <Connection>
+            <ConfigKey><Variable name="Group"/>,hotcue_<Variable name="hotcue_x"/>_clear</ConfigKey>
+            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+            <ButtonState>RightButton</ButtonState>
+            <ConnectValueToWidget>false</ConnectValueToWidget>
+        </Connection>
+        <Connection>
+            <ConfigKey><Variable name="Group"/>,hotcue_<Variable name="hotcue_x"/>_enabled</ConfigKey>
+            <ConnectValueFromWidget>false</ConnectValueFromWidget>
+        </Connection>
+    </PushButton>
+    <!--
+    **************************************************************************************
+    MARKER-BUTTON END
+    **************************************************************************************
+    -->
+
+</Template>

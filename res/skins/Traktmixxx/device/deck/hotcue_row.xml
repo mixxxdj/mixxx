@@ -1,0 +1,38 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    HOTCUE BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>HotCueRow</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,f</SizePolicy>
+        <MinimumSize>-1,55</MinimumSize>
+        <MaximumSize>-1,55</MaximumSize>
+        <Children>
+
+            <WidgetGroup><!-- margin top -->
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,10</MinimumSize>
+                <MaximumSize>-1,10</MaximumSize>
+            </WidgetGroup>
+
+            <Template src="skin:device/deck/hotcue.xml"/>
+            <Template src="skin:device/deck/marker.xml"/>
+
+        </Children>
+        <Connection>
+            <ConfigKey persist="true"><Variable name="Widget"/>,show_hotcue</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    HOTCUE END
+    **************************************************************************************
+    -->
+
+</Template>

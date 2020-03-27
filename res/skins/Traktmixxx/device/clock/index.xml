@@ -1,0 +1,67 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    CLOCK DEVICE BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>Clock</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>max,max</SizePolicy>
+        <MaximumSize>110,69</MaximumSize>
+        <Children>
+
+            <Template src="skin:device/clock/border_top.xml"/>
+
+            <WidgetGroup>
+                <ObjectName>Rectangle</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,max</SizePolicy>
+                <MinimumSize>,45</MinimumSize>
+                <Children>
+
+                    <WidgetGroup><!-- spacer -->
+                        <MinimumSize>10,-1</MinimumSize>
+                        <MaximumSize>10,-1</MaximumSize>
+                    </WidgetGroup>
+
+                        <Time>
+                            <ObjectName>Time</ObjectName>
+                            <TooltipId>time</TooltipId>
+                            <ShowSeconds>false</ShowSeconds>
+                        </Time>
+
+                    <WidgetGroup><!-- spacer -->
+                        <MinimumSize>10,-1</MinimumSize>
+                        <MaximumSize>10,-1</MaximumSize>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetGroup>
+
+            <Template src="skin:device/clock/border_bottom.xml"/>
+
+        </Children>
+        <Connection>
+            <ConfigKey persist="true">[Clock],show_clock</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+
+    <WidgetGroup><!-- margin-right -->
+        <MinimumSize>4,-1</MinimumSize>
+        <MaximumSize>4,-1</MaximumSize>
+        <Connection>
+            <ConfigKey persist="true">[Clock],show_clock</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    CLOCK DEVICE END
+    **************************************************************************************
+    -->
+
+</Template>

@@ -1,0 +1,53 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    TRANSPORT BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>TransportRow</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,f</SizePolicy>
+        <MinimumSize>-1,55</MinimumSize>
+        <MaximumSize>-1,55</MaximumSize>
+        <Children>
+
+            <WidgetGroup><!-- margin-top -->
+                <SizePolicy>f,f</SizePolicy>
+                <MinimumSize>0,10</MinimumSize>
+                <MaximumSize>0,10</MaximumSize>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,45</MinimumSize>
+                <MaximumSize>-1,45</MaximumSize>
+                <Children>
+
+                    <WidgetGroup><!-- margin-left -->
+                        <SizePolicy>f,f</SizePolicy>
+                        <MinimumSize>10,45</MinimumSize>
+                        <MaximumSize>10,45</MaximumSize>
+                    </WidgetGroup>
+
+                    <Template src="skin:device/sampler/transport_controls.xml"/>
+
+                </Children>
+            </WidgetGroup>
+
+        </Children>
+        <Connection>
+            <ConfigKey persist="true">[Samplers],show_transport</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    TRANSPORT END
+    **************************************************************************************
+    -->
+
+</Template>

@@ -1,0 +1,48 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    LIBRARY DEVICE BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>stacked</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+
+            <!-- Hack for BUG https://github.com/22degrees/RoundCorners/issues/4 -->
+            <Template src="skin:shared/confighack.xml"/>
+
+            <Template src="skin:device/library/config.xml"/>
+
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+
+                    <Template src="skin:device/library/border_top.xml"/>
+
+                    <WidgetGroup>
+                        <ObjectName>Library</ObjectName>
+                        <Layout>vertical</Layout>
+                        <Children>
+
+                            <Library></Library>
+
+                        </Children>
+                    </WidgetGroup>
+
+                    <Template src="skin:device/library/border_bottom.xml"/>
+
+                </Children>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    LIBRARY DEVICE END
+    **************************************************************************************
+    -->
+
+</Template>

@@ -1,0 +1,40 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    MENUBAR UNIT BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>Row</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,max</SizePolicy>
+        <Children>
+
+            <WidgetGroup><!-- margin-left -->
+                <MinimumSize>4,-1</MinimumSize>
+                <MaximumSize>4,-1</MaximumSize>
+            </WidgetGroup>
+
+            <Template src="skin:device/brand/index.xml"/>
+
+            <Template src="skin:device/menubar/index.xml"/>
+
+            <Template src="skin:device/internalclock/index.xml"/>
+
+            <Template src="skin:device/main/index.xml"/>
+
+            <Template src="skin:device/headphone/index.xml"/>
+
+            <Template src="skin:device/clock/index.xml"/>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    MENUBAR UNIT END
+    **************************************************************************************
+    -->
+
+</Template>

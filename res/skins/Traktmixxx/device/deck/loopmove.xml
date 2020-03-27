@@ -1,0 +1,75 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    LOOPMOVE BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,f</SizePolicy>
+        <MinimumSize>-1,45</MinimumSize>
+        <MaximumSize>-1,45</MaximumSize>
+        <Children>
+
+            <PushButton>
+                <ObjectName>Btn-blr</ObjectName>
+                <Size>20me,45f</Size>
+                <NumberStates>1</NumberStates>
+                <State>
+                    <Number>0</Number>
+                    <Text>|&lt;</Text>
+                </State>
+                <Connection>
+                    <ConfigKey><Variable name="Group"/>,loop_move_<Variable name="Beats"/>_backward</ConfigKey>
+                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                    <ButtonState>LeftButton</ButtonState>
+                </Connection>
+            </PushButton>
+
+            <PushButton>
+                <ObjectName>Btn-nbr</ObjectName>
+                <Size>20me,45f</Size>
+                <NumberStates>1</NumberStates>
+                <RightClickIsPushButton>true</RightClickIsPushButton>
+                <State>
+                    <Number>0</Number>
+                    <Text><Variable name="Beats"/></Text>
+                </State>
+                <Connection>
+                    <ConfigKey><Variable name="Widget"/>,loopmove_nextpage</ConfigKey>
+                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                    <ButtonState>LeftButton</ButtonState>
+                </Connection>
+                <Connection>
+                    <ConfigKey><Variable name="Widget"/>,loopmove_prevpage</ConfigKey>
+                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                    <ButtonState>RightButton</ButtonState>
+                </Connection>
+            </PushButton>
+
+            <PushButton>
+                <ObjectName>Btn-brr</ObjectName>
+                <Size>20me,45f</Size>
+                <NumberStates>1</NumberStates>
+                <State>
+                    <Number>0</Number>
+                    <Text>&gt;|</Text>
+                </State>
+                <Connection>
+                    <ConfigKey><Variable name="Group"/>,loop_move_<Variable name="Beats"/>_forward</ConfigKey>
+                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                    <ButtonState>LeftButton</ButtonState>
+                </Connection>
+            </PushButton>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    LOOPMOVE END
+    **************************************************************************************
+    -->
+
+</Template>

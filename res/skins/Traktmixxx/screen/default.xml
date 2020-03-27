@@ -1,0 +1,162 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    DEFAULT SCREEN BEGIN
+    **************************************************************************************
+    -->
+    <Template src="skin:unit/menubar/index.xml"/>
+
+    <Template src="skin:unit/waveform/index.xml">
+        <SetVariable name="Number1">1</SetVariable>
+        <SetVariable name="Widget1">[Deck1]</SetVariable>
+        <SetVariable name="Group1">[Channel1]</SetVariable>
+        <SetVariable name="Align1">bottom</SetVariable> <!-- Values: top/center/bottom -->
+        <SetVariable name="SignalHighColor1">#664fd1</SetVariable>
+        <SetVariable name="SignalMidColor1">#9782f9</SetVariable>
+        <SetVariable name="SignalLowColor1">#d3caff</SetVariable>
+        <SetVariable name="MarkRangeColor1">#417587</SetVariable>
+        <SetVariable name="MarkRangeDisabledColor1">#979a9c</SetVariable>
+
+        <SetVariable name="Number2">2</SetVariable>
+        <SetVariable name="Widget2">[Deck2]</SetVariable>
+        <SetVariable name="Group2">[Channel2]</SetVariable>
+        <SetVariable name="Align2">top</SetVariable> <!-- Values: top/center/bottom -->
+        <SetVariable name="SignalHighColor2">#328fae</SetVariable>
+        <SetVariable name="SignalMidColor2">#69bad7</SetVariable>
+        <SetVariable name="SignalLowColor2">#b9e3f1</SetVariable>
+        <SetVariable name="MarkRangeColor2">#36457d</SetVariable>
+        <SetVariable name="MarkRangeDisabledColor2">#828590</SetVariable>
+
+        <SetVariable name="Number3">3</SetVariable>
+        <SetVariable name="Widget3">[Deck3]</SetVariable>
+        <SetVariable name="Group3">[Channel3]</SetVariable>
+        <SetVariable name="Align3">bottom</SetVariable> <!-- Values: top/center/bottom -->
+        <SetVariable name="SignalHighColor3">#328fae</SetVariable>
+        <SetVariable name="SignalMidColor3">#69bad7</SetVariable>
+        <SetVariable name="SignalLowColor3">#b9e3f1</SetVariable>
+        <SetVariable name="MarkRangeColor3">#36457d</SetVariable>
+        <SetVariable name="MarkRangeDisabledColor3">#828590</SetVariable>
+
+        <SetVariable name="Number4">4</SetVariable>
+        <SetVariable name="Widget4">[Deck4]</SetVariable>
+        <SetVariable name="Group4">[Channel4]</SetVariable>
+        <SetVariable name="Align4">top</SetVariable> <!-- Values: top/center/bottom -->
+        <SetVariable name="SignalHighColor4">#664fd1</SetVariable>
+        <SetVariable name="SignalMidColor4">#9782f9</SetVariable>
+        <SetVariable name="SignalLowColor4">#d3caff</SetVariable>
+        <SetVariable name="MarkRangeColor4">#417587</SetVariable>
+        <SetVariable name="MarkRangeDisabledColor4">#979a9c</SetVariable>
+    </Template>
+
+    <Template src="skin:unit/deck/index.xml">
+        <SetVariable name="Number1">1</SetVariable>
+        <SetVariable name="Widget1">[Deck1]</SetVariable>
+        <SetVariable name="Group1">[Channel1]</SetVariable>
+        <SetVariable name="Align1">bottom</SetVariable> <!-- Values: top/center/bottom -->
+        <SetVariable name="SignalHighColor1">#684ed6</SetVariable>
+        <SetVariable name="SignalMidColor1">#684ed6</SetVariable>
+        <SetVariable name="SignalLowColor1">#684ed6</SetVariable>
+        <SetVariable name="MarkRangeColor1">#ff3b37</SetVariable>
+        <SetVariable name="MarkRangeDisabledColor1">#979a9c</SetVariable>
+
+        <SetVariable name="Number2">2</SetVariable>
+        <SetVariable name="Widget2">[Deck2]</SetVariable>
+        <SetVariable name="Group2">[Channel2]</SetVariable>
+        <SetVariable name="Align2">bottom</SetVariable> <!-- Values: top/center/bottom -->
+        <SetVariable name="SignalHighColor2">#328fae</SetVariable>
+        <SetVariable name="SignalMidColor2">#328fae</SetVariable>
+        <SetVariable name="SignalLowColor2">#328fae</SetVariable>
+        <SetVariable name="MarkRangeColor2">#ff3b37</SetVariable>
+        <SetVariable name="MarkRangeDisabledColor2">#828590</SetVariable>
+
+        <SetVariable name="Number3">1</SetVariable>
+        <SetVariable name="Widget3">[Mixer1]</SetVariable>
+
+        <SetVariable name="Widget4">[DeckRow1]</SetVariable>
+    </Template>
+
+    <Template src="skin:unit/deck/index.xml">
+        <SetVariable name="Number1">3</SetVariable>
+        <SetVariable name="Widget1">[Deck3]</SetVariable>
+        <SetVariable name="Group1">[Channel3]</SetVariable>
+        <SetVariable name="Align1">bottom</SetVariable> <!-- Values: top/center/bottom -->
+        <SetVariable name="SignalHighColor1">#684ed6</SetVariable>
+        <SetVariable name="SignalMidColor1">#684ed6</SetVariable>
+        <SetVariable name="SignalLowColor1">#684ed6</SetVariable>
+        <SetVariable name="MarkRangeColor1">#ff3b37</SetVariable>
+        <SetVariable name="MarkRangeDisabledColor1">#979a9c</SetVariable>
+
+        <SetVariable name="Number2">4</SetVariable>
+        <SetVariable name="Widget2">[Deck4]</SetVariable>
+        <SetVariable name="Group2">[Channel4]</SetVariable>
+        <SetVariable name="Align2">bottom</SetVariable> <!-- Values: top/center/bottom -->
+        <SetVariable name="SignalHighColor2">#328fae</SetVariable>
+        <SetVariable name="SignalMidColor2">#328fae</SetVariable>
+        <SetVariable name="SignalLowColor2">#328fae</SetVariable>
+        <SetVariable name="MarkRangeColor2">#ff3b37</SetVariable>
+        <SetVariable name="MarkRangeDisabledColor2">#828590</SetVariable>
+
+        <SetVariable name="Number3">2</SetVariable>
+        <SetVariable name="Widget3">[Mixer2]</SetVariable>
+
+        <SetVariable name="Widget4">[DeckRow2]</SetVariable>
+    </Template>
+
+    <Template src="skin:unit/vinylcontrol/index.xml"/>
+
+    <Template src="skin:unit/microphone/index.xml"/>
+
+    <Template src="skin:unit/sampler/index.xml">
+        <SetVariable name="Number1">1</SetVariable>
+        <SetVariable name="Widget1">[Sampler1]</SetVariable>
+        <SetVariable name="Group1">[Sampler1]</SetVariable>
+        <SetVariable name="SignalHighColor1">#d4ddd7</SetVariable>
+        <SetVariable name="SignalMidColor1">#a4aba6</SetVariable>
+        <SetVariable name="SignalLowColor1">#737875</SetVariable>
+        <SetVariable name="MarkRangeColor1">#417587</SetVariable>
+        <SetVariable name="MarkRangeDisabledColor1">#979a9c</SetVariable>
+
+        <SetVariable name="Number2">2</SetVariable>
+        <SetVariable name="Widget2">[Sampler2]</SetVariable>
+        <SetVariable name="Group2">[Sampler2]</SetVariable>
+        <SetVariable name="SignalHighColor2">#9ab0b5</SetVariable>
+        <SetVariable name="SignalMidColor2">#7c9297</SetVariable>
+        <SetVariable name="SignalLowColor2">#5e7479</SetVariable>
+        <SetVariable name="MarkRangeColor2">#36457d</SetVariable>
+        <SetVariable name="MarkRangeDisabledColor2">#828590</SetVariable>
+
+        <SetVariable name="Number3">3</SetVariable>
+        <SetVariable name="Widget3">[Sampler3]</SetVariable>
+        <SetVariable name="Group3">[Sampler3]</SetVariable>
+        <SetVariable name="SignalHighColor3">#918b74</SetVariable>
+        <SetVariable name="SignalMidColor3">#736d56</SetVariable>
+        <SetVariable name="SignalLowColor3">#554f38</SetVariable>
+        <SetVariable name="MarkRangeColor3">#5e5c26</SetVariable>
+        <SetVariable name="MarkRangeDisabledColor3">#6d6c5c</SetVariable>
+
+        <SetVariable name="Number4">4</SetVariable>
+        <SetVariable name="Widget4">[Sampler4]</SetVariable>
+        <SetVariable name="Group4">[Sampler4]</SetVariable>
+        <SetVariable name="SignalHighColor4">#776a54</SetVariable>
+        <SetVariable name="SignalMidColor4">#594c36</SetVariable>
+        <SetVariable name="SignalLowColor4">#3b2e18</SetVariable>
+        <SetVariable name="MarkRangeColor4">#4d431b</SetVariable>
+        <SetVariable name="MarkRangeDisabledColor4">#595546</SetVariable>
+    </Template>
+
+    <Template src="skin:unit/effect/index.xml">
+        <SetVariable name="EffectRackNumber">1</SetVariable>
+    </Template>
+
+    <SingletonContainer>
+        <ObjectName>LibrarySingleton</ObjectName>
+    </SingletonContainer>
+    <!--
+    **************************************************************************************
+    DEFAULT SCREEN END
+    **************************************************************************************
+    -->
+
+</Template>

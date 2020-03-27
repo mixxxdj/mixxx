@@ -1,0 +1,50 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    DUMMY DEVICE BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>Dummy</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+
+            <Template src="skin:device/dummy/border_top.xml"/>
+
+            <WidgetGroup>
+                <ObjectName>Rectangle</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+
+                    <WidgetGroup><!-- margin-left -->
+                        <SizePolicy>f,f</SizePolicy>
+                        <MinimumSize>10,45</MinimumSize>
+                        <MaximumSize>10,45</MaximumSize>
+                    </WidgetGroup>
+
+                    <!-- YOUR CODE GOES HERE -->
+
+                    <WidgetGroup><!-- margin-right -->
+                        <SizePolicy>f,f</SizePolicy>
+                        <MinimumSize>10,45</MinimumSize>
+                        <MaximumSize>10,45</MaximumSize>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetGroup>
+
+            <Template src="skin:device/dummy/border_bottom.xml"/>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    DUMMY DEVICE END
+    **************************************************************************************
+    -->
+
+</Template>

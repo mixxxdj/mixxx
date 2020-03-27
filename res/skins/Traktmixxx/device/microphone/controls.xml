@@ -1,0 +1,142 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    MICROPHONE CONTROLS BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>Rectangle</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <MinimumSize>-1,45</MinimumSize>
+        <MaximumSize>-1,45</MaximumSize>
+        <Children>
+
+            <WidgetGroup><!-- margin-left -->
+                <SizePolicy>f,f</SizePolicy>
+                <MinimumSize>10,45</MinimumSize>
+                <MaximumSize>10,45</MaximumSize>
+            </WidgetGroup>
+
+            <PushButton>
+                <ObjectName>Btn-br</ObjectName>
+                <TooltipId>microphone_talkover</TooltipId>
+                <Size>25me,45f</Size>
+                <NumberStates>2</NumberStates>
+                <State>
+                    <Number>0</Number>
+                    <Text> MIC <Variable name="Number"/></Text>
+                </State>
+                <State>
+                    <Number>1</Number>
+                    <Text>MIC <Variable name="Number"/></Text>
+                </State>
+                <Connection>
+                    <ConfigKey><Variable name="Group"/>,talkover</ConfigKey>
+                    <ButtonState>LeftButton</ButtonState>
+                </Connection>
+            </PushButton>
+
+            <Template src="skin:device/microphone/knob_small.xml">
+                <SetVariable name="ObjectName">Volume</SetVariable>
+                <SetVariable name="TooltipId">microphone_volume</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="Group"/>,volume</SetVariable>
+            </Template>
+
+            <Template src="skin:device/microphone/knob_small.xml">
+                <SetVariable name="ObjectName">Pregain</SetVariable>
+                <SetVariable name="TooltipId">microphone_pregain</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="Group"/>,pregain</SetVariable>
+            </Template>
+
+            <PushButton>
+                <ObjectName>Btn-blr</ObjectName>
+                <TooltipId>pfl</TooltipId>
+                <Size>30me,45f</Size>
+                <NumberStates>2</NumberStates>
+                <State>
+                    <Number>0</Number>
+                    <Text>CUE</Text>
+                </State>
+                <State>
+                    <Number>1</Number>
+                    <Text>CUE</Text>
+                </State>
+                <Connection>
+                    <ConfigKey><Variable name="Group"/>,pfl</ConfigKey>
+                    <ButtonState>LeftButton</ButtonState>
+                </Connection>
+            </PushButton>
+
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,45</MinimumSize>
+                <MaximumSize>-1,45</MaximumSize>
+                <Children>
+
+                    <PushButton>
+                        <ObjectName>Btn-btrr</ObjectName>
+                        <TooltipId>microphone_talkover</TooltipId>
+                        <Size>20me,23f</Size>
+                        <NumberStates>3</NumberStates>
+                        <State>
+                            <Number>0</Number>
+                            <Text>DUCK OFF</Text>
+                        </State>
+                        <State>
+                            <Number>1</Number>
+                            <Text>AUTO DUCK</Text>
+                        </State>
+                        <State>
+                            <Number>2</Number>
+                            <Text>MANUAL</Text>
+                        </State>
+                        <Connection>
+                            <ConfigKey>[MASTER],talkoverDucking</ConfigKey>
+                            <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                    </PushButton>
+
+                    <PushButton>
+                        <ObjectName>Btn-bbrr</ObjectName>
+                        <TooltipId>orientation</TooltipId>
+                        <Size>20me,23f</Size>
+                        <NumberStates>3</NumberStates>
+                        <State>
+                            <Number>0</Number>
+                            <Text>&#8624;</Text>
+                        </State>
+                        <State>
+                            <Number>1</Number>
+                            <Text>&#8624;&#8625;</Text>
+                        </State>
+                        <State>
+                            <Number>2</Number>
+                            <Text>&#8625;</Text>
+                        </State>
+                        <Connection>
+                            <ConfigKey><Variable name="Group"/>,orientation</ConfigKey>
+                            <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                    </PushButton>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup><!-- margin-right -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    MICROPHONE CONTROLS END
+    **************************************************************************************
+    -->
+
+</Template>

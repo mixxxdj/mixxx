@@ -1,0 +1,7 @@
+<!DOCTYPE template>
+<Template>
+
+    <Template src="skin:shared/waveform.xml"/>
+    <Template src="skin:shared/waveform_advanced.xml"/>
+
+</Template>

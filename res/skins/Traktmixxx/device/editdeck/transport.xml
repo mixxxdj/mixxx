@@ -1,0 +1,82 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    TRANSPORT BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>TransportRow</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,f</SizePolicy>
+        <MinimumSize>-1,55</MinimumSize>
+        <MaximumSize>-1,55</MaximumSize>
+        <Children>
+
+            <WidgetGroup><!-- margin-top -->
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,10</MinimumSize>
+                <MaximumSize>-1,10</MaximumSize>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,45</MinimumSize>
+                <MaximumSize>-1,45</MaximumSize>
+                <Children>
+
+                    <WidgetGroup><!-- margin-left -->
+                        <SizePolicy>f,f</SizePolicy>
+                        <MinimumSize>10,45</MinimumSize>
+                        <MaximumSize>10,45</MaximumSize>
+                    </WidgetGroup>
+
+                    <SizeAwareStack>
+                        <Children>
+                           <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <MinimumSize>0,45</MinimumSize>
+                                <MaximumSize>485,45</MaximumSize>
+                                <Children>
+
+                                    <Template src="skin:device/editdeck/transport_controls_sm.xml"/>
+
+                                </Children>
+                           </WidgetGroup>
+                           <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <MinimumSize>486,45</MinimumSize>
+                                <MaximumSize>600,45</MaximumSize>
+                                <Children>
+
+                                    <Template src="skin:device/editdeck/transport_controls_md.xml"/>
+
+                                </Children>
+                           </WidgetGroup>
+                           <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <MinimumSize>601,45</MinimumSize>
+                                <MaximumSize>-1,45</MaximumSize>
+                                <Children>
+
+                                    <Template src="skin:device/editdeck/transport_controls_lg.xml"/>
+
+                                </Children>
+                           </WidgetGroup>
+                        </Children>
+                    </SizeAwareStack>
+
+                </Children>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    TRANSPORT END
+    **************************************************************************************
+    -->
+
+</Template>

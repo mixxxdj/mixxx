@@ -1,0 +1,76 @@
+<!DOCTYPE template>
+<Template>
+
+        <!--
+        **************************************************************************************
+        COVER ART DEVICE BEGIN
+        **************************************************************************************
+        -->
+        <WidgetGroup>
+            <Layout>vertical</Layout>
+            <MinimumSize>120,120</MinimumSize>
+            <MaximumSize>-1,220</MaximumSize>
+            <Children>
+
+                <WidgetGroup>
+                    <Layout>stacked</Layout>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Children>
+
+                        <!-- Hack for BUG https://github.com/22degrees/RoundCorners/issues/4 -->
+                        <Template src="skin:shared/confighack.xml"/>
+
+                        <Template src="skin:device/coverart/config.xml"/>
+
+                        <WidgetGroup>
+                            <Layout>vertical</Layout>
+                            <Children>
+
+                                <Template src="skin:device/coverart/border_top.xml"/>
+
+                                    <WidgetGroup>
+                                        <ObjectName>Rectangle</ObjectName>
+                                        <Layout>horizontal</Layout>
+
+                                        <Children>
+
+                                            <WidgetGroup>
+                                                <MinimumSize>10,-1</MinimumSize>
+                                                <MaximumSize>10,-1</MaximumSize>
+                                            </WidgetGroup>
+
+                                            <CoverArt>
+                                                <ObjectName>Rectangle</ObjectName>
+                                                <TooltipId>coverart</TooltipId>
+                                                <SizePolicy>me,me</SizePolicy>
+                                            </CoverArt>
+
+                                            <WidgetGroup>
+                                                <MinimumSize>10,-1</MinimumSize>
+                                                <MaximumSize>10,-1</MaximumSize>
+                                            </WidgetGroup>
+
+                                        </Children>
+                                    </WidgetGroup>
+
+                                <Template src="skin:device/coverart/border_bottom.xml"/>
+
+                            </Children>
+                        </WidgetGroup>
+
+                    </Children>
+                </WidgetGroup>
+
+            </Children>
+            <Connection>
+                <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+                <BindProperty>visible</BindProperty>
+            </Connection>
+        </WidgetGroup>
+        <!--
+        **************************************************************************************
+        COVER ART DEVICE END
+        **************************************************************************************
+        -->
+
+</Template>

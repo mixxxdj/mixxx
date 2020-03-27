@@ -1,0 +1,67 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    MENUBAR DEVICE EGIN
+    **************************************************************************************
+    -->
+     <WidgetGroup>
+        <ObjectName>MenuBar</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+
+            <Template src="skin:device/menubar/border_top.xml"/>
+
+            <SizeAwareStack>
+                <Children>
+                   <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <MinimumSize>0,45</MinimumSize>
+                        <MaximumSize>720,45</MaximumSize>
+                        <Children>
+
+                            <Template src="skin:device/menubar/menubar_sm.xml"/>
+
+                        </Children>
+                   </WidgetGroup>
+                   <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <MinimumSize>721,45</MinimumSize>
+                        <MaximumSize>1000,45</MaximumSize>
+                        <Children>
+
+                            <Template src="skin:device/menubar/menubar_md.xml"/>
+
+                        </Children>
+                   </WidgetGroup>
+                   <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <MinimumSize>1001,45</MinimumSize>
+                        <MaximumSize>-1,45</MaximumSize>
+                        <Children>
+
+                            <Template src="skin:device/menubar/menubar_lg.xml"/>
+
+                        </Children>
+                   </WidgetGroup>
+                </Children>
+            </SizeAwareStack>
+
+            <Template src="skin:device/menubar/border_bottom.xml"/>
+
+        </Children>
+    </WidgetGroup>
+
+    <WidgetGroup><!-- margin-right -->
+        <MinimumSize>4,-1</MinimumSize>
+        <MaximumSize>4,-1</MaximumSize>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    MENUBAR DEVICE END
+    **************************************************************************************
+    -->
+
+</Template>

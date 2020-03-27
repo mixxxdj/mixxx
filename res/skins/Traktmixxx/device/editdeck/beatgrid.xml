@@ -1,0 +1,412 @@
+<!DOCTYPE template>
+<Template>
+
+    <SetVariable name="EqualizerNumber">1</SetVariable>
+    <SetVariable name="EffectNumber">1</SetVariable>
+    <SetVariable name="EqualizerRackGroup">[EqualizerRack<Variable name="EqualizerNumber"/>]</SetVariable>
+    <SetVariable name="EqualizerEffectUnitGroup">[EqualizerRack<Variable name="EqualizerNumber"/>_<Variable name="Group"/>]</SetVariable>
+    <SetVariable name="EqualizerEffectGroup">[EqualizerRack<Variable name="EqualizerNumber"/>_<Variable name="Group"/>_Effect<Variable name="EffectNumber"/>]</SetVariable>
+
+    <!--
+    **************************************************************************************
+    BEATGRID BEGIN
+    **************************************************************************************
+    -->
+     <WidgetGroup>
+        <ObjectName>BeatGridRow</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,f</SizePolicy>
+        <MinimumSize>-1,55</MinimumSize>
+        <MaximumSize>-1,55</MaximumSize>
+        <Children>
+
+            <WidgetGroup><!-- margin-top -->
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,10</MinimumSize>
+                <MaximumSize>-1,10</MaximumSize>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,45</MinimumSize>
+                <MaximumSize>-1,45</MaximumSize>
+                <Children>
+
+                    <WidgetGroup><!-- margin-left -->
+                        <SizePolicy>f,f</SizePolicy>
+                        <MinimumSize>10,45</MinimumSize>
+                        <MaximumSize>10,45</MaximumSize>
+                    </WidgetGroup>
+
+                    <WidgetGroup>
+                        <ObjectName>Rectangle</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,f</SizePolicy>
+                        <MinimumSize>-1,45</MinimumSize>
+                        <MaximumSize>-1,45</MaximumSize>
+                        <Children>
+
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>me,f</SizePolicy>
+                                <MinimumSize>-1,45</MinimumSize>
+                                <MaximumSize>-1,45</MaximumSize>
+                                <Children>
+
+                                    <PushButton>
+                                        <ObjectName>Btn-blr</ObjectName>
+                                        <Size>20me,45f</Size>
+                                        <NumberStates>1</NumberStates>
+                                        <State>
+                                            <Number>0</Number>
+                                            <Text>&lt;&lt; ||||</Text>
+                                        </State>
+                                        <Connection>
+                                            <ConfigKey><Variable name="Group"/>,beats_translate_earlier</ConfigKey>
+                                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                            <ButtonState>LeftButton</ButtonState>
+                                        </Connection>
+                                    </PushButton>
+
+                                    <PushButton>
+                                        <ObjectName>Btn-brr</ObjectName>
+                                        <Size>20me,45f</Size>
+                                        <NumberStates>1</NumberStates>
+                                        <State>
+                                            <Number>0</Number>
+                                            <Text>|||| &gt;&gt;</Text>
+                                        </State>
+                                        <Connection>
+                                            <ConfigKey><Variable name="Group"/>,beats_translate_later</ConfigKey>
+                                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                            <ButtonState>LeftButton</ButtonState>
+                                        </Connection>
+                                    </PushButton>
+
+                                </Children>
+                            </WidgetGroup>
+
+                            <WidgetGroup><!-- spacer -->
+                                <MinimumSize>10,-1</MinimumSize>
+                                <MaximumSize>10,-1</MaximumSize>
+                            </WidgetGroup>
+
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>me,f</SizePolicy>
+                                <MinimumSize>-1,45</MinimumSize>
+                                <MaximumSize>-1,45</MaximumSize>
+                                <Children>
+
+                                    <PushButton>
+                                        <ObjectName>Btn-blr</ObjectName>
+                                        <Size>20me,45f</Size>
+                                        <NumberStates>1</NumberStates>
+                                        <State>
+                                            <Number>0</Number>
+                                            <Text>| | | ||||</Text>
+                                        </State>
+                                        <Connection>
+                                            <ConfigKey><Variable name="Group"/>,beats_adjust_faster</ConfigKey>
+                                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                            <ButtonState>LeftButton</ButtonState>
+                                        </Connection>
+                                    </PushButton>
+
+                                    <PushButton>
+                                        <ObjectName>Btn-brr</ObjectName>
+                                        <Size>20me,45f</Size>
+                                        <NumberStates>1</NumberStates>
+                                        <State>
+                                            <Number>0</Number>
+                                            <Text>|||| | | |</Text>
+                                        </State>
+                                        <Connection>
+                                            <ConfigKey><Variable name="Group"/>,beats_adjust_slower</ConfigKey>
+                                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                            <ButtonState>LeftButton</ButtonState>
+                                        </Connection>
+                                    </PushButton>
+
+                                </Children>
+                            </WidgetGroup>
+
+                            <WidgetGroup><!-- spacer -->
+                                <MinimumSize>10,-1</MinimumSize>
+                                <MaximumSize>10,-1</MaximumSize>
+                            </WidgetGroup>
+
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>me,f</SizePolicy>
+                                <MinimumSize>-1,45</MinimumSize>
+                                <MaximumSize>-1,45</MaximumSize>
+                                <Children>
+
+                                    <PushButton>
+                                        <ObjectName>Btn-blr</ObjectName>
+                                        <Size>20me,45f</Size>
+                                        <NumberStates>1</NumberStates>
+                                        <State>
+                                            <Number>0</Number>
+                                            <Text>|||| POS</Text>
+                                        </State>
+                                        <Connection>
+                                            <ConfigKey><Variable name="Group"/>,beats_translate_curpos</ConfigKey>
+                                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                            <ButtonState>LeftButton</ButtonState>
+                                        </Connection>
+                                    </PushButton>
+
+                                    <PushButton>
+                                        <ObjectName>Btn-brr</ObjectName>
+                                        <Size>20me,45f</Size>
+                                        <NumberStates>1</NumberStates>
+                                        <State>
+                                            <Number>0</Number>
+                                            <Text>|||| DECK</Text>
+                                        </State>
+                                        <Connection>
+                                            <ConfigKey><Variable name="Group"/>,beats_translate_match_alignment</ConfigKey>
+                                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                            <ButtonState>LeftButton</ButtonState>
+                                        </Connection>
+                                    </PushButton>
+
+                                </Children>
+                            </WidgetGroup>
+
+                            <WidgetGroup><!-- spacer -->
+                                <MinimumSize>10,-1</MinimumSize>
+                                <MaximumSize>10,-1</MaximumSize>
+                            </WidgetGroup>
+
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>me,f</SizePolicy>
+                                <MinimumSize>-1,45</MinimumSize>
+                                <MaximumSize>-1,45</MaximumSize>
+                                <Children>
+
+                                    <PushButton>
+                                        <ObjectName>Btn-br</ObjectName>
+                                        <Size>40me,45f</Size>
+                                        <NumberStates>1</NumberStates>
+                                        <State>
+                                            <Number>0</Number>
+                                            <Text>TAP</Text>
+                                        </State>
+                                        <Connection>
+                                            <ConfigKey><Variable name="Group"/>,bpm_tap</ConfigKey>
+                                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                        </Connection>
+                                    </PushButton>
+
+                                </Children>
+                            </WidgetGroup>
+
+                            <WidgetGroup><!-- spacer -->
+                                <MinimumSize>10,-1</MinimumSize>
+                                <MaximumSize>10,-1</MaximumSize>
+                            </WidgetGroup>
+
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>me,f</SizePolicy>
+                                <MinimumSize>-1,45</MinimumSize>
+                                <MaximumSize>-1,45</MaximumSize>
+                                <Children>
+
+                                    <PushButton>
+                                        <ObjectName>Btn-br</ObjectName>
+                                        <Size>40me,45f</Size>
+                                        <NumberStates>2</NumberStates>
+                                        <State>
+                                            <Number>0</Number>
+                                            <Text>|&gt;|</Text>
+                                        </State>
+                                        <State>
+                                            <Number>1</Number>
+                                            <Text>|&gt;|</Text>
+                                        </State>
+                                        <Connection>
+                                            <ConfigKey><Variable name="Group"/>,quantize</ConfigKey>
+                                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                        </Connection>
+                                    </PushButton>
+
+                                </Children>
+                            </WidgetGroup>
+
+                            <WidgetGroup><!-- spacer -->
+                                <MinimumSize>10,-1</MinimumSize>
+                                <MaximumSize>10,-1</MaximumSize>
+                            </WidgetGroup>
+
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>me,f</SizePolicy>
+                                <MinimumSize>-1,45</MinimumSize>
+                                <MaximumSize>-1,45</MaximumSize>
+                                <Children>
+
+                                    <PushButton>
+                                        <ObjectName>Btn-blr</ObjectName>
+                                        <Size>20me,45f</Size>
+                                        <NumberStates>1</NumberStates>
+                                        <State>
+                                            <Number>0</Number>
+                                            <Text>-</Text>
+                                        </State>
+                                        <Connection>
+                                            <ConfigKey><Variable name="Group"/>,waveform_zoom_up</ConfigKey>
+                                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                            <ButtonState>LeftButton</ButtonState>
+                                        </Connection>
+                                    </PushButton>
+
+                                    <PushButton>
+                                        <ObjectName>Btn-nbr</ObjectName>
+                                        <Size>20me,45f</Size>
+                                        <NumberStates>1</NumberStates>
+                                        <State>
+                                            <Number>0</Number>
+                                            <Text>ZOOM</Text>
+                                        </State>
+                                        <Connection>
+                                            <ConfigKey><Variable name="Group"/>,waveform_zoom_set_default</ConfigKey>
+                                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                            <ButtonState>LeftButton</ButtonState>
+                                        </Connection>
+                                    </PushButton>
+
+                                    <PushButton>
+                                        <ObjectName>Btn-brr</ObjectName>
+                                        <Size>20me,45f</Size>
+                                        <NumberStates>1</NumberStates>
+                                        <State>
+                                            <Number>0</Number>
+                                            <Text>+</Text>
+                                        </State>
+                                        <Connection>
+                                            <ConfigKey><Variable name="Group"/>,waveform_zoom_down</ConfigKey>
+                                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                            <ButtonState>LeftButton</ButtonState>
+                                        </Connection>
+                                    </PushButton>
+
+                                </Children>
+                            </WidgetGroup>
+
+                            <WidgetGroup><!-- spacer -->
+                                <MinimumSize>10,-1</MinimumSize>
+                                <MaximumSize>10,-1</MaximumSize>
+                            </WidgetGroup>
+
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>me,f</SizePolicy>
+                                <MinimumSize>-1,45</MinimumSize>
+                                <MaximumSize>-1,45</MaximumSize>
+                                <Children>
+
+                                    <EffectPushButton>
+                                        <TooltipId>filterHighKill</TooltipId>
+                                        <ObjectName>Btn-blr</ObjectName>
+                                        <Size>15me,45f</Size>
+                                        <EffectRackGroup><Variable name="EqualizerRackGroup"/></EffectRackGroup>
+                                        <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>
+                                        <Effect><Variable name="EffectNumber"/></Effect>
+                                        <EffectButtonParameter>3</EffectButtonParameter>
+                                        <NumberStates>1</NumberStates>
+                                        <State>
+                                            <Number>0</Number>
+                                            <Text>HI</Text>
+                                        </State>
+                                        <State>
+                                            <Number>1</Number>
+                                            <Text>HI</Text>
+                                        </State>
+                                        <Connection>
+                                            <ConfigKey><Variable name="EqualizerEffectGroup"/>,button_parameter3</ConfigKey>
+                                            <ButtonState>LeftButton</ButtonState>
+                                            <Transform>
+                                                <Invert/>
+                                                <Add>1</Add>
+                                            </Transform>
+                                        </Connection>
+                                    </EffectPushButton>
+
+                                    <EffectPushButton>
+                                        <TooltipId>filterMidKill</TooltipId>
+                                        <ObjectName>Btn-nbr</ObjectName>
+                                        <Size>15me,45f</Size>
+                                        <EffectRackGroup><Variable name="EqualizerRackGroup"/></EffectRackGroup>
+                                        <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>
+                                        <Effect><Variable name="EffectNumber"/></Effect>
+                                        <EffectButtonParameter>2</EffectButtonParameter>
+                                        <NumberStates>2</NumberStates>
+                                        <State>
+                                            <Number>0</Number>
+                                            <Text>MID</Text>
+                                        </State>
+                                        <State>
+                                            <Number>1</Number>
+                                            <Text>MID</Text>
+                                        </State>
+                                        <Connection>
+                                            <ConfigKey><Variable name="EqualizerEffectGroup"/>,button_parameter2</ConfigKey>
+                                            <ButtonState>LeftButton</ButtonState>
+                                            <Transform>
+                                                <Invert/>
+                                                <Add>1</Add>
+                                            </Transform>
+                                        </Connection>
+                                    </EffectPushButton>
+
+                                    <EffectPushButton>
+                                        <TooltipId>filterLowKill</TooltipId>
+                                        <ObjectName>Btn-brr</ObjectName>
+                                        <Size>15me,45f</Size>
+                                        <EffectRackGroup><Variable name="EqualizerRackGroup"/></EffectRackGroup>
+                                        <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>
+                                        <Effect><Variable name="EffectNumber"/></Effect>
+                                        <EffectButtonParameter>1</EffectButtonParameter>
+                                        <NumberStates>1</NumberStates>
+                                        <State>
+                                            <Number>0</Number>
+                                            <Text>LOW</Text>
+                                        </State>
+                                        <State>
+                                            <Number>1</Number>
+                                            <Text>LOW</Text>
+                                        </State>
+                                        <Connection>
+                                            <ConfigKey><Variable name="EqualizerEffectGroup"/>,button_parameter1</ConfigKey>
+                                            <ButtonState>LeftButton</ButtonState>
+                                            <Transform>
+                                                <Invert/>
+                                                <Add>1</Add>
+                                            </Transform>
+                                        </Connection>
+                                    </EffectPushButton>
+
+                                </Children>
+                            </WidgetGroup>
+
+                        </Children>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    BEATGRID END
+    **************************************************************************************
+    -->
+
+</Template>

@@ -1,0 +1,259 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    TRACKINFO BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>i,max</SizePolicy>
+        <Size>-1,36</Size>
+        <Children>
+
+            <WidgetGroup><!-- margin-left -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Size>30f,36f</Size>
+                <Children>
+
+                    <Label>
+                        <Size>30f,23f</Size>
+                        <ObjectName>DeckLabel</ObjectName>
+                        <Alignment>center</Alignment>
+                        <Text><Variable name="Number"/></Text>
+                    </Label>
+
+                    <WidgetGroup>
+                        <Size>30f,13f</Size>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup><!-- spacer -->
+                <Layout>horizontal</Layout>
+                <Size>10f,36f</Size>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Size>40f,36f</Size>
+                <Children>
+
+                    <PushButton>
+                        <ObjectName>Btn-br</ObjectName>
+                        <Size>40f,23</Size>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                            <Number>0</Number>
+                            <Text>EDIT</Text>
+                        </State>
+                        <State>
+                            <Number>1</Number>
+                            <Text>EDIT</Text>
+                        </State>
+                        <Connection>
+                            <ConfigKey><Variable name="Widget"/>,show_editmode</ConfigKey>
+                        </Connection>
+                    </PushButton>
+
+                    <WidgetGroup>
+                        <Size>80f,13f</Size>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup><!-- spacer -->
+                <Layout>horizontal</Layout>
+                <Size>10f,36f</Size>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,max</SizePolicy>
+                <MinimumSize>-1,36</MinimumSize>
+                <MaximumSize>-1,36</MaximumSize>
+                <Children>
+
+                    <TrackProperty>
+                        <ObjectName>Artist</ObjectName>
+                        <TooltipId></TooltipId>
+                        <!-- CSS alignments not respected see bug lp:605530 , lets call <Alignment> -->
+                        <Alignment>center</Alignment>
+                        <Property>artist</Property>
+                        <Channel><Variable name="Number"/></Channel>
+                    </TrackProperty>
+
+                    <TrackProperty>
+                        <ObjectName>Title</ObjectName>
+                        <TooltipId></TooltipId>
+                        <!-- CSS alignments not respected see bug lp:605530 , lets call <Alignment> -->
+                        <Alignment>center</Alignment>
+                        <Property>title</Property>
+                        <Channel><Variable name="Number"/></Channel>
+                    </TrackProperty>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup><!-- spacer -->
+                <Layout>horizontal</Layout>
+                <Size>10f,36f</Size>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>80,36</MinimumSize>
+                <MaximumSize>110,36</MaximumSize>
+                <Children>
+
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,max</SizePolicy>
+                        <Children>
+
+                            <NumberBpm>
+                                <ObjectName>VisualBpm</ObjectName>
+                                <TooltipId>visual_bpm</TooltipId>
+                                <Channel><Variable name="Number"/></Channel>
+                                <Size>me,me</Size>
+                                <Style>QLabel { text-align: left; padding-left: 0; }</Style>
+                                <!-- CSS alignments not respected see bug lp:605530 , lets call <Alignment> -->
+                                <Alignment>right</Alignment>
+                                <!-- <NumberOfDigits>6</NumberOfDigits> -->
+                                <Connection>
+                                    <ConfigKey><Variable name="Group"/>,bpm</ConfigKey>
+                                </Connection>
+                            </NumberBpm>
+
+                        </Children>
+                        <Connection>
+                            <ConfigKey persist="true"><Variable name="Widget"/>,show_bpm</ConfigKey>
+                            <BindProperty>visible</BindProperty>
+                        </Connection>
+                    </WidgetGroup>
+
+                    <WidgetGroup><!-- spacer -->
+                        <SizePolicy>me,me</SizePolicy>
+                    </WidgetGroup>
+
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,max</SizePolicy>
+                        <Children>
+
+                            <Key>
+                                <ObjectName>VisualKey</ObjectName>
+                                <TooltipId>visual_key</TooltipId>
+                                <Size>me,18</Size>
+                                <Style>QLabel { text-align: right; padding-left: 0; }</Style>
+                                <!-- CSS alignments not respected see bug lp:605530 , lets call <Alignment> -->
+                                <Alignment>right</Alignment>
+                                <Connection>
+                                    <ConfigKey><Variable name="Group"/>,visual_key</ConfigKey>
+                                </Connection>
+                            </Key>
+
+                            <NumberRate>
+                                <ObjectName>RateDisplay</ObjectName>
+                                <TooltipId>rate_display</TooltipId>
+                                <Channel><Variable name="Number"/></Channel>
+                                <Size>me,18</Size>
+                                <!-- <NumberOfDigits>4</NumberOfDigits> -->
+                                <!-- CSS alignments not respected see bug lp:605530 , lets call <Alignment> -->
+                                <Alignment>right</Alignment>
+                            </NumberRate>
+
+                        </Children>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup><!-- margin-left -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+
+    <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Size>-1,19f</Size>
+        <Children>
+
+            <WidgetGroup><!-- margin-left -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+            <NumberPos>
+                <ObjectName>Time</ObjectName>
+                <TooltipId>track_time</TooltipId>
+                <Size>me,me</Size>
+                <Channel><Variable name="Number"/></Channel>
+                <NumberOfDigits>6</NumberOfDigits>
+                <Connection>
+                    <ConfigKey><Variable name="Group"/>,playposition</ConfigKey>
+                </Connection>
+            </NumberPos>
+
+<!--             <PushButton>
+                <ObjectName>SyncMode</ObjectName>
+                <Size>me,me</Size>
+                <NumberStates>3</NumberStates>
+                <State>
+                    <Number>0</Number>
+                    <Text></Text>
+                </State>
+                <State>
+                    <Number>1</Number>
+                    <Text>SLAVE</Text>
+                </State>
+                <State>
+                    <Number>2</Number>
+                    <Text>MASTER</Text>
+                </State>
+                <Connection>
+                    <ConfigKey><Variable name="Group"/>,sync_mode</ConfigKey>
+                </Connection>
+            </PushButton> -->
+
+            <StarRating>
+                <ObjectName>SyncMode</ObjectName>
+                <Size>me,me</Size>
+            </StarRating>
+
+            <TrackProperty>
+                <ObjectName>Duration</ObjectName>
+                <TooltipId></TooltipId>
+                <!-- CSS alignments not respected see bug lp:605530 , lets call <Alignment> -->
+                <Alignment>right</Alignment>
+                <Size>me,me</Size>
+                <Property>durationFormatted</Property>
+                <Channel><Variable name="Number"/></Channel>
+            </TrackProperty>
+
+            <WidgetGroup><!-- margin-left -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    TRACKINFO END
+    **************************************************************************************
+    -->
+
+</Template>

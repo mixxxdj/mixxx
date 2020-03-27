@@ -1,0 +1,7 @@
+<!DOCTYPE template>
+<Template>
+
+    <Template src="skin:shared/overview.xml"/>
+    <Template src="skin:shared/overview_advanced.xml"/>
+
+</Template>

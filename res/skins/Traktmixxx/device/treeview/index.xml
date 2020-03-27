@@ -1,0 +1,52 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    ************************************************************************
+    TREEVIEW DEVICE BEGIN
+    ************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>stacked</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+
+            <!-- Hack for BUG https://github.com/22degrees/RoundCorners/issues/4 -->
+            <Template src="skin:shared/confighack.xml"/>
+
+            <Template src="skin:device/treeview/config.xml"/>
+
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+
+                    <WidgetGroup>
+                        <ObjectName>BorderTop</ObjectName>
+                        <MinimumSize>-1,22</MinimumSize>
+                        <MaximumSize>-1,22</MaximumSize>
+                    </WidgetGroup>
+
+                    <WidgetGroup>
+                        <ObjectName>Sidebar</ObjectName>
+                        <Layout>vertical</Layout>
+                        <Children>
+
+                            <LibrarySidebar></LibrarySidebar>
+
+                        </Children>
+                    </WidgetGroup>
+
+                    <Template src="skin:device/treeview/border_bottom.xml"/>
+
+                </Children>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    ************************************************************************
+    TREEVIEW DEVICE END
+    ************************************************************************
+    -->
+
+</Template>

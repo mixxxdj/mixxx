@@ -1,0 +1,278 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    MIXER DEVICE BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>stacked</Layout>
+        <SizePolicy>max,p</SizePolicy>
+        <Children>
+
+            <!-- Hack for BUG https://github.com/22degrees/RoundCorners/issues/4 -->
+            <Template src="skin:shared/confighack.xml"/>
+
+            <Template src="skin:device/mixer/config.xml"/>
+
+            <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>max,p</SizePolicy>
+                <Children>
+
+                    <WidgetGroup><!-- margin-left -->
+                        <MinimumSize>2,-1</MinimumSize>
+                        <MaximumSize>2,-1</MaximumSize>
+                    </WidgetGroup>
+
+                    <WidgetGroup>
+                        <ObjectName>Mixer</ObjectName>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>max,p</SizePolicy>
+                        <Children>
+
+                            <Template src="skin:device/mixer/border_top.xml"/>
+
+                            <!--
+                            **************************************************************************************
+                            MIXER UPPER ELEMENTS BEGIN
+                            **************************************************************************************
+                            -->
+                            <WidgetGroup>
+                                <ObjectName>Rectangle</ObjectName>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>me,min</SizePolicy>
+                                <Children>
+
+                                    <!--
+                                    **************************************************************************************
+                                    GAIN, KEY BEGIN
+                                    **************************************************************************************
+                                    -->
+                                    <Template src="skin:device/mixer/effect_column.xml">
+                                        <SetVariable name="Number"><Variable name="Number1"/></SetVariable>
+                                        <SetVariable name="Group"><Variable name="Group1"/></SetVariable>
+                                        <SetVariable name="Widget"><Variable name="Widget"/></SetVariable>
+                                    </Template>
+                                    <!--
+                                    **************************************************************************************
+                                    FILTER, KEY, PFL END
+                                    **************************************************************************************
+                                    -->
+
+                                    <!--
+                                    **************************************************************************************
+                                    GAIN, EQ HIGH MID LOW BEGIN
+                                    **************************************************************************************
+                                    -->
+                                    <Template src="skin:device/mixer/eq_column.xml">
+                                        <SetVariable name="Number"><Variable name="Number1"/></SetVariable>
+                                        <SetVariable name="Group"><Variable name="Group1"/></SetVariable>
+                                        <SetVariable name="Widget"><Variable name="Widget"/></SetVariable>
+                                    </Template>
+                                    <!--
+                                    **************************************************************************************
+                                    GAIN, EQ HIGH MID LOW END
+                                    **************************************************************************************
+                                    -->
+
+                                    <!--
+                                    **************************************************************************************
+                                    GAIN, EQ HIGH MID LOW BEGIN
+                                    **************************************************************************************
+                                    -->
+                                    <Template src="skin:device/mixer/eq_column.xml">
+                                        <SetVariable name="Number"><Variable name="Number2"/></SetVariable>
+                                        <SetVariable name="Group"><Variable name="Group2"/></SetVariable>
+                                        <SetVariable name="Widget"><Variable name="Widget"/></SetVariable>
+                                    </Template>
+                                    <!--
+                                    **************************************************************************************
+                                    GAIN, EQ HIGH MID LOW END
+                                    **************************************************************************************
+                                    -->
+
+                                    <!--
+                                    **************************************************************************************
+                                    FILTER, KEY, PFL BEGIN
+                                    **************************************************************************************
+                                    -->
+                                    <Template src="skin:device/mixer/effect_column.xml">
+                                        <SetVariable name="Number"><Variable name="Number2"/></SetVariable>
+                                        <SetVariable name="Group"><Variable name="Group2"/></SetVariable>
+                                        <SetVariable name="Widget"><Variable name="Widget"/></SetVariable>
+                                    </Template>
+                                    <!--
+                                    **************************************************************************************
+                                    FILTER, KEY, PFL END
+                                    **************************************************************************************
+                                    -->
+
+                                </Children>
+                            </WidgetGroup>
+                            <!--
+                            **************************************************************************************
+                            MIXER UPPER ELEMENTS END
+                            **************************************************************************************
+                            -->
+
+                            <!--
+                            **************************************************************************************
+                            MIXER LOWER ELEMENTS BEGIN
+                            **************************************************************************************
+                            -->
+                            <WidgetGroup>
+                                <ObjectName>Rectangle</ObjectName>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>me,me</SizePolicy>
+                                <Children>
+
+                                    <!--
+                                    **************************************************************************************
+                                    VOLUME CONTROL BEGIN
+                                    **************************************************************************************
+                                    -->
+                                    <WidgetGroup>
+                                        <Layout>vertical</Layout>
+                                        <SizePolicy>f,p</SizePolicy>
+                                        <MinimumSize>68,55</MinimumSize>
+                                        <MaximumSize>68,-1</MaximumSize>
+                                        <Children>
+
+                                            <Template src="skin:device/mixer/slider.xml">
+                                                <SetVariable name="Number"><Variable name="Number1"/></SetVariable>
+                                                <SetVariable name="Group"><Variable name="Group1"/></SetVariable>
+                                            </Template>
+
+                                        </Children>
+                                        <Connection>
+                                            <ConfigKey persist="true"><Variable name="Widget"/>,show_fader</ConfigKey>
+                                            <BindProperty>visible</BindProperty>
+                                        </Connection>
+                                    </WidgetGroup>
+                                    <!--
+                                    **************************************************************************************
+                                    VOLUME CONTROL END
+                                    **************************************************************************************
+                                    -->
+
+                                    <!--
+                                    **************************************************************************************
+                                    VOLUME CONTROL METER BEGIN
+                                    **************************************************************************************
+                                    -->
+                                    <WidgetGroup>
+                                        <Layout>horizontal</Layout>
+                                        <SizePolicy>f,me</SizePolicy>
+                                        <MinimumSize>68,55</MinimumSize>
+                                        <MaximumSize>68,-1</MaximumSize>
+                                        <Children>
+
+                                            <Template src="skin:device/mixer/vu.xml">
+                                                <SetVariable name="Group"><Variable name="Group1"/></SetVariable>
+                                            </Template>
+
+                                        </Children>
+                                        <Connection>
+                                            <ConfigKey persist="true"><Variable name="Widget"/>,show_vu</ConfigKey>
+                                            <BindProperty>visible</BindProperty>
+                                        </Connection>
+                                    </WidgetGroup>
+                                    <!--
+                                    **************************************************************************************
+                                    VOLUME CONTROL METER END
+                                    **************************************************************************************
+                                    -->
+
+                                    <!--
+                                    **************************************************************************************
+                                    VOLUME CONTROL METER BEGIN
+                                    **************************************************************************************
+                                    -->
+                                    <WidgetGroup>
+                                        <Layout>horizontal</Layout>
+                                        <SizePolicy>f,me</SizePolicy>
+                                        <MinimumSize>68,55</MinimumSize>
+                                        <MaximumSize>68,-1</MaximumSize>
+                                        <Children>
+
+                                            <Template src="skin:device/mixer/vu.xml">
+                                                <SetVariable name="Group"><Variable name="Group2"/></SetVariable>
+                                            </Template>
+
+                                        </Children>
+                                        <Connection>
+                                            <ConfigKey persist="true"><Variable name="Widget"/>,show_vu</ConfigKey>
+                                            <BindProperty>visible</BindProperty>
+                                        </Connection>
+                                    </WidgetGroup>
+                                    <!--
+                                    **************************************************************************************
+                                    VOLUME CONTROL METER END
+                                    **************************************************************************************
+                                    -->
+
+                                    <!--
+                                    **************************************************************************************
+                                    VOLUME CONTROL BEGIN
+                                    **************************************************************************************
+                                    -->
+                                    <WidgetGroup>
+                                        <Layout>vertical</Layout>
+                                        <SizePolicy>f,p</SizePolicy>
+                                        <MinimumSize>68,55</MinimumSize>
+                                        <MaximumSize>68,-1</MaximumSize>
+                                        <Children>
+
+                                            <Template src="skin:device/mixer/slider.xml">
+                                                <SetVariable name="Number"><Variable name="Number2"/></SetVariable>
+                                                <SetVariable name="Group"><Variable name="Group2"/></SetVariable>
+                                            </Template>
+
+                                        </Children>
+                                        <Connection>
+                                            <ConfigKey persist="true"><Variable name="Widget"/>,show_fader</ConfigKey>
+                                            <BindProperty>visible</BindProperty>
+                                        </Connection>
+                                    </WidgetGroup>
+                                    <!--
+                                    **************************************************************************************
+                                    VOLUME CONTROL END
+                                    **************************************************************************************
+                                    -->
+
+                                </Children>
+                            </WidgetGroup>
+                            <!--
+                            **************************************************************************************
+                            MIXER LOWER ELEMENTS END
+                            **************************************************************************************
+                            -->
+
+                            <Template src="skin:device/mixer/border_bottom.xml"/>
+
+                        </Children>
+                    </WidgetGroup>
+
+                    <WidgetGroup><!-- margin-right -->
+                        <MinimumSize>2,-1</MinimumSize>
+                        <MaximumSize>2,-1</MaximumSize>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetGroup>
+
+        </Children>
+        <Connection>
+            <ConfigKey persist="true"><Variable name="Widget"/>,show_mixer</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    MIXER DEVICE END
+    **************************************************************************************
+    -->
+
+</Template>

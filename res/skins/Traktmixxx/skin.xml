@@ -1,0 +1,115 @@
+<!DOCTYPE skin>
+<skin>
+
+    <manifest>
+        <title>Traktmixxx</title>
+        <author>Inti Alonso (over the amazing work of 22degrees)</author>
+        <version>1.0.0</version>
+        <description>A 4-deck full-featured skin</description>
+        <language>en</language>
+        <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
+        <attributes>
+
+            <!-- Main -->
+            <attribute persist="true" config_key="[Main],show_main">1</attribute>
+            <!-- Internal Clock -->
+            <attribute persist="true" config_key="[InternalClock],show_internalclock">1</attribute>
+            <!-- Headphone -->
+            <attribute persist="true" config_key="[Headphone],show_headphone">0</attribute>
+            <!-- Clock-->
+            <attribute persist="true" config_key="[Clock],show_clock">0</attribute>
+            <!-- Stacked Waveforms -->
+            <attribute persist="true" config_key="[Visuals],show_row">0</attribute>
+            <!-- Deck 1-4 -->
+            <attribute persist="true" config_key="[Master],num_decks">4</attribute>
+            <!-- Deck 1 -->
+            <attribute persist="true" config_key="[DeckRow1],show_row">1</attribute>
+            <attribute persist="true" config_key="[Deck1],show_spinny">1</attribute>
+            <attribute persist="true" config_key="[Deck1],show_pitch">1</attribute>
+            <attribute persist="true" config_key="[Deck1],show_bpm">1</attribute>
+            <attribute persist="true" config_key="[Deck1],show_transport">1</attribute>
+            <attribute persist="true" config_key="[Deck1],show_hotcue">1</attribute>
+            <attribute persist="true" config_key="[Deck1],show_advanced_markers">1</attribute>
+            <attribute persist="true" config_key="[Deck1],show_loop">1</attribute>
+            <!-- Mixer 1 -->
+            <attribute persist="true" config_key="[Mixer1],show_mixer">1</attribute>
+            <attribute persist="true" config_key="[Mixer1],show_filter">1</attribute>
+            <attribute persist="true" config_key="[Mixer1],show_eq">1</attribute>
+            <attribute persist="true" config_key="[Mixer1],show_fader">1</attribute>
+            <attribute persist="true" config_key="[Mixer1],show_vu">1</attribute>
+            <!-- Deck 2 -->
+            <attribute persist="true" config_key="[Deck2],show_spinny">1</attribute>
+            <attribute persist="true" config_key="[Deck2],show_pitch">1</attribute>
+            <attribute persist="true" config_key="[Deck2],show_bpm">1</attribute>
+            <attribute persist="true" config_key="[Deck2],show_transport">1</attribute>
+            <attribute persist="true" config_key="[Deck2],show_hotcue">1</attribute>
+            <attribute persist="true" config_key="[Deck2],show_advanced_markers">1</attribute>
+            <attribute persist="true" config_key="[Deck2],show_loop">1</attribute>
+            <!-- Deck 3 -->
+            <attribute persist="true" config_key="[DeckRow2],show_row">0</attribute>
+            <attribute persist="true" config_key="[Deck3],show_spinny">0</attribute>
+            <attribute persist="true" config_key="[Deck3],show_pitch">0</attribute>
+            <attribute persist="true" config_key="[Deck3],show_bpm">1</attribute>
+            <attribute persist="true" config_key="[Deck3],show_transport">1</attribute>
+            <attribute persist="true" config_key="[Deck3],show_hotcue">0</attribute>
+            <attribute persist="true" config_key="[Deck3],show_advanced_markers">1</attribute>
+            <attribute persist="true" config_key="[Deck3],show_loop">0</attribute>
+            <!-- Mixer 2 -->
+            <attribute persist="true" config_key="[Mixer2],show_mixer">1</attribute>
+            <attribute persist="true" config_key="[Mixer2],show_filter">1</attribute>
+            <attribute persist="true" config_key="[Mixer2],show_eq">1</attribute>
+            <attribute persist="true" config_key="[Mixer2],show_fader">1</attribute>
+            <attribute persist="true" config_key="[Mixer2],show_vu">1</attribute>
+            <!-- Deck 4 -->
+            <attribute persist="true" config_key="[Deck4],show_spinny">0</attribute>
+            <attribute persist="true" config_key="[Deck4],show_pitch">0</attribute>
+            <attribute persist="true" config_key="[Deck4],show_bpm">1</attribute>
+            <attribute persist="true" config_key="[Deck4],show_transport">1</attribute>
+            <attribute persist="true" config_key="[Deck4],show_hotcue">0</attribute>
+            <attribute persist="true" config_key="[Deck4],show_advanced_markers">1</attribute>
+            <attribute persist="true" config_key="[Deck4],show_loop">0</attribute>
+            <!-- VinylControl/Crossfader -->
+            <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
+            <!-- Microphone/Aux-->
+            <attribute persist="true" config_key="[Master],num_microphones">2</attribute>
+            <attribute persist="true" config_key="[Master],num_auxiliaries">2</attribute>
+            <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
+            <!-- Samplers -->
+            <attribute persist="true" config_key="[Master],num_samplers">4</attribute>
+            <attribute persist="true" config_key="[Samplers],show_samplers">1</attribute>
+            <attribute persist="true" config_key="[Samplers],show_vumeter">0</attribute>
+            <attribute persist="true" config_key="[Samplers],show_transport">1</attribute>
+            <attribute persist="true" config_key="[Samplers],show_advanced_markers">1</attribute>
+            <!-- Effects -->
+            <attribute persist="true" config_key="[Master],num_effectunits">4</attribute>
+            <attribute persist="true" config_key="[EffectRack1],show">0</attribute>
+            <attribute persist="true" config_key="[EffectUnit],show_controls">1</attribute>
+            <attribute persist="true" config_key="[EffectUnit],show_chain">0</attribute>
+            <!-- Library/Coverart -->
+            <attribute persist="true" config_key="[Master],show_maximized">0</attribute>
+            <attribute persist="true" config_key="[Library],show_coverart">0</attribute>
+            <!-- Previewdeck -->
+            <attribute persist="true" config_key="[Master],num_preview_decks">1</attribute>
+            <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
+
+        </attributes>
+    </manifest>
+
+    <ObjectName>Body</ObjectName>
+    <Style src="skin:style.qss"/>
+    <MinimumSize>1024,-1</MinimumSize>
+    <SizePolicy>me,me</SizePolicy>
+    <Layout>vertical</Layout>
+    <Children>
+
+        <SingletonDefinition>
+            <ObjectName>LibrarySingleton</ObjectName>
+            <Children>
+                <Template src="skin:unit/library/index.xml"/>
+            </Children>
+        </SingletonDefinition>
+
+        <Template src="skin:screen/index.xml"/>
+
+    </Children>
+</skin>

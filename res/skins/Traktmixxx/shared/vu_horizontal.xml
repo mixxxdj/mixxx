@@ -1,0 +1,301 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    AUXILIARY VU BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>HotCueRow</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,f</SizePolicy>
+        <MinimumSize>-1,55</MinimumSize>
+        <MaximumSize>-1,55</MaximumSize>
+        <Children>
+
+            <WidgetGroup><!-- margin top -->
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,10</MinimumSize>
+                <MaximumSize>-1,10</MaximumSize>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <ObjectName>Rectangle</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+
+                    <WidgetGroup><!-- margin-left -->
+                        <SizePolicy>f,f</SizePolicy>
+                        <MinimumSize>10,45</MinimumSize>
+                        <MaximumSize>10,45</MaximumSize>
+                    </WidgetGroup>
+
+                    <WidgetGroup>
+                        <ObjectName>ChannelVuBottom</ObjectName>
+                        <MinimumSize>3,45</MinimumSize>
+                        <MaximumSize>3,45</MaximumSize>
+                    </WidgetGroup>
+
+                    <SizeAwareStack>
+                        <Children>
+
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <MinimumSize>0,45</MinimumSize>
+                                <MaximumSize>68,45</MaximumSize>
+                                <Children>
+
+                                    <WidgetGroup>
+                                        <ObjectName>ChannelVu</ObjectName>
+                                        <Layout>vertical</Layout>
+                                        <!--<Size>68f,122f</Size>-->
+                                        <Size>me,45f</Size>
+                                        <Children>
+
+                                            <VuMeter>
+                                                <!-- <SizePolicy>min,max</SizePolicy> -->
+                                                <Size>me,22f</Size>
+                                                <TooltipId>channel_VuMeterL</TooltipId>
+                                                <PathVu>background/bg_4_vu_left_on.svg</PathVu>
+                                                <Horizontal>true</Horizontal>
+                                                <PeakHoldSize>4</PeakHoldSize>
+                                                <PeakHoldTime>500</PeakHoldTime>
+                                                <PeakFallTime>50</PeakFallTime>
+                                                <PeakFallStep>2</PeakFallStep>
+                                                <Connection>
+                                                    <ConfigKey><Variable name="Group"/>,VuMeterL</ConfigKey>
+                                                </Connection>
+                                            </VuMeter>
+
+                                            <VuMeter>
+                                                <!-- <SizePolicy>min,max</SizePolicy> -->
+                                                <Size>me,23f</Size>
+                                                <TooltipId>channel_VuMeterR</TooltipId>
+                                                <PathVu>background/bg_4_vu_right_on.svg</PathVu>
+                                                <Horizontal>true</Horizontal>
+                                                <PeakHoldSize>4</PeakHoldSize>
+                                                <PeakHoldTime>500</PeakHoldTime>
+                                                <PeakFallTime>50</PeakFallTime>
+                                                <PeakFallStep>2</PeakFallStep>
+                                                <Connection>
+                                                    <ConfigKey><Variable name="Group"/>,VuMeterR</ConfigKey>
+                                                </Connection>
+                                            </VuMeter>
+
+                                        </Children>
+                                    </WidgetGroup>
+
+                                    <WidgetGroup>
+                                        <ObjectName>ChannelPeakIndicator</ObjectName>
+                                        <Layout>vertical</Layout>
+                                        <Size>13,45</Size>
+                                        <Children>
+
+                                            <StatusLight>
+                                                <Size>13,22</Size>
+                                                <TooltipId>channel_PeakIndicatorL</TooltipId>
+                                                <PathStatusLight>background/bg_6_clipping_left_on.svg</PathStatusLight>
+                                                <PathBack>background/bg_6_clipping_left_off.svg</PathBack>
+                                                <Connection>
+                                                    <ConfigKey><Variable name="Group"/>,PeakIndicatorL</ConfigKey>
+                                                </Connection>
+                                            </StatusLight>
+
+                                            <StatusLight>
+                                                <Size>13,23</Size>
+                                                <TooltipId>channel_PeakIndicatorR</TooltipId>
+                                                <PathStatusLight>background/bg_6_clipping_right_on.svg</PathStatusLight>
+                                                <PathBack>background/bg_6_clipping_right_off.svg</PathBack>
+                                                <Connection>
+                                                    <ConfigKey><Variable name="Group"/>,PeakIndicatorR</ConfigKey>
+                                                </Connection>
+                                            </StatusLight>
+
+                                        </Children>
+                                    </WidgetGroup>
+
+                                </Children>
+                            </WidgetGroup>
+
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <MinimumSize>69,45</MinimumSize>
+                                <MaximumSize>137,45</MaximumSize>
+                                <Children>
+
+                                    <WidgetGroup>
+                                        <ObjectName>ChannelVu</ObjectName>
+                                        <Layout>vertical</Layout>
+                                        <!--<Size>68f,122f</Size>-->
+                                        <Size>me,45f</Size>
+                                        <Children>
+
+                                            <VuMeter>
+                                                <!-- <SizePolicy>min,max</SizePolicy> -->
+                                                <Size>me,22f</Size>
+                                                <TooltipId>channel_VuMeterL</TooltipId>
+                                                <PathVu>background/bg_4_vu_left_on.svg</PathVu>
+                                                <Horizontal>true</Horizontal>
+                                                <PeakHoldSize>4</PeakHoldSize>
+                                                <PeakHoldTime>500</PeakHoldTime>
+                                                <PeakFallTime>50</PeakFallTime>
+                                                <PeakFallStep>2</PeakFallStep>
+                                                <Connection>
+                                                    <ConfigKey><Variable name="Group"/>,VuMeterL</ConfigKey>
+                                                </Connection>
+                                            </VuMeter>
+
+                                            <VuMeter>
+                                                <!-- <SizePolicy>min,max</SizePolicy> -->
+                                                <Size>me,23f</Size>
+                                                <TooltipId>channel_VuMeterR</TooltipId>
+                                                <PathVu>background/bg_4_vu_right_on.svg</PathVu>
+                                                <Horizontal>true</Horizontal>
+                                                <PeakHoldSize>4</PeakHoldSize>
+                                                <PeakHoldTime>500</PeakHoldTime>
+                                                <PeakFallTime>50</PeakFallTime>
+                                                <PeakFallStep>2</PeakFallStep>
+                                                <Connection>
+                                                    <ConfigKey><Variable name="Group"/>,VuMeterR</ConfigKey>
+                                                </Connection>
+                                            </VuMeter>
+
+                                        </Children>
+                                    </WidgetGroup>
+
+                                    <WidgetGroup>
+                                        <ObjectName>ChannelPeakIndicator</ObjectName>
+                                        <Layout>vertical</Layout>
+                                        <Size>23,45</Size>
+                                        <Children>
+
+                                            <StatusLight>
+                                                <Size>23,22</Size>
+                                                <TooltipId>channel_PeakIndicatorL</TooltipId>
+                                                <PathStatusLight>background/bg_5_clipping_left_on.svg</PathStatusLight>
+                                                <PathBack>background/bg_5_clipping_left_off.svg</PathBack>
+                                                <Connection>
+                                                    <ConfigKey><Variable name="Group"/>,PeakIndicatorL</ConfigKey>
+                                                </Connection>
+                                            </StatusLight>
+
+                                            <StatusLight>
+                                                <Size>33,23</Size>
+                                                <TooltipId>channel_PeakIndicatorR</TooltipId>
+                                                <PathStatusLight>background/bg_5_clipping_right_on.svg</PathStatusLight>
+                                                <PathBack>background/bg_5_clipping_right_off.svg</PathBack>
+                                                <Connection>
+                                                    <ConfigKey><Variable name="Group"/>,PeakIndicatorR</ConfigKey>
+                                                </Connection>
+                                            </StatusLight>
+
+                                        </Children>
+                                    </WidgetGroup>
+
+                                </Children>
+                            </WidgetGroup>
+
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <MinimumSize>137,45</MinimumSize>
+                                <MaximumSize>-1,45</MaximumSize>
+                                <Children>
+
+                                    <WidgetGroup>
+                                        <ObjectName>ChannelVu</ObjectName>
+                                        <Layout>vertical</Layout>
+                                        <!--<Size>68f,122f</Size>-->
+                                        <Size>me,45f</Size>
+                                        <Children>
+
+                                            <VuMeter>
+                                                <!-- <SizePolicy>min,max</SizePolicy> -->
+                                                <Size>me,22f</Size>
+                                                <TooltipId>channel_VuMeterL</TooltipId>
+                                                <PathVu>background/bg_4_vu_left_on.svg</PathVu>
+                                                <Horizontal>true</Horizontal>
+                                                <PeakHoldSize>4</PeakHoldSize>
+                                                <PeakHoldTime>500</PeakHoldTime>
+                                                <PeakFallTime>50</PeakFallTime>
+                                                <PeakFallStep>2</PeakFallStep>
+                                                <Connection>
+                                                    <ConfigKey><Variable name="Group"/>,VuMeterL</ConfigKey>
+                                                </Connection>
+                                            </VuMeter>
+
+                                            <VuMeter>
+                                                <!-- <SizePolicy>min,max</SizePolicy> -->
+                                                <Size>me,23f</Size>
+                                                <TooltipId>channel_VuMeterR</TooltipId>
+                                                <PathVu>background/bg_4_vu_right_on.svg</PathVu>
+                                                <Horizontal>true</Horizontal>
+                                                <PeakHoldSize>4</PeakHoldSize>
+                                                <PeakHoldTime>500</PeakHoldTime>
+                                                <PeakFallTime>50</PeakFallTime>
+                                                <PeakFallStep>2</PeakFallStep>
+                                                <Connection>
+                                                    <ConfigKey><Variable name="Group"/>,VuMeterR</ConfigKey>
+                                                </Connection>
+                                            </VuMeter>
+
+                                        </Children>
+                                    </WidgetGroup>
+
+                                    <WidgetGroup>
+                                        <ObjectName>ChannelPeakIndicator</ObjectName>
+                                        <Layout>vertical</Layout>
+                                        <Size>33,45</Size>
+                                        <Children>
+
+                                            <StatusLight>
+                                                <Size>33,22</Size>
+                                                <TooltipId>channel_PeakIndicatorL</TooltipId>
+                                                <PathStatusLight>background/bg_4_clipping_left_on.svg</PathStatusLight>
+                                                <PathBack>background/bg_4_clipping_left_off.svg</PathBack>
+                                                <Connection>
+                                                    <ConfigKey><Variable name="Group"/>,PeakIndicatorL</ConfigKey>
+                                                </Connection>
+                                            </StatusLight>
+
+                                            <StatusLight>
+                                                <Size>33,23</Size>
+                                                <TooltipId>channel_PeakIndicatorR</TooltipId>
+                                                <PathStatusLight>background/bg_4_clipping_right_on.svg</PathStatusLight>
+                                                <PathBack>background/bg_4_clipping_right_off.svg</PathBack>
+                                                <Connection>
+                                                    <ConfigKey><Variable name="Group"/>,PeakIndicatorR</ConfigKey>
+                                                </Connection>
+                                            </StatusLight>
+
+                                        </Children>
+                                    </WidgetGroup>
+
+                                </Children>
+                            </WidgetGroup>
+
+                        </Children>
+                    </SizeAwareStack>
+
+                    <WidgetGroup><!-- margin-right -->
+                        <MinimumSize>10,-1</MinimumSize>
+                        <MaximumSize>10,-1</MaximumSize>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetGroup>
+
+        </Children>
+        <Connection>
+            <ConfigKey persist="true"><Variable name="Widget"/>,show_vumeter</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    AUXILIARY VU END
+    **************************************************************************************
+    -->
+
+</Template>

@@ -1,0 +1,88 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    VINYLCONTROL DEVICE BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <MinimumSize>4,-1</MinimumSize>
+        <MaximumSize>4,-1</MaximumSize>
+        <Connection>
+            <ConfigKey persist="true"><Variable name="DeckRow"/>,show_row</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+
+    <WidgetGroup>
+        <Layout>stacked</Layout>
+        <SizePolicy>p,me</SizePolicy>
+        <Children>
+
+            <!-- Hack for BUG https://github.com/22degrees/RoundCorners/issues/4 -->
+            <Template src="skin:shared/confighack.xml"/>
+
+            <Template src="skin:device/vinylcontrol/config.xml"/>
+
+            <WidgetGroup>
+                <ObjectName>VinylControl<Variable name="Number"/></ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>max,me</SizePolicy>
+                <Children>
+
+                    <Template src="skin:device/vinylcontrol/border_top.xml"/>
+
+                        <SizeAwareStack>
+                            <Children>
+                               <WidgetGroup>
+                                    <Layout>horizontal</Layout>
+                                    <MinimumSize>0,45</MinimumSize>
+                                    <MaximumSize>300,45</MaximumSize>
+                                    <Children>
+
+                                        <Template src="skin:device/vinylcontrol/vinyl_controls_sm.xml"/>
+
+                                    </Children>
+                               </WidgetGroup>
+                               <WidgetGroup>
+                                    <Layout>horizontal</Layout>
+                                    <MinimumSize>301,45</MinimumSize>
+                                    <MaximumSize>480,45</MaximumSize>
+                                    <Children>
+
+                                        <Template src="skin:device/vinylcontrol/vinyl_controls_md.xml"/>
+
+                                    </Children>
+                               </WidgetGroup>
+                               <WidgetGroup>
+                                    <Layout>horizontal</Layout>
+                                    <MinimumSize>481,45</MinimumSize>
+                                    <MaximumSize>-1,45</MaximumSize>
+                                    <Children>
+
+                                        <Template src="skin:device/vinylcontrol/vinyl_controls_lg.xml"/>
+
+                                    </Children>
+                               </WidgetGroup>
+                            </Children>
+                        </SizeAwareStack>
+
+                    <Template src="skin:device/vinylcontrol/border_bottom.xml"/>
+
+                </Children>
+            </WidgetGroup>
+
+        </Children>
+        <Connection>
+            <ConfigKey persist="true"><Variable name="DeckRow"/>,show_row</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    VINYLCONTROL DEVICE END
+    **************************************************************************************
+    -->
+
+</Template>

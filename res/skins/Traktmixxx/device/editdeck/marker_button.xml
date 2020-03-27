@@ -1,0 +1,6 @@
+<!DOCTYPE template>
+<Template>
+
+    <Template src="skin:shared/marker_button.xml"/>
+
+</Template>

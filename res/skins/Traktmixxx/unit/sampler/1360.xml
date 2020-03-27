@@ -1,0 +1,100 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    SAMPLER RACK BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>Row</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,max</SizePolicy>
+        <Children>
+
+            <WidgetGroup>
+                <MinimumSize>4,-1</MinimumSize>
+                <MaximumSize>4,-1</MaximumSize>
+            </WidgetGroup>
+
+            <Template src="skin:device/sampler/index.xml">
+                <SetVariable name="Number"><Variable name="Number1"/></SetVariable>
+                <SetVariable name="Widget"><Variable name="Widget1"/></SetVariable>
+                <SetVariable name="Group"><Variable name="Group1"/></SetVariable>
+                <SetVariable name="SignalHighColor"><Variable name="SignalHighColor1"/></SetVariable>
+                <SetVariable name="SignalMidColor"><Variable name="SignalMidColor1"/></SetVariable>
+                <SetVariable name="SignalLowColor"><Variable name="SignalLowColor1"/></SetVariable>
+                <SetVariable name="MarkRangeColor"><Variable name="MarkRangeColor1"/></SetVariable>
+                <SetVariable name="MarkRangeDisabledColor"><Variable name="MarkRangeDisabledColor1"/></SetVariable>
+                <SetVariable name="Size">me,55f</SetVariable>
+            </Template>
+
+            <WidgetGroup>
+                <MinimumSize>4,-1</MinimumSize>
+                <MaximumSize>4,-1</MaximumSize>
+            </WidgetGroup>
+
+            <Template src="skin:device/sampler/index.xml">
+                <SetVariable name="Number"><Variable name="Number2"/></SetVariable>
+                <SetVariable name="Widget"><Variable name="Widget2"/></SetVariable>
+                <SetVariable name="Group"><Variable name="Group2"/></SetVariable>
+                <SetVariable name="SignalHighColor"><Variable name="SignalHighColor2"/></SetVariable>
+                <SetVariable name="SignalMidColor"><Variable name="SignalMidColor2"/></SetVariable>
+                <SetVariable name="SignalLowColor"><Variable name="SignalLowColor2"/></SetVariable>
+                <SetVariable name="MarkRangeColor"><Variable name="MarkRangeColor2"/></SetVariable>
+                <SetVariable name="MarkRangeDisabledColor"><Variable name="MarkRangeDisabledColor2"/></SetVariable>
+                <SetVariable name="Size">me,55f</SetVariable>
+            </Template>
+
+            <WidgetGroup>
+                <MinimumSize>4,-1</MinimumSize>
+                <MaximumSize>4,-1</MaximumSize>
+            </WidgetGroup>
+
+            <Template src="skin:device/sampler/index.xml">
+                <SetVariable name="Number"><Variable name="Number3"/></SetVariable>
+                <SetVariable name="Widget"><Variable name="Widget3"/></SetVariable>
+                <SetVariable name="Group"><Variable name="Group3"/></SetVariable>
+                <SetVariable name="SignalHighColor"><Variable name="SignalHighColor3"/></SetVariable>
+                <SetVariable name="SignalMidColor"><Variable name="SignalMidColor3"/></SetVariable>
+                <SetVariable name="SignalLowColor"><Variable name="SignalLowColor3"/></SetVariable>
+                <SetVariable name="MarkRangeColor"><Variable name="MarkRangeColor3"/></SetVariable>
+                <SetVariable name="MarkRangeDisabledColor"><Variable name="MarkRangeDisabledColor3"/></SetVariable>
+                <SetVariable name="Size">me,55f</SetVariable>
+            </Template>
+
+            <WidgetGroup>
+                <MinimumSize>4,-1</MinimumSize>
+                <MaximumSize>4,-1</MaximumSize>
+            </WidgetGroup>
+
+            <Template src="skin:device/sampler/index.xml">
+                <SetVariable name="Number"><Variable name="Number4"/></SetVariable>
+                <SetVariable name="Widget"><Variable name="Widget4"/></SetVariable>
+                <SetVariable name="Group"><Variable name="Group4"/></SetVariable>
+                <SetVariable name="SignalHighColor"><Variable name="SignalHighColor4"/></SetVariable>
+                <SetVariable name="SignalMidColor"><Variable name="SignalMidColor4"/></SetVariable>
+                <SetVariable name="SignalLowColor"><Variable name="SignalLowColor4"/></SetVariable>
+                <SetVariable name="MarkRangeColor"><Variable name="MarkRangeColor4"/></SetVariable>
+                <SetVariable name="MarkRangeDisabledColor"><Variable name="MarkRangeDisabledColor4"/></SetVariable>
+                <SetVariable name="Size">me,55f</SetVariable>
+            </Template>
+
+            <WidgetGroup>
+                <MinimumSize>4,-1</MinimumSize>
+                <MaximumSize>4,-1</MaximumSize>
+            </WidgetGroup>
+
+        </Children>
+        <Connection>
+            <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    SAMPLER RACK END
+    **************************************************************************************
+    -->
+
+</Template>

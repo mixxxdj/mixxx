@@ -1,0 +1,68 @@
+<!DOCTYPE template>
+<Template>
+
+    <WidgetGroup>
+        <Layout>vertical</Layout>
+        <MinimumSize>68,165</MinimumSize>
+        <MaximumSize>68,275</MaximumSize>
+        <Children>
+
+            <Template src="skin:device/mixer/knob.xml">
+                <SetVariable name="Number"><Variable name="Number"/></SetVariable>
+                <SetVariable name="Group"><Variable name="Group"/></SetVariable>
+                <SetVariable name="ObjectName1">Pregain</SetVariable>
+                <SetVariable name="TooltipId1">pregain</SetVariable>
+                <SetVariable name="ConfigKey1"><Variable name="Group"/>,pregain</SetVariable>
+                <SetVariable name="ObjectName2">Mute</SetVariable>
+                <SetVariable name="TooltipId2">mute</SetVariable>
+                <SetVariable name="ConfigKey2"><Variable name="Group"/>,mute</SetVariable>
+            </Template>
+
+            <Template src="skin:device/mixer/eqknob.xml">
+                <SetVariable name="Number"><Variable name="Number"/></SetVariable>
+                <SetVariable name="Group"><Variable name="Group"/></SetVariable>
+                <SetVariable name="ObjectName1"></SetVariable>
+                <SetVariable name="TooltipId1"></SetVariable>
+                <SetVariable name="ObjectName2"></SetVariable>
+                <SetVariable name="TooltipId2"></SetVariable>
+                <SetVariable name="Parameter">4</SetVariable>
+            </Template>
+
+            <Template src="skin:device/mixer/eqknob.xml">
+                <SetVariable name="Number"><Variable name="Number"/></SetVariable>
+                <SetVariable name="Group"><Variable name="Group"/></SetVariable>
+                <SetVariable name="ObjectName1">FilterHigh</SetVariable>
+                <SetVariable name="TooltipId1">filterHigh</SetVariable>
+                <SetVariable name="ObjectName2">FilterHighKill</SetVariable>
+                <SetVariable name="TooltipId2">filterHighKill</SetVariable>
+                <SetVariable name="Parameter">3</SetVariable>
+            </Template>
+
+            <Template src="skin:device/mixer/eqknob.xml">
+                <SetVariable name="Number"><Variable name="Number"/></SetVariable>
+                <SetVariable name="Group"><Variable name="Group"/></SetVariable>
+                <SetVariable name="ObjectName1">FilterMid</SetVariable>
+                <SetVariable name="TooltipId1">filterMid</SetVariable>
+                <SetVariable name="ObjectName2">FilterMidKill</SetVariable>
+                <SetVariable name="TooltipId2">filterMidKill</SetVariable>
+                <SetVariable name="Parameter">2</SetVariable>
+            </Template>
+
+            <Template src="skin:device/mixer/eqknob.xml">
+                <SetVariable name="Number"><Variable name="Number"/></SetVariable>
+                <SetVariable name="Group"><Variable name="Group"/></SetVariable>
+                <SetVariable name="ObjectName1">FilterLow</SetVariable>
+                <SetVariable name="TooltipId1">filterLow</SetVariable>
+                <SetVariable name="ObjectName2">FilterLowKill</SetVariable>
+                <SetVariable name="TooltipId2">filterLowKill</SetVariable>
+                <SetVariable name="Parameter">1</SetVariable>
+            </Template>
+
+        </Children>
+        <Connection>
+            <ConfigKey persist="true"><Variable name="Widget"/>,show_eq</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+
+</Template>

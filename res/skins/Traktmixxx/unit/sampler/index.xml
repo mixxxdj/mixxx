@@ -1,0 +1,101 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    SAMPLER UNIT BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>Row</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,max</SizePolicy>
+        <Children>
+
+            <SizeAwareStack>
+                <Children>
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <MinimumSize>0,0</MinimumSize>
+                        <MaximumSize>1151,-1</MaximumSize>
+                        <Children>
+
+                            <Template src="skin:unit/sampler/1024.xml"/>
+
+                        </Children>
+                    </WidgetGroup>
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <MinimumSize>1152,0</MinimumSize>
+                        <MaximumSize>1279,-1</MaximumSize>
+                        <Children>
+
+                            <Template src="skin:unit/sampler/1152.xml"/>
+
+                        </Children>
+                    </WidgetGroup>
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <MinimumSize>1280,0</MinimumSize>
+                        <MaximumSize>1359,-1</MaximumSize>
+                        <Children>
+
+                            <Template src="skin:unit/sampler/1280.xml"/>
+
+                        </Children>
+                    </WidgetGroup>
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <MinimumSize>1360,0</MinimumSize>
+                        <MaximumSize>1439,-1</MaximumSize>
+                        <Children>
+
+                            <Template src="skin:unit/sampler/1360.xml"/>
+
+                        </Children>
+                    </WidgetGroup>
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <MinimumSize>1440,0</MinimumSize>
+                        <MaximumSize>1599,-1</MaximumSize>
+                        <Children>
+
+                            <Template src="skin:unit/sampler/1440.xml"/>
+
+                        </Children>
+                    </WidgetGroup>
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <MinimumSize>1600,0</MinimumSize>
+                        <MaximumSize>1919,-1</MaximumSize>
+                        <Children>
+
+                            <Template src="skin:unit/sampler/1600.xml"/>
+
+                        </Children>
+                    </WidgetGroup>
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <MinimumSize>1920,0</MinimumSize>
+                        <Children>
+
+                            <Template src="skin:unit/sampler/1920.xml"/>
+
+                        </Children>
+                    </WidgetGroup>
+                </Children>
+            </SizeAwareStack>
+
+        </Children>
+        <Connection>
+            <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    SAMPLER UNIT END
+    **************************************************************************************
+    -->
+
+</Template>

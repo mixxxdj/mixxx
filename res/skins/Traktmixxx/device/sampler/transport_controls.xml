@@ -1,0 +1,306 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    TRANSPORT BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>Rectangle</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,f</SizePolicy>
+        <MinimumSize>-1,45</MinimumSize>
+        <MaximumSize>-1,45</MaximumSize>
+        <Children>
+
+            <PushButton>
+                <ObjectName>Btn-br</ObjectName>
+                <Size>25me,45f</Size>
+                <NumberStates>2</NumberStates>
+                <RightClickIsPushButton>true</RightClickIsPushButton>
+                <State>
+                    <Number>0</Number>
+                    <Text>▶/||</Text>
+                </State>
+                <State>
+                    <Number>1</Number>
+                    <Text>▶/||</Text>
+                </State>
+                <Connection>
+                    <ConfigKey><Variable name="Group"/>,play</ConfigKey>
+                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                    <ButtonState>LeftButton</ButtonState>
+                </Connection>
+                <Connection>
+                    <ConfigKey><Variable name="Group"/>,cue_set</ConfigKey>
+                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                    <ButtonState>RightButton</ButtonState>
+                </Connection>
+            </PushButton>
+
+            <WidgetGroup><!-- margin-left/right -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+            <PushButton>
+                <ObjectName>Btn-blr</ObjectName>
+                <Size>20f,45f</Size>
+                <NumberStates>1</NumberStates>
+                <State>
+                    <Number>0</Number>
+                    <Text>&lt;</Text>
+                </State>
+                <Connection>
+                    <ConfigKey><Variable name="Widget"/>,hotcuepage_prev</ConfigKey>
+                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                    <ButtonState>LeftButton</ButtonState>
+                </Connection>
+            </PushButton>
+
+            <WidgetStack>
+                <NextControl><Variable name="Widget"/>,hotcuepage_next</NextControl>
+                <PrevControl><Variable name="Widget"/>,hotcuepage_prev</PrevControl>
+                <Children>
+
+                    <WidgetGroup>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>me,f</SizePolicy>
+                        <MinimumSize>-1,45</MinimumSize>
+                        <MaximumSize>-1,45</MaximumSize>
+                        <Children>
+
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>me,f</SizePolicy>
+                                <MinimumSize>-1,23</MinimumSize>
+                                <MaximumSize>-1,23</MaximumSize>
+                                <Children>
+
+                                    <Template src="skin:device/sampler/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">1</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/sampler/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">2</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/sampler/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">3</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/sampler/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">4</SetVariable>
+                                    </Template>
+
+                                </Children>
+                            </WidgetGroup>
+
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>me,f</SizePolicy>
+                                <MinimumSize>-1,22</MinimumSize>
+                                <MaximumSize>-1,22</MaximumSize>
+                                <Children>
+
+                                    <Template src="skin:device/sampler/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">5</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/sampler/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">6</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/sampler/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">7</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/sampler/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">8</SetVariable>
+                                    </Template>
+                                    
+                                </Children>
+                            </WidgetGroup>
+
+                        </Children>
+                    </WidgetGroup>
+
+                    <WidgetGroup>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>me,f</SizePolicy>
+                        <MinimumSize>-1,45</MinimumSize>
+                        <MaximumSize>-1,45</MaximumSize>
+                        <Children>
+
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>me,f</SizePolicy>
+                                <MinimumSize>-1,23</MinimumSize>
+                                <MaximumSize>-1,23</MaximumSize>
+                                <Children>
+
+                                    <Template src="skin:device/sampler/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">5</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/sampler/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">6</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/sampler/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">7</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/sampler/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">8</SetVariable>
+                                    </Template>
+
+                                </Children>
+                            </WidgetGroup>
+
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>me,f</SizePolicy>
+                                <MinimumSize>-1,22</MinimumSize>
+                                <MaximumSize>-1,22</MaximumSize>
+                                <Children>
+
+                                    <Template src="skin:device/sampler/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">9</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/sampler/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">10</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/sampler/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">11</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/sampler/button_hotcue.xml">
+                                        <SetVariable name="hotcue_x">12</SetVariable>
+                                    </Template>
+
+                                </Children>
+                            </WidgetGroup>
+
+                        </Children>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetStack>
+
+            <PushButton>
+                <ObjectName>Btn-brr</ObjectName>
+                <Size>20f,45f</Size>
+                <NumberStates>1</NumberStates>
+                <State>
+                    <Number>0</Number>
+                    <Text>&gt;</Text>
+                </State>
+                <Connection>
+                    <ConfigKey><Variable name="Widget"/>,hotcuepage_next</ConfigKey>
+                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                    <ButtonState>LeftButton</ButtonState>
+                </Connection>
+            </PushButton>
+
+            <Template src="skin:device/sampler/knob_small.xml">
+                <SetVariable name="ObjectName">Gain</SetVariable>
+                <SetVariable name="TooltipId">pregain</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="Group"/>,pregain</SetVariable>
+            </Template>
+
+            <Template src="skin:device/sampler/knob_small.xml">
+                <SetVariable name="ObjectName">Pitch</SetVariable>
+                <SetVariable name="TooltipId">rate</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="Group"/>,rate</SetVariable>
+            </Template>
+
+            <PushButton>
+                <ObjectName>Btn-blr</ObjectName>
+                <Size>40me,45f</Size>
+                <NumberStates>2</NumberStates>
+                <State>
+                    <Number>0</Number>
+                    <Text>SYNC</Text>
+                </State>
+                <State>
+                    <Number>1</Number>
+                    <Text>SYNC</Text>
+                </State>
+                <Connection>
+                    <ConfigKey><Variable name="Group"/>,sync_enabled</ConfigKey>
+                    <ButtonState>LeftButton</ButtonState>
+                </Connection>
+            </PushButton>
+
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,45</MinimumSize>
+                <MaximumSize>-1,45</MaximumSize>
+                <Children>
+
+                    <PushButton>
+                        <ObjectName>Btn-btrr</ObjectName>
+                        <TooltipId>quantize</TooltipId>
+                        <Size>20me,23f</Size>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                            <Number>0</Number>
+                            <Text>|&gt;|</Text>
+                        </State>
+                        <State>
+                            <Number>1</Number>
+                            <Text>|&gt;|</Text>
+                        </State>
+                        <Connection>
+                            <ConfigKey><Variable name="Group"/>,quantize</ConfigKey>
+                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                            <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                    </PushButton>
+
+                    <PushButton>
+                        <ObjectName>Btn-bbrr</ObjectName>
+                        <TooltipId>orientation</TooltipId>
+                        <Size>20me,23f</Size>
+                        <NumberStates>3</NumberStates>
+                        <State>
+                            <Number>0</Number>
+                            <Text>&#8624;</Text>
+                        </State>
+                        <State>
+                            <Number>1</Number>
+                            <Text>&#8624;&#8625;</Text>
+                        </State>
+                        <State>
+                            <Number>2</Number>
+                            <Text>&#8625;</Text>
+                        </State>
+                        <Connection>
+                            <ConfigKey><Variable name="Widget"/>,orientation</ConfigKey>
+                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                            <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                    </PushButton>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup><!-- margin-right -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    TRANSPORT END
+    **************************************************************************************
+    -->
+
+</Template>

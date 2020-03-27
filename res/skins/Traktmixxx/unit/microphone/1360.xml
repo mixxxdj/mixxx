@@ -1,0 +1,62 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    MICROPHONE UNIT BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>Row</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,max</SizePolicy>
+        <Children>
+
+            <WidgetGroup><!-- margin-left -->
+                <MinimumSize>4,-1</MinimumSize>
+                <MaximumSize>4,-1</MaximumSize>
+            </WidgetGroup>
+
+            <Template src="skin:device/auxiliary/index.xml">
+                <SetVariable name="Number">1</SetVariable>
+                <SetVariable name="Group">[Auxiliary1]</SetVariable>
+            </Template>
+
+            <WidgetGroup>
+                <MinimumSize>4,-1</MinimumSize>
+                <MaximumSize>4,-1</MaximumSize>
+            </WidgetGroup>
+
+            <Template src="skin:device/auxiliary/index.xml">
+                <SetVariable name="Number">2</SetVariable>
+                <SetVariable name="Group">[Auxiliary2]</SetVariable>
+            </Template>
+
+            <WidgetGroup>
+                <MinimumSize>4,-1</MinimumSize>
+                <MaximumSize>4,-1</MaximumSize>
+            </WidgetGroup>
+
+            <Template src="skin:device/microphone/index.xml">
+                <SetVariable name="Number">1</SetVariable>
+                <SetVariable name="Group">[Microphone]</SetVariable>
+            </Template>
+
+            <WidgetGroup><!-- margin-right -->
+                <MinimumSize>4,-1</MinimumSize>
+                <MaximumSize>4,-1</MaximumSize>
+            </WidgetGroup>
+
+        </Children>
+        <Connection>
+            <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    MICROPHONE UNIT END
+    **************************************************************************************
+    -->
+
+</Template>

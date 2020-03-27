@@ -1,0 +1,85 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    CROSSFADER DEVICE BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>stacked</Layout>
+        <SizePolicy>f,me</SizePolicy>
+        <MinimumSize>272,-1</MinimumSize>
+        <MaximumSize>272,-1</MaximumSize>
+        <Children>
+
+            <!-- Hack for BUG https://github.com/22degrees/RoundCorners/issues/4 -->
+            <Template src="skin:shared/confighack.xml"/>
+
+            <Template src="skin:device/crossfader/config.xml"/>
+
+            <WidgetGroup>
+                <ObjectName>Crossfader</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>f,me</SizePolicy>
+                <MinimumSize>272,-1</MinimumSize>
+                <MaximumSize>272,-1</MaximumSize>
+                <Children>
+
+                    <Template src="skin:device/crossfader/border_top.xml"/>
+
+                    <WidgetGroup>
+                        <ObjectName>Rectangle</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,me</SizePolicy>
+                        <Children>
+
+                            <WidgetGroup><!-- margin-left -->
+                                <MinimumSize>10,-1</MinimumSize>
+                                <MaximumSize>10,-1</MaximumSize>
+                            </WidgetGroup>
+
+                            <WidgetGroup>
+                                <ObjectName>CrossFaderLeft</ObjectName>
+                                <Size>22f,45f</Size>
+                            </WidgetGroup>
+
+                            <SliderComposed>
+                                <ObjectName>CrossFader</ObjectName>
+                                <TooltipId>crossfader</TooltipId>
+                                <Size>200f,45f</Size>
+                                <Handle>knob/knob_2_sliderhandle.svg</Handle>
+                                <Horizontal>true</Horizontal>
+                                <Connection>
+                                    <ConfigKey>[Master],crossfader</ConfigKey>
+                                    <EmitOnDownPress>false</EmitOnDownPress>
+                                </Connection>
+                            </SliderComposed>
+
+                            <WidgetGroup>
+                                <ObjectName>CrossFaderRight</ObjectName>
+                                <Size>22f,45f</Size>
+                            </WidgetGroup>
+
+                            <WidgetGroup><!-- margin-right -->
+                                <MinimumSize>10,-1</MinimumSize>
+                                <MaximumSize>10,-1</MaximumSize>
+                            </WidgetGroup>
+
+                        </Children>
+                    </WidgetGroup>
+
+                    <Template src="skin:device/crossfader/border_bottom.xml"/>
+
+                </Children>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    CROSSFADER DEVICE END
+    **************************************************************************************
+    -->
+
+</Template>

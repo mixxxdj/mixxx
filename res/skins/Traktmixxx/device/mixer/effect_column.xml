@@ -1,0 +1,51 @@
+<!DOCTYPE template>
+<Template>
+
+    <WidgetGroup>
+        <ObjectName>Deck<Variable name="Number"/></ObjectName>
+        <Layout>vertical</Layout>
+        <MinimumSize>68,220</MinimumSize>
+        <MaximumSize>68,275</MaximumSize>
+        <Children>
+
+            <Template src="skin:device/mixer/superknob.xml">
+                <SetVariable name="Number"><Variable name="Number"/></SetVariable>
+                <SetVariable name="Group"><Variable name="Group"/></SetVariable>
+                <SetVariable name="ObjectName1">Filter</SetVariable>
+                <SetVariable name="TooltipId1">EffectUnit_super1</SetVariable>
+                <SetVariable name="ConfigKey1"><Variable name="Group"/>,filterDepth</SetVariable>
+                <SetVariable name="ObjectName2">FilterKill</SetVariable>
+                <SetVariable name="TooltipId2">Kill</SetVariable>
+                <SetVariable name="ConfigKey2"><Variable name="Group"/>,filter</SetVariable>
+            </Template>
+
+            <Template src="skin:device/mixer/knob.xml">
+                <SetVariable name="Number"><Variable name="Number"/></SetVariable>
+                <SetVariable name="Group"><Variable name="Group"/></SetVariable>
+                <SetVariable name="ObjectName1">Key</SetVariable>
+                <SetVariable name="TooltipId1">pitch</SetVariable>
+                <SetVariable name="ConfigKey1"><Variable name="Group"/>,pitch</SetVariable>
+                <SetVariable name="ObjectName2">KeyLock</SetVariable>
+                <SetVariable name="TooltipId2">keylock</SetVariable>
+                <SetVariable name="ConfigKey2"><Variable name="Group"/>,keylock</SetVariable>
+            </Template>
+
+            <WidgetGroup><!-- spacer -->
+                <Size>68f,me</Size>
+            </WidgetGroup>
+
+            <Template src="skin:device/mixer/button.xml">
+                <SetVariable name="ObjectName">Btn-br</SetVariable>
+                <SetVariable name="TooltipId">pfl</SetVariable>
+                <SetVariable name="Label">CUE</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="Group"/>,pfl</SetVariable>
+            </Template>
+
+        </Children>
+        <Connection>
+            <ConfigKey persist="true"><Variable name="Widget"/>,show_filter</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+
+</Template>

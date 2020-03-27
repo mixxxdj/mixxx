@@ -1,0 +1,58 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    TRACKINFO BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>i,f</SizePolicy>
+        <Size>-1,31</Size>
+        <Children>
+
+            <WidgetGroup><!-- margin-left -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+            <TrackProperty>
+                <ObjectName>Artist</ObjectName>
+                <TooltipId>track_artist</TooltipId>
+                <Size>me,31f</Size>
+                <!-- CSS alignments not respected see bug lp:605530 , lets call <Alignment> -->
+                <Alignment>right</Alignment>
+                <Property>artist</Property>
+                <Group>[PreviewDeck1]</Group>
+            </TrackProperty>
+
+            <Label>
+                <ObjectName>Hyphen</ObjectName>
+                <Text> - </Text>
+            </Label>
+
+            <TrackProperty>
+                <ObjectName>Title</ObjectName>
+                <TooltipId>track_title</TooltipId>
+                <Size>me,31f</Size>
+                <!-- CSS alignments not respected see bug lp:605530 , lets call <Alignment> -->
+                <Alignment>left</Alignment>
+                <Property>title</Property>
+                <Group>[PreviewDeck1]</Group>
+            </TrackProperty>
+
+            <WidgetGroup><!-- margin-left -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    TRACKINFO END
+    **************************************************************************************
+    -->
+
+</Template>

@@ -1,0 +1,40 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    VINYL CONTROL BUTTON BEGIN
+    **************************************************************************************
+    -->
+    <PushButton>
+        <ObjectName><Variable name="ObjectName"/></ObjectName>
+        <TooltipId><Variable name="TooltipId"/></TooltipId>
+        <Size><Variable name="Size"/></Size>
+        <NumberStates>3</NumberStates>
+        <State>
+            <Number>0</Number>
+            <Text><Variable name="text1"/></Text>
+        </State>
+        <State>
+            <Number>1</Number>
+            <Text><Variable name="text2"/></Text>
+        </State>
+        <State>
+            <Number>2</Number>
+            <Text><Variable name="text3"/></Text>
+        </State>
+        <Connection>
+            <ConfigKey persist="true"><Variable name="Group"/>,<Variable name="control"/></ConfigKey>
+            <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+            <ConfigKey persist="true"><Variable name="Group"/>,<Variable name="control"/></ConfigKey>
+        </Connection>
+    </PushButton>
+    <!--
+    **************************************************************************************
+    VINYL CONTROL BUTTON END
+    **************************************************************************************
+    -->
+
+</Template>

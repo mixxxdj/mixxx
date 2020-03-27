@@ -1,0 +1,30 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    EDITDECK1 SCREEN BEGIN
+    **************************************************************************************
+    -->
+    <Template src="skin:unit/editdeck/index.xml">
+        <SetVariable name="Number1">1</SetVariable>
+        <SetVariable name="Widget1">[Deck1]</SetVariable>
+        <SetVariable name="Group1">[Channel1]</SetVariable>
+        <SetVariable name="Align1">bottom</SetVariable> <!-- Values: top/center/bottom -->
+        <SetVariable name="SignalHighColor1">#d4ddd7</SetVariable>
+        <SetVariable name="SignalMidColor1">#a4aba6</SetVariable>
+        <SetVariable name="SignalLowColor1">#737875</SetVariable>
+        <SetVariable name="MarkRangeColor1">#417587</SetVariable>
+        <SetVariable name="MarkRangeDisabledColor1">#979a9c</SetVariable>
+    </Template>
+
+    <SingletonContainer>
+        <ObjectName>LibrarySingleton</ObjectName>
+    </SingletonContainer>
+    <!--
+    **************************************************************************************
+    EDITDECK1 SCREEN END
+    **************************************************************************************
+    -->
+
+</Template>

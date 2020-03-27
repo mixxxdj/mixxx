@@ -1,0 +1,42 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    MENU BUTTON BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName><Variable name="icon"/></ObjectName>
+        <Layout>vertical</Layout>
+        <Size><Variable name="Size"/></Size>
+        <Children>
+
+            <PushButton>
+                <ObjectName><Variable name="ObjectName"/></ObjectName>
+                <Size><Variable name="Size"/></Size>
+                <NumberStates>2</NumberStates>
+                <State>
+                    <Number>0</Number>
+                    <Text><Variable name="text"/></Text>
+                </State>
+                <State>
+                    <Number>1</Number>
+                    <Text><Variable name="text"/></Text>
+                </State>
+                <Connection>
+                    <ConfigKey persist="true"><Variable name="control"/></ConfigKey>
+                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                    <ButtonState>LeftButton</ButtonState>
+                </Connection>
+            </PushButton>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    MENU BUTTON END
+    **************************************************************************************
+    -->
+
+</Template>

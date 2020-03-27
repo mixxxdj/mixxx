@@ -1,0 +1,48 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    PITCH-SLIDER BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>vertical</Layout>
+        <SizePolicy>f,p</SizePolicy>
+        <MinimumSize>56,-1</MinimumSize>
+        <MaximumSize>56,-1</MaximumSize>
+        <Children>
+
+            <WidgetGroup>
+                <ObjectName>PitchSliderTop</ObjectName>
+                <Size>56f,16f</Size>
+            </WidgetGroup>
+
+            <SliderComposed>
+                <ObjectName>PitchSlider</ObjectName>
+                <TooltipId>rate</TooltipId>
+                <SizePolicy>min,me</SizePolicy>
+                <MinimumSize>56,-1</MinimumSize>
+                <MaximumSize>56,-1</MaximumSize>
+                <Handle>knob/knob_3_sliderhandle.svg</Handle>
+                <Horizontal>false</Horizontal>
+                <Connection>
+                    <ConfigKey><Variable name="Group"/>,rate</ConfigKey>
+                    <EmitOnDownPress>false</EmitOnDownPress>
+                </Connection>
+            </SliderComposed>
+
+            <WidgetGroup>
+                <ObjectName>PitchSliderBottom</ObjectName>
+                <Size>56f,16f</Size>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    PITCH-SLIDER END
+    **************************************************************************************
+    -->
+
+</Template>

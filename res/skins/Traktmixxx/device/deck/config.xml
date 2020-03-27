@@ -1,0 +1,83 @@
+<!DOCTYPE template>
+<Template>
+
+    <WidgetGroup>
+        <ObjectName>OuterConfigBox</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+
+            <WidgetGroup>
+                <ObjectName>InnerConfigBox</ObjectName>
+                <Layout>vertical</Layout>
+                <Size>130f,180f</Size>
+                <Children>
+
+                    <Label>
+                        <ObjectName>ConfigHeadline</ObjectName>
+                        <Size>100f,25f</Size>
+                        <Elide>left</Elide>
+                        <Alignment>left</Alignment>
+                        <Text>Deck <Variable name="Number"/></Text>
+                    </Label>
+
+                    <Template src="skin:device/deck/config_controls.xml">
+                        <SetVariable name="Tooltip">Show/hide the Channel Volume Meter.</SetVariable>
+                        <SetVariable name="Label">Vinyl</SetVariable>
+                        <SetVariable name="Group"><Variable name="Widget"/></SetVariable>
+                        <SetVariable name="Widget">show_spinny</SetVariable>
+                    </Template>
+
+                    <Template src="skin:device/deck/config_controls.xml">
+                        <SetVariable name="Tooltip">Show/hide the Pitch Slider.</SetVariable>
+                        <SetVariable name="Label">Pitch-Slider</SetVariable>
+                        <SetVariable name="Group"><Variable name="Widget"/></SetVariable>
+                        <SetVariable name="Widget">show_pitch</SetVariable>
+                    </Template>
+
+                    <Template src="skin:device/deck/config_controls.xml">
+                        <SetVariable name="Tooltip">Show/hide the BMP Display.</SetVariable>
+                        <SetVariable name="Label">BPM</SetVariable>
+                        <SetVariable name="Group"><Variable name="Widget"/></SetVariable>
+                        <SetVariable name="Widget">show_bpm</SetVariable>
+                    </Template>
+
+                    <Template src="skin:device/deck/config_controls.xml">
+                        <SetVariable name="Tooltip">Show/hide the Transport Section.</SetVariable>
+                        <SetVariable name="Label">Transport</SetVariable>
+                        <SetVariable name="Group"><Variable name="Widget"/></SetVariable>
+                        <SetVariable name="Widget">show_transport</SetVariable>
+                    </Template>
+
+                    <Template src="skin:device/deck/config_controls.xml">
+                        <SetVariable name="Tooltip">Show/hide the Hot Cues Section.</SetVariable>
+                        <SetVariable name="Label">Hot Cues</SetVariable>
+                        <SetVariable name="Group"><Variable name="Widget"/></SetVariable>
+                        <SetVariable name="Widget">show_hotcue</SetVariable>
+                    </Template>
+
+                    <Template src="skin:device/deck/config_controls.xml">
+                        <SetVariable name="Tooltip">Show/hide the Advanced Markers.</SetVariable>
+                        <SetVariable name="Label">Markers</SetVariable>
+                        <SetVariable name="Group"><Variable name="Widget"/></SetVariable>
+                        <SetVariable name="Widget">show_advanced_markers</SetVariable>
+                    </Template>
+
+                    <Template src="skin:device/deck/config_controls.xml">
+                        <SetVariable name="Tooltip">Show/hide the Loop Section.</SetVariable>
+                        <SetVariable name="Label">Loop</SetVariable>
+                        <SetVariable name="Group"><Variable name="Widget"/></SetVariable>
+                        <SetVariable name="Widget">show_loop</SetVariable>
+                    </Template>
+
+                </Children>
+            </WidgetGroup>
+
+        </Children>
+        <Connection>
+            <ConfigKey>[Master],skin_settings</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+
+</Template>

@@ -1,0 +1,72 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    EFFECT RACK BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>Row</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,max</SizePolicy>
+        <Children>
+
+            <WidgetGroup>
+                <MinimumSize>4,-1</MinimumSize>
+                <MaximumSize>4,-1</MaximumSize>
+            </WidgetGroup>
+
+            <Template src="skin:device/effect/index.xml">
+                <SetVariable name="EffectUnitNumber">1</SetVariable>
+                <SetVariable name="Number">1</SetVariable>
+            </Template>
+
+            <WidgetGroup>
+                <MinimumSize>4,-1</MinimumSize>
+                <MaximumSize>4,-1</MaximumSize>
+            </WidgetGroup>
+
+            <Template src="skin:device/effect/index.xml">
+                <SetVariable name="EffectUnitNumber">2</SetVariable>
+                <SetVariable name="Number">2</SetVariable>
+            </Template>
+
+            <WidgetGroup>
+                <MinimumSize>4,-1</MinimumSize>
+                <MaximumSize>4,-1</MaximumSize>
+            </WidgetGroup>
+
+            <Template src="skin:device/effect/index.xml">
+                <SetVariable name="EffectUnitNumber">3</SetVariable>
+                <SetVariable name="Number">3</SetVariable>
+            </Template>
+
+            <WidgetGroup>
+                <MinimumSize>4,-1</MinimumSize>
+                <MaximumSize>4,-1</MaximumSize>
+            </WidgetGroup>
+
+            <Template src="skin:device/effect/index.xml">
+                <SetVariable name="EffectUnitNumber">4</SetVariable>
+                <SetVariable name="Number">4</SetVariable>
+            </Template>
+
+            <WidgetGroup>
+                <MinimumSize>4,-1</MinimumSize>
+                <MaximumSize>4,-1</MaximumSize>
+            </WidgetGroup>
+
+        </Children>
+        <Connection>
+            <ConfigKey persist="true">[EffectRack<Variable name="EffectRackNumber"/>],show</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    EFFECT RACK END
+    **************************************************************************************
+    -->
+
+</Template>

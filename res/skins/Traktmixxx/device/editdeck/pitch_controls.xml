@@ -1,0 +1,137 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    PITCH-CONTROLS BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>vertical</Layout>
+        <Size>56f,45f</Size>
+        <Children>
+
+            <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Size>56f,22f</Size>
+                <Children>
+
+                    <WidgetGroup><!-- margin-right -->
+                        <MinimumSize>10,-1</MinimumSize>
+                        <MaximumSize>10,-1</MaximumSize>
+                    </WidgetGroup>
+
+                    <PushButton>
+                        <ObjectName>Btn-btlr</ObjectName>
+                        <TooltipId>rate_perm_down_rate_perm_down_small</TooltipId>
+                        <Size>23f,22f</Size>
+                        <NumberStates>1</NumberStates>
+                        <State>
+                            <Number>0</Number>
+                            <Text>-</Text>
+                        </State>
+                        <Connection>
+                            <ConfigKey><Variable name="Group"/>,rate_perm_down</ConfigKey>
+                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                            <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                            <ConfigKey><Variable name="Group"/>,rate_perm_down_small</ConfigKey>
+                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                            <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                    </PushButton>
+
+                    <PushButton>
+                        <ObjectName>Btn-btrr</ObjectName>
+                        <TooltipId>rate_perm_up_rate_perm_up_small</TooltipId>
+                        <Size>23f,22f</Size>
+                        <NumberStates>1</NumberStates>
+                        <State>
+                            <Number>0</Number>
+                            <Text>+</Text>
+                        </State>
+                        <Connection>
+                            <ConfigKey><Variable name="Group"/>,rate_perm_up</ConfigKey>
+                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                            <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                            <ConfigKey><Variable name="Group"/>,rate_perm_up_small</ConfigKey>
+                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                            <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                    </PushButton>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Size>56f,23f</Size>
+                <Children>
+
+                    <WidgetGroup><!-- margin-right -->
+                        <MinimumSize>10,-1</MinimumSize>
+                        <MaximumSize>10,-1</MaximumSize>
+                    </WidgetGroup>
+
+                    <PushButton>
+                       <ObjectName>Btn-bblr</ObjectName>
+                        <TooltipId>rate_temp_down_rate_temp_down_small</TooltipId>
+                        <Size>23f,23f</Size>
+                        <NumberStates>1</NumberStates>
+                        <State>
+                            <Number>0</Number>
+                            <Text>&lt;</Text>
+                        </State>
+                        <Connection>
+                            <ConfigKey><Variable name="Group"/>,rate_temp_down</ConfigKey>
+                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                            <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                            <ConfigKey><Variable name="Group"/>,rate_temp_down_small</ConfigKey>
+                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                            <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                    </PushButton>
+
+                    <PushButton>
+                        <ObjectName>Btn-bbrr</ObjectName>
+                        <TooltipId>rate_temp_up_rate_temp_up_small</TooltipId>
+                        <Size>23f,23f</Size>
+                        <NumberStates>1</NumberStates>
+                        <State>
+                            <Number>0</Number>
+                            <Text>&gt;</Text>
+                        </State>
+                        <Connection>
+                            <ConfigKey><Variable name="Group"/>,rate_temp_up</ConfigKey>
+                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                            <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                            <ConfigKey><Variable name="Group"/>,rate_temp_up_small</ConfigKey>
+                            <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                            <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                    </PushButton>
+
+                </Children>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+
+    <WidgetGroup><!-- margin-right -->
+        <MinimumSize>10,-1</MinimumSize>
+        <MaximumSize>10,-1</MaximumSize>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    PITCH-CONTROLS END
+    **************************************************************************************
+    -->
+
+</Template>

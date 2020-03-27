@@ -1,0 +1,161 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    WAVEFORM DEVICE BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>Row</ObjectName>
+        <Layout>horizontal</Layout>
+        <MinimumSize>-1,244</MinimumSize>
+        <MaximumSize>-1,244</MaximumSize>
+        <SizePolicy>me,f</SizePolicy>
+        <Children>
+
+            <WidgetGroup><!-- margin-left -->
+                <MinimumSize>4,-1</MinimumSize>
+                <MaximumSize>4,-1</MaximumSize>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>stacked</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+
+                    <!-- Hack for BUG https://github.com/22degrees/RoundCorners/issues/4 -->
+                    <Template src="skin:shared/confighack.xml"/>
+
+                    <Template src="skin:device/waveform/config.xml"/>
+
+                    <WidgetGroup>
+                        <Layout>vertical</Layout>
+                        <Children>
+
+                            <Template src="skin:device/waveform/border_top.xml"/>
+
+                            <WidgetGroup>
+                                <ObjectName>Rectangle</ObjectName>
+                                <Layout>horizontal</Layout>
+                                <MinimumSize>-1,220</MinimumSize>
+                                <MaximumSize>-1,220</MaximumSize>
+                                <SizePolicy>me,f</SizePolicy>
+                                <Children>
+
+                                    <WidgetGroup><!-- margin-left -->
+                                        <MinimumSize>10,-1</MinimumSize>
+                                        <MaximumSize>10,-1</MaximumSize>
+                                    </WidgetGroup>
+
+                                    <WidgetGroup>
+                                        <Layout>vertical</Layout>
+                                        <Children>
+
+                                            <WidgetGroup>
+                                                <Layout>vertical</Layout>
+                                                <Children>
+
+                                                    <Template src="skin:device/waveform/waveform.xml">
+                                                        <SetVariable name="Number"><Variable name="Number1"/></SetVariable>
+                                                        <SetVariable name="Widget"><Variable name="Widget1"/></SetVariable>
+                                                        <SetVariable name="Group"><Variable name="Group1"/></SetVariable>
+                                                        <SetVariable name="Align"><Variable name="Align1"/></SetVariable>
+                                                        <SetVariable name="SignalHighColor"><Variable name="SignalHighColor1"/></SetVariable>
+                                                        <SetVariable name="SignalMidColor"><Variable name="SignalMidColor1"/></SetVariable>
+                                                        <SetVariable name="SignalLowColor"><Variable name="SignalLowColor1"/></SetVariable>
+                                                        <SetVariable name="MarkRangeColor"><Variable name="MarkRangeColor1"/></SetVariable>
+                                                        <SetVariable name="MarkRangeDisabledColor"><Variable name="MarkRangeDisabledColor1"/></SetVariable>
+                                                    </Template>
+
+                                                    <Template src="skin:device/waveform/waveform.xml">
+                                                        <SetVariable name="Number"><Variable name="Number2"/></SetVariable>
+                                                        <SetVariable name="Widget"><Variable name="Widget2"/></SetVariable>
+                                                        <SetVariable name="Group"><Variable name="Group2"/></SetVariable>
+                                                        <SetVariable name="Align"><Variable name="Align2"/></SetVariable>
+                                                        <SetVariable name="SignalHighColor"><Variable name="SignalHighColor2"/></SetVariable>
+                                                        <SetVariable name="SignalMidColor"><Variable name="SignalMidColor2"/></SetVariable>
+                                                        <SetVariable name="SignalLowColor"><Variable name="SignalLowColor2"/></SetVariable>
+                                                        <SetVariable name="MarkRangeColor"><Variable name="MarkRangeColor2"/></SetVariable>
+                                                        <SetVariable name="MarkRangeDisabledColor"><Variable name="MarkRangeDisabledColor2"/></SetVariable>
+                                                    </Template>
+
+                                                </Children>
+                                                <Connection>
+                                                    <ConfigKey>[DeckRow1],show_row</ConfigKey>
+                                                    <BindProperty>visible</BindProperty>
+                                                </Connection>
+                                            </WidgetGroup>
+
+                                            <WidgetGroup>
+                                                <Layout>vertical</Layout>
+                                                <Children>
+
+                                                    <Template src="skin:device/waveform/waveform.xml">
+                                                        <SetVariable name="Number"><Variable name="Number3"/></SetVariable>
+                                                        <SetVariable name="Widget"><Variable name="Widget3"/></SetVariable>
+                                                        <SetVariable name="Group"><Variable name="Group3"/></SetVariable>
+                                                        <SetVariable name="Align"><Variable name="Align3"/></SetVariable>
+                                                        <SetVariable name="SignalHighColor"><Variable name="SignalHighColor3"/></SetVariable>
+                                                        <SetVariable name="SignalMidColor"><Variable name="SignalMidColor3"/></SetVariable>
+                                                        <SetVariable name="SignalLowColor"><Variable name="SignalLowColor3"/></SetVariable>
+                                                        <SetVariable name="MarkRangeColor"><Variable name="MarkRangeColor3"/></SetVariable>
+                                                        <SetVariable name="MarkRangeDisabledColor"><Variable name="MarkRangeDisabledColor3"/></SetVariable>
+                                                    </Template>
+
+                                                    <Template src="skin:device/waveform/waveform.xml">
+                                                        <SetVariable name="Number"><Variable name="Number4"/></SetVariable>
+                                                        <SetVariable name="Widget"><Variable name="Widget4"/></SetVariable>
+                                                        <SetVariable name="Group"><Variable name="Group4"/></SetVariable>
+                                                        <SetVariable name="Align"><Variable name="Align4"/></SetVariable>
+                                                        <SetVariable name="SignalHighColor"><Variable name="SignalHighColor4"/></SetVariable>
+                                                        <SetVariable name="SignalMidColor"><Variable name="SignalMidColor4"/></SetVariable>
+                                                        <SetVariable name="SignalLowColor"><Variable name="SignalLowColor4"/></SetVariable>
+                                                        <SetVariable name="MarkRangeColor"><Variable name="MarkRangeColor4"/></SetVariable>
+                                                        <SetVariable name="MarkRangeDisabledColor"><Variable name="MarkRangeDisabledColor4"/></SetVariable>
+                                                    </Template>
+
+                                                </Children>
+                                                <Connection>
+                                                    <ConfigKey>[DeckRow2],show_row</ConfigKey>
+                                                    <BindProperty>visible</BindProperty>
+                                                </Connection>
+                                            </WidgetGroup>
+
+                                        </Children>
+                                    </WidgetGroup>
+
+                                    <WidgetGroup><!-- margin-right -->
+                                        <MinimumSize>10,-1</MinimumSize>
+                                        <MaximumSize>10,-1</MaximumSize>
+                                    </WidgetGroup>
+
+                                </Children>
+                            </WidgetGroup>
+
+                            <Template src="skin:device/waveform/border_bottom.xml"/>
+
+                        </Children>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup><!-- margin-right -->
+                <MinimumSize>4,-1</MinimumSize>
+                <MaximumSize>4,-1</MaximumSize>
+            </WidgetGroup>
+
+        </Children>
+        <Connection>
+            <ConfigKey persist="true">[Visuals],show_row</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    WAVEFORM DEVICE END
+    **************************************************************************************
+    -->
+
+</Template>

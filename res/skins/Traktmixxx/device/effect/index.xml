@@ -1,0 +1,139 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    EFFECT DEVICE BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>stacked</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+
+            <!-- Hack for BUG https://github.com/22degrees/RoundCorners/issues/4 -->
+            <Template src="skin:shared/confighack.xml"/>
+
+            <Template src="skin:device/effect/config.xml"/>
+            
+            <WidgetGroup>
+                <ObjectName>EffectUnit<Variable name="EffectUnitNumber"/></ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+
+                    <Template src="skin:device/effect/border_top.xml"/>
+
+                    <WidgetGroup>
+                        <ObjectName>Rectangle</ObjectName>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>me,me</SizePolicy>
+                        <Children>
+
+                            <Template src="skin:device/effect/info.xml"/>
+
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>me,me</SizePolicy>
+                                <Children>
+
+                                    <WidgetGroup><!-- margin-left -->
+                                        <MinimumSize>10,-1</MinimumSize>
+                                        <MaximumSize>10,-1</MaximumSize>
+                                    </WidgetGroup>
+
+                                    <WidgetGroup>
+                                        <ObjectName>Rectangle</ObjectName>
+                                        <Layout>vertical</Layout>
+                                        <SizePolicy>me,me</SizePolicy>
+                                        <Children>
+
+                                            <WidgetGroup><!-- margin-top -->
+                                                <MinimumSize>-1,10</MinimumSize>
+                                                <MaximumSize>-1,10</MaximumSize>
+                                            </WidgetGroup>
+
+                                            <WidgetGroup>
+                                                <ObjectName>Line</ObjectName>
+                                                <MinimumSize>-1,2</MinimumSize>
+                                                <MaximumSize>-1,2</MaximumSize>
+                                            </WidgetGroup>
+
+                                            <Template src="skin:device/effect/chain.xml">
+                                                <SetVariable name="EffectNumber">1</SetVariable>
+                                            </Template>
+
+                                            <WidgetGroup>
+                                                <ObjectName>Rectangle</ObjectName>
+                                                <Layout>vertical</Layout>
+                                                <SizePolicy>me,me</SizePolicy>
+                                                <Children>
+
+                                                    <Template src="skin:device/effect/chain.xml">
+                                                        <SetVariable name="EffectNumber">2</SetVariable>
+                                                    </Template>
+
+                                                    <Template src="skin:device/effect/chain.xml">
+                                                        <SetVariable name="EffectNumber">3</SetVariable>
+                                                    </Template>
+
+                                                </Children>
+                                                <Connection>
+                                                    <ConfigKey persist="true">[EffectUnit],show_chain</ConfigKey>
+                                                    <BindProperty>visible</BindProperty>
+                                                </Connection>
+                                            </WidgetGroup>
+
+
+                                            <WidgetGroup>
+                                                <MinimumSize>-1,10</MinimumSize>
+                                                <MaximumSize>-1,10</MaximumSize>
+                                                <Connection>
+                                                    <ConfigKey persist="true">[EffectUnit],show_controls</ConfigKey>
+                                                    <BindProperty>visible</BindProperty>
+                                                </Connection>
+                                            </WidgetGroup>
+
+                                            <WidgetGroup>
+                                                <ObjectName>Line</ObjectName>
+                                                <MinimumSize>-1,2</MinimumSize>
+                                                <MaximumSize>-1,2</MaximumSize>
+                                                <Connection>
+                                                    <ConfigKey persist="true">[EffectUnit],show_controls</ConfigKey>
+                                                    <BindProperty>visible</BindProperty>
+                                                </Connection>
+                                            </WidgetGroup>
+
+
+                                        </Children>
+                                    </WidgetGroup>
+
+                                    <WidgetGroup><!-- margin-right-->
+                                        <MinimumSize>10,-1</MinimumSize>
+                                        <MaximumSize>10,-1</MaximumSize>
+                                    </WidgetGroup>
+
+                                </Children>
+                            </WidgetGroup>
+
+                        </Children>
+                    </WidgetGroup>
+
+                    <Template src="skin:device/effect/controls.xml"/>
+
+                    <Template src="skin:device/effect/border_bottom.xml">
+                        <SetVariable name="Widget">[EffectUnit]</SetVariable>
+                    </Template>
+
+                </Children>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    EFFECT DEVICE END
+    **************************************************************************************
+    -->
+
+</Template>

@@ -1,0 +1,100 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    SAMPLER DEVICE BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>stacked</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+
+            <!-- Hack for BUG https://github.com/22degrees/RoundCorners/issues/4 -->
+            <Template src="skin:shared/confighack.xml"/>
+
+            <Template src="skin:device/sampler/config.xml"/>
+
+            <WidgetGroup>
+                <ObjectName>Sampler<Variable name="Number"/></ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,max</SizePolicy>
+                <Children>
+
+                    <Template src="skin:device/sampler/border_top.xml"/>
+
+                    <WidgetGroup>
+                        <ObjectName>Rectangle</ObjectName>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>me,me</SizePolicy>
+                        <MinimumSize>-1,95</MinimumSize>
+                        <MaximumSize>-1,95</MaximumSize>
+                        <Children>
+
+                            <Template src="skin:device/sampler/trackinfo.xml"/>
+
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>me,f</SizePolicy>
+                                <MinimumSize>-1,59</MinimumSize>
+                                <MaximumSize>-1,59</MaximumSize>
+                                <Children>
+
+                                    <WidgetGroup><!-- margin-left -->
+                                        <MinimumSize>10,-1</MinimumSize>
+                                        <MaximumSize>10,-1</MaximumSize>
+                                    </WidgetGroup>
+
+                                    <WidgetGroup>
+                                        <ObjectName>Rectangle</ObjectName>
+                                        <Layout>vertical</Layout>
+                                        <SizePolicy>me,me</SizePolicy>
+                                        <Children>
+
+                                            <WidgetGroup>
+                                                <ObjectName>Line</ObjectName>
+                                                <MinimumSize>-1,2</MinimumSize>
+                                                <MaximumSize>-1,2</MaximumSize>
+                                            </WidgetGroup>
+
+                                            <Template src="skin:device/sampler/overview.xml"/>
+
+                                            <WidgetGroup>
+                                                <ObjectName>Line</ObjectName>
+                                                <MinimumSize>-1,2</MinimumSize>
+                                                <MaximumSize>-1,2</MaximumSize>
+                                            </WidgetGroup>
+
+                                        </Children>
+                                    </WidgetGroup>
+
+                                    <WidgetGroup><!-- margin-left -->
+                                        <MinimumSize>10,-1</MinimumSize>
+                                        <MaximumSize>10,-1</MaximumSize>
+                                    </WidgetGroup>
+
+                                </Children>
+                            </WidgetGroup>
+
+                        </Children>
+                    </WidgetGroup>
+
+                    <Template src="skin:device/sampler/transport.xml"/>
+
+                    <Template src="skin:device/sampler/vu.xml"/>
+
+                    <Template src="skin:device/sampler/border_bottom.xml"/>
+
+                </Children>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    SAMPLER DEVICE END
+    **************************************************************************************
+    -->
+
+</Template>

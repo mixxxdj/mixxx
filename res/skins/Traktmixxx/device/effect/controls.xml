@@ -1,0 +1,230 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    EFFECT CONTROLS BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>Rectangle</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,f</SizePolicy>
+        <MinimumSize>-1,55</MinimumSize>
+        <MaximumSize>-1,55</MaximumSize>
+        <Children>
+
+            <WidgetGroup><!-- margin-top -->
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,10</MinimumSize>
+                <MaximumSize>-1,10</MaximumSize>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,45</MinimumSize>
+                <MaximumSize>-1,45</MaximumSize>
+                <Children>
+
+                    <WidgetGroup><!-- margin-left -->
+                        <SizePolicy>f,f</SizePolicy>
+                        <MinimumSize>10,45</MinimumSize>
+                        <MaximumSize>10,45</MaximumSize>
+                    </WidgetGroup>
+
+                    <WidgetGroup>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>me,f</SizePolicy>
+                        <MinimumSize>-1,45</MinimumSize>
+                        <MaximumSize>-1,45</MaximumSize>
+                        <Children>
+
+                            <WidgetGroup>
+                                <ObjectName>EffectAssignToButtons</ObjectName>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>me,f</SizePolicy>
+                                <MinimumSize>-1,23</MinimumSize>
+                                <MaximumSize>-1,23</MaximumSize>
+                                <Children>
+
+                                    <Template src="skin:device/effect/assign_button.xml">
+                                        <SetVariable name="ObjectName">Btn-btlr</SetVariable>
+                                        <SetVariable name="Name">MASTER</SetVariable>
+                                        <SetVariable name="Group">[Master]</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/effect/assign_button.xml">
+                                        <SetVariable name="ObjectName">Btn-nbr-bisected</SetVariable>
+                                        <SetVariable name="Name">DECK 1</SetVariable>
+                                        <SetVariable name="Group">[Channel1]</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/effect/assign_button.xml">
+                                        <SetVariable name="ObjectName">Btn-btrr</SetVariable>
+                                        <SetVariable name="Name">DECK 2</SetVariable>
+                                        <SetVariable name="Group">[Channel2]</SetVariable>
+                                    </Template>
+
+                                </Children>
+                            </WidgetGroup>
+
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>me,f</SizePolicy>
+                                <MinimumSize>-1,22</MinimumSize>
+                                <MaximumSize>-1,22</MaximumSize>
+                                <Children>
+
+                                    <Template src="skin:device/effect/assign_button.xml">
+                                        <SetVariable name="ObjectName">Btn-bblr</SetVariable>
+                                        <SetVariable name="Name">HEAD</SetVariable>
+                                        <SetVariable name="Group">[Headphone]</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/effect/assign_button.xml">
+                                        <SetVariable name="ObjectName">Btn-nbr-bisected</SetVariable>
+                                        <SetVariable name="Name">DECK 3</SetVariable>
+                                        <SetVariable name="Group">[Channel3]</SetVariable>
+                                    </Template>
+
+                                    <Template src="skin:device/effect/assign_button.xml">
+                                        <SetVariable name="ObjectName">Btn-bbrr</SetVariable>
+                                        <SetVariable name="Name">DECK 4</SetVariable>
+                                        <SetVariable name="Group">[Channel4]</SetVariable>
+                                    </Template>
+
+                                </Children>
+                            </WidgetGroup>
+
+                        </Children>
+                    </WidgetGroup>
+
+                    <WidgetGroup><!-- margin-right -->
+                        <MinimumSize>10,-1</MinimumSize>
+                        <MaximumSize>10,-1</MaximumSize>
+                    </WidgetGroup>
+
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,f</SizePolicy>
+                        <MinimumSize>-1,45</MinimumSize>
+                        <MaximumSize>-1,45</MaximumSize>
+                        <Children>
+
+                            <PushButton>
+                                <ObjectName>Btn-blr</ObjectName>
+                                <Size>20me,45f</Size>
+                                <NumberStates>1</NumberStates>
+                                <State>
+                                    <Number>0</Number>
+                                    <Text>◀</Text>
+                                </State>
+                                <Connection>
+                                    <ConfigKey>[EffectRack<Variable name="EffectRackNumber"/>_EffectUnit<Variable name="EffectUnitNumber"/>],prev_chain</ConfigKey>
+                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                    <ButtonState>LeftButton</ButtonState>
+                                </Connection>
+                            </PushButton>
+
+                            <PushButton>
+                                <ObjectName>Btn-brr</ObjectName>
+                                <Size>20me,45f</Size>
+                                <NumberStates>1</NumberStates>
+                                <State>
+                                    <Number>0</Number>
+                                    <Text>▶</Text>
+                                </State>
+                                <Connection>
+                                    <ConfigKey>[EffectRack<Variable name="EffectRackNumber"/>_EffectUnit<Variable name="EffectUnitNumber"/>],next_chain</ConfigKey>
+                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                    <ButtonState>LeftButton</ButtonState>
+                                </Connection>
+                            </PushButton>
+
+                            <WidgetGroup><!-- margin right -->
+                                <SizePolicy>f,f</SizePolicy>
+                                <MinimumSize>10,45</MinimumSize>
+                                <MaximumSize>10,45</MaximumSize>
+                            </WidgetGroup>
+
+                            <WidgetGroup>
+                                <Layout>vertical</Layout>
+                                <Size>30f,45f</Size>
+                                <Children>
+
+                                    <KnobComposed>
+                                        <TooltipId/>
+                                        <Size>30f,30f</Size>
+                                        <Knob>knob/knob_deck<Variable name="Number"/>_2.svg</Knob>
+                                        <MinAngle>-135</MinAngle>
+                                        <MaxAngle>135</MaxAngle>
+                                        <Connection>
+                                            <ConfigKey>[EffectRack<Variable name="EffectRackNumber"/>_EffectUnit<Variable name="EffectUnitNumber"/>],mix</ConfigKey>
+                                        </Connection>
+                                    </KnobComposed>
+
+                                    <WidgetGroup>
+                                        <MinimumSize>-1,3</MinimumSize>
+                                        <MaximumSize>-1,3</MaximumSize>
+                                    </WidgetGroup>
+
+                                    <Label>
+                                        <Size>30f,12f</Size>
+                                        <ObjectName>EffectKnobLabel</ObjectName>
+                                        <Text>Mix</Text>
+                                    </Label>
+
+                                    </Children>
+                                </WidgetGroup>
+
+                            <WidgetGroup><!-- margin right -->
+                                <SizePolicy>f,f</SizePolicy>
+                                <MinimumSize>10,45</MinimumSize>
+                                <MaximumSize>10,45</MaximumSize>
+                            </WidgetGroup>
+
+                            <PushButton>
+                                <ObjectName>Btn-br</ObjectName>
+                                <Size>20me,45f</Size>
+                                <NumberStates>2</NumberStates>
+                                <State>
+                                    <Number>0</Number>
+                                    <Text>FX</Text>
+                                </State>
+                                <State>
+                                    <Number>1</Number>
+                                    <Text>FX</Text>
+                                </State>
+                                <Connection>
+                                    <ConfigKey>[EffectRack<Variable name="EffectRackNumber"/>_EffectUnit<Variable name="EffectUnitNumber"/>],enabled</ConfigKey>
+                                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                    <ButtonState>LeftButton</ButtonState>
+                                </Connection>
+                            </PushButton>
+
+                        </Children>
+                    </WidgetGroup>
+
+                    <WidgetGroup><!-- margin right -->
+                        <SizePolicy>f,f</SizePolicy>
+                        <MinimumSize>10,45</MinimumSize>
+                        <MaximumSize>10,45</MaximumSize>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetGroup>
+
+        </Children>
+        <Connection>
+            <ConfigKey persist="true">[EffectUnit],show_controls</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    EFFECT CONTROLS END
+    **************************************************************************************
+    -->
+
+</Template>

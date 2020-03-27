@@ -1,0 +1,69 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    LIBRARY, SEARCH, TREE VIEW, PREVIEWDECK UNIT BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>Row</ObjectName>
+        <MinimumSize>-1,0</MinimumSize>
+        <SizePolicy>me,i</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+
+            <WidgetGroup>
+                <MinimumSize>4,-1</MinimumSize>
+                <MaximumSize>4,-1</MaximumSize>
+            </WidgetGroup>
+
+            <Splitter>
+                <SplitSizesConfigKey>[RoundedCorners],LibrarySidebarSplitSize</SplitSizesConfigKey>
+                <Orientation>horizontal</Orientation>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+
+                    <WidgetGroup>
+                        <Layout>vertical</Layout>
+                        <Size>180me,me</Size>
+                        <Children>
+
+                            <Template src="skin:device/search/index.xml"/>
+
+                            <Template src="skin:device/previewdeck/index.xml"/>
+
+                            <Template src="skin:device/treeview/index.xml"/>
+
+                            <Template src="skin:device/coverart/index.xml"/>
+
+                        </Children>
+                    </WidgetGroup>
+
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <Size>400p,me</Size>
+                        <Children>
+
+                            <Template src="skin:device/library/index.xml"/>
+
+                        </Children>
+                    </WidgetGroup>
+
+                </Children>
+            </Splitter>
+
+            <WidgetGroup>
+                <MinimumSize>4,-1</MinimumSize>
+                <MaximumSize>4,-1</MaximumSize>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    LIBRARY, SEARCH, TREE VIEW, PREVIEWDECK UNIT END
+    **************************************************************************************
+    -->
+
+</Template>

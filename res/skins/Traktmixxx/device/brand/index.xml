@@ -1,0 +1,83 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    BRAND DEVICE BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>Brand</ObjectName>
+        <Layout>vertical</Layout>
+        <Size>150f,69f</Size>
+        <Children>
+
+            <Template src="skin:device/brand/border_top.xml"/>
+
+            <WidgetGroup>
+                <ObjectName>Rectangle</ObjectName>
+                <Layout>horizontal</Layout>
+                <Size>150f,45f</Size>
+                <Children>
+
+                    <WidgetGroup><!-- spacer -->
+                        <MinimumSize>10,-1</MinimumSize>
+                        <MaximumSize>10,-1</MaximumSize>
+                    </WidgetGroup>
+
+                    <WidgetGroup>
+                        <ObjectName>Logo</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <Size>130f,45f</Size>
+                        <Children>
+
+                            <VuMeter>
+                                <ObjectName>Latency</ObjectName>
+                                <TooltipId>audio_latency_usage</TooltipId>
+                                <Size>65f,45f</Size>
+                                <PathVu>background/bg_7_vu_on.svg</PathVu>
+                                <PathBack>background/bg_7_vu_off.svg</PathBack>
+                                <Horizontal>true</Horizontal>
+                                <PeakHoldSize>2</PeakHoldSize>
+                                <PeakHoldTime>1000</PeakHoldTime>
+                                <PeakFallTime>1000</PeakFallTime>
+                                <PeakFallStep>1</PeakFallStep>
+                                <Connection>
+                                        <ConfigKey>[Master],audio_latency_usage</ConfigKey>
+                                </Connection>
+                            </VuMeter>
+
+                            <Label>
+                                <Size>50f,45f</Size>
+                                <ObjectName>Version</ObjectName>
+                                <Text>v.2.2.3</Text>
+                                <Alignment>right</Alignment>
+                            </Label>
+
+                        </Children>
+                    </WidgetGroup>
+
+                    <WidgetGroup><!-- spacer -->
+                        <MinimumSize>10,-1</MinimumSize>
+                        <MaximumSize>10,-1</MaximumSize>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetGroup>
+
+            <Template src="skin:device/brand/border_bottom.xml"/>
+
+        </Children>
+    </WidgetGroup>
+
+    <WidgetGroup><!-- margin-right-->
+        <MinimumSize>4,-1</MinimumSize>
+        <MaximumSize>4,-1</MaximumSize>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    BRAND DEVICE END
+    **************************************************************************************
+    -->
+
+</Template>

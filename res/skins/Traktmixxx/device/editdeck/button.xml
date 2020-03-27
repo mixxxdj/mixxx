@@ -1,0 +1,48 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    EDITDECK BUTTON BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <MinimumSize>56,45</MinimumSize>
+        <MaximumSize>56,45</MaximumSize>
+        <Children>
+
+            <WidgetGroup><!-- margin-right -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+            <PushButton>
+                <ObjectName><Variable name="ObjectName"/></ObjectName>
+                <TooltipId><Variable name="TooltipId"/></TooltipId>
+                <Size>46f,45f</Size>
+                <NumberStates>2</NumberStates>
+                <State>
+                    <Number>0</Number>
+                    <Text><Variable name="Label"/></Text>
+                </State>
+                <State>
+                    <Number>1</Number>
+                    <Text><Variable name="Label"/></Text>
+                </State>
+                <Connection>
+                    <ConfigKey><Variable name="ConfigKey"/></ConfigKey>
+                    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                    <ButtonState>LeftButton</ButtonState>
+                </Connection>
+            </PushButton>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    EDITDECK BUTTON END
+    **************************************************************************************
+    -->
+
+</Template>

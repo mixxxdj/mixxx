@@ -1,0 +1,300 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    MIXER VU BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>vertical</Layout>
+        <!--<Size>68f,165f</Size>-->
+        <Size>68f,me</Size>
+        <Children>
+
+            <WidgetGroup><!-- spacer -->
+                <Layout>horizontal</Layout>
+                <Size>68,max</Size>
+                <Children>
+
+                    <WidgetGroup><!-- dyn margin-top -->
+                        <Size>me,10f</Size>
+                        <Connection>
+                            <ConfigKey persist="true"><Variable name="Widget"/>,show_filter</ConfigKey>
+                            <BindProperty>visible</BindProperty>
+                        </Connection>
+                    </WidgetGroup>
+
+                    <WidgetGroup><!-- dyn margin-top -->
+                        <Size>me,10f</Size>
+                        <Connection>
+                            <ConfigKey persist="true"><Variable name="Widget"/>,show_eq</ConfigKey>
+                            <BindProperty>visible</BindProperty>
+                        </Connection>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetGroup>
+
+
+            <SizeAwareStack>
+                <Children>
+
+                    <WidgetGroup>
+                        <Layout>vertical</Layout>
+                        <MinimumSize>68,0</MinimumSize>
+                        <MaximumSize>68,45</MaximumSize>
+                        <Children>
+
+                            <WidgetGroup>
+                                <ObjectName>PeakIndicator</ObjectName>
+                                <Layout>horizontal</Layout>
+                                <Size>68f,13</Size>
+                                <Children>
+
+                                    <StatusLight>
+                                        <TooltipId>channel_PeakIndicatorL</TooltipId>
+                                        <PathStatusLight>background/bg_3_clipping_left_on.svg</PathStatusLight>
+                                        <PathBack>background/bg_3_clipping_left_off.svg</PathBack>
+                                        <Connection>
+                                            <ConfigKey><Variable name="Group"/>,PeakIndicatorL</ConfigKey>
+                                        </Connection>
+                                    </StatusLight>
+
+                                    <StatusLight>
+                                        <TooltipId>channel_PeakIndicatorR</TooltipId>
+                                        <PathStatusLight>background/bg_3_clipping_right_on.svg</PathStatusLight>
+                                        <PathBack>background/bg_3_clipping_right_off.svg</PathBack>
+                                        <Connection>
+                                            <ConfigKey><Variable name="Group"/>,PeakIndicatorR</ConfigKey>
+                                        </Connection>
+                                    </StatusLight>
+
+                                </Children>
+                            </WidgetGroup>
+
+                            <WidgetGroup>
+                                <ObjectName>Vu</ObjectName>
+                                <Layout>horizontal</Layout>
+                                <!--<Size>68f,122f</Size>-->
+                                <Size>68f,me</Size>
+                                <Children>
+
+                                    <VuMeter>
+                                        <!-- <SizePolicy>min,max</SizePolicy> -->
+                                        <Size>68f,me</Size>
+                                        <TooltipId>channel_VuMeterL</TooltipId>
+                                        <PathVu>background/bg_1_vu_left_on.svg</PathVu>
+                                        <Horizontal>false</Horizontal>
+                                        <PeakHoldSize>4</PeakHoldSize>
+                                        <PeakHoldTime>500</PeakHoldTime>
+                                        <PeakFallTime>50</PeakFallTime>
+                                        <PeakFallStep>2</PeakFallStep>
+                                        <Connection>
+                                            <ConfigKey><Variable name="Group"/>,VuMeterL</ConfigKey>
+                                        </Connection>
+                                    </VuMeter>
+
+                                    <VuMeter>
+                                        <!-- <SizePolicy>min,max</SizePolicy> -->
+                                        <Size>68f,me</Size>
+                                        <TooltipId>channel_VuMeterR</TooltipId>
+                                        <PathVu>background/bg_1_vu_right_on.svg</PathVu>
+                                        <Horizontal>false</Horizontal>
+                                        <PeakHoldSize>4</PeakHoldSize>
+                                        <PeakHoldTime>500</PeakHoldTime>
+                                        <PeakFallTime>50</PeakFallTime>
+                                        <PeakFallStep>2</PeakFallStep>
+                                        <Connection>
+                                            <ConfigKey><Variable name="Group"/>,VuMeterR</ConfigKey>
+                                        </Connection>
+                                    </VuMeter>
+
+                                </Children>
+                            </WidgetGroup>
+        
+                            <WidgetGroup>
+                                <ObjectName>VuBottom</ObjectName>
+                                <MinimumSize>68,3</MinimumSize>
+                                <MaximumSize>68,3</MaximumSize>
+                            </WidgetGroup>
+
+                        </Children>
+                    </WidgetGroup>
+
+                    <WidgetGroup>
+                        <Layout>vertical</Layout>
+                        <MinimumSize>68,46</MinimumSize>
+                        <MaximumSize>68,100</MaximumSize>
+                        <Children>
+
+                            <WidgetGroup>
+                                <ObjectName>PeakIndicator</ObjectName>
+                                <Layout>horizontal</Layout>
+                                <Size>68f,23</Size>
+                                <Children>
+
+                                    <StatusLight>
+                                        <TooltipId>channel_PeakIndicatorL</TooltipId>
+                                        <PathStatusLight>background/bg_2_clipping_left_on.svg</PathStatusLight>
+                                        <PathBack>background/bg_2_clipping_left_off.svg</PathBack>
+                                        <Connection>
+                                            <ConfigKey><Variable name="Group"/>,PeakIndicatorL</ConfigKey>
+                                        </Connection>
+                                    </StatusLight>
+
+                                    <StatusLight>
+                                        <TooltipId>channel_PeakIndicatorR</TooltipId>
+                                        <PathStatusLight>background/bg_2_clipping_right_on.svg</PathStatusLight>
+                                        <PathBack>background/bg_2_clipping_right_off.svg</PathBack>
+                                        <Connection>
+                                            <ConfigKey><Variable name="Group"/>,PeakIndicatorR</ConfigKey>
+                                        </Connection>
+                                    </StatusLight>
+
+                                </Children>
+                            </WidgetGroup>
+
+                            <WidgetGroup>
+                                <ObjectName>Vu</ObjectName>
+                                <Layout>horizontal</Layout>
+                                <!--<Size>68f,122f</Size>-->
+                                <Size>68f,me</Size>
+                                <Children>
+
+                                    <VuMeter>
+                                        <!-- <SizePolicy>min,max</SizePolicy> -->
+                                        <Size>68f,me</Size>
+                                        <TooltipId>channel_VuMeterL</TooltipId>
+                                        <PathVu>background/bg_1_vu_left_on.svg</PathVu>
+                                        <Horizontal>false</Horizontal>
+                                        <PeakHoldSize>4</PeakHoldSize>
+                                        <PeakHoldTime>500</PeakHoldTime>
+                                        <PeakFallTime>50</PeakFallTime>
+                                        <PeakFallStep>2</PeakFallStep>
+                                        <Connection>
+                                            <ConfigKey><Variable name="Group"/>,VuMeterL</ConfigKey>
+                                        </Connection>
+                                    </VuMeter>
+
+                                    <VuMeter>
+                                        <!-- <SizePolicy>min,max</SizePolicy> -->
+                                        <Size>68f,me</Size>
+                                        <TooltipId>channel_VuMeterR</TooltipId>
+                                        <PathVu>background/bg_1_vu_right_on.svg</PathVu>
+                                        <Horizontal>false</Horizontal>
+                                        <PeakHoldSize>4</PeakHoldSize>
+                                        <PeakHoldTime>500</PeakHoldTime>
+                                        <PeakFallTime>50</PeakFallTime>
+                                        <PeakFallStep>2</PeakFallStep>
+                                        <Connection>
+                                            <ConfigKey><Variable name="Group"/>,VuMeterR</ConfigKey>
+                                        </Connection>
+                                    </VuMeter>
+
+                                </Children>
+                            </WidgetGroup>
+        
+                            <WidgetGroup>
+                                <ObjectName>VuBottom</ObjectName>
+                                <MinimumSize>68,3</MinimumSize>
+                                <MaximumSize>68,3</MaximumSize>
+                            </WidgetGroup>
+
+                        </Children>
+                    </WidgetGroup>
+
+                    <WidgetGroup>
+                        <Layout>vertical</Layout>
+                        <MinimumSize>68,101</MinimumSize>
+                        <MaximumSize>68,-1</MaximumSize>
+                        <Children>
+
+                            <WidgetGroup>
+                                <ObjectName>PeakIndicator</ObjectName>
+                                <Layout>horizontal</Layout>
+                                <Size>68f,33</Size>
+                                <Children>
+
+                                    <StatusLight>
+                                        <TooltipId>channel_PeakIndicatorL</TooltipId>
+                                        <PathStatusLight>background/bg_1_clipping_left_on.svg</PathStatusLight>
+                                        <PathBack>background/bg_1_clipping_left_off.svg</PathBack>
+                                        <Connection>
+                                            <ConfigKey><Variable name="Group"/>,PeakIndicatorL</ConfigKey>
+                                        </Connection>
+                                    </StatusLight>
+
+                                    <StatusLight>
+                                        <TooltipId>channel_PeakIndicatorR</TooltipId>
+                                        <PathStatusLight>background/bg_1_clipping_right_on.svg</PathStatusLight>
+                                        <PathBack>background/bg_1_clipping_right_off.svg</PathBack>
+                                        <Connection>
+                                            <ConfigKey><Variable name="Group"/>,PeakIndicatorR</ConfigKey>
+                                        </Connection>
+                                    </StatusLight>
+
+                                </Children>
+                            </WidgetGroup>
+
+                            <WidgetGroup>
+                                <ObjectName>Vu</ObjectName>
+                                <Layout>horizontal</Layout>
+                                <!--<Size>68f,122f</Size>-->
+                                <Size>68f,me</Size>
+                                <Children>
+
+                                    <VuMeter>
+                                        <!-- <SizePolicy>min,max</SizePolicy> -->
+                                        <Size>68f,me</Size>
+                                        <TooltipId>channel_VuMeterL</TooltipId>
+                                        <PathVu>background/bg_1_vu_left_on.svg</PathVu>
+                                        <Horizontal>false</Horizontal>
+                                        <PeakHoldSize>4</PeakHoldSize>
+                                        <PeakHoldTime>500</PeakHoldTime>
+                                        <PeakFallTime>50</PeakFallTime>
+                                        <PeakFallStep>2</PeakFallStep>
+                                        <Connection>
+                                            <ConfigKey><Variable name="Group"/>,VuMeterL</ConfigKey>
+                                        </Connection>
+                                    </VuMeter>
+
+                                    <VuMeter>
+                                        <!-- <SizePolicy>min,max</SizePolicy> -->
+                                        <Size>68f,me</Size>
+                                        <TooltipId>channel_VuMeterR</TooltipId>
+                                        <PathVu>background/bg_1_vu_right_on.svg</PathVu>
+                                        <Horizontal>false</Horizontal>
+                                        <PeakHoldSize>4</PeakHoldSize>
+                                        <PeakHoldTime>500</PeakHoldTime>
+                                        <PeakFallTime>50</PeakFallTime>
+                                        <PeakFallStep>2</PeakFallStep>
+                                        <Connection>
+                                            <ConfigKey><Variable name="Group"/>,VuMeterR</ConfigKey>
+                                        </Connection>
+                                    </VuMeter>
+
+                                </Children>
+                            </WidgetGroup>
+        
+                            <WidgetGroup>
+                                <ObjectName>VuBottom</ObjectName>
+                                <MinimumSize>68,3</MinimumSize>
+                                <MaximumSize>68,3</MaximumSize>
+                            </WidgetGroup>
+
+                        </Children>
+                    </WidgetGroup>
+
+                </Children>
+            </SizeAwareStack>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    MIXER VU END
+    **************************************************************************************
+    -->
+
+</Template>

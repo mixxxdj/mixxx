@@ -1,0 +1,129 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    TRACKINFO BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>i,max</SizePolicy>
+        <Size>-1,17</Size>
+        <Children>
+
+            <WidgetGroup><!-- margin-left -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+            <Label>
+                <Size>23f,17f</Size>
+                <ObjectName>SamplerLabel</ObjectName>
+                <Alignment>center</Alignment>
+                <Text><Variable name="Number"/></Text>
+            </Label>
+
+            <TrackProperty>
+                <ObjectName>Artist</ObjectName>
+                <TooltipId>track_artist</TooltipId>
+                <Size>me,17f</Size>
+                <!-- CSS alignments not respected see bug lp:605530 , lets call <Alignment> -->
+                <Alignment>right</Alignment>
+                <Property>artist</Property>
+                <Group><Variable name="Group"/></Group>
+            </TrackProperty>
+
+            <Label>
+                <ObjectName>Hyphen</ObjectName>
+                <Text> - </Text>
+            </Label>
+
+            <TrackProperty>
+                <ObjectName>Title</ObjectName>
+                <TooltipId>track_title</TooltipId>
+                <Size>me,17f</Size>
+                <!-- CSS alignments not respected see bug lp:605530 , lets call <Alignment> -->
+                <Alignment>left</Alignment>
+                <Property>title</Property>
+                <Group><Variable name="Group"/></Group>
+            </TrackProperty>
+
+            <WidgetGroup><!-- margin-left -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+
+    <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Size>-1,19f</Size>
+        <Children>
+
+            <WidgetGroup><!-- margin-left -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+            <NumberPos>
+                <ObjectName>Time</ObjectName>
+                <TooltipId>track_time</TooltipId>
+                <Size>me,me</Size>
+                <Group><Variable name="Group"/></Group>
+                <NumberOfDigits>6</NumberOfDigits>
+                <Connection>
+                    <ConfigKey><Variable name="Group"/>,playposition</ConfigKey>
+                </Connection>
+            </NumberPos>
+
+            <PushButton>
+                <ObjectName>SyncMode</ObjectName>
+                <Size>me,me</Size>
+                <NumberStates>3</NumberStates>
+                <State>
+                    <Number>0</Number>
+                    <Text></Text>
+                </State>
+                <State>
+                    <Number>1</Number>
+                    <Text>SLAVE</Text>
+                </State>
+                <State>
+                    <Number>2</Number>
+                    <Text>MASTER</Text>
+                </State>
+                <Connection>
+                    <ConfigKey><Variable name="Group"/>,sync_mode</ConfigKey>
+                </Connection>
+            </PushButton>
+
+            <NumberBpm>
+                <ObjectName>VisualBpm</ObjectName>
+                <TooltipId>visual_bpm</TooltipId>
+                <Group><Variable name="Group"/></Group>
+                <Size>me,me</Size>
+                <Style>QLabel { text-align: left; padding-left: 0; }</Style>
+                <!-- CSS alignments not respected see bug lp:605530 , lets call <Alignment> -->
+                <Alignment>right</Alignment>
+                <!-- <NumberOfDigits>6</NumberOfDigits> -->
+                <Connection>
+                   <ConfigKey><Variable name="Group"/>,bpm</ConfigKey>
+                </Connection>
+            </NumberBpm>
+
+            <WidgetGroup><!-- margin-left -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    TRACKINFO END
+    **************************************************************************************
+    -->
+
+</Template>

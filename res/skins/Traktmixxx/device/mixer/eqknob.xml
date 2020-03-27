@@ -1,0 +1,107 @@
+<!DOCTYPE template>
+<Template>
+
+    <SetVariable name="EqualizerNumber">1</SetVariable>
+    <SetVariable name="EffectNumber">1</SetVariable>
+    <SetVariable name="EqualizerRackGroup">[EqualizerRack<Variable name="EqualizerNumber"/>]</SetVariable>
+    <SetVariable name="EqualizerEffectUnitGroup">[EqualizerRack<Variable name="EqualizerNumber"/>_<Variable name="Group"/>]</SetVariable>
+    <SetVariable name="EqualizerEffectGroup">[EqualizerRack<Variable name="EqualizerNumber"/>_<Variable name="Group"/>_Effect<Variable name="EffectNumber"/>]</SetVariable>
+
+    <!--
+    **************************************************************************************
+    EQUALIZER-EFFECT-KNOB BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>vertical</Layout>
+        <Size>68f,55f</Size>
+        <Children>
+
+            <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Size>68f,38f</Size>
+                <Children>
+
+                    <WidgetGroup><!-- margin-left -->
+                        <MinimumSize>15,-1</MinimumSize>
+                        <MaximumSize>15,-1</MaximumSize>
+                    </WidgetGroup>
+
+                    <KnobComposed>
+                        <TooltipId><Variable name="TooltipId1"/></TooltipId>
+                        <ObjectName><Variable name="ObjectName1"/></ObjectName>
+                        <Size>38f,38f</Size>
+                        <Knob>knob/knob_deck<Variable name="Number"/>_1.svg</Knob>
+                        <MinAngle>-135</MinAngle>
+                        <MaxAngle>135</MaxAngle>
+                        <Connection>
+                            <ConfigKey><Variable name="EqualizerEffectGroup"/>,parameter<Variable name="Parameter"/></ConfigKey>
+                        </Connection>
+                    </KnobComposed>
+
+                    <WidgetGroup>
+                        <Size>10f,38f</Size>
+                        <Children>
+
+                            <EffectPushButton>
+                                <TooltipId><Variable name="TooltipId2"/></TooltipId>
+                                <ObjectName><Variable name="ObjectName2"/></ObjectName>
+                                <EffectRackGroup><Variable name="EqualizerRackGroup"/></EffectRackGroup>
+                                <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>
+                                <Effect><Variable name="EffectNumber"/></Effect>
+                                <EffectButtonParameter><Variable name="Parameter"/></EffectButtonParameter>
+                                <NumberStates>2</NumberStates>
+                                <State>
+                                    <Number>0</Number>
+                                    <Pressed>button/btn_deck<Variable name="Number"/>_1_kill_down.svg</Pressed>
+                                    <Unpressed>button/btn_deck<Variable name="Number"/>_1_kill.svg</Unpressed>
+                                </State>
+                                <State>
+                                    <Number>1</Number>
+                                    <Pressed>button/btn_deck<Variable name="Number"/>_1_kill_overdown.svg</Pressed>
+                                    <Unpressed>button/btn_deck<Variable name="Number"/>_1_kill_over.svg</Unpressed>
+                                </State>
+                                <Connection>
+                                    <ConfigKey><Variable name="EqualizerEffectGroup"/>,button_parameter<Variable name="Parameter"/></ConfigKey>
+                                    <ButtonState>LeftButton</ButtonState>
+                                </Connection>
+                            </EffectPushButton>
+
+                        </Children>
+                    </WidgetGroup>
+
+                    <WidgetGroup><!-- margin-right -->
+                        <MinimumSize>5,-1</MinimumSize>
+                        <MaximumSize>5,-1</MaximumSize>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <MinimumSize>-1,3</MinimumSize>
+                <MaximumSize>-1,3</MaximumSize>
+            </WidgetGroup>
+
+            <EffectParameterName>
+                <Size>68f,12f</Size>
+                <ObjectName>EqualizerEffectKnobLabel</ObjectName>
+                <EffectRackGroup><Variable name="EqualizerRackGroup"/></EffectRackGroup>
+                <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>
+                <Effect><Variable name="EffectNumber"/></Effect>
+                <EffectParameter><Variable name="Parameter"/></EffectParameter>
+            </EffectParameterName>
+
+        </Children>
+        <Connection>
+            <ConfigKey><Variable name="EqualizerEffectGroup"/>,parameter<Variable name="Parameter"/>_loaded</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    EQUALIZER-EFFECT-KNOB END
+    **************************************************************************************
+    -->
+
+</Template>

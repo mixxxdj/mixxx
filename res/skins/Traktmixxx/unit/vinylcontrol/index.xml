@@ -1,0 +1,63 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    VINYLCONTROLS UNIT BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>Row</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,max</SizePolicy>
+        <Children>
+
+            <Template src="skin:device/vinylcontrol/index.xml">
+                <SetVariable name="Number">1</SetVariable>
+                <SetVariable name="Group">[Channel1]</SetVariable>
+                <SetVariable name="DeckRow">[DeckRow1]</SetVariable>
+            </Template>
+
+            <Template src="skin:device/vinylcontrol/index.xml">
+                <SetVariable name="Number">3</SetVariable>
+                <SetVariable name="Group">[Channel3]</SetVariable>
+                <SetVariable name="DeckRow">[DeckRow2]</SetVariable>
+            </Template>
+
+            <WidgetGroup>
+                <MinimumSize>4,-1</MinimumSize>
+                <MaximumSize>4,-1</MaximumSize>
+            </WidgetGroup>
+
+            <Template src="skin:device/crossfader/index.xml"/>
+
+            <Template src="skin:device/vinylcontrol/index.xml">
+                <SetVariable name="Number">2</SetVariable>
+                <SetVariable name="Group">[Channel2]</SetVariable>
+                <SetVariable name="DeckRow">[DeckRow1]</SetVariable>
+            </Template>
+
+            <Template src="skin:device/vinylcontrol/index.xml">
+                <SetVariable name="Number">4</SetVariable>
+                <SetVariable name="Group">[Channel4]</SetVariable>
+                <SetVariable name="DeckRow">[DeckRow2]</SetVariable>
+            </Template>
+
+            <WidgetGroup>
+                <MinimumSize>4,-1</MinimumSize>
+                <MaximumSize>4,-1</MaximumSize>
+            </WidgetGroup>
+
+        </Children>
+        <Connection>
+            <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    VINYLCONTROLS UNIT END
+    **************************************************************************************
+    -->
+
+</Template>

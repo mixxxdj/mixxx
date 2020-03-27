@@ -1,0 +1,103 @@
+<!DOCTYPE template>
+<Template>
+
+    <SetVariable name="QuickEffectRackGroup">[QuickEffectRack1]</SetVariable>
+    <SetVariable name="QuickEffectUnitGroup">[QuickEffectRack1_<Variable name="Group"/>]</SetVariable>
+    <SetVariable name="QuickEffectEffectGroup">[QuickEffectRack1_<Variable name="Group"/>_Effect1]</SetVariable>
+
+    <!--
+    **************************************************************************************
+    MIXER SUPERKNOB BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <Layout>vertical</Layout>
+        <Size>68f,55f</Size>
+        <Children>
+
+            <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Size>68f,38f</Size>
+                <Children>
+
+                    <WidgetGroup><!-- margin-left -->
+                        <MinimumSize>15,-1</MinimumSize>
+                        <MaximumSize>15,-1</MaximumSize>
+                    </WidgetGroup>
+
+                    <KnobComposed>
+                        <TooltipId><Variable name="TooltipId1"/></TooltipId>
+                        <ObjectName><Variable name="ObjectName1"/></ObjectName>
+                        <Size>38f,38f</Size>
+                        <Knob>knob/knob_deck<Variable name="Number"/>_1.svg</Knob>
+                        <MinAngle>-135</MinAngle>
+                        <MaxAngle>135</MaxAngle>
+                        <Connection>
+                            <ConfigKey><Variable name="QuickEffectUnitGroup"/>,super1</ConfigKey>
+                        </Connection>
+                    </KnobComposed>
+
+                    <WidgetGroup>
+                        <Size>10f,38f</Size>
+                        <Children>
+
+                            <EffectPushButton>
+                                <ObjectName><Variable name="ObjectName2"/></ObjectName>
+                                <EffectRackGroup><Variable name="QuickEffectRackGroup"/></EffectRackGroup>
+                                <EffectUnitGroup><Variable name="QuickEffectUnitGroup"/></EffectUnitGroup>
+                                <Effect>1</Effect>
+                                <EffectButtonParameter>1</EffectButtonParameter>
+                                <NumberStates>2</NumberStates>
+                                <State>
+                                    <Number>0</Number>
+                                    <Pressed>button/btn_deck<Variable name="Number"/>_1_kill_down.svg</Pressed>
+                                    <Unpressed>button/btn_deck<Variable name="Number"/>_1_kill.svg</Unpressed>
+                                </State>
+                                <State>
+                                    <Number>1</Number>
+                                    <Pressed>button/btn_deck<Variable name="Number"/>_1_kill_overdown.svg</Pressed>
+                                    <Unpressed>button/btn_deck<Variable name="Number"/>_1_kill_over.svg</Unpressed>
+                                </State>
+                                <Connection>
+                                    <ConfigKey persist="true"><Variable name="QuickEffectEffectGroup"/>,enabled</ConfigKey>
+                                    <ButtonState>LeftButton</ButtonState>
+                                </Connection>
+                            </EffectPushButton>
+
+                        </Children>
+                    </WidgetGroup>
+
+                    <WidgetGroup><!-- margin-right -->
+                        <MinimumSize>5,-1</MinimumSize>
+                        <MaximumSize>5,-1</MaximumSize>
+                    </WidgetGroup>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <MinimumSize>-1,3</MinimumSize>
+                <MaximumSize>-1,3</MaximumSize>
+            </WidgetGroup>
+
+            <EffectName>
+                <Size>68f,12f</Size>
+                <ObjectName>EffectKnobLabel</ObjectName>
+                <EffectRackGroup><Variable name="QuickEffectRackGroup"/></EffectRackGroup>
+                <EffectUnitGroup><Variable name="QuickEffectUnitGroup"/></EffectUnitGroup>
+                <Effect>1</Effect>
+            </EffectName>
+
+        </Children>
+        <Connection>
+            <ConfigKey><Variable name="QuickEffectEffectGroup"/>,loaded</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    MIXER SUPERKNOB END
+    **************************************************************************************
+    -->
+
+</Template>

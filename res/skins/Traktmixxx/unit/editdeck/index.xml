@@ -1,0 +1,45 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    EDITDECK UNIT BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>Row</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,max</SizePolicy>
+        <Children>
+
+            <WidgetGroup><!-- margin-left -->
+                <MinimumSize>4,-1</MinimumSize>
+                <MaximumSize>4,-1</MaximumSize>
+            </WidgetGroup>
+
+            <Template src="skin:device/editdeck/index.xml">
+                <SetVariable name="Number"><Variable name="Number1"/></SetVariable>
+                <SetVariable name="Widget"><Variable name="Widget1"/></SetVariable>
+                <SetVariable name="Group"><Variable name="Group1"/></SetVariable>
+                <SetVariable name="Align"><Variable name="Align1"/></SetVariable>
+                <SetVariable name="SignalHighColor"><Variable name="SignalHighColor1"/></SetVariable>
+                <SetVariable name="SignalMidColor"><Variable name="SignalMidColor1"/></SetVariable>
+                <SetVariable name="SignalLowColor"><Variable name="SignalLowColor1"/></SetVariable>
+                <SetVariable name="MarkRangeColor"><Variable name="MarkRangeColor1"/></SetVariable>
+                <SetVariable name="MarkRangeDisabledColor"><Variable name="MarkRangeDisabledColor1"/></SetVariable>
+            </Template>
+
+            <WidgetGroup><!-- margin-right -->
+                <MinimumSize>4,-1</MinimumSize>
+                <MaximumSize>4,-1</MaximumSize>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    EDITDECK UNIT END
+    **************************************************************************************
+    -->
+
+</Template>

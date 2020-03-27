@@ -1,0 +1,91 @@
+<!DOCTYPE template>
+<Template>
+
+    <!--
+    **************************************************************************************
+    VINYLCONTROLS BEGIN
+    **************************************************************************************
+    -->
+    <WidgetGroup>
+        <ObjectName>Rectangle</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+
+            <WidgetGroup><!-- spacer -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,45</MinimumSize>
+                <MaximumSize>-1,45</MaximumSize>
+                <Children>
+
+                    <Template src="skin:device/vinylcontrol/button_2-state.xml">
+                        <SetVariable name="ObjectName">Btn-btlr</SetVariable>
+                        <SetVariable name="TooltipId">vinylcontrol_enabled</SetVariable>
+                        <SetVariable name="Size">120me,23f</SetVariable>
+                        <SetVariable name="control">vinylcontrol_enabled</SetVariable>
+                        <SetVariable name="text1">VINYL CONTROL <Variable name="Number"/></SetVariable>
+                        <SetVariable name="text2">VINYL CONTROL <Variable name="Number"/></SetVariable>
+                    </Template>
+
+                    <Template src="skin:device/vinylcontrol/button_2-state.xml">
+                        <SetVariable name="ObjectName">Btn-bblr</SetVariable>
+                        <SetVariable name="TooltipId">passthrough_enabled</SetVariable>
+                        <SetVariable name="Size">120,23f</SetVariable>
+                        <SetVariable name="control">passthrough</SetVariable>
+                        <SetVariable name="text1">PASSTHROUGH</SetVariable>
+                        <SetVariable name="text2">PASSTHROUGH</SetVariable>
+                    </Template>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>-1,45</MinimumSize>
+                <MaximumSize>-1,45</MaximumSize>
+                <Children>
+
+                    <Template src="skin:device/vinylcontrol/button_3-state.xml">
+                        <SetVariable name="ObjectName">Btn-btrr</SetVariable>
+                        <SetVariable name="TooltipId">vinylcontrol_mode</SetVariable>
+                        <SetVariable name="Size">120me,23f</SetVariable>
+                        <SetVariable name="control">vinylcontrol_mode</SetVariable>
+                        <SetVariable name="text1">ABSOLUTE</SetVariable>
+                        <SetVariable name="text2">RELATIVE</SetVariable>
+                        <SetVariable name="text3">CONSTANT</SetVariable>
+                    </Template>
+
+                    <Template src="skin:device/vinylcontrol/button_3-state.xml">
+                        <SetVariable name="ObjectName">Btn-bbrr</SetVariable>
+                        <SetVariable name="TooltipId">vinylcontrol_cueing</SetVariable>
+                        <SetVariable name="Size">120,23f</SetVariable>
+                        <SetVariable name="control">vinylcontrol_cueing</SetVariable>
+                        <SetVariable name="text1">CUE OFF</SetVariable>
+                        <SetVariable name="text2">CUE ON</SetVariable>
+                        <SetVariable name="text3">HOT CUE</SetVariable>
+                    </Template>
+
+                </Children>
+            </WidgetGroup>
+
+            <WidgetGroup><!-- spacer -->
+                <MinimumSize>10,-1</MinimumSize>
+                <MaximumSize>10,-1</MaximumSize>
+            </WidgetGroup>
+
+        </Children>
+    </WidgetGroup>
+    <!--
+    **************************************************************************************
+    VINYLCONTROLS END
+    **************************************************************************************
+    -->
+
+</Template>

@@ -1,0 +1,6 @@
+<!DOCTYPE template>
+<Template>
+
+    <Template src="skin:shared/button_hotcue.xml"/>
+
+</Template>

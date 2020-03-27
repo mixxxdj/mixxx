@@ -1,0 +1,8 @@
+<!DOCTYPE template>
+<Template>
+
+    <Template src="skin:shared/vu_horizontal.xml">
+        <SetVariable name="Widget">[Microphones]</SetVariable>
+    </Template>
+
+</Template>
