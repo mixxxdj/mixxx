@@ -34,11 +34,11 @@ DlgPrefColors::DlgPrefColors(
     connect(colorPaletteEditor,
             &ColorPaletteEditor::paletteChanged,
             this,
-            &DlgPrefColors::loadSettings);
+            &DlgPrefColors::palettesUpdated);
     connect(colorPaletteEditor,
             &ColorPaletteEditor::paletteRemoved,
             this,
-            &DlgPrefColors::loadSettings);
+            &DlgPrefColors::palettesUpdated);
     connect(colorPaletteEditor,
             &ColorPaletteEditor::closeButtonClicked,
             this,
@@ -236,4 +236,16 @@ void DlgPrefColors::slotCloseClicked() {
     widgetSpacer->show();
     pushButtonEdit->show();
     labelCustomPalette->show();
+}
+
+void DlgPrefColors::palettesUpdated() {
+    QString hotcueColors = comboBoxHotcueColors->currentText();
+    QString trackColors = comboBoxTrackColors->currentText();
+    int defaultColor = comboBoxHotcueDefaultColor->currentIndex();
+
+    loadSettings();
+
+    comboBoxHotcueColors->setCurrentText(hotcueColors);
+    comboBoxTrackColors->setCurrentText(trackColors);
+    comboBoxHotcueDefaultColor->setCurrentIndex(defaultColor);
 }

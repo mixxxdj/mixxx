@@ -26,9 +26,10 @@ class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
 
   private slots:
     void slotHotcuePaletteChanged(const QString& palette);
+    void loadSettings();
+    void palettesUpdated();
 
   private:
-    void loadSettings();
     void loadPaletteIntoEditor(const ColorPalette& palette);
     QPixmap drawPalettePreview(const QString& paletteName);
     QIcon drawPaletteIcon(const QString& paletteName);
