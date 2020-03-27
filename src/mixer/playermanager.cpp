@@ -270,7 +270,8 @@ void PlayerManager::slotChangeNumDecks(double v) {
     VERIFY_OR_DEBUG_ASSERT(num <= kMaxNumberOfDecks) {
         qWarning() << "Number of decks exceeds the maximum we expect."
                    << num << "vs" << kMaxNumberOfDecks
-                   << " Please update util/defs.h";
+                   << " Refusing to add another deck. Please update util/defs.h";
+        return;
     }
 
     // Update the soundmanager config even if the number of decks has been

@@ -197,8 +197,9 @@ void InternalClock::onCallbackStart(int sampleRate, int bufferSize) {
 void InternalClock::onCallbackEnd(int sampleRate, int bufferSize) {
     updateBeatLength(sampleRate, m_pClockBpm->get());
 
+    // If the clock was updated mid-call due to seeks or other updates from other decks, skip the
+    // incrementing of the clock.
     if (m_bClockUpdated.fetchAndStoreRelaxed(false)) {
-        // We were updated mid-call, don't increment values
         return;
     }
 
