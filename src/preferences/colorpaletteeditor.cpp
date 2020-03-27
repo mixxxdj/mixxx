@@ -6,6 +6,7 @@
 #include <QHeaderView>
 #include <QLabel>
 #include <QMenu>
+#include <QMessageBox>
 #include <QStandardItemModel>
 #include <QTableView>
 
@@ -214,7 +215,21 @@ void ColorPaletteEditor::slotPaletteNameChanged(const QString& text) {
 }
 
 void ColorPaletteEditor::slotCloseButtonClicked() {
-    emit closeButtonClicked();
+    if (m_pSaveButton->isEnabled()) {
+        QMessageBox msgBox;
+        msgBox.setWindowTitle(tr("Custom Palettes Editor"));
+        msgBox.setText(tr(
+                "The custom palette is not saved.\n"
+                "Close anyway?"));
+        msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        msgBox.setDefaultButton(QMessageBox::Cancel);
+        int ret = msgBox.exec();
+        if (ret == QMessageBox::Ok) {
+            emit closeButtonClicked();
+        }
+    } else {
+        emit closeButtonClicked();
+    }
 }
 
 void ColorPaletteEditor::slotRemoveButtonClicked() {
