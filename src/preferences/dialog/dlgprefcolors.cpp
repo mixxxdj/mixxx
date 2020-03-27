@@ -13,6 +13,7 @@
 namespace {
 
 constexpr int kHotcueDefaultColorIndex = -1;
+constexpr QSize kPalettePreviewSize = QSize(200, 16);
 
 } // anonymous namespace
 
@@ -23,6 +24,8 @@ DlgPrefColors::DlgPrefColors(
           m_colorPaletteSettings(ColorPaletteSettings(pConfig)) {
     setupUi(this);
     colorPaletteEditor->initialize(pConfig);
+    comboBoxHotcueColors->setIconSize(kPalettePreviewSize);
+    comboBoxTrackColors->setIconSize(kPalettePreviewSize);
 
     groupBoxPaletteEditor->hide();
 
@@ -40,11 +43,6 @@ DlgPrefColors::DlgPrefColors(
             &ColorPaletteEditor::closeButtonClicked,
             this,
             &DlgPrefColors::slotCloseClicked);
-
-    connect(comboBoxTrackColors,
-            QOverload<const QString&>::of(&QComboBox::currentIndexChanged),
-            this,
-            &DlgPrefColors::slotTrackPaletteChanged);
 
     connect(comboBoxHotcueColors,
             QOverload<const QString&>::of(&QComboBox::currentIndexChanged),
@@ -66,7 +64,7 @@ void DlgPrefColors::loadSettings() {
     comboBoxTrackColors->clear();
     for (const auto& palette : qAsConst(mixxx::PredefinedColorPalettes::kPalettes)) {
         QString paletteName = palette.getName();
-        QIcon paletteIcon = drawPaletteIcon(paletteName);
+        QIcon paletteIcon = drawPalettePreview(paletteName);
         comboBoxHotcueColors->addItem(paletteName);
         comboBoxHotcueColors->setItemIcon(
                 comboBoxHotcueColors->count() - 1,
@@ -79,7 +77,7 @@ void DlgPrefColors::loadSettings() {
     }
 
     for (const auto& paletteName : m_colorPaletteSettings.getColorPaletteNames()) {
-        QIcon paletteIcon = drawPaletteIcon(paletteName);
+        QIcon paletteIcon = drawPalettePreview(paletteName);
         comboBoxHotcueColors->addItem(paletteName);
         comboBoxHotcueColors->setItemIcon(
                 comboBoxHotcueColors->count() - 1,
@@ -100,7 +98,6 @@ void DlgPrefColors::loadSettings() {
             m_colorPaletteSettings.getTrackColorPalette();
     comboBoxTrackColors->setCurrentText(
             trackPalette.getName());
-    slotTrackPaletteChanged(trackPalette.getName());
 }
 
 // Set the default values for all the widgets
@@ -158,15 +155,15 @@ void DlgPrefColors::slotApply() {
 QPixmap DlgPrefColors::drawPalettePreview(const QString& paletteName) {
     ColorPalette palette = m_colorPaletteSettings.getHotcueColorPalette(paletteName);
     if (paletteName == palette.getName()) {
+        QPixmap pixmap(kPalettePreviewSize);
         int count = math_max(palette.size(), 1);
-        int width = math_min((200 / count), 16);
-        QPixmap pixmap(count * width, 16);
-        pixmap.fill(Qt::black);
+        // Rounding up is required so the entire width of the pixmap is filled up to the edge.
+        int widthPerColor = ceil(pixmap.width() / static_cast<float>(count));
         QPainter painter(&pixmap);
         for (int i = 0; i < palette.size(); ++i) {
             painter.setPen(mixxx::RgbColor::toQColor(palette.at(i)));
             painter.setBrush(mixxx::RgbColor::toQColor(palette.at(i)));
-            painter.drawRect(i * width, 0, width, 16);
+            painter.drawRect(i * widthPerColor, 0, widthPerColor, pixmap.height());
         }
         return pixmap;
     }
@@ -190,15 +187,7 @@ QIcon DlgPrefColors::drawPaletteIcon(const QString& paletteName) {
     return QIcon();
 }
 
-void DlgPrefColors::slotTrackPaletteChanged(const QString& paletteName) {
-    QPixmap pixmap = drawPalettePreview(paletteName);
-    labelTrackPalette->setPixmap(pixmap);
-}
-
 void DlgPrefColors::slotHotcuePaletteChanged(const QString& paletteName) {
-    QPixmap preview = drawPalettePreview(paletteName);
-    labelHotcuePalette->setPixmap(preview);
-
     ColorPalette palette =
             m_colorPaletteSettings.getHotcueColorPalette(paletteName);
 

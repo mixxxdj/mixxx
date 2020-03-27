@@ -25,7 +25,6 @@ class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
     void apply(const QString&);
 
   private slots:
-    void slotTrackPaletteChanged(const QString& palette);
     void slotHotcuePaletteChanged(const QString& palette);
 
   private:
