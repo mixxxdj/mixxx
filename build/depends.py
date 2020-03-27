@@ -958,6 +958,7 @@ class MixxxCore(Feature):
                    "src/widget/wvumeter.cpp",
                    "src/widget/wpushbutton.cpp",
                    "src/widget/weffectpushbutton.cpp",
+                   "src/widget/whotcuebutton.cpp",
                    "src/widget/wslidercomposed.cpp",
                    "src/widget/wstatuslight.cpp",
                    "src/widget/woverview.cpp",

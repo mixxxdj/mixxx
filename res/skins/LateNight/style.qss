@@ -638,7 +638,7 @@ QPushButton#pushButtonAutoDJ:enabled:!checked,
       brighter bg color to enhance contrast in darker containers
       and with small size respectively */
 #DeckRow_5_LoopCuesTransport WPushButton[value="0"],
-#HotcueButton[displayValue="0"],
+#HotcueButton,
 #FxAssignButton[displayValue="0"], #FxFocusButton[displayValue="0"],
 #FxToggleButton[displayValue="0"], #FxParameterButton[displayValue="0"],
 #SplitCueButton[value="0"],
@@ -684,11 +684,8 @@ QPushButton#pushButtonRecording:checked,
 #RecFeedback[displayValue="2"],
 #BeatgridButtons WPushButton[value="1"],
 #KeyMatchButton[displayValue="1"],
-#KeyUpButton[displayValue="1"], #KeyDownButton[displayValue="1"],
-#HotcueButton[displayValue="1"][highlight="0"],
-#HotcueButton[displayValue="2"][highlight="0"],
-#HotcueButton[displayValue="1"][highlight="1"],
-#HotcueButton[displayValue="2"][highlight="1"] {
+#KeyUpButton[displayValue="1"],
+#KeyDownButton[displayValue="1"] {
   background-color: #db0000;
 }
 
@@ -714,8 +711,10 @@ QPushButton#pushButtonAutoDJ:checked,
 #MicDuckingButton[value="2"] {
   background-color: #d09300;
 }
-/* ToDo
-  * orange Play button when playing from Cue / Hotcue */
+
+#SpecialCueButton[value="1"] {
+  background-color: #0044ff;
+}
 
 
 /************** Button icons **************************************************/

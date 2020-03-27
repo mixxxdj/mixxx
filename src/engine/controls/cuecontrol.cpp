@@ -24,8 +24,6 @@ static const double CUE_MODE_NUMARK = 3.0;
 static const double CUE_MODE_MIXXX_NO_BLINK = 4.0;
 static const double CUE_MODE_CUP = 5.0;
 
-constexpr double kNoColorControlValue = -1;
-
 namespace {
 
 // Helper function to convert control values (i.e. doubles) into RgbColor
@@ -336,7 +334,6 @@ void CueControl::detachCue(HotcueControl* pControl) {
     }
     disconnect(pCue.get(), 0, this, 0);
     pControl->resetCue();
-    pControl->setColor(std::nullopt);
 }
 
 void CueControl::trackLoaded(TrackPointer pNewTrack) {
@@ -1780,7 +1777,10 @@ HotcueControl::HotcueControl(QString group, int i)
 
     // The rgba value  of the color assigned to this color.
     m_hotcueColor = new ControlObject(keyForControl(i, "color"));
-    m_hotcueColor->set(kNoColorControlValue);
+    m_hotcueColor->connectValueChangeRequest(
+            this,
+            &HotcueControl::slotHotcueColorChangeRequest,
+            Qt::DirectConnection);
     connect(m_hotcueColor,
             &ControlObject::valueChanged,
             this,
@@ -1869,14 +1869,21 @@ void HotcueControl::slotHotcuePositionChanged(double newPosition) {
     emit hotcuePositionChanged(this, newPosition);
 }
 
+void HotcueControl::slotHotcueColorChangeRequest(double color) {
+    if (color < 0 || color > 0xFFFFFF) {
+        qWarning() << "slotHotcueColorChanged got invalid value:" << color;
+        return;
+    }
+    m_hotcueColor->setAndConfirm(color);
+}
+
 void HotcueControl::slotHotcueColorChanged(double newColor) {
     if (!m_pCue) {
         return;
     }
 
     mixxx::RgbColor::optional_t color = doubleToRgbColor(newColor);
-    if (!color) {
-        qWarning() << "slotHotcueColorChanged got invalid value:" << newColor;
+    VERIFY_OR_DEBUG_ASSERT(color) {
         return;
     }
 
@@ -1902,8 +1909,6 @@ mixxx::RgbColor::optional_t HotcueControl::getColor() const {
 void HotcueControl::setColor(mixxx::RgbColor::optional_t newColor) {
     if (newColor) {
         m_hotcueColor->set(*newColor);
-    } else {
-        m_hotcueColor->set(kNoColorControlValue);
     }
 }
 void HotcueControl::resetCue() {
