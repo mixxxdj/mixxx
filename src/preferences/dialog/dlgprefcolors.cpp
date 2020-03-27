@@ -88,16 +88,28 @@ void DlgPrefColors::loadSettings() {
                 paletteIcon);
     }
 
+    const ColorPalette trackPalette =
+            m_colorPaletteSettings.getTrackColorPalette();
+    comboBoxTrackColors->setCurrentText(
+            trackPalette.getName());
+
     const ColorPalette hotcuePalette =
             m_colorPaletteSettings.getHotcueColorPalette();
     comboBoxHotcueColors->setCurrentText(
             hotcuePalette.getName());
     slotHotcuePaletteChanged(hotcuePalette.getName());
 
-    const ColorPalette trackPalette =
-            m_colorPaletteSettings.getTrackColorPalette();
-    comboBoxTrackColors->setCurrentText(
-            trackPalette.getName());
+    bool autoHotcueColors =
+            m_pConfig->getValue(ConfigKey("[Controls]", "auto_hotcue_colors"), false);
+    if (autoHotcueColors) {
+        comboBoxHotcueDefaultColor->setCurrentIndex(0);
+    } else {
+        int hotcueDefaultColorIndex = m_pConfig->getValue(ConfigKey("[Controls]", "HotcueDefaultColorIndex"), kHotcueDefaultColorIndex);
+        if (hotcueDefaultColorIndex < 0 || hotcueDefaultColorIndex >= hotcuePalette.size()) {
+            hotcueDefaultColorIndex = hotcuePalette.size() - 1; // default to last color (orange)
+        }
+        comboBoxHotcueDefaultColor->setCurrentIndex(hotcueDefaultColorIndex + 1);
+    }
 }
 
 // Set the default values for all the widgets
@@ -191,6 +203,7 @@ void DlgPrefColors::slotHotcuePaletteChanged(const QString& paletteName) {
     ColorPalette palette =
             m_colorPaletteSettings.getHotcueColorPalette(paletteName);
 
+    int defaultColor = comboBoxHotcueDefaultColor->currentIndex();
     comboBoxHotcueDefaultColor->clear();
 
     comboBoxHotcueDefaultColor->addItem(tr("By hotcue number"), -1);
@@ -211,17 +224,7 @@ void DlgPrefColors::slotHotcuePaletteChanged(const QString& paletteName) {
         comboBoxHotcueDefaultColor->setItemIcon(i + 1, QIcon(pixmap));
     }
 
-    bool autoHotcueColors =
-            m_pConfig->getValue(ConfigKey("[Controls]", "auto_hotcue_colors"), false);
-    if (autoHotcueColors) {
-        comboBoxHotcueDefaultColor->setCurrentIndex(0);
-    } else {
-        int hotcueDefaultColorIndex = m_pConfig->getValue(ConfigKey("[Controls]", "HotcueDefaultColorIndex"), kHotcueDefaultColorIndex);
-        if (hotcueDefaultColorIndex < 0 || hotcueDefaultColorIndex >= palette.size()) {
-            hotcueDefaultColorIndex = palette.size() - 1; // default to last color (orange)
-        }
-        comboBoxHotcueDefaultColor->setCurrentIndex(hotcueDefaultColorIndex + 1);
-    }
+    comboBoxHotcueDefaultColor->setCurrentIndex(defaultColor);
 }
 
 void DlgPrefColors::slotEditClicked() {
