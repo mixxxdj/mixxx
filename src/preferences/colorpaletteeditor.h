@@ -46,4 +46,5 @@ class ColorPaletteEditor : public QWidget {
     QPushButton* m_pCloseButton;
     QPushButton* m_pRemoveButton;
     parented_ptr<QPushButton> m_pResetButton;
+    QString m_resetedPalette;
 };

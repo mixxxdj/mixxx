@@ -89,9 +89,13 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
             this,
             &ColorPaletteEditor::slotTableViewContextMenuRequested);
     connect(m_pSaveAsComboBox,
-            &QComboBox::editTextChanged,
+            &QComboBox::currentTextChanged,
             this,
             &ColorPaletteEditor::slotPaletteNameChanged);
+    connect(m_pPaletteTemplateComboBox,
+            &QComboBox::currentTextChanged,
+            this,
+            &ColorPaletteEditor::slotUpdateButtons);
     connect(m_pResetButton,
             &QPushButton::clicked,
             this,
@@ -130,6 +134,9 @@ void ColorPaletteEditor::reset() {
             m_pSaveAsComboBox->addItem(paletteName);
             m_pPaletteTemplateComboBox->addItem(paletteName);
         }
+        QString current = m_pSaveAsComboBox->currentText();
+        m_pPaletteTemplateComboBox->setCurrentText(current);
+        m_resetedPalette = current;
     } else {
         m_pSaveAsComboBox->addItem(tr("Custom Color Palette"));
         slotResetButtonClicked();
@@ -145,6 +152,8 @@ void ColorPaletteEditor::slotUpdateButtons() {
     m_pRemoveButton->setEnabled(
             m_bPaletteExists &&
             !m_bPaletteIsReadOnly);
+    m_pResetButton->setEnabled(bDirty ||
+            m_resetedPalette != m_pPaletteTemplateComboBox->currentText());
 }
 
 void ColorPaletteEditor::slotTableViewDoubleClicked(const QModelIndex& index) {
@@ -211,6 +220,14 @@ void ColorPaletteEditor::slotPaletteNameChanged(const QString& text) {
 
     m_bPaletteExists = bPaletteExists;
     m_bPaletteIsReadOnly = bPaletteIsReadOnly;
+
+    if (bPaletteExists && !bPaletteIsReadOnly) {
+        m_pPaletteTemplateComboBox->setCurrentText(text);
+        if (!m_pModel->isDirty()) {
+            m_resetedPalette = text;
+        }
+    }
+
     slotUpdateButtons();
 }
 
@@ -257,6 +274,6 @@ void ColorPaletteEditor::slotResetButtonClicked() {
             paletteName,
             mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette);
     m_pModel->setColorPalette(palette);
-    m_pModel->setDirty(true);
+    m_resetedPalette = paletteName;
     slotUpdateButtons();
 }
