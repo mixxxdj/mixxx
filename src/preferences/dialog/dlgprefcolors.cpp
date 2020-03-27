@@ -44,11 +44,6 @@ DlgPrefColors::DlgPrefColors(
             this,
             &DlgPrefColors::slotCloseClicked);
 
-    connect(comboBoxTrackColors,
-            QOverload<const QString&>::of(&QComboBox::currentIndexChanged),
-            this,
-            &DlgPrefColors::slotTrackPaletteChanged);
-
     connect(comboBoxHotcueColors,
             QOverload<const QString&>::of(&QComboBox::currentIndexChanged),
             this,
@@ -103,7 +98,6 @@ void DlgPrefColors::loadSettings() {
             m_colorPaletteSettings.getTrackColorPalette();
     comboBoxTrackColors->setCurrentText(
             trackPalette.getName());
-    slotTrackPaletteChanged(trackPalette.getName());
 }
 
 // Set the default values for all the widgets
@@ -191,10 +185,6 @@ QIcon DlgPrefColors::drawPaletteIcon(const QString& paletteName) {
         return QIcon(pixmap);
     }
     return QIcon();
-}
-
-void DlgPrefColors::slotTrackPaletteChanged(const QString& paletteName) {
-    Q_UNUSED(paletteName);
 }
 
 void DlgPrefColors::slotHotcuePaletteChanged(const QString& paletteName) {
