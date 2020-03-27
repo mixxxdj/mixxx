@@ -157,8 +157,8 @@ QPixmap DlgPrefColors::drawPalettePreview(const QString& paletteName) {
     if (paletteName == palette.getName()) {
         QPixmap pixmap(kPalettePreviewSize);
         int count = math_max(palette.size(), 1);
-        int widthPerColor = pixmap.width() / count;
-        pixmap.fill(Qt::black);
+        // Rounding up is required so the entire width of the pixmap is filled up to the edge.
+        int widthPerColor = ceil(pixmap.width() / static_cast<float>(count));
         QPainter painter(&pixmap);
         for (int i = 0; i < palette.size(); ++i) {
             painter.setPen(mixxx::RgbColor::toQColor(palette.at(i)));
