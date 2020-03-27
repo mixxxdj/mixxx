@@ -71,7 +71,7 @@ BrowseFeature::BrowseFeature(
     m_proxyModel.setDynamicSortFilter(true);
 
     // The invisible root item of the child model
-    auto pRootItem = std::make_unique<TreeItem>(this);
+    std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
 
     m_pQuickLinkItem = pRootItem->appendChild(tr("Quick Links"), QUICK_LINK_NODE);
 
@@ -153,7 +153,7 @@ void BrowseFeature::slotAddQuickLink() {
     QString name = extractNameFromPath(spath);
 
     QModelIndex parent = m_childModel.index(m_pQuickLinkItem->parentRow(), 0);
-    auto pNewChild = std::make_unique<TreeItem>(this, name, vpath);
+    auto pNewChild = std::make_unique<TreeItem>(name, vpath);
     QList<TreeItem*> rows;
     rows.append(pNewChild.get());
     pNewChild.release();
@@ -312,7 +312,7 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 
 namespace {
 // Get the list of devices (under "Removable Devices" section).
-QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
+QList<TreeItem*> getRemovableDevices() {
     QList<TreeItem*> ret;
 #if defined(__WINDOWS__)
     // Repopulate drive list
@@ -332,7 +332,6 @@ QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
             display_path.chop(1);
         }
         TreeItem* driveLetter = new TreeItem(
-            pFeature,
             display_path, // Displays C:
             drive.filePath()); // Displays C:/
         ret << driveLetter;
@@ -354,13 +353,10 @@ QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
     // Convert devices into a QList<TreeItem*> for display.
     foreach(QFileInfo device, devices) {
         TreeItem* folder = new TreeItem(
-            pFeature,
             device.fileName(),
             QVariant(device.filePath() + QStringLiteral("/")));
         ret << folder;
     }
-#else
-    Q_UNUSED(pFeature);
 #endif
     return ret;
 }
@@ -404,7 +400,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
 
     // If we are on the special device node
     if (path == DEVICE_NODE) {
-        folders += getRemovableDevices(this);
+        folders += getRemovableDevices();
     } else {
         // we assume that the path refers to a folder in the file system
         // populate childs
@@ -424,7 +420,6 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
             // Once the items are added to the TreeItemModel,
             // the models takes ownership of them and ensures their deletion
             TreeItem* folder = new TreeItem(
-                this,
                 one.fileName(),
                 QVariant(one.absoluteFilePath() + QStringLiteral("/")));
             folders << folder;

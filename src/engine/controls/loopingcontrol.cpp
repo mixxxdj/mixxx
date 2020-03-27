@@ -851,6 +851,7 @@ void LoopingControl::notifySeek(double dNewPlaypos) {
             setLoopingEnabled(false);
         }
     }
+    EngineControl::notifySeek(dNewPlaypos);
 }
 
 void LoopingControl::setLoopingEnabled(bool enabled) {

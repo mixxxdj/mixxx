@@ -2,15 +2,17 @@
 
 #include <QDir>
 #include <QList>
-#include <QObject>
 #include <QSet>
 
-#include "library/scanner/libraryscanner.h"
+#include <memory>
+
+#include "library/relocatedtrack.h"
 #include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/parented_ptr.h"
 
+class LibraryScanner;
 class TrackCollection;
 class ExternalTrackCollection;
 
@@ -31,7 +33,7 @@ class TrackCollectionManager: public QObject,
             QObject* parent,
             UserSettingsPointer pConfig,
             mixxx::DbConnectionPoolPtr pDbConnectionPool,
-            deleteTrackFn_t deleteTrackFn = nullptr);
+            deleteTrackFn_t deleteTrackForTestingFn = nullptr);
     ~TrackCollectionManager() override;
 
     TrackCollection* internalCollection() {
@@ -46,7 +48,7 @@ class TrackCollectionManager: public QObject,
     bool unhideTracks(const QList<TrackId>& trackIds);
     void hideAllTracks(const QDir& rootDir);
 
-    void purgeTracks(const QList<TrackId>& trackIds);
+    void purgeTracks(const QList<TrackRef>& trackRefs);
     void purgeAllTracks(const QDir& rootDir);
 
     bool addDirectory(const QString& dir);
@@ -74,7 +76,7 @@ class TrackCollectionManager: public QObject,
 
     void slotScanTrackAdded(TrackPointer pTrack);
     void slotScanTracksUpdated(QSet<TrackId> updatedTrackIds);
-    void slotScanTracksReplaced(QList<QPair<TrackRef, TrackRef>> replacedTracks);
+    void slotScanTracksRelocated(QList<RelocatedTrack> relocatedTracks);
 
   private:
     // Callback for GlobalTrackCache
@@ -98,5 +100,6 @@ class TrackCollectionManager: public QObject,
 
     QList<ExternalTrackCollection*> m_externalCollections;
 
-    LibraryScanner m_scanner;
+    // TODO: Extract and decouple LibraryScanner from TrackCollectionManager
+    std::unique_ptr<LibraryScanner> m_pScanner;
 };

@@ -129,10 +129,10 @@ void ControllerManager::slotInitialize() {
     // construct since they interact with host MIDI APIs.
     m_enumerators.append(new PortMidiEnumerator());
 #ifdef __HSS1394__
-    m_enumerators.append(new Hss1394Enumerator());
+    m_enumerators.append(new Hss1394Enumerator(m_pConfig));
 #endif
 #ifdef __BULK__
-    m_enumerators.append(new BulkEnumerator());
+    m_enumerators.append(new BulkEnumerator(m_pConfig));
 #endif
 #ifdef __HID__
     m_enumerators.append(new HidEnumerator());

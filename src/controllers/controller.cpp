@@ -20,7 +20,7 @@ Controller::Controller()
           m_bIsInputDevice(false),
           m_bIsOpen(false),
           m_bLearning(false) {
-        m_userActivityInhibitTimer.start();
+    m_userActivityInhibitTimer.start();
 }
 
 Controller::~Controller() {

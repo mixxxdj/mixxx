@@ -36,11 +36,11 @@ class DlgPrefController : public DlgPreferencePage {
 
   public slots:
     // Called when we should apply / save our changes.
-    void slotApply();
+    void slotApply() override;
     // Called when we should cancel the changes made.
-    void slotCancel();
+    void slotCancel() override;
     // Called when preference dialog (not this dialog) is displayed.
-    void slotUpdate();
+    void slotUpdate() override;
     // Called when the user toggles the enabled checkbox.
     void slotEnableDevice(bool enable);
     // Called when the user selects a preset from the combobox.

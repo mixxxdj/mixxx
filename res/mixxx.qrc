@@ -8,11 +8,12 @@
       <!-- lock icon for crates, playlists & history -->
         <file>images/library/ic_library_locked_tracklist.svg</file>
         <file>images/library/cover_default.svg</file>
-        <file>images/library/ic_library_cross.svg</file>
         <file>images/library/ic_library_autodj.svg</file>
         <file>images/library/ic_library_banshee.svg</file>
         <file>images/library/ic_library_computer.svg</file> <!-- from Gnome high contrast icons LGPL 2.1 -->
         <file>images/library/ic_library_crates.svg</file>
+        <file>images/library/ic_library_cross_grey.svg</file>
+        <file>images/library/ic_library_cross_orange.svg</file>
         <file>images/library/ic_library_history.svg</file>
         <file>images/library/ic_library_history_current.svg</file>
         <file>images/library/ic_library_itunes.svg</file>
@@ -25,7 +26,8 @@
         <file>images/library/ic_library_recordings.svg</file>
         <file>images/library/ic_library_rhythmbox.svg</file>
         <file>images/library/ic_library_traktor.svg</file>
-        <file>images/library/ic_library_rekordbox.svg</file>        
+        <file>images/library/ic_library_rekordbox.svg</file>
+        <file>images/library/ic_library_serato.svg</file>
         <file>images/mixxx_logo.svg</file> <!-- logo in 'About' dialog -->
         <file>images/mixxx_icon.svg</file> <!-- icon in 'About' dialog -->
         <file>images/mixxx-icon-logo-symbolic.svg</file> <!-- default launch image -->
@@ -35,6 +37,7 @@
         <file>images/preferences/ic_preferences_autodj.svg</file>
         <file>images/preferences/ic_preferences_bpmdetect.svg</file>
         <file>images/preferences/ic_preferences_broadcast.svg</file>
+        <file>images/preferences/ic_preferences_colors.svg</file>
         <file>images/preferences/ic_preferences_controllers.svg</file>
         <file>images/preferences/ic_preferences_crossfader.svg</file>
         <file>images/preferences/ic_preferences_decks.svg</file>

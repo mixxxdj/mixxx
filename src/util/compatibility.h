@@ -1,10 +1,10 @@
-#ifndef COMPATABILITY_H
-#define COMPATABILITY_H
+#pragma once
 
 #include <QCoreApplication>
 #include <QGuiApplication>
 #include <QList>
 #include <QScreen>
+#include <QUuid>
 #include <QWindow>
 #include <QWidget>
 
@@ -100,8 +100,31 @@ inline QScreen* getPrimaryScreen() {
     return nullptr;
 }
 
+inline
+QString uuidToStringWithoutBraces(const QUuid& uuid) {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
+    return uuid.toString(QUuid::WithoutBraces);
+#else
+    QString withBraces = uuid.toString();
+    DEBUG_ASSERT(withBraces.size() == 38);
+    DEBUG_ASSERT(withBraces.startsWith('{'));
+    DEBUG_ASSERT(withBraces.endsWith('}'));
+    // We need to strip off the heading/trailing curly braces after formatting
+    return withBraces.mid(1, 36);
+#endif
+}
+
+inline
+QString uuidToNullableStringWithoutBraces(const QUuid& uuid) {
+    if (uuid.isNull()) {
+        return QString();
+    } else {
+        return uuidToStringWithoutBraces(uuid);
+    }
+}
+
 template <typename T>
-inline T atomicLoadAcquire(QAtomicInteger<T> atomicInt) {
+inline T atomicLoadAcquire(const QAtomicInteger<T>& atomicInt) {
     // TODO: QBasicAtomicInteger<T>::load() is deprecated and should be
     // replaced with QBasicAtomicInteger<T>::loadRelaxed() However, the
     // proposed alternative has just been introduced in Qt 5.14. Until the
@@ -115,7 +138,7 @@ inline T atomicLoadAcquire(QAtomicInteger<T> atomicInt) {
 }
 
 template <typename T>
-inline T* atomicLoadAcquire(QAtomicPointer<T> atomicPtr) {
+inline T* atomicLoadAcquire(const QAtomicPointer<T>& atomicPtr) {
     // TODO: QBasicAtomicPointer<T>::load() is deprecated and should be
     // replaced with QBasicAtomicPointer<T>::loadRelaxed() However, the
     // proposed alternative has just been introduced in Qt 5.14. Until the
@@ -129,7 +152,7 @@ inline T* atomicLoadAcquire(QAtomicPointer<T> atomicPtr) {
 }
 
 template <typename T>
-inline T atomicLoadRelaxed(QAtomicInteger<T> atomicInt) {
+inline T atomicLoadRelaxed(const QAtomicInteger<T>& atomicInt) {
     // TODO: QBasicAtomicInteger<T>::load() is deprecated and should be
     // replaced with QBasicAtomicInteger<T>::loadRelaxed() However, the
     // proposed alternative has just been introduced in Qt 5.14. Until the
@@ -143,7 +166,7 @@ inline T atomicLoadRelaxed(QAtomicInteger<T> atomicInt) {
 }
 
 template <typename T>
-inline T* atomicLoadRelaxed(QAtomicPointer<T> atomicPtr) {
+inline T* atomicLoadRelaxed(const QAtomicPointer<T>& atomicPtr) {
     // TODO: QBasicAtomicPointer<T>::load() is deprecated and should be
     // replaced with QBasicAtomicPointer<T>::loadRelaxed() However, the
     // proposed alternative has just been introduced in Qt 5.14. Until the
@@ -157,7 +180,7 @@ inline T* atomicLoadRelaxed(QAtomicPointer<T> atomicPtr) {
 }
 
 template <typename T>
-inline void atomicStoreRelaxed(QAtomicInteger<T> atomicInt, T newValue) {
+inline void atomicStoreRelaxed(QAtomicInteger<T>& atomicInt, T newValue) {
     // TODO: QBasicAtomicInteger<T>::store(T newValue) is deprecated and should
     // be replaced with QBasicAtomicInteger<T>::storeRelaxed(T newValue)
     // However, the proposed alternative has just been introduced in Qt 5.14.
@@ -171,7 +194,7 @@ inline void atomicStoreRelaxed(QAtomicInteger<T> atomicInt, T newValue) {
 }
 
 template <typename T>
-inline void atomicStoreRelaxed(QAtomicPointer<T> atomicPtr, T* newValue) {
+inline void atomicStoreRelaxed(QAtomicPointer<T>& atomicPtr, T* newValue) {
     // TODO: QBasicAtomicPointer<T>::store(T* newValue) is deprecated and
     // should be replaced with QBasicAtomicPointer<T>::storeRelaxed(T*
     // newValue) However, the proposed alternative has just been introduced in
@@ -184,4 +207,13 @@ inline void atomicStoreRelaxed(QAtomicPointer<T> atomicPtr, T* newValue) {
 #endif
 }
 
-#endif /* COMPATABILITY_H */
+#if QT_VERSION < QT_VERSION_CHECK(5, 6, 0)
+template<typename T>
+inline uint qHash(const QList<T>& key, uint seed = 0) {
+    uint hash = 0;
+    for (const auto& elem : key) {
+        hash ^= qHash(elem, seed);
+    }
+    return hash;
+}
+#endif

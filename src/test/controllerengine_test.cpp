@@ -1,5 +1,5 @@
-#include <QtDebug>
 #include <QThread>
+#include <QtDebug>
 
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
@@ -8,7 +8,7 @@
 #include "controllers/softtakeover.h"
 #include "preferences/usersettings.h"
 #include "test/mixxxtest.h"
-#include "util/color/color.h"
+#include "util/color/colorpalette.h"
 #include "util/memory.h"
 #include "util/time.h"
 
@@ -580,25 +580,4 @@ TEST_F(ControllerEngineTest, connectionExecutesWithCorrectThisObject) {
     application()->processEvents();
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
-}
-
-TEST_F(ControllerEngineTest, colorProxy) {
-    QList<PredefinedColorPointer> allColors = Color::kPredefinedColorsSet.allColors;
-    for (int i = 0; i < allColors.length(); ++i) {
-        PredefinedColorPointer color = allColors[i];
-        qDebug() << "Testing color " << color->m_sName;
-        QJSValue jsColor = evaluate("color.predefinedColorFromId(" + QString::number(color->m_iId) + ")");
-        EXPECT_EQ(jsColor.property("red").toInt(), color->m_defaultRgba.red());
-        EXPECT_EQ(jsColor.property("green").toInt(), color->m_defaultRgba.green());
-        EXPECT_EQ(jsColor.property("blue").toInt(), color->m_defaultRgba.blue());
-        EXPECT_EQ(jsColor.property("alpha").toInt(), color->m_defaultRgba.alpha());
-        EXPECT_EQ(jsColor.property("id").toInt(), color->m_iId);
-
-        QJSValue jsColor2 = evaluate("color.predefinedColorsList()[" + QString::number(i) + "]");
-        EXPECT_EQ(jsColor2.property("red").toInt(), color->m_defaultRgba.red());
-        EXPECT_EQ(jsColor2.property("green").toInt(), color->m_defaultRgba.green());
-        EXPECT_EQ(jsColor2.property("blue").toInt(), color->m_defaultRgba.blue());
-        EXPECT_EQ(jsColor2.property("alpha").toInt(), color->m_defaultRgba.alpha());
-        EXPECT_EQ(jsColor2.property("id").toInt(), color->m_iId);
-    }
 }

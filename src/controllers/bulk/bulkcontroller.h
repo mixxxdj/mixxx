@@ -42,8 +42,10 @@ class BulkReader : public QThread {
 class BulkController : public Controller {
     Q_OBJECT
   public:
-    BulkController(libusb_context* context, libusb_device_handle *handle,
-                   struct libusb_device_descriptor *desc);
+    BulkController(UserSettingsPointer pConfig,
+            libusb_context* context,
+            libusb_device_handle* handle,
+            struct libusb_device_descriptor* desc);
     ~BulkController() override;
 
     QString presetExtension() override;
@@ -72,7 +74,7 @@ class BulkController : public Controller {
     bool matchPreset(const PresetInfo& preset) override;
 
   protected:
-    void send(QList<int> data, unsigned int length);
+    void send(QList<int> data, unsigned int length) override;
 
   private slots:
     int open() override;

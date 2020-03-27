@@ -1,11 +1,13 @@
 #include "glwaveformrendererfilteredsignal.h"
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+
+#include <QDomNode>
+
 #include "track/track.h"
 #include "waveform/waveform.h"
 #include "waveformwidgetrenderer.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "util/math.h"
-
-#include <QDomNode>
 
 GLWaveformRendererFilteredSignal::GLWaveformRendererFilteredSignal(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -223,3 +225,5 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
 
     painter->endNativePainting();
 }
+
+#endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)

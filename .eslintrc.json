@@ -20,6 +20,7 @@
     "func-style": ["error", "expression", {
         "allowArrowFunctions": true
     }],
+    "indent": ["warn", 4],
     "key-spacing": "warn",
     "keyword-spacing": "warn",
     "linebreak-style": ["warn", "unix"],
@@ -30,11 +31,16 @@
     "no-unused-vars": ["error", {
         "argsIgnorePattern": "^_"
     }],
+    "object-curly-newline" : ["warn", {
+        "consistent": true,
+        "multiline": true
+    }],
     "object-curly-spacing" : "warn",
     "quotes": ["warn", "double"],
     "require-atomic-updates": "error",
     "semi": "warn",
     "semi-spacing": "warn",
+    "space-before-blocks": ["warn", "always"],
     "space-before-function-paren": ["warn", "never"],
     "space-in-parens": "warn"
   },

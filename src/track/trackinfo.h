@@ -4,14 +4,11 @@
 #include <QUuid>
 
 #include "sources/audiosource.h"
-
 #include "track/bpm.h"
 #include "track/replaygain.h"
-#include "track/seratomarkers2.h"
-
+#include "track/serato/tags.h"
 #include "util/duration.h"
 #include "util/macros.h"
-
 
 namespace mixxx {
 
@@ -47,7 +44,7 @@ class TrackInfo final {
 #endif // __EXTRA_METADATA__
     PROPERTY_SET_BYVAL_GET_BYREF(ReplayGain, replayGain,           ReplayGain)
 #if defined(__EXTRA_METADATA__)
-    PROPERTY_SET_BYVAL_GET_BYREF(SeratoMarkers2, seratoMarkers2,   SeratoMarkers2)
+    PROPERTY_SET_BYVAL_GET_BYREF(SeratoTags, seratoTags,           SeratoTags)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    subtitle,             Subtitle)
 #endif // __EXTRA_METADATA__
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    title,                Title)

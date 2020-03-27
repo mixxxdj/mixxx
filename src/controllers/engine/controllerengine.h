@@ -16,6 +16,7 @@
 #include <QtScript>
 
 #include "controllers/controllerpreset.h"
+#include "controllers/engine/colormapperjsproxy.h"
 #include "controllers/softtakeover.h"
 #include "preferences/usersettings.h"
 #include "util/alphabetafilter.h"
@@ -214,6 +215,8 @@ class ControllerEngine : public QObject {
 
     friend class ScriptConnection;
     friend class ControllerEngineJSProxy;
+    friend class ColorJSProxy;
+    friend class ColorMapperJSProxy;
     friend class ControllerEngineTest;
 };
 

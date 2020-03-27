@@ -7,7 +7,6 @@
  ***************************************************************************/
 
 #include "controllers/engine/controllerengine.h"
-
 #include "control/controlobject.h"
 #include "control/controlobjectscript.h"
 #include "controllers/controller.h"
@@ -208,6 +207,9 @@ void ControllerEngine::initializeScriptEngine() {
     ControllerEngineJSProxy* proxy = new ControllerEngineJSProxy(this);
     engineGlobalObject.setProperty("engine", m_pScriptEngine->newQObject(proxy));
 
+    ColorJSProxy* pColorProxy = new ColorJSProxy(this);
+    engineGlobalObject.setProperty("color", m_pScriptEngine->newQObject(pColorProxy));
+
     if (m_pController) {
         qDebug() << "Controller in script engine is:" << m_pController->getName();
 
@@ -221,9 +223,6 @@ void ControllerEngine::initializeScriptEngine() {
     }
 
     m_byteArrayToScriptValueJSFunction = evaluateCodeString("(function(arg1) { return new Uint8Array(arg1) })");
-
-    ColorJSProxy* pColorProxy = new ColorJSProxy(m_pScriptEngine);
-    engineGlobalObject.setProperty("color", m_pScriptEngine->newQObject(pColorProxy));
 }
 
 /* -------- ------------------------------------------------------

@@ -1,36 +1,35 @@
 #include "controllers/engine/colorjsproxy.h"
+#include "controllers/engine/colormapperjsproxy.h"
+#include "controllers/engine/controllerengine.h"
 
-ColorJSProxy::ColorJSProxy(QJSEngine* pScriptEngine)
-        : m_pScriptEngine(pScriptEngine),
-          m_predefinedColorsList(makePredefinedColorsList(pScriptEngine)){};
+ColorJSProxy::ColorJSProxy(ControllerEngine* pControllerEngine)
+        : m_pControllerEngine(pControllerEngine) {}
 
-ColorJSProxy::~ColorJSProxy(){};
+ColorJSProxy::~ColorJSProxy() = default;
 
-QJSValue ColorJSProxy::predefinedColorFromId(int iId) {
-    PredefinedColorPointer color(Color::kPredefinedColorsSet.predefinedColorFromId(iId));
-    return jsColorFrom(color);
-};
 
-Q_INVOKABLE QJSValue ColorJSProxy::predefinedColorsList() {
-    return m_predefinedColorsList;
-}
+QJSValue ColorJSProxy::colorMapper(const QMap<QRgb, QVariant>& colorMap) {
+    QMap<QRgb, QVariant> availableColors;
 
-QJSValue ColorJSProxy::jsColorFrom(PredefinedColorPointer predefinedColor) {
-    QJSValue jsColor = m_pScriptEngine->newObject();
-    jsColor.setProperty("red", predefinedColor->m_defaultRgba.red());
-    jsColor.setProperty("green", predefinedColor->m_defaultRgba.green());
-    jsColor.setProperty("blue", predefinedColor->m_defaultRgba.blue());
-    jsColor.setProperty("alpha", predefinedColor->m_defaultRgba.alpha());
-    jsColor.setProperty("id", predefinedColor->m_iId);
-    return jsColor;
-}
-
-QJSValue ColorJSProxy::makePredefinedColorsList(QJSEngine* pScriptEngine) {
-    int numColors = Color::kPredefinedColorsSet.allColors.length();
-    QJSValue colorList = pScriptEngine->newArray(numColors);
-    for (int i = 0; i < numColors; ++i) {
-        PredefinedColorPointer color = Color::kPredefinedColorsSet.allColors.at(i);
-        colorList.setProperty(i, jsColorFrom(color));
+    QMapIterator<QRgb, QVariant> it(colorMap);
+    while (it.hasNext()) {
+        it.next();
+        QColor color(it.key());
+        if (color.isValid()) {
+            availableColors.insert(color.rgb(), it.value());
+        } else {
+            m_pControllerEngine->throwJSError(
+                    QStringLiteral("Invalid color name passed to ColorMapper: ") + QString::number(it.key()));
+            continue;
+        }
     }
-    return colorList;
+
+    if (availableColors.isEmpty()) {
+        m_pControllerEngine->throwJSError(
+                QStringLiteral("Failed to create ColorMapper object:' available colors mustn't be empty!"));
+        return QJSValue(QJSValue::UndefinedValue);
+    }
+
+    QObject* colorMapper = new ColorMapperJSProxy(m_pControllerEngine->m_pScriptEngine, availableColors);
+    return m_pControllerEngine->m_pScriptEngine->newQObject(colorMapper);
 }

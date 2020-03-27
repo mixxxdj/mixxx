@@ -1,5 +1,4 @@
-#ifndef BASEEXTERNALLIBRARYFEATURE_H
-#define BASEEXTERNALLIBRARYFEATURE_H
+#pragma once
 
 #include <QAction>
 #include <QModelIndex>
@@ -7,6 +6,7 @@
 
 #include "library/libraryfeature.h"
 #include "library/dao/playlistdao.h"
+#include "util/parented_ptr.h"
 
 class BaseSqlTableModel;
 class TrackCollection;
@@ -17,7 +17,7 @@ class BaseExternalLibraryFeature : public LibraryFeature {
     BaseExternalLibraryFeature(
             Library* pLibrary,
             UserSettingsPointer pConfig);
-    ~BaseExternalLibraryFeature() override;
+    ~BaseExternalLibraryFeature() override = default;
 
   public slots:
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
@@ -28,7 +28,7 @@ class BaseExternalLibraryFeature : public LibraryFeature {
     // Must be implemented by external Libraries copied to Mixxx DB
     virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist) {
         Q_UNUSED(playlist);
-        return NULL;
+        return nullptr;
     }
     // Must be implemented by external Libraries not copied to Mixxx DB
     virtual void appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist);
@@ -51,12 +51,10 @@ class BaseExternalLibraryFeature : public LibraryFeature {
 
     QModelIndex m_lastRightClickedIndex;
 
-    QAction* m_pAddToAutoDJAction;
-    QAction* m_pAddToAutoDJTopAction;
-    QAction* m_pAddToAutoDJReplaceAction;
-    QAction* m_pImportAsMixxxPlaylistAction;
+    parented_ptr<QAction> m_pAddToAutoDJAction;
+    parented_ptr<QAction> m_pAddToAutoDJTopAction;
+    parented_ptr<QAction> m_pAddToAutoDJReplaceAction;
+    parented_ptr<QAction> m_pImportAsMixxxPlaylistAction;
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 };
-
-#endif // BASEEXTERNALLIBRARYFEATURE_H

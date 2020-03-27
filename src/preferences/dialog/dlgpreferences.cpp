@@ -37,11 +37,12 @@
 #include "preferences/dialog/dlgprefnovinyl.h"
 #endif
 
-#include "preferences/dialog/dlgprefinterface.h"
-#include "preferences/dialog/dlgprefwaveform.h"
+#include "preferences/dialog/dlgprefcolors.h"
+#include "preferences/dialog/dlgprefcrossfader.h"
 #include "preferences/dialog/dlgprefdeck.h"
 #include "preferences/dialog/dlgprefeq.h"
-#include "preferences/dialog/dlgprefcrossfader.h"
+#include "preferences/dialog/dlgprefinterface.h"
+#include "preferences/dialog/dlgprefwaveform.h"
 #ifdef __LILV__
 #include "preferences/dialog/dlgpreflv2.h"
 #endif /* __LILV__ */
@@ -65,6 +66,7 @@
 #include "controllers/controllermanager.h"
 #include "skin/skinloader.h"
 #include "library/library.h"
+#include "library/trackcollectionmanager.h"
 #include "util/compatibility.h"
 
 DlgPreferences::DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman, PlayerManager* pPlayerManager, ControllerManager* controllers, VinylControlManager* pVCManager, LV2Backend* pLV2Backend, EffectsManager* pEffectsManager, SettingsManager* pSettingsManager, Library* pLibrary)
@@ -96,7 +98,10 @@ DlgPreferences::DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, 
     addPageWidget(m_soundPage);
 
     DlgPrefLibrary* plibraryPage = new DlgPrefLibrary(this, m_pConfig, pLibrary);
-    connect(plibraryPage, SIGNAL(scanLibrary()), pLibrary, SLOT(scan()));
+    connect(plibraryPage,
+            &DlgPrefLibrary::scanLibrary,
+            pLibrary->trackCollections(),
+            &TrackCollectionManager::startLibraryScan);
     addPageWidget(PreferencesPage(
             plibraryPage,
             createTreeItem(tr("Library"), QIcon(":/images/preferences/ic_preferences_library.svg"))));
@@ -127,6 +132,10 @@ DlgPreferences::DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, 
             new DlgPrefWaveform(this, mixxx, m_pConfig, pLibrary),
             createTreeItem(tr("Waveforms"), QIcon(":/images/preferences/ic_preferences_waveforms.svg"))));
 
+    addPageWidget(PreferencesPage(
+            new DlgPrefColors(this, m_pConfig),
+            createTreeItem(tr("Colors"), QIcon(":/images/preferences/ic_preferences_colors.svg"))));
+    
     addPageWidget(PreferencesPage(
             new DlgPrefDeck(this, mixxx, pPlayerManager, m_pConfig),
             createTreeItem(tr("Decks"), QIcon(":/images/preferences/ic_preferences_decks.svg"))));

@@ -12,7 +12,7 @@
 
 class HidEnumerator : public ControllerEnumerator {
   public:
-    HidEnumerator();
+    explicit HidEnumerator();
     virtual ~HidEnumerator();
 
     QList<Controller*> queryDevices();
