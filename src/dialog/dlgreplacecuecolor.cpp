@@ -44,6 +44,7 @@ DlgReplaceCueColor::DlgReplaceCueColor(
         : QDialog(pParent),
           m_pConfig(pConfig),
           m_pDbConnectionPool(dbConnectionPool),
+          m_bDatabaseChangeInProgress(false),
           m_bDatabaseChanged(false),
           m_pNewColorMenu(new QMenu(this)),
           m_pCurrentColorMenu(new QMenu(this)) {
@@ -66,6 +67,7 @@ DlgReplaceCueColor::DlgReplaceCueColor(
             [this](mixxx::RgbColor::optional_t color) {
                 if (color) {
                     setButtonColor(pushButtonNewColor, mixxx::RgbColor::toQColor(*color));
+                    slotUpdateApplyButton();
                 }
                 m_pNewColorMenu->hide();
             });
@@ -74,6 +76,14 @@ DlgReplaceCueColor::DlgReplaceCueColor(
 
     // Set up current color button
     setButtonColor(pushButtonCurrentColor, mixxx::RgbColor::toQColor(mixxx::PredefinedColorPalettes::kDefaultCueColor));
+    connect(checkBoxCurrentColorCondition,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgReplaceCueColor::slotUpdateApplyButton);
+    connect(comboBoxCurrentColorCompare,
+            &QComboBox::currentTextChanged,
+            this,
+            &DlgReplaceCueColor::slotUpdateApplyButton);
 
     // Add menu for current color button
     m_pCurrentColorPickerAction = new WColorPickerAction(WColorPicker::Option::AllowCustomColor, colorPaletteSettings.getHotcueColorPalette(), this);
@@ -84,6 +94,7 @@ DlgReplaceCueColor::DlgReplaceCueColor(
             [this](mixxx::RgbColor::optional_t color) {
                 if (color) {
                     setButtonColor(pushButtonCurrentColor, mixxx::RgbColor::toQColor(*color));
+                    slotUpdateApplyButton();
                 }
                 m_pCurrentColorMenu->hide();
             });
@@ -104,13 +115,16 @@ DlgReplaceCueColor::DlgReplaceCueColor(
                     break;
                 };
             });
+
+    slotUpdateApplyButton();
 }
 
 DlgReplaceCueColor::~DlgReplaceCueColor() {
 }
 
 void DlgReplaceCueColor::slotApply() {
-    setApplyButtonEnabled(false);
+    m_bDatabaseChangeInProgress = false;
+    slotUpdateApplyButton();
 
     // Get values for SELECT query
     QProgressDialog progress("Selecting database rows...", "Cancel", 0, 0, this);
@@ -135,13 +149,15 @@ void DlgReplaceCueColor::slotApply() {
 
     mixxx::RgbColor::optional_t currentColor = mixxx::RgbColor::fromQString(pushButtonCurrentColor->text());
     VERIFY_OR_DEBUG_ASSERT(currentColor) {
-        setApplyButtonEnabled(true);
+        m_bDatabaseChangeInProgress = false;
+        slotUpdateApplyButton();
         return;
     }
 
     mixxx::RgbColor::optional_t newColor = mixxx::RgbColor::fromQString(pushButtonNewColor->text());
     VERIFY_OR_DEBUG_ASSERT(newColor) {
-        setApplyButtonEnabled(true);
+        m_bDatabaseChangeInProgress = false;
+        slotUpdateApplyButton();
         return;
     }
 
@@ -156,7 +172,8 @@ void DlgReplaceCueColor::slotApply() {
     VERIFY_OR_DEBUG_ASSERT(database.isOpen()) {
         qWarning() << "Failed to open database for cue color replace dialog."
                    << database.lastError();
-        setApplyButtonEnabled(true);
+        m_bDatabaseChangeInProgress = false;
+        slotUpdateApplyButton();
         return;
     }
 
@@ -192,6 +209,8 @@ void DlgReplaceCueColor::slotApply() {
 
     if (!selectQuery.exec()) {
         LOG_FAILED_QUERY(selectQuery);
+        m_bDatabaseChangeInProgress = false;
+        slotUpdateApplyButton();
         return;
     }
     int idColumn = selectQuery.record().indexOf("id");
@@ -203,7 +222,8 @@ void DlgReplaceCueColor::slotApply() {
     while (selectQuery.next()) {
         QCoreApplication::processEvents();
         if (progress.wasCanceled()) {
-            setApplyButtonEnabled(true);
+            m_bDatabaseChangeInProgress = false;
+            slotUpdateApplyButton();
             return;
         }
         mixxx::RgbColor::optional_t color = mixxx::RgbColor::fromQVariant(selectQuery.value(colorColumn));
@@ -224,7 +244,8 @@ void DlgReplaceCueColor::slotApply() {
 
     if (rows.size() == 0) {
         QMessageBox::warning(this, tr("No colors changed!"), tr("No cues matched the specified criteria."));
-        setApplyButtonEnabled(true);
+        m_bDatabaseChangeInProgress = false;
+        slotUpdateApplyButton();
         return;
     }
 
@@ -232,7 +253,8 @@ void DlgReplaceCueColor::slotApply() {
                 this,
                 tr("Really replace colors?"),
                 tr("Really replace the colors of %1 cues in %2 tracks? This change cannot be undone!").arg(QString::number(rows.size()), QString::number(trackIds.size()))) == QMessageBox::No) {
-        setApplyButtonEnabled(true);
+        m_bDatabaseChangeInProgress = false;
+        slotUpdateApplyButton();
         return;
     }
 
@@ -276,13 +298,27 @@ void DlgReplaceCueColor::slotApply() {
     }
 
     progress.reset();
-    setApplyButtonEnabled(true);
+    m_bDatabaseChangeInProgress = false;
+    slotUpdateApplyButton();
 }
 
-void DlgReplaceCueColor::setApplyButtonEnabled(bool enabled) {
+void DlgReplaceCueColor::slotUpdateApplyButton() {
+    bool bEnabled = !m_bDatabaseChangeInProgress;
+    if (bEnabled &&
+            checkBoxCurrentColorCondition->isChecked() &&
+            comboBoxCurrentColorCompare->currentText() == "is") {
+        mixxx::RgbColor::optional_t currentColor = mixxx::RgbColor::fromQString(
+                pushButtonCurrentColor->text());
+        mixxx::RgbColor::optional_t newColor = mixxx::RgbColor::fromQString(
+                pushButtonNewColor->text());
+        if (currentColor == newColor) {
+            bEnabled = false;
+        }
+    }
+
     QPushButton* button = buttonBox->button(QDialogButtonBox::Apply);
     if (button) {
-        button->setEnabled(enabled);
+        button->setEnabled(bEnabled);
     }
 }
 

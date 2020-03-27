@@ -41,12 +41,14 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
   private slots:
     void slotApply();
     void reject() override;
+    void slotUpdateApplyButton();
 
   private:
     void setApplyButtonEnabled(bool enabled);
 
     const UserSettingsPointer m_pConfig;
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
+    bool m_bDatabaseChangeInProgress;
     bool m_bDatabaseChanged;
     QMenu* m_pNewColorMenu;
     QMenu* m_pCurrentColorMenu;
