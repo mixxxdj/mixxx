@@ -118,8 +118,9 @@ double SeratoTags::findTimingOffsetMillis(const QString& filePath) {
 
         // TODO: Find missing timing offsets
         switch (timingShiftCase) {
-#if defined(__MAD__)
-        // Apparently all mp3guessenc cases have the same offset (?)
+#if defined(__MAD__) || defined(__FFMPEG__)
+        // Apparently all mp3guessenc cases have the same offset for MAD
+        // and FFMPEG
         default:
             timingOffset = -18;
             break;
