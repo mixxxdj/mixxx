@@ -18,10 +18,10 @@ mixxx::RgbColor ColorPalette::previousColor(mixxx::RgbColor color) const {
 
 mixxx::RgbColor ColorPalette::colorForHotcueIndex(unsigned int hotcueIndex) const {
     int colorIndex;
-    if (m_hotcueColorIndices.isEmpty()) {
+    if (m_colorIndicesByHotcue.isEmpty()) {
         colorIndex = hotcueIndex;
     } else {
-        colorIndex = m_hotcueColorIndices.at(hotcueIndex % m_hotcueColorIndices.size());
+        colorIndex = m_colorIndicesByHotcue.at(hotcueIndex % m_colorIndicesByHotcue.size());
     }
     return at(colorIndex % size());
 }

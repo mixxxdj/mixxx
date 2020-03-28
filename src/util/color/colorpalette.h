@@ -9,10 +9,10 @@ class ColorPalette final {
     ColorPalette(
             QString name,
             QList<mixxx::RgbColor> colorList,
-            QList<unsigned int> hotcueColorIndices = {})
+            QList<int> colorIndicesByHotcue = {})
             : m_name(name),
               m_colorList(colorList),
-              m_hotcueColorIndices(hotcueColorIndices) {
+              m_colorIndicesByHotcue(colorIndicesByHotcue) {
         DEBUG_ASSERT(m_colorList.size() != 0);
     }
 
@@ -52,14 +52,14 @@ class ColorPalette final {
         return m_colorList;
     }
 
-    QList<unsigned int> getHotcueIndices() const {
-        return m_hotcueColorIndices;
+    QList<int> getIndicesByHotcue() const {
+        return m_colorIndicesByHotcue;
     }
 
   private:
     QString m_name;
     QList<mixxx::RgbColor> m_colorList;
-    QList<unsigned int> m_hotcueColorIndices;
+    QList<int> m_colorIndicesByHotcue;
 };
 
 inline bool operator==(
