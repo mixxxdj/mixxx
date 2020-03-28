@@ -73,6 +73,12 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
     connect(this, SIGNAL(loadPreset(Controller*, ControllerPresetPointer)),
             m_pControllerManager, SLOT(loadPreset(Controller*, ControllerPresetPointer)));
 
+    // Open script file links
+    connect(m_ui.labelLoadedPresetScriptFileLinks,
+            &QLabel::linkActivated,
+            [](const QString & path) {
+            QDesktopServices::openUrl(QUrl::fromLocalFile(path)); });
+
     // Input mappings
     connect(m_ui.btnAddInputMapping, SIGNAL(clicked()),
             this, SLOT(addInputMapping()));
@@ -212,6 +218,27 @@ QString DlgPrefController::presetWikiLink(const ControllerPresetPointer pPreset)
             url = "<a href=\"" + link + "\">Mixxx Wiki</a>";
     }
     return url;
+}
+
+QString DlgPrefController::presetScriptFileLinks(const ControllerPresetPointer pPreset) const {
+    QString scriptFileLinks;
+
+    if (pPreset) {
+        QList<QString> presetDirs;
+        presetDirs.append(userPresetsPath(m_pConfig));
+        presetDirs.append(resourcePresetsPath(m_pConfig));
+        QStringList linkList;
+        for (QList<ControllerPreset::ScriptFileInfo>::iterator it =
+                     pPreset->scripts.begin(); it != pPreset->scripts.end(); ++it) {
+            QString name = it->name;
+            QString path = ControllerManager::getAbsolutePath(
+                    name, presetDirs);
+            QString scriptFileLink = "<a href=\"" + path + "\">" + name + "</a>";
+            linkList << scriptFileLink;
+        }
+        scriptFileLinks = linkList.join("<br/>");
+    }
+    return scriptFileLinks;
 }
 
 void DlgPrefController::slotDirty() {
@@ -411,6 +438,9 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
 
     QString support = supportLinks.join("&nbsp;&nbsp;");
     m_ui.labelLoadedPresetSupportLinks->setText(support);
+
+    QString scriptFiles = presetScriptFileLinks(preset);
+    m_ui.labelLoadedPresetScriptFileLinks->setText(scriptFiles);
 
     // We mutate this preset so keep a reference to it while we are using it.
     // TODO(rryan): Clone it? Technically a waste since nothing else uses this
