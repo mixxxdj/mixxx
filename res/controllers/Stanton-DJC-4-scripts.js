@@ -4,17 +4,28 @@
  * Written by Martin Bruset Solberg
  * Adopted for v2.2.3 by Christoph Zimmermann
  *
- * Based on MC2000 script by Esteban Serrano Roloff
- * and Denon MC7000 script by OsZ
- *
+ * Based on:
+ *  Denon MC2000 script by Esteban Serrano Roloff,
+ *  Denon MC7000 script by OsZ
+ *  Roland DJ-505 script by Jan Holthuis
  *
  * TODO:
- * Effects browsing
- * Beat multiplier
+ * Pitch range
  *
  **/
 
 var djc4 = {};
+
+/////////////////
+// Tweakables. //
+/////////////////
+
+djc4.tempoRange = [0.08, 0.16, 0.5];
+djc4.autoShowFourDecks = false;
+
+///////////
+// Code. //
+///////////
 
 // ----------   Global variables    ----------
 
@@ -60,119 +71,185 @@ djc4.leds = {
     fx: 47
 };
 
-djc4.scratchMode = [false, false, false, false];
-
 // ----------   Functions    ----------
 
 // Called when the MIDI device is opened & set up.
-djc4.init = function(id, debug) {
-    djc4.id = id;
-    djc4.debug = debug;
+djc4.init = function() {
+    var i;
 
     // Put all LEDs to default state.
     djc4.allLed2Default();
 
-    // ---- Connect controls -----------
+    engine.makeConnection("[Channel3]", "track_loaded", djc4.autoShowDecks);
+    engine.makeConnection("[Channel4]", "track_loaded", djc4.autoShowDecks);
 
-    // ---- Controls for Channel 1 to 4
-    var i = 0;
-    for (i = 1; i <= 4; i++) {
-    // Cue 1-4
-        var j = 0;
-        for (j = 1; j <= 4; j++) {
-            engine.makeConnection("[Channel" + i + "]", "hotcue_" + j + "_enabled",
-                djc4.hotcueSetLed);
-        }
-
-        // Cue
-        engine.makeConnection("[Channel" + i + "]", "cue_indicator",
-            djc4.cueSetLed);
-        // Play
-        engine.makeConnection("[Channel" + i + "]", "play_indicator",
-            djc4.playSetLed);
-
-        // Loop in
-        engine.makeConnection("[Channel" + i + "]", "loop_start_position",
-            djc4.loopStartSetLed);
-        // Loop out
-        engine.makeConnection("[Channel" + i + "]", "loop_end_position",
-            djc4.loopEndSetLed);
-        // Loop enabled
-        engine.makeConnection("[Channel" + i + "]", "loop_enabled",
-            djc4.loopEnabledSetLed);
-        // Loop double
-        engine.makeConnection("[Channel" + i + "]", "loop_double",
-            djc4.loopDoubleSetLed);
-        // Loop halve
-        engine.makeConnection("[Channel" + i + "]", "loop_halve",
-            djc4.loopHalveSetLed);
-
-        // Monitor cue
-        engine.makeConnection("[Channel" + i + "]", "pfl", djc4.pflSetLed);
-
-        // Kills
-        engine.makeConnection("[Channel" + i + "]", "filterHighKill",
-            djc4.highkillSetLed);
-        engine.makeConnection("[Channel" + i + "]", "filterMidKill",
-            djc4.midkillSetLed);
-        engine.makeConnection("[Channel" + i + "]", "filterLowKill",
-            djc4.lowkillSetLed);
-
-        engine.makeConnection("[QuickEffectRack1_[Channel" + i + "]_Effect1]",
-            "enabled", djc4.filterSetLed);
-
-        // Keylock
-        engine.makeConnection("[Channel" + i + "]", "keylock", djc4.keylockSetLed);
-
-        // Pitch bend
-        engine.makeConnection("[Channel" + i + "]", "rate_temp_down",
-            djc4.ratetempdownSetLed);
-        engine.makeConnection("[Channel" + i + "]", "rate_temp_up",
-            djc4.ratetempupSetLed);
+    if (engine.getValue("[Master]", "num_samplers") < 8) {
+        engine.setValue("[Master]", "num_samplers", 8);
     }
 
-    // ---- Controls for Sampler 1 - 8
-    for (i = 1; i <= 8; i++) {
-        engine.makeConnection("[Sampler" + i + "]", "track_loaded",
-            djc4.samplerSetLed);
-        if (engine.getValue("[Sampler" + i + "]", "track_loaded") === 1) {
-            djc4.samplerSetLed(1, "[Sampler" + i + "]");
-        }
+    djc4.deck = [];
+    for (i = 0; i < 4; i++) {
+        djc4.deck[i] = new djc4.Deck(i + 1);
+        djc4.deck[i].setCurrentDeck("[Channel" + (i + 1) + "]");
     }
 
-    // ---- Controls for EffectUnit 1 to 2
-    for (i = 1; i <= 2; i++) {
-    // Effects 1-3
-        for (j = 1; j <= 3; j++) {
-            engine.makeConnection("[EffectRack1_EffectUnit" + i + "_Effect" + j + "]",
-                "enabled", djc4.fxenabledSetLed);
-        }
+    djc4.effectUnit = [];
+    for (i = 0; i <= 3; i++) {
+        djc4.effectUnit[i] = new components.EffectUnit([i + 1]);
+        djc4.effectUnit[i].shiftOffset = 0x32;
+        djc4.effectUnit[i].shiftControl = true;
+        djc4.effectUnit[i].enableButtons[1].midi = [0x90 + i, 0x1F];
+        djc4.effectUnit[i].enableButtons[2].midi = [0x90 + i, 0x20];
+        djc4.effectUnit[i].enableButtons[3].midi = [0x90 + i, 0x21];
+        djc4.effectUnit[i].effectFocusButton.midi = [0x90 + i, 0x1D];
+        djc4.effectUnit[i].knobs[1].midi = [0xB0 + i, 0x09];
+        djc4.effectUnit[i].knobs[2].midi = [0xB0 + i, 0x0A];
+        djc4.effectUnit[i].knobs[3].midi = [0xB0 + i, 0x0B];
+        djc4.effectUnit[i].dryWetKnob.midi = [0xB0 + i, 0x08];
+        djc4.effectUnit[i].dryWetKnob.input = function(channel, control, value) {
+            if (value === 0x41) {
+                // 0.05 is an example. Adjust that value to whatever works well for your controller.
+                this.inSetParameter(this.inGetParameter() + 0.05);
+            } else if (value === 0x3F) {
+                this.inSetParameter(this.inGetParameter() - 0.05);
+            }
+        };
+        djc4.effectUnit[i].init();
     }
-    // Effect enabled for Channel
-    engine.makeConnection("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable",
-        djc4.fxon1SetLed);
-    engine.makeConnection("[EffectRack1_EffectUnit1]", "group_[Channel3]_enable",
-        djc4.fxon3SetLed);
-    engine.makeConnection("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable",
-        djc4.fxon2SetLed);
-    engine.makeConnection("[EffectRack1_EffectUnit2]", "group_[Channel4]_enable",
-        djc4.fxon4SetLed);
 
-    // ---- VU meter (Master is shown)
-    engine.makeConnection("[Master]", "VuMeterL", djc4.VuMeterLSetLed);
-    engine.makeConnection("[Master]", "VuMeterR", djc4.VuMeterRSetLed);
+    // === VU Meter ===
+    djc4.vuMeter = new components.Component({
+        midi: [0xB0, 0x03],
+        group: "[Master]",
+        outKey: "VuMeterL",
+        output: function(value, group) {
+            // The red LEDs light up with MIDI values greater than 0x60.
+            // The Red LEDs should only be illuminated if the track is clipping.
+            if (engine.getValue(group, "PeakIndicator") === 1) {
+                value = 0x60;
+            } else {
+                value = Math.round(value * 0x54);
+            }
+            this.send(value);
+        },
+    });
 
-    // Enable load LEDs because Channels are empty at start
-    djc4.setLed(1, djc4.leds["loadac"], 1);
-    djc4.setLed(3, djc4.leds["loadac"], 1);
-    djc4.setLed(2, djc4.leds["loadbd"], 1);
-    djc4.setLed(4, djc4.leds["loadbd"], 1);
+    djc4.vuMeter = new components.Component({
+        midi: [0xB0, 0x04],
+        group: "[Master]",
+        outKey: "VuMeterR",
+        output: function(value, group) {
+            // The red LEDs light up with MIDI values greater than 0x60.
+            // The Red LEDs should only be illuminated if the track is clipping.
+            if (engine.getValue(group, "PeakIndicator") === 1) {
+                value = 0x60;
+            } else {
+                value = Math.round(value * 0x54);
+            }
+            this.send(value);
+        },
+    });
 };
 
 // Called when the MIDI device is closed
 djc4.shutdown = function() {
     // Put all LEDs to default state.
     djc4.allLed2Default();
+};
+
+djc4.Deck = function(deckNumbers) {
+    components.Deck.call(this, deckNumbers);
+
+    // === Instantiate controls ===
+    this.beatLoopEncoder = new components.Encoder({
+        midi: [0xB0+deckNumbers-1, 0x01],
+        group: "[Channel" + deckNumbers + "]",
+        inKey: "beatloop_size",
+        input: function(channel, control, value) {
+            if (value === 0x3F) {
+                if (this.inGetParameter() <= 1) {
+                    this.inSetParameter(this.inGetParameter() / 2);
+                } else {
+                    this.inSetParameter(this.inGetParameter() - 1);
+                }
+            } else if (value === 0x41) {
+                if (this.inGetParameter() <= 1) {
+                    this.inSetParameter(this.inGetParameter() * 2);
+                } else {
+                    this.inSetParameter(this.inGetParameter() + 1);
+                }
+            }
+        },
+    });
+
+    this.samplerButtons = [];
+    for (var i = 0; i <= 3; i++) {
+        this.samplerButtons[i] = new components.SamplerButton({
+            number: (deckNumbers === 1 || deckNumbers === 3) ? (i + 1) : (i + 5),
+            midi: [0x90+deckNumbers-1, 0x0C+i],
+        });
+    }
+
+    // === Scratch control ===
+    this.scratchMode = false;
+
+    this.toggleScratchMode = function(value) {
+        if (value === 0x7F) {
+            // Toggle setting
+            this.scratchMode = !this.scratchMode;
+            djc4.setLed(script.deckFromGroup(this.currentDeck), djc4.leds["scratch"], this.scratchMode);
+        }
+    };
+
+    // ============================= JOG WHEELS =================================
+    this.wheelTouch = function(channel, control, value) {
+        if (control === 0x58) { // If shift is pressed, do a fast search
+            if (value === 0x7F) {
+                var alpha = 1.0 / 8;
+                var beta = alpha / 32;
+                var rpm = 40.0;
+
+                engine.scratchEnable(script.deckFromGroup(this.currentDeck), 128, rpm, alpha, beta, true);
+            } else {    // If button up
+                engine.scratchDisable(script.deckFromGroup(this.currentDeck));
+            }
+        } else if (this.scratchMode === true) { // If scratch enabled
+            if (value === 0x7F) {
+                alpha = 1.0/8;
+                beta = alpha/32;
+                rpm = 150.0;
+
+                engine.scratchEnable(script.deckFromGroup(this.currentDeck), 128, rpm, alpha, beta);
+            } else {    // If button up
+                engine.scratchDisable(script.deckFromGroup(this.currentDeck));
+            }
+        }  else if (value === 0x00) {
+            // In case shift is let go before the platter,
+            // ensure scratch is disabled
+            engine.scratchDisable(script.deckFromGroup(this.currentDeck));
+        }
+    };
+
+    this.wheelTurn = function(control, value) {
+        // When the jog wheel is turned in clockwise direction, value is
+        // greater than 64 (= 0x40). If it's turned in counter-clockwise
+        // direction, the value is smaller than 64.
+        var newValue = value - 64;
+        var deck = script.deckFromGroup(this.currentDeck);
+        if (engine.isScratching(deck)) {
+            engine.scratchTick(deck, newValue); // Scratch!
+        } else if (control === 0x20) { // If shift is pressed
+            var oldPos = engine.getValue(this.currentDeck, "playposition");
+            // Since ‘playposition’ is normalized to unity, we need to scale by
+            // song duration in order for the jog wheel to cover the same amount
+            // of time given a constant turning angle.
+            var duration = engine.getValue(this.currentDeck, "duration");
+            var newPos = Math.max(0, oldPos + (newValue * djc4.stripSearchScaling / duration));
+            engine.setValue(this.currentDeck, "playposition", newPos); // Strip search
+        } else {
+            engine.setValue(this.currentDeck, "jog", newValue); // Pitch bend
+        }
+    };
 };
 
 // === FOR MANAGING LEDS ===
@@ -216,113 +293,33 @@ djc4.setLed = function(deck, led, status) {
 
 // === MISC COMMON ===
 
-djc4.group2Deck = function(group) {
-    var matches = group.match(/\[Channel(\d+)\]/);
-    if (matches === null) {
-        return -1;
-    } else {
-        return matches[1];
-    }
-};
-
-djc4.group2Sampler = function(group) {
-    var matches = group.match(/^\[Sampler(\d+)\]$/);
-    if (matches === null) {
-        return -1;
-    } else {
-        return matches[1];
-    }
-};
-
-// === Scratch control ===
-
-djc4.toggleScratchMode = function(channel, control, value, status, group) {
-    if (!value)
-        return;
-
-    var deck = djc4.group2Deck(group);
-    // Toggle setting
-    djc4.scratchMode[deck - 1] = !djc4.scratchMode[deck - 1];
-    djc4.scratchSetLed(djc4.scratchMode[deck - 1], group);
-};
-
-// === JOG WHEEL ===
-
-// Touch platter
-djc4.wheelTouch = function(channel, control, value) {
-    var deck = channel + 1;
-
-    if (control === 0x58) { // If shift is pressed, do a fast search
-        if (value === 0x7F) { // If touch
-            var alpha = 1.0 / 8;
-            var beta = alpha / 32;
-
-            var rpm = 40.0;
-
-            engine.scratchEnable(deck, 128, rpm, alpha, beta, true);
-        } else { // If button up
-            engine.scratchDisable(deck);
-        }
-    } else if (djc4.scratchMode[channel] === true) { // If scratch enabled
-        if (value === 0x7F) {                          // If touch
-            alpha = 1.0 / 8;
-            beta = alpha / 32;
-
-            rpm = 150.0;
-
-            engine.scratchEnable(deck, 128, rpm, alpha, beta, true);
-        } else { // If button up
-            engine.scratchDisable(deck);
-        }
-    } else if (value === 0x00) {
-    // In case shift is let go before the platter,
-    // ensure scratch is disabled
-        engine.scratchDisable(deck);
-    }
-};
-
-// Wheel
-djc4.wheelTurn = function(channel, control, value, status, group) {
-    // var deck = channel + 1;
-    var deck = script.deckFromGroup(group);
-
-    // B: For a control that centers on 0x40 (64):
-    var newValue = (value - 64);
-
-    // See if we're scratching. If not, skip this.
-    if (!engine.isScratching(deck)) {
-        engine.setValue(group, "jog", newValue / 4);
+djc4.autoShowDecks = function() {
+    var anyLoaded = engine.getValue("[Channel3]", "track_loaded") || engine.getValue("[Channel4]", "track_loaded");
+    if (!djc4.autoShowFourDecks) {
         return;
     }
+    engine.setValue("[Master]", "show_4decks", anyLoaded);
+};
 
-    // In either case, register the movement
-    engine.scratchTick(deck, newValue);
+djc4.shiftButton = function(value) {
+    djc4.deck.concat(djc4.effectUnit).forEach(
+        value ? function(module) { module.shift(); } : function(module) { module.unshift(); }
+    );
 };
 
 // === Browser ===
-
-djc4.browseMove = function(channel, control, value, status, group) {
-    // Next/previous track
-    if (value === 0x41) {
-        engine.setValue(group, "MoveUp", true);
-    } else if (value === 0x3F) {
-        engine.setValue(group, "MoveDown", true);
-    } else
-        return;
-};
-
-djc4.browseScroll = function(channel, control, value, status, group) {
-    // Next/previous page
-    if (value === 0x41) {
-        engine.setValue(group, "ScrollUp", true);
-    } else if (value === 0x3F) {
-        engine.setValue(group, "ScrollDown", true);
-    } else
-        return;
-};
+djc4.browseEncoder = new components.Encoder({
+    input: function(channel, control, value) {
+        var isShifted = (control) === 0x2C;
+        if (value === 0x41) {
+            engine.setValue("[Library]", isShifted ? "ScrollDown" : "MoveDown", true);
+        } else if (value === 0x3F) {
+            engine.setValue("[Library]", isShifted ? "ScrollUp" : "MoveUp", true);
+        }
+    }
+});
 
 // === Sampler Volume Control ===
-
 djc4.samplerVolume = function(channel, control, value) {
     // check if the Sampler Volume is at Zero and if so hide the sampler bank
     if (value > 0x00) {
@@ -340,156 +337,6 @@ djc4.samplerVolume = function(channel, control, value) {
     }
 };
 
-// === SET LED FUNCTIONS ===
 
-// Hot cues
-
-djc4.hotcueSetLed = function(value, group, control) {
-    djc4.setLed(djc4.group2Deck(group), djc4.leds["hotcue" + control[7]], value);
-};
-
-// PFL
-
-djc4.pflSetLed = function(
-    value,
-    group) { djc4.setLed(djc4.group2Deck(group), djc4.leds["pfl"], value); };
-
-// Play/Cue
-
-djc4.playSetLed = function(value, group) {
-    // var deck = channel + 1;
-    var deck = djc4.group2Deck(group);
-
-    djc4.setLed(djc4.group2Deck(group), djc4.leds["play"], value);
-
-    // if a deck is playing it is not possible to load a track
-    // -> disable corresponding load LED
-    if (deck === 1 || deck === 3) {
-        djc4.setLed(djc4.group2Deck(group), djc4.leds["loadac"], !value);
-    } else {
-        djc4.setLed(djc4.group2Deck(group), djc4.leds["loadbd"], !value);
-    }
-};
-
-djc4.cueSetLed = function(
-    value,
-    group) { djc4.setLed(djc4.group2Deck(group), djc4.leds["cue"], value); };
-
-// Keylock
-
-djc4.keylockSetLed = function(value, group) {
-    djc4.setLed(djc4.group2Deck(group), djc4.leds["keylock"], value);
-};
-
-// Loops
-
-djc4.loopStartSetLed = function(value, group) {
-    djc4.setLed(djc4.group2Deck(group), djc4.leds["loopin"], value !== -1);
-};
-
-djc4.loopEndSetLed = function(value, group) {
-    djc4.setLed(djc4.group2Deck(group), djc4.leds["loopout"], value !== -1);
-};
-
-djc4.loopEnabledSetLed = function(
-    value,
-    group) { djc4.setLed(djc4.group2Deck(group), djc4.leds["loopon"], value); };
-
-djc4.loopDoubleSetLed = function(value, group) {
-    djc4.setLed(djc4.group2Deck(group), djc4.leds["loopplus"], value);
-};
-
-djc4.loopHalveSetLed = function(value, group) {
-    djc4.setLed(djc4.group2Deck(group), djc4.leds["loopminus"], value);
-};
-
-// Kills
-
-djc4.highkillSetLed = function(value, group) {
-    djc4.setLed(djc4.group2Deck(group), djc4.leds["highkill"], value);
-};
-
-djc4.midkillSetLed = function(value, group) {
-    djc4.setLed(djc4.group2Deck(group), djc4.leds["midkill"], value);
-};
-
-djc4.lowkillSetLed = function(value, group) {
-    djc4.setLed(djc4.group2Deck(group), djc4.leds["lowkill"], value);
-};
-
-djc4.filterSetLed = function(value, group) {
-    djc4.setLed(djc4.group2Deck(group), djc4.leds["filteron"], !value);
-};
-
-// Scratch button
-
-djc4.scratchSetLed = function(value, group) {
-    djc4.setLed(djc4.group2Deck(group), djc4.leds["scratch"], value);
-};
-
-// Pitch bend buttons
-djc4.ratetempdownSetLed = function(value, group) {
-    djc4.setLed(djc4.group2Deck(group), djc4.leds["pbendminus"], value);
-};
-
-djc4.ratetempupSetLed = function(value, group) {
-    djc4.setLed(djc4.group2Deck(group), djc4.leds["pbendplus"], value);
-};
-
-djc4.fxenabledSetLed = function(value, group) {
-    var matches = group.match(/^\[EffectRack1_EffectUnit(\d+)_Effect(\d+)\]$/);
-    if (matches !== null) {
-        var led = djc4.leds["fxexf1"] - 1 + parseInt(matches[2], 10);
-
-        // FX1 is on deck A/C
-        if (parseInt(matches[1], 10) === 1) {
-            djc4.setLed(1, led, value);
-            djc4.setLed(3, led, value);
-        } else {
-            djc4.setLed(2, led, value);
-            djc4.setLed(4, led, value);
-        }
-    }
-};
-
-djc4.fxon1SetLed = function(
-    value) { djc4.setLed(1, djc4.leds["fxon"], value); };
-
-djc4.fxon2SetLed = function(
-    value) { djc4.setLed(2, djc4.leds["fxon"], value); };
-
-djc4.fxon3SetLed = function(
-    value) { djc4.setLed(3, djc4.leds["fxon"], value); };
-
-djc4.fxon4SetLed = function(
-    value) { djc4.setLed(4, djc4.leds["fxon"], value); };
-
-// Sampler
-
-djc4.samplerSetLed = function(value, group) {
-    var sampler = djc4.group2Sampler(group);
-
-    if (sampler <= 4) {
-    // Sampler 1 - 4 are on deck A/C
-        var led = djc4.leds["sample1"] - 1 + parseInt(sampler, 10);
-        djc4.setLed(1, led, value);
-        djc4.setLed(3, led, value);
-    } else {
-    // Sampler 5 - 8 are on deck B/D
-        led = djc4.leds["sample1"] - 1 - 4 + parseInt(sampler, 10);
-        djc4.setLed(2, led, value);
-        djc4.setLed(4, led, value);
-    }
-};
-
-// === VU Meter ===
-
-djc4.VuMeterLSetLed = function(value) {
-    var ledStatus = (value * 119);
-    midi.sendShortMsg(0xB0, 3, ledStatus);
-};
-
-djc4.VuMeterRSetLed = function(value) {
-    var ledStatus = (value * 119);
-    midi.sendShortMsg(0xB0, 4, ledStatus);
-};
+// give your custom Deck all the methods of the generic Deck in the Components library
+djc4.Deck.prototype = Object.create(components.Deck.prototype);

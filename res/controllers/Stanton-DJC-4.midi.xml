@@ -3,17 +3,91 @@
   <info>
     <name>Stanton DJC.4</name>
     <author>Martin Bruset Solberg, Christoph Zimmermann</author>
-    <description>The Stanton DJC.4 is a four-deck control surface with large, touch-sensitive jog wheels and built-in audio interface (2 inputs, 2 outputs). Configured as four-deck, two-fx and master VU meter controller</description>
-    <wiki>https://mixxx.org/wiki/doku.php/stanton_djc4</wiki>
+    <description>The Stanton DJC.4 is a four-deck control surface with large, touch-sensitive jog wheels and built-in audio interface (2 inputs, 2 outputs). Configured as four-deck, four-fx and master VU meter controller</description>
+    <wiki>https://mixxx.org/wiki/doku.php/stanton_djc.4</wiki>
   </info>
   <controller id="DJC-4">
     <scriptfiles>
+      <file functionprefix="" filename="lodash.mixxx.js"/>
+      <file functionprefix="" filename="midi-components-0.0.js"/>
       <file functionprefix="djc4" filename="Stanton-DJC-4-scripts.js" />
     </scriptfiles>
     <controls>
       <control>
         <group>[Channel1]</group>
-        <key>djc4.wheelTurn</key>
+        <key>djc4.deck[0].beatLoopEncoder.input</key>
+        <status>0xB0</status>
+        <midino>0x01</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>beatloop_activate</key>
+        <status>0x90</status>
+        <midino>0x01</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>djc4.deck[1].beatLoopEncoder.input</key>
+        <status>0xB1</status>
+        <midino>0x01</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>beatloop_activate</key>
+        <status>0x91</status>
+        <midino>0x01</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>djc4.deck[2].beatLoopEncoder.input</key>
+        <status>0xB2</status>
+        <midino>0x01</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>beatloop_activate</key>
+        <status>0x92</status>
+        <midino>0x01</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>djc4.deck[3].beatLoopEncoder.input</key>
+        <status>0xB3</status>
+        <midino>0x01</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>beatloop_activate</key>
+        <status>0x93</status>
+        <midino>0x01</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>djc4.deck[0].wheelTurn</key>
         <status>0xB0</status>
         <midino>0x02</midino>
         <options>
@@ -31,7 +105,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>djc4.wheelTurn</key>
+        <key>djc4.deck[1].wheelTurn</key>
         <status>0xB1</status>
         <midino>0x02</midino>
         <options>
@@ -49,7 +123,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>djc4.wheelTurn</key>
+        <key>djc4.deck[2].wheelTurn</key>
         <status>0xB2</status>
         <midino>0x02</midino>
         <options>
@@ -67,7 +141,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>djc4.wheelTurn</key>
+        <key>djc4.deck[3].wheelTurn</key>
         <status>0xB3</status>
         <midino>0x02</midino>
         <options>
@@ -405,6 +479,42 @@
         <midino>0x07</midino>
         <options>
           <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>djc4.effectUnit[0].dryWetKnob.input</key>
+        <status>0xB0</status>
+        <midino>0x08</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit3]</group>
+        <key>djc4.effectUnit[1].dryWetKnob.input</key>
+        <status>0xB1</status>
+        <midino>0x08</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit3]</group>
+        <key>djc4.effectUnit[2].dryWetKnob.input</key>
+        <status>0xB2</status>
+        <midino>0x08</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit3]</group>
+        <key>djc4.effectUnit[3].dryWetKnob.input</key>
+        <status>0xB3</status>
+        <midino>0x08</midino>
+        <options>
+          <script-binding />
         </options>
       </control>
       <control>
@@ -481,38 +591,38 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect1]</group>
-        <key>meta</key>
+        <key>djc4.effectUnit[0].knobs[1].input</key>
         <status>0xB0</status>
         <midino>0x09</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect1]</group>
-        <key>meta</key>
+        <key>djc4.effectUnit[1].knobs[1].input</key>
         <status>0xB1</status>
         <midino>0x09</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect1]</group>
-        <key>meta</key>
+        <key>djc4.effectUnit[2].knobs[1].input</key>
         <status>0xB2</status>
         <midino>0x09</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect1]</group>
-        <key>meta</key>
+        <key>djc4.effectUnit[3].knobs[1].input</key>
         <status>0xB3</status>
         <midino>0x09</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
@@ -553,38 +663,38 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect2]</group>
-        <key>meta</key>
+        <key>djc4.effectUnit[0].knobs[2].input</key>
         <status>0xB0</status>
         <midino>0x0A</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect2]</group>
-        <key>meta</key>
+        <key>djc4.effectUnit[1].knobs[2].input</key>
         <status>0xB1</status>
         <midino>0x0A</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect2]</group>
-        <key>meta</key>
+        <key>djc4.effectUnit[2].knobs[2].input</key>
         <status>0xB2</status>
         <midino>0x0A</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect2]</group>
-        <key>meta</key>
+        <key>djc4.effectUnit[3].knobs[2].input</key>
         <status>0xB3</status>
         <midino>0x0A</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
@@ -625,110 +735,110 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect3]</group>
-        <key>meta</key>
+        <key>djc4.effectUnit[0].knobs[3].input</key>
         <status>0xB0</status>
         <midino>0x0B</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect3]</group>
-        <key>meta</key>
+        <key>djc4.effectUnit[1].knobs[3].input</key>
         <status>0xB1</status>
         <midino>0x0B</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect3]</group>
-        <key>meta</key>
+        <key>djc4.effectUnit[2].knobs[3].input</key>
         <status>0xB2</status>
         <midino>0x0B</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect3]</group>
-        <key>meta</key>
+        <key>djc4.effectUnit[3].knobs[3].input</key>
         <status>0xB3</status>
         <midino>0x0B</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Sampler1]</group>
-        <key>cue_gotoandplay</key>
+        <key>djc4.deck[0].samplerButtons[0].input</key>
         <status>0x90</status>
         <midino>0x0C</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Sampler5]</group>
-        <key>cue_gotoandplay</key>
+        <key>djc4.deck[1].samplerButtons[0].input</key>
         <status>0x91</status>
         <midino>0x0C</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Sampler1]</group>
-        <key>cue_gotoandplay</key>
+        <key>djc4.deck[2].samplerButtons[0].input</key>
         <status>0x92</status>
         <midino>0x0C</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Sampler5]</group>
-        <key>cue_gotoandplay</key>
+        <key>djc4.deck[3].samplerButtons[0].input</key>
         <status>0x93</status>
         <midino>0x0C</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Sampler2]</group>
-        <key>cue_gotoandplay</key>
+        <key>djc4.deck[0].samplerButtons[1].input</key>
         <status>0x90</status>
         <midino>0x0D</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Sampler6]</group>
-        <key>cue_gotoandplay</key>
+        <key>djc4.deck[1].samplerButtons[1].input</key>
         <status>0x91</status>
         <midino>0x0D</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Sampler2]</group>
-        <key>cue_gotoandplay</key>
+        <key>djc4.deck[2].samplerButtons[1].input</key>
         <status>0x92</status>
         <midino>0x0D</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Sampler6]</group>
-        <key>cue_gotoandplay</key>
+        <key>djc4.deck[3].samplerButtons[1].input</key>
         <status>0x93</status>
         <midino>0x0D</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
@@ -742,7 +852,7 @@
       </control>
       <control>
         <group>[Library]</group>
-        <key>djc4.browseMove</key>
+        <key>djc4.browseEncoder.input</key>
         <status>0xB0</status>
         <midino>0x0E</midino>
         <options>
@@ -751,74 +861,74 @@
       </control>
       <control>
         <group>[Sampler3]</group>
-        <key>cue_gotoandplay</key>
+        <key>djc4.deck[0].samplerButtons[2].input</key>
         <status>0x90</status>
         <midino>0x0E</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Sampler7]</group>
-        <key>cue_gotoandplay</key>
+        <key>djc4.deck[1].samplerButtons[2].input</key>
         <status>0x91</status>
         <midino>0x0E</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Sampler3]</group>
-        <key>cue_gotoandplay</key>
+        <key>djc4.deck[2].samplerButtons[2].input</key>
         <status>0x92</status>
         <midino>0x0E</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Sampler7]</group>
-        <key>cue_gotoandplay</key>
+        <key>djc4.deck[3].samplerButtons[2].input</key>
         <status>0x93</status>
         <midino>0x0E</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Sampler4]</group>
-        <key>cue_gotoandplay</key>
+        <key>djc4.deck[0].samplerButtons[3].input</key>
         <status>0x90</status>
         <midino>0x0F</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Sampler8]</group>
-        <key>cue_gotoandplay</key>
+        <key>djc4.deck[1].samplerButtons[3].input</key>
         <status>0x91</status>
         <midino>0x0F</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Sampler4]</group>
-        <key>cue_gotoandplay</key>
+        <key>djc4.deck[2].samplerButtons[3].input</key>
         <status>0x92</status>
         <midino>0x0F</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Sampler8]</group>
-        <key>cue_gotoandplay</key>
+        <key>djc4.deck[3].samplerButtons[3].input</key>
         <status>0x93</status>
         <midino>0x0F</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
@@ -994,7 +1104,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>djc4.toggleScratchMode</key>
+        <key>djc4.deck[0].toggleScratchMode</key>
         <status>0x90</status>
         <midino>0x15</midino>
         <options>
@@ -1003,7 +1113,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>djc4.toggleScratchMode</key>
+        <key>djc4.deck[1].toggleScratchMode</key>
         <status>0x91</status>
         <midino>0x15</midino>
         <options>
@@ -1012,7 +1122,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>djc4.toggleScratchMode</key>
+        <key>djc4.deck[2].toggleScratchMode</key>
         <status>0x92</status>
         <midino>0x15</midino>
         <options>
@@ -1021,7 +1131,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>djc4.toggleScratchMode</key>
+        <key>djc4.deck[3].toggleScratchMode</key>
         <status>0x93</status>
         <midino>0x15</midino>
         <options>
@@ -1278,6 +1388,42 @@
         <midino>0x1C</midino>
         <options>
           <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>djc4.effectUnit[0].effectFocusButton.input</key>
+        <status>0x90</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>djc4.effectUnit[1].effectFocusButton.input</key>
+        <status>0x91</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>djc4.effectUnit[2].effectFocusButton.input</key>
+        <status>0x92</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>djc4.effectUnit[3].effectFocusButton.input</key>
+        <status>0x93</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding />
         </options>
       </control>
       <control>
@@ -1299,7 +1445,7 @@
         </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit1]</group>
+        <group>[EffectRack1_EffectUnit3]</group>
         <key>group_[Channel3]_enable</key>
         <status>0x92</status>
         <midino>0x1E</midino>
@@ -1308,7 +1454,7 @@
         </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit2]</group>
+        <group>[EffectRack1_EffectUnit4]</group>
         <key>group_[Channel4]_enable</key>
         <status>0x93</status>
         <midino>0x1E</midino>
@@ -1318,79 +1464,79 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect1]</group>
-        <key>enabled</key>
+        <key>djc4.effectUnit[0].enableButtons[1].input</key>
         <status>0x90</status>
         <midino>0x1F</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect1]</group>
-        <key>enabled</key>
+        <key>djc4.effectUnit[1].enableButtons[1].input</key>
         <status>0x91</status>
         <midino>0x1F</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit1_Effect1]</group>
-        <key>enabled</key>
+        <group>[EffectRack1_EffectUnit3_Effect1]</group>
+        <key>djc4.effectUnit[2].enableButtons[1].input</key>
         <status>0x92</status>
         <midino>0x1F</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit2_Effect1]</group>
-        <key>enabled</key>
+        <group>[EffectRack1_EffectUnit4_Effect1]</group>
+        <key>djc4.effectUnit[3].enableButtons[1].input</key>
         <status>0x93</status>
         <midino>0x1F</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect2]</group>
-        <key>enabled</key>
+        <key>djc4.effectUnit[0].enableButtons[2].input</key>
         <status>0x90</status>
         <midino>0x20</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect2]</group>
-        <key>enabled</key>
+        <key>djc4.effectUnit[1].enableButtons[2].input</key>
         <status>0x91</status>
         <midino>0x20</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit1_Effect2]</group>
-        <key>enabled</key>
+        <group>[EffectRack1_EffectUnit3_Effect2]</group>
+        <key>djc4.effectUnit[2].enableButtons[2].input</key>
         <status>0x92</status>
         <midino>0x20</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit2_Effect2]</group>
-        <key>enabled</key>
+        <group>[EffectRack1_EffectUnit4_Effect2]</group>
+        <key>djc4.effectUnit[3].enableButtons[2].input</key>
         <status>0x93</status>
         <midino>0x20</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>djc4.wheelTurn</key>
+        <key>djc4.deck[0].wheelTurn</key>
         <status>0xB0</status>
         <midino>0x20</midino>
         <options>
@@ -1399,7 +1545,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>djc4.wheelTurn</key>
+        <key>djc4.deck[1].wheelTurn</key>
         <status>0xB1</status>
         <midino>0x20</midino>
         <options>
@@ -1408,7 +1554,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>djc4.wheelTurn</key>
+        <key>djc4.deck[2].wheelTurn</key>
         <status>0xB2</status>
         <midino>0x20</midino>
         <options>
@@ -1417,7 +1563,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>djc4.wheelTurn</key>
+        <key>djc4.deck[3].wheelTurn</key>
         <status>0xB3</status>
         <midino>0x20</midino>
         <options>
@@ -1426,38 +1572,38 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect3]</group>
-        <key>enabled</key>
+        <key>djc4.effectUnit[0].enableButtons[3].input</key>
         <status>0x90</status>
         <midino>0x21</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect3]</group>
-        <key>enabled</key>
+        <key>djc4.effectUnit[1].enableButtons[3].input</key>
         <status>0x91</status>
         <midino>0x21</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect3]</group>
-        <key>enabled</key>
+        <key>djc4.effectUnit[2].enableButtons[3].input</key>
         <status>0x92</status>
         <midino>0x21</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect3]</group>
-        <key>enabled</key>
+        <key>djc4.effectUnit[3].enableButtons[3].input</key>
         <status>0x93</status>
         <midino>0x21</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
@@ -1475,7 +1621,7 @@
         <status>0x92</status>
         <midino>0x22</midino>
         <options>
-          <normal />
+          <snormal />
         </options>
       </control>
       <control>
@@ -1534,43 +1680,43 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>mix</key>
+        <key>djc4.effectUnit[0].dryWetKnob.input</key>
         <status>0xB0</status>
-        <midino>0x25</midino>
+        <midino>0x26</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2]</group>
-        <key>mix</key>
+        <key>djc4.effectUnit[1].dryWetKnob.input</key>
         <status>0xB1</status>
-        <midino>0x25</midino>
+        <midino>0x26</midino>
         <options>
-          <normal />
-        </options>
-      </control>
-      <control>
-        <group>[EffectRack1_EffectUnit1]</group>
-        <key>mix</key>
-        <status>0xB2</status>
-        <midino>0x25</midino>
-        <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2]</group>
-        <key>mix</key>
-        <status>0xB3</status>
-        <midino>0x25</midino>
+        <key>djc4.effectUnit[2].dryWetKnob.input</key>
+        <status>0xB2</status>
+        <midino>0x26</midino>
         <options>
-          <normal />
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit3]</group>
+        <key>djc4.effectUnit[3].dryWetKnob.input</key>
+        <status>0xB3</status>
+        <midino>0x26</midino>
+        <options>
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>djc4.wheelTouch</key>
+        <key>djc4.deck[0].wheelTouch</key>
         <status>0x90</status>
         <midino>0x26</midino>
         <options>
@@ -1579,7 +1725,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>djc4.wheelTouch</key>
+        <key>djc4.deck[1].wheelTouch</key>
         <status>0x91</status>
         <midino>0x26</midino>
         <options>
@@ -1588,7 +1734,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>djc4.wheelTouch</key>
+        <key>djc4.deck[2].wheelTouch</key>
         <status>0x92</status>
         <midino>0x26</midino>
         <options>
@@ -1597,7 +1743,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>djc4.wheelTouch</key>
+        <key>djc4.deck[3].wheelTouch</key>
         <status>0x93</status>
         <midino>0x26</midino>
         <options>
@@ -1606,7 +1752,7 @@
       </control>
       <control>
         <group>[Library]</group>
-        <key>MoveFocusForward</key>
+        <key>MoveFocus</key>
         <status>0x90</status>
         <midino>0x27</midino>
         <options>
@@ -1615,7 +1761,7 @@
       </control>
       <control>
         <group>[Library]</group>
-        <key>djc4.browseScroll</key>
+        <key>djc4.browseEncoder.input</key>
         <status>0xB0</status>
         <midino>0x2C</midino>
         <options>
@@ -1623,6 +1769,51 @@
         </options>
       </control>
       <control>
+        <group>[Master]</group>
+        <key>djc4.shiftButton</key>
+        <status>0x90</status>
+        <midino>0x2D</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>beatlooproll_activate</key>
+        <status>0x90</status>
+        <midino>0x33</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>beatlooproll_activate</key>
+        <status>0x91</status>
+        <midino>0x33</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>beatlooproll_activate</key>
+        <status>0x92</status>
+        <midino>0x33</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>beatlooproll_activate</key>
+        <status>0x93</status>
+        <midino>0x33</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
         <group>[Channel1]</group>
         <key>loop_in_goto</key>
         <status>0x90</status>
@@ -1876,146 +2067,146 @@
       </control>
       <control>
         <group>[Sampler1]</group>
-        <key>cue_default</key>
+        <key>djc4.deck[0].samplerButtons[0].input</key>
         <status>0x90</status>
         <midino>0x3E</midino>
         <options>
-          <normal />
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Sampler5]</group>
-        <key>cue_default</key>
+        <key>djc4.deck[1].samplerButtons[0].input</key>
         <status>0x91</status>
         <midino>0x3E</midino>
         <options>
-          <normal />
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Sampler1]</group>
-        <key>cue_default</key>
+        <key>djc4.deck[3].samplerButtons[0].input</key>
         <status>0x92</status>
         <midino>0x3E</midino>
         <options>
-          <normal />
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Sampler5]</group>
-        <key>cue_default</key>
+        <key>djc4.deck[3].samplerButtons[0].input</key>
         <status>0x93</status>
         <midino>0x3E</midino>
         <options>
-          <normal />
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Sampler2]</group>
-        <key>cue_default</key>
+        <key>djc4.deck[0].samplerButtons[1].input</key>
         <status>0x90</status>
         <midino>0x3F</midino>
         <options>
-          <normal />
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Sampler6]</group>
-        <key>cue_default</key>
+        <key>djc4.deck[1].samplerButtons[1].input</key>
         <status>0x91</status>
         <midino>0x3F</midino>
         <options>
-          <normal />
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Sampler2]</group>
-        <key>cue_default</key>
+        <key>djc4.deck[2].samplerButtons[1].input</key>
         <status>0x92</status>
         <midino>0x3F</midino>
         <options>
-          <normal />
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Sampler6]</group>
-        <key>cue_default</key>
+        <key>djc4.deck[3].samplerButtons[1].input</key>
         <status>0x93</status>
         <midino>0x3F</midino>
         <options>
-          <normal />
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Sampler3]</group>
-        <key>cue_default</key>
+        <key>djc4.deck[0].samplerButtons[2].input</key>
         <status>0x90</status>
         <midino>0x40</midino>
         <options>
-          <normal />
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Sampler7]</group>
-        <key>cue_default</key>
+        <key>djc4.deck[1].samplerButtons[2].input</key>
         <status>0x91</status>
         <midino>0x40</midino>
         <options>
-          <normal />
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Sampler3]</group>
-        <key>cue_default</key>
+        <key>djc4.deck[2].samplerButtons[2].input</key>
         <status>0x92</status>
         <midino>0x40</midino>
         <options>
-          <normal />
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Sampler7]</group>
-        <key>cue_default</key>
+        <key>djc4.deck[3].samplerButtons[2].input</key>
         <status>0x93</status>
         <midino>0x40</midino>
         <options>
-          <normal />
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Sampler4]</group>
-        <key>cue_default</key>
+        <key>djc4.deck[0].samplerButtons[3].input</key>
         <status>0x90</status>
         <midino>0x41</midino>
         <options>
-          <normal />
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Sampler8]</group>
-        <key>cue_default</key>
+        <key>djc4.deck[1].samplerButtons[3].input</key>
         <status>0x91</status>
         <midino>0x41</midino>
         <options>
-          <normal />
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Sampler4]</group>
-        <key>cue_default</key>
+        <key>djc4.deck[2].samplerButtons[3].input</key>
         <status>0x92</status>
         <midino>0x41</midino>
         <options>
-          <normal />
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Sampler8]</group>
-        <key>cue_default</key>
+        <key>djc4.deck[3].samplerButtons[3].input</key>
         <status>0x93</status>
         <midino>0x41</midino>
         <options>
-          <normal />
+          <script-binding/>
         </options>
       </control>
       <control>
@@ -2199,26 +2390,188 @@
         </options>
       </control>
       <control>
-        <group>[Playlist]</group>
-        <key>djc4.browsePrevPlaylist</key>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>djc4.effectUnit[0].effectFocusButton.input</key>
         <status>0x90</status>
-        <midino>0x54</midino>
+        <midino>0x4F</midino>
         <options>
           <script-binding />
         </options>
       </control>
       <control>
-        <group>[Playlist]</group>
-        <key>djc4.browseNextPlaylist</key>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>djc4.effectUnit[1].effectFocusButton.input</key>
         <status>0x91</status>
-        <midino>0x55</midino>
+        <midino>0x4F</midino>
         <options>
           <script-binding />
         </options>
       </control>
       <control>
-        <group>[Library]</group>
-        <key>MoveFocusBackward</key>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>djc4.effectUnit[2].effectFocusButton.input</key>
+        <status>0x92</status>
+        <midino>0x4F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>djc4.effectUnit[3].effectFocusButton.input</key>
+        <status>0x93</status>
+        <midino>0x4F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>djc4.effectUnit[0].enableButtons[1].input</key>
+        <status>0x90</status>
+        <midino>0x51</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2_Effect1]</group>
+        <key>djc4.effectUnit[1].enableButtons[1].input</key>
+        <status>0x91</status>
+        <midino>0x51</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>djc4.effectUnit[2].enableButtons[1].input</key>
+        <status>0x92</status>
+        <midino>0x51</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2_Effect1]</group>
+        <key>djc4.effectUnit[3].enableButtons[1].input</key>
+        <status>0x93</status>
+        <midino>0x51</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1_Effect2]</group>
+        <key>djc4.effectUnit[0].enableButtons[2].input</key>
+        <status>0x90</status>
+        <midino>0x52</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2_Effect2]</group>
+        <key>djc4.effectUnit[1].enableButtons[2].input</key>
+        <status>0x91</status>
+        <midino>0x52</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1_Effect2]</group>
+        <key>djc4.effectUnit[2].enableButtons[2].input</key>
+        <status>0x92</status>
+        <midino>0x52</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2_Effect2]</group>
+        <key>djc4.effectUnit[3].enableButtons[2].input</key>
+        <status>0x93</status>
+        <midino>0x52</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1_Effect3]</group>
+        <key>djc4.effectUnit[0].enableButtons[3].input</key>
+        <status>0x90</status>
+        <midino>0x53</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2_Effect3]</group>
+        <key>djc4.effectUnit[1].enableButtons[3].input</key>
+        <status>0x91</status>
+        <midino>0x53</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1_Effect3]</group>
+        <key>djc4.effectUnit[2].enableButtons[3].input</key>
+        <status>0x92</status>
+        <midino>0x53</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2_Effect3]</group>
+        <key>djc4.effectUnit[3].enableButtons[3].input</key>
+        <status>0x93</status>
+        <midino>0x53</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>djc4.deck[0].wheelTouch</key>
+        <status>0x90</status>
+        <midino>0x58</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>djc4.deck[1].wheelTouch</key>
+        <status>0x91</status>
+        <midino>0x58</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>djc4.deck[2].wheelTouch</key>
+        <status>0x92</status>
+        <midino>0x58</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>djc4.deck[3].wheelTouch</key>
+        <status>0x93</status>
+        <midino>0x58</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>maximize_library</key>
         <status>0x90</status>
         <midino>0x59</midino>
         <options>
@@ -2258,6 +2611,851 @@
         </options>
       </control>
     </controls>
-    <outputs />
+    <outputs>
+      <output>
+        <group>[Channel1]</group>
+        <key>loop_halve</key>
+        <status>0x90</status>
+        <midino>0x02</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>loop_halve</key>
+        <status>0x91</status>
+        <midino>0x02</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel3]</group>
+        <key>loop_halve</key>
+        <status>0x92</status>
+        <midino>0x02</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel4]</group>
+        <key>loop_halve</key>
+        <status>0x93</status>
+        <midino>0x02</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>loop_double</key>
+        <status>0x90</status>
+        <midino>0x03</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>loop_double</key>
+        <status>0x91</status>
+        <midino>0x03</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel3]</group>
+        <key>loop_double</key>
+        <status>0x92</status>
+        <midino>0x03</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel4]</group>
+        <key>loop_double</key>
+        <status>0x93</status>
+        <midino>0x03</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>loop_start_position</key>
+        <status>0x90</status>
+        <midino>0x04</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0</minimum>
+        <maximum>2147483647</maximum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>loop_start_position</key>
+        <status>0x91</status>
+        <midino>0x04</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0</minimum>
+        <maximum>2147483647</maximum>
+      </output>
+      <output>
+        <group>[Channel3]</group>
+        <key>loop_start_position</key>
+        <status>0x92</status>
+        <midino>0x04</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0</minimum>
+        <maximum>2147483647</maximum>
+      </output>
+      <output>
+        <group>[Channel4]</group>
+        <key>loop_start_position</key>
+        <status>0x93</status>
+        <midino>0x04</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0</minimum>
+        <maximum>2147483647</maximum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>loop_end_position</key>
+        <status>0x90</status>
+        <midino>0x05</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0</minimum>
+        <maximum>2147483647</maximum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>loop_end_position</key>
+        <status>0x91</status>
+        <midino>0x05</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0</minimum>
+        <maximum>2147483647</maximum>
+      </output>
+      <output>
+        <group>[Channel3]</group>
+        <key>loop_end_position</key>
+        <status>0x92</status>
+        <midino>0x05</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0</minimum>
+        <maximum>2147483647</maximum>
+      </output>
+      <output>
+        <group>[Channel4]</group>
+        <key>loop_end_position</key>
+        <status>0x93</status>
+        <midino>0x05</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0</minimum>
+        <maximum>2147483647</maximum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>loop_enabled</key>
+        <status>0x90</status>
+        <midino>0x06</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>loop_enabled</key>
+        <status>0x91</status>
+        <midino>0x06</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel3]</group>
+        <key>loop_enabled</key>
+        <status>0x92</status>
+        <midino>0x06</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel4]</group>
+        <key>loop_enabled</key>
+        <status>0x93</status>
+        <midino>0x06</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_1_enabled</key>
+        <status>0x90</status>
+        <midino>0x08</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_1_enabled</key>
+        <status>0x91</status>
+        <midino>0x08</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel3]</group>
+        <key>hotcue_1_enabled</key>
+        <status>0x92</status>
+        <midino>0x08</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel4]</group>
+        <key>hotcue_1_enabled</key>
+        <status>0x93</status>
+        <midino>0x08</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_2_enabled</key>
+        <status>0x90</status>
+        <midino>0x09</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_2_enabled</key>
+        <status>0x91</status>
+        <midino>0x09</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel3]</group>
+        <key>hotcue_2_enabled</key>
+        <status>0x92</status>
+        <midino>0x09</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel4]</group>
+        <key>hotcue_2_enabled</key>
+        <status>0x93</status>
+        <midino>0x09</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_3_enabled</key>
+        <status>0x90</status>
+        <midino>0x0A</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_3_enabled</key>
+        <status>0x91</status>
+        <midino>0x0A</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel3]</group>
+        <key>hotcue_3_enabled</key>
+        <status>0x92</status>
+        <midino>0x0A</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel4]</group>
+        <key>hotcue_3_enabled</key>
+        <status>0x93</status>
+        <midino>0x0A</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_4_enabled</key>
+        <status>0x90</status>
+        <midino>0x0B</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_4_enabled</key>
+        <status>0x91</status>
+        <midino>0x0B</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel3]</group>
+        <key>hotcue_4_enabled</key>
+        <status>0x92</status>
+        <midino>0x0B</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel4]</group>
+        <key>hotcue_4_enabled</key>
+        <status>0x93</status>
+        <midino>0x0B</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>keylock</key>
+        <status>0x90</status>
+        <midino>0x10</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>keylock</key>
+        <status>0x91</status>
+        <midino>0x10</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel3]</group>
+        <key>keylock</key>
+        <status>0x92</status>
+        <midino>0x10</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel4]</group>
+        <key>keylock</key>
+        <status>0x93</status>
+        <midino>0x10</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>beatsync</key>
+        <status>0x90</status>
+        <midino>0x12</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>beatsync</key>
+        <status>0x91</status>
+        <midino>0x12</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel3]</group>
+        <key>beatsync</key>
+        <status>0x92</status>
+        <midino>0x12</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel4]</group>
+        <key>beatsync</key>
+        <status>0x93</status>
+        <midino>0x12</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>rate_temp_down</key>
+        <status>0x90</status>
+        <midino>0x13</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>rate_temp_down</key>
+        <status>0x91</status>
+        <midino>0x13</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel3]</group>
+        <key>rate_temp_down</key>
+        <status>0x92</status>
+        <midino>0x13</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel4]</group>
+        <key>rate_temp_down</key>
+        <status>0x93</status>
+        <midino>0x13</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>rate_temp_up</key>
+        <status>0x90</status>
+        <midino>0x14</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>rate_temp_up</key>
+        <status>0x91</status>
+        <midino>0x14</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel3]</group>
+        <key>rate_temp_up</key>
+        <status>0x92</status>
+        <midino>0x14</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel4]</group>
+        <key>rate_temp_up</key>
+        <status>0x93</status>
+        <midino>0x14</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>play_indicator</key>
+        <status>0x90</status>
+        <midino>0x16</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>play_indicator</key>
+        <status>0x91</status>
+        <midino>0x16</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel3]</group>
+        <key>play_indicator</key>
+        <status>0x92</status>
+        <midino>0x16</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel4]</group>
+        <key>play_indicator</key>
+        <status>0x93</status>
+        <midino>0x16</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>cue_indicator</key>
+        <status>0x90</status>
+        <midino>0x17</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>cue_indicator</key>
+        <status>0x91</status>
+        <midino>0x17</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel3]</group>
+        <key>cue_indicator</key>
+        <status>0x92</status>
+        <midino>0x17</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel4]</group>
+        <key>cue_indicator</key>
+        <status>0x93</status>
+        <midino>0x17</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>play_indicator</key>
+        <status>0x90</status>
+        <midino>0x18</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>play_indicator</key>
+        <status>0x91</status>
+        <midino>0x18</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel3]</group>
+        <key>play_indicator</key>
+        <status>0x92</status>
+        <midino>0x18</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel4]</group>
+        <key>play_indicator</key>
+        <status>0x93</status>
+        <midino>0x18</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>button_parameter3</key>
+        <status>0x90</status>
+        <midino>0x19</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>button_parameter3</key>
+        <status>0x91</status>
+        <midino>0x19</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+        <key>button_parameter3</key>
+        <status>0x92</status>
+        <midino>0x19</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+        <key>button_parameter3</key>
+        <status>0x93</status>
+        <midino>0x19</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>button_parameter2</key>
+        <status>0x90</status>
+        <midino>0x1A</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>button_parameter2</key>
+        <status>0x91</status>
+        <midino>0x1A</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+        <key>button_parameter2</key>
+        <status>0x92</status>
+        <midino>0x1A</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+        <key>button_parameter2</key>
+        <status>0x93</status>
+        <midino>0x1A</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>button_parameter1</key>
+        <status>0x90</status>
+        <midino>0x1B</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>button_parameter1</key>
+        <status>0x91</status>
+        <midino>0x1B</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+        <key>button_parameter1</key>
+        <status>0x92</status>
+        <midino>0x1B</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+        <key>button_parameter1</key>
+        <status>0x93</status>
+        <midino>0x1B</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>pfl</key>
+        <status>0x90</status>
+        <midino>0x1C</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>pfl</key>
+        <status>0x91</status>
+        <midino>0x1C</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel3]</group>
+        <key>pfl</key>
+        <status>0x92</status>
+        <midino>0x1C</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel4]</group>
+        <key>pfl</key>
+        <status>0x93</status>
+        <midino>0x1C</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>group_[Channel1]_enable</key>
+        <status>0x90</status>
+        <midino>0x1E</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>group_[Channel2]_enable</key>
+        <status>0x91</status>
+        <midino>0x1E</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit3]</group>
+        <key>group_[Channel3]_enable</key>
+        <status>0x92</status>
+        <midino>0x1E</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit4]</group>
+        <key>group_[Channel4]_enable</key>
+        <status>0x93</status>
+        <midino>0x1E</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>play_indicator</key>
+        <status>0x90</status>
+        <midino>0x22</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <maximum>0.5</maximum>
+        <minimum>0.0</minimum>
+      </output>
+      <output>
+        <group>[Channel3]</group>
+        <key>play_indicator</key>
+        <status>0x92</status>
+        <midino>0x22</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <maximum>0.5</maximum>
+        <minimum>0.0</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>play_indicator</key>
+        <status>0x91</status>
+        <midino>0x23</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <maximum>0.5</maximum>
+        <minimum>0.0</minimum>
+      </output>
+      <output>
+        <group>[Channel4]</group>
+        <key>play_indicator</key>
+        <status>0x93</status>
+        <midino>0x23</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <maximum>0.5</maximum>
+        <minimum>0.0</minimum>
+      </output>
+      <output>
+        <group>[QuickEffectRack1_[Channel1]_Effect1]</group>
+        <key>enabled</key>
+        <status>0x90</status>
+        <midino>0x27</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <maximum>0.5</maximum>
+        <minimum>0.0</minimum>
+      </output>
+      <output>
+        <group>[QuickEffectRack1_[Channel2]_Effect1]</group>
+        <key>enabled</key>
+        <status>0x91</status>
+        <midino>0x27</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <maximum>0.5</maximum>
+        <minimum>0.0</minimum>
+      </output>
+      <output>
+        <group>[QuickEffectRack1_[Channel3]_Effect1]</group>
+        <key>enabled</key>
+        <status>0x92</status>
+        <midino>0x27</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <maximum>0.5</maximum>
+        <minimum>0.0</minimum>
+      </output>
+      <output>
+        <group>[QuickEffectRack1_[Channel4]_Effect1]</group>
+        <key>enabled</key>
+        <status>0x93</status>
+        <midino>0x27</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <maximum>0.5</maximum>
+        <minimum>0.0</minimum>
+      </output>
+    </outputs>
   </controller>
 </MixxxControllerPreset>
