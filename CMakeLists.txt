@@ -1319,8 +1319,8 @@ target_link_libraries(mixxx-lib PUBLIC ${OggVorbis_LIBRARIES})
 
 # PortAudio
 find_package(PortAudio REQUIRED)
-target_include_directories(mixxx-lib SYSTEM PUBLIC ${PORTAUDIO_INCLUDE_DIRS})
-target_link_libraries(mixxx-lib PUBLIC ${PORTAUDIO_LIBRARIES})
+target_include_directories(mixxx-lib SYSTEM PUBLIC ${PortAudio_INCLUDE_DIRS})
+target_link_libraries(mixxx-lib PUBLIC ${PortAudio_LIBRARIES})
 
 # PortAudio Ring Buffer
 add_library(PortAudioRingBuffer STATIC EXCLUDE_FROM_ALL
