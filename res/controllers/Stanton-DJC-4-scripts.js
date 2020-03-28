@@ -87,6 +87,24 @@ djc4.init = function() {
         engine.setValue("[Master]", "num_samplers", 8);
     }
 
+    djc4.browseEncoder = new components.Encoder({
+        group: "[Library]",
+        inKey: "Move",
+        input: function(channel, control, value) {
+            if (value === 0x41) {
+                engine.setParameter(this.group, this.inKey + "Down", 1);
+            } else if (value === 0x3F) {
+                engine.setParameter(this.group, this.inKey + "Up", 1);
+            }
+        },
+        unshift: function() {
+            this.inKey = "Move";
+        },
+        shift: function() {
+            this.inKey = "Scroll";
+        },
+    });
+
     djc4.deck = [];
     for (i = 0; i < 4; i++) {
         djc4.deck[i] = new djc4.Deck(i + 1);
@@ -162,7 +180,7 @@ djc4.Deck = function(deckNumbers) {
 
     // === Instantiate controls ===
     this.beatLoopEncoder = new components.Encoder({
-        midi: [0xB0+deckNumbers-1, 0x01],
+        midi: [0xB0 + deckNumbers - 1, 0x01],
         group: "[Channel" + deckNumbers + "]",
         inKey: "beatloop_size",
         input: function(channel, control, value) {
@@ -193,7 +211,7 @@ djc4.Deck = function(deckNumbers) {
     // === Scratch control ===
     this.scratchMode = false;
 
-    this.toggleScratchMode = function(value) {
+    this.toggleScratchMode = function(channel, control, value) {
         if (value === 0x7F) {
             // Toggle setting
             this.scratchMode = !this.scratchMode;
@@ -201,9 +219,10 @@ djc4.Deck = function(deckNumbers) {
         }
     };
 
-    // ============================= JOG WHEELS =================================
-    this.wheelTouch = function(channel, control, value) {
-        if (control === 0x58) { // If shift is pressed, do a fast search
+    // ============================= JOG WHEELS ==============================
+    this.wheelTouch = function(channel, control, value, status, group) {
+        if (engine.getValue(group, "play") === 0) {
+            // If not playing, do a fast search
             if (value === 0x7F) {
                 var alpha = 1.0 / 8;
                 var beta = alpha / 32;
@@ -213,7 +232,8 @@ djc4.Deck = function(deckNumbers) {
             } else {    // If button up
                 engine.scratchDisable(script.deckFromGroup(this.currentDeck));
             }
-        } else if (this.scratchMode === true) { // If scratch enabled
+        } else if (this.scratchMode === true) {
+            // If scratch enabled
             if (value === 0x7F) {
                 alpha = 1.0/8;
                 beta = alpha/32;
@@ -223,14 +243,12 @@ djc4.Deck = function(deckNumbers) {
             } else {    // If button up
                 engine.scratchDisable(script.deckFromGroup(this.currentDeck));
             }
-        }  else if (value === 0x00) {
-            // In case shift is let go before the platter,
-            // ensure scratch is disabled
+        } else {    // If button up
             engine.scratchDisable(script.deckFromGroup(this.currentDeck));
         }
     };
 
-    this.wheelTurn = function(control, value) {
+    this.wheelTurn = function(channel, control, value) {
         // When the jog wheel is turned in clockwise direction, value is
         // greater than 64 (= 0x40). If it's turned in counter-clockwise
         // direction, the value is smaller than 64.
@@ -238,7 +256,7 @@ djc4.Deck = function(deckNumbers) {
         var deck = script.deckFromGroup(this.currentDeck);
         if (engine.isScratching(deck)) {
             engine.scratchTick(deck, newValue); // Scratch!
-        } else if (control === 0x20) { // If shift is pressed
+        } else if (this.shifted === true) { // If shift is pressed
             var oldPos = engine.getValue(this.currentDeck, "playposition");
             // Since ‘playposition’ is normalized to unity, we need to scale by
             // song duration in order for the jog wheel to cover the same amount
@@ -301,23 +319,22 @@ djc4.autoShowDecks = function() {
     engine.setValue("[Master]", "show_4decks", anyLoaded);
 };
 
-djc4.shiftButton = function(value) {
-    djc4.deck.concat(djc4.effectUnit).forEach(
-        value ? function(module) { module.shift(); } : function(module) { module.unshift(); }
-    );
-};
-
-// === Browser ===
-djc4.browseEncoder = new components.Encoder({
-    input: function(channel, control, value) {
-        var isShifted = (control) === 0x2C;
-        if (value === 0x41) {
-            engine.setValue("[Library]", isShifted ? "ScrollDown" : "MoveDown", true);
-        } else if (value === 0x3F) {
-            engine.setValue("[Library]", isShifted ? "ScrollUp" : "MoveUp", true);
+djc4.shiftButton = function(channel, control, value) {
+    var i;
+    if (value === 0x7F) {
+        djc4.browseEncoder.shift();
+        for (i = 0; i < 4; i++) {
+            djc4.deck[i].shift();
+            djc4.effectUnit[i].shift();
+        }
+    } else {
+        djc4.browseEncoder.unshift();
+        for (i = 0; i < 4; i++) {
+            djc4.deck[i].unshift();
+            djc4.effectUnit[i].unshift();
         }
     }
-});
+};
 
 // === Sampler Volume Control ===
 djc4.samplerVolume = function(channel, control, value) {
