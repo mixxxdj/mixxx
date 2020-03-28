@@ -78,7 +78,7 @@ void WebTask::onAborted(
     const auto signal = QMetaMethod::fromSignal(
             &WebTask::aborted);
     if (isSignalConnected(signal)) {
-        emit aborted();
+        emit aborted(requestUrl);
     } else {
         kLogger.info()
                 << "Request aborted"
@@ -235,11 +235,11 @@ QUrl WebTask::timeOutPendingNetworkReply(
     return pendingNetworkReply->request().url();
 }
 
-void WebTask::slotAbort() {
+QUrl WebTask::abort() {
     DEBUG_ASSERT(thread() == QThread::currentThread());
     if (m_status != Status::Pending) {
         DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
-        return;
+        return QUrl();
     }
     if (m_timeoutTimerId != kInvalidTimerId) {
         killTimer(m_timeoutTimerId);
@@ -248,7 +248,13 @@ void WebTask::slotAbort() {
     m_status = Status::Aborted;
     kLogger.debug()
             << "Aborting...";
-    onAborted(doAbort());
+    QUrl url = doAbort();
+    onAborted(url);
+    return url;
+}
+
+void WebTask::slotAbort() {
+    abort();
 }
 
 void WebTask::timerEvent(QTimerEvent* event) {

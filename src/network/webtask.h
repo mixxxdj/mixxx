@@ -109,6 +109,9 @@ class WebTask : public QObject {
     // Cancel a pending request.
     void invokeAbort();
 
+    // Cancel a pending request from the event loop thread.
+    QUrl abort();
+
     // Abort the pending request while suppressing any signals
     // and mark the task for deletion.
     void deleteBeforeFinished();
@@ -128,7 +131,8 @@ class WebTask : public QObject {
     // in memory as a dysfunctional zombie until its parent object
     // is finally deleted. If no receiver is connected the task
     // will be deleted implicitly.
-    void aborted();
+    void aborted(
+            QUrl requestUrl);
     void networkError(
             QUrl requestUrl,
             QNetworkReply::NetworkError errorCode,
