@@ -1,6 +1,7 @@
 
 #include <QDebug>
 #include <QUrl>
+#include <QMenu>
 
 #include "control/controlobject.h"
 #include "widget/wtrackproperty.h"
@@ -13,6 +14,10 @@ WTrackProperty::WTrackProperty(const char* group,
           m_pGroup(group),
           m_pConfig(pConfig) {
     setAcceptDrops(true);
+
+    // Setup context menu
+    m_pMenu = new QMenu(this);
+    createContextMenuActions();
 }
 
 void WTrackProperty::setup(const QDomNode& node, const SkinContext& context) {
@@ -71,3 +76,23 @@ void WTrackProperty::dragEnterEvent(QDragEnterEvent *event) {
 void WTrackProperty::dropEvent(QDropEvent *event) {
     DragAndDropHelper::handleTrackDropEvent(event, *this, m_pGroup, m_pConfig);
 }
+
+void WTrackProperty::slotOpenInFileBrowser() {
+
+}
+
+void WTrackProperty::createContextMenuActions() {
+    m_pFileBrowserAct = new QAction(tr("Open in File Browser"), this);
+    connect(m_pFileBrowserAct, SIGNAL(triggered()),
+            this, SLOT(slotOpenInFileBrowser()));
+}
+
+void WTrackProperty::contextMenuEvent(QContextMenuEvent *event) {
+    m_pMenu->addSeparator();
+    m_pMenu->addAction(m_pFileBrowserAct);
+    m_pMenu->addSeparator();
+
+    // Create the right-click menu
+    m_pMenu->popup(event->globalPos());
+}
+

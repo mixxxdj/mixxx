@@ -17,8 +17,9 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
     WTrackProperty(const char* group, UserSettingsPointer pConfig, QWidget* pParent);
 
     void setup(const QDomNode& node, const SkinContext& context) override;
+    void contextMenuEvent(QContextMenuEvent * event) override;
 
-  signals:
+signals:
     void trackDropped(QString filename, QString group) override;
     void cloneDeck(QString source_group, QString target_group) override;
 
@@ -28,6 +29,7 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
 
   private slots:
     void slotTrackChanged(TrackId);
+    void slotOpenInFileBrowser();
 
   private:
     void dragEnterEvent(QDragEnterEvent *event) override;
@@ -35,11 +37,17 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
     void mouseMoveEvent(QMouseEvent *event) override;
 
     void updateLabel();
+    void createContextMenuActions();
 
     const char* m_pGroup;
     UserSettingsPointer m_pConfig;
     TrackPointer m_pCurrentTrack;
     QString m_property;
+
+    // Context menu machinery
+    QMenu *m_pMenu;
+
+    QAction *m_pFileBrowserAct;
 };
 
 
