@@ -409,7 +409,7 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
             .arg(tr("Troubleshooting"));
     supportLinks << troubleShooting;
 
-    QString support = supportLinks.join("&nbsp;");
+    QString support = supportLinks.join("&nbsp;&nbsp;");
     m_ui.labelLoadedPresetSupportLinks->setText(support);
 
     // We mutate this preset so keep a reference to it while we are using it.
