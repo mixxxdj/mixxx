@@ -110,7 +110,7 @@ void ColorPaletteEditor::initialize(
 
     for (const ColorPalette& palette : mixxx::PredefinedColorPalettes::kPalettes) {
         if (paletteName == palette.getName()) {
-            saveName = paletteName + QChar(' ') + tr("(Edited)");
+            saveName = paletteName + QStringLiteral(" (") + tr("Edited") + QChar(')');
             ColorPaletteSettings colorPaletteSettings(m_pConfig);
             if (colorPaletteSettings.getColorPaletteNames().contains(saveName)) {
                 m_resetPalette = saveName;
