@@ -282,7 +282,7 @@ void DlgReplaceCueColor::slotApply() {
 
     bool canceled = false;
 
-    QMap<TrackId, int> cueIds;
+    QMap<TrackPointer, int> cues;
     for (const auto& row : rows) {
         QCoreApplication::processEvents();
         if (progress.wasCanceled()) {
@@ -299,7 +299,13 @@ void DlgReplaceCueColor::slotApply() {
         }
 
         if (query.numRowsAffected() > 0) {
-            cueIds.insertMulti(row.trackId, row.id);
+            // If the track that these cues belong to is cached, store a
+            // reference to them so that we can update the in-memory objects
+            // after committing the database changes
+            TrackPointer pTrack = GlobalTrackCacheLocker().lookupTrackById(row.trackId);
+            if (pTrack) {
+                cues.insertMulti(pTrack, row.id);
+            }
         }
     }
 
@@ -308,15 +314,17 @@ void DlgReplaceCueColor::slotApply() {
     } else {
         transaction.commit();
         trackIds.clear();
-        for (auto it = cueIds.constBegin(); it != cueIds.constEnd(); it++) {
-            trackIds << it.key();
-            TrackPointer pTrack = GlobalTrackCacheLocker().lookupTrackById(it.key());
-            if (!pTrack) {
+
+        // Update the cue colors for in-memory track objects
+        for (auto it = cues.constBegin(); it != cues.constEnd(); it++) {
+            TrackPointer pTrack = it.key();
+            VERIFY_OR_DEBUG_ASSERT(pTrack) {
                 continue;
             }
             CuePointer pCue = pTrack->findCueById(it.value());
             if (pCue) {
                 pCue->setColor(*newColor);
+                trackIds << pTrack->getId();
             }
         }
         emit databaseTracksChanged(trackIds);
