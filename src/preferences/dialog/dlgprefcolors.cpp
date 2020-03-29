@@ -214,7 +214,12 @@ void DlgPrefColors::slotHotcuePaletteChanged(const QString& paletteName) {
         comboBoxHotcueDefaultColor->setItemIcon(i + 1, QIcon(pixmap));
     }
 
-    comboBoxHotcueDefaultColor->setCurrentIndex(defaultColor);
+    if (comboBoxHotcueDefaultColor->count() > defaultColor) {
+        comboBoxHotcueDefaultColor->setCurrentIndex(defaultColor);
+    } else {
+        comboBoxHotcueDefaultColor->setCurrentIndex(
+                comboBoxHotcueDefaultColor->count() - 1);
+    }
 }
 
 void DlgPrefColors::slotEditTrackPaletteClicked() {
@@ -258,10 +263,7 @@ void DlgPrefColors::trackPaletteUpdated(const QString& trackColors) {
     int defaultColor = comboBoxHotcueDefaultColor->currentIndex();
 
     loadSettings();
-
-    comboBoxHotcueColors->setCurrentText(hotcueColors);
-    comboBoxTrackColors->setCurrentText(trackColors);
-    comboBoxHotcueDefaultColor->setCurrentIndex(defaultColor);
+    restoreComboBoxed(hotcueColors, trackColors, defaultColor);
 }
 
 void DlgPrefColors::hotcuePaletteUpdated(const QString& hotcueColors) {
@@ -269,10 +271,7 @@ void DlgPrefColors::hotcuePaletteUpdated(const QString& hotcueColors) {
     int defaultColor = comboBoxHotcueDefaultColor->currentIndex();
 
     loadSettings();
-
-    comboBoxHotcueColors->setCurrentText(hotcueColors);
-    comboBoxTrackColors->setCurrentText(trackColors);
-    comboBoxHotcueDefaultColor->setCurrentIndex(defaultColor);
+    restoreComboBoxed(hotcueColors, trackColors, defaultColor);
 }
 
 void DlgPrefColors::palettesUpdated() {
@@ -281,8 +280,19 @@ void DlgPrefColors::palettesUpdated() {
     int defaultColor = comboBoxHotcueDefaultColor->currentIndex();
 
     loadSettings();
+    restoreComboBoxed(hotcueColors, trackColors, defaultColor);
+}
 
+void DlgPrefColors::restoreComboBoxed(
+        const QString& hotcueColors,
+        const QString& trackColors,
+        int defaultColor) {
     comboBoxHotcueColors->setCurrentText(hotcueColors);
     comboBoxTrackColors->setCurrentText(trackColors);
-    comboBoxHotcueDefaultColor->setCurrentIndex(defaultColor);
+    if (comboBoxHotcueDefaultColor->count() > defaultColor) {
+        comboBoxHotcueDefaultColor->setCurrentIndex(defaultColor);
+    } else {
+        comboBoxHotcueDefaultColor->setCurrentIndex(
+                comboBoxHotcueDefaultColor->count() - 1);
+    }
 }

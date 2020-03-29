@@ -39,6 +39,10 @@ class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
             bool editHotcuePalette);
     QPixmap drawPalettePreview(const QString& paletteName);
     QIcon drawPaletteIcon(const QString& paletteName);
+    void restoreComboBoxed(
+            const QString& hotcueColors,
+            const QString& trackColors,
+            int defaultColor);
 
     const UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;
