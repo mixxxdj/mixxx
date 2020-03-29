@@ -138,9 +138,11 @@ void ColorPaletteEditor::slotUpdateButtons() {
 
 void ColorPaletteEditor::slotTableViewDoubleClicked(const QModelIndex& index) {
     if (index.isValid() && index.column() == 0) {
-        QColor color = QColorDialog::getColor();
-        if (color.isValid()) {
-            m_pModel->setColor(index.row(), color);
+        QStandardItem* pColorItem = m_pModel->item(index.row(), 0);
+        QColor oldColor = QColor(pColorItem->text());
+        QColor newColor = QColorDialog::getColor(oldColor);
+        if (newColor.isValid() && oldColor != newColor) {
+            m_pModel->setColor(index.row(), newColor);
         }
     }
 }
