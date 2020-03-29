@@ -549,14 +549,6 @@ void CueControl::loadCuesFromTrack() {
     }
 }
 
-void CueControl::reloadCuesFromTrack() {
-    if (!m_pLoadedTrack)
-        return;
-
-    // Update COs with cues from track.
-    loadCuesFromTrack();
-}
-
 void CueControl::trackAnalyzed() {
     if (!m_pLoadedTrack) {
         return;
@@ -586,11 +578,11 @@ void CueControl::trackAnalyzed() {
 }
 
 void CueControl::trackCuesUpdated() {
-    reloadCuesFromTrack();
+    loadCuesFromTrack();
 }
 
 void CueControl::trackBeatsUpdated() {
-    reloadCuesFromTrack();
+    loadCuesFromTrack();
 }
 
 void CueControl::quantizeChanged(double v) {
@@ -600,7 +592,7 @@ void CueControl::quantizeChanged(double v) {
     bool wasTrackAtCue = getTrackAt() == TrackAt::Cue;
     bool wasTrackAtIntro = isTrackAtIntroCue();
 
-    reloadCuesFromTrack();
+    loadCuesFromTrack();
 
     // if we are playing (no matter what reason for) do not seek
     if (m_pPlay->toBool()) {
@@ -1700,10 +1692,6 @@ double CueControl::quantizeCuePoint(double cuePos) {
     }
 
     return cuePos;
-}
-
-bool CueControl::isTrackAtZeroPos() {
-    return (fabs(getSampleOfTrack().current) < 1.0f);
 }
 
 bool CueControl::isTrackAtIntroCue() {
