@@ -2,31 +2,49 @@
 
 // Qt includes
 #include <QMenu>
+#include <QtCore/QItemSelectionModel>
+#include <QtWidgets/QInputDialog>
 
 // std includes
 #include <utility>
-#include <util/desktophelper.h>
 
 // Project includes
 #include "control/controlobject.h"
+#include "library/dao/playlistdao.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
+#include "library/trackmodel.h"
+#include "track/track.h"
 #include "util/dnd.h"
+#include "util/desktophelper.h"
 
 WTrackProperty::WTrackProperty(const char* group,
                                UserSettingsPointer pConfig,
-                               QWidget* pParent)
+                               QWidget* pParent,
+                               TrackCollectionManager* pTrackCollectionManager)
         : WLabel(pParent),
           m_pGroup(group),
-          m_pConfig(std::move(pConfig)) {
+          m_pConfig(std::move(pConfig)),
+          m_pTrackCollectionManager(pTrackCollectionManager),
+          m_bPlaylistMenuLoaded(false) {
     setAcceptDrops(true);
 
     // Setup context menu
     m_pMenu = new QMenu(this);
+    m_pPlaylistMenu = new QMenu(this);
+    m_pPlaylistMenu->setTitle(tr("Add to Playlist"));
+    connect(m_pPlaylistMenu, SIGNAL(aboutToShow()),
+            this, SLOT(slotPopulatePlaylistMenu()));
+
+    // Create all the context m_pMenu->actions (stuff that shows up when you
+    // right-click)
     createContextMenuActions();
 }
 
 WTrackProperty::~WTrackProperty() {
     delete m_pMenu;
     delete m_pFileBrowserAct;
+    delete m_pPlaylistMenu;
 }
 
 void WTrackProperty::setup(const QDomNode& node, const SkinContext& context) {
@@ -91,6 +109,48 @@ void WTrackProperty::slotOpenInFileBrowser() {
     mixxx::DesktopHelper::openInFileBrowser(QStringList(trackLocation));
 }
 
+void WTrackProperty::slotPopulatePlaylistMenu() {
+    // The user may open the Playlist submenu, move their cursor away, then
+    // return to the Playlist submenu before exiting the track context menu.
+    // Avoid querying the database multiple times in that case.
+    if (m_bPlaylistMenuLoaded) {
+        return;
+    }
+    m_pPlaylistMenu->clear();
+    PlaylistDAO& playlistDao = m_pTrackCollectionManager->internalCollection()->getPlaylistDAO();
+    QMap<QString,int> playlists;
+    int numPlaylists = playlistDao.playlistCount();
+    for (int i = 0; i < numPlaylists; ++i) {
+        int iPlaylistId = playlistDao.getPlaylistId(i);
+        playlists.insert(playlistDao.getPlaylistName(iPlaylistId), iPlaylistId);
+    }
+    QMapIterator<QString, int> it(playlists);
+    while (it.hasNext()) {
+        it.next();
+        if (!playlistDao.isHidden(it.value())) {
+            // No leak because making the menu the parent means they will be
+            // auto-deleted
+            auto pAction = new QAction(it.key(), m_pPlaylistMenu);
+            bool locked = playlistDao.isPlaylistLocked(it.value());
+            pAction->setEnabled(!locked);
+            m_pPlaylistMenu->addAction(pAction);
+            int iPlaylistId = it.value();
+            connect(pAction, &QAction::triggered,
+                    this, [this, iPlaylistId] { slotAddSelectionToPlaylist(iPlaylistId); });
+        }
+    }
+    m_pPlaylistMenu->addSeparator();
+    auto* newPlaylistAction = new QAction(tr("Create New Playlist"), m_pPlaylistMenu);
+    m_pPlaylistMenu->addAction(newPlaylistAction);
+    connect(newPlaylistAction, &QAction::triggered,
+            this, [this] { slotAddSelectionToPlaylist(-1); });
+    m_bPlaylistMenuLoaded = true;
+}
+
+void WTrackProperty::slotAddSelectionToPlaylist(int iPlaylistId) {
+
+}
+
 void WTrackProperty::createContextMenuActions() {
     m_pFileBrowserAct = new QAction(tr("Open in File Browser"), this);
     connect(m_pFileBrowserAct, SIGNAL(triggered()),
@@ -100,6 +160,7 @@ void WTrackProperty::createContextMenuActions() {
 void WTrackProperty::contextMenuEvent(QContextMenuEvent *event) {
     if (m_pCurrentTrack) {
         m_pMenu->addAction(m_pFileBrowserAct);
+        m_pMenu->addMenu(m_pPlaylistMenu);
 
         // Create the right-click menu
         m_pMenu->popup(event->globalPos());

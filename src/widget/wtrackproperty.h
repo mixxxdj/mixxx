@@ -11,14 +11,20 @@
 #include "widget/trackdroptarget.h"
 #include "widget/wlabel.h"
 
+class TrackCollectionManager;
+
 class WTrackProperty : public WLabel, public TrackDropTarget {
     Q_OBJECT
   public:
-    WTrackProperty(const char* group, UserSettingsPointer pConfig, QWidget* pParent);
+    WTrackProperty(const char* group,
+            UserSettingsPointer pConfig,
+            QWidget* pParent,
+            TrackCollectionManager* pTrackCollectionManager);
     ~WTrackProperty() override;
 
     void setup(const QDomNode& node, const SkinContext& context) override;
     void contextMenuEvent(QContextMenuEvent * event) override;
+    QList<TrackId> getSelectedTrackIds() const;
 
 signals:
     void trackDropped(QString filename, QString group) override;
@@ -31,6 +37,8 @@ signals:
   private slots:
     void slotTrackChanged(TrackId);
     void slotOpenInFileBrowser();
+    void slotPopulatePlaylistMenu();
+    void slotAddSelectionToPlaylist(int iPlaylistId);
 
   private:
     void dragEnterEvent(QDragEnterEvent *event) override;
@@ -47,8 +55,13 @@ signals:
 
     // Context menu machinery
     QMenu *m_pMenu;
+    QMenu *m_pPlaylistMenu;
 
     QAction *m_pFileBrowserAct;
+
+    TrackCollectionManager* const m_pTrackCollectionManager;
+
+    bool m_bPlaylistMenuLoaded;
 };
 
 
