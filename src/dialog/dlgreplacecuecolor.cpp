@@ -22,11 +22,11 @@ const QString kColorButtonStyleSheetDark = QStringLiteral(
 
 void setButtonColor(QPushButton* button, const QColor& color) {
     button->setText(color.name());
-    button->setStyleSheet((
-            (color.lightness() >= kColorButtonLightnessThreshold)
-                    ? kColorButtonStyleSheetLight
-                    : kColorButtonStyleSheetDark)
-                                  .arg(color.name()));
+    button->setStyleSheet(
+            (Color::isDimmColor(color)
+                            ? kColorButtonStyleSheetLight
+                            : kColorButtonStyleSheetDark)
+                    .arg(color.name()));
 }
 
 typedef struct {
