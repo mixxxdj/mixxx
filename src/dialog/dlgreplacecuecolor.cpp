@@ -276,7 +276,8 @@ void DlgReplaceCueColor::slotApply() {
     query.bindValue(":new_color", mixxx::RgbColor::toQVariant(newColor));
 
     bool canceled = false;
-    trackIds.clear();
+
+    QMap<TrackId, int> cueIds;
     for (const auto& row : rows) {
         QCoreApplication::processEvents();
         if (progress.wasCanceled()) {
@@ -293,7 +294,7 @@ void DlgReplaceCueColor::slotApply() {
         }
 
         if (query.numRowsAffected() > 0) {
-            trackIds << row.trackId;
+            cueIds.insertMulti(row.trackId, row.id);
         }
     }
 
@@ -301,6 +302,18 @@ void DlgReplaceCueColor::slotApply() {
         transaction.rollback();
     } else {
         transaction.commit();
+        trackIds.clear();
+        for (auto it = cueIds.constBegin(); it != cueIds.constEnd(); it++) {
+            trackIds << it.key();
+            TrackPointer pTrack = GlobalTrackCacheLocker().lookupTrackById(it.key());
+            if (!pTrack) {
+                continue;
+            }
+            CuePointer pCue = pTrack->findCueById(it.value());
+            if (pCue) {
+                pCue->setColor(*newColor);
+            }
+        }
         emit databaseTracksChanged(trackIds);
         m_bDatabaseChanged = true;
     }
