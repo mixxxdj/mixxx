@@ -263,7 +263,7 @@ void DlgPrefColors::trackPaletteUpdated(const QString& trackColors) {
     int defaultColor = comboBoxHotcueDefaultColor->currentIndex();
 
     loadSettings();
-    restoreComboBoxed(hotcueColors, trackColors, defaultColor);
+    restoreComboBoxes(hotcueColors, trackColors, defaultColor);
 }
 
 void DlgPrefColors::hotcuePaletteUpdated(const QString& hotcueColors) {
@@ -271,7 +271,7 @@ void DlgPrefColors::hotcuePaletteUpdated(const QString& hotcueColors) {
     int defaultColor = comboBoxHotcueDefaultColor->currentIndex();
 
     loadSettings();
-    restoreComboBoxed(hotcueColors, trackColors, defaultColor);
+    restoreComboBoxes(hotcueColors, trackColors, defaultColor);
 }
 
 void DlgPrefColors::palettesUpdated() {
@@ -280,10 +280,10 @@ void DlgPrefColors::palettesUpdated() {
     int defaultColor = comboBoxHotcueDefaultColor->currentIndex();
 
     loadSettings();
-    restoreComboBoxed(hotcueColors, trackColors, defaultColor);
+    restoreComboBoxes(hotcueColors, trackColors, defaultColor);
 }
 
-void DlgPrefColors::restoreComboBoxed(
+void DlgPrefColors::restoreComboBoxes(
         const QString& hotcueColors,
         const QString& trackColors,
         int defaultColor) {
