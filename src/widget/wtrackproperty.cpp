@@ -4,12 +4,15 @@
 #include <QMenu>
 #include <QtCore/QItemSelectionModel>
 #include <QtWidgets/QInputDialog>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QWidgetAction>
 
 // std includes
 #include <utility>
 
 // Project includes
 #include "control/controlobject.h"
+#include <library/crate/cratefeaturehelper.h>
 #include "library/dao/playlistdao.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
@@ -26,7 +29,8 @@ WTrackProperty::WTrackProperty(const char* group,
           m_pGroup(group),
           m_pConfig(std::move(pConfig)),
           m_pTrackCollectionManager(pTrackCollectionManager),
-          m_bPlaylistMenuLoaded(false) {
+          m_bPlaylistMenuLoaded(false),
+          m_bCrateMenuLoaded(false) {
     setAcceptDrops(true);
 
     // Setup context menu
@@ -35,6 +39,10 @@ WTrackProperty::WTrackProperty(const char* group,
     m_pPlaylistMenu->setTitle(tr("Add to Playlist"));
     connect(m_pPlaylistMenu, SIGNAL(aboutToShow()),
             this, SLOT(slotPopulatePlaylistMenu()));
+    m_pCrateMenu = new QMenu(this);
+    m_pCrateMenu->setTitle(tr("Crates"));
+    connect(m_pCrateMenu, SIGNAL(aboutToShow()),
+            this, SLOT(slotPopulateCrateMenu()));
 
     // Create all the context m_pMenu->actions (stuff that shows up when you
     // right-click)
@@ -45,6 +53,7 @@ WTrackProperty::~WTrackProperty() {
     delete m_pMenu;
     delete m_pFileBrowserAct;
     delete m_pPlaylistMenu;
+    delete m_pCrateMenu;
 }
 
 void WTrackProperty::setup(const QDomNode& node, const SkinContext& context) {
@@ -192,6 +201,100 @@ void WTrackProperty::slotAddToPlaylist(int iPlaylistId) {
     playlistDao.appendTrackToPlaylist(trackId, iPlaylistId);
 }
 
+void WTrackProperty::slotPopulateCrateMenu() {
+    // The user may open the Crate submenu, move their cursor away, then
+    // return to the Crate submenu before exiting the track context menu.
+    // Avoid querying the database multiple times in that case.
+    if (m_bCrateMenuLoaded) {
+        return;
+    }
+    m_pCrateMenu->clear();
+    const auto trackId = m_pCurrentTrack->getId();
+    QList<TrackId> trackIds;
+    trackIds.push_back(trackId);
+
+    CrateSummarySelectResult allCrates(m_pTrackCollectionManager->internalCollection()->crates().selectCratesWithTrackCount(trackIds));
+
+    CrateSummary crate;
+    while (allCrates.populateNext(&crate)) {
+        auto pAction = make_parented<QWidgetAction>(m_pCrateMenu);
+        auto pCheckBox = make_parented<QCheckBox>(m_pCrateMenu);
+
+        pCheckBox->setText(crate.getName());
+        pCheckBox->setProperty("crateId",
+                               QVariant::fromValue(crate.getId()));
+        pCheckBox->setEnabled(!crate.isLocked());
+
+        pAction->setEnabled(!crate.isLocked());
+        pAction->setDefaultWidget(pCheckBox.get());
+
+        pCheckBox->setChecked(crate.getTrackCount() != 0);
+
+        m_pCrateMenu->addAction(pAction.get());
+        connect(pAction.get(), &QAction::triggered,
+                this, [this, pCheckBox{pCheckBox.get()}] { slotUpdateSelectionCrates(pCheckBox); });
+        connect(pCheckBox.get(), &QCheckBox::stateChanged,
+                this, [this, pCheckBox{pCheckBox.get()}] { slotUpdateSelectionCrates(pCheckBox); });
+    }
+    m_pCrateMenu->addSeparator();
+    auto* newCrateAction = new QAction(tr("Create New Crate"), m_pCrateMenu);
+    m_pCrateMenu->addAction(newCrateAction);
+    connect(newCrateAction, SIGNAL(triggered()), this, SLOT(slotAddSelectionToNewCrate()));
+    m_bCrateMenuLoaded = true;
+}
+
+void WTrackProperty::slotUpdateSelectionCrates(QWidget *pWidget) {
+    auto pCheckBox = qobject_cast<QCheckBox*>(pWidget);
+    VERIFY_OR_DEBUG_ASSERT(pCheckBox) {
+        qWarning() << "crateId is not of CrateId type";
+        return;
+    }
+    auto crateId = pCheckBox->property("crateId").value<CrateId>();
+
+    const auto trackId = m_pCurrentTrack->getId();
+    QList<TrackId> trackIds;
+    trackIds.push_back(trackId);
+
+    if (trackIds.isEmpty()) {
+        qWarning() << "No tracks selected for crate";
+        return;
+    }
+
+    if(!pCheckBox->isChecked()) {
+        if (crateId.isValid()) {
+            m_pTrackCollectionManager->internalCollection()->removeCrateTracks(crateId, trackIds);
+        }
+    } else {
+        if (!crateId.isValid()) { // i.e. a new crate is suppose to be created
+            crateId = CrateFeatureHelper(
+                    m_pTrackCollectionManager->internalCollection(), m_pConfig).createEmptyCrate();
+        }
+        if (crateId.isValid()) {
+            m_pTrackCollectionManager->unhideTracks(trackIds);
+            m_pTrackCollectionManager->internalCollection()->addCrateTracks(crateId, trackIds);
+        }
+    }
+}
+
+void WTrackProperty::slotAddSelectionToNewCrate() {
+    auto trackId = m_pCurrentTrack->getId();
+    QList<TrackId> trackIds;
+    trackIds.push_back(trackId);
+
+    if (trackIds.isEmpty()) {
+        qWarning() << "No tracks selected for crate";
+        return;
+    }
+
+    CrateId crateId = CrateFeatureHelper(
+            m_pTrackCollectionManager->internalCollection(), m_pConfig).createEmptyCrate();
+
+    if (crateId.isValid()) {
+        m_pTrackCollectionManager->unhideTracks(trackIds);
+        m_pTrackCollectionManager->internalCollection()->addCrateTracks(crateId, trackIds);
+    }
+}
+
 void WTrackProperty::createContextMenuActions() {
     m_pFileBrowserAct = new QAction(tr("Open in File Browser"), this);
     connect(m_pFileBrowserAct, SIGNAL(triggered()),
@@ -200,8 +303,10 @@ void WTrackProperty::createContextMenuActions() {
 
 void WTrackProperty::contextMenuEvent(QContextMenuEvent *event) {
     if (m_pCurrentTrack) {
-        m_pMenu->addAction(m_pFileBrowserAct);
         m_pMenu->addMenu(m_pPlaylistMenu);
+        m_pMenu->addMenu(m_pCrateMenu);
+        m_pMenu->addSeparator();
+        m_pMenu->addAction(m_pFileBrowserAct);
 
         // Create the right-click menu
         m_pMenu->popup(event->globalPos());

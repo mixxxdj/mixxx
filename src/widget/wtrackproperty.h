@@ -39,6 +39,9 @@ signals:
     void slotOpenInFileBrowser();
     void slotPopulatePlaylistMenu();
     void slotAddToPlaylist(int iPlaylistId);
+    void slotPopulateCrateMenu();
+    void slotUpdateSelectionCrates(QWidget* pWidget);
+    void slotAddSelectionToNewCrate();
 
   private:
     void dragEnterEvent(QDragEnterEvent *event) override;
@@ -56,12 +59,14 @@ signals:
     // Context menu machinery
     QMenu *m_pMenu;
     QMenu *m_pPlaylistMenu;
+    QMenu *m_pCrateMenu;
 
     QAction *m_pFileBrowserAct;
 
     TrackCollectionManager* const m_pTrackCollectionManager;
 
     bool m_bPlaylistMenuLoaded;
+    bool m_bCrateMenuLoaded;
 };
 
 
