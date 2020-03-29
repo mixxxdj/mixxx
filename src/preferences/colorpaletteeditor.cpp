@@ -18,37 +18,27 @@ const QColor kDefaultPaletteColor(0, 0, 0);
 }
 
 ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
-        : QWidget(parent),
+        : QDialog(parent),
           m_bPaletteExists(false),
           m_bPaletteIsReadOnly(false),
-          m_pPaletteTemplateComboBox(make_parented<QComboBox>()),
-          m_pSaveAsComboBox(make_parented<QComboBox>()),
-          m_pTableView(make_parented<QTableView>()),
+          m_pSaveAsEdit(make_parented<QLineEdit>(this)),
+          m_pTableView(make_parented<QTableView>(this)),
           m_pModel(make_parented<ColorPaletteEditorModel>(m_pTableView)) {
-    m_pSaveAsComboBox->setEditable(true);
-
-    m_pResetButton = make_parented<QPushButton>(tr("Reset"), this);
-
     QDialogButtonBox* pButtonBox = new QDialogButtonBox();
     m_pRemoveButton = pButtonBox->addButton(
             tr("Remove Palette"),
             QDialogButtonBox::DestructiveRole);
+    m_pCloseButton = pButtonBox->addButton(QDialogButtonBox::Discard);
+    m_pResetButton = pButtonBox->addButton(QDialogButtonBox::Reset);
     m_pSaveButton = pButtonBox->addButton(QDialogButtonBox::Save);
-    m_pCloseButton = pButtonBox->addButton(QDialogButtonBox::Close);
 
-    QHBoxLayout* pTopLayout = new QHBoxLayout();
-    pTopLayout->addWidget(new QLabel(tr("Name")));
-    pTopLayout->addWidget(m_pSaveAsComboBox, 1);
-
-    QHBoxLayout* pBottomLayout = new QHBoxLayout();
-    pBottomLayout->addWidget(new QLabel(tr("Reset to")));
-    pBottomLayout->addWidget(m_pPaletteTemplateComboBox, 1);
-    pBottomLayout->addWidget(m_pResetButton.get());
+    QHBoxLayout* pNameLayout = new QHBoxLayout();
+    pNameLayout->addWidget(new QLabel(tr("Name")));
+    pNameLayout->addWidget(m_pSaveAsEdit, 1);
 
     QVBoxLayout* pLayout = new QVBoxLayout();
-    pLayout->addLayout(pTopLayout);
     pLayout->addWidget(m_pTableView, 1);
-    pLayout->addLayout(pBottomLayout);
+    pLayout->addLayout(pNameLayout);
     pLayout->addWidget(pButtonBox);
     setLayout(pLayout);
     setContentsMargins(0, 0, 0, 0);
@@ -88,14 +78,10 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
             &QTableView::customContextMenuRequested,
             this,
             &ColorPaletteEditor::slotTableViewContextMenuRequested);
-    connect(m_pSaveAsComboBox,
-            &QComboBox::currentTextChanged,
+    connect(m_pSaveAsEdit,
+            &QLineEdit::textChanged,
             this,
             &ColorPaletteEditor::slotPaletteNameChanged);
-    connect(m_pPaletteTemplateComboBox,
-            &QComboBox::currentTextChanged,
-            this,
-            &ColorPaletteEditor::slotUpdateButtons);
     connect(m_pResetButton,
             &QPushButton::clicked,
             this,
@@ -114,46 +100,40 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
             &ColorPaletteEditor::slotRemoveButtonClicked);
 }
 
-void ColorPaletteEditor::initialize(UserSettingsPointer pConfig) {
+void ColorPaletteEditor::initialize(
+        UserSettingsPointer pConfig,
+        const QString& paletteName) {
     DEBUG_ASSERT(!m_pConfig);
     m_pConfig = pConfig;
-    reset();
-}
-
-void ColorPaletteEditor::reset() {
-    m_pPaletteTemplateComboBox->clear();
-    m_pSaveAsComboBox->clear();
+    m_resetPalette = paletteName;
+    QString saveName = paletteName;
 
     for (const ColorPalette& palette : mixxx::PredefinedColorPalettes::kPalettes) {
-        m_pPaletteTemplateComboBox->addItem(palette.getName());
+        if (paletteName == palette.getName()) {
+            saveName = paletteName + QChar(' ') + tr("(Edited)");
+            ColorPaletteSettings colorPaletteSettings(m_pConfig);
+            if (colorPaletteSettings.getColorPaletteNames().contains(saveName)) {
+                m_resetPalette = saveName;
+            }
+            break;
+        }
     }
 
-    ColorPaletteSettings colorPaletteSettings(m_pConfig);
-    if (colorPaletteSettings.getColorPaletteNames().count()) {
-        for (const QString& paletteName : colorPaletteSettings.getColorPaletteNames()) {
-            m_pSaveAsComboBox->addItem(paletteName);
-            m_pPaletteTemplateComboBox->addItem(paletteName);
-        }
-        QString current = m_pSaveAsComboBox->currentText();
-        m_pPaletteTemplateComboBox->setCurrentText(current);
-        m_resetedPalette = current;
-    } else {
-        m_pSaveAsComboBox->addItem(tr("Custom Color Palette"));
-        slotResetButtonClicked();
-    }
+    m_pSaveAsEdit->setText(saveName);
+
+    slotResetButtonClicked();
 }
 
 void ColorPaletteEditor::slotUpdateButtons() {
     bool bDirty = m_pModel->isDirty();
     bool bEmpty = m_pModel->isEmpty();
     m_pSaveButton->setEnabled(
-            !m_pSaveAsComboBox->currentText().isEmpty() &&
+            !m_pSaveAsEdit->text().trimmed().isEmpty() &&
             (!m_bPaletteExists || (!m_bPaletteIsReadOnly && bDirty && !bEmpty)));
     m_pRemoveButton->setEnabled(
             m_bPaletteExists &&
             !m_bPaletteIsReadOnly);
-    m_pResetButton->setEnabled(bDirty ||
-            m_resetedPalette != m_pPaletteTemplateComboBox->currentText());
+    m_pResetButton->setEnabled(bDirty);
 }
 
 void ColorPaletteEditor::slotTableViewDoubleClicked(const QModelIndex& index) {
@@ -213,7 +193,8 @@ void ColorPaletteEditor::slotPaletteNameChanged(const QString& text) {
                 }
             }
             if (!bPaletteFound) {
-                m_pModel->setColorPalette(colorPaletteSettings.getColorPalette(text, mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette));
+                m_pModel->setColorPalette(colorPaletteSettings.getColorPalette(
+                        text, mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette));
             }
         }
     }
@@ -221,59 +202,35 @@ void ColorPaletteEditor::slotPaletteNameChanged(const QString& text) {
     m_bPaletteExists = bPaletteExists;
     m_bPaletteIsReadOnly = bPaletteIsReadOnly;
 
-    if (bPaletteExists && !bPaletteIsReadOnly) {
-        m_pPaletteTemplateComboBox->setCurrentText(text);
-        if (!m_pModel->isDirty()) {
-            m_resetedPalette = text;
-        }
-    }
-
     slotUpdateButtons();
 }
 
 void ColorPaletteEditor::slotCloseButtonClicked() {
-    if (m_pSaveButton->isEnabled()) {
-        QMessageBox msgBox;
-        msgBox.setWindowTitle(tr("Custom Palettes Editor"));
-        msgBox.setText(tr(
-                "The custom palette is not saved.\n"
-                "Close anyway?"));
-        msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-        msgBox.setDefaultButton(QMessageBox::Cancel);
-        int ret = msgBox.exec();
-        if (ret == QMessageBox::Ok) {
-            emit closeButtonClicked();
-        }
-    } else {
-        emit closeButtonClicked();
-    }
+    reject();
 }
 
 void ColorPaletteEditor::slotRemoveButtonClicked() {
-    QString paletteName = m_pSaveAsComboBox->currentText();
+    QString paletteName = m_pSaveAsEdit->text().trimmed();
     ColorPaletteSettings colorPaletteSettings(m_pConfig);
     colorPaletteSettings.removePalette(paletteName);
-    reset();
     emit paletteRemoved(paletteName);
+    accept();
 }
 
 void ColorPaletteEditor::slotSaveButtonClicked() {
-    QString paletteName = m_pSaveAsComboBox->currentText();
+    QString paletteName = m_pSaveAsEdit->text().trimmed();
     ColorPaletteSettings colorPaletteSettings(m_pConfig);
     colorPaletteSettings.setColorPalette(paletteName, m_pModel->getColorPalette(paletteName));
     m_pModel->setDirty(false);
-    reset();
-    m_pSaveAsComboBox->setCurrentText(paletteName);
     emit paletteChanged(paletteName);
+    accept();
 }
 
 void ColorPaletteEditor::slotResetButtonClicked() {
-    QString paletteName = m_pPaletteTemplateComboBox->currentText();
     ColorPaletteSettings colorPaletteSettings(m_pConfig);
     ColorPalette palette = colorPaletteSettings.getColorPalette(
-            paletteName,
+            m_resetPalette,
             mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette);
     m_pModel->setColorPalette(palette);
-    m_resetedPalette = paletteName;
     slotUpdateButtons();
 }

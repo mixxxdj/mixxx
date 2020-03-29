@@ -1,26 +1,24 @@
 #pragma once
 
 #include <QComboBox>
+#include <QDialog>
+#include <QLineEdit>
 #include <QPushButton>
 #include <QTableView>
-#include <QWidget>
 
 #include "preferences/colorpaletteeditormodel.h"
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 
-// Widget for viewing, adding, editing and removing color palettes that can be
-// used for track/hotcue colors.
-class ColorPaletteEditor : public QWidget {
+class ColorPaletteEditor : public QDialog {
     Q_OBJECT
   public:
     ColorPaletteEditor(QWidget* parent = nullptr);
-    void initialize(UserSettingsPointer pConfig);
-    void reset();
+    void initialize(UserSettingsPointer pConfig, const QString& paletteName);
 
   signals:
-    void paletteChanged(QString name);
-    void paletteRemoved(QString name);
+    void paletteChanged(const QString& name);
+    void paletteRemoved(const QString& name);
     void closeButtonClicked();
 
   private slots:
@@ -38,13 +36,12 @@ class ColorPaletteEditor : public QWidget {
     bool m_bPaletteIsReadOnly;
 
     UserSettingsPointer m_pConfig;
-    parented_ptr<QComboBox> m_pPaletteTemplateComboBox;
-    parented_ptr<QComboBox> m_pSaveAsComboBox;
+    parented_ptr<QLineEdit> m_pSaveAsEdit;
     parented_ptr<QTableView> m_pTableView;
     parented_ptr<ColorPaletteEditorModel> m_pModel;
     QPushButton* m_pSaveButton;
     QPushButton* m_pCloseButton;
     QPushButton* m_pRemoveButton;
-    parented_ptr<QPushButton> m_pResetButton;
-    QString m_resetedPalette;
+    QPushButton* m_pResetButton;
+    QString m_resetPalette;
 };

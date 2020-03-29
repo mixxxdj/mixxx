@@ -9,11 +9,12 @@
 #include "util/color/predefinedcolorpalettes.h"
 #include "util/compatibility.h"
 #include "util/math.h"
+#include "util/memory.h"
 
 namespace {
 
 constexpr int kHotcueDefaultColorIndex = -1;
-constexpr QSize kPalettePreviewSize = QSize(200, 16);
+constexpr QSize kPalettePreviewSize = QSize(108, 16);
 
 } // anonymous namespace
 
@@ -23,36 +24,25 @@ DlgPrefColors::DlgPrefColors(
           m_pConfig(pConfig),
           m_colorPaletteSettings(ColorPaletteSettings(pConfig)) {
     setupUi(this);
-    colorPaletteEditor->initialize(pConfig);
     comboBoxHotcueColors->setIconSize(kPalettePreviewSize);
     comboBoxTrackColors->setIconSize(kPalettePreviewSize);
 
-    groupBoxPaletteEditor->hide();
-
     loadSettings();
-
-    connect(colorPaletteEditor,
-            &ColorPaletteEditor::paletteChanged,
-            this,
-            &DlgPrefColors::palettesUpdated);
-    connect(colorPaletteEditor,
-            &ColorPaletteEditor::paletteRemoved,
-            this,
-            &DlgPrefColors::palettesUpdated);
-    connect(colorPaletteEditor,
-            &ColorPaletteEditor::closeButtonClicked,
-            this,
-            &DlgPrefColors::slotCloseClicked);
 
     connect(comboBoxHotcueColors,
             QOverload<const QString&>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefColors::slotHotcuePaletteChanged);
 
-    connect(pushButtonEdit,
+    connect(pushButtonEditHotcuePalette,
             &QPushButton::clicked,
             this,
-            &DlgPrefColors::slotEditClicked);
+            &DlgPrefColors::slotEditHotcuePaletteClicked);
+
+    connect(pushButtonEditTrackPalette,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefColors::slotEditTrackPaletteClicked);
 }
 
 DlgPrefColors::~DlgPrefColors() {
@@ -227,18 +217,62 @@ void DlgPrefColors::slotHotcuePaletteChanged(const QString& paletteName) {
     comboBoxHotcueDefaultColor->setCurrentIndex(defaultColor);
 }
 
-void DlgPrefColors::slotEditClicked() {
-    pushButtonEdit->hide();
-    labelCustomPalette->hide();
-    widgetSpacer->hide();
-    groupBoxPaletteEditor->show();
+void DlgPrefColors::slotEditTrackPaletteClicked() {
+    QString trackColorPaletteName = comboBoxTrackColors->currentText();
+    openColorPaletteEditor(trackColorPaletteName, false);
 }
 
-void DlgPrefColors::slotCloseClicked() {
-    groupBoxPaletteEditor->hide();
-    widgetSpacer->show();
-    pushButtonEdit->show();
-    labelCustomPalette->show();
+void DlgPrefColors::slotEditHotcuePaletteClicked() {
+    QString hotcueColorPaletteName = comboBoxHotcueColors->currentText();
+    openColorPaletteEditor(hotcueColorPaletteName, true);
+}
+
+void DlgPrefColors::openColorPaletteEditor(
+        const QString& paletteName,
+        bool editHotcuePalette) {
+    std::unique_ptr<ColorPaletteEditor> pColorPaletteEditor =
+            std::make_unique<ColorPaletteEditor>(this);
+
+    if (editHotcuePalette) {
+        connect(pColorPaletteEditor.get(),
+                &ColorPaletteEditor::paletteChanged,
+                this,
+                &DlgPrefColors::hotcuePaletteUpdated);
+    } else {
+        connect(pColorPaletteEditor.get(),
+                &ColorPaletteEditor::paletteChanged,
+                this,
+                &DlgPrefColors::trackPaletteUpdated);
+    }
+    connect(pColorPaletteEditor.get(),
+            &ColorPaletteEditor::paletteRemoved,
+            this,
+            &DlgPrefColors::palettesUpdated);
+
+    pColorPaletteEditor->initialize(m_pConfig, paletteName);
+    pColorPaletteEditor->exec();
+}
+
+void DlgPrefColors::trackPaletteUpdated(const QString& trackColors) {
+    QString hotcueColors = comboBoxHotcueColors->currentText();
+    int defaultColor = comboBoxHotcueDefaultColor->currentIndex();
+
+    loadSettings();
+
+    comboBoxHotcueColors->setCurrentText(hotcueColors);
+    comboBoxTrackColors->setCurrentText(trackColors);
+    comboBoxHotcueDefaultColor->setCurrentIndex(defaultColor);
+}
+
+void DlgPrefColors::hotcuePaletteUpdated(const QString& hotcueColors) {
+    QString trackColors = comboBoxTrackColors->currentText();
+    int defaultColor = comboBoxHotcueDefaultColor->currentIndex();
+
+    loadSettings();
+
+    comboBoxHotcueColors->setCurrentText(hotcueColors);
+    comboBoxTrackColors->setCurrentText(trackColors);
+    comboBoxHotcueDefaultColor->setCurrentIndex(defaultColor);
 }
 
 void DlgPrefColors::palettesUpdated() {

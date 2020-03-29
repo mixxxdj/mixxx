@@ -26,6 +26,16 @@
       <string>Colors</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
+      <item row="1" column="1">
+       <widget class="QComboBox" name="comboBoxHotcueColors">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="0">
        <widget class="QLabel" name="labelHotcueColors">
         <property name="text">
@@ -47,57 +57,14 @@
         </property>
        </widget>
       </item>
-      <item row="8" column="0">
-       <widget class="QLabel" name="labelCustomPalette">
-        <property name="text">
-         <string>Custom palettes</string>
-        </property>
-       </widget>
-      </item>
-      <item row="8" column="2">
-       <widget class="QPushButton" name="pushButtonEdit">
+      <item row="1" column="2">
+       <widget class="QPushButton" name="pushButtonEditHotcuePalette">
         <property name="text">
          <string>Edit…</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
-       <widget class="QWidget" name="widgetSpacer" native="true">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>15</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="8" column="3">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="2" column="2" colspan="2">
-       <widget class="QComboBox" name="comboBoxHotcueDefaultColor"/>
-      </item>
-      <item row="1" column="2" colspan="2">
-       <widget class="QComboBox" name="comboBoxHotcueColors">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2" colspan="2">
+      <item row="0" column="1">
        <widget class="QComboBox" name="comboBoxTrackColors">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -107,23 +74,15 @@
         </property>
        </widget>
       </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="groupBoxPaletteEditor">
-     <property name="title">
-      <string>Custom Palettes Editor</string>
-     </property>
-     <property name="flat">
-      <bool>false</bool>
-     </property>
-     <property name="checkable">
-      <bool>false</bool>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
-       <widget class="ColorPaletteEditor" name="colorPaletteEditor" native="true"/>
+      <item row="2" column="1" colspan="2">
+       <widget class="QComboBox" name="comboBoxHotcueDefaultColor"/>
+      </item>
+      <item row="0" column="2">
+       <widget class="QPushButton" name="pushButtonEditTrackPalette">
+        <property name="text">
+         <string>Edit…</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -144,14 +103,6 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <customwidgets>
-  <customwidget>
-   <class>ColorPaletteEditor</class>
-   <extends>QWidget</extends>
-   <header>preferences/colorpaletteeditor.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>
