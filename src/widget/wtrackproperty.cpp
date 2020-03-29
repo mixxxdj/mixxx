@@ -5,6 +5,7 @@
 
 // std includes
 #include <utility>
+#include <util/desktophelper.h>
 
 // Project includes
 #include "control/controlobject.h"
@@ -86,7 +87,8 @@ void WTrackProperty::dropEvent(QDropEvent *event) {
 }
 
 void WTrackProperty::slotOpenInFileBrowser() {
-
+    QString trackLocation = m_pCurrentTrack->getLocation();
+    mixxx::DesktopHelper::openInFileBrowser(QStringList(trackLocation));
 }
 
 void WTrackProperty::createContextMenuActions() {
