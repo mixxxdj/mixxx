@@ -187,20 +187,12 @@ djc4.Deck = function(deckNumber) {
     this.beatLoopEncoder = new components.Encoder({
         midi: [0xB0 + deckNumber - 1, 0x01],
         group: "[Channel" + deckNumber + "]",
-        inKey: "beatloop_size",
+        inKey: "loop_move_1",
         input: function(channel, control, value) {
-            if (value === 0x3F) {
-                if (this.inGetParameter() <= 1) {
-                    this.inSetParameter(this.inGetParameter() / 2);
-                } else {
-                    this.inSetParameter(this.inGetParameter() - 1);
-                }
-            } else if (value === 0x41) {
-                if (this.inGetParameter() <= 1) {
-                    this.inSetParameter(this.inGetParameter() * 2);
-                } else {
-                    this.inSetParameter(this.inGetParameter() + 1);
-                }
+            if (value === 0x41) {
+                engine.setParameter(this.group, this.inKey + "_forward", 1);
+            } else if (value === 0x3F) {
+                engine.setParameter(this.group, this.inKey + "_backward", 1);
             }
         },
     });
