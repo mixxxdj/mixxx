@@ -38,7 +38,7 @@ signals:
     void slotTrackChanged(TrackId);
     void slotOpenInFileBrowser();
     void slotPopulatePlaylistMenu();
-    void slotAddSelectionToPlaylist(int iPlaylistId);
+    void slotAddToPlaylist(int iPlaylistId);
 
   private:
     void dragEnterEvent(QDragEnterEvent *event) override;

@@ -136,19 +136,60 @@ void WTrackProperty::slotPopulatePlaylistMenu() {
             m_pPlaylistMenu->addAction(pAction);
             int iPlaylistId = it.value();
             connect(pAction, &QAction::triggered,
-                    this, [this, iPlaylistId] { slotAddSelectionToPlaylist(iPlaylistId); });
+                    this, [this, iPlaylistId] { slotAddToPlaylist(iPlaylistId); });
         }
     }
     m_pPlaylistMenu->addSeparator();
     auto* newPlaylistAction = new QAction(tr("Create New Playlist"), m_pPlaylistMenu);
     m_pPlaylistMenu->addAction(newPlaylistAction);
     connect(newPlaylistAction, &QAction::triggered,
-            this, [this] { slotAddSelectionToPlaylist(-1); });
+            this, [this] { slotAddToPlaylist(-1); });
     m_bPlaylistMenuLoaded = true;
 }
 
-void WTrackProperty::slotAddSelectionToPlaylist(int iPlaylistId) {
+void WTrackProperty::slotAddToPlaylist(int iPlaylistId) {
+    const TrackId trackId = m_pCurrentTrack->getId();
 
+    PlaylistDAO& playlistDao = m_pTrackCollectionManager->internalCollection()->getPlaylistDAO();
+
+    if (iPlaylistId == -1) { // i.e. a new playlist is suppose to be created
+        QString name;
+        bool validNameGiven = false;
+
+        do {
+            bool ok = false;
+            name = QInputDialog::getText(nullptr,
+                                         tr("Create New Playlist"),
+                                         tr("Enter name for new playlist:"),
+                                         QLineEdit::Normal,
+                                         tr("New Playlist"),
+                                         &ok).trimmed();
+            if (!ok) {
+                return;
+            }
+            if (playlistDao.getPlaylistIdFromName(name) != -1) {
+                QMessageBox::warning(nullptr,
+                                     tr("Playlist Creation Failed"),
+                                     tr("A playlist by that name already exists."));
+            } else if (name.isEmpty()) {
+                QMessageBox::warning(nullptr,
+                                     tr("Playlist Creation Failed"),
+                                     tr("A playlist cannot have a blank name."));
+            } else {
+                validNameGiven = true;
+            }
+        } while (!validNameGiven);
+        iPlaylistId = playlistDao.createPlaylist(name);//-1 is changed to the new playlist ID return from the DAO
+        if (iPlaylistId == -1) {
+            QMessageBox::warning(nullptr,
+                                 tr("Playlist Creation Failed"),
+                                 tr("An unknown error occurred while creating playlist: ")
+                                 +name);
+            return;
+        }
+    }
+
+    playlistDao.appendTrackToPlaylist(trackId, iPlaylistId);
 }
 
 void WTrackProperty::createContextMenuActions() {
