@@ -1,11 +1,8 @@
-
-#include <QDebug>
-#include <QUrl>
-#include <QMenu>
+#include "widget/wtrackproperty.h"
 
 #include "control/controlobject.h"
-#include "widget/wtrackproperty.h"
 #include "util/dnd.h"
+#include "widget/wcoverartmenu.h"
 
 WTrackProperty::WTrackProperty(const char* group,
                                UserSettingsPointer pConfig,
@@ -18,6 +15,11 @@ WTrackProperty::WTrackProperty(const char* group,
     // Setup context menu
     m_pMenu = new QMenu(this);
     createContextMenuActions();
+}
+
+WTrackProperty::~WTrackProperty() {
+    delete m_pMenu;
+    delete m_pFileBrowserAct;
 }
 
 void WTrackProperty::setup(const QDomNode& node, const SkinContext& context) {
@@ -95,4 +97,3 @@ void WTrackProperty::contextMenuEvent(QContextMenuEvent *event) {
     // Create the right-click menu
     m_pMenu->popup(event->globalPos());
 }
-

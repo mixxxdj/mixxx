@@ -15,6 +15,7 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
     Q_OBJECT
   public:
     WTrackProperty(const char* group, UserSettingsPointer pConfig, QWidget* pParent);
+    ~WTrackProperty() override;
 
     void setup(const QDomNode& node, const SkinContext& context) override;
     void contextMenuEvent(QContextMenuEvent * event) override;
