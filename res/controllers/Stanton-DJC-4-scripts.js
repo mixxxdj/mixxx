@@ -20,8 +20,11 @@ var djc4 = {};
 // Tweakables. //
 /////////////////
 
-djc4.tempoRange = [0.08, 0.16, 0.5];
+djc4.tempoRange = [0.08, 0.16, 0.5];  // not used yet!
 djc4.autoShowFourDecks = false;
+
+// amount the dryWetKnob changes the value for each increment
+djc4.dryWetAdjustValue = 0.05;
 
 ///////////
 // Code. //
@@ -126,10 +129,9 @@ djc4.init = function() {
         djc4.effectUnit[i].dryWetKnob.midi = [0xB0 + i, 0x08];
         djc4.effectUnit[i].dryWetKnob.input = function(channel, control, value) {
             if (value === 0x41) {
-                // 0.05 is an example. Adjust that value to whatever works well for your controller.
-                this.inSetParameter(this.inGetParameter() + 0.05);
+                this.inSetParameter(this.inGetParameter() + djc4.dryWetAdjustValue);
             } else if (value === 0x3F) {
-                this.inSetParameter(this.inGetParameter() - 0.05);
+                this.inSetParameter(this.inGetParameter() - djc4.dryWetAdjustValue);
             }
         };
         djc4.effectUnit[i].init();
@@ -175,13 +177,13 @@ djc4.shutdown = function() {
     djc4.allLed2Default();
 };
 
-djc4.Deck = function(deckNumbers) {
-    components.Deck.call(this, deckNumbers);
+djc4.Deck = function(deckNumber) {
+    components.Deck.call(this, deckNumber);
 
     // === Instantiate controls ===
     this.beatLoopEncoder = new components.Encoder({
-        midi: [0xB0 + deckNumbers - 1, 0x01],
-        group: "[Channel" + deckNumbers + "]",
+        midi: [0xB0 + deckNumber - 1, 0x01],
+        group: "[Channel" + deckNumber + "]",
         inKey: "beatloop_size",
         input: function(channel, control, value) {
             if (value === 0x3F) {
@@ -203,8 +205,8 @@ djc4.Deck = function(deckNumbers) {
     this.samplerButtons = [];
     for (var i = 0; i <= 3; i++) {
         this.samplerButtons[i] = new components.SamplerButton({
-            number: (deckNumbers === 1 || deckNumbers === 3) ? (i + 1) : (i + 5),
-            midi: [0x90+deckNumbers-1, 0x0C+i],
+            number: (deckNumber === 1 || deckNumber === 3) ? (i + 1) : (i + 5),
+            midi: [0x90+deckNumber-1, 0x0C+i],
         });
     }
 
