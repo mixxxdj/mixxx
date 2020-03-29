@@ -57,7 +57,12 @@ DlgReplaceCueColor::DlgReplaceCueColor(
 
     // Set up new color button
     ColorPaletteSettings colorPaletteSettings(pConfig);
-    mixxx::RgbColor firstColor = colorPaletteSettings.getHotcueColorPalette().at(0);
+    ColorPalette hotcuePalette = colorPaletteSettings.getHotcueColorPalette();
+    mixxx::RgbColor firstColor = mixxx::PredefinedColorPalettes::kDefaultCueColor;
+    DEBUG_ASSERT(hotcuePalette.size() > 0);
+    if (hotcuePalette.size() > 0) { // Should always be true
+        firstColor = hotcuePalette.at(0);
+    }
     setButtonColor(pushButtonNewColor, mixxx::RgbColor::toQColor(firstColor));
 
     // Add menu for new color button
