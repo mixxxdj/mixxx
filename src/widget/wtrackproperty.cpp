@@ -1,15 +1,21 @@
 #include "widget/wtrackproperty.h"
 
+// Qt includes
+#include <QMenu>
+
+// std includes
+#include <utility>
+
+// Project includes
 #include "control/controlobject.h"
 #include "util/dnd.h"
-#include "widget/wcoverartmenu.h"
 
 WTrackProperty::WTrackProperty(const char* group,
                                UserSettingsPointer pConfig,
                                QWidget* pParent)
         : WLabel(pParent),
           m_pGroup(group),
-          m_pConfig(pConfig) {
+          m_pConfig(std::move(pConfig)) {
     setAcceptDrops(true);
 
     // Setup context menu
@@ -90,10 +96,10 @@ void WTrackProperty::createContextMenuActions() {
 }
 
 void WTrackProperty::contextMenuEvent(QContextMenuEvent *event) {
-    m_pMenu->addSeparator();
-    m_pMenu->addAction(m_pFileBrowserAct);
-    m_pMenu->addSeparator();
+    if (m_pCurrentTrack) {
+        m_pMenu->addAction(m_pFileBrowserAct);
 
-    // Create the right-click menu
-    m_pMenu->popup(event->globalPos());
+        // Create the right-click menu
+        m_pMenu->popup(event->globalPos());
+    }
 }
