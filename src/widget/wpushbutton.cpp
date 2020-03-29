@@ -444,6 +444,8 @@ bool WPushButton::event(QEvent* e) {
             m_bPressed = false;
             restyleAndRepaint();
         }
+    } else if (e->type() == QEvent::ToolTip) {
+        updateTooltip();
     }
     return QWidget::event(e);
 }
