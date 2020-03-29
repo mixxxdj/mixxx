@@ -22,6 +22,7 @@ var djc4 = {};
 
 djc4.tempoRange = [0.08, 0.16, 0.5];  // not used yet!
 djc4.autoShowFourDecks = false;
+djc4.showMasterVu = true;  // if set to false, show channel VU meter
 
 // amount the dryWetKnob changes the value for each increment
 djc4.dryWetAdjustValue = 0.05;
@@ -137,38 +138,40 @@ djc4.init = function() {
         djc4.effectUnit[i].init();
     }
 
-    // === VU Meter ===
-    djc4.vuMeter = new components.Component({
-        midi: [0xB0, 0x03],
-        group: "[Master]",
-        outKey: "VuMeterL",
-        output: function(value, group) {
-            // The red LEDs light up with MIDI values greater than 0x60.
-            // The Red LEDs should only be illuminated if the track is clipping.
-            if (engine.getValue(group, "PeakIndicator") === 1) {
-                value = 0x60;
-            } else {
-                value = Math.round(value * 0x54);
-            }
-            this.send(value);
-        },
-    });
+    // === Master VU Meter ===
+    if (djc4.showMasterVu === true) {
+        djc4.vuMeter = new components.Component({
+            midi: [0xB0, 0x03],
+            group: "[Master]",
+            outKey: "VuMeterL",
+            output: function(value, group) {
+                // The red LEDs light up with MIDI values greater than 0x60.
+                // The Red LEDs should only be illuminated if the track is clipping.
+                if (engine.getValue(group, "PeakIndicator") === 1) {
+                    value = 0x60;
+                } else {
+                    value = Math.round(value * 0x54);
+                }
+                this.send(value);
+            },
+        });
 
-    djc4.vuMeter = new components.Component({
-        midi: [0xB0, 0x04],
-        group: "[Master]",
-        outKey: "VuMeterR",
-        output: function(value, group) {
-            // The red LEDs light up with MIDI values greater than 0x60.
-            // The Red LEDs should only be illuminated if the track is clipping.
-            if (engine.getValue(group, "PeakIndicator") === 1) {
-                value = 0x60;
-            } else {
-                value = Math.round(value * 0x54);
-            }
-            this.send(value);
-        },
-    });
+        djc4.vuMeter = new components.Component({
+            midi: [0xB0, 0x04],
+            group: "[Master]",
+            outKey: "VuMeterR",
+            output: function(value, group) {
+                // The red LEDs light up with MIDI values greater than 0x60.
+                // The Red LEDs should only be illuminated if the track is clipping.
+                if (engine.getValue(group, "PeakIndicator") === 1) {
+                    value = 0x60;
+                } else {
+                    value = Math.round(value * 0x54);
+                }
+                this.send(value);
+            },
+        });
+    }
 };
 
 // Called when the MIDI device is closed
@@ -207,6 +210,25 @@ djc4.Deck = function(deckNumber) {
         this.samplerButtons[i] = new components.SamplerButton({
             number: (deckNumber === 1 || deckNumber === 3) ? (i + 1) : (i + 5),
             midi: [0x90+deckNumber-1, 0x0C+i],
+        });
+    }
+
+    // === Channel VU Meter ===
+    if (djc4.showMasterVu === false) {
+        djc4.vuMeter = new components.Component({
+            midi: [0xB0+deckNumber-1, 0x02],
+            group: "[Channel" + deckNumber + "]",
+            outKey: "VuMeter",
+            output: function(value, group) {
+                // The red LEDs light up with MIDI values greater than 0x60.
+                // The Red LEDs should only be illuminated if the track is clipping.
+                if (engine.getValue(group, "PeakIndicator") === 1) {
+                    value = 0x60;
+                } else {
+                    value = Math.round(value * 0x54);
+                }
+                this.send(value);
+            },
         });
     }
 
