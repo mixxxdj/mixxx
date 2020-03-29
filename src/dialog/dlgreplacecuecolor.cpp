@@ -10,6 +10,7 @@
 #include "library/dao/cuedao.h"
 #include "library/queryutil.h"
 #include "preferences/colorpalettesettings.h"
+#include "util/color/predefinedcolorpalettes.h"
 
 namespace {
 
@@ -72,12 +73,12 @@ DlgReplaceCueColor::DlgReplaceCueColor(
     pushButtonNewColor->setMenu(m_pNewColorMenu);
 
     // Set up current color button
-    setButtonColor(pushButtonCurrentColor, mixxx::RgbColor::toQColor(ColorPalette::kDefaultCueColor));
+    setButtonColor(pushButtonCurrentColor, mixxx::RgbColor::toQColor(mixxx::PredefinedColorPalettes::kDefaultCueColor));
 
     // Add menu for current color button
     m_pCurrentColorPickerAction = new WColorPickerAction(WColorPicker::Option::AllowCustomColor, colorPaletteSettings.getHotcueColorPalette(), this);
     m_pCurrentColorPickerAction->setObjectName("HotcueColorPickerAction");
-    m_pNewColorPickerAction->setSelectedColor(ColorPalette::kDefaultCueColor);
+    m_pNewColorPickerAction->setSelectedColor(mixxx::PredefinedColorPalettes::kDefaultCueColor);
     connect(m_pCurrentColorPickerAction,
             &WColorPickerAction::colorPicked,
             [this](mixxx::RgbColor::optional_t color) {
