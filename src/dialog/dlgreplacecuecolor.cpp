@@ -163,9 +163,6 @@ void DlgReplaceCueColor::slotApply() {
 
     int hotcueIndex = spinBoxHotcueIndex->value() - 1;
 
-    // The pooler limits the lifetime of all thread-local connections. It will
-    // be closed by its destructor when it goes out of scope
-    const mixxx::DbConnectionPooler dbConnectionPooler(m_pDbConnectionPool);
     QSqlDatabase database = mixxx::DbConnectionPooled(m_pDbConnectionPool);
 
     // Open the database connection in this thread.
