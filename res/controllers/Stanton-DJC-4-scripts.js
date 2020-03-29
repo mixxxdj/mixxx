@@ -352,6 +352,10 @@ djc4.shiftButton = function(channel, control, value) {
     }
 };
 
+djc4.crossfaderCurve = function(channel, control, value) {
+    script.crossfaderCurve(value, 0, 127);
+};
+
 // === Sampler Volume Control ===
 djc4.samplerVolume = function(channel, control, value) {
     // check if the Sampler Volume is at Zero and if so hide the sampler bank
