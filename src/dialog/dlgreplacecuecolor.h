@@ -9,6 +9,7 @@
 
 #include "dialog/ui_dlgreplacecuecolordlg.h"
 #include "library/dao/trackdao.h"
+#include "library/trackcollectionmanager.h"
 #include "preferences/usersettings.h"
 #include "track/trackid.h"
 #include "util/color/rgbcolor.h"
@@ -32,6 +33,7 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
     DlgReplaceCueColor(
             UserSettingsPointer pConfig,
             mixxx::DbConnectionPoolPtr dbConnectionPool,
+            TrackCollectionManager* pTrackCollectionManager,
             QWidget* pParent);
     ~DlgReplaceCueColor();
 
@@ -48,6 +50,7 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
 
     const UserSettingsPointer m_pConfig;
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
+    TrackCollectionManager* m_pTrackCollectionManager;
     bool m_bDatabaseChangeInProgress;
     bool m_bDatabaseChanged;
     QMenu* m_pNewColorMenu;

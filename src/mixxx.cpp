@@ -473,6 +473,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pReplaceCueColorDlg = new DlgReplaceCueColor(
             pConfig,
             m_pLibrary->dbConnectionPool(),
+            m_pTrackCollectionManager,
             this);
     m_pReplaceCueColorDlg->setHidden(true);
     connect(m_pReplaceCueColorDlg,

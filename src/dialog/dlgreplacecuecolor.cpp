@@ -40,10 +40,12 @@ typedef struct {
 DlgReplaceCueColor::DlgReplaceCueColor(
         UserSettingsPointer pConfig,
         mixxx::DbConnectionPoolPtr dbConnectionPool,
+        TrackCollectionManager* pTrackCollectionManager,
         QWidget* pParent)
         : QDialog(pParent),
           m_pConfig(pConfig),
           m_pDbConnectionPool(dbConnectionPool),
+          m_pTrackCollectionManager(pTrackCollectionManager),
           m_bDatabaseChangeInProgress(false),
           m_bDatabaseChanged(false),
           m_pNewColorMenu(new QMenu(this)),
@@ -202,6 +204,15 @@ void DlgReplaceCueColor::slotApply() {
     selectQuery.prepare(queryString);
     for (auto i = queryValues.constBegin(); i != queryValues.constEnd(); i++) {
         selectQuery.bindValue(i.key(), i.value());
+    }
+
+    // Flush cached tracks to database
+    QSet<TrackId> cachedTrackIds = GlobalTrackCacheLocker().getCachedTrackIds();
+    for (const TrackId& trackId : cachedTrackIds) {
+        TrackPointer pTrack = GlobalTrackCacheLocker().lookupTrackById(trackId);
+        if (pTrack) {
+            m_pTrackCollectionManager->saveTrack(pTrack);
+        }
     }
 
     if (!selectQuery.exec()) {
