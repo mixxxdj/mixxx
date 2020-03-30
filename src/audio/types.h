@@ -34,6 +34,7 @@ QDebug operator<<(QDebug dbg, ChannelLayout arg);
 
 class ChannelCount {
   private:
+    // The default value is invalid and indicates a missing or unknown value.
     static constexpr SINT kValueDefault = 0;
 
   public:
@@ -100,6 +101,7 @@ QDebug operator<<(QDebug dbg, SampleLayout arg);
 
 class SampleRate {
   private:
+    // The default value is invalid and indicates a missing or unknown value.
     static constexpr SINT kValueDefault = 0;
 
   public:
@@ -138,10 +140,14 @@ QDebug operator<<(QDebug dbg, SampleRate arg);
 
 // The bitrate is measured in kbit/s (kbps) and provides information
 // about the level of compression for lossily encoded audio streams.
-// It depends on the metadata and decoder if a value for the bitrate
-// is available, i.e. it might be invalid if it cannot be determined.
+//
+// The value can only be interpreted in the context of the corresponding
+// codec. It is supposed to reflect the average bitrate in case of a
+// variable bitrate encoding and serves as a rough estimate of the
+// expected quality.
 class Bitrate {
   private:
+    // The default value is invalid and indicates a missing or unknown value.
     static constexpr SINT kValueDefault = 0;
 
   public:
