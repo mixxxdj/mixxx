@@ -44,12 +44,12 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
     pNameLayout->addWidget(m_pSaveAsEdit, 1);
 
     QDialogButtonBox* pPaletteButtonBox = new QDialogButtonBox();
+    m_pResetButton = pPaletteButtonBox->addButton(QDialogButtonBox::Reset);
     m_pRemoveButton = pPaletteButtonBox->addButton(
             tr("Remove Palette"),
-            QDialogButtonBox::DestructiveRole);
+            QDialogButtonBox::ResetRole);
     m_pCloseButton = pPaletteButtonBox->addButton(QDialogButtonBox::Discard);
-    m_pResetButton = pPaletteButtonBox->addButton(QDialogButtonBox::Reset);
-    m_pSaveButton = pPaletteButtonBox->addButton(QDialogButtonBox::Save);
+    m_pSaveButton = pPaletteButtonBox->addButton(QDialogButtonBox::Ok);
 
     // Add widgets to dialog
     QVBoxLayout* pLayout = new QVBoxLayout();
