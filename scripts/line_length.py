@@ -100,7 +100,9 @@ def main() -> int:
     changed_files = group_lines(long_lines)
 
     proc = subprocess.run(
-        ["clang-format", "--dump-config"], capture_output=True, text=True
+        ["clang-format", "--dump-config", "src/mixxx.cpp"],
+        capture_output=True,
+        text=True,
     )
     proc.check_returncode()
 
