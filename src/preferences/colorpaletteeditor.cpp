@@ -239,10 +239,20 @@ void ColorPaletteEditor::slotCloseButtonClicked() {
 
 void ColorPaletteEditor::slotRemoveButtonClicked() {
     QString paletteName = m_pSaveAsEdit->text().trimmed();
-    ColorPaletteSettings colorPaletteSettings(m_pConfig);
-    colorPaletteSettings.removePalette(paletteName);
-    emit paletteRemoved(paletteName);
-    accept();
+
+    QMessageBox msgBox;
+    msgBox.setWindowTitle(tr("Remove Palette"));
+    msgBox.setText(tr(
+            "Do you really want to remove the palette permanently?"));
+    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Cancel);
+    int ret = msgBox.exec();
+    if (ret == QMessageBox::Ok) {
+        ColorPaletteSettings colorPaletteSettings(m_pConfig);
+        colorPaletteSettings.removePalette(paletteName);
+        emit paletteRemoved(paletteName);
+        accept();
+    }
 }
 
 void ColorPaletteEditor::slotSaveButtonClicked() {
