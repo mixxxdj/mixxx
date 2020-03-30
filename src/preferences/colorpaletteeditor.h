@@ -13,7 +13,7 @@
 class ColorPaletteEditor : public QDialog {
     Q_OBJECT
   public:
-    ColorPaletteEditor(QWidget* parent = nullptr);
+    ColorPaletteEditor(QWidget* parent = nullptr, bool showHotcueNumbers = true);
     void initialize(UserSettingsPointer pConfig, const QString& paletteName);
 
   signals:

@@ -17,7 +17,7 @@ namespace {
 const QColor kDefaultPaletteColor(0, 0, 0);
 }
 
-ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
+ColorPaletteEditor::ColorPaletteEditor(QWidget* parent, bool showHotcueNumbers)
         : QDialog(parent),
           m_bPaletteExists(false),
           m_bPaletteIsReadOnly(false),
@@ -69,6 +69,10 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
     m_pTableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     m_pTableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
     m_pTableView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+
+    if (!showHotcueNumbers) {
+        m_pTableView->hideColumn(1);
+    }
 
     connect(m_pTableView,
             &QTableView::doubleClicked,
