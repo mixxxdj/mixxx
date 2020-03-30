@@ -44,8 +44,9 @@ class SignalInfo final {
     SignalInfo& operator=(const SignalInfo&) = default;
 
     // Conversion: #samples / sample offset -> #frames / frame offset
+    // Only works for sample offsets on frame boundaries!
     template<typename T>
-    inline T samples2frames(T samples) const {
+    T samples2frames(T samples) const {
         DEBUG_ASSERT(getChannelCount().isValid());
         DEBUG_ASSERT(0 == (samples % getChannelCount()));
         return samples / getChannelCount();
@@ -53,9 +54,60 @@ class SignalInfo final {
 
     // Conversion: #frames / frame offset -> #samples / sample offset
     template<typename T>
-    inline T frames2samples(T frames) const {
+    T frames2samples(T frames) const {
         DEBUG_ASSERT(getChannelCount().isValid());
         return frames * getChannelCount();
+    }
+
+    // Conversion: #frames / frame offset -> second offset
+    template<typename T>
+    double frames2secs(T frames) const {
+        DEBUG_ASSERT(getSampleRate().isValid());
+        return static_cast<double>(frames) / getSampleRate();
+    }
+
+    // Conversion: second offset -> #frames / frame offset
+    double secs2frames(double seconds) const {
+        DEBUG_ASSERT(getSampleRate().isValid());
+        return seconds * getSampleRate();
+    }
+
+    // Conversion: #frames / frame offset -> millisecond offset
+    template<typename T>
+    double frames2millis(T frames) const {
+        return frames2secs(frames) * 1000;
+    }
+
+    // Conversion: millisecond offset -> #frames / frame offset
+    double millis2frames(double milliseconds) const {
+        return secs2frames(milliseconds / 1000);
+    }
+
+    // Conversion: #samples / sample offset -> second offset
+    // Only works for sample offsets on frame boundaries!
+    template<typename T>
+    double samples2secs(T samples) const {
+        return frames2secs(samples2frames(samples));
+    }
+
+    // Conversion: second offset -> #samples / sample offset
+    // May return sample offsets that are not on frame boundaries!
+    template<typename T>
+    double secs2samples(double seconds) const {
+        return frames2samples(secs2frames(seconds));
+    }
+
+    // Conversion: #samples / sample offset -> millisecond offset
+    // Only works for sample offsets on frame boundaries!
+    template<typename T>
+    double samples2millis(T samples) const {
+        return frames2millis(samples2frames(samples));
+    }
+
+    // Conversion: millisecond offset -> #samples / sample offset
+    // May return sample offsets that are not on frame boundaries!
+    double millis2samples(double milliseconds) const {
+        return frames2samples(millis2frames(milliseconds));
     }
 };
 

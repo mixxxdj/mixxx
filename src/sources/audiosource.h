@@ -284,7 +284,7 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
     }
     inline double getDuration() const {
         DEBUG_ASSERT(hasDuration()); // prevents division by zero
-        return double(frameLength()) / double(getSignalInfo().getSampleRate());
+        return getSignalInfo().frames2secs(frameLength());
     }
 
     // Verifies various properties to ensure that the audio data is
