@@ -52,7 +52,7 @@ class ChannelCount {
         case ChannelLayout::Mono:
             return ChannelCount(1);
         case ChannelLayout::DualMono:
-            return ChannelCount(1);
+            return ChannelCount(2);
         case ChannelLayout::Stereo:
             return ChannelCount(2);
         }
