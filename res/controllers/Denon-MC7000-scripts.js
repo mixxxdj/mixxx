@@ -531,9 +531,7 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
                 midi.sendShortMsg(0x94 + deckNumber -1, control, MC7000.padColor.slicerJumpFwd);
             }
         } else {
-            for (i = 0; i < 8; i++) {
-                midi.sendShortMsg(0x94 + deckNumber -1, control, MC7000.padColor.sliceron);
-            }
+            midi.sendShortMsg(0x94 + deckNumber -1, control, MC7000.padColor.sliceron);
         }
     } else if (MC7000.PADModeSlicerLoop[deckNumber]) {
         return;
