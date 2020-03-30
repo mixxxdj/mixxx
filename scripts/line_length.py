@@ -143,17 +143,16 @@ def main() -> int:
                 proc = subprocess.run(
                     cmd, stdin=fp, capture_output=True, text=True
                 )
-                try:
-                    proc.check_returncode()
-                except subprocess.CalledProcessError:
-                    logger.error(
-                        "Error while executing command %s: %s",
-                        cmd,
-                        proc.stderr,
-                    )
-                    return 1
+            try:
+                proc.check_returncode()
+            except subprocess.CalledProcessError:
+                logger.error(
+                    "Error while executing command %s: %s", cmd, proc.stderr,
+                )
+                return 1
 
-            print(proc.stderr)
+            if proc.stderr:
+                print(proc.stderr)
             with open(filename, mode="w+") as fp:
                 fp.write(proc.stdout)
     return 0
