@@ -412,12 +412,6 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     // Seek track according to SeekOnLoadMode.
     SeekOnLoadMode seekOnLoadMode = getSeekOnLoadPreference();
 
-    CuePointer pAudibleSound = pNewTrack->findCueByType(mixxx::CueType::AudibleSound);
-    double firstSound = Cue::kNoPosition;
-    if (pAudibleSound) {
-        firstSound = pAudibleSound->getPosition();
-    }
-
     switch (seekOnLoadMode) {
     case SeekOnLoadMode::Beginning:
         // This allows users to load tracks and have the needle-drop be maintained.
@@ -426,20 +420,28 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
             seekExact(0.0);
         }
         break;
-    case SeekOnLoadMode::FirstSound:
-        if (firstSound != Cue::kNoPosition) {
-            seekExact(firstSound);
+    case SeekOnLoadMode::FirstSound: {
+        CuePointer pAudibleSound = pNewTrack->findCueByType(mixxx::CueType::AudibleSound);
+        if (pAudibleSound && pAudibleSound->getPosition() != Cue::kNoPosition) {
+            seekExact(pAudibleSound->getPosition());
         } else {
             seekExact(0.0);
         }
         break;
-    case SeekOnLoadMode::MainCue:
-        if (mainCuePoint.getPosition() != Cue::kNoPosition) {
-            seekExact(mainCuePoint.getPosition());
+    }
+    case SeekOnLoadMode::MainCue: {
+        // Take main cue position from CO instead of cue point list because
+        // value in CO will be quantized if quantization is enabled
+        // while value in cue point list will never be quantized.
+        // This prevents jumps when track analysis finishes while quantization is enabled.
+        double cuePoint = m_pCuePoint->get();
+        if (cuePoint != Cue::kNoPosition) {
+            seekExact(cuePoint);
         } else {
             seekExact(0.0);
         }
         break;
+    }
     case SeekOnLoadMode::IntroStart: {
         double introStart = m_pIntroStartPosition->get();
         if (introStart != Cue::kNoPosition) {
