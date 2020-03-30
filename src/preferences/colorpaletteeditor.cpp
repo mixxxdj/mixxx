@@ -41,6 +41,7 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
     m_pRemoveColorButton = new QPushButton("-", this);
     m_pRemoveColorButton->setFixedWidth(32);
     m_pRemoveColorButton->setToolTip(tr("Remove Color"));
+    m_pRemoveColorButton->setDisabled(true);
     pColorButtonLayout->addWidget(m_pRemoveColorButton);
     connect(m_pRemoveColorButton,
             &QPushButton::clicked,
@@ -99,6 +100,10 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
             &QTableView::doubleClicked,
             this,
             &ColorPaletteEditor::slotTableViewDoubleClicked);
+    connect(m_pTableView->selectionModel(),
+            &QItemSelectionModel::selectionChanged,
+            this,
+            &ColorPaletteEditor::slotSelectionChanged);
     connect(m_pSaveAsEdit,
             &QLineEdit::textChanged,
             this,
@@ -170,17 +175,23 @@ void ColorPaletteEditor::slotTableViewDoubleClicked(const QModelIndex& index) {
 
 void ColorPaletteEditor::slotAddColor() {
     m_pModel->appendRow(kDefaultPaletteColor);
+    m_pTableView->scrollToBottom();
+    //m_pTableView->selectionModel()->select(QItemSelection
+    //        m_pModel->index(m_pModel->rowCount() - 1, 0),
+    //        QItemSelectionModel::ClearAndSelect );
+    m_pTableView->setCurrentIndex(
+            m_pModel->index(m_pModel->rowCount() - 1, 0));
 }
 
 void ColorPaletteEditor::slotRemoveColor() {
     QModelIndexList selection = m_pTableView->selectionModel()->selectedRows();
-
-    if (selection.count() > 0) {
-        QModelIndex index = selection.at(0);
+    for (const auto& index : selection) {
         //row selected
         int row = index.row();
         m_pModel->removeRow(row);
     }
+    m_pRemoveColorButton->setDisabled(
+            !m_pTableView->selectionModel()->hasSelection());
 }
 
 void ColorPaletteEditor::slotPaletteNameChanged(const QString& text) {
@@ -250,4 +261,11 @@ void ColorPaletteEditor::slotResetButtonClicked() {
             mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette);
     m_pModel->setColorPalette(palette);
     slotUpdateButtons();
+}
+
+void ColorPaletteEditor::slotSelectionChanged(
+        const QItemSelection& selected,
+        const QItemSelection& deselected) {
+    Q_UNUSED(deselected);
+    m_pRemoveColorButton->setDisabled(!selected.count());
 }

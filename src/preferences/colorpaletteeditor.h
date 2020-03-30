@@ -31,6 +31,9 @@ class ColorPaletteEditor : public QDialog {
     void slotSaveButtonClicked();
     void slotResetButtonClicked();
     void slotRemoveButtonClicked();
+    void slotSelectionChanged(
+            const QItemSelection& selected,
+            const QItemSelection& deselected);
 
   private:
     bool m_bPaletteExists;
