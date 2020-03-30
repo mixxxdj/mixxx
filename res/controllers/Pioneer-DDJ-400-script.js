@@ -158,26 +158,26 @@ PioneerDDJ400.init = function() {
         PioneerDDJ400.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "play", PioneerDDJ400.samplerPlayOutputCallbackFunction));
     }
 
-   // trigger "track loaded" animations when a track is loaded
+    // trigger "track loaded" animations when a track is loaded
     engine.makeConnection("[Channel1]","track_loaded", PioneerDDJ400.trackLoadedLED);
     engine.makeConnection("[Channel2]","track_loaded", PioneerDDJ400.trackLoadedLED);
 
-	// eye candy : play the "track loaded" animation on both decks at startup
-	midi.sendShortMsg(0x9F,0x00,0x7F);	
-	midi.sendShortMsg(0x9F,0x01,0x7F);
+    // eye candy : play the "track loaded" animation on both decks at startup
+    midi.sendShortMsg(0x9F,0x00,0x7F);
+    midi.sendShortMsg(0x9F,0x01,0x7F);
 
     // poll the controller for current control positions on startup
     midi.sendSysexMsg([0xF0,0x00,0x40,0x05,0x00,0x00,0x02,0x06,0x00,0x03,0x01,0xf7], 12);
 };
 
 PioneerDDJ400.trackLoadedLED = function (value, group, control) {
-   if (value) {
-      var value = 0x7F;
-   } else {
-      var value = 0x00;
-   }
-   var channel = group.match(/^\[Channel(\d+)\]$/)[1];
-   midi.sendShortMsg(0x9F,0x00+(channel-1),value);
+    if (value) {
+        var value = 0x7F;
+    } else {
+        var value = 0x00;
+    }
+    var channel = group.match(/^\[Channel(\d+)\]$/)[1];
+    midi.sendShortMsg(0x9F,0x00+(channel-1),value);
 }
 
 PioneerDDJ400.toggleLight = function(midiIn, active) {
@@ -472,8 +472,8 @@ PioneerDDJ400.loopin4beatPressed = function(channel, _control, value, _status, g
 
 PioneerDDJ400.loopin4beatPressedLong = function(_channel, _control, value, _status, group) {
     // problematic - loop gets set to the playback position where the 'long press' was recognized
-	// and not to the point at which the button was initially pressed
-	// as a result, the loop is not set where one would expect
+    // and not to the point at which the button was initially pressed
+    // as a result, the loop is not set where one would expect
     var loopEnabled = engine.getValue(group, "loop_enabled");
     if (!loopEnabled && value > 0) {
         engine.setValue(group, "beatloop_4_activate", 1);
