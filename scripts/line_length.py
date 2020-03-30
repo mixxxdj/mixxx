@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import argparse
 import re
+import logging
 import os
+import itertools
 import subprocess
 import tempfile
-from typing import Optional
-from typing import Sequence
+import typing
 
 # We recommend a maximum line length of 80, but do allow up to 100 characters
 # if deemed necessary by the developer. Lines that exceed that limit will
@@ -14,11 +14,90 @@ from typing import Sequence
 LINE_LENGTH_THRESHOLD = 100
 BREAK_BEFORE = 80
 
+Line = typing.NamedTuple(
+    "Line", [("sourcefile", str), ("number", int), ("text", str)]
+)
+LineGenerator = typing.Generator[Line, None, None]
+FileLines = typing.NamedTuple(
+    "FileLines",
+    [("filename", str), ("lines", typing.Sequence[typing.Tuple[int, int]])],
+)
 
-def main(argv: Optional[Sequence[str]] = None) -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("filenames", nargs="*", help="Filenames to check")
-    args = parser.parse_args(argv)
+
+def get_git_added_lines() -> LineGenerator:
+    proc = subprocess.run(
+        ["git", "diff", "--cached", "--unified=0"],
+        capture_output=True,
+        text=True,
+    )
+    proc.check_returncode()
+    current_file = None
+    current_lineno = None
+    lines_left = 0
+    for line in proc.stdout.splitlines():
+        match_file = re.match(r"^\+\+\+ b/(.*)$", line)
+        if match_file:
+            current_file = match_file.group(1)
+            lines_left = 0
+            continue
+
+        match_lineno = re.match(
+            r"^@@ -\d+(?:,\d+)? \+([0-9]+(?:,[0-9]+)?) @@", line
+        )
+        if match_lineno:
+            start, _, length = match_lineno.group(1).partition(",")
+            current_lineno = int(start)
+            lines_left = 1
+            if length:
+                lines_left += int(length)
+            continue
+
+        if lines_left and line.startswith("+"):
+            yield Line(
+                sourcefile=current_file, number=current_lineno, text=line[1:]
+            )
+            lines_left -= 1
+            current_lineno += 1
+
+
+def group_lines(
+    lines: LineGenerator,
+) -> typing.Generator[FileLines, None, None]:
+    for filename, lines in itertools.groupby(
+        lines, key=lambda line: line.sourcefile
+    ):
+        grouped_linenumbers = []
+        start_linenumber = None
+        last_linenumber = None
+        for line in lines:
+            if None not in (start_linenumber, last_linenumber):
+                if line.number != last_linenumber + 1:
+                    grouped_linenumbers.append(
+                        (start_linenumber, last_linenumber)
+                    )
+
+            if start_linenumber is None:
+                start_linenumber = line.number
+            last_linenumber = line.number
+
+        if None not in (start_linenumber, last_linenumber):
+            grouped_linenumbers.append((start_linenumber, last_linenumber))
+
+        if grouped_linenumbers:
+            yield FileLines(filename, grouped_linenumbers)
+
+
+def main() -> int:
+    logging.basicConfig()
+    logger = logging.getLogger(__name__)
+
+    all_lines = get_git_added_lines()
+    long_lines = (
+        line
+        for line in all_lines
+        if (len(line.text) - 1) >= LINE_LENGTH_THRESHOLD
+    )
+    changed_files = group_lines(long_lines)
 
     proc = subprocess.run(
         ["clang-format", "--dump-config"], capture_output=True, text=True
@@ -37,35 +116,40 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 )
             )
 
-        for filename in args.filenames:
-            lineArguments = []
-            with open(filename) as fd:
-                for lineno, line in enumerate(fd):
-                    if len(line) <= LINE_LENGTH_THRESHOLD:
-                        continue
-                    humanlineno = lineno + 1
-                    print(f"{filename}:{humanlineno} Line is too long.")
-                    lineArguments += [f"-lines={humanlineno}:{humanlineno}"]
+        for changed_file in changed_files:
+            line_arguments = [
+                "--lines={}:{}".format(start, end)
+                for start, end in changed_file.lines
+            ]
 
-                if not lineArguments:
-                    continue
+            if not line_arguments:
+                continue
 
-                fd.seek(0)
-                cmd = [
-                    "clang-format",
-                    "--style=file",
-                    "--assume-filename={}".format(
-                        os.path.join(tempdir, "file.cpp")
-                    ),
-                    *lineArguments,
-                ]
+            cmd = [
+                "clang-format",
+                "--style=file",
+                "--assume-filename={}".format(
+                    os.path.join(tempdir, changed_file.filename)
+                ),
+                *line_arguments,
+            ]
+
+            with open(changed_file.filename) as fp:
                 proc = subprocess.run(
-                    cmd, stdin=fd, capture_output=True, text=True
+                    cmd, stdin=fp, capture_output=True, text=True
                 )
-                proc.check_returncode()
-                print(proc.stderr)
+                try:
+                    proc.check_returncode()
+                except subprocess.CalledProcessError:
+                    logger.error(
+                        "Error while executing command %s: %s",
+                        cmd,
+                        proc.stderr,
+                    )
+                    return 1
 
-            with open(filename, mode="w+") as fp:
+            print(proc.stderr)
+            with open(changed_file.filename, mode="w+") as fp:
                 fp.write(proc.stdout)
     return 0
 
