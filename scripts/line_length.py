@@ -99,8 +99,10 @@ def main() -> int:
     )
     changed_files = group_lines(long_lines)
 
+    rootdir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+    cpp_file = os.path.join(rootdir, "src/mixxx.cpp")
     proc = subprocess.run(
-        ["clang-format", "--dump-config", "src/mixxx.cpp"],
+        ["clang-format", "--dump-config", cpp_file],
         capture_output=True,
         text=True,
     )
@@ -136,7 +138,8 @@ def main() -> int:
                 *line_arguments,
             ]
 
-            with open(changed_file.filename) as fp:
+            filename = os.path.join(rootdir, changed_file.filename)
+            with open(filename) as fp:
                 proc = subprocess.run(
                     cmd, stdin=fp, capture_output=True, text=True
                 )
@@ -151,7 +154,7 @@ def main() -> int:
                     return 1
 
             print(proc.stderr)
-            with open(changed_file.filename, mode="w+") as fp:
+            with open(filename, mode="w+") as fp:
                 fp.write(proc.stdout)
     return 0
 
