@@ -26,13 +26,21 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
           m_pModel(make_parented<ColorPaletteEditorModel>(m_pTableView)) {
     // Create widgets
     QHBoxLayout* pColorButtonLayout = new QHBoxLayout();
-    m_pAddColorButton = new QPushButton(tr("Add Color"), this);
+    QWidget* pExpander = new QWidget(this);
+    pExpander->setSizePolicy(
+            QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred));
+    pColorButtonLayout->addWidget(pExpander);
+    m_pAddColorButton = new QPushButton("+", this);
+    m_pAddColorButton->setFixedWidth(32);
+    m_pAddColorButton->setToolTip(tr("Add Color"));
     pColorButtonLayout->addWidget(m_pAddColorButton);
     connect(m_pAddColorButton,
             &QPushButton::clicked,
             this,
             &ColorPaletteEditor::slotAddColor);
-    m_pRemoveColorButton = new QPushButton(tr("Remove Color"), this);
+    m_pRemoveColorButton = new QPushButton("-", this);
+    m_pRemoveColorButton->setFixedWidth(32);
+    m_pRemoveColorButton->setToolTip(tr("Remove Color"));
     pColorButtonLayout->addWidget(m_pRemoveColorButton);
     connect(m_pRemoveColorButton,
             &QPushButton::clicked,
@@ -53,8 +61,8 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
 
     // Add widgets to dialog
     QVBoxLayout* pLayout = new QVBoxLayout();
-    pLayout->addLayout(pColorButtonLayout);
     pLayout->addWidget(m_pTableView, 1);
+    pLayout->addLayout(pColorButtonLayout);
     pLayout->addLayout(pNameLayout);
     pLayout->addWidget(pPaletteButtonBox);
     setLayout(pLayout);
