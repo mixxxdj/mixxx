@@ -24,22 +24,39 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
           m_pSaveAsEdit(make_parented<QLineEdit>(this)),
           m_pTableView(make_parented<QTableView>(this)),
           m_pModel(make_parented<ColorPaletteEditorModel>(m_pTableView)) {
-    QDialogButtonBox* pButtonBox = new QDialogButtonBox();
-    m_pRemoveButton = pButtonBox->addButton(
-            tr("Remove Palette"),
-            QDialogButtonBox::DestructiveRole);
-    m_pCloseButton = pButtonBox->addButton(QDialogButtonBox::Discard);
-    m_pResetButton = pButtonBox->addButton(QDialogButtonBox::Reset);
-    m_pSaveButton = pButtonBox->addButton(QDialogButtonBox::Save);
+    // Create widgets
+    QHBoxLayout* pColorButtonLayout = new QHBoxLayout();
+    m_pAddColorButton = new QPushButton(tr("Add Color"), this);
+    pColorButtonLayout->addWidget(m_pAddColorButton);
+    connect(m_pAddColorButton,
+            &QPushButton::clicked,
+            this,
+            &ColorPaletteEditor::slotAddColor);
+    m_pRemoveColorButton = new QPushButton(tr("Remove Color"), this);
+    pColorButtonLayout->addWidget(m_pRemoveColorButton);
+    connect(m_pRemoveColorButton,
+            &QPushButton::clicked,
+            this,
+            &ColorPaletteEditor::slotRemoveColor);
 
     QHBoxLayout* pNameLayout = new QHBoxLayout();
     pNameLayout->addWidget(new QLabel(tr("Name")));
     pNameLayout->addWidget(m_pSaveAsEdit, 1);
 
+    QDialogButtonBox* pPaletteButtonBox = new QDialogButtonBox();
+    m_pRemoveButton = pPaletteButtonBox->addButton(
+            tr("Remove Palette"),
+            QDialogButtonBox::DestructiveRole);
+    m_pCloseButton = pPaletteButtonBox->addButton(QDialogButtonBox::Discard);
+    m_pResetButton = pPaletteButtonBox->addButton(QDialogButtonBox::Reset);
+    m_pSaveButton = pPaletteButtonBox->addButton(QDialogButtonBox::Save);
+
+    // Add widgets to dialog
     QVBoxLayout* pLayout = new QVBoxLayout();
+    pLayout->addLayout(pColorButtonLayout);
     pLayout->addWidget(m_pTableView, 1);
     pLayout->addLayout(pNameLayout);
-    pLayout->addWidget(pButtonBox);
+    pLayout->addWidget(pPaletteButtonBox);
     setLayout(pLayout);
     setContentsMargins(0, 0, 0, 0);
 
@@ -74,10 +91,6 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
             &QTableView::doubleClicked,
             this,
             &ColorPaletteEditor::slotTableViewDoubleClicked);
-    connect(m_pTableView,
-            &QTableView::customContextMenuRequested,
-            this,
-            &ColorPaletteEditor::slotTableViewContextMenuRequested);
     connect(m_pSaveAsEdit,
             &QLineEdit::textChanged,
             this,
@@ -147,24 +160,18 @@ void ColorPaletteEditor::slotTableViewDoubleClicked(const QModelIndex& index) {
     }
 }
 
-void ColorPaletteEditor::slotTableViewContextMenuRequested(const QPoint& pos) {
-    QMenu menu(this);
+void ColorPaletteEditor::slotAddColor() {
+    m_pModel->appendRow(kDefaultPaletteColor);
+}
 
-    QAction* pAddAction = menu.addAction("Add");
-    QAction* pRemoveAction = menu.addAction("Remove");
-    QAction* pAction = menu.exec(m_pTableView->viewport()->mapToGlobal(pos));
-    if (pAction == pAddAction) {
-        m_pModel->appendRow(kDefaultPaletteColor);
-    } else if (pAction == pRemoveAction) {
-        QModelIndexList selection = m_pTableView->selectionModel()->selectedRows();
+void ColorPaletteEditor::slotRemoveColor() {
+    QModelIndexList selection = m_pTableView->selectionModel()->selectedRows();
 
-        if (selection.count() > 0) {
-            QModelIndex index = selection.at(0);
-
-            //row selected
-            int row = index.row();
-            m_pModel->removeRow(row);
-        }
+    if (selection.count() > 0) {
+        QModelIndex index = selection.at(0);
+        //row selected
+        int row = index.row();
+        m_pModel->removeRow(row);
     }
 }
 

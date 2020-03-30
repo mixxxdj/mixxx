@@ -24,7 +24,8 @@ class ColorPaletteEditor : public QDialog {
   private slots:
     void slotUpdateButtons();
     void slotTableViewDoubleClicked(const QModelIndex& index);
-    void slotTableViewContextMenuRequested(const QPoint& pos);
+    void slotAddColor();
+    void slotRemoveColor();
     void slotPaletteNameChanged(const QString& text);
     void slotCloseButtonClicked();
     void slotSaveButtonClicked();
@@ -39,6 +40,8 @@ class ColorPaletteEditor : public QDialog {
     parented_ptr<QLineEdit> m_pSaveAsEdit;
     parented_ptr<QTableView> m_pTableView;
     parented_ptr<ColorPaletteEditorModel> m_pModel;
+    QPushButton* m_pAddColorButton;
+    QPushButton* m_pRemoveColorButton;
     QPushButton* m_pSaveButton;
     QPushButton* m_pCloseButton;
     QPushButton* m_pRemoveButton;
