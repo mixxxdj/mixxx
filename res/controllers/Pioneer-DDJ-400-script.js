@@ -539,7 +539,7 @@ PioneerDDJ400.beatFxSelectShiftPressed = function(_channel, _control, _value) {
 
 PioneerDDJ400.beatFxLeftPressed = ignoreRelease(function() {
     // focus Effect Slot 1 in Effect Unit 1, or clear focus if it is currently focused
-    if (PioneerDDJ400.selectedFxSlot == 1) {
+    if (PioneerDDJ400.selectedFxSlot === 1) {
         PioneerDDJ400.selectedFxSlot = 0;
     } else {
         PioneerDDJ400.selectedFxSlot = 1;
@@ -649,8 +649,7 @@ PioneerDDJ400.samplerModeShiftPadPressed = function(_channel, _control, value, _
     // when playing stop and return to start/cue point
     if (playing > 0) {
         engine.setValue(group, 'cue_gotoandstop', 1);
-    }
-    else { // load selected track
+    } else { // load selected track
         // engine.setValue(group, 'LoadSelectedTrack', 1);
     }
 };
@@ -684,14 +683,14 @@ function startSamplerBlink(channel, control, group) {
     });
 }
 
-stopSamplerBlink = function(channel, control) {
+function stopSamplerBlink(channel, control) {
     TimersPioneerDDJ400[channel] = TimersPioneerDDJ400[channel] || {};
 
     if (TimersPioneerDDJ400[channel][control] !== undefined) {
         engine.stopTimer(TimersPioneerDDJ400[channel][control]);
         TimersPioneerDDJ400[channel][control] = undefined;
     }
-};
+}
 
 PioneerDDJ400.shutdown = function() {
     // reset vumeter
