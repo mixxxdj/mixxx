@@ -87,6 +87,14 @@ QNetworkRequest newRequest(
     qRegisterMetaType<JsonWebResponse>("mixxx::network::JsonWebResponse");
 }
 
+QDebug operator<<(QDebug dbg, const JsonWebResponse& arg) {
+    return dbg
+        << "CustomWebResponse{"
+        << static_cast<const WebResponse&>(arg)
+        << arg.content
+        << '}';
+}
+
 JsonWebTask::JsonWebTask(
         QNetworkAccessManager* networkAccessManager,
         QUrl baseUrl,

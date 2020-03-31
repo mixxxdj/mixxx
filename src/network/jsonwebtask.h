@@ -46,6 +46,8 @@ struct JsonWebResponse : public WebResponse {
     QJsonDocument content;
 };
 
+QDebug operator<<(QDebug dbg, const JsonWebResponse& arg);
+
 class JsonWebTask : public WebTask {
     Q_OBJECT
 

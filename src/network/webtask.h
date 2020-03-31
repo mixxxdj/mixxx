@@ -58,6 +58,8 @@ struct WebResponse {
     HttpStatusCode statusCode;
 };
 
+QDebug operator<<(QDebug dbg, const WebResponse& arg);
+
 struct CustomWebResponse : public WebResponse {
   public:
     static void registerMetaType();
@@ -76,10 +78,10 @@ struct CustomWebResponse : public WebResponse {
     CustomWebResponse& operator=(const CustomWebResponse&) = default;
     CustomWebResponse& operator=(CustomWebResponse&&) = default;
 
-    QUrl replyUrl;
-    HttpStatusCode statusCode;
     QByteArray content;
 };
+
+QDebug operator<<(QDebug dbg, const CustomWebResponse& arg);
 
 // A transient task for performing a single HTTP network request
 // asynchronously.

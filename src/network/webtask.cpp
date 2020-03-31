@@ -54,8 +54,24 @@ bool readStatusCode(
     qRegisterMetaType<WebResponse>("mixxx::network::WebResponse");
 }
 
+QDebug operator<<(QDebug dbg, const WebResponse& arg) {
+    return dbg
+        << "WebResponse{"
+        << arg.replyUrl
+        << arg.statusCode
+        << '}';
+}
+
 /*static*/ void CustomWebResponse::registerMetaType() {
     qRegisterMetaType<CustomWebResponse>("mixxx::network::CustomWebResponse");
+}
+
+QDebug operator<<(QDebug dbg, const CustomWebResponse& arg) {
+    return dbg
+        << "CustomWebResponse{"
+        << static_cast<const WebResponse&>(arg)
+        << arg.content
+        << '}';
 }
 
 WebTask::WebTask(
