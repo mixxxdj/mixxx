@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QMetaMethod>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QPair>
@@ -100,7 +101,8 @@ class WebTask : public QObject {
 
   public:
     explicit WebTask(
-            QNetworkAccessManager* networkAccessManager);
+            QNetworkAccessManager* networkAccessManager,
+            QObject* parent = nullptr);
     ~WebTask() override;
 
     // timeoutMillis <= 0: No timeout (unlimited)
@@ -113,10 +115,6 @@ class WebTask : public QObject {
 
     // Cancel a pending request from the event loop thread.
     QUrl abort();
-
-    // Abort the pending request while suppressing any signals
-    // and mark the task for deletion.
-    void deleteBeforeFinished();
 
     // Disconnect from all signals after receiving a reply
     // and mark the task for deletion.
@@ -142,6 +140,13 @@ class WebTask : public QObject {
             QByteArray errorContent);
 
   protected:
+    template<typename S>
+    bool isSignalFuncConnected(
+            S signalFunc) {
+        const QMetaMethod signal = QMetaMethod::fromSignal(signalFunc);
+        return isSignalConnected(signal);
+    }
+
     void timerEvent(QTimerEvent* event) final;
 
     enum class Status {
@@ -152,29 +157,29 @@ class WebTask : public QObject {
         Finished,
     };
 
-    // Handle status changes and ensure that the task eventually
-    // gets deleted. The default implementations emit a signal
-    // if connected or otherwise implicitly delete the task.
-    virtual void onAborted(
-            QUrl requestUrl);
-    virtual void onTimedOut(
-            QUrl requestUrl);
-
     QUrl abortPendingNetworkReply(
             QNetworkReply* pendingNetworkReply);
     QUrl timeOutPendingNetworkReply(
             QNetworkReply* pendingNetworkReply);
 
+    QPair<QNetworkReply*, HttpStatusCode> receiveNetworkReply();
+
+    // Handle status changes and ensure that the task eventually
+    // gets deleted. The default implementations emit a signal
+    // if connected or otherwise implicitly delete the task.
+    virtual void onAborted(
+            QUrl&& requestUrl);
+    virtual void onTimedOut(
+            QUrl&& requestUrl);
+
     // Handle the abort and ensure that the task eventually
     // gets deleted. The default implementation logs a warning
     // and deletes the task.
     virtual void onNetworkError(
-            QUrl requestUrl,
+            QUrl&& requestUrl,
             QNetworkReply::NetworkError errorCode,
-            QString errorString,
-            QByteArray errorContent);
-
-    QPair<QNetworkReply*, HttpStatusCode> receiveNetworkReply();
+            QString&& errorString,
+            QByteArray&& errorContent);
 
   private:
     // Try to compose and send the actual network request. If

@@ -67,11 +67,13 @@ network::JsonWebRequest lookupRequest() {
 AcoustIdLookupTask::AcoustIdLookupTask(
         QNetworkAccessManager* networkAccessManager,
         const QString& fingerprint,
-        int duration)
+        int duration,
+        QObject* parent)
         : network::JsonWebTask(
                   networkAccessManager,
                   kBaseUrl,
-                  lookupRequest()),
+                  lookupRequest(),
+                  parent),
           m_urlQuery(lookupUrlQuery(fingerprint, duration)) {
 }
 
@@ -110,7 +112,7 @@ QNetworkReply* AcoustIdLookupTask::sendNetworkRequest(
 }
 
 void AcoustIdLookupTask::onFinished(
-        network::JsonWebResponse response) {
+        network::JsonWebResponse&& response) {
     if (!response.isStatusCodeSuccess()) {
         kLogger.warning()
                 << "Request failed with HTTP status code"
@@ -198,7 +200,7 @@ void AcoustIdLookupTask::onFinished(
                 const auto recordingId =
                         QUuid(recordingObject.value(QLatin1String("id")).toString());
                 VERIFY_OR_DEBUG_ASSERT(!recordingId.isNull()) {
-                     continue;
+                    continue;
                 }
                 recordingIds.append(recordingId);
             }
@@ -209,15 +211,15 @@ void AcoustIdLookupTask::onFinished(
 
 void AcoustIdLookupTask::emitSucceeded(
         QList<QUuid>&& recordingIds) {
-    const auto signal = QMetaMethod::fromSignal(
-            &AcoustIdLookupTask::succeeded);
-    DEBUG_ASSERT(receivers(signal.name()) <= 1); // unique connection
-    if (isSignalConnected(signal)) {
-        emit succeeded(
-                std::move(recordingIds));
-    } else {
+    VERIFY_OR_DEBUG_ASSERT(
+            isSignalFuncConnected(&AcoustIdLookupTask::succeeded)) {
+        kLogger.warning()
+                << "Unhandled succeeded signal";
         deleteLater();
+        return;
     }
+    emit succeeded(
+            std::move(recordingIds));
 }
 
 } // namespace mixxx

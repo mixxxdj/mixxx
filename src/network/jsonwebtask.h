@@ -54,8 +54,9 @@ class JsonWebTask : public WebTask {
   public:
     JsonWebTask(
             QNetworkAccessManager* networkAccessManager,
-            QUrl baseUrl,
-            JsonWebRequest request);
+            const QUrl& baseUrl,
+            JsonWebRequest&& request,
+            QObject* parent = nullptr);
     ~JsonWebTask() override;
 
   signals:
@@ -74,16 +75,16 @@ class JsonWebTask : public WebTask {
             const QJsonDocument& content);
 
     void emitFailed(
-            network::JsonWebResponse response);
+            network::JsonWebResponse&& response);
 
   private:
     // Handle the response and ensure that the task eventually
     // gets deleted. The default implementation discards the
     // response and deletes the task.
     virtual void onFinished(
-            JsonWebResponse response);
+            JsonWebResponse&& response);
     virtual void onFinishedCustom(
-            CustomWebResponse response);
+            CustomWebResponse&& response);
 
     bool doStart(
             QNetworkAccessManager* networkAccessManager,

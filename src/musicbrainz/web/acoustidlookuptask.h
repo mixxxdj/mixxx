@@ -15,7 +15,8 @@ class AcoustIdLookupTask : public network::JsonWebTask {
     AcoustIdLookupTask(
             QNetworkAccessManager* networkAccessManager,
             const QString& fingerprint,
-            int duration);
+            int duration,
+            QObject* parent = nullptr);
     ~AcoustIdLookupTask() override = default;
 
   signals:
@@ -31,7 +32,7 @@ class AcoustIdLookupTask : public network::JsonWebTask {
 
   private:
     void onFinished(
-            network::JsonWebResponse response) override;
+            network::JsonWebResponse&& response) override;
 
     void emitSucceeded(
             QList<QUuid>&& recordingIds);

@@ -17,8 +17,9 @@ class MusicBrainzRecordingsTask : public network::WebTask {
   public:
     MusicBrainzRecordingsTask(
             QNetworkAccessManager* networkAccessManager,
-            QList<QUuid>&& recordingIds);
-    ~MusicBrainzRecordingsTask() override = default;
+            QList<QUuid>&& recordingIds,
+            QObject* parent = nullptr);
+    ~MusicBrainzRecordingsTask() override;
 
   signals:
     void succeeded(
@@ -41,9 +42,9 @@ class MusicBrainzRecordingsTask : public network::WebTask {
     void emitSucceeded(
             QList<musicbrainz::TrackRelease>&& trackReleases);
     void emitFailed(
-            network::WebResponse response,
+            network::WebResponse&& response,
             int errorCode,
-            QString errorMessage);
+            QString&& errorMessage);
 
     void continueWithNextRequest();
 

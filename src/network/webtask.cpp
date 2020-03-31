@@ -1,6 +1,5 @@
 #include "network/webtask.h"
 
-#include <QMetaMethod>
 #include <QThread>
 #include <QTimerEvent>
 #include <mutex> // std::once_flag
@@ -75,8 +74,10 @@ QDebug operator<<(QDebug dbg, const CustomWebResponse& arg) {
 }
 
 WebTask::WebTask(
-        QNetworkAccessManager* networkAccessManager)
-        : m_networkAccessManager(networkAccessManager),
+        QNetworkAccessManager* networkAccessManager,
+        QObject* parent)
+        : QObject(parent),
+          m_networkAccessManager(networkAccessManager),
           m_timeoutTimerId(kInvalidTimerId),
           m_status(Status::Idle) {
     std::call_once(registerMetaTypesOnceFlag, registerMetaTypesOnce);
@@ -89,52 +90,51 @@ WebTask::~WebTask() {
 }
 
 void WebTask::onAborted(
-        QUrl requestUrl) {
+        QUrl&& requestUrl) {
     DEBUG_ASSERT(m_status == Status::Aborted);
-    const auto signal = QMetaMethod::fromSignal(
-            &WebTask::aborted);
-    if (isSignalConnected(signal)) {
-        emit aborted(requestUrl);
-    } else {
-        kLogger.info()
-                << "Request aborted"
+    VERIFY_OR_DEBUG_ASSERT(
+            isSignalFuncConnected(&WebTask::aborted)) {
+        kLogger.warning()
+                << "Unhandled abort signal"
                 << requestUrl;
-        deleteAfterFinished();
+        deleteLater();
+        return;
     }
+    emit aborted(
+            std::move(requestUrl));
 }
 
 void WebTask::onTimedOut(
-        QUrl requestUrl) {
+        QUrl&& requestUrl) {
     DEBUG_ASSERT(m_status == Status::TimedOut);
     onNetworkError(
-            requestUrl,
+            std::move(requestUrl),
             QNetworkReply::TimeoutError,
             tr("Client-side network timeout"),
             QByteArray());
 }
 
 void WebTask::onNetworkError(
-        QUrl requestUrl,
+        QUrl&& requestUrl,
         QNetworkReply::NetworkError errorCode,
-        QString errorString,
-        QByteArray errorContent) {
-    const auto signal = QMetaMethod::fromSignal(
-            &WebTask::networkError);
-    if (isSignalConnected(signal)) {
-        emit networkError(
-                std::move(requestUrl),
-                errorCode,
-                std::move(errorString),
-                std::move(errorContent));
-    } else {
+        QString&& errorString,
+        QByteArray&& errorContent) {
+    VERIFY_OR_DEBUG_ASSERT(
+            isSignalFuncConnected(&WebTask::networkError)) {
         kLogger.warning()
-                << "Network error"
+                << "Unhandled network error signal"
                 << requestUrl
                 << errorCode
                 << errorString
                 << errorContent;
-        deleteAfterFinished();
+        deleteLater();
+        return;
     }
+    emit networkError(
+            std::move(requestUrl),
+            errorCode,
+            std::move(errorString),
+            std::move(errorContent));
 }
 
 void WebTask::invokeStart(int timeoutMillis) {
@@ -163,15 +163,6 @@ void WebTask::invokeAbort() {
             }
 #endif
     );
-}
-
-void WebTask::deleteBeforeFinished() {
-    // Might be called from any thread so we must not
-    // access any member variables!
-    // Do not disconnect any connections, because otherwise
-    // the destroyed() signal is not received!
-    invokeAbort();
-    deleteLater();
 }
 
 void WebTask::deleteAfterFinished() {
@@ -260,7 +251,7 @@ QUrl WebTask::abort() {
     kLogger.debug()
             << "Aborting...";
     QUrl url = doAbort();
-    onAborted(url);
+    onAborted(QUrl(url));
     return url;
 }
 

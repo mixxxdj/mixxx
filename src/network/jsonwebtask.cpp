@@ -97,10 +97,11 @@ QDebug operator<<(QDebug dbg, const JsonWebResponse& arg) {
 
 JsonWebTask::JsonWebTask(
         QNetworkAccessManager* networkAccessManager,
-        QUrl baseUrl,
-        JsonWebRequest request)
-        : WebTask(networkAccessManager),
-          m_baseUrl(std::move(baseUrl)),
+        const QUrl& baseUrl,
+        JsonWebRequest&& request,
+        QObject* parent)
+        : WebTask(networkAccessManager, parent),
+          m_baseUrl(baseUrl),
           m_request(std::move(request)),
           m_pendingNetworkReply(nullptr) {
     std::call_once(registerMetaTypesOnceFlag, registerMetaTypesOnce);
@@ -114,7 +115,7 @@ JsonWebTask::~JsonWebTask() {
 }
 
 void JsonWebTask::onFinished(
-        JsonWebResponse response) {
+        JsonWebResponse&& response) {
     kLogger.info()
             << "Response received"
             << response.replyUrl
@@ -124,7 +125,7 @@ void JsonWebTask::onFinished(
 }
 
 void JsonWebTask::onFinishedCustom(
-        CustomWebResponse response) {
+        CustomWebResponse&& response) {
     kLogger.info()
             << "Custom response received"
             << response.replyUrl
@@ -320,16 +321,16 @@ void JsonWebTask::slotNetworkReplyFinished() {
 }
 
 void JsonWebTask::emitFailed(
-        network::JsonWebResponse response) {
-    const auto signal = QMetaMethod::fromSignal(
-            &JsonWebTask::failed);
-    DEBUG_ASSERT(receivers(signal.name()) <= 1); // unique connection
-    if (isSignalConnected(signal)) {
-        emit failed(
-                std::move(response));
-    } else {
+        network::JsonWebResponse&& response) {
+    VERIFY_OR_DEBUG_ASSERT(
+            isSignalFuncConnected(&JsonWebTask::failed)) {
+        kLogger.warning()
+                << "Unhandled failed signal"
+                << response;
         deleteLater();
+        return;
     }
+    emit failed(std::move(response));
 }
 
 } // namespace network
