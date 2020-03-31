@@ -3,6 +3,7 @@
 #include "preferences/usersettings.h"
 #include "util/color/colorpalette.h"
 
+// Saves ColorPalettes to and loads ColorPalettes from the mixxx.cfg file
 class ColorPaletteSettings {
   public:
     explicit ColorPaletteSettings(UserSettingsPointer pConfig)

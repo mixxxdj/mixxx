@@ -4,6 +4,9 @@
 
 #include "util/color/rgbcolor.h"
 
+// An ordered list of colors that can be picked by the user from WColorPicker,
+// used for cue and track colors. Also used by CueControl to map default
+// colors to hotcues based on their hotcue number
 class ColorPalette final {
   public:
     ColorPalette(

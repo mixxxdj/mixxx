@@ -10,6 +10,8 @@
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 
+// Widget for viewing, adding, editing and removing color palettes that can be
+// used for track/hotcue colors. Used by the Edit buttons in DlgPrefColors.
 class ColorPaletteEditor : public QDialog {
     Q_OBJECT
   public:
