@@ -24,7 +24,7 @@
 //                 * Beatjump mode (no lighting, shift mode(adjust jump size))
 //                 * PAD FX (only slots A-H, Q-P)
 //                 * Output (lights)
-//                 * Loop Section: Loop in / Out, Call, Double, Half 
+//                 * Loop Section: Loop in / Out, Call, Double, Half
 //                   (loop adjust not working, '4 beat loop' doesnt work correctly - see comments in PioneerDDJ400.loopin4beatPressedLong)
 //
 //             Testing:
@@ -147,7 +147,7 @@ PioneerDDJ400.init = function() {
     // reset vumeter
     PioneerDDJ400.toggleLight(LightsPioneerDDJ400.deck1.vuMeter, false);
     PioneerDDJ400.toggleLight(LightsPioneerDDJ400.deck2.vuMeter, false);
-    
+
     // enable soft takeover for rate controls
     engine.softTakeover("[Channel1]", "rate", true);
     engine.softTakeover("[Channel2]", "rate", true);
@@ -660,7 +660,7 @@ function startSamplerBlink(channel, control, group) {
     var val = 0x7f;
 
     // print('channel ' + channel + ' +1= ' + (channel+1));
-    
+
     stopSamplerBlink(channel, control);
     TimersPioneerDDJ400[channel][control] = engine.beginTimer(250, function() {
         val = 0x7f - val;
@@ -705,7 +705,7 @@ PioneerDDJ400.shutdown = function() {
         midi.sendShortMsg(0x99, 0x30 + i, 0x00);    // Deck 2 pads
         midi.sendShortMsg(0x9A, 0x30 + i, 0x00);    // Deck 2 pads with SHIFT
     }
-    // turn off all Hotcue LEDs 
+    // turn off all Hotcue LEDs
     for (i = 0; i <= 7; ++i) {
         midi.sendShortMsg(0x97, 0x00 + i, 0x00);    // Deck 1 pads
         midi.sendShortMsg(0x98, 0x00 + i, 0x00);    // Deck 1 pads with SHIFT
