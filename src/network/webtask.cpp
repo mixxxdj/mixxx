@@ -90,22 +90,11 @@ void WebTask::onAborted(
 void WebTask::onTimedOut(
         QUrl requestUrl) {
     DEBUG_ASSERT(m_status == Status::TimedOut);
-    const auto signal = QMetaMethod::fromSignal(
-            &WebTask::networkError);
-    if (isSignalConnected(signal)) {
-        emit networkError(
-                std::move(requestUrl),
-                QNetworkReply::TimeoutError,
-                QStringLiteral("Client-side timeout"),
-                QByteArray());
-    } else {
-        kLogger.warning()
-                << "Aborting request after client-side timeout"
-                << requestUrl;
-        // Do not abort the request before deleting it,
-        // i.e. pretend it already has been finished.
-        deleteAfterFinished();
-    }
+    onNetworkError(
+            requestUrl,
+            QNetworkReply::TimeoutError,
+            tr("Client-side network timeout"),
+            QByteArray());
 }
 
 void WebTask::onNetworkError(
@@ -181,8 +170,11 @@ void WebTask::slotStart(int timeoutMillis) {
     DEBUG_ASSERT(thread() == QThread::currentThread());
     DEBUG_ASSERT(m_status != Status::Pending);
     VERIFY_OR_DEBUG_ASSERT(m_networkAccessManager) {
-        kLogger.warning()
-                << "No network access";
+        onNetworkError(
+                QUrl(),
+                QNetworkReply::NetworkSessionFailedError,
+                tr("No network access"),
+                QByteArray());
         return;
     }
 
@@ -194,8 +186,11 @@ void WebTask::slotStart(int timeoutMillis) {
         // The callee is not supposed to abort a request
         // before it has beeen started successfully.
         DEBUG_ASSERT(m_status == Status::Idle);
-        kLogger.warning()
-                << "Start aborted";
+        onNetworkError(
+                QUrl(),
+                QNetworkReply::OperationCanceledError,
+                tr("Start of network task has been aborted"),
+                QByteArray());
         return;
     }
     // Still idle after the request has been started

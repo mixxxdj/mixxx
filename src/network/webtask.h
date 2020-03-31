@@ -151,8 +151,8 @@ class WebTask : public QObject {
     };
 
     // Handle status changes and ensure that the task eventually
-    // gets deleted. The default implementation simply deletes the
-    // task.
+    // gets deleted. The default implementations emit a signal
+    // if connected or otherwise implicitly delete the task.
     virtual void onAborted(
             QUrl requestUrl);
     virtual void onTimedOut(
