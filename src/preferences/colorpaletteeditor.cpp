@@ -30,14 +30,7 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
     pExpander->setSizePolicy(
             QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred));
     pColorButtonLayout->addWidget(pExpander);
-    m_pAddColorButton = new QPushButton("+", this);
-    m_pAddColorButton->setFixedWidth(32);
-    m_pAddColorButton->setToolTip(tr("Add Color"));
-    pColorButtonLayout->addWidget(m_pAddColorButton);
-    connect(m_pAddColorButton,
-            &QPushButton::clicked,
-            this,
-            &ColorPaletteEditor::slotAddColor);
+
     m_pRemoveColorButton = new QPushButton("-", this);
     m_pRemoveColorButton->setFixedWidth(32);
     m_pRemoveColorButton->setToolTip(tr("Remove Color"));
@@ -47,6 +40,15 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent)
             &QPushButton::clicked,
             this,
             &ColorPaletteEditor::slotRemoveColor);
+
+    m_pAddColorButton = new QPushButton("+", this);
+    m_pAddColorButton->setFixedWidth(32);
+    m_pAddColorButton->setToolTip(tr("Add Color"));
+    pColorButtonLayout->addWidget(m_pAddColorButton);
+    connect(m_pAddColorButton,
+            &QPushButton::clicked,
+            this,
+            &ColorPaletteEditor::slotAddColor);
 
     QHBoxLayout* pNameLayout = new QHBoxLayout();
     pNameLayout->addWidget(new QLabel(tr("Name")));
