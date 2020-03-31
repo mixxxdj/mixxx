@@ -154,31 +154,31 @@ PioneerDDJ400.init = function() {
 
 
     // Sampler callbacks
-    for (i = 1; i <= 16; ++i) {
+    for (var i = 1; i <= 16; ++i) {
         PioneerDDJ400.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "play", PioneerDDJ400.samplerPlayOutputCallbackFunction));
     }
 
     // trigger "track loaded" animations when a track is loaded
-    engine.makeConnection("[Channel1]","track_loaded", PioneerDDJ400.trackLoadedLED);
-    engine.makeConnection("[Channel2]","track_loaded", PioneerDDJ400.trackLoadedLED);
+    engine.makeConnection("[Channel1]", "track_loaded", PioneerDDJ400.trackLoadedLED);
+    engine.makeConnection("[Channel2]", "track_loaded", PioneerDDJ400.trackLoadedLED);
 
     // eye candy : play the "track loaded" animation on both decks at startup
-    midi.sendShortMsg(0x9F,0x00,0x7F);
-    midi.sendShortMsg(0x9F,0x01,0x7F);
+    midi.sendShortMsg(0x9F, 0x00, 0x7F);
+    midi.sendShortMsg(0x9F, 0x01, 0x7F);
 
     // poll the controller for current control positions on startup
-    midi.sendSysexMsg([0xF0,0x00,0x40,0x05,0x00,0x00,0x02,0x06,0x00,0x03,0x01,0xf7], 12);
+    midi.sendSysexMsg([0xF0, 0x00, 0x40, 0x05, 0x00, 0x00, 0x02, 0x06, 0x00, 0x03, 0x01, 0xf7], 12);
 };
 
-PioneerDDJ400.trackLoadedLED = function (value, group, control) {
+PioneerDDJ400.trackLoadedLED = function(value, group, _control) {
     if (value) {
-        var value = 0x7F;
+        value = 0x7F;
     } else {
-        var value = 0x00;
+        value = 0x00;
     }
     var channel = group.match(/^\[Channel(\d+)\]$/)[1];
-    midi.sendShortMsg(0x9F,0x00+(channel-1),value);
-}
+    midi.sendShortMsg(0x9F, 0x00+(channel-1), value);
+};
 
 PioneerDDJ400.toggleLight = function(midiIn, active) {
     midi.sendShortMsg(midiIn.status, midiIn.data1, active ? 0x7F : 0);
@@ -247,11 +247,11 @@ PioneerDDJ400.highResMSB = {
 };
 
 
-PioneerDDJ400.tempoSliderMSB = function (channel, control, value, status, group) {
+PioneerDDJ400.tempoSliderMSB = function(channel, control, value, status, group) {
     PioneerDDJ400.highResMSB[group].tempoSlider = value;
 };
 
-PioneerDDJ400.tempoSliderLSB = function (channel, control, value, status, group) {
+PioneerDDJ400.tempoSliderLSB = function(channel, control, value, status, group) {
     var fullValue = (PioneerDDJ400.highResMSB[group].tempoSlider << 7) + value;
 
     engine.setValue(
@@ -526,14 +526,14 @@ PioneerDDJ400.beatFxLevelDepthRotate = function(_channel, _control, value) {
 
 PioneerDDJ400.beatFxSelectPressed = ignoreRelease(function() {
     // focus Effect Slot 3 in Effect Unit 1, or clear focus if it is currently focused
-    if (PioneerDDJ400.selectedFxSlot == 3) {
+    if (PioneerDDJ400.selectedFxSlot === 3) {
         PioneerDDJ400.selectedFxSlot = 0;
     } else {
         PioneerDDJ400.selectedFxSlot = 3;
     }
 });
 
-PioneerDDJ400.beatFxSelectShiftPressed = function(_channel, _control, value) {
+PioneerDDJ400.beatFxSelectShiftPressed = function(_channel, _control, _value) {
     //engine.setValue(PioneerDDJ400.selectedFxGroup, "prev_effect", value);
 };
 
@@ -548,7 +548,7 @@ PioneerDDJ400.beatFxLeftPressed = ignoreRelease(function() {
 
 PioneerDDJ400.beatFxRightPressed = ignoreRelease(function() {
     // focus Effect Slot 2 in Effect Unit 1, or clear focus if it is currently focused
-    if (PioneerDDJ400.selectedFxSlot == 2) {
+    if (PioneerDDJ400.selectedFxSlot === 2) {
         PioneerDDJ400.selectedFxSlot = 0;
     } else {
         PioneerDDJ400.selectedFxSlot = 2;
@@ -623,9 +623,10 @@ PioneerDDJ400.vuMeterUpdate = function(value, group) {
 //
 
 // blink pad when sample playback starts
-PioneerDDJ400.samplerPlayOutputCallbackFunction = function (value, group, control) {
+PioneerDDJ400.samplerPlayOutputCallbackFunction = function(value, group, _control) {
     if (value === 1) {
-        var curPad = group.match(/^\[Sampler(\d+)\]$/)[1];   // for some reason, using script.samplerRegEx here results in an error under Linux
+        // for some reason, using script.samplerRegEx here results in an error under Linux
+        var curPad = group.match(/^\[Sampler(\d+)\]$/)[1];
         startSamplerBlink((0x97 + (curPad > 8 ? 2 : 0)), (0x30 + ((curPad > 8 ? curPad-8 : curPad)-1)), group);
     }
 };
@@ -640,16 +641,16 @@ PioneerDDJ400.samplerModePadPressed = ignoreRelease(function(_channel, control, 
 });
 
 
-PioneerDDJ400.samplerModeShiftPadPressed = function(_channel, _control, value, _status, group){
-    if(value == 0) {
+PioneerDDJ400.samplerModeShiftPadPressed = function(_channel, _control, value, _status, group) {
+    if (value === 0) {
         return; // ignore release
     }
     var playing = engine.getValue(group, 'play');
     // when playing stop and return to start/cue point
-    if(playing > 0){
+    if (playing > 0) {
         engine.setValue(group, 'cue_gotoandstop', 1);
     }
-    else{ // load selected track
+    else { // load selected track
         // engine.setValue(group, 'LoadSelectedTrack', 1);
     }
 };
@@ -683,14 +684,14 @@ function startSamplerBlink(channel, control, group) {
     });
 }
 
-function stopSamplerBlink(channel, control) {
+stopSamplerBlink = function(channel, control) {
     TimersPioneerDDJ400[channel] = TimersPioneerDDJ400[channel] || {};
 
     if (TimersPioneerDDJ400[channel][control] !== undefined) {
         engine.stopTimer(TimersPioneerDDJ400[channel][control]);
         TimersPioneerDDJ400[channel][control] = undefined;
     }
-}
+};
 
 PioneerDDJ400.shutdown = function() {
     // reset vumeter
@@ -699,7 +700,7 @@ PioneerDDJ400.shutdown = function() {
 
     // housekeeping
     // turn off all Sampler LEDs
-    for (i = 0; i <= 7; ++i) {
+    for (var i = 0; i <= 7; ++i) {
         midi.sendShortMsg(0x97, 0x30 + i, 0x00);    // Deck 1 pads
         midi.sendShortMsg(0x98, 0x30 + i, 0x00);    // Deck 1 pads with SHIFT
         midi.sendShortMsg(0x99, 0x30 + i, 0x00);    // Deck 2 pads
