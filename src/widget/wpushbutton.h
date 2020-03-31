@@ -88,13 +88,11 @@ class WPushButton : public WWidget {
     void paintEvent(QPaintEvent* e) override;
     void mousePressEvent(QMouseEvent* e) override;
     void mouseReleaseEvent(QMouseEvent* e) override;
-    void enterEvent(QEvent *event) override;
-    void leaveEvent(QEvent *event) override;
     void focusOutEvent(QFocusEvent* e) override;
     void fillDebugTooltip(QStringList* debug) override;
 
   protected:
-    void restyleAndRepaint();
+    virtual void restyleAndRepaint();
 
     // Associates a pixmap of a given state of the button with the widget
     void setPixmap(int iState, bool bPressed, PixmapSource source,

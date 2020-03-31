@@ -290,7 +290,7 @@ WSearchLineEdit {
 #GuiToggleButton[displayValue="0"], #RecFeedback[displayValue="0"],
 #BroadcastButton[displayValue="0"], #SettingsButton[displayValue="0"],
 #DeckRow_5_LoopCuesTransport WPushButton[value="0"],
-#HotcueButton[displayValue="0"],
+#HotcueButton,
 #FxAssignButton[displayValue="0"], #FxFocusButton[displayValue="0"],
 #FxToggleButton[displayValue="0"], #FxParameterButton[displayValue="0"],
 #SplitCueButton[value="0"],

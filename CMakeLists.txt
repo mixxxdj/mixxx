@@ -685,6 +685,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/weffectparameterknobcomposed.cpp
   src/widget/weffectpushbutton.cpp
   src/widget/weffectselector.cpp
+  src/widget/whotcuebutton.cpp
   src/widget/wimagestore.cpp
   src/widget/wkey.cpp
   src/widget/wknob.cpp
@@ -1318,8 +1319,8 @@ target_link_libraries(mixxx-lib PUBLIC ${OggVorbis_LIBRARIES})
 
 # PortAudio
 find_package(PortAudio REQUIRED)
-target_include_directories(mixxx-lib SYSTEM PUBLIC ${PORTAUDIO_INCLUDE_DIRS})
-target_link_libraries(mixxx-lib PUBLIC ${PORTAUDIO_LIBRARIES})
+target_include_directories(mixxx-lib SYSTEM PUBLIC ${PortAudio_INCLUDE_DIRS})
+target_link_libraries(mixxx-lib PUBLIC ${PortAudio_LIBRARIES})
 
 # PortAudio Ring Buffer
 add_library(PortAudioRingBuffer STATIC EXCLUDE_FROM_ALL
