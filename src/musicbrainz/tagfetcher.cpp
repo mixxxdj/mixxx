@@ -25,8 +25,8 @@ void TagFetcher::startFetch(
     m_pTrack = pTrack;
 
     emit fetchProgress(tr("Fingerprinting track"));
-    const auto fingerprintTask = QtConcurrent::run([this, pTrack] {
-        return ChromaPrinter(this).getFingerprint(pTrack);
+    const auto fingerprintTask = QtConcurrent::run([pTrack] {
+        return ChromaPrinter().getFingerprint(pTrack);
     });
     m_fingerprintWatcher.setFuture(fingerprintTask);
     connect(
