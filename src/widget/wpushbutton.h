@@ -88,8 +88,6 @@ class WPushButton : public WWidget {
     void paintEvent(QPaintEvent* e) override;
     void mousePressEvent(QMouseEvent* e) override;
     void mouseReleaseEvent(QMouseEvent* e) override;
-    void enterEvent(QEvent *event) override;
-    void leaveEvent(QEvent *event) override;
     void focusOutEvent(QFocusEvent* e) override;
     void fillDebugTooltip(QStringList* debug) override;
 
