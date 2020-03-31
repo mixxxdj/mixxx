@@ -68,6 +68,12 @@ constexpr mixxx::RgbColor kTrackColorAqua(0x16C0F8);
 constexpr mixxx::RgbColor kTrackColorBlue(0x0150F8);
 constexpr mixxx::RgbColor kTrackColorPurple(0x9808F8);
 
+struct memory_cue_t {
+    double position;
+    QString comment;
+    mixxx::RgbColor::optional_t color;
+};
+
 bool createLibraryTable(QSqlDatabase& database, const QString& tableName) {
     qDebug() << "Creating Rekordbox library table: " << tableName;
 
@@ -784,7 +790,7 @@ void clearDeviceTables(QSqlDatabase& database, TreeItem* child) {
     transaction.commit();
 }
 
-void setHotCue(TrackPointer track, double position, int id, QString label, int /*colorCode*/, int /*colorRed*/, int /*colorGreen*/, int /*colorBlue*/) {
+void setHotCue(TrackPointer track, double position, int id, QString label, mixxx::RgbColor::optional_t color) {
     CuePointer pCue;
     bool hotCueFound = false;
 
@@ -803,57 +809,10 @@ void setHotCue(TrackPointer track, double position, int id, QString label, int /
     pCue->setType(mixxx::CueType::HotCue);
     pCue->setStartPosition(position);
     pCue->setHotCue(id);
-
-    if (!label.isNull()) {
-        pCue->setLabel(label);
+    pCue->setLabel(label);
+    if (color) {
+        pCue->setColor(*color);
     }
-
-    /*
-    TODO(ehendrikd):
-    Update setting hotcue colors once proposed PR is merged
-    allowing custom hotcue colors/palette
-    See:
-       https://github.com/mixxxdj/mixxx/pull/2119
-       https://github.com/mixxxdj/mixxx/pull/2345
-
-    // Map 17 possible Rekordbox hotcue colors to closest Mixxx hotcue colors
-    switch (colorCode) {
-    case 38:
-    case 42:
-        pCue->setColor(Color::kPredefinedColorsSet.red);
-        break;
-    case 0:
-    case 14:
-    case 18:
-    case 22:
-    case 26:
-        pCue->setColor(Color::kPredefinedColorsSet.green);
-        break;
-    case 30:
-    case 32:
-        pCue->setColor(Color::kPredefinedColorsSet.yellow);
-        break;
-    case 1:
-    case 5:
-    case 62:
-        pCue->setColor(Color::kPredefinedColorsSet.blue);
-        break;
-    case 9:
-        pCue->setColor(Color::kPredefinedColorsSet.cyan);
-        break;
-    case 56:
-    case 60:
-        pCue->setColor(Color::kPredefinedColorsSet.magenta);
-        break;
-    case 45:
-    case 49:
-        pCue->setColor(Color::kPredefinedColorsSet.pink);
-        break;
-    default:
-        pCue->setColor(Color::kPredefinedColorsSet.noColor);
-        break;
-    }
-*/
 }
 
 void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool ignoreBeatsAndLegacyCues, QString anlzPath) {
@@ -871,8 +830,8 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
     double sampleRateKhz = sampleRate / 1000.0;
     double samples = sampleRateKhz * mixxx::kEngineChannelCount;
 
-    double cueLoadPosition = kLongestPosition;
-    QString cueLoadComment;
+    QList<memory_cue_t> memoryCues;
+    int lastHotCueIndex = 0;
     double cueLoopStartPosition = kLongestPosition;
     double cueLoopEndPosition = kLongestPosition;
 
@@ -922,10 +881,10 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                 case rekordbox_anlz_t::CUE_LIST_TYPE_MEMORY_CUES: {
                     switch ((*cueEntry)->type()) {
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_MEMORY_CUE: {
-                        // As Mixxx can only have 1 saved cue point, use the first occurance of a memory cue relative to the start of the track
-                        if (position < cueLoadPosition) {
-                            cueLoadPosition = position;
-                        }
+                        memory_cue_t memoryCue;
+                        memoryCue.position = position;
+                        memoryCue.color = mixxx::RgbColor::nullopt();
+                        memoryCues << memoryCue;
                     } break;
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_LOOP: {
                         // As Mixxx can only have 1 saved loop, use the first occurance of a memory loop relative to the start of the track
@@ -942,7 +901,11 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                     }
                 } break;
                 case rekordbox_anlz_t::CUE_LIST_TYPE_HOT_CUES: {
-                    setHotCue(track, position, static_cast<int>((*cueEntry)->hot_cue() - 1), QString(), -1, -1, -1, -1);
+                    int hotCueIndex = static_cast<int>((*cueEntry)->hot_cue() - 1);
+                    if (hotCueIndex > lastHotCueIndex) {
+                        lastHotCueIndex = hotCueIndex;
+                    }
+                    setHotCue(track, position, hotCueIndex, QString(), mixxx::RgbColor::nullopt());
                 } break;
                 }
             }
@@ -962,11 +925,11 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                 case rekordbox_anlz_t::CUE_LIST_TYPE_MEMORY_CUES: {
                     switch ((*cueExtendedEntry)->type()) {
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_MEMORY_CUE: {
-                        // As Mixxx can only have 1 saved cue point, use the first occurance of a memory cue relative to the start of the track
-                        if (position < cueLoadPosition) {
-                            cueLoadPosition = position;
-                            cueLoadComment = toUnicode((*cueExtendedEntry)->comment());
-                        }
+                        memory_cue_t memoryCue;
+                        memoryCue.position = position;
+                        memoryCue.comment = toUnicode((*cueExtendedEntry)->comment());
+                        memoryCue.color = mixxx::RgbColor(qRgb(static_cast<int>((*cueExtendedEntry)->color_red()), static_cast<int>((*cueExtendedEntry)->color_green()), static_cast<int>((*cueExtendedEntry)->color_blue())));
+                        memoryCues << memoryCue;
                     } break;
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_LOOP: {
                         // As Mixxx can only have 1 saved loop, use the first occurance of a memory loop relative to the start of the track
@@ -983,7 +946,11 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                     }
                 } break;
                 case rekordbox_anlz_t::CUE_LIST_TYPE_HOT_CUES: {
-                    setHotCue(track, position, static_cast<int>((*cueExtendedEntry)->hot_cue() - 1), toUnicode((*cueExtendedEntry)->comment()), static_cast<int>((*cueExtendedEntry)->color_code()), static_cast<int>((*cueExtendedEntry)->color_red()), static_cast<int>((*cueExtendedEntry)->color_green()), static_cast<int>((*cueExtendedEntry)->color_blue()));
+                    int hotCueIndex = static_cast<int>((*cueExtendedEntry)->hot_cue() - 1);
+                    if (hotCueIndex > lastHotCueIndex) {
+                        lastHotCueIndex = hotCueIndex;
+                    }
+                    setHotCue(track, position, hotCueIndex, toUnicode((*cueExtendedEntry)->comment()), mixxx::RgbColor(qRgb(static_cast<int>((*cueExtendedEntry)->color_red()), static_cast<int>((*cueExtendedEntry)->color_green()), static_cast<int>((*cueExtendedEntry)->color_blue()))));
                 } break;
                 }
             }
@@ -993,13 +960,24 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
         }
     }
 
-    if (cueLoadPosition < kLongestPosition) {
-        track->setCuePoint(CuePosition(cueLoadPosition));
+    if (memoryCues.size() > 0) {
+        std::sort(memoryCues.begin(), memoryCues.end(), [](const memory_cue_t& a, const memory_cue_t& b) -> bool {
+            return a.position < b.position;
+        });
+
+        // Set first chronological memory cue as Mixxx MainCue
+        memory_cue_t firstCue = memoryCues[0];
+        track->setCuePoint(CuePosition(firstCue.position));
         CuePointer pLoadCue = track->findCueByType(mixxx::CueType::MainCue);
-        if (!cueLoadComment.isNull()) {
-            pLoadCue->setLabel(cueLoadComment);
+        pLoadCue->setLabel(firstCue.comment);
+
+        // Add remaining memory cues as hot cues (after actual found hotcues) as Mixxx can only have 1 cue
+        for (int memoryCueIndex = 1; memoryCueIndex < memoryCues.size(); memoryCueIndex++) {
+            memory_cue_t memoryCue = memoryCues[memoryCueIndex];
+            setHotCue(track, memoryCue.position, lastHotCueIndex + memoryCueIndex, memoryCue.comment, memoryCue.color);
         }
     }
+
     if (cueLoopStartPosition < kLongestPosition) {
         CuePointer pCue(track->createAndAddCue());
         pCue->setStartPosition(cueLoopStartPosition);

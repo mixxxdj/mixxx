@@ -249,6 +249,10 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
 
 void BpmControl::slotControlBeatSyncPhase(double v) {
     if (!v) return;
+
+    if (isSynchronized()) {
+        m_dUserOffset.setValue(0.0);
+    }
     getEngineBuffer()->requestSyncPhase();
 }
 
@@ -268,7 +272,7 @@ void BpmControl::slotControlBeatSync(double v) {
     // this is used from controller scripts, where the latching behaviour of
     // the sync_enable CO cannot be used
     if (m_pPlayButton->toBool() && m_pQuantize->toBool()) {
-        getEngineBuffer()->requestSyncPhase();
+        slotControlBeatSyncPhase(v);
     }
 }
 

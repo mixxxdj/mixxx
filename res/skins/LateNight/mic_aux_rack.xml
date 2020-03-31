@@ -22,12 +22,18 @@
           <Template src="skin:mic_unit.xml">
             <SetVariable name="micnum">4</SetVariable>
           </Template>
+          <Template src="skin:mic_unit_unconfigured.xml">
+            <SetVariable name="micnum">4</SetVariable>
+          </Template>
             <WidgetGroup>
               <SizePolicy>min,min</SizePolicy>
               <MinimumSize>3,0</MinimumSize>
               <MaximumSize>5,</MaximumSize>
             </WidgetGroup>
           <Template src="skin:mic_unit.xml">
+            <SetVariable name="micnum">3</SetVariable>
+          </Template>
+          <Template src="skin:mic_unit_unconfigured.xml">
             <SetVariable name="micnum">3</SetVariable>
           </Template>
             <WidgetGroup>
@@ -38,12 +44,18 @@
           <Template src="skin:mic_unit.xml">
             <SetVariable name="micnum">2</SetVariable>
           </Template>
+          <Template src="skin:mic_unit_unconfigured.xml">
+            <SetVariable name="micnum">2</SetVariable>
+          </Template>
             <WidgetGroup>
               <SizePolicy>min,min</SizePolicy>
               <MinimumSize>3,0</MinimumSize>
               <MaximumSize>5,</MaximumSize>
             </WidgetGroup>
           <Template src="skin:mic_unit.xml">
+            <SetVariable name="mic1hack">1</SetVariable>
+          </Template>
+          <Template src="skin:mic_unit_unconfigured.xml">
             <SetVariable name="mic1hack">1</SetVariable>
           </Template>
 
@@ -79,7 +91,7 @@
           </WidgetGroup><!-- MicDuckingContainer -->
         </Children>
       </WidgetGroup><!-- MicRack -->
-      
+
       <WidgetGroup>
         <ObjectName>AuxRack</ObjectName>
         <Layout>horizontal</Layout>
@@ -97,12 +109,18 @@
           <Template src="skin:aux_unit.xml">
             <SetVariable name="auxnum">4</SetVariable>
           </Template>
+          <Template src="skin:aux_unit_unconfigured.xml">
+            <SetVariable name="auxnum">4</SetVariable>
+          </Template>
             <WidgetGroup>
               <SizePolicy>min,min</SizePolicy>
               <MinimumSize>3,0</MinimumSize>
               <MaximumSize>5,</MaximumSize>
             </WidgetGroup>
           <Template src="skin:aux_unit.xml">
+            <SetVariable name="auxnum">3</SetVariable>
+          </Template>
+          <Template src="skin:aux_unit_unconfigured.xml">
             <SetVariable name="auxnum">3</SetVariable>
           </Template>
             <WidgetGroup>
@@ -113,12 +131,18 @@
           <Template src="skin:aux_unit.xml">
             <SetVariable name="auxnum">2</SetVariable>
           </Template>
+          <Template src="skin:aux_unit_unconfigured.xml">
+            <SetVariable name="auxnum">2</SetVariable>
+          </Template>
             <WidgetGroup>
               <SizePolicy>min,min</SizePolicy>
               <MinimumSize>3,0</MinimumSize>
               <MaximumSize>5,</MaximumSize>
             </WidgetGroup>
           <Template src="skin:aux_unit.xml">
+            <SetVariable name="auxnum">1</SetVariable>
+          </Template>
+          <Template src="skin:aux_unit_unconfigured.xml">
             <SetVariable name="auxnum">1</SetVariable>
           </Template>
         </Children>

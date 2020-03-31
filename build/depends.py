@@ -768,6 +768,7 @@ class MixxxCore(Feature):
                    "src/preferences/configobject.cpp",
                    "src/preferences/dialog/dlgprefautodj.cpp",
                    "src/preferences/dialog/dlgprefdeck.cpp",
+                   "src/preferences/dialog/dlgprefcolors.cpp",
                    "src/preferences/dialog/dlgprefcrossfader.cpp",
                    "src/preferences/dialog/dlgprefeffects.cpp",
                    "src/preferences/dialog/dlgprefeq.cpp",
@@ -790,6 +791,9 @@ class MixxxCore(Feature):
                    "src/preferences/effectsettingsmodel.cpp",
                    "src/preferences/broadcastprofile.cpp",
                    "src/preferences/upgrade.cpp",
+                   "src/preferences/colorpaletteeditor.cpp",
+                   "src/preferences/colorpaletteeditormodel.cpp",
+                   "src/preferences/colorpalettesettings.cpp",
                    "src/preferences/dlgpreferencepage.cpp",
 
                    "src/effects/effectmanifest.cpp",
@@ -925,7 +929,8 @@ class MixxxCore(Feature):
                    "src/controllers/midi/midioutputhandler.cpp",
                    "src/controllers/softtakeover.cpp",
                    "src/controllers/keyboard/keyboardeventfilter.cpp",
-                   "src/controllers/colorjsproxy.cpp",
+                   "src/controllers/colormapper.cpp",
+                   "src/controllers/colormapperjsproxy.cpp",
 
                    "src/main.cpp",
                    "src/mixxx.cpp",
@@ -958,6 +963,7 @@ class MixxxCore(Feature):
                    "src/widget/wvumeter.cpp",
                    "src/widget/wpushbutton.cpp",
                    "src/widget/weffectpushbutton.cpp",
+                   "src/widget/whotcuebutton.cpp",
                    "src/widget/wslidercomposed.cpp",
                    "src/widget/wstatuslight.cpp",
                    "src/widget/woverview.cpp",
@@ -1283,6 +1289,8 @@ class MixxxCore(Feature):
                    "src/util/cache.cpp",
                    "src/util/console.cpp",
                    "src/util/color/color.cpp",
+                   "src/util/color/colorpalette.cpp",
+                   "src/util/color/predefinedcolorpalettes.cpp",
                    "src/util/db/dbconnection.cpp",
                    "src/util/db/dbconnectionpool.cpp",
                    "src/util/db/dbconnectionpooler.cpp",
@@ -1309,8 +1317,7 @@ class MixxxCore(Feature):
                    "src/util/desktophelper.cpp",
                    "src/util/widgetrendertimer.cpp",
                    "src/util/workerthread.cpp",
-                   "src/util/workerthreadscheduler.cpp",
-                   "src/util/color/predefinedcolor.cpp"
+                   "src/util/workerthreadscheduler.cpp"
                    ]
 
         proto_args = {
@@ -1345,6 +1352,7 @@ class MixxxCore(Feature):
             'src/preferences/dialog/dlgprefautodjdlg.ui',
             'src/preferences/dialog/dlgprefbeatsdlg.ui',
             'src/preferences/dialog/dlgprefdeckdlg.ui',
+            'src/preferences/dialog/dlgprefcolorsdlg.ui',
             'src/preferences/dialog/dlgprefcrossfaderdlg.ui',
             'src/preferences/dialog/dlgpreflv2dlg.ui',
             'src/preferences/dialog/dlgprefeffectsdlg.ui',

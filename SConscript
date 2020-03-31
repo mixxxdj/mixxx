@@ -287,7 +287,7 @@ dotdesktop_files = Glob('#res/linux/mixxx.desktop')
 dotappstream_files = Glob('#res/linux/mixxx.appdata.xml')
 
 #udev rule file for USB HID and Bulk controllers
-hidudev_files = Glob('#res/linux/mixxx.usb.rules')
+hidudev_files = Glob('#res/linux/mixxx-usb-uaccess.rules')
 
 #Icon file for menu entry
 icon_files = Glob('#res/images/mixxx_icon.svg')
@@ -1009,7 +1009,7 @@ def BuildUbuntuPackage(target, source, env):
         print("* Copying Debian build directory from build/debian to debian (cwd: %s)" % os.getcwd())
         print()
         os.system('cp -r build/debian .')
-        os.system('cp res/linux/mixxx.usb.rules ./debian/mixxx.mixxx-usb.udev')
+        os.system('cp res/linux/mixxx-usb-uaccess.rules ./debian/mixxx.mixxx-usb.udev')
 
         scons_flags = ' '.join([
                 'optimize=portable',

@@ -82,7 +82,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotLockBpm();
     void slotUnlockBpm();
     void slotScaleBpm(int);
-    void slotColorPicked(PredefinedColorPointer pColor);
+    void slotColorPicked(mixxx::RgbColor::optional_t color);
 
     void slotClearBeats();
     void slotClearPlayCount();

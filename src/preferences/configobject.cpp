@@ -1,14 +1,15 @@
 #include "preferences/configobject.h"
 
-#include <QIODevice>
-#include <QTextStream>
 #include <QApplication>
 #include <QDir>
+#include <QIODevice>
+#include <QTextStream>
 #include <QtDebug>
 
-#include "widget/wwidget.h"
 #include "util/cmdlineargs.h"
+#include "util/color/rgbcolor.h"
 #include "util/xml.h"
+#include "widget/wwidget.h"
 
 // TODO(rryan): Move to a utility file.
 namespace {
@@ -215,6 +216,28 @@ template <class ValueType> void ConfigObject<ValueType>::save() {
     }
 }
 
+template<class ValueType>
+QSet<QString> ConfigObject<ValueType>::getGroups() {
+    QWriteLocker lock(&m_valuesLock);
+    QSet<QString> groups;
+    for (const ConfigKey& key : m_values.uniqueKeys()) {
+        groups.insert(key.group);
+    }
+    return groups;
+}
+
+template<class ValueType>
+QList<ConfigKey> ConfigObject<ValueType>::getKeysWithGroup(QString group) const {
+    QWriteLocker lock(&m_valuesLock);
+    QList<ConfigKey> filteredList;
+    for (const ConfigKey& key : m_values.uniqueKeys()) {
+        if (key.group == group) {
+            filteredList.append(key);
+        }
+    }
+    return filteredList;
+}
+
 template <class ValueType> ConfigObject<ValueType>::ConfigObject(const QDomNode& node) {
     if (!node.isNull() && node.isElement()) {
         QDomNode ctrl = node.firstChild();
@@ -270,6 +293,24 @@ void ConfigObject<ConfigValue>::setValue(
     set(key, ConfigValue(QString::number(value)));
 }
 
+template<>
+template<>
+void ConfigObject<ConfigValue>::setValue(
+        const ConfigKey& key, const mixxx::RgbColor::optional_t& value) {
+    if (!value) {
+        remove(key);
+        return;
+    }
+    set(key, ConfigValue(mixxx::RgbColor::toQString(value)));
+}
+
+template<>
+template<>
+void ConfigObject<ConfigValue>::setValue(
+        const ConfigKey& key, const mixxx::RgbColor& value) {
+    set(key, ConfigValue(mixxx::RgbColor::toQString(value)));
+}
+
 template <> template <>
 bool ConfigObject<ConfigValue>::getValue(
         const ConfigKey& key, const bool& default_value) const {
@@ -304,6 +345,40 @@ double ConfigObject<ConfigValue>::getValue(
     bool ok;
     auto result = value.value.toDouble(&ok);
     return ok ? result : default_value;
+}
+
+template<>
+template<>
+mixxx::RgbColor::optional_t ConfigObject<ConfigValue>::getValue(
+        const ConfigKey& key, const mixxx::RgbColor::optional_t& default_value) const {
+    const ConfigValue value = get(key);
+    if (value.isNull()) {
+        return default_value;
+    }
+    return mixxx::RgbColor::fromQString(value.value, default_value);
+}
+
+template<>
+template<>
+mixxx::RgbColor::optional_t ConfigObject<ConfigValue>::getValue(const ConfigKey& key) const {
+    return getValue(key, mixxx::RgbColor::optional_t(std::nullopt));
+}
+
+template<>
+template<>
+mixxx::RgbColor ConfigObject<ConfigValue>::getValue(
+        const ConfigKey& key, const mixxx::RgbColor& default_value) const {
+    const mixxx::RgbColor::optional_t value = getValue(key, mixxx::RgbColor::optional_t(std::nullopt));
+    if (!value) {
+        return default_value;
+    }
+    return *value;
+}
+
+template<>
+template<>
+mixxx::RgbColor ConfigObject<ConfigValue>::getValue(const ConfigKey& key) const {
+    return getValue(key, mixxx::RgbColor(0));
 }
 
 // For string literal default

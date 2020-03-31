@@ -23,6 +23,7 @@
 #include <QString>
 
 #include "preferences/usersettings.h"
+#include "util/color/color.h"
 #include "widget/wbasewidget.h"
 
 class ControlProxy;

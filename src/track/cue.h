@@ -7,7 +7,7 @@
 #include "track/cueinfo.h"
 #include "track/trackid.h"
 #include "util/audiosignal.h"
-#include "util/color/predefinedcolor.h"
+#include "util/color/rgbcolor.h"
 #include "util/memory.h"
 
 class CuePosition;
@@ -50,8 +50,8 @@ class Cue : public QObject {
     void setLabel(
             QString label = QString());
 
-    PredefinedColorPointer getColor() const;
-    void setColor(PredefinedColorPointer color);
+    mixxx::RgbColor getColor() const;
+    void setColor(mixxx::RgbColor color);
 
     double getEndPosition() const;
 
@@ -70,7 +70,7 @@ class Cue : public QObject {
             double length,
             int hotCue,
             QString label,
-            PredefinedColorPointer color);
+            mixxx::RgbColor color);
 
     void setDirty(bool dirty);
 
@@ -87,7 +87,7 @@ class Cue : public QObject {
     double m_sampleEndPosition;
     int m_iHotCue;
     QString m_label;
-    PredefinedColorPointer m_color;
+    mixxx::RgbColor m_color;
 
     friend class Track;
     friend class CueDAO;

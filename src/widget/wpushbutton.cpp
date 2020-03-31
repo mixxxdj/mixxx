@@ -369,18 +369,6 @@ void WPushButton::paintEvent(QPaintEvent* e) {
     }
 }
 
-void WPushButton::enterEvent(QEvent *event) {
-    m_bHovered = true;
-    restyleAndRepaint();
-    return QWidget::enterEvent(event);
-}
-
-void WPushButton::leaveEvent(QEvent *event) {
-    m_bHovered = false;
-    restyleAndRepaint();
-    return QWidget::leaveEvent(event);
-}
-
 void WPushButton::mousePressEvent(QMouseEvent * e) {
     const bool leftClick = e->button() == Qt::LeftButton;
     const bool rightClick = e->button() == Qt::RightButton;
@@ -444,6 +432,14 @@ bool WPushButton::event(QEvent* e) {
             m_bPressed = false;
             restyleAndRepaint();
         }
+    } else if (e->type() == QEvent::ToolTip) {
+        updateTooltip();
+    } else if (e->type() == QEvent::Enter) {
+        m_bHovered = true;
+        restyleAndRepaint();
+    } else if (e->type() == QEvent::Leave) {
+        m_bHovered = false;
+        restyleAndRepaint();
     }
     return QWidget::event(e);
 }
