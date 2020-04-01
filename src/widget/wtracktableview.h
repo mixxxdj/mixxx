@@ -12,6 +12,7 @@
 #include "util/duration.h"
 #include "widget/wcolorpickeraction.h"
 #include "widget/wlibrarytableview.h"
+#include "widget/wtrackmenu.h"
 
 class ControlProxy;
 class DlgTagFetcher;
@@ -58,7 +59,6 @@ class WTrackTableView : public WLibraryTableView {
   private slots:
     void slotRemove();
     void slotHide();
-    void slotOpenInFileBrowser();
     void slotShowTrackInfo();
     void slotShowDlgTagFetcher();
     void slotNextTrackInfo();
@@ -69,10 +69,10 @@ class WTrackTableView : public WLibraryTableView {
     void slotImportTrackMetadataFromFileTags();
     void slotExportTrackMetadataIntoFileTags();
     void slotUpdateExternalTrackCollection(ExternalTrackCollection*);
-    void slotPopulatePlaylistMenu();
+    //void slotPopulatePlaylistMenu();
     void addSelectionToPlaylist(int iPlaylistId);
     void updateSelectionCrates(QWidget* qc);
-    void slotPopulateCrateMenu();
+    //void slotPopulateCrateMenu();
     void addSelectionToNewCrate();
     void loadSelectionToGroup(QString group, bool play = false);
     void doSortByColumn(int headerSection, Qt::SortOrder sortOrder);
@@ -142,76 +142,78 @@ class WTrackTableView : public WLibraryTableView {
     ControlProxy* m_pNumDecks;
     ControlProxy* m_pNumPreviewDecks;
 
-    // Context menu machinery
-    QMenu *m_pMenu;
-
-    QMenu *m_pLoadToMenu;
-    QMenu *m_pDeckMenu;
-    QMenu *m_pSamplerMenu;
-
-    QMenu *m_pPlaylistMenu;
-    QMenu *m_pCrateMenu;
-    QMenu *m_pMetadataMenu;
-    QMenu *m_pMetadataUpdateExternalCollectionsMenu;
-    QMenu *m_pClearMetadataMenu;
-    QMenu *m_pBPMMenu;
-    QMenu *m_pColorMenu;
-
-
-    WCoverArtMenu* m_pCoverMenu;
-
-    // Reload Track Metadata Action:
-    QAction *m_pImportMetadataFromFileAct;
-    QAction *m_pImportMetadataFromMusicBrainzAct;
-
-    // Save Track Metadata Action:
-    QAction *m_pExportMetadataAct;
-
-    // Load Track to PreviewDeck
-    QAction* m_pAddToPreviewDeck;
-
-    // Send to Auto-DJ Action
-    QAction *m_pAutoDJBottomAct;
-    QAction *m_pAutoDJTopAct;
-    QAction *m_pAutoDJReplaceAct;
-
-    // Remove from table
-    QAction *m_pRemoveAct;
-    QAction *m_pRemovePlaylistAct;
-    QAction *m_pRemoveCrateAct;
-    QAction *m_pHideAct;
-    QAction *m_pUnhideAct;
-    QAction *m_pPurgeAct;
-
-    // Show track-editor action
-    QAction *m_pPropertiesAct;
-    QAction *m_pFileBrowserAct;
-
-    // BPM feature
-    QAction *m_pBpmLockAction;
-    QAction *m_pBpmUnlockAction;
-    QAction *m_pBpmDoubleAction;
-    QAction *m_pBpmHalveAction;
-    QAction *m_pBpmTwoThirdsAction;
-    QAction *m_pBpmThreeFourthsAction;
-    QAction *m_pBpmFourThirdsAction;
-    QAction *m_pBpmThreeHalvesAction;
-
-    // Track color
-    WColorPickerAction *m_pColorPickerAction;
-
-    // Clear track metadata actions
-    QAction* m_pClearBeatsAction;
-    QAction* m_pClearPlayCountAction;
-    QAction* m_pClearMainCueAction;
-    QAction* m_pClearHotCuesAction;
-    QAction* m_pClearIntroCueAction;
-    QAction* m_pClearOutroCueAction;
-    QAction* m_pClearLoopAction;
-    QAction* m_pClearWaveformAction;
-    QAction* m_pClearKeyAction;
-    QAction* m_pClearReplayGainAction;
-    QAction* m_pClearAllMetadataAction;
+    // Context menu container
+    WTrackMenu *m_pMenu;
+//    // Context menu machinery
+//    WTrackMenu *m_pMenu;
+//
+//    QMenu *m_pLoadToMenu;
+//    QMenu *m_pDeckMenu;
+//    QMenu *m_pSamplerMenu;
+//
+//    QMenu *m_pPlaylistMenu;
+//    QMenu *m_pCrateMenu;
+//    QMenu *m_pMetadataMenu;
+//    QMenu *m_pMetadataUpdateExternalCollectionsMenu;
+//    QMenu *m_pClearMetadataMenu;
+//    QMenu *m_pBPMMenu;
+//    QMenu *m_pColorMenu;
+//
+//
+//    WCoverArtMenu* m_pCoverMenu;
+//
+//    // Reload Track Metadata Action:
+//    QAction *m_pImportMetadataFromFileAct;
+//    QAction *m_pImportMetadataFromMusicBrainzAct;
+//
+//    // Save Track Metadata Action:
+//    QAction *m_pExportMetadataAct;
+//
+//    // Load Track to PreviewDeck
+//    QAction* m_pAddToPreviewDeck;
+//
+//    // Send to Auto-DJ Action
+//    QAction *m_pAutoDJBottomAct;
+//    QAction *m_pAutoDJTopAct;
+//    QAction *m_pAutoDJReplaceAct;
+//
+//    // Remove from table
+//    QAction *m_pRemoveAct;
+//    QAction *m_pRemovePlaylistAct;
+//    QAction *m_pRemoveCrateAct;
+//    QAction *m_pHideAct;
+//    QAction *m_pUnhideAct;
+//    QAction *m_pPurgeAct;
+//
+//    // Show track-editor action
+//    QAction *m_pPropertiesAct;
+//    QAction *m_pFileBrowserAct;
+//
+//    // BPM feature
+//    QAction *m_pBpmLockAction;
+//    QAction *m_pBpmUnlockAction;
+//    QAction *m_pBpmDoubleAction;
+//    QAction *m_pBpmHalveAction;
+//    QAction *m_pBpmTwoThirdsAction;
+//    QAction *m_pBpmThreeFourthsAction;
+//    QAction *m_pBpmFourThirdsAction;
+//    QAction *m_pBpmThreeHalvesAction;
+//
+//    // Track color
+//    WColorPickerAction *m_pColorPickerAction;
+//
+//    // Clear track metadata actions
+//    QAction* m_pClearBeatsAction;
+//    QAction* m_pClearPlayCountAction;
+//    QAction* m_pClearMainCueAction;
+//    QAction* m_pClearHotCuesAction;
+//    QAction* m_pClearIntroCueAction;
+//    QAction* m_pClearOutroCueAction;
+//    QAction* m_pClearLoopAction;
+//    QAction* m_pClearWaveformAction;
+//    QAction* m_pClearKeyAction;
+//    QAction* m_pClearReplayGainAction;
+//    QAction* m_pClearAllMetadataAction;
 
     struct UpdateExternalTrackCollection {
         QPointer<ExternalTrackCollection> externalTrackCollection;

@@ -1018,6 +1018,7 @@ class MixxxCore(Feature):
                    "src/widget/wlibrarytableview.cpp",
                    "src/widget/wanalysislibrarytableview.cpp",
                    "src/widget/wlibrarytextbrowser.cpp",
+                   "src/widget/wtrackmenu.cpp",
 
                    "src/database/mixxxdb.cpp",
                    "src/database/schemamanager.cpp",
