@@ -121,7 +121,7 @@ void JsonWebTask::onFinished(
             << response.replyUrl
             << response.statusCode
             << response.content;
-    deleteAfterFinished();
+    deleteLater();
 }
 
 void JsonWebTask::onFinishedCustom(
@@ -131,7 +131,7 @@ void JsonWebTask::onFinishedCustom(
             << response.replyUrl
             << response.statusCode
             << response.content;
-    deleteAfterFinished();
+    deleteLater();
 }
 
 QNetworkReply* JsonWebTask::sendNetworkRequest(

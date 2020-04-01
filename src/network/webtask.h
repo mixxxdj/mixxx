@@ -116,10 +116,6 @@ class WebTask : public QObject {
     // Cancel a pending request from the event loop thread.
     QUrl abort();
 
-    // Disconnect from all signals after receiving a reply
-    // and mark the task for deletion.
-    void deleteAfterFinished();
-
   public slots:
     void slotStart(
             int timeoutMillis);

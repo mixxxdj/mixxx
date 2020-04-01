@@ -165,14 +165,6 @@ void WebTask::invokeAbort() {
     );
 }
 
-void WebTask::deleteAfterFinished() {
-    // Might be called from any thread so we must not
-    // access any member variables!
-    // Do not disconnect any connections, because otherwise
-    // the destroyed() signal is not received!
-    deleteLater();
-}
-
 void WebTask::slotStart(int timeoutMillis) {
     DEBUG_ASSERT(thread() == QThread::currentThread());
     DEBUG_ASSERT(m_status != Status::Pending);
