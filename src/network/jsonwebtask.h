@@ -46,14 +46,16 @@ struct JsonWebResponse : public WebResponse {
     QJsonDocument content;
 };
 
+QDebug operator<<(QDebug dbg, const JsonWebResponse& arg);
+
 class JsonWebTask : public WebTask {
     Q_OBJECT
 
   public:
     JsonWebTask(
             QNetworkAccessManager* networkAccessManager,
-            QUrl baseUrl,
-            JsonWebRequest request,
+            const QUrl& baseUrl,
+            JsonWebRequest&& request,
             QObject* parent = nullptr);
     ~JsonWebTask() override;
 
@@ -73,21 +75,22 @@ class JsonWebTask : public WebTask {
             const QJsonDocument& content);
 
     void emitFailed(
-            network::JsonWebResponse response);
+            network::JsonWebResponse&& response);
 
   private:
     // Handle the response and ensure that the task eventually
     // gets deleted. The default implementation discards the
     // response and deletes the task.
     virtual void onFinished(
-            JsonWebResponse response);
+            JsonWebResponse&& response);
     virtual void onFinishedCustom(
-            CustomWebResponse response);
+            CustomWebResponse&& response);
 
     bool doStart(
             QNetworkAccessManager* networkAccessManager,
             int parentTimeoutMillis) override;
-    void doAbort() override;
+    QUrl doAbort() override;
+    QUrl doTimeOut() override;
 
     // All member variables must only be accessed from
     // the event loop thread!!
