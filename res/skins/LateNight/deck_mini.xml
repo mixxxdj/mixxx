@@ -130,13 +130,13 @@
             <Size>37f,46f</Size>
             <Children>
               <Template src="skin:button_2state_right_display.xml">
-                <SetVariable name="TooltipId">play_cue_set</SetVariable>
+                <SetVariable name="TooltipId">play_cue_default</SetVariable>
                 <SetVariable name="ObjectName">PlayDeckMini</SetVariable>
                 <SetVariable name="Size">34f,34f</SetVariable>
                 <SetVariable name="btn_type"><Variable name="TopRegion_btn_type"/></SetVariable>
                 <SetVariable name="btn_format">square_big</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
-                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_set</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
               </Template>
               <PushButton>
                 <ObjectName>PlayIndicator</ObjectName>

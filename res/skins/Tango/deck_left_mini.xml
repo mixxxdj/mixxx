@@ -191,12 +191,12 @@ Variables:
               <!-- Play button -->
               <Template src="skin:button_2state_right_display.xml">
                 <SetVariable name="ObjectName">PlayCue</SetVariable>
-                <SetVariable name="TooltipId">play_cue_set</SetVariable>
+                <SetVariable name="TooltipId">play_cue_default</SetVariable>
                 <SetVariable name="Size">23f,40f</SetVariable>
                 <SetVariable name="state_0_icon">play_deck_mini.svg</SetVariable>
                 <SetVariable name="state_1_icon">pause_deck_mini.svg</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
-                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_set</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
               </Template>
               <!--	Play indicator -->
               <Template src="skin:button_2state.xml">

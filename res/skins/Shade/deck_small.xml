@@ -207,7 +207,7 @@
                     </Connection>
                   </PushButton>
                   <PushButton>
-                    <TooltipId>play_cue_set</TooltipId>
+                    <TooltipId>play_cue_default</TooltipId>
                     <Pos>5,8</Pos>
                     <NumberStates>2</NumberStates>
                     <State>
@@ -225,7 +225,7 @@
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey><Variable name="group"/>,cue_set</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
                       <ButtonState>RightButton</ButtonState>
                     </Connection>
                   </PushButton>

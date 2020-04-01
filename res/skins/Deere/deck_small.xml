@@ -173,13 +173,13 @@
                 <SizePolicy>f,me</SizePolicy>
                 <Children>
                   <Template src="skin:left_right_2state_button.xml">
-                    <SetVariable name="TooltipId">play_cue_set</SetVariable>
+                    <SetVariable name="TooltipId">play_cue_default</SetVariable>
                     <SetVariable name="ObjectName">PlayToggle</SetVariable>
                     <SetVariable name="MinimumSize">24,30</SetVariable>
                     <SetVariable name="MaximumSize">24,</SetVariable>
                     <SetVariable name="SizePolicy">f,me</SetVariable>
                     <SetVariable name="left_connection_control"><Variable name="group"/>,play</SetVariable>
-                    <SetVariable name="right_connection_control"><Variable name="group"/>,cue_set</SetVariable>
+                    <SetVariable name="right_connection_control"><Variable name="group"/>,cue_default</SetVariable>
                   </Template>
                   <Template src="skin:left_2state_button.xml">
                     <SetVariable name="MinimumSize">24,30</SetVariable>
