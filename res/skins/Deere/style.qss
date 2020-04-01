@@ -1544,6 +1544,10 @@ WPushButton[value="2"]:hover {
     border: 1px solid #0080BE;
 }
 
+#HotcueButton {
+  border: none;
+}
+
 #HotcueButton[light="true"] {
     color: #1f1e1e;
 }
