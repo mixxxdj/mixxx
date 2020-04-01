@@ -26,8 +26,8 @@
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>skin:/btn/btn_play_sampler_overdown.png</Pressed>
-							<Unpressed>skin:/btn/btn_play_sampler_over.png</Unpressed>
+							<Pressed>skin:/btn/btn_pause_sampler_overdown.png</Pressed>
+							<Unpressed>skin:/btn/btn_pause_sampler_over.png</Unpressed>
 						</State>
 						<Connection>
               <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
@@ -38,7 +38,7 @@
               <ButtonState>RightButton</ButtonState>
             </Connection>
             <Connection>
-              <ConfigKey>[Sampler<Variable name="samplernum"/>],play_indicator</ConfigKey>
+              <ConfigKey>[Sampler<Variable name="samplernum"/>],play</ConfigKey>
             </Connection>
 					</PushButton>
 
