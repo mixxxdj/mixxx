@@ -190,13 +190,30 @@
                 <Size>41f,38f</Size>
                 <Children>
                   <PushButton>
+                    <Pos>5,8</Pos>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>skin:/btn/btn_play_small_deck.png</Pressed>
+                      <Unpressed>skin:/btn/btn_play_small_deck.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>skin:/btn/btn_play_small_deck_over.png</Pressed>
+                      <Unpressed>skin:/btn/btn_play_small_deck_over.png</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
+                    </Connection>
+                  </PushButton>
+                  <PushButton>
                     <TooltipId>play_cue_set</TooltipId>
                     <Pos>5,8</Pos>
                     <NumberStates>2</NumberStates>
                     <State>
                       <Number>0</Number>
                       <Pressed>skin:/btn/btn_play_deck_small_down.png</Pressed>
-                      <Unpressed>skin:/btn/btn_play_deck_small.png</Unpressed>
+                      <Unpressed></Unpressed>
                     </State>
                     <State>
                       <Number>1</Number>
@@ -210,9 +227,6 @@
                     <Connection>
                       <ConfigKey><Variable name="group"/>,cue_set</ConfigKey>
                       <ButtonState>RightButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
                     </Connection>
                   </PushButton>
                 </Children>

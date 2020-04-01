@@ -585,7 +585,7 @@ WEffectSelector:open {
 }
 
 #RateControls WPushButton, #SyncButton,
-#DeckRow_5_LoopCuesTransport WPushButton,
+#DeckRow_5_LoopCuesTransport WPushButton, #PlayBg,
 #PflButton, #EQKillButton, #QuickEffectButton,
 #PlayButtonSampler, #PlayButtonDeckMini,
 #SamplerButtons WPushButton,
@@ -637,13 +637,21 @@ QPushButton#pushButtonAutoDJ:enabled:!checked,
 /* elevated buttons & embedded buttons in top row & toolbar
       brighter bg color to enhance contrast in darker containers
       and with small size respectively */
-#DeckRow_5_LoopCuesTransport WPushButton[value="0"],
+#DeckRow_5_LoopCuesTransport WPushButton[value="0"], #PlayBg,
 #HotcueButton,
 #FxAssignButton[displayValue="0"], #FxFocusButton[displayValue="0"],
 #FxToggleButton[displayValue="0"], #FxParameterButton[displayValue="0"],
 #SplitCueButton[value="0"],
 #MicAuxGainPFlContainer WPushButton[displayValue="0"] {
   background-color: #2c2c2c;
+}
+/* Exception: #PlayDeck is transparent. #PlayIndicator & #PlayBg shine through */
+WPushButton#PlayDeck[value="0"],
+WPushButton#PlayDeck[value="1"],
+WPushButton#PlayButtonDeckMini[value="0"],
+WPushButton#PlayButtonDeckMini[value="1"],
+WPushButton#PlayIndicator[value="0"] {
+  background-color: none;
 }
 
 /* Green/Lime Fx-related buttons */
@@ -666,12 +674,7 @@ QPushButton#pushButtonAutoDJ:enabled:!checked,
 /* define red buttons in DeckRow_5_LoopCuesTransport indivually,
 because somehow bg color for #SpecialCueButton can't be overwritten */
 #LoopControls WPushButton[value="1"], #BeatjumpControls WPushButton[value="1"],
-#CueDeck[value="1"], #Reverse[value="1"],
-/* Indicating play_from_cue. Not working 100%, will be fixed later on
-#PlayDeck[value="1"][highlight="0"], #PlayDeck[value="1"][highlight="1"],
-#PlayButtonDeckMini[value="1"][highlight="0"], #PlayButtonDeckMini[value="1"][highlight="1"],
-#PlayButtonSampler[value="1"][highlight="0"], #PlayButtonSampler[value="1"][highlight="1"], */
-#PlayDeck[displayValue="1"],
+#CueDeck[value="1"], #Reverse[value="1"], #PlayIndicator[displayValue="1"],
 #PlayButtonDeckMini[displayValue="1"],
 #PlayButtonSampler[displayValue="1"],
 #PflButton[value="1"],
