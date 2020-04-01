@@ -194,13 +194,13 @@
                     <NumberStates>2</NumberStates>
                     <State>
                       <Number>0</Number>
-                      <Pressed>skin:/btn/btn_play_small_deck.png</Pressed>
-                      <Unpressed>skin:/btn/btn_play_small_deck.png</Unpressed>
+                      <Pressed>skin:/btn/btn_play_deck_small.png</Pressed>
+                      <Unpressed>skin:/btn/btn_play_deck_small.png</Unpressed>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Pressed>skin:/btn/btn_play_small_deck_over.png</Pressed>
-                      <Unpressed>skin:/btn/btn_play_small_deck_over.png</Unpressed>
+                      <Pressed>skin:/btn/btn_play_deck_small_over.png</Pressed>
+                      <Unpressed>skin:/btn/btn_play_deck_small_over.png</Unpressed>
                     </State>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>

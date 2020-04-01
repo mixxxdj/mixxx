@@ -586,8 +586,9 @@ WEffectSelector:open {
 
 #RateControls WPushButton, #SyncButton,
 #DeckRow_5_LoopCuesTransport WPushButton, #PlayBg,
+#PlayContainerSmall WPushButton,
 #PflButton, #EQKillButton, #QuickEffectButton,
-#PlayButtonSampler, #PlayButtonDeckMini,
+#PlayButtonSampler, #PlayDeckMini,
 #SamplerButtons WPushButton,
 #SamplerSyncButton,
 #FxUnitControlsExpanded WPushButton, #FxUnitControlsCollapsed  WPushButton,
@@ -615,7 +616,7 @@ WEffectSelector:open {
 #QuickEffectButton[displayValue="0"],
 #FxUnitControlsCollapsed WPushButton, #FxUnitControlsExpanded WPushButton,
 #FxExpandCollapseButton,
-#PlayButtonSampler[displayValue="0"], #PlayButtonDeckMini[displayValue="0"],
+#PlayButtonSampler[displayValue="0"], #PlayDeckMini[displayValue="0"],
 #SamplerSyncButton[displayValue="0"],
 #MicTalkButton[value="0"], #AuxPlayButton[value="0"], #MicAuxAddButton,
 #MicDuckingButton[value="0"],
@@ -648,8 +649,8 @@ QPushButton#pushButtonAutoDJ:enabled:!checked,
 /* Exception: #PlayDeck is transparent. #PlayIndicator & #PlayBg shine through */
 WPushButton#PlayDeck[value="0"],
 WPushButton#PlayDeck[value="1"],
-WPushButton#PlayButtonDeckMini[value="0"],
-WPushButton#PlayButtonDeckMini[value="1"],
+WPushButton#PlayDeckMini[value="0"],
+WPushButton#PlayDeckMini[value="1"],
 WPushButton#PlayIndicator[value="0"] {
   background-color: none;
 }
@@ -675,7 +676,7 @@ WPushButton#PlayIndicator[value="0"] {
 because somehow bg color for #SpecialCueButton can't be overwritten */
 #LoopControls WPushButton[value="1"], #BeatjumpControls WPushButton[value="1"],
 #CueDeck[value="1"], #Reverse[value="1"], #PlayIndicator[displayValue="1"],
-#PlayButtonDeckMini[displayValue="1"],
+#PlayDeckMini[displayValue="1"],
 #PlayButtonSampler[displayValue="1"],
 #PflButton[value="1"],
 #SamplerSyncButton[displayValue="1"],
@@ -698,10 +699,6 @@ QPushButton#pushButtonRecording:checked,
 }
 
 /* Orange/yellow */
-/* Play bg when playing from Cue / hotcue
-#PlayDeck[value="0"][highlight="1"],
-#PlayButtonDeckMini[value="0"][highlight="1"],
-#PlayButtonSampler[value="0"][highlight="1"], */
 #VinylButton[displayValue="1"], #VinylButton[displayValue="2"],
 #FxFocusButton[displayValue="1"],
 #GuiToggleButton[displayValue="1"], #GuiToggleButton[displayValue="2"],
@@ -862,12 +859,12 @@ QPushButton#pushButtonAutoDJ:checked,
   }
 
 #PlayButtonSampler[value="0"],
-#PlayButtonDeckMini[value="0"],
+#PlayDeckMini[value="0"],
 #PlayButtonPreview[displayValue="0"] {
   image: url(skin:/buttons_classic/btn__play_sampler.svg) no-repeat center center;
   }
   #PlayButtonSampler[value="1"],
-  #PlayButtonDeckMini[value="1"],
+  #PlayDeckMini[value="1"],
   #PlayButtonPreview[displayValue="1"] {
     image: url(skin:/buttons_classic/btn__pause_sampler.svg) no-repeat center center;
   }
@@ -1234,7 +1231,7 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
   }
   #PlayContainerSmall {
     margin: 1px 0px;
-    padding: 0px 1px 0px 2px;
+    padding: 5px 1px 0px 2px;
     border-width: 0px 0px 0px 1px;
   }
   #MiniDeckSpinnyCoverContainer {
