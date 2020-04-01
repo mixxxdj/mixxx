@@ -22,17 +22,15 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
                                const QString& idColumn,
                                const QStringList& columns,
                                bool isCaching)
-        : QObject(),
-          m_tableName(tableName),
+        : m_tableName(tableName),
           m_idColumn(idColumn),
           m_columnCount(columns.size()),
           m_columnsJoined(columns.join(",")),
           m_columnCache(columns),
+          m_pQueryParser(new SearchQueryParser(pTrackCollection)),
           m_bIndexBuilt(false),
           m_bIsCaching(isCaching),
-          m_trackDAO(pTrackCollection->getTrackDAO()),
-          m_database(pTrackCollection->database()),
-          m_pQueryParser(new SearchQueryParser(pTrackCollection)) {
+          m_database(pTrackCollection->database()) {
     m_searchColumns << "artist"
                     << "album"
                     << "album_artist"
@@ -52,7 +50,8 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
 }
 
 BaseTrackCache::~BaseTrackCache() {
-    delete m_pQueryParser;
+    // Required to allow forward declarations of (managed pointer) members
+    // in header file
 }
 
 int BaseTrackCache::columnCount() const {
@@ -116,7 +115,7 @@ void BaseTrackCache::slotTrackChanged(TrackId trackId) {
     }
     QSet<TrackId> trackIds;
     trackIds.insert(trackId);
-    emit(tracksChanged(trackIds));
+    emit tracksChanged(trackIds);
 }
 
 void BaseTrackCache::slotTrackClean(TrackId trackId) {
@@ -354,7 +353,7 @@ void BaseTrackCache::updateTracksInIndex(const QSet<TrackId>& trackIds) {
         qDebug() << "updateTracksInIndex failed!";
         return;
     }
-    emit(tracksChanged(trackIds));
+    emit tracksChanged(trackIds);
 }
 
 void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
@@ -416,6 +415,8 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         trackValue.setValue(static_cast<int>(pTrack->getKey()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
         trackValue.setValue(pTrack->isBpmLocked());
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR) == column) {
+        trackValue.setValue(mixxx::RgbColor::toQVariant(pTrack->getColor()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) == column) {
         trackValue.setValue(pTrack->getCoverInfo().coverLocation);
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column ||
@@ -489,8 +490,20 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
         }
     }
 
-    std::unique_ptr<QueryNode> pQuery(parseQuery(
-        searchQuery, extraFilter, idStrings));
+    QStringList queryFragments;
+    if (!extraFilter.isNull() && extraFilter != "") {
+        queryFragments << QString("(%1)").arg(extraFilter);
+    }
+    if (idStrings.size() > 0) {
+        queryFragments << QString("%1 in (%2)")
+                .arg(m_idColumn, idStrings.join(","));
+    }
+
+    const std::unique_ptr<QueryNode> pQuery =
+            m_pQueryParser->parseQuery(
+                    searchQuery,
+                    m_searchColumns,
+                    queryFragments.join(" AND "));
 
     QString filter = pQuery->toSql();
     if (!filter.isEmpty()) {
@@ -607,22 +620,6 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
             }
         }
     }
-}
-
-std::unique_ptr<QueryNode> BaseTrackCache::parseQuery(QString query, QString extraFilter,
-                                      QStringList idStrings) const {
-    QStringList queryFragments;
-    if (!extraFilter.isNull() && extraFilter != "") {
-        queryFragments << QString("(%1)").arg(extraFilter);
-    }
-
-    if (idStrings.size() > 0) {
-        queryFragments << QString("%1 in (%2)")
-                .arg(m_idColumn, idStrings.join(","));
-    }
-
-    return m_pQueryParser->parseQuery(query, m_searchColumns,
-                                      queryFragments.join(" AND "));
 }
 
 int BaseTrackCache::findSortInsertionPoint(TrackPointer pTrack,

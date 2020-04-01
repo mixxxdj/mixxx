@@ -185,6 +185,7 @@ class EffectChainSlot : public QObject {
     SignalProcessingStage m_signalProcessingStage;
     QSet<ChannelHandleAndGroup> m_enabledInputChannels;
     EngineEffectChain* m_pEngineEffectChain;
+
     DISALLOW_COPY_AND_ASSIGN(EffectChainSlot);
 };
 

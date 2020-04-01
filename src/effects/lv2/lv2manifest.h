@@ -43,7 +43,6 @@ class LV2Manifest : public EffectManifest {
     float* m_maximum;
     float* m_default;
     Status m_status;
-    bool m_isValid;
 };
 
 typedef QSharedPointer<LV2Manifest> LV2EffectManifestPointer;

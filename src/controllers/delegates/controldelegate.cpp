@@ -85,7 +85,7 @@ void ControlDelegate::setModelData(QWidget* editor,
 
     QStringList keyStrs = pLineEdit->text().split(",");
     if (keyStrs.size() == 2) {
-        model->setData(index, qVariantFromValue(
+        model->setData(index, QVariant::fromValue(
             ConfigKey(keyStrs.at(0), keyStrs.at(1))), Qt::EditRole);
     }
 }

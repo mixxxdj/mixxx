@@ -12,24 +12,23 @@
 #ifndef WOVERVIEW_H
 #define WOVERVIEW_H
 
-#include <QPaintEvent>
-#include <QMouseEvent>
-#include <QPixmap>
 #include <QColor>
 #include <QList>
+#include <QMouseEvent>
+#include <QPaintEvent>
+#include <QPixmap>
 
-#include "track/track.h"
-#include "widget/cuemenu.h"
-#include "widget/trackdroptarget.h"
-#include "widget/wwidget.h"
 #include "analyzer/analyzerprogress.h"
-
-#include "util/color/color.h"
-
-#include "waveform/renderers/waveformsignalcolors.h"
-#include "waveform/renderers/waveformmarkset.h"
-#include "waveform/renderers/waveformmarkrange.h"
 #include "skin/skincontext.h"
+#include "track/track.h"
+#include "util/color/color.h"
+#include "util/parented_ptr.h"
+#include "waveform/renderers/waveformmarkrange.h"
+#include "waveform/renderers/waveformmarkset.h"
+#include "waveform/renderers/waveformsignalcolors.h"
+#include "widget/trackdroptarget.h"
+#include "widget/wcuemenupopup.h"
+#include "widget/wwidget.h"
 
 class PlayerManager;
 class PainterScope;
@@ -47,8 +46,8 @@ class WOverview : public WWidget, public TrackDropTarget {
             AnalyzerProgress analyzerProgress);
 
   signals:
-    void trackDropped(QString filename, QString group);
-    void cloneDeck(QString source_group, QString target_group);
+    void trackDropped(QString filename, QString group) override;
+    void cloneDeck(QString source_group, QString target_group) override;
 
   protected:
     WOverview(
@@ -57,12 +56,12 @@ class WOverview : public WWidget, public TrackDropTarget {
             UserSettingsPointer pConfig,
             QWidget* parent = nullptr);
 
-    void mouseMoveEvent(QMouseEvent *e) override;
-    void mouseReleaseEvent(QMouseEvent *e) override;
-    void mousePressEvent(QMouseEvent *e) override;
+    void mouseMoveEvent(QMouseEvent* e) override;
+    void mouseReleaseEvent(QMouseEvent* e) override;
+    void mousePressEvent(QMouseEvent* e) override;
     void leaveEvent(QEvent* event) override;
-    void paintEvent(QPaintEvent * /*unused*/) override;
-    void resizeEvent(QResizeEvent * /*unused*/) override;
+    void paintEvent(QPaintEvent* /*unused*/) override;
+    void resizeEvent(QResizeEvent* /*unused*/) override;
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dropEvent(QDropEvent* event) override;
 
@@ -97,12 +96,12 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     void onMarkChanged(double v);
     void onMarkRangeChange(double v);
-    void onRateSliderChange(double v);
+    void onRateRatioChange(double v);
+    void onPassthroughChange(double v);
     void receiveCuesUpdated();
 
     void slotWaveformSummaryUpdated();
-    void slotCueMenuAboutToHide();
-
+    void slotCueMenuPopupAboutToHide();
 
   private:
     // Append the waveform overview pixmap according to available data
@@ -115,7 +114,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     void drawAnalyzerProgress(QPainter* pPainter);
     void drawRangeMarks(QPainter* pPainter, const float& offset, const float& gain);
     void drawMarks(QPainter* pPainter, const float offset, const float gain);
-    void drawCurrentPosition(QPainter* pPainter);
+    void drawPickupPosition(QPainter* pPainter);
     void drawTimeRuler(QPainter* pPainter);
     void drawMarkLabels(QPainter* pPainter, const float offset, const float gain);
     void paintText(const QString& text, QPainter* pPainter);
@@ -133,23 +132,27 @@ class WOverview : public WWidget, public TrackDropTarget {
     UserSettingsPointer m_pConfig;
     ControlProxy* m_endOfTrackControl;
     bool m_endOfTrack;
-    ControlProxy* m_pRateDirControl;
-    ControlProxy* m_pRateRangeControl;
-    ControlProxy* m_pRateSliderControl;
+    bool m_bPassthroughEnabled;
+    ControlProxy* m_pRateRatioControl;
     ControlProxy* m_trackSampleRateControl;
     ControlProxy* m_trackSamplesControl;
     ControlProxy* m_playpositionControl;
+    ControlProxy* m_pPassthroughControl;
 
     // Current active track
     TrackPointer m_pCurrentTrack;
     ConstWaveformPointer m_pWaveform;
 
-    std::unique_ptr<CueMenu> m_pCueMenu;
+    parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
     bool m_bShowCueTimes;
 
     int m_iPosSeconds;
+    // True if pick-up is dragged. Only used when m_bEventWhileDrag is false
+    bool m_bLeftClickDragging;
     // Internal storage of slider position in pixels
-    int m_iPos;
+    int m_iPickupPos;
+    // position of the overlay shadow
+    int m_iPlayPos;
 
     WaveformMarkPointer m_pHoveredMark;
     bool m_bHotcueMenuShowing;
@@ -168,7 +171,6 @@ class WOverview : public WWidget, public TrackDropTarget {
     QColor m_labelBackgroundColor;
     QColor m_endOfTrackColor;
 
-    PredefinedColorsRepresentation m_predefinedColorsRepresentation;
     // All WaveformMarks
     WaveformMarkSet m_marks;
     // List of visible WaveformMarks sorted by the order they appear in the track

@@ -274,6 +274,7 @@ class Qt(Dependence):
 
         # Emit various Qt defines
         build.env.Append(CPPDEFINES=['QT_TABLET_SUPPORT'])
+        build.env.Append(CPPDEFINES=['QT_USE_QSTRINGBUILDER'])
 
         if build.static_qt:
             build.env.Append(CPPDEFINES='QT_NODLL')
@@ -438,18 +439,26 @@ class Qt(Dependence):
                 build.env.Append(LINKFLAGS=['-Wl,-rpath,%s' % libdir_path])
                 build.env.Append(LINKFLAGS="-L" + libdir_path)
 
-        # Mixxx requires C++14 support
+        # Mixxx requires C++17 support
         if build.platform_is_windows:
             # MSVC
-            build.env.Append(CXXFLAGS='/std:c++14')
+            build.env.Append(CXXFLAGS='/std:c++17')
+            # Fix build of googletest 1.8.x
+            # https://developercommunity.visualstudio.com/content/problem/225156/google-test-does-not-work-with-stdc17.html
+            # https://devblogs.microsoft.com/cppblog/msvc-now-correctly-reports-__cplusplus/
+            build.env.Append(CXXFLAGS='/Zc:__cplusplus')
         else:
             # GCC/Clang
-            build.env.Append(CXXFLAGS='-std=c++14')
+            build.env.Append(CXXFLAGS='-std=c++17')
+            if build.platform_is_osx and build.compiler_is_clang:
+                # Aligned allocation is only supported since macOS 10.13,
+                # but not for the minimum supported version macOS 10.11
+                build.env.Append(CXXFLAGS='-fno-aligned-allocation')
 
 
 class TestHeaders(Dependence):
     def configure(self, build, conf):
-        build.env.Append(CPPPATH="#lib/gtest-1.7.0/include")
+        build.env.Append(CPPPATH="#lib/googletest-1.8.x/googletest/include")
 
 class FidLib(Dependence):
     def sources(self, build):
@@ -480,6 +489,30 @@ class ReplayGain(Dependence):
 
     def configure(self, build, conf):
         build.env.Append(CPPPATH="#lib/replaygain")
+
+# For Rekordbox removable device binary database file parsing
+class Kaitai(Dependence):
+
+    def sources(self, build):
+        return ["lib/kaitai/kaitaistream.cpp"]
+
+    def configure(self, build, conf):
+        build.env.Append(CPPDEFINES=['KS_STR_ENCODING_NONE'])
+        build.env.Append(CPPPATH="#lib/kaitai")
+
+# For determining MP3 timing offset cases in Rekordbox library feature
+class MP3GuessEnc(Dependence):
+
+    def sources(self, build):
+        return [
+            "lib/mp3guessenc-0.27.4/mp3guessenc.c",
+            "lib/mp3guessenc-0.27.4/tags.c",
+            "lib/mp3guessenc-0.27.4/decode.c",
+            "lib/mp3guessenc-0.27.4/bit_utils.c",
+        ]
+
+    def configure(self, build, conf):
+        build.env.Append(CPPPATH='#lib/mp3guessenc-0.27.4/')
 
 
 class Ebur128Mit(Dependence):
@@ -684,6 +717,11 @@ class PortAudioRingBuffer(Dependence):
     def sources(self, build):
         return ['lib/portaudio/pa_ringbuffer.c']
 
+# https://github.com/rigtorp/SPSCQueue
+class RigtorpSPSCQueue(Dependence):
+    def configure(self, build, conf):
+        build.env.Append(CPPPATH='#lib/rigtorp/SPSCQueue/include')
+
 class Reverb(Dependence):
     def configure(self, build, conf):
         build.env.Append(CPPPATH='#lib/reverb')
@@ -730,6 +768,7 @@ class MixxxCore(Feature):
                    "src/preferences/configobject.cpp",
                    "src/preferences/dialog/dlgprefautodj.cpp",
                    "src/preferences/dialog/dlgprefdeck.cpp",
+                   "src/preferences/dialog/dlgprefcolors.cpp",
                    "src/preferences/dialog/dlgprefcrossfader.cpp",
                    "src/preferences/dialog/dlgprefeffects.cpp",
                    "src/preferences/dialog/dlgprefeq.cpp",
@@ -752,6 +791,9 @@ class MixxxCore(Feature):
                    "src/preferences/effectsettingsmodel.cpp",
                    "src/preferences/broadcastprofile.cpp",
                    "src/preferences/upgrade.cpp",
+                   "src/preferences/colorpaletteeditor.cpp",
+                   "src/preferences/colorpaletteeditormodel.cpp",
+                   "src/preferences/colorpalettesettings.cpp",
                    "src/preferences/dlgpreferencepage.cpp",
 
                    "src/effects/effectmanifest.cpp",
@@ -884,7 +926,8 @@ class MixxxCore(Feature):
                    "src/controllers/midi/midioutputhandler.cpp",
                    "src/controllers/softtakeover.cpp",
                    "src/controllers/keyboard/keyboardeventfilter.cpp",
-                   "src/controllers/colorjsproxy.cpp",
+                   "src/controllers/colormapper.cpp",
+                   "src/controllers/colormapperjsproxy.cpp",
 
                    "src/main.cpp",
                    "src/mixxx.cpp",
@@ -898,9 +941,7 @@ class MixxxCore(Feature):
                    "src/sources/soundsourceproviderregistry.cpp",
                    "src/sources/soundsourceproxy.cpp",
 
-                   "src/widget/colormenu.cpp",
                    "src/widget/controlwidgetconnection.cpp",
-                   "src/widget/cuemenu.cpp",
                    "src/widget/wbasewidget.cpp",
                    "src/widget/wwidget.cpp",
                    "src/widget/wwidgetgroup.cpp",
@@ -919,6 +960,7 @@ class MixxxCore(Feature):
                    "src/widget/wvumeter.cpp",
                    "src/widget/wpushbutton.cpp",
                    "src/widget/weffectpushbutton.cpp",
+                   "src/widget/whotcuebutton.cpp",
                    "src/widget/wslidercomposed.cpp",
                    "src/widget/wstatuslight.cpp",
                    "src/widget/woverview.cpp",
@@ -951,16 +993,20 @@ class MixxxCore(Feature):
                    "src/widget/wcoverart.cpp",
                    "src/widget/wcoverartlabel.cpp",
                    "src/widget/wcoverartmenu.cpp",
+                   "src/widget/wcolorpicker.cpp",
+                   "src/widget/wcolorpickeraction.cpp",
+                   "src/widget/wcuemenupopup.cpp",
                    "src/widget/wsingletoncontainer.cpp",
                    "src/widget/wmainmenubar.cpp",
 
-                   "src/musicbrainz/network.cpp",
                    "src/musicbrainz/tagfetcher.cpp",
                    "src/musicbrainz/gzip.cpp",
                    "src/musicbrainz/crc.c",
-                   "src/musicbrainz/acoustidclient.cpp",
                    "src/musicbrainz/chromaprinter.cpp",
-                   "src/musicbrainz/musicbrainzclient.cpp",
+                   "src/musicbrainz/musicbrainz.cpp",
+                   "src/musicbrainz/musicbrainzxml.cpp",
+                   "src/musicbrainz/web/acoustidlookuptask.cpp",
+                   "src/musicbrainz/web/musicbrainzrecordingstask.cpp",
 
                    "src/widget/wtracktableview.cpp",
                    "src/widget/wtracktableviewheader.cpp",
@@ -974,6 +1020,7 @@ class MixxxCore(Feature):
                    "src/database/schemamanager.cpp",
 
                    "src/library/trackcollection.cpp",
+                   "src/library/trackcollectionmanager.cpp",
                    "src/library/externaltrackcollection.cpp",
                    "src/library/basesqltablemodel.cpp",
                    "src/library/basetrackcache.cpp",
@@ -1039,6 +1086,12 @@ class MixxxCore(Feature):
 
                    "src/library/itunes/itunesfeature.cpp",
                    "src/library/traktor/traktorfeature.cpp",
+                   "src/library/serato/seratofeature.cpp",
+                   "src/library/serato/seratoplaylistmodel.cpp",
+
+                   "src/library/rekordbox/rekordboxfeature.cpp",
+                   "src/library/rekordbox/rekordbox_pdb.cpp",
+                   "src/library/rekordbox/rekordbox_anlz.cpp",
 
                    "src/library/sidebarmodel.cpp",
                    "src/library/library.cpp",
@@ -1064,6 +1117,7 @@ class MixxxCore(Feature):
                    "src/library/stareditor.cpp",
                    "src/library/bpmdelegate.cpp",
                    "src/library/previewbuttondelegate.cpp",
+                   "src/library/colordelegate.cpp",
                    "src/library/coverartdelegate.cpp",
                    "src/library/locationdelegate.cpp",
                    "src/library/tableitemdelegate.cpp",
@@ -1075,6 +1129,11 @@ class MixxxCore(Feature):
                    "src/library/parserpls.cpp",
                    "src/library/parserm3u.cpp",
                    "src/library/parsercsv.cpp",
+
+                   "src/library/trackloader.cpp",
+
+                   "src/network/jsonwebtask.cpp",
+                   "src/network/webtask.cpp",
 
                    "src/widget/wwaveformviewer.cpp",
 
@@ -1152,11 +1211,15 @@ class MixxxCore(Feature):
                    "src/track/beats.cpp",
                    "src/track/bpm.cpp",
                    "src/track/cue.cpp",
+                   "src/track/cueinfo.cpp",
                    "src/track/keyfactory.cpp",
                    "src/track/keys.cpp",
                    "src/track/keyutils.cpp",
                    "src/track/playcounter.cpp",
                    "src/track/replaygain.cpp",
+                   "src/track/serato/markers.cpp",
+                   "src/track/serato/markers2.cpp",
+                   "src/track/serato/tags.cpp",
                    "src/track/track.cpp",
                    "src/track/globaltrackcache.cpp",
                    "src/track/trackfile.cpp",
@@ -1220,8 +1283,11 @@ class MixxxCore(Feature):
                    "src/util/xml.cpp",
                    "src/util/tapfilter.cpp",
                    "src/util/movinginterquartilemean.cpp",
+                   "src/util/cache.cpp",
                    "src/util/console.cpp",
                    "src/util/color/color.cpp",
+                   "src/util/color/colorpalette.cpp",
+                   "src/util/color/predefinedcolorpalettes.cpp",
                    "src/util/db/dbconnection.cpp",
                    "src/util/db/dbconnectionpool.cpp",
                    "src/util/db/dbconnectionpooler.cpp",
@@ -1248,8 +1314,7 @@ class MixxxCore(Feature):
                    "src/util/desktophelper.cpp",
                    "src/util/widgetrendertimer.cpp",
                    "src/util/workerthread.cpp",
-                   "src/util/workerthreadscheduler.cpp",
-                   "src/util/color/predefinedcolor.cpp"
+                   "src/util/workerthreadscheduler.cpp"
                    ]
 
         proto_args = {
@@ -1284,6 +1349,7 @@ class MixxxCore(Feature):
             'src/preferences/dialog/dlgprefautodjdlg.ui',
             'src/preferences/dialog/dlgprefbeatsdlg.ui',
             'src/preferences/dialog/dlgprefdeckdlg.ui',
+            'src/preferences/dialog/dlgprefcolorsdlg.ui',
             'src/preferences/dialog/dlgprefcrossfaderdlg.ui',
             'src/preferences/dialog/dlgpreflv2dlg.ui',
             'src/preferences/dialog/dlgprefeffectsdlg.ui',
@@ -1541,7 +1607,7 @@ class MixxxCore(Feature):
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
                 QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, LAME,
-                QueenMaryDsp]
+                QueenMaryDsp, Kaitai, MP3GuessEnc, RigtorpSPSCQueue]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

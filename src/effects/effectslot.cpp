@@ -231,7 +231,7 @@ void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
 
     if (pManifest == EffectManifestPointer()) {
         // No new effect to load; just unload the old effect and return.
-        emit(effectChanged());
+        emit effectChanged();
         return;
     }
 
@@ -262,7 +262,7 @@ void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
         slotEffectMetaParameter(m_pManifest->metaknobDefault(), true);
     }
 
-    emit(effectChanged());
+    emit effectChanged();
     updateEngineState();
 }
 
@@ -379,16 +379,16 @@ void EffectSlot::slotNextEffect(double v) {
 void EffectSlot::slotEffectSelector(double v) {
     // TODO: reimplement
     // if (v > 0) {
-    //     emit(nextEffect(m_iChainNumber, m_iEffectNumber, m_pEffect));
+    //     emit nextEffect(m_iChainNumber, m_iEffectNumber, m_pEffect);
     // } else if (v < 0) {
-    //     emit(prevEffect(m_iChainNumber, m_iEffectNumber, m_pEffect));
+    //     emit prevEffect(m_iChainNumber, m_iEffectNumber, m_pEffect);
     // }
 }
 
 void EffectSlot::slotClear(double v) {
     if (v > 0) {
         unloadEffect();
-        emit(effectChanged());
+        emit effectChanged();
     }
 }
 

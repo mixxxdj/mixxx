@@ -312,13 +312,6 @@ void BeatGrid::removeBeat(double dBeatSample) {
     return;
 }
 
-void BeatGrid::moveBeat(double dBeatSample, double dNewBeatSample) {
-    Q_UNUSED(dBeatSample);
-    Q_UNUSED(dNewBeatSample);
-    //QMutexLocker locker(&m_mutex);
-    return;
-}
-
 void BeatGrid::translate(double dNumSamples) {
     QMutexLocker locker(&m_mutex);
     if (!isValid()) {
@@ -327,7 +320,7 @@ void BeatGrid::translate(double dNumSamples) {
     double newFirstBeatFrames = (firstBeatSample() + dNumSamples) / kFrameSize;
     m_grid.mutable_first_beat()->set_frame_position(newFirstBeatFrames);
     locker.unlock();
-    emit(updated());
+    emit updated();
 }
 
 void BeatGrid::scale(enum BPMScale scale) {
@@ -367,5 +360,5 @@ void BeatGrid::setBpm(double dBpm) {
     m_grid.mutable_bpm()->set_bpm(dBpm);
     m_dBeatLength = (60.0 * m_iSampleRate / dBpm) * kFrameSize;
     locker.unlock();
-    emit(updated());
+    emit updated();
 }

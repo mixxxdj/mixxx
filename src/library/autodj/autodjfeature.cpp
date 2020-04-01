@@ -15,14 +15,20 @@
 #include "library/library.h"
 #include "library/parser.h"
 #include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "mixer/playermanager.h"
 #include "sources/soundsourceproxy.h"
 #include "util/compatibility.h"
 #include "util/dnd.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
 
-const QString AutoDJFeature::m_sAutoDJViewName = QString("Auto DJ");
+namespace {
+
+const QString kViewName = QStringLiteral("Auto DJ");
+
+}
 
 namespace {
     const int kMaxRetrieveAttempts = 3;
@@ -43,22 +49,19 @@ namespace {
 
 AutoDJFeature::AutoDJFeature(Library* pLibrary,
                              UserSettingsPointer pConfig,
-                             PlayerManagerInterface* pPlayerManager,
-                             TrackCollection* pTrackCollection)
-        : LibraryFeature(pLibrary),
-          m_pConfig(pConfig),
-          m_pLibrary(pLibrary),
-          m_pTrackCollection(pTrackCollection),
-          m_playlistDao(pTrackCollection->getPlaylistDAO()),
+                             PlayerManagerInterface* pPlayerManager)
+        : LibraryFeature(pLibrary, pConfig),
+          m_pTrackCollection(pLibrary->trackCollections()->internalCollection()),
+          m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
           m_iAutoDJPlaylistId(findOrCrateAutoDjPlaylistId(m_playlistDao)),
-          m_pAutoDJProcessor(NULL),
-          m_pAutoDJView(NULL),
-          m_autoDjCratesDao(m_iAutoDJPlaylistId, pTrackCollection, pConfig),
+          m_pAutoDJProcessor(nullptr),
+          m_pAutoDJView(nullptr),
+          m_autoDjCratesDao(m_iAutoDJPlaylistId, m_pTrackCollection, m_pConfig),
           m_icon(":/images/library/ic_library_autodj.svg") {
 
     qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
     m_pAutoDJProcessor = new AutoDJProcessor(
-            this, m_pConfig, pPlayerManager, m_iAutoDJPlaylistId, m_pTrackCollection);
+            this, m_pConfig, pPlayerManager, pLibrary->trackCollections(), m_iAutoDJPlaylistId);
     connect(m_pAutoDJProcessor,
             &AutoDJProcessor::loadTrackToPlayer,
             this,
@@ -66,7 +69,7 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
     m_playlistDao.setAutoDJProcessor(m_pAutoDJProcessor);
 
     // Create the "Crates" tree-item under the root item.
-    auto pRootItem = std::make_unique<TreeItem>(this);
+    std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     m_pCratesTreeItem = pRootItem->appendChild(tr("Crates"));
     m_pCratesTreeItem->setIcon(QIcon(":/images/library/ic_library_crates.svg"));
 
@@ -91,10 +94,6 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
 
     // Create context-menu items to allow crates to be added to, and removed
     // from, the auto-DJ queue.
-    connect(&m_crateMapper,
-            QOverload<int>::of(&QSignalMapper::mapped),
-            this,
-            &AutoDJFeature::slotAddCrateToAutoDj);
     m_pRemoveCrateFromAutoDj = new QAction(tr("Remove Crate as Track Source"), this);
     connect(m_pRemoveCrateFromAutoDj,
             &QAction::triggered,
@@ -115,15 +114,17 @@ QIcon AutoDJFeature::getIcon() {
     return m_icon;
 }
 
-void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
-                               KeyboardEventFilter* keyboard) {
-    m_pAutoDJView = new DlgAutoDJ(libraryWidget,
-                                  m_pConfig,
-                                  m_pLibrary,
-                                  m_pAutoDJProcessor,
-                                  m_pTrackCollection,
-                                  keyboard);
-    libraryWidget->registerView(m_sAutoDJViewName, m_pAutoDJView);
+void AutoDJFeature::bindLibraryWidget(
+        WLibrary* libraryWidget,
+        KeyboardEventFilter* keyboard) {
+    m_pAutoDJView = new DlgAutoDJ(
+            libraryWidget,
+            m_pConfig,
+            m_pLibrary,
+            m_pAutoDJProcessor,
+            keyboard,
+            libraryWidget->getShowButtonText());
+    libraryWidget->registerView(kViewName, m_pAutoDJView);
     connect(m_pAutoDJView,
             &DlgAutoDJ::loadTrack,
             this,
@@ -149,15 +150,20 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
             &AutoDJFeature::slotAddRandomTrack);
 }
 
+void AutoDJFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // store the sidebar widget pointer for later use in onRightClickChild
+    m_pSidebarWidget = pSidebarWidget;
+}
+
 TreeItemModel* AutoDJFeature::getChildModel() {
     return &m_childModel;
 }
 
 void AutoDJFeature::activate() {
     //qDebug() << "AutoDJFeature::activate()";
-    emit(switchToView(m_sAutoDJViewName));
+    emit switchToView(kViewName);
     emit disableSearch();
-    emit(enableCoverArtDisplay(true));
+    emit enableCoverArtDisplay(true);
 }
 
 bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
@@ -200,7 +206,7 @@ void AutoDJFeature::slotCrateChanged(CrateId crateId) {
         for (int i = 0; i < m_crateList.length(); ++i) {
             if (m_crateList[i].getId() == crateId) {
                 QModelIndex parentIndex = m_childModel.index(0, 0);
-                QModelIndex childIndex = parentIndex.child(i, 0);
+                QModelIndex childIndex = m_childModel.index(i, 0, parentIndex);
                 m_childModel.setData(childIndex, crate.getName(), Qt::DisplayRole);
                 m_crateList[i] = crate;
                 return; // early exit
@@ -209,7 +215,7 @@ void AutoDJFeature::slotCrateChanged(CrateId crateId) {
         // No child item for crate found
         // -> Create and append a new child item for this crate
         QList<TreeItem*> rows;
-        rows.append(new TreeItem(this, crate.getName(), crate.getId().toVariant()));
+        rows.append(new TreeItem(crate.getName(), crate.getId().toVariant()));
         QModelIndex parentIndex = m_childModel.index(0, 0);
         m_childModel.insertTreeItemRows(rows, m_crateList.length(), parentIndex);
         DEBUG_ASSERT(rows.isEmpty()); // ownership passed to m_childModel
@@ -247,7 +253,7 @@ void AutoDJFeature::slotAddRandomTrack() {
             }
 
             if (randomTrackId.isValid()) {
-                pRandomTrack = m_pTrackCollection->getTrackDAO().getTrack(randomTrackId);
+                pRandomTrack = m_pTrackCollection->getTrackById(randomTrackId);
                 VERIFY_OR_DEBUG_ASSERT(pRandomTrack) {
                     qWarning() << "Track does not exist:"
                             << randomTrackId;
@@ -255,8 +261,8 @@ void AutoDJFeature::slotAddRandomTrack() {
                 }
                 if (!pRandomTrack->checkFileExists()) {
                     qWarning() << "Track does not exist:"
-                            << pRandomTrack->getInfo()
-                            << pRandomTrack->getFileInfo();
+                               << pRandomTrack->getInfo()
+                               << pRandomTrack->getFileInfo();
                     pRandomTrack.reset();
                 }
             }
@@ -285,32 +291,30 @@ void AutoDJFeature::constructCrateChildModel() {
 void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
                                       QModelIndex index) {
     TreeItem* pClickedItem = static_cast<TreeItem*>(index.internalPointer());
+    QMenu menu(m_pSidebarWidget);
     if (m_pCratesTreeItem == pClickedItem) {
         // The "Crates" parent item was right-clicked.
         // Bring up the context menu.
-        QMenu crateMenu;
+        QMenu crateMenu(m_pSidebarWidget);
         crateMenu.setTitle(tr("Add Crate as Track Source"));
         CrateSelectResult nonAutoDjCrates(m_pTrackCollection->crates().selectAutoDjCrates(false));
         Crate crate;
         while (nonAutoDjCrates.populateNext(&crate)) {
             auto pAction = std::make_unique<QAction>(crate.getName(), &crateMenu);
-            m_crateMapper.setMapping(pAction.get(), crate.getId().value());
-            connect(pAction.get(),
-                    &QAction::triggered,
-                    [=](bool) { m_crateMapper.map(); });
+            int iCrateId = crate.getId().value();
+            connect(pAction.get(), &QAction::triggered,
+                    this, [this, iCrateId] { slotAddCrateToAutoDj(iCrateId); });
             crateMenu.addAction(pAction.get());
             pAction.release();
         }
-        QMenu contextMenu;
-        contextMenu.addMenu(&crateMenu);
-        contextMenu.exec(globalPos);
+        menu.addMenu(&crateMenu);
+        menu.exec(globalPos);
     } else {
         // A crate child item was right-clicked.
         // Bring up the context menu.
         m_pRemoveCrateFromAutoDj->setData(pClickedItem->getData()); // the selected CrateId
-        QMenu contextMenu;
-        contextMenu.addAction(m_pRemoveCrateFromAutoDj);
-        contextMenu.exec(globalPos);
+        menu.addAction(m_pRemoveCrateFromAutoDj);
+        menu.exec(globalPos);
     }
 }
 

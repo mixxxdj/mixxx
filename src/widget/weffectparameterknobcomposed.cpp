@@ -15,6 +15,7 @@ void WEffectParameterKnobComposed::setupEffectParameterSlot(const ConfigKey& con
         return;
     }
     setEffectKnobParameterSlot(pParameterSlot);
+    setFocusPolicy(Qt::NoFocus);
 }
 
 void WEffectParameterKnobComposed::setEffectKnobParameterSlot(

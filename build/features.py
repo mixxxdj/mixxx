@@ -648,35 +648,42 @@ class TestSuite(Feature):
 
         # Clone our main environment so we don't change any settings in the
         # Mixxx environment
-        test_env = build.env.Clone()
+        env = build.env.Clone()
+        SCons.Export('env')
+        SCons.Export('build')
 
         # -pthread tells GCC to do the right thing regardless of system
         if build.toolchain_is_gnu:
-            test_env.Append(CCFLAGS='-pthread')
-            test_env.Append(LINKFLAGS='-pthread')
+            env.Append(CCFLAGS='-pthread')
+            env.Append(LINKFLAGS='-pthread')
 
-        test_env.Append(CPPPATH="#lib/gtest-1.7.0/include")
-        gtest_dir = test_env.Dir("lib/gtest-1.7.0")
-
-        env = test_env
-        SCons.Export('env')
-        SCons.Export('build')
+        # Build gtest
+        env.Append(CPPPATH="#lib/googletest-1.8.x/googletest/include")
+        gtest_dir = env.Dir("lib/googletest-1.8.x/googletest")
         env.SConscript(env.File('SConscript', gtest_dir))
+        build.env.Append(LIBPATH=gtest_dir)
+        build.env.Append(LIBS=['gtest'])
 
-        # build and configure gmock
-        test_env.Append(CPPPATH="#lib/gmock-1.7.0/include")
-        gmock_dir = test_env.Dir("lib/gmock-1.7.0")
+        # Build gmock
+        env.Append(CPPPATH="#lib/googletest-1.8.x/googlemock/include")
+        gmock_dir = env.Dir("lib/googletest-1.8.x/googlemock")
         env.SConscript(env.File('SConscript', gmock_dir))
+        build.env.Append(LIBPATH=gmock_dir)
+        build.env.Append(LIBS=['gmock'])
 
         # Build the benchmark library
-        test_env.Append(CPPPATH="#lib/benchmark/include")
-        benchmark_dir = test_env.Dir("lib/benchmark")
+        env.Append(CPPPATH="#lib/benchmark/include")
+        benchmark_dir = env.Dir("lib/benchmark")
         env.SConscript(env.File('SConscript', benchmark_dir))
+        build.env.Append(LIBPATH=benchmark_dir)
+        build.env.Append(LIBS=['benchmark'])
 
         return []
 
 
 class LiveBroadcasting(Feature):
+    INTERNAL_LINK = False
+
     def description(self):
         return "Live Broadcasting Support"
 
@@ -693,11 +700,22 @@ class LiveBroadcasting(Feature):
         if not self.enabled(build):
             return
 
-        libshout_found = conf.CheckLib(['libshout', 'shout'])
         build.env.Append(CPPDEFINES='__BROADCAST__')
 
-        if not libshout_found:
-            raise Exception('Could not find libshout or its development headers. Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.')
+        if build.platform_is_linux:
+            # Check if system lib is lower at least 2.4.4 and not suffering bug
+            # https://bugs.launchpad.net/mixxx/+bug/1833225
+            if not conf.CheckForPKG('shout', '2.4.4'):
+                self.INTERNAL_LINK = True
+ 
+        if not self.INTERNAL_LINK:
+            self.INTERNAL_LINK = not conf.CheckLib(['libshout', 'shout'])
+
+        if self.INTERNAL_LINK:
+            print("Using internal shout_mixxx from lib/libshout")
+            build.env.Append(CPPPATH='include')
+            build.env.Append(CPPPATH='src')
+            return
 
         if build.platform_is_windows and build.static_dependencies:
             conf.CheckLib('winmm')
@@ -705,6 +723,26 @@ class LiveBroadcasting(Feature):
             conf.CheckLib('gdi32')
 
     def sources(self, build):
+        if self.INTERNAL_LINK:
+            # Clone our main environment so we don't change any settings in the
+            # Mixxx environment
+            libshout_env = build.env.Clone()
+
+            if build.toolchain_is_gnu:
+                libshout_env.Append(CCFLAGS='-pthread')
+                libshout_env.Append(LINKFLAGS='-pthread')
+
+            libshout_env.Append(CPPPATH="#lib/libshout")
+            libshout_dir = libshout_env.Dir("#lib/libshout")
+
+            env = libshout_env
+            SCons.Export('env')
+            SCons.Export('build')
+            env.SConscript(env.File('SConscript', libshout_dir))
+
+            build.env.Append(LIBPATH=libshout_dir)
+            build.env.Append(LIBS=['shout_mixxx', 'ogg', 'vorbis', 'theora', 'speex', 'ssl', 'crypto'])
+
         depends.Qt.uic(build)('src/preferences/dialog/dlgprefbroadcastdlg.ui')
         return ['src/preferences/dialog/dlgprefbroadcast.cpp',
                 'src/broadcast/broadcastmanager.cpp',

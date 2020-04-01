@@ -32,38 +32,75 @@ QDrag* dragUrls(
 }
 
 bool addFileToList(
-        const QString& file,
-        QList<QFileInfo>* files) {
-    QFileInfo fileInfo(file);
-
+        TrackFile trackFile,
+        QList<TrackFile>* trackFiles) {
     // Since the user just dropped these files into Mixxx we have permission
     // to touch the file. Create a security token to keep this permission
     // across reboots.
-    Sandbox::createSecurityToken(fileInfo);
+    Sandbox::createSecurityToken(trackFile.asFileInfo());
 
-    if (!fileInfo.exists()) {
+    if (!trackFile.checkFileExists()) {
         return false;
     }
 
     // Filter out invalid URLs (eg. files that aren't supported audio
     // filetypes, etc.)
-    if (!SoundSourceProxy::isFileSupported(fileInfo)) {
+    if (!SoundSourceProxy::isFileSupported(trackFile.asFileInfo())) {
         return false;
     }
 
-    files->append(fileInfo);
+    trackFiles->append(std::move(trackFile));
     return true;
+}
+
+QList<TrackFile> dropEventFiles(
+        const QMimeData& mimeData,
+        const QString& sourceIdentifier,
+        bool firstOnly,
+        bool acceptPlaylists) {
+    qDebug() << "dropEventFiles()" << mimeData.hasUrls() << mimeData.urls();
+    qDebug() << "mimeData.hasText()" << mimeData.hasText() << mimeData.text();
+
+    if (!mimeData.hasUrls() ||
+            (mimeData.hasText() && mimeData.text() == sourceIdentifier)) {
+        return QList<TrackFile>();
+    }
+
+    return DragAndDropHelper::supportedTracksFromUrls(
+            mimeData.urls(),
+            firstOnly,
+            acceptPlaylists);
+}
+
+// Allow loading to a player if the player isn't playing
+// or the settings allow interrupting a playing player.
+bool allowLoadToPlayer(
+        const QString& group,
+        UserSettingsPointer pConfig) {
+    // Always allow loads to preview decks
+    if (PlayerManager::isPreviewDeckGroup(group)) {
+        return true;
+    }
+
+    // Allow if deck is not playing
+    if (ControlObject::get(ConfigKey(group, "play")) <= 0.0) {
+        return true;
+    }
+
+    return pConfig->getValueString(
+            ConfigKey("[Controls]",
+            "AllowTrackLoadToPlayingDeck")).toInt();
 }
 
 } // anonymous namespace
 
 //static
-QList<QFileInfo> DragAndDropHelper::supportedTracksFromUrls(
+QList<TrackFile> DragAndDropHelper::supportedTracksFromUrls(
         const QList<QUrl>& urls,
         bool firstOnly,
         bool acceptPlaylists) {
-    QList<QFileInfo> fileLocations;
-    for (QUrl url : urls) {
+    QList<TrackFile> trackFiles;
+    for (const QUrl& url : urls) {
 
         // XXX: Possible WTF alert - Previously we thought we needed
         // toString() here but what you actually want in any case when
@@ -89,46 +126,24 @@ QList<QFileInfo> DragAndDropHelper::supportedTracksFromUrls(
             QScopedPointer<ParserM3u> playlist_parser(new ParserM3u());
             QList<QString> track_list = playlist_parser->parse(file);
             foreach (const QString& playlistFile, track_list) {
-                addFileToList(playlistFile, &fileLocations);
+                addFileToList(TrackFile(playlistFile), &trackFiles);
             }
         } else if (acceptPlaylists && url.toString().endsWith(".pls")) {
             QScopedPointer<ParserPls> playlist_parser(new ParserPls());
             QList<QString> track_list = playlist_parser->parse(file);
             foreach (const QString& playlistFile, track_list) {
-                addFileToList(playlistFile, &fileLocations);
+                addFileToList(TrackFile(playlistFile), &trackFiles);
             }
         } else {
-            addFileToList(file, &fileLocations);
+            addFileToList(TrackFile::fromUrl(url), &trackFiles);
         }
 
-        if (firstOnly && !fileLocations.isEmpty()) {
+        if (firstOnly && !trackFiles.isEmpty()) {
             break;
         }
     }
 
-    return fileLocations;
-}
-
-//static
-bool DragAndDropHelper::allowLoadToPlayer(
-        const QString& group,
-        UserSettingsPointer pConfig) {
-    return allowLoadToPlayer(
-            group, ControlObject::get(ConfigKey(group, "play")) > 0.0, pConfig);
-}
-
-//static
-bool DragAndDropHelper::allowLoadToPlayer(
-        const QString& group,
-        bool isPlaying,
-        UserSettingsPointer pConfig) {
-    // Always allow loads to preview decks.
-    if (PlayerManager::isPreviewDeckGroup(group)) {
-        return true;
-    }
-
-    return !isPlaying ||
-            pConfig->getValueString(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt();
+    return trackFiles;
 }
 
 //static
@@ -162,27 +177,10 @@ bool DragAndDropHelper::dragEnterAccept(
         const QString& sourceIdentifier,
         bool firstOnly,
         bool acceptPlaylists) {
-    QList<QFileInfo> files = dropEventFiles(mimeData, sourceIdentifier, firstOnly, acceptPlaylists);
+    // TODO(XXX): This operation blocks the UI when many
+    // files are selected!
+    QList<TrackFile> files = dropEventFiles(mimeData, sourceIdentifier, firstOnly, acceptPlaylists);
     return !files.isEmpty();
-}
-
-//static
-QList<QFileInfo> DragAndDropHelper::dropEventFiles(
-        const QMimeData& mimeData,
-        const QString& sourceIdentifier,
-        bool firstOnly,
-        bool acceptPlaylists) {
-    qDebug() << "dropEventFiles()" << mimeData.hasUrls() << mimeData.urls();
-    qDebug() << "mimeData.hasText()" << mimeData.hasText() << mimeData.text();
-
-    if (!mimeData.hasUrls() ||
-            (mimeData.hasText() && mimeData.text() == sourceIdentifier)) {
-        return QList<QFileInfo>();
-    }
-
-    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
-            mimeData.urls(), firstOnly, acceptPlaylists);
-    return files;
 }
 
 //static
@@ -230,14 +228,14 @@ void DragAndDropHelper::handleTrackDropEvent(
     if (allowLoadToPlayer(group, pConfig)) {
         if (allowDeckCloneAttempt(*event, group)) {
             event->accept();
-            emit(target.cloneDeck(event->mimeData()->text(), group));
+            emit target.cloneDeck(event->mimeData()->text(), group);
             return;
         } else {
-            QList<QFileInfo> files = dropEventFiles(
+            QList<TrackFile> files = dropEventFiles(
                     *event->mimeData(), group, true, false);
             if (!files.isEmpty()) {
                 event->accept();
-                target.emitTrackDropped(files.at(0).absoluteFilePath(), group);
+                target.emitTrackDropped(files.at(0).location(), group);
                 return;
             }
         }

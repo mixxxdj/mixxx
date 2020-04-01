@@ -142,7 +142,7 @@ bool EngineEffectChain::processEffectsRequest(EffectsRequest& message,
         default:
             return false;
     }
-    pResponsePipe->writeMessages(&response, 1);
+    pResponsePipe->writeMessage(response);
     return true;
 }
 

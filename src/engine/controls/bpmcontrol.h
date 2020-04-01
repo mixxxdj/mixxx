@@ -34,6 +34,7 @@ class BpmControl : public EngineControl {
     double calcSyncedRate(double userTweak);
     // Get the phase offset from the specified position.
     double getNearestPositionInPhase(double dThisPosition, bool respectLoops, bool playing);
+    double getBeatMatchPosition(double dThisPosition, bool respectLoops, bool playing);
     double getPhaseOffset(double dThisPosition);
     double getBeatDistance(double dThisPosition) const;
 
@@ -70,6 +71,8 @@ class BpmControl : public EngineControl {
     // Example: shortestPercentageChange(0.99, 0.01) == 0.02
     static double shortestPercentageChange(const double& current_percentage,
                                            const double& target_percentage);
+    double getRateRatio() const;
+    void notifySeek(double dNewPlaypos) override;
     void trackLoaded(TrackPointer pNewTrack) override;
 
   private slots:
@@ -97,8 +100,7 @@ class BpmControl : public EngineControl {
         return toSynchronized(getSyncMode());
     }
     bool syncTempo();
-    double calcSyncAdjustment(double my_percentage, bool userTweakingSync);
-    double calcRateRatio() const;
+    double calcSyncAdjustment(bool userTweakingSync);
 
     friend class SyncControl;
 
@@ -106,15 +108,12 @@ class BpmControl : public EngineControl {
     ControlProxy* m_pPlayButton;
     QAtomicInt m_oldPlayButton;
     ControlProxy* m_pReverseButton;
-    ControlProxy* m_pRateSlider;
+    ControlProxy* m_pRateRatio;
     ControlObject* m_pQuantize;
-    ControlProxy* m_pRateRange;
-    ControlProxy* m_pRateDir;
 
     // ControlObjects that come from QuantizeControl
     QScopedPointer<ControlProxy> m_pNextBeat;
     QScopedPointer<ControlProxy> m_pPrevBeat;
-    QScopedPointer<ControlProxy> m_pClosestBeat;
 
     // ControlObjects that come from LoopingControl
     ControlProxy* m_pLoopEnabled;
@@ -162,8 +161,6 @@ class BpmControl : public EngineControl {
     // objects below are written from an engine worker thread
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
-
-    const QString m_sGroup;
 
     FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
 };

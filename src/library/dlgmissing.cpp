@@ -1,16 +1,17 @@
 #include "library/dlgmissing.h"
 
 #include "library/missingtablemodel.h"
+#include "library/trackcollectionmanager.h"
 #include "widget/wtracktableview.h"
 #include "util/assert.h"
 
 DlgMissing::DlgMissing(QWidget* parent, UserSettingsPointer pConfig,
                        Library* pLibrary,
-                       TrackCollection* pTrackCollection, KeyboardEventFilter* pKeyboard)
+                       KeyboardEventFilter* pKeyboard)
          : QWidget(parent),
            Ui::DlgMissing(),
            m_pTrackTableView(
-               new WTrackTableView(this, pConfig, pTrackCollection, false)) {
+               new WTrackTableView(this, pConfig, pLibrary->trackCollections(), false)) {
     setupUi(this);
     m_pTrackTableView->installEventFilter(pKeyboard);
 
@@ -23,7 +24,7 @@ DlgMissing::DlgMissing(QWidget* parent, UserSettingsPointer pConfig,
         box->insertWidget(1, m_pTrackTableView);
     }
 
-    m_pMissingTableModel = new MissingTableModel(this, pLibrary);
+    m_pMissingTableModel = new MissingTableModel(this, pLibrary->trackCollections());
     m_pTrackTableView->loadTrackModel(m_pMissingTableModel);
 
     connect(btnPurge, &QPushButton::clicked, m_pTrackTableView, &WTrackTableView::slotPurge);

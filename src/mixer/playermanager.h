@@ -12,6 +12,7 @@
 #include "analyzer/trackanalysisscheduler.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
+#include "util/parented_ptr.h"
 #include "util/performancetimer.h"
 
 class Auxiliary;
@@ -216,6 +217,10 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // there is no input configured.
     void noMicrophoneInputConfigured();
 
+    // Emitted when the user tries to enable an auxiliary master control when
+    // there is no input configured.
+    void noAuxiliaryInputConfigured();
+
     // Emitted when the user tries to enable deck passthrough when there is no
     // input configured.
     void noDeckPassthroughInputConfigured();
@@ -265,6 +270,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     ControlObject* m_pCONumPreviewDecks;
     ControlObject* m_pCONumMicrophones;
     ControlObject* m_pCONumAuxiliaries;
+    parented_ptr<ControlProxy> m_pAutoDjEnabled;
 
     TrackAnalysisScheduler::Pointer m_pTrackAnalysisScheduler;
 

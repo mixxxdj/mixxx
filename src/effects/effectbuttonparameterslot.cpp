@@ -78,7 +78,7 @@ void EffectButtonParameterSlot::loadParameter(EffectParameter* pEffectParameter)
         m_pControlLoaded->forceSet(1.0);
     }
 
-    emit(updated());
+    emit updated();
 }
 
 void EffectButtonParameterSlot::clear() {
@@ -93,7 +93,7 @@ void EffectButtonParameterSlot::clear() {
     m_pControlValue->set(0.0);
     m_pControlValue->setDefaultValue(0.0);
     m_pControlType->forceSet(0.0);
-    emit(updated());
+    emit updated();
 }
 
 void EffectButtonParameterSlot::slotParameterValueChanged(double value) {

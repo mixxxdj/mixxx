@@ -5,7 +5,6 @@
 #include <QMimeData>
 
 #include "library/trackmodel.h"
-#include "library/trackcollection.h"
 #include "recording/recordingmanager.h"
 #include "util/file.h"
 #include "library/browse/browsethread.h"
@@ -33,6 +32,7 @@ const int COLUMN_FILE_MODIFIED_TIME = 18;
 const int COLUMN_FILE_CREATION_TIME = 19;
 const int COLUMN_REPLAYGAIN = 20;
 
+class TrackCollectionManager;
 
 // The BrowseTable models displays tracks
 // of given directory on the HDD.
@@ -45,12 +45,13 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     Q_OBJECT
 
   public:
-    BrowseTableModel(QObject* parent, TrackCollection* pTrackCollection, RecordingManager* pRec);
+    BrowseTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager, RecordingManager* pRec);
     virtual ~BrowseTableModel();
 
     void setPath(const MDir& path);
 
     TrackPointer getTrack(const QModelIndex& index) const override;
+    TrackPointer getTrackByRef(const TrackRef& trackRef) const override;
     TrackModel::CapabilitiesFlags getCapabilities() const override;
 
     QString getTrackLocation(const QModelIndex& index) const override;
@@ -80,9 +81,10 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
   private:
     void addSearchColumn(int index);
 
+    TrackCollectionManager* const m_pTrackCollectionManager;
+
     QList<int> m_searchColumns;
     MDir m_current_directory;
-    TrackCollection* m_pTrackCollection;
     RecordingManager* m_pRecordingManager;
     BrowseThreadPointer m_pBrowseThread;
     QString m_previewDeckGroup;

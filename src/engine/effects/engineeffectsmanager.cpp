@@ -19,7 +19,7 @@ EngineEffectsManager::~EngineEffectsManager() {
 
 void EngineEffectsManager::onCallbackStart() {
     EffectsRequest* request = NULL;
-    while (m_pResponsePipe->readMessages(&request, 1) > 0) {
+    while (m_pResponsePipe->readMessage(&request)) {
         EffectsResponse response(*request);
         bool processed = false;
         switch (request->type) {
@@ -91,7 +91,7 @@ void EngineEffectsManager::onCallbackStart() {
         }
 
         if (!processed) {
-            m_pResponsePipe->writeMessages(&response, 1);
+            m_pResponsePipe->writeMessage(response);
         }
     }
 }
@@ -262,6 +262,6 @@ bool EngineEffectsManager::processEffectsRequest(EffectsRequest& message,
         default:
             return false;
     }
-    pResponsePipe->writeMessages(&response, 1);
+    pResponsePipe->writeMessage(response);
     return true;
 }

@@ -11,22 +11,52 @@
 const QString MixxxDb::kDefaultSchemaFile(":/schema.xml");
 
 //static
-const int MixxxDb::kRequiredSchemaVersion = 29;
+const int MixxxDb::kRequiredSchemaVersion = 32;
 
 namespace {
 
 const mixxx::Logger kLogger("MixxxDb");
+
+const QString kType = QStringLiteral("QSQLITE");
+
+const QString kConnectOptions = QStringLiteral("QSQLITE_OPEN_URI");
+
+const QString kUriPrefix = QStringLiteral("file://");
+
+const QString kDefaultFileName = QStringLiteral("mixxxdb.sqlite");
+
+const QString kUserName = QStringLiteral("mixxx");
+
+const QString kPassword = QStringLiteral("mixxx");
 
 // The connection parameters for the main Mixxx DB
 mixxx::DbConnection::Params dbConnectionParams(
         const UserSettingsPointer& pConfig,
         bool inMemoryConnection) {
     mixxx::DbConnection::Params params;
-    params.type = "QSQLITE";
-    params.hostName = "localhost";
-    params.filePath = inMemoryConnection ? QString(":memory:") : QDir(pConfig->getSettingsPath()).filePath("mixxxdb.sqlite");
-    params.userName = "mixxx";
-    params.password = "mixxx";
+    params.type = kType;
+    params.connectOptions = kConnectOptions;
+    params.filePath = kUriPrefix;
+    const QString absFilePath =
+            QDir(pConfig->getSettingsPath()).absoluteFilePath(kDefaultFileName);
+    // On Windows absFilePath starts with a drive letter instead of
+    // the leading '/' as required.
+    // https://www.sqlite.org/c3ref/open.html#urifilenameexamples
+    if (!absFilePath.startsWith(QChar('/'))) {
+        params.filePath += QChar('/');
+    }
+    params.filePath += absFilePath;
+    // Allow multiple connections to the same in-memory database by
+    // using a named connection. This is needed to make the database
+    // connection pool work correctly even during tests.
+    //
+    // See also:
+    // https://www.sqlite.org/inmemorydb.html
+    if (inMemoryConnection) {
+        params.filePath += QStringLiteral("?mode=memory&cache=shared");
+    }
+    params.userName = kUserName;
+    params.password = kPassword;
     return params;
 }
 

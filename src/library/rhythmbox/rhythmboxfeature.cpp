@@ -7,12 +7,14 @@
 
 #include "library/baseexternaltrackmodel.h"
 #include "library/baseexternalplaylistmodel.h"
+#include "library/library.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "library/queryutil.h"
 
-RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackCollection)
-        : BaseExternalLibraryFeature(parent, pTrackCollection),
-          m_pTrackCollection(pTrackCollection),
+RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfig)
+        : BaseExternalLibraryFeature(pLibrary, pConfig),
           m_cancelImport(false),
           m_icon(":/images/library/ic_library_rhythmbox.svg") {
     QString tableName = "rhythmbox_library";
@@ -44,12 +46,12 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackColle
     m_trackSource->setSearchColumns(searchColumns);
 
     m_pRhythmboxTrackModel = new BaseExternalTrackModel(
-        this, m_pTrackCollection,
+        this, pLibrary->trackCollections(),
         "mixxx.db.model.rhythmbox",
         "rhythmbox_library",
         m_trackSource);
     m_pRhythmboxPlaylistModel = new BaseExternalPlaylistModel(
-        this, m_pTrackCollection,
+        this, pLibrary->trackCollections(),
         "mixxx.db.model.rhythmbox_playlist",
         "rhythmbox_playlists",
         "rhythmbox_playlist_tracks",
@@ -58,7 +60,7 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackColle
     m_isActivated =  false;
     m_title = tr("Rhythmbox");
 
-    m_database = QSqlDatabase::cloneDatabase(pTrackCollection->database(),
+    m_database = QSqlDatabase::cloneDatabase(pLibrary->trackCollections()->internalCollection()->database(),
                                              "RHYTHMBOX_SCANNER");
 
     //Open the database connection in this thread.
@@ -84,7 +86,7 @@ RhythmboxFeature::~RhythmboxFeature() {
 
 BaseSqlTableModel* RhythmboxFeature::getPlaylistModelForPlaylist(QString playlist) {
     BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(
-                                            this, m_pTrackCollection,
+                                            this, m_pLibrary->trackCollections(),
                                             "mixxx.db.model.rhythmbox_playlist",
                                             "rhythmbox_playlists",
                                             "rhythmbox_playlist_tracks",
@@ -119,11 +121,11 @@ void RhythmboxFeature::activate() {
         m_track_watcher.setFuture(m_track_future);
         m_title = "(loading) Rhythmbox";
         //calls a slot in the sidebar model such that 'Rhythmbox (isLoading)' is displayed.
-        emit(featureIsLoading(this, true));
+        emit featureIsLoading(this, true);
     }
 
-    emit(showTrackModel(m_pRhythmboxTrackModel));
-    emit(enableCoverArtDisplay(false));
+    emit showTrackModel(m_pRhythmboxTrackModel);
+    emit enableCoverArtDisplay(false);
 }
 
 void RhythmboxFeature::activateChild(const QModelIndex& index) {
@@ -131,8 +133,8 @@ void RhythmboxFeature::activateChild(const QModelIndex& index) {
     QString playlist = index.data().toString();
     qDebug() << "Activating " << playlist;
     m_pRhythmboxPlaylistModel->setPlaylist(playlist);
-    emit(showTrackModel(m_pRhythmboxPlaylistModel));
-    emit(enableCoverArtDisplay(false));
+    emit showTrackModel(m_pRhythmboxPlaylistModel);
+    emit enableCoverArtDisplay(false);
 }
 
 TreeItem* RhythmboxFeature::importMusicCollection() {
@@ -214,7 +216,7 @@ TreeItem* RhythmboxFeature::importPlaylists() {
             "INSERT INTO rhythmbox_playlist_tracks (playlist_id, track_id, position) "
             "VALUES (:playlist_id, :track_id, :position)");
     //The tree structure holding the playlists
-    TreeItem* rootItem = new TreeItem(this);
+    std::unique_ptr<TreeItem> rootItem = TreeItem::newRoot(this);
 
     QXmlStreamReader xml(&db);
     while (!xml.atEnd() && !m_cancelImport) {
@@ -251,13 +253,11 @@ TreeItem* RhythmboxFeature::importPlaylists() {
         // do error handling
         qDebug() << "Cannot process Rhythmbox music collection";
         qDebug() << "XML ERROR: " << xml.errorString();
-        delete rootItem;
-        return NULL;
+        return nullptr;
     }
     db.close();
 
-    return rootItem;
-
+    return rootItem.release();
 }
 
 void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query) {
@@ -437,6 +437,6 @@ void RhythmboxFeature::onTrackCollectionLoaded() {
     // calls a slot in the sidebarmodel such that 'isLoading' is removed from
     // the feature title.
     m_title = tr("Rhythmbox");
-    emit(featureLoadingFinished(this));
+    emit featureLoadingFinished(this);
     activate();
 }

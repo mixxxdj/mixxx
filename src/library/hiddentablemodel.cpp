@@ -1,13 +1,13 @@
 #include "library/hiddentablemodel.h"
 
-#include "library/library.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/dao/trackschema.h"
 
 
 HiddenTableModel::HiddenTableModel(QObject* parent,
-                                   Library* pLibrary)
-        : BaseSqlTableModel(parent, &pLibrary->trackCollection(), "mixxx.db.model.missing"),
-          m_pLibrary(pLibrary) {
+                                   TrackCollectionManager* pTrackCollectionManager)
+        : BaseSqlTableModel(parent, pTrackCollectionManager, "mixxx.db.model.missing") {
     setTableModel();
 }
 
@@ -41,19 +41,13 @@ void HiddenTableModel::setTableModel(int id) {
     QStringList tableColumns;
     tableColumns << LIBRARYTABLE_ID;
     setTable(tableName, LIBRARYTABLE_ID, tableColumns,
-             m_pTrackCollection->getTrackSource());
+             m_pTrackCollectionManager->internalCollection()->getTrackSource());
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
     setSearch("");
 }
 
 void HiddenTableModel::purgeTracks(const QModelIndexList& indices) {
-    QList<TrackId> trackIds;
-
-    foreach (QModelIndex index, indices) {
-        trackIds.append(getTrackId(index));
-    }
-
-    m_pLibrary->purgeTracks(trackIds);
+    m_pTrackCollectionManager->purgeTracks(getTrackRefs(indices));
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.
@@ -67,7 +61,7 @@ void HiddenTableModel::unhideTracks(const QModelIndexList& indices) {
         trackIds.append(getTrackId(index));
     }
 
-    m_pTrackCollection->unhideTracks(trackIds);
+    m_pTrackCollectionManager->unhideTracks(trackIds);
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.

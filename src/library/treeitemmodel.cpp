@@ -83,7 +83,7 @@ bool TreeItemModel::setData(const QModelIndex &a_rIndex,
         return false;
     }
 
-    emit(dataChanged(a_rIndex, a_rIndex));
+    emit dataChanged(a_rIndex, a_rIndex);
     return true;
 }
 
@@ -177,7 +177,8 @@ void TreeItemModel::insertTreeItemRows(
     DEBUG_ASSERT(pParentItem != nullptr);
 
     beginInsertRows(parent, position, position + rows.size() - 1);
-    pParentItem->insertChildren(rows, position, rows.size());
+    pParentItem->insertChildren(position, rows);
+    DEBUG_ASSERT(rows.isEmpty());
     endInsertRows();
 }
 
@@ -205,11 +206,11 @@ TreeItem* TreeItemModel::getItem(const QModelIndex &index) const {
 }
 
 void TreeItemModel::triggerRepaint(const QModelIndex& index) {
-    emit(dataChanged(index, index));
+    emit dataChanged(index, index);
 }
 
 void TreeItemModel::triggerRepaint() {
     QModelIndex left = index(0, 0);
     QModelIndex right = index(rowCount() - 1, columnCount() - 1);
-    emit(dataChanged(left, right));
+    emit dataChanged(left, right);
 }

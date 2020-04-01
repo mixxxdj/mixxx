@@ -6,18 +6,17 @@
 
 #include "preferences/usersettings.h"
 #include "control/controlproxy.h"
-#include "library/coverart.h"
-#include "library/dlgtagfetcher.h"
-#include "library/libraryview.h"
-#include "library/trackcollection.h"
+#include "library/dao/playlistdao.h"
 #include "library/trackmodel.h" // Can't forward declare enums
 #include "track/track.h"
 #include "util/duration.h"
+#include "widget/wcolorpickeraction.h"
 #include "widget/wlibrarytableview.h"
 
 class ControlProxy;
+class DlgTagFetcher;
 class DlgTrackInfo;
-class TrackCollection;
+class TrackCollectionManager;
 class WCoverArtMenu;
 
 class ExternalTrackCollection;
@@ -32,9 +31,8 @@ class WTrackTableView : public WLibraryTableView {
     WTrackTableView(
             QWidget* parent,
             UserSettingsPointer pConfig,
-            TrackCollection* pTrackCollection,
-            bool sorting,
-            const QList<ExternalTrackCollection*>& externalTrackCollections = {});
+            TrackCollectionManager* pTrackCollectionManager,
+            bool sorting);
     ~WTrackTableView() override;
     void contextMenuEvent(QContextMenuEvent * event) override;
     void onSearch(const QString& text) override;
@@ -53,9 +51,9 @@ class WTrackTableView : public WLibraryTableView {
     void slotMouseDoubleClicked(const QModelIndex &);
     void slotUnhide();
     void slotPurge();
-    void slotSendToAutoDJBottom() override;
-    void slotSendToAutoDJTop() override;
-    void slotSendToAutoDJReplace() override;
+    void slotAddToAutoDJBottom() override;
+    void slotAddToAutoDJTop() override;
+    void slotAddToAutoDJReplace() override;
 
   private slots:
     void slotRemove();
@@ -77,17 +75,20 @@ class WTrackTableView : public WLibraryTableView {
     void slotPopulateCrateMenu();
     void addSelectionToNewCrate();
     void loadSelectionToGroup(QString group, bool play = false);
-    void doSortByColumn(int headerSection);
+    void doSortByColumn(int headerSection, Qt::SortOrder sortOrder);
     void applySortingIfVisible();
     void applySorting();
     void slotLockBpm();
     void slotUnlockBpm();
     void slotScaleBpm(int);
+    void slotColorPicked(mixxx::RgbColor::optional_t color);
 
     void slotClearBeats();
     void slotClearPlayCount();
     void slotClearMainCue();
     void slotClearHotCues();
+    void slotClearIntroCue();
+    void slotClearOutroCue();
     void slotClearLoop();
     void slotClearKey();
     void slotClearReplayGain();
@@ -106,11 +107,11 @@ class WTrackTableView : public WLibraryTableView {
     void keyNotationChanged();
 
   private:
+    void createActions();
 
-    void sendToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
+    void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
     void showTrackInfo(QModelIndex index);
     void showDlgTagFetcher(QModelIndex index);
-    void createActions(const QList<ExternalTrackCollection*>& externalTrackCollections);
     void dragMoveEvent(QDragMoveEvent * event) override;
     void dragEnterEvent(QDragEnterEvent * event) override;
     void dropEvent(QDropEvent * event) override;
@@ -128,16 +129,14 @@ class WTrackTableView : public WLibraryTableView {
     TrackModel* getTrackModel() const;
     bool modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) const;
 
-    UserSettingsPointer m_pConfig;
-    TrackCollection* m_pTrackCollection;
+    const UserSettingsPointer m_pConfig;
 
-    QSignalMapper m_loadTrackMapper;
+    TrackCollectionManager* const m_pTrackCollectionManager;
 
     QScopedPointer<DlgTrackInfo> m_pTrackInfo;
     QScopedPointer<DlgTagFetcher> m_pTagFetcher;
 
     QModelIndex currentTrackInfoIndex;
-
 
     ControlProxy* m_pNumSamplers;
     ControlProxy* m_pNumDecks;
@@ -156,10 +155,10 @@ class WTrackTableView : public WLibraryTableView {
     QMenu *m_pMetadataUpdateExternalCollectionsMenu;
     QMenu *m_pClearMetadataMenu;
     QMenu *m_pBPMMenu;
+    QMenu *m_pColorMenu;
 
 
     WCoverArtMenu* m_pCoverMenu;
-    QSignalMapper m_playlistMapper, m_crateMapper, m_deckMapper, m_samplerMapper;
 
     // Reload Track Metadata Action:
     QAction *m_pImportMetadataFromFileAct;
@@ -191,7 +190,6 @@ class WTrackTableView : public WLibraryTableView {
     // BPM feature
     QAction *m_pBpmLockAction;
     QAction *m_pBpmUnlockAction;
-    QSignalMapper m_BpmMapper;
     QAction *m_pBpmDoubleAction;
     QAction *m_pBpmHalveAction;
     QAction *m_pBpmTwoThirdsAction;
@@ -199,11 +197,16 @@ class WTrackTableView : public WLibraryTableView {
     QAction *m_pBpmFourThirdsAction;
     QAction *m_pBpmThreeHalvesAction;
 
+    // Track color
+    WColorPickerAction *m_pColorPickerAction;
+
     // Clear track metadata actions
     QAction* m_pClearBeatsAction;
     QAction* m_pClearPlayCountAction;
     QAction* m_pClearMainCueAction;
     QAction* m_pClearHotCuesAction;
+    QAction* m_pClearIntroCueAction;
+    QAction* m_pClearOutroCueAction;
     QAction* m_pClearLoopAction;
     QAction* m_pClearWaveformAction;
     QAction* m_pClearKeyAction;

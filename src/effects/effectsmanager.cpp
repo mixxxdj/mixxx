@@ -37,7 +37,7 @@ EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig,
     qRegisterMetaType<EffectChainMixMode>("EffectChainMixMode");
     QPair<EffectsRequestPipe*, EffectsResponsePipe*> requestPipes =
             TwoWayMessagePipe<EffectsRequest*, EffectsResponse>::makeTwoWayMessagePipe(
-                kEffectMessagPipeFifoSize, kEffectMessagPipeFifoSize, false, false);
+                kEffectMessagPipeFifoSize, kEffectMessagPipeFifoSize);
 
     m_pRequestPipe.reset(requestPipes.first);
     m_pEngineEffectsManager = new EngineEffectsManager(requestPipes.second);
@@ -374,10 +374,10 @@ void EffectsManager::setEffectVisibility(EffectManifestPointer pManifest, bool v
                                                 m_visibleEffectManifests.end(),
                                                 pManifest, alphabetizeEffectManifests);
         m_visibleEffectManifests.insert(insertion_point, pManifest);
-        emit(visibleEffectsUpdated());
+        emit visibleEffectsUpdated();
     } else if (!visible) {
         m_visibleEffectManifests.removeOne(pManifest);
-        emit(visibleEffectsUpdated());
+        emit visibleEffectsUpdated();
     }
 }
 
@@ -436,7 +436,7 @@ bool EffectsManager::writeRequest(EffectsRequest* request) {
 
     request->request_id = m_nextRequestId++;
     // TODO(XXX) use preallocated requests to avoid delete calls from engine
-    if (m_pRequestPipe->writeMessages(&request, 1) == 1) {
+    if (m_pRequestPipe->writeMessage(request)) {
         m_activeRequests[request->request_id] = request;
         return true;
     }
@@ -450,7 +450,7 @@ void EffectsManager::processEffectsResponses() {
     }
 
     EffectsResponse response;
-    while (m_pRequestPipe->readMessages(&response, 1) == 1) {
+    while (m_pRequestPipe->readMessage(&response)) {
         QHash<qint64, EffectsRequest*>::iterator it =
                 m_activeRequests.find(response.request_id);
 

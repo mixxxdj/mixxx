@@ -21,6 +21,7 @@ void WStarRating::setup(const QDomNode& node, const SkinContext& context) {
     Q_UNUSED(node);
     Q_UNUSED(context);
     setMouseTracking(true);
+    setFocusPolicy(Qt::NoFocus);
 }
 
 QSize WStarRating::sizeHint() const {
@@ -46,8 +47,10 @@ void WStarRating::slotTrackLoaded(TrackPointer pTrack) {
             m_pCurrentTrack.reset();
         }
         if (pTrack) {
-            connect(pTrack.get(), SIGNAL(changed(Track*)),
-                    this, SLOT(updateRating(Track*)));
+            connect(pTrack.get(),
+                    &Track::changed,
+                    this,
+                    &WStarRating::slotTrackChanged);
             m_pCurrentTrack = pTrack;
         }
         updateRating();
@@ -63,7 +66,8 @@ void WStarRating::updateRating() {
     update();
 }
 
-void WStarRating::updateRating(Track* /*unused*/) {
+void WStarRating::slotTrackChanged(TrackId trackId) {
+    Q_UNUSED(trackId);
     updateRating();
 }
 

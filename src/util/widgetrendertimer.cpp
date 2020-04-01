@@ -18,7 +18,7 @@ void WidgetRenderTimer::guiTick() {
     }
     if (m_lastActivity > m_lastRender) {
         m_lastRender = m_lastActivity;
-        emit(update());
+        emit update();
     }
 }
 

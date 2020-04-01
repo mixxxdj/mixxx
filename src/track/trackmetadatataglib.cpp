@@ -1,8 +1,11 @@
 #include "track/trackmetadatataglib.h"
 
+#include <taglib/tpropertymap.h>
+
 #include "track/tracknumbers.h"
 
 #include "util/assert.h"
+#include "util/compatibility.h"
 #include "util/duration.h"
 #include "util/logger.h"
 #include "util/memory.h"
@@ -15,6 +18,10 @@
 // TagLib has support for has<TagType>() style functions since version 1.9
 #define TAGLIB_HAS_TAG_CHECK \
     (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
+
+// TagLib has support for MP4::File::hasMP4Tag() and MP4::Tag::isEmpty() version 1.10
+#define TAGLIB_HAS_MP4TAG_CHECK_AND_IS_EMPTY \
+    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 10))
 
 // TagLib has support for length in milliseconds since version 1.10
 #define TAGLIB_HAS_LENGTH_IN_MILLISECONDS \
@@ -30,10 +37,13 @@
 
 #include <taglib/commentsframe.h>
 #include <taglib/textidentificationframe.h>
-#include <taglib/uniquefileidentifierframe.h>
 #include <taglib/attachedpictureframe.h>
 #include <taglib/flacpicture.h>
 #include <taglib/unknownframe.h>
+#if defined(__EXTRA_METADATA__)
+#include <taglib/uniquefileidentifierframe.h>
+#include <taglib/generalencapsulatedobjectframe.h>
+#endif // __EXTRA_METADATA__
 
 #include <array>
 
@@ -62,6 +72,13 @@ bool checkID3v2HeaderVersionSupported(const TagLib::ID3v2::Header& header) {
         return true;
     }
 }
+
+// Owners of ID3v2 UFID frames.
+// NOTE(uklotzde, 2019-09-28): This is the owner string for MusicBrainz
+// as written by MusicBrainz Picard 2.1.3 although the mapping table
+// doesn't mention any "http://" prefix.
+// See also: https://picard.musicbrainz.org/docs/mappings
+const QString kMusicBrainzOwner = QStringLiteral("http://musicbrainz.org");
 
 } // anonymous namespace
 
@@ -150,6 +167,33 @@ bool hasAPETag(TagLib::WavPack::File& file) {
 #endif
 }
 
+bool hasID3v2Tag(TagLib::RIFF::WAV::File& file) {
+#if (TAGLIB_HAS_WAV_ID3V2TAG)
+    return file.hasID3v2Tag();
+#else
+    return file.tag() != nullptr;
+#endif
+}
+
+bool hasID3v2Tag(TagLib::RIFF::AIFF::File& file) {
+#if (TAGLIB_HAS_AIFF_HAS_ID3V2TAG)
+    return file.hasID3v2Tag();
+#else
+    return file.tag() != nullptr;
+#endif
+}
+
+bool hasMP4Tag(TagLib::MP4::File& file) {
+    // Note (TagLib 1.11.1): For MP4 files without file tags
+    // TagLib still reports that the MP4 tag exists. Additionally
+    // we need to check that the tag itself is not empty.
+#if (TAGLIB_HAS_MP4TAG_CHECK_AND_IS_EMPTY)
+    return file.hasMP4Tag() && !file.tag()->isEmpty();
+#else
+    return file.tag() != nullptr;
+#endif
+}
+
 namespace {
 
 // Preferred picture types for cover art sorted by priority
@@ -184,6 +228,15 @@ inline QString toQString(const TagLib::String& tString) {
         return QString();
     } else {
         return TStringToQString(tString);
+    }
+}
+
+inline TagLib::String toTString(const QString& str) {
+    if (str.isNull()) {
+        return TagLib::String::null;
+    } else {
+        const QByteArray qba(str.toUtf8());
+        return TagLib::String(qba.constData(), TagLib::String::UTF8);
     }
 }
 
@@ -227,14 +280,30 @@ inline QString toQStringFirstNotEmpty(const TagLib::MP4::Item& mp4Item) {
     return toQStringFirstNotEmpty(mp4Item.toStringList());
 }
 
-inline TagLib::String toTagLibString(const QString& str) {
-    const QByteArray qba(str.toUtf8());
-    if (str.isNull()) {
-        return TagLib::String::null;
+#if defined(__EXTRA_METADATA__)
+inline QByteArray toQByteArray(const TagLib::ByteVector& tByteVector) {
+    if (tByteVector.isNull()) {
+        // null -> null
+        return QByteArray();
     } else {
-        return TagLib::String(qba.constData(), TagLib::String::UTF8);
+        return QByteArray(tByteVector.data(), tByteVector.size());
     }
 }
+
+inline TagLib::ByteVector toTByteVector(const QByteArray& bytearray) {
+    if (bytearray.isNull()) {
+        return TagLib::ByteVector::null;
+    } else {
+        return TagLib::ByteVector(bytearray.constData(), bytearray.size());
+    }
+}
+
+inline
+TagLib::String uuidToTString(const QUuid& uuid) {
+    return toTString(uuidToNullableStringWithoutBraces(uuid));
+}
+
+#endif // __EXTRA_METADATA__
 
 inline QString formatBpm(const TrackMetadata& trackMetadata) {
     return Bpm::valueToString(trackMetadata.getTrackInfo().getBpm().getValue());
@@ -311,11 +380,6 @@ QString formatReplayGainPeak(const ReplayGain& replayGain) {
 }
 
 inline
-bool hasTrackPeak(const TrackMetadata& trackMetadata) {
-    return trackMetadata.getTrackInfo().getReplayGain().hasPeak();
-}
-
-inline
 QString formatTrackPeak(const TrackMetadata& trackMetadata) {
     return formatReplayGainPeak(trackMetadata.getTrackInfo().getReplayGain());
 }
@@ -348,11 +412,6 @@ bool parseTrackPeak(
 
 #if defined(__EXTRA_METADATA__)
 inline
-bool hasAlbumGain(const TrackMetadata& trackMetadata) {
-    return trackMetadata.getAlbumInfo().getReplayGain().hasRatio();
-}
-
-inline
 QString formatAlbumGain(const TrackMetadata& trackMetadata) {
     return formatReplayGainGain(trackMetadata.getAlbumInfo().getReplayGain());
 }
@@ -371,11 +430,6 @@ bool parseAlbumGain(
 }
 
 inline
-bool hasAlbumPeak(const TrackMetadata& trackMetadata) {
-    return trackMetadata.getAlbumInfo().getReplayGain().hasPeak();
-}
-
-inline
 QString formatAlbumPeak(const TrackMetadata& trackMetadata) {
     return formatReplayGainPeak(trackMetadata.getAlbumInfo().getReplayGain());
 }
@@ -391,6 +445,32 @@ bool parseAlbumPeak(
         pTrackMetadata->refAlbumInfo().setReplayGain(replayGain);
     }
     return isPeakValid;
+}
+
+bool parseSeratoMarkers(
+        TrackMetadata* pTrackMetadata,
+        const QByteArray& data) {
+    DEBUG_ASSERT(pTrackMetadata);
+
+    SeratoTags seratoTags(pTrackMetadata->getTrackInfo().getSeratoTags());
+    bool isValid = seratoTags.parseMarkers(data);
+    if (isValid) {
+        pTrackMetadata->refTrackInfo().setSeratoTags(seratoTags);
+    }
+    return isValid;
+}
+
+bool parseSeratoMarkers2(
+        TrackMetadata* pTrackMetadata,
+        const QByteArray& data) {
+    DEBUG_ASSERT(pTrackMetadata);
+
+    SeratoTags seratoTags(pTrackMetadata->getTrackInfo().getSeratoTags());
+    bool isValid = seratoTags.parseMarkers2(data);
+    if (isValid) {
+        pTrackMetadata->refTrackInfo().setSeratoTags(seratoTags);
+    }
+    return isValid;
 }
 #endif // __EXTRA_METADATA__
 
@@ -564,6 +644,21 @@ TagLib::ID3v2::UserTextIdentificationFrame* findFirstUserTextIdentificationFrame
     return pFirstFrame;
 }
 
+inline
+QString readFirstUserTextIdentificationFrame(
+        const TagLib::ID3v2::Tag& tag,
+        const QString& description) {
+    const TagLib::ID3v2::UserTextIdentificationFrame* pTextFrame =
+            findFirstUserTextIdentificationFrame(tag, description);
+    if (pTextFrame && (pTextFrame->fieldList().size() > 1)) {
+        // The actual value is stored in the 2nd field
+        return toQString(pTextFrame->fieldList()[1]);
+    } else {
+        return QString();
+    }
+}
+
+#if defined(__EXTRA_METADATA__)
 // Finds the first UFID frame that with a matching owner (case-insensitive).
 // If multiple UFID frames with matching descriptions exist prefer the first
 // with a non-empty content if requested.
@@ -601,21 +696,6 @@ TagLib::ID3v2::UniqueFileIdentifierFrame* findFirstUniqueFileIdentifierFrame(
     return pFirstFrame;
 }
 
-inline
-QString readFirstUserTextIdentificationFrame(
-        const TagLib::ID3v2::Tag& tag,
-        const QString& description) {
-    const TagLib::ID3v2::UserTextIdentificationFrame* pTextFrame =
-            findFirstUserTextIdentificationFrame(tag, description);
-    if (pTextFrame && (pTextFrame->fieldList().size() > 1)) {
-        // The actual value is stored in the 2nd field
-        return toQString(pTextFrame->fieldList()[1]);
-    } else {
-        return QString();
-    }
-}
-
-inline
 QByteArray readFirstUniqueFileIdentifierFrame(
         const TagLib::ID3v2::Tag& tag,
         const QString& owner) {
@@ -625,6 +705,114 @@ QByteArray readFirstUniqueFileIdentifierFrame(
         return QByteArray(pFrame->identifier().data(), pFrame->identifier().size());
     } else {
         return QByteArray();
+    }
+}
+
+// Finds the first GEOB frame that with a matching description (case-insensitive).
+// If multiple GEOB frames with matching descriptions exist prefer the first
+// with a non-empty content if requested.
+TagLib::ID3v2::GeneralEncapsulatedObjectFrame* findFirstGeneralEncapsulatedObjectFrame(
+        const TagLib::ID3v2::Tag& tag,
+        const QString& description,
+        bool preferNotEmpty = true) {
+    DEBUG_ASSERT(!description.isEmpty());
+    TagLib::ID3v2::GeneralEncapsulatedObjectFrame* pFirstFrame = nullptr;
+    // Bind the const-ref result to avoid a local copy
+    const TagLib::ID3v2::FrameList& geobFrames =
+            tag.frameListMap()["GEOB"];
+    for (TagLib::ID3v2::FrameList::ConstIterator it(geobFrames.begin());
+            it != geobFrames.end(); ++it) {
+        auto pFrame =
+                dynamic_cast<TagLib::ID3v2::GeneralEncapsulatedObjectFrame*>(*it);
+        if (pFrame) {
+            const QString frameDescription(
+                    toQString(pFrame->description()));
+            if (0 == frameDescription.compare(
+                    description, Qt::CaseInsensitive)) {
+                if (preferNotEmpty && pFrame->toString().isEmpty()) {
+                    // we might need the first matching frame later
+                    // even if it is empty
+                    if (!pFirstFrame) {
+                        pFirstFrame = pFrame;
+                    }
+                } else {
+                    // found what we are looking for
+                    return pFrame;
+                }
+            }
+        }
+    }
+    // simply return the first matching frame
+    return pFirstFrame;
+}
+
+inline
+QByteArray readFirstGeneralEncapsulatedObjectFrame(
+        const TagLib::ID3v2::Tag& tag,
+        const QString& description) {
+    const TagLib::ID3v2::GeneralEncapsulatedObjectFrame* pGeobFrame =
+            findFirstGeneralEncapsulatedObjectFrame(tag, description);
+    if (pGeobFrame) {
+        return toQByteArray(pGeobFrame->object());
+    } else {
+        return QByteArray();
+    }
+}
+#endif // __EXTRA_METADATA__
+
+void writeID3v2TextIdentificationFrame(
+        TagLib::ID3v2::Tag* pTag,
+        const TagLib::ByteVector &id,
+        const QString& text,
+        bool isNumericOrURL = false) {
+    DEBUG_ASSERT(pTag);
+
+    // Remove all existing frames before adding a new one
+    pTag->removeFrames(id);
+    if (!text.isEmpty()) {
+        // Only add non-empty frames
+        const TagLib::String::Type stringType =
+                getID3v2StringType(*pTag, isNumericOrURL);
+        auto pFrame =
+                std::make_unique<TagLib::ID3v2::TextIdentificationFrame>(id, stringType);
+        pFrame->setText(toTString(text));
+        pTag->addFrame(pFrame.get());
+        // Now that the plain pointer in pFrame is owned and managed by
+        // pTag we need to release the ownership to avoid double deletion!
+        pFrame.release();
+    }
+}
+
+void writeID3v2UserTextIdentificationFrame(
+        TagLib::ID3v2::Tag* pTag,
+        const QString& description,
+        const QString& text,
+        bool isNumericOrURL = false) {
+    TagLib::ID3v2::UserTextIdentificationFrame* pFrame =
+            findFirstUserTextIdentificationFrame(*pTag, description);
+    if (pFrame) {
+        // Modify existing frame
+        if (text.isEmpty()) {
+            // Purge empty frames
+            pTag->removeFrame(pFrame);
+        } else {
+            pFrame->setDescription(toTString(description));
+            pFrame->setText(toTString(text));
+        }
+    } else {
+        // Add a new (non-empty) frame
+        if (!text.isEmpty()) {
+            const TagLib::String::Type stringType =
+                    getID3v2StringType(*pTag, isNumericOrURL);
+            auto pFrame =
+                    std::make_unique<TagLib::ID3v2::UserTextIdentificationFrame>(stringType);
+            pFrame->setDescription(toTString(description));
+            pFrame->setText(toTString(text));
+            pTag->addFrame(pFrame.get());
+            // Now that the plain pointer in pFrame is owned and managed by
+            // pTag we need to release the ownership to avoid double deletion!
+            pFrame.release();
+        }
     }
 }
 
@@ -669,29 +857,6 @@ int removeUserTextIdentificationFrames(
     return count;
 }
 
-void writeID3v2TextIdentificationFrame(
-        TagLib::ID3v2::Tag* pTag,
-        const TagLib::ByteVector &id,
-        const QString& text,
-        bool isNumericOrURL = false) {
-    DEBUG_ASSERT(pTag);
-
-    // Remove all existing frames before adding a new one
-    pTag->removeFrames(id);
-    if (!text.isEmpty()) {
-        // Only add non-empty frames
-        const TagLib::String::Type stringType =
-                getID3v2StringType(*pTag, isNumericOrURL);
-        auto pFrame =
-                std::make_unique<TagLib::ID3v2::TextIdentificationFrame>(id, stringType);
-        pFrame->setText(toTagLibString(text));
-        pTag->addFrame(pFrame.get());
-        // Now that the plain pointer in pFrame is owned and managed by
-        // pTag we need to release the ownership to avoid double deletion!
-        pFrame.release();
-    }
-}
-
 void writeID3v2CommentsFrame(
         TagLib::ID3v2::Tag* pTag,
         const QString& text,
@@ -705,8 +870,8 @@ void writeID3v2CommentsFrame(
             // Purge empty frames
             pTag->removeFrame(pFrame);
         } else {
-            pFrame->setDescription(toTagLibString(description));
-            pFrame->setText(toTagLibString(text));
+            pFrame->setDescription(toTString(description));
+            pFrame->setText(toTString(text));
         }
     } else {
         // Add a new (non-empty) frame
@@ -715,8 +880,8 @@ void writeID3v2CommentsFrame(
                     getID3v2StringType(*pTag, isNumericOrURL);
             auto pFrame =
                     std::make_unique<TagLib::ID3v2::CommentsFrame>(stringType);
-            pFrame->setDescription(toTagLibString(description));
-            pFrame->setText(toTagLibString(text));
+            pFrame->setDescription(toTString(description));
+            pFrame->setText(toTString(text));
             pTag->addFrame(pFrame.get());
             // Now that the plain pointer in pFrame is owned and managed by
             // pTag we need to release the ownership to avoid double deletion!
@@ -741,52 +906,7 @@ void writeID3v2CommentsFrameWithoutDescription(
     writeID3v2CommentsFrame(pTag, text, QString(), isNumericOrURL);
 }
 
-void writeID3v2UserTextIdentificationFrame(
-        TagLib::ID3v2::Tag* pTag,
-        const QString& description,
-        const QString& text,
-        bool isNumericOrURL = false) {
-    TagLib::ID3v2::UserTextIdentificationFrame* pFrame =
-            findFirstUserTextIdentificationFrame(*pTag, description);
-    if (pFrame) {
-        // Modify existing frame
-        if (text.isEmpty()) {
-            // Purge empty frames
-            pTag->removeFrame(pFrame);
-        } else {
-            pFrame->setDescription(toTagLibString(description));
-            pFrame->setText(toTagLibString(text));
-        }
-    } else {
-        // Add a new (non-empty) frame
-        if (!text.isEmpty()) {
-            const TagLib::String::Type stringType =
-                    getID3v2StringType(*pTag, isNumericOrURL);
-            auto pFrame =
-                    std::make_unique<TagLib::ID3v2::UserTextIdentificationFrame>(stringType);
-            pFrame->setDescription(toTagLibString(description));
-            pFrame->setText(toTagLibString(text));
-            pTag->addFrame(pFrame.get());
-            // Now that the plain pointer in pFrame is owned and managed by
-            // pTag we need to release the ownership to avoid double deletion!
-            pFrame.release();
-        }
-    }
-}
-
 #if defined(__EXTRA_METADATA__)
-bool writeID3v2TextIdentificationFrameStringIfNotNull(
-        TagLib::ID3v2::Tag* pTag,
-        const TagLib::ByteVector &id,
-        const QString& text) {
-    if (text.isNull()) {
-        return false;
-    } else {
-        writeID3v2TextIdentificationFrame(pTag, id, text);
-        return true;
-    }
-}
-
 void writeID3v2UniqueFileIdentifierFrame(
         TagLib::ID3v2::Tag* pTag,
         const QString& owner,
@@ -799,7 +919,7 @@ void writeID3v2UniqueFileIdentifierFrame(
             // Purge empty frames
             pTag->removeFrame(pFrame);
         } else {
-            pFrame->setOwner(toTagLibString(owner));
+            pFrame->setOwner(toTString(owner));
             pFrame->setIdentifier(TagLib::ByteVector(identifier.constData(), identifier.size()));
         }
     } else {
@@ -807,8 +927,38 @@ void writeID3v2UniqueFileIdentifierFrame(
         if (!identifier.isEmpty()) {
             auto pFrame =
                     std::make_unique<TagLib::ID3v2::UniqueFileIdentifierFrame>(
-                            toTagLibString(owner),
+                            toTString(owner),
                             TagLib::ByteVector(identifier.constData(), identifier.size()));
+            pTag->addFrame(pFrame.get());
+            // Now that the plain pointer in pFrame is owned and managed by
+            // pTag we need to release the ownership to avoid double deletion!
+            pFrame.release();
+        }
+    }
+}
+
+void writeID3v2GeneralEncapsulatedObjectFrame(
+        TagLib::ID3v2::Tag* pTag,
+        const QString& description,
+        const QByteArray& data) {
+    TagLib::ID3v2::GeneralEncapsulatedObjectFrame* pFrame =
+            findFirstGeneralEncapsulatedObjectFrame(*pTag, description);
+    if (pFrame) {
+        // Modify existing frame
+        if (data.isEmpty()) {
+            // Purge empty frames
+            pTag->removeFrame(pFrame);
+        } else {
+            pFrame->setDescription(toTString(description));
+            pFrame->setObject(toTByteVector(data));
+        }
+    } else {
+        // Add a new (non-empty) frame
+        if (!data.isEmpty()) {
+            auto pFrame =
+                    std::make_unique<TagLib::ID3v2::GeneralEncapsulatedObjectFrame>();
+            pFrame->setDescription(toTString(description));
+            pFrame->setObject(toTByteVector(data));
             pTag->addFrame(pFrame.get());
             // Now that the plain pointer in pFrame is owned and managed by
             // pTag we need to release the ownership to avoid double deletion!
@@ -1018,9 +1168,9 @@ const T* downcastID3v2Frame(TagLib::ID3v2::Frame* frame) {
     return downcastFrame;
 }
 
-void importCoverImageFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& tag) {
+bool importCoverImageFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& tag) {
     if (!pCoverArt) {
-        return; // nothing to do
+        return false; // nothing to do
     }
 
     const auto iterAPIC = tag.frameListMap().find("APIC");
@@ -1028,7 +1178,7 @@ void importCoverImageFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& t
         if (kLogger.debugEnabled()) {
             kLogger.debug() << "No cover art: None or empty list of ID3v2 APIC frames";
         }
-        return; // abort
+        return false; // abort
     }
 
     const TagLib::ID3v2::FrameList pFrames = iterAPIC->second;
@@ -1045,7 +1195,7 @@ void importCoverImageFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& t
                     continue;
                 } else {
                     *pCoverArt = image;
-                    return; // success
+                    return true; // success
                 }
             }
         }
@@ -1064,15 +1214,20 @@ void importCoverImageFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& t
                 continue;
             } else {
                 *pCoverArt = image;
-                return; // success
+                return true; // success
             }
         }
     }
+
+    if (kLogger.debugEnabled()) {
+        kLogger.debug() << "No cover art found in ID3v2 tag";
+    }
+    return false;
 }
 
-void importCoverImageFromAPETag(QImage* pCoverArt, const TagLib::APE::Tag& tag) {
+bool importCoverImageFromAPETag(QImage* pCoverArt, const TagLib::APE::Tag& tag) {
     if (!pCoverArt) {
-        return; // nothing to do
+        return false; // nothing to do
     }
 
     if (tag.itemListMap().contains("COVER ART (FRONT)")) {
@@ -1088,14 +1243,20 @@ void importCoverImageFromAPETag(QImage* pCoverArt, const TagLib::APE::Tag& tag) 
                         << "Failed to load image from APE tag";
             } else {
                 *pCoverArt = image; // success
+                return true;
             }
         }
     }
+
+    if (kLogger.debugEnabled()) {
+        kLogger.debug() << "No cover art found in APE tag";
+    }
+    return false;
 }
 
-void importCoverImageFromVorbisCommentTag(QImage* pCoverArt, TagLib::Ogg::XiphComment& tag) {
+bool importCoverImageFromVorbisCommentTag(QImage* pCoverArt, TagLib::Ogg::XiphComment& tag) {
     if (!pCoverArt) {
-        return; // nothing to do
+        return false; // nothing to do
     }
 
 #if (TAGLIB_HAS_VORBIS_COMMENT_PICTURES)
@@ -1103,7 +1264,7 @@ void importCoverImageFromVorbisCommentTag(QImage* pCoverArt, TagLib::Ogg::XiphCo
             importCoverImageFromVorbisCommentPictureList(tag.pictureList());
     if (!image.isNull()) {
         *pCoverArt = image;
-        return; // done
+        return false; // done
     }
 #endif
 
@@ -1137,7 +1298,7 @@ void importCoverImageFromVorbisCommentTag(QImage* pCoverArt, TagLib::Ogg::XiphCo
                     continue;
                 } else {
                     *pCoverArt = image;
-                    return; // done
+                    return true; // done
                 }
             } else {
                 kLogger.warning()
@@ -1165,18 +1326,20 @@ void importCoverImageFromVorbisCommentTag(QImage* pCoverArt, TagLib::Ogg::XiphCo
                 continue;
             } else {
                 *pCoverArt = image;
-                return; // done
+                return true; // done
             }
         }
     }
+
     if (kLogger.debugEnabled()) {
         kLogger.debug() << "No cover art found in VorbisComment tag";
     }
+    return false;
 }
 
-void importCoverImageFromMP4Tag(QImage* pCoverArt, const TagLib::MP4::Tag& tag) {
+bool importCoverImageFromMP4Tag(QImage* pCoverArt, const TagLib::MP4::Tag& tag) {
     if (!pCoverArt) {
-        return; // nothing to do
+        return false; // nothing to do
     }
 
     if (getItemListMap(tag).contains("covr")) {
@@ -1190,10 +1353,15 @@ void importCoverImageFromMP4Tag(QImage* pCoverArt, const TagLib::MP4::Tag& tag) 
                 continue;
             } else {
                 *pCoverArt = image;
-                return; // done
+                return true; // done
             }
         }
     }
+
+    if (kLogger.debugEnabled()) {
+        kLogger.debug() << "No cover art found in MP4 tag";
+    }
+    return false;
 }
 
 void importTrackMetadataFromTag(
@@ -1447,7 +1615,7 @@ void importTrackMetadataFromID3v2Tag(
         pTrackMetadata->refTrackInfo().setMusicBrainzArtistId(QUuid(trackArtistId));
     }
     QByteArray trackRecordingId =
-            readFirstUniqueFileIdentifierFrame(tag, "http://musicbrainz.org");
+            readFirstUniqueFileIdentifierFrame(tag, kMusicBrainzOwner);
     if (!trackRecordingId.isEmpty()) {
         pTrackMetadata->refTrackInfo().setMusicBrainzRecordingId(QUuid(trackRecordingId));
     }
@@ -1526,6 +1694,16 @@ void importTrackMetadataFromID3v2Tag(
     const TagLib::ID3v2::FrameList encoderSettingsFrames(tag.frameListMap()["TSSE"]);
     if (!encoderSettingsFrames.isEmpty()) {
         pTrackMetadata->refTrackInfo().setEncoderSettings(toQStringFirstNotEmpty(encoderSettingsFrames));
+    }
+    // Serato tags
+    QByteArray seratoMarkers = readFirstGeneralEncapsulatedObjectFrame(tag, "Serato Markers_");
+    if (!seratoMarkers.isEmpty()) {
+        parseSeratoMarkers(pTrackMetadata, seratoMarkers);
+    }
+
+    QByteArray seratoMarkers2 = readFirstGeneralEncapsulatedObjectFrame(tag, "Serato Markers2");
+    if (!seratoMarkers2.isEmpty()) {
+        parseSeratoMarkers2(pTrackMetadata, seratoMarkers2);
     }
 #endif // __EXTRA_METADATA__
 }
@@ -2116,17 +2294,17 @@ void exportTrackMetadataIntoTag(
         int writeMask) {
     DEBUG_ASSERT(pTag); // already validated before
 
-    pTag->setArtist(toTagLibString(trackMetadata.getTrackInfo().getArtist()));
-    pTag->setTitle(toTagLibString(trackMetadata.getTrackInfo().getTitle()));
-    pTag->setAlbum(toTagLibString(trackMetadata.getAlbumInfo().getTitle()));
-    pTag->setGenre(toTagLibString(trackMetadata.getTrackInfo().getGenre()));
+    pTag->setArtist(toTString(trackMetadata.getTrackInfo().getArtist()));
+    pTag->setTitle(toTString(trackMetadata.getTrackInfo().getTitle()));
+    pTag->setAlbum(toTString(trackMetadata.getAlbumInfo().getTitle()));
+    pTag->setGenre(toTString(trackMetadata.getTrackInfo().getGenre()));
 
     // Using setComment() from TagLib::Tag might have undesirable
     // effects if the tag type supports multiple comment fields for
     // different purposes, e.g. ID3v2. In this case setting the
     // comment here should be omitted.
     if (0 == (writeMask & WRITE_TAG_OMIT_COMMENT)) {
-        pTag->setComment(toTagLibString(trackMetadata.getTrackInfo().getComment()));
+        pTag->setComment(toTString(trackMetadata.getTrackInfo().getComment()));
     }
 
     // Specialized write functions for tags derived from Taglib::Tag might
@@ -2185,7 +2363,7 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
     writeID3v2CommentsFrameWithoutDescription(pTag, trackMetadata.getTrackInfo().getComment());
 
     writeID3v2TextIdentificationFrame(pTag, "TRCK",
-            TrackNumbers::joinStrings(
+            TrackNumbers::joinAsString(
                     trackMetadata.getTrackInfo().getTrackNumber(),
                     trackMetadata.getTrackInfo().getTrackTotal()));
 
@@ -2238,11 +2416,11 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
                 "GRP1",
                 trackMetadata.getTrackInfo().getGrouping());
 #if defined(__EXTRA_METADATA__)
-        writeID3v2TextIdentificationFrameStringIfNotNull(
+        writeID3v2TextIdentificationFrame(
                 pTag,
                 "TIT1",
                 trackMetadata.getTrackInfo().getWork());
-        writeID3v2TextIdentificationFrameStringIfNotNull(
+        writeID3v2TextIdentificationFrame(
                 pTag,
                 "MVNM",
                 trackMetadata.getTrackInfo().getMovement());
@@ -2269,145 +2447,131 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
             "REPLAYGAIN_TRACK_GAIN",
             formatTrackGain(trackMetadata),
             true);
-    // NOTE(uklotzde, 2018-04-22): The analyzers currently doesn't
-    // calculate a peak value, so leave it untouched in the file if
-    // the value is invalid/absent. Otherwise the ID3 frame would
-    // be deleted.
-    if (hasTrackPeak(trackMetadata)) {
-        writeID3v2UserTextIdentificationFrame(
-                pTag,
-                "REPLAYGAIN_TRACK_PEAK",
-                formatTrackPeak(trackMetadata),
-                true);
-    }
+    writeID3v2UserTextIdentificationFrame(
+            pTag,
+            "REPLAYGAIN_TRACK_PEAK",
+            formatTrackPeak(trackMetadata),
+            true);
 
-    // TODO(XXX): The following tags have been added later and are currently
-    // not stored in the Mixxx library. Only write fields that have non-null
-    // values to preserve any existing file tags instead of removing them!
 #if defined(__EXTRA_METADATA__)
-    if (hasAlbumGain(trackMetadata)) {
-        writeID3v2UserTextIdentificationFrame(
-                pTag,
-                "REPLAYGAIN_ALBUM_GAIN",
-                formatAlbumGain(trackMetadata),
-                true);
-    }
-    if (hasAlbumPeak(trackMetadata)) {
-        writeID3v2UserTextIdentificationFrame(
-                pTag,
-                "REPLAYGAIN_ALBUM_PEAK",
-                formatAlbumPeak(trackMetadata),
-                true);
-    }
+    writeID3v2TextIdentificationFrame(pTag, "TPOS", TrackNumbers::joinAsString(
+            trackMetadata.getTrackInfo().getDiscNumber(),
+            trackMetadata.getTrackInfo().getDiscTotal()));
 
-    if (!trackMetadata.getTrackInfo().getMusicBrainzArtistId().isNull()) {
-        writeID3v2UserTextIdentificationFrame(
-                pTag,
-                "MusicBrainz Artist Id",
-                trackMetadata.getTrackInfo().getMusicBrainzArtistId().toString(),
-                false);
-    }
-    if (!trackMetadata.getTrackInfo().getMusicBrainzRecordingId().isNull()) {
+    writeID3v2UserTextIdentificationFrame(
+            pTag,
+            "REPLAYGAIN_ALBUM_GAIN",
+            formatAlbumGain(trackMetadata),
+            true);
+    writeID3v2UserTextIdentificationFrame(
+            pTag,
+            "REPLAYGAIN_ALBUM_PEAK",
+            formatAlbumPeak(trackMetadata),
+            true);
+
+    writeID3v2UserTextIdentificationFrame(
+            pTag,
+            "MusicBrainz Artist Id",
+            uuidToNullableStringWithoutBraces(trackMetadata.getTrackInfo().getMusicBrainzArtistId()),
+            false);
+    {
         QByteArray identifier = trackMetadata.getTrackInfo().getMusicBrainzRecordingId().toByteArray();
         if (identifier.size() == 38) {
             // Strip leading/trailing curly braces
+            DEBUG_ASSERT(identifier.startsWith('{'));
+            DEBUG_ASSERT(identifier.endsWith('}'));
             identifier = identifier.mid(1, 36);
         }
         DEBUG_ASSERT(identifier.size() == 36);
         writeID3v2UniqueFileIdentifierFrame(
                 pTag,
-                "http://musicbrainz.org",
+                kMusicBrainzOwner,
                 identifier);
     }
-    if (!trackMetadata.getTrackInfo().getMusicBrainzReleaseId().isNull()) {
-        writeID3v2UserTextIdentificationFrame(
-                pTag,
-                "MusicBrainz Release Track Id",
-                trackMetadata.getTrackInfo().getMusicBrainzReleaseId().toString(),
-                false);
-    }
-    if (!trackMetadata.getTrackInfo().getMusicBrainzWorkId().isNull()) {
-        writeID3v2UserTextIdentificationFrame(
-                pTag,
-                "MusicBrainz Work Id",
-                trackMetadata.getTrackInfo().getMusicBrainzWorkId().toString(),
-                false);
-    }
-    if (!trackMetadata.getAlbumInfo().getMusicBrainzArtistId().isNull()) {
-        writeID3v2UserTextIdentificationFrame(
-                pTag,
-                "MusicBrainz Album Artist Id",
-                trackMetadata.getAlbumInfo().getMusicBrainzArtistId().toString(),
-                false);
-    }
-    if (!trackMetadata.getAlbumInfo().getMusicBrainzReleaseId().isNull()) {
-        writeID3v2UserTextIdentificationFrame(
-                pTag,
-                "MusicBrainz Album Id",
-                trackMetadata.getAlbumInfo().getMusicBrainzReleaseId().toString(),
-                false);
-    }
-    if (!trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId().isNull()) {
-        writeID3v2UserTextIdentificationFrame(
-                pTag,
-                "MusicBrainz Release Group Id",
-                trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId().toString(),
-                false);
-    }
+    writeID3v2UserTextIdentificationFrame(
+            pTag,
+            "MusicBrainz Release Track Id",
+            uuidToNullableStringWithoutBraces(trackMetadata.getTrackInfo().getMusicBrainzReleaseId()),
+            false);
+    writeID3v2UserTextIdentificationFrame(
+            pTag,
+            "MusicBrainz Work Id",
+            uuidToNullableStringWithoutBraces(trackMetadata.getTrackInfo().getMusicBrainzWorkId()),
+            false);
+    writeID3v2UserTextIdentificationFrame(
+            pTag,
+            "MusicBrainz Album Artist Id",
+            uuidToNullableStringWithoutBraces(trackMetadata.getAlbumInfo().getMusicBrainzArtistId()),
+            false);
+    writeID3v2UserTextIdentificationFrame(
+            pTag,
+            "MusicBrainz Album Id",
+            uuidToNullableStringWithoutBraces(trackMetadata.getAlbumInfo().getMusicBrainzReleaseId()),
+            false);
+    writeID3v2UserTextIdentificationFrame(
+            pTag,
+            "MusicBrainz Release Group Id",
+            uuidToNullableStringWithoutBraces(trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId()),
+            false);
 
-    writeID3v2TextIdentificationFrameStringIfNotNull(pTag, "TPOS", TrackNumbers::joinStrings(
-            trackMetadata.getTrackInfo().getDiscNumber(),
-            trackMetadata.getTrackInfo().getDiscTotal()));
-    writeID3v2TextIdentificationFrameStringIfNotNull(
+    writeID3v2TextIdentificationFrame(
             pTag,
             "TPE3",
             trackMetadata.getTrackInfo().getConductor());
-    writeID3v2TextIdentificationFrameStringIfNotNull(
+    writeID3v2TextIdentificationFrame(
             pTag,
             "TSRC",
             trackMetadata.getTrackInfo().getISRC());
-    writeID3v2TextIdentificationFrameStringIfNotNull(
+    writeID3v2TextIdentificationFrame(
             pTag,
             "TLAN",
             trackMetadata.getTrackInfo().getLanguage());
-    writeID3v2TextIdentificationFrameStringIfNotNull(
+    writeID3v2TextIdentificationFrame(
             pTag,
             "TEXT",
             trackMetadata.getTrackInfo().getLyricist());
     if (pHeader->majorVersion() >= 4) {
-        writeID3v2TextIdentificationFrameStringIfNotNull(
+        writeID3v2TextIdentificationFrame(
                 pTag,
                 "TMOO",
                 trackMetadata.getTrackInfo().getMood());
     }
-    writeID3v2TextIdentificationFrameStringIfNotNull(
+    writeID3v2TextIdentificationFrame(
             pTag,
             "TCOP",
             trackMetadata.getAlbumInfo().getCopyright());
-    writeID3v2TextIdentificationFrameStringIfNotNull(
+    writeID3v2TextIdentificationFrame(
             pTag,
             "WCOP",
             trackMetadata.getAlbumInfo().getLicense());
-    writeID3v2TextIdentificationFrameStringIfNotNull(
+    writeID3v2TextIdentificationFrame(
             pTag,
             "TPUB",
             trackMetadata.getAlbumInfo().getRecordLabel());
-    writeID3v2TextIdentificationFrameStringIfNotNull(
+    writeID3v2TextIdentificationFrame(
             pTag,
             "TPE4",
             trackMetadata.getTrackInfo().getRemixer());
-    writeID3v2TextIdentificationFrameStringIfNotNull(
+    writeID3v2TextIdentificationFrame(
             pTag,
             "TIT3",
             trackMetadata.getTrackInfo().getSubtitle());
-    writeID3v2TextIdentificationFrameStringIfNotNull(
+    writeID3v2TextIdentificationFrame(
             pTag,
             "TENC",
             trackMetadata.getTrackInfo().getEncoder());
-    writeID3v2TextIdentificationFrameStringIfNotNull(
+    writeID3v2TextIdentificationFrame(
             pTag,
             "TSSE",
             trackMetadata.getTrackInfo().getEncoderSettings());
+    writeID3v2GeneralEncapsulatedObjectFrame(
+            pTag,
+            "Serato Markers_",
+            trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers());
+    writeID3v2GeneralEncapsulatedObjectFrame(
+            pTag,
+            "Serato Markers2",
+            trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2());
 #endif // __EXTRA_METADATA__
 
     return true;
@@ -2425,134 +2589,81 @@ bool exportTrackMetadataIntoAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& 
     // part of the tag with the custom string from the track metadata
     // (pass-through without any further validation)
     writeAPEItem(pTag, "Track",
-            toTagLibString(TrackNumbers::joinStrings(
+            toTString(TrackNumbers::joinAsString(
                     trackMetadata.getTrackInfo().getTrackNumber(),
                     trackMetadata.getTrackInfo().getTrackTotal())));
 
     writeAPEItem(pTag, "Year",
-            toTagLibString(trackMetadata.getTrackInfo().getYear()));
+            toTString(trackMetadata.getTrackInfo().getYear()));
 
     writeAPEItem(pTag, "Album Artist",
-            toTagLibString(trackMetadata.getAlbumInfo().getArtist()));
+            toTString(trackMetadata.getAlbumInfo().getArtist()));
     writeAPEItem(pTag, "Composer",
-            toTagLibString(trackMetadata.getTrackInfo().getComposer()));
+            toTString(trackMetadata.getTrackInfo().getComposer()));
     writeAPEItem(pTag, "Grouping",
-            toTagLibString(trackMetadata.getTrackInfo().getGrouping()));
+            toTString(trackMetadata.getTrackInfo().getGrouping()));
 
     writeAPEItem(pTag, "BPM",
-            toTagLibString(formatBpm(trackMetadata)));
+            toTString(formatBpm(trackMetadata)));
 
     writeAPEItem(pTag, "INITIALKEY",
-            toTagLibString(trackMetadata.getTrackInfo().getKey()));
+            toTString(trackMetadata.getTrackInfo().getKey()));
 
     writeAPEItem(pTag, "REPLAYGAIN_TRACK_GAIN",
-            toTagLibString(formatTrackGain(trackMetadata)));
-    // NOTE(uklotzde, 2018-04-22): The analyzers currently doesn't
-    // calculate a peak value, so leave it untouched in the file if
-    // the value is invalid/absent. Otherwise the APE item would be
-    // deleted.
-    if (hasTrackPeak(trackMetadata)) {
-        writeAPEItem(pTag, "REPLAYGAIN_TRACK_PEAK",
-                toTagLibString(formatTrackPeak(trackMetadata)));
-    }
+            toTString(formatTrackGain(trackMetadata)));
+    writeAPEItem(pTag, "REPLAYGAIN_TRACK_PEAK",
+            toTString(formatTrackPeak(trackMetadata)));
 
-    // TODO(XXX): The following tags have been added later and are currently
-    // not stored in the Mixxx library. Only write fields that have non-null
-    // values to preserve any existing file tags instead of removing them!
 #if defined(__EXTRA_METADATA__)
-    auto discNumbers = TrackNumbers::joinStrings(
+    auto discNumbers = TrackNumbers::joinAsString(
             trackMetadata.getTrackInfo().getDiscNumber(),
             trackMetadata.getTrackInfo().getDiscTotal());
-    if (!discNumbers.isNull()) {
-        writeAPEItem(pTag, "Disc", toTagLibString(discNumbers));
-    }
+    writeAPEItem(pTag, "Disc", toTString(discNumbers));
 
-    if (hasAlbumGain(trackMetadata)) {
-        writeAPEItem(pTag, "REPLAYGAIN_ALBUM_GAIN",
-                toTagLibString(formatAlbumGain(trackMetadata)));
-    }
-    if (hasAlbumPeak(trackMetadata)) {
-        writeAPEItem(pTag, "REPLAYGAIN_ALBUM_PEAK",
-                toTagLibString(formatAlbumPeak(trackMetadata)));
-    }
+    writeAPEItem(pTag, "REPLAYGAIN_ALBUM_GAIN",
+            toTString(formatAlbumGain(trackMetadata)));
+    writeAPEItem(pTag, "REPLAYGAIN_ALBUM_PEAK",
+            toTString(formatAlbumPeak(trackMetadata)));
 
-    if (!trackMetadata.getTrackInfo().getMusicBrainzArtistId().isNull()) {
-        writeAPEItem(pTag, "MUSICBRAINZ_ARTISTID",
-                toTagLibString(trackMetadata.getTrackInfo().getMusicBrainzArtistId().toString()));
-    }
-    if (!trackMetadata.getTrackInfo().getMusicBrainzRecordingId().isNull()) {
-        writeAPEItem(pTag, "MUSICBRAINZ_TRACKID",
-                toTagLibString(trackMetadata.getTrackInfo().getMusicBrainzRecordingId().toString()));
-    }
-    if (!trackMetadata.getTrackInfo().getMusicBrainzReleaseId().isNull()) {
-        writeAPEItem(pTag, "MUSICBRAINZ_RELEASETRACKID",
-                toTagLibString(trackMetadata.getTrackInfo().getMusicBrainzReleaseId().toString()));
-    }
-    if (!trackMetadata.getTrackInfo().getMusicBrainzWorkId().isNull()) {
-        writeAPEItem(pTag, "MUSICBRAINZ_WORKID",
-                toTagLibString(trackMetadata.getTrackInfo().getMusicBrainzWorkId().toString()));
-    }
-    if (!trackMetadata.getAlbumInfo().getMusicBrainzArtistId().isNull()) {
-        writeAPEItem(pTag, "MUSICBRAINZ_ALBUMARTISTID",
-                toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzArtistId().toString()));
-    }
-    if (!trackMetadata.getAlbumInfo().getMusicBrainzReleaseId().isNull()) {
-        writeAPEItem(pTag, "MUSICBRAINZ_ALBUMID",
-                toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseId().toString()));
-    }
-    if (!trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId().isNull()) {
-        writeAPEItem(pTag, "MUSICBRAINZ_RELEASEGROUPID",
-                toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId().toString()));
-    }
+    writeAPEItem(pTag, "MUSICBRAINZ_ARTISTID",
+            uuidToTString(trackMetadata.getTrackInfo().getMusicBrainzArtistId()));
+    writeAPEItem(pTag, "MUSICBRAINZ_TRACKID",
+            uuidToTString(trackMetadata.getTrackInfo().getMusicBrainzRecordingId()));
+    writeAPEItem(pTag, "MUSICBRAINZ_RELEASETRACKID",
+            uuidToTString(trackMetadata.getTrackInfo().getMusicBrainzReleaseId()));
+    writeAPEItem(pTag, "MUSICBRAINZ_WORKID",
+            uuidToTString(trackMetadata.getTrackInfo().getMusicBrainzWorkId()));
+    writeAPEItem(pTag, "MUSICBRAINZ_ALBUMARTISTID",
+            uuidToTString(trackMetadata.getAlbumInfo().getMusicBrainzArtistId()));
+    writeAPEItem(pTag, "MUSICBRAINZ_ALBUMID",
+            uuidToTString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseId()));
+    writeAPEItem(pTag, "MUSICBRAINZ_RELEASEGROUPID",
+            uuidToTString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId()));
 
-    if (!trackMetadata.getTrackInfo().getConductor().isNull()) {
-        writeAPEItem(pTag, "Conductor",
-                toTagLibString(trackMetadata.getTrackInfo().getConductor()));
-    }
-    if (!trackMetadata.getTrackInfo().getISRC().isNull()) {
-        writeAPEItem(pTag, "ISRC",
-                toTagLibString(trackMetadata.getTrackInfo().getISRC()));
-    }
-    if (!trackMetadata.getTrackInfo().getLanguage().isNull()) {
-        writeAPEItem(pTag, "Language",
-                toTagLibString(trackMetadata.getTrackInfo().getLanguage()));
-    }
-    if (!trackMetadata.getTrackInfo().getLyricist().isNull()) {
-        writeAPEItem(pTag, "Lyricist",
-                toTagLibString(trackMetadata.getTrackInfo().getLyricist()));
-    }
-    if (!trackMetadata.getTrackInfo().getMood().isNull()) {
-        writeAPEItem(pTag, "Mood",
-                toTagLibString(trackMetadata.getTrackInfo().getMood()));
-    }
-    if (!trackMetadata.getAlbumInfo().getCopyright().isNull()) {
-        writeAPEItem(pTag, "Copyright",
-                toTagLibString(trackMetadata.getAlbumInfo().getCopyright()));
-    }
-    if (!trackMetadata.getAlbumInfo().getLicense().isNull()) {
-        writeAPEItem(pTag, "LICENSE",
-                toTagLibString(trackMetadata.getAlbumInfo().getLicense()));
-    }
-    if (!trackMetadata.getAlbumInfo().getRecordLabel().isNull()) {
-        writeAPEItem(pTag, "Label",
-                toTagLibString(trackMetadata.getAlbumInfo().getRecordLabel()));
-    }
-    if (!trackMetadata.getTrackInfo().getRemixer().isNull()) {
-        writeAPEItem(pTag, "MixArtist",
-                toTagLibString(trackMetadata.getTrackInfo().getRemixer()));
-    }
-    if (!trackMetadata.getTrackInfo().getSubtitle().isNull()) {
-        writeAPEItem(pTag, "Subtitle",
-                toTagLibString(trackMetadata.getTrackInfo().getSubtitle()));
-    }
-    if (!trackMetadata.getTrackInfo().getEncoder().isNull()) {
-        writeAPEItem(pTag, "EncodedBy",
-                toTagLibString(trackMetadata.getTrackInfo().getEncoder()));
-    }
-    if (!trackMetadata.getTrackInfo().getEncoderSettings().isNull()) {
-        writeAPEItem(pTag, "EncoderSettings",
-                toTagLibString(trackMetadata.getTrackInfo().getEncoderSettings()));
-    }
+    writeAPEItem(pTag, "Conductor",
+            toTString(trackMetadata.getTrackInfo().getConductor()));
+    writeAPEItem(pTag, "ISRC",
+            toTString(trackMetadata.getTrackInfo().getISRC()));
+    writeAPEItem(pTag, "Language",
+            toTString(trackMetadata.getTrackInfo().getLanguage()));
+    writeAPEItem(pTag, "Lyricist",
+            toTString(trackMetadata.getTrackInfo().getLyricist()));
+    writeAPEItem(pTag, "Mood",
+            toTString(trackMetadata.getTrackInfo().getMood()));
+    writeAPEItem(pTag, "Copyright",
+            toTString(trackMetadata.getAlbumInfo().getCopyright()));
+    writeAPEItem(pTag, "LICENSE",
+            toTString(trackMetadata.getAlbumInfo().getLicense()));
+    writeAPEItem(pTag, "Label",
+            toTString(trackMetadata.getAlbumInfo().getRecordLabel()));
+    writeAPEItem(pTag, "MixArtist",
+            toTString(trackMetadata.getTrackInfo().getRemixer()));
+    writeAPEItem(pTag, "Subtitle",
+            toTString(trackMetadata.getTrackInfo().getSubtitle()));
+    writeAPEItem(pTag, "EncodedBy",
+            toTString(trackMetadata.getTrackInfo().getEncoder()));
+    writeAPEItem(pTag, "EncoderSettings",
+            toTString(trackMetadata.getTrackInfo().getEncoderSettings()));
 #endif // __EXTRA_METADATA__
 
     return true;
@@ -2577,40 +2688,40 @@ bool exportTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
     if (hasXiphCommentField(*pTag, "COMMENT") || !hasXiphCommentField(*pTag, "DESCRIPTION")) {
         // MusicBrainz-style
         writeXiphCommentField(pTag, "COMMENT",
-                toTagLibString(trackMetadata.getTrackInfo().getComment()));
+                toTString(trackMetadata.getTrackInfo().getComment()));
     } else {
         // Preserve and update the "DESCRIPTION" field only if it already exists
         DEBUG_ASSERT(hasXiphCommentField(*pTag, "DESCRIPTION"));
         writeXiphCommentField(pTag, "DESCRIPTION",
-                toTagLibString(trackMetadata.getTrackInfo().getComment()));
+                toTString(trackMetadata.getTrackInfo().getComment()));
     }
 
     // Write unambiguous fields
     writeXiphCommentField(pTag, "DATE",
-            toTagLibString(trackMetadata.getTrackInfo().getYear()));
+            toTString(trackMetadata.getTrackInfo().getYear()));
     writeXiphCommentField(pTag, "COMPOSER",
-            toTagLibString(trackMetadata.getTrackInfo().getComposer()));
+            toTString(trackMetadata.getTrackInfo().getComposer()));
     writeXiphCommentField(pTag, "GROUPING",
-            toTagLibString(trackMetadata.getTrackInfo().getGrouping()));
+            toTString(trackMetadata.getTrackInfo().getGrouping()));
     writeXiphCommentField(pTag, "TRACKNUMBER",
-            toTagLibString(trackMetadata.getTrackInfo().getTrackNumber()));
+            toTString(trackMetadata.getTrackInfo().getTrackNumber()));
 
     // According to https://wiki.xiph.org/Field_names "TRACKTOTAL" is
     // the proposed field name, but some applications use "TOTALTRACKS".
     const TagLib::String trackTotal(
-            toTagLibString(trackMetadata.getTrackInfo().getTrackTotal()));
+            toTString(trackMetadata.getTrackInfo().getTrackTotal()));
     writeXiphCommentField(pTag, "TRACKTOTAL", trackTotal); // recommended field
     updateXiphCommentField(pTag, "TOTALTRACKS", trackTotal); // alternative field
 
     const TagLib::String albumArtist(
-            toTagLibString(trackMetadata.getAlbumInfo().getArtist()));
+            toTString(trackMetadata.getAlbumInfo().getArtist()));
     writeXiphCommentField(pTag, "ALBUMARTIST", albumArtist); // recommended field
     updateXiphCommentField(pTag, "ALBUM_ARTIST", albumArtist); // alternative field
     updateXiphCommentField(pTag, "ALBUM ARTIST", albumArtist); // alternative field
     updateXiphCommentField(pTag, "ENSEMBLE", albumArtist); // alternative field
 
     const TagLib::String bpm(
-            toTagLibString(formatBpm(trackMetadata)));
+            toTString(formatBpm(trackMetadata)));
     // MusicBrainz recommends "BPM": https://picard.musicbrainz.org/docs/mappings
     // Mixxx (<= 2.0) favored "TEMPO": https://www.mixxx.org/wiki/doku.php/library_metadata_rewrite_using_taglib
     if (hasXiphCommentField(*pTag, "BPM") || !hasXiphCommentField(*pTag, "TEMPO")) {
@@ -2624,120 +2735,72 @@ bool exportTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
 
     // Write both INITIALKEY and KEY
     const TagLib::String key(
-            toTagLibString(trackMetadata.getTrackInfo().getKey()));
+            toTString(trackMetadata.getTrackInfo().getKey()));
     writeXiphCommentField(pTag, "INITIALKEY", key); // recommended field
     updateXiphCommentField(pTag, "KEY", key); // alternative field
 
     writeXiphCommentField(pTag, "REPLAYGAIN_TRACK_GAIN",
-            toTagLibString(formatTrackGain(trackMetadata)));
+            toTString(formatTrackGain(trackMetadata)));
     // NOTE(uklotzde, 2018-04-22): The analyzers currently doesn't
     // calculate a peak value, so leave it untouched in the file if
     // the value is invalid/absent. Otherwise the comment field would
     // be deleted.
-    if (hasTrackPeak(trackMetadata)) {
-        writeXiphCommentField(pTag, "REPLAYGAIN_TRACK_PEAK",
-                toTagLibString(formatTrackPeak(trackMetadata)));
-    }
+    writeXiphCommentField(pTag, "REPLAYGAIN_TRACK_PEAK",
+            toTString(formatTrackPeak(trackMetadata)));
 
-    // TODO(XXX): The following tags have been added later and are currently
-    // not stored in the Mixxx library. Only write fields that have non-null
-    // values to preserve any existing file tags instead of removing them!
 #if defined(__EXTRA_METADATA__)
-    if (hasAlbumGain(trackMetadata)) {
-        writeXiphCommentField(pTag, "REPLAYGAIN_ALBUM_GAIN",
-                toTagLibString(formatAlbumGain(trackMetadata)));
-    }
-    if (hasAlbumPeak(trackMetadata)) {
-        writeXiphCommentField(pTag, "REPLAYGAIN_ALBUM_PEAK",
-                toTagLibString(formatAlbumPeak(trackMetadata)));
-    }
-    if (!trackMetadata.getTrackInfo().getMusicBrainzArtistId().isNull()) {
-        writeXiphCommentField(pTag, "MUSICBRAINZ_ARTISTID",
-                toTagLibString(trackMetadata.getTrackInfo().getMusicBrainzArtistId().toString()));
-    }
-    if (!trackMetadata.getTrackInfo().getMusicBrainzRecordingId().isNull()) {
-        writeXiphCommentField(pTag, "MUSICBRAINZ_TRACKID",
-                toTagLibString(trackMetadata.getTrackInfo().getMusicBrainzRecordingId().toString()));
-    }
-    if (!trackMetadata.getTrackInfo().getMusicBrainzReleaseId().isNull()) {
-        writeXiphCommentField(pTag, "MUSICBRAINZ_RELEASETRACKID",
-                toTagLibString(trackMetadata.getTrackInfo().getMusicBrainzReleaseId().toString()));
-    }
-    if (!trackMetadata.getTrackInfo().getMusicBrainzWorkId().isNull()) {
-        writeXiphCommentField(pTag, "MUSICBRAINZ_WORKID",
-                toTagLibString(trackMetadata.getTrackInfo().getMusicBrainzWorkId().toString()));
-    }
-    if (!trackMetadata.getAlbumInfo().getMusicBrainzArtistId().isNull()) {
-        writeXiphCommentField(pTag, "MUSICBRAINZ_ALBUMARTISTID",
-                toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzArtistId().toString()));
-    }
-    if (!trackMetadata.getAlbumInfo().getMusicBrainzReleaseId().isNull()) {
-        writeXiphCommentField(pTag, "MUSICBRAINZ_ALBUMID",
-                toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseId().toString()));
-    }
-    if (!trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId().isNull()) {
-        writeXiphCommentField(pTag, "MUSICBRAINZ_RELEASEGROUPID",
-                toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId().toString()));
-    }
-    if (!trackMetadata.getTrackInfo().getConductor().isNull()) {
-        writeXiphCommentField(pTag, "CONDUCTOR",
-                toTagLibString(trackMetadata.getTrackInfo().getConductor()));
-    }
-    if (!trackMetadata.getTrackInfo().getISRC().isNull()) {
-        writeXiphCommentField(pTag, "ISRC",
-                toTagLibString(trackMetadata.getTrackInfo().getISRC()));
-    }
-    if (!trackMetadata.getTrackInfo().getLanguage().isNull()) {
-        writeXiphCommentField(pTag, "LANGUAGE",
-                toTagLibString(trackMetadata.getTrackInfo().getLanguage()));
-    }
-    if (!trackMetadata.getTrackInfo().getLyricist().isNull()) {
-        writeXiphCommentField(pTag, "LYRICIST",
-                toTagLibString(trackMetadata.getTrackInfo().getLyricist()));
-    }
-    if (!trackMetadata.getTrackInfo().getMood().isNull()) {
-        writeXiphCommentField(pTag, "MOOD",
-                toTagLibString(trackMetadata.getTrackInfo().getMood()));
-    }
-    if (!trackMetadata.getAlbumInfo().getCopyright().isNull()) {
-        writeXiphCommentField(pTag, "COPYRIGHT",
-                toTagLibString(trackMetadata.getAlbumInfo().getCopyright()));
-    }
-    if (!trackMetadata.getAlbumInfo().getLicense().isNull()) {
-        writeXiphCommentField(pTag, "LICENSE",
-                toTagLibString(trackMetadata.getAlbumInfo().getLicense()));
-    }
-    if (!trackMetadata.getAlbumInfo().getRecordLabel().isNull()) {
-        writeXiphCommentField(pTag, "LABEL",
-                toTagLibString(trackMetadata.getAlbumInfo().getRecordLabel()));
-    }
-    if (!trackMetadata.getTrackInfo().getRemixer().isNull()) {
-        writeXiphCommentField(pTag, "REMIXER",
-                toTagLibString(trackMetadata.getTrackInfo().getRemixer()));
-    }
-    if (!trackMetadata.getTrackInfo().getSubtitle().isNull()) {
-        writeXiphCommentField(pTag, "SUBTITLE",
-                toTagLibString(trackMetadata.getTrackInfo().getSubtitle()));
-    }
-    if (!trackMetadata.getTrackInfo().getEncoder().isNull()) {
-        writeXiphCommentField(pTag, "ENCODEDBY",
-                toTagLibString(trackMetadata.getTrackInfo().getEncoder()));
-    }
-    if (!trackMetadata.getTrackInfo().getEncoderSettings().isNull()) {
-        writeXiphCommentField(pTag, "ENCODERSETTINGS",
-                toTagLibString(trackMetadata.getTrackInfo().getEncoderSettings()));
-    }
-    if (!trackMetadata.getTrackInfo().getDiscNumber().isNull()) {
-        writeXiphCommentField(
-                pTag, "DISCNUMBER", toTagLibString(trackMetadata.getTrackInfo().getDiscNumber()));
-    }
     // According to https://wiki.xiph.org/Field_names "DISCTOTAL" is
     // the proposed field name, but some applications use "TOTALDISCS".
-    if (!trackMetadata.getTrackInfo().getDiscTotal().isNull()) {
-        const TagLib::String discTotal(toTagLibString(trackMetadata.getTrackInfo().getDiscTotal()));
-        writeXiphCommentField(pTag, "DISCTOTAL", discTotal);   // recommended field
-        updateXiphCommentField(pTag, "TOTALDISCS", discTotal); // alternative field
-    }
+    const TagLib::String discTotal(toTString(trackMetadata.getTrackInfo().getDiscTotal()));
+    writeXiphCommentField(pTag, "DISCTOTAL", discTotal);   // recommended field
+    updateXiphCommentField(pTag, "TOTALDISCS", discTotal); // alternative field
+
+    writeXiphCommentField(pTag, "REPLAYGAIN_ALBUM_GAIN",
+            toTString(formatAlbumGain(trackMetadata)));
+    writeXiphCommentField(pTag, "REPLAYGAIN_ALBUM_PEAK",
+            toTString(formatAlbumPeak(trackMetadata)));
+
+    writeXiphCommentField(pTag, "MUSICBRAINZ_ARTISTID",
+            uuidToTString(trackMetadata.getTrackInfo().getMusicBrainzArtistId()));
+    writeXiphCommentField(pTag, "MUSICBRAINZ_TRACKID",
+            uuidToTString(trackMetadata.getTrackInfo().getMusicBrainzRecordingId()));
+    writeXiphCommentField(pTag, "MUSICBRAINZ_RELEASETRACKID",
+            uuidToTString(trackMetadata.getTrackInfo().getMusicBrainzReleaseId()));
+    writeXiphCommentField(pTag, "MUSICBRAINZ_WORKID",
+            uuidToTString(trackMetadata.getTrackInfo().getMusicBrainzWorkId()));
+    writeXiphCommentField(pTag, "MUSICBRAINZ_ALBUMARTISTID",
+            uuidToTString(trackMetadata.getAlbumInfo().getMusicBrainzArtistId()));
+    writeXiphCommentField(pTag, "MUSICBRAINZ_ALBUMID",
+            uuidToTString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseId()));
+    writeXiphCommentField(pTag, "MUSICBRAINZ_RELEASEGROUPID",
+            uuidToTString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId()));
+
+    writeXiphCommentField(pTag, "CONDUCTOR",
+            toTString(trackMetadata.getTrackInfo().getConductor()));
+    writeXiphCommentField(pTag, "ISRC",
+            toTString(trackMetadata.getTrackInfo().getISRC()));
+    writeXiphCommentField(pTag, "LANGUAGE",
+            toTString(trackMetadata.getTrackInfo().getLanguage()));
+    writeXiphCommentField(pTag, "LYRICIST",
+            toTString(trackMetadata.getTrackInfo().getLyricist()));
+    writeXiphCommentField(pTag, "MOOD",
+            toTString(trackMetadata.getTrackInfo().getMood()));
+    writeXiphCommentField(pTag, "COPYRIGHT",
+            toTString(trackMetadata.getAlbumInfo().getCopyright()));
+    writeXiphCommentField(pTag, "LICENSE",
+            toTString(trackMetadata.getAlbumInfo().getLicense()));
+    writeXiphCommentField(pTag, "LABEL",
+            toTString(trackMetadata.getAlbumInfo().getRecordLabel()));
+    writeXiphCommentField(pTag, "REMIXER",
+            toTString(trackMetadata.getTrackInfo().getRemixer()));
+    writeXiphCommentField(pTag, "SUBTITLE",
+            toTString(trackMetadata.getTrackInfo().getSubtitle()));
+    writeXiphCommentField(pTag, "ENCODEDBY",
+            toTString(trackMetadata.getTrackInfo().getEncoder()));
+    writeXiphCommentField(pTag, "ENCODERSETTINGS",
+            toTString(trackMetadata.getTrackInfo().getEncoderSettings()));
+    writeXiphCommentField(
+            pTag, "DISCNUMBER", toTString(trackMetadata.getTrackInfo().getDiscNumber()));
 #endif // __EXTRA_METADATA__
 
     return true;
@@ -2769,16 +2832,16 @@ bool exportTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& 
         break;
     default:
         kLogger.warning() << "Invalid track numbers:"
-            << TrackNumbers::joinStrings(
+            << TrackNumbers::joinAsString(
                     trackMetadata.getTrackInfo().getTrackNumber(),
                     trackMetadata.getTrackInfo().getTrackTotal());
     }
 
-    writeMP4Atom(pTag, "\251day", toTagLibString(trackMetadata.getTrackInfo().getYear()));
+    writeMP4Atom(pTag, "\251day", toTString(trackMetadata.getTrackInfo().getYear()));
 
-    writeMP4Atom(pTag, "aART", toTagLibString(trackMetadata.getAlbumInfo().getArtist()));
-    writeMP4Atom(pTag, "\251wrt", toTagLibString(trackMetadata.getTrackInfo().getComposer()));
-    writeMP4Atom(pTag, "\251grp", toTagLibString(trackMetadata.getTrackInfo().getGrouping()));
+    writeMP4Atom(pTag, "aART", toTString(trackMetadata.getAlbumInfo().getArtist()));
+    writeMP4Atom(pTag, "\251wrt", toTString(trackMetadata.getTrackInfo().getComposer()));
+    writeMP4Atom(pTag, "\251grp", toTString(trackMetadata.getTrackInfo().getGrouping()));
 
     // Write both BPM fields (just in case)
     if (trackMetadata.getTrackInfo().getBpm().hasValue()) {
@@ -2790,27 +2853,18 @@ bool exportTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& 
         pTag->itemListMap().erase("tmpo");
     }
     writeMP4Atom(pTag, "----:com.apple.iTunes:BPM",
-            toTagLibString(formatBpm(trackMetadata)));
+            toTString(formatBpm(trackMetadata)));
 
     const TagLib::String key =
-            toTagLibString(trackMetadata.getTrackInfo().getKey());
+            toTString(trackMetadata.getTrackInfo().getKey());
     writeMP4Atom(pTag, "----:com.apple.iTunes:initialkey", key); // preferred
     updateMP4Atom(pTag, "----:com.apple.iTunes:KEY", key); // alternative
 
     writeMP4Atom(pTag, "----:com.apple.iTunes:replaygain_track_gain",
-            toTagLibString(formatTrackGain(trackMetadata)));
-    // NOTE(uklotzde, 2018-04-22): The analyzers currently doesn't
-    // calculate a peak value, so leave it untouched in the file if
-    // the value is invalid/absent. Otherwise the MP4 atom would be
-    // deleted.
-    if (hasTrackPeak(trackMetadata)) {
-        writeMP4Atom(pTag, "----:com.apple.iTunes:replaygain_track_peak",
-                toTagLibString(formatTrackPeak(trackMetadata)));
-    }
+            toTString(formatTrackGain(trackMetadata)));
+    writeMP4Atom(pTag, "----:com.apple.iTunes:replaygain_track_peak",
+            toTString(formatTrackPeak(trackMetadata)));
 
-    // TODO(XXX): The following tags have been added later and are currently
-    // not stored in the Mixxx library. Only write fields that have non-null
-    // values to preserve any existing file tags instead of removing them!
 #if defined(__EXTRA_METADATA__)
     // Write disc number/total pair
     QString discNumberText;
@@ -2821,9 +2875,7 @@ bool exportTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& 
             trackMetadata.getTrackInfo().getDiscTotal(), &parsedDiscNumbers);
     switch (discParseResult) {
         case TrackNumbers::ParseResult::EMPTY:
-            // Preserve disc numbers in file and do NOT delete them
-            // if not already stored in the Mixxx database! Support
-            // for these fields have been added later.
+            pTag->itemListMap().erase("disk");
             break;
         case TrackNumbers::ParseResult::VALID:
             pTag->itemListMap()["disk"] =
@@ -2831,97 +2883,57 @@ bool exportTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& 
             break;
         default:
             kLogger.warning() << "Invalid disc numbers:"
-                              << TrackNumbers::joinStrings(
+                              << TrackNumbers::joinAsString(
                                          trackMetadata.getTrackInfo().getDiscNumber(),
                                          trackMetadata.getTrackInfo().getDiscTotal());
     }
 
-    if (hasAlbumGain(trackMetadata)) {
-        writeMP4Atom(pTag, "----:com.apple.iTunes:replaygain_album_gain",
-                toTagLibString(formatAlbumGain(trackMetadata)));
-    }
-    if (hasAlbumPeak(trackMetadata)) {
-        writeMP4Atom(pTag, "----:com.apple.iTunes:replaygain_album_peak",
-                toTagLibString(formatAlbumPeak(trackMetadata)));
-    }
-    if (!trackMetadata.getTrackInfo().getMusicBrainzArtistId().isNull()) {
-        writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Artist Id",
-                toTagLibString(trackMetadata.getTrackInfo().getMusicBrainzArtistId().toString()));
-    }
-    if (!trackMetadata.getTrackInfo().getMusicBrainzRecordingId().isNull()) {
-        writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Track Id",
-                toTagLibString(trackMetadata.getTrackInfo().getMusicBrainzRecordingId().toString()));
-    }
-    if (!trackMetadata.getTrackInfo().getMusicBrainzReleaseId().isNull()) {
-        writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Release Track Id",
-                toTagLibString(trackMetadata.getTrackInfo().getMusicBrainzReleaseId().toString()));
-    }
-    if (!trackMetadata.getTrackInfo().getMusicBrainzWorkId().isNull()) {
-        writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Work Id",
-                toTagLibString(trackMetadata.getTrackInfo().getMusicBrainzWorkId().toString()));
-    }
-    if (!trackMetadata.getAlbumInfo().getMusicBrainzArtistId().isNull()) {
-        writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Album Artist Id",
-                toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzArtistId().toString()));
-    }
-    if (!trackMetadata.getAlbumInfo().getMusicBrainzReleaseId().isNull()) {
-        writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Album Id",
-                toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseId().toString()));
-    }
-    if (!trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId().isNull()) {
-        writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Release Group Id",
-                toTagLibString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId().toString()));
-    }
-    if (!trackMetadata.getTrackInfo().getConductor().isNull()) {
-        writeMP4Atom(pTag, "----:com.apple.iTunes:CONDUCTOR",
-                toTagLibString(trackMetadata.getTrackInfo().getConductor()));
-    }
-    if (!trackMetadata.getTrackInfo().getISRC().isNull()) {
-        writeMP4Atom(pTag, "----:com.apple.iTunes:ISRC",
-                toTagLibString(trackMetadata.getTrackInfo().getISRC()));
-    }
-    if (!trackMetadata.getTrackInfo().getLanguage().isNull()) {
-        writeMP4Atom(pTag, "----:com.apple.iTunes:LANGUAGE",
-                toTagLibString(trackMetadata.getTrackInfo().getLanguage()));
-    }
-    if (!trackMetadata.getTrackInfo().getLyricist().isNull()) {
-        writeMP4Atom(pTag, "----:com.apple.iTunes:LYRICIST",
-                toTagLibString(trackMetadata.getTrackInfo().getLyricist()));
-    }
-    if (!trackMetadata.getTrackInfo().getMood().isNull()) {
-        writeMP4Atom(pTag, "----:com.apple.iTunes:MOOD",
-                toTagLibString(trackMetadata.getTrackInfo().getMood()));
-    }
-    if (!trackMetadata.getAlbumInfo().getCopyright().isNull()) {
-        writeMP4Atom(pTag, "cprt",
-                toTagLibString(trackMetadata.getAlbumInfo().getCopyright()));
-    }
-    if (!trackMetadata.getAlbumInfo().getLicense().isNull()) {
-        writeMP4Atom(pTag, "----:com.apple.iTunes:LICENSE",
-                toTagLibString(trackMetadata.getAlbumInfo().getLicense()));
-    }
-    if (!trackMetadata.getAlbumInfo().getRecordLabel().isNull()) {
-        writeMP4Atom(pTag, "----:com.apple.iTunes:LABEL",
-                toTagLibString(trackMetadata.getAlbumInfo().getRecordLabel()));
-    }
-    if (!trackMetadata.getTrackInfo().getRemixer().isNull()) {
-        writeMP4Atom(pTag, "----:com.apple.iTunes:REMIXER",
-                toTagLibString(trackMetadata.getTrackInfo().getRemixer()));
-    }
-    if (!trackMetadata.getTrackInfo().getSubtitle().isNull()) {
-        writeMP4Atom(pTag, "----:com.apple.iTunes:SUBTITLE",
-                toTagLibString(trackMetadata.getTrackInfo().getSubtitle()));
-    }
-    if (!trackMetadata.getTrackInfo().getEncoder().isNull()) {
-        writeMP4Atom(pTag, "\251too",
-                toTagLibString(trackMetadata.getTrackInfo().getEncoder()));
-    }
-    if (!trackMetadata.getTrackInfo().getWork().isNull()) {
-        writeMP4Atom(pTag, "\251wrk", toTagLibString(trackMetadata.getTrackInfo().getWork()));
-    }
-    if (!trackMetadata.getTrackInfo().getMovement().isNull()) {
-        writeMP4Atom(pTag, "\251mvn", toTagLibString(trackMetadata.getTrackInfo().getMovement()));
-    }
+    writeMP4Atom(pTag, "----:com.apple.iTunes:replaygain_album_gain",
+            toTString(formatAlbumGain(trackMetadata)));
+    writeMP4Atom(pTag, "----:com.apple.iTunes:replaygain_album_peak",
+            toTString(formatAlbumPeak(trackMetadata)));
+
+    writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Artist Id",
+            uuidToTString(trackMetadata.getTrackInfo().getMusicBrainzArtistId()));
+    writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Track Id",
+            uuidToTString(trackMetadata.getTrackInfo().getMusicBrainzRecordingId()));
+    writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Release Track Id",
+            uuidToTString(trackMetadata.getTrackInfo().getMusicBrainzReleaseId()));
+    writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Work Id",
+            uuidToTString(trackMetadata.getTrackInfo().getMusicBrainzWorkId()));
+    writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Album Artist Id",
+            uuidToTString(trackMetadata.getAlbumInfo().getMusicBrainzArtistId()));
+    writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Album Id",
+            uuidToTString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseId()));
+    writeMP4Atom(pTag, "----:com.apple.iTunes:MusicBrainz Release Group Id",
+            uuidToTString(trackMetadata.getAlbumInfo().getMusicBrainzReleaseGroupId()));
+
+    writeMP4Atom(pTag, "----:com.apple.iTunes:CONDUCTOR",
+            toTString(trackMetadata.getTrackInfo().getConductor()));
+    writeMP4Atom(pTag, "----:com.apple.iTunes:ISRC",
+            toTString(trackMetadata.getTrackInfo().getISRC()));
+    writeMP4Atom(pTag, "----:com.apple.iTunes:LANGUAGE",
+            toTString(trackMetadata.getTrackInfo().getLanguage()));
+    writeMP4Atom(pTag, "----:com.apple.iTunes:LYRICIST",
+            toTString(trackMetadata.getTrackInfo().getLyricist()));
+    writeMP4Atom(pTag, "----:com.apple.iTunes:MOOD",
+            toTString(trackMetadata.getTrackInfo().getMood()));
+    writeMP4Atom(pTag, "cprt",
+            toTString(trackMetadata.getAlbumInfo().getCopyright()));
+    writeMP4Atom(pTag, "----:com.apple.iTunes:LICENSE",
+            toTString(trackMetadata.getAlbumInfo().getLicense()));
+    writeMP4Atom(pTag, "----:com.apple.iTunes:LABEL",
+            toTString(trackMetadata.getAlbumInfo().getRecordLabel()));
+    writeMP4Atom(pTag, "----:com.apple.iTunes:REMIXER",
+            toTString(trackMetadata.getTrackInfo().getRemixer()));
+    writeMP4Atom(pTag, "----:com.apple.iTunes:SUBTITLE",
+            toTString(trackMetadata.getTrackInfo().getSubtitle()));
+    writeMP4Atom(pTag, "\251too",
+            toTString(trackMetadata.getTrackInfo().getEncoder()));
+    writeMP4Atom(pTag, "\251wrk",
+            toTString(trackMetadata.getTrackInfo().getWork()));
+    writeMP4Atom(pTag, "\251mvn",
+            toTString(trackMetadata.getTrackInfo().getMovement()));
 #endif // __EXTRA_METADATA__
 
     return true;

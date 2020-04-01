@@ -6,6 +6,7 @@
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/autodj/autodjprocessor.h"
+#include "util/compatibility.h"
 #include "util/math.h"
 
 PlaylistDAO::PlaylistDAO()
@@ -82,7 +83,7 @@ int PlaylistDAO::createPlaylist(const QString& name, const HiddenType hidden) {
     int playlistId = query.lastInsertId().toInt();
     // Commit the transaction
     transaction.commit();
-    emit(added(playlistId));
+    emit added(playlistId);
     return playlistId;
 }
 
@@ -196,7 +197,7 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
         }
     }
 
-    emit(deleted(playlistId));
+    emit deleted(playlistId);
 }
 
 void PlaylistDAO::renamePlaylist(const int playlistId, const QString& newName) {
@@ -208,7 +209,7 @@ void PlaylistDAO::renamePlaylist(const int playlistId, const QString& newName) {
         LOG_FAILED_QUERY(query);
         return;
     }
-    emit(renamed(playlistId, newName));
+    emit renamed(playlistId, newName);
 }
 
 bool PlaylistDAO::setPlaylistLocked(const int playlistId, const bool locked) {
@@ -223,7 +224,7 @@ bool PlaylistDAO::setPlaylistLocked(const int playlistId, const bool locked) {
         LOG_FAILED_QUERY(query);
         return false;
     }
-    emit(lockChanged(playlistId));
+    emit lockChanged(playlistId);
     return true;
 }
 
@@ -243,7 +244,7 @@ bool PlaylistDAO::isPlaylistLocked(const int playlistId) const {
     return false;
 }
 
-bool PlaylistDAO::removeTracksFromPlaylist(const int playlistId, const int startIndex) {
+bool PlaylistDAO::removeTracksFromPlaylist(int playlistId, int startIndex) {
     // Retain the first track if it is loaded in a deck
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
@@ -256,7 +257,7 @@ bool PlaylistDAO::removeTracksFromPlaylist(const int playlistId, const int start
         return false;
     }
     transaction.commit();
-    emit(changed(playlistId));
+    emit tracksChanged(QSet<int>{playlistId});
     return true;
 }
 
@@ -296,9 +297,9 @@ bool PlaylistDAO::appendTracksToPlaylist(const QList<TrackId>& trackIds, const i
     for (const auto& trackId: trackIds) {
         m_playlistsTrackIsIn.insert(trackId, playlistId);
         // TODO(XXX) don't emit if the track didn't add successfully.
-        emit(trackAdded(playlistId, trackId, insertPosition++));
+        emit trackAdded(playlistId, trackId, insertPosition++);
     }
-    emit(changed(playlistId));
+    emit tracksChanged(QSet<int>{playlistId});
     return true;
 }
 
@@ -406,18 +407,23 @@ void PlaylistDAO::removeHiddenTracks(const int playlistId) {
     }
 
     while (query.next()) {
-    	int position = query.value(query.record().indexOf("position")).toInt();
-    	removeTracksFromPlaylistInner(playlistId, position);
+        int position = query.value(query.record().indexOf("position")).toInt();
+        removeTracksFromPlaylistInner(playlistId, position);
     }
 
     transaction.commit();
-    emit(changed(playlistId));
+    emit tracksChanged(QSet<int>{playlistId});
 }
 
 
-void PlaylistDAO::removeTrackFromPlaylist(const int playlistId, const TrackId& trackId) {
+void PlaylistDAO::removeTracksFromPlaylistById(int playlistId, TrackId trackId) {
     ScopedTransaction transaction(m_database);
+    removeTracksFromPlaylistByIdInner(playlistId, trackId);
+    transaction.commit();
+    emit tracksChanged(QSet<int>{playlistId});
+}
 
+void PlaylistDAO::removeTracksFromPlaylistByIdInner(int playlistId, TrackId trackId) {
     QSqlQuery query(m_database);
     query.prepare("SELECT position FROM PlaylistTracks WHERE playlist_id=:id "
                 "AND track_id=:track_id");
@@ -431,37 +437,33 @@ void PlaylistDAO::removeTrackFromPlaylist(const int playlistId, const TrackId& t
     }
 
     while (query.next()) {
-    	int position = query.value(query.record().indexOf("position")).toInt();
+        int position = query.value(query.record().indexOf("position")).toInt();
         removeTracksFromPlaylistInner(playlistId, position);
-
     }
-
-    transaction.commit();
-    emit(changed(playlistId));
 }
 
 
-void PlaylistDAO::removeTrackFromPlaylist(const int playlistId, const int position) {
+void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position) {
     // qDebug() << "PlaylistDAO::removeTrackFromPlaylist"
     //          << QThread::currentThread() << m_database.connectionName();
     ScopedTransaction transaction(m_database);
     removeTracksFromPlaylistInner(playlistId, position);
     transaction.commit();
-    emit(changed(playlistId));
+    emit tracksChanged(QSet<int>{playlistId});
 }
 
-void PlaylistDAO::removeTracksFromPlaylist(const int playlistId, QList<int>& positions) {
+void PlaylistDAO::removeTracksFromPlaylist(int playlistId, QList<int> positions) {
     // get positions in reversed order
     std::sort(positions.begin(), positions.end(), std::greater<int>());
 
     //qDebug() << "PlaylistDAO::removeTrackFromPlaylist"
     //         << QThread::currentThread() << m_database.connectionName();
     ScopedTransaction transaction(m_database);
-    foreach (int position , positions) {
-    	removeTracksFromPlaylistInner(playlistId, position);
+    for (const auto position : qAsConst(positions)) {
+        removeTracksFromPlaylistInner(playlistId, position);
     }
     transaction.commit();
-    emit(changed(playlistId));
+    emit tracksChanged(QSet<int>{playlistId});
 }
 
 void PlaylistDAO::removeTracksFromPlaylistInner(int playlistId, int position) {
@@ -504,7 +506,7 @@ void PlaylistDAO::removeTracksFromPlaylistInner(int playlistId, int position) {
     }
 
     m_playlistsTrackIsIn.remove(trackId, playlistId);
-    emit(trackRemoved(playlistId, trackId, position));
+    emit trackRemoved(playlistId, trackId, position);
 }
 
 
@@ -548,8 +550,8 @@ bool PlaylistDAO::insertTrackIntoPlaylist(TrackId trackId, const int playlistId,
     transaction.commit();
 
     m_playlistsTrackIsIn.insert(trackId, playlistId);
-    emit(trackAdded(playlistId, trackId, position));
-    emit(changed(playlistId));
+    emit trackAdded(playlistId, trackId, position);
+    emit tracksChanged(QSet<int>{playlistId});
     return true;
 }
 
@@ -608,13 +610,13 @@ int PlaylistDAO::insertTracksIntoPlaylist(const QList<TrackId>& trackIds,
     for (const auto& trackId: trackIds) {
         m_playlistsTrackIsIn.insert(trackId, playlistId);
         // TODO(XXX) The position is wrong if any track failed to insert.
-        emit(trackAdded(playlistId, trackId, insertPositon++));
+        emit trackAdded(playlistId, trackId, insertPositon++);
     }
-    emit(changed(playlistId));
+    emit tracksChanged(QSet<int>{playlistId});
     return tracksAdded;
 }
 
-void PlaylistDAO::addPlaylistToAutoDJQueue(const int playlistId, const bool bTop) {
+void PlaylistDAO::addPlaylistToAutoDJQueue(const int playlistId, AutoDJSendLoc loc) {
     //qDebug() << "Adding tracks from playlist " << playlistId << " to the Auto-DJ Queue";
 
     // Query the PlaylistTracks database to locate tracks in the selected
@@ -634,19 +636,7 @@ void PlaylistDAO::addPlaylistToAutoDJQueue(const int playlistId, const bool bTop
     while (query.next()) {
         trackIds.append(TrackId(query.value(0)));
     }
-    addTracksToAutoDJQueue(trackIds, bTop);
-}
-
-void PlaylistDAO::addTracksToAutoDJQueue(const QList<TrackId>& trackIds, const bool bTop) {
-    // Get the ID of the Auto-DJ playlist
-    int autoDJId = getPlaylistIdFromName(AUTODJ_TABLE);
-
-    if (bTop) {
-        // Start at position 2 because position 1 might be already loaded to the deck.
-        insertTracksIntoPlaylist(trackIds, autoDJId, 2);
-    } else {
-        appendTracksToPlaylist(trackIds, autoDJId);
-    }
+    addTracksToAutoDJQueue(trackIds, loc);
 }
 
 int PlaylistDAO::getPreviousPlaylist(const int currentPlaylistId, HiddenType hidden) const {
@@ -721,9 +711,9 @@ bool PlaylistDAO::copyPlaylistTracks(const int sourcePlaylistID, const int targe
         TrackId copiedTrackId(query.value(0));
         int copiedPosition = query.value(1).toInt();
         m_playlistsTrackIsIn.insert(copiedTrackId, targetPlaylistID);
-        emit(trackAdded(targetPlaylistID, copiedTrackId, copiedPosition));
+        emit trackAdded(targetPlaylistID, copiedTrackId, copiedPosition);
     }
-    emit(changed(targetPlaylistID));
+    emit tracksChanged(QSet<int>{targetPlaylistID});
     return true;
 }
 
@@ -749,14 +739,22 @@ int PlaylistDAO::getMaxPosition(const int playlistId) const {
 void PlaylistDAO::removeTracksFromPlaylists(const QList<TrackId>& trackIds) {
     // copy the hash, because there is no guarantee that "it" is valid after remove
     QMultiHash<TrackId, int> playlistsTrackIsInCopy = m_playlistsTrackIsIn;
-    for (const auto& trackId: trackIds) {
+    QSet<int> playlistIds;
+
+    ScopedTransaction transaction(m_database);
+    for (const auto& trackId : trackIds) {
         for (auto it = playlistsTrackIsInCopy.constBegin();
                 it != playlistsTrackIsInCopy.constEnd(); ++it) {
             if (it.key() == trackId) {
-                removeTrackFromPlaylist(it.value(), trackId);
+                const auto playlistId = it.value();
+                removeTracksFromPlaylistByIdInner(playlistId, trackId);
+                playlistIds.insert(playlistId);
             }
         }
     }
+    transaction.commit();
+
+    emit tracksChanged(playlistIds);
 }
 
 int PlaylistDAO::tracksInPlaylist(const int playlistId) const {
@@ -829,7 +827,7 @@ void PlaylistDAO::moveTrack(const int playlistId, const int oldPosition, const i
         qDebug() << query.lastError();
     }
 
-    emit(changed(playlistId));
+    emit tracksChanged(QSet<int>{playlistId});
 }
 
 void PlaylistDAO::searchForDuplicateTrack(const int fromPosition,
@@ -974,8 +972,20 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
         //qDebug() << "Swapping tracks " << trackAPosition << " and " << trackBPosition;
         trackPositionIds.insert(trackAPosition, trackBId);
         trackPositionIds.insert(trackBPosition, trackAId);
+
+        // TODO: The following use of QList<T>::swap(int, int) is deprecated
+        // and should be replaced with QList<T>::swapItemsAt(int, int)
+        // However, the proposed alternative has just been introduced in Qt
+        // 5.13. Until the minimum required Qt version of Mixx is increased,
+        // we need a version check here.
+        #if (QT_VERSION < QT_VERSION_CHECK(5, 13, 0))
         newPositions.swap(newPositions.indexOf(trackAPosition),
                           newPositions.indexOf(trackBPosition));
+        #else
+        newPositions.swapItemsAt(newPositions.indexOf(trackAPosition),
+                                 newPositions.indexOf(trackBPosition));
+        #endif
+
         QString swapQuery = "UPDATE PlaylistTracks SET position=%1 "
                 "WHERE position=%2 AND playlist_id=%3";
         query.exec(swapQuery.arg(QString::number(-1),
@@ -993,7 +1003,7 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
     }
 
     transaction.commit();
-    emit(changed(playlistId));
+    emit tracksChanged(QSet<int>{playlistId});
 }
 
 bool PlaylistDAO::isTrackInPlaylist(TrackId trackId, const int playlistId) const {
@@ -1013,7 +1023,7 @@ void PlaylistDAO::setAutoDJProcessor(AutoDJProcessor* pAutoDJProcessor) {
     m_pAutoDJProcessor = pAutoDJProcessor;
 }
 
-void PlaylistDAO::sendToAutoDJ(const QList<TrackId>& trackIds, AutoDJSendLoc loc) {
+void PlaylistDAO::addTracksToAutoDJQueue(const QList<TrackId>& trackIds, AutoDJSendLoc loc) {
     int iAutoDJPlaylistId = getPlaylistIdFromName(AUTODJ_TABLE);
     if (iAutoDJPlaylistId == -1) {
         return;

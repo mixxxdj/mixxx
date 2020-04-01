@@ -45,7 +45,6 @@ class BaseTrackPlayer : public BasePlayer {
     void newTrackLoaded(TrackPointer pLoadedTrack);
     void loadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty();
-    void noPassthroughInputConfigured();
     void noVinylControlInputConfigured();
 };
 
@@ -86,7 +85,6 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
   private slots:
     void slotCloneChannel(EngineChannel* pChannel);
     void slotCloneFromDeck(double deck);
-    void slotPassthroughEnabled(double v);
     void slotVinylControlEnabled(double v);
     void slotWaveformZoomValueChangeRequest(double pressed);
     void slotWaveformZoomUp(double pressed);
@@ -137,10 +135,9 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlProxy> m_pMidFilterKill;
     std::unique_ptr<ControlProxy> m_pHighFilterKill;
     std::unique_ptr<ControlProxy> m_pPreGain;
-    std::unique_ptr<ControlProxy> m_pRateSlider;
+    std::unique_ptr<ControlProxy> m_pRateRatio;
     std::unique_ptr<ControlProxy> m_pPitchAdjust;
     std::unique_ptr<ControlProxy> m_pInputConfigured;
-    std::unique_ptr<ControlProxy> m_pPassthroughEnabled;
     std::unique_ptr<ControlProxy> m_pVinylControlEnabled;
     std::unique_ptr<ControlProxy> m_pVinylControlStatus;
 };

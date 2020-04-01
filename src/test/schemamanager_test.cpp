@@ -104,7 +104,28 @@ TEST_F(SchemaManagerTest, BackwardsIncompatibleVersion) {
     EXPECT_EQ(SchemaManager::Result::NewerVersionIncompatible, result);
 }
 
-TEST_F(SchemaManagerTest, FailedUpgrade) {
+TEST_F(SchemaManagerTest, IgnoreDuplicateColumn) {
+    // Establish preconditions for test
+    {
+        // Upgrade to version 3 to get the modern library table.
+        SchemaManager schemaManager(dbConnection());
+        SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
+                MixxxDb::kDefaultSchemaFile, 3);
+        ASSERT_EQ(SchemaManager::Result::UpgradeSucceeded, result);
+    }
+
+    // Add a column that will be added again in version 24.
+    QSqlQuery query(dbConnection());
+    ASSERT_TRUE(query.exec(
+            "ALTER TABLE library ADD COLUMN coverart_source TEXT"));
+
+    SchemaManager schemaManager(dbConnection());
+    SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(
+            MixxxDb::kDefaultSchemaFile, MixxxDb::kRequiredSchemaVersion);
+    EXPECT_EQ(SchemaManager::Result::UpgradeSucceeded, result);
+}
+
+TEST_F(SchemaManagerTest, UpgradeFailed) {
     // Establish preconditions for test
     {
         // Upgrade to version 3 to get the modern library table.
@@ -114,10 +135,10 @@ TEST_F(SchemaManagerTest, FailedUpgrade) {
         EXPECT_EQ(SchemaManager::Result::UpgradeSucceeded, result);
     }
 
-    // Add a column that is added in version 24.
+    // Drop a table that is expected to exist.
     QSqlQuery query(dbConnection());
     EXPECT_TRUE(query.exec(
-            "ALTER TABLE library ADD COLUMN coverart_source TEXT"));
+            "DROP TABLE PlaylistTracks"));
 
     SchemaManager schemaManager(dbConnection());
     SchemaManager::Result result = schemaManager.upgradeToSchemaVersion(

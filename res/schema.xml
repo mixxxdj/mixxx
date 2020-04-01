@@ -440,11 +440,59 @@ METADATA
   </revision>
   <revision version="29" min_compatible="3">
     <description>
-      Add source to cue. Default is MANUAL.
-      <!-- See track/cue.h. -->
+      This was used in the development of 2.3 to track whether cues were placed
+      manually or automatically. However, this turned out to be unnecessary.
+      This version is left as a placeholder so users who were using the master
+      branch will have their database updated correctly for the subsequent
+      schema change.
+    </description>
+    <sql/>
+  </revision>
+  <revision version="30" min_compatible="3">
+    <description>
+      This was used in the development of 2.3 for permanent Rekordbox
+      library feature tables, which have since been replaced by
+      dynamic temporary tables, similar to the Serato library
+      feature.
+    </description>
+    <sql/>
+  </revision>
+  <revision version="31" min_compatible="3">
+    <description>
+      Add track color support.
     </description>
     <sql>
-      ALTER TABLE cues ADD COLUMN source INTEGER DEFAULT 2 NOT NULL;
+      ALTER TABLE library ADD COLUMN color INTEGER;
+    </sql>
+  </revision>
+  <revision version="32" min_compatible="3">
+    <description>
+      Convert the PredefinedColor ID to the actual RGB value.
+    </description>
+    <sql>
+      <!-- No Color becomes Orange (not in default palette) -->
+      UPDATE cues SET color=0xFF8C00 WHERE color=0;
+      <!-- Mixx Hotcue Color Palette (also defined in src/util/color/colorpalette.h) -->
+      <!-- Red -->
+      UPDATE cues SET color=0xC50A08 WHERE color=1;
+      <!-- Green -->
+      UPDATE cues SET color=0x32BE44 WHERE color=2;
+      <!-- Blue -->
+      UPDATE cues SET color=0x0044FF WHERE color=3;
+      <!-- Yellow -->
+      UPDATE cues SET color=0xF8D200 WHERE color=4;
+      <!-- Celeste -->
+      UPDATE cues SET color=0x42D4F4 WHERE color=5;
+      <!-- Magenta -->
+      UPDATE cues SET color=0xAF00CC WHERE color=6;
+      <!-- Pink -->
+      UPDATE cues SET color=0xFCA6D7 WHERE color=7;
+      <!-- White -->
+      UPDATE cues SET color=0xF2F2FF WHERE color=8;
+      <!-- Remove alpha channel from cues that were updated by
+           previous, in-development schema migrations
+        -->
+      UPDATE cues SET color = (color &amp; 0xFFFFFF) WHERE color > 0xFFFFFF;
     </sql>
   </revision>
 </schema>

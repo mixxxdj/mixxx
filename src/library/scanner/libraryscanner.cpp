@@ -6,7 +6,6 @@
 #include "library/scanner/scannertask.h"
 #include "library/queryutil.h"
 #include "library/coverartutils.h"
-#include "library/trackcollection.h"
 #include "util/logger.h"
 #include "util/trace.h"
 #include "util/file.h"
@@ -26,12 +25,8 @@ mixxx::Logger kLogger("LibraryScanner");
 
 QAtomicInt s_instanceCounter(0);
 
-const QString kDeleteOrphanedLibraryScannerDirectories =
-        "delete from LibraryHashes where hash <> 0 and directory_path not in (select directory from track_locations)";
-
 // Returns the number of affected rows or -1 on error
-int execCleanupQuery(QSqlDatabase database, const QString& statement) {
-    FwdSqlQuery query(database, statement);
+int execCleanupQuery(FwdSqlQuery& query) {
     VERIFY_OR_DEBUG_ASSERT(query.isPrepared()) {
         return -1;
     }
@@ -45,10 +40,8 @@ int execCleanupQuery(QSqlDatabase database, const QString& statement) {
 
 LibraryScanner::LibraryScanner(
         mixxx::DbConnectionPoolPtr pDbConnectionPool,
-        TrackCollection* pTrackCollection,
         const UserSettingsPointer& pConfig)
         : m_pDbConnectionPool(std::move(pDbConnectionPool)),
-          m_pTrackCollection(pTrackCollection),
           m_analysisDao(pConfig),
           m_trackDao(m_cueDao, m_playlistDao,
                   m_analysisDao, m_libraryHashDao,
@@ -57,7 +50,6 @@ LibraryScanner::LibraryScanner(
           m_state(IDLE) {
     // Move LibraryScanner to its own thread so that our signals/slots will
     // queue to our event loop.
-    kLogger.debug() << "Starting thread";
     moveToThread(this);
     m_pool.moveToThread(this);
 
@@ -69,24 +61,6 @@ LibraryScanner::LibraryScanner(
     // Listen to signals from our public methods (invoked by other threads) and
     // connect them to our slots to run the command on the scanner thread.
     connect(this, &LibraryScanner::startScan, this, &LibraryScanner::slotStartScan);
-
-    // Force the GUI thread's Track cache to be cleared when a library
-    // scan is finished, because we might have modified the database directly
-    // when we detected moved files, and the TIOs corresponding to the moved
-    // files would then have the wrong track location.
-    TrackDAO* trackDao = &(m_pTrackCollection->getTrackDAO());
-    connect(this,
-            &LibraryScanner::trackAdded,
-            trackDao,
-            &TrackDAO::databaseTrackAdded);
-    connect(this,
-            &LibraryScanner::tracksChanged,
-            trackDao,
-            &TrackDAO::databaseTracksChanged);
-    connect(this,
-            &LibraryScanner::tracksReplaced,
-            trackDao,
-            &TrackDAO::databaseTracksReplaced);
 
     m_pProgressDlg.reset(new LibraryScannerDlg());
     connect(this,
@@ -117,8 +91,6 @@ LibraryScanner::LibraryScanner(
             &TrackDAO::progressCoverArt,
             m_pProgressDlg.data(),
             &LibraryScannerDlg::slotUpdateCover);
-
-    start();
 }
 
 LibraryScanner::~LibraryScanner() {
@@ -142,11 +114,19 @@ void LibraryScanner::run() {
         // Clean up the database and fix inconsistencies from previous runs.
         // See also: https://bugs.launchpad.net/mixxx/+bug/1846945
         {
-            kLogger.info() << "Cleaning up database...";
+            kLogger.info()
+                    << "Cleaning up database...";
             PerformanceTimer timer;
             timer.start();
-            auto numRows = execCleanupQuery(dbConnection,
-                    kDeleteOrphanedLibraryScannerDirectories);
+            const auto sqlStmt = QStringLiteral(
+                "DELETE FROM LibraryHashes WHERE hash <> :unequalHash "
+                        "AND directory_path NOT IN "
+                        "(SELECT directory FROM track_locations)");
+            FwdSqlQuery query(dbConnection, sqlStmt);
+            query.bindValue(
+                QStringLiteral(":unequalHash"),
+                static_cast<mixxx::cache_key_signed_t>(mixxx::invalidCacheKey()));
+            auto numRows = execCleanupQuery(query);
             if (numRows < 0) {
                 kLogger.warning()
                         << "Failed to delete orphaned directory hashes";
@@ -188,8 +168,8 @@ void LibraryScanner::slotStartScan() {
     }
     changeScannerState(SCANNING);
 
-    QSet<QString> trackLocations = m_trackDao.getTrackLocations();
-    QHash<QString, int> directoryHashes = m_libraryHashDao.getDirectoryHashes();
+    QSet<QString> trackLocations = m_trackDao.getAllTrackLocations();
+    QHash<QString, mixxx::cache_key_t> directoryHashes = m_libraryHashDao.getDirectoryHashes();
     QRegExp extensionFilter(SoundSourceProxy::getSupportedFileNamesRegex());
     QRegExp coverExtensionFilter =
             QRegExp(CoverArtUtils::supportedCoverArtExtensionsRegex(),
@@ -202,7 +182,7 @@ void LibraryScanner::slotStartScan() {
 
     m_scannerGlobal->startTimer();
 
-    emit(scanStarted());
+    emit scanStarted();
 
     // First, we're going to mark all the directories that we've previously
     // hashed as needing verification. As we search through the directory tree
@@ -338,20 +318,21 @@ void LibraryScanner::cleanUpScan() {
     // and if so, do some magic to update all our tables.
     kLogger.debug() << "Detecting moved files";
     {
-        QList<QPair<TrackRef, TrackRef>> replacedTracks;
-        if (!m_trackDao.detectMovedTracks(&replacedTracks,
+        QList<RelocatedTrack> relocatedTracks;
+        if (!m_trackDao.detectMovedTracks(
+                &relocatedTracks,
                 m_scannerGlobal->addedTracks(),
                 m_scannerGlobal->shouldCancelPointer())) {
             kLogger.info()
                     << "Detecting moved files has been canceled or aborted";
             return;
         }
-        if (!replacedTracks.isEmpty()) {
+        if (!relocatedTracks.isEmpty()) {
             kLogger.info()
                     << "Found"
-                    << replacedTracks.size()
+                    << relocatedTracks.size()
                     << "moved track(s)";
-            emit tracksReplaced(replacedTracks);
+            emit tracksRelocated(relocatedTracks);
         }
     }
 
@@ -422,12 +403,12 @@ void LibraryScanner::slotFinishUnhashedScan() {
     changeScannerState(FINISHED);
     // now we may accept new scan commands
 
-    emit(scanFinished());
+    emit scanFinished();
 }
 
 void LibraryScanner::scan() {
     if (changeScannerState(STARTING)) {
-        emit(startScan());
+        emit startScan();
     }
 }
 
@@ -514,7 +495,7 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
 }
 
 void LibraryScanner::slotDirectoryHashedAndScanned(const QString& directoryPath,
-                                               bool newDirectory, int hash) {
+                                               bool newDirectory, mixxx::cache_key_t hash) {
     ScopedTimer timer("LibraryScanner::slotDirectoryHashedAndScanned");
     //kLogger.debug() << "sloDirectoryHashedAndScanned" << directoryPath
     //          << newDirectory << hash;
@@ -530,7 +511,7 @@ void LibraryScanner::slotDirectoryHashedAndScanned(const QString& directoryPath,
     } else {
         m_libraryHashDao.updateDirectoryHash(directoryPath, hash, 0);
     }
-    emit(progressHashing(directoryPath));
+    emit progressHashing(directoryPath);
 }
 
 void LibraryScanner::slotDirectoryUnchanged(const QString& directoryPath) {
@@ -539,7 +520,7 @@ void LibraryScanner::slotDirectoryUnchanged(const QString& directoryPath) {
     if (m_scannerGlobal) {
         m_scannerGlobal->addVerifiedDirectory(directoryPath);
     }
-    emit(progressHashing(directoryPath));
+    emit progressHashing(directoryPath);
 }
 
 void LibraryScanner::slotTrackExists(const QString& trackPath) {
@@ -565,8 +546,8 @@ void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
         }
         // Signal the main instance of TrackDAO, that there is
         // a new track in the database.
-        emit(trackAdded(pTrack));
-        emit(progressLoading(trackLocation));
+        emit trackAdded(pTrack);
+        emit progressLoading(trackLocation);
     } else {
         // Acknowledge failed track addition
         // TODO(XXX): Is it really intended to acknowledge a failed

@@ -3,11 +3,12 @@
 
 #include <QWidget>
 
+#include "engine/controls/cuecontrol.h"
 #include "engine/controls/ratecontrol.h"
 #include "preferences/constants.h"
 #include "preferences/dialog/ui_dlgprefdeckdlg.h"
-#include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
+#include "preferences/usersettings.h"
 
 class ControlProxy;
 class ControlPotmeter;
@@ -17,7 +18,7 @@ class MixxxMainWindow;
 class ControlObject;
 
 namespace {
-    constexpr bool kDefaultCloneDeckOnLoad = true;
+constexpr bool kDefaultCloneDeckOnLoad = true;
 }
 
 namespace TrackTime {
@@ -64,6 +65,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void slotApply();
     void slotResetToDefaults();
 
+    void slotMoveIntroStartCheckbox(bool checked);
     void slotRateRangeComboBox(int index);
     void slotRateInversionCheckbox(bool invert);
     void slotKeyLockModeSelected(QAbstractButton*);
@@ -76,9 +78,8 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void slotSetTrackTimeDisplay(double);
     void slotDisallowTrackLoadToPlayingDeckCheckbox(bool);
     void slotCueModeCombobox(int);
-    void slotJumpToCueOnTrackLoadCheckbox(bool);
+    void slotSetTrackLoadMode(int comboboxIndex);
     void slotCloneDeckOnLoadDoubleTapCheckbox(bool);
-    void slotAssignHotcueColorsCheckbox(bool);
     void slotRateRampingModeLinearButton(bool);
     void slotRateRampSensitivitySlider(int);
 
@@ -119,10 +120,10 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
 
     TrackTime::DisplayMode m_timeDisplayMode;
 
-    int m_iCueMode;
+    CueMode m_cueMode;
 
+    bool m_bSetIntroStartAtMainCue;
     bool m_bDisallowTrackLoadToPlayingDeck;
-    bool m_bJumpToCueOnTrackLoad;
     bool m_bCloneDeckOnLoadDoubleTap;
     bool m_bAssignHotcueColors;
 
@@ -133,6 +134,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     bool m_pitchAutoReset;
     KeylockMode m_keylockMode;
     KeyunlockMode m_keyunlockMode;
+    SeekOnLoadMode m_seekOnLoadMode;
 
     RateControl::RampMode m_bRateRamping;
     int m_iRateRampSensitivity;

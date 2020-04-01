@@ -13,23 +13,22 @@
 #include "library/parsercsv.h"
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
 #include "util/assert.h"
 
-BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
-                                         UserSettingsPointer pConfig,
-                                         TrackCollection* pTrackCollection,
-                                         QString rootViewName)
-        : LibraryFeature(pConfig, parent),
-          m_pTrackCollection(pTrackCollection),
-          m_playlistDao(pTrackCollection->getPlaylistDAO()),
-          m_trackDao(pTrackCollection->getTrackDAO()),
-          m_pPlaylistTableModel(NULL),
+BasePlaylistFeature::BasePlaylistFeature(
+        Library* pLibrary,
+        UserSettingsPointer pConfig,
+        const QString& rootViewName)
+        : LibraryFeature(pLibrary, pConfig),
+          m_playlistDao(pLibrary->trackCollections()->internalCollection()->getPlaylistDAO()),
+          m_pPlaylistTableModel(nullptr),
           m_rootViewName(rootViewName) {
-    m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"),this);
+    m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"), this);
     connect(m_pCreatePlaylistAction,
             &QAction::triggered,
             this,
@@ -47,19 +46,25 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
             this,
             &BasePlaylistFeature::slotAddToAutoDJTop);
 
-    m_pDeletePlaylistAction = new QAction(tr("Remove"),this);
+    m_pAddToAutoDJReplaceAction = new QAction(tr("Add to Auto DJ Queue (replace)"), this);
+    connect(m_pAddToAutoDJReplaceAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotAddToAutoDJReplace);
+
+    m_pDeletePlaylistAction = new QAction(tr("Remove"), this);
     connect(m_pDeletePlaylistAction,
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotDeletePlaylist);
 
-    m_pRenamePlaylistAction = new QAction(tr("Rename"),this);
+    m_pRenamePlaylistAction = new QAction(tr("Rename"), this);
     connect(m_pRenamePlaylistAction,
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotRenamePlaylist);
 
-    m_pLockPlaylistAction = new QAction(tr("Lock"),this);
+    m_pLockPlaylistAction = new QAction(tr("Lock"), this);
     connect(m_pLockPlaylistAction,
             &QAction::triggered,
             this,
@@ -71,7 +76,7 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
             this,
             &BasePlaylistFeature::slotDuplicatePlaylist);
 
-    m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
+    m_pImportPlaylistAction = new QAction(tr("Import Playlist"), this);
     connect(m_pImportPlaylistAction,
             &QAction::triggered,
             this,
@@ -117,7 +122,7 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
             &BasePlaylistFeature::slotPlaylistTableRenamed);
 
     connect(&m_playlistDao,
-            &PlaylistDAO::changed,
+            &PlaylistDAO::tracksChanged,
             this,
             &BasePlaylistFeature::slotPlaylistContentChanged);
 
@@ -126,7 +131,6 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
             this,
             &BasePlaylistFeature::slotPlaylistTableChanged);
 
-    Library* pLibrary = static_cast<Library*>(parent);
     connect(pLibrary,
             &Library::trackSelected,
             this,
@@ -137,20 +141,10 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
             &BasePlaylistFeature::slotResetSelectedTrack);
 }
 
-BasePlaylistFeature::~BasePlaylistFeature() {
-    delete m_pPlaylistTableModel;
-    delete m_pCreatePlaylistAction;
-    delete m_pDeletePlaylistAction;
-    delete m_pImportPlaylistAction;
-    delete m_pCreateImportPlaylistAction;
-    delete m_pExportPlaylistAction;
-    delete m_pExportTrackFilesAction;
-    delete m_pDuplicatePlaylistAction;
-    delete m_pAddToAutoDJAction;
-    delete m_pAddToAutoDJTopAction;
-    delete m_pRenamePlaylistAction;
-    delete m_pLockPlaylistAction;
-    delete m_pAnalyzePlaylistAction;
+void BasePlaylistFeature::initTableModel(
+        PlaylistTableModel* pPlaylistTableModel) {
+    DEBUG_ASSERT(!m_pPlaylistTableModel);
+    m_pPlaylistTableModel = pPlaylistTableModel;
 }
 
 int BasePlaylistFeature::playlistIdFromIndex(QModelIndex index) {
@@ -169,30 +163,36 @@ int BasePlaylistFeature::playlistIdFromIndex(QModelIndex index) {
 }
 
 void BasePlaylistFeature::activate() {
-    emit(switchToView(m_rootViewName));
+    emit switchToView(m_rootViewName);
     emit disableSearch();
-    emit(enableCoverArtDisplay(true));
+    emit enableCoverArtDisplay(true);
 }
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
+    if (!m_pPlaylistTableModel) {
+        return;
+    }
     int playlistId = playlistIdFromIndex(index);
-    if (playlistId != -1 && m_pPlaylistTableModel) {
+    if (playlistId != -1) {
         m_pPlaylistTableModel->setTableModel(playlistId);
-        emit(showTrackModel(m_pPlaylistTableModel));
-        emit(enableCoverArtDisplay(true));
+        emit showTrackModel(m_pPlaylistTableModel);
+        emit enableCoverArtDisplay(true);
     }
 }
 
 void BasePlaylistFeature::activatePlaylist(int playlistId) {
     //qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
+    if (!m_pPlaylistTableModel) {
+        return;
+    }
     QModelIndex index = indexFromPlaylistId(playlistId);
-    if (playlistId != -1 && index.isValid() && m_pPlaylistTableModel) {
+    if (playlistId != -1 && index.isValid()) {
         m_pPlaylistTableModel->setTableModel(playlistId);
-        emit(showTrackModel(m_pPlaylistTableModel));
-        emit(enableCoverArtDisplay(true));
+        emit showTrackModel(m_pPlaylistTableModel);
+        emit enableCoverArtDisplay(true);
         // Update selection
-        emit(featureSelect(this, m_lastRightClickedIndex));
+        emit featureSelect(this, m_lastRightClickedIndex);
         activateChild(m_lastRightClickedIndex);
     }
 }
@@ -529,7 +529,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
     // Create a new table model since the main one might have an active search.
     // This will only export songs that we think exist on default
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-        new PlaylistTableModel(this, m_pTrackCollection,
+        new PlaylistTableModel(this, m_pLibrary->trackCollections(),
                                "mixxx.db.model.playlist_export"));
 
     pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
@@ -577,7 +577,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
 
 void BasePlaylistFeature::slotExportTrackFiles() {
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-        new PlaylistTableModel(this, m_pTrackCollection,
+        new PlaylistTableModel(this, m_pLibrary->trackCollections(),
                                "mixxx.db.model.playlist_export"));
 
     pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
@@ -598,21 +598,26 @@ void BasePlaylistFeature::slotExportTrackFiles() {
 
 void BasePlaylistFeature::slotAddToAutoDJ() {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
-    addToAutoDJ(false); // Top = True
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
 }
 
 void BasePlaylistFeature::slotAddToAutoDJTop() {
     //qDebug() << "slotAddToAutoDJTop() row:" << m_lastRightClickedIndex.data();
-    addToAutoDJ(true); // bTop = True
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
 }
 
-void BasePlaylistFeature::addToAutoDJ(bool bTop) {
+void BasePlaylistFeature::slotAddToAutoDJReplace() {
+    //qDebug() << "slotAddToAutoDJReplace() row:" << m_lastRightClickedIndex.data();
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::REPLACE);
+}
+
+void BasePlaylistFeature::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
     if (m_lastRightClickedIndex.isValid()) {
         int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
         if (playlistId >= 0) {
             // Insert this playlist
-            m_playlistDao.addPlaylistToAutoDJQueue(playlistId, bTop);
+            m_playlistDao.addPlaylistToAutoDJQueue(playlistId, loc);
         }
     }
 }
@@ -622,7 +627,7 @@ void BasePlaylistFeature::slotAnalyzePlaylist() {
         int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
         if (playlistId >= 0) {
             QList<TrackId> ids = m_playlistDao.getTrackIds(playlistId);
-            emit(analyzeTracks(ids));
+            emit analyzeTracks(ids);
         }
     }
 }
@@ -631,7 +636,7 @@ TreeItemModel* BasePlaylistFeature::getChildModel() {
     return &m_childModel;
 }
 
-void BasePlaylistFeature::bindWidget(WLibrary* libraryWidget,
+void BasePlaylistFeature::bindLibraryWidget(WLibrary* libraryWidget,
                                      KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
@@ -672,7 +677,7 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
         }
 
         // Create the TreeItem whose parent is the invisible root item
-        TreeItem* item = new TreeItem(this, playlistLabel, playlistId);
+        TreeItem* item = new TreeItem(playlistLabel, playlistId);
         item->setBold(m_playlistsSelectedTrackIsIn.contains(playlistId));
 
         decorateChild(item, playlistId);

@@ -10,6 +10,7 @@
 #include "track/playcounter.h"
 
 #include "library/coverart.h"
+#include "util/color/rgbcolor.h"
 
 
 namespace mixxx {
@@ -44,11 +45,19 @@ class TrackRecord final {
     PROPERTY_SET_BYVAL_GET_BYREF(QString,     fileType,       FileType)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,     url,            Url)
     PROPERTY_SET_BYVAL_GET_BYREF(PlayCounter, playCounter,    PlayCounter)
+    PROPERTY_SET_BYVAL_GET_BYREF(RgbColor::optional_t, color, Color)
     PROPERTY_SET_BYVAL_GET_BYREF(CuePosition, cuePoint,       CuePoint)
     PROPERTY_SET_BYVAL_GET_BYREF(int,         rating,         Rating)
     PROPERTY_SET_BYVAL_GET_BYREF(bool,        bpmLocked,      BpmLocked)
 
 public:
+    // Data migration: Reload track total from file tags if not initialized
+    // yet. The added column "tracktotal" has been initialized with the
+    // default value "//".
+    // See also: Schema revision 26 in schema.xml
+    // Public only for testing purposes!
+    static const QString kTrackTotalPlaceholder;
+
     explicit TrackRecord(TrackId id = TrackId());
     TrackRecord(TrackRecord&&) = default;
     TrackRecord(const TrackRecord&) = default;
@@ -86,6 +95,12 @@ public:
     bool updateGlobalKeyText(
             const QString& keyText,
             track::io::key::Source keySource);
+
+    // Merge the current metadata from the file with the subset of metadata
+    // that is stored in the library. This is required to NOT delete any tags
+    // from the file that are not (yet) stored in the library database!
+    void mergeImportedMetadata(
+            const TrackMetadata& importedMetadata);
 
 private:
     Keys m_keys;

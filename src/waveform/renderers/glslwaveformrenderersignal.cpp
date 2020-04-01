@@ -1,8 +1,9 @@
+#include "waveform/renderers/glslwaveformrenderersignal.h"
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+
 #include <QGLFramebufferObject>
 
-#include "waveform/renderers/glslwaveformrenderersignal.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
-
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 
@@ -448,3 +449,5 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
 
     painter->endNativePainting();
 }
+
+#endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)

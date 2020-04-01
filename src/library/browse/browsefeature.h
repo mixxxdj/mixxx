@@ -24,21 +24,22 @@
 
 class Library;
 class TrackCollection;
+class WLibrarySidebar;
 
 class BrowseFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    BrowseFeature(Library* parent,
+    BrowseFeature(Library* pLibrary,
             UserSettingsPointer pConfig,
-            TrackCollection* pTrackCollection,
             RecordingManager* pRecordingManager);
     virtual ~BrowseFeature();
 
     QVariant title();
     QIcon getIcon();
 
-    void bindWidget(WLibrary* libraryWidget,
+    void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard);
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
 
     TreeItemModel* getChildModel();
 
@@ -65,10 +66,10 @@ class BrowseFeature : public LibraryFeature {
     void saveQuickLinks();
     void loadQuickLinks();
 
-    UserSettingsPointer m_pConfig;
+    TrackCollection* const m_pTrackCollection;
+
     BrowseTableModel m_browseModel;
     ProxyTrackModel m_proxyModel;
-    TrackCollection* m_pTrackCollection;
     FolderTreeModel m_childModel;
     QAction* m_pAddQuickLinkAction;
     QAction* m_pRemoveQuickLinkAction;
@@ -77,6 +78,7 @@ class BrowseFeature : public LibraryFeature {
     TreeItem* m_pQuickLinkItem;
     QStringList m_quickLinkList;
     QIcon m_icon;
+    QPointer<WLibrarySidebar> m_pSidebarWidget;
 };
 
 #endif // BROWSEFEATURE_H

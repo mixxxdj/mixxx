@@ -123,7 +123,7 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
         QListIterator<CuePointer> it(cuePoints);
         while (it.hasNext()) {
             CuePointer pCue(it.next());
-            if (pCue->getType() != Cue::CUE || pCue->getHotCue() == -1) {
+            if (pCue->getType() != mixxx::CueType::HotCue || pCue->getHotCue() == -1) {
                 continue;
             }
 

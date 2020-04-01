@@ -176,7 +176,7 @@ const QString& EffectChainSlot::name() const {
 
 void EffectChainSlot::setName(const QString& name) {
     m_name = name;
-    emit(updated());
+    emit updated();
 }
 
 QString EffectChainSlot::description() const {
@@ -185,7 +185,7 @@ QString EffectChainSlot::description() const {
 
 void EffectChainSlot::setDescription(const QString& description) {
     m_description = description;
-    emit(updated());
+    emit updated();
 }
 
 void EffectChainSlot::loadEffect(const unsigned int iEffectSlotNumber,
@@ -308,9 +308,9 @@ void EffectChainSlot::slotControlChainSuperParameter(double v, bool force) {
 void EffectChainSlot::slotControlChainSelector(double v) {
 //     qDebug() << debugString() << "slotControlChainSelector" << v;
 //     if (v > 0) {
-//         emit(nextChain(m_iChainSlotNumber, m_pEffectChain));
+//         emit nextChain(m_iChainSlotNumber, m_pEffectChain);
 //     } else if (v < 0) {
-//         emit(prevChain(m_iChainSlotNumber, m_pEffectChain));
+//         emit prevChain(m_iChainSlotNumber, m_pEffectChain);
 //     }
 }
 

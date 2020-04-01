@@ -1,12 +1,13 @@
-#ifndef MIXXX_CUE_H
-#define MIXXX_CUE_H
+#pragma once
 
-#include <QObject>
-#include <QMutex>
 #include <QColor>
+#include <QMutex>
+#include <QObject>
 
+#include "track/cueinfo.h"
 #include "track/trackid.h"
-#include "util/color/predefinedcolor.h"
+#include "util/audiosignal.h"
+#include "util/color/rgbcolor.h"
 #include "util/memory.h"
 
 class CuePosition;
@@ -17,62 +18,62 @@ class Cue : public QObject {
     Q_OBJECT
 
   public:
-    enum CueSource {
-        UNKNOWN   = 0,
-        AUTOMATIC = 1,
-        MANUAL    = 2,
-    };
+    static constexpr double kNoPosition = -1.0;
+    static constexpr int kNoHotCue = -1;
 
-    enum CueType {
-        INVALID = 0,
-        CUE     = 1, // hot cue
-        LOAD    = 2, // the cue
-        BEAT    = 3,
-        LOOP    = 4,
-        JUMP    = 5,
-        INTRO   = 6,
-        OUTRO   = 7,
-    };
-
-    static constexpr double kPositionNotDefined = -1.0;
-
+    Cue();
+    Cue(
+            const mixxx::CueInfo& cueInfo,
+            mixxx::AudioSignal::SampleRate sampleRate);
     ~Cue() override = default;
 
     bool isDirty() const;
     int getId() const;
     TrackId getTrackId() const;
 
-    CueSource getSource() const;
-    void setSource(CueSource source);
-
-    CueType getType() const;
-    void setType(CueType type);
+    mixxx::CueType getType() const;
+    void setType(mixxx::CueType type);
 
     double getPosition() const;
-    void setPosition(double samplePosition);
+    void setStartPosition(
+            double samplePosition = kNoPosition);
+    void setEndPosition(
+            double samplePosition = kNoPosition);
 
     double getLength() const;
-    void setLength(double length);
 
     int getHotCue() const;
-    void setHotCue(int hotCue);
+    void setHotCue(
+            int hotCue = kNoHotCue);
 
     QString getLabel() const;
-    void setLabel(QString label);
+    void setLabel(
+            QString label = QString());
 
-    PredefinedColorPointer getColor() const;
-    void setColor(PredefinedColorPointer color);
+    mixxx::RgbColor getColor() const;
+    void setColor(mixxx::RgbColor color);
 
     double getEndPosition() const;
+
+    mixxx::CueInfo getCueInfo(
+            mixxx::AudioSignal::SampleRate sampleRate) const;
 
   signals:
     void updated();
 
   private:
-    explicit Cue(TrackId trackId);
-    Cue(int id, TrackId trackId, CueSource source, CueType type, double position, double length,
-        int hotCue, QString label, PredefinedColorPointer color);
+    Cue(
+            int id,
+            TrackId trackId,
+            mixxx::CueType type,
+            double position,
+            double length,
+            int hotCue,
+            QString label,
+            mixxx::RgbColor color);
+
     void setDirty(bool dirty);
+
     void setId(int id);
     void setTrackId(TrackId trackId);
 
@@ -81,23 +82,22 @@ class Cue : public QObject {
     bool m_bDirty;
     int m_iId;
     TrackId m_trackId;
-    CueSource m_source;
-    CueType m_type;
-    double m_samplePosition;
-    double m_length;
+    mixxx::CueType m_type;
+    double m_sampleStartPosition;
+    double m_sampleEndPosition;
     int m_iHotCue;
     QString m_label;
-    PredefinedColorPointer m_color;
+    mixxx::RgbColor m_color;
 
     friend class Track;
     friend class CueDAO;
 };
 
-class CuePointer: public std::shared_ptr<Cue> {
+class CuePointer : public std::shared_ptr<Cue> {
   public:
     CuePointer() = default;
     explicit CuePointer(Cue* pCue)
-          : std::shared_ptr<Cue>(pCue, deleteLater) {
+            : std::shared_ptr<Cue>(pCue, deleteLater) {
     }
 
   private:
@@ -107,9 +107,11 @@ class CuePointer: public std::shared_ptr<Cue> {
 class CuePosition {
   public:
     CuePosition()
-        : m_position(0.0), m_source(Cue::UNKNOWN) {}
-    CuePosition(double position, Cue::CueSource source)
-        : m_position(position), m_source(source) {}
+            : m_position(0.0) {
+    }
+    CuePosition(double position)
+            : m_position(position) {
+    }
 
     double getPosition() const {
         return m_position;
@@ -119,39 +121,24 @@ class CuePosition {
         m_position = position;
     }
 
-    Cue::CueSource getSource() const {
-        return m_source;
-    }
-
-    void setSource(Cue::CueSource source) {
-        m_source = source;
-    }
-
-    void set(double position, Cue::CueSource source) {
+    void set(double position) {
         m_position = position;
-        m_source = source;
     }
 
     void reset() {
         m_position = 0.0;
-        m_source = Cue::UNKNOWN;
     }
 
   private:
     double m_position;
-    Cue::CueSource m_source;
 };
 
 bool operator==(const CuePosition& lhs, const CuePosition& rhs);
 
-inline
-bool operator!=(const CuePosition& lhs, const CuePosition& rhs) {
+inline bool operator!=(const CuePosition& lhs, const CuePosition& rhs) {
     return !(lhs == rhs);
 }
 
-inline
-QDebug operator<<(QDebug dbg, const CuePosition& arg) {
-    return dbg << "position =" << arg.getPosition() << "/" << "source =" << arg.getSource();
+inline QDebug operator<<(QDebug dbg, const CuePosition& arg) {
+    return dbg << "position =" << arg.getPosition();
 }
-
-#endif // MIXXX_CUE_H

@@ -9,40 +9,15 @@ constexpr float kSilenceThreshold = 0.001;
 // TODO: Change the above line to:
 //constexpr float kSilenceThreshold = db2ratio(-60.0f);
 
-bool shouldUpdateMainCue(CuePosition mainCue) {
-    return mainCue.getSource() != Cue::MANUAL ||
-            mainCue.getPosition() == -1.0 ||
-            mainCue.getPosition() == 0.0;
-}
+bool shouldAnalyze(TrackPointer pTrack) {
+    CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);
+    CuePointer pOutroCue = pTrack->findCueByType(mixxx::CueType::Outro);
+    CuePointer pAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
 
-bool hasIntroCueStart(const Cue& introCue) {
-    return introCue.getPosition() != -1.0;
-}
-
-bool hasOutroCueEnd(const Cue& outroCue) {
-    return outroCue.getEndPosition() > 0.0;
-}
-
-bool needsIntroCueStart(const Cue& introCue) {
-    return introCue.getSource() != Cue::MANUAL &&
-            !hasIntroCueStart(introCue);
-}
-
-bool needsOutroCueEnd(const Cue& outroCue) {
-    return outroCue.getSource() != Cue::MANUAL &&
-            !hasOutroCueEnd(outroCue);
-}
-
-bool shouldAnalyze(TrackPointer tio) {
-    CuePointer pIntroCue = tio->findCueByType(Cue::INTRO);
-    if (!pIntroCue) {
+    if (!pIntroCue || !pOutroCue || !pAudibleSound || pAudibleSound->getLength() <= 0) {
         return true;
     }
-    CuePointer pOutroCue = tio->findCueByType(Cue::OUTRO);
-    if (!pOutroCue) {
-        return true;
-    }
-    return needsIntroCueStart(*pIntroCue) || needsOutroCueEnd(*pOutroCue);
+    return false;
 }
 
 } // anonymous namespace
@@ -56,11 +31,11 @@ AnalyzerSilence::AnalyzerSilence(UserSettingsPointer pConfig)
           m_iSignalEnd(-1) {
 }
 
-bool AnalyzerSilence::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
+bool AnalyzerSilence::initialize(TrackPointer pTrack, int sampleRate, int totalSamples) {
     Q_UNUSED(sampleRate);
     Q_UNUSED(totalSamples);
 
-    if (!shouldAnalyze(tio)) {
+    if (!shouldAnalyze(pTrack)) {
         return false;
     }
 
@@ -100,7 +75,7 @@ bool AnalyzerSilence::processSamples(const CSAMPLE* pIn, const int iLen) {
 void AnalyzerSilence::cleanup() {
 }
 
-void AnalyzerSilence::storeResults(TrackPointer tio) {
+void AnalyzerSilence::storeResults(TrackPointer pTrack) {
     if (m_iSignalStart < 0) {
         m_iSignalStart = 0;
     }
@@ -114,32 +89,53 @@ void AnalyzerSilence::storeResults(TrackPointer tio) {
         m_iSignalEnd = m_iFramesProcessed;
     }
 
-    double introStart = mixxx::kAnalysisChannels * m_iSignalStart;
-    double outroEnd = mixxx::kAnalysisChannels * m_iSignalEnd;
+    double firstSound = mixxx::kAnalysisChannels * m_iSignalStart;
+    double lastSound = mixxx::kAnalysisChannels * m_iSignalEnd;
 
-    if (shouldUpdateMainCue(tio->getCuePoint())) {
-        tio->setCuePoint(CuePosition(introStart, Cue::AUTOMATIC));
+    CuePointer pAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
+    if (pAudibleSound == nullptr) {
+        pAudibleSound = pTrack->createAndAddCue();
+        pAudibleSound->setType(mixxx::CueType::AudibleSound);
+    }
+    // The user has no way to directly edit the AudibleSound cue. If the user
+    // has deleted the Intro or Outro Cue, this analysis will be rerun when
+    // the track is loaded again. In this case, adjust the AudibleSound Cue's
+    // positions. This could be helpful, for example, when the track length
+    // is changed in a different program, or the silence detection threshold
+    // is changed.
+    pAudibleSound->setStartPosition(firstSound);
+    pAudibleSound->setEndPosition(lastSound);
+
+    CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);
+
+    double mainCue = pTrack->getCuePoint().getPosition();
+    double introStart = firstSound;
+    // Before Mixxx 2.3, the default position for the main cue was 0.0. In this
+    // case, move the main cue point to the first sound. This case can be
+    // distinguished from a user intentionally setting the main cue position
+    // to 0.0 at a later time after analysis because in that case the intro cue
+    // would have already been created by this analyzer.
+    bool upgradingWithMainCueAtDefault = (mainCue == 0.0 && pIntroCue == nullptr);
+    if (mainCue == Cue::kNoPosition || upgradingWithMainCueAtDefault) {
+        pTrack->setCuePoint(CuePosition(firstSound));
+        // NOTE: the actual default for this ConfigValue is set in DlgPrefDeck.
+    } else if (m_pConfig->getValue(ConfigKey("[Controls]", "SetIntroStartAtMainCue"), false) &&
+            pIntroCue == nullptr) {
+        introStart = mainCue;
     }
 
-    CuePointer pIntroCue = tio->findCueByType(Cue::INTRO);
-    if (!pIntroCue) {
-        pIntroCue = tio->createAndAddCue();
-        pIntroCue->setType(Cue::INTRO);
-        pIntroCue->setSource(Cue::AUTOMATIC);
-    }
-    if (pIntroCue->getSource() != Cue::MANUAL) {
-        pIntroCue->setPosition(introStart);
-        pIntroCue->setLength(0.0);
+    if (pIntroCue == nullptr) {
+        pIntroCue = pTrack->createAndAddCue();
+        pIntroCue->setType(mixxx::CueType::Intro);
+        pIntroCue->setStartPosition(introStart);
+        pIntroCue->setEndPosition(Cue::kNoPosition);
     }
 
-    CuePointer pOutroCue = tio->findCueByType(Cue::OUTRO);
-    if (!pOutroCue) {
-        pOutroCue = tio->createAndAddCue();
-        pOutroCue->setType(Cue::OUTRO);
-        pOutroCue->setSource(Cue::AUTOMATIC);
-    }
-    if (pOutroCue->getSource() != Cue::MANUAL) {
-        pOutroCue->setPosition(-1.0);
-        pOutroCue->setLength(outroEnd);
+    CuePointer pOutroCue = pTrack->findCueByType(mixxx::CueType::Outro);
+    if (pOutroCue == nullptr) {
+        pOutroCue = pTrack->createAndAddCue();
+        pOutroCue->setType(mixxx::CueType::Outro);
+        pOutroCue->setStartPosition(Cue::kNoPosition);
+        pOutroCue->setEndPosition(lastSound);
     }
 }

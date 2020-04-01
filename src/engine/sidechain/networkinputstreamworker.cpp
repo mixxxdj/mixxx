@@ -3,9 +3,7 @@
 
 #include <engine/sidechain/networkinputstreamworker.h>
 
-NetworkInputStreamWorker::NetworkInputStreamWorker()
-    : m_sampleRate(0),
-      m_numInputChannels(0) {
+NetworkInputStreamWorker::NetworkInputStreamWorker() {
 }
 
 NetworkInputStreamWorker::~NetworkInputStreamWorker() {
