@@ -264,8 +264,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 #ifdef __LILV__
     LV2Backend* pLV2Backend = new LV2Backend();
     m_pEffectsManager->addEffectsBackend(EffectsBackendPointer(pLV2Backend));
-#else
-    LV2Backend* pLV2Backend = nullptr;
 #endif
 
     launchProgress(8);
@@ -458,9 +456,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     }
 
     // Initialize preference dialog
-    m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
-                                    m_pControllerManager, m_pVCManager, pLV2Backend, m_pEffectsManager,
-                                    m_pSettingsManager, m_pLibrary);
+    m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager, m_pControllerManager, m_pVCManager, m_pEffectsManager, m_pSettingsManager, m_pLibrary);
     m_pPrefDlg->setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     m_pPrefDlg->setHidden(true);
 

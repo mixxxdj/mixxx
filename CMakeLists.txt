@@ -482,7 +482,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefkeydlg.ui
   src/preferences/dialog/dlgpreflibrary.cpp
   src/preferences/dialog/dlgpreflibrarydlg.ui
-  src/preferences/dialog/dlgpreflv2dlg.ui
   src/preferences/dialog/dlgprefnovinyl.cpp
   src/preferences/dialog/dlgprefnovinyldlg.ui
   src/preferences/dialog/dlgprefrecord.cpp
@@ -1809,7 +1808,6 @@ if(LILV)
     src/effects/lv2/lv2backend.cpp
     src/effects/lv2/lv2effectprocessor.cpp
     src/effects/lv2/lv2manifest.cpp
-    src/preferences/dialog/dlgpreflv2.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __LILV__)
   target_link_libraries(mixxx-lib PUBLIC Lilv::Lilv)

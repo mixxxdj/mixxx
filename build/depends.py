@@ -1351,7 +1351,6 @@ class MixxxCore(Feature):
             'src/preferences/dialog/dlgprefdeckdlg.ui',
             'src/preferences/dialog/dlgprefcolorsdlg.ui',
             'src/preferences/dialog/dlgprefcrossfaderdlg.ui',
-            'src/preferences/dialog/dlgpreflv2dlg.ui',
             'src/preferences/dialog/dlgprefeffectsdlg.ui',
             'src/preferences/dialog/dlgprefeqdlg.ui',
             'src/preferences/dialog/dlgpreferencesdlg.ui',

@@ -707,7 +707,7 @@ class LiveBroadcasting(Feature):
             # https://bugs.launchpad.net/mixxx/+bug/1833225
             if not conf.CheckForPKG('shout', '2.4.4'):
                 self.INTERNAL_LINK = True
- 
+
         if not self.INTERNAL_LINK:
             self.INTERNAL_LINK = not conf.CheckLib(['libshout', 'shout'])
 
@@ -1171,8 +1171,7 @@ class Lilv(Feature):
     def sources(self, build):
         return ['src/effects/lv2/lv2backend.cpp',
                 'src/effects/lv2/lv2effectprocessor.cpp',
-                'src/effects/lv2/lv2manifest.cpp',
-                'src/preferences/dialog/dlgpreflv2.cpp']
+                'src/effects/lv2/lv2manifest.cpp']
 
 class Battery(Feature):
     def description(self):
