@@ -391,32 +391,6 @@ void EffectsManager::setup() {
     addOutputEffectChainSlot();
 }
 
-void EffectsManager::setEffectParameterPosition(EffectManifestPointer pManifest,
-        const unsigned int parameterId, const unsigned int position) {
-    for (auto& pChainSlot : m_standardEffectChainSlots) {
-        pChainSlot->setEffectParameterPosition(pManifest, parameterId, position);
-    }
-    for (auto& pChainSlot : m_equalizerEffectChainSlots) {
-        pChainSlot->setEffectParameterPosition(pManifest, parameterId, position);
-    }
-    for (auto& pChainSlot : m_quickEffectChainSlots) {
-        pChainSlot->setEffectParameterPosition(pManifest, parameterId, position);
-    }
-}
-
-void EffectsManager::hideEffectParameter(EffectManifestPointer pManifest,
-        const unsigned int position) {
-    for (auto& pChainSlot : m_standardEffectChainSlots) {
-        pChainSlot->hideEffectParameter(pManifest, position);
-    }
-    for (auto& pChainSlot : m_equalizerEffectChainSlots) {
-        pChainSlot->hideEffectParameter(pManifest, position);
-    }
-    for (auto& pChainSlot : m_quickEffectChainSlots) {
-        pChainSlot->hideEffectParameter(pManifest, position);
-    }
-}
-
 bool EffectsManager::writeRequest(EffectsRequest* request) {
     if (m_underDestruction) {
         // Catch all delete Messages since the engine is already down

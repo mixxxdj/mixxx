@@ -343,27 +343,6 @@ void EffectSlot::loadParameters() {
     }
 }
 
-void EffectSlot::hideEffectParameter(const unsigned int parameterId) {
-    for (auto& parameterMapping : m_mapForParameterType) {
-        parameterMapping.removeAll(parameterId);
-    }
-
-    loadParameters();
-}
-
-void EffectSlot::setEffectParameterPosition(const unsigned int parameterId,
-        const unsigned int position) {
-    for (auto& parameterMapping : m_mapForParameterType) {
-        parameterMapping.removeAll(parameterId);
-    }
-
-    auto pParameter = m_parameters.at(parameterId);
-    if (pParameter) {
-        m_mapForParameterType[pParameter->manifest()->parameterType()].insert(position, parameterId);
-        loadParameters();
-    }
-}
-
 void EffectSlot::slotPrevEffect(double v) {
     if (v > 0) {
         slotEffectSelector(-1);

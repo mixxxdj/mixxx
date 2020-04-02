@@ -195,24 +195,6 @@ void EffectChainSlot::loadEffect(const unsigned int iEffectSlotNumber,
                                                  m_enabledInputChannels);
 }
 
-void EffectChainSlot::hideEffectParameter(EffectManifestPointer pManifest,
-        const unsigned int position) {
-    for (EffectSlotPointer pEffectSlot : m_effectSlots) {
-        if (pEffectSlot->getManifest() == pManifest) {
-            pEffectSlot->hideEffectParameter(position);
-        }
-    }
-}
-
-void EffectChainSlot::setEffectParameterPosition(EffectManifestPointer pManifest,
-        const unsigned int parameterId, const unsigned int position) {
-    for (EffectSlotPointer pEffectSlot : m_effectSlots) {
-        if (pEffectSlot->getManifest() == pManifest) {
-            pEffectSlot->setEffectParameterPosition(parameterId, position);
-        }
-    }
-}
-
 void EffectChainSlot::sendParameterUpdate() {
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS;

@@ -117,17 +117,6 @@ void DlgPrefLV2::slotApply() {
 
     EffectManifestPointer pCurrentEffectManifest =
             m_pLV2Backend->getManifest(m_currentEffectId);
-
-    qDebug() << "DlgPrefLV2::slotApply" << pCurrentEffectManifest.data();
-    unsigned int position = 0;
-    for (int i = 0; i < m_pluginParameters.size(); i++) {
-        if (m_pluginParameters[i]->isChecked()) {
-            m_pEffectsManager->setEffectParameterPosition(pCurrentEffectManifest, i, position);
-            ++position;
-        } else {
-            m_pEffectsManager->hideEffectParameter(pCurrentEffectManifest, i);
-        }
-    }
 }
 
 void DlgPrefLV2::slotUpdateOnParameterCheck(int state) {

@@ -136,11 +136,6 @@ class EffectsManager : public QObject {
 
     void setup();
 
-    // TODO : Remove these functions once the GUI for parameter rearrangement is implemented
-    void hideEffectParameter(EffectManifestPointer pManifest, const unsigned int position);
-    void setEffectParameterPosition(EffectManifestPointer pManifest,
-            const unsigned int parameterId, const unsigned int position);
-
     // Write an EffectsRequest to the EngineEffectsManager. EffectsManager takes
     // ownership of request and deletes it once a response is received.
     bool writeRequest(EffectsRequest* request);

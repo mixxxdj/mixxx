@@ -82,10 +82,6 @@ class EffectSlot : public QObject {
             const QSet<ChannelHandleAndGroup>& activeInputChannels);
     void removeFromEngine();
 
-    void hideEffectParameter(const unsigned int parameterId);
-    void setEffectParameterPosition(const unsigned int parameterId,
-            const unsigned int position);
-
   public slots:
     void setMetaParameter(double v, bool force = false);
 
