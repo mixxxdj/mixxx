@@ -37,13 +37,13 @@
    <item row="1" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBoxConditions">
      <property name="title">
-      <string>If all of these conditions are true:</string>
+      <string>Conditions (leave empty to apply color to ALL hotcues)</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
        <widget class="QCheckBox" name="checkBoxCurrentColorCondition">
         <property name="text">
-         <string>Current Cue Color</string>
+         <string>Current cue color</string>
         </property>
         <property name="checked">
          <bool>true</bool>
@@ -73,7 +73,7 @@
          <bool>true</bool>
         </property>
         <property name="text">
-         <string>Hotcue Index</string>
+         <string>Hotcue index</string>
         </property>
        </widget>
       </item>
@@ -124,7 +124,7 @@
    <item row="0" column="0">
     <widget class="QLabel" name="labelNewColor">
      <property name="text">
-      <string>Set Cue color to:</string>
+      <string>New cue color</string>
      </property>
     </widget>
    </item>
