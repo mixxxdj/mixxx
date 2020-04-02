@@ -50,7 +50,7 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
             Qt::DirectConnection);
 
     // Set up passthrough toggle button
-    connect(m_pPassing, SIGNAL(valueChanged(double)),
+    connect(m_pPassing, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotPassingToggle(double)),
             Qt::DirectConnection);
 
