@@ -1,6 +1,12 @@
-language: cpp
-os: linux
+# Enable build config validation (opt-in)
+version: ~> 1.0
 
+# Default build environment
+os: linux
+dist: bionic
+
+# Default programming language
+language: cpp
 
 # Build flags common to OS X and Linux.
 # Parallel builds are important for avoiding OSX build timeouts.
@@ -19,8 +25,6 @@ jobs:
   include:
     - name: pre-commit
       if: type != pull_request
-      os: linux
-      dist: bionic
       language: python
       python: 3.7
       # There are too many files in the repo that have formatting issues. We'll
@@ -38,8 +42,6 @@ jobs:
 
     - name: pre-commit-pr
       if: type == pull_request
-      os: linux
-      dist: bionic
       language: python
       python: 3.7
       cache:
@@ -52,8 +54,6 @@ jobs:
       addons: []
 
     - name: Ubuntu/gcc/SCons build
-      os: linux
-      dist: bionic
       compiler: gcc
       # Ubuntu Bionic build prerequisites
       before_install:
@@ -67,8 +67,6 @@ jobs:
         - ./mixxx-test
 
     - name: Ubuntu/gcc/CMake build
-      os: linux
-      dist: bionic
       compiler: gcc
       cache: ccache
       # Ubuntu Bionic build prerequisites
