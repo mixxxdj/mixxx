@@ -15,7 +15,7 @@
 namespace {
 
 const QString kColorButtonStyleSheetLight = QStringLiteral(
-        "QPushButton { background-color: %1; }");
+        "QPushButton { background-color: %1; color: black; }");
 const QString kColorButtonStyleSheetDark = QStringLiteral(
         "QPushButton { background-color: %1; color: white; }");
 
