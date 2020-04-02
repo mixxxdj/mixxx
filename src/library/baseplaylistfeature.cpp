@@ -486,15 +486,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
     if (file_location.isNull() || file_location.isEmpty()) {
         return;
     }
-    // Manually add extension due to bug in QFileDialog
-    // via https://bugreports.qt-project.org/browse/QTBUG-27186
-    // Can be removed after switch to Qt5
     QFileInfo fileName(file_location);
-    if (fileName.suffix().isNull() || fileName.suffix().isEmpty()) {
-        QString ext = filefilter.section(".",1,1);
-        ext.chop(1);
-        file_location.append(".").append(ext);
-    }
     // Update the import/export playlist directory
     m_pConfig->set(ConfigKey("[Library]","LastImportExportPlaylistDirectory"),
                 ConfigValue(fileName.dir().absolutePath()));
