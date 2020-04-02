@@ -25,7 +25,7 @@ BasePlaylistFeature::BasePlaylistFeature(
         UserSettingsPointer pConfig,
         PlaylistTableModel* pModel,
         const QString& rootViewName)
-        : LibraryFeature(pLibrary, pConfig),
+        : BaseTrackCollectionFeature(pLibrary, pConfig),
           m_playlistDao(pLibrary->trackCollections()->internalCollection()->getPlaylistDAO()),
           m_pPlaylistTableModel(pModel),
           m_rootViewName(rootViewName) {

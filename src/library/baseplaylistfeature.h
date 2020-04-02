@@ -12,8 +12,8 @@
 #include <QString>
 
 #include "library/dao/playlistdao.h"
-#include "library/libraryfeature.h"
 #include "track/track.h"
+#include "basetrackcollectionfeature.h"
 
 class WLibrary;
 class KeyboardEventFilter;
@@ -21,7 +21,7 @@ class PlaylistTableModel;
 class TrackCollectionManager;
 class TreeItem;
 
-class BasePlaylistFeature : public LibraryFeature {
+class BasePlaylistFeature : public BaseTrackCollectionFeature {
     Q_OBJECT
   public:
     BasePlaylistFeature(Library* pLibrary,

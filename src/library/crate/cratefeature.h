@@ -1,7 +1,6 @@
 #ifndef MIXXX_CRATEFEATURE_H
 #define MIXXX_CRATEFEATURE_H
 
-
 #include <QModelIndex>
 #include <QList>
 #include <QAction>
@@ -13,8 +12,7 @@
 
 #include "library/crate/cratestorage.h"
 #include "library/crate/cratetablemodel.h"
-
-#include "library/libraryfeature.h"
+#include "library/basetrackcollectionfeature.h"
 #include "library/treeitemmodel.h"
 
 #include "track/track.h"
@@ -27,7 +25,7 @@
 class Library;
 class WLibrarySidebar;
 
-class CrateFeature : public LibraryFeature {
+class CrateFeature : public BaseTrackCollectionFeature {
     Q_OBJECT
   public:
     CrateFeature(Library* pLibrary,

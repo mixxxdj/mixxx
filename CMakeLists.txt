@@ -353,6 +353,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/baseplaylistfeature.cpp
   src/library/basesqltablemodel.cpp
   src/library/basetrackcache.cpp
+  src/library/basetrackcollectionfeature.cpp
   src/library/basetracktablemodel.cpp
   src/library/bpmdelegate.cpp
   src/library/browse/browsefeature.cpp
