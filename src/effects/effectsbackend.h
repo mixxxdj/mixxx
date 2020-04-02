@@ -24,6 +24,7 @@ class EffectsBackend {
     // returns a list sorted like it should be displayed in the GUI
     virtual const QList<QString> getEffectIds() const = 0;
     virtual EffectManifestPointer getManifest(const QString& effectId) const = 0;
+    virtual const QList<EffectManifestPointer> getManifests() const = 0;
     virtual bool canInstantiateEffect(const QString& effectId) const = 0;
 
     virtual std::unique_ptr<EffectProcessor> createProcessor(

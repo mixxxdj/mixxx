@@ -13,6 +13,7 @@ class BuiltInBackend : public EffectsBackend {
 
     const QList<QString> getEffectIds() const;
     EffectManifestPointer getManifest(const QString& effectId) const;
+    const QList<EffectManifestPointer> getManifests() const;
     std::unique_ptr<EffectProcessor> createProcessor(
             const EffectManifestPointer pManifest) const;
     bool canInstantiateEffect(const QString& effectId) const;

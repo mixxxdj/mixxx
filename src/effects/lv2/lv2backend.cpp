@@ -74,6 +74,14 @@ EffectManifestPointer LV2Backend::getManifest(const QString& effectId) const {
     return m_registeredEffects.value(effectId);
 }
 
+const QList<EffectManifestPointer> LV2Backend::getManifests() const {
+    QList<EffectManifestPointer> list;
+    for (const auto& manifest : m_registeredEffects) {
+        list.append(manifest);
+    }
+    return list;
+}
+
 std::unique_ptr<EffectProcessor> LV2Backend::createProcessor(
         const EffectManifestPointer pManifest) const {
     LV2EffectManifestPointer pLV2Manifest = m_registeredEffects.value(pManifest->id());

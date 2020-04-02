@@ -92,6 +92,13 @@ EffectManifestPointer BuiltInBackend::getManifest(const QString& effectId) const
     return m_registeredEffects.value(effectId).manifest();
 }
 
+const QList<EffectManifestPointer> BuiltInBackend::getManifests() const {
+    QList<EffectManifestPointer> list;
+    for (const auto& registeredEffect : m_registeredEffects) {
+        list.append(registeredEffect.manifest());
+    }
+    return list;
+}
 
 bool BuiltInBackend::canInstantiateEffect(const QString& effectId) const {
     return m_registeredEffects.contains(effectId);

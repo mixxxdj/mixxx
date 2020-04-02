@@ -17,6 +17,7 @@ class LV2Backend : public EffectsBackend {
     const QList<QString> getEffectIds() const;
     const QSet<QString> getDiscoveredPluginIds() const;
     EffectManifestPointer getManifest(const QString& effectId) const;
+    const QList<EffectManifestPointer> getManifests() const;
     LV2EffectManifestPointer getLV2Manifest(const QString& effectId) const;
     std::unique_ptr<EffectProcessor> createProcessor(
             const EffectManifestPointer pManifest) const;
