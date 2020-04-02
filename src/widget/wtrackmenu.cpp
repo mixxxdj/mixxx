@@ -283,7 +283,6 @@ void WTrackMenu::teardownActions()
     m_pClearMetadataMenu->clear();
     m_pBPMMenu->clear();
     m_pColorMenu->clear();
-    m_pCoverMenu->clear();
 }
 
 void WTrackMenu::setupActions() {
