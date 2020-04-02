@@ -278,8 +278,8 @@ void DlgReplaceCueColor::slotApply() {
 
     if (QMessageBox::question(
                 this,
-                tr("Really replace colors?"),
-                tr("Really replace the colors of %1 cues in %2 tracks? This change cannot be undone!").arg(QString::number(rows.size()), QString::number(trackIds.size()))) == QMessageBox::No) {
+                tr("Confirm Color Replacement"),
+                tr("The colors of %1 cues in %2 tracks will be replaced. This change cannot be undone! Are you sure?").arg(QString::number(rows.size()), QString::number(trackIds.size()))) == QMessageBox::No) {
         m_bDatabaseChangeInProgress = false;
         slotUpdateApplyButton();
         return;
