@@ -22,8 +22,8 @@ EffectPreset::EffectPreset(const QDomElement& effectElement) {
         QDomNode parameterNode = parametersList.at(i);
         if (parameterNode.isElement()) {
             QDomElement parameterElement = parameterNode.toElement();
-            // EffectParameterPresetPointer pPreset(new EffectParameterPreset(parameterElement));
-            // m_effectParameterPresets.append(pPreset);
+            EffectParameterPreset parameterPreset(parameterElement);
+            m_effectParameterPresets.append(parameterElement);
         }
     }
 }

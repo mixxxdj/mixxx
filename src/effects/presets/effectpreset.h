@@ -2,6 +2,7 @@
 #include <QDomElement>
 
 #include "effects/defs.h"
+#include "effects/presets/effectparameterpreset.h"
 
 class EffectPreset {
   public:
@@ -14,5 +15,5 @@ class EffectPreset {
     QString m_version;
     double m_dMetaParameter;
 
-    // QList <EffectParameterPresetPointer> m_effectParameterPresets;
+    QList<EffectParameterPreset> m_effectParameterPresets;
 };

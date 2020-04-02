@@ -29,4 +29,5 @@ const QString ParameterId("Id");
 const QString ParameterValue("Value");
 const QString ParameterLinkType("LinkType");
 const QString ParameterLinkInversion("LinkInversion");
+const QString ParameterHidden("Hidden");
 }
