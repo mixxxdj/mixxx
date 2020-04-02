@@ -14,7 +14,6 @@
 
 namespace {
 
-constexpr int kColorButtonLightnessThreshold = 0x80;
 const QString kColorButtonStyleSheetLight = QStringLiteral(
         "QPushButton { background-color: %1; }");
 const QString kColorButtonStyleSheetDark = QStringLiteral(
