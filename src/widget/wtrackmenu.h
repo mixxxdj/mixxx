@@ -8,9 +8,9 @@
 #include <library/dlgtagfetcher.h>
 #include "library/trackcollectionmanager.h"
 #include "library/trackmodel.h"
+#include "track/track.h"
 #include "library/dao/playlistdao.h"
-
-
+#include "preferences/usersettings.h"
 
 #include "widget/wcoverartmenu.h"
 #include "widget/wcolorpickeraction.h"
@@ -18,6 +18,7 @@
 typedef QList<TrackId> TrackIdList;
 typedef QList<TrackPointer> TrackPointerList;
 
+class ControlProxy;
 class WCoverArtMenu;
 
 class TrackCollectionManager;
@@ -88,6 +89,7 @@ class WTrackMenu : public QMenu {
     void slotPurge();
 
 private:
+    void constructMenus();
     void createActions();
     void setupActions();
     void trackIdsToTrackPointers();
@@ -103,6 +105,8 @@ private:
     void showDlgTagFetcher(QModelIndex index);
 
     void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
+
+    void teardownActions();
 
 
     void loadSelectionToGroup(QString group, bool play);
@@ -217,7 +221,6 @@ private:
 
     void trackIndicesToTrackPointers();
 };
-
 
 
 

@@ -403,12 +403,11 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 
     // Update track indices in context menu
     QModelIndexList indices = selectionModel()->selectedRows();
-    std::cout << "passing this many indices: " << indices.size() << std::endl;
-    DEBUG_ASSERT(!indices.empty());
-    m_pMenu->setTrackIndexList(selectionModel()->selectedRows());
+    m_pMenu->setTrackIndexList(indices);
 
     //Create the right-click menu
     m_pMenu->popup(event->globalPos());
+
 }
 
 void WTrackTableView::onSearch(const QString& text) {

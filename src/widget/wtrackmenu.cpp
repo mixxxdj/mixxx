@@ -47,12 +47,11 @@ WTrackMenu::WTrackMenu(QWidget *parent, UserSettingsPointer pConfig, TrackCollec
         m_pTrackCollectionManager(pTrackCollectionManager),
         m_bPlaylistMenuLoaded(false),
         m_bCrateMenuLoaded(false),
-          m_iCoverSourceColumn(-1),
-          m_iCoverTypeColumn(-1),
-          m_iCoverLocationColumn(-1),
-          m_iCoverHashColumn(-1),
-          m_iCoverColumn(-1) {
-    std::cout << "Constructor started (stdout)\n";
+        m_iCoverSourceColumn(-1),
+        m_iCoverTypeColumn(-1),
+        m_iCoverLocationColumn(-1),
+        m_iCoverHashColumn(-1),
+        m_iCoverColumn(-1) {
     m_pNumSamplers = new ControlProxy(
             "[Master]", "num_samplers", this);
     m_pNumDecks = new ControlProxy(
@@ -60,6 +59,14 @@ WTrackMenu::WTrackMenu(QWidget *parent, UserSettingsPointer pConfig, TrackCollec
     m_pNumPreviewDecks = new ControlProxy(
             "[Master]", "num_preview_decks", this);
 
+    constructMenus();
+}
+
+WTrackMenu::~WTrackMenu() {
+    // Explicit destruction of heap allocated objects would cause segfault.
+}
+
+void WTrackMenu::constructMenus() {
     m_pLoadToMenu = new QMenu(this);
     m_pLoadToMenu->setTitle(tr("Load to"));
     m_pDeckMenu = new QMenu(this);
@@ -99,63 +106,11 @@ WTrackMenu::WTrackMenu(QWidget *parent, UserSettingsPointer pConfig, TrackCollec
             this, SLOT(slotCoverInfoSelected(const CoverInfoRelative&)));
     connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
             this, SLOT(slotReloadCoverArt()));
-    createActions();
-    std::cout << "constructor end\n";
 }
 
-WTrackMenu::~WTrackMenu() {
-    std::cout << "Destructor start\n";
-    delete m_pImportMetadataFromFileAct;
-    delete m_pImportMetadataFromMusicBrainzAct;
-    delete m_pExportMetadataAct;
-    delete m_pAddToPreviewDeck;
-    delete m_pAutoDJBottomAct;
-    delete m_pAutoDJTopAct;
-    delete m_pAutoDJReplaceAct;
-    delete m_pRemoveAct;
-    delete m_pRemovePlaylistAct;
-    delete m_pRemoveCrateAct;
-    delete m_pHideAct;
-    delete m_pUnhideAct;
-    delete m_pPropertiesAct;
-    delete m_pLoadToMenu;
-    delete m_pDeckMenu;
-    delete m_pSamplerMenu;
-    delete m_pPlaylistMenu;
-    delete m_pCrateMenu;
-    delete m_pMetadataMenu;
-    delete m_pClearMetadataMenu;
-    delete m_pCoverMenu;
-    delete m_pBpmLockAction;
-    delete m_pBpmUnlockAction;
-    delete m_pBpmDoubleAction;
-    delete m_pBpmHalveAction;
-    delete m_pBpmTwoThirdsAction;
-    delete m_pBpmThreeFourthsAction;
-    delete m_pBpmFourThirdsAction;
-    delete m_pBpmThreeHalvesAction;
-    delete m_pBPMMenu;
-    delete m_pColorMenu;
-    delete m_pClearBeatsAction;
-    delete m_pClearPlayCountAction;
-    delete m_pClearMainCueAction;
-    delete m_pClearHotCuesAction;
-    delete m_pClearIntroCueAction;
-    delete m_pClearOutroCueAction;
-    delete m_pClearLoopAction;
-    delete m_pClearReplayGainAction;
-    delete m_pClearWaveformAction;
-    delete m_pClearKeyAction;
-    delete m_pClearAllMetadataAction;
-    delete m_pPurgeAct;
-    delete m_pFileBrowserAct;
-    delete m_pTrackCollectionManager;
-    delete m_pTrackModel;
-    std::cout << "Destructor end\n";
-}
+
 
 void WTrackMenu::createActions() {
-    std::cout << "create actions\n";
     DEBUG_ASSERT(this);
     DEBUG_ASSERT(m_pSamplerMenu);
 
@@ -313,60 +268,25 @@ void WTrackMenu::createActions() {
             &WTrackMenu::slotColorPicked);
 }
 
-void WTrackMenu::setTrackIds(TrackIdList trackIdList) {
-    // Clean all forms of track store
-    clearTrackSelection();
-
-    m_pTrackIdList = std::move(trackIdList);
-    // Store the track pointers at each initialization of track ids.
-    for (const auto trackId : m_pTrackIdList) {
-        TrackPointer trackPointer = m_pTrackCollectionManager->internalCollection()->getTrackById(trackId);
-        m_pTrackPointerList.push_back(trackPointer);
-    }
-    // Add actions to menu
-    setupActions();
-}
-
-void WTrackMenu::setTrackId(TrackId trackId) {
-    // Create a QList of single track to maintain common functions
-    // for single and multi track selection.
-    TrackIdList singleItemTrackIdList;
-    singleItemTrackIdList.push_back(trackId);
-    // Use setTrackIds to set a list of single element.
-    setTrackIds(singleItemTrackIdList);
-}
-
-void WTrackMenu::setTrackIndexList(QModelIndexList indexList) {
-    std::cout << "setindexlist\n";
-    clearTrackSelection();
-
-    m_pSelectedTrackIndices = std::move(indexList);
-    for (auto index : m_pSelectedTrackIndices) {
-        TrackPointer trackPointer = m_pTrackModel->getTrack(index);
-        m_pTrackPointerList.push_back(trackPointer);
-        TrackId trackId = trackPointer->getId();
-        m_pTrackIdList.push_back(trackId);
-    }
-
-    std::cout << "After initialization of indices: \n";
-    std::cout << "size: " << m_pSelectedTrackIndices.size() << std::endl;
-    for (auto iter : m_pSelectedTrackIndices) {
-        std::cout << "printing index: ";
-        std::cout << iter.row() << " " << iter.internalId() << " " << iter.isValid() << std::endl;
-    }
-    std::cout << std::endl;
-    for (auto iter : m_pTrackIdList) {
-        std::cout << iter << " ";
-    }
-    std::cout << std::endl;
-    std::cout << "setindexlist " << m_pTrackPointerList.size() << " " << m_pSelectedTrackIndices.size() << std::endl;
-    setupActions();
+void WTrackMenu::teardownActions()
+{
+    clear();
+    m_pLoadToMenu->clear();
+    m_pDeckMenu->clear();
+    m_pSamplerMenu->clear();
+    m_pPlaylistMenu->clear();
+    m_pCrateMenu->clear();
+    m_pMetadataMenu->clear();
+    m_pMetadataUpdateExternalCollectionsMenu->clear();
+    m_pClearMetadataMenu->clear();
+    m_pBPMMenu->clear();
+    m_pColorMenu->clear();
+    m_pCoverMenu->clear();
 }
 
 void WTrackMenu::setupActions() {
-    std::cout << "Setup Actions:";
-    std::cout << m_pTrackModel;
-    std::cout << std::endl;
+    teardownActions();
+    createActions();
 
     QModelIndexList indices = m_pSelectedTrackIndices;
 
@@ -671,6 +591,7 @@ void WTrackMenu::setupActions() {
         m_pPurgeAct->setEnabled(!locked);
         addAction(m_pPurgeAct);
     }
+
     addAction(m_pFileBrowserAct);
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA)) {
@@ -680,14 +601,49 @@ void WTrackMenu::setupActions() {
     }
 }
 
+void WTrackMenu::setTrackIds(TrackIdList trackIdList) {
+    // Clean all forms of track store
+    clearTrackSelection();
+
+    m_pTrackIdList = std::move(trackIdList);
+    // Store the track pointers at each initialization of track ids.
+    for (const auto trackId : m_pTrackIdList) {
+        TrackPointer trackPointer = m_pTrackCollectionManager->internalCollection()->getTrackById(trackId);
+        m_pTrackPointerList.push_back(trackPointer);
+    }
+    // Add actions to menu
+    setupActions();
+}
+
+void WTrackMenu::setTrackId(TrackId trackId) {
+    // Create a QList of single track to maintain common functions
+    // for single and multi track selection.
+    TrackIdList singleItemTrackIdList;
+    singleItemTrackIdList.push_back(trackId);
+    // Use setTrackIds to set a list of single element.
+    setTrackIds(singleItemTrackIdList);
+}
+
+void WTrackMenu::setTrackIndexList(QModelIndexList indexList) {
+    clearTrackSelection();
+
+    m_pSelectedTrackIndices = std::move(indexList);
+    for (auto index : m_pSelectedTrackIndices) {
+        TrackPointer trackPointer = m_pTrackModel->getTrack(index);
+        m_pTrackPointerList.push_back(trackPointer);
+        TrackId trackId = trackPointer->getId();
+        m_pTrackIdList.push_back(trackId);
+    }
+
+    setupActions();
+}
+
+
 void WTrackMenu::slotOpenInFileBrowser() {
-    std::cout << "slotopeninfilebrowser " << m_pTrackPointerList.size() << " " << m_pSelectedTrackIndices.size() << std::endl;
-    DEBUG_ASSERT(!getTrackPointerList().empty());
     TrackPointerList trackPointerList = getTrackPointerList();
     QStringList locations;
     for (const TrackPointer& trackPointer : trackPointerList) {
         locations << trackPointer->getLocation();
-        std::cout << trackPointer->getLocation().toStdString() << std::endl;
     }
     mixxx::DesktopHelper::openInFileBrowser(locations);
 }
@@ -1016,7 +972,6 @@ void WTrackMenu::addSelectionToNewCrate() {
 }
 
 void WTrackMenu::setTrackModel(TrackModel* trackModel) {
-    std::cout << "settrackmodel\n";
     m_pTrackModel = trackModel;
 
     // Move this to another function
@@ -1265,6 +1220,7 @@ void WTrackMenu::slotClearHotCues() {
 
 void WTrackMenu::slotClearAllMetadata() {
     slotClearBeats();
+    slotClearPlayCount();
     slotClearMainCue();
     slotClearHotCues();
     slotClearIntroCue();
@@ -1278,14 +1234,7 @@ void WTrackMenu::slotClearAllMetadata() {
 
 
 void WTrackMenu::slotRemove() {
-    std::cout << "Slot remove\n";
-    if (m_pTrackModel->getCapabilities() == TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST) {
-        std::cout << "Can remove from playlist\n";
-    }if (m_pTrackModel->getCapabilities() == TrackModel::TRACKMODELCAPS_REMOVE_CRATE) {
-        std::cout << "Can remove from crate\n";
-    }
     QModelIndexList indices = m_pSelectedTrackIndices;
-    std::cout << "Removal size: " << indices.size() << std::endl;
     if (!indices.empty()) {
         TrackModel* trackModel = m_pTrackModel;
         if (trackModel) {
