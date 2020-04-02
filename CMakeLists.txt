@@ -252,17 +252,17 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/builtin/threebandbiquadeqeffect.cpp
   src/effects/builtin/tremoloeffect.cpp
   src/effects/effectbuttonparameterslot.cpp
-  src/effects/effectchainpreset.cpp
   src/effects/effectchainslot.cpp
   src/effects/effectmanifest.cpp
   src/effects/effectmanifestparameter.cpp
   src/effects/effectparameter.cpp
-  src/effects/effectpreset.cpp
   src/effects/effectknobparameterslot.cpp
   src/effects/effectparameterslotbase.cpp
   src/effects/effectslot.cpp
   src/effects/effectsmanager.cpp
   src/effects/specialeffectchainslots.cpp
+  src/effects/presets/effectpreset.cpp
+  src/effects/presets/effectchainpreset.cpp
   src/encoder/encoder.cpp
   src/encoder/encoderbroadcastsettings.cpp
   src/encoder/encoderflacsettings.cpp

@@ -1,16 +1,13 @@
-#ifndef EFFECTCHAINPRESET_H
-#define EFFECTCHAINPRESET_H
-
+#pragma once
 #include <QDomElement>
 
 #include "effects/defs.h"
-#include "effects/effectpreset.h"
-
+#include "effects/presets/effectpreset.h"
 
 class EffectChainPreset {
   public:
     EffectChainPreset();
-    EffectChainPreset(const QDomElement& element);
+    EffectChainPreset(const QDomElement& chainElement);
     ~EffectChainPreset();
 
     QString name() const {
@@ -23,7 +20,5 @@ class EffectChainPreset {
     QString m_description;
     double m_dSuper;
     EffectChainMixMode m_mixMode;
-    QList <EffectPresetPointer> m_effectPresets;
+    QList<EffectPresetPointer> m_effectPresets;
 };
-
-#endif /* EFFECTCHAINPRESET_H */

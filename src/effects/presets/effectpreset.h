@@ -1,10 +1,7 @@
-#ifndef EFFECTPRESET_H
-#define EFFECTPRESET_H
-
+#pragma once
 #include <QDomElement>
 
 #include "effects/defs.h"
-
 
 class EffectPreset {
   public:
@@ -19,5 +16,3 @@ class EffectPreset {
 
     // QList <EffectParameterPresetPointer> m_effectParameterPresets;
 };
-
-#endif /* EFFECTPRESET_H */

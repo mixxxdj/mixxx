@@ -2,16 +2,15 @@
 
 #include <QDir>
 #include <QMetaType>
-
 #include <algorithm>
 
-#include "engine/effects/engineeffectsmanager.h"
-#include "effects/effectchainpreset.h"
 #include "effects/effectsbackend.h"
 #include "effects/effectslot.h"
 #include "effects/effectxmlelements.h"
+#include "effects/presets/effectchainpreset.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectchain.h"
+#include "engine/effects/engineeffectsmanager.h"
 #include "util/assert.h"
 
 namespace {
