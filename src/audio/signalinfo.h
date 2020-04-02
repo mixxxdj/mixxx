@@ -44,7 +44,7 @@ class SignalInfo final {
     SignalInfo& operator=(const SignalInfo&) = default;
 
     // Conversion: #samples / sample offset -> #frames / frame offset
-    // Only works for sample offsets on frame boundaries!
+    // Only works for integer sample offsets on frame boundaries!
     template<typename T>
     T samples2frames(T samples) const {
         DEBUG_ASSERT(getChannelCount().isValid());
@@ -84,7 +84,7 @@ class SignalInfo final {
     }
 
     // Conversion: #samples / sample offset -> second offset
-    // Only works for sample offsets on frame boundaries!
+    // Only works for integer sample offsets on frame boundaries!
     template<typename T>
     double samples2secs(T samples) const {
         return frames2secs(samples2frames(samples));
@@ -98,7 +98,7 @@ class SignalInfo final {
     }
 
     // Conversion: #samples / sample offset -> millisecond offset
-    // Only works for sample offsets on frame boundaries!
+    // Only works for integer sample offsets on frame boundaries!
     template<typename T>
     double samples2millis(T samples) const {
         return frames2millis(samples2frames(samples));
