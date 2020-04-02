@@ -1,6 +1,3 @@
-// playlistfeature.h
-// Created 8/17/09 by RJ Ryan (rryan@mit.edu)
-
 #ifndef PLAYLISTFEATURE_H
 #define PLAYLISTFEATURE_H
 

@@ -23,15 +23,15 @@ SetlogFeature::SetlogFeature(
         : BasePlaylistFeature(
                 pLibrary,
                 pConfig,
+                new PlaylistTableModel(
+                        this,
+                        pLibrary->trackCollections(),
+                        "mixxx.db.model.setlog",
+                        /*show-all-tracks*/ true),
                 QStringLiteral("SETLOGHOME")),
           m_playlistId(-1),
           m_libraryWidget(nullptr),
           m_icon(QStringLiteral(":/images/library/ic_library_history.svg")) {
-    initTableModel(new PlaylistTableModel(
-            this,
-            pLibrary->trackCollections(),
-            "mixxx.db.model.setlog",
-            /*show-all-tracks*/ true));
 
     //construct child model
     m_childModel.setRootItem(TreeItem::newRoot(this));
@@ -338,10 +338,6 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
 }
 
 void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
-    if (!m_pPlaylistTableModel) {
-        return;
-    }
-
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_SET_LOG ||
@@ -352,10 +348,6 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
 }
 
 void SetlogFeature::slotPlaylistContentChanged(QSet<int> playlistIds) {
-    if (!m_pPlaylistTableModel) {
-        return;
-    }
-
     for (const auto playlistId : qAsConst(playlistIds)) {
         enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
         if (type == PlaylistDAO::PLHT_SET_LOG ||
@@ -369,10 +361,6 @@ void SetlogFeature::slotPlaylistTableRenamed(
         int playlistId,
         QString newName) {
     Q_UNUSED(newName);
-    if (!m_pPlaylistTableModel) {
-        return;
-    }
-
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_SET_LOG ||

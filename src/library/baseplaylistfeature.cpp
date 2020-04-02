@@ -1,9 +1,9 @@
-#include "library/baseplaylistfeature.h"
-
 #include <QInputDialog>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QStandardPaths>
+
+#include "library/baseplaylistfeature.h"
 
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
@@ -23,10 +23,11 @@
 BasePlaylistFeature::BasePlaylistFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig,
+        PlaylistTableModel* pModel,
         const QString& rootViewName)
         : LibraryFeature(pLibrary, pConfig),
           m_playlistDao(pLibrary->trackCollections()->internalCollection()->getPlaylistDAO()),
-          m_pPlaylistTableModel(nullptr),
+          m_pPlaylistTableModel(pModel),
           m_rootViewName(rootViewName) {
     m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"), this);
     connect(m_pCreatePlaylistAction,
@@ -141,12 +142,6 @@ BasePlaylistFeature::BasePlaylistFeature(
             &BasePlaylistFeature::slotResetSelectedTrack);
 }
 
-void BasePlaylistFeature::initTableModel(
-        PlaylistTableModel* pPlaylistTableModel) {
-    DEBUG_ASSERT(!m_pPlaylistTableModel);
-    m_pPlaylistTableModel = pPlaylistTableModel;
-}
-
 int BasePlaylistFeature::playlistIdFromIndex(QModelIndex index) {
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     if (item == nullptr) {
@@ -170,9 +165,6 @@ void BasePlaylistFeature::activate() {
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
-    if (!m_pPlaylistTableModel) {
-        return;
-    }
     int playlistId = playlistIdFromIndex(index);
     if (playlistId != -1) {
         m_pPlaylistTableModel->setTableModel(playlistId);
@@ -183,9 +175,6 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
 
 void BasePlaylistFeature::activatePlaylist(int playlistId) {
     //qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
-    if (!m_pPlaylistTableModel) {
-        return;
-    }
     QModelIndex index = indexFromPlaylistId(playlistId);
     if (playlistId != -1 && index.isValid()) {
         m_pPlaylistTableModel->setTableModel(playlistId);
@@ -303,10 +292,6 @@ void BasePlaylistFeature::slotTogglePlaylistLock() {
 }
 
 void BasePlaylistFeature::slotCreatePlaylist() {
-    if (!m_pPlaylistTableModel) {
-        return;
-    }
-
     QString name;
     bool validNameGiven = false;
 
@@ -373,11 +358,6 @@ void BasePlaylistFeature::slotDeletePlaylist() {
 
 void BasePlaylistFeature::slotImportPlaylist() {
     //qDebug() << "slotImportPlaylist() row:" << m_lastRightClickedIndex.data();
-
-    if (!m_pPlaylistTableModel) {
-        return;
-    }
-
     QString playlist_file = getPlaylistFile();
     if (playlist_file.isEmpty()) return;
 
@@ -421,10 +401,6 @@ void BasePlaylistFeature::slotImportPlaylistFile(const QString &playlist_file) {
 }
 
 void BasePlaylistFeature::slotCreateImportPlaylist() {
-    if (!m_pPlaylistTableModel) {
-        return;
-    }
-
     // Get file to read
     QStringList playlist_files = LibraryFeature::getPlaylistFiles();
     if (playlist_files.isEmpty()) {
@@ -462,7 +438,7 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
         }
 
         lastPlaylistId = m_playlistDao.createPlaylist(name);
-        if (lastPlaylistId != -1 && m_pPlaylistTableModel) {
+        if (lastPlaylistId != -1) {
             m_pPlaylistTableModel->setTableModel(lastPlaylistId);
         }
         else {
@@ -479,9 +455,6 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
 }
 
 void BasePlaylistFeature::slotExportPlaylist() {
-    if (!m_pPlaylistTableModel) {
-        return;
-    }
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
     if (playlistId == -1) {
         return;

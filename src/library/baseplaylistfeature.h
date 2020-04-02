@@ -26,6 +26,7 @@ class BasePlaylistFeature : public LibraryFeature {
   public:
     BasePlaylistFeature(Library* pLibrary,
                         UserSettingsPointer pConfig,
+                        PlaylistTableModel* pModel,
                         const QString& rootViewName);
     ~BasePlaylistFeature() override = default;
 
@@ -70,8 +71,6 @@ class BasePlaylistFeature : public LibraryFeature {
         int id;
         QString label;
     };
-
-    void initTableModel(PlaylistTableModel* pPlaylistTableModel);
 
     virtual QModelIndex constructChildModel(int selected_id);
     virtual void updateChildModel(int selected_id);

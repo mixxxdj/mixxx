@@ -1,7 +1,6 @@
 #include <QtDebug>
 #include <QMenu>
 #include <QFile>
-#include <QFileInfo>
 
 #include "library/playlistfeature.h"
 
@@ -17,7 +16,6 @@
 #include "library/parser.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "sources/soundsourceproxy.h"
-#include "util/compatibility.h"
 #include "util/db/dbconnection.h"
 #include "util/dnd.h"
 #include "util/duration.h"
@@ -41,12 +39,12 @@ PlaylistFeature::PlaylistFeature(
         : BasePlaylistFeature(
                 pLibrary,
                 pConfig,
+                new PlaylistTableModel(
+                        this,
+                        pLibrary->trackCollections(),
+                        "mixxx.db.model.playlist"),
                 QStringLiteral("PLAYLISTHOME")),
           m_icon(QStringLiteral(":/images/library/ic_library_playlist.svg")) {
-    initTableModel(new PlaylistTableModel(
-            this,
-            pLibrary->trackCollections(),
-            "mixxx.db.model.playlist"));
 
     //construct child model
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
@@ -232,10 +230,6 @@ void PlaylistFeature::decorateChild(TreeItem* item, int playlistId) {
 }
 
 void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
-    if (!m_pPlaylistTableModel) {
-        return;
-    }
-
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
@@ -246,10 +240,6 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
 }
 
 void PlaylistFeature::slotPlaylistContentChanged(QSet<int> playlistIds) {
-    if (!m_pPlaylistTableModel) {
-        return;
-    }
-
     for (const auto playlistId : qAsConst(playlistIds)) {
         enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
         if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
@@ -263,10 +253,6 @@ void PlaylistFeature::slotPlaylistTableRenamed(
         int playlistId,
         QString newName) {
     Q_UNUSED(newName);
-    if (!m_pPlaylistTableModel) {
-        return;
-    }
-
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
