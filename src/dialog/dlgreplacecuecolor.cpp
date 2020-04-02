@@ -49,11 +49,26 @@ DlgReplaceCueColor::DlgReplaceCueColor(
           m_bDatabaseChangeInProgress(false),
           m_bDatabaseChanged(false),
           m_pNewColorMenu(new QMenu(this)),
-          m_pCurrentColorMenu(new QMenu(this)) {
+          m_pCurrentColorMenu(new QMenu(this)),
+          m_pStyle(QStyleFactory::create(QStringLiteral("fusion"))) {
     setupUi(this);
     setWindowModality(Qt::ApplicationModal);
 
     spinBoxHotcueIndex->setMaximum(NUM_HOT_CUES);
+
+    // Unfortunately, not all styles supported by Qt support setting a
+    // background color for QPushButtons (see
+    // https://bugreports.qt.io/browse/QTBUG-11089). For example, when using
+    // the gtk2 style all color buttons would be just grey. It's possible to
+    // work around this by modifying the button border with a QSS stylesheet,
+    // so that the QStyle will be overwritten, but as a sane default for skins
+    // without styles for WColorPicker, we're setting the platform-independent
+    // "Fusion" style here. This will make the buttons look slightly different
+    // from the rest of the application (when not styled via QSS), but that's
+    // better than having buttons without any colors (which would make the
+    // color picker unusable).
+    pushButtonNewColor->setStyle(m_pStyle);
+    pushButtonCurrentColor->setStyle(m_pStyle);
 
     // Set up new color button
     ColorPaletteSettings colorPaletteSettings(pConfig);

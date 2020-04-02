@@ -57,5 +57,6 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
     QMenu* m_pCurrentColorMenu;
     WColorPickerAction* m_pNewColorPickerAction;
     WColorPickerAction* m_pCurrentColorPickerAction;
+    QStyle* m_pStyle;
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(DlgReplaceCueColor::Conditions);
