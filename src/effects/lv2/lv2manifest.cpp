@@ -51,6 +51,9 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
         if (lilv_port_is_a(m_pLV2plugin, port, properties["control_port"])
                 && !lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"])
                 && !lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
+            if (isnan(m_minimum[i]) || isnan(m_maximum[i])) {
+                continue;
+            }
             controlPortIndices.append(i);
             EffectManifestParameterPointer param = addParameter();
 
@@ -67,6 +70,9 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
 
             param->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
             param->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+            if (isnan(m_default[i]) || m_default[i] < m_minimum[i] || m_default[i] > m_maximum[i]) {
+                m_default[i] = m_minimum[i];
+            }
             param->setRange(m_minimum[i], m_default[i], m_maximum[i]);
 
             // Set the appropriate Hints
