@@ -18,7 +18,6 @@ class ControlProxy;
 class DlgTagFetcher;
 class DlgTrackInfo;
 class TrackCollectionManager;
-class WCoverArtMenu;
 
 class ExternalTrackCollection;
 
@@ -52,70 +51,29 @@ class WTrackTableView : public WLibraryTableView {
     void slotMouseDoubleClicked(const QModelIndex &);
     void slotUnhide();
     void slotPurge();
-    void slotAddToAutoDJBottom() override;
-    void slotAddToAutoDJTop() override;
-    void slotAddToAutoDJReplace() override;
+
 
   private slots:
-    void slotRemove();
-    void slotHide();
-    void slotShowTrackInfo();
-    void slotShowDlgTagFetcher();
-    void slotNextTrackInfo();
-    void slotNextDlgTagFetcher();
-    void slotPrevTrackInfo();
-    void slotPrevDlgTagFetcher();
-    void slotShowTrackInTagFetcher(TrackPointer track);
-    void slotImportTrackMetadataFromFileTags();
-    void slotExportTrackMetadataIntoFileTags();
-    void slotUpdateExternalTrackCollection(ExternalTrackCollection*);
-    //void slotPopulatePlaylistMenu();
-    void addSelectionToPlaylist(int iPlaylistId);
-    void updateSelectionCrates(QWidget* qc);
-    //void slotPopulateCrateMenu();
-    void addSelectionToNewCrate();
+
     void loadSelectionToGroup(QString group, bool play = false);
     void doSortByColumn(int headerSection, Qt::SortOrder sortOrder);
     void applySortingIfVisible();
     void applySorting();
-    void slotLockBpm();
-    void slotUnlockBpm();
-    void slotScaleBpm(int);
-    void slotColorPicked(mixxx::RgbColor::optional_t color);
-
-    void slotClearBeats();
-    void slotClearPlayCount();
-    void slotClearMainCue();
-    void slotClearHotCues();
-    void slotClearIntroCue();
-    void slotClearOutroCue();
-    void slotClearLoop();
-    void slotClearKey();
-    void slotClearReplayGain();
-    void slotClearWaveform();
-    void slotClearAllMetadata();
 
     // Signalled 20 times per second (every 50ms) by GuiTick.
     void slotGuiTick50ms(double);
     void slotScrollValueChanged(int);
-    void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
-    void slotReloadCoverArt();
-
-    void slotTrackInfoClosed();
-    void slotTagFetcherClosed();
+//
+//    void slotTrackInfoClosed();
+//    void slotTagFetcherClosed();
     void slotSortingChanged(int headerSection, Qt::SortOrder order);
     void keyNotationChanged();
 
   private:
-    void createActions();
-
     void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
-    void showTrackInfo(QModelIndex index);
-    void showDlgTagFetcher(QModelIndex index);
     void dragMoveEvent(QDragMoveEvent * event) override;
     void dragEnterEvent(QDragEnterEvent * event) override;
     void dropEvent(QDropEvent * event) override;
-    void lockBpm(bool lock);
 
     void enableCachedOnly();
     void selectionChanged(const QItemSelection &selected,
@@ -133,110 +91,16 @@ class WTrackTableView : public WLibraryTableView {
 
     TrackCollectionManager* const m_pTrackCollectionManager;
 
-    QScopedPointer<DlgTrackInfo> m_pTrackInfo;
-    QScopedPointer<DlgTagFetcher> m_pTagFetcher;
-
-    QModelIndex currentTrackInfoIndex;
-
-    ControlProxy* m_pNumSamplers;
-    ControlProxy* m_pNumDecks;
-    ControlProxy* m_pNumPreviewDecks;
-
     // Context menu container
     WTrackMenu *m_pMenu;
-//    // Context menu machinery
-//    WTrackMenu *m_pMenu;
-//
-//    QMenu *m_pLoadToMenu;
-//    QMenu *m_pDeckMenu;
-//    QMenu *m_pSamplerMenu;
-//
-//    QMenu *m_pPlaylistMenu;
-//    QMenu *m_pCrateMenu;
-//    QMenu *m_pMetadataMenu;
-//    QMenu *m_pMetadataUpdateExternalCollectionsMenu;
-//    QMenu *m_pClearMetadataMenu;
-//    QMenu *m_pBPMMenu;
-//    QMenu *m_pColorMenu;
-//
-//
-//    WCoverArtMenu* m_pCoverMenu;
-//
-//    // Reload Track Metadata Action:
-//    QAction *m_pImportMetadataFromFileAct;
-//    QAction *m_pImportMetadataFromMusicBrainzAct;
-//
-//    // Save Track Metadata Action:
-//    QAction *m_pExportMetadataAct;
-//
-//    // Load Track to PreviewDeck
-//    QAction* m_pAddToPreviewDeck;
-//
-//    // Send to Auto-DJ Action
-//    QAction *m_pAutoDJBottomAct;
-//    QAction *m_pAutoDJTopAct;
-//    QAction *m_pAutoDJReplaceAct;
-//
-//    // Remove from table
-//    QAction *m_pRemoveAct;
-//    QAction *m_pRemovePlaylistAct;
-//    QAction *m_pRemoveCrateAct;
-//    QAction *m_pHideAct;
-//    QAction *m_pUnhideAct;
-//    QAction *m_pPurgeAct;
-//
-//    // Show track-editor action
-//    QAction *m_pPropertiesAct;
-//    QAction *m_pFileBrowserAct;
-//
-//    // BPM feature
-//    QAction *m_pBpmLockAction;
-//    QAction *m_pBpmUnlockAction;
-//    QAction *m_pBpmDoubleAction;
-//    QAction *m_pBpmHalveAction;
-//    QAction *m_pBpmTwoThirdsAction;
-//    QAction *m_pBpmThreeFourthsAction;
-//    QAction *m_pBpmFourThirdsAction;
-//    QAction *m_pBpmThreeHalvesAction;
-//
-//    // Track color
-//    WColorPickerAction *m_pColorPickerAction;
-//
-//    // Clear track metadata actions
-//    QAction* m_pClearBeatsAction;
-//    QAction* m_pClearPlayCountAction;
-//    QAction* m_pClearMainCueAction;
-//    QAction* m_pClearHotCuesAction;
-//    QAction* m_pClearIntroCueAction;
-//    QAction* m_pClearOutroCueAction;
-//    QAction* m_pClearLoopAction;
-//    QAction* m_pClearWaveformAction;
-//    QAction* m_pClearKeyAction;
-//    QAction* m_pClearReplayGainAction;
-//    QAction* m_pClearAllMetadataAction;
-
-    struct UpdateExternalTrackCollection {
-        QPointer<ExternalTrackCollection> externalTrackCollection;
-        QAction* action;
-    };
-    QList<UpdateExternalTrackCollection> m_updateInExternalTrackCollections;
 
     bool m_sorting;
-
-    // Column numbers
-    int m_iCoverSourceColumn; // cover art source
-    int m_iCoverTypeColumn; // cover art type
-    int m_iCoverLocationColumn; // cover art location
-    int m_iCoverHashColumn; // cover art hash
-    int m_iCoverColumn; // visible cover art
-    int m_iTrackLocationColumn;
 
     // Control the delay to load a cover art.
     mixxx::Duration m_lastUserAction;
     bool m_selectionChangedSinceLastGuiTick;
     bool m_loadCachedOnly;
-    bool m_bPlaylistMenuLoaded;
-    bool m_bCrateMenuLoaded;
+
     ControlProxy* m_pCOTGuiTick;
     ControlProxy* m_pKeyNotation;
     ControlProxy* m_pSortColumn;

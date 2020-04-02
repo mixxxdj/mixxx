@@ -4,7 +4,12 @@
 #include <QAction>
 #include <QMenu>
 #include <QWidget>
-#include <library/trackcollectionmanager.h>
+#include <library/dlgtrackinfo.h>
+#include <library/dlgtagfetcher.h>
+#include "library/trackcollectionmanager.h"
+#include "library/trackmodel.h"
+#include "library/dao/playlistdao.h"
+
 
 
 #include "widget/wcoverartmenu.h"
@@ -13,26 +18,99 @@
 typedef QList<TrackId> TrackIdList;
 typedef QList<TrackPointer> TrackPointerList;
 
+class WCoverArtMenu;
+
 class TrackCollectionManager;
 class ExternalTrackCollection;
 
 class WTrackMenu : public QMenu {
     Q_OBJECT
   public:
-    WTrackMenu(QWidget *parent, TrackCollectionManager* pTrackCollectionManager);
+    WTrackMenu(QWidget *parent, UserSettingsPointer pConfig, TrackCollectionManager* pTrackCollectionManager);
     ~WTrackMenu() override;
 
-    void setTrack(TrackId track);
-    void setTracks(TrackIdList trackList);
+    void setTrackId(TrackId track);
+    void setTrackIds(TrackIdList trackList);
+    void setTrackIndexList(QModelIndexList indexList);
+    void setTrackModel(TrackModel* trackModel);
 
   private slots:
     void slotOpenInFileBrowser();
+    void slotLockBpm();
+    void slotUnlockBpm();
+    void slotScaleBpm(int);
+    void slotColorPicked(mixxx::RgbColor::optional_t color);
+
+    void slotClearBeats();
+    void slotClearPlayCount();
+    void slotClearMainCue();
+    void slotClearHotCues();
+    void slotClearIntroCue();
+    void slotClearOutroCue();
+    void slotClearLoop();
+    void slotClearKey();
+    void slotClearReplayGain();
+    void slotClearWaveform();
+    void slotClearAllMetadata();
+
+    void lockBpm(bool lock);
+    void slotNextTrackInfo();
+    void slotNextDlgTagFetcher();
+    void slotPrevTrackInfo();
+    void slotPrevDlgTagFetcher();
+    void slotShowTrackInTagFetcher(TrackPointer track);
+
+    void slotPopulatePlaylistMenu();
+    void slotPopulateCrateMenu();
+    void addSelectionToNewCrate();
+
+    void slotImportTrackMetadataFromFileTags();
+    void slotExportTrackMetadataIntoFileTags();
+    void slotUpdateExternalTrackCollection(ExternalTrackCollection *externalTrackCollection);
+    void slotRemove();
+    void slotHide();
+    void slotTrackInfoClosed();
+    void slotTagFetcherClosed();
+    void slotShowTrackInfo();
+    void slotShowDlgTagFetcher();
+
+    void slotAddToAutoDJBottom();
+    void slotAddToAutoDJTop();
+    void slotAddToAutoDJReplace();
+
+    void slotCoverInfoSelected(const CoverInfoRelative &coverInfo);
+
+
+    void slotReloadCoverArt();
+
+    void slotUnhide();
+
+    void slotPurge();
 
 private:
     void createActions();
     void setupActions();
     void trackIdsToTrackPointers();
+    void setTrackPointerList(TrackPointerList trackPointerList);
     TrackPointerList getTrackPointerList();
+
+    bool modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) const;
+
+    void addSelectionToPlaylist(int iPlaylistId);
+    void updateSelectionCrates(QWidget* pWidget);
+
+    void showTrackInfo(QModelIndex index);
+    void showDlgTagFetcher(QModelIndex index);
+
+    void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
+
+
+    void loadSelectionToGroup(QString group, bool play);
+    void clearTrackSelection();
+
+    ControlProxy* m_pNumSamplers;
+    ControlProxy* m_pNumDecks;
+    ControlProxy* m_pNumPreviewDecks;
 
     // The selected tracks for which the context menu is created
     TrackIdList m_pTrackIdList;
@@ -106,9 +184,43 @@ private:
     QAction* m_pClearReplayGainAction;
     QAction* m_pClearAllMetadataAction;
 
+
+    const UserSettingsPointer m_pConfig;
+
     TrackCollectionManager* m_pTrackCollectionManager;
     TrackPointerList m_pTrackPointerList;
+    TrackModel* m_pTrackModel;
+
+    QModelIndexList m_pSelectedTrackIndices;
+
+    QScopedPointer<DlgTrackInfo> m_pTrackInfo;
+    QScopedPointer<DlgTagFetcher> m_pTagFetcher;
+
+    QModelIndex currentTrackInfoIndex;
+
+    struct UpdateExternalTrackCollection {
+        QPointer<ExternalTrackCollection> externalTrackCollection;
+        QAction* action{};
+    };
+    QList<UpdateExternalTrackCollection> m_updateInExternalTrackCollections;
+
+    bool m_bPlaylistMenuLoaded;
+    bool m_bCrateMenuLoaded;
+
+    // Column numbers
+    int m_iCoverSourceColumn; // cover art source
+    int m_iCoverTypeColumn; // cover art type
+    int m_iCoverLocationColumn; // cover art location
+    int m_iCoverHashColumn; // cover art hash
+    int m_iCoverColumn; // visible cover art
+    int m_iTrackLocationColumn;
+
+    void trackIndicesToTrackPointers();
 };
+
+
+
+
 
 
 #endif // WTRACKMENU_H
