@@ -236,7 +236,7 @@ void DlgPrefColors::openColorPaletteEditor(
         const QString& paletteName,
         bool editHotcuePalette) {
     std::unique_ptr<ColorPaletteEditor> pColorPaletteEditor =
-            std::make_unique<ColorPaletteEditor>(this);
+            std::make_unique<ColorPaletteEditor>(this, editHotcuePalette);
 
     if (editHotcuePalette) {
         connect(pColorPaletteEditor.get(),
