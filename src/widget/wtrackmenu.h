@@ -11,6 +11,8 @@
 #include "track/track.h"
 #include "library/dao/playlistdao.h"
 #include "preferences/usersettings.h"
+#include "widget/wlibrarytableview.h"
+#include "control/controlproxy.h"
 
 #include "widget/wcoverartmenu.h"
 #include "widget/wcolorpickeraction.h"
@@ -20,7 +22,8 @@ typedef QList<TrackPointer> TrackPointerList;
 
 class ControlProxy;
 class WCoverArtMenu;
-
+class DlgTagFetcher;
+class DlgTrackInfo;
 class TrackCollectionManager;
 class ExternalTrackCollection;
 
@@ -87,6 +90,10 @@ class WTrackMenu : public QMenu {
     void slotUnhide();
 
     void slotPurge();
+public:
+    signals:
+    void loadTrackToPlayer(TrackPointer pTrack, QString group,
+            bool play = false);
 
 private:
     void constructMenus();
@@ -109,7 +116,7 @@ private:
     void teardownActions();
 
 
-    void loadSelectionToGroup(QString group, bool play);
+    void loadSelectionToGroup(QString group, bool play = false);
     void clearTrackSelection();
 
     ControlProxy* m_pNumSamplers;

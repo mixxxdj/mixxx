@@ -63,9 +63,7 @@ class WTrackTableView : public WLibraryTableView {
     // Signalled 20 times per second (every 50ms) by GuiTick.
     void slotGuiTick50ms(double);
     void slotScrollValueChanged(int);
-//
-//    void slotTrackInfoClosed();
-//    void slotTagFetcherClosed();
+
     void slotSortingChanged(int headerSection, Qt::SortOrder order);
     void keyNotationChanged();
 

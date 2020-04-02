@@ -22,6 +22,7 @@
 #include "library/dlgtrackinfo.h"
 #include "library/dlgtrackmetadataexport.h"
 #include "library/externaltrackcollection.h"
+#include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
@@ -30,7 +31,8 @@
 #include "sources/soundsourceproxy.h"
 #include "util/desktophelper.h"
 #include "widget/wlibrarytableview.h"
-
+#include "track/track.h"
+#include "track/trackref.h"
 #include "util/desktophelper.h"
 #include "util/parented_ptr.h"
 #include "waveform/guitick.h"
@@ -181,8 +183,8 @@ void WTrackMenu::createActions() {
     m_pAddToPreviewDeck = new QAction(tr("Preview Deck"), this);
     // currently there is only one preview deck so just map it here.
     QString previewDeckGroup = PlayerManager::groupForPreviewDeck(0);
-//    connect(m_pAddToPreviewDeck, &QAction::triggered,
-//            this, [this, previewDeckGroup] { loadSelectionToGroup(previewDeckGroup); });
+    connect(m_pAddToPreviewDeck, &QAction::triggered,
+            this, [this, previewDeckGroup] { loadSelectionToGroup(previewDeckGroup); });
 
 
     // Clear metadata actions
@@ -302,10 +304,8 @@ void WTrackMenu::setupActions() {
         addSeparator();
     }
 
-    m_pLoadToMenu->clear();
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTODECK)) {
         int iNumDecks = m_pNumDecks->get();
-        m_pDeckMenu->clear();
         if (iNumDecks > 0) {
             for (int i = 1; i <= iNumDecks; ++i) {
                 // PlayerManager::groupForDeck is 0-indexed.
@@ -318,8 +318,8 @@ void WTrackMenu::setupActions() {
                 QAction* pAction = new QAction(tr("Deck %1").arg(i), this);
                 pAction->setEnabled(deckEnabled);
                 m_pDeckMenu->addAction(pAction);
-//                connect(pAction, &QAction::triggered,
-//                        this, [this, deckGroup] { loadSelectionToGroup(deckGroup); });
+                connect(pAction, &QAction::triggered,
+                        this, [this, deckGroup] { loadSelectionToGroup(deckGroup); });
             }
         }
         m_pLoadToMenu->addMenu(m_pDeckMenu);
@@ -328,7 +328,6 @@ void WTrackMenu::setupActions() {
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTOSAMPLER)) {
         int iNumSamplers = m_pNumSamplers->get();
         if (iNumSamplers > 0) {
-            m_pSamplerMenu->clear();
             for (int i = 1; i <= iNumSamplers; ++i) {
                 // PlayerManager::groupForSampler is 0-indexed.
                 QString samplerGroup = PlayerManager::groupForSampler(i - 1);
@@ -338,8 +337,8 @@ void WTrackMenu::setupActions() {
                 QAction* pAction = new QAction(tr("Sampler %1").arg(i), m_pSamplerMenu);
                 pAction->setEnabled(samplerEnabled);
                 m_pSamplerMenu->addAction(pAction);
-//                connect(pAction, &QAction::triggered,
-//                        this, [this, samplerGroup] {loadSelectionToGroup(samplerGroup); } );
+                connect(pAction, &QAction::triggered,
+                        this, [this, samplerGroup] {loadSelectionToGroup(samplerGroup); } );
 
             }
             m_pLoadToMenu->addMenu(m_pSamplerMenu);
@@ -384,8 +383,6 @@ void WTrackMenu::setupActions() {
     }
 
     addSeparator();
-    m_pMetadataMenu->clear();
-    m_pMetadataUpdateExternalCollectionsMenu->clear();
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA)) {
         m_pMetadataMenu->addAction(m_pImportMetadataFromFileAct);
@@ -420,8 +417,6 @@ void WTrackMenu::setupActions() {
         if (!m_pMetadataUpdateExternalCollectionsMenu->isEmpty()) {
             m_pMetadataMenu->addMenu(m_pMetadataUpdateExternalCollectionsMenu);
         }
-
-        m_pClearMetadataMenu->clear();
 
         if (trackModel == nullptr) {
             return;
@@ -1046,26 +1041,26 @@ void WTrackMenu::slotColorPicked(mixxx::RgbColor::optional_t color) {
 }
 
 void WTrackMenu::loadSelectionToGroup(QString group, bool play) {
-//    QModelIndexList indices = m_pSelectedTrackIndices;
-//    if (indices.size() > 0) {
-//        // If the track load override is disabled, check to see if a track is
-//        // playing before trying to load it
-//        if (!(m_pConfig->getValueString(
-//                ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt())) {
-//            // TODO(XXX): Check for other than just the first preview deck.
-//            if (group != "[PreviewDeck1]" &&
-//                ControlObject::get(ConfigKey(group, "play")) > 0.0) {
-//                return;
-//            }
-//        }
-//        QModelIndex index = indices.at(0);
-//        TrackModel* trackModel = m_pTrackModel;
-//        TrackPointer pTrack;
-//        if (trackModel &&
-//            (pTrack = trackModel->getTrack(index))) {
-//            emit loadTrackToPlayer(pTrack, group, play);
-//        }
-//    }
+    QModelIndexList indices = m_pSelectedTrackIndices;
+    if (indices.size() > 0) {
+        // If the track load override is disabled, check to see if a track is
+        // playing before trying to load it
+        if (!(m_pConfig->getValueString(
+                ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt())) {
+            // TODO(XXX): Check for other than just the first preview deck.
+            if (group != "[PreviewDeck1]" &&
+                ControlObject::get(ConfigKey(group, "play")) > 0.0) {
+                return;
+            }
+        }
+        QModelIndex index = indices.at(0);
+        TrackModel* trackModel = m_pTrackModel;
+        TrackPointer pTrack;
+        if (trackModel &&
+            (pTrack = trackModel->getTrack(index))) {
+            emit loadTrackToPlayer(pTrack, group, play);
+        }
+    }
 }
 
 

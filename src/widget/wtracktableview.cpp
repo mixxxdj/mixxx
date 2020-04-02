@@ -79,6 +79,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(setFocus()));
 
     m_pMenu = new WTrackMenu(this, pConfig, m_pTrackCollectionManager);
+    // Receive signal from menu and emit from here.
+    connect(m_pMenu, &WTrackMenu::loadTrackToPlayer, this, &WTrackTableView::loadTrackToPlayer);
 }
 
 WTrackTableView::~WTrackTableView() {
