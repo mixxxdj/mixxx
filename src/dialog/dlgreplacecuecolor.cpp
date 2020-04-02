@@ -24,8 +24,8 @@ void setButtonColor(QPushButton* button, const QColor& color) {
     button->setText(color.name());
     button->setStyleSheet(
             (Color::isDimmColor(color)
-                            ? kColorButtonStyleSheetLight
-                            : kColorButtonStyleSheetDark)
+                            ? kColorButtonStyleSheetDark
+                            : kColorButtonStyleSheetLight)
                     .arg(color.name()));
 }
 
