@@ -12,10 +12,10 @@ EffectParameterPreset::EffectParameterPreset(const QDomElement& parameterElement
         m_id = QString();
         m_linkType = EffectManifestParameter::LinkType::NONE;
     } else {
-        bool conversionWorked = false;
+        m_id = XmlParse::selectNodeQString(parameterElement, EffectXml::ParameterId);
+
         m_dValue = XmlParse::selectNodeDouble(parameterElement,
-                EffectXml::ParameterValue,
-                &conversionWorked);
+                EffectXml::ParameterValue);
 
         m_linkType = EffectManifestParameter::LinkTypeFromString(
                 XmlParse::selectNodeQString(parameterElement,

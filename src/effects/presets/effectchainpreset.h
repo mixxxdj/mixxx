@@ -10,8 +10,18 @@ class EffectChainPreset {
     EffectChainPreset(const QDomElement& chainElement);
     ~EffectChainPreset();
 
-    QString name() const {
+    const QString& name() const {
         return m_name;
+    }
+    EffectChainMixMode mixMode() const {
+        return m_mixMode;
+    }
+    double superKnob() const {
+        return m_dSuper;
+    }
+
+    const QList<EffectPresetPointer>& effectPresets() {
+        return m_effectPresets;
     }
 
   private:

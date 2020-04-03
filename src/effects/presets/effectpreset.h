@@ -12,6 +12,22 @@ class EffectPreset {
     EffectPreset(const EffectManifestPointer pManifest);
     ~EffectPreset();
 
+    const QString& id() const {
+        return m_id;
+    }
+
+    EffectBackendType backendType() const {
+        return m_backendType;
+    }
+
+    double metaParameter() const {
+        return m_dMetaParameter;
+    }
+
+    const QList<EffectParameterPreset>& getParameterPresets() const {
+        return m_effectParameterPresets;
+    }
+
   private:
     QString m_id;
     EffectBackendType m_backendType;
