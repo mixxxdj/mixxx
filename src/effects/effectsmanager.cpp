@@ -302,6 +302,10 @@ EffectManifestPointer EffectsManager::getManifestFromUniqueId(const QString& uid
             uid.mid(-1, delimiterIndex+1));
 }
 
+EffectManifestPointer EffectsManager::getManifest(const QString& id, EffectBackendType backendType) const {
+    return m_effectsBackends.value(backendType)->getManifest(id);
+}
+
 void EffectsManager::addStandardEffectChainSlots() {
     for (int i = 0; i < EffectsManager::kNumStandardEffectChains; ++i) {
         VERIFY_OR_DEBUG_ASSERT(!m_effectChainSlotsByGroup.contains(

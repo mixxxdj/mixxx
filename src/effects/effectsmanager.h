@@ -132,6 +132,7 @@ class EffectsManager : public QObject {
             const QString& effectId,
             EffectManifestPointer* ppManifest, EffectsBackend** ppBackend) const;
     EffectManifestPointer getManifestFromUniqueId(const QString& uid) const;
+    EffectManifestPointer getManifest(const QString& id, EffectBackendType backendType) const;
 
     void setEffectVisibility(EffectManifestPointer pManifest, bool visibility);
     bool getEffectVisibility(EffectManifestPointer pManifest);
