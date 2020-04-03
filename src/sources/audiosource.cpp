@@ -28,6 +28,7 @@ AudioSource::OpenResult AudioSource::open(
         OpenMode mode,
         const OpenParams& params) {
     close(); // reopening is not supported
+    DEBUG_ASSERT(!getSignalInfo().isValid());
 
     OpenResult result;
     try {

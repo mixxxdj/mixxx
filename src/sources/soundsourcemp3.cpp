@@ -192,8 +192,6 @@ void SoundSourceMp3::finishDecoding() {
 SoundSource::OpenResult SoundSourceMp3::tryOpen(
         OpenMode /*mode*/,
         const OpenParams& /*config*/) {
-    DEBUG_ASSERT(!getSignalInfo().isValid());
-
     DEBUG_ASSERT(!m_file.isOpen());
     if (!m_file.open(QIODevice::ReadOnly)) {
         kLogger.warning() << "Failed to open file:" << m_file.fileName();
