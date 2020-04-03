@@ -30,5 +30,13 @@ EffectParameterPreset::EffectParameterPreset(const QDomElement& parameterElement
     }
 }
 
+EffectParameterPreset::EffectParameterPreset(const EffectManifestParameterPointer pManifestParameter) {
+    m_id = pManifestParameter->id();
+    m_dValue = pManifestParameter->getDefault();
+    m_linkType = pManifestParameter->defaultLinkType();
+    m_linkInversion = pManifestParameter->defaultLinkInversion();
+    m_bHidden = false;
+}
+
 EffectParameterPreset::~EffectParameterPreset() {
 }

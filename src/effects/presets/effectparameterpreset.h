@@ -9,6 +9,7 @@ class EffectParameterPreset {
   public:
     EffectParameterPreset();
     EffectParameterPreset(const QDomElement& parameterElement);
+    EffectParameterPreset(const EffectManifestParameterPointer pManifestParameter);
     ~EffectParameterPreset();
 
   private:
