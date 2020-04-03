@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxControllerPreset mixxxVersion="2.2.3" schemaVersion="1">
     <info>
-    	<name>Denon MC7000 beta for MIXXX 2.2.x</name>
+    	<name>Denon MC7000</name>
     	<author>OsZ</author>
     	<description>Denon MC7000 mapping for testing. Check your Linux Kernel version to get the Audio Interface working - see WIKI page.</description>
     	<forums>https://www.mixxx.org/forums/</forums>
