@@ -213,9 +213,10 @@ void DlgReplaceCueColor::slotApply() {
         queryValues.insert(QStringLiteral(":hotcue"), QVariant(hotcueIndex));
     }
 
-    QString queryString = QStringLiteral("SELECT id, track_id, color FROM " CUE_TABLE);
+    QString queryString = QStringLiteral("SELECT id, track_id, color FROM " CUE_TABLE " WHERE color != :new_color");
+    queryValues.insert(QStringLiteral(":new_color"), mixxx::RgbColor::toQVariant(newColor));
     if (!queryStringConditions.isEmpty()) {
-        queryString += QStringLiteral(" WHERE ") + queryStringConditions.join(QStringLiteral(" AND "));
+        queryString += QStringLiteral(" AND ") + queryStringConditions.join(QStringLiteral(" AND "));
     }
 
     // Select affected queues
