@@ -8,6 +8,9 @@ EffectParameterPreset::EffectParameterPreset() {
 }
 
 EffectParameterPreset::EffectParameterPreset(const QDomElement& parameterElement) {
+    VERIFY_OR_DEBUG_ASSERT(parameterElement.tagName() == EffectXml::Parameter) {
+        return;
+    }
     if (!parameterElement.hasChildNodes()) {
         m_dValue = 0.0;
         m_id = QString();

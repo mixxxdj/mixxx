@@ -8,6 +8,10 @@ EffectPreset::EffectPreset() {
 }
 
 EffectPreset::EffectPreset(const QDomElement& effectElement) {
+    // effectElement can come from untrusted input from the filesystem, so do not DEBUG_ASSERT
+    if (effectElement.tagName() != EffectXml::Effect) {
+        return;
+    }
     if (!effectElement.hasChildNodes()) {
         return;
     }

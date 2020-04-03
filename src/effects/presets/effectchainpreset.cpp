@@ -8,6 +8,10 @@ EffectChainPreset::EffectChainPreset() {
 }
 
 EffectChainPreset::EffectChainPreset(const QDomElement& chainElement) {
+    // chainElement can come from untrusted input from the filesystem, so do not DEBUG_ASSERT
+    if (chainElement.tagName() != EffectXml::Chain) {
+        return;
+    }
     if (!chainElement.hasChildNodes()) {
         return;
     }
