@@ -47,6 +47,9 @@ EffectsManager::~EffectsManager() {
     m_underDestruction = true;
 
     saveEffectChainPresets();
+    for (const auto pEffectPreset : m_defaultPresets) {
+        saveDefaultForEffect(pEffectPreset);
+    }
 
     // The EffectChainSlots must be deleted before the EffectsBackends in case
     // there is an LV2 effect currently loaded.
@@ -507,13 +510,64 @@ void EffectsManager::collectGarbage(const EffectsRequest* pRequest) {
 }
 
 void EffectsManager::loadDefaultEffectPresets() {
-    //TODO: load default presets from filesystem, only fallback to manifest if not found
+    // Load saved defaults from settings directory
+    QString dirPath(m_pConfig->getSettingsPath() + "/effects/defaults");
+    QDir effectsDefaultsDir(dirPath);
+    effectsDefaultsDir.setFilter(QDir::Files | QDir::Readable);
+    for (const auto& filePath : effectsDefaultsDir.entryList()) {
+        QFile file(dirPath + "/" + filePath);
+        if (!file.open(QIODevice::ReadOnly)) {
+            continue;
+        }
+        QDomDocument doc;
+        if (!doc.setContent(&file)) {
+            file.close();
+            continue;
+        }
+        EffectPresetPointer pEffectPreset(new EffectPreset(doc.documentElement()));
+        if (!pEffectPreset->isNull()) {
+            EffectManifestPointer pManifest = getManifest(pEffectPreset->id(), pEffectPreset->backendType());
+            m_defaultPresets.insert(pManifest, pEffectPreset);
+        }
+        file.close();
+    }
+
+    // If no preset was found, generate one from the manifest
     for (const auto pBackend : m_effectsBackends) {
         for (const auto pManifest : pBackend->getManifests()) {
-            m_defaultPresets.insert(pManifest,
-                    EffectPresetPointer(new EffectPreset(pManifest)));
+            if (!m_defaultPresets.contains(pManifest)) {
+                m_defaultPresets.insert(pManifest,
+                        EffectPresetPointer(new EffectPreset(pManifest)));
+            }
         }
     }
+}
+
+void EffectsManager::saveDefaultForEffect(EffectPresetPointer pEffectPreset) {
+    VERIFY_OR_DEBUG_ASSERT(!pEffectPreset.isNull()) {
+        return;
+    }
+
+    const auto pBackend = m_effectsBackends.value(pEffectPreset->backendType());
+    const auto pManifest = pBackend->getManifest(pEffectPreset->id());
+    m_defaultPresets.insert(pManifest, pEffectPreset);
+
+    QDomDocument doc(EffectXml::Effect);
+    doc.setContent(QString("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"));
+    doc.appendChild(pEffectPreset->toXml(&doc));
+
+    QString path(m_pConfig->getSettingsPath() + "/effects/defaults");
+    QDir effectsDefaultsDir(path);
+    if (!effectsDefaultsDir.exists()) {
+        effectsDefaultsDir.mkpath(path);
+    }
+    // TODO: sanitize file name?
+    QFile file(path + "/" + pEffectPreset->id() + ".xml");
+    if (!file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
+        return;
+    }
+    file.write(doc.toString().toUtf8());
+    file.close();
 }
 
 void EffectsManager::loadEffectChainPresets() {

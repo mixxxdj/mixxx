@@ -137,6 +137,8 @@ class EffectsManager : public QObject {
     void setEffectVisibility(EffectManifestPointer pManifest, bool visibility);
     bool getEffectVisibility(EffectManifestPointer pManifest);
 
+    void saveDefaultForEffect(EffectPresetPointer pEffectPreset);
+
     void setup();
 
     // Write an EffectsRequest to the EngineEffectsManager. EffectsManager takes
