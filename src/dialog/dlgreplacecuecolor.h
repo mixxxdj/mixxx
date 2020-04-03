@@ -42,7 +42,6 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
 
   private slots:
     void slotApply();
-    void reject() override;
     void slotUpdateApplyButton();
 
   private:
@@ -52,7 +51,6 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
     TrackCollectionManager* m_pTrackCollectionManager;
     bool m_bDatabaseChangeInProgress;
-    bool m_bDatabaseChanged;
     QMenu* m_pNewColorMenu;
     QMenu* m_pCurrentColorMenu;
     parented_ptr<WColorPickerAction> m_pNewColorPickerAction;

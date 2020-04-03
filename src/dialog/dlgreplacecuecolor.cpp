@@ -46,7 +46,6 @@ DlgReplaceCueColor::DlgReplaceCueColor(
           m_pDbConnectionPool(dbConnectionPool),
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_bDatabaseChangeInProgress(false),
-          m_bDatabaseChanged(false),
           m_pNewColorMenu(new QMenu(this)),
           m_pCurrentColorMenu(new QMenu(this)),
           m_pStyle(QStyleFactory::create(QStringLiteral("fusion"))) {
@@ -349,12 +348,12 @@ void DlgReplaceCueColor::slotApply() {
             }
         }
         emit databaseTracksChanged(trackIds);
-        m_bDatabaseChanged = true;
     }
 
     progress.reset();
     m_bDatabaseChangeInProgress = false;
     slotUpdateApplyButton();
+    accept();
 }
 
 void DlgReplaceCueColor::slotUpdateApplyButton() {
@@ -374,15 +373,5 @@ void DlgReplaceCueColor::slotUpdateApplyButton() {
     QPushButton* button = buttonBox->button(QDialogButtonBox::Apply);
     if (button) {
         button->setEnabled(bEnabled);
-    }
-}
-
-void DlgReplaceCueColor::reject() {
-    if (m_bDatabaseChanged) {
-        QDialog::accept();
-        qWarning() << "DlgReplaceCueColor::accept";
-    } else {
-        QDialog::reject();
-        qWarning() << "DlgReplaceCueColor::reject";
     }
 }
