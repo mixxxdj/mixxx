@@ -28,6 +28,7 @@ EffectChainSlot::EffectChainSlot(const QString& group,
           m_id(id),
           m_name(""),
           m_description(""),
+          m_mixMode(EffectChainMixMode::DrySlashWet),
           m_signalProcessingStage(stage),
           m_pEngineEffectChain(nullptr) {
     // qDebug() << "EffectChainSlot::EffectChainSlot " << group << ' ' << iChainNumber;
