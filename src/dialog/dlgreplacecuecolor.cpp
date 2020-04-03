@@ -80,7 +80,10 @@ DlgReplaceCueColor::DlgReplaceCueColor(
     setButtonColor(pushButtonNewColor, mixxx::RgbColor::toQColor(firstColor));
 
     // Add menu for new color button
-    m_pNewColorPickerAction = new WColorPickerAction(WColorPicker::Option::AllowCustomColor, colorPaletteSettings.getHotcueColorPalette(), this);
+    m_pNewColorPickerAction = new WColorPickerAction(
+            WColorPicker::Option::AllowCustomColor,
+            colorPaletteSettings.getHotcueColorPalette(),
+            this);
     m_pNewColorPickerAction->setObjectName("HotcueColorPickerAction");
     m_pNewColorPickerAction->setSelectedColor(firstColor);
     connect(m_pNewColorPickerAction,
@@ -107,7 +110,10 @@ DlgReplaceCueColor::DlgReplaceCueColor(
             &DlgReplaceCueColor::slotUpdateApplyButton);
 
     // Add menu for current color button
-    m_pCurrentColorPickerAction = new WColorPickerAction(WColorPicker::Option::AllowCustomColor, colorPaletteSettings.getHotcueColorPalette(), this);
+    m_pCurrentColorPickerAction = new WColorPickerAction(
+            WColorPicker::Option::AllowCustomColor,
+            colorPaletteSettings.getHotcueColorPalette(),
+            this);
     m_pCurrentColorPickerAction->setObjectName("HotcueColorPickerAction");
     m_pNewColorPickerAction->setSelectedColor(mixxx::PredefinedColorPalettes::kDefaultCueColor);
     connect(m_pCurrentColorPickerAction,
