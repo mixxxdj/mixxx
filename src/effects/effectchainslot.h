@@ -90,7 +90,8 @@ class EffectChainSlot : public QObject {
     virtual void loadEffect(const unsigned int iEffectSlotNumber,
             const EffectManifestPointer pManifest,
             std::unique_ptr<EffectProcessor> pProcessor,
-            EffectPresetPointer pPreset);
+            EffectPresetPointer pPreset,
+            bool adoptMetaknobFromPreset = false);
 
   signals:
     // Signal that whoever is in charge of this EffectChainSlot should load the

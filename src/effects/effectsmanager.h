@@ -90,7 +90,8 @@ class EffectsManager : public QObject {
             EffectChainSlotPointer pChainSlot,
             const int iEffectSlotNumber,
             const EffectManifestPointer pManifest,
-            EffectPresetPointer pPreset = nullptr);
+            EffectPresetPointer pPreset = nullptr,
+            bool adoptMetaknobFromPreset = false);
 
     std::unique_ptr<EffectProcessor> createProcessor(
             const EffectManifestPointer pManifest);

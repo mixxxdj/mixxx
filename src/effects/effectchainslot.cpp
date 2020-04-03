@@ -189,8 +189,9 @@ void EffectChainSlot::setDescription(const QString& description) {
 void EffectChainSlot::loadEffect(const unsigned int iEffectSlotNumber,
         const EffectManifestPointer pManifest,
         std::unique_ptr<EffectProcessor> pProcessor,
-        EffectPresetPointer pPreset) {
-    m_effectSlots[iEffectSlotNumber]->loadEffect(pManifest, std::move(pProcessor), pPreset, m_enabledInputChannels);
+        EffectPresetPointer pPreset,
+        bool adoptMetaknobFromPreset) {
+    m_effectSlots[iEffectSlotNumber]->loadEffect(pManifest, std::move(pProcessor), pPreset, m_enabledInputChannels, adoptMetaknobFromPreset);
 }
 
 void EffectChainSlot::sendParameterUpdate() {

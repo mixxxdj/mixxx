@@ -214,7 +214,8 @@ EffectParameterSlotBasePointer EffectSlot::getEffectParameterSlot(
 void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
         std::unique_ptr<EffectProcessor> pProcessor,
         EffectPresetPointer pEffectPreset,
-        const QSet<ChannelHandleAndGroup>& activeChannels) {
+        const QSet<ChannelHandleAndGroup>& activeChannels,
+        bool adoptMetaknobFromPreset) {
     if (kEffectDebugOutput) {
         if (pManifest != nullptr) {
             qDebug() << this << m_group << "loading effect" << pManifest->id() << pEffectPreset.get() << pProcessor.get();
@@ -283,12 +284,18 @@ void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
 
     m_pControlLoaded->forceSet(1.0);
 
-    // TODO: load meta knob from preset
     if (m_pEffectsManager->isAdoptMetaknobValueEnabled()) {
-        slotEffectMetaParameter(m_pControlMetaParameter->get(), true);
+        if (adoptMetaknobFromPreset) {
+            // Update the ControlObject value, but do not sync the parameters
+            // with slotEffectMetaParameter. This allows presets to intentionally
+            // save parameters in a state inconsistent with the metaknob.
+            m_pControlMetaParameter->set(pEffectPreset->metaParameter());
+        } else {
+            slotEffectMetaParameter(m_pControlMetaParameter->get(), true);
+        }
     } else {
-        m_pControlMetaParameter->set(m_pManifest->metaknobDefault());
-        slotEffectMetaParameter(m_pManifest->metaknobDefault(), true);
+        m_pControlMetaParameter->set(pEffectPreset->metaParameter());
+        slotEffectMetaParameter(pEffectPreset->metaParameter(), true);
     }
 
     emit effectChanged();

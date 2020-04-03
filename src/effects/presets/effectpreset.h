@@ -19,6 +19,10 @@ class EffectPreset {
         return m_id;
     }
 
+    bool isNull() const {
+        return m_id.isEmpty();
+    }
+
     EffectBackendType backendType() const {
         return m_backendType;
     }

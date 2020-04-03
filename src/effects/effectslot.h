@@ -43,7 +43,8 @@ class EffectSlot : public QObject {
     void loadEffect(const EffectManifestPointer pManifest,
             std::unique_ptr<EffectProcessor> pProcessor,
             EffectPresetPointer pPreset,
-            const QSet<ChannelHandleAndGroup>& activeChannels);
+            const QSet<ChannelHandleAndGroup>& activeChannels,
+            bool adoptMetaknobFromPreset = false);
 
     inline int getEffectSlotNumber() const {
         return m_iEffectNumber;

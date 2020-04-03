@@ -158,11 +158,12 @@ void EffectsManager::loadEqualizerEffect(const QString& deckGroup,
 void EffectsManager::loadEffect(EffectChainSlotPointer pChainSlot,
         const int iEffectSlotNumber,
         const EffectManifestPointer pManifest,
-        EffectPresetPointer pPreset) {
+        EffectPresetPointer pPreset,
+        bool adoptMetaknobFromPreset) {
     if (pPreset == nullptr) {
         pPreset = m_defaultPresets.value(pManifest);
     }
-    pChainSlot->loadEffect(iEffectSlotNumber, pManifest, createProcessor(pManifest), pPreset);
+    pChainSlot->loadEffect(iEffectSlotNumber, pManifest, createProcessor(pManifest), pPreset, adoptMetaknobFromPreset);
 }
 
 std::unique_ptr<EffectProcessor> EffectsManager::createProcessor(
@@ -188,6 +189,10 @@ void EffectsManager::loadEffectChainPreset(EffectChainSlotPointer pChainSlot,
     VERIFY_OR_DEBUG_ASSERT(pPreset) {
         return;
     }
+    // Set the superknob before loading the effects so it does not change their
+    // metaknobs
+    pChainSlot->setSuperParameter(pPreset->superKnob());
+
     int effectSlot = 0;
     for (const auto& pEffectPreset : pPreset->effectPresets()) {
         if (pEffectPreset->isNull()) {
@@ -200,11 +205,10 @@ void EffectsManager::loadEffectChainPreset(EffectChainSlotPointer pChainSlot,
             continue;
         }
         EffectManifestPointer pManifest = pBackend->getManifest(pEffectPreset->id());
-        pChainSlot->loadEffect(effectSlot, pManifest, createProcessor(pManifest), pEffectPreset);
+        pChainSlot->loadEffect(effectSlot, pManifest, createProcessor(pManifest), pEffectPreset, true);
         effectSlot++;
     }
     pChainSlot->setMixMode(pPreset->mixMode());
-    pChainSlot->setSuperParameter(pPreset->superKnob());
 }
 
 const QList<EffectManifestPointer> EffectsManager::getAvailableEffectManifestsFiltered(
