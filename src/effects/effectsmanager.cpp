@@ -46,8 +46,7 @@ EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig, Ch
 EffectsManager::~EffectsManager() {
     m_underDestruction = true;
 
-    // NOTE(Kshitij) : Use new functions for saving XML files
-    // saveEffectChains();
+    saveEffectChainPresets();
 
     // The EffectChainSlots must be deleted before the EffectsBackends in case
     // there is an LV2 effect currently loaded.
@@ -191,6 +190,10 @@ void EffectsManager::loadEffectChainPreset(EffectChainSlotPointer pChainSlot,
     }
     int effectSlot = 0;
     for (const auto& pEffectPreset : pPreset->effectPresets()) {
+        if (pEffectPreset->isNull()) {
+            effectSlot++;
+            continue;
+        }
         EffectsBackendPointer pBackend = m_effectsBackends.value(pEffectPreset->backendType());
         VERIFY_OR_DEBUG_ASSERT(pBackend) {
             effectSlot++;
@@ -533,4 +536,33 @@ void EffectsManager::loadEffectChainPresets() {
             loadEffectChainPreset(m_standardEffectChainSlots.value(i), pPreset);
         }
     }
+}
+
+void EffectsManager::saveEffectChainPresets() {
+    QDomDocument doc("MixxxEffects");
+    doc.setContent(QString("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"));
+
+    QDomElement rootElement = doc.createElement("MixxxEffects");
+    rootElement.setAttribute("schemaVersion", QString::number(EffectXml::kXmlSchemaVersion));
+    doc.appendChild(rootElement);
+    QDomElement rackElement = doc.createElement(EffectXml::Rack);
+    rootElement.appendChild(rackElement);
+    QDomElement chainsElement = doc.createElement(EffectXml::ChainsRoot);
+    rackElement.appendChild(chainsElement);
+
+    for (const auto pChainSlot : m_standardEffectChainSlots) {
+        EffectChainSlot* genericChainSlot = static_cast<EffectChainSlot*>(pChainSlot.get());
+        chainsElement.appendChild(EffectChainPreset(genericChainSlot).toXml(&doc));
+    }
+
+    QDir settingsPath(m_pConfig->getSettingsPath());
+    if (!settingsPath.exists()) {
+        return;
+    }
+    QFile file(settingsPath.absoluteFilePath("effects.xml"));
+    if (!file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
+        return;
+    }
+    file.write(doc.toString().toUtf8());
+    file.close();
 }

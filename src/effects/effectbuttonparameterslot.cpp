@@ -100,36 +100,3 @@ void EffectButtonParameterSlot::slotParameterValueChanged(double value) {
     //qDebug() << debugString() << "slotParameterValueChanged" << value.toDouble();
     m_pControlValue->set(value);
 }
-
-QDomElement EffectButtonParameterSlot::toXml(QDomDocument* doc) const {
-    QDomElement parameterElement;
-    // if (m_pEffectParameter != nullptr) {
-    //     parameterElement = doc->createElement(EffectXml::Parameter);
-    //     XmlParse::addElement(*doc, parameterElement,
-    //                          EffectXml::ParameterValue,
-    //                          QString::number(m_pControlValue->get()));
-    // }
-
-    return parameterElement;
-}
-
-void EffectButtonParameterSlot::loadParameterSlotFromXml(const QDomElement&
-                                                  parameterElement) {
-    // if (m_pEffectParameter == nullptr) {
-    //     return;
-    // }
-    // if (!parameterElement.hasChildNodes()) {
-    //     m_pControlValue->reset();
-    // } else {
-    //     bool conversionWorked = false;
-    //     double value = XmlParse::selectNodeDouble(parameterElement,
-    //                                               EffectXml::ParameterValue,
-    //                                               &conversionWorked);
-    //     if (conversionWorked) {
-    //         // Need to use setParameterFrom(..., nullptr) here to
-    //         // trigger valueChanged() signal emission and execute slotValueChanged()
-    //         m_pControlValue->setParameterFrom(value, nullptr);
-    //     }
-    //     // If the conversion failed, the default value is kept.
-    // }
-}

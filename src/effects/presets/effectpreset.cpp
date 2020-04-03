@@ -31,6 +31,25 @@ EffectPreset::EffectPreset(const QDomElement& effectElement) {
     }
 }
 
+EffectPreset::EffectPreset(const EffectSlotPointer pEffectSlot) {
+    m_id = pEffectSlot->id();
+    m_backendType = pEffectSlot->backendType();
+    m_dMetaParameter = pEffectSlot->getMetaParameter();
+    // Parameters are reloaded in the order they are saved, so the order of
+    // loaded effects must be preserved.
+    int numTypes = static_cast<int>(EffectManifestParameter::ParameterType::NUM_TYPES);
+    for (int parameterTypeId = 0; parameterTypeId < numTypes; ++parameterTypeId) {
+        const EffectManifestParameter::ParameterType parameterType =
+                static_cast<EffectManifestParameter::ParameterType>(parameterTypeId);
+        for (const auto& pParameter : pEffectSlot->getLoadedParameters().value(parameterType)) {
+            m_effectParameterPresets.append(EffectParameterPreset(pParameter, false));
+        }
+        for (const auto& pParameter : pEffectSlot->getHiddenParameters().value(parameterType)) {
+            m_effectParameterPresets.append(EffectParameterPreset(pParameter, true));
+        }
+    }
+}
+
 EffectPreset::EffectPreset(const EffectManifestPointer pManifest) {
     m_id = pManifest->id();
     m_backendType = pManifest->backendType();
@@ -38,6 +57,24 @@ EffectPreset::EffectPreset(const EffectManifestPointer pManifest) {
     for (const auto pParameterManifest : pManifest->parameters()) {
         m_effectParameterPresets.append(EffectParameterPreset(pParameterManifest));
     }
+}
+
+const QDomElement EffectPreset::toXml(QDomDocument* doc) const {
+    QDomElement effectElement = doc->createElement(EffectXml::Effect);
+    if (m_id.isEmpty()) {
+        return effectElement;
+    }
+
+    XmlParse::addElement(*doc, effectElement, EffectXml::EffectMetaParameter, QString::number(m_dMetaParameter));
+    XmlParse::addElement(*doc, effectElement, EffectXml::EffectId, m_id);
+
+    QDomElement parametersElement = doc->createElement(EffectXml::ParametersRoot);
+    for (const auto& pParameter : m_effectParameterPresets) {
+        parametersElement.appendChild(pParameter.toXml(doc));
+    }
+    effectElement.appendChild(parametersElement);
+
+    return effectElement;
 }
 
 EffectPreset::~EffectPreset() {

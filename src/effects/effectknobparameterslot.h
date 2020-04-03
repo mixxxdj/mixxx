@@ -40,8 +40,6 @@ class EffectKnobParameterSlot : public EffectParameterSlotBase {
     void syncSofttakeover() override;
 
     // Clear the currently loaded effect
-    QDomElement toXml(QDomDocument* doc) const override;
-    void loadParameterSlotFromXml(const QDomElement& parameterElement) override;
     void clear() override;
 
   private slots:

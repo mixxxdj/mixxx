@@ -151,6 +151,7 @@ class EffectsManager : public QObject {
 
     void loadDefaultEffectPresets();
     void loadEffectChainPresets();
+    void saveEffectChainPresets();
 
     void processEffectsResponses();
     void collectGarbage(const EffectsRequest* pResponse);

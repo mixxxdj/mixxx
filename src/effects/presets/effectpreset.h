@@ -9,8 +9,11 @@ class EffectPreset {
   public:
     EffectPreset();
     EffectPreset(const QDomElement& element);
+    EffectPreset(const EffectSlotPointer pEffectSlot);
     EffectPreset(const EffectManifestPointer pManifest);
     ~EffectPreset();
+
+    const QDomElement toXml(QDomDocument* doc) const;
 
     const QString& id() const {
         return m_id;

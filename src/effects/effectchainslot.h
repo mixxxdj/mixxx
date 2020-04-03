@@ -46,14 +46,14 @@ class EffectChainSlot : public QObject {
     void setSuperParameter(double value, bool force = false);
     void setSuperParameterDefaultValue(double value);
 
+    EffectChainMixMode mixMode() const {
+        return m_mixMode;
+    }
     void setMixMode(EffectChainMixMode mixMode);
 
     const QString& getGroup() const {
         return m_group;
     }
-
-    QDomElement toXml(QDomDocument* doc) const;
-    void loadChainSlotFromXml(const QDomElement& effectChainElement);
 
     // Get the human-readable name of the EffectChain
     const QString& name() const;
@@ -81,6 +81,10 @@ class EffectChainSlot : public QObject {
         } else {
             return EffectChainMixMode::NumMixModes;
         }
+    }
+
+    const QList<EffectSlotPointer>& getEffectSlots() const {
+        return m_effectSlots;
     }
 
     virtual void loadEffect(const unsigned int iEffectSlotNumber,

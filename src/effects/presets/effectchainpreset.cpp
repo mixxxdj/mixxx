@@ -34,5 +34,34 @@ EffectChainPreset::EffectChainPreset(const QDomElement& chainElement) {
     }
 }
 
+EffectChainPreset::EffectChainPreset(const EffectChainSlot* chain) {
+    m_id = chain->id();
+    m_name = chain->name();
+    m_description = chain->description();
+    m_mixMode = chain->mixMode();
+    m_dSuper = chain->getSuperParameter();
+    for (const auto& pEffectSlot : chain->getEffectSlots()) {
+        m_effectPresets.append(EffectPresetPointer(new EffectPreset(pEffectSlot)));
+    }
+}
+
+const QDomElement EffectChainPreset::toXml(QDomDocument* doc) const {
+    QDomElement chainElement = doc->createElement(EffectXml::Chain);
+
+    XmlParse::addElement(*doc, chainElement, EffectXml::ChainId, m_id);
+    XmlParse::addElement(*doc, chainElement, EffectXml::ChainName, m_name);
+    XmlParse::addElement(*doc, chainElement, EffectXml::ChainDescription, m_description);
+    XmlParse::addElement(*doc, chainElement, EffectXml::ChainMixMode, EffectChainSlot::mixModeToString(m_mixMode));
+    XmlParse::addElement(*doc, chainElement, EffectXml::ChainSuperParameter, QString::number(m_dSuper));
+
+    QDomElement effectsElement = doc->createElement(EffectXml::EffectsRoot);
+    for (const auto& pEffectPreset : m_effectPresets) {
+        effectsElement.appendChild(pEffectPreset->toXml(doc));
+    }
+    chainElement.appendChild(effectsElement);
+
+    return chainElement;
+}
+
 EffectChainPreset::~EffectChainPreset() {
 }

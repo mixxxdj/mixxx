@@ -53,6 +53,39 @@ class EffectSlot : public QObject {
         return m_pEngineEffect != nullptr;
     }
 
+    const QString id() const {
+        if (!isLoaded() || m_pManifest == nullptr) {
+            return "";
+        }
+        return m_pManifest->id();
+    }
+
+    EffectBackendType backendType() const {
+        if (!isLoaded() || m_pManifest == nullptr) {
+            return EffectBackendType::BuiltIn;
+        }
+        return m_pManifest->backendType();
+    }
+
+    const QMap<EffectManifestParameter::ParameterType, QList<EffectParameterPointer>> getLoadedParameters() const {
+        return m_loadedParameters;
+    }
+
+    const QMap<EffectManifestParameter::ParameterType, QList<EffectParameterPointer>> getHiddenParameters() const {
+        QMap<EffectManifestParameter::ParameterType, QList<EffectParameterPointer>> hiddenParameters;
+        int numTypes = static_cast<int>(EffectManifestParameter::ParameterType::NUM_TYPES);
+        for (int parameterTypeId = 0; parameterTypeId < numTypes; ++parameterTypeId) {
+            const EffectManifestParameter::ParameterType parameterType =
+                    static_cast<EffectManifestParameter::ParameterType>(parameterTypeId);
+            for (const auto& pParameter : m_parameters.value(parameterType)) {
+                if (!m_loadedParameters.value(parameterType).contains(pParameter)) {
+                    hiddenParameters[parameterType].append(pParameter);
+                }
+            }
+        }
+        return hiddenParameters;
+    }
+
     void addEffectParameterSlot(EffectManifestParameter::ParameterType parameterType);
     EffectParameterSlotBasePointer getEffectParameterSlot(
             EffectManifestParameter::ParameterType parameterType, unsigned int slotNumber);
@@ -67,9 +100,6 @@ class EffectSlot : public QObject {
         return m_group;
     }
 
-    QDomElement toXml(QDomDocument* doc) const;
-    void loadEffectSlotFromXml(const QDomElement& effectElement);
-
     EffectState* createState(const mixxx::EngineParameters& bufferParameters);
 
     EffectManifestPointer getManifest() const;
@@ -78,8 +108,6 @@ class EffectSlot : public QObject {
 
     void setEnabled(bool enabled);
 
-    // static EffectPointer createFromXml(EffectsManager* pEffectsManager,
-    //                              const QDomElement& element);
     void addToEngine(std::unique_ptr<EffectProcessor>,
             const QSet<ChannelHandleAndGroup>& activeInputChannels);
     void removeFromEngine();

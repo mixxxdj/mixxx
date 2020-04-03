@@ -9,8 +9,12 @@ class EffectParameterPreset {
   public:
     EffectParameterPreset();
     EffectParameterPreset(const QDomElement& parameterElement);
+    // The hidden state is stored in the EffectSlot, not the EffectParameter
+    EffectParameterPreset(const EffectParameterPointer pParameter, bool hidden);
     EffectParameterPreset(const EffectManifestParameterPointer pManifestParameter);
     ~EffectParameterPreset();
+
+    const QDomElement toXml(QDomDocument* doc) const;
 
     bool isNull() const {
         return m_id.isEmpty();

@@ -4,11 +4,16 @@
 #include "effects/defs.h"
 #include "effects/presets/effectpreset.h"
 
+class EffectChainSlot;
+
 class EffectChainPreset {
   public:
     EffectChainPreset();
     EffectChainPreset(const QDomElement& chainElement);
+    EffectChainPreset(const EffectChainSlot* pChain);
     ~EffectChainPreset();
+
+    const QDomElement toXml(QDomDocument* doc) const;
 
     const QString& name() const {
         return m_name;
@@ -20,7 +25,7 @@ class EffectChainPreset {
         return m_dSuper;
     }
 
-    const QList<EffectPresetPointer>& effectPresets() {
+    const QList<EffectPresetPointer>& effectPresets() const {
         return m_effectPresets;
     }
 

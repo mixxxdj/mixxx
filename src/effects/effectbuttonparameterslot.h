@@ -27,8 +27,6 @@ class EffectButtonParameterSlot : public EffectParameterSlotBase {
     // Load the parameter of the given effect into this EffectButtonParameterSlot
     void loadParameter(EffectParameterPointer pEffectParameter) override;
 
-    QDomElement toXml(QDomDocument* doc) const override;
-    void loadParameterSlotFromXml(const QDomElement& parameterElement) override;
     void clear() override;
 
   private slots:
