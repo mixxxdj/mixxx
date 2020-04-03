@@ -436,7 +436,7 @@ bpm.tapButton = function(deck) {
     // a tap is considered missed when the delta of this press is 80% longer than the previous one
     // and a tap is considered double when the delta is shorter than 40% of the previous one.
     // these numbers are just guesses that produced good results in practice
-    if ((tapDelta > bpm.previousTapDelta*1.8)||(tapDelta < bpm.previousTapDelta*0.4)) {
+    if ((tapDelta > bpm.previousTapDelta*1.8)||(tapDelta < bpm.previousTapDelta*0.6)) {
         return;
     }
     bpm.previousTapDelta = tapDelta;
