@@ -2543,6 +2543,42 @@
         </options>
       </control>
       <control>
+        <group>[Library]</group>
+        <key>MoveLeft</key>
+        <status>0x90</status>
+        <midino>0x54</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>MoveRight</key>
+        <status>0x91</status>
+        <midino>0x55</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>MoveLeft</key>
+        <status>0x92</status>
+        <midino>0x54</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>MoveRight</key>
+        <status>0x93</status>
+        <midino>0x55</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
         <group>[Channel1]</group>
         <key>DJC4.deck[0].wheelTouch</key>
         <status>0x90</status>
