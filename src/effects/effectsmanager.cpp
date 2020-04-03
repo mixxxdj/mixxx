@@ -389,6 +389,8 @@ void EffectsManager::setup() {
     // Add postfader effect chain slots
     addStandardEffectChainSlots();
     addOutputEffectChainSlot();
+
+    loadDefaultEffectPresets();
 }
 
 bool EffectsManager::writeRequest(EffectsRequest* request) {
@@ -466,6 +468,16 @@ void EffectsManager::collectGarbage(const EffectsRequest* pRequest) {
         }
         pRequest->pTargetChain->deleteStatesForInputChannel(
                 pRequest->DisableInputChannelForChain.pChannelHandle);
+    }
+}
+
+void EffectsManager::loadDefaultEffectPresets() {
+    //TODO: load default presets from filesystem, only fallback to manifest if not found
+    for (const auto pBackend : m_effectsBackends) {
+        for (const auto pManifest : pBackend->getManifests()) {
+            m_defaultPresets.insert(pManifest,
+                    EffectPresetPointer(new EffectPreset(pManifest)));
+        }
     }
 }
 

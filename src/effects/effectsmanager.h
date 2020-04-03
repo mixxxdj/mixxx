@@ -148,6 +148,7 @@ class EffectsManager : public QObject {
         return "EffectsManager";
     }
 
+    void loadDefaultEffectPresets();
     void processEffectsResponses();
     void collectGarbage(const EffectsRequest* pResponse);
 
@@ -181,6 +182,7 @@ class EffectsManager : public QObject {
     QHash<QString, QuickEffectChainSlotPointer> m_quickEffectChainSlots;
 
     QHash<QString, EffectChainPresetPointer> m_effectChainPresets;
+    QHash<EffectManifestPointer, EffectPresetPointer> m_defaultPresets;
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };
