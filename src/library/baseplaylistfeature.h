@@ -1,5 +1,4 @@
-#ifndef BASEPLAYLISTFEATURE_H
-#define BASEPLAYLISTFEATURE_H
+#pragma once
 
 #include <QAction>
 #include <QUrl>
@@ -115,5 +114,3 @@ class BasePlaylistFeature : public BaseTrackCollectionFeature {
 
     QSet<int> m_playlistsSelectedTrackIsIn;
 };
-
-#endif /* BASEPLAYLISTFEATURE_H */

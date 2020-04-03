@@ -1,5 +1,4 @@
-#ifndef MIXXX_CRATEFEATURE_H
-#define MIXXX_CRATEFEATURE_H
+#pragma once
 
 #include <QModelIndex>
 #include <QList>
@@ -122,6 +121,3 @@ class CrateFeature : public BaseTrackCollectionFeature {
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 };
-
-
-#endif // MIXXX_CRATEFEATURE_H

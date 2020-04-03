@@ -1,5 +1,4 @@
-#ifndef MIXXX_BASETRACKCOLLECTIONFEATURE_H
-#define MIXXX_BASETRACKCOLLECTIONFEATURE_H
+#pragma once
 
 #include "libraryfeature.h"
 
@@ -16,6 +15,3 @@ class BaseTrackCollectionFeature : public LibraryFeature {
     const QString m_rootViewName;
 
 };
-
-
-#endif //MIXXX_BASETRACKCOLLECTIONFEATURE_H
