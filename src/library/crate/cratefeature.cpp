@@ -43,7 +43,7 @@ QString formatLabel(
 
 CrateFeature::CrateFeature(Library* pLibrary,
                            UserSettingsPointer pConfig)
-        : BaseTrackCollectionFeature(pLibrary, pConfig),
+        : BaseTrackCollectionFeature(pLibrary, pConfig, "CRATEHOME"),
           m_cratesIcon(":/images/library/ic_library_crates.svg"),
           m_lockedCrateIcon(":/images/library/ic_library_locked_tracklist.svg"),
           m_pTrackCollection(pLibrary->trackCollections()->internalCollection()),
@@ -275,7 +275,7 @@ void CrateFeature::bindLibraryWidget(WLibrary* libraryWidget,
             &WLibraryTextBrowser::anchorClicked,
             this,
             &CrateFeature::htmlLinkClicked);
-    libraryWidget->registerView("CRATEHOME", edit);
+    libraryWidget->registerView(m_rootViewName, edit);
 }
 
 void CrateFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
@@ -285,12 +285,6 @@ void CrateFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 
 TreeItemModel* CrateFeature::getChildModel() {
     return &m_childModel;
-}
-
-void CrateFeature::activate() {
-    emit switchToView("CRATEHOME");
-    emit disableSearch();
-    emit enableCoverArtDisplay(true);
 }
 
 void CrateFeature::activateChild(const QModelIndex& index) {

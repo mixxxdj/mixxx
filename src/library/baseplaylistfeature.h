@@ -40,7 +40,6 @@ class BasePlaylistFeature : public BaseTrackCollectionFeature {
     void analyzeTracks(QList<TrackId>);
 
   public slots:
-    void activate() override;
     void activateChild(const QModelIndex& index) override;
     virtual void activatePlaylist(int playlistId);
     virtual void htmlLinkClicked(const QUrl& link);
@@ -111,8 +110,6 @@ class BasePlaylistFeature : public BaseTrackCollectionFeature {
 
   private:
     virtual QString getRootViewHtml() const = 0;
-
-    const QString m_rootViewName;
 
     TrackPointer m_pSelectedTrack;
 

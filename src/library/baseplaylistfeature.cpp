@@ -25,10 +25,9 @@ BasePlaylistFeature::BasePlaylistFeature(
         UserSettingsPointer pConfig,
         PlaylistTableModel* pModel,
         const QString& rootViewName)
-        : BaseTrackCollectionFeature(pLibrary, pConfig),
+        : BaseTrackCollectionFeature(pLibrary, pConfig, rootViewName),
           m_playlistDao(pLibrary->trackCollections()->internalCollection()->getPlaylistDAO()),
-          m_pPlaylistTableModel(pModel),
-          m_rootViewName(rootViewName) {
+          m_pPlaylistTableModel(pModel) {
     m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"), this);
     connect(m_pCreatePlaylistAction,
             &QAction::triggered,
@@ -155,12 +154,6 @@ int BasePlaylistFeature::playlistIdFromIndex(QModelIndex index) {
     } else {
         return -1;
     }
-}
-
-void BasePlaylistFeature::activate() {
-    emit switchToView(m_rootViewName);
-    emit disableSearch();
-    emit enableCoverArtDisplay(true);
 }
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
