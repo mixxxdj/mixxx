@@ -3,19 +3,19 @@
   <info>
     <name>Stanton DJC.4</name>
     <author>Martin Bruset Solberg, Christoph Zimmermann</author>
-    <description>The Stanton DJC.4 is a four-deck control surface with large, touch-sensitive jog wheels and built-in audio interface (2 inputs, 2 outputs). Configured as four-deck, four-fx and master VU meter controller</description>
+    <description>The Stanton DJC.4 is a 4 deck controller with large, touch-sensitive jog wheels and a built-in audio interface (2 inputs, 2 outputs). It features 4 FX units and a master VU meter.</description>
     <wiki>https://mixxx.org/wiki/doku.php/stanton_djc.4</wiki>
   </info>
   <controller id="DJC-4">
     <scriptfiles>
       <file functionprefix="" filename="lodash.mixxx.js"/>
       <file functionprefix="" filename="midi-components-0.0.js"/>
-      <file functionprefix="djc4" filename="Stanton-DJC-4-scripts.js" />
+      <file functionprefix="DJC4" filename="Stanton-DJC-4-scripts.js" />
     </scriptfiles>
     <controls>
       <control>
         <group>[Channel1]</group>
-        <key>djc4.deck[0].beatLoopEncoder.input</key>
+        <key>DJC4.deck[0].beatLoopEncoder.input</key>
         <status>0xB0</status>
         <midino>0x01</midino>
         <options>
@@ -33,7 +33,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>djc4.deck[1].beatLoopEncoder.input</key>
+        <key>DJC4.deck[1].beatLoopEncoder.input</key>
         <status>0xB1</status>
         <midino>0x01</midino>
         <options>
@@ -51,7 +51,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>djc4.deck[2].beatLoopEncoder.input</key>
+        <key>DJC4.deck[2].beatLoopEncoder.input</key>
         <status>0xB2</status>
         <midino>0x01</midino>
         <options>
@@ -69,7 +69,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>djc4.deck[3].beatLoopEncoder.input</key>
+        <key>DJC4.deck[3].beatLoopEncoder.input</key>
         <status>0xB3</status>
         <midino>0x01</midino>
         <options>
@@ -87,7 +87,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>djc4.deck[0].wheelTurn</key>
+        <key>DJC4.deck[0].wheelTurn</key>
         <status>0xB0</status>
         <midino>0x02</midino>
         <options>
@@ -105,7 +105,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>djc4.deck[1].wheelTurn</key>
+        <key>DJC4.deck[1].wheelTurn</key>
         <status>0xB1</status>
         <midino>0x02</midino>
         <options>
@@ -123,7 +123,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>djc4.deck[2].wheelTurn</key>
+        <key>DJC4.deck[2].wheelTurn</key>
         <status>0xB2</status>
         <midino>0x02</midino>
         <options>
@@ -141,7 +141,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>djc4.deck[3].wheelTurn</key>
+        <key>DJC4.deck[3].wheelTurn</key>
         <status>0xB3</status>
         <midino>0x02</midino>
         <options>
@@ -483,7 +483,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>djc4.effectUnit[0].dryWetKnob.input</key>
+        <key>DJC4.effectUnit[0].dryWetKnob.input</key>
         <status>0xB0</status>
         <midino>0x08</midino>
         <options>
@@ -492,7 +492,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3]</group>
-        <key>djc4.effectUnit[1].dryWetKnob.input</key>
+        <key>DJC4.effectUnit[1].dryWetKnob.input</key>
         <status>0xB1</status>
         <midino>0x08</midino>
         <options>
@@ -501,7 +501,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3]</group>
-        <key>djc4.effectUnit[2].dryWetKnob.input</key>
+        <key>DJC4.effectUnit[2].dryWetKnob.input</key>
         <status>0xB2</status>
         <midino>0x08</midino>
         <options>
@@ -510,7 +510,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3]</group>
-        <key>djc4.effectUnit[3].dryWetKnob.input</key>
+        <key>DJC4.effectUnit[3].dryWetKnob.input</key>
         <status>0xB3</status>
         <midino>0x08</midino>
         <options>
@@ -591,7 +591,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect1]</group>
-        <key>djc4.effectUnit[0].knobs[1].input</key>
+        <key>DJC4.effectUnit[0].knobs[1].input</key>
         <status>0xB0</status>
         <midino>0x09</midino>
         <options>
@@ -600,7 +600,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect1]</group>
-        <key>djc4.effectUnit[1].knobs[1].input</key>
+        <key>DJC4.effectUnit[1].knobs[1].input</key>
         <status>0xB1</status>
         <midino>0x09</midino>
         <options>
@@ -609,7 +609,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect1]</group>
-        <key>djc4.effectUnit[2].knobs[1].input</key>
+        <key>DJC4.effectUnit[2].knobs[1].input</key>
         <status>0xB2</status>
         <midino>0x09</midino>
         <options>
@@ -618,7 +618,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect1]</group>
-        <key>djc4.effectUnit[3].knobs[1].input</key>
+        <key>DJC4.effectUnit[3].knobs[1].input</key>
         <status>0xB3</status>
         <midino>0x09</midino>
         <options>
@@ -663,7 +663,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect2]</group>
-        <key>djc4.effectUnit[0].knobs[2].input</key>
+        <key>DJC4.effectUnit[0].knobs[2].input</key>
         <status>0xB0</status>
         <midino>0x0A</midino>
         <options>
@@ -672,7 +672,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect2]</group>
-        <key>djc4.effectUnit[1].knobs[2].input</key>
+        <key>DJC4.effectUnit[1].knobs[2].input</key>
         <status>0xB1</status>
         <midino>0x0A</midino>
         <options>
@@ -681,7 +681,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect2]</group>
-        <key>djc4.effectUnit[2].knobs[2].input</key>
+        <key>DJC4.effectUnit[2].knobs[2].input</key>
         <status>0xB2</status>
         <midino>0x0A</midino>
         <options>
@@ -690,7 +690,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect2]</group>
-        <key>djc4.effectUnit[3].knobs[2].input</key>
+        <key>DJC4.effectUnit[3].knobs[2].input</key>
         <status>0xB3</status>
         <midino>0x0A</midino>
         <options>
@@ -735,7 +735,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect3]</group>
-        <key>djc4.effectUnit[0].knobs[3].input</key>
+        <key>DJC4.effectUnit[0].knobs[3].input</key>
         <status>0xB0</status>
         <midino>0x0B</midino>
         <options>
@@ -744,7 +744,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect3]</group>
-        <key>djc4.effectUnit[1].knobs[3].input</key>
+        <key>DJC4.effectUnit[1].knobs[3].input</key>
         <status>0xB1</status>
         <midino>0x0B</midino>
         <options>
@@ -753,7 +753,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect3]</group>
-        <key>djc4.effectUnit[2].knobs[3].input</key>
+        <key>DJC4.effectUnit[2].knobs[3].input</key>
         <status>0xB2</status>
         <midino>0x0B</midino>
         <options>
@@ -762,7 +762,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect3]</group>
-        <key>djc4.effectUnit[3].knobs[3].input</key>
+        <key>DJC4.effectUnit[3].knobs[3].input</key>
         <status>0xB3</status>
         <midino>0x0B</midino>
         <options>
@@ -771,7 +771,7 @@
       </control>
       <control>
         <group>[Sampler1]</group>
-        <key>djc4.deck[0].samplerButtons[0].input</key>
+        <key>DJC4.deck[0].samplerButtons[0].input</key>
         <status>0x90</status>
         <midino>0x0C</midino>
         <options>
@@ -780,7 +780,7 @@
       </control>
       <control>
         <group>[Sampler5]</group>
-        <key>djc4.deck[1].samplerButtons[0].input</key>
+        <key>DJC4.deck[1].samplerButtons[0].input</key>
         <status>0x91</status>
         <midino>0x0C</midino>
         <options>
@@ -789,7 +789,7 @@
       </control>
       <control>
         <group>[Sampler1]</group>
-        <key>djc4.deck[2].samplerButtons[0].input</key>
+        <key>DJC4.deck[2].samplerButtons[0].input</key>
         <status>0x92</status>
         <midino>0x0C</midino>
         <options>
@@ -798,7 +798,7 @@
       </control>
       <control>
         <group>[Sampler5]</group>
-        <key>djc4.deck[3].samplerButtons[0].input</key>
+        <key>DJC4.deck[3].samplerButtons[0].input</key>
         <status>0x93</status>
         <midino>0x0C</midino>
         <options>
@@ -807,7 +807,7 @@
       </control>
       <control>
         <group>[Sampler2]</group>
-        <key>djc4.deck[0].samplerButtons[1].input</key>
+        <key>DJC4.deck[0].samplerButtons[1].input</key>
         <status>0x90</status>
         <midino>0x0D</midino>
         <options>
@@ -816,7 +816,7 @@
       </control>
       <control>
         <group>[Sampler6]</group>
-        <key>djc4.deck[1].samplerButtons[1].input</key>
+        <key>DJC4.deck[1].samplerButtons[1].input</key>
         <status>0x91</status>
         <midino>0x0D</midino>
         <options>
@@ -825,7 +825,7 @@
       </control>
       <control>
         <group>[Sampler2]</group>
-        <key>djc4.deck[2].samplerButtons[1].input</key>
+        <key>DJC4.deck[2].samplerButtons[1].input</key>
         <status>0x92</status>
         <midino>0x0D</midino>
         <options>
@@ -834,7 +834,7 @@
       </control>
       <control>
         <group>[Sampler6]</group>
-        <key>djc4.deck[3].samplerButtons[1].input</key>
+        <key>DJC4.deck[3].samplerButtons[1].input</key>
         <status>0x93</status>
         <midino>0x0D</midino>
         <options>
@@ -843,7 +843,7 @@
       </control>
       <control>
         <group>[Sampler]</group>
-        <key>djc4.samplerVolume</key>
+        <key>DJC4.samplerVolume</key>
         <status>0xB0</status>
         <midino>0x0D</midino>
         <options>
@@ -852,7 +852,7 @@
       </control>
       <control>
         <group>[Library]</group>
-        <key>djc4.browseEncoder.input</key>
+        <key>DJC4.browseEncoder.input</key>
         <status>0xB0</status>
         <midino>0x0E</midino>
         <options>
@@ -861,7 +861,7 @@
       </control>
       <control>
         <group>[Sampler3]</group>
-        <key>djc4.deck[0].samplerButtons[2].input</key>
+        <key>DJC4.deck[0].samplerButtons[2].input</key>
         <status>0x90</status>
         <midino>0x0E</midino>
         <options>
@@ -870,7 +870,7 @@
       </control>
       <control>
         <group>[Sampler7]</group>
-        <key>djc4.deck[1].samplerButtons[2].input</key>
+        <key>DJC4.deck[1].samplerButtons[2].input</key>
         <status>0x91</status>
         <midino>0x0E</midino>
         <options>
@@ -879,7 +879,7 @@
       </control>
       <control>
         <group>[Sampler3]</group>
-        <key>djc4.deck[2].samplerButtons[2].input</key>
+        <key>DJC4.deck[2].samplerButtons[2].input</key>
         <status>0x92</status>
         <midino>0x0E</midino>
         <options>
@@ -888,7 +888,7 @@
       </control>
       <control>
         <group>[Sampler7]</group>
-        <key>djc4.deck[3].samplerButtons[2].input</key>
+        <key>DJC4.deck[3].samplerButtons[2].input</key>
         <status>0x93</status>
         <midino>0x0E</midino>
         <options>
@@ -897,7 +897,7 @@
       </control>
       <control>
         <group>[Sampler4]</group>
-        <key>djc4.deck[0].samplerButtons[3].input</key>
+        <key>DJC4.deck[0].samplerButtons[3].input</key>
         <status>0x90</status>
         <midino>0x0F</midino>
         <options>
@@ -906,7 +906,7 @@
       </control>
       <control>
         <group>[Sampler8]</group>
-        <key>djc4.deck[1].samplerButtons[3].input</key>
+        <key>DJC4.deck[1].samplerButtons[3].input</key>
         <status>0x91</status>
         <midino>0x0F</midino>
         <options>
@@ -915,7 +915,7 @@
       </control>
       <control>
         <group>[Sampler4]</group>
-        <key>djc4.deck[2].samplerButtons[3].input</key>
+        <key>DJC4.deck[2].samplerButtons[3].input</key>
         <status>0x92</status>
         <midino>0x0F</midino>
         <options>
@@ -924,7 +924,7 @@
       </control>
       <control>
         <group>[Sampler8]</group>
-        <key>djc4.deck[3].samplerButtons[3].input</key>
+        <key>DJC4.deck[3].samplerButtons[3].input</key>
         <status>0x93</status>
         <midino>0x0F</midino>
         <options>
@@ -978,7 +978,7 @@
       </control>
       <control>
         <group>[Master]</group>
-        <key>djc4.crossfaderCurve</key>
+        <key>DJC4.crossfaderCurve</key>
         <status>0xB0</status>
         <midino>0x12</midino>
         <options>
@@ -1113,7 +1113,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>djc4.deck[0].toggleScratchMode</key>
+        <key>DJC4.deck[0].toggleScratchMode</key>
         <status>0x90</status>
         <midino>0x15</midino>
         <options>
@@ -1122,7 +1122,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>djc4.deck[1].toggleScratchMode</key>
+        <key>DJC4.deck[1].toggleScratchMode</key>
         <status>0x91</status>
         <midino>0x15</midino>
         <options>
@@ -1131,7 +1131,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>djc4.deck[2].toggleScratchMode</key>
+        <key>DJC4.deck[2].toggleScratchMode</key>
         <status>0x92</status>
         <midino>0x15</midino>
         <options>
@@ -1140,7 +1140,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>djc4.deck[3].toggleScratchMode</key>
+        <key>DJC4.deck[3].toggleScratchMode</key>
         <status>0x93</status>
         <midino>0x15</midino>
         <options>
@@ -1401,7 +1401,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>djc4.effectUnit[0].effectFocusButton.input</key>
+        <key>DJC4.effectUnit[0].effectFocusButton.input</key>
         <status>0x90</status>
         <midino>0x1D</midino>
         <options>
@@ -1410,7 +1410,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>djc4.effectUnit[1].effectFocusButton.input</key>
+        <key>DJC4.effectUnit[1].effectFocusButton.input</key>
         <status>0x91</status>
         <midino>0x1D</midino>
         <options>
@@ -1419,7 +1419,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>djc4.effectUnit[2].effectFocusButton.input</key>
+        <key>DJC4.effectUnit[2].effectFocusButton.input</key>
         <status>0x92</status>
         <midino>0x1D</midino>
         <options>
@@ -1428,7 +1428,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>djc4.effectUnit[3].effectFocusButton.input</key>
+        <key>DJC4.effectUnit[3].effectFocusButton.input</key>
         <status>0x93</status>
         <midino>0x1D</midino>
         <options>
@@ -1473,7 +1473,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect1]</group>
-        <key>djc4.effectUnit[0].enableButtons[1].input</key>
+        <key>DJC4.effectUnit[0].enableButtons[1].input</key>
         <status>0x90</status>
         <midino>0x1F</midino>
         <options>
@@ -1482,7 +1482,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect1]</group>
-        <key>djc4.effectUnit[1].enableButtons[1].input</key>
+        <key>DJC4.effectUnit[1].enableButtons[1].input</key>
         <status>0x91</status>
         <midino>0x1F</midino>
         <options>
@@ -1491,7 +1491,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3_Effect1]</group>
-        <key>djc4.effectUnit[2].enableButtons[1].input</key>
+        <key>DJC4.effectUnit[2].enableButtons[1].input</key>
         <status>0x92</status>
         <midino>0x1F</midino>
         <options>
@@ -1500,7 +1500,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit4_Effect1]</group>
-        <key>djc4.effectUnit[3].enableButtons[1].input</key>
+        <key>DJC4.effectUnit[3].enableButtons[1].input</key>
         <status>0x93</status>
         <midino>0x1F</midino>
         <options>
@@ -1509,7 +1509,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect2]</group>
-        <key>djc4.effectUnit[0].enableButtons[2].input</key>
+        <key>DJC4.effectUnit[0].enableButtons[2].input</key>
         <status>0x90</status>
         <midino>0x20</midino>
         <options>
@@ -1518,7 +1518,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect2]</group>
-        <key>djc4.effectUnit[1].enableButtons[2].input</key>
+        <key>DJC4.effectUnit[1].enableButtons[2].input</key>
         <status>0x91</status>
         <midino>0x20</midino>
         <options>
@@ -1527,7 +1527,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3_Effect2]</group>
-        <key>djc4.effectUnit[2].enableButtons[2].input</key>
+        <key>DJC4.effectUnit[2].enableButtons[2].input</key>
         <status>0x92</status>
         <midino>0x20</midino>
         <options>
@@ -1536,7 +1536,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit4_Effect2]</group>
-        <key>djc4.effectUnit[3].enableButtons[2].input</key>
+        <key>DJC4.effectUnit[3].enableButtons[2].input</key>
         <status>0x93</status>
         <midino>0x20</midino>
         <options>
@@ -1545,7 +1545,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>djc4.deck[0].wheelTurn</key>
+        <key>DJC4.deck[0].wheelTurn</key>
         <status>0xB0</status>
         <midino>0x20</midino>
         <options>
@@ -1554,7 +1554,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>djc4.deck[1].wheelTurn</key>
+        <key>DJC4.deck[1].wheelTurn</key>
         <status>0xB1</status>
         <midino>0x20</midino>
         <options>
@@ -1563,7 +1563,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>djc4.deck[2].wheelTurn</key>
+        <key>DJC4.deck[2].wheelTurn</key>
         <status>0xB2</status>
         <midino>0x20</midino>
         <options>
@@ -1572,7 +1572,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>djc4.deck[3].wheelTurn</key>
+        <key>DJC4.deck[3].wheelTurn</key>
         <status>0xB3</status>
         <midino>0x20</midino>
         <options>
@@ -1581,7 +1581,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect3]</group>
-        <key>djc4.effectUnit[0].enableButtons[3].input</key>
+        <key>DJC4.effectUnit[0].enableButtons[3].input</key>
         <status>0x90</status>
         <midino>0x21</midino>
         <options>
@@ -1590,7 +1590,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect3]</group>
-        <key>djc4.effectUnit[1].enableButtons[3].input</key>
+        <key>DJC4.effectUnit[1].enableButtons[3].input</key>
         <status>0x91</status>
         <midino>0x21</midino>
         <options>
@@ -1599,7 +1599,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect3]</group>
-        <key>djc4.effectUnit[2].enableButtons[3].input</key>
+        <key>DJC4.effectUnit[2].enableButtons[3].input</key>
         <status>0x92</status>
         <midino>0x21</midino>
         <options>
@@ -1608,7 +1608,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect3]</group>
-        <key>djc4.effectUnit[3].enableButtons[3].input</key>
+        <key>DJC4.effectUnit[3].enableButtons[3].input</key>
         <status>0x93</status>
         <midino>0x21</midino>
         <options>
@@ -1689,7 +1689,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>djc4.effectUnit[0].dryWetKnob.input</key>
+        <key>DJC4.effectUnit[0].dryWetKnob.input</key>
         <status>0xB0</status>
         <midino>0x26</midino>
         <options>
@@ -1698,7 +1698,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2]</group>
-        <key>djc4.effectUnit[1].dryWetKnob.input</key>
+        <key>DJC4.effectUnit[1].dryWetKnob.input</key>
         <status>0xB1</status>
         <midino>0x26</midino>
         <options>
@@ -1707,7 +1707,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2]</group>
-        <key>djc4.effectUnit[2].dryWetKnob.input</key>
+        <key>DJC4.effectUnit[2].dryWetKnob.input</key>
         <status>0xB2</status>
         <midino>0x26</midino>
         <options>
@@ -1716,7 +1716,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit3]</group>
-        <key>djc4.effectUnit[3].dryWetKnob.input</key>
+        <key>DJC4.effectUnit[3].dryWetKnob.input</key>
         <status>0xB3</status>
         <midino>0x26</midino>
         <options>
@@ -1725,7 +1725,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>djc4.deck[0].wheelTouch</key>
+        <key>DJC4.deck[0].wheelTouch</key>
         <status>0x90</status>
         <midino>0x26</midino>
         <options>
@@ -1734,7 +1734,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>djc4.deck[1].wheelTouch</key>
+        <key>DJC4.deck[1].wheelTouch</key>
         <status>0x91</status>
         <midino>0x26</midino>
         <options>
@@ -1743,7 +1743,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>djc4.deck[2].wheelTouch</key>
+        <key>DJC4.deck[2].wheelTouch</key>
         <status>0x92</status>
         <midino>0x26</midino>
         <options>
@@ -1752,7 +1752,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>djc4.deck[3].wheelTouch</key>
+        <key>DJC4.deck[3].wheelTouch</key>
         <status>0x93</status>
         <midino>0x26</midino>
         <options>
@@ -1770,7 +1770,7 @@
       </control>
       <control>
         <group>[Library]</group>
-        <key>djc4.browseEncoder.input</key>
+        <key>DJC4.browseEncoder.input</key>
         <status>0xB0</status>
         <midino>0x2C</midino>
         <options>
@@ -1779,7 +1779,7 @@
       </control>
       <control>
         <group>[Master]</group>
-        <key>djc4.shiftButton</key>
+        <key>DJC4.shiftButton</key>
         <status>0x90</status>
         <midino>0x2D</midino>
         <options>
@@ -2076,7 +2076,7 @@
       </control>
       <control>
         <group>[Sampler1]</group>
-        <key>djc4.deck[0].samplerButtons[0].input</key>
+        <key>DJC4.deck[0].samplerButtons[0].input</key>
         <status>0x90</status>
         <midino>0x3E</midino>
         <options>
@@ -2085,7 +2085,7 @@
       </control>
       <control>
         <group>[Sampler5]</group>
-        <key>djc4.deck[1].samplerButtons[0].input</key>
+        <key>DJC4.deck[1].samplerButtons[0].input</key>
         <status>0x91</status>
         <midino>0x3E</midino>
         <options>
@@ -2094,7 +2094,7 @@
       </control>
       <control>
         <group>[Sampler1]</group>
-        <key>djc4.deck[3].samplerButtons[0].input</key>
+        <key>DJC4.deck[3].samplerButtons[0].input</key>
         <status>0x92</status>
         <midino>0x3E</midino>
         <options>
@@ -2103,7 +2103,7 @@
       </control>
       <control>
         <group>[Sampler5]</group>
-        <key>djc4.deck[3].samplerButtons[0].input</key>
+        <key>DJC4.deck[3].samplerButtons[0].input</key>
         <status>0x93</status>
         <midino>0x3E</midino>
         <options>
@@ -2112,7 +2112,7 @@
       </control>
       <control>
         <group>[Sampler2]</group>
-        <key>djc4.deck[0].samplerButtons[1].input</key>
+        <key>DJC4.deck[0].samplerButtons[1].input</key>
         <status>0x90</status>
         <midino>0x3F</midino>
         <options>
@@ -2121,7 +2121,7 @@
       </control>
       <control>
         <group>[Sampler6]</group>
-        <key>djc4.deck[1].samplerButtons[1].input</key>
+        <key>DJC4.deck[1].samplerButtons[1].input</key>
         <status>0x91</status>
         <midino>0x3F</midino>
         <options>
@@ -2130,7 +2130,7 @@
       </control>
       <control>
         <group>[Sampler2]</group>
-        <key>djc4.deck[2].samplerButtons[1].input</key>
+        <key>DJC4.deck[2].samplerButtons[1].input</key>
         <status>0x92</status>
         <midino>0x3F</midino>
         <options>
@@ -2139,7 +2139,7 @@
       </control>
       <control>
         <group>[Sampler6]</group>
-        <key>djc4.deck[3].samplerButtons[1].input</key>
+        <key>DJC4.deck[3].samplerButtons[1].input</key>
         <status>0x93</status>
         <midino>0x3F</midino>
         <options>
@@ -2148,7 +2148,7 @@
       </control>
       <control>
         <group>[Sampler3]</group>
-        <key>djc4.deck[0].samplerButtons[2].input</key>
+        <key>DJC4.deck[0].samplerButtons[2].input</key>
         <status>0x90</status>
         <midino>0x40</midino>
         <options>
@@ -2157,7 +2157,7 @@
       </control>
       <control>
         <group>[Sampler7]</group>
-        <key>djc4.deck[1].samplerButtons[2].input</key>
+        <key>DJC4.deck[1].samplerButtons[2].input</key>
         <status>0x91</status>
         <midino>0x40</midino>
         <options>
@@ -2166,7 +2166,7 @@
       </control>
       <control>
         <group>[Sampler3]</group>
-        <key>djc4.deck[2].samplerButtons[2].input</key>
+        <key>DJC4.deck[2].samplerButtons[2].input</key>
         <status>0x92</status>
         <midino>0x40</midino>
         <options>
@@ -2175,7 +2175,7 @@
       </control>
       <control>
         <group>[Sampler7]</group>
-        <key>djc4.deck[3].samplerButtons[2].input</key>
+        <key>DJC4.deck[3].samplerButtons[2].input</key>
         <status>0x93</status>
         <midino>0x40</midino>
         <options>
@@ -2184,7 +2184,7 @@
       </control>
       <control>
         <group>[Sampler4]</group>
-        <key>djc4.deck[0].samplerButtons[3].input</key>
+        <key>DJC4.deck[0].samplerButtons[3].input</key>
         <status>0x90</status>
         <midino>0x41</midino>
         <options>
@@ -2193,7 +2193,7 @@
       </control>
       <control>
         <group>[Sampler8]</group>
-        <key>djc4.deck[1].samplerButtons[3].input</key>
+        <key>DJC4.deck[1].samplerButtons[3].input</key>
         <status>0x91</status>
         <midino>0x41</midino>
         <options>
@@ -2202,7 +2202,7 @@
       </control>
       <control>
         <group>[Sampler4]</group>
-        <key>djc4.deck[2].samplerButtons[3].input</key>
+        <key>DJC4.deck[2].samplerButtons[3].input</key>
         <status>0x92</status>
         <midino>0x41</midino>
         <options>
@@ -2211,7 +2211,7 @@
       </control>
       <control>
         <group>[Sampler8]</group>
-        <key>djc4.deck[3].samplerButtons[3].input</key>
+        <key>DJC4.deck[3].samplerButtons[3].input</key>
         <status>0x93</status>
         <midino>0x41</midino>
         <options>
@@ -2400,7 +2400,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>djc4.effectUnit[0].effectFocusButton.input</key>
+        <key>DJC4.effectUnit[0].effectFocusButton.input</key>
         <status>0x90</status>
         <midino>0x4F</midino>
         <options>
@@ -2409,7 +2409,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>djc4.effectUnit[1].effectFocusButton.input</key>
+        <key>DJC4.effectUnit[1].effectFocusButton.input</key>
         <status>0x91</status>
         <midino>0x4F</midino>
         <options>
@@ -2418,7 +2418,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>djc4.effectUnit[2].effectFocusButton.input</key>
+        <key>DJC4.effectUnit[2].effectFocusButton.input</key>
         <status>0x92</status>
         <midino>0x4F</midino>
         <options>
@@ -2427,7 +2427,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>djc4.effectUnit[3].effectFocusButton.input</key>
+        <key>DJC4.effectUnit[3].effectFocusButton.input</key>
         <status>0x93</status>
         <midino>0x4F</midino>
         <options>
@@ -2436,7 +2436,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect1]</group>
-        <key>djc4.effectUnit[0].enableButtons[1].input</key>
+        <key>DJC4.effectUnit[0].enableButtons[1].input</key>
         <status>0x90</status>
         <midino>0x51</midino>
         <options>
@@ -2445,7 +2445,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect1]</group>
-        <key>djc4.effectUnit[1].enableButtons[1].input</key>
+        <key>DJC4.effectUnit[1].enableButtons[1].input</key>
         <status>0x91</status>
         <midino>0x51</midino>
         <options>
@@ -2454,7 +2454,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect1]</group>
-        <key>djc4.effectUnit[2].enableButtons[1].input</key>
+        <key>DJC4.effectUnit[2].enableButtons[1].input</key>
         <status>0x92</status>
         <midino>0x51</midino>
         <options>
@@ -2463,7 +2463,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect1]</group>
-        <key>djc4.effectUnit[3].enableButtons[1].input</key>
+        <key>DJC4.effectUnit[3].enableButtons[1].input</key>
         <status>0x93</status>
         <midino>0x51</midino>
         <options>
@@ -2472,7 +2472,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect2]</group>
-        <key>djc4.effectUnit[0].enableButtons[2].input</key>
+        <key>DJC4.effectUnit[0].enableButtons[2].input</key>
         <status>0x90</status>
         <midino>0x52</midino>
         <options>
@@ -2481,7 +2481,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect2]</group>
-        <key>djc4.effectUnit[1].enableButtons[2].input</key>
+        <key>DJC4.effectUnit[1].enableButtons[2].input</key>
         <status>0x91</status>
         <midino>0x52</midino>
         <options>
@@ -2490,7 +2490,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect2]</group>
-        <key>djc4.effectUnit[2].enableButtons[2].input</key>
+        <key>DJC4.effectUnit[2].enableButtons[2].input</key>
         <status>0x92</status>
         <midino>0x52</midino>
         <options>
@@ -2499,7 +2499,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect2]</group>
-        <key>djc4.effectUnit[3].enableButtons[2].input</key>
+        <key>DJC4.effectUnit[3].enableButtons[2].input</key>
         <status>0x93</status>
         <midino>0x52</midino>
         <options>
@@ -2508,7 +2508,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect3]</group>
-        <key>djc4.effectUnit[0].enableButtons[3].input</key>
+        <key>DJC4.effectUnit[0].enableButtons[3].input</key>
         <status>0x90</status>
         <midino>0x53</midino>
         <options>
@@ -2517,7 +2517,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect3]</group>
-        <key>djc4.effectUnit[1].enableButtons[3].input</key>
+        <key>DJC4.effectUnit[1].enableButtons[3].input</key>
         <status>0x91</status>
         <midino>0x53</midino>
         <options>
@@ -2526,7 +2526,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit1_Effect3]</group>
-        <key>djc4.effectUnit[2].enableButtons[3].input</key>
+        <key>DJC4.effectUnit[2].enableButtons[3].input</key>
         <status>0x92</status>
         <midino>0x53</midino>
         <options>
@@ -2535,7 +2535,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect3]</group>
-        <key>djc4.effectUnit[3].enableButtons[3].input</key>
+        <key>DJC4.effectUnit[3].enableButtons[3].input</key>
         <status>0x93</status>
         <midino>0x53</midino>
         <options>
@@ -2544,7 +2544,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>djc4.deck[0].wheelTouch</key>
+        <key>DJC4.deck[0].wheelTouch</key>
         <status>0x90</status>
         <midino>0x58</midino>
         <options>
@@ -2553,7 +2553,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>djc4.deck[1].wheelTouch</key>
+        <key>DJC4.deck[1].wheelTouch</key>
         <status>0x91</status>
         <midino>0x58</midino>
         <options>
@@ -2562,7 +2562,7 @@
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>djc4.deck[2].wheelTouch</key>
+        <key>DJC4.deck[2].wheelTouch</key>
         <status>0x92</status>
         <midino>0x58</midino>
         <options>
@@ -2571,7 +2571,7 @@
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>djc4.deck[3].wheelTouch</key>
+        <key>DJC4.deck[3].wheelTouch</key>
         <status>0x93</status>
         <midino>0x58</midino>
         <options>

@@ -1,5 +1,5 @@
 /**
- * Stanton DJC4 controller script v1.0 for Mixxx v2.2.3
+ * Stanton DJC.4 controller script v1.0 for Mixxx v2.2.3
  *
  * Written by Martin Bruset Solberg
  * Adopted for v2.2.3 by Christoph Zimmermann
@@ -14,18 +14,17 @@
  *
  **/
 
-var djc4 = {};
+var DJC4 = {};
 
 /////////////////
 // Tweakables. //
 /////////////////
 
-djc4.tempoRange = [0.08, 0.16, 0.5];  // not used yet!
-djc4.autoShowFourDecks = false;
-djc4.showMasterVu = true;  // if set to false, show channel VU meter
+DJC4.autoShowFourDecks = false;
+DJC4.showMasterVu = true;  // if set to false, show channel VU meter
 
 // amount the dryWetKnob changes the value for each increment
-djc4.dryWetAdjustValue = 0.05;
+DJC4.dryWetAdjustValue = 0.05;
 
 ///////////
 // Code. //
@@ -34,7 +33,7 @@ djc4.dryWetAdjustValue = 0.05;
 // ----------   Global variables    ----------
 
 // MIDI Reception commands (from spec)
-djc4.leds = {
+DJC4.leds = {
     loopminus: 2,
     loopplus: 3,
     loopin: 4,
@@ -78,20 +77,20 @@ djc4.leds = {
 // ----------   Functions    ----------
 
 // Called when the MIDI device is opened & set up.
-djc4.init = function() {
+DJC4.init = function() {
     var i;
 
     // Put all LEDs to default state.
-    djc4.allLed2Default();
+    DJC4.allLed2Default();
 
-    engine.makeConnection("[Channel3]", "track_loaded", djc4.autoShowDecks);
-    engine.makeConnection("[Channel4]", "track_loaded", djc4.autoShowDecks);
+    engine.makeConnection("[Channel3]", "track_loaded", DJC4.autoShowDecks);
+    engine.makeConnection("[Channel4]", "track_loaded", DJC4.autoShowDecks);
 
     if (engine.getValue("[Master]", "num_samplers") < 8) {
         engine.setValue("[Master]", "num_samplers", 8);
     }
 
-    djc4.browseEncoder = new components.Encoder({
+    DJC4.browseEncoder = new components.Encoder({
         group: "[Library]",
         inKey: "Move",
         input: function(channel, control, value) {
@@ -109,38 +108,38 @@ djc4.init = function() {
         },
     });
 
-    djc4.deck = [];
+    DJC4.deck = [];
     for (i = 0; i < 4; i++) {
-        djc4.deck[i] = new djc4.Deck(i + 1);
-        djc4.deck[i].setCurrentDeck("[Channel" + (i + 1) + "]");
+        DJC4.deck[i] = new DJC4.Deck(i + 1);
+        DJC4.deck[i].setCurrentDeck("[Channel" + (i + 1) + "]");
     }
 
-    djc4.effectUnit = [];
+    DJC4.effectUnit = [];
     for (i = 0; i <= 3; i++) {
-        djc4.effectUnit[i] = new components.EffectUnit([i + 1]);
-        djc4.effectUnit[i].shiftOffset = 0x32;
-        djc4.effectUnit[i].shiftControl = true;
-        djc4.effectUnit[i].enableButtons[1].midi = [0x90 + i, 0x1F];
-        djc4.effectUnit[i].enableButtons[2].midi = [0x90 + i, 0x20];
-        djc4.effectUnit[i].enableButtons[3].midi = [0x90 + i, 0x21];
-        djc4.effectUnit[i].effectFocusButton.midi = [0x90 + i, 0x1D];
-        djc4.effectUnit[i].knobs[1].midi = [0xB0 + i, 0x09];
-        djc4.effectUnit[i].knobs[2].midi = [0xB0 + i, 0x0A];
-        djc4.effectUnit[i].knobs[3].midi = [0xB0 + i, 0x0B];
-        djc4.effectUnit[i].dryWetKnob.midi = [0xB0 + i, 0x08];
-        djc4.effectUnit[i].dryWetKnob.input = function(channel, control, value) {
+        DJC4.effectUnit[i] = new components.EffectUnit([i + 1]);
+        DJC4.effectUnit[i].shiftOffset = 0x32;
+        DJC4.effectUnit[i].shiftControl = true;
+        DJC4.effectUnit[i].enableButtons[1].midi = [0x90 + i, 0x1F];
+        DJC4.effectUnit[i].enableButtons[2].midi = [0x90 + i, 0x20];
+        DJC4.effectUnit[i].enableButtons[3].midi = [0x90 + i, 0x21];
+        DJC4.effectUnit[i].effectFocusButton.midi = [0x90 + i, 0x1D];
+        DJC4.effectUnit[i].knobs[1].midi = [0xB0 + i, 0x09];
+        DJC4.effectUnit[i].knobs[2].midi = [0xB0 + i, 0x0A];
+        DJC4.effectUnit[i].knobs[3].midi = [0xB0 + i, 0x0B];
+        DJC4.effectUnit[i].dryWetKnob.midi = [0xB0 + i, 0x08];
+        DJC4.effectUnit[i].dryWetKnob.input = function(channel, control, value) {
             if (value === 0x41) {
-                this.inSetParameter(this.inGetParameter() + djc4.dryWetAdjustValue);
+                this.inSetParameter(this.inGetParameter() + DJC4.dryWetAdjustValue);
             } else if (value === 0x3F) {
-                this.inSetParameter(this.inGetParameter() - djc4.dryWetAdjustValue);
+                this.inSetParameter(this.inGetParameter() - DJC4.dryWetAdjustValue);
             }
         };
-        djc4.effectUnit[i].init();
+        DJC4.effectUnit[i].init();
     }
 
     // === Master VU Meter ===
-    if (djc4.showMasterVu === true) {
-        djc4.vuMeter = new components.Component({
+    if (DJC4.showMasterVu === true) {
+        DJC4.vuMeter = new components.Component({
             midi: [0xB0, 0x03],
             group: "[Master]",
             outKey: "VuMeterL",
@@ -156,7 +155,7 @@ djc4.init = function() {
             },
         });
 
-        djc4.vuMeter = new components.Component({
+        DJC4.vuMeter = new components.Component({
             midi: [0xB0, 0x04],
             group: "[Master]",
             outKey: "VuMeterR",
@@ -175,12 +174,12 @@ djc4.init = function() {
 };
 
 // Called when the MIDI device is closed
-djc4.shutdown = function() {
+DJC4.shutdown = function() {
     // Put all LEDs to default state.
-    djc4.allLed2Default();
+    DJC4.allLed2Default();
 };
 
-djc4.Deck = function(deckNumber) {
+DJC4.Deck = function(deckNumber) {
     components.Deck.call(this, deckNumber);
 
     // === Instantiate controls ===
@@ -206,8 +205,8 @@ djc4.Deck = function(deckNumber) {
     }
 
     // === Channel VU Meter ===
-    if (djc4.showMasterVu === false) {
-        djc4.vuMeter = new components.Component({
+    if (DJC4.showMasterVu === false) {
+        DJC4.vuMeter = new components.Component({
             midi: [0xB0+deckNumber-1, 0x02],
             group: "[Channel" + deckNumber + "]",
             outKey: "VuMeter",
@@ -231,7 +230,7 @@ djc4.Deck = function(deckNumber) {
         if (value === 0x7F) {
             // Toggle setting
             this.scratchMode = !this.scratchMode;
-            djc4.setLed(script.deckFromGroup(this.currentDeck), djc4.leds["scratch"], this.scratchMode);
+            DJC4.setLed(script.deckFromGroup(this.currentDeck), DJC4.leds["scratch"], this.scratchMode);
         }
     };
 
@@ -278,7 +277,7 @@ djc4.Deck = function(deckNumber) {
             // song duration in order for the jog wheel to cover the same amount
             // of time given a constant turning angle.
             var duration = engine.getValue(this.currentDeck, "duration");
-            var newPos = Math.max(0, oldPos + (newValue * djc4.stripSearchScaling / duration));
+            var newPos = Math.max(0, oldPos + (newValue * DJC4.stripSearchScaling / duration));
             engine.setValue(this.currentDeck, "playposition", newPos); // Strip search
         } else {
             engine.setValue(this.currentDeck, "jog", newValue); // Pitch bend
@@ -288,12 +287,12 @@ djc4.Deck = function(deckNumber) {
 
 // === FOR MANAGING LEDS ===
 
-djc4.allLed2Default = function() {
+DJC4.allLed2Default = function() {
     // All LEDs OFF for deck 1 to 4
     var i = 0;
     for (i = 1; i <= 4; i++) {
-        for (var led in djc4.leds) {
-            djc4.setLed(i, djc4.leds[led], 0);
+        for (var led in DJC4.leds) {
+            DJC4.setLed(i, DJC4.leds[led], 0);
         }
         // Channel VU meter
         midi.sendShortMsg(0xB0 + (i - 1), 2, 0);
@@ -304,7 +303,7 @@ djc4.allLed2Default = function() {
 };
 
 // Set leds function
-djc4.setLed = function(deck, led, status) {
+DJC4.setLed = function(deck, led, status) {
     var ledStatus = 0x00; // Default OFF
     switch (status) {
     case 0:
@@ -327,37 +326,37 @@ djc4.setLed = function(deck, led, status) {
 
 // === MISC COMMON ===
 
-djc4.autoShowDecks = function() {
+DJC4.autoShowDecks = function() {
     var anyLoaded = engine.getValue("[Channel3]", "track_loaded") || engine.getValue("[Channel4]", "track_loaded");
-    if (!djc4.autoShowFourDecks) {
+    if (!DJC4.autoShowFourDecks) {
         return;
     }
     engine.setValue("[Master]", "show_4decks", anyLoaded);
 };
 
-djc4.shiftButton = function(channel, control, value) {
+DJC4.shiftButton = function(channel, control, value) {
     var i;
     if (value === 0x7F) {
-        djc4.browseEncoder.shift();
+        DJC4.browseEncoder.shift();
         for (i = 0; i < 4; i++) {
-            djc4.deck[i].shift();
-            djc4.effectUnit[i].shift();
+            DJC4.deck[i].shift();
+            DJC4.effectUnit[i].shift();
         }
     } else {
-        djc4.browseEncoder.unshift();
+        DJC4.browseEncoder.unshift();
         for (i = 0; i < 4; i++) {
-            djc4.deck[i].unshift();
-            djc4.effectUnit[i].unshift();
+            DJC4.deck[i].unshift();
+            DJC4.effectUnit[i].unshift();
         }
     }
 };
 
-djc4.crossfaderCurve = function(channel, control, value) {
-    script.crossfaderCurve(value, 0, 127);
+DJC4.crossfaderCurve = function(channel, control, value) {
+    script.crossfaderCurve(value, 0, 0x7F);
 };
 
 // === Sampler Volume Control ===
-djc4.samplerVolume = function(channel, control, value) {
+DJC4.samplerVolume = function(channel, control, value) {
     // check if the Sampler Volume is at Zero and if so hide the sampler bank
     if (value > 0x00) {
         engine.setValue("[Samplers]", "show_samplers", true);
@@ -376,4 +375,4 @@ djc4.samplerVolume = function(channel, control, value) {
 
 
 // give your custom Deck all the methods of the generic Deck in the Components library
-djc4.Deck.prototype = Object.create(components.Deck.prototype);
+DJC4.Deck.prototype = Object.create(components.Deck.prototype);
