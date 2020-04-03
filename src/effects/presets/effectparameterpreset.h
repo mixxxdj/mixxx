@@ -15,6 +15,6 @@ class EffectParameterPreset {
     double m_dValue;
     QString m_id;
     EffectManifestParameter::LinkType m_linkType;
-    bool m_bLinkInverted;
+    EffectManifestParameter::LinkInversion m_linkInversion;
     bool m_bHidden;
 };

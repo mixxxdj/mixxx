@@ -21,8 +21,9 @@ EffectParameterPreset::EffectParameterPreset(const QDomElement& parameterElement
                 XmlParse::selectNodeQString(parameterElement,
                         EffectXml::ParameterLinkType));
 
-        m_bLinkInverted = XmlParse::selectNodeBool(parameterElement,
-                EffectXml::ParameterLinkInversion);
+        m_linkInversion = static_cast<EffectManifestParameter::LinkInversion>(
+                static_cast<int>(XmlParse::selectNodeDouble(parameterElement,
+                        EffectXml::ParameterLinkInversion)));
 
         m_bHidden = XmlParse::selectNodeBool(parameterElement,
                 EffectXml::ParameterHidden);
