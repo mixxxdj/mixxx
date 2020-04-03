@@ -11,6 +11,7 @@
 class Effect;
 class EffectsManager;
 class EngineEffect;
+class EffectParameterPreset;
 
 // An EffectParameter is a wrapper around EffectManifestParameter that tracks a
 // mutable value state and communicates that state to the engine. This class is
@@ -20,8 +21,7 @@ class EngineEffect;
 // parameter hiding and rearrangement.
 class EffectParameter {
   public:
-    EffectParameter(EngineEffect* pEngineEffect, EffectsManager* pEffectsManager,
-                    int iParameterNumber, EffectManifestParameterPointer pParameter);
+    EffectParameter(EngineEffect* pEngineEffect, EffectsManager* pEffectsManager, int iParameterNumber, EffectManifestParameterPointer pParameter, EffectParameterPreset preset);
     virtual ~EffectParameter();
 
     EffectManifestParameterPointer manifest() const;
@@ -45,6 +45,10 @@ class EffectParameter {
     int m_iParameterNumber;
     EffectManifestParameterPointer m_pParameter;
     double m_value;
+    // Hidden parameters cannot be linked to the metaknob, but EffectParameter
+    // needs to maintain their state in case they are loaded into an EffectParameterSlot.
+    EffectManifestParameter::LinkType m_linkType;
+    EffectManifestParameter::LinkInversion m_linkInversion;
 
     DISALLOW_COPY_AND_ASSIGN(EffectParameter);
 };

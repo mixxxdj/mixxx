@@ -55,6 +55,9 @@ typedef std::array<EffectStatesMap, kNumEffectsPerUnit> EffectStatesMapArray;
 class EngineEffectParameter;
 typedef QSharedPointer<EngineEffectParameter> EngineEffectParameterPointer;
 
+class EffectParameter;
+typedef QSharedPointer<EffectParameter> EffectParameterPointer;
+
 class EffectSlot;
 typedef QSharedPointer<EffectSlot> EffectSlotPointer;
 

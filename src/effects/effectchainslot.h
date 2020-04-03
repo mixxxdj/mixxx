@@ -1,14 +1,15 @@
 #ifndef EFFECTCHAINSLOT_H
 #define EFFECTCHAINSLOT_H
 
-#include <QObject>
-#include <QMap>
-#include <QList>
-#include <QSignalMapper>
 #include <QDomDocument>
+#include <QList>
+#include <QMap>
+#include <QObject>
+#include <QSignalMapper>
 
 #include "control/controlobject.h"
 #include "effects/defs.h"
+#include "effects/presets/effectchainpreset.h"
 #include "engine/channelhandle.h"
 #include "util/class.h"
 #include "util/memory.h"
@@ -44,6 +45,8 @@ class EffectChainSlot : public QObject {
     double getSuperParameter() const;
     void setSuperParameter(double value, bool force = false);
     void setSuperParameterDefaultValue(double value);
+
+    void setMixMode(EffectChainMixMode mixMode);
 
     const QString& getGroup() const {
         return m_group;
@@ -81,9 +84,9 @@ class EffectChainSlot : public QObject {
     }
 
     virtual void loadEffect(const unsigned int iEffectSlotNumber,
-                    const EffectManifestPointer pManifest,
-                    std::unique_ptr<EffectProcessor> pProcessor);
-
+            const EffectManifestPointer pManifest,
+            std::unique_ptr<EffectProcessor> pProcessor,
+            EffectPresetPointer pPreset);
 
   signals:
     // Signal that whoever is in charge of this EffectChainSlot should load the
@@ -177,6 +180,7 @@ class EffectChainSlot : public QObject {
     QString m_id;
     QString m_name;
     QString m_description;
+    EffectChainMixMode m_mixMode;
     SignalProcessingStage m_signalProcessingStage;
     QSet<ChannelHandleAndGroup> m_enabledInputChannels;
     EngineEffectChain* m_pEngineEffectChain;

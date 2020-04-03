@@ -10,13 +10,14 @@
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 #include "controllers/softtakeover.h"
-#include "engine/channelhandle.h"
-#include "engine/engine.h"
-#include "engine/effects/engineeffect.h"
 #include "effects/effectbuttonparameterslot.h"
+#include "effects/effectknobparameterslot.h"
 #include "effects/effectmanifest.h"
 #include "effects/effectparameter.h"
-#include "effects/effectknobparameterslot.h"
+#include "effects/presets/effectpreset.h"
+#include "engine/channelhandle.h"
+#include "engine/effects/engineeffect.h"
+#include "engine/engine.h"
 #include "util/class.h"
 
 class EffectProcessor;
@@ -41,6 +42,7 @@ class EffectSlot : public QObject {
     // Call with nullptr for pManifest and pProcessor to unload an effect
     void loadEffect(const EffectManifestPointer pManifest,
             std::unique_ptr<EffectProcessor> pProcessor,
+            EffectPresetPointer pPreset,
             const QSet<ChannelHandleAndGroup>& activeChannels);
 
     inline int getEffectSlotNumber() const {
@@ -113,9 +115,9 @@ class EffectSlot : public QObject {
     EffectManifestPointer m_pManifest;
     EngineEffectChain* m_pEngineEffectChain;
     EngineEffect* m_pEngineEffect;
-    QList<EffectParameter*> m_parameters;
-    QList<EffectParameterSlotBasePointer> m_parameterSlots;
-    QHash<EffectManifestParameter::ParameterType, QList<int>> m_mapForParameterType;
+    QMap<EffectManifestParameter::ParameterType, QList<EffectParameterPointer>> m_parameters;
+    QMap<EffectManifestParameter::ParameterType, QList<EffectParameterPointer>> m_loadedParameters;
+    QMap<EffectManifestParameter::ParameterType, QList<EffectParameterSlotBasePointer>> m_parameterSlots;
 
     ControlObject* m_pControlLoaded;
     QHash<EffectManifestParameter::ParameterType, ControlObject*> m_pControlNumParameters;

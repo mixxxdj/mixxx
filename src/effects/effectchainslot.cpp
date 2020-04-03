@@ -186,10 +186,10 @@ void EffectChainSlot::setDescription(const QString& description) {
 }
 
 void EffectChainSlot::loadEffect(const unsigned int iEffectSlotNumber,
-                                 const EffectManifestPointer pManifest,
-                                 std::unique_ptr<EffectProcessor> pProcessor) {
-    m_effectSlots[iEffectSlotNumber]->loadEffect(pManifest, std::move(pProcessor),
-                                                 m_enabledInputChannels);
+        const EffectManifestPointer pManifest,
+        std::unique_ptr<EffectProcessor> pProcessor,
+        EffectPresetPointer pPreset) {
+    m_effectSlots[iEffectSlotNumber]->loadEffect(pManifest, std::move(pProcessor), pPreset, m_enabledInputChannels);
 }
 
 void EffectChainSlot::sendParameterUpdate() {
@@ -224,8 +224,15 @@ void EffectChainSlot::setSuperParameterDefaultValue(double value) {
     m_pControlChainSuperParameter->setDefaultValue(value);
 }
 
+void EffectChainSlot::setMixMode(EffectChainMixMode mixMode) {
+    m_pControlChainMixMode->set(static_cast<int>(mixMode));
+    sendParameterUpdate();
+}
+
 EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
-    // qDebug() << debugString() << "addEffectSlot" << group;
+    if (kEffectDebugOutput) {
+        qDebug() << debugString() << "addEffectSlot" << group;
+    }
     EffectSlotPointer pEffectSlot = EffectSlotPointer(
             new EffectSlot(group, m_pEffectsManager, m_effectSlots.size(), m_pEngineEffectChain));
 
@@ -262,8 +269,7 @@ void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handle_g
 
 EffectSlotPointer EffectChainSlot::getEffectSlot(unsigned int slotNumber) {
     //qDebug() << debugString() << "getEffectSlot" << slotNumber;
-    if (slotNumber >= static_cast<unsigned int>(m_effectSlots.size())) {
-        qWarning() << "WARNING: slotNumber out of range";
+    VERIFY_OR_DEBUG_ASSERT(slotNumber <= static_cast<unsigned int>(m_effectSlots.size())) {
         return EffectSlotPointer();
     }
     return m_effectSlots[slotNumber];

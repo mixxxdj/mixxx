@@ -115,8 +115,9 @@ QuickEffectChainSlot::QuickEffectChainSlot(const QString& group,
 void QuickEffectChainSlot::loadEffect(
         const unsigned int iEffectSlotNumber,
         const EffectManifestPointer pManifest,
-        std::unique_ptr<EffectProcessor> pProcessor) {
-    EffectChainSlot::loadEffect(iEffectSlotNumber, pManifest, std::move(pProcessor));
+        std::unique_ptr<EffectProcessor> pProcessor,
+        EffectPresetPointer pPreset) {
+    EffectChainSlot::loadEffect(iEffectSlotNumber, pManifest, std::move(pProcessor), pPreset);
     slotControlChainSuperParameter(m_pControlChainSuperParameter->get(), true);
 }
 
@@ -148,10 +149,11 @@ EqualizerEffectChainSlot::EqualizerEffectChainSlot(const QString& group,
 void EqualizerEffectChainSlot::loadEffect(
         const unsigned int iEffectSlotNumber,
         const EffectManifestPointer pManifest,
-        std::unique_ptr<EffectProcessor> pProcessor) {
+        std::unique_ptr<EffectProcessor> pProcessor,
+        EffectPresetPointer pPreset) {
     // TODO: preserve effect parameters when loading new effect. This will allow
     // for easy comparison of the sound of different equalizer effects.
-    EffectChainSlot::loadEffect(iEffectSlotNumber, pManifest, std::move(pProcessor));
+    EffectChainSlot::loadEffect(iEffectSlotNumber, pManifest, std::move(pProcessor), pPreset);
     m_pCOFilterWaveform->set(pManifest->isMixingEQ());
 }
 

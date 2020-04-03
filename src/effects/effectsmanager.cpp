@@ -157,12 +157,13 @@ void EffectsManager::loadEqualizerEffect(const QString& deckGroup,
 }
 
 void EffectsManager::loadEffect(EffectChainSlotPointer pChainSlot,
-        const int iEffectSlotNumber, const EffectManifestPointer pManifest) {
-    if (kEffectDebugOutput) {
-        qDebug() << debugString() << "loading effect" << iEffectSlotNumber << pManifest;
+        const int iEffectSlotNumber,
+        const EffectManifestPointer pManifest,
+        EffectPresetPointer pPreset) {
+    if (pPreset == nullptr) {
+        pPreset = m_defaultPresets.value(pManifest);
     }
-    pChainSlot->loadEffect(iEffectSlotNumber, pManifest,
-                           createProcessor(pManifest));
+    pChainSlot->loadEffect(iEffectSlotNumber, pManifest, createProcessor(pManifest), pPreset);
 }
 
 std::unique_ptr<EffectProcessor> EffectsManager::createProcessor(
@@ -176,6 +177,31 @@ std::unique_ptr<EffectProcessor> EffectsManager::createProcessor(
         return std::unique_ptr<EffectProcessor>(nullptr);
     }
     return pBackend->createProcessor(pManifest);
+}
+
+// This needs to be in EffectsManager rather than EffectChainSlot because it
+// needs access to the EffectsBackends.
+void EffectsManager::loadEffectChainPreset(EffectChainSlotPointer pChainSlot,
+        EffectChainPresetPointer pPreset) {
+    VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(pPreset) {
+        return;
+    }
+    int effectSlot = 0;
+    for (const auto& pEffectPreset : pPreset->effectPresets()) {
+        EffectsBackendPointer pBackend = m_effectsBackends.value(pEffectPreset->backendType());
+        VERIFY_OR_DEBUG_ASSERT(pBackend) {
+            effectSlot++;
+            continue;
+        }
+        EffectManifestPointer pManifest = pBackend->getManifest(pEffectPreset->id());
+        pChainSlot->loadEffect(effectSlot, pManifest, createProcessor(pManifest), pEffectPreset);
+        effectSlot++;
+    }
+    pChainSlot->setMixMode(pPreset->mixMode());
+    pChainSlot->setSuperParameter(pPreset->superKnob());
 }
 
 const QList<EffectManifestPointer> EffectsManager::getAvailableEffectManifestsFiltered(
@@ -246,7 +272,7 @@ void EffectsManager::getEffectManifestAndBackend(
 
 EffectManifestPointer EffectsManager::getManifestFromUniqueId(const QString& uid) const {
     if (kEffectDebugOutput) {
-        qDebug() << "EffectsManager::getManifestFromUniqueId" << uid;
+        //qDebug() << "EffectsManager::getManifestFromUniqueId" << uid;
     }
     if (uid.isEmpty()) {
         // Do not DEBUG_ASSERT, this may be a valid request for a nullptr to
@@ -383,12 +409,12 @@ bool EffectsManager::getEffectVisibility(EffectManifestPointer pManifest) {
 }
 
 void EffectsManager::setup() {
-    loadEffectChainPresets();
     // Add postfader effect chain slots
     addStandardEffectChainSlots();
     addOutputEffectChainSlot();
 
     loadDefaultEffectPresets();
+    loadEffectChainPresets();
 }
 
 bool EffectsManager::writeRequest(EffectsRequest* request) {
@@ -504,6 +530,7 @@ void EffectsManager::loadEffectChainPresets() {
             QDomElement chainElement = chainNode.toElement();
             EffectChainPresetPointer pPreset(new EffectChainPreset(chainElement));
             m_effectChainPresets.insert(pPreset->name(), pPreset);
+            loadEffectChainPreset(m_standardEffectChainSlots.value(i), pPreset);
         }
     }
 }

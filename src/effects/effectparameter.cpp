@@ -4,17 +4,18 @@
 #include "effects/effectsmanager.h"
 #include "util/assert.h"
 
-EffectParameter::EffectParameter(EngineEffect* pEngineEffect, EffectsManager* pEffectsManager,
-                                 int iParameterNumber, EffectManifestParameterPointer pParameter)
+EffectParameter::EffectParameter(EngineEffect* pEngineEffect, EffectsManager* pEffectsManager, int iParameterNumber, EffectManifestParameterPointer pParameter, EffectParameterPreset preset)
         : m_pEngineEffect(pEngineEffect),
           m_pEffectsManager(pEffectsManager),
           m_iParameterNumber(iParameterNumber),
           m_pParameter(pParameter) {
-    // qDebug() << debugString() << "Constructing new EffectParameter from EffectManifestParameter:"
-    //          << m_parameter.id();
-
-    // Set the value to the default.
-    m_value = m_pParameter->getDefault();
+    if (preset.isNull()) {
+        setValue(pParameter->getDefault());
+    } else {
+        setValue(preset.value());
+        m_linkType = preset.linkType();
+        m_linkInversion = preset.linkInverted();
+    }
 }
 
 EffectParameter::~EffectParameter() {

@@ -28,26 +28,25 @@ class EffectKnobParameterSlot : public EffectParameterSlotBase {
     }
 
     // Load the parameter of the given effect into this EffectKnobParameterSlot
-    void loadParameter(EffectParameter* pEffectParameter);
+    void loadParameter(EffectParameterPointer pEffectParameter) override;
 
     double getValueParameter() const;
 
-    void onEffectMetaParameterChanged(double parameter, bool force=false);
+    void onEffectMetaParameterChanged(double parameter, bool force = false) override;
 
     // Syncs the Super button with the parameter, that the following
     // super button change will be passed to the effect parameter
     // used during test
-    void syncSofttakeover();
+    void syncSofttakeover() override;
 
     // Clear the currently loaded effect
-    void clear();
-
     QDomElement toXml(QDomDocument* doc) const override;
     void loadParameterSlotFromXml(const QDomElement& parameterElement) override;
+    void clear() override;
 
   private slots:
     // Solely for handling control changes
-    void slotParameterValueChanged(double value);
+    void slotParameterValueChanged(double value) override;
     void slotLinkTypeChanging(double v);
     void slotLinkInverseChanged(double v);
 

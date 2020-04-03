@@ -57,7 +57,7 @@ EffectKnobParameterSlot::~EffectKnobParameterSlot() {
     delete m_pMetaknobSoftTakeover;
 }
 
-void EffectKnobParameterSlot::loadParameter(EffectParameter* pEffectParameter) {
+void EffectKnobParameterSlot::loadParameter(EffectParameterPointer pEffectParameter) {
     // qDebug() << debugString() << "loadParameter" << (pEffectSlot ? pEffectSlot->getManifest().name() : "(null)");
     clear();
 
@@ -71,7 +71,7 @@ void EffectKnobParameterSlot::loadParameter(EffectParameter* pEffectParameter) {
     if (m_pEffectParameter) {
         m_pManifestParameter = m_pEffectParameter->manifest();
 
-        // qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
+        //qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->manifest()->id();
         double dValue = m_pEffectParameter->getValue();
         double dMinimum = m_pManifestParameter->getMinimum();
         double dMinimumLimit = dMinimum; // TODO(rryan) expose limit from EffectParameter

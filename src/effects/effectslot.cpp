@@ -157,8 +157,10 @@ void EffectSlot::updateEngineState() {
     pRequest->SetEffectParameters.enabled = m_pControlEnabled->get();
     m_pEffectsManager->writeRequest(pRequest);
 
-    for (auto const& pParameter : m_parameters) {
-        pParameter->updateEngineState();
+    for (const auto& parameterList : m_parameters) {
+        for (auto const& pParameter : parameterList) {
+            pParameter->updateEngineState();
+        }
     }
 }
 
@@ -189,42 +191,37 @@ void EffectSlot::addEffectParameterSlot(EffectManifestParameter::ParameterType p
             m_pControlNumParameterSlots[parameterType]->get()) {
         return;
     }
-    m_parameterSlots.append(pParameterSlot);
+    m_parameterSlots[parameterType].append(pParameterSlot);
 }
 
 unsigned int EffectSlot::numParameters(EffectManifestParameter::ParameterType parameterType) const {
-    unsigned int num = 0;
-    for (auto const& pParameter : m_parameters) {
-        if (parameterType == pParameter->manifest()->parameterType()) {
-            ++num;
-        }
-    }
-    return num;
+    return m_parameters.value(parameterType).size();
 }
 
 void EffectSlot::setEnabled(bool enabled) {
     m_pControlEnabled->set(enabled);
 }
 
-EffectParameterSlotBasePointer EffectSlot::getEffectParameterSlot(EffectManifestParameter::ParameterType parameterType,
-                                                                  unsigned int slotNumber) {
-    // qDebug() << debugString() << "getEffectParameterSlot" << static_cast<int>(parameterType) << ' ' << slotNumber;
-
-    int iSlotNumber = 0;
-    for (const auto& pParameterSlot : m_parameterSlots) {
-        if (pParameterSlot->parameterType() == parameterType) {
-            if (iSlotNumber == slotNumber) {
-                return pParameterSlot;
-            }
-            ++iSlotNumber;
-        }
+EffectParameterSlotBasePointer EffectSlot::getEffectParameterSlot(
+        EffectManifestParameter::ParameterType parameterType,
+        unsigned int slotNumber) {
+    VERIFY_OR_DEBUG_ASSERT(slotNumber <= (unsigned)m_parameterSlots.value(parameterType).size()) {
+        return nullptr;
     }
-    return EffectParameterSlotBasePointer();
+    return m_parameterSlots.value(parameterType).at(slotNumber);
 }
 
 void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
-                            std::unique_ptr<EffectProcessor> pProcessor,
-                            const QSet<ChannelHandleAndGroup>& activeChannels) {
+        std::unique_ptr<EffectProcessor> pProcessor,
+        EffectPresetPointer pEffectPreset,
+        const QSet<ChannelHandleAndGroup>& activeChannels) {
+    if (kEffectDebugOutput) {
+        if (pManifest != nullptr) {
+            qDebug() << this << m_group << "loading effect" << pManifest->id() << pEffectPreset.get() << pProcessor.get();
+        } else {
+            qDebug() << this << m_group << "unloading effect";
+        }
+    }
     unloadEffect();
 
     m_pManifest = pManifest;
@@ -235,26 +232,58 @@ void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
         return;
     }
 
-    for (auto& parameterMapping : m_mapForParameterType) {
-        parameterMapping.clear();
-    }
-
     addToEngine(std::move(pProcessor), activeChannels);
 
-    int index = 0;
+    // Create EffectParameters. Every parameter listed in the manifest must have
+    // an EffectParameter created, regardless of whether it is loaded in a slot.
+    int manifestIndex = 0;
     for (const auto& pManifestParameter: m_pManifest->parameters()) {
-        EffectParameter* pParameter = new EffectParameter(
-                m_pEngineEffect, m_pEffectsManager, m_parameters.size(), pManifestParameter);
-        m_parameters.append(pParameter);
-
-        m_mapForParameterType[pManifestParameter->parameterType()].push_back(index);
-        ++index;
+        // match the manifest parameter to the preset parameter
+        EffectParameterPreset parameterPreset = EffectParameterPreset();
+        if (pEffectPreset != nullptr) {
+            for (const auto& p : pEffectPreset->getParameterPresets()) {
+                if (p.id() == pManifestParameter->id()) {
+                    parameterPreset = p;
+                }
+            }
+        }
+        EffectParameterPointer pParameter(new EffectParameter(
+                m_pEngineEffect, m_pEffectsManager, manifestIndex, pManifestParameter, parameterPreset));
+        m_parameters[pManifestParameter->parameterType()].append(pParameter);
+        manifestIndex++;
     }
 
-    m_pControlLoaded->forceSet(1.0);
+    // Map the parameter slots to the EffectParameters.
+    // The slot order is determined by the order parameters are listed in the preset.
+    int numTypes = static_cast<int>(EffectManifestParameter::ParameterType::NUM_TYPES);
+    for (int parameterTypeId = 0; parameterTypeId < numTypes; ++parameterTypeId) {
+        const EffectManifestParameter::ParameterType parameterType =
+                static_cast<EffectManifestParameter::ParameterType>(parameterTypeId);
+
+        if (pEffectPreset != nullptr && !pEffectPreset.isNull()) {
+            m_loadedParameters[parameterType].clear();
+            int slot = 0;
+            for (const auto& parameterPreset : pEffectPreset->getParameterPresets()) {
+                if (parameterPreset.hidden() || parameterPreset.isNull()) {
+                    continue;
+                }
+
+                for (const auto& pParameter : m_parameters.value(parameterType)) {
+                    if (pParameter->manifest()->id() == parameterPreset.id()) {
+                        m_loadedParameters[parameterType].insert(slot, pParameter);
+                        break;
+                    }
+                }
+                slot++;
+            }
+        }
+    }
 
     loadParameters();
 
+    m_pControlLoaded->forceSet(1.0);
+
+    // TODO: load meta knob from preset
     if (m_pEffectsManager->isAdoptMetaknobValueEnabled()) {
         slotEffectMetaParameter(m_pControlMetaParameter->get(), true);
     } else {
@@ -276,25 +305,28 @@ void EffectSlot::unloadEffect() {
         pControlNumParameters->forceSet(0.0);
     }
 
-    for (const auto& pParameterSlot : m_parameterSlots) {
-        pParameterSlot->clear();
+    for (auto& slotList : m_parameterSlots) {
+        // Do not delete the slots; clear the parameters from the slots
+        // The parameter slots are used by the next effect, but the EffectParameters
+        // are deleted below.
+        for (auto pSlot : slotList) {
+            pSlot->clear();
+        }
+    }
+    for (auto& parameterList : m_parameters) {
+        parameterList.clear();
+    }
+    for (auto& parameterList : m_loadedParameters) {
+        parameterList.clear();
     }
 
-    for (int i = 0; i < m_parameters.size(); ++i) {
-        EffectParameter* pParameter = m_parameters.at(i);
-        m_parameters[i] = nullptr;
-        delete pParameter;
-    }
-    m_parameters.clear();
     m_pManifest.clear();
-    for (auto& parameterMapping : m_mapForParameterType) {
-        parameterMapping.clear();
-    }
 
     removeFromEngine();
 }
 
 void EffectSlot::loadParameters() {
+    //qDebug() << this << m_group << "loading parameters";
     int numTypes = static_cast<int>(EffectManifestParameter::ParameterType::NUM_TYPES);
     for (int parameterTypeId=0 ; parameterTypeId<numTypes ; ++parameterTypeId) {
         const EffectManifestParameter::ParameterType parameterType =
@@ -302,43 +334,19 @@ void EffectSlot::loadParameters() {
 
         m_pControlNumParameters[parameterType]->forceSet(numParameters(parameterType));
 
-        unsigned int parameterSlotIndex = 0;
-        unsigned int numParameterSlots = m_iNumParameterSlots[parameterType];
-
-        // Load EffectParameters into the slot indicated by m_mapForParameterType
-        for (int i=0 ; i<m_mapForParameterType[parameterType].size() ; ++i) {
-            const int manifestIndex = m_mapForParameterType[parameterType].value(i, -1);
-
-            auto pParameter = m_parameters.value(manifestIndex, nullptr);
-
-            // Try loading the next parameter in the current parameter slot
-            VERIFY_OR_DEBUG_ASSERT(pParameter != nullptr) {
-                continue;
-            }
-
-            VERIFY_OR_DEBUG_ASSERT(parameterSlotIndex < numParameterSlots) {
+        int slot = 0;
+        for (auto pParameter : m_loadedParameters.value(parameterType)) {
+            VERIFY_OR_DEBUG_ASSERT(slot <= m_parameterSlots.value(parameterType).size()) {
                 break;
             }
-
-            auto pParameterSlot = getEffectParameterSlot(parameterType, parameterSlotIndex);
-            VERIFY_OR_DEBUG_ASSERT(pParameterSlot != nullptr) {
-                ++parameterSlotIndex;
-                continue;
-            }
-            pParameterSlot->loadParameter(pParameter);
-            ++parameterSlotIndex;
+            m_parameterSlots.value(parameterType).at(slot)->loadParameter(pParameter);
+            slot++;
         }
 
         // Clear any EffectParameterSlots that still have a loaded parameter from before
-        // but the loop above did not load a new parameter into them
-        while (parameterSlotIndex < numParameterSlots) {
-            auto pParameterSlot = getEffectParameterSlot(parameterType, parameterSlotIndex);
-            VERIFY_OR_DEBUG_ASSERT(pParameterSlot != nullptr) {
-                ++parameterSlotIndex;
-                continue;
-            }
-            pParameterSlot->clear();
-            ++parameterSlotIndex;
+        // but the loop above did not load a new parameter into them.
+        for (; slot < m_parameterSlots.value(parameterType).size(); slot++) {
+            m_parameterSlots.value(parameterType).at(slot)->clear();
         }
     }
 }
@@ -372,9 +380,11 @@ void EffectSlot::slotClear(double v) {
 }
 
 void EffectSlot::syncSofttakeover() {
-    for (const auto pParameterSlot : m_parameterSlots) {
-        if (pParameterSlot->parameterType() == EffectManifestParameter::ParameterType::KNOB) {
-            pParameterSlot->syncSofttakeover();
+    for (const auto& parameterSlotList : m_parameterSlots) {
+        for (const auto& pParameterSlot : parameterSlotList) {
+            if (pParameterSlot->parameterType() == EffectManifestParameter::ParameterType::KNOB) {
+                pParameterSlot->syncSofttakeover();
+            }
         }
     }
 }
@@ -404,7 +414,9 @@ void EffectSlot::slotEffectMetaParameter(double v, bool force) {
     if (!m_pControlEnabled->toBool()) {
         force = true;
     }
-    for (const auto& pParameterSlot : m_parameterSlots) {
+
+    // Only knobs are linked to the metaknob; not buttons
+    for (const auto& pParameterSlot : m_parameterSlots.value(EffectManifestParameter::ParameterType::KNOB)) {
         if (pParameterSlot->parameterType() == EffectManifestParameter::ParameterType::KNOB) {
             pParameterSlot->onEffectMetaParameterChanged(v, force);
         }

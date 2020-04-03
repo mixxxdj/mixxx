@@ -89,11 +89,14 @@ class EffectsManager : public QObject {
     void loadEffect(
             EffectChainSlotPointer pChainSlot,
             const int iEffectSlotNumber,
-            const EffectManifestPointer pManifest);
+            const EffectManifestPointer pManifest,
+            EffectPresetPointer pPreset = nullptr);
 
     std::unique_ptr<EffectProcessor> createProcessor(
             const EffectManifestPointer pManifest);
 
+    void loadEffectChainPreset(EffectChainSlotPointer pChainSlot,
+            EffectChainPresetPointer pPreset);
     void addStandardEffectChainSlots();
     EffectChainSlotPointer getStandardEffectChainSlot(int unitNumber) const;
 
@@ -102,8 +105,6 @@ class EffectsManager : public QObject {
 
     void addEqualizerEffectChainSlot(const QString& deckGroupName);
     void addQuickEffectChainSlot(const QString& deckGroupName);
-
-    void loadEffectChainPresets();
 
     // TODO: Remove these methods to reduce coupling between GUI and
     // effects system implementation details.
@@ -149,6 +150,8 @@ class EffectsManager : public QObject {
     }
 
     void loadDefaultEffectPresets();
+    void loadEffectChainPresets();
+
     void processEffectsResponses();
     void collectGarbage(const EffectsRequest* pResponse);
 

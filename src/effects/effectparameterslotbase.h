@@ -25,7 +25,7 @@ class EffectParameterSlotBase : public QObject {
 
     virtual ~EffectParameterSlotBase();
 
-    virtual void loadParameter(EffectParameter* pEffectParameter) = 0;
+    virtual void loadParameter(EffectParameterPointer pEffectParameter) = 0;
 
     // Clear the currently loaded effect
     virtual void clear() = 0;
@@ -60,7 +60,7 @@ class EffectParameterSlotBase : public QObject {
     const unsigned int m_iParameterSlotNumber;
     QString m_group;
     EffectSlot* m_pEffectSlot;
-    EffectParameter* m_pEffectParameter;
+    EffectParameterPointer m_pEffectParameter;
     EffectManifestParameterPointer m_pManifestParameter;
     EffectManifestParameter::ParameterType m_parameterType;
 
