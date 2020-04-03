@@ -149,11 +149,15 @@ void EffectKnobParameterSlot::slotLinkTypeChanging(double v) {
         m_pMetaknobSoftTakeover->setThreshold(SoftTakeover::kDefaultTakeoverThreshold);
     }
     m_pControlLinkType->setAndConfirm(static_cast<double>(newType));
+    m_pEffectParameter->setLinkType(newType);
 }
 
 void EffectKnobParameterSlot::slotLinkInverseChanged(double v) {
     Q_UNUSED(v);
     m_pMetaknobSoftTakeover->ignoreNext();
+    m_pEffectParameter->setLinkInversion(
+            static_cast<EffectManifestParameter::LinkInversion>(
+                    static_cast<int>(v)));
 }
 
 void EffectKnobParameterSlot::onEffectMetaParameterChanged(double parameter, bool force) {

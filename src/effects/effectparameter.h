@@ -26,6 +26,19 @@ class EffectParameter {
 
     EffectManifestParameterPointer manifest() const;
 
+    void setLinkType(EffectManifestParameter::LinkType type) {
+        m_linkType = type;
+    }
+    EffectManifestParameter::LinkType linkType() const {
+        return m_linkType;
+    }
+    void setLinkInversion(EffectManifestParameter::LinkInversion inversion) {
+        m_linkInversion = inversion;
+    }
+    EffectManifestParameter::LinkInversion linkInversion() const {
+        return m_linkInversion;
+    }
+
     double getValue() const;
     void setValue(double value);
 
