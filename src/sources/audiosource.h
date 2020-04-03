@@ -233,7 +233,6 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
     virtual void close() = 0;
 
     const audio::SignalInfo& getSignalInfo() const {
-        DEBUG_ASSERT(m_signalInfo.isValid());
         return m_signalInfo;
     }
 
