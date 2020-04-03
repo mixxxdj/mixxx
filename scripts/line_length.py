@@ -63,13 +63,13 @@ def get_git_added_lines() -> LineGenerator:
 def group_lines(
     lines: LineGenerator,
 ) -> typing.Generator[FileLines, None, None]:
-    for filename, lines in itertools.groupby(
+    for filename, file_lines in itertools.groupby(
         lines, key=lambda line: line.sourcefile
     ):
         grouped_linenumbers = []
         start_linenumber = None
         last_linenumber = None
-        for line in lines:
+        for line in file_lines:
             if None not in (start_linenumber, last_linenumber):
                 if line.number != last_linenumber + 1:
                     grouped_linenumbers.append(
