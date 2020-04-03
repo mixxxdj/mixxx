@@ -20,6 +20,7 @@
 #include "library/trackcollectionmanager.h"
 #include "library/trackmodel.h"
 
+#include "library/analysisfeature.h"
 #include "library/autodj/autodjfeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/browse/browsefeature.h"
@@ -28,11 +29,11 @@
 #include "library/mixxxlibraryfeature.h"
 #include "library/playlistfeature.h"
 #include "library/recording/recordingfeature.h"
+#include "library/rekordbox/rekordboxfeature.h"
 #include "library/rhythmbox/rhythmboxfeature.h"
+#include "library/serato/seratofeature.h"
 #include "library/setlogfeature.h"
 #include "library/traktor/traktorfeature.h"
-#include "library/rekordbox/rekordboxfeature.h"
-#include "library/analysisfeature.h"
 
 #include "mixer/playermanager.h"
 
@@ -168,6 +169,10 @@ Library::Library(
         addFeature(new RekordboxFeature(this, m_pConfig));
     }
 
+    if (m_pConfig->getValue(ConfigKey(kConfigGroup, "ShowSeratoLibrary"), true)) {
+        addFeature(new SeratoFeature(this, m_pConfig));
+    }
+
     for (const auto& externalTrackCollection : m_pTrackCollectionManager->externalCollections()) {
         auto feature = externalTrackCollection->newLibraryFeature(this, m_pConfig);
         if (feature) {
@@ -221,6 +226,26 @@ void Library::stopPendingTasks() {
         m_pAnalysisFeature->stopAnalysis();
         m_pAnalysisFeature = nullptr;
     }
+}
+
+void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
+    connect(pSearchboxWidget,
+            &WSearchLineEdit::search,
+            this,
+            &Library::search);
+    connect(this,
+            &Library::disableSearch,
+            pSearchboxWidget,
+            &WSearchLineEdit::disableSearch);
+    connect(this,
+            &Library::restoreSearch,
+            pSearchboxWidget,
+            &WSearchLineEdit::restoreSearch);
+    connect(this,
+            &Library::setTrackTableFont,
+            pSearchboxWidget,
+            &WSearchLineEdit::slotSetFont);
+    emit setTrackTableFont(m_trackTableFont);
 }
 
 void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
@@ -317,9 +342,9 @@ void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
 
     // Set the current font and row height on all the WTrackTableViews that were
     // just connected to us.
-    emit(setTrackTableFont(m_trackTableFont));
-    emit(setTrackTableRowHeight(m_iTrackTableRowHeight));
-    emit(setSelectedClick(m_editMetadataSelectedClick));
+    emit setTrackTableFont(m_trackTableFont);
+    emit setTrackTableRowHeight(m_iTrackTableRowHeight);
+    emit setSelectedClick(m_editMetadataSelectedClick);
 }
 
 void Library::addFeature(LibraryFeature* feature) {
@@ -347,11 +372,11 @@ void Library::addFeature(LibraryFeature* feature) {
     connect(feature,
             &LibraryFeature::restoreSearch,
             this,
-            &Library::slotRestoreSearch);
+            &Library::restoreSearch); // forward signal
     connect(feature,
             &LibraryFeature::disableSearch,
             this,
-            &Library::slotDisableSearch);
+            &Library::disableSearch); // forward signal
     connect(feature,
             &LibraryFeature::enableCoverArtDisplay,
             this,
@@ -381,38 +406,30 @@ void Library::slotShowTrackModel(QAbstractItemModel* model) {
     VERIFY_OR_DEBUG_ASSERT(trackModel) {
         return;
     }
-    emit(showTrackModel(model));
-    emit(switchToView(m_sTrackViewName));
-    emit(restoreSearch(trackModel->currentSearch()));
+    emit showTrackModel(model);
+    emit switchToView(m_sTrackViewName);
+    emit restoreSearch(trackModel->currentSearch());
 }
 
 void Library::slotSwitchToView(const QString& view) {
     //qDebug() << "Library::slotSwitchToView" << view;
-    emit(switchToView(view));
+    emit switchToView(view);
 }
 
 void Library::slotLoadTrack(TrackPointer pTrack) {
-    emit(loadTrack(pTrack));
+    emit loadTrack(pTrack);
 }
 
 void Library::slotLoadLocationToPlayer(QString location, QString group) {
     auto trackRef = TrackRef::fromFileInfo(location);
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(trackRef);
     if (pTrack) {
-        emit(loadTrackToPlayer(pTrack, group));
+        emit loadTrackToPlayer(pTrack, group);
     }
 }
 
 void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
-    emit(loadTrackToPlayer(pTrack, group, play));
-}
-
-void Library::slotRestoreSearch(const QString& text) {
-    emit restoreSearch(text);
-}
-
-void Library::slotDisableSearch() {
-    emit disableSearch();
+    emit loadTrackToPlayer(pTrack, group, play);
 }
 
 void Library::slotRefreshLibraryModels() {
@@ -509,17 +526,17 @@ QStringList Library::getDirs() {
 
 void Library::setFont(const QFont& font) {
     m_trackTableFont = font;
-    emit(setTrackTableFont(font));
+    emit setTrackTableFont(font);
 }
 
 void Library::setRowHeight(int rowHeight) {
     m_iTrackTableRowHeight = rowHeight;
-    emit(setTrackTableRowHeight(rowHeight));
+    emit setTrackTableRowHeight(rowHeight);
 }
 
 void Library::setEditMedatataSelectedClick(bool enabled) {
     m_editMetadataSelectedClick = enabled;
-    emit(setSelectedClick(enabled));
+    emit setSelectedClick(enabled);
 }
 
 TrackCollection& Library::trackCollection() {

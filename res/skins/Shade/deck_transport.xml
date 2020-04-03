@@ -48,21 +48,21 @@
       </PushButton>
 
       <PushButton>
-        <TooltipId>mute</TooltipId>
+        <TooltipId>master_enable</TooltipId>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
           <Pressed>skin:/btn/btn_aux_mute_overdown.png</Pressed>
-          <Unpressed>skin:/btn/btn_aux_mute_over.png</Unpressed>
-        </State>				
+          <Unpressed>skin:/btn/btn_aux_mute.png</Unpressed>
+        </State>
         <State>
           <Number>1</Number>
           <Pressed>skin:/btn/btn_aux_mute_overdown.png</Pressed>
-          <Unpressed>skin:/btn/btn_aux_mute.png</Unpressed>
+          <Unpressed>skin:/btn/btn_aux_mute_over.png</Unpressed>
         </State>
         <Pos>5,35</Pos>
         <Connection>
-          <ConfigKey>[Auxiliary<Variable name="auxnum"/>],mute</ConfigKey>
+          <ConfigKey>[Auxiliary<Variable name="auxnum"/>],master</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
         </Connection>
       </PushButton>
@@ -116,7 +116,7 @@
         <Connection>
           <ConfigKey>[Sampler<Variable name="samplernum1"/>],play_indicator</ConfigKey>
         </Connection>
-      </PushButton>	
+      </PushButton>
 
       <PushButton>
         <TooltipId>play_start</TooltipId>
@@ -143,7 +143,7 @@
         <Connection>
           <ConfigKey>[Sampler<Variable name="samplernum2"/>],play_indicator</ConfigKey>
         </Connection>
-      </PushButton>	
+      </PushButton>
 
       <PushButton>
         <TooltipId>play_start</TooltipId>
@@ -170,7 +170,7 @@
         <Connection>
           <ConfigKey>[Sampler<Variable name="samplernum3"/>],play_indicator</ConfigKey>
         </Connection>
-      </PushButton>	
+      </PushButton>
 
       <PushButton>
         <TooltipId>play_start</TooltipId>
@@ -197,7 +197,7 @@
         <Connection>
           <ConfigKey>[Sampler<Variable name="samplernum4"/>],play_indicator</ConfigKey>
         </Connection>
-      </PushButton>	
+      </PushButton>
 
       <!--
       **********************************************
@@ -445,19 +445,19 @@
         <Pos>197,14</Pos>
         <Size>43f,43f</Size>
         <Children>
-          <Template src="skin:deck_hotcue_button.xml">
+          <Template src="skin:hotcue_button.xml">
             <SetVariable name="hotcue">1</SetVariable>
             <SetVariable name="pos">0,0</SetVariable>
           </Template>
-          <Template src="skin:deck_hotcue_button.xml">
+          <Template src="skin:hotcue_button.xml">
             <SetVariable name="hotcue">2</SetVariable>
             <SetVariable name="pos">21,0</SetVariable>
           </Template>
-          <Template src="skin:deck_hotcue_button.xml">
+          <Template src="skin:hotcue_button.xml">
             <SetVariable name="hotcue">3</SetVariable>
             <SetVariable name="pos">0,21</SetVariable>
           </Template>
-          <Template src="skin:deck_hotcue_button.xml">
+          <Template src="skin:hotcue_button.xml">
             <SetVariable name="hotcue">4</SetVariable>
             <SetVariable name="pos">21,21</SetVariable>
           </Template>

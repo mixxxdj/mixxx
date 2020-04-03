@@ -20,7 +20,12 @@ WNumberRate::WNumberRate(const char * group, QWidget * parent)
         : WNumber(parent) {
     m_pRateRatio = new ControlProxy(group, "rate_ratio", this);
     m_pRateRatio->connectValueChanged(this, &WNumberRate::setValue);
-    // Initialize the widget.
+}
+
+void WNumberRate::setup(const QDomNode& node, const SkinContext& context) {
+    WNumber::setup(node, context);
+
+    // Initialize the widget (overrides the base class initial value.
     setValue(m_pRateRatio->get());
 }
 

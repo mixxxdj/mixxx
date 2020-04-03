@@ -4,15 +4,16 @@
 #ifndef ENCODER_ENCODEROPUSSETTINGS_H
 #define ENCODER_ENCODEROPUSSETTINGS_H
 
-#include "encoder/encodersettings.h"
+#include "encoder/encoderrecordingsettings.h"
 #include "encoder/encoder.h"
+#include "recording/defs_recording.h"
 
 #define OPUS_BITRATE_MODES_COUNT 3
 #define OPUS_BITRATE_CONSTRAINED_VBR 0
 #define OPUS_BITRATE_CBR 1
 #define OPUS_BITRATE_VBR 2
 
-class EncoderOpusSettings: public EncoderSettings {
+class EncoderOpusSettings: public EncoderRecordingSettings {
   public:
     explicit EncoderOpusSettings(UserSettingsPointer pConfig);
     ~EncoderOpusSettings() override = default;
@@ -21,19 +22,9 @@ class EncoderOpusSettings: public EncoderSettings {
     bool usesQualitySlider() const override {
         return true;
     }
-    // Indicates that it uses the compression slider section of the preferences
-    bool usesCompressionSlider() const override {
-        return false;
-    }
-    // Indicates that it uses the radio button section of the preferences.
-    bool usesOptionGroups() const override {
-        return true;
-    }
 
     // Returns the list of quality values that it supports, to assign them to the slider
     QList<int> getQualityValues() const override;
-    // Sets the quality value by its value
-    void setQualityByValue(int qualityValue) override;
     // Sets the quality value by its index
     void setQualityByIndex(int qualityIndex) override;
     // Returns the current quality value
@@ -48,6 +39,11 @@ class EncoderOpusSettings: public EncoderSettings {
     // Return the selected option of the group. If it is a single-element option,
     // 0 means disabled and 1 enabled.
     int getSelectedOption(QString groupCode) const override;
+
+    // Returns the format of this encoder settings.
+    QString getFormat() const override {
+        return ENCODING_OPUS;
+    }
 
     static const QString BITRATE_MODE_GROUP;
 

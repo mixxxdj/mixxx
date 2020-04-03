@@ -34,11 +34,11 @@ Variables:
             <Alignment>right</Alignment>
           </Label>
 
-          <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="TooltipId">mute</SetVariable>
-            <SetVariable name="ObjectName">AuxMute</SetVariable>
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="TooltipId">master_enable</SetVariable>
+            <SetVariable name="ObjectName">AuxEnable</SetVariable>
             <SetVariable name="Size">20f,29f</SetVariable>
-            <SetVariable name="ConfigKey"><Variable name="group"/>,mute</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,master</SetVariable>
           </Template>
 
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
@@ -50,7 +50,7 @@ Variables:
           <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
           <Template src="skin:knob_textless.xml">
-            <SetVariable name="TooltipId"></SetVariable>
+            <SetVariable name="TooltipId">auxiliary_pregain</SetVariable>
             <SetVariable name="ObjectName">MicAuxKnob</SetVariable>
             <SetVariable name="Size">28f,28f</SetVariable>
             <SetVariable name="group"><Variable name="group"/></SetVariable>

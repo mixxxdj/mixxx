@@ -10,6 +10,7 @@
 #include "library/trackmodel.h" // Can't forward declare enums
 #include "track/track.h"
 #include "util/duration.h"
+#include "widget/wcolorpickeraction.h"
 #include "widget/wlibrarytableview.h"
 
 class ControlProxy;
@@ -80,6 +81,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotLockBpm();
     void slotUnlockBpm();
     void slotScaleBpm(int);
+    void slotColorPicked(mixxx::RgbColor::optional_t color);
 
     void slotClearBeats();
     void slotClearPlayCount();
@@ -131,8 +133,6 @@ class WTrackTableView : public WLibraryTableView {
 
     TrackCollectionManager* const m_pTrackCollectionManager;
 
-    QSignalMapper m_loadTrackMapper;
-
     QScopedPointer<DlgTrackInfo> m_pTrackInfo;
     QScopedPointer<DlgTagFetcher> m_pTagFetcher;
 
@@ -155,10 +155,10 @@ class WTrackTableView : public WLibraryTableView {
     QMenu *m_pMetadataUpdateExternalCollectionsMenu;
     QMenu *m_pClearMetadataMenu;
     QMenu *m_pBPMMenu;
+    QMenu *m_pColorMenu;
 
 
     WCoverArtMenu* m_pCoverMenu;
-    QSignalMapper m_playlistMapper, m_crateMapper, m_deckMapper, m_samplerMapper;
 
     // Reload Track Metadata Action:
     QAction *m_pImportMetadataFromFileAct;
@@ -190,13 +190,15 @@ class WTrackTableView : public WLibraryTableView {
     // BPM feature
     QAction *m_pBpmLockAction;
     QAction *m_pBpmUnlockAction;
-    QSignalMapper m_BpmMapper;
     QAction *m_pBpmDoubleAction;
     QAction *m_pBpmHalveAction;
     QAction *m_pBpmTwoThirdsAction;
     QAction *m_pBpmThreeFourthsAction;
     QAction *m_pBpmFourThirdsAction;
     QAction *m_pBpmThreeHalvesAction;
+
+    // Track color
+    WColorPickerAction *m_pColorPickerAction;
 
     // Clear track metadata actions
     QAction* m_pClearBeatsAction;

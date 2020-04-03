@@ -1,5 +1,12 @@
-language: c++
+# Enable build config validation (opt-in)
+version: ~> 1.0
 
+# Default build environment
+os: linux
+dist: bionic
+
+# Default programming language
+language: cpp
 
 # Build flags common to OS X and Linux.
 # Parallel builds are important for avoiding OSX build timeouts.
@@ -16,27 +23,39 @@ env:
 
 jobs:
   include:
-    - name: qsscheck
-      os: linux
-      dist: xenial
+    - name: pre-commit
+      if: type != pull_request
+      language: python
+      python: 3.7
+      # There are too many files in the repo that have formatting issues. We'll
+      # disable these checks for now when pushing directly (but still run these
+      # on Pull Requests!).
+      env: SKIP=end-of-file-fixer,trailing-whitespace,clang-format,eslint
+      cache:
+        directories:
+          - $HOME/.cache/pre-commit
       before_install:
-        - pip3 install tinycss
+        - pip install pre-commit==2.0.1
       script:
-        - ./scripts/qsscheck.py .
-      addons:
-        apt:
-          packages:
-            - python3
-            - python3-pip
-            - python3-pyqt5
-            - python3-setuptools
-            - python3-wheel
+        - pre-commit run --all-files
+      addons: []
+
+    - name: pre-commit-pr
+      if: type == pull_request
+      language: python
+      python: 3.7
+      cache:
+        directories:
+          - $HOME/.cache/pre-commit
+      before_install:
+        - pip install pre-commit==2.0.1
+      script:
+        - pre-commit run --origin HEAD --source origin/HEAD --show-diff-on-failure
+      addons: []
 
     - name: Ubuntu/gcc/SCons build
-      os: linux
-      dist: xenial
       compiler: gcc
-      # Ubuntu Xenial build prerequisites
+      # Ubuntu Bionic build prerequisites
       before_install:
         - sudo apt-get install -y scons
       install:
@@ -48,14 +67,13 @@ jobs:
         - ./mixxx-test
 
     - name: Ubuntu/gcc/CMake build
-      os: linux
-      dist: xenial
       compiler: gcc
       cache: ccache
-      # Ubuntu Xenial build prerequisites
+      # Ubuntu Bionic build prerequisites
       env: CMAKEFLAGS_EXTRA="-DLOCALECOMPARE=ON"
       before_install:
         - export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
+        - export CTEST_PARALLEL_LEVEL="$(nproc)"
         - export PATH="$HOME/.local/bin:$PATH"
         - pip install --user cmake
         - cmake --version
@@ -68,7 +86,7 @@ jobs:
         - sudo env "PATH=$PATH" cmake --build . --target install
       script:
         # Run tests and benchmarks
-        - cmake --build . --target test
+        - ctest
         - cmake --build . --target benchmark
 
     - name: OSX/clang/SCons build
@@ -123,6 +141,7 @@ jobs:
         CMAKEFLAGS_EXTRA="-DLOCALECOMPARE=OFF -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5/"
         DISPLAY=:99.0
         CMAKE_BUILD_PARALLEL_LEVEL=4
+        CTEST_PARALLEL_LEVEL=1
       before_install:
         - brew install ccache
         - export PATH="/usr/local/opt/ccache/bin:$PATH"
@@ -136,7 +155,7 @@ jobs:
         - sudo cmake --build . --target install
       script:
         # Run tests and benchmarks
-        - cmake --build . --target test
+        - ctest
         - cmake --build . --target benchmark
       before_cache:
         # Avoid indefinite cache growth

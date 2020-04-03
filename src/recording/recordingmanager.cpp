@@ -202,7 +202,7 @@ void RecordingManager::slotDurationRecorded(quint64 duration)
             // This will reuse the previous filename but append a suffix.
             splitContinueRecording();
         }
-        emit(durationRecorded(getRecordedDurationStr(m_secondsRecorded+m_secondsRecordedSplit)));
+        emit durationRecorded(getRecordedDurationStr(m_secondsRecorded+m_secondsRecordedSplit));
     }
 }
 // Copy from the implementation in enginerecord.cpp
@@ -228,7 +228,7 @@ void RecordingManager::slotBytesRecorded(int bytes)
         // This will reuse the previous filename but append a suffix.
         splitContinueRecording();
     }
-    emit(bytesRecorded(m_iNumberOfBytesRecorded));
+    emit bytesRecorded(m_iNumberOfBytesRecorded);
 
     // check for free space
 
@@ -278,7 +278,7 @@ void RecordingManager::slotIsRecording(bool isRecordingActive, bool error) {
 
     // Notify the GUI controls, see dlgrecording.cpp.
     m_bRecording = isRecordingActive;
-    emit(isRecording(isRecordingActive));
+    emit isRecording(isRecordingActive);
 
     if (error) {
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();

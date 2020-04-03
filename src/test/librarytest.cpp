@@ -31,3 +31,9 @@ LibraryTest::LibraryTest()
       m_dbConnectionPooler(m_mixxxDb.connectionPool()),
       m_pTrackCollectionManager(newTrackCollectionManager(config(), m_dbConnectionPooler)) {
 }
+
+TrackPointer LibraryTest::getOrAddTrackByLocation(
+        const QString& trackLocation) {
+    return m_pTrackCollectionManager->getOrAddTrack(
+            TrackRef::fromFileInfo(trackLocation));
+}

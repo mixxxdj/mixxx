@@ -14,7 +14,7 @@
 
 #include "test/librarytest.h"
 
-using ::testing::ElementsAre;
+using ::testing::UnorderedElementsAre;
 
 namespace {
 
@@ -41,14 +41,16 @@ class DirectoryDAOTest : public LibraryTest {
 TEST_F(DirectoryDAOTest, addDirTest) {
     DirectoryDAO m_DirectoryDao = internalCollection()->getDirectoryDAO();
     // prepend dir with '/' so that QT thinks the dir starts at the root
-    QString testdir(QDir::tempPath() + "/TestDir/a");
-    QString testChild(QDir::tempPath() + "/TestDir/a/child");
-    QString testParent(QDir::tempPath() + "/TestDir");
+    QTemporaryDir tempDir;
+    ASSERT_TRUE(tempDir.isValid());
+    QString testdir = QString(tempDir.path() + "/TestDir/a");
+    QString testChild = QString(tempDir.path() + "/TestDir/a/child");
+    QString testParent = QString(tempDir.path() + "/TestDir");
 
     //create temp dirs
-    QDir(QDir::temp()).mkpath(testParent);
-    QDir(QDir::temp()).mkpath(testdir);
-    QDir(QDir::temp()).mkpath(testChild);
+    ASSERT_TRUE(QDir(tempDir.path()).mkpath(testParent));
+    ASSERT_TRUE(QDir(tempDir.path()).mkpath(testdir));
+    ASSERT_TRUE(QDir(tempDir.path()).mkpath(testChild));
 
     // check if directory doa adds and thinks everything is ok
     int success = m_DirectoryDao.addDirectory(testdir);
@@ -141,13 +143,13 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
     internalCollection()->addTrack(Track::newTemporary(TrackFile(test2, "c" + m_supportedFileExt)), false);
     internalCollection()->addTrack(Track::newTemporary(TrackFile(test2, "d" + m_supportedFileExt)), false);
 
-    QList<TrackRef> refs = directoryDao.relocateDirectory(testdir, testnew);
-    EXPECT_EQ(2, refs.size());
+    QList<RelocatedTrack> relocatedTracks =
+            directoryDao.relocateDirectory(testdir, testnew);
+    EXPECT_EQ(2, relocatedTracks.size());
 
     QStringList dirs = directoryDao.getDirs();
     EXPECT_EQ(2, dirs.size());
-    std::sort(dirs.begin(), dirs.end());
-    EXPECT_THAT(dirs, ElementsAre(test2, testnew));
+    EXPECT_THAT(dirs, UnorderedElementsAre(test2, testnew));
 }
 
 }  // namespace

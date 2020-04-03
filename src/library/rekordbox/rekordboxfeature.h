@@ -50,9 +50,10 @@ class RekordboxPlaylistModel : public BaseExternalPlaylistModel {
             QSharedPointer<BaseTrackCache> trackSource);
     TrackPointer getTrack(const QModelIndex& index) const override;
     bool isColumnHiddenByDefault(int column) override;
+    bool isColumnInternal(int column) override;
 
   protected:
-    virtual void initSortColumnMapping();
+    void initSortColumnMapping() override;
 };
 
 class RekordboxFeature : public BaseExternalLibraryFeature {
@@ -67,11 +68,11 @@ class RekordboxFeature : public BaseExternalLibraryFeature {
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
 
-    TreeItemModel* getChildModel();
+    TreeItemModel* getChildModel() override;
 
   public slots:
-    void activate();
-    void activateChild(const QModelIndex& index);
+    void activate() override;
+    void activateChild(const QModelIndex& index) override;
     void refreshLibraryModels();
     void onRekordboxDevicesFound();
     void onTracksFound();

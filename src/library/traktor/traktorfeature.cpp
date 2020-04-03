@@ -160,11 +160,11 @@ void TraktorFeature::activate() {
         m_future_watcher.setFuture(m_future);
         m_title = tr("(loading) Traktor");
         //calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
-        emit(featureIsLoading(this, true));
+        emit featureIsLoading(this, true);
     }
 
-    emit(showTrackModel(m_pTraktorTableModel));
-    emit(enableCoverArtDisplay(false));
+    emit showTrackModel(m_pTraktorTableModel);
+    emit enableCoverArtDisplay(false);
 }
 
 void TraktorFeature::activateChild(const QModelIndex& index) {
@@ -177,8 +177,8 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
     if (!item->hasChildren()) {
         qDebug() << "Activate Traktor Playlist: " << item->getData().toString();
         m_pTraktorPlaylistModel->setPlaylist(item->getData().toString());
-        emit(showTrackModel(m_pTraktorPlaylistModel));
-        emit(enableCoverArtDisplay(false));
+        emit showTrackModel(m_pTraktorPlaylistModel);
+        emit enableCoverArtDisplay(false);
     }
 }
 
@@ -390,8 +390,8 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 
     QString delimiter = "-->";
 
-    TreeItem *rootItem = new TreeItem(this);
-    TreeItem * parent = rootItem;
+    std::unique_ptr<TreeItem> rootItem = TreeItem::newRoot(this);
+    TreeItem* parent = rootItem.get();
 
     QSqlQuery query_insert_to_playlists(m_database);
     query_insert_to_playlists.prepare("INSERT INTO traktor_playlists (name) "
@@ -452,7 +452,7 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
             }
         }
     }
-    return rootItem;
+    return rootItem.release();
 }
 
 void TraktorFeature::parsePlaylistEntries(
@@ -610,7 +610,7 @@ void TraktorFeature::onTrackCollectionLoaded() {
         m_trackSource->buildIndex();
 
         //m_pTraktorTableModel->select();
-        emit(showTrackModel(m_pTraktorTableModel));
+        emit showTrackModel(m_pTraktorTableModel);
         qDebug() << "Traktor library loaded successfully";
     } else {
         QMessageBox::warning(
@@ -622,6 +622,6 @@ void TraktorFeature::onTrackCollectionLoaded() {
 
     // calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
     m_title = tr("Traktor");
-    emit(featureLoadingFinished(this));
+    emit featureLoadingFinished(this);
     activate();
 }

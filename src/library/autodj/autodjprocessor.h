@@ -50,10 +50,6 @@ class DeckAttributes : public QObject {
         return m_playPos.get();
     }
 
-    double trackTime() const;
-
-    double timeElapsed() const;
-
     void setPlayPosition(double playpos) {
         m_playPos.set(playpos);
     }
@@ -86,8 +82,8 @@ class DeckAttributes : public QObject {
         return m_sampleRate.get();
     }
 
-    double trackDuration() const {
-        return m_duration.get();
+    double trackSamples() const {
+        return m_trackSamples.get();
     }
 
     double rateRatio() const {
@@ -138,8 +134,8 @@ class DeckAttributes : public QObject {
     ControlProxy m_introEndPos;
     ControlProxy m_outroStartPos;
     ControlProxy m_outroEndPos;
+    ControlProxy m_trackSamples;
     ControlProxy m_sampleRate;
-    ControlProxy m_duration;
     ControlProxy m_rateRatio;
     BaseTrackPlayer* m_pPlayer;
 };
@@ -235,10 +231,10 @@ class AutoDJProcessor : public QObject {
   protected:
     // The following virtual signal wrappers are used for testing
     virtual void emitLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
-        emit(loadTrackToPlayer(pTrack, group, play));
+        emit loadTrackToPlayer(pTrack, group, play);
     }
     virtual void emitAutoDJStateChanged(AutoDJProcessor::AutoDJState state) {
-        emit(autoDJStateChanged(state));
+        emit autoDJStateChanged(state);
     }
 
   private:
@@ -251,12 +247,13 @@ class AutoDJProcessor : public QObject {
 
     // Following functions return seconds computed from samples or -1 if
     // track in deck has invalid sample rate (<= 0)
-    double getIntroStartPosition(DeckAttributes* pDeck);
-    double getIntroEndPosition(DeckAttributes* pDeck);
-    double getOutroStartPosition(DeckAttributes* pDeck);
-    double getOutroEndPosition(DeckAttributes* pDeck);
-    double getFirstSoundPosition(DeckAttributes* pDeck);
-    double getLastSoundPosition(DeckAttributes* pDeck);
+    double getIntroStartSecond(DeckAttributes* pDeck);
+    double getIntroEndSecond(DeckAttributes* pDeck);
+    double getOutroStartSecond(DeckAttributes* pDeck);
+    double getOutroEndSecond(DeckAttributes* pDeck);
+    double getFirstSoundSecond(DeckAttributes* pDeck);
+    double getLastSoundSecond(DeckAttributes* pDeck);
+    double getEndSecond(DeckAttributes* pDeck);
     double samplePositionToSeconds(double samplePosition, DeckAttributes* pDeck);
 
     TrackPointer getNextTrackFromQueue();
@@ -264,11 +261,12 @@ class AutoDJProcessor : public QObject {
     void calculateTransition(DeckAttributes* pFromDeck,
             DeckAttributes* pToDeck,
             bool seekToStartPoint);
-    void useFixedFadeTime(DeckAttributes* pFromDeck,
+    void useFixedFadeTime(
+            DeckAttributes* pFromDeck,
             DeckAttributes* pToDeck,
-            double fromDeckPosition,
-            double endPoint,
-            double startPoint);
+            double fromDeckSecond,
+            double fadeEndSecond,
+            double toDeckStartSecond);
     DeckAttributes* getOtherDeck(const DeckAttributes* pThisDeck);
     DeckAttributes* getFromDeck();
 
@@ -279,7 +277,7 @@ class AutoDJProcessor : public QObject {
     // Removes the provided track from the top of the AutoDJ queue if it is
     // present.
     bool removeTrackFromTopOfQueue(TrackPointer pTrack);
-
+    void maybeFillRandomTracks();
     UserSettingsPointer m_pConfig;
     PlayerManagerInterface* m_pPlayerManager;
     PlaylistTableModel* m_pAutoDJTableModel;

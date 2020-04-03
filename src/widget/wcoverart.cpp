@@ -32,11 +32,11 @@ WCoverArt::WCoverArt(QWidget* parent,
     setAcceptDrops(!m_group.isEmpty());
 
     CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != nullptr) {
-        connect(pCache, SIGNAL(coverFound(const QObject*,
-                                          const CoverInfoRelative&, QPixmap, bool)),
-                this, SLOT(slotCoverFound(const QObject*,
-                                          const CoverInfoRelative&, QPixmap, bool)));
+    if (pCache) {
+        connect(pCache,
+                &CoverArtCache::coverFound,
+                this,
+                &WCoverArt::slotCoverFound);
     }
     connect(m_pMenu, SIGNAL(coverInfoSelected(const CoverInfoRelative&)),
             this, SLOT(slotCoverInfoSelected(const CoverInfoRelative&)));
@@ -98,12 +98,10 @@ void WCoverArt::setup(const QDomNode& node, const SkinContext& context) {
 }
 
 void WCoverArt::slotReloadCoverArt() {
-    if (m_loadedTrack) {
-        CoverArtCache* pCache = CoverArtCache::instance();
-        if (pCache) {
-            pCache->requestGuessCover(m_loadedTrack);
-        }
+    if (!m_loadedTrack) {
+        return;
     }
+    guessTrackCoverInfoConcurrently(m_loadedTrack);
 }
 
 void WCoverArt::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
@@ -131,8 +129,11 @@ void WCoverArt::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
 
 void WCoverArt::slotReset() {
     if (m_loadedTrack) {
-        disconnect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
-                   this, SLOT(slotTrackCoverArtUpdated()));
+        disconnect(
+                m_loadedTrack.get(),
+                &Track::coverArtUpdated,
+                this,
+                &WCoverArt::slotTrackCoverArtUpdated);
     }
     m_loadedTrack.reset();
     m_lastRequestedCover = CoverInfo();
@@ -143,23 +144,26 @@ void WCoverArt::slotReset() {
 
 void WCoverArt::slotTrackCoverArtUpdated() {
     if (m_loadedTrack) {
-        CoverArtCache::requestCover(*m_loadedTrack, this);
+        CoverArtCache::requestTrackCover(this, m_loadedTrack);
     }
 }
 
-void WCoverArt::slotCoverFound(const QObject* pRequestor,
-                               const CoverInfoRelative& info, QPixmap pixmap,
-                               bool fromCache) {
-    Q_UNUSED(info);
-    Q_UNUSED(fromCache);
+void WCoverArt::slotCoverFound(
+        const QObject* pRequestor,
+        const CoverInfo& coverInfo,
+        const QPixmap& pixmap,
+        quint16 requestedHash,
+        bool coverInfoUpdated) {
+    Q_UNUSED(requestedHash);
+    Q_UNUSED(coverInfoUpdated);
     if (!m_bEnable) {
         return;
     }
 
-    if (pRequestor == this && m_loadedTrack &&
-            m_loadedTrack->getCoverHash() == info.hash) {
-        qDebug() << "WCoverArt::slotCoverFound" << pRequestor << info
-                 << pixmap.size();
+    if (pRequestor == this &&
+            m_loadedTrack &&
+            m_loadedTrack->getLocation() == coverInfo.trackLocation) {
+        m_lastRequestedCover = coverInfo;
         m_loadedCover = pixmap;
         m_loadedCoverScaled = scaledCoverArt(pixmap);
         update();
@@ -176,8 +180,10 @@ void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
     m_loadedCoverScaled = QPixmap();
     m_loadedTrack = pTrack;
     if (m_loadedTrack) {
-        connect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
-                this, SLOT(slotTrackCoverArtUpdated()));
+        connect(m_loadedTrack.get(),
+                &Track::coverArtUpdated,
+                this,
+                &WCoverArt::slotTrackCoverArtUpdated);
     }
 
     if (!m_bEnable) {
@@ -283,4 +289,11 @@ void WCoverArt::dropEvent(QDropEvent *event) {
     } else {
         event->ignore();
     }
+}
+
+bool WCoverArt::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    }
+    return QWidget::event(pEvent);
 }

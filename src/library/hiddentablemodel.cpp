@@ -47,13 +47,7 @@ void HiddenTableModel::setTableModel(int id) {
 }
 
 void HiddenTableModel::purgeTracks(const QModelIndexList& indices) {
-    QList<TrackId> trackIds;
-
-    foreach (QModelIndex index, indices) {
-        trackIds.append(getTrackId(index));
-    }
-
-    m_pTrackCollectionManager->purgeTracks(trackIds);
+    m_pTrackCollectionManager->purgeTracks(getTrackRefs(indices));
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.

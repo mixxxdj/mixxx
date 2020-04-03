@@ -144,7 +144,7 @@ void DlgAnalysis::selectAll() {
 void DlgAnalysis::analyze() {
     //qDebug() << this << "analyze()";
     if (m_bAnalysisActive) {
-        emit(stopAnalysis());
+        emit stopAnalysis();
     } else {
         QList<TrackId> trackIds;
 
@@ -157,7 +157,7 @@ void DlgAnalysis::analyze() {
                 trackIds.append(trackId);
             }
         }
-        emit(analyzeTracks(trackIds));
+        emit analyzeTracks(trackIds);
     }
 }
 

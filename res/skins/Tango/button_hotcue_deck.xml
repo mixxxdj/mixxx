@@ -8,12 +8,14 @@ Variables:
   HotCue: hotcue number
 -->
 <Template>
-  <PushButton>
+  <HotcueButton>
     <TooltipId>hotcue</TooltipId>
     <ObjectName>HotcueButton</ObjectName>
     <MinimumSize>15,24</MinimumSize>
     <MaximumSize>23,24</MaximumSize>
     <SizePolicy>me,f</SizePolicy>
+    <Group><Variable name="group"/></Group>
+    <Hotcue><Variable name="HotCue"/></Hotcue>
     <NumberStates>3</NumberStates>
     <State>
       <Number>0</Number>
@@ -46,5 +48,5 @@ Variables:
       <ConfigKey><Variable name="group"/>,hotcue_<Variable name="HotCue"/>_color_id</ConfigKey>
       <BindProperty>highlight</BindProperty>
     </Connection>
-  </PushButton>
+  </HotcueButton>
 </Template>

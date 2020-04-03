@@ -32,59 +32,60 @@
 
 #include "recording/recordingmanager.h"
 
+#include "util/cmdlineargs.h"
+#include "util/timer.h"
+#include "util/valuetransformer.h"
+#include "waveform/waveformwidgetfactory.h"
 #include "widget/controlwidgetconnection.h"
 #include "widget/wbasewidget.h"
+#include "widget/wbattery.h"
+#include "widget/wbeatspinbox.h"
+#include "widget/wcombobox.h"
 #include "widget/wcoverart.h"
-#include "widget/wwidget.h"
+#include "widget/wdisplay.h"
+#include "widget/weffect.h"
+#include "widget/weffectbuttonparameter.h"
+#include "widget/weffectchain.h"
+#include "widget/weffectparameter.h"
+#include "widget/weffectparameterbase.h"
+#include "widget/weffectparameterknob.h"
+#include "widget/weffectparameterknobcomposed.h"
+#include "widget/weffectpushbutton.h"
+#include "widget/weffectselector.h"
+#include "widget/whotcuebutton.h"
+#include "widget/wkey.h"
 #include "widget/wknob.h"
 #include "widget/wknobcomposed.h"
-#include "widget/wslidercomposed.h"
-#include "widget/wpushbutton.h"
-#include "widget/weffectpushbutton.h"
-#include "widget/wdisplay.h"
-#include "widget/wvumeter.h"
-#include "widget/wstatuslight.h"
 #include "widget/wlabel.h"
-#include "widget/wtime.h"
-#include "widget/wrecordingduration.h"
-#include "widget/wtracktext.h"
-#include "widget/wtrackproperty.h"
-#include "widget/wstarrating.h"
+#include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
 #include "widget/wnumber.h"
 #include "widget/wnumberdb.h"
 #include "widget/wnumberpos.h"
 #include "widget/wnumberrate.h"
-#include "widget/weffectchain.h"
-#include "widget/weffect.h"
-#include "widget/weffectselector.h"
-#include "widget/weffectparameter.h"
-#include "widget/weffectparameterknob.h"
-#include "widget/weffectparameterknobcomposed.h"
-#include "widget/weffectbuttonparameter.h"
-#include "widget/weffectparameterbase.h"
-#include "widget/wbeatspinbox.h"
-#include "widget/woverviewlmh.h"
 #include "widget/woverviewhsv.h"
+#include "widget/woverviewlmh.h"
 #include "widget/woverviewrgb.h"
-#include "widget/wspinny.h"
-#include "widget/wwaveformviewer.h"
-#include "waveform/waveformwidgetfactory.h"
-#include "widget/wsearchlineedit.h"
-#include "widget/wlibrary.h"
-#include "widget/wlibrarysidebar.h"
-#include "widget/wskincolor.h"
 #include "widget/wpixmapstore.h"
-#include "widget/wwidgetstack.h"
-#include "widget/wsizeawarestack.h"
-#include "widget/wwidgetgroup.h"
-#include "widget/wkey.h"
-#include "widget/wbattery.h"
-#include "widget/wcombobox.h"
-#include "widget/wsplitter.h"
+#include "widget/wpushbutton.h"
+#include "widget/wrecordingduration.h"
+#include "widget/wsearchlineedit.h"
 #include "widget/wsingletoncontainer.h"
-#include "util/valuetransformer.h"
-#include "util/cmdlineargs.h"
-#include "util/timer.h"
+#include "widget/wsizeawarestack.h"
+#include "widget/wskincolor.h"
+#include "widget/wslidercomposed.h"
+#include "widget/wspinny.h"
+#include "widget/wsplitter.h"
+#include "widget/wstarrating.h"
+#include "widget/wstatuslight.h"
+#include "widget/wtime.h"
+#include "widget/wtrackproperty.h"
+#include "widget/wtracktext.h"
+#include "widget/wvumeter.h"
+#include "widget/wwaveformviewer.h"
+#include "widget/wwidget.h"
+#include "widget/wwidgetgroup.h"
+#include "widget/wwidgetstack.h"
 
 using mixxx::skin::SkinManifest;
 
@@ -505,6 +506,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseStandardWidget<WPushButton>(node));
     } else if (nodeName == "EffectPushButton") {
         result = wrapWidget(parseEffectPushButton(node));
+    } else if (nodeName == "HotcueButton") {
+        result = wrapWidget(parseStandardWidget<WHotcueButton>(node));
     } else if (nodeName == "ComboBox") {
         result = wrapWidget(parseStandardWidget<WComboBox>(node));
     } else if (nodeName == "Overview") {
@@ -1223,13 +1226,7 @@ QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
     commonWidgetSetup(node, pLineEditSearch, false);
     pLineEditSearch->setup(node, *m_pContext);
 
-    // Connect search box signals to the library
-    connect(pLineEditSearch, SIGNAL(search(const QString&)),
-            m_pLibrary, SIGNAL(search(const QString&)));
-    connect(m_pLibrary, SIGNAL(disableSearch()),
-            pLineEditSearch, SLOT(disableSearch()));
-    connect(m_pLibrary, SIGNAL(restoreSearch(const QString&)),
-            pLineEditSearch, SLOT(restoreSearch(const QString&)));
+    m_pLibrary->bindSearchboxWidget(pLineEditSearch);
 
     return pLineEditSearch;
 }
@@ -1321,8 +1318,10 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
     pLibraryWidget->setup(node, *m_pContext);
 
     // Connect Library search signals to the WLibrary
-    connect(m_pLibrary, SIGNAL(search(const QString&)),
-            pLibraryWidget, SLOT(search(const QString&)));
+    connect(m_pLibrary,
+            &Library::search,
+            pLibraryWidget,
+            &WLibrary::search);
 
     m_pLibrary->bindLibraryWidget(pLibraryWidget, m_pKeyboard);
 
@@ -1504,7 +1503,7 @@ QList<QWidget*> LegacySkinParser::parseTemplate(const QDomElement& node) {
     QString path = node.attribute("src");
 
     std::unique_ptr<SkinContext> pOldContext = std::move(m_pContext);
-    m_pContext = std::make_unique<SkinContext>(*pOldContext);
+    m_pContext = std::make_unique<SkinContext>(pOldContext.get());
 
     QDomElement templateNode = loadTemplate(path);
 

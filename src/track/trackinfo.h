@@ -4,14 +4,11 @@
 #include <QUuid>
 
 #include "sources/audiosource.h"
-
 #include "track/bpm.h"
 #include "track/replaygain.h"
-#include "track/seratomarkers2.h"
-
+#include "track/serato/tags.h"
 #include "util/duration.h"
 #include "util/macros.h"
-
 
 namespace mixxx {
 
@@ -47,7 +44,7 @@ class TrackInfo final {
 #endif // __EXTRA_METADATA__
     PROPERTY_SET_BYVAL_GET_BYREF(ReplayGain, replayGain,           ReplayGain)
 #if defined(__EXTRA_METADATA__)
-    PROPERTY_SET_BYVAL_GET_BYREF(SeratoMarkers2, seratoMarkers2,   SeratoMarkers2)
+    PROPERTY_SET_BYVAL_GET_BYREF(SeratoTags, seratoTags,           SeratoTags)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    subtitle,             Subtitle)
 #endif // __EXTRA_METADATA__
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    title,                Title)
@@ -72,18 +69,22 @@ public:
             QString fileName,
             bool splitArtistTitle);
 
-    // TODO(XXX): Remove after all new fields have been added to the library
-    void resetUnsupportedValues();
-
     // Adjusts floating-point properties to match their string representation
     // in file tags to account for rounding errors.
     void normalizeBeforeExport() {
         refBpm().normalizeBeforeExport();
         refReplayGain().normalizeBeforeExport();
     }
+
+    bool compareEq(
+            const TrackInfo& trackInfo,
+            Bpm::Comparison cmpBpm = Bpm::Comparison::Default) const;
 };
 
-bool operator==(const TrackInfo& lhs, const TrackInfo& rhs);
+inline
+bool operator==(const TrackInfo& lhs, const TrackInfo& rhs) {
+    return lhs.compareEq(rhs);
+}
 
 inline
 bool operator!=(const TrackInfo& lhs, const TrackInfo& rhs) {

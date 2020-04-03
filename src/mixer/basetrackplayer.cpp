@@ -46,8 +46,6 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
                                 pEffectsManager, defaultOrientation);
 
     m_pInputConfigured = std::make_unique<ControlProxy>(group, "input_configured", this);
-    m_pPassthroughEnabled = std::make_unique<ControlProxy>(group, "passthrough", this);
-    m_pPassthroughEnabled->connectValueChanged(this, &BaseTrackPlayerImpl::slotPassthroughEnabled);
 #ifdef __VINYLCONTROL__
     m_pVinylControlEnabled = std::make_unique<ControlProxy>(group, "vinylcontrol_enabled", this);
     m_pVinylControlEnabled->connectValueChanged(this, &BaseTrackPlayerImpl::slotVinylControlEnabled);
@@ -153,7 +151,7 @@ TrackPointer BaseTrackPlayerImpl::loadFakeTrack(bool bPlay, double filebpm) {
     pEngineBuffer->loadFakeTrack(pTrack, bPlay);
 
     // await slotTrackLoaded()/slotLoadFailed()
-    emit(loadingTrack(pTrack, pOldTrack));
+    emit loadingTrack(pTrack, pOldTrack);
 
     return pTrack;
 }
@@ -181,7 +179,7 @@ void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
         QListIterator<CuePointer> it(trackCues);
         while (it.hasNext()) {
             CuePointer pCue(it.next());
-            if (pCue->getType() == Cue::Type::Loop && pCue->getHotCue() == -1) {
+            if (pCue->getType() == mixxx::CueType::Loop && pCue->getHotCue() == -1) {
                 double loopStart = pCue->getPosition();
                 double loopEnd = loopStart + pCue->getLength();
                 if (loopStart != kNoTrigger && loopEnd != kNoTrigger && loopStart <= loopEnd) {
@@ -220,13 +218,13 @@ TrackPointer BaseTrackPlayerImpl::unloadTrack() {
         QListIterator<CuePointer> it(cuePoints);
         while (it.hasNext()) {
             CuePointer pCue(it.next());
-            if (pCue->getType() == Cue::Type::Loop && pCue->getHotCue() == -1) {
+            if (pCue->getType() == mixxx::CueType::Loop && pCue->getHotCue() == -1) {
                 pLoopCue = pCue;
             }
         }
         if (!pLoopCue) {
             pLoopCue = m_pLoadedTrack->createAndAddCue();
-            pLoopCue->setType(Cue::Type::Loop);
+            pLoopCue->setType(mixxx::CueType::Loop);
         }
         pLoopCue->setStartPosition(loopStart);
         pLoopCue->setEndPosition(loopEnd);
@@ -280,7 +278,7 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
     pEngineBuffer->loadTrack(pNewTrack, bPlay);
 
     // await slotTrackLoaded()/slotLoadFailed()
-    emit(loadingTrack(pNewTrack, pOldTrack));
+    emit loadingTrack(pNewTrack, pOldTrack);
 }
 
 void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer pTrack, QString reason) {
@@ -313,7 +311,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
 
         // Causes the track's data to be saved back to the library database and
         // for all the widgets to change the track and update themselves.
-        emit(loadingTrack(pNewTrack, pOldTrack));
+        emit loadingTrack(pNewTrack, pOldTrack);
         m_pDuration->set(0);
         m_pFileBPM->set(0);
         m_pKey->set(0);
@@ -321,7 +319,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         m_pLoopInPoint->set(kNoTrigger);
         m_pLoopOutPoint->set(kNoTrigger);
         m_pLoadedTrack.reset();
-        emit(playerEmpty());
+        emit playerEmpty();
     } else if (pNewTrack && pNewTrack == m_pLoadedTrack) {
         // NOTE(uklotzde): In a previous version track metadata was reloaded
         // from the source file at this point again. This is no longer necessary
@@ -406,7 +404,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
             }
         }
 
-        emit(newTrackLoaded(m_pLoadedTrack));
+        emit newTrackLoaded(m_pLoadedTrack);
     } else {
         // this is the result from an outdated load or unload signal
         // A new load is already pending
@@ -499,18 +497,6 @@ void BaseTrackPlayerImpl::setupEqControls() {
     m_pPitchAdjust = std::make_unique<ControlProxy>(group, "pitch_adjust", this);
 }
 
-void BaseTrackPlayerImpl::slotPassthroughEnabled(double v) {
-    bool configured = m_pInputConfigured->toBool();
-    bool passthrough = v > 0.0;
-
-    // Warn the user if they try to enable passthrough on a player with no
-    // configured input.
-    if (!configured && passthrough) {
-        m_pPassthroughEnabled->set(0.0);
-        emit(noPassthroughInputConfigured());
-    }
-}
-
 void BaseTrackPlayerImpl::slotVinylControlEnabled(double v) {
 #ifdef __VINYLCONTROL__
     bool configured = m_pInputConfigured->toBool();
@@ -521,7 +507,7 @@ void BaseTrackPlayerImpl::slotVinylControlEnabled(double v) {
     if (!configured && vinylcontrol_enabled) {
         m_pVinylControlEnabled->set(0.0);
         m_pVinylControlStatus->set(VINYL_STATUS_DISABLED);
-        emit(noVinylControlInputConfigured());
+        emit noVinylControlInputConfigured();
     }
 #endif
 }

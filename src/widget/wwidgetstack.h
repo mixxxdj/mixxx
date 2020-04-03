@@ -3,7 +3,6 @@
 
 #include <QWidget>
 #include <QObject>
-#include <QSignalMapper>
 #include <QStackedWidget>
 #include <QEvent>
 
@@ -74,10 +73,9 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
     void showIndex(int index);
     void hideIndex(int index);
     void showEvent(QShowEvent* event) override;
+    void slotSetIndex(int index);
 
   private:
-    QSignalMapper m_showMapper;
-    QSignalMapper m_hideMapper;
     ControlProxy m_nextControl;
     ControlProxy m_prevControl;
     ControlProxy m_currentPageControl;
