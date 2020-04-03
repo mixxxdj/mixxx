@@ -21,7 +21,7 @@ const QString EffectsRoot("Effects");
 const QString Effect("Effect");
 const QString EffectMetaParameter("MetaParameterValue");
 const QString EffectId("Id");
-const QString EffectVersion("Version");
+const QString EffectBackendType("BackendType");
 
 const QString ParametersRoot("Parameters");
 const QString Parameter("Parameter");

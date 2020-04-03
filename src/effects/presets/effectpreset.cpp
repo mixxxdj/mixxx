@@ -1,5 +1,6 @@
 #include "effects/presets/effectpreset.h"
 
+#include "effects/effectsbackend.h"
 #include "effects/effectxmlelements.h"
 #include "util/xml.h"
 
@@ -12,7 +13,9 @@ EffectPreset::EffectPreset(const QDomElement& effectElement) {
     }
 
     m_id = XmlParse::selectNodeQString(effectElement, EffectXml::EffectId);
-    m_version = XmlParse::selectNodeQString(effectElement, EffectXml::EffectVersion);
+    m_backendType = EffectsBackend::backendTypeFromString(
+            XmlParse::selectNodeQString(effectElement,
+                    EffectXml::EffectBackendType));
     m_dMetaParameter = XmlParse::selectNodeDouble(effectElement, EffectXml::EffectMetaParameter);
 
     QDomElement parametersElement = XmlParse::selectElement(effectElement, EffectXml::ParametersRoot);

@@ -29,6 +29,24 @@ class EffectsBackend {
 
     virtual std::unique_ptr<EffectProcessor> createProcessor(
         const EffectManifestPointer pManifest) const = 0;
+
+    static EffectBackendType backendTypeFromString(const QString& string) {
+        if (string == "LV2") {
+            return EffectBackendType::LV2;
+        } else {
+            return EffectBackendType::BuiltIn;
+        }
+    }
+
+    static QString backendTypeToString(EffectBackendType backendType) {
+        if (backendType == EffectBackendType::BuiltIn) {
+            return "BuiltIn";
+        } else if (backendType == EffectBackendType::LV2) {
+            return "LV2";
+        } else {
+            return "Unknown";
+        }
+    }
 };
 
 #endif /* EFFECTSBACKEND_H */

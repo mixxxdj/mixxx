@@ -12,7 +12,7 @@ class EffectPreset {
 
   private:
     QString m_id;
-    QString m_version;
+    EffectBackendType m_backendType;
     double m_dMetaParameter;
 
     QList<EffectParameterPreset> m_effectParameterPresets;
