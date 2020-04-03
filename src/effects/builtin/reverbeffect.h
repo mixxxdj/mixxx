@@ -42,7 +42,7 @@ class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
     static EffectManifestPointer getManifest();
 
     void loadEngineEffectParameters(
-            const QMap<QString, EngineEffectParameterPointer>& parameters);
+            const QMap<QString, EngineEffectParameterPointer>& parameters) override;
 
     void processChannel(
             ReverbGroupState* pState,

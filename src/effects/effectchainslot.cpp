@@ -17,19 +17,18 @@
 #include "util/sample.h"
 #include "util/xml.h"
 
-
 EffectChainSlot::EffectChainSlot(const QString& group,
-                                 EffectsManager* pEffectsManager,
-                                 SignalProcessingStage stage,
-                                 const QString& id)
+        EffectsManager* pEffectsManager,
+        SignalProcessingStage stage,
+        const QString& id)
         : // The control group names are 1-indexed while internally everything
           // is 0-indexed.
-          m_group(group),
           m_pEffectsManager(pEffectsManager),
-          m_signalProcessingStage(stage),
+          m_group(group),
           m_id(id),
           m_name(""),
           m_description(""),
+          m_signalProcessingStage(stage),
           m_pEngineEffectChain(nullptr) {
     // qDebug() << "EffectChainSlot::EffectChainSlot " << group << ' ' << iChainNumber;
 
@@ -150,8 +149,6 @@ void EffectChainSlot::addToEngine() {
     pRequest->AddEffectChain.signalProcessingStage = m_signalProcessingStage;
     pRequest->AddEffectChain.pChain = m_pEngineEffectChain;
     m_pEffectsManager->writeRequest(pRequest);
-
-    VERIFY_OR_DEBUG_ASSERT(!m_enabledInputChannels.size());
 
     sendParameterUpdate();
 }

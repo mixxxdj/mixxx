@@ -23,16 +23,14 @@ const QString kGroupClose = "]";
 const unsigned int kEffectMessagPipeFifoSize = 2048;
 } // anonymous namespace
 
-
-EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig,
-                               ChannelHandleFactory* pChannelHandleFactory)
+EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig, ChannelHandleFactory* pChannelHandleFactory)
         : QObject(pParent),
           m_pChannelHandleFactory(pChannelHandleFactory),
-          m_pConfig(pConfig),
           m_nextRequestId(0),
           m_loEqFreq(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040),
           m_hiEqFreq(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040),
-          m_underDestruction(false) {
+          m_underDestruction(false),
+          m_pConfig(pConfig) {
     qRegisterMetaType<EffectChainMixMode>("EffectChainMixMode");
     QPair<EffectsRequestPipe*, EffectsResponsePipe*> requestPipes =
             TwoWayMessagePipe<EffectsRequest*, EffectsResponse>::makeTwoWayMessagePipe(

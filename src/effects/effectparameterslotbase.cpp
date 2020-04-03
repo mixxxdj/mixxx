@@ -7,17 +7,16 @@
 #include "control/controlpushbutton.h"
 
 EffectParameterSlotBase::EffectParameterSlotBase(const QString& group,
-                                                 const unsigned int iParameterSlotNumber,
-                                                 const EffectManifestParameter::ParameterType parameterType)
+        const unsigned int iParameterSlotNumber,
+        const EffectManifestParameter::ParameterType parameterType)
         : m_iParameterSlotNumber(iParameterSlotNumber),
-          m_parameterType(parameterType),
           m_group(group),
           m_pEffectParameter(nullptr),
           m_pManifestParameter(nullptr),
+          m_parameterType(parameterType),
           m_pControlLoaded(nullptr),
           m_pControlType(nullptr),
           m_dChainParameter(0.0) {
-
 }
 
 EffectParameterSlotBase::~EffectParameterSlotBase() {
@@ -64,6 +63,8 @@ void EffectParameterSlotBase::syncSofttakeover() {
 }
 
 void EffectParameterSlotBase::onEffectMetaParameterChanged(double parameter, bool force) {
+    Q_UNUSED(parameter);
+    Q_UNUSED(force);
 }
 
 void EffectParameterSlotBase::slotValueChanged(double v) {
