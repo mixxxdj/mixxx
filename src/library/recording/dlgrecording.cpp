@@ -74,7 +74,7 @@ DlgRecording::DlgRecording(QWidget* parent, UserSettingsPointer pConfig,
     m_pTrackTableView->loadTrackModel(&m_proxyModel);
 
     connect(pushButtonRecording,
-            &QPushButton::toggled,
+            &QPushButton::clicked,
             this,
             &DlgRecording::toggleRecording);
     label->setText("");
