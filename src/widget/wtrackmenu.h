@@ -38,6 +38,14 @@ class WTrackMenu : public QMenu {
     void setTrackIndexList(QModelIndexList indexList);
     void setTrackModel(TrackModel* trackModel);
 
+    enum Filter {
+        None,
+        FileBrowser,
+        Playlist,
+        Crate
+    };
+    Q_DECLARE_FLAGS(Filters, Filter)
+
   private slots:
     void slotOpenInFileBrowser();
     void slotLockBpm();
@@ -226,11 +234,10 @@ private:
     int m_iCoverColumn; // visible cover art
     int m_iTrackLocationColumn;
 
-    void trackIndicesToTrackPointers();
+    Filters m_eFilters;
 };
 
-
-
+Q_DECLARE_OPERATORS_FOR_FLAGS(WTrackMenu::Filters)
 
 
 #endif // WTRACKMENU_H

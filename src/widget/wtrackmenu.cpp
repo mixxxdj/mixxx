@@ -45,15 +45,17 @@
 
 WTrackMenu::WTrackMenu(QWidget *parent, UserSettingsPointer pConfig, TrackCollectionManager *pTrackCollectionManager)
         : QMenu(parent),
-        m_pConfig(std::move(pConfig)),
-        m_pTrackCollectionManager(pTrackCollectionManager),
-        m_bPlaylistMenuLoaded(false),
-        m_bCrateMenuLoaded(false),
-        m_iCoverSourceColumn(-1),
-        m_iCoverTypeColumn(-1),
-        m_iCoverLocationColumn(-1),
-        m_iCoverHashColumn(-1),
-        m_iCoverColumn(-1) {
+          m_pConfig(std::move(pConfig)),
+          m_pTrackCollectionManager(pTrackCollectionManager),
+          m_pTrackModel(nullptr),
+          m_bPlaylistMenuLoaded(false),
+          m_bCrateMenuLoaded(false),
+          m_iCoverSourceColumn(-1),
+          m_iCoverTypeColumn(-1),
+          m_iCoverLocationColumn(-1),
+          m_iCoverHashColumn(-1),
+          m_iCoverColumn(-1),
+          m_eFilters(Filter::None) {
     m_pNumSamplers = new ControlProxy(
             "[Master]", "num_samplers", this);
     m_pNumDecks = new ControlProxy(
@@ -62,6 +64,7 @@ WTrackMenu::WTrackMenu(QWidget *parent, UserSettingsPointer pConfig, TrackCollec
             "[Master]", "num_preview_decks", this);
 
     constructMenus();
+    createActions();
 }
 
 WTrackMenu::~WTrackMenu() {
@@ -120,7 +123,7 @@ void WTrackMenu::createActions() {
     connect(m_pRemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
 
     m_pRemovePlaylistAct = new QAction(tr("Remove from Playlist"), this);
-    connect(m_pRemovePlaylistAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
+    connect(m_pRemovePlaylistAct, &QAction::triggered, this, &WTrackMenu::slotRemove);
 
     m_pRemoveCrateAct = new QAction(tr("Remove from Crate"), this);
     connect(m_pRemoveCrateAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
@@ -139,8 +142,8 @@ void WTrackMenu::createActions() {
             this, SLOT(slotShowTrackInfo()));
 
     m_pFileBrowserAct = new QAction(tr("Open in File Browser"), this);
-    connect(m_pFileBrowserAct, SIGNAL(triggered()),
-            this, SLOT(slotOpenInFileBrowser()));
+    connect(m_pFileBrowserAct, &QAction::triggered,
+            this, &WTrackMenu::slotOpenInFileBrowser);
 
     m_pAutoDJBottomAct = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
     connect(m_pAutoDJBottomAct, SIGNAL(triggered()),
@@ -179,6 +182,7 @@ void WTrackMenu::createActions() {
                     slotUpdateExternalTrackCollection(externalTrackCollectionPtr);
                 });
     }
+
 
     m_pAddToPreviewDeck = new QAction(tr("Preview Deck"), this);
     // currently there is only one preview deck so just map it here.
@@ -270,8 +274,7 @@ void WTrackMenu::createActions() {
             &WTrackMenu::slotColorPicked);
 }
 
-void WTrackMenu::teardownActions()
-{
+void WTrackMenu::teardownActions() {
     clear();
     m_pLoadToMenu->clear();
     m_pDeckMenu->clear();
@@ -286,24 +289,21 @@ void WTrackMenu::teardownActions()
 }
 
 void WTrackMenu::setupActions() {
+    // TODO: Replace true with filters
     teardownActions();
-    createActions();
-
     QModelIndexList indices = m_pSelectedTrackIndices;
 
     // Gray out some stuff if multiple songs were selected.
-    bool oneSongSelected = indices.size() == 1;
-    TrackModel* trackModel = m_pTrackModel;
+    bool oneSongSelected = m_pTrackIdList.size() == 1;
 
-
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
+    if (true) {
         addAction(m_pAutoDJBottomAct);
         addAction(m_pAutoDJTopAct);
         addAction(m_pAutoDJReplaceAct);
         addSeparator();
     }
 
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTODECK)) {
+    if (true) {
         int iNumDecks = m_pNumDecks->get();
         if (iNumDecks > 0) {
             for (int i = 1; i <= iNumDecks; ++i) {
@@ -324,7 +324,7 @@ void WTrackMenu::setupActions() {
         m_pLoadToMenu->addMenu(m_pDeckMenu);
     }
 
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTOSAMPLER)) {
+    if (true) {
         int iNumSamplers = m_pNumSamplers->get();
         if (iNumSamplers > 0) {
             for (int i = 1; i <= iNumSamplers; ++i) {
@@ -344,22 +344,24 @@ void WTrackMenu::setupActions() {
         }
     }
 
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTOPREVIEWDECK) &&
+    if (true &&
         m_pNumPreviewDecks->get() > 0.0) {
         m_pLoadToMenu->addAction(m_pAddToPreviewDeck);
     }
 
-    addMenu(m_pLoadToMenu);
-    addSeparator();
+    if (!m_pLoadToMenu->isEmpty()){
+        addMenu(m_pLoadToMenu);
+        addSeparator();
+    }
 
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOPLAYLIST)) {
+    if (true) {
         // Playlist menu is lazy loaded on hover by slotPopulatePlaylistMenu
         // to avoid unnecessary database queries
         m_bPlaylistMenuLoaded = false;
         addMenu(m_pPlaylistMenu);
     }
 
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOCRATE)) {
+    if (true) {
         // Crate menu is lazy loaded on hover by slotPopulateCrateMenu
         // to avoid unnecessary database queries
         m_bCrateMenuLoaded = false;
@@ -417,11 +419,12 @@ void WTrackMenu::setupActions() {
             m_pMetadataMenu->addMenu(m_pMetadataUpdateExternalCollectionsMenu);
         }
 
-        if (trackModel == nullptr) {
+        DEBUG_ASSERT(m_pTrackModel);
+        if (m_pTrackModel == nullptr) {
             return;
         }
         bool allowClear = true;
-        int column = trackModel->fieldIndex(LIBRARYTABLE_BPM_LOCK);
+        int column = m_pTrackModel->fieldIndex(LIBRARYTABLE_BPM_LOCK);
         for (int i = 0; i < indices.size() && allowClear; ++i) {
             int row = indices.at(i).row();
             QModelIndex index = indices.at(i).sibling(row,column);
@@ -433,7 +436,7 @@ void WTrackMenu::setupActions() {
         m_pClearMetadataMenu->addAction(m_pClearBeatsAction);
     }
 
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_RESETPLAYED)) {
+    if (true) {
         m_pClearMetadataMenu->addAction(m_pClearPlayCountAction);
     }
 
@@ -483,10 +486,10 @@ void WTrackMenu::setupActions() {
         m_pBPMMenu->addAction(m_pBpmUnlockAction);
         m_pBPMMenu->addSeparator();
         if (oneSongSelected) {
-            if (trackModel == nullptr) {
+            if (m_pTrackModel == nullptr) {
                 return;
             }
-            int column = trackModel->fieldIndex(LIBRARYTABLE_BPM_LOCK);
+            int column = m_pTrackModel->fieldIndex(LIBRARYTABLE_BPM_LOCK);
             QModelIndex index = indices.at(0).sibling(indices.at(0).row(),column);
             if (index.data().toBool()) { //BPM is locked
                 m_pBpmUnlockAction->setEnabled(true);
@@ -509,7 +512,7 @@ void WTrackMenu::setupActions() {
             }
         } else {
             bool anyLocked = false; //true if any of the selected items are locked
-            int column = trackModel->fieldIndex(LIBRARYTABLE_BPM_LOCK);
+            int column = m_pTrackModel->fieldIndex(LIBRARYTABLE_BPM_LOCK);
             for (int i = 0; i < indices.size() && !anyLocked; ++i) {
                 int row = indices.at(i).row();
                 QModelIndex index = indices.at(i).sibling(row,column);
@@ -545,7 +548,7 @@ void WTrackMenu::setupActions() {
                     ColorPaletteSettings(m_pConfig).getTrackColorPalette());
 
             // Get color of first selected track
-            int column = trackModel->fieldIndex(LIBRARYTABLE_COLOR);
+            int column = m_pTrackModel->fieldIndex(LIBRARYTABLE_COLOR);
             QModelIndex index = indices.at(0).sibling(indices.at(0).row(), column);
             auto trackColor = mixxx::RgbColor::fromQVariant(index.data());
 
@@ -586,9 +589,11 @@ void WTrackMenu::setupActions() {
         addAction(m_pPurgeAct);
     }
 
-    addAction(m_pFileBrowserAct);
+    if (true) {
+        addAction(m_pFileBrowserAct);
+    }
 
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA)) {
+    if (true) {
         addSeparator();
         m_pPropertiesAct->setEnabled(oneSongSelected);
         addAction(m_pPropertiesAct);
@@ -619,6 +624,10 @@ void WTrackMenu::setTrackId(TrackId trackId) {
 }
 
 void WTrackMenu::setTrackIndexList(QModelIndexList indexList) {
+    DEBUG_ASSERT(m_pTrackModel);
+    if (!m_pTrackModel) {
+        return;
+    }
     clearTrackSelection();
 
     m_pSelectedTrackIndices = std::move(indexList);
@@ -647,6 +656,7 @@ TrackPointerList WTrackMenu::getTrackPointerList() {
 }
 
 bool WTrackMenu::modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) const {
+    DEBUG_ASSERT(m_pTrackModel);
     if (!m_pTrackModel) {
         return false;
     }
@@ -746,19 +756,15 @@ void WTrackMenu::slotUpdateExternalTrackCollection(
 
 //slot for reset played count, sets count to 0 of one or more tracks
 void WTrackMenu::slotClearPlayCount() {
-    const QModelIndexList indices = m_pSelectedTrackIndices;
-    TrackModel* trackModel = m_pTrackModel;;
-
-    if (trackModel == nullptr) {
+    if (m_pTrackPointerList.empty()) {
         return;
     }
 
-    for (const QModelIndex& index : indices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
-        if (pTrack) {
-            pTrack->resetPlayCounter();
-        }
+    for (const auto& pTrack : m_pTrackPointerList) {
+        pTrack->resetPlayCounter();
     }
+
+
 }
 
 void WTrackMenu::slotPopulatePlaylistMenu() {
@@ -962,7 +968,6 @@ void WTrackMenu::addSelectionToNewCrate() {
         m_pTrackCollectionManager->unhideTracks(trackIds);
         m_pTrackCollectionManager->internalCollection()->addCrateTracks(crateId, trackIds);
     }
-
 }
 
 void WTrackMenu::setTrackModel(TrackModel* trackModel) {
@@ -987,14 +992,11 @@ void WTrackMenu::slotUnlockBpm() {
 }
 
 void WTrackMenu::slotScaleBpm(int scale) {
-    TrackModel* trackModel = m_pTrackModel;
-    if (trackModel == nullptr) {
+    if (m_pTrackPointerList.empty()) {
         return;
     }
 
-    const QModelIndexList selectedTrackIndices = m_pSelectedTrackIndices;
-    for (const auto& index : selectedTrackIndices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
+    for (const auto& pTrack : m_pTrackPointerList) {
         if (pTrack && !pTrack->isBpmLocked()) {
             BeatsPointer pBeats = pTrack->getBeats();
             if (pBeats) {
@@ -1006,32 +1008,26 @@ void WTrackMenu::slotScaleBpm(int scale) {
 
 
 void WTrackMenu::lockBpm(bool lock) {
-    TrackModel* trackModel = m_pTrackModel;;
-    if (trackModel == nullptr) {
+    if (m_pTrackPointerList.empty()) {
         return;
     }
 
-    const QModelIndexList selectedTrackIndices = m_pSelectedTrackIndices;
     // TODO: This should be done in a thread for large selections
-    for (const auto& index : selectedTrackIndices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
-        if (pTrack) {
+    for (const auto& pTrack : m_pTrackPointerList) {
+        if (!pTrack->isBpmLocked()) {
             pTrack->setBpmLocked(lock);
         }
     }
 }
 
 void WTrackMenu::slotColorPicked(mixxx::RgbColor::optional_t color) {
-    TrackModel* trackModel = m_pTrackModel;
-    if (trackModel == nullptr) {
+    if (m_pTrackPointerList.empty()) {
         return;
     }
 
-    const QModelIndexList selectedTrackIndices = m_pSelectedTrackIndices;
     // TODO: This should be done in a thread for large selections
-    for (const auto& index : selectedTrackIndices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
-        if (pTrack) {
+    for (const auto& pTrack : m_pTrackPointerList) {
+        if (!pTrack->isBpmLocked()) {
             pTrack->setColor(color);
         }
     }
@@ -1040,139 +1036,98 @@ void WTrackMenu::slotColorPicked(mixxx::RgbColor::optional_t color) {
 }
 
 void WTrackMenu::loadSelectionToGroup(QString group, bool play) {
-    QModelIndexList indices = m_pSelectedTrackIndices;
-    if (indices.size() > 0) {
-        // If the track load override is disabled, check to see if a track is
-        // playing before trying to load it
-        if (!(m_pConfig->getValueString(
-                ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt())) {
-            // TODO(XXX): Check for other than just the first preview deck.
-            if (group != "[PreviewDeck1]" &&
-                ControlObject::get(ConfigKey(group, "play")) > 0.0) {
-                return;
-            }
+    if (m_pTrackPointerList.empty()) {
+        return;
+    }
+    // If the track load override is disabled, check to see if a track is
+    // playing before trying to load it
+    if (!(m_pConfig->getValueString(
+            ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt())) {
+        // TODO(XXX): Check for other than just the first preview deck.
+        if (group != "[PreviewDeck1]" &&
+            ControlObject::get(ConfigKey(group, "play")) > 0.0) {
+            return;
         }
-        QModelIndex index = indices.at(0);
-        TrackModel* trackModel = m_pTrackModel;
-        TrackPointer pTrack;
-        if (trackModel &&
-            (pTrack = trackModel->getTrack(index))) {
-            emit loadTrackToPlayer(pTrack, group, play);
-        }
+    }
+
+    TrackPointer pTrack = m_pTrackPointerList.at(0);
+    if (pTrack) {
+        emit loadTrackToPlayer(pTrack, group, play);
     }
 }
 
 
 
 void WTrackMenu::slotClearBeats() {
-    TrackModel* trackModel = m_pTrackModel;
-    if (trackModel == nullptr) {
+    if (m_pTrackPointerList.empty()) {
         return;
     }
 
-    const QModelIndexList selectedTrackIndices = m_pSelectedTrackIndices;
     // TODO: This should be done in a thread for large selections
-    for (const auto& index : selectedTrackIndices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
-        if (pTrack && !pTrack->isBpmLocked()) {
+    for (const auto& pTrack : m_pTrackPointerList) {
+        if (!pTrack->isBpmLocked()) {
             pTrack->setBeats(BeatsPointer());
         }
     }
 }
 
 void WTrackMenu::slotClearMainCue() {
-    const QModelIndexList indices = m_pSelectedTrackIndices;
-    TrackModel* trackModel = m_pTrackModel;;
-
-    if (trackModel == nullptr) {
+    if (m_pTrackPointerList.empty()) {
         return;
     }
 
-    for (const QModelIndex& index : indices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
-        if (pTrack) {
-            pTrack->removeCuesOfType(mixxx::CueType::MainCue);
-        }
+    for (const auto& pTrack : m_pTrackPointerList) {
+        pTrack->removeCuesOfType(mixxx::CueType::MainCue);
     }
 }
 
 void WTrackMenu::slotClearOutroCue() {
-    const QModelIndexList indices = m_pSelectedTrackIndices;
-    TrackModel* trackModel = m_pTrackModel;;
-
-    if (trackModel == nullptr) {
+    if (m_pTrackPointerList.empty()) {
         return;
     }
 
-    for (const QModelIndex& index : indices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
-        if (pTrack) {
-            pTrack->removeCuesOfType(mixxx::CueType::HotCue);
-        }
+    for (const auto& pTrack : m_pTrackPointerList) {
+        pTrack->removeCuesOfType(mixxx::CueType::Outro);
     }
 }
 
-void WTrackMenu::slotClearIntroCue() {
-    const QModelIndexList indices = m_pSelectedTrackIndices;
-    TrackModel* trackModel = m_pTrackModel;;
-
-    if (trackModel == nullptr) {
+void WTrackMenu::slotClearIntroCue() {    
+    if (m_pTrackPointerList.empty()) {
         return;
     }
 
-    for (const QModelIndex& index : indices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
-        if (pTrack) {
-            pTrack->removeCuesOfType(mixxx::CueType::Intro);
-        }
+    for (const auto& pTrack : m_pTrackPointerList) {
+        pTrack->removeCuesOfType(mixxx::CueType::Intro);
     }
 }
 
 void WTrackMenu::slotClearKey() {
-    const QModelIndexList indices = m_pSelectedTrackIndices;
-    TrackModel* trackModel = m_pTrackModel;;
-
-    if (trackModel == nullptr) {
+    if (m_pTrackPointerList.empty()) {
         return;
     }
 
-    for (const QModelIndex& index : indices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
-        if (pTrack) {
-            pTrack->resetKeys();
-        }
+    for (const auto& pTrack : m_pTrackPointerList) {
+        pTrack->resetKeys();
     }
 }
 
 void WTrackMenu::slotClearReplayGain() {
-    const QModelIndexList indices = m_pSelectedTrackIndices;
-    TrackModel* trackModel = m_pTrackModel;;
-
-    if (trackModel == nullptr) {
+    if (m_pTrackPointerList.empty()) {
         return;
     }
 
-    for (const QModelIndex& index : indices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
-        if (pTrack) {
-            pTrack->setReplayGain(mixxx::ReplayGain());
-        }
+    for (const auto& pTrack : m_pTrackPointerList) {
+        pTrack->setReplayGain(mixxx::ReplayGain());
     }
 }
 
 void WTrackMenu::slotClearWaveform() {
-    TrackModel* trackModel = m_pTrackModel;;
-    if (trackModel == nullptr) {
+    if (m_pTrackPointerList.empty()) {
         return;
     }
 
     AnalysisDao& analysisDao = m_pTrackCollectionManager->internalCollection()->getAnalysisDAO();
-    const QModelIndexList indices = m_pSelectedTrackIndices;
-    for (const QModelIndex& index : indices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
-        if (!pTrack) {
-            continue;
-        }
+    for (const auto& pTrack : m_pTrackPointerList) {
         analysisDao.deleteAnalysesForTrack(pTrack->getId());
         pTrack->setWaveform(WaveformPointer());
         pTrack->setWaveformSummary(WaveformPointer());
@@ -1180,34 +1135,22 @@ void WTrackMenu::slotClearWaveform() {
 }
 
 void WTrackMenu::slotClearLoop() {
-    const QModelIndexList indices = m_pSelectedTrackIndices;
-    TrackModel* trackModel = m_pTrackModel;
-
-    if (trackModel == nullptr) {
+    if (m_pTrackPointerList.empty()) {
         return;
     }
 
-    for (const QModelIndex& index : indices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
-        if (pTrack) {
-            pTrack->removeCuesOfType(mixxx::CueType::Loop);
-        }
+    for (const auto& pTrack : m_pTrackPointerList) {
+        pTrack->removeCuesOfType(mixxx::CueType::Loop);
     }
 }
 
 void WTrackMenu::slotClearHotCues() {
-    const QModelIndexList indices = m_pSelectedTrackIndices;
-    TrackModel* trackModel = m_pTrackModel;
-
-    if (trackModel == nullptr) {
+    if (m_pTrackPointerList.empty()) {
         return;
     }
 
-    for (const QModelIndex& index : indices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
-        if (pTrack) {
-            pTrack->removeCuesOfType(mixxx::CueType::HotCue);
-        }
+    for (const auto& pTrack : m_pTrackPointerList) {
+        pTrack->removeCuesOfType(mixxx::CueType::HotCue);
     }
 }
 
@@ -1228,24 +1171,28 @@ void WTrackMenu::slotClearAllMetadata() {
 
 
 void WTrackMenu::slotRemove() {
+    DEBUG_ASSERT(m_pTrackModel);
+    TrackModel* trackModel = m_pTrackModel;
+    if (!trackModel) {
+        return;
+    }
     QModelIndexList indices = m_pSelectedTrackIndices;
     if (!indices.empty()) {
-        TrackModel* trackModel = m_pTrackModel;
-        if (trackModel) {
-            trackModel->removeTracks(indices);
-        }
+        trackModel->removeTracks(indices);
     }
 }
 
 
 
 void WTrackMenu::slotHide() {
+    DEBUG_ASSERT(m_pTrackModel);
+    TrackModel* trackModel = m_pTrackModel;
+    if (!trackModel) {
+        return;
+    }
     QModelIndexList indices = m_pSelectedTrackIndices;
     if (indices.size() > 0) {
-        TrackModel* trackModel = m_pTrackModel;
-        if (trackModel) {
-            trackModel->hideTracks(indices);
-        }
+        trackModel->hideTracks(indices);
     }
 }
 
@@ -1271,6 +1218,10 @@ void WTrackMenu::slotTagFetcherClosed() {
 }
 
 void WTrackMenu::slotShowTrackInfo() {
+    DEBUG_ASSERT(m_pTrackModel);
+    if (!m_pTrackModel) {
+        return;
+    }
     QModelIndexList indices = m_pSelectedTrackIndices;
 
     if (indices.size() > 0) {
@@ -1279,6 +1230,10 @@ void WTrackMenu::slotShowTrackInfo() {
 }
 
 void WTrackMenu::slotNextTrackInfo() {
+    DEBUG_ASSERT(m_pTrackModel);
+    if (!m_pTrackModel) {
+        return;
+    }
     QModelIndex nextRow = currentTrackInfoIndex.sibling(
         currentTrackInfoIndex.row()+1, currentTrackInfoIndex.column());
     if (nextRow.isValid()) {
@@ -1290,6 +1245,10 @@ void WTrackMenu::slotNextTrackInfo() {
 }
 
 void WTrackMenu::slotPrevTrackInfo() {
+    DEBUG_ASSERT(m_pTrackModel);
+    if (!m_pTrackModel) {
+        return;
+    }
     QModelIndex prevRow = currentTrackInfoIndex.sibling(
         currentTrackInfoIndex.row()-1, currentTrackInfoIndex.column());
     if (prevRow.isValid()) {
@@ -1301,6 +1260,7 @@ void WTrackMenu::slotPrevTrackInfo() {
 }
 
 void WTrackMenu::showTrackInfo(QModelIndex index) {
+    DEBUG_ASSERT(m_pTrackModel);
     TrackModel* trackModel = m_pTrackModel;
 
     if (!trackModel) {
@@ -1328,6 +1288,10 @@ void WTrackMenu::showTrackInfo(QModelIndex index) {
 }
 
 void WTrackMenu::slotNextDlgTagFetcher() {
+    DEBUG_ASSERT(m_pTrackModel);
+    if (!m_pTrackModel) {
+        return;
+    }
     QModelIndex nextRow = currentTrackInfoIndex.sibling(
         currentTrackInfoIndex.row()+1, currentTrackInfoIndex.column());
     if (nextRow.isValid()) {
@@ -1339,6 +1303,10 @@ void WTrackMenu::slotNextDlgTagFetcher() {
 }
 
 void WTrackMenu::slotPrevDlgTagFetcher() {
+    DEBUG_ASSERT(m_pTrackModel);
+    if (!m_pTrackModel) {
+        return;
+    }
     QModelIndex prevRow = currentTrackInfoIndex.sibling(
         currentTrackInfoIndex.row()-1, currentTrackInfoIndex.column());
     if (prevRow.isValid()) {
@@ -1350,6 +1318,7 @@ void WTrackMenu::slotPrevDlgTagFetcher() {
 }
 
 void WTrackMenu::showDlgTagFetcher(QModelIndex index) {
+    DEBUG_ASSERT(m_pTrackModel);
     TrackModel* trackModel = m_pTrackModel;
 
     if (!trackModel) {
@@ -1378,6 +1347,9 @@ void WTrackMenu::slotShowTrackInTagFetcher(TrackPointer pTrack) {
 }
 
 void WTrackMenu::slotShowDlgTagFetcher() {
+    if (m_pSelectedTrackIndices.empty()) {
+        return;
+    }
     QModelIndexList indices = m_pSelectedTrackIndices;
 
     if (indices.size() > 0) {
@@ -1400,10 +1372,9 @@ void WTrackMenu::slotAddToAutoDJReplace() {
 }
 
 void WTrackMenu::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
-    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
+    if (m_pTrackIdList.empty()) {
         return;
     }
-
     const TrackIdList trackIds = m_pTrackIdList;
     if (trackIds.isEmpty()) {
         qWarning() << "No tracks selected for AutoDJ";
@@ -1419,56 +1390,43 @@ void WTrackMenu::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
 
 
 void WTrackMenu::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
-    TrackModel* trackModel = m_pTrackModel;
-    if (trackModel == nullptr) {
+    if (m_pTrackPointerList.empty()) {
         return;
     }
-    const QModelIndexList selection = m_pSelectedTrackIndices;
-    for (const QModelIndex& index : selection) {
-        TrackPointer pTrack = trackModel->getTrack(index);
-        if (pTrack) {
-            pTrack->setCoverInfo(coverInfo);
-        }
+    for (const auto pTrack : m_pTrackPointerList) {
+        pTrack->setCoverInfo(coverInfo);
     }
 }
 
 void WTrackMenu::slotReloadCoverArt() {
-    TrackModel* trackModel = m_pTrackModel;
-    if (!trackModel) {
+    if (m_pTrackPointerList.empty()) {
         return;
     }
-    const QModelIndexList selection = m_pSelectedTrackIndices;
-    if (selection.isEmpty()) {
-        return;
-    }
-    QList<TrackPointer> selectedTracks;
-    selectedTracks.reserve(selection.size());
-    for (const QModelIndex& index : selection) {
-        TrackPointer pTrack = trackModel->getTrack(index);
-        if (pTrack) {
-            selectedTracks.append(pTrack);
-        }
-    }
-    guessTrackCoverInfoConcurrently(selectedTracks);
+    guessTrackCoverInfoConcurrently(m_pTrackPointerList);
 }
 
 void WTrackMenu::slotPurge() {
-    QModelIndexList indices = m_pSelectedTrackIndices;
-    if (indices.size() > 0) {
-        TrackModel* trackModel = m_pTrackModel;
-        if (trackModel) {
-            trackModel->purgeTracks(indices);
+    DEBUG_ASSERT(m_pTrackModel);
+    if (m_pTrackModel) {
+        QModelIndexList indices = m_pSelectedTrackIndices;
+        if (indices.size() > 0) {
+            TrackModel* trackModel = m_pTrackModel;
+            if (trackModel) {
+                trackModel->purgeTracks(indices);
+            }
         }
     }
 }
 
 void WTrackMenu::slotUnhide() {
-    QModelIndexList indices = m_pSelectedTrackIndices;
+    if (m_pTrackModel) {
+        QModelIndexList indices = m_pSelectedTrackIndices;
 
-    if (indices.size() > 0) {
-        TrackModel* trackModel = m_pTrackModel;
-        if (trackModel) {
-            trackModel->unhideTracks(indices);
+        if (indices.size() > 0) {
+            TrackModel* trackModel = m_pTrackModel;
+            if (trackModel) {
+                trackModel->unhideTracks(indices);
+            }
         }
     }
 }
