@@ -342,32 +342,17 @@ void EffectChainSlot::enableForInputChannel(const ChannelHandleAndGroup& handle_
     // EffectStates are passed to the EffectRequest and the EffectProcessorImpls
     // store the pointers. The containers of EffectState* pointers get deleted
     // by ~EffectsRequest, but the EffectStates are managed by EffectProcessorImpl.
+
+    // The EffectStates for one EngineEffectChain must be sent all together in
+    // the same message using an EffectStatesMapArray. If they were separated
+    // into a message for each effect, there would be a chance that the
+    // EngineEffectChain could get activated in one cycle of the audio callback
+    // thread but the EffectStates for an EngineEffect would not be received by
+    // EngineEffectsManager until the next audio callback cycle.
+
     auto pEffectStatesMapArray = new EffectStatesMapArray;
-
-    //TODO: get actual configuration of engine
-    const mixxx::EngineParameters bufferParameters(
-          mixxx::AudioSignal::SampleRate(96000),
-          MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
-
-    // TODO: Simplify by defining a method to create an EffectState for the input channel
     for (int i = 0; i < m_effectSlots.size(); ++i) {
-        auto& statesMap = (*pEffectStatesMapArray)[i];
-        if (m_effectSlots[i]->isLoaded()) {
-            for (const auto& outputChannel : m_pEffectsManager->registeredOutputChannels()) {
-                if (kEffectDebugOutput) {
-                    qDebug() << debugString() << "EffectChain::enableForInputChannel creating EffectState for input" << handle_group << "output" << outputChannel;
-                }
-                statesMap.insert(outputChannel.handle(),
-                        m_effectSlots[i]->createState(bufferParameters));
-            }
-        } else {
-            for (EffectState* pState : statesMap) {
-                if (pState != nullptr) {
-                    delete pState;
-                }
-            }
-            statesMap.clear();
-        }
+        m_effectSlots[i]->fillEffectStatesMap(&(*pEffectStatesMapArray)[i]);
     }
     request->EnableInputChannelForChain.pEffectStatesMapArray = pEffectStatesMapArray;
 

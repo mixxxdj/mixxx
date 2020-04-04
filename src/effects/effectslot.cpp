@@ -3,12 +3,12 @@
 
 #include <QDebug>
 
-#include "effects/defs.h"
-#include "control/controlpushbutton.h"
 #include "control/controlencoder.h"
 #include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
+#include "effects/defs.h"
+#include "util/defs.h"
 #include "util/math.h"
-#include "util/xml.h"
 
 // The maximum number of effect parameters we're going to support.
 const unsigned int kDefaultMaxParameters = 16;
@@ -164,12 +164,26 @@ void EffectSlot::updateEngineState() {
     }
 }
 
-EffectState* EffectSlot::createState(const mixxx::EngineParameters& bufferParameters) {
-    VERIFY_OR_DEBUG_ASSERT(m_pEngineEffect != nullptr) {
-        return new EffectState(bufferParameters);
+void EffectSlot::fillEffectStatesMap(EffectStatesMap* pStatesMap) const {
+    //TODO: get actual configuration of engine
+    const mixxx::EngineParameters bufferParameters(
+            mixxx::AudioSignal::SampleRate(96000),
+            MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
+
+    if (isLoaded()) {
+        for (const auto& outputChannel : m_pEffectsManager->registeredOutputChannels()) {
+            pStatesMap->insert(outputChannel.handle(),
+                    m_pEngineEffect->createState(bufferParameters));
+        }
+    } else {
+        for (EffectState* pState : *pStatesMap) {
+            if (pState != nullptr) {
+                delete pState;
+            }
+        }
+        pStatesMap->clear();
     }
-    return m_pEngineEffect->createState(bufferParameters);
-}
+};
 
 EffectManifestPointer EffectSlot::getManifest() const {
     return m_pManifest;
