@@ -34,11 +34,11 @@ Variables:
             <Alignment>right</Alignment>
           </Label>
 
-          <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="TooltipId">mute</SetVariable>
-            <SetVariable name="ObjectName">AuxMute</SetVariable>
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="TooltipId">master_enable</SetVariable>
+            <SetVariable name="ObjectName">AuxEnable</SetVariable>
             <SetVariable name="Size">20f,29f</SetVariable>
-            <SetVariable name="ConfigKey"><Variable name="group"/>,mute</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,master</SetVariable>
           </Template>
 
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>

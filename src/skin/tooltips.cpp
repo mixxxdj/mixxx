@@ -469,6 +469,11 @@ void Tooltips::addStandardTooltips() {
             << tr("Mute")
             << tr("Mutes the selected channel's audio in the master output.");
 
+    add("master_enable")
+            << tr("Master enable")
+            << tr("Hold or short click for latching to")
+            << tr("mix this input into the master output.");
+
     add("back_start")
             << tr("Fast Rewind")
             << QString("%1: %2").arg(leftClick, tr("Fast rewind through the track."))
@@ -555,8 +560,7 @@ void Tooltips::addStandardTooltips() {
             << QString("%1: %2").arg(leftClick, tr("If hotcue is set, jumps to the hotcue."))
             << tr("If hotcue is not set, sets the hotcue to the current play position.")
             << quantizeSnap
-            << QString("%1: %2").arg(rightClick, tr("If hotcue is set, clears the hotcue."))
-            << tr("Right click hotcues on the overview waveform to edit their labels and colors.");
+            << QString("%1: %2").arg(rightClick, tr("Opens a menu to clear hotcues or edit their labels and colors."));
 
     // Status displays and toggle buttons
     add("toggle_recording")
@@ -962,7 +966,7 @@ void Tooltips::addStandardTooltips() {
     add("SaveSamplerBank")
             << tr("Save Sampler Bank")
             << tr("Save the collection of samples loaded in the samplers.");
-    
+
     add("LoadSamplerBank")
             << tr("Load Sampler Bank")
             << tr("Load a previously saved collection of samples into the samplers.");

@@ -209,15 +209,22 @@
  ** LIBRARY *********************************************************************
  *******************************************************************************/
 
-/* library table */
-#LibraryContainer QTableView {
+/* sidebar, as well as root items for playlists, crates, and history */
+#LibraryContainer QTextBrowser,
+#LibraryContainer QTableView,
+#LibraryContainer QTreeView {
   color: #d2d2d2;
   background-color: #1F1F1F;
-  alternate-background-color: #1A1A1A;
   selection-background-color: #006596;
   selection-color: #D6D6D6;
   border: 1px solid #1A1A1A;
   gridline-color: red;
+  /* Suppresses that selected sidebar item's branch indicator shows wrong color
+     when out of focus, see lp:880588 */
+  show-decoration-selected: 1;
+}
+#LibraryContainer QTableView {
+  alternate-background-color: #1A1A1A;
 }
 
 #LibraryContainer QTableView:focus,
@@ -416,20 +423,6 @@ WSearchLineEdit {
   margin-top: 4px;
 }
 
-/* sidebar, as well as root items for playlists, crates, and history */
-#LibraryContainer QTextBrowser,
-#LibraryContainer QTableView,
-#LibraryContainer QTreeView {
-  color: #d2d2d2;
-  background-color: #1F1F1F;
-  selection-background-color: #006596;
-  selection-color: #D6D6D6;
-  border: 1px solid #1A1A1A;
-  gridline-color: red;
-  /* Suppresses that selected sidebar item's branch indicator shows wrong color
-     when out of focus, see lp:880588 */
-  show-decoration-selected: 1;
-}
 /* triangle for closed/opened branches in treeview */
 #LibraryContainer QTreeView::branch:has-children:!has-siblings:closed,
 #LibraryContainer QTreeView::branch:closed:has-children:has-siblings {
@@ -1397,52 +1390,45 @@ WStarRating {
 }
 
 #MicAuxRack {
-  background-color: #333333;
+  background-color: #222;
+  margin-bottom: 4px;
   qproperty-layoutSpacing: 3;
-  padding-left: 2px;
-  border-bottom: 4px solid #222222;
 }
 
-#MicLabelContainer,
+#MicAuxLabelContainer,
 #DuckingLabelContainer {
   qproperty-layoutAlignment: 'AlignHCenter';
 }
 
-#MicrophoneContainer, #MicDuckingContainer, #AuxiliaryContainer {
-  padding: 4px 4px;
+#MicAuxContainer, #MicDuckingContainer {
   margin: 0px;
+  background-color: #333;
 }
 
-#MicrophoneContainer, #MicDuckingContainer {
-  border: 3px solid #222222;
-  border-width: 0px 3px 0px 0px;
+#MicAuxContainer {
+  padding: 4px 3px;
 }
-
 #MicDuckingContainer {
-  qproperty-layoutSpacing: 2;
+  padding: 4px;
 }
 
-#AuxiliaryContainer {
-  border: 3px solid #222222;
-  border-width: 0px 0px 0px 3px;
-}
-
-#MicrophoneContainer, #AuxiliaryContainer,
-#MicrophoneControlButtons, #AuxiliaryControlButtons,
-#MicDuckingControls {
+#MicAuxContainer {
   qproperty-layoutSpacing: 3;
 }
 
-#MicrophoneControls, #AuxiliaryControls {
-  qproperty-layoutSpacing: 4;
+#MicDuckingControls {
+  qproperty-layoutSpacing: 1;
 }
 
-#AuxLabel, #MicLabel, #DuckingLabel {
+#MicAuxLabel, #DuckingLabel {
   font-weight: bold;
 }
 
-#MicrophoneButtonsAndMeter, #AuxiliaryButtonsAndMeter {
+#MicAuxButtons {
   qproperty-layoutSpacing: 3;
+}
+
+#OrientationButtonAux {
 }
 
 #LibraryContainer {
@@ -1559,14 +1545,10 @@ WPushButton[value="2"]:hover {
 }
 
 #HotcueButton {
-    qproperty-shouldHighlightBackgroundOnHover: true;
+  border: none;
 }
 
-#HotcueButton[backgroundIsDark=true][hasBackgroundColor=true] {
-    color: #FDFDFD;
-}
-
-#HotcueButton[backgroundIsDark=false][hasBackgroundColor=true] {
+#HotcueButton[light="true"] {
     color: #1f1e1e;
 }
 
