@@ -1386,6 +1386,34 @@ TEST_F(EngineSyncTest, HalfDoubleInternalClockTest) {
                             ConfigKey(m_sGroup2, "rate"))->get());
 }
 
+TEST_F(EngineSyncTest, HalfDoubleConsistency) {
+    // half-double matching should be consistent
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
+    pFileBpm1->set(90.0);
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
+    pFileBpm2->set(145.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 90, 0.0);
+    m_pTrack1->setBeats(pBeats1);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 145, 0.0);
+    m_pTrack2->setBeats(pBeats2);
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(1);
+    EXPECT_FLOAT_EQ(180.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(1);
+    EXPECT_FLOAT_EQ(90.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    EXPECT_FLOAT_EQ(180.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(0);
+    ProcessBuffer();
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(1);
+    ProcessBuffer();
+    EXPECT_FLOAT_EQ(90.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    EXPECT_FLOAT_EQ(180.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+}
+
 TEST_F(EngineSyncTest, SetFileBpmUpdatesLocalBpm) {
     auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->set(0.2);
