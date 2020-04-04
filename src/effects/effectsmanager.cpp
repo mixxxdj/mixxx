@@ -1,6 +1,7 @@
 #include "effects/effectsmanager.h"
 
 #include <QDir>
+#include <QInputDialog>
 #include <QMetaType>
 #include <algorithm>
 
@@ -46,7 +47,7 @@ EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig, Ch
 EffectsManager::~EffectsManager() {
     m_underDestruction = true;
 
-    saveEffectChainPresets();
+    saveStandardEffectChains();
     for (const auto pEffectPreset : m_defaultPresets) {
         saveDefaultForEffect(pEffectPreset);
     }
@@ -212,6 +213,10 @@ void EffectsManager::loadEffectChainPreset(EffectChainSlotPointer pChainSlot,
         effectSlot++;
     }
     pChainSlot->setMixMode(pPreset->mixMode());
+}
+
+void EffectsManager::loadPresetToStandardChain(int chainNumber, EffectChainPresetPointer pPreset) {
+    loadEffectChainPreset(m_standardEffectChainSlots.at(chainNumber), pPreset);
 }
 
 const QList<EffectManifestPointer> EffectsManager::getAvailableEffectManifestsFiltered(
@@ -429,6 +434,8 @@ void EffectsManager::setup() {
 
     loadDefaultEffectPresets();
     loadEffectChainPresets();
+
+    reloadStandardEffectChains();
 }
 
 bool EffectsManager::writeRequest(EffectsRequest* request) {
@@ -571,6 +578,80 @@ void EffectsManager::saveDefaultForEffect(EffectPresetPointer pEffectPreset) {
 }
 
 void EffectsManager::loadEffectChainPresets() {
+    QString dirPath(m_pConfig->getSettingsPath() + "/effects/chains");
+    QDir effectsDefaultsDir(dirPath);
+    effectsDefaultsDir.setFilter(QDir::Files | QDir::Readable);
+    for (const auto& filePath : effectsDefaultsDir.entryList()) {
+        QFile file(dirPath + "/" + filePath);
+        if (!file.open(QIODevice::ReadOnly)) {
+            continue;
+        }
+        QDomDocument doc;
+        if (!doc.setContent(&file)) {
+            file.close();
+            continue;
+        }
+        EffectChainPresetPointer pEffectChainPreset(new EffectChainPreset(doc.documentElement()));
+        if (!pEffectChainPreset->isNull()) {
+            m_effectChainPresets.insert(pEffectChainPreset->name(), pEffectChainPreset);
+        }
+        file.close();
+    }
+}
+
+void EffectsManager::savePresetFromStandardEffectChain(int chainNumber) {
+    StandardEffectChainSlotPointer pStandardChainSlot = m_standardEffectChainSlots.at(chainNumber);
+    EffectChainSlot* genericChainSlot = static_cast<EffectChainSlot*>(pStandardChainSlot.get());
+    EffectChainPresetPointer pChainPreset(new EffectChainPreset(genericChainSlot));
+
+    bool okay = false;
+    QString name = QInputDialog::getText(nullptr,
+            tr("Save preset for effect chain %1").arg(QString::number(chainNumber)),
+            tr("Name for new effect chain preset"),
+            QLineEdit::Normal,
+            pChainPreset->name(),
+            &okay);
+    if (!okay) {
+        return;
+    }
+
+    pChainPreset->setName(name);
+    m_effectChainPresets.insert(name, pChainPreset);
+
+    QString path(m_pConfig->getSettingsPath() + "/effects/chains");
+    QDir effectsChainsDir(path);
+    if (!effectsChainsDir.exists()) {
+        effectsChainsDir.mkpath(path);
+    }
+    // TODO: sanitize file name?
+    QFile file(path + "/" + name + ".xml");
+    if (!file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
+        return;
+    }
+
+    QDomDocument doc(EffectXml::Chain);
+    doc.setContent(QString("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"));
+    doc.appendChild(pChainPreset->toXml(&doc));
+    file.write(doc.toString().toUtf8());
+    file.close();
+}
+
+const QList<EffectChainPresetPointer> EffectsManager::getAvailableChainPresets() const {
+    // Sort available chain presets by name alphabetically
+    QStringList nameList;
+    for (const auto pChainPreset : m_effectChainPresets) {
+        nameList.append(pChainPreset->name());
+    }
+    nameList.sort();
+
+    QList<EffectChainPresetPointer> presetList;
+    for (const auto& name : nameList) {
+        presetList.append(m_effectChainPresets.value(name));
+    }
+    return presetList;
+}
+
+void EffectsManager::reloadStandardEffectChains() {
     QDir settingsPath(m_pConfig->getSettingsPath());
     QFile file(settingsPath.absoluteFilePath("effects.xml"));
     QDomDocument doc;
@@ -594,13 +675,12 @@ void EffectsManager::loadEffectChainPresets() {
         if (chainNode.isElement()) {
             QDomElement chainElement = chainNode.toElement();
             EffectChainPresetPointer pPreset(new EffectChainPreset(chainElement));
-            m_effectChainPresets.insert(pPreset->name(), pPreset);
             loadEffectChainPreset(m_standardEffectChainSlots.value(i), pPreset);
         }
     }
 }
 
-void EffectsManager::saveEffectChainPresets() {
+void EffectsManager::saveStandardEffectChains() {
     QDomDocument doc("MixxxEffects");
     doc.setContent(QString("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"));
 

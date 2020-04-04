@@ -15,6 +15,13 @@ class EffectChainPreset {
 
     const QDomElement toXml(QDomDocument* doc) const;
 
+    bool isNull() const {
+        return m_name.isEmpty();
+    }
+
+    void setName(const QString& newName) {
+        m_name = newName;
+    }
     const QString& name() const {
         return m_name;
     }

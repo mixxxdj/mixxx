@@ -98,6 +98,7 @@ class EffectsManager : public QObject {
 
     void loadEffectChainPreset(EffectChainSlotPointer pChainSlot,
             EffectChainPresetPointer pPreset);
+    void loadPresetToStandardChain(int chainNumber, EffectChainPresetPointer pPreset);
     void addStandardEffectChainSlots();
     EffectChainSlotPointer getStandardEffectChainSlot(int unitNumber) const;
 
@@ -139,6 +140,9 @@ class EffectsManager : public QObject {
 
     void saveDefaultForEffect(EffectPresetPointer pEffectPreset);
 
+    void savePresetFromStandardEffectChain(int chainNumber);
+    const QList<EffectChainPresetPointer> getAvailableChainPresets() const;
+
     void setup();
 
     // Write an EffectsRequest to the EngineEffectsManager. EffectsManager takes
@@ -155,7 +159,9 @@ class EffectsManager : public QObject {
 
     void loadDefaultEffectPresets();
     void loadEffectChainPresets();
-    void saveEffectChainPresets();
+
+    void reloadStandardEffectChains();
+    void saveStandardEffectChains();
 
     void processEffectsResponses();
     void collectGarbage(const EffectsRequest* pResponse);
