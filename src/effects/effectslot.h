@@ -127,7 +127,7 @@ class EffectSlot : public QObject {
         return m_group;
     }
 
-    EffectState* createState(const mixxx::EngineParameters& bufferParameters);
+    void fillEffectStatesMap(EffectStatesMap* pStatesMap) const;
 
     EffectManifestPointer getManifest() const;
 
