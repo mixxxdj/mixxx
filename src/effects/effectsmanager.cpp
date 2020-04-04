@@ -183,6 +183,22 @@ std::unique_ptr<EffectProcessor> EffectsManager::createProcessor(
     return pBackend->createProcessor(pManifest);
 }
 
+ParameterMap EffectsManager::getLoadedParameters(int chainNumber, int effectNumber) const {
+    return m_standardEffectChainSlots.at(chainNumber)->getEffectSlot(effectNumber)->getLoadedParameters();
+}
+
+ParameterMap EffectsManager::getHiddenParameters(int chainNumber, int effectNumber) const {
+    return m_standardEffectChainSlots.at(chainNumber)->getEffectSlot(effectNumber)->getHiddenParameters();
+}
+
+void EffectsManager::hideParameter(int chainNumber, int effectNumber, EffectParameterPointer pParameter) {
+    m_standardEffectChainSlots.at(chainNumber)->getEffectSlot(effectNumber)->hideParameter(pParameter);
+}
+
+void EffectsManager::showParameter(int chainNumber, int effectNumber, EffectParameterPointer pParameter) {
+    m_standardEffectChainSlots.at(chainNumber)->getEffectSlot(effectNumber)->showParameter(pParameter);
+}
+
 // This needs to be in EffectsManager rather than EffectChainSlot because it
 // needs access to the EffectsBackends.
 void EffectsManager::loadEffectChainPreset(EffectChainSlotPointer pChainSlot,
@@ -575,6 +591,12 @@ void EffectsManager::saveDefaultForEffect(EffectPresetPointer pEffectPreset) {
     }
     file.write(doc.toString().toUtf8());
     file.close();
+}
+
+void EffectsManager::saveDefaultForEffect(int unitNumber, int effectNumber) {
+    auto pSlot = m_standardEffectChainSlots.at(unitNumber)->getEffectSlot(effectNumber);
+    EffectPresetPointer pPreset(new EffectPreset(pSlot));
+    saveDefaultForEffect(pPreset);
 }
 
 void EffectsManager::loadEffectChainPresets() {

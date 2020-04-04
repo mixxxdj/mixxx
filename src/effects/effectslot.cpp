@@ -358,6 +358,27 @@ void EffectSlot::loadParameters() {
     }
 }
 
+void EffectSlot::hideParameter(EffectParameterPointer pParameter) {
+    auto parameterType = pParameter->manifest()->parameterType();
+    VERIFY_OR_DEBUG_ASSERT(m_parameters.value(parameterType).contains(pParameter)) {
+        return;
+    }
+    m_loadedParameters[parameterType].removeAll(pParameter);
+    loadParameters();
+}
+
+void EffectSlot::showParameter(EffectParameterPointer pParameter) {
+    auto parameterType = pParameter->manifest()->parameterType();
+    VERIFY_OR_DEBUG_ASSERT(m_parameters.value(parameterType).contains(pParameter)) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(!m_loadedParameters.value(parameterType).contains(pParameter)) {
+        return;
+    }
+    m_loadedParameters[parameterType].append(pParameter);
+    loadParameters();
+}
+
 void EffectSlot::slotPrevEffect(double v) {
     if (v > 0) {
         slotEffectSelector(-1);

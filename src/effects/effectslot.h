@@ -30,6 +30,8 @@ class ControlProxy;
 class EffectParameter;
 class EffectKnobParameterSlot;
 
+typedef QMap<EffectManifestParameter::ParameterType, QList<EffectParameterPointer>> ParameterMap;
+
 class EffectSlot : public QObject {
     Q_OBJECT
   public:
@@ -68,12 +70,12 @@ class EffectSlot : public QObject {
         return m_pManifest->backendType();
     }
 
-    const QMap<EffectManifestParameter::ParameterType, QList<EffectParameterPointer>> getLoadedParameters() const {
+    const ParameterMap getLoadedParameters() const {
         return m_loadedParameters;
     }
 
-    const QMap<EffectManifestParameter::ParameterType, QList<EffectParameterPointer>> getHiddenParameters() const {
-        QMap<EffectManifestParameter::ParameterType, QList<EffectParameterPointer>> hiddenParameters;
+    const ParameterMap getHiddenParameters() const {
+        ParameterMap hiddenParameters;
         int numTypes = static_cast<int>(EffectManifestParameter::ParameterType::NUM_TYPES);
         for (int parameterTypeId = 0; parameterTypeId < numTypes; ++parameterTypeId) {
             const EffectManifestParameter::ParameterType parameterType =
@@ -86,6 +88,9 @@ class EffectSlot : public QObject {
         }
         return hiddenParameters;
     }
+
+    void hideParameter(EffectParameterPointer pParameter);
+    void showParameter(EffectParameterPointer pParameter);
 
     void addEffectParameterSlot(EffectManifestParameter::ParameterType parameterType);
     EffectParameterSlotBasePointer getEffectParameterSlot(
@@ -144,8 +149,8 @@ class EffectSlot : public QObject {
     EffectManifestPointer m_pManifest;
     EngineEffectChain* m_pEngineEffectChain;
     EngineEffect* m_pEngineEffect;
-    QMap<EffectManifestParameter::ParameterType, QList<EffectParameterPointer>> m_parameters;
-    QMap<EffectManifestParameter::ParameterType, QList<EffectParameterPointer>> m_loadedParameters;
+    ParameterMap m_parameters;
+    ParameterMap m_loadedParameters;
     QMap<EffectManifestParameter::ParameterType, QList<EffectParameterSlotBasePointer>> m_parameterSlots;
 
     ControlObject* m_pControlLoaded;

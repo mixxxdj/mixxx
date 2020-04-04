@@ -23,6 +23,8 @@
 class EngineEffectsManager;
 class EffectManifest;
 
+typedef QMap<EffectManifestParameter::ParameterType, QList<EffectParameterPointer>> ParameterMap;
+
 class EffectsManager : public QObject {
     Q_OBJECT
   public:
@@ -96,6 +98,12 @@ class EffectsManager : public QObject {
     std::unique_ptr<EffectProcessor> createProcessor(
             const EffectManifestPointer pManifest);
 
+    ParameterMap getLoadedParameters(int chainNumber, int effectNumber) const;
+    ParameterMap getHiddenParameters(int chainNumber, int effectNumber) const;
+
+    void hideParameter(int chainNumber, int effectNumber, EffectParameterPointer pParameter);
+    void showParameter(int chainNumber, int effectNumber, EffectParameterPointer pParameter);
+
     void loadEffectChainPreset(EffectChainSlotPointer pChainSlot,
             EffectChainPresetPointer pPreset);
     void loadPresetToStandardChain(int chainNumber, EffectChainPresetPointer pPreset);
@@ -139,6 +147,7 @@ class EffectsManager : public QObject {
     bool getEffectVisibility(EffectManifestPointer pManifest);
 
     void saveDefaultForEffect(EffectPresetPointer pEffectPreset);
+    void saveDefaultForEffect(int chainNumber, int effcectNumber);
 
     void savePresetFromStandardEffectChain(int chainNumber);
     const QList<EffectChainPresetPointer> getAvailableChainPresets() const;
