@@ -282,7 +282,7 @@ QString getText(rekordbox_pdb_t::device_sql_string_t* deviceString) {
         text =  toUnicode(longUtf16beString->text());
     }
 
-    return text.replace('\x0', "");
+    return text.remove('\x0');
 }
 
 int createDevicePlaylist(QSqlDatabase& database, QString devicePath) {
