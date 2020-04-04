@@ -282,6 +282,8 @@ QString getText(rekordbox_pdb_t::device_sql_string_t* deviceString) {
         text =  toUnicode(longUtf16beString->text());
     }
 
+    // Some strings read from Rekordbox *.PDB files contain random null characters
+    // which if not removed cause Mixxx to crash when attempting to read file paths
     return text.remove('\x0');
 }
 
