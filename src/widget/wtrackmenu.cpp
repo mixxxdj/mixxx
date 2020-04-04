@@ -62,8 +62,7 @@ WTrackMenu::WTrackMenu(QWidget *parent, UserSettingsPointer pConfig, TrackCollec
             "[Master]", "num_decks", this);
     m_pNumPreviewDecks = new ControlProxy(
             "[Master]", "num_preview_decks", this);
-
-    constructMenus();
+//    constructMenus();
     // FIXME: createActions() would cause segfault in constructor.
 //    createActions();
 }
@@ -125,7 +124,27 @@ void WTrackMenu::constructMenus() {
 }
 
 void WTrackMenu::createActions() {
-    DEBUG_ASSERT(this);
+    if (optionIsEnabled(Filter::AutoDJ)) {
+        m_pAutoDJBottomAct = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
+        connect(m_pAutoDJBottomAct, SIGNAL(triggered()),
+                this, SLOT(slotAddToAutoDJBottom()));
+
+        m_pAutoDJTopAct = new QAction(tr("Add to Auto DJ Queue (top)"), this);
+        connect(m_pAutoDJTopAct, SIGNAL(triggered()),
+                this, SLOT(slotAddToAutoDJTop()));
+
+        m_pAutoDJReplaceAct = new QAction(tr("Add to Auto DJ Queue (replace)"), this);
+        connect(m_pAutoDJReplaceAct, SIGNAL(triggered()),
+                this, SLOT(slotAddToAutoDJReplace()));
+    }
+
+    if (optionIsEnabled(Filter::LoadTo)) {
+        m_pAddToPreviewDeck = new QAction(tr("Preview Deck"), this);
+        // currently there is only one preview deck so just map it here.
+        QString previewDeckGroup = PlayerManager::groupForPreviewDeck(0);
+        connect(m_pAddToPreviewDeck, &QAction::triggered,
+                this, [this, previewDeckGroup] { loadSelectionToGroup(previewDeckGroup); });
+    }
 
     if (optionIsEnabled(Filter::Remove)) {
         m_pRemoveAct = new QAction(tr("Remove"), this);
@@ -161,20 +180,6 @@ void WTrackMenu::createActions() {
                 this, &WTrackMenu::slotOpenInFileBrowser);
     }
 
-    if (optionIsEnabled(Filter::AutoDJ)) {
-        m_pAutoDJBottomAct = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
-        connect(m_pAutoDJBottomAct, SIGNAL(triggered()),
-                this, SLOT(slotAddToAutoDJBottom()));
-
-        m_pAutoDJTopAct = new QAction(tr("Add to Auto DJ Queue (top)"), this);
-        connect(m_pAutoDJTopAct, SIGNAL(triggered()),
-                this, SLOT(slotAddToAutoDJTop()));
-
-        m_pAutoDJReplaceAct = new QAction(tr("Add to Auto DJ Queue (replace)"), this);
-        connect(m_pAutoDJReplaceAct, SIGNAL(triggered()),
-                this, SLOT(slotAddToAutoDJReplace()));
-    }
-
     if (optionIsEnabled(Filter::Metadata)) {
         m_pImportMetadataFromFileAct = new QAction(tr("Import From File Tags"), this);
         connect(m_pImportMetadataFromFileAct, SIGNAL(triggered()),
@@ -201,15 +206,6 @@ void WTrackMenu::createActions() {
                         slotUpdateExternalTrackCollection(externalTrackCollectionPtr);
                     });
         }
-    }
-
-
-    if (optionIsEnabled(Filter::LoadTo)) {
-        m_pAddToPreviewDeck = new QAction(tr("Preview Deck"), this);
-        // currently there is only one preview deck so just map it here.
-        QString previewDeckGroup = PlayerManager::groupForPreviewDeck(0);
-        connect(m_pAddToPreviewDeck, &QAction::triggered,
-                this, [this, previewDeckGroup] { loadSelectionToGroup(previewDeckGroup); });
     }
 
     if (optionIsEnabled(Filter::Reset)) {
@@ -302,29 +298,49 @@ void WTrackMenu::createActions() {
 
 void WTrackMenu::teardownActions() {
     clear();
-    m_pLoadToMenu->clear();
-    m_pDeckMenu->clear();
-    m_pSamplerMenu->clear();
-    m_pPlaylistMenu->clear();
-    m_pCrateMenu->clear();
-    m_pMetadataMenu->clear();
-    m_pMetadataUpdateExternalCollectionsMenu->clear();
-    m_pClearMetadataMenu->clear();
-    m_pBPMMenu->clear();
-    m_pColorMenu->clear();
+    if (m_pLoadToMenu) {
+        m_pLoadToMenu->clear();
+    }
+    if (m_pDeckMenu) {
+        m_pDeckMenu->clear();
+    }
+    if (m_pSamplerMenu) {
+        m_pSamplerMenu->clear();
+    }
+    if (m_pPlaylistMenu) {
+        m_pPlaylistMenu->clear();
+    }
+
+    if (m_pCrateMenu) {
+        m_pCrateMenu->clear();
+    }
+    if (m_pMetadataMenu) {
+        m_pMetadataMenu->clear();
+    }
+    if (m_pMetadataUpdateExternalCollectionsMenu) {
+        m_pMetadataUpdateExternalCollectionsMenu->clear();
+    }
+    if (m_pClearMetadataMenu) {
+        m_pClearMetadataMenu->clear();
+    }
+    if (m_pBPMMenu) {
+        m_pBPMMenu->clear();
+    }
+    if (m_pColorMenu) {
+        m_pColorMenu->clear();
+    }
 }
 
 void WTrackMenu::setupActions() {
-    // TODO: Replace true with filters
     teardownActions();
+    constructMenus();
     createActions();
     QModelIndexList indices = m_pSelectedTrackIndices;
 
     // Gray out some stuff if multiple songs were selected.
     bool oneSongSelected = m_pTrackIdList.size() == 1;
 
-    if (optionIsEnabled(Filter::AutoDJ) &&
-            (!m_pTrackModel | modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ))) {
+    if (optionIsEnabled(Filter::AutoDJ)) {
         addAction(m_pAutoDJBottomAct);
         addAction(m_pAutoDJTopAct);
         addAction(m_pAutoDJReplaceAct);
@@ -414,8 +430,7 @@ void WTrackMenu::setupActions() {
 
     addSeparator();
 
-    if (optionIsEnabled(Filter::Metadata) &&
-            modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA)) {
+    if (optionIsEnabled(Filter::Metadata)) {
         m_pMetadataMenu->addAction(m_pImportMetadataFromFileAct);
         m_pImportMetadataFromMusicBrainzAct->setEnabled(oneSongSelected);
         m_pMetadataMenu->addAction(m_pImportMetadataFromMusicBrainzAct);
@@ -570,9 +585,7 @@ void WTrackMenu::setupActions() {
     }
 
     // Track color menu only appears if at least one track is selected
-    if (optionIsEnabled(Filter::Color) &&
-            m_pTrackModel != nullptr &&
-            !indices.empty()) {
+    if (optionIsEnabled(Filter::Color) && !indices.empty()) {
         m_pColorPickerAction->setColorPalette(
                 ColorPaletteSettings(m_pConfig).getTrackColorPalette());
 
@@ -635,12 +648,18 @@ void WTrackMenu::setTrackIds(TrackIdList trackIdList) {
     // Clean all forms of track store
     clearTrackSelection();
 
-    m_pTrackIdList = std::move(trackIdList);
     // Store the track pointers at each initialization of track ids.
-    for (const auto trackId : m_pTrackIdList) {
+    for (const auto trackId : trackIdList) {
         TrackPointer trackPointer = m_pTrackCollectionManager->internalCollection()->getTrackById(trackId);
-        m_pTrackPointerList.push_back(trackPointer);
+        if (trackPointer) {
+            m_pTrackPointerList.push_back(trackPointer);
+            m_pTrackIdList.push_back(trackId);
+        }
     }
+    if (m_pTrackPointerList.empty()) {
+        return;
+    }
+
     // Add actions to menu
     setupActions();
 }
@@ -661,12 +680,17 @@ void WTrackMenu::setTrackIndexList(QModelIndexList indexList) {
     }
     clearTrackSelection();
 
-    m_pSelectedTrackIndices = std::move(indexList);
-    for (auto index : m_pSelectedTrackIndices) {
+    for (auto index : indexList) {
         TrackPointer trackPointer = m_pTrackModel->getTrack(index);
-        m_pTrackPointerList.push_back(trackPointer);
-        TrackId trackId = trackPointer->getId();
-        m_pTrackIdList.push_back(trackId);
+        if (trackPointer) {
+            m_pSelectedTrackIndices.push_back(index);
+            m_pTrackPointerList.push_back(trackPointer);
+            TrackId trackId = trackPointer->getId();
+            m_pTrackIdList.push_back(trackId);
+        }
+    }
+    if (m_pTrackPointerList.empty()) {
+        return;
     }
 
     setupActions();
@@ -687,7 +711,6 @@ TrackPointerList WTrackMenu::getTrackPointerList() {
 }
 
 bool WTrackMenu::modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) const {
-    DEBUG_ASSERT(m_pTrackModel);
     if (!m_pTrackModel) {
         return false;
     }
@@ -695,8 +718,6 @@ bool WTrackMenu::modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities
     return trackModel &&
            (trackModel->getCapabilities() & capabilities) == capabilities;
 }
-
-
 
 void WTrackMenu::slotImportTrackMetadataFromFileTags() {
     if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA)) {
@@ -1083,11 +1104,11 @@ void WTrackMenu::loadSelectionToGroup(QString group, bool play) {
 
     TrackPointer pTrack = m_pTrackPointerList.at(0);
     if (pTrack) {
+        // TODO: load track from this class without depending on
+        // external slot to load track
         emit loadTrackToPlayer(pTrack, group, play);
     }
 }
-
-
 
 void WTrackMenu::slotClearBeats() {
     if (m_pTrackPointerList.empty()) {
@@ -1469,5 +1490,59 @@ void WTrackMenu::clearTrackSelection() {
 }
 
 bool WTrackMenu::optionIsEnabled(Filter flag) {
-    return m_eFilters.testFlag(Filter::None) || m_eFilters.testFlag(flag);
+    bool optionIsAvailable = m_eFilters.testFlag(Filter::None) || m_eFilters.testFlag(flag);
+    bool optionIsValid = false;
+
+    if (!optionIsAvailable) {
+        return false;
+    }
+
+    Filters independentOptions =
+            Filter::LoadTo |
+            Filter::Playlist |
+            Filter::Crate |
+            Filter::FileBrowser |
+            Filter::Properties;
+
+    // Some of these can be made independent of track table.
+    Filters trackTableDependentOptions =
+            Filter::AutoDJ |
+            Filter::Remove |
+            Filter::Metadata |
+            Filter::Reset |
+            Filter::BPM |
+            Filter::Color |
+            Filter::HideUnhidePurge;
+
+    if (independentOptions.testFlag(flag)) {
+        return true;
+    }
+
+    if (trackTableDependentOptions.testFlag(flag)) {
+        if (m_pTrackModel == nullptr) {
+            // Add to AutoDJ should be allowed from non-WTrackTableViews
+            if (flag == Filter::AutoDJ) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            optionIsValid = true;
+            if (flag == Filter::AutoDJ) {
+                optionIsValid = modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ);
+            } else if (flag == Filter::Remove) {
+                optionIsValid = modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE) ||
+                                modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST) ||
+                                modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_CRATE);
+            } else if (flag == Filter::HideUnhidePurge) {
+                optionIsValid = modelHasCapabilities(TrackModel::TRACKMODELCAPS_HIDE) ||
+                                modelHasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE) ||
+                                modelHasCapabilities(TrackModel::TRACKMODELCAPS_PURGE);
+            }
+        }
+    }
+
+    return optionIsValid;
 }

@@ -31,24 +31,24 @@ class WTrackMenu : public QMenu {
     Q_OBJECT
   public:
     enum Filter {
-        None,
-        AutoDJ,
-        LoadTo,
-        Playlist,
-        Crate,
-        Remove,
-        Metadata,
-        Reset,
-        BPM,
-        Color,
-        HideUnhidePurge,
-        FileBrowser,
-        Properties,
+        None = 0,
+        AutoDJ = 1,
+        LoadTo = 1 << 1,
+        Playlist = 1 << 2,
+        Crate = 1 << 3,
+        Remove = 1 << 4,
+        Metadata = 1 << 5,
+        Reset = 1 << 6,
+        BPM = 1 << 7,
+        Color = 1 << 8,
+        HideUnhidePurge = 1 << 9,
+        FileBrowser = 1 << 10,
+        Properties = 1 << 11,
     };
     Q_DECLARE_FLAGS(Filters, Filter)
 
     WTrackMenu(QWidget *parent, UserSettingsPointer pConfig, TrackCollectionManager* pTrackCollectionManager, Filters flags = Filter::None);
-    ~WTrackMenu() {};
+    ~WTrackMenu() {}
 
     void setTrackId(TrackId track);
     void setTrackIds(TrackIdList trackList);
@@ -139,88 +139,88 @@ private:
     void loadSelectionToGroup(QString group, bool play = false);
     void clearTrackSelection();
 
-    ControlProxy* m_pNumSamplers;
-    ControlProxy* m_pNumDecks;
-    ControlProxy* m_pNumPreviewDecks;
+    ControlProxy* m_pNumSamplers{};
+    ControlProxy* m_pNumDecks{};
+    ControlProxy* m_pNumPreviewDecks{};
 
     // The selected tracks for which the context menu is created
     TrackIdList m_pTrackIdList;
 
     // Context menu machinery
-    QMenu *m_pLoadToMenu;
-    QMenu *m_pDeckMenu;
-    QMenu *m_pSamplerMenu;
+    QMenu *m_pLoadToMenu{};
+    QMenu *m_pDeckMenu{};
+    QMenu *m_pSamplerMenu{};
 
-    QMenu *m_pPlaylistMenu;
-    QMenu *m_pCrateMenu;
-    QMenu *m_pMetadataMenu;
-    QMenu *m_pMetadataUpdateExternalCollectionsMenu;
-    QMenu *m_pClearMetadataMenu;
-    QMenu *m_pBPMMenu;
-    QMenu *m_pColorMenu;
+    QMenu *m_pPlaylistMenu{};
+    QMenu *m_pCrateMenu{};
+    QMenu *m_pMetadataMenu{};
+    QMenu *m_pMetadataUpdateExternalCollectionsMenu{};
+    QMenu *m_pClearMetadataMenu{};
+    QMenu *m_pBPMMenu{};
+    QMenu *m_pColorMenu{};
 
 
-    WCoverArtMenu* m_pCoverMenu;
+    WCoverArtMenu* m_pCoverMenu{};
 
     // Reload Track Metadata Action:
-    QAction *m_pImportMetadataFromFileAct;
-    QAction *m_pImportMetadataFromMusicBrainzAct;
+    QAction *m_pImportMetadataFromFileAct{};
+    QAction *m_pImportMetadataFromMusicBrainzAct{};
 
     // Save Track Metadata Action:
-    QAction *m_pExportMetadataAct;
+    QAction *m_pExportMetadataAct{};
 
     // Load Track to PreviewDeck
-    QAction* m_pAddToPreviewDeck;
+    QAction* m_pAddToPreviewDeck{};
 
     // Send to Auto-DJ Action
-    QAction *m_pAutoDJBottomAct;
-    QAction *m_pAutoDJTopAct;
-    QAction *m_pAutoDJReplaceAct;
+    QAction *m_pAutoDJBottomAct{};
+    QAction *m_pAutoDJTopAct{};
+    QAction *m_pAutoDJReplaceAct{};
 
     // Remove from table
-    QAction *m_pRemoveAct;
-    QAction *m_pRemovePlaylistAct;
-    QAction *m_pRemoveCrateAct;
-    QAction *m_pHideAct;
-    QAction *m_pUnhideAct;
-    QAction *m_pPurgeAct;
+    QAction *m_pRemoveAct{};
+    QAction *m_pRemovePlaylistAct{};
+    QAction *m_pRemoveCrateAct{};
+    QAction *m_pHideAct{};
+    QAction *m_pUnhideAct{};
+    QAction *m_pPurgeAct{};
 
     // Show track-editor action
-    QAction *m_pPropertiesAct;
-    QAction *m_pFileBrowserAct;
+    QAction *m_pPropertiesAct{};
+    QAction *m_pFileBrowserAct{};
 
     // BPM feature
-    QAction *m_pBpmLockAction;
-    QAction *m_pBpmUnlockAction;
-    QAction *m_pBpmDoubleAction;
-    QAction *m_pBpmHalveAction;
-    QAction *m_pBpmTwoThirdsAction;
-    QAction *m_pBpmThreeFourthsAction;
-    QAction *m_pBpmFourThirdsAction;
-    QAction *m_pBpmThreeHalvesAction;
+    QAction *m_pBpmLockAction{};
+    QAction *m_pBpmUnlockAction{};
+    QAction *m_pBpmDoubleAction{};
+    QAction *m_pBpmHalveAction{};
+    QAction *m_pBpmTwoThirdsAction{};
+    QAction *m_pBpmThreeFourthsAction{};
+    QAction *m_pBpmFourThirdsAction{};
+    QAction *m_pBpmThreeHalvesAction{};
 
     // Track color
-    WColorPickerAction *m_pColorPickerAction;
+    WColorPickerAction *m_pColorPickerAction{};
 
     // Clear track metadata actions
-    QAction* m_pClearBeatsAction;
-    QAction* m_pClearPlayCountAction;
-    QAction* m_pClearMainCueAction;
-    QAction* m_pClearHotCuesAction;
-    QAction* m_pClearIntroCueAction;
-    QAction* m_pClearOutroCueAction;
-    QAction* m_pClearLoopAction;
-    QAction* m_pClearWaveformAction;
-    QAction* m_pClearKeyAction;
-    QAction* m_pClearReplayGainAction;
-    QAction* m_pClearAllMetadataAction;
+    QAction* m_pClearBeatsAction{};
+    QAction* m_pClearPlayCountAction{};
+    QAction* m_pClearMainCueAction{};
+    QAction* m_pClearHotCuesAction{};
+    QAction* m_pClearIntroCueAction{};
+    QAction* m_pClearOutroCueAction{};
+    QAction* m_pClearLoopAction{};
+    QAction* m_pClearWaveformAction{};
+    QAction* m_pClearKeyAction{};
+    QAction* m_pClearReplayGainAction{};
+    QAction* m_pClearAllMetadataAction{};
 
 
     const UserSettingsPointer m_pConfig;
 
     TrackCollectionManager* m_pTrackCollectionManager;
     TrackPointerList m_pTrackPointerList;
-    TrackModel* m_pTrackModel;
+    TrackModel* m_pTrackModel{};
 
     QModelIndexList m_pSelectedTrackIndices;
 

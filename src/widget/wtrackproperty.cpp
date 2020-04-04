@@ -28,11 +28,12 @@ WTrackProperty::WTrackProperty(const char* group,
                                TrackCollectionManager* pTrackCollectionManager)
         : WLabel(pParent),
           m_pGroup(group),
-          m_pConfig(std::move(pConfig)) {
+          m_pConfig(pConfig) {
     setAcceptDrops(true);
 
     // Setup context menu
-    WTrackMenu::Filters flags = WTrackMenu::Filter::Crate;
+    WTrackMenu::Filters flags = WTrackMenu::Filter::Playlist |
+                                WTrackMenu::Filter::Crate;
     m_pMenu = new WTrackMenu(this, pConfig, pTrackCollectionManager, flags);
 }
 
