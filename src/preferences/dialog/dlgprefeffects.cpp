@@ -16,12 +16,13 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
     for (auto& profile : m_availableEffectsModel.profiles()) {
         EffectManifestPointer pManifest = profile->pManifest;
 
-        // Users are likely to have lots of external plugins installed and 
-        // many of them are useless for DJing. To avoid cluttering the list 
+        // Users are likely to have lots of external plugins installed and
+        // many of them are useless for DJing. To avoid cluttering the list
         // shown in WEffectSelector, blacklist external plugins by default.
         bool defaultValue = (pManifest->backendType() == EffectBackendType::BuiltIn);
-        bool visible = m_pConfig->getValue<bool>(ConfigKey("[Visible " + pManifest->backendName() + " Effects]", 
-                                                 pManifest->id()), defaultValue);
+        bool visible = m_pConfig->getValue<bool>(ConfigKey("[Visible " + pManifest->backendName() + " Effects]",
+                                                         pManifest->id()),
+                defaultValue);
         profile->bIsVisible = visible;
         m_pEffectsManager->setEffectVisibility(pManifest, visible);
     }
@@ -56,12 +57,12 @@ void DlgPrefEffects::slotApply() {
     for (EffectProfilePtr profile : m_availableEffectsModel.profiles()) {
         EffectManifestPointer pManifest = profile->pManifest;
         m_pEffectsManager->setEffectVisibility(pManifest, profile->bIsVisible);
-        
+
         // Effects from different backends can have same Effect IDs.
         // Add backend name to group to uniquely identify those effects.
         // Use untranslated value to keep the group language independent.
-        m_pConfig->set(ConfigKey("[Visible " + pManifest->backendName() + " Effects]", pManifest->id()), 
-                       ConfigValue(profile->bIsVisible));
+        m_pConfig->set(ConfigKey("[Visible " + pManifest->backendName() + " Effects]", pManifest->id()),
+                ConfigValue(profile->bIsVisible));
     }
 }
 
