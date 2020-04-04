@@ -801,8 +801,6 @@ class MixxxCore(Feature):
 
                    "src/effects/effectparameter.cpp",
 
-                   "src/effects/effectchainpreset.cpp",
-                   "src/effects/effectpreset.cpp",
                    "src/effects/effectchainslot.cpp",
                    "src/effects/specialeffectchainslots.cpp",
                    "src/effects/effectslot.cpp",
@@ -831,6 +829,10 @@ class MixxxCore(Feature):
                    "src/effects/builtin/phasereffect.cpp",
                    "src/effects/builtin/metronomeeffect.cpp",
                    "src/effects/builtin/tremoloeffect.cpp",
+
+                   "src/effects/presets/effectpreset.cpp",
+                   "src/effects/presets/effectchainpreset.cpp",
+                   "src/effects/presets/effectparameterpreset.cpp",
 
                    "src/engine/effects/engineeffectsmanager.cpp",
                    "src/engine/effects/engineeffectchain.cpp",
@@ -977,6 +979,7 @@ class MixxxCore(Feature):
                    "src/widget/wtrackproperty.cpp",
                    "src/widget/wstarrating.cpp",
                    "src/widget/weffectchain.cpp",
+                   "src/widget/weffectchainpresetbutton.cpp",
                    "src/widget/weffect.cpp",
                    "src/widget/weffectselector.cpp",
                    "src/widget/weffectparameter.cpp",

@@ -5,6 +5,9 @@
 #include "effects/effectmanifest.h"
 #include "effects/presets/effectparameterpreset.h"
 
+// EffectPreset is a read-only snapshot of the state of an effect that can be
+// serialized to/deserialized from XML. It is used to save/load chain presets
+// as well as save custom defaults for each effect.
 class EffectPreset {
   public:
     EffectPreset();

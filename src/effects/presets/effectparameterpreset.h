@@ -5,12 +5,15 @@
 #include "effects/defs.h"
 #include "effects/effectmanifestparameter.h"
 
+// EffectParameterPreset is a read-only snapshot of the state of an effect parameter
+// that can be serialized to/deserialized from XML.
 class EffectParameterPreset {
   public:
     EffectParameterPreset();
     EffectParameterPreset(const QDomElement& parameterElement);
     // The hidden state is stored in the EffectSlot, not the EffectParameter
     EffectParameterPreset(const EffectParameterPointer pParameter, bool hidden);
+    // read defaults from manifest
     EffectParameterPreset(const EffectManifestParameterPointer pManifestParameter);
     ~EffectParameterPreset();
 
