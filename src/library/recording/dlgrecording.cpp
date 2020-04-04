@@ -77,6 +77,7 @@ DlgRecording::DlgRecording(QWidget* parent, UserSettingsPointer pConfig,
             &QPushButton::clicked,
             this,
             &DlgRecording::toggleRecording);
+
     label->setText("");
     label->setEnabled(false);
 }
@@ -131,23 +132,16 @@ void DlgRecording::moveSelection(int delta) {
 
 void DlgRecording::toggleRecording(bool toggle) {
     Q_UNUSED(toggle);
-    if (!m_pRecordingManager->isRecordingActive()) //If recording is enabled
-    {
-        //pushButtonRecording->setText(tr("Stop Recording"));
-        m_pRecordingManager->startRecording();
-    }
-    else if(m_pRecordingManager->isRecordingActive()) //If we disable recording
-    {
-        //pushButtonRecording->setText(tr("Start Recording"));
-        m_pRecordingManager->stopRecording();
-    }
+    m_pRecordingManager->slotToggleRecording(true);
 }
 
 void DlgRecording::slotRecordingEnabled(bool isRecording) {
     if (isRecording) {
+        pushButtonRecording->setChecked(true);
         pushButtonRecording->setText((tr("Stop Recording")));
         label->setEnabled(true);
     } else {
+        pushButtonRecording->setChecked(false);
         pushButtonRecording->setText((tr("Start Recording")));
         label->setText("");
         label->setEnabled(false);
@@ -176,4 +170,4 @@ void DlgRecording::refreshLabel() {
               .arg(m_bytesRecordedStr)
               .arg(m_durationRecordedStr);
     label->setText(text);
- }
+}

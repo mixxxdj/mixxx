@@ -81,8 +81,8 @@ void RecordingManager::slotSetRecording(bool recording) {
     }
 }
 
-void RecordingManager::slotToggleRecording(double v) {
-    if (v > 0) {
+void RecordingManager::slotToggleRecording(bool toggle) {
+    if (toggle) {
         if (isRecordingActive()) {
             stopRecording();
         } else {
