@@ -63,6 +63,7 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
             &QPushButton::clicked,
             this,
             &DlgAnalysis::analyze);
+    pushButtonAnalyze->setEnabled(false);
 
     connect(pushButtonSelectAll,
             &QPushButton::clicked,
@@ -165,10 +166,11 @@ void DlgAnalysis::slotAnalysisActive(bool bActive) {
     //qDebug() << this << "slotAnalysisActive" << bActive;
     m_bAnalysisActive = bActive;
     if (bActive) {
-        pushButtonAnalyze->setEnabled(true);
+        pushButtonAnalyze->setChecked(true);
         pushButtonAnalyze->setText(tr("Stop Analysis"));
         labelProgress->setEnabled(true);
     } else {
+        pushButtonAnalyze->setChecked(false);
         pushButtonAnalyze->setText(tr("Analyze"));
         labelProgress->setText("");
         labelProgress->setEnabled(false);

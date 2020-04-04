@@ -84,6 +84,9 @@
        <property name="text">
         <string>Analyze</string>
        </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item>
