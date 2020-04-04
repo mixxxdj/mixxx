@@ -52,11 +52,26 @@ EffectChainPreset::EffectChainPreset(const EffectChainSlot* chain) {
 const QDomElement EffectChainPreset::toXml(QDomDocument* doc) const {
     QDomElement chainElement = doc->createElement(EffectXml::Chain);
 
-    XmlParse::addElement(*doc, chainElement, EffectXml::ChainId, m_id);
-    XmlParse::addElement(*doc, chainElement, EffectXml::ChainName, m_name);
-    XmlParse::addElement(*doc, chainElement, EffectXml::ChainDescription, m_description);
-    XmlParse::addElement(*doc, chainElement, EffectXml::ChainMixMode, EffectChainSlot::mixModeToString(m_mixMode));
-    XmlParse::addElement(*doc, chainElement, EffectXml::ChainSuperParameter, QString::number(m_dSuper));
+    XmlParse::addElement(*doc,
+            chainElement,
+            EffectXml::ChainId,
+            m_id);
+    XmlParse::addElement(*doc,
+            chainElement,
+            EffectXml::ChainName,
+            m_name);
+    XmlParse::addElement(*doc,
+            chainElement,
+            EffectXml::ChainDescription,
+            m_description);
+    XmlParse::addElement(*doc,
+            chainElement,
+            EffectXml::ChainMixMode,
+            EffectChainSlot::mixModeToString(m_mixMode));
+    XmlParse::addElement(*doc,
+            chainElement,
+            EffectXml::ChainSuperParameter,
+            QString::number(m_dSuper));
 
     QDomElement effectsElement = doc->createElement(EffectXml::EffectsRoot);
     for (const auto& pEffectPreset : m_effectPresets) {
