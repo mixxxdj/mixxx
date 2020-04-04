@@ -15,26 +15,21 @@
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
-
-#include "controllers/keyboard/keyboardeventfilter.h"
-#include "mixer/playermanager.h"
-#include "mixer/basetrackplayer.h"
-#include "library/library.h"
-#include "util/xml.h"
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controllermanager.h"
-
-#include "skin/colorschemeparser.h"
-#include "skin/skincontext.h"
-#include "skin/launchimage.h"
-
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "effects/effectsmanager.h"
-
+#include "library/library.h"
+#include "mixer/basetrackplayer.h"
+#include "mixer/playermanager.h"
 #include "recording/recordingmanager.h"
-
+#include "skin/colorschemeparser.h"
+#include "skin/launchimage.h"
+#include "skin/skincontext.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 #include "util/valuetransformer.h"
+#include "util/xml.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/controlwidgetconnection.h"
 #include "widget/wbasewidget.h"
