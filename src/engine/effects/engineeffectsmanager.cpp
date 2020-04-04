@@ -209,14 +209,9 @@ void EngineEffectsManager::processInner(
                 }
             }
         }
-
-        // NOTE(Kshitij) : Check if we are required to add or copy the input samples to pOut
-
-        // pIntermediateInput is the output of the last processed chain. It would be the
-        // intermediate input of the next chain if there was one.
-        if (processingOccured) {
-            SampleUtil::copy(pOut, pIntermediateInput, numSamples);
-        }
+        // pIntermediateInput is the output of the last processed chain. It would
+        // be the intermediate input of the next chain if there was one.
+        SampleUtil::add(pOut, pIntermediateInput, numSamples);
     }
 }
 
