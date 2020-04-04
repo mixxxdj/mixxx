@@ -25,6 +25,26 @@ class EffectManifest;
 
 typedef QMap<EffectManifestParameter::ParameterType, QList<EffectParameterPointer>> ParameterMap;
 
+// EffectsManager is the interface between the parts of the effects system in
+// the main thread and the rest of Mixxx. It creates/destroys a fixed
+// set of EffectChainSlots on Mixxx startup/shutdown. EffectManager uses
+// EffectBackends and EffectManifests to create EffectProcessors. The
+// EffectProcessors are sent down to the EffectChainSlots, then down to the
+// EffectSlots which use the EffectProcessors to create EngineEffects and add
+// them to the audio engine.
+
+// EffectsManager saves/loads EffectChainPresets and EffectPresets.
+// EffectsManager maintains a list of custom EffectChainPresets in the
+// "effects/chains" folder in the user settings folder. The state of loaded
+// effects are saved as EffectChainPresets in the effects.xml file in the user
+// settings folder, which is used to restore the state of effects on startup.
+// Additionally, EffectsManager saves/loads EffectPresets in the
+// "effects/defaults" folder in the user settings folder to allow users to
+// specify default states when each effect is loaded.
+
+// To maintain clear separation of responsibilities, GUI classes should NOT
+// access the EffectChainSlots or EffectSlots directly. They should interface
+// with them indirectly through EffectsManager.
 class EffectsManager : public QObject {
     Q_OBJECT
   public:
@@ -52,9 +72,6 @@ class EffectsManager : public QObject {
     // your current chain.
     // EffectChainSlotPointer getNextEffectChain(EffectChainSlotPointer pEffectChainSlot);
     // EffectChainSlotPointer getPrevEffectChain(EffectChainSlotPointer pEffectChainSlot);
-
-    // NOTE(Kshitij) : New functions for saving and loading
-    // bool saveEffectChains();
 
     static const int kNumStandardEffectChains = 4;
 

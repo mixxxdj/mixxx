@@ -14,7 +14,20 @@
 
 class EffectProcessor;
 
-// EffectsBackend enumerates available effects and instantiates EffectProcessors
+// EffectsBackend is an abstract base class that enumerates available effects
+// which are identified by EffectManifests. EffectsBackend creates
+// EffectProcessors when provided with an EffectManifest from EffectsManager
+// indicating which specific EffectProcessor type to create.
+
+// The EffectProcessors implement the DSP logic specific to each effect.
+// EffectManager sends the EffectProcessors down to the EffectChainSlot, which
+// sends it down to the EffectSlot. The EffectSlot uses the EffectProcessor to
+// create an EngineEffect and add/remove the EngineEffect from the engine.
+
+// Currently the implemented EffectsBackend subclasses are for the effects
+// built into Mixxx and LV2 plugins. Other plugin types such as VSTs could be
+// added in the future by creating new subclasses of EffectsBackend,
+// EffectManifest, EffectState, and EffectProcessorImpl.
 class EffectsBackend {
   public:
     virtual ~EffectsBackend() {};

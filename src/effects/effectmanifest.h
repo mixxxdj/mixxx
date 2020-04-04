@@ -9,11 +9,14 @@
 #include "effects/effectmanifestparameter.h"
 #include "effects/defs.h"
 
-// An EffectManifest is a full description of the metadata associated with an
-// effect (e.g. name, author, version, description, etc.) and the parameters of
-// the effect that are intended to be exposed to the rest of Mixxx for user or
-// script control.
-//
+// An EffectManifest is a description of the metadata associated with an effect
+// (ID, display name, author, description) and all the parameters of the effect.
+// The pair of the ID string and EffectBackendType uniquely identifies an
+// effect. EffectManifests are used by EffectBackends to create EffectProcessors
+// which implement the DSP logic of the effect. The name string of effect
+// parameters in the manifest is used to link EngineEffectParameters
+// with member variables used in the DSP logic of the EffectProcessorImpl.
+
 // EffectManifest is composed purely of simple data types, and when an
 // EffectManifest is const, it should be completely immutable. EffectManifest is
 // meant to be used in most cases as a reference, and in Qt collections, so it

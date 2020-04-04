@@ -12,8 +12,7 @@
 class ControlObject;
 class ControlPushButton;
 
-// EffectButtonParameterSlot is a wrapper around the parameterX ControlObject
-// that loaded with an EffectParameter into itself by the EffectSlot.
+// Refer to EffectParameterSlotBase for documentation
 class EffectButtonParameterSlot : public EffectParameterSlotBase {
     Q_OBJECT
   public:

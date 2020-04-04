@@ -8,6 +8,7 @@
 #include "effects/defs.h"
 #include "engine/engine.h"
 
+// Refer to EffectProcessor for documentation
 class LV2EffectGroupState final: public EffectState {
   public:
     LV2EffectGroupState(const mixxx::EngineParameters& bufferParameters)

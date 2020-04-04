@@ -32,6 +32,27 @@ class EffectKnobParameterSlot;
 
 typedef QMap<EffectManifestParameter::ParameterType, QList<EffectParameterPointer>> ParameterMap;
 
+// EffectSlot is a main thread class which creates EngineEffects and sends
+// updates to them in response to changes in ControlObjects. It owns the
+// ControlObjects for enabling/disabling the effect and the effect metaknob.
+
+// EffectSlot owns a list of EffectParameterSlotBases and EffectParameters.
+// The EffectParameters are the main thread representation of the state of an
+// EngineEffectParameter. EffectSlot creates and destroys EffectParameters
+// together with the EngineEffect as it loads/unloads EngineEffects. The
+// EffectParameterSlotBases own the ControlObjects for manipulating the
+// EffectParameters and showing them in skins. The EffectParameterSlotBases are
+// permanent for the lifetime the EffectSlot; they are not created or destroyed
+// when loading/unloading effects.
+
+// The separation of EffectParameters from EffectParameterSlotBases decouples
+// the parameters available from manipulation via ControlObjects from the
+// parameters of EngineEffects. This allows EffectSlot to arbitrarily hide and
+// rearrange EffectParameters by loading/unloading them from the
+// EffectParameterSlotBases without changing the audio processing in the engine.
+
+// The state of an EffectSlot is loaded from an EffectPreset and a snapshot
+// of EffectSlot's state can be serialized into a EffectPreset.
 class EffectSlot : public QObject {
     Q_OBJECT
   public:

@@ -5,8 +5,9 @@
 #include "effects/defs.h"
 #include "effects/effectmanifestparameter.h"
 
-// EffectParameterPreset is a read-only snapshot of the state of an effect parameter
-// that can be serialized to/deserialized from XML.
+// EffectParameterPreset is a read-only snapshot of the state of an effect
+// parameter that can be serialized to/deserialized from XML. It is only used
+// as a component of an EffectPreset; never on its own.
 class EffectParameterPreset {
   public:
     EffectParameterPreset();

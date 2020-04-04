@@ -15,8 +15,7 @@ class ControlEffectKnob;
 class SoftTakeover;
 class EffectSlot;
 
-// EffectKnobParameterSlot is a wrapper around the parameterX ControlObject
-// that loaded with an EffectParameter into itself by the EffectSlot.
+// Refer to EffectParameterSlotBase for documentation
 class EffectKnobParameterSlot : public EffectParameterSlotBase {
     Q_OBJECT
   public:
