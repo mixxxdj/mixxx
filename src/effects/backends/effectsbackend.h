@@ -1,5 +1,4 @@
-#ifndef EFFECTSBACKEND_H
-#define EFFECTSBACKEND_H
+#pragma once
 
 #include <QObject>
 #include <QList>
@@ -57,5 +56,3 @@ class EffectsBackend {
         }
     }
 };
-
-#endif /* EFFECTSBACKEND_H */

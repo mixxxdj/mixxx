@@ -1,5 +1,4 @@
-#ifndef EFFECTPROCESSOR_H
-#define EFFECTPROCESSOR_H
+#pragma once
 
 #include <QString>
 #include <QHash>
@@ -275,5 +274,3 @@ class EffectProcessorImpl : public EffectProcessor {
     QSet<ChannelHandleAndGroup> m_registeredOutputChannels;
     ChannelHandleMap<ChannelHandleMap<EffectSpecificState*>> m_channelStateMatrix;
 };
-
-#endif /* EFFECTPROCESSOR_H */

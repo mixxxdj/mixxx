@@ -1,6 +1,4 @@
-#ifndef TREMOLOEFFECT_H
-#define TREMOLOEFFECT_H
-
+#pragma once
 #include "effects/backends/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
@@ -52,5 +50,3 @@ class TremoloEffect : public EffectProcessorImpl<TremoloState> {
 
     DISALLOW_COPY_AND_ASSIGN(TremoloEffect);
 };
-
-#endif /* TREMOLOEFFECT_H */

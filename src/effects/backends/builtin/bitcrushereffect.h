@@ -1,5 +1,4 @@
-#ifndef BITCRUSHEREFFECT_H
-#define BITCRUSHEREFFECT_H
+#pragma once
 
 #include <QMap>
 
@@ -50,5 +49,3 @@ class BitCrusherEffect : public EffectProcessorImpl<BitCrusherGroupState> {
 
     DISALLOW_COPY_AND_ASSIGN(BitCrusherEffect);
 };
-
-#endif /* BITCRUSHEREFFECT_H */
