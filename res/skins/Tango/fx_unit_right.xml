@@ -93,8 +93,13 @@ Variables:
                     <Connection>
                       <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
                       <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup><!-- /Super Knob, if enabled -->
+                  </Connection>
+                </WidgetGroup><!-- /Super Knob, if enabled -->
+
+                  <EffectChainPresetButton>
+                    <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+                    <Size>30f,30f</Size>
+                  </EffectChainPresetButton>
 
                   <WidgetGroup><!-- additional spacer for Super Knob, if enabled -->
                     <SizePolicy>min,me</SizePolicy>
