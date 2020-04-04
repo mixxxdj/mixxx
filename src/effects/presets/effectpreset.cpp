@@ -69,8 +69,21 @@ const QDomElement EffectPreset::toXml(QDomDocument* doc) const {
         return effectElement;
     }
 
-    XmlParse::addElement(*doc, effectElement, EffectXml::EffectMetaParameter, QString::number(m_dMetaParameter));
-    XmlParse::addElement(*doc, effectElement, EffectXml::EffectId, m_id);
+    XmlParse::addElement(
+            *doc,
+            effectElement,
+            EffectXml::EffectMetaParameter,
+            QString::number(m_dMetaParameter));
+    XmlParse::addElement(
+            *doc,
+            effectElement,
+            EffectXml::EffectId,
+            m_id);
+    XmlParse::addElement(
+            *doc,
+            effectElement,
+            EffectXml::EffectBackendType,
+            EffectsBackend::backendTypeToString(m_backendType));
 
     QDomElement parametersElement = doc->createElement(EffectXml::ParametersRoot);
     for (const auto& pParameter : m_effectParameterPresets) {
