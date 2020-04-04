@@ -12,7 +12,6 @@
 class EffectManifestParameter;
 typedef QSharedPointer<EffectManifestParameter> EffectManifestParameterPointer;
 
-
 class EffectManifestParameter {
   public:
     enum class ParameterType {
@@ -235,9 +234,15 @@ class EffectManifestParameter {
         return m_maximum;
     }
 
+    // Minimum, default, and maximum are set together in one function so their
+    // validity only needs to be checked once.
     void setRange(const double& minimum, const double& defaultValue, const double& maximum) {
         VERIFY_OR_DEBUG_ASSERT(minimum <= defaultValue && defaultValue <= maximum) {
-            qWarning() << "Invalid Parameter Range: " << minimum << ' ' << defaultValue << ' ' << maximum;
+            qWarning() << "EffectManifestParameter" << m_name
+                       << "tried to set invalid parameter range:"
+                       << "minimum" << minimum
+                       << "default" << defaultValue
+                       << "maximum" << maximum;
             return;
         }
         m_minimum = minimum;
