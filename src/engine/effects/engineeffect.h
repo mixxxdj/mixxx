@@ -9,8 +9,8 @@
 #include <QtDebug>
 
 #include "effects/effectsmanager.h"
-#include "effects/effectmanifest.h"
-#include "effects/effectprocessor.h"
+#include "effects/backends/effectmanifest.h"
+#include "effects/backends/effectprocessor.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/effects/message.h"

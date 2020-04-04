@@ -231,36 +231,36 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/dialog/dlgaboutdlg.ui
   src/dialog/dlgdevelopertools.cpp
   src/dialog/dlgdevelopertoolsdlg.ui
-  src/effects/builtin/autopaneffect.cpp
-  src/effects/builtin/balanceeffect.cpp
-  src/effects/builtin/bessel4lvmixeqeffect.cpp
-  src/effects/builtin/bessel8lvmixeqeffect.cpp
-  src/effects/builtin/biquadfullkilleqeffect.cpp
-  src/effects/builtin/bitcrushereffect.cpp
-  src/effects/builtin/builtinbackend.cpp
-  src/effects/builtin/echoeffect.cpp
-  src/effects/builtin/filtereffect.cpp
-  src/effects/builtin/flangereffect.cpp
-  src/effects/builtin/graphiceqeffect.cpp
-  src/effects/builtin/linkwitzriley8eqeffect.cpp
-  src/effects/builtin/loudnesscontoureffect.cpp
-  src/effects/builtin/metronomeeffect.cpp
-  src/effects/builtin/moogladder4filtereffect.cpp
-  src/effects/builtin/parametriceqeffect.cpp
-  src/effects/builtin/phasereffect.cpp
-  src/effects/builtin/reverbeffect.cpp
-  src/effects/builtin/threebandbiquadeqeffect.cpp
-  src/effects/builtin/tremoloeffect.cpp
   src/effects/effectbuttonparameterslot.cpp
   src/effects/effectchainslot.cpp
-  src/effects/effectmanifest.cpp
-  src/effects/effectmanifestparameter.cpp
   src/effects/effectparameter.cpp
   src/effects/effectknobparameterslot.cpp
   src/effects/effectparameterslotbase.cpp
   src/effects/effectslot.cpp
   src/effects/effectsmanager.cpp
   src/effects/specialeffectchainslots.cpp
+  src/effects/backends/effectmanifest.cpp
+  src/effects/backends/effectmanifestparameter.cpp
+  src/effects/backends/builtin/autopaneffect.cpp
+  src/effects/backends/builtin/balanceeffect.cpp
+  src/effects/backends/builtin/bessel4lvmixeqeffect.cpp
+  src/effects/backends/builtin/bessel8lvmixeqeffect.cpp
+  src/effects/backends/builtin/biquadfullkilleqeffect.cpp
+  src/effects/backends/builtin/bitcrushereffect.cpp
+  src/effects/backends/builtin/builtinbackend.cpp
+  src/effects/backends/builtin/echoeffect.cpp
+  src/effects/backends/builtin/filtereffect.cpp
+  src/effects/backends/builtin/flangereffect.cpp
+  src/effects/backends/builtin/graphiceqeffect.cpp
+  src/effects/backends/builtin/linkwitzriley8eqeffect.cpp
+  src/effects/backends/builtin/loudnesscontoureffect.cpp
+  src/effects/backends/builtin/metronomeeffect.cpp
+  src/effects/backends/builtin/moogladder4filtereffect.cpp
+  src/effects/backends/builtin/parametriceqeffect.cpp
+  src/effects/backends/builtin/phasereffect.cpp
+  src/effects/backends/builtin/reverbeffect.cpp
+  src/effects/backends/builtin/threebandbiquadeqeffect.cpp
+  src/effects/backends/builtin/tremoloeffect.cpp
   src/effects/presets/effectpreset.cpp
   src/effects/presets/effectchainpreset.cpp
   src/effects/presets/effectparameterpreset.cpp
@@ -1806,9 +1806,9 @@ if(LILV)
     message(FATAL_ERROR "Lilv (LV2) support requires the liblilv-0 and its development headers.")
   endif()
   target_sources(mixxx-lib PRIVATE
-    src/effects/lv2/lv2backend.cpp
-    src/effects/lv2/lv2effectprocessor.cpp
-    src/effects/lv2/lv2manifest.cpp
+    src/effects/backends/lv2/lv2backend.cpp
+    src/effects/backends/lv2/lv2effectprocessor.cpp
+    src/effects/backends/lv2/lv2manifest.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __LILV__)
   target_link_libraries(mixxx-lib PUBLIC Lilv::Lilv)

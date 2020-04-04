@@ -1169,9 +1169,9 @@ class Lilv(Feature):
             build.env.Append(CPPDEFINES='__LILV__')
 
     def sources(self, build):
-        return ['src/effects/lv2/lv2backend.cpp',
-                'src/effects/lv2/lv2effectprocessor.cpp',
-                'src/effects/lv2/lv2manifest.cpp']
+        return ['src/effects/backends/lv2/lv2backend.cpp',
+                'src/effects/backends/lv2/lv2effectprocessor.cpp',
+                'src/effects/backends/lv2/lv2manifest.cpp']
 
 class Battery(Feature):
     def description(self):

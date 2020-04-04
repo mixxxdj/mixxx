@@ -11,7 +11,7 @@
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 #include "effects/specialeffectchainslots.h"
-#include "effects/effectmanifestparameter.h"
+#include "effects/backends/effectmanifestparameter.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/message.h"
 #include "preferences/usersettings.h"

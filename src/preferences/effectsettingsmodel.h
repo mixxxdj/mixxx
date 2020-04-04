@@ -6,7 +6,7 @@
 #include <QMap>
 #include <QVariant>
 
-#include "effects/effectmanifest.h"
+#include "effects/backends/effectmanifest.h"
 #include "effects/effectsmanager.h"
 
 struct EffectProfile {

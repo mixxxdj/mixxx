@@ -3,7 +3,7 @@
 #include "control/controlencoder.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
-#include "effects/effectprocessor.h"
+#include "effects/backends/effectprocessor.h"
 #include "effects/effectslot.h"
 #include "effects/effectsmanager.h"
 #include "effects/effectxmlelements.h"

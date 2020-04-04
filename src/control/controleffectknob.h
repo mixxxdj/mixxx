@@ -2,7 +2,7 @@
 #define CONTROLEFFECTKNOB_H
 
 #include "control/controlpotmeter.h"
-#include "effects/effectmanifestparameter.h"
+#include "effects/backends/effectmanifestparameter.h"
 
 class ControlEffectKnob : public ControlPotmeter {
     Q_OBJECT

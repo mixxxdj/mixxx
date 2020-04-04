@@ -1,0 +1,65 @@
+#ifndef BESSEL8LVMIXEQEFFECT_H
+#define BESSEL8LVMIXEQEFFECT_H
+
+#include "effects/backends/builtin/lvmixeqbase.h"
+
+#include <QMap>
+
+#include "control/controlproxy.h"
+#include "effects/backends/effectprocessor.h"
+#include "engine/effects/engineeffect.h"
+#include "engine/effects/engineeffectparameter.h"
+#include "engine/filters/enginefilterbessel8.h"
+#include "engine/filters/enginefilterdelay.h"
+#include "util/class.h"
+#include "util/defs.h"
+#include "util/sample.h"
+#include "util/types.h"
+
+
+class Bessel8LVMixEQEffectGroupState :
+        public LVMixEQEffectGroupState<EngineFilterBessel8Low> {
+  public:
+        Bessel8LVMixEQEffectGroupState(const mixxx::EngineParameters& bufferParameters)
+            : LVMixEQEffectGroupState<EngineFilterBessel8Low>(bufferParameters) {
+        }
+};
+
+class Bessel8LVMixEQEffect : public EffectProcessorImpl<Bessel8LVMixEQEffectGroupState> {
+  public:
+    Bessel8LVMixEQEffect();
+    virtual ~Bessel8LVMixEQEffect();
+
+    static QString getId();
+    static EffectManifestPointer getManifest();
+
+    void loadEngineEffectParameters(
+            const QMap<QString, EngineEffectParameterPointer>& parameters) override;
+
+    void processChannel(
+            Bessel8LVMixEQEffectGroupState* pState,
+            const CSAMPLE* pInput, CSAMPLE* pOutput,
+            const mixxx::EngineParameters& bufferParameters,
+            const EffectEnableState enableState,
+            const GroupFeatureState& groupFeatureState) override;
+
+  private:
+    QString debugString() const {
+        return getId();
+    }
+
+    EngineEffectParameterPointer m_pPotLow;
+    EngineEffectParameterPointer m_pPotMid;
+    EngineEffectParameterPointer m_pPotHigh;
+
+    EngineEffectParameterPointer m_pKillLow;
+    EngineEffectParameterPointer m_pKillMid;
+    EngineEffectParameterPointer m_pKillHigh;
+
+    ControlProxy* m_pLoFreqCorner;
+    ControlProxy* m_pHiFreqCorner;
+
+    DISALLOW_COPY_AND_ASSIGN(Bessel8LVMixEQEffect);
+};
+
+#endif /* BESSEL8LVMIXEQEFFECT_H */

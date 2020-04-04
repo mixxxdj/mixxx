@@ -1,6 +1,7 @@
 #include "effects/presets/effectpreset.h"
 
-#include "effects/effectsbackend.h"
+#include "effects/effectslot.h"
+#include "effects/backends/effectsbackend.h"
 #include "effects/effectxmlelements.h"
 #include "util/xml.h"
 

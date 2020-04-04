@@ -3,7 +3,7 @@
 #include <QDomElement>
 
 #include "effects/defs.h"
-#include "effects/effectmanifestparameter.h"
+#include "effects/backends/effectmanifestparameter.h"
 
 // EffectParameterPreset is a read-only snapshot of the state of an effect
 // parameter that can be serialized to/deserialized from XML. It is only used

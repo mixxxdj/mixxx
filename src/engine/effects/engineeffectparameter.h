@@ -5,7 +5,7 @@
 #include <QVariant>
 
 #include "util/class.h"
-#include "effects/effectmanifestparameter.h"
+#include "effects/backends/effectmanifestparameter.h"
 
 class EngineEffectParameter {
   public:

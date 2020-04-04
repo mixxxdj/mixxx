@@ -37,9 +37,9 @@
 #include "dialog/dlgdevelopertools.h"
 #include "engine/enginemaster.h"
 #include "effects/effectsmanager.h"
-#include "effects/builtin/builtinbackend.h"
+#include "effects/backends/builtin/builtinbackend.h"
 #ifdef __LILV__
-#include "effects/lv2/lv2backend.h"
+#include "effects/backends/lv2/lv2backend.h"
 #endif
 #include "library/coverartcache.h"
 #include "library/library.h"

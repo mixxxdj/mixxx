@@ -6,7 +6,7 @@
 #include <QString>
 
 #include "control/controlobject.h"
-#include "effects/effectmanifest.h"
+#include "effects/backends/effectmanifest.h"
 #include "util/class.h"
 
 class ControlObject;

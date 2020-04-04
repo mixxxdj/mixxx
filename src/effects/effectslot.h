@@ -12,7 +12,7 @@
 #include "controllers/softtakeover.h"
 #include "effects/effectbuttonparameterslot.h"
 #include "effects/effectknobparameterslot.h"
-#include "effects/effectmanifest.h"
+#include "effects/backends/effectmanifest.h"
 #include "effects/effectparameter.h"
 #include "effects/presets/effectpreset.h"
 #include "engine/channelhandle.h"
