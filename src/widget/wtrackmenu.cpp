@@ -43,7 +43,7 @@
 
 
 
-WTrackMenu::WTrackMenu(QWidget *parent, UserSettingsPointer pConfig, TrackCollectionManager *pTrackCollectionManager)
+WTrackMenu::WTrackMenu(QWidget *parent, UserSettingsPointer pConfig, TrackCollectionManager *pTrackCollectionManager, Filters flags)
         : QMenu(parent),
           m_pConfig(std::move(pConfig)),
           m_pTrackCollectionManager(pTrackCollectionManager),
@@ -55,7 +55,7 @@ WTrackMenu::WTrackMenu(QWidget *parent, UserSettingsPointer pConfig, TrackCollec
           m_iCoverLocationColumn(-1),
           m_iCoverHashColumn(-1),
           m_iCoverColumn(-1),
-          m_eFilters(Filter::None) {
+          m_eFilters(flags) {
     m_pNumSamplers = new ControlProxy(
             "[Master]", "num_samplers", this);
     m_pNumDecks = new ControlProxy(
@@ -64,214 +64,240 @@ WTrackMenu::WTrackMenu(QWidget *parent, UserSettingsPointer pConfig, TrackCollec
             "[Master]", "num_preview_decks", this);
 
     constructMenus();
-    createActions();
-}
-
-WTrackMenu::~WTrackMenu() {
-    // Explicit destruction of heap allocated objects would cause segfault.
+    // FIXME: createActions() would cause segfault in constructor.
+//    createActions();
 }
 
 void WTrackMenu::constructMenus() {
-    m_pLoadToMenu = new QMenu(this);
-    m_pLoadToMenu->setTitle(tr("Load to"));
-    m_pDeckMenu = new QMenu(this);
-    m_pDeckMenu->setTitle(tr("Deck"));
-    m_pSamplerMenu = new QMenu(this);
-    m_pSamplerMenu->setTitle(tr("Sampler"));
+    if (optionIsEnabled(Filter::LoadTo)) {
+        m_pLoadToMenu = new QMenu(this);
+        m_pLoadToMenu->setTitle(tr("Load to"));
+        m_pDeckMenu = new QMenu(this);
+        m_pDeckMenu->setTitle(tr("Deck"));
+        m_pSamplerMenu = new QMenu(this);
+        m_pSamplerMenu->setTitle(tr("Sampler"));
+    }
 
-    m_pPlaylistMenu = new QMenu(this);
-    m_pPlaylistMenu->setTitle(tr("Add to Playlist"));
-    connect(m_pPlaylistMenu, SIGNAL(aboutToShow()),
-            this, SLOT(slotPopulatePlaylistMenu()));
-    m_pCrateMenu = new QMenu(this);
-    m_pCrateMenu->setTitle(tr("Crates"));
-    connect(m_pCrateMenu, SIGNAL(aboutToShow()),
-            this, SLOT(slotPopulateCrateMenu()));
+    if (optionIsEnabled(Filter::Playlist)) {
+        m_pPlaylistMenu = new QMenu(this);
+        m_pPlaylistMenu->setTitle(tr("Add to Playlist"));
+        connect(m_pPlaylistMenu, SIGNAL(aboutToShow()),
+                this, SLOT(slotPopulatePlaylistMenu()));
+    }
 
-    m_pMetadataMenu = new QMenu(this);
-    m_pMetadataMenu->setTitle(tr("Metadata"));
+    if (optionIsEnabled(Filter::Crate)) {
+        m_pCrateMenu = new QMenu(this);
+        m_pCrateMenu->setTitle(tr("Crates"));
+        connect(m_pCrateMenu, SIGNAL(aboutToShow()),
+                this, SLOT(slotPopulateCrateMenu()));
+    }
 
-    m_pMetadataUpdateExternalCollectionsMenu = new QMenu(this);
-    m_pMetadataUpdateExternalCollectionsMenu->setTitle(tr("Update external collections"));
+    if (optionIsEnabled(Filter::Metadata)) {
+        m_pMetadataMenu = new QMenu(this);
+        m_pMetadataMenu->setTitle(tr("Metadata"));
 
-    m_pBPMMenu = new QMenu(this);
-    m_pBPMMenu->setTitle(tr("Adjust BPM"));
+        m_pMetadataUpdateExternalCollectionsMenu = new QMenu(this);
+        m_pMetadataUpdateExternalCollectionsMenu->setTitle(tr("Update external collections"));
 
-    m_pColorMenu = new QMenu(this);
-    m_pColorMenu->setTitle(tr("Select Color"));
+        m_pCoverMenu = new WCoverArtMenu(this);
+        m_pCoverMenu->setTitle(tr("Cover Art"));
+        connect(m_pCoverMenu, SIGNAL(coverInfoSelected(const CoverInfoRelative&)),
+                this, SLOT(slotCoverInfoSelected(const CoverInfoRelative&)));
+        connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
+                this, SLOT(slotReloadCoverArt()));
+    }
 
-    m_pClearMetadataMenu = new QMenu(this);
-    //: Reset metadata in right click track context menu in library
-    m_pClearMetadataMenu->setTitle(tr("Reset"));
+    if (optionIsEnabled(Filter::BPM)) {
+        m_pBPMMenu = new QMenu(this);
+        m_pBPMMenu->setTitle(tr("Adjust BPM"));
+    }
 
-    m_pCoverMenu = new WCoverArtMenu(this);
-    m_pCoverMenu->setTitle(tr("Cover Art"));
+    if (optionIsEnabled(Filter::Color)) {
+        m_pColorMenu = new QMenu(this);
+        m_pColorMenu->setTitle(tr("Select Color"));
+    }
 
-    connect(m_pCoverMenu, SIGNAL(coverInfoSelected(const CoverInfoRelative&)),
-            this, SLOT(slotCoverInfoSelected(const CoverInfoRelative&)));
-    connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
-            this, SLOT(slotReloadCoverArt()));
+    if (optionIsEnabled(Filter::Reset)) {
+        m_pClearMetadataMenu = new QMenu(this);
+        //: Reset metadata in right click track context menu in library
+        m_pClearMetadataMenu->setTitle(tr("Reset"));
+    }
 }
-
-
 
 void WTrackMenu::createActions() {
     DEBUG_ASSERT(this);
-    DEBUG_ASSERT(m_pSamplerMenu);
 
-    m_pRemoveAct = new QAction(tr("Remove"), this);
-    connect(m_pRemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
+    if (optionIsEnabled(Filter::Remove)) {
+        m_pRemoveAct = new QAction(tr("Remove"), this);
+        connect(m_pRemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
 
-    m_pRemovePlaylistAct = new QAction(tr("Remove from Playlist"), this);
-    connect(m_pRemovePlaylistAct, &QAction::triggered, this, &WTrackMenu::slotRemove);
+        m_pRemovePlaylistAct = new QAction(tr("Remove from Playlist"), this);
+        connect(m_pRemovePlaylistAct, &QAction::triggered, this, &WTrackMenu::slotRemove);
 
-    m_pRemoveCrateAct = new QAction(tr("Remove from Crate"), this);
-    connect(m_pRemoveCrateAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
+        m_pRemoveCrateAct = new QAction(tr("Remove from Crate"), this);
+        connect(m_pRemoveCrateAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
+    }
 
-    m_pHideAct = new QAction(tr("Hide from Library"), this);
-    connect(m_pHideAct, SIGNAL(triggered()), this, SLOT(slotHide()));
+    if (optionIsEnabled(Filter::HideUnhidePurge)) {
+        m_pHideAct = new QAction(tr("Hide from Library"), this);
+        connect(m_pHideAct, SIGNAL(triggered()), this, SLOT(slotHide()));
 
-    m_pUnhideAct = new QAction(tr("Unhide from Library"), this);
-    connect(m_pUnhideAct, SIGNAL(triggered()), this, SLOT(slotUnhide()));
+        m_pUnhideAct = new QAction(tr("Unhide from Library"), this);
+        connect(m_pUnhideAct, SIGNAL(triggered()), this, SLOT(slotUnhide()));
 
-    m_pPurgeAct = new QAction(tr("Purge from Library"), this);
-    connect(m_pPurgeAct, SIGNAL(triggered()), this, SLOT(slotPurge()));
+        m_pPurgeAct = new QAction(tr("Purge from Library"), this);
+        connect(m_pPurgeAct, SIGNAL(triggered()), this, SLOT(slotPurge()));
+    }
 
-    m_pPropertiesAct = new QAction(tr("Properties"), this);
-    connect(m_pPropertiesAct, SIGNAL(triggered()),
-            this, SLOT(slotShowTrackInfo()));
+    if (optionIsEnabled(Filter::Properties)) {
+        m_pPropertiesAct = new QAction(tr("Properties"), this);
+        connect(m_pPropertiesAct, SIGNAL(triggered()),
+                this, SLOT(slotShowTrackInfo()));
+    }
 
-    m_pFileBrowserAct = new QAction(tr("Open in File Browser"), this);
-    connect(m_pFileBrowserAct, &QAction::triggered,
-            this, &WTrackMenu::slotOpenInFileBrowser);
+    if (optionIsEnabled(Filter::FileBrowser)) {
+        m_pFileBrowserAct = new QAction(tr("Open in File Browser"), this);
+        connect(m_pFileBrowserAct, &QAction::triggered,
+                this, &WTrackMenu::slotOpenInFileBrowser);
+    }
 
-    m_pAutoDJBottomAct = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
-    connect(m_pAutoDJBottomAct, SIGNAL(triggered()),
-            this, SLOT(slotAddToAutoDJBottom()));
+    if (optionIsEnabled(Filter::AutoDJ)) {
+        m_pAutoDJBottomAct = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
+        connect(m_pAutoDJBottomAct, SIGNAL(triggered()),
+                this, SLOT(slotAddToAutoDJBottom()));
 
-    m_pAutoDJTopAct = new QAction(tr("Add to Auto DJ Queue (top)"), this);
-    connect(m_pAutoDJTopAct, SIGNAL(triggered()),
-            this, SLOT(slotAddToAutoDJTop()));
+        m_pAutoDJTopAct = new QAction(tr("Add to Auto DJ Queue (top)"), this);
+        connect(m_pAutoDJTopAct, SIGNAL(triggered()),
+                this, SLOT(slotAddToAutoDJTop()));
 
-    m_pAutoDJReplaceAct = new QAction(tr("Add to Auto DJ Queue (replace)"), this);
-    connect(m_pAutoDJReplaceAct, SIGNAL(triggered()),
-            this, SLOT(slotAddToAutoDJReplace()));
+        m_pAutoDJReplaceAct = new QAction(tr("Add to Auto DJ Queue (replace)"), this);
+        connect(m_pAutoDJReplaceAct, SIGNAL(triggered()),
+                this, SLOT(slotAddToAutoDJReplace()));
+    }
 
-    m_pImportMetadataFromFileAct = new QAction(tr("Import From File Tags"), this);
-    connect(m_pImportMetadataFromFileAct, SIGNAL(triggered()),
-            this, SLOT(slotImportTrackMetadataFromFileTags()));
+    if (optionIsEnabled(Filter::Metadata)) {
+        m_pImportMetadataFromFileAct = new QAction(tr("Import From File Tags"), this);
+        connect(m_pImportMetadataFromFileAct, SIGNAL(triggered()),
+                this, SLOT(slotImportTrackMetadataFromFileTags()));
 
-    m_pImportMetadataFromMusicBrainzAct = new QAction(tr("Import From MusicBrainz"),this);
-    connect(m_pImportMetadataFromMusicBrainzAct, SIGNAL(triggered()),
-            this, SLOT(slotShowDlgTagFetcher()));
+        m_pImportMetadataFromMusicBrainzAct = new QAction(tr("Import From MusicBrainz"),this);
+        connect(m_pImportMetadataFromMusicBrainzAct, SIGNAL(triggered()),
+                this, SLOT(slotShowDlgTagFetcher()));
 
-    m_pExportMetadataAct = new QAction(tr("Export To File Tags"), this);
-    connect(m_pExportMetadataAct, SIGNAL(triggered()),
-            this, SLOT(slotExportTrackMetadataIntoFileTags()));
+        m_pExportMetadataAct = new QAction(tr("Export To File Tags"), this);
+        connect(m_pExportMetadataAct, SIGNAL(triggered()),
+                this, SLOT(slotExportTrackMetadataIntoFileTags()));
 
 
-    for (const auto& externalTrackCollection : m_pTrackCollectionManager->externalCollections()) {
-        UpdateExternalTrackCollection updateInExternalTrackCollection;
-        updateInExternalTrackCollection.externalTrackCollection = externalTrackCollection;
-        updateInExternalTrackCollection.action = new QAction(externalTrackCollection->name(), this);
-        updateInExternalTrackCollection.action->setToolTip(externalTrackCollection->description());
-        m_updateInExternalTrackCollections += updateInExternalTrackCollection;
-        auto externalTrackCollectionPtr = updateInExternalTrackCollection.externalTrackCollection;
-        connect(updateInExternalTrackCollection.action, &QAction::triggered,
-                this, [this, externalTrackCollectionPtr] {
-                    slotUpdateExternalTrackCollection(externalTrackCollectionPtr);
-                });
+        for (const auto& externalTrackCollection : m_pTrackCollectionManager->externalCollections()) {
+            UpdateExternalTrackCollection updateInExternalTrackCollection;
+            updateInExternalTrackCollection.externalTrackCollection = externalTrackCollection;
+            updateInExternalTrackCollection.action = new QAction(externalTrackCollection->name(), this);
+            updateInExternalTrackCollection.action->setToolTip(externalTrackCollection->description());
+            m_updateInExternalTrackCollections += updateInExternalTrackCollection;
+            auto externalTrackCollectionPtr = updateInExternalTrackCollection.externalTrackCollection;
+            connect(updateInExternalTrackCollection.action, &QAction::triggered,
+                    this, [this, externalTrackCollectionPtr] {
+                        slotUpdateExternalTrackCollection(externalTrackCollectionPtr);
+                    });
+        }
     }
 
 
-    m_pAddToPreviewDeck = new QAction(tr("Preview Deck"), this);
-    // currently there is only one preview deck so just map it here.
-    QString previewDeckGroup = PlayerManager::groupForPreviewDeck(0);
-    connect(m_pAddToPreviewDeck, &QAction::triggered,
-            this, [this, previewDeckGroup] { loadSelectionToGroup(previewDeckGroup); });
+    if (optionIsEnabled(Filter::LoadTo)) {
+        m_pAddToPreviewDeck = new QAction(tr("Preview Deck"), this);
+        // currently there is only one preview deck so just map it here.
+        QString previewDeckGroup = PlayerManager::groupForPreviewDeck(0);
+        connect(m_pAddToPreviewDeck, &QAction::triggered,
+                this, [this, previewDeckGroup] { loadSelectionToGroup(previewDeckGroup); });
+    }
 
+    if (optionIsEnabled(Filter::Reset)) {
+        // Clear metadata actions
+        m_pClearBeatsAction = new QAction(tr("BPM and Beatgrid"), this);
+        connect(m_pClearBeatsAction, SIGNAL(triggered()),
+                this, SLOT(slotClearBeats()));
 
-    // Clear metadata actions
-    m_pClearBeatsAction = new QAction(tr("BPM and Beatgrid"), this);
-    connect(m_pClearBeatsAction, SIGNAL(triggered()),
-            this, SLOT(slotClearBeats()));
+        m_pClearPlayCountAction = new QAction(tr("Play Count"), this);
+        connect(m_pClearPlayCountAction, SIGNAL(triggered()),
+                this, SLOT(slotClearPlayCount()));
 
-    m_pClearPlayCountAction = new QAction(tr("Play Count"), this);
-    connect(m_pClearPlayCountAction, SIGNAL(triggered()),
-            this, SLOT(slotClearPlayCount()));
+        m_pClearMainCueAction = new QAction(tr("Cue Point"), this);
+        connect(m_pClearMainCueAction, SIGNAL(triggered()),
+                this, SLOT(slotClearMainCue()));
 
-    m_pClearMainCueAction = new QAction(tr("Cue Point"), this);
-    connect(m_pClearMainCueAction, SIGNAL(triggered()),
-            this, SLOT(slotClearMainCue()));
+        m_pClearHotCuesAction = new QAction(tr("Hotcues"), this);
+        connect(m_pClearHotCuesAction, SIGNAL(triggered()),
+                this, SLOT(slotClearHotCues()));
 
-    m_pClearHotCuesAction = new QAction(tr("Hotcues"), this);
-    connect(m_pClearHotCuesAction, SIGNAL(triggered()),
-            this, SLOT(slotClearHotCues()));
+        m_pClearIntroCueAction = new QAction(tr("Intro"), this);
+        connect(m_pClearIntroCueAction, SIGNAL(triggered()),
+                this, SLOT(slotClearIntroCue()));
 
-    m_pClearIntroCueAction = new QAction(tr("Intro"), this);
-    connect(m_pClearIntroCueAction, SIGNAL(triggered()),
-            this, SLOT(slotClearIntroCue()));
+        m_pClearOutroCueAction = new QAction(tr("Outro"), this);
+        connect(m_pClearOutroCueAction, SIGNAL(triggered()),
+                this, SLOT(slotClearOutroCue()));
 
-    m_pClearOutroCueAction = new QAction(tr("Outro"), this);
-    connect(m_pClearOutroCueAction, SIGNAL(triggered()),
-            this, SLOT(slotClearOutroCue()));
+        m_pClearLoopAction = new QAction(tr("Loop"), this);
+        connect(m_pClearLoopAction, SIGNAL(triggered()),
+                this, SLOT(slotClearLoop()));
 
-    m_pClearLoopAction = new QAction(tr("Loop"), this);
-    connect(m_pClearLoopAction, SIGNAL(triggered()),
-            this, SLOT(slotClearLoop()));
+        m_pClearKeyAction = new QAction(tr("Key"), this);
+        connect(m_pClearKeyAction, SIGNAL(triggered()),
+                this, SLOT(slotClearKey()));
 
-    m_pClearKeyAction = new QAction(tr("Key"), this);
-    connect(m_pClearKeyAction, SIGNAL(triggered()),
-            this, SLOT(slotClearKey()));
+        m_pClearReplayGainAction = new QAction(tr("ReplayGain"), this);
+        connect(m_pClearReplayGainAction, SIGNAL(triggered()),
+                this, SLOT(slotClearReplayGain()));
 
-    m_pClearReplayGainAction = new QAction(tr("ReplayGain"), this);
-    connect(m_pClearReplayGainAction, SIGNAL(triggered()),
-            this, SLOT(slotClearReplayGain()));
+        m_pClearWaveformAction = new QAction(tr("Waveform"), this);
+        connect(m_pClearWaveformAction, SIGNAL(triggered()),
+                this, SLOT(slotClearWaveform()));
 
-    m_pClearWaveformAction = new QAction(tr("Waveform"), this);
-    connect(m_pClearWaveformAction, SIGNAL(triggered()),
-            this, SLOT(slotClearWaveform()));
+        m_pClearAllMetadataAction = new QAction(tr("All"), this);
+        connect(m_pClearAllMetadataAction, SIGNAL(triggered()),
+                this, SLOT(slotClearAllMetadata()));
+    }
 
-    m_pClearAllMetadataAction = new QAction(tr("All"), this);
-    connect(m_pClearAllMetadataAction, SIGNAL(triggered()),
-            this, SLOT(slotClearAllMetadata()));
+    if (optionIsEnabled(Filter::BPM)) {
+        m_pBpmLockAction = new QAction(tr("Lock BPM"), this);
+        m_pBpmUnlockAction = new QAction(tr("Unlock BPM"), this);
+        connect(m_pBpmLockAction, SIGNAL(triggered()),
+                this, SLOT(slotLockBpm()));
+        connect(m_pBpmUnlockAction, SIGNAL(triggered()),
+                this, SLOT(slotUnlockBpm()));
 
+        //BPM edit actions
+        m_pBpmDoubleAction = new QAction(tr("Double BPM"), this);
+        m_pBpmHalveAction = new QAction(tr("Halve BPM"), this);
+        m_pBpmTwoThirdsAction = new QAction(tr("2/3 BPM"), this);
+        m_pBpmThreeFourthsAction = new QAction(tr("3/4 BPM"), this);
+        m_pBpmFourThirdsAction = new QAction(tr("4/3 BPM"), this);
+        m_pBpmThreeHalvesAction = new QAction(tr("3/2 BPM"), this);
 
-    m_pBpmLockAction = new QAction(tr("Lock BPM"), this);
-    m_pBpmUnlockAction = new QAction(tr("Unlock BPM"), this);
-    connect(m_pBpmLockAction, SIGNAL(triggered()),
-            this, SLOT(slotLockBpm()));
-    connect(m_pBpmUnlockAction, SIGNAL(triggered()),
-            this, SLOT(slotUnlockBpm()));
+        connect(m_pBpmDoubleAction, &QAction::triggered,
+                this, [this] { slotScaleBpm(Beats::DOUBLE); });
+        connect(m_pBpmHalveAction, &QAction::triggered,
+                this, [this] { slotScaleBpm(Beats::HALVE); });
+        connect(m_pBpmTwoThirdsAction, &QAction::triggered,
+                this, [this] { slotScaleBpm(Beats::TWOTHIRDS); });
+        connect(m_pBpmThreeFourthsAction, &QAction::triggered,
+                this, [this] { slotScaleBpm(Beats::THREEFOURTHS); });
+        connect(m_pBpmFourThirdsAction, &QAction::triggered,
+                this, [this] { slotScaleBpm(Beats::FOURTHIRDS); });
+        connect(m_pBpmThreeHalvesAction, &QAction::triggered,
+                this, [this] { slotScaleBpm(Beats::THREEHALVES); });
+    }
 
-    //BPM edit actions
-    m_pBpmDoubleAction = new QAction(tr("Double BPM"), this);
-    m_pBpmHalveAction = new QAction(tr("Halve BPM"), this);
-    m_pBpmTwoThirdsAction = new QAction(tr("2/3 BPM"), this);
-    m_pBpmThreeFourthsAction = new QAction(tr("3/4 BPM"), this);
-    m_pBpmFourThirdsAction = new QAction(tr("4/3 BPM"), this);
-    m_pBpmThreeHalvesAction = new QAction(tr("3/2 BPM"), this);
-
-    connect(m_pBpmDoubleAction, &QAction::triggered,
-            this, [this] { slotScaleBpm(Beats::DOUBLE); });
-    connect(m_pBpmHalveAction, &QAction::triggered,
-            this, [this] { slotScaleBpm(Beats::HALVE); });
-    connect(m_pBpmTwoThirdsAction, &QAction::triggered,
-            this, [this] { slotScaleBpm(Beats::TWOTHIRDS); });
-    connect(m_pBpmThreeFourthsAction, &QAction::triggered,
-            this, [this] { slotScaleBpm(Beats::THREEFOURTHS); });
-    connect(m_pBpmFourThirdsAction, &QAction::triggered,
-            this, [this] { slotScaleBpm(Beats::FOURTHIRDS); });
-    connect(m_pBpmThreeHalvesAction, &QAction::triggered,
-            this, [this] { slotScaleBpm(Beats::THREEHALVES); });
-
-    ColorPaletteSettings colorPaletteSettings(m_pConfig);
-    m_pColorPickerAction = new WColorPickerAction(WColorPicker::Option::AllowNoColor, colorPaletteSettings.getTrackColorPalette(), this);
-    m_pColorPickerAction->setObjectName("TrackColorPickerAction");
-    connect(m_pColorPickerAction,
-            &WColorPickerAction::colorPicked,
-            this,
-            &WTrackMenu::slotColorPicked);
+    if (optionIsEnabled(Filter::Color)) {
+        ColorPaletteSettings colorPaletteSettings(m_pConfig);
+        m_pColorPickerAction = new WColorPickerAction(WColorPicker::Option::AllowNoColor, colorPaletteSettings.getTrackColorPalette(), this);
+        m_pColorPickerAction->setObjectName("TrackColorPickerAction");
+        connect(m_pColorPickerAction,
+                &WColorPickerAction::colorPicked,
+                this,
+                &WTrackMenu::slotColorPicked);
+    }
 }
 
 void WTrackMenu::teardownActions() {
@@ -291,19 +317,21 @@ void WTrackMenu::teardownActions() {
 void WTrackMenu::setupActions() {
     // TODO: Replace true with filters
     teardownActions();
+    createActions();
     QModelIndexList indices = m_pSelectedTrackIndices;
 
     // Gray out some stuff if multiple songs were selected.
     bool oneSongSelected = m_pTrackIdList.size() == 1;
 
-    if (true) {
+    if (optionIsEnabled(Filter::AutoDJ) &&
+            (!m_pTrackModel | modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ))) {
         addAction(m_pAutoDJBottomAct);
         addAction(m_pAutoDJTopAct);
         addAction(m_pAutoDJReplaceAct);
         addSeparator();
     }
 
-    if (true) {
+    if (optionIsEnabled(Filter::LoadTo)) {
         int iNumDecks = m_pNumDecks->get();
         if (iNumDecks > 0) {
             for (int i = 1; i <= iNumDecks; ++i) {
@@ -322,9 +350,8 @@ void WTrackMenu::setupActions() {
             }
         }
         m_pLoadToMenu->addMenu(m_pDeckMenu);
-    }
 
-    if (true) {
+
         int iNumSamplers = m_pNumSamplers->get();
         if (iNumSamplers > 0) {
             for (int i = 1; i <= iNumSamplers; ++i) {
@@ -342,50 +369,53 @@ void WTrackMenu::setupActions() {
             }
             m_pLoadToMenu->addMenu(m_pSamplerMenu);
         }
+
+
+        if (m_pNumPreviewDecks->get() > 0.0) {
+            m_pLoadToMenu->addAction(m_pAddToPreviewDeck);
+        }
+
+        if (!m_pLoadToMenu->isEmpty()){
+            addMenu(m_pLoadToMenu);
+            addSeparator();
+        }
     }
 
-    if (true &&
-        m_pNumPreviewDecks->get() > 0.0) {
-        m_pLoadToMenu->addAction(m_pAddToPreviewDeck);
-    }
-
-    if (!m_pLoadToMenu->isEmpty()){
-        addMenu(m_pLoadToMenu);
-        addSeparator();
-    }
-
-    if (true) {
+    if (optionIsEnabled(Filter::Playlist)) {
         // Playlist menu is lazy loaded on hover by slotPopulatePlaylistMenu
         // to avoid unnecessary database queries
         m_bPlaylistMenuLoaded = false;
         addMenu(m_pPlaylistMenu);
     }
 
-    if (true) {
+    if (optionIsEnabled(Filter::Crate)) {
         // Crate menu is lazy loaded on hover by slotPopulateCrateMenu
         // to avoid unnecessary database queries
         m_bCrateMenuLoaded = false;
         addMenu(m_pCrateMenu);
     }
 
-    // REMOVE and HIDE should not be at the first menu position to avoid accidental clicks
-    bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
-        m_pRemoveAct->setEnabled(!locked);
-        addAction(m_pRemoveAct);
-    }
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST)) {
-        m_pRemovePlaylistAct->setEnabled(!locked);
-        addAction(m_pRemovePlaylistAct);
-    }
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_CRATE)) {
-        m_pRemoveCrateAct->setEnabled(!locked);
-        addAction(m_pRemoveCrateAct);
+    if (optionIsEnabled(Filter::Remove)) {
+        // REMOVE and HIDE should not be at the first menu position to avoid accidental clicks
+        bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
+        if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
+            m_pRemoveAct->setEnabled(!locked);
+            addAction(m_pRemoveAct);
+        }
+        if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST)) {
+            m_pRemovePlaylistAct->setEnabled(!locked);
+            addAction(m_pRemovePlaylistAct);
+        }
+        if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_CRATE)) {
+            m_pRemoveCrateAct->setEnabled(!locked);
+            addAction(m_pRemoveCrateAct);
+        }
     }
 
     addSeparator();
 
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA)) {
+    if (optionIsEnabled(Filter::Metadata) &&
+            modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA)) {
         m_pMetadataMenu->addAction(m_pImportMetadataFromFileAct);
         m_pImportMetadataFromMusicBrainzAct->setEnabled(oneSongSelected);
         m_pMetadataMenu->addAction(m_pImportMetadataFromMusicBrainzAct);
@@ -418,41 +448,6 @@ void WTrackMenu::setupActions() {
         if (!m_pMetadataUpdateExternalCollectionsMenu->isEmpty()) {
             m_pMetadataMenu->addMenu(m_pMetadataUpdateExternalCollectionsMenu);
         }
-
-        DEBUG_ASSERT(m_pTrackModel);
-        if (m_pTrackModel == nullptr) {
-            return;
-        }
-        bool allowClear = true;
-        int column = m_pTrackModel->fieldIndex(LIBRARYTABLE_BPM_LOCK);
-        for (int i = 0; i < indices.size() && allowClear; ++i) {
-            int row = indices.at(i).row();
-            QModelIndex index = indices.at(i).sibling(row,column);
-            if (index.data().toBool()) {
-                allowClear = false;
-            }
-        }
-        m_pClearBeatsAction->setEnabled(allowClear);
-        m_pClearMetadataMenu->addAction(m_pClearBeatsAction);
-    }
-
-    if (true) {
-        m_pClearMetadataMenu->addAction(m_pClearPlayCountAction);
-    }
-
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA)) {
-        // FIXME: Why is clearing the loop not working?
-        m_pClearMetadataMenu->addAction(m_pClearMainCueAction);
-        m_pClearMetadataMenu->addAction(m_pClearHotCuesAction);
-        m_pClearMetadataMenu->addAction(m_pClearIntroCueAction);
-        m_pClearMetadataMenu->addAction(m_pClearOutroCueAction);
-        //m_pClearMetadataMenu->addAction(m_pClearLoopAction);
-        m_pClearMetadataMenu->addAction(m_pClearKeyAction);
-        m_pClearMetadataMenu->addAction(m_pClearReplayGainAction);
-        m_pClearMetadataMenu->addAction(m_pClearWaveformAction);
-        m_pClearMetadataMenu->addSeparator();
-        m_pClearMetadataMenu->addAction(m_pClearAllMetadataAction);
-
         // Cover art menu only applies if at least one track is selected.
         if (indices.size()) {
             // We load a single track to get the necessary context for the cover (we use
@@ -471,10 +466,41 @@ void WTrackMenu::setupActions() {
             m_pCoverMenu->setCoverArt(info);
             m_pMetadataMenu->addMenu(m_pCoverMenu);
         }
-
         addMenu(m_pMetadataMenu);
-        addMenu(m_pClearMetadataMenu);
+    }
 
+    if (optionIsEnabled(Filter::Reset)) {
+        DEBUG_ASSERT(m_pTrackModel);
+        if (m_pTrackModel == nullptr) {
+            return;
+        }
+        bool allowClear = true;
+        int column = m_pTrackModel->fieldIndex(LIBRARYTABLE_BPM_LOCK);
+        for (int i = 0; i < indices.size() && allowClear; ++i) {
+            int row = indices.at(i).row();
+            QModelIndex index = indices.at(i).sibling(row,column);
+            if (index.data().toBool()) {
+                allowClear = false;
+            }
+        }
+        m_pClearBeatsAction->setEnabled(allowClear);
+        m_pClearMetadataMenu->addAction(m_pClearBeatsAction);
+        m_pClearMetadataMenu->addAction(m_pClearPlayCountAction);
+        // FIXME: Why is clearing the loop not working?
+        m_pClearMetadataMenu->addAction(m_pClearMainCueAction);
+        m_pClearMetadataMenu->addAction(m_pClearHotCuesAction);
+        m_pClearMetadataMenu->addAction(m_pClearIntroCueAction);
+        m_pClearMetadataMenu->addAction(m_pClearOutroCueAction);
+        //m_pClearMetadataMenu->addAction(m_pClearLoopAction);
+        m_pClearMetadataMenu->addAction(m_pClearKeyAction);
+        m_pClearMetadataMenu->addAction(m_pClearReplayGainAction);
+        m_pClearMetadataMenu->addAction(m_pClearWaveformAction);
+        m_pClearMetadataMenu->addSeparator();
+        m_pClearMetadataMenu->addAction(m_pClearAllMetadataAction);
+        addMenu(m_pClearMetadataMenu);
+    }
+
+    if(optionIsEnabled(Filter::BPM)) {
         m_pBPMMenu->addAction(m_pBpmDoubleAction);
         m_pBPMMenu->addAction(m_pBpmHalveAction);
         m_pBPMMenu->addAction(m_pBpmTwoThirdsAction);
@@ -541,59 +567,64 @@ void WTrackMenu::setupActions() {
             }
         }
         addMenu(m_pBPMMenu);
+    }
 
-        // Track color menu only appears if at least one track is selected
-        if (!indices.empty()) {
-            m_pColorPickerAction->setColorPalette(
-                    ColorPaletteSettings(m_pConfig).getTrackColorPalette());
+    // Track color menu only appears if at least one track is selected
+    if (optionIsEnabled(Filter::Color) &&
+            m_pTrackModel != nullptr &&
+            !indices.empty()) {
+        m_pColorPickerAction->setColorPalette(
+                ColorPaletteSettings(m_pConfig).getTrackColorPalette());
 
-            // Get color of first selected track
-            int column = m_pTrackModel->fieldIndex(LIBRARYTABLE_COLOR);
-            QModelIndex index = indices.at(0).sibling(indices.at(0).row(), column);
-            auto trackColor = mixxx::RgbColor::fromQVariant(index.data());
+        // Get color of first selected track
+        int column = m_pTrackModel->fieldIndex(LIBRARYTABLE_COLOR);
+        QModelIndex index = indices.at(0).sibling(indices.at(0).row(), column);
+        auto trackColor = mixxx::RgbColor::fromQVariant(index.data());
 
-            // Check if all other selected tracks have the same color
-            bool multipleTrackColors = false;
-            for (int i = 1; i < indices.size(); ++i) {
-                int row = indices.at(i).row();
-                QModelIndex index = indices.at(i).sibling(row, column);
+        // Check if all other selected tracks have the same color
+        bool multipleTrackColors = false;
+        for (int i = 1; i < indices.size(); ++i) {
+            int row = indices.at(i).row();
+            QModelIndex index = indices.at(i).sibling(row, column);
 
-                if (trackColor != mixxx::RgbColor::fromQVariant(index.data())) {
-                    trackColor = mixxx::RgbColor::nullopt();
-                    multipleTrackColors = true;
-                    break;
-                }
+            if (trackColor != mixxx::RgbColor::fromQVariant(index.data())) {
+                trackColor = mixxx::RgbColor::nullopt();
+                multipleTrackColors = true;
+                break;
             }
-
-            if (multipleTrackColors) {
-                m_pColorPickerAction->resetSelectedColor();
-            } else {
-                m_pColorPickerAction->setSelectedColor(trackColor);
-            }
-            m_pColorMenu->addAction(m_pColorPickerAction);
-            addMenu(m_pColorMenu);
         }
+
+        if (multipleTrackColors) {
+            m_pColorPickerAction->resetSelectedColor();
+        } else {
+            m_pColorPickerAction->setSelectedColor(trackColor);
+        }
+        m_pColorMenu->addAction(m_pColorPickerAction);
+        addMenu(m_pColorMenu);
     }
 
     addSeparator();
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_HIDE)) {
-        m_pHideAct->setEnabled(!locked);
-        addAction(m_pHideAct);
-    }
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE)) {
-        m_pUnhideAct->setEnabled(!locked);
-        addAction(m_pUnhideAct);
-    }
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_PURGE)) {
-        m_pPurgeAct->setEnabled(!locked);
-        addAction(m_pPurgeAct);
+    if (optionIsEnabled(Filter::HideUnhidePurge)) {
+        bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
+        if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_HIDE)) {
+            m_pHideAct->setEnabled(!locked);
+            addAction(m_pHideAct);
+        }
+        if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE)) {
+            m_pUnhideAct->setEnabled(!locked);
+            addAction(m_pUnhideAct);
+        }
+        if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_PURGE)) {
+            m_pPurgeAct->setEnabled(!locked);
+            addAction(m_pPurgeAct);
+        }
     }
 
-    if (true) {
+    if (optionIsEnabled(Filter::FileBrowser)) {
         addAction(m_pFileBrowserAct);
     }
 
-    if (true) {
+    if (optionIsEnabled(Filter::Properties)) {
         addSeparator();
         m_pPropertiesAct->setEnabled(oneSongSelected);
         addAction(m_pPropertiesAct);
@@ -1435,4 +1466,8 @@ void WTrackMenu::clearTrackSelection() {
     m_pTrackIdList.clear();
     m_pTrackPointerList.clear();
     m_pSelectedTrackIndices.clear();
+}
+
+bool WTrackMenu::optionIsEnabled(Filter flag) {
+    return m_eFilters.testFlag(Filter::None) || m_eFilters.testFlag(flag);
 }

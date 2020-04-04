@@ -32,7 +32,8 @@ WTrackProperty::WTrackProperty(const char* group,
     setAcceptDrops(true);
 
     // Setup context menu
-    m_pMenu = new WTrackMenu(this, pConfig, pTrackCollectionManager);
+    WTrackMenu::Filters flags = WTrackMenu::Filter::Crate;
+    m_pMenu = new WTrackMenu(this, pConfig, pTrackCollectionManager, flags);
 }
 
 WTrackProperty::~WTrackProperty() {

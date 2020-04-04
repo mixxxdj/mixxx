@@ -30,21 +30,32 @@ class ExternalTrackCollection;
 class WTrackMenu : public QMenu {
     Q_OBJECT
   public:
-    WTrackMenu(QWidget *parent, UserSettingsPointer pConfig, TrackCollectionManager* pTrackCollectionManager);
-    ~WTrackMenu() override;
+    enum Filter {
+        None,
+        AutoDJ,
+        LoadTo,
+        Playlist,
+        Crate,
+        Remove,
+        Metadata,
+        Reset,
+        BPM,
+        Color,
+        HideUnhidePurge,
+        FileBrowser,
+        Properties,
+    };
+    Q_DECLARE_FLAGS(Filters, Filter)
+
+    WTrackMenu(QWidget *parent, UserSettingsPointer pConfig, TrackCollectionManager* pTrackCollectionManager, Filters flags = Filter::None);
+    ~WTrackMenu() {};
 
     void setTrackId(TrackId track);
     void setTrackIds(TrackIdList trackList);
     void setTrackIndexList(QModelIndexList indexList);
     void setTrackModel(TrackModel* trackModel);
 
-    enum Filter {
-        None,
-        FileBrowser,
-        Playlist,
-        Crate
-    };
-    Q_DECLARE_FLAGS(Filters, Filter)
+
 
   private slots:
     void slotOpenInFileBrowser();
@@ -112,6 +123,7 @@ private:
     TrackPointerList getTrackPointerList();
 
     bool modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) const;
+    bool optionIsEnabled(Filter flag);
 
     void addSelectionToPlaylist(int iPlaylistId);
     void updateSelectionCrates(QWidget* pWidget);
