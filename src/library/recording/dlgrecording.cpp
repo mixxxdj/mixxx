@@ -47,7 +47,7 @@ DlgRecording::DlgRecording(QWidget* parent, UserSettingsPointer pConfig,
     connect(m_pRecordingManager,
             &RecordingManager::isRecording,
             this,
-            &DlgRecording::slotRecordingEnabled);
+            &DlgRecording::slotRecordingStateChanged);
     connect(m_pRecordingManager,
             &RecordingManager::bytesRecorded,
             this,
@@ -76,7 +76,7 @@ DlgRecording::DlgRecording(QWidget* parent, UserSettingsPointer pConfig,
     connect(pushButtonRecording,
             &QPushButton::clicked,
             this,
-            &DlgRecording::toggleRecording);
+            &DlgRecording::slotRecButtonClicked);
 
     label->setText("");
     label->setEnabled(false);
@@ -130,12 +130,12 @@ void DlgRecording::moveSelection(int delta) {
     m_pTrackTableView->moveSelection(delta);
 }
 
-void DlgRecording::toggleRecording(bool toggle) {
+void DlgRecording::slotRecButtonClicked(bool toggle) {
     Q_UNUSED(toggle);
     m_pRecordingManager->slotToggleRecording(true);
 }
 
-void DlgRecording::slotRecordingEnabled(bool isRecording) {
+void DlgRecording::slotRecordingStateChanged(bool isRecording) {
     if (isRecording) {
         pushButtonRecording->setChecked(true);
         pushButtonRecording->setText((tr("Stop Recording")));
