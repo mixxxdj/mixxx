@@ -135,9 +135,6 @@ class EffectSlot : public QObject {
 
     void setEnabled(bool enabled);
 
-    void addToEngine(std::unique_ptr<EffectProcessor>,
-            const QSet<ChannelHandleAndGroup>& activeInputChannels);
-    void removeFromEngine();
 
   public slots:
     void setMetaParameter(double v, bool force = false);
@@ -158,6 +155,10 @@ class EffectSlot : public QObject {
     QString debugString() const {
         return QString("EffectSlot(%1)").arg(m_group);
     }
+
+    void addToEngine(std::unique_ptr<EffectProcessor>,
+            const QSet<ChannelHandleAndGroup>& activeInputChannels);
+    void removeFromEngine();
 
     void loadParameters();
     void unloadEffect();
