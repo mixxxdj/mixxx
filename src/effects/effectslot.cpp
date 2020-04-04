@@ -343,6 +343,10 @@ void EffectSlot::loadParameters() {
 
         int slot = 0;
         for (auto pParameter : m_loadedParameters.value(parameterType)) {
+            // LV2 effects may have more parameters than there are slots available
+            if ((unsigned)slot >= kDefaultMaxParameters) {
+                return;
+            }
             VERIFY_OR_DEBUG_ASSERT(slot <= m_parameterSlots.value(parameterType).size()) {
                 break;
             }
