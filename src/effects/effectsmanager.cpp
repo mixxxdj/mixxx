@@ -584,8 +584,27 @@ void EffectsManager::saveDefaultForEffect(EffectPresetPointer pEffectPreset) {
     if (!effectsDefaultsDir.exists()) {
         effectsDefaultsDir.mkpath(path);
     }
-    // TODO: sanitize file name?
-    QFile file(path + "/" + pEffectPreset->id() + ".xml");
+
+    // The file name does not matter as long as it is unique. The actual id string
+    // is safely stored in the UTF8 document, regardless of what the filesystem
+    // supports for file names.
+    QString fileName = pEffectPreset->id();
+    // LV2 ids are URLs
+    fileName.replace("/", "-");
+    QStringList forbiddenCharacters;
+    forbiddenCharacters << "<"
+                        << ">"
+                        << ":"
+                        << "\""
+                        << "\'"
+                        << "|"
+                        << "?"
+                        << "*"
+                        << "\\";
+    for (const auto& character : forbiddenCharacters) {
+        fileName.remove(character);
+    }
+    QFile file(path + "/" + fileName + ".xml");
     if (!file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
         return;
     }
