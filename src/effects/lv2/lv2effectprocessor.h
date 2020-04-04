@@ -1,5 +1,4 @@
-#ifndef LV2EFFECTPROCESSOR_H
-#define LV2EFFECTPROCESSOR_H
+#pragma once
 
 #include "effects/effectprocessor.h"
 #include "effects/lv2/lv2manifest.h"
@@ -65,6 +64,3 @@ class LV2EffectProcessor final : public EffectProcessorImpl<LV2EffectGroupState>
     const QList<int> m_audioPortIndices;
     const QList<int> m_controlPortIndices;
 };
-
-
-#endif // LV2EFFECTPROCESSOR_H

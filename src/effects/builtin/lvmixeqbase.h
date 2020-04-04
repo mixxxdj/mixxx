@@ -1,5 +1,4 @@
-#ifndef BESSELLVMIXEQBASE_H
-#define BESSELLVMIXEQBASE_H
+#pragma once
 
 #include "effects/effectprocessor.h"
 #include "engine/filters/enginefilterdelay.h"
@@ -256,5 +255,3 @@ class LVMixEQEffectGroupState : public EffectState {
     CSAMPLE* m_pBandBuf;
     CSAMPLE* m_pHighBuf;
 };
-
-#endif // BESSELLVMIXEQBASE_H

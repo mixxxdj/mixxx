@@ -1,5 +1,4 @@
-#ifndef LV2MANIFEST_H
-#define LV2MANIFEST_H
+#pragma once
 
 #include <QSharedPointer>
 
@@ -47,5 +46,3 @@ class LV2Manifest : public EffectManifest {
 };
 
 typedef QSharedPointer<LV2Manifest> LV2EffectManifestPointer;
-
-#endif // LV2MANIFEST_H

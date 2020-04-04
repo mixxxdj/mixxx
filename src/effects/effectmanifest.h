@@ -1,5 +1,4 @@
-#ifndef EFFECTMANIFEST_H
-#define EFFECTMANIFEST_H
+#pragma once
 
 #include <QList>
 #include <QString>
@@ -216,5 +215,3 @@ class EffectManifest {
     bool m_bAddDryToWet;
     double m_metaknobDefault;
 };
-
-#endif /* EFFECTMANIFEST_H */

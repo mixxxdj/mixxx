@@ -1,6 +1,4 @@
-#ifndef LOUDNESSCONTOUREFFECT_H
-#define LOUDNESSCONTOUREFFECT_H
-
+#pragma once
 #include "control/controlproxy.h"
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
@@ -62,5 +60,3 @@ class LoudnessContourEffect
     EngineEffectParameterPointer m_pLoudness;
     EngineEffectParameterPointer m_pUseGain;
 };
-
-#endif // LOUDNESSCONTOUREFFECT_H

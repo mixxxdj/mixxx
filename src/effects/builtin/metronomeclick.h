@@ -1,6 +1,4 @@
-#ifndef METRONOMECLICK_H
-#define METRONOMECLICK_H
-
+#pragma once
 #include "util/types.h"
 
 // This is a new recording from a real metronome
@@ -4389,6 +4387,3 @@ const CSAMPLE kClick96000[kClickSize96000] = {
         0.00085,
         0.00021
 };
-
-
-#endif /* METRONOMECLICK_H */

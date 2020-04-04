@@ -1,5 +1,4 @@
-#ifndef BALANCEEFFECT_H
-#define BALANCEEFFECT_H
+#pragma once
 
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
@@ -57,5 +56,3 @@ class BalanceEffect : public EffectProcessorImpl<BalanceGroupState> {
 
     DISALLOW_COPY_AND_ASSIGN(BalanceEffect);
 };
-
-#endif /* BALANCEEFFECT_H */

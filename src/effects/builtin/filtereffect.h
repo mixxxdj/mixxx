@@ -1,5 +1,4 @@
-#ifndef FILTEREFFECT_H
-#define FILTEREFFECT_H
+#pragma once
 
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
@@ -56,5 +55,3 @@ class FilterEffect : public EffectProcessorImpl<FilterGroupState> {
 
     DISALLOW_COPY_AND_ASSIGN(FilterEffect);
 };
-
-#endif /* FILTEREFFECT_H */

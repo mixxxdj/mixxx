@@ -1,5 +1,4 @@
-#ifndef EFFECTPARAMETER_H
-#define EFFECTPARAMETER_H
+#pragma once
 
 #include <QObject>
 #include <QVariant>
@@ -71,6 +70,3 @@ class EffectParameter {
 
     DISALLOW_COPY_AND_ASSIGN(EffectParameter);
 };
-
-
-#endif /* EFFECTPARAMETER_H */

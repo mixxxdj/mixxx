@@ -1,5 +1,4 @@
-#ifndef EFFECTKNOBPARAMETERSLOT_H
-#define EFFECTKNOBPARAMETERSLOT_H
+#pragma once
 
 #include <QObject>
 #include <QVariant>
@@ -61,5 +60,3 @@ class EffectKnobParameterSlot : public EffectParameterSlotBase {
 
     DISALLOW_COPY_AND_ASSIGN(EffectKnobParameterSlot);
 };
-
-#endif // EFFECTKNOBPARAMETERSLOT_H

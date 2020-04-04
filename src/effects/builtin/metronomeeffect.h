@@ -1,6 +1,4 @@
-#ifndef METRONOMEEFFECT_H
-#define METRONOMEEFFECT_H
-
+#pragma once
 #include <QMap>
 
 #include "effects/effectprocessor.h"
@@ -11,7 +9,6 @@
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/types.h"
-
 
 class MetronomeGroupState final : public EffectState {
   public:
@@ -49,5 +46,3 @@ class MetronomeEffect : public EffectProcessorImpl<MetronomeGroupState> {
 
     DISALLOW_COPY_AND_ASSIGN(MetronomeEffect);
 };
-
-#endif /* METRONOMEEFFECT_H */

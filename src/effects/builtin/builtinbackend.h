@@ -1,5 +1,4 @@
-#ifndef BUILTINBACKEND_H
-#define BUILTINBACKEND_H
+#pragma once
 
 #include "effects/defs.h"
 #include "effects/effectsbackend.h"
@@ -75,5 +74,3 @@ class BuiltInBackend : public EffectsBackend {
     QMap<QString, RegisteredEffect> m_registeredEffects;
     QList<QString> m_effectIds;
 };
-
-#endif /* BUILTINBACKEND_H */
