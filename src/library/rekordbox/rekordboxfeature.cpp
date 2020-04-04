@@ -266,21 +266,25 @@ QString toUnicode(std::string toConvert) {
 // getText is needed because the strings in the PDB file "have a variety of obscure representations".
 
 QString getText(rekordbox_pdb_t::device_sql_string_t* deviceString) {
+    QString text;
+
     if (instanceof <rekordbox_pdb_t::device_sql_short_ascii_t>(deviceString->body())) {
         rekordbox_pdb_t::device_sql_short_ascii_t* shortAsciiString =
                 static_cast<rekordbox_pdb_t::device_sql_short_ascii_t*>(deviceString->body());
-        return QString::fromStdString(shortAsciiString->text());
+        text =  QString::fromStdString(shortAsciiString->text());
     } else if (instanceof <rekordbox_pdb_t::device_sql_long_ascii_t>(deviceString->body())) {
         rekordbox_pdb_t::device_sql_long_ascii_t* longAsciiString =
                 static_cast<rekordbox_pdb_t::device_sql_long_ascii_t*>(deviceString->body());
-        return QString::fromStdString(longAsciiString->text());
+        text =  QString::fromStdString(longAsciiString->text());
     } else if (instanceof <rekordbox_pdb_t::device_sql_long_utf16be_t>(deviceString->body())) {
         rekordbox_pdb_t::device_sql_long_utf16be_t* longUtf16beString =
                 static_cast<rekordbox_pdb_t::device_sql_long_utf16be_t*>(deviceString->body());
-        return toUnicode(longUtf16beString->text());
+        text =  toUnicode(longUtf16beString->text());
     }
 
-    return QString();
+    // Some strings read from Rekordbox *.PDB files contain random null characters
+    // which if not removed cause Mixxx to crash when attempting to read file paths
+    return text.remove('\x0');
 }
 
 int createDevicePlaylist(QSqlDatabase& database, QString devicePath) {
