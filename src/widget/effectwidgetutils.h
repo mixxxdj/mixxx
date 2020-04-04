@@ -10,6 +10,16 @@
 
 class EffectWidgetUtils {
   public:
+    static int getEffectUnitNumberFromNode(const QDomNode& node, const SkinContext& context) {
+        bool unitNumberOk = false;
+        int unitNumber = context.selectInt(node, "EffectUnit", &unitNumberOk);
+        if (unitNumberOk) {
+            // XML effect nodes are 1-indexed.
+            return unitNumber - 1;
+        }
+        return 0;
+    }
+
     static EffectChainSlotPointer getEffectChainSlotFromNode(
             const QDomNode& node,
             const SkinContext& context,

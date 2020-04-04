@@ -46,6 +46,7 @@
 #include "widget/weffect.h"
 #include "widget/weffectbuttonparameter.h"
 #include "widget/weffectchain.h"
+#include "widget/weffectchainpresetbutton.h"
 #include "widget/weffectparameter.h"
 #include "widget/weffectparameterbase.h"
 #include "widget/weffectparameterknob.h"
@@ -557,6 +558,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseSizeAwareStack(node));
     } else if (nodeName == "EffectChainName") {
         result = wrapWidget(parseEffectChainName(node));
+    } else if (nodeName == "EffectChainPresetButton") {
+        result = wrapWidget(parseEffectChainPresetButton(node));
     } else if (nodeName == "EffectName") {
         result = wrapWidget(parseEffectName(node));
     } else if (nodeName == "EffectSelector") {
@@ -1578,6 +1581,13 @@ QWidget* LegacySkinParser::parseEffectChainName(const QDomElement& node) {
     WEffectChain* pEffectChain = new WEffectChain(m_pParent, m_pEffectsManager);
     setupLabelWidget(node, pEffectChain);
     return pEffectChain;
+}
+
+QWidget* LegacySkinParser::parseEffectChainPresetButton(const QDomElement& node) {
+    WEffectChainPresetButton* pButton = new WEffectChainPresetButton(m_pParent, m_pEffectsManager);
+    commonWidgetSetup(node, pButton);
+    pButton->setup(node, *m_pContext);
+    return pButton;
 }
 
 QWidget* LegacySkinParser::parseEffectName(const QDomElement& node) {
