@@ -6,7 +6,6 @@
 #include "effects/backends/effectprocessor.h"
 #include "effects/effectslot.h"
 #include "effects/effectsmanager.h"
-#include "effects/effectxmlelements.h"
 #include "effects/specialeffectchainslots.h"
 #include "engine/effects/engineeffectchain.h"
 #include "engine/effects/message.h"

@@ -5,7 +5,6 @@
 #include "effects/effectslot.h"
 #include "effects/effectparameter.h"
 #include "control/controleffectknob.h"
-#include "effects/effectxmlelements.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "controllers/softtakeover.h"

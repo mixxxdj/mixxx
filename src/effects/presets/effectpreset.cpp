@@ -1,8 +1,8 @@
 #include "effects/presets/effectpreset.h"
 
-#include "effects/effectslot.h"
 #include "effects/backends/effectsbackend.h"
-#include "effects/effectxmlelements.h"
+#include "effects/effectslot.h"
+#include "effects/presets/effectxmlelements.h"
 #include "util/xml.h"
 
 EffectPreset::EffectPreset() {

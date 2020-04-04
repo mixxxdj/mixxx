@@ -1,7 +1,7 @@
 #include "effects/presets/effectparameterpreset.h"
 
 #include "effects/effectparameter.h"
-#include "effects/effectxmlelements.h"
+#include "effects/presets/effectxmlelements.h"
 #include "util/xml.h"
 
 EffectParameterPreset::EffectParameterPreset() {

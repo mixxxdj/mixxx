@@ -1,5 +1,4 @@
 #include "effects/effectslot.h"
-#include "effects/effectxmlelements.h"
 
 #include <QDebug>
 

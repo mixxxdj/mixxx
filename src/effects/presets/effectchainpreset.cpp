@@ -1,7 +1,7 @@
 #include "effects/presets/effectchainpreset.h"
 
 #include "effects/effectchainslot.h"
-#include "effects/effectxmlelements.h"
+#include "effects/presets/effectxmlelements.h"
 #include "util/xml.h"
 
 EffectChainPreset::EffectChainPreset() {

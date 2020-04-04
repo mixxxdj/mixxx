@@ -3,7 +3,6 @@
 #include "effects/effectslot.h"
 #include "effects/effectbuttonparameterslot.h"
 #include "control/controleffectknob.h"
-#include "effects/effectxmlelements.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "util/math.h"
