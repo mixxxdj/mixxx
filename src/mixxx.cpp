@@ -37,10 +37,6 @@
 #include "dialog/dlgdevelopertools.h"
 #include "engine/enginemaster.h"
 #include "effects/effectsmanager.h"
-#include "effects/builtin/builtinbackend.h"
-#ifdef __LILV__
-#include "effects/lv2/lv2backend.h"
-#endif
 #include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
@@ -256,15 +252,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // Starting the master (mixing of the channels and effects):
     m_pEngine = new EngineMaster(pConfig, "[Master]", m_pEffectsManager,
                                  m_pChannelHandleFactory, true);
-
-    // Create effect backends. We do this after creating EngineMaster to allow
-    // effect backends to refer to controls that are produced by the engine.
-    BuiltInBackend* pBuiltInBackend = new BuiltInBackend();
-    m_pEffectsManager->addEffectsBackend(EffectsBackendPointer(pBuiltInBackend));
-#ifdef __LILV__
-    LV2Backend* pLV2Backend = new LV2Backend();
-    m_pEffectsManager->addEffectsBackend(EffectsBackendPointer(pLV2Backend));
-#endif
 
     launchProgress(8);
 

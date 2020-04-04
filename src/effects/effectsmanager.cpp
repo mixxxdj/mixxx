@@ -5,7 +5,8 @@
 #include <QMetaType>
 #include <algorithm>
 
-#include "effects/effectsbackend.h"
+#include "effects/builtin/builtinbackend.h"
+#include "effects/lv2/lv2backend.h"
 #include "effects/effectslot.h"
 #include "effects/effectxmlelements.h"
 #include "effects/presets/effectchainpreset.h"
@@ -42,6 +43,11 @@ EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig, Ch
 
     m_pNumEffectsAvailable = new ControlObject(ConfigKey("[Master]", "num_effectsavailable"));
     m_pNumEffectsAvailable->setReadOnly();
+
+    addEffectsBackend(EffectsBackendPointer(new BuiltInBackend()));
+#ifdef __LILV__
+    addEffectsBackend(EffectsBackendPointer(new LV2Backend()));
+#endif
 }
 
 EffectsManager::~EffectsManager() {
