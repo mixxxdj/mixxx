@@ -33,13 +33,16 @@ typedef std::optional<ChannelLayout> OptionalChannelLayout;
 QDebug operator<<(QDebug dbg, ChannelLayout arg);
 
 class ChannelCount {
+  public:
+    typedef SINT value_t;
+
   private:
     // The default value is invalid and indicates a missing or unknown value.
-    static constexpr SINT kValueDefault = 0;
+    static constexpr value_t kValueDefault = 0;
 
   public:
-    static constexpr SINT kValueMin = 1;   // lower bound (inclusive)
-    static constexpr SINT kValueMax = 255; // upper bound (inclusive, 8-bit unsigned integer)
+    static constexpr value_t kValueMin = 1;   // lower bound (inclusive)
+    static constexpr value_t kValueMax = 255; // upper bound (inclusive, 8-bit unsigned integer)
 
     static constexpr ChannelCount min() {
         return ChannelCount(kValueMin);
@@ -60,10 +63,12 @@ class ChannelCount {
         DEBUG_ASSERT(!"unreachable code");
     }
 
-    explicit constexpr ChannelCount(SINT value = kValueDefault)
+    explicit constexpr ChannelCount(
+            value_t value = kValueDefault)
             : m_value(value) {
     }
-    explicit ChannelCount(ChannelLayout layout)
+    explicit ChannelCount(
+            ChannelLayout layout)
             : m_value(fromLayout(layout).m_value) {
     }
 
@@ -72,12 +77,12 @@ class ChannelCount {
                 (m_value <= kValueMax);
     }
 
-    /*implicit*/ constexpr operator SINT() const {
+    /*implicit*/ constexpr operator value_t() const {
         return m_value;
     }
 
   private:
-    SINT m_value;
+    value_t m_value;
 };
 
 // Defines the ordering of how samples from multiple channels are
@@ -100,13 +105,16 @@ typedef std::optional<SampleLayout> OptionalSampleLayout;
 QDebug operator<<(QDebug dbg, SampleLayout arg);
 
 class SampleRate {
+  public:
+    typedef SINT value_t;
+
   private:
     // The default value is invalid and indicates a missing or unknown value.
-    static constexpr SINT kValueDefault = 0;
+    static constexpr value_t kValueDefault = 0;
 
   public:
-    static constexpr SINT kValueMin = 8000;   // lower bound (inclusive, = minimum MP3 sample rate)
-    static constexpr SINT kValueMax = 192000; // upper bound (inclusive)
+    static constexpr value_t kValueMin = 8000;   // lower bound (inclusive, = minimum MP3 sample rate)
+    static constexpr value_t kValueMax = 192000; // upper bound (inclusive)
 
     static constexpr SampleRate min() {
         return SampleRate(kValueMin);
@@ -119,7 +127,8 @@ class SampleRate {
         return "Hz";
     }
 
-    explicit constexpr SampleRate(SINT value = kValueDefault)
+    explicit constexpr SampleRate(
+            value_t value = kValueDefault)
             : m_value(value) {
     }
 
@@ -128,12 +137,12 @@ class SampleRate {
                 (m_value <= kValueMax);
     }
 
-    /*implicit*/ constexpr operator SINT() const {
+    /*implicit*/ constexpr operator value_t() const {
         return m_value;
     }
 
   private:
-    SINT m_value;
+    value_t m_value;
 };
 
 QDebug operator<<(QDebug dbg, SampleRate arg);
@@ -146,16 +155,20 @@ QDebug operator<<(QDebug dbg, SampleRate arg);
 // variable bitrate encoding and serves as a rough estimate of the
 // expected quality.
 class Bitrate {
+  public:
+    typedef SINT value_t;
+
   private:
     // The default value is invalid and indicates a missing or unknown value.
-    static constexpr SINT kValueDefault = 0;
+    static constexpr value_t kValueDefault = 0;
 
   public:
     static constexpr const char* unit() {
         return "kbps";
     }
 
-    explicit constexpr Bitrate(SINT value = kValueDefault)
+    explicit constexpr Bitrate(
+            value_t value = kValueDefault)
             : m_value(value) {
     }
 
@@ -163,13 +176,13 @@ class Bitrate {
         return m_value > kValueDefault;
     }
 
-    /*implicit*/ operator SINT() const {
+    /*implicit*/ operator value_t() const {
         DEBUG_ASSERT(m_value >= kValueDefault); // unsigned value
         return m_value;
     }
 
   private:
-    SINT m_value;
+    value_t m_value;
 };
 
 QDebug operator<<(QDebug dbg, Bitrate arg);
