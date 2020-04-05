@@ -219,7 +219,8 @@ void EffectSlot::setEnabled(bool enabled) {
 EffectParameterSlotBasePointer EffectSlot::getEffectParameterSlot(
         EffectManifestParameter::ParameterType parameterType,
         unsigned int slotNumber) {
-    VERIFY_OR_DEBUG_ASSERT(slotNumber <= (unsigned)m_parameterSlots.value(parameterType).size()) {
+    VERIFY_OR_DEBUG_ASSERT(
+            slotNumber <= (unsigned)m_parameterSlots.value(parameterType).size()) {
         return nullptr;
     }
     return m_parameterSlots.value(parameterType).at(slotNumber);
@@ -232,7 +233,7 @@ void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
         bool adoptMetaknobFromPreset) {
     if (kEffectDebugOutput) {
         if (pManifest != nullptr) {
-            qDebug() << this << m_group << "loading effect" << pManifest->id() << pEffectPreset.get() << pProcessor.get();
+            qDebug() << this << m_group << "loading effect" << pManifest->id();
         } else {
             qDebug() << this << m_group << "unloading effect";
         }
@@ -460,7 +461,8 @@ void EffectSlot::slotEffectMetaParameter(double v, bool force) {
     }
 
     // Only knobs are linked to the metaknob; not buttons
-    for (const auto& pParameterSlot : m_parameterSlots.value(EffectManifestParameter::ParameterType::KNOB)) {
+    const auto& knobParameters = m_parameterSlots.value(EffectManifestParameter::ParameterType::KNOB);
+    for (const auto& pParameterSlot : knobParameters) {
         if (pParameterSlot->parameterType() == EffectManifestParameter::ParameterType::KNOB) {
             pParameterSlot->onEffectMetaParameterChanged(v, force);
         }

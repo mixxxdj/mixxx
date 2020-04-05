@@ -25,7 +25,9 @@ const QString kGroupClose = "]";
 const unsigned int kEffectMessagPipeFifoSize = 2048;
 } // anonymous namespace
 
-EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig, ChannelHandleFactory* pChannelHandleFactory)
+EffectsManager::EffectsManager(QObject* pParent,
+        UserSettingsPointer pConfig,
+        ChannelHandleFactory* pChannelHandleFactory)
         : QObject(pParent),
           m_pChannelHandleFactory(pChannelHandleFactory),
           m_nextRequestId(0),
@@ -86,10 +88,12 @@ EffectsManager::~EffectsManager() {
 }
 
 bool alphabetizeEffectManifests(EffectManifestPointer pManifest1,
-                                EffectManifestPointer pManifest2) {
+        EffectManifestPointer pManifest2) {
     // Sort built-in effects first before external plugins
-    int backendNameComparision = static_cast<int>(pManifest1->backendType()) - static_cast<int>(pManifest2->backendType());
-    int displayNameComparision = QString::localeAwareCompare(pManifest1->displayName(), pManifest2->displayName());
+    int backendNameComparision = static_cast<int>(pManifest1->backendType()) -
+            static_cast<int>(pManifest2->backendType());
+    int displayNameComparision = QString::localeAwareCompare(
+            pManifest1->displayName(), pManifest2->displayName());
     return (backendNameComparision ? (backendNameComparision < 0) : (displayNameComparision < 0));
 }
 
@@ -173,7 +177,12 @@ void EffectsManager::loadEffect(EffectChainSlotPointer pChainSlot,
     if (pPreset == nullptr) {
         pPreset = m_defaultPresets.value(pManifest);
     }
-    pChainSlot->loadEffect(iEffectSlotNumber, pManifest, createProcessor(pManifest), pPreset, adoptMetaknobFromPreset);
+    pChainSlot->loadEffect(
+            iEffectSlotNumber,
+            pManifest,
+            createProcessor(pManifest),
+            pPreset,
+            adoptMetaknobFromPreset);
 }
 
 std::unique_ptr<EffectProcessor> EffectsManager::createProcessor(
@@ -231,7 +240,12 @@ void EffectsManager::loadEffectChainPreset(EffectChainSlotPointer pChainSlot,
             continue;
         }
         EffectManifestPointer pManifest = pBackend->getManifest(pEffectPreset->id());
-        pChainSlot->loadEffect(effectSlot, pManifest, createProcessor(pManifest), pEffectPreset, true);
+        pChainSlot->loadEffect(
+                effectSlot,
+                pManifest,
+                createProcessor(pManifest),
+                pEffectPreset,
+                true);
         effectSlot++;
     }
     pChainSlot->setMixMode(pPreset->mixMode());
@@ -332,7 +346,8 @@ EffectManifestPointer EffectsManager::getManifestFromUniqueId(const QString& uid
             uid.mid(-1, delimiterIndex+1));
 }
 
-EffectManifestPointer EffectsManager::getManifest(const QString& id, EffectBackendType backendType) const {
+EffectManifestPointer EffectsManager::getManifest(
+        const QString& id, EffectBackendType backendType) const {
     return m_effectsBackends.value(backendType)->getManifest(id);
 }
 
@@ -418,7 +433,8 @@ EffectSlotPointer EffectsManager::getEffectSlot(
 }
 
 EffectParameterSlotBasePointer EffectsManager::getEffectParameterSlot(
-        const EffectManifestParameter::ParameterType parameterType, const ConfigKey& configKey) {
+        const EffectManifestParameter::ParameterType parameterType,
+        const ConfigKey& configKey) {
     EffectSlotPointer pEffectSlot =
              getEffectSlot(configKey.group);
     VERIFY_OR_DEBUG_ASSERT(pEffectSlot) {
@@ -531,7 +547,9 @@ void EffectsManager::collectGarbage(const EffectsRequest* pRequest) {
         delete pRequest->RemoveEffectChain.pChain;
     } else if (pRequest->type == EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL) {
         if (kEffectDebugOutput) {
-            qDebug() << debugString() << "deleting states for input channel" << pRequest->DisableInputChannelForChain.pChannelHandle << "for EngineEffectChain" << pRequest->pTargetChain;
+            qDebug() << debugString() << "deleting states for input channel"
+                     << pRequest->DisableInputChannelForChain.pChannelHandle
+                     << "for EngineEffectChain" << pRequest->pTargetChain;
         }
         pRequest->pTargetChain->deleteStatesForInputChannel(
                 pRequest->DisableInputChannelForChain.pChannelHandle);

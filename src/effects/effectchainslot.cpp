@@ -191,7 +191,12 @@ void EffectChainSlot::loadEffect(const unsigned int iEffectSlotNumber,
         std::unique_ptr<EffectProcessor> pProcessor,
         EffectPresetPointer pPreset,
         bool adoptMetaknobFromPreset) {
-    m_effectSlots[iEffectSlotNumber]->loadEffect(pManifest, std::move(pProcessor), pPreset, m_enabledInputChannels, adoptMetaknobFromPreset);
+    m_effectSlots[iEffectSlotNumber]->loadEffect(
+            pManifest,
+            std::move(pProcessor),
+            pPreset,
+            m_enabledInputChannels,
+            adoptMetaknobFromPreset);
 }
 
 void EffectChainSlot::sendParameterUpdate() {
