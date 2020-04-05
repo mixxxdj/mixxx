@@ -38,6 +38,8 @@
 * Add controller mapping for Native Instruments Traktor Kontrol S2 MK3 #2348
 * Add controller mapping for Soundless joyMIDI #2425
 * Add controller mapping for Hercules DJControl Inpulse 300 #2465
+* Add controller mapping for Denon MC7000 #2546
+* Add controller mapping for Stanton DJC.4 #2607
 
 ## [2.2.3](https://launchpad.net/mixxx/+milestone/2.2.3) (2019-11-24)
 
