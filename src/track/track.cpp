@@ -135,9 +135,20 @@ void Track::importMetadata(
         // enter locking scope
         QMutexLocker lock(&m_qMutex);
 
-        bool modified = compareAndSet(
-                &m_record.refMetadataSynchronized(),
-                !metadataSynchronized.isNull());
+        bool modified = false;
+        // Only set the metadata synchronized flag (column `header_parsed`
+        // in the database) from false to true, but never reset it back to
+        // false. Otherwise file tags would be re-imported and overwrite
+        // the metadata stored in the database, e.g. after retrieving metadata
+        // from MusicBrainz!
+        // TODO: In the future this flag should become a time stamp
+        // to detect updates of files and then decide based on time
+        // stamps if file tags need to be re-imported.
+        if (!metadataSynchronized.isNull()) {
+            modified |= compareAndSet(
+                    &m_record.refMetadataSynchronized(),
+                    true);
+        }
         bool modifiedReplayGain = false;
         if (m_record.getMetadata() != importedMetadata) {
             modifiedReplayGain =
