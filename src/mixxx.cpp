@@ -32,7 +32,6 @@
 
 #include "dialog/dlgabout.h"
 #include "dialog/dlgdevelopertools.h"
-#include "dialog/dlgreplacecuecolor.h"
 #include "effects/builtin/builtinbackend.h"
 #include "effects/effectsmanager.h"
 #include "engine/enginemaster.h"
@@ -163,7 +162,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pMenuBar(nullptr),
           m_pDeveloperToolsDlg(nullptr),
           m_pPrefDlg(nullptr),
-          m_pReplaceCueColorDlg(nullptr),
           m_pKbdConfig(nullptr),
           m_pKbdConfigEmpty(nullptr),
           m_toolTipsCfg(mixxx::TooltipsPreference::TOOLTIPS_ON),
@@ -469,17 +467,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
                                     m_pSettingsManager, m_pLibrary);
     m_pPrefDlg->setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     m_pPrefDlg->setHidden(true);
-
-    m_pReplaceCueColorDlg = new DlgReplaceCueColor(
-            pConfig,
-            m_pLibrary->dbConnectionPool(),
-            m_pTrackCollectionManager,
-            this);
-    m_pReplaceCueColorDlg->setHidden(true);
-    connect(m_pReplaceCueColorDlg,
-            &DlgReplaceCueColor::databaseTracksChanged,
-            &(m_pTrackCollectionManager->internalCollection()->getTrackDAO()),
-            &TrackDAO::databaseTracksChanged);
 
     launchProgress(60);
 
@@ -1117,10 +1104,6 @@ void MixxxMainWindow::connectMenuBar() {
             this,
             &MixxxMainWindow::slotOptionsPreferences);
     connect(m_pMenuBar,
-            &WMainMenuBar::showReplaceCueColor,
-            this,
-            &MixxxMainWindow::slotReplaceCueColor);
-    connect(m_pMenuBar,
             &WMainMenuBar::loadTrackToDeck,
             this,
             &MixxxMainWindow::slotFileLoadSongPlayer);
@@ -1347,12 +1330,6 @@ void MixxxMainWindow::slotOptionsPreferences() {
     m_pPrefDlg->show();
     m_pPrefDlg->raise();
     m_pPrefDlg->activateWindow();
-}
-
-void MixxxMainWindow::slotReplaceCueColor() {
-    m_pReplaceCueColorDlg->show();
-    m_pReplaceCueColorDlg->raise();
-    m_pReplaceCueColorDlg->activateWindow();
 }
 
 void MixxxMainWindow::slotNoVinylControlInputConfigured() {

@@ -36,7 +36,6 @@ class ControlPushButton;
 class ControllerManager;
 class DlgDeveloperTools;
 class DlgPreferences;
-class DlgReplaceCueColor;
 class EffectsManager;
 class EngineMaster;
 class GuiTick;
@@ -88,8 +87,6 @@ class MixxxMainWindow : public QMainWindow {
     void slotOptionsKeyboard(bool toggle);
     // Preference dialog
     void slotOptionsPreferences();
-    // Replace Color dialog
-    void slotReplaceCueColor();
     // shows an about dlg
     void slotHelpAbout();
     // toggle full screen mode
@@ -192,9 +189,6 @@ class MixxxMainWindow : public QMainWindow {
 
     /** Pointer to preference dialog */
     DlgPreferences* m_pPrefDlg;
-
-    // Pointer to color replace dialog
-    DlgReplaceCueColor* m_pReplaceCueColorDlg;
 
     ConfigObject<ConfigValueKbd>* m_pKbdConfig;
     ConfigObject<ConfigValueKbd>* m_pKbdConfigEmpty;

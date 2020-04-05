@@ -10,10 +10,13 @@
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 
+class DlgReplaceCueColor;
+class Library;
+
 class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
     Q_OBJECT
   public:
-    DlgPrefColors(QWidget* parent, UserSettingsPointer pConfig);
+    DlgPrefColors(QWidget* parent, UserSettingsPointer pConfig, Library* pLibrary);
     virtual ~DlgPrefColors();
 
   public slots:
@@ -30,6 +33,7 @@ class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
     void trackPaletteUpdated(const QString& palette);
     void hotcuePaletteUpdated(const QString& palette);
     void palettesUpdated();
+    void slotReplaceCueColorClicked();
     void slotEditTrackPaletteClicked();
     void slotEditHotcuePaletteClicked();
 
@@ -46,4 +50,6 @@ class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
 
     const UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;
+    // Pointer to color replace dialog
+    DlgReplaceCueColor* m_pReplaceCueColorDlg;
 };

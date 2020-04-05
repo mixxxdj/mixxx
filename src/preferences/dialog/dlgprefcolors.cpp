@@ -6,6 +6,9 @@
 #include <QtDebug>
 
 #include "control/controlobject.h"
+#include "dialog/dlgreplacecuecolor.h"
+#include "library/library.h"
+#include "library/trackcollection.h"
 #include "util/color/predefinedcolorpalettes.h"
 #include "util/compatibility.h"
 #include "util/math.h"
@@ -19,13 +22,24 @@ constexpr QSize kPalettePreviewSize = QSize(108, 16);
 } // anonymous namespace
 
 DlgPrefColors::DlgPrefColors(
-        QWidget* parent, UserSettingsPointer pConfig)
+        QWidget* parent, UserSettingsPointer pConfig, Library* pLibrary)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
-          m_colorPaletteSettings(ColorPaletteSettings(pConfig)) {
+          m_colorPaletteSettings(ColorPaletteSettings(pConfig)),
+          m_pReplaceCueColorDlg(new DlgReplaceCueColor(
+                  pConfig,
+                  pLibrary->dbConnectionPool(),
+                  pLibrary->trackCollections(),
+                  this)) {
     setupUi(this);
     comboBoxHotcueColors->setIconSize(kPalettePreviewSize);
     comboBoxTrackColors->setIconSize(kPalettePreviewSize);
+
+    m_pReplaceCueColorDlg->setHidden(true);
+    connect(m_pReplaceCueColorDlg,
+            &DlgReplaceCueColor::databaseTracksChanged,
+            &(pLibrary->trackCollections()->internalCollection()->getTrackDAO()),
+            &TrackDAO::databaseTracksChanged);
 
     loadSettings();
 
@@ -43,6 +57,11 @@ DlgPrefColors::DlgPrefColors(
             &QPushButton::clicked,
             this,
             &DlgPrefColors::slotEditTrackPaletteClicked);
+
+    connect(pushButtonReplaceCueColor,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefColors::slotReplaceCueColorClicked);
 }
 
 DlgPrefColors::~DlgPrefColors() {
@@ -152,6 +171,12 @@ void DlgPrefColors::slotApply() {
         m_pConfig->setValue(ConfigKey("[Controls]", "auto_hotcue_colors"), true);
         m_pConfig->setValue(ConfigKey("[Controls]", "HotcueDefaultColorIndex"), -1);
     }
+}
+
+void DlgPrefColors::slotReplaceCueColorClicked() {
+    m_pReplaceCueColorDlg->show();
+    m_pReplaceCueColorDlg->raise();
+    m_pReplaceCueColorDlg->activateWindow();
 }
 
 QPixmap DlgPrefColors::drawPalettePreview(const QString& paletteName) {
