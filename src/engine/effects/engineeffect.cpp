@@ -107,17 +107,11 @@ bool EngineEffect::processEffectsRequest(EffectsRequest& message,
             if (kEffectDebugOutput) {
                 qDebug() << debugString() << "SET_PARAMETER_PARAMETERS"
                          << "parameter" << message.SetParameterParameters.iParameter
-                         << "minimum" << message.minimum
-                         << "maximum" << message.maximum
-                         << "default_value" << message.default_value
                          << "value" << message.value;
             }
             pParameter = m_parameters.value(
                 message.SetParameterParameters.iParameter, EngineEffectParameterPointer());
             if (pParameter) {
-                pParameter->setMinimum(message.minimum);
-                pParameter->setMaximum(message.maximum);
-                pParameter->setDefaultValue(message.default_value);
                 pParameter->setValue(message.value);
                 response.success = true;
             } else {
