@@ -1498,21 +1498,21 @@ bool WTrackMenu::optionIsEnabled(Filter flag) {
     }
 
     Filters independentOptions =
-            Filter::LoadTo |
             Filter::Playlist |
             Filter::Crate |
-            Filter::FileBrowser |
-            Filter::Properties;
+            Filter::FileBrowser;
 
     // Some of these can be made independent of track table.
     Filters trackTableDependentOptions =
-            Filter::AutoDJ |
+            Filter::AutoDJ |            
+            Filter::LoadTo |
             Filter::Remove |
             Filter::Metadata |
             Filter::Reset |
             Filter::BPM |
             Filter::Color |
-            Filter::HideUnhidePurge;
+            Filter::HideUnhidePurge |
+            Filter::Properties;
 
     if (independentOptions.testFlag(flag)) {
         return true;
