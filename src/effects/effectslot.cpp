@@ -251,7 +251,6 @@ void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
 
     // Create EffectParameters. Every parameter listed in the manifest must have
     // an EffectParameter created, regardless of whether it is loaded in a slot.
-    int manifestIndex = 0;
     for (const auto& pManifestParameter: m_pManifest->parameters()) {
         // match the manifest parameter to the preset parameter
         EffectParameterPreset parameterPreset = EffectParameterPreset();
@@ -263,9 +262,8 @@ void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
             }
         }
         EffectParameterPointer pParameter(new EffectParameter(
-                m_pEngineEffect, m_pEffectsManager, manifestIndex, pManifestParameter, parameterPreset));
+                m_pEngineEffect, m_pEffectsManager, pManifestParameter, parameterPreset));
         m_parameters[pManifestParameter->parameterType()].append(pParameter);
-        manifestIndex++;
     }
 
     // Map the parameter slots to the EffectParameters.
