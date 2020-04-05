@@ -69,8 +69,5 @@ void EffectParameter::updateEngineState() {
     pRequest->pTargetEffect = m_pEngineEffect;
     pRequest->SetParameterParameters.iParameter = m_pParameterManifest->index();
     pRequest->value = m_value;
-    pRequest->minimum = m_pParameterManifest->getMinimum();
-    pRequest->maximum = m_pParameterManifest->getMaximum();
-    pRequest->default_value = m_pParameterManifest->getDefault();
     m_pEffectsManager->writeRequest(pRequest);
 }

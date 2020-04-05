@@ -37,9 +37,6 @@ struct EffectsRequest {
     EffectsRequest()
             : type(NUM_REQUEST_TYPES),
               request_id(-1),
-              minimum(0.0),
-              maximum(0.0),
-              default_value(0.0),
               value(0.0) {
         pTargetChain = nullptr;
         pTargetEffect = nullptr;
@@ -127,9 +124,6 @@ struct EffectsRequest {
     };
 
     // Used by SET_EFFECT_PARAMETER.
-    double minimum;
-    double maximum;
-    double default_value;
     double value;
 };
 
