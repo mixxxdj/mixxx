@@ -28,7 +28,7 @@ class EffectParameter {
   public:
     EffectParameter(EngineEffect* pEngineEffect,
             EffectsManager* pEffectsManager,
-            EffectManifestParameterPointer pParameter,
+            EffectManifestParameterPointer pParameterManifest,
             EffectParameterPreset preset);
     virtual ~EffectParameter();
 
@@ -54,7 +54,7 @@ class EffectParameter {
 
   private:
     QString debugString() const {
-        return QString("EffectParameter(%1)").arg(m_pParameter->name());
+        return QString("EffectParameter(%1)").arg(m_pParameterManifest->name());
     }
 
     static bool clampValue(double* pValue,
@@ -63,7 +63,7 @@ class EffectParameter {
 
     EngineEffect* m_pEngineEffect;
     EffectsManager* m_pEffectsManager;
-    EffectManifestParameterPointer m_pParameter;
+    EffectManifestParameterPointer m_pParameterManifest;
     double m_value;
     // Hidden parameters cannot be linked to the metaknob, but EffectParameter
     // needs to maintain their state in case they are loaded into an EffectParameterSlot.

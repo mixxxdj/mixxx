@@ -6,13 +6,13 @@
 
 EffectParameter::EffectParameter(EngineEffect* pEngineEffect,
         EffectsManager* pEffectsManager,
-        EffectManifestParameterPointer pParameter,
+        EffectManifestParameterPointer pParameterManifest,
         EffectParameterPreset preset)
         : m_pEngineEffect(pEngineEffect),
           m_pEffectsManager(pEffectsManager),
-          m_pParameter(pParameter) {
+          m_pParameterManifest(pParameterManifest) {
     if (preset.isNull()) {
-        setValue(pParameter->getDefault());
+        setValue(pParameterManifest->getDefault());
     } else {
         setValue(preset.value());
         m_linkType = preset.linkType();
@@ -25,7 +25,7 @@ EffectParameter::~EffectParameter() {
 }
 
 EffectManifestParameterPointer EffectParameter::manifest() const {
-    return m_pParameter;
+    return m_pParameterManifest;
 }
 
 // static
@@ -42,7 +42,7 @@ bool EffectParameter::clampValue(double* pValue,
 }
 
 bool EffectParameter::clampValue() {
-    return clampValue(&m_value, m_pParameter->getMinimum(), m_pParameter->getMaximum());
+    return clampValue(&m_value, m_pParameterManifest->getMinimum(), m_pParameterManifest->getMaximum());
 }
 
 double EffectParameter::getValue() const {
@@ -67,10 +67,10 @@ void EffectParameter::updateEngineState() {
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::SET_PARAMETER_PARAMETERS;
     pRequest->pTargetEffect = m_pEngineEffect;
-    pRequest->SetParameterParameters.iParameter = m_pParameter->index();
+    pRequest->SetParameterParameters.iParameter = m_pParameterManifest->index();
     pRequest->value = m_value;
-    pRequest->minimum = m_pParameter->getMinimum();
-    pRequest->maximum = m_pParameter->getMaximum();
-    pRequest->default_value = m_pParameter->getDefault();
+    pRequest->minimum = m_pParameterManifest->getMinimum();
+    pRequest->maximum = m_pParameterManifest->getMaximum();
+    pRequest->default_value = m_pParameterManifest->getDefault();
     m_pEffectsManager->writeRequest(pRequest);
 }
