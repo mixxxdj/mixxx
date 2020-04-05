@@ -271,6 +271,20 @@
      </widget>
     </widget>
    </item>
+   <item>
+    <layout class="QHBoxLayout" name="chainPresetHeader">
+     <item>
+      <widget class="QLabel" name="chainPresetHeaderLabel">
+       <property name="text">
+        <string>Effect Chain Presets</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QListWidget" name="chainListWidget"/>
+   </item>
   </layout>
  </widget>
  <resources/>

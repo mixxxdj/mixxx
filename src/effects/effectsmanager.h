@@ -123,6 +123,9 @@ class EffectsManager : public QObject {
     void loadEffectChainPreset(EffectChainSlotPointer pChainSlot,
             EffectChainPresetPointer pPreset);
     void loadPresetToStandardChain(int chainNumber, EffectChainPresetPointer pPreset);
+
+    void setChainPresetOrder(const QStringList& chainPresetList);
+
     void addStandardEffectChainSlots();
     EffectChainSlotPointer getStandardEffectChainSlot(int unitNumber) const;
 
@@ -221,6 +224,7 @@ class EffectsManager : public QObject {
     QHash<QString, QuickEffectChainSlotPointer> m_quickEffectChainSlots;
 
     QHash<QString, EffectChainPresetPointer> m_effectChainPresets;
+    QList<EffectChainPresetPointer> m_effectChainPresetsSorted;
     QHash<EffectManifestPointer, EffectPresetPointer> m_defaultPresets;
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);

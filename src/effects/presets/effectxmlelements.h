@@ -9,6 +9,9 @@ const QString SchemaVersion("SchemaVersion");
 const QString Rack("Rack");
 const QString RackGroup("Group");
 
+const QString ChainPresetList("ChainPresetList");
+const QString ChainPresetName("ChainPresetName");
+
 const QString ChainsRoot("Chains");
 const QString Chain("EffectChain");
 const QString ChainSuperParameter("SuperParameterValue");

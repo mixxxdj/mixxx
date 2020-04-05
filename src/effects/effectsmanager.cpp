@@ -55,7 +55,7 @@ EffectsManager::EffectsManager(QObject* pParent,
 EffectsManager::~EffectsManager() {
     m_underDestruction = true;
 
-    saveStandardEffectChains();
+    saveEffectsXml();
     for (const auto pEffectPreset : m_defaultPresets) {
         saveDefaultForEffect(pEffectPreset);
     }
@@ -473,7 +473,7 @@ void EffectsManager::setup() {
     loadDefaultEffectPresets();
     loadEffectChainPresets();
 
-    reloadStandardEffectChains();
+    readEffectsXml();
 }
 
 bool EffectsManager::writeRequest(EffectsRequest* request) {
@@ -659,8 +659,26 @@ void EffectsManager::loadEffectChainPresets() {
         EffectChainPresetPointer pEffectChainPreset(new EffectChainPreset(doc.documentElement()));
         if (!pEffectChainPreset->isNull()) {
             m_effectChainPresets.insert(pEffectChainPreset->name(), pEffectChainPreset);
+            m_effectChainPresetsSorted.append(pEffectChainPreset);
         }
         file.close();
+    }
+}
+
+void EffectsManager::setChainPresetOrder(const QStringList& chainPresetList) {
+    m_effectChainPresetsSorted.clear();
+
+    for (const auto chainPresetName : chainPresetList) {
+        VERIFY_OR_DEBUG_ASSERT(m_effectChainPresets.contains(chainPresetName)) {
+            continue;
+        }
+        m_effectChainPresetsSorted.append(m_effectChainPresets.value(chainPresetName));
+    }
+
+    for (const auto pChainPreset : m_effectChainPresets) {
+        VERIFY_OR_DEBUG_ASSERT(m_effectChainPresetsSorted.contains(pChainPreset)) {
+            m_effectChainPresetsSorted.append(pChainPreset);
+        }
     }
 }
 
@@ -702,21 +720,10 @@ void EffectsManager::savePresetFromStandardEffectChain(int chainNumber) {
 }
 
 const QList<EffectChainPresetPointer> EffectsManager::getAvailableChainPresets() const {
-    // Sort available chain presets by name alphabetically
-    QStringList nameList;
-    for (const auto pChainPreset : m_effectChainPresets) {
-        nameList.append(pChainPreset->name());
-    }
-    nameList.sort();
-
-    QList<EffectChainPresetPointer> presetList;
-    for (const auto& name : nameList) {
-        presetList.append(m_effectChainPresets.value(name));
-    }
-    return presetList;
+    return m_effectChainPresetsSorted;
 }
 
-void EffectsManager::reloadStandardEffectChains() {
+void EffectsManager::readEffectsXml() {
     QDir settingsPath(m_pConfig->getSettingsPath());
     QFile file(settingsPath.absoluteFilePath("effects.xml"));
     QDomDocument doc;
@@ -729,6 +736,7 @@ void EffectsManager::reloadStandardEffectChains() {
     }
     file.close();
 
+    // Reload state of standard chains
     QDomElement root = doc.documentElement();
     QDomElement rackElement = XmlParse::selectElement(root, EffectXml::Rack);
     QDomElement chainsElement = XmlParse::selectElement(rackElement, EffectXml::ChainsRoot);
@@ -743,12 +751,25 @@ void EffectsManager::reloadStandardEffectChains() {
             loadEffectChainPreset(m_standardEffectChainSlots.value(i), pPreset);
         }
     }
+
+    // Reload order of custom chain presets
+    QStringList chainPresetsSorted;
+    QDomElement chainPresetsElement = XmlParse::selectElement(root, EffectXml::ChainPresetList);
+    QDomNodeList presetNameList = chainPresetsElement.elementsByTagName(EffectXml::ChainPresetName);
+    for (int i = 0; i < presetNameList.count(); ++i) {
+        QDomNode presetNameNode = presetNameList.at(i);
+        if (presetNameNode.isElement()) {
+            chainPresetsSorted << presetNameNode.toElement().text();
+        }
+    }
+    setChainPresetOrder(chainPresetsSorted);
 }
 
-void EffectsManager::saveStandardEffectChains() {
+void EffectsManager::saveEffectsXml() {
     QDomDocument doc("MixxxEffects");
     doc.setContent(QString("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"));
 
+    // Save presets for current state of standard chains
     QDomElement rootElement = doc.createElement("MixxxEffects");
     rootElement.setAttribute("schemaVersion", QString::number(EffectXml::kXmlSchemaVersion));
     doc.appendChild(rootElement);
@@ -756,11 +777,20 @@ void EffectsManager::saveStandardEffectChains() {
     rootElement.appendChild(rackElement);
     QDomElement chainsElement = doc.createElement(EffectXml::ChainsRoot);
     rackElement.appendChild(chainsElement);
-
     for (const auto pChainSlot : m_standardEffectChainSlots) {
         EffectChainSlot* genericChainSlot = static_cast<EffectChainSlot*>(pChainSlot.get());
         chainsElement.appendChild(EffectChainPreset(genericChainSlot).toXml(&doc));
     }
+
+    // Save order of custom chain presets
+    QDomElement chainPresetListElement = doc.createElement(EffectXml::ChainPresetList);
+    for (const auto pChainPreset : m_effectChainPresetsSorted) {
+        XmlParse::addElement(doc,
+                chainPresetListElement,
+                EffectXml::ChainPresetName,
+                pChainPreset->name());
+    }
+    doc.appendChild(chainPresetListElement);
 
     QDir settingsPath(m_pConfig->getSettingsPath());
     if (!settingsPath.exists()) {
