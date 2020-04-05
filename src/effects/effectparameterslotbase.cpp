@@ -8,7 +8,7 @@
 
 EffectParameterSlotBase::EffectParameterSlotBase(const QString& group,
         const unsigned int iParameterSlotNumber,
-        const EffectManifestParameter::ParameterType parameterType)
+        const EffectParameterType parameterType)
         : m_iParameterSlotNumber(iParameterSlotNumber),
           m_group(group),
           m_pEffectParameter(nullptr),
@@ -48,7 +48,7 @@ QString EffectParameterSlotBase::description() const {
     return tr("No effect loaded.");
 }
 
-EffectManifestParameter::ParameterType EffectParameterSlotBase::parameterType() const {
+EffectParameterType EffectParameterSlotBase::parameterType() const {
     return m_parameterType;
 }
 

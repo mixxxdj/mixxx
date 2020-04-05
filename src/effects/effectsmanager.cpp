@@ -433,7 +433,7 @@ EffectSlotPointer EffectsManager::getEffectSlot(
 }
 
 EffectParameterSlotBasePointer EffectsManager::getEffectParameterSlot(
-        const EffectManifestParameter::ParameterType parameterType,
+        const EffectParameterType parameterType,
         const ConfigKey& configKey) {
     EffectSlotPointer pEffectSlot =
              getEffectSlot(configKey.group);

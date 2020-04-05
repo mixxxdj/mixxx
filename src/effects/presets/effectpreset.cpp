@@ -41,10 +41,10 @@ EffectPreset::EffectPreset(const EffectSlotPointer pEffectSlot) {
     m_dMetaParameter = pEffectSlot->getMetaParameter();
     // Parameters are reloaded in the order they are saved, so the order of
     // loaded effects must be preserved.
-    int numTypes = static_cast<int>(EffectManifestParameter::ParameterType::NUM_TYPES);
+    int numTypes = static_cast<int>(EffectParameterType::NUM_TYPES);
     for (int parameterTypeId = 0; parameterTypeId < numTypes; ++parameterTypeId) {
-        const EffectManifestParameter::ParameterType parameterType =
-                static_cast<EffectManifestParameter::ParameterType>(parameterTypeId);
+        const EffectParameterType parameterType =
+                static_cast<EffectParameterType>(parameterTypeId);
         for (const auto& pParameter : pEffectSlot->getLoadedParameters().value(parameterType)) {
             m_effectParameterPresets.append(EffectParameterPreset(pParameter, false));
         }

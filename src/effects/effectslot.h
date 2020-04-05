@@ -29,7 +29,7 @@ class ControlProxy;
 class EffectParameter;
 class EffectKnobParameterSlot;
 
-typedef QMap<EffectManifestParameter::ParameterType, QList<EffectParameterPointer>> ParameterMap;
+typedef QMap<EffectParameterType, QList<EffectParameterPointer>> ParameterMap;
 
 // EffectSlot is a main thread class which creates EngineEffects and sends
 // updates to them in response to changes in ControlObjects. It owns the
@@ -96,10 +96,10 @@ class EffectSlot : public QObject {
 
     const ParameterMap getHiddenParameters() const {
         ParameterMap hiddenParameters;
-        int numTypes = static_cast<int>(EffectManifestParameter::ParameterType::NUM_TYPES);
+        int numTypes = static_cast<int>(EffectParameterType::NUM_TYPES);
         for (int parameterTypeId = 0; parameterTypeId < numTypes; ++parameterTypeId) {
-            const EffectManifestParameter::ParameterType parameterType =
-                    static_cast<EffectManifestParameter::ParameterType>(parameterTypeId);
+            const EffectParameterType parameterType =
+                    static_cast<EffectParameterType>(parameterTypeId);
             for (const auto& pParameter : m_parameters.value(parameterType)) {
                 if (!m_loadedParameters.value(parameterType).contains(pParameter)) {
                     hiddenParameters[parameterType].append(pParameter);
@@ -112,9 +112,9 @@ class EffectSlot : public QObject {
     void hideParameter(EffectParameterPointer pParameter);
     void showParameter(EffectParameterPointer pParameter);
 
-    void addEffectParameterSlot(EffectManifestParameter::ParameterType parameterType);
+    void addEffectParameterSlot(EffectParameterType parameterType);
     EffectParameterSlotBasePointer getEffectParameterSlot(
-            EffectManifestParameter::ParameterType parameterType, unsigned int slotNumber);
+            EffectParameterType parameterType, unsigned int slotNumber);
 
     double getMetaParameter() const;
 
@@ -130,7 +130,7 @@ class EffectSlot : public QObject {
 
     EffectManifestPointer getManifest() const;
 
-    unsigned int numParameters(EffectManifestParameter::ParameterType parameterType) const;
+    unsigned int numParameters(EffectParameterType parameterType) const;
 
     void setEnabled(bool enabled);
 
@@ -163,7 +163,7 @@ class EffectSlot : public QObject {
     void unloadEffect();
 
     const unsigned int m_iEffectNumber;
-    QHash<EffectManifestParameter::ParameterType, unsigned int> m_iNumParameterSlots;
+    QHash<EffectParameterType, unsigned int> m_iNumParameterSlots;
     const QString m_group;
     UserSettingsPointer m_pConfig;
     EffectsManager* m_pEffectsManager;
@@ -172,11 +172,11 @@ class EffectSlot : public QObject {
     EngineEffect* m_pEngineEffect;
     ParameterMap m_parameters;
     ParameterMap m_loadedParameters;
-    QMap<EffectManifestParameter::ParameterType, QList<EffectParameterSlotBasePointer>> m_parameterSlots;
+    QMap<EffectParameterType, QList<EffectParameterSlotBasePointer>> m_parameterSlots;
 
     ControlObject* m_pControlLoaded;
-    QHash<EffectManifestParameter::ParameterType, ControlObject*> m_pControlNumParameters;
-    QHash<EffectManifestParameter::ParameterType, ControlObject*> m_pControlNumParameterSlots;
+    QHash<EffectParameterType, ControlObject*> m_pControlNumParameters;
+    QHash<EffectParameterType, ControlObject*> m_pControlNumParameterSlots;
     ControlPushButton* m_pControlEnabled;
     ControlObject* m_pControlNextEffect;
     ControlObject* m_pControlPrevEffect;

@@ -22,7 +22,7 @@
 class EngineEffectsManager;
 class EffectManifest;
 
-typedef QMap<EffectManifestParameter::ParameterType, QList<EffectParameterPointer>> ParameterMap;
+typedef QMap<EffectParameterType, QList<EffectParameterPointer>> ParameterMap;
 
 // EffectsManager is the interface between the parts of the effects system in
 // the main thread and the rest of Mixxx. It creates/destroys a fixed
@@ -138,7 +138,7 @@ class EffectsManager : public QObject {
     EffectSlotPointer getEffectSlot(const QString& group);
 
     EffectParameterSlotBasePointer getEffectParameterSlot(
-            const EffectManifestParameter::ParameterType parameterType, const ConfigKey& configKey);
+            const EffectParameterType parameterType, const ConfigKey& configKey);
 
     QString getNextEffectId(const QString& effectId);
     QString getPrevEffectId(const QString& effectId);
