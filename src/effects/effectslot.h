@@ -95,18 +95,7 @@ class EffectSlot : public QObject {
     }
 
     const ParameterMap getHiddenParameters() const {
-        ParameterMap hiddenParameters;
-        int numTypes = static_cast<int>(EffectParameterType::NUM_TYPES);
-        for (int parameterTypeId = 0; parameterTypeId < numTypes; ++parameterTypeId) {
-            const EffectParameterType parameterType =
-                    static_cast<EffectParameterType>(parameterTypeId);
-            for (const auto& pParameter : m_parameters.value(parameterType)) {
-                if (!m_loadedParameters.value(parameterType).contains(pParameter)) {
-                    hiddenParameters[parameterType].append(pParameter);
-                }
-            }
-        }
-        return hiddenParameters;
+        return m_hiddenParameters;
     }
 
     void hideParameter(EffectParameterPointer pParameter);
@@ -170,8 +159,9 @@ class EffectSlot : public QObject {
     EffectManifestPointer m_pManifest;
     EngineEffectChain* m_pEngineEffectChain;
     EngineEffect* m_pEngineEffect;
-    ParameterMap m_parameters;
+    ParameterMap m_allParameters;
     ParameterMap m_loadedParameters;
+    ParameterMap m_hiddenParameters;
     QMap<EffectParameterType, QList<EffectParameterSlotBasePointer>> m_parameterSlots;
 
     ControlObject* m_pControlLoaded;
