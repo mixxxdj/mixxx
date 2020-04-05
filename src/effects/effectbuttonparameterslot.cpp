@@ -9,9 +9,8 @@
 #include "util/xml.h"
 
 EffectButtonParameterSlot::EffectButtonParameterSlot(const QString& group,
-                                                     const unsigned int iParameterSlotNumber)
-        : EffectParameterSlotBase(group, iParameterSlotNumber,
-                EffectManifestParameter::ParameterType::BUTTON) {
+        const unsigned int iParameterSlotNumber)
+        : EffectParameterSlotBase(group, iParameterSlotNumber, EffectParameterType::BUTTON) {
     QString itemPrefix = formatItemPrefix(iParameterSlotNumber);
     m_pControlLoaded = new ControlObject(
             ConfigKey(m_group, itemPrefix + QString("_loaded")));
@@ -44,7 +43,7 @@ void EffectButtonParameterSlot::loadParameter(EffectParameterPointer pEffectPara
     }
 
     VERIFY_OR_DEBUG_ASSERT(pEffectParameter->manifest()->parameterType() ==
-            EffectManifestParameter::ParameterType::BUTTON) {
+            EffectParameterType::BUTTON) {
         return;
     }
 

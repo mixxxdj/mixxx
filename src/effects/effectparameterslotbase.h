@@ -22,8 +22,7 @@ class EffectSlot;
 class EffectParameterSlotBase : public QObject {
     Q_OBJECT
   public:
-    EffectParameterSlotBase(const QString& group, const unsigned int iParameterSlotNumber,
-            const EffectManifestParameter::ParameterType parameterType);
+    EffectParameterSlotBase(const QString& group, const unsigned int iParameterSlotNumber, const EffectParameterType parameterType);
 
     virtual ~EffectParameterSlotBase();
 
@@ -39,7 +38,7 @@ class EffectParameterSlotBase : public QObject {
     QString name() const;
     QString shortName() const;
     QString description() const;
-    EffectManifestParameter::ParameterType parameterType() const;
+    EffectParameterType parameterType() const;
     EffectManifestParameterPointer getManifest();
     inline bool isLoaded() const {
         return m_pManifestParameter != nullptr;
@@ -60,7 +59,7 @@ class EffectParameterSlotBase : public QObject {
     EffectSlot* m_pEffectSlot;
     EffectParameterPointer m_pEffectParameter;
     EffectManifestParameterPointer m_pManifestParameter;
-    EffectManifestParameter::ParameterType m_parameterType;
+    EffectParameterType m_parameterType;
 
     // Controls exposed to the rest of Mixxx
     ControlObject* m_pControlLoaded;

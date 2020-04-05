@@ -296,8 +296,10 @@ class EffectManifestParameter {
     bool m_showInParametertSlot;
 };
 
-inline uint qHash(const EffectManifestParameter::ParameterType& parameterType) {
+QDebug operator<<(QDebug dbg, const EffectManifestParameter& parameter);
+
+typedef EffectManifestParameter::ParameterType EffectParameterType;
+
+inline uint qHash(const EffectParameterType& parameterType) {
     return static_cast<uint>(parameterType);
 }
-
-QDebug operator<<(QDebug dbg, const EffectManifestParameter& parameter);
