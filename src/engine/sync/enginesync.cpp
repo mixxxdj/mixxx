@@ -399,6 +399,11 @@ void EngineSync::activateMaster(Syncable* pSyncable, bool explicitMaster) {
         qWarning() << "WARNING: Logic Error: Called activateMaster on a nullptr Syncable.";
         return;
     }
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "EngineSync::activateMaster: "
+                        << pSyncable->getGroup() << "explicit? "
+                        << explicitMaster;
+    }
 
     // Already master, no need to do anything.
     if (m_pMasterSyncable == pSyncable) {

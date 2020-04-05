@@ -4,22 +4,22 @@
 // * Flinging tracks with the waveform should work.
 // * vinyl??
 
-#include <string>
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include <QtDebug>
+#include <string>
 
-#include "preferences/usersettings.h"
 #include "control/controlobject.h"
 #include "engine/controls/bpmcontrol.h"
 #include "engine/sync/synccontrol.h"
-#include "test/mockedenginebackendtest.h"
-#include "test/mixxxtest.h"
-#include "track/beatfactory.h"
 #include "mixer/basetrackplayer.h"
+#include "preferences/usersettings.h"
+#include "test/mixxxtest.h"
+#include "test/mockedenginebackendtest.h"
+#include "track/beatfactory.h"
+#include "track/beatmap.h"
 #include "util/memory.h"
-
 
 class EngineSyncTest : public MockedEngineBackendTest {
   public:
@@ -1386,16 +1386,35 @@ TEST_F(EngineSyncTest, HalfDoubleInternalClockTest) {
                             ConfigKey(m_sGroup2, "rate"))->get());
 }
 
+namespace {
+QVector<double> createBeatVector(double first_beat,
+        unsigned int num_beats,
+        double beat_length) {
+    QVector<double> beats;
+    for (unsigned int i = 0; i < num_beats; ++i) {
+        beats.append(first_beat + i * beat_length);
+    }
+    return beats;
+}
+} // namespace
+
 TEST_F(EngineSyncTest, HalfDoubleConsistency) {
     // half-double matching should be consistent
     auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(90.0);
+    double beatLengthFrames = 60.0 * 44100 / 90.0;
+    double startOffsetFrames = 0;
+    const int numBeats = 100;
+    QVector<double> beats1 = createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
+    auto pBeats1 = new BeatMap(*m_pTrack1, 0, beats1);
+    m_pTrack1->setBeats(BeatsPointer(pBeats1));
+
     auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(145.0);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 90, 0.0);
-    m_pTrack1->setBeats(pBeats1);
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 145, 0.0);
-    m_pTrack2->setBeats(pBeats2);
+    beatLengthFrames = 60.0 * 44100 / 145.0;
+    QVector<double> beats2 = createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
+    auto pBeats2 = new BeatMap(*m_pTrack2, 0, beats2);
+    m_pTrack2->setBeats(BeatsPointer(pBeats2));
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(1);
