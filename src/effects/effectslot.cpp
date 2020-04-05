@@ -157,7 +157,7 @@ void EffectSlot::updateEngineState() {
     pRequest->SetEffectParameters.enabled = m_pControlEnabled->get();
     m_pEffectsManager->writeRequest(pRequest);
 
-    for (const auto& parameterList : m_parameters) {
+    for (const auto& parameterList : m_allParameters) {
         for (auto const& pParameter : parameterList) {
             pParameter->updateEngineState();
         }
@@ -209,7 +209,7 @@ void EffectSlot::addEffectParameterSlot(EffectParameterType parameterType) {
 }
 
 unsigned int EffectSlot::numParameters(EffectParameterType parameterType) const {
-    return m_parameters.value(parameterType).size();
+    return m_allParameters.value(parameterType).size();
 }
 
 void EffectSlot::setEnabled(bool enabled) {
@@ -264,7 +264,7 @@ void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
         }
         EffectParameterPointer pParameter(new EffectParameter(
                 m_pEngineEffect, m_pEffectsManager, pManifestParameter, parameterPreset));
-        m_parameters[pManifestParameter->parameterType()].append(pParameter);
+        m_allParameters[pManifestParameter->parameterType()].append(pParameter);
     }
 
     // Map the parameter slots to the EffectParameters.
@@ -282,7 +282,7 @@ void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
                     continue;
                 }
 
-                for (const auto& pParameter : m_parameters.value(parameterType)) {
+                for (const auto& pParameter : m_allParameters.value(parameterType)) {
                     if (pParameter->manifest()->id() == parameterPreset.id()) {
                         m_loadedParameters[parameterType].insert(slot, pParameter);
                         break;
@@ -333,10 +333,13 @@ void EffectSlot::unloadEffect() {
             pSlot->clear();
         }
     }
-    for (auto& parameterList : m_parameters) {
+    for (auto& parameterList : m_allParameters) {
         parameterList.clear();
     }
     for (auto& parameterList : m_loadedParameters) {
+        parameterList.clear();
+    }
+    for (auto& parameterList : m_hiddenParameters) {
         parameterList.clear();
     }
 
@@ -372,12 +375,22 @@ void EffectSlot::loadParameters() {
         for (; slot < m_parameterSlots.value(parameterType).size(); slot++) {
             m_parameterSlots.value(parameterType).at(slot)->clear();
         }
+
+        m_hiddenParameters[parameterType].clear();
+        for (auto pParameter : m_allParameters.value(parameterType)) {
+            if (!m_loadedParameters.value(parameterType).contains(pParameter)) {
+                m_hiddenParameters[parameterType].append(pParameter);
+            }
+        }
     }
 }
 
 void EffectSlot::hideParameter(EffectParameterPointer pParameter) {
     auto parameterType = pParameter->manifest()->parameterType();
-    VERIFY_OR_DEBUG_ASSERT(m_parameters.value(parameterType).contains(pParameter)) {
+    VERIFY_OR_DEBUG_ASSERT(m_allParameters.value(parameterType).contains(pParameter)) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(!m_hiddenParameters.value(parameterType).contains(pParameter)) {
         return;
     }
     m_loadedParameters[parameterType].removeAll(pParameter);
@@ -386,7 +399,7 @@ void EffectSlot::hideParameter(EffectParameterPointer pParameter) {
 
 void EffectSlot::showParameter(EffectParameterPointer pParameter) {
     auto parameterType = pParameter->manifest()->parameterType();
-    VERIFY_OR_DEBUG_ASSERT(m_parameters.value(parameterType).contains(pParameter)) {
+    VERIFY_OR_DEBUG_ASSERT(m_allParameters.value(parameterType).contains(pParameter)) {
         return;
     }
     VERIFY_OR_DEBUG_ASSERT(!m_loadedParameters.value(parameterType).contains(pParameter)) {
