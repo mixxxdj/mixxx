@@ -39,6 +39,11 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
     availableEffectsList->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     availableEffectsList->setColumnWidth(1, 200);
     availableEffectsList->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+
+    chainListWidget->setDragEnabled(true);
+    chainListWidget->viewport()->setAcceptDrops(true);
+    chainListWidget->setDropIndicatorShown(true);
+    chainListWidget->setDragDropMode(QAbstractItemView::InternalMove);
 }
 
 DlgPrefEffects::~DlgPrefEffects() {
@@ -50,6 +55,11 @@ void DlgPrefEffects::slotUpdate() {
 
     if (!m_availableEffectsModel.isEmpty()) {
         availableEffectsList->selectRow(0);
+    }
+
+    chainListWidget->clear();
+    for (const auto& pChainPreset : m_pEffectsManager->getAvailableChainPresets()) {
+        chainListWidget->addItem(pChainPreset->name());
     }
 }
 
@@ -64,6 +74,12 @@ void DlgPrefEffects::slotApply() {
         m_pConfig->set(ConfigKey("[Visible " + pManifest->backendName() + " Effects]", pManifest->id()),
                 ConfigValue(profile->bIsVisible));
     }
+
+    QStringList chainList;
+    for (int i = 0; i < chainListWidget->count(); ++i) {
+        chainList << chainListWidget->item(i)->text();
+    }
+    m_pEffectsManager->setChainPresetOrder(chainList);
 }
 
 void DlgPrefEffects::slotResetToDefaults() {
