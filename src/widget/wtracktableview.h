@@ -4,13 +4,12 @@
 #include <QAbstractItemModel>
 #include <QSortFilterProxyModel>
 
-#include "preferences/usersettings.h"
 #include "control/controlproxy.h"
 #include "library/dao/playlistdao.h"
 #include "library/trackmodel.h" // Can't forward declare enums
+#include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/duration.h"
-#include "widget/wcolorpickeraction.h"
 #include "widget/wlibrarytableview.h"
 #include "widget/wtrackmenu.h"
 
@@ -18,12 +17,10 @@ class ControlProxy;
 class DlgTagFetcher;
 class DlgTrackInfo;
 class TrackCollectionManager;
-
 class ExternalTrackCollection;
 
 const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigValue key for QTable vertical scrollbar position */
 const QString LIBRARY_CONFIGVALUE = "[Library]"; /** ConfigValue "value" (wtf) for library stuff */
-
 
 class WTrackTableView : public WLibraryTableView {
     Q_OBJECT
@@ -52,9 +49,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotUnhide();
     void slotPurge();
 
-
   private slots:
-
     void loadSelectionToGroup(QString group, bool play = false);
     void doSortByColumn(int headerSection, Qt::SortOrder sortOrder);
     void applySortingIfVisible();
@@ -83,6 +78,8 @@ class WTrackTableView : public WLibraryTableView {
 
     // Returns the current TrackModel, or returns NULL if none is set.
     TrackModel* getTrackModel() const;
+
+    // Check if an operation is allowed on a model.
     bool modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) const;
 
     const UserSettingsPointer m_pConfig;

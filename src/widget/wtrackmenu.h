@@ -4,28 +4,19 @@
 #include <QAction>
 #include <QMenu>
 #include <QWidget>
-#include <library/dlgtrackinfo.h>
-#include <library/dlgtagfetcher.h>
+
+#include "control/controlproxy.h"
+#include "library/dao/playlistdao.h"
+#include "library/dlgtagfetcher.h"
+#include "library/dlgtrackinfo.h"
 #include "library/trackcollectionmanager.h"
 #include "library/trackmodel.h"
-#include "track/track.h"
-#include "library/dao/playlistdao.h"
 #include "preferences/usersettings.h"
-#include "widget/wlibrarytableview.h"
-#include "control/controlproxy.h"
-
-#include "widget/wcoverartmenu.h"
 #include "widget/wcolorpickeraction.h"
+#include "widget/wcoverartmenu.h"
 
 typedef QList<TrackId> TrackIdList;
 typedef QList<TrackPointer> TrackPointerList;
-
-class ControlProxy;
-class WCoverArtMenu;
-class DlgTagFetcher;
-class DlgTrackInfo;
-class TrackCollectionManager;
-class ExternalTrackCollection;
 
 class WTrackMenu : public QMenu {
     Q_OBJECT
@@ -55,15 +46,14 @@ class WTrackMenu : public QMenu {
     void setTrackIndexList(QModelIndexList indexList);
     void setTrackModel(TrackModel* trackModel);
 
-
-
   private slots:
+    // File
     void slotOpenInFileBrowser();
-    void slotLockBpm();
-    void slotUnlockBpm();
-    void slotScaleBpm(int);
+    
+    // Row color
     void slotColorPicked(mixxx::RgbColor::optional_t color);
 
+    // Reset
     void slotClearBeats();
     void slotClearPlayCount();
     void slotClearMainCue();
@@ -76,54 +66,58 @@ class WTrackMenu : public QMenu {
     void slotClearWaveform();
     void slotClearAllMetadata();
 
-    void lockBpm(bool lock);
+    // BPM
+    void slotLockBpm();
+    void slotUnlockBpm();
+    void slotScaleBpm(int);
+    
+    // Info and metadata
     void slotNextTrackInfo();
     void slotNextDlgTagFetcher();
     void slotPrevTrackInfo();
     void slotPrevDlgTagFetcher();
     void slotShowTrackInTagFetcher(TrackPointer track);
-
-    void slotPopulatePlaylistMenu();
-    void slotPopulateCrateMenu();
-    void addSelectionToNewCrate();
-
-    void slotImportTrackMetadataFromFileTags();
-    void slotExportTrackMetadataIntoFileTags();
-    void slotUpdateExternalTrackCollection(ExternalTrackCollection *externalTrackCollection);
-    void slotRemove();
-    void slotHide();
     void slotTrackInfoClosed();
     void slotTagFetcherClosed();
     void slotShowTrackInfo();
     void slotShowDlgTagFetcher();
+    void slotImportTrackMetadataFromFileTags();
+    void slotExportTrackMetadataIntoFileTags();
+    void slotUpdateExternalTrackCollection(ExternalTrackCollection *externalTrackCollection);
 
+    // Playlist and crate
+    void slotPopulatePlaylistMenu();
+    void slotPopulateCrateMenu();
+    void addSelectionToNewCrate();
+
+    // Auto DJ
     void slotAddToAutoDJBottom();
     void slotAddToAutoDJTop();
     void slotAddToAutoDJReplace();
 
+    // Cover
     void slotCoverInfoSelected(const CoverInfoRelative &coverInfo);
-
-
     void slotReloadCoverArt();
 
+    // Library management
+    void slotRemove();
+    void slotHide();
     void slotUnhide();
-
     void slotPurge();
+    
 public:
     signals:
     void loadTrackToPlayer(TrackPointer pTrack, QString group,
             bool play = false);
 
 private:
+    void teardownActions();
     void constructMenus();
     void createActions();
     void setupActions();
-    void trackIdsToTrackPointers();
-    void setTrackPointerList(TrackPointerList trackPointerList);
-    TrackPointerList getTrackPointerList();
 
     bool modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) const;
-    bool optionIsEnabled(Filter flag);
+    bool optionIsEnabled(Filter flag) const;
 
     void addSelectionToPlaylist(int iPlaylistId);
     void updateSelectionCrates(QWidget* pWidget);
@@ -133,24 +127,26 @@ private:
 
     void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
 
-    void teardownActions();
-
+    void lockBpm(bool lock);
 
     void loadSelectionToGroup(QString group, bool play = false);
     void clearTrackSelection();
+
+    // Selected tracks
+    TrackIdList m_pTrackIdList;
+    TrackPointerList m_pTrackPointerList;
+    QModelIndexList m_pSelectedTrackIndices;
+
+    TrackModel* m_pTrackModel{};
 
     ControlProxy* m_pNumSamplers{};
     ControlProxy* m_pNumDecks{};
     ControlProxy* m_pNumPreviewDecks{};
 
-    // The selected tracks for which the context menu is created
-    TrackIdList m_pTrackIdList;
-
-    // Context menu machinery
+    // Submenus
     QMenu *m_pLoadToMenu{};
     QMenu *m_pDeckMenu{};
     QMenu *m_pSamplerMenu{};
-
     QMenu *m_pPlaylistMenu{};
     QMenu *m_pCrateMenu{};
     QMenu *m_pMetadataMenu{};
@@ -158,8 +154,6 @@ private:
     QMenu *m_pClearMetadataMenu{};
     QMenu *m_pBPMMenu{};
     QMenu *m_pColorMenu{};
-
-
     WCoverArtMenu* m_pCoverMenu{};
 
     // Reload Track Metadata Action:
@@ -187,6 +181,8 @@ private:
 
     // Show track-editor action
     QAction *m_pPropertiesAct{};
+    
+    // Open file in default file browser
     QAction *m_pFileBrowserAct{};
 
     // BPM feature
@@ -215,14 +211,8 @@ private:
     QAction* m_pClearReplayGainAction{};
     QAction* m_pClearAllMetadataAction{};
 
-
     const UserSettingsPointer m_pConfig;
-
     TrackCollectionManager* m_pTrackCollectionManager;
-    TrackPointerList m_pTrackPointerList;
-    TrackModel* m_pTrackModel{};
-
-    QModelIndexList m_pSelectedTrackIndices;
 
     QScopedPointer<DlgTrackInfo> m_pTrackInfo;
     QScopedPointer<DlgTagFetcher> m_pTagFetcher;
@@ -234,7 +224,7 @@ private:
         QAction* action{};
     };
     QList<UpdateExternalTrackCollection> m_updateInExternalTrackCollections;
-
+    
     bool m_bPlaylistMenuLoaded;
     bool m_bCrateMenuLoaded;
 
@@ -246,6 +236,7 @@ private:
     int m_iCoverColumn; // visible cover art
     int m_iTrackLocationColumn;
 
+    // Filter available options
     Filters m_eFilters;
 };
 

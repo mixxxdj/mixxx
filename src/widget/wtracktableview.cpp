@@ -1,8 +1,6 @@
 #include "widget/wtracktableview.h"
 
-#include <QCheckBox>
 #include <QDrag>
-#include <QInputDialog>
 #include <QLinkedList>
 #include <QModelIndex>
 #include <QScrollBar>
@@ -10,10 +8,7 @@
 #include <QUrl>
 
 #include "control/controlobject.h"
-#include "control/controlproxy.h"
-#include "library/crate/cratefeaturehelper.h"
 #include "library/dao/trackschema.h"
-#include "library/externaltrackcollection.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
@@ -27,8 +22,6 @@
 #include "util/time.h"
 #include "widget/wtracktableviewheader.h"
 
-#include <iostream>
-
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  UserSettingsPointer pConfig,
                                  TrackCollectionManager* pTrackCollectionManager,
@@ -41,8 +34,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_sorting(sorting),
           m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false) {
-
-
 
     // Connect slots and signals to make the world go 'round.
     connect(this, SIGNAL(doubleClicked(const QModelIndex &)),
@@ -310,6 +301,9 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     restoreVScrollBarPos(newModel);
     // restoring scrollBar position using model pointer as key
     // scrollbar positions with respect to different models are backed by map
+
+    // Set the track model in context menu widget.
+    m_pMenu->setTrackModel(getTrackModel());
 }
 
 // slot
@@ -341,7 +335,6 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
     }
 }
 
-
 void WTrackTableView::loadSelectionToGroup(QString group, bool play) {
     QModelIndexList indices = selectionModel()->selectedRows();
     if (indices.size() > 0) {
@@ -365,8 +358,6 @@ void WTrackTableView::loadSelectionToGroup(QString group, bool play) {
     }
 }
 
-
-
 void WTrackTableView::slotPurge() {
     QModelIndexList indices = selectionModel()->selectedRows();
     if (indices.size() > 0) {
@@ -389,9 +380,6 @@ void WTrackTableView::slotUnhide() {
 }
 
 void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
-    // Set the track model
-    m_pMenu->setTrackModel(getTrackModel());
-
     // Update track indices in context menu
     QModelIndexList indices = selectionModel()->selectedRows();
     m_pMenu->setTrackIndexList(indices);
@@ -678,6 +666,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     updateGeometries();
     verticalScrollBar()->setValue(vScrollBarPos);
 }
+
 TrackModel* WTrackTableView::getTrackModel() const {
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
     return trackModel;
@@ -710,8 +699,6 @@ void WTrackTableView::loadSelectedTrack() {
 void WTrackTableView::loadSelectedTrackToGroup(QString group, bool play) {
     loadSelectionToGroup(group, play);
 }
-
-
 
 QList<TrackId> WTrackTableView::getSelectedTrackIds() const {
     QList<TrackId> trackIds;
@@ -768,7 +755,6 @@ void WTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
     }
 }
 
-
 void WTrackTableView::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
         return;
@@ -786,7 +772,6 @@ void WTrackTableView::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     m_pTrackCollectionManager->unhideTracks(trackIds);
     playlistDao.addTracksToAutoDJQueue(trackIds, loc);
 }
-
 
 void WTrackTableView::doSortByColumn(int headerSection, Qt::SortOrder sortOrder) {
     TrackModel* trackModel = getTrackModel();
@@ -869,9 +854,6 @@ void WTrackTableView::applySorting() {
     // in Qt5, we need to call it manually, which triggers finally the select()
     doSortByColumn(sortColumn, sortOrder);
 }
-
-
-
 
 void WTrackTableView::slotSortingChanged(int headerSection, Qt::SortOrder order) {
 

@@ -7,11 +7,6 @@
 #include <QModelIndex>
 #include <QWidgetAction>
 
-
-#include <utility>
-#include <iostream>
-
-
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "library/coverartutils.h"
@@ -29,25 +24,19 @@
 #include "mixer/playermanager.h"
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
-#include "util/desktophelper.h"
-#include "widget/wlibrarytableview.h"
-#include "track/track.h"
 #include "track/trackref.h"
 #include "util/desktophelper.h"
+#include "util/desktophelper.h"
 #include "util/parented_ptr.h"
-#include "waveform/guitick.h"
 #include "widget/wcolorpickeraction.h"
-#include "widget/wcoverartmenu.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
-
 
 
 WTrackMenu::WTrackMenu(QWidget *parent, UserSettingsPointer pConfig, TrackCollectionManager *pTrackCollectionManager, Filters flags)
         : QMenu(parent),
           m_pConfig(std::move(pConfig)),
           m_pTrackCollectionManager(pTrackCollectionManager),
-          m_pTrackModel(nullptr),
           m_bPlaylistMenuLoaded(false),
           m_bCrateMenuLoaded(false),
           m_iCoverSourceColumn(-1),
@@ -696,27 +685,25 @@ void WTrackMenu::setTrackIndexList(QModelIndexList indexList) {
     setupActions();
 }
 
+void WTrackMenu::setTrackModel(TrackModel* trackModel) {
+    m_pTrackModel = trackModel;
+
+    // Move this to another function
+    m_iCoverSourceColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART_SOURCE);
+    m_iCoverTypeColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART_TYPE);
+    m_iCoverLocationColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART_LOCATION);
+    m_iCoverHashColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART_HASH);
+    m_iCoverColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART);
+    m_iTrackLocationColumn = trackModel->fieldIndex(TRACKLOCATIONSTABLE_LOCATION);
+}
 
 void WTrackMenu::slotOpenInFileBrowser() {
-    TrackPointerList trackPointerList = getTrackPointerList();
+    TrackPointerList trackPointerList = m_pTrackPointerList;
     QStringList locations;
     for (const TrackPointer& trackPointer : trackPointerList) {
         locations << trackPointer->getLocation();
     }
     mixxx::DesktopHelper::openInFileBrowser(locations);
-}
-
-TrackPointerList WTrackMenu::getTrackPointerList() {
-    return m_pTrackPointerList;
-}
-
-bool WTrackMenu::modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) const {
-    if (!m_pTrackModel) {
-        return false;
-    }
-    TrackModel* trackModel = m_pTrackModel;
-    return trackModel &&
-           (trackModel->getCapabilities() & capabilities) == capabilities;
 }
 
 void WTrackMenu::slotImportTrackMetadataFromFileTags() {
@@ -804,19 +791,6 @@ void WTrackMenu::slotUpdateExternalTrackCollection(
     }
 
     externalTrackCollection->updateTracks(std::move(trackRefs));
-}
-
-//slot for reset played count, sets count to 0 of one or more tracks
-void WTrackMenu::slotClearPlayCount() {
-    if (m_pTrackPointerList.empty()) {
-        return;
-    }
-
-    for (const auto& pTrack : m_pTrackPointerList) {
-        pTrack->resetPlayCounter();
-    }
-
-
 }
 
 void WTrackMenu::slotPopulatePlaylistMenu() {
@@ -909,7 +883,6 @@ void WTrackMenu::addSelectionToPlaylist(int iPlaylistId) {
     playlistDao.appendTracksToPlaylist(trackIds, iPlaylistId);
 }
 
-
 void WTrackMenu::slotPopulateCrateMenu() {
     // The user may open the Crate submenu, move their cursor away, then
     // return to the Crate submenu before exiting the track context menu.
@@ -971,7 +944,6 @@ void WTrackMenu::slotPopulateCrateMenu() {
     m_bCrateMenuLoaded = true;
 }
 
-
 void WTrackMenu::updateSelectionCrates(QWidget* pWidget) {
     auto pCheckBox = qobject_cast<QCheckBox*>(pWidget);
     VERIFY_OR_DEBUG_ASSERT(pCheckBox) {
@@ -1022,19 +994,6 @@ void WTrackMenu::addSelectionToNewCrate() {
     }
 }
 
-void WTrackMenu::setTrackModel(TrackModel* trackModel) {
-    m_pTrackModel = trackModel;
-
-    // Move this to another function
-    m_iCoverSourceColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART_SOURCE);
-    m_iCoverTypeColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART_TYPE);
-    m_iCoverLocationColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART_LOCATION);
-    m_iCoverHashColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART_HASH);
-    m_iCoverColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART);
-    m_iTrackLocationColumn = trackModel->fieldIndex(TRACKLOCATIONSTABLE_LOCATION);
-}
-
-
 void WTrackMenu::slotLockBpm() {
     lockBpm(true);
 }
@@ -1057,7 +1016,6 @@ void WTrackMenu::slotScaleBpm(int scale) {
         }
     }
 }
-
 
 void WTrackMenu::lockBpm(bool lock) {
     if (m_pTrackPointerList.empty()) {
@@ -1108,6 +1066,19 @@ void WTrackMenu::loadSelectionToGroup(QString group, bool play) {
         // external slot to load track
         emit loadTrackToPlayer(pTrack, group, play);
     }
+}
+
+//slot for reset played count, sets count to 0 of one or more tracks
+void WTrackMenu::slotClearPlayCount() {
+    if (m_pTrackPointerList.empty()) {
+        return;
+    }
+
+    for (const auto& pTrack : m_pTrackPointerList) {
+        pTrack->resetPlayCounter();
+    }
+
+
 }
 
 void WTrackMenu::slotClearBeats() {
@@ -1206,7 +1177,6 @@ void WTrackMenu::slotClearHotCues() {
     }
 }
 
-
 void WTrackMenu::slotClearAllMetadata() {
     slotClearBeats();
     slotClearPlayCount();
@@ -1219,37 +1189,6 @@ void WTrackMenu::slotClearAllMetadata() {
     slotClearReplayGain();
     slotClearWaveform();
 }
-
-
-
-void WTrackMenu::slotRemove() {
-    DEBUG_ASSERT(m_pTrackModel);
-    TrackModel* trackModel = m_pTrackModel;
-    if (!trackModel) {
-        return;
-    }
-    QModelIndexList indices = m_pSelectedTrackIndices;
-    if (!indices.empty()) {
-        trackModel->removeTracks(indices);
-    }
-}
-
-
-
-void WTrackMenu::slotHide() {
-    DEBUG_ASSERT(m_pTrackModel);
-    TrackModel* trackModel = m_pTrackModel;
-    if (!trackModel) {
-        return;
-    }
-    QModelIndexList indices = m_pSelectedTrackIndices;
-    if (indices.size() > 0) {
-        trackModel->hideTracks(indices);
-    }
-}
-
-
-
 
 void WTrackMenu::slotTrackInfoClosed() {
     DlgTrackInfo* pTrackInfo = m_pTrackInfo.take();
@@ -1409,7 +1348,6 @@ void WTrackMenu::slotShowDlgTagFetcher() {
     }
 }
 
-
 void WTrackMenu::slotAddToAutoDJBottom() {
     // append to auto DJ
     addToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
@@ -1440,7 +1378,6 @@ void WTrackMenu::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     playlistDao.addTracksToAutoDJQueue(trackIds, loc);
 }
 
-
 void WTrackMenu::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
     if (m_pTrackPointerList.empty()) {
         return;
@@ -1457,16 +1394,27 @@ void WTrackMenu::slotReloadCoverArt() {
     guessTrackCoverInfoConcurrently(m_pTrackPointerList);
 }
 
-void WTrackMenu::slotPurge() {
+void WTrackMenu::slotRemove() {
     DEBUG_ASSERT(m_pTrackModel);
-    if (m_pTrackModel) {
-        QModelIndexList indices = m_pSelectedTrackIndices;
-        if (indices.size() > 0) {
-            TrackModel* trackModel = m_pTrackModel;
-            if (trackModel) {
-                trackModel->purgeTracks(indices);
-            }
-        }
+    TrackModel* trackModel = m_pTrackModel;
+    if (!trackModel) {
+        return;
+    }
+    QModelIndexList indices = m_pSelectedTrackIndices;
+    if (!indices.empty()) {
+        trackModel->removeTracks(indices);
+    }
+}
+
+void WTrackMenu::slotHide() {
+    DEBUG_ASSERT(m_pTrackModel);
+    TrackModel* trackModel = m_pTrackModel;
+    if (!trackModel) {
+        return;
+    }
+    QModelIndexList indices = m_pSelectedTrackIndices;
+    if (indices.size() > 0) {
+        trackModel->hideTracks(indices);
     }
 }
 
@@ -1483,15 +1431,36 @@ void WTrackMenu::slotUnhide() {
     }
 }
 
+void WTrackMenu::slotPurge() {
+    DEBUG_ASSERT(m_pTrackModel);
+    if (m_pTrackModel) {
+        QModelIndexList indices = m_pSelectedTrackIndices;
+        if (indices.size() > 0) {
+            TrackModel* trackModel = m_pTrackModel;
+            if (trackModel) {
+                trackModel->purgeTracks(indices);
+            }
+        }
+    }
+}
+
 void WTrackMenu::clearTrackSelection() {
     m_pTrackIdList.clear();
     m_pTrackPointerList.clear();
     m_pSelectedTrackIndices.clear();
 }
 
-bool WTrackMenu::optionIsEnabled(Filter flag) {
+bool WTrackMenu::modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) const {
+    if (!m_pTrackModel) {
+        return false;
+    }
+    TrackModel* trackModel = m_pTrackModel;
+    return trackModel &&
+           (trackModel->getCapabilities() & capabilities) == capabilities;
+}
+
+bool WTrackMenu::optionIsEnabled(Filter flag) const {
     bool optionIsAvailable = m_eFilters.testFlag(Filter::None) || m_eFilters.testFlag(flag);
-    bool optionIsValid = false;
 
     if (!optionIsAvailable) {
         return false;
@@ -1524,25 +1493,20 @@ bool WTrackMenu::optionIsEnabled(Filter flag) {
             if (flag == Filter::AutoDJ) {
                 return true;
             }
-            else {
-                return false;
-            }
+            return false;
         }
-        else {
-            optionIsValid = true;
-            if (flag == Filter::AutoDJ) {
-                optionIsValid = modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ);
-            } else if (flag == Filter::Remove) {
-                optionIsValid = modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE) ||
-                                modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST) ||
-                                modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_CRATE);
-            } else if (flag == Filter::HideUnhidePurge) {
-                optionIsValid = modelHasCapabilities(TrackModel::TRACKMODELCAPS_HIDE) ||
-                                modelHasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE) ||
-                                modelHasCapabilities(TrackModel::TRACKMODELCAPS_PURGE);
-            }
+        if (flag == Filter::AutoDJ) {
+            return modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ);
+        } else if (flag == Filter::Remove) {
+            return modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE) ||
+                            modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST) ||
+                            modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_CRATE);
+        } else if (flag == Filter::HideUnhidePurge) {
+            return modelHasCapabilities(TrackModel::TRACKMODELCAPS_HIDE) ||
+                            modelHasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE) ||
+                            modelHasCapabilities(TrackModel::TRACKMODELCAPS_PURGE);
         }
     }
 
-    return optionIsValid;
+    return true;
 }

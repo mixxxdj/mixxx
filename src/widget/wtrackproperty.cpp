@@ -1,26 +1,9 @@
-#include "widget/wtrackproperty.h"
+#include <QDebug>
+#include <QUrl>
 
-// Qt includes
-#include <QMenu>
-#include <QtCore/QItemSelectionModel>
-#include <QtWidgets/QInputDialog>
-#include <QtWidgets/QCheckBox>
-#include <QtWidgets/QWidgetAction>
-
-// std includes
-#include <utility>
-
-// Project includes
 #include "control/controlobject.h"
-#include <library/crate/cratefeaturehelper.h>
-#include "library/dao/playlistdao.h"
-#include "library/trackcollection.h"
-#include "library/trackcollectionmanager.h"
-#include "library/trackmodel.h"
-#include "track/track.h"
+#include "widget/wtrackproperty.h"
 #include "util/dnd.h"
-#include "util/desktophelper.h"
-#include <iostream>
 
 WTrackProperty::WTrackProperty(const char* group,
                                UserSettingsPointer pConfig,

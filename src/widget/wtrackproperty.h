@@ -23,7 +23,6 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
 
     void setup(const QDomNode& node, const SkinContext& context) override;
     void contextMenuEvent(QContextMenuEvent * event) override;
-    QList<TrackId> getSelectedTrackIds() const;
 
 signals:
     void trackDropped(QString filename, QString group) override;
