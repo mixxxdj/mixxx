@@ -810,6 +810,26 @@
                     <normal/>
                 </options>
             </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJ200.seek</key>
+                <description>Deck 1: Seek</description>
+                <status>0xB0</status>
+                <midino>0x29</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJ200.seek</key>
+                <description>Deck 2: Seek</description>
+                <status>0xB1</status>
+                <midino>0x29</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
         </controls>
         <outputs/>
     </controller>
