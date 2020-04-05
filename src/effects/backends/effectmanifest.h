@@ -122,6 +122,7 @@ class EffectManifest {
     EffectManifestParameterPointer addParameter() {
         EffectManifestParameterPointer effectManifestParameterPointer(
                 new EffectManifestParameter());
+        effectManifestParameterPointer->setIndex(m_parameters.size());
         m_parameters.append(effectManifestParameterPointer);
         return effectManifestParameterPointer;
     }

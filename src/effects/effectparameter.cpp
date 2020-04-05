@@ -4,10 +4,12 @@
 #include "effects/effectsmanager.h"
 #include "util/assert.h"
 
-EffectParameter::EffectParameter(EngineEffect* pEngineEffect, EffectsManager* pEffectsManager, int iParameterNumber, EffectManifestParameterPointer pParameter, EffectParameterPreset preset)
+EffectParameter::EffectParameter(EngineEffect* pEngineEffect,
+        EffectsManager* pEffectsManager,
+        EffectManifestParameterPointer pParameter,
+        EffectParameterPreset preset)
         : m_pEngineEffect(pEngineEffect),
           m_pEffectsManager(pEffectsManager),
-          m_iParameterNumber(iParameterNumber),
           m_pParameter(pParameter) {
     if (preset.isNull()) {
         setValue(pParameter->getDefault());
@@ -65,7 +67,7 @@ void EffectParameter::updateEngineState() {
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::SET_PARAMETER_PARAMETERS;
     pRequest->pTargetEffect = m_pEngineEffect;
-    pRequest->SetParameterParameters.iParameter = m_iParameterNumber;
+    pRequest->SetParameterParameters.iParameter = m_pParameter->index();
     pRequest->value = m_value;
     pRequest->minimum = m_pParameter->getMinimum();
     pRequest->maximum = m_pParameter->getMaximum();

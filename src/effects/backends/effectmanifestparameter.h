@@ -137,6 +137,13 @@ class EffectManifestParameter {
         m_description = description;
     }
 
+    int index() const {
+        return m_iIndex;
+    }
+    void setIndex(int index) {
+        m_iIndex = index;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////
     // Usage hints
     ////////////////////////////////////////////////////////////////////////////////
@@ -265,6 +272,7 @@ class EffectManifestParameter {
     QString m_name;
     QString m_shortName;
     QString m_description;
+    int m_iIndex;
 
     ParameterType m_parameterType;
     ValueScaler m_valueScaler;

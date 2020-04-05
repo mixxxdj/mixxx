@@ -26,7 +26,10 @@ class EffectParameterPreset;
 // care of that difference.
 class EffectParameter {
   public:
-    EffectParameter(EngineEffect* pEngineEffect, EffectsManager* pEffectsManager, int iParameterNumber, EffectManifestParameterPointer pParameter, EffectParameterPreset preset);
+    EffectParameter(EngineEffect* pEngineEffect,
+            EffectsManager* pEffectsManager,
+            EffectManifestParameterPointer pParameter,
+            EffectParameterPreset preset);
     virtual ~EffectParameter();
 
     EffectManifestParameterPointer manifest() const;
@@ -60,7 +63,6 @@ class EffectParameter {
 
     EngineEffect* m_pEngineEffect;
     EffectsManager* m_pEffectsManager;
-    int m_iParameterNumber;
     EffectManifestParameterPointer m_pParameter;
     double m_value;
     // Hidden parameters cannot be linked to the metaknob, but EffectParameter
