@@ -50,7 +50,7 @@ EngineEffect::~EngineEffect() {
 }
 
 EffectState* EngineEffect::createState(const mixxx::EngineParameters& bufferParameters) {
-    if (!m_pProcessor) {
+    VERIFY_OR_DEBUG_ASSERT(m_pProcessor) {
         return new EffectState(bufferParameters);
     }
     return m_pProcessor->createState(bufferParameters);
