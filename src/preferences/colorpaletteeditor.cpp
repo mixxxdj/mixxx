@@ -31,7 +31,12 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent, bool showHotcueNumbers)
             QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred));
     pColorButtonLayout->addWidget(pExpander);
 
-    m_pRemoveColorButton = new QPushButton(QIcon::fromTheme("list-remove"), "", this);
+    QIcon removeIcon = QIcon::fromTheme("list-remove", QIcon());
+    if (!removeIcon.isNull()) {
+        m_pRemoveColorButton = new QPushButton(removeIcon, "", this);
+    } else {
+        m_pRemoveButton = new QPushButton("-", this);
+    }
     m_pRemoveColorButton->setFixedWidth(32);
     m_pRemoveColorButton->setToolTip(tr("Remove Color"));
     m_pRemoveColorButton->setDisabled(true);
@@ -41,7 +46,12 @@ ColorPaletteEditor::ColorPaletteEditor(QWidget* parent, bool showHotcueNumbers)
             this,
             &ColorPaletteEditor::slotRemoveColor);
 
-    m_pAddColorButton = new QPushButton(QIcon::fromTheme("list-add"), "", this);
+    QIcon addIcon = QIcon::fromTheme("list-add", QIcon());
+    if (!addIcon.isNull()) {
+        m_pAddColorButton = new QPushButton(addIcon, "", this);
+    } else {
+        m_pAddColorButton = new QPushButton("+", this);
+    }
     m_pAddColorButton->setFixedWidth(32);
     m_pAddColorButton->setToolTip(tr("Add Color"));
     pColorButtonLayout->addWidget(m_pAddColorButton);
