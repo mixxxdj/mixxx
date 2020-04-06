@@ -220,8 +220,6 @@ void ControllerManager::slotSetUpDevices() {
     updateControllerList();
     QList<Controller*> deviceList = getControllerList(false, true);
 
-    QSet<QString> filenames;
-
     foreach (Controller* pController, deviceList) {
         QString name = pController->getName();
 
