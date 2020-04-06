@@ -92,7 +92,6 @@ class SignalInfo final {
 
     // Conversion: second offset -> #samples / sample offset
     // May return sample offsets that are not on frame boundaries!
-    template<typename T>
     double secs2samples(double seconds) const {
         return frames2samples(secs2frames(seconds));
     }
