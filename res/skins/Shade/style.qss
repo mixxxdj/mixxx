@@ -493,8 +493,9 @@ WSearchLineEdit {
   Defined by SearchBox	*/
   margin: 0px;
   }
+  #LibraryContainer QTableView:focus,
   #LibraryContainer QTreeView:focus,
-  #LibraryContainer QTableView:focus { /*
+  #LibraryContainer QTextBrowser:focus { /*
     New Library navigation COs only work if TreeView or TableView have focus.
     Clicking on buttons, sliders and visuals elsewhere removes focus from Library.
     In conjunction with [Library],MoveFocusBackward/..Forward, this helps a lot. */
