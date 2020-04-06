@@ -234,10 +234,11 @@ void DlgPrefController::enumeratePresets() {
 
     // qDebug() << "Enumerating presets for controller" << m_pController->getName();
 
-    // Insert a dummy "..." item at the top to try to make it less confusing.
+    // Insert a dummy item at the top to try to make it less confusing.
     // (We don't want the first found file showing up as the default item when a
     // user has their controller plugged in)
-    m_ui.comboBoxPreset->addItem("...");
+    QIcon noPresetIcon(":/images/ic_none.svg");
+    m_ui.comboBoxPreset->addItem(noPresetIcon, "No Preset");
 
     PresetInfo match;
     // Enumerate user presets
@@ -377,7 +378,7 @@ void DlgPrefController::slotApply() {
 
 void DlgPrefController::slotLoadPreset(int chosenIndex) {
     if (chosenIndex == 0) {
-        // User picked ...
+        // User picked no preset
         m_ui.chkEnabledDevice->setEnabled(false);
         return;
     }
