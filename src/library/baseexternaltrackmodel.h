@@ -23,9 +23,11 @@ class BaseExternalTrackModel : public BaseSqlTableModel {
     CapabilitiesFlags getCapabilities() const override;
     TrackId getTrackId(const QModelIndex& index) const override;
     TrackPointer getTrack(const QModelIndex& index) const override;
-    void trackLoaded(QString group, TrackPointer pTrack) override;
     bool isColumnInternal(int column) override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
+
+  private:
+    TrackId doGetTrackId(const TrackPointer& pTrack) const override;
 };
 
 #endif /* BASEEXTERNALTRACKMODEL_H */

@@ -345,12 +345,14 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/banshee/bansheedbconnection.cpp
   src/library/banshee/bansheefeature.cpp
   src/library/banshee/bansheeplaylistmodel.cpp
+  src/library/basecoverartdelegate.cpp
   src/library/baseexternallibraryfeature.cpp
   src/library/baseexternalplaylistmodel.cpp
   src/library/baseexternaltrackmodel.cpp
   src/library/baseplaylistfeature.cpp
   src/library/basesqltablemodel.cpp
   src/library/basetrackcache.cpp
+  src/library/basetracktablemodel.cpp
   src/library/bpmdelegate.cpp
   src/library/browse/browsefeature.cpp
   src/library/browse/browsetablemodel.cpp
