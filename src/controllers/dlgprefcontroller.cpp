@@ -241,9 +241,9 @@ void DlgPrefController::enumeratePresets() {
 
     PresetInfo match;
     // Enumerate user presets
-    QIcon icon(":/images/ic_custom.svg");
+    QIcon userPresetIcon(":/images/ic_custom.svg");
     PresetInfo userPresetsMatch = enumeratePresetsFromEnumerator(
-            m_pControllerManager->getMainThreadUserPresetEnumerator(), icon);
+            m_pControllerManager->getMainThreadUserPresetEnumerator(), userPresetIcon);
     if (userPresetsMatch.isValid()) {
         match = userPresetsMatch;
     }
@@ -252,8 +252,9 @@ void DlgPrefController::enumeratePresets() {
     m_ui.comboBoxPreset->insertSeparator(m_ui.comboBoxPreset->count());
 
     // Enumerate system presets
+    QIcon systemPresetIcon(":/images/ic_mixxx_symbolic.svg");
     PresetInfo systemPresetsMatch = enumeratePresetsFromEnumerator(
-            m_pControllerManager->getMainThreadSystemPresetEnumerator());
+            m_pControllerManager->getMainThreadSystemPresetEnumerator(), systemPresetIcon);
     if (systemPresetsMatch.isValid()) {
         match = systemPresetsMatch;
     }
