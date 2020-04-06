@@ -89,10 +89,6 @@ class ControllerManager : public QObject {
     void stopPolling();
     void maybeStartOrStopPolling();
 
-    static QString sanitizeString(QString name) {
-        return name.replace(" ", "_").replace("/", "_").replace("\\", "_");
-    }
-
   private:
     UserSettingsPointer m_pConfig;
     ControllerLearningEventFilter* m_pControllerLearningEventFilter;
