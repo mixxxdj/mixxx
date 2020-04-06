@@ -467,6 +467,10 @@ WLibrary WColorPicker QPushButton {
       border: 1px solid rgba(151,151,151,128);
       }
 
+#PreviewDeckContainer {
+  margin: 2px 0px 4px 3px;
+}
+
 /* library search text box */
 WSearchLineEdit {
   margin-top: 2px;

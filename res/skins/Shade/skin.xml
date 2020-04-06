@@ -444,33 +444,13 @@
                 <WidgetGroup>
                   <Layout>vertical</Layout>
                   <Children>
-                    <!-- Preview deck -->
-                    <WidgetGroup>
-                      <Style>
-                        QGroupBox {
-                          margin: 2px 0px 4px 3px;
-                        }
-                      </Style>
-                      <Layout>horizontal</Layout>
-                      <Children>
-                        <Template src="skin:preview_deck.xml"/>
-                      </Children>
-                      <Connection>
-                        <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
-                        <BindProperty>visible</BindProperty>
-                      </Connection>
-                    </WidgetGroup><!-- Preview deck -->
+                    <Template src="skin:preview_deck.xml"/>
 
                     <!--Search Input Field-->
-                    <WidgetGroup>
-                      <Style>
-                        QGroupBox {margin: 0px 0px 5px 0px;}
-                      </Style>
-                      <Layout>horizontal</Layout>
-                      <Children>
-                        <SearchBox></SearchBox>
-                      </Children>
-                    </WidgetGroup>
+                    <SearchBox></SearchBox>
+
+                    <WidgetGroup><Size>,5f</Size></WidgetGroup>
+
                     <!--Library Tree View-->
                     <Splitter>
                       <Size>e,me</Size>
@@ -489,11 +469,14 @@
                         </CoverArt>
                       </Children>
                     </Splitter>
+
                   </Children>
                 </WidgetGroup><!-- Sidebar etc. -->
+
                 <SingletonContainer>
                   <ObjectName>LibraryTable</ObjectName>
                 </SingletonContainer>
+
               </Children>
             </Splitter>
           </Children>
