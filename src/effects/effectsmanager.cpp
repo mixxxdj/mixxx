@@ -232,6 +232,12 @@ void EffectsManager::loadEffectChainPreset(EffectChainSlotPointer pChainSlot,
     int effectSlot = 0;
     for (const auto& pEffectPreset : pPreset->effectPresets()) {
         if (pEffectPreset->isEmpty()) {
+            pChainSlot->loadEffect(
+                    effectSlot,
+                    nullptr,
+                    nullptr,
+                    nullptr,
+                    true);
             effectSlot++;
             continue;
         }
