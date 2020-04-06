@@ -132,7 +132,7 @@ void DlgRecording::moveSelection(int delta) {
 
 void DlgRecording::slotRecButtonClicked(bool toggle) {
     Q_UNUSED(toggle);
-    m_pRecordingManager->slotToggleRecording(true);
+    m_pRecordingManager->slotToggleRecording(1);
 }
 
 void DlgRecording::slotRecordingStateChanged(bool isRecording) {

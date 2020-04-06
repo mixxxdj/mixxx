@@ -89,7 +89,8 @@ void RecordingManager::slotSetRecording(bool recording) {
     }
 }
 
-void RecordingManager::slotToggleRecording(bool toggle) {
+void RecordingManager::slotToggleRecording(double value) {
+    bool toggle = static_cast<bool>(value);
     if (toggle) {
         if (isRecordingActive()) {
             stopRecording();
