@@ -81,6 +81,12 @@ class SignalInfo final {
 
     // Conversion: #samples / sample offset -> second offset
     // Only works for integer sample offsets on frame boundaries!
+    //
+    // Remark: Only generalize for arbitrary sample offsets when
+    // actually needed. Existing code may rely on the debug
+    // assertions that checks for frame boundary alignment!
+    // It is very unlikely that an integer sample offset/count
+    // is NOT supposed to address a frame boundary!!
     double samples2secs(SINT samples) const {
         return frames2secs(samples2frames(samples));
     }
@@ -93,6 +99,12 @@ class SignalInfo final {
 
     // Conversion: #samples / sample offset -> millisecond offset
     // Only works for integer sample offsets on frame boundaries!
+    //
+    // Remark: Only generalize for arbitrary sample offsets when
+    // actually needed. Existing code may rely on the debug
+    // assertions that checks for frame boundary alignment!
+    // It is very unlikely that an integer sample offset/count
+    // is NOT supposed to address a frame boundary!!
     double samples2millis(SINT samples) const {
         return frames2millis(samples2frames(samples));
     }
