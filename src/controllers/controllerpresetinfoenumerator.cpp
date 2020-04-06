@@ -29,6 +29,10 @@ bool presetInfoNameComparator(const PresetInfo &a, const PresetInfo &b) {
 }
 }
 
+PresetInfoEnumerator::PresetInfoEnumerator(const QString& searchPath)
+        : PresetInfoEnumerator(QList<QString>{searchPath}) {
+}
+
 PresetInfoEnumerator::PresetInfoEnumerator(const QStringList& searchPaths)
         : m_controllerDirPaths(searchPaths) {
     loadSupportedPresets();
