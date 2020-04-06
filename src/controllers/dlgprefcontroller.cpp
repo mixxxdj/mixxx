@@ -269,8 +269,11 @@ void DlgPrefController::enumeratePresets() {
     } else if (match.isValid()) {
         index = m_ui.comboBoxPreset->findText(match.getName());
     }
-    if (index != -1) {
+    if (index == -1) {
+        m_ui.chkEnabledDevice->setEnabled(false);
+    } else {
         m_ui.comboBoxPreset->setCurrentIndex(index);
+        m_ui.chkEnabledDevice->setEnabled(true);
     }
 }
 
@@ -375,8 +378,10 @@ void DlgPrefController::slotApply() {
 void DlgPrefController::slotLoadPreset(int chosenIndex) {
     if (chosenIndex == 0) {
         // User picked ...
+        m_ui.chkEnabledDevice->setEnabled(false);
         return;
     }
+    m_ui.chkEnabledDevice->setEnabled(true);
 
     const QString presetPath = m_ui.comboBoxPreset->itemData(chosenIndex).toString();
     // When loading the preset, we only want to load from the same dir as the
