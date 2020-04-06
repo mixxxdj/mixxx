@@ -39,6 +39,12 @@ const int kPollIntervalMillis = 5;
 const int kPollIntervalMillis = 1;
 #endif
 
+// Strip slashes and spaces from device name, so that it can be used as config
+// key or a filename.
+QString sanitizeDeviceName(QString name) {
+    return name.replace(" ", "_").replace("/", "_").replace("\\", "_");
+}
+
 } // anonymous namespace
 
 QString firstAvailableFilename(QSet<QString>& filenames,
@@ -205,7 +211,7 @@ QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, boo
 }
 
 QString ControllerManager::getConfiguredPresetFileForDevice(QString name) {
-    return m_pConfig->getValueString(ConfigKey("[ControllerPreset]", sanitizeString(name)));
+    return m_pConfig->getValueString(ConfigKey("[ControllerPreset]", sanitizeDeviceName(name)));
 }
 
 void ControllerManager::slotSetUpDevices() {
@@ -224,7 +230,7 @@ void ControllerManager::slotSetUpDevices() {
         }
 
         // The filename for this device name.
-        QString deviceName = sanitizeString(name);
+        QString deviceName = sanitizeDeviceName(name);
         if (m_pConfig->getValueString(ConfigKey("[Controller]", deviceName)) != "1") {
             continue;
         }
@@ -352,7 +358,7 @@ void ControllerManager::openController(Controller* pController) {
 
         // Update configuration to reflect controller is enabled.
         m_pConfig->setValue(
-                ConfigKey("[Controller]", sanitizeString(pController->getName())), 1);
+                ConfigKey("[Controller]", sanitizeDeviceName(pController->getName())), 1);
     }
 }
 
@@ -364,7 +370,7 @@ void ControllerManager::closeController(Controller* pController) {
     maybeStartOrStopPolling();
     // Update configuration to reflect controller is disabled.
     m_pConfig->setValue(
-            ConfigKey("[Controller]", sanitizeString(pController->getName())), 0);
+            ConfigKey("[Controller]", sanitizeDeviceName(pController->getName())), 0);
 }
 
 bool ControllerManager::loadPreset(Controller* pController,
@@ -376,7 +382,7 @@ bool ControllerManager::loadPreset(Controller* pController,
     // Save the file path/name in the config so it can be auto-loaded at
     // startup next time
     m_pConfig->set(
-            ConfigKey("[ControllerPreset]", sanitizeString(pController->getName())),
+            ConfigKey("[ControllerPreset]", sanitizeDeviceName(pController->getName())),
             preset->filePath());
     return true;
 }
@@ -392,7 +398,7 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
         if (onlyActive && !pController->isOpen()) {
             continue;
         }
-        QString deviceName = sanitizeString(pController->getName());
+        QString deviceName = sanitizeDeviceName(pController->getName());
         QString filename = firstAvailableFilename(filenames, deviceName);
         QString presetPath = userPresetsPath(m_pConfig) + filename
                 + pController->presetExtension();
