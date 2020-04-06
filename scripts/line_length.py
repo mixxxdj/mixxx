@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import argparse
 import re
 import logging
 import os
@@ -87,11 +88,35 @@ def group_lines(
             yield FileLines(filename, grouped_linenumbers)
 
 
-def main() -> int:
+def main(argv: typing.Optional[typing.List[str]] = None) -> int:
     logging.basicConfig()
     logger = logging.getLogger(__name__)
 
+    import sys
+
+    print(sys.argv)
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("files", nargs="*", help="only check these files")
+    args = parser.parse_args(argv)
+    print(args)
+
     all_lines = get_git_added_lines()
+
+    # Filter filenames
+    rootdir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+    if args.files:
+        files = [
+            os.path.abspath(os.path.join(rootdir, filename))
+            for filename in args.files
+        ]
+        all_lines = (
+            line
+            for line in all_lines
+            if os.path.abspath(os.path.join(line.sourcefile)) in files
+        )
+
+    # Only keep long lines
     long_lines = (
         line
         for line in all_lines
@@ -99,7 +124,6 @@ def main() -> int:
     )
     changed_files = group_lines(long_lines)
 
-    rootdir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
     cpp_file = os.path.join(rootdir, "src/mixxx.cpp")
     proc = subprocess.run(
         ["clang-format", "--dump-config", cpp_file],
