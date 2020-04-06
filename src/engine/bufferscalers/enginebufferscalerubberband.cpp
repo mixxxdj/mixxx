@@ -28,6 +28,9 @@ EngineBufferScaleRubberBand::EngineBufferScaleRubberBand(
           m_bBackwards(false) {
     m_retrieve_buffer[0] = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_retrieve_buffer[1] = SampleUtil::alloc(MAX_BUFFER_LEN);
+    // Initialize the internal buffers to prevent re-allocations
+    // in the real-time thread.
+    onSampleRateChanged();
 }
 
 EngineBufferScaleRubberBand::~EngineBufferScaleRubberBand() {
@@ -98,6 +101,9 @@ void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
 }
 
 void EngineBufferScaleRubberBand::onSampleRateChanged() {
+    // TODO: Resetting the sample rate will cause internal
+    // memory allocations that may block the real-time thread.
+    // When is this function actually invoked??
     if (!getOutputSignal().isValid()) {
         m_pRubberBand.reset();
         return;
