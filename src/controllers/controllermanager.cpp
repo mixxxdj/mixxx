@@ -404,7 +404,7 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
 
         ControllerPresetPointer pPreset = pController->getPreset();
         if (!pPreset) {
-            qDebug() << "Device" << deviceName << "has no configurated preset";
+            qDebug() << "Device" << deviceName << "has no configured preset";
             continue;
         }
 
