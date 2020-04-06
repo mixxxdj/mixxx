@@ -241,8 +241,9 @@ void DlgPrefController::enumeratePresets() {
 
     PresetInfo match;
     // Enumerate user presets
+    QIcon icon(":/images/ic_custom.svg");
     PresetInfo userPresetsMatch = enumeratePresetsFromEnumerator(
-            m_pControllerManager->getMainThreadUserPresetEnumerator());
+            m_pControllerManager->getMainThreadUserPresetEnumerator(), icon);
     if (userPresetsMatch.isValid()) {
         match = userPresetsMatch;
     }
@@ -273,7 +274,7 @@ void DlgPrefController::enumeratePresets() {
 }
 
 PresetInfo DlgPrefController::enumeratePresetsFromEnumerator(
-        QSharedPointer<PresetInfoEnumerator> pPresetEnumerator) {
+        QSharedPointer<PresetInfoEnumerator> pPresetEnumerator, QIcon icon) {
     PresetInfo match;
 
     // Check if enumerator is ready. Should be rare that it isn't. We will
@@ -284,7 +285,7 @@ PresetInfo DlgPrefController::enumeratePresetsFromEnumerator(
                 m_pController->presetExtension());
 
         for (const PresetInfo& preset : systemPresets) {
-            m_ui.comboBoxPreset->addItem(preset.getName(), preset.getPath());
+            m_ui.comboBoxPreset->addItem(icon, preset.getName(), preset.getPath());
             if (m_pController->matchPreset(preset)) {
                 match = preset;
             }

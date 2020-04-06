@@ -90,7 +90,8 @@ class DlgPrefController : public DlgPreferencePage {
     // Reload the mappings in the dropdown dialog
     void enumeratePresets();
     PresetInfo enumeratePresetsFromEnumerator(
-            QSharedPointer<PresetInfoEnumerator> pPresetEnumerator);
+            QSharedPointer<PresetInfoEnumerator> pPresetEnumerator,
+            QIcon icon = QIcon());
 
     void enableDevice();
     void disableDevice();
