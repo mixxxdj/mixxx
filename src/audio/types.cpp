@@ -30,13 +30,13 @@ QDebug operator<<(QDebug dbg, SampleLayout arg) {
 
 QDebug operator<<(QDebug dbg, SampleRate arg) {
     return dbg
-            << QString::number(arg).toLocal8Bit().constData()
+            << static_cast<SampleRate::value_t>(arg)
             << SampleRate::unit();
 }
 
 QDebug operator<<(QDebug dbg, Bitrate arg) {
     return dbg
-            << QString::number(arg).toLocal8Bit().constData()
+            << static_cast<Bitrate::value_t>(arg)
             << Bitrate::unit();
 }
 
