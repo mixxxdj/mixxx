@@ -45,23 +45,20 @@ class SignalInfo final {
 
     // Conversion: #samples / sample offset -> #frames / frame offset
     // Only works for integer sample offsets on frame boundaries!
-    template<typename T>
-    T samples2frames(T samples) const {
+    SINT samples2frames(SINT samples) const {
         DEBUG_ASSERT(getChannelCount().isValid());
         DEBUG_ASSERT(0 == (samples % getChannelCount()));
         return samples / getChannelCount();
     }
 
     // Conversion: #frames / frame offset -> #samples / sample offset
-    template<typename T>
-    T frames2samples(T frames) const {
+    SINT frames2samples(SINT frames) const {
         DEBUG_ASSERT(getChannelCount().isValid());
         return frames * getChannelCount();
     }
 
     // Conversion: #frames / frame offset -> second offset
-    template<typename T>
-    double frames2secs(T frames) const {
+    double frames2secs(SINT frames) const {
         DEBUG_ASSERT(getSampleRate().isValid());
         return static_cast<double>(frames) / getSampleRate();
     }
@@ -73,8 +70,7 @@ class SignalInfo final {
     }
 
     // Conversion: #frames / frame offset -> millisecond offset
-    template<typename T>
-    double frames2millis(T frames) const {
+    double frames2millis(SINT frames) const {
         return frames2secs(frames) * 1000;
     }
 
@@ -85,8 +81,7 @@ class SignalInfo final {
 
     // Conversion: #samples / sample offset -> second offset
     // Only works for integer sample offsets on frame boundaries!
-    template<typename T>
-    double samples2secs(T samples) const {
+    double samples2secs(SINT samples) const {
         return frames2secs(samples2frames(samples));
     }
 
@@ -98,8 +93,7 @@ class SignalInfo final {
 
     // Conversion: #samples / sample offset -> millisecond offset
     // Only works for integer sample offsets on frame boundaries!
-    template<typename T>
-    double samples2millis(T samples) const {
+    double samples2millis(SINT samples) const {
         return frames2millis(samples2frames(samples));
     }
 
