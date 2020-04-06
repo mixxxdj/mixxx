@@ -30,7 +30,7 @@ EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
     : m_pReadAheadManager(pReadAheadManager),
       m_pSoundTouch(std::make_unique<soundtouch::SoundTouch>()),
       m_bBackwards(false) {
-    m_pSoundTouch->setChannels(getAudioSignal().getChannelCount());
+    m_pSoundTouch->setChannels(getOutputSignal().getChannelCount());
     m_pSoundTouch->setRate(m_dBaseRate);
     m_pSoundTouch->setPitch(1.0);
     m_pSoundTouch->setSetting(SETTING_USE_QUICKSEEK, 1);
@@ -87,11 +87,11 @@ void EngineBufferScaleST::setScaleParameters(double base_rate,
 
 void EngineBufferScaleST::onSampleRateChanged() {
     buffer_back.clear();
-    if (!getAudioSignal().isValid()) {
+    if (!getOutputSignal().isValid()) {
         return;
     }
-    m_pSoundTouch->setSampleRate(getAudioSignal().getSampleRate());
-    const auto bufferSize = getAudioSignal().frames2samples(kSeekOffsetFrames);
+    m_pSoundTouch->setSampleRate(getOutputSignal().getSampleRate());
+    const auto bufferSize = getOutputSignal().frames2samples(kSeekOffsetFrames);
     if (bufferSize > buffer_back.size()) {
         // grow buffer
         buffer_back = mixxx::SampleBuffer(bufferSize);
@@ -126,7 +126,7 @@ double EngineBufferScaleST::scaleBuffer(
     SINT total_received_frames = 0;
     SINT total_read_frames = 0;
 
-    SINT remaining_frames = getAudioSignal().samples2frames(iOutputBufferSize);
+    SINT remaining_frames = getOutputSignal().samples2frames(iOutputBufferSize);
     CSAMPLE* read = pOutputBuffer;
     bool last_read_failed = false;
     while (remaining_frames > 0) {
@@ -135,7 +135,7 @@ double EngineBufferScaleST::scaleBuffer(
         DEBUG_ASSERT(remaining_frames >= received_frames);
         remaining_frames -= received_frames;
         total_received_frames += received_frames;
-        read += getAudioSignal().frames2samples(received_frames);
+        read += getOutputSignal().frames2samples(received_frames);
 
         if (remaining_frames > 0) {
             SINT iAvailSamples = m_pReadAheadManager->getNextSamples(
@@ -144,7 +144,7 @@ double EngineBufferScaleST::scaleBuffer(
                         (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempoRatio,
                         buffer_back.data(),
                         buffer_back.size());
-            SINT iAvailFrames = getAudioSignal().samples2frames(iAvailSamples);
+            SINT iAvailFrames = getOutputSignal().samples2frames(iAvailSamples);
 
             if (iAvailFrames > 0) {
                 last_read_failed = false;

@@ -17,21 +17,21 @@ namespace mixxx {
             return m_framesPerBuffer;
         }
         SINT samplesPerBuffer() const {
-            return m_audioSignal.frames2samples(framesPerBuffer());
+            return m_outputSignal.frames2samples(framesPerBuffer());
         }
 
         audio::ChannelCount channelCount() const {
-            return m_audioSignal.getChannelCount();
+            return m_outputSignal.getChannelCount();
         }
 
         audio::SampleRate sampleRate() const {
-            return m_audioSignal.getSampleRate();
+            return m_outputSignal.getSampleRate();
         }
 
         explicit EngineParameters(
                 audio::SampleRate sampleRate,
                 SINT framesPerBuffer)
-                : m_audioSignal(
+                : m_outputSignal(
                           kEngineChannelCount,
                           sampleRate,
                           kEngineSampleLayout),
@@ -40,7 +40,7 @@ namespace mixxx {
         }
 
       private:
-        const audio::SignalInfo m_audioSignal;
+        const audio::SignalInfo m_outputSignal;
         const SINT m_framesPerBuffer;
     };
 }

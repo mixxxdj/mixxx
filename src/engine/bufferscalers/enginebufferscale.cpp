@@ -4,7 +4,7 @@
 #include "util/defs.h"
 
 EngineBufferScale::EngineBufferScale()
-        : m_audioSignal(
+        : m_outputSignal(
                   mixxx::audio::SignalInfo(
                           mixxx::kEngineChannelCount,
                           mixxx::audio::SampleRate(),
@@ -13,15 +13,15 @@ EngineBufferScale::EngineBufferScale()
           m_bSpeedAffectsPitch(false),
           m_dTempoRatio(1.0),
           m_dPitchRatio(1.0) {
-    DEBUG_ASSERT(!m_audioSignal.isValid());
+    DEBUG_ASSERT(!m_outputSignal.isValid());
 }
 
 void EngineBufferScale::setSampleRate(
         mixxx::audio::SampleRate sampleRate) {
     DEBUG_ASSERT(sampleRate.isValid());
-    if (sampleRate != m_audioSignal.getSampleRate()) {
-        m_audioSignal.setSampleRate(sampleRate);
+    if (sampleRate != m_outputSignal.getSampleRate()) {
+        m_outputSignal.setSampleRate(sampleRate);
         onSampleRateChanged();
     }
-    DEBUG_ASSERT(m_audioSignal.isValid());
+    DEBUG_ASSERT(m_outputSignal.isValid());
 }
