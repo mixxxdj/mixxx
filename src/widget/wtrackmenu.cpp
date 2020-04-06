@@ -921,7 +921,7 @@ void WTrackMenu::slotPopulateCrateMenu() {
 
     }
     m_pCrateMenu->addSeparator();
-    QAction* newCrateAction = new QAction(tr("Create New Crate"), m_pCrateMenu);
+    QAction* newCrateAction = new QAction(tr("Add to New Crate"), m_pCrateMenu);
     m_pCrateMenu->addAction(newCrateAction);
     connect(newCrateAction, &QAction::triggered, this, &WTrackMenu::addSelectionToNewCrate);
     m_bCrateMenuLoaded = true;
