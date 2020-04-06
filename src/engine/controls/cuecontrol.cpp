@@ -11,6 +11,7 @@
 #include "engine/enginebuffer.h"
 #include "preferences/colorpalettesettings.h"
 #include "util/color/color.h"
+#include "util/color/predefinedcolorpalettes.h"
 #include "util/sample.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
@@ -22,8 +23,6 @@ static const double CUE_MODE_DENON = 2.0;
 static const double CUE_MODE_NUMARK = 3.0;
 static const double CUE_MODE_MIXXX_NO_BLINK = 4.0;
 static const double CUE_MODE_CUP = 5.0;
-
-constexpr double kNoColorControlValue = -1;
 
 namespace {
 
@@ -335,7 +334,6 @@ void CueControl::detachCue(HotcueControl* pControl) {
     }
     disconnect(pCue.get(), 0, this, 0);
     pControl->resetCue();
-    pControl->setColor(std::nullopt);
 }
 
 void CueControl::trackLoaded(TrackPointer pNewTrack) {
@@ -617,12 +615,16 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     pCue->setLabel();
     pCue->setType(mixxx::CueType::HotCue);
 
-    ConfigKey autoHotcueColorsKey("[Controls]", "auto_hotcue_colors");
-    if (getConfig()->getValue(autoHotcueColorsKey, false)) {
-        auto hotcueColorPalette = m_colorPaletteSettings.getHotcueColorPalette();
+    const ColorPalette hotcueColorPalette =
+            m_colorPaletteSettings.getHotcueColorPalette();
+    if (getConfig()->getValue(ConfigKey("[Controls]", "auto_hotcue_colors"), false)) {
         pCue->setColor(hotcueColorPalette.colorForHotcueIndex(hotcue));
     } else {
-        pCue->setColor(ColorPalette::kDefaultCueColor);
+        int hotcueDefaultColorIndex = m_pConfig->getValue(ConfigKey("[Controls]", "HotcueDefaultColorIndex"), -1);
+        if (hotcueDefaultColorIndex < 0 || hotcueDefaultColorIndex >= hotcueColorPalette.size()) {
+            hotcueDefaultColorIndex = hotcueColorPalette.size() - 1; // default to last color (orange)
+        }
+        pCue->setColor(hotcueColorPalette.at(hotcueDefaultColorIndex));
     }
 
     // TODO(XXX) deal with spurious signals
@@ -1710,13 +1712,18 @@ void CueControl::hotcueFocusColorPrev(double v) {
         return;
     }
 
-    mixxx::RgbColor::optional_t controlColor = pControl->getColor();
-    if (!controlColor) {
+    CuePointer pCue = pControl->getCue();
+    if (!pCue) {
+        return;
+    }
+
+    mixxx::RgbColor::optional_t color = pCue->getColor();
+    if (!color) {
         return;
     }
 
     ColorPalette colorPalette = m_colorPaletteSettings.getHotcueColorPalette();
-    pControl->setColor(colorPalette.previousColor(*controlColor));
+    pCue->setColor(colorPalette.previousColor(*color));
 }
 
 void CueControl::hotcueFocusColorNext(double v) {
@@ -1734,13 +1741,18 @@ void CueControl::hotcueFocusColorNext(double v) {
         return;
     }
 
-    mixxx::RgbColor::optional_t controlColor = pControl->getColor();
-    if (!controlColor) {
+    CuePointer pCue = pControl->getCue();
+    if (!pCue) {
+        return;
+    }
+
+    mixxx::RgbColor::optional_t color = pCue->getColor();
+    if (!color) {
         return;
     }
 
     ColorPalette colorPalette = m_colorPaletteSettings.getHotcueColorPalette();
-    pControl->setColor(colorPalette.nextColor(*controlColor));
+    pCue->setColor(colorPalette.nextColor(*color));
 }
 
 
@@ -1769,7 +1781,10 @@ HotcueControl::HotcueControl(QString group, int i)
 
     // The rgba value  of the color assigned to this color.
     m_hotcueColor = new ControlObject(keyForControl(i, "color"));
-    m_hotcueColor->set(kNoColorControlValue);
+    m_hotcueColor->connectValueChangeRequest(
+            this,
+            &HotcueControl::slotHotcueColorChangeRequest,
+            Qt::DirectConnection);
     connect(m_hotcueColor,
             &ControlObject::valueChanged,
             this,
@@ -1858,14 +1873,21 @@ void HotcueControl::slotHotcuePositionChanged(double newPosition) {
     emit hotcuePositionChanged(this, newPosition);
 }
 
+void HotcueControl::slotHotcueColorChangeRequest(double color) {
+    if (color < 0 || color > 0xFFFFFF) {
+        qWarning() << "slotHotcueColorChanged got invalid value:" << color;
+        return;
+    }
+    m_hotcueColor->setAndConfirm(color);
+}
+
 void HotcueControl::slotHotcueColorChanged(double newColor) {
     if (!m_pCue) {
         return;
     }
 
     mixxx::RgbColor::optional_t color = doubleToRgbColor(newColor);
-    if (!color) {
-        qWarning() << "slotHotcueColorChanged got invalid value:" << newColor;
+    VERIFY_OR_DEBUG_ASSERT(color) {
         return;
     }
 
@@ -1891,8 +1913,6 @@ mixxx::RgbColor::optional_t HotcueControl::getColor() const {
 void HotcueControl::setColor(mixxx::RgbColor::optional_t newColor) {
     if (newColor) {
         m_hotcueColor->set(*newColor);
-    } else {
-        m_hotcueColor->set(kNoColorControlValue);
     }
 }
 void HotcueControl::resetCue() {

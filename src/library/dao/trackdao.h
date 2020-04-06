@@ -76,6 +76,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     void trackDirty(TrackId trackId) const;
     void trackClean(TrackId trackId) const;
     void trackChanged(TrackId trackId);
+    void tracksChanged(QSet<TrackId> trackIds);
     void tracksAdded(QSet<TrackId> trackIds);
     void tracksRemoved(QSet<TrackId> trackIds);
     void dbTrackAdded(TrackPointer pTrack);
