@@ -727,7 +727,7 @@ void EffectsManager::loadDefaultEffectPresets() {
 }
 
 void EffectsManager::saveDefaultForEffect(EffectPresetPointer pEffectPreset) {
-    VERIFY_OR_DEBUG_ASSERT(!pEffectPreset->isEmpty()) {
+    if (pEffectPreset->isEmpty()) {
         return;
     }
 
