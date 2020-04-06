@@ -29,7 +29,6 @@ WOverview /* Hotcue labels in the overview */ {
 }
 
 /* regular font weight */
-WSearchLineEdit,
 QToolTip,
 #LibraryContainer QMenu,
 WCueMenuPopup,
@@ -2482,7 +2481,6 @@ WEffectSelector, WEffectSelector::item,
 WBeatSpinBox,
 #spinBoxTransition,
 #SkinSettings,
-WSearchLineEdit,
 WEffectSelector, WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox, #fadeModeCombobox QAbstractScrollArea {
   font-size: 13px/13px;
