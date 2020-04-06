@@ -34,6 +34,10 @@ EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
     m_pSoundTouch->setRate(m_dBaseRate);
     m_pSoundTouch->setPitch(1.0);
     m_pSoundTouch->setSetting(SETTING_USE_QUICKSEEK, 1);
+    // Initialize the internal buffers to prevent re-allocations
+    // in the real-time thread.
+    onSampleRateChanged();
+
 }
 
 EngineBufferScaleST::~EngineBufferScaleST() {
