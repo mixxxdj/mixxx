@@ -297,7 +297,7 @@ void TrackDAO::databaseTrackAdded(TrackPointer pTrack) {
 void TrackDAO::databaseTracksChanged(QSet<TrackId> changedTracks) {
     // results in a call of BaseTrackCache::updateTracksInIndex(trackIds);
     if (!changedTracks.isEmpty()) {
-        emit tracksAdded(changedTracks);
+        emit tracksChanged(changedTracks);
     }
 }
 
