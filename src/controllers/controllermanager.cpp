@@ -231,10 +231,13 @@ void ControllerManager::slotSetUpDevices() {
 
         // The filename for this device name.
         QString deviceName = sanitizeDeviceName(name);
-        if (m_pConfig->getValueString(ConfigKey("[Controller]", deviceName)) != "1") {
+
+        // Check if device is enabled
+        if (!m_pConfig->getValue(ConfigKey("[Controller]", deviceName), 0)) {
             continue;
         }
 
+        // Check if device has a configured preset
         QString presetFile = getConfiguredPresetFileForDevice(deviceName);
         if (presetFile.isEmpty()) {
             continue;
