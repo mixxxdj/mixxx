@@ -276,10 +276,10 @@ PresetInfo DlgPrefController::enumeratePresetsFromEnumerator(
         QSharedPointer<PresetInfoEnumerator> pPresetEnumerator) {
     PresetInfo match;
 
-    // Check if enumerator is ready. Should be rare. We will re-enumerate on
-    // the next open of the preferences.
+    // Check if enumerator is ready. Should be rare that it isn't. We will
+    // re-enumerate on the next open of the preferences.
     if (!pPresetEnumerator.isNull()) {
-        // Making the list of presets in the alphabetical order
+        // Get a list of presets in alphabetical order
         QList<PresetInfo> systemPresets = pPresetEnumerator->getPresetsByExtension(
                 m_pController->presetExtension());
 
