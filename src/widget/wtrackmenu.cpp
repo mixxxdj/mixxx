@@ -69,15 +69,15 @@ void WTrackMenu::constructMenus() {
     if (optionIsEnabled(Filter::Playlist)) {
         m_pPlaylistMenu = new QMenu(this);
         m_pPlaylistMenu->setTitle(tr("Add to Playlist"));
-        connect(m_pPlaylistMenu, SIGNAL(aboutToShow()),
-                this, SLOT(slotPopulatePlaylistMenu()));
+        connect(m_pPlaylistMenu, &QMenu::aboutToShow,
+                this, &WTrackMenu::slotPopulatePlaylistMenu);
     }
 
     if (optionIsEnabled(Filter::Crate)) {
         m_pCrateMenu = new QMenu(this);
         m_pCrateMenu->setTitle(tr("Crates"));
-        connect(m_pCrateMenu, SIGNAL(aboutToShow()),
-                this, SLOT(slotPopulateCrateMenu()));
+        connect(m_pCrateMenu, &QMenu::aboutToShow,
+                this,  &WTrackMenu::slotPopulateCrateMenu);
     }
 
     if (optionIsEnabled(Filter::Metadata)) {
@@ -89,10 +89,10 @@ void WTrackMenu::constructMenus() {
 
         m_pCoverMenu = new WCoverArtMenu(this);
         m_pCoverMenu->setTitle(tr("Cover Art"));
-        connect(m_pCoverMenu, SIGNAL(coverInfoSelected(const CoverInfoRelative&)),
-                this, SLOT(slotCoverInfoSelected(const CoverInfoRelative&)));
-        connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
-                this, SLOT(slotReloadCoverArt()));
+        connect(m_pCoverMenu, &WCoverArtMenu::coverInfoSelected,
+                this, &WTrackMenu::slotCoverInfoSelected);
+        connect(m_pCoverMenu, &WCoverArtMenu::reloadCoverArt,
+                this, &WTrackMenu::slotReloadCoverArt);
     }
 
     if (optionIsEnabled(Filter::BPM)) {
@@ -115,16 +115,16 @@ void WTrackMenu::constructMenus() {
 void WTrackMenu::createActions() {
     if (optionIsEnabled(Filter::AutoDJ)) {
         m_pAutoDJBottomAct = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
-        connect(m_pAutoDJBottomAct, SIGNAL(triggered()),
-                this, SLOT(slotAddToAutoDJBottom()));
+        connect(m_pAutoDJBottomAct, &QAction::triggered,
+                this, &WTrackMenu::slotAddToAutoDJBottom);
 
         m_pAutoDJTopAct = new QAction(tr("Add to Auto DJ Queue (top)"), this);
-        connect(m_pAutoDJTopAct, SIGNAL(triggered()),
-                this, SLOT(slotAddToAutoDJTop()));
+        connect(m_pAutoDJBottomAct, &QAction::triggered,
+                this, &WTrackMenu::slotAddToAutoDJTop);
 
         m_pAutoDJReplaceAct = new QAction(tr("Add to Auto DJ Queue (replace)"), this);
-        connect(m_pAutoDJReplaceAct, SIGNAL(triggered()),
-                this, SLOT(slotAddToAutoDJReplace()));
+        connect(m_pAutoDJBottomAct, &QAction::triggered,
+                this, &WTrackMenu::slotAddToAutoDJReplace);
     }
 
     if (optionIsEnabled(Filter::LoadTo)) {
@@ -137,30 +137,29 @@ void WTrackMenu::createActions() {
 
     if (optionIsEnabled(Filter::Remove)) {
         m_pRemoveAct = new QAction(tr("Remove"), this);
-        connect(m_pRemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
+        connect(m_pRemoveAct, &QAction::triggered, this, &WTrackMenu::slotRemove);
 
         m_pRemovePlaylistAct = new QAction(tr("Remove from Playlist"), this);
         connect(m_pRemovePlaylistAct, &QAction::triggered, this, &WTrackMenu::slotRemove);
 
         m_pRemoveCrateAct = new QAction(tr("Remove from Crate"), this);
-        connect(m_pRemoveCrateAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
+        connect(m_pRemoveCrateAct, &QAction::triggered, this, &WTrackMenu::slotRemove);
     }
 
     if (optionIsEnabled(Filter::HideUnhidePurge)) {
         m_pHideAct = new QAction(tr("Hide from Library"), this);
-        connect(m_pHideAct, SIGNAL(triggered()), this, SLOT(slotHide()));
+        connect(m_pHideAct, &QAction::triggered, this, &WTrackMenu::slotHide);
 
         m_pUnhideAct = new QAction(tr("Unhide from Library"), this);
-        connect(m_pUnhideAct, SIGNAL(triggered()), this, SLOT(slotUnhide()));
+        connect(m_pUnhideAct, &QAction::triggered, this, &WTrackMenu::slotUnhide);
 
         m_pPurgeAct = new QAction(tr("Purge from Library"), this);
-        connect(m_pPurgeAct, SIGNAL(triggered()), this, SLOT(slotPurge()));
+        connect(m_pPurgeAct, &QAction::triggered, this, &WTrackMenu::slotPurge);
     }
 
     if (optionIsEnabled(Filter::Properties)) {
         m_pPropertiesAct = new QAction(tr("Properties"), this);
-        connect(m_pPropertiesAct, SIGNAL(triggered()),
-                this, SLOT(slotShowTrackInfo()));
+        connect(m_pPropertiesAct, &QAction::triggered, this, &WTrackMenu::slotShowTrackInfo);
     }
 
     if (optionIsEnabled(Filter::FileBrowser)) {
@@ -171,16 +170,13 @@ void WTrackMenu::createActions() {
 
     if (optionIsEnabled(Filter::Metadata)) {
         m_pImportMetadataFromFileAct = new QAction(tr("Import From File Tags"), this);
-        connect(m_pImportMetadataFromFileAct, SIGNAL(triggered()),
-                this, SLOT(slotImportTrackMetadataFromFileTags()));
+        connect(m_pImportMetadataFromFileAct, &QAction::triggered, this, &WTrackMenu::slotImportTrackMetadataFromFileTags);
 
         m_pImportMetadataFromMusicBrainzAct = new QAction(tr("Import From MusicBrainz"),this);
-        connect(m_pImportMetadataFromMusicBrainzAct, SIGNAL(triggered()),
-                this, SLOT(slotShowDlgTagFetcher()));
+        connect(m_pImportMetadataFromMusicBrainzAct, &QAction::triggered, this, &WTrackMenu::slotShowDlgTagFetcher);
 
         m_pExportMetadataAct = new QAction(tr("Export To File Tags"), this);
-        connect(m_pExportMetadataAct, SIGNAL(triggered()),
-                this, SLOT(slotExportTrackMetadataIntoFileTags()));
+        connect(m_pExportMetadataAct, &QAction::triggered, this, &WTrackMenu::slotExportTrackMetadataIntoFileTags);
 
 
         for (const auto& externalTrackCollection : m_pTrackCollectionManager->externalCollections()) {
@@ -200,57 +196,44 @@ void WTrackMenu::createActions() {
     if (optionIsEnabled(Filter::Reset)) {
         // Clear metadata actions
         m_pClearBeatsAction = new QAction(tr("BPM and Beatgrid"), this);
-        connect(m_pClearBeatsAction, SIGNAL(triggered()),
-                this, SLOT(slotClearBeats()));
+        connect(m_pClearBeatsAction, &QAction::triggered, this, &WTrackMenu::slotClearBeats);
 
         m_pClearPlayCountAction = new QAction(tr("Play Count"), this);
-        connect(m_pClearPlayCountAction, SIGNAL(triggered()),
-                this, SLOT(slotClearPlayCount()));
+        connect(m_pClearPlayCountAction, &QAction::triggered, this, &WTrackMenu::slotClearPlayCount);
 
         m_pClearMainCueAction = new QAction(tr("Cue Point"), this);
-        connect(m_pClearMainCueAction, SIGNAL(triggered()),
-                this, SLOT(slotClearMainCue()));
+        connect(m_pClearMainCueAction, &QAction::triggered, this, &WTrackMenu::slotClearMainCue);
 
         m_pClearHotCuesAction = new QAction(tr("Hotcues"), this);
-        connect(m_pClearHotCuesAction, SIGNAL(triggered()),
-                this, SLOT(slotClearHotCues()));
+        connect(m_pClearHotCuesAction, &QAction::triggered, this, &WTrackMenu::slotClearHotCues);
 
         m_pClearIntroCueAction = new QAction(tr("Intro"), this);
-        connect(m_pClearIntroCueAction, SIGNAL(triggered()),
-                this, SLOT(slotClearIntroCue()));
+        connect(m_pClearIntroCueAction, &QAction::triggered, this, &WTrackMenu::slotClearIntroCue);
 
         m_pClearOutroCueAction = new QAction(tr("Outro"), this);
-        connect(m_pClearOutroCueAction, SIGNAL(triggered()),
-                this, SLOT(slotClearOutroCue()));
+        connect(m_pClearOutroCueAction, &QAction::triggered, this, &WTrackMenu::slotClearOutroCue);
 
         m_pClearLoopAction = new QAction(tr("Loop"), this);
-        connect(m_pClearLoopAction, SIGNAL(triggered()),
-                this, SLOT(slotClearLoop()));
+        connect(m_pClearLoopAction, &QAction::triggered, this, &WTrackMenu::slotClearLoop);
 
         m_pClearKeyAction = new QAction(tr("Key"), this);
-        connect(m_pClearKeyAction, SIGNAL(triggered()),
-                this, SLOT(slotClearKey()));
+        connect(m_pClearKeyAction, &QAction::triggered, this, &WTrackMenu::slotClearKey);
 
         m_pClearReplayGainAction = new QAction(tr("ReplayGain"), this);
-        connect(m_pClearReplayGainAction, SIGNAL(triggered()),
-                this, SLOT(slotClearReplayGain()));
+        connect(m_pClearReplayGainAction, &QAction::triggered, this, &WTrackMenu::slotClearReplayGain);
 
         m_pClearWaveformAction = new QAction(tr("Waveform"), this);
-        connect(m_pClearWaveformAction, SIGNAL(triggered()),
-                this, SLOT(slotClearWaveform()));
+        connect(m_pClearWaveformAction, &QAction::triggered, this, &WTrackMenu::slotClearWaveform);
 
         m_pClearAllMetadataAction = new QAction(tr("All"), this);
-        connect(m_pClearAllMetadataAction, SIGNAL(triggered()),
-                this, SLOT(slotClearAllMetadata()));
+        connect(m_pClearAllMetadataAction, &QAction::triggered, this, &WTrackMenu::slotClearAllMetadata);
     }
 
     if (optionIsEnabled(Filter::BPM)) {
         m_pBpmLockAction = new QAction(tr("Lock BPM"), this);
         m_pBpmUnlockAction = new QAction(tr("Unlock BPM"), this);
-        connect(m_pBpmLockAction, SIGNAL(triggered()),
-                this, SLOT(slotLockBpm()));
-        connect(m_pBpmUnlockAction, SIGNAL(triggered()),
-                this, SLOT(slotUnlockBpm()));
+        connect(m_pBpmLockAction, &QAction::triggered, this, &WTrackMenu::slotLockBpm);
+        connect(m_pBpmUnlockAction, &QAction::triggered, this, &WTrackMenu::slotUnlockBpm);
 
         //BPM edit actions
         m_pBpmDoubleAction = new QAction(tr("Double BPM"), this);
@@ -940,7 +923,7 @@ void WTrackMenu::slotPopulateCrateMenu() {
     m_pCrateMenu->addSeparator();
     QAction* newCrateAction = new QAction(tr("Create New Crate"), m_pCrateMenu);
     m_pCrateMenu->addAction(newCrateAction);
-    connect(newCrateAction, SIGNAL(triggered()), this, SLOT(addSelectionToNewCrate()));
+    connect(newCrateAction, &QAction::triggered, this, &WTrackMenu::addSelectionToNewCrate);
     m_bCrateMenuLoaded = true;
 }
 
@@ -1263,14 +1246,14 @@ void WTrackMenu::showTrackInfo(QModelIndex index) {
         // make it unreadable. Bug #673411
         m_pTrackInfo.reset(new DlgTrackInfo(m_pConfig, nullptr));
 
-        connect(m_pTrackInfo.data(), SIGNAL(next()),
-                this, SLOT(slotNextTrackInfo()));
-        connect(m_pTrackInfo.data(), SIGNAL(previous()),
-                this, SLOT(slotPrevTrackInfo()));
-        connect(m_pTrackInfo.data(), SIGNAL(showTagFetcher(TrackPointer)),
-                this, SLOT(slotShowTrackInTagFetcher(TrackPointer)));
-        connect(m_pTrackInfo.data(), SIGNAL(finished(int)),
-                this, SLOT(slotTrackInfoClosed()));
+        connect(m_pTrackInfo.data(), &DlgTrackInfo::next,
+                this, &WTrackMenu::slotNextTrackInfo);
+        connect(m_pTrackInfo.data(), &DlgTrackInfo::previous,
+                this, &WTrackMenu::slotPrevTrackInfo);
+        connect(m_pTrackInfo.data(), &DlgTrackInfo::showTagFetcher,
+                this, &WTrackMenu::slotShowTrackInTagFetcher);
+        connect(m_pTrackInfo.data(), &DlgTrackInfo::finished,
+                this, &WTrackMenu::slotTrackInfoClosed);
     }
     TrackPointer pTrack = trackModel->getTrack(index);
     m_pTrackInfo->loadTrack(pTrack); // NULL is fine.
@@ -1324,12 +1307,12 @@ void WTrackMenu::showDlgTagFetcher(QModelIndex index) {
 void WTrackMenu::slotShowTrackInTagFetcher(TrackPointer pTrack) {
     if (m_pTagFetcher.isNull()) {
         m_pTagFetcher.reset(new DlgTagFetcher(nullptr));
-        connect(m_pTagFetcher.data(), SIGNAL(next()),
-                this, SLOT(slotNextDlgTagFetcher()));
-        connect(m_pTagFetcher.data(), SIGNAL(previous()),
-                this, SLOT(slotPrevDlgTagFetcher()));
-        connect(m_pTagFetcher.data(), SIGNAL(finished(int)),
-                this, SLOT(slotTagFetcherClosed()));
+        connect(m_pTagFetcher.data(), &DlgTagFetcher::next,
+                this, &WTrackMenu::slotNextDlgTagFetcher);
+        connect(m_pTagFetcher.data(), &DlgTagFetcher::previous,
+                this, &WTrackMenu::slotPrevDlgTagFetcher);
+        connect(m_pTagFetcher.data(), &DlgTagFetcher::finished,
+                this, &WTrackMenu::slotTagFetcherClosed);
     }
 
     // NULL is fine

@@ -36,8 +36,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_loadCachedOnly(false) {
 
     // Connect slots and signals to make the world go 'round.
-    connect(this, SIGNAL(doubleClicked(const QModelIndex &)),
-            this, SLOT(slotMouseDoubleClicked(const QModelIndex &)));
+    connect(this, &WTrackTableView::doubleClicked,
+            this, &WTrackTableView::slotMouseDoubleClicked);
 
     m_pCOTGuiTick = new ControlProxy("[Master]", "guiTick50ms", this);
     m_pCOTGuiTick->connectValueChanged(this, &WTrackTableView::slotGuiTick50ms);
@@ -50,16 +50,15 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pSortOrder = new ControlProxy("[Library]", "sort_order", this);
     m_pSortOrder->connectValueChanged(this, &WTrackTableView::applySortingIfVisible);
 
-    connect(this, SIGNAL(scrollValueChanged(int)),
-            this, SLOT(slotScrollValueChanged(int)));
+    connect(this, &WTrackTableView::scrollValueChanged,
+            this, &WTrackTableView::slotScrollValueChanged);
 
     QShortcut *setFocusShortcut = new QShortcut(
         QKeySequence(tr("ESC", "Focus")), this);
-    connect(setFocusShortcut, SIGNAL(activated()),
-            this, SLOT(setFocus()));
+    connect(setFocusShortcut, &QShortcut::activated,
+            this, qOverload<>(&WTrackTableView::setFocus));
 
     m_pMenu = new WTrackMenu(this, pConfig, m_pTrackCollectionManager);
-    // Receive signal from menu and emit from here.
     connect(m_pMenu, &WTrackMenu::loadTrackToPlayer, this, &WTrackTableView::loadTrackToPlayer);
 }
 
@@ -244,8 +243,11 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
     if (m_sorting) {
         // NOTE: Should be a UniqueConnection but that requires Qt 4.6
-        connect(horizontalHeader(), SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
-                this, SLOT(slotSortingChanged(int, Qt::SortOrder)), Qt::AutoConnection);
+        // But Qt::UniqueConnections do not work for lambdas, non-member functions
+        // and functors; they only apply to connecting to member functions.
+        // https://doc.qt.io/qt-5/qobject.html#connect
+        connect(horizontalHeader(), &QHeaderView::sortIndicatorChanged,
+                this, &WTrackTableView::slotSortingChanged, Qt::AutoConnection);
 
         int sortColumn;
         Qt::SortOrder sortOrder;
