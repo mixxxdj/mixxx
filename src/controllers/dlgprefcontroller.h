@@ -23,6 +23,7 @@
 // Forward declarations
 class Controller;
 class ControllerManager;
+class PresetInfoEnumerator;
 
 class DlgPrefController : public DlgPreferencePage {
     Q_OBJECT
@@ -88,6 +89,8 @@ class DlgPrefController : public DlgPreferencePage {
 
     // Reload the mappings in the dropdown dialog
     void enumeratePresets();
+    PresetInfo enumeratePresetsFromEnumerator(
+            QSharedPointer<PresetInfoEnumerator> pPresetEnumerator);
 
     void enableDevice();
     void disableDevice();
