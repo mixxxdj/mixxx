@@ -23,8 +23,8 @@ class EffectPreset {
         return m_id;
     }
 
-    bool isNull() const {
-        return m_id.isEmpty();
+    bool isEmpty() const {
+        return m_effectParameterPresets.size() == 0;
     }
 
     EffectBackendType backendType() const {

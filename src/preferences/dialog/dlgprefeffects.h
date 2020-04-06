@@ -22,9 +22,19 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
 
   private slots:
     void availableEffectsListItemSelected(const QModelIndex& selected);
+    void slotChainPresetSelected(const QString& chainPresetName);
+    void slotImportPreset();
+    void slotExportPreset();
+    void slotRenamePreset();
+    void slotDeletePreset();
+    void slotPresetMoveUp();
+    void slotPresetMoveDown();
 
   private:
     void clear();
+    void loadChainPresetList();
+
+    QList<QLabel*> m_effectsLabels;
 
     EffectSettingsModel m_availableEffectsModel;
     UserSettingsPointer m_pConfig;
