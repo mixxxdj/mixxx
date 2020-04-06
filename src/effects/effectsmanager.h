@@ -124,7 +124,18 @@ class EffectsManager : public QObject {
             EffectChainPresetPointer pPreset);
     void loadPresetToStandardChain(int chainNumber, EffectChainPresetPointer pPreset);
 
+    EffectChainPresetPointer getEffectChainPreset(const QString& name) {
+        return m_effectChainPresets.value(name);
+    }
+
+    void importChainPreset();
+    void exportChainPreset(const QString& chainPresetName);
+    void renameChainPreset(const QString& oldName);
+    void deleteChainPreset(const QString& chainPresetName);
+
     void setChainPresetOrder(const QStringList& chainPresetList);
+
+    const QString getDisplayNameForEffectPreset(EffectPresetPointer pPreset);
 
     void addStandardEffectChainSlots();
     EffectChainSlotPointer getStandardEffectChainSlot(int unitNumber) const;
@@ -188,8 +199,8 @@ class EffectsManager : public QObject {
     void loadDefaultEffectPresets();
     void loadEffectChainPresets();
 
-    void reloadStandardEffectChains();
-    void saveStandardEffectChains();
+    void readEffectsXml();
+    void saveEffectsXml();
 
     void processEffectsResponses();
     void collectGarbage(const EffectsRequest* pResponse);

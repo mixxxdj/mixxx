@@ -19,8 +19,8 @@ class EffectChainPreset {
 
     const QDomElement toXml(QDomDocument* doc) const;
 
-    bool isNull() const {
-        return m_name.isEmpty();
+    bool isEmpty() const {
+        return m_effectPresets.size() == 0;
     }
 
     // This is the only exception to EffectChainPreset being read-only.

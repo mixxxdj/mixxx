@@ -44,6 +44,19 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
     chainListWidget->viewport()->setAcceptDrops(true);
     chainListWidget->setDropIndicatorShown(true);
     chainListWidget->setDragDropMode(QAbstractItemView::InternalMove);
+
+    connect(chainListWidget, &QListWidget::currentTextChanged, this, &DlgPrefEffects::slotChainPresetSelected);
+
+    connect(chainPresetImportButton, &QPushButton::clicked, this, &DlgPrefEffects::slotImportPreset);
+    connect(chainPresetExportButton, &QPushButton::clicked, this, &DlgPrefEffects::slotExportPreset);
+    connect(chainPresetRenameButton, &QPushButton::clicked, this, &DlgPrefEffects::slotRenamePreset);
+    connect(chainPresetDeleteButton, &QPushButton::clicked, this, &DlgPrefEffects::slotDeletePreset);
+    connect(chainPresetMoveUpButton, &QPushButton::clicked, this, &DlgPrefEffects::slotPresetMoveUp);
+    connect(chainPresetMoveDownButton, &QPushButton::clicked, this, &DlgPrefEffects::slotPresetMoveDown);
+
+    m_effectsLabels.append(effect1Name);
+    m_effectsLabels.append(effect2Name);
+    m_effectsLabels.append(effect3Name);
 }
 
 DlgPrefEffects::~DlgPrefEffects() {
@@ -53,14 +66,21 @@ void DlgPrefEffects::slotUpdate() {
     clear();
     m_availableEffectsModel.resetFromEffectManager(m_pEffectsManager);
 
+    // No chain preset is selected when the preferences are opened
+    for (int i = 0; i < m_effectsLabels.size(); ++i) {
+        m_effectsLabels[i]->setText(QString::number(i + 1) + ": ");
+    }
+
+    chainPresetExportButton->setEnabled(false);
+    chainPresetRenameButton->setEnabled(false);
+    chainPresetDeleteButton->setEnabled(false);
+    chainPresetMoveUpButton->setEnabled(false);
+    chainPresetMoveDownButton->setEnabled(false);
+
     if (!m_availableEffectsModel.isEmpty()) {
         availableEffectsList->selectRow(0);
     }
-
-    chainListWidget->clear();
-    for (const auto& pChainPreset : m_pEffectsManager->getAvailableChainPresets()) {
-        chainListWidget->addItem(pChainPreset->name());
-    }
+    loadChainPresetList();
 }
 
 void DlgPrefEffects::slotApply() {
@@ -94,6 +114,13 @@ void DlgPrefEffects::clear() {
     effectType->clear();
 }
 
+void DlgPrefEffects::loadChainPresetList() {
+    chainListWidget->clear();
+    for (const auto& pChainPreset : m_pEffectsManager->getAvailableChainPresets()) {
+        chainListWidget->addItem(pChainPreset->name());
+    }
+}
+
 void DlgPrefEffects::availableEffectsListItemSelected(const QModelIndex& selected) {
     QString effectId = m_availableEffectsModel.data(selected, Qt::UserRole).toString();
 
@@ -107,4 +134,80 @@ void DlgPrefEffects::availableEffectsListItemSelected(const QModelIndex& selecte
     effectDescription->setText(pManifest->description());
     effectVersion->setText(pManifest->version());
     effectType->setText(pManifest->translatedBackendName());
+}
+
+void DlgPrefEffects::slotChainPresetSelected(const QString& chainPresetName) {
+    EffectChainPresetPointer pChainPreset = m_pEffectsManager->getEffectChainPreset(chainPresetName);
+    if (pChainPreset == nullptr || pChainPreset->isEmpty()) {
+        return;
+    }
+
+    for (int i = 0; i < pChainPreset->effectPresets().size() - 1; ++i) {
+        EffectPresetPointer pEffectPreset = pChainPreset->effectPresets().at(i);
+        if (!pEffectPreset->isEmpty()) {
+            QString displayName = m_pEffectsManager->getDisplayNameForEffectPreset(pEffectPreset);
+            // Code uses 0-indexed numbers; users see 1 indexed numbers
+            m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + displayName);
+        } else {
+            m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + tr("None"));
+        }
+    }
+
+    chainPresetExportButton->setEnabled(true);
+    chainPresetRenameButton->setEnabled(true);
+    chainPresetDeleteButton->setEnabled(true);
+    if (chainListWidget->currentRow() > 0) {
+        chainPresetMoveUpButton->setEnabled(true);
+    } else {
+        chainPresetMoveUpButton->setEnabled(false);
+    }
+    if (chainListWidget->currentRow() < chainListWidget->count() - 1) {
+        chainPresetMoveDownButton->setEnabled(true);
+    } else {
+        chainPresetMoveDownButton->setEnabled(false);
+    }
+}
+
+void DlgPrefEffects::slotImportPreset() {
+    m_pEffectsManager->importChainPreset();
+    loadChainPresetList();
+}
+
+void DlgPrefEffects::slotExportPreset() {
+    const QString& selectedPresetName = chainListWidget->currentItem()->text();
+    m_pEffectsManager->exportChainPreset(selectedPresetName);
+}
+
+void DlgPrefEffects::slotRenamePreset() {
+    const QString& selectedPresetName = chainListWidget->currentItem()->text();
+    m_pEffectsManager->renameChainPreset(selectedPresetName);
+    loadChainPresetList();
+}
+
+void DlgPrefEffects::slotDeletePreset() {
+    const QString& selectedPresetName = chainListWidget->currentItem()->text();
+    m_pEffectsManager->deleteChainPreset(selectedPresetName);
+    loadChainPresetList();
+}
+
+void DlgPrefEffects::slotPresetMoveUp() {
+    QListWidgetItem* item = chainListWidget->currentItem();
+    int oldRow = chainListWidget->currentRow();
+    if (oldRow == 0) {
+        return;
+    }
+    chainListWidget->takeItem(oldRow);
+    chainListWidget->insertItem(oldRow - 1, item);
+    chainListWidget->setCurrentRow(oldRow - 1);
+}
+
+void DlgPrefEffects::slotPresetMoveDown() {
+    QListWidgetItem* item = chainListWidget->currentItem();
+    int oldRow = chainListWidget->currentRow();
+    if (oldRow == chainListWidget->count()) {
+        return;
+    }
+    chainListWidget->takeItem(oldRow);
+    chainListWidget->insertItem(oldRow + 1, item);
+    chainListWidget->setCurrentRow(oldRow + 1);
 }
