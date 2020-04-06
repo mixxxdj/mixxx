@@ -6,7 +6,7 @@
 
  8/22/2009
 
- Copyright 2009, All Rights Reserved.
+ Copyright 2009
  
  This contents of this file may be used by anyone
  for any reason without any conditions and may be

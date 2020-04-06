@@ -2,7 +2,7 @@
 # to 0666 (world readable/writable) for a specified device on Linux systems.
 
 
-# If you are using the libusb implementation of hidapi (hid-libusb.c), then
+# If you are using the libusb implementation of hidapi (libusb/hid.c), then
 # use something like the following line, substituting the VID and PID with
 # those of your device. Note that for kernels before 2.6.24, you will need
 # to substitute "usb" with "usb_device". It shouldn't hurt to use two lines
@@ -12,8 +12,9 @@
 SUBSYSTEM=="usb", ATTRS{idVendor}=="04d8", ATTRS{idProduct}=="003f", MODE="0666"
 
 
-# If you are using the hidraw implementation, then do something like the
-# following, substituting the VID and PID with your device. Busnum 1 is USB.
+# If you are using the hidraw implementation (linux/hid.c), then do something
+# like the following, substituting the VID and PID with your device. Busnum 1
+# is USB.
 
 # HIDAPI/hidraw
 KERNEL=="hidraw*", ATTRS{busnum}=="1", ATTRS{idVendor}=="04d8", ATTRS{idProduct}=="003f", MODE="0666"

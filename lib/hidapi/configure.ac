@@ -2,9 +2,9 @@ AC_PREREQ(2.63)
 
 # Version number. This is currently the only place.
 m4_define([HIDAPI_MAJOR],   0)
-m4_define([HIDAPI_MINOR],   8)
+m4_define([HIDAPI_MINOR],   9)
 m4_define([HIDAPI_RELEASE], 0)
-m4_define([HIDAPI_RC],      -rc1)
+m4_define([HIDAPI_RC],       )
 m4_define([VERSION_STRING], HIDAPI_MAJOR[.]HIDAPI_MINOR[.]HIDAPI_RELEASE[]HIDAPI_RC)
 
 AC_INIT([hidapi],[VERSION_STRING],[alan@signal11.us])
@@ -63,14 +63,14 @@ case $host in
 
 	# HIDAPI/hidraw libs
 	PKG_CHECK_MODULES([libudev], [libudev], true, [hidapi_lib_error libudev])
-	LIBS_HIDRAW_PR+=" $libudev_LIBS"
-	CFLAGS_HIDRAW+=" $libudev_CFLAGS"
+	LIBS_HIDRAW_PR="${LIBS_HIDRAW_PR} $libudev_LIBS"
+	CFLAGS_HIDRAW="${CFLAGS_HIDRAW} $libudev_CFLAGS"
 
 	# HIDAPI/libusb libs
-	AC_CHECK_LIB([rt], [clock_gettime], [LIBS_LIBUSB_PRIVATE+=" -lrt"], [hidapi_lib_error librt])
+	AC_CHECK_LIB([rt], [clock_gettime], [LIBS_LIBUSB_PRIVATE="${LIBS_LIBUSB_PRIVATE} -lrt"], [hidapi_lib_error librt])
 	PKG_CHECK_MODULES([libusb], [libusb-1.0 >= 1.0.9], true, [hidapi_lib_error libusb-1.0])
-	LIBS_LIBUSB_PRIVATE+=" $libusb_LIBS"
-	CFLAGS_LIBUSB+=" $libusb_CFLAGS"
+	LIBS_LIBUSB_PRIVATE="${LIBS_LIBUSB_PRIVATE} $libusb_LIBS"
+	CFLAGS_LIBUSB="${CFLAGS_LIBUSB} $libusb_CFLAGS"
 	;;
 *-darwin*)
 	AC_MSG_RESULT([ (Mac OS X back-end)])
@@ -94,6 +94,17 @@ case $host in
 	LIBS="${LIBS}"
 	AC_CHECK_LIB([usb], [libusb_init], [LIBS_LIBUSB_PRIVATE="${LIBS_LIBUSB_PRIVATE} -lusb"], [hidapi_lib_error libusb])
 	AC_CHECK_LIB([iconv], [iconv_open], [LIBS_LIBUSB_PRIVATE="${LIBS_LIBUSB_PRIVATE} -liconv"], [hidapi_lib_error libiconv])
+	echo libs_priv: $LIBS_LIBUSB_PRIVATE
+	;;
+*-kfreebsd*)
+	AC_MSG_RESULT([ (kFreeBSD back-end)])
+	AC_DEFINE(OS_KFREEBSD, 1, [kFreeBSD implementation])
+	AC_SUBST(OS_KFREEBSD)
+	backend="libusb"
+	os="kfreebsd"
+	threads="pthreads"
+
+	AC_CHECK_LIB([usb], [libusb_init], [LIBS_LIBUSB_PRIVATE="${LIBS_LIBUSB_PRIVATE} -lusb"], [hidapi_lib_error libusb])
 	echo libs_priv: $LIBS_LIBUSB_PRIVATE
 	;;
 *-mingw*)
@@ -169,10 +180,10 @@ if test "x$testgui_enabled" != "xno"; then
 		if test "x$foxconfig" = "xfalse"; then
 			hidapi_prog_error fox-config "FOX Toolkit"
 		fi
-		LIBS_TESTGUI+=`$foxconfig --libs`
-		LIBS_TESTGUI+=" -framework Cocoa -L/usr/X11R6/lib"
-		CFLAGS_TESTGUI+=`$foxconfig --cflags`
-		OBJCFLAGS+=" -x objective-c++"
+		LIBS_TESTGUI="${LIBS_TESTGUI} `$foxconfig --libs`"
+		LIBS_TESTGUI="${LIBS_TESTGUI} -framework Cocoa -L/usr/X11R6/lib"
+		CFLAGS_TESTGUI="${CFLAGS_TESTGUI} `$foxconfig --cflags`"
+		OBJCFLAGS="${OBJCFLAGS} -x objective-c++"
 	elif test "x$os" = xwindows; then
 		# On Windows, just set the paths for Fox toolkit
 		if test "x$win_implementation" = xmingw; then
@@ -185,7 +196,7 @@ if test "x$testgui_enabled" != "xno"; then
 		fi
 	else
 		# On Linux and FreeBSD platforms, use pkg-config to find fox.
-		PKG_CHECK_MODULES([fox], [fox])
+		PKG_CHECK_MODULES([fox], [fox17], [], [PKG_CHECK_MODULES([fox], [fox])])
 		LIBS_TESTGUI="${LIBS_TESTGUI} $fox_LIBS"
 		if test "x$os" = xfreebsd; then
 			LIBS_TESTGUI="${LIBS_TESTGUI} -L/usr/local/lib"
@@ -201,6 +212,7 @@ AC_SUBST([backend])
 AM_CONDITIONAL(OS_LINUX, test "x$os" = xlinux)
 AM_CONDITIONAL(OS_DARWIN, test "x$os" = xdarwin)
 AM_CONDITIONAL(OS_FREEBSD, test "x$os" = xfreebsd)
+AM_CONDITIONAL(OS_KFREEBSD, test "x$os" = xkfreebsd)
 AM_CONDITIONAL(OS_WINDOWS, test "x$os" = xwindows)
 
 AC_CONFIG_HEADERS([config.h])
