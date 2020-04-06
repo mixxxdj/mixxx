@@ -408,7 +408,7 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
         }
 
         if (!pPreset->isDirty()) {
-            qWarning()
+            qDebug()
                     << "Preset for device" << deviceName
                     << "is not dirty, no need to save it to the user presets.";
             continue;
