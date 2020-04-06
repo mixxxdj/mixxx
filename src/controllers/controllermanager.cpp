@@ -399,10 +399,14 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
             continue;
         }
 
-        ControllerPresetPointer pPreset = pController->getPreset();
-        DEBUG_ASSERT(!pPreset);
-
         QString deviceName = sanitizeDeviceName(pController->getName());
+
+        ControllerPresetPointer pPreset = pController->getPreset();
+        if (!pPreset) {
+            qDebug() << "Device" << deviceName << "has no configurated preset";
+            continue;
+        }
+
         if (!pPreset->isDirty()) {
             qWarning()
                     << "Preset for device" << deviceName
