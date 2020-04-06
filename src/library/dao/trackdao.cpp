@@ -440,6 +440,7 @@ namespace {
         pTrackLibraryQuery->bindValue(":cuepoint", track.getCuePoint().getPosition());
         pTrackLibraryQuery->bindValue(":bpm_lock", track.isBpmLocked()? 1 : 0);
         pTrackLibraryQuery->bindValue(":replaygain", track.getReplayGain().getRatio());
+        pTrackLibraryQuery->bindValue(":replaygain_peak", track.getReplayGain().getPeak());
 
         pTrackLibraryQuery->bindValue(":channels", track.getChannels());
         pTrackLibraryQuery->bindValue(":samplerate", track.getSampleRate());
