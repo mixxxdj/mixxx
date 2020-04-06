@@ -55,7 +55,6 @@ class WMainMenuBar : public QMenuBar {
     void reloadSkin();
     void rescanLibrary();
     void showAbout();
-    void showReplaceCueColor();
     void showPreferences();
     void toggleDeveloperTools(bool toggle);
     void toggleFullScreen(bool toggle);
