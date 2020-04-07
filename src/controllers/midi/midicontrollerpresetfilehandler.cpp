@@ -194,7 +194,7 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement 
 bool MidiControllerPresetFileHandler::save(const MidiControllerPreset& preset,
                                            const QString deviceName,
                                            const QString fileName) const {
-    qDebug() << "Saving preset for" << deviceName << "to" << fileName;
+    qDebug() << "Saving preset" << preset.name() << "for" << deviceName << "to" << fileName;
     QDomDocument doc = buildRootWithScripts(preset, deviceName);
     addControlsToDocument(preset, &doc);
     return writeDocument(doc, fileName);

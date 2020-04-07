@@ -415,6 +415,12 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
             continue;
         }
 
+        if (pPreset->filePath().startsWith(resourcePresetsPath(m_pConfig))) {
+            pPreset->setName(QString(tr("%1 (edited)")).arg(pPreset->name()));
+            pController->setPreset(*pPreset);
+            qDebug() << "Renamed preset to " << pPreset->name();
+        }
+
         QString filename = firstAvailableFilename(filenames, deviceName);
         QString presetPath = userPresetsPath(m_pConfig) + filename
                 + pController->presetExtension();
