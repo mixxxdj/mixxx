@@ -1652,10 +1652,12 @@ WBeatSpinBox,
         padding: 0px 0px 3px 1px;
       }
       #MicAuxPlayButtonBox {
-        margin: 0px 0px 2px 1px;
+        qproperty-alignment: 'AlignCenter | AlignBottom';
+        padding: 0px 0px 2px 1px;
       }
       #MicAuxAddBox {
-        margin: 6px 0px 8px 1px;
+        qproperty-alignment: 'AlignCenter | AlignBottom';
+        padding: 0px 0px 8px 1px;
       }
 
   #MicAuxSubControlsFrame {
