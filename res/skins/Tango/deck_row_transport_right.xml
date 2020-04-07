@@ -13,7 +13,7 @@ Variables:
 -->
 <Template>
   <WidgetGroup><!-- Play + deck controls -->
-    <ObjectName>DeckButtonsPlay</ObjectName>
+    <ObjectName>DeckRowTransport</ObjectName>
     <Size>1me,24f</Size>
     <Layout>horizontal</Layout>
     <Children>
@@ -171,13 +171,13 @@ Variables:
                   </StarRating>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Tango],stars</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_starrating</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
             </Children>
             <Connection>
-              <ConfigKey>[Tango],stars_fit</ConfigKey>
+              <ConfigKey>[Tango],starrating_fits</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /Stars -->

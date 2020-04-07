@@ -10,8 +10,8 @@ static const QSize s_labelDisplaySize = QSize(100, 100);
 
 WCoverArtLabel::WCoverArtLabel(QWidget* parent)
         : QLabel(parent),
-          m_pCoverMenu(new WCoverArtMenu(this)),
-          m_pDlgFullSize(new DlgCoverArtFullSize(this, nullptr)),
+          m_pCoverMenu(make_parented<WCoverArtMenu>(this)),
+          m_pDlgFullSize(make_parented<DlgCoverArtFullSize>(this)),
           m_defaultCover(CoverArtUtils::defaultCoverLocation()) {
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     setFrameShape(QFrame::Box);
@@ -32,22 +32,21 @@ WCoverArtLabel::WCoverArtLabel(QWidget* parent)
 }
 
 WCoverArtLabel::~WCoverArtLabel() {
-    delete m_pCoverMenu;
-    delete m_pDlgFullSize;
+    // Nothing to do
 }
 
 void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
                                  QPixmap px) {
     qDebug() << "WCoverArtLabel::setCoverArt" << coverInfo << px.size();
 
-    m_loadedCover = px.scaled(s_labelDisplaySize * getDevicePixelRatioF(this),
-            Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    m_loadedCover.setDevicePixelRatio(getDevicePixelRatioF(this));
     m_pCoverMenu->setCoverArt(coverInfo);
-
-    if (m_loadedCover.isNull()) {
+    if (px.isNull()) {
+        m_loadedCover = px;
         setPixmap(m_defaultCover);
     } else {
+        m_loadedCover = px.scaled(s_labelDisplaySize * getDevicePixelRatioF(this),
+                Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        m_loadedCover.setDevicePixelRatio(getDevicePixelRatioF(this));
         setPixmap(m_loadedCover);
     }
 
@@ -78,4 +77,3 @@ void WCoverArtLabel::mousePressEvent(QMouseEvent* event) {
         }
     }
 }
-

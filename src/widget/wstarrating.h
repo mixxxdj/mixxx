@@ -11,6 +11,11 @@
 #include "library/starrating.h"
 #include "widget/wwidget.h"
 
+#include "control/controlpushbutton.h"
+
+class ControlObject;
+class ControlPushButton;
+
 class WStarRating : public WWidget {
     Q_OBJECT
   public:
@@ -23,7 +28,9 @@ class WStarRating : public WWidget {
     void slotTrackLoaded(TrackPointer pTrack = TrackPointer());
 
   private slots:
-    void updateRating(Track*);
+    void slotTrackChanged(TrackId);
+    void slotStarsUp(double v);
+    void slotStarsDown(double v);
 
   protected:
     void paintEvent(QPaintEvent* e) override;
@@ -38,9 +45,11 @@ class WStarRating : public WWidget {
     bool m_focused;
     mutable QRect m_contentRect;
 
-    private:
-        void updateRating();
-        int starAtPosition(int x);
+  private:
+    void updateRating();
+    int starAtPosition(int x);
+    std::unique_ptr<ControlPushButton> m_pStarsUp;
+    std::unique_ptr<ControlPushButton> m_pStarsDown;
 };
 
 #endif /* WSTARRATING_H */

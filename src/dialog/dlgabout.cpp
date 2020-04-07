@@ -52,9 +52,9 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
             << "ronso0"
             << "Jan Holthuis";
 
-    // This list should contains all contributors committed 
-    // code to the Mixxx core within the past two years. 
-    // New Contributors are added at the end.  
+    // This list should contains all contributors committed
+    // code to the Mixxx core within the past two years.
+    // New Contributors are added at the end.
     QStringList recentContributors;
     recentContributors
             << "Stefan N&uuml;rnberger"
@@ -90,9 +90,16 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
             << "Pawe&#322; Goli&#324;ski"
             << "beenisss"
             << "Bernd Binder"
+            << "Pradyuman"
             << "Nikolaus Einhauser"
+            << "Nik Martin"
+            << "Kerrick Staley"
+            << "Raphael Graf"
+            << "YunQiang Su"
+            << "Sebastian Hasler"
             << "Philip Gottschling"
-            << "Cristiano Lacerda"; 
+            << "Cristiano Lacerda"
+            << "Ketan Lambat";
 
     QStringList specialThanks;
     specialThanks

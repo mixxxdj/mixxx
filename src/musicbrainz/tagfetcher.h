@@ -1,59 +1,79 @@
-/*****************************************************************************
- *  Copyright © 2012 John Maguire <john.maguire@gmail.com>                   *
- *                   David Sansome <me@davidsansome.com>                     *
- *  This work is free. You can redistribute it and/or modify it under the    *
- *  terms of the Do What The Fuck You Want To Public License, Version 2,     *
- *  as published by Sam Hocevar.                                             *
- *  See http://www.wtfpl.net/ for more details.                              *
- *****************************************************************************/
-
-#ifndef TAGFETCHER_H
-#define TAGFETCHER_H
+#pragma once
 
 #include <QFutureWatcher>
 #include <QObject>
 
-#include "musicbrainz/musicbrainzclient.h"
-#include "musicbrainz/acoustidclient.h"
+#include "musicbrainz/web/acoustidlookuptask.h"
+#include "musicbrainz/web/musicbrainzrecordingstask.h"
 #include "track/track.h"
-
+#include "util/parented_ptr.h"
 
 class TagFetcher : public QObject {
-  Q_OBJECT
+    Q_OBJECT
 
-  // High level interface to Fingerprinter, AcoustidClient and
-  // MusicBrainzClient.
+    // Implements retrieval of metadata in 3 subsequent stages:
+    //   1. Chromaprint -> AcoustID fingerprint
+    //   2. AcoustID -> MusicBrainz recording UUIDs
+    //   3. MusicBrainz -> MusicBrainz track releases
 
   public:
-    TagFetcher(QObject* parent = 0);
+    explicit TagFetcher(
+            QObject* parent = nullptr);
+    ~TagFetcher() override = default;
 
-    void startFetch(const TrackPointer track);
+    void startFetch(
+            TrackPointer pTrack);
 
   public slots:
     void cancel();
 
   signals:
-    void resultAvailable(const TrackPointer originalTrack,
-                         const QList<TrackPointer>& tracksGuessed);
-    void fetchProgress(QString);
-    void networkError(int,QString);
+    void resultAvailable(
+            TrackPointer pTrack,
+            QList<mixxx::musicbrainz::TrackRelease> guessedTrackReleases);
+    void fetchProgress(
+            QString message);
+    void networkError(
+            int httpStatus,
+            QString app,
+            QString message,
+            int code);
 
   private slots:
-    void fingerprintFound(int index);
-    void mbidFound(int index, const QString& mbid);
-    void tagsFetched(int index, const MusicBrainzClient::ResultList& result);
+    void slotFingerprintReady();
+
+    void slotAcoustIdTaskSucceeded(
+            QList<QUuid> recordingIds);
+    void slotAcoustIdTaskFailed(
+            mixxx::network::JsonWebResponse response);
+    void slotAcoustIdTaskAborted();
+    void slotAcoustIdTaskNetworkError(
+            QUrl requestUrl,
+            QNetworkReply::NetworkError errorCode,
+            QString errorString,
+            QByteArray errorContent);
+
+    void slotMusicBrainzTaskSucceeded(
+            QList<mixxx::musicbrainz::TrackRelease> guessedTrackReleases);
+    void slotMusicBrainzTaskFailed(
+            mixxx::network::WebResponse response,
+            int errorCode,
+            QString errorMessage);
+    void slotMusicBrainzTaskAborted();
+    void slotMusicBrainzTaskNetworkError(
+            QUrl requestUrl,
+            QNetworkReply::NetworkError errorCode,
+            QString errorString,
+            QByteArray errorContent);
 
   private:
-    // has to be static so we can call it with QtConcurrent and have a nice
-    // responsive UI while the fingerprint is calculated
-    static QString getFingerprint(const TrackPointer tio);
+    QNetworkAccessManager m_network;
 
-    QFutureWatcher<QString>* m_pFingerprintWatcher;
-    AcoustidClient m_AcoustidClient;
-    MusicBrainzClient m_MusicbrainzClient;
+    QFutureWatcher<QString> m_fingerprintWatcher;
 
-    // Code can already be run on an arbitrary number of input tracks
-    QList<TrackPointer> m_tracks;
+    parented_ptr<mixxx::AcoustIdLookupTask> m_pAcoustIdTask;
+
+    parented_ptr<mixxx::MusicBrainzRecordingsTask> m_pMusicBrainzTask;
+
+    TrackPointer m_pTrack;
 };
-
-#endif // TAGFETCHER_H

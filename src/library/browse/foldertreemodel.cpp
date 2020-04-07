@@ -50,8 +50,8 @@ bool FolderTreeModel::hasChildren(const QModelIndex& parent) const {
 }
 
 bool FolderTreeModel::directoryHasChildren(const QString& path) const {
-    QHash<QString, bool>::const_iterator it = m_directoryCache.find(path);
-    if (it != m_directoryCache.end()) {
+    auto it = m_directoryCache.constFind(path);
+    if (it != m_directoryCache.constEnd()) {
         return it.value();
     }
 

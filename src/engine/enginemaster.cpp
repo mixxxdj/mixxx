@@ -14,8 +14,8 @@
 #include "engine/effects/engineeffectsmanager.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginechannel.h"
-#include "engine/enginedeck.h"
+#include "engine/channels/enginechannel.h"
+#include "engine/channels/enginedeck.h"
 #include "engine/enginedelay.h"
 #include "engine/enginetalkoverducking.h"
 #include "engine/enginevumeter.h"
@@ -274,7 +274,7 @@ void EngineMaster::processChannels(int iBufferSize) {
     m_activeTalkoverChannels.clear();
     m_activeChannels.clear();
 
-    ScopedTimer timer("EngineMaster::processChannels");
+    //ScopedTimer timer("EngineMaster::processChannels");
     EngineChannel* pMasterChannel = m_pMasterSync->getMaster();
     // Reserve the first place for the master channel which
     // should be processed first
@@ -377,7 +377,7 @@ void EngineMaster::process(const int iBufferSize) {
         QThread::currentThread()->setObjectName("Engine");
         haveSetName = true;
     }
-    Trace t("EngineMaster::process");
+    //Trace t("EngineMaster::process");
 
     bool masterEnabled = m_pMasterEnabled->get();
     bool boothEnabled = m_pBoothEnabled->get();

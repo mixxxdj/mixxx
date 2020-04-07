@@ -436,7 +436,7 @@ TEST_F(SampleUtilTest, copyReverse) {
 }
 
 static void BM_MemCpy(benchmark::State& state) {
-    size_t size = state.range_x();
+    size_t size = state.range(0);
     CSAMPLE* buffer = SampleUtil::alloc(size);
     SampleUtil::fill(buffer, 0.0f, size);
     CSAMPLE* buffer2 = SampleUtil::alloc(size);
@@ -452,7 +452,7 @@ static void BM_MemCpy(benchmark::State& state) {
 BENCHMARK(BM_MemCpy)->Range(64, 4096);
 
 static void BM_StdCpy(benchmark::State& state) {
-    size_t size = state.range_x();
+    size_t size = state.range(0);
     CSAMPLE* buffer = SampleUtil::alloc(size);
     SampleUtil::fill(buffer, 0.0f, size);
     CSAMPLE* buffer2 = SampleUtil::alloc(size);
@@ -468,7 +468,7 @@ static void BM_StdCpy(benchmark::State& state) {
 BENCHMARK(BM_StdCpy)->Range(64, 4096);
 
 static void BM_SampleUtilCopy(benchmark::State& state) {
-    size_t size = state.range_x();
+    size_t size = state.range(0);
     CSAMPLE* buffer = SampleUtil::alloc(size);
     SampleUtil::fill(buffer, 0.0f, size);
     CSAMPLE* buffer2 = SampleUtil::alloc(size);
@@ -488,7 +488,7 @@ BENCHMARK(BM_SampleUtilCopy)->Range(64, 4096);
 TEST_F(SampleUtilTest, copy3WithGainSpeed) {
     CSAMPLE* buffer = buffers[0];
 
-    int size = sizes[0] - (rand() % 2) * 8; // preven predicting loop size
+    int size = sizes[0] - (rand() % 2) * 8; // prevent predicting loop size
     FillBuffer(buffer, 0.0f, size);
     CSAMPLE* buffer2 = SampleUtil::alloc(size);
     FillBuffer(buffer2, 0.0f, size);
@@ -583,7 +583,7 @@ TEST_F(SampleUtilTest, copy3WithGainSpeed) {
 */
 
 static void BM_Copy2WithGain(benchmark::State& state) {
-    size_t size = state.range_x();
+    size_t size = state.range(0);
     CSAMPLE* buffer = SampleUtil::alloc(size);
     SampleUtil::fill(buffer, 0.0f, size);
     CSAMPLE* buffer2 = SampleUtil::alloc(size);
@@ -602,7 +602,7 @@ static void BM_Copy2WithGain(benchmark::State& state) {
 BENCHMARK(BM_Copy2WithGain)->Range(64, 4096);
 
 static void BM_Copy2WithRampingGain(benchmark::State& state) {
-    size_t size = state.range_x();
+    size_t size = state.range(0);
     CSAMPLE* buffer = SampleUtil::alloc(size);
     SampleUtil::fill(buffer, 0.0f, size);
     CSAMPLE* buffer2 = SampleUtil::alloc(size);

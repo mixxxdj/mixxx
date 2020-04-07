@@ -17,7 +17,7 @@
    <item>
     <widget class="QStackedWidget" name="stack">
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="results_page">
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -45,20 +45,24 @@
          <attribute name="headerMinimumSectionSize">
           <number>50</number>
          </attribute>
-         <attribute name="headerDefaultSectionSize">
-          <number>150</number>
-         </attribute>
-         <attribute name="headerMinimumSectionSize">
-          <number>50</number>
-         </attribute>
          <column>
           <property name="text">
-           <string>Track</string>
+           <string>Year</string>
           </property>
          </column>
          <column>
           <property name="text">
-           <string>Year</string>
+           <string>Album</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Album Artist</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Track</string>
           </property>
          </column>
          <column>
@@ -69,11 +73,6 @@
          <column>
           <property name="text">
            <string>Artist</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Album</string>
           </property>
          </column>
         </widget>
@@ -253,8 +252,20 @@
          </item>
          <item>
           <widget class="QLabel" name="httpStatus">
+           <property name="maximumSize">
+            <size>
+             <width>600</width>
+             <height>300</height>
+            </size>
+           </property>
            <property name="text">
             <string notr="true">HTTP Status: %1</string>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+           <property name="textInteractionFlags">
+            <set>Qt::TextSelectableByMouse</set>
            </property>
           </widget>
          </item>

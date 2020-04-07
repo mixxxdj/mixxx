@@ -10,10 +10,7 @@ Variables:
     <Layout>vertical</Layout>
     <Children>
 
-      <WidgetGroup>
-        <ObjectName>Spacer1e</ObjectName>
-        <Size>1min,2f</Size>
-      </WidgetGroup>
+      <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1min,3f</Size></WidgetGroup>
 
       <WidgetGroup><!-- Beatjump controls -->
         <ObjectName>LoopBeatJumpContainer</ObjectName>
@@ -31,8 +28,8 @@ Variables:
                 <SetVariable name="TooltipId">beatjump_backward</SetVariable>
                 <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
                 <SetVariable name="Size">22f,22f</SetVariable>
-                <SetVariable name="state_0_pressed">backward_pressed.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">backward.svg</SetVariable>
+                <SetVariable name="state_0_pressed">beatjump_backward_pressed.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">beatjump_backward.svg</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,beatjump_backward</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatjump_1_backward</SetVariable>
               </Template>
@@ -43,8 +40,8 @@ Variables:
                 <SetVariable name="TooltipId">beatjump_forward</SetVariable>
                 <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
                 <SetVariable name="Size">22f,22f</SetVariable>
-                <SetVariable name="state_0_pressed">forward_pressed.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">forward.svg</SetVariable>
+                <SetVariable name="state_0_pressed">beatjump_forward_pressed.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">beatjump_forward.svg</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,beatjump_forward</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatjump_1_forward</SetVariable>
               </Template>
@@ -53,10 +50,18 @@ Variables:
 
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
-          <BeatSpinBox>
-            <TooltipId>beatjump_size</TooltipId>
-            <Value><Variable name="group"/>,beatjump_size</Value>
-          </BeatSpinBox>
+
+          <WidgetGroup>
+            <ObjectName>AlignLeft</ObjectName>
+            <Layout>horizontal</Layout>
+            <Size>68f,22f</Size>
+            <Children>
+              <BeatSpinBox>
+                <TooltipId>beatjump_size</TooltipId>
+                <Value><Variable name="group"/>,beatjump_size</Value>
+              </BeatSpinBox>
+            </Children>
+          </WidgetGroup>
 
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
         </Children>

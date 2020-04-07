@@ -1,5 +1,5 @@
 #include <QFileDialog>
-#include <QDesktopServices>
+#include <QStandardPaths>
 
 #include "preferences/dialog/dlgprefrecord.h"
 #include "recording/defs_recording.h"
@@ -22,7 +22,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     if (recordingsPath == "") {
         // Initialize recordings path in config to old default path.
         // Do it here so we show current value in UI correctly.
-        QString musicDir = QDesktopServices::storageLocation(QDesktopServices::MusicLocation);
+        QString musicDir = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
         QDir recordDir(musicDir + "/Mixxx/Recordings");
         recordingsPath = recordDir.absolutePath();
     }
@@ -223,8 +223,8 @@ void DlgPrefRecord::slotFormatChanged()
 }
 
 void DlgPrefRecord::setupEncoderUI() {
-    EncoderSettingsPointer settings =
-            EncoderFactory::getFactory().getEncoderSettings(
+    EncoderRecordingSettingsPointer settings =
+            EncoderFactory::getFactory().getEncoderRecordingSettings(
                     m_selFormat, m_pConfig);
     if (settings->usesQualitySlider()) {
         LabelQuality->setVisible(true);
@@ -257,10 +257,10 @@ void DlgPrefRecord::setupEncoderUI() {
         optionsgroup.removeButton(widget);
         OptionGroupsLayout->removeWidget(widget);
         disconnect(widget, SIGNAL(clicked()), this, SLOT(slotGroupChanged()));
-        emit(widget->deleteLater());
+        widget->deleteLater();
     }
     m_optionWidgets.clear();
-    if (settings->usesOptionGroups()) {
+    if (!settings->getOptionGroups().isEmpty()) {
         labelOptionGroup->setVisible(true);
         // TODO (XXX): Right now i am supporting just one optiongroup.
         // The concept is already there for multiple groups
@@ -306,9 +306,10 @@ void DlgPrefRecord::slotSliderQuality()
     // Settings are only stored when doing an apply so that "cancel" can actually cancel.
 }
 
-void DlgPrefRecord::updateTextQuality()
-{
-    EncoderSettingsPointer settings = EncoderFactory::getFactory().getEncoderSettings(m_selFormat, m_pConfig);
+void DlgPrefRecord::updateTextQuality() {
+    EncoderRecordingSettingsPointer settings =
+            EncoderFactory::getFactory().getEncoderRecordingSettings(
+                    m_selFormat, m_pConfig);
     int quality;
     // This should be handled somehow by the EncoderSettings classes, but currently
     // I don't have a clean way to do it
@@ -340,9 +341,11 @@ void DlgPrefRecord::slotSliderCompression()
     updateTextCompression();
     // Settings are only stored when doing an apply so that "cancel" can actually cancel.
 }
-void DlgPrefRecord::updateTextCompression()
-{
-    EncoderSettingsPointer settings = EncoderFactory::getFactory().getEncoderSettings(m_selFormat, m_pConfig);
+
+void DlgPrefRecord::updateTextCompression() {
+    EncoderRecordingSettingsPointer settings =
+            EncoderFactory::getFactory().getEncoderRecordingSettings(
+                    m_selFormat, m_pConfig);
     int quality = settings->getCompressionValues().at(SliderCompression->value());
     TextCompression->setText(QString::number(quality));
 }
@@ -351,7 +354,9 @@ void DlgPrefRecord::slotGroupChanged()
 {
     // On complex scenarios, one could want to enable or disable some controls when changing
     // these, but we don't have these needs now.
-    EncoderSettingsPointer settings = EncoderFactory::getFactory().getEncoderSettings(m_selFormat, m_pConfig);
+    EncoderRecordingSettingsPointer settings =
+            EncoderFactory::getFactory().getEncoderRecordingSettings(
+                    m_selFormat, m_pConfig);
     if (settings->usesQualitySlider()) {
         updateTextQuality();
     }
@@ -381,10 +386,11 @@ void DlgPrefRecord::saveMetaData()
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Author"), ConfigValue(LineEditAuthor->text()));
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Album"), ConfigValue(LineEditAlbum->text()));
 }
-void DlgPrefRecord::saveEncoding()
-{
-    EncoderSettingsPointer settings = EncoderFactory::getFactory().getEncoderSettings(m_selFormat, m_pConfig);
 
+void DlgPrefRecord::saveEncoding() {
+    EncoderRecordingSettingsPointer settings =
+            EncoderFactory::getFactory().getEncoderRecordingSettings(
+                    m_selFormat, m_pConfig);
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"),
         ConfigValue(m_selFormat.internalName));
 
@@ -395,7 +401,7 @@ void DlgPrefRecord::saveEncoding()
         QList<int> comps = settings->getCompressionValues();
         settings->setCompression(comps.at(SliderCompression->value()));
     }
-    if (settings->usesOptionGroups()) {
+    if (!settings->getOptionGroups().isEmpty()) {
         // TODO (XXX): Right now i am supporting just one optiongroup.
         // The concept is already there for multiple groups
         EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();

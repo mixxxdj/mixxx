@@ -12,6 +12,7 @@
 //
 
 #include <QtDebug>
+#include <QDir>
 #include <QFile>
 #include <QIODevice>
 #include <QUrl>
@@ -146,11 +147,19 @@ bool Parser::isUtf8(const char* string) {
     return true;
 }
 
-QString Parser::playlistEntrytoLocalFile(const QString& playlistEntry) {
+TrackFile Parser::playlistEntryToTrackFile(
+        const QString& playlistEntry,
+        const QString& basePath) {
     if (playlistEntry.startsWith("file:")) {
-        return QUrl(playlistEntry).toLocalFile();
+        // URLs are always absolute
+        return TrackFile::fromUrl(QUrl(playlistEntry));
     }
-
-    return QString(playlistEntry).replace('\\', '/');
+    auto filePath = QString(playlistEntry).replace('\\', '/');
+    auto trackFile = TrackFile(filePath);
+    if (basePath.isEmpty() || trackFile.asFileInfo().isAbsolute()) {
+        return trackFile;
+    } else {
+        // Fallback: Relative to base path
+        return TrackFile(QDir(basePath), filePath);
+    }
 }
-

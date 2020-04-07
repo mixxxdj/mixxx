@@ -1,5 +1,6 @@
-#ifndef WAVEFORMWIDGETFACTORY_H
-#define WAVEFORMWIDGETFACTORY_H
+#pragma once
+
+#include <vector>
 
 #include <QObject>
 #include <QTime>
@@ -17,6 +18,7 @@ class WaveformWidgetAbstract;
 class QTimer;
 class VSyncThread;
 class GuiTick;
+class VisualsManager;
 
 class WaveformWidgetAbstractHandle {
   public:
@@ -35,11 +37,14 @@ class WaveformWidgetAbstractHandle {
 class WaveformWidgetHolder {
   public:
     WaveformWidgetHolder();
+    WaveformWidgetHolder(WaveformWidgetHolder&&) = default;
+    WaveformWidgetHolder& operator=(WaveformWidgetHolder&&) = default;
   private:
-    WaveformWidgetHolder(WaveformWidgetAbstract* waveformWidget,
-                         WWaveformViewer* waveformViewer,
-                         const QDomNode& skinNode,
-                         const SkinContext& skinContext);
+    WaveformWidgetHolder(
+            WaveformWidgetAbstract* waveformWidget,
+            WWaveformViewer* waveformViewer,
+            const QDomNode& skinNode,
+            const SkinContext& parentContext);
 
     WaveformWidgetAbstract* m_waveformWidget;
     WWaveformViewer* m_waveformViewer;
@@ -61,8 +66,10 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     //creates the waveform widget and bind it to the viewer
     //clean-up every thing if needed
-    bool setWaveformWidget(WWaveformViewer* viewer,
-                           const QDomElement &node, const SkinContext& context);
+    bool setWaveformWidget(
+            WWaveformViewer* viewer,
+            const QDomElement &node,
+            const SkinContext& parentContext);
 
     void setFrameRate(int frameRate);
     int getFrameRate() const { return m_frameRate;}
@@ -80,8 +87,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool setWidgetTypeFromHandle(int handleIndex);
     WaveformWidgetType::Type getType() const { return m_type;}
 
-    void setDefaultZoom(int zoom);
-    int getDefaultZoom() const { return m_defaultZoom;}
+    void setDefaultZoom(double zoom);
+    double getDefaultZoom() const { return m_defaultZoom;}
 
     void setZoomSync(bool sync);
     int isZoomSync() const { return m_zoomSync;}
@@ -101,7 +108,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     void addTimerListener(QWidget* pWidget);
 
-    void startVSync(GuiTick* pGuiTick);
+    void startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager);
     void setVSyncType(int vsType);
     int getVSyncType();
 
@@ -115,7 +122,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
   signals:
     void waveformUpdateTick();
     void waveformMeasured(float frameRate, int droppedFrames);
-    void renderSpinnies();
+    void renderSpinnies(VSyncThread*);
     void swapSpinnies();
 
   protected:
@@ -138,7 +145,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     QVector<WaveformWidgetAbstractHandle> m_waveformWidgetHandles;
 
     //Currently in use widgets/visual/node
-    QVector<WaveformWidgetHolder> m_waveformWidgetHolders;
+    std::vector<WaveformWidgetHolder> m_waveformWidgetHolders;
 
     WaveformWidgetType::Type m_type;
 
@@ -147,7 +154,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool m_skipRender;
     int m_frameRate;
     int m_endOfTrackWarningTime;
-    int m_defaultZoom;
+    double m_defaultZoom;
     bool m_zoomSync;
     double m_visualGain[FilterCount];
     bool m_overviewNormalized;
@@ -160,6 +167,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     VSyncThread* m_vsyncThread;
     GuiTick* m_pGuiTick;  // not owned
+    VisualsManager* m_pVisualsManager;  // not owned
 
     //Debug
     PerformanceTimer m_time;
@@ -168,5 +176,3 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     int m_vSyncType;
     double m_playMarkerPosition;
 };
-
-#endif // WAVEFORMWIDGETFACTORY_H

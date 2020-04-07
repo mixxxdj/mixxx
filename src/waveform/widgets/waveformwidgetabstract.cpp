@@ -1,9 +1,9 @@
 #include "waveformwidgetabstract.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
+#include "util/compatibility.h"
 
 #include <QtDebug>
 #include <QWidget>
-
 
 WaveformWidgetAbstract::WaveformWidgetAbstract(const char* group)
     : WaveformWidgetRenderer(group),

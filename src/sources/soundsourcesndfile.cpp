@@ -35,9 +35,9 @@ SoundSource::OpenResult SoundSourceSndFile::tryOpen(
     const ushort* const fileNameUtf16 = localFileName.utf16();
     static_assert(sizeof(wchar_t) == sizeof(ushort), "QString::utf16(): wchar_t and ushort have different sizes");
     m_pSndFile = sf_wchar_open(
-        reinterpret_cast<wchar_t*>(const_cast<ushort*>(fileNameUtf16)),
-        SFM_READ,
-        &sfInfo);
+            reinterpret_cast<wchar_t*>(const_cast<ushort*>(fileNameUtf16)),
+            SFM_READ,
+            &sfInfo);
 #else
     m_pSndFile = sf_open(QFile::encodeName(getLocalFileName()), SFM_READ, &sfInfo);
 #endif
@@ -57,8 +57,8 @@ SoundSource::OpenResult SoundSourceSndFile::tryOpen(
             return OpenResult::Aborted;
         } else {
             kLogger.warning() << "Error opening libsndfile file:"
-                    << getUrlString()
-                    << errorMsg;
+                              << getUrlString()
+                              << errorMsg;
             return OpenResult::Failed;
         }
     }
@@ -80,15 +80,14 @@ void SoundSourceSndFile::close() {
             m_curFrameIndex = frameIndexMin();
         } else {
             kLogger.warning() << "Failed to close file:" << closeResult
-                    << sf_strerror(m_pSndFile)
-                    << getUrlString();
+                              << sf_strerror(m_pSndFile)
+                              << getUrlString();
         }
     }
 }
 
 ReadableSampleFrames SoundSourceSndFile::readSampleFramesClamped(
         WritableSampleFrames writableSampleFrames) {
-
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
     if (m_curFrameIndex != firstFrameIndex) {
@@ -97,7 +96,7 @@ ReadableSampleFrames SoundSourceSndFile::readSampleFramesClamped(
             m_curFrameIndex = seekResult;
         } else {
             kLogger.warning() << "Failed to seek libsnd file:" << seekResult
-                    << sf_strerror(m_pSndFile);
+                              << sf_strerror(m_pSndFile);
             m_curFrameIndex = sf_seek(m_pSndFile, 0, SEEK_CUR);
             return ReadableSampleFrames(IndexRange::between(m_curFrameIndex, m_curFrameIndex));
         }
@@ -119,8 +118,8 @@ ReadableSampleFrames SoundSourceSndFile::readSampleFramesClamped(
                         frames2samples(readCount)));
     } else {
         kLogger.warning() << "Failed to read from libsnd file:"
-                << readCount
-                << sf_strerror(m_pSndFile);
+                          << readCount
+                          << sf_strerror(m_pSndFile);
         return ReadableSampleFrames(
                 IndexRange::between(
                         m_curFrameIndex,
@@ -134,16 +133,28 @@ QString SoundSourceProviderSndFile::getName() const {
 
 QStringList SoundSourceProviderSndFile::getSupportedFileExtensions() const {
     QStringList supportedFileExtensions;
-    supportedFileExtensions.append("aiff");
     supportedFileExtensions.append("aif");
-    supportedFileExtensions.append("wav");
-    supportedFileExtensions.append("flac");
-    supportedFileExtensions.append("ogg");
+    supportedFileExtensions.append("aiff");
     // ALAC/CAF has been added in version 1.0.26
     // NOTE(uklotzde, 2015-05-26): Unfortunately ALAC in M4A containers
     // is still not supported https://github.com/mixxxdj/mixxx/pull/904#issuecomment-221928362
     supportedFileExtensions.append("caf");
+    supportedFileExtensions.append("flac");
+    supportedFileExtensions.append("ogg");
+    supportedFileExtensions.append("wav");
     return supportedFileExtensions;
+}
+
+SoundSourceProviderPriority SoundSourceProviderSndFile::getPriorityHint(
+        const QString& supportedFileExtension) const {
+    if (supportedFileExtension.startsWith("aif") ||
+            supportedFileExtension == "wav") {
+        // Default decoder for AIFF and WAV
+        return SoundSourceProviderPriority::DEFAULT;
+    } else {
+        // Otherwise only used as fallback
+        return SoundSourceProviderPriority::LOWER;
+    }
 }
 
 } // namespace mixxx

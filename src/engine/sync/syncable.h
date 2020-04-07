@@ -33,9 +33,8 @@ class Syncable {
     virtual EngineChannel* getChannel() const = 0;
 
     // Notify a Syncable that their mode has changed. The Syncable must record
-    // this mode and return the latest mode received via notifySyncModeChanged
-    // in response to getMode().
-    virtual void notifySyncModeChanged(SyncMode mode) = 0;
+    // this mode and return the latest mode in response to getMode().
+    virtual void setSyncMode(SyncMode mode) = 0;
 
     // Notify a Syncable that it is now the only currently-playing syncable.
     virtual void notifyOnlyPlayingSyncable() = 0;
@@ -113,7 +112,7 @@ class SyncableListener {
     // Notify Syncable that the Syncable's scratching state changed.
     virtual void notifyScratching(Syncable* pSyncable, bool scratching) = 0;
 
-    // A Syncable must never call notifyBeatDistanceChanged in respnse to a
+    // A Syncable must never call notifyBeatDistanceChanged in response to a
     // setBeatDistance() call.
     virtual void notifyBeatDistanceChanged(
             Syncable* pSyncable, double beatDistance) = 0;

@@ -8,6 +8,7 @@
 #include "track/track.h"
 #include "widget/wwidget.h"
 #include "util/math.h"
+#include "util/painterscope.h"
 
 WaveformRendererRGB::WaveformRendererRGB(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -42,7 +43,8 @@ void WaveformRendererRGB::draw(QPainter* painter,
         return;
     }
 
-    painter->save();
+    PainterScope PainterScope(painter);
+
     painter->setRenderHints(QPainter::Antialiasing, false);
     painter->setRenderHints(QPainter::SmoothPixmapTransform, false);
     painter->setWorldMatrixEnabled(false);
@@ -175,6 +177,4 @@ void WaveformRendererRGB::draw(QPainter* painter,
             }
         }
     }
-
-    painter->restore();
 }

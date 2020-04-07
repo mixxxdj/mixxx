@@ -15,26 +15,25 @@ if build.compiler_is_clang:
 
 # Sources used by base library and library that includes main.
 sources = [
+  "src/benchmark_api_internal.cc",
+  "src/benchmark_name.cc",
+  "src/benchmark_register.cc",
+  "src/benchmark_runner.cc",
   "src/benchmark.cc",
   "src/colorprint.cc",
   "src/commandlineflags.cc",
+  "src/complexity.cc",
   "src/console_reporter.cc",
+  "src/counter.cc",
   "src/csv_reporter.cc",
   "src/json_reporter.cc",
-  "src/log.cc",
   "src/reporter.cc",
   "src/sleep.cc",
+  "src/statistics.cc",
   "src/string_util.cc",
   "src/sysinfo.cc",
-  "src/walltime.cc",
-
-  # NOTE(rryan): Since we're using C++11 we can use std::regex.
-  "src/re_std.cc"
+  "src/timers.cc"
 ]
 
 benchmark_lib = env.StaticLibrary(target='benchmark',
                                   source=[sources])
-
-# Install the libraries if needed.
-if 'LIB_OUTPUT' in env.Dictionary():
-  env.Install('$LIB_OUTPUT', source=[benchmark_lib])

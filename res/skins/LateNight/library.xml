@@ -3,15 +3,13 @@
     <SizePolicy>me,i</SizePolicy>
     <Layout>vertical</Layout>
     <Children>
-
-      <WidgetGroup><Size>0me,5f</Size></WidgetGroup>
       <!--
       **********************************************
       Library / Preview Deck / Search / Tree view
       **********************************************
       -->
       <WidgetGroup>
-        <ObjectName>Library</ObjectName>
+        <ObjectName>LibraryContainer</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>me,me</SizePolicy>
         <Children>
@@ -20,30 +18,42 @@
             <ObjectName>VerticalSplitter</ObjectName>
             <SizePolicy>me,me</SizePolicy>
             <SplitSizes>1,10</SplitSizes>
-            <SplitSizesConfigKey>[LateNight],LibrarySidebarSplitSize</SplitSizesConfigKey>
+            <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
             <Collapsible>1,0</Collapsible>
             <Children>
               <WidgetGroup>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,me</SizePolicy>
-                <MinimumSize>100,-1</MinimumSize>
+                <MinimumSize>100,</MinimumSize>
                 <Children>
 
                   <Template src="skin:preview_deck.xml"/>
 
                   <!--Search Input Field-->
-                  <SearchBox></SearchBox>
+                  <WidgetGroup>
+                    <ObjectName>SearchLineBox</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <SearchBox></SearchBox>
+                    </Children>
+                  </WidgetGroup>
 
                   <Splitter>
                     <ObjectName>HorizontalSplitter</ObjectName>
                     <Size>me,me</Size>
                     <SplitSizes>1,1</SplitSizes>
-                    <SplitSizesConfigKey>[LateNight],CoverArtSplitSize</SplitSizesConfigKey>
+                    <SplitSizesConfigKey>[Skin],coverArt_splitsize</SplitSizesConfigKey>
                     <Orientation>vertical</Orientation>
                     <Collapsible>0,0</Collapsible>
                     <Children>
                       <!--Library Tree View-->
-                      <LibrarySidebar></LibrarySidebar>
+                      <WidgetGroup>
+                        <ObjectName>SidebarBox</ObjectName>
+                        <Layout>vertical</Layout>
+                        <Children>
+                          <LibrarySidebar></LibrarySidebar>
+                        </Children>
+                      </WidgetGroup>
                       <!--Cover Art-->
                       <CoverArt>
                         <SizePolicy>me,me</SizePolicy>
@@ -58,17 +68,14 @@
 
                 </Children>
               </WidgetGroup>
-              <WidgetGroup>
-                <!-- Library Table-->
-                <Style>QGroupBox {}</Style>
-                <Layout>vertical</Layout>
-                <Children>
-                  <Library>
-                    <BgColor>#585858</BgColor>
-                    <FgColor>#eece33</FgColor>
-                  </Library>
-                </Children>
-              </WidgetGroup>
+
+              <!-- Library Table-->
+              <Library>
+                <BgColor>#585858</BgColor>
+                <FgColor>#eece33</FgColor>
+                <ShowButtonText>false</ShowButtonText>
+              </Library>
+
             </Children>
           </Splitter>
 
@@ -81,7 +88,7 @@
           </WidgetGroup>
 
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- LibraryContainer -->
     </Children>
   </WidgetGroup>
 </Template>

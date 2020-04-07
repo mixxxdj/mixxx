@@ -51,7 +51,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     PlaylistDAO();
     ~PlaylistDAO() override {}
 
-    void initialize(const QSqlDatabase& database);
+    void initialize(const QSqlDatabase& database) override;
 
     // Create a playlist, fails with -1 if already exists
     int createPlaylist(const QString& name, const HiddenType type = PLHT_NOT_HIDDEN);
@@ -99,9 +99,9 @@ class PlaylistDAO : public QObject, public virtual DAO {
     // Inserts a list of tracks into playlist
     int insertTracksIntoPlaylist(const QList<TrackId>& trackIds, const int playlistId, int position);
     // Add a playlist to the Auto-DJ Queue
-    void addPlaylistToAutoDJQueue(const int playlistId, const bool bTop);
+    void addPlaylistToAutoDJQueue(const int playlistId, AutoDJSendLoc loc);
     // Add a list of tracks to the Auto-DJ Queue
-    void addTracksToAutoDJQueue(const QList<TrackId>& trackIds, const bool bTop);
+    void addTracksToAutoDJQueue(const QList<TrackId>& trackIds, AutoDJSendLoc loc);
     // Get the preceding playlist of currentPlaylistId with the HiddenType
     // hidden. Returns -1 if no such playlist exists.
     int getPreviousPlaylist(const int currentPlaylistId, HiddenType hidden) const;
@@ -119,7 +119,6 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void getPlaylistsTrackIsIn(TrackId trackId, QSet<int>* playlistSet) const;
 
     void setAutoDJProcessor(AutoDJProcessor* pAutoDJProcessor);
-    void sendToAutoDJ(const QList<TrackId>& trackIds, AutoDJSendLoc loc);
 
   signals:
     void added(int playlistId);

@@ -20,14 +20,7 @@
       <string>Interface options</string>
      </property>
      <layout class="QGridLayout" name="GridLayout1">
-      <item row="1" column="1" colspan="2">
-       <widget class="QLabel" name="skinPreviewLabel">
-        <property name="text">
-         <string notr="true">skin preview screenshot goes here</string>
-        </property>
-       </widget>
-      </item>
-      <item row="11" column="0">
+      <item row="13" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
          <string>Screen saver</string>
@@ -66,16 +59,6 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="1" colspan="2">
-       <widget class="QLabel" name="warningLabel">
-        <property name="text">
-         <string/>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignJustify|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
       <item row="3" column="1" rowspan="2" colspan="2">
        <widget class="QComboBox" name="ComboBoxSchemeconf">
         <property name="sizePolicy">
@@ -92,7 +75,7 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="0">
+      <item row="8" column="0">
        <widget class="QLabel" name="textLabelLocale">
         <property name="text">
          <string>Locale</string>
@@ -102,14 +85,14 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="1" colspan="2">
+      <item row="8" column="1" colspan="2">
        <widget class="QComboBox" name="ComboBoxLocale">
         <property name="toolTip">
          <string>Locales determine country and language specific settings.</string>
         </property>
        </widget>
       </item>
-      <item row="8" column="0">
+      <item row="10" column="0">
        <widget class="QLabel" name="labelFullscreenOption">
         <property name="text">
          <string>Full-screen mode</string>
@@ -119,14 +102,14 @@
         </property>
        </widget>
       </item>
-      <item row="8" column="1" colspan="2">
+      <item row="10" column="1" colspan="2">
        <widget class="QCheckBox" name="checkBoxStartFullScreen">
         <property name="text">
          <string>Start in full-screen mode</string>
         </property>
        </widget>
       </item>
-      <item row="10" column="0">
+      <item row="12" column="0">
        <widget class="QLabel" name="labelTooltips">
         <property name="enabled">
          <bool>true</bool>
@@ -145,7 +128,7 @@
         </property>
        </widget>
       </item>
-      <item row="10" column="1" colspan="2">
+      <item row="12" column="1" colspan="2">
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QRadioButton" name="radioButtonTooltipsOff">
@@ -179,7 +162,7 @@
         </item>
        </layout>
       </item>
-      <item row="7" column="0">
+      <item row="9" column="0">
        <widget class="QLabel" name="labelScaleFactor">
         <property name="text">
          <string>HiDPI / Retina scaling</string>
@@ -189,7 +172,7 @@
         </property>
        </widget>
       </item>
-      <item row="7" column="1">
+      <item row="9" column="1">
        <widget class="QDoubleSpinBox" name="spinBoxScaleFactor">
         <property name="toolTip">
          <string>Change the size of text, buttons, and other items.</string>
@@ -211,7 +194,7 @@
         </property>
        </widget>
       </item>
-      <item row="7" column="2">
+      <item row="9" column="2">
        <widget class="QCheckBox" name="checkBoxScaleFactorAuto">
         <property name="toolTip">
          <string>Adopt scale factor from the operating system</string>
@@ -221,7 +204,7 @@
         </property>
        </widget>
       </item>
-      <item row="11" column="1" colspan="2">
+      <item row="13" column="1" colspan="2">
        <widget class="QComboBox" name="comboBoxScreensaver"/>
       </item>
       <item row="3" column="0" rowspan="2">
@@ -240,6 +223,23 @@
         </property>
         <property name="buddy">
          <cstring>ComboBoxSchemeconf</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="QLabel" name="skinPreviewLabel">
+        <property name="text">
+         <string notr="true">skin preview screenshot goes here</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="QLabel" name="warningLabel">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignJustify|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
@@ -314,7 +314,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroupEffectLoadBehavior"/>
   <buttongroup name="buttonGroupTooltips"/>
+  <buttongroup name="buttonGroupEffectLoadBehavior"/>
  </buttongroups>
 </ui>

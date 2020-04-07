@@ -1,6 +1,5 @@
-#include <qgl.h>
-
 #include "waveform/renderers/glvsynctestrenderer.h"
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
@@ -11,6 +10,7 @@ GLVSyncTestRenderer::GLVSyncTestRenderer(
         WaveformWidgetRenderer* waveformWidgetRenderer)
     : WaveformRendererSignalBase(waveformWidgetRenderer),
       m_drawcount(0) {
+    initializeOpenGLFunctions();
 }
 
 GLVSyncTestRenderer::~GLVSyncTestRenderer() {
@@ -72,8 +72,6 @@ void GLVSyncTestRenderer::draw(QPainter* painter, QPaintEvent* /*event*/) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-#ifndef __OPENGLES__
-
     //t7 = timer.restart(); // 5,770 ns
 
     glMatrixMode(GL_PROJECTION);
@@ -119,8 +117,6 @@ void GLVSyncTestRenderer::draw(QPainter* painter, QPaintEvent* /*event*/) {
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
 
-#endif
-
     //t12 = timer.restart(); // 22,426 ns
     painter->endNativePainting();
 
@@ -130,3 +126,5 @@ void GLVSyncTestRenderer::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     //qDebug() << timer.restart(); // 129,498 ns
 }
+
+#endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)

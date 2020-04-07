@@ -131,7 +131,7 @@ void DlgControllerLearning::populateComboBox() {
                 NamedControl(m_controlPickerMenu.controlTitleForConfigKey(key),
                              key));
     }
-    qSort(sorted_controls.begin(), sorted_controls.end(),
+    std::sort(sorted_controls.begin(), sorted_controls.end(),
           namedControlComparator);
     foreach(NamedControl control, sorted_controls)
     {
@@ -143,7 +143,7 @@ void DlgControllerLearning::populateComboBox() {
 void DlgControllerLearning::resetWizard(bool keepCurrentControl) {
     m_firstMessageTimer.stop();
     m_lastMessageTimer.stop();
-    emit(clearTemporaryInputMappings());
+    emit clearTemporaryInputMappings();
 
     if (!keepCurrentControl) {
         m_currentControl = ConfigKey();
@@ -184,7 +184,7 @@ void DlgControllerLearning::startListening() {
     // Get the underlying type of the Controller. This will call
     // one of the visit() methods below immediately.
     m_pController->accept(this);
-    emit(listenForClicks());
+    emit listenForClicks();
 }
 
 void DlgControllerLearning::slotStartLearningPressed() {
@@ -296,7 +296,7 @@ void DlgControllerLearning::slotTimerExpired() {
     m_messagesLearned = true;
     m_mappings = mappings;
     pushButtonRetry->setEnabled(true);
-    emit(learnTemporaryInputMappings(m_mappings));
+    emit learnTemporaryInputMappings(m_mappings);
 
     QString midiControl = "";
     bool first = true;
@@ -349,7 +349,7 @@ void DlgControllerLearning::slotMidiOptionsChanged() {
         return;
     }
 
-    emit(clearTemporaryInputMappings());
+    emit clearTemporaryInputMappings();
 
     // Go over every mapping and set its MIDI options to match the user's
     // choices.
@@ -362,15 +362,20 @@ void DlgControllerLearning::slotMidiOptionsChanged() {
         options.selectknob = midiOptionSelectKnob->isChecked();
     }
 
-    emit(learnTemporaryInputMappings(m_mappings));
+    emit learnTemporaryInputMappings(m_mappings);
 }
 
 void DlgControllerLearning::commitMapping() {
-    emit(commitTemporaryInputMappings());
-    emit(inputMappingsLearned(m_mappings));
+    emit commitTemporaryInputMappings();
+    emit inputMappingsLearned(m_mappings);
 }
 
 void DlgControllerLearning::visit(MidiController* pMidiController) {
+    // Disconnect everything in both directions so we don't end up with duplicate connections
+    // after pressing the "Learn Another" button
+    pMidiController->disconnect(this);
+    this->disconnect(pMidiController);
+
     m_pMidiController = pMidiController;
 
     connect(m_pMidiController, SIGNAL(messageReceived(unsigned char, unsigned char, unsigned char)),
@@ -388,7 +393,7 @@ void DlgControllerLearning::visit(MidiController* pMidiController) {
     connect(this, SIGNAL(stopLearning()),
             m_pMidiController, SLOT(stopLearning()));
 
-    emit(startLearning());
+    emit startLearning();
 }
 
 void DlgControllerLearning::visit(HidController* pHidController) {
@@ -410,8 +415,8 @@ DlgControllerLearning::~DlgControllerLearning() {
     }
 
     //If there was any ongoing learning, cancel it (benign if there wasn't).
-    emit(stopLearning());
-    emit(stopListeningForClicks());
+    emit stopLearning();
+    emit stopListeningForClicks();
 }
 
 void DlgControllerLearning::showControlMenu() {

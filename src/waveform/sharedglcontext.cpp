@@ -12,10 +12,10 @@ void SharedGLContext::setWidget(QGLWidget* pWidget) {
     s_pSharedGLWidget = pWidget;
     qDebug() << "Set root GL Context widget valid:"
              << pWidget << (pWidget && pWidget->isValid());
-    const QGLContext* pContext = pWidget->context();
-    qDebug() << "Created root GL Context valid:" << pContext
-             << (pContext && pContext->isValid());
     if (pWidget) {
+        const QGLContext* pContext = pWidget->context();
+        qDebug() << "Created root GL Context valid:" << pContext
+                 << (pContext && pContext->isValid());
         QGLFormat format = pWidget->format();
         qDebug() << "Root GL Context format:";
         qDebug() << "Double Buffering:" << format.doubleBuffer();

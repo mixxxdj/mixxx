@@ -909,7 +909,7 @@ HerculesRMX.rateChange = function (value, group) {
 //   HerculesRMX.stopJog[group] = 1.0;
 //   HerculesRMX.decayLast = new Date().getTime();
 //   engine.setValue(group,"scratch",HerculesRMX.stopJog[group]);
-//   HerculesRMX.stoping = true;
+//   HerculesRMX.stopping = true;
 //   return;
 //      } else {
 //        engine.setValue(group,"playposition",0);

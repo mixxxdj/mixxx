@@ -28,15 +28,26 @@ GLSLWaveformWidget::GLSLWaveformWidget(const char* group, QWidget* parent,
                                        bool rgbRenderer)
         : QGLWidget(parent, SharedGLContext::getWidget()),
           WaveformWidgetAbstract(group) {
+    qDebug() << "Created QGLWidget. Context"
+             << "Valid:" << context()->isValid()
+             << "Sharing:" << context()->isSharing();
+    if (QGLContext::currentContext() != context()) {
+        makeCurrent();
+    }
+
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     if (rgbRenderer) {
-        signalRenderer_ = addRenderer<GLSLWaveformRendererRGBSignal>();
+        m_signalRenderer = addRenderer<GLSLWaveformRendererRGBSignal>();
     } else {
-        signalRenderer_ = addRenderer<GLSLWaveformRendererFilteredSignal>();
+        m_signalRenderer = addRenderer<GLSLWaveformRendererFilteredSignal>();
     }
+#else
+    Q_UNUSED(rgbRenderer);
+#endif // QT_NO_OPENGL && !QT_OPENGL_ES_2
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
 
@@ -45,14 +56,6 @@ GLSLWaveformWidget::GLSLWaveformWidget(const char* group, QWidget* parent,
 
     setAutoBufferSwap(false);
 
-    qDebug() << "Created QGLWidget. Context"
-             << "Valid:" << context()->isValid()
-             << "Sharing:" << context()->isSharing();
-
-    // Initialization requires activating our context.
-    if (QGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
     m_initSuccess = init();
 }
 
@@ -93,6 +96,8 @@ void GLSLWaveformWidget::resize(int width, int height) {
 void GLSLWaveformWidget::mouseDoubleClickEvent(QMouseEvent *event) {
     if (event->button() == Qt::RightButton) {
         makeCurrent();
-        signalRenderer_->debugClick();
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+        m_signalRenderer->debugClick();
+#endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     }
 }

@@ -7,6 +7,7 @@
 #include <QtSql>
 
 #include "track/track.h"
+#include "track/trackref.h"
 #include "library/dao/settingsdao.h"
 
 /** Pure virtual (abstract) class that provides an interface for data models which
@@ -49,9 +50,47 @@ class TrackModel {
     };
     typedef int CapabilitiesFlags; /** Enables us to do ORing */
 
-    // Deserialize and return the track at the given QModelIndex in this result
-    // set.
+    enum SortColumnId {
+        SORTCOLUMN_INVALID = -1,
+        SORTCOLUMN_ARTIST = 0,
+        SORTCOLUMN_TITLE,
+        SORTCOLUMN_ALBUM,
+        SORTCOLUMN_ALBUMARTIST,
+        SORTCOLUMN_YEAR,
+        SORTCOLUMN_GENRE,
+        SORTCOLUMN_COMPOSER,
+        SORTCOLUMN_GROUPING,
+        SORTCOLUMN_TRACKNUMBER,
+        SORTCOLUMN_FILETYPE,
+        SORTCOLUMN_NATIVELOCATION,
+        SORTCOLUMN_COMMENT,
+        SORTCOLUMN_DURATION,
+        SORTCOLUMN_BITRATE,
+        SORTCOLUMN_BPM,
+        SORTCOLUMN_REPLAYGAIN,
+        SORTCOLUMN_DATETIMEADDED,
+        SORTCOLUMN_TIMESPLAYED,
+        SORTCOLUMN_RATING,
+        SORTCOLUMN_KEY,
+        SORTCOLUMN_PREVIEW,
+        SORTCOLUMN_COVERART,
+        SORTCOLUMN_POSITION,
+        SORTCOLUMN_PLAYLISTID,
+        SORTCOLUMN_LOCATION,
+        SORTCOLUMN_FILENAME,
+        SORTCOLUMN_FILE_MODIFIED_TIME,
+        SORTCOLUMN_FILE_CREATION_TIME,
+        SORTCOLUMN_SAMPLERATE,
+        SORTCOLUMN_COLOR,
+
+        // NUM_SORTCOLUMNS should always be the last item.
+        NUM_SORTCOLUMNIDS
+    };
+
+    // Deserialize and return the track at the given QModelIndex
+    // or TrackRef in this result set.
     virtual TrackPointer getTrack(const QModelIndex& index) const = 0;
+    virtual TrackPointer getTrackByRef(const TrackRef& trackRef) const = 0;
 
     // Gets the on-disk location of the track at the given location
     // with Qt separator "/".
@@ -136,6 +175,17 @@ class TrackModel {
     virtual bool isColumnSortable(int column) {
         Q_UNUSED(column);
         return true;
+    }
+
+    virtual SortColumnId sortColumnIdFromColumnIndex(int index) {
+        Q_UNUSED(index);
+        return SORTCOLUMN_INVALID;
+
+    }
+
+    virtual int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) {
+        Q_UNUSED(sortColumn);
+        return -1;
     }
 
     virtual int fieldIndex(const QString& fieldName) const {

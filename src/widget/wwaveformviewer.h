@@ -34,7 +34,8 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     void mouseReleaseEvent(QMouseEvent * /*unused*/) override;
 
 signals:
-    void trackDropped(QString filename, QString group);
+    void trackDropped(QString filename, QString group) override;
+    void cloneDeck(QString source_group, QString target_group) override;
 
 public slots:
     void slotTrackLoaded(TrackPointer track);
@@ -56,7 +57,7 @@ private:
         return m_waveformWidget;
     }
     //direct access to let factory sync/set default zoom
-    void setZoom(int zoom);
+    void setZoom(double zoom);
     void setDisplayBeatGridAlpha(int alpha);
     void setPlayMarkerPosition(double position);
 

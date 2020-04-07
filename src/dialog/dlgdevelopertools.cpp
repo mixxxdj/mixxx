@@ -18,8 +18,8 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
     QHash<ConfigKey, ConfigKey> controlAliases =
             ControlDoublePrivate::getControlAliases();
 
-    for (QList<QSharedPointer<ControlDoublePrivate> >::const_iterator it = controlsList.begin();
-            it != controlsList.end(); ++it) {
+    for (auto it = controlsList.constBegin();
+            it != controlsList.constEnd(); ++it) {
         const QSharedPointer<ControlDoublePrivate>& pControl = *it;
         if (pControl) {
             m_controlModel.addControl(pControl->getKey(), pControl->name(),
@@ -43,8 +43,10 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
 
     StatsManager* pManager = StatsManager::instance();
     if (pManager) {
-        connect(pManager, SIGNAL(statUpdated(const Stat&)),
-                &m_statModel, SLOT(statUpdated(const Stat&)));
+        connect(pManager,
+                &StatsManager::statUpdated,
+                &m_statModel,
+                &StatModel::statUpdated);
         pManager->emitAllStats();
     }
 
@@ -58,16 +60,24 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
     }
 
     // Connect search box signals to the library
-    connect(controlSearch, SIGNAL(search(const QString&)),
-            this, SLOT(slotControlSearch(const QString&)));
-    connect(controlDump, SIGNAL(clicked()),
-            this, SLOT(slotControlDump()));
+    connect(controlSearch,
+            &WSearchLineEdit::search,
+            this,
+            &DlgDeveloperTools::slotControlSearch);
+    connect(controlDump,
+            &QPushButton::clicked,
+            this,
+            &DlgDeveloperTools::slotControlDump);
 
     // Set up the log search box
-    connect(logSearch, SIGNAL(returnPressed()),
-            this, SLOT(slotLogSearch()));
-    connect(logSearchButton, SIGNAL(clicked()),
-            this, SLOT(slotLogSearch()));
+    connect(logSearch,
+            &QLineEdit::returnPressed,
+            this,
+            &DlgDeveloperTools::slotLogSearch);
+    connect(logSearchButton,
+            &QPushButton::clicked,
+            this,
+            &DlgDeveloperTools::slotLogSearch);
 
     m_logCursor = logTextView->textCursor();
 
@@ -136,8 +146,7 @@ void DlgDeveloperTools::slotControlDump() {
 
     QList<QSharedPointer<ControlDoublePrivate> > controlsList;
     ControlDoublePrivate::getControls(&controlsList);
-    for (QList<QSharedPointer<ControlDoublePrivate> >::const_iterator it =
-            controlsList.begin(); it != controlsList.end(); ++it) {
+    for (auto it = controlsList.constBegin(); it != controlsList.constEnd(); ++it) {
         const QSharedPointer<ControlDoublePrivate>& pControl = *it;
         if (pControl) {
             QString line = pControl->getKey().group + "," +

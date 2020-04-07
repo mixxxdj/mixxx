@@ -46,6 +46,7 @@ const char* kNoDelayFirstReconnect = "NoDelayFirstReconnect";
 const char* kOggDynamicUpdate = "OggDynamicUpdate";
 const char* kPassword = "Password";
 const char* kPort = "Port";
+const char* kProfileName = "ProfileName";
 const char* kReconnectFirstDelay = "ReconnectFirstDelay";
 const char* kReconnectPeriod = "ReconnectPeriod";
 const char* kServertype = "Servertype";
@@ -119,6 +120,10 @@ BroadcastProfilePtr BroadcastProfile::loadFromFile(
     BroadcastProfilePtr profile(new BroadcastProfile(profileFilename));
     profile->loadValues(filename);
     return profile;
+}
+
+QString BroadcastProfile::getLastFilename() const {
+    return m_filename;
 }
 
 bool BroadcastProfile::equals(BroadcastProfilePtr other) {
@@ -259,12 +264,24 @@ bool BroadcastProfile::loadValues(const QString& filename) {
     if (doc.childNodes().size() < 1)
         return false;
 
+    m_filename = filename;
+
+#ifdef __QTKEYCHAIN__
     m_secureCredentials = (bool)XmlParse::selectNodeInt(doc, kSecureCredentials);
-#ifndef __QTKEYCHAIN__
+#else
     // Secure credentials storage can't be enabled nor disabled from the UI,
     // so force it to disabled to avoid issues if enabled.
     m_secureCredentials = false;
 #endif
+
+    // ProfileName is special because it was not previously saved in the file.
+    // When loading old files, we need to use the file name (set in the
+    // constructor) as the profile name and only load it if present in the
+    // file.
+    QDomNode node = XmlParse::selectNode(doc, kProfileName);
+    if (!node.isNull()) {
+        m_profileName = node.toElement().text();
+    }
 
     m_enabled = (bool)XmlParse::selectNodeInt(doc, kEnabled);
 
@@ -322,6 +339,8 @@ bool BroadcastProfile::loadValues(const QString& filename) {
 bool BroadcastProfile::save(const QString& filename) {
     QDomDocument doc(kDoctype);
     QDomElement docRoot = doc.createElement(kDocumentRoot);
+
+    XmlParse::addElement(doc, docRoot, kProfileName, m_profileName);
 
     XmlParse::addElement(doc, docRoot,
                          kSecureCredentials, QString::number((int)m_secureCredentials));
@@ -384,6 +403,7 @@ bool BroadcastProfile::save(const QString& filename) {
 
     QFile xmlFile(filename);
     if (xmlFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        m_filename = filename;
         QTextStream fileStream(&xmlFile);
         doc.save(fileStream, 4);
         xmlFile.close();
@@ -397,7 +417,7 @@ void BroadcastProfile::setProfileName(const QString &profileName) {
     QString oldName(m_profileName);
     m_profileName = QString(profileName);
 
-    emit(profileNameChanged(oldName, m_profileName));
+    emit profileNameChanged(oldName, m_profileName);
 }
 
 QString BroadcastProfile::getProfileName() const {
@@ -406,11 +426,11 @@ QString BroadcastProfile::getProfileName() const {
 
 void BroadcastProfile::setConnectionStatus(int newState) {
     m_connectionStatus = newState;
-    emit(connectionStatusChanged(connectionStatus()));
+    emit connectionStatusChanged(connectionStatus());
 }
 
 int BroadcastProfile::connectionStatus() {
-    return load_atomic(m_connectionStatus);
+    return atomicLoadRelaxed(m_connectionStatus);
 }
 
 void BroadcastProfile::setSecureCredentialStorage(bool value) {
@@ -513,7 +533,7 @@ bool BroadcastProfile::getEnabled() const {
 
 void BroadcastProfile::setEnabled(bool value) {
     m_enabled = value;
-    emit(statusChanged(m_enabled));
+    emit statusChanged(m_enabled);
 }
 
 QString BroadcastProfile::getHost() const {

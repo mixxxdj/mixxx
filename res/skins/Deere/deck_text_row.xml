@@ -14,18 +14,14 @@
 
       <WidgetGroup>
         <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <Size>58f,58f</Size>
         <Children>
-          <CoverArt>
-            <TooltipId>coverart</TooltipId>
-            <ObjectName>DeckCoverArt</ObjectName>
-            <SizePolicy>min,min</SizePolicy>
-            <MinimumSize>58,58</MinimumSize>
-            <Group><Variable name="group"/></Group>
-          </CoverArt>
+          <SingletonContainer>
+            <ObjectName>DeckCoverArt<Variable name="i"/></ObjectName>
+          </SingletonContainer>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Master],show_coverart</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
@@ -345,7 +341,7 @@
                           </StarRating>
                         </Children>
                         <Connection>
-                          <ConfigKey>[Deere],show_starrating</ConfigKey>
+                          <ConfigKey>[Skin],show_starrating</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </WidgetGroup>

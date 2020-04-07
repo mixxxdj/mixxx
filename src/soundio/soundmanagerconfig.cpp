@@ -523,4 +523,3 @@ QSet<SoundDeviceId> SoundManagerConfig::getDevices() const {
     }
     return devices;
 }
-

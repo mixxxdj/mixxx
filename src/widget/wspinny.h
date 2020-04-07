@@ -21,6 +21,7 @@
 class ControlProxy;
 class VisualPlayPosition;
 class VinylControlManager;
+class VSyncThread;
 
 class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityListener,
                 public TrackDropTarget {
@@ -45,19 +46,24 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     void updateVinylControlEnabled(double enabled);
     void updateVinylControlSignalEnabled(double enabled);
     void updateSlipEnabled(double enabled);
-    void render();
+    void render(VSyncThread* vSyncThread);
     void swap();
 
   protected slots:
-    void slotCoverFound(const QObject* pRequestor,
-                        const CoverInfoRelative& info, QPixmap pixmap, bool fromCache);
+    void slotCoverFound(
+            const QObject* pRequestor,
+            const CoverInfo& coverInfo,
+            const QPixmap& pixmap,
+            quint16 requestedHash,
+            bool coverInfoUpdated);
     void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
     void slotTrackCoverArtUpdated();
 
 
   signals:
-    void trackDropped(QString filename, QString group);
+    void trackDropped(QString filename, QString group) override;
+    void cloneDeck(QString source_group, QString target_group) override;
 
   protected:
     //QWidget:
@@ -84,7 +90,6 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     QImage m_fgImageScaled;
     std::shared_ptr<QImage> m_pGhostImage;
     QImage m_ghostImageScaled;
-    ControlProxy* m_pPlay;
     ControlProxy* m_pPlayPos;
     QSharedPointer<VisualPlayPosition> m_pVisualPlayPos;
     ControlProxy* m_pTrackSamples;

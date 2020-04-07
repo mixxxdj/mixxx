@@ -33,7 +33,7 @@ void BulkReader::run() {
     m_stop = 0;
     unsigned char data[255];
 
-    while (load_atomic(m_stop) == 0) {
+    while (atomicLoadAcquire(m_stop) == 0) {
         // Blocked polling: The only problem with this is that we can't close
         // the device until the block is released, which means the controller
         // has to send more data
@@ -53,7 +53,7 @@ void BulkReader::run() {
             Trace process("BulkReader process packet");
             //qDebug() << "Read" << result << "bytes, pointer:" << data;
             QByteArray outData((char*)data, transferred);
-            emit(incomingData(outData, mixxx::Time::elapsed()));
+            emit incomingData(outData, mixxx::Time::elapsed());
         }
     }
     qDebug() << "Stopped Reader";
@@ -66,18 +66,18 @@ static QString get_string(libusb_device_handle *handle, u_int8_t id) {
         libusb_get_string_descriptor_ascii(handle, id, buf, sizeof(buf));
     }
 
-    return QString::fromAscii((char*)buf);
+    return QString::fromLatin1((char*)buf);
 }
 
-
-BulkController::BulkController(libusb_context* context,
-                               libusb_device_handle *handle,
-                               struct libusb_device_descriptor *desc)
-        : m_context(context),
+BulkController::BulkController(UserSettingsPointer pConfig,
+        libusb_context* context,
+        libusb_device_handle* handle,
+        struct libusb_device_descriptor* desc)
+        : Controller(pConfig),
+          m_context(context),
           m_phandle(handle),
           in_epaddr(0),
-          out_epaddr(0)
-{
+          out_epaddr(0) {
     vendor_id = desc->idVendor;
     product_id = desc->idProduct;
 
@@ -113,7 +113,7 @@ void BulkController::visit(const MidiControllerPreset* preset) {
 void BulkController::visit(const HidControllerPreset* preset) {
     m_preset = *preset;
     // Emit presetLoaded with a clone of the preset.
-    emit(presetLoaded(getPreset()));
+    emit presetLoaded(getPreset());
 }
 
 bool BulkController::savePreset(const QString fileName) const {

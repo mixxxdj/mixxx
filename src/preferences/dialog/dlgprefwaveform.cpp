@@ -2,6 +2,7 @@
 
 #include "mixxx.h"
 #include "library/library.h"
+#include "library/dao/analysisdao.h"
 #include "preferences/waveformsettings.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
@@ -111,7 +112,8 @@ void DlgPrefWaveform::slotUpdate() {
     midVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Mid));
     highVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::High));
     normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
-    defaultZoomComboBox->setCurrentIndex(factory->getDefaultZoom() - 1);
+    // Round zoom to int to get a default zoom index.
+    defaultZoomComboBox->setCurrentIndex(static_cast<int>(factory->getDefaultZoom()) - 1);
     playMarkerPositionSlider->setValue(factory->getPlayMarkerPosition() * 100);
     beatGridAlphaSpinBox->setValue(factory->beatGridAlpha());
     beatGridAlphaSlider->setValue(factory->beatGridAlpha());

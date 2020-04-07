@@ -7,7 +7,7 @@
 
 #include "engine/sync/clock.h"
 #include "engine/sync/syncable.h"
-#include "engine/enginechannel.h"
+#include "engine/channels/enginechannel.h"
 
 class ControlObject;
 class ControlLinPotmeter;
@@ -27,7 +27,7 @@ class InternalClock : public QObject, public Clock, public Syncable {
         return NULL;
     }
 
-    void notifySyncModeChanged(SyncMode mode);
+    void setSyncMode(SyncMode mode);
     void notifyOnlyPlayingSyncable();
     void requestSync();
     SyncMode getSyncMode() const {
