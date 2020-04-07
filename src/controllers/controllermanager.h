@@ -53,7 +53,6 @@ class ControllerManager : public QObject {
     static QString getAbsolutePath(const QString& pathOrFilename,
                                    const QStringList& presetPaths);
 
-    bool importScript(const QString& scriptPath, QString* newScriptFileName);
     static bool checksumFile(const QString& filename, quint16* pChecksum);
 
   signals:
