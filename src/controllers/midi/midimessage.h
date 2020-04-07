@@ -160,6 +160,16 @@ struct MidiInputMapping {
               control(control) {
     }
 
+    MidiInputMapping(MidiKey key,
+            MidiOptions options,
+            const ConfigKey& control,
+            QString description)
+            : key(key),
+              options(options),
+              control(control),
+              description(description) {
+    }
+
     bool operator==(const MidiInputMapping& other) const {
         return key == other.key && options == other.options &&
                 control == other.control && description == other.description;
