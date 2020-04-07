@@ -70,11 +70,6 @@ class DlgPrefController : public DlgPreferencePage {
     void removeOutputMappings();
     void clearAllOutputMappings();
 
-    // Scripts
-    void addScript();
-    void removeScript();
-    void openScript();
-
     void midiInputMappingsLearned(const MidiInputMappings& mappings);
 
   private:
@@ -84,6 +79,7 @@ class DlgPrefController : public DlgPreferencePage {
     QString presetDescription(const ControllerPresetPointer pPreset) const;
     QString presetForumLink(const ControllerPresetPointer pPreset) const;
     QString presetWikiLink(const ControllerPresetPointer pPreset) const;
+    QString presetScriptFileLinks(const ControllerPresetPointer pPreset) const;
     void savePreset(QString path);
     void initTableView(QTableView* pTable);
 

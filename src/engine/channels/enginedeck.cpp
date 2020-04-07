@@ -50,11 +50,6 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
             &EngineDeck::slotPassthroughChangeRequest,
             Qt::DirectConnection);
 
-    // Set up passthrough toggle button
-    connect(m_pPassing, &ControlObject::valueChanged,
-            this, &EngineDeck::slotPassingToggle,
-            Qt::DirectConnection);
-
     m_pPregain = new EnginePregain(getGroup());
     m_pBuffer = new EngineBuffer(getGroup(), pConfig, this, pMixingEngine);
 }
@@ -173,6 +168,11 @@ void EngineDeck::slotPassingToggle(double v) {
 void EngineDeck::slotPassthroughChangeRequest(double v) {
     if (v <= 0 || m_pInputConfigured->get() > 0) {
         m_pPassing->setAndConfirm(v);
+
+        // Pass confirmed value to slotPassingToggle. We cannot use the
+        // valueChanged signal for this, because the change originates from the
+        // same ControlObject instance.
+        slotPassingToggle(v);
     } else {
         emit noPassthroughInputConfigured();
     }

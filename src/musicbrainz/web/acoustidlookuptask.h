@@ -32,7 +32,7 @@ class AcoustIdLookupTask : public network::JsonWebTask {
 
   private:
     void onFinished(
-            network::JsonWebResponse response) override;
+            network::JsonWebResponse&& response) override;
 
     void emitSucceeded(
             QList<QUuid>&& recordingIds);

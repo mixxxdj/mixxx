@@ -3,9 +3,9 @@ BasedOnStyle: Google
 IndentWidth:  4
 TabWidth:     8
 UseTab:       Never
-# NOTE(2019-02-23, uklotzde) The column limit has been set to 0
-# to avoid eagerly reformatting of the existing code base. This
-# may later be changed to 80-100 characters per line if desired.
+# A ColumnLimit > 0 causes clang-format to unbreaks all short lines,
+# which is undesired here.
+# If the line length exceeds 100, "ColumnLimit:  80" is used in scripts/line-length.py
 ColumnLimit:  0
 ---
 # Customize only those options that differ from the base style!

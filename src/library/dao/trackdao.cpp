@@ -297,7 +297,7 @@ void TrackDAO::databaseTrackAdded(TrackPointer pTrack) {
 void TrackDAO::databaseTracksChanged(QSet<TrackId> changedTracks) {
     // results in a call of BaseTrackCache::updateTracksInIndex(trackIds);
     if (!changedTracks.isEmpty()) {
-        emit tracksAdded(changedTracks);
+        emit tracksChanged(changedTracks);
     }
 }
 
@@ -357,7 +357,7 @@ void TrackDAO::addTracksPrepare() {
             "artist,title,album,album_artist,year,genre,tracknumber,tracktotal,composer,"
             "grouping,filetype,location,color,comment,url,duration,rating,key,key_id,"
             "bitrate,samplerate,cuepoint,bpm,replaygain,replaygain_peak,wavesummaryhex,"
-            "timesplayed,channels,mixxx_deleted,header_parsed,"
+            "timesplayed,played,channels,mixxx_deleted,header_parsed,"
             "beats_version,beats_sub_version,beats,bpm_lock,"
             "keys_version,keys_sub_version,keys,"
             "coverart_source,coverart_type,coverart_location,coverart_hash,"
@@ -366,7 +366,7 @@ void TrackDAO::addTracksPrepare() {
             ":artist,:title,:album,:album_artist,:year,:genre,:tracknumber,:tracktotal,:composer,"
             ":grouping,:filetype,:location,:color,:comment,:url,:duration,:rating,:key,:key_id,"
             ":bitrate,:samplerate,:cuepoint,:bpm,:replaygain,:replaygain_peak,:wavesummaryhex,"
-            ":timesplayed,:channels,:mixxx_deleted,:header_parsed,"
+            ":timesplayed,:played,:channels,:mixxx_deleted,:header_parsed,"
             ":beats_version,:beats_sub_version,:beats,:bpm_lock,"
             ":keys_version,:keys_sub_version,:keys,"
             ":coverart_source,:coverart_type,:coverart_location,:coverart_hash,"
