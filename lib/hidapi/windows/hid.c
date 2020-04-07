@@ -36,6 +36,10 @@ typedef LONG NTSTATUS;
 #define _wcsdup wcsdup
 #endif
 
+/* The maximum number of characters that can be passed into the
+   HidD_Get*String() functions without it failing.*/
+#define MAX_STRING_WCHARS 0xFFF
+
 /*#define HIDAPI_USE_DDK*/
 
 #ifdef __cplusplus
@@ -61,6 +65,9 @@ extern "C" {
 
 
 #include "hidapi.h"
+
+#undef MIN
+#define MIN(x,y) ((x) < (y)? (x): (y))
 
 #ifdef _MSC_VER
 	/* Thanks Microsoft, but I know how to use strncpy(). */
@@ -106,6 +113,7 @@ extern "C" {
 	typedef BOOLEAN (__stdcall *HidD_GetPreparsedData_)(HANDLE handle, PHIDP_PREPARSED_DATA *preparsed_data);
 	typedef BOOLEAN (__stdcall *HidD_FreePreparsedData_)(PHIDP_PREPARSED_DATA preparsed_data);
 	typedef NTSTATUS (__stdcall *HidP_GetCaps_)(PHIDP_PREPARSED_DATA preparsed_data, HIDP_CAPS *caps);
+	typedef BOOLEAN (__stdcall *HidD_SetNumInputBuffers_)(HANDLE handle, ULONG number_buffers);
 
 	static HidD_GetAttributes_ HidD_GetAttributes;
 	static HidD_GetSerialNumberString_ HidD_GetSerialNumberString;
@@ -117,6 +125,7 @@ extern "C" {
 	static HidD_GetPreparsedData_ HidD_GetPreparsedData;
 	static HidD_FreePreparsedData_ HidD_FreePreparsedData;
 	static HidP_GetCaps_ HidP_GetCaps;
+	static HidD_SetNumInputBuffers_ HidD_SetNumInputBuffers;
 
 	static HMODULE lib_handle = NULL;
 	static BOOLEAN initialized = FALSE;
@@ -146,7 +155,7 @@ static hid_device *new_hid_device()
 	dev->read_pending = FALSE;
 	dev->read_buf = NULL;
 	memset(&dev->ol, 0, sizeof(dev->ol));
-	dev->ol.hEvent = CreateEvent(NULL, FALSE, FALSE /*inital state f=nonsignaled*/, NULL);
+	dev->ol.hEvent = CreateEvent(NULL, FALSE, FALSE /*initial state f=nonsignaled*/, NULL);
 
 	return dev;
 }
@@ -160,7 +169,7 @@ static void free_hid_device(hid_device *dev)
 	free(dev);
 }
 
-static void register_error(hid_device *device, const char *op)
+static void register_error(hid_device *dev, const char *op)
 {
 	WCHAR *ptr, *msg;
 
@@ -186,8 +195,8 @@ static void register_error(hid_device *device, const char *op)
 
 	/* Store the message off in the Device entry so that
 	   the hid_error() function can pick it up. */
-	LocalFree(device->last_error_str);
-	device->last_error_str = msg;
+	LocalFree(dev->last_error_str);
+	dev->last_error_str = msg;
 }
 
 #ifndef HIDAPI_USE_DDK
@@ -206,6 +215,7 @@ static int lookup_functions()
 		RESOLVE(HidD_GetPreparsedData);
 		RESOLVE(HidD_FreePreparsedData);
 		RESOLVE(HidP_GetCaps);
+		RESOLVE(HidD_SetNumInputBuffers);
 #undef RESOLVE
 	}
 	else
@@ -215,10 +225,10 @@ static int lookup_functions()
 }
 #endif
 
-static HANDLE open_device(const char *path, BOOL enumerate)
+static HANDLE open_device(const char *path, BOOL open_rw)
 {
 	HANDLE handle;
-	DWORD desired_access = (enumerate)? 0: (GENERIC_WRITE | GENERIC_READ);
+	DWORD desired_access = (open_rw)? (GENERIC_WRITE | GENERIC_READ): 0;
 	DWORD share_mode = FILE_SHARE_READ|FILE_SHARE_WRITE;
 
 	handle = CreateFileA(path,
@@ -348,7 +358,9 @@ struct hid_device_info HID_API_EXPORT * HID_API_CALL hid_enumerate(unsigned shor
 			if (!res)
 				goto cont;
 
-			if (strcmp(driver_name, "HIDClass") == 0) {
+			if ((strcmp(driver_name, "HIDClass") == 0) ||
+				(strcmp(driver_name, "Mouse") == 0) ||
+				(strcmp(driver_name, "Keyboard") == 0)) {
 				/* See if there's a driver bound. */
 				res = SetupDiGetDeviceRegistryPropertyA(device_info_set, &devinfo_data,
 				           SPDRP_DRIVER, NULL, (PBYTE)driver_name, sizeof(driver_name), NULL);
@@ -360,7 +372,7 @@ struct hid_device_info HID_API_EXPORT * HID_API_CALL hid_enumerate(unsigned shor
 		//wprintf(L"HandleName: %s\n", device_interface_detail_data->DevicePath);
 
 		/* Open a handle to the device */
-		write_handle = open_device(device_interface_detail_data->DevicePath, TRUE);
+		write_handle = open_device(device_interface_detail_data->DevicePath, FALSE);
 
 		/* Check validity of write_handle. */
 		if (write_handle == INVALID_HANDLE_VALUE) {
@@ -556,12 +568,29 @@ HID_API_EXPORT hid_device * HID_API_CALL hid_open_path(const char *path)
 	dev = new_hid_device();
 
 	/* Open a handle to the device */
-	dev->device_handle = open_device(path, FALSE);
+	dev->device_handle = open_device(path, TRUE);
 
 	/* Check validity of write_handle. */
 	if (dev->device_handle == INVALID_HANDLE_VALUE) {
-		/* Unable to open the device. */
-		register_error(dev, "CreateFile");
+		/* System devices, such as keyboards and mice, cannot be opened in
+		   read-write mode, because the system takes exclusive control over
+		   them.  This is to prevent keyloggers.  However, feature reports
+		   can still be sent and received.  Retry opening the device, but
+		   without read/write access. */
+		dev->device_handle = open_device(path, FALSE);
+
+		/* Check the validity of the limited device_handle. */
+		if (dev->device_handle == INVALID_HANDLE_VALUE) {
+			/* Unable to open the device, even without read-write mode. */
+			register_error(dev, "CreateFile");
+			goto err;
+		}
+	}
+
+	/* Set the Input Report buffer size to 64 reports. */
+	res = HidD_SetNumInputBuffers(dev->device_handle, 64);
+	if (!res) {
+		register_error(dev, "HidD_SetNumInputBuffers");
 		goto err;
 	}
 
@@ -650,6 +679,7 @@ end_of_function:
 int HID_API_EXPORT HID_API_CALL hid_read_timeout(hid_device *dev, unsigned char *data, size_t length, int milliseconds)
 {
 	DWORD bytes_read = 0;
+	size_t copy_len = 0;
 	BOOL res;
 
 	/* Copy the handle for convenience. */
@@ -697,14 +727,13 @@ int HID_API_EXPORT HID_API_CALL hid_read_timeout(hid_device *dev, unsigned char 
 			   number (0x0) on the beginning of the report anyway. To make this
 			   work like the other platforms, and to make it work more like the
 			   HID spec, we'll skip over this byte. */
-			size_t copy_len;
 			bytes_read--;
 			copy_len = length > bytes_read ? bytes_read : length;
 			memcpy(data, dev->read_buf+1, copy_len);
 		}
 		else {
 			/* Copy the whole buffer, report number and all. */
-			size_t copy_len = length > bytes_read ? bytes_read : length;
+			copy_len = length > bytes_read ? bytes_read : length;
 			memcpy(data, dev->read_buf, copy_len);
 		}
 	}
@@ -715,7 +744,7 @@ end_of_function:
 		return -1;
 	}
 	
-	return bytes_read;
+	return copy_len;
 }
 
 int HID_API_EXPORT HID_API_CALL hid_read(hid_device *dev, unsigned char *data, size_t length)
@@ -779,6 +808,12 @@ int HID_API_EXPORT HID_API_CALL hid_get_feature_report(hid_device *dev, unsigned
 		register_error(dev, "Send Feature Report GetOverLappedResult");
 		return -1;
 	}
+
+	/* bytes_returned does not include the first byte which contains the
+	   report ID. The data buffer actually contains one more byte than
+	   bytes_returned. */
+	bytes_returned++;
+
 	return bytes_returned;
 #endif
 }
@@ -795,7 +830,7 @@ int HID_API_EXPORT_CALL HID_API_CALL hid_get_manufacturer_string(hid_device *dev
 {
 	BOOL res;
 
-	res = HidD_GetManufacturerString(dev->device_handle, string, sizeof(wchar_t) * maxlen);
+	res = HidD_GetManufacturerString(dev->device_handle, string, sizeof(wchar_t) * MIN(maxlen, MAX_STRING_WCHARS));
 	if (!res) {
 		register_error(dev, "HidD_GetManufacturerString");
 		return -1;
@@ -808,7 +843,7 @@ int HID_API_EXPORT_CALL HID_API_CALL hid_get_product_string(hid_device *dev, wch
 {
 	BOOL res;
 
-	res = HidD_GetProductString(dev->device_handle, string, sizeof(wchar_t) * maxlen);
+	res = HidD_GetProductString(dev->device_handle, string, sizeof(wchar_t) * MIN(maxlen, MAX_STRING_WCHARS));
 	if (!res) {
 		register_error(dev, "HidD_GetProductString");
 		return -1;
@@ -821,7 +856,7 @@ int HID_API_EXPORT_CALL HID_API_CALL hid_get_serial_number_string(hid_device *de
 {
 	BOOL res;
 
-	res = HidD_GetSerialNumberString(dev->device_handle, string, sizeof(wchar_t) * maxlen);
+	res = HidD_GetSerialNumberString(dev->device_handle, string, sizeof(wchar_t) * MIN(maxlen, MAX_STRING_WCHARS));
 	if (!res) {
 		register_error(dev, "HidD_GetSerialNumberString");
 		return -1;
@@ -834,7 +869,7 @@ int HID_API_EXPORT_CALL HID_API_CALL hid_get_indexed_string(hid_device *dev, int
 {
 	BOOL res;
 
-	res = HidD_GetIndexedString(dev->device_handle, string_index, string, sizeof(wchar_t) * maxlen);
+	res = HidD_GetIndexedString(dev->device_handle, string_index, string, sizeof(wchar_t) * MIN(maxlen, MAX_STRING_WCHARS));
 	if (!res) {
 		register_error(dev, "HidD_GetIndexedString");
 		return -1;
