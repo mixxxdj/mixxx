@@ -160,11 +160,9 @@ struct MidiInputMapping {
               control(control) {
     }
 
-    // Don't use descriptions in operator== since we only use equality testing
-    // for unit tests.
     bool operator==(const MidiInputMapping& other) const {
         return key == other.key && options == other.options &&
-                control == other.control;
+                control == other.control && description == other.description;
     }
 
     MidiKey key;
