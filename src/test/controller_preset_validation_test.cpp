@@ -122,15 +122,16 @@ FakeController::~FakeController() {
 class ControllerPresetValidationTest : public MixxxTest {
   protected:
     void SetUp() override {
-        m_presetPath = QDir::currentPath() + "/res/controllers";
-        m_pEnumerator.reset(new PresetInfoEnumerator(QList<QString>{m_presetPath}));
+        m_presetPath = QDir::current();
+        m_presetPath.cd("res/controllers");
+        m_pEnumerator.reset(new PresetInfoEnumerator(QList<QString>{m_presetPath.absolutePath()}));
     }
 
     bool testLoadPreset(const PresetInfo& preset) {
         ControllerPresetPointer pPreset =
                 ControllerPresetFileHandler::loadPreset(
                         preset.getPath(),
-                        QList<QString>{m_presetPath});
+                        m_presetPath);
         if (pPreset.isNull()) {
             return false;
         }
@@ -140,12 +141,12 @@ class ControllerPresetValidationTest : public MixxxTest {
         controller.startEngine();
         controller.setPreset(*pPreset);
         // Do not initialize the scripts.
-        bool result = controller.applyPreset(m_presetPath, false);
+        bool result = controller.applyPreset(false);
         controller.stopEngine();
         return result;
     }
 
-    QString m_presetPath;
+    QDir m_presetPath;
     QScopedPointer<PresetInfoEnumerator> m_pEnumerator;
 };
 

@@ -219,6 +219,7 @@ void ControllerManager::slotSetUpDevices() {
 
     updateControllerList();
     QList<Controller*> deviceList = getControllerList(false, true);
+    QStringList presetPaths(getPresetPaths(m_pConfig));
 
     foreach (Controller* pController, deviceList) {
         QString name = pController->getName();
@@ -241,9 +242,16 @@ void ControllerManager::slotSetUpDevices() {
             continue;
         }
 
+        qDebug() << "Searching for controller preset" << presetFile
+                 << "in paths:" << presetPaths.join(",");
+        QString presetFilePath = ControllerManager::getAbsolutePath(presetFile, presetPaths);
+        if (presetFilePath.isEmpty()) {
+            qDebug() << "Could not find" << presetFilePath << "in any preset path.";
+            continue;
+        }
+
         ControllerPresetPointer pPreset = ControllerPresetFileHandler::loadPreset(
-                presetFile,
-                getPresetPaths(m_pConfig));
+                QFileInfo(presetFilePath), resourcePresetsPath(m_pConfig));
 
         if (!loadPreset(pController, pPreset)) {
             // TODO(XXX) : auto load midi preset here.
@@ -263,7 +271,7 @@ void ControllerManager::slotSetUpDevices() {
             qWarning() << "There was a problem opening" << name;
             continue;
         }
-        pController->applyPreset(resourcePresetsPath(m_pConfig), true);
+        pController->applyPreset(true);
     }
 
     maybeStartOrStopPolling();
@@ -355,7 +363,7 @@ void ControllerManager::openController(Controller* pController) {
     // If successfully opened the device, apply the preset and save the
     // preference setting.
     if (result == 0) {
-        pController->applyPreset(resourcePresetsPath(m_pConfig), true);
+        pController->applyPreset(true);
 
         // Update configuration to reflect controller is enabled.
         m_pConfig->setValue(

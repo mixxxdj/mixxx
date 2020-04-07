@@ -45,35 +45,21 @@ class ControllerPreset {
      * @param filename Name of the XML file to add
      * @param functionprefix Function prefix to add
      */
-    void addScriptFile(QString filename, QString functionprefix, bool builtin = false) {
+    void addScriptFile(const QString& name,
+            const QString& functionprefix,
+            const QFileInfo& file,
+            bool builtin = false) {
         ScriptFileInfo info;
-        info.name = filename;
+        info.name = name;
         info.functionPrefix = functionprefix;
-        // Always try to load script from the mapping's directory first
-        info.file = QFileInfo(dirPath().absoluteFilePath(filename));
+        info.file = file;
         info.builtin = builtin;
         m_scripts.append(info);
         setDirty(true);
     }
 
-    QList<ScriptFileInfo> getScriptFiles(const QString& fallbackPath = QString()) const {
-        if (fallbackPath.isEmpty()) {
-            return m_scripts;
-        }
-
-        QDir path(fallbackPath);
-        QList<ScriptFileInfo> scriptsWithFallbackPath;
-        for (const ScriptFileInfo& script : m_scripts) {
-            if (script.file.exists()) {
-                scriptsWithFallbackPath << script;
-                continue;
-            }
-
-            ScriptFileInfo info(script);
-            info.file = QFileInfo(path.absoluteFilePath(info.name));
-            scriptsWithFallbackPath << info;
-        }
-        return scriptsWithFallbackPath;
+    const QList<ScriptFileInfo>& getScriptFiles() const {
+        return m_scripts;
     }
 
     inline void setDirty(bool bDirty) {

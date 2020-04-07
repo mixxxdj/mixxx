@@ -16,15 +16,17 @@ class ControllerPresetFileHandler {
     ControllerPresetFileHandler() {};
     virtual ~ControllerPresetFileHandler() {};
 
-    static ControllerPresetPointer loadPreset(const QString& path,
-                                              const QStringList& presetPaths);
+    static ControllerPresetPointer loadPreset(const QFileInfo& presetFile,
+            const QDir& systemPresetsPath);
 
     /** load(QString,QString,bool)
      * Overloaded function for convenience
      * @param path The path to a controller preset XML file.
      * @param deviceName The name/id of the controller
      */
-    ControllerPresetPointer load(const QString path, const QString deviceName);
+    ControllerPresetPointer load(const QString path,
+            const QString deviceName,
+            const QDir& systemPresetsPath);
 
     // Returns just the name of a given device (everything before the first
     // space)
@@ -47,7 +49,8 @@ class ControllerPresetFileHandler {
      * @param preset The ControllerPreset into which the scripts should be placed.
      */
     void addScriptFilesToPreset(const QDomElement& root,
-                                ControllerPreset* preset) const;
+            ControllerPreset* preset,
+            const QDir& systemPresetsPath) const;
 
     // Creates the XML document and includes what script files are currently
     // loaded. Sub-classes need to call this before adding any other items.
@@ -60,7 +63,8 @@ class ControllerPresetFileHandler {
     // Sub-classes implement this.
     virtual ControllerPresetPointer load(const QDomElement root,
             const QString filePath,
-            const QString deviceName) = 0;
+            const QString deviceName,
+            const QDir& systemPresetPath) = 0;
 };
 
 #endif

@@ -15,7 +15,8 @@ class HidControllerPresetFileHandler : public ControllerPresetFileHandler {
   private:
     virtual ControllerPresetPointer load(const QDomElement root,
             const QString filePath,
-            const QString deviceName);
+            const QString deviceName,
+            const QDir& systemPresetsPath);
 };
 
 #endif /* HIDCONTROLLERPRESETFILEHANDLER_H */

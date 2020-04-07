@@ -16,7 +16,8 @@
 
 ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement root,
         const QString filePath,
-        const QString deviceName) {
+        const QString deviceName,
+        const QDir& systemPresetsPath) {
     if (root.isNull()) {
         return ControllerPresetPointer();
     }
@@ -31,7 +32,7 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement 
 
     // Superclass handles parsing <info> tag and script files
     parsePresetInfo(root, preset);
-    addScriptFilesToPreset(controller, preset);
+    addScriptFilesToPreset(controller, preset, systemPresetsPath);
 
     QDomElement control = controller.firstChildElement("controls").firstChildElement("control");
 

@@ -227,7 +227,7 @@ QString DlgPrefController::presetScriptFileLinks(const ControllerPresetPointer p
 
     QString systemPresetPath = resourcePresetsPath(m_pConfig);
     QStringList linkList;
-    for (const auto& script : pPreset->getScriptFiles(resourcePresetsPath(m_pConfig))) {
+    for (const auto& script : pPreset->getScriptFiles()) {
         QString scriptFileLink = QStringLiteral("<a href=\"") +
                 script.file.absoluteFilePath() + QStringLiteral("\">") +
                 script.name + QStringLiteral("</a>");
@@ -390,7 +390,7 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
     presetDirs.append(presetFileInfo.canonicalPath());
 
     ControllerPresetPointer pPreset = ControllerPresetFileHandler::loadPreset(
-        presetPath, ControllerManager::getPresetPaths(m_pConfig));
+            presetPath, QDir(resourcePresetsPath(m_pConfig)));
 
     if (!pPreset) {
         return;

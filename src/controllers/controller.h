@@ -83,7 +83,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     virtual void receive(const QByteArray data, mixxx::Duration timestamp);
 
     // Initializes the controller engine and returns whether it was successful.
-    virtual bool applyPreset(const QString& fallbackScriptPath, bool initializeScripts);
+    virtual bool applyPreset(bool initializeScripts);
 
     // Puts the controller in and out of learning mode.
     void startLearning();
