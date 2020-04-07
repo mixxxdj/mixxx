@@ -48,6 +48,7 @@ DlgRecording::DlgRecording(QWidget* parent, UserSettingsPointer pConfig,
             &RecordingManager::isRecording,
             this,
             &DlgRecording::slotRecordingStateChanged);
+
     connect(m_pRecordingManager,
             &RecordingManager::bytesRecorded,
             this,
@@ -80,6 +81,9 @@ DlgRecording::DlgRecording(QWidget* parent, UserSettingsPointer pConfig,
 
     label->setText("");
     label->setEnabled(false);
+
+    // Sync GUI with recording state, also refreshes labels
+    slotRecordingStateChanged(m_pRecordingManager->isRecordingActive());
 }
 
 DlgRecording::~DlgRecording() {
