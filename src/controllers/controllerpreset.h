@@ -64,7 +64,6 @@ class ControllerPreset {
         QDir path(fallbackPath);
         QList<ScriptFileInfo> scriptsWithFallbackPath;
         for (const ScriptFileInfo& script : m_scripts) {
-            qDebug() << "script" << script.file;
             if (script.file.exists()) {
                 scriptsWithFallbackPath << script;
                 continue;
