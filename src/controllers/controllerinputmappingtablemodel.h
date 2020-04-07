@@ -9,6 +9,10 @@
 #include "controllers/controllermappingtablemodel.h"
 #include "controllers/midi/midimessage.h"
 
+/** Table Model for the "Inputs" table view in the preferences dialog.
+ *
+ *  This allows editing the input mappings for a MIDI preset.
+ */
 class ControllerInputMappingTableModel : public ControllerMappingTableModel {
     Q_OBJECT
   public:

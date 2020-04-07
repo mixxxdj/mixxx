@@ -2,7 +2,7 @@
 * @file dlgprefcontroller.h
 * @author Sean M. Pappalardo  spappalardo@mixxx.org
 * @date Mon May 2 2011
-* @brief Configuration dialog for a DJ controller
+* @brief Configuration dialog for a single DJ controller
 */
 
 #ifndef DLGPREFCONTROLLER_H
