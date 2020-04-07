@@ -819,7 +819,10 @@ void MixxxMainWindow::finalize() {
     t.elapsed(true);
     // Report the total time we have been running.
     m_runtime_timer.elapsed(true);
-    StatsManager::destroy();
+
+    if (m_cmdLineArgs.getDeveloper()) {
+        StatsManager::destroy();
+    }
 }
 
 bool MixxxMainWindow::initializeDatabase() {
