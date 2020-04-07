@@ -8,7 +8,8 @@ bool HidControllerPresetFileHandler::save(const HidControllerPreset& preset,
 }
 
 ControllerPresetPointer HidControllerPresetFileHandler::load(const QDomElement root,
-                                                             const QString deviceName) {
+        const QString filePath,
+        const QString deviceName) {
     if (root.isNull()) {
         return ControllerPresetPointer();
     }
@@ -19,6 +20,7 @@ ControllerPresetPointer HidControllerPresetFileHandler::load(const QDomElement r
     }
 
     HidControllerPreset* preset = new HidControllerPreset();
+    preset->setFilePath(filePath);
     parsePresetInfo(root, preset);
     addScriptFilesToPreset(controller, preset);
     return ControllerPresetPointer(preset);

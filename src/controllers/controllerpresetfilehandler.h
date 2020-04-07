@@ -58,7 +58,9 @@ class ControllerPresetFileHandler {
 
   private:
     // Sub-classes implement this.
-    virtual ControllerPresetPointer load(const QDomElement root, const QString deviceName) = 0;
+    virtual ControllerPresetPointer load(const QDomElement root,
+            const QString filePath,
+            const QString deviceName) = 0;
 };
 
 #endif

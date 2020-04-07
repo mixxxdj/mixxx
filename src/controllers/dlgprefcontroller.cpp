@@ -221,35 +221,26 @@ QString DlgPrefController::presetWikiLink(const ControllerPresetPointer pPreset)
 }
 
 QString DlgPrefController::presetScriptFileLinks(const ControllerPresetPointer pPreset) const {
-    QString scriptFileLinks;
-
-    if (pPreset) {
-        // Always prefer script from the mapping's directory
-        QList<QString> scriptPaths = {pPreset->dirPath().absolutePath()};
-
-        QString systemPresetPath = resourcePresetsPath(m_pConfig);
-        if (!scriptPaths.contains(systemPresetPath)) {
-            scriptPaths << systemPresetPath;
-        }
-
-        QStringList linkList;
-        for (QList<ControllerPreset::ScriptFileInfo>::iterator it =
-                     pPreset->scripts.begin(); it != pPreset->scripts.end(); ++it) {
-            QString name = it->name;
-            QString path = ControllerManager::getAbsolutePath(
-                    name, scriptPaths);
-            QString scriptFileLink = "<a href=\"" + path + "\">" + name + "</a>";
-
-            qDebug() << "path" << path << systemPresetPath;
-            if (path.startsWith(systemPresetPath)) {
-                scriptFileLink = QString(tr("%1 (built-in)")).arg(scriptFileLink);
-            }
-
-            linkList << scriptFileLink;
-        }
-        scriptFileLinks = linkList.join("<br/>");
+    if (!pPreset) {
+        return QString();
     }
-    return scriptFileLinks;
+
+    QString systemPresetPath = resourcePresetsPath(m_pConfig);
+    QStringList linkList;
+    for (const auto& script : pPreset->getScriptFiles(resourcePresetsPath(m_pConfig))) {
+        QString scriptFileLink = QStringLiteral("<a href=\"") +
+                script.file.absoluteFilePath() + QStringLiteral("\">") +
+                script.name + QStringLiteral("</a>");
+
+        if (!script.file.exists()) {
+            scriptFileLink += QStringLiteral(" (") + tr("missing") + QStringLiteral(")");
+        } else if (script.file.absoluteFilePath().startsWith(systemPresetPath)) {
+            scriptFileLink += QStringLiteral(" (") + tr("built-in") + QStringLiteral(")");
+        }
+
+        linkList << scriptFileLink;
+    }
+    return linkList.join("<br/>");
 }
 
 void DlgPrefController::slotDirty() {

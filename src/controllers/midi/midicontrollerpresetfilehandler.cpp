@@ -15,7 +15,8 @@
 #define DEFAULT_OUTPUT_OFF  0x00
 
 ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement root,
-                                                              const QString deviceName) {
+        const QString filePath,
+        const QString deviceName) {
     if (root.isNull()) {
         return ControllerPresetPointer();
     }
@@ -26,6 +27,7 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement 
     }
 
     MidiControllerPreset* preset = new MidiControllerPreset();
+    preset->setFilePath(filePath);
 
     // Superclass handles parsing <info> tag and script files
     parsePresetInfo(root, preset);

@@ -56,10 +56,8 @@ ControllerPresetPointer ControllerPresetFileHandler::load(const QString path,
                                                           const QString deviceName) {
     qDebug() << "Loading controller preset from" << path;
     ControllerPresetPointer pPreset = load(XmlParse::openXMLFile(path, "controller"),
-                                           deviceName);
-    if (pPreset) {
-        pPreset->setFilePath(path);
-    }
+            path,
+            deviceName);
     return pPreset;
 }
 
@@ -198,7 +196,7 @@ QDomDocument ControllerPresetFileHandler::buildRootWithScripts(const ControllerP
     QDomElement scriptFiles = doc.createElement("scriptfiles");
     controller.appendChild(scriptFiles);
 
-    foreach (const ControllerPreset::ScriptFileInfo& script, preset.scripts) {
+    foreach (const ControllerPreset::ScriptFileInfo& script, preset.getScriptFiles()) {
         QString filename = script.name;
         // Don't need to write anything for built-in files.
         if (script.builtin) {

@@ -61,23 +61,16 @@ bool Controller::applyPreset(const QString& fallbackScriptPath, bool initializeS
         return false;
     }
 
-    if (pPreset->scripts.isEmpty()) {
+    QList<ControllerPreset::ScriptFileInfo> scriptFiles =
+            pPreset->getScriptFiles(fallbackScriptPath);
+    if (scriptFiles.isEmpty()) {
         qWarning() << "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
         return true;
     }
 
-    // Always prefer script from the mapping's directory
-    QList<QString> scriptPaths = {pPreset->dirPath().absolutePath()};
-
-    // Additional fallback path if a script file is not present in the
-    // mapping's directory
-    if (!scriptPaths.contains(fallbackScriptPath)) {
-        scriptPaths << fallbackScriptPath;
-    }
-
-    bool success = m_pEngine->loadScriptFiles(scriptPaths, pPreset->scripts);
+    bool success = m_pEngine->loadScriptFiles(scriptFiles);
     if (initializeScripts) {
-        m_pEngine->initializeScripts(pPreset->scripts);
+        m_pEngine->initializeScripts(scriptFiles);
     }
     return success;
 }

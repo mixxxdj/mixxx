@@ -11,6 +11,7 @@
 #ifndef CONTROLLERPRESET_H
 #define CONTROLLERPRESET_H
 
+#include <QDebug>
 #include <QDir>
 #include <QHash>
 #include <QList>
@@ -35,6 +36,7 @@ class ControllerPreset {
 
         QString name;
         QString functionPrefix;
+        QFileInfo file;
         bool builtin;
     };
 
@@ -43,14 +45,36 @@ class ControllerPreset {
      * @param filename Name of the XML file to add
      * @param functionprefix Function prefix to add
      */
-    void addScriptFile(QString filename, QString functionprefix,
-                       bool builtin=false) {
+    void addScriptFile(QString filename, QString functionprefix, bool builtin = false) {
         ScriptFileInfo info;
         info.name = filename;
         info.functionPrefix = functionprefix;
+        // Always try to load script from the mapping's directory first
+        info.file = QFileInfo(dirPath().absoluteFilePath(filename));
         info.builtin = builtin;
-        scripts.append(info);
+        m_scripts.append(info);
         setDirty(true);
+    }
+
+    QList<ScriptFileInfo> getScriptFiles(const QString& fallbackPath = QString()) const {
+        if (fallbackPath.isEmpty()) {
+            return m_scripts;
+        }
+
+        QDir path(fallbackPath);
+        QList<ScriptFileInfo> scriptsWithFallbackPath;
+        for (const ScriptFileInfo& script : m_scripts) {
+            qDebug() << "script" << script.file;
+            if (script.file.exists()) {
+                scriptsWithFallbackPath << script;
+                continue;
+            }
+
+            ScriptFileInfo info(script);
+            info.file = QFileInfo(path.absoluteFilePath(info.name));
+            scriptsWithFallbackPath << info;
+        }
+        return scriptsWithFallbackPath;
     }
 
     inline void setDirty(bool bDirty) {
@@ -171,6 +195,8 @@ class ControllerPreset {
     QString m_wikilink;
     QString m_schemaVersion;
     QString m_mixxxVersion;
+
+    QList<ScriptFileInfo> m_scripts;
 };
 
 typedef QSharedPointer<ControllerPreset> ControllerPresetPointer;
