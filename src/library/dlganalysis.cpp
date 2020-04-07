@@ -54,10 +54,8 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
             &QRadioButton::clicked,
             this,
             &DlgAnalysis::showAllSongs);
-
-    // TODO(rryan): This triggers a library search before the UI has even
-    // started up. Accounts for 0.2% of skin creation time. Get rid of this!
-    radioButtonRecentlyAdded->click();
+    // Don't click those radio buttons now reduce skin loading time.
+    // 'RecentlyAdded' is clicked in onShow()
 
     connect(pushButtonAnalyze,
             &QPushButton::clicked,
@@ -92,6 +90,10 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
 }
 
 void DlgAnalysis::onShow() {
+    if (!radioButtonRecentlyAdded->isChecked() &&
+            !radioButtonAllSongs->isChecked()) {
+        radioButtonRecentlyAdded->click();
+    }
     // Refresh table
     // There might be new tracks dropped to other views
     m_pAnalysisLibraryTableModel->select();
