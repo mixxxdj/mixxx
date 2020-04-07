@@ -11,10 +11,11 @@
 #ifndef CONTROLLERPRESET_H
 #define CONTROLLERPRESET_H
 
+#include <QDir>
 #include <QHash>
+#include <QList>
 #include <QSharedPointer>
 #include <QString>
-#include <QList>
 
 class ControllerPresetVisitor;
 class ConstControllerPresetVisitor;
@@ -76,6 +77,10 @@ class ControllerPreset {
 
     inline QString filePath() const {
         return m_filePath;
+    }
+
+    inline QDir dirPath() const {
+        return QFileInfo(filePath()).absoluteDir();
     }
 
     inline void setName(const QString name) {

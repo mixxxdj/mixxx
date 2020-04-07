@@ -59,9 +59,9 @@ bool MidiController::savePreset(const QString fileName) const {
     return handler.save(m_preset, getName(), fileName);
 }
 
-bool MidiController::applyPreset(QList<QString> scriptPaths, bool initializeScripts) {
+bool MidiController::applyPreset(const QString& fallbackScriptPath, bool initializeScripts) {
     // Handles the engine
-    bool result = Controller::applyPreset(scriptPaths, initializeScripts);
+    bool result = Controller::applyPreset(fallbackScriptPath, initializeScripts);
 
     // Only execute this code if this is an output device
     if (isOutputDevice()) {

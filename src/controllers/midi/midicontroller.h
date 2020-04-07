@@ -76,7 +76,7 @@ class MidiController : public Controller {
 
   private slots:
     // Initializes the engine and static output mappings.
-    bool applyPreset(QList<QString> scriptPaths, bool initializeScripts) override;
+    bool applyPreset(const QString& fallbackScriptPath, bool initializeScripts) override;
 
     void learnTemporaryInputMappings(const MidiInputMappings& mappings);
     void clearTemporaryInputMappings();
