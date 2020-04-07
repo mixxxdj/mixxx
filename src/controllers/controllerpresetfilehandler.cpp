@@ -196,7 +196,7 @@ QDomDocument ControllerPresetFileHandler::buildRootWithScripts(const ControllerP
     QDomElement scriptFiles = doc.createElement("scriptfiles");
     controller.appendChild(scriptFiles);
 
-    foreach (const ControllerPreset::ScriptFileInfo& script, preset.getScriptFiles()) {
+    for (const ControllerPreset::ScriptFileInfo& script : preset.getScriptFiles()) {
         QString filename = script.name;
         // Don't need to write anything for built-in files.
         if (script.builtin) {
