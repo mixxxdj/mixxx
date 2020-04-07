@@ -22,7 +22,7 @@ class EngineTalkoverDucking : public QObject, public EngineSideChainCompressor {
         return static_cast<TalkoverDuckSetting>(int(m_pTalkoverDucking->get()));
     }
 
-    CSAMPLE getGain(int numFrames);
+    CSAMPLE getGain();
 
   public slots:
     void slotSampleRateChanged(double);

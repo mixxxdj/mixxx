@@ -483,8 +483,12 @@ void EngineMaster::process(const int iBufferSize) {
     // m_masterGain takes care of applying the attenuation from
     // channel volume faders, crossfader, and talkover ducking.
     // Talkover is mixed in later according to the configured MicMonitorMode
+    CSAMPLE talkOvergain = 1;
+    if (!m_activeTalkoverChannels.isEmpty()) {
+        talkOvergain = m_pTalkoverDucking->getGain();
+    }
     m_masterGain.setGains(crossfaderLeftGain, 1.0, crossfaderRightGain,
-                            m_pTalkoverDucking->getGain(m_iBufferSize / 2));
+                            talkOvergain);
 
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
         ChannelMixer::applyEffectsInPlaceAndMixChannels(
