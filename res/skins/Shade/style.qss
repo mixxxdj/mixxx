@@ -810,6 +810,14 @@ QPushButton#pushButtonRepeatPlaylist {
 }
 /* AutoDJ button icons */
 
+#labelRecFilename {
+  font-weight: bold;
+}
+#labelRecPrefix,
+#labelRecStatistics {
+  font-weight: normal;
+}
+
 #HotcueButton {
     background-color: #aab2b7;
 }

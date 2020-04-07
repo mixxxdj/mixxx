@@ -79,8 +79,10 @@ DlgRecording::DlgRecording(QWidget* parent, UserSettingsPointer pConfig,
             this,
             &DlgRecording::slotRecButtonClicked);
 
-    label->setText("");
-    label->setEnabled(false);
+    labelRecPrefix->hide();
+    labelRecFilename->hide();
+    labelRecStatistics->hide();
+    labelRecPrefix->setText(tr("Recording to file:"));
 
     // Sync GUI with recording state, also refreshes labels
     slotRecordingStateChanged(m_pRecordingManager->isRecordingActive());
@@ -143,12 +145,15 @@ void DlgRecording::slotRecordingStateChanged(bool isRecording) {
     if (isRecording) {
         pushButtonRecording->setChecked(true);
         pushButtonRecording->setText((tr("Stop Recording")));
-        label->setEnabled(true);
+        labelRecPrefix->show();
+        labelRecFilename->show();
+        labelRecStatistics->show();
     } else {
         pushButtonRecording->setChecked(false);
         pushButtonRecording->setText((tr("Start Recording")));
-        label->setText("");
-        label->setEnabled(false);
+        labelRecPrefix->hide();
+        labelRecFilename->hide();
+        labelRecStatistics->hide();
     }
     //This will update the recorded track table view
     m_browseModel.setPath(m_recordingDir);
@@ -158,20 +163,21 @@ void DlgRecording::slotRecordingStateChanged(bool isRecording) {
 void DlgRecording::slotBytesRecorded(int bytes) {
     double megabytes = bytes / 1048576.0;
     m_bytesRecordedStr = QString::number(megabytes,'f',2);
-    refreshLabel();
+    refreshLabels();
 }
 
 // gets recorded duration and update label
 void DlgRecording::slotDurationRecorded(QString durationRecorded) {
     m_durationRecordedStr = durationRecorded;
-    refreshLabel();
+    refreshLabels();
 }
 
 // update label besides start/stop button
-void DlgRecording::refreshLabel() {
-    QString text = tr("Recording to file: %1 (%2 MiB written in %3)")
-              .arg(m_pRecordingManager->getRecordingFile())
-              .arg(m_bytesRecordedStr)
-              .arg(m_durationRecordedStr);
-    label->setText(text);
+void DlgRecording::refreshLabels() {
+    QString recFile = m_pRecordingManager->getRecordingFile();
+    QString recData = tr("(%1 MiB written in %2)")
+            .arg(m_bytesRecordedStr)
+            .arg(m_durationRecordedStr);
+    labelRecFilename->setText(recFile);
+    labelRecStatistics->setText(recData);
 }

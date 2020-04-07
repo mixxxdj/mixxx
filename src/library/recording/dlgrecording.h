@@ -54,7 +54,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     ProxyTrackModel m_proxyModel;
     QString m_recordingDir;
 
-    void refreshLabel();
+    void refreshLabels();
     void slotRecButtonClicked(bool checked);
     QString m_bytesRecordedStr;
     QString m_durationRecordedStr;
