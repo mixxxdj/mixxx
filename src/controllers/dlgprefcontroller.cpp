@@ -224,16 +224,27 @@ QString DlgPrefController::presetScriptFileLinks(const ControllerPresetPointer p
     QString scriptFileLinks;
 
     if (pPreset) {
-        QList<QString> presetDirs;
-        presetDirs.append(userPresetsPath(m_pConfig));
-        presetDirs.append(resourcePresetsPath(m_pConfig));
+        // Always prefer script from the mapping's directory
+        QList<QString> scriptPaths = {pPreset->dirPath().absolutePath()};
+
+        QString systemPresetPath = resourcePresetsPath(m_pConfig);
+        if (!scriptPaths.contains(systemPresetPath)) {
+            scriptPaths << systemPresetPath;
+        }
+
         QStringList linkList;
         for (QList<ControllerPreset::ScriptFileInfo>::iterator it =
                      pPreset->scripts.begin(); it != pPreset->scripts.end(); ++it) {
             QString name = it->name;
             QString path = ControllerManager::getAbsolutePath(
-                    name, presetDirs);
+                    name, scriptPaths);
             QString scriptFileLink = "<a href=\"" + path + "\">" + name + "</a>";
+
+            qDebug() << "path" << path << systemPresetPath;
+            if (path.startsWith(systemPresetPath)) {
+                scriptFileLink = QString(tr("%1 (built-in)")).arg(scriptFileLink);
+            }
+
             linkList << scriptFileLink;
         }
         scriptFileLinks = linkList.join("<br/>");
