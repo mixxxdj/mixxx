@@ -12,6 +12,32 @@
 #include "controllers/midi/midicontrollerpresetfilehandler.h"
 #include "controllers/hid/hidcontrollerpresetfilehandler.h"
 
+namespace {
+
+/** Find script file in the preset or system path.
+ *
+ *  @param preset The controller preset the script belongs to.
+ *  @param filename The script filename.
+ *  @param systemPresetsPath The system presets path to use as fallback.
+ *  @return Returns a QFileInfo object. If the script was not found in either
+ *  of the search directories, the QFileInfo object might point to a
+ *  non-existing file.
+ */
+QFileInfo findScriptFile(ControllerPreset* preset,
+        const QString& filename,
+        const QDir& systemPresetsPath) {
+    // Always try to load script from the mapping's directory first
+    QFileInfo file = QFileInfo(preset->dirPath().absoluteFilePath(filename));
+
+    // If the script does not exist, try to find it in the fallback dir
+    if (!file.exists()) {
+        file = QFileInfo(systemPresetsPath.absoluteFilePath(filename));
+    }
+    return file;
+}
+
+} // namespace
+
 // static
 ControllerPresetPointer ControllerPresetFileHandler::loadPreset(
         const QFileInfo& presetFile, const QDir& systemPresetsPath) {
@@ -115,20 +141,14 @@ void ControllerPresetFileHandler::addScriptFilesToPreset(
     // Default currently required file
     preset->addScriptFile(REQUIRED_SCRIPT_FILE,
             "",
-            QFileInfo(systemPresetsPath.absoluteFilePath(REQUIRED_SCRIPT_FILE)),
+            findScriptFile(preset, REQUIRED_SCRIPT_FILE, systemPresetsPath),
             true);
 
     // Look for additional ones
     while (!scriptFile.isNull()) {
         QString functionPrefix = scriptFile.attribute("functionprefix","");
         QString filename = scriptFile.attribute("filename","");
-
-        // Always try to load script from the mapping's directory first
-        QFileInfo file = QFileInfo(preset->dirPath().absoluteFilePath(filename));
-        if (!file.exists()) {
-            // If the script does not exist, try to find it in the fallback dir
-            file = QFileInfo(systemPresetsPath.absoluteFilePath(filename));
-        }
+        QFileInfo file = findScriptFile(preset, filename, systemPresetsPath);
 
         preset->addScriptFile(filename, functionPrefix, file);
         scriptFile = scriptFile.nextSiblingElement("file");
