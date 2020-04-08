@@ -426,6 +426,7 @@ void DlgPrefController::slotPresetSelected(int chosenIndex) {
         presetPath = m_ui.comboBoxPreset->itemData(chosenIndex).toString();
     }
 
+    // Check if the preset is different from the configured preset
     if (m_pControllerManager->getConfiguredPresetFileForDevice(
                 m_pController->getName()) != presetPath) {
         setDirty(true);
