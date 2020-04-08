@@ -41,7 +41,7 @@ QFileInfo findScriptFile(ControllerPreset* preset,
 // static
 ControllerPresetPointer ControllerPresetFileHandler::loadPreset(
         const QFileInfo& presetFile, const QDir& systemPresetsPath) {
-    VERIFY_OR_DEBUG_ASSERT(presetFile.exists() && presetFile.isReadable()) {
+    if (!presetFile.exists() || !presetFile.isReadable()) {
         qDebug() << "Preset" << presetFile.absoluteFilePath()
                  << "does not exist or is unreadable.";
         return ControllerPresetPointer();
