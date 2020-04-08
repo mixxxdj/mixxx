@@ -374,16 +374,6 @@ void DlgPrefController::slotCancel() {
     slotShowPreset(m_pController->getPreset());
 }
 
-void DlgPrefController::revertPresetChanges() {
-    if (m_pInputTableModel) {
-        m_pInputTableModel->cancel();
-    }
-
-    if (m_pOutputTableModel) {
-        m_pOutputTableModel->cancel();
-    }
-}
-
 void DlgPrefController::applyPresetChanges() {
     if (m_pInputTableModel) {
         m_pInputTableModel->apply();

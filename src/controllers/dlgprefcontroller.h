@@ -72,7 +72,6 @@ class DlgPrefController : public DlgPreferencePage {
     QString presetForumLink(const ControllerPresetPointer pPreset) const;
     QString presetWikiLink(const ControllerPresetPointer pPreset) const;
     QString presetScriptFileLinks(const ControllerPresetPointer pPreset) const;
-    void revertPresetChanges();
     void applyPresetChanges();
     void savePreset();
     void initTableView(QTableView* pTable);
