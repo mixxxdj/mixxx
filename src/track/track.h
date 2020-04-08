@@ -254,7 +254,7 @@ class Track : public QObject {
     QList<CuePointer> getCuePoints() const;
 
     void setCuePoints(const QList<CuePointer>& cuePoints);
-    void importCues(const QList<mixxx::CueInfo>& cueInfos);
+    void importCueInfos(const QList<mixxx::CueInfo>& cueInfos);
 
     bool isDirty();
 
@@ -364,7 +364,7 @@ class Track : public QObject {
     void setCuePointsMarkDirtyAndUnlock(
             QMutexLocker* pLock,
             const QList<CuePointer>& cuePoints);
-    void importCuesMarkDirtyAndUnlock(
+    void importCueInfosMarkDirtyAndUnlock(
             QMutexLocker* pLock,
             const QList<mixxx::CueInfo>& cueInfos);
 
@@ -417,7 +417,7 @@ class Track : public QObject {
     ConstWaveformPointer m_waveform;
     ConstWaveformPointer m_waveformSummary;
 
-    QList<mixxx::CueInfo> m_importCuesPending;
+    QList<mixxx::CueInfo> m_importCueInfosPending;
 
     friend class TrackDAO;
     friend class GlobalTrackCache;
