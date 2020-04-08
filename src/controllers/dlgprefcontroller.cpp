@@ -133,9 +133,6 @@ void DlgPrefController::showLearningWizard() {
     }
     slotApply();
 
-    // After this point we consider the mapping wizard as dirtying the preset.
-    setDirty(true);
-
     // Note that DlgControllerLearning is set to delete itself on close using
     // the Qt::WA_DeleteOnClose attribute (so this "new" doesn't leak memory)
     m_pDlgControllerLearning = new DlgControllerLearning(this, m_pController);
