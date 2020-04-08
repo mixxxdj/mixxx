@@ -1,5 +1,4 @@
-#ifndef WTRACKMENU_H
-#define WTRACKMENU_H
+#pragma once
 
 #include <QAction>
 #include <QMenu>
@@ -245,5 +244,3 @@ class WTrackMenu : public QMenu {
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(WTrackMenu::Filters)
-
-#endif // WTRACKMENU_H
