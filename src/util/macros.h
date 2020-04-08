@@ -14,7 +14,7 @@
 // The refName() function returns a mutable reference. It can
 // be used to access deeply nested properties chaining these
 // functions with the dot syntax. The returned reference should
-// not be scored outside of the current scope!
+// not be stored outside of the current scope!
 //
 // TODO: Adjust the name of this macro, e.g. DECL_MIXXX_PROPERTY
 #define PROPERTY_SET_BYVAL_GET_BYREF(TYPE, NAME, CAP_NAME) \
