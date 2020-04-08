@@ -484,7 +484,9 @@ void EngineMaster::process(const int iBufferSize) {
     // channel volume faders, crossfader, and talkover ducking.
     // Talkover is mixed in later according to the configured MicMonitorMode
     CSAMPLE talkOvergain = 1;
-    if (!m_activeTalkoverChannels.isEmpty()) {
+    if ((m_pTalkoverDucking->getMode() == EngineTalkoverDucking::AUTO &&
+            !m_activeTalkoverChannels.isEmpty()) ||
+            m_pTalkoverDucking->getMode() == EngineTalkoverDucking::MANUAL) {
         talkOvergain = m_pTalkoverDucking->getGain();
     }
     m_masterGain.setGains(crossfaderLeftGain, 1.0, crossfaderRightGain,
