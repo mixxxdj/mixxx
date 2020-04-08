@@ -1,6 +1,6 @@
 
-There are two implementations of HIDAPI for Linux. One (hid.c) uses the
-Linux hidraw driver, and the other (hid-libusb.c) uses libusb. Which one you
+There are two implementations of HIDAPI for Linux. One (linux/hid.c) uses the
+Linux hidraw driver, and the other (libusb/hid.c) uses libusb. Which one you
 use depends on your application. Complete functionality of the hidraw
 version depends on patches to the Linux kernel which are not currently in
 the mainline. These patches have to do with sending and receiving feature
@@ -9,18 +9,14 @@ device, bypassing any Linux HID driver. The disadvantage of the libusb
 version is that it will only work with USB devices, while the hidraw
 implementation will work with Bluetooth devices as well.
 
-To use HIDAPI, simply drop either hid.c or hid-libusb.c into your
+To use HIDAPI, simply drop either linux/hid.c or libusb/hid.c into your
 application and build using the build parameters in the Makefile.
-
-By default, on Linux, the Makefile in this directory is configured to use
-the libusb implementation. To switch to the hidraw implementation, simply
-change hid-libusb.c to hid.c in the Makefile.
 
 
 Libusb Implementation notes
 ----------------------------
 For the libusb implementation, libusb-1.0 must be installed. Libusb 1.0 is
-different than the legacy libusb 0.1 which is installed on many systems.  To
+different than the legacy libusb 0.1 which is installed on many systems. To
 install libusb-1.0 on Ubuntu and other Debian-based systems, run:
 	sudo apt-get install libusb-1.0-0-dev
 

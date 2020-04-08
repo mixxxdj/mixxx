@@ -45,7 +45,7 @@ class HSS1394(Feature):
 
 class HID(Feature):
     INTERNAL_LINK = False
-    HIDAPI_INTERNAL_PATH = 'lib/hidapi-0.8.0-rc1'
+    HIDAPI_INTERNAL_PATH = 'lib/hidapi'
 
     def description(self):
         return "HID controller support"
