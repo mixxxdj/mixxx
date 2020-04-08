@@ -45,21 +45,20 @@ QString sanitizeDeviceName(QString name) {
     return name.replace(" ", "_").replace("/", "_").replace("\\", "_");
 }
 
-QString findPresetFile(const QString& pathOrFilename, const QStringList& paths) {
+QFileInfo findPresetFile(const QString& pathOrFilename, const QStringList& paths) {
     QFileInfo fileInfo(pathOrFilename);
     if (fileInfo.isAbsolute()) {
-        return pathOrFilename;
+        return fileInfo;
     }
 
     for (const QString& path : paths) {
-        QDir pathDir(path);
-
-        if (pathDir.exists(pathOrFilename)) {
-            return pathDir.absoluteFilePath(pathOrFilename);
+        fileInfo = QFileInfo(QDir(path).absoluteFilePath(pathOrFilename));
+        if (fileInfo.exists()) {
+            return fileInfo;
         }
     }
 
-    return QString();
+    return QFileInfo();
 }
 
 } // anonymous namespace
@@ -252,21 +251,21 @@ void ControllerManager::slotSetUpDevices() {
         }
 
         // Check if device has a configured preset
-        QString presetFile = getConfiguredPresetFileForDevice(deviceName);
-        if (presetFile.isEmpty()) {
+        QString presetFilePath = getConfiguredPresetFileForDevice(deviceName);
+        if (presetFilePath.isEmpty()) {
             continue;
         }
 
-        qDebug() << "Searching for controller preset" << presetFile
+        qDebug() << "Searching for controller preset" << presetFilePath
                  << "in paths:" << presetPaths.join(",");
-        QString presetFilePath = findPresetFile(presetFile, presetPaths);
-        if (presetFilePath.isEmpty()) {
+        QFileInfo presetFile = findPresetFile(presetFilePath, presetPaths);
+        if (!presetFile.exists()) {
             qDebug() << "Could not find" << presetFilePath << "in any preset path.";
             continue;
         }
 
         ControllerPresetPointer pPreset = ControllerPresetFileHandler::loadPreset(
-                QFileInfo(presetFilePath), resourcePresetsPath(m_pConfig));
+                presetFile, resourcePresetsPath(m_pConfig));
 
         if (!pPreset) {
             continue;
