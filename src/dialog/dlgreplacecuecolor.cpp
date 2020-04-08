@@ -153,9 +153,11 @@ void DlgReplaceCueColor::slotApply() {
     slotUpdateApplyButton();
 
     // Get values for SELECT query
-    QProgressDialog progress("Selecting database rows...", "Cancel", 0, 0, this);
+    QProgressDialog progress(this);
     progress.setWindowModality(Qt::ApplicationModal);
     progress.setAutoReset(false);
+    progress.setLabelText(tr("Selecting database rows..."));
+    progress.setMaximum(0);
     progress.setValue(0);
 
     Conditions conditions = ConditionFlag::NoConditions;
