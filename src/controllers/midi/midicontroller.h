@@ -75,8 +75,14 @@ class MidiController : public Controller {
     int close() override;
 
   private slots:
-    // Initializes the engine and static output mappings.
-    bool applyPreset(bool initializeScripts) override;
+    /** Apply the preset to the controller.
+     *  @brief Initializes both controller engine and static output mappings.
+     *
+     *  @param initializeScripts Can be set to false to skip script
+     *  initialization for unit tests.
+     *  @return Returns whether it was successful.
+     */
+    bool applyPreset(bool initializeScripts = false) override;
 
     void learnTemporaryInputMappings(const MidiInputMappings& mappings);
     void clearTemporaryInputMappings();

@@ -271,7 +271,7 @@ void ControllerManager::slotSetUpDevices() {
             qWarning() << "There was a problem opening" << name;
             continue;
         }
-        pController->applyPreset(true);
+        pController->applyPreset();
     }
 
     maybeStartOrStopPolling();
@@ -363,7 +363,7 @@ void ControllerManager::openController(Controller* pController) {
     // If successfully opened the device, apply the preset and save the
     // preference setting.
     if (result == 0) {
-        pController->applyPreset(true);
+        pController->applyPreset();
 
         // Update configuration to reflect controller is enabled.
         m_pConfig->setValue(
