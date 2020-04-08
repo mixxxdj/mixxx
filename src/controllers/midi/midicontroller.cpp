@@ -54,11 +54,6 @@ bool MidiController::matchPreset(const PresetInfo& preset) {
     return false;
 }
 
-bool MidiController::savePreset(const QString fileName) const {
-    MidiControllerPresetFileHandler handler;
-    return handler.save(m_preset, getName(), fileName);
-}
-
 bool MidiController::applyPreset(bool initializeScripts) {
     // Handles the engine
     bool result = Controller::applyPreset(initializeScripts);

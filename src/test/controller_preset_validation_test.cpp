@@ -35,11 +35,6 @@ class FakeController : public Controller {
         }
     }
 
-    bool savePreset(const QString fileName) const override {
-        Q_UNUSED(fileName);
-        return true;
-    }
-
     void visit(const MidiControllerPreset* preset) override {
         m_bMidiPreset = true;
         m_bHidPreset = false;

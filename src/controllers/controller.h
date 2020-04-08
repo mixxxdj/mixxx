@@ -39,8 +39,6 @@ class Controller : public QObject, ConstControllerPresetVisitor {
 
     virtual void accept(ControllerVisitor* visitor) = 0;
 
-    virtual bool savePreset(const QString filename) const = 0;
-
     // Returns a clone of the Controller's loaded preset.
     virtual ControllerPresetPointer getPreset() const = 0;
 

@@ -160,6 +160,8 @@ class ControllerPreset {
         setDirty(true);
     }
 
+    virtual bool savePreset(const QString& filename) const = 0;
+
     virtual void accept(ControllerPresetVisitor* visitor) = 0;
     virtual void accept(ConstControllerPresetVisitor* visitor) const = 0;
     virtual bool isMappable() const = 0;

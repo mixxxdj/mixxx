@@ -65,22 +65,18 @@ ControllerPresetPointer ControllerPresetFileHandler::loadPreset(
     }
 
     ControllerPresetPointer pPreset = pHandler->load(
-            presetFile.absoluteFilePath(), QString(), systemPresetsPath);
+            presetFile.absoluteFilePath(), systemPresetsPath);
     if (pPreset) {
         pPreset->setDirty(false);
     }
     return pPreset;
 }
 
-ControllerPresetPointer ControllerPresetFileHandler::load(const QString path,
-        const QString deviceName,
-        const QDir& systemPresetsPath) {
+ControllerPresetPointer ControllerPresetFileHandler::load(
+        const QString& path, const QDir& systemPresetsPath) {
     qDebug() << "Loading controller preset from" << path;
-    ControllerPresetPointer pPreset =
-            load(XmlParse::openXMLFile(path, "controller"),
-                    path,
-                    deviceName,
-                    systemPresetsPath);
+    ControllerPresetPointer pPreset = load(
+            XmlParse::openXMLFile(path, "controller"), path, systemPresetsPath);
     return pPreset;
 }
 
@@ -112,8 +108,7 @@ void ControllerPresetFileHandler::parsePresetInfo(
 }
 
 QDomElement ControllerPresetFileHandler::getControllerNode(
-        const QDomElement& root, const QString deviceName) {
-    Q_UNUSED(deviceName);
+        const QDomElement& root) {
     if (root.isNull()) {
         return QDomElement();
     }
@@ -146,8 +141,8 @@ void ControllerPresetFileHandler::addScriptFilesToPreset(
 
     // Look for additional ones
     while (!scriptFile.isNull()) {
-        QString functionPrefix = scriptFile.attribute("functionprefix","");
-        QString filename = scriptFile.attribute("filename","");
+        QString functionPrefix = scriptFile.attribute("functionprefix", "");
+        QString filename = scriptFile.attribute("filename", "");
         QFileInfo file = findScriptFile(preset, filename, systemPresetsPath);
 
         preset->addScriptFile(filename, functionPrefix, file);
@@ -155,8 +150,8 @@ void ControllerPresetFileHandler::addScriptFilesToPreset(
     }
 }
 
-bool ControllerPresetFileHandler::writeDocument(QDomDocument root,
-                                                const QString fileName) const {
+bool ControllerPresetFileHandler::writeDocument(
+        QDomDocument root, const QString fileName) const {
     // Need to do this on Windows
     QDir directory;
     if (!directory.mkpath(fileName.left(fileName.lastIndexOf("/")))) {
@@ -180,16 +175,18 @@ bool ControllerPresetFileHandler::writeDocument(QDomDocument root,
     return true;
 }
 
-void addTextTag(QDomDocument& doc, QDomElement& holder,
-                QString tagName, QString tagText) {
+void addTextTag(QDomDocument& doc,
+        QDomElement& holder,
+        QString tagName,
+        QString tagText) {
     QDomElement tag = doc.createElement(tagName);
     QDomText textNode = doc.createTextNode(tagText);
     tag.appendChild(textNode);
     holder.appendChild(tag);
 }
 
-QDomDocument ControllerPresetFileHandler::buildRootWithScripts(const ControllerPreset& preset,
-                                                               const QString deviceName) const {
+QDomDocument ControllerPresetFileHandler::buildRootWithScripts(
+        const ControllerPreset& preset) const {
     QDomDocument doc("Preset");
     QString blank = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
         "<MixxxControllerPreset>\n"
@@ -220,7 +217,7 @@ QDomDocument ControllerPresetFileHandler::buildRootWithScripts(const ControllerP
 
     QDomElement controller = doc.createElement("controller");
     // Strip off the serial number
-    controller.setAttribute("id", rootDeviceName(deviceName));
+    controller.setAttribute("id", rootDeviceName(preset.deviceId()));
     rootNode.appendChild(controller);
 
     QDomElement scriptFiles = doc.createElement("scriptfiles");

@@ -14,15 +14,14 @@
 #define DEFAULT_OUTPUT_ON   0x7F
 #define DEFAULT_OUTPUT_OFF  0x00
 
-ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement root,
-        const QString filePath,
-        const QString deviceName,
+ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement& root,
+        const QString& filePath,
         const QDir& systemPresetsPath) {
     if (root.isNull()) {
         return ControllerPresetPointer();
     }
 
-    QDomElement controller = getControllerNode(root, deviceName);
+    QDomElement controller = getControllerNode(root);
     if (controller.isNull()) {
         return ControllerPresetPointer();
     }
@@ -195,10 +194,9 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement 
 }
 
 bool MidiControllerPresetFileHandler::save(const MidiControllerPreset& preset,
-                                           const QString deviceName,
-                                           const QString fileName) const {
-    qDebug() << "Saving preset" << preset.name() << "for" << deviceName << "to" << fileName;
-    QDomDocument doc = buildRootWithScripts(preset, deviceName);
+        const QString& fileName) const {
+    qDebug() << "Saving preset" << preset.name() << "to" << fileName;
+    QDomDocument doc = buildRootWithScripts(preset);
     addControlsToDocument(preset, &doc);
     return writeDocument(doc, fileName);
 }
