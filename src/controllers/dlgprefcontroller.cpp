@@ -388,7 +388,7 @@ void DlgPrefController::slotApply() {
     applyPresetChanges();
 
     // If no changes were made, do nothing
-    if (!isDirty() && (!m_pPreset || m_pPreset->isDirty())) {
+    if (!(isDirty() || (m_pPreset && m_pPreset->isDirty()))) {
         return;
     }
 
