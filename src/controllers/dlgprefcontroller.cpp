@@ -291,6 +291,10 @@ void DlgPrefController::enumeratePresets(const QString& selectedPresetPath) {
     PresetInfo match;
     // Enumerate user presets
     QIcon userPresetIcon(":/images/ic_custom.svg");
+
+    // Reload user presets to detect added, changed or removed mappings
+    m_pControllerManager->getMainThreadUserPresetEnumerator()->loadSupportedPresets();
+
     PresetInfo userPresetsMatch = enumeratePresetsFromEnumerator(
             m_pControllerManager->getMainThreadUserPresetEnumerator(),
             userPresetIcon);

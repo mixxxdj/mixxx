@@ -20,8 +20,6 @@ class PresetInfoEnumerator {
 
     // Return cached list of presets for this extension
     QList<PresetInfo> getPresetsByExtension(const QString& extension);
-
-  protected:
     void loadSupportedPresets();
 
   private:

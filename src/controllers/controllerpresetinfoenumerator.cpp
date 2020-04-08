@@ -52,6 +52,10 @@ QList<PresetInfo> PresetInfoEnumerator::getPresetsByExtension(const QString& ext
 }
 
 void PresetInfoEnumerator::loadSupportedPresets() {
+    m_midiPresets.clear();
+    m_hidPresets.clear();
+    m_bulkPresets.clear();
+
     for (const QString& dirPath : m_controllerDirPaths) {
         QDirIterator it(dirPath);
         while (it.hasNext()) {
