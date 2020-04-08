@@ -934,12 +934,12 @@ bool ControllerEngine::evaluate(const QFileInfo& scriptFile) {
     }
 
     if (!scriptFile.exists()) {
-        qWarning() << "ControllerEngine: File does not exist:" << scriptFile;
+        qWarning() << "ControllerEngine: File does not exist:" << scriptFile.absoluteFilePath();
         return false;
     }
     m_scriptWatcher.addPath(scriptFile.absoluteFilePath());
 
-    qDebug() << "ControllerEngine: Loading" << scriptFile;
+    qDebug() << "ControllerEngine: Loading" << scriptFile.absoluteFilePath();
 
     // Read in the script file
     QString filename = scriptFile.absoluteFilePath();
