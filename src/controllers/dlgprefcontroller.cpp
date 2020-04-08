@@ -412,6 +412,9 @@ void DlgPrefController::slotApply() {
     // table models). The controller clones the preset so we aren't touching
     // the same preset.
     emit applyPreset(m_pController, m_pPreset, bEnabled);
+
+    // Mark the dialog as not dirty
+    setDirty(false);
 }
 
 void DlgPrefController::slotPresetSelected(int chosenIndex) {
