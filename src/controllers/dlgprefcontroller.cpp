@@ -462,13 +462,24 @@ void DlgPrefController::savePreset() {
         return;
     }
 
-    if (m_pPreset->filePath().startsWith(resourcePresetsPath(m_pConfig))) {
-        m_pPreset->setName(QString(tr("%1 (edited)")).arg(m_pPreset->name()));
-        qDebug() << "Renamed preset to " << m_pPreset->name();
-    }
+    QFileInfo fileInfo(m_pPreset->filePath());
+    QString fileName = fileInfo.fileName();
 
-    QString fileName = QFileInfo(m_pPreset->filePath()).fileName();
+    // Add " (edited)" to preset name (if it's not already present)
+    QString editedSuffix = QStringLiteral(" (") + tr("edited") + QStringLiteral(")");
+    if (!m_pPreset->name().endsWith(editedSuffix)) {
+        m_pPreset->setName(m_pPreset->name() + editedSuffix);
+        qDebug() << "Renamed preset to " << m_pPreset->name();
+
+        // Add " (edited)" to file name (if it's not already present)
+        QString baseName = fileInfo.baseName();
+        if (baseName.endsWith(editedSuffix)) {
+            baseName.chop(editedSuffix.size());
+        }
+        fileName = baseName + editedSuffix + QStringLiteral(".") + fileInfo.completeSuffix();
+    }
     QString filePath = QDir(userPresetsPath(m_pConfig)).absoluteFilePath(fileName);
+
     if (!m_pPreset->savePreset(filePath)) {
         qDebug() << "Failed to save preset!";
     }
