@@ -78,42 +78,6 @@ class SignalInfo final {
     double millis2frames(double milliseconds) const {
         return secs2frames(milliseconds / 1000);
     }
-
-    // Conversion: #samples / sample offset -> second offset
-    // Only works for integer sample offsets on frame boundaries!
-    //
-    // Remark: Only generalize for arbitrary sample offsets when
-    // actually needed. Existing code may rely on the debug
-    // assertions that checks for frame boundary alignment!
-    // It is very unlikely that an integer sample offset/count
-    // is NOT supposed to address a frame boundary!!
-    double samples2secs(SINT samples) const {
-        return frames2secs(samples2frames(samples));
-    }
-
-    // Conversion: second offset -> #samples / sample offset
-    // May return sample offsets that are not on frame boundaries!
-    double secs2samples(double seconds) const {
-        return frames2samples(secs2frames(seconds));
-    }
-
-    // Conversion: #samples / sample offset -> millisecond offset
-    // Only works for integer sample offsets on frame boundaries!
-    //
-    // Remark: Only generalize for arbitrary sample offsets when
-    // actually needed. Existing code may rely on the debug
-    // assertions that checks for frame boundary alignment!
-    // It is very unlikely that an integer sample offset/count
-    // is NOT supposed to address a frame boundary!!
-    double samples2millis(SINT samples) const {
-        return frames2millis(samples2frames(samples));
-    }
-
-    // Conversion: millisecond offset -> #samples / sample offset
-    // May return sample offsets that are not on frame boundaries!
-    double millis2samples(double milliseconds) const {
-        return frames2samples(millis2frames(milliseconds));
-    }
 };
 
 bool operator==(
