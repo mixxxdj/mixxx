@@ -20,10 +20,6 @@ WTrackProperty::WTrackProperty(const char* group,
     m_pMenu = new WTrackMenu(this, pConfig, pTrackCollectionManager, flags);
 }
 
-WTrackProperty::~WTrackProperty() {
-    delete m_pMenu;
-}
-
 void WTrackProperty::setup(const QDomNode& node, const SkinContext& context) {
     WLabel::setup(node, context);
 

@@ -68,8 +68,6 @@ WTrackTableView::~WTrackTableView() {
     if (pHeader) {
         pHeader->saveHeaderState();
     }
-
-    delete m_pMenu;
 }
 
 void WTrackTableView::enableCachedOnly() {
