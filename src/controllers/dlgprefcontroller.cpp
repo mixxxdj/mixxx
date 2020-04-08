@@ -39,15 +39,14 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
     initTableView(m_ui.m_pInputMappingTableView);
     initTableView(m_ui.m_pOutputMappingTableView);
 
-    connect(m_pController, SIGNAL(presetLoaded(ControllerPresetPointer)),
-            this, SLOT(slotPresetLoaded(ControllerPresetPointer)));
+    connect(m_pController, &Controller::presetLoaded, this, &DlgPrefController::slotShowPreset);
     // TODO(rryan): Eh, this really isn't thread safe but it's the way it's been
     // since 1.11.0. We shouldn't be calling Controller methods because it lives
     // in a different thread. Booleans (like isOpen()) are fine but a complex
     // object like a preset involves QHash's and other data structures that
     // really don't like concurrent access.
     ControllerPresetPointer pPreset = m_pController->getPreset();
-    slotPresetLoaded(pPreset);
+    slotShowPreset(pPreset);
 
     m_ui.labelDeviceName->setText(m_pController->getName());
     QString category = m_pController->getCategory();
@@ -58,44 +57,55 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
     }
 
     // When the user picks a preset, load it.
-    connect(m_ui.comboBoxPreset, SIGNAL(activated(int)),
-            this, SLOT(slotLoadPreset(int)));
+    connect(m_ui.comboBoxPreset, SIGNAL(activated(int)), this, SLOT(slotPresetSelected(int)));
 
-    // When the user toggles the Enabled checkbox, toggle.
-    connect(m_ui.chkEnabledDevice, SIGNAL(clicked(bool)),
-            this, SLOT(slotEnableDevice(bool)));
+    // When the user toggles the Enabled checkbox, mark as dirty
+    connect(m_ui.chkEnabledDevice, &QCheckBox::clicked, [this] { setDirty(true); });
 
     // Connect our signals to controller manager.
-    connect(this, SIGNAL(openController(Controller*)),
-            m_pControllerManager, SLOT(openController(Controller*)));
-    connect(this, SIGNAL(closeController(Controller*)),
-            m_pControllerManager, SLOT(closeController(Controller*)));
-    connect(this, SIGNAL(loadPreset(Controller*, ControllerPresetPointer)),
-            m_pControllerManager, SLOT(loadPreset(Controller*, ControllerPresetPointer)));
+    connect(this,
+            &DlgPrefController::applyPreset,
+            m_pControllerManager,
+            &ControllerManager::slotApplyPreset);
 
     // Open script file links
     connect(m_ui.labelLoadedPresetScriptFileLinks,
             &QLabel::linkActivated,
-            [](const QString & path) {
-            QDesktopServices::openUrl(QUrl::fromLocalFile(path)); });
+            [](const QString& path) {
+                QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+            });
 
     // Input mappings
-    connect(m_ui.btnAddInputMapping, SIGNAL(clicked()),
-            this, SLOT(addInputMapping()));
-    connect(m_ui.btnRemoveInputMappings, SIGNAL(clicked()),
-            this, SLOT(removeInputMappings()));
-    connect(m_ui.btnLearningWizard, SIGNAL(clicked()),
-            this, SLOT(showLearningWizard()));
-    connect(m_ui.btnClearAllInputMappings, SIGNAL(clicked()),
-            this, SLOT(clearAllInputMappings()));
+    connect(m_ui.btnAddInputMapping,
+            SIGNAL(clicked()),
+            this,
+            SLOT(addInputMapping()));
+    connect(m_ui.btnRemoveInputMappings,
+            SIGNAL(clicked()),
+            this,
+            SLOT(removeInputMappings()));
+    connect(m_ui.btnLearningWizard,
+            SIGNAL(clicked()),
+            this,
+            SLOT(showLearningWizard()));
+    connect(m_ui.btnClearAllInputMappings,
+            SIGNAL(clicked()),
+            this,
+            SLOT(clearAllInputMappings()));
 
     // Output mappings
-    connect(m_ui.btnAddOutputMapping, SIGNAL(clicked()),
-            this, SLOT(addOutputMapping()));
-    connect(m_ui.btnRemoveOutputMappings, SIGNAL(clicked()),
-            this, SLOT(removeOutputMappings()));
-    connect(m_ui.btnClearAllOutputMappings, SIGNAL(clicked()),
-            this, SLOT(clearAllOutputMappings()));
+    connect(m_ui.btnAddOutputMapping,
+            SIGNAL(clicked()),
+            this,
+            SLOT(addOutputMapping()));
+    connect(m_ui.btnRemoveOutputMappings,
+            SIGNAL(clicked()),
+            this,
+            SLOT(removeOutputMappings()));
+    connect(m_ui.btnClearAllOutputMappings,
+            SIGNAL(clicked()),
+            this,
+            SLOT(clearAllOutputMappings()));
 }
 
 DlgPrefController::~DlgPrefController() {
@@ -107,13 +117,14 @@ void DlgPrefController::showLearningWizard() {
     // learning dialog. If we don't apply the settings first and open the
     // device, the dialog won't react to controller messages.
     if (m_ui.chkEnabledDevice->isChecked() && !m_pController->isOpen()) {
-        QMessageBox::StandardButton result = QMessageBox::question(
-            this,
-            tr("Apply device settings?"),
-            tr("Your settings must be applied before starting the learning wizard.\n"
-               "Apply settings and continue?"),
-            QMessageBox::Ok | QMessageBox::Cancel,  // Buttons to be displayed
-            QMessageBox::Ok);  // Default button
+        QMessageBox::StandardButton result = QMessageBox::question(this,
+                tr("Apply device settings?"),
+                tr("Your settings must be applied before starting the learning "
+                   "wizard.\n"
+                   "Apply settings and continue?"),
+                QMessageBox::Ok |
+                        QMessageBox::Cancel, // Buttons to be displayed
+                QMessageBox::Ok);            // Default button
         // Stop if the user has not pressed the Ok button,
         // which could be the Cancel or the Close Button.
         if (result != QMessageBox::Ok) {
@@ -123,7 +134,7 @@ void DlgPrefController::showLearningWizard() {
     slotApply();
 
     // After this point we consider the mapping wizard as dirtying the preset.
-    slotDirty();
+    setDirty(true);
 
     // Note that DlgControllerLearning is set to delete itself on close using
     // the Qt::WA_DeleteOnClose attribute (so this "new" doesn't leak memory)
@@ -132,23 +143,36 @@ void DlgPrefController::showLearningWizard() {
     ControllerLearningEventFilter* pControllerLearning =
             m_pControllerManager->getControllerLearningEventFilter();
     pControllerLearning->startListening();
-    connect(pControllerLearning, SIGNAL(controlClicked(ControlObject*)),
-            m_pDlgControllerLearning, SLOT(controlClicked(ControlObject*)));
-    connect(m_pDlgControllerLearning, SIGNAL(listenForClicks()),
-            pControllerLearning, SLOT(startListening()));
-    connect(m_pDlgControllerLearning, SIGNAL(stopListeningForClicks()),
-            pControllerLearning, SLOT(stopListening()));
-    connect(m_pDlgControllerLearning, SIGNAL(stopLearning()),
-            this, SLOT(show()));
-    connect(m_pDlgControllerLearning, SIGNAL(inputMappingsLearned(MidiInputMappings)),
-            this, SLOT(midiInputMappingsLearned(MidiInputMappings)));
+    connect(pControllerLearning,
+            SIGNAL(controlClicked(ControlObject*)),
+            m_pDlgControllerLearning,
+            SLOT(controlClicked(ControlObject*)));
+    connect(m_pDlgControllerLearning,
+            SIGNAL(listenForClicks()),
+            pControllerLearning,
+            SLOT(startListening()));
+    connect(m_pDlgControllerLearning,
+            SIGNAL(stopListeningForClicks()),
+            pControllerLearning,
+            SLOT(stopListening()));
+    connect(m_pDlgControllerLearning,
+            SIGNAL(stopLearning()),
+            this,
+            SLOT(show()));
+    connect(m_pDlgControllerLearning,
+            SIGNAL(inputMappingsLearned(MidiInputMappings)),
+            this,
+            SLOT(midiInputMappingsLearned(MidiInputMappings)));
 
     emit mappingStarted();
-    connect(m_pDlgControllerLearning, SIGNAL(stopLearning()),
-            this, SIGNAL(mappingEnded()));
+    connect(m_pDlgControllerLearning,
+            SIGNAL(stopLearning()),
+            this,
+            SIGNAL(mappingEnded()));
 }
 
-void DlgPrefController::midiInputMappingsLearned(const MidiInputMappings& mappings) {
+void DlgPrefController::midiInputMappingsLearned(
+        const MidiInputMappings& mappings) {
     // This is just a shortcut since doing a round-trip from Learning ->
     // Controller -> slotPresetLoaded -> setPreset is too heavyweight.
     if (m_pInputTableModel != NULL) {
@@ -156,7 +180,8 @@ void DlgPrefController::midiInputMappingsLearned(const MidiInputMappings& mappin
     }
 }
 
-QString DlgPrefController::presetShortName(const ControllerPresetPointer pPreset) const {
+QString DlgPrefController::presetShortName(
+        const ControllerPresetPointer pPreset) const {
     QString presetName = tr("None");
     if (pPreset) {
         QString name = pPreset->name();
@@ -173,7 +198,8 @@ QString DlgPrefController::presetShortName(const ControllerPresetPointer pPreset
     return presetName;
 }
 
-QString DlgPrefController::presetName(const ControllerPresetPointer pPreset) const {
+QString DlgPrefController::presetName(
+        const ControllerPresetPointer pPreset) const {
     if (pPreset) {
         QString name = pPreset->name();
         if (name.length() > 0)
@@ -182,7 +208,8 @@ QString DlgPrefController::presetName(const ControllerPresetPointer pPreset) con
     return tr("No Name");
 }
 
-QString DlgPrefController::presetDescription(const ControllerPresetPointer pPreset) const {
+QString DlgPrefController::presetDescription(
+        const ControllerPresetPointer pPreset) const {
     if (pPreset) {
         QString description = pPreset->description();
         if (description.length() > 0)
@@ -191,7 +218,8 @@ QString DlgPrefController::presetDescription(const ControllerPresetPointer pPres
     return tr("No Description");
 }
 
-QString DlgPrefController::presetAuthor(const ControllerPresetPointer pPreset) const {
+QString DlgPrefController::presetAuthor(
+        const ControllerPresetPointer pPreset) const {
     if (pPreset) {
         QString author = pPreset->author();
         if (author.length() > 0)
@@ -200,7 +228,8 @@ QString DlgPrefController::presetAuthor(const ControllerPresetPointer pPreset) c
     return tr("No Author");
 }
 
-QString DlgPrefController::presetForumLink(const ControllerPresetPointer pPreset) const {
+QString DlgPrefController::presetForumLink(
+        const ControllerPresetPointer pPreset) const {
     QString url;
     if (pPreset) {
         QString link = pPreset->forumlink();
@@ -210,7 +239,8 @@ QString DlgPrefController::presetForumLink(const ControllerPresetPointer pPreset
     return url;
 }
 
-QString DlgPrefController::presetWikiLink(const ControllerPresetPointer pPreset) const {
+QString DlgPrefController::presetWikiLink(
+        const ControllerPresetPointer pPreset) const {
     QString url;
     if (pPreset) {
         QString link = pPreset->wikilink();
@@ -220,7 +250,8 @@ QString DlgPrefController::presetWikiLink(const ControllerPresetPointer pPreset)
     return url;
 }
 
-QString DlgPrefController::presetScriptFileLinks(const ControllerPresetPointer pPreset) const {
+QString DlgPrefController::presetScriptFileLinks(
+        const ControllerPresetPointer pPreset) const {
     if (!pPreset) {
         return QString();
     }
@@ -233,9 +264,12 @@ QString DlgPrefController::presetScriptFileLinks(const ControllerPresetPointer p
                 script.name + QStringLiteral("</a>");
 
         if (!script.file.exists()) {
-            scriptFileLink += QStringLiteral(" (") + tr("missing") + QStringLiteral(")");
-        } else if (script.file.absoluteFilePath().startsWith(systemPresetPath)) {
-            scriptFileLink += QStringLiteral(" (") + tr("built-in") + QStringLiteral(")");
+            scriptFileLink +=
+                    QStringLiteral(" (") + tr("missing") + QStringLiteral(")");
+        } else if (script.file.absoluteFilePath().startsWith(
+                           systemPresetPath)) {
+            scriptFileLink +=
+                    QStringLiteral(" (") + tr("built-in") + QStringLiteral(")");
         }
 
         linkList << scriptFileLink;
@@ -243,11 +277,7 @@ QString DlgPrefController::presetScriptFileLinks(const ControllerPresetPointer p
     return linkList.join("<br/>");
 }
 
-void DlgPrefController::slotDirty() {
-    m_bDirty = true;
-}
-
-void DlgPrefController::enumeratePresets() {
+void DlgPrefController::enumeratePresets(const QString& selectedPresetPath) {
     m_ui.comboBoxPreset->clear();
 
     // qDebug() << "Enumerating presets for controller" << m_pController->getName();
@@ -262,7 +292,8 @@ void DlgPrefController::enumeratePresets() {
     // Enumerate user presets
     QIcon userPresetIcon(":/images/ic_custom.svg");
     PresetInfo userPresetsMatch = enumeratePresetsFromEnumerator(
-            m_pControllerManager->getMainThreadUserPresetEnumerator(), userPresetIcon);
+            m_pControllerManager->getMainThreadUserPresetEnumerator(),
+            userPresetIcon);
     if (userPresetsMatch.isValid()) {
         match = userPresetsMatch;
     }
@@ -273,18 +304,16 @@ void DlgPrefController::enumeratePresets() {
     // Enumerate system presets
     QIcon systemPresetIcon(":/images/ic_mixxx_symbolic.svg");
     PresetInfo systemPresetsMatch = enumeratePresetsFromEnumerator(
-            m_pControllerManager->getMainThreadSystemPresetEnumerator(), systemPresetIcon);
+            m_pControllerManager->getMainThreadSystemPresetEnumerator(),
+            systemPresetIcon);
     if (systemPresetsMatch.isValid()) {
         match = systemPresetsMatch;
     }
 
-    QString configuredPresetFile = m_pControllerManager->getConfiguredPresetFileForDevice(
-            m_pController->getName());
-
     // Preselect configured or matching preset
     int index = -1;
-    if (!configuredPresetFile.isEmpty()) {
-        index = m_ui.comboBoxPreset->findData(configuredPresetFile);
+    if (!selectedPresetPath.isEmpty()) {
+        index = m_ui.comboBoxPreset->findData(selectedPresetPath);
     } else if (match.isValid()) {
         index = m_ui.comboBoxPreset->findText(match.getName());
     }
@@ -304,11 +333,13 @@ PresetInfo DlgPrefController::enumeratePresetsFromEnumerator(
     // re-enumerate on the next open of the preferences.
     if (!pPresetEnumerator.isNull()) {
         // Get a list of presets in alphabetical order
-        QList<PresetInfo> systemPresets = pPresetEnumerator->getPresetsByExtension(
-                m_pController->presetExtension());
+        QList<PresetInfo> systemPresets =
+                pPresetEnumerator->getPresetsByExtension(
+                        m_pController->presetExtension());
 
         for (const PresetInfo& preset : systemPresets) {
-            m_ui.comboBoxPreset->addItem(icon, preset.getName(), preset.getPath());
+            m_ui.comboBoxPreset->addItem(
+                    icon, preset.getName(), preset.getPath());
             if (m_pController->matchPreset(preset)) {
                 match = preset;
             }
@@ -319,7 +350,8 @@ PresetInfo DlgPrefController::enumeratePresetsFromEnumerator(
 }
 
 void DlgPrefController::slotUpdate() {
-    enumeratePresets();
+    enumeratePresets(m_pControllerManager->getConfiguredPresetFileForDevice(
+            m_pController->getName()));
 
     // Check if the controller is open.
     bool deviceOpen = m_pController->isOpen();
@@ -335,64 +367,121 @@ void DlgPrefController::slotUpdate() {
 }
 
 void DlgPrefController::slotCancel() {
-    if (m_pInputTableModel != NULL) {
+    slotShowPreset(m_pController->getPreset());
+}
+
+void DlgPrefController::revertPresetChanges() {
+    if (m_pInputTableModel) {
         m_pInputTableModel->cancel();
     }
 
-    if (m_pOutputTableModel != NULL) {
+    if (m_pOutputTableModel) {
         m_pOutputTableModel->cancel();
     }
 }
 
-void DlgPrefController::slotApply() {
-    if (m_bDirty) {
-        // Apply the presets and load the resulting preset.
-        if (m_pInputTableModel != NULL) {
-            m_pInputTableModel->apply();
-        }
+void DlgPrefController::applyPresetChanges() {
+    if (m_pInputTableModel) {
+        m_pInputTableModel->apply();
+    }
 
-        if (m_pOutputTableModel != NULL) {
-            m_pOutputTableModel->apply();
-        }
-
-        // Load the resulting preset (which has been mutated by the input/output
-        // table models). The controller clones the preset so we aren't touching
-        // the same preset.
-        emit loadPreset(m_pController, m_pPreset);
-
-        bool wantEnabled = m_ui.chkEnabledDevice->isChecked();
-        bool enabled = m_pController->isOpen();
-        if (wantEnabled && !enabled) {
-            enableDevice();
-        } else if (!wantEnabled && enabled) {
-            disableDevice();
-        }
-
-        m_bDirty = false;
+    if (m_pOutputTableModel) {
+        m_pOutputTableModel->apply();
     }
 }
 
-void DlgPrefController::slotLoadPreset(int chosenIndex) {
-    if (chosenIndex == 0) {
-        // User picked no preset
-        m_ui.chkEnabledDevice->setEnabled(false);
+void DlgPrefController::slotApply() {
+    applyPresetChanges();
+
+    // If no changes were made, do nothing
+    if (!isDirty() && (!m_pPreset || m_pPreset->isDirty())) {
         return;
     }
-    m_ui.chkEnabledDevice->setEnabled(true);
 
-    const QString presetPath = m_ui.comboBoxPreset->itemData(chosenIndex).toString();
+    bool bEnabled = false;
+    if (m_pPreset) {
+        bEnabled = m_ui.chkEnabledDevice->isChecked();
+
+        if (m_pPreset->isDirty()) {
+            savePreset();
+        }
+    }
+    m_ui.chkEnabledDevice->setChecked(bEnabled);
+
+    // The shouldn't be dirty at this pint because we already tried to save
+    // it. If that failed, don't apply the preset.
+    if (m_pPreset && m_pPreset->isDirty()) {
+        return;
+    }
+
+    // Load the resulting preset (which has been mutated by the input/output
+    // table models). The controller clones the preset so we aren't touching
+    // the same preset.
+    emit applyPreset(m_pController, m_pPreset, bEnabled);
+}
+
+void DlgPrefController::slotPresetSelected(int chosenIndex) {
+    QString presetPath;
+    if (chosenIndex == 0) {
+        // User picked "No Preset" item
+        m_ui.chkEnabledDevice->setEnabled(false);
+    } else {
+        // User picked a preset
+        m_ui.chkEnabledDevice->setEnabled(true);
+
+        presetPath = m_ui.comboBoxPreset->itemData(chosenIndex).toString();
+    }
+
+    if (m_pControllerManager->getConfiguredPresetFileForDevice(
+                m_pController->getName()) != presetPath) {
+        setDirty(true);
+    }
+
+    applyPresetChanges();
+    if (m_pPreset && m_pPreset->isDirty()) {
+        if (QMessageBox::question(this,
+                    tr("Preset has been edited"),
+                    tr("Do you want to save the changes?")) ==
+                QMessageBox::Yes) {
+            savePreset();
+        }
+    }
+
     ControllerPresetPointer pPreset = ControllerPresetFileHandler::loadPreset(
             presetPath, QDir(resourcePresetsPath(m_pConfig)));
 
-    if (!pPreset) {
+    if (pPreset) {
+        DEBUG_ASSERT(!pPreset->isDirty());
+    }
+
+    slotShowPreset(pPreset);
+}
+
+void DlgPrefController::savePreset() {
+    VERIFY_OR_DEBUG_ASSERT(m_pPreset) {
         return;
     }
 
-    // TODO(rryan): We really should not load the preset here. We should load it
-    // into the preferences GUI and then load it to the actual controller once
-    // the user hits apply.
-    emit loadPreset(m_pController, pPreset);
-    slotDirty();
+    if (!m_pPreset->isDirty()) {
+        qDebug() << "Preset is not dirty, no need to save it.";
+        return;
+    }
+
+    if (m_pPreset->filePath().startsWith(resourcePresetsPath(m_pConfig))) {
+        m_pPreset->setName(QString(tr("%1 (edited)")).arg(m_pPreset->name()));
+        qDebug() << "Renamed preset to " << m_pPreset->name();
+    }
+
+    QString fileName = QFileInfo(m_pPreset->filePath()).fileName();
+    QString filePath = QDir(userPresetsPath(m_pConfig)).absoluteFilePath(fileName);
+    if (!m_pPreset->savePreset(filePath)) {
+        qDebug() << "Failed to save preset!";
+    }
+
+    m_pPreset->setFilePath(filePath);
+    m_pPreset->setDirty(false);
+
+    enumeratePresets(m_pPreset->filePath());
 }
 
 void DlgPrefController::initTableView(QTableView* pTable) {
@@ -415,7 +504,7 @@ void DlgPrefController::initTableView(QTableView* pTable) {
     pTable->setAlternatingRowColors(true);
 }
 
-void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
+void DlgPrefController::slotShowPreset(ControllerPresetPointer preset) {
     m_ui.labelLoadedPreset->setText(presetName(preset));
     m_ui.labelLoadedPresetDescription->setText(presetDescription(preset));
     m_ui.labelLoadedPresetAuthor->setText(presetAuthor(preset));
@@ -451,13 +540,6 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
 
     ControllerInputMappingTableModel* pInputModel =
             new ControllerInputMappingTableModel(this);
-    // If the model reports changes, mark ourselves as dirty.
-    connect(pInputModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)),
-            this, SLOT(slotDirty()));
-    connect(pInputModel, SIGNAL(rowsInserted(QModelIndex, int, int)),
-            this, SLOT(slotDirty()));
-    connect(pInputModel, SIGNAL(rowsRemoved(QModelIndex, int, int)),
-            this, SLOT(slotDirty()));
     pInputModel->setPreset(preset);
 
     QSortFilterProxyModel* pInputProxyModel = new QSortFilterProxyModel(this);
@@ -505,23 +587,6 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
     m_pOutputTableModel = pOutputModel;
 }
 
-void DlgPrefController::slotEnableDevice(bool enable) {
-    slotDirty();
-
-    // Set tree item text to normal/bold.
-    emit controllerEnabled(this, enable);
-}
-
-void DlgPrefController::enableDevice() {
-    emit openController(m_pController);
-    //TODO: Should probably check if open() actually succeeded.
-}
-
-void DlgPrefController::disableDevice() {
-    emit closeController(m_pController);
-    //TODO: Should probably check if close() actually succeeded.
-}
-
 void DlgPrefController::addInputMapping() {
     if (m_pInputTableModel) {
         m_pInputTableModel->addEmptyMapping();
@@ -534,7 +599,6 @@ void DlgPrefController::addInputMapping() {
         m_ui.m_pInputMappingTableView->selectionModel()->select(
             QItemSelection(left, right), QItemSelectionModel::Clear | QItemSelectionModel::Select);
         m_ui.m_pInputMappingTableView->scrollTo(left);
-        slotDirty();
     }
 }
 
@@ -545,7 +609,6 @@ void DlgPrefController::removeInputMappings() {
         QModelIndexList selectedIndices = selection.indexes();
         if (selectedIndices.size() > 0 && m_pInputTableModel) {
             m_pInputTableModel->removeMappings(selectedIndices);
-            slotDirty();
         }
     }
 }
@@ -559,7 +622,6 @@ void DlgPrefController::clearAllInputMappings() {
     }
     if (m_pInputTableModel) {
         m_pInputTableModel->clear();
-        slotDirty();
     }
 }
 
@@ -575,7 +637,6 @@ void DlgPrefController::addOutputMapping() {
         m_ui.m_pOutputMappingTableView->selectionModel()->select(
             QItemSelection(left, right), QItemSelectionModel::Clear | QItemSelectionModel::Select);
         m_ui.m_pOutputMappingTableView->scrollTo(left);
-        slotDirty();
     }
 }
 
@@ -586,7 +647,6 @@ void DlgPrefController::removeOutputMappings() {
         QModelIndexList selectedIndices = selection.indexes();
         if (selectedIndices.size() > 0 && m_pOutputTableModel) {
             m_pOutputTableModel->removeMappings(selectedIndices);
-            slotDirty();
         }
     }
 }
@@ -600,6 +660,5 @@ void DlgPrefController::clearAllOutputMappings() {
     }
     if (m_pOutputTableModel) {
         m_pOutputTableModel->clear();
-        slotDirty();
     }
 }

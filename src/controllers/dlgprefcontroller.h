@@ -40,24 +40,16 @@ class DlgPrefController : public DlgPreferencePage {
     void slotCancel();
     // Called when preference dialog (not this dialog) is displayed.
     void slotUpdate();
-    // Called when the user toggles the enabled checkbox.
-    void slotEnableDevice(bool enable);
-    // Called when the user selects a preset from the combobox.
-    void slotLoadPreset(int index);
-    // Mark that we need to apply the settings.
-    void slotDirty();
 
   signals:
-    void controllerEnabled(DlgPrefController*, bool);
-    void openController(Controller* pController);
-    void closeController(Controller* pController);
-    void loadPreset(Controller* pController, QString controllerName);
-    void loadPreset(Controller* pController, ControllerPresetPointer pPreset);
+    void applyPreset(Controller* pController, ControllerPresetPointer pPreset, bool bEnabled);
     void mappingStarted();
     void mappingEnded();
 
   private slots:
-    void slotPresetLoaded(ControllerPresetPointer preset);
+    // Called when the user toggles the enabled checkbox.
+    void slotPresetSelected(int index);
+    void slotShowPreset(ControllerPresetPointer preset);
 
     // Input mappings
     void addInputMapping();
@@ -80,11 +72,35 @@ class DlgPrefController : public DlgPreferencePage {
     QString presetForumLink(const ControllerPresetPointer pPreset) const;
     QString presetWikiLink(const ControllerPresetPointer pPreset) const;
     QString presetScriptFileLinks(const ControllerPresetPointer pPreset) const;
-    void savePreset(QString path);
+    void revertPresetChanges();
+    void applyPresetChanges();
+    void savePreset();
     void initTableView(QTableView* pTable);
 
+    /** Set dirty state (i.e. changes have been made).
+     *
+     * When this preferences page is marked as "dirty", changes have occured
+     * that can be applied or discarded.
+     *
+     * @param bDirty The new dialog's dirty state.
+     */
+    void setDirty(bool bDirty) {
+        m_bDirty = bDirty;
+    }
+
+    /** Set dirty state (i.e. changes have been made).
+     *
+     * When this preferences page is marked as "dirty", changes have occured
+     * that can be applied or discarded.
+     *
+     * @param bDirty The new dialog's dirty state.
+     */
+    bool isDirty() {
+        return m_bDirty;
+    }
+
     // Reload the mappings in the dropdown dialog
-    void enumeratePresets();
+    void enumeratePresets(const QString& selectedPresetPath);
     PresetInfo enumeratePresetsFromEnumerator(
             QSharedPointer<PresetInfoEnumerator> pPresetEnumerator,
             QIcon icon = QIcon());

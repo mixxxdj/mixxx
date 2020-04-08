@@ -45,6 +45,23 @@ QString sanitizeDeviceName(QString name) {
     return name.replace(" ", "_").replace("/", "_").replace("\\", "_");
 }
 
+QString findPresetFile(const QString& pathOrFilename, const QStringList& paths) {
+    QFileInfo fileInfo(pathOrFilename);
+    if (fileInfo.isAbsolute()) {
+        return pathOrFilename;
+    }
+
+    for (const QString& path : paths) {
+        QDir pathDir(path);
+
+        if (pathDir.exists(pathOrFilename)) {
+            return pathDir.absoluteFilePath(pathOrFilename);
+        }
+    }
+
+    return QString();
+}
+
 } // anonymous namespace
 
 QString firstAvailableFilename(QSet<QString>& filenames,
@@ -101,8 +118,6 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
             this, SLOT(slotSetUpDevices()));
     connect(this, SIGNAL(requestShutdown()),
             this, SLOT(slotShutdown()));
-    connect(this, SIGNAL(requestSave(bool)),
-            this, SLOT(slotSavePresets(bool)));
 
     // Signal that we should run slotInitialize once our event loop has started
     // up.
@@ -244,7 +259,7 @@ void ControllerManager::slotSetUpDevices() {
 
         qDebug() << "Searching for controller preset" << presetFile
                  << "in paths:" << presetPaths.join(",");
-        QString presetFilePath = ControllerManager::getAbsolutePath(presetFile, presetPaths);
+        QString presetFilePath = findPresetFile(presetFile, presetPaths);
         if (presetFilePath.isEmpty()) {
             qDebug() << "Could not find" << presetFilePath << "in any preset path.";
             continue;
@@ -253,10 +268,11 @@ void ControllerManager::slotSetUpDevices() {
         ControllerPresetPointer pPreset = ControllerPresetFileHandler::loadPreset(
                 QFileInfo(presetFilePath), resourcePresetsPath(m_pConfig));
 
-        if (!loadPreset(pController, pPreset)) {
-            // TODO(XXX) : auto load midi preset here.
+        if (!pPreset) {
             continue;
         }
+
+        pController->setPreset(*pPreset);
 
         // If we are in safe mode, skip opening controllers.
         if (CmdlineArgs::Instance().getSafeMode()) {
@@ -382,61 +398,36 @@ void ControllerManager::closeController(Controller* pController) {
             ConfigKey("[Controller]", sanitizeDeviceName(pController->getName())), 0);
 }
 
-bool ControllerManager::loadPreset(Controller* pController,
-                                   ControllerPresetPointer preset) {
-    if (!preset) {
-        return false;
+void ControllerManager::slotApplyPreset(Controller* pController,
+        ControllerPresetPointer pPreset,
+        bool bEnabled) {
+    VERIFY_OR_DEBUG_ASSERT(pController) {
+        qWarning() << "slotApplyPreset got invalid controller!";
+        return;
     }
-    pController->setPreset(*preset.data());
+
+    ConfigKey key("[ControllerPreset]", sanitizeDeviceName(pController->getName()));
+    if (!pPreset) {
+        closeController(pController);
+        // Unset the controller preset for this controller
+        m_pConfig->remove(key);
+        return;
+    }
+
+    VERIFY_OR_DEBUG_ASSERT(!pPreset->isDirty()) {
+        qWarning() << "Preset is dirty, changes might be lost on restart!";
+    }
+
+    pController->setPreset(*pPreset);
+
     // Save the file path/name in the config so it can be auto-loaded at
     // startup next time
-    m_pConfig->set(
-            ConfigKey("[ControllerPreset]", sanitizeDeviceName(pController->getName())),
-            preset->filePath());
-    return true;
-}
+    m_pConfig->set(key, pPreset->filePath());
 
-void ControllerManager::slotSavePresets(bool onlyActive) {
-    QList<Controller*> deviceList = getControllerList(false, true);
-    QSet<QString> filenames;
-
-    // TODO(rryan): This should be split up somehow but the filename selection
-    // is dependent on all of the controllers to prevent over-writing each
-    // other. We need a better solution.
-    for (Controller* pController : deviceList) {
-        if (onlyActive && !pController->isOpen()) {
-            continue;
-        }
-
-        QString deviceName = sanitizeDeviceName(pController->getName());
-
-        ControllerPresetPointer pPreset = pController->getPreset();
-        if (!pPreset) {
-            qDebug() << "Device" << deviceName << "has no configured preset";
-            continue;
-        }
-
-        if (!pPreset->isDirty()) {
-            qDebug()
-                    << "Preset for device" << deviceName
-                    << "is not dirty, no need to save it to the user presets.";
-            continue;
-        }
-
-        if (pPreset->filePath().startsWith(resourcePresetsPath(m_pConfig))) {
-            pPreset->setName(QString(tr("%1 (edited)")).arg(pPreset->name()));
-            pController->setPreset(*pPreset);
-            qDebug() << "Renamed preset to " << pPreset->name();
-        }
-
-        QString filename = firstAvailableFilename(filenames, deviceName);
-        QString presetPath = userPresetsPath(m_pConfig) + filename
-                + pController->presetExtension();
-        if (!pPreset->savePreset(presetPath)) {
-            qWarning() << "Failed to write preset for device"
-                       << deviceName << "to" << presetPath;
-        }
-        m_pConfig->set(ConfigKey("[ControllerPreset]", deviceName), presetPath);
+    if (bEnabled) {
+        openController(pController);
+    } else {
+        closeController(pController);
     }
 }
 
@@ -446,44 +437,4 @@ QList<QString> ControllerManager::getPresetPaths(UserSettingsPointer pConfig) {
     scriptPaths.append(userPresetsPath(pConfig));
     scriptPaths.append(resourcePresetsPath(pConfig));
     return scriptPaths;
-}
-
-// static
-bool ControllerManager::checksumFile(const QString& filename,
-                                     quint16* pChecksum) {
-    QFile file(filename);
-    if (!file.open(QIODevice::ReadOnly)) {
-        return false;
-    }
-
-    qint64 fileSize = file.size();
-    const char* pFile = reinterpret_cast<char*>(file.map(0, fileSize));
-
-    if (pFile == NULL) {
-        file.close();
-        return false;
-    }
-
-    *pChecksum = qChecksum(pFile, fileSize);
-    file.close();
-    return true;
-}
-
-// static
-QString ControllerManager::getAbsolutePath(const QString& pathOrFilename,
-                                           const QStringList& paths) {
-    QFileInfo fileInfo(pathOrFilename);
-    if (fileInfo.isAbsolute()) {
-        return pathOrFilename;
-    }
-
-    for (const QString& path : paths) {
-        QDir pathDir(path);
-
-        if (pathDir.exists(pathOrFilename)) {
-            return pathDir.absoluteFilePath(pathOrFilename);
-        }
-    }
-
-    return QString();
 }

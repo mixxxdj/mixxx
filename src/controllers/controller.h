@@ -69,8 +69,10 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // preset, not a pointer to the preset itself.
     void presetLoaded(ControllerPresetPointer pPreset);
 
-  // Making these slots protected/private ensures that other parts of Mixxx can
-  // only signal them which allows us to use no locks.
+    void openChanged(bool bOpen);
+
+    // Making these slots protected/private ensures that other parts of Mixxx can
+    // only signal them which allows us to use no locks.
   protected slots:
     // TODO(XXX) move this into the inherited classes since is not called here
     // (via Controller) and re-implemented anyway in most cases.
@@ -126,6 +128,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     }
     inline void setOpen(bool open) {
         m_bIsOpen = open;
+        emit openChanged(m_bIsOpen);
     }
 
   private: // but used by ControllerManager
