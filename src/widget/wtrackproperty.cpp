@@ -83,7 +83,7 @@ void WTrackProperty::dropEvent(QDropEvent *event) {
 
 void WTrackProperty::contextMenuEvent(QContextMenuEvent *event) {
     if (m_pCurrentTrack) {
-        m_pMenu->setTrackId(m_pCurrentTrack->getId());
+        m_pMenu->loadTrack(m_pCurrentTrack->getId());
         // Create the right-click menu
         m_pMenu->popup(event->globalPos());
     }

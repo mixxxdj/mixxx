@@ -38,18 +38,23 @@ class WTrackMenu : public QMenu {
     };
     Q_DECLARE_FLAGS(Filters, Filter)
 
-    WTrackMenu(QWidget *parent, UserSettingsPointer pConfig, TrackCollectionManager* pTrackCollectionManager, Filters flags = Filter::None);
-    ~WTrackMenu() {}
+    WTrackMenu(QWidget* parent, UserSettingsPointer pConfig, TrackCollectionManager* pTrackCollectionManager, Filters flags = Filter::None);
+    ~WTrackMenu() {
+    }
 
-    void setTrackId(TrackId track);
-    void setTrackIds(TrackIdList trackList);
-    void setTrackIndexList(QModelIndexList indexList);
+    void loadTrack(TrackId trackId);
+    void loadTrack(QModelIndex index);
+    void loadTracks(TrackIdList trackList);
+    void loadTracks(QModelIndexList indexList);
     void setTrackModel(TrackModel* trackModel);
+
+  signals:
+    void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
 
   private slots:
     // File
     void slotOpenInFileBrowser();
-    
+
     // Row color
     void slotColorPicked(mixxx::RgbColor::optional_t color);
 
@@ -70,7 +75,7 @@ class WTrackMenu : public QMenu {
     void slotLockBpm();
     void slotUnlockBpm();
     void slotScaleBpm(int);
-    
+
     // Info and metadata
     void slotNextTrackInfo();
     void slotNextDlgTagFetcher();
@@ -83,7 +88,7 @@ class WTrackMenu : public QMenu {
     void slotShowDlgTagFetcher();
     void slotImportTrackMetadataFromFileTags();
     void slotExportTrackMetadataIntoFileTags();
-    void slotUpdateExternalTrackCollection(ExternalTrackCollection *externalTrackCollection);
+    void slotUpdateExternalTrackCollection(ExternalTrackCollection* externalTrackCollection);
 
     // Playlist and crate
     void slotPopulatePlaylistMenu();
@@ -96,7 +101,7 @@ class WTrackMenu : public QMenu {
     void slotAddToAutoDJReplace();
 
     // Cover
-    void slotCoverInfoSelected(const CoverInfoRelative &coverInfo);
+    void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
 
     // Library management
@@ -104,15 +109,15 @@ class WTrackMenu : public QMenu {
     void slotHide();
     void slotUnhide();
     void slotPurge();
-    
-public:
-    signals:
-    void loadTrackToPlayer(TrackPointer pTrack, QString group,
-            bool play = false);
 
-private:
+  private:
+    TrackIdList getTrackIds() const;
+    TrackPointerList getTrackPointers() const;
+    TrackModel* getTrackModel() const;
+    QModelIndexList getTrackIndices() const;
+
     void teardownActions();
-    void constructMenus();
+    void createMenus();
     void createActions();
     void setupActions();
 
@@ -133,70 +138,69 @@ private:
     void clearTrackSelection();
 
     // Selected tracks
-    TrackIdList m_pTrackIdList;
     TrackPointerList m_pTrackPointerList;
-    QModelIndexList m_pSelectedTrackIndices;
+    QModelIndexList m_pTrackIndexList;
 
     TrackModel* m_pTrackModel{};
 
-    ControlProxy* m_pNumSamplers{};
-    ControlProxy* m_pNumDecks{};
-    ControlProxy* m_pNumPreviewDecks{};
+    const ControlProxy* m_pNumSamplers{};
+    const ControlProxy* m_pNumDecks{};
+    const ControlProxy* m_pNumPreviewDecks{};
 
     // Submenus
-    QMenu *m_pLoadToMenu{};
-    QMenu *m_pDeckMenu{};
-    QMenu *m_pSamplerMenu{};
-    QMenu *m_pPlaylistMenu{};
-    QMenu *m_pCrateMenu{};
-    QMenu *m_pMetadataMenu{};
-    QMenu *m_pMetadataUpdateExternalCollectionsMenu{};
-    QMenu *m_pClearMetadataMenu{};
-    QMenu *m_pBPMMenu{};
-    QMenu *m_pColorMenu{};
+    QMenu* m_pLoadToMenu{};
+    QMenu* m_pDeckMenu{};
+    QMenu* m_pSamplerMenu{};
+    QMenu* m_pPlaylistMenu{};
+    QMenu* m_pCrateMenu{};
+    QMenu* m_pMetadataMenu{};
+    QMenu* m_pMetadataUpdateExternalCollectionsMenu{};
+    QMenu* m_pClearMetadataMenu{};
+    QMenu* m_pBPMMenu{};
+    QMenu* m_pColorMenu{};
     WCoverArtMenu* m_pCoverMenu{};
 
     // Reload Track Metadata Action:
-    QAction *m_pImportMetadataFromFileAct{};
-    QAction *m_pImportMetadataFromMusicBrainzAct{};
+    QAction* m_pImportMetadataFromFileAct{};
+    QAction* m_pImportMetadataFromMusicBrainzAct{};
 
     // Save Track Metadata Action:
-    QAction *m_pExportMetadataAct{};
+    QAction* m_pExportMetadataAct{};
 
     // Load Track to PreviewDeck
     QAction* m_pAddToPreviewDeck{};
 
     // Send to Auto-DJ Action
-    QAction *m_pAutoDJBottomAct{};
-    QAction *m_pAutoDJTopAct{};
-    QAction *m_pAutoDJReplaceAct{};
+    QAction* m_pAutoDJBottomAct{};
+    QAction* m_pAutoDJTopAct{};
+    QAction* m_pAutoDJReplaceAct{};
 
     // Remove from table
-    QAction *m_pRemoveAct{};
-    QAction *m_pRemovePlaylistAct{};
-    QAction *m_pRemoveCrateAct{};
-    QAction *m_pHideAct{};
-    QAction *m_pUnhideAct{};
-    QAction *m_pPurgeAct{};
+    QAction* m_pRemoveAct{};
+    QAction* m_pRemovePlaylistAct{};
+    QAction* m_pRemoveCrateAct{};
+    QAction* m_pHideAct{};
+    QAction* m_pUnhideAct{};
+    QAction* m_pPurgeAct{};
 
     // Show track-editor action
-    QAction *m_pPropertiesAct{};
-    
+    QAction* m_pPropertiesAct{};
+
     // Open file in default file browser
-    QAction *m_pFileBrowserAct{};
+    QAction* m_pFileBrowserAct{};
 
     // BPM feature
-    QAction *m_pBpmLockAction{};
-    QAction *m_pBpmUnlockAction{};
-    QAction *m_pBpmDoubleAction{};
-    QAction *m_pBpmHalveAction{};
-    QAction *m_pBpmTwoThirdsAction{};
-    QAction *m_pBpmThreeFourthsAction{};
-    QAction *m_pBpmFourThirdsAction{};
-    QAction *m_pBpmThreeHalvesAction{};
+    QAction* m_pBpmLockAction{};
+    QAction* m_pBpmUnlockAction{};
+    QAction* m_pBpmDoubleAction{};
+    QAction* m_pBpmHalveAction{};
+    QAction* m_pBpmTwoThirdsAction{};
+    QAction* m_pBpmThreeFourthsAction{};
+    QAction* m_pBpmFourThirdsAction{};
+    QAction* m_pBpmThreeHalvesAction{};
 
     // Track color
-    WColorPickerAction *m_pColorPickerAction{};
+    WColorPickerAction* m_pColorPickerAction{};
 
     // Clear track metadata actions
     QAction* m_pClearBeatsAction{};
@@ -224,16 +228,16 @@ private:
         QAction* action{};
     };
     QList<UpdateExternalTrackCollection> m_updateInExternalTrackCollections;
-    
+
     bool m_bPlaylistMenuLoaded;
     bool m_bCrateMenuLoaded;
 
     // Column numbers
-    int m_iCoverSourceColumn; // cover art source
-    int m_iCoverTypeColumn; // cover art type
+    int m_iCoverSourceColumn;   // cover art source
+    int m_iCoverTypeColumn;     // cover art type
     int m_iCoverLocationColumn; // cover art location
-    int m_iCoverHashColumn; // cover art hash
-    int m_iCoverColumn; // visible cover art
+    int m_iCoverHashColumn;     // cover art hash
+    int m_iCoverColumn;         // visible cover art
     int m_iTrackLocationColumn;
 
     // Filter available options
@@ -241,6 +245,5 @@ private:
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(WTrackMenu::Filters)
-
 
 #endif // WTRACKMENU_H

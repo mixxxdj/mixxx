@@ -384,11 +384,10 @@ void WTrackTableView::slotUnhide() {
 void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     // Update track indices in context menu
     QModelIndexList indices = selectionModel()->selectedRows();
-    m_pMenu->setTrackIndexList(indices);
+    m_pMenu->loadTracks(indices);
 
     //Create the right-click menu
     m_pMenu->popup(event->globalPos());
-
 }
 
 void WTrackTableView::onSearch(const QString& text) {
