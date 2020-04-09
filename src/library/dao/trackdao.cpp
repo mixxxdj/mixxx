@@ -355,18 +355,20 @@ void TrackDAO::addTracksPrepare() {
     m_pQueryLibraryInsert->prepare("INSERT INTO library "
             "("
             "artist,title,album,album_artist,year,genre,tracknumber,tracktotal,composer,"
-            "grouping,filetype,location,color,comment,url,duration,rating,key,key_id,"
-            "bitrate,samplerate,cuepoint,bpm,replaygain,replaygain_peak,wavesummaryhex,"
-            "timesplayed,played,channels,mixxx_deleted,header_parsed,"
+            "grouping,filetype,location,color,comment,url,rating,key,key_id,"
+            "cuepoint,bpm,replaygain,replaygain_peak,wavesummaryhex,"
+            "timesplayed,played,mixxx_deleted,header_parsed,"
+            "channels,samplerate,bitrate,duration,"
             "beats_version,beats_sub_version,beats,bpm_lock,"
             "keys_version,keys_sub_version,keys,"
             "coverart_source,coverart_type,coverart_location,coverart_hash,"
             "datetime_added"
             ") VALUES ("
             ":artist,:title,:album,:album_artist,:year,:genre,:tracknumber,:tracktotal,:composer,"
-            ":grouping,:filetype,:location,:color,:comment,:url,:duration,:rating,:key,:key_id,"
-            ":bitrate,:samplerate,:cuepoint,:bpm,:replaygain,:replaygain_peak,:wavesummaryhex,"
-            ":timesplayed,:played,:channels,:mixxx_deleted,:header_parsed,"
+            ":grouping,:filetype,:location,:color,:comment,:url,:rating,:key,:key_id,"
+            ":cuepoint,:bpm,:replaygain,:replaygain_peak,:wavesummaryhex,"
+            ":timesplayed,:played,:mixxx_deleted,:header_parsed,"
+            ":channels,:samplerate,:bitrate,:duration,"
             ":beats_version,:beats_sub_version,:beats,:bpm_lock,"
             ":keys_version,:keys_sub_version,:keys,"
             ":coverart_source,:coverart_type,:coverart_location,:coverart_hash,"
@@ -434,15 +436,16 @@ namespace {
         pTrackLibraryQuery->bindValue(":color", mixxx::RgbColor::toQVariant(track.getColor()));
         pTrackLibraryQuery->bindValue(":comment", track.getComment());
         pTrackLibraryQuery->bindValue(":url", track.getURL());
-        pTrackLibraryQuery->bindValue(":duration", track.getDuration());
         pTrackLibraryQuery->bindValue(":rating", track.getRating());
-        pTrackLibraryQuery->bindValue(":bitrate", track.getBitrate());
-        pTrackLibraryQuery->bindValue(":samplerate", track.getSampleRate());
         pTrackLibraryQuery->bindValue(":cuepoint", track.getCuePoint().getPosition());
         pTrackLibraryQuery->bindValue(":bpm_lock", track.isBpmLocked()? 1 : 0);
         pTrackLibraryQuery->bindValue(":replaygain", track.getReplayGain().getRatio());
         pTrackLibraryQuery->bindValue(":replaygain_peak", track.getReplayGain().getPeak());
+
         pTrackLibraryQuery->bindValue(":channels", track.getChannels());
+        pTrackLibraryQuery->bindValue(":samplerate", track.getSampleRate());
+        pTrackLibraryQuery->bindValue(":bitrate", track.getBitrate());
+        pTrackLibraryQuery->bindValue(":duration", track.getDuration());
 
         pTrackLibraryQuery->bindValue(":header_parsed", track.isMetadataSynchronized() ? 1 : 0);
 
@@ -973,27 +976,9 @@ bool setTrackUrl(const QSqlRecord& record, const int column,
     return false;
 }
 
-bool setTrackDuration(const QSqlRecord& record, const int column,
-                      TrackPointer pTrack) {
-    pTrack->setDuration(record.value(column).toDouble());
-    return false;
-}
-
-bool setTrackBitrate(const QSqlRecord& record, const int column,
-                     TrackPointer pTrack) {
-    pTrack->setBitrate(record.value(column).toInt());
-    return false;
-}
-
 bool setTrackRating(const QSqlRecord& record, const int column,
                     TrackPointer pTrack) {
     pTrack->setRating(record.value(column).toInt());
-    return false;
-}
-
-bool setTrackSampleRate(const QSqlRecord& record, const int column,
-                        TrackPointer pTrack) {
-    pTrack->setSampleRate(record.value(column).toInt());
     return false;
 }
 
@@ -1035,12 +1020,6 @@ bool setTrackPlayed(const QSqlRecord& record, const int column,
     return false;
 }
 
-bool setTrackChannels(const QSqlRecord& record, const int column,
-                      TrackPointer pTrack) {
-    pTrack->setChannels(record.value(column).toInt());
-    return false;
-}
-
 bool setTrackDateAdded(const QSqlRecord& record, const int column,
                        TrackPointer pTrack) {
     pTrack->setDateAdded(record.value(column).toDateTime());
@@ -1056,6 +1035,22 @@ bool setTrackFiletype(const QSqlRecord& record, const int column,
 bool setTrackMetadataSynchronized(const QSqlRecord& record, const int column,
                           TrackPointer pTrack) {
     pTrack->setMetadataSynchronized(record.value(column).toBool());
+    return false;
+}
+
+bool setTrackAudioProperties(
+        const QSqlRecord& record,
+        const int firstColumn,
+        TrackPointer pTrack) {
+    const auto channels = record.value(firstColumn).toInt();
+    const auto samplerate = record.value(firstColumn + 1).toInt();
+    const auto bitrate = record.value(firstColumn + 2).toInt();
+    const auto duration = record.value(firstColumn + 3).toDouble();
+    pTrack->setAudioProperties(
+            mixxx::audio::ChannelCount(channels),
+            mixxx::audio::SampleRate(samplerate),
+            mixxx::audio::Bitrate(bitrate),
+            mixxx::Duration::fromSeconds(duration));
     return false;
 }
 
@@ -1161,17 +1156,20 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
         { "color", setTrackColor },
         { "comment", setTrackComment },
         { "url", setTrackUrl },
-        { "duration", setTrackDuration },
-        { "bitrate", setTrackBitrate },
-        { "samplerate", setTrackSampleRate },
         { "cuepoint", setTrackCuePoint },
         { "replaygain", setTrackReplayGainRatio },
         { "replaygain_peak", setTrackReplayGainPeak },
-        { "channels", setTrackChannels },
         { "timesplayed", setTrackTimesPlayed },
         { "played", setTrackPlayed },
         { "datetime_added", setTrackDateAdded },
         { "header_parsed", setTrackMetadataSynchronized },
+
+        // Audio properties are set together at once. Do not change the
+        // ordering of these columns or put other columns in between them!
+        { "channels", setTrackAudioProperties },
+        { "samplerate", nullptr },
+        { "bitrate", nullptr },
+        { "duration", nullptr },
 
         // Beat detection columns are handled by setTrackBeats. Do not change
         // the ordering of these columns or put other columns in between them!
@@ -1397,21 +1395,21 @@ bool TrackDAO::updateTrack(Track* pTrack) {
             "color=:color,"
             "comment=:comment,"
             "url=:url,"
-            "duration=:duration,"
             "rating=:rating,"
             "key=:key,"
             "key_id=:key_id,"
-            "bitrate=:bitrate,"
-            "samplerate=:samplerate,"
             "cuepoint=:cuepoint,"
             "bpm=:bpm,"
             "replaygain=:replaygain,"
             "replaygain_peak=:replaygain_peak,"
             "timesplayed=:timesplayed,"
             "played=:played,"
-            "channels=:channels,"
             "header_parsed=:header_parsed,"
-            "beats_version=:beats_version,"
+            "channels=:channels,"
+            "bitrate=:bitrate,"
+            "samplerate=:samplerate,"
+            "bitrate=:bitrate,"
+            "duration=:duration,"
             "beats_sub_version=:beats_sub_version,"
             "beats=:beats,"
             "bpm_lock=:bpm_lock,"

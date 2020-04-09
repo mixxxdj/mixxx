@@ -145,7 +145,7 @@ void AnalyzerThread::doRun() {
             // Make sure not to short-circuit initialize(...)
             if (analyzer.initialize(
                         m_currentTrack,
-                        audioSource->sampleRate(),
+                        audioSource->getSignalInfo().getSampleRate(),
                         audioSource->frameLength() * mixxx::kAnalysisChannels)) {
                 processTrack = true;
             }
@@ -226,7 +226,9 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
     mixxx::AudioSourceStereoProxy audioSourceProxy(
             audioSource,
             mixxx::kAnalysisFramesPerChunk);
-    DEBUG_ASSERT(audioSourceProxy.channelCount() == mixxx::kAnalysisChannels);
+    DEBUG_ASSERT(
+            audioSourceProxy.getSignalInfo().getChannelCount() ==
+            mixxx::kAnalysisChannels);
 
     // Analysis starts now
     emitBusyProgress(kAnalyzerProgressNone);

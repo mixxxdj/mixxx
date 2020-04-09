@@ -12,13 +12,23 @@ const Logger kLogger("AudioSource");
 
 AudioSource::AudioSource(QUrl url)
         : UrlResource(url),
-          AudioSignal(kSampleLayout) {
+          m_signalInfo(kSampleLayout) {
+}
+
+AudioSource::AudioSource(
+        const AudioSource& inner,
+        const audio::SignalInfo& signalInfo)
+        : UrlResource(inner),
+          m_signalInfo(signalInfo),
+          m_bitrate(inner.m_bitrate),
+          m_frameIndexRange(inner.m_frameIndexRange) {
 }
 
 AudioSource::OpenResult AudioSource::open(
         OpenMode mode,
         const OpenParams& params) {
     close(); // reopening is not supported
+    DEBUG_ASSERT(!getSignalInfo().isValid());
 
     OpenResult result;
     try {
@@ -56,14 +66,61 @@ bool AudioSource::initFrameIndexRangeOnce(
     return true;
 }
 
-bool AudioSource::initBitrateOnce(Bitrate bitrate) {
-    if (bitrate < Bitrate()) {
+bool AudioSource::initChannelCountOnce(
+        audio::ChannelCount channelCount) {
+    if (!channelCount.isValid()) {
+        kLogger.warning()
+                << "Invalid channel count"
+                << channelCount;
+        return false; // abort
+    }
+    VERIFY_OR_DEBUG_ASSERT(
+            !m_signalInfo.getChannelCount().isValid() ||
+            m_signalInfo.getChannelCount() == channelCount) {
+        kLogger.warning()
+                << "Channel count has already been initialized to"
+                << m_signalInfo.getChannelCount()
+                << "which differs from"
+                << channelCount;
+        return false; // abort
+    }
+    m_signalInfo.setChannelCount(channelCount);
+    return true;
+}
+
+bool AudioSource::initSampleRateOnce(
+        audio::SampleRate sampleRate) {
+    if (!sampleRate.isValid()) {
+        kLogger.warning()
+                << "Invalid sample rate"
+                << sampleRate;
+        return false; // abort
+    }
+    VERIFY_OR_DEBUG_ASSERT(
+            !m_signalInfo.getSampleRate().isValid() ||
+            m_signalInfo.getSampleRate() == sampleRate) {
+        kLogger.warning()
+                << "Sample rate has already been initialized to"
+                << m_signalInfo.getSampleRate()
+                << "which differs from"
+                << sampleRate;
+        return false; // abort
+    }
+    m_signalInfo.setSampleRate(sampleRate);
+    return true;
+}
+
+bool AudioSource::initBitrateOnce(audio::Bitrate bitrate) {
+    // Bitrate is optional and might be invalid (= audio::Bitrate())
+    if (bitrate < audio::Bitrate()) {
         kLogger.warning()
                 << "Invalid bitrate"
                 << bitrate;
         return false; // abort
     }
-    VERIFY_OR_DEBUG_ASSERT(!m_bitrate.valid() || (m_bitrate == bitrate)) {
+    VERIFY_OR_DEBUG_ASSERT(
+            !m_bitrate.isValid() ||
+            m_bitrate == bitrate) {
         kLogger.warning()
                 << "Bitrate has already been initialized to"
                 << m_bitrate
@@ -76,22 +133,48 @@ bool AudioSource::initBitrateOnce(Bitrate bitrate) {
 }
 
 bool AudioSource::verifyReadable() const {
-    bool result = AudioSignal::verifyReadable();
-    if (frameIndexRange().empty()) {
+    bool result = true;
+    DEBUG_ASSERT(m_signalInfo.getSampleLayout());
+    if (!m_signalInfo.getChannelCount().isValid()) {
         kLogger.warning()
-                << "No audio data available";
-        // Don't set the result to false, even if reading from an empty source
-        // is pointless!
+                << "Invalid number of channels:"
+                << getSignalInfo().getChannelCount()
+                << "is out of range ["
+                << audio::ChannelCount::min()
+                << ","
+                << audio::ChannelCount::max()
+                << "]";
+        result = false;
     }
-    if (m_bitrate != Bitrate()) {
-        VERIFY_OR_DEBUG_ASSERT(m_bitrate.valid()) {
+    if (!m_signalInfo.getSampleRate().isValid()) {
+        kLogger.warning()
+                << "Invalid sample rate:"
+                << getSignalInfo().getSampleRate()
+                << "is out of range ["
+                << audio::SampleRate::min()
+                << ","
+                << audio::SampleRate::max()
+                << "]";
+        result = false;
+    }
+    DEBUG_ASSERT(result == m_signalInfo.isValid());
+    // Bitrate is optional and might be invalid (= audio::Bitrate())
+    if (m_bitrate != audio::Bitrate()) {
+        // Non-default bitrate must be valid
+        VERIFY_OR_DEBUG_ASSERT(m_bitrate.isValid()) {
             kLogger.warning()
-                    << "Invalid bitrate [kbps]:"
+                    << "Invalid bitrate"
                     << m_bitrate;
             // Don't set the result to false, because bitrate is only
             // an informational property that does not effect the ability
             // to decode audio data!
         }
+    }
+    if (frameIndexRange().empty()) {
+        kLogger.warning()
+                << "No audio data available";
+        // Don't set the result to false, even if reading from an
+        // empty source is pointless!
     }
     return result;
 }
@@ -101,12 +184,19 @@ WritableSampleFrames AudioSource::clampWritableSampleFrames(
     const auto readableFrameIndexRange =
             clampFrameIndexRange(sampleFrames.frameIndexRange());
     // adjust offset and length of the sample buffer
-    DEBUG_ASSERT(sampleFrames.frameIndexRange().start() <= readableFrameIndexRange.end());
+    DEBUG_ASSERT(
+            sampleFrames.frameIndexRange().start() <=
+            readableFrameIndexRange.end());
     auto writableFrameIndexRange =
-            IndexRange::between(sampleFrames.frameIndexRange().start(), readableFrameIndexRange.end());
+            IndexRange::between(
+                    sampleFrames.frameIndexRange().start(),
+                    readableFrameIndexRange.end());
     const SINT minSampleBufferCapacity =
-            frames2samples(writableFrameIndexRange.length());
-    VERIFY_OR_DEBUG_ASSERT(sampleFrames.writableLength() >= minSampleBufferCapacity) {
+            m_signalInfo.frames2samples(
+                    writableFrameIndexRange.length());
+    VERIFY_OR_DEBUG_ASSERT(
+            sampleFrames.writableLength() >=
+            minSampleBufferCapacity) {
         kLogger.critical()
                 << "Capacity of output buffer is too small"
                 << sampleFrames.writableLength()
@@ -118,20 +208,27 @@ WritableSampleFrames AudioSource::clampWritableSampleFrames(
                 << writableFrameIndexRange;
         writableFrameIndexRange =
                 writableFrameIndexRange.splitAndShrinkFront(
-                        samples2frames(sampleFrames.writableLength()));
+                        m_signalInfo.samples2frames(
+                                sampleFrames.writableLength()));
         kLogger.warning()
                 << "Reduced writable sample frames"
                 << writableFrameIndexRange;
     }
-    DEBUG_ASSERT(readableFrameIndexRange.start() >= writableFrameIndexRange.start());
+    DEBUG_ASSERT(
+            readableFrameIndexRange.start() >=
+            writableFrameIndexRange.start());
     const SINT writableFrameOffset =
-            readableFrameIndexRange.start() - writableFrameIndexRange.start();
-    writableFrameIndexRange.shrinkFront(writableFrameOffset);
+            readableFrameIndexRange.start() -
+            writableFrameIndexRange.start();
+    writableFrameIndexRange.shrinkFront(
+            writableFrameOffset);
     return WritableSampleFrames(
             writableFrameIndexRange,
             SampleBuffer::WritableSlice(
-                    sampleFrames.writableData(frames2samples(writableFrameOffset)),
-                    frames2samples(writableFrameIndexRange.length())));
+                    sampleFrames.writableData(
+                            m_signalInfo.frames2samples(writableFrameOffset)),
+                    m_signalInfo.frames2samples(
+                            writableFrameIndexRange.length())));
 }
 
 ReadableSampleFrames AudioSource::readSampleFrames(
@@ -156,17 +253,22 @@ ReadableSampleFrames AudioSource::readSampleFrames(
                 // Adjust upper bound: Consider all audio data following
                 // the read position until the end as unreadable
                 shrinkedFrameIndexRange.shrinkBack(
-                        shrinkedFrameIndexRange.end() - writable.frameIndexRange().start());
+                        shrinkedFrameIndexRange.end() -
+                        writable.frameIndexRange().start());
             } else {
                 // Adjust lower bound of readable audio data
-                if (writable.frameIndexRange().start() < readable.frameIndexRange().start()) {
+                if (writable.frameIndexRange().start() <
+                        readable.frameIndexRange().start()) {
                     shrinkedFrameIndexRange.shrinkFront(
-                            readable.frameIndexRange().start() - shrinkedFrameIndexRange.start());
+                            readable.frameIndexRange().start() -
+                            shrinkedFrameIndexRange.start());
                 }
                 // Adjust upper bound of readable audio data
-                if (writable.frameIndexRange().end() > readable.frameIndexRange().end()) {
+                if (writable.frameIndexRange().end() >
+                        readable.frameIndexRange().end()) {
                     shrinkedFrameIndexRange.shrinkBack(
-                            shrinkedFrameIndexRange.end() - readable.frameIndexRange().end());
+                            shrinkedFrameIndexRange.end() -
+                            readable.frameIndexRange().end());
                 }
             }
             DEBUG_ASSERT(shrinkedFrameIndexRange < m_frameIndexRange);

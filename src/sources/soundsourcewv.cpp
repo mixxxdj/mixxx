@@ -42,8 +42,8 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(
     DEBUG_ASSERT(!m_wpc);
     char msg[80]; // hold possible error message
     int openFlags = OPEN_WVC | OPEN_NORMALIZE;
-    if ((params.channelCount() == 1) ||
-            (params.channelCount() == 2)) {
+    if ((params.getSignalInfo().getChannelCount() == 1) ||
+            (params.getSignalInfo().getChannelCount() == 2)) {
         openFlags |= OPEN_2CH_MAX;
     }
 
@@ -64,8 +64,8 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(
         return OpenResult::Failed;
     }
 
-    setChannelCount(WavpackGetReducedChannels(static_cast<WavpackContext*>(m_wpc)));
-    setSampleRate(WavpackGetSampleRate(static_cast<WavpackContext*>(m_wpc)));
+    initChannelCountOnce(WavpackGetReducedChannels(static_cast<WavpackContext*>(m_wpc)));
+    initSampleRateOnce(WavpackGetSampleRate(static_cast<WavpackContext*>(m_wpc)));
     initFrameIndexRangeOnce(
             mixxx::IndexRange::forward(
                     0,
@@ -140,7 +140,7 @@ ReadableSampleFrames SoundSourceWV::readSampleFramesClamped(
     DEBUG_ASSERT(unpackCount <= numberOfFramesTotal);
     if (!(WavpackGetMode(static_cast<WavpackContext*>(m_wpc)) & MODE_FLOAT)) {
         // signed integer -> float
-        const SINT sampleCount = frames2samples(unpackCount);
+        const SINT sampleCount = getSignalInfo().frames2samples(unpackCount);
         for (SINT i = 0; i < sampleCount; ++i) {
             const int32_t sampleValue =
                     *reinterpret_cast<int32_t*>(pOutputBuffer);
@@ -153,7 +153,7 @@ ReadableSampleFrames SoundSourceWV::readSampleFramesClamped(
             resultRange,
             SampleBuffer::ReadableSlice(
                     writableSampleFrames.writableData(),
-                    frames2samples(unpackCount)));
+                    getSignalInfo().frames2samples(unpackCount)));
 }
 
 QString SoundSourceProviderWV::getName() const {

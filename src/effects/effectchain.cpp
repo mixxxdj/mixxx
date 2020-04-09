@@ -183,7 +183,7 @@ void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handle_grou
 
     //TODO: get actual configuration of engine
     const mixxx::EngineParameters bufferParameters(
-          mixxx::AudioSignal::SampleRate(96000),
+          mixxx::audio::SampleRate(96000),
           MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
 
     for (int i = 0; i < m_effects.size(); ++i) {
