@@ -10,6 +10,7 @@
 
 class BaseCoverArtDelegate;
 class TrackCollectionManager;
+class WLibraryTableView;
 
 class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     Q_OBJECT
@@ -19,7 +20,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     explicit BaseTrackTableModel(
             const char* settingsNamespace,
             TrackCollectionManager* const pTrackCollectionManager,
-            QObject* parent = nullptr);
+            QObject* parent);
     ~BaseTrackTableModel() override = default;
 
     ///////////////////////////////////////////////////////
@@ -199,6 +200,8 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
             const QModelIndexList& indexes) const;
 
     const QString m_previewDeckGroup;
+
+    double m_backgroundColorOpacity;
 
     ColumnCache m_columnCache;
 
