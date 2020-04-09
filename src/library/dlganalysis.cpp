@@ -8,9 +8,10 @@
 #include "library/trackcollectionmanager.h"
 #include "library/dlganalysis.h"
 #include "library/library.h"
+#include "widget/wlibrary.h"
 #include "util/assert.h"
 
-DlgAnalysis::DlgAnalysis(QWidget* parent,
+DlgAnalysis::DlgAnalysis(WLibrary* parent,
                        UserSettingsPointer pConfig,
                        Library* pLibrary)
         : QWidget(parent),
@@ -20,7 +21,11 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
     m_songsButtonGroup.addButton(radioButtonRecentlyAdded);
     m_songsButtonGroup.addButton(radioButtonAllSongs);
 
-    m_pAnalysisLibraryTableView = new WAnalysisLibraryTableView(this, pConfig, pLibrary->trackCollections());
+    m_pAnalysisLibraryTableView = new WAnalysisLibraryTableView(
+            this,
+            pConfig,
+            pLibrary->trackCollections(),
+            parent->getTrackTableBackgroundColorOpacity());
     connect(m_pAnalysisLibraryTableView,
             &WAnalysisLibraryTableView::loadTrack,
             this,

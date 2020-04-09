@@ -13,7 +13,7 @@
 namespace mixxx {
 
 class TrackInfo final {
-    // Track properties (in alphabetical order)
+    // Properties in alphabetical order
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    artist,               Artist)
     PROPERTY_SET_BYVAL_GET_BYREF(Bpm,        bpm,                  Bpm)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    comment,              Comment)

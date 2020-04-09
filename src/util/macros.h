@@ -1,20 +1,31 @@
 #pragma once
 
+#include <type_traits>
+
 #include <QtDebug>
 
-
-// Helper for defining simple properties with setters and getters that are
-// passed by value using move assignment in the setter. The getter returns
-// a const reference. The type must have a default constructor for proper
-// initialization during construction and a move assignment operator for
-// efficient passing and setting by value.
+// Helper macro for defining simple properties with setters and
+// getters.
 //
-// The refName() function returns a mutable reference. It is only needed
-// for direct and efficient access to properties when nesting property
-// classes.
+// Fundamental types and bool are passed and returned by value.
+// Other types are passed by universal reference and returned
+// by const reference.
+//
+// The refName() function returns a mutable reference. It can
+// be used to access deeply nested properties chaining these
+// functions with the dot syntax. The returned reference should
+// not be stored outside of the current scope!
+//
+// The ptrName() function is overloaded for both mutable and
+// immutable access by a pointer.
+//
+// TODO: Adjust the name of this macro, e.g. DECL_MIXXX_PROPERTY
 #define PROPERTY_SET_BYVAL_GET_BYREF(TYPE, NAME, CAP_NAME) \
-public: void set##CAP_NAME(TYPE NAME) { m_##NAME = std::move(NAME); } \
-public: TYPE const& get##CAP_NAME() const { return m_##NAME; } \
-public: TYPE& ref##CAP_NAME() { return m_##NAME; } \
+public: template <typename T> typename std::enable_if<(std::is_fundamental<TYPE>::value || std::is_same<TYPE, bool>::value) && std::is_same<TYPE, T>::value>::type set##CAP_NAME(T _val) { m_##NAME = _val; } \
+public: template <typename T> typename std::enable_if<!(std::is_fundamental<TYPE>::value || std::is_same<TYPE, bool>::value) && std::is_assignable<TYPE, T>::value>::type set##CAP_NAME(T&& _val) { m_##NAME = std::forward<T>(_val); } \
+public: constexpr std::conditional<std::is_fundamental<TYPE>::value, TYPE, const TYPE&>::type get##CAP_NAME() const { return m_##NAME; } \
+public: constexpr TYPE& ref##CAP_NAME() { return m_##NAME; } \
+public: constexpr TYPE* ptr##CAP_NAME() { return &m_##NAME; } \
+public: constexpr const TYPE* ptr##CAP_NAME() const { return &m_##NAME; } \
 public: QDebug dbg##CAP_NAME(QDebug dbg) const { return dbg << #NAME ":" << m_##NAME; } \
 private: TYPE m_##NAME;

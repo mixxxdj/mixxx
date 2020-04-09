@@ -37,11 +37,6 @@ class FakeController : public Controller {
 
     ControllerPresetPointer getPreset() const override;
 
-    bool savePreset(const QString fileName) const override {
-        Q_UNUSED(fileName);
-        return true;
-    }
-
     void visit(const MidiControllerPreset* preset) override {
         m_bMidiPreset = true;
         m_bHidPreset = false;
@@ -103,6 +98,6 @@ class ControllerPresetValidationTest : public MixxxTest {
 
     bool testLoadPreset(const PresetInfo& preset);
 
-    QStringList m_presetPaths;
+    QDir m_presetPath;
     QScopedPointer<PresetInfoEnumerator> m_pEnumerator;
 };

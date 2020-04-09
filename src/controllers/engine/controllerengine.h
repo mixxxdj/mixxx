@@ -145,8 +145,7 @@ class ControllerEngine : public QObject {
   public slots:
     // Evaluates all provided script files and returns true if no script errors
     // occurred while evaluating them.
-    bool loadScriptFiles(const QList<QString>& scriptPaths,
-            const QList<ControllerPreset::ScriptFileInfo>& scripts);
+    bool loadScriptFiles(const QList<ControllerPreset::ScriptFileInfo>& scripts);
     void initializeScripts(const QList<ControllerPreset::ScriptFileInfo>& scripts);
     void gracefulShutdown();
     void scriptHasChanged(const QString&);
@@ -158,7 +157,7 @@ class ControllerEngine : public QObject {
     void errorDialogButton(const QString& key, QMessageBox::StandardButton button);
 
   private:
-    bool evaluateScriptFile(const QString& scriptName, QList<QString> scriptPaths);
+    bool evaluateScriptFile(const QFileInfo& scriptFile);
     void initializeScriptEngine();
     void reloadScripts();
 
@@ -209,7 +208,7 @@ class ControllerEngine : public QObject {
     QJSValue m_byteArrayToScriptValueJSFunction;
     // Filesystem watcher for script auto-reload
     QFileSystemWatcher m_scriptWatcher;
-    QList<QString> m_lastScriptPaths;
+    QList<ControllerPreset::ScriptFileInfo> m_lastScriptFiles;
 
     bool m_bTesting;
 

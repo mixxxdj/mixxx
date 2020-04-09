@@ -34,7 +34,7 @@ EngineEffect::EngineEffect(EffectManifestPointer pManifest,
     m_pProcessor = pInstantiator->instantiate(this, pManifest);
     //TODO: get actual configuration of engine
     const mixxx::EngineParameters bufferParameters(
-          mixxx::AudioSignal::SampleRate(96000),
+          mixxx::audio::SampleRate(96000),
           MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
     m_pProcessor->initialize(activeInputChannels, pEffectsManager, bufferParameters);
     m_effectRampsFromDry = pManifest->effectRampsFromDry();
@@ -191,7 +191,7 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
     if (effectiveEffectEnableState != EffectEnableState::Disabled) {
         //TODO: refactor rest of audio engine to use mixxx::AudioParameters
         const mixxx::EngineParameters bufferParameters(
-              mixxx::AudioSignal::SampleRate(sampleRate),
+              mixxx::audio::SampleRate(sampleRate),
               numSamples / mixxx::kEngineChannelCount);
 
         m_pProcessor->process(inputHandle, outputHandle, pInput, pOutput,

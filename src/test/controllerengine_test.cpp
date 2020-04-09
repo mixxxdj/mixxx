@@ -28,8 +28,8 @@ class ControllerEngineTest : public MixxxTest {
         mixxx::Time::setTestMode(false);
     }
 
-    bool evaluateScriptFile(const QString& scriptName, QList<QString> scriptPaths = QList<QString>()) {
-        return cEngine->evaluateScriptFile(scriptName, scriptPaths);
+    bool evaluateScriptFile(const QFileInfo& scriptFile) {
+        return cEngine->evaluateScriptFile(scriptFile);
     }
 
     QJSValue evaluate(const QString& code) {
@@ -44,7 +44,7 @@ class ControllerEngineTest : public MixxxTest {
 };
 
 TEST_F(ControllerEngineTest, commonScriptHasNoErrors) {
-    QString commonScript = "./res/controllers/common-controller-scripts.js";
+    QFileInfo commonScript("./res/controllers/common-controller-scripts.js");
     EXPECT_TRUE(evaluateScriptFile(commonScript));
 }
 

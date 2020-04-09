@@ -369,18 +369,6 @@ void WPushButton::paintEvent(QPaintEvent* e) {
     }
 }
 
-void WPushButton::enterEvent(QEvent *event) {
-    m_bHovered = true;
-    restyleAndRepaint();
-    return QWidget::enterEvent(event);
-}
-
-void WPushButton::leaveEvent(QEvent *event) {
-    m_bHovered = false;
-    restyleAndRepaint();
-    return QWidget::leaveEvent(event);
-}
-
 void WPushButton::mousePressEvent(QMouseEvent * e) {
     const bool leftClick = e->button() == Qt::LeftButton;
     const bool rightClick = e->button() == Qt::RightButton;
@@ -444,6 +432,14 @@ bool WPushButton::event(QEvent* e) {
             m_bPressed = false;
             restyleAndRepaint();
         }
+    } else if (e->type() == QEvent::ToolTip) {
+        updateTooltip();
+    } else if (e->type() == QEvent::Enter) {
+        m_bHovered = true;
+        restyleAndRepaint();
+    } else if (e->type() == QEvent::Leave) {
+        m_bHovered = false;
+        restyleAndRepaint();
     }
     return QWidget::event(e);
 }
@@ -467,13 +463,13 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
     if (m_leftButtonMode == ControlPushButton::POWERWINDOW
             && m_iNoStates == 2) {
         if (leftClick) {
-            m_bPressed = false;
             const bool rightButtonDown = QApplication::mouseButtons() & Qt::RightButton;
             if (m_bPressed && !m_clickTimer.isActive() && !rightButtonDown) {
                 // Release button after timer, but not if right button is clicked
                 double emitValue = getControlParameterLeft() == 0.0 ? 1.0 : 0.0;
                 setControlParameterLeftUp(emitValue);
             }
+            m_bPressed = false;
         } else if (rightClick) {
             m_bPressed = false;
         }

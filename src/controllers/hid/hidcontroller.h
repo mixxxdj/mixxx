@@ -33,8 +33,6 @@ class HidController final : public Controller {
         return ControllerPresetPointer(pClone);
     }
 
-    bool savePreset(const QString fileName) const override;
-
     void visit(const MidiControllerPreset* preset) override;
     void visit(const HidControllerPreset* preset) override;
 
@@ -95,7 +93,7 @@ class HidController final : public Controller {
     HidControllerPreset m_preset;
 
     unsigned char m_pPollData[255];
-    
+
     friend class HidControllerJSProxy;
 };
 

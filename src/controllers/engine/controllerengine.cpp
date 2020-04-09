@@ -230,17 +230,15 @@ void ControllerEngine::initializeScriptEngine() {
    Input:   List of script paths and file names to load
    Output:  Returns true if no errors occurred.
    -------- ------------------------------------------------------ */
-bool ControllerEngine::loadScriptFiles(const QList<QString>& scriptPaths,
-        const QList<ControllerPreset::ScriptFileInfo>& scripts) {
-    m_lastScriptPaths = scriptPaths;
-
-    // scriptPaths holds the paths to search in when we're looking for scripts
+bool ControllerEngine::loadScriptFiles(const QList<ControllerPreset::ScriptFileInfo>& scripts) {
     bool scriptsEvaluatedCorrectly = true;
-    for (const ControllerPreset::ScriptFileInfo& script : scripts) {
-        if (!evaluateScriptFile(script.name, scriptPaths)) {
+    for (const auto& script : scripts) {
+        if (!evaluateScriptFile(script.file)) {
             scriptsEvaluatedCorrectly = false;
         }
     }
+
+    m_lastScriptFiles = scripts;
 
     connect(&m_scriptWatcher, &QFileSystemWatcher::fileChanged, this, &ControllerEngine::scriptHasChanged);
 
@@ -271,10 +269,10 @@ void ControllerEngine::reloadScripts() {
     }
 
     initializeScriptEngine();
-    loadScriptFiles(m_lastScriptPaths, pPreset->scripts);
+    loadScriptFiles(m_lastScriptFiles);
 
     qDebug() << "Re-initializing scripts";
-    initializeScripts(pPreset->scripts);
+    initializeScripts(m_lastScriptFiles);
 }
 
 /* -------- ------------------------------------------------------
@@ -836,35 +834,22 @@ void ControllerEngine::trigger(QString group, QString name) {
    Input:   Script filename
    Output:  false if the script file has errors or doesn't exist
    -------- ------------------------------------------------------ */
-bool ControllerEngine::evaluateScriptFile(const QString& scriptName, QList<QString> scriptPaths) {
+bool ControllerEngine::evaluateScriptFile(const QFileInfo& scriptFile) {
     VERIFY_OR_DEBUG_ASSERT(!(m_pScriptEngine == nullptr)) {
         return false;
     }
 
-    QString filename = "";
-    QFile input;
-
-    if (scriptPaths.length() == 0) {
-        // If we aren't given any paths to search, assume that scriptName
-        // contains the full file name
-        filename = scriptName;
-        input.setFileName(filename);
-    } else {
-        for (const QString& scriptPath : scriptPaths) {
-            QDir scriptPathDir(scriptPath);
-            filename = scriptPathDir.absoluteFilePath(scriptName);
-            input.setFileName(filename);
-            if (input.exists()) {
-                qDebug() << "ControllerEngine: Watching JS File:" << filename;
-                m_scriptWatcher.addPath(filename);
-                break;
-            }
-        }
+    if (!scriptFile.exists()) {
+        qWarning() << "ControllerEngine: File does not exist:" << scriptFile.absoluteFilePath();
+        return false;
     }
+    m_scriptWatcher.addPath(scriptFile.absoluteFilePath());
 
-    qDebug() << "ControllerEngine: Loading" << filename;
+    qDebug() << "ControllerEngine: Loading" << scriptFile.absoluteFilePath();
 
     // Read in the script file
+    QString filename = scriptFile.absoluteFilePath();
+    QFile input(filename);
     if (!input.open(QIODevice::ReadOnly)) {
         qWarning() << QString("ControllerEngine: Problem opening the script file: %1, error # %2, %3")
                               .arg(filename, QString::number(input.error()), input.errorString());

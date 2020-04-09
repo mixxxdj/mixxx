@@ -22,8 +22,6 @@ class EngineBufferScaleRubberBand : public EngineBufferScale {
                             double* pTempoRatio,
                             double* pPitchRatio) override;
 
-    void setSampleRate(SINT iSampleRate) override;
-
     double scaleBuffer(
             CSAMPLE* pOutputBuffer,
             SINT iOutputBufferSize) override;
@@ -33,7 +31,7 @@ class EngineBufferScaleRubberBand : public EngineBufferScale {
 
   private:
     // Reset RubberBand library with new audio signal
-    void initRubberBand();
+    void onSampleRateChanged() override;
 
     void deinterleaveAndProcess(const CSAMPLE* pBuffer, SINT frames, bool flush);
     SINT retrieveAndDeinterleave(CSAMPLE* pBuffer, SINT frames);

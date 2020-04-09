@@ -15,8 +15,8 @@ namespace {
 
 inline std::optional<double> positionSamplesToMillis(
         double positionSamples,
-        mixxx::AudioSignal::SampleRate sampleRate) {
-    VERIFY_OR_DEBUG_ASSERT(sampleRate.valid()) {
+        mixxx::audio::SampleRate sampleRate) {
+    VERIFY_OR_DEBUG_ASSERT(sampleRate.isValid()) {
         return Cue::kNoPosition;
     }
     if (positionSamples == Cue::kNoPosition) {
@@ -28,8 +28,8 @@ inline std::optional<double> positionSamplesToMillis(
 
 inline double positionMillisToSamples(
         std::optional<double> positionMillis,
-        mixxx::AudioSignal::SampleRate sampleRate) {
-    VERIFY_OR_DEBUG_ASSERT(sampleRate.valid()) {
+        mixxx::audio::SampleRate sampleRate) {
+    VERIFY_OR_DEBUG_ASSERT(sampleRate.isValid()) {
         return Cue::kNoPosition;
     }
     if (!positionMillis) {
@@ -87,7 +87,7 @@ Cue::Cue(
 
 Cue::Cue(
         const mixxx::CueInfo& cueInfo,
-        mixxx::AudioSignal::SampleRate sampleRate)
+        mixxx::audio::SampleRate sampleRate)
         : m_bDirty(false),
           m_iId(-1),
           m_type(cueInfo.getType()),
@@ -105,7 +105,7 @@ Cue::Cue(
 }
 
 mixxx::CueInfo Cue::getCueInfo(
-        mixxx::AudioSignal::SampleRate sampleRate) const {
+        mixxx::audio::SampleRate sampleRate) const {
     QMutexLocker lock(&m_mutex);
     return mixxx::CueInfo(
             m_type,

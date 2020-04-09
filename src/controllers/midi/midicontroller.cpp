@@ -58,14 +58,9 @@ bool MidiController::matchPreset(const PresetInfo& preset) {
     return false;
 }
 
-bool MidiController::savePreset(const QString fileName) const {
-    MidiControllerPresetFileHandler handler;
-    return handler.save(m_preset, getName(), fileName);
-}
-
-bool MidiController::applyPreset(QList<QString> scriptPaths, bool initializeScripts) {
+bool MidiController::applyPreset(bool initializeScripts) {
     // Handles the engine
-    bool result = Controller::applyPreset(scriptPaths, initializeScripts);
+    bool result = Controller::applyPreset(initializeScripts);
 
     // Only execute this code if this is an output device
     if (isOutputDevice()) {
@@ -79,11 +74,11 @@ bool MidiController::applyPreset(QList<QString> scriptPaths, bool initializeScri
 }
 
 void MidiController::createOutputHandlers() {
-    if (m_preset.outputMappings.isEmpty()) {
+    if (m_preset.getOutputMappings().isEmpty()) {
         return;
     }
 
-    QHashIterator<ConfigKey, MidiOutputMapping> outIt(m_preset.outputMappings);
+    QHashIterator<ConfigKey, MidiOutputMapping> outIt(m_preset.getOutputMappings());
     QStringList failures;
     while (outIt.hasNext()) {
         outIt.next();
@@ -189,15 +184,19 @@ void MidiController::clearTemporaryInputMappings() {
 void MidiController::commitTemporaryInputMappings() {
     // We want to replace duplicates that exist in m_preset but allow duplicates
     // in m_temporaryInputMappings. To do this, we first remove every key in
-    // m_temporaryInputMappings from m_preset.inputMappings.
+    // m_temporaryInputMappings from m_preset's input mappings.
     for (auto it = m_temporaryInputMappings.constBegin();
          it != m_temporaryInputMappings.constEnd(); ++it) {
-        m_preset.inputMappings.remove(it.key());
+        m_preset.removeInputMapping(it.key());
     }
 
-    // Now, we can just use unite since we manually removed the duplicates in
-    // the original set.
-    m_preset.inputMappings.unite(m_temporaryInputMappings);
+    // Now, we can just use add all mappings from m_temporaryInputMappings
+    // since we removed the duplicates in the original set.
+    for (auto it = m_temporaryInputMappings.constBegin();
+            it != m_temporaryInputMappings.constEnd();
+            ++it) {
+        m_preset.addInputMapping(it.key(), it.value());
+    }
     m_temporaryInputMappings.clear();
 }
 
@@ -223,8 +222,8 @@ void MidiController::receive(unsigned char status, unsigned char control,
         }
     }
 
-    auto it = m_preset.inputMappings.constFind(mappingKey.key);
-    for (; it != m_preset.inputMappings.constEnd() && it.key() == mappingKey.key; ++it) {
+    auto it = m_preset.getInputMappings().constFind(mappingKey.key);
+    for (; it != m_preset.getInputMappings().constEnd() && it.key() == mappingKey.key; ++it) {
         processInputMapping(it.value(), status, control, value, timestamp);
     }
 }
@@ -479,8 +478,8 @@ void MidiController::receive(QByteArray data, mixxx::Duration timestamp) {
         }
     }
 
-    auto it = m_preset.inputMappings.constFind(mappingKey.key);
-    for (; it != m_preset.inputMappings.constEnd() && it.key() == mappingKey.key; ++it) {
+    auto it = m_preset.getInputMappings().constFind(mappingKey.key);
+    for (; it != m_preset.getInputMappings().constEnd() && it.key() == mappingKey.key; ++it) {
         processInputMapping(it.value(), data, timestamp);
     }
 }

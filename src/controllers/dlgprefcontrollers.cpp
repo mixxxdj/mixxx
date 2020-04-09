@@ -55,11 +55,6 @@ void DlgPrefControllers::slotApply() {
     foreach (DlgPrefController* pControllerWindows, m_controllerWindows) {
         pControllerWindows->slotApply();
     }
-
-    // Save all controller presets.
-    // TODO(rryan): Get rid of this and make DlgPrefController do this for each
-    // preset.
-    m_pControllerManager->savePresets();
 }
 
 bool DlgPrefControllers::handleTreeItemClick(QTreeWidgetItem* clickedItem) {
@@ -128,7 +123,11 @@ void DlgPrefControllers::setupControllerWidgets() {
         m_controllerWindows.append(controllerDlg);
         m_pDlgPreferences->addPageWidget(DlgPreferences::PreferencesPage(controllerDlg, controllerWindowLink));
 
-        connect(controllerDlg, &DlgPrefController::controllerEnabled, this, &DlgPrefControllers::slotHighlightDevice);
+        connect(pController,
+                &Controller::openChanged,
+                [this, controllerDlg](bool bOpen) {
+                    slotHighlightDevice(controllerDlg, bOpen);
+                });
     }
 
     // If no controllers are available, show the "No controllers available"

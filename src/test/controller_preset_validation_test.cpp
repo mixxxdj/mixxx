@@ -65,14 +65,14 @@ ControllerPreset* FakeController::preset() {
 }
 
 void ControllerPresetValidationTest::SetUp() {
-    m_presetPaths << QDir::currentPath() + "/res/controllers";
-    m_pEnumerator.reset(new PresetInfoEnumerator(m_presetPaths));
+    m_presetPath = QDir::current();
+    m_presetPath.cd("res/controllers");
+    m_pEnumerator.reset(new PresetInfoEnumerator(QList<QString>{m_presetPath.absolutePath()}));
 }
 
 bool ControllerPresetValidationTest::testLoadPreset(const PresetInfo& preset) {
     ControllerPresetPointer pPreset =
-            ControllerPresetFileHandler::loadPreset(preset.getPath(),
-                    m_presetPaths);
+            ControllerPresetFileHandler::loadPreset(preset.getPath(), m_presetPath);
     if (pPreset.isNull()) {
         return false;
     }
@@ -81,7 +81,7 @@ bool ControllerPresetValidationTest::testLoadPreset(const PresetInfo& preset) {
     controller.setDeviceName("Test Controller");
     controller.setPreset(*pPreset);
     // Do not initialize the scripts.
-    bool result = controller.applyPreset(m_presetPaths, false);
+    bool result = controller.applyPreset(false);
     controller.stopEngine();
     return result;
 }
