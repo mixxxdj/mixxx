@@ -39,8 +39,8 @@ const int kPollIntervalMillis = 5;
 const int kPollIntervalMillis = 1;
 #endif
 
-// Strip slashes and spaces from device name, so that it can be used as config
-// key or a filename.
+/// Strip slashes and spaces from device name, so that it can be used as config
+/// key or a filename.
 QString sanitizeDeviceName(QString name) {
     return name.replace(" ", "_").replace("/", "_").replace("\\", "_");
 }

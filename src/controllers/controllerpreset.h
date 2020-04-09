@@ -1,15 +1,8 @@
-/**
-* @file controllerpreset.h
-* @author Sean Pappalardo spappalardo@mixxx.org
-* @date Mon 9 Apr 2012
-* @brief Controller preset
-*
-* This class represents a controller preset, containing the data elements that
-* make it up.
-*/
-
-#ifndef CONTROLLERPRESET_H
-#define CONTROLLERPRESET_H
+#pragma once
+/// @file controllerpreset.h
+/// @author Sean Pappalardo spappalardo@mixxx.org
+/// @date Mon 9 Apr 2012
+/// @brief Controller Preset
 
 #include <QDebug>
 #include <QDir>
@@ -21,6 +14,8 @@
 class ControllerPresetVisitor;
 class ConstControllerPresetVisitor;
 
+/// This class represents a controller preset, containing the data elements that
+/// make it up.
 class ControllerPreset {
   public:
     ControllerPreset()
@@ -40,11 +35,11 @@ class ControllerPreset {
         bool builtin;
     };
 
-    /** addScriptFile(QString,QString)
-     * Adds an entry to the list of script file names & associated list of function prefixes
-     * @param filename Name of the XML file to add
-     * @param functionprefix Function prefix to add
-     */
+    /// Adds a script file to the list of controller scripts for this preset.
+    /// @param filename Name of the script file to add
+    /// @param functionprefix The script's function prefix (or empty string)
+    /// @param file A FileInfo object pointing to the script file
+    /// @param builtin If this is true, the script won't be written to the XML
     void addScriptFile(const QString& name,
             const QString& functionprefix,
             const QFileInfo& file,
@@ -187,5 +182,3 @@ class ControllerPreset {
 };
 
 typedef QSharedPointer<ControllerPreset> ControllerPresetPointer;
-
-#endif

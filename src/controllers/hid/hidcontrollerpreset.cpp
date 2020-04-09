@@ -1,12 +1,10 @@
-/**
- * @file hidcontrollerpreset.cpp
- * @author Jan Holthuis holzhaus@mixxx.org
- * @date Mon 8 Apr 2020
- * @brief HID/Bulk Controller Preset
- *
- * This class represents a HID or Bulk controller preset, containing the data
- * elements that make it up.
- */
+/// @file hidcontrollerpreset.cpp
+/// @author Jan Holthuis holzhaus@mixxx.org
+/// @date Mon 8 Apr 2020
+/// @brief HID/Bulk Controller Preset
+///
+/// This class represents a HID or Bulk controller preset, containing the data
+/// elements that make it up.
 
 #include "controllers/hid/hidcontrollerpreset.h"
 

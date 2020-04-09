@@ -10,10 +10,9 @@ class DlgPreferences;
 class DlgPrefController;
 class ControllerManager;
 
-/** Controllers Overview in the preferences
- *
- *  This dialog allows selecting controllers for configuration.
- */
+/// Controllers Overview in the preferences
+///
+/// This dialog allows selecting controllers for configuration.
 
 class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControllersDlg {
     Q_OBJECT

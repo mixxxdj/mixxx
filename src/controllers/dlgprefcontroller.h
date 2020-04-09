@@ -1,9 +1,7 @@
-/**
-* @file dlgprefcontroller.h
-* @author Sean M. Pappalardo  spappalardo@mixxx.org
-* @date Mon May 2 2011
-* @brief Configuration dialog for a single DJ controller
-*/
+/// @file dlgprefcontroller.h
+/// @author Sean M. Pappalardo  spappalardo@mixxx.org
+/// @date Mon May 2 2011
+/// @brief Configuration dialog for a single DJ controller
 
 #ifndef DLGPREFCONTROLLER_H
 #define DLGPREFCONTROLLER_H
@@ -47,8 +45,10 @@ class DlgPrefController : public DlgPreferencePage {
     void mappingEnded();
 
   private slots:
-    // Called when the user toggles the enabled checkbox.
+    /// Called when the user selects another preset in the combobox
     void slotPresetSelected(int index);
+    /// Used to selected the current preset in the combobox and display the
+    /// preset information.
     void slotShowPreset(ControllerPresetPointer preset);
 
     // Input mappings
@@ -76,29 +76,27 @@ class DlgPrefController : public DlgPreferencePage {
     void savePreset();
     void initTableView(QTableView* pTable);
 
-    /** Set dirty state (i.e. changes have been made).
-     *
-     * When this preferences page is marked as "dirty", changes have occured
-     * that can be applied or discarded.
-     *
-     * @param bDirty The new dialog's dirty state.
-     */
+    /// Set dirty state (i.e. changes have been made).
+    ///
+    /// When this preferences page is marked as "dirty", changes have occured
+    /// that can be applied or discarded.
+    ///
+    /// @param bDirty The new dialog's dirty state.
     void setDirty(bool bDirty) {
         m_bDirty = bDirty;
     }
 
-    /** Set dirty state (i.e. changes have been made).
-     *
-     * When this preferences page is marked as "dirty", changes have occured
-     * that can be applied or discarded.
-     *
-     * @param bDirty The new dialog's dirty state.
-     */
+    /// Set dirty state (i.e. changes have been made).
+    ///
+    /// When this preferences page is marked as "dirty", changes have occured
+    /// that can be applied or discarded.
+    ///
+    /// @param bDirty The new dialog's dirty state.
     bool isDirty() {
         return m_bDirty;
     }
 
-    // Reload the mappings in the dropdown dialog
+    /// Reload the mappings in the dropdown dialog
     void enumeratePresets(const QString& selectedPresetPath);
     PresetInfo enumeratePresetsFromEnumerator(
             QSharedPointer<PresetInfoEnumerator> pPresetEnumerator,

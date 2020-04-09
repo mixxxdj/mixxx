@@ -57,9 +57,9 @@ class MidiController : public Controller {
     Q_INVOKABLE virtual void sendShortMsg(unsigned char status,
                                           unsigned char byte1, unsigned char byte2) = 0;
 
-    // Alias for send()
-    // The length parameter is here for backwards compatibility for when scripts
-    // were required to specify it.
+    /// Alias for send()
+    /// The length parameter is here for backwards compatibility for when scripts
+    /// were required to specify it.
     Q_INVOKABLE inline void sendSysexMsg(QList<int> data, unsigned int length = 0) {
         Q_UNUSED(length);
         send(data);
@@ -73,13 +73,12 @@ class MidiController : public Controller {
     int close() override;
 
   private slots:
-    /** Apply the preset to the controller.
-     *  @brief Initializes both controller engine and static output mappings.
-     *
-     *  @param initializeScripts Can be set to false to skip script
-     *  initialization for unit tests.
-     *  @return Returns whether it was successful.
-     */
+    /// Apply the preset to the controller.
+    /// @brief Initializes both controller engine and static output mappings.
+    ///
+    /// @param initializeScripts Can be set to false to skip script
+    /// initialization for unit tests.
+    /// @return Returns whether it was successful.
     bool applyPreset(bool initializeScripts = false) override;
 
     void learnTemporaryInputMappings(const MidiInputMappings& mappings);
@@ -101,8 +100,8 @@ class MidiController : public Controller {
     void updateAllOutputs();
     void destroyOutputHandlers();
 
-    // Returns a pointer to the currently loaded controller preset. For internal
-    // use only.
+    /// Returns a pointer to the currently loaded controller preset. For internal
+    /// use only.
     ControllerPreset* preset() override {
         return &m_preset;
     }

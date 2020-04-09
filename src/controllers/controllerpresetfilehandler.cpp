@@ -1,10 +1,7 @@
-/**
-* @file controllerpresetfilehandler.cpp
-* @author Sean Pappalardo spappalardo@mixxx.org
-* @date Mon 9 Apr 2012
-* @brief Handles loading and saving of Controller presets.
-*
-*/
+/// @file controllerpresetfilehandler.cpp
+/// @author Sean Pappalardo spappalardo@mixxx.org
+/// @date Mon 9 Apr 2012
+/// @brief Handles loading and saving of Controller presets.
 
 #include "controllers/controllerpresetfilehandler.h"
 #include "controllers/controllermanager.h"
@@ -14,15 +11,14 @@
 
 namespace {
 
-/** Find script file in the preset or system path.
- *
- *  @param preset The controller preset the script belongs to.
- *  @param filename The script filename.
- *  @param systemPresetsPath The system presets path to use as fallback.
- *  @return Returns a QFileInfo object. If the script was not found in either
- *  of the search directories, the QFileInfo object might point to a
- *  non-existing file.
- */
+/// Find script file in the preset or system path.
+///
+/// @param preset The controller preset the script belongs to.
+/// @param filename The script filename.
+/// @param systemPresetsPath The system presets path to use as fallback.
+/// @return Returns a QFileInfo object. If the script was not found in either
+/// of the search directories, the QFileInfo object might point to a
+/// non-existing file.
 QFileInfo findScriptFile(ControllerPreset* preset,
         const QString& filename,
         const QDir& systemPresetsPath) {

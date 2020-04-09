@@ -15,10 +15,9 @@ class LearningUtilsTest : public MixxxTest {
         m_messages.append(qMakePair(MidiKey(status, control), value));
     }
 
-    /** Check if mapping in present in mapping list.
-     *  Similar to MidiInputMappings::contains(const MidiInputMapping&), but
-     *  does not compare the description.
-     */
+    /// Check if mapping in present in mapping list.
+    /// Similar to MidiInputMappings::contains(const MidiInputMapping&), but
+    /// does not compare the description.
     bool containsMapping(const MidiInputMappings& haystack, const MidiInputMapping& needle) {
         for (const MidiInputMapping& mapping : haystack) {
             if (mapping.key == needle.key &&
