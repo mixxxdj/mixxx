@@ -37,7 +37,7 @@
    <item row="1" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBoxConditions">
      <property name="title">
-      <string>Conditions (leave empty to apply color to ALL hotcues)</string>
+      <string>Conditions (leave empty to apply color to all hotcues)</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
