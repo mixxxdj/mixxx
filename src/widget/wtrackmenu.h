@@ -21,7 +21,7 @@ class WTrackMenu : public QMenu {
     Q_OBJECT
   public:
     enum Filter {
-        None = 0,
+        All = 0,
         AutoDJ = 1,
         LoadTo = 1 << 1,
         Playlist = 1 << 2,
@@ -34,13 +34,14 @@ class WTrackMenu : public QMenu {
         HideUnhidePurge = 1 << 9,
         FileBrowser = 1 << 10,
         Properties = 1 << 11,
+        IndependentFilters = AutoDJ | Playlist | Crate | FileBrowser
     };
     Q_DECLARE_FLAGS(Filters, Filter)
 
     WTrackMenu(QWidget* parent,
             UserSettingsPointer pConfig,
             TrackCollectionManager* pTrackCollectionManager,
-            Filters flags = Filter::None,
+            Filters flags = Filter::IndependentFilters,
             TrackModel* trackModel = nullptr);
     ~WTrackMenu() {
     }
@@ -49,6 +50,9 @@ class WTrackMenu : public QMenu {
     void loadTrack(QModelIndex index);
     void loadTracks(TrackIdList trackList);
     void loadTracks(QModelIndexList indexList);
+
+    // Override default popup method from class QMenu
+    void popup(const QPoint& pos, QAction* at = nullptr);
 
   signals:
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
@@ -244,6 +248,7 @@ class WTrackMenu : public QMenu {
 
     // Filter available options
     const Filters m_eFilters;
+    const Filters m_eIndependentFilters;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(WTrackMenu::Filters)

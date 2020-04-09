@@ -300,7 +300,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // scrollbar positions with respect to different models are backed by map
 
     // Initialize m_pMenu only after track model has been loaded.
-    m_pMenu = new WTrackMenu(this, m_pConfig, m_pTrackCollectionManager, WTrackMenu::Filter::None, trackModel);
+    m_pMenu = new WTrackMenu(this, m_pConfig, m_pTrackCollectionManager, WTrackMenu::Filter::All, trackModel);
     connect(m_pMenu, &WTrackMenu::loadTrackToPlayer, this, &WTrackTableView::loadTrackToPlayer);
 }
 

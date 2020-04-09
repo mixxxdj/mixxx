@@ -47,7 +47,8 @@ WTrackMenu::WTrackMenu(QWidget* parent,
           m_iCoverLocationColumn(-1),
           m_iCoverHashColumn(-1),
           m_iCoverColumn(-1),
-          m_eFilters(flags) {
+          m_eFilters(flags),
+          m_eIndependentFilters(Filter::IndependentFilters) {
     m_pNumSamplers = new ControlProxy(
             "[Master]", "num_samplers", this);
     m_pNumDecks = new ControlProxy(
@@ -62,11 +63,23 @@ WTrackMenu::WTrackMenu(QWidget* parent,
         m_iCoverHashColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART_HASH);
         m_iCoverColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART);
         m_iTrackLocationColumn = trackModel->fieldIndex(TRACKLOCATIONSTABLE_LOCATION);
+    } else {
+        // Check if passed flags are a subset of available subsets
+        VERIFY_OR_DEBUG_ASSERT((m_eIndependentFilters | flags) == m_eIndependentFilters) {
+            return;
+        }
     }
 
     createMenus();
     createActions();
     setupActions();
+}
+
+void WTrackMenu::popup(const QPoint& pos, QAction* at) {
+    if (getTrackPointers().empty()) {
+        return;
+    }
+    QMenu::popup(pos, at);
 }
 
 void WTrackMenu::createMenus() {
@@ -1474,53 +1487,44 @@ bool WTrackMenu::modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities
 
 bool WTrackMenu::optionIsEnabled(Filter flag) const {
     auto trackModel = getTrackModel();
-    bool optionIsAvailable = m_eFilters.testFlag(Filter::None) || m_eFilters.testFlag(flag);
+    bool optionIsSelected = m_eFilters.testFlag(Filter::All) || m_eFilters.testFlag(flag);
 
-    if (!optionIsAvailable) {
+    if (!optionIsSelected) {
         return false;
     }
 
-    Filters independentOptions =
-            Filter::Playlist |
-            Filter::Crate |
-            Filter::FileBrowser;
-
-    // Some of these can be made independent of track table.
-    Filters trackTableDependentOptions =
-            Filter::AutoDJ |
-            Filter::LoadTo |
-            Filter::Remove |
-            Filter::Metadata |
-            Filter::Reset |
-            Filter::BPM |
-            Filter::Color |
-            Filter::HideUnhidePurge |
-            Filter::Properties;
-
-    if (independentOptions.testFlag(flag)) {
-        return true;
-    }
-
-    if (trackTableDependentOptions.testFlag(flag)) {
-        if (!trackModel) {
-            // Add to AutoDJ should be allowed from non-WTrackTableViews
-            if (flag == Filter::AutoDJ) {
-                return true;
-            }
-            return false;
-        }
+    if (trackModel) {
         if (flag == Filter::AutoDJ) {
             return modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ);
+        } else if (flag == Filter::LoadTo) {
+            return modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTODECK) ||
+                    modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTOSAMPLER) || modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTOPREVIEWDECK);
+        } else if (flag == Filter::Playlist) {
+            return modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOPLAYLIST);
+        } else if (flag == Filter::Crate) {
+            return modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOCRATE);
         } else if (flag == Filter::Remove) {
             return modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE) ||
-                    modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST) ||
-                    modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_CRATE);
+                    modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST) || modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_CRATE);
+        } else if (flag == Filter::Metadata) {
+            return modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+        } else if (flag == Filter::Reset) {
+            return modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA) &&
+                    modelHasCapabilities(TrackModel::TRACKMODELCAPS_RESETPLAYED);
+        } else if (flag == Filter::BPM) {
+            return modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+        } else if (flag == Filter::Color) {
+            return modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
         } else if (flag == Filter::HideUnhidePurge) {
             return modelHasCapabilities(TrackModel::TRACKMODELCAPS_HIDE) ||
                     modelHasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE) ||
                     modelHasCapabilities(TrackModel::TRACKMODELCAPS_PURGE);
+        } else if (flag == Filter::Properties) {
+            return modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+        } else {
+            return true;
         }
     }
 
-    return true;
+    return m_eIndependentFilters.testFlag(flag);
 }
