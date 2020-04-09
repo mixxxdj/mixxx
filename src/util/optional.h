@@ -7,6 +7,8 @@
 
 #else
 
+#pragma clang diagnostic ignored "-Winvalid-constexpr"
+
 #include <experimental/optional>
 
 namespace std {
