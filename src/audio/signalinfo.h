@@ -19,7 +19,7 @@ class SignalInfo final {
   public:
     constexpr SignalInfo() = default;
     constexpr explicit SignalInfo(
-            OptionalSampleLayout sampleLayout)
+            SampleLayout sampleLayout)
             : m_sampleLayout(sampleLayout) {
     }
     SignalInfo(

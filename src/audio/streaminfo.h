@@ -19,11 +19,7 @@ class StreamInfo final {
 
   public:
     constexpr StreamInfo() = default;
-    constexpr explicit StreamInfo(
-            const SignalInfo& signalInfo)
-            : m_signalInfo(signalInfo) {
-    }
-    constexpr StreamInfo(
+    StreamInfo(
             const SignalInfo& signalInfo,
             Bitrate bitrate,
             Duration duration)
