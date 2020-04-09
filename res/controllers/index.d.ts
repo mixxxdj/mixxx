@@ -73,7 +73,7 @@ declare interface RGBObject {
 }
 
 declare namespace color {
-    function colorCodeToObject(color: RBGColorCode): RGBObject
+    function colorCodeToObject(color: RGBColorCode): RGBObject
     function colorCodeFromObject(color: RGBObject): RGBColorCode
 }
 
