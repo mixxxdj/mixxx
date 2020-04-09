@@ -368,7 +368,19 @@ void Track::setDateAdded(const QDateTime& dateAdded) {
 
 void Track::setDuration(mixxx::Duration duration) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_record.refMetadata().refDuration(), duration)) {
+    VERIFY_OR_DEBUG_ASSERT(!m_streamInfo ||
+            m_streamInfo->getDuration() <= mixxx::Duration::empty() ||
+            m_streamInfo->getDuration() == duration) {
+        kLogger.warning()
+                << "Cannot override stream duration:"
+                << m_streamInfo->getDuration()
+                << "->"
+                << duration;
+        return;
+    }
+    if (compareAndSet(
+            &m_record.refMetadata().refDuration(),
+            duration)) {
         markDirtyAndUnlock(&lock);
     }
 }
@@ -587,28 +599,14 @@ void Track::setType(const QString& sType) {
     }
 }
 
-void Track::setSampleRate(int iSampleRate) {
-    QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_record.refMetadata().refSampleRate(), mixxx::AudioSignal::SampleRate(iSampleRate))) {
-        markDirtyAndUnlock(&lock);
-    }
-}
-
 int Track::getSampleRate() const {
     QMutexLocker lock(&m_qMutex);
     return m_record.getMetadata().getSampleRate();
 }
 
-void Track::setChannels(int iChannels) {
-    QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_record.refMetadata().refChannels(), mixxx::AudioSignal::ChannelCount(iChannels))) {
-        markDirtyAndUnlock(&lock);
-    }
-}
-
 int Track::getChannels() const {
     QMutexLocker lock(&m_qMutex);
-    return m_record.getMetadata().getChannels();
+    return m_record.getMetadata().getChannelCount();
 }
 
 int Track::getBitrate() const {
@@ -622,7 +620,20 @@ QString Track::getBitrateText() const {
 
 void Track::setBitrate(int iBitrate) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_record.refMetadata().refBitrate(), mixxx::AudioSource::Bitrate(iBitrate))) {
+    const mixxx::audio::Bitrate bitrate(iBitrate);
+    VERIFY_OR_DEBUG_ASSERT(!m_streamInfo ||
+            !m_streamInfo->getBitrate().isValid() ||
+            m_streamInfo->getBitrate() == bitrate) {
+        kLogger.warning()
+                << "Cannot override stream bitrate:"
+                << m_streamInfo->getBitrate()
+                << "->"
+                << bitrate;
+        return;
+    }
+    if (compareAndSet(
+            &m_record.refMetadata().refBitrate(),
+            bitrate)) {
         markDirtyAndUnlock(&lock);
     }
 }
@@ -713,6 +724,10 @@ void Track::setCuePoint(CuePosition cue) {
     emit cuesUpdated();
 }
 
+void Track::analysisFinished() {
+    emit analyzed();
+}
+
 CuePosition Track::getCuePoint() const {
     QMutexLocker lock(&m_qMutex);
     return m_record.getCuePoint();
@@ -794,6 +809,42 @@ QList<CuePointer> Track::getCuePoints() const {
 void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
     //qDebug() << "setCuePoints" << cuePoints.length();
     QMutexLocker lock(&m_qMutex);
+    setCuePointsMarkDirtyAndUnlock(
+            &lock,
+            cuePoints);
+}
+
+void Track::importCueInfos(
+        const QList<mixxx::CueInfo>& cueInfos) {
+    QMutexLocker lock(&m_qMutex);
+    if (m_streamInfo) {
+        // Replace existing cue points with imported cue
+        // points immediately
+        importCueInfosMarkDirtyAndUnlock(
+                &lock,
+                cueInfos);
+    } else {
+        kLogger.debug()
+                << "Deferring import of"
+                << cueInfos.size()
+                << "cue(s) until actual sample rate becomes available";
+        m_importCueInfosPending.append(cueInfos);
+        // Clear all existing cue points, that are supposed
+        // to be replaced with the imported cue points soon.
+        setCuePointsMarkDirtyAndUnlock(
+                &lock,
+                QList<CuePointer>{});
+    }
+}
+
+void Track::setCuePointsMarkDirtyAndUnlock(
+        QMutexLocker* pLock,
+        const QList<CuePointer>& cuePoints) {
+    DEBUG_ASSERT(pLock);
+    // Prevent inconsistencies between cue infos that have been queued
+    // and are waiting to be imported and new cue points. At least one
+    // of these two collections must be empty.
+    DEBUG_ASSERT(cuePoints.isEmpty() || m_importCueInfosPending.isEmpty());
     // disconnect existing cue points
     for (const auto& pCue: m_cuePoints) {
         disconnect(pCue.get(), 0, this, 0);
@@ -809,26 +860,34 @@ void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
             m_record.setCuePoint(CuePosition(pCue->getPosition()));
         }
     }
-    markDirtyAndUnlock(&lock);
+    markDirtyAndUnlock(pLock);
     emit cuesUpdated();
 }
 
-void Track::importCuePoints(const QList<mixxx::CueInfo>& cueInfos) {
-    TrackId trackId;
-    mixxx::AudioSignal::SampleRate sampleRate;
-    {
-        QMutexLocker lock(&m_qMutex);
-        trackId = m_record.getId();
-        sampleRate = m_record.getMetadata().getSampleRate();
-    } // implicitly unlocked when leaving scope
-
+void Track::importCueInfosMarkDirtyAndUnlock(
+        QMutexLocker* pLock,
+        const QList<mixxx::CueInfo>& cueInfos) {
+    DEBUG_ASSERT(pLock);
+    DEBUG_ASSERT(m_importCueInfosPending.isEmpty());
+    // The sample rate can only be trusted after the audio
+    // stream has been openend.
+    DEBUG_ASSERT(m_streamInfo);
+    const auto sampleRate =
+            m_streamInfo->getSignalInfo().getSampleRate();
+    // The sample rate is supposed to be consistent
+    DEBUG_ASSERT(sampleRate ==
+            m_record.getMetadata().getSampleRate());
+    const auto trackId = m_record.getId();
     QList<CuePointer> cuePoints;
-    for (const mixxx::CueInfo& cueInfo : cueInfos) {
+    cuePoints.reserve(cueInfos.size());
+    for (const auto& cueInfo : cueInfos) {
         CuePointer pCue(new Cue(cueInfo, sampleRate));
         pCue->setTrackId(trackId);
         cuePoints.append(pCue);
     }
-    setCuePoints(cuePoints);
+    setCuePointsMarkDirtyAndUnlock(
+            pLock,
+            cuePoints);
 }
 
 void Track::markDirty() {
@@ -1132,4 +1191,70 @@ ExportTrackMetadataResult Track::exportMetadata(
                 << getLocation();
         return ExportTrackMetadataResult::Failed;
     }
+}
+
+void Track::setAudioProperties(
+        mixxx::audio::ChannelCount channelCount,
+        mixxx::audio::SampleRate sampleRate,
+        mixxx::audio::Bitrate bitrate,
+        mixxx::Duration duration) {
+    QMutexLocker lock(&m_qMutex);
+    DEBUG_ASSERT(!m_streamInfo);
+    bool dirty = false;
+    if (compareAndSet(
+                &m_record.refMetadata().refChannelCount(),
+                channelCount)) {
+        dirty = true;
+    }
+    if (compareAndSet(
+                &m_record.refMetadata().refSampleRate(),
+                sampleRate)) {
+        dirty = true;
+    }
+    if (compareAndSet(
+                &m_record.refMetadata().refBitrate(),
+                bitrate)) {
+        dirty = true;
+    }
+    if (compareAndSet(
+                &m_record.refMetadata().refDuration(),
+                duration)) {
+        dirty = true;
+    }
+    if (dirty) {
+        markDirtyAndUnlock(&lock);
+    }
+}
+
+void Track::updateAudioPropertiesFromStream(
+        mixxx::audio::StreamInfo&& streamInfo) {
+    QMutexLocker lock(&m_qMutex);
+    VERIFY_OR_DEBUG_ASSERT(!m_streamInfo ||
+            *m_streamInfo == streamInfo) {
+        kLogger.warning()
+                << "Varying stream properties:"
+                << *m_streamInfo
+                << "->"
+                << streamInfo;
+    }
+    bool updated = m_record.refMetadata().updateAudioPropertiesFromStream(
+            streamInfo);
+    m_streamInfo = std::make_optional(std::move(streamInfo));
+    if (m_importCueInfosPending.isEmpty()) {
+        // Nothing more to do
+        if (updated) {
+            markDirtyAndUnlock(&lock);
+        }
+        return;
+    }
+    DEBUG_ASSERT(m_cuePoints.isEmpty());
+    const auto cueInfos = std::move(m_importCueInfosPending);
+    DEBUG_ASSERT(m_importCueInfosPending.isEmpty());
+    kLogger.debug()
+            << "Finishing deferred import of"
+            << cueInfos.size()
+            << "cue(s)";
+    importCueInfosMarkDirtyAndUnlock(
+            &lock,
+            cueInfos);
 }

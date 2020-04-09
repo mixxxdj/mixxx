@@ -66,10 +66,10 @@ TEST_F(TrackMetadataTest, mergeImportedMetadata) {
     // Existing track metadata (stored in the database) without extra properties
     mixxx::TrackRecord oldTrackRecord;
     mixxx::TrackMetadata& oldTrackMetadata = oldTrackRecord.refMetadata();
-    oldTrackMetadata.setBitrate(mixxx::AudioSource::Bitrate(100));
-    oldTrackMetadata.setChannels(mixxx::AudioSignal::ChannelCount(1));
+    oldTrackMetadata.setBitrate(mixxx::audio::Bitrate(100));
+    oldTrackMetadata.setChannelCount(mixxx::audio::ChannelCount(1));
     oldTrackMetadata.setDuration(mixxx::Duration::fromSeconds(60));
-    oldTrackMetadata.setSampleRate(mixxx::AudioSignal::SampleRate(10000));
+    oldTrackMetadata.setSampleRate(mixxx::audio::SampleRate(10000));
     mixxx::TrackInfo& oldTrackInfo = oldTrackMetadata.refTrackInfo();
     oldTrackInfo.setArtist("old artist");
     oldTrackInfo.setBpm(mixxx::Bpm(100));
@@ -89,10 +89,10 @@ TEST_F(TrackMetadataTest, mergeImportedMetadata) {
 
     // Imported track metadata (from file tags) with extra properties
     mixxx::TrackMetadata newTrackMetadata;
-    newTrackMetadata.setBitrate(mixxx::AudioSource::Bitrate(200));
-    newTrackMetadata.setChannels(mixxx::AudioSignal::ChannelCount(2));
+    newTrackMetadata.setBitrate(mixxx::audio::Bitrate(200));
+    newTrackMetadata.setChannelCount(mixxx::audio::ChannelCount(2));
     newTrackMetadata.setDuration(mixxx::Duration::fromSeconds(120));
-    newTrackMetadata.setSampleRate(mixxx::AudioSignal::SampleRate(20000));
+    newTrackMetadata.setSampleRate(mixxx::audio::SampleRate(20000));
     mixxx::TrackInfo& newTrackInfo = newTrackMetadata.refTrackInfo();
     newTrackInfo.setArtist("new artist");
     newTrackInfo.setBpm(mixxx::Bpm(200));
@@ -150,7 +150,7 @@ TEST_F(TrackMetadataTest, mergeImportedMetadata) {
 
     mixxx::TrackMetadata& mergedTrackMetadata = mergedTrackRecord.refMetadata();
     EXPECT_EQ(oldTrackMetadata.getBitrate(), mergedTrackMetadata.getBitrate());
-    EXPECT_EQ(oldTrackMetadata.getChannels(), mergedTrackMetadata.getChannels());
+    EXPECT_EQ(oldTrackMetadata.getChannelCount(), mergedTrackMetadata.getChannelCount());
     EXPECT_EQ(oldTrackMetadata.getDuration(), mergedTrackMetadata.getDuration());
     EXPECT_EQ(oldTrackMetadata.getSampleRate(), mergedTrackMetadata.getSampleRate());
     mixxx::TrackInfo& mergedTrackInfo = mergedTrackMetadata.refTrackInfo();

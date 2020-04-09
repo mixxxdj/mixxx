@@ -2,6 +2,7 @@
 
 #include <QDebug>
 
+#include "audio/types.h"
 #include "control/controlencoder.h"
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
@@ -166,7 +167,7 @@ void EffectSlot::updateEngineState() {
 void EffectSlot::fillEffectStatesMap(EffectStatesMap* pStatesMap) const {
     //TODO: get actual configuration of engine
     const mixxx::EngineParameters bufferParameters(
-            mixxx::AudioSignal::SampleRate(96000),
+            mixxx::audio::SampleRate(96000),
             MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
 
     if (isLoaded()) {

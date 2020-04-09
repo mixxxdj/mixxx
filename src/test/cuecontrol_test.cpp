@@ -28,7 +28,13 @@ class CueControlTest : public BaseSignalPathTest {
 
     TrackPointer createTestTrack() const {
         const QString kTrackLocationTest = QDir::currentPath() + "/src/test/sine-30.wav";
-        return Track::newTemporary(kTrackLocationTest, SecurityTokenPointer());
+        const auto pTrack = Track::newTemporary(kTrackLocationTest, SecurityTokenPointer());
+        pTrack->setAudioProperties(
+                mixxx::audio::ChannelCount(2),
+                mixxx::audio::SampleRate(44100),
+                mixxx::audio::Bitrate(),
+                mixxx::Duration::fromSeconds(180));
+        return pTrack;
     }
 
     void loadTrack(TrackPointer pTrack) {
@@ -163,7 +169,6 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeEnabled) {
     m_pQuantizeEnabled->set(1);
 
     TrackPointer pTrack = createTestTrack();
-    pTrack->setSampleRate(44100);
     pTrack->setBpm(120.0);
 
     const int frameSize = 2;
@@ -196,7 +201,6 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeEnabledNoBeats) {
     m_pQuantizeEnabled->set(1);
 
     TrackPointer pTrack = createTestTrack();
-    pTrack->setSampleRate(44100);
     pTrack->setBpm(0.0);
 
     pTrack->setCuePoint(CuePosition(100.0));
@@ -224,7 +228,6 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeDisabled) {
     m_pQuantizeEnabled->set(0);
 
     TrackPointer pTrack = createTestTrack();
-    pTrack->setSampleRate(44100);
     pTrack->setBpm(120.0);
 
     pTrack->setCuePoint(CuePosition(240.0));
@@ -273,8 +276,9 @@ TEST_F(CueControlTest, SeekOnLoadMainCue) {
     EXPECT_DOUBLE_EQ(100.0, m_pCuePoint->get());
     EXPECT_DOUBLE_EQ(100.0, getCurrentSample());
 
-    // Move cue and check if track is following it.
+    // Move cue like silence analysis does and check if track is following it
     pTrack->setCuePoint(CuePosition(200.0));
+    pTrack->analysisFinished();
     ProcessBuffer();
 
     EXPECT_DOUBLE_EQ(200.0, m_pCuePoint->get());
@@ -292,12 +296,57 @@ TEST_F(CueControlTest, SeekOnLoadDefault_CueInPreroll) {
     EXPECT_DOUBLE_EQ(-100.0, m_pCuePoint->get());
     EXPECT_DOUBLE_EQ(-100.0, getCurrentSample());
 
-    // Move cue and check if track is following it.
+    // Move cue like silence analysis does and check if track is following it
     pTrack->setCuePoint(CuePosition(-200.0));
+    pTrack->analysisFinished();
     ProcessBuffer();
 
     EXPECT_DOUBLE_EQ(-200.0, m_pCuePoint->get());
     EXPECT_DOUBLE_EQ(-200.0, getCurrentSample());
+}
+
+TEST_F(CueControlTest, FollowCueOnQuantize) {
+    config()->set(ConfigKey("[Controls]", "CueRecall"),
+            ConfigValue(static_cast<int>(SeekOnLoadMode::MainCue)));
+    TrackPointer pTrack = createTestTrack();
+    pTrack->setAudioProperties(
+            mixxx::kEngineChannelCount,
+            mixxx::audio::SampleRate(44100),
+            mixxx::audio::Bitrate(),
+            mixxx::Duration::fromSeconds(10));
+    pTrack->setBpm(120.0);
+
+    const int frameSize = 2;
+    const int sampleRate = pTrack->getSampleRate();
+    const double bpm = pTrack->getBpm();
+    const double beatLength = (60.0 * sampleRate / bpm) * frameSize;
+    double cuePos = 1.8 * beatLength;
+    double quantizedCuePos = 2.0 * beatLength;
+    pTrack->setCuePoint(cuePos);
+
+    loadTrack(pTrack);
+
+    EXPECT_DOUBLE_EQ(cuePos, m_pCuePoint->get());
+    EXPECT_DOUBLE_EQ(cuePos, getCurrentSample());
+
+    // enable quantization and expect current position to follow
+    m_pQuantizeEnabled->set(1);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(quantizedCuePos, m_pCuePoint->get());
+    EXPECT_DOUBLE_EQ(quantizedCuePos, getCurrentSample());
+
+    // move current position to track start
+    m_pQuantizeEnabled->set(0);
+    ProcessBuffer();
+    setCurrentSample(0.0);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(0.0, getCurrentSample());
+
+    // enable quantization again and expect play position to stay at track start
+    m_pQuantizeEnabled->set(1);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(quantizedCuePos, m_pCuePoint->get());
+    EXPECT_DOUBLE_EQ(0.0, getCurrentSample());
 }
 
 TEST_F(CueControlTest, IntroCue_SetStartEnd_ClearStartEnd) {

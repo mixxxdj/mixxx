@@ -173,6 +173,9 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/analyzer/plugins/analyzersoundtouchbeats.cpp
   src/analyzer/plugins/buffering_utils.cpp
   src/analyzer/trackanalysisscheduler.cpp
+  src/audio/types.cpp
+  src/audio/signalinfo.cpp
+  src/audio/streaminfo.cpp
   src/control/control.cpp
   src/control/controlaudiotaperpot.cpp
   src/control/controlbehavior.cpp
@@ -217,6 +220,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/controllers/keyboard/keyboardeventfilter.cpp
   src/controllers/learningutils.cpp
   src/controllers/midi/midicontroller.cpp
+  src/controllers/midi/midicontrollerpreset.cpp
   src/controllers/midi/midicontrollerpresetfilehandler.cpp
   src/controllers/midi/midienumerator.cpp
   src/controllers/midi/midimessage.cpp
@@ -340,12 +344,14 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/banshee/bansheedbconnection.cpp
   src/library/banshee/bansheefeature.cpp
   src/library/banshee/bansheeplaylistmodel.cpp
+  src/library/basecoverartdelegate.cpp
   src/library/baseexternallibraryfeature.cpp
   src/library/baseexternalplaylistmodel.cpp
   src/library/baseexternaltrackmodel.cpp
   src/library/baseplaylistfeature.cpp
   src/library/basesqltablemodel.cpp
   src/library/basetrackcache.cpp
+  src/library/basetracktablemodel.cpp
   src/library/bpmdelegate.cpp
   src/library/browse/browsefeature.cpp
   src/library/browse/browsetablemodel.cpp
@@ -556,7 +562,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/tracknumbers.cpp
   src/track/trackrecord.cpp
   src/track/trackref.cpp
-  src/util/audiosignal.cpp
   src/util/autohidpi.cpp
   src/util/battery/battery.cpp
   src/util/cache.cpp
@@ -1975,22 +1980,23 @@ if(HID)
   target_sources(mixxx-lib PRIVATE
     src/controllers/hid/hidcontroller.cpp
     src/controllers/hid/hidenumerator.cpp
+    src/controllers/hid/hidcontrollerpreset.cpp
     src/controllers/hid/hidcontrollerpresetfilehandler.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __HID__)
   if(HIDAPI_STATIC)
     message(STATUS "Linking internal libhidapi statically")
     add_library(mixxx-hidapi STATIC EXCLUDE_FROM_ALL)
-    target_include_directories(mixxx-hidapi SYSTEM PUBLIC lib/hidapi-0.8.0-rc1/hidapi)
+    target_include_directories(mixxx-hidapi SYSTEM PUBLIC lib/hidapi/hidapi)
     if(WIN32)
-        target_sources(mixxx-hidapi PRIVATE lib/hidapi-0.8.0-rc1/windows/hid.c)
+        target_sources(mixxx-hidapi PRIVATE lib/hidapi/windows/hid.c)
     elseif(APPLE)
-        target_sources(mixxx-hidapi PRIVATE lib/hidapi-0.8.0-rc1/mac/hid.c)
+        target_sources(mixxx-hidapi PRIVATE lib/hidapi/mac/hid.c)
     elseif(UNIX)
       if(NOT LibUSB_FOUND)
         message(FATAL_ERROR "USB HID controller support on Unix with statically linked libhidapi-libusb requires libusb 1.0 and its development headers.")
       endif()
-      target_sources(mixxx-hidapi PRIVATE lib/hidapi-0.8.0-rc1/libusb/hid.c)
+      target_sources(mixxx-hidapi PRIVATE lib/hidapi/libusb/hid.c)
       target_link_libraries(mixxx-hidapi PRIVATE LibUSB::LibUSB)
     else()
       message(FATAL_ERROR "USB HID controller support only possible on Windows/Mac OS/Linux/BSD.")

@@ -7,7 +7,7 @@
 
 namespace {
 
-constexpr mixxx::AudioSignal::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
+constexpr mixxx::audio::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
 constexpr int kTrackLengthFrames = 100000;
 constexpr double kTonePitchHz = 1000.0; // 1kHz
 
@@ -19,7 +19,11 @@ class AnalyzerSilenceTest : public MixxxTest {
 
     void SetUp() override {
         pTrack = Track::newTemporary();
-        pTrack->setSampleRate(44100);
+        pTrack->setAudioProperties(
+                mixxx::audio::ChannelCount(kChannelCount),
+                mixxx::audio::SampleRate(44100),
+                mixxx::audio::Bitrate(),
+                mixxx::Duration::fromSeconds(kTrackLengthFrames / 44100.0));
 
         nTrackSampleDataLength = kChannelCount * kTrackLengthFrames;
         pTrackSampleData = new CSAMPLE[nTrackSampleDataLength];
