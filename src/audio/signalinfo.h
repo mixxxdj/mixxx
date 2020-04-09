@@ -12,9 +12,9 @@ namespace audio {
 // Properties that characterize an uncompressed PCM audio signal.
 class SignalInfo final {
     // Properties
-    PROPERTY_SET_BYVAL_GET_BYREF(ChannelCount, channelCount, ChannelCount)
-    PROPERTY_SET_BYVAL_GET_BYREF(SampleRate, sampleRate, SampleRate)
-    PROPERTY_SET_BYVAL_GET_BYREF(OptionalSampleLayout, sampleLayout, SampleLayout)
+    PROPERTY_SET_BYVAL_GET_BYREF_CONSTEXPR(ChannelCount, channelCount, ChannelCount)
+    PROPERTY_SET_BYVAL_GET_BYREF_CONSTEXPR(SampleRate, sampleRate, SampleRate)
+    PROPERTY_SET_BYVAL_GET_BYREF_CONSTEXPR(OptionalSampleLayout, sampleLayout, SampleLayout)
 
   public:
     constexpr SignalInfo() = default;
