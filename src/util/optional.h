@@ -7,7 +7,9 @@
 
 #else
 
+#ifdef __clang__
 #pragma clang diagnostic ignored "-Winvalid-constexpr"
+#endif
 
 #include <experimental/optional>
 
