@@ -175,7 +175,7 @@ void DlgRecording::slotDurationRecorded(QString durationRecorded) {
 // update label besides start/stop button
 void DlgRecording::refreshLabels() {
     QString recFile = m_pRecordingManager->getRecordingFile();
-    QString recData = tr("(%1 MiB written in %2)")
+    QString recData = (QStringLiteral("(") + tr("%1 MiB written in %2") + QStringLiteral(")"))
             .arg(m_bytesRecordedStr)
             .arg(m_durationRecordedStr);
     labelRecFilename->setText(recFile);
