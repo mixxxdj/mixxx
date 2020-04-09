@@ -419,9 +419,19 @@ void DlgPrefController::slotPresetSelected(int chosenIndex) {
     if (chosenIndex == 0) {
         // User picked "No Preset" item
         m_ui.chkEnabledDevice->setEnabled(false);
+
+        if (m_ui.chkEnabledDevice->isChecked()) {
+            m_ui.chkEnabledDevice->setChecked(false);
+            setDirty(true);
+        }
     } else {
         // User picked a preset
         m_ui.chkEnabledDevice->setEnabled(true);
+
+        if (!m_ui.chkEnabledDevice->isChecked()) {
+            m_ui.chkEnabledDevice->setChecked(true);
+            setDirty(true);
+        }
 
         presetPath = m_ui.comboBoxPreset->itemData(chosenIndex).toString();
     }
