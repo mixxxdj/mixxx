@@ -100,6 +100,7 @@ class HID(Feature):
 
     def sources(self, build):
         sources = ['src/controllers/hid/hidcontroller.cpp',
+                   'src/controllers/hid/hidcontrollerpreset.cpp',
                    'src/controllers/hid/hidenumerator.cpp',
                    'src/controllers/hid/hidcontrollerpresetfilehandler.cpp']
 

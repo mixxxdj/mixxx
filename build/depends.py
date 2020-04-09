@@ -928,6 +928,7 @@ class MixxxCore(Feature):
                    "src/controllers/midi/midimessage.cpp",
                    "src/controllers/midi/midiutils.cpp",
                    "src/controllers/midi/midicontroller.cpp",
+                   "src/controllers/midi/midicontrollerpreset.cpp",
                    "src/controllers/midi/midicontrollerpresetfilehandler.cpp",
                    "src/controllers/midi/midienumerator.cpp",
                    "src/controllers/midi/midioutputhandler.cpp",

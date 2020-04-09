@@ -220,6 +220,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/controllers/keyboard/keyboardeventfilter.cpp
   src/controllers/learningutils.cpp
   src/controllers/midi/midicontroller.cpp
+  src/controllers/midi/midicontrollerpreset.cpp
   src/controllers/midi/midicontrollerpresetfilehandler.cpp
   src/controllers/midi/midienumerator.cpp
   src/controllers/midi/midimessage.cpp
@@ -1981,6 +1982,7 @@ if(HID)
   target_sources(mixxx-lib PRIVATE
     src/controllers/hid/hidcontroller.cpp
     src/controllers/hid/hidenumerator.cpp
+    src/controllers/hid/hidcontrollerpreset.cpp
     src/controllers/hid/hidcontrollerpresetfilehandler.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __HID__)
