@@ -150,7 +150,7 @@ void DlgRecording::slotRecordingStateChanged(bool isRecording) {
         labelRecStatistics->show();
     } else {
         pushButtonRecording->setChecked(false);
-        pushButtonRecording->setText((tr("Start Recording")));
+        pushButtonRecording->setText(tr("Start Recording"));
         labelRecPrefix->hide();
         labelRecFilename->hide();
         labelRecStatistics->hide();
