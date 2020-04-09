@@ -24,9 +24,10 @@ const int kMinBpm = 30;
 // Maximum allowed interval between beats (calculated from kMinBpm).
 const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kMinBpm));
 
-DlgTrackInfo::DlgTrackInfo(UserSettingsPointer pConfig, QWidget* parent)
+DlgTrackInfo::DlgTrackInfo(UserSettingsPointer pConfig, QWidget* parent, bool enableNavigation)
         : QDialog(parent),
           m_pTapFilter(new TapFilter(this, kFilterLength, kMaxInterval)),
+          m_bNavigationIsEnabled(enableNavigation),
           m_dLastTapedBpm(-1.),
           m_pWCoverArtLabel(new WCoverArtLabel(this)),
           m_pConfig(pConfig) {
@@ -42,8 +43,14 @@ void DlgTrackInfo::init() {
 
     coverBox->insertWidget(1, m_pWCoverArtLabel);
 
-    connect(btnNext, &QPushButton::clicked, this, &DlgTrackInfo::slotNext);
-    connect(btnPrev, &QPushButton::clicked, this, &DlgTrackInfo::slotPrev);
+    if (m_bNavigationIsEnabled) {
+        connect(btnNext, &QPushButton::clicked, this, &DlgTrackInfo::slotNext);
+        connect(btnPrev, &QPushButton::clicked, this, &DlgTrackInfo::slotPrev);
+    } else {
+        btnNext->hide();
+        btnPrev->hide();
+    }
+
     connect(btnApply, &QPushButton::clicked, this, &DlgTrackInfo::apply);
     connect(btnOK, &QPushButton::clicked, this, &DlgTrackInfo::OK);
     connect(btnCancel, &QPushButton::clicked, this, &DlgTrackInfo::cancel);

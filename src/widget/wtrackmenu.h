@@ -34,7 +34,15 @@ class WTrackMenu : public QMenu {
         HideUnhidePurge = 1 << 9,
         FileBrowser = 1 << 10,
         Properties = 1 << 11,
-        IndependentFilters = AutoDJ | Playlist | Crate | FileBrowser
+        IndependentFilters = AutoDJ |
+                Playlist |
+                Crate |
+                Metadata |
+                Reset |
+                BPM |
+                Color |
+                FileBrowser |
+                Properties
     };
     Q_DECLARE_FLAGS(Filters, Filter)
 
@@ -134,7 +142,9 @@ class WTrackMenu : public QMenu {
     void updateSelectionCrates(QWidget* pWidget);
 
     void showTrackInfo(QModelIndex index);
+    void showTrackInfo(TrackPointer pTrack);
     void showDlgTagFetcher(QModelIndex index);
+    void showDlgTagFetcher(TrackPointer pTrack);
 
     void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
 
@@ -237,14 +247,6 @@ class WTrackMenu : public QMenu {
 
     bool m_bPlaylistMenuLoaded;
     bool m_bCrateMenuLoaded;
-
-    // Column numbers
-    int m_iCoverSourceColumn;   // cover art source
-    int m_iCoverTypeColumn;     // cover art type
-    int m_iCoverLocationColumn; // cover art location
-    int m_iCoverHashColumn;     // cover art hash
-    int m_iCoverColumn;         // visible cover art
-    int m_iTrackLocationColumn;
 
     // Filter available options
     const Filters m_eFilters;

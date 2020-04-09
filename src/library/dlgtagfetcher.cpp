@@ -54,20 +54,26 @@ void addTrack(
 
 } // anonymous namespace
 
-DlgTagFetcher::DlgTagFetcher(QWidget* parent)
+DlgTagFetcher::DlgTagFetcher(QWidget* parent, bool enableNavigation)
         : QDialog(parent),
           m_tagFetcher(parent),
-          m_networkResult(NetworkResult::Ok) {
+          m_networkResult(NetworkResult::Ok),
+          m_bNavigationIsEnabled(enableNavigation) {
     init();
 }
 
 void DlgTagFetcher::init() {
     setupUi(this);
 
+    if (m_bNavigationIsEnabled) {
+        connect(btnPrev, &QPushButton::clicked, this, &DlgTagFetcher::previous);
+        connect(btnNext, &QPushButton::clicked, this, &DlgTagFetcher::next);
+    } else {
+        btnNext->hide();
+        btnPrev->hide();
+    }
     connect(btnApply, &QPushButton::clicked, this, &DlgTagFetcher::apply);
     connect(btnQuit, &QPushButton::clicked, this, &DlgTagFetcher::quit);
-    connect(btnPrev, &QPushButton::clicked, this, &DlgTagFetcher::previous);
-    connect(btnNext, &QPushButton::clicked, this, &DlgTagFetcher::next);
     connect(results, &QTreeWidget::currentItemChanged, this, &DlgTagFetcher::resultSelected);
 
     connect(&m_tagFetcher, &TagFetcher::resultAvailable, this, &DlgTagFetcher::fetchTagFinished);

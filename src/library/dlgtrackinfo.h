@@ -18,7 +18,7 @@
 class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     Q_OBJECT
   public:
-    DlgTrackInfo(UserSettingsPointer pConfig, QWidget* parent);
+    DlgTrackInfo(UserSettingsPointer pConfig, QWidget* parent, bool enableNavigation = false);
     virtual ~DlgTrackInfo();
 
   public slots:
@@ -78,6 +78,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     BeatsPointer m_pBeatsClone;
     Keys m_keysClone;
     bool m_trackHasBeatMap;
+    bool m_bNavigationIsEnabled;
 
     QScopedPointer<TapFilter> m_pTapFilter;
     double m_dLastTapedBpm;

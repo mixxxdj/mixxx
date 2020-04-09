@@ -12,7 +12,7 @@ class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
   Q_OBJECT
 
   public:
-    explicit DlgTagFetcher(QWidget *parent);
+    DlgTagFetcher(QWidget* parent, bool enableNavigation = false);
     ~DlgTagFetcher() override = default;
 
     void init();
@@ -58,4 +58,5 @@ class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
         UnknownError,
     };
     NetworkResult m_networkResult;
+    bool m_bNavigationIsEnabled;
 };

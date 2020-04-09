@@ -16,7 +16,13 @@ WTrackProperty::WTrackProperty(const char* group,
 
     // Setup context menu
     WTrackMenu::Filters flags = WTrackMenu::Filter::Playlist |
-                                WTrackMenu::Filter::Crate;
+            WTrackMenu::Filter::Crate |
+            WTrackMenu::Filter::Metadata |
+            WTrackMenu::Filter::Reset |
+            WTrackMenu::Filter::BPM |
+            WTrackMenu::Filter::Color |
+            WTrackMenu::Filter::FileBrowser |
+            WTrackMenu::Filter::Properties;
     m_pMenu = new WTrackMenu(this, pConfig, pTrackCollectionManager, flags);
 }
 

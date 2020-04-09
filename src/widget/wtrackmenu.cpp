@@ -42,11 +42,6 @@ WTrackMenu::WTrackMenu(QWidget* parent,
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_bPlaylistMenuLoaded(false),
           m_bCrateMenuLoaded(false),
-          m_iCoverSourceColumn(-1),
-          m_iCoverTypeColumn(-1),
-          m_iCoverLocationColumn(-1),
-          m_iCoverHashColumn(-1),
-          m_iCoverColumn(-1),
           m_eFilters(flags),
           m_eIndependentFilters(Filter::IndependentFilters) {
     m_pNumSamplers = new ControlProxy(
@@ -56,14 +51,7 @@ WTrackMenu::WTrackMenu(QWidget* parent,
     m_pNumPreviewDecks = new ControlProxy(
             "[Master]", "num_preview_decks", this);
 
-    if (trackModel) {
-        m_iCoverSourceColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART_SOURCE);
-        m_iCoverTypeColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART_TYPE);
-        m_iCoverLocationColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART_LOCATION);
-        m_iCoverHashColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART_HASH);
-        m_iCoverColumn = trackModel->fieldIndex(LIBRARYTABLE_COVERART);
-        m_iTrackLocationColumn = trackModel->fieldIndex(TRACKLOCATIONSTABLE_LOCATION);
-    } else {
+    if (!trackModel) {
         // Check if passed flags are a subset of available subsets
         VERIFY_OR_DEBUG_ASSERT((m_eIndependentFilters | flags) == m_eIndependentFilters) {
             return;
@@ -140,10 +128,10 @@ void WTrackMenu::createActions() {
         connect(m_pAutoDJBottomAct, &QAction::triggered, this, &WTrackMenu::slotAddToAutoDJBottom);
 
         m_pAutoDJTopAct = new QAction(tr("Add to Auto DJ Queue (top)"), this);
-        connect(m_pAutoDJBottomAct, &QAction::triggered, this, &WTrackMenu::slotAddToAutoDJTop);
+        connect(m_pAutoDJTopAct, &QAction::triggered, this, &WTrackMenu::slotAddToAutoDJTop);
 
         m_pAutoDJReplaceAct = new QAction(tr("Add to Auto DJ Queue (replace)"), this);
-        connect(m_pAutoDJBottomAct, &QAction::triggered, this, &WTrackMenu::slotAddToAutoDJReplace);
+        connect(m_pAutoDJReplaceAct, &QAction::triggered, this, &WTrackMenu::slotAddToAutoDJReplace);
     }
 
     if (optionIsEnabled(Filter::LoadTo)) {
@@ -406,9 +394,6 @@ void WTrackMenu::setupActions() {
 }
 
 void WTrackMenu::updateMenus() {
-    // Changes menu options depending on track(s)
-    auto trackModel = getTrackModel();
-    const auto indices = getTrackIndices();
     const auto trackIds = getTrackIds();
     const auto trackPointers = getTrackPointers();
 
@@ -479,39 +464,22 @@ void WTrackMenu::updateMenus() {
     if (optionIsEnabled(Filter::Metadata)) {
         m_pImportMetadataFromMusicBrainzAct->setEnabled(oneSongSelected);
 
-        // Cover art menu only applies if at least one track is selected.
-        if (indices.size()) {
-            // We load a single track to get the necessary context for the cover (we use
-            // last to be consistent with selectionChanged above).
-            QModelIndex last = indices.last();
-            CoverInfo info;
-            info.source = static_cast<CoverInfo::Source>(
-                    last.sibling(last.row(), m_iCoverSourceColumn).data().toInt());
-            info.type = static_cast<CoverInfo::Type>(
-                    last.sibling(last.row(), m_iCoverTypeColumn).data().toInt());
-            info.hash = last.sibling(last.row(), m_iCoverHashColumn).data().toUInt();
-            info.trackLocation = last.sibling(
-                                             last.row(), m_iTrackLocationColumn)
-                                         .data()
-                                         .toString();
-            info.coverLocation = last.sibling(
-                                             last.row(), m_iCoverLocationColumn)
-                                         .data()
-                                         .toString();
-            m_pCoverMenu->setCoverArt(info);
-        }
+        // We load a single track to get the necessary context for the cover (we use
+        // last to be consistent with selectionChanged above).
+        TrackPointer last = trackPointers.last();
+        CoverInfo info;
+        info.source = last->getCoverInfo().source;
+        info.type = last->getCoverInfo().type;
+        info.hash = last->getCoverHash();
+        info.trackLocation = last->getCoverInfoWithLocation().trackLocation;
+        info.coverLocation = last->getCoverInfoWithLocation().coverLocation;
+        m_pCoverMenu->setCoverArt(info);
     }
 
     if (optionIsEnabled(Filter::Reset)) {
-        VERIFY_OR_DEBUG_ASSERT(trackModel) {
-            return;
-        }
         bool allowClear = true;
-        int column = trackModel->fieldIndex(LIBRARYTABLE_BPM_LOCK);
-        for (int i = 0; i < indices.size() && allowClear; ++i) {
-            int row = indices.at(i).row();
-            QModelIndex index = indices.at(i).sibling(row, column);
-            if (index.data().toBool()) {
+        for (int i = 0; i < trackPointers.size() && allowClear; ++i) {
+            if (trackPointers.at(0)->isBpmLocked()) {
                 allowClear = false;
             }
         }
@@ -519,80 +487,45 @@ void WTrackMenu::updateMenus() {
     }
 
     if (optionIsEnabled(Filter::BPM)) {
-        if (oneSongSelected) {
-            if (!trackModel) {
-                return;
+        bool anyLocked = false; //true if any of the selected items are locked
+        for (int i = 0; i < trackPointers.size() && !anyLocked; ++i) {
+            if (trackPointers.at(i)->isBpmLocked()) {
+                anyLocked = true;
             }
-            int column = trackModel->fieldIndex(LIBRARYTABLE_BPM_LOCK);
-            QModelIndex index = indices.at(0).sibling(indices.at(0).row(), column);
-            if (index.data().toBool()) { //BPM is locked
-                m_pBpmUnlockAction->setEnabled(true);
-                m_pBpmLockAction->setEnabled(false);
-                m_pBpmDoubleAction->setEnabled(false);
-                m_pBpmHalveAction->setEnabled(false);
-                m_pBpmTwoThirdsAction->setEnabled(false);
-                m_pBpmThreeFourthsAction->setEnabled(false);
-                m_pBpmFourThirdsAction->setEnabled(false);
-                m_pBpmThreeHalvesAction->setEnabled(false);
-            } else { //BPM is not locked
-                m_pBpmUnlockAction->setEnabled(false);
-                m_pBpmLockAction->setEnabled(true);
-                m_pBpmDoubleAction->setEnabled(true);
-                m_pBpmHalveAction->setEnabled(true);
-                m_pBpmTwoThirdsAction->setEnabled(true);
-                m_pBpmThreeFourthsAction->setEnabled(true);
-                m_pBpmFourThirdsAction->setEnabled(true);
-                m_pBpmThreeHalvesAction->setEnabled(true);
-            }
+        }
+        if (anyLocked) {
+            m_pBpmUnlockAction->setEnabled(true);
+            m_pBpmLockAction->setEnabled(false);
+            m_pBpmDoubleAction->setEnabled(false);
+            m_pBpmHalveAction->setEnabled(false);
+            m_pBpmTwoThirdsAction->setEnabled(false);
+            m_pBpmThreeFourthsAction->setEnabled(false);
+            m_pBpmFourThirdsAction->setEnabled(false);
+            m_pBpmThreeHalvesAction->setEnabled(false);
         } else {
-            bool anyLocked = false; //true if any of the selected items are locked
-            int column = trackModel->fieldIndex(LIBRARYTABLE_BPM_LOCK);
-            for (int i = 0; i < indices.size() && !anyLocked; ++i) {
-                int row = indices.at(i).row();
-                QModelIndex index = indices.at(i).sibling(row, column);
-                if (index.data().toBool()) {
-                    anyLocked = true;
-                }
-            }
-            if (anyLocked) {
-                m_pBpmLockAction->setEnabled(false);
-                m_pBpmUnlockAction->setEnabled(true);
-                m_pBpmDoubleAction->setEnabled(false);
-                m_pBpmHalveAction->setEnabled(false);
-                m_pBpmTwoThirdsAction->setEnabled(false);
-                m_pBpmThreeFourthsAction->setEnabled(false);
-                m_pBpmFourThirdsAction->setEnabled(false);
-                m_pBpmThreeHalvesAction->setEnabled(false);
-            } else {
-                m_pBpmLockAction->setEnabled(true);
-                m_pBpmUnlockAction->setEnabled(false);
-                m_pBpmDoubleAction->setEnabled(true);
-                m_pBpmHalveAction->setEnabled(true);
-                m_pBpmTwoThirdsAction->setEnabled(true);
-                m_pBpmThreeFourthsAction->setEnabled(true);
-                m_pBpmFourThirdsAction->setEnabled(true);
-                m_pBpmThreeHalvesAction->setEnabled(true);
-            }
+            m_pBpmUnlockAction->setEnabled(false);
+            m_pBpmLockAction->setEnabled(true);
+            m_pBpmDoubleAction->setEnabled(true);
+            m_pBpmHalveAction->setEnabled(true);
+            m_pBpmTwoThirdsAction->setEnabled(true);
+            m_pBpmThreeFourthsAction->setEnabled(true);
+            m_pBpmFourThirdsAction->setEnabled(true);
+            m_pBpmThreeHalvesAction->setEnabled(true);
         }
     }
 
-    // Track color menu only appears if at least one track is selected
-    if (optionIsEnabled(Filter::Color) && !indices.empty()) {
+    if (optionIsEnabled(Filter::Color)) {
         m_pColorPickerAction->setColorPalette(
                 ColorPaletteSettings(m_pConfig).getTrackColorPalette());
 
         // Get color of first selected track
-        int column = trackModel->fieldIndex(LIBRARYTABLE_COLOR);
-        QModelIndex index = indices.at(0).sibling(indices.at(0).row(), column);
-        auto trackColor = mixxx::RgbColor::fromQVariant(index.data());
+        TrackPointer pTrack = trackPointers.at(0);
+        auto trackColor = pTrack->getColor();
 
         // Check if all other selected tracks have the same color
         bool multipleTrackColors = false;
-        for (int i = 1; i < indices.size(); ++i) {
-            int row = indices.at(i).row();
-            QModelIndex index = indices.at(i).sibling(row, column);
-
-            if (trackColor != mixxx::RgbColor::fromQVariant(index.data())) {
+        for (int i = 1; i < trackPointers.size(); ++i) {
+            if (trackColor != trackPointers.at(i)->getColor()) {
                 trackColor = mixxx::RgbColor::nullopt();
                 multipleTrackColors = true;
                 break;
@@ -739,20 +672,9 @@ void WTrackMenu::slotOpenInFileBrowser() {
 }
 
 void WTrackMenu::slotImportTrackMetadataFromFileTags() {
-    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA)) {
-        return;
-    }
+    auto trackPointers = getTrackPointers();
 
-    const QModelIndexList indices = getTrackIndices();
-
-    auto trackModel = getTrackModel();
-
-    if (trackModel == nullptr) {
-        return;
-    }
-
-    for (const QModelIndex& index : indices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
+    for (const auto& pTrack : trackPointers) {
         if (pTrack) {
             // The user has explicitly requested to reload metadata from the file
             // to override the information within Mixxx! Custom cover art must be
@@ -764,24 +686,11 @@ void WTrackMenu::slotImportTrackMetadataFromFileTags() {
 }
 
 void WTrackMenu::slotExportTrackMetadataIntoFileTags() {
-    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA)) {
-        return;
-    }
-
-    auto trackModel = getTrackModel();
-    if (!trackModel) {
-        return;
-    }
-
-    const QModelIndexList indices = getTrackIndices();
-    if (indices.isEmpty()) {
-        return;
-    }
+    auto trackPointers = getTrackPointers();
 
     mixxx::DlgTrackMetadataExport::showMessageBoxOncePerSession();
 
-    for (const QModelIndex& index : indices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
+    for (const auto& pTrack : trackPointers) {
         if (pTrack) {
             // Export of metadata is deferred until all references to the
             // corresponding track object have been dropped. Otherwise
@@ -798,28 +707,15 @@ void WTrackMenu::slotUpdateExternalTrackCollection(
     VERIFY_OR_DEBUG_ASSERT(externalTrackCollection) {
         return;
     }
-
-    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA)) {
-        return;
-    }
-
-    auto trackModel = getTrackModel();
-    if (!trackModel) {
-        return;
-    }
-
-    const QModelIndexList indices = getTrackIndices();
-    if (indices.isEmpty()) {
-        return;
-    }
+    auto trackPointers = getTrackPointers();
 
     QList<TrackRef> trackRefs;
-    trackRefs.reserve(indices.size());
-    for (const QModelIndex& index : indices) {
+    trackRefs.reserve(trackPointers.size());
+    for (const auto& pTrack : trackPointers) {
         trackRefs.append(
                 TrackRef::fromFileInfo(
-                        trackModel->getTrackLocation(index),
-                        trackModel->getTrackId(index)));
+                        pTrack->getLocation(),
+                        pTrack->getId()));
     }
 
     externalTrackCollection->updateTracks(std::move(trackRefs));
@@ -1037,7 +933,7 @@ void WTrackMenu::slotScaleBpm(int scale) {
     }
 
     for (const auto& pTrack : trackPointers) {
-        if (pTrack && !pTrack->isBpmLocked()) {
+        if (!pTrack->isBpmLocked()) {
             BeatsPointer pBeats = pTrack->getBeats();
             if (pBeats) {
                 pBeats->scale(static_cast<Beats::BPMScale>(scale));
@@ -1054,9 +950,7 @@ void WTrackMenu::lockBpm(bool lock) {
 
     // TODO: This should be done in a thread for large selections
     for (const auto& pTrack : trackPointers) {
-        if (!pTrack->isBpmLocked()) {
-            pTrack->setBpmLocked(lock);
-        }
+        pTrack->setBpmLocked(lock);
     }
 }
 
@@ -1068,9 +962,7 @@ void WTrackMenu::slotColorPicked(mixxx::RgbColor::optional_t color) {
 
     // TODO: This should be done in a thread for large selections
     for (const auto& pTrack : trackPointers) {
-        if (!pTrack->isBpmLocked()) {
-            pTrack->setColor(color);
-        }
+        pTrack->setColor(color);
     }
 
     hide();
@@ -1251,13 +1143,12 @@ void WTrackMenu::slotTagFetcherClosed() {
 
 void WTrackMenu::slotShowTrackInfo() {
     auto trackModel = getTrackModel();
-    VERIFY_OR_DEBUG_ASSERT(trackModel) {
-        return;
-    }
-    const QModelIndexList indices = getTrackIndices();
-
-    if (indices.size() > 0) {
-        showTrackInfo(indices[0]);
+    if (trackModel) {
+        const auto indices = getTrackIndices();
+        showTrackInfo(indices.at(0));
+    } else {
+        const auto trackPointers = getTrackPointers();
+        showTrackInfo(trackPointers.at(0));
     }
 }
 
@@ -1300,7 +1191,8 @@ void WTrackMenu::showTrackInfo(QModelIndex index) {
     if (m_pTrackInfo.isNull()) {
         // Give a NULL parent because otherwise it inherits our style which can
         // make it unreadable. Bug #673411
-        m_pTrackInfo.reset(new DlgTrackInfo(m_pConfig, nullptr));
+        bool trackNavigation = true;
+        m_pTrackInfo.reset(new DlgTrackInfo(m_pConfig, nullptr, trackNavigation));
 
         connect(m_pTrackInfo.data(), &DlgTrackInfo::next, this, &WTrackMenu::slotNextTrackInfo);
         connect(m_pTrackInfo.data(), &DlgTrackInfo::previous, this, &WTrackMenu::slotPrevTrackInfo);
@@ -1313,9 +1205,19 @@ void WTrackMenu::showTrackInfo(QModelIndex index) {
     m_pTrackInfo->show();
 }
 
+void WTrackMenu::showTrackInfo(TrackPointer pTrack) {
+    if (m_pTrackInfo.isNull()) {
+        m_pTrackInfo.reset(new DlgTrackInfo(m_pConfig, nullptr));
+        connect(m_pTrackInfo.data(), &DlgTrackInfo::showTagFetcher, this, &WTrackMenu::slotShowTrackInTagFetcher);
+        connect(m_pTrackInfo.data(), &DlgTrackInfo::finished, this, &WTrackMenu::slotTrackInfoClosed);
+    }
+    m_pTrackInfo->loadTrack(pTrack); // NULL is fine.
+    m_pTrackInfo->show();
+}
+
 void WTrackMenu::slotNextDlgTagFetcher() {
     auto trackModel = getTrackModel();
-    VERIFY_OR_DEBUG_ASSERT(trackModel) {
+    if (!trackModel) {
         return;
     }
     QModelIndex nextRow = currentTrackInfoIndex.sibling(
@@ -1330,7 +1232,7 @@ void WTrackMenu::slotNextDlgTagFetcher() {
 
 void WTrackMenu::slotPrevDlgTagFetcher() {
     auto trackModel = getTrackModel();
-    VERIFY_OR_DEBUG_ASSERT(trackModel) {
+    if (!trackModel) {
         return;
     }
     QModelIndex prevRow = currentTrackInfoIndex.sibling(
@@ -1354,9 +1256,14 @@ void WTrackMenu::showDlgTagFetcher(QModelIndex index) {
     slotShowTrackInTagFetcher(pTrack);
 }
 
+void WTrackMenu::showDlgTagFetcher(TrackPointer pTrack) {
+    slotShowTrackInTagFetcher(pTrack);
+}
+
 void WTrackMenu::slotShowTrackInTagFetcher(TrackPointer pTrack) {
     if (m_pTagFetcher.isNull()) {
-        m_pTagFetcher.reset(new DlgTagFetcher(nullptr));
+        bool trackNavigation = getTrackModel() != nullptr;
+        m_pTagFetcher.reset(new DlgTagFetcher(nullptr, trackNavigation));
         connect(m_pTagFetcher.data(), &DlgTagFetcher::next, this, &WTrackMenu::slotNextDlgTagFetcher);
         connect(m_pTagFetcher.data(), &DlgTagFetcher::previous, this, &WTrackMenu::slotPrevDlgTagFetcher);
         connect(m_pTagFetcher.data(), &DlgTagFetcher::finished, this, &WTrackMenu::slotTagFetcherClosed);
@@ -1368,13 +1275,17 @@ void WTrackMenu::slotShowTrackInTagFetcher(TrackPointer pTrack) {
 }
 
 void WTrackMenu::slotShowDlgTagFetcher() {
-    const QModelIndexList indices = getTrackIndices();
-    if (indices.empty()) {
-        return;
-    }
-
-    if (indices.size() > 0) {
-        showDlgTagFetcher(indices[0]);
+    auto trackModel = getTrackModel();
+    if (trackModel) {
+        const auto indices = getTrackIndices();
+        if (indices.size() > 0) {
+            showDlgTagFetcher(indices.at(0));
+        }
+    } else {
+        const auto trackPointers = getTrackPointers();
+        if (trackPointers.size() > 0) {
+            showDlgTagFetcher(trackPointers.at(0));
+        }
     }
 }
 
@@ -1394,9 +1305,6 @@ void WTrackMenu::slotAddToAutoDJReplace() {
 void WTrackMenu::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     const TrackIdList trackIds = getTrackIds();
     if (trackIds.empty()) {
-        return;
-    }
-    if (trackIds.isEmpty()) {
         qWarning() << "No tracks selected for AutoDJ";
         return;
     }
