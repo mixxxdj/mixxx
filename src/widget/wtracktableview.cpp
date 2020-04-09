@@ -57,9 +57,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
         QKeySequence(tr("ESC", "Focus")), this);
     connect(setFocusShortcut, &QShortcut::activated,
             this, qOverload<>(&WTrackTableView::setFocus));
-
-    m_pMenu = new WTrackMenu(this, pConfig, m_pTrackCollectionManager);
-    connect(m_pMenu, &WTrackMenu::loadTrackToPlayer, this, &WTrackTableView::loadTrackToPlayer);
 }
 
 WTrackTableView::~WTrackTableView() {
@@ -302,8 +299,9 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // restoring scrollBar position using model pointer as key
     // scrollbar positions with respect to different models are backed by map
 
-    // Set the track model in context menu widget.
-    m_pMenu->setTrackModel(getTrackModel());
+    // Initialize m_pMenu only after track model has been loaded.
+    m_pMenu = new WTrackMenu(this, m_pConfig, m_pTrackCollectionManager, WTrackMenu::Filter::None, trackModel);
+    connect(m_pMenu, &WTrackMenu::loadTrackToPlayer, this, &WTrackTableView::loadTrackToPlayer);
 }
 
 // slot
@@ -380,6 +378,9 @@ void WTrackTableView::slotUnhide() {
 }
 
 void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
+    if (!m_pMenu) {
+        return;
+    }
     // Update track indices in context menu
     QModelIndexList indices = selectionModel()->selectedRows();
     m_pMenu->loadTracks(indices);

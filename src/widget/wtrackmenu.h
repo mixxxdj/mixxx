@@ -37,7 +37,11 @@ class WTrackMenu : public QMenu {
     };
     Q_DECLARE_FLAGS(Filters, Filter)
 
-    WTrackMenu(QWidget* parent, UserSettingsPointer pConfig, TrackCollectionManager* pTrackCollectionManager, Filters flags = Filter::None);
+    WTrackMenu(QWidget* parent,
+            UserSettingsPointer pConfig,
+            TrackCollectionManager* pTrackCollectionManager,
+            Filters flags = Filter::None,
+            TrackModel* trackModel = nullptr);
     ~WTrackMenu() {
     }
 
@@ -45,7 +49,6 @@ class WTrackMenu : public QMenu {
     void loadTrack(QModelIndex index);
     void loadTracks(TrackIdList trackList);
     void loadTracks(QModelIndexList indexList);
-    void setTrackModel(TrackModel* trackModel);
 
   signals:
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
@@ -112,13 +115,13 @@ class WTrackMenu : public QMenu {
   private:
     TrackIdList getTrackIds() const;
     TrackPointerList getTrackPointers() const;
-    TrackModel* getTrackModel() const;
     QModelIndexList getTrackIndices() const;
+    TrackModel* getTrackModel() const;
 
-    void teardownActions();
     void createMenus();
     void createActions();
     void setupActions();
+    void updateMenus();
 
     bool modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) const;
     bool optionIsEnabled(Filter flag) const;
@@ -240,7 +243,7 @@ class WTrackMenu : public QMenu {
     int m_iTrackLocationColumn;
 
     // Filter available options
-    Filters m_eFilters;
+    const Filters m_eFilters;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(WTrackMenu::Filters)
