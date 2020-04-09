@@ -249,8 +249,8 @@ QString DlgPrefController::presetWikiLink(
 
 QString DlgPrefController::presetScriptFileLinks(
         const ControllerPresetPointer pPreset) const {
-    if (!pPreset) {
-        return QString();
+    if (!pPreset || pPreset->getScriptFiles().empty()) {
+        return tr("No Scripts");
     }
 
     QString systemPresetPath = resourcePresetsPath(m_pConfig);
