@@ -36,8 +36,6 @@ class WTrackTableView : public WLibraryTableView {
     void onShow() override;
     bool hasFocus() const override;
     void keyPressEvent(QKeyEvent* event) override;
-    void loadSelectedTrack() override;
-    void loadSelectedTrackToGroup(QString group, bool play) override;
     QList<TrackId> getSelectedTrackIds() const;
     void setSelectedTracks(const QList<TrackId>& tracks);
     void saveCurrentVScrollBarPos();
@@ -50,7 +48,6 @@ class WTrackTableView : public WLibraryTableView {
     void slotPurge();
 
   private slots:
-    void loadSelectionToGroup(QString group, bool play = false);
     void doSortByColumn(int headerSection, Qt::SortOrder sortOrder);
     void applySortingIfVisible();
     void applySorting();

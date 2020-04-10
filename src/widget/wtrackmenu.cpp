@@ -1,11 +1,8 @@
 #include "widget/wtrackmenu.h"
 
-#include <QAbstractItemView>
 #include <QCheckBox>
-#include <QDesktopServices>
 #include <QInputDialog>
 #include <QModelIndex>
-#include <QWidgetAction>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -13,13 +10,12 @@
 #include "library/crate/cratefeaturehelper.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/trackschema.h"
-#include "library/dlgtagfetcher.h"
-#include "library/dlgtrackinfo.h"
 #include "library/dlgtrackmetadataexport.h"
 #include "library/externaltrackcollection.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/trackmodel.h"
 #include "mixer/playermanager.h"
 #include "preferences/colorpalettesettings.h"

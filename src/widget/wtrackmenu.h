@@ -1,21 +1,24 @@
 #pragma once
 
-#include <QAction>
 #include <QMenu>
-#include <QWidget>
 
-#include "control/controlproxy.h"
 #include "library/dao/playlistdao.h"
 #include "library/dlgtagfetcher.h"
 #include "library/dlgtrackinfo.h"
-#include "library/trackcollectionmanager.h"
 #include "library/trackmodel.h"
-#include "preferences/usersettings.h"
-#include "widget/wcolorpickeraction.h"
-#include "widget/wcoverartmenu.h"
 
 typedef QList<TrackId> TrackIdList;
 typedef QList<TrackPointer> TrackPointerList;
+
+class ControlProxy;
+class DlgTagFetcher;
+class DlgTrackInfo;
+class ExternalTrackCollection;
+class QAction;
+class QWidget;
+class TrackCollectionManager;
+class WColorPickerAction;
+class WCoverArtMenu;
 
 class WTrackMenu : public QMenu {
     Q_OBJECT
@@ -232,7 +235,7 @@ class WTrackMenu : public QMenu {
     QAction* m_pClearAllMetadataAction{};
 
     const UserSettingsPointer m_pConfig;
-    TrackCollectionManager* m_pTrackCollectionManager;
+    TrackCollectionManager* const m_pTrackCollectionManager;
 
     QScopedPointer<DlgTrackInfo> m_pTrackInfo;
     QScopedPointer<DlgTagFetcher> m_pTagFetcher;
