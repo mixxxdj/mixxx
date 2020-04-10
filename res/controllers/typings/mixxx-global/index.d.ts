@@ -33,7 +33,7 @@ declare namespace engine {
         rpm: number,
         alpha: number,
         beta: number,
-        ramp: boolean
+        ramp?: boolean
     ): void
     function scratchTick(deck: number, interval: number): void
     function scratchDisable(deck: number, ramp: boolean): void
