@@ -40,7 +40,7 @@ declare namespace engine {
     function isScratching(deck: number): boolean
 
     type timerID = number
-    function beginTimer(milliseconds: number, callback: () => void | string, oneShot?: boolean): timerID
+    function beginTimer(milliseconds: number, callback: (() => void) | string, oneShot?: boolean): timerID
     function stopTimer(id: timerID): void
 
     function brake(deck: number, activate: boolean, factor?: number): void
