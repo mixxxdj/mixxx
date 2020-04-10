@@ -92,9 +92,6 @@ Description:
                 <SizePolicy>me,me</SizePolicy>
                 <Layout>stacked</Layout>
                 <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
                   <!-- translucent cover when Hot Cues are invisble -->
                   <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
@@ -184,9 +181,6 @@ Description:
                     <Layout>stacked</Layout>
                     <Size>16f,15f</Size>
                     <Children>
-                      <!-- index 0 due to bug -->
-                      <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
                       <!-- translucent cover when Stars don't fit into transport row -->
                       <WidgetGroup>
                         <ObjectName>SubmenuCover</ObjectName>
@@ -281,9 +275,6 @@ Description:
             <MaximumSize>-1,40</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Children>
-              <!-- index 0 due to bug -->
-              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
               <!-- translucent cover when Pitch slider is hidden -->
               <WidgetGroup>
                 <ObjectName>SubmenuCover</ObjectName>
@@ -387,9 +378,6 @@ Description:
             <SizePolicy>me,me</SizePolicy>
             <Layout>stacked</Layout>
             <Children>
-              <!-- index 0 due to bug -->
-              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
               <WidgetGroup><!-- translucent cover when Spinny/Cover is disabled -->
                 <ObjectName>SubmenuCover</ObjectName>
                 <Layout>vertical</Layout>
@@ -532,9 +520,6 @@ Description:
             <MaximumSize>182,60</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Children>
-              <!-- index 0 due to bug -->
-              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
               <!-- translucent cover when Channel Mixer is hidden -->
               <WidgetGroup>
                 <ObjectName>SubmenuCover</ObjectName>
@@ -563,9 +548,6 @@ Description:
                     <MaximumSize>182,20</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
                     <Children>
-                      <!-- index 0 due to bug -->
-                      <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
                       <!-- translucent cover when EQ knobs are hidden -->
                       <WidgetGroup>
                         <ObjectName>SubmenuCover</ObjectName>
@@ -605,9 +587,6 @@ Description:
             <MaximumSize>182,20</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Children>
-              <!-- index 0 due to bug -->
-              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
               <!-- translucent cover when Channel Mixer is hidden -->
               <WidgetGroup>
                 <ObjectName>SubmenuCover</ObjectName>
@@ -657,9 +636,6 @@ Description:
                 <Size>40f,20f</Size>
                 <Layout>stacked</Layout>
                 <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
                   <!-- translucent cover when Effects are invisible -->
                   <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
@@ -702,9 +678,6 @@ Description:
             <SizePolicy>me,me</SizePolicy>
             <Layout>stacked</Layout>
             <Children>
-              <!-- index 0 due to bug -->
-              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
               <!-- translucent cover when Effects are invisble -->
               <WidgetGroup>
                 <ObjectName>SubmenuCover</ObjectName>
@@ -765,9 +738,6 @@ Description:
                 <MaximumSize>112,20</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
                   <!-- translucent cover when Samlers are hidden -->
                   <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
