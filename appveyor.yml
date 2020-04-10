@@ -202,8 +202,7 @@ for:
       ..
     - cmake --build .
     - cmake --build . --target install
-    # Generate EXE/MSI installers
-    - cpack -G "NSIS"
+    # Generate WIX installer
     - cpack -G "WIX"
 
   test_script:

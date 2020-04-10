@@ -847,123 +847,155 @@ target_link_libraries(mixxx PUBLIC mixxx-lib)
 #
 # Installation and Packaging
 #
-include(GNUInstallDirs)
+set(MIXXX_INSTALL_BINDIR ".")
+set(MIXXX_INSTALL_DATADIR ".")
+set(MIXXX_INSTALL_DOCDIR ".")
+set(MIXXX_INSTALL_LICENSEDIR ".")
+if (UNIX)
+  include(GNUInstallDirs)
+  set(MIXXX_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}")
+  set(MIXXX_INSTALL_DATADIR "${CMAKE_INSTALL_DATADIR}/mixxx")
+  set(MIXXX_INSTALL_DOCDIR "${CMAKE_INSTALL_DOCDIR}/mixxx")
+  set(MIXXX_INSTALL_LICENSEDIR "${CMAKE_INSTALL_DATADIR}/licenses/mixxx")
+endif()
+
 install(
   TARGETS
     mixxx
   RUNTIME DESTINATION
-    ${CMAKE_INSTALL_BINDIR}
+    "${MIXXX_INSTALL_BINDIR}"
 )
 
 # Skins
 install(
   DIRECTORY
-    ${CMAKE_CURRENT_SOURCE_DIR}/res/skins
+    "${CMAKE_CURRENT_SOURCE_DIR}/res/skins"
   DESTINATION
-    ${CMAKE_INSTALL_DATADIR}/mixxx
+    "${MIXXX_INSTALL_DATADIR}"
 )
 
 # Controller mappings
 install(
   DIRECTORY
-    ${CMAKE_CURRENT_SOURCE_DIR}/res/controllers
+    "${CMAKE_CURRENT_SOURCE_DIR}/res/controllers"
   DESTINATION
-    ${CMAKE_INSTALL_DATADIR}/mixxx
+    "${MIXXX_INSTALL_DATADIR}"
 )
 
 # Translation files
 install(
   DIRECTORY
-    ${CMAKE_CURRENT_SOURCE_DIR}/res/translations
+    "${CMAKE_CURRENT_SOURCE_DIR}/res/translations"
   DESTINATION
-    ${CMAKE_INSTALL_DATADIR}/mixxx
+    "${MIXXX_INSTALL_DATADIR}"
   FILES_MATCHING PATTERN
     "*.qm"
 )
 # Font files
 install(
   DIRECTORY
-    ${CMAKE_CURRENT_SOURCE_DIR}/res/fonts
-  DESTINATION
-    ${CMAKE_INSTALL_DATADIR}/mixxx
+    "${CMAKE_CURRENT_SOURCE_DIR}/res/fonts"
+  "DESTINATION"
+    "${MIXXX_INSTALL_DATADIR}"
 )
 
 # Keyboard mapping(s)
 install(
   DIRECTORY
-    ${CMAKE_CURRENT_SOURCE_DIR}/res/keyboard
+    "${CMAKE_CURRENT_SOURCE_DIR}/res/keyboard"
   DESTINATION
-    ${CMAKE_INSTALL_DATADIR}/mixxx
+    "${MIXXX_INSTALL_DATADIR}"
 )
 
 # QScriptEngine extensions
 install(
   DIRECTORY
-    ${CMAKE_CURRENT_SOURCE_DIR}/script
+    "${CMAKE_CURRENT_SOURCE_DIR}/script"
   DESTINATION
-    ${CMAKE_INSTALL_DATADIR}/mixxx
+    "${MIXXX_INSTALL_DATADIR}"
 )
 
 # Licenses
 install(
   FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
-    ${CMAKE_CURRENT_SOURCE_DIR}/COPYING
+    "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"
+    "${CMAKE_CURRENT_SOURCE_DIR}/COPYING"
   DESTINATION
-    ${CMAKE_INSTALL_DATADIR}/licenses/mixxx
+    "${MIXXX_INSTALL_LICENSEDIR}"
 )
 
 # Documentation
 install(
   FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/README
-    ${CMAKE_CURRENT_SOURCE_DIR}/Mixxx-Manual.pdf
+    "${CMAKE_CURRENT_SOURCE_DIR}/README"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Mixxx-Manual.pdf"
   DESTINATION
-    ${CMAKE_INSTALL_DOCDIR}
+    "${MIXXX_INSTALL_DOCDIR}"
 )
 
-# .desktop file for KDE/GNOME menu
-install(
-  FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.desktop
-  DESTINATION
-    ${CMAKE_INSTALL_DATADIR}/applications
-)
+# Additional Linux-only files
+if(UNIX AND NOT APPLE)
+  # .desktop file for KDE/GNOME menu
+  install(
+    FILES
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.desktop"
+    DESTINATION
+      "${CMAKE_INSTALL_DATADIR}/applications"
+  )
 
-# Icon file for menu entry
-install(
-  FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/res/images/mixxx_icon.svg
-  DESTINATION
-    ${CMAKE_INSTALL_DATADIR}/pixmaps
-)
+  # Icon file for menu entry
+  install(
+    FILES
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/images/mixxx_icon.svg"
+    DESTINATION
+      "${CMAKE_INSTALL_DATADIR}/pixmaps"
+  )
 
-# .appdata.xml file for KDE/GNOME AppStream initiative
-install(
-  FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.appdata.xml
-  DESTINATION
-    ${CMAKE_INSTALL_DATADIR}/appdata
-)
+  # .appdata.xml file for KDE/GNOME AppStream initiative
+  install(
+    FILES
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.appdata.xml"
+    DESTINATION
+      "${CMAKE_INSTALL_DATADIR}/appdata"
+  )
 
-# udev rule file for USB HID and Bulk controllers
-install(
-  FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx-usb-uaccess.rules
-  DESTINATION
-    ${CMAKE_INSTALL_SYSCONFDIR}/udev/rules.d
-)
+  # udev rule file for USB HID and Bulk controllers
+  install(
+    FILES
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx-usb-uaccess.rules"
+    DESTINATION
+      "${CMAKE_INSTALL_SYSCONFDIR}/udev/rules.d"
+  )
+endif()
 
 # Packaging
 set(CPACK_PACKAGE_VENDOR "Mixxx Project")
 set(CPACK_PACKAGE_CONTACT "RJ Skerry-Ryan <rryan@mixxx.org>")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack_package_description.txt")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "Mixxx")
+set(CPACK_PACKAGE_EXECUTABLES "mixxx" "Mixxx")
+set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/res/images/mixxx_install_logo.bmp")
+set(CPACK_PACKAGE_HOMEPAGE_URL "https://www.mixxx.org/")
+
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README")
+set(CPACK_STRIP_FILES ON)
+set(CPACK_CREATE_DESKTOP_LINKS "mixxx")
+
 set(CPACK_DEBIAN_PACKAGE_SECTION "sound")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 set(CPACK_DEBIAN_PACKAGE_SUGGESTS "pdf-viewer")
 set(CPACK_DEBIAN_PACKAGE_REPLACES "mixxx-data")
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5opengl5, libqt5svg5, libqt5xml5, libqt5sql5, libqt5sql5-sqlite")
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+
+set(CPACK_WIX_UPGRADE_GUID "921DC99C-4DCF-478D-B950-50685CB9E6BE")
+set(CPACK_WIX_LICENSE_RTF "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/LICENSE.rtf")
+set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/res/images/ic_mixxx.ico")
+set(CPACK_WIX_PROPERTY_ARPHELPLINK "${CPACK_PACKAGE_HOMEPAGE_URL}")
+set(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/images/banner.bmp")
+set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/images/dialog.bmp")
+
 include(CPack)
 
 #
