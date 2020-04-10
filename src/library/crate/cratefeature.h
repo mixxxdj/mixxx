@@ -44,9 +44,6 @@ class CrateFeature : public BaseTrackCollectionFeature {
 
     TreeItemModel* getChildModel() override;
 
-  signals:
-    void analyzeTracks(QList<TrackId>);
-
   public slots:
     void activateChild(const QModelIndex& index) override;
     void onRightClick(const QPoint& globalPos) override;

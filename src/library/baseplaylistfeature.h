@@ -34,10 +34,6 @@ class BasePlaylistFeature : public BaseTrackCollectionFeature {
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard) override;
 
-  signals:
-    void showPage(const QUrl& page);
-    void analyzeTracks(QList<TrackId>);
-
   public slots:
     void activateChild(const QModelIndex& index) override;
     virtual void activatePlaylist(int playlistId);
