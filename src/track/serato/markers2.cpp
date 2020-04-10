@@ -457,7 +457,7 @@ QList<CueInfo> SeratoMarkers2::getCues(double timingOffsetMillis) const {
 
             break;
         }
-        // TODO: Add support for COLOR/LOOP/FLIP
+        // TODO: Add support for LOOP/FLIP
         default:
             break;
         }
