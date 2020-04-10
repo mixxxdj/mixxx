@@ -139,8 +139,8 @@ QString TrackMetadata::reformatYear(QString year) {
 }
 
 void TrackMetadata::normalizeBeforeExport() {
-    refAlbumInfo().normalizeBeforeExport();
-    refTrackInfo().normalizeBeforeExport();
+    m_albumInfo.normalizeBeforeExport();
+    m_trackInfo.normalizeBeforeExport();
 }
 
 bool TrackMetadata::anyFileTagsModified(
