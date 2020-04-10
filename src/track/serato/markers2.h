@@ -374,9 +374,15 @@ class SeratoMarkers2 final {
 
     // Parsing and formatting of gain values according to the
     // SeratoMarkers2 1.0/2.0 specification.
-    static bool parse(SeratoMarkers2* seratoMarkers2, const QByteArray& outerData);
+    static bool parse(
+            SeratoMarkers2* seratoMarkers2,
+            const QByteArray& outerData);
+    static bool parseBase64Encoded(
+            SeratoMarkers2* seratoMarkers2,
+            const QByteArray& base64EncodedData);
 
     QByteArray dump() const;
+    QByteArray dumpBase64Encoded() const;
 
     int getAllocatedSize() const {
         return m_allocatedSize;

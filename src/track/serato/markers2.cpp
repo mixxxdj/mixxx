@@ -3,6 +3,11 @@
 #include <QtEndian>
 
 namespace {
+
+const QByteArray kSeratoMarkers2Base64EncodedPrefix = QByteArray(
+        "application/octet-stream\x00\x00Serato Markers2\x00",
+        24 + 2 + 15 + 1);
+
 QString zeroTerminatedUtf8StringtoQString(QDataStream* stream) {
     DEBUG_ASSERT(stream);
 
@@ -17,6 +22,7 @@ QString zeroTerminatedUtf8StringtoQString(QDataStream* stream) {
     }
     return QString::fromUtf8(data);
 }
+
 } // namespace
 
 namespace mixxx {
@@ -290,7 +296,9 @@ quint32 SeratoMarkers2LoopEntry::length() const {
     return 21 + m_label.toUtf8().length();
 }
 
-bool SeratoMarkers2::parse(SeratoMarkers2* seratoMarkers2, const QByteArray& outerData) {
+bool SeratoMarkers2::parse(
+        SeratoMarkers2* seratoMarkers2,
+        const QByteArray& outerData) {
     if (!outerData.startsWith("\x01\x01")) {
         qWarning() << "Parsing SeratoMarkers2 failed:"
                    << "Unknown outer Serato Markers2 tag version";
@@ -362,6 +370,22 @@ bool SeratoMarkers2::parse(SeratoMarkers2* seratoMarkers2, const QByteArray& out
     seratoMarkers2->setAllocatedSize(outerData.size());
     seratoMarkers2->setEntries(entries);
     return true;
+}
+
+//static
+bool SeratoMarkers2::parseBase64Encoded(
+        SeratoMarkers2* seratoMarkers2,
+        const QByteArray& base64EncodedData) {
+    const auto decodedData = QByteArray::fromBase64(base64EncodedData);
+    if (!decodedData.startsWith(kSeratoMarkers2Base64EncodedPrefix)) {
+        qWarning() << "Decoding SeratoMarkers2 from base64 failed:"
+                   << "Unexpected prefix";
+        return false;
+    }
+    DEBUG_ASSERT(decodedData.size() >= kSeratoMarkers2Base64EncodedPrefix.size());
+    return parse(
+            seratoMarkers2,
+            decodedData.mid(kSeratoMarkers2Base64EncodedPrefix.size()));
 }
 
 QByteArray SeratoMarkers2::dump() const {
@@ -451,6 +475,76 @@ QList<CueInfo> SeratoMarkers2::getCues() const {
     }
 
     return cueInfos;
+}
+
+QByteArray SeratoMarkers2::dumpBase64Encoded() const {
+    QByteArray innerData;
+
+    // To reduce disk fragmentation, Serato pre-allocates at least 470 bytes
+    // for the "Markers2" tag. Unused bytes are filled with null-bytes.
+    // Hence, it's possible to have a valid tag that does not contain actual
+    // marker information. The allocated size is set after successfully parsing
+    // the tag, so if the tag is valid but does not contain entries we
+    // shouldn't delete the tag content.
+    if (isEmpty() && getAllocatedSize() == 0) {
+        // Return empty QByteArray
+        return innerData;
+    }
+
+    QDataStream stream(&innerData, QIODevice::WriteOnly);
+    stream.setByteOrder(QDataStream::BigEndian);
+    stream << static_cast<quint16>(0x0101);
+
+    for (int i = 0; i < m_entries.size(); i++) {
+        SeratoMarkers2EntryPointer entry = m_entries.at(i);
+        QByteArray entryName = entry->type().toUtf8();
+        QByteArray entryData = entry->dump();
+        stream.writeRawData(entryName.constData(), entryName.length());
+        stream << static_cast<quint8>(0x00) // terminating null-byte
+               << entryData.length();
+        stream.writeRawData(entryData.constData(), entryData.length());
+    }
+    innerData.append('\0');
+    innerData = innerData.toBase64(QByteArray::Base64Encoding | QByteArray::OmitTrailingEquals);
+
+    QByteArray outerData;
+    outerData.reserve(kSeratoMarkers2Base64EncodedPrefix.size() + 2 + innerData.size());
+    outerData += kSeratoMarkers2Base64EncodedPrefix;
+    outerData += QByteArray({0x01, 0x01});
+    outerData += innerData;
+
+    int size = getAllocatedSize();
+    if (size <= outerData.size()) {
+        // TODO: Find out how Serato chooses the allocation sizes
+        size = outerData.size() + 1;
+        if (size < 470) {
+            size = 470;
+        }
+    }
+    outerData = outerData.leftJustified(size, '\0');
+
+    // A newline char is inserted at every 72 bytes of base64-encoded content.
+    // Hence, we can split the data into blocks of 72 bytes * 3/4 = 54 bytes
+    // and base64-encode them one at a time:
+    const int base64Size = (outerData.size() * 4 + 2) / 3;
+    QByteArray base64Data;
+    base64Data.reserve(base64Size + base64Size / 72);
+    int offset = 0;
+    while (offset < outerData.size()) {
+        if (offset > 0) {
+            base64Data.append('\n');
+        }
+        QByteArray block = outerData.mid(offset, 54);
+        base64Data.append(block.toBase64(QByteArray::Base64Encoding | QByteArray::OmitTrailingEquals));
+        offset += block.size();
+
+        // In case that the last block would require padding, Serato seems to
+        // chop off the last byte of the base64-encoded data
+        if (block.size() % 3) {
+            base64Data.chop(1);
+        }
+    }
+    return base64Data;
 }
 
 RgbColor::optional_t SeratoMarkers2::getTrackColor() const {

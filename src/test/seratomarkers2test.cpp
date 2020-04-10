@@ -280,9 +280,30 @@ TEST_F(SeratoMarkers2Test, ParseMarkers2Data) {
 TEST_F(SeratoMarkers2Test, ParseEmptyData) {
     QByteArray inputValue;
     mixxx::SeratoMarkers2 seratoMarkers2;
-    mixxx::SeratoMarkers2::parse(&seratoMarkers2, inputValue);
+    EXPECT_FALSE(mixxx::SeratoMarkers2::parse(&seratoMarkers2, inputValue));
     QByteArray outputValue = seratoMarkers2.dump();
     EXPECT_EQ(inputValue, outputValue);
 }
 
-}  // namespace
+TEST_F(SeratoMarkers2Test, ParseAndDumpBase64Encoded) {
+    const char* referenceData =
+            "YXBwbGljYXRpb24vb2N0ZXQtc3RyZWFtAABTZXJhdG8gTWFya2VyczIAAQFBUUZEVDB4UFVn\n"
+            "QUFBQUFFQVAvLy8wSlFUVXhQUTBzQUFBQUFBUUFBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
+            "AAAAAAAAAAAAAAAAAAAAAA";
+    const auto inputData = QByteArray(referenceData);
+    mixxx::SeratoMarkers2 seratoMarkers2;
+    EXPECT_TRUE(mixxx::SeratoMarkers2::parseBase64Encoded(&seratoMarkers2, inputData));
+    const auto outputData = seratoMarkers2.dumpBase64Encoded();
+    EXPECT_EQ(inputData.size(), outputData.size());
+    EXPECT_EQ(inputData, outputData);
+}
+
+} // namespace
