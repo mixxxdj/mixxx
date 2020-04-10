@@ -24,7 +24,7 @@ declare namespace engine {
     ): connectionBinding
 
 
-    function softTakeover(group: string, key: string, enable: bool): void
+    function softTakeover(group: string, key: string, enable: boolean): void
     function softTakeoverIgnoreNextValue(group: string, key: string): void
 
     function scratchEnable(
@@ -33,14 +33,14 @@ declare namespace engine {
         rpm: number,
         alpha: number,
         beta: number,
-        ramp: bool
+        ramp: boolean
     ): void
     function scratchTick(deck: number, interval: number): void
     function scratchDisable(deck: number, ramp: boolean): void
     function isScratching(deck: number): boolean
 
     type timerID = number
-    function beginTimer(milliseconds: number, callback: function, oneShot: boolean): timerID
+    function beginTimer(milliseconds: number, callback: () => void, oneShot: boolean): timerID
     function stopTimer(id: timerID): void
 
     function brake(deck: number, activate: boolean, factor?: number): void
