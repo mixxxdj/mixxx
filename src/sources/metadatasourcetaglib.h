@@ -2,7 +2,7 @@
 
 #include "sources/metadatasource.h"
 
-#include "track/trackmetadatataglib.h"
+#include "track/taglib/trackmetadata.h"
 
 namespace mixxx {
 
