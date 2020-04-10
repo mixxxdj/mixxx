@@ -36,7 +36,7 @@ declare namespace engine {
         ramp?: boolean
     ): void
     function scratchTick(deck: number, interval: number): void
-    function scratchDisable(deck: number, ramp: boolean): void
+    function scratchDisable(deck: number, ramp?: boolean): void
     function isScratching(deck: number): boolean
 
     type timerID = number
