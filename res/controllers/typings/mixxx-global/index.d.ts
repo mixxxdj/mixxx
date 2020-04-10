@@ -78,7 +78,7 @@ declare namespace color {
 }
 
 declare class ColorMapper {
-    constructor(availableColors: Map<string, number> | object)
+    constructor(availableColors: object)
     getValueForNearestColor(ColorCode: RGBColorCode): number
     getNearestColor(ColorCode: RGBColorCode): RGBObject
 }
