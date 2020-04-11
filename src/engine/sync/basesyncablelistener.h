@@ -24,15 +24,8 @@ class BaseSyncableListener : public SyncableListener {
     }
 
   protected:
-    // Choices about master selection can hinge on if any decks have sync
-    // mode enabled.  This utility method returns true if it finds a deck
-    // not in SYNC_NONE mode.
+    // This utility method returns true if it finds a deck not in SYNC_NONE mode.
     bool syncDeckExists() const;
-
-    // Choices about master selection can hinge on how many decks are playing
-    // back. This utility method counts the number of decks not in SYNC_NONE
-    // mode that are playing.
-    int playingSyncDeckCount() const;
 
     // Return the current BPM of the master Syncable. If no master syncable is
     // set then returns the BPM of the internal clock.
