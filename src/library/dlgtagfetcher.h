@@ -4,21 +4,23 @@
 #include <QList>
 #include <QTreeWidget>
 
+#include "library/trackmodel.h"
 #include "library/ui_dlgtagfetcher.h"
-#include "track/track.h"
 #include "musicbrainz/tagfetcher.h"
+#include "track/track.h"
 
 class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
   Q_OBJECT
 
   public:
-    DlgTagFetcher(QWidget* parent, bool enableNavigation = false);
+    DlgTagFetcher(QWidget* parent, const TrackModel* trackModel = nullptr);
     ~DlgTagFetcher() override = default;
 
     void init();
 
   public slots:
     void loadTrack(const TrackPointer& track);
+    void loadTrack(const QModelIndex& index);
 
   signals:
     void next();
@@ -34,8 +36,11 @@ class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
     void slotTrackChanged(TrackId trackId);
     void apply();
     void quit();
+    void slotNext();
+    void slotPrev();
 
   private:
+    void changeTrack(const TrackPointer& track);
     void updateStack();
     void addDivider(const QString& text, QTreeWidget* parent) const;
 
@@ -58,5 +63,6 @@ class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
         UnknownError,
     };
     NetworkResult m_networkResult;
-    bool m_bNavigationIsEnabled;
+    const TrackModel* m_pTrackModel;
+    QModelIndex m_currentTrackIndex;
 };

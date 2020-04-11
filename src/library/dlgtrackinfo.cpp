@@ -24,13 +24,13 @@ const int kMinBpm = 30;
 // Maximum allowed interval between beats (calculated from kMinBpm).
 const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kMinBpm));
 
-DlgTrackInfo::DlgTrackInfo(UserSettingsPointer pConfig, QWidget* parent, bool enableNavigation)
+DlgTrackInfo::DlgTrackInfo(UserSettingsPointer pConfig, QWidget* parent, const TrackModel* trackModel)
         : QDialog(parent),
           m_pTapFilter(new TapFilter(this, kFilterLength, kMaxInterval)),
-          m_bNavigationIsEnabled(enableNavigation),
           m_dLastTapedBpm(-1.),
           m_pWCoverArtLabel(new WCoverArtLabel(this)),
-          m_pConfig(pConfig) {
+          m_pConfig(pConfig),
+          m_pTrackModel(trackModel) {
     init();
 }
 
@@ -43,17 +43,43 @@ void DlgTrackInfo::init() {
 
     coverBox->insertWidget(1, m_pWCoverArtLabel);
 
-    if (m_bNavigationIsEnabled) {
-        connect(btnNext, &QPushButton::clicked, this, &DlgTrackInfo::slotNext);
-        connect(btnPrev, &QPushButton::clicked, this, &DlgTrackInfo::slotPrev);
+    m_pTagFetcher.reset(new DlgTagFetcher(this, m_pTrackModel));
+
+    if (m_pTrackModel) {
+        connect(btnNext,
+                &QPushButton::clicked,
+                [=]() { slotNext(); });
+
+        connect(btnPrev,
+                &QPushButton::clicked,
+                [=]() { slotPrev(); });
+
+        connect(m_pTagFetcher.data(),
+                &DlgTagFetcher::next,
+                [=]() { slotNext(false); });
+
+        connect(m_pTagFetcher.data(),
+                &DlgTagFetcher::previous,
+                [=]() { slotPrev(false); });
     } else {
         btnNext->hide();
         btnPrev->hide();
     }
 
-    connect(btnApply, &QPushButton::clicked, this, &DlgTrackInfo::apply);
-    connect(btnOK, &QPushButton::clicked, this, &DlgTrackInfo::OK);
-    connect(btnCancel, &QPushButton::clicked, this, &DlgTrackInfo::cancel);
+    connect(btnApply,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::apply);
+
+    connect(btnOK,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::OK);
+
+    connect(btnCancel,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::cancel);
 
     connect(bpmDouble,
             &QPushButton::clicked,
@@ -112,10 +138,12 @@ void DlgTrackInfo::init() {
             &QPushButton::clicked,
             this,
             &DlgTrackInfo::slotImportMetadataFromFile);
+
     connect(btnImportMetadataFromMusicBrainz,
             &QPushButton::clicked,
             this,
             &DlgTrackInfo::slotImportMetadataFromMusicBrainz);
+
     connect(btnOpenFileBrowser,
             &QPushButton::clicked,
             this,
@@ -156,12 +184,28 @@ void DlgTrackInfo::trackUpdated() {
 
 }
 
-void DlgTrackInfo::slotNext() {
-    emit next();
+void DlgTrackInfo::slotNext(bool loadTrackInTagFetcher) {
+    QModelIndex nextRow = m_currentTrackIndex.sibling(
+            m_currentTrackIndex.row() + 1, m_currentTrackIndex.column());
+    if (nextRow.isValid()) {
+        loadTrack(nextRow);
+        if (m_pTagFetcher->isVisible() && loadTrackInTagFetcher) {
+            m_pTagFetcher->loadTrack(nextRow);
+        }
+        emit next();
+    }
 }
 
-void DlgTrackInfo::slotPrev() {
-    emit previous();
+void DlgTrackInfo::slotPrev(bool loadTrackInTagFetcher) {
+    QModelIndex prevRow = m_currentTrackIndex.sibling(
+            m_currentTrackIndex.row() - 1, m_currentTrackIndex.column());
+    if (prevRow.isValid()) {
+        loadTrack(prevRow);
+        if (m_pTagFetcher->isVisible() && loadTrackInTagFetcher) {
+            m_pTagFetcher->loadTrack(prevRow);
+        }
+        emit previous();
+    }
 }
 
 void DlgTrackInfo::populateFields(const Track& track) {
@@ -219,7 +263,7 @@ void DlgTrackInfo::reloadTrackBeats(const Track& track) {
     }
 }
 
-void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
+void DlgTrackInfo::changeTrack(const TrackPointer& pTrack) {
     clear();
 
     if (!pTrack) {
@@ -237,6 +281,22 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
             &Track::changed,
             this,
             &DlgTrackInfo::slotTrackChanged);
+}
+
+void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
+    VERIFY_OR_DEBUG_ASSERT(!m_pTrackModel) {
+        return;
+    }
+    changeTrack(pTrack);
+}
+
+void DlgTrackInfo::loadTrack(QModelIndex index) {
+    VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
+        return;
+    }
+    TrackPointer pTrack = m_pTrackModel->getTrack(index);
+    m_currentTrackIndex = index;
+    changeTrack(pTrack);
 }
 
 void DlgTrackInfo::slotCoverFound(
@@ -528,5 +588,10 @@ void DlgTrackInfo::slotTrackChanged(TrackId trackId) {
 }
 
 void DlgTrackInfo::slotImportMetadataFromMusicBrainz() {
-    emit showTagFetcher(m_pLoadedTrack);
+    if (m_pTrackModel) {
+        m_pTagFetcher->loadTrack(m_currentTrackIndex);
+    } else {
+        m_pTagFetcher->loadTrack(m_pLoadedTrack);
+    }
+    m_pTagFetcher->show();
 }

@@ -20,6 +20,7 @@ class Track;
 
 typedef std::shared_ptr<Track> TrackPointer;
 typedef std::weak_ptr<Track> TrackWeakPointer;
+typedef QList<TrackPointer> TrackPointerList;
 
 Q_DECLARE_METATYPE(TrackPointer);
 

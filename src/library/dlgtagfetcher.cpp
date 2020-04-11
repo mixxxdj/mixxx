@@ -54,20 +54,20 @@ void addTrack(
 
 } // anonymous namespace
 
-DlgTagFetcher::DlgTagFetcher(QWidget* parent, bool enableNavigation)
+DlgTagFetcher::DlgTagFetcher(QWidget* parent, const TrackModel* trackModel)
         : QDialog(parent),
           m_tagFetcher(parent),
           m_networkResult(NetworkResult::Ok),
-          m_bNavigationIsEnabled(enableNavigation) {
+          m_pTrackModel(trackModel) {
     init();
 }
 
 void DlgTagFetcher::init() {
     setupUi(this);
 
-    if (m_bNavigationIsEnabled) {
-        connect(btnPrev, &QPushButton::clicked, this, &DlgTagFetcher::previous);
-        connect(btnNext, &QPushButton::clicked, this, &DlgTagFetcher::next);
+    if (m_pTrackModel) {
+        connect(btnPrev, &QPushButton::clicked, this, &DlgTagFetcher::slotPrev);
+        connect(btnNext, &QPushButton::clicked, this, &DlgTagFetcher::slotNext);
     } else {
         btnNext->hide();
         btnPrev->hide();
@@ -89,8 +89,26 @@ void DlgTagFetcher::init() {
     results->setColumnWidth(5, 160); // Artist column
 }
 
-void DlgTagFetcher::loadTrack(const TrackPointer& track) {
-    if (track == NULL) {
+void DlgTagFetcher::slotNext() {
+    QModelIndex nextRow = m_currentTrackIndex.sibling(
+            m_currentTrackIndex.row() + 1, m_currentTrackIndex.column());
+    if (nextRow.isValid()) {
+        loadTrack(nextRow);
+        emit next();
+    }
+}
+
+void DlgTagFetcher::slotPrev() {
+    QModelIndex prevRow = m_currentTrackIndex.sibling(
+            m_currentTrackIndex.row() - 1, m_currentTrackIndex.column());
+    if (prevRow.isValid()) {
+        loadTrack(prevRow);
+        emit previous();
+    }
+}
+
+void DlgTagFetcher::changeTrack(const TrackPointer& track) {
+    if (!track) {
         return;
     }
     results->clear();
@@ -110,6 +128,22 @@ void DlgTagFetcher::loadTrack(const TrackPointer& track) {
             &DlgTagFetcher::slotTrackChanged);
 
     updateStack();
+}
+
+void DlgTagFetcher::loadTrack(const TrackPointer& track) {
+    VERIFY_OR_DEBUG_ASSERT(!m_pTrackModel) {
+        return;
+    }
+    changeTrack(track);
+}
+
+void DlgTagFetcher::loadTrack(const QModelIndex& index) {
+    VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
+        return;
+    }
+    TrackPointer pTrack = m_pTrackModel->getTrack(index);
+    m_currentTrackIndex = index;
+    changeTrack(pTrack);
 }
 
 void DlgTagFetcher::slotTrackChanged(TrackId trackId) {

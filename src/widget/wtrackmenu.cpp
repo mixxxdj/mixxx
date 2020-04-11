@@ -169,6 +169,10 @@ void WTrackMenu::createActions() {
         m_pImportMetadataFromMusicBrainzAct = new QAction(tr("Import From MusicBrainz"), m_pMetadataMenu);
         connect(m_pImportMetadataFromMusicBrainzAct, &QAction::triggered, this, &WTrackMenu::slotShowDlgTagFetcher);
 
+        // Give a NULL parent because otherwise it inherits our style which can
+        // make it unreadable. Bug #673411
+        m_pTagFetcher.reset(new DlgTagFetcher(nullptr, m_pTrackModel));
+
         m_pExportMetadataAct = new QAction(tr("Export To File Tags"), m_pMetadataMenu);
         connect(m_pExportMetadataAct, &QAction::triggered, this, &WTrackMenu::slotExportTrackMetadataIntoFileTags);
 
@@ -253,6 +257,10 @@ void WTrackMenu::createActions() {
                 &WColorPickerAction::colorPicked,
                 this,
                 &WTrackMenu::slotColorPicked);
+    }
+
+    if (optionIsEnabled(Filter::Properties)) {
+        m_pTrackInfo.reset(new DlgTrackInfo(m_pConfig, nullptr, m_pTrackModel));
     }
 }
 
@@ -1047,162 +1055,32 @@ void WTrackMenu::slotClearAllMetadata() {
     slotClearWaveform();
 }
 
-void WTrackMenu::slotTrackInfoClosed() {
-    DlgTrackInfo* pTrackInfo = m_pTrackInfo.take();
-    // We are in a slot directly invoked from DlgTrackInfo. Delete it
-    // later.
-    if (pTrackInfo != nullptr) {
-        pTrackInfo->deleteLater();
-    }
-}
-
-void WTrackMenu::slotTagFetcherClosed() {
-    DlgTagFetcher* pTagFetcher = m_pTagFetcher.take();
-    // We are in a slot directly invoked from DlgTagFetcher. Delete it
-    // later.
-    if (pTagFetcher != nullptr) {
-        pTagFetcher->deleteLater();
-    }
-}
-
 void WTrackMenu::slotShowTrackInfo() {
+    const auto trackPointers = getTrackPointers();
+    if (trackPointers.empty()) {
+        return;
+    }
     if (m_pTrackModel) {
         const auto indices = getTrackIndices();
-        showTrackInfo(indices.at(0));
+        m_pTrackInfo->loadTrack(indices.at(0));
     } else {
-        const auto trackPointers = getTrackPointers();
-        showTrackInfo(trackPointers.at(0));
+        m_pTrackInfo->loadTrack(trackPointers.at(0));
     }
-}
-
-void WTrackMenu::slotNextTrackInfo() {
-    VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
-        return;
-    }
-    QModelIndex nextRow = currentTrackInfoIndex.sibling(
-            currentTrackInfoIndex.row() + 1, currentTrackInfoIndex.column());
-    if (nextRow.isValid()) {
-        showTrackInfo(nextRow);
-        if (!m_pTagFetcher.isNull()) {
-            showDlgTagFetcher(nextRow);
-        }
-    }
-}
-
-void WTrackMenu::slotPrevTrackInfo() {
-    VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
-        return;
-    }
-    QModelIndex prevRow = currentTrackInfoIndex.sibling(
-            currentTrackInfoIndex.row() - 1, currentTrackInfoIndex.column());
-    if (prevRow.isValid()) {
-        showTrackInfo(prevRow);
-        if (!m_pTagFetcher.isNull()) {
-            showDlgTagFetcher(prevRow);
-        }
-    }
-}
-
-void WTrackMenu::showTrackInfo(QModelIndex index) {
-    VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
-        return;
-    }
-
-    if (m_pTrackInfo.isNull()) {
-        // Give a NULL parent because otherwise it inherits our style which can
-        // make it unreadable. Bug #673411
-        bool trackNavigation = true;
-        m_pTrackInfo.reset(new DlgTrackInfo(m_pConfig, nullptr, trackNavigation));
-
-        connect(m_pTrackInfo.data(), &DlgTrackInfo::next, this, &WTrackMenu::slotNextTrackInfo);
-        connect(m_pTrackInfo.data(), &DlgTrackInfo::previous, this, &WTrackMenu::slotPrevTrackInfo);
-        connect(m_pTrackInfo.data(), &DlgTrackInfo::showTagFetcher, this, &WTrackMenu::slotShowTrackInTagFetcher);
-        connect(m_pTrackInfo.data(), &DlgTrackInfo::finished, this, &WTrackMenu::slotTrackInfoClosed);
-    }
-    TrackPointer pTrack = m_pTrackModel->getTrack(index);
-    m_pTrackInfo->loadTrack(pTrack); // NULL is fine.
-    currentTrackInfoIndex = index;
     m_pTrackInfo->show();
-}
-
-void WTrackMenu::showTrackInfo(TrackPointer pTrack) {
-    if (m_pTrackInfo.isNull()) {
-        m_pTrackInfo.reset(new DlgTrackInfo(m_pConfig, nullptr));
-        connect(m_pTrackInfo.data(), &DlgTrackInfo::showTagFetcher, this, &WTrackMenu::slotShowTrackInTagFetcher);
-        connect(m_pTrackInfo.data(), &DlgTrackInfo::finished, this, &WTrackMenu::slotTrackInfoClosed);
-    }
-    m_pTrackInfo->loadTrack(pTrack); // NULL is fine.
-    m_pTrackInfo->show();
-}
-
-void WTrackMenu::slotNextDlgTagFetcher() {
-    if (!m_pTrackModel) {
-        return;
-    }
-    QModelIndex nextRow = currentTrackInfoIndex.sibling(
-            currentTrackInfoIndex.row() + 1, currentTrackInfoIndex.column());
-    if (nextRow.isValid()) {
-        showDlgTagFetcher(nextRow);
-        if (!m_pTrackInfo.isNull()) {
-            showTrackInfo(nextRow);
-        }
-    }
-}
-
-void WTrackMenu::slotPrevDlgTagFetcher() {
-    if (!m_pTrackModel) {
-        return;
-    }
-    QModelIndex prevRow = currentTrackInfoIndex.sibling(
-            currentTrackInfoIndex.row() - 1, currentTrackInfoIndex.column());
-    if (prevRow.isValid()) {
-        showDlgTagFetcher(prevRow);
-        if (!m_pTrackInfo.isNull()) {
-            showTrackInfo(prevRow);
-        }
-    }
-}
-
-void WTrackMenu::showDlgTagFetcher(QModelIndex index) {
-    VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
-        return;
-    }
-
-    TrackPointer pTrack = m_pTrackModel->getTrack(index);
-    currentTrackInfoIndex = index;
-    slotShowTrackInTagFetcher(pTrack);
-}
-
-void WTrackMenu::showDlgTagFetcher(TrackPointer pTrack) {
-    slotShowTrackInTagFetcher(pTrack);
-}
-
-void WTrackMenu::slotShowTrackInTagFetcher(TrackPointer pTrack) {
-    if (m_pTagFetcher.isNull()) {
-        bool trackNavigation = m_pTrackModel != nullptr;
-        m_pTagFetcher.reset(new DlgTagFetcher(nullptr, trackNavigation));
-        connect(m_pTagFetcher.data(), &DlgTagFetcher::next, this, &WTrackMenu::slotNextDlgTagFetcher);
-        connect(m_pTagFetcher.data(), &DlgTagFetcher::previous, this, &WTrackMenu::slotPrevDlgTagFetcher);
-        connect(m_pTagFetcher.data(), &DlgTagFetcher::finished, this, &WTrackMenu::slotTagFetcherClosed);
-    }
-
-    // NULL is fine
-    m_pTagFetcher->loadTrack(pTrack);
-    m_pTagFetcher->show();
 }
 
 void WTrackMenu::slotShowDlgTagFetcher() {
+    const auto trackPointers = getTrackPointers();
+    if (trackPointers.empty()) {
+        return;
+    }
     if (m_pTrackModel) {
         const auto indices = getTrackIndices();
-        if (indices.size() > 0) {
-            showDlgTagFetcher(indices.at(0));
-        }
+        m_pTagFetcher->loadTrack(indices.at(0));
     } else {
-        const auto trackPointers = getTrackPointers();
-        if (trackPointers.size() > 0) {
-            showDlgTagFetcher(trackPointers.at(0));
-        }
+        m_pTagFetcher->loadTrack(trackPointers.at(0));
     }
+    m_pTagFetcher->show();
 }
 
 void WTrackMenu::slotAddToAutoDJBottom() {

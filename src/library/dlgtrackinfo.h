@@ -2,14 +2,16 @@
 #define DLGTRACKINFO_H
 
 #include <QDialog>
-#include <QMutex>
 #include <QHash>
 #include <QList>
+#include <QMutex>
 #include <QScopedPointer>
 
+#include "library/coverart.h"
+#include "library/dlgtagfetcher.h"
+#include "library/trackmodel.h"
 #include "library/ui_dlgtrackinfo.h"
 #include "track/track.h"
-#include "library/coverart.h"
 #include "util/tapfilter.h"
 #include "util/types.h"
 #include "widget/wcoverartlabel.h"
@@ -18,22 +20,22 @@
 class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     Q_OBJECT
   public:
-    DlgTrackInfo(UserSettingsPointer pConfig, QWidget* parent, bool enableNavigation = false);
+    DlgTrackInfo(UserSettingsPointer pConfig, QWidget* parent, const TrackModel* trackModel = nullptr);
     virtual ~DlgTrackInfo();
 
   public slots:
     // Not thread safe. Only invoke via AutoConnection or QueuedConnection, not
     // directly!
     void loadTrack(TrackPointer pTrack);
+    void loadTrack(QModelIndex index);
 
   signals:
     void next();
     void previous();
-    void showTagFetcher(TrackPointer pTrack);
 
   private slots:
-    void slotNext();
-    void slotPrev();
+    void slotNext(bool loadTrackInTagFetcher = true);
+    void slotPrev(bool loadTrackInTagFetcher = true);
     void OK();
     void apply();
     void cancel();
@@ -68,6 +70,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotReloadCoverArt();
 
   private:
+    void changeTrack(const TrackPointer& pTrack);
     void populateFields(const Track& track);
     void reloadTrackBeats(const Track& track);
     void saveTrack();
@@ -78,14 +81,17 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     BeatsPointer m_pBeatsClone;
     Keys m_keysClone;
     bool m_trackHasBeatMap;
-    bool m_bNavigationIsEnabled;
 
     QScopedPointer<TapFilter> m_pTapFilter;
+    QScopedPointer<DlgTagFetcher> m_pTagFetcher;
     double m_dLastTapedBpm;
 
     CoverInfo m_loadedCoverInfo;
     WCoverArtLabel* m_pWCoverArtLabel;
     UserSettingsPointer m_pConfig;
+
+    const TrackModel* m_pTrackModel;
+    QModelIndex m_currentTrackIndex;
 };
 
 #endif /* DLGTRACKINFO_H */

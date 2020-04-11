@@ -7,9 +7,6 @@
 #include "library/dlgtrackinfo.h"
 #include "library/trackmodel.h"
 
-typedef QList<TrackId> TrackIdList;
-typedef QList<TrackPointer> TrackPointerList;
-
 class ControlProxy;
 class DlgTagFetcher;
 class DlgTrackInfo;
@@ -86,13 +83,6 @@ class WTrackMenu : public QMenu {
     void slotScaleBpm(int);
 
     // Info and metadata
-    void slotNextTrackInfo();
-    void slotNextDlgTagFetcher();
-    void slotPrevTrackInfo();
-    void slotPrevDlgTagFetcher();
-    void slotShowTrackInTagFetcher(TrackPointer track);
-    void slotTrackInfoClosed();
-    void slotTagFetcherClosed();
     void slotShowTrackInfo();
     void slotShowDlgTagFetcher();
     void slotImportTrackMetadataFromFileTags();
@@ -134,11 +124,6 @@ class WTrackMenu : public QMenu {
 
     void addSelectionToPlaylist(int iPlaylistId);
     void updateSelectionCrates(QWidget* pWidget);
-
-    void showTrackInfo(QModelIndex index);
-    void showTrackInfo(TrackPointer pTrack);
-    void showDlgTagFetcher(QModelIndex index);
-    void showDlgTagFetcher(TrackPointer pTrack);
 
     void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
 
@@ -230,8 +215,6 @@ class WTrackMenu : public QMenu {
 
     QScopedPointer<DlgTrackInfo> m_pTrackInfo;
     QScopedPointer<DlgTagFetcher> m_pTagFetcher;
-
-    QModelIndex currentTrackInfoIndex;
 
     struct UpdateExternalTrackCollection {
         QPointer<ExternalTrackCollection> externalTrackCollection;
