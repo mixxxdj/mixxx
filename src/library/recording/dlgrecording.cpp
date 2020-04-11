@@ -5,15 +5,25 @@
 #include "library/trackcollectionmanager.h"
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
+#include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
 #include "util/assert.h"
 
-DlgRecording::DlgRecording(QWidget* parent, UserSettingsPointer pConfig,
-                           Library* pLibrary,
-                           RecordingManager* pRecordingManager, KeyboardEventFilter* pKeyboard)
+DlgRecording::DlgRecording(
+        WLibrary* parent,
+        UserSettingsPointer pConfig,
+        Library* pLibrary,
+        RecordingManager* pRecordingManager,
+        KeyboardEventFilter* pKeyboard)
         : QWidget(parent),
           m_pConfig(pConfig),
-          m_pTrackTableView(new WTrackTableView(this, pConfig, pLibrary->trackCollections(), true)),
+          m_pTrackTableView(
+                  new WTrackTableView(
+                          this,
+                          pConfig,
+                          pLibrary->trackCollections(),
+                          parent->getTrackTableBackgroundColorOpacity(),
+                          true)),
           m_browseModel(this, pLibrary->trackCollections(), pRecordingManager),
           m_proxyModel(&m_browseModel),
           m_bytesRecordedStr("--"),

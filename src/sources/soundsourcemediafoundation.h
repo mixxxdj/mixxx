@@ -20,8 +20,8 @@ class StreamUnitConverter final {
     }
     explicit StreamUnitConverter(const AudioSource* pAudioSource)
             : m_pAudioSource(pAudioSource),
-              m_fromSampleFramesToStreamUnits(double(kStreamUnitsPerSecond) / double(pAudioSource->sampleRate())),
-              m_fromStreamUnitsToSampleFrames(double(pAudioSource->sampleRate()) / double(kStreamUnitsPerSecond)) {
+              m_fromSampleFramesToStreamUnits(double(kStreamUnitsPerSecond) / double(pAudioSource->getSignalInfo().getSampleRate())),
+              m_fromStreamUnitsToSampleFrames(double(pAudioSource->getSignalInfo().getSampleRate()) / double(kStreamUnitsPerSecond)) {
         // The stream units should actually be much shorter than
         // sample frames to minimize jitter and rounding. Even a
         // frame at 192 kHz has a length of about 5000 ns >> 100 ns.

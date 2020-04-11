@@ -92,16 +92,16 @@ void copyIfNotEmpty(
 
 void TrackRecord::mergeImportedMetadata(
         const TrackMetadata& importedFromFile) {
-    TrackInfo& mergedTrackInfo = refMetadata().refTrackInfo();
+    TrackInfo* pMergedTrackInfo = m_metadata.ptrTrackInfo();
     const TrackInfo& importedTrackInfo = importedFromFile.getTrackInfo();
-    if (mergedTrackInfo.getTrackTotal() == kTrackTotalPlaceholder) {
-        mergedTrackInfo.setTrackTotal(importedTrackInfo.getTrackTotal());
+    if (pMergedTrackInfo->getTrackTotal() == kTrackTotalPlaceholder) {
+        pMergedTrackInfo->setTrackTotal(importedTrackInfo.getTrackTotal());
         // Also set the track number if it is still empty due
         // to insufficient parsing capabilities of Mixxx in
         // previous versions.
-        if (mergedTrackInfo.getTrackNumber().isEmpty() &&
+        if (pMergedTrackInfo->getTrackNumber().isEmpty() &&
                 !importedTrackInfo.getTrackNumber().isEmpty()) {
-            mergedTrackInfo.setTrackNumber(importedTrackInfo.getTrackNumber());
+            pMergedTrackInfo->setTrackNumber(importedTrackInfo.getTrackNumber());
         }
     }
 #if defined(__EXTRA_METADATA__)

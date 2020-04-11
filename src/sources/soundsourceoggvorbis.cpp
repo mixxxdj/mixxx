@@ -82,8 +82,8 @@ SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(
                 << getUrlString();
         return OpenResult::Failed;
     }
-    setChannelCount(vi->channels);
-    setSampleRate(vi->rate);
+    initChannelCountOnce(vi->channels);
+    initSampleRateOnce(vi->rate);
     if (0 < vi->bitrate_nominal) {
         initBitrateOnce(vi->bitrate_nominal / 1000);
     } else {
@@ -154,7 +154,7 @@ ReadableSampleFrames SoundSourceOggVorbis::readSampleFramesClamped(
         if (0 < readResult) {
             m_curFrameIndex += readResult;
             if (pSampleBuffer) {
-                switch (channelCount()) {
+                switch (getSignalInfo().getChannelCount()) {
                 case 1:
                     for (long i = 0; i < readResult; ++i) {
                         *pSampleBuffer++ = pcmChannels[0][i];
@@ -168,7 +168,7 @@ ReadableSampleFrames SoundSourceOggVorbis::readSampleFramesClamped(
                     break;
                 default:
                     for (long i = 0; i < readResult; ++i) {
-                        for (SINT j = 0; j < channelCount(); ++j) {
+                        for (SINT j = 0; j < getSignalInfo().getChannelCount(); ++j) {
                             *pSampleBuffer++ = pcmChannels[j][i];
                         }
                     }
@@ -188,7 +188,9 @@ ReadableSampleFrames SoundSourceOggVorbis::readSampleFramesClamped(
             IndexRange::forward(firstFrameIndex, numberOfFrames),
             SampleBuffer::ReadableSlice(
                     writableSampleFrames.writableData(),
-                    std::min(writableSampleFrames.writableLength(), frames2samples(numberOfFrames))));
+                    std::min(
+                            writableSampleFrames.writableLength(),
+                            getSignalInfo().frames2samples(numberOfFrames))));
 }
 
 //static

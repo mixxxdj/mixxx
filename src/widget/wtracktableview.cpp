@@ -41,15 +41,17 @@
 #include "widget/wtracktableviewheader.h"
 #include "widget/wwidget.h"
 
-WTrackTableView::WTrackTableView(QWidget * parent,
+WTrackTableView::WTrackTableView(QWidget* parent,
                                  UserSettingsPointer pConfig,
                                  TrackCollectionManager* pTrackCollectionManager,
+                                 double backgroundColorOpacity,
                                  bool sorting)
         : WLibraryTableView(parent, pConfig,
                             ConfigKey(LIBRARY_CONFIGVALUE,
                                       WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
           m_pConfig(pConfig),
           m_pTrackCollectionManager(pTrackCollectionManager),
+          m_backgroundColorOpacity(backgroundColorOpacity),
           m_sorting(sorting),
           m_iCoverSourceColumn(-1),
           m_iCoverTypeColumn(-1),

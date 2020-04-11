@@ -1,6 +1,7 @@
 #include "sources/soundsourcecoreaudio.h"
 #include "sources/mp3decoding.h"
 
+#include "engine/engine.h"
 #include "util/logger.h"
 #include "util/math.h"
 
@@ -88,7 +89,9 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
 
     // create the output format
     const UInt32 numChannels =
-            params.channelCount().valid() ? params.channelCount() : 2;
+            params.getSignalInfo().getChannelCount().isValid() ?
+            params.getSignalInfo().getChannelCount() :
+            mixxx::kEngineChannelCount;
     m_outputFormat = CAStreamBasicDescription(m_inputFormat.mSampleRate,
             numChannels,
             CAStreamBasicDescription::kPCMFormatFloat32,
@@ -160,8 +163,8 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
         return OpenResult::Failed;
     }
 
-    setChannelCount(m_outputFormat.NumberChannels());
-    setSampleRate(m_inputFormat.mSampleRate);
+    initChannelCountOnce(m_outputFormat.NumberChannels());
+    initSampleRateOnce(m_inputFormat.mSampleRate);
     // TODO(XXX): Reduce totalFrameCount by m_leadingFrames???
     initFrameIndexRangeOnce(IndexRange::forward(m_leadingFrames, totalFrameCount));
 
@@ -172,7 +175,7 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
     } else {
         m_seekPrefetchFrames = m_leadingFrames;
     }
-    m_seekPrefetchBuffer.resize(frames2samples(m_seekPrefetchFrames));
+    m_seekPrefetchBuffer.resize(getSignalInfo().frames2samples(m_seekPrefetchFrames));
 
     // Seek to the first position, skipping over all header frames
     seekSampleFrame(frameIndexMin());
@@ -199,7 +202,7 @@ SINT SoundSourceCoreAudio::seekSampleFrame(SINT frameIndex) {
     }
     // Decode and discard prefetched frames
     if (prefetchFrames > 0) {
-        DEBUG_ASSERT(frames2samples(prefetchFrames) <= SINT(m_seekPrefetchBuffer.size()));
+        DEBUG_ASSERT(getSignalInfo().frames2samples(prefetchFrames) <= SINT(m_seekPrefetchBuffer.size()));
         const auto prefetchedFrames = readSampleFrames(prefetchFrames, m_seekPrefetchBuffer.data());
         DEBUG_ASSERT(prefetchedFrames <= prefetchFrames);
         if (prefetchedFrames < prefetchFrames) {
@@ -246,9 +249,9 @@ SINT SoundSourceCoreAudio::readSampleFrames(
 
         AudioBufferList fillBufList;
         fillBufList.mNumberBuffers = 1;
-        fillBufList.mBuffers[0].mNumberChannels = channelCount();
-        fillBufList.mBuffers[0].mDataByteSize = frames2samples(numFramesToRead) * sizeof(sampleBuffer[0]);
-        fillBufList.mBuffers[0].mData = sampleBuffer + frames2samples(numFramesRead);
+        fillBufList.mBuffers[0].mNumberChannels = getSignalInfo().getChannelCount();
+        fillBufList.mBuffers[0].mDataByteSize = getSignalInfo().frames2samples(numFramesToRead) * sizeof(sampleBuffer[0]);
+        fillBufList.mBuffers[0].mData = sampleBuffer + getSignalInfo().frames2samples(numFramesRead);
 
         UInt32 numFramesToReadInOut = numFramesToRead; // input/output parameter
         OSStatus err = ExtAudioFileRead(m_audioFile, &numFramesToReadInOut, &fillBufList);
