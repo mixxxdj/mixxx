@@ -488,7 +488,6 @@ bool ControllerEngine::checkException() {
         QString errorMessage = exception.toString();
         QString line =
                 QString::number(m_pEngine->uncaughtExceptionLineNumber());
-        QStringList backtrace = m_pEngine->uncaughtExceptionBacktrace();
         QString filename = exception.property("fileName").toString();
 
         QStringList error;
@@ -506,11 +505,12 @@ bool ControllerEngine::checkException() {
             errorText = tr("Uncaught exception at line %1 in passed code: %2")
                                 .arg(line, errorMessage);
 
-        scriptErrorDialog(ControllerDebug::enabled()
-                        ? QString("%1\nBacktrace:\n%2")
-                                  .arg(errorText, backtrace.join("\n"))
-                        : errorText);
+        // Add backtrace to the error details
+        errorText += QStringLiteral("\n") + tr("Backtrace:") +
+                QStringLiteral("\n") +
+                m_pEngine->uncaughtExceptionBacktrace().join("\n");
 
+        scriptErrorDialog(errorText);
         m_pEngine->clearExceptions();
         return true;
     }
