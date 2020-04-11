@@ -63,6 +63,9 @@ bool readJsonContent(
     DEBUG_ASSERT(JSON_MIME_TYPE.isValid());
     const auto contentType = readContentType(reply);
     if (contentType != JSON_MIME_TYPE) {
+        kLogger.warning()
+                << "Unexpected content type"
+                << contentType;
         return false;
     }
     QByteArray jsonData = reply->readAll();
