@@ -49,32 +49,18 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
     int stopped_deck_count = 0;
     int playing_deck_count = 0;
 
-    if (enabling_syncable != nullptr && enabling_syncable->getBaseBpm() != 0.0) {
-        if (enabling_syncable->isPlaying()) {
-            if (playing_deck_count == 0) {
-                first_playing_deck = enabling_syncable;
-            }
-            playing_deck_count++;
-        } else {
-            if (stopped_deck_count == 0) {
-                first_stopped_deck = enabling_syncable;
-            }
-            stopped_deck_count++;
-        }
-    }
-
     for (const auto& pSyncable : m_syncables) {
-        if (pSyncable == enabling_syncable) {
+        if (pSyncable->getBaseBpm() <= 0.0) {
             continue;
         }
-        if (!pSyncable->getChannel()->isPrimaryDeck()) {
-            continue;
-        }
-        if (!pSyncable->isSynchronized()) {
-            continue;
-        }
-        if (pSyncable->getBaseBpm() == 0.0) {
-            continue;
+
+        if (pSyncable != enabling_syncable) {
+            if (!pSyncable->getChannel()->isPrimaryDeck()) {
+                continue;
+            }
+            if (!pSyncable->isSynchronized()) {
+                continue;
+            }
         }
 
         if (pSyncable->isPlaying()) {
