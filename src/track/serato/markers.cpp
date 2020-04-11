@@ -71,7 +71,6 @@ QByteArray SeratoMarkersEntry::dump() const {
     data.resize(kEntrySize);
 
     QDataStream stream(&data, QIODevice::WriteOnly);
-    stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
     stream << static_cast<quint8>((m_hasStartPosition ? 0x00 : 0x7F))
            << static_cast<quint32>(
@@ -104,7 +103,6 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parse(const QByteArray& data) {
     char buffer[6];
 
     QDataStream stream(data);
-    stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
     stream >> startPositionStatus >> startPositionSerato32 >>
             endPositionStatus >> endPositionSerato32;
@@ -180,10 +178,10 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parse(const QByteArray& data) {
     return pEntry;
 }
 
+//static
 bool SeratoMarkers::parse(
         SeratoMarkers* seratoMarkers, const QByteArray& data) {
     QDataStream stream(data);
-    stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
 
     quint16 version;
@@ -272,7 +270,6 @@ QByteArray SeratoMarkers::dump() const {
             kEntrySize * m_entries.size());
 
     QDataStream stream(&data, QIODevice::WriteOnly);
-    stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
     stream << kVersion << m_entries.size();
     for (int i = 0; i < m_entries.size(); i++) {

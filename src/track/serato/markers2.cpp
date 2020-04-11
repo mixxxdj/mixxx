@@ -39,7 +39,6 @@ QByteArray SeratoMarkers2BpmlockEntry::dump() const {
     data.resize(length());
 
     QDataStream stream(&data, QIODevice::WriteOnly);
-    stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
     stream << static_cast<quint8>(m_locked);
 
@@ -80,7 +79,6 @@ QByteArray SeratoMarkers2ColorEntry::dump() const {
     data.resize(length());
 
     QDataStream stream(&data, QIODevice::WriteOnly);
-    stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
     stream << static_cast<quint8>('\x00')
            << static_cast<quint8>(qRed(m_color))
@@ -112,7 +110,6 @@ SeratoMarkers2EntryPointer SeratoMarkers2CueEntry::parse(const QByteArray& data)
     quint16 unknownField3;
 
     QDataStream stream(data);
-    stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
 
     stream >> unknownField1;
@@ -170,7 +167,6 @@ QByteArray SeratoMarkers2CueEntry::dump() const {
     data.resize(length());
 
     QDataStream stream(&data, QIODevice::WriteOnly);
-    stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
     stream << static_cast<quint8>('\x00')
            << m_index
@@ -211,7 +207,6 @@ SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray& data
     bool locked;
 
     QDataStream stream(data);
-    stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
 
     stream >> unknownField1;
@@ -273,7 +268,6 @@ QByteArray SeratoMarkers2LoopEntry::dump() const {
     data.resize(length());
 
     QDataStream stream(&data, QIODevice::WriteOnly);
-    stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
     stream << static_cast<quint8>('\x00')
            << m_index
@@ -385,7 +379,6 @@ QByteArray SeratoMarkers2::dump() const {
     }
 
     QDataStream stream(&data, QIODevice::WriteOnly);
-    stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
     stream << static_cast<quint16>(0x0101);
 
