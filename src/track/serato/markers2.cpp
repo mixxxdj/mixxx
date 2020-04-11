@@ -421,11 +421,6 @@ QByteArray SeratoMarkers2::dump() const {
         }
     }
 
-    // Exit early if outerData is empty
-    if (outerData.isEmpty()) {
-        return outerData;
-    }
-
     int size = getAllocatedSize();
     if (size <= outerData.size()) {
         // TODO: Find out how Serato chooses the allocation sizes
