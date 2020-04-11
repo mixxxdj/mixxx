@@ -62,12 +62,30 @@ bool readJsonContent(
     DEBUG_ASSERT(jsonContent);
     DEBUG_ASSERT(JSON_MIME_TYPE.isValid());
     const auto contentType = readContentType(reply);
-    if (contentType == JSON_MIME_TYPE) {
-        *jsonContent = QJsonDocument::fromJson(reply->readAll());
-        return true;
-    } else {
+    if (contentType != JSON_MIME_TYPE) {
         return false;
     }
+    QByteArray jsonData = reply->readAll();
+    if (jsonData.isEmpty()) {
+        kLogger.warning()
+                << "Empty reply";
+        return false;
+    }
+    QJsonParseError parseError;
+    const auto jsonDoc = QJsonDocument::fromJson(
+            jsonData,
+            &parseError);
+    if (jsonDoc.isNull()) {
+        DEBUG_ASSERT(parseError.error != QJsonParseError::NoError);
+        kLogger.warning()
+                << "Failed to parse JSON data:"
+                << parseError.errorString()
+                << "at offset"
+                << parseError.offset;
+        return false;
+    }
+    *jsonContent = jsonDoc;
+    return true;
 }
 
 // TODO: Allow to customize headers and attributes?
