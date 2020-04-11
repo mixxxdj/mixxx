@@ -39,20 +39,13 @@ WTrackMenu::WTrackMenu(QWidget* parent,
           m_bPlaylistMenuLoaded(false),
           m_bCrateMenuLoaded(false),
           m_eFilters(flags),
-          m_eIndependentFilters(Filter::IndependentFilters) {
+          m_eTrackModelFilters(Filter::TrackModelFilters) {
     m_pNumSamplers = new ControlProxy(
             "[Master]", "num_samplers", this);
     m_pNumDecks = new ControlProxy(
             "[Master]", "num_decks", this);
     m_pNumPreviewDecks = new ControlProxy(
             "[Master]", "num_preview_decks", this);
-
-    if (!trackModel) {
-        // Check if passed flags are a subset of available subsets
-        VERIFY_OR_DEBUG_ASSERT((m_eIndependentFilters | flags) == m_eIndependentFilters) {
-            return;
-        }
-    }
 
     createMenus();
     createActions();
@@ -561,46 +554,39 @@ void WTrackMenu::loadTracks(TrackIdList trackIdList) {
     trackPointers.reserve(trackIdList.size());
     for (const auto& trackId : trackIdList) {
         TrackPointer pTrack = m_pTrackCollectionManager->internalCollection()->getTrackById(trackId);
-        if (!pTrack) {
-            return;
+        if (pTrack) {
+            trackPointers.push_back(pTrack);
         }
-        trackPointers.push_back(pTrack);
     }
-    if (trackPointers.empty()) {
-        return;
-    }
-
     m_pTrackPointerList = trackPointers;
 
-    updateMenus();
+    if (!m_pTrackPointerList.empty()) {
+        updateMenus();
+    }
 }
 
 void WTrackMenu::loadTracks(QModelIndexList indexList) {
     // Clean all forms of track store
     clearTrackSelection();
 
-    auto trackModel = getTrackModel();
-    if (!trackModel) {
+    if (!m_pTrackModel) {
         return;
     }
 
     QModelIndexList indices;
     indices.reserve(indexList.size());
     for (const auto& index : indexList) {
-        TrackPointer pTrack = trackModel->getTrack(index);
+        TrackPointer pTrack = m_pTrackModel->getTrack(index);
         // Checking if passed indexList is valid
-        if (!pTrack) {
-            return;
+        if (pTrack) {
+            indices.push_back(index);
         }
-        indices.push_back(index);
     }
-    if (indices.empty()) {
-        return;
-    }
-
     m_pTrackIndexList = indices;
 
-    updateMenus();
+    if (!m_pTrackIndexList.empty()) {
+        updateMenus();
+    }
 }
 
 void WTrackMenu::loadTrack(TrackId trackId) {
@@ -620,12 +606,11 @@ void WTrackMenu::loadTrack(QModelIndex index) {
 
 TrackIdList WTrackMenu::getTrackIds() const {
     TrackIdList trackIds;
-    auto trackModel = getTrackModel();
-    if (trackModel) {
+    if (m_pTrackModel) {
         const QModelIndexList indices = getTrackIndices();
         trackIds.reserve(indices.size());
         for (const auto& index : indices) {
-            trackIds.push_back(trackModel->getTrackId(index));
+            trackIds.push_back(m_pTrackModel->getTrackId(index));
         }
     } else {
         const TrackPointerList trackPointers = getTrackPointers();
@@ -637,13 +622,12 @@ TrackIdList WTrackMenu::getTrackIds() const {
 }
 
 TrackPointerList WTrackMenu::getTrackPointers() const {
-    auto trackModel = getTrackModel();
-    if (trackModel) {
+    if (m_pTrackModel) {
         const QModelIndexList indices = getTrackIndices();
         TrackPointerList trackPointers;
         trackPointers.reserve(indices.size());
         for (const auto& index : indices) {
-            trackPointers.push_back(trackModel->getTrack(index));
+            trackPointers.push_back(m_pTrackModel->getTrack(index));
         }
         return trackPointers;
     }
@@ -652,10 +636,6 @@ TrackPointerList WTrackMenu::getTrackPointers() const {
 
 QModelIndexList WTrackMenu::getTrackIndices() const {
     return m_pTrackIndexList;
-}
-
-TrackModel* WTrackMenu::getTrackModel() const {
-    return m_pTrackModel;
 }
 
 void WTrackMenu::slotOpenInFileBrowser() {
@@ -924,10 +904,6 @@ void WTrackMenu::slotUnlockBpm() {
 
 void WTrackMenu::slotScaleBpm(int scale) {
     const TrackPointerList trackPointers = getTrackPointers();
-    if (trackPointers.empty()) {
-        return;
-    }
-
     for (const auto& pTrack : trackPointers) {
         if (!pTrack->isBpmLocked()) {
             BeatsPointer pBeats = pTrack->getBeats();
@@ -940,10 +916,6 @@ void WTrackMenu::slotScaleBpm(int scale) {
 
 void WTrackMenu::lockBpm(bool lock) {
     const TrackPointerList trackPointers = getTrackPointers();
-    if (trackPointers.empty()) {
-        return;
-    }
-
     // TODO: This should be done in a thread for large selections
     for (const auto& pTrack : trackPointers) {
         pTrack->setBpmLocked(lock);
@@ -952,10 +924,6 @@ void WTrackMenu::lockBpm(bool lock) {
 
 void WTrackMenu::slotColorPicked(mixxx::RgbColor::optional_t color) {
     const TrackPointerList trackPointers = getTrackPointers();
-    if (trackPointers.empty()) {
-        return;
-    }
-
     // TODO: This should be done in a thread for large selections
     for (const auto& pTrack : trackPointers) {
         pTrack->setColor(color);
@@ -992,10 +960,6 @@ void WTrackMenu::loadSelectionToGroup(QString group, bool play) {
 //slot for reset played count, sets count to 0 of one or more tracks
 void WTrackMenu::slotClearPlayCount() {
     const TrackPointerList trackPointers = getTrackPointers();
-    if (trackPointers.empty()) {
-        return;
-    }
-
     for (const auto& pTrack : trackPointers) {
         pTrack->resetPlayCounter();
     }
@@ -1003,10 +967,6 @@ void WTrackMenu::slotClearPlayCount() {
 
 void WTrackMenu::slotClearBeats() {
     const TrackPointerList trackPointers = getTrackPointers();
-    if (trackPointers.empty()) {
-        return;
-    }
-
     // TODO: This should be done in a thread for large selections
     for (const auto& pTrack : trackPointers) {
         if (!pTrack->isBpmLocked()) {
@@ -1017,10 +977,6 @@ void WTrackMenu::slotClearBeats() {
 
 void WTrackMenu::slotClearMainCue() {
     const TrackPointerList trackPointers = getTrackPointers();
-    if (trackPointers.empty()) {
-        return;
-    }
-
     for (const auto& pTrack : trackPointers) {
         pTrack->removeCuesOfType(mixxx::CueType::MainCue);
     }
@@ -1028,10 +984,6 @@ void WTrackMenu::slotClearMainCue() {
 
 void WTrackMenu::slotClearOutroCue() {
     const TrackPointerList trackPointers = getTrackPointers();
-    if (trackPointers.empty()) {
-        return;
-    }
-
     for (const auto& pTrack : trackPointers) {
         pTrack->removeCuesOfType(mixxx::CueType::Outro);
     }
@@ -1039,10 +991,6 @@ void WTrackMenu::slotClearOutroCue() {
 
 void WTrackMenu::slotClearIntroCue() {
     const TrackPointerList trackPointers = getTrackPointers();
-    if (trackPointers.empty()) {
-        return;
-    }
-
     for (const auto& pTrack : trackPointers) {
         pTrack->removeCuesOfType(mixxx::CueType::Intro);
     }
@@ -1050,10 +998,6 @@ void WTrackMenu::slotClearIntroCue() {
 
 void WTrackMenu::slotClearKey() {
     const TrackPointerList trackPointers = getTrackPointers();
-    if (trackPointers.empty()) {
-        return;
-    }
-
     for (const auto& pTrack : trackPointers) {
         pTrack->resetKeys();
     }
@@ -1061,10 +1005,6 @@ void WTrackMenu::slotClearKey() {
 
 void WTrackMenu::slotClearReplayGain() {
     const TrackPointerList trackPointers = getTrackPointers();
-    if (trackPointers.empty()) {
-        return;
-    }
-
     for (const auto& pTrack : trackPointers) {
         pTrack->setReplayGain(mixxx::ReplayGain());
     }
@@ -1072,10 +1012,6 @@ void WTrackMenu::slotClearReplayGain() {
 
 void WTrackMenu::slotClearWaveform() {
     const TrackPointerList trackPointers = getTrackPointers();
-    if (trackPointers.empty()) {
-        return;
-    }
-
     AnalysisDao& analysisDao = m_pTrackCollectionManager->internalCollection()->getAnalysisDAO();
     for (const auto& pTrack : trackPointers) {
         analysisDao.deleteAnalysesForTrack(pTrack->getId());
@@ -1086,10 +1022,6 @@ void WTrackMenu::slotClearWaveform() {
 
 void WTrackMenu::slotClearLoop() {
     const TrackPointerList trackPointers = getTrackPointers();
-    if (trackPointers.empty()) {
-        return;
-    }
-
     for (const auto& pTrack : trackPointers) {
         pTrack->removeCuesOfType(mixxx::CueType::Loop);
     }
@@ -1097,10 +1029,6 @@ void WTrackMenu::slotClearLoop() {
 
 void WTrackMenu::slotClearHotCues() {
     const TrackPointerList trackPointers = getTrackPointers();
-    if (trackPointers.empty()) {
-        return;
-    }
-
     for (const auto& pTrack : trackPointers) {
         pTrack->removeCuesOfType(mixxx::CueType::HotCue);
     }
@@ -1138,8 +1066,7 @@ void WTrackMenu::slotTagFetcherClosed() {
 }
 
 void WTrackMenu::slotShowTrackInfo() {
-    auto trackModel = getTrackModel();
-    if (trackModel) {
+    if (m_pTrackModel) {
         const auto indices = getTrackIndices();
         showTrackInfo(indices.at(0));
     } else {
@@ -1149,8 +1076,7 @@ void WTrackMenu::slotShowTrackInfo() {
 }
 
 void WTrackMenu::slotNextTrackInfo() {
-    auto trackModel = getTrackModel();
-    VERIFY_OR_DEBUG_ASSERT(trackModel) {
+    VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
         return;
     }
     QModelIndex nextRow = currentTrackInfoIndex.sibling(
@@ -1164,8 +1090,7 @@ void WTrackMenu::slotNextTrackInfo() {
 }
 
 void WTrackMenu::slotPrevTrackInfo() {
-    auto trackModel = getTrackModel();
-    VERIFY_OR_DEBUG_ASSERT(trackModel) {
+    VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
         return;
     }
     QModelIndex prevRow = currentTrackInfoIndex.sibling(
@@ -1179,8 +1104,7 @@ void WTrackMenu::slotPrevTrackInfo() {
 }
 
 void WTrackMenu::showTrackInfo(QModelIndex index) {
-    auto trackModel = getTrackModel();
-    VERIFY_OR_DEBUG_ASSERT(trackModel) {
+    VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
         return;
     }
 
@@ -1195,7 +1119,7 @@ void WTrackMenu::showTrackInfo(QModelIndex index) {
         connect(m_pTrackInfo.data(), &DlgTrackInfo::showTagFetcher, this, &WTrackMenu::slotShowTrackInTagFetcher);
         connect(m_pTrackInfo.data(), &DlgTrackInfo::finished, this, &WTrackMenu::slotTrackInfoClosed);
     }
-    TrackPointer pTrack = trackModel->getTrack(index);
+    TrackPointer pTrack = m_pTrackModel->getTrack(index);
     m_pTrackInfo->loadTrack(pTrack); // NULL is fine.
     currentTrackInfoIndex = index;
     m_pTrackInfo->show();
@@ -1212,8 +1136,7 @@ void WTrackMenu::showTrackInfo(TrackPointer pTrack) {
 }
 
 void WTrackMenu::slotNextDlgTagFetcher() {
-    auto trackModel = getTrackModel();
-    if (!trackModel) {
+    if (!m_pTrackModel) {
         return;
     }
     QModelIndex nextRow = currentTrackInfoIndex.sibling(
@@ -1227,8 +1150,7 @@ void WTrackMenu::slotNextDlgTagFetcher() {
 }
 
 void WTrackMenu::slotPrevDlgTagFetcher() {
-    auto trackModel = getTrackModel();
-    if (!trackModel) {
+    if (!m_pTrackModel) {
         return;
     }
     QModelIndex prevRow = currentTrackInfoIndex.sibling(
@@ -1242,12 +1164,11 @@ void WTrackMenu::slotPrevDlgTagFetcher() {
 }
 
 void WTrackMenu::showDlgTagFetcher(QModelIndex index) {
-    auto trackModel = getTrackModel();
-    VERIFY_OR_DEBUG_ASSERT(trackModel) {
+    VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
         return;
     }
 
-    TrackPointer pTrack = trackModel->getTrack(index);
+    TrackPointer pTrack = m_pTrackModel->getTrack(index);
     currentTrackInfoIndex = index;
     slotShowTrackInTagFetcher(pTrack);
 }
@@ -1258,7 +1179,7 @@ void WTrackMenu::showDlgTagFetcher(TrackPointer pTrack) {
 
 void WTrackMenu::slotShowTrackInTagFetcher(TrackPointer pTrack) {
     if (m_pTagFetcher.isNull()) {
-        bool trackNavigation = getTrackModel() != nullptr;
+        bool trackNavigation = m_pTrackModel != nullptr;
         m_pTagFetcher.reset(new DlgTagFetcher(nullptr, trackNavigation));
         connect(m_pTagFetcher.data(), &DlgTagFetcher::next, this, &WTrackMenu::slotNextDlgTagFetcher);
         connect(m_pTagFetcher.data(), &DlgTagFetcher::previous, this, &WTrackMenu::slotPrevDlgTagFetcher);
@@ -1271,8 +1192,7 @@ void WTrackMenu::slotShowTrackInTagFetcher(TrackPointer pTrack) {
 }
 
 void WTrackMenu::slotShowDlgTagFetcher() {
-    auto trackModel = getTrackModel();
-    if (trackModel) {
+    if (m_pTrackModel) {
         const auto indices = getTrackIndices();
         if (indices.size() > 0) {
             showDlgTagFetcher(indices.at(0));
@@ -1314,9 +1234,6 @@ void WTrackMenu::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
 
 void WTrackMenu::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
     const TrackPointerList trackPointers = getTrackPointers();
-    if (trackPointers.empty()) {
-        return;
-    }
     for (const auto& pTrack : trackPointers) {
         pTrack->setCoverInfo(coverInfo);
     }
@@ -1324,56 +1241,43 @@ void WTrackMenu::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
 
 void WTrackMenu::slotReloadCoverArt() {
     const TrackPointerList trackPointers = getTrackPointers();
-    if (trackPointers.empty()) {
-        return;
+    if (!trackPointers.empty()) {
+        guessTrackCoverInfoConcurrently(trackPointers);
     }
-    guessTrackCoverInfoConcurrently(trackPointers);
 }
 
 void WTrackMenu::slotRemove() {
-    auto trackModel = getTrackModel();
-    if (!trackModel) {
-        return;
-    }
-    const QModelIndexList indices = getTrackIndices();
-    if (!indices.empty()) {
-        trackModel->removeTracks(indices);
+    if (m_pTrackModel) {
+        const QModelIndexList indices = getTrackIndices();
+        if (!indices.empty()) {
+            m_pTrackModel->removeTracks(indices);
+        }
     }
 }
 
 void WTrackMenu::slotHide() {
-    auto trackModel = getTrackModel();
-    if (!trackModel) {
-        return;
-    }
-    const QModelIndexList indices = getTrackIndices();
-    if (indices.size() > 0) {
-        trackModel->hideTracks(indices);
+    if (m_pTrackModel) {
+        const QModelIndexList indices = getTrackIndices();
+        if (!indices.empty()) {
+            m_pTrackModel->hideTracks(indices);
+        }
     }
 }
 
 void WTrackMenu::slotUnhide() {
-    auto trackModel = getTrackModel();
-    if (trackModel) {
+    if (m_pTrackModel) {
         const QModelIndexList indices = getTrackIndices();
-
-        if (indices.size() > 0) {
-            if (trackModel) {
-                trackModel->unhideTracks(indices);
-            }
+        if (!indices.empty()) {
+            m_pTrackModel->unhideTracks(indices);
         }
     }
 }
 
 void WTrackMenu::slotPurge() {
-    auto trackModel = getTrackModel();
-    if (trackModel) {
+    if (m_pTrackModel) {
         const QModelIndexList indices = getTrackIndices();
-        if (indices.size() > 0) {
-            auto trackModel = getTrackModel();
-            if (trackModel) {
-                trackModel->purgeTracks(indices);
-            }
+        if (!indices.empty()) {
+            m_pTrackModel->purgeTracks(indices);
         }
     }
 }
@@ -1384,20 +1288,17 @@ void WTrackMenu::clearTrackSelection() {
 }
 
 bool WTrackMenu::modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) const {
-    auto trackModel = getTrackModel();
-    return trackModel &&
-            (trackModel->getCapabilities() & capabilities) == capabilities;
+    return m_pTrackModel &&
+            (m_pTrackModel->getCapabilities() & capabilities) == capabilities;
 }
 
 bool WTrackMenu::optionIsEnabled(Filter flag) const {
-    auto trackModel = getTrackModel();
     bool optionIsSelected = m_eFilters.testFlag(Filter::All) || m_eFilters.testFlag(flag);
-
     if (!optionIsSelected) {
         return false;
     }
 
-    if (trackModel) {
+    if (m_pTrackModel) {
         if (flag == Filter::AutoDJ) {
             return modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ);
         } else if (flag == Filter::LoadTo) {
@@ -1430,5 +1331,5 @@ bool WTrackMenu::optionIsEnabled(Filter flag) const {
         }
     }
 
-    return m_eIndependentFilters.testFlag(flag);
+    return !m_eTrackModelFilters.testFlag(flag);
 }

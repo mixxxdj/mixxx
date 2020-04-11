@@ -37,22 +37,14 @@ class WTrackMenu : public QMenu {
         HideUnhidePurge = 1 << 9,
         FileBrowser = 1 << 10,
         Properties = 1 << 11,
-        IndependentFilters = AutoDJ |
-                Playlist |
-                Crate |
-                Metadata |
-                Reset |
-                BPM |
-                Color |
-                FileBrowser |
-                Properties
+        TrackModelFilters = LoadTo | Remove | HideUnhidePurge
     };
     Q_DECLARE_FLAGS(Filters, Filter)
 
     WTrackMenu(QWidget* parent,
             UserSettingsPointer pConfig,
             TrackCollectionManager* pTrackCollectionManager,
-            Filters flags = Filter::IndependentFilters,
+            Filters flags = Filter::All,
             TrackModel* trackModel = nullptr);
     ~WTrackMenu() {
     }
@@ -131,7 +123,6 @@ class WTrackMenu : public QMenu {
     TrackIdList getTrackIds() const;
     TrackPointerList getTrackPointers() const;
     QModelIndexList getTrackIndices() const;
-    TrackModel* getTrackModel() const;
 
     void createMenus();
     void createActions();
@@ -253,7 +244,7 @@ class WTrackMenu : public QMenu {
 
     // Filter available options
     const Filters m_eFilters;
-    const Filters m_eIndependentFilters;
+    const Filters m_eTrackModelFilters;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(WTrackMenu::Filters)

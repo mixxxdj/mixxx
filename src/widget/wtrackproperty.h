@@ -43,7 +43,7 @@ signals:
     void updateLabel();
 
     const char* m_pGroup;
-    UserSettingsPointer m_pConfig;
+    const UserSettingsPointer m_pConfig;
     TrackPointer m_pCurrentTrack;
     QString m_property;
 
