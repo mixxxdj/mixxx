@@ -1292,7 +1292,10 @@ TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "quantize"))->set(1.0);
 
-    EXPECT_FLOAT_EQ(175.0,
+    // We Expect that m_sGroup1 has adjusted its own bpm to the second deck and becomes a single master.
+    // When the second deck is synced the master bpm is adopted by the interna clock, which becomes now
+    // the master
+    EXPECT_FLOAT_EQ(87.5,
             ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
     EXPECT_FLOAT_EQ(87.5,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
@@ -1376,8 +1379,8 @@ TEST_F(EngineSyncTest, HalfDoubleInternalClockTest) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(1);
     ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(1);
 
-    EXPECT_FLOAT_EQ(140.0,
-                ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_FLOAT_EQ(70.0,
+            ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
     EXPECT_FLOAT_EQ(getRateSliderValue(1.0),
                     ControlObject::getControl(
                             ConfigKey(m_sGroup1, "rate"))->get());
