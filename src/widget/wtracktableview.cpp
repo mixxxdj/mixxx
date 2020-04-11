@@ -19,6 +19,7 @@
 #include "track/trackref.h"
 #include "util/assert.h"
 #include "util/dnd.h"
+#include "util/parented_ptr.h"
 #include "util/time.h"
 #include "widget/wtracktableviewheader.h"
 
@@ -299,7 +300,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // restoring scrollBar position using model pointer as key
     // scrollbar positions with respect to different models are backed by map
 
-    m_pMenu = new WTrackMenu(this, m_pConfig, m_pTrackCollectionManager, WTrackMenu::Filter::All, trackModel);
+    m_pMenu = make_parented<WTrackMenu>(this, m_pConfig, m_pTrackCollectionManager, WTrackMenu::Filter::All, trackModel);
     connect(m_pMenu, &WTrackMenu::loadTrackToPlayer, this, &WTrackTableView::loadTrackToPlayer);
 }
 
