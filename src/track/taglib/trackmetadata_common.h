@@ -154,6 +154,13 @@ bool parseSeratoMarkers2(
         TrackMetadata* pTrackMetadata,
         const QByteArray& data);
 
+bool parseSeratoMarkers2Base64Encoded(
+        TrackMetadata* pTrackMetadata,
+        const TagLib::String& base64Encoded);
+
+TagLib::String dumpSeratoMarkers2Base64Encoded(
+        const TrackMetadata& trackMetadata);
+
 inline QImage loadImageFromByteVector(
         const TagLib::ByteVector& imageData,
         const char* format = nullptr) {

@@ -36,12 +36,20 @@ class SeratoTags final {
         return SeratoMarkers2::parse(&m_seratoMarkers2, data);
     }
 
+    bool parseMarkers2Base64Encoded(const QByteArray& data) {
+        return SeratoMarkers2::parseBase64Encoded(&m_seratoMarkers2, data);
+    }
+
     QByteArray dumpMarkers() const {
         return m_seratoMarkers.dump();
     }
 
     QByteArray dumpMarkers2() const {
         return m_seratoMarkers2.dump();
+    }
+
+    QByteArray dumpMarkers2Base64Encoded() const {
+        return m_seratoMarkers2.dumpBase64Encoded();
     }
 
     CueInfoImporterPointer importCueInfos() const;

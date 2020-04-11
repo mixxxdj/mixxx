@@ -31,6 +31,8 @@ const std::array<TagLib::FLAC::Picture::Type, 4> kPreferredPictureTypes = {
         TagLib::FLAC::Picture::Other,
 };
 
+const TagLib::String kCommentFieldKeySeratoMarkersV2 = "SERATO_MARKERS_V2";
+
 bool readCommentField(
         const TagLib::Ogg::XiphComment& tag,
         const TagLib::String& key,
@@ -461,6 +463,17 @@ void importTrackMetadataFromTag(
         pTrackMetadata->refTrackInfo().setEncoderSettings(encoderSettings);
     }
 #endif // __EXTRA_METADATA__
+
+    // Serato tags
+    TagLib::String seratoMarkers2Base64;
+    if (readCommentField(
+                tag,
+                kCommentFieldKeySeratoMarkersV2,
+                &seratoMarkers2Base64)) {
+        parseSeratoMarkers2Base64Encoded(
+                pTrackMetadata,
+                seratoMarkers2Base64);
+    }
 }
 
 bool exportTrackMetadataIntoTag(
@@ -568,6 +581,16 @@ bool exportTrackMetadataIntoTag(
     writeCommentField(
             pTag, "DISCNUMBER", toTString(trackMetadata.getTrackInfo().getDiscNumber()));
 #endif // __EXTRA_METADATA__
+
+    // Export of Serato markers is disabled, because Mixxx
+    // does not modify them.
+#if defined(__EXPORT_SERATO_MARKERS__)
+    // Serato tags
+    writeCommentField(
+            pTag,
+            kCommentFieldKeySeratoMarkersV2,
+            dumpSeratoMarkers2Base64Encoded(trackMetadata));
+#endif // __EXPORT_SERATO_MARKERS__
 
     return true;
 }
