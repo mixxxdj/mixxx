@@ -449,6 +449,11 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             m_pLibrary,
             &Library::onSkinLoadFinished);
 
+    connect(this,
+            &MixxxMainWindow::newSkinLoaded,
+            WaveformWidgetFactory::instance(),
+            &WaveformWidgetFactory::onSkinLoadFinished);
+
     // Inhibit the screensaver if the option is set. (Do it before creating the preferences dialog)
     int inhibit = pConfig->getValue<int>(ConfigKey("[Config]","InhibitScreensaver"),-1);
     if (inhibit == -1) {
