@@ -196,10 +196,11 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
     if (index < 0) {
         return;
     }
-    // This regenerates twice the waveforms because of a bug found on Windows
+    // This regenerates the waveforms twice because of a bug found on Windows
     // where the first one fails.
     // The problem is that the window of the widget thinks that it is not exposed.
     // (https://doc.qt.io/qt-5/qwindow.html#exposeEvent )
+    // TODO: Remove this when it has been fixed upstream.
     WaveformWidgetFactory::instance()->setWidgetTypeFromHandle(index);
     WaveformWidgetFactory::instance()->setWidgetTypeFromHandle(index, true);
 }
