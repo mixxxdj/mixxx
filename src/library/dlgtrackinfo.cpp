@@ -44,7 +44,6 @@ void DlgTrackInfo::init() {
     coverBox->insertWidget(1, m_pWCoverArtLabel);
 
     m_pTagFetcher.reset(new DlgTagFetcher(this, m_pTrackModel));
-
     if (m_pTrackModel) {
         connect(btnNext,
                 &QPushButton::clicked,
@@ -69,17 +68,17 @@ void DlgTrackInfo::init() {
     connect(btnApply,
             &QPushButton::clicked,
             this,
-            &DlgTrackInfo::apply);
+            &DlgTrackInfo::slotApply);
 
     connect(btnOK,
             &QPushButton::clicked,
             this,
-            &DlgTrackInfo::OK);
+            &DlgTrackInfo::slotOk);
 
     connect(btnCancel,
             &QPushButton::clicked,
             this,
-            &DlgTrackInfo::cancel);
+            &DlgTrackInfo::slotCancel);
 
     connect(bpmDouble,
             &QPushButton::clicked,
@@ -150,7 +149,7 @@ void DlgTrackInfo::init() {
             &DlgTrackInfo::slotOpenInFileBrowser);
 
     CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != nullptr) {
+    if (pCache) {
         connect(pCache,
                 &CoverArtCache::coverFound,
                 this,
@@ -166,16 +165,16 @@ void DlgTrackInfo::init() {
             &DlgTrackInfo::slotReloadCoverArt);
 }
 
-void DlgTrackInfo::OK() {
+void DlgTrackInfo::slotOk() {
     unloadTrack(true);
     accept();
 }
 
-void DlgTrackInfo::apply() {
+void DlgTrackInfo::slotApply() {
     saveTrack();
 }
 
-void DlgTrackInfo::cancel() {
+void DlgTrackInfo::slotCancel() {
     unloadTrack(false);
     reject();
 }
@@ -227,7 +226,8 @@ void DlgTrackInfo::populateFields(const Track& track) {
     txtDuration->setText(track.getDurationText(mixxx::Duration::Precision::SECONDS));
     txtLocation->setText(QDir::toNativeSeparators(track.getLocation()));
     txtType->setText(track.getType());
-    txtBitrate->setText(QString(track.getBitrateText()) + (" ") + tr(mixxx::AudioSource::Bitrate::unit()));
+    txtBitrate->setText(QString(track.getBitrateText()) + (" ") +
+            tr(mixxx::audio::Bitrate::unit()));
     txtBpm->setText(track.getBpmText());
     m_keysClone = track.getKeys();
     txtKey->setText(KeyUtils::getGlobalKeyText(m_keysClone));

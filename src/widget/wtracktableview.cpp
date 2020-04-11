@@ -23,19 +23,21 @@
 #include "util/time.h"
 #include "widget/wtracktableviewheader.h"
 
-WTrackTableView::WTrackTableView(QWidget * parent,
-                                 UserSettingsPointer pConfig,
-                                 TrackCollectionManager* pTrackCollectionManager,
-                                 bool sorting)
-        : WLibraryTableView(parent, pConfig,
-                            ConfigKey(LIBRARY_CONFIGVALUE,
-                                      WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
+WTrackTableView::WTrackTableView(QWidget* parent,
+        UserSettingsPointer pConfig,
+        TrackCollectionManager* pTrackCollectionManager,
+        double backgroundColorOpacity,
+        bool sorting)
+        : WLibraryTableView(parent,
+                  pConfig,
+                  ConfigKey(LIBRARY_CONFIGVALUE,
+                          WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
           m_pConfig(pConfig),
           m_pTrackCollectionManager(pTrackCollectionManager),
+          m_backgroundColorOpacity(backgroundColorOpacity),
           m_sorting(sorting),
           m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false) {
-
     // Connect slots and signals to make the world go 'round.
     connect(this, &WTrackTableView::doubleClicked,
             this, &WTrackTableView::slotMouseDoubleClicked);

@@ -112,7 +112,7 @@ void DlgTagFetcher::changeTrack(const TrackPointer& track) {
         return;
     }
     results->clear();
-    disconnect(track.get(),
+    disconnect(m_track.get(),
             &Track::changed,
             this,
             &DlgTagFetcher::slotTrackChanged);
@@ -120,12 +120,13 @@ void DlgTagFetcher::changeTrack(const TrackPointer& track) {
     m_track = track;
     m_data = Data();
     m_networkResult = NetworkResult::Ok;
-    m_tagFetcher.startFetch(m_track);
 
-    connect(track.get(),
+    connect(m_track.get(),
             &Track::changed,
             this,
             &DlgTagFetcher::slotTrackChanged);
+
+    m_tagFetcher.startFetch(m_track);
 
     updateStack();
 }
@@ -216,7 +217,12 @@ void DlgTagFetcher::apply() {
                 trackRelease.releaseGroupId);
     }
 #endif // __EXTRA_METADATA__
-    m_track->importMetadata(std::move(trackMetadata));
+    m_track->importMetadata(
+            std::move(trackMetadata),
+            // Prevent re-import of outdated metadata from file tags
+            // by explicitly setting the synchronization time stamp
+            // to the current time.
+            QDateTime::currentDateTimeUtc());
 }
 
 void DlgTagFetcher::quit() {

@@ -36,9 +36,10 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
   private slots:
     void slotNext(bool loadTrackInTagFetcher = true);
     void slotPrev(bool loadTrackInTagFetcher = true);
-    void OK();
-    void apply();
-    void cancel();
+    void slotOk();
+    void slotApply();
+    void slotCancel();
+
     void trackUpdated();
 
     void slotBpmDouble();
