@@ -582,7 +582,7 @@ QString Track::getComment() const {
 
 void Track::setComment(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_record.refMetadata().refTrackInfo().refComment(), s)) {
+    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrComment(), s)) {
         markDirtyAndUnlock(&lock);
     }
 }

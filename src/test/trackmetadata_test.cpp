@@ -127,7 +127,7 @@ TEST_F(TrackMetadataTest, mergeImportedMetadata) {
     pNewTrackInfo->setTrackNumber("2");
     pNewTrackInfo->setTrackTotal("20");
 #if defined(__EXTRA_METADATA__)
-    newTrackInfo.setWork("work");
+    pNewTrackInfo->setWork("work");
 #endif // __EXTRA_METADATA__
     pNewTrackInfo->setYear("2002-02-02");
     mixxx::AlbumInfo* pNewAlbumInfo = newTrackMetadata.ptrAlbumInfo();
@@ -139,7 +139,7 @@ TEST_F(TrackMetadataTest, mergeImportedMetadata) {
     pNewAlbumInfo->setMusicBrainzReleaseGroupId(QUuid("66666666-6666-6666-6666-666666666666"));
     pNewAlbumInfo->setMusicBrainzReleaseId(QUuid("77777777-7777-7777-7777-777777777777"));
     pNewAlbumInfo->setRecordLabel("copyright");
-    pNewAlbumInfo->> setReplayGain(mixxx::ReplayGain(0.3, 3));
+    pNewAlbumInfo->setReplayGain(mixxx::ReplayGain(0.3, 3));
 #endif // __EXTRA_METADATA__
     pNewAlbumInfo->setTitle("new album title");
 
@@ -193,7 +193,7 @@ TEST_F(TrackMetadataTest, mergeImportedMetadata) {
     EXPECT_EQ(
             pOldTrackInfo->getTrackTotal(), pMergedTrackInfo->getTrackTotal());
 #if defined(__EXTRA_METADATA__)
-    EXPECT_EQ(pNewTrackInfo.getWork(), pMergedTrackInfo->getWork());
+    EXPECT_EQ(pNewTrackInfo->getWork(), pMergedTrackInfo->getWork());
 #endif // __EXTRA_METADATA__
     EXPECT_EQ(pOldTrackInfo->getYear(), pMergedTrackInfo->getYear());
     mixxx::AlbumInfo* pMergedAlbumInfo =
