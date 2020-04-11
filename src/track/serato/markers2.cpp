@@ -440,6 +440,7 @@ QByteArray SeratoMarkers2::dump() const {
 
 QList<CueInfo> SeratoMarkers2::getCues(double timingOffsetMillis) const {
     qDebug() << "Reading cues from 'Serato Markers2' tag data...";
+
     QList<CueInfo> cueInfos;
     for (auto& pEntry : m_entries) {
         DEBUG_ASSERT(pEntry);
@@ -454,10 +455,23 @@ QList<CueInfo> SeratoMarkers2::getCues(double timingOffsetMillis) const {
                     pCueEntry->getLabel(),
                     pCueEntry->getColor());
             cueInfos.append(cueInfo);
-
             break;
         }
-        // TODO: Add support for LOOP/FLIP
+        case SeratoMarkers2Entry::TypeId::Loop: {
+            const SeratoMarkers2LoopEntry* pLoopEntry =
+                    static_cast<SeratoMarkers2LoopEntry*>(pEntry.get());
+            CueInfo loopInfo = CueInfo(
+                    CueType::Loop,
+                    pLoopEntry->getStartPosition() + timingOffsetMillis,
+                    pLoopEntry->getEndPosition() + timingOffsetMillis,
+                    pLoopEntry->getIndex(),
+                    pLoopEntry->getLabel(),
+                    std::nullopt); // Serato's Loops don't have a color
+            // TODO: Add support for "locked" loops
+            cueInfos.append(loopInfo);
+            break;
+        }
+        // TODO: Add support for FLIP
         default:
             break;
         }

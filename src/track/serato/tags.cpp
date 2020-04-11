@@ -16,6 +16,8 @@ const QString kDecoderName(QStringLiteral("FFMPEG"));
 const QString kDecoderName(QStringLiteral("Unknown"));
 #endif
 
+const int kLoopIndexOffset = 8;
+
 mixxx::RgbColor getColorFromOtherPalette(
         const ColorPalette& source,
         const ColorPalette& dest,
@@ -156,6 +158,11 @@ QList<CueInfo> SeratoTags::getCues(const QString& filePath) const {
     // from "Serato Markers_". This is what Serato does too (i.e. if
     // "Serato Markers_" and "Serato Markers2" contradict each other,
     // Serato will use the values from "Serato Markers_").
+    //
+    // In Serato, loops and hotcues are kept separate (i. e. you can
+    // have a loop and a hotcue with the same number. In Mixxx, loops
+    // and hotcues share indices. Hence, we import them with and offset
+    // of 8 (the maximum number of hotcues in Serato).
 
     double timingOffsetMillis = SeratoTags::findTimingOffsetMillis(filePath);
 
@@ -171,9 +178,22 @@ QList<CueInfo> SeratoTags::getCues(const QString& filePath) const {
             qWarning() << "SeratoTags::getCues: Cue with number < 0 found!";
         }
 
-        if (cueInfo.getType() != CueType::HotCue) {
-            qWarning() << "SeratoTags::getCues: Ignoring cue with non-hotcue type!";
-            continue;
+        switch (cueInfo.getType()) {
+        case CueType::HotCue: {
+            if (index >= kLoopIndexOffset) {
+                qWarning()
+                        << "SeratoTags::getCues: Non-loop Cue with number >="
+                        << kLoopIndexOffset << "found!";
+                continue;
+            }
+            break;
+        }
+        case CueType::Loop: {
+            index += kLoopIndexOffset;
+            break;
+        }
+        default:
+            break;
         }
 
         CueInfo newCueInfo(cueInfo);
@@ -200,9 +220,22 @@ QList<CueInfo> SeratoTags::getCues(const QString& filePath) const {
             qWarning() << "SeratoTags::getCues: Cue with number < 0 found!";
         }
 
-        if (cueInfo.getType() != CueType::HotCue) {
-            qWarning() << "SeratoTags::getCues: Ignoring cue with non-hotcue type!";
-            continue;
+        switch (cueInfo.getType()) {
+        case CueType::HotCue: {
+            if (index >= kLoopIndexOffset) {
+                qWarning()
+                        << "SeratoTags::getCues: Non-loop Cue with number >="
+                        << kLoopIndexOffset << "found!";
+                continue;
+            }
+            break;
+        }
+        case CueType::Loop: {
+            index += kLoopIndexOffset;
+            break;
+        }
+        default:
+            break;
         }
 
         // Take a pre-existing CueInfo object that was read from

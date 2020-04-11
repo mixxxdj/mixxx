@@ -289,6 +289,7 @@ QList<CueInfo> SeratoMarkers::getCues(double timingOffsetMillis) const {
 
     QList<CueInfo> cueInfos;
     int cueIndex = 0;
+    int loopIndex = 0;
     for (const auto& pEntry : m_entries) {
         DEBUG_ASSERT(pEntry);
         switch (pEntry->typeId()) {
@@ -306,7 +307,21 @@ QList<CueInfo> SeratoMarkers::getCues(double timingOffsetMillis) const {
             cueIndex++;
             break;
         }
-        // TODO: Add support for Loops
+        case SeratoMarkersEntry::TypeId::Loop: {
+            if (pEntry->hasStartPosition()) {
+                CueInfo loopInfo = CueInfo(
+                        CueType::Loop,
+                        pEntry->getStartPosition() + timingOffsetMillis,
+                        pEntry->getEndPosition() + timingOffsetMillis,
+                        loopIndex,
+                        "",
+                        std::nullopt);
+                cueInfos.append(loopInfo);
+                // TODO: Add support for the "locked" attribute
+            }
+            loopIndex++;
+            break;
+        }
         default:
             break;
         }
