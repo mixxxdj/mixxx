@@ -189,7 +189,9 @@ void Track::importMetadata(
 void Track::mergeImportedMetadata(
         const mixxx::TrackMetadata& importedMetadata) {
     QMutexLocker lock(&m_qMutex);
-    m_record.mergeImportedMetadata(importedMetadata);
+    if (m_record.mergeImportedMetadata(importedMetadata)) {
+        markDirtyAndUnlock(&lock);
+    }
 }
 
 void Track::readTrackMetadata(
@@ -198,7 +200,7 @@ void Track::readTrackMetadata(
     DEBUG_ASSERT(pTrackMetadata);
     QMutexLocker lock(&m_qMutex);
     *pTrackMetadata = m_record.getMetadata();
-    if (pMetadataSynchronized != nullptr) {
+    if (pMetadataSynchronized) {
         *pMetadataSynchronized = m_record.getMetadataSynchronized();
     }
 }
@@ -209,7 +211,7 @@ void Track::readTrackRecord(
     DEBUG_ASSERT(pTrackRecord);
     QMutexLocker lock(&m_qMutex);
     *pTrackRecord = m_record;
-    if (pDirty != nullptr) {
+    if (pDirty) {
         *pDirty = m_bDirty;
     }
 }
