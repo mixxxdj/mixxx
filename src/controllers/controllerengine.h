@@ -171,7 +171,7 @@ class ControllerEngine : public QObject {
     void errorDialogButton(const QString& key, QMessageBox::StandardButton button);
 
   private:
-    bool syntaxIsValid(const QString& scriptCode);
+    bool syntaxIsValid(const QString& scriptCode, const QString& filename = QString());
     bool evaluate(const QFileInfo& scriptFile);
     bool internalExecute(QScriptValue thisObject, const QString& scriptCode);
     bool internalExecute(QScriptValue thisObject, QScriptValue functionObject,
@@ -179,7 +179,7 @@ class ControllerEngine : public QObject {
     void initializeScriptEngine();
     void uninitializeScriptEngine();
 
-    void scriptErrorDialog(const QString& detailedError);
+    void scriptErrorDialog(const QString& detailedError, bool bFatal = false);
     void generateScriptFunctions(const QString& code);
     // Stops and removes all timers (for shutdown).
     void stopAllTimers();
