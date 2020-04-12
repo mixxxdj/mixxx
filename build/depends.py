@@ -736,6 +736,7 @@ class MixxxCore(Feature):
         return True
 
     def sources(self, build):
+
         sources = ["src/control/control.cpp",
                    "src/control/controlaudiotaperpot.cpp",
                    "src/control/controlbehavior.cpp",
@@ -916,6 +917,7 @@ class MixxxCore(Feature):
                    "src/controllers/engine/controllerengine.cpp",
                    "src/controllers/engine/controllerenginejsproxy.cpp",
                    "src/controllers/engine/colorjsproxy.cpp",
+                   "src/controllers/engine/colormapperjsproxy.cpp",
                    "src/controllers/midi/midimessage.cpp",
                    "src/controllers/midi/midiutils.cpp",
                    "src/controllers/midi/midicontroller.cpp",
@@ -925,7 +927,6 @@ class MixxxCore(Feature):
                    "src/controllers/softtakeover.cpp",
                    "src/controllers/keyboard/keyboardeventfilter.cpp",
                    "src/controllers/colormapper.cpp",
-                   "src/controllers/colormapperjsproxy.cpp",
 
                    "src/main.cpp",
                    "src/mixxx.cpp",
@@ -1314,7 +1315,6 @@ class MixxxCore(Feature):
                    "src/util/workerthread.cpp",
                    "src/util/workerthreadscheduler.cpp"
                    ]
-
         proto_args = {
             'PROTOCPROTOPATH': ['src'],
             'PROTOCPYTHONOUTDIR': '',  # set to None to not generate python
