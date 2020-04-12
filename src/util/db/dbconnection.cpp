@@ -249,6 +249,8 @@ bool initDatabase(QSqlDatabase database, StringCollator* pCollator) {
     }
     // v.data() returns a pointer to the handle
     sqlite3* handle = *static_cast<sqlite3**>(v.data());
+    // Ensure initialization. database.open() might not do it
+    sqlite3_initialize();
     VERIFY_OR_DEBUG_ASSERT(handle != nullptr) {
         kLogger.warning()
                 << "SQLite3 handle is invalid";

@@ -59,8 +59,7 @@ find_library(Opus_LIBRARY
 mark_as_advanced(Opus_LIBRARY)
 
 find_path(OpusFile_INCLUDE_DIR
-  NAMES opusfile.h
-  PATH_SUFFIXES opus
+  NAMES opus/opusfile.h
   PATHS ${PC_OpusFile_INCLUDE_DIRS}
   DOC "Opusfile include directory")
 mark_as_advanced(OpusFile_INCLUDE_DIR)
