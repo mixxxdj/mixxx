@@ -96,10 +96,15 @@ public:
             const QString& keyText,
             track::io::key::Source keySource);
 
-    // Merge the current metadata from the file with the subset of metadata
-    // that is stored in the library. This is required to NOT delete any tags
-    // from the file that are not (yet) stored in the library database!
-    void mergeImportedMetadata(
+    // Merge the current metadata with new and additional properties
+    // imported from the file. Since these properties are not (yet)
+    // stored in the library or have been added later all existing
+    // data must be preserved and never be overwritten! This allows
+    // a gradual migration by selectively reimporting the required
+    // data when needed.
+    //
+    // Returns true if any property has been modified or false otherwise.
+    bool mergeImportedMetadata(
             const TrackMetadata& importedMetadata);
 
 private:
