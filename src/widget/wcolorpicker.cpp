@@ -77,6 +77,7 @@ void WColorPicker::removeColorButtons() {
     if (m_pCustomColorButton) {
         pLayout->removeWidget(m_pCustomColorButton);
         delete m_pCustomColorButton;
+        m_pCustomColorButton = nullptr;
     }
 
     while (!m_colorButtons.isEmpty()) {
@@ -88,6 +89,7 @@ void WColorPicker::removeColorButtons() {
     if (m_pNoColorButton) {
         pLayout->removeWidget(m_pNoColorButton);
         delete m_pNoColorButton;
+        m_pNoColorButton = nullptr;
     }
 }
 
