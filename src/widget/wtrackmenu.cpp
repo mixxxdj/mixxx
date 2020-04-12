@@ -759,6 +759,12 @@ void WTrackMenu::slotImportTrackMetadataFromFileTags() {
         // reloaded separately.
         SoundSourceProxy(pTrack).updateTrackFromSource(
                 SoundSourceProxy::ImportTrackMetadataMode::Again);
+        if (pTrack->isDirty()) {
+            // Update the database to reflect the recent changes. This is
+            // crucial for additional metadata like custom tags that are
+            // directly fetched from the database for certain use cases!
+            m_pTrackCollectionManager->saveTrack(pTrack);
+        }
     }
 }
 
