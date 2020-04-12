@@ -541,7 +541,7 @@ void ControllerEngine::scriptErrorDialog(
                    "be disabled until the issue has been resolved.");
     } else {
         additionalErrorText =
-                tr("For now, you can: Ignore this error for this session but "
+                tr("You can ignore this error for this session but "
                    "you may experience erratic behavior.") +
                 QString("<br>") +
                 tr("Try to recover by resetting your controller.");
