@@ -119,33 +119,60 @@ bool TrackRecord::mergeImportedMetadata(
         }
     }
 #if defined(__EXTRA_METADATA__)
-    modified |= copyIfNotNull(pMergedTrackInfo->ptrConductor(), importedTrackInfo.getConductor());
-    modified |= copyIfNotNull(pMergedTrackInfo->ptrDiscNumber(), importedTrackInfo.getDiscNumber());
-    modified |= copyIfNotNull(pMergedTrackInfo->ptrDiscTotal(), importedTrackInfo.getDiscTotal());
-    modified |= copyIfNotNull(pMergedTrackInfo->ptrEncoder(), importedTrackInfo.getEncoder());
-    modified |= copyIfNotNull(pMergedTrackInfo->ptrEncoderSettings(), importedTrackInfo.getEncoderSettings());
-    modified |= copyIfNotNull(pMergedTrackInfo->ptrISRC(), importedTrackInfo.getISRC());
-    modified |= copyIfNotNull(pMergedTrackInfo->ptrLanguage(), importedTrackInfo.getLanguage());
-    modified |= copyIfNotNull(pMergedTrackInfo->ptrLyricist(), importedTrackInfo.getLyricist());
-    modified |= copyIfNotNull(pMergedTrackInfo->ptrMood(), importedTrackInfo.getMood());
-    modified |= copyIfNotNull(pMergedTrackInfo->ptrMovement(), importedTrackInfo.getMovement());
-    modified |= copyIfNotNull(pMergedTrackInfo->ptrMusicBrainzArtistId(), importedTrackInfo.getMusicBrainzArtistId());
-    modified |= copyIfNotNull(pMergedTrackInfo->ptrMusicBrainzRecordingId(), importedTrackInfo.getMusicBrainzRecordingId());
-    modified |= copyIfNotNull(pMergedTrackInfo->ptrMusicBrainzReleaseId(), importedTrackInfo.getMusicBrainzReleaseId());
-    modified |= copyIfNotNull(pMergedTrackInfo->ptrMusicBrainzWorkId(), importedTrackInfo.getMusicBrainzWorkId());
-    modified |= copyIfNotNull(pMergedTrackInfo->ptrRemixer(), importedTrackInfo.getRemixer());
-    modified |= copyIfNotEmpty(pMergedTrackInfo->ptrSeratoTags(), importedTrackInfo.getSeratoTags());
-    modified |= copyIfNotNull(pMergedTrackInfo->ptrSubtitle(), importedTrackInfo.getSubtitle());
-    modified |= copyIfNotNull(pMergedTrackInfo->ptrWork(), importedTrackInfo.getWork());
-    AlbumInfo* pMergedAlbumInfo = refMetadata().ptrAlbumInfo();
-    const AlbumInfo& importedAlbumInfo = importedFromFile.getAlbumInfo();
-    modified |= mergeReplayGainMetadataProperty(pMergedAlbumInfo->ptrReplayGain(), importedAlbumInfo.getReplayGain());
-    modified |= copyIfNotNull(pMergedAlbumInfo->ptrCopyright(), importedAlbumInfo.getCopyright());
-    modified |= copyIfNotNull(pMergedAlbumInfo->ptrLicense(), importedAlbumInfo.getLicense());
-    modified |= copyIfNotNull(pMergedAlbumInfo->ptrMusicBrainzArtistId(), importedAlbumInfo.getMusicBrainzArtistId());
-    modified |= copyIfNotNull(pMergedAlbumInfo->ptrMusicBrainzReleaseGroupId(), importedAlbumInfo.getMusicBrainzReleaseGroupId());
-    modified |= copyIfNotNull(pMergedAlbumInfo->ptrMusicBrainzReleaseId(), importedAlbumInfo.getMusicBrainzReleaseId());
-    modified |= copyIfNotNull(pMergedAlbumInfo->ptrRecordLabel(), importedAlbumInfo.getRecordLabel());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrConductor(),
+            importedTrackInfo.getConductor());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrDiscNumber(),
+            importedTrackInfo.getDiscNumber());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrDiscTotal(),
+            importedTrackInfo.getDiscTotal());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrEncoder(),
+            importedTrackInfo.getEncoder());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrEncoderSettings(),
+            importedTrackInfo.getEncoderSettings());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrISRC(),
+            importedTrackInfo.getISRC());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrLanguage(),
+            importedTrackInfo.getLanguage());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrLyricist(),
+            importedTrackInfo.getLyricist());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrMood(),
+            importedTrackInfo.getMood());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrMovement(),
+            importedTrackInfo.getMovement());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrMusicBrainzArtistId(),
+            importedTrackInfo.getMusicBrainzArtistId());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrMusicBrainzRecordingId(),
+            importedTrackInfo.getMusicBrainzRecordingId());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrMusicBrainzReleaseId(),
+            importedTrackInfo.getMusicBrainzReleaseId());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrMusicBrainzWorkId(),
+            importedTrackInfo.getMusicBrainzWorkId());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrRemixer(),
+            importedTrackInfo.getRemixer());
+    modified |= copyIfNotEmpty(
+            pMergedTrackInfo->ptrSeratoTags(),
+            importedTrackInfo.getSeratoTags());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrSubtitle(),
+            importedTrackInfo.getSubtitle());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrWork(),
+            importedTrackInfo.getWork());
 #endif // __EXTRA_METADATA__
     return modified;
 }
