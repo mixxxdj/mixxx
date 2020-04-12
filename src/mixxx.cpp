@@ -532,7 +532,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     if (args.getStartInFullscreen() || fullscreenPref) {
         slotViewFullScreen(true);
     }
-    emit newSkinLoaded();
+    emit skinLoaded();
 
 
     // Wait until all other ControlObjects are set up before initializing
@@ -1097,7 +1097,7 @@ void MixxxMainWindow::createMenuBar() {
 void MixxxMainWindow::connectMenuBar() {
     ScopedTimer t("MixxxMainWindow::connectMenuBar");
     connect(this,
-            &MixxxMainWindow::newSkinLoaded,
+            &MixxxMainWindow::skinLoaded,
             m_pMenuBar,
             &WMainMenuBar::onNewSkinLoaded);
 
@@ -1483,7 +1483,7 @@ void MixxxMainWindow::rebootMixxxView() {
     }
 
     qDebug() << "rebootMixxxView DONE";
-    emit newSkinLoaded();
+    emit skinLoaded();
 }
 
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
