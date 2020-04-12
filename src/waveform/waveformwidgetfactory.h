@@ -64,9 +64,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     bool setConfig(UserSettingsPointer config);
 
-    // creates the waveform widget using the type set with setWidgetType
-    // and binds it to the viewer.
-    // deletes older widget and resets positions to config defaults
+    /// creates the waveform widget using the type set with setWidgetType
+    /// and binds it to the viewer.
+    /// deletes older widget and resets positions to config defaults
     bool setWaveformWidget(
             WWaveformViewer* viewer,
             const QDomElement &node,
@@ -84,13 +84,13 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     bool isOpenGlShaderAvailable() const { return m_openGLShaderAvailable;}
 
-    // Sets the widget type and saves it to configuration. 
-    // Returns false and sets EmtpyWaveform if type is invalid
+    /// Sets the widget type and saves it to configuration.
+    /// Returns false and sets EmtpyWaveform if type is invalid
     bool setWidgetType(WaveformWidgetType::Type type);
-    // Changes the widged type to that loaded from config and recreates them.
-    // Used as a workaround on Windows due to a problem with GL and QT 5.14.2
+    /// Changes the widged type to that loaded from config and recreates them.
+    /// Used as a workaround on Windows due to a problem with GL and QT 5.14.2
     bool setWidgetTypeFromConfig();
-    // Changes the widget type and recreates them. Used from the pref. dialog
+    /// Changes the widget type and recreates them. Used from the pref. dialog
     bool setWidgetTypeFromHandle(int handleIndex, bool force = false);
     WaveformWidgetType::Type getType() const { return m_type;}
 
@@ -137,7 +137,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void swapSpinnies();
 
   public slots:
-    void onSkinLoadFinished();
+    void slotSkinLoaded();
 
   protected:
     WaveformWidgetFactory();

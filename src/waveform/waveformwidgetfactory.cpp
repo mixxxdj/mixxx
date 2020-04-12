@@ -314,7 +314,7 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
 
     WaveformWidgetType::Type type = static_cast<WaveformWidgetType::Type>(
             m_config->getValueString(ConfigKey("[Waveform]","WaveformType")).toInt(&ok));
-    // Store the widget type on m_configType for later initialization. 
+    // Store the widget type on m_configType for later initialization.
     // We will initialize the objects later because of a problem with GL on QT 5.14.2 on Windows
     if (!ok || !setWidgetType(type, m_configType)) {
         setWidgetType(autoChooseWidgetType(), m_configType);
@@ -365,7 +365,7 @@ void WaveformWidgetFactory::addTimerListener(QWidget* pWidget) {
 }
 
 
-void WaveformWidgetFactory::onSkinLoadFinished() {
+void WaveformWidgetFactory::slotSkinLoaded() {
     // This regenerates twice the waveforms because of a bug found on Windows
     // where the first one fails.
     // The problem is that the window of the widget thinks that it is not exposed.
@@ -449,6 +449,7 @@ int WaveformWidgetFactory::getVSyncType() {
 bool WaveformWidgetFactory::setWidgetType(WaveformWidgetType::Type type) {
     return setWidgetType(type, m_type);
 }
+
 bool WaveformWidgetFactory::setWidgetType(WaveformWidgetType::Type type, WaveformWidgetType::Type& currentType) {
     if (type == currentType)
         return true;
@@ -480,6 +481,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromConfig() {
     }
     return setWidgetTypeFromHandle(desired, true);
 }
+
 bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force) {
     if (handleIndex < 0 || handleIndex >= (int)m_waveformWidgetHandles.size()) {
         qDebug() << "WaveformWidgetFactory::setWidgetType - invalid handle --> use of 'EmptyWaveform'";
@@ -1007,6 +1009,7 @@ WaveformWidgetType::Type WaveformWidgetFactory::findTypeFromHandleIndex(int inde
     }
     return type;
 }
+
 int WaveformWidgetFactory::findHandleIndexFromType(WaveformWidgetType::Type type) {
     int index = -1;
     for (int i = 0; i < m_waveformWidgetHandles.size(); i++) {
