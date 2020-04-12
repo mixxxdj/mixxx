@@ -2,7 +2,6 @@
 
 #include "track/keyfactory.h"
 
-
 namespace mixxx {
 
 /*static*/ const QString TrackRecord::kTrackTotalPlaceholder = QStringLiteral("//");
@@ -173,6 +172,29 @@ bool TrackRecord::mergeImportedMetadata(
     modified |= copyIfNotNull(
             pMergedTrackInfo->ptrWork(),
             importedTrackInfo.getWork());
+    AlbumInfo* pMergedAlbumInfo = refMetadata().ptrAlbumInfo();
+    const AlbumInfo& importedAlbumInfo = importedFromFile.getAlbumInfo();
+    modified |= mergeReplayGainMetadataProperty(
+            pMergedAlbumInfo->ptrReplayGain(),
+            importedAlbumInfo.getReplayGain());
+    modified |= copyIfNotNull(
+            pMergedAlbumInfo->ptrCopyright(),
+            importedAlbumInfo.getCopyright());
+    modified |= copyIfNotNull(
+            pMergedAlbumInfo->ptrLicense(),
+            importedAlbumInfo.getLicense());
+    modified |= copyIfNotNull(
+            pMergedAlbumInfo->ptrMusicBrainzArtistId(),
+            importedAlbumInfo.getMusicBrainzArtistId());
+    modified |= copyIfNotNull(
+            pMergedAlbumInfo->ptrMusicBrainzReleaseGroupId(),
+            importedAlbumInfo.getMusicBrainzReleaseGroupId());
+    modified |= copyIfNotNull(
+            pMergedAlbumInfo->ptrMusicBrainzReleaseId(),
+            importedAlbumInfo.getMusicBrainzReleaseId());
+    modified |= copyIfNotNull(
+            pMergedAlbumInfo->ptrRecordLabel(),
+            importedAlbumInfo.getRecordLabel());
 #endif // __EXTRA_METADATA__
     return modified;
 }
