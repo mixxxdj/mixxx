@@ -366,7 +366,7 @@ void WaveformWidgetFactory::addTimerListener(QWidget* pWidget) {
 
 
 void WaveformWidgetFactory::slotSkinLoaded() {
-    // This regenerates twice the waveforms because of a bug found on Windows
+    // This regenerates the waveforms twice because of a bug found on Windows
     // where the first one fails.
     // The problem is that the window of the widget thinks that it is not exposed.
     // (https://doc.qt.io/qt-5/qwindow.html#exposeEvent )
