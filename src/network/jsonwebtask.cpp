@@ -82,8 +82,8 @@ bool readJsonContent(
     // if parsing succeeds and otherwise null on error. The
     // parse error must only be evaluated if the returned
     // document is null!
-    if (jsonDoc.isNull()) {
-        DEBUG_ASSERT(parseError.error != QJsonParseError::NoError);
+    if (jsonDoc.isNull() &&
+            parseError.error != QJsonParseError::NoError) {
         kLogger.warning()
                 << "Failed to parse JSON data:"
                 << parseError.errorString()
