@@ -450,9 +450,24 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
     databaseRootDir.cdUp();
 
 #if defined(__WINDOWS__)
-    // Find drive letter (paths are relative to drive root on Windows)
+    // On Windows, all paths are relative to drive root of the database (e.g.
+    // "C:\"). Qt doesn't seem to provide a way to find it for a specific path,
+    // so we just call cdUp() until it stops working.
     while (databaseRootDir.cdUp()) {
         // Nothing to do here
+    }
+#elif defined(__UNIX__)
+    // If the file is on an external drive, the database path are relative to
+    // its mountpoint, i.e. the parent directory of the _Serato_
+    // directory. This means we can just use the path as-is.
+    //
+    // If the file is not on an external drive, the paths are all relative to
+    // the file system's root directory ("/").
+    //
+    // Serato does not exist on Linux, if it did, it would probably just mirror
+    // the way paths are handled on OSX.
+    if (databaseRootDir.canonicalPath().startsWith(QDir::homePath())) {
+        databaseRootDir = QDir::root();
     }
 #endif
 
