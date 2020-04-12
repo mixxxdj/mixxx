@@ -553,7 +553,9 @@ void ControllerEngine::scriptErrorDialog(
             tr("The script code needs to be fixed.") + QStringLiteral("<p>") +
             additionalErrorText + QStringLiteral("</p></html>"));
 
-    props->setDetails(detailedError);
+    // Add "Details" text and set monospace font since they may contain
+    // backtraces and code.
+    props->setDetails(detailedError, true);
     props->setKey(detailedError);   // To prevent multiple windows for the same error
 
     // Allow user to suppress further notifications about this particular error
