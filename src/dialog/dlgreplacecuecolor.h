@@ -37,6 +37,8 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
             QWidget* pParent);
     ~DlgReplaceCueColor();
 
+    void setColorPalette(const ColorPalette& palette);
+
   signals:
     void databaseTracksChanged(QSet<TrackId> Trackids);
 

@@ -174,6 +174,11 @@ void DlgPrefColors::slotApply() {
 }
 
 void DlgPrefColors::slotReplaceCueColorClicked() {
+    ColorPaletteSettings colorPaletteSettings(m_pConfig);
+    ColorPalette palette = colorPaletteSettings.getColorPalette(
+            comboBoxHotcueColors->currentText(),
+            colorPaletteSettings.getHotcueColorPalette());
+    m_pReplaceCueColorDlg->setColorPalette(palette);
     m_pReplaceCueColorDlg->show();
     m_pReplaceCueColorDlg->raise();
     m_pReplaceCueColorDlg->activateWindow();

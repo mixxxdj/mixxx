@@ -148,6 +148,11 @@ DlgReplaceCueColor::DlgReplaceCueColor(
 DlgReplaceCueColor::~DlgReplaceCueColor() {
 }
 
+void DlgReplaceCueColor::setColorPalette(const ColorPalette& palette) {
+    m_pNewColorPickerAction->setColorPalette(palette);
+    m_pCurrentColorPickerAction->setColorPalette(palette);
+}
+
 void DlgReplaceCueColor::slotApply() {
     m_bDatabaseChangeInProgress = false;
     slotUpdateApplyButton();
