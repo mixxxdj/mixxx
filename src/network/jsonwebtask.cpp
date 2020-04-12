@@ -78,6 +78,10 @@ bool readJsonContent(
     const auto jsonDoc = QJsonDocument::fromJson(
             jsonData,
             &parseError);
+    // QJsonDocument::fromJson() returns a non-null document
+    // if parsing succeeds and otherwise null on error. The
+    // parse error must only be evaluated if the returned
+    // document is null!
     if (jsonDoc.isNull()) {
         DEBUG_ASSERT(parseError.error != QJsonParseError::NoError);
         kLogger.warning()
