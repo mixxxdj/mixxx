@@ -24,6 +24,8 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
                              double* pPitchRatio) override;
 
   private:
+    void onSampleRateChanged() override {}
+
     SINT do_scale(CSAMPLE* buf, SINT buf_size);
     SINT do_copy(CSAMPLE* buf, SINT buf_size);
 

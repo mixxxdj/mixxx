@@ -2,8 +2,8 @@
 
 #include <taglib/tpropertymap.h>
 
+#include "audio/streaminfo.h"
 #include "track/tracknumbers.h"
-
 #include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/duration.h"
@@ -484,9 +484,12 @@ void readAudioProperties(
     // the audio data for this track. Often those properties
     // stored in tags don't match with the corresponding
     // audio data in the file.
-    pTrackMetadata->setChannels(AudioSignal::ChannelCount(audioProperties.channels()));
-    pTrackMetadata->setSampleRate(AudioSignal::SampleRate(audioProperties.sampleRate()));
-    pTrackMetadata->setBitrate(AudioSource::Bitrate(audioProperties.bitrate()));
+    pTrackMetadata->setChannelCount(
+            audio::ChannelCount(audioProperties.channels()));
+    pTrackMetadata->setSampleRate(
+            audio::SampleRate(audioProperties.sampleRate()));
+    pTrackMetadata->setBitrate(
+            audio::Bitrate(audioProperties.bitrate()));
 #if (TAGLIB_HAS_LENGTH_IN_MILLISECONDS)
     const auto duration = Duration::fromMillis(audioProperties.lengthInMilliseconds());
 #else

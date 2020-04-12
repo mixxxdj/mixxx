@@ -198,8 +198,8 @@ void AutoDJCratesDAO::createAndConnectAutoDjCratesDatabase() {
 
     // Be notified when a track is modified.
     // We only care when the number of times it's been played changes.
-    connect(&m_pTrackCollection->getTrackDAO(),
-            &TrackDAO::trackDirty,
+    connect(m_pTrackCollection,
+            &TrackCollection::trackDirty,
             this,
             &AutoDJCratesDAO::slotTrackDirty);
 

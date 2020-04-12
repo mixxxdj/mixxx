@@ -18,12 +18,13 @@ void ControllerOutputMappingTableModel::apply() {
     if (m_pMidiPreset != NULL) {
         // Clear existing output mappings and insert all the output mappings in
         // the table into the preset.
-        m_pMidiPreset->outputMappings.clear();
+        QHash<ConfigKey, MidiOutputMapping> mappings;
         foreach (const MidiOutputMapping& mapping, m_midiOutputMappings) {
             // Use insertMulti because we support multiple outputs from the same
             // control.
-            m_pMidiPreset->outputMappings.insertMulti(mapping.controlKey, mapping);
+            mappings.insertMulti(mapping.controlKey, mapping);
         }
+        m_pMidiPreset->setOutputMappings(mappings);
     }
 }
 
@@ -42,9 +43,9 @@ void ControllerOutputMappingTableModel::onPresetLoaded() {
         setHeaderData(MIDI_COLUMN_MAX, Qt::Horizontal, tr("On Range Max"));
         setHeaderData(MIDI_COLUMN_COMMENT, Qt::Horizontal, tr("Comment"));
 
-        if (!m_pMidiPreset->outputMappings.isEmpty()) {
-            beginInsertRows(QModelIndex(), 0, m_pMidiPreset->outputMappings.size() - 1);
-            m_midiOutputMappings = m_pMidiPreset->outputMappings.values();
+        if (!m_pMidiPreset->getOutputMappings().isEmpty()) {
+            beginInsertRows(QModelIndex(), 0, m_pMidiPreset->getOutputMappings().size() - 1);
+            m_midiOutputMappings = m_pMidiPreset->getOutputMappings().values();
             endInsertRows();
         }
     }

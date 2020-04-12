@@ -101,11 +101,6 @@ void HidController::visit(const HidControllerPreset* preset) {
     emit presetLoaded(getPreset());
 }
 
-bool HidController::savePreset(const QString fileName) const {
-    HidControllerPresetFileHandler handler;
-    return handler.save(m_preset, getName(), fileName);
-}
-
 bool HidController::matchPreset(const PresetInfo& preset) {
     const QList<ProductInfo>& products = preset.getProducts();
     for (const auto& product : products) {

@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QUrl>
 
+#include "audio/streaminfo.h"
 #include "track/beats.h"
 #include "track/cue.h"
 #include "track/trackfile.h"
@@ -68,7 +69,7 @@ class Track : public QObject {
     Q_PROPERTY(double bpm READ getBpm WRITE setBpm)
     Q_PROPERTY(QString bpmFormatted READ getBpmText STORED false)
     Q_PROPERTY(QString key READ getKeyText WRITE setKeyText)
-    Q_PROPERTY(double duration READ getDuration WRITE setDuration)
+    Q_PROPERTY(double duration READ getDuration)
     Q_PROPERTY(QString durationFormatted READ getDurationTextSeconds STORED false)
     Q_PROPERTY(QString durationFormattedCentiseconds READ getDurationTextCentiseconds STORED false)
     Q_PROPERTY(QString durationFormattedMilliseconds READ getDurationTextMilliseconds STORED false)
@@ -99,13 +100,9 @@ class Track : public QObject {
     void setType(const QString&);
     QString getType() const;
 
-    // Set number of channels
-    void setChannels(int iChannels);
     // Get number of channels
     int getChannels() const;
 
-    // Set sample rate
-    void setSampleRate(int iSampleRate);
     // Get sample rate
     int getSampleRate() const;
 
@@ -248,6 +245,8 @@ class Track : public QObject {
     CuePosition getCuePoint() const;
     // Set the track's main cue point
     void setCuePoint(CuePosition cue);
+    // Call when analysis is done.
+    void analysisFinished();
 
     // Calls for managing the track's cue points
     CuePointer createAndAddCue();
@@ -256,8 +255,9 @@ class Track : public QObject {
     void removeCue(const CuePointer& pCue);
     void removeCuesOfType(mixxx::CueType);
     QList<CuePointer> getCuePoints() const;
+
     void setCuePoints(const QList<CuePointer>& cuePoints);
-    void importCuePoints(const QList<mixxx::CueInfo>& cueInfos);
+    void importCueInfos(const QList<mixxx::CueInfo>& cueInfos);
 
     bool isDirty();
 
@@ -316,6 +316,12 @@ class Track : public QObject {
     void markForMetadataExport();
     bool isMarkedForMetadataExport() const;
 
+    void setAudioProperties(
+            mixxx::audio::ChannelCount channelCount,
+            mixxx::audio::SampleRate sampleRate,
+            mixxx::audio::Bitrate bitrate,
+            mixxx::Duration duration);
+
   signals:
     void waveformUpdated();
     void waveformSummaryUpdated();
@@ -326,6 +332,7 @@ class Track : public QObject {
     void keysUpdated();
     void ReplayGainUpdated(mixxx::ReplayGain replayGain);
     void cuesUpdated();
+    void analyzed();
 
     void changed(TrackId trackId);
     void dirty(TrackId trackId);
@@ -358,6 +365,13 @@ class Track : public QObject {
 
     void afterKeysUpdated(QMutexLocker* pLock);
 
+    void setCuePointsMarkDirtyAndUnlock(
+            QMutexLocker* pLock,
+            const QList<CuePointer>& cuePoints);
+    void importCueInfosMarkDirtyAndUnlock(
+            QMutexLocker* pLock,
+            const QList<mixxx::CueInfo>& cueInfos);
+
     enum class DurationRounding {
         SECONDS, // rounded to full seconds
         NONE     // unmodified
@@ -366,6 +380,13 @@ class Track : public QObject {
 
     ExportTrackMetadataResult exportMetadata(
             mixxx::MetadataSourcePointer pMetadataSource);
+
+    // Information about the actual properties of the
+    // audio stream is only available after opening it.
+    // On this occasion the audio properties of the track
+    // need to be updated to reflect these values.
+    void updateAudioPropertiesFromStream(
+            mixxx::audio::StreamInfo&& streamInfo);
 
     // Mutex protecting access to object
     mutable QMutex m_qMutex;
@@ -385,6 +406,11 @@ class Track : public QObject {
     // the metadata.
     bool m_bMarkedForMetadataExport;
 
+    // Reliable information about the PCM audio stream
+    // that only becomes available when opening the
+    // corresponding file.
+    std::optional<mixxx::audio::StreamInfo> m_streamInfo;
+
     // The list of cue points for the track
     QList<CuePointer> m_cuePoints;
 
@@ -394,6 +420,8 @@ class Track : public QObject {
     //Visual waveform data
     ConstWaveformPointer m_waveform;
     ConstWaveformPointer m_waveformSummary;
+
+    QList<mixxx::CueInfo> m_importCueInfosPending;
 
     friend class TrackDAO;
     friend class GlobalTrackCache;

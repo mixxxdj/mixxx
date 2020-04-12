@@ -59,10 +59,11 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     void loadVScrollBarPosState();
     void saveVScrollBarPosState();
 
+    const UserSettingsPointer m_pConfig;
+    const ConfigKey m_vScrollBarPosKey;
+
     QMap<TrackModel*, int> m_vScrollBarPosValues;
 
-    UserSettingsPointer m_pConfig;
-    ConfigKey m_vScrollBarPosKey;
     // The position of the vertical scrollbar slider, eg. before a search is
     // executed
     int m_noSearchVScrollBarPos;

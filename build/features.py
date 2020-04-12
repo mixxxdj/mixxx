@@ -45,7 +45,7 @@ class HSS1394(Feature):
 
 class HID(Feature):
     INTERNAL_LINK = False
-    HIDAPI_INTERNAL_PATH = 'lib/hidapi-0.8.0-rc1'
+    HIDAPI_INTERNAL_PATH = 'lib/hidapi'
 
     def description(self):
         return "HID controller support"
@@ -100,6 +100,7 @@ class HID(Feature):
 
     def sources(self, build):
         sources = ['src/controllers/hid/hidcontroller.cpp',
+                   'src/controllers/hid/hidcontrollerpreset.cpp',
                    'src/controllers/hid/hidenumerator.cpp',
                    'src/controllers/hid/hidcontrollerpresetfilehandler.cpp']
 
@@ -707,7 +708,7 @@ class LiveBroadcasting(Feature):
             # https://bugs.launchpad.net/mixxx/+bug/1833225
             if not conf.CheckForPKG('shout', '2.4.4'):
                 self.INTERNAL_LINK = True
- 
+
         if not self.INTERNAL_LINK:
             self.INTERNAL_LINK = not conf.CheckLib(['libshout', 'shout'])
 
