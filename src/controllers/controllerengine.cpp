@@ -355,7 +355,7 @@ bool ControllerEngine::syntaxIsValid(const QString& scriptCode, const QString& f
                                     QString::number(result.errorLineNumber()),
                                     QString::number(result.errorColumnNumber()),
                                     result.errorMessage()) +
-                    QStringLiteral("\n\n") + scriptCode;
+                    QStringLiteral("\n\n") + tr("Code:") + QStringLiteral("\n") + scriptCode;
         } else {
             error = QString(tr("%1 at line %2, column %3 in file %4: %5"))
                             .arg(error,
@@ -495,20 +495,17 @@ bool ControllerEngine::checkException() {
         m_scriptErrors.insert(
                 (filename.isEmpty() ? "passed code" : filename), error);
 
-        QString errorText =
-                tr("Uncaught exception at line %1 in file %2: %3")
-                        .arg(line,
-                                (filename.isEmpty() ? "" : filename),
-                                errorMessage);
-
-        if (filename.isEmpty())
-            errorText = tr("Uncaught exception at line %1 in passed code: %2")
-                                .arg(line, errorMessage);
+        QString errorText;
+        if (filename.isEmpty()) {
+            errorText = tr("Uncaught exception at line %1 in passed code.").arg(line);
+        } else {
+            errorText = tr("Uncaught exception at line %1 in file %2.").arg(line, filename);
+        }
 
         // Add backtrace to the error details
-        errorText += QStringLiteral("\n") + tr("Backtrace:") +
-                QStringLiteral("\n") +
-                m_pEngine->uncaughtExceptionBacktrace().join("\n");
+        errorText = errorText + QStringLiteral("\n\n") + tr("Backtrace:") +
+                QStringLiteral("\n  ") +
+                m_pEngine->uncaughtExceptionBacktrace().join("\n  ");
 
         scriptErrorDialog(errorText);
         m_pEngine->clearExceptions();
