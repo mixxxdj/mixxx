@@ -2104,7 +2104,7 @@ if(NOT OPTIMIZE STREQUAL "off")
       # Jenkins logs) Should we turn on PGO ?
       # http://msdn.microsoft.com/en-us/library/xbf3tbeh.aspx
       target_link_options(mixxx-lib PUBLIC "/LTCG:OFF")
-    elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")    
+    elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
       target_compile_options(mixxx-lib PUBLIC "/GL-")
     else()
       target_compile_options(mixxx-lib PUBLIC "/GL")

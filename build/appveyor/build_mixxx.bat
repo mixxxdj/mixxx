@@ -86,7 +86,7 @@ if "%4" == "skipinstaller" (
     if "%5" == "skipinstaller" (
        set PARAM_INSTALLER=
     ) else (
-       set PARAM_INSTALLER=makerelease 
+       set PARAM_INSTALLER=makerelease
     )
 )
 set WINLIB_DIR=%3
