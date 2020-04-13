@@ -63,6 +63,14 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
           m_pDlgCoverArt(new DlgCoverArtFullSize(parent, pPlayer)),
           m_pCoverMenu(new WCoverArtMenu(this)),
           m_shouldRenderOnNextTick(false) {
+    auto thisContext = context();
+    qDebug() << "Created QOpenGLWidget. Context"
+             << "Valid:" << (thisContext && thisContext->isValid());
+    // Make our context current for OpenGL work done in child constructors.
+    if (QOpenGLContext::currentContext() != thisContext) {
+        makeCurrent();
+    }
+
 #ifdef __VINYLCONTROL__
     m_pVCManager = pVCMan;
 #endif
