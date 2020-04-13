@@ -34,7 +34,7 @@ class WTrackMenu : public QMenu {
         HideUnhidePurge = 1 << 9,
         FileBrowser = 1 << 10,
         Properties = 1 << 11,
-        TrackModelFilters = LoadTo | Remove | HideUnhidePurge
+        TrackModelFilters = Remove | HideUnhidePurge
     };
     Q_DECLARE_FLAGS(Filters, Filter)
 
@@ -55,6 +55,7 @@ class WTrackMenu : public QMenu {
     void popup(const QPoint& pos, QAction* at = nullptr);
 
   signals:
+    // This signal must be handled by the client of this class to make "LoadTo" work.
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
 
   private slots:
