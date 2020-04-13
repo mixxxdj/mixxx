@@ -20,9 +20,9 @@ class WCoverArtMenu;
 class WTrackMenu : public QMenu {
     Q_OBJECT
   public:
-    enum Filter {
-        All = 0,
+    enum Feature {
         AutoDJ = 1,
+        // The loadTrackToPlayer signal emitted from this class must be handled to make LoadTo work.
         LoadTo = 1 << 1,
         Playlist = 1 << 2,
         Crate = 1 << 3,
@@ -34,15 +34,18 @@ class WTrackMenu : public QMenu {
         HideUnhidePurge = 1 << 9,
         FileBrowser = 1 << 10,
         Properties = 1 << 11,
-        TrackModelFilters = Remove | HideUnhidePurge
+        TrackModelFeatures = Remove | HideUnhidePurge,
+        All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset |
+                BPM | Color | HideUnhidePurge | FileBrowser | Properties
     };
-    Q_DECLARE_FLAGS(Filters, Filter)
+    Q_DECLARE_FLAGS(Features, Feature)
 
     WTrackMenu(QWidget* parent,
             UserSettingsPointer pConfig,
             TrackCollectionManager* pTrackCollectionManager,
-            Filters flags = Filter::All,
+            Features flags = Feature::All,
             TrackModel* trackModel = nullptr);
+
     ~WTrackMenu() {
     }
 
@@ -55,7 +58,6 @@ class WTrackMenu : public QMenu {
     void popup(const QPoint& pos, QAction* at = nullptr);
 
   signals:
-    // This signal must be handled by the client of this class to make "LoadTo" work.
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
 
   private slots:
@@ -120,7 +122,7 @@ class WTrackMenu : public QMenu {
     void setupActions();
     void updateMenus();
 
-    bool optionIsEnabled(Filter flag) const;
+    bool featureIsEnabled(Feature flag) const;
 
     void addSelectionToPlaylist(int iPlaylistId);
     void updateSelectionCrates(QWidget* pWidget);
@@ -225,9 +227,8 @@ class WTrackMenu : public QMenu {
     bool m_bPlaylistMenuLoaded;
     bool m_bCrateMenuLoaded;
 
-    // Filter available options
-    const Filters m_eFilters;
-    const Filters m_eTrackModelFilters;
+    Features m_eActiveFeatures;
+    const Features m_eTrackModelFeatures;
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(WTrackMenu::Filters)
+Q_DECLARE_OPERATORS_FOR_FLAGS(WTrackMenu::Features)

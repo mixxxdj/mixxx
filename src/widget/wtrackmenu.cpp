@@ -30,7 +30,7 @@
 WTrackMenu::WTrackMenu(QWidget* parent,
         UserSettingsPointer pConfig,
         TrackCollectionManager* pTrackCollectionManager,
-        Filters flags,
+        Features flags,
         TrackModel* trackModel)
         : QMenu(parent),
           m_pTrackModel(trackModel),
@@ -38,8 +38,8 @@ WTrackMenu::WTrackMenu(QWidget* parent,
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_bPlaylistMenuLoaded(false),
           m_bCrateMenuLoaded(false),
-          m_eFilters(flags),
-          m_eTrackModelFilters(Filter::TrackModelFilters) {
+          m_eActiveFeatures(flags),
+          m_eTrackModelFeatures(Feature::TrackModelFeatures) {
     m_pNumSamplers = new ControlProxy(
             "[Master]", "num_samplers", this);
     m_pNumDecks = new ControlProxy(
@@ -49,7 +49,9 @@ WTrackMenu::WTrackMenu(QWidget* parent,
 
     if (!trackModel) {
         // Warn if any of the chosen flags depend on a TrackModel
-        VERIFY_OR_DEBUG_ASSERT((m_eTrackModelFilters & flags) == 0) {
+        VERIFY_OR_DEBUG_ASSERT((m_eTrackModelFeatures & flags) == 0) {
+            // Remove unsupported features
+            m_eActiveFeatures &= !m_eTrackModelFeatures;
         }
     }
     createMenus();
@@ -65,7 +67,7 @@ void WTrackMenu::popup(const QPoint& pos, QAction* at) {
 }
 
 void WTrackMenu::createMenus() {
-    if (optionIsEnabled(Filter::LoadTo)) {
+    if (featureIsEnabled(Feature::LoadTo)) {
         m_pLoadToMenu = new QMenu(this);
         m_pLoadToMenu->setTitle(tr("Load to"));
         m_pDeckMenu = new QMenu(m_pLoadToMenu);
@@ -74,19 +76,19 @@ void WTrackMenu::createMenus() {
         m_pSamplerMenu->setTitle(tr("Sampler"));
     }
 
-    if (optionIsEnabled(Filter::Playlist)) {
+    if (featureIsEnabled(Feature::Playlist)) {
         m_pPlaylistMenu = new QMenu(this);
         m_pPlaylistMenu->setTitle(tr("Add to Playlist"));
         connect(m_pPlaylistMenu, &QMenu::aboutToShow, this, &WTrackMenu::slotPopulatePlaylistMenu);
     }
 
-    if (optionIsEnabled(Filter::Crate)) {
+    if (featureIsEnabled(Feature::Crate)) {
         m_pCrateMenu = new QMenu(this);
         m_pCrateMenu->setTitle(tr("Crates"));
         connect(m_pCrateMenu, &QMenu::aboutToShow, this, &WTrackMenu::slotPopulateCrateMenu);
     }
 
-    if (optionIsEnabled(Filter::Metadata)) {
+    if (featureIsEnabled(Feature::Metadata)) {
         m_pMetadataMenu = new QMenu(this);
         m_pMetadataMenu->setTitle(tr("Metadata"));
 
@@ -99,17 +101,17 @@ void WTrackMenu::createMenus() {
         connect(m_pCoverMenu, &WCoverArtMenu::reloadCoverArt, this, &WTrackMenu::slotReloadCoverArt);
     }
 
-    if (optionIsEnabled(Filter::BPM)) {
+    if (featureIsEnabled(Feature::BPM)) {
         m_pBPMMenu = new QMenu(this);
         m_pBPMMenu->setTitle(tr("Adjust BPM"));
     }
 
-    if (optionIsEnabled(Filter::Color)) {
+    if (featureIsEnabled(Feature::Color)) {
         m_pColorMenu = new QMenu(this);
         m_pColorMenu->setTitle(tr("Select Color"));
     }
 
-    if (optionIsEnabled(Filter::Reset)) {
+    if (featureIsEnabled(Feature::Reset)) {
         m_pClearMetadataMenu = new QMenu(this);
         //: Reset metadata in right click track context menu in library
         m_pClearMetadataMenu->setTitle(tr("Reset"));
@@ -117,7 +119,7 @@ void WTrackMenu::createMenus() {
 }
 
 void WTrackMenu::createActions() {
-    if (optionIsEnabled(Filter::AutoDJ)) {
+    if (featureIsEnabled(Feature::AutoDJ)) {
         m_pAutoDJBottomAct = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
         connect(m_pAutoDJBottomAct, &QAction::triggered, this, &WTrackMenu::slotAddToAutoDJBottom);
 
@@ -128,14 +130,14 @@ void WTrackMenu::createActions() {
         connect(m_pAutoDJReplaceAct, &QAction::triggered, this, &WTrackMenu::slotAddToAutoDJReplace);
     }
 
-    if (optionIsEnabled(Filter::LoadTo)) {
+    if (featureIsEnabled(Feature::LoadTo)) {
         m_pAddToPreviewDeck = new QAction(tr("Preview Deck"), m_pLoadToMenu);
         // currently there is only one preview deck so just map it here.
         QString previewDeckGroup = PlayerManager::groupForPreviewDeck(0);
         connect(m_pAddToPreviewDeck, &QAction::triggered, this, [this, previewDeckGroup] { loadSelectionToGroup(previewDeckGroup); });
     }
 
-    if (optionIsEnabled(Filter::Remove)) {
+    if (featureIsEnabled(Feature::Remove)) {
         m_pRemoveAct = new QAction(tr("Remove"), this);
         connect(m_pRemoveAct, &QAction::triggered, this, &WTrackMenu::slotRemove);
 
@@ -146,7 +148,7 @@ void WTrackMenu::createActions() {
         connect(m_pRemoveCrateAct, &QAction::triggered, this, &WTrackMenu::slotRemove);
     }
 
-    if (optionIsEnabled(Filter::HideUnhidePurge)) {
+    if (featureIsEnabled(Feature::HideUnhidePurge)) {
         m_pHideAct = new QAction(tr("Hide from Library"), this);
         connect(m_pHideAct, &QAction::triggered, this, &WTrackMenu::slotHide);
 
@@ -157,17 +159,17 @@ void WTrackMenu::createActions() {
         connect(m_pPurgeAct, &QAction::triggered, this, &WTrackMenu::slotPurge);
     }
 
-    if (optionIsEnabled(Filter::Properties)) {
+    if (featureIsEnabled(Feature::Properties)) {
         m_pPropertiesAct = new QAction(tr("Properties"), this);
         connect(m_pPropertiesAct, &QAction::triggered, this, &WTrackMenu::slotShowTrackInfo);
     }
 
-    if (optionIsEnabled(Filter::FileBrowser)) {
+    if (featureIsEnabled(Feature::FileBrowser)) {
         m_pFileBrowserAct = new QAction(tr("Open in File Browser"), this);
         connect(m_pFileBrowserAct, &QAction::triggered, this, &WTrackMenu::slotOpenInFileBrowser);
     }
 
-    if (optionIsEnabled(Filter::Metadata)) {
+    if (featureIsEnabled(Feature::Metadata)) {
         m_pImportMetadataFromFileAct = new QAction(tr("Import From File Tags"), m_pMetadataMenu);
         connect(m_pImportMetadataFromFileAct, &QAction::triggered, this, &WTrackMenu::slotImportTrackMetadataFromFileTags);
 
@@ -194,7 +196,7 @@ void WTrackMenu::createActions() {
         }
     }
 
-    if (optionIsEnabled(Filter::Reset)) {
+    if (featureIsEnabled(Feature::Reset)) {
         // Clear metadata actions
         m_pClearBeatsAction = new QAction(tr("BPM and Beatgrid"), m_pClearMetadataMenu);
         connect(m_pClearBeatsAction, &QAction::triggered, this, &WTrackMenu::slotClearBeats);
@@ -230,7 +232,7 @@ void WTrackMenu::createActions() {
         connect(m_pClearAllMetadataAction, &QAction::triggered, this, &WTrackMenu::slotClearAllMetadata);
     }
 
-    if (optionIsEnabled(Filter::BPM)) {
+    if (featureIsEnabled(Feature::BPM)) {
         m_pBpmLockAction = new QAction(tr("Lock BPM"), m_pBPMMenu);
         m_pBpmUnlockAction = new QAction(tr("Unlock BPM"), m_pBPMMenu);
         connect(m_pBpmLockAction, &QAction::triggered, this, &WTrackMenu::slotLockBpm);
@@ -252,7 +254,7 @@ void WTrackMenu::createActions() {
         connect(m_pBpmThreeHalvesAction, &QAction::triggered, this, [this] { slotScaleBpm(Beats::THREEHALVES); });
     }
 
-    if (optionIsEnabled(Filter::Color)) {
+    if (featureIsEnabled(Feature::Color)) {
         ColorPaletteSettings colorPaletteSettings(m_pConfig);
         m_pColorPickerAction = new WColorPickerAction(WColorPicker::Option::AllowNoColor,
                 colorPaletteSettings.getTrackColorPalette(),
@@ -264,20 +266,20 @@ void WTrackMenu::createActions() {
                 &WTrackMenu::slotColorPicked);
     }
 
-    if (optionIsEnabled(Filter::Properties)) {
+    if (featureIsEnabled(Feature::Properties)) {
         m_pTrackInfo.reset(new DlgTrackInfo(m_pConfig, nullptr, m_pTrackModel));
     }
 }
 
 void WTrackMenu::setupActions() {
-    if (optionIsEnabled(Filter::AutoDJ)) {
+    if (featureIsEnabled(Feature::AutoDJ)) {
         addAction(m_pAutoDJBottomAct);
         addAction(m_pAutoDJTopAct);
         addAction(m_pAutoDJReplaceAct);
         addSeparator();
     }
 
-    if (optionIsEnabled(Filter::LoadTo)) {
+    if (featureIsEnabled(Feature::LoadTo)) {
         m_pLoadToMenu->addMenu(m_pDeckMenu);
 
         m_pLoadToMenu->addMenu(m_pSamplerMenu);
@@ -290,15 +292,15 @@ void WTrackMenu::setupActions() {
         addSeparator();
     }
 
-    if (optionIsEnabled(Filter::Playlist)) {
+    if (featureIsEnabled(Feature::Playlist)) {
         addMenu(m_pPlaylistMenu);
     }
 
-    if (optionIsEnabled(Filter::Crate)) {
+    if (featureIsEnabled(Feature::Crate)) {
         addMenu(m_pCrateMenu);
     }
 
-    if (optionIsEnabled(Filter::Remove)) {
+    if (featureIsEnabled(Feature::Remove)) {
         if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
             addAction(m_pRemoveAct);
         }
@@ -312,7 +314,7 @@ void WTrackMenu::setupActions() {
 
     addSeparator();
 
-    if (optionIsEnabled(Filter::Metadata)) {
+    if (featureIsEnabled(Feature::Metadata)) {
         m_pMetadataMenu->addAction(m_pImportMetadataFromFileAct);
         m_pMetadataMenu->addAction(m_pImportMetadataFromMusicBrainzAct);
         m_pMetadataMenu->addAction(m_pExportMetadataAct);
@@ -335,7 +337,7 @@ void WTrackMenu::setupActions() {
         addMenu(m_pMetadataMenu);
     }
 
-    if (optionIsEnabled(Filter::Reset)) {
+    if (featureIsEnabled(Feature::Reset)) {
         m_pClearMetadataMenu->addAction(m_pClearBeatsAction);
         m_pClearMetadataMenu->addAction(m_pClearPlayCountAction);
         // FIXME: Why is clearing the loop not working?
@@ -352,7 +354,7 @@ void WTrackMenu::setupActions() {
         addMenu(m_pClearMetadataMenu);
     }
 
-    if (optionIsEnabled(Filter::BPM)) {
+    if (featureIsEnabled(Feature::BPM)) {
         m_pBPMMenu->addAction(m_pBpmDoubleAction);
         m_pBPMMenu->addAction(m_pBpmHalveAction);
         m_pBPMMenu->addAction(m_pBpmTwoThirdsAction);
@@ -367,13 +369,13 @@ void WTrackMenu::setupActions() {
         addMenu(m_pBPMMenu);
     }
 
-    if (optionIsEnabled(Filter::Color)) {
+    if (featureIsEnabled(Feature::Color)) {
         m_pColorMenu->addAction(m_pColorPickerAction);
         addMenu(m_pColorMenu);
     }
 
     addSeparator();
-    if (optionIsEnabled(Filter::HideUnhidePurge)) {
+    if (featureIsEnabled(Feature::HideUnhidePurge)) {
         if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_HIDE)) {
             addAction(m_pHideAct);
         }
@@ -385,11 +387,11 @@ void WTrackMenu::setupActions() {
         }
     }
 
-    if (optionIsEnabled(Filter::FileBrowser)) {
+    if (featureIsEnabled(Feature::FileBrowser)) {
         addAction(m_pFileBrowserAct);
     }
 
-    if (optionIsEnabled(Filter::Properties)) {
+    if (featureIsEnabled(Feature::Properties)) {
         addSeparator();
         addAction(m_pPropertiesAct);
     }
@@ -402,7 +404,7 @@ void WTrackMenu::updateMenus() {
     // Gray out some stuff if multiple songs were selected.
     bool oneSongSelected = trackPointers.size() == 1;
 
-    if (optionIsEnabled(Filter::LoadTo)) {
+    if (featureIsEnabled(Feature::LoadTo)) {
         int iNumDecks = m_pNumDecks->get();
         m_pDeckMenu->clear();
         if (iNumDecks > 0) {
@@ -438,19 +440,19 @@ void WTrackMenu::updateMenus() {
         }
     }
 
-    if (optionIsEnabled(Filter::Playlist)) {
+    if (featureIsEnabled(Feature::Playlist)) {
         // Playlist menu is lazy loaded on hover by slotPopulatePlaylistMenu
         // to avoid unnecessary database queries
         m_bPlaylistMenuLoaded = false;
     }
 
-    if (optionIsEnabled(Filter::Crate)) {
+    if (featureIsEnabled(Feature::Crate)) {
         // Crate menu is lazy loaded on hover by slotPopulateCrateMenu
         // to avoid unnecessary database queries
         m_bCrateMenuLoaded = false;
     }
 
-    if (optionIsEnabled(Filter::Remove)) {
+    if (featureIsEnabled(Feature::Remove)) {
         bool locked = m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
         if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
             m_pRemoveAct->setEnabled(!locked);
@@ -463,7 +465,7 @@ void WTrackMenu::updateMenus() {
         }
     }
 
-    if (optionIsEnabled(Filter::Metadata)) {
+    if (featureIsEnabled(Feature::Metadata)) {
         m_pImportMetadataFromMusicBrainzAct->setEnabled(oneSongSelected);
 
         // We load a single track to get the necessary context for the cover (we use
@@ -478,7 +480,7 @@ void WTrackMenu::updateMenus() {
         m_pCoverMenu->setCoverArt(info);
     }
 
-    if (optionIsEnabled(Filter::Reset)) {
+    if (featureIsEnabled(Feature::Reset)) {
         bool allowClear = true;
         for (int i = 0; i < trackPointers.size() && allowClear; ++i) {
             if (trackPointers.at(0)->isBpmLocked()) {
@@ -488,7 +490,7 @@ void WTrackMenu::updateMenus() {
         m_pClearBeatsAction->setEnabled(allowClear);
     }
 
-    if (optionIsEnabled(Filter::BPM)) {
+    if (featureIsEnabled(Feature::BPM)) {
         bool anyLocked = false; //true if any of the selected items are locked
         for (int i = 0; i < trackPointers.size() && !anyLocked; ++i) {
             if (trackPointers.at(i)->isBpmLocked()) {
@@ -516,7 +518,7 @@ void WTrackMenu::updateMenus() {
         }
     }
 
-    if (optionIsEnabled(Filter::Color)) {
+    if (featureIsEnabled(Feature::Color)) {
         m_pColorPickerAction->setColorPalette(
                 ColorPaletteSettings(m_pConfig).getTrackColorPalette());
 
@@ -541,7 +543,7 @@ void WTrackMenu::updateMenus() {
         }
     }
 
-    if (optionIsEnabled(Filter::HideUnhidePurge)) {
+    if (featureIsEnabled(Feature::HideUnhidePurge)) {
         bool locked = m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
         if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_HIDE)) {
             m_pHideAct->setEnabled(!locked);
@@ -554,7 +556,7 @@ void WTrackMenu::updateMenus() {
         }
     }
 
-    if (optionIsEnabled(Filter::Properties)) {
+    if (featureIsEnabled(Feature::Properties)) {
         m_pPropertiesAct->setEnabled(oneSongSelected);
     }
 }
@@ -1172,54 +1174,54 @@ void WTrackMenu::clearTrackSelection() {
     m_pTrackIndexList.clear();
 }
 
-bool WTrackMenu::optionIsEnabled(Filter flag) const {
-    bool optionIsSelected = m_eFilters.testFlag(Filter::All) || m_eFilters.testFlag(flag);
+bool WTrackMenu::featureIsEnabled(Feature flag) const {
+    bool optionIsSelected = m_eActiveFeatures.testFlag(flag);
     if (!optionIsSelected) {
         return false;
     }
 
     if (m_pTrackModel) {
-        if (flag == Filter::AutoDJ) {
+        if (flag == Feature::AutoDJ) {
             return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ);
-        } else if (flag == Filter::LoadTo) {
+        } else if (flag == Feature::LoadTo) {
             return m_pTrackModel->hasCapabilities(
                            TrackModel::TRACKMODELCAPS_LOADTODECK) ||
                     m_pTrackModel->hasCapabilities(
                             TrackModel::TRACKMODELCAPS_LOADTOSAMPLER) ||
                     m_pTrackModel->hasCapabilities(
                             TrackModel::TRACKMODELCAPS_LOADTOPREVIEWDECK);
-        } else if (flag == Filter::Playlist) {
+        } else if (flag == Feature::Playlist) {
             return m_pTrackModel->hasCapabilities(
                     TrackModel::TRACKMODELCAPS_ADDTOPLAYLIST);
-        } else if (flag == Filter::Crate) {
+        } else if (flag == Feature::Crate) {
             return m_pTrackModel->hasCapabilities(
                     TrackModel::TRACKMODELCAPS_ADDTOCRATE);
-        } else if (flag == Filter::Remove) {
+        } else if (flag == Feature::Remove) {
             return m_pTrackModel->hasCapabilities(
                            TrackModel::TRACKMODELCAPS_REMOVE) ||
                     m_pTrackModel->hasCapabilities(
                             TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST) ||
                     m_pTrackModel->hasCapabilities(
                             TrackModel::TRACKMODELCAPS_REMOVE_CRATE);
-        } else if (flag == Filter::Metadata) {
+        } else if (flag == Feature::Metadata) {
             return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
-        } else if (flag == Filter::Reset) {
+        } else if (flag == Feature::Reset) {
             return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA) &&
                     m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_RESETPLAYED);
-        } else if (flag == Filter::BPM) {
+        } else if (flag == Feature::BPM) {
             return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
-        } else if (flag == Filter::Color) {
+        } else if (flag == Feature::Color) {
             return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
-        } else if (flag == Filter::HideUnhidePurge) {
+        } else if (flag == Feature::HideUnhidePurge) {
             return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_HIDE) ||
                     m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE) ||
                     m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_PURGE);
-        } else if (flag == Filter::Properties) {
+        } else if (flag == Feature::Properties) {
             return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
         } else {
             return true;
         }
     }
 
-    return !m_eTrackModelFilters.testFlag(flag);
+    return !m_eTrackModelFeatures.testFlag(flag);
 }

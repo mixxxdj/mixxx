@@ -15,14 +15,14 @@ WTrackProperty::WTrackProperty(const char* group,
     setAcceptDrops(true);
 
     // Setup context menu
-    WTrackMenu::Filters flags = WTrackMenu::Filter::Playlist |
-            WTrackMenu::Filter::Crate |
-            WTrackMenu::Filter::Metadata |
-            WTrackMenu::Filter::Reset |
-            WTrackMenu::Filter::BPM |
-            WTrackMenu::Filter::Color |
-            WTrackMenu::Filter::FileBrowser |
-            WTrackMenu::Filter::Properties;
+    WTrackMenu::Features flags = WTrackMenu::Feature::Playlist |
+            WTrackMenu::Feature::Crate |
+            WTrackMenu::Feature::Metadata |
+            WTrackMenu::Feature::Reset |
+            WTrackMenu::Feature::BPM |
+            WTrackMenu::Feature::Color |
+            WTrackMenu::Feature::FileBrowser |
+            WTrackMenu::Feature::Properties;
     m_pMenu = new WTrackMenu(this, pConfig, pTrackCollectionManager, flags);
 }
 

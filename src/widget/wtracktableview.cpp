@@ -304,7 +304,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     m_pMenu = std::make_unique<WTrackMenu>(this,
             m_pConfig,
             m_pTrackCollectionManager,
-            WTrackMenu::Filter::All,
+            WTrackMenu::Feature::All,
             trackModel);
     connect(m_pMenu.get(),
             &WTrackMenu::loadTrackToPlayer,
@@ -371,7 +371,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pMenu = std::make_unique<WTrackMenu>(this,
                 m_pConfig,
                 m_pTrackCollectionManager,
-                WTrackMenu::Filter::All,
+                WTrackMenu::Feature::All,
                 getTrackModel());
         connect(m_pMenu.get(),
                 &WTrackMenu::loadTrackToPlayer,
