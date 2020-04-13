@@ -13,13 +13,6 @@ BaseQOpenGLWidget::BaseQOpenGLWidget(const char* group, QWidget* pParent)
             this, &BaseQOpenGLWidget::slotAboutToCompose);
     connect(this, &QOpenGLWidget::frameSwapped,
             this, &BaseQOpenGLWidget::slotFrameSwapped);
-    auto thisContext = context();
-    qDebug() << "Created QOpenGLWidget. Context"
-             << "Valid:" << (thisContext && thisContext->isValid());
-    // Make our context current for OpenGL work done in child constructors.
-    if (QOpenGLContext::currentContext() != thisContext) {
-        makeCurrent();
-    }
 }
 
 void BaseQOpenGLWidget::slotAboutToCompose() {
