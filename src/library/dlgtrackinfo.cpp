@@ -45,6 +45,8 @@ void DlgTrackInfo::init() {
 
     m_pTagFetcher.reset(new DlgTagFetcher(this, m_pTrackModel));
     if (m_pTrackModel) {
+        // The default parameter in QPushButton::clicked signal is false,
+        // so slotNext needs to be called explicitly to maintain true.
         connect(btnNext,
                 &QPushButton::clicked,
                 [=]() { slotNext(); });
@@ -53,6 +55,9 @@ void DlgTrackInfo::init() {
                 &QPushButton::clicked,
                 [=]() { slotPrev(); });
 
+        // This next signal is issued from DlgTagFetcher, so don't call
+        // m_pTagFetcher->loadTrack in slotNext since it will lead to
+        // an unnecessary reload in DlgTagFetcher.
         connect(m_pTagFetcher.data(),
                 &DlgTagFetcher::next,
                 [=]() { slotNext(false); });
