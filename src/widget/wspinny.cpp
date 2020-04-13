@@ -689,7 +689,5 @@ void WSpinny::slotFrameSwapped() {
 
 void WSpinny::slotShouldRenderOnNextTick() {
     m_shouldRenderOnNextTick = true;
-    if (isVisible()) {
-        update();
-    }
+    update();
 }
