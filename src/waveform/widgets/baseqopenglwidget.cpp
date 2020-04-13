@@ -1,3 +1,6 @@
+#include <QtDebug>
+#include <QOpenGLContext>
+
 #include "waveform/widgets/baseqopenglwidget.h"
 
 #include "util/time.h"

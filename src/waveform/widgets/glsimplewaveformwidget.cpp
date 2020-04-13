@@ -21,16 +21,15 @@ GLSimpleWaveformWidget::GLSimpleWaveformWidget(const char* group, QWidget* paren
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     addRenderer<GLWaveformRendererSimpleSignal>();
+#endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
 
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
 
-    if (QOpenGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
     m_initSuccess = init();
 }
 
@@ -59,8 +58,6 @@ mixxx::Duration GLSimpleWaveformWidget::render() {
     t1 = timer.restart();
     draw(&painter, NULL);
     //t2 = timer.restart();
-    //glFinish();
-    //t3 = timer.restart();
-    //qDebug() << "GLVSyncTestWidget "<< t1 << t2 << t3;
+    //qDebug() << "GLSimpleWaveformWidget" << t1 << t2;
     return t1; // return timer for painter setup
 }

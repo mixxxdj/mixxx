@@ -12,25 +12,26 @@
 #ifndef WOVERVIEW_H
 #define WOVERVIEW_H
 
-#include <QPaintEvent>
-#include <QMouseEvent>
-#include <QPixmap>
 #include <QColor>
 #include <QList>
+#include <QMouseEvent>
+#include <QPaintEvent>
+#include <QPixmap>
 
-#include "track/track.h"
-#include "widget/trackdroptarget.h"
-#include "widget/wwidget.h"
 #include "analyzer/analyzerprogress.h"
-
-#include "util/color/color.h"
-
-#include "waveform/renderers/waveformsignalcolors.h"
-#include "waveform/renderers/waveformmarkset.h"
-#include "waveform/renderers/waveformmarkrange.h"
 #include "skin/skincontext.h"
+#include "track/track.h"
+#include "util/color/color.h"
+#include "util/parented_ptr.h"
+#include "waveform/renderers/waveformmarkrange.h"
+#include "waveform/renderers/waveformmarkset.h"
+#include "waveform/renderers/waveformsignalcolors.h"
+#include "widget/trackdroptarget.h"
+#include "widget/wcuemenupopup.h"
+#include "widget/wwidget.h"
 
 class PlayerManager;
+class PainterScope;
 
 class WOverview : public WWidget, public TrackDropTarget {
     Q_OBJECT
@@ -41,11 +42,12 @@ class WOverview : public WWidget, public TrackDropTarget {
     void onConnectedControlChanged(double dParameter, double dValue) override;
     void slotTrackLoaded(TrackPointer pTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
-    void onTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
+    void onTrackAnalyzerProgress(TrackId trackId,
+            AnalyzerProgress analyzerProgress);
 
   signals:
-    void trackDropped(QString filename, QString group);
-    void cloneDeck(QString source_group, QString target_group);
+    void trackDropped(QString filename, QString group) override;
+    void cloneDeck(QString source_group, QString target_group) override;
 
   protected:
     WOverview(
@@ -54,11 +56,12 @@ class WOverview : public WWidget, public TrackDropTarget {
             UserSettingsPointer pConfig,
             QWidget* parent = nullptr);
 
-    void mouseMoveEvent(QMouseEvent *e) override;
-    void mouseReleaseEvent(QMouseEvent *e) override;
-    void mousePressEvent(QMouseEvent *e) override;
-    void paintEvent(QPaintEvent * /*unused*/) override;
-    void resizeEvent(QResizeEvent * /*unused*/) override;
+    void mouseMoveEvent(QMouseEvent* e) override;
+    void mouseReleaseEvent(QMouseEvent* e) override;
+    void mousePressEvent(QMouseEvent* e) override;
+    void leaveEvent(QEvent* event) override;
+    void paintEvent(QPaintEvent* /*unused*/) override;
+    void resizeEvent(QResizeEvent* /*unused*/) override;
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dropEvent(QDropEvent* event) override;
 
@@ -86,20 +89,36 @@ class WOverview : public WWidget, public TrackDropTarget {
     float m_waveformPeak;
 
     int m_diffGain;
+    qreal m_devicePixelRatio;
 
   private slots:
     void onEndOfTrackChange(double v);
 
     void onMarkChanged(double v);
     void onMarkRangeChange(double v);
+    void onRateRatioChange(double v);
+    void onPassthroughChange(double v);
     void receiveCuesUpdated();
 
     void slotWaveformSummaryUpdated();
+    void slotCueMenuPopupAboutToHide();
 
   private:
-    // Append the waveform overview pixmap according to available data in waveform
+    // Append the waveform overview pixmap according to available data
+    // in waveform
     virtual bool drawNextPixmapPart() = 0;
-    void paintText(const QString &text, QPainter *painter);
+    void drawEndOfTrackBackground(QPainter* pPainter);
+    void drawAxis(QPainter* pPainter);
+    void drawWaveformPixmap(QPainter* pPainter);
+    void drawEndOfTrackFrame(QPainter* pPainter);
+    void drawAnalyzerProgress(QPainter* pPainter);
+    void drawRangeMarks(QPainter* pPainter, const float& offset, const float& gain);
+    void drawMarks(QPainter* pPainter, const float offset, const float gain);
+    void drawPickupPosition(QPainter* pPainter);
+    void drawTimeRuler(QPainter* pPainter);
+    void drawMarkLabels(QPainter* pPainter, const float offset, const float gain);
+    void paintText(const QString& text, QPainter* pPainter);
+    double samplePositionToSeconds(double sample);
     inline int valueToPosition(double value) const {
         return static_cast<int>(m_a * value - m_b);
     }
@@ -113,27 +132,52 @@ class WOverview : public WWidget, public TrackDropTarget {
     UserSettingsPointer m_pConfig;
     ControlProxy* m_endOfTrackControl;
     bool m_endOfTrack;
+    bool m_bPassthroughEnabled;
+    ControlProxy* m_pRateRatioControl;
+    ControlProxy* m_trackSampleRateControl;
     ControlProxy* m_trackSamplesControl;
+    ControlProxy* m_playpositionControl;
+    ControlProxy* m_pPassthroughControl;
 
     // Current active track
     TrackPointer m_pCurrentTrack;
     ConstWaveformPointer m_pWaveform;
 
-    // True if slider is dragged. Only used when m_bEventWhileDrag is false
-    bool m_bDrag;
+    parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
+    bool m_bShowCueTimes;
+
+    int m_iPosSeconds;
+    // True if pick-up is dragged. Only used when m_bEventWhileDrag is false
+    bool m_bLeftClickDragging;
     // Internal storage of slider position in pixels
-    int m_iPos;
+    int m_iPickupPos;
+    // position of the overlay shadow
+    int m_iPlayPos;
+
+    WaveformMarkPointer m_pHoveredMark;
+    bool m_bHotcueMenuShowing;
+    bool m_bTimeRulerActive;
+    QPointF m_timeRulerPos;
+    WaveformMarkLabel m_timeRulerPositionLabel;
+    WaveformMarkLabel m_timeRulerDistanceLabel;
 
     Qt::Orientation m_orientation;
 
     QPixmap m_backgroundPixmap;
     QString m_backgroundPixmapPath;
     QColor m_qColorBackground;
+    int m_iLabelFontSize;
+    QColor m_labelTextColor;
+    QColor m_labelBackgroundColor;
     QColor m_endOfTrackColor;
 
-    PredefinedColorsRepresentation m_predefinedColorsRepresentation;
+    // All WaveformMarks
     WaveformMarkSet m_marks;
+    // List of visible WaveformMarks sorted by the order they appear in the track
+    QList<WaveformMarkPointer> m_marksToRender;
     std::vector<WaveformMarkRange> m_markRanges;
+    WaveformMarkLabel m_cuePositionLabel;
+    WaveformMarkLabel m_cueTimeDistanceLabel;
 
     // Coefficient value-position linear transposition
     double m_a;

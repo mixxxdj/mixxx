@@ -14,22 +14,24 @@
 #define DEFAULT_OUTPUT_ON   0x7F
 #define DEFAULT_OUTPUT_OFF  0x00
 
-ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement root,
-                                                              const QString deviceName) {
+ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement& root,
+        const QString& filePath,
+        const QDir& systemPresetsPath) {
     if (root.isNull()) {
         return ControllerPresetPointer();
     }
 
-    QDomElement controller = getControllerNode(root, deviceName);
+    QDomElement controller = getControllerNode(root);
     if (controller.isNull()) {
         return ControllerPresetPointer();
     }
 
     MidiControllerPreset* preset = new MidiControllerPreset();
+    preset->setFilePath(filePath);
 
     // Superclass handles parsing <info> tag and script files
     parsePresetInfo(root, preset);
-    addScriptFilesToPreset(controller, preset);
+    addScriptFilesToPreset(controller, preset, systemPresetsPath);
 
     QDomElement control = controller.firstChildElement("controls").firstChildElement("control");
 
@@ -101,7 +103,7 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement 
 
         // Use insertMulti because we support multiple inputs mappings for the
         // same input MidiKey.
-        preset->inputMappings.insertMulti(mapping.key.key, mapping);
+        preset->addInputMapping(mapping.key.key, mapping);
         control = control.nextSiblingElement("control");
     }
 
@@ -181,7 +183,7 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement 
 
         // Use insertMulti because we support multiple outputs from the same
         // control.
-        preset->outputMappings.insertMulti(mapping.controlKey, mapping);
+        preset->addOutputMapping(mapping.controlKey, mapping);
 
         output = output.nextSiblingElement("output");
     }
@@ -192,10 +194,9 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement 
 }
 
 bool MidiControllerPresetFileHandler::save(const MidiControllerPreset& preset,
-                                           const QString deviceName,
-                                           const QString fileName) const {
-    qDebug() << "Saving preset for" << deviceName << "to" << fileName;
-    QDomDocument doc = buildRootWithScripts(preset, deviceName);
+        const QString& fileName) const {
+    qDebug() << "Saving preset" << preset.name() << "to" << fileName;
+    QDomDocument doc = buildRootWithScripts(preset);
     addControlsToDocument(preset, &doc);
     return writeDocument(doc, fileName);
 }
@@ -209,11 +210,12 @@ void MidiControllerPresetFileHandler::addControlsToDocument(const MidiController
     QDomElement controls = doc->createElement("controls");
     // We will iterate over all of the values that have the same keys, so we need
     // to remove duplicate keys or else we'll duplicate those values.
-    auto sortedInputKeys = preset.inputMappings.uniqueKeys();
+    auto sortedInputKeys = preset.getInputMappings().uniqueKeys();
     std::sort(sortedInputKeys.begin(), sortedInputKeys.end());
     for (const auto& key : sortedInputKeys) {
-        for (auto it = preset.inputMappings.constFind(key);
-                it != preset.inputMappings.constEnd() && it.key() == key; ++it) {
+        for (auto it = preset.getInputMappings().constFind(key);
+                it != preset.getInputMappings().constEnd() && it.key() == key;
+                ++it) {
             QDomElement controlNode = inputMappingToXML(doc, it.value());
             controls.appendChild(controlNode);
         }
@@ -223,11 +225,12 @@ void MidiControllerPresetFileHandler::addControlsToDocument(const MidiController
 
     // Repeat the process for the output mappings.
     QDomElement outputs = doc->createElement("outputs");
-    auto sortedOutputKeys = preset.outputMappings.uniqueKeys();
+    auto sortedOutputKeys = preset.getOutputMappings().uniqueKeys();
     std::sort(sortedOutputKeys.begin(), sortedOutputKeys.end());
     for (const auto& key : sortedOutputKeys) {
-        for (auto it = preset.outputMappings.constFind(key);
-                it != preset.outputMappings.constEnd() && it.key() == key; ++it) {
+        for (auto it = preset.getOutputMappings().constFind(key);
+                it != preset.getOutputMappings().constEnd() && it.key() == key;
+                ++it) {
             QDomElement outputNode = outputMappingToXML(doc, it.value());
             outputs.appendChild(outputNode);
         }

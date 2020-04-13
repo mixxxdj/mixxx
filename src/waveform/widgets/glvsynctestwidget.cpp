@@ -17,20 +17,21 @@
 
 GLVSyncTestWidget::GLVSyncTestWidget(const char* group, QWidget* parent)
         : BaseQOpenGLWidget(group, parent) {
-//    addRenderer<WaveformRenderBackground>(); // 172 µs
-//    addRenderer<WaveformRendererEndOfTrack>(); // 677 µs 1145 µs (active)
-//    addRenderer<WaveformRendererPreroll>(); // 652 µs 2034 µs (active)
-//    addRenderer<WaveformRenderMarkRange>(); // 793 µs
+    addRenderer<WaveformRenderBackground>(); // 172 µs
+//  addRenderer<WaveformRendererEndOfTrack>(); // 677 µs 1145 µs (active)
+//  addRenderer<WaveformRendererPreroll>(); // 652 µs 2034 µs (active)
+//  addRenderer<WaveformRenderMarkRange>(); // 793 µs
+
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     addRenderer<GLVSyncTestRenderer>(); // 841 µs // 2271 µs
-//    addRenderer<WaveformRenderMark>(); // 711 µs
-//    addRenderer<WaveformRenderBeat>(); // 1183 µs
+#endif                                  // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2
+
+    // addRenderer<WaveformRenderMark>(); // 711 µs
+    // addRenderer<WaveformRenderBeat>(); // 1183 µs
 
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
 
-    if (QOpenGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
     m_initSuccess = init();
 }
 
@@ -51,7 +52,7 @@ void GLVSyncTestWidget::paintEvent(QPaintEvent* event) {
 mixxx::Duration GLVSyncTestWidget::render() {
     PerformanceTimer timer;
     mixxx::Duration t1;
-    //mixxx::Duration t2, t3;
+    //mixxx::Duration t2;
     timer.start();
     // QPainter makes QOpenGLContext::currentContext() == context()
     // this may delayed until previous buffer swap finished
@@ -59,8 +60,6 @@ mixxx::Duration GLVSyncTestWidget::render() {
     t1 = timer.restart();
     draw(&painter, NULL);
     //t2 = timer.restart();
-    glFinish();
-    //t3 = timer.restart();
-    //qDebug() << "GLVSyncTestWidget "<< t1 << t2 << t3;
+    //qDebug() << "GLVSyncTestWidget "<< t1 << t2;
     return t1; // return timer for painter setup
 }

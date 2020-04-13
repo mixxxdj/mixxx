@@ -58,7 +58,7 @@
     Replaced fixed point division with multiply&shift.  Thanks to Jean-Marc Valin for 
     discussions regarding.  Considerable speedup for fixed-point.
 
-    Corrected overflow protection in real fft routines when using fixed point.
+    Corrected overflow protection in real fft routines  when using fixed point.
     Finder's Credit goes to Robert Oschler of robodance for pointing me at the bug.
     This also led to the CHECK_OVERFLOW_OP macro.
 
@@ -78,7 +78,7 @@
 
 1.2 (Feb 23, 2004)
     interface change -- cfg object is forward declaration of struct instead of void*
-    This maintains type safety and lets the compiler warn/error about stupid mistakes.
+    This maintains type saftey and lets the compiler warn/error about stupid mistakes.
             (prompted by suggestion from Erik de Castro Lopo)
 
     small speed improvements

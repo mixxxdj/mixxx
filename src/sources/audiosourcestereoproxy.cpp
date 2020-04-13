@@ -1,8 +1,7 @@
 #include "sources/audiosourcestereoproxy.h"
 
-#include "util/sample.h"
 #include "util/logger.h"
-
+#include "util/sample.h"
 
 namespace mixxx {
 
@@ -10,33 +9,44 @@ namespace {
 
 const Logger kLogger("AudioSourceStereoProxy");
 
+constexpr audio::ChannelCount kChannelCount = audio::ChannelCount(2);
+
+audio::SignalInfo proxySignalInfo(
+        const audio::SignalInfo& signalInfo) {
+    DEBUG_ASSERT(signalInfo.isValid());
+    return audio::SignalInfo(
+            kChannelCount,
+            signalInfo.getSampleRate(),
+            signalInfo.getSampleLayout());
+}
+
 } // anonymous namespace
 
 AudioSourceStereoProxy::AudioSourceStereoProxy(
         AudioSourcePointer pAudioSource,
         SINT maxReadableFrames)
-    : AudioSource(*pAudioSource),
-      m_pAudioSource(std::move(pAudioSource)),
-      m_tempSampleBuffer(
-              (m_pAudioSource->channelCount() != 2) ?
-                      m_pAudioSource->frames2samples(maxReadableFrames) : 0),
-      m_tempWritableSlice(m_tempSampleBuffer) {
-    setChannelCount(2);
+        : AudioSourceProxy(
+                std::move(pAudioSource),
+                proxySignalInfo(pAudioSource->getSignalInfo())),
+          m_tempSampleBuffer(
+                  (m_pAudioSource->getSignalInfo().getChannelCount() != kChannelCount) ?
+                  m_pAudioSource->getSignalInfo().frames2samples(maxReadableFrames) :
+                  0),
+          m_tempWritableSlice(m_tempSampleBuffer) {
 }
 
 AudioSourceStereoProxy::AudioSourceStereoProxy(
         AudioSourcePointer pAudioSource,
         SampleBuffer::WritableSlice tempWritableSlice)
-    : AudioSource(*pAudioSource),
-      m_pAudioSource(std::move(pAudioSource)),
-      m_tempWritableSlice(std::move(tempWritableSlice)) {
-    setChannelCount(2);
+        : AudioSourceProxy(
+                std::move(pAudioSource),
+                proxySignalInfo(pAudioSource->getSignalInfo())),
+          m_tempWritableSlice(std::move(tempWritableSlice)) {
 }
 
 namespace {
 
-inline
-bool isDisjunct(
+inline bool isDisjunct(
         const SampleBuffer::WritableSlice& slice1,
         const SampleBuffer::WritableSlice& slice2) {
     if (slice1.data() == slice2.data()) {
@@ -52,11 +62,11 @@ bool isDisjunct(
     }
 }
 
-}
+} // namespace
 
 ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
         WritableSampleFrames sampleFrames) {
-    if (m_pAudioSource->channelCount() == 2) {
+    if (m_pAudioSource->getSignalInfo().getChannelCount() == kChannelCount) {
         return readSampleFramesClampedOn(*m_pAudioSource, sampleFrames);
     }
 
@@ -70,7 +80,7 @@ ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
     }
     {
         const SINT numberOfSamplesToRead =
-                m_pAudioSource->frames2samples(
+                m_pAudioSource->getSignalInfo().frames2samples(
                         sampleFrames.frameLength());
         VERIFY_OR_DEBUG_ASSERT(m_tempWritableSlice.length() >= numberOfSamplesToRead) {
             kLogger.warning()
@@ -93,14 +103,19 @@ ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
     if (readableSampleFrames.frameIndexRange().empty()) {
         return readableSampleFrames;
     }
-    DEBUG_ASSERT(readableSampleFrames.frameIndexRange() <= sampleFrames.frameIndexRange());
-    DEBUG_ASSERT(readableSampleFrames.frameIndexRange().start() >= sampleFrames.frameIndexRange().start());
+    DEBUG_ASSERT(
+            readableSampleFrames.frameIndexRange() <=
+            sampleFrames.frameIndexRange());
+    DEBUG_ASSERT(
+            readableSampleFrames.frameIndexRange().start() >=
+            sampleFrames.frameIndexRange().start());
     const SINT frameOffset =
-            readableSampleFrames.frameIndexRange().start() - sampleFrames.frameIndexRange().start();
+            readableSampleFrames.frameIndexRange().start() -
+            sampleFrames.frameIndexRange().start();
     SampleBuffer::WritableSlice writableSlice(
-            sampleFrames.writableData(frames2samples(frameOffset)),
-            frames2samples(readableSampleFrames.frameLength()));
-    if (m_pAudioSource->channelCount() == 1) {
+            sampleFrames.writableData(getSignalInfo().frames2samples(frameOffset)),
+            getSignalInfo().frames2samples(readableSampleFrames.frameLength()));
+    if (m_pAudioSource->getSignalInfo().getChannelCount() == 1) {
         SampleUtil::copyMonoToDualMono(
                 writableSlice.data(),
                 readableSampleFrames.readableData(),
@@ -110,7 +125,7 @@ ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
                 writableSlice.data(),
                 readableSampleFrames.readableData(),
                 readableSampleFrames.frameLength(),
-                m_pAudioSource->channelCount());
+                m_pAudioSource->getSignalInfo().getChannelCount());
     }
     return ReadableSampleFrames(
             readableSampleFrames.frameIndexRange(),
@@ -119,4 +134,4 @@ ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
                     writableSlice.length()));
 }
 
-}
+} // namespace mixxx

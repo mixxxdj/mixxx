@@ -69,21 +69,25 @@ void QuantizeControl::slotBeatsUpdated() {
 void QuantizeControl::setCurrentSample(const double dCurrentSample,
                                        const double dTotalSamples,
                                        const double dTrackSampleRate) {
-    if (dCurrentSample == getSampleOfTrack().current) {
-        // No need to recalculate.
-        return;
-    }
-
     EngineControl::setCurrentSample(dCurrentSample, dTotalSamples, dTrackSampleRate);
+    playPosChanged(dCurrentSample);
+}
+
+void QuantizeControl::notifySeek(double dNewPlaypos) {
+    EngineControl::notifySeek(dNewPlaypos);
+    playPosChanged(dNewPlaypos);
+}
+
+void QuantizeControl::playPosChanged(double dNewPlaypos) {
     // We only need to update the prev or next if the current sample is
     // out of range of the existing beat positions or if we've been forced to
     // do so.
     // NOTE: This bypasses the epsilon calculation, but is there a way
     //       that could actually cause a problem?
-    if (dCurrentSample < m_pCOPrevBeat->get() || dCurrentSample > m_pCONextBeat->get()) {
-        lookupBeatPositions(dCurrentSample);
+    if (dNewPlaypos < m_pCOPrevBeat->get() || dNewPlaypos > m_pCONextBeat->get()) {
+        lookupBeatPositions(dNewPlaypos);
     }
-    updateClosestBeat(dCurrentSample);
+    updateClosestBeat(dNewPlaypos);
 }
 
 void QuantizeControl::lookupBeatPositions(double dCurrentSample) {
@@ -119,9 +123,6 @@ void QuantizeControl::updateClosestBeat(double dCurrentSample) {
         double currentClosestBeat =
                 (nextBeat - dCurrentSample > dCurrentSample - prevBeat) ?
                         prevBeat : nextBeat;
-        VERIFY_OR_DEBUG_ASSERT(even(static_cast<int>(currentClosestBeat))) {
-            currentClosestBeat--;
-        }
         if (closestBeat != currentClosestBeat) {
             m_pCOClosestBeat->set(currentClosestBeat);
         }

@@ -7,9 +7,10 @@
 #include <QList>
 #include <QMutex>
 
-#include "engine/controls/enginecontrol.h"
-#include "preferences/usersettings.h"
 #include "control/controlproxy.h"
+#include "engine/controls/enginecontrol.h"
+#include "preferences/colorpalettesettings.h"
+#include "preferences/usersettings.h"
 #include "track/track.h"
 
 #define NUM_HOT_CUES 37
@@ -18,11 +19,31 @@ class ControlObject;
 class ControlPushButton;
 class ControlIndicator;
 
+enum class CueMode {
+    Mixxx,
+    Pioneer,
+    Denon,
+    Numark,
+    MixxxNoBlinking,
+    CueAndPlay
+};
+
+enum class SeekOnLoadMode {
+    MainCue = 0,    // Use main cue point
+    Beginning = 1,  // Use 0:00.000
+    FirstSound = 2, // Skip leading silence
+    IntroStart = 3, // Use intro start cue point
+};
+
+inline SeekOnLoadMode seekOnLoadModeFromDouble(double value) {
+    return static_cast<SeekOnLoadMode>(int(value));
+}
+
 class HotcueControl : public QObject {
     Q_OBJECT
   public:
     HotcueControl(QString group, int hotcueNumber);
-    virtual ~HotcueControl();
+    ~HotcueControl() override;
 
     inline int getHotcueNumber() { return m_iHotcueNumber; }
     inline CuePointer getCue() { return m_pCue; }
@@ -30,8 +51,8 @@ class HotcueControl : public QObject {
     void setCue(CuePointer pCue);
     void resetCue();
     void setPosition(double position);
-    void setColor(PredefinedColorPointer newColor);
-    PredefinedColorPointer getColor() const;
+    void setColor(mixxx::RgbColor::optional_t newColor);
+    mixxx::RgbColor::optional_t getColor() const;
 
     // Used for caching the preview state of this hotcue control.
     inline bool isPreviewing() {
@@ -56,7 +77,8 @@ class HotcueControl : public QObject {
     void slotHotcueActivatePreview(double v);
     void slotHotcueClear(double v);
     void slotHotcuePositionChanged(double newPosition);
-    void slotHotcueColorChanged(double newColorId);
+    void slotHotcueColorChangeRequest(double newColor);
+    void slotHotcueColorChanged(double newColor);
 
   signals:
     void hotcueSet(HotcueControl* pHotcue, double v);
@@ -67,7 +89,7 @@ class HotcueControl : public QObject {
     void hotcueActivatePreview(HotcueControl* pHotcue, double v);
     void hotcueClear(HotcueControl* pHotcue, double v);
     void hotcuePositionChanged(HotcueControl* pHotcue, double newPosition);
-    void hotcueColorChanged(HotcueControl* pHotcue, double newColorId);
+    void hotcueColorChanged(HotcueControl* pHotcue, double newColor);
     void hotcuePlay(double v);
 
   private:
@@ -101,17 +123,23 @@ class CueControl : public EngineControl {
                UserSettingsPointer pConfig);
     ~CueControl() override;
 
-    virtual void hintReader(HintVector* pHintList) override;
+    void hintReader(HintVector* pHintList) override;
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible);
     void updateIndicators();
+    bool isTrackAtIntroCue();
     void resetIndicators();
     bool isPlayingByPlayButton();
     bool getPlayFlashingAtPause();
+    SeekOnLoadMode getSeekOnLoadPreference();
     void trackLoaded(TrackPointer pNewTrack) override;
 
   private slots:
+    void quantizeChanged(double v);
+
     void cueUpdated();
+    void trackAnalyzed();
     void trackCuesUpdated();
+    void trackBeatsUpdated();
     void hotcueSet(HotcueControl* pControl, double v);
     void hotcueGoto(HotcueControl* pControl, double v);
     void hotcueGotoAndPlay(HotcueControl* pControl, double v);
@@ -121,7 +149,11 @@ class CueControl : public EngineControl {
     void hotcueClear(HotcueControl* pControl, double v);
     void hotcuePositionChanged(HotcueControl* pControl, double newPosition);
 
+    void hotcueFocusColorNext(double v);
+    void hotcueFocusColorPrev(double v);
+
     void cueSet(double v);
+    void cueClear(double v);
     void cueGoto(double v);
     void cueGotoAndPlay(double v);
     void cueGotoAndStop(double v);
@@ -133,6 +165,19 @@ class CueControl : public EngineControl {
     void pause(double v);
     void playStutter(double v);
 
+    void introStartSet(double v);
+    void introStartClear(double v);
+    void introStartActivate(double v);
+    void introEndSet(double v);
+    void introEndClear(double v);
+    void introEndActivate(double v);
+    void outroStartSet(double v);
+    void outroStartClear(double v);
+    void outroStartActivate(double v);
+    void outroEndSet(double v);
+    void outroEndClear(double v);
+    void outroEndActivate(double v);
+
   private:
     enum class TrackAt {
         Cue,
@@ -142,16 +187,20 @@ class CueControl : public EngineControl {
 
     // These methods are not thread safe, only call them when the lock is held.
     void createControls();
-    void attachCue(CuePointer pCue, int hotcueNumber);
-    void detachCue(int hotcueNumber);
+    void attachCue(CuePointer pCue, HotcueControl* pControl);
+    void detachCue(HotcueControl* pControl);
+    void loadCuesFromTrack();
+    double quantizeCuePoint(double position);
+    double getQuantizedCurrentPosition();
     TrackAt getTrackAt() const;
 
+    UserSettingsPointer m_pConfig;
+    ColorPaletteSettings m_colorPaletteSettings;
     bool m_bPreviewing;
     ControlObject* m_pPlay;
     ControlObject* m_pStopButton;
     int m_iCurrentlyPreviewingHotcues;
     ControlObject* m_pQuantizeEnabled;
-    ControlObject* m_pNextBeat;
     ControlObject* m_pClosestBeat;
     bool m_bypassCueSetByPlay;
 
@@ -162,6 +211,7 @@ class CueControl : public EngineControl {
     ControlObject* m_pCuePoint;
     ControlObject* m_pCueMode;
     ControlPushButton* m_pCueSet;
+    ControlPushButton* m_pCueClear;
     ControlPushButton* m_pCueCDJ;
     ControlPushButton* m_pCueDefault;
     ControlPushButton* m_pPlayStutter;
@@ -172,8 +222,37 @@ class CueControl : public EngineControl {
     ControlPushButton* m_pCuePlay;
     ControlPushButton* m_pCueGotoAndStop;
     ControlPushButton* m_pCuePreview;
+
+    ControlObject* m_pIntroStartPosition;
+    ControlObject* m_pIntroStartEnabled;
+    ControlPushButton* m_pIntroStartSet;
+    ControlPushButton* m_pIntroStartClear;
+    ControlPushButton* m_pIntroStartActivate;
+
+    ControlObject* m_pIntroEndPosition;
+    ControlObject* m_pIntroEndEnabled;
+    ControlPushButton* m_pIntroEndSet;
+    ControlPushButton* m_pIntroEndClear;
+    ControlPushButton* m_pIntroEndActivate;
+
+    ControlObject* m_pOutroStartPosition;
+    ControlObject* m_pOutroStartEnabled;
+    ControlPushButton* m_pOutroStartSet;
+    ControlPushButton* m_pOutroStartClear;
+    ControlPushButton* m_pOutroStartActivate;
+
+    ControlObject* m_pOutroEndPosition;
+    ControlObject* m_pOutroEndEnabled;
+    ControlPushButton* m_pOutroEndSet;
+    ControlPushButton* m_pOutroEndClear;
+    ControlPushButton* m_pOutroEndActivate;
+
     ControlProxy* m_pVinylControlEnabled;
     ControlProxy* m_pVinylControlMode;
+
+    ControlObject* m_pHotcueFocus;
+    ControlObject* m_pHotcueFocusColorNext;
+    ControlObject* m_pHotcueFocusColorPrev;
 
     TrackPointer m_pLoadedTrack; // is written from an engine worker thread
 

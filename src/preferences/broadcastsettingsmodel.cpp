@@ -19,9 +19,11 @@ void BroadcastSettingsModel::resetFromSettings(BroadcastSettingsPointer pSetting
         return;
     }
 
-    beginRemoveRows(QModelIndex(), 0, m_profiles.size()-1);
-    endRemoveRows();
-    m_profiles.clear();
+    if (!m_profiles.isEmpty()) {
+        beginRemoveRows(QModelIndex(), 0, m_profiles.size()-1);
+        endRemoveRows();
+        m_profiles.clear();
+    }
 
     for(BroadcastProfilePtr profile : pSettings->profiles()) {
         BroadcastProfilePtr copy = profile->valuesCopy();
@@ -222,7 +224,7 @@ void BroadcastSettingsModel::onProfileNameChanged(QString oldName, QString newNa
     // Refresh the whole name column
     QModelIndex start = this->index(0, kColumnName);
     QModelIndex end = this->index(this->rowCount()-1, kColumnName);
-    emit(dataChanged(start, end));
+    emit dataChanged(start, end);
 }
 
 void BroadcastSettingsModel::onConnectionStatusChanged(int newStatus) {
@@ -230,5 +232,5 @@ void BroadcastSettingsModel::onConnectionStatusChanged(int newStatus) {
     // Refresh the whole status column
     QModelIndex start = this->index(0, kColumnStatus);
     QModelIndex end = this->index(this->rowCount()-1, kColumnStatus);
-    emit(dataChanged(start, end));
+    emit dataChanged(start, end);
 }

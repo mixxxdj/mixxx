@@ -41,7 +41,7 @@ class ControlRingValue {
             *value = m_value;
             m_readerSlots.fetchAndAddRelease(1);
             // We need the early return here to make the compiler
-            // aware that *value is initalised in the true case.
+            // aware that *value is initialised in the true case.
             return true;
         }
         m_readerSlots.fetchAndAddRelease(1);
@@ -77,7 +77,7 @@ class ControlValueAtomicBase {
   public:
     inline T getValue() const {
         T value;
-        unsigned int index = static_cast<unsigned int>(m_readIndex.load()) % cRingSize;
+        unsigned int index = static_cast<unsigned int>(atomicLoadRelaxed(m_readIndex)) % cRingSize;
         while (!m_ring[index].tryGet(&value)) {
             // We are here if
             // 1) there are more then kMaxReaderSlots reader (get) reading the same value or

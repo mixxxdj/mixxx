@@ -9,6 +9,89 @@
 * Remove VAMP plugin support. vamp-plugin-sdk and vamp-hostsdk are no longer required dependencies.
 * Remove SoundSource plugin support. [lp:1792747](https://bugs.launchpad.net/mixxx/+bug/1792747)
 * Add Opus streaming and recording support. [lp:1338413](https://bugs.launchpad.net/mixxx/+bug/1338413)
+* Improve synchronization of track metadata and file tags #2406
+* Add support for track colors [lp:1100882](https://bugs.launchpad.net/mixxx/+bug/1100882) #2470
+* Fix error prone recording settings preferences design [lp:1861421](https://bugs.launchpad.net/mixxx/+bug/1861421) #2478
+* Add Serato removable library feature #2480
+* Library Scanner: Improve hashing of directory contents #2497
+* Make Mixxx compile even though QT_NO_OPENGL or QT_OPENGL_ES_2 is defined (fixes build on RPi) [lp:1863440](https://bugs.launchpad.net/mixxx/+bug/1863440) #2504
+* Rework of Cover Image Hashing [lp:1607097](https://bugs.launchpad.net/mixxx/+bug/1607097) #2507 #2508
+* MusicBrainz: Handle 301 status response #2510
+* MusicBrainz: Add extended metadata support [lp:1581256](https://bugs.launchpad.net/mixxx/+bug/1581256) #2522
+* TagLib: Fix detection of empty or missing file tags [lp:1865957](https://bugs.launchpad.net/mixxx/+bug/1865957) #2535
+* Add mapping for Roland DJ-505 #2111
+
+## [2.2.4](https://launchpad.net/mixxx/+milestone/2.2.4) (Unreleased)
+
+* Store default recording format after "Restore Defaults" [lp:1857806](https://bugs.launchpad.net/mixxx/+bug/1857806) #2414
+* Prevent infinite loop when decoding corrupt MP3 files #2417
+* Add workaround for broken libshout versions #2040 #2438
+* Speed up purging of tracks [lp:1845837](https://bugs.launchpad.net/mixxx/+bug/1845837) #2393
+* Prevent infinite loop when decoding corrupt MP3 files #2417
+* Store default recording format after "Restore Defaults" [lp:1857806](https://bugs.launchpad.net/mixxx/+bug/1857806) #2414
+* Don't stop playback if vinyl passthrough input is configured and PASS button is pressed #2474
+* Fix debug assertion for invalid crate names [lp:1861431](https://bugs.launchpad.net/mixxx/+bug/1861431) #2477
+* Fix crashes when executing actions on tracks that already disappeared from the DB #2527
+* AutoDJ: Skip next track when both deck are playing [lp:1399974](https://bugs.launchpad.net/mixxx/+bug/1399974) #2531
+* Tweak scratch parameters for Mixtrack Platinum #2028
+* Fix auto tempo going to infinity on Pioneer DDJ-SB2 #2559
+* Add controller mapping for Native Instruments Traktor Kontrol S2 MK3 #2348
+* Add controller mapping for Soundless joyMIDI #2425
+* Add controller mapping for Hercules DJControl Inpulse 300 #2465
+* Add controller mapping for Denon MC7000 #2546
+* Add controller mapping for Stanton DJC.4 #2607
+
+## [2.2.3](https://launchpad.net/mixxx/+milestone/2.2.3) (2019-11-24)
+
+* Don't make users reconfigure sound hardware when it has not changed #2253
+* Fix MusicBrainz metadata lookup [lp:1848887](https://bugs.launchpad.net/mixxx/+bug/1848887) #2328
+* Fix high DPI scaling of cover art #2247
+* Fix high DPI scaling of cue point labels on scrolling waveforms #2331
+* Fix high DPI scaling of sliders in Tango skin #2318
+* Fix sound dropping out during recording [lp:1842679](https://bugs.launchpad.net/mixxx/+bug/1842679) #2265 #2305 #2308 #2309
+* Fix rare crash on application shutdown #2293
+* Workaround various rare bugs caused by database inconsistencies [lp:1846971](https://bugs.launchpad.net/mixxx/+bug/1846971) #2321
+* Improve handling of corrupt FLAC files #2315
+* Don't immediately jump to loop start when loop_out is pressed in quantized mode [lp:1837077](https://bugs.launchpad.net/mixxx/+bug/1837077) #2269
+* Preserve order of tracks when dragging and dropping from AutoDJ to playlist [lp:1829601](https://bugs.launchpad.net/mixxx/+bug/1829601) #2237
+* Explicitly use X11 Qt platform plugin instead of Wayland in .desktop launcher [lp:1850729](https://bugs.launchpad.net/mixxx/+bug/1850729) #2340
+* Pioneer DDJ-SX: fix delayed sending of MIDI messages with low audio buffer sizes #2326
+* Enable modplug support on Linux by default [lp:1840537](https://bugs.launchpad.net/mixxx/+bug/1840537) #2244 #2272
+* Fix keyboard shortcut for View > Skin Preferences [lp:1851993](https://bugs.launchpad.net/mixxx/+bug/1851993) #2358 #2372
+* Reloop Terminal Mix: Fix mapping of sampler buttons 5-8 [lp:1846966](https://bugs.launchpad.net/mixxx/+bug/1846966) #2330
+
+## [2.2.2](https://launchpad.net/mixxx/+milestone/2.2.2) (2019-08-10)
+
+==== 2.2.2 2019-08-10 ====
+
+* Fix battery widget with upower <= 0.99.7. #2221
+* Fix BPM adjust in BpmControl. lp:1836480
+* Disable track metadata export for .ogg files and TagLib 1.11.1. lp:1833190
+* Fix interaction of hot cue buttons and looping. lp:1778246
+* Fix detection of moved tracks. #2197
+* Fix playlist import. lp:16878282
+* Fix updating playlist labels. lp:1837315
+* Fix potential segfault on exit. lp:1828360
+* Fix parsing of invalid bpm values in MP3 files. lp:1832325
+* Fix crash when removing rows from empty model. #2128
+* Fix high DPI scaling of RGB overview waveforms. #2090
+* Fix for OpenGL SL detection on macOS. lp:1828019
+* Fix OpenGL ES detection. lp:1825461
+* Fix FX1/2 buttons missing Mic unit in Deere (64 samplers). lp:1837716
+* Tango64: Re-enable 64 samplers. #2223
+* Numark DJ2Go re-enable note-off for deck A cue button. #2087
+* Replace Flanger with QuickEffect in keyboard mapping. #2233
+
+## [2.2.1](https://launchpad.net/mixxx/+milestone/2.2.1) (2019-04-22)
+
+* Include all fixes from Mixxx 2.1.7 and 2.1.8
+* Fix high CPU usage on MAC due to preview column lp:1812763
+* Fix HID controller output on Windows with common-hid-packet-parser.js
+* Fix rendering slow down by not using QStylePainter in WSpinny lp:1530720
+* Fix broken Mic mute button lp:1782568
+* added quick effect enable button to the control picker menu
+* Fix Cover Window close issue with empty cover arts
+* Fix Numark Mixtrack 3 mapping. #2057
 
 ## [2.2.0](https://launchpad.net/mixxx/+milestone/2.2.0) (2018-12-17)
 
@@ -42,6 +125,15 @@ Miscellaneous
   scrolling waveforms.
 * Support IRC/AIM/ICQ broadcast metadata.
 
+## [2.1.8](https://launchpad.net/mixxx/+milestone/2.1.8) (2019-04-07)
+
+* Fix a rare chance for a corrupt track file while writing metadata in out of disk situations. lp:1815305
+* Fix export of BPM track file metadata. lp:1816490
+* Fix export of BPM track file metadata. lp:1816490
+* Fix sending of broadcast metadata with TLS enabled libshout 2.4.1. lp:1817395
+* Fix resdicovering purged tracks in all cases. lp:1821514
+* Fix dropping track from OSX Finder. lp:1822424
+
 ## [2.1.7](https://launchpad.net/mixxx/+milestone/2.1.7) (2019-01-15)
 
 * Fix syncing to doublespeed [lp:1808697](https://bugs.launchpad.net/mixxx/+bug/1808697)
@@ -63,7 +155,7 @@ Miscellaneous
 * Improve search bar timing. [lp:1635087](https://bugs.launchpad.net/mixxx/+bug/1635087)
 * Fix quoted search sentence. [lp:1784141](https://bugs.launchpad.net/mixxx/+bug/1784141)
 * Fix loading a track formerly not existing. [lp:1800395](https://bugs.launchpad.net/mixxx/+bug/1800395)
-* Fix imporing m3u files with blank lines. [lp:1806271](https://bugs.launchpad.net/mixxx/+bug/1806271)
+* Fix importing m3u files with blank lines. [lp:1806271](https://bugs.launchpad.net/mixxx/+bug/1806271)
 * Fix position in sampler overview waveforms. [lp:1744170](https://bugs.launchpad.net/mixxx/+bug/1744170)
 * Don't reset rate slider, syncing a track without a beatgrid. [lp:1783020](https://bugs.launchpad.net/mixxx/+bug/1783020)
 * Clean up iTunes track context menu. [lp:1800335](https://bugs.launchpad.net/mixxx/+bug/1800335)

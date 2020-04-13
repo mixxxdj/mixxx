@@ -23,7 +23,7 @@ QString getSelectInFileBrowserCommand() {
 #if defined(Q_OS_MAC)
     return "open -R";
 #elif defined(Q_OS_WIN)
-    return "explorer.exe /select,\"%1\"";
+    return "explorer.exe /select,";
 #elif defined(Q_OS_LINUX)
     QProcess proc;
     QString output;
@@ -92,22 +92,12 @@ bool selectInXfce(const QString& path) {
 
 void selectViaCommand(const QString& path) {
     QStringList arguments = sSelectInFileBrowserCommand.split(" ");
-
-    #ifdef Q_OS_WIN
-    // The template string contains the sorrounding ""
-    // Embedded quotes and slashed are not allowed on Windows
-    arguments.last() = arguments.last().arg(
-            QDir::toNativeSeparators(path));
-    #else
     // No escaping required because QProcess bypasses the shell
-    arguments.append(path);
-    #endif
-
+    arguments.append(QDir::toNativeSeparators(path));
     QString program = arguments.takeFirst();
     qDebug() << "Calling:" << program << arguments;
     QProcess::startDetached(program, arguments);
 }
-
 
 } // anonymous namespace
 
@@ -161,7 +151,7 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
         while (!dir.exists() && dirPath.size()) {
             // Note: dir.cdUp() does not work for not existing dirs
             dirPath = removeChildDir(dirPath);
-            dir = dirPath;
+            dir.setPath(dirPath);
         }
 
         // This function does not work for a non-existent directory!

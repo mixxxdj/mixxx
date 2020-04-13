@@ -23,6 +23,7 @@
 #include <QTabWidget>
 #include <QMoveEvent>
 #include <QResizeEvent>
+#include <QScreen>
 
 #include "preferences/dialog/dlgpreferences.h"
 
@@ -36,11 +37,12 @@
 #include "preferences/dialog/dlgprefnovinyl.h"
 #endif
 
-#include "preferences/dialog/dlgprefinterface.h"
-#include "preferences/dialog/dlgprefwaveform.h"
+#include "preferences/dialog/dlgprefcolors.h"
+#include "preferences/dialog/dlgprefcrossfader.h"
 #include "preferences/dialog/dlgprefdeck.h"
 #include "preferences/dialog/dlgprefeq.h"
-#include "preferences/dialog/dlgprefcrossfader.h"
+#include "preferences/dialog/dlgprefinterface.h"
+#include "preferences/dialog/dlgprefwaveform.h"
 #ifdef __LILV__
 #include "preferences/dialog/dlgpreflv2.h"
 #endif /* __LILV__ */
@@ -64,6 +66,8 @@
 #include "controllers/controllermanager.h"
 #include "skin/skinloader.h"
 #include "library/library.h"
+#include "library/trackcollectionmanager.h"
+#include "util/compatibility.h"
 
 DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
                                SoundManager * soundman, PlayerManager* pPlayerManager,
@@ -73,15 +77,12 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
                                SettingsManager* pSettingsManager,
                                Library *pLibrary)
         : m_pConfig(pSettingsManager->settings()),
-          m_pageSizeHint(QSize(0, 0)),
-          m_preferencesUpdated(ConfigKey("[Preferences]", "updated"), false) {
+          m_pageSizeHint(QSize(0, 0)) {
 #ifndef __LILV__
     Q_UNUSED(pLV2Backend);
 #endif /* __LILV__ */
     setupUi(this);
-#if QT_VERSION >= 0x040400 //setHeaderHidden is a qt4.4 addition so having it in the .ui file breaks the build on OpenBSD4.4 (FIXME: revisit this when OpenBSD4.5 comes out?)
     contentsTreeWidget->setHeaderHidden(true);
-#endif
 
     connect(buttonBox, SIGNAL(clicked(QAbstractButton*)),
             this, SLOT(slotButtonPressed(QAbstractButton*)));
@@ -97,8 +98,10 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_soundPage);
     m_libraryPage = new DlgPrefLibrary(this, m_pConfig, pLibrary);
     addPageWidget(m_libraryPage);
-    connect(m_libraryPage, SIGNAL(scanLibrary()),
-            pLibrary, SLOT(scan()));
+    connect(m_libraryPage,
+            &DlgPrefLibrary::scanLibrary,
+            pLibrary->trackCollections(),
+            &TrackCollectionManager::startLibraryScan);
     m_controllersPage = new DlgPrefControllers(this, m_pConfig, controllers,
                                             m_pControllerTreeItem);
     addPageWidget(m_controllersPage);
@@ -119,6 +122,8 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_waveformPage);
     m_deckPage = new DlgPrefDeck(this, mixxx, pPlayerManager, m_pConfig);
     addPageWidget(m_deckPage);
+    m_colorsPage = new DlgPrefColors(this, m_pConfig);
+    addPageWidget(m_colorsPage);
     m_equalizerPage = new DlgPrefEQ(this, pEffectsManager, m_pConfig);
     addPageWidget(m_equalizerPage);
     m_crossfaderPage = new DlgPrefCrossfader(this, m_pConfig);
@@ -232,6 +237,12 @@ void DlgPreferences::createIcons() {
     m_pDecksButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pDecksButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
+    m_pColorsButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pColorsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_colors.svg"));
+    m_pColorsButton->setText(0, tr("Colors"));
+    m_pColorsButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pColorsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
     m_pEqButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pEqButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_equalizers.svg"));
     m_pEqButton->setText(0, tr("Equalizers"));
@@ -332,6 +343,8 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
         switchToPage(m_waveformPage);
     } else if (current == m_pDecksButton) {
         switchToPage(m_deckPage);
+    } else if (current == m_pColorsButton) {
+        switchToPage(m_colorsPage);
     } else if (current == m_pEqButton) {
         switchToPage(m_equalizerPage);
     } else if (current == m_pCrossfaderButton) {
@@ -384,11 +397,7 @@ bool DlgPreferences::eventFilter(QObject* o, QEvent* e) {
 
 void DlgPreferences::onHide() {
     // Notify children that we are about to hide.
-    emit(closeDlg());
-
-    // Notify other parts of Mixxx that the preferences window just saved and so
-    // preferences are likely changed.
-    m_preferencesUpdated.set(1);
+    emit closeDlg();
 }
 
 void DlgPreferences::onShow() {
@@ -409,8 +418,17 @@ void DlgPreferences::onShow() {
     }
     int newX = m_geometry[0].toInt();
     int newY = m_geometry[1].toInt();
-    newX = std::max(0, std::min(newX, QApplication::desktop()->screenGeometry().width()- m_geometry[2].toInt()));
-    newY = std::max(0, std::min(newY, QApplication::desktop()->screenGeometry().height() - m_geometry[3].toInt()));
+
+    const QScreen* primaryScreen = getPrimaryScreen();
+    QSize screenSpace;
+    if (primaryScreen) {
+        screenSpace = primaryScreen->geometry().size();
+    } else {
+        qWarning() << "Assuming screen size of 800x600px.";
+        screenSpace = QSize(800, 600);
+    }
+    newX = std::max(0, std::min(newX, screenSpace.width()- m_geometry[2].toInt()));
+    newY = std::max(0, std::min(newY, screenSpace.height() - m_geometry[3].toInt()));
     m_geometry[0] = QString::number(newX);
     m_geometry[1] = QString::number(newY);
 
@@ -435,7 +453,7 @@ void DlgPreferences::onShow() {
     move(newX, newY);
 
     // Notify children that we are about to show.
-    emit(showDlg());
+    emit showDlg();
 }
 
 void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
@@ -455,11 +473,11 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
             }
             break;
         case QDialogButtonBox::AcceptRole:
-            emit(applyPreferences());
+            emit applyPreferences();
             accept();
             break;
         case QDialogButtonBox::RejectRole:
-            emit(cancelPreferences());
+            emit cancelPreferences();
             reject();
             break;
         default:

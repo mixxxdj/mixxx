@@ -1,0 +1,124 @@
+# This is the configuration file for the pre-commit framework, a simple way
+# to manage, install and run git hooks to catch common problems early on.
+# See https://pre-commit.com/ for details.
+#
+# This adds the following hooks:
+#
+# - check-case-conflict
+# - check-byte-order-marker
+# - check-yaml
+# - check-json
+# - check-xml
+# - mixed-line-ending
+# - end-of-file-fixer
+# - trailing-whitespace
+# - no-commit-to-branch
+# - eslint
+# - clang-format
+# - qsscheck
+#
+# If you have Python >= 3.7 and python-pip installed, just run:
+#
+#     $ pip install --user pre-commit
+#     $ git clone https://github.com/your-fork-of/mixxx.git
+#     $ cd mixxx
+#     $ pre-commit install
+#     $ pre-commit install -t pre-push
+#
+# It will now run relevant hooks automatically on every `git commit` or
+# `git push` in the mixxx git repository.
+#
+# If you have a problems with a particular hook, you can use the `$SKIP`
+# environment variable to disable hooks:
+#
+#     $ SKIP=clang-format,end-of-file-fixer git commit
+#
+# This can also be used to separate logic changes and autoformatting into
+# two subsequent commits.
+#
+# Using the `$SKIP` var is preferable to using `git commit --no-verify`
+# because it won't prevent catching other, unrelated issues.
+
+exclude: ^lib/.*$
+default_language_version:
+  python: python3
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v2.3.0
+  hooks:
+  - id: check-byte-order-marker
+    exclude: ^.*(\.cbproj|\.groupproj|\.props|\.sln|\.vcxproj|\.vcxproj.filters)$
+  - id: check-case-conflict
+  - id: check-json
+  - id: check-merge-conflict
+  - id: check-xml
+  - id: check-yaml
+  - id: end-of-file-fixer
+    stages:
+    - commit
+    - manual
+  - id: mixed-line-ending
+  - id: trailing-whitespace
+    stages:
+    - commit
+    - manual
+  - id: no-commit-to-branch
+- repo: https://github.com/pre-commit/mirrors-eslint
+  rev: v6.8.0
+  hooks:
+  - id: eslint
+    args: [--fix, --report-unused-disable-directives]
+    stages:
+    - commit
+    - manual
+- repo: local
+  hooks:
+  - id: clang-format
+    name: clang-format
+    entry: git clang-format
+    require_serial: true
+    stages:
+    - commit
+    - manual
+    language: python
+    files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|mm|proto|vert)$
+    additional_dependencies:
+    - clang-format
+-   repo: https://github.com/psf/black
+    rev: stable
+    hooks:
+    -   id: black
+        files: ^scripts/.*$
+-   repo: https://gitlab.com/pycqa/flake8
+    rev: '3.7.9'
+    hooks:
+    -   id: flake8
+        files: ^scripts/.*$
+- repo: local
+  hooks:
+  - id: qsscheck
+    name: qsscheck
+    description: Run qsscheck to detect broken QSS.
+    entry: ./scripts/qsscheck.py
+    args: [.]
+    pass_filenames: false
+    language: python
+    additional_dependencies:
+    - tinycss==0.4
+    types: [text]
+    files: ^.*\.qss$
+    stages:
+    - commit
+    - push
+    - manual
+- repo: local
+  hooks:
+  - id: line-length
+    name: line-length
+    description: Check for lines longer 100 and brakes them before 80.
+    entry: ./scripts/line_length.py
+    stages:
+    - commit
+    - push
+    language: python
+    files: \.(c|cpp|h)$

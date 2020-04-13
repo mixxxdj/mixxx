@@ -31,6 +31,7 @@ QSqlDatabase createDatabase(
 
     QSqlDatabase database =
             QSqlDatabase::addDatabase(params.type, connectionName);
+    database.setConnectOptions(params.connectOptions);
     database.setHostName(params.hostName);
     database.setDatabaseName(params.filePath);
     database.setUserName(params.userName);
@@ -81,8 +82,6 @@ void makeLatinLow(QChar* c, int count) {
         }
     }
 }
-
-const QChar kSqlLikeEscapeDefault = '\0';
 
 // Compare two strings for equality where the first string is
 // a "LIKE" expression. Return true (1) if they are the same and
@@ -165,6 +164,12 @@ int likeCompareInner(
 }
 
 #ifdef __SQLITE3__
+
+namespace {
+
+const QChar kSqlLikeEscapeDefault = '\0';
+
+} // anonymous namespace
 
 // The collating function callback is invoked with a copy of the pArg
 // application data pointer and with two strings in the encoding specified
@@ -289,6 +294,9 @@ bool initDatabase(QSqlDatabase database, StringCollator* pCollator) {
                 << "Failed to install custom 3-arg LIKE function for SQLite3:"
                 << result;
     }
+#else
+    Q_UNUSED(database);
+    Q_UNUSED(pCollator);
 #endif // __SQLITE3__
     return true;
 }

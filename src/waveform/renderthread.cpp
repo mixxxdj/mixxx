@@ -7,6 +7,8 @@
 #include "util/math.h"
 #include "util/time.h"
 
+static const QString renderTag("RenderThread render");
+
 RenderThread::RenderThread(QObject* pParent)
         : QThread(pParent),
           m_bDoRendering(true),
@@ -36,24 +38,24 @@ void RenderThread::run() {
         if (m_renderMode == ST_FREE) {
             // for benchmark only!
 
-            Event::start("RenderThread render");
+            Event::start(renderTag);
             // renders the waveform, Possible delayed due to anti tearing
             emit(render());
             m_semaRenderSlot.acquire();
-            Event::end("RenderThread render");
+            Event::end(renderTag);
 
             m_timer.restart();
             usleep(1000);
         } else { // if (m_renderMode == ST_TIMER) {
             m_timer.restart();
 
-            Event::start("RenderThread render");
+            Event::start(renderTag);
             emit(render()); // renders the new waveform.
 
             // wait until rendering was scheduled. It might be delayed due a
             // pending swap (depends one driver render settings)
             m_semaRenderSlot.acquire();
-            Event::end("RenderThread render");
+            Event::end(renderTag);
 
             int elapsed = m_timer.restart().toIntegerMicros();
             int sleepTimeMicros = m_syncIntervalTimeMicros - elapsed;

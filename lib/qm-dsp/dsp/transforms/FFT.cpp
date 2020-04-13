@@ -11,7 +11,7 @@
 #include "maths/MathUtilities.h"
 
 #include "ext/kissfft/kiss_fft.h"
-#include "ext/kissfft/kiss_fftr.h"
+#include "ext/kissfft/tools/kiss_fftr.h"
 
 #include <cmath>
 

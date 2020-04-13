@@ -327,14 +327,34 @@
         </property>
        </widget>
       </item>
+      <item row="5" column="0">
+       <widget class="QCheckBox" name="checkBox_show_rekordbox">
+        <property name="text">
+         <string>Show Rekordbox Library</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
       <item row="6" column="0">
+       <widget class="QCheckBox" name="checkBox_show_serato">
+        <property name="text">
+         <string>Show Serato Library</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
          <string>All external libraries shown are write protected.</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
+      <item row="8" column="0">
        <widget class="Line" name="line">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>

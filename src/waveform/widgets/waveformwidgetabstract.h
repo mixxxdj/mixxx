@@ -35,7 +35,7 @@ class WaveformWidgetAbstract : public WaveformWidgetRenderer {
         preRender(mixxx::Duration::fromSeconds(0));
         render();
     }
-    virtual void resize(int width, int height, float devicePixelRatio) override;
+    virtual void resize(int width, int height);
 
   protected:
     QWidget* m_widget;

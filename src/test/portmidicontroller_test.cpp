@@ -16,16 +16,20 @@ using ::testing::SetArrayArgument;
 class MockPortMidiController : public PortMidiController {
   public:
     MockPortMidiController(const PmDeviceInfo* inputDeviceInfo,
-                           const PmDeviceInfo* outputDeviceInfo,
-                           int inputDeviceIndex,
-                           int outputDeviceIndex) : PortMidiController(
-                               inputDeviceInfo, outputDeviceInfo,
-                               inputDeviceIndex, outputDeviceIndex) {
+            const PmDeviceInfo* outputDeviceInfo,
+            int inputDeviceIndex,
+            int outputDeviceIndex,
+            UserSettingsPointer pConfig)
+            : PortMidiController(inputDeviceInfo,
+                      outputDeviceInfo,
+                      inputDeviceIndex,
+                      outputDeviceIndex,
+                      pConfig) {
     }
     ~MockPortMidiController() override {
     }
 
-    void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2) {
+    void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2) override {
         PortMidiController::sendShortMsg(status, byte1, byte2);
     }
 
@@ -71,9 +75,8 @@ class PortMidiControllerTest : public MixxxTest {
         m_outputDeviceInfo.output = 1;
         m_outputDeviceInfo.opened = 0;
 
-        m_pController.reset(new MockPortMidiController(&m_inputDeviceInfo,
-                                                       &m_outputDeviceInfo,
-                                                       0, 0));
+        m_pController.reset(new MockPortMidiController(
+                &m_inputDeviceInfo, &m_outputDeviceInfo, 0, 0, config()));
         m_pController->setPortMidiInputDevice(m_mockInput);
         m_pController->setPortMidiOutputDevice(m_mockOutput);
     }

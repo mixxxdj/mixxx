@@ -1,27 +1,66 @@
-#include <QStringBuilder>
-#include <QThread>
 #include <QApplication>
+#include <QThread>
 
 #include "library/trackcollection.h"
 
-#include "sources/soundsourceproxy.h"
+#include "library/basetrackcache.h"
 #include "track/globaltrackcache.h"
-#include "util/logger.h"
-#include "util/db/sqltransaction.h"
-
 #include "util/assert.h"
-
+#include "util/db/sqltransaction.h"
+#include "util/dnd.h"
+#include "util/logger.h"
 
 namespace {
-    mixxx::Logger kLogger("TrackCollection");
+
+mixxx::Logger kLogger("TrackCollection");
+
 } // anonymous namespace
 
 TrackCollection::TrackCollection(
+        QObject* parent,
         const UserSettingsPointer& pConfig)
-        : m_pConfig(pConfig),
+        : QObject(parent),
           m_analysisDao(pConfig),
           m_trackDao(m_cueDao, m_playlistDao,
                      m_analysisDao, m_libraryHashDao, pConfig) {
+    // Forward signals from TrackDAO
+    connect(&m_trackDao,
+            &TrackDAO::trackClean,
+            this,
+            &TrackCollection::trackClean,
+            /*signal-to-signal*/ Qt::DirectConnection);
+    connect(&m_trackDao,
+            &TrackDAO::trackDirty,
+            this,
+            &TrackCollection::trackDirty,
+            /*signal-to-signal*/ Qt::DirectConnection);
+    connect(&m_trackDao,
+            &TrackDAO::trackChanged,
+            this,
+            [this](TrackId trackId) {
+                emit tracksChanged(QSet<TrackId>{trackId});
+            },
+            /*signal-to-signal*/ Qt::DirectConnection);
+    connect(&m_trackDao,
+            &TrackDAO::tracksAdded,
+            this,
+            &TrackCollection::tracksAdded,
+            /*signal-to-signal*/ Qt::DirectConnection);
+    connect(&m_trackDao,
+            &TrackDAO::tracksChanged,
+            this,
+            &TrackCollection::tracksChanged,
+            /*signal-to-signal*/ Qt::DirectConnection);
+    connect(&m_trackDao,
+            &TrackDAO::tracksRemoved,
+            this,
+            &TrackCollection::tracksRemoved,
+            /*signal-to-signal*/ Qt::DirectConnection);
+    connect(&m_trackDao,
+            &TrackDAO::forceModelUpdate,
+            this,
+            &TrackCollection::multipleTracksChanged,
+            /*signal-to-signal*/ Qt::DirectConnection);
 }
 
 TrackCollection::~TrackCollection() {
@@ -35,12 +74,14 @@ TrackCollection::~TrackCollection() {
 void TrackCollection::repairDatabase(QSqlDatabase database) {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
 
+    kLogger.info() << "Repairing database";
     m_crates.repairDatabase(database);
 }
 
 void TrackCollection::connectDatabase(QSqlDatabase database) {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
 
+    kLogger.info() << "Connecting database";
     m_database = database;
     m_trackDao.initialize(database);
     m_playlistDao.initialize(database);
@@ -54,18 +95,91 @@ void TrackCollection::connectDatabase(QSqlDatabase database) {
 void TrackCollection::disconnectDatabase() {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
 
+    kLogger.info() << "Disconnecting database";
     m_database = QSqlDatabase();
     m_trackDao.finish();
     m_crates.disconnectDatabase();
 }
 
-void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache> pTrackSource) {
+void TrackCollection::connectTrackSource(QSharedPointer<BaseTrackCache> pTrackSource) {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
 
     VERIFY_OR_DEBUG_ASSERT(m_pTrackSource.isNull()) {
+        kLogger.warning() << "Track source has already been connected";
         return;
     }
+    kLogger.info() << "Connecting track source";
     m_pTrackSource = pTrackSource;
+    connect(&m_trackDao,
+            &TrackDAO::trackDirty,
+            m_pTrackSource.data(),
+            &BaseTrackCache::slotTrackDirty);
+    connect(&m_trackDao,
+            &TrackDAO::trackClean,
+            m_pTrackSource.data(),
+            &BaseTrackCache::slotTrackClean);
+    connect(&m_trackDao,
+            &TrackDAO::trackChanged,
+            m_pTrackSource.data(),
+            &BaseTrackCache::slotTrackChanged);
+    connect(&m_trackDao,
+            &TrackDAO::tracksAdded,
+            m_pTrackSource.data(),
+            &BaseTrackCache::slotTracksAddedOrChanged);
+    connect(&m_trackDao,
+            &TrackDAO::tracksChanged,
+            m_pTrackSource.data(),
+            &BaseTrackCache::slotTracksAddedOrChanged);
+    connect(&m_trackDao,
+            &TrackDAO::tracksRemoved,
+            m_pTrackSource.data(),
+            &BaseTrackCache::slotTracksRemoved);
+    connect(&m_trackDao,
+            &TrackDAO::dbTrackAdded,
+            m_pTrackSource.data(),
+            &BaseTrackCache::slotDbTrackAdded);
+}
+
+QWeakPointer<BaseTrackCache> TrackCollection::disconnectTrackSource() {
+    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+
+    auto pWeakPtr = m_pTrackSource.toWeakRef();
+    if (m_pTrackSource) {
+        kLogger.info() << "Disconnecting track source";
+        m_trackDao.disconnect(m_pTrackSource.data());
+        m_pTrackSource.reset();
+    }
+    return pWeakPtr;
+}
+
+bool TrackCollection::addDirectory(const QString& dir) {
+    SqlTransaction transaction(m_database);
+    switch (m_directoryDao.addDirectory(dir)) {
+    case SQL_ERROR:
+        return false;
+    case ALREADY_WATCHING:
+        return true;
+    case ALL_FINE:
+        transaction.commit();
+        return true;
+    default:
+        DEBUG_ASSERT("unreachable");
+    }
+    return false;
+}
+
+bool TrackCollection::removeDirectory(const QString& dir) {
+    SqlTransaction transaction(m_database);
+    switch (m_directoryDao.removeDirectory(dir)) {
+    case SQL_ERROR:
+        return false;
+    case ALL_FINE:
+        transaction.commit();
+        return true;
+    default:
+        DEBUG_ASSERT("unreachable");
+    }
+    return false;
 }
 
 void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
@@ -77,15 +191,58 @@ void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
     // have permission so that we can access the folder on future runs. We need
     // to canonicalize the path so we first wrap the directory string with a
     // QDir.
-    QDir directory(newDir);
-    Sandbox::createSecurityToken(directory);
+    Sandbox::createSecurityToken(QDir(newDir));
 
-    QSet<TrackId> movedIds(
-            m_directoryDao.relocateDirectory(oldDir, newDir));
+    SqlTransaction transaction(m_database);
+    QList<RelocatedTrack> relocatedTracks =
+            m_directoryDao.relocateDirectory(oldDir, newDir);
+    transaction.commit();
 
-    m_trackDao.databaseTracksMoved(std::move(movedIds), QSet<TrackId>());
+    if (relocatedTracks.isEmpty()) {
+        // No tracks moved
+        return;
+    }
+
+    m_trackDao.databaseTracksRelocated(std::move(relocatedTracks));
 
     GlobalTrackCacheLocker().relocateCachedTracks(&m_trackDao);
+}
+
+QList<TrackId> TrackCollection::resolveTrackIds(
+        const QList<TrackFile>& trackFiles,
+        TrackDAO::ResolveTrackIdFlags flags) {
+    QList<TrackId> trackIds = m_trackDao.resolveTrackIds(trackFiles, flags);
+    if (flags & TrackDAO::ResolveTrackIdFlag::UnhideHidden) {
+        unhideTracks(trackIds);
+    }
+    return trackIds;
+}
+
+QList<TrackId> TrackCollection::resolveTrackIdsFromUrls(
+        const QList<QUrl>& urls, bool addMissing) {
+    QList<TrackFile> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+    if (files.isEmpty()) {
+        return QList<TrackId>();
+    }
+
+    TrackDAO::ResolveTrackIdFlags flags =
+            TrackDAO::ResolveTrackIdFlag::UnhideHidden;
+    if (addMissing) {
+        flags |= TrackDAO::ResolveTrackIdFlag::AddMissing;
+    }
+    return resolveTrackIds(files, flags);
+}
+
+QList<TrackId> TrackCollection::resolveTrackIdsFromLocations(
+        const QList<QString>& locations) {
+    QList<TrackFile> trackFiles;
+    trackFiles.reserve(locations.size());
+    for (const QString& location : locations) {
+        trackFiles.append(TrackFile(location));
+    }
+    return resolveTrackIds(trackFiles,
+            TrackDAO::ResolveTrackIdFlag::UnhideHidden
+                    | TrackDAO::ResolveTrackIdFlag::AddMissing);
 }
 
 bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
@@ -132,7 +289,7 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     VERIFY_OR_DEBUG_ASSERT(transaction) {
         return false;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_trackDao.onHidingTracks(trackIds)) {
+    VERIFY_OR_DEBUG_ASSERT(m_trackDao.hideTracks(trackIds)) {
         return false;
     }
     VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
@@ -149,36 +306,34 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
 
     // Emit signal(s)
     // TODO(XXX): Emit signals here instead of from DAOs
-    emit(crateSummaryChanged(modifiedCrateSummaries));
+    emit crateSummaryChanged(modifiedCrateSummaries);
 
     return true;
+}
+
+void TrackCollection::hideAllTracks(const QDir& rootDir) {
+    m_trackDao.hideAllTracks(rootDir);
 }
 
 bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
 
-    // Transactional
-    SqlTransaction transaction(m_database);
-    VERIFY_OR_DEBUG_ASSERT(transaction) {
-        return false;
-    }
-    VERIFY_OR_DEBUG_ASSERT(m_trackDao.onUnhidingTracks(trackIds)) {
-        return false;
-    }
-    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
+    VERIFY_OR_DEBUG_ASSERT(m_trackDao.unhideTracks(trackIds)) {
         return false;
     }
 
     // Post-processing
     // TODO(XXX): Move signals from TrackDAO to TrackCollection
+    // to update BaseTrackCache
     m_trackDao.afterUnhidingTracks(trackIds);
-    // TODO(XXX): Move signals from TrackDAO to TrackCollection
 
     // Emit signal(s)
     // TODO(XXX): Emit signals here instead of from DAOs
-    QSet<CrateId> modifiedCrateSummaries(
-            m_crates.collectCrateIdsOfTracks(trackIds));
-    emit(crateSummaryChanged(modifiedCrateSummaries));
+    // To update labels of CrateFeature, because unhiding might make a
+    // crate track visible again.
+    QSet<CrateId> modifiedCrateSummaries =
+            m_crates.collectCrateIdsOfTracks(trackIds);
+    emit crateSummaryChanged(modifiedCrateSummaries);
 
     return true;
 }
@@ -217,14 +372,20 @@ bool TrackCollection::purgeTracks(
 
     // Emit signal(s)
     // TODO(XXX): Emit signals here instead of from DAOs
-    emit(crateSummaryChanged(modifiedCrateSummaries));
+    emit crateSummaryChanged(modifiedCrateSummaries);
 
     return true;
 }
 
-bool TrackCollection::purgeTracks(
-        const QDir& dir) {
-    QList<TrackId> trackIds(m_trackDao.getTrackIds(dir));
+bool TrackCollection::purgeAllTracks(
+        const QDir& rootDir) {
+    QList<TrackRef> trackRefs = m_trackDao.getAllTrackRefs(rootDir);
+    QList<TrackId> trackIds;
+    trackIds.reserve(trackRefs.size());
+    for (const auto trackRef : trackRefs) {
+        DEBUG_ASSERT(trackRef.hasId());
+        trackIds.append(trackRef.getId());
+    }
     return purgeTracks(trackIds);
 }
 
@@ -248,7 +409,7 @@ bool TrackCollection::insertCrate(
     }
 
     // Emit signals
-    emit(crateInserted(crateId));
+    emit crateInserted(crateId);
 
     if (pCrateId != nullptr) {
         *pCrateId = crateId;
@@ -273,7 +434,7 @@ bool TrackCollection::updateCrate(
     }
 
     // Emit signals
-    emit(crateUpdated(crate.getId()));
+    emit crateUpdated(crate.getId());
 
     return true;
 }
@@ -295,7 +456,7 @@ bool TrackCollection::deleteCrate(
     }
 
     // Emit signals
-    emit(crateDeleted(crateId));
+    emit crateDeleted(crateId);
 
     return true;
 }
@@ -318,7 +479,7 @@ bool TrackCollection::addCrateTracks(
     }
 
     // Emit signals
-    emit(crateTracksChanged(crateId, trackIds, QList<TrackId>()));
+    emit crateTracksChanged(crateId, trackIds, QList<TrackId>());
 
     return true;
 }
@@ -341,7 +502,7 @@ bool TrackCollection::removeCrateTracks(
     }
 
     // Emit signals
-    emit(crateTracksChanged(crateId, QList<TrackId>(), trackIds));
+    emit crateTracksChanged(crateId, QList<TrackId>(), trackIds);
 
     return true;
 }
@@ -362,25 +523,38 @@ bool TrackCollection::updateAutoDjCrate(
     return updateCrate(crate);
 }
 
-void TrackCollection::exportTrackMetadata(Track* pTrack) const {
-    DEBUG_ASSERT(pTrack);
-
-    // Write audio meta data, if explicitly requested by the user
-    // for individual tracks or enabled in the preferences for all
-    // tracks.
-    //
-    // This must be done before updating the database, because
-    // a timestamp is used to keep track of when metadata has been
-    // last synchronized. Exporting metadata will update this time
-    // stamp on the track object!
-    if (pTrack->isMarkedForMetadataExport() ||
-            (pTrack->isDirty() && m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","SyncTrackMetadataExport")).toInt() == 1)) {
-        SoundSourceProxy::exportTrackMetadataBeforeSaving(pTrack);
-    }
-}
-
 void TrackCollection::saveTrack(Track* pTrack) {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
 
     m_trackDao.saveTrack(pTrack);
+}
+
+TrackPointer TrackCollection::getTrackById(
+        TrackId trackId) const {
+    return m_trackDao.getTrackById(trackId);
+}
+
+TrackPointer TrackCollection::getTrackByRef(
+        const TrackRef& trackRef) const {
+    return m_trackDao.getTrackByRef(trackRef);
+}
+
+TrackId TrackCollection::getTrackIdByRef(
+        const TrackRef& trackRef) const {
+    return m_trackDao.getTrackIdByRef(trackRef);
+}
+
+TrackPointer TrackCollection::getOrAddTrack(
+        const TrackRef& trackRef,
+        bool* pAlreadyInLibrary) {
+    return m_trackDao.getOrAddTrack(trackRef, pAlreadyInLibrary);
+}
+
+TrackId TrackCollection::addTrack(
+        const TrackPointer& pTrack,
+        bool unremove) {
+    m_trackDao.addTracksPrepare();
+    const auto trackId = m_trackDao.addTracksAddTrack(pTrack, unremove);
+    m_trackDao.addTracksFinish(!trackId.isValid());
+    return trackId;
 }

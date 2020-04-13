@@ -6,26 +6,6 @@ from .mixxx import Feature
 import SCons.Script as SCons
 from . import depends
 
-class OpenGLES(Feature):
-    def description(self):
-        return "OpenGL-ES >= 2.0 support [Experimental]"
-
-    def enabled(self, build):
-        build.flags['opengles'] = util.get_flags(build.env, 'opengles', 0)
-        return int(build.flags['opengles'])
-
-    def add_options(self, build, vars):
-        vars.Add('opengles', 'Set to 1 to enable OpenGL-ES >= 2.0 support [Experimental]', 0)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            return
-        if build.flags['opengles']:
-            build.env.Append(CPPDEFINES='__OPENGLES__')
-
-    def sources(self, build):
-        return []
-
 class HSS1394(Feature):
     def description(self):
         return "HSS1394 MIDI device support"
@@ -65,7 +45,7 @@ class HSS1394(Feature):
 
 class HID(Feature):
     INTERNAL_LINK = False
-    HIDAPI_INTERNAL_PATH = 'lib/hidapi-0.8.0-rc1'
+    HIDAPI_INTERNAL_PATH = 'lib/hidapi'
 
     def description(self):
         return "HID controller support"
@@ -83,7 +63,7 @@ class HID(Feature):
         if not self.enabled(build):
             return
 
-        if build.platform_is_linux:
+        if build.platform_is_linux or build.platform_is_bsd:
             # Try using system lib
             if not conf.CheckLib(['hidapi-libusb', 'libhidapi-libusb']):
                 # No System Lib found
@@ -120,6 +100,7 @@ class HID(Feature):
 
     def sources(self, build):
         sources = ['src/controllers/hid/hidcontroller.cpp',
+                   'src/controllers/hid/hidcontrollerpreset.cpp',
                    'src/controllers/hid/hidenumerator.cpp',
                    'src/controllers/hid/hidcontrollerpresetfilehandler.cpp']
 
@@ -176,7 +157,7 @@ class Bulk(Feature):
                    'src/controllers/bulk/bulkenumerator.cpp']
         if not int(build.flags['hid']):
             sources.append(
-                'controllers/hid/hidcontrollerpresetfilehandler.cpp')
+                'src/controllers/hid/hidcontrollerpresetfilehandler.cpp')
         return sources
 
 
@@ -334,29 +315,42 @@ class ModPlug(Feature):
         return "Modplug module decoder plugin"
 
     def enabled(self, build):
-        build.flags['modplug'] = util.get_flags(build.env, 'modplug', 0)
+        # Default to enabled on but only throw an error if it was explicitly
+        # requested and is not available.
+        if 'modplug' in build.flags:
+            return int(build.flags['modplug']) > 0
+        build.flags['modplug'] = util.get_flags(build.env, 'modplug', 1)
         if int(build.flags['modplug']):
             return True
         return False
 
     def add_options(self, build, vars):
         vars.Add('modplug',
-                 'Set to 1 to enable libmodplug based module tracker support.', 0)
+                 'Set to 1 to enable libmodplug based module tracker support.',
+                 1)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
 
+        # Only block the configure if modplug was explicitly requested.
+        explicit = 'modplug' in SCons.ARGUMENTS
+
+        if not conf.CheckHeader('libmodplug/modplug.h'):
+            if explicit:
+                raise Exception('Could not find libmodplug development headers.')
+            else:
+                build.flags['modplug'] = 0
+            return
+
+        if not conf.CheckLib(['modplug', 'libmodplug'], autoadd=True):
+            if explicit:
+                raise Exception('Could not find libmodplug shared library.')
+            else:
+                build.flags['modplug'] = 0
+            return
+
         build.env.Append(CPPDEFINES='__MODPLUG__')
-
-        have_modplug_h = conf.CheckHeader('libmodplug/modplug.h')
-        have_modplug = conf.CheckLib(['modplug', 'libmodplug'], autoadd=True)
-
-        if not have_modplug_h:
-            raise Exception('Could not find libmodplug development headers.')
-
-        if not have_modplug:
-            raise Exception('Could not find libmodplug shared library.')
 
     def sources(self, build):
         depends.Qt.uic(build)('src/preferences/dialog/dlgprefmodplugdlg.ui')
@@ -368,8 +362,11 @@ class FAAD(Feature):
     def description(self):
         return "FAAD AAC audio file decoder plugin"
 
+    def default(self, build):
+        return 1 if build.platform_is_linux else 0
+
     def enabled(self, build):
-        build.flags['faad'] = util.get_flags(build.env, 'faad', 0)
+        build.flags['faad'] = util.get_flags(build.env, 'faad', self.default(build))
         if int(build.flags['faad']):
             return True
         return False
@@ -392,14 +389,9 @@ class FAAD(Feature):
             raise Exception(
                 'Could not find libmp4, libmp4v2 or the libmp4v2 development headers.')
 
-        have_faad = conf.CheckLib(['faad', 'libfaad'])
-
-        if not have_faad:
-            raise Exception(
-                'Could not find libfaad or the libfaad development headers.')
-
     def sources(self, build):
-        return ['src/sources/soundsourcem4a.cpp']
+        return ['src/sources/soundsourcem4a.cpp',
+        		'src/sources/libfaadloader.cpp']
 
 
 class WavPack(Feature):
@@ -657,35 +649,42 @@ class TestSuite(Feature):
 
         # Clone our main environment so we don't change any settings in the
         # Mixxx environment
-        test_env = build.env.Clone()
+        env = build.env.Clone()
+        SCons.Export('env')
+        SCons.Export('build')
 
         # -pthread tells GCC to do the right thing regardless of system
         if build.toolchain_is_gnu:
-            test_env.Append(CCFLAGS='-pthread')
-            test_env.Append(LINKFLAGS='-pthread')
+            env.Append(CCFLAGS='-pthread')
+            env.Append(LINKFLAGS='-pthread')
 
-        test_env.Append(CPPPATH="#lib/gtest-1.7.0/include")
-        gtest_dir = test_env.Dir("lib/gtest-1.7.0")
-
-        env = test_env
-        SCons.Export('env')
-        SCons.Export('build')
+        # Build gtest
+        env.Append(CPPPATH="#lib/googletest-1.8.x/googletest/include")
+        gtest_dir = env.Dir("lib/googletest-1.8.x/googletest")
         env.SConscript(env.File('SConscript', gtest_dir))
+        build.env.Append(LIBPATH=gtest_dir)
+        build.env.Append(LIBS=['gtest'])
 
-        # build and configure gmock
-        test_env.Append(CPPPATH="#lib/gmock-1.7.0/include")
-        gmock_dir = test_env.Dir("lib/gmock-1.7.0")
+        # Build gmock
+        env.Append(CPPPATH="#lib/googletest-1.8.x/googlemock/include")
+        gmock_dir = env.Dir("lib/googletest-1.8.x/googlemock")
         env.SConscript(env.File('SConscript', gmock_dir))
+        build.env.Append(LIBPATH=gmock_dir)
+        build.env.Append(LIBS=['gmock'])
 
         # Build the benchmark library
-        test_env.Append(CPPPATH="#lib/benchmark/include")
-        benchmark_dir = test_env.Dir("lib/benchmark")
+        env.Append(CPPPATH="#lib/benchmark/include")
+        benchmark_dir = env.Dir("lib/benchmark")
         env.SConscript(env.File('SConscript', benchmark_dir))
+        build.env.Append(LIBPATH=benchmark_dir)
+        build.env.Append(LIBS=['benchmark'])
 
         return []
 
 
 class LiveBroadcasting(Feature):
+    INTERNAL_LINK = False
+
     def description(self):
         return "Live Broadcasting Support"
 
@@ -702,11 +701,22 @@ class LiveBroadcasting(Feature):
         if not self.enabled(build):
             return
 
-        libshout_found = conf.CheckLib(['libshout', 'shout'])
         build.env.Append(CPPDEFINES='__BROADCAST__')
 
-        if not libshout_found:
-            raise Exception('Could not find libshout or its development headers. Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.')
+        if build.platform_is_linux:
+            # Check if system lib is lower at least 2.4.4 and not suffering bug
+            # https://bugs.launchpad.net/mixxx/+bug/1833225
+            if not conf.CheckForPKG('shout', '2.4.4'):
+                self.INTERNAL_LINK = True
+
+        if not self.INTERNAL_LINK:
+            self.INTERNAL_LINK = not conf.CheckLib(['libshout', 'shout'])
+
+        if self.INTERNAL_LINK:
+            print("Using internal shout_mixxx from lib/libshout")
+            build.env.Append(CPPPATH='include')
+            build.env.Append(CPPPATH='src')
+            return
 
         if build.platform_is_windows and build.static_dependencies:
             conf.CheckLib('winmm')
@@ -714,6 +724,26 @@ class LiveBroadcasting(Feature):
             conf.CheckLib('gdi32')
 
     def sources(self, build):
+        if self.INTERNAL_LINK:
+            # Clone our main environment so we don't change any settings in the
+            # Mixxx environment
+            libshout_env = build.env.Clone()
+
+            if build.toolchain_is_gnu:
+                libshout_env.Append(CCFLAGS='-pthread')
+                libshout_env.Append(LINKFLAGS='-pthread')
+
+            libshout_env.Append(CPPPATH="#lib/libshout")
+            libshout_dir = libshout_env.Dir("#lib/libshout")
+
+            env = libshout_env
+            SCons.Export('env')
+            SCons.Export('build')
+            env.SConscript(env.File('SConscript', libshout_dir))
+
+            build.env.Append(LIBPATH=libshout_dir)
+            build.env.Append(LIBS=['shout_mixxx', 'ogg', 'vorbis', 'theora', 'speex', 'ssl', 'crypto'])
+
         depends.Qt.uic(build)('src/preferences/dialog/dlgprefbroadcastdlg.ui')
         return ['src/preferences/dialog/dlgprefbroadcast.cpp',
                 'src/broadcast/broadcastmanager.cpp',
@@ -769,9 +799,9 @@ class Opus(Feature):
                 'src/encoder/encoderopus.cpp']
 
 
-class FFMPEG(Feature):
+class FFmpeg(Feature):
     def description(self):
-        return "FFmpeg/Avconv support"
+        return "FFmpeg 4.x support"
 
     def enabled(self, build):
         build.flags['ffmpeg'] = util.get_flags(build.env, 'ffmpeg', 0)
@@ -780,28 +810,27 @@ class FFMPEG(Feature):
         return False
 
     def add_options(self, build, vars):
-        vars.Add('ffmpeg', 'Set to 1 to enable FFmpeg/Avconv support \
-                           (supported FFmpeg 0.11-2.x and Avconv 0.8.x-11.x)', 0)
+        vars.Add('ffmpeg', 'Set to 1 to enable FFmpeg 4.x support', 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
 
-        # Supported version are FFmpeg 0.11-2.x and Avconv 0.8.x-11.x
         # FFmpeg is multimedia library that can be found http://ffmpeg.org/
-        # Avconv is fork of FFmpeg that is used mainly in Debian and Ubuntu
-        # that can be found http://libav.org
         if build.platform_is_linux or build.platform_is_osx \
                 or build.platform_is_bsd:
             # Check for libavcodec, libavformat
-            # I just randomly picked version numbers lower than mine for this
-            if not conf.CheckForPKG('libavcodec', '53.35.0'):
-                raise Exception('Missing libavcodec or it\'s too old! It can'
-                                'be separated from main package so check your'
+            if not conf.CheckForPKG('libavcodec', '58'):
+                raise Exception('Missing libavcodec or it\'s too old! It can '
+                                'be separated from main package so check your '
                                 'operating system packages.')
-            if not conf.CheckForPKG('libavformat', '53.21.0'):
-                raise Exception('Missing libavformat  or it\'s too old!'
-                                'It can be separated from main package so'
+            if not conf.CheckForPKG('libavformat', '58'):
+                raise Exception('Missing libavformat or it\'s too old! '
+                                'It can be separated from main package so '
+                                'check your operating system packages.')
+            if not conf.CheckForPKG('libswresample', '3.1'):
+                raise Exception('Missing libswresample or it\'s too old! '
+                                'It can be separated from main package so '
                                 'check your operating system packages.')
 
             # Needed to build new FFmpeg
@@ -810,6 +839,8 @@ class FFMPEG(Feature):
             build.env.Append(CCFLAGS='-D__STDC_FORMAT_MACROS')
 
             # Grabs the libs and cflags for FFmpeg
+            build.env.ParseConfig('pkg-config libswresample --silence-errors \
+                                   --cflags --libs')
             build.env.ParseConfig('pkg-config libavcodec --silence-errors \
                                   --cflags --libs')
             build.env.ParseConfig('pkg-config libavformat --silence-errors \
@@ -817,47 +848,15 @@ class FFMPEG(Feature):
             build.env.ParseConfig('pkg-config libavutil --silence-errors \
                                    --cflags --libs')
 
-            build.env.Append(CPPDEFINES='__FFMPEGFILE__')
+            build.env.Append(CPPDEFINES='__FFMPEG__')
             self.status = "Enabled"
 
         else:
-            # aptitude install libavcodec-dev libavformat-dev liba52-0.7.4-dev
-            # libdts-dev
-            # Append some stuff to CFLAGS in Windows also
-            build.env.Append(CCFLAGS='-D__STDC_CONSTANT_MACROS')
-            build.env.Append(CCFLAGS='-D__STDC_LIMIT_MACROS')
-            build.env.Append(CCFLAGS='-D__STDC_FORMAT_MACROS')
-
-            build.env.Append(LIBS='avcodec')
-            build.env.Append(LIBS='avformat')
-            build.env.Append(LIBS='avutil')
-            build.env.Append(LIBS='z')
-            build.env.Append(LIBS='swresample')
-            # build.env.Append(LIBS = 'a52')
-            # build.env.Append(LIBS = 'dts')
-            build.env.Append(LIBS='gsm')
-            # build.env.Append(LIBS = 'dc1394_control')
-            # build.env.Append(LIBS = 'dl')
-            build.env.Append(LIBS='vorbisenc')
-            # build.env.Append(LIBS = 'raw1394')
-            build.env.Append(LIBS='vorbis')
-            build.env.Append(LIBS='m')
-            build.env.Append(LIBS='ogg')
-            build.env.Append(CPPDEFINES='__FFMPEGFILE__')
-
-        # Add new path for FFmpeg header files.
-        # Non-crosscompiled builds need this too, don't they?
-        if build.crosscompile and build.platform_is_windows \
-                and build.toolchain_is_gnu:
-            build.env.Append(CPPPATH=os.path.join(build.crosscompile_root,
-                                                  'include', 'ffmpeg'))
+            raise Exception('Building with FFmpeg 4.x is not supported'
+                            'for your platform')
 
     def sources(self, build):
-        return ['src/sources/soundsourceffmpeg.cpp',
-                'src/encoder/encoderffmpegresample.cpp',
-                'src/encoder/encoderffmpegcore.cpp',
-                'src/encoder/encoderffmpegmp3.cpp',
-                'src/encoder/encoderffmpegvorbis.cpp']
+        return ['src/sources/soundsourceffmpeg.cpp']
 
 
 class Optimize(Feature):
@@ -1201,7 +1200,7 @@ class Battery(Feature):
             return ["src/util/battery/batterywindows.cpp"]
         elif build.platform_is_osx:
             return ["src/util/battery/batterymac.cpp"]
-        elif build.platform_is_linux:
+        elif build.platform_is_linux or build.platform_is_bsd:
             return ["src/util/battery/batterylinux.cpp"]
         else:
             raise Exception('Battery support is not implemented for the target platform.')

@@ -32,21 +32,21 @@ GLSLWaveformWidget::GLSLWaveformWidget(const char* group, QWidget* parent,
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     if (rgbRenderer) {
-        signalRenderer_ = addRenderer<GLSLWaveformRendererRGBSignal>();
+        m_signalRenderer = addRenderer<GLSLWaveformRendererRGBSignal>();
     } else {
-        signalRenderer_ = addRenderer<GLSLWaveformRendererFilteredSignal>();
+        m_signalRenderer = addRenderer<GLSLWaveformRendererFilteredSignal>();
     }
+#else
+    Q_UNUSED(rgbRenderer);
+#endif // QT_NO_OPENGL && !QT_OPENGL_ES_2
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
 
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
 
-    // Initialization requires activating our context.
-    if (QOpenGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
     m_initSuccess = init();
 }
 
@@ -73,22 +73,22 @@ mixxx::Duration GLSLWaveformWidget::render() {
     t1 = timer.restart();
     draw(&painter, NULL);
     //t2 = timer.restart();
-    //glFinish();
-    //t3 = timer.restart();
-    //qDebug() << "GLVSyncTestWidget "<< t1 << t2 << t3;
+    //qDebug() << "GLSLWaveformWidget" << t1 << t2;
     return t1; // return timer for painter setup
 }
 
-void GLSLWaveformWidget::resize(int width, int height, float devicePixelRatio) {
+void GLSLWaveformWidget::resize(int width, int height) {
     // NOTE: (vrince) this is needed since we allocation buffer on resize
     // and the Gl Context should be properly set
     makeCurrent();
-    WaveformWidgetAbstract::resize(width, height, devicePixelRatio);
+    WaveformWidgetAbstract::resize(width, height);
 }
 
 void GLSLWaveformWidget::mouseDoubleClickEvent(QMouseEvent *event) {
     if (event->button() == Qt::RightButton) {
         makeCurrent();
-        signalRenderer_->debugClick();
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+        m_signalRenderer->debugClick();
+#endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     }
 }

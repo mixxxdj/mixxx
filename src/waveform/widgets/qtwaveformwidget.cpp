@@ -28,9 +28,6 @@ QtWaveformWidget::QtWaveformWidget(const char* group, QWidget* parent)
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
 
-    if (QOpenGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
     m_initSuccess = init();
 }
 
@@ -48,7 +45,7 @@ void QtWaveformWidget::paintEvent(QPaintEvent* event) {
 mixxx::Duration QtWaveformWidget::render() {
     PerformanceTimer timer;
     mixxx::Duration t1;
-    //mixxx::Duration t2, t3;
+    //mixxx::Duration t2;
     timer.start();
     // QPainter makes QOpenGLContext::currentContext() == context()
     // this may delayed until previous buffer swap finished
@@ -56,8 +53,6 @@ mixxx::Duration QtWaveformWidget::render() {
     t1 = timer.restart();
     draw(&painter, NULL);
     //t2 = timer.restart();
-    //glFinish();
-    //t3 = timer.restart();
-    //qDebug() << "GLVSyncTestWidget "<< t1 << t2 << t3;
+    //qDebug() << "GLVSyncTestWidget "<< t1 << t2;
     return t1; // return timer for painter setup
 }

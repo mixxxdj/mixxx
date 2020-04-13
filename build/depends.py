@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import os
+import subprocess
+
 from . import util
 from .mixxx import Dependence, Feature
 import SCons.Script as SCons
@@ -92,6 +94,13 @@ class CoreServices(Dependence):
         build.env.Append(CPPPATH='/System/Library/Frameworks/CoreServices.framework/Headers/')
         build.env.Append(LINKFLAGS='-framework CoreServices')
 
+class Foundation(Dependence):
+    def configure(self, build, conf):
+        if not build.platform_is_osx:
+            return
+        build.env.Append(CPPPATH='/System/Library/Frameworks/Foundation.framework/Headers/')
+        build.env.Append(LINKFLAGS='-framework Foundation')
+
 class IOKit(Dependence):
     """Used for battery measurements and controlling the screensaver on OS X and iOS."""
     def configure(self, build, conf):
@@ -102,9 +111,9 @@ class IOKit(Dependence):
         build.env.Append(LINKFLAGS='-framework IOKit')
 
 class UPower(Dependence):
-    """UPower is used to get battery measurements on Linux."""
+    """UPower is used to get battery measurements on Linux and BSD."""
     def configure(self, build, conf):
-        if not build.platform_is_linux:
+        if not build.platform_is_linux and not build.platform_is_bsd:
             return
         build.env.ParseConfig(
                 'pkg-config upower-glib --silence-errors --cflags --libs')
@@ -174,10 +183,12 @@ class FLAC(Dependence):
 
 class Qt(Dependence):
     DEFAULT_QT5DIRS64 = {'linux': '/usr/lib/x86_64-linux-gnu/qt5',
+                         'bsd': '/usr/local/lib/qt5',
                          'osx': '/Library/Frameworks',
                          'windows': 'C:\\qt\\5.11.1'}
 
     DEFAULT_QT5DIRS32 = {'linux': '/usr/lib/i386-linux-gnu/qt5',
+                         'bsd': '/usr/local/lib/qt5',
                          'osx': '/Library/Frameworks',
                          'windows': 'C:\\qt\\5.11.1'}
 
@@ -188,15 +199,19 @@ class Qt(Dependence):
     @staticmethod
     def find_framework_libdir(qtdir):
         # Try pkg-config on Linux
-        import sys
-        if sys.platform.startswith('linux'):
-            if any(os.access(os.path.join(path, 'pkg-config'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep)):
-                import subprocess
-                try:
-                    core = subprocess.Popen(["pkg-config", "--variable=libdir", "Qt5Core"], stdout = subprocess.PIPE).communicate()[0].rstrip().decode()
-                finally:
-                    if os.path.isdir(core):
-                        return core
+        pkg_config_cmd = ['pkg-config', '--variable=libdir', 'Qt5Core']
+        try:
+            output = subprocess.check_output(pkg_config_cmd)
+        except OSError:
+            # pkg-config is not installed
+            pass
+        except subprocess.CalledProcessError:
+            # pkg-config failed to find Qt5Core
+            pass
+        else:
+            core = output.decode('utf-8').rstrip()
+            if os.path.isdir(core):
+                return core
 
         for d in (os.path.join(qtdir, x) for x in ['', 'Frameworks', 'lib']):
             core = os.path.join(d, 'QtCore.framework')
@@ -259,6 +274,7 @@ class Qt(Dependence):
 
         # Emit various Qt defines
         build.env.Append(CPPDEFINES=['QT_TABLET_SUPPORT'])
+        build.env.Append(CPPDEFINES=['QT_USE_QSTRINGBUILDER'])
 
         if build.static_qt:
             build.env.Append(CPPDEFINES='QT_NODLL')
@@ -275,7 +291,7 @@ class Qt(Dependence):
             conf.CheckLib('sqlite3');
 
         # Enable Qt include paths
-        if build.platform_is_linux:
+        if build.platform_is_linux or build.platform_is_bsd:
             if not conf.CheckForPKG('Qt5Core', '5.0'):
                 raise Exception('Qt >= 5.0 not found')
 
@@ -297,11 +313,6 @@ class Qt(Dependence):
                 # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=65886#c30
                 build.env.Append(CCFLAGS='-fPIC')
 
-        elif build.platform_is_bsd:
-            build.env.Append(LIBS=qt_modules)
-            include_paths = ['$QTDIR/include/%s' % module
-                             for module in qt_modules]
-            build.env.Append(CPPPATH=include_paths)
         elif build.platform_is_osx:
             qtdir = build.env['QTDIR']
             build.env.Append(
@@ -428,15 +439,26 @@ class Qt(Dependence):
                 build.env.Append(LINKFLAGS=['-Wl,-rpath,%s' % libdir_path])
                 build.env.Append(LINKFLAGS="-L" + libdir_path)
 
-        # Mixxx requires C++11 support. Windows enables C++11 features by
-        # default but Clang/GCC require a flag.
-        if not build.platform_is_windows:
-            build.env.Append(CXXFLAGS='-std=c++11')
+        # Mixxx requires C++17 support
+        if build.platform_is_windows:
+            # MSVC
+            build.env.Append(CXXFLAGS='/std:c++17')
+            # Fix build of googletest 1.8.x
+            # https://developercommunity.visualstudio.com/content/problem/225156/google-test-does-not-work-with-stdc17.html
+            # https://devblogs.microsoft.com/cppblog/msvc-now-correctly-reports-__cplusplus/
+            build.env.Append(CXXFLAGS='/Zc:__cplusplus')
+        else:
+            # GCC/Clang
+            build.env.Append(CXXFLAGS='-std=c++17')
+            if build.platform_is_osx and build.compiler_is_clang:
+                # Aligned allocation is only supported since macOS 10.13,
+                # but not for the minimum supported version macOS 10.11
+                build.env.Append(CXXFLAGS='-fno-aligned-allocation')
 
 
 class TestHeaders(Dependence):
     def configure(self, build, conf):
-        build.env.Append(CPPPATH="#lib/gtest-1.7.0/include")
+        build.env.Append(CPPPATH="#lib/googletest-1.8.x/googletest/include")
 
 class FidLib(Dependence):
     def sources(self, build):
@@ -468,6 +490,30 @@ class ReplayGain(Dependence):
     def configure(self, build, conf):
         build.env.Append(CPPPATH="#lib/replaygain")
 
+# For Rekordbox removable device binary database file parsing
+class Kaitai(Dependence):
+
+    def sources(self, build):
+        return ["lib/kaitai/kaitaistream.cpp"]
+
+    def configure(self, build, conf):
+        build.env.Append(CPPDEFINES=['KS_STR_ENCODING_NONE'])
+        build.env.Append(CPPPATH="#lib/kaitai")
+
+# For determining MP3 timing offset cases in Rekordbox library feature
+class MP3GuessEnc(Dependence):
+
+    def sources(self, build):
+        return [
+            "lib/mp3guessenc-0.27.4/mp3guessenc.c",
+            "lib/mp3guessenc-0.27.4/tags.c",
+            "lib/mp3guessenc-0.27.4/decode.c",
+            "lib/mp3guessenc-0.27.4/bit_utils.c",
+        ]
+
+    def configure(self, build, conf):
+        build.env.Append(CPPPATH='#lib/mp3guessenc-0.27.4/')
+
 
 class Ebur128Mit(Dependence):
     INTERNAL_PATH = 'lib/libebur128'
@@ -483,7 +529,9 @@ class Ebur128Mit(Dependence):
         if not conf.CheckLib(['ebur128', 'libebur128']):
             self.INTERNAL_LINK = True;
             env.Append(CPPPATH=['#%s/ebur128' % self.INTERNAL_PATH])
-            if not conf.CheckHeader('sys/queue.h'):
+            import sys
+            if not conf.CheckHeader('sys/queue.h') or sys.platform.startswith('openbsd'):
+                # OpenBSD's queue.h lacks the STAILQ_* macros
                 env.Append(CPPPATH=['#%s/ebur128/queue' % self.INTERNAL_PATH])
 
 
@@ -507,7 +555,7 @@ class SoundTouch(Dependence):
         if env is None:
             env = build.env
 
-        if build.platform_is_linux:
+        if build.platform_is_linux or build.platform_is_bsd:
             # Try using system lib
             if conf.CheckForPKG('soundtouch', '2.0.0'):
                 # System Lib found
@@ -548,7 +596,6 @@ class QueenMaryDsp(Dependence):
             #"#lib/qm-dsp/base/KaiserWindow.cpp",
             "#lib/qm-dsp/base/Pitch.cpp",
             #"#lib/qm-dsp/base/SincWindow.cpp",
-            "#lib/qm-dsp/dsp/chromagram/CQprecalc.cpp",
             "#lib/qm-dsp/dsp/chromagram/Chromagram.cpp",
             "#lib/qm-dsp/dsp/chromagram/ConstantQ.cpp",
             "#lib/qm-dsp/dsp/keydetection/GetKeyMode.cpp",
@@ -577,7 +624,7 @@ class QueenMaryDsp(Dependence):
             "#lib/qm-dsp/dsp/transforms/FFT.cpp",
             #"#lib/qm-dsp/dsp/wavelet/Wavelet.cpp",
             "#lib/qm-dsp/ext/kissfft/kiss_fft.c",
-            "#lib/qm-dsp/ext/kissfft/kiss_fftr.c",
+            "#lib/qm-dsp/ext/kissfft/tools/kiss_fftr.c",
             #"#lib/qm-dsp/hmm/hmm.c",
             "#lib/qm-dsp/maths/Correlation.cpp",
             #"#lib/qm-dsp/maths/CosineDistance.cpp",
@@ -670,6 +717,11 @@ class PortAudioRingBuffer(Dependence):
     def sources(self, build):
         return ['lib/portaudio/pa_ringbuffer.c']
 
+# https://github.com/rigtorp/SPSCQueue
+class RigtorpSPSCQueue(Dependence):
+    def configure(self, build, conf):
+        build.env.Append(CPPPATH='#lib/rigtorp/SPSCQueue/include')
+
 class Reverb(Dependence):
     def configure(self, build, conf):
         build.env.Append(CPPPATH='#lib/reverb')
@@ -716,6 +768,7 @@ class MixxxCore(Feature):
                    "src/preferences/configobject.cpp",
                    "src/preferences/dialog/dlgprefautodj.cpp",
                    "src/preferences/dialog/dlgprefdeck.cpp",
+                   "src/preferences/dialog/dlgprefcolors.cpp",
                    "src/preferences/dialog/dlgprefcrossfader.cpp",
                    "src/preferences/dialog/dlgprefeffects.cpp",
                    "src/preferences/dialog/dlgprefeq.cpp",
@@ -738,6 +791,9 @@ class MixxxCore(Feature):
                    "src/preferences/effectsettingsmodel.cpp",
                    "src/preferences/broadcastprofile.cpp",
                    "src/preferences/upgrade.cpp",
+                   "src/preferences/colorpaletteeditor.cpp",
+                   "src/preferences/colorpaletteeditormodel.cpp",
+                   "src/preferences/colorpalettesettings.cpp",
                    "src/preferences/dlgpreferencepage.cpp",
 
                    "src/effects/effectmanifest.cpp",
@@ -840,9 +896,15 @@ class MixxxCore(Feature):
                    "src/analyzer/analyzerbeats.cpp",
                    "src/analyzer/analyzerkey.cpp",
                    "src/analyzer/analyzerebur128.cpp",
+                   "src/analyzer/analyzersilence.cpp",
                    "src/analyzer/plugins/analyzersoundtouchbeats.cpp",
                    "src/analyzer/plugins/analyzerqueenmarybeats.cpp",
                    "src/analyzer/plugins/analyzerqueenmarykey.cpp",
+                   "src/analyzer/plugins/buffering_utils.cpp",
+
+                   "src/audio/types.cpp",
+                   "src/audio/signalinfo.cpp",
+                   "src/audio/streaminfo.cpp",
 
                    "src/controllers/controller.cpp",
                    "src/controllers/controllerdebug.cpp",
@@ -866,12 +928,14 @@ class MixxxCore(Feature):
                    "src/controllers/midi/midimessage.cpp",
                    "src/controllers/midi/midiutils.cpp",
                    "src/controllers/midi/midicontroller.cpp",
+                   "src/controllers/midi/midicontrollerpreset.cpp",
                    "src/controllers/midi/midicontrollerpresetfilehandler.cpp",
                    "src/controllers/midi/midienumerator.cpp",
                    "src/controllers/midi/midioutputhandler.cpp",
                    "src/controllers/softtakeover.cpp",
                    "src/controllers/keyboard/keyboardeventfilter.cpp",
-                   "src/controllers/colorjsproxy.cpp",
+                   "src/controllers/colormapper.cpp",
+                   "src/controllers/colormapperjsproxy.cpp",
 
                    "src/main.cpp",
                    "src/mixxx.cpp",
@@ -904,6 +968,7 @@ class MixxxCore(Feature):
                    "src/widget/wvumeter.cpp",
                    "src/widget/wpushbutton.cpp",
                    "src/widget/weffectpushbutton.cpp",
+                   "src/widget/whotcuebutton.cpp",
                    "src/widget/wslidercomposed.cpp",
                    "src/widget/wstatuslight.cpp",
                    "src/widget/woverview.cpp",
@@ -936,16 +1001,20 @@ class MixxxCore(Feature):
                    "src/widget/wcoverart.cpp",
                    "src/widget/wcoverartlabel.cpp",
                    "src/widget/wcoverartmenu.cpp",
+                   "src/widget/wcolorpicker.cpp",
+                   "src/widget/wcolorpickeraction.cpp",
+                   "src/widget/wcuemenupopup.cpp",
                    "src/widget/wsingletoncontainer.cpp",
                    "src/widget/wmainmenubar.cpp",
 
-                   "src/musicbrainz/network.cpp",
                    "src/musicbrainz/tagfetcher.cpp",
                    "src/musicbrainz/gzip.cpp",
                    "src/musicbrainz/crc.c",
-                   "src/musicbrainz/acoustidclient.cpp",
                    "src/musicbrainz/chromaprinter.cpp",
-                   "src/musicbrainz/musicbrainzclient.cpp",
+                   "src/musicbrainz/musicbrainz.cpp",
+                   "src/musicbrainz/musicbrainzxml.cpp",
+                   "src/musicbrainz/web/acoustidlookuptask.cpp",
+                   "src/musicbrainz/web/musicbrainzrecordingstask.cpp",
 
                    "src/widget/wtracktableview.cpp",
                    "src/widget/wtracktableviewheader.cpp",
@@ -959,8 +1028,11 @@ class MixxxCore(Feature):
                    "src/database/schemamanager.cpp",
 
                    "src/library/trackcollection.cpp",
+                   "src/library/trackcollectionmanager.cpp",
+                   "src/library/externaltrackcollection.cpp",
                    "src/library/basesqltablemodel.cpp",
                    "src/library/basetrackcache.cpp",
+                   "src/library/basetracktablemodel.cpp",
                    "src/library/columncache.cpp",
                    "src/library/librarytablemodel.cpp",
                    "src/library/searchquery.cpp",
@@ -1023,6 +1095,12 @@ class MixxxCore(Feature):
 
                    "src/library/itunes/itunesfeature.cpp",
                    "src/library/traktor/traktorfeature.cpp",
+                   "src/library/serato/seratofeature.cpp",
+                   "src/library/serato/seratoplaylistmodel.cpp",
+
+                   "src/library/rekordbox/rekordboxfeature.cpp",
+                   "src/library/rekordbox/rekordbox_pdb.cpp",
+                   "src/library/rekordbox/rekordbox_anlz.cpp",
 
                    "src/library/sidebarmodel.cpp",
                    "src/library/library.cpp",
@@ -1034,7 +1112,6 @@ class MixxxCore(Feature):
                    "src/library/scanner/recursivescandirectorytask.cpp",
 
                    "src/library/dao/cuedao.cpp",
-                   "src/library/dao/cue.cpp",
                    "src/library/dao/trackdao.cpp",
                    "src/library/dao/playlistdao.cpp",
                    "src/library/dao/libraryhashdao.cpp",
@@ -1049,6 +1126,8 @@ class MixxxCore(Feature):
                    "src/library/stareditor.cpp",
                    "src/library/bpmdelegate.cpp",
                    "src/library/previewbuttondelegate.cpp",
+                   "src/library/colordelegate.cpp",
+                   "src/library/basecoverartdelegate.cpp",
                    "src/library/coverartdelegate.cpp",
                    "src/library/locationdelegate.cpp",
                    "src/library/tableitemdelegate.cpp",
@@ -1060,6 +1139,11 @@ class MixxxCore(Feature):
                    "src/library/parserpls.cpp",
                    "src/library/parserm3u.cpp",
                    "src/library/parsercsv.cpp",
+
+                   "src/library/trackloader.cpp",
+
+                   "src/network/jsonwebtask.cpp",
+                   "src/network/webtask.cpp",
 
                    "src/widget/wwaveformviewer.cpp",
 
@@ -1084,12 +1168,12 @@ class MixxxCore(Feature):
                    "src/waveform/renderers/waveformrendererrgb.cpp",
                    "src/waveform/renderers/qtwaveformrendererfilteredsignal.cpp",
                    "src/waveform/renderers/qtwaveformrenderersimplesignal.cpp",
+                   "src/waveform/renderers/qtvsynctestrenderer.cpp",
 
                    "src/waveform/renderers/waveformsignalcolors.cpp",
 
                    "src/waveform/renderers/waveformrenderersignalbase.cpp",
                    "src/waveform/renderers/waveformmark.cpp",
-                   "src/waveform/renderers/waveformmarkproperties.cpp",
                    "src/waveform/renderers/waveformmarkset.cpp",
                    "src/waveform/renderers/waveformmarkrange.cpp",
                    "src/waveform/renderers/glwaveformrenderersimplesignal.cpp",
@@ -1099,13 +1183,17 @@ class MixxxCore(Feature):
                    "src/waveform/renderers/glvsynctestrenderer.cpp",
 
                    "src/waveform/widgets/baseqopenglwidget.cpp",
+                   "src/waveform/waveformmarklabel.cpp",
                    "src/waveform/widgets/waveformwidgetabstract.cpp",
                    "src/waveform/widgets/emptywaveformwidget.cpp",
                    "src/waveform/widgets/softwarewaveformwidget.cpp",
                    "src/waveform/widgets/hsvwaveformwidget.cpp",
                    "src/waveform/widgets/rgbwaveformwidget.cpp",
+                   "src/waveform/widgets/qthsvwaveformwidget.cpp",
+                   "src/waveform/widgets/qtrgbwaveformwidget.cpp",
                    "src/waveform/widgets/qtwaveformwidget.cpp",
                    "src/waveform/widgets/qtsimplewaveformwidget.cpp",
+                   "src/waveform/widgets/qtvsynctestwidget.cpp",
                    "src/waveform/widgets/glwaveformwidget.cpp",
                    "src/waveform/widgets/glsimplewaveformwidget.cpp",
                    "src/waveform/widgets/glvsynctestwidget.cpp",
@@ -1132,13 +1220,19 @@ class MixxxCore(Feature):
                    "src/track/beatutils.cpp",
                    "src/track/beats.cpp",
                    "src/track/bpm.cpp",
+                   "src/track/cue.cpp",
+                   "src/track/cueinfo.cpp",
                    "src/track/keyfactory.cpp",
                    "src/track/keys.cpp",
                    "src/track/keyutils.cpp",
                    "src/track/playcounter.cpp",
                    "src/track/replaygain.cpp",
+                   "src/track/serato/markers.cpp",
+                   "src/track/serato/markers2.cpp",
+                   "src/track/serato/tags.cpp",
                    "src/track/track.cpp",
                    "src/track/globaltrackcache.cpp",
+                   "src/track/trackfile.cpp",
                    "src/track/trackmetadata.cpp",
                    "src/track/trackmetadatataglib.cpp",
                    "src/track/tracknumbers.cpp",
@@ -1181,6 +1275,7 @@ class MixxxCore(Feature):
                    "src/util/statsmanager.cpp",
                    "src/util/stat.cpp",
                    "src/util/statmodel.cpp",
+                   "src/util/dnd.cpp",
                    "src/util/duration.cpp",
                    "src/util/time.cpp",
                    "src/util/timer.cpp",
@@ -1198,7 +1293,11 @@ class MixxxCore(Feature):
                    "src/util/xml.cpp",
                    "src/util/tapfilter.cpp",
                    "src/util/movinginterquartilemean.cpp",
+                   "src/util/cache.cpp",
                    "src/util/console.cpp",
+                   "src/util/color/color.cpp",
+                   "src/util/color/colorpalette.cpp",
+                   "src/util/color/predefinedcolorpalettes.cpp",
                    "src/util/db/dbconnection.cpp",
                    "src/util/db/dbconnectionpool.cpp",
                    "src/util/db/dbconnectionpooler.cpp",
@@ -1217,7 +1316,6 @@ class MixxxCore(Feature):
                    "src/util/logger.cpp",
                    "src/util/logging.cpp",
                    "src/util/cmdlineargs.cpp",
-                   "src/util/audiosignal.cpp",
                    "src/util/widgethider.cpp",
                    "src/util/autohidpi.cpp",
                    "src/util/screensaver.cpp",
@@ -1225,8 +1323,7 @@ class MixxxCore(Feature):
                    "src/util/desktophelper.cpp",
                    "src/util/widgetrendertimer.cpp",
                    "src/util/workerthread.cpp",
-                   "src/util/workerthreadscheduler.cpp",
-                   "src/util/color/predefinedcolor.cpp"
+                   "src/util/workerthreadscheduler.cpp"
                    ]
 
         proto_args = {
@@ -1261,6 +1358,7 @@ class MixxxCore(Feature):
             'src/preferences/dialog/dlgprefautodjdlg.ui',
             'src/preferences/dialog/dlgprefbeatsdlg.ui',
             'src/preferences/dialog/dlgprefdeckdlg.ui',
+            'src/preferences/dialog/dlgprefcolorsdlg.ui',
             'src/preferences/dialog/dlgprefcrossfaderdlg.ui',
             'src/preferences/dialog/dlgpreflv2dlg.ui',
             'src/preferences/dialog/dlgprefeffectsdlg.ui',
@@ -1277,7 +1375,11 @@ class MixxxCore(Feature):
             'src/preferences/dialog/dlgprefvinyldlg.ui',
             'src/preferences/dialog/dlgprefwaveformdlg.ui',
         ]
-        map(Qt.uic(build), ui_files)
+
+        # In Python 3.x, map() returns a "map object" (instead of a list),
+        # which is evaluated on-demand rather than at once. To invoke uic
+        # for all *.ui files at once, we need to cast it to a list here.
+        list(map(Qt.uic(build), ui_files))
 
         if build.platform_is_windows:
             # Add Windows resource file with icons and such
@@ -1335,6 +1437,14 @@ class MixxxCore(Feature):
             # Default GNU Options
             build.env.Append(CCFLAGS='-pipe')
             build.env.Append(CCFLAGS='-Wall')
+            build.env.Append(CCFLAGS='-Wextra')
+
+            if build.compiler_is_gcc and build.gcc_major_version >= 9:
+                # Avoid many warnings from GCC 9 about implicitly defined copy assignment
+                # operators that are deprecated for classes with a user-provided copy
+                # constructor. This affects both Qt 5.12 and Mixxx.
+                build.env.Append(CXXFLAGS='-Wno-deprecated-copy')
+
             if build.compiler_is_clang:
                 # Quiet down Clang warnings about inconsistent use of override
                 # keyword until Qt fixes qt_metacall.
@@ -1350,7 +1460,6 @@ class MixxxCore(Feature):
                 # Enable thread-safety analysis.
                 # http://clang.llvm.org/docs/ThreadSafetyAnalysis.html
                 build.env.Append(CCFLAGS='-Wthread-safety')
-            build.env.Append(CCFLAGS='-Wextra')
 
             # Always generate debugging info.
             build.env.Append(CCFLAGS='-g')
@@ -1460,9 +1569,6 @@ class MixxxCore(Feature):
                                       '/usr/local/lib',
                                       '/usr/X11R6/lib'])
             build.env.Append(LIBS='pthread')
-            # why do we need to do this on OpenBSD and not on Linux?  if we
-            # don't then CheckLib("vorbisfile") fails
-            build.env.Append(LIBS=['ogg', 'vorbis'])
 
         # Define for things that would like to special case UNIX (Linux or BSD)
         if build.platform_is_bsd or build.platform_is_linux:
@@ -1510,7 +1616,7 @@ class MixxxCore(Feature):
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
                 QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, LAME,
-                QueenMaryDsp]
+                QueenMaryDsp, Kaitai, MP3GuessEnc, RigtorpSPSCQueue]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

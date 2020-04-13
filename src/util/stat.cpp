@@ -137,7 +137,7 @@ QDebug operator<<(QDebug dbg, const Stat &stat) {
 }
 
 // static
-bool Stat::track(const QString& tag,
+bool Stat::track(QString tag,
                  Stat::StatType type,
                  Stat::ComputeFlags compute,
                  double value) {
@@ -145,11 +145,11 @@ bool Stat::track(const QString& tag,
         return false;
     }
     StatReport report;
-    report.tag = strdup(tag.toUtf8().constData());
+    report.tag = std::move(tag);
     report.type = type;
     report.compute = compute;
     report.time = mixxx::Time::elapsed().toIntegerNanos();
     report.value = value;
     StatsManager* pManager = StatsManager::instance();
-    return pManager && pManager->maybeWriteReport(report);
+    return pManager && pManager->maybeWriteReport(std::move(report));
 }

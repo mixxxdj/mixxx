@@ -48,6 +48,7 @@ available_features = [features.Mad,
                       features.Verbose,
                       features.Optimize,
                       features.FAAD,
+                      features.FFmpeg,
                       features.WavPack,
                       features.ModPlug,
                       features.TestSuite,
@@ -56,15 +57,11 @@ available_features = [features.Mad,
                       features.LocaleCompare,
                       features.Lilv,
                       features.Battery,
+                      features.QtKeychain,
 
                       # "Features" of dubious quality
                       features.PerfTools,
                       features.AsmLib,
-                      features.FFMPEG,
-
-                      # Experimental features
-                      features.OpenGLES,
-                      features.QtKeychain
                       ]
 
 build = mixxx.MixxxBuild(target, machine, build_type,

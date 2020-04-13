@@ -29,6 +29,10 @@ bool presetInfoNameComparator(const PresetInfo &a, const PresetInfo &b) {
 }
 }
 
+PresetInfoEnumerator::PresetInfoEnumerator(const QString& searchPath)
+        : PresetInfoEnumerator(QList<QString>{searchPath}) {
+}
+
 PresetInfoEnumerator::PresetInfoEnumerator(const QStringList& searchPaths)
         : m_controllerDirPaths(searchPaths) {
     loadSupportedPresets();
@@ -48,6 +52,10 @@ QList<PresetInfo> PresetInfoEnumerator::getPresetsByExtension(const QString& ext
 }
 
 void PresetInfoEnumerator::loadSupportedPresets() {
+    m_midiPresets.clear();
+    m_hidPresets.clear();
+    m_bulkPresets.clear();
+
     for (const QString& dirPath : m_controllerDirPaths) {
         QDirIterator it(dirPath);
         while (it.hasNext()) {
@@ -64,9 +72,9 @@ void PresetInfoEnumerator::loadSupportedPresets() {
         }
     }
 
-    qSort(m_midiPresets.begin(), m_midiPresets.end(), presetInfoNameComparator);
-    qSort(m_hidPresets.begin(), m_hidPresets.end(), presetInfoNameComparator);
-    qSort(m_bulkPresets.begin(), m_bulkPresets.end(), presetInfoNameComparator);
+    std::sort(m_midiPresets.begin(), m_midiPresets.end(), presetInfoNameComparator);
+    std::sort(m_hidPresets.begin(), m_hidPresets.end(), presetInfoNameComparator);
+    std::sort(m_bulkPresets.begin(), m_bulkPresets.end(), presetInfoNameComparator);
 
     qDebug() << "Extension" << MIDI_PRESET_EXTENSION << "total"
              << m_midiPresets.length() << "presets";

@@ -1,0 +1,46 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A grid of beatloop controls with a loop double and halve on the left and right.
+  Variables:
+    group: The group for the controls.
+-->
+<Template>
+  <WidgetGroup>  <!--
+    <ObjectName>TEST3</ObjectName> -->
+    <Layout>vertical</Layout>
+    <SizePolicy>me,p</SizePolicy>
+    <MaximumSize>-1,70</MaximumSize>
+    <Children>
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,p</SizePolicy>
+        <MaximumSize>-1,70</MaximumSize>
+        <Children>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <MaximumSize>-1,70</MaximumSize>
+            <Children>
+            </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_faders</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
+      <Transform><Not/></Transform>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

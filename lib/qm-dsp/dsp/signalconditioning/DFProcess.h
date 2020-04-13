@@ -21,19 +21,21 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef CDFPROCESS_H
-#define CDFPROCESS_H
+#ifndef QM_DSP_DFPROCESS_H
+#define QM_DSP_DFPROCESS_H
 
-#include <stdio.h>
 #include "FiltFilt.h"
 
-struct DFProcConfig{
-    unsigned int length; 
-    unsigned int LPOrd; 
+#include <stdio.h>
+
+struct DFProcConfig
+{
+    int length; 
+    int LPOrd; 
     double *LPACoeffs; 
     double *LPBCoeffs; 
-    unsigned int winPre;
-    unsigned int winPost; 
+    int winPre;
+    int winPost; 
     double AlphaNormParam;
     bool isMedianPositive;
     float delta; //delta threshold used as an offset when computing the smoothed detection function
@@ -59,8 +61,7 @@ public:
     virtual ~DFProcess();
 
     void process( double* src, double* dst );
-
-	
+        
 private:
     void initialise( DFProcConfig Config );
     void deInitialise();
@@ -80,8 +81,6 @@ private:
 
     double* m_filtScratchIn;
     double* m_filtScratchOut;
-
-    FilterConfig m_FilterConfigParams;
 
     FiltFilt* m_FiltFilt;
 

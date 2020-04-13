@@ -1,8 +1,9 @@
+#include "waveform/renderers/glslwaveformrenderersignal.h"
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+
 #include <QOpenGLFramebufferObject>
 
-#include "waveform/renderers/glslwaveformrenderersignal.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
-
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 
@@ -14,6 +15,7 @@ GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* w
           m_textureRenderedWaveformCompletion(0),
           m_bDumpPng(false),
           m_rgbShader(rgbShader) {
+    initializeOpenGLFunctions();
 }
 
 GLSLWaveformRendererSignal::~GLSLWaveformRendererSignal() {
@@ -129,8 +131,6 @@ void GLSLWaveformRendererSignal::createGeometry() {
         return;
     }
 
-#ifndef __OPENGLES__
-
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(-1.0, 1.0, -1.0, 1.0, -10.0, 10.0);
@@ -158,7 +158,6 @@ void GLSLWaveformRendererSignal::createGeometry() {
     }
     glEndList();
 
-#endif
 }
 
 void GLSLWaveformRendererSignal::createFrameBuffers() {
@@ -194,8 +193,10 @@ void GLSLWaveformRendererSignal::onSetup(const QDomNode& node) {
 
 void GLSLWaveformRendererSignal::onSetTrack() {
     if (m_loadedTrack) {
-        disconnect(m_loadedTrack.get(), SIGNAL(waveformUpdated()),
-                   this, SLOT(slotWaveformUpdated()));
+        disconnect(m_loadedTrack.get(),
+                &Track::waveformUpdated,
+                this,
+                &GLSLWaveformRendererSignal::slotWaveformUpdated);
     }
 
     slotWaveformUpdated();
@@ -208,8 +209,10 @@ void GLSLWaveformRendererSignal::onSetTrack() {
     // When the track's waveform has been changed (or cleared), it is necessary
     // to update (or delete) the texture containing the waveform which was
     // uploaded to GPU. Otherwise, previous waveform will be shown.
-    connect(pTrack.get(), SIGNAL(waveformUpdated()),
-            this, SLOT(slotWaveformUpdated()));
+    connect(pTrack.get(),
+            &Track::waveformUpdated,
+            this,
+            &GLSLWaveformRendererSignal::slotWaveformUpdated);
 
     m_loadedTrack = pTrack;
 }
@@ -275,8 +278,6 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     // lastVisualIndex = lastIndex + lastIndex%2;
 
     //qDebug() << "GAIN" << allGain << lowGain << midGain << highGain;
-
-#ifndef __OPENGLES__
 
     //paint into frame buffer
     {
@@ -432,7 +433,7 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
 
-#endif
-
     painter->endNativePainting();
 }
+
+#endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)

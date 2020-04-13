@@ -13,6 +13,7 @@ class QtSimpleWaveformWidget : public BaseQOpenGLWidget {
 
     static inline QString getWaveformWidgetName() { return tr("Simple") + " - Qt"; }
     static inline bool useOpenGl() { return true; }
+    static inline bool useOpenGles() { return true; }
     static inline bool useOpenGLShaders() { return false; }
     static inline bool developerOnly() { return false; }
 

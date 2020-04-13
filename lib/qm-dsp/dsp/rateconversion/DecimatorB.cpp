@@ -94,17 +94,17 @@ void DecimatorB::doAntiAlias(const double *src, double *dst, int length,
 
     for (int i = 0; i < length; i++) {
 
-	double input = src[i];
-	double output = input * m_b[0] + o[0];
+        double input = src[i];
+        double output = input * m_b[0] + o[0];
 
-	o[0] = input * m_b[1] - output * m_a[1] + o[1];
-	o[1] = input * m_b[2] - output * m_a[2] + o[2];
-	o[2] = input * m_b[3] - output * m_a[3] + o[3];
-	o[3] = input * m_b[4] - output * m_a[4] + o[4];
-	o[4] = input * m_b[5] - output * m_a[5] + o[5];
-	o[5] = input * m_b[6] - output * m_a[6];
+        o[0] = input * m_b[1] - output * m_a[1] + o[1];
+        o[1] = input * m_b[2] - output * m_a[2] + o[2];
+        o[2] = input * m_b[3] - output * m_a[3] + o[3];
+        o[3] = input * m_b[4] - output * m_a[4] + o[4];
+        o[4] = input * m_b[5] - output * m_a[5] + o[5];
+        o[5] = input * m_b[6] - output * m_a[6];
 
-	dst[i] = output;
+        dst[i] = output;
     }
 }
 
@@ -112,7 +112,6 @@ void DecimatorB::doProcess()
 {
     int filteridx = 0;
     int factorDone = 1;
-    int factorRemaining = m_decFactor;
 
     while (factorDone < m_decFactor) {
 

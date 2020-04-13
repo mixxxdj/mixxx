@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>562</width>
+    <width>710</width>
     <height>723</height>
    </rect>
   </property>
@@ -23,17 +23,109 @@
       <property name="spacing">
        <number>10</number>
       </property>
-      <item row="3" column="0">
-       <widget class="QLabel" name="labelAutoCue">
+      <item row="5" column="0">
+       <widget class="QLabel" name="labelPlayingTrackProtection">
         <property name="text">
-         <string>Auto cue</string>
+         <string>Playing track protection</string>
         </property>
         <property name="buddy">
-         <cstring>checkBoxSeekToCue</cstring>
+         <cstring>checkBoxDisallowLoadToPlayingDeck</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelCueMode">
+        <property name="text">
+         <string>Cue mode</string>
+        </property>
+        <property name="openExternalLinks">
+         <bool>true</bool>
+        </property>
+        <property name="buddy">
+         <cstring>ComboBoxCueMode</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1" colspan="2">
+       <widget class="QComboBox" name="comboBoxLoadPoint"/>
+      </item>
+      <item row="1" column="1" colspan="2">
+       <widget class="QCheckBox" name="checkBoxIntroStartMove">
+        <property name="toolTip">
+         <string>When the analyzer places the intro start point automatically,
+it will place it at the main cue point if the main cue point has been set previously.
+This may be helpful for upgrading to Mixxx 2.3 from earlier versions.
+
+If this option is disabled, the intro start point is automatically placed at the first sound.</string>
+        </property>
+        <property name="text">
+         <string>Set intro start to main cue when analyzing tracks</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
+       <widget class="QLabel" name="labelIntroStartMove">
+        <property name="text">
+         <string>Intro start</string>
+        </property>
+        <property name="buddy">
+         <cstring>ComboBoxCueMode</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" colspan="2">
+       <widget class="QComboBox" name="ComboBoxCueMode">
+        <property name="toolTip">
+         <string>Mixxx mode:
+- Cue button while pause at cue point = preview
+- Cue button while pause not at cue point = set cue point
+- Cue button while playing = pause at cue point
+Mixxx mode (no blinking):
+- Same as Mixxx mode but with no blinking indicators
+Pioneer mode:
+- Same as Mixxx mode with a flashing play button
+Denon mode:
+- Cue button at cue point = preview
+- Cue button not at cue point = pause at cue point
+- Play = set cue point
+Numark mode:
+- Same as Denon mode, but without a flashing play button
+CUP mode:
+- Cue button while pause at cue point = play after release
+- Cue button while pause not at cue point = set cue point and play after release
+- Cue button while playing = go to cue point and play after release
+</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="labelCloneDeckOnLoadDoubleTap">
+        <property name="text">
+         <string>Clone deck</string>
+        </property>
+        <property name="buddy">
+         <cstring>checkBoxCloneDeckOnLoadDoubleTap</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="labelTimeDisplay">
+        <property name="text">
+         <string>Time Format</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QComboBox" name="comboBoxTimeFormat"/>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="labelLoadPoint">
+        <property name="text">
+         <string>Track load point</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
        <widget class="QLabel" name="labelPositionDisplay">
         <property name="enabled">
          <bool>true</bool>
@@ -52,25 +144,14 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="1" colspan="2">
+      <item row="5" column="1" colspan="2">
        <widget class="QCheckBox" name="checkBoxDisallowLoadToPlayingDeck">
         <property name="text">
          <string>Do not load tracks into playing decks</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="1" colspan="2">
-       <widget class="QCheckBox" name="checkBoxSeekToCue">
-        <property name="toolTip">
-         <string>Automatically seeks to the first saved cue point on track load.
-            If none exists, seeks to the beginning of the track.</string>
-        </property>
-        <property name="text">
-         <string>Jump to main cue point on track load</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1" colspan="2">
+      <item row="2" column="1" colspan="2">
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QRadioButton" name="radioButtonElapsed">
@@ -104,63 +185,16 @@
         </item>
        </layout>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="labelCueMode">
-        <property name="text">
-         <string>Cue mode</string>
-        </property>
-        <property name="openExternalLinks">
-         <bool>true</bool>
-        </property>
-        <property name="buddy">
-         <cstring>ComboBoxCueMode</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1" colspan="2">
-       <widget class="QComboBox" name="ComboBoxCueMode">
+      <item row="6" column="1" colspan="2">
+       <widget class="QCheckBox" name="checkBoxCloneDeckOnLoadDoubleTap">
         <property name="toolTip">
-         <string>Mixxx mode:
-- Cue button while pause at cue point = preview
-- Cue button while pause not at cue point = set cue point
-- Cue button while playing = pause at cue point
-Mixxx mode (no blinking):
-- Same as Mixxx mode but with no blinking indicators
-Pioneer mode:
-- Same as Mixxx mode with a flashing play button
-Denon mode:
-- Cue button at cue point = preview
-- Cue button not at cue point = pause at cue point
-- Play = set cue point
-Numark mode:
-- Same as Denon mode, but without a flashing play button
-CUP mode:
-- Cue button while pause at cue point = play after release
-- Cue button while pause not at cue point = set cue point and play after release
-- Cue button while playing = go to cue point and play after release
-</string>
+         <string>Create a playing clone of the first playing deck by double-tapping a Load button on a controller or keyboard.
+You can always drag-and-drop tracks on screen to clone a deck.</string>
         </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="labelPlayingTrackProtection">
         <property name="text">
-         <string>Pla&amp;ying track protection</string>
-        </property>
-        <property name="buddy">
-         <cstring>checkBoxDisallowLoadToPlayingDeck</cstring>
+         <string>Double-press Load button to clone playing track</string>
         </property>
        </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="labelTimeDisplay">
-        <property name="text">
-         <string>Time Format</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QComboBox" name="comboBoxTimeFormat"/>
       </item>
      </layout>
     </widget>
@@ -617,7 +651,6 @@ CUP mode:
   <tabstop>radioButtonElapsed</tabstop>
   <tabstop>radioButtonRemaining</tabstop>
   <tabstop>radioButtonElapsedAndRemaining</tabstop>
-  <tabstop>checkBoxSeekToCue</tabstop>
   <tabstop>checkBoxDisallowLoadToPlayingDeck</tabstop>
   <tabstop>ComboBoxRateRange</tabstop>
   <tabstop>checkBoxInvertSpeedSlider</tabstop>
@@ -768,14 +801,14 @@ CUP mode:
   </connection>
  </connections>
  <buttongroups>
+  <buttongroup name="buttonGroupTrackTime"/>
+  <buttongroup name="buttonGroupKeyUnlockMode"/>
+  <buttongroup name="buttonGroupKeyLockMode"/>
+  <buttongroup name="buttonGroupSpeedBendBehavior"/>
   <buttongroup name="buttonGroupSpeedPitchReset">
    <property name="exclusive">
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroupKeyLockMode"/>
-  <buttongroup name="buttonGroupKeyUnlockMode"/>
-  <buttongroup name="buttonGroupTrackTime"/>
-  <buttongroup name="buttonGroupSpeedBendBehavior"/>
  </buttongroups>
 </ui>

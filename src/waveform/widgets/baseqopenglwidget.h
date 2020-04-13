@@ -9,6 +9,8 @@
 class BaseQOpenGLWidget : public QOpenGLWidget, public WaveformWidgetAbstract {
     Q_OBJECT
   public:
+    // Makes the QOpenGLContext current to facilitate setup logic in child
+    // constructors.
     BaseQOpenGLWidget(const char* group, QWidget* pParent);
     virtual ~BaseQOpenGLWidget() = default;
 

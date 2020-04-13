@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include "util/audiosignal.h"
+#include "audio/signalinfo.h"
 
 // MAX_SEEK_SPEED needs to be good and high to allow room for the very high
 //  instantaneous velocities of advanced scratching (Uzi) and spin-backs.
@@ -24,7 +24,7 @@ class EngineBufferScale : public QObject {
     Q_OBJECT
   public:
     EngineBufferScale();
-    virtual ~EngineBufferScale();
+    ~EngineBufferScale() override = default;
 
     // Sets the scaling parameters.
     // * The base rate (ratio of track sample rate to output sample rate).
@@ -48,10 +48,11 @@ class EngineBufferScale : public QObject {
     }
 
     // Set the desired output sample rate.
-    virtual void setSampleRate(SINT iSampleRate);
+    void setSampleRate(
+            mixxx::audio::SampleRate sampleRate);
 
-    const mixxx::AudioSignal& getAudioSignal() const {
-        return m_audioSignal;
+    const mixxx::audio::SignalInfo& getOutputSignal() const {
+        return m_outputSignal;
     }
 
     // Called from EngineBuffer when seeking, to ensure the buffers are flushed */
@@ -68,7 +69,9 @@ class EngineBufferScale : public QObject {
             SINT iOutputBufferSize) = 0;
 
   private:
-    mixxx::AudioSignal m_audioSignal;
+    mixxx::audio::SignalInfo m_outputSignal;
+
+    virtual void onSampleRateChanged() = 0;
 
   protected:
     double m_dBaseRate;

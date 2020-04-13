@@ -54,10 +54,13 @@ public:
     // Returns the current engine rate.  "reportScratching" is used to tell
     // the caller that the user is currently scratching, and this is used to
     // disable keylock.
-    double calculateSpeed(double baserate, double speed, bool paused,
-                         int iSamplesPerBuffer, bool* pReportScratching,
-                         bool* pReportReverse);
-    double calcRateRatio() const;
+    double calculateSpeed(
+            double baserate,
+            double speed,
+            bool paused,
+            int iSamplesPerBuffer,
+            bool* pReportScratching,
+            bool* pReportReverse);
 
     // Set rate change when temp rate button is pressed
     static void setTemporaryRateChangeCoarseAmount(double v);
@@ -77,9 +80,13 @@ public:
     // Set Rate Ramp Sensitivity
     static void setRateRampSensitivity(int);
     static int getRateRampSensitivity();
-    void notifySeek(double dNewPlaypos, bool adjustingPhase) override;
+    void notifySeek(double dNewPlaypos) override;
+    bool isReverseButtonPressed();
 
   public slots:
+    void slotRateRangeChanged(double);
+    void slotRateSliderChanged(double);
+    void slotRateRatioChanged(double);
     void slotReverseRollActivate(double);
     void slotControlRatePermDown(double);
     void slotControlRatePermDownSmall(double);
@@ -121,6 +128,7 @@ public:
     ControlPushButton* m_pButtonRatePermUp;
     ControlPushButton* m_pButtonRatePermUpSmall;
 
+    ControlObject* m_pRateRatio;
     ControlObject* m_pRateDir;
     ControlObject* m_pRateRange;
     ControlPotmeter* m_pRateSlider;

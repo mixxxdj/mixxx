@@ -22,6 +22,7 @@
 class ControlProxy;
 class VisualPlayPosition;
 class VinylControlManager;
+class VSyncThread;
 
 class WSpinny : public QOpenGLWidget, public WBaseWidget, public VinylSignalQualityListener,
                 public TrackDropTarget {
@@ -46,18 +47,22 @@ class WSpinny : public QOpenGLWidget, public WBaseWidget, public VinylSignalQual
     void updateVinylControlEnabled(double enabled);
     void updateVinylControlSignalEnabled(double enabled);
     void updateSlipEnabled(double enabled);
-    void render();
+    void slotShouldRenderOnNextTick();
 
   protected slots:
-    void slotCoverFound(const QObject* pRequestor,
-                        const CoverInfoRelative& info, QPixmap pixmap, bool fromCache);
+    void slotCoverFound(
+            const QObject* pRequestor,
+            const CoverInfo& coverInfo,
+            const QPixmap& pixmap,
+            quint16 requestedHash,
+            bool coverInfoUpdated);
     void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
     void slotTrackCoverArtUpdated();
 
   signals:
-    void trackDropped(QString filename, QString group);
-    void cloneDeck(QString source_group, QString target_group);
+    void trackDropped(QString filename, QString group) override;
+    void cloneDeck(QString source_group, QString target_group) override;
 
   protected:
     //QWidget:
@@ -78,9 +83,10 @@ class WSpinny : public QOpenGLWidget, public WBaseWidget, public VinylSignalQual
   private slots:
     void slotAboutToCompose();
     void slotFrameSwapped();
-    void slotShouldRenderOnNextTick();
 
   private:
+    void render();
+
     QString m_group;
     UserSettingsPointer m_pConfig;
     std::shared_ptr<QImage> m_pBgImage;

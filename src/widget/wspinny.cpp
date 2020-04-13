@@ -1,13 +1,16 @@
-#include <QtDebug>
 #include <QApplication>
-#include <QUrl>
 #include <QMimeData>
+#include <QOpenGLContext>
 #include <QStylePainter>
+#include <QUrl>
 #include <QWindow>
+#include <QtDebug>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "library/coverartcache.h"
+#include "library/coverartutils.h"
+#include "util/compatibility.h"
 #include "util/dnd.h"
 #include "util/math.h"
 #include "util/time.h"
@@ -53,7 +56,7 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
           m_iFullRotations(0),
           m_dPrevTheta(0.),
           m_dTheta(0.),
-          m_dRotationsPerSecond(0.),
+          m_dRotationsPerSecond(MIXXX_VINYL_SPEED_33_NUM / 60),
           m_bClampFailedWarning(false),
           m_bGhostPlayback(false),
           m_pPlayer(pPlayer),
@@ -65,13 +68,12 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
 #endif
     //Drag and drop
     setAcceptDrops(true);
-
     CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != nullptr) {
-        connect(pCache, SIGNAL(coverFound(const QObject*,
-                                          const CoverInfoRelative&, QPixmap, bool)),
-                this, SLOT(slotCoverFound(const QObject*,
-                                          const CoverInfoRelative&, QPixmap, bool)));
+    if (pCache) {
+        connect(pCache,
+                &CoverArtCache::coverFound,
+                this,
+                &WSpinny::slotCoverFound);
     }
 
     if (m_pPlayer != nullptr) {
@@ -257,20 +259,21 @@ void WSpinny::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
 
 void WSpinny::slotTrackCoverArtUpdated() {
     if (m_loadedTrack) {
-        CoverArtCache::requestCover(*m_loadedTrack, this);
+        CoverArtCache::requestTrackCover(this, m_loadedTrack);
     }
 }
 
-void WSpinny::slotCoverFound(const QObject* pRequestor,
-                             const CoverInfoRelative& info, QPixmap pixmap,
-                             bool fromCache) {
-    Q_UNUSED(info);
-    Q_UNUSED(fromCache);
-
-    if (pRequestor == this && m_loadedTrack &&
-            m_loadedTrack->getCoverHash() == info.hash) {
-        qDebug() << "WSpinny::slotCoverFound" << pRequestor << info
-                 << pixmap.size();
+void WSpinny::slotCoverFound(
+        const QObject* pRequestor,
+        const CoverInfo& coverInfo,
+        const QPixmap& pixmap,
+        quint16 requestedHash,
+        bool coverInfoUpdated) {
+    Q_UNUSED(requestedHash);
+    Q_UNUSED(coverInfoUpdated);
+    if (pRequestor == this &&
+            m_loadedTrack &&
+            m_loadedTrack->getLocation() == coverInfo.trackLocation) {
         m_loadedCover = pixmap;
         m_loadedCoverScaled = scaledCoverArt(pixmap);
         update();
@@ -285,12 +288,10 @@ void WSpinny::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
 }
 
 void WSpinny::slotReloadCoverArt() {
-    if (m_loadedTrack != nullptr) {
-        CoverArtCache* pCache = CoverArtCache::instance();
-        if (pCache) {
-            pCache->requestGuessCover(m_loadedTrack);
-        }
+    if (!m_loadedTrack) {
+        return;
     }
+    guessTrackCoverInfoConcurrently(m_loadedTrack);
 }
 
 void WSpinny::paintEvent(QPaintEvent *e) {
@@ -303,14 +304,15 @@ void WSpinny::render() {
     }
 
     if (!m_pVisualPlayPos.isNull()) {
-        m_pVisualPlayPos->getPlaySlipAt(m_lastSwapDurationMovingAverage,
-                                        &m_dAngleCurrentPlaypos,
-                                        &m_dGhostAngleCurrentPlaypos);
+        m_pVisualPlayPos->getPlaySlipAtNextSwap(m_lastSwapDurationMovingAverage,
+                                                &m_dAngleCurrentPlaypos,
+                                                &m_dGhostAngleCurrentPlaypos);
     }
+
+    double scaleFactor = getDevicePixelRatioF(this);
 
     QPainter p(this);
     p.setRenderHint(QPainter::Antialiasing);
-    p.setRenderHint(QPainter::HighQualityAntialiasing);
     p.setRenderHint(QPainter::SmoothPixmapTransform);
 
     if (m_pBgImage) {
@@ -319,8 +321,8 @@ void WSpinny::render() {
 
     if (m_bShowCover && !m_loadedCoverScaled.isNull()) {
         // Some covers aren't square, so center them.
-        int x = (width() - m_loadedCoverScaled.width()) / 2;
-        int y = (height() - m_loadedCoverScaled.height()) / 2;
+        int x = (width() - m_loadedCoverScaled.width() / scaleFactor) / 2;
+        int y = (height() - m_loadedCoverScaled.height() / scaleFactor) / 2;
         p.drawPixmap(x, y, m_loadedCoverScaled);
     }
 
@@ -357,13 +359,6 @@ void WSpinny::render() {
         m_dGhostAngleLastPlaypos = m_dGhostAngleCurrentPlaypos;
     }
 
-    if (m_pFgImage && !m_pFgImage->isNull()) {
-        // Now rotate the image and draw it on the screen.
-        p.rotate(m_fAngle);
-        p.drawImage(-(m_fgImageScaled.width() / 2),
-                    -(m_fgImageScaled.height() / 2), m_fgImageScaled);
-    }
-
     if (paintGhost) {
         p.restore();
         p.save();
@@ -375,13 +370,23 @@ void WSpinny::render() {
         //and draw the beat marks from there.
         p.restore();
     }
+
+    if (m_pFgImage && !m_pFgImage->isNull()) {
+        // Now rotate the image and draw it on the screen.
+        p.rotate(m_fAngle);
+        p.drawImage(-(m_fgImageScaled.width() / 2),
+                    -(m_fgImageScaled.height() / 2), m_fgImageScaled);
+    }
 }
 
 QPixmap WSpinny::scaledCoverArt(const QPixmap& normal) {
     if (normal.isNull()) {
         return QPixmap();
     }
-    return normal.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QPixmap scaled = normal.scaled(size() * getDevicePixelRatioF(this),
+            Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    scaled.setDevicePixelRatio(getDevicePixelRatioF(this));
+    return scaled;
 }
 
 void WSpinny::resizeEvent(QResizeEvent* event) {
@@ -609,8 +614,8 @@ void WSpinny::mousePressEvent(QMouseEvent * e) {
     } else {
         if (!m_loadedCover.isNull()) {
             m_pDlgCoverArt->init(m_loadedTrack);
-        } else if (!m_pDlgCoverArt->isVisible()) {
-            m_pCoverMenu->popup(e->pos());
+        } else if (!m_pDlgCoverArt->isVisible() && m_bShowCover) {
+            m_pCoverMenu->popup(e->globalPos());
         }
     }
 }
@@ -658,7 +663,7 @@ void WSpinny::dragEnterEvent(QDragEnterEvent* event) {
     DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
 }
 
-void WSpinny::dropEvent(QDropEvent * event) {
+void WSpinny::dropEvent(QDropEvent* event) {
     DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
 }
 
@@ -683,5 +688,7 @@ void WSpinny::slotFrameSwapped() {
 
 void WSpinny::slotShouldRenderOnNextTick() {
     m_shouldRenderOnNextTick = true;
-    update();
+    if (isVisible()) {
+        update();
+    }
 }

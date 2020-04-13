@@ -1,8 +1,6 @@
-#ifndef DLGPREFCONTROLLERS_H
-#define DLGPREFCONTROLLERS_H
+#pragma once
 
 #include <QTreeWidgetItem>
-#include <QSignalMapper>
 
 #include "preferences/usersettings.h"
 #include "controllers/ui_dlgprefcontrollersdlg.h"
@@ -11,6 +9,10 @@
 class DlgPreferences;
 class DlgPrefController;
 class ControllerManager;
+
+/// Controllers Overview in the preferences
+///
+/// This dialog allows selecting controllers for configuration.
 
 class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControllersDlg {
     Q_OBJECT
@@ -43,7 +45,4 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
     QTreeWidgetItem* m_pControllerTreeItem;
     QList<DlgPrefController*> m_controllerWindows;
     QList<QTreeWidgetItem*> m_controllerTreeItems;
-    QSignalMapper m_buttonMapper;
 };
-
-#endif /* DLGPREFCONTROLLERS_H */

@@ -6,8 +6,8 @@
     email                : spappalardo@mixxx.org
  ***************************************************************************/
 
+#include "controllers/colormapperjsproxy.h"
 #include "controllers/controllerengine.h"
-
 #include "controllers/controller.h"
 #include "controllers/controllerdebug.h"
 #include "control/controlobject.h"
@@ -29,9 +29,11 @@ const int kDecks = 16;
 const int kScratchTimerMs = 1;
 const double kAlphaBetaDt = kScratchTimerMs / 1000.0;
 
-ControllerEngine::ControllerEngine(Controller* controller)
+ControllerEngine::ControllerEngine(
+        Controller* controller, UserSettingsPointer pConfig)
         : m_pEngine(nullptr),
           m_pController(controller),
+          m_pConfig(pConfig),
           m_bPopups(false),
           m_pBaClass(nullptr) {
     // Handle error dialog buttons
@@ -185,7 +187,6 @@ void ControllerEngine::gracefulShutdown() {
         ++it;
     }
 
-    m_pColorJSProxy.reset();
     delete m_pBaClass;
     m_pBaClass = nullptr;
 }
@@ -213,8 +214,9 @@ void ControllerEngine::initializeScriptEngine() {
         engineGlobalObject.setProperty("midi", m_pEngine->newQObject(m_pController));
     }
 
-    m_pColorJSProxy = std::make_unique<ColorJSProxy>(m_pEngine);
-    engineGlobalObject.setProperty("color", m_pEngine->newQObject(m_pColorJSProxy.get()));
+    QScriptValue constructor = m_pEngine->newFunction(ColorMapperJSProxyConstructor);
+    QScriptValue metaObject = m_pEngine->newQMetaObject(&ColorMapperJSProxy::staticMetaObject, constructor);
+    engineGlobalObject.setProperty("ColorMapper", metaObject);
 
     m_pBaClass = new ByteArrayClass(m_pEngine);
     engineGlobalObject.setProperty("ByteArray", m_pBaClass->constructor());
@@ -225,14 +227,10 @@ void ControllerEngine::initializeScriptEngine() {
    Input:   List of script paths and file names to load
    Output:  Returns true if no errors occurred.
    -------- ------------------------------------------------------ */
-bool ControllerEngine::loadScriptFiles(const QList<QString>& scriptPaths,
-                                       const QList<ControllerPreset::ScriptFileInfo>& scripts) {
-    m_lastScriptPaths = scriptPaths;
-
-    // scriptPaths holds the paths to search in when we're looking for scripts
+bool ControllerEngine::loadScriptFiles(const QList<ControllerPreset::ScriptFileInfo>& scripts) {
     bool result = true;
-    for (const ControllerPreset::ScriptFileInfo& script : scripts) {
-        if (!evaluate(script.name, scriptPaths)) {
+    for (const auto& script : scripts) {
+        if (!evaluate(script.file)) {
             result = false;
         }
 
@@ -241,10 +239,12 @@ bool ControllerEngine::loadScriptFiles(const QList<QString>& scriptPaths,
         }
     }
 
+    m_lastScriptFiles = scripts;
+
     connect(&m_scriptWatcher, SIGNAL(fileChanged(QString)),
             this, SLOT(scriptHasChanged(QString)));
 
-    emit(initialized());
+    emit initialized();
 
     return result && m_scriptErrors.isEmpty();
 }
@@ -269,10 +269,10 @@ void ControllerEngine::scriptHasChanged(const QString& scriptFilename) {
     }
 
     initializeScriptEngine();
-    loadScriptFiles(m_lastScriptPaths, pPreset->scripts);
+    loadScriptFiles(m_lastScriptFiles);
 
     qDebug() << "Re-initializing scripts";
-    initializeScripts(pPreset->scripts);
+    initializeScripts(m_lastScriptFiles);
 }
 
 /* -------- ------------------------------------------------------
@@ -298,7 +298,7 @@ void ControllerEngine::initializeScripts(const QList<ControllerPreset::ScriptFil
     // Call the init method for all the prefixes.
     callFunctionOnObjects(m_scriptFunctionPrefixes, "init", args);
 
-    emit(initialized());
+    emit initialized();
 }
 
 /* -------- ------------------------------------------------------
@@ -308,10 +308,7 @@ void ControllerEngine::initializeScripts(const QList<ControllerPreset::ScriptFil
    Output:  -
    -------- ------------------------------------------------------ */
 bool ControllerEngine::evaluate(const QString& filepath) {
-    QList<QString> dummy;
-    bool ret = evaluate(filepath, dummy);
-
-    return ret;
+    return evaluate(QFileInfo(filepath));
 }
 
 bool ControllerEngine::syntaxIsValid(const QString& scriptCode) {
@@ -531,7 +528,7 @@ void ControllerEngine::errorDialogButton(const QString& key, QMessageBox::Standa
                SLOT(errorDialogButton(QString, QMessageBox::StandardButton)));
 
     if (button == QMessageBox::Retry) {
-        emit(resetController());
+        emit resetController();
     }
 }
 
@@ -764,19 +761,22 @@ void ScriptConnection::executeCallback(double value) const {
    Purpose: (Dis)connects a ScriptConnection
    Input:   the ScriptConnection to disconnect
    -------- ------------------------------------------------------ */
-void ControllerEngine::removeScriptConnection(const ScriptConnection connection) {
+bool ControllerEngine::removeScriptConnection(const ScriptConnection connection) {
     ControlObjectScript* coScript = getControlObjectScript(connection.key.group,
                                                            connection.key.item);
 
     if (m_pEngine == nullptr || coScript == nullptr) {
-        return;
+        return false;
     }
 
-    coScript->removeScriptConnection(connection);
+    return coScript->removeScriptConnection(connection);
 }
 
-void ScriptConnectionInvokableWrapper::disconnect() {
-    m_scriptConnection.controllerEngine->removeScriptConnection(m_scriptConnection);
+bool ScriptConnectionInvokableWrapper::disconnect() {
+    // if the removeScriptConnection succeeded, the connection has been successfully disconnected
+    bool success = m_scriptConnection.controllerEngine->removeScriptConnection(m_scriptConnection);
+    m_isConnected = !success;
+    return success;
 }
 
 /* -------- ------------------------------------------------------
@@ -928,35 +928,22 @@ void ControllerEngine::trigger(QString group, QString name) {
    Input:   Script filename
    Output:  false if the script file has errors or doesn't exist
    -------- ------------------------------------------------------ */
-bool ControllerEngine::evaluate(const QString& scriptName, QList<QString> scriptPaths) {
+bool ControllerEngine::evaluate(const QFileInfo& scriptFile) {
     if (m_pEngine == nullptr) {
         return false;
     }
 
-    QString filename = "";
-    QFile input;
-
-    if (scriptPaths.length() == 0) {
-        // If we aren't given any paths to search, assume that scriptName
-        // contains the full file name
-        filename = scriptName;
-        input.setFileName(filename);
-    } else {
-        for (const QString& scriptPath : scriptPaths) {
-            QDir scriptPathDir(scriptPath);
-            filename = scriptPathDir.absoluteFilePath(scriptName);
-            input.setFileName(filename);
-            if (input.exists())  {
-                qDebug() << "ControllerEngine: Watching JS File:" << filename;
-                m_scriptWatcher.addPath(filename);
-                break;
-            }
-        }
+    if (!scriptFile.exists()) {
+        qWarning() << "ControllerEngine: File does not exist:" << scriptFile.absoluteFilePath();
+        return false;
     }
+    m_scriptWatcher.addPath(scriptFile.absoluteFilePath());
 
-    qDebug() << "ControllerEngine: Loading" << filename;
+    qDebug() << "ControllerEngine: Loading" << scriptFile.absoluteFilePath();
 
     // Read in the script file
+    QString filename = scriptFile.absoluteFilePath();
+    QFile input(filename);
     if (!input.open(QIODevice::ReadOnly)) {
         qWarning() << QString("ControllerEngine: Problem opening the script file: %1, error # %2, %3")
                 .arg(filename, QString::number(input.error()), input.errorString());
@@ -1131,21 +1118,10 @@ void ControllerEngine::timerEvent(QTimerEvent *event) {
 
 double ControllerEngine::getDeckRate(const QString& group) {
     double rate = 0.0;
-    ControlObjectScript* pRate = getControlObjectScript(group, "rate");
-    if (pRate != nullptr) {
-        rate = pRate->get();
+    ControlObjectScript* pRateRatio = getControlObjectScript(group, "rate_ratio");
+    if (pRateRatio != nullptr) {
+        rate = pRateRatio->get();
     }
-    ControlObjectScript* pRateDir = getControlObjectScript(group, "rate_dir");
-    if (pRateDir != nullptr) {
-        rate *= pRateDir->get();
-    }
-    ControlObjectScript* pRateRange = getControlObjectScript(group, "rateRange");
-    if (pRateRange != nullptr) {
-        rate *= pRateRange->get();
-    }
-
-    // Add 1 since the deck is playing
-    rate += 1.0;
 
     // See if we're in reverse play
     ControlObjectScript* pReverse = getControlObjectScript(group, "reverse");

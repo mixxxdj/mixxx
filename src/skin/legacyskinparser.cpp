@@ -32,59 +32,60 @@
 
 #include "recording/recordingmanager.h"
 
+#include "util/cmdlineargs.h"
+#include "util/timer.h"
+#include "util/valuetransformer.h"
+#include "waveform/waveformwidgetfactory.h"
 #include "widget/controlwidgetconnection.h"
 #include "widget/wbasewidget.h"
+#include "widget/wbattery.h"
+#include "widget/wbeatspinbox.h"
+#include "widget/wcombobox.h"
 #include "widget/wcoverart.h"
-#include "widget/wwidget.h"
+#include "widget/wdisplay.h"
+#include "widget/weffect.h"
+#include "widget/weffectbuttonparameter.h"
+#include "widget/weffectchain.h"
+#include "widget/weffectparameter.h"
+#include "widget/weffectparameterbase.h"
+#include "widget/weffectparameterknob.h"
+#include "widget/weffectparameterknobcomposed.h"
+#include "widget/weffectpushbutton.h"
+#include "widget/weffectselector.h"
+#include "widget/whotcuebutton.h"
+#include "widget/wkey.h"
 #include "widget/wknob.h"
 #include "widget/wknobcomposed.h"
-#include "widget/wslidercomposed.h"
-#include "widget/wpushbutton.h"
-#include "widget/weffectpushbutton.h"
-#include "widget/wdisplay.h"
-#include "widget/wvumeter.h"
-#include "widget/wstatuslight.h"
 #include "widget/wlabel.h"
-#include "widget/wtime.h"
-#include "widget/wrecordingduration.h"
-#include "widget/wtracktext.h"
-#include "widget/wtrackproperty.h"
-#include "widget/wstarrating.h"
+#include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
 #include "widget/wnumber.h"
 #include "widget/wnumberdb.h"
 #include "widget/wnumberpos.h"
 #include "widget/wnumberrate.h"
-#include "widget/weffectchain.h"
-#include "widget/weffect.h"
-#include "widget/weffectselector.h"
-#include "widget/weffectparameter.h"
-#include "widget/weffectparameterknob.h"
-#include "widget/weffectparameterknobcomposed.h"
-#include "widget/weffectbuttonparameter.h"
-#include "widget/weffectparameterbase.h"
-#include "widget/wbeatspinbox.h"
-#include "widget/woverviewlmh.h"
 #include "widget/woverviewhsv.h"
+#include "widget/woverviewlmh.h"
 #include "widget/woverviewrgb.h"
-#include "widget/wspinny.h"
-#include "widget/wwaveformviewer.h"
-#include "waveform/waveformwidgetfactory.h"
-#include "widget/wsearchlineedit.h"
-#include "widget/wlibrary.h"
-#include "widget/wlibrarysidebar.h"
-#include "widget/wskincolor.h"
 #include "widget/wpixmapstore.h"
-#include "widget/wwidgetstack.h"
-#include "widget/wsizeawarestack.h"
-#include "widget/wwidgetgroup.h"
-#include "widget/wkey.h"
-#include "widget/wbattery.h"
-#include "widget/wcombobox.h"
-#include "widget/wsplitter.h"
+#include "widget/wpushbutton.h"
+#include "widget/wrecordingduration.h"
+#include "widget/wsearchlineedit.h"
 #include "widget/wsingletoncontainer.h"
-#include "util/valuetransformer.h"
-#include "util/cmdlineargs.h"
-#include "util/timer.h"
+#include "widget/wsizeawarestack.h"
+#include "widget/wskincolor.h"
+#include "widget/wslidercomposed.h"
+#include "widget/wspinny.h"
+#include "widget/wsplitter.h"
+#include "widget/wstarrating.h"
+#include "widget/wstatuslight.h"
+#include "widget/wtime.h"
+#include "widget/wtrackproperty.h"
+#include "widget/wtracktext.h"
+#include "widget/wvumeter.h"
+#include "widget/wwaveformviewer.h"
+#include "widget/wwidget.h"
+#include "widget/wwidgetgroup.h"
+#include "widget/wwidgetstack.h"
 
 using mixxx::skin::SkinManifest;
 
@@ -505,6 +506,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseStandardWidget<WPushButton>(node));
     } else if (nodeName == "EffectPushButton") {
         result = wrapWidget(parseEffectPushButton(node));
+    } else if (nodeName == "HotcueButton") {
+        result = wrapWidget(parseStandardWidget<WHotcueButton>(node));
     } else if (nodeName == "ComboBox") {
         result = wrapWidget(parseStandardWidget<WComboBox>(node));
     } else if (nodeName == "Overview") {
@@ -1178,16 +1181,25 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
         return dummy;
     }
 
+    auto waveformWidgetFactory = WaveformWidgetFactory::instance();
+
+    if (!waveformWidgetFactory->isOpenGlAvailable() &&
+            !waveformWidgetFactory->isOpenGlesAvailable()) {
+        WLabel* dummy = new WLabel(m_pParent);
+        //: Shown when Spinny can not be displayed. Please keep \n unchanged
+        dummy->setText(tr("No OpenGL\nsupport."));
+        return dummy;
+    }
+
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
     WSpinny* spinny = new WSpinny(m_pParent, channelStr, m_pConfig,
                                   m_pVCManager, pPlayer);
     commonWidgetSetup(node, spinny);
 
-    auto waveformWidgetFactory = WaveformWidgetFactory::instance();
-    connect(waveformWidgetFactory, SIGNAL(renderSpinnies()),
-            spinny, SLOT(slotShouldRenderOnNextTick()));
-    connect(spinny, SIGNAL(trackDropped(QString, QString)),
-            m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
+    connect(waveformWidgetFactory, &WaveformWidgetFactory::renderSpinnies,
+            spinny, &WSpinny::slotShouldRenderOnNextTick);
+    connect(spinny, &WSpinny::trackDropped,
+            m_pPlayerManager, &PlayerManager::slotLoadToPlayer);
     connect(spinny, &WSpinny::cloneDeck,
             m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
@@ -1213,13 +1225,7 @@ QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
     commonWidgetSetup(node, pLineEditSearch, false);
     pLineEditSearch->setup(node, *m_pContext);
 
-    // Connect search box signals to the library
-    connect(pLineEditSearch, SIGNAL(search(const QString&)),
-            m_pLibrary, SIGNAL(search(const QString&)));
-    connect(m_pLibrary, SIGNAL(disableSearch()),
-            pLineEditSearch, SLOT(disableSearch()));
-    connect(m_pLibrary, SIGNAL(restoreSearch(const QString&)),
-            pLineEditSearch, SLOT(restoreSearch(const QString&)));
+    m_pLibrary->bindSearchboxWidget(pLineEditSearch);
 
     return pLineEditSearch;
 }
@@ -1308,14 +1314,17 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
     WLibrary* pLibraryWidget = new WLibrary(m_pParent);
     pLibraryWidget->installEventFilter(m_pKeyboard);
     pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    pLibraryWidget->setup(node, *m_pContext);
 
     // Connect Library search signals to the WLibrary
-    connect(m_pLibrary, SIGNAL(search(const QString&)),
-            pLibraryWidget, SLOT(search(const QString&)));
+    connect(m_pLibrary,
+            &Library::search,
+            pLibraryWidget,
+            &WLibrary::search);
 
-    m_pLibrary->bindWidget(pLibraryWidget, m_pKeyboard);
+    m_pLibrary->bindLibraryWidget(pLibraryWidget, m_pKeyboard);
 
-    // This must come after the bindWidget or we will not style any of the
+    // This must come after the bindLibraryWidget or we will not style any of the
     // LibraryView's because they have not been added yet.
     commonWidgetSetup(node, pLibraryWidget, false);
 
@@ -1402,48 +1411,14 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
     // Workaround to support legacy color styling
     QColor color(0,0,0);
 
-
-    // Qt 4.7.0's GTK style is broken.
-    bool hasQtKickedUsInTheNuts = false;
-
-#ifdef __LINUX__
-#define ohyesithas true
-    QString QtVersion = qVersion();
-    if (QtVersion == "4.7.0") {
-        hasQtKickedUsInTheNuts = ohyesithas;
-    }
-#undef ohyesithas
-#endif
-
-    // Style the library preview button with a default image.
-    QString styleHack = (
-        "#LibraryPreviewButton { background: transparent; border: 0; }"
-        "#LibraryPreviewButton:checked {"
-        "  image: url(:/images/library/ic_library_preview_pause.svg);"
-        "}"
-        "#LibraryPreviewButton:!checked {"
-        "  image: url(:/images/library/ic_library_preview_play.svg);"
-        "}");
-    // Style the library BPM Button with a default image
-    styleHack.append(QString(
-        "QPushButton#LibraryBPMButton { background: transparent; border: 0; }"
-        "QPushButton#LibraryBPMButton:checked {image: url(:/images/library/ic_library_locked.svg);}"
-        "QPushButton#LibraryBPMButton:!checked {image: url(:/images/library/ic_library_unlocked.svg);}"));
-
+    QString styleHack = "";
     QString fgColor;
     if (m_pContext->hasNodeSelectString(node, "FgColor", &fgColor)) {
         color.setNamedColor(fgColor);
         color = WSkinColor::getCorrectColor(color);
 
-        if (hasQtKickedUsInTheNuts) {
-            styleHack.append(QString("QTreeView { color: %1; }\n ").arg(color.name()));
-            styleHack.append(QString("QTableView { color: %1; }\n ").arg(color.name()));
-            styleHack.append(QString("QTableView::item:!selected { color: %1; }\n ").arg(color.name()));
-            styleHack.append(QString("QTreeView::item:!selected { color: %1; }\n ").arg(color.name()));
-        } else {
-            styleHack.append(QString("WLibraryTableView { color: %1; }\n ").arg(color.name()));
-            styleHack.append(QString("WLibrarySidebar { color: %1; }\n ").arg(color.name()));
-        }
+        styleHack.append(QString("WLibraryTableView { color: %1; }\n ").arg(color.name()));
+        styleHack.append(QString("WLibrarySidebar { color: %1; }\n ").arg(color.name()));
         styleHack.append(QString("WSearchLineEdit { color: %1; }\n ").arg(color.name()));
         styleHack.append(QString("QTextBrowser { color: %1; }\n ").arg(color.name()));
         styleHack.append(QString("QLabel { color: %1; }\n ").arg(color.name()));
@@ -1455,28 +1430,8 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
     if (m_pContext->hasNodeSelectString(node, "BgColor", &bgColor)) {
         color.setNamedColor(bgColor);
         color = WSkinColor::getCorrectColor(color);
-        if (hasQtKickedUsInTheNuts) {
-            styleHack.append(QString("QTreeView {  background-color: %1; }\n ").arg(color.name()));
-            styleHack.append(QString("QTableView {  background-color: %1; }\n ").arg(color.name()));
-
-            // Required for styling the item backgrounds, need to pick !selected
-            styleHack.append(QString("QTreeView::item:!selected {  background-color: %1; }\n ").arg(color.name()));
-            styleHack.append(QString("QTableView::item:!selected {  background-color: %1; }\n ").arg(color.name()));
-
-            // Styles the sidebar triangle area where there is no triangle
-            styleHack.append(QString("QTreeView::branch:!has-children {  background-color: %1; }\n ").arg(color.name()));
-
-            // We can't style the triangle portions because the triangle
-            // disappears when we do background-color. I suspect they use
-            // background-image instead of border-image, against their own
-            // documentation's recommendation.
-            // EDIT: Un-commented next line cause it works if we use custom images as triangle,
-            // see https://bugs.launchpad.net/mixxx/+bug/690280 --jus 12/2010
-            styleHack.append(QString("QTreeView::branch:has-children {  background-color: %1; }\n ").arg(color.name()));
-        } else {
-            styleHack.append(QString("WLibraryTableView {  background-color: %1; }\n ").arg(color.name()));
-            styleHack.append(QString("WLibrarySidebar {  background-color: %1; }\n ").arg(color.name()));
-        }
+        styleHack.append(QString("WLibraryTableView {  background-color: %1; }\n ").arg(color.name()));
+        styleHack.append(QString("WLibrarySidebar {  background-color: %1; }\n ").arg(color.name()));
 
         styleHack.append(QString("WSearchLineEdit {  background-color: %1; }\n ").arg(color.name()));
         styleHack.append(QString("QTextBrowser {  background-color: %1; }\n ").arg(color.name()));
@@ -1488,11 +1443,7 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
         color.setNamedColor(bgColorRowEven);
         color = WSkinColor::getCorrectColor(color);
 
-        if (hasQtKickedUsInTheNuts) {
-            styleHack.append(QString("QTableView::item:!selected { background-color: %1; }\n ").arg(color.name()));
-        } else {
-            styleHack.append(QString("WLibraryTableView { background: %1; }\n ").arg(color.name()));
-        }
+        styleHack.append(QString("WLibraryTableView { background: %1; }\n ").arg(color.name()));
     }
 
     QString bgColorRowUneven;
@@ -1500,11 +1451,7 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
         color.setNamedColor(bgColorRowUneven);
         color = WSkinColor::getCorrectColor(color);
 
-        if (hasQtKickedUsInTheNuts) {
-            styleHack.append(QString("QTableView::item:alternate:!selected { background-color: %1; }\n ").arg(color.name()));
-        } else {
-            styleHack.append(QString("WLibraryTableView { alternate-background-color: %1; }\n ").arg(color.name()));
-        }
+        styleHack.append(QString("WLibraryTableView { alternate-background-color: %1; }\n ").arg(color.name()));
     }
     style.prepend(styleHack);
     return style;
@@ -1555,7 +1502,7 @@ QList<QWidget*> LegacySkinParser::parseTemplate(const QDomElement& node) {
     QString path = node.attribute("src");
 
     std::unique_ptr<SkinContext> pOldContext = std::move(m_pContext);
-    m_pContext = std::make_unique<SkinContext>(*pOldContext);
+    m_pContext = std::make_unique<SkinContext>(pOldContext.get());
 
     QDomElement templateNode = loadTemplate(path);
 
@@ -1772,14 +1719,14 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
         // -1 means do not set.
         if (x >= 0 && y >= 0) {
             pWidget->setMinimumSize(x, y);
-        } else if (x >= 0) {
+        } else if (x >= 0 && y == -1) {
             pWidget->setMinimumWidth(x);
-        } else if (y >= 0) {
+        } else if (y >= 0 && x == -1) {
             pWidget->setMinimumHeight(y);
-        } else {
+        } else if (x != -1 || y != -1) {
             SKIN_WARNING(node, *m_pContext)
                     << "Could not parse widget MinimumSize:" << size;
-        }
+	}
     }
 
 
@@ -1794,11 +1741,11 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
         // -1 means do not set.
         if (x >= 0 && y >= 0) {
             pWidget->setMaximumSize(x, y);
-        } else if (x >= 0) {
+        } else if (x >= 0 && y == -1) {
             pWidget->setMaximumWidth(x);
-        } else if (y >= 0) {
+        } else if (y >= 0 && x == -1) {
             pWidget->setMaximumHeight(y);
-        } else {
+        } else if (x != -1 || y != -1) {
             SKIN_WARNING(node, *m_pContext)
                     << "Could not parse widget MaximumSize:" << size;
         }
@@ -2124,7 +2071,8 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                     emitOption = ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE;
                 } else {
                     SKIN_WARNING(con, *m_pContext)
-                            << "LegacySkinParser::setupConnections(): EmitOnPressAndRelease must not set false";
+                            << "LegacySkinParser::setupConnections():"
+                            << "Setting EmitOnPressAndRelease to false is not necessary.";
                 }
             } else {
                 // default:
@@ -2267,12 +2215,7 @@ void LegacySkinParser::addShortcutToToolTip(WBaseWidget* pWidget,
     QString tooltip;
 
     // translate shortcut to native text
-#if QT_VERSION >= 0x040700
     QString nativeShortcut = QKeySequence(shortcut, QKeySequence::PortableText).toString(QKeySequence::NativeText);
-#else
-    QKeySequence keySec = QKeySequence::fromString(shortcut, QKeySequence::PortableText);
-    QString nativeShortcut = keySec.toString(QKeySequence::NativeText);
-#endif
 
     tooltip += "\n";
     tooltip += tr("Shortcut");

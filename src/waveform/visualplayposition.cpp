@@ -78,8 +78,7 @@ double VisualPlayPosition::getAtNextSwap(mixxx::Duration estimatedTimeUntilSwap)
     return -1;
 }
 
-void VisualPlayPosition::getPlaySlipAt(mixxx::Duration estimatedTimeUntilSwap,
-                                       double* pPlayPosition, double* pSlipPosition) {
+void VisualPlayPosition::getPlaySlipAtNextSwap(mixxx::Duration estimatedTimeUntilSwap, double* pPlayPosition, double* pSlipPosition) {
     //static double testPos = 0;
     //testPos += 0.000017759; //0.000016608; //  1.46257e-05;
     //return testPos;

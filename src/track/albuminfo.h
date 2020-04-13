@@ -11,12 +11,17 @@
 namespace mixxx {
 
 class AlbumInfo final {
-    // Album properties (in alphabetical order)
+    // Properties in alphabetical order
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    artist,                    Artist)
+#if defined(__EXTRA_METADATA__)
+    PROPERTY_SET_BYVAL_GET_BYREF(QString,    copyright,                 Copyright)
+    PROPERTY_SET_BYVAL_GET_BYREF(QString,    license,                   License)
     PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzArtistId,       MusicBrainzArtistId)
-    PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzReleaseId,      MusicBrainzReleaseId)
     PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzReleaseGroupId, MusicBrainzReleaseGroupId)
+    PROPERTY_SET_BYVAL_GET_BYREF(QUuid,      musicBrainzReleaseId,      MusicBrainzReleaseId)
+    PROPERTY_SET_BYVAL_GET_BYREF(QString,    recordLabel,               RecordLabel)
     PROPERTY_SET_BYVAL_GET_BYREF(ReplayGain, replayGain,                ReplayGain)
+#endif // __EXTRA_METADATA__
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    title,                     Title)
 
 public:
@@ -28,13 +33,12 @@ public:
     AlbumInfo& operator=(AlbumInfo&&) = default;
     AlbumInfo& operator=(const AlbumInfo&) = default;
 
-    // TODO(XXX): Remove after all new fields have been added to the library
-    void resetUnsupportedValues();
-
-    // Adjusts floating-point values to match their string representation
+    // Adjusts floating-point properties to match their string representation
     // in file tags to account for rounding errors.
     void normalizeBeforeExport() {
+#if defined(__EXTRA_METADATA__)
         refReplayGain().normalizeBeforeExport();
+#endif // __EXTRA_METADATA__
     }
 };
 

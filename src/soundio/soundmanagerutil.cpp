@@ -290,10 +290,8 @@ unsigned char AudioPath::minChannelsForType(AudioPathType type) {
 
 // static
 unsigned char AudioPath::maxChannelsForType(AudioPathType type) {
-    switch (type) {
-    default:
-        return 2;
-    }
+    Q_UNUSED(type);
+    return 2;
 }
 
 /**
@@ -461,6 +459,14 @@ void AudioInput::setType(AudioPathType type) {
         m_type = type;
     } else {
         m_type = AudioPath::INVALID;
+    }
+}
+
+QString SoundDeviceId::debugName() const {
+    if (alsaHwDevice.isEmpty()) {
+        return name + QStringLiteral(", ") + QString::number(portAudioIndex);
+    } else {
+        return name + QStringLiteral(", ") + alsaHwDevice + QStringLiteral(", ") + QString::number(portAudioIndex);
     }
 }
 

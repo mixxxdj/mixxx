@@ -18,7 +18,7 @@
 class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     Q_OBJECT
   public:
-    DlgTrackInfo(QWidget* parent);
+    DlgTrackInfo(UserSettingsPointer pConfig, QWidget* parent);
     virtual ~DlgTrackInfo();
 
   public slots:
@@ -34,13 +34,11 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
   private slots:
     void slotNext();
     void slotPrev();
-    void OK();
-    void apply();
-    void cancel();
-    void trackUpdated();
+    void slotOk();
+    void slotApply();
+    void slotCancel();
 
-    void cueActivate();
-    void cueDelete();
+    void trackUpdated();
 
     void slotBpmDouble();
     void slotBpmHalve();
@@ -58,23 +56,25 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotImportMetadataFromFile();
     void slotImportMetadataFromMusicBrainz();
 
-    void updateTrackMetadata();
+    void slotTrackChanged(TrackId trackId);
     void slotOpenInFileBrowser();
 
-    void slotCoverFound(const QObject* pRequestor,
-                        const CoverInfoRelative& info, QPixmap pixmap, bool fromCache);
+    void slotCoverFound(
+            const QObject* pRequestor,
+            const CoverInfo& info,
+            const QPixmap& pixmap,
+            quint16 requestedHash,
+            bool coverInfoUpdated);
     void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
 
   private:
     void populateFields(const Track& track);
     void reloadTrackBeats(const Track& track);
-    void populateCues(TrackPointer pTrack);
     void saveTrack();
     void unloadTrack(bool save);
     void clear();
     void init();
-    QHash<int, CuePointer> m_cueMap;
     TrackPointer m_pLoadedTrack;
     BeatsPointer m_pBeatsClone;
     Keys m_keysClone;
@@ -85,6 +85,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     CoverInfo m_loadedCoverInfo;
     WCoverArtLabel* m_pWCoverArtLabel;
+    UserSettingsPointer m_pConfig;
 };
 
 #endif /* DLGTRACKINFO_H */

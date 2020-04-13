@@ -16,7 +16,6 @@
 #include "bytearrayclass.h"
 #include "preferences/usersettings.h"
 #include "controllers/controllerpreset.h"
-#include "controllers/colorjsproxy.h"
 #include "controllers/softtakeover.h"
 #include "util/alphabetafilter.h"
 #include "util/duration.h"
@@ -59,24 +58,28 @@ class ScriptConnectionInvokableWrapper : public QObject {
     //Q_PROPERTY(ConfigKey key READ key)
     // There's little use in exposing the function...
     //Q_PROPERTY(QScriptValue function READ function)
+    Q_PROPERTY(bool isConnected READ readIsConnected)
   public:
     ScriptConnectionInvokableWrapper(ScriptConnection conn) {
         m_scriptConnection = conn;
         m_idString = conn.id.toString();
+        m_isConnected = true;
     }
     const QString& readId() const { return m_idString; }
-    Q_INVOKABLE void disconnect();
+    bool readIsConnected() const { return m_isConnected; }
+    Q_INVOKABLE bool disconnect();
     Q_INVOKABLE void trigger();
 
   private:
     ScriptConnection m_scriptConnection;
     QString m_idString;
+    bool m_isConnected;
 };
 
 class ControllerEngine : public QObject {
     Q_OBJECT
   public:
-    ControllerEngine(Controller* controller);
+    ControllerEngine(Controller* controller, UserSettingsPointer pConfig);
     virtual ~ControllerEngine();
 
     bool isReady();
@@ -99,7 +102,7 @@ class ControllerEngine : public QObject {
     const QList<QString>& getScriptFunctionPrefixes() { return m_scriptFunctionPrefixes; };
 
     // Disconnect a ScriptConnection
-    void removeScriptConnection(const ScriptConnection conn);
+    bool removeScriptConnection(const ScriptConnection conn);
     void triggerScriptConnection(const ScriptConnection conn);
 
   protected:
@@ -155,8 +158,7 @@ class ControllerEngine : public QObject {
 
     // Evaluates all provided script files and returns true if no script errors
     // occurred while evaluating them.
-    bool loadScriptFiles(const QList<QString>& scriptPaths,
-                         const QList<ControllerPreset::ScriptFileInfo>& scripts);
+    bool loadScriptFiles(const QList<ControllerPreset::ScriptFileInfo>& scripts);
     void initializeScripts(const QList<ControllerPreset::ScriptFileInfo>& scripts);
     void gracefulShutdown();
     void scriptHasChanged(const QString&);
@@ -170,7 +172,7 @@ class ControllerEngine : public QObject {
 
   private:
     bool syntaxIsValid(const QString& scriptCode);
-    bool evaluate(const QString& scriptName, QList<QString> scriptPaths);
+    bool evaluate(const QFileInfo& scriptFile);
     bool internalExecute(QScriptValue thisObject, const QString& scriptCode);
     bool internalExecute(QScriptValue thisObject, QScriptValue functionObject,
                          QScriptValueList arguments);
@@ -194,6 +196,7 @@ class ControllerEngine : public QObject {
     double getDeckRate(const QString& group);
 
     Controller* m_pController;
+    const UserSettingsPointer m_pConfig;
     bool m_bPopups;
     QList<QString> m_scriptFunctionPrefixes;
     QMap<QString, QStringList> m_scriptErrors;
@@ -206,7 +209,6 @@ class ControllerEngine : public QObject {
     QHash<int, TimerInfo> m_timers;
     SoftTakeoverCtrl m_st;
     ByteArrayClass* m_pBaClass;
-    std::unique_ptr<ColorJSProxy> m_pColorJSProxy;
     // 256 (default) available virtual decks is enough I would think.
     //  If more are needed at run-time, these will move to the heap automatically
     QVarLengthArray<int> m_intervalAccumulator;
@@ -218,7 +220,7 @@ class ControllerEngine : public QObject {
     QHash<QString, QScriptValue> m_scriptWrappedFunctionCache;
     // Filesystem watcher for script auto-reload
     QFileSystemWatcher m_scriptWatcher;
-    QList<QString> m_lastScriptPaths;
+    QList<ControllerPreset::ScriptFileInfo> m_lastScriptFiles;
 
     friend class ControllerEngineTest;
 };

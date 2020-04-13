@@ -1,13 +1,10 @@
-#ifndef MIXXX_AUDIOSOURCESTEREOPROXY_H
-#define MIXXX_AUDIOSOURCESTEREOPROXY_H
+#pragma once
 
-
-#include "sources/audiosource.h"
-
+#include "sources/audiosourceproxy.h"
 
 namespace mixxx {
 
-class AudioSourceStereoProxy: public AudioSource {
+class AudioSourceStereoProxy : public AudioSourceProxy {
   public:
     static AudioSourcePointer create(
             AudioSourcePointer pAudioSource,
@@ -26,28 +23,15 @@ class AudioSourceStereoProxy: public AudioSource {
     AudioSourceStereoProxy(
             AudioSourcePointer pAudioSource,
             SampleBuffer::WritableSlice tempWritableSlice);
-
-    void close() override {
-        m_pAudioSource->close();
-    }
+    ~AudioSourceStereoProxy() override = default;
 
   protected:
-    OpenResult tryOpen(
-            OpenMode mode,
-            const OpenParams& params) override {
-        return tryOpenOn(*m_pAudioSource, mode, params);
-    }
-
     ReadableSampleFrames readSampleFramesClamped(
             WritableSampleFrames writableSampleFrames) override;
 
   private:
-    AudioSourcePointer m_pAudioSource;
     SampleBuffer m_tempSampleBuffer;
     SampleBuffer::WritableSlice m_tempWritableSlice;
 };
 
 } // namespace mixxx
-
-
-#endif // MIXXX_AUDIOSOURCESTEREOPROXY_H

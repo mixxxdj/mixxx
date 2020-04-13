@@ -13,6 +13,7 @@ class GLWaveformWidget : public BaseQOpenGLWidget {
 
     static inline QString getWaveformWidgetName() { return tr("Filtered"); }
     static inline bool useOpenGl() { return true; }
+    static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return false; }
     static inline bool developerOnly() { return false; }
 

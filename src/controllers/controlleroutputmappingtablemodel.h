@@ -1,5 +1,4 @@
-#ifndef CONTROLLEROUTPUTMAPPINGTABLEMODEL_H
-#define CONTROLLEROUTPUTMAPPINGTABLEMODEL_H
+#pragma once
 
 #include <QAbstractTableModel>
 #include <QVariant>
@@ -9,6 +8,9 @@
 #include "controllers/controllermappingtablemodel.h"
 #include "controllers/midi/midimessage.h"
 
+/// Table Model for the "Outputs" table view in the preferences dialog.
+///
+/// This allows editing the output mappings for a MIDI preset.
 class ControllerOutputMappingTableModel : public ControllerMappingTableModel {
     Q_OBJECT
   public:
@@ -35,7 +37,7 @@ class ControllerOutputMappingTableModel : public ControllerMappingTableModel {
     // QAbstractItemModel methods
     ////////////////////////////////////////////////////////////////////////////
     int rowCount(const QModelIndex& parent = QModelIndex()) const override;
-    int columnCount(const QModelIndex& parent = QModelIndex()) const;
+    int columnCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
     bool setData(const QModelIndex& index, const QVariant& value,
                  int role = Qt::EditRole) override;
@@ -58,5 +60,3 @@ class ControllerOutputMappingTableModel : public ControllerMappingTableModel {
 
     QList<MidiOutputMapping> m_midiOutputMappings;
 };
-
-#endif /* CONTROLLEROUTPUTMAPPINGTABLEMODEL_H */

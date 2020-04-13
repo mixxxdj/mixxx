@@ -127,7 +127,7 @@ void BrowseThread::populateModel() {
     // remove all rows
     // This is a blocking operation
     // see signal/slot connection in BrowseTableModel
-    emit(clearModel(thisModelObserver));
+    emit clearModel(thisModelObserver);
 
     QList< QList<QStandardItem*> > rows;
 
@@ -158,7 +158,7 @@ void BrowseThread::populateModel() {
                             filepath,
                             thisPath.token());
 
-            item = new QStandardItem(pTrack->getFileName());
+            item = new QStandardItem(pTrack->getFileInfo().fileName());
             item->setToolTip(item->text());
             item->setData(item->text(), Qt::UserRole);
             row_data.insert(COLUMN_FILENAME, item);
@@ -248,13 +248,13 @@ void BrowseThread::populateModel() {
             item->setData(location, Qt::UserRole);
             row_data.insert(COLUMN_NATIVELOCATION, item);
 
-            QDateTime modifiedTime = pTrack->getFileModifiedTime().toLocalTime();
+            QDateTime modifiedTime = pTrack->getFileInfo().fileLastModified().toLocalTime();
             item = new QStandardItem(modifiedTime.toString(Qt::DefaultLocaleShortDate));
             item->setToolTip(item->text());
             item->setData(modifiedTime, Qt::UserRole);
             row_data.insert(COLUMN_FILE_MODIFIED_TIME, item);
 
-            QDateTime creationTime = pTrack->getFileCreationTime().toLocalTime();
+            QDateTime creationTime = pTrack->getFileInfo().fileCreated().toLocalTime();
             item = new QStandardItem(creationTime.toString(Qt::DefaultLocaleShortDate));
             item->setToolTip(item->text());
             item->setData(creationTime, Qt::UserRole);
@@ -274,13 +274,13 @@ void BrowseThread::populateModel() {
         // Will limit GUI freezing
         if (row % 10 == 0) {
             // this is a blocking operation
-            emit(rowsAppended(rows, thisModelObserver));
+            emit rowsAppended(rows, thisModelObserver);
             qDebug() << "Append " << rows.count() << " from " << filepath;
             rows.clear();
         }
         // Sleep additionally for 10ms which prevents us from GUI freezes
         msleep(20);
     }
-    emit(rowsAppended(rows, thisModelObserver));
+    emit rowsAppended(rows, thisModelObserver);
     qDebug() << "Append last " << rows.count();
 }

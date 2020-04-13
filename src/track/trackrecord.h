@@ -3,12 +3,14 @@
 #include "proto/keys.pb.h"
 
 #include "track/trackid.h"
+#include "track/cue.h"
 #include "track/keys.h"
 #include "track/keyutils.h"
 #include "track/trackmetadata.h"
 #include "track/playcounter.h"
 
 #include "library/coverart.h"
+#include "util/color/rgbcolor.h"
 
 
 namespace mixxx {
@@ -43,11 +45,19 @@ class TrackRecord final {
     PROPERTY_SET_BYVAL_GET_BYREF(QString,     fileType,       FileType)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,     url,            Url)
     PROPERTY_SET_BYVAL_GET_BYREF(PlayCounter, playCounter,    PlayCounter)
-    PROPERTY_SET_BYVAL_GET_BYREF(double,      cuePoint,       CuePoint)
+    PROPERTY_SET_BYVAL_GET_BYREF(RgbColor::optional_t, color, Color)
+    PROPERTY_SET_BYVAL_GET_BYREF(CuePosition, cuePoint,       CuePoint)
     PROPERTY_SET_BYVAL_GET_BYREF(int,         rating,         Rating)
     PROPERTY_SET_BYVAL_GET_BYREF(bool,        bpmLocked,      BpmLocked)
 
 public:
+    // Data migration: Reload track total from file tags if not initialized
+    // yet. The added column "tracktotal" has been initialized with the
+    // default value "//".
+    // See also: Schema revision 26 in schema.xml
+    // Public only for testing purposes!
+    static const QString kTrackTotalPlaceholder;
+
     explicit TrackRecord(TrackId id = TrackId());
     TrackRecord(TrackRecord&&) = default;
     TrackRecord(const TrackRecord&) = default;
@@ -55,6 +65,10 @@ public:
 
     TrackRecord& operator=(TrackRecord&&) = default;
     TrackRecord& operator=(const TrackRecord&) = default;
+
+    bool hasRating() const {
+        return getRating() > 0;
+    }
 
     void setKeys(const Keys& keys);
     void resetKeys() {
@@ -64,23 +78,34 @@ public:
         return m_keys;
     }
 
-    mixxx::track::io::key::ChromaticKey getGlobalKey() const {
+    track::io::key::ChromaticKey getGlobalKey() const {
         if (getKeys().isValid()) {
             return getKeys().getGlobalKey();
         } else {
-            return mixxx::track::io::key::INVALID;
+            return track::io::key::INVALID;
         }
     }
     bool updateGlobalKey(
-            mixxx::track::io::key::ChromaticKey key,
-            mixxx::track::io::key::Source keySource);
+            track::io::key::ChromaticKey key,
+            track::io::key::Source keySource);
 
     QString getGlobalKeyText() const {
         return KeyUtils::getGlobalKeyText(getKeys());
     }
     bool updateGlobalKeyText(
             const QString& keyText,
-            mixxx::track::io::key::Source keySource);
+            track::io::key::Source keySource);
+
+    // Merge the current metadata with new and additional properties
+    // imported from the file. Since these properties are not (yet)
+    // stored in the library or have been added later all existing
+    // data must be preserved and never be overwritten! This allows
+    // a gradual migration by selectively reimporting the required
+    // data when needed.
+    //
+    // Returns true if any property has been modified or false otherwise.
+    bool mergeImportedMetadata(
+            const TrackMetadata& importedMetadata);
 
 private:
     Keys m_keys;

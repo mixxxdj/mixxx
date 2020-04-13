@@ -2,19 +2,18 @@
 
 #include <vector>
 
-#include "util/workerthread.h"
+#include "rigtorp/SPSCQueue.h"
 
-#include "analyzer/analyzerprogress.h"
 #include "analyzer/analyzer.h"
+#include "analyzer/analyzerprogress.h"
 #include "preferences/usersettings.h"
 #include "sources/audiosource.h"
 #include "track/track.h"
 #include "util/db/dbconnectionpool.h"
+#include "util/memory.h"
 #include "util/performancetimer.h"
 #include "util/samplebuffer.h"
-#include "util/memory.h"
-#include "util/mpscfifo.h"
-
+#include "util/workerthread.h"
 
 enum AnalyzerModeFlags {
     None = 0x00,
@@ -46,9 +45,9 @@ class AnalyzerThread : public WorkerThread {
     Q_OBJECT
 
   public:
-    typedef std::unique_ptr<AnalyzerThread, void(*)(AnalyzerThread*)> Pointer;
+    typedef std::unique_ptr<AnalyzerThread, void (*)(AnalyzerThread*)> Pointer;
     // Subclass that provides a default constructor and nothing else
-    class NullPointer: public Pointer {
+    class NullPointer : public Pointer {
       public:
         NullPointer();
     };
@@ -108,14 +107,13 @@ class AnalyzerThread : public WorkerThread {
     // safely exchanging data between two threads.
     // NOTE(uklotzde, 2018-01-04): Ideally we would use std::atomic<TrackPointer>,
     // for this purpose, which will become available in C++20.
-    MpscFifo<TrackPointer, 1> m_nextTrack;
+    rigtorp::SPSCQueue<TrackPointer> m_nextTrack;
 
     /////////////////////////////////////////////////////////////////////////
     // Thread local: Only used in the constructor/destructor and within
     // run() by the worker thread.
 
-    typedef std::unique_ptr<Analyzer> AnalyzerPtr;
-    std::vector<AnalyzerPtr> m_analyzers;
+    std::vector<AnalyzerWithState> m_analyzers;
 
     mixxx::SampleBuffer m_sampleBuffer;
 
@@ -127,8 +125,7 @@ class AnalyzerThread : public WorkerThread {
 
     enum class AnalysisResult {
         Pending,
-        Partial,
-        Complete,
+        Finished,
         Cancelled,
     };
     AnalysisResult analyzeAudioSource(

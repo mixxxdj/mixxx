@@ -1,11 +1,11 @@
 #include "sources/soundsourcem4a.h"
 
-#include "util/sample.h"
 #include "util/logger.h"
+#include "util/sample.h"
 
 #ifdef __WINDOWS__
-#include <io.h>
 #include <fcntl.h>
+#include <io.h>
 #endif
 
 #ifdef _MSC_VER
@@ -54,8 +54,7 @@ const MP4Duration kDefaultFramesPerSampleBlock = 1024;
 //   http://perso.telecom-paristech.fr/~dufourd/mpeg-4/tools.html
 const u_int32_t kMaxSampleBlockInputSizeLimit = (u_int32_t(1) << 24) - 1;
 
-inline
-u_int32_t getMaxTrackId(MP4FileHandle hFile) {
+inline u_int32_t getMaxTrackId(MP4FileHandle hFile) {
     // The maximum TrackId equals the number of all tracks
     // in an MP4 file. We pass nullptr and 0 as arguments
     // to avoid any type/subtype filtering at this point!
@@ -64,14 +63,12 @@ u_int32_t getMaxTrackId(MP4FileHandle hFile) {
     return MP4GetNumberOfTracks(hFile, nullptr, 0);
 }
 
-inline
-bool isValidTrackType(const char* trackType) {
+inline bool isValidTrackType(const char* trackType) {
     return (nullptr != trackType) &&
             MP4_IS_AUDIO_TRACK_TYPE(trackType);
 }
 
-inline
-bool isValidMediaDataName(const char* mediaDataName) {
+inline bool isValidMediaDataName(const char* mediaDataName) {
     return (nullptr != mediaDataName) &&
             (0 == strcasecmp(mediaDataName, "mp4a"));
 }
@@ -84,25 +81,25 @@ MP4TrackId findFirstAudioTrackId(MP4FileHandle hFile, const QString& fileName) {
         const char* trackType = MP4GetTrackType(hFile, trackId);
         if (!isValidTrackType(trackType)) {
             kLogger.warning() << "Unsupported track type"
-                    << QString((trackType == nullptr) ? "" : trackType);
+                              << QString((trackType == nullptr) ? "" : trackType);
             kLogger.warning() << "Skipping track"
-                    << trackId
-                    << "of"
-                    << maxTrackId
-                    << "in file"
-                    << fileName;
+                              << trackId
+                              << "of"
+                              << maxTrackId
+                              << "in file"
+                              << fileName;
             continue;
         }
         const char* mediaDataName = MP4GetTrackMediaDataName(hFile, trackId);
         if (!isValidMediaDataName(mediaDataName)) {
             kLogger.warning() << "Unsupported media data name"
-                    << QString((mediaDataName == nullptr) ? "" : mediaDataName);
+                              << QString((mediaDataName == nullptr) ? "" : mediaDataName);
             kLogger.warning() << "Skipping track"
-                    << trackId
-                    << "of"
-                    << maxTrackId
-                    << "in file"
-                    << fileName;
+                              << trackId
+                              << "of"
+                              << maxTrackId
+                              << "in file"
+                              << fileName;
             continue;
         }
         const u_int8_t audioType = MP4GetTrackEsdsObjectTypeId(hFile, trackId);
@@ -114,13 +111,13 @@ MP4TrackId findFirstAudioTrackId(MP4FileHandle hFile, const QString& fileName) {
                     return trackId;
                 } else {
                     kLogger.warning() << "Unsupported MPEG4 audio type"
-                            << int(mpeg4AudioType);
+                                      << int(mpeg4AudioType);
                     kLogger.warning() << "Skipping track"
-                            << trackId
-                            << "of"
-                            << maxTrackId
-                            << "in file"
-                            << fileName;
+                                      << trackId
+                                      << "of"
+                                      << maxTrackId
+                                      << "in file"
+                                      << fileName;
                     continue;
                 }
             } else {
@@ -128,22 +125,22 @@ MP4TrackId findFirstAudioTrackId(MP4FileHandle hFile, const QString& fileName) {
             }
         } else {
             kLogger.warning() << "Unsupported audio type"
-                    << int(audioType);
+                              << int(audioType);
             kLogger.warning() << "Skipping track"
-                    << trackId
-                    << "of"
-                    << maxTrackId
-                    << "in file"
-                    << fileName;
+                              << trackId
+                              << "of"
+                              << maxTrackId
+                              << "in file"
+                              << fileName;
             continue;
         }
         VERIFY_OR_DEBUG_ASSERT(!"unreachable code") {
             kLogger.warning() << "Skipping track"
-                    << trackId
-                    << "of"
-                    << maxTrackId
-                    << "in file"
-                    << fileName;
+                              << trackId
+                              << "of"
+                              << maxTrackId
+                              << "in file"
+                              << fileName;
         }
     }
     return MP4_INVALID_TRACK_ID;
@@ -162,7 +159,8 @@ SoundSourceM4A::SoundSourceM4A(const QUrl& url)
           m_hDecoder(nullptr),
           m_numberOfPrefetchSampleBlocks(0),
           m_curSampleBlockId(MP4_INVALID_SAMPLE_ID),
-          m_curFrameIndex(0) {
+          m_curFrameIndex(0),
+          m_pFaad(LibFaadLoader::Instance()) {
 }
 
 SoundSourceM4A::~SoundSourceM4A() {
@@ -201,19 +199,19 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(
     // can't currently handle these.
     m_framesPerSampleBlock = MP4GetTrackFixedSampleDuration(m_hFile, m_trackId);
     if (MP4_INVALID_DURATION == m_framesPerSampleBlock) {
-      kLogger.warning() << "Unable to determine the fixed sample duration of track"
-              << m_trackId << "in file" << getUrlString();
-      if (mode == OpenMode::Strict) {
-          // Abort and give another decoder with lower priority
-          // the chance to open the same file.
-          // Fixes https://bugs.launchpad.net/mixxx/+bug/1504113
-          return OpenResult::Aborted;
-      } else {
-          // Fallback: Use a default value
-          kLogger.warning() << "Fallback: Using a default sample duration of"
-                  << kDefaultFramesPerSampleBlock << "sample frames per block";
-          m_framesPerSampleBlock = kDefaultFramesPerSampleBlock;
-      }
+        kLogger.warning() << "Unable to determine the fixed sample duration of track"
+                          << m_trackId << "in file" << getUrlString();
+        if (mode == OpenMode::Strict) {
+            // Abort and give another decoder with lower priority
+            // the chance to open the same file.
+            // Fixes https://bugs.launchpad.net/mixxx/+bug/1504113
+            return OpenResult::Aborted;
+        } else {
+            // Fallback: Use a default value
+            kLogger.warning() << "Fallback: Using a default sample duration of"
+                              << kDefaultFramesPerSampleBlock << "sample frames per block";
+            m_framesPerSampleBlock = kDefaultFramesPerSampleBlock;
+        }
     }
 
     const MP4SampleId numberOfSamples =
@@ -230,7 +228,7 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(
             m_trackId);
     if (maxSampleBlockInputSize == 0) {
         kLogger.warning() << "Failed to read MP4 DecoderConfigDescriptor.bufferSizeDB:"
-                << getUrlString();
+                          << getUrlString();
         return OpenResult::Failed;
     }
     if (maxSampleBlockInputSize > kMaxSampleBlockInputSizeLimit) {
@@ -238,11 +236,11 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(
         // that returns 4278190742 when opening a corrupt file.
         // https://bugs.launchpad.net/mixxx/+bug/1594169
         kLogger.warning() << "MP4 DecoderConfigDescriptor.bufferSizeDB ="
-                << maxSampleBlockInputSize
-                << ">"
-                << kMaxSampleBlockInputSizeLimit
-                << "exceeds limit:"
-                << getUrlString();
+                          << maxSampleBlockInputSize
+                          << ">"
+                          << kMaxSampleBlockInputSizeLimit
+                          << "exceeds limit:"
+                          << getUrlString();
         return OpenResult::Aborted;
     }
     m_inputBuffer.resize(maxSampleBlockInputSize, 0);
@@ -259,41 +257,39 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(
 bool SoundSourceM4A::openDecoder() {
     DEBUG_ASSERT(m_hDecoder == nullptr); // not already opened
 
-    m_hDecoder = NeAACDecOpen();
+    m_hDecoder = m_pFaad->Open();
     if (m_hDecoder == nullptr) {
         kLogger.warning() << "Failed to open the AAC decoder!";
         return false;
     }
-    NeAACDecConfigurationPtr pDecoderConfig = NeAACDecGetCurrentConfiguration(
+    LibFaadLoader::Configuration* pDecoderConfig = m_pFaad->GetCurrentConfiguration(
             m_hDecoder);
     pDecoderConfig->outputFormat = FAAD_FMT_FLOAT;
-    if ((m_openParams.channelCount() == 1) ||
-            (m_openParams.channelCount() == 2)) {
+    if ((m_openParams.getSignalInfo().getChannelCount() == 1) ||
+            (m_openParams.getSignalInfo().getChannelCount() == 2)) {
         pDecoderConfig->downMatrix = 1;
     } else {
         pDecoderConfig->downMatrix = 0;
     }
 
     pDecoderConfig->defObjectType = LC;
-    if (!NeAACDecSetConfiguration(m_hDecoder, pDecoderConfig)) {
+    if (!m_pFaad->SetConfiguration(m_hDecoder, pDecoderConfig)) {
         kLogger.warning() << "Failed to configure AAC decoder!";
         return false;
     }
 
     u_int8_t* configBuffer = nullptr;
     u_int32_t configBufferSize = 0;
-    if (!MP4GetTrackESConfiguration(m_hFile, m_trackId, &configBuffer,
-            &configBufferSize)) {
+    if (!MP4GetTrackESConfiguration(m_hFile, m_trackId, &configBuffer, &configBufferSize)) {
         // Failed to get mpeg-4 audio config... this is ok.
-        // NeAACDecInit2() will simply use default values instead.
+        // Init2() will simply use default values instead.
         kLogger.warning() << "Failed to read the MP4 audio configuration."
-                << "Continuing with default values.";
+                          << "Continuing with default values.";
     }
 
     SAMPLERATE_TYPE sampleRate;
     unsigned char channelCount;
-    if (0 > NeAACDecInit2(m_hDecoder, configBuffer, configBufferSize,
-                    &sampleRate, &channelCount)) {
+    if (0 > m_pFaad->Init2(m_hDecoder, configBuffer, configBufferSize, &sampleRate, &channelCount)) {
         free(configBuffer);
         kLogger.warning() << "Failed to initialize the AAC decoder!";
         return false;
@@ -308,15 +304,15 @@ bool SoundSourceM4A::openDecoder() {
             (kNumberOfPrefetchFrames + (m_framesPerSampleBlock - 1)) /
             m_framesPerSampleBlock;
 
-    setChannelCount(channelCount);
-    setSampleRate(sampleRate);
+    initChannelCountOnce(channelCount);
+    initSampleRateOnce(sampleRate);
     initFrameIndexRangeOnce(
             mixxx::IndexRange::forward(
                     0,
                     ((m_maxSampleBlockId - kSampleBlockIdMin) + 1) * m_framesPerSampleBlock));
 
     const SINT sampleBufferCapacity =
-            frames2samples(m_framesPerSampleBlock);
+            getSignalInfo().frames2samples(m_framesPerSampleBlock);
     if (m_sampleBuffer.capacity() < sampleBufferCapacity) {
         m_sampleBuffer.adjustCapacity(sampleBufferCapacity);
     }
@@ -333,7 +329,7 @@ bool SoundSourceM4A::openDecoder() {
 
 void SoundSourceM4A::closeDecoder() {
     if (m_hDecoder != nullptr) {
-        NeAACDecClose(m_hDecoder);
+        m_pFaad->Close(m_hDecoder);
         m_hDecoder = nullptr;
     }
 }
@@ -354,14 +350,13 @@ void SoundSourceM4A::close() {
 }
 
 bool SoundSourceM4A::isValidSampleBlockId(MP4SampleId sampleBlockId) const {
-    return (sampleBlockId >= kSampleBlockIdMin)
-            && (sampleBlockId <= m_maxSampleBlockId);
+    return (sampleBlockId >= kSampleBlockIdMin) && (sampleBlockId <= m_maxSampleBlockId);
 }
 
 void SoundSourceM4A::restartDecoding(MP4SampleId sampleBlockId) {
     DEBUG_ASSERT(sampleBlockId >= kSampleBlockIdMin);
 
-    NeAACDecPostSeekReset(m_hDecoder, sampleBlockId);
+    m_pFaad->PostSeekReset(m_hDecoder, sampleBlockId);
     m_curSampleBlockId = sampleBlockId;
     m_curFrameIndex = frameIndexMin() +
             (sampleBlockId - kSampleBlockIdMin) * m_framesPerSampleBlock;
@@ -375,7 +370,6 @@ void SoundSourceM4A::restartDecoding(MP4SampleId sampleBlockId) {
 
 ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
         WritableSampleFrames writableSampleFrames) {
-
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
     if (m_curFrameIndex != firstFrameIndex) {
@@ -390,19 +384,16 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
             reopenDecoder();
         }
 
-        MP4SampleId sampleBlockId = kSampleBlockIdMin
-                + (firstFrameIndex / m_framesPerSampleBlock);
+        MP4SampleId sampleBlockId = kSampleBlockIdMin + (firstFrameIndex / m_framesPerSampleBlock);
         DEBUG_ASSERT(isValidSampleBlockId(sampleBlockId));
-        if ((firstFrameIndex < m_curFrameIndex) || // seeking backwards?
-                !isValidSampleBlockId(m_curSampleBlockId) || // invalid seek position?
-                (sampleBlockId
-                        > (m_curSampleBlockId + m_numberOfPrefetchSampleBlocks))) { // jumping forward?
+        if ((firstFrameIndex < m_curFrameIndex) ||                                         // seeking backwards?
+                !isValidSampleBlockId(m_curSampleBlockId) ||                               // invalid seek position?
+                (sampleBlockId > (m_curSampleBlockId + m_numberOfPrefetchSampleBlocks))) { // jumping forward?
             // Restart decoding one or more blocks of samples backwards
             // from the calculated starting block to avoid audible glitches.
             // Implementation note: The type MP4SampleId is unsigned so we
             // need to be careful when subtracting!
-            if ((kSampleBlockIdMin + m_numberOfPrefetchSampleBlocks)
-                    < sampleBlockId) {
+            if ((kSampleBlockIdMin + m_numberOfPrefetchSampleBlocks) < sampleBlockId) {
                 sampleBlockId -= m_numberOfPrefetchSampleBlocks;
             } else {
                 sampleBlockId = kSampleBlockIdMin;
@@ -415,9 +406,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
         DEBUG_ASSERT(m_curFrameIndex <= firstFrameIndex);
         const auto precedingFrames =
                 IndexRange::between(m_curFrameIndex, firstFrameIndex);
-        if (!precedingFrames.empty()
-                && (precedingFrames != readSampleFramesClamped(
-                        WritableSampleFrames(precedingFrames)).frameIndexRange())) {
+        if (!precedingFrames.empty() && (precedingFrames != readSampleFramesClamped(WritableSampleFrames(precedingFrames)).frameIndexRange())) {
             kLogger.warning()
                     << "Failed to skip preceding frames"
                     << precedingFrames;
@@ -430,12 +419,11 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
     }
     DEBUG_ASSERT(m_curFrameIndex == firstFrameIndex);
 
-    const SINT numberOfSamplesTotal = frames2samples(writableSampleFrames.frameLength());
+    const SINT numberOfSamplesTotal = getSignalInfo().frames2samples(writableSampleFrames.frameLength());
 
     SINT numberOfSamplesRemaining = numberOfSamplesTotal;
     SINT outputSampleOffset = 0;
     while (0 < numberOfSamplesRemaining) {
-
         if (!m_sampleBuffer.empty()) {
             // Consume previously decoded sample data
             const SampleBuffer::ReadableSlice readableSlice(
@@ -447,7 +435,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
                         readableSlice.length());
                 outputSampleOffset += readableSlice.length();
             }
-            m_curFrameIndex += samples2frames(readableSlice.length());
+            m_curFrameIndex += getSignalInfo().samples2frames(readableSlice.length());
             DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
             DEBUG_ASSERT(numberOfSamplesRemaining >= readableSlice.length());
             numberOfSamplesRemaining -= readableSlice.length();
@@ -464,13 +452,13 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
                 // Read data for next sample block into input buffer
                 u_int8_t* pInputBuffer = &m_inputBuffer[0];
                 u_int32_t inputBufferLength = m_inputBuffer.size(); // in/out parameter
-                if (!MP4ReadSample(m_hFile, m_trackId, m_curSampleBlockId,
-                        &pInputBuffer, &inputBufferLength,
-                        nullptr, nullptr, nullptr, nullptr)) {
+                if (!MP4ReadSample(m_hFile, m_trackId, m_curSampleBlockId, &pInputBuffer, &inputBufferLength, nullptr, nullptr, nullptr, nullptr)) {
                     kLogger.warning()
                             << "Failed to read MP4 input data for sample block"
-                            << m_curSampleBlockId << "(" << "min ="
-                            << kSampleBlockIdMin << "," << "max ="
+                            << m_curSampleBlockId << "("
+                            << "min ="
+                            << kSampleBlockIdMin << ","
+                            << "max ="
                             << m_maxSampleBlockId << ")";
                     break; // abort
                 }
@@ -484,13 +472,13 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
             break; // EOF
         }
 
-        // NOTE(uklotzde): The sample buffer for NeAACDecDecode2 has to
+        // NOTE(uklotzde): The sample buffer for Decode2 has to
         // be big enough for a whole block of decoded samples, which
         // contains up to m_framesPerSampleBlock frames. Otherwise
         // we need to use a temporary buffer.
         CSAMPLE* pDecodeBuffer; // in/out parameter
         SINT decodeBufferCapacity;
-        const SINT decodeBufferCapacityMin = frames2samples(m_framesPerSampleBlock);
+        const SINT decodeBufferCapacityMin = getSignalInfo().frames2samples(m_framesPerSampleBlock);
         if (writableSampleFrames.writableData() &&
                 (decodeBufferCapacityMin <= numberOfSamplesRemaining)) {
             // Decode samples directly into the output buffer
@@ -507,36 +495,33 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
         }
         DEBUG_ASSERT(decodeBufferCapacityMin <= decodeBufferCapacity);
 
-        NeAACDecFrameInfo decFrameInfo;
-        void* pDecodeResult = NeAACDecDecode2(
-                m_hDecoder, &decFrameInfo,
-                &m_inputBuffer[m_inputBufferOffset],
-                m_inputBufferLength,
-                reinterpret_cast<void**>(&pDecodeBuffer),
-                decodeBufferCapacity * sizeof(*pDecodeBuffer));
+        LibFaadLoader::FrameInfo decFrameInfo;
+        void* pDecodeResult = m_pFaad->Decode2(
+                m_hDecoder, &decFrameInfo, &m_inputBuffer[m_inputBufferOffset], m_inputBufferLength, reinterpret_cast<void**>(&pDecodeBuffer), decodeBufferCapacity * sizeof(*pDecodeBuffer));
         // Verify the decoding result
         if (0 != decFrameInfo.error) {
             kLogger.warning() << "AAC decoding error:"
-                    << decFrameInfo.error
-                    << NeAACDecGetErrorMessage(decFrameInfo.error)
-                    << getUrlString();
+                              << decFrameInfo.error
+                              << m_pFaad->GetErrorMessage(decFrameInfo.error)
+                              << getUrlString();
             break; // abort
         }
+        Q_UNUSED(pDecodeResult); // only used in DEBUG_ASSERT
         DEBUG_ASSERT(pDecodeResult == pDecodeBuffer); // verify the in/out parameter
 
         // Verify the decoded sample data for consistency
-        VERIFY_OR_DEBUG_ASSERT(channelCount() == decFrameInfo.channels) {
+        VERIFY_OR_DEBUG_ASSERT(getSignalInfo().getChannelCount() == decFrameInfo.channels) {
             kLogger.critical()
                     << "Corrupt or unsupported AAC file:"
                     << "Unexpected number of channels" << decFrameInfo.channels
-                    << "<>" << channelCount();
+                    << "<>" << getSignalInfo().getChannelCount();
             break; // abort
         }
-        VERIFY_OR_DEBUG_ASSERT(sampleRate() == SINT(decFrameInfo.samplerate)) {
+        VERIFY_OR_DEBUG_ASSERT(getSignalInfo().getSampleRate() == SINT(decFrameInfo.samplerate)) {
             kLogger.critical()
                     << "Corrupt or unsupported AAC file:"
                     << "Unexpected sample rate" << decFrameInfo.samplerate
-                    << "<>" << sampleRate();
+                    << "<>" << getSignalInfo().getSampleRate();
             break; // abort
         }
 
@@ -580,7 +565,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
         // at the end of the file! When the end of the file has been
         // reached decoding can be restarted by seeking to a new
         // position.
-        m_curFrameIndex += samples2frames(numberOfSamplesRead);
+        m_curFrameIndex += getSignalInfo().samples2frames(numberOfSamplesRead);
         numberOfSamplesRemaining -= numberOfSamplesRead;
     }
 
@@ -588,7 +573,9 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
     DEBUG_ASSERT(numberOfSamplesTotal >= numberOfSamplesRemaining);
     const SINT numberOfSamples = numberOfSamplesTotal - numberOfSamplesRemaining;
     return ReadableSampleFrames(
-            IndexRange::forward(firstFrameIndex, samples2frames(numberOfSamples)),
+            IndexRange::forward(
+                    firstFrameIndex,
+                    getSignalInfo().samples2frames(numberOfSamples)),
             SampleBuffer::ReadableSlice(
                     writableSampleFrames.writableData(),
                     std::min(writableSampleFrames.writableLength(), numberOfSamples)));
@@ -600,8 +587,10 @@ QString SoundSourceProviderM4A::getName() const {
 
 QStringList SoundSourceProviderM4A::getSupportedFileExtensions() const {
     QStringList supportedFileExtensions;
-    supportedFileExtensions.append("m4a");
-    supportedFileExtensions.append("mp4");
+    if (LibFaadLoader::Instance()->isLoaded()) {
+        supportedFileExtensions.append("m4a");
+        supportedFileExtensions.append("mp4");
+    }
     return supportedFileExtensions;
 }
 

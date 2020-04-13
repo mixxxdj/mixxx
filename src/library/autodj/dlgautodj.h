@@ -14,15 +14,17 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 
 class PlaylistTableModel;
+class WLibrary;
 class WTrackTableView;
 
 class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     Q_OBJECT
   public:
-    DlgAutoDJ(QWidget* parent, UserSettingsPointer pConfig,
-              Library* pLibrary,
-              AutoDJProcessor* pProcessor, TrackCollection* pTrackCollection,
-              KeyboardEventFilter* pKeyboard);
+    DlgAutoDJ(WLibrary* parent,
+            UserSettingsPointer pConfig,
+            Library* pLibrary,
+            AutoDJProcessor* pProcessor,
+            KeyboardEventFilter* pKeyboard);
     ~DlgAutoDJ() override;
 
     void onShow() override;
@@ -41,6 +43,8 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void transitionSliderChanged(int value);
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
     void updateSelectionInfo();
+    void slotTransitionModeChanged(int comboboxIndex);
+    void slotRepeatPlaylistChanged(int checkedState);
 
   signals:
     void addRandomButton(bool buttonChecked);
@@ -49,9 +53,20 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void trackSelected(TrackPointer pTrack);
 
   private:
-    AutoDJProcessor* m_pAutoDJProcessor;
-    WTrackTableView* m_pTrackTableView;
+    void setupActionButton(QPushButton* pButton,
+            void (DlgAutoDJ::*pSlot)(bool),
+            QString fallbackText);
+
+    const UserSettingsPointer m_pConfig;
+
+    AutoDJProcessor* const m_pAutoDJProcessor;
+    WTrackTableView* const m_pTrackTableView;
+    const bool m_bShowButtonText;
+
     PlaylistTableModel* m_pAutoDJTableModel;
+
+    QString m_enableBtnTooltip;
+    QString m_disableBtnTooltip;
 };
 
 #endif //DLGAUTODJ_H

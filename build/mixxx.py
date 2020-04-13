@@ -3,11 +3,13 @@
 from __future__ import with_statement
 
 import logging
-import platform
-import sys
 import os
+import platform
 import re
+import shlex
 import shutil
+import subprocess
+import sys
 
 import SCons
 from SCons import Script
@@ -46,7 +48,7 @@ class MixxxBuild(object):
             raise Exception("invalid target platform")
 
         if machine.lower() not in ['x86_64', 'x86', 'i686', 'i586',
-                                   'alpha', 'hppa', 'mips', 'mipsel', 's390',
+                                   'alpha', 'hppa', 's390',
                                    'sparc', 'ia64', 'armel', 'armhf', 'hurd-i386',
                                    'armv5tel', 'armv5tejl', 'armv6l', 'armv6hl',
                                    'armv7l', 'armv7hl', 'armv7hnl',
@@ -55,8 +57,11 @@ class MixxxBuild(object):
                                    'i486', 'i386', 'ppc', 'ppc64', 'powerpc',
                                    'powerpc64', 'powerpcspe', 's390x',
                                    'amd64', 'em64t', 'intel64', 'arm64',
-                                   'ppc64el', 'ppc64le', 'm68k', 'mips64',
-                                   'mips64el', 'mipsn32', 'mipsn32el',
+                                   'ppc64el', 'ppc64le', 'm68k', 
+                                   'mips', 'mipsel', 'mipsr6', 'mipsr6el',
+                                   'mips64', 'mips64r6', 'mips64el', 'mips64r6el', 
+                                   'mipsn32', 'mipsn32el', 'mipsn32r6', 'mipsn32r6el',
+                                   'mipsisa32r6', 'mipsisa32r6el', 'mipsisa64r6', 'mipsisa64r6el',
                                    'aarch64']:
             raise Exception("invalid machine type")
 
@@ -120,6 +125,15 @@ class MixxxBuild(object):
         self.bundle_pdbs = self.platform_is_windows and (
             self.build_is_debug or Script.ARGUMENTS.get('bundle_pdbs', '') in ('yes', 'y', '1'))
 
+        self.scons_version = (
+            'unknown' if SCons.__version__.startswith('__VERSION')
+            else '%s (%s, %s)' % (
+                SCons.__version__,
+                SCons.__build__,
+                SCons.__date__,
+        ))
+        logging.info("SCons version: %s" % self.scons_version)
+        logging.info("Python version: %s" % sys.version.replace('\n', ''))
         logging.info("Target Platform: %s" % self.platform)
         logging.info("Target Machine: %s" % self.machine)
         logging.info("Build: %s" % self.build)
@@ -153,16 +167,21 @@ class MixxxBuild(object):
 
         # Try fallback to pkg-config on Linux
         if not os.path.isdir(default_qtdir) and self.platform == 'linux':
-            if any(os.access(os.path.join(path, 'pkg-config'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep)):
-                import subprocess
-                try:
-                    default_qtdir = subprocess.Popen(["pkg-config", "--variable=includedir", "Qt5Core"], stdout = subprocess.PIPE).communicate()[0].rstrip().decode()
-                finally:
-                    pass
+            pkg_config_cmd = ['pkg-config', '--variable=includedir', 'Qt5Core']
+            try:
+                output = subprocess.check_output(pkg_config_cmd)
+            except OSError:
+                # pkg-config is not installed
+                pass
+            except subprocess.CalledProcessError:
+                # pkg-config failed to find Qt5Core
+                pass
+            else:
+                default_qtdir = output.decode('utf-8').rstrip()
 
         # Ugly hack to check the qtdir argument
-        qtdir = Script.ARGUMENTS.get('qtdir',
-                                     os.environ.get('QTDIR', default_qtdir))
+        qtdir = Script.ARGUMENTS.get(
+            'qtdir', os.environ.get('QTDIR', default_qtdir)).rstrip()
 
         # Validate the specified qtdir exists
         if not os.path.isdir(qtdir):
@@ -208,8 +227,25 @@ class MixxxBuild(object):
         self.read_environment_variables()
 
         # Now that environment variables have been read, we can detect the compiler.
-        self.compiler_is_gcc = 'gcc' in self.env['CC']
-        self.compiler_is_clang = 'clang' in self.env['CC']
+        if self.toolchain_is_msvs:
+            self.compiler_is_gcc = False
+            self.compiler_is_clang = False
+        else:
+            cc_version_cmd = shlex.split(self.env['CC']) + ['--version']
+            cc_version = subprocess.check_output(cc_version_cmd).decode('utf-8')
+            self.compiler_is_gcc = 'gcc' in cc_version.lower()
+            self.compiler_is_clang = 'clang' in cc_version.lower()
+
+            # Determine the major compiler version (only GCC)
+            if self.compiler_is_gcc:
+                self.gcc_major_version = None
+                gcc_version_cmd = shlex.split(self.env['CC']) + ['-dumpversion']
+                gcc_version = subprocess.check_output(gcc_version_cmd).decode('utf-8')
+                # If match is None we don't know the version.
+                if not gcc_version is None:
+                    version_split = gcc_version.split('.')
+                    if version_split:
+                        self.gcc_major_version = int(version_split[0])
 
         self.virtualize_build_dir()
 
