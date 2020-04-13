@@ -19,7 +19,6 @@
 #include "track/trackref.h"
 #include "util/assert.h"
 #include "util/dnd.h"
-#include "util/parented_ptr.h"
 #include "util/time.h"
 #include "widget/wtracktableviewheader.h"
 
@@ -302,18 +301,26 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // restoring scrollBar position using model pointer as key
     // scrollbar positions with respect to different models are backed by map
 
-    m_pMenu = make_parented<WTrackMenu>(this, m_pConfig, m_pTrackCollectionManager, WTrackMenu::Filter::All, trackModel);
-    connect(m_pMenu, &WTrackMenu::loadTrackToPlayer, this, &WTrackTableView::loadTrackToPlayer);
+    m_pMenu = std::make_unique<WTrackMenu>(this,
+            m_pConfig,
+            m_pTrackCollectionManager,
+            WTrackMenu::Filter::All,
+            trackModel);
+    connect(m_pMenu.get(),
+            &WTrackMenu::loadTrackToPlayer,
+            this,
+            &WTrackTableView::loadTrackToPlayer);
 }
 
 // slot
-void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
+void WTrackTableView::slotMouseDoubleClicked(const QModelIndex& index) {
     // Read the current TrackLoadAction settings
-    int doubleClickActionConfigValue = m_pConfig->getValue(
-            ConfigKey("[Library]","TrackLoadAction"),
-            static_cast<int>(DlgPrefLibrary::LOAD_TO_DECK));
+    int doubleClickActionConfigValue =
+            m_pConfig->getValue(ConfigKey("[Library]", "TrackLoadAction"),
+                    static_cast<int>(DlgPrefLibrary::LOAD_TO_DECK));
     DlgPrefLibrary::TrackDoubleClickAction doubleClickAction =
-            static_cast<DlgPrefLibrary::TrackDoubleClickAction>(doubleClickActionConfigValue);
+            static_cast<DlgPrefLibrary::TrackDoubleClickAction>(
+                    doubleClickActionConfigValue);
 
     auto trackModel = getTrackModel();
     if (doubleClickAction == DlgPrefLibrary::LOAD_TO_DECK &&
@@ -360,8 +367,16 @@ void WTrackTableView::slotUnhide() {
 }
 
 void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
-    if (!m_pMenu) {
-        return;
+    VERIFY_OR_DEBUG_ASSERT(m_pMenu) {
+        m_pMenu = std::make_unique<WTrackMenu>(this,
+                m_pConfig,
+                m_pTrackCollectionManager,
+                WTrackMenu::Filter::All,
+                getTrackModel());
+        connect(m_pMenu.get(),
+                &WTrackMenu::loadTrackToPlayer,
+                this,
+                &WTrackTableView::loadTrackToPlayer);
     }
     // Update track indices in context menu
     QModelIndexList indices = selectionModel()->selectedRows();

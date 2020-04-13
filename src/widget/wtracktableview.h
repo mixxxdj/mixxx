@@ -3,6 +3,7 @@
 
 #include <QAbstractItemModel>
 #include <QSortFilterProxyModel>
+#include <memory>
 
 #include "control/controlproxy.h"
 #include "library/dao/playlistdao.h"
@@ -85,7 +86,7 @@ class WTrackTableView : public WLibraryTableView {
     TrackCollectionManager* const m_pTrackCollectionManager;
 
     // Context menu container
-    WTrackMenu *m_pMenu;
+    std::unique_ptr<WTrackMenu> m_pMenu;
 
     const double m_backgroundColorOpacity;
     bool m_sorting;
