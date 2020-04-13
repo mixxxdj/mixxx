@@ -124,7 +124,7 @@ void WaveformWidgetRenderer::onPreRender(mixxx::Duration estimatedTimeUntilSwap)
     }
 
 
-    double truePlayPos = m_visualPlayPosition->getAtNextSwap(estimatedTimeUntilSwap);
+    double truePlayPos = m_visualPlayPosition->getPlayPositionAtNextSwap(estimatedTimeUntilSwap);
     // m_playPos = -1 happens, when a new track is in buffer but m_visualPlayPosition was not updated
 
     if (m_audioSamplePerPixel && truePlayPos != -1) {

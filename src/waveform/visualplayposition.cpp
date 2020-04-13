@@ -49,7 +49,7 @@ void VisualPlayPosition::set(double playPos, double rate, double positionStep,
     m_valid = true;
 }
 
-double VisualPlayPosition::getAtNextSwap(mixxx::Duration estimatedTimeUntilSwap) {
+double VisualPlayPosition::getPlayPositionAtNextSwap(mixxx::Duration estimatedTimeUntilSwap) {
     //static double testPos = 0;
     //testPos += 0.000017759; //0.000016608; //  1.46257e-05;
     //return testPos;
@@ -63,8 +63,8 @@ double VisualPlayPosition::getAtNextSwap(mixxx::Duration estimatedTimeUntilSwap)
         // first, offset will be negative so that playpos goes backward.
         int offsetMicros = microsUntilSwap - microsUntilDac;
         offsetMicros = math_clamp(offsetMicros,
-                                      -m_audioBufferMicros * kMaxOffsetBufferCnt,
-                                      m_audioBufferMicros * kMaxOffsetBufferCnt);
+                                  -m_audioBufferMicros * kMaxOffsetBufferCnt,
+                                  m_audioBufferMicros * kMaxOffsetBufferCnt);
         double playPos = data.m_enginePlayPos;  // load playPos for the first sample in Buffer
         // add the offset for the position of the sample that will be transferred to the DAC
         // When the next display frame is displayed

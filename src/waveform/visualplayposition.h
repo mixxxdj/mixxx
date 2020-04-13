@@ -48,7 +48,7 @@ class VisualPlayPosition : public QObject {
     // engine thread.
     void set(double playPos, double rate, double positionStep,
              double pSlipPosition, double tempoTrackSeconds);
-    double getAtNextSwap(mixxx::Duration estimatedTimeUntilSwap);
+    double getPlayPositionAtNextSwap(mixxx::Duration estimatedTimeUntilSwap);
     void getPlaySlipAtNextSwap(mixxx::Duration estimatedTimeUntilSwap,
                                double* playPosition, double* slipPosition);
     double getEnginePlayPos();
