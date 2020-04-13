@@ -821,6 +821,7 @@ void WaveformWidgetFactory::startRenderThread(GuiTick* pGuiTick, VisualsManager*
     m_renderThread = new RenderThread(this);
     m_renderThread->start(QThread::NormalPriority);
     m_renderThread->setRenderType(m_renderType);
+    m_renderThread->setSyncIntervalTimeMicros(1e6 / m_frameRate);
 
     connect(m_renderThread, SIGNAL(render()),
             this, SLOT(render()));
