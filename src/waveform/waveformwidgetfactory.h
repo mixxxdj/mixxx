@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include <QMainWindow>
 #include <QObject>
 #include <QTime>
 #include <QVector>
@@ -64,7 +65,13 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     static void setDefaultSurfaceFormat();
 
-    bool setConfig(UserSettingsPointer config);
+    // Perform initialization work and detect OpenGL.  Since this is a
+    // Singleton, we can't pass these arguments through the constructor.
+    // TODO(rryan): This shouldn't be a Singleton.
+    void initialize(QMainWindow* pMainWindow,
+                    UserSettingsPointer config,
+                    GuiTick* pGuiTick,
+                    VisualsManager* pVisualsManager);
 
     //creates the waveform widget and bind it to the viewer
     //clean-up every thing if needed
@@ -110,7 +117,6 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void addTimerListener(QWidget* pWidget);
 
     void setRenderType(int vsType);
-    void startRenderThread(GuiTick* pGuiTick, VisualsManager* pVisualsManager);
 
     void setPlayMarkerPosition(double position);
     double getPlayMarkerPosition() const { return m_playMarkerPosition; }
@@ -134,7 +140,10 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void render();
 
   private:
+    void startRenderThread(GuiTick* pGuiTick, VisualsManager* pVisualsManager);
     void evaluateWidgets();
+    bool setConfig(UserSettingsPointer config);
+    void detectOpenGLVersion(QMainWindow* pMainWindow);
     WaveformWidgetAbstract* createWaveformWidget(WaveformWidgetType::Type type, WWaveformViewer* viewer);
     int findIndexOf(WWaveformViewer* viewer) const;
 

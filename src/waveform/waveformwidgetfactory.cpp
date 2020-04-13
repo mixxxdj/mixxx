@@ -115,23 +115,39 @@ WaveformWidgetFactory::WaveformWidgetFactory()
     m_visualGain[Low] = 1.0;
     m_visualGain[Mid] = 1.0;
     m_visualGain[High] = 1.0;
+}
 
+void WaveformWidgetFactory::detectOpenGLVersion(QMainWindow* pMainWindow) {
     const bool safeMode = CmdlineArgs::Instance().getSafeMode();
-    QWindow* pWindow = QGuiApplication::focusWindow();
+    m_openGlAvailable = false;
+    m_openGlesAvailable = false;
+    m_openGLShaderAvailable = false;
 
+    // Do not create any QOpenGLWidgets since we're in safe mode.
     if (safeMode) {
         m_openGLVersion = tr("Safe Mode");
-    } else if (pWindow && pWindow->supportsOpenGL()) {
-        m_openGlAvailable = true;
+        return;
+    }
 
-        QWidget* w = nullptr;
-        for (QWidget* widget : QApplication::topLevelWidgets()) {
-            if (widget->inherits("QMainWindow")) {
-                w = widget;
-                break;
-            }
+    QWindow* pWindow = pMainWindow->windowHandle();
+    if (!pWindow) {
+        pWindow = QGuiApplication::focusWindow();
+
+        if (!pWindow) {
+            qWarning() << "Couldn't find the current QWindow. Aborting OpenGL detection.";
+            m_openGLVersion = tr("Unknown");
+            return;
         }
-        std::unique_ptr<QOpenGLWidget> pGlW = std::make_unique<QOpenGLWidget>(w);
+    }
+
+    const QSurfaceFormat windowFormat = pWindow->format();
+    qDebug() << "Found window:" << pWindow << "with surface format:"
+             << windowFormat
+             << "and supportsOpenGL=" << pWindow->supportsOpenGL();
+
+    if (pWindow->supportsOpenGL()) {
+        m_openGlAvailable = true;
+        std::unique_ptr<QOpenGLWidget> pGlW = std::make_unique<QOpenGLWidget>(pMainWindow);
         //glw->makeCurrent(); // does not work here
         pGlW->show(); // the context is only valid if the wiget is shown.
         QOpenGLContext* pContext = pGlW->context();
@@ -140,16 +156,14 @@ WaveformWidgetFactory::WaveformWidgetFactory()
         QString renderer;
         if (pContext) {
             version = QString::fromUtf8(reinterpret_cast<const char*>(
-                    pContext->functions()->glGetString(GL_VERSION)));
+                pContext->functions()->glGetString(GL_VERSION)));
             renderer = QString::fromUtf8(reinterpret_cast<const char*>(
-                    pContext->functions()->glGetString(GL_RENDERER)));
+                pContext->functions()->glGetString(GL_RENDERER)));
         }
 
         m_openGLShaderAvailable = QOpenGLShaderProgram::hasOpenGLShaderPrograms(pContext);
 
-        const QSurfaceFormat format = pWindow->format();
-
-        const QSurfaceFormat::RenderableType renderableType = format.renderableType();
+        const QSurfaceFormat::RenderableType renderableType = windowFormat.renderableType();
         QString strRenderableType;
         switch (renderableType) {
         case QSurfaceFormat::DefaultRenderableType:
@@ -173,9 +187,17 @@ WaveformWidgetFactory::WaveformWidgetFactory()
     } else {
         m_openGLVersion = tr("None");
     }
+}
 
+void WaveformWidgetFactory::initialize(QMainWindow* pMainWindow,
+                                       UserSettingsPointer pConfig,
+                                       GuiTick* pGuiTick,
+                                       VisualsManager* pVisualsManager) {
+    detectOpenGLVersion(pMainWindow);
     evaluateWidgets();
     m_time.start();
+    startRenderThread(pGuiTick, pVisualsManager);
+    setConfig(pConfig);
 }
 
 WaveformWidgetFactory::~WaveformWidgetFactory() {

@@ -407,9 +407,12 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     launchProgress(47);
 
-    WaveformWidgetFactory::createInstance(); // takes a long time
-    WaveformWidgetFactory::instance()->startRenderThread(m_pGuiTick, m_pVisualsManager);
-    WaveformWidgetFactory::instance()->setConfig(pConfig);
+    WaveformWidgetFactory::createInstance();
+
+    // Initialization can take a long time, since we create a QOpenGLWidget and
+    // show it.
+    WaveformWidgetFactory::instance()->initialize(
+        this, pConfig, m_pGuiTick, m_pVisualsManager);
 
     launchProgress(52);
 
