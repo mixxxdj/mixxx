@@ -44,7 +44,7 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
 
   private slots:
     void slotApply();
-    void slotUpdateApplyButton();
+    void slotUpdateWidgets();
 
   private:
     void setApplyButtonEnabled(bool enabled);
