@@ -39,7 +39,7 @@ void RenderThread::run() {
             // for benchmark only!
 
             Event::start(renderTag);
-            // renders the waveform, Possible delayed due to anti tearing
+            // Request for the main thread to schedule a render.
             emit(render());
             m_semaRenderSlot.acquire();
             Event::end(renderTag);
@@ -50,16 +50,19 @@ void RenderThread::run() {
             m_timer.restart();
 
             Event::start(renderTag);
-            emit(render()); // renders the new waveform.
 
-            // wait until rendering was scheduled. It might be delayed due a
-            // pending swap (depends one driver render settings)
+            // Request for the main thread to schedule a render.
+            emit(render());
+
+            // Wait until the main thread processed our rendering request. This
+            // means the main thread scheduled a render, not that it has already
+            // happened. Ultimately, Qt's compositor is in charge of when our
+            // QOpenGLWidgets render and swap.
             m_semaRenderSlot.acquire();
             Event::end(renderTag);
 
             int elapsed = m_timer.restart().toIntegerMicros();
             int sleepTimeMicros = m_syncIntervalTimeMicros - elapsed;
-            //qDebug() << "RenderThread sleepTimeMicros" << sleepTimeMicros;
             if (sleepTimeMicros > 100) {
                 usleep(sleepTimeMicros);
             } else if (sleepTimeMicros < 0) {

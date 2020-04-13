@@ -502,38 +502,27 @@ void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
 void WaveformWidgetFactory::render() {
     ScopedTimer t("WaveformWidgetFactory::render() %1waveforms", m_waveformWidgetHolders.size());
 
-    //int paintersSetupTime0 = 0;
-    //int paintersSetupTime1 = 0;
-
-    //qDebug() << "render()" << m_renderThread->elapsed();
-
     if (!m_skipRender) {
         if (m_type) {   // no regular updates for an empty waveform
-            // next rendered frame is displayed after next buffer swap and than after Render
-            //qDebug() << "prerender" << m_renderThread->elapsed();
-
-            // It may happen that there is an artificially delayed due to
-            // anti tearing driver settings
-            // all render commands are delayed until the swap from the previous run is executed
+            // Tell all active waveform widgets to render themselves on the next
+            // tick.
             for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
                 WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
                 if (!shouldRenderWaveform(pWaveformWidget)) {
                     continue;
                 }
                 pWaveformWidget->renderOnNextTick();
-                //qDebug() << "render" << i << m_renderThread->elapsed();
             }
         }
 
         // WSpinnys are also double-buffered QOpenGLWidgets, like all the
-        // waveform renderers. Render all the WSpinny widgets now.
+        // waveform renderers. Tell all the WSpinnys to render themselves on the
+        // next tick.
         emit renderSpinnies();
 
-        // Notify all other waveform-like widgets (e.g. WSpinny's) that they should
+        // Notify all other waveform-like widgets (e.g. WVuMeter's) that they should
         // update.
-        //int t1 = m_renderThread->elapsed();
         emit waveformUpdateTick();
-        //qDebug() << "emit" << m_renderThread->elapsed() - t1;
 
         m_frameCnt += 1.0;
         mixxx::Duration timeCnt = m_time.elapsed();
@@ -547,8 +536,6 @@ void WaveformWidgetFactory::render() {
 
     m_pVisualsManager->process(m_endOfTrackWarningTime);
     m_pGuiTick->process();
-
-    //qDebug() << "refresh end" << m_renderThread->elapsed();
     m_renderThread->renderSlotFinished();
 }
 
