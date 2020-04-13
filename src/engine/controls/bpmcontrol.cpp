@@ -937,34 +937,19 @@ void BpmControl::notifySeek(double dNewPlaypos) {
 
 // called from an engine worker thread
 void BpmControl::trackLoaded(TrackPointer pNewTrack) {
-    if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "BpmControl::trackLoaded";
-    }
-    if (m_pTrack) {
-        disconnect(m_pTrack.get(), &Track::beatsUpdated,
-                   this, &BpmControl::slotUpdatedTrackBeats);
-    }
-
-    // reset for a new track
-    resetSyncAdjustment();
-
+    BeatsPointer pBeats;
     if (pNewTrack) {
-        m_pTrack = pNewTrack;
-        m_pBeats = m_pTrack->getBeats();
-        connect(m_pTrack.get(), &Track::beatsUpdated,
-                this, &BpmControl::slotUpdatedTrackBeats);
-    } else {
-        m_pTrack.reset();
-        m_pBeats.clear();
+        pBeats = pNewTrack->getBeats();
     }
+    trackBeatsUpdated(pBeats);
 }
 
-void BpmControl::slotUpdatedTrackBeats() {
-    TrackPointer pTrack = m_pTrack;
-    if (pTrack) {
-        resetSyncAdjustment();
-        m_pBeats = pTrack->getBeats();
+void BpmControl::trackBeatsUpdated(BeatsPointer pBeats) {
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "BpmControl::trackBeatsUpdated";
     }
+    resetSyncAdjustment();
+    m_pBeats = pBeats;
 }
 
 void BpmControl::slotBeatsTranslate(double v) {

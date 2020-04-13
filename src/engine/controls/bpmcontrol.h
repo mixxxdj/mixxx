@@ -74,6 +74,7 @@ class BpmControl : public EngineControl {
     double getRateRatio() const;
     void notifySeek(double dNewPlaypos) override;
     void trackLoaded(TrackPointer pNewTrack) override;
+    void trackBeatsUpdated(BeatsPointer pBeats) override;
 
   private slots:
     void slotFileBpmChanged(double);
@@ -88,7 +89,6 @@ class BpmControl : public EngineControl {
     void slotBpmTap(double);
     void slotUpdateRateSlider(double v = 0.0);
     void slotUpdateEngineBpm(double v = 0.0);
-    void slotUpdatedTrackBeats();
     void slotBeatsTranslate(double);
     void slotBeatsTranslateMatchAlignment(double);
 
@@ -159,8 +159,7 @@ class BpmControl : public EngineControl {
     double m_dLastSyncAdjustment;
     bool m_dUserTweakingSync;
 
-    // objects below are written from an engine worker thread
-    TrackPointer m_pTrack;
+    // m_pBeats is written from an engine worker thread
     BeatsPointer m_pBeats;
 
     FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
