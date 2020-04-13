@@ -795,3 +795,8 @@ TrackPointer BaseTrackTableModel::getTrackByRef(
         const TrackRef& trackRef) const {
     return m_pTrackCollectionManager->internalCollection()->getTrackByRef(trackRef);
 }
+
+bool BaseTrackTableModel::hasCapabilities(
+        const TrackModel::CapabilitiesFlags& capabilities) const {
+    return (getCapabilities() & capabilities) == capabilities;
+}

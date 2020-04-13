@@ -283,7 +283,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // this.)
     setDragEnabled(true);
 
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_RECEIVEDROPS)) {
+    if (trackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_RECEIVEDROPS)) {
         setDragDropMode(QAbstractItemView::DragDrop);
         setDropIndicatorShown(true);
         setAcceptDrops(true);
@@ -315,9 +315,10 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
     DlgPrefLibrary::TrackDoubleClickAction doubleClickAction =
             static_cast<DlgPrefLibrary::TrackDoubleClickAction>(doubleClickActionConfigValue);
 
-    if (doubleClickAction == DlgPrefLibrary::LOAD_TO_DECK
-        && modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTODECK)) {
-        TrackModel* trackModel = getTrackModel();
+    auto trackModel = getTrackModel();
+    if (doubleClickAction == DlgPrefLibrary::LOAD_TO_DECK &&
+            trackModel->hasCapabilities(
+                    TrackModel::TRACKMODELCAPS_LOADTODECK)) {
         VERIFY_OR_DEBUG_ASSERT(trackModel) {
             return;
         }
@@ -326,11 +327,13 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
         if (pTrack) {
             emit loadTrack(pTrack);
         }
-    } else if (doubleClickAction == DlgPrefLibrary::ADD_TO_AUTODJ_BOTTOM
-        && modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
+    } else if (doubleClickAction == DlgPrefLibrary::ADD_TO_AUTODJ_BOTTOM &&
+            trackModel->hasCapabilities(
+                    TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
         addToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
-    } else if (doubleClickAction == DlgPrefLibrary::ADD_TO_AUTODJ_TOP
-        && modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
+    } else if (doubleClickAction == DlgPrefLibrary::ADD_TO_AUTODJ_TOP &&
+            trackModel->hasCapabilities(
+                    TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
         addToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
     }
 }
@@ -418,10 +421,11 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
 
 // Drag enter event, happens when a dragged item hovers over the track table view
 void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
+    auto trackModel = getTrackModel();
     //qDebug() << "dragEnterEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls()) {
         if (event->source() == this) {
-            if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
+            if (trackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
                 event->acceptProposedAction();
                 return;
             }
@@ -438,6 +442,7 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
 // It changes the drop handle to a "+" when the drag content is acceptable.
 // Without it, the following drop is ignored.
 void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
+    auto trackModel = getTrackModel();
     // Needed to allow auto-scrolling
     WLibraryTableView::dragMoveEvent(event);
 
@@ -445,7 +450,7 @@ void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
     if (event->mimeData()->hasUrls())
     {
         if (event->source() == this) {
-            if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
+            if (trackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
                 event->acceptProposedAction();
             } else {
                 event->ignore();
@@ -492,7 +497,8 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     //qDebug() << "destIndex.row() is" << destIndex.row();
 
     // Drag and drop within this widget (track reordering)
-    if (event->source() == this && modelHasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
+    if (event->source() == this &&
+            trackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
         // Note the above code hides an ambiguous case when a
         // playlist is empty. For that reason, we can't factor that
         // code out to be common for both internal reordering
@@ -632,7 +638,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
 
         // Create the selection, but only if the track model supports
         // reordering. (eg. crates don't support reordering/indexes)
-        if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
+        if (trackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
             for (int i = selectionStartRow; i < selectionStartRow + numNewRows; i++) {
                 this->selectionModel()->select(model()->index(i, 0),
                                                QItemSelectionModel::Select |
@@ -649,12 +655,6 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
 TrackModel* WTrackTableView::getTrackModel() const {
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
     return trackModel;
-}
-
-bool WTrackTableView::modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) const {
-    TrackModel* trackModel = getTrackModel();
-    return trackModel &&
-            (trackModel->getCapabilities() & capabilities) == capabilities;
 }
 
 void WTrackTableView::keyPressEvent(QKeyEvent* event) {
@@ -724,7 +724,8 @@ void WTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
 }
 
 void WTrackTableView::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
-    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
+    auto trackModel = getTrackModel();
+    if (!trackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
         return;
     }
 

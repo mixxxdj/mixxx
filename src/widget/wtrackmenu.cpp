@@ -294,13 +294,13 @@ void WTrackMenu::setupActions() {
     }
 
     if (optionIsEnabled(Filter::Remove)) {
-        if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
             addAction(m_pRemoveAct);
         }
-        if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST)) {
             addAction(m_pRemovePlaylistAct);
         }
-        if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_CRATE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_CRATE)) {
             addAction(m_pRemoveCrateAct);
         }
     }
@@ -369,13 +369,13 @@ void WTrackMenu::setupActions() {
 
     addSeparator();
     if (optionIsEnabled(Filter::HideUnhidePurge)) {
-        if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_HIDE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_HIDE)) {
             addAction(m_pHideAct);
         }
-        if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE)) {
             addAction(m_pUnhideAct);
         }
-        if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_PURGE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_PURGE)) {
             addAction(m_pPurgeAct);
         }
     }
@@ -446,14 +446,14 @@ void WTrackMenu::updateMenus() {
     }
 
     if (optionIsEnabled(Filter::Remove)) {
-        bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
-        if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
+        bool locked = m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
+        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
             m_pRemoveAct->setEnabled(!locked);
         }
-        if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST)) {
             m_pRemovePlaylistAct->setEnabled(!locked);
         }
-        if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_CRATE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_CRATE)) {
             m_pRemoveCrateAct->setEnabled(!locked);
         }
     }
@@ -537,14 +537,14 @@ void WTrackMenu::updateMenus() {
     }
 
     if (optionIsEnabled(Filter::HideUnhidePurge)) {
-        bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
-        if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_HIDE)) {
+        bool locked = m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
+        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_HIDE)) {
             m_pHideAct->setEnabled(!locked);
         }
-        if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE)) {
             m_pUnhideAct->setEnabled(!locked);
         }
-        if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_PURGE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_PURGE)) {
             m_pPurgeAct->setEnabled(!locked);
         }
     }
@@ -1165,11 +1165,6 @@ void WTrackMenu::clearTrackSelection() {
     m_pTrackIndexList.clear();
 }
 
-bool WTrackMenu::modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) const {
-    return m_pTrackModel &&
-            (m_pTrackModel->getCapabilities() & capabilities) == capabilities;
-}
-
 bool WTrackMenu::optionIsEnabled(Filter flag) const {
     bool optionIsSelected = m_eFilters.testFlag(Filter::All) || m_eFilters.testFlag(flag);
     if (!optionIsSelected) {
@@ -1178,32 +1173,42 @@ bool WTrackMenu::optionIsEnabled(Filter flag) const {
 
     if (m_pTrackModel) {
         if (flag == Filter::AutoDJ) {
-            return modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ);
+            return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ);
         } else if (flag == Filter::LoadTo) {
-            return modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTODECK) ||
-                    modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTOSAMPLER) || modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTOPREVIEWDECK);
+            return m_pTrackModel->hasCapabilities(
+                           TrackModel::TRACKMODELCAPS_LOADTODECK) ||
+                    m_pTrackModel->hasCapabilities(
+                            TrackModel::TRACKMODELCAPS_LOADTOSAMPLER) ||
+                    m_pTrackModel->hasCapabilities(
+                            TrackModel::TRACKMODELCAPS_LOADTOPREVIEWDECK);
         } else if (flag == Filter::Playlist) {
-            return modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOPLAYLIST);
+            return m_pTrackModel->hasCapabilities(
+                    TrackModel::TRACKMODELCAPS_ADDTOPLAYLIST);
         } else if (flag == Filter::Crate) {
-            return modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOCRATE);
+            return m_pTrackModel->hasCapabilities(
+                    TrackModel::TRACKMODELCAPS_ADDTOCRATE);
         } else if (flag == Filter::Remove) {
-            return modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE) ||
-                    modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST) || modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_CRATE);
+            return m_pTrackModel->hasCapabilities(
+                           TrackModel::TRACKMODELCAPS_REMOVE) ||
+                    m_pTrackModel->hasCapabilities(
+                            TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST) ||
+                    m_pTrackModel->hasCapabilities(
+                            TrackModel::TRACKMODELCAPS_REMOVE_CRATE);
         } else if (flag == Filter::Metadata) {
-            return modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+            return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
         } else if (flag == Filter::Reset) {
-            return modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA) &&
-                    modelHasCapabilities(TrackModel::TRACKMODELCAPS_RESETPLAYED);
+            return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA) &&
+                    m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_RESETPLAYED);
         } else if (flag == Filter::BPM) {
-            return modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+            return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
         } else if (flag == Filter::Color) {
-            return modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+            return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
         } else if (flag == Filter::HideUnhidePurge) {
-            return modelHasCapabilities(TrackModel::TRACKMODELCAPS_HIDE) ||
-                    modelHasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE) ||
-                    modelHasCapabilities(TrackModel::TRACKMODELCAPS_PURGE);
+            return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_HIDE) ||
+                    m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE) ||
+                    m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_PURGE);
         } else if (flag == Filter::Properties) {
-            return modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+            return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
         } else {
             return true;
         }

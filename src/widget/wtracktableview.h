@@ -81,11 +81,7 @@ class WTrackTableView : public WLibraryTableView {
     // Returns the current TrackModel, or returns NULL if none is set.
     TrackModel* getTrackModel() const;
 
-    // Check if an operation is allowed on a model.
-    bool modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) const;
-
     const UserSettingsPointer m_pConfig;
-
     TrackCollectionManager* const m_pTrackCollectionManager;
 
     // Context menu container

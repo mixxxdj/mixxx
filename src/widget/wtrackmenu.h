@@ -119,7 +119,6 @@ class WTrackMenu : public QMenu {
     void setupActions();
     void updateMenus();
 
-    bool modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) const;
     bool optionIsEnabled(Filter flag) const;
 
     void addSelectionToPlaylist(int iPlaylistId);
