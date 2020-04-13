@@ -47,6 +47,11 @@ WTrackMenu::WTrackMenu(QWidget* parent,
     m_pNumPreviewDecks = new ControlProxy(
             "[Master]", "num_preview_decks", this);
 
+    if (!trackModel) {
+        // Warn if any of the chosen flags depend on a TrackModel
+        VERIFY_OR_DEBUG_ASSERT((m_eTrackModelFilters & flags) == 0) {
+        }
+    }
     createMenus();
     createActions();
     setupActions();
@@ -169,7 +174,7 @@ void WTrackMenu::createActions() {
         m_pImportMetadataFromMusicBrainzAct = new QAction(tr("Import From MusicBrainz"), m_pMetadataMenu);
         connect(m_pImportMetadataFromMusicBrainzAct, &QAction::triggered, this, &WTrackMenu::slotShowDlgTagFetcher);
 
-        // Give a NULL parent because otherwise it inherits our style which can
+        // Give a nullptr parent because otherwise it inherits our style which can
         // make it unreadable. Bug #673411
         m_pTagFetcher.reset(new DlgTagFetcher(nullptr, m_pTrackModel));
 
@@ -558,6 +563,8 @@ void WTrackMenu::loadTracks(TrackIdList trackIdList) {
     // Clean all forms of track store
     clearTrackSelection();
 
+    DEBUG_ASSERT(!m_pTrackModel);
+
     TrackPointerList trackPointers;
     trackPointers.reserve(trackIdList.size());
     for (const auto& trackId : trackIdList) {
@@ -577,7 +584,7 @@ void WTrackMenu::loadTracks(QModelIndexList indexList) {
     // Clean all forms of track store
     clearTrackSelection();
 
-    if (!m_pTrackModel) {
+    VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
         return;
     }
 
