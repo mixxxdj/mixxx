@@ -141,7 +141,7 @@
          <item>
           <widget class="QLabel" name="labelReplaceAllColorsText">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -150,7 +150,7 @@
             <number>1</number>
            </property>
            <property name="text">
-            <string>You didn't specify any conditions. This means that the colors of all cue points in the library will be replaced.</string>
+            <string>If you don't specify any conditions, the colors of all cues in the library will be replaced.</string>
            </property>
            <property name="textFormat">
             <enum>Qt::PlainText</enum>
