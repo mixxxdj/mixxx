@@ -125,10 +125,11 @@ WaveformWidgetFactory::WaveformWidgetFactory()
         m_openGlAvailable = true;
 
         QWidget* w = nullptr;
-        foreach(QWidget* widget, QApplication::topLevelWidgets())
-        if (widget->inherits("QMainWindow")) {
-            w = widget;
-            break;
+        for (QWidget* widget : QApplication::topLevelWidgets()) {
+            if (widget->inherits("QMainWindow")) {
+                w = widget;
+                break;
+            }
         }
         std::unique_ptr<QOpenGLWidget> pGlW = std::make_unique<QOpenGLWidget>(w);
         //glw->makeCurrent(); // does not work here
