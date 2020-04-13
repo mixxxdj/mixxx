@@ -263,7 +263,7 @@ void DlgTrackInfo::reloadTrackBeats(const Track& track) {
     }
 }
 
-void DlgTrackInfo::changeTrack(const TrackPointer& pTrack) {
+void DlgTrackInfo::loadTrackInternal(const TrackPointer& pTrack) {
     clear();
 
     if (!pTrack) {
@@ -287,7 +287,7 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
     VERIFY_OR_DEBUG_ASSERT(!m_pTrackModel) {
         return;
     }
-    changeTrack(pTrack);
+    loadTrackInternal(pTrack);
 }
 
 void DlgTrackInfo::loadTrack(QModelIndex index) {
@@ -296,7 +296,7 @@ void DlgTrackInfo::loadTrack(QModelIndex index) {
     }
     TrackPointer pTrack = m_pTrackModel->getTrack(index);
     m_currentTrackIndex = index;
-    changeTrack(pTrack);
+    loadTrackInternal(pTrack);
 }
 
 void DlgTrackInfo::slotCoverFound(

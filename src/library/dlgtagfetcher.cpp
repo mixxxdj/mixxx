@@ -107,7 +107,7 @@ void DlgTagFetcher::slotPrev() {
     }
 }
 
-void DlgTagFetcher::changeTrack(const TrackPointer& track) {
+void DlgTagFetcher::loadTrackInternal(const TrackPointer& track) {
     if (!track) {
         return;
     }
@@ -135,7 +135,7 @@ void DlgTagFetcher::loadTrack(const TrackPointer& track) {
     VERIFY_OR_DEBUG_ASSERT(!m_pTrackModel) {
         return;
     }
-    changeTrack(track);
+    loadTrackInternal(track);
 }
 
 void DlgTagFetcher::loadTrack(const QModelIndex& index) {
@@ -144,7 +144,7 @@ void DlgTagFetcher::loadTrack(const QModelIndex& index) {
     }
     TrackPointer pTrack = m_pTrackModel->getTrack(index);
     m_currentTrackIndex = index;
-    changeTrack(pTrack);
+    loadTrackInternal(pTrack);
 }
 
 void DlgTagFetcher::slotTrackChanged(TrackId trackId) {

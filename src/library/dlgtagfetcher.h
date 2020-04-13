@@ -40,7 +40,7 @@ class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
     void slotPrev();
 
   private:
-    void changeTrack(const TrackPointer& track);
+    void loadTrackInternal(const TrackPointer& track);
     void updateStack();
     void addDivider(const QString& text, QTreeWidget* parent) const;
 
