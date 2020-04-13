@@ -1,14 +1,17 @@
 #include "library/searchqueryparser.h"
 
-#include "util/compatibility.h"
-
+#include "tagging/customtagsdb.h"
 #include "track/keyutils.h"
+#include "util/compatibility.h"
 
 constexpr char kNegatePrefix[] = "-";
 constexpr char kFuzzyPrefix[] = "~";
 
-SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
-    : m_pTrackCollection(pTrackCollection) {
+SearchQueryParser::SearchQueryParser(
+        TrackCollection* pTrackCollection,
+        const QString& idColumn)
+        : m_pTrackCollection(pTrackCollection),
+          m_idColumn(idColumn) {
     m_textFilters << "artist"
                   << "album_artist"
                   << "album"
@@ -32,7 +35,9 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
                      << "datetime_added"
                      << "date_added";
     m_ignoredColumns << "crate";
-
+    m_tagFilters
+            << mixxx::TrackCustomTagsStorage::kColumnFacet
+            << mixxx::TrackCustomTagsStorage::kColumnLabel;
     m_fieldToSqlColumns["artist"] << "artist" << "album_artist";
     m_fieldToSqlColumns["album_artist"] << "album_artist";
     m_fieldToSqlColumns["album"] << "album";
@@ -57,11 +62,13 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
     m_allFilters.append(m_textFilters);
     m_allFilters.append(m_numericFilters);
     m_allFilters.append(m_specialFilters);
+    m_allFilters.append(m_tagFilters);
 
     m_fuzzyMatcher = QRegExp(QString("^~(%1)$").arg(m_allFilters.join("|")));
     m_textFilterMatcher = QRegExp(QString("^-?(%1):(.*)$").arg(m_textFilters.join("|")));
     m_numericFilterMatcher = QRegExp(QString("^-?(%1):(.*)$").arg(m_numericFilters.join("|")));
     m_specialFilterMatcher = QRegExp(QString("^[~-]?(%1):(.*)$").arg(m_specialFilters.join("|")));
+    m_tagFilterMatcher = QRegExp(QString("^-?(%1):(.*)$").arg(m_tagFilters.join("|")));
 }
 
 SearchQueryParser::~SearchQueryParser() {
@@ -116,12 +123,14 @@ QString SearchQueryParser::getTextArgument(QString argument,
     return argument;
 }
 
-void SearchQueryParser::parseTokens(QStringList tokens,
-                                    QStringList searchColumns,
-                                    AndNode* pQuery) const {
+SearchQueryParser::QueryNodes SearchQueryParser::parseTokens(
+        QStringList tokens,
+        QStringList searchColumns) const {
     // we need to create a filtered columns list that are handled differently
     auto queryColumns = QStringList();
     queryColumns.reserve(searchColumns.count());
+
+    QueryNodes queryNodes;
 
     for (const auto& column: qAsConst(searchColumns)) {
         if (m_ignoredColumns.contains(column)) {
@@ -129,7 +138,6 @@ void SearchQueryParser::parseTokens(QStringList tokens,
         }
         queryColumns << column;
     }
-
 
     while (tokens.size() > 0) {
         QString token = tokens.takeFirst().trimmed();
@@ -139,6 +147,8 @@ void SearchQueryParser::parseTokens(QStringList tokens,
 
         bool negate = token.startsWith(kNegatePrefix);
         std::unique_ptr<QueryNode> pNode;
+        std::unique_ptr<QueryNode> pOrTagSubselectNode;
+        std::unique_ptr<QueryNode> pAndTagSubselectNode;
 
         if (m_fuzzyMatcher.indexIn(token) != -1) {
             // TODO(XXX): implement this feature.
@@ -214,6 +224,20 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                         m_pTrackCollection->database(), m_fieldToSqlColumns[field], argument);
                 }
             }
+        } else if (m_tagFilterMatcher.indexIn(token) != -1) {
+            QString field = m_tagFilterMatcher.cap(1);
+            QString argument = getTextArgument(
+                    m_tagFilterMatcher.cap(2), &tokens);
+            if (argument == kMissingFieldSearchTerm) {
+                pAndTagSubselectNode =
+                        std::make_unique<SqlNode>(QString("%1 IS NULL").arg(field));
+            } else if (!argument.isEmpty()) {
+                pAndTagSubselectNode =
+                        std::make_unique<TextFilterNode>(
+                                m_pTrackCollection->database(),
+                                QStringList{field},
+                                argument);
+            }
         } else {
             // If no advanced search feature matched, treat it as a search term.
             if (negate) {
@@ -238,30 +262,121 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                     pNode = std::make_unique<TextFilterNode>(
                              m_pTrackCollection->database(), queryColumns, argument);
                 }
+                pOrTagSubselectNode =
+                        std::make_unique<TextFilterNode>(
+                                m_pTrackCollection->database(),
+                                m_tagFilters,
+                                argument);
             }
         }
         if (pNode) {
             if (negate) {
                 pNode = std::make_unique<NotNode>(std::move(pNode));
             }
-            pQuery->addNode(std::move(pNode));
+            if (!queryNodes.pMainFilterQueryNode) {
+                queryNodes.pMainFilterQueryNode = std::make_unique<AndNode>();
+            }
+            queryNodes.pMainFilterQueryNode->addNode(std::move(pNode));
+        }
+        if (pOrTagSubselectNode) {
+            if (negate) {
+                pOrTagSubselectNode = std::make_unique<NotNode>(std::move(pOrTagSubselectNode));
+            }
+            if (!queryNodes.pOrTagSubselectFilterNode) {
+                queryNodes.pOrTagSubselectFilterNode = std::make_unique<AndNode>();
+            }
+            queryNodes.pOrTagSubselectFilterNode->addNode(std::move(pOrTagSubselectNode));
+        }
+        if (pAndTagSubselectNode) {
+            if (negate) {
+                pAndTagSubselectNode = std::make_unique<NotNode>(std::move(pAndTagSubselectNode));
+            }
+            if (!queryNodes.pAndTagSubselectFilterNode) {
+                queryNodes.pAndTagSubselectFilterNode = std::make_unique<AndNode>();
+            }
+            queryNodes.pAndTagSubselectFilterNode->addNode(std::move(pAndTagSubselectNode));
         }
     }
+
+    return queryNodes;
 }
 
-std::unique_ptr<QueryNode> SearchQueryParser::parseQuery(const QString& query,
-                                         const QStringList& searchColumns,
-                                         const QString& extraFilter) const {
-    auto pQuery(std::make_unique<AndNode>());
-
-    if (!extraFilter.isEmpty()) {
-        pQuery->addNode(std::make_unique<SqlNode>(extraFilter));
-    }
-
+std::unique_ptr<QueryNode> SearchQueryParser::parseQuery(
+        const QString& query,
+        const QStringList& searchColumns,
+        const QString& extraFilter) const {
+    QueryNodes queryNodes;
     if (!query.isEmpty()) {
         QStringList tokens = query.split(" ");
-        parseTokens(tokens, searchColumns, pQuery.get());
+        queryNodes = parseTokens(tokens, searchColumns);
     }
 
-    return pQuery;
+    std::unique_ptr<QueryNode> pQuery;
+    if (extraFilter.isEmpty()) {
+        pQuery = std::move(queryNodes.pMainFilterQueryNode);
+    } else {
+        auto pExtraQuery = std::make_unique<SqlNode>(extraFilter);
+        if (queryNodes.pMainFilterQueryNode) {
+            auto pGroupNode = std::make_unique<AndNode>();
+            pGroupNode->addNode(std::move(queryNodes.pMainFilterQueryNode));
+            pGroupNode->addNode(std::move(pExtraQuery));
+            pQuery = std::move(pGroupNode);
+        } else {
+            pQuery = std::move(pExtraQuery);
+        }
+    }
+
+    if (m_idColumn.isEmpty()) {
+        // Subselects for tags are only possible if the id column is available
+        if (pQuery) {
+            return pQuery;
+        } else {
+            return std::make_unique<AndNode>();
+        }
+    }
+
+    // 1st step: The regular query and the unspecific tag query
+    // are combined with OR
+    if (queryNodes.pOrTagSubselectFilterNode) {
+        const auto trackIdSelect =
+                mixxx::TrackCustomTagsStorage::buildTrackIdSelect(
+                        queryNodes.pOrTagSubselectFilterNode->toSql());
+        const auto trackIdSubselect =
+                QString(QStringLiteral("%1 IN (%2)"))
+                        .arg(m_idColumn, trackIdSelect);
+        auto pSubselectQuery = std::make_unique<SqlNode>(trackIdSubselect);
+        if (pQuery) {
+            auto pGroupQuery = std::make_unique<OrNode>();
+            pGroupQuery->addNode(std::move(pQuery));
+            pGroupQuery->addNode(std::move(pSubselectQuery));
+            pQuery = std::move(pGroupQuery);
+        } else {
+            pQuery = std::move(pSubselectQuery);
+        }
+    }
+    // 2nd step: The combined query and the specific tag query
+    // are combined with AND
+    if (queryNodes.pAndTagSubselectFilterNode) {
+        const auto trackIdSelect =
+                mixxx::TrackCustomTagsStorage::buildTrackIdSelect(
+                        queryNodes.pAndTagSubselectFilterNode->toSql());
+        const auto trackIdSubselect =
+                QString(QStringLiteral("%1 IN (%2)"))
+                        .arg(m_idColumn, trackIdSelect);
+        auto pSubselectQuery = std::make_unique<SqlNode>(trackIdSubselect);
+        if (pQuery) {
+            auto pGroupQuery = std::make_unique<AndNode>();
+            pGroupQuery->addNode(std::move(pQuery));
+            pGroupQuery->addNode(std::move(pSubselectQuery));
+            pQuery = std::move(pGroupQuery);
+        } else {
+            pQuery = std::move(pSubselectQuery);
+        }
+    }
+
+    if (pQuery) {
+        return pQuery;
+    } else {
+        return std::make_unique<AndNode>();
+    }
 }

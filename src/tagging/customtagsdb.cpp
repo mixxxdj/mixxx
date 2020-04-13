@@ -2,9 +2,19 @@
 
 #include "library/dao/trackschema.h"
 #include "util/assert.h"
+#include "util/db/sqlstringformatter.h"
 #include "util/logger.h"
 
 namespace mixxx {
+
+//static
+const QString TrackCustomTagsStorage::kColumnFacet = QStringLiteral("facet");
+
+//static
+const QString TrackCustomTagsStorage::kColumnLabel = QStringLiteral("label");
+
+//static
+const QString TrackCustomTagsStorage::kColumnScore = QStringLiteral("score");
 
 namespace {
 
@@ -12,9 +22,6 @@ Logger kLogger("tagging.customtags.db");
 
 const QString kTable = QStringLiteral("track_custom_tags");
 const QString kColumnTrackId = QStringLiteral("track_id");
-const QString kColumnFacet = QStringLiteral("facet");
-const QString kColumnLabel = QStringLiteral("label");
-const QString kColumnScore = QStringLiteral("score");
 
 bool purgeOrphanedRecords(
         const QSqlDatabase& database) {
@@ -85,6 +92,52 @@ QString TrackCustomTagsStorage::joinTrackIdList(
         result.append(trackId.toString());
     }
     return result;
+}
+
+//static
+QString TrackCustomTagsStorage::buildTagFilter(
+        const QSqlDatabase& database,
+        const QList<std::pair<TagFacet, TagLabel>>& facetedLabelList) {
+    QString tagFilter;
+    for (const auto& facetLabelPair : facetedLabelList) {
+        const auto& facet = facetLabelPair.first;
+        const auto& label = facetLabelPair.second;
+        QString filterTerm;
+        if (!facet.isEmpty()) {
+            filterTerm = QString("%1=%2").arg(
+                    kColumnFacet,
+                    SqlStringFormatter::format(
+                            database,
+                            facet));
+        }
+        if (!label.isEmpty()) {
+            filterTerm = QString("%1=%2").arg(
+                    kColumnLabel,
+                    SqlStringFormatter::format(
+                            database,
+                            label));
+        }
+        VERIFY_OR_DEBUG_ASSERT(!filterTerm.isEmpty()) {
+            continue;
+        }
+        if (tagFilter.isEmpty()) {
+            tagFilter = filterTerm;
+        } else {
+            tagFilter += QStringLiteral(" AND ") + filterTerm;
+        }
+    }
+    return tagFilter;
+}
+
+//static
+QString TrackCustomTagsStorage::buildTrackIdSelect(
+        const QString& tagFilter) {
+    VERIFY_OR_DEBUG_ASSERT(!tagFilter.isEmpty()) {
+        return QString();
+    }
+    return QString(
+            QStringLiteral("SELECT %2 from %1 WHERE %3"))
+            .arg(kTable, kColumnTrackId, tagFilter);
 }
 
 TrackCustomTagsStorage::TrackCustomTagsStorage(

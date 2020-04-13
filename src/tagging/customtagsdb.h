@@ -12,9 +12,23 @@ namespace mixxx {
 class TrackCustomTagsStorage : public QObject {
     Q_OBJECT
   public:
+    static const QString kColumnFacet;
+    static const QString kColumnLabel;
+    static const QString kColumnScore;
+
     // TODO: Move into a generic SQL query utility class or module
     static QString joinTrackIdList(
             const TrackIdList& trackIds);
+
+    /// Build a filter (AND) from a list of facet/label pairs.
+    static QString buildTagFilter(
+            const QSqlDatabase& database,
+            const QList<std::pair<TagFacet, TagLabel>>& facetedLabelList);
+
+    /// Build a SELECT statement for the track id that is needed
+    /// for using a tag filter in subselects.
+    static QString buildTrackIdSelect(
+            const QString& tagFilter);
 
     TrackCustomTagsStorage(
             const QSqlDatabase& database,
