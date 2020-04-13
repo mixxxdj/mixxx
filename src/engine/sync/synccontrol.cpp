@@ -347,21 +347,16 @@ void SyncControl::trackBeatsUpdated(BeatsPointer pBeats) {
     }
 
     m_pBeats = pBeats;
-    if (getSyncMode() == SYNC_MASTER_SOFT) {
+    m_masterBpmAdjustFactor = kBpmUnity;
+
+    SyncMode syncMode = getSyncMode();
+    if (syncMode == SYNC_MASTER_SOFT) {
         // If we change or remove beats while soft master, hand off.
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
+    } else if (syncMode == SYNC_FOLLOWER) {
+        // Refresh follower state to update soft master
+        m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
     }
-    if (pBeats) {
-        m_masterBpmAdjustFactor = kBpmUnity;
-        if (isSynchronized()) {
-            // We used to set the m_pBpm here, but that causes a signal loop whereby
-            // that was interpreted as a rate slider tweak, and the master bpm
-            // was changed.  Instead, now we pass the suggested bpm to enginesync
-            // explicitly, and it can decide what to do with it.
-            m_pEngineSync->notifyTrackLoaded(this, m_pLocalBpm->get() * m_pRateRatio->get());
-        }
-    }
-
     setLocalBpm(m_pLocalBpm->get());
 }
 
@@ -395,7 +390,7 @@ void SyncControl::slotSyncModeChangeRequest(double state) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "SyncControl::slotSyncModeChangeRequest";
     }
-    SyncMode mode(syncModeFromDouble(state));
+    SyncMode mode = syncModeFromDouble(state);
     if (m_pPassthroughEnabled->get() && mode != SYNC_NONE) {
         qDebug() << "Disallowing enabling of sync mode when passthrough active";
     } else {

@@ -130,7 +130,10 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
             activateFollower(pSyncable);
             // Hand off to the internal clock and keep the current BPM and beat
             // distance.
-            activateMaster(m_pInternalClock, false);
+            Syncable* newMaster = pickMaster(pSyncable);
+            if (newMaster) {
+                activateMaster(newMaster, false);
+            }
         } else if (m_pMasterSyncable == nullptr) {
             // If no master active, activate the internal clock.
             activateMaster(m_pInternalClock, false);
@@ -302,36 +305,6 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
     }
 
     pSyncable->requestSync();
-}
-
-void EngineSync::notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) {
-    if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::notifyTrackLoaded";
-    }
-    // If there are no other sync decks, initialize master based on this.
-    // If there is, make sure to set our rate based on that.
-
-    // TODO(owilliams): Check this logic with an explicit master
-    if (pSyncable->getSyncMode() != SYNC_FOLLOWER) {
-        return;
-    }
-
-    bool sync_deck_exists = false;
-    foreach (const Syncable* pOtherSyncable, m_syncables) {
-        if (pOtherSyncable == pSyncable) {
-            continue;
-        }
-        if (pOtherSyncable->isSynchronized() && pOtherSyncable->getBpm() != 0) {
-            sync_deck_exists = true;
-            break;
-        }
-    }
-
-    if (!sync_deck_exists) {
-        setMasterBpm(pSyncable, suggested_bpm);
-    } else {
-        pSyncable->setMasterBpm(masterBpm());
-    }
 }
 
 void EngineSync::notifyScratching(Syncable* pSyncable, bool scratching) {

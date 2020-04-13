@@ -19,9 +19,9 @@ class BaseSyncableListener : public SyncableListener {
 
     // Only for testing. Do not use.
     Syncable* getSyncableForGroup(const QString& group);
-    Syncable* getMasterSyncable() {
+    Syncable* getMasterSyncable() override {
         return m_pMasterSyncable;
-    }
+    };
 
   protected:
     // This utility method returns true if it finds a deck not in SYNC_NONE mode.

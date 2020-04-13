@@ -106,6 +106,8 @@ TEST_F(EngineSyncTest, SetMasterSuccess) {
     pButtonMasterSync1->slotSet(SYNC_MASTER_EXPLICIT);
     ProcessBuffer();
 
+    // No tracks are playing and we have no beats, SYNC_MASTER_EXPLICIT state is in stand-by
+    EXPECT_FLOAT_EQ(0.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
     // The master sync should now be channel 1.
     assertIsExplicitMaster(m_sGroup1);
 
@@ -131,11 +133,11 @@ TEST_F(EngineSyncTest, SetMasterSuccess) {
     assertIsExplicitMaster(m_sGroup1);
     assertIsFollower(m_sGroup2);
 
-    // Now set channel 1 to follower, internal will be master because no track loaded.
+    // Now set channel 1 to follower, no all are followers, waiting for a tempo to adopt.
     pButtonMasterSync1->slotSet(SYNC_FOLLOWER);
     ProcessBuffer();
 
-    assertIsExplicitMaster(m_sInternalClockGroup);
+    assertIsFollower(m_sInternalClockGroup);
     assertIsFollower(m_sGroup1);
     assertIsFollower(m_sGroup2);
 }
@@ -381,7 +383,7 @@ TEST_F(EngineSyncTest, SetExplicitMasterByLights) {
     auto pButtonSyncMaster1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_master");
     auto pButtonSyncMaster2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_master");
 
-    // Set channel 1 to be master.
+    // Set channel 1 to be explicit master.
     pButtonSyncMaster1->slotSet(1.0);
     ProcessBuffer();
 
@@ -407,10 +409,10 @@ TEST_F(EngineSyncTest, SetExplicitMasterByLights) {
     assertIsExplicitMaster(m_sGroup1);
     assertIsFollower(m_sGroup2);
 
-    // Now set channel 1 to not-master, internal will be master.
+    // Now set channel 1 to not-master, all wil be follower waiting for a valid bpm.
     pButtonSyncMaster1->slotSet(0);
 
-    assertIsExplicitMaster(m_sInternalClockGroup);
+    assertIsFollower(m_sInternalClockGroup);
     assertIsFollower(m_sGroup1);
     assertIsFollower(m_sGroup2);
 }
@@ -750,6 +752,10 @@ TEST_F(EngineSyncTest, LoadTrackInitializesMaster) {
     // If sync is on two decks and we load a track in only one of them, Internal Clock will be
     // master.
     m_pChannel1->getEngineBuffer()->slotEjectTrack(1.0);
+    assertIsFollower(m_sGroup1);
+    // no relevant tempo available so internal clock is following
+    assertIsFollower(m_sInternalClockGroup);
+
     auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
     pButtonSyncEnabled2->slotSet(1.0);
 
@@ -1060,8 +1066,13 @@ TEST_F(EngineSyncTest, EjectTrackSyncRemains) {
     BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 120, 0.0);
     m_pTrack1->setBeats(pBeats1);
     pButtonSyncEnabled1->set(1.0);
-
     ProcessBuffer();
+
+    // m_sGroup1 takes over
+    assertIsFollower(m_sInternalClockGroup);
+    assertIsSoftMaster(m_sGroup1);
+    assertSyncOff(m_sGroup2);
+
     pButtonEject1->set(1.0);
     // When an eject happens, the bpm gets set to zero.
     ProcessBuffer();
@@ -1069,7 +1080,8 @@ TEST_F(EngineSyncTest, EjectTrackSyncRemains) {
     EXPECT_FLOAT_EQ(0.0,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 
-    assertIsSoftMaster(m_sInternalClockGroup);
+    // No valid tempo available all are waiting as follower
+    assertIsFollower(m_sInternalClockGroup);
     assertIsFollower(m_sGroup1);
     assertSyncOff(m_sGroup2);
 
@@ -1081,7 +1093,7 @@ TEST_F(EngineSyncTest, EjectTrackSyncRemains) {
     pButtonSyncEnabled2->set(1.0);
     ProcessBuffer();
 
-    assertIsSoftMaster(m_sInternalClockGroup);
+    // assertIsSoftMaster(m_sInternalClockGroup);
     assertIsFollower(m_sGroup1);
     assertIsFollower(m_sGroup2);
 
