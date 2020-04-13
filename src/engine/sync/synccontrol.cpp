@@ -330,21 +330,30 @@ void SyncControl::reportTrackPosition(double fractionalPlaypos) {
     }
 }
 
+// called from an engine worker thread
 void SyncControl::trackLoaded(TrackPointer pNewTrack) {
+    BeatsPointer pBeats;
+    if (pNewTrack) {
+        pBeats = pNewTrack->getBeats();
+    }
+    trackBeatsUpdated(pBeats);
+}
+
+void SyncControl::trackBeatsUpdated(BeatsPointer pBeats) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "SyncControl::trackLoaded";
+        kLogger.trace() << getGroup() << "SyncControl::trackBeatsUpdated";
     }
     if (isMaster(getSyncMode())) {
-        // If we change or remove a new track while master, hand off.
+        // If we change or remove beats while master, hand off.
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
     }
-    if (pNewTrack) {
+    if (pBeats) {
         m_masterBpmAdjustFactor = kBpmUnity;
         if (isSynchronized()) {
             // Because of the order signals get processed, the file/local_bpm COs and
             // rate slider are not updated as soon as we need them, so do that now.
-            m_pFileBpm->set(pNewTrack->getBpm());
-            m_pLocalBpm->set(pNewTrack->getBpm());
+            m_pFileBpm->set(pBeats->getBpm());
+            m_pLocalBpm->set(pBeats->getBpm());
             // We used to set the m_pBpm here, but that causes a signal loop whereby
             // that was interpreted as a rate slider tweak, and the master bpm
             // was changed.  Instead, now we pass the suggested bpm to enginesync
