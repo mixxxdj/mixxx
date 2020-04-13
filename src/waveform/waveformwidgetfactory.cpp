@@ -215,8 +215,7 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     bool ok = false;
 
     int frameRate = m_config->getValue(ConfigKey("[Waveform]","FrameRate"), m_frameRate);
-    m_frameRate = math_clamp(frameRate, 1, 120);
-
+    setFrameRate(frameRate);
 
     int endTime = m_config->getValueString(ConfigKey("[Waveform]","EndOfTrackWarningTime")).toInt(&ok);
     if (ok) {
