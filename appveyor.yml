@@ -149,8 +149,8 @@ for:
   environment:
     ENVIRONMENTS_URL: https://downloads.mixxx.org/builds/buildserver/2.3.x-windows/
     ENVIRONMENTS_PATH: C:\mixxx-buildserver
-    ENVIRONMENT_NAME: 2.3-j00013-PLATFORM-CONFIGURATION-static-36f44bd2-minimal
-    QT_VERSION: 5.12.0
+    ENVIRONMENT_NAME: 2.3-j00019-PLATFORM-CONFIGURATION-static-55e94982-minimal
+    QT_VERSION: 5.14.2
     MSVC_PATH: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community"
     PATH: 'C:\Python37-x64;C:\Python37-x64\Scripts;%PATH%'
 

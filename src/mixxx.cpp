@@ -94,6 +94,8 @@
 // with references to std::max and std::min
 #undef max
 #undef min
+#elif defined(Q_OS_WINDOWS)
+ #include <QtPlatformHeaders/QWindowsWindowFunctions>
 #endif
 
 namespace {
@@ -215,6 +217,9 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             XESetWireToError(QX11Info::display(), i, &__xErrorHandler);
         }
     }
+#elif defined(Q_OS_WINDOWS)
+    QWindowsWindowFunctions::setHasBorderInFullScreen(this->windowHandle(), true);
+    QWindowsWindowFunctions::setHasBorderInFullScreenDefault(true);
 #endif
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
