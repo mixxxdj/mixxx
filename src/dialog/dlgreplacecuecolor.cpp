@@ -56,7 +56,9 @@ DlgReplaceCueColor::DlgReplaceCueColor(
 
     QIcon icon = QIcon::fromTheme("dialog-warning");
     if (!icon.isNull()) {
-        labelReplaceAllColors->setPixmap(icon.pixmap(QSize(32, 32)));
+        labelReplaceAllColorsIcon->setPixmap(icon.pixmap(QSize(32, 32)));
+    } else {
+        labelReplaceAllColorsIcon->hide();
     }
 
     // Unfortunately, not all styles supported by Qt support setting a
@@ -383,9 +385,9 @@ void DlgReplaceCueColor::slotUpdateWidgets() {
     }
 
     if (checkBoxCurrentColorCondition->isChecked() || checkBoxHotcueIndexCondition->isChecked()) {
-        labelReplaceAllColors->hide();
+        frameReplaceAllColors->hide();
     } else {
-        labelReplaceAllColors->show();
+        frameReplaceAllColors->show();
     }
 
     QPushButton* button = buttonBox->button(QDialogButtonBox::Apply);
