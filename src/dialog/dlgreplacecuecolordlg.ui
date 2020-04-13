@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>360</width>
-    <height>263</height>
+    <height>249</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -100,6 +100,18 @@
       </item>
       <item row="2" column="0" colspan="3">
        <widget class="QLabel" name="labelReplaceAllColors">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>28</height>
+         </size>
+        </property>
         <property name="lineWidth">
          <number>1</number>
         </property>
