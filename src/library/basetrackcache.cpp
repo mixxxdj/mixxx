@@ -74,7 +74,7 @@ QString BaseTrackCache::columnSortForFieldIndex(int index) const {
     return m_columnCache.columnSortForFieldIndex(index);
 }
 
-void BaseTrackCache::slotTracksAdded(QSet<TrackId> trackIds) {
+void BaseTrackCache::slotTracksAddedOrChanged(QSet<TrackId> trackIds) {
     if (sDebug) {
         qDebug() << this << "slotTracksAdded" << trackIds.size();
     }
@@ -113,9 +113,7 @@ void BaseTrackCache::slotTrackChanged(TrackId trackId) {
     if (sDebug) {
         qDebug() << this << "slotTrackChanged" << trackId;
     }
-    QSet<TrackId> trackIds;
-    trackIds.insert(trackId);
-    emit tracksChanged(trackIds);
+    emit tracksChanged(QSet<TrackId>{trackId});
 }
 
 void BaseTrackCache::slotTrackClean(TrackId trackId) {

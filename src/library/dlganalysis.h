@@ -13,11 +13,12 @@
 class AnalysisLibraryTableModel;
 class WAnalysisLibraryTableView;
 class Library;
+class WLibrary;
 
 class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual LibraryView {
     Q_OBJECT
   public:
-    DlgAnalysis(QWidget *parent,
+    DlgAnalysis(WLibrary *parent,
                UserSettingsPointer pConfig,
                Library* pLibrary);
     ~DlgAnalysis() override = default;

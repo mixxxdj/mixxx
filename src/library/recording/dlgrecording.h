@@ -14,12 +14,13 @@
 
 class PlaylistTableModel;
 class QSqlTableModel;
+class WLibrary;
 class WTrackTableView;
 
 class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual LibraryView {
     Q_OBJECT
   public:
-    DlgRecording(QWidget *parent, UserSettingsPointer pConfig,
+    DlgRecording(WLibrary *parent, UserSettingsPointer pConfig,
                  Library* pLibrary,
                  RecordingManager* pRecManager, KeyboardEventFilter* pKeyboard);
     ~DlgRecording() override;

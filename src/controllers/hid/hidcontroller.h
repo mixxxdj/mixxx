@@ -31,8 +31,6 @@ class HidController final : public Controller {
         return ControllerPresetPointer(pClone);
     }
 
-    bool savePreset(const QString fileName) const override;
-
     void visit(const MidiControllerPreset* preset) override;
     void visit(const HidControllerPreset* preset) override;
 

@@ -11,6 +11,7 @@
 #include "engine/enginebuffer.h"
 #include "engine/controls/enginecontrol.h"
 #include "engine/channels/enginedeck.h"
+#include "engine/engine.h"
 #include "engine/enginemaster.h"
 #include "track/beatgrid.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
@@ -124,9 +125,11 @@ BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
 
 TrackPointer BaseTrackPlayerImpl::loadFakeTrack(bool bPlay, double filebpm) {
     TrackPointer pTrack(Track::newTemporary());
-    pTrack->setSampleRate(44100);
-    // 10 seconds
-    pTrack->setDuration(10);
+    pTrack->setAudioProperties(
+            mixxx::kEngineChannelCount,
+            mixxx::audio::SampleRate(44100),
+            mixxx::audio::Bitrate(),
+            mixxx::Duration::fromSeconds(10));
     if (filebpm > 0) {
         pTrack->setBpm(filebpm);
     }

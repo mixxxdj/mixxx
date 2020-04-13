@@ -284,7 +284,7 @@ QString getText(rekordbox_pdb_t::device_sql_string_t* deviceString) {
 
     // Some strings read from Rekordbox *.PDB files contain random null characters
     // which if not removed cause Mixxx to crash when attempting to read file paths
-    return text.remove('\x0');
+    return text.remove(QChar('\x0'));
 }
 
 int createDevicePlaylist(QSqlDatabase& database, QString devicePath) {

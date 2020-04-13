@@ -202,6 +202,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
+    finalize();
     // SkinLoader depends on Config;
     delete m_pSkinLoader;
 }
@@ -818,7 +819,10 @@ void MixxxMainWindow::finalize() {
     t.elapsed(true);
     // Report the total time we have been running.
     m_runtime_timer.elapsed(true);
-    StatsManager::destroy();
+
+    if (m_cmdLineArgs.getDeveloper()) {
+        StatsManager::destroy();
+    }
 }
 
 bool MixxxMainWindow::initializeDatabase() {
@@ -1528,7 +1532,6 @@ void MixxxMainWindow::closeEvent(QCloseEvent *event) {
         event->ignore();
         return;
     }
-    finalize();
     QMainWindow::closeEvent(event);
 }
 
