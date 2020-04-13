@@ -643,14 +643,14 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/waveform/renderers/waveformrendermarkrange.cpp
   src/waveform/renderers/waveformsignalcolors.cpp
   src/waveform/renderers/waveformwidgetrenderer.cpp
-  src/waveform/sharedglcontext.cpp
+  src/waveform/renderthread.cpp
   src/waveform/visualplayposition.cpp
   src/waveform/visualsmanager.cpp
-  src/waveform/vsyncthread.cpp
   src/waveform/waveform.cpp
   src/waveform/waveformfactory.cpp
   src/waveform/waveformmarklabel.cpp
   src/waveform/waveformwidgetfactory.cpp
+  src/waveform/widgets/baseqopenglwidget.cpp
   src/waveform/widgets/emptywaveformwidget.cpp
   src/waveform/widgets/glrgbwaveformwidget.cpp
   src/waveform/widgets/glsimplewaveformwidget.cpp
