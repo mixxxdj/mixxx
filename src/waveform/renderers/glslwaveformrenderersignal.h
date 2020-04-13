@@ -11,9 +11,9 @@
 #include "util/memory.h"
 #include "waveform/renderers/waveformrenderersignalbase.h"
 
-class GLSLWaveformRendererSignal: public QObject,
-        public WaveformRendererSignalBase,
-        protected QOpenGLFunctions_2_1 {
+class GLSLWaveformRendererSignal : public QObject,
+                                   public WaveformRendererSignalBase,
+                                   protected QOpenGLFunctions_2_1 {
     Q_OBJECT
   public:
     GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer,
@@ -54,7 +54,7 @@ class GLSLWaveformRendererSignal: public QObject,
     std::unique_ptr<QOpenGLShaderProgram> m_frameShaderProgram;
 };
 
-class GLSLWaveformRendererFilteredSignal: public GLSLWaveformRendererSignal {
+class GLSLWaveformRendererFilteredSignal : public GLSLWaveformRendererSignal {
 public:
     GLSLWaveformRendererFilteredSignal(
             WaveformWidgetRenderer* waveformWidgetRenderer) :

@@ -15,7 +15,6 @@ GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* w
           m_textureRenderedWaveformCompletion(0),
           m_bDumpPng(false),
           m_rgbShader(rgbShader) {
-    initializeOpenGLFunctions();
 }
 
 GLSLWaveformRendererSignal::~GLSLWaveformRendererSignal() {
@@ -29,6 +28,7 @@ GLSLWaveformRendererSignal::~GLSLWaveformRendererSignal() {
 }
 
 void GLSLWaveformRendererSignal::debugClick() {
+    initializeOpenGLFunctions();
     loadShaders();
     m_bDumpPng = true;
 }
@@ -183,7 +183,6 @@ void GLSLWaveformRendererSignal::createFrameBuffers() {
 
 bool GLSLWaveformRendererSignal::onInit() {
     m_textureRenderedWaveformCompletion = 0;
-    createGeometry();
     return true;
 }
 
@@ -223,10 +222,11 @@ void GLSLWaveformRendererSignal::onResize() {
 
 void GLSLWaveformRendererSignal::slotWaveformUpdated() {
     m_textureRenderedWaveformCompletion = 0;
-    loadTexture();
 }
 
 void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
+    initializeOpenGLFunctions();
+    createGeometry();
     loadShaders();
     createFrameBuffers();
     if (!m_framebuffer || !m_framebuffer->isValid() || !m_frameShaderProgram) {

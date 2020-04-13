@@ -7,8 +7,9 @@
 
 class ControlObject;
 
-class GLWaveformRendererSimpleSignal : public WaveformRendererSignalBase, protected QOpenGLFunctions_2_1 {
-public:
+class GLWaveformRendererSimpleSignal : public WaveformRendererSignalBase,
+                                       protected QOpenGLFunctions_2_1 {
+  public:
     explicit GLWaveformRendererSimpleSignal(WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~GLWaveformRendererSimpleSignal();
 

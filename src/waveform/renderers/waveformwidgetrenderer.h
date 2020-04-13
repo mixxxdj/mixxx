@@ -148,7 +148,7 @@ class WaveformWidgetRenderer {
     int currentFrame;
 #endif
 
-private:
+  private:
     DISALLOW_COPY_AND_ASSIGN(WaveformWidgetRenderer);
     friend class WaveformWidgetFactory;
 };

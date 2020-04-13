@@ -9,9 +9,9 @@
 
 class ControlObject;
 
-class GLWaveformRendererFilteredSignal: public WaveformRendererSignalBase,
-        protected QOpenGLFunctions_2_1 {
-public:
+class GLWaveformRendererFilteredSignal : public WaveformRendererSignalBase,
+                                         protected QOpenGLFunctions_2_1 {
+  public:
     explicit GLWaveformRendererFilteredSignal(
             WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~GLWaveformRendererFilteredSignal();
