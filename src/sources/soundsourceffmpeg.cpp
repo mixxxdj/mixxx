@@ -514,12 +514,12 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
 
     // Request output format
     pavCodecContext->request_sample_fmt = kavSampleFormat;
-    if (params.channelCount().valid()) {
+    if (params.getSignalInfo().getChannelCount().isValid()) {
         // A dedicated number of channels for the output signal
         // has been requested. Forward this to FFmpeg to avoid
         // manual resampling or post-processing after decoding.
         pavCodecContext->request_channel_layout =
-                av_get_default_channel_layout(params.channelCount());
+                av_get_default_channel_layout(params.getSignalInfo().getChannelCount());
     }
 
     // Open decoding context
@@ -556,18 +556,18 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
                 << '}';
     }
 
-    ChannelCount channelCount;
-    SampleRate sampleRate;
+    audio::ChannelCount channelCount;
+    audio::SampleRate sampleRate;
     if (!initResampling(&channelCount, &sampleRate)) {
         return OpenResult::Failed;
     }
-    if (!setChannelCount(channelCount)) {
+    if (!initChannelCountOnce(channelCount)) {
         kLogger.warning()
                 << "Failed to initialize number of channels"
                 << channelCount;
         return OpenResult::Aborted;
     }
-    if (!setSampleRate(sampleRate)) {
+    if (!initSampleRateOnce(sampleRate)) {
         kLogger.warning()
                 << "Failed to initialize sample rate"
                 << sampleRate;
@@ -575,8 +575,8 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     }
 
     const auto streamBitrate =
-            Bitrate(m_pavStream->codecpar->bit_rate / 1000); // kbps
-    if (streamBitrate.valid() && !initBitrateOnce(streamBitrate)) {
+            audio::Bitrate(m_pavStream->codecpar->bit_rate / 1000); // kbps
+    if (streamBitrate.isValid() && !initBitrateOnce(streamBitrate)) {
         kLogger.warning()
                 << "Failed to initialize bitrate"
                 << streamBitrate;
@@ -641,12 +641,12 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
 }
 
 bool SoundSourceFFmpeg::initResampling(
-        ChannelCount* pResampledChannelCount,
-        SampleRate* pResampledSampleRate) {
+        audio::ChannelCount* pResampledChannelCount,
+        audio::SampleRate* pResampledSampleRate) {
     const auto avStreamChannelLayout =
             getStreamChannelLayout(*m_pavStream);
     const auto streamChannelCount =
-            ChannelCount(m_pavStream->codecpar->channels);
+            audio::ChannelCount(m_pavStream->codecpar->channels);
     // NOTE(uklotzde, 2017-09-26): Resampling to a different number of
     // channels like upsampling a mono to stereo signal breaks various
     // tests in the EngineBufferE2ETest suite!! SoundSource decoding tests
@@ -655,7 +655,7 @@ bool SoundSourceFFmpeg::initResampling(
     // a workaround we decode the stream's channels as is and let Mixxx decide
     // how to handle this later.
     const auto resampledChannelCount =
-            /*config.channelCount().valid() ? config.channelCount() :*/ streamChannelCount;
+            /*config.getSignalInfo().getChannelCount().isValid() ? config.getSignalInfo().getChannelCount() :*/ streamChannelCount;
     const auto avResampledChannelLayout =
             av_get_default_channel_layout(resampledChannelCount);
     const auto avStreamSampleFormat =
@@ -668,7 +668,7 @@ bool SoundSourceFFmpeg::initResampling(
     // the channels and to transform the decoded audio data into the sample
     // format that is used by Mixxx.
     const auto streamSampleRate =
-            SampleRate(m_pavStream->codecpar->sample_rate);
+            audio::SampleRate(m_pavStream->codecpar->sample_rate);
     const auto resampledSampleRate = streamSampleRate;
     if ((resampledChannelCount != streamChannelCount) ||
             (avResampledChannelLayout != avStreamChannelLayout) ||
@@ -785,7 +785,7 @@ WritableSampleFrames SoundSourceFFmpeg::consumeSampleBuffer(
     const auto bufferedRange =
             IndexRange::forward(
                     m_curFrameIndex,
-                    samples2frames(m_sampleBuffer.readableLength()));
+                    getSignalInfo().samples2frames(m_sampleBuffer.readableLength()));
     DEBUG_ASSERT(m_curFrameIndex == bufferedRange.clampIndex(m_curFrameIndex));
     DEBUG_ASSERT(bufferedRange <= frameIndexRange());
     auto writableRange = writableSampleFrames.frameIndexRange();
@@ -806,7 +806,7 @@ WritableSampleFrames SoundSourceFFmpeg::consumeSampleBuffer(
                     m_curFrameIndex,
                     consumableRange.start());
     m_sampleBuffer.shrinkForReading(
-            frames2samples(skippableRange.length()));
+            getSignalInfo().frames2samples(skippableRange.length()));
     m_curFrameIndex += skippableRange.length();
 
     // Consume buffered samples
@@ -816,8 +816,8 @@ WritableSampleFrames SoundSourceFFmpeg::consumeSampleBuffer(
     DEBUG_ASSERT(m_curFrameIndex == consumableRange.start());
     const SampleBuffer::ReadableSlice consumableSlice =
             m_sampleBuffer.shrinkForReading(
-                    frames2samples(consumableRange.length()));
-    DEBUG_ASSERT(consumableSlice.length() == frames2samples(consumableRange.length()));
+                    getSignalInfo().frames2samples(consumableRange.length()));
+    DEBUG_ASSERT(consumableSlice.length() == getSignalInfo().frames2samples(consumableRange.length()));
     CSAMPLE* pOutputSampleBuffer = writableSampleFrames.writableData();
     if (pOutputSampleBuffer) {
         SampleUtil::copy(
@@ -957,7 +957,7 @@ const CSAMPLE* SoundSourceFFmpeg::resampleDecodedFrame() {
     if (m_pSwrContext) {
         // Decoded frame must be resampled before reading
         m_pavResampledFrame->channel_layout = m_avResampledChannelLayout;
-        m_pavResampledFrame->sample_rate = sampleRate();
+        m_pavResampledFrame->sample_rate = getSignalInfo().getSampleRate();
         m_pavResampledFrame->format = kavSampleFormat;
         if (m_pavDecodedFrame->channel_layout == kavChannelLayoutUndefined) {
             // Sometimes the channel layout is undefined.
@@ -1012,7 +1012,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                 readableRange,
                 SampleBuffer::ReadableSlice(
                         readableData,
-                        frames2samples(readableRange.length())));
+                        getSignalInfo().frames2samples(readableRange.length())));
     }
 
     // Adjust the current position
@@ -1091,7 +1091,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                             << frameIndexRange().end()
                             << "-> padding with silence";
                     const auto clearSampleCount =
-                            frames2samples(writableRange.length());
+                            getSignalInfo().frames2samples(writableRange.length());
                     if (pOutputSampleBuffer) {
                         SampleUtil::clear(
                                 pOutputSampleBuffer,
@@ -1159,12 +1159,12 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                     // Rewind internally buffered samples first...
                     const auto rewindSampleLength =
                             m_sampleBuffer.shrinkAfterWriting(
-                                    frames2samples(rewindRange.length()));
+                                    getSignalInfo().frames2samples(rewindRange.length()));
                     rewindRange.shrinkBack(
-                            samples2frames(rewindSampleLength));
+                            getSignalInfo().samples2frames(rewindSampleLength));
                     // ...then rewind remaining samples from the output buffer
                     if (pOutputSampleBuffer) {
-                        pOutputSampleBuffer -= frames2samples(rewindRange.length());
+                        pOutputSampleBuffer -= getSignalInfo().frames2samples(rewindRange.length());
                     }
                     writableRange = IndexRange::between(rewindRange.start(), writableRange.end());
                 }
@@ -1219,7 +1219,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                 const auto clearRange = intersect(missingRange, writableRange);
                 if (clearRange.length() > 0) {
                     const auto clearSampleCount =
-                            frames2samples(clearRange.length());
+                            getSignalInfo().frames2samples(clearRange.length());
                     if (pOutputSampleBuffer) {
                         SampleUtil::clear(
                                 pOutputSampleBuffer,
@@ -1239,7 +1239,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
             readFrameIndex += preskipMissingFrameCount;
             const auto preskipDecodedFrameCount =
                     math_min(decodedFrameRange.length(), writableRange.start() - readFrameIndex);
-            pDecodedSampleData += frames2samples(preskipDecodedFrameCount);
+            pDecodedSampleData += getSignalInfo().frames2samples(preskipDecodedFrameCount);
             decodedFrameRange.shrinkFront(preskipDecodedFrameCount);
             readFrameIndex += preskipDecodedFrameCount;
             m_curFrameIndex = readFrameIndex;
@@ -1262,7 +1262,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                 if (writeMissingFrameCount > 0) {
                     // Fill the gap until the first decoded frame with silence
                     const auto clearSampleCount =
-                            frames2samples(writeMissingFrameCount);
+                            getSignalInfo().frames2samples(writeMissingFrameCount);
                     if (pOutputSampleBuffer) {
                         SampleUtil::clear(
                                 pOutputSampleBuffer,
@@ -1279,7 +1279,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                 if (writeDecodedFrameCount > 0) {
                     // Copy the decoded samples into the output buffer
                     const auto copySampleCount =
-                            frames2samples(writeDecodedFrameCount);
+                            getSignalInfo().frames2samples(writeDecodedFrameCount);
                     if (pOutputSampleBuffer) {
                         SampleUtil::copy(
                                 pOutputSampleBuffer,
@@ -1310,7 +1310,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
             // Buffer remaining unread sample data from
             // missing and decoded ranges
             const auto sampleBufferWriteLength =
-                    frames2samples(missingFrameCount + decodedFrameRange.length());
+                    getSignalInfo().frames2samples(missingFrameCount + decodedFrameRange.length());
             if (m_sampleBuffer.writableLength() < sampleBufferWriteLength) {
                 // Increase the pre-allocated capacity of the sample buffer
                 const auto sampleBufferCapacity =
@@ -1327,7 +1327,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
             if (missingFrameCount > 0) {
                 // Fill the gap until the first decoded frame with silence
                 const auto clearSampleCount =
-                        frames2samples(missingFrameCount);
+                        getSignalInfo().frames2samples(missingFrameCount);
                 const SampleBuffer::WritableSlice writableSlice(
                         m_sampleBuffer.growForWriting(clearSampleCount));
                 DEBUG_ASSERT(writableSlice.length() == clearSampleCount);
@@ -1339,7 +1339,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
             if (!decodedFrameRange.empty()) {
                 // Copy the decoded samples into the internal buffer
                 const auto copySampleCount =
-                        frames2samples(decodedFrameRange.length());
+                        getSignalInfo().frames2samples(decodedFrameRange.length());
                 const SampleBuffer::WritableSlice writableSlice(
                         m_sampleBuffer.growForWriting(copySampleCount));
                 DEBUG_ASSERT(writableSlice.length() == copySampleCount);
@@ -1354,7 +1354,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
             const auto bufferedRange =
                     IndexRange::forward(
                             m_curFrameIndex,
-                            samples2frames(m_sampleBuffer.readableLength()));
+                            getSignalInfo().samples2frames(m_sampleBuffer.readableLength()));
             if (frameIndexRange().end() < bufferedRange.end()) {
                 // NOTE(2019-09-08, uklotzde): For some files (MP3 VBR) FFmpeg may
                 // decode a few more samples than expected! Simply discard those
@@ -1366,7 +1366,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                         << overflowFrameCount
                         << "sample frames at the end of the audio stream";
                 m_sampleBuffer.shrinkAfterWriting(
-                        frames2samples(overflowFrameCount));
+                        getSignalInfo().frames2samples(overflowFrameCount));
             }
 
             // Housekeeping before next decoding iteration
@@ -1384,7 +1384,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
             readableRange,
             SampleBuffer::ReadableSlice(
                     readableData,
-                    frames2samples(readableRange.length())));
+                    getSignalInfo().frames2samples(readableRange.length())));
 }
 
 QString SoundSourceProviderFFmpeg::getName() const {

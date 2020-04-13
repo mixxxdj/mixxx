@@ -25,7 +25,11 @@ class AnalyzerWaveformTest : public MixxxTest {
 
     void SetUp() override {
         tio = Track::newTemporary();
-        tio->setSampleRate(44100);
+        tio->setAudioProperties(
+                mixxx::audio::ChannelCount(2),
+                mixxx::audio::SampleRate(44100),
+                mixxx::audio::Bitrate(),
+                mixxx::Duration::fromMillis(1000));
 
         bigbuf = new CSAMPLE[BIGBUF_SIZE];
         for (int i = 0; i < BIGBUF_SIZE; i++)

@@ -45,7 +45,7 @@ QUrlQuery createUrlQuery() {
 }
 
 QNetworkRequest createNetworkRequest(
-    const QUuid& recordingId) {
+        const QUuid& recordingId) {
     DEBUG_ASSERT(kBaseUrl.isValid());
     DEBUG_ASSERT(!recordingId.isNull());
     QUrl url = kBaseUrl;
@@ -73,6 +73,12 @@ MusicBrainzRecordingsTask::MusicBrainzRecordingsTask(
           m_queuedRecordingIds(std::move(recordingIds)),
           m_parentTimeoutMillis(0) {
     musicbrainz::registerMetaTypesOnce();
+}
+
+MusicBrainzRecordingsTask::~MusicBrainzRecordingsTask() {
+    VERIFY_OR_DEBUG_ASSERT(!m_pendingNetworkReply) {
+        m_pendingNetworkReply->deleteLater();
+    }
 }
 
 bool MusicBrainzRecordingsTask::doStart(
@@ -117,13 +123,38 @@ bool MusicBrainzRecordingsTask::doStart(
             &MusicBrainzRecordingsTask::slotNetworkReplyFinished,
             Qt::UniqueConnection);
 
+    connect(m_pendingNetworkReply,
+            QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error),
+            this,
+            &MusicBrainzRecordingsTask::slotNetworkReplyFinished,
+            Qt::UniqueConnection);
+
     return true;
 }
 
-void MusicBrainzRecordingsTask::doAbort() {
+QUrl MusicBrainzRecordingsTask::doAbort() {
+    QUrl requestUrl;
     if (m_pendingNetworkReply) {
-        m_pendingNetworkReply->abort();
+        requestUrl = abortPendingNetworkReply(m_pendingNetworkReply);
+        if (requestUrl.isValid()) {
+            // Already finished
+            m_pendingNetworkReply->deleteLater();
+            m_pendingNetworkReply = nullptr;
+        }
     }
+    return requestUrl;
+}
+
+QUrl MusicBrainzRecordingsTask::doTimeOut() {
+    DEBUG_ASSERT(thread() == QThread::currentThread());
+    QUrl requestUrl;
+    if (m_pendingNetworkReply) {
+        requestUrl = timeOutPendingNetworkReply(m_pendingNetworkReply);
+        // Don't wait until finished
+        m_pendingNetworkReply->deleteLater();
+        m_pendingNetworkReply = nullptr;
+    }
+    return requestUrl;
 }
 
 void MusicBrainzRecordingsTask::slotNetworkReplyFinished() {
@@ -153,13 +184,13 @@ void MusicBrainzRecordingsTask::slotNetworkReplyFinished() {
                 << "GET reply"
                 << "statusCode:" << statusCode
                 << "body:" << body;
-        const auto error = musicbrainz::Error(reader);
+        auto error = musicbrainz::Error(reader);
         emitFailed(
                 network::WebResponse(
                         networkReply->url(),
                         statusCode),
                 error.code,
-                error.message);
+                std::move(error.message));
         return;
     }
 
@@ -175,7 +206,12 @@ void MusicBrainzRecordingsTask::slotNetworkReplyFinished() {
     if (!recordingsResult.second) {
         kLogger.warning()
                 << "Failed to parse XML response";
-        slotAbort();
+        emitFailed(
+                network::WebResponse(
+                        networkReply->url(),
+                        statusCode),
+                -1,
+                "Failed to parse XML response");
         return;
     }
 
@@ -195,31 +231,35 @@ void MusicBrainzRecordingsTask::slotNetworkReplyFinished() {
 
 void MusicBrainzRecordingsTask::emitSucceeded(
         QList<musicbrainz::TrackRelease>&& trackReleases) {
-    const auto signal = QMetaMethod::fromSignal(
-            &MusicBrainzRecordingsTask::succeeded);
-    DEBUG_ASSERT(receivers(signal.name()) <= 1); // unique connection
-    if (isSignalConnected(signal)) {
-        emit succeeded(
-                std::move(trackReleases));
-    } else {
+    VERIFY_OR_DEBUG_ASSERT(
+            isSignalFuncConnected(&MusicBrainzRecordingsTask::succeeded)) {
+        kLogger.warning()
+                << "Unhandled succeeded signal";
         deleteLater();
+        return;
     }
+    emit succeeded(
+            std::move(trackReleases));
 }
+
 void MusicBrainzRecordingsTask::emitFailed(
-        network::WebResponse response,
+        network::WebResponse&& response,
         int errorCode,
-        QString errorMessage) {
-    const auto signal = QMetaMethod::fromSignal(
-            &MusicBrainzRecordingsTask::succeeded);
-    DEBUG_ASSERT(receivers(signal.name()) <= 1); // unique connection
-    if (isSignalConnected(signal)) {
-        emit failed(
-                response,
-                errorCode,
-                errorMessage);
-    } else {
+        QString&& errorMessage) {
+    VERIFY_OR_DEBUG_ASSERT(
+            isSignalFuncConnected(&MusicBrainzRecordingsTask::failed)) {
+        kLogger.warning()
+                << "Unhandled failed signal"
+                << response
+                << errorCode
+                << errorMessage;
         deleteLater();
+        return;
     }
+    emit failed(
+            std::move(response),
+            errorCode,
+            std::move(errorMessage));
 }
 
 } // namespace mixxx

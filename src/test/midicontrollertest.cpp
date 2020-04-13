@@ -33,7 +33,7 @@ class MidiControllerTest : public MixxxTest {
     }
 
     void addMapping(MidiInputMapping mapping) {
-        m_preset.inputMappings.insertMulti(mapping.key.key, mapping);
+        m_preset.addInputMapping(mapping.key.key, mapping);
     }
 
     void loadPreset(const MidiControllerPreset& preset) {
