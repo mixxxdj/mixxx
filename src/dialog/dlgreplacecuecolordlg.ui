@@ -7,26 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>360</width>
-    <height>215</height>
+    <height>263</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Replace Hotcue Color</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="2" column="0" colspan="2">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
    <item row="3" column="0" colspan="2">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
@@ -43,16 +30,6 @@
       <string>Replace cue color if …</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
-       <widget class="QCheckBox" name="checkBoxCurrentColorCondition">
-        <property name="text">
-         <string>Current cue color</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="2">
        <widget class="QSpinBox" name="spinBoxHotcueIndex">
         <property name="enabled">
@@ -67,16 +44,6 @@
        <widget class="QPushButton" name="pushButtonCurrentColor">
         <property name="text">
          <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QCheckBox" name="checkBoxHotcueIndexCondition">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="text">
-         <string>Hotcue index</string>
         </property>
        </widget>
       </item>
@@ -97,6 +64,26 @@
         </item>
        </widget>
       </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="checkBoxHotcueIndexCondition">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="text">
+         <string>Hotcue index</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="checkBoxCurrentColorCondition">
+        <property name="text">
+         <string>Current cue color</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="1">
        <widget class="QComboBox" name="comboBoxCurrentColorCompare">
         <item>
@@ -111,8 +98,40 @@
         </item>
        </widget>
       </item>
+      <item row="2" column="0" colspan="3">
+       <widget class="QLabel" name="labelReplaceAllColors">
+        <property name="lineWidth">
+         <number>1</number>
+        </property>
+        <property name="text">
+         <string>You didn't specify any conditions. This means that the colors of all cue points in the library will be replaced.</string>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::PlainText</enum>
+        </property>
+        <property name="scaledContents">
+         <bool>false</bool>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+    </spacer>
    </item>
    <item row="1" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBoxReplacement">

@@ -54,6 +54,11 @@ DlgReplaceCueColor::DlgReplaceCueColor(
 
     spinBoxHotcueIndex->setMaximum(NUM_HOT_CUES);
 
+    QIcon icon = QIcon::fromTheme("dialog-warning");
+    if (!icon.isNull()) {
+        labelReplaceAllColors->setPixmap(icon.pixmap(QSize(32, 32)));
+    }
+
     // Unfortunately, not all styles supported by Qt support setting a
     // background color for QPushButtons (see
     // https://bugreports.qt.io/browse/QTBUG-11089). For example, when using
@@ -375,6 +380,12 @@ void DlgReplaceCueColor::slotUpdateApplyButton() {
         if (currentColor == newColor) {
             bEnabled = false;
         }
+    }
+
+    if (checkBoxCurrentColorCondition->isChecked() || checkBoxHotcueIndexCondition->isChecked()) {
+        labelReplaceAllColors->hide();
+    } else {
+        labelReplaceAllColors->show();
     }
 
     QPushButton* button = buttonBox->button(QDialogButtonBox::Apply);
