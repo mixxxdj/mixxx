@@ -1402,11 +1402,38 @@ double EngineBuffer::getRateRatio() const {
 
 void EngineBuffer::notifyTrackLoaded(
         TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    if (pOldTrack) {
+        disconnect(
+                pOldTrack.get(),
+                &Track::beatsUpdated,
+                this,
+                &EngineBuffer::slotUpdatedTrackBeats);
+    }
+
     // First inform engineControls directly
     // Note: we are still in a worker thread.
     for (const auto& pControl: qAsConst(m_engineControls)) {
         pControl->trackLoaded(pNewTrack);
     }
+
+    if (pNewTrack) {
+        connect(
+                pNewTrack.get(),
+                &Track::beatsUpdated,
+                this,
+                &EngineBuffer::slotUpdatedTrackBeats,
+                Qt::DirectConnection);
+    }
+
     // Inform BaseTrackPlayer via a queued connection
     emit trackLoaded(pNewTrack, pOldTrack);
+}
+
+void EngineBuffer::slotUpdatedTrackBeats() {
+    TrackPointer pTrack = m_pCurrentTrack;
+    if (pTrack) {
+        for (const auto& pControl : qAsConst(m_engineControls)) {
+            pControl->trackBeatsUpdated(pTrack->getBeats());
+        }
+    }
 }
