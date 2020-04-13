@@ -491,7 +491,7 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
                 midi.sendShortMsg(0x94 + deckNumber - 1, 0x14 + i,
                     MC7000.padColor.rolloff);
                 // now set back initial loop size
-                // engine.setValue(group, "beatloop_size", 4);
+                // engine.setValue(group, "beatloop_size", loopSize);
             }
         }
     } else if (MC7000.PADModeSavedLoop[deckNumber]) {
