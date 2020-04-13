@@ -247,12 +247,17 @@ bool initDatabase(QSqlDatabase database, StringCollator* pCollator) {
                << v.typeName();
         return false; // abort
     }
+    // Ensure initialization. sqlite recommends doing this before using it
+    // and might become required in future versions
+    int rc = sqlite3_initialize();
+    VERIFY_OR_DEBUG_ASSERT(rc == SQLITE_OK) {
+        kLogger.warning()
+            << "sqlite3_initialize failed with the code: "
+            << rc;
+    }
+
     // v.data() returns a pointer to the handle
     sqlite3* handle = *static_cast<sqlite3**>(v.data());
-    // Ensure initialization. database.open() might not do it
-    int rc = sqlite3_initialize();
-    if( rc ) qDebug() << "sqlite3_initialize failed with the code: " << rc;
-
     VERIFY_OR_DEBUG_ASSERT(handle != nullptr) {
         kLogger.warning()
                 << "SQLite3 handle is invalid";
