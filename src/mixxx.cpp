@@ -21,7 +21,6 @@
 #include <QStandardPaths>
 #include <QDesktopWidget>
 #include <QFileDialog>
-#include <QOpenGLWidget>
 #include <QUrl>
 #include <QtDebug>
 #include <QLocale>
