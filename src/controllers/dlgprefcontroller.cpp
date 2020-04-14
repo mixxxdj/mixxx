@@ -368,7 +368,7 @@ void DlgPrefController::slotUpdate() {
 }
 
 void DlgPrefController::slotCancel() {
-    slotShowPreset(m_pController->getPreset());
+    slotUpdate();
 }
 
 void DlgPrefController::applyPresetChanges() {
