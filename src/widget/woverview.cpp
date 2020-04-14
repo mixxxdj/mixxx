@@ -529,7 +529,16 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
             }
             if (pHoveredCue != nullptr) {
                 m_pCueMenuPopup->setTrackAndCue(m_pCurrentTrack, pHoveredCue);
-                m_pCueMenuPopup->popup(e->globalPos());
+
+                // Shift the popup left if it would go off screen shown at the
+                // current cursor position.
+                QPoint popupPoint = e->globalPos();
+                int screenWidth = windowHandle()->screen()->size().width();
+                if (popupPoint.x() + m_pCueMenuPopup->width() > screenWidth) {
+                    popupPoint.setX(screenWidth - m_pCueMenuPopup->width());
+                }
+                m_pCueMenuPopup->popup(popupPoint);
+
                 m_bHotcueMenuShowing = true;
             }
         }
