@@ -574,6 +574,7 @@ void Track::setColor(mixxx::RgbColor::optional_t color) {
     QMutexLocker lock(&m_qMutex);
     if (compareAndSet(m_record.ptrColor(), color)) {
         markDirtyAndUnlock(&lock);
+        emit colorUpdated(color);
     }
 }
 
