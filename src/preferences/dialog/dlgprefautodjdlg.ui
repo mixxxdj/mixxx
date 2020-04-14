@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>658</width>
-    <height>239</height>
+    <height>291</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,6 +16,13 @@
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout">
+     <item row="4" column="0">
+      <widget class="QLabel" name="autoDJRandomQueueMinimumLabel">
+       <property name="text">
+        <string>Minimum allowed tracks before addition</string>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="QLabel" name="autoDjMinimumAvailableLabel">
        <property name="text">
@@ -23,18 +30,25 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QSpinBox" name="autoDjMinimumAvailableSpinBox">
+     <item row="3" column="1">
+      <widget class="QComboBox" name="ComboBoxAutoDjRandomQueue">
        <property name="toolTip">
-        <string>This percentage of tracks are always available for selecting, regardless of when they were last played.</string>
+        <string>Add random tracks from Track Source if the specified minimum tracks remain</string>
        </property>
-       <property name="suffix">
-        <string>%</string>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QSpinBox" name="autoDJRandomQueueMinimumSpinBox">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>Minimum number of tracks after which random tracks may be added</string>
+       </property>
+       <property name="minimum">
+        <number>1</number>
        </property>
        <property name="maximum">
-        <number>100</number>
-       </property>
-       <property name="value">
         <number>20</number>
        </property>
       </widget>
@@ -79,39 +93,35 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
-      <widget class="QComboBox" name="ComboBoxAutoDjRandomQueue">
+     <item row="0" column="1">
+      <widget class="QSpinBox" name="autoDjMinimumAvailableSpinBox">
        <property name="toolTip">
-        <string>Add random tracks from Track Source if the specified minimum tracks remain</string>
+        <string>This percentage of tracks are always available for selecting, regardless of when they were last played.</string>
        </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="autoDJRandomQueueMinimumLabel">
-       <property name="text">
-        <string>Minimum allowed tracks before addition</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QSpinBox" name="autoDJRandomQueueMinimumSpinBox">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="toolTip">
-        <string>Minimum number of tracks after which random tracks may be added</string>
-       </property>
-       <property name="minimum">
-        <number>1</number>
+       <property name="suffix">
+        <string>%</string>
        </property>
        <property name="maximum">
+        <number>100</number>
+       </property>
+       <property name="value">
         <number>20</number>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QComboBox" name="autoDjFaderModeCombobox"/>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="autoDjFaderMode">
+       <property name="text">
+        <string>Fader to use when transitioning</string>
        </property>
       </widget>
      </item>
     </layout>
    </item>
-   <item row="1" column="0">
+   <item row="2" column="0">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>

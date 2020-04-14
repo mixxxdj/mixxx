@@ -49,6 +49,22 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
             SLOT(slotEnableAutoDJRandomQueue(int)));
     connect(autoDJRandomQueueMinimumSpinBox, SIGNAL(valueChanged(int)), this,
             SLOT(slotSetAutoDJRandomQueueMin(int)));
+
+    autoDjFaderModeCombobox->addItem(tr("Crossfader"),
+            static_cast<int>(FaderMode::Crossfader));
+    autoDjFaderModeCombobox->addItem(tr("Volume Faders"),
+            static_cast<int>(FaderMode::VolumeFaders));
+
+    connect(autoDjFaderModeCombobox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefAutoDJ::slotSetAutoDJFaderMode);
+
+    int configuredFaderMode = m_pConfig->getValue(
+            ConfigKey("[Auto DJ]", "FaderMode"),
+            static_cast<int>(FaderMode::Crossfader));
+    autoDjFaderModeCombobox->setCurrentIndex(
+            autoDjFaderModeCombobox->findData(configuredFaderMode));
 }
 
 DlgPrefAutoDJ::~DlgPrefAutoDJ() {
@@ -76,6 +92,10 @@ void DlgPrefAutoDJ::slotApply() {
     m_pConfig->setValue(ConfigKey("[Auto DJ]", "EnableRandomQueue"),
             m_pConfig->getValue(
                     ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"), 0));
+
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", "FaderMode"),
+            m_pConfig->getValue(
+                    ConfigKey("[Auto DJ]", "FaderModeBuff"), 0));
 }
 
 void DlgPrefAutoDJ::slotCancel() {
@@ -112,6 +132,13 @@ void DlgPrefAutoDJ::slotCancel() {
                     ConfigKey("[Auto DJ]", "EnableRandomQueue"), 0));
     slotEnableAutoDJRandomQueueComboBox(
             m_pConfig->getValue<int>(ConfigKey("[Auto DJ]", "Requeue")));
+
+    autoDjFaderModeCombobox->setCurrentIndex(
+            m_pConfig->getValue(
+                    ConfigKey("[Auto DJ]", "FaderMode"), 0));
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", "FaderModeBuff"),
+            m_pConfig->getValue(
+                    ConfigKey("[Auto DJ]", "FaderMode"), 0));
 }
 
 void DlgPrefAutoDJ::slotResetToDefaults() {
@@ -129,6 +156,10 @@ void DlgPrefAutoDJ::slotResetToDefaults() {
     m_pConfig->set(ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),QString("0"));
     autoDJRandomQueueMinimumSpinBox->setEnabled(false);
     ComboBoxAutoDjRandomQueue->setEnabled(true);
+
+    m_pConfig->set(ConfigKey("[Auto DJ]", "FaderModeBuff"),
+            ConfigValue(0));
+    autoDjFaderModeCombobox->setCurrentIndex(0);
 }
 
 void DlgPrefAutoDJ::slotSetAutoDjMinimumAvailable(int a_iValue) {
@@ -183,4 +214,9 @@ void DlgPrefAutoDJ::slotEnableAutoDJRandomQueue(int a_iValue) {
         m_pConfig->set(ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),
                 ConfigValue(1));
     }
+}
+
+void DlgPrefAutoDJ::slotSetAutoDJFaderMode(int comboboxIndex) {
+    m_pConfig->set(ConfigKey("[Auto DJ]", "FaderModeBuff"),
+            ConfigValue(autoDjFaderModeCombobox->itemData(comboboxIndex).toInt()));
 }

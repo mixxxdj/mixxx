@@ -10,6 +10,11 @@
 class DlgPrefAutoDJ : public DlgPreferencePage, public Ui::DlgPrefAutoDJDlg {
     Q_OBJECT
   public:
+    enum class FaderMode {
+        Crossfader,
+        VolumeFaders
+    };
+
     DlgPrefAutoDJ(QWidget* pParent, UserSettingsPointer pConfig);
     virtual ~DlgPrefAutoDJ();
 
@@ -26,6 +31,7 @@ class DlgPrefAutoDJ : public DlgPreferencePage, public Ui::DlgPrefAutoDJDlg {
     void slotSetAutoDJRandomQueueMin(int);
     void slotEnableAutoDJRandomQueueComboBox(int);
     void slotEnableAutoDJRandomQueue(int);
+    void slotSetAutoDJFaderMode(int comboboxIndex);
 
   private:
     UserSettingsPointer m_pConfig;
