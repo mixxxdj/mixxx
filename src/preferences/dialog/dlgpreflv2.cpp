@@ -111,6 +111,14 @@ void DlgPrefLV2::slotDisplayParameters() {
     lv2_vertical_layout_params->addStretch();
 }
 
+void DlgPrefLV2::slotUpdate() {
+    // TODO: Implement this
+}
+
+void DlgPrefLV2::slotResetToDefaults() {
+    // TODO: Implement this
+}
+
 void DlgPrefLV2::slotApply() {
     EffectManifestPointer pCurrentEffectManifest =
             m_pLV2Backend->getManifest(m_currentEffectId);
