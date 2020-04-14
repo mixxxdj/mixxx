@@ -17,7 +17,7 @@
 #include "util/db/dbconnectionpooler.h"
 #include "widget/wcolorpickeraction.h"
 
-// Dialog for bulk replacing colors of cues in the Database.
+/// Dialog for bulk replacing colors of cues in the Database.
 class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
     Q_OBJECT
   public:
@@ -38,6 +38,11 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
     ~DlgReplaceCueColor();
 
     void setColorPalette(const ColorPalette& palette);
+
+    /// Before showing the dialog, DlgPrefColors uses this to set the default
+    /// hotcue color (both saved/new in case the user didn't hit apply yet) so
+    /// that the dialog can pre-select colors to replace.
+    void setDefaultColors(mixxx::RgbColor savedColor, mixxx::RgbColor newColor);
 
   signals:
     void databaseTracksChanged(QSet<TrackId> Trackids);

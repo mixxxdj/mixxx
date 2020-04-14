@@ -164,6 +164,16 @@ void DlgReplaceCueColor::setColorPalette(const ColorPalette& palette) {
     m_pCurrentColorPickerAction->setColorPalette(palette);
 }
 
+void DlgReplaceCueColor::setDefaultColors(mixxx::RgbColor savedColor, mixxx::RgbColor newColor) {
+    setButtonColor(pushButtonCurrentColor, mixxx::RgbColor::toQColor(savedColor));
+    m_pCurrentColorPickerAction->setSelectedColor(savedColor);
+
+    if (savedColor == newColor) {
+        setButtonColor(pushButtonNewColor, mixxx::RgbColor::toQColor(newColor));
+        m_pNewColorPickerAction->setSelectedColor(newColor);
+    }
+}
+
 void DlgReplaceCueColor::slotApply() {
     m_bDatabaseChangeInProgress = false;
     slotUpdateWidgets();
