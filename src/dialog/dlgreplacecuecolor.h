@@ -39,10 +39,8 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
 
     void setColorPalette(const ColorPalette& palette);
 
-    /// Before showing the dialog, DlgPrefColors uses this to set the default
-    /// hotcue color (both saved/new in case the user didn't hit apply yet) so
-    /// that the dialog can pre-select colors to replace.
-    void setDefaultColors(mixxx::RgbColor savedColor, mixxx::RgbColor newColor);
+    void setNewColor(mixxx::RgbColor color);
+    void setCurrentColor(mixxx::RgbColor color);
 
   signals:
     void databaseTracksChanged(QSet<TrackId> Trackids);
@@ -62,6 +60,8 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
     QMenu* m_pCurrentColorMenu;
     parented_ptr<WColorPickerAction> m_pNewColorPickerAction;
     parented_ptr<WColorPickerAction> m_pCurrentColorPickerAction;
+    mixxx::RgbColor::optional_t m_lastAutoSetNewColor;
+    mixxx::RgbColor::optional_t m_lastAutoSetCurrentColor;
     QStyle* m_pStyle;
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(DlgReplaceCueColor::Conditions);

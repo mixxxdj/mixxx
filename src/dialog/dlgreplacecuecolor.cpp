@@ -48,6 +48,8 @@ DlgReplaceCueColor::DlgReplaceCueColor(
           m_bDatabaseChangeInProgress(false),
           m_pNewColorMenu(new QMenu(this)),
           m_pCurrentColorMenu(new QMenu(this)),
+          m_lastAutoSetNewColor(std::nullopt),
+          m_lastAutoSetCurrentColor(std::nullopt),
           m_pStyle(QStyleFactory::create(QStringLiteral("fusion"))) {
     setupUi(this);
     setWindowModality(Qt::ApplicationModal);
@@ -164,14 +166,32 @@ void DlgReplaceCueColor::setColorPalette(const ColorPalette& palette) {
     m_pCurrentColorPickerAction->setColorPalette(palette);
 }
 
-void DlgReplaceCueColor::setDefaultColors(mixxx::RgbColor savedColor, mixxx::RgbColor newColor) {
-    setButtonColor(pushButtonCurrentColor, mixxx::RgbColor::toQColor(savedColor));
-    m_pCurrentColorPickerAction->setSelectedColor(savedColor);
+void DlgReplaceCueColor::setNewColor(mixxx::RgbColor color) {
+    mixxx::RgbColor::optional_t buttonColor = mixxx::RgbColor::fromQString(
+            pushButtonNewColor->text());
 
-    if (savedColor == newColor) {
-        setButtonColor(pushButtonNewColor, mixxx::RgbColor::toQColor(newColor));
-        m_pNewColorPickerAction->setSelectedColor(newColor);
+    // Make sure we don't overwrite colors selected by the user
+    if (!m_lastAutoSetNewColor || m_lastAutoSetNewColor == buttonColor) {
+        setButtonColor(pushButtonNewColor, mixxx::RgbColor::toQColor(color));
+        m_pNewColorPickerAction->setSelectedColor(color);
+        slotUpdateWidgets();
     }
+
+    m_lastAutoSetNewColor = color;
+}
+
+void DlgReplaceCueColor::setCurrentColor(mixxx::RgbColor color) {
+    mixxx::RgbColor::optional_t buttonColor = mixxx::RgbColor::fromQString(
+            pushButtonCurrentColor->text());
+
+    // Make sure we don't overwrite colors selected by the user
+    if (!m_lastAutoSetCurrentColor || m_lastAutoSetCurrentColor == buttonColor) {
+        setButtonColor(pushButtonCurrentColor, mixxx::RgbColor::toQColor(color));
+        m_pCurrentColorPickerAction->setSelectedColor(color);
+        slotUpdateWidgets();
+    }
+
+    m_lastAutoSetCurrentColor = color;
 }
 
 void DlgReplaceCueColor::slotApply() {

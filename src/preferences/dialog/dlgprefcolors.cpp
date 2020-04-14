@@ -203,7 +203,11 @@ void DlgPrefColors::slotReplaceCueColorClicked() {
         newDefaultColorIndex = 0;
     }
     mixxx::RgbColor newDefaultColor = newPalette.at(newDefaultColorIndex % newPalette.size());
-    m_pReplaceCueColorDlg->setDefaultColors(savedDefaultColor, newDefaultColor);
+
+    m_pReplaceCueColorDlg->setCurrentColor(savedDefaultColor);
+    if (savedDefaultColor != newDefaultColor) {
+        m_pReplaceCueColorDlg->setNewColor(newDefaultColor);
+    }
 
     m_pReplaceCueColorDlg->show();
     m_pReplaceCueColorDlg->raise();
