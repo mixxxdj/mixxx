@@ -589,7 +589,6 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgRecording > QPushButton:focus,
 #DlgAnalysis > QPushButton:focus,
 #fadeModeCombobox:focus,
-#faderModeCombobox:focus,
 #DlgAutoDJ QSpinBox:focus {
   border: 1px solid #bbb;
   outline: none;
@@ -667,8 +666,7 @@ QPushButton#pushButtonRepeatPlaylist {
 /* Scroll bars */
 #LibraryContainer QScrollBar:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
-#fadeModeCombobox QAbstractScrollArea QScrollBar:horizontal,
-#faderModeCombobox QAbstractScrollArea QScrollBar:horizontal {
+#fadeModeCombobox QAbstractScrollArea QScrollBar:horizontal {
   border-top: 1px solid #141414;
   min-width: 12px;
   height: 15px;
@@ -677,8 +675,7 @@ WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
 }
 #LibraryContainer QScrollBar:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar:vertical,
-#fadeModeCombobox QAbstractScrollArea QScrollBar:vertical,
-#faderModeCombobox QAbstractScrollArea QScrollBar:vertical {
+#fadeModeCombobox QAbstractScrollArea QScrollBar:vertical {
   border-left: 1px solid #141414;
   min-height: 12px;
   width: 15px;
@@ -691,15 +688,12 @@ WEffectSelector QAbstractScrollArea QScrollBar:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar::add-page,
 WEffectSelector QAbstractScrollArea QScrollBar::sub-page,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::add-page,
-#fadeModeCombobox QAbstractScrollArea QScrollBar::sub-page,
-#faderModeCombobox QAbstractScrollArea QScrollBar::add-page,
-#faderModeCombobox QAbstractScrollArea QScrollBar::sub-page {
+#fadeModeCombobox QAbstractScrollArea QScrollBar::sub-page {
   background: none;
 }
 #LibraryContainer QScrollBar::handle:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
-#fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal,
-#faderModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal {
+#fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal {
   min-width: 25px;
   background: #5F5F5F;
   border-radius: 3px;
@@ -707,8 +701,7 @@ WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
 }
 #LibraryContainer QScrollBar::handle:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
-#fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical,
-#faderModeCombobox QAbstractScrollArea QScrollBar::handle:vertical {
+#fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical {
   min-height: 25px;
   background: #5F5F5F;
   border-radius: 3px;
@@ -719,10 +712,7 @@ WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal:hover,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical:hover,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal:hover,
-#fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical:hover,
-#faderModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal:hover,
-#faderModeCombobox QAbstractScrollArea QScrollBar::handle:vertical:hover {
-  background: #B3B3B3;
+#fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical:hover {
   background: #B3B3B3;
 }
 
@@ -738,11 +728,7 @@ WEffectSelector QAbstractScrollArea QScrollBar::sub-line:vertical ,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::add-line:horizontal,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::add-line:vertical,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::sub-line:horizontal,
-#fadeModeCombobox QAbstractScrollArea QScrollBar::sub-line:vertical,
-#faderModeCombobox QAbstractScrollArea QScrollBar::add-line:horizontal,
-#faderModeCombobox QAbstractScrollArea QScrollBar::add-line:vertical,
-#faderModeCombobox QAbstractScrollArea QScrollBar::sub-line:horizontal,
-#faderModeCombobox QAbstractScrollArea QScrollBar::sub-line:vertical {
+#fadeModeCombobox QAbstractScrollArea QScrollBar::sub-line:vertical {
   width: 0px;
   height: 0px;
   border: none;
@@ -750,8 +736,7 @@ WEffectSelector QAbstractScrollArea QScrollBar::sub-line:vertical ,
 /* Corner in between two scrollbars */
 #LibraryContainer QAbstractScrollArea::corner,
 WEffectSelector QAbstractScrollArea::corner,
-#fadeModeCombobox QAbstractScrollArea::corner,
-#faderModeCombobox QAbstractScrollArea::corner {
+#fadeModeCombobox QAbstractScrollArea::corner {
   border-top: 1px solid #141414;
   border-left: 1px solid #141414;
 }
@@ -1852,7 +1837,6 @@ do not highlight either state. */
 /* common styles for WEffectSelector, QMenu, QToolTip */
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
-#faderModeCombobox QAbstractScrollArea,
 QToolTip,
 #LibraryContainer QMenu,
 WBeatSpinBox QMenu,
@@ -1862,19 +1846,16 @@ WCoverArtMenu {
   padding: 2px;
 }
 WEffectSelector QAbstractScrollArea,
-#fadeModeCombobox QAbstractScrollArea,
-#faderModeCombobox QAbstractScrollArea {
+#fadeModeCombobox QAbstractScrollArea {
   padding: 2px;
   font: 13px;
 }
 WEffectSelector QAbstractScrollArea,
-#fadeModeCombobox QAbstractScrollArea,
-#faderModeCombobox QAbstractScrollArea {
+#fadeModeCombobox QAbstractScrollArea {
   min-width: 180px;
 }
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
-#faderModeCombobox QAbstractScrollArea,
 QToolTip,
 #LibraryContainer QMenu,
 #LibraryContainer QMenu::item,
@@ -1892,7 +1873,6 @@ WCoverArtMenu::item {
   }
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
-#faderModeCombobox QAbstractScrollArea,
 QToolTip,
 #LibraryContainer QMenu,
 WBeatSpinBox QMenu,
@@ -1907,7 +1887,6 @@ WCoverArtMenu {
   /* hovered items */
   WEffectSelector::item:selected,
   #fadeModeCombobox::item:selected,
-  #faderModeCombobox::item:selected,
   #LibraryContainer QMenu::item:selected,
   WBeatSpinBox QMenu::item:selected,
   WCueMenuPopup QMenu::item:selected,
@@ -1924,8 +1903,7 @@ WCoverArtMenu {
 
 
 WEffectSelector,
-#fadeModeCombobox,
-#faderModeCombobox {
+#fadeModeCombobox {
   color: #c1cabe;
   /* The 3D frame on the combo box becomes flat when you give it a border */
   border: 1px solid #444342;
@@ -1940,8 +1918,7 @@ WEffectSelector {
   padding: 0px 6px;
   background-color: #404040;
 }
-#fadeModeCombobox,
-#faderModeCombobox {
+#fadeModeCombobox {
   /* 1px is added in each dimension. 20+1+1 = 22 = button height */
   height: 20px;
   padding: 0px 6px;
@@ -1949,38 +1926,32 @@ WEffectSelector {
 }
 
   WEffectSelector:hover,
-  #fadeModeCombobox:hover,
-  #faderModeCombobox:hover {
+  #fadeModeCombobox:hover {
     border: 1px ridge #015d8d;
   }
   WEffectSelector::drop-down,
-  #fadeModeCombobox::drop-down,
-  #faderModeCombobox::drop-down {
+  #fadeModeCombobox::drop-down {
     /* This causes the Qt theme's widget style to magically not apply. Go figure. */
     border: 0;
   }
   WEffectSelector::down-arrow,
-  #fadeModeCombobox::down-arrow,
-  #faderModeCombobox::down-arrow {
+  #fadeModeCombobox::down-arrow {
     width: 20px;
     height: 20px;
     image: url(skin:/icon/ic_chevron_down_48px.svg);
   }
   WEffectSelector::item:!selected,
-  #fadeModeCombobox::item:!selected,
-  #faderModeCombobox::item:!selected {
+  #fadeModeCombobox::item:!selected {
     background-color: #201f1f;
   }
   /* currently loaded effect */
   WEffectSelector::checked,
-  #fadeModeCombobox::checked,
-  #faderModeCombobox::checked {
+  #fadeModeCombobox::checked {
     color: #4495F4;
     font-weight: bold;
   }
   WEffectSelector::indicator:checked,
-  #fadeModeCombobox::indicator:checked,
-  #faderModeCombobox::indicator:checked {
+  #fadeModeCombobox::indicator:checked {
     /* checkbox container is 28 x 22px;
       use margin + border to create a square checkbox sized like kill buttons */
     margin: 2px;
@@ -1995,10 +1966,6 @@ WEffectSelector {
   #fadeModeCombobox::indicator, /* checkbox, tick mark */
   #fadeModeCombobox::drop-down,
   #fadeModeCombobox::indicator:!checked,
-  #faderModeCombobox::checked, /* selected mode */
-  #faderModeCombobox::indicator, /* checkbox, tick mark */
-  #faderModeCombobox::drop-down,
-  #faderModeCombobox::indicator:!checked,
   #LibraryContainer QMenu::item,
   WBeatSpinBox QMenu::item,
   WCueMenuPopup QMenu::item,

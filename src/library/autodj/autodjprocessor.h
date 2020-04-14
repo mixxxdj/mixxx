@@ -197,18 +197,12 @@ class AutoDJProcessor : public QObject {
         return m_pAutoDJTableModel;
     }
 
-    FaderMode getFaderMode() const {
-        return m_faderMode;
-    }
-
     bool nextTrackLoaded();
 
   public slots:
     void setTransitionTime(int seconds);
 
     void setTransitionMode(TransitionMode newMode);
-
-    void setFaderMode(FaderMode newMode);
 
     AutoDJError shufflePlaylist(const QModelIndexList& selectedIndices);
     AutoDJError skipNext();
@@ -301,7 +295,6 @@ class AutoDJProcessor : public QObject {
     double m_transitionProgress;
     double m_transitionTime; // the desired value set by the user
     TransitionMode m_transitionMode;
-    FaderMode m_faderMode;
 
     QList<DeckAttributes*> m_decks;
 

@@ -12,7 +12,6 @@
 namespace {
 const char* kTransitionPreferenceName = "Transition";
 const char* kTransitionModePreferenceName = "TransitionMode";
-const char* kFaderModePreferenceName = "FaderMode";
 const double kTransitionPreferenceDefault = 10.0;
 const double kKeepPosition = -1.0;
 
@@ -178,11 +177,6 @@ AutoDJProcessor::AutoDJProcessor(
             ConfigKey(kConfigKey, kTransitionModePreferenceName),
             static_cast<int>(TransitionMode::FullIntroOutro));
     m_transitionMode = static_cast<TransitionMode>(configuredTransitionMode);
-    // TODO(c3n7) Check this out later
-    int configuredFaderMode = m_pConfig->getValue(
-            ConfigKey(kConfigKey, kFaderModePreferenceName),
-            static_cast<int>(FaderMode::Crossfader));
-    m_faderMode = static_cast<FaderMode>(configuredFaderMode);
 }
 
 AutoDJProcessor::~AutoDJProcessor() {
@@ -229,7 +223,11 @@ double AutoDJProcessor::getVolumeFader() {
 }
 
 double AutoDJProcessor::getFader() {
-    if (m_faderMode == FaderMode::Crossfader) {
+    int configuredFaderMode = m_pConfig->getValue(
+            ConfigKey("[Auto DJ]", "FaderMode"),
+            static_cast<int>(FaderMode::Crossfader));
+    FaderMode faderMode = static_cast<FaderMode>(configuredFaderMode);
+    if (faderMode == FaderMode::Crossfader) {
         return getCrossfader();
     } else {
         return getVolumeFader();
@@ -238,7 +236,11 @@ double AutoDJProcessor::getFader() {
 
 void AutoDJProcessor::setCrossfader(double value) {
     // TODO(c3n7) Separate the crossfader and the volume faders to their own functions
-    if (m_faderMode == FaderMode::Crossfader) {
+    int configuredFaderMode = m_pConfig->getValue(
+            ConfigKey("[Auto DJ]", "FaderMode"),
+            static_cast<int>(FaderMode::Crossfader));
+    FaderMode faderMode = static_cast<FaderMode>(configuredFaderMode);
+    if (faderMode == FaderMode::Crossfader) {
         if (m_pCOCrossfaderReverse->toBool()) {
             value *= -1.0;
         }
@@ -1650,18 +1652,6 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
     } else {
         // user has manually started the other deck or stopped both.
         // don't know what to do.
-    }
-}
-
-void AutoDJProcessor::setFaderMode(FaderMode newMode) {
-    m_pConfig->set(ConfigKey(kConfigKey, kFaderModePreferenceName),
-            ConfigValue(static_cast<int>(newMode)));
-    // Get the position of the currently set fader before switching to a new one
-    double faderPos = getFader();
-    m_faderMode = newMode;
-
-    if (m_eState != ADJ_DISABLED) {
-        setCrossfader(faderPos);
     }
 }
 
