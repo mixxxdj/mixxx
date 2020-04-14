@@ -2073,6 +2073,12 @@ WTrackProperty#SamplerTitle_mini {
  ######  Misc  ##################################################
 ##############################################################*/
 
+/* Passthrough label on overview waveform */
+WOverview #PassthroughLabel {
+  font-weight: bold;
+  color: #ff8f00;
+}
+
 QToolTip,
 #LibraryContainer QMenu,
 WBeatSpinBox QMenu,

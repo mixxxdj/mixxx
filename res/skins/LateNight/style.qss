@@ -262,6 +262,13 @@ WCoverArtMenu,
   #FxButtonLabel {
     qproperty-alignment: 'AlignLeft | AlignVCenter';
     }
+
+/* Passthrough label on overview waveform */
+WOverview #PassthroughLabel {
+  font-weight: bold;
+  color: #d09300;
+}
+
 /************** font colors **************************************************/
 /************** font settings *************************************************/
 
