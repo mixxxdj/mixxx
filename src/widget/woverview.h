@@ -117,6 +117,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     void drawPickupPosition(QPainter* pPainter);
     void drawTimeRuler(QPainter* pPainter);
     void drawMarkLabels(QPainter* pPainter, const float offset, const float gain);
+    void drawPassthroughOverlay(QPainter* pPainter);
     void paintText(const QString& text, QPainter* pPainter);
     double samplePositionToSeconds(double sample);
     inline int valueToPosition(double value) const {
@@ -170,6 +171,8 @@ class WOverview : public WWidget, public TrackDropTarget {
     QColor m_labelTextColor;
     QColor m_labelBackgroundColor;
     QColor m_endOfTrackColor;
+    QColor m_passthroughOverlayColor;
+    QLabel* m_pPassthroughLabel;
 
     // All WaveformMarks
     WaveformMarkSet m_marks;
