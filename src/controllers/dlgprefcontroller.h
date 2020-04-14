@@ -36,8 +36,6 @@ class DlgPrefController : public DlgPreferencePage {
     void slotUpdate();
     /// Called when the user clicks the global "Apply" button.
     void slotApply();
-    /// Called when the user clicks the global "Cancel" button.
-    void slotCancel();
     /// Called when the user clicks the global "Reset to Defaults" button.
     void slotResetToDefaults();
 

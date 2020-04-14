@@ -367,10 +367,6 @@ void DlgPrefController::slotUpdate() {
     m_ui.outputMappingsTab->setEnabled(isMappable);
 }
 
-void DlgPrefController::slotCancel() {
-    slotUpdate();
-}
-
 void DlgPrefController::slotResetToDefaults() {
     m_ui.chkEnabledDevice->setChecked(false);
     enumeratePresets(QString());
