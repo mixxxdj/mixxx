@@ -57,6 +57,13 @@ void DlgPrefControllers::slotApply() {
     }
 }
 
+void DlgPrefControllers::slotResetToDefaults() {
+    // Update our sub-windows.
+    foreach (DlgPrefController* pControllerWindows, m_controllerWindows) {
+        pControllerWindows->slotResetToDefaults();
+    }
+}
+
 bool DlgPrefControllers::handleTreeItemClick(QTreeWidgetItem* clickedItem) {
     int controllerIndex = m_controllerTreeItems.indexOf(clickedItem);
     if (controllerIndex >= 0) {
