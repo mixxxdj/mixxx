@@ -105,7 +105,9 @@ DlgReplaceCueColor::DlgReplaceCueColor(
     pushButtonNewColor->setMenu(m_pNewColorMenu);
 
     // Set up current color button
-    setButtonColor(pushButtonCurrentColor, mixxx::RgbColor::toQColor(mixxx::PredefinedColorPalettes::kDefaultCueColor));
+    setButtonColor(pushButtonCurrentColor,
+            mixxx::RgbColor::toQColor(
+                    mixxx::PredefinedColorPalettes::kDefaultCueColor));
     connect(checkBoxCurrentColorCondition,
             &QCheckBox::stateChanged,
             this,
@@ -121,12 +123,14 @@ DlgReplaceCueColor::DlgReplaceCueColor(
             colorPaletteSettings.getHotcueColorPalette(),
             this);
     m_pCurrentColorPickerAction->setObjectName("HotcueColorPickerAction");
-    m_pNewColorPickerAction->setSelectedColor(mixxx::PredefinedColorPalettes::kDefaultCueColor);
+    m_pNewColorPickerAction->setSelectedColor(
+            mixxx::PredefinedColorPalettes::kDefaultCueColor);
     connect(m_pCurrentColorPickerAction,
             &WColorPickerAction::colorPicked,
             [this](mixxx::RgbColor::optional_t color) {
                 if (color) {
-                    setButtonColor(pushButtonCurrentColor, mixxx::RgbColor::toQColor(*color));
+                    setButtonColor(pushButtonCurrentColor,
+                            mixxx::RgbColor::toQColor(*color));
                     slotUpdateWidgets();
                 }
                 m_pCurrentColorMenu->hide();
@@ -187,14 +191,16 @@ void DlgReplaceCueColor::slotApply() {
         conditions |= ConditionFlag::HotcueIndexNotEqual;
     }
 
-    mixxx::RgbColor::optional_t currentColor = mixxx::RgbColor::fromQString(pushButtonCurrentColor->text());
+    mixxx::RgbColor::optional_t currentColor =
+            mixxx::RgbColor::fromQString(pushButtonCurrentColor->text());
     VERIFY_OR_DEBUG_ASSERT(currentColor) {
         m_bDatabaseChangeInProgress = false;
         slotUpdateWidgets();
         return;
     }
 
-    mixxx::RgbColor::optional_t newColor = mixxx::RgbColor::fromQString(pushButtonNewColor->text());
+    mixxx::RgbColor::optional_t newColor =
+            mixxx::RgbColor::fromQString(pushButtonNewColor->text());
     VERIFY_OR_DEBUG_ASSERT(newColor) {
         m_bDatabaseChangeInProgress = false;
         slotUpdateWidgets();
@@ -218,24 +224,31 @@ void DlgReplaceCueColor::slotApply() {
     QMap<QString, QVariant> queryValues;
     QStringList queryStringConditions;
     if (conditions.testFlag(ConditionFlag::CurrentColorCheck)) {
-        queryStringConditions << QString(
-                QStringLiteral("color") +
-                (conditions.testFlag(ConditionFlag::CurrentColorNotEqual) ? QStringLiteral("!=") : QStringLiteral("=")) +
+        queryStringConditions << QString(QStringLiteral("color") +
+                (conditions.testFlag(ConditionFlag::CurrentColorNotEqual)
+                                ? QStringLiteral("!=")
+                                : QStringLiteral("=")) +
                 QStringLiteral(":current_color"));
-        queryValues.insert(QStringLiteral(":current_color"), mixxx::RgbColor::toQVariant(currentColor));
+        queryValues.insert(QStringLiteral(":current_color"),
+                mixxx::RgbColor::toQVariant(currentColor));
     }
     if (conditions.testFlag(ConditionFlag::HotcueIndexCheck)) {
-        queryStringConditions << QString(
-                QStringLiteral("hotcue") +
-                (conditions.testFlag(ConditionFlag::HotcueIndexNotEqual) ? QStringLiteral("!=") : QStringLiteral("=")) +
+        queryStringConditions << QString(QStringLiteral("hotcue") +
+                (conditions.testFlag(ConditionFlag::HotcueIndexNotEqual)
+                                ? QStringLiteral("!=")
+                                : QStringLiteral("=")) +
                 QStringLiteral(":hotcue"));
         queryValues.insert(QStringLiteral(":hotcue"), QVariant(hotcueIndex));
     }
 
-    QString queryString = QStringLiteral("SELECT id, track_id, color FROM " CUE_TABLE " WHERE color != :new_color");
-    queryValues.insert(QStringLiteral(":new_color"), mixxx::RgbColor::toQVariant(newColor));
+    QString queryString =
+            QStringLiteral("SELECT id, track_id, color FROM " CUE_TABLE
+                           " WHERE color != :new_color");
+    queryValues.insert(QStringLiteral(":new_color"),
+            mixxx::RgbColor::toQVariant(newColor));
     if (!queryStringConditions.isEmpty()) {
-        queryString += QStringLiteral(" AND ") + queryStringConditions.join(QStringLiteral(" AND "));
+        queryString += QStringLiteral(" AND ") +
+                queryStringConditions.join(QStringLiteral(" AND "));
     }
 
     // Select affected queues
@@ -273,7 +286,8 @@ void DlgReplaceCueColor::slotApply() {
             slotUpdateWidgets();
             return;
         }
-        mixxx::RgbColor::optional_t color = mixxx::RgbColor::fromQVariant(selectQuery.value(colorColumn));
+        mixxx::RgbColor::optional_t color =
+                mixxx::RgbColor::fromQVariant(selectQuery.value(colorColumn));
         VERIFY_OR_DEBUG_ASSERT(color) {
             continue;
         }
@@ -290,16 +304,21 @@ void DlgReplaceCueColor::slotApply() {
     progress.reset();
 
     if (rows.size() == 0) {
-        QMessageBox::warning(this, tr("No colors changed!"), tr("No cues matched the specified criteria."));
+        QMessageBox::warning(this,
+                tr("No colors changed!"),
+                tr("No cues matched the specified criteria."));
         m_bDatabaseChangeInProgress = false;
         slotUpdateWidgets();
         return;
     }
 
-    if (QMessageBox::question(
-                this,
+    if (QMessageBox::question(this,
                 tr("Confirm Color Replacement"),
-                tr("The colors of %1 cues in %2 tracks will be replaced. This change cannot be undone! Are you sure?").arg(QString::number(rows.size()), QString::number(trackIds.size()))) == QMessageBox::No) {
+                tr("The colors of %1 cues in %2 tracks will be replaced. This "
+                   "change cannot be undone! Are you sure?")
+                        .arg(QString::number(rows.size()),
+                                QString::number(trackIds.size()))) ==
+            QMessageBox::No) {
         m_bDatabaseChangeInProgress = false;
         slotUpdateWidgets();
         return;
@@ -311,7 +330,9 @@ void DlgReplaceCueColor::slotApply() {
 
     ScopedTransaction transaction(database);
     QSqlQuery query(database);
-    query.prepare("UPDATE " CUE_TABLE " SET color=:new_color WHERE id=:id AND track_id=:track_id AND color=:current_color");
+    query.prepare("UPDATE " CUE_TABLE
+                  " SET color=:new_color WHERE id=:id AND track_id=:track_id "
+                  "AND color=:current_color");
     query.bindValue(":new_color", mixxx::RgbColor::toQVariant(newColor));
 
     bool canceled = false;
