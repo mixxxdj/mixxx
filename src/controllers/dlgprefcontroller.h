@@ -38,6 +38,8 @@ class DlgPrefController : public DlgPreferencePage {
     void slotApply();
     /// Called when the user clicks the global "Cancel" button.
     void slotCancel();
+    /// Called when the user clicks the global "Reset to Defaults" button.
+    void slotResetToDefaults();
 
   signals:
     void applyPreset(Controller* pController, ControllerPresetPointer pPreset, bool bEnabled);

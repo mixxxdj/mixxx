@@ -371,6 +371,11 @@ void DlgPrefController::slotCancel() {
     slotUpdate();
 }
 
+void DlgPrefController::slotResetToDefaults() {
+    m_ui.chkEnabledDevice->setChecked(false);
+    enumeratePresets(QString());
+}
+
 void DlgPrefController::applyPresetChanges() {
     if (m_pInputTableModel) {
         m_pInputTableModel->apply();
