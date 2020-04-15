@@ -37,8 +37,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     inline const QString currentSearch() { return m_proxyModel.currentSearch(); }
 
   public slots:
-    void toggleRecording(bool toggle);
-    void slotRecordingEnabled(bool);
+    void slotRecordingStateChanged(bool);
     void slotBytesRecorded(int);
     void refreshBrowseModel();
     void slotRestoreSearch();
@@ -56,7 +55,8 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     ProxyTrackModel m_proxyModel;
     QString m_recordingDir;
 
-    void refreshLabel();
+    void refreshLabels();
+    void slotRecButtonClicked(bool checked);
     QString m_bytesRecordedStr;
     QString m_durationRecordedStr;
 

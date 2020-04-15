@@ -2766,11 +2766,19 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
   /* Push labels away from buttons at the right */
   /* AutoDJ selection info */
   QLabel#labelSelectionInfo,
-  /* Recording info */
-  #DlgRecording QLabel,
   /* Analysis progress info */
   QLabel#labelProgress {
     margin: 0px 4px 5px 2px;
+  }
+
+  /* Recording info */
+  #labelRecFilename {
+    font-weight: bold;
+    margin: 0px 1px;
+  }
+  #labelRecPrefix,
+  #labelRecStatistics {
+    font-weight: normal;
   }
 
   /* Entire BPM cell */
