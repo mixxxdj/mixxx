@@ -2,16 +2,24 @@
 
 #include "library/hiddentablemodel.h"
 #include "library/trackcollectionmanager.h"
+#include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
 #include "util/assert.h"
 
-DlgHidden::DlgHidden(QWidget* parent, UserSettingsPointer pConfig,
-                     Library* pLibrary,
-                     KeyboardEventFilter* pKeyboard)
-         : QWidget(parent),
-           Ui::DlgHidden(),
-           m_pTrackTableView(
-               new WTrackTableView(this, pConfig, pLibrary->trackCollections(), false)) {
+DlgHidden::DlgHidden(
+        WLibrary* parent,
+        UserSettingsPointer pConfig,
+        Library* pLibrary,
+        KeyboardEventFilter* pKeyboard)
+        : QWidget(parent),
+          Ui::DlgHidden(),
+          m_pTrackTableView(
+                  new WTrackTableView(
+                          this,
+                          pConfig,
+                          pLibrary->trackCollections(),
+                          parent->getTrackTableBackgroundColorOpacity(),
+                          false)) {
     setupUi(this);
     m_pTrackTableView->installEventFilter(pKeyboard);
 

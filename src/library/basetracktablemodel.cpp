@@ -15,16 +15,14 @@
 #include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/logger.h"
-#include "widget/wlibrarytableview.h"
+#include "widget/wlibrary.h"
+#include "widget/wtracktableview.h"
 
 namespace {
 
 const mixxx::Logger kLogger("BaseTrackTableModel");
 
 const QString kEmptyString = QStringLiteral("");
-
-// Alpha value for row color background (range 0 - 255)
-constexpr int kTrackColorRowBackgroundOpacity = 0x20; // 12.5% opacity
 
 const QStringList kDefaultTableColumns = {
         LIBRARYTABLE_ALBUM,
@@ -98,7 +96,8 @@ BaseTrackTableModel::BaseTrackTableModel(
                   cloneDatabase(pTrackCollectionManager),
                   settingsNamespace),
           m_pTrackCollectionManager(pTrackCollectionManager),
-          m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)) {
+          m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
+          m_backgroundColorOpacity(WLibrary::kDefaultTrackTableBackgroundColorOpacity) {
     connect(&pTrackCollectionManager->internalCollection()->getTrackDAO(),
             &TrackDAO::forceModelUpdate,
             this,
@@ -356,10 +355,11 @@ bool BaseTrackTableModel::isColumnHiddenByDefault(
 
 QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
         const int index, QObject* pParent) {
-    auto* pTableView = qobject_cast<WLibraryTableView*>(pParent);
+    auto* pTableView = qobject_cast<WTrackTableView*>(pParent);
     VERIFY_OR_DEBUG_ASSERT(pTableView) {
         return nullptr;
     }
+    m_backgroundColorOpacity = pTableView->getBackgroundColorOpacity();
     if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
         return new StarDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
@@ -411,7 +411,9 @@ QVariant BaseTrackTableModel::data(
         }
         auto bgColor = mixxx::RgbColor::toQColor(trackColor);
         DEBUG_ASSERT(bgColor.isValid());
-        bgColor.setAlpha(kTrackColorRowBackgroundOpacity);
+        DEBUG_ASSERT(m_backgroundColorOpacity >= 0.0);
+        DEBUG_ASSERT(m_backgroundColorOpacity <= 1.0);
+        bgColor.setAlphaF(m_backgroundColorOpacity);
         return QBrush(bgColor);
     }
 
