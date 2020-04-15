@@ -536,7 +536,7 @@ void BaseTrackPlayerImpl::slotTrackColorChanged(double v) {
     mixxx::RgbColor::optional_t color = std::nullopt;
     if (v != kNoTrackColor) {
         auto colorCode = static_cast<mixxx::RgbColor::code_t>(v);
-        if (v != mixxx::RgbColor::validateCode(colorCode)) {
+        if (!mixxx::RgbColor::isValidCode(colorCode)) {
             return;
         }
         color = mixxx::RgbColor::optional(colorCode);
