@@ -113,8 +113,8 @@ repos:
     - manual
 - repo: local
   hooks:
-  - id: line_length
-    name: line_length
+  - id: line-length
+    name: line-length
     description: Check for lines longer 100 and brakes them before 80.
     entry: ./scripts/line_length.py
     stages:
