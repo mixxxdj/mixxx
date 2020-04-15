@@ -1,6 +1,12 @@
-language: cpp
-os: linux
+# Enable build config validation (opt-in)
+version: ~> 1.0
 
+# Default build environment
+os: linux
+dist: bionic
+
+# Default programming language
+language: cpp
 
 # Build flags common to OS X and Linux.
 # Parallel builds are important for avoiding OSX build timeouts.
@@ -19,8 +25,6 @@ jobs:
   include:
     - name: pre-commit
       if: type != pull_request
-      os: linux
-      dist: xenial
       language: python
       python: 3.7
       # There are too many files in the repo that have formatting issues. We'll
@@ -38,8 +42,6 @@ jobs:
 
     - name: pre-commit-pr
       if: type == pull_request
-      os: linux
-      dist: xenial
       language: python
       python: 3.7
       cache:
@@ -52,10 +54,8 @@ jobs:
       addons: []
 
     - name: Ubuntu/gcc/SCons build
-      os: linux
-      dist: xenial
       compiler: gcc
-      # Ubuntu Xenial build prerequisites
+      # Ubuntu Bionic build prerequisites
       before_install:
         - sudo apt-get install -y scons
       install:
@@ -67,11 +67,9 @@ jobs:
         - ./mixxx-test
 
     - name: Ubuntu/gcc/CMake build
-      os: linux
-      dist: xenial
       compiler: gcc
       cache: ccache
-      # Ubuntu Xenial build prerequisites
+      # Ubuntu Bionic build prerequisites
       env: CMAKEFLAGS_EXTRA="-DLOCALECOMPARE=ON"
       before_install:
         - export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
@@ -93,7 +91,8 @@ jobs:
 
     - name: OSX/clang/SCons build
       os: osx
-      osx_image: xcode11
+      # The XCode version should match that on the build server!
+      osx_image: xcode9.4
       compiler: clang
       cache:
         directories:
@@ -129,7 +128,8 @@ jobs:
 
     - name: OSX/clang/CMake build
       os: osx
-      osx_image: xcode11
+      # The XCode version should match that on the build server!
+      osx_image: xcode9.4
       compiler: clang
       cache:
         ccache: true

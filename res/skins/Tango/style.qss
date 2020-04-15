@@ -23,9 +23,7 @@ WNumber,
 WTrackProperty,
 WBeatSpinBox,
 WEffectSelector, WEffectSelector QAbstractScrollArea,
-WSearchLineEdit,
 WPushButton,
-WSearchLineEdit,
 #LibraryContainer QPushButton,
 #LibraryContainer QLabel,
 #LibraryContainer QRadioButton,
@@ -48,7 +46,6 @@ WPushButton {
 }
 
 WPushButton,
-WSearchLineEdit,
 #LibraryContainer QPushButton,
 #LibraryContainer QLabel,
 #LibraryContainer QRadioButton,
@@ -2071,6 +2068,12 @@ WTrackProperty#SamplerTitle_mini {
  ######  Misc  ##################################################
 ##############################################################*/
 
+/* Passthrough label on overview waveform */
+WOverview #PassthroughLabel {
+  font-weight: bold;
+  color: #ff8f00;
+}
+
 QToolTip,
 #LibraryContainer QMenu,
 WBeatSpinBox QMenu,
@@ -2413,8 +2416,9 @@ WCoverArtMenu::item:!enabled,
   Shift WSearchLineEdit instead */
   margin: 0px;
   }
+  #LibraryContainer QTableView:focus,
   #LibraryContainer QTreeView:focus,
-  #LibraryContainer QTableView:focus { /*
+  #LibraryContainer QTextBrowser:focus { /*
     New Library navigation COs only work if TreeView or TableView have focus.
     Clicking on buttons, sliders and visuals elsewhere removes focus from Library.
     In conjunction with [Library],MoveFocusBackward/..Forward, some highlight
@@ -2764,11 +2768,19 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
   /* Push labels away from buttons at the right */
   /* AutoDJ selection info */
   QLabel#labelSelectionInfo,
-  /* Recording info */
-  #DlgRecording QLabel,
   /* Analysis progress info */
   QLabel#labelProgress {
     margin: 0px 4px 5px 2px;
+  }
+
+  /* Recording info */
+  #labelRecFilename {
+    font-weight: bold;
+    margin: 0px 1px;
+  }
+  #labelRecPrefix,
+  #labelRecStatistics {
+    font-weight: normal;
   }
 
   /* Entire BPM cell */
@@ -2871,7 +2883,7 @@ WSearchLineEdit {
   padding: 2px;
   border: 1px solid #656565;
   color: #cfcfcf;
-  background: #0f0f0f;
+  background-color: #0f0f0f;
   selection-color: #0f0f0f;
   selection-background-color: #d2d2d2;
 /* margin will increase the Qt widget size which is used to position the

@@ -111,3 +111,14 @@ repos:
     - commit
     - push
     - manual
+- repo: local
+  hooks:
+  - id: line-length
+    name: line-length
+    description: Check for lines longer 100 and brakes them before 80.
+    entry: ./scripts/line_length.py
+    stages:
+    - commit
+    - push
+    language: python
+    files: \.(c|cpp|h)$

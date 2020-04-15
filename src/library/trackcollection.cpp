@@ -23,6 +23,44 @@ TrackCollection::TrackCollection(
           m_analysisDao(pConfig),
           m_trackDao(m_cueDao, m_playlistDao,
                      m_analysisDao, m_libraryHashDao, pConfig) {
+    // Forward signals from TrackDAO
+    connect(&m_trackDao,
+            &TrackDAO::trackClean,
+            this,
+            &TrackCollection::trackClean,
+            /*signal-to-signal*/ Qt::DirectConnection);
+    connect(&m_trackDao,
+            &TrackDAO::trackDirty,
+            this,
+            &TrackCollection::trackDirty,
+            /*signal-to-signal*/ Qt::DirectConnection);
+    connect(&m_trackDao,
+            &TrackDAO::trackChanged,
+            this,
+            [this](TrackId trackId) {
+                emit tracksChanged(QSet<TrackId>{trackId});
+            },
+            /*signal-to-signal*/ Qt::DirectConnection);
+    connect(&m_trackDao,
+            &TrackDAO::tracksAdded,
+            this,
+            &TrackCollection::tracksAdded,
+            /*signal-to-signal*/ Qt::DirectConnection);
+    connect(&m_trackDao,
+            &TrackDAO::tracksChanged,
+            this,
+            &TrackCollection::tracksChanged,
+            /*signal-to-signal*/ Qt::DirectConnection);
+    connect(&m_trackDao,
+            &TrackDAO::tracksRemoved,
+            this,
+            &TrackCollection::tracksRemoved,
+            /*signal-to-signal*/ Qt::DirectConnection);
+    connect(&m_trackDao,
+            &TrackDAO::forceModelUpdate,
+            this,
+            &TrackCollection::multipleTracksChanged,
+            /*signal-to-signal*/ Qt::DirectConnection);
 }
 
 TrackCollection::~TrackCollection() {
@@ -87,7 +125,11 @@ void TrackCollection::connectTrackSource(QSharedPointer<BaseTrackCache> pTrackSo
     connect(&m_trackDao,
             &TrackDAO::tracksAdded,
             m_pTrackSource.data(),
-            &BaseTrackCache::slotTracksAdded);
+            &BaseTrackCache::slotTracksAddedOrChanged);
+    connect(&m_trackDao,
+            &TrackDAO::tracksChanged,
+            m_pTrackSource.data(),
+            &BaseTrackCache::slotTracksAddedOrChanged);
     connect(&m_trackDao,
             &TrackDAO::tracksRemoved,
             m_pTrackSource.data(),

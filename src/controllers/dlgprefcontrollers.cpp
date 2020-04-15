@@ -55,11 +55,6 @@ void DlgPrefControllers::slotApply() {
     foreach (DlgPrefController* pControllerWindows, m_controllerWindows) {
         pControllerWindows->slotApply();
     }
-
-    // Save all controller presets.
-    // TODO(rryan): Get rid of this and make DlgPrefController do this for each
-    // preset.
-    m_pControllerManager->savePresets();
 }
 
 bool DlgPrefControllers::handleTreeItemClick(QTreeWidgetItem* clickedItem) {
@@ -116,8 +111,11 @@ void DlgPrefControllers::setupControllerWidgets() {
         m_controllerWindows.append(controllerDlg);
         m_pDlgPreferences->addPageWidget(controllerDlg);
 
-        connect(controllerDlg, SIGNAL(controllerEnabled(DlgPrefController*, bool)),
-                this, SLOT(slotHighlightDevice(DlgPrefController*, bool)));
+        connect(pController,
+                &Controller::openChanged,
+                [this, controllerDlg](bool bOpen) {
+                    slotHighlightDevice(controllerDlg, bOpen);
+                });
 
         QTreeWidgetItem * controllerWindowLink = new QTreeWidgetItem(QTreeWidgetItem::Type);
         controllerWindowLink->setIcon(0, QIcon(":/images/preferences/ic_preferences_controllers.png"));

@@ -24,7 +24,7 @@
 
               <Label>
                 <ObjectName>MicAuxSubTitle</ObjectName>
-                <Size>,17f</Size>
+                <Size>,21f</Size>
                 <Text>mic <Variable name="mic1hack"/><Variable name="micnum"/></Text>
                 <Alignment>center</Alignment>
               </Label>

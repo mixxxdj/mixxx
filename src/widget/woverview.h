@@ -12,25 +12,23 @@
 #ifndef WOVERVIEW_H
 #define WOVERVIEW_H
 
-#include <QPaintEvent>
-#include <QMouseEvent>
-#include <QPixmap>
 #include <QColor>
 #include <QList>
+#include <QMouseEvent>
+#include <QPaintEvent>
+#include <QPixmap>
 
 #include "analyzer/analyzerprogress.h"
+#include "skin/skincontext.h"
 #include "track/track.h"
-#include "widget/wcuemenupopup.h"
-#include "widget/trackdroptarget.h"
-#include "widget/wwidget.h"
-
 #include "util/color/color.h"
 #include "util/parented_ptr.h"
-
-#include "waveform/renderers/waveformsignalcolors.h"
-#include "waveform/renderers/waveformmarkset.h"
 #include "waveform/renderers/waveformmarkrange.h"
-#include "skin/skincontext.h"
+#include "waveform/renderers/waveformmarkset.h"
+#include "waveform/renderers/waveformsignalcolors.h"
+#include "widget/trackdroptarget.h"
+#include "widget/wcuemenupopup.h"
+#include "widget/wwidget.h"
 
 class PlayerManager;
 class PainterScope;
@@ -99,6 +97,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     void onMarkChanged(double v);
     void onMarkRangeChange(double v);
     void onRateRatioChange(double v);
+    void onPassthroughChange(double v);
     void receiveCuesUpdated();
 
     void slotWaveformSummaryUpdated();
@@ -118,6 +117,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     void drawPickupPosition(QPainter* pPainter);
     void drawTimeRuler(QPainter* pPainter);
     void drawMarkLabels(QPainter* pPainter, const float offset, const float gain);
+    void drawPassthroughOverlay(QPainter* pPainter);
     void paintText(const QString& text, QPainter* pPainter);
     double samplePositionToSeconds(double sample);
     inline int valueToPosition(double value) const {
@@ -133,10 +133,12 @@ class WOverview : public WWidget, public TrackDropTarget {
     UserSettingsPointer m_pConfig;
     ControlProxy* m_endOfTrackControl;
     bool m_endOfTrack;
+    bool m_bPassthroughEnabled;
     ControlProxy* m_pRateRatioControl;
     ControlProxy* m_trackSampleRateControl;
     ControlProxy* m_trackSamplesControl;
     ControlProxy* m_playpositionControl;
+    ControlProxy* m_pPassthroughControl;
 
     // Current active track
     TrackPointer m_pCurrentTrack;
@@ -169,6 +171,8 @@ class WOverview : public WWidget, public TrackDropTarget {
     QColor m_labelTextColor;
     QColor m_labelBackgroundColor;
     QColor m_endOfTrackColor;
+    QColor m_passthroughOverlayColor;
+    QLabel* m_pPassthroughLabel;
 
     // All WaveformMarks
     WaveformMarkSet m_marks;
