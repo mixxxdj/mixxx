@@ -1039,7 +1039,10 @@ QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
     if (!pPlayer)
         return NULL;
 
-    WTrackProperty* p = new WTrackProperty(pSafeChannelStr, m_pConfig, m_pParent, m_pLibrary->trackCollections());
+    WTrackProperty* p = new WTrackProperty(m_pParent,
+            m_pConfig,
+            m_pLibrary->trackCollections(),
+            pSafeChannelStr);
     setupLabelWidget(node, p);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),

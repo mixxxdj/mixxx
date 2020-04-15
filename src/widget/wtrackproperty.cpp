@@ -5,25 +5,28 @@
 #include "widget/wtrackproperty.h"
 #include "util/dnd.h"
 
-WTrackProperty::WTrackProperty(const char* group,
-                               UserSettingsPointer pConfig,
-                               QWidget* pParent,
-                               TrackCollectionManager* pTrackCollectionManager)
+namespace {
+const WTrackMenu::Features trackMenuFeatures =
+        WTrackMenu::Feature::Playlist |
+        WTrackMenu::Feature::Crate |
+        WTrackMenu::Feature::Metadata |
+        WTrackMenu::Feature::Reset |
+        WTrackMenu::Feature::BPM |
+        WTrackMenu::Feature::Color |
+        WTrackMenu::Feature::FileBrowser |
+        WTrackMenu::Feature::Properties;
+}
+
+WTrackProperty::WTrackProperty(QWidget* pParent,
+        UserSettingsPointer pConfig,
+        TrackCollectionManager* pTrackCollectionManager,
+        const char* group)
         : WLabel(pParent),
           m_pGroup(group),
-          m_pConfig(pConfig) {
+          m_pConfig(pConfig),
+          m_pTrackMenu(make_parented<WTrackMenu>(
+                  this, pConfig, pTrackCollectionManager, trackMenuFeatures)) {
     setAcceptDrops(true);
-
-    // Setup context menu
-    WTrackMenu::Features flags = WTrackMenu::Feature::Playlist |
-            WTrackMenu::Feature::Crate |
-            WTrackMenu::Feature::Metadata |
-            WTrackMenu::Feature::Reset |
-            WTrackMenu::Feature::BPM |
-            WTrackMenu::Feature::Color |
-            WTrackMenu::Feature::FileBrowser |
-            WTrackMenu::Feature::Properties;
-    m_pMenu = new WTrackMenu(this, pConfig, pTrackCollectionManager, flags);
 }
 
 void WTrackProperty::setup(const QDomNode& node, const SkinContext& context) {
@@ -85,8 +88,8 @@ void WTrackProperty::dropEvent(QDropEvent *event) {
 
 void WTrackProperty::contextMenuEvent(QContextMenuEvent *event) {
     if (m_pCurrentTrack) {
-        m_pMenu->loadTrack(m_pCurrentTrack->getId());
+        m_pTrackMenu->loadTrack(m_pCurrentTrack->getId());
         // Create the right-click menu
-        m_pMenu->popup(event->globalPos());
+        m_pTrackMenu->popup(event->globalPos());
     }
 }

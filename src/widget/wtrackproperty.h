@@ -8,6 +8,7 @@
 #include "preferences/usersettings.h"
 #include "skin/skincontext.h"
 #include "track/track.h"
+#include "util/parented_ptr.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wlabel.h"
 #include "widget/wtrackmenu.h"
@@ -15,11 +16,13 @@
 class WTrackProperty : public WLabel, public TrackDropTarget {
     Q_OBJECT
   public:
-    WTrackProperty(const char* group,
-            UserSettingsPointer pConfig,
+    WTrackProperty(
             QWidget* pParent,
-            TrackCollectionManager* pTrackCollectionManager);
-    ~WTrackProperty() override{};
+            UserSettingsPointer pConfig,
+            TrackCollectionManager* pTrackCollectionManager,
+            const char* group);
+
+    ~WTrackProperty() override = default;
 
     void setup(const QDomNode& node, const SkinContext& context) override;
     void contextMenuEvent(QContextMenuEvent * event) override;
@@ -47,7 +50,7 @@ signals:
     TrackPointer m_pCurrentTrack;
     QString m_property;
 
-    WTrackMenu *m_pMenu;
+    const parented_ptr<WTrackMenu> m_pTrackMenu;
 };
 
 
