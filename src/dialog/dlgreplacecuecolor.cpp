@@ -4,6 +4,7 @@
 #include <QColor>
 #include <QDialogButtonBox>
 #include <QMessageBox>
+#include <QResizeEvent>
 #include <QtConcurrent>
 
 #include "engine/controls/cuecontrol.h"
@@ -163,7 +164,11 @@ DlgReplaceCueColor::~DlgReplaceCueColor() {
 
 void DlgReplaceCueColor::setColorPalette(const ColorPalette& palette) {
     m_pNewColorPickerAction->setColorPalette(palette);
+    QResizeEvent resizeNewColorMenuEvent(QSize(), m_pNewColorMenu->size());
+    qApp->sendEvent(m_pNewColorMenu, &resizeNewColorMenuEvent);
     m_pCurrentColorPickerAction->setColorPalette(palette);
+    QResizeEvent resizeCurrentColorMenuEvent(QSize(), m_pCurrentColorMenu->size());
+    qApp->sendEvent(m_pCurrentColorMenu, &resizeCurrentColorMenuEvent);
 }
 
 void DlgReplaceCueColor::setNewColor(mixxx::RgbColor color) {
