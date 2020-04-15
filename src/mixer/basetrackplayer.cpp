@@ -174,7 +174,7 @@ TrackPointer BaseTrackPlayerImpl::loadFakeTrack(bool bPlay, double filebpm) {
 
         // Listen for updates to the file's Replay Gain
         connect(m_pLoadedTrack.get(),
-                &Track::ReplayGainUpdated,
+                &Track::replayGainUpdated,
                 this,
                 &BaseTrackPlayerImpl::slotSetReplayGain);
 
@@ -289,7 +289,7 @@ void BaseTrackPlayerImpl::connectLoadedTrack() {
             m_pKey.get(),
             &ControlProxy::set);
     connect(m_pLoadedTrack.get(),
-            &Track::ReplayGainUpdated,
+            &Track::replayGainUpdated,
             this,
             &BaseTrackPlayerImpl::slotSetReplayGain);
     connect(m_pLoadedTrack.get(),

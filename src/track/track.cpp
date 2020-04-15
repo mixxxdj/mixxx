@@ -161,7 +161,7 @@ void Track::importMetadata(
             // explicitly unlock before emitting signals
             markDirtyAndUnlock(&lock);
             if (modifiedReplayGain) {
-                emit ReplayGainUpdated(newReplayGain);
+                emit replayGainUpdated(newReplayGain);
             }
         }
 
@@ -230,7 +230,7 @@ void Track::setReplayGain(const mixxx::ReplayGain& replayGain) {
     QMutexLocker lock(&m_qMutex);
     if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrReplayGain(), replayGain)) {
         markDirtyAndUnlock(&lock);
-        emit ReplayGainUpdated(replayGain);
+        emit replayGainUpdated(replayGain);
     }
 }
 
