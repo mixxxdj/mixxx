@@ -564,9 +564,9 @@ void WTrackMenu::loadTracks(TrackIdList trackIdList) {
     // Clean all forms of track store
     clearTrackSelection();
 
-    // This asserts that this function is only accessible
-    // when a track model is not set, thus maintaining only
-    // the track ID list in state.
+    // This asserts that this function is only accessible when a track model is not set,
+    // thus maintaining only the TrackPointerList in state and avoiding storing
+    // duplicate state with TrackIdList and QModelIndexList.
     DEBUG_ASSERT(!m_pTrackModel);
 
     TrackPointerList trackPointers;
@@ -588,9 +588,9 @@ void WTrackMenu::loadTracks(QModelIndexList indexList) {
     // Clean all forms of track store
     clearTrackSelection();
 
-    // This asserts that this function is only accessible
-    // when a track model is set, thus maintaining only
-    // the track index list in state.
+    // This asserts that this function is only accessible when a track model is set,
+    // thus maintaining only the QModelIndexList in state and avoiding storing
+    // duplicate state with TrackIdList and TrackPointerList.
     VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
         return;
     }
