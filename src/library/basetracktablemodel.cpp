@@ -545,7 +545,11 @@ QVariant BaseTrackTableModel::roleValue(
             bool ok;
             const auto bpmValue = rawValue.toDouble(&ok);
             if (ok && bpmValue > 0.0) {
-                return QString("%1").arg(bpmValue, 0, 'f', 1);
+                if (fabs(round(bpmValue * 10) / 10 - bpmValue) < 0.001) {
+                    return QString("%1").arg(bpmValue, 0, 'f', 1);
+                } else {
+                    return QString("%1").arg(bpmValue, 0, 'f', 2);
+                }
             } else {
                 return QChar('-');
             }
