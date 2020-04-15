@@ -24,7 +24,9 @@ const int kMinBpm = 30;
 // Maximum allowed interval between beats (calculated from kMinBpm).
 const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kMinBpm));
 
-DlgTrackInfo::DlgTrackInfo(UserSettingsPointer pConfig, QWidget* parent, const TrackModel* trackModel)
+DlgTrackInfo::DlgTrackInfo(QWidget* parent,
+        UserSettingsPointer pConfig,
+        const TrackModel* trackModel)
         : QDialog(parent),
           m_pTapFilter(new TapFilter(this, kFilterLength, kMaxInterval)),
           m_dLastTapedBpm(-1.),
@@ -45,26 +47,26 @@ void DlgTrackInfo::init() {
 
     m_pTagFetcher.reset(new DlgTagFetcher(this, m_pTrackModel));
     if (m_pTrackModel) {
-        // The default parameter in QPushButton::clicked signal is false,
-        // so slotNext needs to be called explicitly to maintain true.
         connect(btnNext,
                 &QPushButton::clicked,
-                [=]() { slotNext(); });
+                this,
+                &DlgTrackInfo::slotNextButton);
 
         connect(btnPrev,
                 &QPushButton::clicked,
-                [=]() { slotPrev(); });
+                this,
+                &DlgTrackInfo::slotPrevButton);
 
-        // This next signal is issued from DlgTagFetcher, so don't call
-        // m_pTagFetcher->loadTrack in slotNext since it will lead to
-        // an unnecessary reload in DlgTagFetcher.
         connect(m_pTagFetcher.data(),
                 &DlgTagFetcher::next,
-                [=]() { slotNext(false); });
+                this,
+                &DlgTrackInfo::slotNextDlgTagFetcher);
 
         connect(m_pTagFetcher.data(),
                 &DlgTagFetcher::previous,
-                [=]() { slotPrev(false); });
+                this,
+                &DlgTrackInfo::slotPrevDlgTagFetcher);
+
     } else {
         btnNext->hide();
         btnPrev->hide();
@@ -188,26 +190,44 @@ void DlgTrackInfo::trackUpdated() {
 
 }
 
-void DlgTrackInfo::slotNext(bool loadTrackInTagFetcher) {
-    QModelIndex nextRow = m_currentTrackIndex.sibling(
+void DlgTrackInfo::slotNextButton() {
+    loadNextTrack();
+    if (m_pTagFetcher->isVisible()) {
+        m_pTagFetcher->loadTrack(m_currentTrackIndex);
+    }
+}
+
+void DlgTrackInfo::slotPrevButton() {
+    loadPrevTrack();
+    if (m_pTagFetcher->isVisible()) {
+        m_pTagFetcher->loadTrack(m_currentTrackIndex);
+    }
+}
+
+void DlgTrackInfo::slotNextDlgTagFetcher() {
+    loadNextTrack();
+    // Do not load track back into DlgTagFetcher since
+    // it will cause a reload of the same track.
+}
+
+void DlgTrackInfo::slotPrevDlgTagFetcher() {
+    loadPrevTrack();
+}
+
+void DlgTrackInfo::loadNextTrack() {
+    auto nextRow = m_currentTrackIndex.sibling(
             m_currentTrackIndex.row() + 1, m_currentTrackIndex.column());
     if (nextRow.isValid()) {
         loadTrack(nextRow);
-        if (m_pTagFetcher->isVisible() && loadTrackInTagFetcher) {
-            m_pTagFetcher->loadTrack(nextRow);
-        }
         emit next();
     }
 }
 
-void DlgTrackInfo::slotPrev(bool loadTrackInTagFetcher) {
+void DlgTrackInfo::loadPrevTrack() {
     QModelIndex prevRow = m_currentTrackIndex.sibling(
             m_currentTrackIndex.row() - 1, m_currentTrackIndex.column());
     if (prevRow.isValid()) {
         loadTrack(prevRow);
-        if (m_pTagFetcher->isVisible() && loadTrackInTagFetcher) {
-            m_pTagFetcher->loadTrack(prevRow);
-        }
         emit previous();
     }
 }

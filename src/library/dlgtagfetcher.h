@@ -13,7 +13,8 @@ class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
   Q_OBJECT
 
   public:
-    DlgTagFetcher(QWidget* parent, const TrackModel* trackModel = nullptr);
+    // TODO: Remove dependency on TrackModel
+    explicit DlgTagFetcher(QWidget* parent, const TrackModel* trackModel = nullptr);
     ~DlgTagFetcher() override = default;
 
     void init();

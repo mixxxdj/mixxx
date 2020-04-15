@@ -47,13 +47,12 @@ WTrackMenu::WTrackMenu(QWidget* parent,
     m_pNumPreviewDecks = new ControlProxy(
             "[Master]", "num_preview_decks", this);
 
-    if (!trackModel) {
-        // Warn if any of the chosen flags depend on a TrackModel
-        VERIFY_OR_DEBUG_ASSERT((m_eTrackModelFeatures & flags) == 0) {
-            // Remove unsupported features
-            m_eActiveFeatures &= !m_eTrackModelFeatures;
-        }
+    // Warn if any of the chosen features depend on a TrackModel
+    VERIFY_OR_DEBUG_ASSERT(trackModel || (m_eTrackModelFeatures & flags) == 0) {
+        // Remove unsupported features
+        m_eActiveFeatures &= !m_eTrackModelFeatures;
     }
+
     createMenus();
     createActions();
     setupActions();
@@ -267,7 +266,7 @@ void WTrackMenu::createActions() {
     }
 
     if (featureIsEnabled(Feature::Properties)) {
-        m_pTrackInfo.reset(new DlgTrackInfo(m_pConfig, nullptr, m_pTrackModel));
+        m_pTrackInfo.reset(new DlgTrackInfo(nullptr, m_pConfig, m_pTrackModel));
     }
 }
 

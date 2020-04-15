@@ -20,7 +20,10 @@
 class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     Q_OBJECT
   public:
-    DlgTrackInfo(UserSettingsPointer pConfig, QWidget* parent, const TrackModel* trackModel = nullptr);
+    // TODO: Remove dependency on TrackModel
+    DlgTrackInfo(QWidget* parent,
+            UserSettingsPointer pConfig,
+            const TrackModel* trackModel = nullptr);
     virtual ~DlgTrackInfo();
 
   public slots:
@@ -34,8 +37,10 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void previous();
 
   private slots:
-    void slotNext(bool loadTrackInTagFetcher = true);
-    void slotPrev(bool loadTrackInTagFetcher = true);
+    void slotNextButton();
+    void slotPrevButton();
+    void slotNextDlgTagFetcher();
+    void slotPrevDlgTagFetcher();
     void slotOk();
     void slotApply();
     void slotCancel();
@@ -71,6 +76,8 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotReloadCoverArt();
 
   private:
+    void loadNextTrack();
+    void loadPrevTrack();
     void loadTrackInternal(const TrackPointer& pTrack);
     void populateFields(const Track& track);
     void reloadTrackBeats(const Track& track);
