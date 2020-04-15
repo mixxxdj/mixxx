@@ -53,8 +53,8 @@
   <manifest>
     <title>Shade</title>
     <author>jus</author>
-    <version>2.1.0.01</version>
-    <description>A 2-deck split-waveform skin with 4 samplers.</description>
+    <version>2.3.0.1</version>
+    <description>A very compact skin with split waveforms, 2 decks and 8 samplers.</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
