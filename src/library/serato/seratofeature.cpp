@@ -456,7 +456,7 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
     while (databaseRootDir.cdUp()) {
         // Nothing to do here
     }
-#elif defined(__UNIX__)
+#else
     // If the file is on an external drive, the database path are relative to
     // its mountpoint, i.e. the parent directory of the _Serato_
     // directory. This means we can just use the path as-is.
