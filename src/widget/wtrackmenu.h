@@ -112,6 +112,10 @@ class WTrackMenu : public QMenu {
     void slotPurge();
 
   private:
+    // These getters make sure the required lists are
+    // derived from a single source in state, which is the
+    // m_pTrackIndexList if m_pTrackModel is set and
+    // m_pTrackPointerList if m_pTrackModel is not set.
     TrackIdList getTrackIds() const;
     TrackPointerList getTrackPointers() const;
     QModelIndexList getTrackIndices() const;
@@ -133,8 +137,9 @@ class WTrackMenu : public QMenu {
     void loadSelectionToGroup(QString group, bool play = false);
     void clearTrackSelection();
 
-    // Selected tracks
+    // Source of track list when TrackModel is not set.
     TrackPointerList m_pTrackPointerList;
+    // Source of track list when TrackModel is set.
     QModelIndexList m_pTrackIndexList;
 
     TrackModel* m_pTrackModel{};
