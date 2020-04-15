@@ -266,6 +266,8 @@ void WTrackMenu::createActions() {
     }
 
     if (featureIsEnabled(Feature::Properties)) {
+        // Give a nullptr parent because otherwise it inherits our style which can
+        // make it unreadable. Bug #673411
         m_pTrackInfo.reset(new DlgTrackInfo(nullptr, m_pConfig, m_pTrackModel));
     }
 }
