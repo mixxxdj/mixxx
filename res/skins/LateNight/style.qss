@@ -29,7 +29,6 @@ WOverview /* Hotcue labels in the overview */ {
 }
 
 /* regular font weight */
-WSearchLineEdit,
 QToolTip,
 #LibraryContainer QMenu,
 WCueMenuPopup,
@@ -262,6 +261,13 @@ WCoverArtMenu,
   #FxButtonLabel {
     qproperty-alignment: 'AlignLeft | AlignVCenter';
     }
+
+/* Passthrough label on overview waveform */
+WOverview #PassthroughLabel {
+  font-weight: bold;
+  color: #d09300;
+}
+
 /************** font colors **************************************************/
 /************** font settings *************************************************/
 
@@ -506,18 +512,6 @@ QHeaderView::down-arrow {
   #DlgAutoDJ > QPushButton:focus,
   #DlgRecording > QPushButton:focus,
   #DlgAnalysis > QPushButton:focus {
-    border-width: 2px 2px 2px 2px;
-    border-image: url(skin:buttons_classic/btn_embedded_library.svg) 2 2 2 2;
-    outline: none;
-  }
-  #DlgAnalysis > QPushButton:checked:focus,
-  #DlgMissing > QPushButton:checked:focus,
-  #DlgHidden > QPushButton:checked:focus,
-  #DlgAutoDJ > QPushButton:checked:focus,
-  #DlgRecording > QPushButton:checked:focus,
-  #DlgAnalysis > QPushButton:checked:focus {
-    border-width: 2px 2px 2px 2px;
-    border-image: url(skin:buttons_classic/btn_embedded_library_active.svg) 2 2 2 2;
     outline: none;
   }
   #DlgMissing > QPushButton:pressed,
@@ -525,7 +519,7 @@ QHeaderView::down-arrow {
   #DlgAutoDJ > QPushButton:pressed,
   #DlgRecording > QPushButton:pressed,
   #DlgAnalysis > QPushButton:pressed {
-    border-image: url(skin:buttons_classic/btn_embedded_library_pressed.svg) 2 2 2 2;
+    border-image: url(skin:buttons_classic/btn_embedded_library_active.svg) 2 2 2 2;
     color: #d2d2d2;
   }
   #DlgMissing > QPushButton:!enabled,
@@ -2042,7 +2036,8 @@ WLibrary,
 }
 
 #LibraryContainer QTableView:focus,
-#LibraryContainer QTreeView:focus {
+#LibraryContainer QTreeView:focus,
+#LibraryContainer QTextBrowser:focus {
   border: 1px solid #ff6600;
 }
 
@@ -2342,7 +2337,8 @@ WLibrary QRadioButton {
 }
 
 /* Additional space for QLabels */
-WLibrary QLabel {
+#DlgAnalysis QLabel,
+#DlgAutoDJ QLabel {
   margin: 2px 5px 5px 1px;
 }
 
@@ -2363,7 +2359,7 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgAutoDJ > QPushButton,
 #DlgRecording > QPushButton,
 #DlgAnalysis > QPushButton {
-  margin: 0px 4px 3px 2px;
+  margin: 0px 6px 3px 0px;
   padding: 0px;
   height: 20px;
   }
@@ -2373,12 +2369,10 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgAnalysis > QPushButton {
   padding: 0px 5px;
   }
-  /* Focus highlight is set via border-image at the top */
-  /* Space in between 'Enable AutoDJ' and transition time spinbox */
   QPushButton#pushButtonAutoDJ {
-    margin-left: 0px;
     min-width: 40px;
   }
+  /* Space in between 'Enable AutoDJ' and transition time spinbox */
   #DlgAutoDJ > #horizontalSpacer {
     width: 100px;
   }
@@ -2391,7 +2385,20 @@ WLibrary QRadioButton::indicator:unchecked {
     margin-left: 12px;
   }
 
-
+#labelRecPrefix,
+#labelRecFilename,
+#labelRecStatistics {
+  text-transform: none;
+  font-size: 13px;
+  padding: 0px 0px 3px 0px;
+  }
+  #labelRecFilename {
+    font-weight: bold;
+  }
+  #labelRecPrefix,
+  #labelRecStatistics {
+    font-weight: normal;
+  }
 
 #LibraryContainer QTreeView {
   show-decoration-selected: 0;
@@ -2484,7 +2491,6 @@ WEffectSelector, WEffectSelector::item,
 WBeatSpinBox,
 #spinBoxTransition,
 #SkinSettings,
-WSearchLineEdit,
 WEffectSelector, WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox, #fadeModeCombobox QAbstractScrollArea {
   font-size: 13px/13px;
