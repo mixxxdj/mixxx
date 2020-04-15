@@ -26,6 +26,9 @@ namespace {
 
 const double kNoTrackColor = -1;
 
+inline double trackColorToDouble(mixxx::RgbColor::optional_t color) {
+    return (color ? static_cast<double>(*color) : kNoTrackColor);
+}
 }
 
 BaseTrackPlayer::BaseTrackPlayer(QObject* pParent, const QString& group)
@@ -89,10 +92,8 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
             ConfigKey(getGroup(), "track_color"));
 
     m_pTrackColor->set(kNoTrackColor);
-    connect(m_pTrackColor.get(),
-            &ControlObject::valueChanged,
-            this,
-            &BaseTrackPlayerImpl::slotTrackColorChanged);
+    m_pTrackColor->connectValueChangeRequest(
+            this, &BaseTrackPlayerImpl::slotTrackColorChangeRequest);
 
     // Deck cloning
     m_pCloneFromDeck = std::make_unique<ControlObject>(
@@ -525,10 +526,10 @@ void BaseTrackPlayerImpl::slotSetReplayGain(mixxx::ReplayGain replayGain) {
 }
 
 void BaseTrackPlayerImpl::slotSetTrackColor(mixxx::RgbColor::optional_t color) {
-    m_pTrackColor->set(color ? static_cast<double>(*color) : kNoTrackColor);
+    m_pTrackColor->forceSet(trackColorToDouble(color));
 }
 
-void BaseTrackPlayerImpl::slotTrackColorChanged(double v) {
+void BaseTrackPlayerImpl::slotTrackColorChangeRequest(double v) {
     if (!m_pLoadedTrack) {
         return;
     }
@@ -541,6 +542,7 @@ void BaseTrackPlayerImpl::slotTrackColorChanged(double v) {
         }
         color = mixxx::RgbColor::optional(colorCode);
     }
+    m_pTrackColor->setAndConfirm(trackColorToDouble(color));
     m_pLoadedTrack->setColor(color);
 }
 

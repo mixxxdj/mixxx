@@ -86,7 +86,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
   private slots:
     void slotCloneChannel(EngineChannel* pChannel);
     void slotCloneFromDeck(double deck);
-    void slotTrackColorChanged(double value);
+    void slotTrackColorChangeRequest(double value);
     void slotVinylControlEnabled(double v);
     void slotWaveformZoomValueChangeRequest(double pressed);
     void slotWaveformZoomUp(double pressed);
