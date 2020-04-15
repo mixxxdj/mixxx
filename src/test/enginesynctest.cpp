@@ -733,6 +733,8 @@ TEST_F(EngineSyncTest, LoadTrackInitializesMaster) {
 
     // No master because this deck has no track.
     EXPECT_EQ(NULL, m_pEngineSync->getMaster());
+    EXPECT_FLOAT_EQ(0.0,
+            ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 
     // The track load doesn't trigger a master change, so still no master.
     m_pMixerDeck1->loadFakeTrack(false, 140.0);
@@ -1067,8 +1069,9 @@ TEST_F(EngineSyncTest, EjectTrackSyncRemains) {
     EXPECT_FLOAT_EQ(0.0,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 
-    // Group1 is still master because there are no other sync decks.
-    assertIsSoftMaster(m_sGroup1);
+    assertIsSoftMaster(m_sInternalClockGroup);
+    assertIsFollower(m_sGroup1);
+    assertSyncOff(m_sGroup2);
 
     m_pMixerDeck1->loadFakeTrack(false, 128.0);
     EXPECT_FLOAT_EQ(128.0,
@@ -1086,9 +1089,9 @@ TEST_F(EngineSyncTest, EjectTrackSyncRemains) {
     m_pTrack1->setBeats(BeatsPointer());
     ProcessBuffer();
 
-    assertIsSoftMaster(m_sInternalClockGroup);
+    assertIsFollower(m_sInternalClockGroup);
     assertIsFollower(m_sGroup1);
-    assertIsFollower(m_sGroup2);
+    assertIsSoftMaster(m_sGroup2);
 }
 
 TEST_F(EngineSyncTest, FileBpmChangesDontAffectMaster) {

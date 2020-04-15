@@ -69,7 +69,7 @@ WTrackTableView::WTrackTableView(QWidget* parent,
     connect(setFocusShortcut,
             &QShortcut::activated,
             this,
-            qOverload<>(&WTrackTableView::setFocus));
+            QOverload<>::of(&WTrackTableView::setFocus));
 }
 
 WTrackTableView::~WTrackTableView() {

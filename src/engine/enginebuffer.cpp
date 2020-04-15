@@ -195,7 +195,6 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pEngineSync = pMixingEngine->getEngineSync();
 
     m_pSyncControl = new SyncControl(group, pConfig, pChannel, m_pEngineSync);
-    addControl(m_pSyncControl);
 
 #ifdef __VINYLCONTROL__
     m_pVinylControlControl = new VinylControlControl(group, pConfig);
@@ -217,6 +216,7 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pRateControl->setBpmControl(m_pBpmControl);
     m_pSyncControl->setEngineControls(m_pRateControl, m_pBpmControl);
     pMixingEngine->getEngineSync()->addSyncableDeck(m_pSyncControl);
+    addControl(m_pSyncControl);
 
     m_fwdButton = ControlObject::getControl(ConfigKey(group, "fwd"));
     m_backButton = ControlObject::getControl(ConfigKey(group, "back"));
@@ -499,8 +499,6 @@ void EngineBuffer::loadFakeTrack(TrackPointer pTrack, bool bPlay) {
     }
     slotTrackLoaded(pTrack, pTrack->getSampleRate(),
                     pTrack->getSampleRate() * pTrack->getDurationInt());
-    m_pSyncControl->setLocalBpm(pTrack->getBpm());
-    m_pSyncControl->trackLoaded(pTrack);
 }
 
 // WARNING: Always called from the EngineWorker thread pool

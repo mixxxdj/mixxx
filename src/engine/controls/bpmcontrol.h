@@ -77,7 +77,6 @@ class BpmControl : public EngineControl {
     void trackBeatsUpdated(BeatsPointer pBeats) override;
 
   private slots:
-    void slotFileBpmChanged(double);
     void slotAdjustBeatsFaster(double);
     void slotAdjustBeatsSlower(double);
     void slotTranslateBeatsEarlier(double);
@@ -120,8 +119,6 @@ class BpmControl : public EngineControl {
     ControlProxy* m_pLoopStartPosition;
     ControlProxy* m_pLoopEndPosition;
 
-    // The current loaded file's detected BPM
-    ControlObject* m_pFileBpm;
     // The average bpm around the current playposition;
     ControlObject* m_pLocalBpm;
     ControlPushButton* m_pAdjustBeatsFaster;

@@ -78,9 +78,6 @@ class SyncControl : public EngineControl, public Syncable {
     // Fired by changes in rate, rate_dir, rateRange.
     void slotRateChanged();
 
-    // Fired by changes in file_bpm.
-    void slotFileBpmChanged();
-
     // Change request handlers for sync properties.
     void slotSyncModeChangeRequest(double state);
     void slotSyncEnabledChangeRequest(double enabled);
@@ -93,6 +90,7 @@ class SyncControl : public EngineControl, public Syncable {
     // best factor for multiplying the master bpm to get a bpm this syncable
     // should match against.
     double determineBpmMultiplier(double myBpm, double targetBpm) const;
+    double fileBpm() const;
 
     QString m_sGroup;
     // The only reason we have this pointer is an optimzation so that the
@@ -126,13 +124,15 @@ class SyncControl : public EngineControl, public Syncable {
     ControlProxy* m_pPlayButton;
     ControlProxy* m_pBpm;
     ControlProxy* m_pLocalBpm;
-    ControlProxy* m_pFileBpm;
     ControlProxy* m_pRateRatio;
     ControlProxy* m_pVCEnabled;
     ControlProxy* m_pPassthroughEnabled;
     ControlProxy* m_pEjectButton;
     ControlProxy* m_pSyncPhaseButton;
     ControlProxy* m_pQuantize;
+
+    // m_pBeats is written from an engine worker thread
+    BeatsPointer m_pBeats;
 };
 
 
