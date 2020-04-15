@@ -2029,7 +2029,8 @@ WLibrary,
 }
 
 #LibraryContainer QTableView:focus,
-#LibraryContainer QTreeView:focus {
+#LibraryContainer QTreeView:focus,
+#LibraryContainer QTextBrowser:focus {
   border: 1px solid #ff6600;
 }
 
