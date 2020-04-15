@@ -473,7 +473,7 @@ void LibraryControl::slotMoveFocus(double v) {
 }
 
 void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
-    // Ensure a valid library widget has the keyboard focus.
+    // Ensure there's a valid library widget that can receive keyboard focus.
     // QApplication::focusWidget() is not sufficient here because it
     // would return any focused widget like WOverview, WWaveform, QSpinBox
     VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
@@ -482,14 +482,25 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
     VERIFY_OR_DEBUG_ASSERT(m_pLibraryWidget) {
         return;
     }
-    if (!m_pLibraryWidget->hasFocus() && !m_pSidebarWidget->hasFocus()) {
-        setLibraryFocus();
-    }
-    auto focusWidget = QApplication::focusWidget();
-    VERIFY_OR_DEBUG_ASSERT(focusWidget) {
+    if (!QApplication::focusWindow()) {
+        qDebug() << "Mixxx window is not focused, don't send key events";
         return;
     }
+
+    bool keyIsTab = event.key() == static_cast<int>(Qt::Key_Tab);
+
+    // If the main window has focus, any widget can receive Tab.
+    // Other keys should be sent to library widgets only to not
+    // accidentally alter spinboxes etc.
+    if (!keyIsTab && !m_pSidebarWidget->hasFocus()
+            && !m_pLibraryWidget->getActiveView()->hasFocus()) {
+        setLibraryFocus();
+    }
+    if (keyIsTab && !QApplication::focusWidget()){
+        setLibraryFocus();
+    }
     // Send the event pointer to the currently focused widget
+    auto focusWidget = QApplication::focusWidget();
     for (auto i = 0; i < event.count(); ++i) {
         QApplication::sendEvent(focusWidget, &event);
     }
@@ -563,8 +574,8 @@ void LibraryControl::slotGoToItem(double v) {
             slotToggleSelectedSidebarItem(v);
         }
     }
-    // TODO(xxx) instead of remote control the widgets individual, we should 
-    // translate this into Alt+Return and handle it at each library widget 
+    // TODO(xxx) instead of remote control the widgets individual, we should
+    // translate this into Alt+Return and handle it at each library widget
     // individual https://bugs.launchpad.net/mixxx/+bug/1758618
     //emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Return, Qt::AltModifier});
 }
