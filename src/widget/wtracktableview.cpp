@@ -300,13 +300,23 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     restoreVScrollBarPos(newModel);
     // restoring scrollBar position using model pointer as key
     // scrollbar positions with respect to different models are backed by map
+    initTrackMenu();
+}
 
-    m_pMenu = std::make_unique<WTrackMenu>(this,
+void WTrackTableView::initTrackMenu() {
+    auto trackModel = getTrackModel();
+    DEBUG_ASSERT(trackModel);
+
+    if (m_pTrackMenu) {
+        m_pTrackMenu->deleteLater();
+    }
+
+    m_pTrackMenu = make_parented<WTrackMenu>(this,
             m_pConfig,
             m_pTrackCollectionManager,
             WTrackMenu::Feature::All,
             trackModel);
-    connect(m_pMenu.get(),
+    connect(m_pTrackMenu.get(),
             &WTrackMenu::loadTrackToPlayer,
             this,
             &WTrackTableView::loadTrackToPlayer);
@@ -367,23 +377,15 @@ void WTrackTableView::slotUnhide() {
 }
 
 void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
-    VERIFY_OR_DEBUG_ASSERT(m_pMenu) {
-        m_pMenu = std::make_unique<WTrackMenu>(this,
-                m_pConfig,
-                m_pTrackCollectionManager,
-                WTrackMenu::Feature::All,
-                getTrackModel());
-        connect(m_pMenu.get(),
-                &WTrackMenu::loadTrackToPlayer,
-                this,
-                &WTrackTableView::loadTrackToPlayer);
+    VERIFY_OR_DEBUG_ASSERT(m_pTrackMenu.get()) {
+        initTrackMenu();
     }
     // Update track indices in context menu
     QModelIndexList indices = selectionModel()->selectedRows();
-    m_pMenu->loadTracks(indices);
+    m_pTrackMenu->loadTracks(indices);
 
     //Create the right-click menu
-    m_pMenu->popup(event->globalPos());
+    m_pTrackMenu->popup(event->globalPos());
 }
 
 void WTrackTableView::onSearch(const QString& text) {

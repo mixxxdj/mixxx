@@ -3,7 +3,6 @@
 
 #include <QAbstractItemModel>
 #include <QSortFilterProxyModel>
-#include <memory>
 
 #include "control/controlproxy.h"
 #include "library/dao/playlistdao.h"
@@ -11,6 +10,7 @@
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/duration.h"
+#include "util/parented_ptr.h"
 #include "widget/wlibrarytableview.h"
 #include "widget/wtrackmenu.h"
 
@@ -82,11 +82,13 @@ class WTrackTableView : public WLibraryTableView {
     // Returns the current TrackModel, or returns NULL if none is set.
     TrackModel* getTrackModel() const;
 
+    void initTrackMenu();
+
     const UserSettingsPointer m_pConfig;
     TrackCollectionManager* const m_pTrackCollectionManager;
 
     // Context menu container
-    std::unique_ptr<WTrackMenu> m_pMenu;
+    parented_ptr<WTrackMenu> m_pTrackMenu;
 
     const double m_backgroundColorOpacity;
     bool m_sorting;
