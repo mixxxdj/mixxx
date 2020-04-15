@@ -8,19 +8,19 @@
 #include "effects/effectmanifestparameter.h"
 #include "effects/defs.h"
 
-// An EffectManifest is a description of the metadata associated with an effect
-// (ID, display name, author, description) and all the parameters of the effect.
-// The pair of the ID string and EffectBackendType uniquely identifies an
-// effect. EffectManifests are used by EffectBackends to create EffectProcessors
-// which implement the DSP logic of the effect. The name string of effect
-// parameters in the manifest is used to link EngineEffectParameters
-// with member variables used in the DSP logic of the EffectProcessorImpl.
-
-// EffectManifest is composed purely of simple data types, and when an
-// EffectManifest is const, it should be completely immutable. EffectManifest is
-// meant to be used in most cases as a reference, and in Qt collections, so it
-// is important that the implicit copy and assign constructors work, and that
-// the no-argument constructor be non-explicit.
+/// An EffectManifest is a description of the metadata associated with an effect
+/// (ID, display name, author, description) and all the parameters of the effect.
+/// The pair of the ID string and EffectBackendType uniquely identifies an
+/// effect. EffectManifests are used by EffectBackends to create EffectProcessors
+/// which implement the DSP logic of the effect. The name string of effect
+/// parameters in the manifest is used to link EngineEffectParameters
+/// with member variables used in the DSP logic of the EffectProcessorImpl.
+///
+/// EffectManifest is composed purely of simple data types, and when an
+/// EffectManifest is const, it should be completely immutable. EffectManifest is
+/// meant to be used in most cases as a reference, and in Qt collections, so it
+/// is important that the implicit copy and assign constructors work, and that
+/// the no-argument constructor be non-explicit.
 class EffectManifest {
   public:
     EffectManifest()
@@ -32,15 +32,15 @@ class EffectManifest {
           m_metaknobDefault(0.5) {
     }
 
-    // Hack to store unique IDs in QComboBox models
+    /// Hack to store unique IDs in QComboBox models
     const QString uniqueId() const {
         return m_id + " " + backendName();
     }
 
-    // WARNING! Effects must not be identified solely by ID string or name.
-    // ID strings and names are only unique among EffectManifests from one
-    // EffectsBackend. Use EffectManifest::operator== to compare both ID string
-    // and EffectBackendType.
+    /// WARNING! Effects must not be identified solely by ID string or name.
+    /// ID strings and names are only unique among EffectManifests from one
+    /// EffectsBackend. Use EffectManifest::operator== to compare both ID string
+    /// and EffectBackendType.
     const QString& id() const {
         return m_id;
     }
@@ -163,7 +163,7 @@ class EffectManifest {
         }
     }
 
-    // Use this when showing the string in the GUI
+    /// Use this when showing the string in the GUI
     QString translatedBackendName() const {
         switch (m_backendType) {
             case EffectBackendType::BuiltIn:
@@ -208,7 +208,7 @@ class EffectManifest {
     QString m_author;
     QString m_version;
     QString m_description;
-    // This helps us at DlgPrefEQ's basic selection of Equalizers
+    /// This helps us at DlgPrefEQ's basic selection of Equalizers
     bool m_isMixingEQ;
     bool m_isMasterEQ;
     QList<EffectManifestParameterPointer> m_parameters;

@@ -5,10 +5,10 @@
 #include "effects/effectmanifest.h"
 #include "effects/presets/effectparameterpreset.h"
 
-// EffectPreset is a read-only snapshot of the state of an effect that can be
-// serialized to/deserialized from XML. It is used by EffectChainPreset to
-// save/load chain presets. It is also used by EffectsManager to save custom
-// defaults for each effect.
+/// EffectPreset is a read-only snapshot of the state of an effect that can be
+/// serialized to/deserialized from XML. It is used by EffectChainPreset to
+/// save/load chain presets. It is also used by EffectsManager to save custom
+/// defaults for each effect.
 class EffectPreset {
   public:
     EffectPreset();

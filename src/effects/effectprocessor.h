@@ -12,27 +12,27 @@
 #include "engine/effects/message.h"
 #include "engine/channelhandle.h"
 
-// Effects are implemented as two separate classes, an EffectState subclass and
-// an EffectProcessorImpl subclass. Separating state from the DSP code allows
-// memory allocation and deletion, which is slow, to be done on the main thread
-// instead of potentially blocking the audio engine callback thread and causing
-// audible glitches. EffectStates allocated on the main thread are passed as
-// pointers to the EffectProcessorImpl in the audio callback thread via the
-// effect MessagePipe FIFO (see EngineEffectsManager::onCallbackStart).
-
-// Each EffectState instance is responsible for one routing of input signal to
-// output signal. The base EffectProcessorImpl class handles the management
-// of EffectStates. EffectProcessorImpl subclasses only need to be concerned
-// with implementing the signal processing logic and providing metadata for
-// describing the effect and its parameters.
-
-// Input signals can be any EngineChannel, but output channels are hardcoded in
-// EngineMaster as the post-fader processing for the master mix and pre-fader
-// processing for headphones. EffectStates are allocated when an input signal is
-// enabled for a chain. Also, when a new effect is loaded to a chain,
-// EffectStates are only allocated for input signals that are enabled at that
-// time. This allows for scaling up to an arbitrary number of input signals
-// without wasting a lot of memory.
+/// Effects are implemented as two separate classes, an EffectState subclass and
+/// an EffectProcessorImpl subclass. Separating state from the DSP code allows
+/// memory allocation and deletion, which is slow, to be done on the main thread
+/// instead of potentially blocking the audio engine callback thread and causing
+/// audible glitches. EffectStates allocated on the main thread are passed as
+/// pointers to the EffectProcessorImpl in the audio callback thread via the
+/// effect MessagePipe FIFO (see EngineEffectsManager::onCallbackStart).
+///
+/// Each EffectState instance is responsible for one routing of input signal to
+/// output signal. The base EffectProcessorImpl class handles the management
+/// of EffectStates. EffectProcessorImpl subclasses only need to be concerned
+/// with implementing the signal processing logic and providing metadata for
+/// describing the effect and its parameters.
+///
+/// Input signals can be any EngineChannel, but output channels are hardcoded in
+/// EngineMaster as the post-fader processing for the master mix and pre-fader
+/// processing for headphones. EffectStates are allocated when an input signal is
+/// enabled for a chain. Also, when a new effect is loaded to a chain,
+/// EffectStates are only allocated for input signals that are enabled at that
+/// time. This allows for scaling up to an arbitrary number of input signals
+/// without wasting a lot of memory.
 class EffectState {
   public:
     EffectState(const mixxx::EngineParameters& bufferParameters) {
@@ -42,14 +42,14 @@ class EffectState {
     virtual ~EffectState() {};
 };
 
-// EffectProcessor is an abstract base class for interfacing with the main
-// thread without needing to specify a specific EffectState subclass for the
-// template in EffectProcessorImpl.
+/// EffectProcessor is an abstract base class for interfacing with the main
+/// thread without needing to specify a specific EffectState subclass for the
+/// template in EffectProcessorImpl.
 class EffectProcessor {
   public:
     virtual ~EffectProcessor() { }
 
-    // Called from main thread to avoid allocating memory in the audio callback thread
+    /// Called from main thread to avoid allocating memory in the audio callback thread
     virtual void initialize(
             const QSet<ChannelHandleAndGroup>& activeInputChannels,
             const QSet<ChannelHandleAndGroup>& registeredOutputChannels,
@@ -57,23 +57,23 @@ class EffectProcessor {
     virtual EffectState* createState(const mixxx::EngineParameters& bufferParameters) = 0;
     virtual bool loadStatesForInputChannel(const ChannelHandle* inputChannel,
           const EffectStatesMap* pStatesMap) = 0;
-    // Called from main thread for garbage collection after the last audio thread
-    // callback executes process() with EffectEnableState::Disabling
+    /// Called from main thread for garbage collection after the last audio thread
+    /// callback executes process() with EffectEnableState::Disabling
     virtual void deleteStatesForInputChannel(const ChannelHandle* inputChannel) = 0;
 
     virtual void loadEngineEffectParameters(
             const QMap<QString, EngineEffectParameterPointer>& parameters) = 0;
 
-    // Take a buffer of audio samples as pInput, process the buffer according to
-    // Effect-specific logic, and output it to the buffer pOutput. Both pInput
-    // and pOutput are represented as stereo interleaved samples for now, but
-    // effects should not be written assuming this will remain true. The properties
-    // of the buffer necessary for determining how to process it (frames per
-    // buffer, number of channels, and sample rate) are available on the
-    // mixxx::EngineParameters argument. The provided channel handles allow
-    // EffectProcessorImpl::process to fetch the appropriate EffectState and
-    // pass it on to EffectProcessorImpl::processChannel, allowing one
-    // EffectProcessor instance to process multiple signals simultaneously.
+    /// Take a buffer of audio samples as pInput, process the buffer according to
+    /// Effect-specific logic, and output it to the buffer pOutput. Both pInput
+    /// and pOutput are represented as stereo interleaved samples for now, but
+    /// effects should not be written assuming this will remain true. The properties
+    /// of the buffer necessary for determining how to process it (frames per
+    /// buffer, number of channels, and sample rate) are available on the
+    /// mixxx::EngineParameters argument. The provided channel handles allow
+    /// EffectProcessorImpl::process to fetch the appropriate EffectState and
+    /// pass it on to EffectProcessorImpl::processChannel, allowing one
+    /// EffectProcessor instance to process multiple signals simultaneously.
     virtual void process(const ChannelHandle& inputHandle,
                          const ChannelHandle& outputHandle,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
@@ -82,17 +82,17 @@ class EffectProcessor {
                          const GroupFeatureState& groupFeatures) = 0;
 };
 
-// EffectProcessorImpl manages a separate EffectState for every routing of
-// input channel to output channel. This allows for processing effects in
-// parallel for PFL and post-fader for the master output.
-// EffectSpecificState must be a subclass of EffectState.
+/// EffectProcessorImpl manages a separate EffectState for every routing of
+/// input channel to output channel. This allows for processing effects in
+/// parallel for PFL and post-fader for the master output.
+/// EffectSpecificState must be a subclass of EffectState.
 template <typename EffectSpecificState>
 class EffectProcessorImpl : public EffectProcessor {
   public:
     EffectProcessorImpl() {
     }
-    // Subclasses should not implement their own destructor. All state should
-    // be stored in the EffectState subclass, not the EffectProcessorImpl subclass.
+    /// Subclasses should not implement their own destructor. All state should
+    /// be stored in the EffectState subclass, not the EffectProcessorImpl subclass.
     ~EffectProcessorImpl() {
         if (kEffectDebugOutput) {
             qDebug() << "~EffectProcessorImpl" << this;
@@ -118,12 +118,12 @@ class EffectProcessorImpl : public EffectProcessor {
         m_channelStateMatrix.clear();
     };
 
-    // NOTE: Subclasses must implement the following static methods for
-    // EffectInstantiator to work:
-    // static QString getId();
-    // static EffectManifest getManifest();
+    /// NOTE: Subclasses must implement the following static methods for
+    /// EffectInstantiator to work:
+    /// static QString getId();
+    /// static EffectManifest getManifest();
 
-    // This is the only non-static method that subclasses need to implement.
+    /// This is the only non-static method that subclasses need to implement.
     virtual void processChannel(EffectSpecificState* channelState,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
                                 const mixxx::EngineParameters& bufferParameters,
@@ -230,7 +230,7 @@ class EffectProcessorImpl : public EffectProcessor {
           return true;
     };
 
-    // Called from main thread for garbage collection after an input channel is disabled
+    /// Called from main thread for garbage collection after an input channel is disabled
     void deleteStatesForInputChannel(const ChannelHandle* inputChannel) final {
           if (kEffectDebugOutput) {
               qDebug() << "EffectProcessorImpl::deleteStatesForInputChannel"
@@ -259,8 +259,8 @@ class EffectProcessorImpl : public EffectProcessor {
     };
 
   protected:
-    // Subclasses for external effects plugins may reimplement this, but
-    // subclasses for built-in effects should not.
+    /// Subclasses for external effects plugins may reimplement this, but
+    /// subclasses for built-in effects should not.
     virtual EffectSpecificState* createSpecificState(
             const mixxx::EngineParameters& bufferParameters) {
         EffectSpecificState* pState = new EffectSpecificState(bufferParameters);

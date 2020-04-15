@@ -6,10 +6,10 @@
 
 class EffectChainSlot;
 
-// EffectChainPreset is a read-only snapshot of the state of an effect chain
-// that can be serialized to/deserialized from XML. It is used by EffectsManager
-// to easily save/load user-defined chain presets as well as save the state of
-// loaded effects when Mixxx shuts down and restarts.
+/// EffectChainPreset is a read-only snapshot of the state of an effect chain
+/// that can be serialized to/deserialized from XML. It is used by EffectsManager
+/// to easily save/load user-defined chain presets as well as save the state of
+/// loaded effects when Mixxx shuts down and restarts.
 class EffectChainPreset {
   public:
     EffectChainPreset();
@@ -23,7 +23,7 @@ class EffectChainPreset {
         return m_effectPresets.size() == 0;
     }
 
-    // This is the only exception to EffectChainPreset being read-only.
+    /// This is the only exception to EffectChainPreset being read-only.
     void setName(const QString& newName) {
         m_name = newName;
     }

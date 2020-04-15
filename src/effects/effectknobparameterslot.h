@@ -14,7 +14,7 @@ class ControlEffectKnob;
 class SoftTakeover;
 class EffectSlot;
 
-// Refer to EffectParameterSlotBase for documentation
+/// Refer to EffectParameterSlotBase for documentation
 class EffectKnobParameterSlot : public EffectParameterSlotBase {
     Q_OBJECT
   public:
