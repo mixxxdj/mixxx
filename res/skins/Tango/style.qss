@@ -1298,7 +1298,7 @@ WBeatSpinBox,
 #Deck4 WLabel, #DeckMini4 WLabel,
 #RateContainer3 WLabel, #RateContainer3 WPushButton,
 #RateContainer4 WLabel, #RateContainer4 WPushButton {
-  color: #3693d9;
+  color: #7DBF36;
 }
 WLabel#TrackBy,
 WLabel#TrackByMini,
@@ -1309,7 +1309,7 @@ WLabel#TrackComment {
   background-color: #3A0440;
 }
 #DeckOverviewRow3, #DeckOverviewRow4 {
-  background-color: #001D33;
+  background-color: #19260B;
 }
 
 
