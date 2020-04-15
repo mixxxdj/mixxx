@@ -90,7 +90,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
             const TrackRef& trackRef) const override;
 
     bool hasCapabilities(
-            const TrackModel::CapabilitiesFlags& capabilities) const final;
+            TrackModel::CapabilitiesFlags capabilities) const final;
 
   protected:
     static constexpr int defaultColumnWidth() {

@@ -147,7 +147,7 @@ class TrackModel {
     virtual TrackModel::CapabilitiesFlags getCapabilities() const {
         return TRACKMODELCAPS_NONE;
     }
-    virtual bool hasCapabilities(const TrackModel::CapabilitiesFlags& flags) const {
+    virtual bool hasCapabilities(TrackModel::CapabilitiesFlags flags) const {
         Q_UNUSED(flags);
         return false;
     }
