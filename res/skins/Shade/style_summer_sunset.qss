@@ -88,6 +88,11 @@ WCoverArtMenu::item {
   background-color: #706633;
 }
 
+/* Passthrough label on overview waveform */
+WOverview #PassthroughLabel {
+  color: #FF9900;
+}
+
 #DlgMissing > QPushButton:enabled,
 #DlgHidden > QPushButton:enabled,
 #DlgAutoDJ > QPushButton:enabled,

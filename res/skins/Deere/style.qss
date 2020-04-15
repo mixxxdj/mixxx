@@ -831,6 +831,13 @@ WOverview {
   text-transform: none;
 }
 
+/* Passthrough label on overview waveform */
+WOverview #PassthroughLabel {
+  font-size: 16px;
+  font-weight: bold;
+  color: #73b3f7;
+}
+
 /* Start spacing for Deck overview row (small waveform, option grid) */
 #OptionGrid, #ButtonGrid {
   background-color: #333333;

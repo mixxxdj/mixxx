@@ -18,6 +18,13 @@ WOverview {
   font-family: "Ubuntu";
 }
 
+/* Passthrough label on overview waveform */
+WOverview #PassthroughLabel {
+  font-size: 12px;
+  font-weight: bold;
+  color: #55F764;
+}
+
 WBeatSpinBox,
 /* For some mysterious reason #DlgAutoDJ QSpinBox
 wouldn't style the respective spinbox in Shade (anymore),
