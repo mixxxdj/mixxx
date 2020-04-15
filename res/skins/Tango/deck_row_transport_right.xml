@@ -24,26 +24,6 @@ Variables:
         <Children>
           <!-- index 0 due to bug -->
           <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-          <!-- Block Play button if passthrough is active,
-              show speaker icon instead -->
-          <WidgetGroup>
-            <ObjectName>PassthroughPlayCover</ObjectName>
-            <Layout>vertical</Layout>
-            <SizePolicy>me,me</SizePolicy>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-          <WidgetGroup>
-            <ObjectName>Spacer33</ObjectName>
-            <Layout>vertical</Layout>
-            <SizePolicy>me,me</SizePolicy>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
           <!-- Play -->
           <Template src="skin:button_2state_right_display.xml">
             <SetVariable name="ObjectName">PlayCue</SetVariable>
@@ -89,17 +69,6 @@ Variables:
             <Children>
               <!-- index 0 due to bug -->
               <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-              <!-- Block Play button if passthrough is active,
-                  show speaker icon instead -->
-              <WidgetGroup>
-                <ObjectName>PassthroughPlayCover</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>me,me</SizePolicy>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
               <!-- Play -->
               <Template src="skin:button_2state_right_display.xml">
                 <SetVariable name="ObjectName">PlayCue</SetVariable>
