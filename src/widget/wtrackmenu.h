@@ -46,15 +46,14 @@ class WTrackMenu : public QMenu {
             Features flags = Feature::All,
             TrackModel* trackModel = nullptr);
 
-    ~WTrackMenu() {
-    }
+    ~WTrackMenu() override = default;
 
     void loadTrack(TrackId trackId);
     void loadTrack(QModelIndex index);
     void loadTracks(TrackIdList trackList);
     void loadTracks(QModelIndexList indexList);
 
-    // Override default popup method from class QMenu
+    // Hide default popup method from class QMenu
     void popup(const QPoint& pos, QAction* at = nullptr);
 
   signals:
