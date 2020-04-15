@@ -11,7 +11,7 @@
 class ControlObject;
 class ControlPushButton;
 
-// Refer to EffectParameterSlotBase for documentation
+/// Refer to EffectParameterSlotBase for documentation
 class EffectButtonParameterSlot : public EffectParameterSlotBase {
     Q_OBJECT
   public:

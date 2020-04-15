@@ -20,31 +20,31 @@ class EffectsManager;
 class EffectProcessor;
 class EngineEffectChain;
 
-// EffectChainSlot is the main thread representation of an effect chain which
-// adds/removes exactly one EngineEffectChain from the engine. Unlike EffectSlot,
-// EffectChainSlot does not add/remove EngineEffectChains apart from Mixxx
-// startup and shutdown. The lifetime of EngineEffectChain is coupled with
-// EffectChainSlot. Do not change this relationship; there is no use case for
-// that.
-
-// EffectChainSlot owns the ControlObjects for the routing switches that assign
-// chains to process audio inputs (decks, microphones, auxiliary inputs,
-// master mix). EffectChainSlot also owns the ControlObject for the superknob
-// which manipulates the metaknob of each effect in the chain.
-
-// The state of an EffectChainSlot can be saved to and loaded from an
-// EffectChainPreset, which can serialize/deserialize that state to/from XML.
-// Loading state from an EffectChainPreset is done by
-// EffectsManager::loadEffectChainPreset rather than directly by EffectChainSlot
-// because loading effects requires access to the EffectsBackends and default
-// EffectPresets which are maintained by EffectsManager.
-
-// Currently EffectChainSlot has a fixed number of EffectSlots. In the future
-// this may be extended to create an Effect class to decouple an EngineEffect's
-// state from the ControlObjects so that EffectChainSlot could arbitrarily hide
-// and rearrange Effects by loading/unloading them from EffectSlots. This would
-// be similar to the relationship between EffectSlot and
-// EffectParameterSlotBase/EffectParameter.
+/// EffectChainSlot is the main thread representation of an effect chain which
+/// adds/removes exactly one EngineEffectChain from the engine. Unlike EffectSlot,
+/// EffectChainSlot does not add/remove EngineEffectChains apart from Mixxx
+/// startup and shutdown. The lifetime of EngineEffectChain is coupled with
+/// EffectChainSlot. Do not change this relationship; there is no use case for
+/// that.
+///
+/// EffectChainSlot owns the ControlObjects for the routing switches that assign
+/// chains to process audio inputs (decks, microphones, auxiliary inputs,
+/// master mix). EffectChainSlot also owns the ControlObject for the superknob
+/// which manipulates the metaknob of each effect in the chain.
+///
+/// The state of an EffectChainSlot can be saved to and loaded from an
+/// EffectChainPreset, which can serialize/deserialize that state to/from XML.
+/// Loading state from an EffectChainPreset is done by
+/// EffectsManager::loadEffectChainPreset rather than directly by EffectChainSlot
+/// because loading effects requires access to the EffectsBackends and default
+/// EffectPresets which are maintained by EffectsManager.
+///
+/// Currently EffectChainSlot has a fixed number of EffectSlots. In the future
+/// this may be extended to create an Effect class to decouple an EngineEffect's
+/// state from the ControlObjects so that EffectChainSlot could arbitrarily hide
+/// and rearrange Effects by loading/unloading them from EffectSlots. This would
+/// be similar to the relationship between EffectSlot and
+/// EffectParameterSlotBase/EffectParameter.
 class EffectChainSlot : public QObject {
     Q_OBJECT
   public:

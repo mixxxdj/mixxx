@@ -13,12 +13,12 @@ class ControlPushButton;
 class EffectParameter;
 class EffectSlot;
 
-// EffectParameterSlotBase is a wrapper around the parameterX ControlObject.
-// EffectSlot loads/unloads an EffectParameter from the EffectParameterSlotBase.
-// The EffectParameter is responsible for communicating changes in the parameter
-// value to the EngineEffectParameter. The separation of EffectParameter and
-// EffectParameterSlotBase allows EffectSlot to arbitrarily hide and rearrange
-// parameters.
+/// EffectParameterSlotBase is a wrapper around the parameterX ControlObject.
+/// EffectSlot loads/unloads an EffectParameter from the EffectParameterSlotBase.
+/// The EffectParameter is responsible for communicating changes in the parameter
+/// value to the EngineEffectParameter. The separation of EffectParameter and
+/// EffectParameterSlotBase allows EffectSlot to arbitrarily hide and rearrange
+/// parameters.
 class EffectParameterSlotBase : public QObject {
     Q_OBJECT
   public:

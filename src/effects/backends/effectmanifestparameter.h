@@ -26,10 +26,10 @@ class EffectManifestParameter {
         LINEAR_INVERSE,
         LOGARITHMIC,
         LOGARITHMIC_INVERSE,
-        INTEGRAL,   // A step rotary, steps given by m_steps
-                    // are arranged with equal distance on scale
-        TOGGLE      // For button and enum controls, not accessible
-                    // from many controllers, no linking to meta knob
+        INTEGRAL, /// A step rotary, steps given by m_steps
+                  /// are arranged with equal distance on scale
+        TOGGLE    /// For button and enum controls, not accessible
+                  /// from many controllers, no linking to meta knob
     };
 
     enum class SemanticHint {
@@ -42,16 +42,16 @@ class EffectManifestParameter {
         UNKNOWN = 0,
         TIME,
         HERTZ,
-        SAMPLERATE, // fraction of the samplerate
-        BEATS, // multiples of a beat
+        SAMPLERATE, /// fraction of the samplerate
+        BEATS,      /// multiples of a beat
     };
 
     enum class LinkType {
-        NONE = 0,  // Not controlled by the meta knob
-        LINKED,  // Controlled by the meta knob as it is
-        LINKED_LEFT,  // Controlled by the left side of the meta knob
-        LINKED_RIGHT, // Controlled by the right side of the meta knob
-        LINKED_LEFT_RIGHT, // Controlled by both sides of the meta knob
+        NONE = 0,          /// Not controlled by the meta knob
+        LINKED,            /// Controlled by the meta knob as it is
+        LINKED_LEFT,       /// Controlled by the left side of the meta knob
+        LINKED_RIGHT,      /// Controlled by the right side of the meta knob
+        LINKED_LEFT_RIGHT, /// Controlled by both sides of the meta knob
         NUM_LINK_TYPES
     };
 
@@ -196,15 +196,14 @@ class EffectManifestParameter {
         m_defaultLinkInversion = linkInversion;
     }
 
-
-    // Neutral Point On Scale is the parameter in the range 0 .. 1 on the knob that
-    // is adopted as neutral when controlled by the meta knob.
-    // This is allows to link the meta knob in a way that two effects are
-    // cranked in simultaneous, or in case of a split filter like meta knob,
-    // both effects are neutral at meta knob center.
-    // A EQ Gain has usually a neutral point of 0.5 (0 dB) while a delay knob
-    // has a neutral point of 0.0 (no delay)
-    // A EQ Gain knob cannot be used on a split meta knob.
+    /// Neutral Point On Scale is the parameter in the range 0 .. 1 on the knob that
+    /// is adopted as neutral when controlled by the meta knob.
+    /// This is allows to link the meta knob in a way that two effects are
+    /// cranked in simultaneous, or in case of a split filter like meta knob,
+    /// both effects are neutral at meta knob center.
+    /// A EQ Gain has usually a neutral point of 0.5 (0 dB) while a delay knob
+    /// has a neutral point of 0.0 (no delay)
+    /// A EQ Gain knob cannot be used on a split meta knob.
     double neutralPointOnScale() const {
         return m_neutralPointOnScale;
     }
@@ -240,8 +239,8 @@ class EffectManifestParameter {
         return m_maximum;
     }
 
-    // Minimum, default, and maximum are set together in one function so their
-    // validity only needs to be checked once.
+    /// Minimum, default, and maximum are set together in one function so their
+    /// validity only needs to be checked once.
     void setRange(const double& minimum, const double& defaultValue, const double& maximum) {
         VERIFY_OR_DEBUG_ASSERT(minimum <= defaultValue && defaultValue <= maximum) {
             qWarning() << "EffectManifestParameter" << m_name
@@ -286,11 +285,11 @@ class EffectManifestParameter {
     double m_minimum;
     double m_maximum;
 
-    // Used to describe steps of
-    // CONTROL_INTEGRAL and CONTROL_TOGGLE
-    // effect parameters
-    // Each pair has the following form:
-    // name - value
+    /// Used to describe steps of
+    /// CONTROL_INTEGRAL and CONTROL_TOGGLE
+    /// effect parameters
+    /// Each pair has the following form:
+    /// name - value
     QList<QPair<QString, double> > m_steps;
 
     bool m_showInParametertSlot;

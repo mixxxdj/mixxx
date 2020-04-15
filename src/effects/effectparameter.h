@@ -12,18 +12,18 @@ class EffectsManager;
 class EngineEffect;
 class EffectParameterPreset;
 
-// An EffectParameter is a main thread representation of the state of an
-// EngineEffectParameter. EffectParameter tracks a mutable value state and
-// communicates that state to the engine. Separating this from the parameterX
-// ControlObjects in EffectParameterSlotBase allows for decoupling the state of
-// the parameters from the ControlObject states, which is required for
-// EffectSlot to do parameter hiding and rearrangement. EffectParameter is
-// responsible for manipulating the value of knob parameters when the metaknob
-// of the EffectSlot is changed (button parameters cannot be linked to the
-// metaknob). For EffectParameter, there is no difference between knobs and
-// buttons; only EffectSlot and
-// EffectKnobParameterSlot/EffectButtonParameterSlot are responsible for taking
-// care of that difference.
+/// An EffectParameter is a main thread representation of the state of an
+/// EngineEffectParameter. EffectParameter tracks a mutable value state and
+/// communicates that state to the engine. Separating this from the parameterX
+/// ControlObjects in EffectParameterSlotBase allows for decoupling the state of
+/// the parameters from the ControlObject states, which is required for
+/// EffectSlot to do parameter hiding and rearrangement. EffectParameter is
+/// responsible for manipulating the value of knob parameters when the metaknob
+/// of the EffectSlot is changed (button parameters cannot be linked to the
+/// metaknob). For EffectParameter, there is no difference between knobs and
+/// buttons; only EffectSlot and
+/// EffectKnobParameterSlot/EffectButtonParameterSlot are responsible for taking
+/// care of that difference.
 class EffectParameter {
   public:
     EffectParameter(EngineEffect* pEngineEffect,
