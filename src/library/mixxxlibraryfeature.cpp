@@ -30,6 +30,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
           m_icon(":/images/library/ic_library_tracks.svg"),
           m_pTrackCollection(pLibrary->trackCollections()->internalCollection()),
           m_pLastPlayedCache(new LastPlayedCache(m_pTrackCollection)),
+          m_pLibraryTableModel(nullptr),
           m_pMissingView(nullptr),
           m_pHiddenView(nullptr) {
     QStringList columns;

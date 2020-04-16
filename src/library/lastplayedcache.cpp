@@ -43,37 +43,18 @@ void LastPlayedCache::initTableView() {
 
 void LastPlayedCache::slotPlaylistTrackChanged(
         int playlistId, TrackId trackId, int /* a_iPosition */) {
-    qDebug() << "LastPlayedCache::slotPlaylistTrackChanged() playlistId:" << playlistId;
+    // qDebug() << "LastPlayedCache::slotPlaylistTrackChanged() playlistId:" << playlistId;
     if (m_pTrackCollection->getPlaylistDAO().getHiddenType(playlistId) !=
             PlaylistDAO::PLHT_SET_LOG) {
         return;
     }
 
-    // QSqlQuery updateQuery(m_pTrackCollection->database());
-    // updateQuery.prepare(QString(
-    //         "  SELECT "
-    //         "    datetime_played "
-    //         "  FROM "
-    //         "    last_played "
-    //         "  WHERE "
-    //         "    track_id = %1 ")
-    //     .arg(trackId.toString()));
-    // // updateQuery.bindValue(":trackId", trackId.toVariant());
-    // if (!updateQuery.exec()) {
-    //     LOG_FAILED_QUERY(updateQuery);
-    // }
-
     TrackPointer pTrack = m_pTrackCollection->getTrackById(trackId);
-    // const int col = updateQuery.record().indexOf("datetime_played");
-    // while (updateQuery.next()) {
-    //     pTrack->setLastPlayedDate(updateQuery.value(col).toDateTime());
-    // }
     pTrack->setLastPlayedDate(fetchLastPlayedTime(m_pTrackCollection->database(), pTrack));
 }
 
 // static, so that trackdao.cpp can fetch values for initial population in the cache.
 QDateTime LastPlayedCache::fetchLastPlayedTime(const QSqlDatabase& db, TrackPointer pTrack) {
-    qDebug() << "TrackDAO::populateLastPlayedTime";
     QSqlQuery updateQuery(db);
     const QString queryString = QString(
             "  SELECT "

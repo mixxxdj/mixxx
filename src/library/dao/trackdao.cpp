@@ -1523,25 +1523,6 @@ void TrackDAO::markUnverifiedTracksAsDeleted() {
 }
 
 void TrackDAO::populateLastPlayedTime(TrackPointer pTrack) const {
-    qDebug() << "TrackDAO::populateLastPlayedTime";
-    // QSqlQuery updateQuery(m_database);
-    // const QString queryString = QString(
-    //         "  SELECT "
-    //         "    datetime_played "
-    //         "  FROM "
-    //         "    last_played "
-    //         "  WHERE "
-    //         "    track_id = %1 ")
-    //     .arg(pTrack->getId().toString());
-    // updateQuery.prepare(queryString);
-    // // updateQuery.bindValue(":trackId", trackId.toVariant());
-    // if (!updateQuery.exec()) {
-    //     LOG_FAILED_QUERY(updateQuery);
-    // }
-    // const int col = updateQuery.record().indexOf("datetime_played");
-    // while (updateQuery.next()) {
-    //     pTrack->setLastPlayedDate(updateQuery.value(col).toDateTime());
-    // }
     pTrack->setLastPlayedDate(LastPlayedCache::fetchLastPlayedTime(m_database, pTrack));
 }
 

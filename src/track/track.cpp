@@ -370,13 +370,11 @@ void Track::setDateAdded(const QDateTime& dateAdded) {
 
 QDateTime Track::getLastPlayedDate() const {
     QMutexLocker lock(&m_qMutex);
-    qDebug() << "get cached played date:" << m_lastPlayed;
     return m_lastPlayed;
 }
 
 void Track::setLastPlayedDate(const QDateTime& playedDate) {
     QMutexLocker lock(&m_qMutex);
-    qDebug() << "update cached last played date:" << playedDate;
     m_lastPlayed = playedDate;
     markDirtyAndUnlock(&lock);
 }

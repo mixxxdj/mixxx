@@ -45,10 +45,6 @@ class MixxxLibraryFeature final : public LibraryFeature {
         return true;
     }
 
-    QSharedPointer<LastPlayedCache> lastPlayedCache() const {
-        return m_pLastPlayedCache;
-    }
-
   public slots:
     void activate() override;
     void activateChild(const QModelIndex& index) override;
