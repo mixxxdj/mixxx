@@ -28,26 +28,15 @@ EngineBufferScaleRubberBand::EngineBufferScaleRubberBand(
           m_bBackwards(false) {
     m_retrieve_buffer[0] = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_retrieve_buffer[1] = SampleUtil::alloc(MAX_BUFFER_LEN);
-    initRubberBand();
+    // Initialize the internal buffers to prevent re-allocations
+    // in the real-time thread.
+    onSampleRateChanged();
 }
 
 EngineBufferScaleRubberBand::~EngineBufferScaleRubberBand() {
     SampleUtil::free(m_buffer_back);
     SampleUtil::free(m_retrieve_buffer[0]);
     SampleUtil::free(m_retrieve_buffer[1]);
-}
-
-void EngineBufferScaleRubberBand::initRubberBand() {
-    m_pRubberBand = std::make_unique<RubberBandStretcher>(
-            getAudioSignal().sampleRate(),
-            getAudioSignal().channelCount(),
-            RubberBandStretcher::OptionProcessRealTime);
-    m_pRubberBand->setMaxProcessSize(kRubberBandBlockSize);
-    // Setting the time ratio to a very high value will cause RubberBand
-    // to preallocate buffers large enough to (almost certainly)
-    // avoid memory reallocations during playback.
-    m_pRubberBand->setTimeRatio(2.0);
-    m_pRubberBand->setTimeRatio(1.0);
 }
 
 void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
@@ -111,12 +100,30 @@ void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
     m_dPitchRatio = *pPitchRatio;
 }
 
-void EngineBufferScaleRubberBand::setSampleRate(SINT iSampleRate) {
-    EngineBufferScale::setSampleRate(iSampleRate);
-    initRubberBand();
+void EngineBufferScaleRubberBand::onSampleRateChanged() {
+    // TODO: Resetting the sample rate will cause internal
+    // memory allocations that may block the real-time thread.
+    // When is this function actually invoked??
+    if (!getOutputSignal().isValid()) {
+        m_pRubberBand.reset();
+        return;
+    }
+    m_pRubberBand = std::make_unique<RubberBandStretcher>(
+            getOutputSignal().getSampleRate(),
+            getOutputSignal().getChannelCount(),
+            RubberBandStretcher::OptionProcessRealTime);
+    m_pRubberBand->setMaxProcessSize(kRubberBandBlockSize);
+    // Setting the time ratio to a very high value will cause RubberBand
+    // to preallocate buffers large enough to (almost certainly)
+    // avoid memory reallocations during playback.
+    m_pRubberBand->setTimeRatio(2.0);
+    m_pRubberBand->setTimeRatio(1.0);
 }
 
 void EngineBufferScaleRubberBand::clear() {
+    VERIFY_OR_DEBUG_ASSERT(m_pRubberBand) {
+        return;
+    }
     m_pRubberBand->reset();
 }
 
@@ -158,7 +165,7 @@ double EngineBufferScaleRubberBand::scaleBuffer(
     SINT total_received_frames = 0;
     SINT total_read_frames = 0;
 
-    SINT remaining_frames = getAudioSignal().samples2frames(iOutputBufferSize);
+    SINT remaining_frames = getOutputSignal().samples2frames(iOutputBufferSize);
     CSAMPLE* read = pOutputBuffer;
     bool last_read_failed = false;
     bool break_out_after_retrieve_and_reset_rubberband = false;
@@ -171,7 +178,7 @@ double EngineBufferScaleRubberBand::scaleBuffer(
                 read, remaining_frames);
         remaining_frames -= received_frames;
         total_received_frames += received_frames;
-        read += getAudioSignal().frames2samples(received_frames);
+        read += getOutputSignal().frames2samples(received_frames);
 
         if (break_out_after_retrieve_and_reset_rubberband) {
             //qDebug() << "break_out_after_retrieve_and_reset_rubberband";
@@ -201,8 +208,8 @@ double EngineBufferScaleRubberBand::scaleBuffer(
                         // are going forward or backward.
                         (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempoRatio,
                         m_buffer_back,
-                        getAudioSignal().frames2samples(iLenFramesRequired));
-            SINT iAvailFrames = getAudioSignal().samples2frames(iAvailSamples);
+                        getOutputSignal().frames2samples(iLenFramesRequired));
+            SINT iAvailFrames = getOutputSignal().samples2frames(iAvailSamples);
 
             if (iAvailFrames > 0) {
                 last_read_failed = false;
@@ -222,7 +229,7 @@ double EngineBufferScaleRubberBand::scaleBuffer(
     }
 
     if (remaining_frames > 0) {
-        SampleUtil::clear(read, getAudioSignal().frames2samples(remaining_frames));
+        SampleUtil::clear(read, getOutputSignal().frames2samples(remaining_frames));
         Counter counter("EngineBufferScaleRubberBand::getScaled underflow");
         counter.increment();
     }

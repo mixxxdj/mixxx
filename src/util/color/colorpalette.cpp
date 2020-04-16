@@ -40,12 +40,10 @@ mixxx::RgbColor::optional_t ColorPalette::previousColor(mixxx::RgbColor::optiona
 
 mixxx::RgbColor ColorPalette::colorForHotcueIndex(unsigned int hotcueIndex) const {
     int colorIndex;
-    if (m_hotcueColorIndices.isEmpty()) {
-        // For hotcue n, get nth color from palette
+    if (m_colorIndicesByHotcue.isEmpty()) {
         colorIndex = hotcueIndex;
     } else {
-        // For hotcue n, get nth color from palette
-        colorIndex = m_hotcueColorIndices.at(hotcueIndex % m_hotcueColorIndices.size());
+        colorIndex = m_colorIndicesByHotcue.at(hotcueIndex % m_colorIndicesByHotcue.size());
     }
     return at(colorIndex % size());
 }

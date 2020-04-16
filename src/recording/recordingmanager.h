@@ -56,9 +56,7 @@ class RecordingManager : public QObject
     void slotBytesRecorded(int);
     void slotDurationRecorded(quint64);
     void slotSetRecording(bool recording);
-
-  private slots:
-    void slotToggleRecording(double v);
+    void slotToggleRecording(double value);
 
   private:
     QString formatDateTimeForFilename(QDateTime dateTime) const;

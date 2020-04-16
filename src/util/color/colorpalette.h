@@ -4,12 +4,18 @@
 
 #include "util/color/rgbcolor.h"
 
+// An ordered list of colors that can be picked by the user from WColorPicker,
+// used for cue and track colors. Also used by CueControl to map default
+// colors to hotcues based on their hotcue number
 class ColorPalette final {
   public:
-    explicit ColorPalette(QString name, QList<mixxx::RgbColor> colorList, QList<unsigned int> hotcueColorIndices = {})
+    ColorPalette(
+            QString name,
+            QList<mixxx::RgbColor> colorList,
+            QList<int> colorIndicesByHotcue = {})
             : m_name(name),
               m_colorList(colorList),
-              m_hotcueColorIndices(hotcueColorIndices) {
+              m_colorIndicesByHotcue(colorIndicesByHotcue) {
         DEBUG_ASSERT(m_colorList.size() != 0);
     }
 
@@ -51,14 +57,14 @@ class ColorPalette final {
         return m_colorList;
     }
 
-    QList<unsigned int> getHotcueIndices() const {
-        return m_hotcueColorIndices;
+    QList<int> getIndicesByHotcue() const {
+        return m_colorIndicesByHotcue;
     }
 
   private:
     QString m_name;
     QList<mixxx::RgbColor> m_colorList;
-    QList<unsigned int> m_hotcueColorIndices;
+    QList<int> m_colorIndicesByHotcue;
 };
 
 inline bool operator==(

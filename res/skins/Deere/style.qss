@@ -228,7 +228,8 @@
 }
 
 #LibraryContainer QTableView:focus,
-#LibraryContainer QTreeView:focus {
+#LibraryContainer QTreeView:focus,
+#LibraryContainer QTextBrowser:focus {
   border: 1px solid #FF6600;
 }
 
@@ -583,15 +584,6 @@ WLibrary QRadioButton::indicator:unchecked {
 #DlgAnalysis > QPushButton:focus,
 #fadeModeCombobox:focus,
 #DlgAutoDJ QSpinBox:focus {
-  border: 1px solid #bbb;
-  outline: none;
-}
-#DlgMissing > QPushButton:checked:focus,
-#DlgHidden > QPushButton:checked:focus,
-#DlgAutoDJ > QPushButton:checked:focus,
-#DlgRecording > QPushButton:checked:focus,
-#DlgAnalysis > QPushButton:checked:focus {
-  border: 1px solid #d2d2d2;
   outline: none;
 }
 
@@ -655,6 +647,25 @@ QPushButton#pushButtonRepeatPlaylist {
   image: url(skin:/icon/ic_autodj_repeat_playlist.svg) no-repeat center center;
 }
 /* AutoDJ button icons */
+
+/* Recording info */
+#labelRecPrefix,
+#labelRecFilename,
+#labelRecStatistics {
+  text-transform: none;
+  padding: 3px 0px 0px 0px;
+  margin: 0px;
+}
+#labelRecPrefix {
+  margin-left: 3px;
+}
+#labelRecFilename {
+  font-weight: bold;
+}
+#labelRecPrefix,
+#labelRecStatistics {
+  font-weight: normal;
+}
 
 /* Scroll bars */
 #LibraryContainer QScrollBar:horizontal,
@@ -811,12 +822,20 @@ WLibrary QLabel,
 WLibrary QPushButton {
   font-family: "Open Sans";
   font-size: 12px;
+  font-weight: bold;
   text-transform: uppercase;
 }
 
 /* cue points labels in the overview */
 WOverview {
   text-transform: none;
+}
+
+/* Passthrough label on overview waveform */
+WOverview #PassthroughLabel {
+  font-size: 16px;
+  font-weight: bold;
+  color: #73b3f7;
 }
 
 /* Start spacing for Deck overview row (small waveform, option grid) */
@@ -1542,6 +1561,10 @@ WPushButton[value="2"]:hover {
     color: #FDFDFD;
     background-color: #0080BE;
     border: 1px solid #0080BE;
+}
+
+#HotcueButton {
+  border: none;
 }
 
 #HotcueButton[light="true"] {

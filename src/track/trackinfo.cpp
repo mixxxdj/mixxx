@@ -88,7 +88,7 @@ bool TrackInfo::compareEq(
 }
 
 QDebug operator<<(QDebug dbg, const TrackInfo& arg) {
-    dbg << '{';
+    dbg << "TrackInfo{";
     arg.dbgArtist(dbg);
     arg.dbgBpm(dbg);
     arg.dbgComment(dbg);

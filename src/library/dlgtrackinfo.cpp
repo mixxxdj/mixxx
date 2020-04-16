@@ -44,9 +44,9 @@ void DlgTrackInfo::init() {
 
     connect(btnNext, &QPushButton::clicked, this, &DlgTrackInfo::slotNext);
     connect(btnPrev, &QPushButton::clicked, this, &DlgTrackInfo::slotPrev);
-    connect(btnApply, &QPushButton::clicked, this, &DlgTrackInfo::apply);
-    connect(btnOK, &QPushButton::clicked, this, &DlgTrackInfo::OK);
-    connect(btnCancel, &QPushButton::clicked, this, &DlgTrackInfo::cancel);
+    connect(btnApply, &QPushButton::clicked, this, &DlgTrackInfo::slotApply);
+    connect(btnOK, &QPushButton::clicked, this, &DlgTrackInfo::slotOk);
+    connect(btnCancel, &QPushButton::clicked, this, &DlgTrackInfo::slotCancel);
 
     connect(bpmDouble,
             &QPushButton::clicked,
@@ -115,7 +115,7 @@ void DlgTrackInfo::init() {
             &DlgTrackInfo::slotOpenInFileBrowser);
 
     CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != nullptr) {
+    if (pCache) {
         connect(pCache,
                 &CoverArtCache::coverFound,
                 this,
@@ -131,16 +131,16 @@ void DlgTrackInfo::init() {
             &DlgTrackInfo::slotReloadCoverArt);
 }
 
-void DlgTrackInfo::OK() {
+void DlgTrackInfo::slotOk() {
     unloadTrack(true);
     accept();
 }
 
-void DlgTrackInfo::apply() {
+void DlgTrackInfo::slotApply() {
     saveTrack();
 }
 
-void DlgTrackInfo::cancel() {
+void DlgTrackInfo::slotCancel() {
     unloadTrack(false);
     reject();
 }
@@ -176,7 +176,7 @@ void DlgTrackInfo::populateFields(const Track& track) {
     txtDuration->setText(track.getDurationText(mixxx::Duration::Precision::SECONDS));
     txtLocation->setText(QDir::toNativeSeparators(track.getLocation()));
     txtType->setText(track.getType());
-    txtBitrate->setText(QString(track.getBitrateText()) + (" ") + tr(mixxx::AudioSource::Bitrate::unit()));
+    txtBitrate->setText(QString(track.getBitrateText()) + (" ") + tr(mixxx::audio::Bitrate::unit()));
     txtBpm->setText(track.getBpmText());
     m_keysClone = track.getKeys();
     txtKey->setText(KeyUtils::getGlobalKeyText(m_keysClone));

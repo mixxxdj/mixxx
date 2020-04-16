@@ -91,10 +91,16 @@ WCoverArtMenu::item {
   background-color: #3F3041;
 }
 
+/* Passthrough label on overview waveform */
+WOverview #PassthroughLabel {
+  color: #00aaff;
+}
+
 
 
 #LibraryContainer QTableView:focus,
-#LibraryContainer QTreeView:focus {
+#LibraryContainer QTreeView:focus,
+#LibraryContainer QTextBrowser:focus {
   border: 1px solid #78C70B;
 }
 

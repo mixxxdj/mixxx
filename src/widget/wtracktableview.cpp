@@ -47,15 +47,18 @@ const ConfigKey kConfigKeyAllowTrackLoadToPlayingDeck("[Controls]", "AllowTrackL
 
 }
 
-WTrackTableView::WTrackTableView(QWidget * parent,
-                                 UserSettingsPointer pConfig,
-                                 TrackCollectionManager* pTrackCollectionManager,
-                                 bool sorting)
-        : WLibraryTableView(parent, pConfig,
-                            ConfigKey(LIBRARY_CONFIGVALUE,
-                                      WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
+WTrackTableView::WTrackTableView(QWidget* parent,
+        UserSettingsPointer pConfig,
+        TrackCollectionManager* pTrackCollectionManager,
+        double backgroundColorOpacity,
+        bool sorting)
+        : WLibraryTableView(parent,
+                  pConfig,
+                  ConfigKey(LIBRARY_CONFIGVALUE,
+                          WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
           m_pConfig(pConfig),
           m_pTrackCollectionManager(pTrackCollectionManager),
+          m_backgroundColorOpacity(backgroundColorOpacity),
           m_sorting(sorting),
           m_iCoverSourceColumn(-1),
           m_iCoverTypeColumn(-1),
@@ -66,7 +69,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_loadCachedOnly(false),
           m_bPlaylistMenuLoaded(false),
           m_bCrateMenuLoaded(false) {
-
     m_pNumSamplers = new ControlProxy(
             "[Master]", "num_samplers", this);
     m_pNumDecks = new ControlProxy(

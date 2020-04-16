@@ -32,6 +32,7 @@ class WTrackTableView : public WLibraryTableView {
             QWidget* parent,
             UserSettingsPointer pConfig,
             TrackCollectionManager* pTrackCollectionManager,
+            double backgroundColorOpacity,
             bool sorting);
     ~WTrackTableView() override;
     void contextMenuEvent(QContextMenuEvent * event) override;
@@ -47,6 +48,10 @@ class WTrackTableView : public WLibraryTableView {
     void setSelectedTracks(const QList<TrackId>& tracks);
     void saveCurrentVScrollBarPos();
     void restoreCurrentVScrollBarPos();
+
+    double getBackgroundColorOpacity() const {
+        return m_backgroundColorOpacity;
+    }
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
@@ -134,6 +139,8 @@ class WTrackTableView : public WLibraryTableView {
     const UserSettingsPointer m_pConfig;
 
     TrackCollectionManager* const m_pTrackCollectionManager;
+
+    const double m_backgroundColorOpacity;
 
     QScopedPointer<DlgTrackInfo> m_pTrackInfo;
     QScopedPointer<DlgTagFetcher> m_pTagFetcher;
