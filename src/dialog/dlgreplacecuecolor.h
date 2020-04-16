@@ -56,8 +56,6 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
     void slotUpdateWidgets();
 
   private:
-    void setApplyButtonEnabled(bool enabled);
-
     const UserSettingsPointer m_pConfig;
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
     TrackCollectionManager* m_pTrackCollectionManager;
