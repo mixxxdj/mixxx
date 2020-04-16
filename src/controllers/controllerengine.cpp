@@ -341,26 +341,31 @@ bool ControllerEngine::syntaxIsValid(const QString& scriptCode, const QString& f
     }
 
     QScriptSyntaxCheckResult result = m_pEngine->checkSyntax(scriptCode);
+
+    // Note: Do not translate the error messages that go into the "details"
+    // part of the error dialog. These serve as starting point for mapping
+    // developers and might not always be fluent in the language of mapping
+    // user.
     QString error;
     switch (result.state()) {
         case (QScriptSyntaxCheckResult::Valid): break;
         case (QScriptSyntaxCheckResult::Intermediate):
-            error = tr("Incomplete code");
+            error = QStringLiteral("Incomplete code");
             break;
         case (QScriptSyntaxCheckResult::Error):
-            error = tr("Syntax error");
+            error = QStringLiteral("Syntax error");
             break;
     }
     if (!error.isEmpty()) {
         if (filename.isEmpty()) {
-            error = QString(tr("%1 at line %2, column %3: %4"))
+            error = QString("%1 at line %2, column %3: %4")
                             .arg(error,
                                     QString::number(result.errorLineNumber()),
                                     QString::number(result.errorColumnNumber()),
                                     result.errorMessage()) +
-                    QStringLiteral("\n\n") + tr("Code:") + QStringLiteral("\n") + scriptCode;
+                    QStringLiteral("\n\nCode:\n") + scriptCode;
         } else {
-            error = QString(tr("%1 at line %2, column %3 in file %4: %5"))
+            error = QString("%1 at line %2, column %3 in file %4: %5")
                             .arg(error,
                                     QString::number(result.errorLineNumber()),
                                     QString::number(result.errorColumnNumber()),
@@ -493,6 +498,10 @@ bool ControllerEngine::checkException(bool bFatal) {
                 QString::number(m_pEngine->uncaughtExceptionLineNumber());
         QString filename = exception.property("fileName").toString();
 
+        // Note: Do not translate the error messages that go into the "details"
+        // part of the error dialog. These serve as starting point for mapping
+        // developers and might not always be fluent in the language of mapping
+        // user.
         QStringList error;
         error << (filename.isEmpty() ? "" : filename) << errorMessage << line;
         m_scriptErrors.insert(
@@ -500,14 +509,15 @@ bool ControllerEngine::checkException(bool bFatal) {
 
         QString errorText;
         if (filename.isEmpty()) {
-            errorText = tr("Uncaught exception at line %1 in passed code.").arg(line);
+            errorText = QString("Uncaught exception at line %1 in passed code.").arg(line);
         } else {
-            errorText = tr("Uncaught exception at line %1 in file %2.").arg(line, filename);
+            errorText = QString("Uncaught exception at line %1 in file %2.").arg(line, filename);
         }
 
+        errorText += QStringLiteral("\n\nException:\n  ") + errorMessage;
+
         // Add backtrace to the error details
-        errorText = errorText + QStringLiteral("\n\n") + tr("Backtrace:") +
-                QStringLiteral("\n  ") +
+        errorText += QStringLiteral("\n\nBacktrace:\n  ") +
                 m_pEngine->uncaughtExceptionBacktrace().join("\n  ");
 
         scriptErrorDialog(errorText, bFatal);
