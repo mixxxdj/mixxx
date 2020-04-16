@@ -323,6 +323,13 @@ void ControllerEngine::initializeScripts(const QList<ControllerPreset::ScriptFil
 
     // Call the init method for all the prefixes.
     callFunctionOnObjects(m_scriptFunctionPrefixes, "init", args);
+
+    // We failed to initialize the controller scripts, shutdown the script
+    // engine to avoid error popups on every button press or slider move
+    if (checkException(true)) {
+        gracefulShutdown();
+        uninitializeScriptEngine();
+    }
 }
 
 /* -------- ------------------------------------------------------
