@@ -14,7 +14,6 @@
 class ColumnCache : public QObject {
   Q_OBJECT
   public:
-
     enum Column {
         COLUMN_LIBRARYTABLE_INVALID = -1,
         COLUMN_LIBRARYTABLE_ID = 0,
@@ -68,6 +67,7 @@ class ColumnCache : public QObject {
 
         COLUMN_REKORDBOX_ANALYZE_PATH,
 
+        COLUMN_LASTPLAYED_DATETIMEPLAYED,
         // NUM_COLUMNS should always be the last item.
         NUM_COLUMNS
     };

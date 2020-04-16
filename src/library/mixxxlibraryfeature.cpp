@@ -56,6 +56,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             << "library." + LIBRARYTABLE_REPLAYGAIN
             << "library." + LIBRARYTABLE_FILETYPE
             << "library." + LIBRARYTABLE_DATETIMEADDED
+            << "last_played.datetime_played"
             << "track_locations.location"
             << "track_locations.fs_deleted"
             << "library." + LIBRARYTABLE_COMMENT
@@ -66,16 +67,30 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             << "library." + LIBRARYTABLE_COVERART_LOCATION
             << "library." + LIBRARYTABLE_COVERART_HASH;
 
-    QSqlQuery query(m_pTrackCollection->database());
-    QString tableName = "library_cache_view";
-    QString queryString = QString(
-        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-        "SELECT %2 FROM library "
-        "INNER JOIN track_locations ON library.location = track_locations.id")
-            .arg(tableName, columns.join(","));
-    query.prepare(queryString);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
+    QSqlQuery lastPlayedQuery(m_pTrackCollection->database());
+    QString lastPlayedtableName = "last_played";
+    QString lastPlayedQueryString = QString(
+            "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+            "SELECT track_id, MAX(pl_datetime_added) as datetime_played "
+            "FROM PlaylistTracks "
+            "GROUP BY track_id")
+                                            .arg(lastPlayedtableName);
+    lastPlayedQuery.prepare(lastPlayedQueryString);
+    if (!lastPlayedQuery.exec()) {
+        LOG_FAILED_QUERY(lastPlayedQuery);
+    }
+
+    QSqlQuery createCacheQuery(m_pTrackCollection->database());
+    QString cacheTableName = "library_cache_view";
+    QString cacheQueryString = QString(
+            "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+            "SELECT %2 FROM library "
+            "INNER JOIN track_locations ON library.location = track_locations.id "
+            "LEFT JOIN %3 ON library.id = %3.track_id")
+                                       .arg(cacheTableName, columns.join(","), lastPlayedtableName);
+    createCacheQuery.prepare(cacheQueryString);
+    if (!createCacheQuery.exec()) {
+        LOG_FAILED_QUERY(createCacheQuery);
     }
 
     // Strip out library. and track_locations.
@@ -85,11 +100,13 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             *it = it->replace("library.", "");
         } else if (it->startsWith("track_locations.")) {
             *it = it->replace("track_locations.", "");
+        } else if (it->startsWith("last_played.")) {
+            *it = it->replace("last_played.", "");
         }
     }
 
     BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
-            m_pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
+            m_pTrackCollection, cacheTableName, LIBRARYTABLE_ID, columns, true);
     m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
     m_pTrackCollection->connectTrackSource(m_pBaseTrackCache);
 

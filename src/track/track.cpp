@@ -368,6 +368,16 @@ void Track::setDateAdded(const QDateTime& dateAdded) {
     return m_record.setDateAdded(dateAdded);
 }
 
+QDateTime Track::getLastPlayedDate() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_lastPlayed;
+}
+
+void Track::setLastPlayedDate(const QDateTime& playedDate) {
+    QMutexLocker lock(&m_qMutex);
+    m_lastPlayed = playedDate;
+}
+
 void Track::setDuration(mixxx::Duration duration) {
     QMutexLocker lock(&m_qMutex);
     VERIFY_OR_DEBUG_ASSERT(!m_streamInfo ||

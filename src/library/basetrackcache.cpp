@@ -379,6 +379,8 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         trackValue.setValue(pTrack->getYear());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) == column) {
         trackValue.setValue(pTrack->getDateAdded());
+    } else if (fieldIndex(ColumnCache::COLUMN_LASTPLAYED_DATETIMEPLAYED) == column) {
+        trackValue.setValue(pTrack->getLastPlayedDate());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE) == column) {
         trackValue.setValue(pTrack->getGenre());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER) == column) {
@@ -418,7 +420,7 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) == column) {
         trackValue.setValue(pTrack->getCoverInfo().coverLocation);
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column ||
-               fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) == column) {
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) == column) {
         // For sorting, we give COLUMN_LIBRARYTABLE_COVERART the same value as
         // the cover hash.
         trackValue.setValue(pTrack->getCoverHash());

@@ -54,4 +54,6 @@ const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = "needs_verification";
 
 const QString REKORDBOX_ANALYZE_PATH = "analyze_path";
 
+const QString LASTPLAYED_DATETIMEPLAYED = "datetime_played";
+
 #endif //MIXXX_TRACKSCHEMA_H
