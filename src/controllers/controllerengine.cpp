@@ -1029,7 +1029,14 @@ bool ControllerEngine::evaluate(const QFileInfo& scriptFile) {
             props->setTitle(tr("Controller Mapping File Problem"));
             props->setText(tr("The mapping for controller \"%1\" cannot be opened.").arg(m_pController->getName()));
             props->setInfoText(tr("The functionality provided by this controller mapping will be disabled until the issue has been resolved."));
-            props->setDetails(QString(tr("File: %1\n\n")).arg(filename) + input.errorString());
+
+            // We usually don't translate the details field, but the cause of
+            // this problem lies in the user's system (e.g. a permission
+            // issue). Translating this will help users to fix the issue even
+            // when they don't speak english.
+            props->setDetails(tr("File:") + QStringLiteral(" ") + filename +
+                    QStringLiteral("\n") + tr("Error:") + QStringLiteral(" ") +
+                    input.errorString());
 
             // Ask above layer to display the dialog & handle user response
             ErrorDialogHandler::instance()->requestErrorDialog(props);
