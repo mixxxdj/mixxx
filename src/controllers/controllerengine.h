@@ -161,7 +161,6 @@ class ControllerEngine : public QObject {
     void scriptHasChanged(const QString&);
 
   signals:
-    void initialized();
     void resetController();
 
   private slots:

@@ -275,8 +275,6 @@ bool ControllerEngine::loadScriptFiles(const QList<ControllerPreset::ScriptFileI
     if (!success) {
         gracefulShutdown();
         uninitializeScriptEngine();
-    } else {
-        emit initialized();
     }
 
     return success;
@@ -325,8 +323,6 @@ void ControllerEngine::initializeScripts(const QList<ControllerPreset::ScriptFil
 
     // Call the init method for all the prefixes.
     callFunctionOnObjects(m_scriptFunctionPrefixes, "init", args);
-
-    emit initialized();
 }
 
 /* -------- ------------------------------------------------------
