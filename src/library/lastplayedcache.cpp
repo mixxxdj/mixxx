@@ -24,18 +24,17 @@ LastPlayedCache::LastPlayedCache(TrackCollection* trackCollection)
 void LastPlayedCache::initTableView() {
     // XXX: why isn't value binding working???
     QSqlQuery lastPlayedQuery(m_pTrackCollection->database());
-    lastPlayedQuery.prepare(QStringLiteral(
-            "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+    lastPlayedQuery.prepare(
+            "CREATE TEMPORARY VIEW IF NOT EXISTS last_played AS "
             "SELECT "
             "  PlaylistTracks.track_id, "
             "  MAX(PlaylistTracks.pl_datetime_added) as datetime_played "
             "FROM PlaylistTracks "
             "JOIN Playlists ON PlaylistTracks.playlist_id == Playlists.id "
-            "WHERE Playlists.hidden = %2 "
-            "GROUP BY PlaylistTracks.track_id")
-                                    .arg(LASTPLAYEDTABLE_NAME,
-                                            QString::number(PlaylistDAO::
-                                                            PLHT_SET_LOG)));
+            "WHERE Playlists.hidden = :setlogid "
+            "GROUP BY PlaylistTracks.track_id");
+    // .arg(LASTPLAYEDTABLE_NAME));
+    lastPlayedQuery.bindValue(":setlogid", PlaylistDAO::PLHT_SET_LOG);
     if (!lastPlayedQuery.exec()) {
         LOG_FAILED_QUERY(lastPlayedQuery);
     }
@@ -62,10 +61,10 @@ QDateTime LastPlayedCache::fetchLastPlayedTime(const QSqlDatabase& db, TrackPoin
             "  FROM "
             "    last_played "
             "  WHERE "
-            "    track_id = %1 ")
-                                        .arg(pTrack->getId().toString());
-    updateQuery.prepare(queryString);
-    // updateQuery.bindValue(":trackId", trackId.toVariant());
+            "    track_id = :trackid ");
+    // .arg(pTrack->getId().toString());
+    qDebug() << "yesSss????????????? " << updateQuery.prepare(queryString);
+    updateQuery.bindValue(":trackid", pTrack->getId().toVariant(), QSql::Out);
     if (!updateQuery.exec()) {
         LOG_FAILED_QUERY(updateQuery);
     }
