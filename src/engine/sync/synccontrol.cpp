@@ -399,11 +399,15 @@ void SyncControl::slotSyncModeChangeRequest(double state) {
 }
 
 void SyncControl::slotSyncMasterEnabledChangeRequest(double state) {
-    bool currentlyMaster = isMaster(getSyncMode());
-
+    SyncMode mode = getSyncMode();
     if (state > 0.0) {
-        if (currentlyMaster) {
+        if (mode == SYNC_MASTER_EXPLICIT) {
             // Already master.
+            return;
+        }
+        if (mode == SYNC_MASTER_SOFT) {
+            // user request: make master explicite
+            m_pSyncMode->setAndConfirm(SYNC_MASTER_EXPLICIT);
             return;
         }
         if (m_pPassthroughEnabled->get()) {
@@ -413,7 +417,7 @@ void SyncControl::slotSyncMasterEnabledChangeRequest(double state) {
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_MASTER_EXPLICIT);
     } else {
         // Turning off master goes back to follower mode.
-        if (!currentlyMaster) {
+        if (mode == SYNC_FOLLOWER) {
             // Already not master.
             return;
         }

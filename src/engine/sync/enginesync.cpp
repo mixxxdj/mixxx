@@ -102,14 +102,20 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
         return;
     }
 
-    if (isMaster(mode)) {
-        activateMaster(pSyncable, mode == SYNC_MASTER_EXPLICIT);
+    if (mode == SYNC_MASTER_EXPLICIT) {
+        // Note: we enable master unconditionally. If it has no valid
+        // tempo, the tempo of the old master remains until we know better
+        activateMaster(pSyncable, true);
         if (pSyncable->getBaseBpm() > 0) {
             setMasterParams(pSyncable, pSyncable->getBeatDistance(),
                             pSyncable->getBaseBpm(), pSyncable->getBpm());
         }
-    } else if (mode == SYNC_FOLLOWER || pSyncable == m_pInternalClock) {
-        // Note: Internal clock cannot be disabled, it is always listening
+    } else if (mode == SYNC_FOLLOWER ||
+            mode == SYNC_MASTER_SOFT ||
+            pSyncable == m_pInternalClock) {
+        // Note: SYNC_MASTER_SOFT and SYNC_FOLLOWER cannot be set explicit,
+        // they are calculated by pickMaster.
+        // Internal clock cannot be disabled, it is always listening
         if (m_pMasterSyncable == pSyncable) {
             // Was this  pSyncable was master before. Hand off.
             m_pMasterSyncable = nullptr;
@@ -358,10 +364,17 @@ void EngineSync::activateMaster(Syncable* pSyncable, bool explicitMaster) {
 
     // Already master, no need to do anything.
     if (m_pMasterSyncable == pSyncable) {
-        // Sanity check.
-        if (!isMaster(m_pMasterSyncable->getSyncMode())) {
-            qWarning() << "WARNING: Logic Error: m_pMasterSyncable is a syncable that does not think it is master.";
+        // Update the explicit State.
+        if (explicitMaster) {
+            if (m_pMasterSyncable->getSyncMode() != SYNC_MASTER_EXPLICIT) {
+                m_pMasterSyncable->setSyncMode(SYNC_MASTER_EXPLICIT);
+            } else if (m_pMasterSyncable->getSyncMode() != SYNC_MASTER_SOFT) {
+                m_pMasterSyncable->setSyncMode(SYNC_MASTER_SOFT);
+            } else {
+                DEBUG_ASSERT(!"Logic Error: m_pMasterSyncable is a syncable that does not think it is master.");
+            }
         }
+        // nothing else to do
         return;
     }
 

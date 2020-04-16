@@ -61,20 +61,22 @@ void InternalClock::requestSync() {
 }
 
 void InternalClock::slotSyncMasterEnabledChangeRequest(double state) {
-    bool currentlyMaster = isMaster(getSyncMode());
-
+    SyncMode mode = m_mode;
+    //Note: internal clock is always sync enabled
     if (state > 0.0) {
-        if (currentlyMaster) {
+        if (mode == SYNC_MASTER_EXPLICIT) {
             // Already master.
             return;
         }
-        // Internal clock can never be explicit master.  If we ever have something like a
-        // midi clock, *that* can be explicit master, but the internal clock is just around
-        // to hand off and coordinate other decks.
-        m_pEngineSync->requestSyncMode(this, SYNC_MASTER_SOFT);
+        if (mode == SYNC_MASTER_SOFT) {
+            // user request: make master explicite
+            m_mode = SYNC_MASTER_EXPLICIT;
+            return;
+        }
+        m_pEngineSync->requestSyncMode(this, SYNC_MASTER_EXPLICIT);
     } else {
         // Turning off master goes back to follower mode.
-        if (!currentlyMaster) {
+        if (mode == SYNC_FOLLOWER) {
             // Already not master.
             return;
         }

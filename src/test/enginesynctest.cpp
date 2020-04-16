@@ -645,13 +645,8 @@ TEST_F(EngineSyncTest, MasterStopSliderCheck) {
 TEST_F(EngineSyncTest, EnableOneDeckInitsMaster) {
     // If Internal is master, and we turn sync on a playing deck, the playing deck sets the
     // internal master and the beat distances are now aligned.
-
-    auto pButtonMasterSyncInternal = std::make_unique<ControlProxy>(m_sInternalClockGroup, "sync_master");
-
-    // Set internal to master and give it a beat distance.
     ControlObject::set(ConfigKey(m_sInternalClockGroup, "bpm"), 124.0);
     ControlObject::set(ConfigKey(m_sInternalClockGroup, "beat_distance"), 0.5);
-    pButtonMasterSyncInternal->set(SYNC_MASTER_SOFT);
     ProcessBuffer();
 
     // Set up the deck to play.
@@ -1059,12 +1054,9 @@ TEST_F(EngineSyncTest, MomentarySyncDependsOnPlayingStates) {
 }
 
 TEST_F(EngineSyncTest, EjectTrackSyncRemains) {
-    auto pButtonMasterSyncInternal = std::make_unique<ControlProxy>(m_sInternalClockGroup, "sync_master");
     auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
     auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
     auto pButtonEject1 = std::make_unique<ControlProxy>(m_sGroup1, "eject");
-
-    pButtonMasterSyncInternal->set(1.0);
 
     BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 120, 0.0);
     m_pTrack1->setBeats(pBeats1);
