@@ -502,7 +502,48 @@
                     <normal />
                 </options>
             </control>
-            <!--FX Pads (SHIFT mode)-->
+            <!--FX Pads -->
+            <control>
+                <group>[EffectRack1_EffectUnit1_Effect1]</group>
+                <key>enabled</key>
+                <description>FX Unit 1 - Slot 1 On/Off</description>
+                <status>0x96</status>
+                <midino>0x20</midino>
+                <options>
+                    <normal />
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1_Effect2]</group>
+                <key>enabled</key>
+                <description>FX Unit 1 - Slot 2 On/Off</description>
+                <status>0x96</status>
+                <midino>0x21</midino>
+                <options>
+                    <normal />
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1_Effect3]</group>
+                <key>enabled</key>
+                <description>FX Unit 1 - Slot 3 On/Off</description>
+                <status>0x96</status>
+                <midino>0x22</midino>
+                <options>
+                    <normal />
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel1]_enable</key>
+                <description>FX Unit 1 On/Off - Deck A</description>
+                <status>0x96</status>
+                <midino>0x23</midino>
+                <options>
+                    <normal />
+                </options>
+            </control>
+			<!--FX Pads (SHIFT mode)-->
             <control>
                 <group>[EffectRack1_EffectUnit1_Effect1]</group>
                 <key>enabled</key>
@@ -535,7 +576,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>group_[Channel2]_enable</key>
+                <key>group_[Channel1]_enable</key>
                 <description>FX Unit 1 On/Off - Deck A</description>
                 <status>0x96</status>
                 <midino>0x2B</midino>
@@ -708,7 +749,48 @@
                     <normal />
                 </options>
             </control>
-            <!--FX Pads (SHIFT mode)-->
+            <!--FX Pads -->
+            <control>
+                <group>[EffectRack1_EffectUnit2_Effect1]</group>
+                <key>enabled</key>
+                <description>FX Unit 2 - Slot 1 On/Off</description>
+                <status>0x97</status>
+                <midino>0x20</midino>
+                <options>
+                    <normal />
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2_Effect2]</group>
+                <key>enabled</key>
+                <description>FX Unit 2 - Slot 2 On/Off</description>
+                <status>0x97</status>
+                <midino>0x21</midino>
+                <options>
+                    <normal />
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2_Effect3]</group>
+                <key>enabled</key>
+                <description>FX Unit 2 - Slot 3 On/Off</description>
+                <status>0x97</status>
+                <midino>0x22</midino>
+                <options>
+                    <normal />
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel2]_enable</key>
+                <description>FX Unit 2 On/Off - Deck B</description>
+                <status>0x97</status>
+                <midino>0x23</midino>
+                <options>
+                    <normal />
+                </options>
+            </control>
+			<!--FX Pads (SHIFT mode)-->
             <control>
                 <group>[EffectRack1_EffectUnit2_Effect1]</group>
                 <key>enabled</key>
@@ -1503,6 +1585,42 @@
                 <key>enabled</key>
                 <description>(Pad 1)</description>
                 <status>0x96</status>
+                <midino>0x20</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1_Effect2]</group>
+                <key>enabled</key>
+                <description>(Pad 2)</description>
+                <status>0x96</status>
+                <midino>0x21</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1_Effect3]</group>
+                <key>enabled</key>
+                <description>(Pad 3)</description>
+                <status>0x96</status>
+                <midino>0x22</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel1]_enable</key>
+                <description>(Pad 4)</description>
+                <status>0x96</status>
+                <midino>0x23</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+			<output>
+                <group>[EffectRack1_EffectUnit1_Effect1]</group>
+                <key>enabled</key>
+                <description>(Pad 1)</description>
+                <status>0x96</status>
                 <midino>0x28</midino>
                 <on>0x7F</on>
                 <minimum>0.5</minimum>
@@ -1531,6 +1649,42 @@
                 <description>(Pad 4)</description>
                 <status>0x96</status>
                 <midino>0x2B</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+			<output>
+                <group>[EffectRack1_EffectUnit2_Effect1]</group>
+                <key>enabled</key>
+                <description>(Pad 1)</description>
+                <status>0x97</status>
+                <midino>0x20</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2_Effect2]</group>
+                <key>enabled</key>
+                <description>(Pad 2)</description>
+                <status>0x97</status>
+                <midino>0x21</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2_Effect3]</group>
+                <key>enabled</key>
+                <description>(Pad 3)</description>
+                <status>0x97</status>
+                <midino>0x22</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel2]_enable</key>
+                <description>(Pad 4)</description>
+                <status>0x97</status>
+                <midino>0x23</midino>
                 <on>0x7F</on>
                 <minimum>0.5</minimum>
             </output>
