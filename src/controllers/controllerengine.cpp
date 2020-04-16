@@ -485,7 +485,7 @@ bool ControllerEngine::execute(QScriptValue function,
    Input:   QScriptValue returned from call(scriptFunctionName)
    Output:  true if there was an exception
    -------- ------------------------------------------------------ */
-bool ControllerEngine::checkException() {
+bool ControllerEngine::checkException(bool bFatal) {
     if (m_pEngine == nullptr) {
         return false;
     }
@@ -514,7 +514,7 @@ bool ControllerEngine::checkException() {
                 QStringLiteral("\n  ") +
                 m_pEngine->uncaughtExceptionBacktrace().join("\n  ");
 
-        scriptErrorDialog(errorText);
+        scriptErrorDialog(errorText, bFatal);
         m_pEngine->clearExceptions();
         return true;
     }
@@ -566,9 +566,10 @@ void ControllerEngine::scriptErrorDialog(
     props->setKey(detailedError);   // To prevent multiple windows for the same error
 
     // Allow user to suppress further notifications about this particular error
-    props->addButton(QMessageBox::Ignore);
-
-    props->addButton(QMessageBox::Retry);
+    if (!bFatalError) {
+        props->addButton(QMessageBox::Ignore);
+        props->addButton(QMessageBox::Retry);
+    }
     props->addButton(QMessageBox::Close);
     props->setDefaultButton(QMessageBox::Close);
     props->setEscapeButton(QMessageBox::Close);
@@ -1044,7 +1045,7 @@ bool ControllerEngine::evaluate(const QFileInfo& scriptFile) {
     QScriptValue scriptFunction = m_pEngine->evaluate(scriptCode, filename);
 
     // Record errors
-    if (checkException()) {
+    if (checkException(true)) {
         return false;
     }
 

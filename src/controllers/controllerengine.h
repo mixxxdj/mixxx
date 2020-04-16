@@ -182,7 +182,7 @@ class ControllerEngine : public QObject {
     void stopAllTimers();
 
     void callFunctionOnObjects(QList<QString>, const QString&, QScriptValueList args = QScriptValueList());
-    bool checkException();
+    bool checkException(bool bFatal = false);
     QScriptEngine *m_pEngine;
 
     ControlObjectScript* getControlObjectScript(const QString& group, const QString& name);
