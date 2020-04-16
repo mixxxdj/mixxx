@@ -25,7 +25,6 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
     ~WTrackProperty() override = default;
 
     void setup(const QDomNode& node, const SkinContext& context) override;
-    void contextMenuEvent(QContextMenuEvent * event) override;
 
 signals:
     void trackDropped(QString filename, QString group) override;
@@ -37,6 +36,7 @@ signals:
 
   private slots:
     void slotTrackChanged(TrackId);
+    void contextMenuEvent(QContextMenuEvent* event) override;
 
   private:
     void dragEnterEvent(QDragEnterEvent *event) override;

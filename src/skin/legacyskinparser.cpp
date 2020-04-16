@@ -1010,7 +1010,10 @@ QWidget* LegacySkinParser::parseText(const QDomElement& node) {
     if (!pPlayer)
         return NULL;
 
-    WTrackText* p = new WTrackText(pSafeChannelStr, m_pConfig, m_pParent);
+    WTrackText* p = new WTrackText(m_pParent,
+            m_pConfig,
+            m_pLibrary->trackCollections(),
+            pSafeChannelStr);
     setupLabelWidget(node, p);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
