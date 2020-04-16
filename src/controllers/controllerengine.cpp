@@ -76,6 +76,8 @@ Output:  -
 -------- ------------------------------------------------------ */
 void ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefixes,
                                              const QString& function, QScriptValueList args) {
+    // This function is called from outside the controller engine, so we can't
+    // use VERIFY_OR_DEBUG_ASSERT here
     if (m_pEngine == nullptr) {
         return;
     }
@@ -111,7 +113,9 @@ Output:  QScriptValue of JS snippet wrapped in an anonymous function
 ------------------------------------------------------------------- */
 QScriptValue ControllerEngine::wrapFunctionCode(const QString& codeSnippet,
                                                 int numberOfArgs) {
-    VERIFY_OR_DEBUG_ASSERT(m_pEngine != nullptr) {
+    // This function is called from outside the controller engine, so we can't
+    // use VERIFY_OR_DEBUG_ASSERT here
+    if (m_pEngine == nullptr) {
         return QScriptValue();
     }
 
