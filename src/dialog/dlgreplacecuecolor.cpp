@@ -111,10 +111,9 @@ DlgReplaceCueColor::DlgReplaceCueColor(
     setButtonColor(pushButtonCurrentColor,
             mixxx::RgbColor::toQColor(
                     mixxx::PredefinedColorPalettes::kDefaultCueColor));
-    connect(checkBoxCurrentColorCondition,
-            &QCheckBox::stateChanged,
-            this,
-            &DlgReplaceCueColor::slotUpdateWidgets);
+
+    // Update apply button when the current color comparison combobox is
+    // modified
     connect(comboBoxCurrentColorCompare,
             &QComboBox::currentTextChanged,
             this,
@@ -140,6 +139,16 @@ DlgReplaceCueColor::DlgReplaceCueColor(
             });
     m_pCurrentColorMenu->addAction(m_pCurrentColorPickerAction);
     pushButtonCurrentColor->setMenu(m_pCurrentColorMenu);
+
+    // Update dialog widgets when conditions checkboxes are (un)checked
+    connect(checkBoxCurrentColorCondition,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgReplaceCueColor::slotUpdateWidgets);
+    connect(checkBoxHotcueIndexCondition,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgReplaceCueColor::slotUpdateWidgets);
 
     connect(buttonBox,
             &QDialogButtonBox::clicked,
