@@ -41,6 +41,12 @@
 #include "widget/wtracktableviewheader.h"
 #include "widget/wwidget.h"
 
+namespace {
+
+const ConfigKey kConfigKeyAllowTrackLoadToPlayingDeck("[Controls]", "AllowTrackLoadToPlayingDeck");
+
+}
+
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  UserSettingsPointer pConfig,
                                  TrackCollectionManager* pTrackCollectionManager,
@@ -620,9 +626,7 @@ void WTrackTableView::loadSelectionToGroup(QString group, bool play) {
 
     // If the track load override is disabled, check to see if a track is
     // playing before trying to load it
-    if (!(m_pConfig->getValueString(
-                           ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"))
-                        .toInt())) {
+    if (!m_pConfig->getValue<bool>(kConfigKeyAllowTrackLoadToPlayingDeck)) {
         // TODO(XXX): Check for other than just the first preview deck.
         if (group != "[PreviewDeck1]" &&
                 ControlObject::get(ConfigKey(group, "play")) > 0.0) {
@@ -904,7 +908,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 bool deckPlaying = ControlObject::get(
                         ConfigKey(deckGroup, "play")) > 0.0;
                 bool loadTrackIntoPlayingDeck = m_pConfig->getValue<bool>(
-                        ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"));
+                        kConfigKeyAllowTrackLoadToPlayingDeck);
                 bool deckEnabled = (!deckPlaying  || loadTrackIntoPlayingDeck)  && oneSongSelected;
                 QAction* pAction = new QAction(tr("Deck %1").arg(i), m_pMenu);
                 pAction->setEnabled(deckEnabled);
