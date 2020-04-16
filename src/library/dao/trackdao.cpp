@@ -227,7 +227,7 @@ QList<TrackId> TrackDAO::resolveTrackIds(
     return trackIds;
 }
 
-QSet<QString> TrackDAO::getAllTrackLocations() {
+QSet<QString> TrackDAO::getAllTrackLocations() const {
     QSet<QString> locations;
     QSqlQuery query(m_database);
     query.prepare("SELECT track_locations.location FROM track_locations "
@@ -245,7 +245,7 @@ QSet<QString> TrackDAO::getAllTrackLocations() {
 
 // Some code (eg. drag and drop) needs to just get a track's location, and it's
 // not worth retrieving a whole Track.
-QString TrackDAO::getTrackLocation(TrackId trackId) {
+QString TrackDAO::getTrackLocation(TrackId trackId) const {
     qDebug() << "TrackDAO::getTrackLocation"
              << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
@@ -266,7 +266,7 @@ QString TrackDAO::getTrackLocation(TrackId trackId) {
     return trackLocation;
 }
 
-void TrackDAO::saveTrack(Track* pTrack) {
+void TrackDAO::saveTrack(Track* pTrack) const {
     DEBUG_ASSERT(pTrack);
     if (!pTrack->isDirty()) {
         return;
@@ -712,7 +712,7 @@ TrackPointer TrackDAO::addTracksAddFile(const TrackFile& trackFile, bool unremov
 }
 
 bool TrackDAO::hideTracks(
-        const QList<TrackId>& trackIds) {
+        const QList<TrackId>& trackIds) const {
     QStringList idList;
     for (const auto& trackId: trackIds) {
         idList.append(trackId.toString());
@@ -745,7 +745,7 @@ void TrackDAO::afterHidingTracks(
 // This function should get called if you drag-and-drop a file that's been
 // "hidden" from Mixxx back into the library view.
 bool TrackDAO::unhideTracks(
-        const QList<TrackId>& trackIds) {
+        const QList<TrackId>& trackIds) const {
     QStringList idList;
     for (const auto& trackId: trackIds) {
         idList.append(trackId.toString());
@@ -771,7 +771,7 @@ void TrackDAO::afterUnhidingTracks(
 #endif
 }
 
-QList<TrackRef> TrackDAO::getAllTrackRefs(const QDir& rootDir) {
+QList<TrackRef> TrackDAO::getAllTrackRefs(const QDir& rootDir) const {
     // Capture entries that start with the directory prefix dir.
     // dir needs to end in a slash otherwise we might match other
     // directories.
@@ -802,7 +802,7 @@ QList<TrackRef> TrackDAO::getAllTrackRefs(const QDir& rootDir) {
 }
 
 bool TrackDAO::onPurgingTracks(
-        const QList<TrackId>& trackIds) {
+        const QList<TrackId>& trackIds) const {
     if (trackIds.empty()) {
         return true; // nothing to do
     }
@@ -1364,7 +1364,7 @@ TrackPointer TrackDAO::getTrackByRef(
 }
 
 // Saves a track's info back to the database
-bool TrackDAO::updateTrack(Track* pTrack) {
+bool TrackDAO::updateTrack(Track* pTrack) const {
     const TrackId trackId = pTrack->getId();
     DEBUG_ASSERT(trackId.isValid());
 
@@ -1455,7 +1455,7 @@ bool TrackDAO::updateTrack(Track* pTrack) {
 // Mark all the tracks in the library as invalid.
 // That means we'll need to later check that those tracks actually
 // (still) exist as part of the library scanning procedure.
-void TrackDAO::invalidateTrackLocationsInLibrary() {
+void TrackDAO::invalidateTrackLocationsInLibrary() const {
     //qDebug() << "TrackDAO::invalidateTrackLocations" << QThread::currentThread() << m_database.connectionName();
     //qDebug() << "invalidateTrackLocations(" << libraryPath << ")";
 
@@ -1467,7 +1467,7 @@ void TrackDAO::invalidateTrackLocationsInLibrary() {
     }
 }
 
-void TrackDAO::markTrackLocationsAsVerified(const QStringList& locations) {
+void TrackDAO::markTrackLocationsAsVerified(const QStringList& locations) const {
     //qDebug() << "TrackDAO::markTrackLocationsAsVerified" << QThread::currentThread() << m_database.connectionName();
 
     QSqlQuery query(m_database);
@@ -1481,7 +1481,7 @@ void TrackDAO::markTrackLocationsAsVerified(const QStringList& locations) {
     }
 }
 
-void TrackDAO::markTracksInDirectoriesAsVerified(const QStringList& directories) {
+void TrackDAO::markTracksInDirectoriesAsVerified(const QStringList& directories) const {
     //qDebug() << "TrackDAO::markTracksInDirectoryAsVerified" << QThread::currentThread() << m_database.connectionName();
 
     QSqlQuery query(m_database);
@@ -1544,7 +1544,7 @@ namespace {
 bool TrackDAO::detectMovedTracks(
         QList<RelocatedTrack> *pRelocatedTracks,
         const QStringList& addedTracks,
-        volatile const bool* pCancel) {
+        volatile const bool* pCancel) const {
     // This function should not start a transaction on it's own!
     // When it's called from libraryscanner.cpp, there already is a transaction
     // started!
@@ -1716,7 +1716,7 @@ bool TrackDAO::detectMovedTracks(
     return true;
 }
 
-void TrackDAO::hideAllTracks(const QDir& rootDir) {
+void TrackDAO::hideAllTracks(const QDir& rootDir) const {
     // Capture entries that start with the directory prefix dir.
     // dir needs to end in a slash otherwise we might match other
     // directories.

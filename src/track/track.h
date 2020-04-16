@@ -329,7 +329,8 @@ class Track : public QObject {
     void beatsUpdated();
     void keyUpdated(double key);
     void keysUpdated();
-    void ReplayGainUpdated(mixxx::ReplayGain replayGain);
+    void replayGainUpdated(mixxx::ReplayGain replayGain);
+    void colorUpdated(mixxx::RgbColor::optional_t color);
     void cuesUpdated();
     void analyzed();
 

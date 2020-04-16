@@ -18,6 +18,13 @@ WOverview {
   font-family: "Ubuntu";
 }
 
+/* Passthrough label on overview waveform */
+WOverview #PassthroughLabel {
+  font-size: 12px;
+  font-weight: bold;
+  color: #55F764;
+}
+
 WBeatSpinBox,
 /* For some mysterious reason #DlgAutoDJ QSpinBox
 wouldn't style the respective spinbox in Shade (anymore),
@@ -467,6 +474,10 @@ WLibrary WColorPicker QPushButton {
       border: 1px solid rgba(151,151,151,128);
       }
 
+#PreviewDeckContainer {
+  margin: 2px 0px 4px 3px;
+}
+
 /* library search text box */
 WSearchLineEdit {
   margin-top: 2px;
@@ -493,8 +504,9 @@ WSearchLineEdit {
   Defined by SearchBox	*/
   margin: 0px;
   }
+  #LibraryContainer QTableView:focus,
   #LibraryContainer QTreeView:focus,
-  #LibraryContainer QTableView:focus { /*
+  #LibraryContainer QTextBrowser:focus { /*
     New Library navigation COs only work if TreeView or TableView have focus.
     Clicking on buttons, sliders and visuals elsewhere removes focus from Library.
     In conjunction with [Library],MoveFocusBackward/..Forward, this helps a lot. */
@@ -809,6 +821,14 @@ QPushButton#pushButtonRepeatPlaylist {
   image: url(skin:/btn/btn_autodj_repeat_playlist.svg) no-repeat center center;
 }
 /* AutoDJ button icons */
+
+#labelRecFilename {
+  font-weight: bold;
+}
+#labelRecPrefix,
+#labelRecStatistics {
+  font-weight: normal;
+}
 
 #HotcueButton {
     background-color: #aab2b7;
