@@ -175,7 +175,7 @@ class ControllerEngine : public QObject {
     void initializeScriptEngine();
     void uninitializeScriptEngine();
 
-    void scriptErrorDialog(const QString& detailedError, bool bFatal = false);
+    void scriptErrorDialog(const QString& detailedError, const QString& key, bool bFatal = false);
     void generateScriptFunctions(const QString& code);
     // Stops and removes all timers (for shutdown).
     void stopAllTimers();

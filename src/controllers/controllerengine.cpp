@@ -392,7 +392,7 @@ bool ControllerEngine::syntaxIsValid(const QString& scriptCode, const QString& f
     }
 
     qWarning() << "ControllerEngine:" << error;
-    scriptErrorDialog(error, true);
+    scriptErrorDialog(error, error, true);
     return false;
 }
 
@@ -532,11 +532,16 @@ bool ControllerEngine::checkException(bool bFatal) {
 
         errorText += QStringLiteral("\n\nException:\n  ") + errorMessage;
 
+        // Do not include backtrace in dialog key because it might contain midi
+        // slider values that will differ most of the time. This would break
+        // the "Ignore" feature of the error dialog.
+        QString key = errorText;
+
         // Add backtrace to the error details
         errorText += QStringLiteral("\n\nBacktrace:\n  ") +
                 m_pEngine->uncaughtExceptionBacktrace().join("\n  ");
 
-        scriptErrorDialog(errorText, bFatal);
+        scriptErrorDialog(errorText, key, bFatal);
         m_pEngine->clearExceptions();
         return true;
     }
@@ -550,7 +555,7 @@ bool ControllerEngine::checkException(bool bFatal) {
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::scriptErrorDialog(
-        const QString& detailedError, bool bFatalError) {
+        const QString& detailedError, const QString& key, bool bFatalError) {
     qWarning() << "ControllerEngine:" << detailedError;
 
     if (!m_bPopups) {
@@ -585,7 +590,9 @@ void ControllerEngine::scriptErrorDialog(
     // Add "Details" text and set monospace font since they may contain
     // backtraces and code.
     props->setDetails(detailedError, true);
-    props->setKey(detailedError);   // To prevent multiple windows for the same error
+
+    // To prevent multiple windows for the same error
+    props->setKey(key);
 
     // Allow user to suppress further notifications about this particular error
     if (!bFatalError) {
@@ -1201,7 +1208,7 @@ bool ControllerEngine::isDeckPlaying(const QString& group) {
 
     if (pPlay == nullptr) {
       QString error = QString("Could not getControlObjectScript()");
-      scriptErrorDialog(error);
+      scriptErrorDialog(error, error);
       return false;
     }
 
