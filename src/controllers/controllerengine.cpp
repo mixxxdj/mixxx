@@ -211,6 +211,9 @@ bool ControllerEngine::isReady() {
 }
 
 void ControllerEngine::initializeScriptEngine() {
+    // Clear any errors from previous script engine usages
+    m_scriptErrors.clear();
+
     // Create the Script Engine
     m_pEngine = new QScriptEngine(this);
 
