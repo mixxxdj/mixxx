@@ -37,29 +37,25 @@ void DlgPrefControllers::slotOpenLocalFile(const QString& file) {
 }
 
 void DlgPrefControllers::slotUpdate() {
-    // Update our sub-windows.
-    foreach (DlgPrefController* pControllerWindows, m_controllerWindows) {
+    for (DlgPrefController* pControllerWindows : qAsConst(m_controllerWindows)) {
         pControllerWindows->slotUpdate();
     }
 }
 
 void DlgPrefControllers::slotCancel() {
-    // Update our sub-windows.
-    foreach (DlgPrefController* pControllerWindows, m_controllerWindows) {
+    for (DlgPrefController* pControllerWindows : qAsConst(m_controllerWindows)) {
         pControllerWindows->slotCancel();
     }
 }
 
 void DlgPrefControllers::slotApply() {
-    // Update our sub-windows.
-    foreach (DlgPrefController* pControllerWindows, m_controllerWindows) {
+    for (DlgPrefController* pControllerWindows : qAsConst(m_controllerWindows)) {
         pControllerWindows->slotApply();
     }
 }
 
 void DlgPrefControllers::slotResetToDefaults() {
-    // Update our sub-windows.
-    foreach (DlgPrefController* pControllerWindows, m_controllerWindows) {
+    for (DlgPrefController* pControllerWindows : qAsConst(m_controllerWindows)) {
         pControllerWindows->slotResetToDefaults();
     }
 }
