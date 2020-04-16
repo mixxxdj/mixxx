@@ -98,6 +98,9 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     TrackPointer getTrackById(
             TrackId trackId) const;
 
+    // The last played time is calculated on the fly from the db.
+    void populateLastPlayedTime(TrackPointer pTrack) const;
+
     // Loads a track from the database (by id if available, otherwise by location)
     // or adds it if not found in case the location is known. The (optional) out
     // parameter is set if the track has been found (-> true) or added (-> false).

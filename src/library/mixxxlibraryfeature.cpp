@@ -23,13 +23,13 @@
 #include "library/dlgmissing.h"
 
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
-                                         UserSettingsPointer pConfig)
+        UserSettingsPointer pConfig)
         : LibraryFeature(pLibrary, pConfig),
           kMissingTitle(tr("Missing Tracks")),
           kHiddenTitle(tr("Hidden Tracks")),
           m_icon(":/images/library/ic_library_tracks.svg"),
           m_pTrackCollection(pLibrary->trackCollections()->internalCollection()),
-          m_pLibraryTableModel(nullptr),
+          m_pLastPlayedCache(new LastPlayedCache(m_pTrackCollection)),
           m_pMissingView(nullptr),
           m_pHiddenView(nullptr) {
     QStringList columns;
@@ -67,27 +67,17 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             << "library." + LIBRARYTABLE_COVERART_LOCATION
             << "library." + LIBRARYTABLE_COVERART_HASH;
 
-    QSqlQuery lastPlayedQuery(m_pTrackCollection->database());
-    QString lastPlayedtableName = "last_played";
-    QString lastPlayedQueryString = QString(
-            "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-            "SELECT track_id, MAX(pl_datetime_added) as datetime_played "
-            "FROM PlaylistTracks "
-            "GROUP BY track_id")
-                                            .arg(lastPlayedtableName);
-    lastPlayedQuery.prepare(lastPlayedQueryString);
-    if (!lastPlayedQuery.exec()) {
-        LOG_FAILED_QUERY(lastPlayedQuery);
-    }
-
     QSqlQuery createCacheQuery(m_pTrackCollection->database());
-    QString cacheTableName = "library_cache_view";
-    QString cacheQueryString = QString(
-            "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-            "SELECT %2 FROM library "
-            "INNER JOIN track_locations ON library.location = track_locations.id "
-            "LEFT JOIN %3 ON library.id = %3.track_id")
-                                       .arg(cacheTableName, columns.join(","), lastPlayedtableName);
+    const QString cacheTableName = "library_cache_view";
+    const QString cacheQueryString =
+            QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+                    "SELECT %2 FROM library "
+                    "INNER JOIN track_locations ON library.location = "
+                    "track_locations.id "
+                    "LEFT JOIN %3 ON library.id = %3.track_id")
+                    .arg(cacheTableName,
+                            columns.join(","),
+                            LASTPLAYEDTABLE_NAME);
     createCacheQuery.prepare(cacheQueryString);
     if (!createCacheQuery.exec()) {
         LOG_FAILED_QUERY(createCacheQuery);

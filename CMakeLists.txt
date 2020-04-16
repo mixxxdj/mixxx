@@ -397,6 +397,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/externaltrackcollection.cpp
   src/library/hiddentablemodel.cpp
   src/library/itunes/itunesfeature.cpp
+  src/library/lastplayedcache.cpp
   src/library/library.cpp
   src/library/librarycontrol.cpp
   src/library/libraryfeature.cpp

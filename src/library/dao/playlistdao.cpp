@@ -262,8 +262,8 @@ bool PlaylistDAO::removeTracksFromPlaylist(int playlistId, int startIndex) {
 }
 
 bool PlaylistDAO::appendTracksToPlaylist(const QList<TrackId>& trackIds, const int playlistId) {
-    // qDebug() << "PlaylistDAO::appendTracksToPlaylist"
-    //          << QThread::currentThread() << m_database.connectionName();
+    qDebug() << "PlaylistDAO::appendTracksToPlaylist"
+             << QThread::currentThread() << m_database.connectionName();
 
     // Start the transaction
     ScopedTransaction transaction(m_database);

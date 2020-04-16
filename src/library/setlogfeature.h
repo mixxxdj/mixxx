@@ -3,12 +3,13 @@
 #ifndef SETLOGFEATURE_H
 #define SETLOGFEATURE_H
 
-#include <QLinkedList>
-#include <QSqlTableModel>
 #include <QAction>
+#include <QLinkedList>
 #include <QPointer>
+#include <QSqlTableModel>
 
 #include "library/baseplaylistfeature.h"
+#include "library/lastplayedcache.h"
 #include "preferences/usersettings.h"
 
 class SetlogFeature : public BasePlaylistFeature {

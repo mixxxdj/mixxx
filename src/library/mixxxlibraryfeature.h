@@ -4,18 +4,19 @@
 #ifndef MIXXXLIBRARYFEATURE_H
 #define MIXXXLIBRARYFEATURE_H
 
+#include <QIcon>
+#include <QList>
+#include <QModelIndex>
+#include <QObject>
+#include <QSharedPointer>
+#include <QString>
 #include <QStringListModel>
 #include <QUrl>
 #include <QVariant>
-#include <QIcon>
-#include <QModelIndex>
-#include <QList>
-#include <QString>
-#include <QSharedPointer>
-#include <QObject>
 
-#include "library/libraryfeature.h"
 #include "library/dao/trackdao.h"
+#include "library/lastplayedcache.h"
+#include "library/libraryfeature.h"
 #include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
 
@@ -44,6 +45,10 @@ class MixxxLibraryFeature final : public LibraryFeature {
         return true;
     }
 
+    QSharedPointer<LastPlayedCache> lastPlayedCache() const {
+        return m_pLastPlayedCache;
+    }
+
   public slots:
     void activate() override;
     void activateChild(const QModelIndex& index) override;
@@ -56,6 +61,7 @@ class MixxxLibraryFeature final : public LibraryFeature {
     TrackCollection* const m_pTrackCollection;
 
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
+    QSharedPointer<LastPlayedCache> m_pLastPlayedCache;
     LibraryTableModel* m_pLibraryTableModel;
 
     TreeItemModel m_childModel;
