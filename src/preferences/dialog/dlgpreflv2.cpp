@@ -112,11 +112,13 @@ void DlgPrefLV2::slotDisplayParameters() {
 }
 
 void DlgPrefLV2::slotUpdate() {
-    // TODO: Implement this
+    // This preferences page will be removed in PR #2618 anyway, so we'll just
+    // leave this empty for now.
 }
 
 void DlgPrefLV2::slotResetToDefaults() {
-    // TODO: Implement this
+    // This preferences page will be removed in PR #2618 anyway, so we'll just
+    // leave this empty for now.
 }
 
 void DlgPrefLV2::slotApply() {
