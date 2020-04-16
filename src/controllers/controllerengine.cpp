@@ -363,28 +363,37 @@ bool ControllerEngine::syntaxIsValid(const QString& scriptCode, const QString& f
             error = QStringLiteral("Syntax error");
             break;
     }
-    if (!error.isEmpty()) {
-        if (filename.isEmpty()) {
-            error = QString("%1 at line %2, column %3: %4")
-                            .arg(error,
-                                    QString::number(result.errorLineNumber()),
-                                    QString::number(result.errorColumnNumber()),
-                                    result.errorMessage()) +
-                    QStringLiteral("\n\nCode:\n") + scriptCode;
-        } else {
-            error = QString("%1 at line %2, column %3 in file %4: %5")
-                            .arg(error,
-                                    QString::number(result.errorLineNumber()),
-                                    QString::number(result.errorColumnNumber()),
-                                    filename,
-                                    result.errorMessage());
-        }
 
-        qWarning() << "ControllerEngine:" << error;
-        scriptErrorDialog(error, true);
-        return false;
+    // If we didn't encounter an error, exit early
+    if (error.isEmpty()) {
+        return true;
     }
-    return true;
+
+    if (filename.isEmpty()) {
+        error = QString("%1 at line %2, column %3")
+                        .arg(error,
+                                QString::number(result.errorLineNumber()),
+                                QString::number(result.errorColumnNumber()));
+    } else {
+        error = QString("%1 at line %2, column %3 in file %4")
+                        .arg(error,
+                                QString::number(result.errorLineNumber()),
+                                QString::number(result.errorColumnNumber()),
+                                filename);
+    }
+
+    QString errorMessage = result.errorMessage();
+    if (!errorMessage.isEmpty()) {
+        error += QStringLiteral("\n\nError:  \n") + errorMessage;
+    }
+
+    if (filename.isEmpty()) {
+        error += QStringLiteral("\n\nCode:\n") + scriptCode;
+    }
+
+    qWarning() << "ControllerEngine:" << error;
+    scriptErrorDialog(error, true);
+    return false;
 }
 
 /* -------- ------------------------------------------------------
