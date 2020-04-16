@@ -17,6 +17,10 @@
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
 
+/// A dialog box to display and edit track properties.
+/// Use TrackPointer to load a track into the dialog or
+/// QModelIndex along with TrackModel to enable previous and next buttons
+/// to switch tracks within the context of the TrackModel.
 class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     Q_OBJECT
   public:

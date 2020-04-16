@@ -9,6 +9,10 @@
 #include "musicbrainz/tagfetcher.h"
 #include "track/track.h"
 
+/// A dialog box to fetch track metadata from MusicBrainz.
+/// Use TrackPointer to load a track into the dialog or
+/// QModelIndex along with TrackModel to enable previous and next buttons
+/// to switch tracks within the context of the TrackModel.
 class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
   Q_OBJECT
 

@@ -17,6 +17,11 @@ class TrackCollectionManager;
 class WColorPickerAction;
 class WCoverArtMenu;
 
+/// A context menu for track(s).
+/// Can be used with individual track type widgets based on TrackPointer
+/// or list/table type track widgets based on QModelIndexList and TrackModel.
+/// Desired menu features can be selected by passing Feature enum flags
+/// in constructor.
 class WTrackMenu : public QMenu {
     Q_OBJECT
   public:
