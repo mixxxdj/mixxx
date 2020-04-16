@@ -12,10 +12,10 @@ class TrackCollection;
 
 const QString LASTPLAYEDTABLE_NAME = "last_played";
 
-// LastPlayedCache is a helper object for creating and maintaining
-// the "last_played" temporary view on the database. It creates the
-// view and also watches for changes to the Setlog Playlists and updates
-// tracks in the cache as necessary.
+/// LastPlayedCache is a helper object for creating and maintaining
+/// the "last_played" temporary view on the database. It creates the
+/// view and also watches for changes to the Setlog Playlists and updates
+/// tracks in the cache as necessary.
 class LastPlayedCache : public QObject {
     Q_OBJECT
   public:
