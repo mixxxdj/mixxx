@@ -47,6 +47,12 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
 
   private slots:
     void slotApply();
+
+    /// Update the dialog widgets based on the currently selected values.
+    //
+    // This may disable the Apply button if the replacement would be a no-op
+    // (i.e. if the new color is the same as the current color). This slot also
+    // shows/hides the "replaces all colors" warning.
     void slotUpdateWidgets();
 
   private:
