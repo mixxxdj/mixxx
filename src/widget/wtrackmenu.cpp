@@ -610,18 +610,11 @@ void WTrackMenu::loadTracks(QModelIndexList indexList) {
 }
 
 void WTrackMenu::loadTrack(TrackId trackId) {
-    // Create a QList of single track to maintain common functions
-    // for single and multi track selection.
-    TrackIdList singleItemTrackIdList;
-    singleItemTrackIdList.push_back(trackId);
-    // Use setTrackIds to set a list of single element.
-    loadTracks(singleItemTrackIdList);
+    loadTracks(TrackIdList{trackId});
 }
 
 void WTrackMenu::loadTrack(QModelIndex index) {
-    QModelIndexList singleItemTrackIndexList;
-    singleItemTrackIndexList.push_back(index);
-    loadTracks(singleItemTrackIndexList);
+    loadTracks(QModelIndexList{index});
 }
 
 TrackIdList WTrackMenu::getTrackIds() const {
