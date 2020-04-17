@@ -403,7 +403,7 @@ void WTrackMenu::updateMenus() {
     const auto trackPointers = getTrackPointers();
 
     // Gray out some stuff if multiple songs were selected.
-    bool oneSongSelected = trackPointers.size() == 1;
+    const bool singleTrackSelected = trackPointers.size() == 1;
 
     if (featureIsEnabled(Feature::LoadTo)) {
         int iNumDecks = m_pNumDecks->get();
@@ -416,7 +416,7 @@ void WTrackMenu::updateMenus() {
                                            ConfigKey(deckGroup, "play")) > 0.0;
                 bool loadTrackIntoPlayingDeck = m_pConfig->getValue<bool>(
                         ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"));
-                bool deckEnabled = (!deckPlaying || loadTrackIntoPlayingDeck) && oneSongSelected;
+                bool deckEnabled = (!deckPlaying || loadTrackIntoPlayingDeck) && singleTrackSelected;
                 QAction* pAction = new QAction(tr("Deck %1").arg(i), this);
                 pAction->setEnabled(deckEnabled);
                 m_pDeckMenu->addAction(pAction);
@@ -432,7 +432,7 @@ void WTrackMenu::updateMenus() {
                 QString samplerGroup = PlayerManager::groupForSampler(i - 1);
                 bool samplerPlaying = ControlObject::get(
                                               ConfigKey(samplerGroup, "play")) > 0.0;
-                bool samplerEnabled = !samplerPlaying && oneSongSelected;
+                bool samplerEnabled = !samplerPlaying && singleTrackSelected;
                 QAction* pAction = new QAction(tr("Sampler %1").arg(i), m_pSamplerMenu);
                 pAction->setEnabled(samplerEnabled);
                 m_pSamplerMenu->addAction(pAction);
@@ -467,7 +467,7 @@ void WTrackMenu::updateMenus() {
     }
 
     if (featureIsEnabled(Feature::Metadata)) {
-        m_pImportMetadataFromMusicBrainzAct->setEnabled(oneSongSelected);
+        m_pImportMetadataFromMusicBrainzAct->setEnabled(singleTrackSelected);
 
         // We load a single track to get the necessary context for the cover (we use
         // last to be consistent with selectionChanged above).
@@ -554,7 +554,7 @@ void WTrackMenu::updateMenus() {
     }
 
     if (featureIsEnabled(Feature::Properties)) {
-        m_pPropertiesAct->setEnabled(oneSongSelected);
+        m_pPropertiesAct->setEnabled(singleTrackSelected);
     }
 }
 
