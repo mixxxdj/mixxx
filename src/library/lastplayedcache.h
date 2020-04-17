@@ -19,9 +19,8 @@ const QString LASTPLAYEDTABLE_NAME = "last_played";
 class LastPlayedCache : public QObject {
     Q_OBJECT
   public:
-    LastPlayedCache(TrackCollection* trackCollection);
-    ~LastPlayedCache() {
-    }
+    explicit LastPlayedCache(TrackCollection* trackCollection);
+    ~LastPlayedCache() override = default;
 
     static QDateTime fetchLastPlayedTime(const QSqlDatabase& db, TrackPointer pTrack);
 
