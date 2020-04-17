@@ -10,7 +10,7 @@
 
 class TrackCollection;
 
-const QString LASTPLAYEDTABLE_NAME = "last_played";
+extern const QString LASTPLAYEDTABLE_NAME;
 
 /// LastPlayedCache is a helper object for creating and maintaining
 /// the "last_played" temporary view on the database. It creates the

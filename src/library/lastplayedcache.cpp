@@ -7,6 +7,8 @@
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 
+const QString LASTPLAYEDTABLE_NAME = "last_played";
+
 LastPlayedCache::LastPlayedCache(TrackCollection* trackCollection)
         : m_pTrackCollection(trackCollection) {
     initTableView();
