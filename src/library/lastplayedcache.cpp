@@ -57,7 +57,7 @@ void LastPlayedCache::slotPlaylistTrackChanged(
 
 // static, so that trackdao.cpp can fetch values for initial population in the cache.
 QDateTime LastPlayedCache::fetchLastPlayedTime(const QSqlDatabase& db, TrackPointer pTrack) {
-    QSqlQuery updateQuery(db);
+    QSqlQuery fetchQuery(db);
     const QString queryString = QString(
             "  SELECT "
             "    datetime_played "
@@ -65,11 +65,11 @@ QDateTime LastPlayedCache::fetchLastPlayedTime(const QSqlDatabase& db, TrackPoin
             "    last_played "
             "  WHERE "
             "    track_id = :trackid");
-    updateQuery.prepare(queryString);
-    updateQuery.bindValue(":trackid", pTrack->getId().toVariant());
-    if (!updateQuery.exec()) {
-        LOG_FAILED_QUERY(updateQuery);
+    fetchQuery.prepare(queryString);
+    fetchQuery.bindValue(":trackid", pTrack->getId().toVariant());
+    if (!fetchQuery.exec()) {
+        LOG_FAILED_QUERY(fetchQuery);
     }
-    updateQuery.first();
-    return updateQuery.value(0).toDateTime();
+    fetchQuery.first();
+    return fetchQuery.value(0).toDateTime();
 }
