@@ -20,7 +20,6 @@
 WWidget,
 WLabel,
 WNumber,
-WTrackProperty,
 WBeatSpinBox,
 WEffectSelector, WEffectSelector QAbstractScrollArea,
 WPushButton,
@@ -2083,11 +2082,17 @@ WCueMenuPopup,
 WCueMenuPopup QMenu,
 WCueMenuPopup QLabel,
 WCoverArtMenu,
+WTrackMenu,
+WTrackMenu QMenu,
 #LibraryContainer QMenu::item,
 WBeatSpinBox QMenu::item,
 WCueMenuPopup QMenu::item,
 WCoverArtMenu::item,
+WTrackMenu::item,
+WTrackMenu QMenu::item,
 #LibraryContainer QMenu QCheckBox,
+WTrackMenu QCheckBox,
+WTrackMenu QMenu QCheckBox,
 #SkinSettings,
 WEffectSelector, WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox, #fadeModeCombobox QAbstractScrollArea,
@@ -2101,6 +2106,8 @@ WBeatSpinBox QMenu,
 WCueMenuPopup,
 WCueMenuPopup QMenu,
 WCoverArtMenu,
+WTrackMenu,
+WTrackMenu QMenu,
 #SkinSettings,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea {
@@ -2118,6 +2125,8 @@ WEffectSelector QAbstractScrollArea,
   WBeatSpinBox QMenu::separator,
   WCueMenuPopup QMenu::separator,
   WCoverArtMenu::separator,
+  WTrackMenu::separator,
+  WTrackMenu QMenu::separator,
   WSpinny QMenu::separator {
     height: 0px;
     border-top: 1px solid #000;
@@ -2128,6 +2137,10 @@ WEffectSelector QAbstractScrollArea,
   WBeatSpinBox QMenu::item,
   WCueMenuPopup QMenu::item,
   WCoverArtMenu::item,
+  WTrackMenu::item,
+  WTrackMenu QCheckBox,
+  WTrackMenu QMenu::item,
+  WTrackMenu QMenu QCheckBox,
   #LibraryContainer QMenu QCheckBox,
   #SkinSettingsLabel,
   #SkinSettingsButton,
@@ -2140,13 +2153,17 @@ WEffectSelector QAbstractScrollArea,
   #LibraryContainer QMenu::item,
   WBeatSpinBox QMenu::item,
   WCueMenuPopup QMenu::item,
-  WCoverArtMenu::item {
+  WCoverArtMenu::item,
+  WTrackMenu::item,
+  WTrackMenu QMenu::item {
     /* right padding creates a margin to the menu expand arrow,
     left padding should be bigger than menu icon width + menu icon
     margin */
     padding: 5px 12px 5px 25px;
     }
-  #LibraryContainer QMenu QCheckBox {
+  #LibraryContainer QMenu QCheckBox,
+  WTrackMenu QCheckBox,
+  WTrackMenu QMenu QCheckBox {
     padding: 2px 10px 2px 3px;
     }
   /* icons in editline menu (searchbox, editable track properties)
@@ -2156,16 +2173,26 @@ WEffectSelector QAbstractScrollArea,
   WCueMenuPopup QMenu::icon,
   /* checkbox in Crate name context menu:
     "[ ] Auto DJ Track Source"  */
-  #LibraryContainer QMenu::indicator {
+  #LibraryContainer QMenu::indicator,
+  WTrackMenu::indicator,
+  WTrackMenu QMenu::indicator {
     margin: 0px 4px 0px 2px;
     }
   #LibraryContainer QMenu::item:selected,
   WBeatSpinBox QMenu::item:selected,
   WCueMenuPopup QMenu::item:selected,
   WCoverArtMenu::item:selected,
+  WTrackMenu::item:selected,
+  WTrackMenu QMenu::item:selected,
   #LibraryContainer QMenu QCheckBox:selected,
   WBeatSpinBox QMenu QCheckBox:focus,  /* selected by keyboard */
   #LibraryContainer QMenu QCheckBox:hover,  /* mouse hover */
+  WTrackMenu QCheckBox:selected,
+  WTrackMenu QCheckBox:focus,
+  WTrackMenu QCheckBox:hover,
+  WTrackMenu QMenu QCheckBox:selected,
+  WTrackMenu QMenu QCheckBox:focus,
+  WTrackMenu QMenu QCheckBox:hover,
   #SkinSettingsButton:hover,
   #SkinSettingsCategoryButton:hover,
   WEffectSelector::item:selected,
@@ -2176,7 +2203,11 @@ WEffectSelector QAbstractScrollArea,
     outline: none;
   }
 #LibraryContainer QMenu QCheckBox::indicator,
-#LibraryContainer QMenu::indicator {
+WTrackMenu QCheckBox::indicator,
+WTrackMenu QMenu QCheckBox::indicator,
+#LibraryContainer QMenu::indicator,
+WTrackMenu::indicator,
+WTrackMenu QMenu::indicator{
   width: 13px;
   height: 13px;
   background-color: #0f0f0f;
@@ -2186,16 +2217,24 @@ WEffectSelector QAbstractScrollArea,
   outline: none;
   }
   #LibraryContainer QMenu QCheckBox::indicator:checked,
-  #LibraryContainer QMenu::indicator:checked {
+  WTrackMenu QCheckBox::indicator:checked,
+  WTrackMenu QMenu QCheckBox::indicator:checked,
+  #LibraryContainer QMenu::indicator:checked,
+  WTrackMenu::indicator:checked,
+  WTrackMenu QMenu::indicator:checked {
     image: url(skin:/buttons/btn_lib_checkmark.svg);
     border: 1px solid #1e1e1e;
   }
   /* disabled menu checkbox */
-  #LibraryContainer QMenu QCheckBox::indicator:!enabled {
+  #LibraryContainer QMenu QCheckBox::indicator:!enabled,
+  WTrackMenu QCheckBox::indicator:!enabled,
+  WTrackMenu QMenu QCheckBox::indicator:!enabled {
     background-color: #333;
     border: 1px solid #222;
   }
-  #LibraryContainer QMenu QCheckBox::indicator:!enabled:checked {
+  #LibraryContainer QMenu QCheckBox::indicator:!enabled:checked,
+  WTrackMenu QCheckBox::indicator:!enabled:checked,
+  WTrackMenu QMenu QCheckBox::indicator:!enabled:checked {
     image: url(skin:/buttons/btn_lib_checkmark_grey.svg);
   }
 
@@ -2203,6 +2242,10 @@ WEffectSelector QAbstractScrollArea,
 WBeatSpinBox QMenu::item:!enabled,
 WCueMenuPopup QMenu::item:!enabled,
 WCoverArtMenu::item:!enabled,
+WTrackMenu::item:!enabled,
+WTrackMenu QCheckBox:!enabled,
+WTrackMenu QMenu::item:!enabled,
+WTrackMenu QMenu QCheckBox:!enabled,
 #LibraryContainer QMenu QCheckBox:!enabled {
   color: #555;
   }
@@ -2214,13 +2257,17 @@ WCoverArtMenu::item:!enabled,
 #LibraryContainer QCheckBox::indicator:indeterminate:!enabled {
   image: url(skin:/buttons/btn_lib_checkmark_grey.svg);
   }
-#LibraryContainer QMenu::right-arrow {
+#LibraryContainer QMenu::right-arrow,
+WTrackMenu::right-arrow,
+WTrackMenu QMenu::right-arrow {
   width: 8px;
   height: 16px;
   margin-right: 4px;
   image: url(skin:/buttons/btn_arrow_right.svg);
   }
-#LibraryContainer QMenu::right-arrow {
+#LibraryContainer QMenu::right-arrow,
+WTrackMenu::right-arrow,
+WTrackMenu QMenu::right-arrow {
   image: url(skin:/buttons/btn_arrow_right_hover.svg);
   }
 
