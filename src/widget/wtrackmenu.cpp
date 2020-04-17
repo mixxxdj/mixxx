@@ -315,6 +315,26 @@ void WTrackMenu::setupActions() {
 
     addSeparator();
 
+    if (featureIsEnabled(Feature::BPM)) {
+        m_pBPMMenu->addAction(m_pBpmDoubleAction);
+        m_pBPMMenu->addAction(m_pBpmHalveAction);
+        m_pBPMMenu->addAction(m_pBpmTwoThirdsAction);
+        m_pBPMMenu->addAction(m_pBpmThreeFourthsAction);
+        m_pBPMMenu->addAction(m_pBpmFourThirdsAction);
+        m_pBPMMenu->addAction(m_pBpmThreeHalvesAction);
+        m_pBPMMenu->addSeparator();
+        m_pBPMMenu->addAction(m_pBpmLockAction);
+        m_pBPMMenu->addAction(m_pBpmUnlockAction);
+        m_pBPMMenu->addSeparator();
+
+        addMenu(m_pBPMMenu);
+    }
+
+    if (featureIsEnabled(Feature::Color)) {
+        m_pColorMenu->addAction(m_pColorPickerAction);
+        addMenu(m_pColorMenu);
+    }
+
     if (featureIsEnabled(Feature::Metadata)) {
         m_pMetadataMenu->addAction(m_pImportMetadataFromFileAct);
         m_pMetadataMenu->addAction(m_pImportMetadataFromMusicBrainzAct);
@@ -353,26 +373,6 @@ void WTrackMenu::setupActions() {
         m_pClearMetadataMenu->addSeparator();
         m_pClearMetadataMenu->addAction(m_pClearAllMetadataAction);
         addMenu(m_pClearMetadataMenu);
-    }
-
-    if (featureIsEnabled(Feature::BPM)) {
-        m_pBPMMenu->addAction(m_pBpmDoubleAction);
-        m_pBPMMenu->addAction(m_pBpmHalveAction);
-        m_pBPMMenu->addAction(m_pBpmTwoThirdsAction);
-        m_pBPMMenu->addAction(m_pBpmThreeFourthsAction);
-        m_pBPMMenu->addAction(m_pBpmFourThirdsAction);
-        m_pBPMMenu->addAction(m_pBpmThreeHalvesAction);
-        m_pBPMMenu->addSeparator();
-        m_pBPMMenu->addAction(m_pBpmLockAction);
-        m_pBPMMenu->addAction(m_pBpmUnlockAction);
-        m_pBPMMenu->addSeparator();
-
-        addMenu(m_pBPMMenu);
-    }
-
-    if (featureIsEnabled(Feature::Color)) {
-        m_pColorMenu->addAction(m_pColorPickerAction);
-        addMenu(m_pColorMenu);
     }
 
     addSeparator();
