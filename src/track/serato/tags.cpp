@@ -150,46 +150,68 @@ QList<CueInfo> SeratoTags::getCues(const QString& filePath) const {
 
     QMap<int, CueInfo> cueMap;
     for (const CueInfo& cueInfo : m_seratoMarkers2.getCues(timingOffsetMillis)) {
-        DEBUG_ASSERT(cueInfo.getHotCueNumber());
-        int index = *cueInfo.getHotCueNumber();
-        DEBUG_ASSERT(index >= 0);
-
-        RgbColor::optional_t color = cueInfo.getColor();
-        if (color) {
-            // TODO: Make this conversion configurable
-            CueInfo newCueInfo = cueInfo;
-            newCueInfo.setColor(storedToDisplayedSeratoDJProCueColor(*color));
-            cueMap.insert(index, newCueInfo);
-        } else {
-            cueMap.insert(index, cueInfo);
-        }
-    };
-
-    // TODO: If a hotcue is set in SeratoMarkers2, but not in SeratoMarkers_,
-    // we could remove it from the output. We'll just leave it in for now.
-    for (const CueInfo& cueInfo : m_seratoMarkers.getCues(timingOffsetMillis)) {
-        DEBUG_ASSERT(cueInfo.getHotCueNumber());
-        int index = *cueInfo.getHotCueNumber();
-        DEBUG_ASSERT(index >= 0);
-
-        CueInfo existingCueInfo = cueMap.value(index);
-        if (!existingCueInfo.getHotCueNumber()) {
-            cueMap.insert(index, cueInfo);
+        VERIFY_OR_DEBUG_ASSERT(cueInfo.getHotCueNumber()) {
+            qWarning() << "SeratoTags::getCues: Cue without number found!";
             continue;
         }
 
-        existingCueInfo.setType(cueInfo.getType());
-        existingCueInfo.setStartPositionMillis(cueInfo.getStartPositionMillis());
-        existingCueInfo.setEndPositionMillis(cueInfo.getEndPositionMillis());
+        int index = *cueInfo.getHotCueNumber();
+        VERIFY_OR_DEBUG_ASSERT(index >= 0) {
+            qWarning() << "SeratoTags::getCues: Cue with number < 0 found!";
+        }
+
+        if (cueInfo.getType() != CueType::HotCue) {
+            qWarning() << "SeratoTags::getCues: Ignoring cue with non-hotcue type!";
+            continue;
+        }
+
+        CueInfo newCueInfo(cueInfo);
+        RgbColor::optional_t color = cueInfo.getColor();
+        if (color) {
+            // TODO: Make this conversion configurable
+            newCueInfo.setColor(storedToDisplayedSeratoDJProCueColor(*color));
+        }
+        newCueInfo.setHotCueNumber(index);
+        cueMap.insert(index, newCueInfo);
+    };
+
+    // TODO(jholthuis): If a hotcue is set in SeratoMarkers2, but not in
+    // SeratoMarkers_, we could remove it from the output. We'll just leave it
+    // in for now.
+    for (const CueInfo& cueInfo : m_seratoMarkers.getCues(timingOffsetMillis)) {
+        VERIFY_OR_DEBUG_ASSERT(cueInfo.getHotCueNumber()) {
+            qWarning() << "SeratoTags::getCues: Cue without number found!";
+            continue;
+        }
+
+        int index = *cueInfo.getHotCueNumber();
+        VERIFY_OR_DEBUG_ASSERT(index >= 0) {
+            qWarning() << "SeratoTags::getCues: Cue with number < 0 found!";
+        }
+
+        if (cueInfo.getType() != CueType::HotCue) {
+            qWarning() << "SeratoTags::getCues: Ignoring cue with non-hotcue type!";
+            continue;
+        }
+
+        // Take a pre-existing CueInfo object that was read from
+        // "SeratoMarkers2" from the CueMap (or a default constructed CueInfo
+        // object if none exists) and use it as template for the new CueInfo
+        // object. Then overwrite all object values that are present in the
+        // "SeratoMarkers_"tag.
+        CueInfo newCueInfo = cueMap.value(index);
+        newCueInfo.setType(cueInfo.getType());
+        newCueInfo.setStartPositionMillis(cueInfo.getStartPositionMillis());
+        newCueInfo.setEndPositionMillis(cueInfo.getEndPositionMillis());
+        newCueInfo.setHotCueNumber(index);
 
         RgbColor::optional_t color = cueInfo.getColor();
         if (color) {
             // TODO: Make this conversion configurable
-            existingCueInfo.setColor(storedToDisplayedSeratoDJProCueColor(*color));
-        } else {
-            existingCueInfo.setColor(color);
+            newCueInfo.setColor(storedToDisplayedSeratoDJProCueColor(*color));
         }
-    }
+        cueMap.insert(index, newCueInfo);
+    };
 
     return cueMap.values();
 }
