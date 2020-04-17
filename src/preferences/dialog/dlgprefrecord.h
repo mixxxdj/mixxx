@@ -37,9 +37,6 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     void apply(const QString &);
 
   private:
-    void retainSizeFor(QWidget* widget);
-    inline void showWidget(QWidget* widget);
-    inline void hideWidget(QWidget* widget);
     void setupEncoderUI();
     void loadMetaData();
     void updateTextQuality();
