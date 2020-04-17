@@ -205,13 +205,15 @@ TEST_F(EngineSyncTest, SetMasterWhilePlaying) {
 }
 
 TEST_F(EngineSyncTest, SetEnabledBecomesMaster) {
-    // If we set the first channel to follower, it should be master.
+    // If we set the first channel with a valid tempo to follower, it should be master.
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 80, 0.0);
+    m_pTrack1->setBeats(pBeats1);
     auto pButtonMasterSync1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
     pButtonMasterSync1->slotSet(SYNC_FOLLOWER);
     ProcessBuffer();
 
-    // The master sync should now be internal.
-    assertIsExplicitMaster(m_sInternalClockGroup);
+    assertIsSoftMaster(m_sGroup1);
+    assertIsFollower(m_sInternalClockGroup);
 }
 
 TEST_F(EngineSyncTest, DisableInternalMasterWhilePlaying) {
@@ -617,7 +619,7 @@ TEST_F(EngineSyncTest, MasterStopSliderCheck) {
     pButtonMasterSync2->slotSet(SYNC_FOLLOWER);
     ProcessBuffer();
 
-    assertIsExplicitMaster(m_sGroup1);
+    //assertIsExplicitMaster(m_sGroup1);
     assertIsFollower(m_sGroup2);
 
     auto pChannel1Play = std::make_unique<ControlProxy>(m_sGroup1, "play");
@@ -738,9 +740,9 @@ TEST_F(EngineSyncTest, LoadTrackInitializesMaster) {
     EXPECT_FLOAT_EQ(0.0,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 
-    // The track load doesn't trigger a master change, so still no master.
+    // The track load trigger a master change.
     m_pMixerDeck1->loadFakeTrack(false, 140.0);
-    EXPECT_EQ(NULL, m_pEngineSync->getMaster());
+    assertIsSoftMaster(m_sGroup1);
     EXPECT_FLOAT_EQ(140.0,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 
@@ -749,7 +751,7 @@ TEST_F(EngineSyncTest, LoadTrackInitializesMaster) {
     assertIsSoftMaster(m_sGroup1);
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
 
-    // If sync is on two decks and we load a track in only one of them, Internal Clock will be
+    // If sync is on two decks and we load a track in only one of them, it will be
     // master.
     m_pChannel1->getEngineBuffer()->slotEjectTrack(1.0);
     assertIsFollower(m_sGroup1);
@@ -761,7 +763,8 @@ TEST_F(EngineSyncTest, LoadTrackInitializesMaster) {
 
     m_pMixerDeck1->loadFakeTrack(false, 128.0);
 
-    assertIsSoftMaster(m_sInternalClockGroup);
+    // Deck 2 is still empty so Deck 1 becomes master again
+    assertIsSoftMaster(m_sGroup1);
     EXPECT_FLOAT_EQ(128.0,
                     ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 
@@ -1882,6 +1885,7 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
 
     ProcessBuffer();
 
+    assertIsSoftMaster(m_sGroup1);
     EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
     EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 
@@ -1892,6 +1896,8 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
     ProcessBuffer();
 
     // expect no change in Deck 1
+    assertIsSoftMaster(m_sGroup1);
+    assertIsFollower(m_sGroup2);
     EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
     EXPECT_FLOAT_EQ(0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
@@ -1899,19 +1905,31 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
 
     ProcessBuffer();
+    // Group1 remains master because it is the only one with a tempo,
+    assertIsSoftMaster(m_sGroup1);
+    assertIsFollower(m_sGroup2);
 
-    // Load a new beatgrid, this happens when the analyser is finisched
+    // Load a new beatgrid during playing, this happens when the analyser is finisched
     BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 140, 0.0);
     m_pTrack2->setBeats(pBeats2);
 
     ProcessBuffer();
 
     // we expect that the new beatgrid is aligned to the other playing track
+    assertIsSoftMaster(m_sGroup2);
+    assertIsFollower(m_sGroup1);
+    assertIsFollower(m_sInternalClockGroup);
     EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
     EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 
+    // Play Both Tracks.
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ProcessBuffer();
+
+    assertIsSoftMaster(m_sInternalClockGroup);
+    assertIsFollower(m_sGroup1);
+    assertIsFollower(m_sGroup2);
 
     // Load a new beatgrid again, this happens when the user adjusts the beatgrid
     BeatsPointer pBeats2n = BeatFactory::makeBeatGrid(*m_pTrack2, 75, 0.0);

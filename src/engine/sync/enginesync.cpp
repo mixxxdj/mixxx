@@ -40,7 +40,7 @@ EngineSync::~EngineSync() {
 
 Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
     // If there is an explicit master, and it is playing, keep it.
-    if (m_pMasterSyncable && m_pMasterSyncable->getSyncMode() == SYNC_MASTER_EXPLICIT && m_pMasterSyncable->isPlaying()) {
+    if (m_pMasterSyncable && m_pMasterSyncable->getSyncMode() == SYNC_MASTER_EXPLICIT) {
         return m_pMasterSyncable;
     }
 
@@ -102,64 +102,28 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
         return;
     }
 
-    const bool channelIsMaster = m_pMasterSyncable == pSyncable;
-
     if (isMaster(mode)) {
         activateMaster(pSyncable, mode == SYNC_MASTER_EXPLICIT);
         if (pSyncable->getBaseBpm() > 0) {
             setMasterParams(pSyncable, pSyncable->getBeatDistance(),
                             pSyncable->getBaseBpm(), pSyncable->getBpm());
         }
-    } else if (mode == SYNC_FOLLOWER) {
-        if (pSyncable == m_pInternalClock && channelIsMaster) {
-            if (syncDeckExists()) {
-                // Internal clock cannot be set to follower if there are other decks
-                // with sync on. Notify them that their mode has not changed.
-                pSyncable->setSyncMode(SYNC_MASTER_SOFT);
-            } else {
-                // No sync deck exists. Allow the clock to go inactive. This
-                // case does not happen in practice since the logic in
-                // deactivateSync also deactivates the internal clock when the
-                // last sync deck deactivates but leave this in for good
-                // measure.
-                pSyncable->setSyncMode(SYNC_FOLLOWER);
-            }
-        } else if (channelIsMaster) {
-            // Was this deck master before? If so do a handoff.
+    } else if (mode == SYNC_FOLLOWER || pSyncable == m_pInternalClock) {
+        // Note: Internal clock cannot be disabled, it is always listening
+        if (m_pMasterSyncable == pSyncable) {
+            // Was this  pSyncable was master before. Hand off.
             m_pMasterSyncable = nullptr;
-            activateFollower(pSyncable);
-            // Hand off to the internal clock and keep the current BPM and beat
-            // distance.
-            Syncable* newMaster = pickMaster(pSyncable);
-            if (newMaster) {
-                activateMaster(newMaster, false);
-            }
-        } else if (m_pMasterSyncable == nullptr) {
-            // If no master active, activate the internal clock.
-            activateMaster(m_pInternalClock, false);
-            Syncable* targetSyncable = findBpmMatchTarget(pSyncable);
-            if (targetSyncable == nullptr) {
-                targetSyncable = pSyncable;
-            }
-            if (targetSyncable->getBaseBpm() > 0) {
-                setMasterParams(targetSyncable,
-                        targetSyncable->getBeatDistance(),
-                        targetSyncable->getBaseBpm(),
-                        targetSyncable->getBpm());
-            }
-            activateFollower(pSyncable);
-        } else {
+            pSyncable->setSyncMode(SYNC_FOLLOWER);
+        }
+        Syncable* newMaster = pickMaster(pSyncable);
+        if (newMaster) {
+            activateMaster(newMaster, false);
+        }
+        if (pSyncable != newMaster) {
             activateFollower(pSyncable);
         }
     } else {
-        if (pSyncable == m_pInternalClock && channelIsMaster &&
-                syncDeckExists()) {
-            // Internal clock cannot be disabled if there are other decks with
-            // sync on. Notify them that their mode has not changed.
-            pSyncable->setSyncMode(SYNC_MASTER_SOFT);
-        } else {
-            deactivateSync(pSyncable);
-        }
+        deactivateSync(pSyncable);
     }
     checkUniquePlayingSyncable();
 }
@@ -328,15 +292,21 @@ void EngineSync::requestBpmUpdate(Syncable* pSyncable, double bpm) {
         kLogger.trace() << "EngineSync::requestBpmUpdate" << pSyncable->getGroup() << bpm;
     }
 
-    double mbaseBpm = masterBaseBpm();
-    double mbpm = masterBpm();
+    double mbaseBpm = 0.0;
+    double mbpm = 0.0;
+    if (m_pMasterSyncable) {
+        mbaseBpm = m_pMasterSyncable->getBaseBpm();
+        mbpm = m_pMasterSyncable->getBpm();
+    }
+
     if (mbaseBpm != 0.0 && mbpm != 0.0) {
         // resync to current master
         pSyncable->setMasterBaseBpm(mbaseBpm);
         pSyncable->setMasterBpm(mbpm);
     } else {
         // There is no other master, adopt this bpm as master
-        setMasterBpm(pSyncable, bpm);
+        pSyncable->setMasterBaseBpm(pSyncable->getBaseBpm());
+        pSyncable->setMasterBpm(bpm);
     }
 }
 
