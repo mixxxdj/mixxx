@@ -106,4 +106,17 @@ inline QDebug operator<<(QDebug debug, const CueType& cueType) {
     return debug;
 }
 
+inline QDebug operator<<(QDebug debug, const CueInfo& cueInfo) {
+    debug.nospace()
+            << "CueInfo["
+            << "type=" << cueInfo.getType()
+            << ", startPos=" << cueInfo.getStartPositionMillis()
+            << ", endPos=" << cueInfo.getEndPositionMillis()
+            << ", number=" << cueInfo.getHotCueNumber()
+            << ", label=" << cueInfo.getLabel()
+            << ", color=" << cueInfo.getColor()
+            << "]";
+    return debug;
+}
+
 } // namespace mixxx
