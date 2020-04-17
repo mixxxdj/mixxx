@@ -67,7 +67,6 @@ QDateTime LastPlayedCache::fetchLastPlayedTime(const QSqlDatabase& db, TrackPoin
     updateQuery.bindValue(":trackid", pTrack->getId().toVariant());
     if (!updateQuery.exec()) {
         LOG_FAILED_QUERY(updateQuery);
-        return;
     }
     const int col = updateQuery.record().indexOf("datetime_played");
     updateQuery.first();
