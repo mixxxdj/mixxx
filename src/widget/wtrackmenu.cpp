@@ -471,14 +471,10 @@ void WTrackMenu::updateMenus() {
 
         // We load a single track to get the necessary context for the cover (we use
         // last to be consistent with selectionChanged above).
-        TrackPointer last = trackPointers.last();
-        CoverInfo info;
-        info.source = last->getCoverInfo().source;
-        info.type = last->getCoverInfo().type;
-        info.hash = last->getCoverHash();
-        info.trackLocation = last->getCoverInfoWithLocation().trackLocation;
-        info.coverLocation = last->getCoverInfoWithLocation().coverLocation;
-        m_pCoverMenu->setCoverArt(info);
+        TrackPointer pTrack = trackPointers.last();
+
+        m_pCoverMenu->setCoverArt(
+                pTrack->getCoverInfoWithLocation());
     }
 
     if (featureIsEnabled(Feature::Reset)) {
