@@ -156,12 +156,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         //using address of track model as key
     }
 
-    // The "coverLocation" and "hash" column numbers are required very often
-    // by slotLoadCoverArt(). As this value will not change when the model
-    // still the same, we must avoid doing hundreds of "fieldIndex" calls
-    // when it is completely unnecessary...
-
-
     setVisible(false);
 
     // Save the previous track model's header state
