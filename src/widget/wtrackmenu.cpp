@@ -623,11 +623,16 @@ TrackIdList WTrackMenu::getTrackIds() const {
         const QModelIndexList indices = getTrackIndices();
         trackIds.reserve(indices.size());
         for (const auto& index : indices) {
-            trackIds.push_back(m_pTrackModel->getTrackId(index));
+            const auto trackId = m_pTrackModel->getTrackId(index);
+            if (trackId.isValid()) {
+                trackIds.push_back(trackId);
+            }
         }
     } else {
-        const TrackPointerList trackPointers = getTrackPointers();
-        for (const auto& pTrack : trackPointers) {
+        trackIds.reserve(m_pTrackPointerList.size());
+        for (const auto& pTrack : m_pTrackPointerList) {
+            const auto trackId = pTrack->getId();
+            DEBUG_ASSERT(trackId.isValid());
             trackIds.push_back(pTrack->getId());
         }
     }
@@ -635,16 +640,19 @@ TrackIdList WTrackMenu::getTrackIds() const {
 }
 
 TrackPointerList WTrackMenu::getTrackPointers() const {
-    if (m_pTrackModel) {
-        const QModelIndexList indices = getTrackIndices();
-        TrackPointerList trackPointers;
-        trackPointers.reserve(indices.size());
-        for (const auto& index : indices) {
-            trackPointers.push_back(m_pTrackModel->getTrack(index));
-        }
-        return trackPointers;
+    if (!m_pTrackModel) {
+        return m_pTrackPointerList;
     }
-    return m_pTrackPointerList;
+    const QModelIndexList indices = getTrackIndices();
+    TrackPointerList trackPointers;
+    trackPointers.reserve(indices.size());
+    for (const auto& index : indices) {
+        const auto pTrack = m_pTrackModel->getTrack(index);
+        if (pTrack) {
+            trackPointers.push_back(pTrack);
+        }
+    }
+    return trackPointers;
 }
 
 QModelIndexList WTrackMenu::getTrackIndices() const {
