@@ -58,7 +58,8 @@ class WTrackMenu : public QMenu {
     void loadTracks(TrackIdList trackList);
     void loadTracks(QModelIndexList indexList);
 
-    // Hide default popup method from class QMenu
+    // WARNING: This function hides non-virtual QMenu::popup().
+    // This has been done on purpose to ensure menu doesn't popup without loaded track(s).
     void popup(const QPoint& pos, QAction* at = nullptr);
 
   signals:
