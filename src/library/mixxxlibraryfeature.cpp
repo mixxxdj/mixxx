@@ -91,8 +91,8 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             *it = it->replace("library.", "");
         } else if (it->startsWith("track_locations.")) {
             *it = it->replace("track_locations.", "");
-        } else if (it->startsWith("last_played.")) {
-            *it = it->replace("last_played.", "");
+        } else if (it->startsWith(LASTPLAYEDTABLE_NAME + ".")) {
+            *it = it->replace(LASTPLAYEDTABLE_NAME + ".", "");
         }
     }
 

@@ -5,12 +5,29 @@
 #include <QSqlDatabase>
 #include <QString>
 
+#include "library/queryutil.h"
 #include "track/track.h"
 #include "track/trackid.h"
 
 class TrackCollection;
 
 extern const QString LASTPLAYEDTABLE_NAME;
+
+/// LastPlayedFetcher is a small object for fetching last played times from the
+/// database.  It holds and reuses a QSqlQuery for efficiency.
+class LastPlayedFetcher {
+  public:
+    explicit LastPlayedFetcher(QSqlDatabase db)
+            : m_fetchQuery(db) {
+    }
+
+    /// Fetches the last played time for the given track. Returns an empty (null)
+    /// QDateTime on error.
+    QDateTime fetch(TrackPointer pTrack);
+
+  private:
+    QSqlQuery m_fetchQuery;
+};
 
 /// LastPlayedCache is a helper object for creating and maintaining
 /// the "last_played" temporary view on the database. It creates the
@@ -22,8 +39,6 @@ class LastPlayedCache : public QObject {
     explicit LastPlayedCache(TrackCollection* trackCollection);
     ~LastPlayedCache() override = default;
 
-    static QDateTime fetchLastPlayedTime(const QSqlDatabase& db, TrackPointer pTrack);
-
   public slots:
     void slotPlaylistTrackChanged(int playlistId, TrackId trackId, int position);
 
@@ -31,4 +46,5 @@ class LastPlayedCache : public QObject {
     void initTableView();
 
     TrackCollection* const m_pTrackCollection;
+    LastPlayedFetcher m_helper;
 };

@@ -1292,8 +1292,12 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     // Validate and refresh cover image hash values if needed.
     pTrack->refreshCoverImageHash();
 
-    // the Last Played Time exists in a table view
-    populateLastPlayedTime(pTrack);
+    VERIFY_OR_DEBUG_ASSERT(m_pLastPlayedFetcher) {
+        qDebug() << "expected m_pLastPlayedFetcher to be constructed by now";
+    }
+    else {
+        pTrack->setLastPlayedDate(m_pLastPlayedFetcher->fetch(pTrack));
+    }
 
     // Listen to signals from Track objects and forward them to
     // receivers. TrackDAO works as a relay for selected track signals
@@ -1520,10 +1524,6 @@ void TrackDAO::markUnverifiedTracksAsDeleted() {
         LOG_FAILED_QUERY(query)
                 << "Couldn't mark unverified tracks as deleted.";
     }
-}
-
-void TrackDAO::populateLastPlayedTime(TrackPointer pTrack) const {
-    pTrack->setLastPlayedDate(LastPlayedCache::fetchLastPlayedTime(m_database, pTrack));
 }
 
 namespace {

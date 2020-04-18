@@ -4,13 +4,31 @@
 #include <QtDebug>
 
 #include "library/dao/playlistdao.h"
-#include "library/queryutil.h"
 #include "library/trackcollection.h"
 
-const QString LASTPLAYEDTABLE_NAME = "last_played";
+const QString LASTPLAYEDTABLE_NAME = "last_played_datetimes";
+
+QDateTime LastPlayedFetcher::fetch(TrackPointer pTrack) {
+    m_fetchQuery.prepare(
+            "  SELECT "
+            "    datetime_played "
+            "  FROM "
+            "    " +
+            LASTPLAYEDTABLE_NAME +
+            "  WHERE "
+            "    track_id = :trackid");
+    m_fetchQuery.bindValue(":trackid", pTrack->getId().toVariant());
+    if (!m_fetchQuery.exec()) {
+        LOG_FAILED_QUERY(m_fetchQuery);
+        return QDateTime();
+    }
+    m_fetchQuery.first();
+    return m_fetchQuery.value(0).toDateTime();
+}
 
 LastPlayedCache::LastPlayedCache(TrackCollection* trackCollection)
-        : m_pTrackCollection(trackCollection) {
+        : m_pTrackCollection(trackCollection),
+          m_helper(trackCollection->database()) {
     initTableView();
 
     connect(&m_pTrackCollection->getPlaylistDAO(),
@@ -52,24 +70,7 @@ void LastPlayedCache::slotPlaylistTrackChanged(
     }
 
     TrackPointer pTrack = m_pTrackCollection->getTrackById(trackId);
-    pTrack->setLastPlayedDate(fetchLastPlayedTime(m_pTrackCollection->database(), pTrack));
-}
-
-// static, so that trackdao.cpp can fetch values for initial population in the cache.
-QDateTime LastPlayedCache::fetchLastPlayedTime(const QSqlDatabase& db, TrackPointer pTrack) {
-    QSqlQuery fetchQuery(db);
-    const QString queryString = QString(
-            "  SELECT "
-            "    datetime_played "
-            "  FROM "
-            "    last_played "
-            "  WHERE "
-            "    track_id = :trackid");
-    fetchQuery.prepare(queryString);
-    fetchQuery.bindValue(":trackid", pTrack->getId().toVariant());
-    if (!fetchQuery.exec()) {
-        LOG_FAILED_QUERY(fetchQuery);
+    if (pTrack) {
+        pTrack->setLastPlayedDate(m_helper.fetch(pTrack));
     }
-    fetchQuery.first();
-    return fetchQuery.value(0).toDateTime();
 }
