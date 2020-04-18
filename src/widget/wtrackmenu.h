@@ -52,10 +52,15 @@ class WTrackMenu : public QMenu {
             TrackModel* trackModel = nullptr);
     ~WTrackMenu() override;
 
-    void loadTrack(TrackId trackId);
-    void loadTrack(QModelIndex index);
-    void loadTracks(TrackIdList trackList);
-    void loadTracks(QModelIndexList indexList);
+    void loadTrackModelIndex(
+            const QModelIndex& trackIndex) {
+        loadTrackModelIndices(QModelIndexList{trackIndex});
+    }
+    void loadTrackModelIndices(
+            const QModelIndexList& trackIndexList);
+
+    void loadTrack(
+            const TrackPointer& pTrack);
 
     // WARNING: This function hides non-virtual QMenu::popup().
     // This has been done on purpose to ensure menu doesn't popup without loaded track(s).
@@ -117,13 +122,16 @@ class WTrackMenu : public QMenu {
     void slotPurge();
 
   private:
-    // These getters make sure the required lists are
-    // derived from a single source in state, which is the
-    // m_pTrackIndexList if m_pTrackModel is set and
-    // m_pTrackPointerList if m_pTrackModel is not set.
-    TrackIdList getTrackIds() const;
-    TrackPointerList getTrackPointers() const;
+    // This getter verifies that m_pTrackModel is set when
+    // invoked.
     QModelIndexList getTrackIndices() const;
+
+    TrackIdList getTrackIds() const;
+
+    // TODO: This function desperately needs to be replaced
+    // by an iterator pattern that loads (and drops) tracks
+    // lazily one-by-one during the traversal!!
+    TrackPointerList getTrackPointers() const;
 
     void createMenus();
     void createActions();
@@ -146,7 +154,7 @@ class WTrackMenu : public QMenu {
     QModelIndexList m_trackIndexList;
 
     // Source of track list when TrackModel is not set.
-    TrackPointerList m_pTrackPointerList;
+    TrackPointerList m_trackPointerList;
 
     const ControlProxy* m_pNumSamplers{};
     const ControlProxy* m_pNumDecks{};
@@ -229,14 +237,14 @@ class WTrackMenu : public QMenu {
     struct UpdateExternalTrackCollection {
         QPointer<ExternalTrackCollection> externalTrackCollection;
         QAction* action{};
+        };
+        QList<UpdateExternalTrackCollection> m_updateInExternalTrackCollections;
+
+        bool m_bPlaylistMenuLoaded;
+        bool m_bCrateMenuLoaded;
+
+        Features m_eActiveFeatures;
+        const Features m_eTrackModelFeatures;
     };
-    QList<UpdateExternalTrackCollection> m_updateInExternalTrackCollections;
-
-    bool m_bPlaylistMenuLoaded;
-    bool m_bCrateMenuLoaded;
-
-    Features m_eActiveFeatures;
-    const Features m_eTrackModelFeatures;
-};
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(WTrackMenu::Features)

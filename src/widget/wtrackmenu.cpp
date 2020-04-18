@@ -567,34 +567,27 @@ void WTrackMenu::updateMenus() {
     }
 }
 
-void WTrackMenu::loadTracks(TrackIdList trackIdList) {
-    // Clean all forms of track store
-    clearTrackSelection();
-
+void WTrackMenu::loadTrack(
+        const TrackPointer& pTrack) {
     // This asserts that this function is only accessible when a track model is not set,
     // thus maintaining only the TrackPointerList in state and avoiding storing
     // duplicate state with TrackIdList and QModelIndexList.
-    DEBUG_ASSERT(!m_pTrackModel);
-
-    TrackPointerList trackPointers;
-    trackPointers.reserve(trackIdList.size());
-    for (const auto& trackId : trackIdList) {
-        TrackPointer pTrack = m_pTrackCollectionManager->internalCollection()->getTrackById(trackId);
-        if (pTrack) {
-            trackPointers.push_back(pTrack);
-        }
+    VERIFY_OR_DEBUG_ASSERT(!m_pTrackModel) {
+        return;
     }
-    m_pTrackPointerList = trackPointers;
 
-    if (!m_pTrackPointerList.empty()) {
-        updateMenus();
-    }
-}
-
-void WTrackMenu::loadTracks(QModelIndexList indexList) {
     // Clean all forms of track store
     clearTrackSelection();
 
+    if (!pTrack) {
+        return;
+    }
+    m_trackPointerList = TrackPointerList{pTrack};
+    updateMenus();
+}
+
+void WTrackMenu::loadTrackModelIndices(
+        const QModelIndexList& trackIndexList) {
     // This asserts that this function is only accessible when a track model is set,
     // thus maintaining only the QModelIndexList in state and avoiding storing
     // duplicate state with TrackIdList and TrackPointerList.
@@ -602,38 +595,30 @@ void WTrackMenu::loadTracks(QModelIndexList indexList) {
         return;
     }
 
-    m_trackIndexList.reserve(indexList.size());
-    for (const auto& index : indexList) {
-        m_trackIndexList.push_back(index);
-    }
+    // Clean all forms of track store
+    clearTrackSelection();
 
+    m_trackIndexList = trackIndexList;
     if (!m_trackIndexList.empty()) {
         updateMenus();
     }
 }
 
-void WTrackMenu::loadTrack(TrackId trackId) {
-    loadTracks(TrackIdList{trackId});
-}
-
-void WTrackMenu::loadTrack(QModelIndex index) {
-    loadTracks(QModelIndexList{index});
-}
-
 TrackIdList WTrackMenu::getTrackIds() const {
     TrackIdList trackIds;
     if (m_pTrackModel) {
-        const QModelIndexList indices = getTrackIndices();
-        trackIds.reserve(indices.size());
-        for (const auto& index : indices) {
+        trackIds.reserve(m_trackIndexList.size());
+        for (const auto& index : m_trackIndexList) {
             const auto trackId = m_pTrackModel->getTrackId(index);
-            if (trackId.isValid()) {
-                trackIds.push_back(trackId);
+            if (!trackId.isValid()) {
+                // Skip unavailable tracks
+                continue;
             }
+            trackIds.push_back(trackId);
         }
     } else {
-        trackIds.reserve(m_pTrackPointerList.size());
-        for (const auto& pTrack : m_pTrackPointerList) {
+        trackIds.reserve(m_trackPointerList.size());
+        for (const auto& pTrack : m_trackPointerList) {
             const auto trackId = pTrack->getId();
             DEBUG_ASSERT(trackId.isValid());
             trackIds.push_back(pTrack->getId());
@@ -644,16 +629,17 @@ TrackIdList WTrackMenu::getTrackIds() const {
 
 TrackPointerList WTrackMenu::getTrackPointers() const {
     if (!m_pTrackModel) {
-        return m_pTrackPointerList;
+        return m_trackPointerList;
     }
-    const QModelIndexList indices = getTrackIndices();
     TrackPointerList trackPointers;
-    trackPointers.reserve(indices.size());
-    for (const auto& index : indices) {
+    trackPointers.reserve(m_trackIndexList.size());
+    for (const auto& index : m_trackIndexList) {
         const auto pTrack = m_pTrackModel->getTrack(index);
-        if (pTrack) {
-            trackPointers.push_back(pTrack);
+        if (!pTrack) {
+            // Skip unavailable tracks
+            continue;
         }
+        trackPointers.push_back(pTrack);
     }
     return trackPointers;
 }
@@ -1180,7 +1166,7 @@ void WTrackMenu::slotPurge() {
 }
 
 void WTrackMenu::clearTrackSelection() {
-    m_pTrackPointerList.clear();
+    m_trackPointerList.clear();
     m_trackIndexList.clear();
 }
 
