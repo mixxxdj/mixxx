@@ -1058,29 +1058,31 @@ void WTrackMenu::slotClearAllMetadata() {
 }
 
 void WTrackMenu::slotShowTrackInfo() {
-    const auto trackPointers = getTrackPointers();
-    if (trackPointers.empty()) {
-        return;
-    }
     if (m_pTrackModel) {
-        const auto indices = getTrackIndices();
-        m_pTrackInfo->loadTrack(indices.at(0));
+        if (m_trackIndexList.isEmpty()) {
+            return;
+        }
+        m_pTrackInfo->loadTrack(m_trackIndexList.at(0));
     } else {
-        m_pTrackInfo->loadTrack(trackPointers.at(0));
+        if (m_trackPointerList.isEmpty()) {
+            return;
+        }
+        m_pTrackInfo->loadTrack(m_trackPointerList.at(0));
     }
     m_pTrackInfo->show();
 }
 
 void WTrackMenu::slotShowDlgTagFetcher() {
-    const auto trackPointers = getTrackPointers();
-    if (trackPointers.empty()) {
-        return;
-    }
     if (m_pTrackModel) {
-        const auto indices = getTrackIndices();
-        m_pTagFetcher->loadTrack(indices.at(0));
+        if (m_trackIndexList.isEmpty()) {
+            return;
+        }
+        m_pTagFetcher->loadTrack(m_trackIndexList.at(0));
     } else {
-        m_pTagFetcher->loadTrack(trackPointers.at(0));
+        if (m_trackPointerList.isEmpty()) {
+            return;
+        }
+        m_pTagFetcher->loadTrack(m_trackPointerList.at(0));
     }
     m_pTagFetcher->show();
 }
