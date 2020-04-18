@@ -522,7 +522,7 @@ class MixxxBuild(object):
 
         print("branch has changed %s -> %s" % (sconsign_branch, branch_name))
 
-        if sconsign_branch:
+        if sconsign_branch and sconsign_branch != "(no branch)":
             old_branch_build_dir = os.path.join(cache_dir, sconsign_branch)
             old_virtual_build_dir = os.path.join(
                 old_branch_build_dir, self.build_dir)
