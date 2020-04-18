@@ -652,42 +652,35 @@ QModelIndexList WTrackMenu::getTrackIndices() const {
 }
 
 void WTrackMenu::slotOpenInFileBrowser() {
-    TrackPointerList trackPointerList = getTrackPointers();
+    const auto trackPointers = getTrackPointers();
     QStringList locations;
-    for (const TrackPointer& trackPointer : trackPointerList) {
-        locations << trackPointer->getLocation();
+    locations.reserve(trackPointers.size());
+    for (const auto& pTrack : trackPointers) {
+        locations << pTrack->getLocation();
     }
     mixxx::DesktopHelper::openInFileBrowser(locations);
 }
 
 void WTrackMenu::slotImportTrackMetadataFromFileTags() {
-    auto trackPointers = getTrackPointers();
-
-    for (const auto& pTrack : trackPointers) {
-        if (pTrack) {
-            // The user has explicitly requested to reload metadata from the file
-            // to override the information within Mixxx! Custom cover art must be
-            // reloaded separately.
-            SoundSourceProxy(pTrack).updateTrackFromSource(
-                    SoundSourceProxy::ImportTrackMetadataMode::Again);
-        }
+    for (const auto& pTrack : getTrackPointers()) {
+        // The user has explicitly requested to reload metadata from the file
+        // to override the information within Mixxx! Custom cover art must be
+        // reloaded separately.
+        SoundSourceProxy(pTrack).updateTrackFromSource(
+                SoundSourceProxy::ImportTrackMetadataMode::Again);
     }
 }
 
 void WTrackMenu::slotExportTrackMetadataIntoFileTags() {
-    auto trackPointers = getTrackPointers();
-
     mixxx::DlgTrackMetadataExport::showMessageBoxOncePerSession();
 
-    for (const auto& pTrack : trackPointers) {
-        if (pTrack) {
-            // Export of metadata is deferred until all references to the
-            // corresponding track object have been dropped. Otherwise
-            // writing to files that are still used for playback might
-            // cause crashes or at least audible glitches!
-            mixxx::DlgTrackMetadataExport::showMessageBoxOncePerSession();
-            pTrack->markForMetadataExport();
-        }
+    for (const auto& pTrack : getTrackPointers()) {
+        // Export of metadata is deferred until all references to the
+        // corresponding track object have been dropped. Otherwise
+        // writing to files that are still used for playback might
+        // cause crashes or at least audible glitches!
+        mixxx::DlgTrackMetadataExport::showMessageBoxOncePerSession();
+        pTrack->markForMetadataExport();
     }
 }
 
@@ -916,29 +909,28 @@ void WTrackMenu::slotUnlockBpm() {
 }
 
 void WTrackMenu::slotScaleBpm(int scale) {
-    const TrackPointerList trackPointers = getTrackPointers();
-    for (const auto& pTrack : trackPointers) {
-        if (!pTrack->isBpmLocked()) {
-            BeatsPointer pBeats = pTrack->getBeats();
-            if (pBeats) {
-                pBeats->scale(static_cast<Beats::BPMScale>(scale));
-            }
+    for (const auto& pTrack : getTrackPointers()) {
+        if (pTrack->isBpmLocked()) {
+            continue;
         }
+        BeatsPointer pBeats = pTrack->getBeats();
+        if (!pBeats) {
+            continue;
+        }
+        pBeats->scale(static_cast<Beats::BPMScale>(scale));
     }
 }
 
 void WTrackMenu::lockBpm(bool lock) {
-    const TrackPointerList trackPointers = getTrackPointers();
     // TODO: This should be done in a thread for large selections
-    for (const auto& pTrack : trackPointers) {
+    for (const auto& pTrack : getTrackPointers()) {
         pTrack->setBpmLocked(lock);
     }
 }
 
 void WTrackMenu::slotColorPicked(mixxx::RgbColor::optional_t color) {
-    const TrackPointerList trackPointers = getTrackPointers();
     // TODO: This should be done in a thread for large selections
-    for (const auto& pTrack : trackPointers) {
+    for (const auto& pTrack : getTrackPointers()) {
         pTrack->setColor(color);
     }
 
@@ -972,61 +964,54 @@ void WTrackMenu::loadSelectionToGroup(QString group, bool play) {
 
 //slot for reset played count, sets count to 0 of one or more tracks
 void WTrackMenu::slotClearPlayCount() {
-    const TrackPointerList trackPointers = getTrackPointers();
-    for (const auto& pTrack : trackPointers) {
+    for (const auto& pTrack : getTrackPointers()) {
         pTrack->resetPlayCounter();
     }
 }
 
 void WTrackMenu::slotClearBeats() {
-    const TrackPointerList trackPointers = getTrackPointers();
     // TODO: This should be done in a thread for large selections
-    for (const auto& pTrack : trackPointers) {
-        if (!pTrack->isBpmLocked()) {
-            pTrack->setBeats(BeatsPointer());
+    for (const auto& pTrack : getTrackPointers()) {
+        if (pTrack->isBpmLocked()) {
+            continue;
         }
+        pTrack->setBeats(BeatsPointer());
     }
 }
 
 void WTrackMenu::slotClearMainCue() {
-    const TrackPointerList trackPointers = getTrackPointers();
-    for (const auto& pTrack : trackPointers) {
+    for (const auto& pTrack : getTrackPointers()) {
         pTrack->removeCuesOfType(mixxx::CueType::MainCue);
     }
 }
 
 void WTrackMenu::slotClearOutroCue() {
-    const TrackPointerList trackPointers = getTrackPointers();
-    for (const auto& pTrack : trackPointers) {
+    for (const auto& pTrack : getTrackPointers()) {
         pTrack->removeCuesOfType(mixxx::CueType::Outro);
     }
 }
 
 void WTrackMenu::slotClearIntroCue() {
-    const TrackPointerList trackPointers = getTrackPointers();
-    for (const auto& pTrack : trackPointers) {
+    for (const auto& pTrack : getTrackPointers()) {
         pTrack->removeCuesOfType(mixxx::CueType::Intro);
     }
 }
 
 void WTrackMenu::slotClearKey() {
-    const TrackPointerList trackPointers = getTrackPointers();
-    for (const auto& pTrack : trackPointers) {
+    for (const auto& pTrack : getTrackPointers()) {
         pTrack->resetKeys();
     }
 }
 
 void WTrackMenu::slotClearReplayGain() {
-    const TrackPointerList trackPointers = getTrackPointers();
-    for (const auto& pTrack : trackPointers) {
+    for (const auto& pTrack : getTrackPointers()) {
         pTrack->setReplayGain(mixxx::ReplayGain());
     }
 }
 
 void WTrackMenu::slotClearWaveform() {
-    const TrackPointerList trackPointers = getTrackPointers();
     AnalysisDao& analysisDao = m_pTrackCollectionManager->internalCollection()->getAnalysisDAO();
-    for (const auto& pTrack : trackPointers) {
+    for (const auto& pTrack : getTrackPointers()) {
         analysisDao.deleteAnalysesForTrack(pTrack->getId());
         pTrack->setWaveform(WaveformPointer());
         pTrack->setWaveformSummary(WaveformPointer());
@@ -1034,15 +1019,13 @@ void WTrackMenu::slotClearWaveform() {
 }
 
 void WTrackMenu::slotClearLoop() {
-    const TrackPointerList trackPointers = getTrackPointers();
-    for (const auto& pTrack : trackPointers) {
+    for (const auto& pTrack : getTrackPointers()) {
         pTrack->removeCuesOfType(mixxx::CueType::Loop);
     }
 }
 
 void WTrackMenu::slotClearHotCues() {
-    const TrackPointerList trackPointers = getTrackPointers();
-    for (const auto& pTrack : trackPointers) {
+    for (const auto& pTrack : getTrackPointers()) {
         pTrack->removeCuesOfType(mixxx::CueType::HotCue);
     }
 }
@@ -1116,53 +1099,41 @@ void WTrackMenu::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
 }
 
 void WTrackMenu::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
-    const TrackPointerList trackPointers = getTrackPointers();
-    for (const auto& pTrack : trackPointers) {
+    for (const auto& pTrack : getTrackPointers()) {
         pTrack->setCoverInfo(coverInfo);
     }
 }
 
 void WTrackMenu::slotReloadCoverArt() {
-    const TrackPointerList trackPointers = getTrackPointers();
-    if (!trackPointers.empty()) {
-        guessTrackCoverInfoConcurrently(trackPointers);
-    }
+    guessTrackCoverInfoConcurrently(getTrackPointers());
 }
 
 void WTrackMenu::slotRemove() {
-    if (m_pTrackModel) {
-        const QModelIndexList indices = getTrackIndices();
-        if (!indices.empty()) {
-            m_pTrackModel->removeTracks(indices);
-        }
+    if (!m_pTrackModel) {
+        return;
     }
+    m_pTrackModel->removeTracks(getTrackIndices());
 }
 
 void WTrackMenu::slotHide() {
-    if (m_pTrackModel) {
-        const QModelIndexList indices = getTrackIndices();
-        if (!indices.empty()) {
-            m_pTrackModel->hideTracks(indices);
-        }
+    if (!m_pTrackModel) {
+        return;
     }
+    m_pTrackModel->hideTracks(getTrackIndices());
 }
 
 void WTrackMenu::slotUnhide() {
-    if (m_pTrackModel) {
-        const QModelIndexList indices = getTrackIndices();
-        if (!indices.empty()) {
-            m_pTrackModel->unhideTracks(indices);
-        }
+    if (!m_pTrackModel) {
+        return;
     }
+    m_pTrackModel->unhideTracks(getTrackIndices());
 }
 
 void WTrackMenu::slotPurge() {
-    if (m_pTrackModel) {
-        const QModelIndexList indices = getTrackIndices();
-        if (!indices.empty()) {
-            m_pTrackModel->purgeTracks(indices);
-        }
+    if (!m_pTrackModel) {
+        return;
     }
+    m_pTrackModel->purgeTracks(getTrackIndices());
 }
 
 void WTrackMenu::clearTrackSelection() {
