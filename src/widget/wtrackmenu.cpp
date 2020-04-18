@@ -67,8 +67,16 @@ WTrackMenu::~WTrackMenu() {
     // forward declared in the header file.
 }
 
+bool WTrackMenu::isEmpty() const {
+    if (m_pTrackModel) {
+        return m_trackIndexList.isEmpty();
+    } else {
+        return m_trackPointerList.isEmpty();
+    }
+}
+
 void WTrackMenu::popup(const QPoint& pos, QAction* at) {
-    if (getTrackPointers().empty()) {
+    if (isEmpty()) {
         return;
     }
     QMenu::popup(pos, at);
