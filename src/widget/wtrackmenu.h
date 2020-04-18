@@ -11,8 +11,6 @@ class ControlProxy;
 class DlgTagFetcher;
 class DlgTrackInfo;
 class ExternalTrackCollection;
-class QAction;
-class QWidget;
 class TrackCollectionManager;
 class WColorPickerAction;
 class WCoverArtMenu;
