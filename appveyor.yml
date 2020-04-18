@@ -170,7 +170,7 @@ for:
     - python -m pip install git+https://github.com/frerich/clcache.git
 
   before_build:
-    - FOR /D %G IN (%WINLIB_PATH%\Qt-*) DO SET QT_PATH=%G
+    - FOR /D %%G IN (%WINLIB_PATH%\Qt-*) DO SET QT_PATH=%%G
     - IF "%QT_PATH%" EQU "" (
         echo QT not found on %WINLIB_PATH%
       )
