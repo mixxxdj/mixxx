@@ -76,9 +76,7 @@ Output:  -
 -------- ------------------------------------------------------ */
 void ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefixes,
                                              const QString& function, QScriptValueList args) {
-    // This function is called from outside the controller engine, so we can't
-    // use VERIFY_OR_DEBUG_ASSERT here
-    if (m_pEngine == nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(m_pEngine) {
         return;
     }
 
