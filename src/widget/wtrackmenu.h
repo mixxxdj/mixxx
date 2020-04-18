@@ -1,17 +1,19 @@
 #pragma once
 
 #include <QMenu>
+#include <QModelIndex>
+#include <QPointer>
 
 #include "library/dao/playlistdao.h"
-#include "library/dlgtagfetcher.h"
-#include "library/dlgtrackinfo.h"
-#include "library/trackmodel.h"
+#include "preferences/usersettings.h"
+#include "track/track.h"
 
 class ControlProxy;
 class DlgTagFetcher;
 class DlgTrackInfo;
 class ExternalTrackCollection;
 class TrackCollectionManager;
+class TrackModel;
 class WColorPickerAction;
 class WCoverArtMenu;
 

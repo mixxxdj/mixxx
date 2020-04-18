@@ -10,6 +10,8 @@
 #include "library/crate/cratefeaturehelper.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/trackschema.h"
+#include "library/dlgtagfetcher.h"
+#include "library/dlgtrackinfo.h"
 #include "library/dlgtrackmetadataexport.h"
 #include "library/externaltrackcollection.h"
 #include "library/library.h"

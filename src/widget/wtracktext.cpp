@@ -3,6 +3,7 @@
 #include <QUrl>
 
 #include "control/controlobject.h"
+#include "widget/wtrackmenu.h"
 #include "widget/wtracktext.h"
 #include "util/dnd.h"
 
