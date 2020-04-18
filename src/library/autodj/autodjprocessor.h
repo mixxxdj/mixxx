@@ -249,7 +249,9 @@ class AutoDJProcessor : public QObject {
     // right side. (prevents AutoDJ logic from having to check for hamster mode
     // every time)
     double getCrossfader() const;
+    void setFader(double value);
     void setCrossfader(double value);
+    void setVolumeFader(double value);
 
     double getVolumeFader();
     double getFader();

@@ -202,7 +202,6 @@ double AutoDJProcessor::getCrossfader() const {
 }
 
 double AutoDJProcessor::getVolumeFader() {
-    // TODO(c3n7) Check if this can be done better
     double faderPos;
     double volumeFaderPositions[2] = {m_pVolumeFader[0]->get(), m_pVolumeFader[1]->get()};
     DeckAttributes* pFromDeck = getFromDeck();
@@ -215,7 +214,6 @@ double AutoDJProcessor::getVolumeFader() {
         // y = 2x - 1
         faderPos = (2 * volumeFaderPositions[1]) - 1;
     } else {
-        // TODO(c3n7) Find out if and how this state is reached
         faderPos = 0;
     }
 
@@ -234,28 +232,35 @@ double AutoDJProcessor::getFader() {
     }
 }
 
-void AutoDJProcessor::setCrossfader(double value) {
-    // TODO(c3n7) Separate the crossfader and the volume faders to their own functions
+void AutoDJProcessor::setFader(double value) {
     int configuredFaderMode = m_pConfig->getValue(
             ConfigKey("[Auto DJ]", "FaderMode"),
             static_cast<int>(FaderMode::Crossfader));
     FaderMode faderMode = static_cast<FaderMode>(configuredFaderMode);
     if (faderMode == FaderMode::Crossfader) {
-        if (m_pCOCrossfaderReverse->toBool()) {
-            value *= -1.0;
-        }
-        m_pCOCrossfader->set(value);
-        m_pVolumeFader[0]->set(1.0);
-        m_pVolumeFader[1]->set(1.0);
+        setCrossfader(value);
     } else {
-        // x = (1 - y) / 2
-        double valueFader0 = (1.0 - value) / 2.0;
-        // x = (y + 1) / 2
-        double valueFader1 = (value + 1.0) / 2.0;
-        m_pVolumeFader[0]->set(valueFader0);
-        m_pVolumeFader[1]->set(valueFader1);
-        m_pCOCrossfader->set(0);
+        setVolumeFader(value);
     }
+}
+
+void AutoDJProcessor::setCrossfader(double value) {
+    if (m_pCOCrossfaderReverse->toBool()) {
+        value *= -1.0;
+    }
+    m_pCOCrossfader->set(value);
+    m_pVolumeFader[0]->set(1.0);
+    m_pVolumeFader[1]->set(1.0);
+}
+
+void AutoDJProcessor::setVolumeFader(double value) {
+    // x = (1 - y) / 2
+    double valueFader0 = (1.0 - value) / 2.0;
+    // x = (y + 1) / 2
+    double valueFader1 = (value + 1.0) / 2.0;
+    m_pVolumeFader[0]->set(valueFader0);
+    m_pVolumeFader[1]->set(valueFader1);
+    m_pCOCrossfader->set(0);
 }
 
 AutoDJProcessor::AutoDJError AutoDJProcessor::shufflePlaylist(
@@ -278,15 +283,14 @@ void AutoDJProcessor::fadeNow() {
         return;
     }
 
-    // TODO(c3n7) Rename the variable
-    double crossfader = getFader();
+    double faderPos = getFader();
     DeckAttributes* pLeftDeck = m_decks[0];
     DeckAttributes* pRightDeck = m_decks[1];
     DeckAttributes* pFromDeck;
     DeckAttributes* pToDeck;
 
     if (pLeftDeck->isPlaying() &&
-            (!pRightDeck->isPlaying() || crossfader < 0.0)) {
+            (!pRightDeck->isPlaying() || faderPos < 0.0)) {
         pFromDeck = pLeftDeck;
         pToDeck = pRightDeck;
     } else if (pRightDeck->isPlaying()) {
@@ -567,7 +571,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             m_eState = ADJ_ENABLE_P1LOADED;
 
             // Move crossfader to the left.
-            setCrossfader(-1.0);
+            setFader(-1.0);
 
             // Load track into the left deck and play. Once it starts playing,
             // we will receive a playerPositionChanged update for deck 1 which
@@ -581,12 +585,12 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
                 // Load track into the right deck.
                 emitLoadTrackToPlayer(nextTrack, deck2->group, false);
                 // Move crossfader to the left.
-                setCrossfader(-1.0);
+                setFader(-1.0);
             } else {
                 // Load track into the left deck.
                 emitLoadTrackToPlayer(nextTrack, deck1->group, false);
                 // Move crossfader to the right.
-                setCrossfader(1.0);
+                setFader(1.0);
             }
         }
         emitAutoDJStateChanged(m_eState);
@@ -765,9 +769,9 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
         if (!otherDeckPlaying && otherDeck->isFromDeck) {
             // Force crossfader all the way to the (non fading) toDeck.
             if (m_eState == ADJ_RIGHT_FADING) {
-                setCrossfader(-1.0);
+                setFader(-1.0);
             } else {
-                setCrossfader(1.0);
+                setFader(1.0);
             }
             m_eState = ADJ_IDLE;
             // Invalidate threshold calculated for the old otherDeck
@@ -821,7 +825,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                 }
 
                 if (thisDeck->fadeBeginPos >= thisDeck->fadeEndPos) {
-                    setCrossfader(thisDeck->isLeft() ? 1.0 : -1.0);
+                    setFader(thisDeck->isLeft() ? 1.0 : -1.0);
                 }
 
                 // Now that we have started the other deck playing, remove the track
@@ -842,10 +846,9 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             return;
         }
 
-        // TODO(c3n7) Rename the variable
-        double currentCrossfader = getFader();
+        double currentFader = getFader();
 
-        if (currentCrossfader == crossfaderTarget) {
+        if (currentFader == crossfaderTarget) {
             // We are done, the fading (from) track is silenced.
             // We don't handle mode switches here since that's handled by
             // the next playerPositionChanged call otherDeck (see the
@@ -867,12 +870,12 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                 // Backward seeks pause the transitions; forward seeks speed up
                 // the transitions. If there has been a seek beyond endPos, end
                 // the transition immediately.
-                double remainingCrossfader = crossfaderTarget - currentCrossfader;
+                double remainingCrossfader = crossfaderTarget - currentFader;
                 double adjustment = remainingCrossfader /
                         (1.0 - m_transitionProgress) * transitionStep;
                 // we move the crossfader linearly with
                 // movements in this track's play position.
-                setCrossfader(currentCrossfader + adjustment);
+                setFader(currentFader + adjustment);
             }
             m_transitionProgress = transitionProgress;
             // if we are at 1.0 here, we need an additional callback until the last
@@ -1707,7 +1710,6 @@ bool AutoDJProcessor::nextTrackLoaded() {
     } else if (!leftDeckPlaying && rightDeckPlaying) {
         loadedTrack = leftDeck.getLoadedTrack();
     } else if (getFader() < 0.0) {
-        // TODO(c3n7) Delete this comment
         loadedTrack = rightDeck.getLoadedTrack();
     } else {
         loadedTrack = leftDeck.getLoadedTrack();
