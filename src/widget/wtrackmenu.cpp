@@ -635,13 +635,19 @@ TrackIdList WTrackMenu::getTrackIds() const {
     return trackIds;
 }
 
-TrackPointerList WTrackMenu::getTrackPointers() const {
+TrackPointerList WTrackMenu::getTrackPointers(
+        int maxSize) const {
     if (!m_pTrackModel) {
         return m_trackPointerList;
     }
     TrackPointerList trackPointers;
     trackPointers.reserve(m_trackIndexList.size());
     for (const auto& index : m_trackIndexList) {
+        DEBUG_ASSERT(maxSize < 0 ||
+                maxSize <= trackPointers.size());
+        if (maxSize >= 0 && maxSize <= trackPointers.size()) {
+            return trackPointers;
+        }
         const auto pTrack = m_pTrackModel->getTrack(index);
         if (!pTrack) {
             // Skip unavailable tracks
@@ -946,7 +952,7 @@ void WTrackMenu::slotColorPicked(mixxx::RgbColor::optional_t color) {
 }
 
 void WTrackMenu::loadSelectionToGroup(QString group, bool play) {
-    const TrackPointerList trackPointers = getTrackPointers();
+    const auto trackPointers = getTrackPointers(1);
     if (trackPointers.empty()) {
         return;
     }
