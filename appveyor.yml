@@ -160,7 +160,7 @@ for:
     - IF EXIST %WINLIB_PATH% (
         echo Using cached environment %WINLIB_PATH%...
       ) else (
-        mkdir %ENVIRONMENTS_PATH% &&
+        mkdir %ENVIRONMENTS_PATH% &
         echo Downloading environment %ENVIRONMENT_NAME%... &&
         curl -fsS -L -o%ENVIRONMENTS_PATH%\%ENVIRONMENT_NAME%.zip %ENVIRONMENTS_URL%/%ENVIRONMENT_NAME%.zip &&
         echo Unpacking environment %ENVIRONMENT_NAME% to %ENVIRONMENTS_PATH%... &&
