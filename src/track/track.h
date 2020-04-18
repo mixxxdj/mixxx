@@ -6,6 +6,7 @@
 #include <QUrl>
 
 #include "audio/streaminfo.h"
+#include "sources/metadatasource.h"
 #include "track/beats.h"
 #include "track/cue.h"
 #include "track/trackfile.h"
@@ -14,13 +15,12 @@
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
 
-#include "sources/metadatasource.h"
-
 // forward declaration(s)
 class Track;
 
 typedef std::shared_ptr<Track> TrackPointer;
 typedef std::weak_ptr<Track> TrackWeakPointer;
+typedef QList<TrackPointer> TrackPointerList;
 
 Q_DECLARE_METATYPE(TrackPointer);
 

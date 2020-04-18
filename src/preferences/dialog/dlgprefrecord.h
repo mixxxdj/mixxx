@@ -9,14 +9,12 @@
 #include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
 #include "encoder/encoder.h"
-#include "util/widgethider.h"
 
 class ControlObject;
 class ControlProxy;
 
 class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     Q_OBJECT
-    WidgetHider m_hider;
   public:
     DlgPrefRecord(QWidget *parent, UserSettingsPointer _config);
     virtual ~DlgPrefRecord();
@@ -39,9 +37,6 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     void apply(const QString &);
 
   private:
-    void retainSizeFor(QWidget* widget);
-    inline void showWidget(QWidget* widget);
-    inline void hideWidget(QWidget* widget);
     void setupEncoderUI();
     void loadMetaData();
     void updateTextQuality();
