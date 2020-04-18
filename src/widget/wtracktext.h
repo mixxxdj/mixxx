@@ -10,6 +10,7 @@
 #include "widget/trackdroptarget.h"
 #include "widget/wlabel.h"
 
+class TrackCollectionManager;
 class WTrackMenu;
 
 class WTrackText : public WLabel, public TrackDropTarget {
@@ -20,6 +21,7 @@ class WTrackText : public WLabel, public TrackDropTarget {
             UserSettingsPointer pConfig,
             TrackCollectionManager* pTrackCollectionManager,
             const char* group);
+    ~WTrackText() override;
 
   signals:
     void trackDropped(QString fileName, QString group) override;

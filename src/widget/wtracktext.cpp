@@ -31,6 +31,10 @@ WTrackText::WTrackText(QWidget* pParent,
     setAcceptDrops(true);
 }
 
+WTrackText::~WTrackText() {
+    // Required to allow forward declaration of WTrackMenu in header
+}
+
 void WTrackText::slotTrackLoaded(TrackPointer track) {
     if (track) {
         m_pCurrentTrack = track;
