@@ -1019,6 +1019,7 @@ class MixxxCore(Feature):
                    "src/widget/wlibrarytableview.cpp",
                    "src/widget/wanalysislibrarytableview.cpp",
                    "src/widget/wlibrarytextbrowser.cpp",
+                   "src/widget/wtrackmenu.cpp",
 
                    "src/database/mixxxdb.cpp",
                    "src/database/schemamanager.cpp",
@@ -1312,7 +1313,6 @@ class MixxxCore(Feature):
                    "src/util/logger.cpp",
                    "src/util/logging.cpp",
                    "src/util/cmdlineargs.cpp",
-                   "src/util/widgethider.cpp",
                    "src/util/autohidpi.cpp",
                    "src/util/screensaver.cpp",
                    "src/util/indexrange.cpp",

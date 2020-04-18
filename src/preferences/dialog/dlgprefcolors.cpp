@@ -27,8 +27,6 @@ DlgPrefColors::DlgPrefColors(
     comboBoxHotcueColors->setIconSize(kPalettePreviewSize);
     comboBoxTrackColors->setIconSize(kPalettePreviewSize);
 
-    loadSettings();
-
     connect(comboBoxHotcueColors,
             QOverload<const QString&>::of(&QComboBox::currentIndexChanged),
             this,
@@ -43,13 +41,15 @@ DlgPrefColors::DlgPrefColors(
             &QPushButton::clicked,
             this,
             &DlgPrefColors::slotEditTrackPaletteClicked);
+
+    slotUpdate();
 }
 
 DlgPrefColors::~DlgPrefColors() {
 }
 
 // Loads the config keys and sets the widgets in the dialog to match
-void DlgPrefColors::loadSettings() {
+void DlgPrefColors::slotUpdate() {
     comboBoxHotcueColors->clear();
     comboBoxTrackColors->clear();
     for (const auto& palette : qAsConst(mixxx::PredefinedColorPalettes::kPalettes)) {
@@ -264,7 +264,7 @@ void DlgPrefColors::trackPaletteUpdated(const QString& trackColors) {
     QString hotcueColors = comboBoxHotcueColors->currentText();
     int defaultColor = comboBoxHotcueDefaultColor->currentIndex();
 
-    loadSettings();
+    slotUpdate();
     restoreComboBoxes(hotcueColors, trackColors, defaultColor);
 }
 
@@ -272,7 +272,7 @@ void DlgPrefColors::hotcuePaletteUpdated(const QString& hotcueColors) {
     QString trackColors = comboBoxTrackColors->currentText();
     int defaultColor = comboBoxHotcueDefaultColor->currentIndex();
 
-    loadSettings();
+    slotUpdate();
     restoreComboBoxes(hotcueColors, trackColors, defaultColor);
 }
 
@@ -281,7 +281,7 @@ void DlgPrefColors::palettesUpdated() {
     QString trackColors = comboBoxTrackColors->currentText();
     int defaultColor = comboBoxHotcueDefaultColor->currentIndex();
 
-    loadSettings();
+    slotUpdate();
     restoreComboBoxes(hotcueColors, trackColors, defaultColor);
 }
 

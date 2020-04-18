@@ -34,12 +34,12 @@ class DlgPrefController : public DlgPreferencePage {
     DlgPreferencePage::State state() override;
 
   public slots:
-    // Called when we should apply / save our changes.
-    void slotApply() override;
-    // Called when we should cancel the changes made.
-    void slotCancel() override;
-    // Called when preference dialog (not this dialog) is displayed.
+    /// Called when the preference dialog (not this page) is shown to the user.
     void slotUpdate() override;
+    /// Called when the user clicks the global "Apply" button.
+    void slotApply() override;
+    /// Called when the user clicks the global "Reset to Defaults" button.
+    void slotResetToDefaults() override;
 
   signals:
     void applyPreset(Controller* pController, ControllerPresetPointer pPreset, bool bEnabled);

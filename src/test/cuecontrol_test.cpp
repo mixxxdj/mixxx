@@ -309,11 +309,6 @@ TEST_F(CueControlTest, FollowCueOnQuantize) {
     config()->set(ConfigKey("[Controls]", "CueRecall"),
             ConfigValue(static_cast<int>(SeekOnLoadMode::MainCue)));
     TrackPointer pTrack = createTestTrack();
-    pTrack->setAudioProperties(
-            mixxx::kEngineChannelCount,
-            mixxx::audio::SampleRate(44100),
-            mixxx::audio::Bitrate(),
-            mixxx::Duration::fromSeconds(10));
     pTrack->setBpm(120.0);
 
     const int frameSize = 2;

@@ -72,8 +72,8 @@ public:
     // Adjusts floating-point properties to match their string representation
     // in file tags to account for rounding errors.
     void normalizeBeforeExport() {
-        refBpm().normalizeBeforeExport();
-        refReplayGain().normalizeBeforeExport();
+        m_bpm.normalizeBeforeExport();
+        m_replayGain.normalizeBeforeExport();
     }
 
     bool compareEq(

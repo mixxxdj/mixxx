@@ -91,7 +91,8 @@ jobs:
 
     - name: OSX/clang/SCons build
       os: osx
-      osx_image: xcode11
+      # The XCode version should match that on the build server!
+      osx_image: xcode9.4
       compiler: clang
       cache:
         directories:
@@ -127,7 +128,8 @@ jobs:
 
     - name: OSX/clang/CMake build
       os: osx
-      osx_image: xcode11
+      # The XCode version should match that on the build server!
+      osx_image: xcode9.4
       compiler: clang
       cache:
         ccache: true

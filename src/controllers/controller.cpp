@@ -71,7 +71,7 @@ bool Controller::applyPreset(bool initializeScripts) {
     }
 
     bool success = m_pEngine->loadScriptFiles(scriptFiles);
-    if (initializeScripts) {
+    if (success && initializeScripts) {
         m_pEngine->initializeScripts(scriptFiles);
     }
     return success;

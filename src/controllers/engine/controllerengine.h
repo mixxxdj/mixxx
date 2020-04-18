@@ -150,23 +150,24 @@ class ControllerEngine : public QObject {
     void gracefulShutdown();
     void scriptHasChanged(const QString&);
 
-  signals:
-    void initialized();
-
   private slots:
     void errorDialogButton(const QString& key, QMessageBox::StandardButton button);
 
   private:
     bool evaluateScriptFile(const QFileInfo& scriptFile);
     void initializeScriptEngine();
+    void uninitializeScriptEngine();
     void reloadScripts();
 
-    void scriptErrorDialog(const QString& detailedError);
+    void scriptErrorDialog(const QString& detailedError, const QString& key, bool bFatal = false);
     void generateScriptFunctions(const QString& code);
     // Stops and removes all timers (for shutdown).
     void stopAllTimers();
 
-    void callFunctionOnObjects(QList<QString>, const QString&, QJSValueList args = QJSValueList());
+    bool callFunctionOnObjects(QList<QString>,
+            const QString&,
+            QJSValueList args = QJSValueList(),
+            bool bFatalError = false);
     // Convert a byteArray to a JS typed array over an ArrayBuffer
     QJSValue byteArrayToScriptValue(const QByteArray byteArray);
     QJSValue evaluateCodeString(const QString& program, const QString& fileName = QString(), int lineNumber = 1);
@@ -175,7 +176,7 @@ class ControllerEngine : public QObject {
 
     // Shows a UI dialog notifying of a script evaluation error.
     // Precondition: QJSValue.isError() == true
-    void showScriptExceptionDialog(QJSValue evaluationResult);
+    void showScriptExceptionDialog(QJSValue evaluationResult, bool bFatal = false);
     bool m_bDisplayingExceptionDialog;
     QJSEngine* m_pScriptEngine;
 
