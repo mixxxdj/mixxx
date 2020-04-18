@@ -25,7 +25,7 @@ const SINT kInvalidChunkIndex = -1;
 // easier memory alignment.
 // TODO(XXX): The optimum value of the "constant" kFrames depends
 // on the properties of the AudioSource as the remarks above suggest!
-const mixxx::AudioSignal::ChannelCount CachingReaderChunk::kChannels = mixxx::kEngineChannelCount;
+const mixxx::audio::ChannelCount CachingReaderChunk::kChannels = mixxx::kEngineChannelCount;
 const SINT CachingReaderChunk::kFrames = 8192; // ~ 170 ms at 48 kHz
 const SINT CachingReaderChunk::kSamples =
         CachingReaderChunk::frames2samples(CachingReaderChunk::kFrames);
@@ -66,7 +66,9 @@ mixxx::IndexRange CachingReaderChunk::bufferSampleFrames(
     mixxx::AudioSourceStereoProxy audioSourceProxy(
             pAudioSource,
             tempOutputBuffer);
-    DEBUG_ASSERT(audioSourceProxy.channelCount() == kChannels);
+    DEBUG_ASSERT(
+            audioSourceProxy.getSignalInfo().getChannelCount() ==
+            kChannels);
     m_bufferedSampleFrames =
             audioSourceProxy.readSampleFrames(
                     mixxx::WritableSampleFrames(

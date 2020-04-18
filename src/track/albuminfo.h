@@ -11,7 +11,7 @@
 namespace mixxx {
 
 class AlbumInfo final {
-    // Album and release properties (in alphabetical order)
+    // Properties in alphabetical order
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    artist,                    Artist)
 #if defined(__EXTRA_METADATA__)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    copyright,                 Copyright)

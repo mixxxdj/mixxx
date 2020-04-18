@@ -44,7 +44,7 @@ ColorPalette ColorPaletteSettings::getColorPalette(
     // Read colors from configuration
     const QString group = kColorPaletteGroupStart + name + kColorPaletteGroupEnd;
     QList<mixxx::RgbColor> colorList;
-    QList<unsigned int> hotcueIndices;
+    QList<int> hotcueIndices;
     for (const ConfigKey& key : m_pConfig->getKeysWithGroup(group)) {
         if (key.item == kColorPaletteHotcueIndicesConfigItem) {
             for (const QString& stringIndex :
@@ -52,7 +52,7 @@ ColorPalette ColorPaletteSettings::getColorPalette(
                 bool ok;
                 int index = stringIndex.toInt(&ok);
                 if (ok && index >= 0) {
-                    hotcueIndices << static_cast<unsigned int>(index);
+                    hotcueIndices << index;
                 }
             }
         } else {
@@ -91,7 +91,7 @@ void ColorPaletteSettings::setColorPalette(const QString& name, const ColorPalet
     }
 
     QStringList stringIndices;
-    for (const unsigned int index : colorPalette.getHotcueIndices()) {
+    for (const unsigned int index : colorPalette.getIndicesByHotcue()) {
         stringIndices << QString::number(index);
     }
     if (!stringIndices.isEmpty()) {
@@ -110,7 +110,14 @@ void ColorPaletteSettings::removePalette(const QString& name) {
 
 ColorPalette ColorPaletteSettings::getHotcueColorPalette() const {
     QString name = m_pConfig->getValueString(kHotcueColorPaletteConfigKey);
-    return getColorPalette(name, mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette);
+    return getHotcueColorPalette(name);
+}
+
+ColorPalette ColorPaletteSettings::getHotcueColorPalette(
+        const QString& name) const {
+    return getColorPalette(
+            name,
+            mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette);
 }
 
 void ColorPaletteSettings::setHotcueColorPalette(const ColorPalette& colorPalette) {
@@ -123,9 +130,16 @@ void ColorPaletteSettings::setHotcueColorPalette(const ColorPalette& colorPalett
     setColorPalette(name, colorPalette);
 }
 
+ColorPalette ColorPaletteSettings::getTrackColorPalette(
+        const QString& name) const {
+    return getColorPalette(
+            name,
+            mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette);
+}
+
 ColorPalette ColorPaletteSettings::getTrackColorPalette() const {
     QString name = m_pConfig->getValueString(kTrackColorPaletteConfigKey);
-    return getColorPalette(name, mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette);
+    return getTrackColorPalette(name);
 }
 
 void ColorPaletteSettings::setTrackColorPalette(const ColorPalette& colorPalette) {

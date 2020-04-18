@@ -17,6 +17,15 @@ class WColorPickerAction : public QWidgetAction {
 
     void resetSelectedColor();
     void setSelectedColor(mixxx::RgbColor::optional_t color);
+
+    /// Set a new color palette for the underlying color picker.
+    ///
+    /// After calling this, your need to tell Qt that the menu size needs to be
+    /// recalculated, e.g.:
+    ///
+    ///     m_pColorPickerAction->setColorPalette(palette);
+    ///     QResizeEvent resizeEvent(QSize(), m_pMenu->size());
+    ///     qApp->sendEvent(m_pMenu, &resizeEvent);
     void setColorPalette(const ColorPalette& palette);
 
   signals:

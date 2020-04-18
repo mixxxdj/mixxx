@@ -8,17 +8,25 @@
 #include "preferences/usersettings.h"
 #include "skin/skincontext.h"
 #include "track/track.h"
+#include "util/parented_ptr.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wlabel.h"
+#include "widget/wtrackmenu.h"
 
 class WTrackProperty : public WLabel, public TrackDropTarget {
     Q_OBJECT
   public:
-    WTrackProperty(const char* group, UserSettingsPointer pConfig, QWidget* pParent);
+    WTrackProperty(
+            QWidget* pParent,
+            UserSettingsPointer pConfig,
+            TrackCollectionManager* pTrackCollectionManager,
+            const char* group);
+
+    ~WTrackProperty() override = default;
 
     void setup(const QDomNode& node, const SkinContext& context) override;
 
-  signals:
+signals:
     void trackDropped(QString filename, QString group) override;
     void cloneDeck(QString source_group, QString target_group) override;
 
@@ -28,6 +36,7 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
 
   private slots:
     void slotTrackChanged(TrackId);
+    void contextMenuEvent(QContextMenuEvent* event) override;
 
   private:
     void dragEnterEvent(QDragEnterEvent *event) override;
@@ -37,9 +46,11 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
     void updateLabel();
 
     const char* m_pGroup;
-    UserSettingsPointer m_pConfig;
+    const UserSettingsPointer m_pConfig;
     TrackPointer m_pCurrentTrack;
     QString m_property;
+
+    const parented_ptr<WTrackMenu> m_pTrackMenu;
 };
 
 

@@ -4,9 +4,9 @@
 #include <QMutex>
 #include <QObject>
 
+#include "audio/types.h"
 #include "track/cueinfo.h"
 #include "track/trackid.h"
-#include "util/audiosignal.h"
 #include "util/color/rgbcolor.h"
 #include "util/memory.h"
 
@@ -24,7 +24,7 @@ class Cue : public QObject {
     Cue();
     Cue(
             const mixxx::CueInfo& cueInfo,
-            mixxx::AudioSignal::SampleRate sampleRate);
+            mixxx::audio::SampleRate sampleRate);
     ~Cue() override = default;
 
     bool isDirty() const;
@@ -56,7 +56,7 @@ class Cue : public QObject {
     double getEndPosition() const;
 
     mixxx::CueInfo getCueInfo(
-            mixxx::AudioSignal::SampleRate sampleRate) const;
+            mixxx::audio::SampleRate sampleRate) const;
 
   signals:
     void updated();

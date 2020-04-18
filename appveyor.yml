@@ -86,12 +86,12 @@ for:
       libwavpack-dev
       portaudio19-dev
       protobuf-compiler
-      python-pip
+      python3-pip
       qt5-default
       qt5keychain-dev
       qtscript5-dev
       xsltproc
-    - sudo pip install cmake
+    - sudo pip3 install cmake
 
   before_build:
      # Limit cache size to 100 MB
@@ -185,6 +185,11 @@ for:
     # Improve clcache performance
     - set CLCACHE_SERVER=1
     - set CLCACHE_HARDLINK=1
+    - IF [%APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH%] == [] (
+        set "MIXXX_PACKAGE_NAME=mixxx-%APPVEYOR_REPO_BRANCH:/=-%-%APPVEYOR_REPO_COMMIT%"
+      ) else (
+        set "MIXXX_PACKAGE_NAME=mixxx-pr-%APPVEYOR_PULL_REQUEST_NUMBER%-%APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH:/=-%-%APPVEYOR_REPO_COMMIT%"
+      )
     - ps: Start-Process clcache-server
 
   build_script:
@@ -192,6 +197,7 @@ for:
     - cd cmake_build
     - cmake
       -L
+      -DCPACK_PACKAGE_FILE_NAME=%MIXXX_PACKAGE_NAME%
       -DCMAKE_BUILD_TYPE=Release
       -DCMAKE_INSTALL_PREFIX=C:\mixxx
       -DCMAKE_PREFIX_PATH=%WINLIB_PATH%;%QT_PATH%
@@ -203,8 +209,7 @@ for:
       ..
     - cmake --build .
     - cmake --build . --target install
-    # Generate EXE/MSI installers
-    - cpack -G "NSIS"
+    # Generate WIX installer
     - cpack -G "WIX"
 
   test_script:
