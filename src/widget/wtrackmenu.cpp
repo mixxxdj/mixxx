@@ -60,6 +60,13 @@ WTrackMenu::WTrackMenu(QWidget* parent,
     setupActions();
 }
 
+WTrackMenu::~WTrackMenu() {
+    // ~QPointer() needs the definition of the wrapped type
+    // upon deletion! Otherwise the behavior is undefined.
+    // The wrapped types of some QPointer members are only
+    // forward declared in the header file.
+}
+
 void WTrackMenu::popup(const QPoint& pos, QAction* at) {
     if (getTrackPointers().empty()) {
         return;

@@ -50,8 +50,7 @@ class WTrackMenu : public QMenu {
             TrackCollectionManager* pTrackCollectionManager,
             Features flags = Feature::All,
             TrackModel* trackModel = nullptr);
-
-    ~WTrackMenu() override = default;
+    ~WTrackMenu() override;
 
     void loadTrack(TrackId trackId);
     void loadTrack(QModelIndex index);
