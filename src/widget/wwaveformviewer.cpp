@@ -217,4 +217,17 @@ void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) 
         connect(pWidget, SIGNAL(destroyed()),
                 this, SLOT(slotWidgetDead()));
     }
+
+}
+
+void WWaveformViewer::showEvent(QShowEvent *event) {
+    if (m_waveformWidget) {
+        auto widget = m_waveformWidget->getWidget();
+        // Work around lp:1872172. On Qt 5.14, waveforms do not show on startup
+        // on macOS and Windows.
+        if (widget) {
+            widget->hide();
+            widget->show();
+        }
+    }
 }

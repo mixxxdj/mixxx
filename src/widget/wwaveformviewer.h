@@ -7,6 +7,7 @@
 #include <QEvent>
 #include <QList>
 #include <QMutex>
+#include <QShowEvent>
 
 #include "track/track.h"
 #include "widget/trackdroptarget.h"
@@ -28,6 +29,7 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
 
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
+    void showEvent(QShowEvent *event) override;
 
     void mousePressEvent(QMouseEvent * /*unused*/) override;
     void mouseMoveEvent(QMouseEvent * /*unused*/) override;
