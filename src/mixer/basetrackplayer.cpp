@@ -258,6 +258,7 @@ TrackPointer BaseTrackPlayerImpl::unloadTrack() {
             CuePointer pCue(it.next());
             if (pCue->getType() == mixxx::CueType::Loop) {
                 pLoopCue = pCue;
+                break;
             }
         }
         if (!pLoopCue) {
