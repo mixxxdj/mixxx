@@ -25,7 +25,9 @@ QDateTime LastPlayedFetcher::fetch(TrackPointer pTrack) {
     if (!m_fetchQuery.first()) {
         return QDateTime();
     }
-    return m_fetchQuery.value(0).toDateTime();
+    QDateTime ret = m_fetchQuery.value(0).toDateTime();
+    m_fetchQuery.finish();
+    return ret;
 }
 
 LastPlayedCache::LastPlayedCache(TrackCollection* trackCollection)
