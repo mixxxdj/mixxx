@@ -30,6 +30,10 @@ WTrackProperty::WTrackProperty(QWidget* pParent,
     setAcceptDrops(true);
 }
 
+WTrackProperty::~WTrackProperty() {
+    // Required to allow forward declaration of WTrackMenu in header
+}
+
 void WTrackProperty::setup(const QDomNode& node, const SkinContext& context) {
     WLabel::setup(node, context);
 

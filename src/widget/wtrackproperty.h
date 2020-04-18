@@ -11,6 +11,7 @@
 #include "widget/trackdroptarget.h"
 #include "widget/wlabel.h"
 
+class TrackCollectionManager;
 class WTrackMenu;
 
 class WTrackProperty : public WLabel, public TrackDropTarget {
@@ -21,8 +22,7 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
             UserSettingsPointer pConfig,
             TrackCollectionManager* pTrackCollectionManager,
             const char* group);
-
-    ~WTrackProperty() override = default;
+    ~WTrackProperty() override;
 
     void setup(const QDomNode& node, const SkinContext& context) override;
 
