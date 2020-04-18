@@ -64,9 +64,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     bool setConfig(UserSettingsPointer config);
 
-    /// creates the waveform widget using the type set with setWidgetType
+    /// Creates the waveform widget using the type set with setWidgetType
     /// and binds it to the viewer.
-    /// deletes older widget and resets positions to config defaults
+    /// Deletes older widget and resets positions to config defaults.
     bool setWaveformWidget(
             WWaveformViewer* viewer,
             const QDomElement &node,
