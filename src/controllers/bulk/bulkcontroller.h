@@ -42,7 +42,7 @@ class BulkReader : public QThread {
 class BulkController : public Controller {
     Q_OBJECT
   public:
-    BulkController(UserSettingsPointer pConfig,
+    BulkController(
             libusb_context* context,
             libusb_device_handle* handle,
             struct libusb_device_descriptor* desc);
