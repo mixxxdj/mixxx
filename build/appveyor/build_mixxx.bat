@@ -183,6 +183,6 @@ FOR /F %%G IN ('dir "%BUILDTOOLS_PATH%\Tools\MSVC\%PARAM_VCVARSVER%*" /b /ad-h /
   set "LOCAL_64_CL=%BUILDTOOLS_PATH%\Tools\MSVC\%%G\bin\Hostx64\x64\cl.exe"
   if EXIST "!LOCAL_64_CL!" (
     EXIT /B 0
-  ) 
+  )
 )
 EXIT /B 1
