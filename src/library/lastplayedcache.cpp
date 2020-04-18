@@ -22,7 +22,9 @@ QDateTime LastPlayedFetcher::fetch(TrackPointer pTrack) {
         LOG_FAILED_QUERY(m_fetchQuery);
         return QDateTime();
     }
-    m_fetchQuery.first();
+    if (!m_fetchQuery.first()) {
+        return QDateTime();
+    }
     return m_fetchQuery.value(0).toDateTime();
 }
 
