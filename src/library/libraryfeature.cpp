@@ -79,8 +79,9 @@ bool LibraryFeature::exportPlaylistItemsIntoFile(
                 auto overwrite = QMessageBox::question(
                         NULL,
                         tr("Overwrite File?"),
-                        tr("Since you have specified no extension, m3u is used, but the file \"%1"
-                           "\" already exists. Do you wish to overwrite it?").arg(playlistFilePath)
+                        tr("A playlist file with the name \"%1\" already exists.\n"
+                           "The default \"m3u\" extension was added because none was specified.\n\n"
+                           "Do you really want to overwrite it?").arg(playlistFilePath)
                 );
                 if (overwrite != QMessageBox::StandardButton::Yes) {
                     return false;
