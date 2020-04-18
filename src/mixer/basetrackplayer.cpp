@@ -218,7 +218,7 @@ void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
         QListIterator<CuePointer> it(trackCues);
         while (it.hasNext()) {
             CuePointer pCue(it.next());
-            if (pCue->getType() == mixxx::CueType::Loop) {
+            if (pCue->getType() == mixxx::CueType::Loop && pCue->getHotCue() == Cue::kNoHotCue) {
                 double loopStart = pCue->getPosition();
                 double loopEnd = loopStart + pCue->getLength();
                 if (loopStart != kNoTrigger && loopEnd != kNoTrigger && loopStart <= loopEnd) {
@@ -256,7 +256,7 @@ TrackPointer BaseTrackPlayerImpl::unloadTrack() {
         QListIterator<CuePointer> it(cuePoints);
         while (it.hasNext()) {
             CuePointer pCue(it.next());
-            if (pCue->getType() == mixxx::CueType::Loop) {
+            if (pCue->getType() == mixxx::CueType::Loop && pCue->getHotCue() == Cue::kNoHotCue) {
                 pLoopCue = pCue;
                 break;
             }
