@@ -142,12 +142,11 @@ class WTrackMenu : public QMenu {
     void loadSelectionToGroup(QString group, bool play = false);
     void clearTrackSelection();
 
+    TrackModel* m_pTrackModel{};
+    QModelIndexList m_trackIndexList;
+
     // Source of track list when TrackModel is not set.
     TrackPointerList m_pTrackPointerList;
-    // Source of track list when TrackModel is set.
-    QModelIndexList m_pTrackIndexList;
-
-    TrackModel* m_pTrackModel{};
 
     const ControlProxy* m_pNumSamplers{};
     const ControlProxy* m_pNumDecks{};

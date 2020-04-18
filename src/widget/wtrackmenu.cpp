@@ -602,18 +602,12 @@ void WTrackMenu::loadTracks(QModelIndexList indexList) {
         return;
     }
 
-    QModelIndexList indices;
-    indices.reserve(indexList.size());
+    m_trackIndexList.reserve(indexList.size());
     for (const auto& index : indexList) {
-        TrackPointer pTrack = m_pTrackModel->getTrack(index);
-        // Checking if passed indexList is valid
-        if (pTrack) {
-            indices.push_back(index);
-        }
+        m_trackIndexList.push_back(index);
     }
-    m_pTrackIndexList = indices;
 
-    if (!m_pTrackIndexList.empty()) {
+    if (!m_trackIndexList.empty()) {
         updateMenus();
     }
 }
@@ -668,7 +662,7 @@ QModelIndexList WTrackMenu::getTrackIndices() const {
     // Indices are associated with a TrackModel. Can only be obtained
     // if a TrackModel is available.
     DEBUG_ASSERT(m_pTrackModel);
-    return m_pTrackIndexList;
+    return m_trackIndexList;
 }
 
 void WTrackMenu::slotOpenInFileBrowser() {
@@ -1187,7 +1181,7 @@ void WTrackMenu::slotPurge() {
 
 void WTrackMenu::clearTrackSelection() {
     m_pTrackPointerList.clear();
-    m_pTrackIndexList.clear();
+    m_trackIndexList.clear();
 }
 
 bool WTrackMenu::featureIsEnabled(Feature flag) const {
