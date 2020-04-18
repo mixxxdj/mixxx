@@ -90,7 +90,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     /// Changes the widged type to that loaded from config and recreates them.
     /// Used as a workaround on Windows due to a problem with GL and QT 5.14.2
     bool setWidgetTypeFromConfig();
-    /// Changes the widget type and recreates them. Used from the pref. dialog
+    /// Changes the widget type and recreates them. Used from the preferences
+    /// dialog.
     bool setWidgetTypeFromHandle(int handleIndex, bool force = false);
     WaveformWidgetType::Type getType() const { return m_type;}
 
