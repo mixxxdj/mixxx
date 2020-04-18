@@ -67,11 +67,11 @@ WTrackMenu::~WTrackMenu() {
     // forward declared in the header file.
 }
 
-bool WTrackMenu::isEmpty() const {
+int WTrackMenu::getTrackCount() const {
     if (m_pTrackModel) {
-        return m_trackIndexList.isEmpty();
+        return m_trackIndexList.size();
     } else {
-        return m_trackPointerList.isEmpty();
+        return m_trackPointerList.size();
     }
 }
 
@@ -417,10 +417,12 @@ void WTrackMenu::setupActions() {
 
 void WTrackMenu::updateMenus() {
     const auto trackIds = getTrackIds();
+    // TODO: Loading all tracks just by opening the context menu
+    // menu is a real UX performance killer!!
     const auto trackPointers = getTrackPointers();
 
     // Gray out some stuff if multiple songs were selected.
-    const bool singleTrackSelected = trackPointers.size() == 1;
+    const bool singleTrackSelected = getTrackCount() == 1;
 
     if (featureIsEnabled(Feature::LoadTo)) {
         int iNumDecks = m_pNumDecks->get();
@@ -496,9 +498,10 @@ void WTrackMenu::updateMenus() {
 
     if (featureIsEnabled(Feature::Reset)) {
         bool allowClear = true;
-        for (int i = 0; i < trackPointers.size() && allowClear; ++i) {
-            if (trackPointers.at(0)->isBpmLocked()) {
+        for (const auto& pTrack : trackPointers) {
+            if (pTrack->isBpmLocked()) {
                 allowClear = false;
+                break;
             }
         }
         m_pClearBeatsAction->setEnabled(allowClear);
@@ -506,30 +509,20 @@ void WTrackMenu::updateMenus() {
 
     if (featureIsEnabled(Feature::BPM)) {
         bool anyLocked = false; //true if any of the selected items are locked
-        for (int i = 0; i < trackPointers.size() && !anyLocked; ++i) {
-            if (trackPointers.at(i)->isBpmLocked()) {
+        for (const auto& pTrack : trackPointers) {
+            if (pTrack->isBpmLocked()) {
                 anyLocked = true;
+                break;
             }
         }
-        if (anyLocked) {
-            m_pBpmUnlockAction->setEnabled(true);
-            m_pBpmLockAction->setEnabled(false);
-            m_pBpmDoubleAction->setEnabled(false);
-            m_pBpmHalveAction->setEnabled(false);
-            m_pBpmTwoThirdsAction->setEnabled(false);
-            m_pBpmThreeFourthsAction->setEnabled(false);
-            m_pBpmFourThirdsAction->setEnabled(false);
-            m_pBpmThreeHalvesAction->setEnabled(false);
-        } else {
-            m_pBpmUnlockAction->setEnabled(false);
-            m_pBpmLockAction->setEnabled(true);
-            m_pBpmDoubleAction->setEnabled(true);
-            m_pBpmHalveAction->setEnabled(true);
-            m_pBpmTwoThirdsAction->setEnabled(true);
-            m_pBpmThreeFourthsAction->setEnabled(true);
-            m_pBpmFourThirdsAction->setEnabled(true);
-            m_pBpmThreeHalvesAction->setEnabled(true);
-        }
+        m_pBpmUnlockAction->setEnabled(anyLocked);
+        m_pBpmLockAction->setEnabled(!anyLocked);
+        m_pBpmDoubleAction->setEnabled(!anyLocked);
+        m_pBpmHalveAction->setEnabled(!anyLocked);
+        m_pBpmTwoThirdsAction->setEnabled(!anyLocked);
+        m_pBpmThreeFourthsAction->setEnabled(!anyLocked);
+        m_pBpmFourThirdsAction->setEnabled(!anyLocked);
+        m_pBpmThreeHalvesAction->setEnabled(!anyLocked);
     }
 
     if (featureIsEnabled(Feature::Color)) {
@@ -542,8 +535,8 @@ void WTrackMenu::updateMenus() {
 
         // Check if all other selected tracks have the same color
         bool multipleTrackColors = false;
-        for (int i = 1; i < trackPointers.size(); ++i) {
-            if (trackColor != trackPointers.at(i)->getColor()) {
+        for (const auto& pTrack : trackPointers) {
+            if (trackColor != pTrack->getColor()) {
                 trackColor = mixxx::RgbColor::nullopt();
                 multipleTrackColors = true;
                 break;

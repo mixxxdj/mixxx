@@ -133,7 +133,10 @@ class WTrackMenu : public QMenu {
     // lazily one-by-one during the traversal!!
     TrackPointerList getTrackPointers(int maxSize = -1) const;
 
-    bool isEmpty() const;
+    bool isEmpty() const {
+        return getTrackCount() == 0;
+    }
+    int getTrackCount() const;
 
     void createMenus();
     void createActions();
