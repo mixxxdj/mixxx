@@ -55,10 +55,7 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
     autoDjFaderModeCombobox->addItem(tr("Volume Faders"),
             static_cast<int>(FaderMode::VolumeFaders));
 
-    connect(autoDjFaderModeCombobox,
-            QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this,
-            &DlgPrefAutoDJ::slotSetAutoDJFaderMode);
+    connect(autoDjFaderModeCombobox, SIGNAL(currentIndexChanged(int)), this, SLOT(slotSetAutoDJFaderMode(int)));
 
     int configuredFaderMode = m_pConfig->getValue(
             ConfigKey("[Auto DJ]", "FaderMode"),
