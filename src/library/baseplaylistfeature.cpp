@@ -30,24 +30,31 @@ BasePlaylistFeature::BasePlaylistFeature(
           m_pPlaylistTableModel(pModel) {
     pModel->setParent(this);
 
+    initActions();
+}
+
+void BasePlaylistFeature::initActions() {
     m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"), this);
     connect(m_pCreatePlaylistAction,
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotCreatePlaylist);
 
-    m_pDeletePlaylistAction = new QAction(tr("Remove"), this);
-    connect(m_pDeletePlaylistAction,
-            &QAction::triggered,
-            this,
-            &BasePlaylistFeature::slotDeletePlaylist);
-
     m_pRenamePlaylistAction = new QAction(tr("Rename"), this);
     connect(m_pRenamePlaylistAction,
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotRenamePlaylist);
-
+    m_pDuplicatePlaylistAction = new QAction(tr("Duplicate"), this);
+    connect(m_pDuplicatePlaylistAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotDuplicatePlaylist);
+    m_pDeletePlaylistAction = new QAction(tr("Remove"), this);
+    connect(m_pDeletePlaylistAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotDeletePlaylist);
     m_pLockPlaylistAction = new QAction(tr("Lock"), this);
     connect(m_pLockPlaylistAction,
             &QAction::triggered,
@@ -59,48 +66,16 @@ BasePlaylistFeature::BasePlaylistFeature(
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotAddToAutoDJ);
-
     m_pAddToAutoDJTopAction = new QAction(tr("Add to Auto DJ Queue (top)"), this);
     connect(m_pAddToAutoDJTopAction,
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotAddToAutoDJTop);
-
     m_pAddToAutoDJReplaceAction = new QAction(tr("Add to Auto DJ Queue (replace)"), this);
     connect(m_pAddToAutoDJReplaceAction,
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotAddToAutoDJReplace);
-
-    m_pDuplicatePlaylistAction = new QAction(tr("Duplicate"), this);
-    connect(m_pDuplicatePlaylistAction,
-            &QAction::triggered,
-            this,
-            &BasePlaylistFeature::slotDuplicatePlaylist);
-
-    m_pImportPlaylistAction = new QAction(tr("Import Playlist"), this);
-    connect(m_pImportPlaylistAction,
-            &QAction::triggered,
-            this,
-            &BasePlaylistFeature::slotImportPlaylist);
-
-    m_pCreateImportPlaylistAction = new QAction(tr("Import Playlist"), this);
-    connect(m_pCreateImportPlaylistAction,
-            &QAction::triggered,
-            this,
-            &BasePlaylistFeature::slotCreateImportPlaylist);
-
-    m_pExportPlaylistAction = new QAction(tr("Export Playlist"), this);
-    connect(m_pExportPlaylistAction,
-            &QAction::triggered,
-            this,
-            &BasePlaylistFeature::slotExportPlaylist);
-
-    m_pExportTrackFilesAction = new QAction(tr("Export Track Files"), this);
-    connect(m_pExportTrackFilesAction,
-            &QAction::triggered,
-            this,
-            &BasePlaylistFeature::slotExportTrackFiles);
 
     m_pAnalyzePlaylistAction = new QAction(tr("Analyze entire Playlist"), this);
     connect(m_pAnalyzePlaylistAction,
@@ -108,36 +83,53 @@ BasePlaylistFeature::BasePlaylistFeature(
             this,
             &BasePlaylistFeature::slotAnalyzePlaylist);
 
+    m_pImportPlaylistAction = new QAction(tr("Import Playlist"), this);
+    connect(m_pImportPlaylistAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotImportPlaylist);
+    m_pCreateImportPlaylistAction = new QAction(tr("Import Playlist"), this);
+    connect(m_pCreateImportPlaylistAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotCreateImportPlaylist);
+    m_pExportPlaylistAction = new QAction(tr("Export Playlist"), this);
+    connect(m_pExportPlaylistAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotExportPlaylist);
+    m_pExportTrackFilesAction = new QAction(tr("Export Track Files"), this);
+    connect(m_pExportTrackFilesAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotExportTrackFiles);
+
     connect(&m_playlistDao,
             &PlaylistDAO::added,
             this,
             &BasePlaylistFeature::slotPlaylistTableChanged);
-
+    connect(&m_playlistDao,
+            &PlaylistDAO::lockChanged,
+            this,
+            &BasePlaylistFeature::slotPlaylistTableChanged);
     connect(&m_playlistDao,
             &PlaylistDAO::deleted,
             this,
             &BasePlaylistFeature::slotPlaylistTableChanged);
-
+    connect(&m_playlistDao,
+            &PlaylistDAO::tracksChanged,
+            this,
+            &BasePlaylistFeature::slotPlaylistContentChanged);
     connect(&m_playlistDao,
             &PlaylistDAO::renamed,
             this,
             &BasePlaylistFeature::slotPlaylistTableRenamed);
 
-    connect(&m_playlistDao,
-            &PlaylistDAO::tracksChanged,
-            this,
-            &BasePlaylistFeature::slotPlaylistContentChanged);
-
-    connect(&m_playlistDao,
-            &PlaylistDAO::lockChanged,
-            this,
-            &BasePlaylistFeature::slotPlaylistTableChanged);
-
-    connect(pLibrary,
+    connect(m_pLibrary,
             &Library::trackSelected,
             this,
             &BasePlaylistFeature::slotTrackSelected);
-    connect(pLibrary,
+    connect(m_pLibrary,
             &Library::switchToView,
             this,
             &BasePlaylistFeature::slotResetSelectedTrack);

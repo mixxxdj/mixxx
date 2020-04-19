@@ -104,6 +104,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void slotResetSelectedTrack();
 
   private:
+    void initActions();
     virtual QString getRootViewHtml() const = 0;
 
     TrackPointer m_pSelectedTrack;
