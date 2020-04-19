@@ -5,18 +5,8 @@ ColorMapperJSProxy::ColorMapperJSProxy(QVariantMap availableColors)
     QMap<QRgb, QVariant> qrgbMap;
     QVariantMap::const_iterator it;
     for (it = availableColors.constBegin(); it != availableColors.constEnd(); ++it) {
-        QString colorString = it.key();
         bool isInt = false;
-        if (colorString.at(0) == "#") {
-            colorString = colorString.right(colorString.size() - 1);
-            int fromHex = colorString.toInt(&isInt, 16);
-            if (isInt) {
-                qrgbMap.insert(fromHex, it.value());
-            }
-            continue;
-        }
-
-        QRgb color = colorString.toInt(&isInt);
+        QRgb color = it.key().toInt(&isInt);
         if (isInt) {
             qrgbMap.insert(color, it.value());
         }
