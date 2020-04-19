@@ -24,7 +24,18 @@ ColorMapperJSProxy::ColorMapperJSProxy(QVariantMap availableColors)
     m_pColorMapper = std::make_unique<ColorMapper>(qrgbMap);
 }
 
+ColorMapperJSProxy::ColorMapperJSProxy()
+        : m_pColorMapper(nullptr) {
+    qWarning() << "ColorMapper constructor called without a map of colors";
+}
+
 QVariantMap ColorMapperJSProxy::getNearestColor(uint colorCode) {
+    // Do not VERIFY_OR_DEBUG_ASSERT here because the problem is the mapping
+    // script calling the default constructor, not an error in the C++ code.
+    if (m_pColorMapper == nullptr) {
+        return QVariantMap();
+    }
+
     QRgb result = m_pColorMapper->getNearestColor(static_cast<QRgb>(colorCode));
     // Constructing a QJSValue without using QJSEngine::newObject creates
     // an undefined JS object. Using QJSValue::setProperty on that default
@@ -38,5 +49,11 @@ QVariantMap ColorMapperJSProxy::getNearestColor(uint colorCode) {
 }
 
 QVariant ColorMapperJSProxy::getValueForNearestColor(uint colorCode) {
+    // Do not VERIFY_OR_DEBUG_ASSERT here because the problem is the mapping
+    // script calling the default constructor, not an error in the C++ code.
+    if (m_pColorMapper == nullptr) {
+        return QVariant();
+    }
+
     return m_pColorMapper->getValueForNearestColor(static_cast<QRgb>(colorCode));
 }

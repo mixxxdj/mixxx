@@ -10,12 +10,15 @@
 class ColorMapperJSProxy final : public QObject {
     Q_OBJECT
   public:
-    ColorMapperJSProxy() = delete;
     // Passing a QMap<QRgb, QVariant> argument to the constructor as needed by
     // the ColorMapper constructor segfaults. QJSEngine converts a JS object to
     // a QVariantMap, so this constructor converts the QVariantMap to a
     // QMap<QRgb, QVariant>.
     Q_INVOKABLE ColorMapperJSProxy(QVariantMap availableColors);
+
+    // Mixxx would segfault without this if a script calls "new ColorMapper()"
+    // This should not actually be used.
+    Q_INVOKABLE ColorMapperJSProxy();
 
     /// For a given RGB color code (e.g. 0xFF0000), this finds the nearest
     /// available color and returns a JS object with properties "red", "green",
