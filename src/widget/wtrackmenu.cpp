@@ -1190,9 +1190,12 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
         return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_HIDE) ||
                 m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE) ||
                 m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_PURGE);
+    case Feature::FileBrowser:
+        return true;
     case Feature::Properties:
         return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
     default:
+        DEBUG_ASSERT(!"unreachable");
         return true;
     }
 }
