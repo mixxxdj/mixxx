@@ -1057,7 +1057,7 @@ class MixxxCore(Feature):
                    "src/library/autodj/autodjprocessor.cpp",
                    "src/library/dao/directorydao.cpp",
                    "src/library/mixxxlibraryfeature.cpp",
-                   "src/library/basetrackcollectionfeature.cpp",
+                   "src/library/basetracksetfeature.cpp",
                    "src/library/baseplaylistfeature.cpp",
                    "src/library/playlistfeature.cpp",
                    "src/library/setlogfeature.cpp",

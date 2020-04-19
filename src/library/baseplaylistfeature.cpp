@@ -25,7 +25,7 @@ BasePlaylistFeature::BasePlaylistFeature(
         UserSettingsPointer pConfig,
         PlaylistTableModel* pModel,
         const QString& rootViewName)
-        : BaseTrackCollectionFeature(pLibrary, pConfig, rootViewName),
+        : BaseTrackSetFeature(pLibrary, pConfig, rootViewName),
           m_playlistDao(pLibrary->trackCollections()->internalCollection()->getPlaylistDAO()),
           m_pPlaylistTableModel(pModel) {
     pModel->setParent(this);
@@ -35,24 +35,6 @@ BasePlaylistFeature::BasePlaylistFeature(
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotCreatePlaylist);
-
-    m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
-    connect(m_pAddToAutoDJAction,
-            &QAction::triggered,
-            this,
-            &BasePlaylistFeature::slotAddToAutoDJ);
-
-    m_pAddToAutoDJTopAction = new QAction(tr("Add to Auto DJ Queue (top)"), this);
-    connect(m_pAddToAutoDJTopAction,
-            &QAction::triggered,
-            this,
-            &BasePlaylistFeature::slotAddToAutoDJTop);
-
-    m_pAddToAutoDJReplaceAction = new QAction(tr("Add to Auto DJ Queue (replace)"), this);
-    connect(m_pAddToAutoDJReplaceAction,
-            &QAction::triggered,
-            this,
-            &BasePlaylistFeature::slotAddToAutoDJReplace);
 
     m_pDeletePlaylistAction = new QAction(tr("Remove"), this);
     connect(m_pDeletePlaylistAction,
@@ -71,6 +53,24 @@ BasePlaylistFeature::BasePlaylistFeature(
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotTogglePlaylistLock);
+
+    m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
+    connect(m_pAddToAutoDJAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotAddToAutoDJ);
+
+    m_pAddToAutoDJTopAction = new QAction(tr("Add to Auto DJ Queue (top)"), this);
+    connect(m_pAddToAutoDJTopAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotAddToAutoDJTop);
+
+    m_pAddToAutoDJReplaceAction = new QAction(tr("Add to Auto DJ Queue (replace)"), this);
+    connect(m_pAddToAutoDJReplaceAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotAddToAutoDJReplace);
 
     m_pDuplicatePlaylistAction = new QAction(tr("Duplicate"), this);
     connect(m_pDuplicatePlaylistAction,

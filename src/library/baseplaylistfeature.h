@@ -12,7 +12,7 @@
 
 #include "library/dao/playlistdao.h"
 #include "track/track.h"
-#include "basetrackcollectionfeature.h"
+#include "basetracksetfeature.h"
 
 class WLibrary;
 class KeyboardEventFilter;
@@ -20,7 +20,7 @@ class PlaylistTableModel;
 class TrackCollectionManager;
 class TreeItem;
 
-class BasePlaylistFeature : public BaseTrackCollectionFeature {
+class BasePlaylistFeature : public BaseTrackSetFeature {
     Q_OBJECT
   public:
     BasePlaylistFeature(Library* pLibrary,

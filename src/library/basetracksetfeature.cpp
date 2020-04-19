@@ -1,6 +1,6 @@
-#include "basetrackcollectionfeature.h"
+#include "basetracksetfeature.h"
 
-BaseTrackCollectionFeature::BaseTrackCollectionFeature(
+BaseTrackSetFeature::BaseTrackSetFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig,
         const QString& rootViewName)
@@ -8,7 +8,7 @@ BaseTrackCollectionFeature::BaseTrackCollectionFeature(
         m_rootViewName(rootViewName){
 }
 
-void BaseTrackCollectionFeature::activate() {
+void BaseTrackSetFeature::activate() {
     emit switchToView(m_rootViewName);
     emit disableSearch();
     emit enableCoverArtDisplay(true);

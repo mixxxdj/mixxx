@@ -43,7 +43,7 @@ QString formatLabel(
 
 CrateFeature::CrateFeature(Library* pLibrary,
                            UserSettingsPointer pConfig)
-        : BaseTrackCollectionFeature(pLibrary, pConfig, "CRATEHOME"),
+        : BaseTrackSetFeature(pLibrary, pConfig, "CRATEHOME"),
           m_cratesIcon(":/images/library/ic_library_crates.svg"),
           m_lockedCrateIcon(":/images/library/ic_library_locked_tracklist.svg"),
           m_pTrackCollection(pLibrary->trackCollections()->internalCollection()),

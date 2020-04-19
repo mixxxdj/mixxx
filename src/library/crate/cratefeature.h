@@ -11,7 +11,7 @@
 
 #include "library/crate/cratestorage.h"
 #include "library/crate/cratetablemodel.h"
-#include "library/basetrackcollectionfeature.h"
+#include "library/basetracksetfeature.h"
 #include "library/treeitemmodel.h"
 
 #include "track/track.h"
@@ -24,7 +24,7 @@
 class Library;
 class WLibrarySidebar;
 
-class CrateFeature : public BaseTrackCollectionFeature {
+class CrateFeature : public BaseTrackSetFeature {
     Q_OBJECT
   public:
     CrateFeature(Library* pLibrary,
