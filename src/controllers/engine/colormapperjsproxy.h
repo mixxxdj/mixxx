@@ -1,36 +1,32 @@
 #pragma once
+#include <QJSValue>
+#include <memory>
 
-#include <QJSEngine>
+#include "controllers/engine/colormapper.h"
 
-#include "controllers/colormapper.h"
-
-// This is a wrapper class that exposes ColorMapper via the QScriptEngine and
-// makes it possible to create and use ColorMapper object from JavaScript
-// controller mappings.
+/// ColorMapperJSProxy is a wrapper class that exposes ColorMapper via the
+/// QJSEngine and makes it possible to create and use ColorMapper object from
+/// JavaScript controller mappings.
 class ColorMapperJSProxy final : public QObject {
     Q_OBJECT
   public:
     ColorMapperJSProxy() = delete;
-    ColorMapperJSProxy(QJSEngine* pScriptEngine, QMap<QRgb, QVariant> availableColors);
+    // Passing a QMap<QRgb, QVariant> argument to the constructor as needed by
+    // the ColorMapper constructor segfaults. QJSEngine converts a JS object to
+    // a QVariantMap, so this constructor converts the QVariantMap to a
+    // QMap<QRgb, QVariant>.
+    Q_INVOKABLE ColorMapperJSProxy(QVariantMap availableColors);
 
-    ~ColorMapperJSProxy() override {
-        delete m_colorMapper;
-    };
+    /// For a given RGB color code (e.g. 0xFF0000), this finds the nearest
+    /// available color and returns a JS object with properties "red", "green",
+    /// "blue" (each with value range 0-255).
+    Q_INVOKABLE QVariantMap getNearestColor(uint ColorCode);
 
-    // Q_INVOKABLE is need here because these methods callable from controller
-    // scripts
-
-    // For a given RGB color code (e.g. 0xFF0000), this finds the nearest
-    // available color and returns a JS object with properties "red", "green",
-    // "blue" (each with value range 0-255).
-    Q_INVOKABLE QJSValue getNearestColor(uint ColorCode);
-
-    // For a given RGB color code (e.g. 0xFF0000), this finds the nearest
-    // available color, then returns the value associated with that color
-    // (which could be a MIDI byte value for example).
-    Q_INVOKABLE QJSValue getValueForNearestColor(uint ColorCode);
+    /// For a given RGB color code (e.g. 0xFF0000), this finds the nearest
+    /// available color, then returns the value associated with that color
+    /// (which could be a MIDI byte value for example).
+    Q_INVOKABLE QVariant getValueForNearestColor(uint ColorCode);
 
   private:
-    QJSEngine* m_pScriptEngine;
-    ColorMapper* m_colorMapper;
+    std::unique_ptr<ColorMapper> m_pColorMapper;
 };

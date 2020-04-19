@@ -16,7 +16,6 @@
 #include <QtScript>
 
 #include "controllers/controllerpreset.h"
-#include "controllers/engine/colormapperjsproxy.h"
 #include "controllers/softtakeover.h"
 #include "preferences/usersettings.h"
 #include "util/alphabetafilter.h"

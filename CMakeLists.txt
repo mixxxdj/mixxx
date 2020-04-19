@@ -191,7 +191,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/control/controlproxy.cpp
   src/control/controlpushbutton.cpp
   src/control/controlttrotary.cpp
-  src/controllers/colormapper.cpp
   src/controllers/controller.cpp
   src/controllers/controllerdebug.cpp
   src/controllers/controllerenumerator.cpp
@@ -217,7 +216,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/controllers/dlgprefcontrollersdlg.ui
   src/controllers/engine/controllerengine.cpp
   src/controllers/engine/controllerenginejsproxy.cpp
-  src/controllers/engine/colorjsproxy.cpp
+  src/controllers/engine/colormapper.cpp
   src/controllers/engine/colormapperjsproxy.cpp
   src/controllers/keyboard/keyboardeventfilter.cpp
   src/controllers/learningutils.cpp

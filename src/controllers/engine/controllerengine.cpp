@@ -7,11 +7,12 @@
  ***************************************************************************/
 
 #include "controllers/engine/controllerengine.h"
+
 #include "control/controlobject.h"
 #include "control/controlobjectscript.h"
 #include "controllers/controller.h"
 #include "controllers/controllerdebug.h"
-#include "controllers/engine/colorjsproxy.h"
+#include "controllers/engine/colormapperjsproxy.h"
 #include "controllers/engine/controllerenginejsproxy.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
@@ -223,8 +224,8 @@ void ControllerEngine::initializeScriptEngine() {
     ControllerEngineJSProxy* proxy = new ControllerEngineJSProxy(this);
     engineGlobalObject.setProperty("engine", m_pScriptEngine->newQObject(proxy));
 
-    ColorJSProxy* pColorProxy = new ColorJSProxy(this);
-    engineGlobalObject.setProperty("color", m_pScriptEngine->newQObject(pColorProxy));
+    QJSValue mapper = m_pScriptEngine->newQMetaObject(&ColorMapperJSProxy::staticMetaObject);
+    engineGlobalObject.setProperty("ColorMapper", mapper);
 
     if (m_pController) {
         qDebug() << "Controller in script engine is:" << m_pController->getName();

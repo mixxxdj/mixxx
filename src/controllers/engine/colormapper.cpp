@@ -1,4 +1,4 @@
-#include "controllers/colormapper.h"
+#include "controllers/engine/colormapper.h"
 
 #include <cmath>
 #include <cstdint>
@@ -33,7 +33,7 @@ QRgb ColorMapper::getNearestColor(QRgb desiredColor) {
     // If desired color is already in cache, use cache entry
     QMap<QRgb, QRgb>::const_iterator i = m_cache.constFind(desiredColor);
     if (i != m_cache.constEnd()) {
-        DEBUG_ASSERT(m_availableColors.contains(i.value()));
+        DEBUG_ASSERT(m_availableColors.contains(i.key()));
         kLogger.trace()
                 << "ColorMapper cache hit for" << desiredColor << ":"
                 << "Color =" << i.value();
