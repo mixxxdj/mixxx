@@ -416,6 +416,10 @@ void WTrackMenu::setupActions() {
 }
 
 void WTrackMenu::updateMenus() {
+    if (isEmpty()) {
+        return;
+    }
+
     const auto trackIds = getTrackIds();
     // TODO: Loading all tracks just by opening the context menu
     // menu is a real UX performance killer!!
@@ -600,9 +604,7 @@ void WTrackMenu::loadTrackModelIndices(
     clearTrackSelection();
 
     m_trackIndexList = trackIndexList;
-    if (!m_trackIndexList.empty()) {
-        updateMenus();
-    }
+    updateMenus();
 }
 
 TrackIdList WTrackMenu::getTrackIds() const {
