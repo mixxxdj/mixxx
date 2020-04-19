@@ -541,18 +541,8 @@ void WTrackMenu::updateMenus() {
         m_pMetadataMenu->addMenu(m_pCoverMenu);
     }
 
-    if (featureIsEnabled(Feature::Reset)) {
-        bool allowClear = true;
-        for (const auto& pTrack : trackPointers) {
-            if (pTrack->isBpmLocked()) {
-                allowClear = false;
-                break;
-            }
-        }
-        m_pClearBeatsAction->setEnabled(allowClear);
-    }
-
-    if (featureIsEnabled(Feature::BPM)) {
+    if (featureIsEnabled(Feature::Reset) ||
+        featureIsEnabled(Feature::BPM)) {
         bool anyBpmLocked = false;
         if (m_pTrackModel) {
             const int bpmLockedCol =
@@ -573,14 +563,19 @@ void WTrackMenu::updateMenus() {
                 }
             }
         }
-        m_pBpmUnlockAction->setEnabled(anyBpmLocked);
-        m_pBpmLockAction->setEnabled(!anyBpmLocked);
-        m_pBpmDoubleAction->setEnabled(!anyBpmLocked);
-        m_pBpmHalveAction->setEnabled(!anyBpmLocked);
-        m_pBpmTwoThirdsAction->setEnabled(!anyBpmLocked);
-        m_pBpmThreeFourthsAction->setEnabled(!anyBpmLocked);
-        m_pBpmFourThirdsAction->setEnabled(!anyBpmLocked);
-        m_pBpmThreeHalvesAction->setEnabled(!anyBpmLocked);
+        if (featureIsEnabled(Feature::Reset)) {
+            m_pClearBeatsAction->setEnabled(!anyBpmLocked);
+        }
+        if (featureIsEnabled(Feature::BPM)) {
+            m_pBpmUnlockAction->setEnabled(anyBpmLocked);
+            m_pBpmLockAction->setEnabled(!anyBpmLocked);
+            m_pBpmDoubleAction->setEnabled(!anyBpmLocked);
+            m_pBpmHalveAction->setEnabled(!anyBpmLocked);
+            m_pBpmTwoThirdsAction->setEnabled(!anyBpmLocked);
+            m_pBpmThreeFourthsAction->setEnabled(!anyBpmLocked);
+            m_pBpmFourThirdsAction->setEnabled(!anyBpmLocked);
+            m_pBpmThreeHalvesAction->setEnabled(!anyBpmLocked);
+        }
     }
 
     if (featureIsEnabled(Feature::Color)) {
