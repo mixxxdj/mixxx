@@ -1051,30 +1051,24 @@ void WTrackMenu::slotClearAllMetadata() {
 }
 
 void WTrackMenu::slotShowTrackInfo() {
+    if (isEmpty()) {
+        return;
+    }
     if (m_pTrackModel) {
-        if (m_trackIndexList.isEmpty()) {
-            return;
-        }
         m_pTrackInfo->loadTrack(m_trackIndexList.at(0));
     } else {
-        if (m_trackPointerList.isEmpty()) {
-            return;
-        }
         m_pTrackInfo->loadTrack(m_trackPointerList.at(0));
     }
     m_pTrackInfo->show();
 }
 
 void WTrackMenu::slotShowDlgTagFetcher() {
+    if (isEmpty()) {
+        return;
+    }
     if (m_pTrackModel) {
-        if (m_trackIndexList.isEmpty()) {
-            return;
-        }
         m_pTagFetcher->loadTrack(m_trackIndexList.at(0));
     } else {
-        if (m_trackPointerList.isEmpty()) {
-            return;
-        }
         m_pTagFetcher->loadTrack(m_trackPointerList.at(0));
     }
     m_pTagFetcher->show();
