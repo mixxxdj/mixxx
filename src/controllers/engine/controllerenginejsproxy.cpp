@@ -8,6 +8,14 @@ ControllerEngineJSProxy::ControllerEngineJSProxy(ControllerEngine* m_pEngine)
 ControllerEngineJSProxy::~ControllerEngineJSProxy() {
 }
 
+void ControllerEngineJSProxy::registerInputCallback(QJSValue callback) {
+    m_pEngine->registerInputCallback(callback);
+}
+
+void ControllerEngineJSProxy::registerShutdownCallback(QJSValue callback) {
+    m_pEngine->registerShutdownCallback(callback);
+}
+
 double ControllerEngineJSProxy::getValue(QString group, QString name) {
     return m_pEngine->getValue(group, name);
 }

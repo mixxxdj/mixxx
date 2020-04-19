@@ -91,6 +91,8 @@ class ControllerEngine : public QObject {
     static const int version = 1;
 #endif
 
+    void receiveInput(const QByteArray& data, mixxx::Duration timestamp);
+
     // Execute a JS function in the engine
     bool executeFunction(QJSValue functionObject, QJSValueList arguments);
     bool executeFunction(QJSValue functionObject, const QByteArray data);
@@ -153,6 +155,9 @@ class ControllerEngine : public QObject {
     void errorDialogButton(const QString& key, QMessageBox::StandardButton button);
 
   private:
+    void registerInputCallback(QJSValue callback);
+    void registerShutdownCallback(QJSValue callback);
+
     bool evaluateScriptFile(const QFileInfo& scriptFile);
     void initializeScriptEngine();
     void uninitializeScriptEngine();
@@ -188,6 +193,8 @@ class ControllerEngine : public QObject {
     double getDeckRate(const QString& group);
 
     Controller* m_pController;
+    QJSValue m_inputCallback;
+    QJSValue m_shutdownCallback;
     QList<QString> m_scriptFunctionPrefixes;
     QHash<ConfigKey, ControlObjectScript*> m_controlCache;
     struct TimerInfo {
