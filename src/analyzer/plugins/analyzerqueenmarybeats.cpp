@@ -10,14 +10,14 @@
 namespace mixxx {
 namespace {
 // These are the preferred window/step sizes from the BeatTrack VAMP plugin.
-constexpr size_t kWindowSize = 1024;
-constexpr size_t kStepSize = 512;
+constexpr size_t kWindowSize = 512;
+constexpr size_t kStepSize = 256;
 
 DFConfig makeDetectionFunctionConfig() {
     // These are the defaults for the VAMP beat tracker plugin we used in Mixxx
     // 2.0.
     DFConfig config;
-    config.DFType = DF_SPECDIFF;
+    config.DFType = DF_COMPLEXSD;
     config.stepSize = kStepSize;
     config.frameLength = kWindowSize;
     config.dbRise = 3;
@@ -70,13 +70,14 @@ bool AnalyzerQueenMaryBeats::finalize() {
     }
 
     std::vector<double> df;
-    std::vector<double> beatPeriod(nonZeroCount);
+    std::vector<double> beatPeriod;
     std::vector<double> tempi;
 
     df.reserve(nonZeroCount);
-
-    for (int i = 0; i < nonZeroCount; ++i) {
+    // no idea why skip first 2 results, but that's how vamp does and works best this way
+    for (int i = 2; i < nonZeroCount; ++i) {
         df.push_back(m_detectionResults.at(i));
+        beatPeriod.push_back(0.0);
     }
 
     TempoTrackV2 tt(m_iSampleRate, kStepSize);
