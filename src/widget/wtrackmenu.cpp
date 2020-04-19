@@ -420,11 +420,6 @@ void WTrackMenu::updateMenus() {
         return;
     }
 
-    const auto trackIds = getTrackIds();
-    // TODO: Loading all tracks just by opening the context menu
-    // menu is a real UX performance killer!!
-    const auto trackPointers = getTrackPointers();
-
     // Gray out some stuff if multiple songs were selected.
     const bool singleTrackSelected = getTrackCount() == 1;
 
@@ -581,25 +576,41 @@ void WTrackMenu::updateMenus() {
     if (featureIsEnabled(Feature::Color)) {
         m_pColorPickerAction->setColorPalette(
                 ColorPaletteSettings(m_pConfig).getTrackColorPalette());
-
-        // Get color of first selected track
-        TrackPointer pTrack = trackPointers.at(0);
-        auto trackColor = pTrack->getColor();
-
-        // Check if all other selected tracks have the same color
-        bool multipleTrackColors = false;
-        for (const auto& pTrack : trackPointers) {
-            if (trackColor != pTrack->getColor()) {
-                trackColor = mixxx::RgbColor::nullopt();
-                multipleTrackColors = true;
-                break;
+        std::optional<mixxx::RgbColor> oneColor = std::nullopt;
+        if (m_pTrackModel) {
+            const int column =
+                    m_pTrackModel->fieldIndex(LIBRARYTABLE_COLOR);
+            oneColor = mixxx::RgbColor::fromQVariant(
+                    m_trackIndexList.first().sibling(
+                                                    m_trackIndexList.first().row(), column)
+                            .data());
+            if (oneColor) {
+                for (const auto trackIndex : m_trackIndexList) {
+                    const auto otherColor = mixxx::RgbColor::fromQVariant(
+                            trackIndex.sibling(
+                                              trackIndex.row(), column)
+                                    .data());
+                    if (oneColor != otherColor) {
+                        // Multiple, different colors
+                        oneColor = std::nullopt;
+                        break;
+                    }
+                }
+            }
+        } else {
+            oneColor = m_trackPointerList.first()->getColor();
+            for (const auto& pTrack : m_trackPointerList) {
+                if (oneColor != pTrack->getColor()) {
+                    // Multiple, different colors
+                    oneColor = std::nullopt;
+                    break;
+                }
             }
         }
-
-        if (multipleTrackColors) {
-            m_pColorPickerAction->resetSelectedColor();
+        if (oneColor) {
+            m_pColorPickerAction->setSelectedColor(oneColor);
         } else {
-            m_pColorPickerAction->setSelectedColor(trackColor);
+            m_pColorPickerAction->resetSelectedColor();
         }
     }
 
