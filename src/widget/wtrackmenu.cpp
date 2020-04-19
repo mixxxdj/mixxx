@@ -512,21 +512,34 @@ void WTrackMenu::updateMenus() {
     }
 
     if (featureIsEnabled(Feature::BPM)) {
-        bool anyLocked = false; //true if any of the selected items are locked
-        for (const auto& pTrack : trackPointers) {
-            if (pTrack->isBpmLocked()) {
-                anyLocked = true;
-                break;
+        bool anyBpmLocked = false;
+        if (m_pTrackModel) {
+            const int bpmLockedCol =
+                    m_pTrackModel->fieldIndex(LIBRARYTABLE_BPM_LOCK);
+            for (const auto trackIndex : m_trackIndexList) {
+                QModelIndex bpmLockedIndex =
+                        trackIndex.sibling(trackIndex.row(), bpmLockedCol);
+                if (bpmLockedIndex.data().toBool()) {
+                    anyBpmLocked = true;
+                    break;
+                }
+            }
+        } else {
+            for (const auto& pTrack : m_trackPointerList) {
+                if (pTrack->isBpmLocked()) {
+                    anyBpmLocked = true;
+                    break;
+                }
             }
         }
-        m_pBpmUnlockAction->setEnabled(anyLocked);
-        m_pBpmLockAction->setEnabled(!anyLocked);
-        m_pBpmDoubleAction->setEnabled(!anyLocked);
-        m_pBpmHalveAction->setEnabled(!anyLocked);
-        m_pBpmTwoThirdsAction->setEnabled(!anyLocked);
-        m_pBpmThreeFourthsAction->setEnabled(!anyLocked);
-        m_pBpmFourThirdsAction->setEnabled(!anyLocked);
-        m_pBpmThreeHalvesAction->setEnabled(!anyLocked);
+        m_pBpmUnlockAction->setEnabled(anyBpmLocked);
+        m_pBpmLockAction->setEnabled(!anyBpmLocked);
+        m_pBpmDoubleAction->setEnabled(!anyBpmLocked);
+        m_pBpmHalveAction->setEnabled(!anyBpmLocked);
+        m_pBpmTwoThirdsAction->setEnabled(!anyBpmLocked);
+        m_pBpmThreeFourthsAction->setEnabled(!anyBpmLocked);
+        m_pBpmFourThirdsAction->setEnabled(!anyBpmLocked);
+        m_pBpmThreeHalvesAction->setEnabled(!anyBpmLocked);
     }
 
     if (featureIsEnabled(Feature::Color)) {
