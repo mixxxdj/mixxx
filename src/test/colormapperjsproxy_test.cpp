@@ -19,42 +19,6 @@ QJSEngine* createScriptEngine() {
 
 class ColorMapperJSProxyTest : public MixxxTest {};
 
-TEST_F(ColorMapperJSProxyTest, Instantiation) {
-    QJSEngine* pEngine = createScriptEngine();
-
-    // Valid instantiation
-    QJSValue jsval = pEngine->evaluate(
-            R"JavaScript(
-           var mapper = new ColorMapper({
-               '#FF0000': 1,
-               '#00FF00': 2,
-               '#0000FF': 3,
-           });
-           )JavaScript");
-    EXPECT_FALSE(jsval.isError());
-
-    // Invalid instantiation: no arguments
-    pEngine->evaluate("var mapper = new ColorMapper();");
-    EXPECT_TRUE(jsval.isError());
-
-    // Invalid instantiation: invalid argument
-    jsval = pEngine->evaluate("var mapper = new ColorMapper('hello');");
-    EXPECT_TRUE(jsval.isError());
-
-    // Invalid instantiation: argument is an empty object
-    jsval = pEngine->evaluate("var mapper = new ColorMapper({});");
-    EXPECT_TRUE(jsval.isError());
-
-    // Invalid instantiation: argument is an empty object
-    jsval = pEngine->evaluate(
-            R"JavaScript(
-           var mapper = new ColorMapper({
-               'not a color': 1
-           });
-           )JavaScript");
-    EXPECT_TRUE(jsval.isError());
-}
-
 TEST_F(ColorMapperJSProxyTest, GetNearestColor) {
     QJSEngine* pEngine = createScriptEngine();
     QJSValue jsval = pEngine->evaluate(
