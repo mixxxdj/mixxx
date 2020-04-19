@@ -28,6 +28,8 @@ BasePlaylistFeature::BasePlaylistFeature(
         : BaseTrackCollectionFeature(pLibrary, pConfig, rootViewName),
           m_playlistDao(pLibrary->trackCollections()->internalCollection()->getPlaylistDAO()),
           m_pPlaylistTableModel(pModel) {
+    pModel->setParent(this);
+
     m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"), this);
     connect(m_pCreatePlaylistAction,
             &QAction::triggered,

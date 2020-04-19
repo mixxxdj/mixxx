@@ -24,7 +24,7 @@ SetlogFeature::SetlogFeature(
                 pLibrary,
                 pConfig,
                 new PlaylistTableModel(
-                        this,
+                        nullptr,
                         pLibrary->trackCollections(),
                         "mixxx.db.model.setlog",
                         /*show-all-tracks*/ true),

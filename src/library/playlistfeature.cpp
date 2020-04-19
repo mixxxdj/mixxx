@@ -40,7 +40,7 @@ PlaylistFeature::PlaylistFeature(
                 pLibrary,
                 pConfig,
                 new PlaylistTableModel(
-                        this,
+                        nullptr,
                         pLibrary->trackCollections(),
                         "mixxx.db.model.playlist"),
                 QStringLiteral("PLAYLISTHOME")),
