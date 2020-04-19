@@ -492,12 +492,53 @@ void WTrackMenu::updateMenus() {
     if (featureIsEnabled(Feature::Metadata)) {
         m_pImportMetadataFromMusicBrainzAct->setEnabled(singleTrackSelected);
 
-        // We load a single track to get the necessary context for the cover (we use
-        // last to be consistent with selectionChanged above).
-        TrackPointer pTrack = trackPointers.last();
-
-        m_pCoverMenu->setCoverArt(
-                pTrack->getCoverInfoWithLocation());
+        // We use the last selected track for the cover art context to be
+        // consistent with selectionChanged above.
+        if (m_pTrackModel) {
+            const QModelIndex lastIndex = m_trackIndexList.last();
+            CoverInfo coverInfo;
+            coverInfo.source = static_cast<CoverInfo::Source>(
+                    lastIndex
+                            .sibling(
+                                    lastIndex.row(),
+                                    m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_SOURCE))
+                            .data()
+                            .toInt());
+            coverInfo.type = static_cast<CoverInfo::Type>(
+                    lastIndex
+                            .sibling(
+                                    lastIndex.row(),
+                                    m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_TYPE))
+                            .data()
+                            .toInt());
+            coverInfo.hash =
+                    lastIndex
+                            .sibling(
+                                    lastIndex.row(),
+                                    m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_HASH))
+                            .data()
+                            .toUInt();
+            coverInfo.coverLocation =
+                    lastIndex
+                            .sibling(
+                                    lastIndex.row(),
+                                    m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_LOCATION))
+                            .data()
+                            .toString();
+            coverInfo.trackLocation =
+                    lastIndex
+                            .sibling(
+                                    lastIndex.row(),
+                                    m_pTrackModel->fieldIndex(LIBRARYTABLE_LOCATION))
+                            .data()
+                            .toString();
+            m_pCoverMenu->setCoverArt(coverInfo);
+        } else {
+            TrackPointer pTrack = m_trackPointerList.last();
+            m_pCoverMenu->setCoverArt(
+                    pTrack->getCoverInfoWithLocation());
+        }
+        m_pMetadataMenu->addMenu(m_pCoverMenu);
     }
 
     if (featureIsEnabled(Feature::Reset)) {
