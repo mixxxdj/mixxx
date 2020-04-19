@@ -3,6 +3,7 @@
 #include <QUrl>
 
 #include "control/controlobject.h"
+#include "widget/wtrackmenu.h"
 #include "widget/wtracktext.h"
 #include "util/dnd.h"
 
@@ -28,6 +29,10 @@ WTrackText::WTrackText(QWidget* pParent,
           m_pTrackMenu(make_parented<WTrackMenu>(
                   this, pConfig, pTrackCollectionManager, trackMenuFeatures)) {
     setAcceptDrops(true);
+}
+
+WTrackText::~WTrackText() {
+    // Required to allow forward declaration of WTrackMenu in header
 }
 
 void WTrackText::slotTrackLoaded(TrackPointer track) {

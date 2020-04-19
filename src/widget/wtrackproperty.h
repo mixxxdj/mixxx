@@ -1,5 +1,4 @@
-#ifndef WTRACKPROPERTY_H
-#define WTRACKPROPERTY_H
+#pragma once
 
 #include <QDragEnterEvent>
 #include <QDropEvent>
@@ -11,7 +10,9 @@
 #include "util/parented_ptr.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wlabel.h"
-#include "widget/wtrackmenu.h"
+
+class TrackCollectionManager;
+class WTrackMenu;
 
 class WTrackProperty : public WLabel, public TrackDropTarget {
     Q_OBJECT
@@ -21,8 +22,7 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
             UserSettingsPointer pConfig,
             TrackCollectionManager* pTrackCollectionManager,
             const char* group);
-
-    ~WTrackProperty() override = default;
+    ~WTrackProperty() override;
 
     void setup(const QDomNode& node, const SkinContext& context) override;
 
@@ -52,6 +52,3 @@ signals:
 
     const parented_ptr<WTrackMenu> m_pTrackMenu;
 };
-
-
-#endif /* WTRACKPROPERTY_H */

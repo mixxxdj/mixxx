@@ -20,6 +20,7 @@
 #include "util/assert.h"
 #include "util/dnd.h"
 #include "util/time.h"
+#include "widget/wtrackmenu.h"
 #include "widget/wtracktableviewheader.h"
 
 WTrackTableView::WTrackTableView(QWidget* parent,

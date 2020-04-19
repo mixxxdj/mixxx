@@ -12,13 +12,13 @@
 #include "util/duration.h"
 #include "util/parented_ptr.h"
 #include "widget/wlibrarytableview.h"
-#include "widget/wtrackmenu.h"
 
 class ControlProxy;
 class DlgTagFetcher;
 class DlgTrackInfo;
 class TrackCollectionManager;
 class ExternalTrackCollection;
+class WTrackMenu;
 
 const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigValue key for QTable vertical scrollbar position */
 const QString LIBRARY_CONFIGVALUE = "[Library]"; /** ConfigValue "value" (wtf) for library stuff */
