@@ -33,7 +33,7 @@ void ClockControl::trackLoaded(TrackPointer pNewTrack) {
         connect(m_pTrack.get(), &Track::beatsUpdated,
                 this, &ClockControl::slotBeatsUpdated);
     } else {
-        m_pBeats.clear();
+        m_pBeats.reset();
         m_pTrack.reset();
     }
 
@@ -59,7 +59,7 @@ void ClockControl::process(const double dRate,
     // by the rate.
     const double blinkIntervalSamples = 2.0 * samplerate * (1.0 * dRate) * blinkSeconds;
 
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
         double closestBeat = pBeats->findClosestBeat(currentSample);
         double distanceToClosestBeat = fabs(currentSample - closestBeat);

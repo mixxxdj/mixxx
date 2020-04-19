@@ -1,16 +1,15 @@
+#include "engine/controls/bpmcontrol.h"
+
 #include <gtest/gtest.h>
 
-#include <QtDebug>
 #include <QScopedPointer>
+#include <QtDebug>
 
-#include "mixxxtest.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
-#include "engine/controls/bpmcontrol.h"
-#include "track/beats.h"
+#include "mixxxtest.h"
 #include "track/beatfactory.h"
-#include "track/beatgrid.h"
-#include "track/beatmap.h"
+#include "track/beats.h"
 #include "track/track.h"
 
 class BpmControlTest : public MixxxTest {
@@ -32,7 +31,8 @@ TEST_F(BpmControlTest, BeatContext_BeatGrid) {
     TrackPointer pTrack = Track::newTemporary();
     pTrack->setSampleRate(sampleRate);
 
-    BeatsPointer pBeats = BeatFactory::makeBeatGrid(*pTrack, bpm, 0);
+    auto pBeats = mixxx::BeatsPointer(new mixxx::Beats(pTrack.get()));
+    pBeats->setGrid(bpm);
 
     // On a beat.
     double prevBeat, nextBeat, beatLength, beatPercentage;

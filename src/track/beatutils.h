@@ -68,6 +68,15 @@ class BeatUtils {
         const QVector<double> rawbeats, const int sampleRate,
         const int totalSamples, const double globalBpm);
 
+    // TODO(JVC) Document
+    static constexpr int kFrameSize = 2;
+    static double samplesToFrames(const double samples) {
+        return floor(samples / kFrameSize);
+    }
+    static double framesToSamples(const int frames) {
+        return frames * kFrameSize;
+    }
+
   private:
     static double computeSampleMedian(QList<double> sortedItems);
     static double computeFilteredWeightedAverage(

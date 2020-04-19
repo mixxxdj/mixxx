@@ -42,10 +42,9 @@ bool compareAndSet(T* pField, const T& value) {
     }
 }
 
-inline
-mixxx::Bpm getActualBpm(
+inline mixxx::Bpm getActualBpm(
         mixxx::Bpm bpm,
-        BeatsPointer pBeats = BeatsPointer()) {
+        mixxx::BeatsPointer pBeats = mixxx::BeatsPointer()) {
     // Only use the imported BPM if the beat grid is not valid!
     // Reason: The BPM value in the metadata might be normalized
     // or rounded, e.g. ID3v2 only supports integer values.
@@ -228,21 +227,31 @@ double Track::getBpm() const {
     return bpm;
 }
 
+// TODO(JVC) It makes no sense to setBpm on a beatmap. To be removed.
 double Track::setBpm(double bpmValue) {
     if (!mixxx::Bpm::isValidValue(bpmValue)) {
         // If the user sets the BPM to an invalid value, we assume
         // they want to clear the beatgrid.
-        setBeats(BeatsPointer());
+        setBeats(mixxx::BeatsPointer());
         return bpmValue;
     }
 
     QMutexLocker lock(&m_qMutex);
 
+    // TODO(JVC) A track must always have a Beats even if it's empty
     if (!m_pBeats) {
         // No beat grid available -> create and initialize
         double cue = getCuePoint().getPosition();
+        /* TODO(JVC)
         BeatsPointer pBeats(BeatFactory::makeBeatGrid(*this, bpmValue, cue));
         setBeatsAndUnlock(&lock, pBeats);
+        mixxx::BeatsPointer pBeats(new mixxx::Beats(this));
+        */
+        m_pBeats = mixxx::BeatsPointer(new mixxx::Beats(this));
+        //m_pBeats = std::make_shared<mixxx::Beats>(mixxx::Beats(this));
+        m_pBeats->setGrid(bpmValue, cue);
+        setBeatsAndUnlock(&lock, m_pBeats);
+        qDebug() << "JVC Track->setBpm no beats!!";
         return bpmValue;
     }
 
@@ -265,12 +274,12 @@ QString Track::getBpmText() const {
     return QString("%1").arg(getBpm(), 3,'f',1);
 }
 
-void Track::setBeats(BeatsPointer pBeats) {
+void Track::setBeats(mixxx::BeatsPointer pBeats) {
     QMutexLocker lock(&m_qMutex);
     setBeatsAndUnlock(&lock, pBeats);
 }
 
-void Track::setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats) {
+void Track::setBeatsAndUnlock(QMutexLocker* pLock, mixxx::BeatsPointer pBeats) {
     // This whole method is not so great. The fact that Beats is an ABC is
     // limiting with respect to QObject and signals/slots.
 
@@ -280,7 +289,7 @@ void Track::setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats) {
     }
 
     if (m_pBeats) {
-        disconnect(m_pBeats.data(), &Beats::updated, this, &Track::slotBeatsUpdated);
+        disconnect(m_pBeats.get(), &mixxx::Beats::updated, this, &Track::slotBeatsUpdated);
     }
 
     m_pBeats = std::move(pBeats);
@@ -288,7 +297,7 @@ void Track::setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats) {
     auto bpmValue = mixxx::Bpm::kValueUndefined;
     if (m_pBeats) {
         bpmValue = m_pBeats->getBpm();
-        connect(m_pBeats.data(), &Beats::updated, this, &Track::slotBeatsUpdated);
+        connect(m_pBeats.get(), &mixxx::Beats::updated, this, &Track::slotBeatsUpdated);
     }
     m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
 
@@ -297,7 +306,7 @@ void Track::setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats) {
     emit beatsUpdated();
 }
 
-BeatsPointer Track::getBeats() const {
+mixxx::BeatsPointer Track::getBeats() const {
     QMutexLocker lock(&m_qMutex);
     return m_pBeats;
 }
@@ -1061,4 +1070,21 @@ ExportTrackMetadataResult Track::exportMetadata(
                 << getLocation();
         return ExportTrackMetadataResult::Failed;
     }
+}
+
+void Track::printDebugInfo() const {
+    qDebug() << "Track Debug Info";
+    qDebug() << "m_bDirty:" << m_bDirty;
+    qDebug() << "m_bMarkedForMetadataExport:" << m_bMarkedForMetadataExport;
+    qDebug() << "duration:" << getDuration();
+    qDebug() << "Sample Rate:" << getSampleRate();
+    qDebug() << "m_cuePoints:";
+    for (auto cuePoint : m_cuePoints) {
+        qDebug() << "\tDirty:" << cuePoint->isDirty();
+        //qDebug() << "\tPosition:" << cuePoint->getPosition();
+        qDebug() << "\tType:" << int(cuePoint->getType());
+        qDebug() << "\tLabel:" << cuePoint->getLabel();
+    }
+    qDebug() << "m_pBeats:";
+    m_pBeats->printDebugInfo();
 }

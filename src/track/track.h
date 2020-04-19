@@ -5,21 +5,20 @@
 #include <QObject>
 #include <QUrl>
 
+#include "util/memory.h"
+#include "util/sandbox.h"
+
+class Track;
+using TrackPointer = std::shared_ptr<Track>;
+using TrackWeakPointer = std::weak_ptr<Track>;
+
 #include "track/beats.h"
 #include "track/cue.h"
 #include "track/trackfile.h"
 #include "track/trackrecord.h"
-#include "util/memory.h"
-#include "util/sandbox.h"
 #include "waveform/waveform.h"
 
 #include "sources/metadatasource.h"
-
-// forward declaration(s)
-class Track;
-
-typedef std::shared_ptr<Track> TrackPointer;
-typedef std::weak_ptr<Track> TrackWeakPointer;
 
 Q_DECLARE_METATYPE(TrackPointer);
 
@@ -260,10 +259,10 @@ class Track : public QObject {
     bool isDirty();
 
     // Get the track's Beats list
-    BeatsPointer getBeats() const;
+    mixxx::BeatsPointer getBeats() const;
 
     // Set the track's Beats
-    void setBeats(BeatsPointer beats);
+    void setBeats(mixxx::BeatsPointer beats);
 
     void resetKeys();
     void setKeys(const Keys& keys);
@@ -308,6 +307,9 @@ class Track : public QObject {
     void markForMetadataExport();
     bool isMarkedForMetadataExport() const;
 
+    /// Prints track contents information, for debuging purtposes only
+    void printDebugInfo() const;
+
   signals:
     void waveformUpdated();
     void waveformSummaryUpdated();
@@ -345,7 +347,7 @@ class Track : public QObject {
     void markDirtyAndUnlock(QMutexLocker* pLock, bool bDirty = true);
     void setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty);
 
-    void setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats);
+    void setBeatsAndUnlock(QMutexLocker* pLock, mixxx::BeatsPointer pBeats);
 
     void afterKeysUpdated(QMutexLocker* pLock);
 
@@ -380,7 +382,7 @@ class Track : public QObject {
     QList<CuePointer> m_cuePoints;
 
     // Storage for the track's beats
-    BeatsPointer m_pBeats;
+    mixxx::BeatsPointer m_pBeats;
 
     //Visual waveform data
     ConstWaveformPointer m_waveform;

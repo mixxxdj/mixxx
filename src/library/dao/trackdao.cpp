@@ -550,8 +550,8 @@ namespace {
         QString beatsSubVersion;
         // Fall back on cached BPM
         double dBpm = track.getBpm();
-        const BeatsPointer pBeats(track.getBeats());
-        if (!pBeats.isNull()) {
+        const mixxx::BeatsPointer pBeats(track.getBeats());
+        if (pBeats) {
             beatsBlob = pBeats->toByteArray();
             beatsVersion = pBeats->getVersion();
             beatsSubVersion = pBeats->getSubVersion();
@@ -1151,8 +1151,8 @@ bool setTrackBeats(const QSqlRecord& record, const int column,
     QString beatsSubVersion = record.value(column + 2).toString();
     QByteArray beatsBlob = record.value(column + 3).toByteArray();
     bool bpmLocked = record.value(column + 4).toBool();
-    BeatsPointer pBeats = BeatFactory::loadBeatsFromByteArray(
-            *pTrack, beatsVersion, beatsSubVersion, beatsBlob);
+    mixxx::BeatsPointer pBeats = BeatFactory::loadBeatsFromByteArray(
+            pTrack, beatsVersion, beatsSubVersion, beatsBlob);
     if (pBeats) {
         pTrack->setBeats(pBeats);
     } else {

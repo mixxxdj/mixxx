@@ -1635,7 +1635,7 @@ double CueControl::quantizeCuePoint(double cuePos) {
         return cuePos;
     }
 
-    BeatsPointer pBeats = m_pLoadedTrack->getBeats();
+    mixxx::BeatsPointer pBeats = m_pLoadedTrack->getBeats();
     if (!pBeats) {
         return cuePos;
     }

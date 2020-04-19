@@ -76,7 +76,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void init();
     QHash<int, CuePointer> m_cueMap;
     TrackPointer m_pLoadedTrack;
-    BeatsPointer m_pBeatsClone;
+    mixxx::BeatsPointer m_pBeatsClone;
     Keys m_keysClone;
     bool m_trackHasBeatMap;
 

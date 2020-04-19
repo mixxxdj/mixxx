@@ -170,7 +170,7 @@ class LoopingControl : public EngineControl {
 
     // objects below are written from an engine worker thread
     TrackPointer m_pTrack;
-    BeatsPointer m_pBeats;
+    mixxx::BeatsPointer m_pBeats;
 };
 
 // Class for handling loop moves of a set size. This allows easy access from

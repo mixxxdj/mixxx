@@ -514,7 +514,7 @@ double LoopingControl::getSyncPositionInsideLoop(double dRequestedPlaypos, doubl
 
 void LoopingControl::setLoopInToCurrentPosition() {
     // set loop-in position
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     LoopSamples loopSamples = m_loopSamples.getValue();
     double quantizedBeat = -1;
     double pos = m_currentSample.getValue();
@@ -616,7 +616,7 @@ void LoopingControl::slotLoopInGoto(double pressed) {
 }
 
 void LoopingControl::setLoopOutToCurrentPosition() {
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     LoopSamples loopSamples = m_loopSamples.getValue();
     double quantizedBeat = -1;
     int pos = m_currentSample.getValue();
@@ -894,7 +894,7 @@ void LoopingControl::trackLoaded(TrackPointer pNewTrack) {
         }
     } else {
         m_pTrack.reset();
-        m_pBeats.clear();
+        m_pBeats.reset();
     }
 }
 
@@ -968,7 +968,7 @@ void LoopingControl::clearActiveBeatLoop() {
 }
 
 bool LoopingControl::currentLoopMatchesBeatloopSize() {
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     if (!pBeats) {
         return false;
     }
@@ -984,7 +984,7 @@ bool LoopingControl::currentLoopMatchesBeatloopSize() {
 }
 
 double LoopingControl::findBeatloopSizeForLoop(double start, double end) const {
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     if (!pBeats) {
         return -1;
     }
@@ -1042,7 +1042,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     }
 
     int samples = m_pTrackSamples->get();
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     if (samples == 0 || !pBeats) {
         clearActiveBeatLoop();
         m_pCOBeatLoopSize->setAndConfirm(beats);
@@ -1208,7 +1208,7 @@ void LoopingControl::slotBeatLoopRollActivate(double pressed) {
 }
 
 void LoopingControl::slotBeatJump(double beats) {
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     if (!pBeats) {
         return;
     }
@@ -1239,7 +1239,7 @@ void LoopingControl::slotBeatJumpBackward(double pressed) {
 }
 
 void LoopingControl::slotLoopMove(double beats) {
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     if (!pBeats || beats == 0) {
         return;
     }

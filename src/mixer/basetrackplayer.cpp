@@ -1,25 +1,25 @@
-#include <QMessageBox>
-
 #include "mixer/basetrackplayer.h"
-#include "mixer/playerinfo.h"
-#include "mixer/playermanager.h"
+
+#include <QMessageBox>
 
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
-#include "track/track.h"
-#include "sources/soundsourceproxy.h"
-#include "engine/enginebuffer.h"
-#include "engine/controls/enginecontrol.h"
+#include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
+#include "engine/controls/enginecontrol.h"
+#include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
-#include "track/beatgrid.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/visualsmanager.h"
+#include "engine/sync/enginesync.h"
+#include "mixer/playerinfo.h"
+#include "mixer/playermanager.h"
+#include "sources/soundsourceproxy.h"
+#include "track/beats.h"
+#include "track/track.h"
 #include "util/platform.h"
 #include "util/sandbox.h"
-#include "effects/effectsmanager.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
-#include "engine/sync/enginesync.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/visualsmanager.h"
 
 BaseTrackPlayer::BaseTrackPlayer(QObject* pParent, const QString& group)
         : BasePlayer(pParent, group) {

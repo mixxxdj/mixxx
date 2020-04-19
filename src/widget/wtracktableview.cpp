@@ -561,18 +561,12 @@ void WTrackTableView::createActions() {
     m_pBpmFourThirdsAction = new QAction(tr("4/3 BPM"), this);
     m_pBpmThreeHalvesAction = new QAction(tr("3/2 BPM"), this);
 
-    connect(m_pBpmDoubleAction, &QAction::triggered,
-            this, [this] { slotScaleBpm(Beats::DOUBLE); });
-    connect(m_pBpmHalveAction, &QAction::triggered,
-            this, [this] { slotScaleBpm(Beats::HALVE); });
-    connect(m_pBpmTwoThirdsAction, &QAction::triggered,
-            this, [this] { slotScaleBpm(Beats::TWOTHIRDS); });
-    connect(m_pBpmThreeFourthsAction, &QAction::triggered,
-            this, [this] { slotScaleBpm(Beats::THREEFOURTHS); });
-    connect(m_pBpmFourThirdsAction, &QAction::triggered,
-            this, [this] { slotScaleBpm(Beats::FOURTHIRDS); });
-    connect(m_pBpmThreeHalvesAction, &QAction::triggered,
-            this, [this] { slotScaleBpm(Beats::THREEHALVES); });
+    connect(m_pBpmDoubleAction, &QAction::triggered, this, [this] { slotScaleBpm(mixxx::Beats::DOUBLE); });
+    connect(m_pBpmHalveAction, &QAction::triggered, this, [this] { slotScaleBpm(mixxx::Beats::HALVE); });
+    connect(m_pBpmTwoThirdsAction, &QAction::triggered, this, [this] { slotScaleBpm(mixxx::Beats::TWOTHIRDS); });
+    connect(m_pBpmThreeFourthsAction, &QAction::triggered, this, [this] { slotScaleBpm(mixxx::Beats::THREEFOURTHS); });
+    connect(m_pBpmFourThirdsAction, &QAction::triggered, this, [this] { slotScaleBpm(mixxx::Beats::FOURTHIRDS); });
+    connect(m_pBpmThreeHalvesAction, &QAction::triggered, this, [this] { slotScaleBpm(mixxx::Beats::THREEHALVES); });
 
     m_pColorPickerAction = new WColorPickerAction(WColorPicker::ColorOption::AllowNoColor, this);
     m_pColorPickerAction->setObjectName("TrackColorPickerAction");
@@ -1962,9 +1956,9 @@ void WTrackTableView::slotScaleBpm(int scale) {
     for (const auto& index : selectedTrackIndices) {
         TrackPointer track = trackModel->getTrack(index);
         if (!track->isBpmLocked()) { // bpm is not locked
-            BeatsPointer beats = track->getBeats();
+            mixxx::BeatsPointer beats = track->getBeats();
             if (beats != nullptr) {
-                beats->scale(static_cast<Beats::BPMScale>(scale));
+                beats->scale(static_cast<mixxx::Beats::BPMScale>(scale));
             } else {
                 continue;
             }
@@ -2013,7 +2007,7 @@ void WTrackTableView::slotClearBeats() {
     for (const auto& index : selectedTrackIndices) {
         TrackPointer track = trackModel->getTrack(index);
         if (!track->isBpmLocked()) {
-            track->setBeats(BeatsPointer());
+            track->setBeats(mixxx::BeatsPointer());
         }
     }
 }

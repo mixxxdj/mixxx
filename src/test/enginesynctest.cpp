@@ -20,6 +20,7 @@
 #include "mixer/basetrackplayer.h"
 #include "util/memory.h"
 
+using namespace mixxx;
 
 class EngineSyncTest : public MockedEngineBackendTest {
   public:
@@ -1086,9 +1087,11 @@ TEST_F(EngineSyncTest, ZeroLatencyRateChange) {
     auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm1->set(128.0);
     pFileBpm2->set(128.0);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 128, 0.0);
+    auto pBeats1 = BeatsPointer(new Beats(m_pTrack1.get()));
+    pBeats1->setGrid(128);
     m_pTrack1->setBeats(pBeats1);
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 128, 0.0);
+    auto pBeats2 = BeatsPointer(new Beats(m_pTrack2.get()));
+    pBeats2->setGrid(70);
     m_pTrack2->setBeats(pBeats2);
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
@@ -1120,11 +1123,13 @@ TEST_F(EngineSyncTest, ZeroLatencyRateChange) {
 TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
     auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(70);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 70, 0.0);
+    auto pBeats1 = BeatsPointer(new Beats(m_pTrack1.get()));
+    pBeats1->setGrid(70);
     m_pTrack1->setBeats(pBeats1);
     auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(140);
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 140, 0.0);
+    auto pBeats2 = BeatsPointer(new Beats(m_pTrack2.get()));
+    pBeats2->setGrid(140);
     m_pTrack2->setBeats(pBeats2);
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
@@ -1186,9 +1191,11 @@ TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
     pFileBpm1->set(80.0);
     auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(175.0);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 80, 0.0);
+    auto pBeats1 = BeatsPointer(new Beats(m_pTrack1.get()));
+    pBeats1->setGrid(80);
     m_pTrack1->setBeats(pBeats1);
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 175, 0.0);
+    auto pBeats2 = BeatsPointer(new Beats(m_pTrack2.get()));
+    pBeats2->setGrid(175);
     m_pTrack2->setBeats(pBeats2);
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
 
@@ -1241,9 +1248,11 @@ TEST_F(EngineSyncTest, HalfDoubleInternalClockTest) {
     pFileBpm1->set(70.0);
     auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(140.0);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 70, 0.0);
+    auto pBeats1 = BeatsPointer(new Beats(m_pTrack1.get()));
+    pBeats1->setGrid(70);
     m_pTrack1->setBeats(pBeats1);
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 140, 0.0);
+    auto pBeats2 = BeatsPointer(new Beats(m_pTrack2.get()));
+    pBeats2->setGrid(140);
     m_pTrack2->setBeats(pBeats2);
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
@@ -1270,7 +1279,8 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->set(0.2);
     pFileBpm1->set(130.0);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 130, 0.0);
+    auto pBeats1 = BeatsPointer(new Beats(m_pTrack1.get()));
+    pBeats1->setGrid(130);
     m_pTrack1->setBeats(pBeats1);
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
 
@@ -1278,7 +1288,8 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->set(0.8);
     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 100, 0.0);
+    auto pBeats2 = BeatsPointer(new Beats(m_pTrack2.get()));
+    pBeats2->setGrid(100);
     m_pTrack2->setBeats(pBeats2);
     pFileBpm2->set(100.0);
 
@@ -1321,7 +1332,8 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     auto pFileBpm3 = std::make_unique<ControlProxy>(m_sGroup3, "file_bpm");
     ControlObject::set(ConfigKey(m_sGroup3, "beat_distance"), 0.6);
     ControlObject::set(ConfigKey(m_sGroup2, "rate_ratio"), 1.0);
-    BeatsPointer pBeats3 = BeatFactory::makeBeatGrid(*m_pTrack3, 140, 0.0);
+    auto pBeats3 = BeatsPointer(new Beats(m_pTrack3.get()));
+    pBeats3->setGrid(140);
     m_pTrack3->setBeats(pBeats3);
     pFileBpm3->set(140.0);
     // This will sync to the first deck here and not the second (lp1784185)
@@ -1361,9 +1373,11 @@ TEST_F(EngineSyncTest, UserTweakBeatDistance) {
     pFileBpm1->set(128.0);
     auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(128.0);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 128, 0.0);
+    auto pBeats1 = BeatsPointer(new Beats(m_pTrack1.get()));
+    pBeats1->setGrid(128);
     m_pTrack1->setBeats(pBeats1);
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 128, 0.0);
+    auto pBeats2 = BeatsPointer(new Beats(m_pTrack2.get()));
+    pBeats2->setGrid(128);
     m_pTrack2->setBeats(pBeats2);
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
@@ -1419,7 +1433,8 @@ TEST_F(EngineSyncTest, ZeroBpmNaturalRate) {
     auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(0.0);
     // Maybe the beatgrid ended up at zero also.
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 0.0, 0.0);
+    auto pBeats1 = BeatsPointer(new Beats(m_pTrack1.get()));
+    pBeats1->setGrid(0);
     m_pTrack1->setBeats(pBeats1);
 
     auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
@@ -1441,14 +1456,16 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
     auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     ControlObject::set(ConfigKey(m_sGroup1, "beat_distance"), 0.2);
     pFileBpm1->set(130.0);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 130, 0.0);
+    auto pBeats1 = BeatsPointer(new Beats(m_pTrack1.get()));
+    pBeats1->setGrid(130);
     m_pTrack1->setBeats(pBeats1);
 
     auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
     auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     ControlObject::set(ConfigKey(m_sGroup2, "beat_distance"), 0.8);
     ControlObject::set(ConfigKey(m_sGroup2, "rate"), getRateSliderValue(1.0));
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 100, 0.0);
+    auto pBeats2 = BeatsPointer(new Beats(m_pTrack2.get()));
+    pBeats2->setGrid(100);
     m_pTrack2->setBeats(pBeats2);
     pFileBpm2->set(100.0);
 
@@ -1508,7 +1525,8 @@ TEST_F(EngineSyncTest, SeekStayInPhase) {
     auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     ControlObject::set(ConfigKey(m_sGroup1, "beat_distance"), 0.2);
     pFileBpm1->set(130.0);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 130, 0.0);
+    auto pBeats1 = BeatsPointer(new Beats(m_pTrack1.get()));
+    pBeats1->setGrid(130);
     m_pTrack1->setBeats(pBeats1);
 
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
@@ -1525,9 +1543,10 @@ TEST_F(EngineSyncTest, SyncWithoutBeatgrid) {
     auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(128.0);
     auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 128, 0.0);
+    auto pBeats1 = BeatsPointer(new Beats(m_pTrack1.get()));
+    pBeats1->setGrid(128);
     m_pTrack1->setBeats(pBeats1);
-    m_pTrack2->setBeats(BeatsPointer());
+    m_pTrack2->setBeats(mixxx::BeatsPointer());
 
     ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.5);
 
@@ -1547,13 +1566,15 @@ TEST_F(EngineSyncTest, QuantizeHotCueActivate) {
     auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     ControlObject::set(ConfigKey(m_sGroup1, "beat_distance"), 0.2);
     pFileBpm1->set(130.0);
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 130, 0.0);
+    auto pBeats1 = BeatsPointer(new Beats(m_pTrack1.get()));
+    pBeats1->setGrid(130);
     m_pTrack1->setBeats(pBeats1);
 
     auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     auto pHotCueActivate = std::make_unique<ControlProxy>(m_sGroup2, "hotcue_1_activate");
     ControlObject::set(ConfigKey(m_sGroup2, "beat_distance"), 0.8);
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 100, 0.0);
+    auto pBeats2 = BeatsPointer(new Beats(m_pTrack2.get()));
+    pBeats2->setGrid(100);
     m_pTrack2->setBeats(pBeats2);
     pFileBpm2->set(100.0);
 
@@ -1581,7 +1602,7 @@ TEST_F(EngineSyncTest, QuantizeHotCueActivate) {
     pHotCueActivate->set(1.0);
     ProcessBuffer();
 
-    // the value was determined experimentally 
+    // the value was determined experimentally
     ASSERT_DOUBLE_EQ(0.1199697656840514, ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
 
     pHotCueActivate->set(0.0);
@@ -1597,7 +1618,8 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
     auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
 
     // set beatgrid
-    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 130, 0.0);
+    auto pBeats1 = BeatsPointer(new Beats(m_pTrack1.get()));
+    pBeats1->setGrid(130);
     m_pTrack1->setBeats(pBeats1);
     pFileBpm1->set(130.0);
     pButtonSyncEnabled1->set(1.0);
@@ -1624,7 +1646,8 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
     ProcessBuffer();
 
     // Load a new beatgrid, this happens when the analyser is finisched
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 140, 0.0);
+    auto pBeats2 = BeatsPointer(new Beats(m_pTrack2.get()));
+    pBeats2->setGrid(140);
     m_pTrack2->setBeats(pBeats2);
     pFileBpm2->set(140.0);
 
@@ -1639,7 +1662,8 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
     ProcessBuffer();
 
     // Load a new beatgrid again, this happens when the user adjusts the beatgrid
-    BeatsPointer pBeats2n = BeatFactory::makeBeatGrid(*m_pTrack2, 75, 0.0);
+    auto pBeats2n = BeatsPointer(new Beats(m_pTrack2.get()));
+    pBeats2n->setGrid(75);
     m_pTrack2->setBeats(pBeats2n);
     pFileBpm2->set(75.0);
 
@@ -1652,4 +1676,3 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
     EXPECT_FLOAT_EQ(65.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 }
-
