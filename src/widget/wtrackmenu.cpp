@@ -622,7 +622,7 @@ TrackIdList WTrackMenu::getTrackIds() const {
         for (const auto& pTrack : m_trackPointerList) {
             const auto trackId = pTrack->getId();
             DEBUG_ASSERT(trackId.isValid());
-            trackIds.push_back(pTrack->getId());
+            trackIds.push_back(trackId);
         }
     }
     return trackIds;
