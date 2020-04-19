@@ -122,7 +122,7 @@ double SeratoTags::findTimingOffsetMillis(const QString& filePath) {
         // Apparently all mp3guessenc cases have the same offset for MAD
         // and FFMPEG
         default:
-            timingOffset = -18;
+            timingOffset = -19;
             break;
 #endif
         }
