@@ -50,8 +50,18 @@ void WWaveformViewer::setup(const QDomNode& node, const SkinContext& context) {
 }
 
 void WWaveformViewer::resizeEvent(QResizeEvent* /*event*/) {
+    qDebug() << this << "resizeEvent";
+    qDebug() << this << "isVisible()" << isVisible() << size();
+    qDebug() << this << "isVisible()" << parentWidget() << parentWidget()->size();
     if (m_waveformWidget) {
+        auto widget = m_waveformWidget->getWidget();
+        qDebug() << this << "widget isVisible()" << widget->isVisible() << widget->size();
         m_waveformWidget->resize(width(), height());
+        qDebug() << this << "widget isVisible()" << widget->isVisible() << widget->size();
+        auto window = widget->windowHandle();
+        if (window != nullptr) {
+            qDebug() << window << "vis" << window->isVisible() << window->size() << window->surfaceType() << "exposed" << window->isExposed();
+        }
     }
 }
 
@@ -206,6 +216,8 @@ void WWaveformViewer::setPlayMarkerPosition(double position) {
 }
 
 void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) {
+    qDebug() << this << "setWaveformWidget";
+    qDebug() << this << "isVisible()" << isVisible() << size();
     if (m_waveformWidget) {
         QWidget* pWidget = m_waveformWidget->getWidget();
         disconnect(pWidget, SIGNAL(destroyed()),
@@ -213,6 +225,7 @@ void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) 
     }
     m_waveformWidget = waveformWidget;
     if (m_waveformWidget) {
+        qDebug() << this << "widget isVisible()" << waveformWidget->getWidget()->isVisible();
         QWidget* pWidget = m_waveformWidget->getWidget();
         connect(pWidget, SIGNAL(destroyed()),
                 this, SLOT(slotWidgetDead()));
@@ -221,8 +234,14 @@ void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) 
 }
 
 void WWaveformViewer::showEvent(QShowEvent *event) {
+    qDebug() << this << "showEvent";
+    qDebug() << this << "isVisible()" << isVisible() << size();
+    qDebug() << this << "isVisible()" << parentWidget() << parentWidget()->size();
     if (m_waveformWidget) {
         auto widget = m_waveformWidget->getWidget();
+        qDebug() << this << "widget isVisible()" << widget->isVisible() << widget->size();
+        //widget->show();
+
         // Work around lp:1872172. On Qt 5.14, waveforms do not show on startup
         // on macOS and Windows.
         if (widget) {

@@ -419,17 +419,12 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         // Disable waiting for vertical Sync
         // This can be enabled when using a single Threads for each QGLContext
         // Setting 1 causes QGLContext::swapBuffer to sleep until the next VSync
-#if defined(__APPLE__)
-        // On OS X, syncing to vsync has good performance FPS-wise and
-        // eliminates tearing.
-        glFormat.setSwapInterval(1);
-#else
+
         // Otherwise, turn VSync off because it could cause horrible FPS on
         // Linux.
         // TODO(XXX): Make this configurable.
         // TODO(XXX): What should we do on Windows?
         glFormat.setSwapInterval(0);
-#endif
         glFormat.setRgba(true);
         QGLFormat::setDefaultFormat(glFormat);
 
