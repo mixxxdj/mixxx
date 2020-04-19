@@ -1150,48 +1150,48 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
         return false;
     }
 
-    if (m_pTrackModel) {
-        if (flag == Feature::AutoDJ) {
-            return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ);
-        } else if (flag == Feature::LoadTo) {
-            return m_pTrackModel->hasCapabilities(
-                           TrackModel::TRACKMODELCAPS_LOADTODECK) ||
-                    m_pTrackModel->hasCapabilities(
-                            TrackModel::TRACKMODELCAPS_LOADTOSAMPLER) ||
-                    m_pTrackModel->hasCapabilities(
-                            TrackModel::TRACKMODELCAPS_LOADTOPREVIEWDECK);
-        } else if (flag == Feature::Playlist) {
-            return m_pTrackModel->hasCapabilities(
-                    TrackModel::TRACKMODELCAPS_ADDTOPLAYLIST);
-        } else if (flag == Feature::Crate) {
-            return m_pTrackModel->hasCapabilities(
-                    TrackModel::TRACKMODELCAPS_ADDTOCRATE);
-        } else if (flag == Feature::Remove) {
-            return m_pTrackModel->hasCapabilities(
-                           TrackModel::TRACKMODELCAPS_REMOVE) ||
-                    m_pTrackModel->hasCapabilities(
-                            TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST) ||
-                    m_pTrackModel->hasCapabilities(
-                            TrackModel::TRACKMODELCAPS_REMOVE_CRATE);
-        } else if (flag == Feature::Metadata) {
-            return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
-        } else if (flag == Feature::Reset) {
-            return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA) &&
-                    m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_RESETPLAYED);
-        } else if (flag == Feature::BPM) {
-            return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
-        } else if (flag == Feature::Color) {
-            return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
-        } else if (flag == Feature::HideUnhidePurge) {
-            return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_HIDE) ||
-                    m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE) ||
-                    m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_PURGE);
-        } else if (flag == Feature::Properties) {
-            return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
-        } else {
-            return true;
-        }
+    if (!m_pTrackModel) {
+        return !m_eTrackModelFeatures.testFlag(flag);
     }
 
-    return !m_eTrackModelFeatures.testFlag(flag);
+    if (flag == Feature::AutoDJ) {
+        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ);
+    } else if (flag == Feature::LoadTo) {
+        return m_pTrackModel->hasCapabilities(
+                        TrackModel::TRACKMODELCAPS_LOADTODECK) ||
+                m_pTrackModel->hasCapabilities(
+                        TrackModel::TRACKMODELCAPS_LOADTOSAMPLER) ||
+                m_pTrackModel->hasCapabilities(
+                        TrackModel::TRACKMODELCAPS_LOADTOPREVIEWDECK);
+    } else if (flag == Feature::Playlist) {
+        return m_pTrackModel->hasCapabilities(
+                TrackModel::TRACKMODELCAPS_ADDTOPLAYLIST);
+    } else if (flag == Feature::Crate) {
+        return m_pTrackModel->hasCapabilities(
+                TrackModel::TRACKMODELCAPS_ADDTOCRATE);
+    } else if (flag == Feature::Remove) {
+        return m_pTrackModel->hasCapabilities(
+                        TrackModel::TRACKMODELCAPS_REMOVE) ||
+                m_pTrackModel->hasCapabilities(
+                        TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST) ||
+                m_pTrackModel->hasCapabilities(
+                        TrackModel::TRACKMODELCAPS_REMOVE_CRATE);
+    } else if (flag == Feature::Metadata) {
+        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+    } else if (flag == Feature::Reset) {
+        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA) &&
+                m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_RESETPLAYED);
+    } else if (flag == Feature::BPM) {
+        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+    } else if (flag == Feature::Color) {
+        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+    } else if (flag == Feature::HideUnhidePurge) {
+        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_HIDE) ||
+                m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE) ||
+                m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_PURGE);
+    } else if (flag == Feature::Properties) {
+        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+    } else {
+        return true;
+    }
 }
