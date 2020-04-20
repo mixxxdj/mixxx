@@ -1028,6 +1028,8 @@ void WTrackMenu::loadSelectionToGroup(QString group, bool play) {
     if (trackPointers.empty()) {
         return;
     }
+    // Only the first track was requested
+    DEBUG_ASSERT(trackPointers.size() == 1);
     // If the track load override is disabled, check to see if a track is
     // playing before trying to load it
     if (!(m_pConfig->getValueString(
