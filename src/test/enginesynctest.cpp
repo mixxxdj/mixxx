@@ -277,7 +277,7 @@ TEST_F(EngineSyncTest, InternalMasterSetFollowerSliderMoves) {
     auto pMasterSyncSlider = std::make_unique<ControlProxy>(m_sInternalClockGroup, "bpm");
     pMasterSyncSlider->set(100.0);
 
-    // Set the file bpm of channel 1 to 160bpm.
+    // Set the file bpm of channel 1 to 80 bpm.
     BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 80, 0.0);
     m_pTrack1->setBeats(pBeats1);
 
@@ -1250,8 +1250,16 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(0.0);
 
-    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))->set(SYNC_FOLLOWER);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))->set(SYNC_NONE);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))->set(SYNC_NONE);
+
+    EXPECT_EQ(1.0,
+            m_pChannel1->getEngineBuffer()->m_pSyncControl->m_masterBpmAdjustFactor);
+    EXPECT_EQ(1.0,
+            m_pChannel2->getEngineBuffer()->m_pSyncControl->m_masterBpmAdjustFactor);
+
     ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))->set(SYNC_FOLLOWER);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))->set(SYNC_FOLLOWER);
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
 
     // Now start deck 1 first and check again.
@@ -1935,4 +1943,45 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
     // Expect to sync on half beats
     EXPECT_FLOAT_EQ(65.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
+}
+
+TEST_F(EngineSyncTest, BpmAdjustFactor) {
+    // Failing test case from https://github.com/mixxxdj/mixxx/pull/2376
+
+    m_pMixerDeck1->loadFakeTrack(false, 40.0);
+    m_pMixerDeck2->loadFakeTrack(false, 150.0);
+    ProcessBuffer();
+
+    EXPECT_FLOAT_EQ(40.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_FLOAT_EQ(150.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+
+    ControlObject::set(ConfigKey(m_sGroup2, "sync_enabled"), 1.0);
+    ProcessBuffer();
+
+    // group 2 should be synced to the first playing deck and becomes master
+    EXPECT_FLOAT_EQ(40.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_FLOAT_EQ(80.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    assertIsSoftMaster(m_sGroup2);
+    assertSyncOff(m_sGroup1);
+
+    ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
+    ProcessBuffer();
+    assertIsSoftMaster(m_sGroup2);
+    // Pretend a changing beatgrid
+    static_cast<SyncControl*>(m_pEngineSync->getMasterSyncable())->setLocalBpm(152);
+    ProcessBuffer();
+
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_enabled"), 1.0);
+    ProcessBuffer();
+
+    // Group 1 should be already in sync, it must not change due to sync
+    // and Group 2 must also remain.
+    EXPECT_FLOAT_EQ(40.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_FLOAT_EQ(80.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    assertIsFollower(m_sGroup1);
+    assertIsFollower(m_sGroup2);
+    assertIsSoftMaster(m_sInternalClockGroup);
 }
