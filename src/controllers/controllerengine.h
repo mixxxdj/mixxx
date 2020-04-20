@@ -87,9 +87,6 @@ class ControllerEngine : public QObject {
     // Check whether a source file that was evaluated()'d has errors.
     bool hasErrors(const QString& filename);
 
-    // Get the errors for a source file that was evaluated()'d
-    const QStringList getErrors(const QString& filename);
-
     void setPopups(bool bPopups) {
         m_bPopups = bPopups;
     }
@@ -164,27 +161,27 @@ class ControllerEngine : public QObject {
     void scriptHasChanged(const QString&);
 
   signals:
-    void initialized();
     void resetController();
 
   private slots:
     void errorDialogButton(const QString& key, QMessageBox::StandardButton button);
 
   private:
-    bool syntaxIsValid(const QString& scriptCode);
+    bool syntaxIsValid(const QString& scriptCode, const QString& filename = QString());
     bool evaluate(const QFileInfo& scriptFile);
     bool internalExecute(QScriptValue thisObject, const QString& scriptCode);
     bool internalExecute(QScriptValue thisObject, QScriptValue functionObject,
                          QScriptValueList arguments);
     void initializeScriptEngine();
+    void uninitializeScriptEngine();
 
-    void scriptErrorDialog(const QString& detailedError);
+    void scriptErrorDialog(const QString& detailedError, const QString& key, bool bFatal = false);
     void generateScriptFunctions(const QString& code);
     // Stops and removes all timers (for shutdown).
     void stopAllTimers();
 
     void callFunctionOnObjects(QList<QString>, const QString&, QScriptValueList args = QScriptValueList());
-    bool checkException();
+    bool checkException(bool bFatal = false);
     QScriptEngine *m_pEngine;
 
     ControlObjectScript* getControlObjectScript(const QString& group, const QString& name);

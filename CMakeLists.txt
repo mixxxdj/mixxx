@@ -613,7 +613,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/timer.cpp
   src/util/valuetransformer.cpp
   src/util/version.cpp
-  src/util/widgethider.cpp
   src/util/widgetrendertimer.cpp
   src/util/workerthread.cpp
   src/util/workerthreadscheduler.cpp
@@ -722,6 +721,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wstarrating.cpp
   src/widget/wstatuslight.cpp
   src/widget/wtime.cpp
+  src/widget/wtrackmenu.cpp
   src/widget/wtrackproperty.cpp
   src/widget/wtracktableview.cpp
   src/widget/wtracktableviewheader.cpp
