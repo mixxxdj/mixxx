@@ -66,12 +66,8 @@ ChromaticKey chromaticKeyFromKeyFinderKeyT(KeyFinder::key_t key) {
 namespace mixxx {
 
 AnalyzerKeyFinder::AnalyzerKeyFinder()
-        : m_keyFinder(),
-          m_workspace(),
-          m_audioData(),
-          m_currentFrame(0),
-          m_previousKey(mixxx::track::io::key::INVALID),
-          m_resultKeys() {
+        : m_currentFrame(0),
+          m_previousKey(mixxx::track::io::key::INVALID) {
 }
 
 bool AnalyzerKeyFinder::initialize(int samplerate) {
