@@ -168,7 +168,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/analyzer/analyzersilence.cpp
   src/analyzer/analyzerthread.cpp
   src/analyzer/analyzerwaveform.cpp
-  src/analyzer/plugins/analyzerkeyfinder.cpp
   src/analyzer/plugins/analyzerqueenmarybeats.cpp
   src/analyzer/plugins/analyzerqueenmarykey.cpp
   src/analyzer/plugins/analyzersoundtouchbeats.cpp
@@ -1302,8 +1301,14 @@ endif()
 target_include_directories(mixxx-lib SYSTEM PUBLIC lib/fidlib)
 target_link_libraries(mixxx-lib PUBLIC fidlib)
 
-#KeyFinder
-target_link_libraries(mixxx-lib PUBLIC keyfinder)
+# KeyFinder
+find_package(KeyFinder)
+option(KEYFINDER "KeyFinder" OFF)
+if(KEYFINDER)
+  target_sources(mixxx-lib PRIVATE src/analyzer/plugins/analyzerkeyfinder.cpp)
+  target_compile_definitions(mixxx-lib PUBLIC __KEYFINDER__)
+  target_link_libraries(mixxx-lib PUBLIC KeyFinder::KeyFinder)
+endif()
 
 # FLAC
 find_package(FLAC REQUIRED)
