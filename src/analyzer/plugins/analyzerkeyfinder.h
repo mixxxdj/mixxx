@@ -43,6 +43,7 @@ class AnalyzerKeyFinder : public AnalyzerKeyPlugin {
     std::unique_ptr<KeyFinder::AudioData> m_pAudioData;
 
     size_t m_currentFrame;
+    mixxx::track::io::key::ChromaticKey m_previousKey;
     KeyChangeList m_resultKeys;
 };
 

@@ -13,7 +13,8 @@ AnalyzerKeyFinder::AnalyzerKeyFinder()
         : m_pKeyFinder(nullptr),
           m_pWorkspace(nullptr),
           m_pAudioData(nullptr),
-          m_currentFrame(0) {
+          m_currentFrame(0),
+          m_previousKey(mixxx::track::io::key::INVALID) {
 }
 
 AnalyzerKeyFinder::~AnalyzerKeyFinder() {
@@ -22,6 +23,7 @@ AnalyzerKeyFinder::~AnalyzerKeyFinder() {
 bool AnalyzerKeyFinder::initialize(int samplerate) {
     m_resultKeys.clear();
     m_currentFrame = 0;
+    m_previousKey = mixxx::track::io::key::INVALID;
 
     m_pKeyFinder = std::make_unique<KeyFinder::KeyFinder>();
     m_pWorkspace = std::make_unique<KeyFinder::Workspace>();
@@ -34,27 +36,33 @@ bool AnalyzerKeyFinder::initialize(int samplerate) {
 
 bool AnalyzerKeyFinder::processSamples(const CSAMPLE* pIn, const int iLen) {
     DEBUG_ASSERT(iLen % kAnalysisChannels == 0);
+    if (m_pAudioData->getSampleCount() == 0) {
+        m_pAudioData->addToSampleCount(iLen);
+    }
 
     const size_t numInputFrames = iLen / kAnalysisChannels;
     m_currentFrame += numInputFrames;
 
-    m_pAudioData->addToSampleCount(iLen);
     for (unsigned int frame = 0; frame < numInputFrames; frame++) {
         for (unsigned int channel = 0; channel < kAnalysisChannels; channel++) {
             m_pAudioData->setSampleByFrame(
                     frame, channel, pIn[frame * kAnalysisChannels + channel]);
         }
     }
-    // Do not build a progressive list of key changes here because it is very slow.
-    // Instead, just calculate the global key in finalize.
+    m_pKeyFinder->progressiveChromagram(*m_pAudioData, *m_pWorkspace);
+    ChromaticKey key = chromaticKeyFromKeyFinderKeyT(
+            m_pKeyFinder->keyOfChromagram(*m_pWorkspace));
+    if (key != m_previousKey) {
+        m_resultKeys.push_back(qMakePair(key, m_currentFrame));
+    }
     return true;
 }
 
 bool AnalyzerKeyFinder::finalize() {
-    m_pKeyFinder->progressiveChromagram(*m_pAudioData, *m_pWorkspace);
-    ChromaticKey globalKey = chromaticKeyFromKeyFinderKeyT(
+    m_pKeyFinder->finalChromagram(*m_pWorkspace);
+    ChromaticKey finalKey = chromaticKeyFromKeyFinderKeyT(
             m_pKeyFinder->keyOfChromagram(*m_pWorkspace));
-    m_resultKeys.push_back(qMakePair(globalKey, 0));
+    m_resultKeys.push_back(qMakePair(finalKey, m_currentFrame));
     return true;
 }
 
