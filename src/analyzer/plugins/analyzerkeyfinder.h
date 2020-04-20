@@ -21,7 +21,7 @@ class AnalyzerKeyFinder : public AnalyzerKeyPlugin {
     }
 
     AnalyzerKeyFinder();
-    ~AnalyzerKeyFinder() override;
+    ~AnalyzerKeyFinder() override = default;
 
     AnalyzerPluginInfo info() const override {
         return pluginInfo();

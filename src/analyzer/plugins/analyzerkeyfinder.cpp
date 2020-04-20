@@ -17,9 +17,6 @@ AnalyzerKeyFinder::AnalyzerKeyFinder()
           m_previousKey(mixxx::track::io::key::INVALID) {
 }
 
-AnalyzerKeyFinder::~AnalyzerKeyFinder() {
-}
-
 bool AnalyzerKeyFinder::initialize(int samplerate) {
     m_resultKeys.clear();
     m_currentFrame = 0;
