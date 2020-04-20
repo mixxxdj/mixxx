@@ -2,10 +2,8 @@
 #include <keyfinder/keyfinder.h>
 
 #include <QObject>
-#include <vector>
 
 #include "analyzer/plugins/analyzerplugin.h"
-#include "util/memory.h"
 #include "util/types.h"
 
 namespace mixxx {
@@ -38,9 +36,9 @@ class AnalyzerKeyFinder : public AnalyzerKeyPlugin {
   private:
     mixxx::track::io::key::ChromaticKey chromaticKeyFromKeyFinderKeyT(KeyFinder::key_t);
 
-    std::unique_ptr<KeyFinder::KeyFinder> m_pKeyFinder;
-    std::unique_ptr<KeyFinder::Workspace> m_pWorkspace;
-    std::unique_ptr<KeyFinder::AudioData> m_pAudioData;
+    KeyFinder::KeyFinder m_keyFinder;
+    KeyFinder::Workspace m_workspace;
+    KeyFinder::AudioData m_audioData;
 
     size_t m_currentFrame;
     mixxx::track::io::key::ChromaticKey m_previousKey;
