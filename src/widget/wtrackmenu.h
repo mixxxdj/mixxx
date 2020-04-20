@@ -155,6 +155,10 @@ class WTrackMenu : public QMenu {
     void loadSelectionToGroup(QString group, bool play = false);
     void clearTrackSelection();
 
+    bool isAnyTrackBpmLocked() const;
+    std::optional<mixxx::RgbColor> getCommonTrackColor() const;
+    CoverInfo getCoverInfoOfLastTrack() const;
+
     TrackModel* m_pTrackModel{};
     QModelIndexList m_trackIndexList;
 

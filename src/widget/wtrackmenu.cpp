@@ -415,6 +415,115 @@ void WTrackMenu::setupActions() {
     }
 }
 
+bool WTrackMenu::isAnyTrackBpmLocked() const {
+    if (m_pTrackModel) {
+        const int column =
+                m_pTrackModel->fieldIndex(LIBRARYTABLE_BPM_LOCK);
+        for (const auto trackIndex : m_trackIndexList) {
+            QModelIndex bpmLockedIndex =
+                    trackIndex.sibling(trackIndex.row(), column);
+            if (bpmLockedIndex.data().toBool()) {
+                return true;
+            }
+        }
+    } else {
+        for (const auto& pTrack : m_trackPointerList) {
+            if (pTrack->isBpmLocked()) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+std::optional<mixxx::RgbColor> WTrackMenu::getCommonTrackColor() const {
+    VERIFY_OR_DEBUG_ASSERT(!isEmpty()) {
+        return std::nullopt;
+    }
+    std::optional<mixxx::RgbColor> commonColor;
+    if (m_pTrackModel) {
+        const int column =
+                m_pTrackModel->fieldIndex(LIBRARYTABLE_COLOR);
+        commonColor = mixxx::RgbColor::fromQVariant(
+                m_trackIndexList.first().sibling(
+                                                m_trackIndexList.first().row(), column)
+                        .data());
+        if (!commonColor) {
+            return std::nullopt;
+        }
+        for (const auto trackIndex : m_trackIndexList) {
+            const auto otherColor = mixxx::RgbColor::fromQVariant(
+                    trackIndex.sibling(
+                                        trackIndex.row(), column)
+                            .data());
+            if (commonColor != otherColor) {
+                // Multiple, different colors
+                return std::nullopt;
+            }
+        }
+    } else {
+        auto commonColor = m_trackPointerList.first()->getColor();
+        if (!commonColor) {
+            return std::nullopt;
+        }
+        for (const auto& pTrack : m_trackPointerList) {
+            if (commonColor != pTrack->getColor()) {
+                // Multiple, different colors
+                return std::nullopt;
+            }
+        }
+    }
+    return commonColor;
+}
+
+CoverInfo WTrackMenu::getCoverInfoOfLastTrack() const {
+    VERIFY_OR_DEBUG_ASSERT(!isEmpty()) {
+        return CoverInfo();
+    }
+    if (m_pTrackModel) {
+        const QModelIndex lastIndex = m_trackIndexList.last();
+        CoverInfo coverInfo;
+        coverInfo.source = static_cast<CoverInfo::Source>(
+                lastIndex
+                        .sibling(
+                                lastIndex.row(),
+                                m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_SOURCE))
+                        .data()
+                        .toInt());
+        coverInfo.type = static_cast<CoverInfo::Type>(
+                lastIndex
+                        .sibling(
+                                lastIndex.row(),
+                                m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_TYPE))
+                        .data()
+                        .toInt());
+        coverInfo.hash =
+                lastIndex
+                        .sibling(
+                                lastIndex.row(),
+                                m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_HASH))
+                        .data()
+                        .toUInt();
+        coverInfo.coverLocation =
+                lastIndex
+                        .sibling(
+                                lastIndex.row(),
+                                m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_LOCATION))
+                        .data()
+                        .toString();
+        coverInfo.trackLocation =
+                lastIndex
+                        .sibling(
+                                lastIndex.row(),
+                                m_pTrackModel->fieldIndex(LIBRARYTABLE_LOCATION))
+                        .data()
+                        .toString();
+        return coverInfo;
+    } else {
+        return m_trackPointerList.last()->getCoverInfoWithLocation();
+    }
+}
+
 void WTrackMenu::updateMenus() {
     if (isEmpty()) {
         return;
@@ -489,75 +598,13 @@ void WTrackMenu::updateMenus() {
 
         // We use the last selected track for the cover art context to be
         // consistent with selectionChanged above.
-        if (m_pTrackModel) {
-            const QModelIndex lastIndex = m_trackIndexList.last();
-            CoverInfo coverInfo;
-            coverInfo.source = static_cast<CoverInfo::Source>(
-                    lastIndex
-                            .sibling(
-                                    lastIndex.row(),
-                                    m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_SOURCE))
-                            .data()
-                            .toInt());
-            coverInfo.type = static_cast<CoverInfo::Type>(
-                    lastIndex
-                            .sibling(
-                                    lastIndex.row(),
-                                    m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_TYPE))
-                            .data()
-                            .toInt());
-            coverInfo.hash =
-                    lastIndex
-                            .sibling(
-                                    lastIndex.row(),
-                                    m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_HASH))
-                            .data()
-                            .toUInt();
-            coverInfo.coverLocation =
-                    lastIndex
-                            .sibling(
-                                    lastIndex.row(),
-                                    m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_LOCATION))
-                            .data()
-                            .toString();
-            coverInfo.trackLocation =
-                    lastIndex
-                            .sibling(
-                                    lastIndex.row(),
-                                    m_pTrackModel->fieldIndex(LIBRARYTABLE_LOCATION))
-                            .data()
-                            .toString();
-            m_pCoverMenu->setCoverArt(coverInfo);
-        } else {
-            TrackPointer pTrack = m_trackPointerList.last();
-            m_pCoverMenu->setCoverArt(
-                    pTrack->getCoverInfoWithLocation());
-        }
+        m_pCoverMenu->setCoverArt(getCoverInfoOfLastTrack());
         m_pMetadataMenu->addMenu(m_pCoverMenu);
     }
 
     if (featureIsEnabled(Feature::Reset) ||
         featureIsEnabled(Feature::BPM)) {
-        bool anyBpmLocked = false;
-        if (m_pTrackModel) {
-            const int bpmLockedCol =
-                    m_pTrackModel->fieldIndex(LIBRARYTABLE_BPM_LOCK);
-            for (const auto trackIndex : m_trackIndexList) {
-                QModelIndex bpmLockedIndex =
-                        trackIndex.sibling(trackIndex.row(), bpmLockedCol);
-                if (bpmLockedIndex.data().toBool()) {
-                    anyBpmLocked = true;
-                    break;
-                }
-            }
-        } else {
-            for (const auto& pTrack : m_trackPointerList) {
-                if (pTrack->isBpmLocked()) {
-                    anyBpmLocked = true;
-                    break;
-                }
-            }
-        }
+        const bool anyBpmLocked = isAnyTrackBpmLocked();
         if (featureIsEnabled(Feature::Reset)) {
             m_pClearBeatsAction->setEnabled(!anyBpmLocked);
         }
@@ -576,39 +623,9 @@ void WTrackMenu::updateMenus() {
     if (featureIsEnabled(Feature::Color)) {
         m_pColorPickerAction->setColorPalette(
                 ColorPaletteSettings(m_pConfig).getTrackColorPalette());
-        std::optional<mixxx::RgbColor> oneColor = std::nullopt;
-        if (m_pTrackModel) {
-            const int column =
-                    m_pTrackModel->fieldIndex(LIBRARYTABLE_COLOR);
-            oneColor = mixxx::RgbColor::fromQVariant(
-                    m_trackIndexList.first().sibling(
-                                                    m_trackIndexList.first().row(), column)
-                            .data());
-            if (oneColor) {
-                for (const auto trackIndex : m_trackIndexList) {
-                    const auto otherColor = mixxx::RgbColor::fromQVariant(
-                            trackIndex.sibling(
-                                              trackIndex.row(), column)
-                                    .data());
-                    if (oneColor != otherColor) {
-                        // Multiple, different colors
-                        oneColor = std::nullopt;
-                        break;
-                    }
-                }
-            }
-        } else {
-            oneColor = m_trackPointerList.first()->getColor();
-            for (const auto& pTrack : m_trackPointerList) {
-                if (oneColor != pTrack->getColor()) {
-                    // Multiple, different colors
-                    oneColor = std::nullopt;
-                    break;
-                }
-            }
-        }
-        if (oneColor) {
-            m_pColorPickerAction->setSelectedColor(oneColor);
+        const auto commonColor = getCommonTrackColor();
+        if (commonColor) {
+            m_pColorPickerAction->setSelectedColor(commonColor);
         } else {
             m_pColorPickerAction->resetSelectedColor();
         }
