@@ -86,11 +86,11 @@ bool AnalyzerKeyFinder::processSamples(const CSAMPLE* pIn, const int iLen) {
         m_audioData.addToSampleCount(iLen);
     }
 
-    const size_t numInputFrames = iLen / kAnalysisChannels;
+    const SINT numInputFrames = iLen / kAnalysisChannels;
     m_currentFrame += numInputFrames;
 
-    for (unsigned int frame = 0; frame < numInputFrames; frame++) {
-        for (unsigned int channel = 0; channel < kAnalysisChannels; channel++) {
+    for (SINT frame = 0; frame < numInputFrames; frame++) {
+        for (SINT channel = 0; channel < kAnalysisChannels; channel++) {
             m_audioData.setSampleByFrame(
                     frame, channel, pIn[frame * kAnalysisChannels + channel]);
         }

@@ -38,7 +38,7 @@ class AnalyzerKeyFinder : public AnalyzerKeyPlugin {
     KeyFinder::Workspace m_workspace;
     KeyFinder::AudioData m_audioData;
 
-    size_t m_currentFrame;
+    SINT m_currentFrame;
     mixxx::track::io::key::ChromaticKey m_previousKey;
     KeyChangeList m_resultKeys;
 };
