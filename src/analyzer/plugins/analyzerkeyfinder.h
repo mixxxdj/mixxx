@@ -12,6 +12,7 @@ class AnalyzerKeyFinder : public AnalyzerKeyPlugin {
   public:
     static AnalyzerPluginInfo pluginInfo() {
         return AnalyzerPluginInfo(
+                // 2 is for the library version
                 QStringLiteral("keyfinder:2"),
                 QStringLiteral("Ibrahim Sha'ath"),
                 QStringLiteral("KeyFinder"),
