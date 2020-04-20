@@ -1323,7 +1323,13 @@ void MixxxMainWindow::rebootMixxxView() {
     }
 
     setCentralWidget(m_pWidgetParent);
+#ifdef __LINUX__
+    // don't adjustSize() on Linux as this wouldn't use the entire available area
+    // to paint the new skin with X11
+    // https://bugs.launchpad.net/mixxx/+bug/1773587
+#else
     adjustSize();
+#endif
 
     if (wasFullScreen) {
         slotViewFullScreen(true);
