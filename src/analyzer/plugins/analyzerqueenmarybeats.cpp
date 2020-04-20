@@ -10,7 +10,7 @@
 namespace mixxx {
 namespace {
 
-constexpr float kStepSecs = 0.01161; // 512 samples at 44100
+constexpr float kStepSecs = 0.01161; // stepsize should be equivalent to ~11.61 ms irrespectively of samplerate
 
 DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
     // These are the defaults for the VAMP beat tracker plugin we used in Mixxx
@@ -38,6 +38,7 @@ AnalyzerQueenMaryBeats::~AnalyzerQueenMaryBeats() {
 bool AnalyzerQueenMaryBeats::initialize(int samplerate) {
     m_detectionResults.clear();
     m_iSampleRate = samplerate;
+    // These are the preferred window/step sizes from the BeatTrack VAMP
     m_stepSize = int(m_iSampleRate * kStepSecs + 0.0001);
     m_windowSize = m_stepSize * 2;
     m_pDetectionFunction = std::make_unique<DetectionFunction>(
