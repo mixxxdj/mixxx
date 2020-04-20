@@ -11,6 +11,9 @@
 #include <mutex> // std::once_flag
 
 #include "util/assert.h"
+#if QT_VERSION < QT_VERSION_CHECK(5, 7, 0)
+#include "util/compatibility.h"
+#endif
 #include "util/counter.h"
 #include "util/logger.h"
 
@@ -59,12 +62,37 @@ bool readJsonContent(
     DEBUG_ASSERT(jsonContent);
     DEBUG_ASSERT(JSON_MIME_TYPE.isValid());
     const auto contentType = readContentType(reply);
-    if (contentType == JSON_MIME_TYPE) {
-        *jsonContent = QJsonDocument::fromJson(reply->readAll());
-        return true;
-    } else {
+    if (contentType != JSON_MIME_TYPE) {
+        kLogger.warning()
+                << "Unexpected content type"
+                << contentType;
         return false;
     }
+    QByteArray jsonData = reply->readAll();
+    if (jsonData.isEmpty()) {
+        kLogger.warning()
+                << "Empty reply";
+        return false;
+    }
+    QJsonParseError parseError;
+    const auto jsonDoc = QJsonDocument::fromJson(
+            jsonData,
+            &parseError);
+    // QJsonDocument::fromJson() returns a non-null document
+    // if parsing succeeds and otherwise null on error. The
+    // parse error must only be evaluated if the returned
+    // document is null!
+    if (jsonDoc.isNull() &&
+            parseError.error != QJsonParseError::NoError) {
+        kLogger.warning()
+                << "Failed to parse JSON data:"
+                << parseError.errorString()
+                << "at offset"
+                << parseError.offset;
+        return false;
+    }
+    *jsonContent = jsonDoc;
+    return true;
 }
 
 // TODO: Allow to customize headers and attributes?
@@ -84,13 +112,21 @@ QNetworkRequest newRequest(
     qRegisterMetaType<JsonWebResponse>("mixxx::network::JsonWebResponse");
 }
 
+QDebug operator<<(QDebug dbg, const JsonWebResponse& arg) {
+    return dbg
+        << "CustomWebResponse{"
+        << static_cast<const WebResponse&>(arg)
+        << arg.content
+        << '}';
+}
+
 JsonWebTask::JsonWebTask(
         QNetworkAccessManager* networkAccessManager,
-        QUrl baseUrl,
-        JsonWebRequest request,
+        const QUrl& baseUrl,
+        JsonWebRequest&& request,
         QObject* parent)
         : WebTask(networkAccessManager, parent),
-          m_baseUrl(std::move(baseUrl)),
+          m_baseUrl(baseUrl),
           m_request(std::move(request)),
           m_pendingNetworkReply(nullptr) {
     std::call_once(registerMetaTypesOnceFlag, registerMetaTypesOnce);
@@ -104,23 +140,23 @@ JsonWebTask::~JsonWebTask() {
 }
 
 void JsonWebTask::onFinished(
-        JsonWebResponse response) {
+        JsonWebResponse&& response) {
     kLogger.info()
             << "Response received"
             << response.replyUrl
             << response.statusCode
             << response.content;
-    deleteAfterFinished();
+    deleteLater();
 }
 
 void JsonWebTask::onFinishedCustom(
-        CustomWebResponse response) {
+        CustomWebResponse&& response) {
     kLogger.info()
             << "Custom response received"
             << response.replyUrl
             << response.statusCode
             << response.content;
-    deleteAfterFinished();
+    deleteLater();
 }
 
 QNetworkReply* JsonWebTask::sendNetworkRequest(
@@ -237,13 +273,43 @@ bool JsonWebTask::doStart(
             &JsonWebTask::slotNetworkReplyFinished,
             Qt::UniqueConnection);
 
+    connect(m_pendingNetworkReply,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+            qOverload<QNetworkReply::NetworkError>(&QNetworkReply::error),
+#else
+            QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error),
+#endif
+            this,
+            &JsonWebTask::slotNetworkReplyFinished,
+            Qt::UniqueConnection);
+
     return true;
 }
 
-void JsonWebTask::doAbort() {
+QUrl JsonWebTask::doAbort() {
+    DEBUG_ASSERT(thread() == QThread::currentThread());
+    QUrl requestUrl;
     if (m_pendingNetworkReply) {
-        m_pendingNetworkReply->abort();
+        requestUrl = abortPendingNetworkReply(m_pendingNetworkReply);
+        if (requestUrl.isValid()) {
+            // Already finished
+            m_pendingNetworkReply->deleteLater();
+            m_pendingNetworkReply = nullptr;
+        }
     }
+    return requestUrl;
+}
+
+QUrl JsonWebTask::doTimeOut() {
+    DEBUG_ASSERT(thread() == QThread::currentThread());
+    QUrl requestUrl;
+    if (m_pendingNetworkReply) {
+        requestUrl = timeOutPendingNetworkReply(m_pendingNetworkReply);
+        // Don't wait until finished
+        m_pendingNetworkReply->deleteLater();
+        m_pendingNetworkReply = nullptr;
+    }
+    return requestUrl;
 }
 
 void JsonWebTask::slotNetworkReplyFinished() {
@@ -280,16 +346,16 @@ void JsonWebTask::slotNetworkReplyFinished() {
 }
 
 void JsonWebTask::emitFailed(
-        network::JsonWebResponse response) {
-    const auto signal = QMetaMethod::fromSignal(
-            &JsonWebTask::failed);
-    DEBUG_ASSERT(receivers(signal.name()) <= 1); // unique connection
-    if (isSignalConnected(signal)) {
-        emit failed(
-                std::move(response));
-    } else {
+        network::JsonWebResponse&& response) {
+    VERIFY_OR_DEBUG_ASSERT(
+            isSignalFuncConnected(&JsonWebTask::failed)) {
+        kLogger.warning()
+                << "Unhandled failed signal"
+                << response;
         deleteLater();
+        return;
     }
+    emit failed(std::move(response));
 }
 
 } // namespace network

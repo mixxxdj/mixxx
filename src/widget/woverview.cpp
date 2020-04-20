@@ -17,7 +17,6 @@
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPainter>
-#include <QPixmap>
 #include <QUrl>
 #include <QtDebug>
 
@@ -54,6 +53,7 @@ WOverview::WOverview(
           m_group(group),
           m_pConfig(pConfig),
           m_endOfTrack(false),
+          m_bPassthroughEnabled(false),
           m_pCueMenuPopup(make_parented<WCueMenuPopup>(pConfig, this)),
           m_bShowCueTimes(true),
           m_iPosSeconds(0),
@@ -80,6 +80,11 @@ WOverview::WOverview(
     m_trackSamplesControl =
             new ControlProxy(m_group, "track_samples", this);
     m_playpositionControl = new ControlProxy(m_group, "playposition", this);
+    m_pPassthroughControl =
+            new ControlProxy(m_group, "passthrough", this);
+    m_pPassthroughControl->connectValueChanged(this, &WOverview::onPassthroughChange);
+    onPassthroughChange(m_pPassthroughControl->get());
+
     setAcceptDrops(true);
 
     setMouseTracking(true);
@@ -88,6 +93,18 @@ WOverview::WOverview(
             this, &WOverview::onTrackAnalyzerProgress);
 
     connect(m_pCueMenuPopup.get(), &WCueMenuPopup::aboutToHide, this, &WOverview::slotCueMenuPopupAboutToHide);
+
+    m_pPassthroughLabel = new QLabel(this);
+    m_pPassthroughLabel->setObjectName("PassthroughLabel");
+    m_pPassthroughLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    // Shown on the overview waveform when vinyl passthrough is enabled
+    m_pPassthroughLabel->setText(tr("Passthrough"));
+    m_pPassthroughLabel->hide();
+    QVBoxLayout *pPassthroughLayout = new QVBoxLayout(this);
+    pPassthroughLayout->setContentsMargins(0,0,0,0);
+    pPassthroughLayout->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    pPassthroughLayout->addWidget(m_pPassthroughLabel);
+    setLayout(pPassthroughLayout);
 }
 
 void WOverview::setup(const QDomNode& node, const SkinContext& context) {
@@ -128,6 +145,8 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
         m_endOfTrackColor.setNamedColor(endOfTrackColorName);
         m_endOfTrackColor = WSkinColor::getCorrectColor(m_endOfTrackColor);
     }
+
+    m_passthroughOverlayColor = m_signalColors.getPlayedOverlayColor();
 
     // setup hotcues and cue and loop(s)
     m_marks.setup(m_group, node, context, m_signalColors);
@@ -236,6 +255,7 @@ void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
 
 void WOverview::slotWaveformSummaryUpdated() {
     //qDebug() << "WOverview::slotWaveformSummaryUpdated()";
+
     TrackPointer pTrack(m_pCurrentTrack);
     if (!pTrack) {
         return;
@@ -339,6 +359,17 @@ void WOverview::onMarkRangeChange(double v) {
 
 void WOverview::onRateRatioChange(double v) {
     Q_UNUSED(v);
+    update();
+}
+
+void WOverview::onPassthroughChange(double v) {
+    m_bPassthroughEnabled = static_cast<bool>(v);
+
+    if (!m_bPassthroughEnabled) {
+        slotWaveformSummaryUpdated();
+    }
+
+    // Always call this to trigger a repaint even if not track is loaded
     update();
 }
 
@@ -561,7 +592,15 @@ void WOverview::paintEvent(QPaintEvent* pEvent) {
             drawMarkLabels(&painter, offset, gain);
         }
     }
+
+    if (m_bPassthroughEnabled) {
+        drawPassthroughOverlay(&painter);
+        m_pPassthroughLabel->show();
+    } else {
+        m_pPassthroughLabel->hide();
+    }
 }
+
 void WOverview::drawEndOfTrackBackground(QPainter* pPainter) {
     if (m_endOfTrack) {
         PainterScope painterScope(pPainter);
@@ -1046,6 +1085,13 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
                 markRange.m_durationLabel.draw(pPainter);
             }
         }
+    }
+}
+
+void WOverview::drawPassthroughOverlay(QPainter* pPainter) {
+    if (!m_waveformSourceImage.isNull() && m_passthroughOverlayColor.alpha() > 0) {
+        // Overlay the entire overview-waveform with a skin defined color
+        pPainter->fillRect(rect(), m_passthroughOverlayColor);
     }
 }
 

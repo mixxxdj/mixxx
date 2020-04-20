@@ -86,4 +86,50 @@ bool operator==(
             lhs.getColor() == rhs.getColor();
 }
 
+QDebug operator<<(QDebug debug, const CueType& cueType) {
+    switch (cueType) {
+    case CueType::Invalid:
+        debug << "CueType::Invalid";
+        break;
+    case CueType::HotCue:
+        debug << "CueType::HotCue";
+        break;
+    case CueType::MainCue:
+        debug << "CueType::MainCue";
+        break;
+    case CueType::Beat:
+        debug << "CueType::Beat";
+        break;
+    case CueType::Loop:
+        debug << "CueType::Loop";
+        break;
+    case CueType::Jump:
+        debug << "CueType::Jump";
+        break;
+    case CueType::Intro:
+        debug << "CueType::Intro";
+        break;
+    case CueType::Outro:
+        debug << "CueType::Outro";
+        break;
+    case CueType::AudibleSound:
+        debug << "CueType::AudibleSound";
+        break;
+    }
+    return debug;
+}
+
+QDebug operator<<(QDebug debug, const CueInfo& cueInfo) {
+    debug.nospace()
+            << "CueInfo["
+            << "type=" << cueInfo.getType()
+            << ", startPos=" << cueInfo.getStartPositionMillis()
+            << ", endPos=" << cueInfo.getEndPositionMillis()
+            << ", number=" << cueInfo.getHotCueNumber()
+            << ", label=" << cueInfo.getLabel()
+            << ", color=" << cueInfo.getColor()
+            << "]";
+    return debug;
+}
+
 } // namespace mixxx

@@ -2,16 +2,24 @@
 
 #include "library/missingtablemodel.h"
 #include "library/trackcollectionmanager.h"
+#include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
 #include "util/assert.h"
 
-DlgMissing::DlgMissing(QWidget* parent, UserSettingsPointer pConfig,
-                       Library* pLibrary,
-                       KeyboardEventFilter* pKeyboard)
-         : QWidget(parent),
-           Ui::DlgMissing(),
-           m_pTrackTableView(
-               new WTrackTableView(this, pConfig, pLibrary->trackCollections(), false)) {
+DlgMissing::DlgMissing(
+        WLibrary* parent,
+        UserSettingsPointer pConfig,
+        Library* pLibrary,
+        KeyboardEventFilter* pKeyboard)
+        : QWidget(parent),
+          Ui::DlgMissing(),
+          m_pTrackTableView(
+                  new WTrackTableView(
+                          this,
+                          pConfig,
+                          pLibrary->trackCollections(),
+                          parent->getTrackTableBackgroundColorOpacity(),
+                          false)) {
     setupUi(this);
     m_pTrackTableView->installEventFilter(pKeyboard);
 

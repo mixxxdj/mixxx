@@ -116,11 +116,6 @@ void BulkController::visit(const HidControllerPreset* preset) {
     emit presetLoaded(getPreset());
 }
 
-bool BulkController::savePreset(const QString fileName) const {
-    HidControllerPresetFileHandler handler;
-    return handler.save(m_preset, getName(), fileName);
-}
-
 bool BulkController::matchPreset(const PresetInfo& preset) {
     const QList<ProductInfo>& products = preset.getProducts();
     for (const auto& product : products) {

@@ -24,7 +24,7 @@
 
               <Label>
                 <ObjectName>MicAuxSubTitle</ObjectName>
-                <Size>,17f</Size>
+                <Size>,21f</Size>
                 <Text>Aux <Variable name="auxnum"/></Text>
                 <Alignment>center</Alignment>
               </Label>

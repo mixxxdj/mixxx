@@ -71,16 +71,19 @@ repos:
     stages:
     - commit
     - manual
-- repo: git://github.com/doublify/pre-commit-clang-format
-  rev: master
+- repo: local
   hooks:
   - id: clang-format
+    name: clang-format
     entry: git clang-format
-    args: []
     require_serial: true
     stages:
     - commit
     - manual
+    language: python
+    files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|mm|proto|vert)$
+    additional_dependencies:
+    - clang-format
 -   repo: https://github.com/psf/black
     rev: stable
     hooks:
@@ -108,3 +111,14 @@ repos:
     - commit
     - push
     - manual
+- repo: local
+  hooks:
+  - id: line-length
+    name: line-length
+    description: Check for lines longer 100 and brakes them before 80.
+    entry: ./scripts/line_length.py
+    stages:
+    - commit
+    - push
+    language: python
+    files: \.(c|cpp|h)$

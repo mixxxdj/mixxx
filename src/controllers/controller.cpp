@@ -50,7 +50,7 @@ void Controller::stopEngine() {
     m_pEngine = NULL;
 }
 
-bool Controller::applyPreset(QList<QString> scriptPaths, bool initializeScripts) {
+bool Controller::applyPreset(bool initializeScripts) {
     qDebug() << "Applying controller preset...";
 
     const ControllerPreset* pPreset = preset();
@@ -61,14 +61,15 @@ bool Controller::applyPreset(QList<QString> scriptPaths, bool initializeScripts)
         return false;
     }
 
-    if (pPreset->scripts.isEmpty()) {
+    QList<ControllerPreset::ScriptFileInfo> scriptFiles = pPreset->getScriptFiles();
+    if (scriptFiles.isEmpty()) {
         qWarning() << "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
         return true;
     }
 
-    bool success = m_pEngine->loadScriptFiles(scriptPaths, pPreset->scripts);
-    if (initializeScripts) {
-        m_pEngine->initializeScripts(pPreset->scripts);
+    bool success = m_pEngine->loadScriptFiles(scriptFiles);
+    if (success && initializeScripts) {
+        m_pEngine->initializeScripts(scriptFiles);
     }
     return success;
 }

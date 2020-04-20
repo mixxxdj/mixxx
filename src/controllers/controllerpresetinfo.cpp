@@ -10,7 +10,6 @@
 */
 
 #include "controllers/controllerpresetinfo.h"
-#include "controllers/controllerpresetinfoenumerator.h"
 
 #include "controllers/defs_controllers.h"
 #include "util/xml.h"
