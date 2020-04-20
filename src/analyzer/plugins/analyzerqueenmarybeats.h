@@ -51,8 +51,7 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
     int m_iSampleRate;
     int m_windowSize;
     int m_stepSize;
-    std::vector<double>
-            m_detectionResults;
+    std::vector<double> m_detectionResults;
     QVector<double> m_resultBeats;
 };
 
