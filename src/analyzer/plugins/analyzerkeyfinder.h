@@ -34,8 +34,6 @@ class AnalyzerKeyFinder : public AnalyzerKeyPlugin {
     }
 
   private:
-    mixxx::track::io::key::ChromaticKey chromaticKeyFromKeyFinderKeyT(KeyFinder::key_t);
-
     KeyFinder::KeyFinder m_keyFinder;
     KeyFinder::Workspace m_workspace;
     KeyFinder::AudioData m_audioData;

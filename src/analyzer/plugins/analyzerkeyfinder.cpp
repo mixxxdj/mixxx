@@ -7,56 +7,8 @@
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
 
-namespace mixxx {
-
-AnalyzerKeyFinder::AnalyzerKeyFinder()
-        : m_keyFinder(),
-          m_workspace(),
-          m_audioData(),
-          m_currentFrame(0),
-          m_previousKey(mixxx::track::io::key::INVALID),
-          m_resultKeys() {
-}
-
-bool AnalyzerKeyFinder::initialize(int samplerate) {
-    m_audioData.setFrameRate(samplerate);
-    m_audioData.setChannels(kAnalysisChannels);
-    return true;
-}
-
-bool AnalyzerKeyFinder::processSamples(const CSAMPLE* pIn, const int iLen) {
-    DEBUG_ASSERT(iLen % kAnalysisChannels == 0);
-    if (m_audioData.getSampleCount() == 0) {
-        m_audioData.addToSampleCount(iLen);
-    }
-
-    const size_t numInputFrames = iLen / kAnalysisChannels;
-    m_currentFrame += numInputFrames;
-
-    for (unsigned int frame = 0; frame < numInputFrames; frame++) {
-        for (unsigned int channel = 0; channel < kAnalysisChannels; channel++) {
-            m_audioData.setSampleByFrame(
-                    frame, channel, pIn[frame * kAnalysisChannels + channel]);
-        }
-    }
-    m_keyFinder.progressiveChromagram(m_audioData, m_workspace);
-    ChromaticKey key = chromaticKeyFromKeyFinderKeyT(
-            m_keyFinder.keyOfChromagram(m_workspace));
-    if (key != m_previousKey) {
-        m_resultKeys.push_back(qMakePair(key, m_currentFrame));
-    }
-    return true;
-}
-
-bool AnalyzerKeyFinder::finalize() {
-    m_keyFinder.finalChromagram(m_workspace);
-    ChromaticKey finalKey = chromaticKeyFromKeyFinderKeyT(
-            m_keyFinder.keyOfChromagram(m_workspace));
-    m_resultKeys.push_back(qMakePair(finalKey, m_currentFrame));
-    return true;
-}
-
-ChromaticKey AnalyzerKeyFinder::chromaticKeyFromKeyFinderKeyT(KeyFinder::key_t key) {
+namespace {
+ChromaticKey chromaticKeyFromKeyFinderKeyT(KeyFinder::key_t key) {
     switch (key) {
     case (KeyFinder::A_MAJOR):
         return ChromaticKey::A_MAJOR;
@@ -108,6 +60,56 @@ ChromaticKey AnalyzerKeyFinder::chromaticKeyFromKeyFinderKeyT(KeyFinder::key_t k
     default:
         return ChromaticKey::INVALID;
     }
+}
+} // anonymous namespace
+
+namespace mixxx {
+
+AnalyzerKeyFinder::AnalyzerKeyFinder()
+        : m_keyFinder(),
+          m_workspace(),
+          m_audioData(),
+          m_currentFrame(0),
+          m_previousKey(mixxx::track::io::key::INVALID),
+          m_resultKeys() {
+}
+
+bool AnalyzerKeyFinder::initialize(int samplerate) {
+    m_audioData.setFrameRate(samplerate);
+    m_audioData.setChannels(kAnalysisChannels);
+    return true;
+}
+
+bool AnalyzerKeyFinder::processSamples(const CSAMPLE* pIn, const int iLen) {
+    DEBUG_ASSERT(iLen % kAnalysisChannels == 0);
+    if (m_audioData.getSampleCount() == 0) {
+        m_audioData.addToSampleCount(iLen);
+    }
+
+    const size_t numInputFrames = iLen / kAnalysisChannels;
+    m_currentFrame += numInputFrames;
+
+    for (unsigned int frame = 0; frame < numInputFrames; frame++) {
+        for (unsigned int channel = 0; channel < kAnalysisChannels; channel++) {
+            m_audioData.setSampleByFrame(
+                    frame, channel, pIn[frame * kAnalysisChannels + channel]);
+        }
+    }
+    m_keyFinder.progressiveChromagram(m_audioData, m_workspace);
+    ChromaticKey key = chromaticKeyFromKeyFinderKeyT(
+            m_keyFinder.keyOfChromagram(m_workspace));
+    if (key != m_previousKey) {
+        m_resultKeys.push_back(qMakePair(key, m_currentFrame));
+    }
+    return true;
+}
+
+bool AnalyzerKeyFinder::finalize() {
+    m_keyFinder.finalChromagram(m_workspace);
+    ChromaticKey finalKey = chromaticKeyFromKeyFinderKeyT(
+            m_keyFinder.keyOfChromagram(m_workspace));
+    m_resultKeys.push_back(qMakePair(finalKey, m_currentFrame));
+    return true;
 }
 
 } // namespace mixxx
