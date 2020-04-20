@@ -15,8 +15,8 @@ class AnalyzerKeyFinder : public AnalyzerKeyPlugin {
     static AnalyzerPluginInfo pluginInfo() {
         return AnalyzerPluginInfo(
                 "keyfinder:2",
-                QObject::tr("Ibrahim Sha'ath"),
-                QObject::tr("KeyFinder"),
+                "Ibrahim Sha'ath",
+                "KeyFinder",
                 false);
     }
 
