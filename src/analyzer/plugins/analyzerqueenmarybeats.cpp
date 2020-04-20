@@ -9,8 +9,9 @@
 
 namespace mixxx {
 namespace {
-
-constexpr float kStepSecs = 0.01161; // stepsize should be equivalent to ~11.61 ms irrespectively of samplerate
+// stepsize should be equivalent to ~10ms and this constant (11.61ms) make the number 
+// of samples an exact power of 2 for 22.1k, 44.1k, and very close to, for 96k and 192k
+constexpr float kStepSecs = 0.01161; 
 
 DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
     // These are the defaults for the VAMP beat tracker plugin we used in Mixxx
