@@ -23,6 +23,7 @@ class WaveformSignalColors {
     inline const QColor& getAxesColor() const { return m_axesColor; }
     inline const QColor& getPlayPosColor() const { return m_playPosColor; }
     inline const QColor& getPlayedOverlayColor() const { return m_playedOverlayColor; }
+    inline const QColor& getPassthroughOverlayColor() const { return m_passthroughOverlayColor; }
     inline const QColor& getBgColor() const { return m_bgColor; }
 
   protected:
@@ -42,6 +43,7 @@ class WaveformSignalColors {
     QColor m_axesColor;
     QColor m_playPosColor;
     QColor m_playedOverlayColor;
+    QColor m_passthroughOverlayColor;
     QColor m_bgColor;
 };
 

@@ -147,6 +147,10 @@ class TrackModel {
     virtual TrackModel::CapabilitiesFlags getCapabilities() const {
         return TRACKMODELCAPS_NONE;
     }
+    virtual bool hasCapabilities(TrackModel::CapabilitiesFlags flags) const {
+        Q_UNUSED(flags);
+        return false;
+    }
     virtual QString getModelSetting(QString name) {
         SettingsDAO settings(m_db);
         QString key = m_settingsNamespace + "." + name;
