@@ -54,9 +54,9 @@ class LegacySkinParser : public QObject, public SkinParser {
                                             const SkinContext& context);
 
     static QString getStyleFromNode(const QDomNode& node);
+    static QDomElement openSkin(const QString& skinPath);
 
   private:
-    static QDomElement openSkin(const QString& skinPath);
 
     QList<QWidget*> parseNode(const QDomElement& node);
 

@@ -46,6 +46,9 @@ WColorPicker::WColorPicker(Options options, const ColorPalette& palette, QWidget
     pLayout->setMargin(0);
     pLayout->setContentsMargins(0, 0, 0, 0);
 
+    pLayout->setSizeConstraint(QLayout::SetFixedSize);
+    setSizePolicy(QSizePolicy());
+
     // Unfortunately, not all styles supported by Qt support setting a
     // background color for QPushButtons (see
     // https://bugreports.qt.io/browse/QTBUG-11089). For example, when using
@@ -130,6 +133,8 @@ void WColorPicker::addColorButtons() {
         addCustomColorButton(pLayout, row, column);
         column++;
     }
+
+    adjustSize();
 }
 
 void WColorPicker::addColorButton(mixxx::RgbColor color, QGridLayout* pLayout, int row, int column) {

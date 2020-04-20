@@ -32,12 +32,12 @@ class DlgPrefController : public DlgPreferencePage {
     virtual ~DlgPrefController();
 
   public slots:
-    // Called when we should apply / save our changes.
-    void slotApply();
-    // Called when we should cancel the changes made.
-    void slotCancel();
-    // Called when preference dialog (not this dialog) is displayed.
+    /// Called when the preference dialog (not this page) is shown to the user.
     void slotUpdate();
+    /// Called when the user clicks the global "Apply" button.
+    void slotApply();
+    /// Called when the user clicks the global "Reset to Defaults" button.
+    void slotResetToDefaults();
 
   signals:
     void applyPreset(Controller* pController, ControllerPresetPointer pPreset, bool bEnabled);

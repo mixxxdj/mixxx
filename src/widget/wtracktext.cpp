@@ -3,14 +3,36 @@
 #include <QUrl>
 
 #include "control/controlobject.h"
+#include "widget/wtrackmenu.h"
 #include "widget/wtracktext.h"
 #include "util/dnd.h"
 
-WTrackText::WTrackText(const char *group, UserSettingsPointer pConfig, QWidget* pParent)
+namespace {
+const WTrackMenu::Features trackMenuFeatures =
+        WTrackMenu::Feature::Playlist |
+        WTrackMenu::Feature::Crate |
+        WTrackMenu::Feature::Metadata |
+        WTrackMenu::Feature::Reset |
+        WTrackMenu::Feature::BPM |
+        WTrackMenu::Feature::Color |
+        WTrackMenu::Feature::FileBrowser |
+        WTrackMenu::Feature::Properties;
+}
+
+WTrackText::WTrackText(QWidget* pParent,
+        UserSettingsPointer pConfig,
+        TrackCollectionManager* pTrackCollectionManager,
+        const char* group)
         : WLabel(pParent),
           m_pGroup(group),
-          m_pConfig(pConfig) {
+          m_pConfig(pConfig),
+          m_pTrackMenu(make_parented<WTrackMenu>(
+                  this, pConfig, pTrackCollectionManager, trackMenuFeatures)) {
     setAcceptDrops(true);
+}
+
+WTrackText::~WTrackText() {
+    // Required to allow forward declaration of WTrackMenu in header
 }
 
 void WTrackText::slotTrackLoaded(TrackPointer track) {
@@ -59,4 +81,12 @@ void WTrackText::dragEnterEvent(QDragEnterEvent *event) {
 
 void WTrackText::dropEvent(QDropEvent *event) {
     DragAndDropHelper::handleTrackDropEvent(event, *this, m_pGroup, m_pConfig);
+}
+
+void WTrackText::contextMenuEvent(QContextMenuEvent* event) {
+    if (m_pCurrentTrack) {
+        m_pTrackMenu->loadTrack(m_pCurrentTrack->getId());
+        // Create the right-click menu
+        m_pTrackMenu->popup(event->globalPos());
+    }
 }

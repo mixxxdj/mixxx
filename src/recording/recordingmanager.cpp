@@ -36,8 +36,10 @@ RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pE
           m_secondsRecorded(0),
           m_secondsRecordedSplit(0) {
     m_pToggleRecording = new ControlPushButton(ConfigKey(RECORDING_PREF_KEY, "toggle_recording"));
-    connect(m_pToggleRecording, SIGNAL(valueChanged(double)),
-            this, SLOT(slotToggleRecording(double)));
+    connect(m_pToggleRecording,
+            &ControlPushButton::valueChanged,
+            this,
+            &RecordingManager::slotToggleRecording);
     m_recReadyCO = new ControlObject(ConfigKey(RECORDING_PREF_KEY, "status"));
     m_recReady = new ControlProxy(m_recReadyCO->getKey(), this);
 
@@ -49,12 +51,18 @@ RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pE
     EngineSideChain* pSidechain = pEngine->getSideChain();
     if (pSidechain) {
         EngineRecord* pEngineRecord = new EngineRecord(m_pConfig);
-        connect(pEngineRecord, SIGNAL(isRecording(bool, bool)),
-                this, SLOT(slotIsRecording(bool, bool)));
-        connect(pEngineRecord, SIGNAL(bytesRecorded(int)),
-                this, SLOT(slotBytesRecorded(int)));
-        connect(pEngineRecord, SIGNAL(durationRecorded(quint64)),
-                this, SLOT(slotDurationRecorded(quint64)));
+        connect(pEngineRecord,
+                &EngineRecord::isRecording,
+                this,
+                &RecordingManager::slotIsRecording);
+        connect(pEngineRecord,
+                &EngineRecord::bytesRecorded,
+                this,
+                &RecordingManager::slotBytesRecorded);
+        connect(pEngineRecord,
+                &EngineRecord::durationRecorded,
+                this,
+                &RecordingManager::slotDurationRecorded);
         pSidechain->addSideChainWorker(pEngineRecord);
     }
 }
@@ -81,8 +89,9 @@ void RecordingManager::slotSetRecording(bool recording) {
     }
 }
 
-void RecordingManager::slotToggleRecording(double v) {
-    if (v > 0) {
+void RecordingManager::slotToggleRecording(double value) {
+    bool toggle = static_cast<bool>(value);
+    if (toggle) {
         if (isRecordingActive()) {
             stopRecording();
         } else {

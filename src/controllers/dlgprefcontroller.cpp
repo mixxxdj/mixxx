@@ -367,8 +367,10 @@ void DlgPrefController::slotUpdate() {
     m_ui.outputMappingsTab->setEnabled(isMappable);
 }
 
-void DlgPrefController::slotCancel() {
-    slotShowPreset(m_pController->getPreset());
+void DlgPrefController::slotResetToDefaults() {
+    m_ui.chkEnabledDevice->setChecked(false);
+    enumeratePresets(QString());
+    slotPresetSelected(m_ui.comboBoxPreset->currentIndex());
 }
 
 void DlgPrefController::applyPresetChanges() {
