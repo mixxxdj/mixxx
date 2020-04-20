@@ -10,6 +10,8 @@
 #include "library/crate/cratefeaturehelper.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/trackschema.h"
+#include "library/dlgtagfetcher.h"
+#include "library/dlgtrackinfo.h"
 #include "library/dlgtrackmetadataexport.h"
 #include "library/externaltrackcollection.h"
 #include "library/library.h"
@@ -56,6 +58,13 @@ WTrackMenu::WTrackMenu(QWidget* parent,
     createMenus();
     createActions();
     setupActions();
+}
+
+WTrackMenu::~WTrackMenu() {
+    // ~QPointer() needs the definition of the wrapped type
+    // upon deletion! Otherwise the behavior is undefined.
+    // The wrapped types of some QPointer members are only
+    // forward declared in the header file.
 }
 
 void WTrackMenu::popup(const QPoint& pos, QAction* at) {
@@ -610,18 +619,11 @@ void WTrackMenu::loadTracks(QModelIndexList indexList) {
 }
 
 void WTrackMenu::loadTrack(TrackId trackId) {
-    // Create a QList of single track to maintain common functions
-    // for single and multi track selection.
-    TrackIdList singleItemTrackIdList;
-    singleItemTrackIdList.push_back(trackId);
-    // Use setTrackIds to set a list of single element.
-    loadTracks(singleItemTrackIdList);
+    loadTracks(TrackIdList{trackId});
 }
 
 void WTrackMenu::loadTrack(QModelIndex index) {
-    QModelIndexList singleItemTrackIndexList;
-    singleItemTrackIndexList.push_back(index);
-    loadTracks(singleItemTrackIndexList);
+    loadTracks(QModelIndexList{index});
 }
 
 TrackIdList WTrackMenu::getTrackIds() const {
@@ -630,11 +632,16 @@ TrackIdList WTrackMenu::getTrackIds() const {
         const QModelIndexList indices = getTrackIndices();
         trackIds.reserve(indices.size());
         for (const auto& index : indices) {
-            trackIds.push_back(m_pTrackModel->getTrackId(index));
+            const auto trackId = m_pTrackModel->getTrackId(index);
+            if (trackId.isValid()) {
+                trackIds.push_back(trackId);
+            }
         }
     } else {
-        const TrackPointerList trackPointers = getTrackPointers();
-        for (const auto& pTrack : trackPointers) {
+        trackIds.reserve(m_pTrackPointerList.size());
+        for (const auto& pTrack : m_pTrackPointerList) {
+            const auto trackId = pTrack->getId();
+            DEBUG_ASSERT(trackId.isValid());
             trackIds.push_back(pTrack->getId());
         }
     }
@@ -642,16 +649,19 @@ TrackIdList WTrackMenu::getTrackIds() const {
 }
 
 TrackPointerList WTrackMenu::getTrackPointers() const {
-    if (m_pTrackModel) {
-        const QModelIndexList indices = getTrackIndices();
-        TrackPointerList trackPointers;
-        trackPointers.reserve(indices.size());
-        for (const auto& index : indices) {
-            trackPointers.push_back(m_pTrackModel->getTrack(index));
-        }
-        return trackPointers;
+    if (!m_pTrackModel) {
+        return m_pTrackPointerList;
     }
-    return m_pTrackPointerList;
+    const QModelIndexList indices = getTrackIndices();
+    TrackPointerList trackPointers;
+    trackPointers.reserve(indices.size());
+    for (const auto& index : indices) {
+        const auto pTrack = m_pTrackModel->getTrack(index);
+        if (pTrack) {
+            trackPointers.push_back(pTrack);
+        }
+    }
+    return trackPointers;
 }
 
 QModelIndexList WTrackMenu::getTrackIndices() const {

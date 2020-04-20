@@ -2,6 +2,7 @@
 #include <QUrl>
 
 #include "control/controlobject.h"
+#include "widget/wtrackmenu.h"
 #include "widget/wtrackproperty.h"
 #include "util/dnd.h"
 
@@ -27,6 +28,10 @@ WTrackProperty::WTrackProperty(QWidget* pParent,
           m_pTrackMenu(make_parented<WTrackMenu>(
                   this, pConfig, pTrackCollectionManager, trackMenuFeatures)) {
     setAcceptDrops(true);
+}
+
+WTrackProperty::~WTrackProperty() {
+    // Required to allow forward declaration of WTrackMenu in header
 }
 
 void WTrackProperty::setup(const QDomNode& node, const SkinContext& context) {
