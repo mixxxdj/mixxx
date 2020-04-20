@@ -1,11 +1,11 @@
-#include "basetracksetfeature.h"
+#include "library/basetracksetfeature.h"
 
 BaseTrackSetFeature::BaseTrackSetFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig,
         const QString& rootViewName)
         : LibraryFeature(pLibrary, pConfig),
-        m_rootViewName(rootViewName){
+          m_rootViewName(rootViewName) {
 }
 
 void BaseTrackSetFeature::activate() {

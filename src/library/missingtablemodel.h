@@ -1,13 +1,13 @@
 #ifndef MISSINGTABLEMODEL_H
 #define MISSINGTABLEMODEL_H
 
-#include <QtSql>
 #include <QItemDelegate>
 #include <QModelIndex>
 #include <QObject>
+#include <QtSql>
 
-#include "trackmodel.h"
 #include "library/basesqltablemodel.h"
+#include "library/trackmodel.h"
 
 class MissingTableModel : public BaseSqlTableModel {
     Q_OBJECT

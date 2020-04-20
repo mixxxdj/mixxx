@@ -3,26 +3,26 @@
 #ifndef SETLOGFEATURE_H
 #define SETLOGFEATURE_H
 
-#include <QLinkedList>
-#include <QSqlTableModel>
 #include <QAction>
+#include <QLinkedList>
 #include <QPointer>
+#include <QSqlTableModel>
 
 #include "library/baseplaylistfeature.h"
 #include "preferences/usersettings.h"
 
 class SetlogFeature : public BasePlaylistFeature {
     Q_OBJECT
-public:
+  public:
     SetlogFeature(Library* pLibrary,
-                  UserSettingsPointer pConfig);
+            UserSettingsPointer pConfig);
     virtual ~SetlogFeature();
 
     QVariant title() override;
     QIcon getIcon() override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
-                           KeyboardEventFilter* keyboard) override;
+            KeyboardEventFilter* keyboard) override;
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
   public slots:
@@ -34,7 +34,7 @@ public:
   protected:
     QList<BasePlaylistFeature::IdAndLabel> createPlaylistLabels() override;
     QString fetchPlaylistLabel(int playlistId) override;
-    void decorateChild(TreeItem *pChild, int playlistId) override;
+    void decorateChild(TreeItem* pChild, int playlistId) override;
 
   private slots:
     void slotPlayingTrackChanged(TrackPointer currentPlayingTrack);

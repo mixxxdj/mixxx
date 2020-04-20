@@ -1,13 +1,13 @@
 #pragma once
 
-#include "libraryfeature.h"
+#include "library/libraryfeature.h"
 
 class BaseTrackSetFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    BaseTrackSetFeature(Library * pLibrary,
-                        UserSettingsPointer pConfig,
-                        const QString& rootViewName);
+    BaseTrackSetFeature(Library* pLibrary,
+            UserSettingsPointer pConfig,
+            const QString& rootViewName);
 
   signals:
     void analyzeTracks(QList<TrackId>);
@@ -17,5 +17,4 @@ class BaseTrackSetFeature : public LibraryFeature {
 
   protected:
     const QString m_rootViewName;
-
 };
