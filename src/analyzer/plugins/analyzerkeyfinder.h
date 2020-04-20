@@ -12,9 +12,9 @@ class AnalyzerKeyFinder : public AnalyzerKeyPlugin {
   public:
     static AnalyzerPluginInfo pluginInfo() {
         return AnalyzerPluginInfo(
-                "keyfinder:2",
-                "Ibrahim Sha'ath",
-                "KeyFinder",
+                QStringLiteral("keyfinder:2"),
+                QStringLiteral("Ibrahim Sha'ath"),
+                QStringLiteral("KeyFinder"),
                 false);
     }
 
