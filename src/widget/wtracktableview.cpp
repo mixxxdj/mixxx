@@ -433,7 +433,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     }
     // Update track indices in context menu
     QModelIndexList indices = selectionModel()->selectedRows();
-    m_pTrackMenu->loadTracks(indices);
+    m_pTrackMenu->loadTrackModelIndices(indices);
 
     //Create the right-click menu
     m_pTrackMenu->popup(event->globalPos());
