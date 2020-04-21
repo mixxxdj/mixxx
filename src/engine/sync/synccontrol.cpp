@@ -140,14 +140,6 @@ void SyncControl::setSyncMode(SyncMode mode) {
         m_pPassthroughEnabled->set(0.0);
     }
     if (isMaster(mode)) {
-        // Make sure all the followers update based on our current rate.
-        double bpm = m_pBpm->get() / m_masterBpmAdjustFactor;
-        if (bpm > 0) {
-            // When reporting our bpm, remove the multiplier so the masters all
-            // think the followers have the same bpm.
-            m_pEngineSync->notifyBpmChanged(this, bpm);
-            m_pEngineSync->notifyBeatDistanceChanged(this, getBeatDistance());
-        }
         m_pBpmControl->resetSyncAdjustment();
     } else if (mode == SYNC_NONE) {
         m_masterBpmAdjustFactor = kBpmUnity;
@@ -206,7 +198,7 @@ double SyncControl::getBeatDistance() const {
 }
 
 double SyncControl::getBaseBpm() const {
-    return m_pLocalBpm->get();
+    return m_pLocalBpm->get() / m_masterBpmAdjustFactor;
 }
 
 void SyncControl::setMasterBeatDistance(double beatDistance) {
@@ -246,10 +238,17 @@ void SyncControl::setMasterBpm(double bpm) {
 
 void SyncControl::setMasterParams(
         double beatDistance, double baseBpm, double bpm) {
-    m_unmultipliedTargetBeatDistance = beatDistance;
-    m_masterBpmAdjustFactor = determineBpmMultiplier(fileBpm(), baseBpm);
+    double masterBpmAdjustFactor = determineBpmMultiplier(fileBpm(), baseBpm);
+    if (isMaster(getSyncMode())) {
+        // In Master mode we adjust the incomming Bpm for the inital sync.
+        bpm *= masterBpmAdjustFactor;
+        m_masterBpmAdjustFactor = kBpmUnity;
+    } else {
+        // in Follower mode we keep the factor when reporting our BPM
+        m_masterBpmAdjustFactor = masterBpmAdjustFactor;
+    }
     setMasterBpm(bpm);
-    updateTargetBeatDistance();
+    setMasterBeatDistance(beatDistance);
 }
 
 double SyncControl::determineBpmMultiplier(double myBpm, double targetBpm) const {
