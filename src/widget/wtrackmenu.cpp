@@ -445,17 +445,13 @@ std::optional<mixxx::RgbColor> WTrackMenu::getCommonTrackColor() const {
         const int column =
                 m_pTrackModel->fieldIndex(LIBRARYTABLE_COLOR);
         commonColor = mixxx::RgbColor::fromQVariant(
-                m_trackIndexList.first().sibling(
-                                                m_trackIndexList.first().row(), column)
-                        .data());
+                m_trackIndexList.first().sibling(m_trackIndexList.first().row(), column).data());
         if (!commonColor) {
             return std::nullopt;
         }
         for (const auto trackIndex : m_trackIndexList) {
             const auto otherColor = mixxx::RgbColor::fromQVariant(
-                    trackIndex.sibling(
-                                        trackIndex.row(), column)
-                            .data());
+                    trackIndex.sibling(trackIndex.row(), column).data());
             if (commonColor != otherColor) {
                 // Multiple, different colors
                 return std::nullopt;
@@ -603,7 +599,7 @@ void WTrackMenu::updateMenus() {
     }
 
     if (featureIsEnabled(Feature::Reset) ||
-        featureIsEnabled(Feature::BPM)) {
+            featureIsEnabled(Feature::BPM)) {
         const bool anyBpmLocked = isAnyTrackBpmLocked();
         if (featureIsEnabled(Feature::Reset)) {
             m_pClearBeatsAction->setEnabled(!anyBpmLocked);
