@@ -73,4 +73,7 @@ inline bool operator!=(
     return !(lhs == rhs);
 }
 
+QDebug operator<<(QDebug debug, const CueType& cueType);
+QDebug operator<<(QDebug debug, const CueInfo& cueInfo);
+
 } // namespace mixxx

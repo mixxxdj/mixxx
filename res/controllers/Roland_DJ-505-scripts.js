@@ -201,6 +201,8 @@ DJ505.shutdown = function() {
 DJ505.browseEncoder = new components.Encoder({
     longPressTimer: 0,
     longPressTimeout: 250,
+    trackColorCycleEnabled: false,
+    trackColorCycleHappened: false,
     previewSeekEnabled: false,
     previewSeekHappened: false,
     unshift: function() {
@@ -249,12 +251,25 @@ DJ505.browseEncoder = new components.Encoder({
     shift: function() {
         this.onKnobEvent = function(rotateValue) {
             if (rotateValue !== 0) {
-                engine.setValue("[Playlist]", "SelectPlaylist", rotateValue);
+                if (this.trackColorCycleEnabled) {
+                    var key = (rotateValue > 0) ? "track_color_next" : "track_color_prev";
+                    engine.setValue("[Library]", key, 1.0);
+                    this.trackColorCycleHappened = true;
+                } else {
+                    engine.setValue("[Playlist]", "SelectPlaylist", rotateValue);
+                }
             }
         };
         this.onButtonEvent = function(value) {
             if (value) {
-                script.triggerControl("[Playlist]", "ToggleSelectedSidebarItem");
+                this.trackColorCycleEnabled = true;
+                this.trackColorCycleHappened = false;
+            } else {
+                if (!this.trackColorCycleHappened) {
+                    script.triggerControl("[Playlist]", "ToggleSelectedSidebarItem");
+                }
+                this.trackColorCycleEnabled = false;
+                this.trackColorCycleHappened = false;
             }
         };
     },

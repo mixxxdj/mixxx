@@ -47,6 +47,10 @@ QToolTip,
 WBeatSpinBox QMenu,
 #LibraryContainer QMenu,
 #LibraryContainer QMenu QCheckBox,
+WTrackMenu,
+WTrackMenu QCheckBox,
+WTrackMenu QMenu,
+WTrackMenu QMenu QCheckBox,
 WCoverArtMenu,
 WCueMenuPopup,
 WCueMenuPopup QMenu,
@@ -95,6 +99,14 @@ WSearchLineEdit,
   WBeatSpinBox QMenu::item:selected,
   #LibraryContainer QMenu::item:selected,
   WCoverArtMenu::item:selected,
+  WTrackMenu::item:selected,
+  WTrackMenu QMenu::item:selected,
+  WTrackMenu QCheckBox:selected,
+  WTrackMenu QCheckBox:focus,
+  WTrackMenu QCheckBox:hover,
+  WTrackMenu QMenu QCheckBox:selected,
+  WTrackMenu QMenu QCheckBox:focus,
+  WTrackMenu QMenu QCheckBox:hover,
   #LibraryContainer QMenu QCheckBox:selected,
   #LibraryContainer QMenu QCheckBox:focus,  /* selected by keyboard */
   #LibraryContainer QMenu QCheckBox:hover /* mouse hover */ {
@@ -108,10 +120,14 @@ WSearchLineEdit,
     border: 1px solid #c88500;
     background-color: #050504;
   }
-  #LibraryContainer QMenu::right-arrow {
+  #LibraryContainer QMenu::right-arrow,
+  WTrackMenu::right-arrow,
+  WTrackMenu QMenu::right-arrow {
     image: url(skin:/style_classic/menu_arrow_gold.svg);
     }
-  #LibraryContainer QMenu::right-arrow:selected {
+  #LibraryContainer QMenu::right-arrow:selected,
+  WTrackMenu::right-arrow:selected,
+  WTrackMenu QMenu::right-arrow:selected {
     image: url(skin:/style_classic/menu_arrow_black.svg);
   }
 /* BPM lock icon */
