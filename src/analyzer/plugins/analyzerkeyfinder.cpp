@@ -8,6 +8,11 @@ using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
 
 namespace {
+// 2 is for the library version
+const QString pluginId = QStringLiteral("keyfinder:2");
+const QString pluginAuthor = QStringLiteral("Ibrahim Sha'ath");
+const QString pluginName = QStringLiteral("KeyFinder");
+
 ChromaticKey chromaticKeyFromKeyFinderKeyT(KeyFinder::key_t key) {
     switch (key) {
     case (KeyFinder::A_MAJOR):
@@ -68,6 +73,10 @@ namespace mixxx {
 AnalyzerKeyFinder::AnalyzerKeyFinder()
         : m_currentFrame(0),
           m_previousKey(mixxx::track::io::key::INVALID) {
+}
+
+AnalyzerPluginInfo AnalyzerKeyFinder::pluginInfo() {
+    return AnalyzerPluginInfo(pluginId, pluginAuthor, pluginName, false);
 }
 
 bool AnalyzerKeyFinder::initialize(int samplerate) {
