@@ -76,11 +76,7 @@ class Syncable {
     // Must never result in a call to
     // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
     virtual void setMasterBeatDistance(double beatDistance) = 0;
-    // Reports what the bpm of the master would be if it were playing back at
-    // a rate of 1.0x.  This is used by syncables to decide if they should
-    // match rates at x2 or /2 speed.  If we were to use the regular BPM, the
-    // change of a rate slider might suddenly change the sync multiplier.
-    virtual void setMasterBaseBpm(double) = 0;
+
     // Must never result in a call to SyncableListener::notifyBpmChanged or
     // signal loops could occur.
     virtual void setMasterBpm(double bpm) = 0;

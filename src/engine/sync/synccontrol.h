@@ -43,7 +43,7 @@ class SyncControl : public EngineControl, public Syncable {
     // Must never result in a call to
     // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
     void setMasterBeatDistance(double beatDistance) override;
-    void setMasterBaseBpm(double) override;
+
     // Must never result in a call to
     // SyncableListener::notifyBpmChanged or signal loops could occur.
     void setMasterBpm(double bpm) override;

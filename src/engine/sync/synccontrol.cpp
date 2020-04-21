@@ -222,18 +222,6 @@ void SyncControl::setMasterBeatDistance(double beatDistance) {
     updateTargetBeatDistance();
 }
 
-void SyncControl::setMasterBaseBpm(double bpm) {
-    m_masterBpmAdjustFactor = determineBpmMultiplier(fileBpm(), bpm);
-    qDebug() << getGroup() << "setMasterBaseBpm <-" << fileBpm() << bpm << "*"
-             << m_masterBpmAdjustFactor;
-    if (kLogger.traceEnabled()) {
-        kLogger.trace() << "SyncControl::setMasterBaseBpm" << getGroup() << bpm
-                        << m_masterBpmAdjustFactor;
-    }
-    // Update the target beat distance in case the multiplier changed.
-    updateTargetBeatDistance();
-}
-
 void SyncControl::setMasterBpm(double bpm) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "SyncControl::setMasterBpm" << bpm;
@@ -266,7 +254,7 @@ void SyncControl::setMasterParams(
 
 double SyncControl::determineBpmMultiplier(double myBpm, double targetBpm) const {
     double multiplier = kBpmUnity;
-    if (myBpm == 0.0) {
+    if (myBpm == 0.0 || targetBpm == 0.0) {
         return multiplier;
     }
     double best_margin = fabs((targetBpm / myBpm) - 1.0);

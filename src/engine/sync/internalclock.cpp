@@ -105,10 +105,6 @@ double InternalClock::getBaseBpm() const {
     return m_dOldBpm;
 }
 
-void InternalClock::setMasterBaseBpm(double bpm) {
-    Q_UNUSED(bpm)
-}
-
 double InternalClock::getBpm() const {
     return m_pClockBpm->get();
 }

@@ -300,19 +300,19 @@ void EngineSync::requestBpmUpdate(Syncable* pSyncable, double bpm) {
 
     double mbaseBpm = 0.0;
     double mbpm = 0.0;
+    double beatDistance = 0.0;
     if (m_pMasterSyncable) {
         mbaseBpm = m_pMasterSyncable->getBaseBpm();
         mbpm = m_pMasterSyncable->getBpm();
+        beatDistance = m_pMasterSyncable->getBeatDistance();
     }
 
     if (mbaseBpm != 0.0 && mbpm != 0.0) {
         // resync to current master
-        pSyncable->setMasterBaseBpm(mbaseBpm);
-        pSyncable->setMasterBpm(mbpm);
+        pSyncable->setMasterParams(beatDistance, mbaseBpm, mbpm);
     } else {
         // There is no other master, adopt this bpm as master
-        pSyncable->setMasterBaseBpm(pSyncable->getBaseBpm());
-        pSyncable->setMasterBpm(bpm);
+        pSyncable->setMasterParams(0.0, 0.0, bpm);
     }
 }
 

@@ -46,10 +46,6 @@ class BaseSyncableListener : public SyncableListener {
     // pSource.
     void setMasterInstantaneousBpm(Syncable* pSource, double bpm);
 
-    // Set the master base bpm, which is what the bpm would be if the syncable
-    // were playing at 1.0x speed
-    void setMasterBaseBpm(Syncable* pSource, double bpm);
-
     // Set the master beat distance on every sync-enabled Syncable except
     // pSource.
     void setMasterBeatDistance(Syncable* pSource, double beat_distance);
