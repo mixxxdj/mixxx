@@ -175,8 +175,8 @@ for:
     - IF "%QT_PATH%" EQU "" (
         echo QT not found on %WINLIB_PATH%
       )
+    # Remove C:\Program Files\Git\usr\bin from the PATH
     - set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
-    - set QT_PATH=%WINLIB_PATH%\Qt-%QT_VERSION%
     - set CMAKE_BUILD_PARALLEL_LEVEL=%NUMBER_OF_CORES%
     - call "%MSVC_PATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
     - cd %APPVEYOR_BUILD_FOLDER%
