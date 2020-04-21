@@ -14,7 +14,7 @@ InternalClock::InternalClock(const char* pGroup, SyncableListener* pEngineSync)
           m_mode(SYNC_NONE),
           m_iOldSampleRate(44100),
           m_dOldBpm(124.0),
-          m_baseBpm(124.0),
+          m_dbaseBpm(124.0),
           m_bClockUpdated(false),
           m_dBeatLength(m_iOldSampleRate * 60.0 / m_dOldBpm),
           m_dClockPosition(0) {
@@ -103,8 +103,7 @@ void InternalClock::setMasterBeatDistance(double beatDistance) {
 }
 
 double InternalClock::getBaseBpm() const {
-    qDebug() << "InternalClock::getBaseBpm()" << m_baseBpm;
-    return m_baseBpm;
+    return m_dbaseBpm;
 }
 
 double InternalClock::getBpm() const {
@@ -131,13 +130,13 @@ void InternalClock::setMasterParams(double beatDistance, double baseBpm, double 
     if (bpm == 0) {
         return;
     }
-    m_baseBpm = baseBpm;
+    m_dbaseBpm = baseBpm;
     setMasterBpm(bpm);
     setMasterBeatDistance(beatDistance);
 }
 
 void InternalClock::slotBpmChanged(double bpm) {
-    m_baseBpm = bpm;
+    m_dbaseBpm = bpm;
     updateBeatLength(m_iOldSampleRate, bpm);
     if (!isSynchronized()) {
         return;
