@@ -461,14 +461,16 @@ bool Beats::hasBeatInRangeNew(double startSample, double stopSample) const {
 
 double Beats::getBpmNew() const {
     QMutexLocker locker(&m_mutex);
-    if (!isValid())
+    if (!isValid()) {
         return -1;
+    }
     return m_dCachedBpm;
 }
 double Beats::getBpmRangeNew(FrameNum startFrame, FrameNum stopFrame) const {
     QMutexLocker locker(&m_mutex);
-    if (!isValid())
+    if (!isValid()) {
         return -1;
+    }
     track::io::Beat startBeat, stopBeat;
     startBeat.set_frame_position(startFrame);
     stopBeat.set_frame_position(stopFrame);
@@ -477,8 +479,9 @@ double Beats::getBpmRangeNew(FrameNum startFrame, FrameNum stopFrame) const {
 
 double Beats::getBpmAroundPositionNew(FrameNum curFrame, int n) const {
     QMutexLocker locker(&m_mutex);
-    if (!isValid())
+    if (!isValid()) {
         return -1;
+    }
 
     // To make sure we are always counting n beats, iterate backward to the
     // lower bound, then iterate forward from there to the upper bound.
@@ -517,8 +520,9 @@ void Beats::addBeatNew(FrameNum beatFrame) {
 
     // Don't insert a duplicate beat. TODO(XXX) determine what epsilon to
     // consider a beat identical to another.
-    if (it->frame_position() == beat.frame_position())
+    if (it->frame_position() == beat.frame_position()) {
         return;
+    }
 
     m_beats.insert(it, beat);
     onBeatlistChanged();
@@ -546,8 +550,9 @@ void Beats::removeBeatNew(FrameNum beatFrame) {
 
 TimeSignature Beats::getSignatureNew(FrameNum frame) const {
     QMutexLocker locker(&m_mutex);
-    if (!isValid())
+    if (!isValid()) {
         return kNullTimeSignature;
+    }
 
     auto result = kDefaultTimeSignature;
 
@@ -572,8 +577,9 @@ TimeSignature Beats::getSignatureNew(FrameNum frame) const {
 
 void Beats::setSignatureNew(TimeSignature sig, FrameNum frame) {
     QMutexLocker locker(&m_mutex);
-    if (!isValid())
+    if (!isValid()) {
         return;
+    }
 
     // Moves to the beat before the sample
     BeatList::iterator beat = m_beats.begin();
@@ -599,8 +605,9 @@ void Beats::setSignatureNew(TimeSignature sig, FrameNum frame) {
 
 void Beats::setBarNew(FrameNum frame) {
     QMutexLocker locker(&m_mutex);
-    if (!isValid())
+    if (!isValid()) {
         return;
+    }
 
     double closest_sample = findClosestBeat(frame);
 
@@ -609,9 +616,9 @@ void Beats::setBarNew(FrameNum frame) {
     std::unique_ptr<BeatIterator> beat = findBeats(closest_sample, (m_beats.last().frame_position() - 1) * kFrameSize);
     while (beat->hasNext()) {
         beat->next();
-        if (beat->isPhrase())
+        if (beat->isPhrase()) {
             break;
-        if (beat_counter % getSignature(frame).getBeats() == 0) {
+        } else if (beat_counter % getSignature(frame).getBeats() == 0) {
             beat->makeBar();
         } else {
             beat->makeBeat();
