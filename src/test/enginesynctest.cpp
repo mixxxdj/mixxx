@@ -385,6 +385,13 @@ TEST_F(EngineSyncTest, SetExplicitMasterByLights) {
     auto pButtonSyncMaster1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_master");
     auto pButtonSyncMaster2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_master");
 
+    // Set the file bpm of channel 1 to 160bpm.
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 160, 0.0);
+    m_pTrack1->setBeats(pBeats1);
+    // Set the file bpm of channel 2 to 150bpm.
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack1, 150, 0.0);
+    m_pTrack2->setBeats(pBeats2);
+
     // Set channel 1 to be explicit master.
     pButtonSyncMaster1->slotSet(1.0);
     ProcessBuffer();
@@ -411,7 +418,31 @@ TEST_F(EngineSyncTest, SetExplicitMasterByLights) {
     assertIsExplicitMaster(m_sGroup1);
     assertIsFollower(m_sGroup2);
 
-    // Now set channel 1 to not-master, all wil be follower waiting for a valid bpm.
+    // Now set channel 1 to not-master, all will become follower.
+    // handing over master to the internal clock
+    pButtonSyncMaster1->slotSet(0);
+
+    assertIsSoftMaster(m_sInternalClockGroup);
+    assertIsFollower(m_sGroup1);
+    assertIsFollower(m_sGroup2);
+}
+
+TEST_F(EngineSyncTest, SetExplicitMasterByLightsNoTracks) {
+    // Same as above, except we use the midi lights to change state.
+    auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
+    auto pButtonSyncMaster1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_master");
+
+    // Now back again.
+    pButtonSyncMaster1->slotSet(1);
+
+    // Set channel 2 to be follower.
+    pButtonSyncEnabled2->slotSet(1);
+
+    // Now channel 1 should be master, and channel 2 should be a follower.
+    assertIsExplicitMaster(m_sGroup1);
+    assertIsFollower(m_sGroup2);
+
+    // Now set channel 1 to not-master, all will be follower waiting for a valid bpm.
     pButtonSyncMaster1->slotSet(0);
 
     assertIsFollower(m_sInternalClockGroup);
@@ -1088,7 +1119,7 @@ TEST_F(EngineSyncTest, EjectTrackSyncRemains) {
     pButtonSyncEnabled2->set(1.0);
     ProcessBuffer();
 
-    // assertIsSoftMaster(m_sInternalClockGroup);
+    assertIsSoftMaster(m_sInternalClockGroup);
     assertIsFollower(m_sGroup1);
     assertIsFollower(m_sGroup2);
 
@@ -1909,7 +1940,7 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
     assertIsSoftMaster(m_sGroup1);
     assertIsFollower(m_sGroup2);
 
-    // Load a new beatgrid during playing, this happens when the analyser is finisched
+    // Load a new beatgrid during playing, this happens when the analyser is finished
     BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 140, 0.0);
     m_pTrack2->setBeats(pBeats2);
 
