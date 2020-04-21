@@ -29,7 +29,7 @@ class BeatDetectionSettings {
     DEFINE_PREFERENCE_HELPERS(BpmDetectionEnabled, bool,
                               BPM_CONFIG_KEY, BPM_DETECTION_ENABLED, true);
 
-    DEFINE_PREFERENCE_HELPERS(BpmRangeStart, int, BPM_CONFIG_KEY, BPM_RANGE_START, 70);
+    DEFINE_PREFERENCE_HELPERS(BpmRangeStart, int, BPM_CONFIG_KEY, BPM_RANGE_START, 60);
 
     DEFINE_PREFERENCE_HELPERS(BpmRangeEnd, int, BPM_CONFIG_KEY, BPM_RANGE_END, 140);
 
