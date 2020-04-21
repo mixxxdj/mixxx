@@ -66,6 +66,18 @@ class TrackCustomTagsStorage : public QObject {
                 joinTrackIdList(trackIds));
     }
 
+    // Empty track ids/list = all tracks
+    // Returns the number of added tags or -1 on error
+    int mergeFacetsAndLabelsInto(
+            CustomTags* pCustomTags,
+            const QString& trackIdList = QString()) const;
+    int mergeFacetsAndLabelsInto(
+            CustomTags* pCustomTags,
+            const TrackIdList& trackIds) const {
+        return mergeFacetsAndLabelsInto(pCustomTags,
+                joinTrackIdList(trackIds));
+    }
+
     qulonglong countTags(
             const QString& trackIdList,
             const TagLabel& tagLabel,

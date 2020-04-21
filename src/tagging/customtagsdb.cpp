@@ -366,6 +366,58 @@ QList<std::pair<TagLabel, qulonglong>> TrackCustomTagsStorage::findMostFrequentL
     return result;
 }
 
+int TrackCustomTagsStorage::mergeFacetsAndLabelsInto(
+        CustomTags* pCustomTags,
+        const QString& trackIdList) const {
+    VERIFY_OR_DEBUG_ASSERT(pCustomTags) {
+        return -1;
+    }
+    auto query = FwdSqlQuery(
+            m_database,
+            QStringLiteral("SELECT %1,%2 FROM %3")
+                            .arg(
+                                    kColumnFacet,
+                                    kColumnLabel,
+                                    kTable) +
+                    (trackIdList.isEmpty()
+                                    ? QStringLiteral(" WHERE %1 IS NOT NULL")
+                                              .arg(
+                                                      kColumnTrackId)
+                                    : QStringLiteral(" WHERE %1 IN (%2)")
+                                              .arg(
+                                                      kColumnTrackId,
+                                                      trackIdList)) +
+                    QStringLiteral(" GROUP BY %1,%2")
+                            .arg(
+                                    kColumnFacet,
+                                    kColumnLabel));
+    VERIFY_OR_DEBUG_ASSERT(
+            query.isPrepared() &&
+            !query.hasError()) {
+        return -1;
+    }
+    VERIFY_OR_DEBUG_ASSERT(
+            query.execPrepared()) {
+        return -1;
+    }
+    int added = 0;
+    while (query.next()) {
+        const auto facet = TagFacet(query.fieldValue(0).toString());
+        const auto label = TagLabel(query.fieldValue(1).toString());
+        DEBUG_ASSERT(!(facet.isEmpty() && label.isEmpty()));
+        if (!pCustomTags->containsTag(label, facet)) {
+            kLogger.debug()
+                    << "Adding"
+                    << facet
+                    << "->"
+                    << label;
+            pCustomTags->addOrReplaceTag(Tag(label), facet);
+            ++added;
+        }
+    }
+    return added;
+}
+
 qulonglong TrackCustomTagsStorage::countTags(
         const QString& trackIdList,
         const TagLabel& tagLabel,
