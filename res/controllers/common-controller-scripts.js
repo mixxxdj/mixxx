@@ -468,19 +468,6 @@ bpm.tap = [];   // Tap sample values
    Output:  -
    -------- ------------------------------------------------------ */
 bpm.tapButton = function(deck) {
-<<<<<<< HEAD
-    var now = new Date() / 1000;   // Current time in seconds
-    var tapDelta = now - bpm.tapTime;
-    bpm.tapTime = now;
-    if (tapDelta > 2.0) { // reset if longer than two seconds between taps
-        bpm.tap = [];
-        return;
-    }
-    bpm.tap.push(60 / tapDelta);
-    if (bpm.tap.length > 8) bpm.tap.shift();  // Keep the last 8 samples for averaging
-    var sum = 0;
-    for (var i = 0; i < bpm.tap.length; i++) {
-=======
     var now = new Date() / 1000; // Current time in seconds
     var tapDelta = now - bpm.tapTime;
     bpm.tapTime = now;
@@ -506,23 +493,11 @@ bpm.tapButton = function(deck) {
     // Keep the last 8 samples for averaging
     if (bpm.tap.length > 8) bpm.tap.shift();
     var sum = 0;
-    for (i=0; i<bpm.tap.length; i++) {
->>>>>>> upstream/2.2
+    for (var i=0; i<bpm.tap.length; i++) {
         sum += bpm.tap[i];
     }
     var average = sum / bpm.tap.length;
 
-<<<<<<< HEAD
-    var fRateScale = average / engine.getValue("[Channel" + deck + "]", "bpm");
-
-    // Adjust the rate:
-    fRateScale = (fRateScale - 1.) / engine.getValue("[Channel" + deck + "]", "rateRange");
-
-    engine.setValue(
-        "[Channel" + deck + "]", "rate",
-        fRateScale * engine.getValue("[Channel" + deck + "]", "rate_dir"));
-//     print("Script: BPM="+average+" setting to "+fRateScale);
-=======
     var group = "[Channel" + deck + "]";
 
     // "bpm" was changed in 1.10 to reflect the *adjusted* bpm, but I presume it
@@ -532,12 +507,11 @@ bpm.tapButton = function(deck) {
     var fRateScale = average/engine.getValue(group, "file_bpm");
 
     // Adjust the rate:
-    fRateScale = (fRateScale - 1.) / engine.getValue(group, "rateRange")
+    fRateScale = (fRateScale - 1.) / engine.getValue(group, "rateRange");
 
     engine.setValue(
         group, "rate",
         fRateScale * engine.getValue(group, "rate_dir"));
->>>>>>> upstream/2.2
 };
 
 // ----------------- Common regular expressions --------------------------
