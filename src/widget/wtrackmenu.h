@@ -220,6 +220,7 @@ class WTrackMenu : public QMenu {
     QAction* m_pBpmThreeFourthsAction{};
     QAction* m_pBpmFourThirdsAction{};
     QAction* m_pBpmThreeHalvesAction{};
+    QAction* m_pBpmResetAction{};
 
     // Track color
     WColorPickerAction* m_pColorPickerAction{};

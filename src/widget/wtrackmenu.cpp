@@ -268,6 +268,12 @@ void WTrackMenu::createActions() {
         connect(m_pBpmThreeFourthsAction, &QAction::triggered, this, [this] { slotScaleBpm(Beats::THREEFOURTHS); });
         connect(m_pBpmFourThirdsAction, &QAction::triggered, this, [this] { slotScaleBpm(Beats::FOURTHIRDS); });
         connect(m_pBpmThreeHalvesAction, &QAction::triggered, this, [this] { slotScaleBpm(Beats::THREEHALVES); });
+
+        m_pBpmResetAction = new QAction(tr("Reset BPM"), m_pBPMMenu);
+        connect(m_pBpmResetAction,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotClearBeats);
     }
 
     if (featureIsEnabled(Feature::Color)) {
@@ -342,6 +348,8 @@ void WTrackMenu::setupActions() {
         m_pBPMMenu->addSeparator();
         m_pBPMMenu->addAction(m_pBpmLockAction);
         m_pBPMMenu->addAction(m_pBpmUnlockAction);
+        m_pBPMMenu->addSeparator();
+        m_pBPMMenu->addAction(m_pBpmResetAction);
         m_pBPMMenu->addSeparator();
 
         addMenu(m_pBPMMenu);
@@ -613,6 +621,7 @@ void WTrackMenu::updateMenus() {
             m_pBpmThreeFourthsAction->setEnabled(!anyBpmLocked);
             m_pBpmFourThirdsAction->setEnabled(!anyBpmLocked);
             m_pBpmThreeHalvesAction->setEnabled(!anyBpmLocked);
+            m_pBpmResetAction->setEnabled(!anyBpmLocked);
         }
     }
 
