@@ -53,8 +53,8 @@
   <manifest>
     <title>Shade</title>
     <author>jus</author>
-    <version>2.1.0.01</version>
-    <description>A 2-deck split-waveform skin with 4 samplers.</description>
+    <version>2.3.0.1</version>
+    <description>A very compact skin with split waveforms, 2 decks and 8 samplers.</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
@@ -251,7 +251,7 @@
         Above the maximized library there are minimal decks which contain overview waveforms.
         For the end-of-track warning in those overviews to work instances of scrolling waveforms
         are required. We load in the maximzed library view, as well, but they are invisible as
-        they are 0px tall. 
+        they are 0px tall.
     ############################################################################################
     ############################################################################################
     -->
@@ -296,6 +296,7 @@
       <Children>
         <Library>
           <ShowButtonText>false</ShowButtonText>
+          <TrackTableBackgroundColorOpacity>0.125</TrackTableBackgroundColorOpacity>
         </Library>
       </Children>
     </SingletonDefinition>
@@ -444,33 +445,13 @@
                 <WidgetGroup>
                   <Layout>vertical</Layout>
                   <Children>
-                    <!-- Preview deck -->
-                    <WidgetGroup>
-                      <Style>
-                        QGroupBox {
-                          margin: 2px 0px 4px 3px;
-                        }
-                      </Style>
-                      <Layout>horizontal</Layout>
-                      <Children>
-                        <Template src="skin:preview_deck.xml"/>
-                      </Children>
-                      <Connection>
-                        <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
-                        <BindProperty>visible</BindProperty>
-                      </Connection>
-                    </WidgetGroup><!-- Preview deck -->
+                    <Template src="skin:preview_deck.xml"/>
 
                     <!--Search Input Field-->
-                    <WidgetGroup>
-                      <Style>
-                        QGroupBox {margin: 0px 0px 5px 0px;}
-                      </Style>
-                      <Layout>horizontal</Layout>
-                      <Children>
-                        <SearchBox></SearchBox>
-                      </Children>
-                    </WidgetGroup>
+                    <SearchBox></SearchBox>
+
+                    <WidgetGroup><Size>,5f</Size></WidgetGroup>
+
                     <!--Library Tree View-->
                     <Splitter>
                       <Size>e,me</Size>
@@ -489,11 +470,14 @@
                         </CoverArt>
                       </Children>
                     </Splitter>
+
                   </Children>
                 </WidgetGroup><!-- Sidebar etc. -->
+
                 <SingletonContainer>
                   <ObjectName>LibraryTable</ObjectName>
                 </SingletonContainer>
+
               </Children>
             </Splitter>
           </Children>

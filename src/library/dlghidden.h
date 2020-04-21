@@ -8,6 +8,7 @@
 #include "library/libraryview.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 
+class WLibrary;
 class WTrackTableView;
 class HiddenTableModel;
 class QItemSelection;
@@ -16,7 +17,7 @@ class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
     Q_OBJECT
 
   public:
-    DlgHidden(QWidget* parent, UserSettingsPointer pConfig,
+    DlgHidden(WLibrary* parent, UserSettingsPointer pConfig,
               Library* pLibrary,
               KeyboardEventFilter* pKeyboard);
     ~DlgHidden() override;

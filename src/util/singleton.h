@@ -3,27 +3,35 @@
 
 #include <QtDebug>
 
+#include "util/assert.h"
+
 template<class T>
 class Singleton {
   public:
     static T* createInstance() {
-        if (!m_instance) {
-            m_instance = new T();
+        VERIFY_OR_DEBUG_ASSERT(!m_instance) {
+            qWarning() << "Singleton class has already been created!";
+            return m_instance;
         }
+
+        m_instance = new T();
         return m_instance;
     }
 
     static T* instance() {
-        if (m_instance == NULL) {
-            qWarning() << "Singleton class has not been created yet, returning NULL";
+        VERIFY_OR_DEBUG_ASSERT(m_instance) {
+            qWarning() << "Singleton class has not been created yet, returning nullptr";
         }
         return m_instance;
     }
 
     static void destroy() {
-        if (m_instance) {
-            delete m_instance;
+        VERIFY_OR_DEBUG_ASSERT(m_instance) {
+            qWarning() << "Singleton class has already been destroyed!";
+            return;
         }
+        delete m_instance;
+        m_instance = nullptr;
     }
 
   protected:
@@ -38,6 +46,7 @@ class Singleton {
     static T* m_instance;
 };
 
-template<class T> T* Singleton<T>::m_instance = NULL;
+template<class T>
+T* Singleton<T>::m_instance = nullptr;
 
 #endif // SINGLETON_H

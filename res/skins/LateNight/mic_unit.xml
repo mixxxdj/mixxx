@@ -1,8 +1,9 @@
 <Template>
-  <SetVariable name="btn_type"><Variable name="SubRegion_btn_type"/></SetVariable>
+  <SetVariable name="btn_type"><Variable name="TopRegion_btn_type"/></SetVariable>
   <SetVariable name="group">[Microphone<Variable name="micnum"/>]</SetVariable>
   <SetVariable name="Type">microphone</SetVariable>
 
+  <!-- input device is configured -->
   <WidgetGroup>
     <ObjectName>MicAuxUnit</ObjectName>
     <Layout>horizontal</Layout>
@@ -145,34 +146,38 @@
             <SizePolicy>min,me</SizePolicy>
             <Children>
 
-                <Label>
-                  <ObjectName>MicAuxSubTitle</ObjectName>
-                  <Size>,17f</Size>
-                  <Text>mic <Variable name="mic1hack"/><Variable name="micnum"/></Text>
-                  <Alignment>center</Alignment>
-                </Label>
+              <Label>
+                <ObjectName>MicAuxSubTitle</ObjectName>
+                <Size>,21f</Size>
+                <Text>mic <Variable name="mic1hack"/><Variable name="micnum"/></Text>
+                <Alignment>center</Alignment>
+              </Label>
 
-                <WidgetGroup>
-                  <ObjectName>MicAuxPlayButtonBox</ObjectName>
-                  <Layout>vertical</Layout>
-                  <SizePolicy>min,me</SizePolicy>
-                  <Children>
-                    <Template src="skin:button_2state.xml">
-                      <SetVariable name="TooltipId">microphone_talkover</SetVariable>
-                      <SetVariable name="ObjectName">MicTalkButton</SetVariable>
-                      <SetVariable name="Size">42f,26f</SetVariable>
-                      <SetVariable name="btn_type">embedded</SetVariable>
-                      <SetVariable name="btn_format">medium</SetVariable>
-                      <SetVariable name="ConfigKey"><Variable name="group"/>,talkover</SetVariable>
-                    </Template>
-                  </Children>
-                </WidgetGroup>
+              <WidgetGroup>
+                <ObjectName>MicAuxPlayButtonBox</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,me</SizePolicy>
+                <Children>
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="TooltipId">microphone_talkover</SetVariable>
+                    <SetVariable name="ObjectName">MicTalkButton</SetVariable>
+                    <SetVariable name="Size">42f,26f</SetVariable>
+                    <SetVariable name="btn_type">embedded</SetVariable>
+                    <SetVariable name="btn_format">medium</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,talkover</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
 
             </Children>
           </WidgetGroup><!-- MicAuxMainControls -->
         </Children>
-      </WidgetGroup><!-- MicAuxMainControlsFrame -->
+      </WidgetGroup><!-- MicAuxMainControlsFrame  -->
 
     </Children>
-  </WidgetGroup>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,enabled</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup><!-- /MicAuxUnit -->
 </Template>

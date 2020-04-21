@@ -16,7 +16,6 @@
 #include "bytearrayclass.h"
 #include "preferences/usersettings.h"
 #include "controllers/controllerpreset.h"
-#include "controllers/colorjsproxy.h"
 #include "controllers/softtakeover.h"
 #include "util/alphabetafilter.h"
 #include "util/duration.h"
@@ -80,16 +79,13 @@ class ScriptConnectionInvokableWrapper : public QObject {
 class ControllerEngine : public QObject {
     Q_OBJECT
   public:
-    ControllerEngine(Controller* controller);
+    ControllerEngine(Controller* controller, UserSettingsPointer pConfig);
     virtual ~ControllerEngine();
 
     bool isReady();
 
     // Check whether a source file that was evaluated()'d has errors.
     bool hasErrors(const QString& filename);
-
-    // Get the errors for a source file that was evaluated()'d
-    const QStringList getErrors(const QString& filename);
 
     void setPopups(bool bPopups) {
         m_bPopups = bPopups;
@@ -159,34 +155,33 @@ class ControllerEngine : public QObject {
 
     // Evaluates all provided script files and returns true if no script errors
     // occurred while evaluating them.
-    bool loadScriptFiles(const QList<QString>& scriptPaths,
-                         const QList<ControllerPreset::ScriptFileInfo>& scripts);
+    bool loadScriptFiles(const QList<ControllerPreset::ScriptFileInfo>& scripts);
     void initializeScripts(const QList<ControllerPreset::ScriptFileInfo>& scripts);
     void gracefulShutdown();
     void scriptHasChanged(const QString&);
 
   signals:
-    void initialized();
     void resetController();
 
   private slots:
     void errorDialogButton(const QString& key, QMessageBox::StandardButton button);
 
   private:
-    bool syntaxIsValid(const QString& scriptCode);
-    bool evaluate(const QString& scriptName, QList<QString> scriptPaths);
+    bool syntaxIsValid(const QString& scriptCode, const QString& filename = QString());
+    bool evaluate(const QFileInfo& scriptFile);
     bool internalExecute(QScriptValue thisObject, const QString& scriptCode);
     bool internalExecute(QScriptValue thisObject, QScriptValue functionObject,
                          QScriptValueList arguments);
     void initializeScriptEngine();
+    void uninitializeScriptEngine();
 
-    void scriptErrorDialog(const QString& detailedError);
+    void scriptErrorDialog(const QString& detailedError, const QString& key, bool bFatal = false);
     void generateScriptFunctions(const QString& code);
     // Stops and removes all timers (for shutdown).
     void stopAllTimers();
 
     void callFunctionOnObjects(QList<QString>, const QString&, QScriptValueList args = QScriptValueList());
-    bool checkException();
+    bool checkException(bool bFatal = false);
     QScriptEngine *m_pEngine;
 
     ControlObjectScript* getControlObjectScript(const QString& group, const QString& name);
@@ -198,6 +193,7 @@ class ControllerEngine : public QObject {
     double getDeckRate(const QString& group);
 
     Controller* m_pController;
+    const UserSettingsPointer m_pConfig;
     bool m_bPopups;
     QList<QString> m_scriptFunctionPrefixes;
     QMap<QString, QStringList> m_scriptErrors;
@@ -210,7 +206,6 @@ class ControllerEngine : public QObject {
     QHash<int, TimerInfo> m_timers;
     SoftTakeoverCtrl m_st;
     ByteArrayClass* m_pBaClass;
-    std::unique_ptr<ColorJSProxy> m_pColorJSProxy;
     // 256 (default) available virtual decks is enough I would think.
     //  If more are needed at run-time, these will move to the heap automatically
     QVarLengthArray<int> m_intervalAccumulator;
@@ -222,7 +217,7 @@ class ControllerEngine : public QObject {
     QHash<QString, QScriptValue> m_scriptWrappedFunctionCache;
     // Filesystem watcher for script auto-reload
     QFileSystemWatcher m_scriptWatcher;
-    QList<QString> m_lastScriptPaths;
+    QList<ControllerPreset::ScriptFileInfo> m_lastScriptFiles;
 
     friend class ControllerEngineTest;
 };

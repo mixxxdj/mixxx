@@ -45,7 +45,6 @@ class BaseTrackPlayer : public BasePlayer {
     void newTrackLoaded(TrackPointer pLoadedTrack);
     void loadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty();
-    void noPassthroughInputConfigured();
     void noVinylControlInputConfigured();
 };
 
@@ -81,12 +80,13 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotLoadFailed(TrackPointer pTrack, QString reason);
     void slotSetReplayGain(mixxx::ReplayGain replayGain);
+    void slotSetTrackColor(mixxx::RgbColor::optional_t color);
     void slotPlayToggled(double);
 
   private slots:
     void slotCloneChannel(EngineChannel* pChannel);
     void slotCloneFromDeck(double deck);
-    void slotPassthroughEnabled(double v);
+    void slotTrackColorChangeRequest(double value);
     void slotVinylControlEnabled(double v);
     void slotWaveformZoomValueChangeRequest(double pressed);
     void slotWaveformZoomUp(double pressed);
@@ -111,6 +111,9 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
     // Deck clone control
     std::unique_ptr<ControlObject> m_pCloneFromDeck;
+
+    // Track color control
+    std::unique_ptr<ControlObject> m_pTrackColor;
 
     // Waveform display related controls
     std::unique_ptr<ControlObject> m_pWaveformZoom;
@@ -140,7 +143,6 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlProxy> m_pRateRatio;
     std::unique_ptr<ControlProxy> m_pPitchAdjust;
     std::unique_ptr<ControlProxy> m_pInputConfigured;
-    std::unique_ptr<ControlProxy> m_pPassthroughEnabled;
     std::unique_ptr<ControlProxy> m_pVinylControlEnabled;
     std::unique_ptr<ControlProxy> m_pVinylControlStatus;
 };

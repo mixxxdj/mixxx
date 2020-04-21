@@ -3,6 +3,7 @@
   <SetVariable name="group">[Auxiliary<Variable name="auxnum"/>]</SetVariable>
   <SetVariable name="Type">auxiliary</SetVariable>
 
+  <!-- input device is configured -->
   <WidgetGroup>
     <ObjectName>MicAuxUnit</ObjectName>
     <Layout>horizontal</Layout>
@@ -118,7 +119,7 @@
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                   <Template src="skin:vumeter_small.xml">
-                    <SetVariable name="GroupType">microphone</SetVariable>
+                    <SetVariable name="GroupType">auxiliary</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup>
@@ -147,7 +148,7 @@
 
               <Label>
                 <ObjectName>MicAuxSubTitle</ObjectName>
-                <Size>,17f</Size>
+                <Size>,21f</Size>
                 <Text>Aux <Variable name="auxnum"/></Text>
                 <Alignment>center</Alignment>
               </Label>
@@ -158,12 +159,12 @@
                 <SizePolicy>min,me</SizePolicy>
                 <Children>
                   <Template src="skin:button_2state.xml">
-                    <SetVariable name="TooltipId">mute</SetVariable>
+                    <SetVariable name="TooltipId">master_enable</SetVariable>
                     <SetVariable name="ObjectName">AuxPlayButton</SetVariable>
                     <SetVariable name="Size">42f,26f</SetVariable>
                     <SetVariable name="btn_type">embedded</SetVariable>
                     <SetVariable name="btn_format">medium</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="group"/>,mute</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,master</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup>
@@ -173,8 +174,12 @@
             </Children>
           </WidgetGroup><!-- MicAuxMainControls -->
         </Children>
-      </WidgetGroup><!-- MicAuxMainControlsFrame -->
+      </WidgetGroup><!-- MicAuxMainControlsFrame  -->
 
     </Children>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,enabled</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
   </WidgetGroup><!-- /MicAuxUnit -->
 </Template>

@@ -52,4 +52,6 @@ const QString TRACKLOCATIONSTABLE_FILESIZE = "filesize";
 const QString TRACKLOCATIONSTABLE_FSDELETED = "fs_deleted";
 const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = "needs_verification";
 
+const QString REKORDBOX_ANALYZE_PATH = "analyze_path";
+
 #endif //MIXXX_TRACKSCHEMA_H

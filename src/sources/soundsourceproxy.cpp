@@ -464,7 +464,7 @@ QImage SoundSourceProxy::importCoverImage() const {
             return coverImg;
         }
     }
-    // Failed ore unavailable
+    // Failed or unavailable
     return QImage();
 }
 
@@ -512,18 +512,8 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
             }
             // Overwrite metadata with actual audio properties
             if (m_pTrack) {
-                DEBUG_ASSERT(m_pAudioSource->channelCount().valid());
-                m_pTrack->setChannels(m_pAudioSource->channelCount());
-                DEBUG_ASSERT(m_pAudioSource->sampleRate().valid());
-                m_pTrack->setSampleRate(m_pAudioSource->sampleRate());
-                if (m_pAudioSource->hasDuration()) {
-                    // optional property
-                    m_pTrack->setDuration(m_pAudioSource->getDuration());
-                }
-                if (m_pAudioSource->bitrate() != mixxx::AudioSource::Bitrate()) {
-                    // optional property
-                    m_pTrack->setBitrate(m_pAudioSource->bitrate());
-                }
+                m_pTrack->updateAudioPropertiesFromStream(
+                        m_pAudioSource->getStreamInfo());
             }
         } else {
             kLogger.warning() << "Failed to open file"

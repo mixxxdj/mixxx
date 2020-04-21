@@ -768,6 +768,7 @@ class MixxxCore(Feature):
                    "src/preferences/configobject.cpp",
                    "src/preferences/dialog/dlgprefautodj.cpp",
                    "src/preferences/dialog/dlgprefdeck.cpp",
+                   "src/preferences/dialog/dlgprefcolors.cpp",
                    "src/preferences/dialog/dlgprefcrossfader.cpp",
                    "src/preferences/dialog/dlgprefeffects.cpp",
                    "src/preferences/dialog/dlgprefeq.cpp",
@@ -790,6 +791,9 @@ class MixxxCore(Feature):
                    "src/preferences/effectsettingsmodel.cpp",
                    "src/preferences/broadcastprofile.cpp",
                    "src/preferences/upgrade.cpp",
+                   "src/preferences/colorpaletteeditor.cpp",
+                   "src/preferences/colorpaletteeditormodel.cpp",
+                   "src/preferences/colorpalettesettings.cpp",
                    "src/preferences/dlgpreferencepage.cpp",
 
                    "src/effects/effectmanifest.cpp",
@@ -898,6 +902,10 @@ class MixxxCore(Feature):
                    "src/analyzer/plugins/analyzerqueenmarykey.cpp",
                    "src/analyzer/plugins/buffering_utils.cpp",
 
+                   "src/audio/types.cpp",
+                   "src/audio/signalinfo.cpp",
+                   "src/audio/streaminfo.cpp",
+
                    "src/controllers/controller.cpp",
                    "src/controllers/controllerdebug.cpp",
                    "src/controllers/controllerengine.cpp",
@@ -920,12 +928,14 @@ class MixxxCore(Feature):
                    "src/controllers/midi/midimessage.cpp",
                    "src/controllers/midi/midiutils.cpp",
                    "src/controllers/midi/midicontroller.cpp",
+                   "src/controllers/midi/midicontrollerpreset.cpp",
                    "src/controllers/midi/midicontrollerpresetfilehandler.cpp",
                    "src/controllers/midi/midienumerator.cpp",
                    "src/controllers/midi/midioutputhandler.cpp",
                    "src/controllers/softtakeover.cpp",
                    "src/controllers/keyboard/keyboardeventfilter.cpp",
-                   "src/controllers/colorjsproxy.cpp",
+                   "src/controllers/colormapper.cpp",
+                   "src/controllers/colormapperjsproxy.cpp",
 
                    "src/main.cpp",
                    "src/mixxx.cpp",
@@ -958,6 +968,7 @@ class MixxxCore(Feature):
                    "src/widget/wvumeter.cpp",
                    "src/widget/wpushbutton.cpp",
                    "src/widget/weffectpushbutton.cpp",
+                   "src/widget/whotcuebutton.cpp",
                    "src/widget/wslidercomposed.cpp",
                    "src/widget/wstatuslight.cpp",
                    "src/widget/woverview.cpp",
@@ -996,13 +1007,14 @@ class MixxxCore(Feature):
                    "src/widget/wsingletoncontainer.cpp",
                    "src/widget/wmainmenubar.cpp",
 
-                   "src/musicbrainz/network.cpp",
                    "src/musicbrainz/tagfetcher.cpp",
                    "src/musicbrainz/gzip.cpp",
                    "src/musicbrainz/crc.c",
-                   "src/musicbrainz/acoustidclient.cpp",
                    "src/musicbrainz/chromaprinter.cpp",
-                   "src/musicbrainz/musicbrainzclient.cpp",
+                   "src/musicbrainz/musicbrainz.cpp",
+                   "src/musicbrainz/musicbrainzxml.cpp",
+                   "src/musicbrainz/web/acoustidlookuptask.cpp",
+                   "src/musicbrainz/web/musicbrainzrecordingstask.cpp",
 
                    "src/widget/wtracktableview.cpp",
                    "src/widget/wtracktableviewheader.cpp",
@@ -1011,6 +1023,7 @@ class MixxxCore(Feature):
                    "src/widget/wlibrarytableview.cpp",
                    "src/widget/wanalysislibrarytableview.cpp",
                    "src/widget/wlibrarytextbrowser.cpp",
+                   "src/widget/wtrackmenu.cpp",
 
                    "src/database/mixxxdb.cpp",
                    "src/database/schemamanager.cpp",
@@ -1020,6 +1033,7 @@ class MixxxCore(Feature):
                    "src/library/externaltrackcollection.cpp",
                    "src/library/basesqltablemodel.cpp",
                    "src/library/basetrackcache.cpp",
+                   "src/library/basetracktablemodel.cpp",
                    "src/library/columncache.cpp",
                    "src/library/librarytablemodel.cpp",
                    "src/library/searchquery.cpp",
@@ -1114,6 +1128,7 @@ class MixxxCore(Feature):
                    "src/library/bpmdelegate.cpp",
                    "src/library/previewbuttondelegate.cpp",
                    "src/library/colordelegate.cpp",
+                   "src/library/basecoverartdelegate.cpp",
                    "src/library/coverartdelegate.cpp",
                    "src/library/locationdelegate.cpp",
                    "src/library/tableitemdelegate.cpp",
@@ -1127,6 +1142,9 @@ class MixxxCore(Feature):
                    "src/library/parsercsv.cpp",
 
                    "src/library/trackloader.cpp",
+
+                   "src/network/jsonwebtask.cpp",
+                   "src/network/webtask.cpp",
 
                    "src/widget/wwaveformviewer.cpp",
 
@@ -1204,6 +1222,7 @@ class MixxxCore(Feature):
                    "src/track/beats.cpp",
                    "src/track/bpm.cpp",
                    "src/track/cue.cpp",
+                   "src/track/cueinfo.cpp",
                    "src/track/keyfactory.cpp",
                    "src/track/keys.cpp",
                    "src/track/keyutils.cpp",
@@ -1211,6 +1230,7 @@ class MixxxCore(Feature):
                    "src/track/replaygain.cpp",
                    "src/track/serato/markers.cpp",
                    "src/track/serato/markers2.cpp",
+                   "src/track/serato/tags.cpp",
                    "src/track/track.cpp",
                    "src/track/globaltrackcache.cpp",
                    "src/track/trackfile.cpp",
@@ -1277,6 +1297,8 @@ class MixxxCore(Feature):
                    "src/util/cache.cpp",
                    "src/util/console.cpp",
                    "src/util/color/color.cpp",
+                   "src/util/color/colorpalette.cpp",
+                   "src/util/color/predefinedcolorpalettes.cpp",
                    "src/util/db/dbconnection.cpp",
                    "src/util/db/dbconnectionpool.cpp",
                    "src/util/db/dbconnectionpooler.cpp",
@@ -1295,16 +1317,13 @@ class MixxxCore(Feature):
                    "src/util/logger.cpp",
                    "src/util/logging.cpp",
                    "src/util/cmdlineargs.cpp",
-                   "src/util/audiosignal.cpp",
-                   "src/util/widgethider.cpp",
                    "src/util/autohidpi.cpp",
                    "src/util/screensaver.cpp",
                    "src/util/indexrange.cpp",
                    "src/util/desktophelper.cpp",
                    "src/util/widgetrendertimer.cpp",
                    "src/util/workerthread.cpp",
-                   "src/util/workerthreadscheduler.cpp",
-                   "src/util/color/predefinedcolor.cpp"
+                   "src/util/workerthreadscheduler.cpp"
                    ]
 
         proto_args = {
@@ -1339,6 +1358,7 @@ class MixxxCore(Feature):
             'src/preferences/dialog/dlgprefautodjdlg.ui',
             'src/preferences/dialog/dlgprefbeatsdlg.ui',
             'src/preferences/dialog/dlgprefdeckdlg.ui',
+            'src/preferences/dialog/dlgprefcolorsdlg.ui',
             'src/preferences/dialog/dlgprefcrossfaderdlg.ui',
             'src/preferences/dialog/dlgpreflv2dlg.ui',
             'src/preferences/dialog/dlgprefeffectsdlg.ui',

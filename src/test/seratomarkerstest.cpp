@@ -77,7 +77,7 @@ TEST_F(SeratoMarkersTest, ParseEntry) {
             QByteArray("\x00\x00\x0d\x2a\x58\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x06\x32\x10\x00\x01\x00", 22),
             true,
             true,
-            862808,
+            218456,
             false,
             0x7f7f7f7f,
             mixxx::RgbColor(0xcc8800),
@@ -87,7 +87,7 @@ TEST_F(SeratoMarkersTest, ParseEntry) {
             QByteArray("\x00\x00\x03\x54\x64\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x00\x00\x01\x4c\x01\x00", 22),
             true,
             true,
-            218212,
+            60004,
             false,
             0x7f7f7f7f,
             mixxx::RgbColor(0x0000cc),
@@ -107,7 +107,7 @@ TEST_F(SeratoMarkersTest, ParseEntry) {
             QByteArray("\x00\x00\x00\x07\x77\x7f\x7f\x7f\x7f\x7f\x00\x7f\x7f\x7f\x7f\x7f\x00\x03\x18\x00\x01\x00", 22),
             true,
             true,
-            1911,
+            1015,
             false,
             0x7f7f7f7f,
             mixxx::RgbColor(0x00cc00),
@@ -153,6 +153,14 @@ TEST_F(SeratoMarkersTest, ParseMarkersData) {
         QByteArray data = file.readAll();
         parseMarkersData(data, true);
     }
+}
+
+TEST_F(SeratoMarkersTest, ParseEmptyData) {
+    QByteArray inputValue;
+    mixxx::SeratoMarkers seratoMarkers;
+    mixxx::SeratoMarkers::parse(&seratoMarkers, inputValue);
+    QByteArray outputValue = seratoMarkers.dump();
+    EXPECT_EQ(inputValue, outputValue);
 }
 
 } // namespace

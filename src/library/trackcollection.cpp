@@ -23,6 +23,44 @@ TrackCollection::TrackCollection(
           m_analysisDao(pConfig),
           m_trackDao(m_cueDao, m_playlistDao,
                      m_analysisDao, m_libraryHashDao, pConfig) {
+    // Forward signals from TrackDAO
+    connect(&m_trackDao,
+            &TrackDAO::trackClean,
+            this,
+            &TrackCollection::trackClean,
+            /*signal-to-signal*/ Qt::DirectConnection);
+    connect(&m_trackDao,
+            &TrackDAO::trackDirty,
+            this,
+            &TrackCollection::trackDirty,
+            /*signal-to-signal*/ Qt::DirectConnection);
+    connect(&m_trackDao,
+            &TrackDAO::trackChanged,
+            this,
+            [this](TrackId trackId) {
+                emit tracksChanged(QSet<TrackId>{trackId});
+            },
+            /*signal-to-signal*/ Qt::DirectConnection);
+    connect(&m_trackDao,
+            &TrackDAO::tracksAdded,
+            this,
+            &TrackCollection::tracksAdded,
+            /*signal-to-signal*/ Qt::DirectConnection);
+    connect(&m_trackDao,
+            &TrackDAO::tracksChanged,
+            this,
+            &TrackCollection::tracksChanged,
+            /*signal-to-signal*/ Qt::DirectConnection);
+    connect(&m_trackDao,
+            &TrackDAO::tracksRemoved,
+            this,
+            &TrackCollection::tracksRemoved,
+            /*signal-to-signal*/ Qt::DirectConnection);
+    connect(&m_trackDao,
+            &TrackDAO::forceModelUpdate,
+            this,
+            &TrackCollection::multipleTracksChanged,
+            /*signal-to-signal*/ Qt::DirectConnection);
 }
 
 TrackCollection::~TrackCollection() {
@@ -36,12 +74,14 @@ TrackCollection::~TrackCollection() {
 void TrackCollection::repairDatabase(QSqlDatabase database) {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
 
+    kLogger.info() << "Repairing database";
     m_crates.repairDatabase(database);
 }
 
 void TrackCollection::connectDatabase(QSqlDatabase database) {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
 
+    kLogger.info() << "Connecting database";
     m_database = database;
     m_trackDao.initialize(database);
     m_playlistDao.initialize(database);
@@ -55,6 +95,7 @@ void TrackCollection::connectDatabase(QSqlDatabase database) {
 void TrackCollection::disconnectDatabase() {
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
 
+    kLogger.info() << "Disconnecting database";
     m_database = QSqlDatabase();
     m_trackDao.finish();
     m_crates.disconnectDatabase();
@@ -67,8 +108,36 @@ void TrackCollection::connectTrackSource(QSharedPointer<BaseTrackCache> pTrackSo
         kLogger.warning() << "Track source has already been connected";
         return;
     }
+    kLogger.info() << "Connecting track source";
     m_pTrackSource = pTrackSource;
-    m_pTrackSource->connectTrackDAO(&m_trackDao);
+    connect(&m_trackDao,
+            &TrackDAO::trackDirty,
+            m_pTrackSource.data(),
+            &BaseTrackCache::slotTrackDirty);
+    connect(&m_trackDao,
+            &TrackDAO::trackClean,
+            m_pTrackSource.data(),
+            &BaseTrackCache::slotTrackClean);
+    connect(&m_trackDao,
+            &TrackDAO::trackChanged,
+            m_pTrackSource.data(),
+            &BaseTrackCache::slotTrackChanged);
+    connect(&m_trackDao,
+            &TrackDAO::tracksAdded,
+            m_pTrackSource.data(),
+            &BaseTrackCache::slotTracksAddedOrChanged);
+    connect(&m_trackDao,
+            &TrackDAO::tracksChanged,
+            m_pTrackSource.data(),
+            &BaseTrackCache::slotTracksAddedOrChanged);
+    connect(&m_trackDao,
+            &TrackDAO::tracksRemoved,
+            m_pTrackSource.data(),
+            &BaseTrackCache::slotTracksRemoved);
+    connect(&m_trackDao,
+            &TrackDAO::dbTrackAdded,
+            m_pTrackSource.data(),
+            &BaseTrackCache::slotDbTrackAdded);
 }
 
 QWeakPointer<BaseTrackCache> TrackCollection::disconnectTrackSource() {
@@ -76,7 +145,8 @@ QWeakPointer<BaseTrackCache> TrackCollection::disconnectTrackSource() {
 
     auto pWeakPtr = m_pTrackSource.toWeakRef();
     if (m_pTrackSource) {
-        m_pTrackSource->disconnectTrackDAO(&m_trackDao);
+        kLogger.info() << "Disconnecting track source";
+        m_trackDao.disconnect(m_pTrackSource.data());
         m_pTrackSource.reset();
     }
     return pWeakPtr;
@@ -309,7 +379,13 @@ bool TrackCollection::purgeTracks(
 
 bool TrackCollection::purgeAllTracks(
         const QDir& rootDir) {
-    QList<TrackId> trackIds = m_trackDao.getAllTrackIds(rootDir);
+    QList<TrackRef> trackRefs = m_trackDao.getAllTrackRefs(rootDir);
+    QList<TrackId> trackIds;
+    trackIds.reserve(trackRefs.size());
+    for (const auto trackRef : trackRefs) {
+        DEBUG_ASSERT(trackRef.hasId());
+        trackIds.append(trackRef.getId());
+    }
     return purgeTracks(trackIds);
 }
 

@@ -19,6 +19,11 @@ class BeatsTest : public testing::Test {
               m_bpm(60),
               m_startOffsetFrames(7),
               m_beatLengthFrames(getBeatLength(m_bpm)) {
+        m_pTrack->setAudioProperties(
+                mixxx::audio::ChannelCount(2),
+                mixxx::audio::SampleRate(m_iSampleRate),
+                mixxx::audio::Bitrate(),
+                mixxx::Duration::fromSeconds(180));
         m_pBeats->setGridNew(m_bpm, m_startOffsetFrames);
         m_firstBeat = m_pBeats->getFirstBeatPosition();
         m_lastBeat = m_pBeats->getLastBeatPosition();

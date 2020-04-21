@@ -39,14 +39,14 @@ void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
                                  QPixmap px) {
     qDebug() << "WCoverArtLabel::setCoverArt" << coverInfo << px.size();
 
-    m_loadedCover = px.scaled(s_labelDisplaySize * getDevicePixelRatioF(this),
-            Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    m_loadedCover.setDevicePixelRatio(getDevicePixelRatioF(this));
     m_pCoverMenu->setCoverArt(coverInfo);
-
-    if (m_loadedCover.isNull()) {
+    if (px.isNull()) {
+        m_loadedCover = px;
         setPixmap(m_defaultCover);
     } else {
+        m_loadedCover = px.scaled(s_labelDisplaySize * getDevicePixelRatioF(this),
+                Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        m_loadedCover.setDevicePixelRatio(getDevicePixelRatioF(this));
         setPixmap(m_loadedCover);
     }
 
@@ -77,4 +77,3 @@ void WCoverArtLabel::mousePressEvent(QMouseEvent* event) {
         }
     }
 }
-

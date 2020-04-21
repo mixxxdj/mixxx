@@ -1,17 +1,19 @@
 // cuecontrol.cpp
 // Created 11/5/2009 by RJ Ryan (rryan@mit.edu)
 
-#include <QMutexLocker>
-
-#include "engine/enginebuffer.h"
 #include "engine/controls/cuecontrol.h"
 
+#include <QMutexLocker>
+
+#include "control/controlindicator.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
-#include "control/controlindicator.h"
-#include "vinylcontrol/defs_vinylcontrol.h"
-#include "util/sample.h"
+#include "engine/enginebuffer.h"
+#include "preferences/colorpalettesettings.h"
 #include "util/color/color.h"
+#include "util/color/predefinedcolorpalettes.h"
+#include "util/sample.h"
+#include "vinylcontrol/defs_vinylcontrol.h"
 
 // TODO: Convert these doubles to a standard enum
 // and convert elseif logic to switch statements
@@ -22,19 +24,37 @@ static const double CUE_MODE_NUMARK = 3.0;
 static const double CUE_MODE_MIXXX_NO_BLINK = 4.0;
 static const double CUE_MODE_CUP = 5.0;
 
+namespace {
+
+// Helper function to convert control values (i.e. doubles) into RgbColor
+// instances (or nullopt if value < 0). This happens by using the integer
+// component as RGB color codes (e.g. 0xFF0000).
+inline mixxx::RgbColor::optional_t doubleToRgbColor(double value) {
+    if (value < 0) {
+        return std::nullopt;
+    }
+    auto colorCode = static_cast<mixxx::RgbColor::code_t>(value);
+    if (value != mixxx::RgbColor::validateCode(colorCode)) {
+        return std::nullopt;
+    }
+    return mixxx::RgbColor::optional(colorCode);
+}
+
+} // namespace
+
 CueControl::CueControl(QString group,
-                       UserSettingsPointer pConfig) :
-        EngineControl(group, pConfig),
-        m_bPreviewing(false),
-        // m_pPlay->toBoo() -> engine play state
-        // m_pPlay->set(1.0) -> emulate play button press
-        m_pPlay(ControlObject::getControl(ConfigKey(group, "play"))),
-        m_pStopButton(ControlObject::getControl(ConfigKey(group, "stop"))),
-        m_iCurrentlyPreviewingHotcues(0),
-        m_bypassCueSetByPlay(false),
-        m_iNumHotCues(NUM_HOT_CUES),
-        m_pLoadedTrack(),
-        m_mutex(QMutex::Recursive) {
+        UserSettingsPointer pConfig)
+        : EngineControl(group, pConfig),
+          m_pConfig(pConfig),
+          m_colorPaletteSettings(ColorPaletteSettings(pConfig)),
+          m_bPreviewing(false),
+          m_pPlay(ControlObject::getControl(ConfigKey(group, "play"))),
+          m_pStopButton(ControlObject::getControl(ConfigKey(group, "stop"))),
+          m_iCurrentlyPreviewingHotcues(0),
+          m_bypassCueSetByPlay(false),
+          m_iNumHotCues(NUM_HOT_CUES),
+          m_pLoadedTrack(),
+          m_mutex(QMutex::Recursive) {
     // To silence a compiler warning about CUE_MODE_PIONEER.
     Q_UNUSED(CUE_MODE_PIONEER);
     createControls();
@@ -343,6 +363,8 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     }
     m_pLoadedTrack = pNewTrack;
 
+    connect(m_pLoadedTrack.get(), &Track::analyzed, this, &CueControl::trackAnalyzed, Qt::DirectConnection);
+
     connect(m_pLoadedTrack.get(), &Track::cuesUpdated,
             this, &CueControl::trackCuesUpdated,
             Qt::DirectConnection);
@@ -353,7 +375,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
 
     CuePointer pMainCue;
     for (const CuePointer& pCue : m_pLoadedTrack->getCuePoints()) {
-        if (pCue->getType() == Cue::Type::MainCue) {
+        if (pCue->getType() == mixxx::CueType::MainCue) {
             DEBUG_ASSERT(!pMainCue);
             pMainCue = pCue;
         }
@@ -366,7 +388,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
 
     // Because of legacy, we store the (load) cue point twice and need to
     // sync both values.
-    // The Cue::Type::MainCue from getCuePoints() has the priority
+    // The mixxx::CueType::MainCue from getCuePoints() has the priority
     CuePosition mainCuePoint;
     if (pMainCue) {
         mainCuePoint.setPosition(pMainCue->getPosition());
@@ -380,7 +402,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         CuePointer pCue(pNewTrack->createAndAddCue());
         pCue->setStartPosition(mainCuePoint.getPosition());
         pCue->setHotCue(Cue::kNoHotCue);
-        pCue->setType(Cue::Type::MainCue);
+        pCue->setType(mixxx::CueType::MainCue);
     }
     m_pCuePoint->set(mainCuePoint.getPosition());
 
@@ -390,12 +412,6 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     // Seek track according to SeekOnLoadMode.
     SeekOnLoadMode seekOnLoadMode = getSeekOnLoadPreference();
 
-    CuePointer pAudibleSound = pNewTrack->findCueByType(Cue::Type::AudibleSound);
-    double firstSound = Cue::kNoPosition;
-    if (pAudibleSound) {
-        firstSound = pAudibleSound->getPosition();
-    }
-
     switch (seekOnLoadMode) {
     case SeekOnLoadMode::Beginning:
         // This allows users to load tracks and have the needle-drop be maintained.
@@ -404,20 +420,28 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
             seekExact(0.0);
         }
         break;
-    case SeekOnLoadMode::FirstSound:
-        if (firstSound != Cue::kNoPosition) {
-            seekExact(firstSound);
+    case SeekOnLoadMode::FirstSound: {
+        CuePointer pAudibleSound = pNewTrack->findCueByType(mixxx::CueType::AudibleSound);
+        if (pAudibleSound && pAudibleSound->getPosition() != Cue::kNoPosition) {
+            seekExact(pAudibleSound->getPosition());
         } else {
             seekExact(0.0);
         }
         break;
-    case SeekOnLoadMode::MainCue:
-        if (mainCuePoint.getPosition() != Cue::kNoPosition) {
-            seekExact(mainCuePoint.getPosition());
+    }
+    case SeekOnLoadMode::MainCue: {
+        // Take main cue position from CO instead of cue point list because
+        // value in CO will be quantized if quantization is enabled
+        // while value in cue point list will never be quantized.
+        // This prevents jumps when track analysis finishes while quantization is enabled.
+        double cuePoint = m_pCuePoint->get();
+        if (cuePoint != Cue::kNoPosition) {
+            seekExact(cuePoint);
         } else {
             seekExact(0.0);
         }
         break;
+    }
     case SeekOnLoadMode::IntroStart: {
         double introStart = m_pIntroStartPosition->get();
         if (introStart != Cue::kNoPosition) {
@@ -447,16 +471,16 @@ void CueControl::loadCuesFromTrack() {
         return;
 
     for (const CuePointer& pCue: m_pLoadedTrack->getCuePoints()) {
-        if (pCue->getType() == Cue::Type::MainCue) {
+        if (pCue->getType() == mixxx::CueType::MainCue) {
             DEBUG_ASSERT(!pLoadCue); // There should be only one MainCue cue
             pLoadCue = pCue;
-        } else if (pCue->getType() == Cue::Type::Intro) {
+        } else if (pCue->getType() == mixxx::CueType::Intro) {
             DEBUG_ASSERT(!pIntroCue); // There should be only one Intro cue
             pIntroCue = pCue;
-        } else if (pCue->getType() == Cue::Type::Outro) {
+        } else if (pCue->getType() == mixxx::CueType::Outro) {
             DEBUG_ASSERT(!pOutroCue); // There should be only one Outro cue
             pOutroCue = pCue;
-        } else if (pCue->getType() == Cue::Type::HotCue && pCue->getHotCue() != Cue::kNoHotCue) {
+        } else if (pCue->getType() == mixxx::CueType::HotCue && pCue->getHotCue() != Cue::kNoHotCue) {
             int hotcue = pCue->getHotCue();
             HotcueControl* pControl = m_hotcueControls.value(hotcue, NULL);
 
@@ -527,17 +551,15 @@ void CueControl::loadCuesFromTrack() {
     }
 }
 
-void CueControl::reloadCuesFromTrack() {
-    if (!m_pLoadedTrack)
+void CueControl::trackAnalyzed() {
+    if (!m_pLoadedTrack) {
         return;
+    }
 
-    // Determine current playing position of the track.
-    TrackAt trackAt = getTrackAt();
-    bool wasTrackAtZeroPos = isTrackAtZeroPos();
-    bool wasTrackAtIntroCue = isTrackAtIntroCue();
-
-    // Update COs with cues from track.
-    loadCuesFromTrack();
+    // if we are playing (no matter what reason for) do not seek
+    if (m_pPlay->toBool()) {
+        return;
+    }
 
     // Retrieve current position of cues from COs.
     double cue = m_pCuePoint->get();
@@ -547,28 +569,48 @@ void CueControl::reloadCuesFromTrack() {
     SeekOnLoadMode seekOnLoadMode = getSeekOnLoadPreference();
 
     if (seekOnLoadMode == SeekOnLoadMode::MainCue) {
-        if ((trackAt == TrackAt::Cue || wasTrackAtZeroPos) && cue != Cue::kNoPosition) {
+        if (cue != Cue::kNoPosition) {
             seekExact(cue);
         }
     } else if (seekOnLoadMode == SeekOnLoadMode::IntroStart) {
-        if ((wasTrackAtIntroCue || wasTrackAtZeroPos) && intro != Cue::kNoPosition) {
+        if (intro != Cue::kNoPosition) {
             seekExact(intro);
         }
     }
 }
 
 void CueControl::trackCuesUpdated() {
-    reloadCuesFromTrack();
+    loadCuesFromTrack();
 }
 
 void CueControl::trackBeatsUpdated() {
-    reloadCuesFromTrack();
+    loadCuesFromTrack();
 }
 
 void CueControl::quantizeChanged(double v) {
     Q_UNUSED(v);
 
-    reloadCuesFromTrack();
+    // check if we were at the cue point before
+    bool wasTrackAtCue = getTrackAt() == TrackAt::Cue;
+    bool wasTrackAtIntro = isTrackAtIntroCue();
+
+    loadCuesFromTrack();
+
+    // if we are playing (no matter what reason for) do not seek
+    if (m_pPlay->toBool()) {
+        return;
+    }
+
+    // Retrieve new cue pos and follow
+    double cue = m_pCuePoint->get();
+    if (wasTrackAtCue && cue != Cue::kNoPosition) {
+        seekExact(cue);
+    }
+    // Retrieve new intro start pos and follow
+    double intro = m_pIntroStartPosition->get();
+    if (wasTrackAtIntro && intro != Cue::kNoPosition) {
+        seekExact(intro);
+    }
 }
 
 void CueControl::hotcueSet(HotcueControl* pControl, double v) {
@@ -592,15 +634,23 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     double cuePosition = getQuantizedCurrentPosition();
     pCue->setStartPosition(cuePosition);
     pCue->setHotCue(hotcue);
-    pCue->setLabel("");
-    pCue->setType(Cue::Type::HotCue);
+    pCue->setLabel();
+    pCue->setType(mixxx::CueType::HotCue);
+
+    const ColorPalette hotcueColorPalette =
+            m_colorPaletteSettings.getHotcueColorPalette();
+    if (getConfig()->getValue(ConfigKey("[Controls]", "auto_hotcue_colors"), false)) {
+        pCue->setColor(hotcueColorPalette.colorForHotcueIndex(hotcue));
+    } else {
+        int hotcueDefaultColorIndex = m_pConfig->getValue(ConfigKey("[Controls]", "HotcueDefaultColorIndex"), -1);
+        if (hotcueDefaultColorIndex < 0 || hotcueDefaultColorIndex >= hotcueColorPalette.size()) {
+            hotcueDefaultColorIndex = hotcueColorPalette.size() - 1; // default to last color (orange)
+        }
+        pCue->setColor(hotcueColorPalette.at(hotcueDefaultColorIndex));
+    }
+
     // TODO(XXX) deal with spurious signals
     attachCue(pCue, pControl);
-
-    if (getConfig()->getValue(ConfigKey("[Controls]", "auto_hotcue_colors"), false)) {
-        const QList<PredefinedColorPointer> predefinedColors = Color::kPredefinedColorsSet.allColors;
-        pCue->setColor(predefinedColors.at((hotcue % (predefinedColors.count() - 1)) + 1));
-    };
 
     // If quantize is enabled and we are not playing, jump to the cue point
     // since it's not necessarily where we currently are. TODO(XXX) is this
@@ -1158,10 +1208,10 @@ void CueControl::introStartSet(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Intro);
+        CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Intro);
         if (!pCue) {
             pCue = pLoadedTrack->createAndAddCue();
-            pCue->setType(Cue::Type::Intro);
+            pCue->setType(mixxx::CueType::Intro);
         }
         pCue->setStartPosition(position);
         pCue->setEndPosition(introEnd);
@@ -1179,7 +1229,7 @@ void CueControl::introStartClear(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Intro);
+        CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Intro);
         if (introEnd != Cue::kNoPosition) {
             pCue->setStartPosition(Cue::kNoPosition);
             pCue->setEndPosition(introEnd);
@@ -1234,10 +1284,10 @@ void CueControl::introEndSet(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Intro);
+        CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Intro);
         if (!pCue) {
             pCue = pLoadedTrack->createAndAddCue();
-            pCue->setType(Cue::Type::Intro);
+            pCue->setType(mixxx::CueType::Intro);
         }
         pCue->setStartPosition(introStart);
         pCue->setEndPosition(position);
@@ -1255,7 +1305,7 @@ void CueControl::introEndClear(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Intro);
+        CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Intro);
         if (introStart != Cue::kNoPosition) {
             pCue->setStartPosition(introStart);
             pCue->setEndPosition(Cue::kNoPosition);
@@ -1310,10 +1360,10 @@ void CueControl::outroStartSet(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Outro);
+        CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Outro);
         if (!pCue) {
             pCue = pLoadedTrack->createAndAddCue();
-            pCue->setType(Cue::Type::Outro);
+            pCue->setType(mixxx::CueType::Outro);
         }
         pCue->setStartPosition(position);
         pCue->setEndPosition(outroEnd);
@@ -1331,7 +1381,7 @@ void CueControl::outroStartClear(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Outro);
+        CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Outro);
         if (outroEnd != Cue::kNoPosition) {
             pCue->setStartPosition(Cue::kNoPosition);
             pCue->setEndPosition(outroEnd);
@@ -1386,10 +1436,10 @@ void CueControl::outroEndSet(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Outro);
+        CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Outro);
         if (!pCue) {
             pCue = pLoadedTrack->createAndAddCue();
-            pCue->setType(Cue::Type::Outro);
+            pCue->setType(mixxx::CueType::Outro);
         }
         pCue->setStartPosition(outroStart);
         pCue->setEndPosition(position);
@@ -1407,7 +1457,7 @@ void CueControl::outroEndClear(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Outro);
+        CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Outro);
         if (outroStart != Cue::kNoPosition) {
             pCue->setStartPosition(outroStart);
             pCue->setEndPosition(Cue::kNoPosition);
@@ -1650,10 +1700,6 @@ double CueControl::quantizeCuePoint(double cuePos) {
     return cuePos;
 }
 
-bool CueControl::isTrackAtZeroPos() {
-    return (fabs(getSampleOfTrack().current) < 1.0f);
-}
-
 bool CueControl::isTrackAtIntroCue() {
     return (fabs(getSampleOfTrack().current - m_pIntroStartPosition->get()) < 1.0f);
 }
@@ -1684,20 +1730,18 @@ void CueControl::hotcueFocusColorPrev(double v) {
         return;
     }
 
-    PredefinedColorPointer pColor = pControl->getColor();
-    if (!pColor) {
+    CuePointer pCue = pControl->getCue();
+    if (!pCue) {
         return;
     }
 
-    // Get previous color in color set
-    int iColorIndex = Color::kPredefinedColorsSet.predefinedColorIndex(pColor) - 1;
-    if (iColorIndex <= 0) {
-        iColorIndex = Color::kPredefinedColorsSet.allColors.size() - 1;
+    mixxx::RgbColor::optional_t color = pCue->getColor();
+    if (!color) {
+        return;
     }
-    pColor = Color::kPredefinedColorsSet.allColors.at(iColorIndex);
-    DEBUG_ASSERT(pColor != nullptr);
 
-    pControl->setColor(pColor);
+    ColorPalette colorPalette = m_colorPaletteSettings.getHotcueColorPalette();
+    pCue->setColor(colorPalette.previousColor(*color));
 }
 
 void CueControl::hotcueFocusColorNext(double v) {
@@ -1715,20 +1759,18 @@ void CueControl::hotcueFocusColorNext(double v) {
         return;
     }
 
-    PredefinedColorPointer pColor = pControl->getColor();
-    if (!pColor) {
+    CuePointer pCue = pControl->getCue();
+    if (!pCue) {
         return;
     }
 
-    // Get next color in color set
-    int iColorIndex = Color::kPredefinedColorsSet.predefinedColorIndex(pColor) + 1;
-    if (iColorIndex >= Color::kPredefinedColorsSet.allColors.size()) {
-        iColorIndex = 0;
+    mixxx::RgbColor::optional_t color = pCue->getColor();
+    if (!color) {
+        return;
     }
-    pColor = Color::kPredefinedColorsSet.allColors.at(iColorIndex);
-    DEBUG_ASSERT(pColor != nullptr);
 
-    pControl->setColor(pColor);
+    ColorPalette colorPalette = m_colorPaletteSettings.getHotcueColorPalette();
+    pCue->setColor(colorPalette.nextColor(*color));
 }
 
 
@@ -1755,8 +1797,12 @@ HotcueControl::HotcueControl(QString group, int i)
     m_hotcueEnabled = new ControlObject(keyForControl(i, "enabled"));
     m_hotcueEnabled->setReadOnly();
 
-    // The id of the predefined color assigned to this color.
-    m_hotcueColor = new ControlObject(keyForControl(i, "color_id"));
+    // The rgba value  of the color assigned to this color.
+    m_hotcueColor = new ControlObject(keyForControl(i, "color"));
+    m_hotcueColor->connectValueChangeRequest(
+            this,
+            &HotcueControl::slotHotcueColorChangeRequest,
+            Qt::DirectConnection);
     connect(m_hotcueColor,
             &ControlObject::valueChanged,
             this,
@@ -1845,9 +1891,26 @@ void HotcueControl::slotHotcuePositionChanged(double newPosition) {
     emit hotcuePositionChanged(this, newPosition);
 }
 
-void HotcueControl::slotHotcueColorChanged(double newColorId) {
-    m_pCue->setColor(Color::kPredefinedColorsSet.predefinedColorFromId(newColorId));
-    emit hotcueColorChanged(this, newColorId);
+void HotcueControl::slotHotcueColorChangeRequest(double color) {
+    if (color < 0 || color > 0xFFFFFF) {
+        qWarning() << "slotHotcueColorChanged got invalid value:" << color;
+        return;
+    }
+    m_hotcueColor->setAndConfirm(color);
+}
+
+void HotcueControl::slotHotcueColorChanged(double newColor) {
+    if (!m_pCue) {
+        return;
+    }
+
+    mixxx::RgbColor::optional_t color = doubleToRgbColor(newColor);
+    VERIFY_OR_DEBUG_ASSERT(color) {
+        return;
+    }
+
+    m_pCue->setColor(*color);
+    emit hotcueColorChanged(this, newColor);
 }
 
 double HotcueControl::getPosition() const {
@@ -1861,12 +1924,14 @@ void HotcueControl::setCue(CuePointer pCue) {
     // because we have a null check for valid data else where in the code
     m_pCue = pCue;
 }
-PredefinedColorPointer HotcueControl::getColor() const {
-    return Color::kPredefinedColorsSet.predefinedColorFromId(m_hotcueColor->get());
+mixxx::RgbColor::optional_t HotcueControl::getColor() const {
+    return doubleToRgbColor(m_hotcueColor->get());
 }
 
-void HotcueControl::setColor(PredefinedColorPointer newColor) {
-    m_hotcueColor->set(static_cast<double>(newColor->m_iId));
+void HotcueControl::setColor(mixxx::RgbColor::optional_t newColor) {
+    if (newColor) {
+        m_hotcueColor->set(*newColor);
+    }
 }
 void HotcueControl::resetCue() {
     // clear pCue first because we have a null check for valid data else where

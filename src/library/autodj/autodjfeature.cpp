@@ -122,8 +122,7 @@ void AutoDJFeature::bindLibraryWidget(
             m_pConfig,
             m_pLibrary,
             m_pAutoDJProcessor,
-            keyboard,
-            libraryWidget->getShowButtonText());
+            keyboard);
     libraryWidget->registerView(kViewName, m_pAutoDJView);
     connect(m_pAutoDJView,
             &DlgAutoDJ::loadTrack,

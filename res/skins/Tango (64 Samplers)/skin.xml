@@ -26,8 +26,8 @@
   <manifest>
     <title>Tango</title>
     <author>ronso0@mixxx.org</author>
-    <version>2.3.0</version>
-    <description>A controller-focused nighttime skin. Almost all controls can be hidden with skin menu.</description>
+    <version>2.3.0.01</version>
+    <description>A flexible nighttime skin with stacked waveforms, 4 decks and 64 samplers that can be minimized to the bare essentials.</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
 
@@ -95,6 +95,7 @@
       <attribute persist="true" config_key="[Skin],sampler_row_8_expanded">0</attribute>
 
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
+
       <!-- Library -->
       <attribute config_key="[Master],maximize_library">0</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>

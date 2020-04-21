@@ -7,6 +7,16 @@
 #include "library/searchqueryparser.h"
 #include "util/assert.h"
 
+TrackPointer newTestTrack(int sampleRate) {
+    TrackPointer pTrack(Track::newTemporary());
+    pTrack->setAudioProperties(
+            mixxx::audio::ChannelCount(2),
+            mixxx::audio::SampleRate(sampleRate),
+            mixxx::audio::Bitrate(),
+            mixxx::Duration::fromSeconds(180));
+    return pTrack;
+}
+
 class SearchQueryParserTest : public LibraryTest {
   protected:
     SearchQueryParserTest()
@@ -17,8 +27,8 @@ class SearchQueryParserTest : public LibraryTest {
     }
 
     TrackId addTrackToCollection(const QString& trackLocation) {
-        TrackPointer pTrack = internalCollection()->getOrAddTrack(
-                TrackRef::fromFileInfo(trackLocation));
+        TrackPointer pTrack =
+                getOrAddTrackByLocation(trackLocation);
         return pTrack ? pTrack->getId() : TrackId();
     }
 
@@ -360,8 +370,7 @@ TEST_F(SearchQueryParserTest, NumericFilter) {
     auto pQuery(
         m_parser.parseQuery("bpm:127.12", searchColumns, ""));
 
-    TrackPointer pTrack(Track::newTemporary());
-    pTrack->setSampleRate(44100);
+    TrackPointer pTrack = newTestTrack(44100);
     pTrack->setBpm(127);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setBpm(127.12);
@@ -380,8 +389,7 @@ TEST_F(SearchQueryParserTest, NumericFilterEmpty) {
     auto pQuery(
         m_parser.parseQuery("bpm:", searchColumns, ""));
 
-    TrackPointer pTrack(Track::newTemporary());
-    pTrack->setSampleRate(44100);
+    TrackPointer pTrack = newTestTrack(44100);
     pTrack->setBpm(127);
     EXPECT_TRUE(pQuery->match(pTrack));
 
@@ -398,8 +406,7 @@ TEST_F(SearchQueryParserTest, NumericFilterNegation) {
     auto pQuery(
         m_parser.parseQuery("-bpm:127.12", searchColumns, ""));
 
-    TrackPointer pTrack(Track::newTemporary());
-    pTrack->setSampleRate(44100);
+    TrackPointer pTrack = newTestTrack(44100);
     pTrack->setBpm(127);
     EXPECT_TRUE(pQuery->match(pTrack));
     pTrack->setBpm(127.12);
@@ -418,8 +425,7 @@ TEST_F(SearchQueryParserTest, NumericFilterAllowsSpace) {
     auto pQuery(
         m_parser.parseQuery("bpm: 127.12", searchColumns, ""));
 
-    TrackPointer pTrack(Track::newTemporary());
-    pTrack->setSampleRate(44100);
+    TrackPointer pTrack = newTestTrack(44100);
     pTrack->setBpm(127);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setBpm(127.12);
@@ -438,8 +444,7 @@ TEST_F(SearchQueryParserTest, NumericFilterOperators) {
     auto pQuery(
         m_parser.parseQuery("bpm:>127.12", searchColumns, ""));
 
-    TrackPointer pTrack(Track::newTemporary());
-    pTrack->setSampleRate(44100);
+    TrackPointer pTrack = newTestTrack(44100);
     pTrack->setBpm(127.12);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setBpm(127.13);
@@ -485,8 +490,7 @@ TEST_F(SearchQueryParserTest, NumericRangeFilter) {
     auto pQuery(
         m_parser.parseQuery("bpm:127.12-129", searchColumns, ""));
 
-    TrackPointer pTrack(Track::newTemporary());
-    pTrack->setSampleRate(44100);
+    TrackPointer pTrack = newTestTrack(44100);
     pTrack->setBpm(125);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setBpm(127.12);
@@ -508,8 +512,7 @@ TEST_F(SearchQueryParserTest, MultipleFilters) {
         m_parser.parseQuery("bpm:127.12-129 artist:\"com truise\" Colorvision",
                             searchColumns, ""));
 
-    TrackPointer pTrack(Track::newTemporary());
-    pTrack->setSampleRate(44100);
+    TrackPointer pTrack = newTestTrack(44100);
     pTrack->setBpm(128);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setArtist("Com Truise");
@@ -531,7 +534,7 @@ TEST_F(SearchQueryParserTest, ExtraFilterAppended) {
     auto pQuery(
         m_parser.parseQuery("asdf", searchColumns, "1 > 2"));
 
-    TrackPointer pTrack(Track::newTemporary());
+    TrackPointer pTrack = newTestTrack(44100);
     pTrack->setArtist("zxcv");
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setArtist("asdf");
@@ -550,8 +553,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearch) {
     auto pQuery(
         m_parser.parseQuery("duration:1:30", searchColumns, ""));
 
-    TrackPointer pTrack(Track::newTemporary());
-    pTrack->setSampleRate(44100);
+    TrackPointer pTrack = newTestTrack(44100);
     pTrack->setDuration(91);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setDuration(90);
@@ -590,8 +592,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchWithOperators) {
     auto pQuery(
         m_parser.parseQuery("duration:>1:30", searchColumns, ""));
 
-    TrackPointer pTrack(Track::newTemporary());
-    pTrack->setSampleRate(44100);
+    TrackPointer pTrack = newTestTrack(44100);
     pTrack->setDuration(89);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setDuration(91);
@@ -690,8 +691,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {
     auto pQuery(
         m_parser.parseQuery("duration:2:30-3:20", searchColumns, ""));
 
-    TrackPointer pTrack(Track::newTemporary());
-    pTrack->setSampleRate(44100);
+    TrackPointer pTrack = newTestTrack(44100);
     pTrack->setDuration(80);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setDuration(150);
@@ -704,7 +704,6 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("duration:2:30-200", searchColumns, "");
-    pTrack->setSampleRate(44100);
     pTrack->setDuration(80);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setDuration(150);
@@ -717,7 +716,6 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("duration:150-200", searchColumns, "");
-    pTrack->setSampleRate(44100);
     pTrack->setDuration(80);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setDuration(150);
@@ -730,7 +728,6 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("duration:2m30s-3m20s", searchColumns, "");
-    pTrack->setSampleRate(44100);
     pTrack->setDuration(80);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setDuration(150);

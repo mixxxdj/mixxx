@@ -64,9 +64,11 @@ void DeviceChannelListener::Reconnected() {
     qDebug() << "HSS1394 device" << m_sName << "re-connected";
 }
 
-Hss1394Controller::Hss1394Controller(const hss1394::TNodeInfo deviceInfo,
-                                     int deviceIndex)
-        : MidiController(),
+Hss1394Controller::Hss1394Controller(
+        const hss1394::TNodeInfo& deviceInfo,
+        int deviceIndex,
+        UserSettingsPointer pConfig)
+        : MidiController(pConfig),
           m_deviceInfo(deviceInfo),
           m_iDeviceIndex(deviceIndex) {
     // Note: We prepend the input stream's index to the device's name to prevent

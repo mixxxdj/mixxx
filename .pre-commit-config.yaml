@@ -40,6 +40,8 @@
 # because it won't prevent catching other, unrelated issues.
 
 exclude: ^lib/.*$
+default_language_version:
+  python: python3
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v2.3.0
@@ -69,16 +71,19 @@ repos:
     stages:
     - commit
     - manual
-- repo: git://github.com/doublify/pre-commit-clang-format
-  rev: master
+- repo: local
   hooks:
   - id: clang-format
+    name: clang-format
     entry: git clang-format
-    args: []
     require_serial: true
     stages:
     - commit
     - manual
+    language: python
+    files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|mm|proto|vert)$
+    additional_dependencies:
+    - clang-format
 -   repo: https://github.com/psf/black
     rev: stable
     hooks:

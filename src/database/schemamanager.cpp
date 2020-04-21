@@ -189,6 +189,24 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
             }
             FwdSqlQuery query(m_database, statement);
             result = query.isPrepared() && query.execPrepared();
+            if (!result &&
+                    query.hasError() &&
+                    query.lastError().databaseText().startsWith(
+                            QStringLiteral("duplicate column name: "))) {
+                // New columns may have already been added during a previous
+                // migration to a different (= preceding) schema version. This
+                // is a very common situation during development when switching
+                // between schema versions. Since SQLite does not allow to add
+                // new columns only if they do not yet exist we need to account
+                // for and handle those errors here after they occurred. If the
+                // remaining migration finishes without other errors this is
+                // probably ok.
+                kLogger.warning()
+                        << "Ignoring failed statement"
+                        << statement
+                        << "and continuing with schema migration";
+                result = true;
+            }
         }
 
         if (result) {

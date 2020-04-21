@@ -145,7 +145,7 @@ void AnalyzerThread::doRun() {
             // Make sure not to short-circuit initialize(...)
             if (analyzer.initialize(
                         m_currentTrack,
-                        audioSource->sampleRate(),
+                        audioSource->getSignalInfo().getSampleRate(),
                         audioSource->frameLength() * mixxx::kAnalysisChannels)) {
                 processTrack = true;
             }
@@ -226,7 +226,9 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
     mixxx::AudioSourceStereoProxy audioSourceProxy(
             audioSource,
             mixxx::kAnalysisFramesPerChunk);
-    DEBUG_ASSERT(audioSourceProxy.channelCount() == mixxx::kAnalysisChannels);
+    DEBUG_ASSERT(
+            audioSourceProxy.getSignalInfo().getChannelCount() ==
+            mixxx::kAnalysisChannels);
 
     // Analysis starts now
     emitBusyProgress(kAnalyzerProgressNone);
@@ -348,6 +350,7 @@ void AnalyzerThread::emitDoneProgress(AnalyzerProgress doneProgress) {
     // thread that might trigger database actions! The TrackAnalysisScheduler
     // must store a TrackPointer until receiving the Done signal.
     TrackId trackId = m_currentTrack->getId();
+    m_currentTrack->analysisFinished();
     m_currentTrack.reset();
     emitProgress(AnalyzerThreadState::Done, trackId, doneProgress);
 }

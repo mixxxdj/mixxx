@@ -15,7 +15,6 @@
 #include "preferences/usersettings.h"
 #include "skin/pixmapsource.h"
 #include "util/color/color.h"
-#include "util/color/predefinedcolorsrepresentation.h"
 #include "widget/wsingletoncontainer.h"
 #include "widget/wpixmapstore.h"
 
@@ -102,16 +101,16 @@ class SkinContext {
         return nodeToString(child);
     }
 
-    inline float selectFloat(const QDomNode& node, const QString& nodeName) const {
+    inline float selectFloat(const QDomNode& node, const QString& nodeName, float defaultValue = 0.0) const {
         bool ok = false;
         float conv = nodeToString(selectElement(node, nodeName)).toFloat(&ok);
-        return ok ? conv : 0.0f;
+        return ok ? conv : defaultValue;
     }
 
-    inline double selectDouble(const QDomNode& node, const QString& nodeName) const {
+    inline double selectDouble(const QDomNode& node, const QString& nodeName, double defaultValue = 0.0) const {
         bool ok = false;
         double conv = nodeToString(selectElement(node, nodeName)).toDouble(&ok);
-        return ok ? conv : 0.0;
+        return ok ? conv : defaultValue;
     }
 
     inline int selectInt(const QDomNode& node, const QString& nodeName,
@@ -258,18 +257,8 @@ class SkinContext {
         return m_scaleFactor;
     }
 
-    PredefinedColorsRepresentation getCueColorRepresentation(const QDomNode& node, QColor defaultColor) const {
-        PredefinedColorsRepresentation colorRepresentation = Color::kPredefinedColorsSet.defaultRepresentation();
-        for (PredefinedColorPointer color : Color::kPredefinedColorsSet.allColors) {
-            QString sColorName(color->m_sName);
-            QColor skinRgba = selectColor(node, "Cue" + sColorName);
-            if (skinRgba.isValid()) {
-                PredefinedColorPointer originalColor = Color::kPredefinedColorsSet.predefinedColorFromName(sColorName);
-                colorRepresentation.setCustomRgba(originalColor, skinRgba);
-            }
-        }
-        colorRepresentation.setCustomRgba(Color::kPredefinedColorsSet.noColor, defaultColor);
-        return colorRepresentation;
+    UserSettingsPointer getConfig() const {
+        return m_pConfig;
     }
 
   private:

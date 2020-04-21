@@ -99,6 +99,14 @@ class TrackCollection : public QObject,
             bool unremove);
 
   signals:
+    // Forwarded signals from TrackDAO
+    void trackClean(TrackId trackId);
+    void trackDirty(TrackId trackId);
+    void tracksAdded(QSet<TrackId> trackIds);
+    void tracksChanged(QSet<TrackId> trackIds);
+    void tracksRemoved(QSet<TrackId> trackIds);
+    void multipleTracksChanged();
+
     void crateInserted(CrateId id);
     void crateUpdated(CrateId id);
     void crateDeleted(CrateId id);

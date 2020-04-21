@@ -33,10 +33,14 @@
         <file>images/mixxx-icon-logo-symbolic.svg</file> <!-- default launch image -->
         <file>images/skin_preview_placeholder.png</file>
         <file>images/ic_checkmark.svg</file>
+        <file>images/ic_custom.svg</file>
         <file>images/ic_delete.svg</file>
+        <file>images/ic_mixxx_symbolic.svg</file>
+        <file>images/ic_none.svg</file>
         <file>images/preferences/ic_preferences_autodj.svg</file>
         <file>images/preferences/ic_preferences_bpmdetect.svg</file>
         <file>images/preferences/ic_preferences_broadcast.svg</file>
+        <file>images/preferences/ic_preferences_colors.svg</file>
         <file>images/preferences/ic_preferences_controllers.svg</file>
         <file>images/preferences/ic_preferences_crossfader.svg</file>
         <file>images/preferences/ic_preferences_decks.svg</file>

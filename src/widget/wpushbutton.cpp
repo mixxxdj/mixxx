@@ -369,18 +369,6 @@ void WPushButton::paintEvent(QPaintEvent* e) {
     }
 }
 
-void WPushButton::enterEvent(QEvent *event) {
-    m_bHovered = true;
-    restyleAndRepaint();
-    return QWidget::enterEvent(event);
-}
-
-void WPushButton::leaveEvent(QEvent *event) {
-    m_bHovered = false;
-    restyleAndRepaint();
-    return QWidget::leaveEvent(event);
-}
-
 void WPushButton::mousePressEvent(QMouseEvent * e) {
     const bool leftClick = e->button() == Qt::LeftButton;
     const bool rightClick = e->button() == Qt::RightButton;
@@ -390,10 +378,10 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
         if (leftClick) {
             m_clickTimer.setSingleShot(true);
             m_clickTimer.start(ControlPushButtonBehavior::kPowerWindowTimeMillis);
+            m_bPressed = true;
 
             double emitValue = getControlParameterLeft() == 0.0 ? 1.0 : 0.0;
             setControlParameterLeftDown(emitValue);
-            m_bPressed = true;
             restyleAndRepaint();
         }
         // discharge right clicks here, because is used for latching in POWERWINDOW mode
@@ -414,6 +402,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
     }
 
     if (leftClick) {
+        m_bPressed = true;
         double emitValue;
         if (m_leftButtonMode == ControlPushButton::PUSH
                 || m_iNoStates == 1) {
@@ -431,21 +420,40 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
                 m_clickTimer.start(ControlPushButtonBehavior::kLongPressLatchingTimeMillis);
             }
         }
-        m_bPressed = true;
         setControlParameterLeftDown(emitValue);
         restyleAndRepaint();
     }
 }
 
+bool WPushButton::event(QEvent* e) {
+    if (e->type() == QEvent::WindowDeactivate) {
+        // if the window is deactivated while in pressed state
+        if (m_bPressed) {
+            m_bPressed = false;
+            restyleAndRepaint();
+        }
+    } else if (e->type() == QEvent::ToolTip) {
+        updateTooltip();
+    } else if (e->type() == QEvent::Enter) {
+        m_bHovered = true;
+        restyleAndRepaint();
+    } else if (e->type() == QEvent::Leave) {
+        m_bHovered = false;
+        restyleAndRepaint();
+    }
+    return QWidget::event(e);
+}
+
 void WPushButton::focusOutEvent(QFocusEvent* e) {
-    Q_UNUSED(e);
-    if (e->reason() != Qt::MouseFocusReason) {
+    qDebug() << "focusOutEvent" << e->reason();
+    if (m_bPressed && e->reason() != Qt::MouseFocusReason) {
         // Since we support multi touch there is no reason to reset
         // the pressed flag if the Primary touch point is moved to an
         // other widget
         m_bPressed = false;
         restyleAndRepaint();
     }
+    QWidget::focusOutEvent(e);
 }
 
 void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
@@ -483,6 +491,7 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
     }
 
     if (leftClick) {
+        m_bPressed = false;
         double emitValue = getControlParameterLeft();
         if (m_leftButtonMode == ControlPushButton::PUSH
                 || m_iNoStates == 1) {
@@ -499,7 +508,6 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
                 // Nothing special happens when releasing a normal toggle button
             }
         }
-        m_bPressed = false;
         setControlParameterLeftUp(emitValue);
         restyleAndRepaint();
     }

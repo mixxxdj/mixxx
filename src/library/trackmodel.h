@@ -7,6 +7,7 @@
 #include <QtSql>
 
 #include "track/track.h"
+#include "track/trackref.h"
 #include "library/dao/settingsdao.h"
 
 /** Pure virtual (abstract) class that provides an interface for data models which
@@ -86,9 +87,10 @@ class TrackModel {
         NUM_SORTCOLUMNIDS
     };
 
-    // Deserialize and return the track at the given QModelIndex in this result
-    // set.
+    // Deserialize and return the track at the given QModelIndex
+    // or TrackRef in this result set.
     virtual TrackPointer getTrack(const QModelIndex& index) const = 0;
+    virtual TrackPointer getTrackByRef(const TrackRef& trackRef) const = 0;
 
     // Gets the on-disk location of the track at the given location
     // with Qt separator "/".
@@ -144,6 +146,10 @@ class TrackModel {
     }
     virtual TrackModel::CapabilitiesFlags getCapabilities() const {
         return TRACKMODELCAPS_NONE;
+    }
+    virtual bool hasCapabilities(TrackModel::CapabilitiesFlags flags) const {
+        Q_UNUSED(flags);
+        return false;
     }
     virtual QString getModelSetting(QString name) {
         SettingsDAO settings(m_db);

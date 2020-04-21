@@ -221,13 +221,6 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
     setSort(defaultSortColumn(), defaultSortOrder());
 }
 
-bool BansheePlaylistModel::setData(const QModelIndex& index, const QVariant& value, int role) {
-    Q_UNUSED(index);
-    Q_UNUSED(value);
-    Q_UNUSED(role);
-    return false;
-}
-
 TrackModel::CapabilitiesFlags BansheePlaylistModel::getCapabilities() const {
     return TRACKMODELCAPS_NONE
             | TRACKMODELCAPS_ADDTOPLAYLIST
@@ -238,65 +231,23 @@ TrackModel::CapabilitiesFlags BansheePlaylistModel::getCapabilities() const {
 }
 
 Qt::ItemFlags BansheePlaylistModel::flags(const QModelIndex &index) const {
-    return readWriteFlags(index);
-}
-
-Qt::ItemFlags BansheePlaylistModel::readWriteFlags(const QModelIndex &index) const {
-    if (!index.isValid()) {
-        return Qt::ItemIsEnabled;
-    }
-
-    Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
-
-    // Enable dragging songs from this data model to elsewhere (like the waveform
-    // widget to load a track into a Player).
-    defaultFlags |= Qt::ItemIsDragEnabled;
-
-    return defaultFlags;
-}
-
-Qt::ItemFlags BansheePlaylistModel::readOnlyFlags(const QModelIndex &index) const
-{
-    Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
-    if (!index.isValid())
-        return Qt::ItemIsEnabled;
-
-    //Enable dragging songs from this data model to elsewhere (like the waveform widget to
-    //load a track into a Player).
-    defaultFlags |= Qt::ItemIsDragEnabled;
-
-    return defaultFlags;
+    return readOnlyFlags(index);
 }
 
 void BansheePlaylistModel::tracksChanged(QSet<TrackId> trackIds) {
     Q_UNUSED(trackIds);
 }
 
-void BansheePlaylistModel::trackLoaded(QString group, TrackPointer pTrack) {
-    if (group == m_previewDeckGroup) {
-        // If there was a previously loaded track, refresh its rows so the
-        // preview state will update.
-        if (m_previewDeckTrackId.isValid()) {
-            const int numColumns = columnCount();
-            QLinkedList<int> rows = getTrackRows(m_previewDeckTrackId);
-            m_previewDeckTrackId = TrackId(); // invalidate
-            foreach (int row, rows) {
-                QModelIndex left = index(row, 0);
-                QModelIndex right = index(row, numColumns);
-                emit dataChanged(left, right);
-            }
-        }
-        if (pTrack) {
-            for (int row = 0; row < rowCount(); ++row) {
-                const QUrl rowUrl(getFieldString(index(row, 0), CLM_URI));
-                if (TrackFile::fromUrl(rowUrl) == pTrack->getFileInfo()) {
-                    m_previewDeckTrackId =
-                            TrackId(getFieldVariant(index(row, 0), CLM_VIEW_ORDER));
-                    break;
-                }
+TrackId BansheePlaylistModel::doGetTrackId(const TrackPointer& pTrack) const {
+    if (pTrack) {
+        for (int row = 0; row < rowCount(); ++row) {
+            const QUrl rowUrl(getFieldString(index(row, 0), CLM_URI));
+            if (TrackFile::fromUrl(rowUrl) == pTrack->getFileInfo()) {
+                return TrackId(getFieldVariant(index(row, 0), CLM_VIEW_ORDER));
             }
         }
     }
+    return TrackId();
 }
 
 QVariant BansheePlaylistModel::getFieldVariant(const QModelIndex& index,

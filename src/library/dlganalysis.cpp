@@ -8,9 +8,10 @@
 #include "library/trackcollectionmanager.h"
 #include "library/dlganalysis.h"
 #include "library/library.h"
+#include "widget/wlibrary.h"
 #include "util/assert.h"
 
-DlgAnalysis::DlgAnalysis(QWidget* parent,
+DlgAnalysis::DlgAnalysis(WLibrary* parent,
                        UserSettingsPointer pConfig,
                        Library* pLibrary)
         : QWidget(parent),
@@ -20,7 +21,11 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
     m_songsButtonGroup.addButton(radioButtonRecentlyAdded);
     m_songsButtonGroup.addButton(radioButtonAllSongs);
 
-    m_pAnalysisLibraryTableView = new WAnalysisLibraryTableView(this, pConfig, pLibrary->trackCollections());
+    m_pAnalysisLibraryTableView = new WAnalysisLibraryTableView(
+            this,
+            pConfig,
+            pLibrary->trackCollections(),
+            parent->getTrackTableBackgroundColorOpacity());
     connect(m_pAnalysisLibraryTableView,
             &WAnalysisLibraryTableView::loadTrack,
             this,
@@ -54,15 +59,14 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
             &QRadioButton::clicked,
             this,
             &DlgAnalysis::showAllSongs);
-
-    // TODO(rryan): This triggers a library search before the UI has even
-    // started up. Accounts for 0.2% of skin creation time. Get rid of this!
-    radioButtonRecentlyAdded->click();
+    // Don't click those radio buttons now reduce skin loading time.
+    // 'RecentlyAdded' is clicked in onShow()
 
     connect(pushButtonAnalyze,
             &QPushButton::clicked,
             this,
             &DlgAnalysis::analyze);
+    pushButtonAnalyze->setEnabled(false);
 
     connect(pushButtonSelectAll,
             &QPushButton::clicked,
@@ -91,6 +95,10 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
 }
 
 void DlgAnalysis::onShow() {
+    if (!radioButtonRecentlyAdded->isChecked() &&
+            !radioButtonAllSongs->isChecked()) {
+        radioButtonRecentlyAdded->click();
+    }
     // Refresh table
     // There might be new tracks dropped to other views
     m_pAnalysisLibraryTableModel->select();
@@ -165,10 +173,11 @@ void DlgAnalysis::slotAnalysisActive(bool bActive) {
     //qDebug() << this << "slotAnalysisActive" << bActive;
     m_bAnalysisActive = bActive;
     if (bActive) {
-        pushButtonAnalyze->setEnabled(true);
+        pushButtonAnalyze->setChecked(true);
         pushButtonAnalyze->setText(tr("Stop Analysis"));
         labelProgress->setEnabled(true);
     } else {
+        pushButtonAnalyze->setChecked(false);
         pushButtonAnalyze->setText(tr("Analyze"));
         labelProgress->setText("");
         labelProgress->setEnabled(false);
