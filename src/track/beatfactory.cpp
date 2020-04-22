@@ -7,7 +7,7 @@
 #include "track/beatutils.h"
 #include "track/track.h"
 
-mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const TrackPointer track,
+mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const TrackPointer& track,
         QString beatsVersion,
         QString beatsSubVersion,
         const QByteArray& beatsSerialized) {
@@ -83,7 +83,7 @@ QString BeatFactory::getPreferredSubVersion(
 }
 
 mixxx::BeatsPointer BeatFactory::makePreferredBeats(
-        const TrackPointer track, QVector<double> beats, const QHash<QString, QString> extraVersionInfo, const bool bEnableFixedTempoCorrection, const bool bEnableOffsetCorrection, const SINT iSampleRate, const int iTotalSamples, const int iMinBpm, const int iMaxBpm) {
+        const TrackPointer& track, QVector<double> beats, const QHash<QString, QString> extraVersionInfo, const bool bEnableFixedTempoCorrection, const bool bEnableOffsetCorrection, const SINT iSampleRate, const int iTotalSamples, const int iMinBpm, const int iMaxBpm) {
     const QString version = getPreferredVersion(bEnableFixedTempoCorrection);
     const QString subVersion = getPreferredSubVersion(bEnableFixedTempoCorrection,
                                                       bEnableOffsetCorrection,
