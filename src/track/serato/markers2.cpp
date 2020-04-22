@@ -510,7 +510,7 @@ QByteArray SeratoMarkers2::dumpBase64Encoded() const {
     QByteArray outerData;
     outerData.reserve(kSeratoMarkers2Base64EncodedPrefix.size() + 2 + innerData.size());
     outerData += kSeratoMarkers2Base64EncodedPrefix;
-    outerData += QByteArray({0x01, 0x01});
+    outerData += QByteArray("\x01\x01", 2);
     outerData += innerData;
 
     int size = getAllocatedSize();
