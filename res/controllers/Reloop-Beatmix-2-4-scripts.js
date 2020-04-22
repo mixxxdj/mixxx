@@ -407,7 +407,7 @@ ReloopBeatmix24.WheelTurn = function(channel, control, value, status, group) {
     if (engine.isScratching(deck)) {
         engine.scratchTick(deck, newValue); // Scratch!
     } else {
-        engine.setValue(group, 'jog', newValue); // Pitch bend
+        engine.setValue(group, 'jog', newValue / 5); // Pitch bend
     }
 };
 
