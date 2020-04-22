@@ -508,15 +508,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
     if (file_location.isNull() || file_location.isEmpty()) {
         return;
     }
-    // Manually add extension due to bug in QFileDialog
-    // via https://bugreports.qt-project.org/browse/QTBUG-27186
-    // Can be removed after switch to Qt5
     QFileInfo fileName(file_location);
-    if (fileName.suffix().isNull() || fileName.suffix().isEmpty()) {
-        QString ext = filefilter.section(".",1,1);
-        ext.chop(1);
-        file_location.append(".").append(ext);
-    }
     // Update the import/export playlist directory
     m_pConfig->set(ConfigKey("[Library]","LastImportExportPlaylistDirectory"),
                 ConfigValue(fileName.dir().absolutePath()));
@@ -557,21 +549,10 @@ void BasePlaylistFeature::slotExportPlaylist() {
             QModelIndex index = pPlaylistTableModel->index(i, 0);
             playlist_items << pPlaylistTableModel->getTrackLocation(index);
         }
-
-        if (file_location.endsWith(".pls", Qt::CaseInsensitive)) {
-            ParserPls::writePLSFile(file_location, playlist_items, useRelativePath);
-        } else if (file_location.endsWith(".m3u8", Qt::CaseInsensitive)) {
-            ParserM3u::writeM3U8File(file_location, playlist_items, useRelativePath);
-        } else {
-            //default export to M3U if file extension is missing
-            if(!file_location.endsWith(".m3u", Qt::CaseInsensitive))
-            {
-                qDebug() << "Crate export: No valid file extension specified. Appending .m3u "
-                         << "and exporting to M3U.";
-                file_location.append(".m3u");
-            }
-            ParserM3u::writeM3UFile(file_location, playlist_items, useRelativePath);
-        }
+        exportPlaylistItemsIntoFile(
+                file_location,
+                playlist_items,
+                useRelativePath);
     }
 }
 

@@ -2,9 +2,10 @@
 #define MIXXX_UTIL_TRANSLATIONS_H
 
 #include <QCoreApplication>
+#include <QLibraryInfo>
 #include <QLocale>
-#include <QTranslator>
 #include <QString>
+#include <QTranslator>
 #include <QtDebug>
 
 #include "preferences/usersettings.h"

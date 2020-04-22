@@ -115,7 +115,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_waveformPage);
     m_deckPage = new DlgPrefDeck(this, mixxx, pPlayerManager, m_pConfig);
     addPageWidget(m_deckPage);
-    m_colorsPage = new DlgPrefColors(this, m_pConfig);
+    m_colorsPage = new DlgPrefColors(this, m_pConfig, pLibrary);
     addPageWidget(m_colorsPage);
     m_equalizerPage = new DlgPrefEQ(this, pEffectsManager, m_pConfig);
     addPageWidget(m_equalizerPage);
