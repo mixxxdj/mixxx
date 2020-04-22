@@ -411,8 +411,8 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) == column ||
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column) {
         // For sorting, we give COLUMN_LIBRARYTABLE_COVERART the same value as
-        // the cover hash.
-        trackValue.setValue(pTrack->getCoverInfo().imageHash());
+        // the cover digest.
+        trackValue.setValue(pTrack->getCoverInfo().imageDigest());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_COLOR) == column) {
         trackValue.setValue(mixxx::RgbColor::toQVariant(pTrack->getCoverInfo().color));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_DIGEST) == column) {
