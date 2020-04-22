@@ -307,7 +307,6 @@ class Beats : public QObject {
     double m_dCachedBpm;
     FrameNum m_dLastFrame;
     BeatList m_beats;
-    Logger m_logger;
 
     virtual SINT getSampleRate() const = 0;
 
