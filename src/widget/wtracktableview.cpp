@@ -736,6 +736,37 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
     }
 }
 
+void WTrackTableView::loadSelectedTrack() {
+    auto indices = selectionModel()->selectedRows();
+    if (indices.size() > 0) {
+        slotMouseDoubleClicked(indices.at(0));
+    }
+}
+
+void WTrackTableView::loadSelectedTrackToGroup(QString group, bool play) {
+    auto indices = selectionModel()->selectedRows();
+    if (indices.size() > 0) {
+        // If the track load override is disabled, check to see if a track is
+        // playing before trying to load it
+        if (!(m_pConfig->getValueString(
+                               ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"))
+                            .toInt())) {
+            // TODO(XXX): Check for other than just the first preview deck.
+            if (group != "[PreviewDeck1]" &&
+                    ControlObject::get(ConfigKey(group, "play")) > 0.0) {
+                return;
+            }
+        }
+        auto index = indices.at(0);
+        auto trackModel = getTrackModel();
+        TrackPointer pTrack;
+        if (trackModel &&
+                (pTrack = trackModel->getTrack(index))) {
+            emit loadTrackToPlayer(pTrack, group, play);
+        }
+    }
+}
+
 QList<TrackId> WTrackTableView::getSelectedTrackIds() const {
     QList<TrackId> trackIds;
 
