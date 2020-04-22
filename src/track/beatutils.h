@@ -9,6 +9,9 @@
 
 #include <QVector>
 
+// Included to get mixxx::kEngineChannelCount
+#include "engine/engine.h"
+
 class BeatUtils {
   public:
     static void printBeatStatistics(const QVector<double>& beats, int SampleRate);
@@ -68,13 +71,11 @@ class BeatUtils {
         const QVector<double> rawbeats, const int sampleRate,
         const int totalSamples, const double globalBpm);
 
-    // TODO(JVC) Document
-    static constexpr int kFrameSize = 2;
     static double samplesToFrames(const double samples) {
-        return floor(samples / kFrameSize);
+        return floor(samples / mixxx::kEngineChannelCount);
     }
     static double framesToSamples(const int frames) {
-        return frames * kFrameSize;
+        return frames * mixxx::kEngineChannelCount;
     }
 
   private:
