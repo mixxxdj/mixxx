@@ -383,9 +383,15 @@ bool SeratoMarkers2::parseBase64Encoded(
         return false;
     }
     DEBUG_ASSERT(decodedData.size() >= kSeratoMarkers2Base64EncodedPrefix.size());
-    return parse(
-            seratoMarkers2,
-            decodedData.mid(kSeratoMarkers2Base64EncodedPrefix.size()));
+    if (!parse(
+                seratoMarkers2,
+                decodedData.mid(kSeratoMarkers2Base64EncodedPrefix.size()))) {
+        qWarning() << "Parsing base64encoded SeratoMarkers2 failed!";
+        return false;
+    }
+
+    seratoMarkers2->setAllocatedSize(decodedData.size());
+    return true;
 }
 
 QByteArray SeratoMarkers2::dump() const {
@@ -537,12 +543,6 @@ QByteArray SeratoMarkers2::dumpBase64Encoded() const {
         QByteArray block = outerData.mid(offset, 54);
         base64Data.append(block.toBase64(QByteArray::Base64Encoding | QByteArray::OmitTrailingEquals));
         offset += block.size();
-
-        // In case that the last block would require padding, Serato seems to
-        // chop off the last byte of the base64-encoded data
-        if (block.size() % 3) {
-            base64Data.chop(1);
-        }
     }
     return base64Data;
 }
