@@ -113,10 +113,6 @@ class Beats : public QObject {
     }
     void setGridNew(double dBpm, FrameNum dFirstBeatFrame = 0);
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Beat calculations
-    ////////////////////////////////////////////////////////////////////////////
-
     // TODO: We may want to implement these with common code that returns
     //       the triple of closest, next, and prev.
 
