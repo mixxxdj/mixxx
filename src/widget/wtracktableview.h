@@ -39,7 +39,7 @@ class WTrackTableView : public WLibraryTableView {
     bool hasFocus() const override;
     void keyPressEvent(QKeyEvent* event) override;
     void loadSelectedTrack() override;
-    void loadSelectedTrackToGroup(QString group, bool play = false) override;
+    void loadSelectedTrackToGroup(QString group, bool play) override;
     void assignNextTrackColor() override;
     void assignPreviousTrackColor() override;
     QList<TrackId> getSelectedTrackIds() const;
