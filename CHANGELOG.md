@@ -2,24 +2,75 @@
 
 ## [2.3.0](https://launchpad.net/mixxx/+milestone/2.3.0) (Unreleased)
 
-* Add support for multi-threaded track analysis. [lp:1641153](https://bugs.launchpad.net/mixxx/+bug/1641153)
-* Add built-in support for MP3 encoding. LAME is now a required dependency. [lp:1294128](https://bugs.launchpad.net/mixxx/+bug/1294128)
-* Add support for searching for empty fields. (e.g. crate:""). [lp:1788086](https://bugs.launchpad.net/mixxx/+bug/1788086)
-* Unify skin controls for better consistency of settings across skins. [lp:1740513](https://bugs.launchpad.net/mixxx/+bug/1740513)
+==== 2.3 beta 2020-04-dd ====
+### Hotcues ###
+* Add hotcue colors and custom labels by right clicking hotcue buttons or right clicking hotcues on overview waveforms #2016 #2520 #2238 #2560 #2557 #2362
+* Mouse hover cues on overview waveform to show time remaining until the cue #2238
+* Right click overview waveform to show time remaining until that point #2238
+
+### Hotcue & Track Colors ###
+* Add configurable color per track #2470 #2539 #2545 #2630 [lp:1100882](https://bugs.launchpad.net/mixxx/+bug/1100882)
+* Add customizable color palettes for hotcue and track colors #2530 #2589
+* Add hotcue color find-and-replace tool #2547
+
+### Importing From Other DJ Software ###
+* Import cue points, track colors, one loop and playlists from Rekordbox USB drives #2119 #2555 #2543
+  * Note: The first Rekordbox memory cue is imported for the main cue button in Mixxx and the remaining Rekordbox memory cues are imported as Mixxx hotcues, starting with the next hotcue number after the last hotcue from Rekordbox.
+* Import cue points, track colors, one loop and playlists from Serato file tags & database #2480 #2526 #2499 #2495
+
+  * Note: Mixxx does not yet support multiple loops per track. We are working on this for Mixxx 2.4. In Mixxx 2.3, if you import a track with multiple loops from Rekordbox or Serato, only the first loop will be imported.
+
+### Intro & Outro Cues ###
+* Add intro & outro range cues with automatic silence detection #1242
+* Show duration of intro & outro ranges on overview waveform #2089
+* Use intro & outro cues in AutoDJ transitions #2103
+
+### Deck cloning ###
+* Add deck cloning (also known as "instant doubles" in other DJ software) by dragging and dropping between decks #1892
+
+### Skins & GUI ###
+* Aesthetically revamped LateNight skin #2298 #2342
+* Show track context menu when right clicking text in decks #2612 #2675 #2684 #2696
+* Add laptop battery widget to skins #2283 #2277 #2250 #2228 #2221 #2163 #2160 #2147 #2281 #2319 #2287
+* Show when passthrough mode is active on overview waveforms #2616
+
+### Music Feature Analysis ###
+* Multithreaded analysis for much faster batch analysis on multicore CPUs #1624 #2142 #926 [lp:1641153](https://bugs.launchpad.net/mixxx/+bug/1641153)
+* Fix bugs affecting key detection accuracy #2137 #2152 #2112 #2136
+  * Note: Users who have not manually corrected keys are advised to clear all keys in their library by pressing Ctrl + A in the library, right clicking, going to Reset -> Key, then reanalyzing their library.
 * Remove VAMP plugin support. vamp-plugin-sdk and vamp-hostsdk are no longer required dependencies.
-* Remove SoundSource plugin support. [lp:1792747](https://bugs.launchpad.net/mixxx/+bug/1792747)
+
+### Audio Codecs ###
+* Add FFmpeg audio decoder, bringing support for ALAC files #1356
+* Include LAME MP3 encoder with Mixxx now that the MP3 patent has expired [lp:1294128](https://bugs.launchpad.net/mixxx/+bug/1294128)
 * Add Opus streaming and recording support. [lp:1338413](https://bugs.launchpad.net/mixxx/+bug/1338413)
-* Improve synchronization of track metadata and file tags #2406
-* Add support for track colors [lp:1100882](https://bugs.launchpad.net/mixxx/+bug/1100882) #2470
+* Remove SoundSource plugin support. [lp:1792747](https://bugs.launchpad.net/mixxx/+bug/1792747)
+
 * Fix error prone recording settings preferences design [lp:1861421](https://bugs.launchpad.net/mixxx/+bug/1861421) #2478
-* Add Serato removable library feature #2480
+
+### Music Library ###
+* Improve synchronization of track metadata and file tags #2406
+* Add support for searching for empty fields. (e.g. crate:""). [lp:1788086](https://bugs.launchpad.net/mixxx/+bug/1788086)
 * Library Scanner: Improve hashing of directory contents #2497
-* Make Mixxx compile even though QT_NO_OPENGL or QT_OPENGL_ES_2 is defined (fixes build on RPi) [lp:1863440](https://bugs.launchpad.net/mixxx/+bug/1863440) #2504
 * Rework of Cover Image Hashing [lp:1607097](https://bugs.launchpad.net/mixxx/+bug/1607097) #2507 #2508
 * MusicBrainz: Handle 301 status response #2510
 * MusicBrainz: Add extended metadata support [lp:1581256](https://bugs.launchpad.net/mixxx/+bug/1581256) #2522
 * TagLib: Fix detection of empty or missing file tags [lp:1865957](https://bugs.launchpad.net/mixxx/+bug/1865957) #2535
-* Add mapping for Roland DJ-505 #2111
+
+### Controllers ###
+* Improve workflow for configuring controller mappings and editing mappings #2569
+* Improve error reporting from controller scripts #2588
+* Make hotcue and track colors mappable on controllers #2030 #2541 #2665 #2520
+* Add way to change library table sorting from controllers #2118
+* Add support for velocity sensitive sampler buttons in Components JS library #2032
+* Add logging when script ControlObject callback is disconnected successfully #2054
+* Add controller mapping for Roland DJ-505 #2111
+* Update controller mapping for Allen & Heath Xone K2 to add intro/outro cues #2236
+
+### Development ###
+* Add CMake build system with Ccache support for faster compilation time #2280
+  * Note: The old SCons build system is still supported for 2.3. We will be removing it for Mixxx 2.4.
+* Make Mixxx compile even though QT_NO_OPENGL or QT_OPENGL_ES_2 is defined (fixes build on Raspberry Pi) [lp:1863440](https://bugs.launchpad.net/mixxx/+bug/1863440) #2504
 
 ## [2.2.4](https://launchpad.net/mixxx/+milestone/2.2.4) (Unreleased)
 
