@@ -133,7 +133,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, 
             createTreeItem(tr("Waveforms"), QIcon(":/images/preferences/ic_preferences_waveforms.svg"))));
 
     addPageWidget(PreferencesPage(
-            new DlgPrefColors(this, m_pConfig),
+            new DlgPrefColors(this, m_pConfig, pLibrary),
             createTreeItem(tr("Colors"), QIcon(":/images/preferences/ic_preferences_colors.svg"))));
     
     addPageWidget(PreferencesPage(

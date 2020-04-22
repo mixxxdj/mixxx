@@ -438,6 +438,34 @@ QByteArray SeratoMarkers2::dump() const {
     return outerData.leftJustified(size, '\0');
 }
 
+QList<CueInfo> SeratoMarkers2::getCues(double timingOffsetMillis) const {
+    qDebug() << "Reading cues from 'Serato Markers2' tag data...";
+    QList<CueInfo> cueInfos;
+    for (auto& pEntry : m_entries) {
+        DEBUG_ASSERT(pEntry);
+        switch (pEntry->typeId()) {
+        case SeratoMarkers2Entry::TypeId::Cue: {
+            const SeratoMarkers2CueEntry* pCueEntry = static_cast<SeratoMarkers2CueEntry*>(pEntry.get());
+            CueInfo cueInfo(
+                    CueType::HotCue,
+                    pCueEntry->getPosition() + timingOffsetMillis,
+                    std::nullopt,
+                    pCueEntry->getIndex(),
+                    pCueEntry->getLabel(),
+                    pCueEntry->getColor());
+            cueInfos.append(cueInfo);
+
+            break;
+        }
+        // TODO: Add support for LOOP/FLIP
+        default:
+            break;
+        }
+    }
+
+    return cueInfos;
+}
+
 RgbColor::optional_t SeratoMarkers2::getTrackColor() const {
     qDebug() << "Reading track color from 'Serato Markers2' tag data...";
 
