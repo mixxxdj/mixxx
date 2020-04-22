@@ -37,7 +37,7 @@ TEST_F(BpmControlTest, BeatContext_BeatGrid) {
     const int kFrameSize = 2;
     const double expectedBeatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
-    auto pBeats = mixxx::BeatsPointer(new mixxx::Beats(pTrack.get()));
+    auto pBeats = std::make_shared<mixxx::Beats>(pTrack.get());
     pBeats->setGrid(bpm);
 
     // On a beat.
