@@ -839,24 +839,24 @@ bool Beats::readByteArray(const QByteArray& byteArray) {
     return true;
 }
 
-void Beats::printDebugInfo() const {
-    m_logger.debug() << "Beats State";
-    m_logger.debug() << "\tm_subVersion:" << m_subVersion;
-    m_logger.debug() << "\tm_iSampleRate:" << m_iSampleRate;
-    m_logger.debug() << "\tm_dCachedBpm:" << m_dCachedBpm;
-    m_logger.debug() << "\tm_dLastFrame:" << m_dLastFrame;
-    m_logger.debug() << "Beats content:";
-    for (auto beat : m_beats) {
-        m_logger.debug() << "pos:" << beat.frame_position();
-    }
-}
-
 FrameNum Beats::getFirstBeatPosition() const {
     return (m_beats.size() == 0) ? -1 : m_beats.front().frame_position();
 }
 
 FrameNum Beats::getLastBeatPosition() const {
     return (m_beats.size() == 0) ? -1 : m_beats.back().frame_position();
+}
+
+QDebug operator<<(QDebug dbg, const BeatsPointer& arg) {
+    dbg << "Beats State";
+    dbg << "\tm_subVersion:" << arg->m_subVersion;
+    dbg << "\tm_iSampleRate:" << arg->m_iSampleRate;
+    dbg << "\tm_dCachedBpm:" << arg->m_dCachedBpm;
+    dbg << "\tm_dLastFrame:" << arg->m_dLastFrame;
+    dbg << "Beats content:";
+    for (auto beat : arg->m_beats) {
+        dbg << "pos:" << beat.frame_position();
+    }
 }
 
 } // namespace mixxx

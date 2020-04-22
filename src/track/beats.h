@@ -283,8 +283,6 @@ class Beats : public QObject {
         return m_beats.size();
     }
 
-    /// Prints debuging information in stderr
-    void printDebugInfo() const;
     /// Returns the frame number for the first beat, -1 is no beats
     FrameNum getFirstBeatPosition() const;
     /// Returns the frame number for the last beat, -1 if no beats
@@ -293,6 +291,9 @@ class Beats : public QObject {
     SINT getSampleRate() const {
         return m_iSampleRate;
     }
+
+    /// Prints debuging information in stderr
+    friend QDebug operator<<(QDebug dbg, const BeatsPointer& arg);
 
   private:
     void onBeatlistChanged();

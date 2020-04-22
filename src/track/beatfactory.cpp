@@ -13,13 +13,13 @@ mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const TrackPointer track
         const QByteArray& beatsSerialized) {
     if (beatsVersion == BEAT_GRID_1_VERSION ||
         beatsVersion == BEAT_GRID_2_VERSION) {
+        // TODO(JVC) Add code to migrate from BeatGrid proto into the new Beats
         /*
         BeatGrid* pGrid = new BeatGrid(track, 0, beatsSerialized);
         pGrid->setSubVersion(beatsSubVersion);
         qDebug() << "Successfully deserialized BeatGrid";
         return BeatsPointer(pGrid, &BeatFactory::deleteBeats);
         */
-        // TODO(JVC) Add code to migrate from BeatGrid proto into the new Beats
     } else if (beatsVersion == BEAT_MAP_VERSION) {
         mixxx::Beats* pMap = new mixxx::Beats(track.get(), beatsSerialized);
         pMap->setSubVersion(beatsSubVersion);
