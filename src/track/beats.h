@@ -29,7 +29,6 @@ using FrameNum = double;
 #include "track/track.h"
 
 namespace {
-double kMaxBpm = 500;
 }
 
 namespace mixxx {
@@ -225,6 +224,8 @@ class Beats : public QObject {
     virtual double getBpmAroundPositionNew(FrameNum curFrameNum, int n) const;
 
     virtual double getMaxBpm() const {
+        // TODO(JVC) Why is returning a constant? MaxBpm must be taken from somewhere
+        constexpr double kMaxBpm = 500;
         return kMaxBpm;
     }
 
