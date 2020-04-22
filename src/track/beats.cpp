@@ -603,7 +603,7 @@ void Beats::setSignatureNew(TimeSignature sig, FrameNum frame) {
     emit(updated());
 }
 
-void Beats::setBarNew(FrameNum frame) {
+void Beats::setDownBeatNew(FrameNum frame) {
     QMutexLocker locker(&m_mutex);
     if (!isValid()) {
         return;
