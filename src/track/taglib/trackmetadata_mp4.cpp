@@ -30,6 +30,10 @@ const TagLib::String kAtomKeyReplayGainTrackPeak = "----:com.apple.iTunes:replay
 const TagLib::String kAtomKeyReplayGainAlbumGain = "----:com.apple.iTunes:replaygain_album_gain";
 const TagLib::String kAtomKeyReplayGainAlbumPeak = "----:com.apple.iTunes:replaygain_album_peak";
 
+// Serato atom keys
+const TagLib::String kAtomKeySeratoMarkers = "----:com.serato.dj:markers";
+const TagLib::String kAtomKeySeratoMarkers2 = "----:com.serato.dj:markersv2";
+
 // Workaround for missing const member function in TagLib
 inline const TagLib::MP4::ItemListMap& getItemListMap(
         const TagLib::MP4::Tag& tag) {
@@ -305,6 +309,26 @@ void importTrackMetadataFromTag(
         pTrackMetadata->refTrackInfo().setMovement(movement);
     }
 #endif // __EXTRA_METADATA__
+
+    // Serato tags
+    TagLib::String seratoMarkersBase64;
+    if (readAtom(
+                tag,
+                kAtomKeySeratoMarkers,
+                &seratoMarkersBase64)) {
+        parseSeratoMarkersBase64Encoded(
+                pTrackMetadata,
+                seratoMarkersBase64);
+    }
+    TagLib::String seratoMarkers2Base64;
+    if (readAtom(
+                tag,
+                kAtomKeySeratoMarkers2,
+                &seratoMarkers2Base64)) {
+        parseSeratoMarkers2Base64Encoded(
+                pTrackMetadata,
+                seratoMarkers2Base64);
+    }
 }
 
 bool exportTrackMetadataIntoTag(
@@ -417,7 +441,21 @@ bool exportTrackMetadataIntoTag(
     writeAtom(pTag, "\251mvn", toTString(trackMetadata.getTrackInfo().getMovement()));
 #endif // __EXTRA_METADATA__
 
+    // Export of Serato markers is disabled, because Mixxx
+    // does not modify them.
+#if defined(__EXPORT_SERATO_MARKERS__)
+    // Serato tags
+    writeAtom(
+            pTag,
+            kAtomKeySeratoMarkers,
+            dumpSeratoMarkersBase64Encoded(trackMetadata));
+    writeAtom(
+            pTag,
+            kAtomKeySeratoMarkers2,
+            dumpSeratoMarkers2Base64Encoded(trackMetadata));
+
     return true;
+#endif // __EXPORT_SERATO_MARKERS__
 }
 
 } // namespace mp4

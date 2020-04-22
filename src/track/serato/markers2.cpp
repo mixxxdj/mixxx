@@ -511,7 +511,8 @@ QByteArray SeratoMarkers2::dumpBase64Encoded() const {
         stream.writeRawData(entryData.constData(), entryData.length());
     }
     innerData.append('\0');
-    innerData = innerData.toBase64(QByteArray::Base64Encoding | QByteArray::OmitTrailingEquals);
+    innerData = innerData.toBase64(
+            QByteArray::Base64Encoding | QByteArray::OmitTrailingEquals);
 
     QByteArray outerData;
     outerData.reserve(kSeratoMarkers2Base64EncodedPrefix.size() + 2 + innerData.size());

@@ -155,6 +155,23 @@ bool parseSeratoMarkers(
     return isValid;
 }
 
+bool parseSeratoMarkersBase64Encoded(
+        TrackMetadata* pTrackMetadata,
+        const TagLib::String& base64Encoded) {
+    DEBUG_ASSERT(pTrackMetadata);
+
+    const TagLib::ByteVector byteVec =
+            base64Encoded.data(TagLib::String::UTF8);
+    auto byteArray = toQByteArrayRaw(byteVec);
+
+    SeratoTags seratoTags(pTrackMetadata->getTrackInfo().getSeratoTags());
+    bool isValid = seratoTags.parseMarkersBase64Encoded(byteArray);
+    if (isValid) {
+        pTrackMetadata->refTrackInfo().setSeratoTags(seratoTags);
+    }
+    return isValid;
+}
+
 bool parseSeratoMarkers2(
         TrackMetadata* pTrackMetadata,
         const QByteArray& data) {
@@ -183,6 +200,15 @@ bool parseSeratoMarkers2Base64Encoded(
         pTrackMetadata->refTrackInfo().setSeratoTags(seratoTags);
     }
     return isValid;
+}
+
+TagLib::String dumpSeratoMarkersBase64Encoded(
+        const TrackMetadata& trackMetadata) {
+    const QByteArray utf8Data =
+            trackMetadata.getTrackInfo().getSeratoTags().dumpMarkersBase64Encoded();
+    return TagLib::String(
+            utf8Data.constData(),
+            TagLib::String::UTF8);
 }
 
 TagLib::String dumpSeratoMarkers2Base64Encoded(

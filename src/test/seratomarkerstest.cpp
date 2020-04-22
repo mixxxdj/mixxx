@@ -163,4 +163,21 @@ TEST_F(SeratoMarkersTest, ParseEmptyData) {
     EXPECT_EQ(inputValue, outputValue);
 }
 
+TEST_F(SeratoMarkersTest, ParseAndDumpBase64EncodedMP4) {
+    // 5(?) cue points from an MP4 file
+    const char* referenceData =
+            "YXBwbGljYXRpb24vb2N0ZXQtc3RyZWFtAABTZXJhdG8gTWFya2Vyc18AAgUAAAAOAAAAr///\n"
+            "//8A/////wDMAAABAAAATxL/////AP////8AzIgAAQAAALlo/////wD/////AAAAzAEAAAC5\n"
+            "aP////8A/////wDMzAABAAABMWH/////AP////8AAMwAAQD//////////wD/////AAAAAAMA\n"
+            "//////////8A/////wAAAAADAP//////////AP////8AAAAAAwD//////////wD/////AAAA\n"
+            "AAMA//////////8A/////wAAAAADAP//////////AP////8AAAAAAwD//////////wD/////\n"
+            "AAAAAAMA//////////8A/////wAAAAADAP//////////AP////8AAAAAAwAA////A";
+    const auto inputData = QByteArray(referenceData);
+    mixxx::SeratoMarkers seratoMarkers;
+    EXPECT_TRUE(mixxx::SeratoMarkers::parseBase64Encoded(&seratoMarkers, inputData));
+    const auto outputData = seratoMarkers.dumpBase64Encoded();
+    EXPECT_EQ(inputData.size(), outputData.size());
+    EXPECT_EQ(inputData, outputData);
+}
+
 } // namespace

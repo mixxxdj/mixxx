@@ -11,6 +11,10 @@ const int kLoopEntryStartIndex = 5;
 const int kEntrySize = 22;
 const quint16 kVersion = 0x0205;
 
+const QByteArray kSeratoMarkersBase64EncodedPrefix = QByteArray(
+        "application/octet-stream\x00\x00Serato Markers_\x00",
+        24 + 2 + 15 + 1);
+
 // These functions convert between a custom 4-byte format (that we'll call
 // "serato32" for brevity) and 3-byte plaintext (both quint32).
 // Serato's custom format inserts a single null bit after every 7 payload
@@ -259,6 +263,26 @@ bool SeratoMarkers::parse(
     return true;
 }
 
+//static
+bool SeratoMarkers::parseBase64Encoded(
+        SeratoMarkers* seratoMarkers,
+        const QByteArray& base64EncodedData) {
+    const auto decodedData = QByteArray::fromBase64(base64EncodedData);
+    if (!decodedData.startsWith(kSeratoMarkersBase64EncodedPrefix)) {
+        qWarning() << "Decoding SeratoMarkers_ from base64 failed:"
+                   << "Unexpected prefix";
+        return false;
+    }
+    DEBUG_ASSERT(decodedData.size() >= kSeratoMarkersBase64EncodedPrefix.size());
+    if (!parse(
+                seratoMarkers,
+                decodedData.mid(kSeratoMarkersBase64EncodedPrefix.size()))) {
+        qWarning() << "Parsing base64encoded SeratoMarkers_ failed!";
+        return false;
+    }
+    return true;
+}
+
 QByteArray SeratoMarkers::dump() const {
     QByteArray data;
     if (isEmpty()) {
@@ -279,6 +303,28 @@ QByteArray SeratoMarkers::dump() const {
     stream << serato32fromUint24(static_cast<quint32>(
             m_trackColor.value_or(SeratoTags::kDefaultTrackColor)));
     return data;
+}
+
+QByteArray SeratoMarkers::dumpBase64Encoded() const {
+    QByteArray payload = kSeratoMarkersBase64EncodedPrefix;
+    payload.append(dump());
+
+    // A newline char is inserted at every 72 bytes of base64-encoded content.
+    // Hence, we can split the data into blocks of 72 bytes * 3/4 = 54 bytes
+    // and base64-encode them one at a time:
+    const int base64Size = (payload.size() * 4 + 2) / 3;
+    QByteArray base64Data;
+    base64Data.reserve(base64Size + base64Size / 72);
+    int offset = 0;
+    while (offset < payload.size()) {
+        if (offset > 0) {
+            base64Data.append('\n');
+        }
+        QByteArray block = payload.mid(offset, 54);
+        base64Data.append(block.toBase64(QByteArray::Base64Encoding | QByteArray::OmitTrailingEquals));
+        offset += block.size();
+    }
+    return base64Data;
 }
 
 QList<CueInfo> SeratoMarkers::getCues() const {

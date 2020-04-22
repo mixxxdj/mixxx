@@ -132,9 +132,15 @@ class SeratoMarkers final {
             : m_entries(std::move(entries)) {
     }
 
-    static bool parse(SeratoMarkers* seratoMarkers, const QByteArray& data);
+    static bool parse(
+            SeratoMarkers* seratoMarkers,
+            const QByteArray& data);
+    static bool parseBase64Encoded(
+            SeratoMarkers* seratoMarkers,
+            const QByteArray& base64EncodedData);
 
     QByteArray dump() const;
+    QByteArray dumpBase64Encoded() const;
 
     bool isEmpty() const {
         return m_entries.isEmpty() && !m_trackColor;

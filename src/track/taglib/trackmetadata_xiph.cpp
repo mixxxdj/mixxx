@@ -31,7 +31,7 @@ const std::array<TagLib::FLAC::Picture::Type, 4> kPreferredPictureTypes = {
         TagLib::FLAC::Picture::Other,
 };
 
-const TagLib::String kCommentFieldKeySeratoMarkersV2 = "SERATO_MARKERS_V2";
+const TagLib::String kCommentFieldKeySeratoMarkers2 = "SERATO_MARKERS_V2";
 
 bool readCommentField(
         const TagLib::Ogg::XiphComment& tag,
@@ -468,7 +468,7 @@ void importTrackMetadataFromTag(
     TagLib::String seratoMarkers2Base64;
     if (readCommentField(
                 tag,
-                kCommentFieldKeySeratoMarkersV2,
+                kCommentFieldKeySeratoMarkers2,
                 &seratoMarkers2Base64)) {
         parseSeratoMarkers2Base64Encoded(
                 pTrackMetadata,
@@ -588,7 +588,7 @@ bool exportTrackMetadataIntoTag(
     // Serato tags
     writeCommentField(
             pTag,
-            kCommentFieldKeySeratoMarkersV2,
+            kCommentFieldKeySeratoMarkers2,
             dumpSeratoMarkers2Base64Encoded(trackMetadata));
 #endif // __EXPORT_SERATO_MARKERS__
 

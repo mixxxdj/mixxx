@@ -154,9 +154,16 @@ bool parseSeratoMarkers2(
         TrackMetadata* pTrackMetadata,
         const QByteArray& data);
 
+bool parseSeratoMarkersBase64Encoded(
+        TrackMetadata* pTrackMetadata,
+        const TagLib::String& base64Encoded);
+
 bool parseSeratoMarkers2Base64Encoded(
         TrackMetadata* pTrackMetadata,
         const TagLib::String& base64Encoded);
+
+TagLib::String dumpSeratoMarkersBase64Encoded(
+        const TrackMetadata& trackMetadata);
 
 TagLib::String dumpSeratoMarkers2Base64Encoded(
         const TrackMetadata& trackMetadata);
