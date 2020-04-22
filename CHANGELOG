@@ -1,3 +1,54 @@
+==== 2.3 beta 2020-04-dd ====
+* Add hotcue colors and custom labels by right clicking hotcue buttons or
+  right clicking hotcues on overview waveforms #2016 #2520 #2238 #2560 #2557 #2362
+* Mouse hover cues on overview waveform to show time remaining until the cue #2238
+* Right click overview waveform to show time remaining until that point #2238
+
+* Add configurable color per track #2539 #2545 #2630
+* Add customizable color palettes for hotcue and track colors #2530 #2589
+* Add hotcue color find-and-replace tool #2547
+
+* Import cue points, track colors, one loop and playlists from Rekordbox USB drives #2119 #2555 #2543
+ - Note: The first Rekordbox memory cue is imported for the main cue button in Mixxx and the
+         remaining Rekordbox memory cues are imported as Mixxx hotcues, starting with the next
+         hotcue number after the last hotcue from Rekordbox.
+* Import cue points, track colors, one loop and playlists from Serato file
+  tags & database #2526 #2499 #2495 #2480
+
+* Add deck cloning (also known as "instant doubles" in other DJ software) by dragging and
+  dropping between decks #1892
+
+* Add intro & outro range cues with automatic silence detection #1242
+* Show duration of intro & outro ranges on overview waveform #2089
+* Use intro & outro cues in AutoDJ transitions #2103
+
+* Aesthetically revamped LateNight skin #2298 #2342
+* Show track context menu when right clicking text in decks #2612 #2675 #2684 #2696
+* Add laptop battery widget to skins #2283 #2277 #2250 #2228 #2221 #2163 #2160 #2147 #2281 #2319 #2287
+* Show when passthrough mode is active on overview waveforms #2616
+
+* Multithreaded analysis for much faster batch analysis on multicore CPUs #1624 #2142 #926
+* Fix bugs affecting key detection accuracy #2137 #2152 #2112 #2136
+  - Note: Users who have not manually corrected keys are advised to clear all keys in
+          their library by pressing Ctrl + A in the library, right clicking, going to
+          Reset -> Key, then reanalyzing their library.
+
+* OpenGL ES waveform rendering for Raspberry Pis and other single board computers #2094
+
+* Add FFMPEG audio decoder, bringing support for ALAC files #1356
+* Include LAME MP3 encoder with Mixxx now that the MP3 patent has expired
+
+* Improve workflow for configuring controller mappings and editing mappings #2569
+* Improve error reporting from controller scripts #2588
+* Make hotcue and track colors mappable on controllers #2030 #2541 #2665 #2520
+* Add way to change library table sorting from controllers #2118
+* Add controller mapping for Roland DJ-505 #2111
+* Update controller mapping for Allen & Heath Xone K2 to add intro/outro cues #2236
+
+* Add CMake build system with Ccache support for faster compilation time #2280
+ - Note: The old SCons build system is still supported for 2.3. We will be
+   removing it for Mixxx 2.4.
+
 ==== 2.2.4 2020-mm-dd ====
 * Store default recording format after "Restore Defaults" lp:1857806 #2414
 * Prevent infinite loop when decoding corrupt MP3 files #2417
