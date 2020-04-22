@@ -268,7 +268,7 @@ double Track::setBpm(double bpmValue) {
         setBeatsAndUnlock(&lock, pBeats);
         mixxx::BeatsPointer pBeats(new mixxx::Beats(this));
         */
-        m_pBeats = mixxx::BeatsPointer(new mixxx::Beats(this));
+        m_pBeats = std::make_shared<mixxx::Beats>(this);
         //m_pBeats = std::make_shared<mixxx::Beats>(mixxx::Beats(this));
         m_pBeats->setGrid(bpmValue, cue);
         setBeatsAndUnlock(&lock, m_pBeats);

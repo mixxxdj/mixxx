@@ -518,7 +518,7 @@ void DlgTrackInfo::slotBpmConstChanged(int state) {
             // The cue point should be set on a beat, so this seams
             // to be a good alternative
             CuePosition cue = m_pLoadedTrack->getCuePoint();
-            m_pBeatsClone = mixxx::BeatsPointer(new mixxx::Beats(m_pLoadedTrack.get()));
+            m_pBeatsClone = std::make_shared<mixxx::Beats>(m_pLoadedTrack.get());
             m_pBeatsClone->setGrid(spinBpm->value(), cue.getPosition());
         } else {
             m_pBeatsClone.reset();
@@ -552,7 +552,7 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
 
     if (!m_pBeatsClone) {
         CuePosition cue = m_pLoadedTrack->getCuePoint();
-        m_pBeatsClone = mixxx::BeatsPointer(new mixxx::Beats(m_pLoadedTrack.get()));
+        m_pBeatsClone = std::make_shared<mixxx::Beats>(m_pLoadedTrack.get());
         m_pBeatsClone->setGrid(spinBpm->value(), cue.getPosition());
     }
 
