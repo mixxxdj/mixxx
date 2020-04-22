@@ -1205,23 +1205,6 @@ ExportTrackMetadataResult Track::exportMetadata(
     }
 }
 
-void Track::printDebugInfo() const {
-    qDebug() << "Track Debug Info";
-    qDebug() << "m_bDirty:" << m_bDirty;
-    qDebug() << "m_bMarkedForMetadataExport:" << m_bMarkedForMetadataExport;
-    qDebug() << "duration:" << getDuration();
-    qDebug() << "Sample Rate:" << getSampleRate();
-    qDebug() << "m_cuePoints:";
-    for (auto cuePoint : m_cuePoints) {
-        qDebug() << "\tDirty:" << cuePoint->isDirty();
-        //qDebug() << "\tPosition:" << cuePoint->getPosition();
-        qDebug() << "\tType:" << int(cuePoint->getType());
-        qDebug() << "\tLabel:" << cuePoint->getLabel();
-    }
-    qDebug() << "m_pBeats:";
-    m_pBeats->printDebugInfo();
-}
-
 void Track::setAudioProperties(
         mixxx::audio::ChannelCount channelCount,
         mixxx::audio::SampleRate sampleRate,
@@ -1286,4 +1269,22 @@ void Track::updateAudioPropertiesFromStream(
     importCueInfosMarkDirtyAndUnlock(
             &lock,
             cueInfos);
+}
+
+QDebug operator<<(QDebug dbg, const TrackPointer& arg) {
+    dbg << "Track Debug Info";
+    dbg << "m_bDirty:" << arg->m_bDirty;
+    dbg << "m_bMarkedForMetadataExport:" << arg->m_bMarkedForMetadataExport;
+    dbg << "duration:" << arg->getDuration();
+    dbg << "Sample Rate:" << arg->getSampleRate();
+    dbg << "m_cuePoints:";
+    for (auto cuePoint : arg->m_cuePoints) {
+        dbg << "\tDirty:" << cuePoint->isDirty();
+        //qDebug() << "\tPosition:" << cuePoint->getPosition();
+        dbg << "\tType:" << int(cuePoint->getType());
+        dbg << "\tLabel:" << cuePoint->getLabel();
+    }
+    dbg << "m_pBeats:";
+    dbg << arg->m_pBeats;
+    return dbg;
 }

@@ -285,10 +285,13 @@ class Beats : public QObject {
 
     /// Prints debuging information in stderr
     void printDebugInfo() const;
-    /// Returen the frame number for the first beat, -1 is no beats
+    /// Returns the frame number for the first beat, -1 is no beats
     FrameNum getFirstBeatPosition() const;
     /// Returns the frame number for the last beat, -1 if no beats
     FrameNum getLastBeatPosition() const;
+
+    /// Prints debuging information in stderr
+    friend QDebug operator<<(QDebug dbg, const BeatsPointer& arg);
 
   private:
     void onBeatlistChanged();

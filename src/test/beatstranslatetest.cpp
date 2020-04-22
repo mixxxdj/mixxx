@@ -19,7 +19,7 @@ TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     auto beats2 = new Beats(m_pTrack2.get());
     beats2->setGrid(bpm, firstBeat);
     m_pTrack2->setBeats(BeatsPointer(beats2));
-    beats2->printDebugInfo();
+    qDebug() << beats2;
     ASSERT_DOUBLE_EQ(firstBeat, beats2->findClosestBeat(0));
 
     // Seek deck 1 forward a bit.
@@ -41,8 +41,8 @@ TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     ProcessBuffer();
 
     // Push the button on deck 2.
-    beats1->printDebugInfo();
-    beats2->printDebugInfo();
+    qDebug() << beats1;
+    qDebug() << beats2;
     auto pTranslateMatchAlignment = std::make_unique<ControlProxy>(
         m_sGroup2, "beats_translate_match_alignment");
     pTranslateMatchAlignment->set(1.0);
@@ -51,6 +51,6 @@ TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     // Deck 1 is +delta away from its closest beat (which is at 0).
     // Deck 2 was left at 0. We translated grid 2 so that it is also +delta
     // away from its closest beat, so that beat should be at -delta.
-    beats2->printDebugInfo();
+    qDebug() << beats2;
     ASSERT_DOUBLE_EQ(-delta, beats2->findClosestBeat(0));
 }

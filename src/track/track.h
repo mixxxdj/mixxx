@@ -314,9 +314,6 @@ class Track : public QObject {
     void markForMetadataExport();
     bool isMarkedForMetadataExport() const;
 
-    /// Prints track contents information, for debuging purtposes only
-    void printDebugInfo() const;
-
     void setAudioProperties(
             mixxx::audio::ChannelCount channelCount,
             mixxx::audio::SampleRate sampleRate,
@@ -425,8 +422,14 @@ class Track : public QObject {
 
     QList<mixxx::CueInfo> m_importCueInfosPending;
 
+    /// Prints track contents information, for debugging purposes only
+    friend QDebug operator<<(QDebug dbg, const TrackPointer& arg);
+
     friend class TrackDAO;
     friend class GlobalTrackCache;
     friend class GlobalTrackCacheResolver;
     friend class SoundSourceProxy;
 };
+
+/// Prints track contents information, for debugging purposes only
+QDebug operator<<(QDebug dbg, const Track& arg);

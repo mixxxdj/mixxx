@@ -45,9 +45,9 @@ BpmControl::BpmControl(QString group,
     m_dSyncTargetBeatDistance.setValue(0.0);
     m_dUserOffset.setValue(0.0);
 
-    m_pPlayButton = std::make_unique<ControlProxy>(new ControlProxy(group, "play", this));
-    m_pReverseButton = std::make_unique<ControlProxy>(new ControlProxy(group, "reverse", this));
-    m_pRateRatio = std::make_unique<ControlProxy>(new ControlProxy(group, "rate_ratio", this));
+    m_pPlayButton = std::make_unique<ControlProxy>(group, "play", this);
+    m_pReverseButton = std::make_unique<ControlProxy>(group, "reverse", this);
+    m_pRateRatio = std::make_unique<ControlProxy>(group, "rate_ratio", this);
     m_pRateRatio->connectValueChanged(this, &BpmControl::slotUpdateEngineBpm,
                                       Qt::DirectConnection);
 
@@ -56,9 +56,9 @@ BpmControl::BpmControl(QString group,
     m_pPrevBeat.reset(new ControlProxy(group, "beat_prev"));
     m_pNextBeat.reset(new ControlProxy(group, "beat_next"));
 
-    m_pLoopEnabled = std::make_unique<ControlProxy>(new ControlProxy(group, "loop_enabled", this));
-    m_pLoopStartPosition = std::make_unique<ControlProxy>(new ControlProxy(group, "loop_start_position", this));
-    m_pLoopEndPosition = std::make_unique<ControlProxy>(new ControlProxy(group, "loop_end_position", this));
+    m_pLoopEnabled = std::make_unique<ControlProxy>(group, "loop_enabled", this);
+    m_pLoopStartPosition = std::make_unique<ControlProxy>(group, "loop_start_position", this);
+    m_pLoopEndPosition = std::make_unique<ControlProxy>(group, "loop_end_position", this);
 
     m_pFileBpm = new ControlObject(ConfigKey(group, "file_bpm"));
     connect(m_pFileBpm, &ControlObject::valueChanged,
@@ -139,8 +139,8 @@ BpmControl::BpmControl(QString group,
             Qt::DirectConnection);
 
     // Measures distance from last beat in percentage: 0.5 = half-beat away.
-    m_pThisBeatDistance = std::make_unique<ControlProxy>(new ControlProxy(group, "beat_distance", this));
-    m_pSyncMode = std::make_unique<ControlProxy>(new ControlProxy(group, "sync_mode", this));
+    m_pThisBeatDistance = std::make_unique<ControlProxy>(group, "beat_distance", this);
+    m_pSyncMode = std::make_unique<ControlProxy>(group, "sync_mode", this);
 }
 
 BpmControl::~BpmControl() {
@@ -186,46 +186,41 @@ void BpmControl::slotFileBpmChanged(double file_bpm) {
 }
 
 void BpmControl::slotAdjustBeatsFaster(double v) {
-    mixxx::BeatsPointer pBeats = m_pBeats;
-    if (v > 0 && pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
-        double bpm = pBeats->getBpm();
+    if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
+        double bpm = m_pBeats->getBpm();
         double adjustedBpm = bpm + kBpmAdjustStep;
-        pBeats->setBpm(adjustedBpm);
+        m_pBeats->setBpm(adjustedBpm);
     }
 }
 
 void BpmControl::slotAdjustBeatsSlower(double v) {
-    mixxx::BeatsPointer pBeats = m_pBeats;
-    if (v > 0 && pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
-        double bpm = pBeats->getBpm();
+    if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
+        double bpm = m_pBeats->getBpm();
         double adjustedBpm = math_max(kBpmAdjustMin, bpm - kBpmAdjustStep);
-        pBeats->setBpm(adjustedBpm);
+        m_pBeats->setBpm(adjustedBpm);
     }
 }
 
 void BpmControl::slotTranslateBeatsEarlier(double v) {
-    mixxx::BeatsPointer pBeats = m_pBeats;
-    if (v > 0 && pBeats &&
-            (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
+    if (v > 0 && m_pBeats &&
+            (m_pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
         const int translate_dist = getSampleOfTrack().rate * -.01;
-        pBeats->translate(translate_dist);
+        m_pBeats->translate(translate_dist);
     }
 }
 
 void BpmControl::slotTranslateBeatsLater(double v) {
-    mixxx::BeatsPointer pBeats = m_pBeats;
-    if (v > 0 && pBeats &&
-            (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
+    if (v > 0 && m_pBeats &&
+            (m_pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
         // TODO(rryan): Track::getSampleRate is possibly inaccurate!
         const int translate_dist = getSampleOfTrack().rate * .01;
-        pBeats->translate(translate_dist);
+        m_pBeats->translate(translate_dist);
     }
 }
 
 void BpmControl::slotSetDownbeatOnClosestBeat(double v) {
-    mixxx::BeatsPointer pBeats = m_pBeats;
-    if (v > 0 && pBeats) {
-        pBeats->setBar(getSampleOfTrack().current);
+    if (v > 0 && m_pBeats) {
+        m_pBeats->setBar(getSampleOfTrack().current);
     }
 }
 
@@ -243,8 +238,7 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
         return;
     }
 
-    mixxx::BeatsPointer pBeats = m_pBeats;
-    if (!pBeats) {
+    if (!m_pBeats) {
         return;
     }
 
@@ -256,7 +250,7 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     // (60 seconds per minute) * (1000 milliseconds per second) / (X millis per
     // beat) = Y beats/minute
     double averageBpm = 60.0 * 1000.0 / averageLength / rateRatio;
-    pBeats->setBpm(averageBpm);
+    m_pBeats->setBpm(averageBpm);
 }
 
 void BpmControl::slotControlBeatSyncPhase(double v) {

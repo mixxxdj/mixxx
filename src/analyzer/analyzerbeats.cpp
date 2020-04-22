@@ -236,7 +236,7 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
     } else {
         float bpm = m_pPlugin->getBpm();
         qDebug() << "AnalyzerBeats plugin detected constant BPM: " << bpm;
-        pBeats = mixxx::BeatsPointer(new mixxx::Beats(pTrack.get()));
+        pBeats = std::make_shared<mixxx::Beats>(pTrack.get());
         pBeats->setGrid(bpm);
         pTrack->setBeats(pBeats);
     }
