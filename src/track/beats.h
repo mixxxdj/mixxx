@@ -314,4 +314,4 @@ class Beats : public QObject {
     void updated();
 };
 
-} // Namespace mixxx
+} // namespace mixxx
