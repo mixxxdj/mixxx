@@ -220,7 +220,7 @@ void BpmControl::slotTranslateBeatsLater(double v) {
 
 void BpmControl::slotSetDownbeatOnClosestBeat(double v) {
     if (v > 0 && m_pBeats) {
-        m_pBeats->setBar(getSampleOfTrack().current);
+        m_pBeats->setDownBeat(getSampleOfTrack().current);
     }
 }
 

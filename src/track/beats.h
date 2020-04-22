@@ -240,20 +240,20 @@ class Beats : public QObject {
 
     /// Return the track signature at the given frame position
     virtual TimeSignature getSignature(double sample = 0) const {
-        return getSignature(sample / 2.0);
+        return getSignatureNew(sample / 2.0);
     }
     virtual TimeSignature getSignatureNew(FrameNum frame = 0) const;
 
     /// Sets the nearest beat as a bar beat
-    virtual void setBar(double sample = 0) {
-        setBar(sample / 2.0);
+    virtual void setDownBeat(double sample = 0) {
+        setDownBeatNew(sample / 2.0);
     }
-    virtual void setBarNew(FrameNum frame = 0);
+    virtual void setDownBeatNew(FrameNum frame = 0);
 
     /// Add a beat at location frame. Beats instance must have the
     /// capability BEATSCAP_ADDREMOVE.
     virtual void addBeat(double sample) {
-        addBeat(sample / 2.0);
+        addBeatNew(sample / 2.0);
     }
     virtual void addBeatNew(FrameNum frame);
 
