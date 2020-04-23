@@ -55,13 +55,8 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
         return false;
     }
 
-    if (m_bpmSettings.getAllowBpmAboveRange()) {
-        m_iMinBpm = 0;
-        m_iMaxBpm = 9999;
-    } else {
-        m_iMinBpm = m_bpmSettings.getBpmRangeStart();
-        m_iMaxBpm = m_bpmSettings.getBpmRangeEnd();
-    }
+    m_iMinBpm = m_bpmSettings.getBpmRangeStart();
+    m_iMaxBpm = m_bpmSettings.getBpmRangeEnd();
 
     m_bPreferencesFixedTempo = m_bpmSettings.getFixedTempoAssumption();
     m_bPreferencesOffsetCorrection = m_bpmSettings.getFixedTempoOffsetCorrection();
@@ -131,15 +126,8 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
 }
 
 bool AnalyzerBeats::shouldAnalyze(TrackPointer tio) const {
-    int iMinBpm;
-    int iMaxBpm;
-    if (m_bpmSettings.getAllowBpmAboveRange()) {
-        iMinBpm = 0;
-        iMaxBpm = 9999;
-    } else {
-        iMinBpm = m_bpmSettings.getBpmRangeStart();
-        iMaxBpm = m_bpmSettings.getBpmRangeEnd();
-    }
+    int iMinBpm = m_bpmSettings.getBpmRangeStart();
+    int iMaxBpm = m_bpmSettings.getBpmRangeEnd();
 
     bool bpmLock = tio->isBpmLocked();
     if (bpmLock) {

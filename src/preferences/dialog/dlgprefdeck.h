@@ -128,7 +128,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     bool m_bAssignHotcueColors;
 
     int m_iRateRangePercent;
-    bool m_bRateInverted;
+    bool m_bRateDownIncreasesSpeed;
 
     bool m_speedAutoReset;
     bool m_pitchAutoReset;

@@ -201,6 +201,8 @@ DJ505.shutdown = function() {
 DJ505.browseEncoder = new components.Encoder({
     longPressTimer: 0,
     longPressTimeout: 250,
+    trackColorCycleEnabled: false,
+    trackColorCycleHappened: false,
     previewSeekEnabled: false,
     previewSeekHappened: false,
     unshift: function() {
@@ -249,12 +251,25 @@ DJ505.browseEncoder = new components.Encoder({
     shift: function() {
         this.onKnobEvent = function(rotateValue) {
             if (rotateValue !== 0) {
-                engine.setValue("[Playlist]", "SelectPlaylist", rotateValue);
+                if (this.trackColorCycleEnabled) {
+                    var key = (rotateValue > 0) ? "track_color_next" : "track_color_prev";
+                    engine.setValue("[Library]", key, 1.0);
+                    this.trackColorCycleHappened = true;
+                } else {
+                    engine.setValue("[Playlist]", "SelectPlaylist", rotateValue);
+                }
             }
         };
         this.onButtonEvent = function(value) {
             if (value) {
-                script.triggerControl("[Playlist]", "ToggleSelectedSidebarItem");
+                this.trackColorCycleEnabled = true;
+                this.trackColorCycleHappened = false;
+            } else {
+                if (!this.trackColorCycleHappened) {
+                    script.triggerControl("[Playlist]", "ToggleSelectedSidebarItem");
+                }
+                this.trackColorCycleEnabled = false;
+                this.trackColorCycleHappened = false;
             }
         };
     },
@@ -1002,22 +1017,22 @@ DJ505.PadColor = {
 };
 
 DJ505.PadColorMap = new ColorMapper({
-    "#CC0000": DJ505.PadColor.RED,
-    "#CC4400": DJ505.PadColor.CORAL,
-    "#CC8800": DJ505.PadColor.ORANGE,
-    "#CCCC00": DJ505.PadColor.YELLOW,
-    "#88CC00": DJ505.PadColor.GREEN,
-    "#00CC00": DJ505.PadColor.APPLEGREEN,
-    "#00CC88": DJ505.PadColor.AQUAMARINE,
-    "#00CCCC": DJ505.PadColor.TURQUOISE,
-    "#0088CC": DJ505.PadColor.CELESTE,
-    "#0000CC": DJ505.PadColor.BLUE,
-    "#4400CC": DJ505.PadColor.AZURE,
-    "#8800CC": DJ505.PadColor.PURPLE,
-    "#CC00CC": DJ505.PadColor.MAGENTA,
-    "#CC0044": DJ505.PadColor.RED,
-    "#FFCCCC": DJ505.PadColor.APRICOT,
-    "#FFFFFF": DJ505.PadColor.WHITE,
+    0xCC0000: DJ505.PadColor.RED,
+    0xCC4400: DJ505.PadColor.CORAL,
+    0xCC8800: DJ505.PadColor.ORANGE,
+    0xCCCC00: DJ505.PadColor.YELLOW,
+    0x88CC00: DJ505.PadColor.GREEN,
+    0x00CC00: DJ505.PadColor.APPLEGREEN,
+    0x00CC88: DJ505.PadColor.AQUAMARINE,
+    0x00CCCC: DJ505.PadColor.TURQUOISE,
+    0x0088CC: DJ505.PadColor.CELESTE,
+    0x0000CC: DJ505.PadColor.BLUE,
+    0x4400CC: DJ505.PadColor.AZURE,
+    0x8800CC: DJ505.PadColor.PURPLE,
+    0xCC00CC: DJ505.PadColor.MAGENTA,
+    0xCC0044: DJ505.PadColor.RED,
+    0xFFCCCC: DJ505.PadColor.APRICOT,
+    0xFFFFFF: DJ505.PadColor.WHITE,
 });
 
 DJ505.PadSection = function(deck, offset) {

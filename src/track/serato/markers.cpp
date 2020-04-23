@@ -284,4 +284,35 @@ QByteArray SeratoMarkers::dump() const {
     return data;
 }
 
+QList<CueInfo> SeratoMarkers::getCues(double timingOffsetMillis) const {
+    qDebug() << "Reading cues from 'Serato Markers_' tag data...";
+
+    QList<CueInfo> cueInfos;
+    int cueIndex = 0;
+    for (const auto& pEntry : m_entries) {
+        DEBUG_ASSERT(pEntry);
+        switch (pEntry->typeId()) {
+        case SeratoMarkersEntry::TypeId::Cue: {
+            if (pEntry->hasStartPosition()) {
+                CueInfo cueInfo(
+                        CueType::HotCue,
+                        pEntry->getStartPosition() + timingOffsetMillis,
+                        std::nullopt,
+                        cueIndex,
+                        "",
+                        pEntry->getColor());
+                cueInfos.append(cueInfo);
+            }
+            cueIndex++;
+            break;
+        }
+        // TODO: Add support for Loops
+        default:
+            break;
+        }
+    }
+
+    return cueInfos;
+}
+
 } //namespace mixxx

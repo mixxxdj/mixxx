@@ -190,6 +190,18 @@ LibraryControl::LibraryControl(Library* pLibrary)
             this,
             &LibraryControl::slotIncrementFontSize);
 
+    // Track Color controls
+    m_pTrackColorPrev = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "track_color_prev"));
+    m_pTrackColorNext = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "track_color_next"));
+    connect(m_pTrackColorPrev.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotTrackColorPrev);
+    connect(m_pTrackColorNext.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotTrackColorNext);
+
     /// Deprecated controls
     m_pSelectNextTrack = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "SelectNextTrack"));
     connect(m_pSelectNextTrack.get(),
@@ -563,8 +575,8 @@ void LibraryControl::slotGoToItem(double v) {
             slotToggleSelectedSidebarItem(v);
         }
     }
-    // TODO(xxx) instead of remote control the widgets individual, we should 
-    // translate this into Alt+Return and handle it at each library widget 
+    // TODO(xxx) instead of remote control the widgets individual, we should
+    // translate this into Alt+Return and handle it at each library widget
     // individual https://bugs.launchpad.net/mixxx/+bug/1758618
     //emitKeyEvent(QKeyEvent{QEvent::KeyPress, Qt::Key_Return, Qt::AltModifier});
 }
@@ -601,5 +613,33 @@ void LibraryControl::slotIncrementFontSize(double v) {
 void LibraryControl::slotDecrementFontSize(double v) {
     if (v > 0.0) {
         slotFontSize(-1);
+    }
+}
+
+void LibraryControl::slotTrackColorPrev(double v) {
+    if (!m_pLibraryWidget) {
+        return;
+    }
+
+    if (v > 0) {
+        LibraryView* activeView = m_pLibraryWidget->getActiveView();
+        if (!activeView) {
+            return;
+        }
+        activeView->assignPreviousTrackColor();
+    }
+}
+
+void LibraryControl::slotTrackColorNext(double v) {
+    if (!m_pLibraryWidget) {
+        return;
+    }
+
+    if (v > 0) {
+        LibraryView* activeView = m_pLibraryWidget->getActiveView();
+        if (!activeView) {
+            return;
+        }
+        activeView->assignNextTrackColor();
     }
 }

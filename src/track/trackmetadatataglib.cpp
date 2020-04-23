@@ -42,8 +42,8 @@
 #include <taglib/unknownframe.h>
 #if defined(__EXTRA_METADATA__)
 #include <taglib/uniquefileidentifierframe.h>
-#include <taglib/generalencapsulatedobjectframe.h>
 #endif // __EXTRA_METADATA__
+#include <taglib/generalencapsulatedobjectframe.h>
 
 #include <array>
 
@@ -280,7 +280,6 @@ inline QString toQStringFirstNotEmpty(const TagLib::MP4::Item& mp4Item) {
     return toQStringFirstNotEmpty(mp4Item.toStringList());
 }
 
-#if defined(__EXTRA_METADATA__)
 inline QByteArray toQByteArray(const TagLib::ByteVector& tByteVector) {
     if (tByteVector.isNull()) {
         // null -> null
@@ -298,6 +297,7 @@ inline TagLib::ByteVector toTByteVector(const QByteArray& bytearray) {
     }
 }
 
+#if defined(__EXTRA_METADATA__)
 inline
 TagLib::String uuidToTString(const QUuid& uuid) {
     return toTString(uuidToNullableStringWithoutBraces(uuid));
@@ -446,6 +446,7 @@ bool parseAlbumPeak(
     }
     return isPeakValid;
 }
+#endif // __EXTRA_METADATA__
 
 bool parseSeratoMarkers(
         TrackMetadata* pTrackMetadata,
@@ -472,7 +473,6 @@ bool parseSeratoMarkers2(
     }
     return isValid;
 }
-#endif // __EXTRA_METADATA__
 
 void readAudioProperties(
         TrackMetadata* pTrackMetadata,
@@ -710,6 +710,7 @@ QByteArray readFirstUniqueFileIdentifierFrame(
         return QByteArray();
     }
 }
+#endif // __EXTRA_METADATA__
 
 // Finds the first GEOB frame that with a matching description (case-insensitive).
 // If multiple GEOB frames with matching descriptions exist prefer the first
@@ -761,7 +762,6 @@ QByteArray readFirstGeneralEncapsulatedObjectFrame(
         return QByteArray();
     }
 }
-#endif // __EXTRA_METADATA__
 
 void writeID3v2TextIdentificationFrame(
         TagLib::ID3v2::Tag* pTag,
@@ -939,6 +939,7 @@ void writeID3v2UniqueFileIdentifierFrame(
         }
     }
 }
+#endif // __EXTRA_METADATA__
 
 void writeID3v2GeneralEncapsulatedObjectFrame(
         TagLib::ID3v2::Tag* pTag,
@@ -969,7 +970,6 @@ void writeID3v2GeneralEncapsulatedObjectFrame(
         }
     }
 }
-#endif // __EXTRA_METADATA__
 
 bool readMP4Atom(
         const TagLib::MP4::Tag& tag,
@@ -1698,6 +1698,8 @@ void importTrackMetadataFromID3v2Tag(
     if (!encoderSettingsFrames.isEmpty()) {
         pTrackMetadata->refTrackInfo().setEncoderSettings(toQStringFirstNotEmpty(encoderSettingsFrames));
     }
+#endif // __EXTRA_METADATA__
+
     // Serato tags
     QByteArray seratoMarkers = readFirstGeneralEncapsulatedObjectFrame(tag, "Serato Markers_");
     if (!seratoMarkers.isEmpty()) {
@@ -1708,7 +1710,6 @@ void importTrackMetadataFromID3v2Tag(
     if (!seratoMarkers2.isEmpty()) {
         parseSeratoMarkers2(pTrackMetadata, seratoMarkers2);
     }
-#endif // __EXTRA_METADATA__
 }
 
 void importTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::APE::Tag& tag) {
@@ -2567,6 +2568,7 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
             pTag,
             "TSSE",
             trackMetadata.getTrackInfo().getEncoderSettings());
+#endif // __EXTRA_METADATA__
     writeID3v2GeneralEncapsulatedObjectFrame(
             pTag,
             "Serato Markers_",
@@ -2575,7 +2577,6 @@ bool exportTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
             pTag,
             "Serato Markers2",
             trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2());
-#endif // __EXTRA_METADATA__
 
     return true;
 }

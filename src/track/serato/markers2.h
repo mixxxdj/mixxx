@@ -6,7 +6,7 @@
 #include <QList>
 #include <memory>
 
-#include "util/color/rgbcolor.h"
+#include "track/cueinfo.h"
 #include "util/types.h"
 
 namespace mixxx {
@@ -398,6 +398,7 @@ class SeratoMarkers2 final {
         m_entries = std::move(entries);
     }
 
+    QList<CueInfo> getCues(double timingOffsetMillis) const;
     RgbColor::optional_t getTrackColor() const;
     bool isBpmLocked() const;
 

@@ -72,7 +72,7 @@ Description:
 
               <SliderComposed>
                 <TooltipId>headMix</TooltipId>
-                <Size>60f,24f</Size>
+                <Size>54f,24f</Size>
                 <ObjectName>MixerbarSlider</ObjectName>
                 <Handle scalemode="STRETCH_ASPECT">knobs_sliders/headMix_handle.svg</Handle>
                 <Slider scalemode="STRETCH_ASPECT">knobs_sliders/headMix_scale.svg</Slider>

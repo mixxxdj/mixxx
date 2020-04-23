@@ -65,6 +65,9 @@ class LibraryControl : public QObject {
     void slotMoveFocus(double);
     void slotGoToItem(double v);
 
+    void slotTrackColorPrev(double v);
+    void slotTrackColorNext(double v);
+
     // Deprecated navigation slots
     void slotSelectNextTrack(double v);
     void slotSelectPrevTrack(double v);
@@ -128,6 +131,10 @@ class LibraryControl : public QObject {
     std::unique_ptr<ControlEncoder> m_pSortColumn;
     std::unique_ptr<ControlEncoder> m_pSortColumnToggle;
     std::unique_ptr<ControlPushButton> m_pSortOrder;
+
+    // Controls to change track color
+    std::unique_ptr<ControlPushButton> m_pTrackColorPrev;
+    std::unique_ptr<ControlPushButton> m_pTrackColorNext;
 
     // Font sizes
     std::unique_ptr<ControlPushButton> m_pFontSizeIncrement;

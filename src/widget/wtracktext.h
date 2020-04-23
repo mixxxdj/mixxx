@@ -1,5 +1,4 @@
-#ifndef WTRACKTEXT_H
-#define WTRACKTEXT_H
+#pragma once
 
 #include <QDragEnterEvent>
 #include <QDropEvent>
@@ -10,7 +9,9 @@
 #include "util/parented_ptr.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wlabel.h"
-#include "widget/wtrackmenu.h"
+
+class TrackCollectionManager;
+class WTrackMenu;
 
 class WTrackText : public WLabel, public TrackDropTarget {
     Q_OBJECT
@@ -20,6 +21,7 @@ class WTrackText : public WLabel, public TrackDropTarget {
             UserSettingsPointer pConfig,
             TrackCollectionManager* pTrackCollectionManager,
             const char* group);
+    ~WTrackText() override;
 
   signals:
     void trackDropped(QString fileName, QString group) override;
@@ -45,6 +47,3 @@ class WTrackText : public WLabel, public TrackDropTarget {
     TrackPointer m_pCurrentTrack;
     const parented_ptr<WTrackMenu> m_pTrackMenu;
 };
-
-
-#endif /* WTRACKTEXT_H */
