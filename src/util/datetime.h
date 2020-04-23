@@ -12,8 +12,8 @@ namespace mixxx {
 
 /// Obtain the local date time from an UTC date time.
 inline QDateTime localDateTimeFromUtc(
-        const QDateTime& dt) {
-    DEBUG_ASSERT(dt.timeSpec() == Qt::UTC);
+        QDateTime dt) {
+    dt.setTimeSpec(Qt::UTC);
     return dt.toLocalTime();
 }
 
