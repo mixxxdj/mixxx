@@ -24,8 +24,9 @@ inline QDateTime convertVariantToDateTime(
     return data.toDateTime();
 }
 
-/// Format a QDateTime for display to the user.
-inline QString displayDateTime(
+/// Format a QDateTime for display to the user using the
+/// application's locale settings.
+inline QString displayLocalDateTime(
         const QDateTime& dt) {
     return dt.toString(Qt::DefaultLocaleShortDate);
 }

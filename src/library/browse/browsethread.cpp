@@ -252,7 +252,7 @@ void BrowseThread::populateModel() {
             const auto fileLastModified =
                     pTrack->getFileInfo().fileLastModified();
             item = new QStandardItem(
-                    mixxx::displayDateTime(fileLastModified));
+                    mixxx::displayLocalDateTime(fileLastModified));
             item->setToolTip(item->text());
             item->setData(fileLastModified, Qt::UserRole);
             row_data.insert(COLUMN_FILE_MODIFIED_TIME, item);
@@ -260,7 +260,7 @@ void BrowseThread::populateModel() {
             const auto fileCreated =
                     pTrack->getFileInfo().fileCreated();
             item = new QStandardItem(
-                    mixxx::displayDateTime(fileCreated));
+                    mixxx::displayLocalDateTime(fileCreated));
             item->setToolTip(item->text());
             item->setData(fileCreated, Qt::UserRole);
             row_data.insert(COLUMN_FILE_CREATION_TIME, item);
