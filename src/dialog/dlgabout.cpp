@@ -82,6 +82,7 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
             << "Sebastian Hasler"
             << "Philip Gottschling"
             << "Cristiano Lacerda"
+            << "Sergey Ukolov"
             << "Ketan Lambat"
             << "Evan Dekker"
             << "Edward Kigwana"
