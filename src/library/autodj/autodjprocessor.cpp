@@ -280,7 +280,7 @@ void AutoDJProcessor::fadeNow() {
 
         if (toDeckCurrentSecond >= introStart &&
                 toDeckCurrentSecond <= introEnd &&
-                introEnd >= 0) {
+                introEnd >= 0 && introStart != introEnd) {
             double timeUntilIntroEnd = introEnd - toDeckCurrentSecond;
             // The fade must end by the outro end at the latest.
             fadeTime = math_min(timeUntilIntroEnd, timeUntilOutroEnd);
