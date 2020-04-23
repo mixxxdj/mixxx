@@ -186,6 +186,13 @@ QList<CueInfo> SeratoTags::getCues(const QString& filePath) const {
         cueMap.insert(index, newCueInfo);
     };
 
+    // If the "Serato Markers_" tag does not exist at all, Serato DJ Pro just
+    // takes data from the "Serato Markers2" tag, so we can exit early
+    // here. If the "Serato Markers_" exists, its data will take precedence.
+    if (m_seratoMarkers.isEmpty()) {
+        return cueMap.values();
+    }
+
     // The "Serato Markers_" tag always contains entries for the first five
     // cues. If a cue is not set, that entry is present but empty.
     // If a cue is set in "Serato Markers2" but not in "Serato Markers_",
