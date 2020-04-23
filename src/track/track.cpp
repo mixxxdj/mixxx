@@ -128,9 +128,7 @@ void Track::importMetadata(
     const auto newBpm = importedMetadata.getTrackInfo().getBpm();
     const auto newKey = importedMetadata.getTrackInfo().getKey();
     const auto newReplayGain = importedMetadata.getTrackInfo().getReplayGain();
-#ifdef __EXTRA_METADATA__
     const auto newSeratoTags = importedMetadata.getTrackInfo().getSeratoTags();
-#endif // __EXTRA_METADATA__
     {
         // enter locking scope
         QMutexLocker lock(&m_qMutex);
@@ -165,10 +163,12 @@ void Track::importMetadata(
             }
         }
 
-#ifdef __EXTRA_METADATA__
+        // FIXME: Move the Track::setCuePoints call to another location,
+        // because we need the sample rate to calculate sample
+        // positions for cues (and *correct* sample rate isn't known here).
+        importCueInfos(newSeratoTags.getCues(getLocation()));
         setColor(newSeratoTags.getTrackColor());
         setBpmLocked(newSeratoTags.isBpmLocked());
-#endif // __EXTRA_METADATA__
 
         // implicitly unlocked when leaving scope
     }
@@ -761,6 +761,16 @@ CuePointer Track::findCueByType(mixxx::CueType type) const {
     QMutexLocker lock(&m_qMutex);
     for (const CuePointer& pCue: m_cuePoints) {
         if (pCue->getType() == type) {
+            return pCue;
+        }
+    }
+    return CuePointer();
+}
+
+CuePointer Track::findCueById(int id) const {
+    QMutexLocker lock(&m_qMutex);
+    for (const CuePointer& pCue : m_cuePoints) {
+        if (pCue->getId() == id) {
             return pCue;
         }
     }

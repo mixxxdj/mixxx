@@ -743,21 +743,10 @@ void CrateFeature::slotExportPlaylist() {
             QModelIndex index = m_crateTableModel.index(i, 0);
             playlist_items << m_crateTableModel.getTrackLocation(index);
         }
-
-        if (file_location.endsWith(".pls", Qt::CaseInsensitive)) {
-            ParserPls::writePLSFile(file_location, playlist_items, useRelativePath);
-        } else if (file_location.endsWith(".m3u8", Qt::CaseInsensitive)) {
-            ParserM3u::writeM3U8File(file_location, playlist_items, useRelativePath);
-        } else {
-            //default export to M3U if file extension is missing
-            if(!file_location.endsWith(".m3u", Qt::CaseInsensitive))
-            {
-                qDebug() << "Crate export: No valid file extension specified. Appending .m3u "
-                         << "and exporting to M3U.";
-                file_location.append(".m3u");
-            }
-            ParserM3u::writeM3UFile(file_location, playlist_items, useRelativePath);
-        }
+        exportPlaylistItemsIntoFile(
+                file_location,
+                playlist_items,
+                useRelativePath);
     }
 }
 
