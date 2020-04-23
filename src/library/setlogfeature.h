@@ -1,7 +1,4 @@
-// setlogfeature.h
-
-#ifndef SETLOGFEATURE_H
-#define SETLOGFEATURE_H
+#pragma once
 
 #include <QAction>
 #include <QLinkedList>
@@ -53,5 +50,3 @@ class SetlogFeature : public BasePlaylistFeature {
     QPointer<WLibrarySidebar> m_pSidebarWidget;
     const QIcon m_icon;
 };
-
-#endif // SETLOGFEATURE_H

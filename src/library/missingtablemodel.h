@@ -1,5 +1,4 @@
-#ifndef MISSINGTABLEMODEL_H
-#define MISSINGTABLEMODEL_H
+#pragma once
 
 #include <QItemDelegate>
 #include <QModelIndex>
@@ -22,5 +21,3 @@ class MissingTableModel : public BaseSqlTableModel {
     Qt::ItemFlags flags(const QModelIndex &index) const final;
     CapabilitiesFlags getCapabilities() const final;
 };
-
-#endif
