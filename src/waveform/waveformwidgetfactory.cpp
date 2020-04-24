@@ -366,12 +366,14 @@ void WaveformWidgetFactory::addTimerListener(QWidget* pWidget) {
 
 
 void WaveformWidgetFactory::slotSkinLoaded() {
+    setWidgetTypeFromConfig();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0) && defined __WINDOWS__
     // This regenerates the waveforms twice because of a bug found on Windows
     // where the first one fails.
     // The problem is that the window of the widget thinks that it is not exposed.
     // (https://doc.qt.io/qt-5/qwindow.html#exposeEvent )
     setWidgetTypeFromConfig();
-    setWidgetTypeFromConfig();
+#endif
 }
 
 bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
@@ -460,7 +462,7 @@ bool WaveformWidgetFactory::setWidgetType(WaveformWidgetType::Type type, Wavefor
         // type is acceptable
         currentType = type;
         if (m_config) {
-            m_config->set(ConfigKey("[Waveform]", "WaveformType"), ConfigValue((int)(currentType)));
+            m_config->setValue(ConfigKey("[Waveform]", "WaveformType"), static_cast<int>(currentType));
         }
         return true;
     }
@@ -468,7 +470,7 @@ bool WaveformWidgetFactory::setWidgetType(WaveformWidgetType::Type type, Wavefor
     // fallback
     currentType = WaveformWidgetType::EmptyWaveform;
     if (m_config) {
-        m_config->set(ConfigKey("[Waveform]", "WaveformType"), ConfigValue((int)(currentType)));
+        m_config->setValue(ConfigKey("[Waveform]", "WaveformType"), static_cast<int>(currentType));
     }
     return false;
 }
@@ -483,7 +485,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromConfig() {
 }
 
 bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force) {
-    if (handleIndex < 0 || handleIndex >= (int)m_waveformWidgetHandles.size()) {
+    if (handleIndex < 0 || handleIndex >= m_waveformWidgetHandles.size()) {
         qDebug() << "WaveformWidgetFactory::setWidgetType - invalid handle --> use of 'EmptyWaveform'";
         // fallback empty type
         setWidgetType(WaveformWidgetType::EmptyWaveform);
@@ -1004,7 +1006,7 @@ void WaveformWidgetFactory::getAvailableVSyncTypes(QList<QPair<int, QString > >*
 
 WaveformWidgetType::Type WaveformWidgetFactory::findTypeFromHandleIndex(int index) {
     WaveformWidgetType::Type type = WaveformWidgetType::Count_WaveformwidgetType;
-    if (index >= 0 && index < (int)m_waveformWidgetHandles.size()) {
+    if (index >= 0 && index < m_waveformWidgetHandles.size()) {
         type = m_waveformWidgetHandles[index].m_type;
     }
     return type;
