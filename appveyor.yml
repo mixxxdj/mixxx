@@ -152,6 +152,7 @@ for:
     MSVC_PATH: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community"
     PATH: 'C:\Python37-x64;C:\Python37-x64\Scripts;%PATH%'
 
+
   install:
     - set /P ENVIRONMENT_NAME=<build/windows/golden_environment
     - call set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:PLATFORM=%platform%%%
@@ -174,6 +175,7 @@ for:
     - IF "%QT_PATH%" EQU "" (
         echo QT not found on %WINLIB_PATH%
       )
+    # Remove C:\Program Files\Git\usr\bin from the PATH
     - set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
     - set CMAKE_BUILD_PARALLEL_LEVEL=%NUMBER_OF_CORES%
     - call "%MSVC_PATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
