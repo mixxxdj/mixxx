@@ -551,12 +551,14 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/bpm.cpp
   src/track/cue.cpp
   src/track/cueinfo.cpp
+  src/track/cueinfoimporter.cpp
   src/track/globaltrackcache.cpp
   src/track/keyfactory.cpp
   src/track/keys.cpp
   src/track/keyutils.cpp
   src/track/playcounter.cpp
   src/track/replaygain.cpp
+  src/track/serato/cueinfoimporter.cpp
   src/track/serato/markers.cpp
   src/track/serato/markers2.cpp
   src/track/serato/tags.cpp
