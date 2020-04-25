@@ -1,13 +1,12 @@
-#ifndef PLAYLISTTABLEMODEL_H
-#define PLAYLISTTABLEMODEL_H
+#pragma once
 
 #include "library/basesqltablemodel.h"
 
 class PlaylistTableModel : public BaseSqlTableModel {
     Q_OBJECT
+
   public:
-    PlaylistTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager,
-                       const char* settingsNamespace, bool showAll = false);
+    PlaylistTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager, const char* settingsNamespace, bool showAll = false);
     ~PlaylistTableModel() final = default;
 
     void setTableModel(int playlistId = -1);
@@ -17,18 +16,18 @@ class PlaylistTableModel : public BaseSqlTableModel {
 
     bool appendTrack(TrackId trackId);
     void moveTrack(const QModelIndex& sourceIndex,
-                   const QModelIndex& destIndex) override;
+            const QModelIndex& destIndex) override;
     void removeTrack(const QModelIndex& index);
     void shuffleTracks(const QModelIndexList& shuffle, const QModelIndex& exclude);
 
     bool isColumnInternal(int column) final;
     bool isColumnHiddenByDefault(int column) final;
-    // This function should only be used by AUTODJ
+    /// This function should only be used by AUTODJ
     void removeTracks(const QModelIndexList& indices) final;
-    // Adding multiple tracks at one to a playlist. Returns the number of
-    // successful additions.
+    /// Returns the number of successful additions.
     int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
     bool isLocked() final;
+
     CapabilitiesFlags getCapabilities() const final;
 
   private slots:
@@ -40,5 +39,3 @@ class PlaylistTableModel : public BaseSqlTableModel {
     int m_iPlaylistId;
     bool m_showAll;
 };
-
-#endif
