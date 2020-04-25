@@ -717,6 +717,9 @@ void Track::setCuePoint(CuePosition cue) {
             pLoadCue->setStartPosition(position);
         } else {
             pLoadCue = CuePointer(new Cue());
+            // While this method could be called from any thread,
+            // associated Cue objects should always live on the
+            // same thread as their host, namely this->thread().
             pLoadCue->moveToThread(thread());
             pLoadCue->setTrackId(m_record.getId());
             pLoadCue->setType(mixxx::CueType::MainCue);
@@ -753,6 +756,9 @@ void Track::slotCueUpdated() {
 CuePointer Track::createAndAddCue() {
     QMutexLocker lock(&m_qMutex);
     CuePointer pCue(new Cue());
+    // While this method could be called from any thread,
+    // associated Cue objects should always live on the
+    // same thread as their host, namely this->thread().
     pCue->moveToThread(thread());
     pCue->setTrackId(m_record.getId());
     connect(pCue.get(),
@@ -833,7 +839,9 @@ QList<CuePointer> Track::getCuePoints() const {
 }
 
 void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
-    //qDebug() << "setCuePoints" << cuePoints.length();
+    // While this method could be called from any thread,
+    // associated Cue objects should always live on the
+    // same thread as their host, namely this->thread().
     for (const auto& pCue : cuePoints) {
         pCue->moveToThread(thread());
     }
@@ -942,6 +950,9 @@ void Track::importPendingCueInfosMarkDirtyAndUnlock(
     cuePoints.reserve(m_importCueInfosPending.size());
     for (const auto& cueInfo : m_importCueInfosPending) {
         CuePointer pCue(new Cue(cueInfo, sampleRate));
+        // While this method could be called from any thread,
+        // associated Cue objects should always live on the
+        // same thread as their host, namely this->thread().
         pCue->moveToThread(thread());
         pCue->setTrackId(trackId);
         cuePoints.append(pCue);
