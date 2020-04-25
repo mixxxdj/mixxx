@@ -217,7 +217,7 @@ void EffectsManager::showParameter(int chainNumber, int effectNumber, EffectPara
 
 // This needs to be in EffectsManager rather than EffectChainSlot because it
 // needs access to the EffectsBackends.
-void EffectsManager::loadEffectChainPreset(EffectChainSlotPointer pChainSlot,
+void EffectsManager::loadEffectChainPreset(EffectChainSlot* pChainSlot,
         EffectChainPresetPointer pPreset) {
     VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
         return;
@@ -259,7 +259,7 @@ void EffectsManager::loadEffectChainPreset(EffectChainSlotPointer pChainSlot,
 }
 
 void EffectsManager::loadPresetToStandardChain(int chainNumber, EffectChainPresetPointer pPreset) {
-    loadEffectChainPreset(m_standardEffectChainSlots.at(chainNumber), pPreset);
+    loadEffectChainPreset(m_standardEffectChainSlots.at(chainNumber).get(), pPreset);
 }
 
 void EffectsManager::importChainPreset() {
@@ -502,6 +502,7 @@ void EffectsManager::addStandardEffectChainSlots() {
 
         auto pChainSlot = StandardEffectChainSlotPointer(
             new StandardEffectChainSlot(i, this));
+        connectChainSlotSignals(pChainSlot);
 
         m_standardEffectChainSlots.append(pChainSlot);
         m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
@@ -510,6 +511,7 @@ void EffectsManager::addStandardEffectChainSlots() {
 
 void EffectsManager::addOutputEffectChainSlot() {
     m_outputEffectChainSlot = OutputEffectChainSlotPointer(new OutputEffectChainSlot(this));
+    connectChainSlotSignals(m_outputEffectChainSlot);
     m_effectChainSlotsByGroup.insert(m_outputEffectChainSlot->group(), m_outputEffectChainSlot);
 }
 
@@ -532,8 +534,9 @@ void EffectsManager::addEqualizerEffectChainSlot(const QString& deckGroupName) {
 
     auto pChainSlot = EqualizerEffectChainSlotPointer(
             new EqualizerEffectChainSlot(deckGroupName, this));
-    m_equalizerEffectChainSlots.insert(deckGroupName, pChainSlot);
+    connectChainSlotSignals(pChainSlot);
 
+    m_equalizerEffectChainSlots.insert(deckGroupName, pChainSlot);
     m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
 }
 
@@ -545,11 +548,26 @@ void EffectsManager::addQuickEffectChainSlot(const QString& deckGroupName) {
 
     auto pChainSlot = QuickEffectChainSlotPointer(
         new QuickEffectChainSlot(deckGroupName, this));
+    connectChainSlotSignals(pChainSlot);
 
     m_quickEffectChainSlots.insert(deckGroupName, pChainSlot);
     m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
 }
 
+void EffectsManager::connectChainSlotSignals(EffectChainSlotPointer pChainSlot) {
+    connect(pChainSlot.get(),
+            &EffectChainSlot::loadChainPreset,
+            this,
+            &EffectsManager::loadChainPresetFromList);
+}
+
+void EffectsManager::loadChainPresetFromList(EffectChainSlot* pChainSlot, int listIndex) {
+    if (listIndex < 0 || listIndex >= m_effectChainPresets.size()) {
+        listIndex = 0;
+    }
+    loadEffectChainPreset(pChainSlot,
+            m_effectChainPresetsSorted.at(listIndex));
+}
 EffectChainSlotPointer EffectsManager::getEffectChainSlot(
         const QString& group) const {
     return m_effectChainSlotsByGroup.value(group);
@@ -910,7 +928,7 @@ void EffectsManager::readEffectsXml() {
         if (chainNode.isElement()) {
             QDomElement chainElement = chainNode.toElement();
             EffectChainPresetPointer pPreset(new EffectChainPreset(chainElement));
-            loadEffectChainPreset(m_standardEffectChainSlots.value(i), pPreset);
+            loadEffectChainPreset(m_standardEffectChainSlots.value(i).get(), pPreset);
         }
     }
 

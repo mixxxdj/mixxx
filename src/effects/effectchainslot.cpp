@@ -77,6 +77,12 @@ EffectChainSlot::EffectChainSlot(const QString& group,
     connect(m_pControlChainMixMode, &ControlObject::valueChanged,
             this, &EffectChainSlot::sendParameterUpdate);
 
+    m_pControlLoadPreset = new ControlObject(ConfigKey(m_group, "load_preset"), false);
+    connect(m_pControlLoadPreset,
+            &ControlObject::valueChanged,
+            this,
+            &EffectChainSlot::slotControlLoadChainPreset);
+
     m_pControlChainNextPreset = new ControlPushButton(ConfigKey(m_group, "next_chain"));
     connect(m_pControlChainNextPreset, &ControlObject::valueChanged,
             this, &EffectChainSlot::slotControlChainNextPreset);
@@ -125,6 +131,7 @@ EffectChainSlot::~EffectChainSlot() {
     delete m_pControlChainMix;
     delete m_pControlChainSuperParameter;
     delete m_pControlChainMixMode;
+    delete m_pControlLoadPreset;
     delete m_pControlChainPrevPreset;
     delete m_pControlChainNextPreset;
     delete m_pControlChainSelector;
@@ -304,6 +311,11 @@ void EffectChainSlot::slotControlChainSelector(double v) {
 //     } else if (v < 0) {
 //         emit prevChain(m_iChainSlotNumber, m_pEffectChain);
 //     }
+}
+
+void EffectChainSlot::slotControlLoadChainPreset(double value) {
+    // subtract 1 to make the ControlObject 1-indexed like other ControlObjects
+    emit loadChainPreset(this, value - 1);
 }
 
 void EffectChainSlot::slotControlChainNextPreset(double v) {
