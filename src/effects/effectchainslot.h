@@ -131,6 +131,7 @@ class EffectChainSlot : public QObject {
     // Signal that whoever is in charge of this EffectChainSlot should clear
     // this EffectChain (by removing the chain from this EffectChainSlot).
     void clearChain(unsigned int iChainNumber, EffectChainSlotPointer pEffectChain);
+    void loadChainPreset(EffectChainSlot* pChainSlot, int listIndex);
 
     // Signal that indicates that the EffectChainSlot has been updated.
     void updated();
@@ -156,6 +157,7 @@ class EffectChainSlot : public QObject {
     void slotControlChainSelector(double v);
     void slotControlChainNextPreset(double v);
     void slotControlChainPrevPreset(double v);
+    void slotControlLoadChainPreset(double value);
     void slotChannelStatusChanged(const QString& group);
 
   private:
@@ -174,6 +176,7 @@ class EffectChainSlot : public QObject {
     ControlObject* m_pControlChainLoaded;
     ControlPushButton* m_pControlChainEnabled;
     ControlPushButton* m_pControlChainMixMode;
+    ControlObject* m_pControlLoadPreset;
     ControlEncoder* m_pControlChainSelector;
     ControlPushButton* m_pControlChainNextPreset;
     ControlPushButton* m_pControlChainPrevPreset;
