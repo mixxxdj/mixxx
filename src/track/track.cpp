@@ -875,10 +875,16 @@ void Track::setCuePointsMarkDirtyAndUnlock(
         QMutexLocker* pLock,
         const QList<CuePointer>& cuePoints) {
     DEBUG_ASSERT(pLock);
+    if (m_cuePoints.isEmpty() &&
+            cuePoints.isEmpty()) {
+        // Nothing to do
+        return;
+    }
     // Prevent inconsistencies between cue infos that have been queued
     // and are waiting to be imported and new cue points. At least one
     // of these two collections must be empty.
-    DEBUG_ASSERT(cuePoints.isEmpty() || m_importCueInfosPending.isEmpty());
+    DEBUG_ASSERT(cuePoints.isEmpty() ||
+            m_importCueInfosPending.isEmpty());
     // disconnect existing cue points
     for (const auto& pCue: m_cuePoints) {
         disconnect(pCue.get(), 0, this, 0);
@@ -886,10 +892,17 @@ void Track::setCuePointsMarkDirtyAndUnlock(
     m_cuePoints = cuePoints;
     // connect new cue points
     for (const auto& pCue: m_cuePoints) {
-        connect(pCue.get(), &Cue::updated, this, &Track::slotCueUpdated);
-        // Enure that the track IDs are correct
+        // Ensure that the track IDs are correct
         pCue->setTrackId(m_record.getId());
-        // update main cue point
+        // Start listening to cue point updatess AFTER setting
+        // the track id. Otherwise we would receive unwanted
+        // signals about changed cue points that may cause all
+        // sorts of issues, e.g. when adding new tracks during
+        // the library scan!
+        connect(pCue.get(),
+                &Cue::updated,
+                this,
+                &Track::slotCueUpdated);
         if (pCue->getType() == mixxx::CueType::MainCue) {
             m_record.setCuePoint(CuePosition(pCue->getPosition()));
         }
