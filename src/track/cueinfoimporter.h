@@ -1,4 +1,6 @@
 #pragma once
+#include <memory>
+
 #include "track/cueinfo.h"
 
 namespace mixxx {
