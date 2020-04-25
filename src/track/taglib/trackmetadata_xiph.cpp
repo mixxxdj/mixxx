@@ -261,7 +261,7 @@ void importTrackMetadataFromTag(
     taglib::importTrackMetadataFromTag(
             pTrackMetadata,
             tag,
-            READ_TAG_OMIT_COMMENT);
+            ReadTagFlag::OmitComment);
 
     // The original specification only defines a "DESCRIPTION" field,
     // while MusicBrainz recommends to use "COMMENT". Mixxx follows
@@ -473,7 +473,7 @@ bool exportTrackMetadataIntoTag(
     taglib::exportTrackMetadataIntoTag(
             pTag,
             trackMetadata,
-            WRITE_TAG_OMIT_TRACK_NUMBER | WRITE_TAG_OMIT_YEAR | WRITE_TAG_OMIT_COMMENT);
+            WriteTagFlag::OmitTrackNumber | WriteTagFlag::OmitYear | WriteTagFlag::OmitComment);
 
     // The original specification only defines a "DESCRIPTION" field,
     // while MusicBrainz recommends to use "COMMENT". Mixxx follows

@@ -4,6 +4,7 @@
 #include <taglib/tstringlist.h>
 
 #include <QByteArray>
+#include <QFlags>
 #include <QImage>
 #include <QString>
 
@@ -168,15 +169,19 @@ inline QImage loadImageFromByteVector(
 /// Usage: The write functions for ID3v2, MP4, APE and XiphComment tags
 /// have specialized code for some or all of the corresponding tag fields
 /// and the common implementation sometime doesn't work as expected.
-enum ReadTagMask {
-    READ_TAG_OMIT_NONE = 0x00,
-    READ_TAG_OMIT_COMMENT = 0x01,
+enum class ReadTagFlag {
+    OmitNone = 0,
+    OmitComment = 1 << 0,
 };
+
+Q_DECLARE_FLAGS(ReadTagMask, ReadTagFlag)
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(ReadTagMask)
 
 void importTrackMetadataFromTag(
         TrackMetadata* pTrackMetadata,
         const TagLib::Tag& tag,
-        int readMask = READ_TAG_OMIT_NONE);
+        ReadTagMask readMask = ReadTagFlag::OmitNone);
 
 /// Bitmask of optional tag fields that should NOT be written into the
 /// common part of the tag through TagLib::Tag. For future extension
@@ -185,17 +190,21 @@ void importTrackMetadataFromTag(
 /// have specialized code for some or all of the corresponding tag fields
 /// and it is not needed or even dangerous to use the common setters of
 /// TagLib::Tag.
-enum WriteTagMask {
-    WRITE_TAG_OMIT_NONE = 0x00,
-    WRITE_TAG_OMIT_TRACK_NUMBER = 0x01,
-    WRITE_TAG_OMIT_YEAR = 0x02,
-    WRITE_TAG_OMIT_COMMENT = 0x04,
+enum class WriteTagFlag {
+    OmitNone = 0,
+    OmitComment = 1 << 0,
+    OmitTrackNumber = 1 << 1,
+    OmitYear = 1 << 2,
 };
+
+Q_DECLARE_FLAGS(WriteTagMask, WriteTagFlag)
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(WriteTagMask)
 
 void exportTrackMetadataIntoTag(
         TagLib::Tag* pTag,
         const TrackMetadata& trackMetadata,
-        int writeMask);
+        WriteTagMask writeMask);
 
 } // namespace taglib
 

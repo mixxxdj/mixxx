@@ -656,7 +656,7 @@ void importTrackMetadataFromTag(
     taglib::importTrackMetadataFromTag(
             pTrackMetadata,
             tag,
-            READ_TAG_OMIT_COMMENT);
+            ReadTagFlag::OmitComment);
 
     TagLib::ID3v2::CommentsFrame* pCommentsFrame =
             findFirstCommentsFrameWithoutDescription(tag);
@@ -1013,7 +1013,7 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
     DEBUG_ASSERT(pHeader);
     if (!checkHeaderVersionSupported(*pHeader)) {
         kLogger.warning() << "Legacy ID3v2 version - exporting only basic tags";
-        exportTrackMetadataIntoTag(pTag, trackMetadata, WRITE_TAG_OMIT_NONE);
+        exportTrackMetadataIntoTag(pTag, trackMetadata, WriteTagFlag::OmitNone);
         return true; // done
     }
 
@@ -1026,7 +1026,7 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
     taglib::exportTrackMetadataIntoTag(
             pTag,
             trackMetadata,
-            WRITE_TAG_OMIT_TRACK_NUMBER | WRITE_TAG_OMIT_YEAR | WRITE_TAG_OMIT_COMMENT);
+            WriteTagFlag::OmitTrackNumber | WriteTagFlag::OmitYear | WriteTagFlag::OmitComment);
 
     // Writing the common comments frame has been omitted (see above)
     writeCommentsFrameWithoutDescription(

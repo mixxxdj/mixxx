@@ -175,7 +175,7 @@ bool parseSeratoMarkers2(
 void importTrackMetadataFromTag(
         TrackMetadata* pTrackMetadata,
         const TagLib::Tag& tag,
-        int readMask) {
+        ReadTagMask readMask) {
     if (!pTrackMetadata) {
         return; // nothing to do
     }
@@ -185,7 +185,7 @@ void importTrackMetadataFromTag(
     pTrackMetadata->refTrackInfo().setGenre(toQString(tag.genre()));
     pTrackMetadata->refAlbumInfo().setTitle(toQString(tag.album()));
 
-    if ((readMask & READ_TAG_OMIT_COMMENT) == 0) {
+    if ((readMask & ReadTagFlag::OmitComment) == 0) {
         pTrackMetadata->refTrackInfo().setComment(toQString(tag.comment()));
     }
 
@@ -203,7 +203,7 @@ void importTrackMetadataFromTag(
 void exportTrackMetadataIntoTag(
         TagLib::Tag* pTag,
         const TrackMetadata& trackMetadata,
-        int writeMask) {
+        WriteTagMask writeMask) {
     DEBUG_ASSERT(pTag); // already validated before
 
     pTag->setArtist(toTString(trackMetadata.getTrackInfo().getArtist()));
@@ -215,7 +215,7 @@ void exportTrackMetadataIntoTag(
     // effects if the tag type supports multiple comment fields for
     // different purposes, e.g. ID3v2. In this case setting the
     // comment here should be omitted.
-    if (0 == (writeMask & WRITE_TAG_OMIT_COMMENT)) {
+    if (0 == (writeMask & WriteTagFlag::OmitComment)) {
         pTag->setComment(toTString(trackMetadata.getTrackInfo().getComment()));
     }
 
@@ -223,7 +223,7 @@ void exportTrackMetadataIntoTag(
     // be able to write the complete string from trackMetadata.getTrackInfo().getYear()
     // into the corresponding field. In this case parsing the year string
     // here should be omitted.
-    if (0 == (writeMask & WRITE_TAG_OMIT_YEAR)) {
+    if (0 == (writeMask & WriteTagFlag::OmitYear)) {
         // Set the numeric year if available
         const QDate yearDate(
                 TrackMetadata::parseDateTime(trackMetadata.getTrackInfo().getYear()).date());
@@ -237,7 +237,7 @@ void exportTrackMetadataIntoTag(
     // Taglib::Tag might be able to handle both trackMetadata.getTrackInfo().getTrackNumber()
     // and trackMetadata.getTrackInfo().getTrackTotal(). In this case parsing the track
     // number string here is useless and should be omitted.
-    if (0 == (writeMask & WRITE_TAG_OMIT_TRACK_NUMBER)) {
+    if (0 == (writeMask & WriteTagFlag::OmitTrackNumber)) {
         // Set the numeric track number if available
         TrackNumbers parsedTrackNumbers;
         const TrackNumbers::ParseResult parseResult =

@@ -273,7 +273,7 @@ bool exportTrackMetadataIntoTag(TagLib::APE::Tag* pTag, const TrackMetadata& tra
     taglib::exportTrackMetadataIntoTag(
             pTag,
             trackMetadata,
-            WRITE_TAG_OMIT_TRACK_NUMBER | WRITE_TAG_OMIT_YEAR);
+            WriteTagFlag::OmitTrackNumber | WriteTagFlag::OmitYear);
 
     // NOTE(uklotzde): Overwrite the numeric track number in the common
     // part of the tag with the custom string from the track metadata

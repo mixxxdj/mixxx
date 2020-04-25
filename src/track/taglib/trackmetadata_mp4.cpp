@@ -317,7 +317,7 @@ bool exportTrackMetadataIntoTag(
     taglib::exportTrackMetadataIntoTag(
             pTag,
             trackMetadata,
-            WRITE_TAG_OMIT_TRACK_NUMBER | WRITE_TAG_OMIT_YEAR);
+            WriteTagFlag::OmitTrackNumber | WriteTagFlag::OmitYear);
 
     // Write track number/total pair
     TrackNumbers parsedTrackNumbers;

@@ -519,7 +519,7 @@ bool exportTrackMetadataIntoRIFFTag(TagLib::RIFF::Info::Tag* pTag, const TrackMe
         return false;
     }
 
-    taglib::exportTrackMetadataIntoTag(pTag, trackMetadata, taglib::WRITE_TAG_OMIT_NONE);
+    taglib::exportTrackMetadataIntoTag(pTag, trackMetadata, taglib::WriteTagFlag::OmitNone);
 
     return true;
 }
