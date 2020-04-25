@@ -123,13 +123,13 @@ int Cue::getId() const {
 
 void Cue::setId(int cueId) {
     QMutexLocker lock(&m_mutex);
-    if (m_iId == cueId) {
-        return;
-    }
     m_iId = cueId;
-    m_bDirty = true;
-    lock.unlock();
-    emit updated();
+    // Neither mark as dirty nor do emit the updated() signal.
+    // This function is only called after adding the Cue object
+    // to the database. The id is not visible for anyone else.
+    // Unintended side effects with the LibraryScanner occur
+    // when adding new tracks that have their cue points stored
+    // in Serato marker tags!!
 }
 
 TrackId Cue::getTrackId() const {
@@ -143,9 +143,13 @@ void Cue::setTrackId(TrackId trackId) {
         return;
     }
     m_trackId = trackId;
+    // Mark as dirty, but DO NOT emit the updated() signal.
+    // The receiver is the corresponding Track object that
+    // would in turn be marked as dirty. This could cause
+    // unintended side effects with the LibraryScanner when
+    // adding new tracks that have their cue points stored
+    // in Serato marker tags!!
     m_bDirty = true;
-    lock.unlock();
-    emit updated();
 }
 
 mixxx::CueType Cue::getType() const {
