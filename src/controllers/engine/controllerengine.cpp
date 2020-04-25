@@ -178,10 +178,7 @@ void ControllerEngine::gracefulShutdown() {
     // Stop all timers
     stopAllTimers();
 
-    if (m_shutdownCallback.isCallable()) {
-        m_shutdownCallback.call();
-    }
-    // for legacy mappings
+    // Call each script's shutdown function if it exists
     callFunctionOnObjects(m_scriptFunctionPrefixes, "shutdown");
 
     // Prevents leaving decks in an unstable state
@@ -212,22 +209,6 @@ void ControllerEngine::gracefulShutdown() {
         delete coScript;
         ++it;
     }
-}
-
-void ControllerEngine::registerInputCallback(QJSValue callback) {
-    if (!callback.isCallable()) {
-        throwJSError("Input callback is not a function");
-        return;
-    }
-    m_inputCallback = callback;
-}
-
-void ControllerEngine::registerShutdownCallback(QJSValue callback) {
-    if (!callback.isCallable()) {
-        throwJSError("Shutdown callback is not a function");
-        return;
-    }
-    m_shutdownCallback = callback;
 }
 
 void ControllerEngine::initializeScriptEngine() {
@@ -338,17 +319,14 @@ void ControllerEngine::initializeScripts(const QList<ControllerPreset::ScriptFil
     args << QJSValue(m_pController->getName());
     args << QJSValue(ControllerDebug::enabled());
 
-    // for legacy mappings
-    callFunctionOnObjects(m_scriptFunctionPrefixes, "init", args, true);
-}
+    // Call the init method for all the prefixes.
+    bool success = callFunctionOnObjects(m_scriptFunctionPrefixes, "init", args, true);
 
-void ControllerEngine::receiveInput(const QByteArray& data, mixxx::Duration timestamp) {
-    // Legacy mappings do not use this, so do not VERIFY_OR_DEBUG_ASSERT here.
-    if (m_inputCallback.isCallable()) {
-        QJSValueList args;
-        args << byteArrayToScriptValue(data);
-        args << static_cast<uint>(timestamp.toIntegerMillis());
-        m_inputCallback.call(args);
+    // We failed to initialize the controller scripts, shutdown the script
+    // engine to avoid error popups on every button press or slider move
+    if (!success) {
+        gracefulShutdown();
+        uninitializeScriptEngine();
     }
 }
 

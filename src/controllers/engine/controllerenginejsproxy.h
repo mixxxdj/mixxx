@@ -21,9 +21,6 @@ class ControllerEngineJSProxy : public QObject {
 
     virtual ~ControllerEngineJSProxy();
 
-    Q_INVOKABLE void registerInputCallback(QJSValue callback);
-    Q_INVOKABLE void registerShutdownCallback(QJSValue callback);
-
     Q_INVOKABLE double getValue(QString group, QString name);
     Q_INVOKABLE void setValue(QString group, QString name, double newValue);
     Q_INVOKABLE double getParameter(QString group, QString name);

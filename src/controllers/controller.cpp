@@ -136,9 +136,6 @@ void Controller::receive(const QByteArray data, mixxx::Duration timestamp) {
         controllerDebug(message);
     }
 
-    m_pEngine->receiveInput(data, timestamp);
-
-    // for legacy mappings
     foreach (QString function, m_pEngine->getScriptFunctionPrefixes()) {
         if (function == "") {
             continue;
