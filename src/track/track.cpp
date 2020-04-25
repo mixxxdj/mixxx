@@ -715,6 +715,7 @@ void Track::setCuePoint(CuePosition cue) {
     if (position != -1.0) {
         if (!pLoadCue) {
             pLoadCue = CuePointer(new Cue());
+            pLoadCue->moveToThread(thread());
             pLoadCue->setTrackId(m_record.getId());
             pLoadCue->setType(mixxx::CueType::MainCue);
             connect(pLoadCue.get(),
@@ -750,6 +751,7 @@ void Track::slotCueUpdated() {
 CuePointer Track::createAndAddCue() {
     QMutexLocker lock(&m_qMutex);
     CuePointer pCue(new Cue());
+    pCue->moveToThread(thread());
     pCue->setTrackId(m_record.getId());
     connect(pCue.get(), &Cue::updated, this, &Track::slotCueUpdated);
     m_cuePoints.push_back(pCue);
@@ -827,6 +829,9 @@ QList<CuePointer> Track::getCuePoints() const {
 
 void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
     //qDebug() << "setCuePoints" << cuePoints.length();
+    for (const auto& pCue : cuePoints) {
+        pCue->moveToThread(thread());
+    }
     QMutexLocker lock(&m_qMutex);
     setCuePointsMarkDirtyAndUnlock(
             &lock,
@@ -892,6 +897,7 @@ void Track::setCuePointsMarkDirtyAndUnlock(
     m_cuePoints = cuePoints;
     // connect new cue points
     for (const auto& pCue: m_cuePoints) {
+        DEBUG_ASSERT(pCue->thread() == thread());
         // Ensure that the track IDs are correct
         pCue->setTrackId(m_record.getId());
         // Start listening to cue point updatess AFTER setting
@@ -931,6 +937,7 @@ void Track::importPendingCueInfosMarkDirtyAndUnlock(
     cuePoints.reserve(m_importCueInfosPending.size());
     for (const auto& cueInfo : m_importCueInfosPending) {
         CuePointer pCue(new Cue(cueInfo, sampleRate));
+        pCue->moveToThread(thread());
         pCue->setTrackId(trackId);
         cuePoints.append(pCue);
     }
