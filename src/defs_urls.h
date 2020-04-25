@@ -22,7 +22,8 @@
 #define MIXXX_TRANSLATION_URL   "https://www.transifex.com/projects/p/mixxxdj/"
 #define MIXXX_FEEDBACK_URL      "https://goo.gl/forms/IHf3JK7Q9DXmExXc2"
 #define MIXXX_MANUAL_URL        "https://mixxx.org/manual/2.3"
-#define MIXXX_SHORTCUTS_URL     "https://mixxx.org/manual/2.3/en/chapters/controlling_mixxx.html#using-a-keyboard"
+#define MIXXX_MANUAL_SHORTCUTS_URL \
+    MIXXX_MANUAL_URL "/chapters/controlling_mixxx.html#using-a-keyboard"
 #define MIXXX_MANUAL_CONTROLLERS_URL \
     MIXXX_MANUAL_URL                 \
     "/chapters/controlling_mixxx.html#using-midi-hid-controllers"
