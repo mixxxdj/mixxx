@@ -79,7 +79,6 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     QModelIndex indexFromPlaylistId(int playlistId);
 
     PlaylistDAO& m_playlistDao;
-    TreeItemModel m_childModel;
     QModelIndex m_lastRightClickedIndex;
 
     QAction* m_pCreatePlaylistAction;

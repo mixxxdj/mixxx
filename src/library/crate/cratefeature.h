@@ -99,7 +99,6 @@ class CrateFeature : public BaseTrackSetFeature {
     TrackCollection* const m_pTrackCollection;
 
     CrateTableModel m_crateTableModel;
-    TreeItemModel m_childModel;
 
     QModelIndex m_lastRightClickedIndex;
     TrackPointer m_pSelectedTrack;
