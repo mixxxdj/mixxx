@@ -1021,8 +1021,8 @@ target_link_libraries(mixxx PUBLIC mixxx-lib)
 #
 set(MIXXX_INSTALL_BINDIR ".")
 set(MIXXX_INSTALL_DATADIR ".")
-set(MIXXX_INSTALL_DOCDIR ".")
-set(MIXXX_INSTALL_LICENSEDIR ".")
+set(MIXXX_INSTALL_DOCDIR "./doc")
+set(MIXXX_INSTALL_LICENSEDIR "./doc")
 if (UNIX)
   include(GNUInstallDirs)
   set(MIXXX_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}")
@@ -1063,6 +1063,22 @@ install(
   FILES_MATCHING PATTERN
     "*.qm"
 )
+if(WIN32)
+install(
+  DIRECTORY
+    # I haven't seen a way to determine where the translations dir is, so I am making
+    # some assumptions here, and assuming that Qt5_DIR points to Qt-5.14.2/lib/cmake/Qt5
+    # which is what my configuration tells me.
+    "${Qt5_DIR}/../../../translations"
+  DESTINATION
+    "${MIXXX_INSTALL_DATADIR}"
+  FILES_MATCHING REGEX
+    # QT 5 translations have been separated into several files, and most of the qt_xx.qm files 
+    # contain just shortcuts to load the qtbase, qtmultimedia etc files.
+    "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
+)
+endif()
+
 # Font files
 install(
   DIRECTORY
