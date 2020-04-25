@@ -186,9 +186,21 @@ QList<CueInfo> SeratoTags::getCues(const QString& filePath) const {
         cueMap.insert(index, newCueInfo);
     };
 
-    // TODO(jholthuis): If a hotcue is set in SeratoMarkers2, but not in
-    // SeratoMarkers_, we could remove it from the output. We'll just leave it
-    // in for now.
+    // If the "Serato Markers_" tag does not exist at all, Serato DJ Pro just
+    // takes data from the "Serato Markers2" tag, so we can exit early
+    // here. If the "Serato Markers_" exists, its data will take precedence.
+    if (m_seratoMarkers.isEmpty()) {
+        return cueMap.values();
+    }
+
+    // The "Serato Markers_" tag always contains entries for the first five
+    // cues. If a cue is not set, that entry is present but empty.
+    // If a cue is set in "Serato Markers2" but not in "Serato Markers_",
+    // Serato DJ Pro considers it as "not set" and ignores it.
+    // To mirror the behaviour of Serato, we need to remove from the output of
+    // this function.
+    QSet<int> unsetCuesInMarkersTag = {0, 1, 2, 3, 4};
+
     for (const CueInfo& cueInfo : m_seratoMarkers.getCues(timingOffsetMillis)) {
         VERIFY_OR_DEBUG_ASSERT(cueInfo.getHotCueNumber()) {
             qWarning() << "SeratoTags::getCues: Cue without number found!";
@@ -222,7 +234,17 @@ QList<CueInfo> SeratoTags::getCues(const QString& filePath) const {
             newCueInfo.setColor(storedToDisplayedSeratoDJProCueColor(*color));
         }
         cueMap.insert(index, newCueInfo);
+
+        // This cue is set in the "Serato Markers_" tag, so remove it from the
+        // set of unset cues
+        unsetCuesInMarkersTag.remove(index);
     };
+
+    // Now that we know which cues should be present in the "Serato Markers_"
+    // tag but aren't, remove them from the set.
+    for (const int index : unsetCuesInMarkersTag) {
+        cueMap.remove(index);
+    }
 
     return cueMap.values();
 }
