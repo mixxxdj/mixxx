@@ -738,40 +738,6 @@ double BpmControl::getBeatMatchPosition(
         return dThisPosition;
     }
 
-    // Get the current position of this deck.
-    double dThisPrevBeat = m_pPrevBeat->get();
-    double dThisNextBeat = m_pNextBeat->get();
-    double dThisBeatLength;
-    if (dThisPosition > dThisNextBeat || dThisPosition < dThisPrevBeat) {
-        //qDebug() << "BpmControl::getNearestPositionInPhase out of date"
-        //         << dThisPosition << dThisNextBeat << dThisPrevBeat;
-        // This happens if dThisPosition is the target position of a requested
-        // seek command
-        if (!getBeatContext(
-                    m_pBeats,
-                    dThisPosition,
-                    &dThisPrevBeat,
-                    &dThisNextBeat,
-                    &dThisBeatLength,
-                    nullptr)) {
-            return dThisPosition;
-        }
-    } else {
-        if (!getBeatContextNoLookup(
-                    dThisPosition,
-                    dThisPrevBeat,
-                    dThisNextBeat,
-                    &dThisBeatLength,
-                    nullptr)) {
-            return dThisPosition;
-        }
-    }
-
-    double dOtherPrevBeat;
-    double dOtherNextBeat;
-    double dOtherBeatLength;
-    double dOtherBeatFraction;
-    // If not, we have to figure it out
     EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
     if (pOtherEngineBuffer == nullptr) {
         if (playing) {
@@ -790,6 +756,42 @@ double BpmControl::getBeatMatchPosition(
         }
     }
 
+    // Get the current position of this deck.
+    double dThisPrevBeat = m_pPrevBeat->get();
+    double dThisNextBeat = m_pNextBeat->get();
+    double dThisBeatLength = -1;
+
+    // Look up the next beat and beat length for the new position
+    if (dThisNextBeat == -1 ||
+            dThisPosition > dThisNextBeat ||
+            (dThisPrevBeat != -1 && dThisPosition < dThisPrevBeat)) {
+        //qDebug() << "BpmControl::getNearestPositionInPhase out of date"
+        //         << dThisPosition << dThisNextBeat << dThisPrevBeat;
+        // This happens if dThisPosition is the target position of a requested
+        // seek command
+        getBeatContext(
+                m_pBeats,
+                dThisPosition,
+                &dThisPrevBeat,
+                &dThisNextBeat,
+                &dThisBeatLength,
+                nullptr);
+        // now we either have a useful next beat or there is none
+        if (dThisNextBeat == -1) {
+            // We can't match the next beat, give up.
+            return dThisPosition;
+        }
+    } else {
+        // We are between the previous and next beats so we can try a standard
+        // lookup of the beat length.
+        getBeatContextNoLookup(
+                dThisPosition,
+                dThisPrevBeat,
+                dThisNextBeat,
+                &dThisBeatLength,
+                nullptr);
+    }
+
     TrackPointer otherTrack = pOtherEngineBuffer->getLoadedTrack();
     BeatsPointer otherBeats = otherTrack ? otherTrack->getBeats() : BeatsPointer();
 
@@ -800,6 +802,10 @@ double BpmControl::getBeatMatchPosition(
 
     double dOtherPosition = pOtherEngineBuffer->getExactPlayPos();
 
+    double dOtherPrevBeat;
+    double dOtherNextBeat;
+    double dOtherBeatLength;
+    double dOtherBeatFraction;
     if (!BpmControl::getBeatContext(
                 otherBeats,
                 dOtherPosition,
@@ -832,12 +838,14 @@ double BpmControl::getBeatMatchPosition(
     double seekMatch = (thisDivSec - otherDivSec) *
             dThisSampleRate * dThisRateRatio;
 
-    if (dThisBeatLength / 2 < seekMatch) {
-        // seek to previous beat, because of shorter distance
-        seekMatch -= dThisBeatLength;
-    } else if (dThisBeatLength / 2 < -seekMatch) {
-        // seek to beat after next, because of shorter distance
-        seekMatch += dThisBeatLength;
+    if (dThisBeatLength > 0) {
+        if (dThisBeatLength / 2 < seekMatch) {
+            // seek to previous beat, because of shorter distance
+            seekMatch -= dThisBeatLength;
+        } else if (dThisBeatLength / 2 < -seekMatch) {
+            // seek to beat after next, because of shorter distance
+            seekMatch += dThisBeatLength;
+        }
     }
     double dNewPlaypos = dThisPosition + seekMatch;
 
@@ -882,7 +890,6 @@ double BpmControl::getBeatMatchPosition(
             // loops are catching
         }
     }
-
     return dNewPlaypos;
 }
 
