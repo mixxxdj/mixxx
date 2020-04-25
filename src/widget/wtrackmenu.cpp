@@ -628,6 +628,11 @@ void WTrackMenu::updateMenus() {
     if (featureIsEnabled(Feature::Color)) {
         m_pColorPickerAction->setColorPalette(
                 ColorPaletteSettings(m_pConfig).getTrackColorPalette());
+
+        // Resize Menu to fit changed palette
+        QResizeEvent resizeEvent(QSize(), m_pColorMenu->size());
+        qApp->sendEvent(m_pColorMenu, &resizeEvent);
+
         const auto commonColor = getCommonTrackColor();
         if (commonColor) {
             m_pColorPickerAction->setSelectedColor(commonColor);
