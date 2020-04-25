@@ -1287,4 +1287,4 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
 
 } // namespace taglib
 
-} //namespace mixxx
+} // namespace mixxx

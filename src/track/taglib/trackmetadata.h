@@ -1,8 +1,8 @@
 #pragma once
 
 ///////////////////////////////////////////////////////////////////////
-// The common source for all tag mappings is MusicBrainz Picard:
-// https://picard.musicbrainz.org/docs/mappings/
+/// The common source for all tag mappings is MusicBrainz Picard:
+/// https://picard.musicbrainz.org/docs/mappings/
 ///////////////////////////////////////////////////////////////////////
 
 #include "track/taglib/trackmetadata_ape.h"

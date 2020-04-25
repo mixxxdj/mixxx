@@ -17,4 +17,4 @@ void importTrackMetadataFromTag(
 
 } // namespace taglib
 
-} //namespace mixxx
+} // namespace mixxx

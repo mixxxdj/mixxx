@@ -331,4 +331,4 @@ bool exportTrackMetadataIntoTag(TagLib::APE::Tag* pTag, const TrackMetadata& tra
 
 } // namespace taglib
 
-} //namespace mixxx
+} // namespace mixxx

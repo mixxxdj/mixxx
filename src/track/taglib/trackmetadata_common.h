@@ -39,11 +39,11 @@ inline QString toQString(
 TagLib::String toTString(
         const QString& str);
 
-// Returns the first element of TagLib string list that is not empty.
+/// Returns the first element of TagLib string list that is not empty.
 TagLib::String firstNonEmptyStringListItem(
         const TagLib::StringList& strList);
 
-// Returns a QByteArray that owns the data.
+/// Returns a QByteArray that owns the data.
 inline QByteArray toQByteArray(
         const TagLib::ByteVector& tByteVector) {
     if (tByteVector.isNull()) {
@@ -56,7 +56,7 @@ inline QByteArray toQByteArray(
     }
 }
 
-// Returns a QByteArray that directly accesses the underlying byte vector!
+/// Returns a QByteArray that directly accesses the underlying byte vector!
 inline QByteArray toQByteArrayRaw(
         const TagLib::ByteVector& tByteVector) {
     if (tByteVector.isNull()) {
@@ -163,11 +163,11 @@ inline QImage loadImageFromByteVector(
             format);
 }
 
-// Bitmask of optional tag fields that should NOT be read from the
-// common part of the tag through TagLib::Tag.
-// Usage: The write functions for ID3v2, MP4, APE and XiphComment tags
-// have specialized code for some or all of the corresponding tag fields
-// and the common implementation sometime doesn't work as expected.
+/// Bitmask of optional tag fields that should NOT be read from the
+/// common part of the tag through TagLib::Tag.
+/// Usage: The write functions for ID3v2, MP4, APE and XiphComment tags
+/// have specialized code for some or all of the corresponding tag fields
+/// and the common implementation sometime doesn't work as expected.
 enum ReadTagMask {
     READ_TAG_OMIT_NONE = 0x00,
     READ_TAG_OMIT_COMMENT = 0x01,
@@ -178,13 +178,13 @@ void importTrackMetadataFromTag(
         const TagLib::Tag& tag,
         int readMask = READ_TAG_OMIT_NONE);
 
-// Bitmask of optional tag fields that should NOT be written into the
-// common part of the tag through TagLib::Tag. For future extension
-// it is safer to explicitly specify these exceptions!
-// Usage: The write functions for ID3v2, MP4, APE and XiphComment tags
-// have specialized code for some or all of the corresponding tag fields
-// and it is not needed or even dangerous to use the common setters of
-// TagLib::Tag.
+/// Bitmask of optional tag fields that should NOT be written into the
+/// common part of the tag through TagLib::Tag. For future extension
+/// it is safer to explicitly specify these exceptions!
+/// Usage: The write functions for ID3v2, MP4, APE and XiphComment tags
+/// have specialized code for some or all of the corresponding tag fields
+/// and it is not needed or even dangerous to use the common setters of
+/// TagLib::Tag.
 enum WriteTagMask {
     WRITE_TAG_OMIT_NONE = 0x00,
     WRITE_TAG_OMIT_TRACK_NUMBER = 0x01,

@@ -36,4 +36,4 @@ class MetadataSourceTagLib : public MetadataSource {
     taglib::FileType m_fileType;
 };
 
-} //namespace mixxx
+} // namespace mixxx

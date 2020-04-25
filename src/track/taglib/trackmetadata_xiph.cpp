@@ -576,4 +576,4 @@ bool exportTrackMetadataIntoTag(
 
 } // namespace taglib
 
-} //namespace mixxx
+} // namespace mixxx
