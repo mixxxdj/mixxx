@@ -304,13 +304,12 @@ void EffectChainSlot::slotControlChainSuperParameter(double v, bool force) {
     }
 }
 
-void EffectChainSlot::slotControlChainSelector(double v) {
-//     qDebug() << debugString() << "slotControlChainSelector" << v;
-//     if (v > 0) {
-//         emit nextChain(m_iChainSlotNumber, m_pEffectChain);
-//     } else if (v < 0) {
-//         emit prevChain(m_iChainSlotNumber, m_pEffectChain);
-//     }
+void EffectChainSlot::slotControlChainSelector(double value) {
+    if (value > 0) {
+        emit selectChainPreset(this, 1);
+    } else {
+        emit selectChainPreset(this, -1);
+    }
 }
 
 void EffectChainSlot::slotControlLoadChainPreset(double value) {
@@ -318,17 +317,15 @@ void EffectChainSlot::slotControlLoadChainPreset(double value) {
     emit loadChainPreset(this, value - 1);
 }
 
-void EffectChainSlot::slotControlChainNextPreset(double v) {
-    // qDebug() << debugString() << "slotControlChainNextPreset" << v;
-    if (v > 0) {
-        slotControlChainSelector(1);
+void EffectChainSlot::slotControlChainNextPreset(double value) {
+    if (value > 0) {
+        emit selectChainPreset(this, 1);
     }
 }
 
-void EffectChainSlot::slotControlChainPrevPreset(double v) {
-    //qDebug() << debugString() << "slotControlChainPrevPreset" << v;
-    if (v > 0) {
-        slotControlChainSelector(-1);
+void EffectChainSlot::slotControlChainPrevPreset(double value) {
+    if (value > 0) {
+        emit selectChainPreset(this, -1);
     }
 }
 

@@ -118,20 +118,8 @@ class EffectChainSlot : public QObject {
             bool adoptMetaknobFromPreset = false);
 
   signals:
-    // Signal that whoever is in charge of this EffectChainSlot should load the
-    // next EffectChain into it.
-    void nextChain(unsigned int iChainSlotNumber,
-                   EffectChainSlotPointer pEffectChain);
-
-    // Signal that whoever is in charge of this EffectChainSlot should load the
-    // previous EffectChain into it.
-    void prevChain(unsigned int iChainSlotNumber,
-                   EffectChainSlotPointer pEffectChain);
-
-    // Signal that whoever is in charge of this EffectChainSlot should clear
-    // this EffectChain (by removing the chain from this EffectChainSlot).
-    void clearChain(unsigned int iChainNumber, EffectChainSlotPointer pEffectChain);
     void loadChainPreset(EffectChainSlot* pChainSlot, int listIndex);
+    void selectChainPreset(EffectChainSlot* pChainSlot, int delta);
 
     // Signal that indicates that the EffectChainSlot has been updated.
     void updated();
@@ -153,11 +141,11 @@ class EffectChainSlot : public QObject {
     QList<EffectSlotPointer> m_effectSlots;
 
   private slots:
-    void slotControlClear(double v);
-    void slotControlChainSelector(double v);
-    void slotControlChainNextPreset(double v);
-    void slotControlChainPrevPreset(double v);
+    void slotControlClear(double value);
     void slotControlLoadChainPreset(double value);
+    void slotControlChainSelector(double value);
+    void slotControlChainNextPreset(double value);
+    void slotControlChainPrevPreset(double value);
     void slotChannelStatusChanged(const QString& group);
 
   private:
