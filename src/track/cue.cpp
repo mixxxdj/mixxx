@@ -123,6 +123,9 @@ int Cue::getId() const {
 
 void Cue::setId(int cueId) {
     QMutexLocker lock(&m_mutex);
+    if (m_iId == cueId) {
+        return;
+    }
     m_iId = cueId;
     m_bDirty = true;
     lock.unlock();
@@ -136,6 +139,9 @@ TrackId Cue::getTrackId() const {
 
 void Cue::setTrackId(TrackId trackId) {
     QMutexLocker lock(&m_mutex);
+    if (m_trackId == trackId) {
+        return;
+    }
     m_trackId = trackId;
     m_bDirty = true;
     lock.unlock();
@@ -149,6 +155,9 @@ mixxx::CueType Cue::getType() const {
 
 void Cue::setType(mixxx::CueType type) {
     QMutexLocker lock(&m_mutex);
+    if (m_type == type) {
+        return;
+    }
     m_type = type;
     m_bDirty = true;
     lock.unlock();
@@ -162,6 +171,9 @@ double Cue::getPosition() const {
 
 void Cue::setStartPosition(double samplePosition) {
     QMutexLocker lock(&m_mutex);
+    if (m_sampleStartPosition == samplePosition) {
+        return;
+    }
     m_sampleStartPosition = samplePosition;
     m_bDirty = true;
     lock.unlock();
@@ -170,6 +182,9 @@ void Cue::setStartPosition(double samplePosition) {
 
 void Cue::setEndPosition(double samplePosition) {
     QMutexLocker lock(&m_mutex);
+    if (m_sampleEndPosition == samplePosition) {
+        return;
+    }
     m_sampleEndPosition = samplePosition;
     m_bDirty = true;
     lock.unlock();
@@ -195,6 +210,9 @@ int Cue::getHotCue() const {
 void Cue::setHotCue(int hotCue) {
     QMutexLocker lock(&m_mutex);
     // TODO(XXX) enforce uniqueness?
+    if (m_iHotCue == hotCue) {
+        return;
+    }
     m_iHotCue = hotCue;
     m_bDirty = true;
     lock.unlock();
@@ -208,6 +226,9 @@ QString Cue::getLabel() const {
 
 void Cue::setLabel(const QString label) {
     QMutexLocker lock(&m_mutex);
+    if (m_label == label) {
+        return;
+    }
     m_label = label;
     m_bDirty = true;
     lock.unlock();
@@ -221,6 +242,9 @@ mixxx::RgbColor Cue::getColor() const {
 
 void Cue::setColor(mixxx::RgbColor color) {
     QMutexLocker lock(&m_mutex);
+    if (m_color == color) {
+        return;
+    }
     m_color = color;
     m_bDirty = true;
     lock.unlock();
