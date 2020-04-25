@@ -713,18 +713,20 @@ void Track::setCuePoint(CuePosition cue) {
     CuePointer pLoadCue = findCueByType(mixxx::CueType::MainCue);
     double position = cue.getPosition();
     if (position != -1.0) {
-        if (!pLoadCue) {
+        if (pLoadCue) {
+            pLoadCue->setStartPosition(position);
+        } else {
             pLoadCue = CuePointer(new Cue());
             pLoadCue->moveToThread(thread());
             pLoadCue->setTrackId(m_record.getId());
             pLoadCue->setType(mixxx::CueType::MainCue);
+            pLoadCue->setStartPosition(position);
             connect(pLoadCue.get(),
                     &Cue::updated,
                     this,
                     &Track::slotCueUpdated);
             m_cuePoints.push_back(pLoadCue);
         }
-        pLoadCue->setStartPosition(position);
     } else if (pLoadCue) {
         disconnect(pLoadCue.get(), 0, this, 0);
         m_cuePoints.removeOne(pLoadCue);
@@ -753,7 +755,10 @@ CuePointer Track::createAndAddCue() {
     CuePointer pCue(new Cue());
     pCue->moveToThread(thread());
     pCue->setTrackId(m_record.getId());
-    connect(pCue.get(), &Cue::updated, this, &Track::slotCueUpdated);
+    connect(pCue.get(),
+            &Cue::updated,
+            this,
+            &Track::slotCueUpdated);
     m_cuePoints.push_back(pCue);
     markDirtyAndUnlock(&lock);
     emit cuesUpdated();
