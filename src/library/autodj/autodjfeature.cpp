@@ -11,7 +11,7 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/autodj/autodjprocessor.h"
 #include "library/autodj/dlgautodj.h"
-#include "library/crate/cratestorage.h"
+#include "library/trackset/crate/cratestorage.h"
 #include "library/library.h"
 #include "library/parser.h"
 #include "library/trackcollection.h"

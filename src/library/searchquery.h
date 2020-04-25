@@ -14,7 +14,7 @@
 #include "proto/keys.pb.h"
 #include "util/assert.h"
 #include "util/memory.h"
-#include "library/crate/cratestorage.h"
+#include "library/trackset/crate/cratestorage.h"
 
 const QString kMissingFieldSearchTerm = "\"\""; // "" searches for an empty string
 

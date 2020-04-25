@@ -5,7 +5,7 @@
 #include "library/queryutil.h"
 #include "track/keyutils.h"
 #include "library/dao/trackschema.h"
-#include "library/crate/crateschema.h"
+#include "library/trackset/crate/crateschema.h"
 #include "util/db/sqllikewildcards.h"
 #include "util/db/dbconnection.h"
 

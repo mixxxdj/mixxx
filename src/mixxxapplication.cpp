@@ -6,7 +6,7 @@
 
 #include "audio/types.h"
 #include "control/controlproxy.h"
-#include "library/crate/crateid.h"
+#include "library/trackset/crate/crateid.h"
 #include "soundio/soundmanagerutil.h"
 #include "track/track.h"
 #include "track/trackref.h"

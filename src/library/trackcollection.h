@@ -6,7 +6,7 @@
 #include <QSqlDatabase>
 
 #include "preferences/usersettings.h"
-#include "library/crate/cratestorage.h"
+#include "library/trackset/crate/cratestorage.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/playlistdao.h"

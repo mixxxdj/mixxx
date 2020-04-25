@@ -19,7 +19,7 @@
 #include "library/coverart.h"
 #include "library/coverartutils.h"
 #include "library/dao/trackschema.h"
-#include "library/crate/cratestorage.h"
+#include "library/trackset/crate/cratestorage.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"

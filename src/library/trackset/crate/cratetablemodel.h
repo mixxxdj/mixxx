@@ -1,11 +1,7 @@
-#ifndef MIXXX_CRATETABLEMODEL_H
-#define MIXXX_CRATETABLEMODEL_H
-
+#pragma once
 
 #include "library/basesqltablemodel.h"
-
-#include "library/crate/crateid.h"
-
+#include "library/trackset/crate/crateid.h"
 
 class CrateTableModel : public BaseSqlTableModel {
     Q_OBJECT
@@ -15,12 +11,12 @@ class CrateTableModel : public BaseSqlTableModel {
     ~CrateTableModel() final;
 
     void selectCrate(
-        CrateId crateId = CrateId());
+            CrateId crateId = CrateId());
     CrateId selectedCrate() const {
         return m_selectedCrate;
     }
 
-    bool addTrack(const QModelIndex &index, QString location);
+    bool addTrack(const QModelIndex& index, QString location);
 
     // From TrackModel
     bool isColumnInternal(int column) final;
@@ -32,6 +28,3 @@ class CrateTableModel : public BaseSqlTableModel {
   private:
     CrateId m_selectedCrate;
 };
-
-
-#endif // MIXXX_CRATETABLEMODEL_H

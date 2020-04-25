@@ -1,21 +1,18 @@
-#ifndef MIXXX_CRATESUMMARY_H
-#define MIXXX_CRATESUMMARY_H
+#pragma once
 
-
-#include "library/crate/crate.h"
-
+#include "library/trackset/crate/crate.h"
 #include "util/duration.h"
 
-
 // A crate with aggregated track properties (total count + duration)
-class CrateSummary: public Crate {
-public:
+class CrateSummary : public Crate {
+  public:
     explicit CrateSummary(CrateId id = CrateId())
-        : Crate(id),
-          m_trackCount(0),
-          m_trackDuration(0.0) {
+            : Crate(id),
+              m_trackCount(0),
+              m_trackDuration(0.0) {
     }
-    ~CrateSummary() override {}
+    ~CrateSummary() override {
+    }
 
     // The number of all tracks in this crate
     uint getTrackCount() const {
@@ -37,10 +34,7 @@ public:
         return mixxx::Duration::formatTime(getTrackDuration(), mixxx::Duration::Precision::SECONDS);
     }
 
-private:
+  private:
     uint m_trackCount;
     double m_trackDuration;
 };
-
-
-#endif // MIXXX_CRATESUMMARY_H

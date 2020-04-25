@@ -7,7 +7,7 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "library/coverartutils.h"
-#include "library/crate/cratefeaturehelper.h"
+#include "library/trackset/crate/cratefeaturehelper.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/trackschema.h"
 #include "library/dlgtagfetcher.h"

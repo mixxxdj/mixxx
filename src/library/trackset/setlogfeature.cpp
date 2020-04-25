@@ -1,4 +1,4 @@
-#include "library/setlogfeature.h"
+#include "library/trackset/setlogfeature.h"
 
 #include <QDateTime>
 #include <QMenu>

@@ -4,6 +4,7 @@
 
 class BaseTrackSetFeature : public LibraryFeature {
     Q_OBJECT
+
   public:
     BaseTrackSetFeature(Library* pLibrary,
             UserSettingsPointer pConfig,

@@ -19,7 +19,7 @@
 #include "library/libraryfeature.h"
 #include "preferences/usersettings.h"
 #include "library/treeitemmodel.h"
-#include "library/crate/crate.h"
+#include "library/trackset/crate/crate.h"
 #include "library/dao/autodjcratesdao.h"
 
 class DlgAutoDJ;

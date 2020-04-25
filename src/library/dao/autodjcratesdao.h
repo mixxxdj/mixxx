@@ -5,7 +5,7 @@
 #include <QSqlDatabase>
 
 #include "preferences/usersettings.h"
-#include "library/crate/crateid.h"
+#include "library/trackset/crate/crateid.h"
 #include "track/track.h"
 #include "util/class.h"
 

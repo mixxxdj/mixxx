@@ -1,4 +1,4 @@
-#include "library/playlistfeature.h"
+#include "library/trackset/playlistfeature.h"
 
 #include <QFile>
 #include <QMenu>

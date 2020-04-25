@@ -1,23 +1,20 @@
 #pragma once
 
-#include <QModelIndex>
-#include <QList>
 #include <QAction>
-#include <QVariant>
-#include <QUrl>
 #include <QIcon>
+#include <QList>
+#include <QModelIndex>
 #include <QPoint>
 #include <QPointer>
+#include <QUrl>
+#include <QVariant>
 
-#include "library/crate/cratestorage.h"
-#include "library/crate/cratetablemodel.h"
-#include "library/basetracksetfeature.h"
+#include "library/trackset/basetracksetfeature.h"
+#include "library/trackset/crate/cratestorage.h"
+#include "library/trackset/crate/cratetablemodel.h"
 #include "library/treeitemmodel.h"
-
-#include "track/track.h"
-
 #include "preferences/usersettings.h"
-
+#include "track/track.h"
 #include "util/parented_ptr.h"
 
 // forward declaration(s)
@@ -26,20 +23,20 @@ class WLibrarySidebar;
 
 class CrateFeature : public BaseTrackSetFeature {
     Q_OBJECT
+
   public:
     CrateFeature(Library* pLibrary,
-                 UserSettingsPointer pConfig);
+            UserSettingsPointer pConfig);
     ~CrateFeature() override = default;
 
     QVariant title() override;
     QIcon getIcon() override;
 
-    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
-                         QObject* pSource) override;
+    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls, QObject* pSource) override;
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url) override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* keyboard) override;
+            KeyboardEventFilter* keyboard) override;
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
     TreeItemModel* getChildModel() override;
@@ -57,7 +54,7 @@ class CrateFeature : public BaseTrackSetFeature {
     void slotAutoDjTrackSourceChanged();
     void slotToggleCrateLock();
     void slotImportPlaylist();
-    void slotImportPlaylistFile(const QString &playlist_file);
+    void slotImportPlaylistFile(const QString& playlist_file);
     void slotCreateImportCrate();
     void slotExportPlaylist();
     // Copy all of the tracks in a crate to a new directory (like a thumbdrive).
