@@ -193,6 +193,7 @@ class EffectsManager : public QObject {
 
   private slots:
     void loadChainPresetFromList(EffectChainSlot* pChainSlot, int listIndex);
+    void loadChainPresetSelector(EffectChainSlot* pChainSlot, int listIndex);
 
   private:
     QString debugString() const {

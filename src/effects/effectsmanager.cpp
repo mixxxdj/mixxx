@@ -256,6 +256,7 @@ void EffectsManager::loadEffectChainPreset(EffectChainSlot* pChainSlot,
         effectSlot++;
     }
     pChainSlot->setMixMode(pPreset->mixMode());
+    pChainSlot->setName(pPreset->name());
 }
 
 void EffectsManager::loadPresetToStandardChain(int chainNumber, EffectChainPresetPointer pPreset) {
@@ -559,6 +560,10 @@ void EffectsManager::connectChainSlotSignals(EffectChainSlotPointer pChainSlot) 
             &EffectChainSlot::loadChainPreset,
             this,
             &EffectsManager::loadChainPresetFromList);
+    connect(pChainSlot.get(),
+            &EffectChainSlot::selectChainPreset,
+            this,
+            &EffectsManager::loadChainPresetSelector);
 }
 
 void EffectsManager::loadChainPresetFromList(EffectChainSlot* pChainSlot, int listIndex) {
@@ -568,6 +573,25 @@ void EffectsManager::loadChainPresetFromList(EffectChainSlot* pChainSlot, int li
     loadEffectChainPreset(pChainSlot,
             m_effectChainPresetsSorted.at(listIndex));
 }
+
+void EffectsManager::loadChainPresetSelector(EffectChainSlot* pChainSlot, int delta) {
+    int listIndex = 0;
+    if (m_effectChainPresets.contains(pChainSlot->name())) {
+        EffectChainPresetPointer pLoadedPreset = m_effectChainPresets.value(pChainSlot->name());
+        listIndex = m_effectChainPresetsSorted.indexOf(pLoadedPreset);
+    }
+
+    listIndex += delta;
+    if (listIndex >= m_effectChainPresetsSorted.size()) {
+        listIndex = 0;
+    } else if (listIndex < 0) {
+        listIndex = m_effectChainPresetsSorted.size() - 1;
+    }
+
+    loadEffectChainPreset(pChainSlot,
+            m_effectChainPresetsSorted.at(listIndex));
+}
+
 EffectChainSlotPointer EffectsManager::getEffectChainSlot(
         const QString& group) const {
     return m_effectChainSlotsByGroup.value(group);
