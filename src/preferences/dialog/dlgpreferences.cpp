@@ -480,6 +480,14 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
             emit cancelPreferences();
             reject();
             break;
+        case QDialogButtonBox::HelpRole:
+            if (pCurrentPage != nullptr) {
+                QUrl helpUrl = pCurrentPage->helpUrl();
+                if (helpUrl.isValid()) {
+                    QDesktopServices::openUrl(helpUrl);
+                }
+            }
+            break;
         default:
             break;
     }
@@ -537,6 +545,17 @@ void DlgPreferences::expandTreeItem(QTreeWidgetItem* pItem) {
 
 void DlgPreferences::switchToPage(DlgPreferencePage* pWidget) {
     pagesWidget->setCurrentWidget(pWidget->parentWidget()->parentWidget());
+
+    QPushButton* pButton = buttonBox->button(QDialogButtonBox::Help);
+    VERIFY_OR_DEBUG_ASSERT(pButton) {
+        return;
+    }
+
+    if (pWidget->helpUrl().isValid()) {
+        pButton->show();
+    } else {
+        pButton->hide();
+    }
 }
 
 void DlgPreferences::moveEvent(QMoveEvent* e) {
