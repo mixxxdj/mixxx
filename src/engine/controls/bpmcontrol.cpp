@@ -802,10 +802,10 @@ double BpmControl::getBeatMatchPosition(
 
     double dOtherPosition = pOtherEngineBuffer->getExactPlayPos();
 
-    double dOtherPrevBeat;
-    double dOtherNextBeat;
-    double dOtherBeatLength;
-    double dOtherBeatFraction;
+    double dOtherPrevBeat = -1;
+    double dOtherNextBeat = -1;
+    double dOtherBeatLength = -1;
+    double dOtherBeatFraction = -1;
     if (!BpmControl::getBeatContext(
                 otherBeats,
                 dOtherPosition,
@@ -813,6 +813,11 @@ double BpmControl::getBeatMatchPosition(
                 &dOtherNextBeat,
                 &dOtherBeatLength,
                 &dOtherBeatFraction)) {
+        return dThisPosition;
+    }
+
+    if (dOtherBeatLength == -1 || dOtherBeatFraction == -1) {
+        // the other Track has no usable beat info, do not seek.
         return dThisPosition;
     }
 
