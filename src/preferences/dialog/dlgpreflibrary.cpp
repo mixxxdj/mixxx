@@ -115,6 +115,10 @@ void DlgPrefLibrary::slotHide() {
     }
 }
 
+QUrl DlgPrefLibrary::helpUrl() const {
+    return QUrl(MIXXX_MANUAL_LIBRARY_URL);
+}
+
 void DlgPrefLibrary::initializeDirList() {
     // save which index was selected
     const QString selected = dirList->currentIndex().data().toString();
