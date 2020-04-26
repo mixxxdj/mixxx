@@ -268,12 +268,7 @@ controllermappings_files = Glob('#res/controllers/*')
 
 # Translation files
 # QT 5 translations have been separated into several files, and most of the qt_xx.qm files contain just shortcuts to load the qtbase, qtmultimedia etc files.
-translation_files = Glob('#res/translations/*.qm') 
-+ Glob(os.path.join(build.env['QTDIR'], 'translations/qt_*.qm'))
-+ Glob(os.path.join(build.env['QTDIR'], 'translations/qtbase_*.qm'))
-+ Glob(os.path.join(build.env['QTDIR'], 'translations/qtmultimedia_*.qm'))
-+ Glob(os.path.join(build.env['QTDIR'], 'translations/qtscript_*.qm'))
-+ Glob(os.path.join(build.env['QTDIR'], 'translations/qtxmlpatterns_*.qm'))
+translation_files = Glob('#res/translations/*.qm') + Glob(os.path.join(build.env['QTDIR'], 'translations/qt_*.qm')) + Glob(os.path.join(build.env['QTDIR'], 'translations/qtbase_*.qm')) + Glob(os.path.join(build.env['QTDIR'], 'translations/qtmultimedia_*.qm')) + Glob(os.path.join(build.env['QTDIR'], 'translations/qtscript_*.qm')) + Glob(os.path.join(build.env['QTDIR'], 'translations/qtxmlpatterns_*.qm'))
 
 
 # Font files

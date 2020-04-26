@@ -1073,7 +1073,7 @@ install(
   DESTINATION
     "${MIXXX_INSTALL_DATADIR}"
   FILES_MATCHING REGEX
-    # QT 5 translations have been separated into several files, and most of the qt_xx.qm files 
+    # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
     # contain just shortcuts to load the qtbase, qtmultimedia etc files.
     "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
 )
