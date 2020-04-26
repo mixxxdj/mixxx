@@ -25,12 +25,18 @@ void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
             node, context, m_pChainSlot);
 
     if (m_pEffectSlot != nullptr) {
-        connect(m_pEffectsManager, SIGNAL(visibleEffectsUpdated()),
-                this, SLOT(populate()));
-        connect(m_pEffectSlot.data(), SIGNAL(effectChanged()),
-                this, SLOT(slotEffectUpdated()));
-        connect(this, SIGNAL(activated(int)),
-                this, SLOT(slotEffectSelected(int)));
+        connect(m_pEffectsManager,
+                &EffectsManager::visibleEffectsUpdated,
+                this,
+                &WEffectSelector::populate);
+        connect(m_pEffectSlot.data(),
+                &EffectSlot::effectChanged,
+                this,
+                &WEffectSelector::slotEffectUpdated);
+        connect(this,
+                QOverload<int>::of(&QComboBox::activated),
+                this,
+                &WEffectSelector::slotEffectSelected);
     } else {
         SKIN_WARNING(node, context)
                 << "EffectSelector node could not attach to effect slot.";
