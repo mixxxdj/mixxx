@@ -35,13 +35,6 @@ TrackCollection::TrackCollection(
             &TrackCollection::trackDirty,
             /*signal-to-signal*/ Qt::DirectConnection);
     connect(&m_trackDao,
-            &TrackDAO::trackChanged,
-            this,
-            [this](TrackId trackId) {
-                emit tracksChanged(QSet<TrackId>{trackId});
-            },
-            /*signal-to-signal*/ Qt::DirectConnection);
-    connect(&m_trackDao,
             &TrackDAO::tracksAdded,
             this,
             &TrackCollection::tracksAdded,
@@ -118,10 +111,6 @@ void TrackCollection::connectTrackSource(QSharedPointer<BaseTrackCache> pTrackSo
             &TrackDAO::trackClean,
             m_pTrackSource.data(),
             &BaseTrackCache::slotTrackClean);
-    connect(&m_trackDao,
-            &TrackDAO::trackChanged,
-            m_pTrackSource.data(),
-            &BaseTrackCache::slotTrackChanged);
     connect(&m_trackDao,
             &TrackDAO::tracksAdded,
             m_pTrackSource.data(),

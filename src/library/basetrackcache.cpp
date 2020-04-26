@@ -105,13 +105,6 @@ void BaseTrackCache::slotTrackDirty(TrackId trackId) {
     m_dirtyTracks.insert(trackId);
 }
 
-void BaseTrackCache::slotTrackChanged(TrackId trackId) {
-    if (sDebug) {
-        qDebug() << this << "slotTrackChanged" << trackId;
-    }
-    emit tracksChanged(QSet<TrackId>{trackId});
-}
-
 void BaseTrackCache::slotTrackClean(TrackId trackId) {
     if (sDebug) {
         qDebug() << this << "slotTrackClean" << trackId;

@@ -1310,8 +1310,10 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     connect(pTrack.get(),
             &Track::changed,
             this,
-            &TrackDAO::trackChanged,
-            /*signal-to-signal*/ Qt::DirectConnection);
+            [this](TrackId trackId) {
+                // Adapt and forward signal
+                emit tracksChanged(QSet<TrackId>{trackId});
+            });
 
     // BaseTrackCache cares about track trackDirty/trackClean notifications
     // from TrackDAO that are triggered by the track itself. But the preceding

@@ -82,7 +82,6 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     void tracksChanged(QSet<TrackId> trackIds) const;
     void tracksRemoved(QSet<TrackId> trackIds) const;
 
-    void trackChanged(TrackId trackId);
     void dbTrackAdded(TrackPointer pTrack);
     void progressVerifyTracksOutside(QString path);
     void progressCoverArt(QString file);
