@@ -92,9 +92,9 @@ void EffectKnobParameterSlot::loadParameter(EffectParameterPointer pEffectParame
         m_pControlLoaded->forceSet(1.0);
 
         m_pControlLinkType->set(
-            static_cast<double>(m_pManifestParameter->defaultLinkType()));
+                static_cast<double>(pEffectParameter->linkType()));
         m_pControlLinkInverse->set(
-            static_cast<double>(m_pManifestParameter->defaultLinkInversion()));
+                static_cast<double>(pEffectParameter->linkInversion()));
     }
 
     emit(updated());
