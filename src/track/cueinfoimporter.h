@@ -12,6 +12,7 @@ class CueInfoImporter {
   public:
     CueInfoImporter() = default;
     explicit CueInfoImporter(const QList<CueInfo>& cueInfos);
+    virtual ~CueInfoImporter() = default;
 
     /// Returns audio signal dependent timing offset correction.
     /// The default implementation just returns 0, but this can be overridden
