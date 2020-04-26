@@ -306,8 +306,14 @@ QByteArray SeratoMarkers::dump() const {
 }
 
 QByteArray SeratoMarkers::dumpBase64Encoded() const {
-    QByteArray payload = kSeratoMarkersBase64EncodedPrefix;
-    payload.append(dump());
+    QByteArray payload = dump();
+
+    // If the non-encoded payload is empty, just exit early.
+    if (payload.isEmpty()) {
+        return {};
+    }
+
+    payload.prepend(kSeratoMarkersBase64EncodedPrefix);
 
     // A newline char is inserted at every 72 bytes of base64-encoded content.
     // Hence, we can split the data into blocks of 72 bytes * 3/4 = 54 bytes
