@@ -7,6 +7,10 @@
 class InternalClock;
 class EngineChannel;
 
+/// BaseSyncableListener is a superclass for receiving communication about the
+/// state of the Master Sync status. It gets updates about the master bpms and
+/// beat distances.  Specific subclasses could include decks, the internal clock,
+/// midi devices, or other special objects that want to participate in sync.
 class BaseSyncableListener : public SyncableListener {
   public:
     BaseSyncableListener(UserSettingsPointer pConfig);

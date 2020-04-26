@@ -14,6 +14,11 @@ class ControlLinPotmeter;
 class ControlPushButton;
 class EngineSync;
 
+/// Internal Clock is a Master Sync object that provides a source of constant
+/// tempo when needed.  The EngineSync will decide when to make the Internal
+/// Clock master.  The Internal Clock should not be given any new sources of
+/// bpm clock.  If someone wants to write a Midi Clock source, it should be
+/// a separate Syncable object that can become master.
 class InternalClock : public QObject, public Clock, public Syncable {
     Q_OBJECT
   public:

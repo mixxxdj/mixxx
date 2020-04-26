@@ -14,6 +14,7 @@ class ControlObject;
 class ControlProxy;
 class ControlPushButton;
 
+/// SyncControl is the Master Sync object for playback decks.
 class SyncControl : public EngineControl, public Syncable {
     Q_OBJECT
   public:

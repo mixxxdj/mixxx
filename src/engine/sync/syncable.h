@@ -36,6 +36,8 @@ inline bool isMaster(SyncMode mode) {
     return (mode == SYNC_MASTER_SOFT || mode == SYNC_MASTER_EXPLICIT);
 }
 
+/// Syncable is an abstract base class for any object that wants to participate
+/// in Master Sync.
 class Syncable {
   public:
     virtual ~Syncable() { }
