@@ -1,10 +1,9 @@
 #include "library/librarytablemodel.h"
 
 #include "library/dao/trackschema.h"
+#include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
-#include "library/queryutil.h"
-
 #include "mixer/playermanager.h"
 
 namespace {
@@ -15,8 +14,8 @@ const QString kDefaultLibraryFilter =
 } // anonymous namespace
 
 LibraryTableModel::LibraryTableModel(QObject* parent,
-                                     TrackCollectionManager* pTrackCollectionManager,
-                                     const char* settingsNamespace)
+        TrackCollectionManager* pTrackCollectionManager,
+        const char* settingsNamespace)
         : BaseSqlTableModel(parent, pTrackCollectionManager, settingsNamespace) {
     setTableModel();
 }
@@ -36,11 +35,15 @@ void LibraryTableModel::setTableModel(int id) {
     const QString tableName = "library_view";
 
     QSqlQuery query(m_database);
-    QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
-            "SELECT " + columns.join(", ") +
+    QString queryString =
+            "CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName +
+            " AS "
+            "SELECT " +
+            columns.join(", ") +
             " FROM library INNER JOIN track_locations "
             "ON library.location = track_locations.id "
-            "WHERE (" + kDefaultLibraryFilter + ")";
+            "WHERE (" +
+            kDefaultLibraryFilter + ")";
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -50,8 +53,7 @@ void LibraryTableModel::setTableModel(int id) {
     tableColumns << LIBRARYTABLE_ID;
     tableColumns << LIBRARYTABLE_PREVIEW;
     tableColumns << LIBRARYTABLE_COVERART;
-    setTable(tableName, LIBRARYTABLE_ID, tableColumns,
-             m_pTrackCollectionManager->internalCollection()->getTrackSource());
+    setTable(tableName, LIBRARYTABLE_ID, tableColumns, m_pTrackCollectionManager->internalCollection()->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 
@@ -60,9 +62,8 @@ void LibraryTableModel::setTableModel(int id) {
     setHeaderData(fi, Qt::Horizontal, tr("Sort items randomly"), Qt::ToolTipRole);
 }
 
-
 int LibraryTableModel::addTracks(const QModelIndex& index,
-                                 const QList<QString>& locations) {
+        const QList<QString>& locations) {
     Q_UNUSED(index);
     QList<TrackId> trackIds = m_pTrackCollectionManager->internalCollection()->resolveTrackIdsFromLocations(
             locations);
@@ -79,12 +80,12 @@ bool LibraryTableModel::isColumnInternal(int column) {
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_MIXXXDELETED)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_HEADERPARSED)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED)) ||
-            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID))||
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CHANNELS)) ||
             (column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED)) ||
             (PlayerManager::numPreviewDecks() == 0 &&
-             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) ||
+                    column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE)) ||
             (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION)) ||
@@ -96,15 +97,14 @@ bool LibraryTableModel::isColumnInternal(int column) {
 }
 
 TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const {
-    return TRACKMODELCAPS_NONE
-            | TRACKMODELCAPS_RECEIVEDROPS
-            | TRACKMODELCAPS_ADDTOPLAYLIST
-            | TRACKMODELCAPS_ADDTOCRATE
-            | TRACKMODELCAPS_ADDTOAUTODJ
-            | TRACKMODELCAPS_EDITMETADATA
-            | TRACKMODELCAPS_LOADTODECK
-            | TRACKMODELCAPS_LOADTOSAMPLER
-            | TRACKMODELCAPS_LOADTOPREVIEWDECK
-            | TRACKMODELCAPS_HIDE
-            | TRACKMODELCAPS_RESETPLAYED;
+    return TRACKMODELCAPS_RECEIVEDROPS |
+            TRACKMODELCAPS_ADDTOPLAYLIST |
+            TRACKMODELCAPS_ADDTOCRATE |
+            TRACKMODELCAPS_ADDTOAUTODJ |
+            TRACKMODELCAPS_EDITMETADATA |
+            TRACKMODELCAPS_LOADTODECK |
+            TRACKMODELCAPS_LOADTOSAMPLER |
+            TRACKMODELCAPS_LOADTOPREVIEWDECK |
+            TRACKMODELCAPS_HIDE |
+            TRACKMODELCAPS_RESETPLAYED;
 }

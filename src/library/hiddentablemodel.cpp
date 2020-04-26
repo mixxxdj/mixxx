@@ -1,12 +1,11 @@
 #include "library/hiddentablemodel.h"
 
+#include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
-#include "library/dao/trackschema.h"
-
 
 HiddenTableModel::HiddenTableModel(QObject* parent,
-                                   TrackCollectionManager* pTrackCollectionManager)
+        TrackCollectionManager* pTrackCollectionManager)
         : BaseSqlTableModel(parent, pTrackCollectionManager, "mixxx.db.model.missing") {
     setTableModel();
 }
@@ -22,13 +21,16 @@ void HiddenTableModel::setTableModel(int id) {
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID;
     QString filter("mixxx_deleted=1");
-    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
-                  "SELECT "
-                  + columns.join(",") +
-                  " FROM library "
-                  "INNER JOIN track_locations "
-                  "ON library.location=track_locations.id "
-                  "WHERE " + filter);
+    query.prepare(
+            "CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName +
+            " AS "
+            "SELECT " +
+            columns.join(",") +
+            " FROM library "
+            "INNER JOIN track_locations "
+            "ON library.location=track_locations.id "
+            "WHERE " +
+            filter);
     if (!query.exec()) {
         qDebug() << query.executedQuery() << query.lastError();
     }
@@ -40,8 +42,7 @@ void HiddenTableModel::setTableModel(int id) {
 
     QStringList tableColumns;
     tableColumns << LIBRARYTABLE_ID;
-    setTable(tableName, LIBRARYTABLE_ID, tableColumns,
-             m_pTrackCollectionManager->internalCollection()->getTrackSource());
+    setTable(tableName, LIBRARYTABLE_ID, tableColumns, m_pTrackCollectionManager->internalCollection()->getTrackSource());
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
     setSearch("");
 }
@@ -73,7 +74,7 @@ bool HiddenTableModel::isColumnInternal(int column) {
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_MIXXXDELETED) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID)||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID) ||
             column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) ||
@@ -85,12 +86,10 @@ bool HiddenTableModel::isColumnInternal(int column) {
 }
 
 // Override flags from BaseSqlModel since we don't want edit this model
-Qt::ItemFlags HiddenTableModel::flags(const QModelIndex &index) const {
+Qt::ItemFlags HiddenTableModel::flags(const QModelIndex& index) const {
     return readOnlyFlags(index);
 }
 
 TrackModel::CapabilitiesFlags HiddenTableModel::getCapabilities() const {
-    return TRACKMODELCAPS_NONE
-            | TRACKMODELCAPS_PURGE
-            | TRACKMODELCAPS_UNHIDE;
+    return TRACKMODELCAPS_PURGE | TRACKMODELCAPS_UNHIDE;
 }
