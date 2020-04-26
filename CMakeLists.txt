@@ -1065,16 +1065,16 @@ install(
 )
 if(WIN32)
 install(
+  # I haven't seen a way to determine where the translations dir is, so I am making
+  # some assumptions here, and assuming that Qt5_DIR points to Qt-5.14.2/lib/cmake/Qt5
+  # which is what my configuration tells me.
   DIRECTORY
-    # I haven't seen a way to determine where the translations dir is, so I am making
-    # some assumptions here, and assuming that Qt5_DIR points to Qt-5.14.2/lib/cmake/Qt5
-    # which is what my configuration tells me.
     "${Qt5_DIR}/../../../translations"
   DESTINATION
     "${MIXXX_INSTALL_DATADIR}"
+  # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
+  # contain just shortcuts to load the qtbase, qtmultimedia etc files.
   FILES_MATCHING REGEX
-    # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
-    # contain just shortcuts to load the qtbase, qtmultimedia etc files.
     "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
 )
 endif()
