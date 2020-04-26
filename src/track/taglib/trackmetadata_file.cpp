@@ -51,7 +51,7 @@ FileType getFileTypeFromFileName(
     if (fileExt.startsWith(QStringLiteral("aif"))) {
         return FileType::AIFF;
     }
-    return FileType::UNKNOWN;
+    return FileType::Unknown;
 }
 
 QDebug operator<<(QDebug debug, FileType fileType) {

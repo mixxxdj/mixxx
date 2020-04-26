@@ -16,7 +16,7 @@ namespace mixxx {
 namespace taglib {
 
 enum class FileType {
-    UNKNOWN,
+    Unknown,
     AIFF,
     FLAC,
     MP3,
