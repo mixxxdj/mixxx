@@ -30,7 +30,7 @@ bool CueInfoImporter::isEmpty() const {
     return m_cueInfos.isEmpty();
 }
 
-QList<CueInfo> CueInfoImporter::getCueInfosWithCorrectTiming(
+QList<CueInfo> CueInfoImporter::importCueInfosWithCorrectTiming(
         const QString& filePath,
         const audio::SignalInfo& signalInfo) {
     QList<CueInfo> cueInfos;

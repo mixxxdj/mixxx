@@ -26,7 +26,7 @@ class CueInfoImporter {
     int size() const;
     bool isEmpty() const;
 
-    QList<CueInfo> getCueInfosWithCorrectTiming(
+    QList<CueInfo> importCueInfosWithCorrectTiming(
             const QString& filePath,
             const audio::SignalInfo& signalInfo);
 

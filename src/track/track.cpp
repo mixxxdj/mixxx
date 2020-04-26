@@ -957,7 +957,7 @@ void Track::importPendingCueInfosMarkDirtyAndUnlock(
     const auto trackId = m_record.getId();
     QList<CuePointer> cuePoints;
     cuePoints.reserve(m_pCueInfoImporterPending->size());
-    for (const auto& cueInfo : m_pCueInfoImporterPending->getCueInfosWithCorrectTiming(
+    for (const auto& cueInfo : m_pCueInfoImporterPending->importCueInfosWithCorrectTiming(
                  getLocation(), m_streamInfo->getSignalInfo())) {
         CuePointer pCue(new Cue(cueInfo, sampleRate));
         // While this method could be called from any thread,
