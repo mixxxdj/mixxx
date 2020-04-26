@@ -481,11 +481,10 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
             reject();
             break;
         case QDialogButtonBox::HelpRole:
-            if (pCurrentPage != nullptr) {
+            if (pCurrentPage) {
                 QUrl helpUrl = pCurrentPage->helpUrl();
-                if (helpUrl.isValid()) {
-                    QDesktopServices::openUrl(helpUrl);
-                }
+                DEBUG_ASSERT(helpUrl.isValid());
+                QDesktopServices::openUrl(helpUrl);
             }
             break;
         default:
