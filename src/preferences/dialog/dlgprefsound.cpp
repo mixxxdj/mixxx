@@ -246,6 +246,10 @@ void DlgPrefSound::slotApply() {
     m_bSkipConfigClear = false;
 }
 
+QUrl DlgPrefSound::helpUrl() const {
+    return QUrl(MIXXX_MANUAL_SOUND_URL);
+}
+
 /**
  * Initializes (and creates) all the path items. Each path item widget allows
  * the user to input a sound device name and channel number given a description

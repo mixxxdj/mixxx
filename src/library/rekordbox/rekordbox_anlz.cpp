@@ -74,10 +74,16 @@ rekordbox_anlz_t::wave_preview_tag_t::wave_preview_tag_t(kaitai::kstream* p__io,
 void rekordbox_anlz_t::wave_preview_tag_t::_read() {
     m_len_preview = m__io->read_u4be();
     m__unnamed1 = m__io->read_u4be();
-    m_data = m__io->read_bytes(len_preview());
+    n_data = true;
+    if (_parent()->len_tag() > _parent()->len_header()) {
+        n_data = false;
+        m_data = m__io->read_bytes(len_preview());
+    }
 }
 
 rekordbox_anlz_t::wave_preview_tag_t::~wave_preview_tag_t() {
+    if (!n_data) {
+    }
 }
 
 rekordbox_anlz_t::beat_grid_tag_t::beat_grid_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t::tagged_section_t* p__parent, rekordbox_anlz_t* p__root) : kaitai::kstruct(p__io) {
@@ -194,8 +200,16 @@ void rekordbox_anlz_t::cue_extended_entry_t::_read() {
     m_time = m__io->read_u4be();
     m_loop_time = m__io->read_u4be();
     m__unnamed8 = m__io->read_bytes(12);
-    m_len_comment = m__io->read_u4be();
-    m_comment = kaitai::kstream::bytes_to_str(m__io->read_bytes(len_comment()), std::string("utf-16be"));
+    n_len_comment = true;
+    if (len_entry() > 43) {
+        n_len_comment = false;
+        m_len_comment = m__io->read_u4be();
+    }
+    n_comment = true;
+    if (len_entry() > 43) {
+        n_comment = false;
+        m_comment = kaitai::kstream::bytes_to_str(m__io->read_bytes(len_comment()), std::string("utf-16be"));
+    }
     n_color_code = true;
     if ((len_entry() - len_comment()) > 44) {
         n_color_code = false;
@@ -224,6 +238,10 @@ void rekordbox_anlz_t::cue_extended_entry_t::_read() {
 }
 
 rekordbox_anlz_t::cue_extended_entry_t::~cue_extended_entry_t() {
+    if (!n_len_comment) {
+    }
+    if (!n_comment) {
+    }
     if (!n_color_code) {
     }
     if (!n_color_red) {
@@ -480,7 +498,8 @@ rekordbox_anlz_t::cue_tag_t::cue_tag_t(kaitai::kstream* p__io, rekordbox_anlz_t:
 
 void rekordbox_anlz_t::cue_tag_t::_read() {
     m_type = static_cast<rekordbox_anlz_t::cue_list_type_t>(m__io->read_u4be());
-    m_len_cues = m__io->read_u4be();
+    m__unnamed1 = m__io->read_bytes(2);
+    m_len_cues = m__io->read_u2be();
     m_memory_count = m__io->read_u4be();
     int l_cues = len_cues();
     m_cues = new std::vector<cue_entry_t*>();
