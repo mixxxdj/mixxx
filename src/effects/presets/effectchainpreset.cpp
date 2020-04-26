@@ -16,9 +16,7 @@ EffectChainPreset::EffectChainPreset(const QDomElement& chainElement) {
         return;
     }
 
-    m_id = XmlParse::selectNodeQString(chainElement, EffectXml::ChainId);
     m_name = XmlParse::selectNodeQString(chainElement, EffectXml::ChainName);
-    m_description = XmlParse::selectNodeQString(chainElement, EffectXml::ChainDescription);
 
     QString mixModeStr = XmlParse::selectNodeQString(chainElement, EffectXml::ChainMixMode);
     m_mixMode = EffectChainSlot::mixModeFromString(mixModeStr);
@@ -39,9 +37,7 @@ EffectChainPreset::EffectChainPreset(const QDomElement& chainElement) {
 }
 
 EffectChainPreset::EffectChainPreset(const EffectChainSlot* chain) {
-    m_id = chain->id();
-    m_name = chain->name();
-    m_description = chain->description();
+    m_name = chain->presetName();
     m_mixMode = chain->mixMode();
     m_dSuper = chain->getSuperParameter();
     for (const auto& pEffectSlot : chain->getEffectSlots()) {
@@ -54,16 +50,8 @@ const QDomElement EffectChainPreset::toXml(QDomDocument* doc) const {
 
     XmlParse::addElement(*doc,
             chainElement,
-            EffectXml::ChainId,
-            m_id);
-    XmlParse::addElement(*doc,
-            chainElement,
             EffectXml::ChainName,
             m_name);
-    XmlParse::addElement(*doc,
-            chainElement,
-            EffectXml::ChainDescription,
-            m_description);
     XmlParse::addElement(*doc,
             chainElement,
             EffectXml::ChainMixMode,

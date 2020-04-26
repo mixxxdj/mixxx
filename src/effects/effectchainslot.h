@@ -54,8 +54,6 @@ class EffectChainSlot : public QObject {
                     const QString& id = QString());
     virtual ~EffectChainSlot();
 
-    // Get the ID of the loaded EffectChain
-    QString id() const;
     QString group() const;
 
     EffectSlotPointer getEffectSlot(unsigned int slotNumber);
@@ -79,9 +77,8 @@ class EffectChainSlot : public QObject {
         return m_group;
     }
 
-    // Get the human-readable name of the EffectChain
-    const QString& name() const;
-    void setName(const QString& name);
+    const QString& presetName() const;
+    void setPresetName(const QString& name);
 
     // Get the human-readable description of the EffectChain
     QString description() const;
@@ -117,12 +114,14 @@ class EffectChainSlot : public QObject {
             EffectPresetPointer pPreset,
             bool adoptMetaknobFromPreset = false);
 
+  public slots:
+    void slotControlClear(double value);
+
   signals:
     void loadChainPreset(EffectChainSlot* pChainSlot, int listIndex);
     void selectChainPreset(EffectChainSlot* pChainSlot, int delta);
 
-    // Signal that indicates that the EffectChainSlot has been updated.
-    void updated();
+    void nameChanged(const QString& name);
 
   protected slots:
     void sendParameterUpdate();
@@ -141,7 +140,6 @@ class EffectChainSlot : public QObject {
     QList<EffectSlotPointer> m_effectSlots;
 
   private slots:
-    void slotControlClear(double value);
     void slotControlLoadChainPreset(double value);
     void slotControlChainSelector(double value);
     void slotControlChainNextPreset(double value);
@@ -197,9 +195,7 @@ class EffectChainSlot : public QObject {
 
     QMap<QString, ChannelInfo*> m_channelInfoByName;
     QSignalMapper m_channelStatusMapper;
-    QString m_id;
-    QString m_name;
-    QString m_description;
+    QString m_presetName;
     EffectChainMixMode m_mixMode;
     SignalProcessingStage m_signalProcessingStage;
     QSet<ChannelHandleAndGroup> m_enabledInputChannels;

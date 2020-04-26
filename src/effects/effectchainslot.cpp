@@ -25,9 +25,7 @@ EffectChainSlot::EffectChainSlot(const QString& group,
           // is 0-indexed.
           m_pEffectsManager(pEffectsManager),
           m_group(group),
-          m_id(id),
-          m_name(""),
-          m_description(""),
+          m_presetName(""),
           m_mixMode(EffectChainMixMode::DrySlashWet),
           m_signalProcessingStage(stage),
           m_pEngineEffectChain(nullptr) {
@@ -149,9 +147,10 @@ EffectChainSlot::~EffectChainSlot() {
 }
 
 void EffectChainSlot::addToEngine() {
-    m_pEngineEffectChain = new EngineEffectChain(m_id,
-        m_pEffectsManager->registeredInputChannels(),
-        m_pEffectsManager->registeredOutputChannels());
+    m_pEngineEffectChain = new EngineEffectChain(
+            m_group,
+            m_pEffectsManager->registeredInputChannels(),
+            m_pEffectsManager->registeredOutputChannels());
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::ADD_EFFECT_CHAIN;
     pRequest->AddEffectChain.signalProcessingStage = m_signalProcessingStage;
@@ -175,22 +174,13 @@ void EffectChainSlot::removeFromEngine() {
     m_pEngineEffectChain = nullptr;
 }
 
-const QString& EffectChainSlot::name() const {
-    return m_name;
+const QString& EffectChainSlot::presetName() const {
+    return m_presetName;
 }
 
-void EffectChainSlot::setName(const QString& name) {
-    m_name = name;
-    emit updated();
-}
-
-QString EffectChainSlot::description() const {
-    return m_description;
-}
-
-void EffectChainSlot::setDescription(const QString& description) {
-    m_description = description;
-    emit updated();
+void EffectChainSlot::setPresetName(const QString& name) {
+    m_presetName = name;
+    emit nameChanged(name);
 }
 
 void EffectChainSlot::loadEffect(const unsigned int iEffectSlotNumber,
@@ -215,10 +205,6 @@ void EffectChainSlot::sendParameterUpdate() {
                                                     static_cast<int>(m_pControlChainMixMode->get()));
     pRequest->SetEffectChainParameters.mix = m_pControlChainMix->get();
     m_pEffectsManager->writeRequest(pRequest);
-}
-
-QString EffectChainSlot::id() const {
-    return m_id;
 }
 
 QString EffectChainSlot::group() const {

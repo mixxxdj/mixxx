@@ -42,9 +42,7 @@ class EffectChainPreset {
     }
 
   private:
-    QString m_id;
     QString m_name;
-    QString m_description;
     double m_dSuper;
     EffectChainMixMode m_mixMode;
     QList<EffectPresetPointer> m_effectPresets;

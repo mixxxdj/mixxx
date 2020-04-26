@@ -17,9 +17,9 @@ class EngineEffect;
 
 class EngineEffectChain : public EffectsRequestHandler {
   public:
-    EngineEffectChain(const QString& id,
-                      const QSet<ChannelHandleAndGroup>& registeredInputChannels,
-                      const QSet<ChannelHandleAndGroup>& registeredOutputChannels);
+    EngineEffectChain(const QString& group,
+            const QSet<ChannelHandleAndGroup>& registeredInputChannels,
+            const QSet<ChannelHandleAndGroup>& registeredOutputChannels);
     virtual ~EngineEffectChain();
 
     bool processEffectsRequest(
@@ -32,10 +32,6 @@ class EngineEffectChain : public EffectsRequestHandler {
                  const unsigned int numSamples,
                  const unsigned int sampleRate,
                  const GroupFeatureState& groupFeatures);
-
-    const QString& id() const {
-        return m_id;
-    }
 
     bool enabledForChannel(const ChannelHandle& handle) const;
 
@@ -52,7 +48,7 @@ class EngineEffectChain : public EffectsRequestHandler {
     };
 
     QString debugString() const {
-        return QString("EngineEffectChain(%1)").arg(m_id);
+        return QString("EngineEffectChain(%1)").arg(m_group);
     }
 
     bool updateParameters(const EffectsRequest& message);
@@ -67,7 +63,7 @@ class EngineEffectChain : public EffectsRequestHandler {
     ChannelStatus& getChannelStatus(const ChannelHandle& inputHandle,
                                     const ChannelHandle& outputHandle);
 
-    QString m_id;
+    QString m_group;
     EffectEnableState m_enableState;
     EffectChainMixMode m_mixMode;
     CSAMPLE m_dMix;
