@@ -258,7 +258,19 @@ class Track : public QObject {
     QList<CuePointer> getCuePoints() const;
 
     void setCuePoints(const QList<CuePointer>& cuePoints);
-    void importCueInfosFromImporter(mixxx::CueInfoImporterPointer pCueInfoImporter);
+
+    enum class CueImportStatus {
+        Pending,
+        Complete,
+    };
+    /// Imports the given list of cue infos as cue points,
+    /// thereby replacing all existing cue points!
+    ///
+    /// If the list is empty it tries to complete any pending
+    /// import and returns the corresponding status.
+    CueImportStatus importCueInfosFromImporter(
+            mixxx::CueInfoImporterPointer pCueInfoImporter);
+    CueImportStatus getCueImportStatus() const;
 
     bool isDirty();
 
@@ -370,9 +382,8 @@ class Track : public QObject {
     void setCuePointsMarkDirtyAndUnlock(
             QMutexLocker* pLock,
             const QList<CuePointer>& cuePoints);
-    void importCueInfosFromImporterMarkDirtyAndUnlock(
-            QMutexLocker* pLock,
-            mixxx::CueInfoImporterPointer pCueInfoImporter);
+    void importPendingCueInfosMarkDirtyAndUnlock(
+            QMutexLocker* pLock);
 
     enum class DurationRounding {
         SECONDS, // rounded to full seconds

@@ -80,6 +80,12 @@ Track::Track(
 }
 
 Track::~Track() {
+    if (m_pCueInfoImporterPending && !m_pCueInfoImporterPending->isEmpty()) {
+        kLogger.warning()
+                << "Import of"
+                << m_pCueInfoImporterPending->size()
+                << "cue(s) is still pending and discarded";
+    }
     if (kLogStats && kLogger.debugEnabled()) {
         long numberOfInstancesBefore = s_numberOfInstances.fetch_sub(1);
         kLogger.debug()
@@ -707,17 +713,23 @@ void Track::setCuePoint(CuePosition cue) {
     CuePointer pLoadCue = findCueByType(mixxx::CueType::MainCue);
     double position = cue.getPosition();
     if (position != -1.0) {
-        if (!pLoadCue) {
+        if (pLoadCue) {
+            pLoadCue->setStartPosition(position);
+        } else {
             pLoadCue = CuePointer(new Cue());
+            // While this method could be called from any thread,
+            // associated Cue objects should always live on the
+            // same thread as their host, namely this->thread().
+            pLoadCue->moveToThread(thread());
             pLoadCue->setTrackId(m_record.getId());
             pLoadCue->setType(mixxx::CueType::MainCue);
+            pLoadCue->setStartPosition(position);
             connect(pLoadCue.get(),
                     &Cue::updated,
                     this,
                     &Track::slotCueUpdated);
             m_cuePoints.push_back(pLoadCue);
         }
-        pLoadCue->setStartPosition(position);
     } else if (pLoadCue) {
         disconnect(pLoadCue.get(), 0, this, 0);
         m_cuePoints.removeOne(pLoadCue);
@@ -744,8 +756,15 @@ void Track::slotCueUpdated() {
 CuePointer Track::createAndAddCue() {
     QMutexLocker lock(&m_qMutex);
     CuePointer pCue(new Cue());
+    // While this method could be called from any thread,
+    // associated Cue objects should always live on the
+    // same thread as their host, namely this->thread().
+    pCue->moveToThread(thread());
     pCue->setTrackId(m_record.getId());
-    connect(pCue.get(), &Cue::updated, this, &Track::slotCueUpdated);
+    connect(pCue.get(),
+            &Cue::updated,
+            this,
+            &Track::slotCueUpdated);
     m_cuePoints.push_back(pCue);
     markDirtyAndUnlock(&lock);
     emit cuesUpdated();
@@ -820,41 +839,69 @@ QList<CuePointer> Track::getCuePoints() const {
 }
 
 void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
-    //qDebug() << "setCuePoints" << cuePoints.length();
+    // While this method could be called from any thread,
+    // associated Cue objects should always live on the
+    // same thread as their host, namely this->thread().
+    for (const auto& pCue : cuePoints) {
+        pCue->moveToThread(thread());
+    }
     QMutexLocker lock(&m_qMutex);
     setCuePointsMarkDirtyAndUnlock(
             &lock,
             cuePoints);
 }
 
-void Track::importCueInfosFromImporter(
+Track::CueImportStatus Track::importCueInfosFromImporter(
         mixxx::CueInfoImporterPointer pCueInfoImporter) {
     QMutexLocker lock(&m_qMutex);
+    VERIFY_OR_DEBUG_ASSERT(pCueInfoImporter) {
+        return CueImportStatus::Complete;
+    }
+    DEBUG_ASSERT(!m_pCueInfoImporterPending);
+    m_pCueInfoImporterPending = pCueInfoImporter;
     if (m_streamInfo) {
         // Replace existing cue points with imported cue
         // points immediately
-        importCueInfosFromImporterMarkDirtyAndUnlock(
-                &lock,
-                pCueInfoImporter);
+        importPendingCueInfosMarkDirtyAndUnlock(&lock);
+        return CueImportStatus::Complete;
     } else {
+        if (m_pCueInfoImporterPending->isEmpty()) {
+            // Just return the current import status without clearing any
+            // existing cue points.
+            return (!m_pCueInfoImporterPending->isEmpty())
+                    ? CueImportStatus::Complete
+                    : CueImportStatus::Pending;
+        }
+        DEBUG_ASSERT(!m_pCueInfoImporterPending->isEmpty());
         kLogger.debug()
-                << "Deferring import of"
-                << pCueInfoImporter->size()
-                << "cue(s) until actual sample rate becomes available";
-        DEBUG_ASSERT(!m_pCueInfoImporterPending);
-        m_pCueInfoImporterPending = pCueInfoImporter;
+                << "Import of"
+                << m_pCueInfoImporterPending->size()
+                << "cue(s) is pending until the actual sample rate becomes available";
         // Clear all existing cue points, that are supposed
         // to be replaced with the imported cue points soon.
         setCuePointsMarkDirtyAndUnlock(
                 &lock,
                 QList<CuePointer>{});
+        return CueImportStatus::Pending;
     }
+}
+
+Track::CueImportStatus Track::getCueImportStatus() const {
+    QMutexLocker lock(&m_qMutex);
+    return (!m_pCueInfoImporterPending || m_pCueInfoImporterPending->isEmpty())
+            ? CueImportStatus::Complete
+            : CueImportStatus::Pending;
 }
 
 void Track::setCuePointsMarkDirtyAndUnlock(
         QMutexLocker* pLock,
         const QList<CuePointer>& cuePoints) {
     DEBUG_ASSERT(pLock);
+    if (m_cuePoints.isEmpty() &&
+            cuePoints.isEmpty()) {
+        // Nothing to do
+        return;
+    }
     // Prevent inconsistencies between cue infos that have been queued
     // and are waiting to be imported and new cue points. At least one
     // of these two collections must be empty.
@@ -867,10 +914,18 @@ void Track::setCuePointsMarkDirtyAndUnlock(
     m_cuePoints = cuePoints;
     // connect new cue points
     for (const auto& pCue: m_cuePoints) {
-        connect(pCue.get(), &Cue::updated, this, &Track::slotCueUpdated);
-        // Enure that the track IDs are correct
+        DEBUG_ASSERT(pCue->thread() == thread());
+        // Ensure that the track IDs are correct
         pCue->setTrackId(m_record.getId());
-        // update main cue point
+        // Start listening to cue point updatess AFTER setting
+        // the track id. Otherwise we would receive unwanted
+        // signals about changed cue points that may cause all
+        // sorts of issues, e.g. when adding new tracks during
+        // the library scan!
+        connect(pCue.get(),
+                &Cue::updated,
+                this,
+                &Track::slotCueUpdated);
         if (pCue->getType() == mixxx::CueType::MainCue) {
             m_record.setCuePoint(CuePosition(pCue->getPosition()));
         }
@@ -879,12 +934,16 @@ void Track::setCuePointsMarkDirtyAndUnlock(
     emit cuesUpdated();
 }
 
-void Track::importCueInfosFromImporterMarkDirtyAndUnlock(
-        QMutexLocker* pLock,
-        mixxx::CueInfoImporterPointer pCueInfoImporter) {
+void Track::importPendingCueInfosMarkDirtyAndUnlock(
+        QMutexLocker* pLock) {
     DEBUG_ASSERT(pLock);
-    DEBUG_ASSERT(!m_pCueInfoImporterPending);
-    VERIFY_OR_DEBUG_ASSERT(pCueInfoImporter) {
+    if (!m_pCueInfoImporterPending) {
+        // Nothing to do here
+        return;
+    }
+
+    VERIFY_OR_DEBUG_ASSERT(!m_pCueInfoImporterPending->isEmpty()) {
+        m_pCueInfoImporterPending.reset();
         return;
     }
     // The sample rate can only be trusted after the audio
@@ -897,13 +956,19 @@ void Track::importCueInfosFromImporterMarkDirtyAndUnlock(
             m_record.getMetadata().getSampleRate());
     const auto trackId = m_record.getId();
     QList<CuePointer> cuePoints;
-
-    for (const auto& cueInfo : pCueInfoImporter->getCueInfosWithCorrectTiming(
+    cuePoints.reserve(m_pCueInfoImporterPending->size());
+    for (const auto& cueInfo : m_pCueInfoImporterPending->getCueInfosWithCorrectTiming(
                  getLocation(), m_streamInfo->getSignalInfo())) {
         CuePointer pCue(new Cue(cueInfo, sampleRate));
+        // While this method could be called from any thread,
+        // associated Cue objects should always live on the
+        // same thread as their host, namely this->thread().
+        pCue->moveToThread(thread());
         pCue->setTrackId(trackId);
         cuePoints.append(pCue);
     }
+    DEBUG_ASSERT(m_pCueInfoImporterPending->isEmpty());
+    m_pCueInfoImporterPending.reset();
     setCuePointsMarkDirtyAndUnlock(
             pLock,
             cuePoints);
@@ -1268,9 +1333,9 @@ void Track::updateAudioPropertiesFromStream(
     }
     DEBUG_ASSERT(m_cuePoints.isEmpty());
     kLogger.debug()
-            << "Finishing deferred cue import";
-    importCueInfosFromImporterMarkDirtyAndUnlock(
-            &lock,
-            m_pCueInfoImporterPending);
-    m_pCueInfoImporterPending = nullptr;
+            << "Finishing deferred import of"
+            << m_pCueInfoImporterPending->size()
+            << "cue(s)";
+    importPendingCueInfosMarkDirtyAndUnlock(
+            &lock);
 }
