@@ -40,9 +40,7 @@ QList<CueInfo> CueInfoImporter::getCueInfosWithCorrectTiming(
 
     // Do not calculate offset if we don't have any cues to import
     if (m_cueInfos.isEmpty()) {
-        cueInfos.append(m_cueInfos);
-        m_cueInfos.clear();
-        return cueInfos;
+        return {};
     }
 
     double timingOffsetMillis = getTimingOffsetMillis(filePath, signalInfo);
