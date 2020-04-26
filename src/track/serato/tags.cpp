@@ -143,7 +143,7 @@ double SeratoTags::findTimingOffsetMillis(
             timingOffset = -26;
             break;
         default:
-            qWarning() << "Unknown timing offset for sample rate" << signalInfo.getSampleRate();
+            qWarning() << "Unknown timing offset for Serato tags with sample rate" << signalInfo.getSampleRate();
         }
 #endif
         qDebug()
