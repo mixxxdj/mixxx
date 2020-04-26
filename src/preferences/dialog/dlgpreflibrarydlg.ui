@@ -340,7 +340,7 @@
         </property>
        </widget>
       </item>
-       <item row="6" column="0">
+      <item row="6" column="0">
        <widget class="Line" name="line">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -385,13 +385,23 @@
   <tabstop>PushButtonAddDir</tabstop>
   <tabstop>PushButtonRelocateDir</tabstop>
   <tabstop>PushButtonRemoveDir</tabstop>
-  <tabstop>checkBox_library_scan</tabstop>
   <tabstop>checkBox_SyncTrackMetadataExport</tabstop>
+  <tabstop>checkBox_library_scan</tabstop>
+  <tabstop>checkBoxEditMetadataSelectedClicked</tabstop>
   <tabstop>checkBox_use_relative_path</tabstop>
+  <tabstop>spinBoxRowHeight</tabstop>
+  <tabstop>libraryFont</tabstop>
+  <tabstop>libraryFontButton</tabstop>
+  <tabstop>searchDebouncingTimeoutSpinBox</tabstop>
+  <tabstop>radioButton_dbclick_deck</tabstop>
+  <tabstop>radioButton_dbclick_bottom</tabstop>
+  <tabstop>radioButton_dbclick_top</tabstop>
   <tabstop>checkBox_show_rhythmbox</tabstop>
   <tabstop>checkBox_show_banshee</tabstop>
   <tabstop>checkBox_show_itunes</tabstop>
   <tabstop>checkBox_show_traktor</tabstop>
+  <tabstop>checkBox_show_rekordbox</tabstop>
+  <tabstop>checkBox_show_serato</tabstop>
  </tabstops>
  <resources/>
  <connections/>
