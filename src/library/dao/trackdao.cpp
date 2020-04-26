@@ -294,14 +294,13 @@ void TrackDAO::databaseTrackAdded(TrackPointer pTrack) {
     emit dbTrackAdded(pTrack);
 }
 
-void TrackDAO::databaseTracksChanged(QSet<TrackId> changedTracks) {
-    // results in a call of BaseTrackCache::updateTracksInIndex(trackIds);
-    if (!changedTracks.isEmpty()) {
-        emit tracksChanged(changedTracks);
+void TrackDAO::slotDatabaseTracksChanged(QSet<TrackId> changedTrackIds) {
+    if (!changedTrackIds.isEmpty()) {
+        emit tracksChanged(changedTrackIds);
     }
 }
 
-void TrackDAO::databaseTracksRelocated(QList<RelocatedTrack> relocatedTracks) {
+void TrackDAO::slotDatabaseTracksRelocated(QList<RelocatedTrack> relocatedTracks) {
     QSet<TrackId> removedTrackIds;
     QSet<TrackId> changedTrackIds;
     for (const auto& relocatedTrack : qAsConst(relocatedTracks)) {
@@ -322,7 +321,9 @@ void TrackDAO::databaseTracksRelocated(QList<RelocatedTrack> relocatedTracks) {
     if (!removedTrackIds.isEmpty()) {
         emit tracksRemoved(removedTrackIds);
     }
-    databaseTracksChanged(changedTrackIds);
+    if (!changedTrackIds.isEmpty()) {
+        emit tracksChanged(changedTrackIds);
+    }
 }
 
 void TrackDAO::addTracksPrepare() {
