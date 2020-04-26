@@ -7,7 +7,7 @@ class SeratoCueInfoImporter : public CueInfoImporter {
   public:
     using CueInfoImporter::CueInfoImporter;
 
-    double getTimingOffsetMillis(
+    double guessTimingOffsetMillis(
             const QString& filePath,
             const audio::SignalInfo& signalInfo) const override;
 };

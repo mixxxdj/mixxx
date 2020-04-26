@@ -6,7 +6,7 @@ CueInfoImporter::CueInfoImporter(const QList<CueInfo>& cueInfos)
         : m_cueInfos(cueInfos) {
 }
 
-double CueInfoImporter::getTimingOffsetMillis(
+double CueInfoImporter::guessTimingOffsetMillis(
         const QString& filePath,
         const audio::SignalInfo& signalInfo) const {
     Q_UNUSED(filePath);
@@ -40,7 +40,7 @@ QList<CueInfo> CueInfoImporter::getCueInfosWithCorrectTiming(
         return {};
     }
 
-    double timingOffsetMillis = getTimingOffsetMillis(filePath, signalInfo);
+    double timingOffsetMillis = guessTimingOffsetMillis(filePath, signalInfo);
 
     // If we don't have any offset, we can just return the CueInfo objects
     // unchanged.

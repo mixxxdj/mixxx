@@ -15,7 +15,7 @@ class CueInfoImporter {
     /// Returns audio signal dependent timing offset correction.
     /// The default implementation just returns 0, but this can be overridden
     /// in subclasses.
-    virtual double getTimingOffsetMillis(
+    virtual double guessTimingOffsetMillis(
             const QString& filePath,
             const audio::SignalInfo& signalInfo) const;
 

@@ -104,7 +104,7 @@ RgbColor SeratoTags::displayedToStoredSeratoDJProCueColor(RgbColor color) {
             color);
 }
 
-double SeratoTags::findTimingOffsetMillis(
+double SeratoTags::guessTimingOffsetMillis(
         const QString& filePath,
         const audio::SignalInfo& signalInfo) {
     // The following code accounts for timing offsets required to
