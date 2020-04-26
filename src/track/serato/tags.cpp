@@ -16,7 +16,7 @@ const QString kDecoderName(QStringLiteral("FFMPEG"));
 const QString kDecoderName(QStringLiteral("Unknown"));
 #endif
 
-/// In Serato, loops and hotcues are kept separate (i. e. you can
+/// In Serato, loops and hotcues are kept separate, i. e. you can
 /// have a loop and a hotcue with the same number. In Mixxx, loops
 /// and hotcues share indices. Hence, we import them with and offset
 /// of 8 (the maximum number of hotcues in Serato).
