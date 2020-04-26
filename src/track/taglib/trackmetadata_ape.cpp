@@ -13,8 +13,6 @@ Logger kLogger("TagLib");
 
 namespace taglib {
 
-namespace ape {
-
 namespace {
 
 bool readItem(
@@ -49,6 +47,8 @@ void writeItem(
 }
 
 } // anonymous namespace
+
+namespace ape {
 
 bool importCoverImageFromTag(QImage* pCoverArt, const TagLib::APE::Tag& tag) {
     if (!pCoverArt) {

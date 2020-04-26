@@ -21,8 +21,6 @@ Logger kLogger("TagLib");
 
 namespace taglib {
 
-namespace xiph {
-
 namespace {
 
 // Preferred picture types for cover art sorted by priority
@@ -116,6 +114,8 @@ inline QImage parseBase64EncodedImage(
 }
 
 } // anonymous namespace
+
+namespace xiph {
 
 QImage importCoverImageFromPictureList(
         const TagLib::List<TagLib::FLAC::Picture*>& pictures) {

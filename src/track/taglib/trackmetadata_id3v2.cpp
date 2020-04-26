@@ -24,8 +24,6 @@ Logger kLogger("TagLib");
 
 namespace taglib {
 
-namespace id3v2 {
-
 namespace {
 
 // Only ID3v2.3 and ID3v2.4 are supported for both importing and
@@ -571,6 +569,8 @@ inline QString formatBpmInteger(
 }
 
 } // anonymous namespace
+
+namespace id3v2 {
 
 bool importCoverImageFromTag(
         QImage* pCoverArt,

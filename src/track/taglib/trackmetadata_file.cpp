@@ -18,6 +18,30 @@ namespace {
 
 Logger kLogger("TagLib");
 
+void readAudioProperties(
+        TrackMetadata* pTrackMetadata,
+        const TagLib::AudioProperties& audioProperties) {
+    DEBUG_ASSERT(pTrackMetadata);
+
+    // NOTE(uklotzde): All audio properties will be updated
+    // with the actual (and more precise) values when reading
+    // the audio data for this track. Often those properties
+    // stored in tags don't match with the corresponding
+    // audio data in the file.
+    pTrackMetadata->setChannelCount(
+            audio::ChannelCount(audioProperties.channels()));
+    pTrackMetadata->setSampleRate(
+            audio::SampleRate(audioProperties.sampleRate()));
+    pTrackMetadata->setBitrate(
+            audio::Bitrate(audioProperties.bitrate()));
+#if (TAGLIB_HAS_LENGTH_IN_MILLISECONDS)
+    const auto duration = Duration::fromMillis(audioProperties.lengthInMilliseconds());
+#else
+    const auto duration = Duration::fromSeconds(audioProperties.length());
+#endif
+    pTrackMetadata->setDuration(duration);
+}
+
 } // anonymous namespace
 
 namespace taglib {
@@ -132,34 +156,6 @@ bool hasMP4Tag(TagLib::MP4::File& file) {
     return file.tag() != nullptr;
 #endif
 }
-
-namespace {
-
-void readAudioProperties(
-        TrackMetadata* pTrackMetadata,
-        const TagLib::AudioProperties& audioProperties) {
-    DEBUG_ASSERT(pTrackMetadata);
-
-    // NOTE(uklotzde): All audio properties will be updated
-    // with the actual (and more precise) values when reading
-    // the audio data for this track. Often those properties
-    // stored in tags don't match with the corresponding
-    // audio data in the file.
-    pTrackMetadata->setChannelCount(
-            audio::ChannelCount(audioProperties.channels()));
-    pTrackMetadata->setSampleRate(
-            audio::SampleRate(audioProperties.sampleRate()));
-    pTrackMetadata->setBitrate(
-            audio::Bitrate(audioProperties.bitrate()));
-#if (TAGLIB_HAS_LENGTH_IN_MILLISECONDS)
-    const auto duration = Duration::fromMillis(audioProperties.lengthInMilliseconds());
-#else
-    const auto duration = Duration::fromSeconds(audioProperties.length());
-#endif
-    pTrackMetadata->setDuration(duration);
-}
-
-} // anonymous namespace
 
 bool readAudioPropertiesFromFile(
         TrackMetadata* pTrackMetadata,

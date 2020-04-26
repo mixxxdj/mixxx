@@ -17,44 +17,6 @@ namespace {
 
 Logger kLogger("TagLib");
 
-} // anonymous namespace
-
-namespace taglib {
-
-TagLib::String toTString(
-        const QString& str) {
-    if (str.isNull()) {
-        return TagLib::String::null;
-    } else {
-        const QByteArray qba(str.toUtf8());
-        return TagLib::String(qba.constData(), TagLib::String::UTF8);
-    }
-}
-
-TagLib::String firstNonEmptyStringListItem(
-        const TagLib::StringList& strList) {
-    for (const auto& str : strList) {
-        if (!str.isEmpty()) {
-            return str;
-        }
-    }
-    return TagLib::String();
-}
-
-bool parseBpm(
-        TrackMetadata* pTrackMetadata,
-        const QString& sBpm) {
-    DEBUG_ASSERT(pTrackMetadata);
-    bool isBpmValid = false;
-    const double bpmValue = Bpm::valueFromString(sBpm, &isBpmValid);
-    if (isBpmValid) {
-        pTrackMetadata->refTrackInfo().setBpm(Bpm(bpmValue));
-    }
-    return isBpmValid;
-}
-
-namespace {
-
 bool parseReplayGainGain(
         ReplayGain* pReplayGain,
         const QString& dbGain) {
@@ -91,6 +53,40 @@ bool parseReplayGainPeak(
 }
 
 } // anonymous namespace
+
+namespace taglib {
+
+TagLib::String toTString(
+        const QString& str) {
+    if (str.isNull()) {
+        return TagLib::String::null;
+    } else {
+        const QByteArray qba(str.toUtf8());
+        return TagLib::String(qba.constData(), TagLib::String::UTF8);
+    }
+}
+
+TagLib::String firstNonEmptyStringListItem(
+        const TagLib::StringList& strList) {
+    for (const auto& str : strList) {
+        if (!str.isEmpty()) {
+            return str;
+        }
+    }
+    return TagLib::String();
+}
+
+bool parseBpm(
+        TrackMetadata* pTrackMetadata,
+        const QString& sBpm) {
+    DEBUG_ASSERT(pTrackMetadata);
+    bool isBpmValid = false;
+    const double bpmValue = Bpm::valueFromString(sBpm, &isBpmValid);
+    if (isBpmValid) {
+        pTrackMetadata->refTrackInfo().setBpm(Bpm(bpmValue));
+    }
+    return isBpmValid;
+}
 
 bool parseTrackGain(
         TrackMetadata* pTrackMetadata,

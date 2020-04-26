@@ -17,15 +17,7 @@ Logger kLogger("TagLib");
 
 namespace taglib {
 
-namespace mp4 {
-
 namespace {
-
-// Workaround for missing const member function in TagLib
-inline const TagLib::MP4::ItemListMap& getItemListMap(
-        const TagLib::MP4::Tag& tag) {
-    return const_cast<TagLib::MP4::Tag&>(tag).itemListMap();
-}
 
 // Freeform MP4 atom key format: "----:<mean>:<name>"
 
@@ -37,6 +29,12 @@ const TagLib::String kAtomKeyReplayGainTrackGain = "----:com.apple.iTunes:replay
 const TagLib::String kAtomKeyReplayGainTrackPeak = "----:com.apple.iTunes:replaygain_track_peak";
 const TagLib::String kAtomKeyReplayGainAlbumGain = "----:com.apple.iTunes:replaygain_album_gain";
 const TagLib::String kAtomKeyReplayGainAlbumPeak = "----:com.apple.iTunes:replaygain_album_peak";
+
+// Workaround for missing const member function in TagLib
+inline const TagLib::MP4::ItemListMap& getItemListMap(
+        const TagLib::MP4::Tag& tag) {
+    return const_cast<TagLib::MP4::Tag&>(tag).itemListMap();
+}
 
 bool readAtom(
         const TagLib::MP4::Tag& tag,
@@ -94,6 +92,8 @@ inline void updateAtom(
 }
 
 } // anonymous namespace
+
+namespace mp4 {
 
 bool importCoverImageFromTag(
         QImage* pCoverArt,
