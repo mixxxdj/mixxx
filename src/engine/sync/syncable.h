@@ -94,6 +94,8 @@ class Syncable {
     virtual void setInstantaneousBpm(double bpm) = 0;
 };
 
+/// SyncableListener is an interface class used by EngineSync to receive
+/// information about sync change requests.
 class SyncableListener {
   public:
     virtual ~SyncableListener() {}
