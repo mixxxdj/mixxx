@@ -51,24 +51,12 @@ Syncable* BaseSyncableListener::getSyncableForGroup(const QString& group) {
 }
 
 bool BaseSyncableListener::syncDeckExists() const {
-    foreach (const Syncable* pSyncable, m_syncables) {
+    for (auto& pSyncable : qAsConst(m_syncables)) {
         if (pSyncable->isSynchronized() && pSyncable->getBaseBpm() > 0) {
             return true;
         }
     }
     return false;
-}
-
-int BaseSyncableListener::playingSyncDeckCount() const {
-    int playing_sync_decks = 0;
-
-    foreach (const Syncable* pSyncable, m_syncables) {
-        if (pSyncable->isSynchronized() && pSyncable->isPlaying()) {
-            ++playing_sync_decks;
-        }
-    }
-
-    return playing_sync_decks;
 }
 
 double BaseSyncableListener::masterBpm() const {
@@ -116,19 +104,6 @@ void BaseSyncableListener::setMasterInstantaneousBpm(Syncable* pSource, double b
             continue;
         }
         pSyncable->setInstantaneousBpm(bpm);
-    }
-}
-
-void BaseSyncableListener::setMasterBaseBpm(Syncable* pSource, double bpm) {
-    if (pSource != m_pInternalClock) {
-        m_pInternalClock->setMasterBaseBpm(bpm);
-    }
-    foreach (Syncable* pSyncable, m_syncables) {
-        if (pSyncable == pSource ||
-                !pSyncable->isSynchronized()) {
-            continue;
-        }
-        pSyncable->setMasterBaseBpm(bpm);
     }
 }
 

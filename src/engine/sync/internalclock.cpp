@@ -14,6 +14,7 @@ InternalClock::InternalClock(const char* pGroup, SyncableListener* pEngineSync)
           m_mode(SYNC_NONE),
           m_iOldSampleRate(44100),
           m_dOldBpm(124.0),
+          m_dBaseBpm(124.0),
           m_bClockUpdated(false),
           m_dBeatLength(m_iOldSampleRate * 60.0 / m_dOldBpm),
           m_dClockPosition(0) {
@@ -61,20 +62,22 @@ void InternalClock::requestSync() {
 }
 
 void InternalClock::slotSyncMasterEnabledChangeRequest(double state) {
-    bool currentlyMaster = isMaster(getSyncMode());
-
+    SyncMode mode = m_mode;
+    //Note: internal clock is always sync enabled
     if (state > 0.0) {
-        if (currentlyMaster) {
+        if (mode == SYNC_MASTER_EXPLICIT) {
             // Already master.
             return;
         }
-        // Internal clock can never be explicit master.  If we ever have something like a
-        // midi clock, *that* can be explicit master, but the internal clock is just around
-        // to hand off and coordinate other decks.
-        m_pEngineSync->requestSyncMode(this, SYNC_MASTER_SOFT);
+        if (mode == SYNC_MASTER_SOFT) {
+            // user request: make master explicite
+            m_mode = SYNC_MASTER_EXPLICIT;
+            return;
+        }
+        m_pEngineSync->requestSyncMode(this, SYNC_MASTER_EXPLICIT);
     } else {
         // Turning off master goes back to follower mode.
-        if (!currentlyMaster) {
+        if (mode == SYNC_FOLLOWER) {
             // Already not master.
             return;
         }
@@ -100,11 +103,7 @@ void InternalClock::setMasterBeatDistance(double beatDistance) {
 }
 
 double InternalClock::getBaseBpm() const {
-    return m_dOldBpm;
-}
-
-void InternalClock::setMasterBaseBpm(double bpm) {
-    Q_UNUSED(bpm)
+    return m_dBaseBpm;
 }
 
 double InternalClock::getBpm() const {
@@ -112,7 +111,7 @@ double InternalClock::getBpm() const {
 }
 
 void InternalClock::setMasterBpm(double bpm) {
-    //qDebug() << "InternalClock::setBpm" << bpm;
+    qDebug() << "InternalClock::setBpm" << bpm;
     if (bpm == 0) {
         return;
     }
@@ -127,16 +126,17 @@ void InternalClock::setInstantaneousBpm(double bpm) {
 }
 
 void InternalClock::setMasterParams(double beatDistance, double baseBpm, double bpm) {
-    Q_UNUSED(baseBpm)
     //qDebug() << "InternalClock::setMasterParams" << beatDistance << baseBpm << bpm;
     if (bpm == 0) {
         return;
     }
+    m_dBaseBpm = baseBpm;
     setMasterBpm(bpm);
     setMasterBeatDistance(beatDistance);
 }
 
 void InternalClock::slotBpmChanged(double bpm) {
+    m_dBaseBpm = bpm;
     updateBeatLength(m_iOldSampleRate, bpm);
     if (!isSynchronized()) {
         return;

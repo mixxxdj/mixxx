@@ -34,7 +34,6 @@ SyncControl::SyncControl(const QString& group, UserSettingsPointer pConfig,
           m_unmultipliedTargetBeatDistance(0.0),
           m_pBpm(nullptr),
           m_pLocalBpm(nullptr),
-          m_pFileBpm(nullptr),
           m_pRateRatio(nullptr),
           m_pVCEnabled(nullptr),
           m_pSyncPhaseButton(nullptr) {
@@ -94,10 +93,6 @@ void SyncControl::setEngineControls(RateControl* pRateControl,
 
     m_pLocalBpm = new ControlProxy(getGroup(), "local_bpm", this);
 
-    m_pFileBpm = new ControlProxy(getGroup(), "file_bpm", this);
-    m_pFileBpm->connectValueChanged(this, &SyncControl::slotFileBpmChanged,
-                                    Qt::DirectConnection);
-
     m_pRateRatio = new ControlProxy(getGroup(), "rate_ratio", this);
     m_pRateRatio->connectValueChanged(this, &SyncControl::slotRateChanged,
                                        Qt::DirectConnection);
@@ -127,7 +122,6 @@ void SyncControl::setSyncMode(SyncMode mode) {
     }
     // SyncControl has absolutely no say in the matter. This is what EngineSync
     // requires. Bypass confirmation by using setAndConfirm.
-    m_masterBpmAdjustFactor = kBpmUnity;
     m_pSyncMode->setAndConfirm(mode);
     m_pSyncEnabled->setAndConfirm(mode != SYNC_NONE);
     m_pSyncMasterEnabled->setAndConfirm(isMaster(mode));
@@ -140,20 +134,15 @@ void SyncControl::setSyncMode(SyncMode mode) {
     if (mode != SYNC_NONE && m_pPassthroughEnabled->get()) {
         // If any sync mode is enabled and passthrough was on somehow, disable passthrough.
         // This is very unlikely to happen so this deserves a warning.
-        qWarning() << "Notified of sync mode change when passthrough was active -- "
+        qWarning() << "Notified of sync mode change when passthrough was "
+                      "active -- "
                       "must disable passthrough";
         m_pPassthroughEnabled->set(0.0);
     }
     if (isMaster(mode)) {
-        // Make sure all the followers update based on our current rate.
-        double bpm = m_pBpm->get();
-        if (bpm > 0) {
-            // When reporting our bpm, remove the multiplier so the masters all
-            // think the followers have the same bpm.
-            m_pEngineSync->notifyBpmChanged(this, bpm / m_masterBpmAdjustFactor);
-            m_pEngineSync->notifyBeatDistanceChanged(this, getBeatDistance());
-        }
         m_pBpmControl->resetSyncAdjustment();
+    } else if (mode == SYNC_NONE) {
+        m_masterBpmAdjustFactor = kBpmUnity;
     }
 }
 
@@ -165,7 +154,8 @@ void SyncControl::notifyOnlyPlayingSyncable() {
 
 void SyncControl::requestSync() {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "SyncControl::requestSync" << this->getGroup() << isPlaying() << m_pQuantize->toBool();
+        kLogger.trace() << "SyncControl::requestSync" << this->getGroup()
+                        << isPlaying() << m_pQuantize->toBool();
     }
     if (isPlaying() && m_pQuantize->toBool()) {
         // only sync phase if the deck is playing and if quantize is enabled.
@@ -208,12 +198,13 @@ double SyncControl::getBeatDistance() const {
 }
 
 double SyncControl::getBaseBpm() const {
-    return m_pLocalBpm->get();
+    return m_pLocalBpm->get() / m_masterBpmAdjustFactor;
 }
 
 void SyncControl::setMasterBeatDistance(double beatDistance) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "SyncControl::setMasterBeatDistance" << beatDistance;
+        kLogger.trace() << getGroup() << "SyncControl::setMasterBeatDistance"
+                        << beatDistance;
     }
     // Set the BpmControl target beat distance to beatDistance, adjusted by
     // the multiplier if in effect.  This way all of the multiplier logic
@@ -223,22 +214,14 @@ void SyncControl::setMasterBeatDistance(double beatDistance) {
     updateTargetBeatDistance();
 }
 
-void SyncControl::setMasterBaseBpm(double bpm) {
-    m_masterBpmAdjustFactor = determineBpmMultiplier(m_pFileBpm->get(), bpm);
-    if (kLogger.traceEnabled()) {
-        kLogger.trace() << "SyncControl::setMasterBaseBpm" << getGroup() << bpm << m_masterBpmAdjustFactor;
-    }
-    // Update the target beat distance in case the multiplier changed.
-    updateTargetBeatDistance();
-}
-
 void SyncControl::setMasterBpm(double bpm) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "SyncControl::setMasterBpm" << bpm;
     }
 
     if (!isSynchronized()) {
-        qDebug() << "WARNING: Logic Error: setBpm called on SYNC_NONE syncable.";
+        qDebug()
+                << "WARNING: Logic Error: setBpm called on SYNC_NONE syncable.";
         return;
     }
 
@@ -253,16 +236,24 @@ void SyncControl::setMasterBpm(double bpm) {
     }
 }
 
-void SyncControl::setMasterParams(double beatDistance, double baseBpm, double bpm) {
-    m_unmultipliedTargetBeatDistance = beatDistance;
-    m_masterBpmAdjustFactor = determineBpmMultiplier(m_pFileBpm->get(), baseBpm);
+void SyncControl::setMasterParams(
+        double beatDistance, double baseBpm, double bpm) {
+    double masterBpmAdjustFactor = determineBpmMultiplier(fileBpm(), baseBpm);
+    if (isMaster(getSyncMode())) {
+        // In Master mode we adjust the incomming Bpm for the inital sync.
+        bpm *= masterBpmAdjustFactor;
+        m_masterBpmAdjustFactor = kBpmUnity;
+    } else {
+        // in Follower mode we keep the factor when reporting our BPM
+        m_masterBpmAdjustFactor = masterBpmAdjustFactor;
+    }
     setMasterBpm(bpm);
-    updateTargetBeatDistance();
+    setMasterBeatDistance(beatDistance);
 }
 
 double SyncControl::determineBpmMultiplier(double myBpm, double targetBpm) const {
     double multiplier = kBpmUnity;
-    if (myBpm == 0.0) {
+    if (myBpm == 0.0 || targetBpm == 0.0) {
         return multiplier;
     }
     double best_margin = fabs((targetBpm / myBpm) - 1.0);
@@ -313,7 +304,7 @@ double SyncControl::getBpm() const {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "SyncControl::getBpm()" << m_pBpm->get();
     }
-    return m_pBpm->get();
+    return m_pBpm->get() / m_masterBpmAdjustFactor;
 }
 
 void SyncControl::setInstantaneousBpm(double bpm) {
@@ -330,28 +321,39 @@ void SyncControl::reportTrackPosition(double fractionalPlaypos) {
     }
 }
 
+// called from an engine worker thread
 void SyncControl::trackLoaded(TrackPointer pNewTrack) {
-    if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "SyncControl::trackLoaded";
+    BeatsPointer pBeats;
+    if (pNewTrack) {
+        pBeats = pNewTrack->getBeats();
     }
-    if (isMaster(getSyncMode())) {
-        // If we change or remove a new track while master, hand off.
+    trackBeatsUpdated(pBeats);
+}
+
+void SyncControl::trackBeatsUpdated(BeatsPointer pBeats) {
+    // This slot is fired by a new file is loaded or if the user
+    // has adjusted the beatgrid.
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "SyncControl::trackBeatsUpdated";
+    }
+
+    VERIFY_OR_DEBUG_ASSERT(m_pLocalBpm) {
+        // object not initalized
+        return;
+    }
+
+    m_pBeats = pBeats;
+    m_masterBpmAdjustFactor = kBpmUnity;
+
+    SyncMode syncMode = getSyncMode();
+    if (syncMode == SYNC_MASTER_SOFT) {
+        // If we change or remove beats while soft master, hand off.
+        m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
+    } else if (syncMode == SYNC_FOLLOWER) {
+        // Refresh follower state to update soft master
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
     }
-    if (pNewTrack) {
-        m_masterBpmAdjustFactor = kBpmUnity;
-        if (isSynchronized()) {
-            // Because of the order signals get processed, the file/local_bpm COs and
-            // rate slider are not updated as soon as we need them, so do that now.
-            m_pFileBpm->set(pNewTrack->getBpm());
-            m_pLocalBpm->set(pNewTrack->getBpm());
-            // We used to set the m_pBpm here, but that causes a signal loop whereby
-            // that was interpreted as a rate slider tweak, and the master bpm
-            // was changed.  Instead, now we pass the suggested bpm to enginesync
-            // explicitly, and it can decide what to do with it.
-            m_pEngineSync->notifyTrackLoaded(this, m_pLocalBpm->get() * m_pRateRatio->get());
-        }
-    }
+    setLocalBpm(m_pLocalBpm->get());
 }
 
 void SyncControl::slotControlPlay(double play) {
@@ -384,7 +386,7 @@ void SyncControl::slotSyncModeChangeRequest(double state) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "SyncControl::slotSyncModeChangeRequest";
     }
-    SyncMode mode(syncModeFromDouble(state));
+    SyncMode mode = syncModeFromDouble(state);
     if (m_pPassthroughEnabled->get() && mode != SYNC_NONE) {
         qDebug() << "Disallowing enabling of sync mode when passthrough active";
     } else {
@@ -393,11 +395,15 @@ void SyncControl::slotSyncModeChangeRequest(double state) {
 }
 
 void SyncControl::slotSyncMasterEnabledChangeRequest(double state) {
-    bool currentlyMaster = isMaster(getSyncMode());
-
+    SyncMode mode = getSyncMode();
     if (state > 0.0) {
-        if (currentlyMaster) {
+        if (mode == SYNC_MASTER_EXPLICIT) {
             // Already master.
+            return;
+        }
+        if (mode == SYNC_MASTER_SOFT) {
+            // user request: make master explicite
+            m_pSyncMode->setAndConfirm(SYNC_MASTER_EXPLICIT);
             return;
         }
         if (m_pPassthroughEnabled->get()) {
@@ -407,7 +413,7 @@ void SyncControl::slotSyncMasterEnabledChangeRequest(double state) {
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_MASTER_EXPLICIT);
     } else {
         // Turning off master goes back to follower mode.
-        if (!currentlyMaster) {
+        if (mode == SYNC_FOLLOWER) {
             // Already not master.
             return;
         }
@@ -439,34 +445,18 @@ void SyncControl::setLocalBpm(double local_bpm) {
     }
 
     double bpm = local_bpm * m_pRateRatio->get();
-    m_pBpm->set(bpm);
 
     if (syncMode == SYNC_FOLLOWER) {
         // In this case we need an update from the current master to adjust
         // the rate that we continue with the master BPM. If there is no
-        // master bpm, our bpm value is adopted.
+        // master bpm, our bpm value is adopted and the m_masterBpmAdjustFactor
+        // is reset to 1;
         m_pEngineSync->requestBpmUpdate(this, bpm);
     } else {
         DEBUG_ASSERT(isMaster(syncMode));
-        m_pEngineSync->notifyBpmChanged(this, bpm);
-    }
-}
-
-void SyncControl::slotFileBpmChanged() {
-    // This slot is fired by a new file is loaded or if the user
-    // has adjusted the beatgrid.
-    if (kLogger.traceEnabled()) {
-        kLogger.trace() << "SyncControl::slotFileBpmChanged";
-    }
-
-    // Note: bpmcontrol has updated local_bpm just before
-    double local_bpm = m_pLocalBpm ? m_pLocalBpm->get() : 0.0;
-
-    if (!isSynchronized()) {
-        double bpm = local_bpm * m_pRateRatio->get();
-        m_pBpm->set(bpm);
-    } else {
-        setLocalBpm(local_bpm);
+        // We might have adopted an adjust factor when becomming master.
+        // Keep it when reporting our bpm.
+        m_pEngineSync->notifyBpmChanged(this, bpm / m_masterBpmAdjustFactor);
     }
 }
 
@@ -500,4 +490,12 @@ void SyncControl::notifySeek(double dNewPlaypos) {
     EngineControl::notifySeek(dNewPlaypos);
     m_pBpmControl->notifySeek(dNewPlaypos);
     updateTargetBeatDistance();
+}
+
+double SyncControl::fileBpm() const {
+    BeatsPointer pBeats = m_pBeats;
+    if (pBeats) {
+        return pBeats->getBpm();
+    }
+    return 0.0;
 }

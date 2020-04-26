@@ -76,11 +76,7 @@ class Syncable {
     // Must never result in a call to
     // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
     virtual void setMasterBeatDistance(double beatDistance) = 0;
-    // Reports what the bpm of the master would be if it were playing back at
-    // a rate of 1.0x.  This is used by syncables to decide if they should
-    // match rates at x2 or /2 speed.  If we were to use the regular BPM, the
-    // change of a rate slider might suddenly change the sync multiplier.
-    virtual void setMasterBaseBpm(double) = 0;
+
     // Must never result in a call to SyncableListener::notifyBpmChanged or
     // signal loops could occur.
     virtual void setMasterBpm(double bpm) = 0;
@@ -128,11 +124,8 @@ class SyncableListener {
             Syncable* pSyncable, double beatDistance) = 0;
 
     virtual void notifyPlaying(Syncable* pSyncable, bool playing) = 0;
-    // A syncable can notify that a track has been loaded, and passes in the bpm
-    // that it would be set at if the rate slider were left alone.  This allows
-    // the master sync engine to either use that rate, if it pleases, or sets
-    // the syncable to the existing master bpm.
-    virtual void notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) = 0;
+
+    virtual Syncable* getMasterSyncable() = 0;
 };
 
 #endif /* SYNCABLE_H */

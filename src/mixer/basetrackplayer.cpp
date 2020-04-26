@@ -1,26 +1,27 @@
-#include <QMessageBox>
-
 #include "mixer/basetrackplayer.h"
-#include "mixer/playerinfo.h"
-#include "mixer/playermanager.h"
+
+#include <QMessageBox>
 
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
-#include "track/track.h"
-#include "sources/soundsourceproxy.h"
-#include "engine/enginebuffer.h"
-#include "engine/controls/enginecontrol.h"
+#include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
+#include "engine/controls/enginecontrol.h"
 #include "engine/engine.h"
+#include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
+#include "engine/sync/enginesync.h"
+#include "mixer/playerinfo.h"
+#include "mixer/playermanager.h"
+#include "sources/soundsourceproxy.h"
 #include "track/beatgrid.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/visualsmanager.h"
+#include "track/track.h"
+#include "util/compatibility.h"
 #include "util/platform.h"
 #include "util/sandbox.h"
-#include "effects/effectsmanager.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
-#include "engine/sync/enginesync.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/visualsmanager.h"
 
 namespace {
 
@@ -134,7 +135,8 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
 
     m_pPreGain = std::make_unique<ControlProxy>(group, "pregain", this);
     // BPM of the current song
-    m_pFileBPM = std::make_unique<ControlProxy>(group, "file_bpm", this);
+
+    m_pFileBPM = std::make_unique<ControlObject>(ConfigKey(group, "file_bpm"));
     m_pKey = std::make_unique<ControlProxy>(group, "file_key", this);
 
     m_pReplayGain = std::make_unique<ControlProxy>(group, "replaygain", this);
@@ -166,7 +168,7 @@ TrackPointer BaseTrackPlayerImpl::loadFakeTrack(bool bPlay, double filebpm) {
         connect(m_pLoadedTrack.get(),
                 &Track::bpmUpdated,
                 m_pFileBPM.get(),
-                &ControlProxy::set);
+                QOverload<double>::of(&ControlObject::set));
 
         connect(m_pLoadedTrack.get(),
                 &Track::keyUpdated,
@@ -284,7 +286,7 @@ void BaseTrackPlayerImpl::connectLoadedTrack() {
     connect(m_pLoadedTrack.get(),
             &Track::bpmUpdated,
             m_pFileBPM.get(),
-            &ControlProxy::set);
+            QOverload<double>::of(&ControlObject::set));
     connect(m_pLoadedTrack.get(),
             &Track::keyUpdated,
             m_pKey.get(),

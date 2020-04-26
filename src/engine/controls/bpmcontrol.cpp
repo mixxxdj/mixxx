@@ -63,10 +63,6 @@ BpmControl::BpmControl(QString group,
     m_pLoopStartPosition = new ControlProxy(group, "loop_start_position", this);
     m_pLoopEndPosition = new ControlProxy(group, "loop_end_position", this);
 
-    m_pFileBpm = new ControlObject(ConfigKey(group, "file_bpm"));
-    connect(m_pFileBpm, &ControlObject::valueChanged,
-            this, &BpmControl::slotFileBpmChanged,
-            Qt::DirectConnection);
     m_pLocalBpm = new ControlObject(ConfigKey(group, "local_bpm"));
     m_pAdjustBeatsFaster = new ControlPushButton(ConfigKey(group, "beats_adjust_faster"), false);
     connect(m_pAdjustBeatsFaster, &ControlObject::valueChanged,
@@ -143,7 +139,6 @@ BpmControl::BpmControl(QString group,
 }
 
 BpmControl::~BpmControl() {
-    delete m_pFileBpm;
     delete m_pLocalBpm;
     delete m_pEngineBpm;
     delete m_pButtonTap;
@@ -160,29 +155,6 @@ BpmControl::~BpmControl() {
 
 double BpmControl::getBpm() const {
     return m_pEngineBpm->get();
-}
-
-void BpmControl::slotFileBpmChanged(double file_bpm) {
-    // Adjust the file-bpm with the current setting of the rate to get the
-    // engine BPM. We only do this for SYNC_NONE decks because EngineSync will
-    // set our BPM if the file BPM changes. See SyncControl::fileBpmChanged().
-    if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "BpmControl::slotFileBpmChanged" << file_bpm;
-    }
-    BeatsPointer pBeats = m_pBeats;
-    if (pBeats) {
-        const double beats_bpm =
-                pBeats->getBpmAroundPosition(
-                        getSampleOfTrack().current, kLocalBpmSpan);
-        if (beats_bpm != -1) {
-            m_pLocalBpm->set(beats_bpm);
-        } else {
-            m_pLocalBpm->set(file_bpm);
-        }
-    } else {
-        m_pLocalBpm->set(file_bpm);
-    }
-    resetSyncAdjustment();
 }
 
 void BpmControl::slotAdjustBeatsFaster(double v) {
@@ -937,34 +909,21 @@ void BpmControl::notifySeek(double dNewPlaypos) {
 
 // called from an engine worker thread
 void BpmControl::trackLoaded(TrackPointer pNewTrack) {
-    if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "BpmControl::trackLoaded";
-    }
-    if (m_pTrack) {
-        disconnect(m_pTrack.get(), &Track::beatsUpdated,
-                   this, &BpmControl::slotUpdatedTrackBeats);
-    }
-
-    // reset for a new track
-    resetSyncAdjustment();
-
+    BeatsPointer pBeats;
     if (pNewTrack) {
-        m_pTrack = pNewTrack;
-        m_pBeats = m_pTrack->getBeats();
-        connect(m_pTrack.get(), &Track::beatsUpdated,
-                this, &BpmControl::slotUpdatedTrackBeats);
-    } else {
-        m_pTrack.reset();
-        m_pBeats.clear();
+        pBeats = pNewTrack->getBeats();
     }
+    trackBeatsUpdated(pBeats);
 }
 
-void BpmControl::slotUpdatedTrackBeats() {
-    TrackPointer pTrack = m_pTrack;
-    if (pTrack) {
-        resetSyncAdjustment();
-        m_pBeats = pTrack->getBeats();
+void BpmControl::trackBeatsUpdated(BeatsPointer pBeats) {
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "BpmControl::trackBeatsUpdated"
+                        << (pBeats ? pBeats->getBpm() : 0.0);
     }
+    m_pBeats = pBeats;
+    updateLocalBpm();
+    resetSyncAdjustment();
 }
 
 void BpmControl::slotBeatsTranslate(double v) {
@@ -1000,10 +959,8 @@ double BpmControl::updateLocalBpm() {
         local_bpm = pBeats->getBpmAroundPosition(
                 getSampleOfTrack().current, kLocalBpmSpan);
         if (local_bpm == -1) {
-            local_bpm = m_pFileBpm->get();
+            local_bpm = pBeats->getBpm();
         }
-    } else {
-        local_bpm = m_pFileBpm->get();
     }
     if (local_bpm != prev_local_bpm) {
         if (kLogger.traceEnabled()) {

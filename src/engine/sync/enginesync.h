@@ -46,7 +46,6 @@ class EngineSync : public BaseSyncableListener {
     void notifyBeatDistanceChanged(Syncable* pSyncable, double beatDistance) override;
     void notifyPlaying(Syncable* pSyncable, bool playing) override;
     void notifyScratching(Syncable* pSyncable, bool scratching) override;
-    void notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) override;
 
     // Used to pick a sync target for non-master-sync mode.
     EngineChannel* pickNonSyncSyncTarget(EngineChannel* pDontPick) const;
