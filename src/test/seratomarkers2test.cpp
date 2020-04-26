@@ -325,6 +325,10 @@ TEST_F(SeratoMarkers2Test, ParseAndDumpBase64EncodedMP4) {
     mixxx::SeratoMarkers2 seratoMarkers2;
     EXPECT_TRUE(mixxx::SeratoMarkers2::parseBase64Encoded(&seratoMarkers2, inputData));
     const auto outputData = seratoMarkers2.dumpBase64Encoded();
+    if (inputData != outputData) {
+        std::cerr << "inputData:" << inputData.constData() << std::endl;
+        std::cerr << "outputData: " << outputData.constData() << std::endl;
+    }
     EXPECT_EQ(inputData.size(), outputData.size());
     EXPECT_EQ(inputData, outputData);
 }

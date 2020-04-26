@@ -164,7 +164,7 @@ TEST_F(SeratoMarkersTest, ParseEmptyData) {
 }
 
 TEST_F(SeratoMarkersTest, ParseAndDumpBase64EncodedMP4) {
-    // 5(?) cue points from an MP4 file
+    // 5 (of in total 8) cue points from an MP4 file
     const char* referenceData =
             "YXBwbGljYXRpb24vb2N0ZXQtc3RyZWFtAABTZXJhdG8gTWFya2Vyc18AAgUAAAAOAAAAr///\n"
             "//8A/////wDMAAABAAAATxL/////AP////8AzIgAAQAAALlo/////wD/////AAAAzAEAAAC5\n"
@@ -176,6 +176,10 @@ TEST_F(SeratoMarkersTest, ParseAndDumpBase64EncodedMP4) {
     mixxx::SeratoMarkers seratoMarkers;
     EXPECT_TRUE(mixxx::SeratoMarkers::parseBase64Encoded(&seratoMarkers, inputData));
     const auto outputData = seratoMarkers.dumpBase64Encoded();
+    if (inputData != outputData) {
+        std::cerr << "inputData:" << inputData.constData() << std::endl;
+        std::cerr << "outputData: " << outputData.constData() << std::endl;
+    }
     EXPECT_EQ(inputData.size(), outputData.size());
     EXPECT_EQ(inputData, outputData);
 }
