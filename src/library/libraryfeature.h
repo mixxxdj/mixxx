@@ -6,6 +6,7 @@
 
 #include <QtDebug>
 #include <QIcon>
+#include <QList>
 #include <QModelIndex>
 #include <QObject>
 #include <QString>
@@ -125,6 +126,14 @@ class LibraryFeature : public QObject {
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);
+
+  protected:
+    // TODO: Move common crate/playlist functions into
+    // a separate base class
+    static bool exportPlaylistItemsIntoFile(
+            QString playlistFilePath,
+            const QList<QString>& playlistItemLocations,
+            bool useRelativePath);
 
   private:
     QStringList getPlaylistFiles(QFileDialog::FileMode mode) const;

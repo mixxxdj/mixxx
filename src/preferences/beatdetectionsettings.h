@@ -21,7 +21,6 @@
 
 #define BPM_RANGE_START "BPMRangeStart"
 #define BPM_RANGE_END "BPMRangeEnd"
-#define BPM_ABOVE_RANGE_ENABLED "BPMAboveRangeEnabled"
 
 class BeatDetectionSettings {
   public:
@@ -29,9 +28,6 @@ class BeatDetectionSettings {
 
     DEFINE_PREFERENCE_HELPERS(BpmDetectionEnabled, bool,
                               BPM_CONFIG_KEY, BPM_DETECTION_ENABLED, true);
-
-    DEFINE_PREFERENCE_HELPERS(AllowBpmAboveRange, bool,
-                              BPM_CONFIG_KEY, BPM_ABOVE_RANGE_ENABLED, true);
 
     DEFINE_PREFERENCE_HELPERS(BpmRangeStart, int, BPM_CONFIG_KEY, BPM_RANGE_START, 70);
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "librarytablemodel.h"
+#include "library/librarytablemodel.h"
 
 class AnalysisLibraryTableModel : public LibraryTableModel
 {
