@@ -1,8 +1,9 @@
 #pragma once
 
 #include "library/basesqltablemodel.h"
+#include "library/tracksettablemodel.h"
 
-class PlaylistTableModel : public BaseSqlTableModel {
+class PlaylistTableModel : public TrackSetTableModel {
     Q_OBJECT
 
   public:

@@ -1,4 +1,3 @@
-
 #include "library/crate/cratetablemodel.h"
 
 #include "library/dao/trackschema.h"
@@ -9,9 +8,8 @@
 
 #include <QtDebug>
 
-CrateTableModel::CrateTableModel(QObject* pParent,
-                                 TrackCollectionManager* pTrackCollectionManager)
-        : BaseSqlTableModel(pParent, pTrackCollectionManager,
+CrateTableModel::CrateTableModel(QObject* pParent, TrackCollectionManager* pTrackCollectionManager)
+        : TrackSetTableModel(pParent, pTrackCollectionManager,
                             "mixxx.db.model.crate") {
 }
 

@@ -12,7 +12,7 @@ PlaylistTableModel::PlaylistTableModel(QObject* parent,
                                        TrackCollectionManager* pTrackCollectionManager,
                                        const char* settingsNamespace,
                                        bool keepDeletedTracks)
-        : BaseSqlTableModel(parent, pTrackCollectionManager, settingsNamespace),
+        : TrackSetTableModel(parent, pTrackCollectionManager, settingsNamespace),
           m_iPlaylistId(-1),
           m_keepDeletedTracks(keepDeletedTracks) {
 }

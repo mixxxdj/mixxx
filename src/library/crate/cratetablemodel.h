@@ -2,8 +2,9 @@
 
 #include "library/basesqltablemodel.h"
 #include "library/crate/crateid.h"
+#include "library/tracksettablemodel.h"
 
-class CrateTableModel : public BaseSqlTableModel {
+class CrateTableModel : public TrackSetTableModel {
     Q_OBJECT
 
   public:
