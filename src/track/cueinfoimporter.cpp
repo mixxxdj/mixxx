@@ -2,9 +2,6 @@
 
 namespace mixxx {
 
-CueInfoImporter::CueInfoImporter() {
-}
-
 CueInfoImporter::CueInfoImporter(const QList<CueInfo>& cueInfos)
         : m_cueInfos(cueInfos) {
 }
