@@ -1270,6 +1270,9 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
             trackMetadata.getTrackInfo().getEncoderSettings());
 #endif // __EXTRA_METADATA__
 
+    // Export of Serato markers is disabled, because Mixxx
+    // does not modify them.
+#if defined(__EXPORT_SERATO_MARKERS__)
     // Serato tags
     writeGeneralEncapsulatedObjectFrame(
             pTag,
@@ -1281,6 +1284,7 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
             trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2());
 
     return true;
+#endif // __EXPORT_SERATO_MARKERS__
 }
 
 } // namespace id3v2
