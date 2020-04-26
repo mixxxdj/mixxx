@@ -1,4 +1,5 @@
 #pragma once
+
 #include "track/cueinfoimporter.h"
 
 namespace mixxx {
