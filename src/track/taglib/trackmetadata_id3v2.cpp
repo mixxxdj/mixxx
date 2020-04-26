@@ -536,6 +536,7 @@ void writeGeneralEncapsulatedObjectFrame(
         }
     }
 }
+#endif // __EXPORT_SERATO_MARKERS__
 
 template<typename T>
 const T* downcastFrame(TagLib::ID3v2::Frame* frame) {
@@ -1283,9 +1284,9 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
             pTag,
             kFrameDescriptionSeratoMarkersV2,
             trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2());
+#endif // __EXPORT_SERATO_MARKERS__
 
     return true;
-#endif // __EXPORT_SERATO_MARKERS__
 }
 
 } // namespace id3v2
