@@ -27,7 +27,7 @@ SetlogFeature::SetlogFeature(
                           nullptr,
                           pLibrary->trackCollections(),
                           "mixxx.db.model.setlog",
-                          /*show-all-tracks*/ true),
+                          true),
                   QStringLiteral("SETLOGHOME")),
           m_playlistId(-1),
           m_libraryWidget(nullptr),

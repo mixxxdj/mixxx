@@ -11,10 +11,10 @@
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
                                        TrackCollectionManager* pTrackCollectionManager,
                                        const char* settingsNamespace,
-                                       bool showAll)
+                                       bool keepDeletedTracks)
         : BaseSqlTableModel(parent, pTrackCollectionManager, settingsNamespace),
           m_iPlaylistId(-1),
-          m_showAll(showAll) {
+          m_keepDeletedTracks(keepDeletedTracks) {
 }
 
 void PlaylistTableModel::initSortColumnMapping() {
@@ -62,10 +62,10 @@ void PlaylistTableModel::setTableModel(int playlistId) {
 
     m_iPlaylistId = playlistId;
 
-    if (!m_showAll) {
+    if (!m_keepDeletedTracks) {
         // From Mixxx 2.1 we drop tracks that have been explicitly deleted
         // in the library (mixxx_deleted = 0) from playlists.
-        // These invisible tracks, consuming a playlist position number where
+        // These invisible tracks, consuming a playlist position number were
         // a source user of confusion in the past.
         m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().removeHiddenTracks(m_iPlaylistId);
     }

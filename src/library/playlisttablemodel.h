@@ -6,7 +6,7 @@ class PlaylistTableModel : public BaseSqlTableModel {
     Q_OBJECT
 
   public:
-    PlaylistTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager, const char* settingsNamespace, bool showAll = false);
+    PlaylistTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager, const char* settingsNamespace, bool keepDeletedTracks = false);
     ~PlaylistTableModel() final = default;
 
     void setTableModel(int playlistId = -1);
@@ -37,5 +37,5 @@ class PlaylistTableModel : public BaseSqlTableModel {
     void initSortColumnMapping() override;
 
     int m_iPlaylistId;
-    bool m_showAll;
+    bool m_keepDeletedTracks;
 };
