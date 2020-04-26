@@ -87,7 +87,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     /// Sets the widget type and saves it to configuration.
     /// Returns false and sets EmtpyWaveform if type is invalid
     bool setWidgetType(WaveformWidgetType::Type type);
-    /// Changes the widged type to that loaded from config and recreates them.
+    /// Changes the widget type to that loaded from config and recreates them.
     /// Used as a workaround on Windows due to a problem with GL and QT 5.14.2
     bool setWidgetTypeFromConfig();
     /// Changes the widget type and recreates them. Used from the preferences
