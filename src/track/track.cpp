@@ -172,7 +172,7 @@ void Track::importMetadata(
         // FIXME: Move the Track::setCuePoints call to another location,
         // because we need the sample rate to calculate sample
         // positions for cues (and *correct* sample rate isn't known here).
-        importCueInfosFromImporter(newSeratoTags.importCueInfos());
+        importCueInfos(newSeratoTags.importCueInfos());
         setColor(newSeratoTags.getTrackColor());
         setBpmLocked(newSeratoTags.isBpmLocked());
 
@@ -851,7 +851,7 @@ void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
             cuePoints);
 }
 
-Track::CueImportStatus Track::importCueInfosFromImporter(
+Track::CueImportStatus Track::importCueInfos(
         mixxx::CueInfoImporterPointer pCueInfoImporter) {
     QMutexLocker lock(&m_qMutex);
     VERIFY_OR_DEBUG_ASSERT(pCueInfoImporter) {

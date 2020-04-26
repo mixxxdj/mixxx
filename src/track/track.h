@@ -268,7 +268,7 @@ class Track : public QObject {
     ///
     /// If the list is empty it tries to complete any pending
     /// import and returns the corresponding status.
-    CueImportStatus importCueInfosFromImporter(
+    CueImportStatus importCueInfos(
             mixxx::CueInfoImporterPointer pCueInfoImporter);
     CueImportStatus getCueImportStatus() const;
 
