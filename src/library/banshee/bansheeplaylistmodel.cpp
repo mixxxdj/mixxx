@@ -75,29 +75,28 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
         m_playlistId = playlistId;
 
         QSqlQuery query(m_database);
-        QString strQuery(
-                "CREATE TEMP TABLE IF NOT EXISTS %1"
-                " (" CLM_TRACK_ID
-                " INTEGER, " CLM_VIEW_ORDER
-                " INTEGER, " CLM_ARTIST
-                " TEXT, " CLM_TITLE
-                " TEXT, " CLM_DURATION
-                " INTEGER, " CLM_URI
-                " TEXT, " CLM_ALBUM
-                " TEXT, " CLM_ALBUM_ARTIST
-                " TEXT, " CLM_YEAR
-                " INTEGER, " CLM_RATING
-                " INTEGER, " CLM_GENRE
-                " TEXT, " CLM_GROUPING
-                " TEXT, " CLM_TRACKNUMBER
-                " INTEGER, " CLM_DATEADDED
-                " INTEGER, " CLM_BPM
-                " INTEGER, " CLM_BITRATE
-                " INTEGER, " CLM_COMMENT
-                " TEXT, " CLM_PLAYCOUNT
-                " INTEGER, " CLM_COMPOSER
-                " TEXT, " CLM_PREVIEW
-                " TEXT)");
+        QString strQuery(QStringLiteral(
+                "CREATE TEMP TABLE IF NOT EXISTS %1 (" //
+                CLM_TRACK_ID " INTEGER, "              //
+                CLM_VIEW_ORDER " INTEGER, "            //
+                CLM_ARTIST " TEXT, "                   //
+                CLM_TITLE " TEXT, "                    //
+                CLM_DURATION " INTEGER, "              //
+                CLM_URI " TEXT, "                      //
+                CLM_ALBUM " TEXT, "                    //
+                CLM_ALBUM_ARTIST " TEXT, "             //
+                CLM_YEAR " INTEGER, "                  //
+                CLM_RATING " INTEGER, "                //
+                CLM_GENRE " TEXT, "                    //
+                CLM_GROUPING " TEXT, "                 //
+                CLM_TRACKNUMBER " INTEGER, "           //
+                CLM_DATEADDED " INTEGER, "             //
+                CLM_BPM " INTEGER, "                   //
+                CLM_BITRATE " INTEGER, "               //
+                CLM_COMMENT " TEXT, "                  //
+                CLM_PLAYCOUNT " INTEGER, "             //
+                CLM_COMPOSER " TEXT, "                 //
+                CLM_PREVIEW " TEXT)"));
         if (!query.exec(strQuery.arg(m_tempTableName))) {
             LOG_FAILED_QUERY(query);
         }

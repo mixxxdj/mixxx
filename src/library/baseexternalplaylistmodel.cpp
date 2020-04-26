@@ -114,14 +114,15 @@ void BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
 
     QSqlQuery query(m_database);
     FieldEscaper f(m_database);
-    QString queryString = QString(
-            "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-            "SELECT %2 FROM %3 WHERE playlist_id = %4")
-                                  .arg(f.escapeString(playlistViewTable),
-                                          columns.join(","),
-                                          m_playlistTracksTable,
-                                          QString::number(playlistId));
+    QString queryString =
+            QStringLiteral(
+                    "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+                    "SELECT %2 FROM %3 WHERE playlist_id = :playlist_id")
+                    .arg(f.escapeString(playlistViewTable),
+                            columns.join(","),
+                            m_playlistTracksTable);
     query.prepare(queryString);
+    query.bindValue(":playlist_id", playlistId);
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "Error creating temporary view for playlist.";
