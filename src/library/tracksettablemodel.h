@@ -7,4 +7,6 @@ class TrackSetTableModel : public BaseSqlTableModel {
 
   public:
     TrackSetTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager, const char* settingsNamespace);
+
+    bool isColumnInternal(int column) override;
 };

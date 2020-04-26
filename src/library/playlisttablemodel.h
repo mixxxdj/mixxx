@@ -16,8 +16,7 @@ class PlaylistTableModel : public TrackSetTableModel {
     }
 
     bool appendTrack(TrackId trackId);
-    void moveTrack(const QModelIndex& sourceIndex,
-            const QModelIndex& destIndex) override;
+    void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex) override;
     void removeTrack(const QModelIndex& index);
     void shuffleTracks(const QModelIndexList& shuffle, const QModelIndex& exclude);
 

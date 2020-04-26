@@ -9,7 +9,7 @@ class CrateTableModel : public TrackSetTableModel {
 
   public:
     CrateTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager);
-    ~CrateTableModel() final;
+    ~CrateTableModel() final = default;
 
     void selectCrate(CrateId crateId = CrateId());
     CrateId selectedCrate() const {
@@ -18,8 +18,6 @@ class CrateTableModel : public TrackSetTableModel {
 
     bool addTrack(const QModelIndex& index, QString location);
 
-    // From TrackModel
-    bool isColumnInternal(int column) final;
     void removeTracks(const QModelIndexList& indices) final;
     /// Returns the number of unsuccessful additions.
     int addTracks(const QModelIndex& index, const QList<QString>& locations) final;

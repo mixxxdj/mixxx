@@ -244,22 +244,8 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
 }
 
 bool PlaylistTableModel::isColumnInternal(int column) {
-    if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID) ||
-            column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TRACKID) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_MIXXXDELETED) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID)||
-            column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED) ||
-            (PlayerManager::numPreviewDecks() == 0 &&
-             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH)) {
-        return true;
-    }
-    return false;
+    return column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TRACKID) ||
+            TrackSetTableModel::isColumnInternal(column);
 }
 
 bool PlaylistTableModel::isColumnHiddenByDefault(int column) {

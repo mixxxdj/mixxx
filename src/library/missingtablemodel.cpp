@@ -66,19 +66,16 @@ void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
 
 
 bool MissingTableModel::isColumnInternal(int column) {
-    if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID) ||
+    return column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID)||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_MIXXXDELETED) ||
             column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH)) {
-        return true;
-    }
-    return false;
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH);
 }
 
 // Override flags from BaseSqlModel since we don't want edit this model
