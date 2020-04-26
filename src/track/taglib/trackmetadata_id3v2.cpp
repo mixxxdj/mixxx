@@ -506,6 +506,7 @@ void writeUniqueFileIdentifierFrame(
 }
 #endif // __EXTRA_METADATA__
 
+#if defined(__EXPORT_SERATO_MARKERS__)
 void writeGeneralEncapsulatedObjectFrame(
         TagLib::ID3v2::Tag* pTag,
         const QString& description,
