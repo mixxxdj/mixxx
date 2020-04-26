@@ -45,9 +45,7 @@ QList<CueInfo> CueInfoImporter::importCueInfosWithCorrectTiming(
     // If we don't have any offset, we can just return the CueInfo objects
     // unchanged.
     if (timingOffsetMillis == 0) {
-        cueInfos.append(m_cueInfos);
-        m_cueInfos.clear();
-        return cueInfos;
+        return std::move(m_cueInfos);
     }
 
     // Create list of CueInfo object with correct positions
