@@ -69,16 +69,15 @@ std::optional<int> findIndexForCueInfo(const mixxx::CueInfo& cueInfo) {
 
 namespace mixxx {
 
+/// Serato stores Track colors differently from how they are displayed in
+/// the library column. Instead of the color from the library view, the
+/// value from the color picker is stored instead (which is different).
+/// To make sure that the track looks the same in both Mixxx' and Serato's
+/// libraries, we need to convert between the two values.
+///
+/// See this for details:
+/// https://github.com/Holzhaus/serato-tags/blob/master/docs/colors.md#track-colors
 RgbColor::optional_t SeratoTags::storedToDisplayedTrackColor(RgbColor color) {
-    // Serato stores Track colors differently from how they are displayed in
-    // the library column. Instead of the color from the library view, the
-    // value from the color picker is stored instead (which is different).
-    // To make sure that the track looks the same in both Mixxx' and Serato's
-    // libraries, we need to convert between the two values.
-    //
-    // See this for details:
-    // https://github.com/Holzhaus/serato-tags/blob/master/docs/colors.md#track-colors
-
     if (color == 0xFFFFFF) {
         return RgbColor::nullopt();
     }
