@@ -326,7 +326,7 @@ void SyncControl::reportTrackPosition(double fractionalPlaypos) {
     // the party.
     if (isMaster(getSyncMode()) &&
             fractionalPlaypos > kTrackPositionMasterHandoff) {
-        m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_NONE);
+        m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
     }
 }
 
