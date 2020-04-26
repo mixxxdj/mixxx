@@ -1,5 +1,4 @@
-#ifndef WEFFECTSELECTOR_H
-#define WEFFECTSELECTOR_H
+#pragma once
 
 #include <QDomNode>
 #include <QComboBox>
@@ -15,9 +14,6 @@ class WEffectSelector : public QComboBox, public WBaseWidget {
 
     void setup(const QDomNode& node, const SkinContext& context);
 
-  protected:
-    bool event(QEvent* pEvent) override;
-
   private slots:
     void slotEffectUpdated();
     void slotEffectSelected(int newIndex);
@@ -27,8 +23,4 @@ class WEffectSelector : public QComboBox, public WBaseWidget {
     EffectsManager* m_pEffectsManager;
     EffectSlotPointer m_pEffectSlot;
     EffectChainSlotPointer m_pChainSlot;
-    double m_scaleFactor;
 };
-
-
-#endif /* WEFFECTSELECTOR_H */
