@@ -101,10 +101,6 @@ TrackCollectionManager::TrackCollectionManager(
         // corresponding to the moved files would then have the wrong track location.
         TrackDAO* pTrackDAO = &(m_pInternalCollection->getTrackDAO());
         connect(m_pScanner.get(),
-                &LibraryScanner::trackAdded,
-                pTrackDAO,
-                &TrackDAO::databaseTrackAdded);
-        connect(m_pScanner.get(),
                 &LibraryScanner::tracksChanged,
                 pTrackDAO,
                 &TrackDAO::slotDatabaseTracksChanged);

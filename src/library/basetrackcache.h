@@ -75,11 +75,12 @@ class BaseTrackCache : public QObject {
     void tracksChanged(QSet<TrackId> trackIds);
 
   public slots:
+    void slotScanTrackAdded(TrackPointer pTrack);
+
     void slotTracksAddedOrChanged(QSet<TrackId> trackId);
     void slotTracksRemoved(QSet<TrackId> trackId);
     void slotTrackDirty(TrackId trackId);
     void slotTrackClean(TrackId trackId);
-    void slotDbTrackAdded(TrackPointer pTrack);
 
   private:
     const TrackPointer& getRecentTrack(TrackId trackId) const;
@@ -88,8 +89,8 @@ class BaseTrackCache : public QObject {
     void resetRecentTrack() const;
 
     bool updateIndexWithQuery(const QString& query);
-    bool updateIndexWithTrackpointer(TrackPointer pTrack);
     void updateTrackInIndex(TrackId trackId);
+    bool updateTrackInIndex(const TrackPointer& pTrack);
     void updateTracksInIndex(const QSet<TrackId>& trackIds);
     void getTrackValueForColumn(TrackPointer pTrack, int column,
                                 QVariant& trackValue) const;

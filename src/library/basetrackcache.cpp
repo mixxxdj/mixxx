@@ -81,11 +81,11 @@ void BaseTrackCache::slotTracksAddedOrChanged(QSet<TrackId> trackIds) {
     updateTracksInIndex(trackIds);
 }
 
-void BaseTrackCache::slotDbTrackAdded(TrackPointer pTrack) {
+void BaseTrackCache::slotScanTrackAdded(TrackPointer pTrack) {
     if (sDebug) {
-        qDebug() << this << "slotDbTrackAdded";
+        qDebug() << this << "slotScanTrackAdded";
     }
-    updateIndexWithTrackpointer(pTrack);
+    updateTrackInIndex(pTrack);
 }
 
 void BaseTrackCache::slotTracksRemoved(QSet<TrackId> trackIds) {
@@ -207,13 +207,13 @@ void BaseTrackCache::resetRecentTrack() const {
     m_recentTrackPtr.reset();
 }
 
-bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
-    if (sDebug) {
-        qDebug() << "updateIndexWithTrackpointer:" << pTrack->getFileInfo();
-    }
-
-    if (!pTrack) {
+bool BaseTrackCache::updateTrackInIndex(
+        const TrackPointer& pTrack) {
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
         return false;
+    }
+    if (sDebug) {
+        qDebug() << "updateTrackInIndex:" << pTrack->getFileInfo();
     }
 
     int numColumns = columnCount();

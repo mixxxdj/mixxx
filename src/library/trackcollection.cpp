@@ -103,6 +103,10 @@ void TrackCollection::connectTrackSource(QSharedPointer<BaseTrackCache> pTrackSo
     }
     kLogger.info() << "Connecting track source";
     m_pTrackSource = pTrackSource;
+    connect(this,
+            &TrackCollection::scanTrackAdded,
+            m_pTrackSource.data(),
+            &BaseTrackCache::slotScanTrackAdded);
     connect(&m_trackDao,
             &TrackDAO::trackDirty,
             m_pTrackSource.data(),
@@ -123,10 +127,6 @@ void TrackCollection::connectTrackSource(QSharedPointer<BaseTrackCache> pTrackSo
             &TrackDAO::tracksRemoved,
             m_pTrackSource.data(),
             &BaseTrackCache::slotTracksRemoved);
-    connect(&m_trackDao,
-            &TrackDAO::dbTrackAdded,
-            m_pTrackSource.data(),
-            &BaseTrackCache::slotDbTrackAdded);
 }
 
 QWeakPointer<BaseTrackCache> TrackCollection::disconnectTrackSource() {
@@ -192,7 +192,8 @@ void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
         return;
     }
 
-    m_trackDao.databaseTracksRelocated(std::move(relocatedTracks));
+    // Inform the TrackDAO about the changes
+    m_trackDao.slotDatabaseTracksRelocated(std::move(relocatedTracks));
 
     GlobalTrackCacheLocker().relocateCachedTracks(&m_trackDao);
 }

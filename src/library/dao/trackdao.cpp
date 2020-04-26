@@ -289,11 +289,6 @@ void TrackDAO::saveTrack(Track* pTrack) const {
     }
 }
 
-void TrackDAO::databaseTrackAdded(TrackPointer pTrack) {
-    DEBUG_ASSERT(pTrack);
-    emit dbTrackAdded(pTrack);
-}
-
 void TrackDAO::slotDatabaseTracksChanged(QSet<TrackId> changedTrackIds) {
     if (!changedTrackIds.isEmpty()) {
         emit tracksChanged(changedTrackIds);
