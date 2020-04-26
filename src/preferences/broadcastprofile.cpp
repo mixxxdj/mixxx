@@ -23,6 +23,8 @@ using namespace QKeychain;
 
 #include "broadcastprofile.h"
 
+#define BROADCAST_FORMAT_OV_LEGACYNAME "OggVorbis"
+
 namespace {
 const char* kDoctype = "broadcastprofile";
 const char* kDocumentRoot = "BroadcastProfile";
@@ -322,6 +324,10 @@ bool BroadcastProfile::loadValues(const QString& filename) {
     m_streamICQ = XmlParse::selectNodeQString(doc, kStreamICQ);
 
     m_format = XmlParse::selectNodeQString(doc, kFormat);
+    if (m_format == BROADCAST_FORMAT_OV_LEGACYNAME) {
+        // Upgrade to have the same codec name than the recording define.
+        m_format = BROADCAST_FORMAT_OV;
+    }
     m_bitrate = XmlParse::selectNodeInt(doc, kBitrate);
     m_channels = XmlParse::selectNodeInt(doc, kChannels);
 

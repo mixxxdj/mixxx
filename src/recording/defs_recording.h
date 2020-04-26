@@ -2,6 +2,7 @@
 #define __RECORDING_DEFS_H__
 
 #define RECORDING_PREF_KEY "[Recording]"
+// WARNING! def_recordings and defs_broadcast format codes have to be the same
 #define ENCODING_WAVE "WAV"
 #define ENCODING_FLAC "FLAC"
 #define ENCODING_AIFF "AIFF"

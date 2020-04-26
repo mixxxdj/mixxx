@@ -23,8 +23,10 @@
 #define BROADCAST_BITRATE_48KBPS 48
 #define BROADCAST_BITRATE_32KBPS 32
 
+// WARNING! def_recordings and defs_broadcast format codes have to be the same
+// so that the broadcasting settings can be sent to create an encoder.
 #define BROADCAST_FORMAT_MP3 "MP3"
-#define BROADCAST_FORMAT_OV "OggVorbis"
+#define BROADCAST_FORMAT_OV "OGG"
 #define BROADCAST_FORMAT_OPUS "Opus"
 
 // EngineNetworkStream can't use locking mechanisms to protect its
