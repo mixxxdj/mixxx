@@ -4,10 +4,10 @@
 #include "util/defs.h"
 #include "util/sample.h"
 
-EngineEffectChain::EngineEffectChain(const QString& id,
-                                     const QSet<ChannelHandleAndGroup>& registeredInputChannels,
-                                     const QSet<ChannelHandleAndGroup>& registeredOutputChannels)
-        : m_id(id),
+EngineEffectChain::EngineEffectChain(const QString& group,
+        const QSet<ChannelHandleAndGroup>& registeredInputChannels,
+        const QSet<ChannelHandleAndGroup>& registeredOutputChannels)
+        : m_group(group),
           m_enableState(EffectEnableState::Enabled),
           m_mixMode(EffectChainMixMode::DrySlashWet),
           m_dMix(0),

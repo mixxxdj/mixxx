@@ -256,7 +256,7 @@ void EffectsManager::loadEffectChainPreset(EffectChainSlot* pChainSlot,
         effectSlot++;
     }
     pChainSlot->setMixMode(pPreset->mixMode());
-    pChainSlot->setName(pPreset->name());
+    pChainSlot->setPresetName(pPreset->name());
 }
 
 void EffectsManager::loadPresetToStandardChain(int chainNumber, EffectChainPresetPointer pPreset) {
@@ -576,8 +576,9 @@ void EffectsManager::loadChainPresetFromList(EffectChainSlot* pChainSlot, int li
 
 void EffectsManager::loadChainPresetSelector(EffectChainSlot* pChainSlot, int delta) {
     int listIndex = 0;
-    if (m_effectChainPresets.contains(pChainSlot->name())) {
-        EffectChainPresetPointer pLoadedPreset = m_effectChainPresets.value(pChainSlot->name());
+    if (m_effectChainPresets.contains(pChainSlot->presetName())) {
+        EffectChainPresetPointer pLoadedPreset =
+                m_effectChainPresets.value(pChainSlot->presetName());
         listIndex = m_effectChainPresetsSorted.indexOf(pLoadedPreset);
     }
 
