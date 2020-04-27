@@ -998,7 +998,7 @@ void EffectsManager::saveEffectsXml() {
                 EffectXml::ChainPresetName,
                 pChainPreset->name());
     }
-    doc.appendChild(chainPresetListElement);
+    rootElement.appendChild(chainPresetListElement);
 
     QDir settingsPath(m_pConfig->getSettingsPath());
     if (!settingsPath.exists()) {
