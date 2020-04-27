@@ -103,13 +103,10 @@ QuickEffectChainSlot::QuickEffectChainSlot(const QString& group,
                                            EffectsManager* pEffectsManager)
         : PerGroupEffectChainSlot(group, formatEffectChainSlotGroup(group),
                                   pEffectsManager) {
-    // Add a single effect slot
-    addEffectSlot(formatEffectSlotGroup(group));
-    m_effectSlots[0]->setEnabled(true);
-    // DlgPrefEq loads the Effect with loadEffectToGroup
-
-    setSuperParameter(0.5);
-    setSuperParameterDefaultValue(0.5);
+    for (int i = 0; i < kNumEffectsPerUnit; ++i) {
+        addEffectSlot(formatEffectSlotGroup(group, i));
+        m_effectSlots.at(i)->setEnabled(true);
+    }
 }
 
 void QuickEffectChainSlot::loadEffect(
