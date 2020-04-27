@@ -230,12 +230,6 @@ void EffectsManager::loadEffectChainPreset(EffectChainSlot* pChainSlot,
     }
     pChainSlot->slotControlClear(1);
 
-    // Set the superknob before loading the effects so it does not change their
-    // metaknobs
-    pChainSlot->setSuperParameter(pPreset->superKnob());
-    pChainSlot->setSuperParameterDefaultValue(pPreset->superKnob());
-    pChainSlot->setMixMode(pPreset->mixMode());
-
     int effectSlot = 0;
     for (const auto& pEffectPreset : pPreset->effectPresets()) {
         if (pEffectPreset->isEmpty()) {
@@ -262,7 +256,10 @@ void EffectsManager::loadEffectChainPreset(EffectChainSlot* pChainSlot,
                 true);
         effectSlot++;
     }
+
     pChainSlot->setMixMode(pPreset->mixMode());
+    pChainSlot->setSuperParameterDefaultValue(pPreset->superKnob());
+    pChainSlot->setSuperParameter(pChainSlot->getSuperParameter());
     pChainSlot->setPresetName(pPreset->name());
 }
 
@@ -1041,10 +1038,10 @@ void EffectsManager::readEffectsXml() {
         if (!presetNameElement.isNull()) {
             QString deckGroup = presetNameElement.attribute("group");
             auto pQuickEffectChainSlot = m_quickEffectChainSlots.value(deckGroup);
-            QString presetName = presetNameElement.text();
-            loadEffectChainPreset(pQuickEffectChainSlot.get(), presetName);
-            if (pQuickEffectChainSlot != nullptr && !presetName.isEmpty() &&
-                    m_effectChainPresets.contains(presetName)) {
+            auto pChainPreset = m_effectChainPresets.value(presetNameElement.text());
+            loadEffectChainPreset(pQuickEffectChainSlot.get(), pChainPreset);
+            if (pQuickEffectChainSlot != nullptr && pChainPreset != nullptr) {
+                pQuickEffectChainSlot->setSuperParameter(pChainPreset->superKnob());
                 unloadedQuickEffectChainSlots.remove(deckGroup);
             }
         }
