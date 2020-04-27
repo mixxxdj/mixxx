@@ -186,6 +186,7 @@ class EffectsManager : public QObject {
 
   signals:
     void visibleEffectsUpdated();
+    void effectChainPresetListUpdated();
 
   private slots:
     void loadChainPresetFromList(EffectChainSlot* pChainSlot, int listIndex);
