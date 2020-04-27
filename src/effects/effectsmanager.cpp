@@ -266,6 +266,17 @@ void EffectsManager::loadEffectChainPreset(EffectChainSlot* pChainSlot,
     pChainSlot->setPresetName(pPreset->name());
 }
 
+void EffectsManager::loadEffectChainPreset(EffectChainSlot* pChainSlot, const QString& name) {
+    VERIFY_OR_DEBUG_ASSERT(pChainSlot != nullptr) {
+        return;
+    }
+    EffectChainPresetPointer pChainPreset = m_effectChainPresets.value(name);
+    VERIFY_OR_DEBUG_ASSERT(pChainPreset != nullptr) {
+        return;
+    }
+    loadEffectChainPreset(pChainSlot, pChainPreset);
+}
+
 void EffectsManager::loadPresetToStandardChain(int chainNumber, EffectChainPresetPointer pPreset) {
     loadEffectChainPreset(m_standardEffectChainSlots.at(chainNumber).get(), pPreset);
 }
