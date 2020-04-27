@@ -36,7 +36,6 @@ const QString kEqsOnly = "EQsOnly";
 const QString kSingleEq = "SingleEQEffect";
 const QString kDefaultEqId = BiquadFullKillEQEffect::getId() + " Built-in";
 const QString kDefaultMasterEqId = QString();
-const QString kDefaultQuickEffectId = FilterEffect::getId() + " Built-in";
 
 const int kFrequencyUpperLimit = 20050;
 const int kFrequencyLowerLimit = 16;
@@ -91,9 +90,6 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
 DlgPrefEQ::~DlgPrefEQ() {
     qDeleteAll(m_deckEqEffectSelectors);
     m_deckEqEffectSelectors.clear();
-
-    qDeleteAll(m_deckQuickEffectSelectors);
-    m_deckQuickEffectSelectors.clear();
 }
 
 void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
@@ -113,12 +109,6 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
         connect(eqComboBox, SIGNAL(currentIndexChanged(int)),
                 this, SLOT(slotEffectChangedOnDeck(int)));
 
-        // Create the drop down list for EQs
-        QComboBox* quickEffectComboBox = new QComboBox(this);
-        m_deckQuickEffectSelectors.append(quickEffectComboBox);
-        connect(quickEffectComboBox, SIGNAL(currentIndexChanged(int)),
-                this, SLOT(slotEffectChangedOnDeck(int)));
-
         if (deckNo == 1) {
             m_firstSelectorLabel = label;
             if (CheckBoxEqOnly->isChecked()) {
@@ -129,7 +119,6 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
         // Setup the GUI
         gridLayout_3->addWidget(label, deckNo, 0);
         gridLayout_3->addWidget(eqComboBox, deckNo, 1);
-        gridLayout_3->addWidget(quickEffectComboBox, deckNo, 2);
         gridLayout_3->addItem(new QSpacerItem(
                 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum),
                 deckNo, 3, 1, 1);
@@ -155,21 +144,6 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
         }
 
         m_deckEqEffectSelectors[i]->setCurrentIndex(selectedEQEffectIndex);
-
-        QString configuredQuickEffect = m_pConfig->getValue(ConfigKey(kConfigKey,
-                "QuickEffectForGroup_" + group), kDefaultQuickEffectId);
-        const EffectManifestPointer pQuickEffectManifest =
-                m_pEffectsManager->getManifestFromUniqueId(configuredQuickEffect);
-
-        int selectedQuickEffectIndex = 0;
-        if (pQuickEffectManifest) {
-            selectedQuickEffectIndex = m_deckQuickEffectSelectors[i]->findData(
-                QVariant(pQuickEffectManifest->uniqueId()));
-        } else {
-            // Select "None"
-            selectedQuickEffectIndex = m_deckQuickEffectSelectors[i]->count() - 1;
-        }
-        m_deckQuickEffectSelectors[i]->setCurrentIndex(selectedQuickEffectIndex);
     }
     applySelections();
     slotSingleEqChecked(CheckBoxSingleEqEffect->isChecked());
@@ -206,7 +180,6 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
     }
 
     populateDeckBoxList(m_deckEqEffectSelectors, filterEQ);
-    populateDeckBoxList(m_deckQuickEffectSelectors, hasSuperKnobLinking);
 
     m_inSlotPopulateDeckEffectSelectors = false;
 }
@@ -255,18 +228,14 @@ void DlgPrefEQ::slotSingleEqChecked(int checked) {
     m_pConfig->set(ConfigKey(kConfigKey, kSingleEq),
                    do_hide ? QString("yes") : QString("no"));
     int deck1EQIndex = m_deckEqEffectSelectors.at(0)->currentIndex();
-    int deck1QuickEffectIndex = m_deckQuickEffectSelectors.at(0)->currentIndex();
     for (int i = 2; i < m_deckEqEffectSelectors.size() + 1; ++i) {
         if (do_hide) {
             m_deckEqEffectSelectors.at(i-1)->setCurrentIndex(deck1EQIndex);
-            m_deckQuickEffectSelectors.at(i-1)->setCurrentIndex(deck1QuickEffectIndex);
             gridLayout_3->itemAtPosition(i, 0)->widget()->hide();
             gridLayout_3->itemAtPosition(i, 1)->widget()->hide();
-            gridLayout_3->itemAtPosition(i, 2)->widget()->hide();
         } else {
             gridLayout_3->itemAtPosition(i, 0)->widget()->show();
             gridLayout_3->itemAtPosition(i, 1)->widget()->show();
-            gridLayout_3->itemAtPosition(i, 2)->widget()->show();
         }
     }
 
@@ -344,10 +313,6 @@ void DlgPrefEQ::slotResetToDefaults() {
         pCombo->setCurrentIndex(
                pCombo->findData(kDefaultEqId));
     }
-    for (QComboBox* pCombo : m_deckQuickEffectSelectors) {
-        pCombo->setCurrentIndex(
-               pCombo->findData(kDefaultQuickEffectId));
-    }
     loadSettings();
     CheckBoxBypass->setChecked(Qt::Unchecked);
     CheckBoxEqOnly->setChecked(Qt::Checked);
@@ -368,10 +333,6 @@ void DlgPrefEQ::slotEffectChangedOnDeck(int effectIndex) {
     }
 
     QList<QComboBox*>* pBoxList = &m_deckEqEffectSelectors;
-    if (m_deckQuickEffectSelectors.contains(c)) {
-        pBoxList = &m_deckQuickEffectSelectors;
-    }
-
     int deckNumber = pBoxList->indexOf(c);
     // If we are in single-effect mode and the first effect was changed,
     // change the others as well.
@@ -399,11 +360,6 @@ void DlgPrefEQ::applySelections() {
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
     applySelectionsToDecks(m_deckEqEffectSelectors, m_eqIndiciesOnUpdate,
             loadFunc, "EffectForGroup_");
-
-    loadFunc = std::bind(&EffectsManager::loadQuickEffect, m_pEffectsManager,
-            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-    applySelectionsToDecks(m_deckQuickEffectSelectors, m_quickEffectIndiciesOnUpdate,
-            loadFunc, "QuickEffectForGroup_");
 }
 
 void DlgPrefEQ::applySelectionsToDecks(
@@ -544,11 +500,6 @@ void DlgPrefEQ::slotUpdate() {
     m_eqIndiciesOnUpdate.clear();
     for (const auto& box : m_deckEqEffectSelectors) {
         m_eqIndiciesOnUpdate.append(box->currentIndex());
-    }
-
-    m_quickEffectIndiciesOnUpdate.clear();
-    for (const auto& box : m_deckQuickEffectSelectors) {
-        m_quickEffectIndiciesOnUpdate.append(box->currentIndex());
     }
 }
 
@@ -745,11 +696,6 @@ void DlgPrefEQ::validate_levels() {
 
 QString DlgPrefEQ::getEQEffectGroupForDeck(int deck) const {
     return EqualizerEffectChainSlot::formatEffectSlotGroup(
-            PlayerManager::groupForDeck(deck));
-}
-
-QString DlgPrefEQ::getQuickEffectGroupForDeck(int deck) const {
-    return QuickEffectChainSlot::formatEffectSlotGroup(
             PlayerManager::groupForDeck(deck));
 }
 
