@@ -32,6 +32,7 @@
 #include "track/tracknumbers.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
+#include "util/datetime.h"
 #include "util/file.h"
 #include "util/logger.h"
 #include "util/timer.h"
@@ -1022,7 +1023,8 @@ bool setTrackPlayed(const QSqlRecord& record, const int column,
 
 bool setTrackDateAdded(const QSqlRecord& record, const int column,
                        TrackPointer pTrack) {
-    pTrack->setDateAdded(record.value(column).toDateTime());
+    pTrack->setDateAdded(
+            mixxx::convertVariantToDateTime(record.value(column)));
     return false;
 }
 

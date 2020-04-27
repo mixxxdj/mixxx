@@ -16,6 +16,7 @@
 #include "track/keyutils.h"
 #include "track/trackmetadata.h"
 #include "util/assert.h"
+#include "util/datetime.h"
 #include "util/db/dbconnection.h"
 #include "util/duration.h"
 #include "util/performancetimer.h"
@@ -622,9 +623,7 @@ QVariant BaseSqlTableModel::roleValue(
         int role) const {
     if (role == Qt::DisplayRole &&
             index.column() == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
-        QDateTime gmtDate = rawValue.toDateTime();
-        gmtDate.setTimeSpec(Qt::UTC);
-        return gmtDate.toLocalTime();
+        return mixxx::localDateTimeFromUtc(mixxx::convertVariantToDateTime(rawValue));
     }
     return BaseTrackTableModel::roleValue(index, std::move(rawValue), role);
 }
