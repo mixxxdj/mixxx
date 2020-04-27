@@ -79,6 +79,7 @@ class EffectChainSlot : public QObject {
 
     const QString& presetName() const;
     void setPresetName(const QString& name);
+    void setLoadedPresetIndex(int index);
 
     // Get the human-readable description of the EffectChain
     QString description() const;
@@ -163,6 +164,7 @@ class EffectChainSlot : public QObject {
     ControlPushButton* m_pControlChainEnabled;
     ControlPushButton* m_pControlChainMixMode;
     ControlObject* m_pControlLoadPreset;
+    ControlObject* m_pControlLoadedPreset;
     ControlEncoder* m_pControlChainSelector;
     ControlPushButton* m_pControlChainNextPreset;
     ControlPushButton* m_pControlChainPrevPreset;
