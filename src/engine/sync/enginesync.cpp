@@ -136,7 +136,6 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
 
 Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
     Syncable* pStoppedTarget = nullptr;
-    bool foundTargetBpm = false;
 
     for (const auto& pOtherSyncable : qAsConst(m_syncables)) {
         if (pOtherSyncable == requester) {
