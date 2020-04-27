@@ -234,6 +234,7 @@ void EffectsManager::loadEffectChainPreset(EffectChainSlot* pChainSlot,
     // metaknobs
     pChainSlot->setSuperParameter(pPreset->superKnob());
     pChainSlot->setSuperParameterDefaultValue(pPreset->superKnob());
+    pChainSlot->setMixMode(pPreset->mixMode());
 
     int effectSlot = 0;
     for (const auto& pEffectPreset : pPreset->effectPresets()) {
