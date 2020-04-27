@@ -31,6 +31,10 @@ void EngineControl::trackLoaded(TrackPointer pNewTrack) {
     Q_UNUSED(pNewTrack);
 }
 
+void EngineControl::trackBeatsUpdated(BeatsPointer pBeats) {
+    Q_UNUSED(pBeats);
+}
+
 void EngineControl::hintReader(HintVector*) {
 }
 
