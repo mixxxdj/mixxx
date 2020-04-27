@@ -17,6 +17,9 @@
 #include "util/assert.h"
 
 namespace {
+const QString kEffectPresetDirectory = "/effects";
+const QString kEffectChainPresetDirectory = kEffectPresetDirectory + "/chains";
+const QString kEffectDefaultsDirectory = kEffectPresetDirectory + "/defaults";
 const QString kStandardEffectRackGroup = "[EffectRack1]";
 const QString kOutputEffectRackGroup = "[OutputEffectRack]";
 const QString kQuickEffectRackGroup = "[QuickEffectRack1]";
@@ -743,7 +746,7 @@ void EffectsManager::collectGarbage(const EffectsRequest* pRequest) {
 
 void EffectsManager::loadDefaultEffectPresets() {
     // Load saved defaults from settings directory
-    QString dirPath(m_pConfig->getSettingsPath() + "/effects/defaults");
+    QString dirPath(m_pConfig->getSettingsPath() + kEffectDefaultsDirectory);
     QDir effectsDefaultsDir(dirPath);
     effectsDefaultsDir.setFilter(QDir::Files | QDir::Readable);
     for (const auto& filePath : effectsDefaultsDir.entryList()) {
@@ -788,7 +791,7 @@ void EffectsManager::saveDefaultForEffect(EffectPresetPointer pEffectPreset) {
     doc.setContent(QString("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"));
     doc.appendChild(pEffectPreset->toXml(&doc));
 
-    QString path(m_pConfig->getSettingsPath() + "/effects/defaults");
+    QString path(m_pConfig->getSettingsPath() + kEffectDefaultsDirectory);
     QDir effectsDefaultsDir(path);
     if (!effectsDefaultsDir.exists()) {
         effectsDefaultsDir.mkpath(path);
@@ -828,7 +831,7 @@ void EffectsManager::saveDefaultForEffect(int unitNumber, int effectNumber) {
 }
 
 void EffectsManager::loadEffectChainPresets() {
-    QString dirPath(m_pConfig->getSettingsPath() + "/effects/chains");
+    QString dirPath(m_pConfig->getSettingsPath() + kEffectChainPresetDirectory);
     QDir effectsDefaultsDir(dirPath);
     effectsDefaultsDir.setFilter(QDir::Files | QDir::Readable);
     for (const auto& filePath : effectsDefaultsDir.entryList()) {
@@ -906,7 +909,7 @@ void EffectsManager::savePresetFromStandardEffectChain(int chainNumber) {
     m_effectChainPresets.insert(name, pChainPreset);
     m_effectChainPresetsSorted.append(pChainPreset);
 
-    QString path(m_pConfig->getSettingsPath() + "/effects/chains");
+    QString path(m_pConfig->getSettingsPath() + kEffectChainPresetDirectory);
     QDir effectsChainsDir(path);
     if (!effectsChainsDir.exists()) {
         effectsChainsDir.mkpath(path);
