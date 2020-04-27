@@ -353,6 +353,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/baseplaylistfeature.cpp
   src/library/basesqltablemodel.cpp
   src/library/basetrackcache.cpp
+  src/library/basetracksetfeature.cpp
   src/library/basetracktablemodel.cpp
   src/library/bpmdelegate.cpp
   src/library/browse/browsefeature.cpp
@@ -560,10 +561,16 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/trackfile.cpp
   src/track/trackinfo.cpp
   src/track/trackmetadata.cpp
-  src/track/trackmetadatataglib.cpp
   src/track/tracknumbers.cpp
   src/track/trackrecord.cpp
   src/track/trackref.cpp
+  src/track/taglib/trackmetadata_ape.cpp
+  src/track/taglib/trackmetadata_common.cpp
+  src/track/taglib/trackmetadata_file.cpp
+  src/track/taglib/trackmetadata_id3v2.cpp
+  src/track/taglib/trackmetadata_mp4.cpp
+  src/track/taglib/trackmetadata_riff.cpp
+  src/track/taglib/trackmetadata_xiph.cpp
   src/util/autohidpi.cpp
   src/util/battery/battery.cpp
   src/util/cache.cpp
@@ -1255,8 +1262,11 @@ option(STATIC_DEPS "Link dependencies statically" OFF)
 # Chromaprint
 find_package(Chromaprint REQUIRED)
 target_link_libraries(mixxx-lib PUBLIC Chromaprint::Chromaprint)
-if(WIN32 AND STATIC_DEPS)
-  target_compile_definitions(mixxx-lib PUBLIC CHROMAPRINT_NODLL)
+if(WIN32)
+  if(STATIC_DEPS)
+    target_compile_definitions(mixxx-lib PUBLIC CHROMAPRINT_NODLL)
+  endif()
+   # Rubberband is always built statically and needs fftw.
   find_package(FFTW REQUIRED)
   target_link_libraries(mixxx-lib PUBLIC FFTW::FFTW)
 endif()
@@ -1516,6 +1526,12 @@ elseif(WIN32)
     target_link_libraries(mixxx-lib PUBLIC "${QTLIBPNG_LIBRARY}")
     find_library(QTPCRE2_LIBRARY qtpcre2)
     target_link_libraries(mixxx-lib PUBLIC "${QTPCRE2_LIBRARY}")
+  else()
+    #libshout is always built statically
+    target_link_libraries(mixxx-lib PUBLIC
+      ws2_32      # libshout
+      gdi32       # libshout
+    )
   endif()
 endif()
 
@@ -1609,7 +1625,8 @@ if(SndFile_SUPPORTS_SET_COMPRESSION_LEVEL)
   target_compile_definitions(mixxx-lib PUBLIC SFC_SUPPORTS_SET_COMPRESSION_LEVEL)
 endif()
 
-if(WIN32 AND STATIC_DEPS)
+#libsndfile is always build statically, so we don't check for STATIC_DEPS
+if(WIN32)
   find_package(G72X REQUIRED)
   target_link_libraries(mixxx-lib PUBLIC G72X::G72X)
 endif()
@@ -1905,7 +1922,8 @@ if(OPUS)
   target_compile_definitions(mixxx-lib PUBLIC __OPUS__)
   target_include_directories(mixxx-lib SYSTEM PUBLIC ${Opus_INCLUDE_DIRS})
   target_link_libraries(mixxx-lib PUBLIC ${Opus_LIBRARIES})
-  if(WIN32 AND STATIC_DEPS)
+  # Opus is always built statically so we don't check STATIC_DEPS
+  if(WIN32)
     find_package(Celt)
     if(NOT Celt_FOUND)
       message(FATAL_ERROR "Opus support with static dependencies requires the celt library.")
@@ -2140,6 +2158,8 @@ if(NOT OPTIMIZE STREQUAL "off")
       # Jenkins logs) Should we turn on PGO ?
       # http://msdn.microsoft.com/en-us/library/xbf3tbeh.aspx
       target_link_options(mixxx-lib PUBLIC "/LTCG:OFF")
+    elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+      target_compile_options(mixxx-lib PUBLIC "/GL-")
     else()
       target_compile_options(mixxx-lib PUBLIC "/GL")
       target_link_options(mixxx-lib PUBLIC "/LTCG:NOSTATUS")

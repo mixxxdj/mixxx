@@ -15,20 +15,19 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QWidget>
-#include <QString>
-#include <QHBoxLayout>
-
 #include "preferences/dialog/dlgprefeq.h"
-#include "effects/backends/builtin/biquadfullkilleqeffect.h"
-#include "effects/backends/builtin/filtereffect.h"
-#include "effects/effectslot.h"
-#include "engine/filters/enginefilterbessel4.h"
+
+#include <QHBoxLayout>
+#include <QString>
+#include <QWidget>
+
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
-#include "util/math.h"
-#include "mixer/playermanager.h"
+#include "defs_urls.h"
+#include "effects/backends/builtin/biquadfullkilleqeffect.h"
+#include "effects/effectslot.h"
 #include "effects/specialeffectchainslots.h"
+#include "mixer/playermanager.h"
 
 const QString kConfigKey = "[Mixer Profile]";
 const QString kEnableEqs = "EnableEQs";
@@ -248,6 +247,10 @@ void DlgPrefEQ::slotSingleEqChecked(int checked) {
     }
 
     applySelections();
+}
+
+QUrl DlgPrefEQ::helpUrl() const {
+    return QUrl(MIXXX_MANUAL_EQ_URL);
 }
 
 void DlgPrefEQ::loadSettings() {

@@ -1,13 +1,12 @@
-#ifndef MISSINGTABLEMODEL_H
-#define MISSINGTABLEMODEL_H
+#pragma once
 
-#include <QtSql>
 #include <QItemDelegate>
 #include <QModelIndex>
 #include <QObject>
+#include <QtSql>
 
-#include "trackmodel.h"
 #include "library/basesqltablemodel.h"
+#include "library/trackmodel.h"
 
 class MissingTableModel : public BaseSqlTableModel {
     Q_OBJECT
@@ -22,5 +21,3 @@ class MissingTableModel : public BaseSqlTableModel {
     Qt::ItemFlags flags(const QModelIndex &index) const final;
     CapabilitiesFlags getCapabilities() const final;
 };
-
-#endif

@@ -439,13 +439,13 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
     switch (role) {
         case QDialogButtonBox::ResetRole:
             // Only reset to defaults on the current page.
-            if (pCurrentPage != NULL) {
+            if (pCurrentPage) {
                 pCurrentPage->slotResetToDefaults();
             }
             break;
         case QDialogButtonBox::ApplyRole:
             // Only apply settings on the current page.
-            if (pCurrentPage != NULL) {
+            if (pCurrentPage) {
                 pCurrentPage->slotApply();
             }
             break;
@@ -456,6 +456,13 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
         case QDialogButtonBox::RejectRole:
             emit cancelPreferences();
             reject();
+            break;
+        case QDialogButtonBox::HelpRole:
+            if (pCurrentPage) {
+                QUrl helpUrl = pCurrentPage->helpUrl();
+                DEBUG_ASSERT(helpUrl.isValid());
+                QDesktopServices::openUrl(helpUrl);
+            }
             break;
         default:
             break;
@@ -514,6 +521,17 @@ void DlgPreferences::expandTreeItem(QTreeWidgetItem* pItem) {
 
 void DlgPreferences::switchToPage(DlgPreferencePage* pWidget) {
     pagesWidget->setCurrentWidget(pWidget->parentWidget()->parentWidget());
+
+    QPushButton* pButton = buttonBox->button(QDialogButtonBox::Help);
+    VERIFY_OR_DEBUG_ASSERT(pButton) {
+        return;
+    }
+
+    if (pWidget->helpUrl().isValid()) {
+        pButton->show();
+    } else {
+        pButton->hide();
+    }
 }
 
 void DlgPreferences::moveEvent(QMoveEvent* e) {

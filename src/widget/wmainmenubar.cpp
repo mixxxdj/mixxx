@@ -543,8 +543,9 @@ void WMainMenuBar::initialize() {
     auto pHelpShortcuts = new QAction(shortcutsTitle, this);
     pHelpShortcuts->setStatusTip(shortcutsText);
     pHelpShortcuts->setWhatsThis(buildWhatsThis(shortcutsTitle, shortcutsText));
-    connect(pHelpShortcuts, &QAction::triggered,
-            this, [this] { slotVisitUrl(MIXXX_SHORTCUTS_URL); });
+    connect(pHelpShortcuts, &QAction::triggered, this, [this] {
+        slotVisitUrl(MIXXX_MANUAL_SHORTCUTS_URL);
+    });
     pHelpMenu->addAction(pHelpShortcuts);
 
     QString feedbackTitle = tr("Send Us &Feedback") + externalLinkSuffix;

@@ -496,4 +496,4 @@ bool SeratoMarkers2::isBpmLocked() const {
     return false;
 }
 
-} //namespace mixxx
+} // namespace mixxx
