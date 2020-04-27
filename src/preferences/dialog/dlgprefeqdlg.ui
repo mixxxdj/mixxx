@@ -17,7 +17,7 @@
    <item>
     <widget class="QGroupBox" name="DeckEqualizerOptions">
      <property name="title">
-      <string>Deck Equalizers and Quick Effects</string>
+      <string>Deck Equalizers</string>
      </property>
       <layout class="QVBoxLayout" name="DeckEqualizerCheckboxes" stretch="0,0,0,0">
        <item>
@@ -75,19 +75,6 @@
             </property>
             <property name="text">
              <string>Equalizer Plugin</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QLabel" name="label_3">
-            <property name="font">
-             <font>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Quick Effect</string>
             </property>
            </widget>
           </item>
