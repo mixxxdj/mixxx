@@ -339,7 +339,7 @@ void LibraryControl::bindSearchboxWidget(WSearchLineEdit* pSearchbox) {
     connect(m_pSearchbox,
             &WSearchLineEdit::destroyed,
             this,
-            &LibraryControl::libraryWidgetDeleted);
+            &LibraryControl::searchboxWidgetDeleted);
 }
 
 
