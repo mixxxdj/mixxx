@@ -122,6 +122,7 @@ class EffectsManager : public QObject {
 
     void loadEffectChainPreset(EffectChainSlot* pChainSlot,
             EffectChainPresetPointer pPreset);
+    void loadEffectChainPreset(EffectChainSlot* pChainSlot, const QString& name);
     void loadPresetToStandardChain(int chainNumber, EffectChainPresetPointer pPreset);
 
     EffectChainPresetPointer getEffectChainPreset(const QString& name) {
