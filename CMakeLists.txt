@@ -864,6 +864,14 @@ install(
     ${CMAKE_INSTALL_DATADIR}/mixxx
 )
 
+# Effect presets
+install(
+  DIRECTORY
+    "${CMAKE_CURRENT_SOURCE_DIR}/res/effects"
+  DESTINATION
+    "${MIXXX_INSTALL_DATADIR}"
+)
+
 # Translation files
 install(
   DIRECTORY

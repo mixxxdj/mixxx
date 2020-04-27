@@ -835,11 +835,37 @@ void EffectsManager::saveDefaultForEffect(int unitNumber, int effectNumber) {
 }
 
 void EffectsManager::loadEffectChainPresets() {
-    QString dirPath(m_pConfig->getSettingsPath() + kEffectChainPresetDirectory);
-    QDir effectsDefaultsDir(dirPath);
-    effectsDefaultsDir.setFilter(QDir::Files | QDir::Readable);
-    for (const auto& filePath : effectsDefaultsDir.entryList()) {
-        QFile file(dirPath + "/" + filePath);
+    QString savedPresetsPath(m_pConfig->getSettingsPath() + kEffectChainPresetDirectory);
+    QDir savedPresetsDir(savedPresetsPath);
+
+    // On first run of Mixxx, copy chain presets from the resource folder to the
+    // user settings folder. This allows us to ship default chain presets with
+    // Mixxx while letting the user delete our defaults if they do not want them.
+    // The user can always copy the files again manually or use the Import
+    // button in DlgPrefEffects.
+    if (!savedPresetsDir.exists()) {
+        savedPresetsDir.mkpath(savedPresetsPath);
+        QString defaultPresetsPath(m_pConfig->getResourcePath() + kEffectChainPresetDirectory);
+        QDir defaultChainPresetsDir(defaultPresetsPath);
+        defaultChainPresetsDir.setFilter(QDir::Files | QDir::Readable);
+        for (const auto& fileName : defaultChainPresetsDir.entryList()) {
+            QFile::copy(defaultPresetsPath + "/" + fileName, savedPresetsPath + "/" + fileName);
+        }
+
+        QFile file(savedPresetsPath + "/" + m_defaultQuickEffectChainPreset->name() + ".xml");
+        if (file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
+            QDomDocument doc(EffectXml::Chain);
+            doc.setContent(QString("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"));
+            doc.appendChild(m_defaultQuickEffectChainPreset->toXml(&doc));
+            file.write(doc.toString().toUtf8());
+        }
+        file.close();
+    }
+
+    savedPresetsDir.setFilter(QDir::Files | QDir::Readable);
+    QStringList fileList = savedPresetsDir.entryList();
+    for (const auto& filePath : fileList) {
+        QFile file(savedPresetsPath + "/" + filePath);
         if (!file.open(QIODevice::ReadOnly)) {
             continue;
         }
