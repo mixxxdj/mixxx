@@ -81,6 +81,9 @@ EffectChainSlot::EffectChainSlot(const QString& group,
             this,
             &EffectChainSlot::slotControlLoadChainPreset);
 
+    m_pControlLoadedPreset = new ControlObject(ConfigKey(m_group, "loaded_preset"));
+    m_pControlLoadedPreset->setReadOnly();
+
     m_pControlChainNextPreset = new ControlPushButton(ConfigKey(m_group, "next_chain"));
     connect(m_pControlChainNextPreset, &ControlObject::valueChanged,
             this, &EffectChainSlot::slotControlChainNextPreset);
@@ -130,6 +133,7 @@ EffectChainSlot::~EffectChainSlot() {
     delete m_pControlChainSuperParameter;
     delete m_pControlChainMixMode;
     delete m_pControlLoadPreset;
+    delete m_pControlLoadedPreset;
     delete m_pControlChainPrevPreset;
     delete m_pControlChainNextPreset;
     delete m_pControlChainSelector;
@@ -181,6 +185,10 @@ const QString& EffectChainSlot::presetName() const {
 void EffectChainSlot::setPresetName(const QString& name) {
     m_presetName = name;
     emit nameChanged(name);
+}
+
+void EffectChainSlot::setLoadedPresetIndex(int index) {
+    m_pControlLoadedPreset->setAndConfirm(index);
 }
 
 void EffectChainSlot::loadEffect(const unsigned int iEffectSlotNumber,

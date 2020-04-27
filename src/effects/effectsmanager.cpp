@@ -261,6 +261,7 @@ void EffectsManager::loadEffectChainPreset(EffectChainSlot* pChainSlot,
     pChainSlot->setSuperParameterDefaultValue(pPreset->superKnob());
     pChainSlot->setSuperParameter(pChainSlot->getSuperParameter());
     pChainSlot->setPresetName(pPreset->name());
+    pChainSlot->setLoadedPresetIndex(m_effectChainPresetsSorted.indexOf(pPreset));
 }
 
 void EffectsManager::loadEffectChainPreset(EffectChainSlot* pChainSlot, const QString& name) {
