@@ -4,22 +4,22 @@
 // * Flinging tracks with the waveform should work.
 // * vinyl??
 
-#include <string>
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include <QtDebug>
+#include <string>
 
-#include "preferences/usersettings.h"
 #include "control/controlobject.h"
 #include "engine/controls/bpmcontrol.h"
 #include "engine/sync/synccontrol.h"
-#include "test/mockedenginebackendtest.h"
-#include "test/mixxxtest.h"
-#include "track/beatfactory.h"
 #include "mixer/basetrackplayer.h"
+#include "preferences/usersettings.h"
+#include "test/mixxxtest.h"
+#include "test/mockedenginebackendtest.h"
+#include "track/beatfactory.h"
+#include "track/beatmap.h"
 #include "util/memory.h"
-
 
 class EngineSyncTest : public MockedEngineBackendTest {
   public:
@@ -1767,4 +1767,34 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
     // Expect to sync on half beats
     EXPECT_FLOAT_EQ(65.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
+}
+
+TEST_F(EngineSyncTest, BeatMapQantizePlay) {
+    // This test demonstates https://bugs.launchpad.net/mixxx/+bug/1874918
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 120, 0.0);
+    m_pTrack1->setBeats(pBeats1);
+
+    BeatsPointer pBeats2 = BeatsPointer(new BeatMap(*m_pTrack2, 44100));
+    // Add two beats at 120 Bpm
+    pBeats2->addBeat(44100 / 2);
+    pBeats2->addBeat(44100);
+    m_pTrack2->setBeats(pBeats2);
+
+    ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "quantize"), 1.0);
+
+    // Make Channel1 master to weed out any channel ordering issues.
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))->set(SYNC_MASTER);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))->set(SYNC_FOLLOWER);
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+
+    ProcessBuffer();
+
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+
+    ProcessBuffer();
+
+    EXPECT_FLOAT_EQ(m_pChannel1->getEngineBuffer()->m_pSyncControl->getBeatDistance(),
+            m_pChannel2->getEngineBuffer()->m_pSyncControl->getBeatDistance());
 }
