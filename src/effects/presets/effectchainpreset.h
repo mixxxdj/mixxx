@@ -15,6 +15,8 @@ class EffectChainPreset {
     EffectChainPreset();
     EffectChainPreset(const QDomElement& chainElement);
     EffectChainPreset(const EffectChainSlot* pChain);
+    /// make a chain preset with just one effect
+    EffectChainPreset(EffectPresetPointer pEffectPreset);
     ~EffectChainPreset();
 
     const QDomElement toXml(QDomDocument* doc) const;

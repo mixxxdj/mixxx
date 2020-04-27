@@ -4,7 +4,8 @@
 #include "effects/effectxmlelements.h"
 #include "util/xml.h"
 
-EffectChainPreset::EffectChainPreset() {
+EffectChainPreset::EffectChainPreset()
+        : m_name(QObject::tr("None")) {
 }
 
 EffectChainPreset::EffectChainPreset(const QDomElement& chainElement) {
@@ -43,6 +44,13 @@ EffectChainPreset::EffectChainPreset(const EffectChainSlot* chain) {
     for (const auto& pEffectSlot : chain->getEffectSlots()) {
         m_effectPresets.append(EffectPresetPointer(new EffectPreset(pEffectSlot)));
     }
+}
+
+EffectChainPreset::EffectChainPreset(EffectPresetPointer pEffectPreset) {
+    m_name = pEffectPreset->id();
+    m_mixMode = EffectChainMixMode::DrySlashWet;
+    m_dSuper = pEffectPreset->metaParameter();
+    m_effectPresets.append(pEffectPreset);
 }
 
 const QDomElement EffectChainPreset::toXml(QDomDocument* doc) const {
