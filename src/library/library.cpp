@@ -246,6 +246,7 @@ void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
             pSearchboxWidget,
             &WSearchLineEdit::slotSetFont);
     emit setTrackTableFont(m_trackTableFont);
+    m_pLibraryControl->bindSearchboxWidget(pSearchboxWidget);
 }
 
 void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {

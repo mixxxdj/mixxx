@@ -38,8 +38,9 @@ QScriptValue ColorMapperJSProxyConstructor(QScriptContext* pScriptContext, QScri
     QScriptValueIterator it(argument);
     while (it.hasNext()) {
         it.next();
-        QColor color(it.name());
-        if (color.isValid()) {
+        bool isInt = false;
+        QColor color(it.name().toInt(&isInt));
+        if (isInt && color.isValid()) {
             availableColors.insert(color.rgb(), it.value().toVariant());
         } else {
             pScriptContext->throwError(

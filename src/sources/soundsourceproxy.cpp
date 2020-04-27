@@ -299,7 +299,7 @@ void SoundSourceProxy::initSoundSource() {
 }
 
 void SoundSourceProxy::updateTrackFromSource(
-        ImportTrackMetadataMode importTrackMetadataMode) const {
+        ImportTrackMetadataMode importTrackMetadataMode) {
     DEBUG_ASSERT(m_pTrack);
 
     if (getUrl().isEmpty()) {
@@ -434,6 +434,16 @@ void SoundSourceProxy::updateTrackFromSource(
             }
         }
         m_pTrack->importMetadata(trackMetadata, metadataImported.second);
+        if (m_pTrack->getCueImportStatus() == Track::CueImportStatus::Pending) {
+            // Try to open the audio source once to determine the actual
+            // stream properties for finishing the pending import.
+            kLogger.debug()
+                    << "Opening audio source to finish import of cue points";
+            const auto pAudioSource = openAudioSource();
+            Q_UNUSED(pAudioSource); // only used in debug assertion
+            DEBUG_ASSERT(!pAudioSource ||
+                    m_pTrack->getCueImportStatus() == Track::CueImportStatus::Complete);
+        }
     }
 
     if (pCoverImg) {

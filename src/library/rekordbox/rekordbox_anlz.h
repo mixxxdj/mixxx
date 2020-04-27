@@ -63,7 +63,8 @@ public:
 
     enum phrase_style_t {
         PHRASE_STYLE_UP_DOWN = 1,
-        PHRASE_STYLE_VERSE_BRIDGE = 2
+        PHRASE_STYLE_VERSE_BRIDGE = 2,
+        PHRASE_STYLE_VERSE_BRIDGE_2 = 3
     };
 
     enum cue_entry_type_t {
@@ -194,6 +195,12 @@ public:
         uint32_t m_len_preview;
         uint32_t m__unnamed1;
         std::string m_data;
+        bool n_data;
+
+    public:
+        bool _is_null_data() { data(); return n_data; };
+
+    private:
         rekordbox_anlz_t* m__root;
         rekordbox_anlz_t::tagged_section_t* m__parent;
 
@@ -369,7 +376,7 @@ public:
     };
 
     /**
-     * Stores the song structure, also known as phrases (intro, verse, 
+     * Stores the song structure, also known as phrases (intro, verse,
      * bridge, chorus, up, down, outro).
      */
 
@@ -460,7 +467,19 @@ public:
         uint32_t m_loop_time;
         std::string m__unnamed8;
         uint32_t m_len_comment;
+        bool n_len_comment;
+
+    public:
+        bool _is_null_len_comment() { len_comment(); return n_len_comment; };
+
+    private:
         std::string m_comment;
+        bool n_comment;
+
+    public:
+        bool _is_null_comment() { comment(); return n_comment; };
+
+    private:
         uint8_t m_color_code;
         bool n_color_code;
 
@@ -953,7 +972,8 @@ public:
 
     private:
         cue_list_type_t m_type;
-        uint32_t m_len_cues;
+        std::string m__unnamed1;
+        uint16_t m_len_cues;
         uint32_t m_memory_count;
         std::vector<cue_entry_t*>* m_cues;
         rekordbox_anlz_t* m__root;
@@ -965,11 +985,12 @@ public:
          * Identifies whether this tag stores ordinary or hot cues.
          */
         cue_list_type_t type() const { return m_type; }
+        std::string _unnamed1() const { return m__unnamed1; }
 
         /**
          * The length of the cue list.
          */
-        uint32_t len_cues() const { return m_len_cues; }
+        uint16_t len_cues() const { return m_len_cues; }
 
         /**
          * Unsure what this means.

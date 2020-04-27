@@ -111,16 +111,6 @@ WWidgetGroup {
       image: url(skin:/graphics/splitterVert_handle_pressed.svg);
     }
 
-/* ################################################################
-####### Colors ##################################################
-###############################################################*/
-
-/* All deck-specific colors are now defined in <Schemes> in skin.xml.
-  - deck labels
-  - waveform & overview background/signal colors
-  - Spinny mini mask, mini default cover
- */
-
 
 
 /*################################################################
@@ -1294,6 +1284,34 @@ WBeatSpinBox,
       }
 
 
+/* ################################################################
+####### Deck Colors ##################################################
+###############################################################*/
+#Deck1 WLabel, #DeckMini1 WLabel,
+#Deck2 WLabel, #DeckMini2 WLabel,
+#RateContainer1 WLabel, #RateContainer1 WPushButton,
+#RateContainer2 WLabel, #RateContainer2 WPushButton {
+  color: #e145f3;
+}
+#Deck3 WLabel, #DeckMini3 WLabel,
+#Deck4 WLabel, #DeckMini4 WLabel,
+#RateContainer3 WLabel, #RateContainer3 WPushButton,
+#RateContainer4 WLabel, #RateContainer4 WPushButton {
+  color: #7DBF36;
+}
+WLabel#TrackBy,
+WLabel#TrackByMini,
+WLabel#TrackComment {
+  color: #888;
+}
+#DeckOverviewRow1, #DeckOverviewRow2 {
+  background-color: #3A0440;
+}
+#DeckOverviewRow3, #DeckOverviewRow4 {
+  background-color: #19260B;
+}
+
+
 /*################################################################
  #######  Channel Mixer  ########################################
 ##############################################################*/
@@ -2409,9 +2427,9 @@ WTrackMenu QMenu::right-arrow {
     }
 
 #LibraryContainer QTableView,
-#LibraryContainer #LibraryContainer QTextBrowser,
+#LibraryContainer QTextBrowser,
 #LibraryContainer QTreeView {
-  border: 1px solid #585858;
+  border: 2px solid #585858;
   font-weight: normal;
   color: #9e9e9e;
   background-color: #0f0f0f;
@@ -2467,12 +2485,14 @@ WTrackMenu QMenu::right-arrow {
   }
   #LibraryContainer QTableView:focus,
   #LibraryContainer QTreeView:focus,
+  #LibraryContainer QTableView:focus,
+  #LibraryContainer WSearchLineEdit:focus { /*
   #LibraryContainer QTextBrowser:focus { /*
     New Library navigation COs only work if TreeView or TableView have focus.
     Clicking on buttons, sliders and visuals elsewhere removes focus from Library.
     In conjunction with [Library],MoveFocusBackward/..Forward, some highlight
     helps a lot. */
-    border-color: #ff6600;
+    border-color: #ff8800;
   }
 
 /*  Closed branch icon in tree */
@@ -2942,7 +2962,6 @@ WSearchLineEdit {
   }
   WSearchLineEdit:focus {
     padding: 1px;
-    border: 2px solid #ff6600;
     color: #eeeeee;
   }
   /* Clear button: see /skins/default.qss */
