@@ -1,5 +1,6 @@
 #pragma once
 
+#include <taglib/flacpicture.h>
 #include <taglib/xiphcomment.h>
 
 #include "track/taglib/trackmetadata_common.h"
