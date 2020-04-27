@@ -243,6 +243,9 @@ class EffectsManager : public QObject {
 
     QHash<QString, EffectChainPresetPointer> m_effectChainPresets;
     QList<EffectChainPresetPointer> m_effectChainPresetsSorted;
+
+    EffectChainPresetPointer m_defaultQuickEffectChainPreset;
+
     QHash<EffectManifestPointer, EffectPresetPointer> m_defaultPresets;
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);

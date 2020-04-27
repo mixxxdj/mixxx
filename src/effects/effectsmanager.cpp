@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "effects/builtin/builtinbackend.h"
+#include "effects/builtin/filtereffect.h"
 #include "effects/lv2/lv2backend.h"
 #include "effects/effectslot.h"
 #include "effects/effectxmlelements.h"
@@ -54,6 +55,14 @@ EffectsManager::EffectsManager(QObject* pParent,
 #ifdef __LILV__
     addEffectsBackend(EffectsBackendPointer(new LV2Backend()));
 #endif
+
+    // Generate the default QuickEffect chain preset instead of shipping it in
+    // res/effects/chains because this uses the translated name.
+    EffectManifestPointer filterEffectManifest = getManifest(FilterEffect::getId(),
+            EffectBackendType::BuiltIn);
+    m_defaultQuickEffectChainPreset = EffectChainPresetPointer(new EffectChainPreset(
+            EffectPresetPointer(new EffectPreset(filterEffectManifest))));
+    m_defaultQuickEffectChainPreset->setName(filterEffectManifest->displayName());
 }
 
 EffectsManager::~EffectsManager() {
@@ -978,9 +987,15 @@ void EffectsManager::readEffectsXml() {
     QDomDocument doc;
 
     if (!file.open(QIODevice::ReadOnly)) {
+        for (auto pQuickEffectChainSlot : m_quickEffectChainSlots) {
+            loadEffectChainPreset(pQuickEffectChainSlot.get(), m_defaultQuickEffectChainPreset);
+        }
         return;
     } else if (!doc.setContent(&file)) {
         file.close();
+        for (auto pQuickEffectChainSlot : m_quickEffectChainSlots) {
+            loadEffectChainPreset(pQuickEffectChainSlot.get(), m_defaultQuickEffectChainPreset);
+        }
         return;
     }
     file.close();
@@ -1012,6 +1027,35 @@ void EffectsManager::readEffectsXml() {
         }
     }
     setChainPresetOrder(chainPresetsSorted);
+
+    // Load QuickEffect presets
+    QDomElement quickEffectPresetsElement = XmlParse::selectElement(
+            root,
+            EffectXml::QuickEffectChainPresets);
+    QDomNodeList quickEffectPresetList =
+            quickEffectPresetsElement.elementsByTagName(EffectXml::ChainPresetName);
+    if (quickEffectPresetList.count() == 0) {
+        for (const auto pChainSlot : m_quickEffectChainSlots) {
+            loadEffectChainPreset(pChainSlot.get(), m_defaultQuickEffectChainPreset);
+        }
+    }
+    auto unloadedQuickEffectChainSlots = m_quickEffectChainSlots;
+    for (int i = 0; i < quickEffectPresetList.count(); ++i) {
+        QDomElement presetNameElement = quickEffectPresetList.at(i).toElement();
+        if (!presetNameElement.isNull()) {
+            QString deckGroup = presetNameElement.attribute("group");
+            auto pQuickEffectChainSlot = m_quickEffectChainSlots.value(deckGroup);
+            QString presetName = presetNameElement.text();
+            loadEffectChainPreset(pQuickEffectChainSlot.get(), presetName);
+            if (pQuickEffectChainSlot != nullptr && !presetName.isEmpty() &&
+                    m_effectChainPresets.contains(presetName)) {
+                unloadedQuickEffectChainSlots.remove(deckGroup);
+            }
+        }
+    }
+    for (auto pQuickEffectChainSlot : unloadedQuickEffectChainSlots) {
+        loadEffectChainPreset(pQuickEffectChainSlot.get(), m_defaultQuickEffectChainPreset);
+    }
 }
 
 void EffectsManager::saveEffectsXml() {
@@ -1040,6 +1084,18 @@ void EffectsManager::saveEffectsXml() {
                 pChainPreset->name());
     }
     rootElement.appendChild(chainPresetListElement);
+
+    // Save which presets are loaded to QuickEffects
+    QDomElement quickEffectPresetsElement = doc.createElement(EffectXml::QuickEffectChainPresets);
+    for (auto it = m_quickEffectChainSlots.begin(); it != m_quickEffectChainSlots.end(); it++) {
+        QDomElement quickEffectElement = XmlParse::addElement(
+                doc,
+                quickEffectPresetsElement,
+                EffectXml::ChainPresetName,
+                it.value()->presetName());
+        quickEffectElement.setAttribute("group", it.key());
+    }
+    rootElement.appendChild(quickEffectPresetsElement);
 
     QDir settingsPath(m_pConfig->getSettingsPath());
     if (!settingsPath.exists()) {
