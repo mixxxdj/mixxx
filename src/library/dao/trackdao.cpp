@@ -29,6 +29,7 @@
 #include "track/tracknumbers.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
+#include "util/datetime.h"
 #include "util/db/sqllikewildcardescaper.h"
 #include "util/db/sqllikewildcards.h"
 #include "util/db/sqlstringformatter.h"
@@ -51,7 +52,7 @@ void markTrackLocationsAsDeleted(QSqlDatabase database, const QString& directory
                   "SET fs_deleted=1 "
                   "WHERE directory=:directory");
     query.bindValue(":directory", directory);
-    if (!query.exec()) {
+    VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query)
                 << "Couldn't mark tracks in" << directory << "as deleted.";
     }
@@ -121,7 +122,7 @@ TrackId TrackDAO::getTrackIdByLocation(const QString& location) const {
             "INNER JOIN track_locations ON library.location = track_locations.id "
             "WHERE track_locations.location=:location");
     query.bindValue(":location", location);
-    if (!query.exec()) {
+    VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query);
         return TrackId();
     }
@@ -145,7 +146,7 @@ QList<TrackId> TrackDAO::resolveTrackIds(
     query.prepare(
             "CREATE TEMP TABLE playlist_import "
             "(location varchar (512))");
-    if (!query.exec()) {
+    VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query);
         return trackIds;
     }
@@ -160,7 +161,7 @@ QList<TrackId> TrackDAO::resolveTrackIds(
     query.prepare(
             "INSERT INTO playlist_import (location) "
             "VALUES " + pathList.join(','));
-    if (!query.exec()) {
+    VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query);
     }
 
@@ -173,7 +174,7 @@ QList<TrackId> TrackDAO::resolveTrackIds(
         query.prepare("SELECT location FROM playlist_import "
                 "WHERE NOT EXISTS (SELECT location FROM track_locations "
                 "WHERE playlist_import.location = track_locations.location)");
-        if (!query.exec()) {
+        VERIFY_OR_DEBUG_ASSERT(query.exec()) {
             LOG_FAILED_QUERY(query);
         }
         const int locationColumn = query.record().indexOf("location");
@@ -220,7 +221,7 @@ QList<TrackId> TrackDAO::resolveTrackIds(
 
     // Drop the temporary playlist-import table.
     query.prepare("DROP TABLE IF EXISTS playlist_import");
-    if (!query.exec()) {
+    VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query);
     }
 
@@ -232,7 +233,7 @@ QSet<QString> TrackDAO::getAllTrackLocations() const {
     QSqlQuery query(m_database);
     query.prepare("SELECT track_locations.location FROM track_locations "
                   "INNER JOIN library on library.location = track_locations.id");
-    if (!query.exec()) {
+    VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query);
     }
 
@@ -254,7 +255,7 @@ QString TrackDAO::getTrackLocation(TrackId trackId) const {
                   "INNER JOIN library ON library.location = track_locations.id "
                   "WHERE library.id=:id");
     query.bindValue(":id", trackId.toVariant());
-    if (!query.exec()) {
+    VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query);
         return "";
     }
@@ -785,7 +786,7 @@ QList<TrackRef> TrackDAO::getAllTrackRefs(const QDir& rootDir) const {
                           "WHERE track_locations.location LIKE %1 ESCAPE '%2'")
                   .arg(SqlStringFormatter::format(m_database, likeClause), kSqlLikeMatchAll));
 
-    if (!query.exec()) {
+    VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << dirPath;
     }
 
@@ -1022,7 +1023,8 @@ bool setTrackPlayed(const QSqlRecord& record, const int column,
 
 bool setTrackDateAdded(const QSqlRecord& record, const int column,
                        TrackPointer pTrack) {
-    pTrack->setDateAdded(record.value(column).toDateTime());
+    pTrack->setDateAdded(
+            mixxx::convertVariantToDateTime(record.value(column)));
     return false;
 }
 
@@ -1213,7 +1215,7 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
             "INNER JOIN track_locations ON library.location = track_locations.id "
             "WHERE library.id = %2").arg(columnsStr, trackId.toString()));
 
-    if (!query.exec()) {
+    VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query)
                 << QString("getTrack(%1)").arg(trackId.toString());
         return TrackPointer();
@@ -1432,7 +1434,7 @@ bool TrackDAO::updateTrack(Track* pTrack) const {
     query.bindValue(":track_id", trackId.toVariant());
     bindTrackLibraryValues(&query, *pTrack);
 
-    if (!query.exec()) {
+    VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query);
         return false;
     }
@@ -1468,7 +1470,7 @@ void TrackDAO::invalidateTrackLocationsInLibrary() const {
 
     QSqlQuery query(m_database);
     query.prepare("UPDATE track_locations SET needs_verification = 1");
-    if (!query.exec()) {
+    VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query)
                 << "Couldn't mark tracks in library as needing verification.";
     }
@@ -1482,7 +1484,7 @@ void TrackDAO::markTrackLocationsAsVerified(const QStringList& locations) const 
                           "SET needs_verification=0, fs_deleted=0 "
                           "WHERE location IN (%1)").arg(
                                   SqlStringFormatter::formatList(m_database, locations)));
-    if (!query.exec()) {
+    VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query)
                 << "Couldn't mark track locations as verified.";
     }
@@ -1497,7 +1499,7 @@ void TrackDAO::markTracksInDirectoriesAsVerified(const QStringList& directories)
                 "SET needs_verification=0 "
                 "WHERE directory IN (%1)").arg(
                         SqlStringFormatter::formatList(m_database, directories)));
-    if (!query.exec()) {
+    VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query)
                 << "Couldn't mark tracks in" << directories.size() << "directories as verified.";
     }
@@ -1510,7 +1512,7 @@ void TrackDAO::markUnverifiedTracksAsDeleted() {
                   "track_locations.id=library.location WHERE "
                   "track_locations.needs_verification=1");
     QSet<TrackId> trackIds;
-    if (!query.exec()) {
+    VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query) << "Couldn't find unverified tracks";
     }
     while (query.next()) {
@@ -1520,7 +1522,7 @@ void TrackDAO::markUnverifiedTracksAsDeleted() {
     query.prepare("UPDATE track_locations "
                   "SET fs_deleted=1, needs_verification=0 "
                   "WHERE needs_verification=1");
-    if (!query.exec()) {
+    VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query)
                 << "Couldn't mark unverified tracks as deleted.";
     }
@@ -1735,7 +1737,7 @@ void TrackDAO::hideAllTracks(const QDir& rootDir) const {
                           "WHERE track_locations.location LIKE %1 ESCAPE '%2'")
                   .arg(SqlStringFormatter::format(m_database, likeClause), kSqlLikeMatchAll));
 
-    if (!query.exec()) {
+    VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << rootDir;
     }
 
@@ -1747,7 +1749,7 @@ void TrackDAO::hideAllTracks(const QDir& rootDir) const {
 
     query.prepare(QString("UPDATE library SET mixxx_deleted=1 "
                           "WHERE id in (%1)").arg(trackIds.join(",")));
-    if (!query.exec()) {
+    VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query);
     }
 }
@@ -1768,7 +1770,7 @@ bool TrackDAO::verifyRemainingTracks(
     query.prepare("SELECT location "
                   "FROM track_locations "
                   "WHERE needs_verification = 1");
-    if (!query.exec()) {
+    VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query);
         return false;
     }
@@ -1844,7 +1846,7 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
 
     QVector<TrackWithoutCover> tracksWithoutCover;
 
-    if (!query.exec()) {
+    VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query)
                 << "failed looking for tracks with unknown cover art";
         return;

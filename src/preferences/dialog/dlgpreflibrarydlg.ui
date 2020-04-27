@@ -280,13 +280,6 @@
       <string>External Libraries</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_6">
-      <item row="8" column="0">
-       <widget class="QLabel" name="label_10">
-        <property name="text">
-         <string>You will need to restart Mixxx for these settings to take effect.</string>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="0">
        <widget class="QCheckBox" name="checkBox_show_rhythmbox">
         <property name="text">
@@ -317,7 +310,7 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="0">
+      <item row="3" column="0">
        <widget class="QCheckBox" name="checkBox_show_traktor">
         <property name="text">
          <string>Show Traktor Library</string>
@@ -327,7 +320,7 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
+      <item row="4" column="0">
        <widget class="QCheckBox" name="checkBox_show_rekordbox">
         <property name="text">
          <string>Show Rekordbox Library</string>
@@ -337,13 +330,20 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="0">
+      <item row="5" column="0">
        <widget class="QCheckBox" name="checkBox_show_serato">
         <property name="text">
          <string>Show Serato Library</string>
         </property>
         <property name="checked">
          <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
        </widget>
       </item>
@@ -355,9 +355,9 @@
        </widget>
       </item>
       <item row="8" column="0">
-       <widget class="Line" name="line">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>You will need to restart Mixxx for these settings to take effect.</string>
         </property>
        </widget>
       </item>
@@ -385,13 +385,23 @@
   <tabstop>PushButtonAddDir</tabstop>
   <tabstop>PushButtonRelocateDir</tabstop>
   <tabstop>PushButtonRemoveDir</tabstop>
-  <tabstop>checkBox_library_scan</tabstop>
   <tabstop>checkBox_SyncTrackMetadataExport</tabstop>
+  <tabstop>checkBox_library_scan</tabstop>
+  <tabstop>checkBoxEditMetadataSelectedClicked</tabstop>
   <tabstop>checkBox_use_relative_path</tabstop>
+  <tabstop>spinBoxRowHeight</tabstop>
+  <tabstop>libraryFont</tabstop>
+  <tabstop>libraryFontButton</tabstop>
+  <tabstop>searchDebouncingTimeoutSpinBox</tabstop>
+  <tabstop>radioButton_dbclick_deck</tabstop>
+  <tabstop>radioButton_dbclick_bottom</tabstop>
+  <tabstop>radioButton_dbclick_top</tabstop>
   <tabstop>checkBox_show_rhythmbox</tabstop>
   <tabstop>checkBox_show_banshee</tabstop>
   <tabstop>checkBox_show_itunes</tabstop>
   <tabstop>checkBox_show_traktor</tabstop>
+  <tabstop>checkBox_show_rekordbox</tabstop>
+  <tabstop>checkBox_show_serato</tabstop>
  </tabstops>
  <resources/>
  <connections/>

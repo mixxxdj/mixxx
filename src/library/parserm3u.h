@@ -29,9 +29,9 @@ public:
     /**Overwriting function parse in class Parser**/
     QList<QString> parse(QString);
     //Playlist Export
-    static bool writeM3UFile(const QString &file_str, QList<QString> &items, bool useRelativePath, bool useUtf8);
-    static bool writeM3UFile(const QString &file, QList<QString> &items, bool useRelativePath);
-    static bool writeM3U8File(const QString &file_str, QList<QString> &items, bool useRelativePath);
+    static bool writeM3UFile(const QString &file_str, const QList<QString> &items, bool useRelativePath, bool useUtf8);
+    static bool writeM3UFile(const QString &file, const QList<QString> &items, bool useRelativePath);
+    static bool writeM3U8File(const QString &file_str, const QList<QString> &items, bool useRelativePath);
 
 private:
     /**Reads a line from the file and returns filepath if a valid file**/

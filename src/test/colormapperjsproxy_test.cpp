@@ -25,9 +25,9 @@ TEST_F(ColorMapperJSProxyTest, Instantiation) {
     pEngine->evaluate(
             R"JavaScript(
             var mapper = new ColorMapper({
-                '#FF0000': 1,
-                '#00FF00': 2,
-                '#0000FF': 3,
+                0xFF0000: 1,
+                0x00FF00: 2,
+                0x0000FF: 3,
             });
             )JavaScript");
     EXPECT_FALSE(pEngine->hasUncaughtException());
@@ -64,14 +64,14 @@ TEST_F(ColorMapperJSProxyTest, GetNearestColor) {
     pEngine->evaluate(
             R"JavaScript(
             var mapper = new ColorMapper({
-                '#C50A08': 1,
-                '#32BE44': 2,
-                '#42D4F4': 3,
-                '#F8D200': 4,
-                '#0044FF': 5,
-                '#AF00CC': 6,
-                '#FCA6D7': 7,
-                '#F2F2FF': 8,
+                0xC50A08: 1,
+                0x32BE44: 2,
+                0x42D4F4: 3,
+                0xF8D200: 4,
+                0x0044FF: 5,
+                0xAF00CC: 6,
+                0xFCA6D7: 7,
+                0xF2F2FF: 8,
             });
             /* white */
             var color1 = mapper.getNearestColor(0xFFFFFF);
@@ -102,14 +102,14 @@ TEST_F(ColorMapperJSProxyTest, GetNearestValue) {
     pEngine->evaluate(
             R"JavaScript(
             var mapper = new ColorMapper({
-                '#C50A08': 1,
-                '#32BE44': 2,
-                '#42D4F4': 3,
-                '#F8D200': 4,
-                '#0044FF': 5,
-                '#AF00CC': 6,
-                '#FCA6D7': 7,
-                '#F2F2FF': 8,
+                0xC50A08: 1,
+                0x32BE44: 2,
+                0x42D4F4: 3,
+                0xF8D200: 4,
+                0x0044FF: 5,
+                0xAF00CC: 6,
+                0xFCA6D7: 7,
+                0xF2F2FF: 8,
             });
             /* red */
             if (mapper.getValueForNearestColor(0xFF0000) != 1) {

@@ -1,5 +1,35 @@
 #include "track/serato/tags.h"
 
+#include <mp3guessenc.h>
+
+#include "util/color/predefinedcolorpalettes.h"
+
+namespace {
+
+#ifdef __COREAUDIO__
+const QString kDecoderName(QStringLiteral("CoreAudio"));
+#elif defined(__MAD__)
+const QString kDecoderName(QStringLiteral("MAD"));
+#elif defined(__FFMPEG__)
+const QString kDecoderName(QStringLiteral("FFMPEG"));
+#else
+const QString kDecoderName(QStringLiteral("Unknown"));
+#endif
+
+mixxx::RgbColor getColorFromOtherPalette(
+        const ColorPalette& source,
+        const ColorPalette& dest,
+        mixxx::RgbColor color) {
+    DEBUG_ASSERT(source.size() == dest.size());
+    int sourceIndex = source.indexOf(color);
+    if (sourceIndex >= 0 && sourceIndex < dest.size()) {
+        return dest.at(sourceIndex);
+    }
+    return color;
+}
+
+} // namespace
+
 namespace mixxx {
 
 RgbColor::optional_t SeratoTags::storedToDisplayedTrackColor(RgbColor color) {
@@ -57,6 +87,166 @@ RgbColor SeratoTags::displayedToStoredTrackColor(RgbColor::optional_t color) {
 
     colorCode = (colorCode < 0x99999A) ? colorCode + 0x666666 : colorCode - 0x99999A;
     return RgbColor(colorCode);
+}
+
+RgbColor SeratoTags::storedToDisplayedSeratoDJProCueColor(RgbColor color) {
+    return getColorFromOtherPalette(
+            PredefinedColorPalettes::kSeratoTrackMetadataHotcueColorPalette,
+            PredefinedColorPalettes::kSeratoDJProHotcueColorPalette,
+            color);
+}
+
+RgbColor SeratoTags::displayedToStoredSeratoDJProCueColor(RgbColor color) {
+    return getColorFromOtherPalette(
+            PredefinedColorPalettes::kSeratoDJProHotcueColorPalette,
+            PredefinedColorPalettes::kSeratoTrackMetadataHotcueColorPalette,
+            color);
+}
+
+double SeratoTags::findTimingOffsetMillis(const QString& filePath) {
+    // The following code accounts for timing offsets required to
+    // correctly align timing information (e.g. cue points) exported from
+    // Serato. This is caused by different MP3 decoders treating MP3s encoded
+    // in a variety of different cases differently. The mp3guessenc library is
+    // used to determine which case the MP3 is clasified in. See the following
+    // PR for more detailed information:
+    // https://github.com/mixxxdj/mixxx/pull/2119
+
+    double timingOffset = 0;
+    if (filePath.toLower().endsWith(".mp3")) {
+        int timingShiftCase = mp3guessenc_timing_shift_case(filePath.toStdString().c_str());
+
+        // TODO: Find missing timing offsets
+        switch (timingShiftCase) {
+#if defined(__COREAUDIO__)
+        case EXIT_CODE_CASE_A:
+            timingOffset = -12;
+            break;
+        case EXIT_CODE_CASE_B:
+            timingOffset = -40;
+            break;
+        case EXIT_CODE_CASE_C:
+        case EXIT_CODE_CASE_D:
+            timingOffset = -60;
+            break;
+#elif defined(__MAD__) || defined(__FFMPEG__)
+        // Apparently all mp3guessenc cases have the same offset for MAD
+        // and FFMPEG
+        default:
+            timingOffset = -19;
+            break;
+#endif
+        }
+        qDebug()
+                << "Detected timing offset "
+                << timingOffset
+                << "("
+                << kDecoderName
+                << ", case"
+                << timingShiftCase
+                << ") for MP3 file:"
+                << filePath;
+    }
+
+    return timingOffset;
+}
+
+QList<CueInfo> SeratoTags::getCues(const QString& filePath) const {
+    // Import "Serato Markers2" first, then overwrite values with those
+    // from "Serato Markers_". This is what Serato does too (i.e. if
+    // "Serato Markers_" and "Serato Markers2" contradict each other,
+    // Serato will use the values from "Serato Markers_").
+
+    double timingOffsetMillis = SeratoTags::findTimingOffsetMillis(filePath);
+
+    QMap<int, CueInfo> cueMap;
+    for (const CueInfo& cueInfo : m_seratoMarkers2.getCues(timingOffsetMillis)) {
+        VERIFY_OR_DEBUG_ASSERT(cueInfo.getHotCueNumber()) {
+            qWarning() << "SeratoTags::getCues: Cue without number found!";
+            continue;
+        }
+
+        int index = *cueInfo.getHotCueNumber();
+        VERIFY_OR_DEBUG_ASSERT(index >= 0) {
+            qWarning() << "SeratoTags::getCues: Cue with number < 0 found!";
+        }
+
+        if (cueInfo.getType() != CueType::HotCue) {
+            qWarning() << "SeratoTags::getCues: Ignoring cue with non-hotcue type!";
+            continue;
+        }
+
+        CueInfo newCueInfo(cueInfo);
+        RgbColor::optional_t color = cueInfo.getColor();
+        if (color) {
+            // TODO: Make this conversion configurable
+            newCueInfo.setColor(storedToDisplayedSeratoDJProCueColor(*color));
+        }
+        newCueInfo.setHotCueNumber(index);
+        cueMap.insert(index, newCueInfo);
+    };
+
+    // If the "Serato Markers_" tag does not exist at all, Serato DJ Pro just
+    // takes data from the "Serato Markers2" tag, so we can exit early
+    // here. If the "Serato Markers_" exists, its data will take precedence.
+    if (m_seratoMarkers.isEmpty()) {
+        return cueMap.values();
+    }
+
+    // The "Serato Markers_" tag always contains entries for the first five
+    // cues. If a cue is not set, that entry is present but empty.
+    // If a cue is set in "Serato Markers2" but not in "Serato Markers_",
+    // Serato DJ Pro considers it as "not set" and ignores it.
+    // To mirror the behaviour of Serato, we need to remove from the output of
+    // this function.
+    QSet<int> unsetCuesInMarkersTag = {0, 1, 2, 3, 4};
+
+    for (const CueInfo& cueInfo : m_seratoMarkers.getCues(timingOffsetMillis)) {
+        VERIFY_OR_DEBUG_ASSERT(cueInfo.getHotCueNumber()) {
+            qWarning() << "SeratoTags::getCues: Cue without number found!";
+            continue;
+        }
+
+        int index = *cueInfo.getHotCueNumber();
+        VERIFY_OR_DEBUG_ASSERT(index >= 0) {
+            qWarning() << "SeratoTags::getCues: Cue with number < 0 found!";
+        }
+
+        if (cueInfo.getType() != CueType::HotCue) {
+            qWarning() << "SeratoTags::getCues: Ignoring cue with non-hotcue type!";
+            continue;
+        }
+
+        // Take a pre-existing CueInfo object that was read from
+        // "SeratoMarkers2" from the CueMap (or a default constructed CueInfo
+        // object if none exists) and use it as template for the new CueInfo
+        // object. Then overwrite all object values that are present in the
+        // "SeratoMarkers_"tag.
+        CueInfo newCueInfo = cueMap.value(index);
+        newCueInfo.setType(cueInfo.getType());
+        newCueInfo.setStartPositionMillis(cueInfo.getStartPositionMillis());
+        newCueInfo.setEndPositionMillis(cueInfo.getEndPositionMillis());
+        newCueInfo.setHotCueNumber(index);
+
+        RgbColor::optional_t color = cueInfo.getColor();
+        if (color) {
+            // TODO: Make this conversion configurable
+            newCueInfo.setColor(storedToDisplayedSeratoDJProCueColor(*color));
+        }
+        cueMap.insert(index, newCueInfo);
+
+        // This cue is set in the "Serato Markers_" tag, so remove it from the
+        // set of unset cues
+        unsetCuesInMarkersTag.remove(index);
+    };
+
+    // Now that we know which cues should be present in the "Serato Markers_"
+    // tag but aren't, remove them from the set.
+    for (const int index : unsetCuesInMarkersTag) {
+        cueMap.remove(index);
+    }
+
+    return cueMap.values();
 }
 
 RgbColor::optional_t SeratoTags::getTrackColor() const {
