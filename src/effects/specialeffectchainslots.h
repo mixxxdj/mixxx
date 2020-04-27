@@ -28,8 +28,9 @@ class OutputEffectChainSlot : public EffectChainSlot {
 class PerGroupEffectChainSlot : public EffectChainSlot {
   public:
     PerGroupEffectChainSlot(const QString& group,
-                            const QString& chainSlotGroup,
-                            EffectsManager* pEffectsManager);
+            const QString& chainSlotGroup,
+            SignalProcessingStage stage,
+            EffectsManager* pEffectsManager);
 };
 
 class QuickEffectChainSlot : public PerGroupEffectChainSlot {

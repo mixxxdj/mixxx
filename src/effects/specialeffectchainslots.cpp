@@ -72,13 +72,14 @@ QString OutputEffectChainSlot::formatEffectChainSlotGroup(const QString& group) 
     return QString("[OutputEffectRack_%1]").arg(group);
 }
 
-
 PerGroupEffectChainSlot::PerGroupEffectChainSlot(const QString& group,
-                                                 const QString& chainSlotGroup,
-                                                 EffectsManager* pEffectsManager)
-        : EffectChainSlot(chainSlotGroup, pEffectsManager,
-                          SignalProcessingStage::Prefader,
-                          chainSlotGroup) {
+        const QString& chainSlotGroup,
+        SignalProcessingStage stage,
+        EffectsManager* pEffectsManager)
+        : EffectChainSlot(chainSlotGroup,
+                  pEffectsManager,
+                  stage,
+                  chainSlotGroup) {
     // Set the chain to be fully wet.
     m_pControlChainMix->set(1.0);
     sendParameterUpdate();
@@ -99,23 +100,28 @@ PerGroupEffectChainSlot::PerGroupEffectChainSlot(const QString& group,
     enableForInputChannel(*handleAndGroup);
 }
 
-QuickEffectChainSlot::QuickEffectChainSlot(const QString& group,
-                                           EffectsManager* pEffectsManager)
-        : PerGroupEffectChainSlot(group, formatEffectChainSlotGroup(group),
-                                  pEffectsManager) {
+QuickEffectChainSlot::QuickEffectChainSlot(
+        const QString& group, EffectsManager* pEffectsManager)
+        : PerGroupEffectChainSlot(group,
+                  formatEffectChainSlotGroup(group),
+                  SignalProcessingStage::Postfader,
+                  pEffectsManager) {
     for (int i = 0; i < kNumEffectsPerUnit; ++i) {
         addEffectSlot(formatEffectSlotGroup(group, i));
         m_effectSlots.at(i)->setEnabled(true);
     }
 }
 
-void QuickEffectChainSlot::loadEffect(
-        const unsigned int iEffectSlotNumber,
+void QuickEffectChainSlot::loadEffect(const unsigned int iEffectSlotNumber,
         const EffectManifestPointer pManifest,
         std::unique_ptr<EffectProcessor> pProcessor,
         EffectPresetPointer pPreset,
         bool adoptMetaknobFromPreset) {
-    EffectChainSlot::loadEffect(iEffectSlotNumber, pManifest, std::move(pProcessor), pPreset, adoptMetaknobFromPreset);
+    EffectChainSlot::loadEffect(iEffectSlotNumber,
+            pManifest,
+            std::move(pProcessor),
+            pPreset,
+            adoptMetaknobFromPreset);
     slotControlChainSuperParameter(m_pControlChainSuperParameter->get(), true);
 }
 
@@ -123,19 +129,21 @@ QString QuickEffectChainSlot::formatEffectChainSlotGroup(const QString& group) {
     return QString("[QuickEffectRack1_%1]").arg(group);
 }
 
-QString QuickEffectChainSlot::formatEffectSlotGroup(const QString& group,
-                                                    const int iEffectSlotNumber) {
-        return QString("[QuickEffectRack1_%1_Effect%2]")
-                .arg(group)
-                .arg(QString::number(iEffectSlotNumber + 1));
+QString QuickEffectChainSlot::formatEffectSlotGroup(
+        const QString& group, const int iEffectSlotNumber) {
+    return QString("[QuickEffectRack1_%1_Effect%2]")
+            .arg(group)
+            .arg(QString::number(iEffectSlotNumber + 1));
 }
 
-
-EqualizerEffectChainSlot::EqualizerEffectChainSlot(const QString& group,
-                                                   EffectsManager* pEffectsManager)
-        : PerGroupEffectChainSlot(group, formatEffectChainSlotGroup(group),
-                                  pEffectsManager),
-          m_pCOFilterWaveform(new ControlObject(ConfigKey(group, "filterWaveformEnable"))) {
+EqualizerEffectChainSlot::EqualizerEffectChainSlot(
+        const QString& group, EffectsManager* pEffectsManager)
+        : PerGroupEffectChainSlot(group,
+                  formatEffectChainSlotGroup(group),
+                  SignalProcessingStage::Prefader,
+                  pEffectsManager),
+          m_pCOFilterWaveform(
+                  new ControlObject(ConfigKey(group, "filterWaveformEnable"))) {
     // Add a single effect slot
     addEffectSlot(formatEffectSlotGroup(group));
     m_effectSlots[0]->setEnabled(true);
