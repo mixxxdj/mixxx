@@ -1,7 +1,7 @@
 #include "preferences/broadcastsettings.h"
 #include "broadcast/defs_broadcast.h"
+#include "recording/defs_recording.h"
 
-#define BROADCAST_FORMAT_OV_LEGACYNAME "OggVorbis"
 namespace {
 const char* kConfigKey = "[Shoutcast]";
 const char* kBitrate = "bitrate";
@@ -129,9 +129,9 @@ void BroadcastSettings::loadLegacySettings(BroadcastProfilePtr profile) {
     QString m_format = m_pConfig->getValue(
             ConfigKey(kConfigKey, kFormat),
             profile->getFormat());
-    if (m_format == BROADCAST_FORMAT_OV_LEGACYNAME) {
+    if (m_format == BROADCAST_FORMAT_OV_LEGACY) {
         // Upgrade to have the same codec name than the recording define.
-        m_format = BROADCAST_FORMAT_OV;
+        m_format = ENCODING_OGG;
     }
     profile->setFormat(m_format);
 
