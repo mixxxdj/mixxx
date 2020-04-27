@@ -10,6 +10,8 @@ class EngineChannel;
 /// BaseSyncableListener is a SyncableListener used by EngineSync.
 /// It provides some foundational functionality for distributing
 /// various sync updates.
+// TODO(owilliams): This class is only inherited by EngineSync. It should
+// be merged into that class.
 class BaseSyncableListener : public SyncableListener {
   public:
     BaseSyncableListener(UserSettingsPointer pConfig);
