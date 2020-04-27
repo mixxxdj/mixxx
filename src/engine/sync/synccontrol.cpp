@@ -219,9 +219,8 @@ void SyncControl::setMasterBpm(double bpm) {
         kLogger.trace() << getGroup() << "SyncControl::setMasterBpm" << bpm;
     }
 
-    if (!isSynchronized()) {
-        qDebug()
-                << "WARNING: Logic Error: setBpm called on SYNC_NONE syncable.";
+    VERIFY_OR_DEBUG_ASSERT(isSynchronized()) {
+        qWarning() << "WARNING: Logic Error: setBpm called on SYNC_NONE syncable.";
         return;
     }
 
@@ -346,11 +345,10 @@ void SyncControl::trackBeatsUpdated(BeatsPointer pBeats) {
     m_masterBpmAdjustFactor = kBpmUnity;
 
     SyncMode syncMode = getSyncMode();
-    if (syncMode == SYNC_MASTER_SOFT) {
+    if (syncMode == SYNC_MASTER_SOFT || syncMode == SYNC_FOLLOWER) {
         // If we change or remove beats while soft master, hand off.
-        m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
-    } else if (syncMode == SYNC_FOLLOWER) {
-        // Refresh follower state to update soft master
+        // If we were a follower, requesting sync mode refreshes
+        // the soft master.
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
     }
     setLocalBpm(m_pLocalBpm->get());

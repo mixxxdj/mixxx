@@ -353,7 +353,7 @@ void EngineSync::activateFollower(Syncable* pSyncable) {
 }
 
 void EngineSync::activateMaster(Syncable* pSyncable, bool explicitMaster) {
-    if (pSyncable == nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(pSyncable) {
         qWarning() << "WARNING: Logic Error: Called activateMaster on a nullptr Syncable.";
         return;
     }

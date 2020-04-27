@@ -1,12 +1,17 @@
-#include <QtDebug>
-
 #include "engine/sync/internalclock.h"
 
-#include "engine/sync/enginesync.h"
-#include "control/controlobject.h"
+#include <QtDebug>
+
 #include "control/controllinpotmeter.h"
+#include "control/controlobject.h"
 #include "control/controlpushbutton.h"
+#include "engine/sync/enginesync.h"
 #include "preferences/usersettings.h"
+#include "util/logger.h"
+
+namespace {
+const mixxx::Logger kLogger("InternalClock");
+} // namespace
 
 InternalClock::InternalClock(const char* pGroup, SyncableListener* pEngineSync)
         : m_group(pGroup),
@@ -94,7 +99,9 @@ double InternalClock::getBeatDistance() const {
 }
 
 void InternalClock::setMasterBeatDistance(double beatDistance) {
-    //qDebug() << "InternalClock::setMasterBeatDistance" << beatDistance;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "InternalClock::setMasterBeatDistance" << beatDistance;
+    }
     m_bClockUpdated.fetchAndStoreAcquire(true);
     m_dClockPosition = beatDistance * m_dBeatLength;
     m_pClockBeatDistance->set(beatDistance);
@@ -111,7 +118,9 @@ double InternalClock::getBpm() const {
 }
 
 void InternalClock::setMasterBpm(double bpm) {
-    qDebug() << "InternalClock::setBpm" << bpm;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "InternalClock::setBpm" << bpm;
+    }
     if (bpm == 0) {
         return;
     }
@@ -120,13 +129,17 @@ void InternalClock::setMasterBpm(double bpm) {
 }
 
 void InternalClock::setInstantaneousBpm(double bpm) {
-    //qDebug() << "InternalClock::setInstantaneousBpm" << bpm;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "InternalClock::setInstantaneousBpm" << bpm;
+    }
     // Do nothing.
     Q_UNUSED(bpm);
 }
 
 void InternalClock::setMasterParams(double beatDistance, double baseBpm, double bpm) {
-    //qDebug() << "InternalClock::setMasterParams" << beatDistance << baseBpm << bpm;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "InternalClock::setMasterParams" << beatDistance << baseBpm << bpm;
+    }
     if (bpm == 0) {
         return;
     }

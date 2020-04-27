@@ -51,7 +51,7 @@ Syncable* BaseSyncableListener::getSyncableForGroup(const QString& group) {
 }
 
 bool BaseSyncableListener::syncDeckExists() const {
-    for (auto& pSyncable : qAsConst(m_syncables)) {
+    for (const auto& pSyncable : qAsConst(m_syncables)) {
         if (pSyncable->isSynchronized() && pSyncable->getBaseBpm() > 0) {
             return true;
         }
