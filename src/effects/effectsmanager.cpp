@@ -259,7 +259,7 @@ void EffectsManager::loadEffectChainPreset(EffectChainSlot* pChainSlot,
 
     pChainSlot->setMixMode(pPreset->mixMode());
     pChainSlot->setSuperParameterDefaultValue(pPreset->superKnob());
-    pChainSlot->setSuperParameter(pChainSlot->getSuperParameter());
+    pChainSlot->setSuperParameter(pPreset->superKnob());
     pChainSlot->setPresetName(pPreset->name());
     pChainSlot->setLoadedPresetIndex(m_effectChainPresetsSorted.indexOf(pPreset));
 }
