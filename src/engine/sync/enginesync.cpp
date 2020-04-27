@@ -135,7 +135,7 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
 }
 
 Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
-    Syncable* stoppedTarget = nullptr;
+    Syncable* pStoppedTarget = nullptr;
     bool foundTargetBpm = false;
 
     for (const auto& pOtherSyncable : qAsConst(m_syncables)) {
@@ -159,18 +159,15 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
             return pOtherSyncable;
         }
 
-        // The target is not playing. If the requesting deck is playing, or we have already a
-        // non playing deck found, skip.
-        if (foundTargetBpm || requester->isPlaying()) {
-            continue;
+        // The target is not playing. If this is the first one we have seen,
+        // record it. If we never find a playing target, we'll return
+        // this one as a fallback.
+        if (!pStoppedTarget && !requester->isPlaying()) {
+            pStoppedTarget = pOtherSyncable;
         }
-
-        // Take the first non-playing non-sync deck.
-        foundTargetBpm = true;
-        stoppedTarget = pOtherSyncable;
     }
 
-    return stoppedTarget;
+    return pStoppedTarget;
 }
 
 void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
@@ -196,7 +193,7 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
     Syncable* newMaster = pickMaster(pSyncable);
 
     // The syncable that will be used to initialize the master params, if needed
-    Syncable* targetSyncable = nullptr;
+    Syncable* pParamsSyncable = nullptr;
 
     if (newMaster == m_pInternalClock) {
         // This happens if we had a single master before
@@ -206,18 +203,18 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
                 // the old master is playing as well
                 if (m_pMasterSyncable && m_pMasterSyncable->isPlaying()) {
                     // Adopt value from the old master if it is still playing
-                    targetSyncable = m_pMasterSyncable;
+                    pParamsSyncable = m_pMasterSyncable;
                 } else {
                     DEBUG_ASSERT(pSyncable->getBaseBpm() > 0);
-                    targetSyncable = pSyncable;
+                    pParamsSyncable = pSyncable;
                 }
             } else {
                 if (m_pMasterSyncable) {
-                    targetSyncable = m_pMasterSyncable;
+                    pParamsSyncable = m_pMasterSyncable;
                 } else {
                     // Can this ever happen?
                     DEBUG_ASSERT(false);
-                    targetSyncable = pSyncable;
+                    pParamsSyncable = pSyncable;
                 }
             }
         }
@@ -225,14 +222,16 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
         // There is no other synced deck. If any other deck is playing we will
         // match the first available bpm -- sync won't be enabled on these decks,
         // otherwise there would have been a master.
-        targetSyncable = findBpmMatchTarget(pSyncable);
-        if (targetSyncable == nullptr) {
-            targetSyncable = pSyncable;
+        pParamsSyncable = findBpmMatchTarget(pSyncable);
+        if (pParamsSyncable == nullptr) {
+            // We weren't able to find anything to match to, so set ourselves as the
+            // target.  That way we'll use our own params when we setMasterParams below.
+            pParamsSyncable = pSyncable;
         }
     } else if (newMaster) {
         // This happens if this Deck has no valid BPM
         // avoid that other decks are adjusted
-        targetSyncable = newMaster;
+        pParamsSyncable = newMaster;
     } else {
         // This happens if there is no other SyncDeck around and this has no valid BPM
         // nothing to do.
@@ -246,10 +245,13 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
         pSyncable->setSyncMode(SYNC_FOLLOWER);
     }
 
-    if (targetSyncable != nullptr) {
-        setMasterParams(targetSyncable, targetSyncable->getBeatDistance(), targetSyncable->getBaseBpm(), targetSyncable->getBpm());
-        pSyncable->setInstantaneousBpm(targetSyncable->getBpm());
-        if (targetSyncable != pSyncable) {
+    if (pParamsSyncable != nullptr) {
+        setMasterParams(pParamsSyncable,
+                pParamsSyncable->getBeatDistance(),
+                pParamsSyncable->getBaseBpm(),
+                pParamsSyncable->getBpm());
+        pSyncable->setInstantaneousBpm(pParamsSyncable->getBpm());
+        if (pParamsSyncable != pSyncable) {
             pSyncable->requestSync();
         }
     }
