@@ -172,9 +172,14 @@ void Track::importMetadata(
         // FIXME: Move the Track::setCuePoints call to another location,
         // because we need the sample rate to calculate sample
         // positions for cues (and *correct* sample rate isn't known here).
-        importCueInfos(newSeratoTags.getCues(getLocation()));
-        setColor(newSeratoTags.getTrackColor());
-        setBpmLocked(newSeratoTags.isBpmLocked());
+        //
+        // If the Serato tags are empty they are not present. In this case
+        // all existing metadata must be preserved!
+        if (!newSeratoTags.isEmpty()) {
+            importCueInfos(newSeratoTags.getCues(getLocation()));
+            setColor(newSeratoTags.getTrackColor());
+            setBpmLocked(newSeratoTags.isBpmLocked());
+        }
 
         // implicitly unlocked when leaving scope
     }
