@@ -233,6 +233,7 @@ void EffectsManager::loadEffectChainPreset(EffectChainSlot* pChainSlot,
     // Set the superknob before loading the effects so it does not change their
     // metaknobs
     pChainSlot->setSuperParameter(pPreset->superKnob());
+    pChainSlot->setSuperParameterDefaultValue(pPreset->superKnob());
 
     int effectSlot = 0;
     for (const auto& pEffectPreset : pPreset->effectPresets()) {
