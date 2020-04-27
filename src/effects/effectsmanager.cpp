@@ -164,15 +164,6 @@ void EffectsManager::loadOutputEffect(const int iEffectSlotNumber,
     }
 }
 
-void EffectsManager::loadQuickEffect(const QString& deckGroup,
-        const int iEffectSlotNumber, const EffectManifestPointer pManifest) {
-    auto pChainSlot = m_quickEffectChainSlots.value(deckGroup);
-    VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
-        return;
-    }
-    loadEffect(pChainSlot, iEffectSlotNumber, pManifest);
-}
-
 void EffectsManager::loadEqualizerEffect(const QString& deckGroup,
         const int iEffectSlotNumber, const EffectManifestPointer pManifest) {
     auto pChainSlot = m_equalizerEffectChainSlots.value(deckGroup);

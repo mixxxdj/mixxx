@@ -95,11 +95,6 @@ class EffectsManager : public QObject {
             const int iEffectSlotNumber,
             const EffectManifestPointer pManifest);
 
-    void loadQuickEffect(
-            const QString& group,
-            const int iEffectSlotNumber,
-            const EffectManifestPointer pManifest);
-
     void loadEqualizerEffect(const QString& group,
             const int iEffectSlotNumber,
             const EffectManifestPointer pManifest);

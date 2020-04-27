@@ -40,7 +40,6 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     virtual ~DlgPrefEQ();
 
     QString getEQEffectGroupForDeck(int deck) const;
-    QString getQuickEffectGroupForDeck(int deck) const;
 
   public slots:
     // Apply changes to widget
@@ -96,7 +95,6 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     EffectsManager* m_pEffectsManager;
     QLabel* m_firstSelectorLabel;
     QList<QComboBox*> m_deckEqEffectSelectors;
-    QList<QComboBox*> m_deckQuickEffectSelectors;
     ControlProxy* m_pNumDecks;
 
     bool m_inSlotPopulateDeckEffectSelectors;
@@ -111,7 +109,6 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     bool m_bGainAutoReset;
 
     QList<int> m_eqIndiciesOnUpdate;
-    QList<int> m_quickEffectIndiciesOnUpdate;
 };
 
 #endif
