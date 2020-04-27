@@ -677,6 +677,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/weffectbuttonparameter.cpp
   src/widget/weffectchain.cpp
   src/widget/weffectchainpresetbutton.cpp
+  src/widget/weffectchainpresetselector.cpp
   src/widget/weffectparameter.cpp
   src/widget/weffectparameterbase.cpp
   src/widget/weffectparameterknob.cpp

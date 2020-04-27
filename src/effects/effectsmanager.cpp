@@ -399,6 +399,7 @@ void EffectsManager::renameChainPreset(const QString& oldName) {
     m_effectChainPresets.insert(newName, pChainPreset);
     m_effectChainPresetsSorted.removeAt(index);
     m_effectChainPresetsSorted.insert(index, pChainPreset);
+    emit effectChainPresetListUpdated();
 }
 
 void EffectsManager::deleteChainPreset(const QString& chainPresetName) {
@@ -414,6 +415,7 @@ void EffectsManager::deleteChainPreset(const QString& chainPresetName) {
 
     EffectChainPresetPointer pChainPreset = m_effectChainPresets.take(chainPresetName);
     m_effectChainPresetsSorted.removeAll(pChainPreset);
+    emit effectChainPresetListUpdated();
 }
 
 const QList<EffectManifestPointer> EffectsManager::getAvailableEffectManifestsFiltered(
@@ -892,6 +894,7 @@ void EffectsManager::loadEffectChainPresets() {
         }
         file.close();
     }
+    emit effectChainPresetListUpdated();
 }
 
 void EffectsManager::setChainPresetOrder(const QStringList& chainPresetList) {
@@ -909,6 +912,7 @@ void EffectsManager::setChainPresetOrder(const QStringList& chainPresetList) {
             m_effectChainPresetsSorted.append(pChainPreset);
         }
     }
+    emit effectChainPresetListUpdated();
 }
 
 const QString EffectsManager::getDisplayNameForEffectPreset(EffectPresetPointer pPreset) {
@@ -949,6 +953,7 @@ void EffectsManager::savePresetFromStandardEffectChain(int chainNumber) {
     pChainPreset->setName(name);
     m_effectChainPresets.insert(name, pChainPreset);
     m_effectChainPresetsSorted.append(pChainPreset);
+    emit effectChainPresetListUpdated();
 
     QString path(m_pConfig->getSettingsPath() + kEffectChainPresetDirectory);
     QDir effectsChainsDir(path);
