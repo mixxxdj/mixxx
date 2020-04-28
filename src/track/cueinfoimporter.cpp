@@ -33,10 +33,12 @@ bool CueInfoImporter::isEmpty() const {
 QList<CueInfo> CueInfoImporter::importCueInfosWithCorrectTiming(
         const QString& filePath,
         const audio::SignalInfo& signalInfo) {
-    QList<CueInfo> cueInfos;
+    // Consume the collected cue points during the import
+    QList<CueInfo> cueInfos = m_cueInfos;
+    m_cueInfos.clear();
 
     // Do not calculate offset if we don't have any cues to import
-    if (m_cueInfos.isEmpty()) {
+    if (cueInfos.isEmpty()) {
         return {};
     }
 
@@ -45,26 +47,20 @@ QList<CueInfo> CueInfoImporter::importCueInfosWithCorrectTiming(
     // If we don't have any offset, we can just return the CueInfo objects
     // unchanged.
     if (timingOffsetMillis == 0) {
-        return std::move(m_cueInfos);
+        return cueInfos;
     }
 
     // Create list of CueInfo object with correct positions
-    cueInfos.reserve(m_cueInfos.size());
-    for (const CueInfo& cueInfo : qAsConst(m_cueInfos)) {
-        CueInfo newCueInfo(cueInfo);
+    for (CueInfo& cueInfo : cueInfos) {
         if (cueInfo.getStartPositionMillis()) {
-            newCueInfo.setStartPositionMillis(
+            cueInfo.setStartPositionMillis(
                     *cueInfo.getStartPositionMillis() + timingOffsetMillis);
         }
         if (cueInfo.getEndPositionMillis()) {
-            newCueInfo.setEndPositionMillis(
+            cueInfo.setEndPositionMillis(
                     *cueInfo.getEndPositionMillis() + timingOffsetMillis);
         }
-        cueInfos.append(newCueInfo);
     }
-
-    // Clear pending cueinfos
-    m_cueInfos.clear();
 
     return cueInfos;
 }
