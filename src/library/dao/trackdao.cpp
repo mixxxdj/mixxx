@@ -290,19 +290,13 @@ void TrackDAO::saveTrack(Track* pTrack) const {
     }
 }
 
-void TrackDAO::databaseTrackAdded(TrackPointer pTrack) {
-    DEBUG_ASSERT(pTrack);
-    emit dbTrackAdded(pTrack);
-}
-
-void TrackDAO::databaseTracksChanged(QSet<TrackId> changedTracks) {
-    // results in a call of BaseTrackCache::updateTracksInIndex(trackIds);
-    if (!changedTracks.isEmpty()) {
-        emit tracksChanged(changedTracks);
+void TrackDAO::slotDatabaseTracksChanged(QSet<TrackId> changedTrackIds) {
+    if (!changedTrackIds.isEmpty()) {
+        emit tracksChanged(changedTrackIds);
     }
 }
 
-void TrackDAO::databaseTracksRelocated(QList<RelocatedTrack> relocatedTracks) {
+void TrackDAO::slotDatabaseTracksRelocated(QList<RelocatedTrack> relocatedTracks) {
     QSet<TrackId> removedTrackIds;
     QSet<TrackId> changedTrackIds;
     for (const auto& relocatedTrack : qAsConst(relocatedTracks)) {
@@ -323,7 +317,9 @@ void TrackDAO::databaseTracksRelocated(QList<RelocatedTrack> relocatedTracks) {
     if (!removedTrackIds.isEmpty()) {
         emit tracksRemoved(removedTrackIds);
     }
-    databaseTracksChanged(changedTrackIds);
+    if (!changedTrackIds.isEmpty()) {
+        emit tracksChanged(changedTrackIds);
+    }
 }
 
 void TrackDAO::addTracksPrepare() {
@@ -1311,8 +1307,10 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     connect(pTrack.get(),
             &Track::changed,
             this,
-            &TrackDAO::trackChanged,
-            /*signal-to-signal*/ Qt::DirectConnection);
+            [this](TrackId trackId) {
+                // Adapt and forward signal
+                emit tracksChanged(QSet<TrackId>{trackId});
+            });
 
     // BaseTrackCache cares about track trackDirty/trackClean notifications
     // from TrackDAO that are triggered by the track itself. But the preceding
