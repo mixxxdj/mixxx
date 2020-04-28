@@ -78,7 +78,7 @@ MC7000.jogParams = {
 /////////////////////////////////*/
 
 
-/* OTHER VARIABLES - DONT'T TOUCH EXCEPT YOU KNOW WHAT YOU DO */
+/* OTHER VARIABLES - DON'T TOUCH UNLESS YOU KNOW WHAT YOU'RE DOING */
 
 // Resolution of the jog wheel, set so the spinny
 // Jog LED to match exactly the movement of the Jog Wheel
@@ -642,7 +642,7 @@ MC7000.needleSearchStripPosition = function(channel, control, value, status,
     if (MC7000.needleSearchTouched[deckNumber]) {
         var fullValue = (MC7000.needleDropMSB << 7) +
                     value; // move MSB 7 binary gigits to the left and add LSB
-        var position = (fullValue / 0x3FFF); // devide by all possible positions to
+        var position = (fullValue / 0x3FFF); // divide by all possible positions to
         // get relative between 0 - 1
         engine.setParameter(group, "playposition", position);
     }

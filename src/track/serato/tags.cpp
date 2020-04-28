@@ -108,7 +108,7 @@ double SeratoTags::findTimingOffsetMillis(const QString& filePath) {
     // correctly align timing information (e.g. cue points) exported from
     // Serato. This is caused by different MP3 decoders treating MP3s encoded
     // in a variety of different cases differently. The mp3guessenc library is
-    // used to determine which case the MP3 is clasified in. See the following
+    // used to determine which case the MP3 is classified in. See the following
     // PR for more detailed information:
     // https://github.com/mixxxdj/mixxx/pull/2119
 

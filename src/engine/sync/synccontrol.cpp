@@ -239,7 +239,7 @@ void SyncControl::setMasterParams(
         double beatDistance, double baseBpm, double bpm) {
     double masterBpmAdjustFactor = determineBpmMultiplier(fileBpm(), baseBpm);
     if (isMaster(getSyncMode())) {
-        // In Master mode we adjust the incomming Bpm for the inital sync.
+        // In Master mode we adjust the incoming Bpm for the initial sync.
         bpm *= masterBpmAdjustFactor;
         m_masterBpmAdjustFactor = kBpmUnity;
     } else {
@@ -337,7 +337,7 @@ void SyncControl::trackBeatsUpdated(BeatsPointer pBeats) {
     }
 
     VERIFY_OR_DEBUG_ASSERT(m_pLocalBpm) {
-        // object not initalized
+        // object not initialized
         return;
     }
 
@@ -400,7 +400,7 @@ void SyncControl::slotSyncMasterEnabledChangeRequest(double state) {
             return;
         }
         if (mode == SYNC_MASTER_SOFT) {
-            // user request: make master explicite
+            // user request: make master explicit
             m_pSyncMode->setAndConfirm(SYNC_MASTER_EXPLICIT);
             return;
         }
@@ -452,7 +452,7 @@ void SyncControl::setLocalBpm(double local_bpm) {
         m_pEngineSync->requestBpmUpdate(this, bpm);
     } else {
         DEBUG_ASSERT(isMaster(syncMode));
-        // We might have adopted an adjust factor when becomming master.
+        // We might have adopted an adjust factor when becoming master.
         // Keep it when reporting our bpm.
         m_pEngineSync->notifyBpmChanged(this, bpm / m_masterBpmAdjustFactor);
     }

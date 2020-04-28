@@ -481,7 +481,7 @@ bpm.tapButton = function(deck) {
         bpm.tap = [];
         return;
     }
-    // reject occurences of accidental double or missed taps
+    // reject occurrences of accidental double or missed taps
     // a tap is considered missed when the delta of this press is 80% longer than the previous one
     // and a tap is considered double when the delta is shorter than 40% of the previous one.
     // these numbers are just guesses that produced good results in practice

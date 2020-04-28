@@ -187,7 +187,7 @@ class WebTask : public QObject {
 
     // Handle status change requests by aborting a running request
     // and return the request URL. If no request is running or if
-    // the request has already been finished tha QUrl() must be
+    // the request has already been finished the QUrl() must be
     // returned.
     virtual QUrl doAbort() = 0;
     virtual QUrl doTimeOut() = 0;
