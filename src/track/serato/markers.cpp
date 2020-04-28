@@ -315,4 +315,4 @@ QList<CueInfo> SeratoMarkers::getCues() const {
     return cueInfos;
 }
 
-} //namespace mixxx
+} // namespace mixxx

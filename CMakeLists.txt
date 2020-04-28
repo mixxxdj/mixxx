@@ -566,10 +566,16 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/trackfile.cpp
   src/track/trackinfo.cpp
   src/track/trackmetadata.cpp
-  src/track/trackmetadatataglib.cpp
   src/track/tracknumbers.cpp
   src/track/trackrecord.cpp
   src/track/trackref.cpp
+  src/track/taglib/trackmetadata_ape.cpp
+  src/track/taglib/trackmetadata_common.cpp
+  src/track/taglib/trackmetadata_file.cpp
+  src/track/taglib/trackmetadata_id3v2.cpp
+  src/track/taglib/trackmetadata_mp4.cpp
+  src/track/taglib/trackmetadata_riff.cpp
+  src/track/taglib/trackmetadata_xiph.cpp
   src/util/autohidpi.cpp
   src/util/battery/battery.cpp
   src/util/cache.cpp

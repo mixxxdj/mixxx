@@ -39,6 +39,8 @@ class DlgPrefController : public DlgPreferencePage {
     /// Called when the user clicks the global "Reset to Defaults" button.
     void slotResetToDefaults();
 
+    QUrl helpUrl() const override;
+
   signals:
     void applyPreset(Controller* pController, ControllerPresetPointer pPreset, bool bEnabled);
     void mappingStarted();

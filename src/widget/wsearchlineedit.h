@@ -45,12 +45,13 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     void restoreSearch(const QString& text);
     void disableSearch();
     void slotSetFont(const QFont& font);
+    bool clearBtnHasFocus() const;
+    void clearSearch();
 
   private slots:
     void setShortcutFocus();
     void updateText(const QString& text);
 
-    void clearSearch();
     void triggerSearch();
 
   private:
