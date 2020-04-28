@@ -1869,10 +1869,10 @@ endif()
 # Live Broadcasting (Shoutcast)
 option(BROADCAST "Live Broadcasting (Shoutcast) support" ON)
 if(BROADCAST)
+  find_package(Shout)
   if(UNIX AND NOT APPLE)
     # Check if system lib is at least 2.4.4 and not suffering bug
     # https://bugs.launchpad.net/mixxx/+bug/1833225
-    find_package(Shout 2.4.4)
     if(Shout_FOUND AND Shout_VERSION VERSION_LESS 2.4.4)
         message(STATUS "System installed version is suffering bug lp1833225")
     endif()
@@ -1882,10 +1882,10 @@ if(BROADCAST)
       add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/lib/libshout")
     endif()
   else()
-    find_package(Shout)
     if(NOT Shout_FOUND)
         message(FATAL_ERROR "Live Broadcasting support requires the libshout and its development headers.")
     endif()
+    target_link_libraries(mixxx-lib PUBLIC Shout::Shout)
   endif()
   target_sources(mixxx-lib PRIVATE
     src/preferences/dialog/dlgprefbroadcastdlg.ui
@@ -1894,7 +1894,6 @@ if(BROADCAST)
     src/engine/sidechain/shoutconnection.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __BROADCAST__)
-  target_link_libraries(mixxx-lib PUBLIC Shout::Shout)
 endif()
 
 # Locale Aware Compare for SQLite
