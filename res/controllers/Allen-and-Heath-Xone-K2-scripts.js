@@ -279,8 +279,7 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
         supershift: function () {
             this.input = function (channel, control, value, status) {
                 direction = (value === 1) ? 1 : -1;
-                var pitch = engine.getValue(this.group, "pitch");
-                engine.setValue(this.group, "pitch", pitch + (.05 * direction));
+                engine.setValue('[QuickEffectRack1_' + theDeck.deckString + ']', 'chain_selector', direction);
             };
         },
     });
