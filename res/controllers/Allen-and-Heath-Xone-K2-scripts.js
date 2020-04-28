@@ -288,15 +288,18 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
     this.encoderPress = new components.Button({
         outKey: 'sync_enabled',
         unshift: function () {
+            this.group = theDeck.deckString;
             this.inKey = 'sync_enabled';
             this.type = components.Button.prototype.types.toggle;
         },
         shift: function () {
-            this.inKey = 'rate_set_zero';
-            this.type = components.Button.prototype.types.push;
+            this.group = '[QuickEffectRack1_' + theDeck.deckString + ']';
+            this.inKey = 'enabled';
+            this.type = components.Button.prototype.types.toggle;
         },
         supershift: function () {
-            this.inKey = 'reset_key';
+            this.group = theDeck.deckString;
+            this.inKey = 'rate_set_zero';
             this.type = components.Button.prototype.types.push;
         },
     });
