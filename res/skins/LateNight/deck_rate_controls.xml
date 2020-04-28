@@ -190,7 +190,7 @@
                 <SetVariable name="Size">52f,26f</SetVariable>
                 <SetVariable name="btn_format">wide</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,sync_enabled</SetVariable>
-                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatsync_tempo</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,sync_master</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>

@@ -40,7 +40,10 @@ EngineSync::~EngineSync() {
 
 Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
     // If there is an explicit master, and it is playing, keep it.
-    if (m_pMasterSyncable && m_pMasterSyncable->getSyncMode() == SYNC_MASTER_EXPLICIT) {
+    if (m_pMasterSyncable &&
+            m_pMasterSyncable->getSyncMode() == SYNC_MASTER_EXPLICIT &&
+            (m_pMasterSyncable->isPlaying() ||
+                    m_pMasterSyncable == m_pInternalClock)) {
         return m_pMasterSyncable;
     }
 

@@ -255,16 +255,26 @@ TEST_F(EngineSyncTest, DisableSyncOnMaster) {
 
     BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 130, 0.0);
     m_pTrack2->setBeats(pBeats2);
+    // Try to set deck two to explicit master.  This is rejected because
+    // deck 2 is not playing, so it becomes a follower instead.
     auto pButtonSyncMaster2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_master");
     pButtonSyncMaster2->slotSet(1.0);
+    ProcessBuffer();
+    assertIsFollower(m_sGroup1);
+    assertIsFollower(m_sGroup2);
 
+    // Set deck 2 to playing, now we can set it to explicit master.
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+    pButtonSyncMaster2->slotSet(1.0);
+    // The request to become master is queued, so we have to process a buffer.
+    ProcessBuffer();
     assertIsFollower(m_sGroup1);
     assertIsExplicitMaster(m_sGroup2);
 
     // Unset enabled on channel2, it should work.
     auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
     pButtonSyncEnabled2->slotSet(0.0);
-
+    ProcessBuffer();
     assertIsSoftMaster(m_sGroup1);
     ASSERT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->get());
     ASSERT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_master"))->get());
@@ -276,6 +286,7 @@ TEST_F(EngineSyncTest, InternalMasterSetFollowerSliderMoves) {
     pButtonMasterSyncInternal->slotSet(1);
     auto pMasterSyncSlider = std::make_unique<ControlProxy>(m_sInternalClockGroup, "bpm");
     pMasterSyncSlider->set(100.0);
+    assertIsExplicitMaster(m_sInternalClockGroup);
 
     // Set the file bpm of channel 1 to 80 bpm.
     BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 80, 0.0);
@@ -392,6 +403,9 @@ TEST_F(EngineSyncTest, SetExplicitMasterByLights) {
     BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack1, 150, 0.0);
     m_pTrack2->setBeats(pBeats2);
 
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
+
     // Set channel 1 to be explicit master.
     pButtonSyncMaster1->slotSet(1.0);
     ProcessBuffer();
@@ -401,11 +415,13 @@ TEST_F(EngineSyncTest, SetExplicitMasterByLights) {
 
     // Set channel 2 to be follower.
     pButtonSyncEnabled2->slotSet(1);
+    ProcessBuffer();
 
     assertIsFollower(m_sGroup2);
 
     // Now set channel 2 to be master.
     pButtonSyncMaster2->slotSet(1);
+    ProcessBuffer();
 
     // Now channel 2 should be master, and channel 1 should be a follower.
     assertIsFollower(m_sGroup1);
@@ -413,18 +429,20 @@ TEST_F(EngineSyncTest, SetExplicitMasterByLights) {
 
     // Now back again.
     pButtonSyncMaster1->slotSet(1);
+    ProcessBuffer();
 
     // Now channel 1 should be master, and channel 2 should be a follower.
     assertIsExplicitMaster(m_sGroup1);
     assertIsFollower(m_sGroup2);
 
-    // Now set channel 1 to not-master, all will become follower.
-    // handing over master to the internal clock
+    // Now set channel 1 to not-master, it will become a follower.
+    // master is handed over to Internal clock
     pButtonSyncMaster1->slotSet(0);
+    ProcessBuffer();
 
-    assertIsSoftMaster(m_sInternalClockGroup);
     assertIsFollower(m_sGroup1);
     assertIsFollower(m_sGroup2);
+    assertIsSoftMaster(m_sInternalClockGroup);
 }
 
 TEST_F(EngineSyncTest, SetExplicitMasterByLightsNoTracks) {
@@ -438,8 +456,8 @@ TEST_F(EngineSyncTest, SetExplicitMasterByLightsNoTracks) {
     // Set channel 2 to be follower.
     pButtonSyncEnabled2->slotSet(1);
 
-    // Now channel 1 should be master, and channel 2 should be a follower.
-    assertIsExplicitMaster(m_sGroup1);
+    // Channel 1 can't be master because it has no track, and channel 2 should be a follower.
+    assertIsFollower(m_sGroup1);
     assertIsFollower(m_sGroup2);
 
     // Now set channel 1 to not-master, all will be follower waiting for a valid bpm.

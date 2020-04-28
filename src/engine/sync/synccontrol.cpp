@@ -395,27 +395,21 @@ void SyncControl::slotSyncModeChangeRequest(double state) {
 void SyncControl::slotSyncMasterEnabledChangeRequest(double state) {
     SyncMode mode = getSyncMode();
     if (state > 0.0) {
-        if (mode == SYNC_MASTER_EXPLICIT) {
-            // Already master.
-            return;
-        }
-        if (mode == SYNC_MASTER_SOFT) {
-            // user request: make master explicit
-            m_pSyncMode->setAndConfirm(SYNC_MASTER_EXPLICIT);
-            return;
-        }
         if (m_pPassthroughEnabled->get()) {
             qDebug() << "Disallowing enabling of sync mode when passthrough active";
             return;
         }
-        m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_MASTER_EXPLICIT);
-    } else {
-        // Turning off master goes back to follower mode.
-        if (mode == SYNC_FOLLOWER) {
-            // Already not master.
+        // If we're not playing, override request and set as follower.
+        if (!isPlaying()) {
+            m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
             return;
         }
-        m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
+        m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_MASTER_EXPLICIT);
+    } else {
+        // If we're any sort of master, become follower.
+        if (isMaster(getSyncMode())) {
+            m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
+        }
     }
 }
 
