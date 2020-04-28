@@ -31,6 +31,10 @@ class Logging {
                            LogLevel logLevel,
                            LogLevel logFlushLevel,
                            bool debugAssertBreak);
+
+    // Sets only the loglevel without the on-disk settings.  Used by mixxx-test.
+    static void setLogLevel(LogLevel logLevel);
+
     static void shutdown();
 
     static void flushLogFile();

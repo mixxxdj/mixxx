@@ -315,4 +315,4 @@ QList<CueInfo> SeratoMarkers::getCues(double timingOffsetMillis) const {
     return cueInfos;
 }
 
-} //namespace mixxx
+} // namespace mixxx

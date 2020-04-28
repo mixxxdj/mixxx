@@ -52,14 +52,15 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     Q_OBJECT
   public:
     BaseTrackPlayerImpl(QObject* pParent,
-                        UserSettingsPointer pConfig,
-                        EngineMaster* pMixingEngine,
-                        EffectsManager* pEffectsManager,
-                        VisualsManager* pVisualsManager,
-                        EngineChannel::ChannelOrientation defaultOrientation,
-                        const QString& group,
-                        bool defaultMaster,
-                        bool defaultHeadphones);
+            UserSettingsPointer pConfig,
+            EngineMaster* pMixingEngine,
+            EffectsManager* pEffectsManager,
+            VisualsManager* pVisualsManager,
+            EngineChannel::ChannelOrientation defaultOrientation,
+            const QString& group,
+            bool defaultMaster,
+            bool defaultHeadphones,
+            bool primaryDeck);
     virtual ~BaseTrackPlayerImpl();
 
     TrackPointer getLoadedTrack() const final;
@@ -128,7 +129,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
     // TODO() these COs are reconnected during runtime
     // This may lock the engine
-    std::unique_ptr<ControlProxy> m_pFileBPM;
+    std::unique_ptr<ControlObject> m_pFileBPM;
     std::unique_ptr<ControlProxy> m_pKey;
 
     std::unique_ptr<ControlProxy> m_pReplayGain;

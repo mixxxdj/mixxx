@@ -14,6 +14,7 @@
 #include "mixer/playermanager.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
+#include "util/datetime.h"
 #include "util/logger.h"
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
@@ -497,13 +498,9 @@ QVariant BaseTrackTableModel::roleValue(
             }
             return QString("(%1)").arg(rawValue.toInt());
         } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED)) {
-            QDateTime gmtDate = rawValue.toDateTime();
-            gmtDate.setTimeSpec(Qt::UTC);
-            return gmtDate.toLocalTime();
+            return mixxx::localDateTimeFromUtc(mixxx::convertVariantToDateTime(rawValue));
         } else if (column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
-            QDateTime gmtDate = rawValue.toDateTime();
-            gmtDate.setTimeSpec(Qt::UTC);
-            return gmtDate.toLocalTime();
+            return mixxx::localDateTimeFromUtc(mixxx::convertVariantToDateTime(rawValue));
         } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
             bool ok;
             const auto bpmValue = rawValue.toDouble(&ok);

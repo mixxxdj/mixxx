@@ -38,6 +38,8 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
               UserSettingsPointer _config);
     virtual ~DlgPrefEQ();
 
+    QUrl helpUrl() const override;
+
     QString getEQEffectGroupForDeck(int deck) const;
     QString getQuickEffectGroupForDeck(int deck) const;
 
