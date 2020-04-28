@@ -1783,7 +1783,6 @@ TEST_F(EngineSyncTest, BeatMapQantizePlay) {
     ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup2, "quantize"), 1.0);
 
-    // Make Channel1 master to weed out any channel ordering issues.
     ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))->set(SYNC_MASTER);
     ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))->set(SYNC_FOLLOWER);
 
