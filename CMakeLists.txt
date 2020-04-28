@@ -1313,6 +1313,15 @@ endif()
 target_include_directories(mixxx-lib SYSTEM PUBLIC lib/fidlib)
 target_link_libraries(mixxx-lib PUBLIC fidlib)
 
+# KeyFinder
+find_package(KeyFinder)
+option(KEYFINDER "KeyFinder" OFF)
+if(KEYFINDER)
+  target_sources(mixxx-lib PRIVATE src/analyzer/plugins/analyzerkeyfinder.cpp)
+  target_compile_definitions(mixxx-lib PUBLIC __KEYFINDER__)
+  target_link_libraries(mixxx-lib PUBLIC KeyFinder::KeyFinder)
+endif()
+
 # FLAC
 find_package(FLAC REQUIRED)
 target_link_libraries(mixxx-lib PUBLIC FLAC::FLAC)
