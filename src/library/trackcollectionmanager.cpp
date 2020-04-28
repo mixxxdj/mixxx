@@ -65,7 +65,7 @@ TrackCollectionManager::TrackCollectionManager(
     // TODO: Extract and decouple LibraryScanner from TrackCollectionManager
     if (deleteTrackForTestingFn) {
         // Exclude the library scanner from tests
-        kLogger.info() << "Libary scanner is disabled in test mode";
+        kLogger.info() << "Library scanner is disabled in test mode";
     } else {
         m_pScanner = std::make_unique<LibraryScanner>(pDbConnectionPool, pConfig);
 
@@ -179,7 +179,7 @@ bool TrackCollectionManager::saveTrack(const TrackPointer& pTrack) {
 }
 
 // Export metadata and save the track in both the internal database
-// and external libaries.
+// and external libraries.
 void TrackCollectionManager::saveEvictedTrack(Track* pTrack) noexcept {
     saveTrack(pTrack, TrackMetadataExportMode::Immediate);
 }

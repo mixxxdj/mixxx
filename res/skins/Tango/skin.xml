@@ -356,10 +356,10 @@
       </Children>
     </SingletonDefinition>
 
-<!--  ################################################################
-       SkinContainer  ###############################################
-      skin incl. invisble size detector for deck Stars #############
-     ############################################################## -->
+<!--  ##############################################################
+      SkinContainer ################################################
+      skin incl. invisible size detector for deck Stars ############
+      ############################################################## -->
     <WidgetGroup>
       <ObjectName>SkinContainer</ObjectName>
       <Layout>vertical</Layout>
@@ -560,6 +560,6 @@
       </Children>
     </WidgetGroup>
     <!-- SkinContainer -->
-    <!-- /skin incl. invisble size detector for deck Stars -->
+    <!-- /skin incl. invisible size detector for deck Stars -->
   </Children>
 </skin>

@@ -75,7 +75,7 @@ void InternalClock::slotSyncMasterEnabledChangeRequest(double state) {
             return;
         }
         if (mode == SYNC_MASTER_SOFT) {
-            // user request: make master explicite
+            // user request: make master explicit
             m_mode = SYNC_MASTER_EXPLICIT;
             return;
         }

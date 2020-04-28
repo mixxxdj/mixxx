@@ -270,6 +270,7 @@ void DlgPrefKey::slotUpdate() {
             const auto& info = m_availablePlugins.at(i);
             if (info.id == m_selectedAnalyzerId) {
                 plugincombo->setCurrentIndex(i);
+                found = true;
                 break;
             }
         }

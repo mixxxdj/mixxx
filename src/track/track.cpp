@@ -943,7 +943,7 @@ void Track::importPendingCueInfosMarkDirtyAndUnlock(
         return;
     }
     // The sample rate can only be trusted after the audio
-    // stream has been openend.
+    // stream has been opened.
     DEBUG_ASSERT(m_streamInfo);
     const auto sampleRate =
             m_streamInfo->getSignalInfo().getSampleRate();
