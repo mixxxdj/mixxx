@@ -101,11 +101,6 @@ bool AnalyzerKeyFinder::processSamples(const CSAMPLE* pIn, const int iLen) {
         }
     }
     m_keyFinder.progressiveChromagram(m_audioData, m_workspace);
-    ChromaticKey key = chromaticKeyFromKeyFinderKeyT(
-            m_keyFinder.keyOfChromagram(m_workspace));
-    if (key != m_previousKey) {
-        m_resultKeys.push_back(qMakePair(key, m_currentFrame));
-    }
     return true;
 }
 
