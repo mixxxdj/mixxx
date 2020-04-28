@@ -13,6 +13,9 @@ QString TremoloEffect::getId() {
 // static
 EffectManifestPointer TremoloEffect::getManifest() {
     EffectManifestPointer pManifest(new EffectManifest());
+
+    pManifest->setAddDryToWet(true);
+
     pManifest->setId(getId());
     pManifest->setName(QObject::tr("Tremolo"));
     pManifest->setShortName(QObject::tr("Tremolo"));
