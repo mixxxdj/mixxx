@@ -41,7 +41,10 @@ class SeratoMarkersEntry {
     ~SeratoMarkersEntry() = default;
 
     QByteArray dump() const;
+    QByteArray dumpMP4() const;
+
     static SeratoMarkersEntryPointer parse(const QByteArray& data);
+    static SeratoMarkersEntryPointer parseMP4(const QByteArray& data);
 
     int type() const {
         return m_type;
@@ -135,12 +138,12 @@ class SeratoMarkers final {
     static bool parse(
             SeratoMarkers* seratoMarkers,
             const QByteArray& data);
-    static bool parseBase64Encoded(
+    static bool parseMP4(
             SeratoMarkers* seratoMarkers,
             const QByteArray& base64EncodedData);
 
     QByteArray dump() const;
-    QByteArray dumpBase64Encoded() const;
+    QByteArray dumpMP4() const;
 
     bool isEmpty() const {
         return m_entries.isEmpty() && !m_trackColor;

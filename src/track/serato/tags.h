@@ -32,8 +32,8 @@ class SeratoTags final {
         return SeratoMarkers::parse(&m_seratoMarkers, data);
     }
 
-    bool parseMarkersBase64Encoded(const QByteArray& data) {
-        return SeratoMarkers::parseBase64Encoded(&m_seratoMarkers, data);
+    bool parseMarkersMP4(const QByteArray& data) {
+        return SeratoMarkers::parseMP4(&m_seratoMarkers, data);
     }
 
     bool parseMarkers2(const QByteArray& data) {
@@ -48,8 +48,8 @@ class SeratoTags final {
         return m_seratoMarkers.dump();
     }
 
-    QByteArray dumpMarkersBase64Encoded() const {
-        return m_seratoMarkers2.dumpBase64Encoded();
+    QByteArray dumpMarkersMP4() const {
+        return m_seratoMarkers.dumpMP4();
     }
 
     QByteArray dumpMarkers2() const {

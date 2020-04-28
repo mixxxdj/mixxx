@@ -50,6 +50,17 @@ class SeratoMarkersTest : public testing::Test {
 
         EXPECT_EQ(inputValue, seratoMarkers.dump());
     }
+
+    void parseMarkersDataMP4(const QByteArray& inputValue, bool valid) {
+        mixxx::SeratoMarkers seratoMarkers;
+        bool parseOk = mixxx::SeratoMarkers::parseMP4(&seratoMarkers, inputValue);
+        EXPECT_EQ(valid, parseOk);
+        if (!parseOk) {
+            return;
+        }
+
+        EXPECT_EQ(inputValue, seratoMarkers.dumpMP4());
+    }
 };
 
 TEST_F(SeratoMarkersTest, ParseEntry) {
@@ -155,33 +166,32 @@ TEST_F(SeratoMarkersTest, ParseMarkersData) {
     }
 }
 
+TEST_F(SeratoMarkersTest, ParseMarkersDataMP4) {
+    QDir dir("src/test/serato/data/markers_mp4");
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << "*.octet-stream");
+
+    QFileInfoList list = dir.entryInfoList();
+    for (int i = 0; i < list.size(); i++) {
+        QFileInfo fileInfo = list.at(i);
+        qDebug() << "--- File:" << fileInfo.fileName();
+        QFile file(dir.filePath(fileInfo.fileName()));
+        bool openOk = file.open(QIODevice::ReadOnly);
+        EXPECT_TRUE(openOk);
+        if (!openOk) {
+            continue;
+        }
+        QByteArray data = file.readAll();
+        parseMarkersDataMP4(data, true);
+    }
+}
+
 TEST_F(SeratoMarkersTest, ParseEmptyData) {
     QByteArray inputValue;
     mixxx::SeratoMarkers seratoMarkers;
     mixxx::SeratoMarkers::parse(&seratoMarkers, inputValue);
     QByteArray outputValue = seratoMarkers.dump();
     EXPECT_EQ(inputValue, outputValue);
-}
-
-TEST_F(SeratoMarkersTest, ParseAndDumpBase64EncodedMP4) {
-    // 5 (of in total 8) cue points from an MP4 file
-    const char* referenceData =
-            "YXBwbGljYXRpb24vb2N0ZXQtc3RyZWFtAABTZXJhdG8gTWFya2Vyc18AAgUAAAAOAAAAr///\n"
-            "//8A/////wDMAAABAAAATxL/////AP////8AzIgAAQAAALlo/////wD/////AAAAzAEAAAC5\n"
-            "aP////8A/////wDMzAABAAABMWH/////AP////8AAMwAAQD//////////wD/////AAAAAAMA\n"
-            "//////////8A/////wAAAAADAP//////////AP////8AAAAAAwD//////////wD/////AAAA\n"
-            "AAMA//////////8A/////wAAAAADAP//////////AP////8AAAAAAwD//////////wD/////\n"
-            "AAAAAAMA//////////8A/////wAAAAADAP//////////AP////8AAAAAAwAA////A";
-    const auto inputData = QByteArray(referenceData);
-    mixxx::SeratoMarkers seratoMarkers;
-    EXPECT_TRUE(mixxx::SeratoMarkers::parseBase64Encoded(&seratoMarkers, inputData));
-    const auto outputData = seratoMarkers.dumpBase64Encoded();
-    if (inputData != outputData) {
-        std::cerr << "inputData:" << inputData.constData() << std::endl;
-        std::cerr << "outputData: " << outputData.constData() << std::endl;
-    }
-    EXPECT_EQ(inputData.size(), outputData.size());
-    EXPECT_EQ(inputData, outputData);
 }
 
 } // namespace

@@ -165,7 +165,7 @@ bool parseSeratoMarkersBase64Encoded(
     auto byteArray = toQByteArrayRaw(byteVec);
 
     SeratoTags seratoTags(pTrackMetadata->getTrackInfo().getSeratoTags());
-    bool isValid = seratoTags.parseMarkersBase64Encoded(byteArray);
+    bool isValid = seratoTags.parseMarkersMP4(byteArray);
     if (isValid) {
         pTrackMetadata->refTrackInfo().setSeratoTags(seratoTags);
     }
@@ -205,7 +205,7 @@ bool parseSeratoMarkers2Base64Encoded(
 TagLib::String dumpSeratoMarkersBase64Encoded(
         const TrackMetadata& trackMetadata) {
     const QByteArray utf8Data =
-            trackMetadata.getTrackInfo().getSeratoTags().dumpMarkersBase64Encoded();
+            trackMetadata.getTrackInfo().getSeratoTags().dumpMarkersMP4();
     return TagLib::String(
             utf8Data.constData(),
             TagLib::String::UTF8);

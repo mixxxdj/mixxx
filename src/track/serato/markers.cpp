@@ -9,6 +9,7 @@ namespace {
 const int kNumEntries = 14;
 const int kLoopEntryStartIndex = 5;
 const int kEntrySize = 22;
+const int kEntrySizeMP4 = 19;
 const quint16 kVersion = 0x0205;
 
 const QByteArray kSeratoMarkersBase64EncodedPrefix = QByteArray(
@@ -87,6 +88,23 @@ QByteArray SeratoMarkersEntry::dump() const {
     stream.writeRawData("\x00\x7F\x7F\x7F\x7F\x7F", 6);
     stream << serato32fromUint24(static_cast<quint32>(m_color))
            << static_cast<quint8>(m_type) << static_cast<quint8>(m_isLocked);
+    return data;
+}
+
+QByteArray SeratoMarkersEntry::dumpMP4() const {
+    QByteArray data;
+    data.resize(kEntrySizeMP4);
+
+    QDataStream stream(&data, QIODevice::WriteOnly);
+    stream.setByteOrder(QDataStream::BigEndian);
+    stream << static_cast<quint32>(m_startPosition)
+           << static_cast<quint32>(m_endPosition);
+    stream.writeRawData("\x00\xFF\xFF\xFF\xFF\x00", 6);
+    stream << static_cast<quint8>(qRed(m_color))
+           << static_cast<quint8>(qGreen(m_color))
+           << static_cast<quint8>(qBlue(m_color))
+           << static_cast<quint8>(m_type)
+           << static_cast<quint8>(m_isLocked);
     return data;
 }
 
@@ -182,6 +200,67 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parse(const QByteArray& data) {
     return pEntry;
 }
 
+SeratoMarkersEntryPointer SeratoMarkersEntry::parseMP4(const QByteArray& data) {
+    if (data.length() != kEntrySizeMP4) {
+        qWarning() << "Parsing SeratoMarkersEntry (MP4) failed:"
+                   << "Length" << data.length() << "!=" << kEntrySizeMP4;
+        return nullptr;
+    }
+
+    quint32 startPosition;
+    quint32 endPosition;
+    char buffer[6];
+    quint8 colorRed;
+    quint8 colorGreen;
+    quint8 colorBlue;
+    quint8 type;
+    bool isLocked;
+
+    QDataStream stream(data);
+    stream.setByteOrder(QDataStream::BigEndian);
+    stream >> startPosition >> endPosition;
+
+    if (stream.readRawData(buffer, sizeof(buffer)) != sizeof(buffer)) {
+        qWarning() << "Parsing SeratoMarkersEntry (MP4) failed:"
+                   << "unable to read bytes 8..14";
+        return nullptr;
+    }
+
+    stream >> colorRed >> colorGreen >> colorBlue >> type >> isLocked;
+    const RgbColor color = RgbColor(qRgb(colorRed, colorGreen, colorBlue));
+
+    // Make sure that the unknown (and probably unused) bytes have the expected value
+    if (strncmp(buffer, "\x00\xFF\xFF\xFF\xFF\x00", sizeof(buffer)) != 0) {
+        qWarning() << "Parsing SeratoMarkersEntry (MP4) failed:"
+                   << "Unexpected value at offset 8";
+        return nullptr;
+    }
+
+    if (stream.status() != QDataStream::Status::Ok) {
+        qWarning() << "Parsing SeratoMarkersEntry failed:"
+                   << "Stream read failed with status" << stream.status();
+        return nullptr;
+    }
+
+    if (!stream.atEnd()) {
+        qWarning() << "Parsing SeratoMarkersEntry failed:"
+                   << "Unexpected trailing data";
+        return nullptr;
+    }
+
+    SeratoMarkersEntryPointer pEntry =
+            SeratoMarkersEntryPointer(new SeratoMarkersEntry(
+                    true,
+                    startPosition,
+                    type == static_cast<quint8>(TypeId::Loop),
+                    endPosition,
+                    color,
+                    type,
+                    isLocked));
+    qDebug() << "SeratoMarkersEntry" << *pEntry;
+    return pEntry;
+}
+
 //static
 bool SeratoMarkers::parse(
         SeratoMarkers* seratoMarkers, const QByteArray& data) {
@@ -264,7 +343,7 @@ bool SeratoMarkers::parse(
 }
 
 //static
-bool SeratoMarkers::parseBase64Encoded(
+bool SeratoMarkers::parseMP4(
         SeratoMarkers* seratoMarkers,
         const QByteArray& base64EncodedData) {
     const auto decodedData = QByteArray::fromBase64(base64EncodedData);
@@ -273,13 +352,92 @@ bool SeratoMarkers::parseBase64Encoded(
                    << "Unexpected prefix";
         return false;
     }
-    DEBUG_ASSERT(decodedData.size() >= kSeratoMarkersBase64EncodedPrefix.size());
-    if (!parse(
-                seratoMarkers,
-                decodedData.mid(kSeratoMarkersBase64EncodedPrefix.size()))) {
-        qWarning() << "Parsing base64encoded SeratoMarkers_ failed!";
+
+    QDataStream stream(decodedData.mid(kSeratoMarkersBase64EncodedPrefix.length()));
+    stream.setByteOrder(QDataStream::BigEndian);
+
+    quint16 version;
+    stream >> version;
+    if (version != kVersion) {
+        qWarning() << "Parsing SeratoMarkers_ (MP4) failed:"
+                   << "Unknown Serato Markers_ tag version" << QString::number(version, 16);
         return false;
     }
+
+    quint32 numEntries;
+    stream >> numEntries;
+
+    if (numEntries != kNumEntries) {
+        qWarning() << "Parsing SeratoMarkers_ (MP4) failed:"
+                   << "Expected" << kNumEntries << "entries but found"
+                   << numEntries;
+        return false;
+    }
+
+    char buffer[kEntrySizeMP4];
+    QList<SeratoMarkersEntryPointer> entries;
+    for (quint32 i = 0; i < numEntries; i++) {
+        if (stream.readRawData(buffer, sizeof(buffer)) != sizeof(buffer)) {
+            qWarning() << "Parsing SeratoMarkersEntry (MP4) failed:"
+                       << "unable to read entry data";
+            return false;
+        }
+
+        QByteArray entryData = QByteArray(buffer, kEntrySizeMP4);
+        SeratoMarkersEntryPointer pEntry =
+                SeratoMarkersEntryPointer(SeratoMarkersEntry::parseMP4(entryData));
+        if (!pEntry) {
+            qWarning() << "Parsing SeratoMarkers_ (MP4) failed:"
+                       << "Unable to parse entry!";
+            return false;
+        }
+
+        if (i < kLoopEntryStartIndex &&
+                pEntry->typeId() != SeratoMarkersEntry::TypeId::Cue) {
+            qWarning() << "Parsing SeratoMarkers_ (MP4) failed:"
+                       << "Expected cue entry but found type" << pEntry->type();
+            return false;
+        }
+
+        if (i >= kLoopEntryStartIndex &&
+                pEntry->typeId() != SeratoMarkersEntry::TypeId::Loop) {
+            qWarning() << "Parsing SeratoMarkers_ (MP4) failed:"
+                       << "Expected loop entry but found type"
+                       << pEntry->type();
+            return false;
+        }
+
+        entries.append(pEntry);
+    }
+
+    quint8 field1;
+    quint8 colorRed;
+    quint8 colorGreen;
+    quint8 colorBlue;
+    stream >> field1 >> colorRed >> colorGreen >> colorBlue;
+    RgbColor trackColor = RgbColor(qRgb(colorRed, colorGreen, colorBlue));
+
+    if (field1 != 0x00) {
+        qWarning() << "Parsing SeratoMarkers_ (MP4) failed:"
+                   << "Unexpected value before track color"
+                   << field1;
+        return false;
+    }
+
+    if (stream.status() != QDataStream::Status::Ok) {
+        qWarning() << "Parsing SeratoMarkers_ failed:"
+                   << "Stream read failed with status" << stream.status();
+        return false;
+    }
+
+    if (!stream.atEnd()) {
+        qWarning() << "Parsing SeratoMarkers_ failed:"
+                   << "Unexpected trailing data";
+        return false;
+    }
+    seratoMarkers->setEntries(std::move(entries));
+    seratoMarkers->setTrackColor(trackColor);
+
     return true;
 }
 
@@ -305,31 +463,51 @@ QByteArray SeratoMarkers::dump() const {
     return data;
 }
 
-QByteArray SeratoMarkers::dumpBase64Encoded() const {
-    QByteArray payload = dump();
-
-    // If the non-encoded payload is empty, just exit early.
-    if (payload.isEmpty()) {
+QByteArray SeratoMarkers::dumpMP4() const {
+    if (isEmpty()) {
+        // Return empty QByteArray
         return {};
     }
 
-    payload.prepend(kSeratoMarkersBase64EncodedPrefix);
+    QByteArray data;
+    data.resize(kSeratoMarkersBase64EncodedPrefix.length() +
+            sizeof(quint16) + 2 * sizeof(quint32) +
+            kEntrySizeMP4 * m_entries.size());
+    QDataStream stream(&data, QIODevice::WriteOnly);
+    stream.setByteOrder(QDataStream::BigEndian);
+    stream.writeRawData(kSeratoMarkersBase64EncodedPrefix.constData(),
+            kSeratoMarkersBase64EncodedPrefix.length());
+    stream << kVersion << m_entries.size();
+    for (int i = 0; i < m_entries.size(); i++) {
+        SeratoMarkersEntryPointer pEntry = m_entries.at(i);
+        stream.writeRawData(pEntry->dumpMP4(), kEntrySizeMP4);
+    }
+
+    RgbColor trackColor = m_trackColor.value_or(SeratoTags::kDefaultTrackColor);
+    stream << static_cast<quint8>(0x00)
+           << static_cast<quint8>(qRed(trackColor))
+           << static_cast<quint8>(qGreen(trackColor))
+           << static_cast<quint8>(qBlue(trackColor));
 
     // A newline char is inserted at every 72 bytes of base64-encoded content.
     // Hence, we can split the data into blocks of 72 bytes * 3/4 = 54 bytes
     // and base64-encode them one at a time:
-    const int base64Size = (payload.size() * 4 + 2) / 3;
+    const int base64Size = (data.size() * 4 + 2) / 3;
     QByteArray base64Data;
     base64Data.reserve(base64Size + base64Size / 72);
     int offset = 0;
-    while (offset < payload.size()) {
+    while (offset < data.size()) {
         if (offset > 0) {
             base64Data.append('\n');
         }
-        QByteArray block = payload.mid(offset, 54);
+        QByteArray block = data.mid(offset, 54);
         base64Data.append(block.toBase64(QByteArray::Base64Encoding | QByteArray::OmitTrailingEquals));
         offset += block.size();
     }
+
+    // FIXME: Why do we need to append another "A" here?
+    base64Data.append('A');
+
     return base64Data;
 }
 
