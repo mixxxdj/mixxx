@@ -193,7 +193,7 @@ void WebTask::slotStart(int timeoutMillis) {
         return;
     }
     // Still idle after the request has been started
-    // successfully, i.e. nothing happend yet in this
+    // successfully, i.e. nothing happened yet in this
     // thread.
     DEBUG_ASSERT(m_status == Status::Idle);
     m_status = Status::Pending;

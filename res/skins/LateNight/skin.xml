@@ -105,7 +105,7 @@
             style_scheme  icons & backgrounds for library, splitters, spinnies,
                           covers, vinyl control, toolbar
             bg_tile       allows to experiment with the background tile of recessed
-                          areas without having to creat a new style_scheme folder
+                          areas without having to create a new style_scheme folder
             Note:   button borders and icons are set in style_[SCHEME].qss, too
                     so do a mass-find-and-replace there, as well. -->
       <SetVariable name="btn_scheme">classic</SetVariable>
@@ -352,7 +352,7 @@
       <Layout>vertical</Layout>
       <SizePolicy>me,me</SizePolicy>
       <Children>
-        <!-- regular/maximized libary + skin settings menu -->
+        <!-- regular/maximized library + skin settings menu -->
         <WidgetGroup>
           <Layout>horizontal</Layout>
           <SizePolicy>me,me</SizePolicy>
@@ -426,7 +426,7 @@
             <Template src="skin:skin_settings.xml"/>
 
           </Children>
-        </WidgetGroup><!-- regular/maximized libary + skin settings menu -->
+        </WidgetGroup><!-- regular/maximized library + skin settings menu -->
 
         <Template src="skin:toolbar.xml"/>
         <Template src="skin:screen_h-size_detection.xml"/>

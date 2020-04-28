@@ -1296,7 +1296,7 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
 
     // Listen to signals from Track objects and forward them to
     // receivers. TrackDAO works as a relay for selected track signals
-    // that allows receivers to use permament connections with
+    // that allows receivers to use permanent connections with
     // TrackDAO instead of connecting to individual Track objects.
     connect(pTrack.get(),
             &Track::dirty,

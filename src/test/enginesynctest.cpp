@@ -1529,7 +1529,7 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     ProcessBuffer();
 
     // We expect that the second deck (master) has adjusted the "beat_distance" of the
-    // internal clock and the fist deck is advanced sightly but slower to slowly get
+    // internal clock and the fist deck is advanced slightly but slower to slowly get
     // rid of the additional buffer ahead
     // TODO: It does sounds odd to start the track 1 at a random position and adjust the
     // phase later. Seeking into phase is the best option even with quantize off.
@@ -1803,7 +1803,7 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
     EXPECT_DOUBLE_EQ(130, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
     EXPECT_DOUBLE_EQ(100, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
-    // we aligne here to the past beat, because beat_distance < 1.0/8
+    // we align here to the past beat, because beat_distance < 1.0/8
     EXPECT_DOUBLE_EQ(
             ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")) / 130 * 100,
             ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));

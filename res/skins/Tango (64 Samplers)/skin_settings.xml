@@ -95,7 +95,7 @@ Description:
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-                  <WidgetGroup><!-- translucent cover when Hot Cues are invisble -->
+                  <WidgetGroup><!-- translucent cover when Hot Cues are invisible -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
                     <Size>182f,13me</Size>
@@ -704,7 +704,7 @@ Description:
               <!-- index 0 due to bug -->
               <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-              <!-- translucent cover when Effects are invisble -->
+              <!-- translucent cover when Effects are invisible -->
               <WidgetGroup>
                 <ObjectName>SubmenuCover</ObjectName>
                 <Layout>vertical</Layout>
