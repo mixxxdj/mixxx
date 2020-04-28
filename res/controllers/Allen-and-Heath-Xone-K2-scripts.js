@@ -266,14 +266,14 @@ XoneK2.Deck = function (column, deckNumber, midiChannel) {
         unshift: function () {
             this.input = function (channel, control, value, status) {
                 direction = (value === 1) ? 1 : -1;
-                var gain = engine.getValue(this.group, "pregain");
-                engine.setValue(this.group, "pregain", gain + 0.025 * direction);
+                engine.setValue(this.group, "jog", direction * 3);
             };
         },
         shift: function () {
             this.input = function (channel, control, value, status) {
                 direction = (value === 1) ? 1 : -1;
-                engine.setValue(this.group, "jog", direction);
+                var gain = engine.getValue(this.group, "pregain");
+                engine.setValue(this.group, "pregain", gain + 0.025 * direction);
             };
         },
         supershift: function () {
