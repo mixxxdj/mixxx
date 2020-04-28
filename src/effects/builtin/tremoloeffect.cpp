@@ -216,9 +216,8 @@ void TremoloEffect::processChannel(const ChannelHandle& handle,
         //  This function gives the gain to apply for position in [0 1]
         //  Plot the function to get a grasp :
         //  From a sine to a square wave depending on the smooth parameter
-        double gainTarget = 1.0 - (depth / 2.0)
-                + (atan(sin(2.0 * M_PI * position) / smooth) / (2 * atan(1 / smooth)))
-                    * depth;
+        double gainTarget = depth *
+                (atan(sin(2.0 * M_PI * position) / smooth) / (2 * atan(1 / smooth)));
 
         if (gainTarget > gain + kMaxGainIncrement) {
             gain += kMaxGainIncrement;
