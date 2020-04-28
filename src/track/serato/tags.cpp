@@ -3,6 +3,7 @@
 #include <mp3guessenc.h>
 
 #include "track/serato/cueinfoimporter.h"
+#include "track/taglib/trackmetadata_file.h"
 #include "util/color/predefinedcolorpalettes.h"
 
 namespace {
@@ -116,7 +117,7 @@ double SeratoTags::guessTimingOffsetMillis(
     // https://github.com/mixxxdj/mixxx/pull/2119
 
     double timingOffset = 0;
-    if (filePath.toLower().endsWith(".mp3")) {
+    if (taglib::getFileTypeFromFileName(filePath) == taglib::FileType::MP3) {
 #if defined(__COREAUDIO__)
         int timingShiftCase = mp3guessenc_timing_shift_case(filePath.toStdString().c_str());
 
