@@ -403,6 +403,11 @@ TEST_F(SeratoMarkers2Test, ParseMarkers2DataMP4) {
             mixxx::taglib::FileType::MP4);
 }
 
+TEST_F(SeratoMarkers2Test, ParseMarkers2DataFLAC) {
+    parseMarkers2DataInDirectory(QDir("src/test/serato/data/flac/markers2"),
+            mixxx::taglib::FileType::FLAC);
+}
+
 TEST_F(SeratoMarkers2Test, ParseEmptyDataMP3) {
     parseEmptyMarkers2Data(mixxx::taglib::FileType::MP3);
 }
