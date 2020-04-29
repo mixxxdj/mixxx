@@ -371,6 +371,11 @@ TEST_F(SeratoMarkers2Test, ParseMarkers2DataMP3) {
             mixxx::taglib::FileType::MP3);
 }
 
+TEST_F(SeratoMarkers2Test, ParseMarkers2DataMP4) {
+    parseMarkers2DataInDirectory(QDir("src/test/serato/data/mp4/markers2"),
+            mixxx::taglib::FileType::MP4);
+}
+
 TEST_F(SeratoMarkers2Test, ParseEmptyDataMP3) {
     QByteArray inputValue;
     mixxx::SeratoMarkers2 seratoMarkers2;
@@ -398,32 +403,6 @@ TEST_F(SeratoMarkers2Test, ParseAndDumpBase64EncodedXiph) {
     mixxx::SeratoMarkers2 seratoMarkers2;
     EXPECT_TRUE(mixxx::SeratoMarkers2::parseBase64Encoded(&seratoMarkers2, inputData));
     const auto outputData = seratoMarkers2.dumpBase64Encoded();
-    EXPECT_EQ(inputData.size(), outputData.size());
-    EXPECT_EQ(inputData, outputData);
-}
-
-TEST_F(SeratoMarkers2Test, ParseAndDumpBase64EncodedMP4) {
-    // 8 cue points from an MP4 file
-    const char* referenceData =
-            "YXBwbGljYXRpb24vb2N0ZXQtc3RyZWFtAABTZXJhdG8gTWFya2VyczIAAQFBUUZEVDB4UFVn\n"
-            "QUFBQUFFQVAvLy8wTlZSUUFBQUFBTkFBQUFBQUN2QU13QUFBQUFBRU5WUlFBQUFBQU5BQUVB\n"
-            "QUU4U0FNeUkKQUFBQUFFTlZSUUFBQUFBTkFBSUFBTGxvQUFBQXpBQUFBRU5WUlFBQUFBQU5B\n"
-            "QU1BQUxsb0FNek1BQUFBQUVOVlJRQUFBQUFOCkFBUUFBVEZoQUFETUFBQUFBRU5WUlFBQUFB\n"
-            "QU5BQVVBQVhoRkFNd0F6QUFBQUVOVlJRQUFBQUFOQUFZQUFkcHVBQURNekFBQQpBRU5WUlFB\n"
-            "QUFBQU5BQWNBQTlXVUFJZ0F6QUFBQUVKUVRVeFBRMHNBQUFBQUFRQUEAAAAAAAAAAAAAAAAA\n"
-            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
-            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
-            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
-            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
-            "AAAAAAAAAAAAAAAAAAAAAA";
-    const auto inputData = QByteArray(referenceData);
-    mixxx::SeratoMarkers2 seratoMarkers2;
-    EXPECT_TRUE(mixxx::SeratoMarkers2::parseBase64Encoded(&seratoMarkers2, inputData));
-    const auto outputData = seratoMarkers2.dumpBase64Encoded();
-    if (inputData != outputData) {
-        std::cerr << "inputData:" << inputData.constData() << std::endl;
-        std::cerr << "outputData: " << outputData.constData() << std::endl;
-    }
     EXPECT_EQ(inputData.size(), outputData.size());
     EXPECT_EQ(inputData, outputData);
 }
