@@ -11,7 +11,7 @@ class CrateTableModel : public BaseSqlTableModel {
     Q_OBJECT
 
   public:
-    CrateTableModel(QObject* parent, TrackCollection* pTrackCollection);
+    CrateTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager);
     ~CrateTableModel() final;
 
     void selectCrate(

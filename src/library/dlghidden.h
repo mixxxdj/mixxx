@@ -1,11 +1,11 @@
-#ifndef DLGHIDDEN_H
-#define DLGHIDDEN_H
+#pragma once
+
+#include <QItemSelection>
 
 #include "library/ui_dlghidden.h"
 #include "preferences/usersettings.h"
 #include "library/library.h"
 #include "library/libraryview.h"
-#include "library/trackcollection.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 
 class WTrackTableView;
@@ -14,15 +14,17 @@ class QItemSelection;
 
 class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
     Q_OBJECT
+
   public:
     DlgHidden(QWidget* parent, UserSettingsPointer pConfig,
-              Library* pLibrary, TrackCollection* pTrackCollection,
+              Library* pLibrary,
               KeyboardEventFilter* pKeyboard);
     ~DlgHidden() override;
 
     void onShow() override;
     bool hasFocus() const override;
     void onSearch(const QString& text) override;
+    QString currentSearch();
 
   public slots:
     void clicked();
@@ -37,5 +39,3 @@ class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
     WTrackTableView* m_pTrackTableView;
     HiddenTableModel* m_pHiddenTableModel;
 };
-
-#endif //DLGHIDDEN_H

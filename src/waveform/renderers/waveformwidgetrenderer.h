@@ -21,9 +21,9 @@ class VSyncThread;
 
 class WaveformWidgetRenderer {
   public:
-    static const int s_waveformMinZoom;
-    static const int s_waveformMaxZoom;
-    static const int s_waveformDefaultZoom;
+    static const double s_waveformMinZoom;
+    static const double s_waveformMaxZoom;
+    static const double s_waveformDefaultZoom;
     static const double s_defaultPlayMarkerPosition;
 
   public:
@@ -43,7 +43,7 @@ class WaveformWidgetRenderer {
     double getFirstDisplayedPosition() const { return m_firstDisplayedPosition;}
     double getLastDisplayedPosition() const { return m_lastDisplayedPosition;}
 
-    void setZoom(int zoom);
+    void setZoom(double zoom);
 
     void setDisplayBeatGrid(bool set);
     void setDisplayBeatGridAlpha(int alpha);
@@ -71,15 +71,15 @@ class WaveformWidgetRenderer {
     double getPlayPos() const { return m_playPos;}
     double getPlayPosVSample() const { return m_playPosVSample;}
     double getZoomFactor() const { return m_zoomFactor;}
-    double getRateAdjust() const { return m_rateAdjust;}
     double getGain() const { return m_gain;}
     int getTrackSamples() const { return m_trackSamples;}
 
     int beatGridAlpha() const { return m_alphaBeatGrid; }
 
-    void resize(int width, int height);
+    void resize(int width, int height, float devicePixelRatio);
     int getHeight() const { return m_height;}
     int getWidth() const { return m_width;}
+    float getDevicePixelRatio() const { return m_devicePixelRatio; }
     int getLength() const { return m_orientation == Qt::Horizontal ? m_width : m_height;}
     int getBreadth() const { return m_orientation == Qt::Horizontal ? m_height : m_width;}
     Qt::Orientation getOrientation() const { return m_orientation;}
@@ -112,6 +112,7 @@ class WaveformWidgetRenderer {
     Qt::Orientation m_orientation;
     int m_height;
     int m_width;
+    float m_devicePixelRatio;
     WaveformSignalColors m_colors;
 
     double m_firstDisplayedPosition;
@@ -119,7 +120,6 @@ class WaveformWidgetRenderer {
     double m_trackPixelCount;
 
     double m_zoomFactor;
-    double m_rateAdjust;
     double m_visualSamplePerPixel;
     double m_audioSamplePerPixel;
 
@@ -130,12 +130,8 @@ class WaveformWidgetRenderer {
     QSharedPointer<VisualPlayPosition> m_visualPlayPosition;
     double m_playPos;
     int m_playPosVSample;
-    ControlProxy* m_pRateControlObject;
-    double m_rate;
-    ControlProxy* m_pRateRangeControlObject;
-    double m_rateRange;
-    ControlProxy* m_pRateDirControlObject;
-    double m_rateDir;
+    ControlProxy* m_pRateRatioCO;
+    double m_rateRatio;
     ControlProxy* m_pGainControlObject;
     double m_gain;
     ControlProxy* m_pTrackSamplesControlObject;

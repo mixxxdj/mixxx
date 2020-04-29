@@ -12,6 +12,7 @@
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dlgcoverartfullsize.h"
+#include "util/compatibility.h"
 #include "util/dnd.h"
 #include "util/math.h"
 
@@ -190,7 +191,11 @@ QPixmap WCoverArt::scaledCoverArt(const QPixmap& normal) {
     if (normal.isNull()) {
         return QPixmap();
     }
-    return normal.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QPixmap scaled;
+    scaled = normal.scaled(size() * getDevicePixelRatioF(this),
+            Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    scaled.setDevicePixelRatio(getDevicePixelRatioF(this));
+    return scaled;
 }
 
 void WCoverArt::paintEvent(QPaintEvent* /*unused*/) {
@@ -231,13 +236,27 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::RightButton && m_loadedTrack) { // show context-menu
         m_pMenu->setCoverArt(m_lastRequestedCover);
         m_pMenu->popup(event->globalPos());
-    } else if (event->button() == Qt::LeftButton) { // init/close fullsize cover
+    } else if (event->button() == Qt::LeftButton) {
+        // do nothing if left button is pressed,
+        // wait for button release
+        m_clickTimer.setSingleShot(true);
+        m_clickTimer.start(500);
+    }
+}
+
+void WCoverArt::mouseReleaseEvent(QMouseEvent* event) {
+    if (!m_bEnable) {
+        return;
+    }
+
+    if (event->button() == Qt::LeftButton && m_loadedTrack &&
+            m_clickTimer.isActive()) { // init/close fullsize cover
         if (m_pDlgFullSize->isVisible()) {
             m_pDlgFullSize->close();
         } else {
             m_pDlgFullSize->init(m_loadedTrack);
         }
-    }
+    } // else it was a long leftclick or a right click that's already been processed
 }
 
 void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
@@ -249,11 +268,8 @@ void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
 void WCoverArt::dragEnterEvent(QDragEnterEvent* event) {
     // If group is empty then we are a library cover art widget and we don't
     // accept track drops.
-    if (!m_group.isEmpty() &&
-            DragAndDropHelper::allowLoadToPlayer(m_group, m_pConfig) &&
-            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_group,
-                                               true, false)) {
-        event->acceptProposedAction();
+    if (!m_group.isEmpty()) {
+        DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
     } else {
         event->ignore();
     }
@@ -262,15 +278,9 @@ void WCoverArt::dragEnterEvent(QDragEnterEvent* event) {
 void WCoverArt::dropEvent(QDropEvent *event) {
     // If group is empty then we are a library cover art widget and we don't
     // accept track drops.
-    if (!m_group.isEmpty() &&
-            DragAndDropHelper::allowLoadToPlayer(m_group, m_pConfig)) {
-        QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
-                *event->mimeData(), m_group, true, false);
-        if (!files.isEmpty()) {
-            event->accept();
-            emit(trackDropped(files.at(0).absoluteFilePath(), m_group));
-            return;
-        }
+    if (!m_group.isEmpty()) {
+        DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
+    } else {
+        event->ignore();
     }
-    event->ignore();
 }

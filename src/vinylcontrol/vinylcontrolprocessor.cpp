@@ -25,8 +25,10 @@ VinylControlProcessor::VinylControlProcessor(QObject* pParent, UserSettingsPoint
           m_bReportSignalQuality(false),
           m_bQuit(false),
           m_bReloadConfig(false) {
-    connect(m_pToggle, SIGNAL(valueChanged(double)),
-            this, SLOT(toggleDeck(double)),
+    connect(m_pToggle,
+            &ControlPushButton::valueChanged,
+            this,
+            &VinylControlProcessor::toggleDeck,
             Qt::DirectConnection);
 
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
@@ -80,7 +82,6 @@ void VinylControlProcessor::run() {
     QThread::currentThread()->setObjectName(QString("VinylControlProcessor %1").arg(++id));
 
     while (!m_bQuit) {
-        Event::start("VinylControlProcessor");
         if (m_bReloadConfig) {
             reloadConfig();
             m_bReloadConfig = false;
@@ -128,7 +129,6 @@ void VinylControlProcessor::run() {
 
         // Wait for a signal from the main thread or engine thread that we
         // should wake up and process input.
-        Event::end("VinylControlProcessor");
         m_waitForSampleMutex.lock();
         m_samplesAvailableSignal.wait(&m_waitForSampleMutex);
         m_waitForSampleMutex.unlock();

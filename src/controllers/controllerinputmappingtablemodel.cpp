@@ -1,5 +1,3 @@
-#include <QtAlgorithms>
-
 #include "controllers/controllerinputmappingtablemodel.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midiutils.h"
@@ -106,7 +104,7 @@ void ControllerInputMappingTableModel::removeMappings(QModelIndexList indices) {
     foreach (const QModelIndex& index, indices) {
         rows.append(index.row());
     }
-    qSort(rows);
+    std::sort(rows.begin(), rows.end());
 
     int lastRow = -1;
     while (!rows.empty()) {
@@ -202,7 +200,7 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
             case MIDI_COLUMN_ACTION:
                 if (role == Qt::UserRole) {
                     // TODO(rryan): somehow get the delegate display text?
-                    return mapping.control.group + "," + mapping.control.item;
+                    return QVariant(mapping.control.group + QStringLiteral(",") + mapping.control.item);
                 }
                 return qVariantFromValue(mapping.control);
             case MIDI_COLUMN_COMMENT:
@@ -249,11 +247,11 @@ bool ControllerInputMappingTableModel::setData(const QModelIndex& index,
                 emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_OPTIONS:
-                mapping.options = qVariantValue<MidiOptions>(value);
+                mapping.options = value.value<MidiOptions>();
                 emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_ACTION:
-                mapping.control = qVariantValue<ConfigKey>(value);
+                mapping.control = value.value<ConfigKey>();
                 emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_COMMENT:

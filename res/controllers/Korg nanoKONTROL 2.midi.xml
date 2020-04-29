@@ -6,7 +6,7 @@
         <description>Controller mapping for the Korg Nanokontrol 2.  Intended to supplement a standard DJ controller setup.  Dedicated volume faders, and a
         large variety of controls for eight decks.  Gives access to a lot of controls that wouldn't normally have room to be mapped onto a standard controller.
         Created Feb 2013 for Mixxx 1.11.</description>
-		<wiki></wiki>
+        <wiki></wiki>
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=4759</forums>
     </info>
     <controller id="NK2">

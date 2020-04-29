@@ -23,7 +23,21 @@ Variables:
       <WidgetGroup>
         <ObjectName>GuiCover</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>me,min</SizePolicy>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup><Size>0f,19f</Size></WidgetGroup>
+          <Label>
+            <ObjectName>UnconfiguredHeadphonePrevDeck</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+            <Text>No Headphone</Text>
+          </Label>
+          <Label>
+            <ObjectName>UnconfiguredHeadphonePrevDeck</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+            <Text>device configured</Text>
+          </Label>
+          <WidgetGroup><Size>0f,0me</Size></WidgetGroup>
+        </Children>
         <Connection>
           <ConfigKey>[Master],headEnabled</ConfigKey>
           <BindProperty>visible</BindProperty>
@@ -80,11 +94,12 @@ Variables:
                 <Children>
                   <Template src="skin:button_2state_right_display.xml">
                     <SetVariable name="ObjectName">PlayCue</SetVariable>
+                    <SetVariable name="TooltipId">play_start</SetVariable>
                     <SetVariable name="Size">24f,34f</SetVariable>
                     <SetVariable name="state_0_icon">play_previewdeck.svg</SetVariable>
                     <SetVariable name="state_1_icon">pause_previewdeck.svg</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
-                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,start</SetVariable>
                     <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
                   </Template>
                   <!--	Turns Orange when playing Cue/HotCue.
@@ -106,9 +121,12 @@ Variables:
                 <PlayPosColor>#FF4300</PlayPosColor>
                 <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
                 <MarkerColor>#00FF00</MarkerColor>
+                <LabelTextColor>#ffffff</LabelTextColor>
+                <LabelBackgroundColor>#85000000</LabelBackgroundColor>
+                <ShowCueTimes>false</ShowCueTimes>
                 <DefaultMark>
                   <Align>bottom|right</Align>
-                  <Color>#00FF00</Color>
+                  <Color>#666666</Color>
                   <TextColor>#FFFFFF</TextColor>
                   <Text> %1 </Text>
                 </DefaultMark>
@@ -128,12 +146,23 @@ Variables:
                 <SetVariable name="Size">5f,1me</SetVariable>
               </Template>
 
-              <Template src="skin:knob_textless.xml">
-                <SetVariable name="ObjectName">PreviewGainKnob</SetVariable>
-                <SetVariable name="Size">22f,22f</SetVariable>
-                <SetVariable name="ConfigKey">pregain</SetVariable>
-                <SetVariable name="Color">tiny_red</SetVariable>
-              </Template>
+              <WidgetGroup>
+                <ObjectName>PreviewGainKnob</ObjectName>
+                <Layout>vertical</Layout>
+                <Children>
+                  <KnobComposed>
+                    <TooltipId>pregain</TooltipId>
+                    <Size>24f,20f</Size>
+                    <Knob>knobs_sliders/knob_tiny_red.svg</Knob>
+                    <BackPath>knobs_sliders/knob_bg.svg</BackPath>
+                    <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+                    <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,pregain</ConfigKey>
+                    </Connection>
+                  </KnobComposed>
+                </Children>
+              </WidgetGroup>
 
             </Children>
           </WidgetGroup><!-- /Play-Overview-Gain -->

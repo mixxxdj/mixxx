@@ -1,6 +1,8 @@
 #ifndef PREFERENCES_WAVEFORMSETTINGS_H
 #define PREFERENCES_WAVEFORMSETTINGS_H
 
+#include "preferences/usersettings.h"
+
 class WaveformSettings {
   public:
     WaveformSettings(UserSettingsPointer pConfig) : m_pConfig(pConfig) {}

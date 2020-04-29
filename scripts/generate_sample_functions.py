@@ -71,13 +71,13 @@ def write_channelmixer_autogen(output, num_channels):
         if not inplace:
             write('SampleUtil::clear(pOutput, iBufferSize);', depth=1)
         write('if (totalActive == 0) {', depth=1)
-        write('ScopedTimer t("EngineMaster::applyEffects%(inplace)sAndMixChannels_0active");' %
+        write('//ScopedTimer t("EngineMaster::applyEffects%(inplace)sAndMixChannels_0active");' %
               {'inplace': 'InPlace' if inplace else ''}, depth=2)
         if inplace:
             write('SampleUtil::clear(pOutput, iBufferSize);', depth=2)
         for i in xrange(1, num_channels+1):
             write('} else if (totalActive == %d) {' % i, depth=1)
-            write('ScopedTimer t("EngineMaster::applyEffects%(inplace)sAndMixChannels_%(i)dactive");' %
+            write('//ScopedTimer t("EngineMaster::applyEffects%(inplace)sAndMixChannels_%(i)dactive");' %
                   {'inplace': 'InPlace' if inplace else '', 'i': i}, depth=2)
             write('CSAMPLE_GAIN oldGain[%(i)d];' % {'i': i}, depth=2)
             write('CSAMPLE_GAIN newGain[%(i)d];' % {'i': i}, depth=2)
@@ -116,8 +116,10 @@ def write_channelmixer_autogen(output, num_channels):
                 write('}', depth=2)
 
         write('} else {', depth=1)
-        write('ScopedTimer t("EngineMaster::applyEffects%(inplace)sAndMixChannels_Over32active");' %
+        write('//ScopedTimer t("EngineMaster::applyEffects%(inplace)sAndMixChannels_Over32active");' %
             {'inplace': 'InPlace' if inplace else ''}, depth=2)
+        if inplace:
+            write('SampleUtil::clear(pOutput, iBufferSize);', depth=2)
         write('for (int i = 0; i < activeChannels->size(); ++i) {', depth=2)
         write('EngineMaster::ChannelInfo* pChannelInfo = activeChannels->at(i);', depth=3)
 
@@ -136,9 +138,7 @@ def write_channelmixer_autogen(output, num_channels):
         write('CSAMPLE* pBuffer = pChannelInfo->m_pBuffer;', depth=3)
         if inplace:
             write('pEngineEffectsManager->processPostFaderInPlace(pChannelInfo->m_handle, outputHandle, pBuffer, iBufferSize, iSampleRate, pChannelInfo->m_features, oldGain, newGain);' % {'j': j}, depth=3)
-            write('for (unsigned int i = 0; i < iBufferSize; ++i) {', depth=3)
-            write('pOutput[i] += pBuffer[i];', depth=4)
-            write('}', depth=3)
+            write('SampleUtil::add(pOutput, pBuffer, iBufferSize);', depth=3)
         else:
             write('pEngineEffectsManager->processPostFaderAndMix(pChannelInfo->m_handle, outputHandle, pBuffer, pOutput, iBufferSize, iSampleRate, pChannelInfo->m_features, oldGain, newGain);' % {'j': j}, depth=3)
 

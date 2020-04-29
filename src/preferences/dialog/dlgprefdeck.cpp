@@ -6,19 +6,20 @@
 #include <QLocale>
 #include <QDesktopWidget>
 
-#include "mixer/basetrackplayer.h"
-#include "preferences/dialog/dlgprefdeck.h"
-#include "preferences/usersettings.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
-#include "widget/wnumberpos.h"
-#include "engine/enginebuffer.h"
-#include "engine/ratecontrol.h"
-#include "mixer/playermanager.h"
-#include "mixer/playerinfo.h"
-#include "control/controlobject.h"
-#include "mixxx.h"
 #include "defs_urls.h"
+#include "engine/controls/ratecontrol.h"
+#include "engine/enginebuffer.h"
+#include "mixer/basetrackplayer.h"
+#include "mixer/playerinfo.h"
+#include "mixer/playermanager.h"
+#include "mixxx.h"
+#include "preferences/dialog/dlgprefdeck.h"
+#include "preferences/usersettings.h"
+#include "util/compatibility.h"
+#include "util/duration.h"
+#include "widget/wnumberpos.h"
 
 namespace {
 constexpr int kDefaultRateRangePercent = 8;
@@ -29,6 +30,8 @@ constexpr double kDefaultTemporaryRateChangeFine = 2.00;
 constexpr double kDefaultPermanentRateChangeCoarse = 0.50;
 constexpr double kDefaultPermanentRateChangeFine = 0.05;
 constexpr int kDefaultRateRampSensitivity = 250;
+// bool kDefaultCloneDeckOnLoad is defined in header file to make it available
+// to playermanager.cpp
 }
 
 DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
@@ -43,11 +46,11 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     setupUi(this);
 
     m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
-    m_pNumDecks->connectValueChanged(SLOT(slotNumDecksChanged(double)));
+    m_pNumDecks->connectValueChanged(this, [=](double value){slotNumDecksChanged(value);});
     slotNumDecksChanged(m_pNumDecks->get(), true);
 
     m_pNumSamplers = new ControlProxy("[Master]", "num_samplers", this);
-    m_pNumSamplers->connectValueChanged(SLOT(slotNumSamplersChanged(double)));
+    m_pNumSamplers->connectValueChanged(this, [=](double value){slotNumSamplersChanged(value);});
     slotNumSamplersChanged(m_pNumSamplers->get(), true);
 
     // Set default value in config file and control objects, if not present
@@ -56,20 +59,17 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
             ConfigKey("[Controls]", "CueDefault"), 0);
 
     // Update combo box
-    // The itemData values are out of order to avoid breaking configurations
-    // when Mixxx mode (no blinking) was introduced.
-    // TODO: replace magic numbers with an enum class
-    ComboBoxCueMode->addItem(tr("Mixxx mode"), 0);
-    ComboBoxCueMode->addItem(tr("Mixxx mode (no blinking)"), 4);
-    ComboBoxCueMode->addItem(tr("Pioneer mode"), 1);
-    ComboBoxCueMode->addItem(tr("Denon mode"), 2);
-    ComboBoxCueMode->addItem(tr("Numark mode"), 3);
-    ComboBoxCueMode->addItem(tr("CUP mode"), 5);
+    ComboBoxCueMode->addItem(tr("Mixxx mode"), static_cast<int>(CueMode::Mixxx));
+    ComboBoxCueMode->addItem(tr("Mixxx mode (no blinking)"), static_cast<int>(CueMode::MixxxNoBlinking));
+    ComboBoxCueMode->addItem(tr("Pioneer mode"), static_cast<int>(CueMode::Pioneer));
+    ComboBoxCueMode->addItem(tr("Denon mode"), static_cast<int>(CueMode::Denon));
+    ComboBoxCueMode->addItem(tr("Numark mode"), static_cast<int>(CueMode::Numark));
+    ComboBoxCueMode->addItem(tr("CUP mode"), static_cast<int>(CueMode::CueAndPlay));
     const int cueModeIndex = cueDefaultIndexByData(cueDefaultValue);
     ComboBoxCueMode->setCurrentIndex(cueModeIndex);
     slotCueModeCombobox(cueModeIndex);
     for (ControlProxy* pControl : m_cueControls) {
-        pControl->set(m_iCueMode);
+        pControl->set(static_cast<int>(m_cueMode));
     }
     connect(ComboBoxCueMode, SIGNAL(activated(int)), this, SLOT(slotCueModeCombobox(int)));
 
@@ -82,29 +82,75 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     // If not present in the config, set the default value
     if (!m_pConfig->exists(ConfigKey("[Controls]","PositionDisplay"))) {
         m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"),
-          QString::number(static_cast<int>(TrackTime::DisplayMode::Remaining)));
+          QString::number(static_cast<int>(TrackTime::DisplayMode::REMAINING)));
     }
 
     double positionDisplayType = m_pConfig->getValue(
             ConfigKey("[Controls]", "PositionDisplay"),
-            static_cast<double>(TrackTime::DisplayMode::Elapsed));
+            static_cast<double>(TrackTime::DisplayMode::ELAPSED));
     if (positionDisplayType ==
-            static_cast<double>(TrackTime::DisplayMode::Remaining)) {
+            static_cast<double>(TrackTime::DisplayMode::REMAINING)) {
         radioButtonRemaining->setChecked(true);
         m_pControlTrackTimeDisplay->set(
-            static_cast<double>(TrackTime::DisplayMode::Remaining));
+            static_cast<double>(TrackTime::DisplayMode::REMAINING));
     } else if (positionDisplayType ==
-                   static_cast<double>(TrackTime::DisplayMode::ElapsedAndRemaining)) {
+                   static_cast<double>(TrackTime::DisplayMode::ELAPSED_AND_REMAINING)) {
         radioButtonElapsedAndRemaining->setChecked(true);
         m_pControlTrackTimeDisplay->set(
-            static_cast<double>(TrackTime::DisplayMode::ElapsedAndRemaining));
+            static_cast<double>(TrackTime::DisplayMode::ELAPSED_AND_REMAINING));
     } else {
         radioButtonElapsed->setChecked(true);
         m_pControlTrackTimeDisplay->set(
-            static_cast<double>(TrackTime::DisplayMode::Elapsed));
+            static_cast<double>(TrackTime::DisplayMode::ELAPSED));
     }
     connect(buttonGroupTrackTime, SIGNAL(buttonClicked(QAbstractButton*)),
             this, SLOT(slotSetTrackTimeDisplay(QAbstractButton *)));
+
+    // display time format
+
+    m_pControlTrackTimeFormat = new ControlObject(
+            ConfigKey("[Controls]", "TimeFormat"));
+    connect(m_pControlTrackTimeFormat,
+            &ControlObject::valueChanged,
+            this,
+            &DlgPrefDeck::slotTimeFormatChanged);
+
+    QLocale locale;
+    // Track Display model
+    comboBoxTimeFormat->clear();
+
+    comboBoxTimeFormat->addItem(tr("mm:ss%1zz - Traditional")
+                                .arg(mixxx::DurationBase::kDecimalSeparator),
+                                static_cast<int>
+                                (TrackTime::DisplayFormat::TRADITIONAL));
+
+    comboBoxTimeFormat->addItem(tr("mm:ss - Traditional (Coarse)"),
+                                static_cast<int>
+                                (TrackTime::DisplayFormat::TRADITIONAL_COARSE));
+
+    comboBoxTimeFormat->addItem(tr("s%1zz - Seconds")
+                                .arg(mixxx::DurationBase::kDecimalSeparator),
+                                static_cast<int>
+                                (TrackTime::DisplayFormat::SECONDS));
+
+    comboBoxTimeFormat->addItem(tr("sss%1zz - Seconds (Long)")
+                                .arg(mixxx::DurationBase::kDecimalSeparator),
+                                static_cast<int>
+                                (TrackTime::DisplayFormat::SECONDS_LONG));
+
+    comboBoxTimeFormat->addItem(tr("s%1sss%2zz - Kiloseconds")
+                                .arg(QString(mixxx::DurationBase::kDecimalSeparator),
+                                     QString(mixxx::DurationBase::kKiloGroupSeparator)),
+                                static_cast<int>
+                                (TrackTime::DisplayFormat::KILO_SECONDS));
+
+    double time_format = static_cast<double>(
+                                            m_pConfig->getValue(
+                                            ConfigKey("[Controls]", "TimeFormat"),
+                                            static_cast<int>(TrackTime::DisplayFormat::TRADITIONAL)));
+    m_pControlTrackTimeFormat->set(time_format);
+    comboBoxTimeFormat->setCurrentIndex(
+                comboBoxTimeFormat->findData(time_format));
 
     // Override Playing Track on Track Load
     // The check box reflects the opposite of the config value
@@ -114,12 +160,60 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     connect(checkBoxDisallowLoadToPlayingDeck, SIGNAL(toggled(bool)),
             this, SLOT(slotDisallowTrackLoadToPlayingDeckCheckbox(bool)));
 
-    // Jump to cue on track load
-    // The check box reflects the opposite of the config value
-    m_bJumpToCueOnTrackLoad = !m_pConfig->getValue(ConfigKey("[Controls]", "CueRecall"), false);
-    checkBoxSeekToCue->setChecked(m_bJumpToCueOnTrackLoad);
-    connect(checkBoxSeekToCue, SIGNAL(toggled(bool)),
-            this, SLOT(slotJumpToCueOnTrackLoadCheckbox(bool)));
+    comboBoxLoadPoint->addItem(tr("Intro start"), static_cast<int>(SeekOnLoadMode::IntroStart));
+    comboBoxLoadPoint->addItem(tr("Main cue"), static_cast<int>(SeekOnLoadMode::MainCue));
+    comboBoxLoadPoint->addItem(tr("First sound (skip silence)"), static_cast<int>(SeekOnLoadMode::FirstSound));
+    comboBoxLoadPoint->addItem(tr("Beginning of track"), static_cast<int>(SeekOnLoadMode::Beginning));
+    bool seekModeExisted = m_pConfig->exists(ConfigKey("[Controls]", "CueRecall"));
+    int seekMode = m_pConfig->getValue(ConfigKey("[Controls]", "CueRecall"),
+            static_cast<int>(SeekOnLoadMode::IntroStart));
+    comboBoxLoadPoint->setCurrentIndex(
+            comboBoxLoadPoint->findData(seekMode));
+    m_seekOnLoadMode = static_cast<SeekOnLoadMode>(seekMode);
+    connect(comboBoxLoadPoint,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefDeck::slotSetTrackLoadMode);
+
+    // This option was introduced in Mixxx 2.3 with the intro & outro cues.
+    // If the user has set main cue points with the intention of starting tracks
+    // from those points, enable this option. With Denon and Numark CueModes,
+    // it is not safe to assume that the user wants to start tracks from the
+    // main cue point because it is very easy to move the main cue point without
+    // explicitly intending to in those modes (the main cue point moves whenever
+    // the deck is not at the main cue point and play is pressed).
+    bool introStartMoveDefault = (m_seekOnLoadMode == SeekOnLoadMode::MainCue ||
+                                         !seekModeExisted) &&
+            !(m_cueMode == CueMode::Denon ||
+                    m_cueMode == CueMode::Numark);
+    m_bSetIntroStartAtMainCue = m_pConfig->getValue(ConfigKey("[Controls]", "SetIntroStartAtMainCue"),
+            introStartMoveDefault);
+    // This is an ugly hack to ensure AnalyzerSilence gets the correct default
+    // value because ConfigValue::getValue does not set the value of the ConfigValue
+    // in case no value had been set previously (when mixxx.cfg is empty).
+    m_pConfig->setValue(ConfigKey("[Controls]", "SetIntroStartAtMainCue"), m_bSetIntroStartAtMainCue);
+    checkBoxIntroStartMove->setChecked(m_bSetIntroStartAtMainCue);
+    connect(checkBoxIntroStartMove,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefDeck::slotMoveIntroStartCheckbox);
+
+    // Double-tap Load to clone a deck via keyboard or controller ([ChannelN],LoadSelectedTrack)
+    m_bCloneDeckOnLoadDoubleTap = m_pConfig->getValue(
+            ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), true);
+    checkBoxCloneDeckOnLoadDoubleTap->setChecked(m_bCloneDeckOnLoadDoubleTap);
+    connect(checkBoxCloneDeckOnLoadDoubleTap,
+            SIGNAL(toggled(bool)),
+            this,
+            SLOT(slotCloneDeckOnLoadDoubleTapCheckbox(bool)));
+
+    // Automatically assign a color to new hot cues
+    m_bAssignHotcueColors = m_pConfig->getValue(ConfigKey("[Controls]", "auto_hotcue_colors"), false);
+    checkBoxAssignHotcueColors->setChecked(m_bAssignHotcueColors);
+    connect(checkBoxAssignHotcueColors,
+            SIGNAL(toggled(bool)),
+            this,
+            SLOT(slotAssignHotcueColorsCheckbox(bool)));
 
     m_bRateInverted = m_pConfig->getValue(ConfigKey("[Controls]", "RateDir"), false);
     setRateDirectionForAllDecks(m_bRateInverted);
@@ -282,13 +376,19 @@ DlgPrefDeck::~DlgPrefDeck() {
 }
 
 void DlgPrefDeck::slotUpdate() {
+    checkBoxIntroStartMove->setChecked(m_pConfig->getValue(
+            ConfigKey("[Controls]", "SetIntroStartAtMainCue"), false));
+
     slotSetTrackTimeDisplay(m_pControlTrackTimeDisplay->get());
 
     checkBoxDisallowLoadToPlayingDeck->setChecked(!m_pConfig->getValue(
             ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"), false));
 
-    checkBoxSeekToCue->setChecked(!m_pConfig->getValue(
-            ConfigKey("[Controls]", "CueRecall"), false));
+    checkBoxCloneDeckOnLoadDoubleTap->setChecked(m_pConfig->getValue(
+            ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), true));
+
+    checkBoxAssignHotcueColors->setChecked(m_pConfig->getValue(
+            ConfigKey("[Controls]", "auto_hotcue_colors"), false));
 
     double deck1RateRange = m_rateRangeControls[0]->get();
     int index = ComboBoxRateRange->findData(static_cast<int>(deck1RateRange * 100));
@@ -360,11 +460,14 @@ void DlgPrefDeck::slotResetToDefaults() {
     // Don't load tracks into playing decks.
     checkBoxDisallowLoadToPlayingDeck->setChecked(true);
 
+    // Clone decks by double-tapping Load button.
+    checkBoxCloneDeckOnLoadDoubleTap->setChecked(kDefaultCloneDeckOnLoad);
     // Mixxx cue mode
     ComboBoxCueMode->setCurrentIndex(0);
 
-    // Cue recall on.
-    checkBoxSeekToCue->setChecked(true);
+    // Load at intro start
+    comboBoxLoadPoint->setCurrentIndex(
+            comboBoxLoadPoint->findData(static_cast<int>(SeekOnLoadMode::IntroStart)));
 
     // Rate-ramping default off.
     radioButtonRateRampModeStepping->setChecked(true);
@@ -382,6 +485,10 @@ void DlgPrefDeck::slotResetToDefaults() {
 
     radioButtonOriginalKey->setChecked(true);
     radioButtonResetUnlockedKey->setChecked(true);
+}
+
+void DlgPrefDeck::slotMoveIntroStartCheckbox(bool checked) {
+    m_bSetIntroStartAtMainCue = checked;
 }
 
 void DlgPrefDeck::slotRateRangeComboBox(int index) {
@@ -438,29 +545,33 @@ void DlgPrefDeck::slotDisallowTrackLoadToPlayingDeckCheckbox(bool checked) {
 }
 
 void DlgPrefDeck::slotCueModeCombobox(int index) {
-    m_iCueMode = ComboBoxCueMode->itemData(index).toInt();
+    m_cueMode = static_cast<CueMode>(ComboBoxCueMode->itemData(index).toInt());
 }
 
-void DlgPrefDeck::slotJumpToCueOnTrackLoadCheckbox(bool checked) {
-    m_bJumpToCueOnTrackLoad = checked;
+void DlgPrefDeck::slotCloneDeckOnLoadDoubleTapCheckbox(bool checked) {
+    m_bCloneDeckOnLoadDoubleTap = checked;
+}
+
+void DlgPrefDeck::slotAssignHotcueColorsCheckbox(bool checked) {
+    m_bAssignHotcueColors = checked;
 }
 
 void DlgPrefDeck::slotSetTrackTimeDisplay(QAbstractButton* b) {
     if (b == radioButtonRemaining) {
-        m_timeDisplayMode = TrackTime::DisplayMode::Remaining;
+        m_timeDisplayMode = TrackTime::DisplayMode::REMAINING;
     } else if (b == radioButtonElapsedAndRemaining) {
-        m_timeDisplayMode = TrackTime::DisplayMode::ElapsedAndRemaining;
+        m_timeDisplayMode = TrackTime::DisplayMode::ELAPSED_AND_REMAINING;
     } else {
-        m_timeDisplayMode = TrackTime::DisplayMode::Elapsed;
+        m_timeDisplayMode = TrackTime::DisplayMode::ELAPSED;
     }
 }
 
 void DlgPrefDeck::slotSetTrackTimeDisplay(double v) {
     m_timeDisplayMode = static_cast<TrackTime::DisplayMode>(static_cast<int>(v));
     m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(v));
-    if (m_timeDisplayMode == TrackTime::DisplayMode::Remaining) {
+    if (m_timeDisplayMode == TrackTime::DisplayMode::REMAINING) {
         radioButtonRemaining->setChecked(true);
-    } else if (m_timeDisplayMode == TrackTime::DisplayMode::ElapsedAndRemaining) {
+    } else if (m_timeDisplayMode == TrackTime::DisplayMode::ELAPSED_AND_REMAINING) {
         radioButtonElapsedAndRemaining->setChecked(true);
     } else { // Elapsed
         radioButtonElapsed->setChecked(true);
@@ -495,21 +606,44 @@ void DlgPrefDeck::slotRateRampingModeLinearButton(bool checked) {
     }
 }
 
+void DlgPrefDeck::slotTimeFormatChanged(double v) {
+    int i = static_cast<int>(v);
+    m_pConfig->set(ConfigKey("[Controls]","TimeFormat"), ConfigValue(v));
+    comboBoxTimeFormat->setCurrentIndex(
+                comboBoxTimeFormat->findData(i));
+}
+
+void DlgPrefDeck::slotSetTrackLoadMode(int comboboxIndex) {
+    m_seekOnLoadMode = static_cast<SeekOnLoadMode>(
+            comboBoxLoadPoint->itemData(comboboxIndex).toInt());
+}
+
 void DlgPrefDeck::slotApply() {
+    m_pConfig->set(ConfigKey("[Controls]", "SetIntroStartAtMainCue"),
+            ConfigValue(m_bSetIntroStartAtMainCue));
+
     double timeDisplay = static_cast<double>(m_timeDisplayMode);
     m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(timeDisplay));
     m_pControlTrackTimeDisplay->set(timeDisplay);
 
+    // time format
+    double timeFormat = comboBoxTimeFormat->itemData(comboBoxTimeFormat->currentIndex()).toDouble();
+    m_pControlTrackTimeFormat->set(timeFormat);
+    m_pConfig->setValue(ConfigKey("[Controls]", "TimeFormat"), timeFormat);
+
     // Set cue mode for every deck
     for (ControlProxy* pControl : m_cueControls) {
-        pControl->set(m_iCueMode);
+        pControl->set(static_cast<int>(m_cueMode));
     }
-    m_pConfig->setValue(ConfigKey("[Controls]", "CueDefault"), m_iCueMode);
+    m_pConfig->setValue(ConfigKey("[Controls]", "CueDefault"), static_cast<int>(m_cueMode));
 
     m_pConfig->setValue(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"),
                         !m_bDisallowTrackLoadToPlayingDeck);
 
-    m_pConfig->setValue(ConfigKey("[Controls]", "CueRecall"), !m_bJumpToCueOnTrackLoad);
+    m_pConfig->setValue(ConfigKey("[Controls]", "CueRecall"), static_cast<int>(m_seekOnLoadMode));
+    m_pConfig->setValue(ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"),
+            m_bCloneDeckOnLoadDoubleTap);
+    m_pConfig->setValue(ConfigKey("[Controls]", "auto_hotcue_colors"), m_bAssignHotcueColors);
 
     // Set rate range
     setRateRangeForAllDecks(m_iRateRangePercent);

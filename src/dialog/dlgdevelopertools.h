@@ -2,6 +2,7 @@
 #define DIALOG_DLGDEVELOPERTOOLS_H
 
 #include <QDialog>
+#include <QFile>
 #include <QSortFilterProxyModel>
 #include <QTimerEvent>
 
@@ -14,19 +15,18 @@
 class DlgDeveloperTools : public QDialog, public Ui::DlgDeveloperTools {
     Q_OBJECT
   public:
-    DlgDeveloperTools(QWidget* pParent,
-                      UserSettingsPointer pConfig);
+    DlgDeveloperTools(QWidget* pParent, UserSettingsPointer pConfig);
 
   protected:
     void timerEvent(QTimerEvent* pTimerEvent) override;
 
   private slots:
     void slotControlSearch(const QString& search);
-    void slotControlSearchClear();
     void slotLogSearch();
     void slotControlDump();
 
   private:
+    UserSettingsPointer m_pConfig;
     ControlModel m_controlModel;
     QSortFilterProxyModel m_controlProxyModel;
 

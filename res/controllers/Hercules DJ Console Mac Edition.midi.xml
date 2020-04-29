@@ -20,7 +20,7 @@
         <midino>0x2b</midino>
         <options>
 
-			</options>
+            </options>
       </control>
       <control>
         <group>[Channel1]</group>
@@ -53,7 +53,7 @@
         <midino>0x2d</midino>
         <options>
 
-			</options>
+            </options>
       </control>
       <control>
         <group>[Channel1]</group>
@@ -62,7 +62,7 @@
         <midino>0x08</midino>
         <options>
 
-			</options>
+            </options>
       </control>
       <control>
         <group>[Channel1]</group>
@@ -71,7 +71,7 @@
         <midino>0x09</midino>
         <options>
 
-			</options>
+            </options>
       </control>
       <control>
         <group>[Channel1]</group>
@@ -80,7 +80,7 @@
         <midino>0x15</midino>
         <options>
 
-			</options>
+            </options>
       </control>
       <control>
         <group>[Channel1]</group>
@@ -107,7 +107,7 @@
         <midino>0x13</midino>
         <options>
 
-			</options>
+            </options>
       </control>
       <control>
         <group>[Channel1]</group>
@@ -116,7 +116,7 @@
         <midino>0x14</midino>
         <options>
 
-			</options>
+            </options>
       </control>
       <control>
         <group>[Channel2]</group>
@@ -125,7 +125,7 @@
         <midino>0x2c</midino>
         <options>
 
-			</options>
+            </options>
       </control>
       <control>
         <group>[Channel2]</group>
@@ -158,7 +158,7 @@
         <midino>0x2e</midino>
         <options>
 
-			</options>
+            </options>
       </control>
       <control>
         <group>[Channel2]</group>
@@ -167,7 +167,7 @@
         <midino>0x02</midino>
         <options>
 
-			</options>
+            </options>
       </control>
       <control>
         <group>[Channel2]</group>
@@ -176,7 +176,7 @@
         <midino>0x03</midino>
         <options>
 
-			</options>
+            </options>
       </control>
       <control>
         <group>[Channel2]</group>
@@ -185,7 +185,7 @@
         <midino>0x19</midino>
         <options>
 
-			</options>
+            </options>
       </control>
       <control>
         <group>[Channel2]</group>
@@ -212,7 +212,7 @@
         <midino>0x17</midino>
         <options>
 
-			</options>
+            </options>
       </control>
       <control>
         <group>[Channel2]</group>
@@ -221,7 +221,7 @@
         <midino>0x18</midino>
         <options>
 
-			</options>
+            </options>
       </control>
     </controls>
   </controller>

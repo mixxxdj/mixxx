@@ -11,19 +11,17 @@ Variables:
   <PushButton>
     <TooltipId><Variable name="TooltipId"/></TooltipId>
     <ObjectName>SkinSettingsLabelButton</ObjectName>
-    <MinimumSize><Variable name="width"/>,21</MinimumSize>
-    <MaximumSize>200,21</MaximumSize>
-    <SizePolicy>min,me</SizePolicy>
-    <NumberStates>2</NumberStates>d
+    <Size>190min,21f</Size>
+    <NumberStates>2</NumberStates>
     <RightClickIsPushButton>false</RightClickIsPushButton>
     <State>
       <Number>0</Number>
-      <Text><Variable name="state_0_text"/></Text>
+      <Text> &#9744; <Variable name="text"/></Text>
       <Alignment>left</Alignment>
     </State>
     <State>
       <Number>1</Number>
-      <Text><Variable name="state_1_text"/></Text>
+      <Text> &#9745; <Variable name="text"/></Text>
       <Alignment>left</Alignment>
     </State>
     <Connection>

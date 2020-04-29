@@ -285,7 +285,7 @@ not. To build using the DDK:
    4. Type build.
    5. You can find the output files (DLL and LIB) in a subdirectory created
       by the build system which is appropriate for your environment. On
-      Windows XP, this directory is objfre_wxp_x86/i386.
+      Windows 7, this directory is objfre_wxp_x86/i386.
 
 Cross Compiling
 ================

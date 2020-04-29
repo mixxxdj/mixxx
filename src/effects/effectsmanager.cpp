@@ -1,7 +1,6 @@
 #include "effects/effectsmanager.h"
 
 #include <QMetaType>
-#include <QtAlgorithms>
 
 #include <algorithm>
 
@@ -33,7 +32,7 @@ EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig,
     qRegisterMetaType<EffectChainMixMode>("EffectChainMixMode");
     QPair<EffectsRequestPipe*, EffectsResponsePipe*> requestPipes =
             TwoWayMessagePipe<EffectsRequest*, EffectsResponse>::makeTwoWayMessagePipe(
-                kEffectMessagPipeFifoSize, kEffectMessagPipeFifoSize, false, false);
+                kEffectMessagPipeFifoSize, kEffectMessagPipeFifoSize);
 
     m_pRequestPipe.reset(requestPipes.first);
     m_pEngineEffectsManager = new EngineEffectsManager(requestPipes.second);
@@ -89,7 +88,7 @@ void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
 
     m_pNumEffectsAvailable->forceSet(m_availableEffectManifests.size());
 
-    qSort(m_availableEffectManifests.begin(), m_availableEffectManifests.end(),
+    std::sort(m_availableEffectManifests.begin(), m_availableEffectManifests.end(),
           alphabetizeEffectManifests);
 
     connect(pBackend, SIGNAL(effectRegistered(EffectManifestPointer)),
@@ -139,47 +138,48 @@ const QList<EffectManifestPointer> EffectsManager::getAvailableEffectManifestsFi
 }
 
 bool EffectsManager::isEQ(const QString& effectId) const {
-    return getEffectManifest(effectId)->isMixingEQ();
+    EffectManifestPointer pManifest = getEffectManifest(effectId);
+    return pManifest ? pManifest->isMixingEQ() : false;
 }
 
 QString EffectsManager::getNextEffectId(const QString& effectId) {
-    if (m_availableEffectManifests.isEmpty()) {
+    if (m_visibleEffectManifests.isEmpty()) {
         return QString();
     }
     if (effectId.isNull()) {
-        return m_availableEffectManifests.first()->id();
+        return m_visibleEffectManifests.first()->id();
     }
 
     int index;
-    for (index = 0; index < m_availableEffectManifests.size(); ++index) {
-        if (effectId == m_availableEffectManifests.at(index)->id()) {
+    for (index = 0; index < m_visibleEffectManifests.size(); ++index) {
+        if (effectId == m_visibleEffectManifests.at(index)->id()) {
             break;
         }
     }
-    if (++index >= m_availableEffectManifests.size()) {
+    if (++index >= m_visibleEffectManifests.size()) {
         index = 0;
     }
-    return m_availableEffectManifests.at(index)->id();
+    return m_visibleEffectManifests.at(index)->id();
 }
 
 QString EffectsManager::getPrevEffectId(const QString& effectId) {
-    if (m_availableEffectManifests.isEmpty()) {
+    if (m_visibleEffectManifests.isEmpty()) {
         return QString();
     }
     if (effectId.isNull()) {
-        return m_availableEffectManifests.last()->id();
+        return m_visibleEffectManifests.last()->id();
     }
 
     int index;
-    for (index = 0; index < m_availableEffectManifests.size(); ++index) {
-        if (effectId == m_availableEffectManifests.at(index)->id()) {
+    for (index = 0; index < m_visibleEffectManifests.size(); ++index) {
+        if (effectId == m_visibleEffectManifests.at(index)->id()) {
             break;
         }
     }
     if (--index < 0) {
-        index = m_availableEffectManifests.size() - 1;
+        index = m_visibleEffectManifests.size() - 1;
     }
-    return m_availableEffectManifests.at(index)->id();
+    return m_visibleEffectManifests.at(index)->id();
 }
 
 void EffectsManager::getEffectManifestAndBackend(
@@ -427,7 +427,7 @@ bool EffectsManager::writeRequest(EffectsRequest* request) {
 
     request->request_id = m_nextRequestId++;
     // TODO(XXX) use preallocated requests to avoid delete calls from engine
-    if (m_pRequestPipe->writeMessages(&request, 1) == 1) {
+    if (m_pRequestPipe->writeMessage(request)) {
         m_activeRequests[request->request_id] = request;
         return true;
     }
@@ -441,7 +441,7 @@ void EffectsManager::processEffectsResponses() {
     }
 
     EffectsResponse response;
-    while (m_pRequestPipe->readMessages(&response, 1) == 1) {
+    while (m_pRequestPipe->readMessage(&response)) {
         QHash<qint64, EffectsRequest*>::iterator it =
                 m_activeRequests.find(response.request_id);
 

@@ -23,6 +23,7 @@
     (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 10))
 
 #include <QImage>
+#include <QFile>
 
 #include "track/trackmetadata.h"
 
@@ -128,7 +129,7 @@ static_assert(sizeof(wchar_t) == sizeof(QChar), "wchar_t is not the same size th
 // Note: we cannot use QString::toStdWString since QT 4 is compiled with
 // '/Zc:wchar_t-' flag and QT 5 not
 #else
-#define TAGLIB_FILENAME_FROM_QSTRING(fileName) (fileName).toLocal8Bit().constData()
+#define TAGLIB_FILENAME_FROM_QSTRING(fileName) QFile::encodeName(fileName).constData()
 #endif // _WIN32
 
 // Some helper functions for backwards compatibility with older

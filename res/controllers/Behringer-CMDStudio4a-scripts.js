@@ -207,10 +207,10 @@ BehringerCMDStudio4a.hotcue = function (channel, control, value, status, group) 
                     // turn it on directly here, the only work-around I could
                     // think of was to create a (very short) timed call-back
                     // to turn it off!
-					// Raised bug about this:
-					// https://bugs.launchpad.net/mixxx/+bug/1538200
-					// Changed timer from 50 to 100 after the pathology of this
-					// bug was explined in the bug report.
+                    // Raised bug about this:
+                    // https://bugs.launchpad.net/mixxx/+bug/1538200
+                    // Changed timer from 50 to 100 after the pathology of this
+                    // bug was explined in the bug report.
                     engine.beginTimer(100, function() { engine.setValue(group, "slip_enabled", 1); }, 1);
                 }
             }
@@ -223,21 +223,21 @@ BehringerCMDStudio4a.hotcue = function (channel, control, value, status, group) 
 
 // Functions to deal with the pitch inc/dec buttons, (because they have a DEL-mode behaviour).
 BehringerCMDStudio4a.pitch = function (channel, control, value, status, group) {
-	// Work out the direction.
-	var direction = ((control & 0x01) == 0) ? "down" : "up";
-	// Work out the type (and join) by looking at the DEL button state.
-	var type = BehringerCMDStudio4a.delButtonState[channel] ? "pitch" : "rate";
-	var join = BehringerCMDStudio4a.delButtonState[channel] ? "" : "_perm";
-	// Pushed or released?
+    // Work out the direction.
+    var direction = ((control & 0x01) == 0) ? "down" : "up";
+    // Work out the type (and join) by looking at the DEL button state.
+    var type = BehringerCMDStudio4a.delButtonState[channel] ? "pitch" : "rate";
+    var join = BehringerCMDStudio4a.delButtonState[channel] ? "" : "_perm";
+    // Pushed or released?
     if (value == 127) {
         // Button pushed.
         BehringerCMDStudio4a.pitchPushed[control & 0x01][channel] = true;
-		// Is the other button pushed too?
-		if (BehringerCMDStudio4a.pitchPushed[(~control) & 0x01][channel]) {
-			engine.setValue(group, type, 0); // Yep! reset the control.
-		} else {
-			engine.setValue(group, type+join+"_"+direction, 1);
-		}
+        // Is the other button pushed too?
+        if (BehringerCMDStudio4a.pitchPushed[(~control) & 0x01][channel]) {
+            engine.setValue(group, type, 0); // Yep! reset the control.
+        } else {
+            engine.setValue(group, type+join+"_"+direction, 1);
+        }
     } else {
         // Button released.
         BehringerCMDStudio4a.pitchPushed[control & 0x01][channel] = false;

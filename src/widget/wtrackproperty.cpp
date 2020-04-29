@@ -42,8 +42,8 @@ void WTrackProperty::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldT
 
 void WTrackProperty::updateLabel(Track* /*unused*/) {
     if (m_pCurrentTrack) {
-        QVariant property = m_pCurrentTrack->property(m_property.toAscii().constData());
-        if (property.isValid() && qVariantCanConvert<QString>(property)) {
+        QVariant property = m_pCurrentTrack->property(m_property.toUtf8().constData());
+        if (property.isValid() && property.canConvert(QMetaType::QString)) {
             setText(property.toString());
         }
     }
@@ -56,24 +56,9 @@ void WTrackProperty::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void WTrackProperty::dragEnterEvent(QDragEnterEvent *event) {
-    if (DragAndDropHelper::allowLoadToPlayer(m_pGroup, m_pConfig) &&
-            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_pGroup,
-                                               true, false)) {
-        event->acceptProposedAction();
-    } else {
-        event->ignore();
-    }
+    DragAndDropHelper::handleTrackDragEnterEvent(event, m_pGroup, m_pConfig);
 }
 
 void WTrackProperty::dropEvent(QDropEvent *event) {
-    if (DragAndDropHelper::allowLoadToPlayer(m_pGroup, m_pConfig)) {
-        QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
-                *event->mimeData(), m_pGroup, true, false);
-        if (!files.isEmpty()) {
-            event->accept();
-            emit(trackDropped(files.at(0).absoluteFilePath(), m_pGroup));
-            return;
-        }
-    }
-    event->ignore();
+    DragAndDropHelper::handleTrackDropEvent(event, *this, m_pGroup, m_pConfig);
 }

@@ -1,4 +1,5 @@
 #include <QDesktopServices>
+#include <QStandardPaths>
 #include <QDir>
 #include <QFileDialog>
 #include <QStringList>
@@ -11,8 +12,11 @@
 #include "preferences/dialog/dlgpreflibrary.h"
 #include "library/dlgtrackmetadataexport.h"
 #include "sources/soundsourceproxy.h"
+#include "widget/wsearchlineedit.h"
 
-#define MIXXX_ADDONS_URL "http://www.mixxx.org/wiki/doku.php/add-ons"
+namespace {
+    const ConfigKey kSearchDebouncingTimeoutMillisKey = ConfigKey("[Library]","SearchDebouncingTimeoutMillis");
+}
 
 DlgPrefLibrary::DlgPrefLibrary(
         QWidget* pParent,
@@ -38,16 +42,6 @@ DlgPrefLibrary::DlgPrefLibrary(
             this, SLOT(slotRemoveDir()));
     connect(PushButtonRelocateDir, SIGNAL(clicked()),
             this, SLOT(slotRelocateDir()));
-    //connect(pushButtonM4A, SIGNAL(clicked()), this, SLOT(slotM4ACheck()));
-    connect(pushButtonExtraPlugins, SIGNAL(clicked()),
-            this, SLOT(slotExtraPlugins()));
-
-    // plugins are loaded in src/main.cpp way early in boot so this is safe
-    // here, doesn't need done at every slotUpdate
-    QStringList plugins(SoundSourceProxy::getSupportedFileExtensionsByPlugins());
-    if (plugins.length() > 0) {
-        pluginsLabel->setText(plugins.join(", "));
-    }
 
     // Set default direction as stored in config file
     int rowHeight = m_pLibrary->getTrackTableRowHeight();
@@ -55,19 +49,35 @@ DlgPrefLibrary::DlgPrefLibrary(
     connect(spinBoxRowHeight, SIGNAL(valueChanged(int)),
             this, SLOT(slotRowHeightValueChanged(int)));
 
+    searchDebouncingTimeoutSpinBox->setMinimum(WSearchLineEdit::kMinDebouncingTimeoutMillis);
+    searchDebouncingTimeoutSpinBox->setMaximum(WSearchLineEdit::kMaxDebouncingTimeoutMillis);
+    const auto searchDebouncingTimeoutMillis =
+            m_pConfig->getValue(
+                    ConfigKey("[Library]","SearchDebouncingTimeoutMillis"),
+                    WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
+    searchDebouncingTimeoutSpinBox->setValue(searchDebouncingTimeoutMillis);
+    connect(searchDebouncingTimeoutSpinBox, SIGNAL(valueChanged(int)),
+            this, SLOT(slotSearchDebouncingTimeoutMillisChanged(int)));
+
     connect(libraryFontButton, SIGNAL(clicked()),
             this, SLOT(slotSelectFont()));
 
     // TODO(XXX) this string should be extracted from the soundsources
-    QString builtInFormatsStr = "Ogg Vorbis, FLAC, WAVe, AIFF";
-#if defined(__MAD__) || defined(__APPLE__)
+    QString builtInFormatsStr = "Ogg Vorbis, FLAC, WAVE, AIFF";
+#if defined(__MAD__) || defined(__COREAUDIO__)
     builtInFormatsStr += ", MP3";
+#endif
+#if defined(__MEDIAFOUNDATION__) || defined(__COREAUDIO__) || defined(__FAAD__)
+    builtInFormatsStr += ", M4A/MP4";
 #endif
 #ifdef __OPUS__
     builtInFormatsStr += ", Opus";
 #endif
-#ifdef _MODPLUG_
+#ifdef __MODPLUG__
     builtInFormatsStr += ", ModPlug";
+#endif
+#ifdef __WV__
+    builtInFormatsStr += ", WavPack";
 #endif
     builtInFormats->setText(builtInFormatsStr);
 
@@ -126,10 +136,6 @@ void DlgPrefLibrary::initializeDirList() {
     }
 }
 
-void DlgPrefLibrary::slotExtraPlugins() {
-    QDesktopServices::openUrl(QUrl(MIXXX_ADDONS_URL));
-}
-
 void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_library_scan->setChecked(false);
     checkBox_SyncTrackMetadataExport->setChecked(false);
@@ -138,6 +144,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_show_banshee->setChecked(true);
     checkBox_show_itunes->setChecked(true);
     checkBox_show_traktor->setChecked(true);
+    checkBox_show_rekordbox->setChecked(true);
     radioButton_dbclick_bottom->setChecked(false);
     checkBoxEditMetadataSelectedClicked->setChecked(PREF_LIBRARY_EDIT_METADATA_DEFAULT);
     radioButton_dbclick_top->setChecked(false);
@@ -162,6 +169,8 @@ void DlgPrefLibrary::slotUpdate() {
             ConfigKey("[Library]","ShowITunesLibrary"), true));
     checkBox_show_traktor->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","ShowTraktorLibrary"), true));
+    checkBox_show_rekordbox->setChecked(m_pConfig->getValue(
+            ConfigKey("[Library]","ShowRekordboxLibrary"), true));
 
     switch (m_pConfig->getValue<int>(
             ConfigKey("[Library]","TrackLoadAction"), LOAD_TO_DECK)) {
@@ -197,7 +206,7 @@ void DlgPrefLibrary::slotCancel() {
 void DlgPrefLibrary::slotAddDir() {
     QString fd = QFileDialog::getExistingDirectory(
         this, tr("Choose a music directory"),
-        QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+        QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
     if (!fd.isEmpty()) {
         emit(requestAddDir(fd));
         slotUpdate();
@@ -273,8 +282,7 @@ void DlgPrefLibrary::slotRelocateDir() {
     if (!dir.exists() && dir.cdUp()) {
         startDir = dir.absolutePath();
     } else if (!dir.exists()) {
-        startDir = QDesktopServices::storageLocation(
-            QDesktopServices::MusicLocation);
+        startDir = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
     }
 
     QString fd = QFileDialog::getExistingDirectory(
@@ -301,6 +309,8 @@ void DlgPrefLibrary::slotApply() {
                 ConfigValue((int)checkBox_show_itunes->isChecked()));
     m_pConfig->set(ConfigKey("[Library]","ShowTraktorLibrary"),
                 ConfigValue((int)checkBox_show_traktor->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]","ShowRekordboxLibrary"),
+                ConfigValue((int)checkBox_show_rekordbox->isChecked()));
     int dbclick_status;
     if (radioButton_dbclick_bottom->isChecked()) {
             dbclick_status = ADD_TO_AUTODJ_BOTTOM;
@@ -359,6 +369,13 @@ void DlgPrefLibrary::slotSelectFont() {
     if (ok) {
         setLibraryFont(font);
     }
+}
+
+void DlgPrefLibrary::slotSearchDebouncingTimeoutMillisChanged(int searchDebouncingTimeoutMillis) {
+    m_pConfig->setValue(
+            kSearchDebouncingTimeoutMillisKey,
+            searchDebouncingTimeoutMillis);
+    WSearchLineEdit::setDebouncingTimeoutMillis(searchDebouncingTimeoutMillis);
 }
 
 void DlgPrefLibrary::slotSyncTrackMetadataExportToggled() {

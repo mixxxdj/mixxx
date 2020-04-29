@@ -22,7 +22,7 @@
 
   <!-- Error messages -->
   <!-- DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE -->
-  <String Id="OS2Old">See toode nõuab Windows XP-d või uuemat op. süsteemi.</String>
+  <String Id="OS2Old">See toode nõuab Windows 7-d või uuemat op. süsteemi.</String>
   <String Id="NewerInstalled">Sama või uuem versioon sellest tootest on juba paigaldatud.</String>
   <String Id="x64VersionRequired">Sul tuleb paigaldada 64-bitine versioon sellest tootest 64-bitisele Windowsile.</String>
   <String Id="x86VersionRequired">Sul tuleb paigaldada 32-bitine versioon sellest tootest 32-bitisele Windowsile.</String>

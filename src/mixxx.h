@@ -39,8 +39,10 @@ class DlgPreferences;
 class EffectsManager;
 class EngineMaster;
 class GuiTick;
+class VisualsManager;
 class LaunchImage;
 class Library;
+class TrackCollectionManager;
 class KeyboardEventFilter;
 class PlayerManager;
 class RecordingManager;
@@ -110,9 +112,9 @@ class MixxxMainWindow : public QMainWindow {
 
   protected:
     // Event filter to block certain events (eg. tooltips if tooltips are disabled)
-    virtual bool eventFilter(QObject *obj, QEvent *event);
-    virtual void closeEvent(QCloseEvent *event);
-    virtual bool event(QEvent* e);
+    bool eventFilter(QObject *obj, QEvent *event) override;
+    void closeEvent(QCloseEvent *event) override;
+    bool event(QEvent* e) override;
 
   private:
     void initialize(QApplication *app, const CmdlineArgs& args);
@@ -166,6 +168,7 @@ class MixxxMainWindow : public QMainWindow {
     ControllerManager* m_pControllerManager;
 
     GuiTick* m_pGuiTick;
+    VisualsManager* m_pVisualsManager;
 
     VinylControlManager* m_pVCManager;
 
@@ -173,6 +176,8 @@ class MixxxMainWindow : public QMainWindow {
 
     // The Mixxx database connection pool
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
+
+    TrackCollectionManager* m_pTrackCollectionManager;
 
     // The library management object
     Library* m_pLibrary;
