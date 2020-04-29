@@ -1,5 +1,7 @@
 #pragma once
 
+#include "audio/signalinfo.h"
+#include "track/cueinfoimporter.h"
 #include "track/serato/markers.h"
 #include "track/serato/markers2.h"
 
@@ -19,7 +21,8 @@ class SeratoTags final {
     static RgbColor displayedToStoredTrackColor(RgbColor::optional_t color);
     static RgbColor storedToDisplayedSeratoDJProCueColor(RgbColor color);
     static RgbColor displayedToStoredSeratoDJProCueColor(RgbColor color);
-    static double findTimingOffsetMillis(const QString& filePath);
+    static double guessTimingOffsetMillis(
+            const QString& filePath, const audio::SignalInfo& signalInfo);
 
     bool isEmpty() const {
         return m_seratoMarkers.isEmpty() && m_seratoMarkers2.isEmpty();
@@ -41,7 +44,7 @@ class SeratoTags final {
         return m_seratoMarkers2.dump();
     }
 
-    QList<CueInfo> getCues(const QString& filePath) const;
+    CueInfoImporterPointer importCueInfos() const;
 
     RgbColor::optional_t getTrackColor() const;
     bool isBpmLocked() const;

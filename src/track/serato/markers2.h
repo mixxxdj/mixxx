@@ -398,7 +398,7 @@ class SeratoMarkers2 final {
         m_entries = std::move(entries);
     }
 
-    QList<CueInfo> getCues(double timingOffsetMillis) const;
+    QList<CueInfo> getCues() const;
     RgbColor::optional_t getTrackColor() const;
     bool isBpmLocked() const;
 
