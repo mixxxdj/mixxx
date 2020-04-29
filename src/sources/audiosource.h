@@ -286,10 +286,11 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
         return getSignalInfo().frames2secs(frameLength());
     }
 
-    // Verifies various properties to ensure that the audio data is
-    // actually readable. Warning messages are logged for properties
-    // with invalid values for diagnostic purposes.
-    bool verifyReadable() const;
+    /// Verifies various properties to ensure that the audio data is
+    /// actually readable. Warning messages are logged for properties
+    /// with invalid values for diagnostic purposes. Also performs a
+    /// basic read test.
+    bool verifyReadable();
 
     ReadableSampleFrames readSampleFrames(
             WritableSampleFrames sampleFrames);
