@@ -338,6 +338,7 @@ bool SeratoMarkers2::parse(
         return parseID3(seratoMarkers2, data);
     case taglib::FileType::MP4:
     case taglib::FileType::FLAC:
+    case taglib::FileType::OGG:
         return parseBase64Encoded(seratoMarkers2, data);
     default:
         return false;
@@ -449,6 +450,7 @@ QByteArray SeratoMarkers2::dump(taglib::FileType fileType) const {
         return dumpID3();
     case taglib::FileType::MP4:
     case taglib::FileType::FLAC:
+    case taglib::FileType::OGG:
         return dumpBase64Encoded();
     default:
         DEBUG_ASSERT(false);
