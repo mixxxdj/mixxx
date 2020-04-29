@@ -74,6 +74,14 @@ class SeratoMarkersTest : public testing::Test {
             parseMarkersData(data, true, fileType);
         }
     }
+
+    void parseEmptyMarkersData(mixxx::taglib::FileType fileType) {
+        QByteArray inputValue;
+        mixxx::SeratoMarkers seratoMarkers;
+        mixxx::SeratoMarkers::parse(&seratoMarkers, inputValue, fileType);
+        QByteArray outputValue = seratoMarkers.dump(fileType);
+        EXPECT_EQ(inputValue, outputValue);
+    }
 };
 
 TEST_F(SeratoMarkersTest, ParseEntry) {
@@ -178,11 +186,11 @@ TEST_F(SeratoMarkersTest, ParseMarkersDataMP4) {
 }
 
 TEST_F(SeratoMarkersTest, ParseEmptyDataMP3) {
-    QByteArray inputValue;
-    mixxx::SeratoMarkers seratoMarkers;
-    mixxx::SeratoMarkers::parseID3(&seratoMarkers, inputValue);
-    QByteArray outputValue = seratoMarkers.dumpID3();
-    EXPECT_EQ(inputValue, outputValue);
+    parseEmptyMarkersData(mixxx::taglib::FileType::MP3);
+}
+
+TEST_F(SeratoMarkersTest, ParseEmptyDataMP4) {
+    parseEmptyMarkersData(mixxx::taglib::FileType::MP4);
 }
 
 } // namespace

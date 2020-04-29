@@ -119,6 +119,14 @@ class SeratoMarkers2Test : public testing::Test {
             parseMarkers2Data(data, true, fileType);
         }
     }
+
+    void parseEmptyMarkers2Data(mixxx::taglib::FileType fileType) {
+        QByteArray inputValue;
+        mixxx::SeratoMarkers2 seratoMarkers2;
+        EXPECT_FALSE(mixxx::SeratoMarkers2::parse(&seratoMarkers2, inputValue, fileType));
+        QByteArray outputValue = seratoMarkers2.dump(fileType);
+        EXPECT_EQ(inputValue, outputValue);
+    }
 };
 
 TEST_F(SeratoMarkers2Test, ParseBpmlockEntry) {
@@ -377,12 +385,11 @@ TEST_F(SeratoMarkers2Test, ParseMarkers2DataMP4) {
 }
 
 TEST_F(SeratoMarkers2Test, ParseEmptyDataMP3) {
-    QByteArray inputValue;
-    mixxx::SeratoMarkers2 seratoMarkers2;
-    EXPECT_FALSE(mixxx::SeratoMarkers2::parse(
-            &seratoMarkers2, inputValue, mixxx::taglib::FileType::MP3));
-    QByteArray outputValue = seratoMarkers2.dump(mixxx::taglib::FileType::MP3);
-    EXPECT_EQ(inputValue, outputValue);
+    parseEmptyMarkers2Data(mixxx::taglib::FileType::MP3);
+}
+
+TEST_F(SeratoMarkers2Test, ParseEmptyDataMP4) {
+    parseEmptyMarkers2Data(mixxx::taglib::FileType::MP4);
 }
 
 TEST_F(SeratoMarkers2Test, ParseAndDumpBase64EncodedXiph) {
