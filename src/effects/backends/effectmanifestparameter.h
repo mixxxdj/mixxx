@@ -97,8 +97,7 @@ class EffectManifestParameter {
               m_neutralPointOnScale(0.0),
               m_default(0),
               m_minimum(0),
-              m_maximum(1.0),
-              m_showInParametertSlot(true) {
+              m_maximum(1.0) {
     }
 
     ~EffectManifestParameter() {
@@ -211,18 +210,6 @@ class EffectManifestParameter {
         m_neutralPointOnScale = neutralPoint;
     }
 
-
-    // These store the mapping between the parameter slot and
-    // the effective parameter which is loaded onto the slot.
-    // This is required because we have only 8 parameter slots, but
-    // LV2 or VST effects can have more then 8.
-    bool showInParameterSlot() const {
-        return m_showInParametertSlot;
-    }
-    void setShowInParameterSlot(double show) {
-        m_showInParametertSlot = show;
-    }
-
     ////////////////////////////////////////////////////////////////////////////////
     // Value Settings
     ////////////////////////////////////////////////////////////////////////////////
@@ -291,8 +278,6 @@ class EffectManifestParameter {
     /// Each pair has the following form:
     /// name - value
     QList<QPair<QString, double> > m_steps;
-
-    bool m_showInParametertSlot;
 };
 
 QDebug operator<<(QDebug dbg, const EffectManifestParameter& parameter);
