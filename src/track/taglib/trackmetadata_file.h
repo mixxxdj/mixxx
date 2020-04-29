@@ -58,6 +58,6 @@ bool readAudioPropertiesFromFile(
         TrackMetadata* pTrackMetadata,
         const TagLib::File& file);
 
-} // namespace mixxx
+} // namespace taglib
 
 } // namespace mixxx
