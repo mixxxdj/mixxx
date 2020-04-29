@@ -7,9 +7,8 @@
 
 namespace mixxx {
 
-// DTO for storing information from the SeratoMarkers_/2 tags used by the
-// Serato DJ Pro software.
-//
+/// DTO for storing information from the SeratoMarkers_/2 tags used by the
+/// Serato DJ Pro software.
 class SeratoTags final {
   public:
     static constexpr RgbColor kDefaultTrackColor = RgbColor(0xFF9999);
