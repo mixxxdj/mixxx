@@ -1860,6 +1860,30 @@ TEST_F(EngineSyncTest, SeekStayInPhase) {
     // We expect to be two buffers ahead in a beat near 0.2
     EXPECT_DOUBLE_EQ(0.050309901738473183, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
     EXPECT_DOUBLE_EQ(0.18925937554508981, ControlObject::get(ConfigKey(m_sGroup1, "playposition")));
+
+    // The same again with a stopped track loaded in Channel 2
+    ControlObject::set(ConfigKey(m_sGroup1, "playposition"), 0.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
+    ProcessBuffer();
+
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack1, 130, 0.0);
+    m_pTrack2->setBeats(pBeats2);
+
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(0.025154950869236584,
+            ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
+    EXPECT_DOUBLE_EQ(0.0023219954648526077,
+            ControlObject::get(ConfigKey(m_sGroup1, "playposition")));
+
+    ControlObject::set(ConfigKey(m_sGroup1, "playposition"), 0.2);
+    ProcessBuffer();
+
+    // We expect to be two buffers ahead in a beat near 0.2
+    EXPECT_DOUBLE_EQ(0.050309901738473183,
+            ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
+    EXPECT_DOUBLE_EQ(0.18925937554508981, ControlObject::get(ConfigKey(m_sGroup1, "playposition")));
 }
 
 TEST_F(EngineSyncTest, SyncWithoutBeatgrid) {
