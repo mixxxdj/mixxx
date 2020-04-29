@@ -437,9 +437,9 @@ EngineChannel* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const
             continue;
         }
 
-        // Only consider channels that have a track loaded and are in the master
-        // mix.
-        if (pChannel->isActive() && pChannel->isMasterEnabled()) {
+        // Only consider channels that have a track loaded, are in the master
+        // mix, and are primary decks.
+        if (pChannel->isActive() && pChannel->isMasterEnabled() && pChannel->isPrimaryDeck()) {
             EngineBuffer* pBuffer = pChannel->getEngineBuffer();
             if (pBuffer && pBuffer->getBpm() > 0) {
                 // If the deck is playing then go with it immediately.
