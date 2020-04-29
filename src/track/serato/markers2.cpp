@@ -23,6 +23,34 @@ QString zeroTerminatedUtf8StringtoQString(QDataStream* stream) {
     return QString::fromUtf8(data);
 }
 
+QByteArray base64encode(const QByteArray& data, bool chopPadding) {
+    QByteArray dataBase64;
+
+    // A newline char is inserted at every 72 bytes of base64-encoded content.
+    // Hence, we can split the data into blocks of 72 bytes * 3/4 = 54 bytes
+    // and base64-encode them one at a time:
+    int offset = 0;
+    while (offset < data.size()) {
+        if (offset > 0) {
+            dataBase64.append('\n');
+        }
+        QByteArray block = data.mid(offset, 54);
+        dataBase64.append(block.toBase64(
+                QByteArray::Base64Encoding | QByteArray::OmitTrailingEquals));
+        offset += block.size();
+
+        if (chopPadding) {
+            // In case that the last block would require padding, Serato seems to
+            // chop off the last byte of the base64-encoded data
+            if (block.size() % 3) {
+                dataBase64.chop(1);
+            }
+        }
+    }
+
+    return dataBase64;
+}
+
 } // namespace
 
 namespace mixxx {
@@ -458,25 +486,7 @@ QByteArray SeratoMarkers2::dumpID3() const {
     data.append('\0');
 
     QByteArray outerData("\x01\x01", 2);
-
-    // A newline char is inserted at every 72 bytes of base64-encoded content.
-    // Hence, we can split the data into blocks of 72 bytes * 3/4 = 54 bytes
-    // and base64-encode them one at a time:
-    int offset = 0;
-    while (offset < data.size()) {
-        if (offset > 0) {
-            outerData.append('\n');
-        }
-        QByteArray block = data.mid(offset, 54);
-        outerData.append(block.toBase64(QByteArray::Base64Encoding | QByteArray::OmitTrailingEquals));
-        offset += block.size();
-
-        // In case that the last block would require padding, Serato seems to
-        // chop off the last byte of the base64-encoded data
-        if (block.size() % 3) {
-            outerData.chop(1);
-        }
-    }
+    outerData.append(base64encode(data, true));
 
     int size = getAllocatedSize();
     if (size <= outerData.size()) {
@@ -562,24 +572,9 @@ QByteArray SeratoMarkers2::dumpBase64Encoded() const {
             size = 470;
         }
     }
-    outerData = outerData.leftJustified(size, '\0');
 
-    // A newline char is inserted at every 72 bytes of base64-encoded content.
-    // Hence, we can split the data into blocks of 72 bytes * 3/4 = 54 bytes
-    // and base64-encode them one at a time:
-    const int base64Size = (outerData.size() * 4 + 2) / 3;
-    QByteArray base64Data;
-    base64Data.reserve(base64Size + base64Size / 72);
-    int offset = 0;
-    while (offset < outerData.size()) {
-        if (offset > 0) {
-            base64Data.append('\n');
-        }
-        QByteArray block = outerData.mid(offset, 54);
-        base64Data.append(block.toBase64(QByteArray::Base64Encoding | QByteArray::OmitTrailingEquals));
-        offset += block.size();
-    }
-    return base64Data;
+    // Add padding and apply the weird double base64encoding
+    return base64encode(outerData.leftJustified(size, '\0'), false);
 }
 
 RgbColor::optional_t SeratoMarkers2::getTrackColor() const {
