@@ -31,35 +31,51 @@ double colorDistance(QRgb a, QRgb b) {
 
 QRgb ColorMapper::getNearestColor(QRgb desiredColor) {
     // If desired color is already in cache, use cache entry
-    QMap<QRgb, QRgb>::const_iterator i = m_cache.constFind(desiredColor);
-    if (i != m_cache.constEnd()) {
-        DEBUG_ASSERT(m_availableColors.contains(i.value()));
+    const auto iCachedColor = m_cache.constFind(desiredColor);
+    if (iCachedColor != m_cache.constEnd()) {
+        const QRgb cachedColor = iCachedColor.key();
+        DEBUG_ASSERT(m_availableColors.contains(cachedColor));
         if (kLogger.traceEnabled()) {
             kLogger.trace()
-                    << "ColorMapper cache hit for" << desiredColor << ":"
-                    << "Color =" << i.value();
+                    << "ColorMapper found cached color"
+                    << cachedColor
+                    << "for"
+                    << desiredColor;
         }
-        return i.value();
+        return cachedColor;
     }
 
     // Color is not cached
-    QRgb nearestColor;
+    auto iNearestColor = m_availableColors.constEnd();
     double nearestColorDistance = qInf();
-    for (auto j = m_availableColors.constBegin(); j != m_availableColors.constEnd(); j++) {
-        QRgb availableColor = j.key();
+    for (auto i = m_availableColors.constBegin(); i != m_availableColors.constEnd(); ++i) {
+        const QRgb availableColor = i.key();
         double distance = colorDistance(desiredColor, availableColor);
         if (distance < nearestColorDistance) {
             nearestColorDistance = distance;
-            nearestColor = j.key();
+            iNearestColor = i;
         }
     }
+    if (iNearestColor != m_availableColors.constEnd()) {
+        const QRgb nearestColor = iNearestColor.key();
+        if (kLogger.traceEnabled()) {
+            kLogger.trace()
+                    << "ColorMapper found matching color"
+                    << nearestColor
+                    << "for"
+                    << desiredColor;
+        }
+        m_cache.insert(desiredColor, nearestColor);
+        return nearestColor;
+    }
+
+    // Not found
     if (kLogger.traceEnabled()) {
         kLogger.trace()
-                << "ColorMapper found matching color for" << desiredColor << ":"
-                << "Color =" << nearestColor;
+                << "ColorMapper found no matching color for"
+                << desiredColor;
     }
-    m_cache.insert(desiredColor, nearestColor);
-    return nearestColor;
+    return desiredColor;
 }
 
 QVariant ColorMapper::getValueForNearestColor(QRgb desiredColor) {
