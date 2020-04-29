@@ -26,6 +26,8 @@
 namespace {
 
 const double kNoTrackColor = -1;
+const double kShiftTimesOffsetMillis = 10;
+const double kShiftTimesOffsetSmallMillis = 1;
 
 inline double trackColorToDouble(mixxx::RgbColor::optional_t color) {
     return (color ? static_cast<double>(*color) : kNoTrackColor);
@@ -134,8 +136,37 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
             SLOT(slotWaveformZoomSetDefault(double)));
 
     m_pPreGain = std::make_unique<ControlProxy>(group, "pregain", this);
-    // BPM of the current song
 
+    m_pShiftTimesEarlier = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "shift_times_earlier"));
+    connect(m_pShiftTimesEarlier.get(),
+            &ControlObject::valueChanged,
+            this,
+            [=](double value) { slotShiftTimesButton(value, -1 * kShiftTimesOffsetMillis); });
+    m_pShiftTimesLater = std::make_unique<ControlPushButton>(ConfigKey(group, "shift_times_later"));
+    connect(m_pShiftTimesLater.get(),
+            &ControlObject::valueChanged,
+            this,
+            [=](double value) { slotShiftTimesButton(value, kShiftTimesOffsetMillis); });
+    m_pShiftTimesEarlierSmall = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "shift_times_earlier_small"));
+    connect(m_pShiftTimesEarlierSmall.get(),
+            &ControlObject::valueChanged,
+            this,
+            [=](double value) { slotShiftTimesButton(value, -1 * kShiftTimesOffsetSmallMillis); });
+    m_pShiftTimesLaterSmall = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "shift_times_later_small"));
+    connect(m_pShiftTimesLaterSmall.get(),
+            &ControlObject::valueChanged,
+            this,
+            [=](double value) { slotShiftTimesButton(value, kShiftTimesOffsetSmallMillis); });
+    m_pShiftTimes = std::make_unique<ControlObject>(ConfigKey(group, "shift_times"));
+    connect(m_pShiftTimes.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BaseTrackPlayerImpl::slotShiftTimes);
+
+    // BPM of the current song
     m_pFileBPM = std::make_unique<ControlObject>(ConfigKey(group, "file_bpm"));
     m_pKey = std::make_unique<ControlProxy>(group, "file_key", this);
 
@@ -616,6 +647,20 @@ void BaseTrackPlayerImpl::slotWaveformZoomSetDefault(double pressed) {
     double defaultZoom = m_pConfig->getValue(ConfigKey("[Waveform]","DefaultZoom"),
         WaveformWidgetRenderer::s_waveformDefaultZoom);
     m_pWaveformZoom->set(defaultZoom);
+}
+
+void BaseTrackPlayerImpl::slotShiftTimes(double milliseconds) {
+    if (m_pLoadedTrack == nullptr) {
+        return;
+    }
+    m_pLoadedTrack->shiftCuePositions(milliseconds);
+}
+
+void BaseTrackPlayerImpl::slotShiftTimesButton(double value, double milliseconds) {
+    if (value <= 0) {
+        return;
+    }
+    slotShiftTimes(milliseconds);
 }
 
 void BaseTrackPlayerImpl::setReplayGain(double value) {

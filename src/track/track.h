@@ -245,6 +245,8 @@ class Track : public QObject {
     CuePosition getCuePoint() const;
     // Set the track's main cue point
     void setCuePoint(CuePosition cue);
+    /// Shift all cues by a constant offset
+    void shiftCuePositions(double milliseconds);
     // Call when analysis is done.
     void analysisFinished();
 
