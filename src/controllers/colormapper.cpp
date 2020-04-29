@@ -69,12 +69,8 @@ QRgb ColorMapper::getNearestColor(QRgb desiredColor) {
         return nearestColor;
     }
 
-    // Not found
-    if (kLogger.traceEnabled()) {
-        kLogger.trace()
-                << "ColorMapper found no matching color for"
-                << desiredColor;
-    }
+    DEBUG_ASSERT(m_availableColors.isEmpty());
+    DEBUG_ASSERT(!"Unreachable: No matching color found");
     return desiredColor;
 }
 
