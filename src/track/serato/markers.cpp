@@ -8,7 +8,7 @@ namespace {
 
 const int kNumEntries = 14;
 const int kLoopEntryStartIndex = 5;
-const int kEntrySize = 22;
+const int kEntrySizeID3 = 22;
 const int kEntrySizeMP4 = 19;
 const quint16 kVersion = 0x0205;
 
@@ -71,9 +71,9 @@ quint32 serato32fromUint24(quint32 value) {
 
 namespace mixxx {
 
-QByteArray SeratoMarkersEntry::dump() const {
+QByteArray SeratoMarkersEntry::dumpID3() const {
     QByteArray data;
-    data.resize(kEntrySize);
+    data.resize(kEntrySizeID3);
 
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream.setByteOrder(QDataStream::BigEndian);
@@ -108,10 +108,10 @@ QByteArray SeratoMarkersEntry::dumpMP4() const {
     return data;
 }
 
-SeratoMarkersEntryPointer SeratoMarkersEntry::parse(const QByteArray& data) {
-    if (data.length() != kEntrySize) {
+SeratoMarkersEntryPointer SeratoMarkersEntry::parseID3(const QByteArray& data) {
+    if (data.length() != kEntrySizeID3) {
         qWarning() << "Parsing SeratoMarkersEntry failed:"
-                   << "Length" << data.length() << "!=" << kEntrySize;
+                   << "Length" << data.length() << "!=" << kEntrySizeID3;
         return nullptr;
     }
 
@@ -261,8 +261,26 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseMP4(const QByteArray& data) {
     return pEntry;
 }
 
-//static
+// static
 bool SeratoMarkers::parse(
+        SeratoMarkers* seratoMarkers, const QByteArray& data, taglib::FileType fileType) {
+    VERIFY_OR_DEBUG_ASSERT(seratoMarkers) {
+        return false;
+    }
+
+    switch (fileType) {
+    case taglib::FileType::MP3:
+    case taglib::FileType::AIFF:
+        return parseID3(seratoMarkers, data);
+    case taglib::FileType::MP4:
+        return parseMP4(seratoMarkers, data);
+    default:
+        return false;
+    }
+}
+
+// static
+bool SeratoMarkers::parseID3(
         SeratoMarkers* seratoMarkers, const QByteArray& data) {
     QDataStream stream(data);
     stream.setByteOrder(QDataStream::BigEndian);
@@ -285,7 +303,7 @@ bool SeratoMarkers::parse(
         return false;
     }
 
-    char buffer[kEntrySize];
+    char buffer[kEntrySizeID3];
     QList<SeratoMarkersEntryPointer> entries;
     for (quint32 i = 0; i < numEntries; i++) {
         if (stream.readRawData(buffer, sizeof(buffer)) != sizeof(buffer)) {
@@ -294,9 +312,9 @@ bool SeratoMarkers::parse(
             return false;
         }
 
-        QByteArray entryData = QByteArray(buffer, kEntrySize);
+        QByteArray entryData = QByteArray(buffer, kEntrySizeID3);
         SeratoMarkersEntryPointer pEntry =
-                SeratoMarkersEntryPointer(SeratoMarkersEntry::parse(entryData));
+                SeratoMarkersEntryPointer(SeratoMarkersEntry::parseID3(entryData));
         if (!pEntry) {
             qWarning() << "Parsing SeratoMarkers_ failed:"
                        << "Unable to parse entry!";
@@ -342,7 +360,7 @@ bool SeratoMarkers::parse(
     return true;
 }
 
-//static
+// static
 bool SeratoMarkers::parseMP4(
         SeratoMarkers* seratoMarkers,
         const QByteArray& base64EncodedData) {
@@ -441,7 +459,20 @@ bool SeratoMarkers::parseMP4(
     return true;
 }
 
-QByteArray SeratoMarkers::dump() const {
+QByteArray SeratoMarkers::dump(taglib::FileType fileType) const {
+    switch (fileType) {
+    case taglib::FileType::MP3:
+    case taglib::FileType::AIFF:
+        return dumpID3();
+    case taglib::FileType::MP4:
+        return dumpMP4();
+    default:
+        DEBUG_ASSERT(false);
+        return {};
+    }
+}
+
+QByteArray SeratoMarkers::dumpID3() const {
     QByteArray data;
     if (isEmpty()) {
         // Return empty QByteArray
@@ -449,14 +480,14 @@ QByteArray SeratoMarkers::dump() const {
     }
 
     data.resize(sizeof(quint16) + 2 * sizeof(quint32) +
-            kEntrySize * m_entries.size());
+            kEntrySizeID3 * m_entries.size());
 
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream.setByteOrder(QDataStream::BigEndian);
     stream << kVersion << m_entries.size();
     for (int i = 0; i < m_entries.size(); i++) {
         SeratoMarkersEntryPointer pEntry = m_entries.at(i);
-        stream.writeRawData(pEntry->dump(), kEntrySize);
+        stream.writeRawData(pEntry->dumpID3(), kEntrySizeID3);
     }
     stream << serato32fromUint24(static_cast<quint32>(
             m_trackColor.value_or(SeratoTags::kDefaultTrackColor)));

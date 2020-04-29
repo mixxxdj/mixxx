@@ -148,25 +148,31 @@ bool parseAlbumPeak(
 
 bool parseSeratoMarkers(
         TrackMetadata* pTrackMetadata,
-        const QByteArray& data);
+        const QByteArray& data,
+        FileType fileType);
+
+bool parseSeratoMarkers(
+        TrackMetadata* pTrackMetadata,
+        const TagLib::String& data,
+        FileType fileType);
 
 bool parseSeratoMarkers2(
         TrackMetadata* pTrackMetadata,
-        const QByteArray& data);
+        const QByteArray& data,
+        FileType fileType);
 
-bool parseSeratoMarkersBase64Encoded(
+bool parseSeratoMarkers2(
         TrackMetadata* pTrackMetadata,
-        const TagLib::String& base64Encoded);
+        const TagLib::String& data,
+        FileType fileType);
 
-bool parseSeratoMarkers2Base64Encoded(
-        TrackMetadata* pTrackMetadata,
-        const TagLib::String& base64Encoded);
+TagLib::String dumpSeratoMarkers(
+        const TrackMetadata& trackMetadata,
+        FileType fileType);
 
-TagLib::String dumpSeratoMarkersBase64Encoded(
-        const TrackMetadata& trackMetadata);
-
-TagLib::String dumpSeratoMarkers2Base64Encoded(
-        const TrackMetadata& trackMetadata);
+TagLib::String dumpSeratoMarkers2(
+        const TrackMetadata& trackMetadata,
+        FileType fileType);
 
 inline QImage loadImageFromByteVector(
         const TagLib::ByteVector& imageData,

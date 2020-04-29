@@ -994,14 +994,14 @@ void importTrackMetadataFromTag(
                     tag,
                     kFrameDescriptionSeratoMarkers);
     if (!seratoMarkers.isEmpty()) {
-        parseSeratoMarkers(pTrackMetadata, seratoMarkers);
+        parseSeratoMarkers(pTrackMetadata, seratoMarkers, FileType::MP3);
     }
     const QByteArray seratoMarkers2 =
             readFirstGeneralEncapsulatedObjectFrame(
                     tag,
                     kFrameDescriptionSeratoMarkers2);
     if (!seratoMarkers2.isEmpty()) {
-        parseSeratoMarkers2(pTrackMetadata, seratoMarkers2);
+        parseSeratoMarkers2(pTrackMetadata, seratoMarkers2, FileType::MP3);
     }
 }
 
@@ -1279,11 +1279,11 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
     writeGeneralEncapsulatedObjectFrame(
             pTag,
             kFrameDescriptionSeratoMarkers,
-            trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers());
+            trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers(FileType::MP3));
     writeGeneralEncapsulatedObjectFrame(
             pTag,
             kFrameDescriptionSeratoMarkers2,
-            trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2());
+            trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2(FileType::MP3));
 #endif // __EXPORT_SERATO_MARKERS__
 
     return true;

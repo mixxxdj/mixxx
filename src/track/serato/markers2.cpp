@@ -298,6 +298,26 @@ quint32 SeratoMarkers2LoopEntry::length() const {
 
 bool SeratoMarkers2::parse(
         SeratoMarkers2* seratoMarkers2,
+        const QByteArray& data,
+        taglib::FileType fileType) {
+    VERIFY_OR_DEBUG_ASSERT(seratoMarkers2) {
+        return false;
+    }
+
+    switch (fileType) {
+    case taglib::FileType::MP3:
+    case taglib::FileType::AIFF:
+        return parseID3(seratoMarkers2, data);
+    case taglib::FileType::MP4:
+    case taglib::FileType::FLAC:
+        return parseBase64Encoded(seratoMarkers2, data);
+    default:
+        return false;
+    }
+}
+
+bool SeratoMarkers2::parseID3(
+        SeratoMarkers2* seratoMarkers2,
         const QByteArray& outerData) {
     if (!outerData.startsWith("\x01\x01")) {
         qWarning() << "Parsing SeratoMarkers2 failed:"
@@ -383,7 +403,7 @@ bool SeratoMarkers2::parseBase64Encoded(
         return false;
     }
     DEBUG_ASSERT(decodedData.size() >= kSeratoMarkers2Base64EncodedPrefix.size());
-    if (!parse(
+    if (!parseID3(
                 seratoMarkers2,
                 decodedData.mid(kSeratoMarkers2Base64EncodedPrefix.size()))) {
         qWarning() << "Parsing base64encoded SeratoMarkers2 failed!";
@@ -394,7 +414,21 @@ bool SeratoMarkers2::parseBase64Encoded(
     return true;
 }
 
-QByteArray SeratoMarkers2::dump() const {
+QByteArray SeratoMarkers2::dump(taglib::FileType fileType) const {
+    switch (fileType) {
+    case taglib::FileType::MP3:
+    case taglib::FileType::AIFF:
+        return dumpID3();
+    case taglib::FileType::MP4:
+    case taglib::FileType::FLAC:
+        return dumpBase64Encoded();
+    default:
+        DEBUG_ASSERT(false);
+        return {};
+    }
+}
+
+QByteArray SeratoMarkers2::dumpID3() const {
     QByteArray data;
 
     // To reduce disk fragmentation, Serato pre-allocates at least 470 bytes

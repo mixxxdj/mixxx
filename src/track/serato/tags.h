@@ -27,36 +27,20 @@ class SeratoTags final {
         return m_seratoMarkers.isEmpty() && m_seratoMarkers2.isEmpty();
     }
 
-    bool parseMarkers(const QByteArray& data) {
-        return SeratoMarkers::parse(&m_seratoMarkers, data);
+    bool parseMarkers(const QByteArray& data, taglib::FileType fileType) {
+        return SeratoMarkers::parse(&m_seratoMarkers, data, fileType);
     }
 
-    bool parseMarkersMP4(const QByteArray& data) {
-        return SeratoMarkers::parseMP4(&m_seratoMarkers, data);
+    bool parseMarkers2(const QByteArray& data, taglib::FileType fileType) {
+        return SeratoMarkers2::parse(&m_seratoMarkers2, data, fileType);
     }
 
-    bool parseMarkers2(const QByteArray& data) {
-        return SeratoMarkers2::parse(&m_seratoMarkers2, data);
+    QByteArray dumpMarkers(taglib::FileType fileType) const {
+        return m_seratoMarkers.dump(fileType);
     }
 
-    bool parseMarkers2Base64Encoded(const QByteArray& data) {
-        return SeratoMarkers2::parseBase64Encoded(&m_seratoMarkers2, data);
-    }
-
-    QByteArray dumpMarkers() const {
-        return m_seratoMarkers.dump();
-    }
-
-    QByteArray dumpMarkersMP4() const {
-        return m_seratoMarkers.dumpMP4();
-    }
-
-    QByteArray dumpMarkers2() const {
-        return m_seratoMarkers2.dump();
-    }
-
-    QByteArray dumpMarkers2Base64Encoded() const {
-        return m_seratoMarkers2.dumpBase64Encoded();
+    QByteArray dumpMarkers2(taglib::FileType fileType) const {
+        return m_seratoMarkers2.dump(fileType);
     }
 
     CueInfoImporterPointer importCueInfos() const;
@@ -71,7 +55,10 @@ class SeratoTags final {
 
 inline bool operator==(const SeratoTags& lhs, const SeratoTags& rhs) {
     // FIXME: Find a more efficient way to do this
-    return (lhs.dumpMarkers() == rhs.dumpMarkers() && lhs.dumpMarkers2() == rhs.dumpMarkers2());
+    return (lhs.dumpMarkers(taglib::FileType::MP3) ==
+                    rhs.dumpMarkers(taglib::FileType::MP3) &&
+            lhs.dumpMarkers2(taglib::FileType::MP3) ==
+                    rhs.dumpMarkers2(taglib::FileType::MP3));
 }
 
 inline bool operator!=(const SeratoTags& lhs, const SeratoTags& rhs) {

@@ -470,9 +470,10 @@ void importTrackMetadataFromTag(
                 tag,
                 kCommentFieldKeySeratoMarkers2,
                 &seratoMarkers2Base64)) {
-        parseSeratoMarkers2Base64Encoded(
+        parseSeratoMarkers2(
                 pTrackMetadata,
-                seratoMarkers2Base64);
+                seratoMarkers2Base64,
+                FileType::OGG);
     }
 }
 
@@ -589,7 +590,7 @@ bool exportTrackMetadataIntoTag(
     writeCommentField(
             pTag,
             kCommentFieldKeySeratoMarkers2,
-            dumpSeratoMarkers2Base64Encoded(trackMetadata));
+            dumpSeratoMarkers2(trackMetadata, FileType::OGG));
 #endif // __EXPORT_SERATO_MARKERS__
 
     return true;

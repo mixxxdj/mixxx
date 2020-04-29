@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "track/cueinfo.h"
+#include "track/taglib/trackmetadata_file.h"
 #include "util/types.h"
 
 namespace mixxx {
@@ -40,10 +41,10 @@ class SeratoMarkersEntry {
     }
     ~SeratoMarkersEntry() = default;
 
-    QByteArray dump() const;
+    QByteArray dumpID3() const;
     QByteArray dumpMP4() const;
 
-    static SeratoMarkersEntryPointer parse(const QByteArray& data);
+    static SeratoMarkersEntryPointer parseID3(const QByteArray& data);
     static SeratoMarkersEntryPointer parseMP4(const QByteArray& data);
 
     int type() const {
@@ -100,7 +101,7 @@ class SeratoMarkersEntry {
 };
 
 inline bool operator==(const SeratoMarkersEntry& lhs, const SeratoMarkersEntry& rhs) {
-    return (lhs.dump() == rhs.dump());
+    return (lhs.dumpID3() == rhs.dumpID3());
 }
 
 inline bool operator!=(const SeratoMarkersEntry& lhs, const SeratoMarkersEntry& rhs) {
@@ -137,12 +138,17 @@ class SeratoMarkers final {
 
     static bool parse(
             SeratoMarkers* seratoMarkers,
+            const QByteArray& data,
+            taglib::FileType fileType);
+    static bool parseID3(
+            SeratoMarkers* seratoMarkers,
             const QByteArray& data);
     static bool parseMP4(
             SeratoMarkers* seratoMarkers,
             const QByteArray& base64EncodedData);
 
-    QByteArray dump() const;
+    QByteArray dump(taglib::FileType fileType) const;
+    QByteArray dumpID3() const;
     QByteArray dumpMP4() const;
 
     bool isEmpty() const {

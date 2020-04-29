@@ -311,23 +311,25 @@ void importTrackMetadataFromTag(
 #endif // __EXTRA_METADATA__
 
     // Serato tags
-    TagLib::String seratoMarkersBase64;
+    TagLib::String seratoMarkersData;
     if (readAtom(
                 tag,
                 kAtomKeySeratoMarkers,
-                &seratoMarkersBase64)) {
-        parseSeratoMarkersBase64Encoded(
+                &seratoMarkersData)) {
+        parseSeratoMarkers(
                 pTrackMetadata,
-                seratoMarkersBase64);
+                seratoMarkersData,
+                FileType::MP4);
     }
-    TagLib::String seratoMarkers2Base64;
+    TagLib::String seratoMarkers2Data;
     if (readAtom(
                 tag,
                 kAtomKeySeratoMarkers2,
-                &seratoMarkers2Base64)) {
-        parseSeratoMarkers2Base64Encoded(
+                &seratoMarkers2Data)) {
+        parseSeratoMarkers2(
                 pTrackMetadata,
-                seratoMarkers2Base64);
+                seratoMarkers2Data,
+                FileType::MP4);
     }
 }
 
@@ -448,11 +450,11 @@ bool exportTrackMetadataIntoTag(
     writeAtom(
             pTag,
             kAtomKeySeratoMarkers,
-            dumpSeratoMarkersBase64Encoded(trackMetadata));
+            dumpSeratoMarkers(trackMetadata, FileType::MP4));
     writeAtom(
             pTag,
             kAtomKeySeratoMarkers2,
-            dumpSeratoMarkers2Base64Encoded(trackMetadata));
+            dumpSeratoMarkers2(trackMetadata, FileType::MP4));
 
     return true;
 #endif // __EXPORT_SERATO_MARKERS__

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "track/cueinfo.h"
+#include "track/taglib/trackmetadata_file.h"
 #include "util/types.h"
 
 namespace mixxx {
@@ -376,12 +377,17 @@ class SeratoMarkers2 final {
     // SeratoMarkers2 1.0/2.0 specification.
     static bool parse(
             SeratoMarkers2* seratoMarkers2,
+            const QByteArray& outerData,
+            taglib::FileType fileType);
+    static bool parseID3(
+            SeratoMarkers2* seratoMarkers2,
             const QByteArray& outerData);
     static bool parseBase64Encoded(
             SeratoMarkers2* seratoMarkers2,
             const QByteArray& base64EncodedData);
 
-    QByteArray dump() const;
+    QByteArray dump(taglib::FileType fileType) const;
+    QByteArray dumpID3() const;
     QByteArray dumpBase64Encoded() const;
 
     int getAllocatedSize() const {
