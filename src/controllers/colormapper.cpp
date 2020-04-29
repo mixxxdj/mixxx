@@ -37,7 +37,7 @@ QRgb ColorMapper::getNearestColor(QRgb desiredColor) {
         DEBUG_ASSERT(m_availableColors.contains(cachedColor));
         if (kLogger.traceEnabled()) {
             kLogger.trace()
-                    << "ColorMapper found cached color"
+                    << "Found cached color"
                     << cachedColor
                     << "for"
                     << desiredColor;
@@ -60,7 +60,7 @@ QRgb ColorMapper::getNearestColor(QRgb desiredColor) {
         const QRgb nearestColor = iNearestColor.key();
         if (kLogger.traceEnabled()) {
             kLogger.trace()
-                    << "ColorMapper found matching color"
+                    << "Found matching color"
                     << nearestColor
                     << "for"
                     << desiredColor;
