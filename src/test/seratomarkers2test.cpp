@@ -87,17 +87,27 @@ class SeratoMarkers2Test : public testing::Test {
         EXPECT_EQ(inputValue, loopEntry->dump());
     }
 
-    void parseMarkers2Data(const QByteArray inputValue,
+    bool parseMarkers2Data(const QByteArray inputValue,
             bool valid,
-            mixxx::taglib::FileType fileType) {
+            mixxx::taglib::FileType fileType,
+            QByteArray* output = nullptr) {
         mixxx::SeratoMarkers2 seratoMarkers2;
         bool parseOk = mixxx::SeratoMarkers2::parse(
                 &seratoMarkers2, inputValue, fileType);
         EXPECT_EQ(valid, parseOk);
         if (!parseOk) {
-            return;
+            return false;
         }
-        EXPECT_EQ(inputValue, seratoMarkers2.dump(fileType));
+        QByteArray outputValue = seratoMarkers2.dump(fileType);
+        EXPECT_EQ(inputValue, outputValue);
+        if (inputValue != outputValue) {
+            if (output) {
+                output->clear();
+                output->append(outputValue);
+            }
+            return false;
+        }
+        return true;
     }
 
     void parseMarkers2DataInDirectory(
@@ -116,7 +126,16 @@ class SeratoMarkers2Test : public testing::Test {
                 continue;
             }
             QByteArray data = file.readAll();
-            parseMarkers2Data(data, true, fileType);
+            QByteArray actualData;
+            if (!parseMarkers2Data(data, true, fileType, &actualData)) {
+                QFile outfile(file.fileName() + QStringLiteral(".actual"));
+                openOk = outfile.open(QIODevice::WriteOnly);
+                EXPECT_TRUE(openOk);
+                if (!openOk) {
+                    continue;
+                }
+                EXPECT_EQ(actualData.size(), outfile.write(actualData));
+            }
         }
     }
 
