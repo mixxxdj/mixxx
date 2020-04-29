@@ -762,7 +762,6 @@ double BpmControl::getBeatMatchPosition(
     double dOtherNextBeat;
     double dOtherBeatLength;
     double dOtherBeatFraction;
-    // If not, we have to figure it out
     EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
     if (playing) {
         if (!pOtherEngineBuffer || pOtherEngineBuffer->getSpeed() == 0.0) {

@@ -106,6 +106,12 @@ EngineBuffer* EngineControl::pickSyncTarget() {
         return NULL;
     }
 
+    // If sync is on, pick the sync master unless the master is us.
+    auto syncMaster = pEngineSync->getMaster();
+    if (syncMaster && syncMaster->getEngineBuffer() != getEngineBuffer()) {
+        return syncMaster->getEngineBuffer();
+    }
+
     // TODO(rryan): Remove. This is a linear search over groups in
     // EngineMaster. We should pass the EngineChannel into EngineControl.
     EngineChannel* pThisChannel = pMaster->getChannel(getGroup());
