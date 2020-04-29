@@ -367,7 +367,7 @@ TEST_F(SeratoMarkers2Test, ParseLoopEntry) {
 }
 
 TEST_F(SeratoMarkers2Test, ParseMarkers2DataMP3) {
-    parseMarkers2DataInDirectory(QDir("src/test/serato/data/markers2"),
+    parseMarkers2DataInDirectory(QDir("src/test/serato/data/mp3/markers2"),
             mixxx::taglib::FileType::MP3);
 }
 
