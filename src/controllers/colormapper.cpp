@@ -34,9 +34,11 @@ QRgb ColorMapper::getNearestColor(QRgb desiredColor) {
     QMap<QRgb, QRgb>::const_iterator i = m_cache.constFind(desiredColor);
     if (i != m_cache.constEnd()) {
         DEBUG_ASSERT(m_availableColors.contains(i.value()));
-        kLogger.trace()
-                << "ColorMapper cache hit for" << desiredColor << ":"
-                << "Color =" << i.value();
+        if (kLogger.traceEnabled()) {
+            kLogger.trace()
+                    << "ColorMapper cache hit for" << desiredColor << ":"
+                    << "Color =" << i.value();
+        }
         return i.value();
     }
 
@@ -51,10 +53,11 @@ QRgb ColorMapper::getNearestColor(QRgb desiredColor) {
             nearestColor = j.key();
         }
     }
-
-    kLogger.trace()
-            << "ColorMapper found matching color for" << desiredColor << ":"
-            << "Color =" << nearestColor;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "ColorMapper found matching color for" << desiredColor << ":"
+                << "Color =" << nearestColor;
+    }
     m_cache.insert(desiredColor, nearestColor);
     return nearestColor;
 }
