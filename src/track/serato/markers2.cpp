@@ -2,7 +2,11 @@
 
 #include <QtEndian>
 
+#include "util/logger.h"
+
 namespace {
+
+mixxx::Logger kLogger("SeratoMarkers2");
 
 constexpr quint32 kLoopUnknownField2ExpectedValue = 0xFFFFFFFF;
 constexpr quint32 kLoopUnknownField3ExpectedValue = 0x0027AAE1;
@@ -61,14 +65,14 @@ namespace mixxx {
 
 SeratoMarkers2EntryPointer SeratoMarkers2BpmlockEntry::parse(const QByteArray& data) {
     if (data.length() != 1) {
-        qWarning() << "Parsing SeratoMarkers2BpmlockEntry failed:"
-                   << "Length" << data.length() << "!= 1";
+        kLogger.warning() << "Parsing SeratoMarkers2BpmlockEntry failed:"
+                          << "Length" << data.length() << "!= 1";
         return nullptr;
     }
 
     const bool locked = data.at(0);
     SeratoMarkers2BpmlockEntry* pEntry = new SeratoMarkers2BpmlockEntry(locked);
-    qDebug() << "SeratoMarkers2BpmlockEntry" << *pEntry;
+    kLogger.trace() << "SeratoMarkers2BpmlockEntry" << *pEntry;
     return SeratoMarkers2EntryPointer(pEntry);
 }
 
@@ -89,16 +93,16 @@ quint32 SeratoMarkers2BpmlockEntry::length() const {
 
 SeratoMarkers2EntryPointer SeratoMarkers2ColorEntry::parse(const QByteArray& data) {
     if (data.length() != 4) {
-        qWarning() << "Parsing SeratoMarkers2ColorEntry failed:"
-                   << "Length" << data.length() << "!= 4";
+        kLogger.warning() << "Parsing SeratoMarkers2ColorEntry failed:"
+                          << "Length" << data.length() << "!= 4";
         return nullptr;
     }
 
     // Unknown field, make sure it's 0 in case it's a
     // null-terminated string
     if (data.at(0) != '\x00') {
-        qWarning() << "Parsing SeratoMarkers2ColorEntry failed:"
-                   << "Byte 0: " << data.at(0) << "!= '\\0'";
+        kLogger.warning() << "Parsing SeratoMarkers2ColorEntry failed:"
+                          << "Byte 0: " << data.at(0) << "!= '\\0'";
         return nullptr;
     }
 
@@ -108,7 +112,7 @@ SeratoMarkers2EntryPointer SeratoMarkers2ColorEntry::parse(const QByteArray& dat
             static_cast<quint8>(data.at(3))));
 
     SeratoMarkers2ColorEntry* pEntry = new SeratoMarkers2ColorEntry(color);
-    qDebug() << "SeratoMarkers2ColorEntry" << *pEntry;
+    kLogger.trace() << "SeratoMarkers2ColorEntry" << *pEntry;
     return SeratoMarkers2EntryPointer(pEntry);
 }
 
@@ -132,8 +136,8 @@ quint32 SeratoMarkers2ColorEntry::length() const {
 
 SeratoMarkers2EntryPointer SeratoMarkers2CueEntry::parse(const QByteArray& data) {
     if (data.length() < 13) {
-        qWarning() << "Parsing SeratoMarkers2CueEntry failed:"
-                   << "Length" << data.length() << "< 13";
+        kLogger.warning() << "Parsing SeratoMarkers2CueEntry failed:"
+                          << "Length" << data.length() << "< 13";
         return nullptr;
     }
 
@@ -155,8 +159,8 @@ SeratoMarkers2EntryPointer SeratoMarkers2CueEntry::parse(const QByteArray& data)
     // Unknown field, make sure it's 0 in case it's a
     // null-terminated string
     if (unknownField1 != '\x00') {
-        qWarning() << "Parsing SeratoMarkers2CueEntry failed:"
-                   << "Byte 0: " << data.at(0) << "!= '\\0'";
+        kLogger.warning() << "Parsing SeratoMarkers2CueEntry failed:"
+                          << "Byte 0: " << data.at(0) << "!= '\\0'";
         return nullptr;
     }
 
@@ -165,8 +169,8 @@ SeratoMarkers2EntryPointer SeratoMarkers2CueEntry::parse(const QByteArray& data)
     // Unknown field, make sure it's 0 in case it's a
     // null-terminated string
     if (unknownField2 != '\x00') {
-        qWarning() << "Parsing SeratoMarkers2CueEntry failed:"
-                   << "Byte 6: " << data.at(6) << "!= '\\0'";
+        kLogger.warning() << "Parsing SeratoMarkers2CueEntry failed:"
+                          << "Byte 6: " << data.at(6) << "!= '\\0'";
         return nullptr;
     }
 
@@ -176,27 +180,27 @@ SeratoMarkers2EntryPointer SeratoMarkers2CueEntry::parse(const QByteArray& data)
     // Unknown field(s), make sure it's 0 in case it's a
     // null-terminated string
     if (unknownField3 != 0x0000) {
-        qWarning() << "Parsing SeratoMarkers2CueEntry failed:"
-                   << "Bytes 10-11:" << unknownField3 << "!= \"\\0\\0\"";
+        kLogger.warning() << "Parsing SeratoMarkers2CueEntry failed:"
+                          << "Bytes 10-11:" << unknownField3 << "!= \"\\0\\0\"";
         return nullptr;
     }
 
     QString label = zeroTerminatedUtf8StringtoQString(&stream);
 
     if (stream.status() != QDataStream::Status::Ok) {
-        qWarning() << "Parsing SeratoMarkersEntry failed:"
-                   << "Stream read failed with status" << stream.status();
+        kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
+                          << "Stream read failed with status" << stream.status();
         return nullptr;
     }
 
     if (!stream.atEnd()) {
-        qWarning() << "Parsing SeratoMarkersEntry failed:"
-                   << "Unexpected trailing data";
+        kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
+                          << "Unexpected trailing data";
         return nullptr;
     }
 
     SeratoMarkers2CueEntry* pEntry = new SeratoMarkers2CueEntry(index, position, color, label);
-    qDebug() << "SeratoMarkers2CueEntry" << *pEntry;
+    kLogger.trace() << "SeratoMarkers2CueEntry" << *pEntry;
     return SeratoMarkers2EntryPointer(pEntry);
 }
 
@@ -229,8 +233,8 @@ quint32 SeratoMarkers2CueEntry::length() const {
 
 SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray& data) {
     if (data.length() < 21) {
-        qWarning() << "Parsing SeratoMarkers2LoopEntry failed:"
-                   << "Length" << data.length() << "< 21";
+        kLogger.warning() << "Parsing SeratoMarkers2LoopEntry failed:"
+                          << "Length" << data.length() << "< 21";
         return nullptr;
     }
 
@@ -251,26 +255,26 @@ SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray& data
     // Unknown field, make sure it's 0 in case it's a
     // null-terminated string
     if (unknownField1 != '\x00') {
-        qWarning() << "Parsing SeratoMarkers2LoopEntry failed:"
-                   << "Byte 0: " << unknownField1 << "!= '\\0'";
+        kLogger.warning() << "Parsing SeratoMarkers2LoopEntry failed:"
+                          << "Byte 0: " << unknownField1 << "!= '\\0'";
         return nullptr;
     }
 
     stream >> index >> startPosition >> endPosition >> unknownField2;
     // Unknown field, make sure it contains the expected "default" value
     if (unknownField2 != kLoopUnknownField2ExpectedValue) {
-        qWarning() << "Parsing SeratoMarkers2LoopEntry failed:"
-                   << "Invalid magic value" << unknownField2
-                   << "!=" << kLoopUnknownField2ExpectedValue << "at offset 10";
+        kLogger.warning() << "Parsing SeratoMarkers2LoopEntry failed:"
+                          << "Invalid magic value" << unknownField2
+                          << "!=" << kLoopUnknownField2ExpectedValue << "at offset 10";
         return nullptr;
     }
 
     stream >> unknownField3;
     // Unknown field, make sure it contains the expected "default" value
     if (unknownField3 != kLoopUnknownField3ExpectedValue) {
-        qWarning() << "Parsing SeratoMarkers2LoopEntry failed:"
-                   << "Invalid magic value" << unknownField3
-                   << "!=" << kLoopUnknownField3ExpectedValue << "at offset 14";
+        kLogger.warning() << "Parsing SeratoMarkers2LoopEntry failed:"
+                          << "Invalid magic value" << unknownField3
+                          << "!=" << kLoopUnknownField3ExpectedValue << "at offset 14";
         return nullptr;
     }
 
@@ -278,8 +282,8 @@ SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray& data
     // Unknown field, make sure it's 0 in case it's a
     // null-terminated string
     if (unknownField4 != kLoopUnknownField4ExpectedValue) {
-        qWarning() << "Parsing SeratoMarkers2LoopEntry failed:"
-                   << "Byte 18:" << unknownField4 << "!=" << kLoopUnknownField4ExpectedValue;
+        kLogger.warning() << "Parsing SeratoMarkers2LoopEntry failed:"
+                          << "Byte 18:" << unknownField4 << "!=" << kLoopUnknownField4ExpectedValue;
         return nullptr;
     }
 
@@ -287,19 +291,19 @@ SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray& data
     QString label = zeroTerminatedUtf8StringtoQString(&stream);
 
     if (stream.status() != QDataStream::Status::Ok) {
-        qWarning() << "Parsing SeratoMarkersEntry failed:"
-                   << "Stream read failed with status" << stream.status();
+        kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
+                          << "Stream read failed with status" << stream.status();
         return nullptr;
     }
 
     if (!stream.atEnd()) {
-        qWarning() << "Parsing SeratoMarkersEntry failed:"
-                   << "Unexpected trailing data";
+        kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
+                          << "Unexpected trailing data";
         return nullptr;
     }
 
     SeratoMarkers2LoopEntry* pEntry = new SeratoMarkers2LoopEntry(index, startPosition, endPosition, locked, label);
-    qDebug() << "SeratoMarkers2LoopEntry" << *pEntry;
+    kLogger.trace() << "SeratoMarkers2LoopEntry" << *pEntry;
     return SeratoMarkers2EntryPointer(pEntry);
 }
 
@@ -354,8 +358,8 @@ bool SeratoMarkers2::parseID3(
         SeratoMarkers2* seratoMarkers2,
         const QByteArray& outerData) {
     if (!outerData.startsWith("\x01\x01")) {
-        qWarning() << "Parsing SeratoMarkers2 failed:"
-                   << "Unknown outer Serato Markers2 tag version";
+        kLogger.warning() << "Parsing SeratoMarkers2 failed:"
+                          << "Unknown outer Serato Markers2 tag version";
         return false;
     }
 
@@ -373,8 +377,8 @@ bool SeratoMarkers2::parseCommon(
     const auto data = QByteArray::fromBase64(outerData);
 
     if (!data.startsWith("\x01\x01")) {
-        qWarning() << "Parsing SeratoMarkers2 failed:"
-                   << "Unknown inner Serato Markers2 tag version";
+        kLogger.warning() << "Parsing SeratoMarkers2 failed:"
+                          << "Unknown inner Serato Markers2 tag version";
         return false;
     }
 
@@ -390,8 +394,8 @@ bool SeratoMarkers2::parseCommon(
         if (entryType.isEmpty()) {
             // We reached the end of the markers
             if (offset != data.size()) {
-                qWarning() << "Parsing SeratoMarkers2 failed:"
-                           << "Trailing content" << data.mid(offset);
+                kLogger.warning() << "Parsing SeratoMarkers2 failed:"
+                                  << "Trailing content" << data.mid(offset);
                 return false;
             }
             break;
@@ -421,12 +425,12 @@ bool SeratoMarkers2::parseCommon(
             pEntry = SeratoMarkers2LoopEntry::parse(entryData);
         } else {
             pEntry = SeratoMarkers2EntryPointer(new SeratoMarkers2UnknownEntry(entryType, entryData));
-            qDebug() << "SeratoMarkers2UnknownEntry" << *pEntry;
+            kLogger.trace() << "SeratoMarkers2UnknownEntry" << *pEntry;
         }
 
         if (!pEntry) {
-            qWarning() << "Parsing SeratoMarkers2 failed:"
-                       << "Unable to parse entry of type " << entryType;
+            kLogger.warning() << "Parsing SeratoMarkers2 failed:"
+                              << "Unable to parse entry of type " << entryType;
             return false;
         }
         entries.append(pEntry);
@@ -443,15 +447,15 @@ bool SeratoMarkers2::parseBase64Encoded(
         const QByteArray& base64EncodedData) {
     const auto decodedData = QByteArray::fromBase64(base64EncodedData);
     if (!decodedData.startsWith(kSeratoMarkers2Base64EncodedPrefix)) {
-        qWarning() << "Decoding SeratoMarkers2 from base64 failed:"
-                   << "Unexpected prefix";
+        kLogger.warning() << "Decoding SeratoMarkers2 from base64 failed:"
+                          << "Unexpected prefix";
         return false;
     }
     DEBUG_ASSERT(decodedData.size() >= kSeratoMarkers2Base64EncodedPrefix.size());
     if (!parseID3(
                 seratoMarkers2,
                 decodedData.mid(kSeratoMarkers2Base64EncodedPrefix.size()))) {
-        qWarning() << "Parsing base64encoded SeratoMarkers2 failed!";
+        kLogger.warning() << "Parsing base64encoded SeratoMarkers2 failed!";
         return false;
     }
 
@@ -601,7 +605,7 @@ QByteArray SeratoMarkers2::dumpBase64Encoded() const {
 }
 
 RgbColor::optional_t SeratoMarkers2::getTrackColor() const {
-    qDebug() << "Reading track color from 'Serato Markers2' tag data...";
+    kLogger.info() << "Reading track color from 'Serato Markers2' tag data...";
 
     for (auto& pEntry : m_entries) {
         DEBUG_ASSERT(pEntry);
@@ -616,7 +620,7 @@ RgbColor::optional_t SeratoMarkers2::getTrackColor() const {
 }
 
 bool SeratoMarkers2::isBpmLocked() const {
-    qDebug() << "Reading bpmlock state from 'Serato Markers2' tag data...";
+    kLogger.info() << "Reading bpmlock state from 'Serato Markers2' tag data...";
 
     for (auto& pEntry : m_entries) {
         DEBUG_ASSERT(pEntry);
