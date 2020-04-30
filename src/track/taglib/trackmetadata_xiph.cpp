@@ -252,7 +252,8 @@ bool importCoverImageFromTag(
 
 void importTrackMetadataFromTag(
         TrackMetadata* pTrackMetadata,
-        const TagLib::Ogg::XiphComment& tag) {
+        const TagLib::Ogg::XiphComment& tag,
+        FileType fileType) {
     if (!pTrackMetadata) {
         return; // nothing to do
     }
@@ -465,21 +466,22 @@ void importTrackMetadataFromTag(
 #endif // __EXTRA_METADATA__
 
     // Serato tags
-    TagLib::String seratoMarkers2Base64;
+    TagLib::String seratoMarkers2Data;
     if (readCommentField(
                 tag,
                 kCommentFieldKeySeratoMarkers2,
-                &seratoMarkers2Base64)) {
+                &seratoMarkers2Data)) {
         parseSeratoMarkers2(
                 pTrackMetadata,
-                seratoMarkers2Base64,
-                FileType::OGG);
+                seratoMarkers2Data,
+                fileType);
     }
 }
 
 bool exportTrackMetadataIntoTag(
         TagLib::Ogg::XiphComment* pTag,
-        const TrackMetadata& trackMetadata) {
+        const TrackMetadata& trackMetadata,
+        FileType fileType) {
     if (!pTag) {
         return false;
     }
@@ -590,7 +592,7 @@ bool exportTrackMetadataIntoTag(
     writeCommentField(
             pTag,
             kCommentFieldKeySeratoMarkers2,
-            dumpSeratoMarkers2(trackMetadata, FileType::OGG));
+            dumpSeratoMarkers2(trackMetadata, fileType));
 #endif // __EXPORT_SERATO_MARKERS__
 
     return true;
