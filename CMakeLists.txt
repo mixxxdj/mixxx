@@ -547,6 +547,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/backends/builtin/biquadfullkilleqeffect.cpp
   src/effects/backends/builtin/bitcrushereffect.cpp
   src/effects/backends/builtin/builtinbackend.cpp
+  src/effects/backends/builtin/choppereffect.cpp
   src/effects/backends/builtin/echoeffect.cpp
   src/effects/backends/builtin/filtereffect.cpp
   src/effects/backends/builtin/flangereffect.cpp

@@ -8,6 +8,7 @@
 #include "effects/backends/builtin/bessel8lvmixeqeffect.h"
 #include "effects/backends/builtin/biquadfullkilleqeffect.h"
 #include "effects/backends/builtin/bitcrushereffect.h"
+#include "effects/backends/builtin/choppereffect.h"
 #include "effects/backends/builtin/filtereffect.h"
 #include "effects/backends/builtin/flangereffect.h"
 #include "effects/backends/builtin/graphiceqeffect.h"
@@ -54,6 +55,7 @@ BuiltInBackend::BuiltInBackend() {
     registerEffect<PhaserEffect>();
     registerEffect<MetronomeEffect>();
     registerEffect<TremoloEffect>();
+    registerEffect<ChopperEffect>();
 }
 
 std::unique_ptr<EffectProcessor> BuiltInBackend::createProcessor(
