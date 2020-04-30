@@ -33,7 +33,7 @@ QRgb ColorMapper::getNearestColor(QRgb desiredColor) {
     // If desired color is already in cache, use cache entry
     const auto iCachedColor = m_cache.constFind(desiredColor);
     if (iCachedColor != m_cache.constEnd()) {
-        const QRgb cachedColor = iCachedColor.key();
+        const QRgb cachedColor = iCachedColor.value();
         DEBUG_ASSERT(m_availableColors.contains(cachedColor));
         if (kLogger.traceEnabled()) {
             kLogger.trace()
