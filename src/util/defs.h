@@ -5,4 +5,6 @@
 //TODO: Replace this with mixxx::AudioParameters::bufferSize()
 const unsigned int MAX_BUFFER_LEN = 160000;
 
+const int kMaxNumberOfDecks = 4;
+
 #endif /* DEFS_H */

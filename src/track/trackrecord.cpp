@@ -199,4 +199,4 @@ bool TrackRecord::mergeImportedMetadata(
     return modified;
 }
 
-} //namespace mixxx
+} // namespace mixxx

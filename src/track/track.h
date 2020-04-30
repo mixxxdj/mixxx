@@ -9,6 +9,7 @@
 #include "sources/metadatasource.h"
 #include "track/beats.h"
 #include "track/cue.h"
+#include "track/cueinfoimporter.h"
 #include "track/trackfile.h"
 #include "track/trackrecord.h"
 #include "util/memory.h"
@@ -257,7 +258,19 @@ class Track : public QObject {
     QList<CuePointer> getCuePoints() const;
 
     void setCuePoints(const QList<CuePointer>& cuePoints);
-    void importCueInfos(const QList<mixxx::CueInfo>& cueInfos);
+
+    enum class CueImportStatus {
+        Pending,
+        Complete,
+    };
+    /// Imports the given list of cue infos as cue points,
+    /// thereby replacing all existing cue points!
+    ///
+    /// If the list is empty it tries to complete any pending
+    /// import and returns the corresponding status.
+    CueImportStatus importCueInfos(
+            mixxx::CueInfoImporterPointer pCueInfoImporter);
+    CueImportStatus getCueImportStatus() const;
 
     bool isDirty();
 
@@ -369,9 +382,8 @@ class Track : public QObject {
     void setCuePointsMarkDirtyAndUnlock(
             QMutexLocker* pLock,
             const QList<CuePointer>& cuePoints);
-    void importCueInfosMarkDirtyAndUnlock(
-            QMutexLocker* pLock,
-            const QList<mixxx::CueInfo>& cueInfos);
+    void importPendingCueInfosMarkDirtyAndUnlock(
+            QMutexLocker* pLock);
 
     enum class DurationRounding {
         SECONDS, // rounded to full seconds
@@ -422,7 +434,7 @@ class Track : public QObject {
     ConstWaveformPointer m_waveform;
     ConstWaveformPointer m_waveformSummary;
 
-    QList<mixxx::CueInfo> m_importCueInfosPending;
+    mixxx::CueInfoImporterPointer m_pCueInfoImporterPending;
 
     friend class TrackDAO;
     friend class GlobalTrackCache;

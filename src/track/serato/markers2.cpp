@@ -438,7 +438,7 @@ QByteArray SeratoMarkers2::dump() const {
     return outerData.leftJustified(size, '\0');
 }
 
-QList<CueInfo> SeratoMarkers2::getCues(double timingOffsetMillis) const {
+QList<CueInfo> SeratoMarkers2::getCues() const {
     qDebug() << "Reading cues from 'Serato Markers2' tag data...";
     QList<CueInfo> cueInfos;
     for (auto& pEntry : m_entries) {
@@ -448,13 +448,12 @@ QList<CueInfo> SeratoMarkers2::getCues(double timingOffsetMillis) const {
             const SeratoMarkers2CueEntry* pCueEntry = static_cast<SeratoMarkers2CueEntry*>(pEntry.get());
             CueInfo cueInfo(
                     CueType::HotCue,
-                    pCueEntry->getPosition() + timingOffsetMillis,
+                    pCueEntry->getPosition(),
                     std::nullopt,
                     pCueEntry->getIndex(),
                     pCueEntry->getLabel(),
                     pCueEntry->getColor());
             cueInfos.append(cueInfo);
-
             break;
         }
         // TODO: Add support for LOOP/FLIP
@@ -496,4 +495,4 @@ bool SeratoMarkers2::isBpmLocked() const {
     return false;
 }
 
-} //namespace mixxx
+} // namespace mixxx

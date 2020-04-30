@@ -15,7 +15,7 @@ double colorDistance(QRgb a, QRgb b) {
     // of colors into account. More accurate algorithms like the CIELAB2000
     // Delta-E rely on sophisticated color space conversions and need a lot
     // of costly computations. In contrast, this is a low-cost
-    // approximation and should be sufficently accurate.
+    // approximation and should be sufficiently accurate.
     // More details: https://www.compuphase.com/cmetric.htm
     long mean_red = (static_cast<long>(qRed(a)) + static_cast<long>(qRed(b))) / 2;
     long delta_red = static_cast<long>(qRed(a)) - static_cast<long>(qRed(b));

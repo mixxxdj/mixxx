@@ -157,7 +157,7 @@ void Logging::initialize(const QDir& settingsDir,
         return;
     }
 
-    g_logLevel = logLevel;
+    setLogLevel(logLevel);
     g_logFlushLevel = logFlushLevel;
 
     QString logFileName;
@@ -204,6 +204,11 @@ void Logging::initialize(const QDir& settingsDir,
     QLoggingCategory::setFilterRules("*.debug=true\n"
                                      "qt.*.debug=false");
 #endif
+}
+
+// static
+void Logging::setLogLevel(LogLevel logLevel) {
+    g_logLevel = logLevel;
 }
 
 // static

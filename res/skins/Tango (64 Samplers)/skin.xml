@@ -123,68 +123,6 @@
       <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusTalkover]_enable">0</attribute>
     </attributes>
   </manifest>
-<!--  ################################################################
-       Skin Colour Schemes ##########################################
-     ###############################################################
--->
-  <Schemes>
-    <Scheme>
-      <Name>Classic</Name>
-      <Filters/>
-      <!-- Colors for waveform & overview -->
-      <SetVariable name="SignalColor_12">#5EBAFF</SetVariable>
-      <SetVariable name="SignalBgColor_12">#001D33</SetVariable>
-      <SetVariable name="SignalColor_34">#DF4DF0</SetVariable>
-      <SetVariable name="SignalBgColor_34">#3A0440</SetVariable>
-      <!-- small Spinny mask and default mini cover should match -->
-      <SetVariable name="SpinnyCoverColor_12">blue</SetVariable>
-      <SetVariable name="SpinnyCoverColor_34">purple</SetVariable>
-      <SetVariable name="EndOfTrackColor">#EA0085</SetVariable>
-      <Style>
-        <!-- All text labels in decks (artist, title, time, BPM, key, ...) -->
-        #Deck1 WLabel, #DeckMini1 WLabel, #RateContainer1 WLabel, #RateContainer1 WPushButton,
-        #Deck2 WLabel, #DeckMini2 WLabel, #RateContainer2 WLabel, #RateContainer2 WPushButton {
-          color: #33a8ff;}
-        #Deck3 WLabel, #DeckMini3 WLabel, #RateContainer3 WLabel, #RateContainer3 WPushButton,
-        #Deck4 WLabel, #DeckMini4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton {
-          color: #d910f0;}
-        WLabel#TrackBy, WLabel#TrackByMini, WLabel#TrackComment { color: #888;}
-        <!-- Vinyl Controls toggle is transparent. This sets bg color so it matches those above -->
-        #DeckOverviewRow1, #DeckOverviewRow2 { background-color: #001D33;}
-        #DeckOverviewRow3, #DeckOverviewRow4 { background-color: #3A0440;}
-      </Style>
-    </Scheme>
-    <Scheme>
-      <Name>ClubTwist</Name>
-      <SetVariable name="SignalColor_12">#DF4DF0</SetVariable>
-      <SetVariable name="SignalBgColor_12">#3A0440</SetVariable>
-      <SetVariable name="SignalColor_34">#5EBAFF</SetVariable>
-      <SetVariable name="SignalBgColor_34">#001D33</SetVariable>
-      <SetVariable name="SpinnyCoverColor_12">purple</SetVariable>
-      <SetVariable name="SpinnyCoverColor_34">blue</SetVariable>
-      <!-- Cyan end-of-track warning -->
-      <SetVariable name="EndOfTrackColor">#00ffff</SetVariable>
-      <Style>
-        #Deck1 WLabel, #DeckMini1 WLabel, #RateContainer1 WLabel, #RateContainer1 WPushButton,
-        #Deck2 WLabel, #DeckMini2 WLabel, #RateContainer2 WLabel, #RateContainer2 WPushButton {
-          color: #e145f3;}
-        #Deck3 WLabel, #DeckMini3 WLabel, #RateContainer3 WLabel, #RateContainer3 WPushButton,
-        #Deck4 WLabel, #DeckMini4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton {
-          color: #3693d9;}
-        WLabel#TrackBy, WLabel#TrackByMini, WLabel#TrackComment { color: #888;}
-        #DeckOverviewRow1, #DeckOverviewRow2 { background-color: #3A0440;}
-        #DeckOverviewRow3, #DeckOverviewRow4 { background-color: #001D33;}
-        <!-- brighter, broader library focus borders -->
-        #LibraryContainer QTreeView,
-        #LibraryContainer QTableView {
-          border-width: 2px;}
-        #LibraryContainer QTreeView:focus,
-        #LibraryContainer QTableView:focus,
-        #LibraryContainer WSearchLineEdit:focus {
-          border-color: #ff8800;}
-      </Style>
-    </Scheme>
-  </Schemes>
 
   <ObjectName>Mixxx</ObjectName>
   <Style src="skin:../Tango/style.qss" src-mac="skin:../Tango/style-mac.qss"/>
@@ -238,6 +176,14 @@
     <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
     <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
     <SetVariable name="PlayedOverlayColor">#99000000</SetVariable>
+    <!-- Cyan end-of-track warning -->
+    <SetVariable name="EndOfTrackColor">#00ffff</SetVariable>
+    <SetVariable name="SignalColor_12">#DF4DF0</SetVariable>
+    <SetVariable name="SignalBgColor_12">#3A0440</SetVariable>
+    <SetVariable name="SignalColor_34">#5EBAFF</SetVariable>
+    <SetVariable name="SignalBgColor_34">#001D33</SetVariable>
+    <SetVariable name="SpinnyCoverColor_12">purple</SetVariable>
+    <SetVariable name="SpinnyCoverColor_34">blue</SetVariable>
 
 <!--################################################################
      Singleton definitions  #######################################
@@ -416,10 +362,10 @@
       </Children>
     </SingletonDefinition>
 
-<!--  ################################################################
-       SkinContainer  ###############################################
-      skin incl. invisble size detector for deck Stars #############
-     ############################################################## -->
+<!--  ##############################################################
+      SkinContainer  ###############################################
+      skin incl. invisible size detector for deck Stars ############
+      ############################################################## -->
     <WidgetGroup>
       <ObjectName>SkinContainer</ObjectName>
       <Layout>vertical</Layout>
@@ -622,6 +568,6 @@
       </Children>
     </WidgetGroup>
     <!-- SkinContainer -->
-    <!-- /skin incl. invisble size detector for deck Stars -->
+    <!-- /skin incl. invisible size detector for deck Stars -->
   </Children>
 </skin>
