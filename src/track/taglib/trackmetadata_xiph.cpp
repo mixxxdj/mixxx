@@ -467,16 +467,19 @@ void importTrackMetadataFromTag(
 #endif // __EXTRA_METADATA__
 
     // Serato tags
-    TagLib::String seratoMarkers2Data;
-    if (readCommentField(tag,
-                (fileType == FileType::FLAC)
-                        ? kCommentFieldKeySeratoMarkers2FLAC
-                        : kCommentFieldKeySeratoMarkers2Ogg,
-                &seratoMarkers2Data)) {
-        parseSeratoMarkers2(
-                pTrackMetadata,
-                seratoMarkers2Data,
-                fileType);
+    //
+    // FIXME: We're only parsing FLAC tags for now, since the Ogg format is
+    // different we don't support it yet.
+    if (fileType == FileType::FLAC) {
+        TagLib::String seratoMarkers2Data;
+        if (readCommentField(tag,
+                    kCommentFieldKeySeratoMarkers2FLAC,
+                    &seratoMarkers2Data)) {
+            parseSeratoMarkers2(
+                    pTrackMetadata,
+                    seratoMarkers2Data,
+                    fileType);
+        }
     }
 }
 
@@ -591,10 +594,15 @@ bool exportTrackMetadataIntoTag(
     // does not modify them.
 #if defined(__EXPORT_SERATO_MARKERS__)
     // Serato tags
-    writeCommentField(
-            pTag,
-            kCommentFieldKeySeratoMarkers2,
-            dumpSeratoMarkers2(trackMetadata, fileType));
+    //
+    // FIXME: We're only dumping FLAC tags for now, since the Ogg format is
+    // different we don't support it yet.
+    if (fileType == FileType::FLAC) {
+        writeCommentField(
+                pTag,
+                kCommentFieldKeySeratoMarkers2FLAC,
+                dumpSeratoMarkers2(trackMetadata, fileType));
+    }
 #endif // __EXPORT_SERATO_MARKERS__
 
     return true;
