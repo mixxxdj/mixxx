@@ -408,6 +408,11 @@ TEST_F(SeratoMarkers2Test, ParseMarkers2DataFLAC) {
             mixxx::taglib::FileType::FLAC);
 }
 
+TEST_F(SeratoMarkers2Test, ParseMarkers2DataOGG) {
+    parseMarkers2DataInDirectory(QDir("src/test/serato/data/ogg/markers2"),
+            mixxx::taglib::FileType::OGG);
+}
+
 TEST_F(SeratoMarkers2Test, ParseEmptyDataMP3) {
     parseEmptyMarkers2Data(mixxx::taglib::FileType::MP3);
 }
