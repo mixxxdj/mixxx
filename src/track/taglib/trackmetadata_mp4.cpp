@@ -455,9 +455,9 @@ bool exportTrackMetadataIntoTag(
             pTag,
             kAtomKeySeratoMarkers2,
             dumpSeratoMarkers2(trackMetadata, FileType::MP4));
+#endif // __EXPORT_SERATO_MARKERS__
 
     return true;
-#endif // __EXPORT_SERATO_MARKERS__
 }
 
 } // namespace mp4
