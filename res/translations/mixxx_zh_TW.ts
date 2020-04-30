@@ -247,12 +247,12 @@
 <context>
     <name>BaseSqlTableModel</name>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="62"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="63"/>
         <source>#</source>
         <translation>#</translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="65"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="66"/>
         <source>Timestamp</source>
         <translation>時間戳記</translation>
     </message>
@@ -260,7 +260,7 @@
 <context>
     <name>BaseTrackPlayerImpl</name>
     <message>
-        <location filename="../../src/mixer/basetrackplayer.cpp" line="348"/>
+        <location filename="../../src/mixer/basetrackplayer.cpp" line="350"/>
         <source>Couldn&apos;t load track.</source>
         <translation>無法載入追蹤記錄。</translation>
     </message>
@@ -268,127 +268,127 @@
 <context>
     <name>BaseTrackTableModel</name>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="123"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="124"/>
         <source>Album</source>
         <translation>專輯</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="127"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="128"/>
         <source>Album Artist</source>
         <translation>唱片集演出者</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="131"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="132"/>
         <source>Artist</source>
         <translation>演出者</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="135"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="136"/>
         <source>Bitrate</source>
         <translation>位元速率</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="139"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="140"/>
         <source>BPM</source>
         <translation>BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="143"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="144"/>
         <source>Channels</source>
         <translation>電視頻道</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="147"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="148"/>
         <source>Color</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="151"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="152"/>
         <source>Comment</source>
         <translation>評論</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="155"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="156"/>
         <source>Composer</source>
         <translation>作曲家</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="159"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="160"/>
         <source>Cover Art</source>
         <translation>封面</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="163"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="164"/>
         <source>Date Added</source>
         <translation>加入日期</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="167"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="168"/>
         <source>Duration</source>
         <translation>持續時間</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="171"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="172"/>
         <source>Type</source>
         <translation>類型</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="175"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="176"/>
         <source>Genre</source>
         <translation>體裁</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="179"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="180"/>
         <source>Grouping</source>
         <translation>分組</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="183"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="184"/>
         <source>Key</source>
         <translation>關鍵</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="187"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="188"/>
         <source>Location</source>
         <translation>位置</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="191"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="192"/>
         <source>Preview</source>
         <translation>預覽</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="195"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="196"/>
         <source>Rating</source>
         <translation>評分</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="199"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="200"/>
         <source>ReplayGain</source>
         <translation>重播增益</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="203"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="204"/>
         <source>Samplerate</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="207"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="208"/>
         <source>Played</source>
         <translation>演奏的</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="211"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="212"/>
         <source>Title</source>
         <translation>標題</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="215"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="216"/>
         <source>Track #</source>
         <translation>曲目 #</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="219"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="220"/>
         <source>Year</source>
         <translation>年份</translation>
     </message>
@@ -409,22 +409,22 @@
 <context>
     <name>BroadcastProfile</name>
     <message>
-        <location filename="../../src/preferences/broadcastprofile.cpp" line="465"/>
+        <location filename="../../src/preferences/broadcastprofile.cpp" line="470"/>
         <source>Can&apos;t use secure password storage: keychain access failed.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastprofile.cpp" line="496"/>
+        <location filename="../../src/preferences/broadcastprofile.cpp" line="501"/>
         <source>Secure password retrieval unsuccessful: keychain access failed.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastprofile.cpp" line="508"/>
+        <location filename="../../src/preferences/broadcastprofile.cpp" line="513"/>
         <source>Settings error</source>
         <translation>設定錯誤</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastprofile.cpp" line="509"/>
+        <location filename="../../src/preferences/broadcastprofile.cpp" line="514"/>
         <source>&lt;b&gt;Error with settings for &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation>&lt;b&gt;設定 &apos;%1&apos; 失敗:&lt;/b&gt;&lt;br&gt;</translation>
     </message>
@@ -3777,107 +3777,107 @@ You tried to learn: %1,%2</source>
 <context>
     <name>DlgPrefBroadcast</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="95"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="96"/>
         <source>Icecast 2</source>
         <translation>Icecast 2</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="96"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="97"/>
         <source>Shoutcast 1</source>
         <translation>Shoutcast 1</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="97"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="98"/>
         <source>Icecast 1</source>
         <translation>Icecast 1</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="120"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="121"/>
         <source>MP3</source>
         <translation>MP3</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="121"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="122"/>
         <source>Ogg Vorbis</source>
         <translation>Ogg 格式</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="123"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="124"/>
         <source>Opus</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="127"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="128"/>
         <source>Automatic</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="129"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="130"/>
         <source>Mono</source>
         <translation>單聲道</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="131"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="132"/>
         <source>Stereo</source>
         <translation>身歷聲</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="206"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="267"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="542"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="576"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="211"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="272"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="547"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="581"/>
         <source>Action failed</source>
         <translation>行動失敗</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="207"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="212"/>
         <source>'%1' has the same Icecast mountpoint as '%2'.
 Two source connections to the same server can&apos;t have the same mountpoint.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="268"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="273"/>
         <source>You can&apos;t create more than %1 source connections.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="281"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="286"/>
         <source>Source connection %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="543"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="548"/>
         <source>At least one source connection is required.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="587"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="592"/>
         <source>Are you sure you want to disconnect every active source connection?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="549"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="586"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="554"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="591"/>
         <source>Confirmation required</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="550"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="555"/>
         <source>Are you sure you want to delete &apos;%1&apos;?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="565"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="570"/>
         <source>Renaming &apos;%1&apos;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="566"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="571"/>
         <source>New name for &apos;%1&apos;:</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="577"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="582"/>
         <source>Can&apos;t rename &apos;%1&apos; to &apos;%2&apos;: name already in use</source>
         <translation type="unfinished"/>
     </message>
@@ -4202,94 +4202,94 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
 <context>
     <name>DlgPrefController</name>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="121"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="123"/>
         <source>Apply device settings?</source>
         <translation>應用設備設置嗎？</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="122"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="124"/>
         <source>Your settings must be applied before starting the learning wizard.
 Apply settings and continue?</source>
         <translation>開始學習嚮導前，必須應用您的設置。
 應用設置並繼續？</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="182"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="184"/>
         <source>None</source>
         <translation>沒有一個</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="187"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="189"/>
         <source>%1 by %2</source>
         <translation>%2 %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="205"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="207"/>
         <source>No Name</source>
         <translation>沒有名字</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="215"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="217"/>
         <source>No Description</source>
         <translation>沒有說明</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="225"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="227"/>
         <source>No Author</source>
         <translation>沒有作者</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="253"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="255"/>
         <source>No Scripts</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="265"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="267"/>
         <source>missing</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="269"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="271"/>
         <source>built-in</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="450"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="456"/>
         <source>Preset has been edited</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="451"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="457"/>
         <source>Do you want to save the changes?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="481"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="487"/>
         <source>edited</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="545"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="551"/>
         <source>Troubleshooting</source>
         <translation>疑難排解</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="636"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="642"/>
         <source>Clear Input Mappings</source>
         <translation>清除輸入的映射</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="637"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="643"/>
         <source>Are you sure you want to clear all input mappings?</source>
         <translation>你確定你想要清除所有輸入的映射？</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="674"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="680"/>
         <source>Clear Output Mappings</source>
         <translation>清除輸出映射</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="675"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="681"/>
         <source>Are you sure you want to clear all output mappings?</source>
         <translation>你確定你想要清除所有輸出映射？</translation>
     </message>
@@ -5014,9 +5014,9 @@ You can always drag-and-drop tracks on screen to clone a deck.</source>
 <context>
     <name>DlgPrefEQ</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="233"/>
-        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="262"/>
-        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="676"/>
+        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="235"/>
+        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="264"/>
+        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="682"/>
         <source>None</source>
         <extracomment>Displayed when no effect is selected</extracomment>
         <translation>沒有一個</translation>
@@ -5448,47 +5448,47 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <translation>掃描</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="210"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="214"/>
         <source>Choose a music directory</source>
         <translation>選擇音樂目錄</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="225"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="229"/>
         <source>Confirm Directory Removal</source>
         <translation>確認目錄刪除</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="227"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="231"/>
         <source>Mixxx will no longer watch this directory for new tracks. What would you like to do with the tracks from this directory and subdirectories?&lt;ul&gt;&lt;li&gt;Hide all tracks from this directory and subdirectories.&lt;/li&gt;&lt;li&gt;Delete all metadata for these tracks from Mixxx permanently.&lt;/li&gt;&lt;li&gt;Leave the tracks unchanged in your library.&lt;/li&gt;&lt;/ul&gt;Hiding tracks saves their metadata in case you re-add them in the future.</source>
         <translation>Mixxx 將不再監視此目錄為新的軌道。你想要用軌道從這個目錄和子目錄什麼？&lt;ul&gt;&lt;li&gt;隱藏從這個目錄和子目錄中的所有蹤跡。&lt;/li&gt;&lt;li&gt;刪除這些的所有中繼資料跟蹤從 Mixxx 永久。&lt;/li&gt;&lt;li&gt;離開鐵軌在您的庫不變。&lt;/li&gt;&lt;/ul&gt;隱藏曲目將其中繼資料的保存，以防你重新將它們添加到了將來。</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="238"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="242"/>
         <source>Metadata means all track details (artist, title, playcount, etc.) as well as beatgrids, hotcues, and loops. This choice only affects the Mixxx library. No files on disk will be changed or deleted.</source>
         <translation>中繼資料意味著所有跟蹤詳細資訊 （演出者、 標題、 playcount 等） 以及 beatgrids、 hotcues 和迴圈。該選項只會影響 Mixxx 圖書館。沒有磁片上的檔將被更改或刪除。</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="246"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="250"/>
         <source>Hide Tracks</source>
         <translation>隱藏的蹤跡</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="248"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="252"/>
         <source>Delete Track Metadata</source>
         <translation>刪除跟蹤中繼資料</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="250"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="254"/>
         <source>Leave Tracks Unchanged</source>
         <translation>離開軌道不變</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="291"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="295"/>
         <source>Relink music directory to new location</source>
         <translation>重新連結到新位置的音樂目錄</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="372"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="376"/>
         <source>Select Library Font</source>
         <translation>選擇庫字體</translation>
     </message>
@@ -5628,37 +5628,37 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <translation>外部庫</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="286"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="360"/>
         <source>You will need to restart Mixxx for these settings to take effect.</source>
         <translation>您將需要重新開機 Mixxx，這些設置才能生效。</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="293"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="286"/>
         <source>Show Rhythmbox Library</source>
         <translation>顯示 Rhythmbox 庫</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="303"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="296"/>
         <source>Show Banshee Library</source>
         <translation>顯示女妖庫</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="313"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="306"/>
         <source>Show iTunes Library</source>
         <translation>顯示 iTunes 庫</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="323"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="316"/>
         <source>Show Traktor Library</source>
         <translation>顯示拖拉機庫</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="333"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="326"/>
         <source>Show Rekordbox Library</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="343"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="336"/>
         <source>Show Serato Library</source>
         <translation type="unfinished"/>
     </message>
@@ -6154,28 +6154,28 @@ The loudness target is approximate and assumes track pregain and master output l
         <translation>單聲道</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="701"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="705"/>
         <source>Microphone inputs are out of time in the record &amp; broadcast signal compared to what you hear.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="702"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="706"/>
         <source>Measure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="703"/>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="710"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="707"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="714"/>
         <source>Refer to the Mixxx User Manual for details.</source>
         <translation>細節請參考Mixxx 使用者操作手冊</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="708"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="712"/>
         <source>Configured latency has changed.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="709"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="713"/>
         <source>Remeasure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
         <translation type="unfinished"/>
     </message>
@@ -6185,7 +6185,7 @@ The loudness target is approximate and assumes track pregain and master output l
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="534"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="538"/>
         <source>%1 ms</source>
         <translation>%1 ms</translation>
     </message>
@@ -7080,274 +7080,269 @@ Select from different types of displays for the waveform, which differ primarily
         <translation>摘要</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="534"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="486"/>
         <source>Filetype:</source>
         <translation>檔案類型︰</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="443"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="440"/>
         <source>BPM:</source>
         <translation>BPM:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="477"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="549"/>
         <source>Location:</source>
         <translation>位置︰</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="497"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="509"/>
         <source>Bitrate:</source>
         <translation>位元速率︰</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="587"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="618"/>
         <source>Comments</source>
         <translation>評論</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="597"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="628"/>
         <source>BPM</source>
         <translation>BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="680"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="730"/>
         <source>Sets the BPM to 75% of the current value.</source>
         <translation>將 BPM 設置為當前值的 75%。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="683"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="733"/>
         <source>3/4 BPM</source>
         <translation>3/4 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="696"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="698"/>
         <source>Sets the BPM to 50% of the current value.</source>
         <translation>將 BPM 設置為當前值的 50%。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="607"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="645"/>
         <source>Displays the BPM of the selected track.</source>
         <translation>顯示選定的軌道的 BPM。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="54"/>
-        <source>Details</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="88"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="85"/>
         <source>Track #</source>
         <translation>跟蹤 #</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="117"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="114"/>
         <source>Album Artist</source>
         <translation>唱片集演出者</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="127"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="124"/>
         <source>Composer</source>
         <translation>作曲家</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="164"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="161"/>
         <source>Title</source>
         <translation>標題</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="174"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="171"/>
         <source>Grouping</source>
         <translation>分組</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="216"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="213"/>
         <source>Key</source>
         <translation>關鍵</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="239"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="236"/>
         <source>Year</source>
         <translation>一年</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="268"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="265"/>
         <source>Artist</source>
         <translation>演出者</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="284"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="281"/>
         <source>Album</source>
         <translation>專輯</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="326"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="323"/>
         <source>Genre</source>
         <translation>體裁</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="358"/>
-        <source>Re-Import Metadata</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="415"/>
-        <source>File</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="450"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="463"/>
         <source>ReplayGain:</source>
         <translation>重播增益︰</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="664"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="682"/>
         <source>Sets the BPM to 200% of the current value.</source>
         <translation>將 BPM 設置為 200%的當前值。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="667"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="685"/>
         <source>Double BPM</source>
         <translation>雙 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="699"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="701"/>
         <source>Halve BPM</source>
         <translation>減半 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="738"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="805"/>
         <source>Clear BPM and Beatgrid</source>
         <translation>明確的 BPM 和 Beatgrid</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="829"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="850"/>
         <source>Move to the previous item.</source>
         <extracomment>&quot;Previous&quot; button</extracomment>
         <translation>移動到前一項。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="832"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="853"/>
         <source>&amp;Previous</source>
         <translation>&amp; 上一頁</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="845"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="866"/>
         <source>Move to the next item.</source>
         <extracomment>&quot;Next&quot; button</extracomment>
         <translation>移動到下一個專案。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="848"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="869"/>
         <source>&amp;Next</source>
         <translation>與下一步</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="470"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="417"/>
         <source>Duration:</source>
         <translation>持續時間︰</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="351"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="335"/>
         <source>Import Metadata from MusicBrainz</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="556"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="342"/>
+        <source>Re-Import Metadata from file</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="532"/>
+        <source>Date added:</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="574"/>
         <source>Open in File Browser</source>
         <translation>在檔瀏覽器中打開</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="623"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="638"/>
         <source>Track BPM: </source>
         <translation>BPM 的軌道︰</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="630"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="661"/>
         <source>Converts beats detected by the analyzer into a fixed-tempo beatgrid.
 Use this setting if your tracks have a constant tempo (e.g. most electronic music).
 Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="635"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="669"/>
         <source>Assume constant tempo</source>
         <translation>假設恒定的節奏</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="648"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="714"/>
         <source>Sets the BPM to 66% of the current value.</source>
         <translation>將 BPM 設置為當前值的 66%。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="651"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="717"/>
         <source>2/3 BPM</source>
         <translation>2/3 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="712"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="746"/>
         <source>Sets the BPM to 150% of the current value.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="715"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="749"/>
         <source>3/2 BPM</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="728"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="762"/>
         <source>Sets the BPM to 133% of the current value.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="731"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="765"/>
         <source>4/3 BPM</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="759"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="784"/>
         <source>Tap with the beat to set the BPM to the speed you are tapping.</source>
         <translation>點擊擊敗，設置 BPM 為您正在開發的速度。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="762"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="787"/>
         <source>Tap to Beat</source>
         <translation>點擊節拍</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="791"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="812"/>
         <source>Hint: Use the Library Analyze view to run BPM detection.</source>
         <translation>提示︰ 使用庫分析視圖運行 BPM 檢測。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="912"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="933"/>
         <source>Save changes and close the window.</source>
         <extracomment>&quot;OK&quot; button</extracomment>
         <translation>保存更改並關閉視窗。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="915"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="936"/>
         <source>&amp;OK</source>
         <translation>與確定</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="874"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="895"/>
         <source>Discard changes and close the window.</source>
         <extracomment>&quot;Cancel&quot; button</extracomment>
         <translation>捨棄變更並關閉視窗。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="893"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="914"/>
         <source>Save changes and keep the window open.</source>
         <extracomment>&quot;Apply&quot; button</extracomment>
         <translation>保存更改並保持視窗打開。</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="896"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="917"/>
         <source>&amp;Apply</source>
         <translation>與應用</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="877"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="898"/>
         <source>&amp;Cancel</source>
         <translation>與取消</translation>
     </message>
@@ -7703,12 +7698,12 @@ support.</source>
 <context>
     <name>Library</name>
     <message>
-        <location filename="../../src/library/library.cpp" line="465"/>
+        <location filename="../../src/library/library.cpp" line="466"/>
         <source>Add Directory to Library</source>
         <translation>將目錄添加到庫</translation>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="466"/>
+        <location filename="../../src/library/library.cpp" line="467"/>
         <source>Could not add the directory to your library. Either this directory is already in your library or you are currently rescanning your library.</source>
         <translation>無法將該目錄添加到您的庫。此目錄是已經在你的圖書館，或者你目前正在掃描您的庫。</translation>
     </message>
@@ -8985,18 +8980,18 @@ Higher values result in less attenuation of high frequencies.</source>
         <translation>共振的篩選器。4 = 自振盪</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="111"/>
+        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="113"/>
         <source>Deck %1 EQ Effect</source>
         <translation>甲板 %1 情商效應</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="136"/>
-        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="295"/>
+        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="138"/>
+        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="297"/>
         <source>EQ Effect</source>
         <translation>情商影響</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="297"/>
+        <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="299"/>
         <source>Deck 1 EQ Effect</source>
         <translation>甲板 1 情商效應</translation>
     </message>
@@ -9215,12 +9210,12 @@ Higher values result in less attenuation of high frequencies.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastprofile.cpp" line="79"/>
+        <location filename="../../src/preferences/broadcastprofile.cpp" line="80"/>
         <source>This stream is online for testing purposes!</source>
         <translation>這條小溪有線上用於測試目的 ！</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/broadcastprofile.cpp" line="80"/>
+        <location filename="../../src/preferences/broadcastprofile.cpp" line="81"/>
         <source>Live Mix</source>
         <translation>現場攪拌</translation>
     </message>
@@ -12306,12 +12301,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
 <context>
     <name>TrackCollection</name>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="277"/>
+        <location filename="../../src/library/trackcollection.cpp" line="267"/>
         <source>Hiding tracks</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="278"/>
+        <location filename="../../src/library/trackcollection.cpp" line="268"/>
         <source>The selected tracks are in the following playlists:%1Hiding them will remove them from these playlists. Continue?</source>
         <translation type="unfinished"/>
     </message>
@@ -12998,32 +12993,32 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <translation>加快您的工作流使用鍵盤快速鍵。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="550"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="551"/>
         <source>Send Us &amp;Feedback</source>
         <translation>發送我們 &amp; 回饋</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="551"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="552"/>
         <source>Send feedback to the Mixxx team.</source>
         <translation>向 Mixxx 小組發送回饋。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="559"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="560"/>
         <source>&amp;Translate This Application</source>
         <translation>&amp; 翻譯此應用程式</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="560"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="561"/>
         <source>Help translate this application into your language.</source>
         <translation>幫忙翻譯成您的語言此應用程式。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="570"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="571"/>
         <source>&amp;About</source>
         <translation>&amp; 約</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="571"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="572"/>
         <source>About the application</source>
         <translation>有關應用程式</translation>
     </message>
@@ -13058,84 +13053,84 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
 <context>
     <name>WSearchLineEdit</name>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="173"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="176"/>
         <source>Clear input</source>
         <comment>Clear the search bar input field</comment>
         <translation>清除輸入</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="76"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="79"/>
         <source>Ctrl+F</source>
         <comment>Search|Focus</comment>
         <translation>Ctrl + F</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="247"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="250"/>
         <source>Search...</source>
         <comment>noun</comment>
         <translation>搜索...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="166"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="169"/>
         <source>Search</source>
         <comment>noun</comment>
         <translation>搜索</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="160"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="163"/>
         <source>Clear input</source>
         <translation>清除輸入</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="161"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="164"/>
         <source>Clear the search bar input field</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="167"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="170"/>
         <source>Enter a string to search for</source>
         <translation>輸入要搜索的字串</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="168"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="171"/>
         <source>Use operators like bpm:115-128, artist:BooFar, -year:1990</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="169"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="172"/>
         <source>For more information see User Manual &gt; Mixxx Library</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="163"/>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="171"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="166"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="174"/>
         <source>Shortcut</source>
         <translation>快捷方式</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="172"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="175"/>
         <source>Ctrl+F</source>
         <translation>Ctrl + F</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="172"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="175"/>
         <source>Focus</source>
         <comment>Give search bar input focus</comment>
         <translation>焦點</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="164"/>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="173"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="167"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="176"/>
         <source>Ctrl+Backspace</source>
         <translation>Ctrl + 倒退鍵</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="174"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="177"/>
         <source>Esc</source>
         <translation>按 esc 鍵</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="174"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="177"/>
         <source>Exit search</source>
         <comment>Exit search bar and leave focus</comment>
         <translation>退出搜索</translation>
@@ -13385,45 +13380,45 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <translation>採樣器 %1</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="827"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="849"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="832"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="854"/>
         <source>Create New Playlist</source>
         <translation>創建新的播放清單</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="850"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="855"/>
         <source>Enter name for new playlist:</source>
         <translation>輸入新播放清單名稱︰</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="852"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="857"/>
         <source>New Playlist</source>
         <translation>新增播放清單</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="860"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="864"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="873"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="865"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="869"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="878"/>
         <source>Playlist Creation Failed</source>
         <translation>播放清單創建失敗</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="861"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="866"/>
         <source>A playlist by that name already exists.</source>
         <translation>已存在該名稱的播放清單。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="865"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="870"/>
         <source>A playlist cannot have a blank name.</source>
         <translation>播放清單不能有空白的名稱。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="874"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="879"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>創建播放清單時發生未知的錯誤︰</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="936"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="941"/>
         <source>Add to New Crate</source>
         <translation type="unfinished"/>
     </message>
