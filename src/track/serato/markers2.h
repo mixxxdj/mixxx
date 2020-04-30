@@ -390,6 +390,7 @@ class SeratoMarkers2 final {
             const QByteArray& base64EncodedData);
 
     QByteArray dump(taglib::FileType fileType) const;
+    QByteArray dumpCommon() const;
     QByteArray dumpID3() const;
     QByteArray dumpBase64Encoded() const;
 

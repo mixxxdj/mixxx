@@ -359,15 +359,7 @@ bool SeratoMarkers2::parseID3(
         return false;
     }
 
-    const auto data = QByteArray::fromBase64(outerData.mid(2));
-
-    if (!data.startsWith("\x01\x01")) {
-        qWarning() << "Parsing SeratoMarkers2 failed:"
-                   << "Unknown inner Serato Markers2 tag version";
-        return false;
-    }
-
-    if (!parseCommon(seratoMarkers2, data.mid(2))) {
+    if (!parseCommon(seratoMarkers2, outerData.mid(2))) {
         return false;
     }
 
@@ -377,10 +369,18 @@ bool SeratoMarkers2::parseID3(
 
 bool SeratoMarkers2::parseCommon(
         SeratoMarkers2* seratoMarkers2,
-        const QByteArray& data) {
+        const QByteArray& outerData) {
+    const auto data = QByteArray::fromBase64(outerData);
+
+    if (!data.startsWith("\x01\x01")) {
+        qWarning() << "Parsing SeratoMarkers2 failed:"
+                   << "Unknown inner Serato Markers2 tag version";
+        return false;
+    }
+
     QList<std::shared_ptr<SeratoMarkers2Entry>> entries;
 
-    int offset = 0;
+    int offset = 2;
     int entryTypeEndPos;
     while ((entryTypeEndPos = data.indexOf('\x00', offset)) >= 0) {
         // Entry Name
@@ -432,6 +432,7 @@ bool SeratoMarkers2::parseCommon(
         entries.append(pEntry);
     }
 
+    seratoMarkers2->setAllocatedSize(outerData.size());
     seratoMarkers2->setEntries(entries);
     return true;
 }
@@ -472,7 +473,7 @@ QByteArray SeratoMarkers2::dump(taglib::FileType fileType) const {
     }
 }
 
-QByteArray SeratoMarkers2::dumpID3() const {
+QByteArray SeratoMarkers2::dumpCommon() const {
     QByteArray data;
 
     // To reduce disk fragmentation, Serato pre-allocates at least 470 bytes
@@ -500,9 +501,17 @@ QByteArray SeratoMarkers2::dumpID3() const {
         stream.writeRawData(entryData.constData(), entryData.length());
     }
     data.append('\0');
+    return base64encode(data, true);
+}
+
+QByteArray SeratoMarkers2::dumpID3() const {
+    if (isEmpty() && getAllocatedSize() == 0) {
+        // Return empty QByteArray
+        return {};
+    }
 
     QByteArray outerData("\x01\x01", 2);
-    outerData.append(base64encode(data, true));
+    outerData.append(dumpCommon());
 
     int size = getAllocatedSize();
     if (size <= outerData.size()) {
