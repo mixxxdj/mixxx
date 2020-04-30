@@ -9,7 +9,7 @@ namespace {
 mixxx::Logger kLogger("SeratoMarkers2");
 
 constexpr quint32 kLoopUnknownField2ExpectedValue = 0xFFFFFFFF;
-constexpr quint32 kLoopUnknownField3ExpectedValue = 0x0027AAE1;
+constexpr quint8 kLoopUnknownField3ExpectedValue = 0x00;
 constexpr quint8 kLoopUnknownField4ExpectedValue = 0x00;
 
 const QByteArray kSeratoMarkers2Base64EncodedPrefix = QByteArray(
@@ -244,7 +244,10 @@ SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray& data
     quint32 startPosition;
     quint32 endPosition;
     quint32 unknownField2;
-    quint32 unknownField3;
+    quint8 unknownField3;
+    quint8 colorRed;
+    quint8 colorGreen;
+    quint8 colorBlue;
     quint8 unknownField4;
     bool locked;
 
@@ -278,6 +281,9 @@ SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray& data
         return nullptr;
     }
 
+    stream >> colorRed >> colorGreen >> colorBlue;
+    RgbColor color(qRgb(colorRed, colorGreen, colorBlue));
+
     stream >> unknownField4;
     // Unknown field, make sure it's 0 in case it's a
     // null-terminated string
@@ -302,7 +308,8 @@ SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray& data
         return nullptr;
     }
 
-    SeratoMarkers2LoopEntry* pEntry = new SeratoMarkers2LoopEntry(index, startPosition, endPosition, locked, label);
+    SeratoMarkers2LoopEntry* pEntry = new SeratoMarkers2LoopEntry(
+            index, startPosition, endPosition, color, locked, label);
     kLogger.trace() << "SeratoMarkers2LoopEntry" << *pEntry;
     return SeratoMarkers2EntryPointer(pEntry);
 }
@@ -318,9 +325,12 @@ QByteArray SeratoMarkers2LoopEntry::dump() const {
            << m_startposition
            << m_endposition;
 
-    stream.writeRawData("\xff\xff\xff\xff\x00\x27\xaa\xe1", 8);
+    stream.writeRawData("\xff\xff\xff\xff\x00", 5);
 
-    stream << static_cast<quint8>('\x00')
+    stream << static_cast<quint8>(qRed(m_color))
+           << static_cast<quint8>(qGreen(m_color))
+           << static_cast<quint8>(qBlue(m_color))
+           << static_cast<quint8>('\x00')
            << static_cast<quint8>(m_locked);
 
     QByteArray labelData = m_label.toUtf8();

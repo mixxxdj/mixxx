@@ -260,10 +260,16 @@ inline QDebug operator<<(QDebug dbg, const SeratoMarkers2CueEntry& arg) {
 
 class SeratoMarkers2LoopEntry : public SeratoMarkers2Entry {
   public:
-    SeratoMarkers2LoopEntry(quint8 index, quint32 startposition, quint32 endposition, bool locked, QString label)
+    SeratoMarkers2LoopEntry(quint8 index,
+            quint32 startposition,
+            quint32 endposition,
+            RgbColor color,
+            bool locked,
+            QString label)
             : m_index(index),
               m_startposition(startposition),
               m_endposition(endposition),
+              m_color(color),
               m_locked(locked),
               m_label(label) {
     }
@@ -305,6 +311,14 @@ class SeratoMarkers2LoopEntry : public SeratoMarkers2Entry {
         m_endposition = endposition;
     }
 
+    RgbColor getColor() const {
+        return m_color;
+    }
+
+    void setColor(RgbColor color) {
+        m_color = color;
+    }
+
     bool isLocked() const {
         return m_locked;
     }
@@ -327,6 +341,7 @@ class SeratoMarkers2LoopEntry : public SeratoMarkers2Entry {
     quint8 m_index;
     quint32 m_startposition;
     quint32 m_endposition;
+    RgbColor m_color;
     bool m_locked;
     QString m_label;
 };
