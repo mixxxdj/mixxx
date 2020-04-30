@@ -362,9 +362,20 @@ bool SeratoMarkers2::parseID3(
         return false;
     }
 
+    if (!parseCommon(seratoMarkers2, data.mid(2))) {
+        return false;
+    }
+
+    seratoMarkers2->setAllocatedSize(outerData.size());
+    return true;
+}
+
+bool SeratoMarkers2::parseCommon(
+        SeratoMarkers2* seratoMarkers2,
+        const QByteArray& data) {
     QList<std::shared_ptr<SeratoMarkers2Entry>> entries;
 
-    int offset = 2;
+    int offset = 0;
     int entryTypeEndPos;
     while ((entryTypeEndPos = data.indexOf('\x00', offset)) >= 0) {
         // Entry Name
@@ -416,7 +427,6 @@ bool SeratoMarkers2::parseID3(
         entries.append(pEntry);
     }
 
-    seratoMarkers2->setAllocatedSize(outerData.size());
     seratoMarkers2->setEntries(entries);
     return true;
 }

@@ -379,6 +379,9 @@ class SeratoMarkers2 final {
             SeratoMarkers2* seratoMarkers2,
             const QByteArray& outerData,
             taglib::FileType fileType);
+    static bool parseCommon(
+            SeratoMarkers2* seratoMarkers2,
+            const QByteArray& data);
     static bool parseID3(
             SeratoMarkers2* seratoMarkers2,
             const QByteArray& outerData);
