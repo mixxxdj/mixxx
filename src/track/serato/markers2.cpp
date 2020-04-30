@@ -4,6 +4,10 @@
 
 namespace {
 
+constexpr quint32 kLoopUnknownField2ExpectedValue = 0xFFFFFFFF;
+constexpr quint32 kLoopUnknownField3ExpectedValue = 0x0027AAE1;
+constexpr quint8 kLoopUnknownField4ExpectedValue = 0x00;
+
 const QByteArray kSeratoMarkers2Base64EncodedPrefix = QByteArray(
         "application/octet-stream\x00\x00Serato Markers2\x00",
         24 + 2 + 15 + 1);
@@ -254,26 +258,28 @@ SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray& data
 
     stream >> index >> startPosition >> endPosition >> unknownField2;
     // Unknown field, make sure it contains the expected "default" value
-    if (unknownField2 != 0xffffffff) {
+    if (unknownField2 != kLoopUnknownField2ExpectedValue) {
         qWarning() << "Parsing SeratoMarkers2LoopEntry failed:"
-                   << "Invalid magic value" << unknownField2 << "at offset 10";
+                   << "Invalid magic value" << unknownField2
+                   << "!=" << kLoopUnknownField2ExpectedValue << "at offset 10";
         return nullptr;
     }
 
     stream >> unknownField3;
     // Unknown field, make sure it contains the expected "default" value
-    if (unknownField3 != 0x0027aae1) {
+    if (unknownField3 != kLoopUnknownField3ExpectedValue) {
         qWarning() << "Parsing SeratoMarkers2LoopEntry failed:"
-                   << "Invalid magic value" << unknownField3 << "at offset 14";
+                   << "Invalid magic value" << unknownField3
+                   << "!=" << kLoopUnknownField3ExpectedValue << "at offset 14";
         return nullptr;
     }
 
     stream >> unknownField4;
     // Unknown field, make sure it's 0 in case it's a
     // null-terminated string
-    if (unknownField4 != '\x00') {
+    if (unknownField4 != kLoopUnknownField4ExpectedValue) {
         qWarning() << "Parsing SeratoMarkers2LoopEntry failed:"
-                   << "Byte 18:" << unknownField4 << "!= '\\0'";
+                   << "Byte 18:" << unknownField4 << "!=" << kLoopUnknownField4ExpectedValue;
         return nullptr;
     }
 
