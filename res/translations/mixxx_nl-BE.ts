@@ -371,7 +371,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="203"/>
         <source>Samplerate</source>
-        <translation type="unfinished"/>
+        <translation>Sample snelheid</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="207"/>
@@ -664,12 +664,12 @@
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="39"/>
         <source>Remove Color</source>
-        <translation type="unfinished"/>
+        <translation>Verwijder kleur</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="52"/>
         <source>Add Color</source>
-        <translation type="unfinished"/>
+        <translation>Voeg kleur toe</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="60"/>
@@ -680,7 +680,7 @@
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="66"/>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="253"/>
         <source>Remove Palette</source>
-        <translation type="unfinished"/>
+        <translation>Verwijder palet</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="82"/>
@@ -690,17 +690,17 @@
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="83"/>
         <source>Assign to Hotcue Number</source>
-        <translation type="unfinished"/>
+        <translation>Wijs toe aan Hotcue nummer</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="151"/>
         <source>Edited</source>
-        <translation type="unfinished"/>
+        <translation>Bewerkt</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="254"/>
         <source>Do you really want to remove the palette permanently?</source>
-        <translation type="unfinished"/>
+        <translation>Wilt u het palet echt definitief verwijderen?</translation>
     </message>
 </context>
 <context>
@@ -766,7 +766,7 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="172"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="178"/>
         <source>Deck %1</source>
-        <translation>Speler %1</translation>
+        <translation>Deck %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="17"/>
@@ -776,7 +776,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="18"/>
         <source>Preview Deck %1</source>
-        <translation>Voorbeluistering %1</translation>
+        <translation>Preview Deck %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="19"/>
@@ -1516,7 +1516,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="90"/>
         <source>Adjust beatgrid to match another playing deck.</source>
-        <translation>Pas Beat-raster overeenkomstig aan andere speler</translation>
+        <translation>Pas Beat-raster overeenkomstig aan andere deck</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="91"/>
@@ -1678,12 +1678,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="193"/>
         <source>Vinyl Control Next Deck</source>
-        <translation>Vinylbediening Volgende Speler</translation>
+        <translation>Vinylbediening Volgende deck</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="194"/>
         <source>Single deck mode - Switch vinyl control to next deck</source>
-        <translation>Enkelvoudige Speles modus - Wissel vinylbediening naar volgende speler</translation>
+        <translation>Enkelvoudige deck modus - Wissel vinylbediening naar volgende deck</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="198"/>
@@ -1893,7 +1893,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="450"/>
         <source>Deck %1 Quick Effect Super Knob</source>
-        <translation>Superknop snelle effecten speler %1</translation>
+        <translation>Superknop snelle effecten deck %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="451"/>
@@ -2471,7 +2471,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="454"/>
         <source>Deck %1 Quick Effect Enable Button</source>
-        <translation>Speler %1 Snel Effect Inschakelknop</translation>
+        <translation>Deck %1 Snel Effect Inschakelknop</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="455"/>
@@ -2652,12 +2652,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="759"/>
         <source>Preview Deck Show/Hide</source>
-        <translation>Speler Voorbeluisteren Toon/Verberg</translation>
+        <translation>Deck Voorbeluisteren Toon/Verberg</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="760"/>
         <source>Show/hide the preview deck</source>
-        <translation>Toon/Verberg de Voorbeluister-speler </translation>
+        <translation>Toon/Verberg de Voorbeluister-deck </translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="771"/>
@@ -2721,22 +2721,22 @@
         <location filename="../../src/controllers/controllerengine.cpp" line="569"/>
         <location filename="../../src/controllers/controllerengine.cpp" line="1052"/>
         <source>The functionality provided by this controller mapping will be disabled until the issue has been resolved.</source>
-        <translation type="unfinished"/>
+        <translation>De functionaliteit van deze controller-verbinding wordt uitgeschakeld totdat het probleem is opgelost.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="573"/>
         <source>You can ignore this error for this session but you may experience erratic behavior.</source>
-        <translation type="unfinished"/>
+        <translation>U kunt deze fout voor deze sessie negeren, maar u kunt onregelmatig gedrag ervaren.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="580"/>
         <source>Controller Preset Error</source>
-        <translation type="unfinished"/>
+        <translation>Controller voorinstellingsfout</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="581"/>
         <source>The preset for your controller &quot;%1&quot; is not working properly.</source>
-        <translation type="unfinished"/>
+        <translation>De voorinstelling van je controller &quot;%1&quot; werkt niet goed.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="585"/>
@@ -2746,22 +2746,22 @@
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="1050"/>
         <source>Controller Mapping File Problem</source>
-        <translation type="unfinished"/>
+        <translation>Probleem met Controller verbindingsbestand</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="1051"/>
         <source>The mapping for controller &quot;%1&quot; cannot be opened.</source>
-        <translation type="unfinished"/>
+        <translation>De verbinding voor de controller &quot;%1&quot; kan niet worden geopend.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="1058"/>
         <source>File:</source>
-        <translation type="unfinished"/>
+        <translation>Bestand:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="1059"/>
         <source>Error:</source>
-        <translation type="unfinished"/>
+        <translation>Fout:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="576"/>
@@ -3174,45 +3174,55 @@
         <source>Enable Auto DJ
 
 Shortcut: Shift+F12</source>
-        <translation type="unfinished"/>
+        <translation>Schakel Auto DJ in
+
+Sneltoets: Shift+F12</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="99"/>
         <source>Disable Auto DJ
 
 Shortcut: Shift+F12</source>
-        <translation type="unfinished"/>
+        <translation>schakel Auto DJ uit
+
+Sneltoets: Shift+F12</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="103"/>
         <source>Trigger the transition to the next track
 
 Shortcut: Shift+F11</source>
-        <translation type="unfinished"/>
+        <translation>Activeer de overgang naar het volgende nummer
+
+Sneltoets: Shift + F11</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="107"/>
         <source>Skip the next track in the Auto DJ queue
 
 Shortcut: Shift+F10</source>
-        <translation type="unfinished"/>
+        <translation>Sla het volgende nummer in de Auto DJ-wachtrij over
+
+Sneltoets: Shift + F10</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="111"/>
         <source>Shuffle the content of the Auto DJ queue
 
 Shortcut: Shift+F9</source>
-        <translation type="unfinished"/>
+        <translation>Schud de inhoud van de Auto DJ-wachtrij
+
+Sneltoets: Shift + F9</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="118"/>
         <source>Repeat the playlist</source>
-        <translation type="unfinished"/>
+        <translation>Herhaal de afspeellijst</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="120"/>
         <source>Determines the duration of the transition</source>
-        <translation type="unfinished"/>
+        <translation>Bepaalt de duur van de overgang</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="122"/>
@@ -3294,12 +3304,12 @@ laatste geluid.</translation>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="270"/>
         <source>One deck must be stopped to enable Auto DJ mode.</source>
-        <translation>Eén speler moet gestopt worden om Auto DJ modus in te schakelen.</translation>
+        <translation>Eén deck moet gestopt worden om Auto DJ modus in te schakelen.</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="278"/>
         <source>Decks 3 and 4 must be stopped to enable Auto DJ mode.</source>
-        <translation>Spelers 3 en 4 moeten gestopt worden om Auto DJ modus in te schakelen.</translation>
+        <translation>Decks 3 en 4 moeten gestopt worden om Auto DJ modus in te schakelen.</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="301"/>
@@ -4175,7 +4185,7 @@ Twee bronverbindingen naar dezelfde server kunnen niet hetzelfde mountpoint hebb
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolors.cpp" line="261"/>
         <source>By hotcue number</source>
-        <translation type="unfinished"/>
+        <translation>Op hotcue-number</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolors.cpp" line="269"/>
@@ -4188,38 +4198,38 @@ Twee bronverbindingen naar dezelfde server kunnen niet hetzelfde mountpoint hebb
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="20"/>
         <source>Color Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Kleur voorkeuren</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="26"/>
         <source>Colors</source>
-        <translation type="unfinished"/>
+        <translation>Kleuren</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="32"/>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="42"/>
         <source>Edit…</source>
-        <translation type="unfinished"/>
+        <translation>Bewerk...</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="49"/>
         <source>Track palette</source>
-        <translation type="unfinished"/>
+        <translation>Track palet</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="66"/>
         <source>Hotcue palette</source>
-        <translation type="unfinished"/>
+        <translation>Hotcue-palet</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="73"/>
         <source>Hotcue default color</source>
-        <translation type="unfinished"/>
+        <translation>Hocue standaardkleur</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="90"/>
         <source>Replace…</source>
-        <translation type="unfinished"/>
+        <translation>Vervang...</translation>
     </message>
 </context>
 <context>
@@ -4264,32 +4274,32 @@ Instellingen toepassen en doorgaan?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="253"/>
         <source>No Scripts</source>
-        <translation type="unfinished"/>
+        <translation>Geen scripts</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="265"/>
         <source>missing</source>
-        <translation type="unfinished"/>
+        <translation>ontbrekend</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="269"/>
         <source>built-in</source>
-        <translation type="unfinished"/>
+        <translation>Ingebouwd</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="450"/>
         <source>Preset has been edited</source>
-        <translation type="unfinished"/>
+        <translation>Voorinstelling is bewerkt</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="451"/>
         <source>Do you want to save the changes?</source>
-        <translation type="unfinished"/>
+        <translation>Wilt u de wijzigingen opslaan?</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="481"/>
         <source>edited</source>
-        <translation type="unfinished"/>
+        <translation>bewerkt</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="545"/>
@@ -4357,7 +4367,7 @@ Instellingen toepassen en doorgaan?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="321"/>
         <source>Script Files:</source>
-        <translation type="unfinished"/>
+        <translation>Script bestanden:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="376"/>
@@ -4770,12 +4780,12 @@ Instellingen toepassen en doorgaan?</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="14"/>
         <source>Deck Preferences</source>
-        <translation>Speler Voorkeuren</translation>
+        <translation>Deck Voorkeuren</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="20"/>
         <source>Deck options</source>
-        <translation>speler-opties</translation>
+        <translation>Deck opties</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="39"/>
@@ -4851,7 +4861,7 @@ CUP-modus:
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="150"/>
         <source>Do not load tracks into playing decks</source>
-        <translation>Laad geen tracks in draaiende spelers</translation>
+        <translation>Laad geen tracks in spelende decks</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="114"/>
@@ -4889,14 +4899,14 @@ Als deze optie is uitgeschakeld, wordt het intro-startpunt automatisch bij het e
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="104"/>
         <source>Clone deck</source>
-        <translation>Kloon speler</translation>
+        <translation>Kloon deck</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="191"/>
         <source>Create a playing clone of the first playing deck by double-tapping a Load button on a controller or keyboard.
 You can always drag-and-drop tracks on screen to clone a deck.</source>
-        <translation>Kloon of maak een kopij van de inhoud van de eerste speler door te dubbeltikken op een Laad-knop op een controller of toetsenbord.
-U kunt de tracks ten allen tijde op het scherm slepen en neerzetten om een speler te klonen.</translation>
+        <translation>Kloon of maak een kopij van de inhoud van de eerste deck door te dubbeltikken op een Laad-knop op een controller of toetsenbord.
+U kunt de tracks ten allen tijde op het scherm slepen en neerzetten om een deck te klonen.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="195"/>
@@ -5034,7 +5044,7 @@ U kunt de tracks ten allen tijde op het scherm slepen en neerzetten om een spele
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="591"/>
         <source>Smoothly adjusts deck speed when temporary change buttons are held down</source>
-        <translation>Past de speler-snelheid soepel aan wanneer de knoppen voor tijdelijke aanpassing ingedrukt worden gehouden</translation>
+        <translation>Past de deck-snelheid soepel aan wanneer de knoppen voor tijdelijke aanpassing ingedrukt worden gehouden</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="594"/>
@@ -5103,12 +5113,12 @@ U kunt de tracks ten allen tijde op het scherm slepen en neerzetten om een spele
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="39"/>
         <source>Use the same EQ filter for all decks</source>
-        <translation>Gebruik dezelfde EQ-filter voor alle spelers</translation>
+        <translation>Gebruik dezelfde EQ-filter voor alle decks</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="45"/>
         <source>Uncheck to allow different decks to use different EQ effects.</source>
-        <translation>Vink af om toe te staan dat verschillende speler andere EQ-effecten mogen gebruiken.</translation>
+        <translation>Vink af om toe te staan dat verschillende decks andere EQ-effecten mogen gebruiken.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="77"/>
@@ -5149,7 +5159,7 @@ U kunt de tracks ten allen tijde op het scherm slepen en neerzetten om een spele
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="377"/>
         <source>Resets the deck gain to unity when loading a track.</source>
-        <translation>Stelt de gain van de speler opnieuw in naar de eenheid bij het laden van een track.</translation>
+        <translation>Stelt de gain van het deck opnieuw in naar de eenheid bij het laden van een track.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="380"/>
@@ -5667,7 +5677,7 @@ en stelt u in staat om de pitch aan te passen voor harmonisch mixen.</translatio
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="253"/>
         <source>Load track to next available deck</source>
-        <translation>Laad track naar het volgende beschikbare speler</translation>
+        <translation>Laad track naar het volgende beschikbare deck</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="280"/>
@@ -5707,7 +5717,7 @@ en stelt u in staat om de pitch aan te passen voor harmonisch mixen.</translatio
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="343"/>
         <source>Show Serato Library</source>
-        <translation type="unfinished"/>
+        <translation>Toon de Serato bibliotheek</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="353"/>
@@ -6433,22 +6443,22 @@ Het doelvolume is bij benadering en gaat ervan uit dat track pregain en master o
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="38"/>
         <source>Deck 1 Vinyl Type</source>
-        <translation>Vinyltype speler 1</translation>
+        <translation>Vinyltype deck 1</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="177"/>
         <source>Deck 2 Vinyl Type</source>
-        <translation>Vinyltype speler 2</translation>
+        <translation>Vinyltype deck 2</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="316"/>
         <source>Deck 3 Vinyl Type</source>
-        <translation>Vinyltype speler 3</translation>
+        <translation>Vinyltype deck 3</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="455"/>
         <source>Deck 4 Vinyl Type</source>
-        <translation>Vinyltype speler 4</translation>
+        <translation>Vinyltype deck 4</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="582"/>
@@ -6783,12 +6793,12 @@ Kies uit verschillende soorten weergaven voor de waveform, die voornamelijk vers
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="236"/>
         <source>Decks</source>
-        <translation>Spelers</translation>
+        <translation>Decks</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="242"/>
         <source>Colors</source>
-        <translation type="unfinished"/>
+        <translation>Kleuren</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="254"/>
@@ -6871,7 +6881,7 @@ Kies uit verschillende soorten weergaven voor de waveform, die voornamelijk vers
     <message>
         <location filename="../../src/library/recording/dlgrecording.cpp" line="95"/>
         <source>Recording to file:</source>
-        <translation type="unfinished"/>
+        <translation>Opnemen naar bestand:</translation>
     </message>
     <message>
         <location filename="../../src/library/recording/dlgrecording.cpp" line="157"/>
@@ -6881,7 +6891,7 @@ Kies uit verschillende soorten weergaven voor de waveform, die voornamelijk vers
     <message>
         <location filename="../../src/library/recording/dlgrecording.cpp" line="188"/>
         <source>%1 MiB written in %2</source>
-        <translation type="unfinished"/>
+        <translation>%1 Mb geschreven in %2</translation>
     </message>
 </context>
 <context>
@@ -6889,74 +6899,74 @@ Kies uit verschillende soorten weergaven voor de waveform, die voornamelijk vers
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="20"/>
         <source>Replace Hotcue Color</source>
-        <translation type="unfinished"/>
+        <translation>Vervang Hotcue kleur</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="26"/>
         <source>Replace cue color if …</source>
-        <translation type="unfinished"/>
+        <translation>Vervang cue kleur als ...</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="45"/>
         <source>Hotcue index</source>
-        <translation type="unfinished"/>
+        <translation>Hotcue index</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="56"/>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="80"/>
         <source>is</source>
-        <translation type="unfinished"/>
+        <translation>is</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="61"/>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="85"/>
         <source>is not</source>
-        <translation type="unfinished"/>
+        <translation>is niet</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="69"/>
         <source>Current cue color</source>
-        <translation type="unfinished"/>
+        <translation>Huidige cue kleur</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="149"/>
         <source>If you don&apos;t specify any conditions, the colors of all cues in the library will be replaced.</source>
-        <translation type="unfinished"/>
+        <translation>Als u geen voorwaarden opgeeft, worden de kleuren van alle cues in de bibliotheek vervangen.</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="171"/>
         <source>… by:</source>
-        <translation type="unfinished"/>
+        <translation>... door:</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="177"/>
         <source>New cue color</source>
-        <translation type="unfinished"/>
+        <translation>Nieuwe cue kleur</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="219"/>
         <source>Selecting database rows...</source>
-        <translation type="unfinished"/>
+        <translation>Database rijen selecteren...</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="350"/>
         <source>No colors changed!</source>
-        <translation type="unfinished"/>
+        <translation>Kleuren niet gewijzigd!</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="351"/>
         <source>No cues matched the specified criteria.</source>
-        <translation type="unfinished"/>
+        <translation>Geen enkele cue komt overeen met de specifieke criteria.</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="358"/>
         <source>Confirm Color Replacement</source>
-        <translation type="unfinished"/>
+        <translation>Bevestig kleurvervanging</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="359"/>
         <source>The colors of %1 cues in %2 tracks will be replaced. This change cannot be undone! Are you sure?</source>
-        <translation type="unfinished"/>
+        <translation>De kleuren van %1 cues in %2 tracks worden vervangen. Deze wijziging kan niet ongedaan worden gemaakt! Weet je het zeker?</translation>
     </message>
 </context>
 <context>
@@ -7780,7 +7790,7 @@ ondersteuning.</translation>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="79"/>
         <source>Overwrite File?</source>
-        <translation type="unfinished"/>
+        <translation>Bestand Overschrijven?</translation>
     </message>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="80"/>
@@ -7788,7 +7798,10 @@ ondersteuning.</translation>
 The default &quot;m3u&quot; extension was added because none was specified.
 
 Do you really want to overwrite it?</source>
-        <translation type="unfinished"/>
+        <translation>Er bestaat al een afspeellijstbestand met de naam &quot;%1&quot;.
+De standaard &quot;m3u&quot; -extensie is toegevoegd omdat er geen is opgegeven.
+
+Wil je het echt overschrijven?</translation>
     </message>
 </context>
 <context>
@@ -8037,7 +8050,7 @@ Klik op OK om af te sluiten.</translation>
     <message>
         <location filename="../../src/mixxx.cpp" line="1224"/>
         <source>Load track to Deck %1</source>
-        <translation>Laad track in Speler %1</translation>
+        <translation>Laad track in deck %1</translation>
     </message>
     <message>
         <location filename="../../src/mixxx.cpp" line="1225"/>
@@ -8067,13 +8080,15 @@ Selecteer eerst een invoerapparaat in de voorkeuren voor geluidsapparatuur.</tra
         <location filename="../../src/mixxx.cpp" line="1369"/>
         <source>There is no input device selected for this microphone.
 Do you want to select an input device?</source>
-        <translation type="unfinished"/>
+        <translation>Er is geen invoerapparaat geselecteerd voor deze microfoon.
+Wilt u een invoerapparaat selecteren?</translation>
     </message>
     <message>
         <location filename="../../src/mixxx.cpp" line="1382"/>
         <source>There is no input device selected for this auxiliary.
 Do you want to select an input device?</source>
-        <translation type="unfinished"/>
+        <translation>Er is geen invoerapparaat geselecteerd voor deze auxiliary.
+Wilt u een invoerapparaat selecteren?</translation>
     </message>
     <message>
         <location filename="../../src/mixxx.cpp" line="1459"/>
@@ -8105,7 +8120,7 @@ Do you want to select an input device?</source>
     <message>
         <location filename="../../src/mixxx.cpp" line="1598"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
-        <translation>Er is momenteel een speler actief. Mixxx afsluiten?</translation>
+        <translation>Er is momenteel een deck actief. Mixxx afsluiten?</translation>
     </message>
     <message>
         <location filename="../../src/mixxx.cpp" line="1606"/>
@@ -9055,7 +9070,7 @@ Hogere waarden resulteren in minder vervagen van hoge frequenties.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="111"/>
         <source>Deck %1 EQ Effect</source>
-        <translation>EQ Effect Speler %1</translation>
+        <translation>EQ Effect deck %1</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="136"/>
@@ -9066,7 +9081,7 @@ Hogere waarden resulteren in minder vervagen van hoge frequenties.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="297"/>
         <source>Deck 1 EQ Effect</source>
-        <translation>EQ Effect Speler 1</translation>
+        <translation>EQ Effect deck 1</translation>
     </message>
     <message>
         <location filename="../../src/test/metaknob_link_test.cpp" line="216"/>
@@ -9818,12 +9833,12 @@ Volledig rechts: einde van de effectperiode</translation>
         <location filename="../../src/library/serato/seratofeature.cpp" line="984"/>
         <location filename="../../src/library/serato/seratofeature.cpp" line="1128"/>
         <source>Serato</source>
-        <translation type="unfinished"/>
+        <translation>Serato</translation>
     </message>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="985"/>
         <source>Reads the following from the Serato Music directory and removable devices:</source>
-        <translation type="unfinished"/>
+        <translation>Leest het volgende uit de Serato Music-directory en verwijderbare apparaten:</translation>
     </message>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="988"/>
@@ -9838,12 +9853,12 @@ Volledig rechts: einde van de effectperiode</translation>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="992"/>
         <source>Check for Serato databases (refresh)</source>
-        <translation type="unfinished"/>
+        <translation>Controleer op Serato-databases (vernieuwen)</translation>
     </message>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="1018"/>
         <source>(loading) Serato</source>
-        <translation type="unfinished"/>
+        <translation>(laden) Serato</translation>
     </message>
 </context>
 <context>
@@ -10169,12 +10184,12 @@ Volledig rechts: einde van de effectperiode</translation>
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="74"/>
         <source>Identifying track through Acoustid</source>
-        <translation type="unfinished"/>
+        <translation>Track identificeren via Acoustid</translation>
     </message>
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="116"/>
         <source>Retrieving metadata from MusicBrainz</source>
-        <translation type="unfinished"/>
+        <translation>Metadata ophalen van MuzicBrainz</translation>
     </message>
 </context>
 <context>
@@ -10328,22 +10343,22 @@ Volledig rechts: einde van de effectperiode</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="131"/>
         <source>Auxiliary Volume Meter</source>
-        <translation type="unfinished"/>
+        <translation>Auxiliary Volumemeter</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="132"/>
         <source>Shows the current auxiliary volume.</source>
-        <translation type="unfinished"/>
+        <translation>Toont het huidige auxiliary volume.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="135"/>
         <source>Auxiliary Peak Indicator</source>
-        <translation type="unfinished"/>
+        <translation>Auxiliary Piekindicator</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="136"/>
         <source>Indicates when the signal on the auxiliary is clipping,</source>
-        <translation type="unfinished"/>
+        <translation>Geeft aan wanneer het signaal op de auxiliary wordt vervormd,</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="159"/>
@@ -10493,7 +10508,7 @@ Volledig rechts: einde van de effectperiode</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="239"/>
         <source>Show/hide the Preview deck.</source>
-        <translation>Toon/verberg de Preview speler.</translation>
+        <translation>Toon/verberg de Preview deck.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="242"/>
@@ -10509,12 +10524,12 @@ Volledig rechts: einde van de effectperiode</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="246"/>
         <source>Toggle 4 Decks</source>
-        <translation>Schakel 4 Spelers </translation>
+        <translation>Schakel naar 4 Decks </translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="247"/>
         <source>Switches between showing 2 decks and 4 decks.</source>
-        <translation>Schakelt tussen weergave van 2 spelers en 4 spelers.</translation>
+        <translation>Schakelt tussen weergave van 2 decks en 4 decks.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="250"/>
@@ -10569,12 +10584,12 @@ Volledig rechts: einde van de effectperiode</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="276"/>
         <source>Auxiliary Gain</source>
-        <translation type="unfinished"/>
+        <translation>Auxiliary Gain</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="277"/>
         <source>Adjusts the pre-fader auxiliary gain.</source>
-        <translation type="unfinished"/>
+        <translation>Past de pre-fader van de auxiliary gain aan.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="281"/>
@@ -10881,17 +10896,17 @@ Volledig rechts: einde van de effectperiode</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="465"/>
         <source>Sends the selected channel&apos;s audio to the headphone output, selected in Preferences -&gt; Sound Hardware.</source>
-        <translation type="unfinished"/>
+        <translation>Stuurt de audio van het geselecteerde kanaal naar de hoofdtelefoonuitgang, geselecteerd in Voorkeuren -&gt; Geluidshardware.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="473"/>
         <source>Master enable</source>
-        <translation type="unfinished"/>
+        <translation>Master ingeschakeld</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="474"/>
         <source>Hold or short click for latching to mix this input into the master output.</source>
-        <translation type="unfinished"/>
+        <translation>Houd ingedrukt of klik kort om te vergrendelen, om deze invoer in de masteruitgang te mengen.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="520"/>
@@ -10901,7 +10916,7 @@ Volledig rechts: einde van de effectperiode</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="975"/>
         <source>Select and configure a hardware device for this input</source>
-        <translation type="unfinished"/>
+        <translation>Selecteer en configureer een hardware apparaat voor deze uitgang</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="572"/>
@@ -11362,7 +11377,7 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="864"/>
         <source>Route this deck through the indicated effect unit.</source>
-        <translation>Stuur deze spelen door de aangegeven effecteneenheid.</translation>
+        <translation>Stuur deze deck door de aangegeven effecteneenheid.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="869"/>
@@ -11382,7 +11397,7 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="889"/>
         <source>The effect unit must also be assigned to a deck or other sound source to hear the effect.</source>
-        <translation>De effecteenheid moet ook zijn toegewezen aan een speler of andere geluidsbron om het effect te horen.</translation>
+        <translation>De effecteenheid moet ook zijn toegewezen aan een deck of andere geluidsbron om het effect te horen.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="893"/>
@@ -11526,7 +11541,7 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
         <location filename="../../src/skin/tooltips.cpp" line="387"/>
         <location filename="../../src/skin/tooltips.cpp" line="391"/>
         <source>Adjust beatgrid to match another playing deck.</source>
-        <translation>Pas Beat-raster overeenkomstig aan andere speler</translation>
+        <translation>Pas Beat-raster overeenkomstig aan andere deck</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="416"/>
@@ -11657,12 +11672,12 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="29"/>
         <source>Drag this item to other decks/samplers, to crates and playlist or to external file manager.</source>
-        <translation type="unfinished"/>
+        <translation>Sleep dit item naar andere decks/samplers, naar kratten en afspeellijst of naar een externe bestandsbeheerder.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="40"/>
         <source>Shows information about the track currently loaded in this deck.</source>
-        <translation>Toont informatie over de track die momenteel in deze speler is geladen.</translation>
+        <translation>Toont informatie over de track die momenteel in deze deck is geladen.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="41"/>
@@ -11772,22 +11787,22 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="149"/>
         <source>Preview Deck Volume Meter</source>
-        <translation>Volumemeter voorbeluistering</translation>
+        <translation>Volumemeter voorbeluisterdeck</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="150"/>
         <source>Shows the current Preview Deck volume.</source>
-        <translation>Toont het huidige voorbeluisteringsvolume</translation>
+        <translation>Toont het huidige volume van het voorbeluisterdeck</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="153"/>
         <source>Preview Deck Peak Indicator</source>
-        <translation>Voorbeluistering piekindicator</translation>
+        <translation>Voorbeluisterdeck piekindicator</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="154"/>
         <source>Indicates when the signal on the Preview Deck is clipping,</source>
-        <translation>Geeft aan wanneer het signaal op de voorbeluistering wordt vervormd,</translation>
+        <translation>Geeft aan wanneer het signaal op de voorbeluisterdeck wordt vervormd,</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="158"/>
@@ -11817,7 +11832,7 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="409"/>
         <source>Changes the number of hotcue buttons displayed in the deck</source>
-        <translation>Wijzigt het aantal hotcue-knoppen dat in de speler wordt weergegeven</translation>
+        <translation>Wijzigt het aantal hotcue-knoppen dat in de deck wordt weergegeven</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="432"/>
@@ -11877,17 +11892,17 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="495"/>
         <source>Syncs to the first deck (in numerical order) that is playing a track and has a BPM.</source>
-        <translation>Synchroniseert met het eerste speler (in numerieke volgorde) dat een track afspeelt en een BPM heeft.</translation>
+        <translation>Synchroniseert met de eerste deck (in numerieke volgorde) dat een track afspeelt en een BPM heeft.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="496"/>
         <source>If no deck is playing, syncs to the first deck that has a BPM.</source>
-        <translation>Als er geen speler speelt, wordt het gesynchroniseerd met de eerste speler met een BPM.</translation>
+        <translation>Als er geen deck speelt, wordt het gesynchroniseerd met de eerste deck met een BPM.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="497"/>
         <source>Decks can&apos;t sync to samplers and samplers can only sync to decks.</source>
-        <translation>Spelers kunnen niet worden gesynchroniseerd met samplers en samplers kunnen alleen worden gesynchroniseerd met spelers.</translation>
+        <translation>Spelers kunnen niet worden gesynchroniseerd met samplers en samplers kunnen alleen worden gesynchroniseerd met decks.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="501"/>
@@ -11902,12 +11917,12 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="503"/>
         <source>Hold for at least a second to enable sync lock for this deck.</source>
-        <translation>Houd minimaal één seconde ingedrukt om het synchronisatieslot voor deze speler in te schakelen.</translation>
+        <translation>Houd minimaal één seconde ingedrukt om het synchronisatieslot voor deze deck in te schakelen.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="504"/>
         <source>Decks with sync locked will all play at the same tempo, and decks that also have quantize enabled will always have their beats lined up.</source>
-        <translation>Spelers met synchronisatievergrendeling, spelen allemaal in hetzelfde tempo, en spelers waarvoor ook quantisering is ingeschakeld, hebben altijd hun uitgelijnde beats.</translation>
+        <translation>Decks met synchronisatievergrendeling, spelen allemaal in hetzelfde tempo, en decks waarvoor ook kwantisering is ingeschakeld, hebben altijd hun uitgelijnde beats.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="512"/>
@@ -11922,7 +11937,7 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="516"/>
         <source>When enabled, this device will serve as the master clock for all other decks.</source>
-        <translation>Indien ingeschakeld, zal dit apparaat dienen als de masterklok voor alle andere spelers.</translation>
+        <translation>Indien ingeschakeld, zal dit apparaat dienen als de masterklok voor alle andere decks.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="519"/>
@@ -11959,7 +11974,7 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="563"/>
         <source>Opens a menu to clear hotcues or edit their labels and colors.</source>
-        <translation type="unfinished"/>
+        <translation>Opent een menu om hotcues te wissen of de labels en kleuren te bewerken.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="567"/>
@@ -11994,7 +12009,7 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="586"/>
         <source>When enabled, the deck directly plays the audio arriving on the vinyl input.</source>
-        <translation>Indien ingeschakeld, speelt de speler direct de audio af die op de vinyl-invoer binnenkomt.</translation>
+        <translation>Indien ingeschakeld, speelt de deck direct de audio af die op de vinyl-invoer binnenkomt.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="598"/>
@@ -12070,7 +12085,7 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="744"/>
         <source>Do not enable keylock, effects or additional decks in this situation.</source>
-        <translation>Schakel in deze situatie geen keylock, effecten of extra spelers in.</translation>
+        <translation>Schakel in deze situatie geen keylock, effecten of extra decks in.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="747"/>
@@ -12085,7 +12100,7 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="28"/>
         <source>Drop tracks from library, external file manager, or other decks/samplers here.</source>
-        <translation>Zet tracks van de bibliotheek, extern bestandsbeheer of andere spelers/samplers hier neer.</translation>
+        <translation>Zet tracks van de bibliotheek, extern bestandsbeheer of andere decks/samplers hier neer.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="163"/>
@@ -12160,7 +12175,7 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="510"/>
         <source>Sets the pitch to a key that allows a harmonic transition from the other track. Requires a detected key on both involved decks.</source>
-        <translation>Stelt de toonhoogte in op een toonaard die een harmonische overgang van de andere track mogelijk maakt. Vereist een gedetecteerde toonaard op beide betrokken dekken.</translation>
+        <translation>Stelt de toonhoogte in op een toonaard die een harmonische overgang van de andere track mogelijk maakt. Vereist een gedetecteerde toonaard op beide betrokken decks.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="524"/>
@@ -12277,7 +12292,7 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="634"/>
         <source>Deck immediately loops if past the new endpoint.</source>
-        <translation>De speler zal onmiddellijk in een loop gaan als het voorbij het nieuwe eindpunt is.</translation>
+        <translation>De deck zal onmiddellijk in een loop gaan als het voorbij het nieuwe eindpunt is.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="637"/>
@@ -12558,12 +12573,12 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/widget/wcolorpicker.cpp" line="171"/>
         <source>No color</source>
-        <translation type="unfinished"/>
+        <translation>Geen kleur</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcolorpicker.cpp" line="193"/>
         <source>Custom color</source>
-        <translation type="unfinished"/>
+        <translation>Aangepaste kleur</translation>
     </message>
 </context>
 <context>
@@ -12602,12 +12617,12 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="19"/>
         <source>Cue number</source>
-        <translation type="unfinished"/>
+        <translation>Cue nummer</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="24"/>
         <source>Cue position</source>
-        <translation type="unfinished"/>
+        <translation>Cue positie</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="29"/>
@@ -12617,17 +12632,17 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="31"/>
         <source>Label...</source>
-        <translation type="unfinished"/>
+        <translation>Label...</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="40"/>
         <source>Delete this cue</source>
-        <translation type="unfinished"/>
+        <translation>Verwijder deze cue...</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="74"/>
         <source>Hotcue #%1</source>
-        <translation type="unfinished"/>
+        <translation>Hotcue #%1</translation>
     </message>
 </context>
 <context>
@@ -12705,12 +12720,12 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="66"/>
         <source>Load Track to Deck &amp;%1</source>
-        <translation>Laad Track in Speler %1</translation>
+        <translation>Laad Track in Deck %1</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="67"/>
         <source>Loads a track in deck %1</source>
-        <translation>Laad een track in speler %1</translation>
+        <translation>Laad een track in deck %1</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="68"/>
@@ -12839,12 +12854,12 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="217"/>
         <source>Show Preview Deck</source>
-        <translation>Toon voorbeluisterspeler</translation>
+        <translation>Toon voorbeluisterdeck</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="218"/>
         <source>Show the preview deck in the Mixxx interface.</source>
-        <translation>Toon de voorbeluisterspeler in de mixxx-interface.</translation>
+        <translation>Toon de voorbeluisterdeck in de mixxx-interface.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="225"/>
@@ -13120,7 +13135,7 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/widget/woverview.cpp" line="101"/>
         <source>Passthrough</source>
-        <translation type="unfinished"/>
+        <translation>Passthrough</translation>
     </message>
     <message>
         <location filename="../../src/widget/woverview.cpp" line="710"/>
@@ -13176,7 +13191,7 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="161"/>
         <source>Clear the search bar input field</source>
-        <translation type="unfinished"/>
+        <translation>Wis het zoektekstveld</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="167"/>
@@ -13238,7 +13253,7 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="90"/>
         <source>Deck</source>
-        <translation>Speler</translation>
+        <translation>Deck</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="92"/>
@@ -13273,12 +13288,12 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="122"/>
         <source>Adjust BPM</source>
-        <translation type="unfinished"/>
+        <translation>Pas BPM aan</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="127"/>
         <source>Select Color</source>
-        <translation type="unfinished"/>
+        <translation>Selecteer kleur</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="133"/>
@@ -13304,7 +13319,7 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="150"/>
         <source>Preview Deck</source>
-        <translation>Preview Deck</translation>
+        <translation>Voorbeluisterdeck</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="157"/>
@@ -13459,12 +13474,12 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="272"/>
         <source>Reset BPM</source>
-        <translation type="unfinished"/>
+        <translation>Herstel BPM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="551"/>
         <source>Deck %1</source>
-        <translation>Speler %1</translation>
+        <translation>Deck %1</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="567"/>
@@ -13512,7 +13527,7 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="936"/>
         <source>Add to New Crate</source>
-        <translation type="unfinished"/>
+        <translation>Voeg toe aan nieuwe krat</translation>
     </message>
 </context>
 <context>
@@ -13565,7 +13580,7 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/library/dlgtrackmetadataexport.cpp" line="16"/>
         <source>Mixxx may wait to modify files until they are not loaded to any decks or samplers. If you do not see changed metadata in other programs immediately, eject the track from all decks and samplers or shutdown Mixxx.</source>
-        <translation>Mixxx kan wachten met het wijzigen van bestanden zolang ze niet in decks of samplers zijn geladen. Als je niet meteen gewijzigde metadata in andere programma&apos;s ziet, verwijder dan de track uit alle spelers en samplers of schakel Mixxx uit.</translation>
+        <translation>Mixxx kan wachten met het wijzigen van bestanden zolang ze niet in decks of samplers zijn geladen. Als je niet meteen gewijzigde metadata in andere programma&apos;s ziet, verwijder dan de track uit alle decks en samplers of schakel Mixxx uit.</translation>
     </message>
 </context>
 <context>
@@ -13573,17 +13588,17 @@ Gebruik deze optie om alleen het verwerkte (Wet) signaal met EQ en filtereffecte
     <message>
         <location filename="../../src/network/webtask.cpp" line="113"/>
         <source>Client-side network timeout</source>
-        <translation type="unfinished"/>
+        <translation>Klantzijde netwerk timeout</translation>
     </message>
     <message>
         <location filename="../../src/network/webtask.cpp" line="175"/>
         <source>No network access</source>
-        <translation type="unfinished"/>
+        <translation>Geen netwerktoegang</translation>
     </message>
     <message>
         <location filename="../../src/network/webtask.cpp" line="191"/>
         <source>Start of network task has been aborted</source>
-        <translation type="unfinished"/>
+        <translation>Start van netwerktaak is afgebroken</translation>
     </message>
 </context>
 </TS>

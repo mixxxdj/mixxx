@@ -373,7 +373,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="203"/>
         <source>Samplerate</source>
-        <translation type="unfinished"/>
+        <translation>Tauxéchantillonnage</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="207"/>
@@ -666,12 +666,12 @@
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="39"/>
         <source>Remove Color</source>
-        <translation type="unfinished"/>
+        <translation>Retirer couleur</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="52"/>
         <source>Add Color</source>
-        <translation type="unfinished"/>
+        <translation>Ajouter couleur</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="60"/>
@@ -682,7 +682,7 @@
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="66"/>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="253"/>
         <source>Remove Palette</source>
-        <translation type="unfinished"/>
+        <translation>Retirer palette</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="82"/>
@@ -692,17 +692,17 @@
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="83"/>
         <source>Assign to Hotcue Number</source>
-        <translation type="unfinished"/>
+        <translation>Attribuer au numéro de repère rapide</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="151"/>
         <source>Edited</source>
-        <translation type="unfinished"/>
+        <translation>Édité</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="254"/>
         <source>Do you really want to remove the palette permanently?</source>
-        <translation type="unfinished"/>
+        <translation>Voulez-vous vraiment retirer définitivement la palette ?</translation>
     </message>
 </context>
 <context>
@@ -2723,22 +2723,22 @@
         <location filename="../../src/controllers/controllerengine.cpp" line="569"/>
         <location filename="../../src/controllers/controllerengine.cpp" line="1052"/>
         <source>The functionality provided by this controller mapping will be disabled until the issue has been resolved.</source>
-        <translation type="unfinished"/>
+        <translation>La fonctionnalité fournie par ce mappage de contrôleur sera désactivée jusqu&apos;à ce que le problème soit résolu.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="573"/>
         <source>You can ignore this error for this session but you may experience erratic behavior.</source>
-        <translation type="unfinished"/>
+        <translation>Vous pouvez ignorer cette erreur pour la durée de la session mais il se peut que vous observiez un comportement erratique.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="580"/>
         <source>Controller Preset Error</source>
-        <translation type="unfinished"/>
+        <translation>Erreur de préréglage du contrôleur</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="581"/>
         <source>The preset for your controller &quot;%1&quot; is not working properly.</source>
-        <translation type="unfinished"/>
+        <translation>Le préréglage de votre contrôleur &quot;%1&quot; ne fonctionne pas correctement.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="585"/>
@@ -2748,22 +2748,22 @@
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="1050"/>
         <source>Controller Mapping File Problem</source>
-        <translation type="unfinished"/>
+        <translation>Problème de fichier de mappage de contrôleur</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="1051"/>
         <source>The mapping for controller &quot;%1&quot; cannot be opened.</source>
-        <translation type="unfinished"/>
+        <translation>Le mappage du contrôleur &quot;%1&quot; ne peut pas être ouvert.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="1058"/>
         <source>File:</source>
-        <translation type="unfinished"/>
+        <translation>Fichier :</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="1059"/>
         <source>Error:</source>
-        <translation type="unfinished"/>
+        <translation>Erreur :</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="576"/>
@@ -3176,45 +3176,55 @@
         <source>Enable Auto DJ
 
 Shortcut: Shift+F12</source>
-        <translation type="unfinished"/>
+        <translation>Activer Auto DJ
+
+Raccourci : Maj + F12</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="99"/>
         <source>Disable Auto DJ
 
 Shortcut: Shift+F12</source>
-        <translation type="unfinished"/>
+        <translation>Désctiver Auto DJ
+
+Raccourci : Maj + F12</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="103"/>
         <source>Trigger the transition to the next track
 
 Shortcut: Shift+F11</source>
-        <translation type="unfinished"/>
+        <translation>Activer la transition vers la piste suivante
+
+Raccourci : Maj + F11</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="107"/>
         <source>Skip the next track in the Auto DJ queue
 
 Shortcut: Shift+F10</source>
-        <translation type="unfinished"/>
+        <translation>Saute à la piste suivante dans la file Auto DJ 
+
+Raccourci : Maj + F10</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="111"/>
         <source>Shuffle the content of the Auto DJ queue
 
 Shortcut: Shift+F9</source>
-        <translation type="unfinished"/>
+        <translation>Mélange aléatoirement le contenu de la file Auto DJ
+
+Raccourci : Maj + F9</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="118"/>
         <source>Repeat the playlist</source>
-        <translation type="unfinished"/>
+        <translation>Répète la liste de lecture</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="120"/>
         <source>Determines the duration of the transition</source>
-        <translation type="unfinished"/>
+        <translation>Détermine la durée de la transition</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="122"/>
@@ -4178,7 +4188,7 @@ Deux connexions de source vers le même serveur ne peuvent pas avoir le même po
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolors.cpp" line="261"/>
         <source>By hotcue number</source>
-        <translation type="unfinished"/>
+        <translation>Par numéro de repère rapide</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolors.cpp" line="269"/>
@@ -4191,38 +4201,38 @@ Deux connexions de source vers le même serveur ne peuvent pas avoir le même po
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="20"/>
         <source>Color Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Préférences de couleur</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="26"/>
         <source>Colors</source>
-        <translation type="unfinished"/>
+        <translation>Couleurs</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="32"/>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="42"/>
         <source>Edit…</source>
-        <translation type="unfinished"/>
+        <translation>Édite...</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="49"/>
         <source>Track palette</source>
-        <translation type="unfinished"/>
+        <translation>Palette de piste</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="66"/>
         <source>Hotcue palette</source>
-        <translation type="unfinished"/>
+        <translation>Palette de repère rapide</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="73"/>
         <source>Hotcue default color</source>
-        <translation type="unfinished"/>
+        <translation>Couleur par défaut de repère rapide</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="90"/>
         <source>Replace…</source>
-        <translation type="unfinished"/>
+        <translation>Remplace...</translation>
     </message>
 </context>
 <context>
@@ -4267,32 +4277,32 @@ Appliquer les paramètres et continuer ?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="253"/>
         <source>No Scripts</source>
-        <translation type="unfinished"/>
+        <translation>Pas de scripts</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="265"/>
         <source>missing</source>
-        <translation type="unfinished"/>
+        <translation>manquant</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="269"/>
         <source>built-in</source>
-        <translation type="unfinished"/>
+        <translation>intégré</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="450"/>
         <source>Preset has been edited</source>
-        <translation type="unfinished"/>
+        <translation>Le préréglage a été modifié</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="451"/>
         <source>Do you want to save the changes?</source>
-        <translation type="unfinished"/>
+        <translation>Voulez-vous enregistrer les modifications ?</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="481"/>
         <source>edited</source>
-        <translation type="unfinished"/>
+        <translation>Édité</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="545"/>
@@ -4360,7 +4370,7 @@ Appliquer les paramètres et continuer ?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="321"/>
         <source>Script Files:</source>
-        <translation type="unfinished"/>
+        <translation>Fichiers de scripts :</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="376"/>
@@ -5710,7 +5720,7 @@ et vous permet d&apos;ajuster la hauteur tonale pour un mix harmonique.</transla
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="343"/>
         <source>Show Serato Library</source>
-        <translation type="unfinished"/>
+        <translation>Afficher la Bibliothèque Serato </translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="353"/>
@@ -6791,7 +6801,7 @@ Sélectionner depuis les différents types d&apos;affichage de la forme d&apos;o
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="242"/>
         <source>Colors</source>
-        <translation type="unfinished"/>
+        <translation>Couleurs</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="254"/>
@@ -6874,7 +6884,7 @@ Sélectionner depuis les différents types d&apos;affichage de la forme d&apos;o
     <message>
         <location filename="../../src/library/recording/dlgrecording.cpp" line="95"/>
         <source>Recording to file:</source>
-        <translation type="unfinished"/>
+        <translation>Enregistrement dans le fichier : </translation>
     </message>
     <message>
         <location filename="../../src/library/recording/dlgrecording.cpp" line="157"/>
@@ -6884,7 +6894,7 @@ Sélectionner depuis les différents types d&apos;affichage de la forme d&apos;o
     <message>
         <location filename="../../src/library/recording/dlgrecording.cpp" line="188"/>
         <source>%1 MiB written in %2</source>
-        <translation type="unfinished"/>
+        <translation>%1 MiB écrit en %2</translation>
     </message>
 </context>
 <context>
@@ -6892,74 +6902,74 @@ Sélectionner depuis les différents types d&apos;affichage de la forme d&apos;o
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="20"/>
         <source>Replace Hotcue Color</source>
-        <translation type="unfinished"/>
+        <translation>Remplacer la couleur de repère rapide</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="26"/>
         <source>Replace cue color if …</source>
-        <translation type="unfinished"/>
+        <translation>Remplacer la couleur de repère si ...</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="45"/>
         <source>Hotcue index</source>
-        <translation type="unfinished"/>
+        <translation>Index de repère rapide</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="56"/>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="80"/>
         <source>is</source>
-        <translation type="unfinished"/>
+        <translation>est</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="61"/>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="85"/>
         <source>is not</source>
-        <translation type="unfinished"/>
+        <translation>n&apos;est pas</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="69"/>
         <source>Current cue color</source>
-        <translation type="unfinished"/>
+        <translation>Couleur actuelle de repère</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="149"/>
         <source>If you don&apos;t specify any conditions, the colors of all cues in the library will be replaced.</source>
-        <translation type="unfinished"/>
+        <translation>Si vous ne spécifiez aucune condition, les couleurs de tous les repères de la bibliothèque seront remplacées.</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="171"/>
         <source>… by:</source>
-        <translation type="unfinished"/>
+        <translation>... par :</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="177"/>
         <source>New cue color</source>
-        <translation type="unfinished"/>
+        <translation>Nouvelle couleur de repère</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="219"/>
         <source>Selecting database rows...</source>
-        <translation type="unfinished"/>
+        <translation>Sélection de lignes de base de données ...</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="350"/>
         <source>No colors changed!</source>
-        <translation type="unfinished"/>
+        <translation>Aucune couleur modifiée !</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="351"/>
         <source>No cues matched the specified criteria.</source>
-        <translation type="unfinished"/>
+        <translation>Aucun repères ne correspondait au critère spécifié.</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="358"/>
         <source>Confirm Color Replacement</source>
-        <translation type="unfinished"/>
+        <translation>Confirmer le remplacement de couleur</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolor.cpp" line="359"/>
         <source>The colors of %1 cues in %2 tracks will be replaced. This change cannot be undone! Are you sure?</source>
-        <translation type="unfinished"/>
+        <translation>Les couleurs des repères %1 dans les pistes %2 seront remplacées. Ce changement ne peut pas être annulé ! Êtes-vous sûr ?</translation>
     </message>
 </context>
 <context>
@@ -7783,7 +7793,7 @@ d&apos;OpenGL.</translation>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="79"/>
         <source>Overwrite File?</source>
-        <translation type="unfinished"/>
+        <translation>Remplacer le fichier ?</translation>
     </message>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="80"/>
@@ -7791,7 +7801,10 @@ d&apos;OpenGL.</translation>
 The default &quot;m3u&quot; extension was added because none was specified.
 
 Do you really want to overwrite it?</source>
-        <translation type="unfinished"/>
+        <translation>Un fichier de liste de lecture portant le nom &quot;%1&quot; existe déjà.
+L&apos;extension par défaut &quot;m3u&quot; a été ajoutée car aucune n&apos;a été spécifiée.
+
+Voulez-vous vraiment l&apos;écraser ?</translation>
     </message>
 </context>
 <context>
@@ -8069,13 +8082,15 @@ Veuillez d&apos;abord en sélectionner un dans les Préférences du matériel so
         <location filename="../../src/mixxx.cpp" line="1369"/>
         <source>There is no input device selected for this microphone.
 Do you want to select an input device?</source>
-        <translation type="unfinished"/>
+        <translation>Aucun périphérique d&apos;entrée n&apos;est sélectionné pour ce microphone.
+Voulez-vous sélectionner un périphérique d&apos;entrée ?</translation>
     </message>
     <message>
         <location filename="../../src/mixxx.cpp" line="1382"/>
         <source>There is no input device selected for this auxiliary.
 Do you want to select an input device?</source>
-        <translation type="unfinished"/>
+        <translation>Aucun périphérique d&apos;entrée n&apos;est sélectionné pour cet auxiliaire.
+Voulez-vous sélectionner un périphérique d&apos;entrée ?</translation>
     </message>
     <message>
         <location filename="../../src/mixxx.cpp" line="1459"/>
@@ -9819,12 +9834,12 @@ Complètement à droite: fin de la période d&apos;effet</translation>
         <location filename="../../src/library/serato/seratofeature.cpp" line="984"/>
         <location filename="../../src/library/serato/seratofeature.cpp" line="1128"/>
         <source>Serato</source>
-        <translation type="unfinished"/>
+        <translation>Serato</translation>
     </message>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="985"/>
         <source>Reads the following from the Serato Music directory and removable devices:</source>
-        <translation type="unfinished"/>
+        <translation>Lit ce qui suit à partir du répertoire de musique Serato et les périphériques amovibles :</translation>
     </message>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="988"/>
@@ -9839,12 +9854,12 @@ Complètement à droite: fin de la période d&apos;effet</translation>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="992"/>
         <source>Check for Serato databases (refresh)</source>
-        <translation type="unfinished"/>
+        <translation>Vérifie les bases de données Serato (actualise)</translation>
     </message>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="1018"/>
         <source>(loading) Serato</source>
-        <translation type="unfinished"/>
+        <translation>(chargement) Serato</translation>
     </message>
 </context>
 <context>
@@ -10170,12 +10185,12 @@ Complètement à droite: fin de la période d&apos;effet</translation>
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="74"/>
         <source>Identifying track through Acoustid</source>
-        <translation type="unfinished"/>
+        <translation>Identification de la piste via Acoustid</translation>
     </message>
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="116"/>
         <source>Retrieving metadata from MusicBrainz</source>
-        <translation type="unfinished"/>
+        <translation>Récupération des métadonnées de MusicBrainz</translation>
     </message>
 </context>
 <context>
@@ -10329,22 +10344,22 @@ Complètement à droite: fin de la période d&apos;effet</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="131"/>
         <source>Auxiliary Volume Meter</source>
-        <translation type="unfinished"/>
+        <translation>Vu-mètre de Auxiliaire</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="132"/>
         <source>Shows the current auxiliary volume.</source>
-        <translation type="unfinished"/>
+        <translation>Affiche le volume actuel de auxiliaire.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="135"/>
         <source>Auxiliary Peak Indicator</source>
-        <translation type="unfinished"/>
+        <translation>Indicateur de pic Auxiliaire</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="136"/>
         <source>Indicates when the signal on the auxiliary is clipping,</source>
-        <translation type="unfinished"/>
+        <translation>Indique lorsque le signal sur Auxiliaire est écrêté,</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="159"/>
@@ -10570,12 +10585,12 @@ Complètement à droite: fin de la période d&apos;effet</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="276"/>
         <source>Auxiliary Gain</source>
-        <translation type="unfinished"/>
+        <translation>Gain Auxiliaire</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="277"/>
         <source>Adjusts the pre-fader auxiliary gain.</source>
-        <translation type="unfinished"/>
+        <translation>Ajuste le gain pré-fader de Auxiliaire</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="281"/>
@@ -10882,17 +10897,17 @@ Complètement à droite: fin de la période d&apos;effet</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="465"/>
         <source>Sends the selected channel&apos;s audio to the headphone output, selected in Preferences -&gt; Sound Hardware.</source>
-        <translation type="unfinished"/>
+        <translation>Envoie l&apos;audio du canal sélectionné à la sortie casque, sélectionné dans Préférences -&gt; Matériel audio.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="473"/>
         <source>Master enable</source>
-        <translation type="unfinished"/>
+        <translation>Activer principal</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="474"/>
         <source>Hold or short click for latching to mix this input into the master output.</source>
-        <translation type="unfinished"/>
+        <translation>Maintenir ou cliquer brièvement pour enclencher le mélange de cette entrée dans la sortie principale.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="520"/>
@@ -10902,7 +10917,7 @@ Complètement à droite: fin de la période d&apos;effet</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="975"/>
         <source>Select and configure a hardware device for this input</source>
-        <translation type="unfinished"/>
+        <translation>Sélectionner et configurer un périphérique matériel pour cette entrée</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="572"/>
@@ -11658,7 +11673,7 @@ Utiliser ceci pour modifier uniquement le signal affecté (traité) avec EQ et l
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="29"/>
         <source>Drag this item to other decks/samplers, to crates and playlist or to external file manager.</source>
-        <translation type="unfinished"/>
+        <translation>Faites glisser cet élément vers d&apos;autres platines/échantillonneurs, vers des bacs et listes de lecture ou vers un gestionnaire de fichiers externe.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="40"/>
@@ -11960,7 +11975,7 @@ Utiliser ceci pour modifier uniquement le signal affecté (traité) avec EQ et l
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="563"/>
         <source>Opens a menu to clear hotcues or edit their labels and colors.</source>
-        <translation type="unfinished"/>
+        <translation>Ouvre un menu pour effacer les repères rapide ou modifier leurs étiquettes et couleurs.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="567"/>
@@ -12559,12 +12574,12 @@ Utiliser ceci pour modifier uniquement le signal affecté (traité) avec EQ et l
     <message>
         <location filename="../../src/widget/wcolorpicker.cpp" line="171"/>
         <source>No color</source>
-        <translation type="unfinished"/>
+        <translation>Pas de couleur</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcolorpicker.cpp" line="193"/>
         <source>Custom color</source>
-        <translation type="unfinished"/>
+        <translation>Couleur personnalisée</translation>
     </message>
 </context>
 <context>
@@ -12603,12 +12618,12 @@ Utiliser ceci pour modifier uniquement le signal affecté (traité) avec EQ et l
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="19"/>
         <source>Cue number</source>
-        <translation type="unfinished"/>
+        <translation>Numéro de repère</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="24"/>
         <source>Cue position</source>
-        <translation type="unfinished"/>
+        <translation>Position du repère</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="29"/>
@@ -12618,17 +12633,17 @@ Utiliser ceci pour modifier uniquement le signal affecté (traité) avec EQ et l
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="31"/>
         <source>Label...</source>
-        <translation type="unfinished"/>
+        <translation>Etiquette...</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="40"/>
         <source>Delete this cue</source>
-        <translation type="unfinished"/>
+        <translation>Supprimer ce repère</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="74"/>
         <source>Hotcue #%1</source>
-        <translation type="unfinished"/>
+        <translation>Repère rapide #%1</translation>
     </message>
 </context>
 <context>
@@ -13177,7 +13192,7 @@ Utiliser ceci pour modifier uniquement le signal affecté (traité) avec EQ et l
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="161"/>
         <source>Clear the search bar input field</source>
-        <translation type="unfinished"/>
+        <translation>Effacer le champ de saisie de la barre de recherche</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="167"/>
@@ -13274,12 +13289,12 @@ Utiliser ceci pour modifier uniquement le signal affecté (traité) avec EQ et l
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="122"/>
         <source>Adjust BPM</source>
-        <translation type="unfinished"/>
+        <translation>Ajuster le BPM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="127"/>
         <source>Select Color</source>
-        <translation type="unfinished"/>
+        <translation>Sélectionner la couleur</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="133"/>
@@ -13460,7 +13475,7 @@ Utiliser ceci pour modifier uniquement le signal affecté (traité) avec EQ et l
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="272"/>
         <source>Reset BPM</source>
-        <translation type="unfinished"/>
+        <translation>Réinitialiser le BPM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="551"/>
@@ -13513,7 +13528,7 @@ Utiliser ceci pour modifier uniquement le signal affecté (traité) avec EQ et l
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="936"/>
         <source>Add to New Crate</source>
-        <translation type="unfinished"/>
+        <translation>Ajouter dans un nouveau Bac</translation>
     </message>
 </context>
 <context>
@@ -13574,17 +13589,17 @@ Utiliser ceci pour modifier uniquement le signal affecté (traité) avec EQ et l
     <message>
         <location filename="../../src/network/webtask.cpp" line="113"/>
         <source>Client-side network timeout</source>
-        <translation type="unfinished"/>
+        <translation>Délai d&apos;expiration du réseau côté client</translation>
     </message>
     <message>
         <location filename="../../src/network/webtask.cpp" line="175"/>
         <source>No network access</source>
-        <translation type="unfinished"/>
+        <translation>Pas d&apos;accès au réseau</translation>
     </message>
     <message>
         <location filename="../../src/network/webtask.cpp" line="191"/>
         <source>Start of network task has been aborted</source>
-        <translation type="unfinished"/>
+        <translation>Le début de la tâche réseau a été interrompue</translation>
     </message>
 </context>
 </TS>
