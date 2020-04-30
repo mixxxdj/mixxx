@@ -603,6 +603,8 @@ bool exportTrackMetadataIntoTag(
                 kCommentFieldKeySeratoMarkers2FLAC,
                 dumpSeratoMarkers2(trackMetadata, fileType));
     }
+#else
+    Q_UNUSED(fileType);
 #endif // __EXPORT_SERATO_MARKERS__
 
     return true;
