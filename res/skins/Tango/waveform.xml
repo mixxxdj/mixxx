@@ -170,6 +170,24 @@ Variables:
                     <SetVariable name="Size">28f,24f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,beats_adjust_faster</SetVariable>
                   </Template>
+
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <Size>f,f</Size>
+                    <Children>
+                      <Template src="skin:button_1state_right.xml">
+                        <SetVariable name="TooltipId">FIXME</SetVariable>
+                        <SetVariable name="ObjectName">ShiftEarlier</SetVariable>
+                        <SetVariable name="Size">28f,24f</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="group"/>,shift_times_earlier</SetVariable>
+                        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,shift_times_earlier_small</SetVariable>
+                      </Template>
+                    </Children>
+                    <Connection>
+                      <ConfigKey persist="true">[Skin],timing_shift_buttons</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
                 </Children>
               </WidgetGroup><!-- /beats earlier & faster -->
 
@@ -194,6 +212,24 @@ Variables:
                     <SetVariable name="Size">28f,24f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,beats_adjust_slower</SetVariable>
                   </Template>
+
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <Size>f,f</Size>
+                    <Children>
+                      <Template src="skin:button_1state_right.xml">
+                        <SetVariable name="TooltipId">FIXME</SetVariable>
+                        <SetVariable name="ObjectName">ShiftLater</SetVariable>
+                        <SetVariable name="Size">28f,24f</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="group"/>,shift_times_later</SetVariable>
+                        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,shift_times_later_small</SetVariable>
+                      </Template>
+                    </Children>
+                    <Connection>
+                      <ConfigKey persist="true">[Skin],timing_shift_buttons</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
                 </Children>
               </WidgetGroup><!-- /beats later & slower -->
             </Children>
