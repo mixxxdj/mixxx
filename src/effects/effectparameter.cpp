@@ -1,15 +1,16 @@
+#include "effects/effectparameter.h"
+
 #include <QtDebug>
 
-#include "effects/effectparameter.h"
-#include "effects/effectsmanager.h"
+#include "effects/effectsmessenger.h"
 #include "util/assert.h"
 
 EffectParameter::EffectParameter(EngineEffect* pEngineEffect,
-        EffectsManager* pEffectsManager,
+        EffectsMessengerPointer pEffectsMessenger,
         EffectManifestParameterPointer pParameterManifest,
         EffectParameterPreset preset)
         : m_pEngineEffect(pEngineEffect),
-          m_pEffectsManager(pEffectsManager),
+          m_pMessenger(pEffectsMessenger),
           m_pParameterManifest(pParameterManifest) {
     if (preset.isNull()) {
         setValue(pParameterManifest->getDefault());
@@ -69,5 +70,5 @@ void EffectParameter::updateEngineState() {
     pRequest->pTargetEffect = m_pEngineEffect;
     pRequest->SetParameterParameters.iParameter = m_pParameterManifest->index();
     pRequest->value = m_value;
-    m_pEffectsManager->writeRequest(pRequest);
+    m_pMessenger->writeRequest(pRequest);
 }

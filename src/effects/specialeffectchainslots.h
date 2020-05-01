@@ -10,8 +10,9 @@
 class StandardEffectChainSlot : public EffectChainSlot {
   public:
     StandardEffectChainSlot(unsigned int iChainNumber,
-                            EffectsManager* pEffectsManager,
-                            const QString& id = QString());
+            EffectsManager* pEffectsManager,
+            EffectsMessengerPointer pEffectsMessenger,
+            const QString& id = QString());
     static QString formatEffectChainSlotGroup(const int iChainNumber);
     static QString formatEffectSlotGroup(const int iChainSlotNumber,
                                          const int iEffectSlotNumber);
@@ -19,7 +20,8 @@ class StandardEffectChainSlot : public EffectChainSlot {
 
 class OutputEffectChainSlot : public EffectChainSlot {
   public:
-    OutputEffectChainSlot(EffectsManager* pEffectsManager);
+    OutputEffectChainSlot(EffectsManager* pEffectsManager,
+            EffectsMessengerPointer pEffectsMessenger);
 
   private:
     static QString formatEffectChainSlotGroup(const QString& group);
@@ -30,13 +32,15 @@ class PerGroupEffectChainSlot : public EffectChainSlot {
     PerGroupEffectChainSlot(const QString& group,
             const QString& chainSlotGroup,
             SignalProcessingStage stage,
-            EffectsManager* pEffectsManager);
+            EffectsManager* pEffectsManager,
+            EffectsMessengerPointer pEffectsMessenger);
 };
 
 class QuickEffectChainSlot : public PerGroupEffectChainSlot {
   public:
     QuickEffectChainSlot(const QString& group,
-                         EffectsManager* pEffectsManager);
+            EffectsManager* pEffectsManager,
+            EffectsMessengerPointer pEffectsMessenger);
 
     void loadEffect(const unsigned int iEffectSlotNumber,
             const EffectManifestPointer pManifest,
@@ -52,7 +56,8 @@ class QuickEffectChainSlot : public PerGroupEffectChainSlot {
 class EqualizerEffectChainSlot : public PerGroupEffectChainSlot {
   public:
     EqualizerEffectChainSlot(const QString& group,
-                             EffectsManager* pEffectsManager);
+            EffectsManager* pEffectsManager,
+            EffectsMessengerPointer pEffectsMessenger);
 
     void loadEffect(const unsigned int iEffectSlotNumber,
             const EffectManifestPointer pManifest,

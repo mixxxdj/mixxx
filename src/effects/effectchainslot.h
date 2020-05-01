@@ -49,9 +49,10 @@ class EffectChainSlot : public QObject {
     Q_OBJECT
   public:
     EffectChainSlot(const QString& group,
-                    EffectsManager* pEffectsManager,
-                    SignalProcessingStage stage = SignalProcessingStage::Postfader,
-                    const QString& id = QString());
+            EffectsManager* pEffectsManager,
+            EffectsMessengerPointer pEffectsMessenger,
+            SignalProcessingStage stage = SignalProcessingStage::Postfader,
+            const QString& id = QString());
     virtual ~EffectChainSlot();
 
     QString group() const;
@@ -136,6 +137,7 @@ class EffectChainSlot : public QObject {
     void disableForInputChannel(const ChannelHandleAndGroup& handle_group);
 
     EffectsManager* m_pEffectsManager;
+    EffectsMessengerPointer m_pMessenger;
     ControlObject* m_pControlChainMix;
     ControlObject* m_pControlChainSuperParameter;
     QList<EffectSlotPointer> m_effectSlots;

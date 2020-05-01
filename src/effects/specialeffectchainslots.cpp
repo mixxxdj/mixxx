@@ -4,12 +4,14 @@
 #include "mixer/playermanager.h"
 
 StandardEffectChainSlot::StandardEffectChainSlot(unsigned int iChainNumber,
-                                                 EffectsManager* pEffectsManager,
-                                                 const QString& id)
+        EffectsManager* pEffectsManager,
+        EffectsMessengerPointer pEffectsMessenger,
+        const QString& id)
         : EffectChainSlot(formatEffectChainSlotGroup(iChainNumber),
-                          pEffectsManager,
-                          SignalProcessingStage::Postfader,
-                          formatEffectChainSlotGroup(iChainNumber)) {
+                  pEffectsManager,
+                  pEffectsMessenger,
+                  SignalProcessingStage::Postfader,
+                  formatEffectChainSlotGroup(iChainNumber)) {
     for (int i = 0; i < kNumEffectsPerUnit; ++i) {
         addEffectSlot(formatEffectSlotGroup(iChainNumber, i));
     }
@@ -39,12 +41,13 @@ QString StandardEffectChainSlot::formatEffectSlotGroup(const int iChainSlotNumbe
                    .arg(QString::number(iEffectSlotNumber + 1));
 }
 
-
-OutputEffectChainSlot::OutputEffectChainSlot(EffectsManager* pEffectsManager)
+OutputEffectChainSlot::OutputEffectChainSlot(EffectsManager* pEffectsManager,
+        EffectsMessengerPointer pEffectsMessenger)
         : EffectChainSlot(formatEffectChainSlotGroup("[Master]"),
-                          pEffectsManager,
-                          SignalProcessingStage::Postfader,
-                          formatEffectChainSlotGroup("[Master]")) {
+                  pEffectsManager,
+                  pEffectsMessenger,
+                  SignalProcessingStage::Postfader,
+                  formatEffectChainSlotGroup("[Master]")) {
     addEffectSlot("[OutputEffectRack_[Master]_Effect1]");
     m_effectSlots[0]->setEnabled(true);
 
@@ -68,16 +71,19 @@ OutputEffectChainSlot::OutputEffectChainSlot(EffectsManager* pEffectsManager)
     sendParameterUpdate();
 }
 
-QString OutputEffectChainSlot::formatEffectChainSlotGroup(const QString& group) {
+QString OutputEffectChainSlot::formatEffectChainSlotGroup(
+        const QString& group) {
     return QString("[OutputEffectRack_%1]").arg(group);
 }
 
 PerGroupEffectChainSlot::PerGroupEffectChainSlot(const QString& group,
         const QString& chainSlotGroup,
         SignalProcessingStage stage,
-        EffectsManager* pEffectsManager)
+        EffectsManager* pEffectsManager,
+        EffectsMessengerPointer pEffectsMessenger)
         : EffectChainSlot(chainSlotGroup,
                   pEffectsManager,
+                  pEffectsMessenger,
                   stage,
                   chainSlotGroup) {
     // Set the chain to be fully wet.
@@ -87,7 +93,7 @@ PerGroupEffectChainSlot::PerGroupEffectChainSlot(const QString& group,
     // TODO(rryan): remove.
     const ChannelHandleAndGroup* handleAndGroup = nullptr;
     for (const ChannelHandleAndGroup& handle_group :
-             m_pEffectsManager->registeredInputChannels()) {
+            m_pEffectsManager->registeredInputChannels()) {
         if (handle_group.name() == group) {
             handleAndGroup = &handle_group;
             break;
@@ -100,12 +106,14 @@ PerGroupEffectChainSlot::PerGroupEffectChainSlot(const QString& group,
     enableForInputChannel(*handleAndGroup);
 }
 
-QuickEffectChainSlot::QuickEffectChainSlot(
-        const QString& group, EffectsManager* pEffectsManager)
+QuickEffectChainSlot::QuickEffectChainSlot(const QString& group,
+        EffectsManager* pEffectsManager,
+        EffectsMessengerPointer pEffectsMessenger)
         : PerGroupEffectChainSlot(group,
                   formatEffectChainSlotGroup(group),
                   SignalProcessingStage::Postfader,
-                  pEffectsManager) {
+                  pEffectsManager,
+                  pEffectsMessenger) {
     for (int i = 0; i < kNumEffectsPerUnit; ++i) {
         addEffectSlot(formatEffectSlotGroup(group, i));
         m_effectSlots.at(i)->setEnabled(true);
@@ -136,12 +144,14 @@ QString QuickEffectChainSlot::formatEffectSlotGroup(
             .arg(QString::number(iEffectSlotNumber + 1));
 }
 
-EqualizerEffectChainSlot::EqualizerEffectChainSlot(
-        const QString& group, EffectsManager* pEffectsManager)
+EqualizerEffectChainSlot::EqualizerEffectChainSlot(const QString& group,
+        EffectsManager* pEffectsManager,
+        EffectsMessengerPointer pEffectsMessenger)
         : PerGroupEffectChainSlot(group,
                   formatEffectChainSlotGroup(group),
                   SignalProcessingStage::Prefader,
-                  pEffectsManager),
+                  pEffectsManager,
+                  pEffectsMessenger),
           m_pCOFilterWaveform(
                   new ControlObject(ConfigKey(group, "filterWaveformEnable"))) {
     // Add a single effect slot

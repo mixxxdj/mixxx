@@ -27,7 +27,7 @@ class EffectParameterPreset;
 class EffectParameter {
   public:
     EffectParameter(EngineEffect* pEngineEffect,
-            EffectsManager* pEffectsManager,
+            EffectsMessengerPointer pEffectsMessenger,
             EffectManifestParameterPointer pParameterManifest,
             EffectParameterPreset preset);
     virtual ~EffectParameter();
@@ -62,7 +62,7 @@ class EffectParameter {
     bool clampValue();
 
     EngineEffect* m_pEngineEffect;
-    EffectsManager* m_pEffectsManager;
+    EffectsMessengerPointer m_pMessenger;
     EffectManifestParameterPointer m_pParameterManifest;
     double m_value;
     // Hidden parameters cannot be linked to the metaknob, but EffectParameter
