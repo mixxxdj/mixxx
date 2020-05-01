@@ -49,6 +49,13 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
             SLOT(slotEnableAutoDJRandomQueue(int)));
     connect(autoDJRandomQueueMinimumSpinBox, SIGNAL(valueChanged(int)), this,
             SLOT(slotSetAutoDJRandomQueueMin(int)));
+
+    ComboBoxAutoDjTransitionUnit->addItem(tr("Seconds"));
+    ComboBoxAutoDjTransitionUnit->addItem(tr("Beats"));
+    ComboBoxAutoDjTransitionUnit->setCurrentIndex(
+            m_pConfig->getValue(
+                    ConfigKey("[Auto DJ]", "TransitionUnit"), 0));
+    connect(ComboBoxAutoDjTransitionUnit, SIGNAL(currentIndexChanged(int)), this, SLOT(slotSetAutoDJTransitionUnit(int)));
 }
 
 DlgPrefAutoDJ::~DlgPrefAutoDJ() {
@@ -76,6 +83,10 @@ void DlgPrefAutoDJ::slotApply() {
     m_pConfig->setValue(ConfigKey("[Auto DJ]", "EnableRandomQueue"),
             m_pConfig->getValue(
                     ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"), 0));
+
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", "TransitionUnit"),
+            m_pConfig->getValue(
+                    ConfigKey("[Auto DJ]", "TransitionUnitBuff"), 0));
 }
 
 void DlgPrefAutoDJ::slotCancel() {
@@ -112,6 +123,13 @@ void DlgPrefAutoDJ::slotCancel() {
                     ConfigKey("[Auto DJ]", "EnableRandomQueue"), 0));
     slotEnableAutoDJRandomQueueComboBox(
             m_pConfig->getValue<int>(ConfigKey("[Auto DJ]", "Requeue")));
+
+    ComboBoxAutoDjTransitionUnit->setCurrentIndex(
+            m_pConfig->getValue(
+                    ConfigKey("[Auto DJ]", "TransitionUnit"), 0));
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", "TransitionUnitBuff"),
+            m_pConfig->getValue(
+                    ConfigKey("[Auto DJ]", "TransitionUnit"), 0));
 }
 
 void DlgPrefAutoDJ::slotResetToDefaults() {
@@ -129,6 +147,8 @@ void DlgPrefAutoDJ::slotResetToDefaults() {
     m_pConfig->set(ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),QString("0"));
     autoDJRandomQueueMinimumSpinBox->setEnabled(false);
     ComboBoxAutoDjRandomQueue->setEnabled(true);
+    ComboBoxAutoDjTransitionUnit->setCurrentIndex(0);
+    m_pConfig->set(ConfigKey("[Auto DJ]", "TransitionUnitBuff"), ConfigValue(0));
 }
 
 void DlgPrefAutoDJ::slotSetAutoDjMinimumAvailable(int a_iValue) {
@@ -181,6 +201,18 @@ void DlgPrefAutoDJ::slotEnableAutoDJRandomQueue(int a_iValue) {
     } else {
         autoDJRandomQueueMinimumSpinBox->setEnabled(true);
         m_pConfig->set(ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),
+                ConfigValue(1));
+    }
+}
+
+void DlgPrefAutoDJ::slotSetAutoDJTransitionUnit(int a_iValue) {
+    if (a_iValue == 0) {
+        // Use seconds
+        m_pConfig->set(ConfigKey("[Auto DJ]", "TransitionUnitBuff"),
+                ConfigValue(0));
+    } else {
+        // Use beats
+        m_pConfig->set(ConfigKey("[Auto DJ]", "TransitionUnitBuff"),
                 ConfigValue(1));
     }
 }

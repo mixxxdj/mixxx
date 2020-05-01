@@ -26,6 +26,7 @@ class DlgPrefAutoDJ : public DlgPreferencePage, public Ui::DlgPrefAutoDJDlg {
     void slotSetAutoDJRandomQueueMin(int);
     void slotEnableAutoDJRandomQueueComboBox(int);
     void slotEnableAutoDJRandomQueue(int);
+    void slotSetAutoDJTransitionUnit(int);
 
   private:
     UserSettingsPointer m_pConfig;
