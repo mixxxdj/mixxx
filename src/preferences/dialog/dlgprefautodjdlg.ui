@@ -16,10 +16,43 @@
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QLabel" name="autoDjMinimumAvailableLabel">
+     <item row="2" column="0">
+      <widget class="QLabel" name="autoDjMinimumAvailableLabel_2">
        <property name="text">
-        <string>Minimum available tracks in Track Source</string>
+        <string>Suspension period for track selection</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QSpinBox" name="autoDJRandomQueueMinimumSpinBox">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>Minimum number of tracks after which random tracks may be added</string>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>20</number>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="autoDJRandomQueueMinimumLabel">
+       <property name="text">
+        <string>Minimum allowed tracks before addition</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="textAutoDJRandomQueue">
+       <property name="text">
+        <string>Enable random track addition to queue</string>
+       </property>
+       <property name="buddy">
+        <cstring>ComboBoxAutoDjRandomQueue</cstring>
        </property>
       </widget>
      </item>
@@ -49,13 +82,6 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="autoDjMinimumAvailableLabel_2">
-       <property name="text">
-        <string>Suspension period for track selection</string>
-       </property>
-      </widget>
-     </item>
      <item row="2" column="1">
       <widget class="QTimeEdit" name="autoDjIgnoreTimeEdit">
        <property name="toolTip">
@@ -69,13 +95,10 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="textAutoDJRandomQueue">
+     <item row="0" column="0">
+      <widget class="QLabel" name="autoDjMinimumAvailableLabel">
        <property name="text">
-        <string>Enable random track addition to queue</string>
-       </property>
-       <property name="buddy">
-        <cstring>ComboBoxAutoDjRandomQueue</cstring>
+        <string>Minimum available tracks in Track Source</string>
        </property>
       </widget>
      </item>
@@ -86,26 +109,17 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="autoDJRandomQueueMinimumLabel">
+     <item row="5" column="0">
+      <widget class="QLabel" name="textAutoDjTransitionUnit">
        <property name="text">
-        <string>Minimum allowed tracks before addition</string>
+        <string>Transition unit to use</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
-      <widget class="QSpinBox" name="autoDJRandomQueueMinimumSpinBox">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+     <item row="5" column="1">
+      <widget class="QComboBox" name="ComboBoxAutoDjTransitionUnit">
        <property name="toolTip">
-        <string>Minimum number of tracks after which random tracks may be added</string>
-       </property>
-       <property name="minimum">
-        <number>1</number>
-       </property>
-       <property name="maximum">
-        <number>20</number>
+        <string>Sets the units to use when specifying how long a transition should last.</string>
        </property>
       </widget>
      </item>
