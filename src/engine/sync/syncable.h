@@ -3,6 +3,8 @@
 
 #include <QString>
 
+#include "track/keyutils.h"
+
 class EngineChannel;
 
 enum SyncMode {
@@ -69,9 +71,15 @@ class Syncable {
     // include scratch or FF/REW values.
     virtual double getBpm() const = 0;
 
+    // Gets the beat distance as a fraction from 0 to 1
     virtual double getBeatDistance() const = 0;
+    // Gets the beat length in seconds
+    virtual double getBeatLengthSeconds() const = 0;
     // Gets the speed of the syncable if it was playing at 1.0 rate.
     virtual double getBaseBpm() const = 0;
+    // // Returns the effective key of the syncable.
+    // virtual mixxx::track::io::key::ChromaticKey getKey() const = 0;
+    // virtual double getVisualKeyDistance() const = 0;
 
     // The following functions are used to tell syncables about the state of the
     // current Sync Master.

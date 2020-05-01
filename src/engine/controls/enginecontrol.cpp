@@ -95,7 +95,7 @@ void EngineControl::notifySeek(double dNewPlaypos) {
     m_sampleOfTrack.setValue(sot);
 }
 
-EngineBuffer* EngineControl::pickSyncTarget() {
+Syncable* EngineControl::pickSyncTarget() {
     EngineMaster* pMaster = getEngineMaster();
     if (!pMaster) {
         return NULL;
@@ -106,15 +106,12 @@ EngineBuffer* EngineControl::pickSyncTarget() {
         return NULL;
     }
 
-    // If sync is on, pick the sync master unless the master is us.
-    auto syncMaster = pEngineSync->getMaster();
-    if (syncMaster && syncMaster->getEngineBuffer() != getEngineBuffer()) {
-        return syncMaster->getEngineBuffer();
-    }
+    // EngineChannel* pThisChannel = pMaster->getChannel(getGroup());
+    return pEngineSync->pickSyncTarget(pEngineSync->getSyncableForGroup(getGroup()));
 
     // TODO(rryan): Remove. This is a linear search over groups in
     // EngineMaster. We should pass the EngineChannel into EngineControl.
-    EngineChannel* pThisChannel = pMaster->getChannel(getGroup());
-    EngineChannel* pChannel = pEngineSync->pickNonSyncSyncTarget(pThisChannel);
-    return pChannel ? pChannel->getEngineBuffer() : NULL;
+    // EngineChannel* pChannel = pEngineSync->pickSyncTarget(pThisChannel);
+    // qDebug() << "SYNC TARGET" << (pChannel ? pChannel->getGroup() : "NONE");
+    // return pChannel ? pChannel->getEngineBuffer() : NULL;
 }

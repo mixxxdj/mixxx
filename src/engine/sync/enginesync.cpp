@@ -429,8 +429,40 @@ void EngineSync::deactivateSync(Syncable* pSyncable) {
     }
 }
 
-EngineChannel* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const {
-    EngineChannel* pFirstNonplayingDeck = nullptr;
+Syncable* EngineSync::pickSyncTarget(Syncable* pDontPick) const {
+    // EngineChannel* pFirstNonplayingDeck = nullptr;
+    // foreach (Syncable* pSyncable, m_syncables) {
+    //     EngineChannel* pChannel = pSyncable->getChannel();
+    //     if (pChannel == nullptr || pChannel == pDontPick) {
+    //         continue;
+    //     }
+
+    //     // Only consider channels that have a track loaded, are in the master
+    //     // mix, and are primary decks.
+    //     if (pChannel->isActive() && pChannel->isMasterEnabled() && pChannel->isPrimaryDeck()) {
+    //         EngineBuffer* pBuffer = pChannel->getEngineBuffer();
+    //         if (pBuffer && pBuffer->getBpm() > 0) {
+    //             // If the deck is playing then go with it immediately.
+    //             if (pBuffer->getSpeed() != 0.0) {
+    //                 return pChannel;
+    //             }
+    //             // Otherwise hold out for a deck that might be playing but
+    //             // remember the first deck that matched our criteria.
+    //             if (pFirstNonplayingDeck == nullptr) {
+    //                 pFirstNonplayingDeck = pChannel;
+    //             }
+    //         }
+    //     }
+    // }
+    // First choice: Pick the sync master (unless the master is the pDontPick)
+    if (m_pMasterSyncable && m_pMasterSyncable != pDontPick) {
+        qDebug() << "MASTER????" << m_pMasterSyncable->getGroup()
+                 << m_pMasterSyncable->getChannel();
+        return m_pMasterSyncable;
+    }
+
+    pSyncable* pFirstPlayingDeck = nullptr;
+    pSyncable* pFirstNonplayingDeck = nullptr;
     foreach (Syncable* pSyncable, m_syncables) {
         EngineChannel* pChannel = pSyncable->getChannel();
         if (pChannel == nullptr || pChannel == pDontPick) {
@@ -442,21 +474,30 @@ EngineChannel* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const
         if (pChannel->isActive() && pChannel->isMasterEnabled() && pChannel->isPrimaryDeck()) {
             EngineBuffer* pBuffer = pChannel->getEngineBuffer();
             if (pBuffer && pBuffer->getBpm() > 0) {
-                // If the deck is playing then go with it immediately.
                 if (pBuffer->getSpeed() != 0.0) {
-                    return pChannel;
-                }
-                // Otherwise hold out for a deck that might be playing but
-                // remember the first deck that matched our criteria.
-                if (pFirstNonplayingDeck == nullptr) {
-                    pFirstNonplayingDeck = pChannel;
+                    if (pSyncable->getSyncMode() != SYNC_NONE) {
+                        // Second choice: first playing sync deck
+                        qDebug() << "SYNC PLAYING";
+                        return pSyncable;
+                    }
+                    if (pFirstPlayingDeck == nullptr) {
+                        pFirstPlayingDeck = pSyncable;
+                    }
+                } else if (pFirstNonplayingDeck == nullptr) {
+                    pFirstNonplayingDeck = pSyncable;
                 }
             }
         }
     }
+    if (pFirstPlayingDeck) {
+        // Third choice: first playing non-sync deck
+        qDebug() << "PLAYING NON SYNC";
+        return pFirstPlayingDeck;
+    }
 
     // No playing decks have a BPM. Go with the first deck that was stopped but
     // had a BPM.
+    qDebug() << "FIRST NON PLAYING";
     return pFirstNonplayingDeck;
 }
 

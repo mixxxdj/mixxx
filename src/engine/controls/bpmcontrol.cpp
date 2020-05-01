@@ -254,8 +254,12 @@ void BpmControl::slotControlBeatSync(double v) {
 }
 
 bool BpmControl::syncTempo() {
-    EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
+    Syncable* pOtherSyncable = pickSyncTarget();
 
+    if (!pOtherSyncable) {
+        return false;
+    }
+    EngineBuffer* pOtherEngineBuffer = pOtherSyncable->getChannel()->getEngineBuffer();
     if (!pOtherEngineBuffer) {
         return false;
     }
@@ -313,8 +317,7 @@ bool BpmControl::syncTempo() {
             desiredRate *= 2.0;
         }
 
-        if (desiredRate < 2.0 && desiredRate > 0.5)
-        {
+        if (desiredRate < 2.0 && desiredRate > 0.5) {
             m_pEngineBpm->set(m_pLocalBpm->get() * desiredRate);
             m_pRateRatio->set(desiredRate);
             return true;
@@ -607,37 +610,38 @@ double BpmControl::getNearestPositionInPhase(
         // If we're a follower, it's easy to get the other beat fraction
         dOtherBeatFraction = m_dSyncTargetBeatDistance.getValue();
     } else {
-        // If not, we have to figure it out
-        EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
-        if (playing) {
-            if (!pOtherEngineBuffer || pOtherEngineBuffer->getSpeed() == 0.0) {
-                // "this" track is playing, or just starting
-                // only match phase if the sync target is playing as well
-                // else use the previous phase of "this" track before the seek
-                pOtherEngineBuffer = getEngineBuffer();
-            }
-        }
+        // // If not, we have to figure it out
+        // EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
+        // if (playing) {
+        //     if (!pOtherEngineBuffer || pOtherEngineBuffer->getSpeed() == 0.0) {
+        //         // "this" track is playing, or just starting
+        //         // only match phase if the sync target is playing as well
+        //         // else use the previous phase of "this" track before the seek
+        //         pOtherEngineBuffer = getEngineBuffer();
+        //     }
+        // }
 
-        if (!pOtherEngineBuffer) {
-            // no suitable sync buffer found
-            return dThisPosition;
-        }
+        // if (!pOtherEngineBuffer) {
+        //     // no suitable sync buffer found
+        //     return dThisPosition;
+        // }
 
-        TrackPointer otherTrack = pOtherEngineBuffer->getLoadedTrack();
-        mixxx::BeatsPointer otherBeats =
-                otherTrack ? otherTrack->getBeats() : mixxx::BeatsPointer();
+        // TrackPointer otherTrack = pOtherEngineBuffer->getLoadedTrack();
+        // BeatsPointer otherBeats = otherTrack ? otherTrack->getBeats() : BeatsPointer();
 
-        // If either track does not have beats, then we can't adjust the phase.
-        if (!otherBeats) {
-            return dThisPosition;
-        }
+        // // If either track does not have beats, then we can't adjust the phase.
+        // if (!otherBeats) {
+        //     return dThisPosition;
+        // }
 
-        double dOtherPosition = pOtherEngineBuffer->getExactPlayPos();
+        // double dOtherPosition = pOtherEngineBuffer->getExactPlayPos();
 
-        if (!BpmControl::getBeatContext(otherBeats, dOtherPosition,
-                                        NULL, NULL, NULL, &dOtherBeatFraction)) {
-            return dThisPosition;
-        }
+        // if (!BpmControl::getBeatContext(otherBeats, dOtherPosition,
+        //                                 NULL, NULL, NULL, &dOtherBeatFraction)) {
+        //     return dThisPosition;
+        // }
+        Syncable* pOtherSyncable = pickSyncTarget();
+        dOtherBeatFraction = pOtherSyncable->getBeatDistance();
     }
 
     bool this_near_next = dThisNextBeat - dThisPosition <= dThisPosition - dThisPrevBeat;
@@ -758,39 +762,8 @@ double BpmControl::getBeatMatchPosition(
         }
     }
 
-    double dOtherPrevBeat;
-    double dOtherNextBeat;
-    double dOtherBeatLength;
-    double dOtherBeatFraction;
-    EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
-    if (playing) {
-        if (!pOtherEngineBuffer || pOtherEngineBuffer->getSpeed() == 0.0) {
-            // "this" track is playing, or just starting
-            // only match phase if the sync target is playing as well
-            // else use the previous phase of "this" track before the seek
-            pOtherEngineBuffer = getEngineBuffer();
-        }
-    } else if (!pOtherEngineBuffer) {
-        return dThisPosition;
-    }
-
-    TrackPointer otherTrack = pOtherEngineBuffer->getLoadedTrack();
-    mixxx::BeatsPointer otherBeats = otherTrack ? otherTrack->getBeats() : mixxx::BeatsPointer();
-
-    // If either track does not have beats, then we can't adjust the phase.
-    if (!otherBeats) {
-        return dThisPosition;
-    }
-
-    double dOtherPosition = pOtherEngineBuffer->getExactPlayPos();
-
-    if (!BpmControl::getBeatContext(
-                otherBeats,
-                dOtherPosition,
-                &dOtherPrevBeat,
-                &dOtherNextBeat,
-                &dOtherBeatLength,
-                &dOtherBeatFraction)) {
+    Syncable* pOtherSyncable = pickSyncTarget();
+    if (!pOtherSyncable || !pOtherSyncable->isPlaying()) {
         return dThisPosition;
     }
 
@@ -803,6 +776,7 @@ double BpmControl::getBeatMatchPosition(
     double thisDivSec = (dThisNextBeat - dThisPosition) /
             dThisSampleRate / dThisRateRatio;
 
+    double dOtherBeatFraction = pOtherSyncable->getBeatDistance();
     if (dOtherBeatFraction < 1.0 / 8) {
         // the user has probably pressed play too late, sync the previous beat
         dOtherBeatFraction += 1.0;
@@ -810,7 +784,7 @@ double BpmControl::getBeatMatchPosition(
 
     dOtherBeatFraction += m_dUserOffset.getValue();
     double otherDivSec = (1 - dOtherBeatFraction) *
-            dOtherBeatLength / otherBeats->getSampleRate() / pOtherEngineBuffer->getRateRatio();
+            pOtherSyncable->getBeatLengthSeconds();
 
     // This matches the next beat in of both tracks.
     double seekMatch = (thisDivSec - otherDivSec) *

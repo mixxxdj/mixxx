@@ -22,11 +22,14 @@ class BaseSyncableListener : public SyncableListener {
     void onCallbackStart(int sampleRate, int bufferSize);
     void onCallbackEnd(int sampleRate, int bufferSize);
 
-    // Only for testing. Do not use.
     Syncable* getSyncableForGroup(const QString& group);
+    // Only for testing. Do not use.
     Syncable* getMasterSyncable() override {
         return m_pMasterSyncable;
     }
+    // Returns the engine buffer for the Master, or if a
+    // non-deck is master, returns the next-best choice.
+    EngineBuffer* getEngineBufferForMaster();
 
   protected:
     // This utility method returns true if it finds a deck not in SYNC_NONE mode.

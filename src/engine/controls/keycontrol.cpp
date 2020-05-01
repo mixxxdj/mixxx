@@ -324,7 +324,7 @@ void KeyControl::updatePitchAdjust() {
 
 void KeyControl::slotSyncKey(double v) {
     if (v > 0) {
-        EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
+        Syncable* pOtherSyncable = pickSyncTarget();
         syncKey(pOtherEngineBuffer);
     }
 }
@@ -336,8 +336,8 @@ void KeyControl::slotResetKey(double v) {
     }
 }
 
-bool KeyControl::syncKey(EngineBuffer* pOtherEngineBuffer) {
-    if (!pOtherEngineBuffer) {
+bool KeyControl::syncKey(Syncable* pOtherSyncable) {
+    if (!pOtherSyncable) {
         return false;
     }
 
@@ -345,10 +345,12 @@ bool KeyControl::syncKey(EngineBuffer* pOtherEngineBuffer) {
             KeyUtils::keyFromNumericValue(m_pFileKey->get());
 
     // Get the sync target's effective key, since that is what we aim to match.
-    double dKey = ControlObject::get(ConfigKey(pOtherEngineBuffer->getGroup(), "key"));
-    mixxx::track::io::key::ChromaticKey otherKey =
-            KeyUtils::keyFromNumericValue(dKey);
-    double otherDistance = ControlObject::get(ConfigKey(pOtherEngineBuffer->getGroup(), "visual_key_distance"));
+    // double dKey = ControlObject::get(ConfigKey(pOtherEngineBuffer->getGroup(), "key"));
+    // mixxx::track::io::key::ChromaticKey otherKey =
+    //         KeyUtils::keyFromNumericValue(dKey);
+    mixxx::track::io::key::ChromaticKey otherKey = pOtherSyncable->getKey();
+    // double otherDistance = ControlObject::get(ConfigKey(pOtherEngineBuffer->getGroup(), "visual_key_distance"));
+    double otherDistance = pOtherSyncable->getVisualKeyDistance();
 
     if (thisFileKey == mixxx::track::io::key::INVALID ||
         otherKey == mixxx::track::io::key::INVALID) {

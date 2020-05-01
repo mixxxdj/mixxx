@@ -37,6 +37,9 @@ class SyncControl : public EngineControl, public Syncable {
 
     double adjustSyncBeatDistance(double beatDistance) const;
     double getBeatDistance() const override;
+    double getBeatLengthSeconds() const override;
+    mixxx::track::io::key::ChromaticKey getKey() const override;
+    double getVisualKeyDistance() const override;
     void updateTargetBeatDistance();
     double getBaseBpm() const override;
     void setLocalBpm(double local_bpm);
