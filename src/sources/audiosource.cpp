@@ -8,7 +8,11 @@ namespace {
 
 const Logger kLogger("AudioSource");
 
-const SINT kVerifyReadableFrameCount = 1;
+// Maximum number of sample frames to verify that decoding the audio
+// stream works.
+// NOTE(2020-05-01): A single frame is sufficient to reliably detect
+// the broken FAAD2 v2.9.1 library.
+const SINT kVerifyReadableMaxFrameCount = 1;
 
 } // anonymous namespace
 
@@ -191,7 +195,7 @@ bool AudioSource::verifyReadable() {
     // Counterexample: The broken FAAD version 2.9.1 is able to open a file
     // but then fails to decode any sample frames.
     const SINT numSampleFrames =
-            math_min(kVerifyReadableFrameCount, frameIndexRange().length());
+            math_min(kVerifyReadableMaxFrameCount, frameIndexRange().length());
     SampleBuffer sampleBuffer(
             m_signalInfo.frames2samples(numSampleFrames));
     WritableSampleFrames writableSampleFrames(
