@@ -481,7 +481,9 @@ QImage SoundSourceProxy::importCoverImage() const {
 mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSource::OpenParams& params) {
     DEBUG_ASSERT(m_pTrack);
     auto openMode = mixxx::SoundSource::OpenMode::Strict;
+    int attemptCount = 0;
     while (m_pSoundSource && !m_pAudioSource) {
+        ++attemptCount;
         const mixxx::SoundSource::OpenResult openResult =
                 m_pSoundSource->open(openMode, params);
         if (openResult == mixxx::SoundSource::OpenResult::Succeeded) {
@@ -543,8 +545,11 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
     // All available providers have returned OpenResult::Aborted when
     // getting here. m_pSoundSource might already be invalid/null!
     kLogger.warning()
-            << "Unable to decode file"
-            << getUrl().toString();
+            << "Giving up to open file"
+            << getUrl().toString()
+            << "after"
+            << attemptCount
+            << "unsuccessful attempts";
     DEBUG_ASSERT(!m_pAudioSource);
     return m_pAudioSource;
 }
