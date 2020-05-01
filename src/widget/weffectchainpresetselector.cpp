@@ -47,7 +47,8 @@ void WEffectChainPresetSelector::populate() {
 
     QFontMetrics metrics(font());
 
-    for (const auto& pChainPreset : m_pEffectsManager->getAvailableChainPresets()) {
+    for (const auto& pChainPreset :
+            m_pEffectsManager->getChainPresetManager()->getPresetsSorted()) {
         QString elidedDisplayName = metrics.elidedText(pChainPreset->name(),
                 Qt::ElideMiddle,
                 width() - 2);

@@ -269,6 +269,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/backends/builtin/tremoloeffect.cpp
   src/effects/presets/effectpreset.cpp
   src/effects/presets/effectchainpreset.cpp
+  src/effects/presets/effectchainpresetmanager.cpp
   src/effects/presets/effectparameterpreset.cpp
   src/encoder/encoder.cpp
   src/encoder/encoderbroadcastsettings.cpp
