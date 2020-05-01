@@ -19,11 +19,12 @@ class RelocatedTrack final {
         DEBUG_ASSERT(m_missingTrackRef.isValid());
         DEBUG_ASSERT(m_missingTrackRef.hasId());
         DEBUG_ASSERT(m_missingTrackRef.hasLocation());
-        DEBUG_ASSERT(m_addedTrackRef.isValid());
-        // NOTE(uklotzde, 2019-12-16):
-        // m_addedTrackRef might not have a valid TrackId
-        // if the relocated track has not been added as a
-        // new track to the internal collection before.
+        // NOTE: m_addedTrackRef might not be valid!
+        // It might not have a valid TrackId if the relocated track has
+        // not been added as a new track to the internal collection before.
+        // It may also not have a valid canonical location, e.g. when
+        // relinking directories and the track is missing at both the old
+        // and the new location.
         DEBUG_ASSERT(m_addedTrackRef.hasLocation());
         DEBUG_ASSERT(updatedTrackRef().isValid());
         DEBUG_ASSERT(updatedTrackRef().hasId());
