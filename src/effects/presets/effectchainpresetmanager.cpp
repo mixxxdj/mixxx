@@ -5,8 +5,9 @@
 #include <QInputDialog>
 #include <QMessageBox>
 
+#include "effects/builtin/filtereffect.h"
 #include "effects/effectsmanager.h"
-#include "effects/presets/effectxmlelements.h"
+#include "effects/effectxmlelements.h"
 
 namespace {
 const QString kEffectChainPresetDirectory = "/effects/chains";
@@ -14,13 +15,15 @@ const QString kEffectsXmlFile = "effects.xml";
 } // anonymous namespace
 
 EffectChainPresetManager::EffectChainPresetManager(UserSettingsPointer pConfig,
-        EffectsManager* pEffectsManager,
-        EffectManifestPointer pDefaultQuickEffectManifest)
-        : m_pConfig(pConfig), m_pEffectsManager(pEffectsManager) {
+        EffectsBackendManagerPointer pBackendManager)
+        : m_pConfig(pConfig),
+          m_pBackendManager(pBackendManager) {
     // Generate the default QuickEffect chain preset instead of shipping it in
     // res/effects/chains because this uses the translated name.
-    m_pDefaultQuickEffectChainPreset =
-            EffectChainPresetPointer(new EffectChainPreset(EffectPresetPointer(
+    EffectManifestPointer pDefaultQuickEffectManifest = m_pBackendManager->getManifest(
+            FilterEffect::getId(), EffectBackendType::BuiltIn);
+    m_pDefaultQuickEffectChainPreset = EffectChainPresetPointer(
+            new EffectChainPreset(EffectPresetPointer(
                     new EffectPreset(pDefaultQuickEffectManifest))));
     m_pDefaultQuickEffectChainPreset->setName(
             pDefaultQuickEffectManifest->displayName());
@@ -103,8 +106,7 @@ void EffectChainPresetManager::importPreset() {
                 }
 
                 bool effectSupported = false;
-                for (EffectManifestPointer pManifest :
-                        m_pEffectsManager->getAvailableEffectManifests()) {
+                for (EffectManifestPointer pManifest : m_pBackendManager->getManifests()) {
                     if (pManifest->id() == pEffectPreset->id() &&
                             pManifest->backendType() ==
                                     pEffectPreset->backendType()) {

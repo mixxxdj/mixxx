@@ -78,7 +78,7 @@ void WEffectSelector::populate() {
 
 void WEffectSelector::slotEffectSelected(int newIndex) {
     const EffectManifestPointer pManifest =
-            m_pEffectsManager->getManifestFromUniqueId(
+            m_pEffectsManager->getBackendManager()->getManifestFromUniqueId(
                     itemData(newIndex).toString());
 
     m_pEffectsManager->loadEffect(

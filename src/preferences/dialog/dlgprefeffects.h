@@ -40,6 +40,7 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
     UserSettingsPointer m_pConfig;
     EffectsManager* m_pEffectsManager;
     EffectChainPresetManagerPointer m_pChainPresetManager;
+    EffectsBackendManagerPointer m_pBackendManager;
     EffectSettingsModel* m_pAvailableEffectsModel;
 };
 

@@ -75,9 +75,13 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void updateBandFilter(int index, double value);
     void setUpMasterEQ();
     void applySelections();
+
+    typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
+    const QList<EffectManifestPointer> getFilteredManifests(
+            EffectManifestFilterFnc filterFunc) const;
     void populateDeckBoxList(
             const QList<QComboBox*> boxList,
-            EffectsManager::EffectManifestFilterFnc filterFunc);
+            EffectManifestFilterFnc filterFunc);
 
     typedef std::function<void(QString, int, EffectManifestPointer)> loadEffectFunction;
     void applySelectionsToDecks(
@@ -93,6 +97,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
     // Members needed for changing the effects loaded on the EQ Effect Rack
     EffectsManager* m_pEffectsManager;
+    EffectsBackendManagerPointer m_pBackendManager;
     QLabel* m_firstSelectorLabel;
     QList<QComboBox*> m_deckEqEffectSelectors;
     ControlProxy* m_pNumDecks;

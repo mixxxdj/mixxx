@@ -4,9 +4,6 @@
 #include <QMetaType>
 #include <algorithm>
 
-#include "effects/builtin/builtinbackend.h"
-#include "effects/builtin/filtereffect.h"
-#include "effects/lv2/lv2backend.h"
 #include "effects/effectslot.h"
 #include "effects/effectsmessenger.h"
 #include "effects/presets/effectchainpreset.h"
@@ -34,6 +31,8 @@ EffectsManager::EffectsManager(QObject* pParent,
           m_pConfig(pConfig) {
     qRegisterMetaType<EffectChainMixMode>("EffectChainMixMode");
 
+    m_pBackendManager = EffectsBackendManagerPointer(new EffectsBackendManager());
+
     QPair<EffectsRequestPipe*, EffectsResponsePipe*> requestPipes =
             TwoWayMessagePipe<EffectsRequest*, EffectsResponse>::makeTwoWayMessagePipe(
                     kEffectMessagePipeFifoSize, kEffectMessagePipeFifoSize);
@@ -41,18 +40,8 @@ EffectsManager::EffectsManager(QObject* pParent,
             requestPipes.first, requestPipes.second));
     m_pEngineEffectsManager = new EngineEffectsManager(requestPipes.second);
 
-    m_pNumEffectsAvailable = new ControlObject(ConfigKey("[Master]", "num_effectsavailable"));
-    m_pNumEffectsAvailable->setReadOnly();
-
-    addEffectsBackend(EffectsBackendPointer(new BuiltInBackend()));
-#ifdef __LILV__
-    addEffectsBackend(EffectsBackendPointer(new LV2Backend()));
-#endif
-
-    EffectManifestPointer filterEffectManifest = getManifest(FilterEffect::getId(),
-            EffectBackendType::BuiltIn);
     m_pChainPresetManager = EffectChainPresetManagerPointer(
-            new EffectChainPresetManager(pConfig, this, filterEffectManifest));
+            new EffectChainPresetManager(pConfig, m_pBackendManager));
 }
 
 EffectsManager::~EffectsManager() {
@@ -73,39 +62,6 @@ EffectsManager::~EffectsManager() {
     m_outputEffectChainSlot.clear();
     m_effectChainSlotsByGroup.clear();
     m_pMessenger->processEffectsResponses();
-
-    m_effectsBackends.clear();
-
-    // delete m_pHiEqFreq;
-    // delete m_pLoEqFreq;
-    delete m_pNumEffectsAvailable;
-}
-
-bool alphabetizeEffectManifests(EffectManifestPointer pManifest1,
-        EffectManifestPointer pManifest2) {
-    // Sort built-in effects first before external plugins
-    int backendNameComparision = static_cast<int>(pManifest1->backendType()) -
-            static_cast<int>(pManifest2->backendType());
-    int displayNameComparision = QString::localeAwareCompare(
-            pManifest1->displayName(), pManifest2->displayName());
-    return (backendNameComparision ? (backendNameComparision < 0) : (displayNameComparision < 0));
-}
-
-void EffectsManager::addEffectsBackend(EffectsBackendPointer pBackend) {
-    VERIFY_OR_DEBUG_ASSERT(pBackend) {
-        return;
-    }
-    m_effectsBackends.insert(pBackend->getType(), pBackend);
-
-    QList<QString> backendEffects = pBackend->getEffectIds();
-    for (const QString& effectId : backendEffects) {
-        m_availableEffectManifests.append(pBackend->getManifest(effectId));
-    }
-
-    m_pNumEffectsAvailable->forceSet(m_availableEffectManifests.size());
-
-    std::sort(m_availableEffectManifests.begin(), m_availableEffectManifests.end(),
-          alphabetizeEffectManifests);
 }
 
 bool EffectsManager::isAdoptMetaknobValueEnabled() const {
@@ -165,22 +121,9 @@ void EffectsManager::loadEffect(EffectChainSlotPointer pChainSlot,
     pChainSlot->loadEffect(
             iEffectSlotNumber,
             pManifest,
-            createProcessor(pManifest),
+            m_pBackendManager->createProcessor(pManifest),
             pPreset,
             adoptMetaknobFromPreset);
-}
-
-std::unique_ptr<EffectProcessor> EffectsManager::createProcessor(
-        const EffectManifestPointer pManifest) {
-    if (!pManifest) {
-        // This can be a valid request to unload an effect, so do not DEBUG_ASSERT.
-        return std::unique_ptr<EffectProcessor>(nullptr);
-    }
-    EffectsBackendPointer pBackend = m_effectsBackends.value(pManifest->backendType());
-    VERIFY_OR_DEBUG_ASSERT(pBackend) {
-        return std::unique_ptr<EffectProcessor>(nullptr);
-    }
-    return pBackend->createProcessor(pManifest);
 }
 
 ParameterMap EffectsManager::getLoadedParameters(int chainNumber, int effectNumber) const {
@@ -223,16 +166,12 @@ void EffectsManager::loadEffectChainPreset(EffectChainSlot* pChainSlot,
             effectSlot++;
             continue;
         }
-        EffectsBackendPointer pBackend = m_effectsBackends.value(pEffectPreset->backendType());
-        VERIFY_OR_DEBUG_ASSERT(pBackend) {
-            effectSlot++;
-            continue;
-        }
-        EffectManifestPointer pManifest = pBackend->getManifest(pEffectPreset->id());
+        EffectManifestPointer pManifest = m_pBackendManager->getManifest(
+                pEffectPreset->id(), pEffectPreset->backendType());
         pChainSlot->loadEffect(
                 effectSlot,
                 pManifest,
-                createProcessor(pManifest),
+                m_pBackendManager->createProcessor(pManifest),
                 pEffectPreset,
                 true);
         effectSlot++;
@@ -258,21 +197,6 @@ void EffectsManager::loadEffectChainPreset(EffectChainSlot* pChainSlot, const QS
 
 void EffectsManager::loadPresetToStandardChain(int chainNumber, EffectChainPresetPointer pPreset) {
     loadEffectChainPreset(m_standardEffectChainSlots.at(chainNumber).get(), pPreset);
-}
-
-const QList<EffectManifestPointer> EffectsManager::getAvailableEffectManifestsFiltered(
-        EffectManifestFilterFnc filter) const {
-    if (filter == nullptr) {
-        return m_availableEffectManifests;
-    }
-
-    QList<EffectManifestPointer> list;
-    for (const auto& pManifest : m_availableEffectManifests) {
-        if (filter(pManifest.data())) {
-            list.append(pManifest);
-        }
-    }
-    return list;
 }
 
 QString EffectsManager::getNextEffectId(const QString& effectId) {
@@ -313,47 +237,6 @@ QString EffectsManager::getPrevEffectId(const QString& effectId) {
         index = m_visibleEffectManifests.size() - 1;
     }
     return m_visibleEffectManifests.at(index)->id();
-}
-
-void EffectsManager::getEffectManifestAndBackend(
-        const QString& effectId,
-        EffectManifestPointer* ppManifest, EffectsBackend** ppBackend) const {
-    for (const auto& pBackend : m_effectsBackends) {
-        if (pBackend->canInstantiateEffect(effectId)) {
-            *ppManifest = pBackend->getManifest(effectId);
-            *ppBackend = pBackend.data();
-        }
-    }
-}
-
-EffectManifestPointer EffectsManager::getManifestFromUniqueId(const QString& uid) const {
-    if (kEffectDebugOutput) {
-        //qDebug() << "EffectsManager::getManifestFromUniqueId" << uid;
-    }
-    if (uid.isEmpty()) {
-        // Do not DEBUG_ASSERT, this may be a valid request for a nullptr to
-        // unload an effect.
-        return EffectManifestPointer();
-    }
-    int delimiterIndex = uid.lastIndexOf(" ");
-    EffectBackendType backendType = EffectManifest::backendTypeFromString(
-            uid.mid(delimiterIndex+1));
-    VERIFY_OR_DEBUG_ASSERT(backendType != EffectBackendType::Unknown) {
-        // Mixxx 2.0 - 2.2 did not store the backend type in mixxx.cfg,
-        // so this code will be executed once when upgrading to Mixxx 2.3.
-        // This debug assertion is safe to ignore in that case. If it is
-        // triggered at any later time, there is a bug somewhere.
-        // Do not manipulate the string passed to this function, just pass
-        // it directly to BuiltInBackend.
-        return m_effectsBackends.value(EffectBackendType::BuiltIn)->getManifest(uid);
-    }
-    return m_effectsBackends.value(backendType)->getManifest(
-            uid.mid(-1, delimiterIndex+1));
-}
-
-EffectManifestPointer EffectsManager::getManifest(
-        const QString& id, EffectBackendType backendType) const {
-    return m_effectsBackends.value(backendType)->getManifest(id);
 }
 
 void EffectsManager::addStandardEffectChainSlots() {
@@ -482,8 +365,9 @@ EffectParameterSlotBasePointer EffectsManager::getEffectParameterSlot(
 void EffectsManager::setEffectVisibility(EffectManifestPointer pManifest, bool visible) {
     if (visible && !m_visibleEffectManifests.contains(pManifest)) {
         auto insertion_point = std::lower_bound(m_visibleEffectManifests.begin(),
-                                                m_visibleEffectManifests.end(),
-                                                pManifest, alphabetizeEffectManifests);
+                m_visibleEffectManifests.end(),
+                pManifest,
+                EffectManifest::alphabetize);
         m_visibleEffectManifests.insert(insertion_point, pManifest);
         emit visibleEffectsUpdated();
     } else if (!visible) {
@@ -523,19 +407,18 @@ void EffectsManager::loadDefaultEffectPresets() {
         }
         EffectPresetPointer pEffectPreset(new EffectPreset(doc.documentElement()));
         if (!pEffectPreset->isEmpty()) {
-            EffectManifestPointer pManifest = getManifest(pEffectPreset->id(), pEffectPreset->backendType());
+            EffectManifestPointer pManifest = m_pBackendManager->getManifest(
+                    pEffectPreset->id(), pEffectPreset->backendType());
             m_defaultPresets.insert(pManifest, pEffectPreset);
         }
         file.close();
     }
 
     // If no preset was found, generate one from the manifest
-    for (const auto pBackend : m_effectsBackends) {
-        for (const auto pManifest : pBackend->getManifests()) {
-            if (!m_defaultPresets.contains(pManifest)) {
-                m_defaultPresets.insert(pManifest,
-                        EffectPresetPointer(new EffectPreset(pManifest)));
-            }
+    for (const auto& pManifest : m_pBackendManager->getManifests()) {
+        if (!m_defaultPresets.contains(pManifest)) {
+            m_defaultPresets.insert(pManifest,
+                    EffectPresetPointer(new EffectPreset(pManifest)));
         }
     }
 }
@@ -545,8 +428,8 @@ void EffectsManager::saveDefaultForEffect(EffectPresetPointer pEffectPreset) {
         return;
     }
 
-    const auto pBackend = m_effectsBackends.value(pEffectPreset->backendType());
-    const auto pManifest = pBackend->getManifest(pEffectPreset->id());
+    const auto pManifest = m_pBackendManager->getManifest(
+            pEffectPreset->id(), pEffectPreset->backendType());
     m_defaultPresets.insert(pManifest, pEffectPreset);
 
     QDomDocument doc(EffectXml::Effect);
@@ -590,25 +473,6 @@ void EffectsManager::saveDefaultForEffect(int unitNumber, int effectNumber) {
     auto pSlot = m_standardEffectChainSlots.at(unitNumber)->getEffectSlot(effectNumber);
     EffectPresetPointer pPreset(new EffectPreset(pSlot));
     saveDefaultForEffect(pPreset);
-}
-
-const QString EffectsManager::getDisplayNameForEffectPreset(EffectPresetPointer pPreset) {
-    QString displayName(tr("None"));
-    if (pPreset == nullptr || pPreset->isEmpty()) {
-        return displayName;
-    }
-
-    bool manifestFound = false;
-    for (const auto pManifest : m_availableEffectManifests) {
-        if (pManifest->id() == pPreset->id() &&
-                pManifest->backendType() == pPreset->backendType()) {
-            displayName = pManifest->name();
-            manifestFound = true;
-            break;
-        }
-    }
-    DEBUG_ASSERT(manifestFound);
-    return displayName;
 }
 
 void EffectsManager::savePresetFromStandardEffectChain(int chainNumber) {

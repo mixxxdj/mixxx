@@ -40,8 +40,7 @@ const QString kDefaultMasterEqId = QString();
 const int kFrequencyUpperLimit = 20050;
 const int kFrequencyLowerLimit = 16;
 
-DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
-                     UserSettingsPointer pConfig)
+DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager, UserSettingsPointer pConfig)
         : DlgPreferencePage(pParent),
           m_COLoFreq(kConfigKey, "LoEQFrequency"),
           m_COHiFreq(kConfigKey, "HiEQFrequency"),
@@ -49,6 +48,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
           m_lowEqFreq(0.0),
           m_highEqFreq(0.0),
           m_pEffectsManager(pEffectsManager),
+          m_pBackendManager(pEffectsManager->getBackendManager()),
           m_firstSelectorLabel(NULL),
           m_pNumDecks(NULL),
           m_inSlotPopulateDeckEffectSelectors(false),
@@ -132,7 +132,7 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
                 "EffectForGroup_" + group), kDefaultEqId);
 
         const EffectManifestPointer pEQManifest =
-                m_pEffectsManager->getManifestFromUniqueId(configuredEffect);
+                m_pBackendManager->getManifestFromUniqueId(configuredEffect);
 
         int selectedEQEffectIndex = 0;
         if (pEQManifest) {
@@ -170,7 +170,7 @@ static bool hasSuperKnobLinking(EffectManifest* pManifest) {
 void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
     m_inSlotPopulateDeckEffectSelectors = true; // prevents a recursive call
 
-    EffectsManager::EffectManifestFilterFnc filterEQ;
+    EffectManifestFilterFnc filterEQ;
     if (CheckBoxEqOnly->isChecked()) {
         m_pConfig->set(ConfigKey(kConfigKey, kEqsOnly), QString("yes"));
         filterEQ = isMixingEQ;
@@ -185,15 +185,14 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
 }
 
 void DlgPrefEQ::populateDeckBoxList(
-            const QList<QComboBox*> boxList,
-            EffectsManager::EffectManifestFilterFnc filterFunc) {
-    const QList<EffectManifestPointer> pManifestList =
-            m_pEffectsManager->getAvailableEffectManifestsFiltered(filterFunc);
+        const QList<QComboBox*> boxList,
+        EffectManifestFilterFnc filterFunc) {
+    const QList<EffectManifestPointer> pManifestList = getFilteredManifests(filterFunc);
     for (QComboBox* box : boxList) {
         // Populate comboboxes with all available effects
         // Save current selection
         const EffectManifestPointer pCurrentlySelectedManifest =
-                m_pEffectsManager->getManifestFromUniqueId(
+                m_pBackendManager->getManifestFromUniqueId(
                         box->itemData(box->currentIndex()).toString());
 
         box->clear();
@@ -370,7 +369,7 @@ void DlgPrefEQ::applySelectionsToDecks(
     int deck = 0;
     for (QComboBox* box : boxList) {
         const EffectManifestPointer pManifest =
-                m_pEffectsManager->getManifestFromUniqueId(
+                m_pBackendManager->getManifestFromUniqueId(
                         box->itemData(box->currentIndex()).toString());
 
         QString group = PlayerManager::groupForDeck(deck);
@@ -549,10 +548,10 @@ void DlgPrefEQ::setUpMasterEQ() {
     const QString configuredEffectId = m_pConfig->getValue(ConfigKey(kConfigKey,
             "EffectForGroup_[Master]"), kDefaultMasterEqId);
     const EffectManifestPointer configuredEffectManifest =
-            m_pEffectsManager->getManifestFromUniqueId(configuredEffectId);
+            m_pBackendManager->getManifestFromUniqueId(configuredEffectId);
 
     const QList<EffectManifestPointer> availableMasterEQEffects =
-            m_pEffectsManager->getAvailableEffectManifestsFiltered(isMasterEQ);
+            getFilteredManifests(isMasterEQ);
 
     for (const auto& pManifest : availableMasterEQEffects) {
         comboBoxMasterEq->addItem(pManifest->name(), QVariant(pManifest->uniqueId()));
@@ -597,9 +596,8 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
     m_masterEQLabels.clear();
 
     const EffectManifestPointer pManifest =
-                m_pEffectsManager->getManifestFromUniqueId(
-                        comboBoxMasterEq->itemData(
-                                effectIndex).toString());
+            m_pBackendManager->getManifestFromUniqueId(
+                    comboBoxMasterEq->itemData(effectIndex).toString());
 
     if (pManifest == nullptr) {
         pbResetMasterEq->hide();
@@ -732,4 +730,21 @@ void DlgPrefEQ::setMasterEQParameter(int i, double value) {
                             ConfigValue(valueText));
         }
     }
+}
+
+const QList<EffectManifestPointer> DlgPrefEQ::getFilteredManifests(
+        EffectManifestFilterFnc filterFunc) const {
+    const QList<EffectManifestPointer> allManifests =
+            m_pBackendManager->getManifests();
+    if (filterFunc == nullptr) {
+        return allManifests;
+    }
+
+    QList<EffectManifestPointer> list;
+    for (const auto& pManifest : allManifests) {
+        if (filterFunc(pManifest.data())) {
+            list.append(pManifest);
+        }
+    }
+    return list;
 }

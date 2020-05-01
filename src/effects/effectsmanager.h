@@ -10,6 +10,7 @@
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 #include "effects/effectmanifestparameter.h"
+#include "effects/backends/effectsbackendmanager.h"
 #include "effects/presets/effectchainpresetmanager.h"
 #include "effects/specialeffectchainslots.h"
 #include "engine/channelhandle.h"
@@ -43,8 +44,6 @@ typedef QMap<EffectParameterType, QList<EffectParameterPointer>> ParameterMap;
 class EffectsManager : public QObject {
     Q_OBJECT
   public:
-    typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
-
     EffectsManager(QObject* pParent, UserSettingsPointer pConfig,
                    ChannelHandleFactory* pChannelHandleFactory);
     virtual ~EffectsManager();
@@ -59,6 +58,10 @@ class EffectsManager : public QObject {
 
     const EffectChainPresetManagerPointer getChainPresetManager() const {
         return m_pChainPresetManager;
+    }
+
+    const EffectsBackendManagerPointer getBackendManager() const {
+        return m_pBackendManager;
     }
 
     static const int kNumStandardEffectChains = 4;
@@ -95,9 +98,6 @@ class EffectsManager : public QObject {
             EffectPresetPointer pPreset = nullptr,
             bool adoptMetaknobFromPreset = false);
 
-    std::unique_ptr<EffectProcessor> createProcessor(
-            const EffectManifestPointer pManifest);
-
     ParameterMap getLoadedParameters(int chainNumber, int effectNumber) const;
     ParameterMap getHiddenParameters(int chainNumber, int effectNumber) const;
 
@@ -108,8 +108,6 @@ class EffectsManager : public QObject {
             EffectChainPresetPointer pPreset);
     void loadEffectChainPreset(EffectChainSlot* pChainSlot, const QString& name);
     void loadPresetToStandardChain(int chainNumber, EffectChainPresetPointer pPreset);
-
-    const QString getDisplayNameForEffectPreset(EffectPresetPointer pPreset);
 
     void addStandardEffectChainSlots();
     EffectChainSlotPointer getStandardEffectChainSlot(int unitNumber) const;
@@ -131,21 +129,9 @@ class EffectsManager : public QObject {
     QString getNextEffectId(const QString& effectId);
     QString getPrevEffectId(const QString& effectId);
 
-    inline const QList<EffectManifestPointer>& getAvailableEffectManifests() const {
-        return m_availableEffectManifests;
-    };
     inline const QList<EffectManifestPointer>& getVisibleEffectManifests() const {
         return m_visibleEffectManifests;
     };
-    const QList<EffectManifestPointer> getAvailableEffectManifestsFiltered(
-        EffectManifestFilterFnc filter) const;
-    bool isEQ(const QString& effectId) const;
-
-    void getEffectManifestAndBackend(
-            const QString& effectId,
-            EffectManifestPointer* ppManifest, EffectsBackend** ppBackend) const;
-    EffectManifestPointer getManifestFromUniqueId(const QString& uid) const;
-    EffectManifestPointer getManifest(const QString& id, EffectBackendType backendType) const;
 
     void setEffectVisibility(EffectManifestPointer pManifest, bool visibility);
     bool getEffectVisibility(EffectManifestPointer pManifest);
@@ -170,8 +156,6 @@ class EffectsManager : public QObject {
         return "EffectsManager";
     }
 
-    void addEffectsBackend(EffectsBackendPointer pEffectsBackend);
-
     void connectChainSlotSignals(EffectChainSlotPointer pChainSlot);
 
     void loadDefaultEffectPresets();
@@ -181,11 +165,8 @@ class EffectsManager : public QObject {
 
     ChannelHandleFactory* m_pChannelHandleFactory;
 
-    QHash<EffectBackendType, EffectsBackendPointer> m_effectsBackends;
-    QList<EffectManifestPointer> m_availableEffectManifests;
     QList<EffectManifestPointer> m_visibleEffectManifests;
 
-    ControlObject* m_pNumEffectsAvailable;
     // We need to create Control Objects for Equalizers' frequencies
     ControlPotmeter m_loEqFreq;
     ControlPotmeter m_hiEqFreq;
@@ -206,6 +187,7 @@ class EffectsManager : public QObject {
 
     QHash<EffectManifestPointer, EffectPresetPointer> m_defaultPresets;
 
+    EffectsBackendManagerPointer m_pBackendManager;
     EngineEffectsManager* m_pEngineEffectsManager;
     EffectsMessengerPointer m_pMessenger;
     EffectChainPresetManagerPointer m_pChainPresetManager;
