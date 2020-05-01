@@ -74,7 +74,7 @@ const QString kMusicBrainzOwner = QStringLiteral("http://musicbrainz.org");
 
 // Serato frames
 const QString kFrameDescriptionSeratoMarkers = QStringLiteral("Serato Markers_");
-const QString kFrameDescriptionSeratoMarkersV2 = QStringLiteral("Serato Markers2");
+const QString kFrameDescriptionSeratoMarkers2 = QStringLiteral("Serato Markers2");
 
 // Returns the text of an ID3v2 frame as a string.
 inline QString frameToQString(
@@ -994,14 +994,14 @@ void importTrackMetadataFromTag(
                     tag,
                     kFrameDescriptionSeratoMarkers);
     if (!seratoMarkers.isEmpty()) {
-        parseSeratoMarkers(pTrackMetadata, seratoMarkers);
+        parseSeratoMarkers(pTrackMetadata, seratoMarkers, FileType::MP3);
     }
     const QByteArray seratoMarkers2 =
             readFirstGeneralEncapsulatedObjectFrame(
                     tag,
-                    kFrameDescriptionSeratoMarkersV2);
+                    kFrameDescriptionSeratoMarkers2);
     if (!seratoMarkers2.isEmpty()) {
-        parseSeratoMarkers2(pTrackMetadata, seratoMarkers2);
+        parseSeratoMarkers2(pTrackMetadata, seratoMarkers2, FileType::MP3);
     }
 }
 
@@ -1279,11 +1279,11 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
     writeGeneralEncapsulatedObjectFrame(
             pTag,
             kFrameDescriptionSeratoMarkers,
-            trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers());
+            trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers(FileType::MP3));
     writeGeneralEncapsulatedObjectFrame(
             pTag,
-            kFrameDescriptionSeratoMarkersV2,
-            trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2());
+            kFrameDescriptionSeratoMarkers2,
+            trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2(FileType::MP3));
 #endif // __EXPORT_SERATO_MARKERS__
 
     return true;
