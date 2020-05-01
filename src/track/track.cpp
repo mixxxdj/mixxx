@@ -756,7 +756,6 @@ void Track::shiftCuePositions(double milliseconds) {
     }
 
     markDirtyAndUnlock(&lock);
-    emit cuesUpdated();
 }
 
 void Track::analysisFinished() {
