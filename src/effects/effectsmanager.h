@@ -65,13 +65,6 @@ class EffectsManager : public QObject {
     /// takes ownership of the backend, and will delete it when EffectsManager is
     /// being deleted. Not thread safe -- use only from the GUI thread.
     void addEffectsBackend(EffectsBackendPointer pEffectsBackend);
-
-    // To support cycling through effect chains, there is a global ordering of
-    // chains. These methods allow you to get the next or previous chain given
-    // your current chain.
-    // EffectChainSlotPointer getNextEffectChain(EffectChainSlotPointer pEffectChainSlot);
-    // EffectChainSlotPointer getPrevEffectChain(EffectChainSlotPointer pEffectChainSlot);
-
     static const int kNumStandardEffectChains = 4;
 
     bool isAdoptMetaknobValueEnabled() const;
