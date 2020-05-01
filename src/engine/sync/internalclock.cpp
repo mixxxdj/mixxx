@@ -98,10 +98,6 @@ double InternalClock::getBeatDistance() const {
     return m_dClockPosition / m_dBeatLength;
 }
 
-double InternalClock::getBeatLengthSeconds() const {
-    return getBeatDistance() / 44100.0;
-}
-
 void InternalClock::setMasterBeatDistance(double beatDistance) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "InternalClock::setMasterBeatDistance" << beatDistance;

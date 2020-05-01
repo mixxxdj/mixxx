@@ -3,8 +3,6 @@
 
 #include <QString>
 
-#include "track/keyutils.h"
-
 class EngineChannel;
 
 enum SyncMode {
@@ -73,8 +71,6 @@ class Syncable {
 
     // Gets the beat distance as a fraction from 0 to 1
     virtual double getBeatDistance() const = 0;
-    // Gets the beat length in seconds
-    virtual double getBeatLengthSeconds() const = 0;
     // Gets the speed of the syncable if it was playing at 1.0 rate.
     virtual double getBaseBpm() const = 0;
 

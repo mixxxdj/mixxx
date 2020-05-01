@@ -6,9 +6,7 @@
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
-#include "engine/channels/enginechannel.h"
 #include "engine/enginebuffer.h"
-#include "engine/sync/syncable.h"
 #include "track/keyutils.h"
 
 //static const double kLockOriginalKey = 0;
@@ -326,8 +324,8 @@ void KeyControl::updatePitchAdjust() {
 
 void KeyControl::slotSyncKey(double v) {
     if (v > 0) {
-        Syncable* pOtherSyncable = pickSyncTarget();
-        syncKey(pOtherSyncable->getChannel()->getEngineBuffer());
+        EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
+        syncKey(pOtherEngineBuffer);
     }
 }
 

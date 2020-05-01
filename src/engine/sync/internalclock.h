@@ -46,7 +46,6 @@ class InternalClock : public QObject, public Clock, public Syncable {
     }
 
     double getBeatDistance() const;
-    double getBeatLengthSeconds() const override;
     void setMasterBeatDistance(double beatDistance);
 
     double getBaseBpm() const;

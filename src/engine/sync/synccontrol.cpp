@@ -197,36 +197,6 @@ double SyncControl::getBeatDistance() const {
     return adjustSyncBeatDistance(beatDistance);
 }
 
-double SyncControl::getBeatLengthSeconds() const {
-    EngineBuffer* engineBuffer = m_pChannel->getEngineBuffer();
-
-    TrackPointer track = engineBuffer->getLoadedTrack();
-    BeatsPointer beats = track ? track->getBeats() : BeatsPointer();
-
-    // If either track does not have beats, then we can't adjust the phase.
-    if (!beats) {
-        return -1;
-    }
-
-    double dPosition = engineBuffer->getExactPlayPos();
-
-    double dPrevBeat;
-    double dNextBeat;
-    double dBeatLength;
-    double dBeatFraction;
-    if (!BpmControl::getBeatContext(
-                beats,
-                dPosition,
-                &dPrevBeat,
-                &dNextBeat,
-                &dBeatLength,
-                &dBeatFraction)) {
-        return -1;
-    }
-
-    return dBeatLength / beats->getSampleRate() / engineBuffer->getRateRatio();
-}
-
 double SyncControl::getBaseBpm() const {
     return m_pLocalBpm->get() / m_masterBpmAdjustFactor;
 }

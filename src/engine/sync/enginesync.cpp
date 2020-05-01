@@ -430,6 +430,12 @@ void EngineSync::deactivateSync(Syncable* pSyncable) {
 }
 
 Syncable* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const {
+    if (m_pMasterSyncable &&
+            m_pMasterSyncable->getChannel() &&
+            m_pMasterSyncable->getChannel() != pDontPick) {
+        return m_pMasterSyncable;
+    }
+
     Syncable* pFirstPlayingDeck = nullptr;
     Syncable* pFirstNonplayingDeck = nullptr;
     foreach (Syncable* pSyncable, m_syncables) {
@@ -470,10 +476,6 @@ Syncable* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const {
     qDebug() << "FIRST NON PLAYING";
     return pFirstNonplayingDeck;
 }
-
-// EngineBuffer* EngineSync::getEngineBufferForMaster() const {
-//     EngineChannel* channel = pickSyncTarget(m_pInternalClock);
-// }
 
 bool EngineSync::otherSyncedPlaying(const QString& group) {
     bool othersInSync = false;
