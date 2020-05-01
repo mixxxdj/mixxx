@@ -134,11 +134,11 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlObject> m_pFileBPM;
     std::unique_ptr<ControlProxy> m_pKey;
 
-    std::unique_ptr<ControlPushButton> m_pShiftTimesEarlier;
-    std::unique_ptr<ControlPushButton> m_pShiftTimesEarlierSmall;
-    std::unique_ptr<ControlPushButton> m_pShiftTimesLater;
-    std::unique_ptr<ControlPushButton> m_pShiftTimesLaterSmall;
-    std::unique_ptr<ControlObject> m_pShiftTimes;
+    std::unique_ptr<ControlPushButton> m_pShiftCuesEarlier;
+    std::unique_ptr<ControlPushButton> m_pShiftCuesEarlierSmall;
+    std::unique_ptr<ControlPushButton> m_pShiftCuesLater;
+    std::unique_ptr<ControlPushButton> m_pShiftCuesLaterSmall;
+    std::unique_ptr<ControlObject> m_pShiftCues;
 
     std::unique_ptr<ControlProxy> m_pReplayGain;
     std::unique_ptr<ControlProxy> m_pPlay;

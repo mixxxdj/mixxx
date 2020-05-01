@@ -26,8 +26,8 @@
 namespace {
 
 const double kNoTrackColor = -1;
-const double kShiftTimesOffsetMillis = 10;
-const double kShiftTimesOffsetSmallMillis = 1;
+const double kShiftCuesOffsetMillis = 10;
+const double kShiftCuesOffsetSmallMillis = 1;
 
 inline double trackColorToDouble(mixxx::RgbColor::optional_t color) {
     return (color ? static_cast<double>(*color) : kNoTrackColor);
@@ -137,33 +137,35 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
 
     m_pPreGain = std::make_unique<ControlProxy>(group, "pregain", this);
 
-    m_pShiftTimesEarlier = std::make_unique<ControlPushButton>(
-            ConfigKey(group, "shift_times_earlier"));
-    connect(m_pShiftTimesEarlier.get(),
+    m_pShiftCuesEarlier = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "shift_cues_earlier"));
+    connect(m_pShiftCuesEarlier.get(),
             &ControlObject::valueChanged,
             this,
-            [this](double value) { slotShiftTimesButton(value, -1 * kShiftTimesOffsetMillis); });
-    m_pShiftTimesLater = std::make_unique<ControlPushButton>(ConfigKey(group, "shift_times_later"));
-    connect(m_pShiftTimesLater.get(),
+            [this](double value) { slotShiftTimesButton(value, -1 * kShiftCuesOffsetMillis); });
+    m_pShiftCuesLater = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "shift_cues_later"));
+    connect(m_pShiftCuesLater.get(),
             &ControlObject::valueChanged,
             this,
-            [this](double value) { slotShiftTimesButton(value, kShiftTimesOffsetMillis); });
-    m_pShiftTimesEarlierSmall = std::make_unique<ControlPushButton>(
-            ConfigKey(group, "shift_times_earlier_small"));
-    connect(m_pShiftTimesEarlierSmall.get(),
+            [this](double value) { slotShiftTimesButton(value, kShiftCuesOffsetMillis); });
+    m_pShiftCuesEarlierSmall = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "shift_cues_earlier_small"));
+    connect(m_pShiftCuesEarlierSmall.get(),
             &ControlObject::valueChanged,
             this,
             [this](double value) {
-                slotShiftTimesButton(value, -1 * kShiftTimesOffsetSmallMillis);
+                slotShiftTimesButton(value, -1 * kShiftCuesOffsetSmallMillis);
             });
-    m_pShiftTimesLaterSmall = std::make_unique<ControlPushButton>(
-            ConfigKey(group, "shift_times_later_small"));
-    connect(m_pShiftTimesLaterSmall.get(),
+    m_pShiftCuesLaterSmall = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "shift_cues_later_small"));
+    connect(m_pShiftCuesLaterSmall.get(),
             &ControlObject::valueChanged,
             this,
-            [this](double value) { slotShiftTimesButton(value, kShiftTimesOffsetSmallMillis); });
-    m_pShiftTimes = std::make_unique<ControlObject>(ConfigKey(group, "shift_times"));
-    connect(m_pShiftTimes.get(),
+            [this](double value) { slotShiftTimesButton(value, kShiftCuesOffsetSmallMillis); });
+    m_pShiftCues = std::make_unique<ControlObject>(
+            ConfigKey(group, "shift_cues"));
+    connect(m_pShiftCues.get(),
             &ControlObject::valueChanged,
             this,
             &BaseTrackPlayerImpl::slotShiftTimes);

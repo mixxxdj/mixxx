@@ -180,19 +180,19 @@ Variables:
                     <SizePolicy>f,f</SizePolicy>
                     <Children>
                       <Template src="skin:button_1state_right.xml">
-                        <SetVariable name="TooltipId">FIXME</SetVariable>
+                        <SetVariable name="TooltipId">shift_cues_earlier</SetVariable>
                         <SetVariable name="ObjectName">ShiftEarlier</SetVariable>
                         <SetVariable name="Size">24f,24f</SetVariable>
-                        <SetVariable name="ConfigKey"><Variable name="group"/>,shift_times_earlier</SetVariable>
-                        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,shift_times_earlier_small</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="group"/>,shift_cues_earlier</SetVariable>
+                        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,shift_cues_earlier_small</SetVariable>
                       </Template>
                       <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
                       <Template src="skin:button_1state_right.xml">
-                        <SetVariable name="TooltipId">FIXME</SetVariable>
+                        <SetVariable name="TooltipId">shift_cues_later</SetVariable>
                         <SetVariable name="ObjectName">ShiftLater</SetVariable>
                         <SetVariable name="Size">24f,24f</SetVariable>
-                        <SetVariable name="ConfigKey"><Variable name="group"/>,shift_times_later</SetVariable>
-                        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,shift_times_later_small</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="group"/>,shift_cues_later</SetVariable>
+                        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,shift_cues_later_small</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup>
