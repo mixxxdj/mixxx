@@ -168,6 +168,11 @@ class AutoDJProcessor : public QObject {
         FixedSkipSilence
     };
 
+    enum class TransitionUnit {
+        SECONDS,
+        BEATS
+    };
+
     AutoDJProcessor(QObject* pParent,
                     UserSettingsPointer pConfig,
                     PlayerManagerInterface* pPlayerManager,
@@ -192,6 +197,10 @@ class AutoDJProcessor : public QObject {
     }
 
     bool nextTrackLoaded();
+
+    TransitionUnit getTransitionUnit() const {
+        return m_transitionUnit;
+    }
 
   public slots:
     void setTransitionTime(int seconds);
@@ -286,6 +295,7 @@ class AutoDJProcessor : public QObject {
     double m_transitionProgress;
     double m_transitionTime; // the desired value set by the user
     TransitionMode m_transitionMode;
+    TransitionUnit m_transitionUnit;
 
     QList<DeckAttributes*> m_decks;
 

@@ -12,6 +12,7 @@
 namespace {
 const char* kTransitionPreferenceName = "Transition";
 const char* kTransitionModePreferenceName = "TransitionMode";
+const char* kTransitionUnitPreferenceName = "TransitionUnit";
 const double kTransitionPreferenceDefault = 10.0;
 const double kKeepPosition = -1.0;
 
@@ -174,6 +175,11 @@ AutoDJProcessor::AutoDJProcessor(
             ConfigKey(kConfigKey, kTransitionModePreferenceName),
             static_cast<int>(TransitionMode::FullIntroOutro));
     m_transitionMode = static_cast<TransitionMode>(configuredTransitionMode);
+
+    m_transitionUnit = static_cast<TransitionUnit>(
+            m_pConfig->getValue(
+                    ConfigKey(kConfigKey, kTransitionUnitPreferenceName),
+                    static_cast<int>(TransitionUnit::SECONDS)));
 }
 
 AutoDJProcessor::~AutoDJProcessor() {
@@ -553,6 +559,13 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         m_pCOCrossfader->set(0);
         emitAutoDJStateChanged(m_eState);
     }
+
+    // Update this value just in case it was changed in the preferences
+    m_transitionUnit = static_cast<TransitionUnit>(
+            m_pConfig->getValue(
+                    ConfigKey(kConfigKey, kTransitionUnitPreferenceName),
+                    static_cast<int>(TransitionUnit::SECONDS)));
+
     return ADJ_OK;
 }
 
