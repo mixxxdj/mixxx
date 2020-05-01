@@ -231,15 +231,6 @@ double SyncControl::getBaseBpm() const {
     return m_pLocalBpm->get() / m_masterBpmAdjustFactor;
 }
 
-mixxx::track::io::key::ChromaticKey SyncControl::getKey() const {
-    double dKey = ControlObject::get(ConfigKey(getGroup(), "key"));
-    return KeyUtils::keyFromNumericValue(dKey);
-}
-
-double SyncControl::getVisualKeyDistance() const {
-    return ControlObject::get(ConfigKey(getGroup(), "visual_key_distance"));
-}
-
 void SyncControl::setMasterBeatDistance(double beatDistance) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "SyncControl::setMasterBeatDistance"

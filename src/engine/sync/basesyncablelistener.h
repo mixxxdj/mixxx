@@ -22,8 +22,8 @@ class BaseSyncableListener : public SyncableListener {
     void onCallbackStart(int sampleRate, int bufferSize);
     void onCallbackEnd(int sampleRate, int bufferSize);
 
-    Syncable* getSyncableForGroup(const QString& group);
     // Only for testing. Do not use.
+    Syncable* getSyncableForGroup(const QString& group);
     Syncable* getMasterSyncable() override {
         return m_pMasterSyncable;
     }

@@ -98,20 +98,27 @@ void EngineControl::notifySeek(double dNewPlaypos) {
 Syncable* EngineControl::pickSyncTarget() {
     EngineMaster* pMaster = getEngineMaster();
     if (!pMaster) {
-        return NULL;
+        return nullptr;
     }
 
     EngineSync* pEngineSync = pMaster->getEngineSync();
-    if (pEngineSync == NULL) {
-        return NULL;
+    if (!pEngineSync) {
+        return nullptr;
     }
 
-    // EngineChannel* pThisChannel = pMaster->getChannel(getGroup());
-    return pEngineSync->pickSyncTarget(pEngineSync->getSyncableForGroup(getGroup()));
+    // The Master Syncable might not be a deck, but if it is, use it.
+    EngineChannel* pThisChannel = pMaster->getChannel(getGroup());
+    Syncable* masterSyncable = pEngineSync->getMasterSyncable();
+    if (masterSyncable &&
+            masterSyncable->getChannel() &&
+            masterSyncable->getChannel() != pThisChannel) {
+        qDebug() << "returning master syncable" << masterSyncable->getGroup();
+        return masterSyncable;
+    }
 
     // TODO(rryan): Remove. This is a linear search over groups in
     // EngineMaster. We should pass the EngineChannel into EngineControl.
-    // EngineChannel* pChannel = pEngineSync->pickSyncTarget(pThisChannel);
-    // qDebug() << "SYNC TARGET" << (pChannel ? pChannel->getGroup() : "NONE");
-    // return pChannel ? pChannel->getEngineBuffer() : NULL;
+    Syncable* pSyncable = pEngineSync->pickNonSyncSyncTarget(pThisChannel);
+    qDebug() << "SYNC TARGET" << (pSyncable ? pSyncable->getGroup() : "NONE");
+    return pSyncable;
 }

@@ -429,18 +429,12 @@ void EngineSync::deactivateSync(Syncable* pSyncable) {
     }
 }
 
-Syncable* EngineSync::pickSyncTarget(Syncable* pDontPick) const {
-    // First choice: Pick the sync master (unless the master is the pDontPick)
-    if (m_pMasterSyncable && m_pMasterSyncable != pDontPick) {
-        qDebug() << "MASTER????" << m_pMasterSyncable->getGroup()
-                 << m_pMasterSyncable->getChannel();
-        return m_pMasterSyncable;
-    }
-
-    pSyncable* pFirstPlayingDeck = nullptr;
-    pSyncable* pFirstNonplayingDeck = nullptr;
+Syncable* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const {
+    Syncable* pFirstPlayingDeck = nullptr;
+    Syncable* pFirstNonplayingDeck = nullptr;
     foreach (Syncable* pSyncable, m_syncables) {
         EngineChannel* pChannel = pSyncable->getChannel();
+        // Exclude non-decks
         if (pChannel == nullptr || pChannel == pDontPick) {
             continue;
         }
@@ -452,7 +446,7 @@ Syncable* EngineSync::pickSyncTarget(Syncable* pDontPick) const {
             if (pBuffer && pBuffer->getBpm() > 0) {
                 if (pBuffer->getSpeed() != 0.0) {
                     if (pSyncable->getSyncMode() != SYNC_NONE) {
-                        // Second choice: first playing sync deck
+                        // First choice: first playing sync deck
                         qDebug() << "SYNC PLAYING";
                         return pSyncable;
                     }
@@ -466,7 +460,7 @@ Syncable* EngineSync::pickSyncTarget(Syncable* pDontPick) const {
         }
     }
     if (pFirstPlayingDeck) {
-        // Third choice: first playing non-sync deck
+        // Second choice: first playing non-sync deck
         qDebug() << "PLAYING NON SYNC";
         return pFirstPlayingDeck;
     }
@@ -477,9 +471,9 @@ Syncable* EngineSync::pickSyncTarget(Syncable* pDontPick) const {
     return pFirstNonplayingDeck;
 }
 
-EngineBuffer* EngineSync::getEngineBufferForMaster() const {
-    EngineChannel* channel = pickSyncTarget(m_pInternalClock);
-}
+// EngineBuffer* EngineSync::getEngineBufferForMaster() const {
+//     EngineChannel* channel = pickSyncTarget(m_pInternalClock);
+// }
 
 bool EngineSync::otherSyncedPlaying(const QString& group) {
     bool othersInSync = false;

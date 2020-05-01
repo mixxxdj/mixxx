@@ -77,9 +77,6 @@ class Syncable {
     virtual double getBeatLengthSeconds() const = 0;
     // Gets the speed of the syncable if it was playing at 1.0 rate.
     virtual double getBaseBpm() const = 0;
-    // // Returns the effective key of the syncable.
-    // virtual mixxx::track::io::key::ChromaticKey getKey() const = 0;
-    // virtual double getVisualKeyDistance() const = 0;
 
     // The following functions are used to tell syncables about the state of the
     // current Sync Master.

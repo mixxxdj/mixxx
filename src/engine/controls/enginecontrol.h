@@ -84,6 +84,8 @@ class EngineControl : public QObject {
     void seekAbs(double sample);
     // Seek to an exact sample and don't allow quantizing adjustment.
     void seekExact(double sample);
+    // Returns a Syncable to target for syncing. The target is guaranteed
+    // to be a real deck with an enginebuffer.
     Syncable* pickSyncTarget();
 
     UserSettingsPointer getConfig();

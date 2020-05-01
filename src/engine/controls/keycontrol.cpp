@@ -1,12 +1,14 @@
-#include <QtDebug>
-#include <QPair>
-
 #include "engine/controls/keycontrol.h"
 
+#include <QPair>
+#include <QtDebug>
+
 #include "control/controlobject.h"
-#include "control/controlpushbutton.h"
 #include "control/controlpotmeter.h"
+#include "control/controlpushbutton.h"
+#include "engine/channels/enginechannel.h"
 #include "engine/enginebuffer.h"
+#include "engine/sync/syncable.h"
 #include "track/keyutils.h"
 
 //static const double kLockOriginalKey = 0;
@@ -325,7 +327,7 @@ void KeyControl::updatePitchAdjust() {
 void KeyControl::slotSyncKey(double v) {
     if (v > 0) {
         Syncable* pOtherSyncable = pickSyncTarget();
-        syncKey(pOtherEngineBuffer);
+        syncKey(pOtherSyncable->getChannel()->getEngineBuffer());
     }
 }
 
@@ -336,8 +338,8 @@ void KeyControl::slotResetKey(double v) {
     }
 }
 
-bool KeyControl::syncKey(Syncable* pOtherSyncable) {
-    if (!pOtherSyncable) {
+bool KeyControl::syncKey(EngineBuffer* pOtherEngineBuffer) {
+    if (!pOtherEngineBuffer) {
         return false;
     }
 
@@ -345,12 +347,11 @@ bool KeyControl::syncKey(Syncable* pOtherSyncable) {
             KeyUtils::keyFromNumericValue(m_pFileKey->get());
 
     // Get the sync target's effective key, since that is what we aim to match.
-    // double dKey = ControlObject::get(ConfigKey(pOtherEngineBuffer->getGroup(), "key"));
-    // mixxx::track::io::key::ChromaticKey otherKey =
-    //         KeyUtils::keyFromNumericValue(dKey);
-    mixxx::track::io::key::ChromaticKey otherKey = pOtherSyncable->getKey();
-    // double otherDistance = ControlObject::get(ConfigKey(pOtherEngineBuffer->getGroup(), "visual_key_distance"));
-    double otherDistance = pOtherSyncable->getVisualKeyDistance();
+    double dKey = ControlObject::get(ConfigKey(pOtherEngineBuffer->getGroup(), "key"));
+    mixxx::track::io::key::ChromaticKey otherKey =
+            KeyUtils::keyFromNumericValue(dKey);
+    double otherDistance = ControlObject::get(
+            ConfigKey(pOtherEngineBuffer->getGroup(), "visual_key_distance"));
 
     if (thisFileKey == mixxx::track::io::key::INVALID ||
         otherKey == mixxx::track::io::key::INVALID) {
