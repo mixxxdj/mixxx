@@ -61,10 +61,6 @@ class EffectsManager : public QObject {
         return m_pChainPresetManager;
     }
 
-    /// Add an effect backend to be managed by EffectsManager. EffectsManager
-    /// takes ownership of the backend, and will delete it when EffectsManager is
-    /// being deleted. Not thread safe -- use only from the GUI thread.
-    void addEffectsBackend(EffectsBackendPointer pEffectsBackend);
     static const int kNumStandardEffectChains = 4;
 
     bool isAdoptMetaknobValueEnabled() const;
@@ -173,6 +169,8 @@ class EffectsManager : public QObject {
     QString debugString() const {
         return "EffectsManager";
     }
+
+    void addEffectsBackend(EffectsBackendPointer pEffectsBackend);
 
     void connectChainSlotSignals(EffectChainSlotPointer pChainSlot);
 
