@@ -106,16 +106,7 @@ EngineBuffer* EngineControl::pickSyncTarget() {
         return nullptr;
     }
 
-    // The Master Syncable might not be a deck, but if it is, use it.
     EngineChannel* pThisChannel = pMaster->getChannel(getGroup());
-    Syncable* masterSyncable = pEngineSync->getMasterSyncable();
-    if (masterSyncable &&
-            masterSyncable->getChannel() &&
-            masterSyncable->getChannel() != pThisChannel) {
-        qDebug() << "returning master syncable" << masterSyncable->getGroup();
-        return masterSyncable->getChannel()->getEngineBuffer();
-    }
-
     Syncable* pSyncable = pEngineSync->pickNonSyncSyncTarget(pThisChannel);
     // pickNonSyncSyncTarget can return nullptr, but if it doesn't the Syncable
     // definitely has an EngineChannel.
