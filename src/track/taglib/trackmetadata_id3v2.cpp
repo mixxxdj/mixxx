@@ -645,7 +645,7 @@ void importTrackMetadataFromTag(
     DEBUG_ASSERT(pHeader);
     if (!checkHeaderVersionSupported(*pHeader)) {
         kLogger.warning() << "Legacy ID3v2 version - importing only basic tags";
-        importTrackMetadataFromTag(pTrackMetadata, tag);
+        taglib::importTrackMetadataFromTag(pTrackMetadata, tag);
         return; // done
     }
 
@@ -1015,7 +1015,7 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
     DEBUG_ASSERT(pHeader);
     if (!checkHeaderVersionSupported(*pHeader)) {
         kLogger.warning() << "Legacy ID3v2 version - exporting only basic tags";
-        exportTrackMetadataIntoTag(pTag, trackMetadata, WriteTagFlag::OmitNone);
+        taglib::exportTrackMetadataIntoTag(pTag, trackMetadata, WriteTagFlag::OmitNone);
         return true; // done
     }
 
