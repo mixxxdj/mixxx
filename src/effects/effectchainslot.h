@@ -67,7 +67,6 @@ class EffectChainSlot : public QObject {
 
     double getSuperParameter() const;
     void setSuperParameter(double value, bool force = false);
-    void setSuperParameterDefaultValue(double value);
 
     EffectChainMixMode mixMode() const {
         return m_mixMode;
@@ -80,7 +79,6 @@ class EffectChainSlot : public QObject {
 
     const QString& presetName() const;
     void setPresetName(const QString& name);
-    void setLoadedPresetIndex(int index);
 
     // Get the human-readable description of the EffectChain
     QString description() const;
@@ -116,13 +114,12 @@ class EffectChainSlot : public QObject {
             EffectPresetPointer pPreset,
             bool adoptMetaknobFromPreset = false);
 
+    void loadChainPreset(EffectChainPresetPointer pPreset);
+
   public slots:
     void slotControlClear(double value);
 
   signals:
-    void loadChainPreset(EffectChainSlot* pChainSlot, int listIndex);
-    void selectChainPreset(EffectChainSlot* pChainSlot, int delta);
-
     void nameChanged(const QString& name);
 
   protected slots:
@@ -137,6 +134,8 @@ class EffectChainSlot : public QObject {
     void disableForInputChannel(const ChannelHandleAndGroup& handle_group);
 
     EffectsManager* m_pEffectsManager;
+    EffectsBackendManagerPointer m_pBackendManager;
+    EffectChainPresetManagerPointer m_pChainPresetManager;
     EffectsMessengerPointer m_pMessenger;
     ControlObject* m_pControlChainMix;
     ControlObject* m_pControlChainSuperParameter;

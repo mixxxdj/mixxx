@@ -50,6 +50,12 @@ typedef QSharedPointer<EffectsBackend> EffectsBackendPointer;
 class EffectsMessenger;
 typedef QSharedPointer<EffectsMessenger> EffectsMessengerPointer;
 
+class EffectsBackendManager;
+typedef QSharedPointer<EffectsBackendManager> EffectsBackendManagerPointer;
+
+class EffectChainPresetManager;
+typedef QSharedPointer<EffectChainPresetManager> EffectChainPresetManagerPointer;
+
 class EffectState;
 // For sending EffectStates along the MessagePipe
 typedef ChannelHandleMap<EffectState*> EffectStatesMap;
