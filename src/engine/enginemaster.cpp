@@ -153,7 +153,9 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
     }
 
     // Starts a thread for recording and broadcast
-    m_pEngineSideChain = bEnableSidechain ? new EngineSideChain(pConfig) : NULL;
+    m_pEngineSideChain =
+            bEnableSidechain ?
+                    new EngineSideChain(pConfig, m_pSidechainMix) : nullptr;
 
     // X-Fader Setup
     m_pXFaderMode = new ControlPushButton(
@@ -632,7 +634,8 @@ void EngineMaster::process(const int iBufferSize) {
             SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld,
                                          master_gain, m_iBufferSize);
             m_masterGainOld = master_gain;
-            if (!m_bExternalRecordBroadcastInputConnected) {
+            if (m_pEngineSideChain &&
+                    !m_bExternalRecordBroadcastInputConnected) {
                 SampleUtil::copy(m_pSidechainMix, m_pMaster, m_iBufferSize);
             }
 
@@ -651,8 +654,9 @@ void EngineMaster::process(const int iBufferSize) {
             // mixing the talkover signal for the record/broadcast mix.
             // If not using microphone inputs or recording/broadcasting from
             // a sound card input, skip unnecessary processing here.
-            if (m_pNumMicsConfigured->get() > 0
-                && !m_bExternalRecordBroadcastInputConnected) {
+            if (m_pEngineSideChain &&
+                    !m_bExternalRecordBroadcastInputConnected &&
+                    m_pNumMicsConfigured->get() > 0) {
                 // Copy the master mix to a separate buffer before delaying it
                 // to avoid delaying the master output.
                 m_pLatencyCompensationDelay->process(m_pSidechainMix, m_iBufferSize);
@@ -665,8 +669,7 @@ void EngineMaster::process(const int iBufferSize) {
         // If recording/broadcasting from a sound card input,
         // SoundManager will send the input buffer from the sound card to m_pSidechain
         // so skip sending a buffer to m_pSidechain here.
-        if (!m_bExternalRecordBroadcastInputConnected
-            && m_pEngineSideChain != nullptr) {
+        if (m_pEngineSideChain) {
             m_pEngineSideChain->writeSamples(m_pSidechainMix, iFrames);
         }
 
