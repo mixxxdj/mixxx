@@ -73,6 +73,9 @@ MC7000.jogParams = {
     maxJogValue: 3      // default: 3
 };
 
+// Use SHIFT + fxWetDry knop to zoom in/out the waveform.
+MC7000.fxWetDryOnShiftIsWaveZoom = true; // default: true
+
 /*/////////////////////////////////
 //      USER VARIABLES END       //
 /////////////////////////////////*/
@@ -134,6 +137,8 @@ MC7000.padColor = {
     "samplerplay": 0x09,    // green Sampler playing
     "sampleroff": 0x12     // light pink Sampler standard colour
 };
+
+MC7000.shiftStates = [false, false, false, false];
 
 /* DECK INITIALIZATION */
 MC7000.init = function() {
@@ -203,6 +208,12 @@ MC7000.init = function() {
     // midi controller will send the status of every item on the
     // control surface. (Mixxx will be initialized with current values)
     midi.sendSysexMsg(ControllerStatusSysex, ControllerStatusSysex.length);
+};
+
+// SHIFT buttons
+MC7000.onShift = function(_channel, _control, value, _status, group) {
+  var deckNumber = script.deckFromGroup(group);
+	MC7000.shiftStates[deckNumber-1] = value === 0x7F;
 };
 
 // PAD Mode Hot Cue
@@ -733,13 +744,60 @@ MC7000.crossFaderCurve = function(control, value) {
     script.crossfaderCurve(value);
 };
 
-/* Set FX wet/dry value */
-MC7000.fxWetDry = function(midichan, control, value, status, group) {
-    var numTicks = (value < 0x64) ? value: (value - 128);
-    var newVal = engine.getValue(group, "mix") + numTicks/64*2;
-    engine.setValue(group, "mix", Math.max(0, Math.min(1, newVal)));
+// TODO:
+// This is a workaround.
+// Is there a better error handling than just
+// printing strings to the log?
+MC7000._warn = function(msg) {
+    print("Warn: " + msg + " (MC7000.fxWetDry)");
+};
 
+/* Set FX wet/dry value OR change waveform zoom on SHIFT */
+MC7000.fxWetDry = function(_channel, _control, value, _status, group) {
+    var unitMatch = group.match(script.effectUnitRegEx);
+    if (unitMatch === null || unitMatch.length < 2) {
+        MC7000._warn("Could not extract FX unit from group " + group);
+        return;
+    }
+    var unit = parseInt(unitMatch[1]);
+    if (MC7000.fxWetDryOnShiftIsWaveZoom && MC7000.shiftStates[unit-1]) {
+        MC7000.changeWaveZoom(value, unit);
+    } else {
+        var numTicks = (value < 0x64) ? value: (value - 128);
+        var newVal = engine.getValue(group, "mix") + numTicks/64*2;
+        engine.setValue(group, "mix", Math.max(0, Math.min(1, newVal)));
+    }
+};
 
+/* Set waveform zoom */
+MC7000.changeWaveZoom = function(value, unit) {
+    // TODO:
+    // How can we detect which deck is selected?
+    // As long as we can't do this, we have this mapping:
+    //
+    //  - channel 1 <= unit 1
+    //  - channel 2 <= unit 2
+    //  - channel 3 <= -- NOT SUPPORTED --
+    //  - channel 4 <= -- NOT SUPPORTED --
+    var targetChannel = '[Channel' + unit + ']';
+
+    var newZoom;
+    var STEP_WIDTH = 0.5;
+    var currentZoom = engine.getValue(targetChannel, "waveform_zoom");
+
+    if (value === 0x01) {
+        // zoom in
+        newZoom = currentZoom + STEP_WIDTH;
+    } else if (value === 0x7F) {
+        // zoom out
+        newZoom = currentZoom - STEP_WIDTH;
+    } else {
+        MC7000._warn("Expected value 0x01 or 0x7F but got " + value);
+        return;
+    }
+    if (newZoom > 6) { newZoom = 6; }
+    if (newZoom < 1) { newZoom = 1; }
+    engine.setValue(targetChannel, "waveform_zoom", newZoom);
 };
 
 /* LEDs for VuMeter */
