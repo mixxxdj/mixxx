@@ -186,11 +186,10 @@ bool AudioSource::verifyReadable() {
         // is pointless. It is still a valid audio stream.
         return true;
     }
-    // Try to read the some test frames to ensure that decoding actually
-    // works!
+    // Try to read some test frames to ensure that decoding actually works!
     //
-    // Counterexample: The broken FAAD version 2.9.1 is able to open
-    // a file but then fails to decode any sample frames.
+    // Counterexample: The broken FAAD version 2.9.1 is able to open a file
+    // but then fails to decode any sample frames.
     const SINT numSampleFrames =
             math_min(kVerifyReadableFrameCount, frameIndexRange().length());
     SampleBuffer sampleBuffer(
