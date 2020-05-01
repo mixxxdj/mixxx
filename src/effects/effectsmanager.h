@@ -1,16 +1,17 @@
 #pragma once
 
-#include <QObject>
 #include <QHash>
 #include <QList>
-#include <QSet>
-#include <QScopedPointer>
+#include <QObject>
 #include <QPair>
+#include <QScopedPointer>
+#include <QSet>
 
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
-#include "effects/specialeffectchainslots.h"
 #include "effects/effectmanifestparameter.h"
+#include "effects/presets/effectchainpresetmanager.h"
+#include "effects/specialeffectchainslots.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/message.h"
 #include "preferences/usersettings.h"
@@ -32,14 +33,9 @@ typedef QMap<EffectParameterType, QList<EffectParameterPointer>> ParameterMap;
 /// EffectSlots which use the EffectProcessors to create EngineEffects and add
 /// them to the audio engine.
 ///
-/// EffectsManager saves/loads EffectChainPresets and EffectPresets.
-/// EffectsManager maintains a list of custom EffectChainPresets in the
-/// "effects/chains" folder in the user settings folder. The state of loaded
-/// effects are saved as EffectChainPresets in the effects.xml file in the user
-/// settings folder, which is used to restore the state of effects on startup.
-/// Additionally, EffectsManager saves/loads EffectPresets in the
-/// "effects/defaults" folder in the user settings folder to allow users to
-/// specify default states when each effect is loaded.
+/// EffectsManager saves/loads EffectPresets in the "effects/defaults" folder in
+/// the user settings folder to allow users to specify default states when each
+/// effect is loaded.
 ///
 /// To maintain clear separation of responsibilities, GUI classes should NOT
 /// access the EffectChainSlots or EffectSlots directly. They should interface
@@ -59,6 +55,10 @@ class EffectsManager : public QObject {
 
     const ChannelHandle getMasterHandle() {
         return m_pChannelHandleFactory->getOrCreateHandle("[Master]");
+    }
+
+    const EffectChainPresetManagerPointer getChainPresetManager() const {
+        return m_pChainPresetManager;
     }
 
     /// Add an effect backend to be managed by EffectsManager. EffectsManager
@@ -120,17 +120,6 @@ class EffectsManager : public QObject {
     void loadEffectChainPreset(EffectChainSlot* pChainSlot, const QString& name);
     void loadPresetToStandardChain(int chainNumber, EffectChainPresetPointer pPreset);
 
-    EffectChainPresetPointer getEffectChainPreset(const QString& name) {
-        return m_effectChainPresets.value(name);
-    }
-
-    void importChainPreset();
-    void exportChainPreset(const QString& chainPresetName);
-    void renameChainPreset(const QString& oldName);
-    void deleteChainPreset(const QString& chainPresetName);
-
-    void setChainPresetOrder(const QStringList& chainPresetList);
-
     const QString getDisplayNameForEffectPreset(EffectPresetPointer pPreset);
 
     void addStandardEffectChainSlots();
@@ -176,7 +165,6 @@ class EffectsManager : public QObject {
     void saveDefaultForEffect(int chainNumber, int effcectNumber);
 
     void savePresetFromStandardEffectChain(int chainNumber);
-    const QList<EffectChainPresetPointer> getAvailableChainPresets() const;
 
     void setup();
 
@@ -200,7 +188,6 @@ class EffectsManager : public QObject {
     void connectChainSlotSignals(EffectChainSlotPointer pChainSlot);
 
     void loadDefaultEffectPresets();
-    void loadEffectChainPresets();
 
     void readEffectsXml();
     void saveEffectsXml();
@@ -237,12 +224,11 @@ class EffectsManager : public QObject {
     QHash<QString, EqualizerEffectChainSlotPointer> m_equalizerEffectChainSlots;
     QHash<QString, QuickEffectChainSlotPointer> m_quickEffectChainSlots;
 
-    QHash<QString, EffectChainPresetPointer> m_effectChainPresets;
-    QList<EffectChainPresetPointer> m_effectChainPresetsSorted;
-
     EffectChainPresetPointer m_defaultQuickEffectChainPreset;
 
     QHash<EffectManifestPointer, EffectPresetPointer> m_defaultPresets;
+
+    EffectChainPresetManagerPointer m_pChainPresetManager;
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };

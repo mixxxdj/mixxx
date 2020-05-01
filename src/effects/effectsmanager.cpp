@@ -1,8 +1,6 @@
 #include "effects/effectsmanager.h"
 
 #include <QDir>
-#include <QFileDialog>
-#include <QInputDialog>
 #include <QMetaType>
 #include <algorithm>
 
@@ -56,13 +54,10 @@ EffectsManager::EffectsManager(QObject* pParent,
     addEffectsBackend(EffectsBackendPointer(new LV2Backend()));
 #endif
 
-    // Generate the default QuickEffect chain preset instead of shipping it in
-    // res/effects/chains because this uses the translated name.
     EffectManifestPointer filterEffectManifest = getManifest(FilterEffect::getId(),
             EffectBackendType::BuiltIn);
-    m_defaultQuickEffectChainPreset = EffectChainPresetPointer(new EffectChainPreset(
-            EffectPresetPointer(new EffectPreset(filterEffectManifest))));
-    m_defaultQuickEffectChainPreset->setName(filterEffectManifest->displayName());
+    m_pChainPresetManager = EffectChainPresetManagerPointer(
+            new EffectChainPresetManager(pConfig, this, filterEffectManifest));
 }
 
 EffectsManager::~EffectsManager() {
@@ -261,14 +256,14 @@ void EffectsManager::loadEffectChainPreset(EffectChainSlot* pChainSlot,
     pChainSlot->setSuperParameterDefaultValue(pPreset->superKnob());
     pChainSlot->setSuperParameter(pPreset->superKnob());
     pChainSlot->setPresetName(pPreset->name());
-    pChainSlot->setLoadedPresetIndex(m_effectChainPresetsSorted.indexOf(pPreset));
+    pChainSlot->setLoadedPresetIndex(m_pChainPresetManager->presetIndex(pPreset));
 }
 
 void EffectsManager::loadEffectChainPreset(EffectChainSlot* pChainSlot, const QString& name) {
     VERIFY_OR_DEBUG_ASSERT(pChainSlot != nullptr) {
         return;
     }
-    EffectChainPresetPointer pChainPreset = m_effectChainPresets.value(name);
+    EffectChainPresetPointer pChainPreset = m_pChainPresetManager->getPreset(name);
     VERIFY_OR_DEBUG_ASSERT(pChainPreset != nullptr) {
         return;
     }
@@ -277,143 +272,6 @@ void EffectsManager::loadEffectChainPreset(EffectChainSlot* pChainSlot, const QS
 
 void EffectsManager::loadPresetToStandardChain(int chainNumber, EffectChainPresetPointer pPreset) {
     loadEffectChainPreset(m_standardEffectChainSlots.at(chainNumber).get(), pPreset);
-}
-
-void EffectsManager::importChainPreset() {
-    QStringList fileNames = QFileDialog::getOpenFileNames(nullptr,
-            tr("Import effect chain preset"),
-            QString(),
-            tr("Mixxx Effect Chain Presets") + " (*.xml)");
-
-    QString importFailed = tr("Error importing effect chain preset");
-    for (int i = 0; i < fileNames.size(); ++i) {
-        QString filePath = fileNames.at(i);
-        QDomDocument doc;
-        QFile file(filePath);
-        if (!file.open(QIODevice::ReadOnly)) {
-            QMessageBox::critical(nullptr, importFailed, importFailed + " " + filePath);
-            continue;
-        } else if (!doc.setContent(&file)) {
-            file.close();
-            QMessageBox::critical(nullptr, importFailed, importFailed + " " + filePath);
-            continue;
-        }
-        file.close();
-
-        EffectChainPresetPointer pChainPreset(new EffectChainPreset(doc.documentElement()));
-        if (!pChainPreset->isEmpty()) {
-            if (m_effectChainPresets.contains(pChainPreset->name())) {
-                bool okay = false;
-                QString newName = QInputDialog::getText(nullptr,
-                        tr("Rename effect chain preset"),
-                        tr("An effect chain preset with the name") + " " + pChainPreset->name() + " " + tr("already exists. Choose a new name for the imported effect chain preset:"),
-                        QLineEdit::Normal,
-                        QString(),
-                        &okay);
-                if (!okay) {
-                    continue;
-                }
-                pChainPreset->setName(newName);
-            }
-
-            // An imported chain preset might contain an LV2 plugin that the user does not
-            // have installed.
-            for (const auto pEffectPreset : pChainPreset->effectPresets()) {
-                if (pEffectPreset == nullptr || pEffectPreset->isEmpty()) {
-                    continue;
-                }
-
-                bool effectSupported = false;
-                for (EffectManifestPointer pManifest : m_availableEffectManifests) {
-                    if (pManifest->id() == pEffectPreset->id() &&
-                            pManifest->backendType() == pEffectPreset->backendType()) {
-                        effectSupported = true;
-                        break;
-                    }
-                }
-                if (!effectSupported) {
-                    QMessageBox::critical(nullptr, importFailed, tr("The effect chain imported from") + " " + filePath + " " + tr("contains an effect that Mixxx does not support") + ":\n\n" + pEffectPreset->id() + "\n\n" + tr("If you load this chain preset, the unsupported effect will not be loaded with it."));
-                }
-            }
-
-            m_effectChainPresets.insert(pChainPreset->name(), pChainPreset);
-            m_effectChainPresetsSorted.append(pChainPreset);
-        } else {
-            QMessageBox::critical(nullptr, importFailed, importFailed + " " + filePath);
-        }
-    }
-}
-
-void EffectsManager::exportChainPreset(const QString& chainPresetName) {
-    VERIFY_OR_DEBUG_ASSERT(m_effectChainPresets.contains(chainPresetName)) {
-        return;
-    }
-
-    EffectChainPresetPointer pChainPreset = m_effectChainPresets.value(chainPresetName);
-    VERIFY_OR_DEBUG_ASSERT(!pChainPreset->isEmpty()) {
-        return;
-    }
-
-    QString fileName = QFileDialog::getSaveFileName(nullptr,
-            tr("Save effect chain preset"),
-            QString(),
-            tr("Mixxx Effect Chain Presets") + " (*.xml)");
-
-    QFile file(fileName);
-    if (!file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
-        file.close();
-        QMessageBox::critical(nullptr,
-                tr("Error exporting effect chain preset"),
-                tr("Could not save effect chain preset") + " " + chainPresetName + tr("to file") + " " + fileName);
-        return;
-    }
-
-    QDomDocument doc(EffectXml::Chain);
-    doc.setContent(QString("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"));
-    doc.appendChild(pChainPreset->toXml(&doc));
-    file.write(doc.toString().toUtf8());
-    file.close();
-}
-
-void EffectsManager::renameChainPreset(const QString& oldName) {
-    VERIFY_OR_DEBUG_ASSERT(m_effectChainPresets.contains(oldName)) {
-        return;
-    }
-
-    bool okay = false;
-    QString newName = QInputDialog::getText(nullptr,
-            tr("Rename effect chain preset"),
-            tr("New name effect chain preset") + " " + oldName,
-            QLineEdit::Normal,
-            oldName,
-            &okay);
-    if (!okay) {
-        return;
-    }
-
-    EffectChainPresetPointer pChainPreset = m_effectChainPresets.take(oldName);
-    int index = m_effectChainPresetsSorted.indexOf(pChainPreset);
-    pChainPreset->setName(newName);
-    m_effectChainPresets.insert(newName, pChainPreset);
-    m_effectChainPresetsSorted.removeAt(index);
-    m_effectChainPresetsSorted.insert(index, pChainPreset);
-    emit effectChainPresetListUpdated();
-}
-
-void EffectsManager::deleteChainPreset(const QString& chainPresetName) {
-    VERIFY_OR_DEBUG_ASSERT(m_effectChainPresets.contains(chainPresetName)) {
-        return;
-    }
-    auto pressedButton = QMessageBox::question(nullptr,
-            tr("Remove effect chain preset"),
-            tr("Are you sure you want to delete the effect chain preset") + " " + chainPresetName + "?");
-    if (pressedButton != QMessageBox::Yes) {
-        return;
-    }
-
-    EffectChainPresetPointer pChainPreset = m_effectChainPresets.take(chainPresetName);
-    m_effectChainPresetsSorted.removeAll(pChainPreset);
-    emit effectChainPresetListUpdated();
 }
 
 const QList<EffectManifestPointer> EffectsManager::getAvailableEffectManifestsFiltered(
@@ -585,30 +443,13 @@ void EffectsManager::connectChainSlotSignals(EffectChainSlotPointer pChainSlot) 
 }
 
 void EffectsManager::loadChainPresetFromList(EffectChainSlot* pChainSlot, int listIndex) {
-    if (listIndex < 0 || listIndex >= m_effectChainPresets.size()) {
-        listIndex = 0;
-    }
-    loadEffectChainPreset(pChainSlot,
-            m_effectChainPresetsSorted.at(listIndex));
+    loadEffectChainPreset(pChainSlot, m_pChainPresetManager->presetAtIndex(listIndex));
 }
 
 void EffectsManager::loadChainPresetSelector(EffectChainSlot* pChainSlot, int delta) {
-    int listIndex = 0;
-    if (m_effectChainPresets.contains(pChainSlot->presetName())) {
-        EffectChainPresetPointer pLoadedPreset =
-                m_effectChainPresets.value(pChainSlot->presetName());
-        listIndex = m_effectChainPresetsSorted.indexOf(pLoadedPreset);
-    }
-
-    listIndex += delta;
-    if (listIndex >= m_effectChainPresetsSorted.size()) {
-        listIndex = 0;
-    } else if (listIndex < 0) {
-        listIndex = m_effectChainPresetsSorted.size() - 1;
-    }
-
-    loadEffectChainPreset(pChainSlot,
-            m_effectChainPresetsSorted.at(listIndex));
+    int listIndex = m_pChainPresetManager->presetIndex(pChainSlot->presetName());
+    auto pChainPreset = m_pChainPresetManager->presetAtIndex(listIndex + delta);
+    loadEffectChainPreset(pChainSlot, pChainPreset);
 }
 
 EffectChainSlotPointer EffectsManager::getEffectChainSlot(
@@ -674,7 +515,6 @@ void EffectsManager::setup() {
     addOutputEffectChainSlot();
 
     loadDefaultEffectPresets();
-    loadEffectChainPresets();
 
     readEffectsXml();
 }
@@ -845,74 +685,6 @@ void EffectsManager::saveDefaultForEffect(int unitNumber, int effectNumber) {
     saveDefaultForEffect(pPreset);
 }
 
-void EffectsManager::loadEffectChainPresets() {
-    QString savedPresetsPath(m_pConfig->getSettingsPath() + kEffectChainPresetDirectory);
-    QDir savedPresetsDir(savedPresetsPath);
-
-    // On first run of Mixxx, copy chain presets from the resource folder to the
-    // user settings folder. This allows us to ship default chain presets with
-    // Mixxx while letting the user delete our defaults if they do not want them.
-    // The user can always copy the files again manually or use the Import
-    // button in DlgPrefEffects.
-    if (!savedPresetsDir.exists()) {
-        savedPresetsDir.mkpath(savedPresetsPath);
-        QString defaultPresetsPath(m_pConfig->getResourcePath() + kEffectChainPresetDirectory);
-        QDir defaultChainPresetsDir(defaultPresetsPath);
-        defaultChainPresetsDir.setFilter(QDir::Files | QDir::Readable);
-        for (const auto& fileName : defaultChainPresetsDir.entryList()) {
-            QFile::copy(defaultPresetsPath + "/" + fileName, savedPresetsPath + "/" + fileName);
-        }
-
-        QFile file(savedPresetsPath + "/" + m_defaultQuickEffectChainPreset->name() + ".xml");
-        if (file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
-            QDomDocument doc(EffectXml::Chain);
-            doc.setContent(QString("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"));
-            doc.appendChild(m_defaultQuickEffectChainPreset->toXml(&doc));
-            file.write(doc.toString().toUtf8());
-        }
-        file.close();
-    }
-
-    savedPresetsDir.setFilter(QDir::Files | QDir::Readable);
-    QStringList fileList = savedPresetsDir.entryList();
-    for (const auto& filePath : fileList) {
-        QFile file(savedPresetsPath + "/" + filePath);
-        if (!file.open(QIODevice::ReadOnly)) {
-            continue;
-        }
-        QDomDocument doc;
-        if (!doc.setContent(&file)) {
-            file.close();
-            continue;
-        }
-        EffectChainPresetPointer pEffectChainPreset(new EffectChainPreset(doc.documentElement()));
-        if (!pEffectChainPreset->isEmpty()) {
-            m_effectChainPresets.insert(pEffectChainPreset->name(), pEffectChainPreset);
-            m_effectChainPresetsSorted.append(pEffectChainPreset);
-        }
-        file.close();
-    }
-    emit effectChainPresetListUpdated();
-}
-
-void EffectsManager::setChainPresetOrder(const QStringList& chainPresetList) {
-    m_effectChainPresetsSorted.clear();
-
-    for (const auto chainPresetName : chainPresetList) {
-        VERIFY_OR_DEBUG_ASSERT(m_effectChainPresets.contains(chainPresetName)) {
-            continue;
-        }
-        m_effectChainPresetsSorted.append(m_effectChainPresets.value(chainPresetName));
-    }
-
-    for (const auto pChainPreset : m_effectChainPresets) {
-        VERIFY_OR_DEBUG_ASSERT(m_effectChainPresetsSorted.contains(pChainPreset)) {
-            m_effectChainPresetsSorted.append(pChainPreset);
-        }
-    }
-    emit effectChainPresetListUpdated();
-}
-
 const QString EffectsManager::getDisplayNameForEffectPreset(EffectPresetPointer pPreset) {
     QString displayName(tr("None"));
     if (pPreset == nullptr || pPreset->isEmpty()) {
@@ -935,170 +707,42 @@ const QString EffectsManager::getDisplayNameForEffectPreset(EffectPresetPointer 
 void EffectsManager::savePresetFromStandardEffectChain(int chainNumber) {
     StandardEffectChainSlotPointer pStandardChainSlot = m_standardEffectChainSlots.at(chainNumber);
     EffectChainSlot* genericChainSlot = static_cast<EffectChainSlot*>(pStandardChainSlot.get());
-    EffectChainPresetPointer pChainPreset(new EffectChainPreset(genericChainSlot));
-
-    bool okay = false;
-    QString name = QInputDialog::getText(nullptr,
-            tr("Save preset for effect chain %1").arg(QString::number(chainNumber)),
-            tr("Name for new effect chain preset"),
-            QLineEdit::Normal,
-            pChainPreset->name(),
-            &okay);
-    if (!okay) {
-        return;
-    }
-
-    pChainPreset->setName(name);
-    m_effectChainPresets.insert(name, pChainPreset);
-    m_effectChainPresetsSorted.append(pChainPreset);
-    emit effectChainPresetListUpdated();
-
-    QString path(m_pConfig->getSettingsPath() + kEffectChainPresetDirectory);
-    QDir effectsChainsDir(path);
-    if (!effectsChainsDir.exists()) {
-        effectsChainsDir.mkpath(path);
-    }
-    // TODO: sanitize file name?
-    QFile file(path + "/" + name + ".xml");
-    if (!file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
-        return;
-    }
-
-    QDomDocument doc(EffectXml::Chain);
-    doc.setContent(QString("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"));
-    doc.appendChild(pChainPreset->toXml(&doc));
-    file.write(doc.toString().toUtf8());
-    file.close();
-}
-
-const QList<EffectChainPresetPointer> EffectsManager::getAvailableChainPresets() const {
-    return m_effectChainPresetsSorted;
+    EffectChainPresetPointer pPreset(new EffectChainPreset(genericChainSlot));
+    m_pChainPresetManager->savePreset(pPreset);
 }
 
 void EffectsManager::readEffectsXml() {
-    QDir settingsPath(m_pConfig->getSettingsPath());
-    QFile file(settingsPath.absoluteFilePath("effects.xml"));
-    QDomDocument doc;
-
-    if (!file.open(QIODevice::ReadOnly)) {
-        for (auto pQuickEffectChainSlot : m_quickEffectChainSlots) {
-            loadEffectChainPreset(pQuickEffectChainSlot.get(), m_defaultQuickEffectChainPreset);
-        }
-        return;
-    } else if (!doc.setContent(&file)) {
-        file.close();
-        for (auto pQuickEffectChainSlot : m_quickEffectChainSlots) {
-            loadEffectChainPreset(pQuickEffectChainSlot.get(), m_defaultQuickEffectChainPreset);
-        }
-        return;
+    QStringList deckStrings;
+    for (auto it = m_quickEffectChainSlots.begin(); it != m_quickEffectChainSlots.end(); it++) {
+        deckStrings << it.key();
     }
-    file.close();
+    EffectsXmlData data = m_pChainPresetManager->readEffectsXml(deckStrings);
 
-    // Reload state of standard chains
-    QDomElement root = doc.documentElement();
-    QDomElement rackElement = XmlParse::selectElement(root, EffectXml::Rack);
-    QDomElement chainsElement = XmlParse::selectElement(rackElement, EffectXml::ChainsRoot);
-    QDomNodeList chainsList = chainsElement.elementsByTagName(EffectXml::Chain);
-
-    for (int i=0; i<chainsList.count(); ++i) {
-        QDomNode chainNode = chainsList.at(i);
-
-        if (chainNode.isElement()) {
-            QDomElement chainElement = chainNode.toElement();
-            EffectChainPresetPointer pPreset(new EffectChainPreset(chainElement));
-            loadEffectChainPreset(m_standardEffectChainSlots.value(i).get(), pPreset);
-        }
+    for (int i = 0; i < data.standardEffectChainPresets.size(); i++) {
+        loadEffectChainPreset(
+                m_standardEffectChainSlots.value(i).get(), data.standardEffectChainPresets.at(i));
     }
 
-    // Reload order of custom chain presets
-    QStringList chainPresetsSorted;
-    QDomElement chainPresetsElement = XmlParse::selectElement(root, EffectXml::ChainPresetList);
-    QDomNodeList presetNameList = chainPresetsElement.elementsByTagName(EffectXml::ChainPresetName);
-    for (int i = 0; i < presetNameList.count(); ++i) {
-        QDomNode presetNameNode = presetNameList.at(i);
-        if (presetNameNode.isElement()) {
-            chainPresetsSorted << presetNameNode.toElement().text();
-        }
-    }
-    setChainPresetOrder(chainPresetsSorted);
-
-    // Load QuickEffect presets
-    QDomElement quickEffectPresetsElement = XmlParse::selectElement(
-            root,
-            EffectXml::QuickEffectChainPresets);
-    QDomNodeList quickEffectPresetList =
-            quickEffectPresetsElement.elementsByTagName(EffectXml::ChainPresetName);
-    if (quickEffectPresetList.count() == 0) {
-        for (const auto pChainSlot : m_quickEffectChainSlots) {
-            loadEffectChainPreset(pChainSlot.get(), m_defaultQuickEffectChainPreset);
-        }
-    }
-    auto unloadedQuickEffectChainSlots = m_quickEffectChainSlots;
-    for (int i = 0; i < quickEffectPresetList.count(); ++i) {
-        QDomElement presetNameElement = quickEffectPresetList.at(i).toElement();
-        if (!presetNameElement.isNull()) {
-            QString deckGroup = presetNameElement.attribute("group");
-            auto pQuickEffectChainSlot = m_quickEffectChainSlots.value(deckGroup);
-            auto pChainPreset = m_effectChainPresets.value(presetNameElement.text());
-            loadEffectChainPreset(pQuickEffectChainSlot.get(), pChainPreset);
-            if (pQuickEffectChainSlot != nullptr && pChainPreset != nullptr) {
-                pQuickEffectChainSlot->setSuperParameter(pChainPreset->superKnob());
-                unloadedQuickEffectChainSlots.remove(deckGroup);
-            }
-        }
-    }
-    for (auto pQuickEffectChainSlot : unloadedQuickEffectChainSlots) {
-        loadEffectChainPreset(pQuickEffectChainSlot.get(), m_defaultQuickEffectChainPreset);
+    for (auto it = data.quickEffectChainPresets.begin();
+            it != data.quickEffectChainPresets.end();
+            it++) {
+        loadEffectChainPreset(m_quickEffectChainSlots.value(it.key()).get(), it.value());
     }
 }
 
 void EffectsManager::saveEffectsXml() {
-    QDomDocument doc("MixxxEffects");
-    doc.setContent(QString("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"));
-
-    // Save presets for current state of standard chains
-    QDomElement rootElement = doc.createElement("MixxxEffects");
-    rootElement.setAttribute("schemaVersion", QString::number(EffectXml::kXmlSchemaVersion));
-    doc.appendChild(rootElement);
-    QDomElement rackElement = doc.createElement(EffectXml::Rack);
-    rootElement.appendChild(rackElement);
-    QDomElement chainsElement = doc.createElement(EffectXml::ChainsRoot);
-    rackElement.appendChild(chainsElement);
-    for (const auto pChainSlot : m_standardEffectChainSlots) {
-        EffectChainSlot* genericChainSlot = static_cast<EffectChainSlot*>(pChainSlot.get());
-        chainsElement.appendChild(EffectChainPreset(genericChainSlot).toXml(&doc));
-    }
-
-    // Save order of custom chain presets
-    QDomElement chainPresetListElement = doc.createElement(EffectXml::ChainPresetList);
-    for (const auto pChainPreset : m_effectChainPresetsSorted) {
-        XmlParse::addElement(doc,
-                chainPresetListElement,
-                EffectXml::ChainPresetName,
-                pChainPreset->name());
-    }
-    rootElement.appendChild(chainPresetListElement);
-
-    // Save which presets are loaded to QuickEffects
-    QDomElement quickEffectPresetsElement = doc.createElement(EffectXml::QuickEffectChainPresets);
+    QHash<QString, EffectChainPresetPointer> quickEffectChainPresets;
     for (auto it = m_quickEffectChainSlots.begin(); it != m_quickEffectChainSlots.end(); it++) {
-        QDomElement quickEffectElement = XmlParse::addElement(
-                doc,
-                quickEffectPresetsElement,
-                EffectXml::ChainPresetName,
-                it.value()->presetName());
-        quickEffectElement.setAttribute("group", it.key());
+        auto pPreset = EffectChainPresetPointer(new EffectChainPreset(it.value().get()));
+        quickEffectChainPresets.insert(it.key(), pPreset);
     }
-    rootElement.appendChild(quickEffectPresetsElement);
 
-    QDir settingsPath(m_pConfig->getSettingsPath());
-    if (!settingsPath.exists()) {
-        return;
+    QList<EffectChainPresetPointer> standardEffectChainPresets;
+    for (const auto& pChainSlot : m_standardEffectChainSlots) {
+        auto pPreset = EffectChainPresetPointer(new EffectChainPreset(pChainSlot.get()));
+        standardEffectChainPresets.append(pPreset);
     }
-    QFile file(settingsPath.absoluteFilePath("effects.xml"));
-    if (!file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
-        return;
-    }
-    file.write(doc.toString().toUtf8());
-    file.close();
+
+    m_pChainPresetManager->saveEffectsXml(EffectsXmlData{
+            quickEffectChainPresets, standardEffectChainPresets});
 }

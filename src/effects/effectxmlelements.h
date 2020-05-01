@@ -1,4 +1,5 @@
 namespace EffectXml {
+const QString FileHeader("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
 // Version history:
 // 0 (Mixxx 2.1.0): initial support for saving state of effects
 const int kXmlSchemaVersion = 0;

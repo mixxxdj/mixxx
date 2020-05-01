@@ -24,7 +24,7 @@ void WEffectChainPresetButton::setup(const QDomNode& node, const SkinContext& co
 
 void WEffectChainPresetButton::populateMenu() {
     m_pMenu->clear();
-    for (const auto pChainPreset : m_pEffectsManager->getAvailableChainPresets()) {
+    for (const auto pChainPreset : m_pEffectsManager->getChainPresetManager()->getPresetsSorted()) {
         m_pMenu->addAction(pChainPreset->name(), [=]() {
             m_pEffectsManager->loadPresetToStandardChain(m_iChainNumber, pChainPreset);
         });

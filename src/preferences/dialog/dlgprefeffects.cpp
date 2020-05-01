@@ -5,11 +5,12 @@
 #include "effects/effectsbackend.h"
 
 DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
-                               UserSettingsPointer pConfig,
-                               EffectsManager* pEffectsManager)
+        UserSettingsPointer pConfig,
+        EffectsManager* pEffectsManager)
         : DlgPreferencePage(pParent),
           m_pConfig(pConfig),
-          m_pEffectsManager(pEffectsManager) {
+          m_pEffectsManager(pEffectsManager),
+          m_pChainPresetManager(pEffectsManager->getChainPresetManager()) {
     setupUi(this);
 
     m_availableEffectsModel.resetFromEffectManager(pEffectsManager);
@@ -99,7 +100,7 @@ void DlgPrefEffects::slotApply() {
     for (int i = 0; i < chainListWidget->count(); ++i) {
         chainList << chainListWidget->item(i)->text();
     }
-    m_pEffectsManager->setChainPresetOrder(chainList);
+    m_pChainPresetManager->setPresetOrder(chainList);
 }
 
 void DlgPrefEffects::slotResetToDefaults() {
@@ -116,7 +117,7 @@ void DlgPrefEffects::clear() {
 
 void DlgPrefEffects::loadChainPresetList() {
     chainListWidget->clear();
-    for (const auto& pChainPreset : m_pEffectsManager->getAvailableChainPresets()) {
+    for (const auto& pChainPreset : m_pChainPresetManager->getPresetsSorted()) {
         chainListWidget->addItem(pChainPreset->name());
     }
 }
@@ -137,7 +138,7 @@ void DlgPrefEffects::availableEffectsListItemSelected(const QModelIndex& selecte
 }
 
 void DlgPrefEffects::slotChainPresetSelected(const QString& chainPresetName) {
-    EffectChainPresetPointer pChainPreset = m_pEffectsManager->getEffectChainPreset(chainPresetName);
+    EffectChainPresetPointer pChainPreset = m_pChainPresetManager->getPreset(chainPresetName);
     if (pChainPreset == nullptr || pChainPreset->isEmpty()) {
         return;
     }
@@ -169,24 +170,24 @@ void DlgPrefEffects::slotChainPresetSelected(const QString& chainPresetName) {
 }
 
 void DlgPrefEffects::slotImportPreset() {
-    m_pEffectsManager->importChainPreset();
+    m_pChainPresetManager->importPreset();
     loadChainPresetList();
 }
 
 void DlgPrefEffects::slotExportPreset() {
     const QString& selectedPresetName = chainListWidget->currentItem()->text();
-    m_pEffectsManager->exportChainPreset(selectedPresetName);
+    m_pChainPresetManager->exportPreset(selectedPresetName);
 }
 
 void DlgPrefEffects::slotRenamePreset() {
     const QString& selectedPresetName = chainListWidget->currentItem()->text();
-    m_pEffectsManager->renameChainPreset(selectedPresetName);
+    m_pChainPresetManager->renamePreset(selectedPresetName);
     loadChainPresetList();
 }
 
 void DlgPrefEffects::slotDeletePreset() {
     const QString& selectedPresetName = chainListWidget->currentItem()->text();
-    m_pEffectsManager->deleteChainPreset(selectedPresetName);
+    m_pChainPresetManager->deletePreset(selectedPresetName);
     loadChainPresetList();
 }
 
