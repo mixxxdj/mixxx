@@ -142,24 +142,26 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
     connect(m_pShiftTimesEarlier.get(),
             &ControlObject::valueChanged,
             this,
-            [=](double value) { slotShiftTimesButton(value, -1 * kShiftTimesOffsetMillis); });
+            [this](double value) { slotShiftTimesButton(value, -1 * kShiftTimesOffsetMillis); });
     m_pShiftTimesLater = std::make_unique<ControlPushButton>(ConfigKey(group, "shift_times_later"));
     connect(m_pShiftTimesLater.get(),
             &ControlObject::valueChanged,
             this,
-            [=](double value) { slotShiftTimesButton(value, kShiftTimesOffsetMillis); });
+            [this](double value) { slotShiftTimesButton(value, kShiftTimesOffsetMillis); });
     m_pShiftTimesEarlierSmall = std::make_unique<ControlPushButton>(
             ConfigKey(group, "shift_times_earlier_small"));
     connect(m_pShiftTimesEarlierSmall.get(),
             &ControlObject::valueChanged,
             this,
-            [=](double value) { slotShiftTimesButton(value, -1 * kShiftTimesOffsetSmallMillis); });
+            [this](double value) {
+                slotShiftTimesButton(value, -1 * kShiftTimesOffsetSmallMillis);
+            });
     m_pShiftTimesLaterSmall = std::make_unique<ControlPushButton>(
             ConfigKey(group, "shift_times_later_small"));
     connect(m_pShiftTimesLaterSmall.get(),
             &ControlObject::valueChanged,
             this,
-            [=](double value) { slotShiftTimesButton(value, kShiftTimesOffsetSmallMillis); });
+            [this](double value) { slotShiftTimesButton(value, kShiftTimesOffsetSmallMillis); });
     m_pShiftTimes = std::make_unique<ControlObject>(ConfigKey(group, "shift_times"));
     connect(m_pShiftTimes.get(),
             &ControlObject::valueChanged,
