@@ -482,16 +482,6 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
     DEBUG_ASSERT(m_pTrack);
     auto openMode = mixxx::SoundSource::OpenMode::Strict;
     while (m_pSoundSource && !m_pAudioSource) {
-        // NOTE(uklotzde): Log unconditionally (with debug level) to
-        // identify files in the log file that might have caused a
-        // crash while importing metadata or decoding audio subsequently.
-        kLogger.debug()
-                << "Opening file"
-                << getUrl().toString()
-                << "with provider"
-                << getSoundSourceProvider()->getName()
-                << "using mode"
-                << openMode;
         const mixxx::SoundSource::OpenResult openResult =
                 m_pSoundSource->open(openMode, params);
         if (openResult == mixxx::SoundSource::OpenResult::Succeeded) {
@@ -505,13 +495,20 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
                 }
                 return m_pAudioSource;
             }
+            kLogger.warning()
+                    << "Failed to read file"
+                    << getUrl().toString()
+                    << "with provider"
+                    << getSoundSourceProvider()->getName();
             m_pSoundSource->close(); // cleanup
         } else {
             kLogger.warning()
                     << "Failed to open file"
                     << getUrl().toString()
                     << "with provider"
-                    << getSoundSourceProvider()->getName();
+                    << getSoundSourceProvider()->getName()
+                    << "using mode"
+                    << openMode;
             if (openMode == mixxx::SoundSource::OpenMode::Permissive) {
                 if (openResult == mixxx::SoundSource::OpenResult::Failed) {
                     // Do NOT retry with the next SoundSource provider if the file
@@ -530,12 +527,6 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
                 DEBUG_ASSERT(openMode == mixxx::SoundSource::OpenMode::Strict);
             }
         }
-        kLogger.warning() << "Unable to open file"
-                          << getUrl().toString()
-                          << "with provider"
-                          << getSoundSourceProvider()->getName()
-                          << "using mode"
-                          << openMode;
         // Continue with the next SoundSource provider
         nextSoundSourceProvider();
         if (!getSoundSourceProvider() &&
