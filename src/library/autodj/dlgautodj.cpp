@@ -203,6 +203,14 @@ DlgAutoDJ::DlgAutoDJ(
     autoDJStateChanged(m_pAutoDJProcessor->getState());
 
     updateSelectionInfo();
+
+    QString transitionUnit;
+    if (m_pAutoDJProcessor->getTransitionUnit() == AutoDJProcessor::TransitionUnit::SECONDS) {
+        transitionUnit = tr("sec.");
+    } else {
+        transitionUnit = tr("beats.");
+    }
+    labelTransitionAppendix->setText(transitionUnit);
 }
 
 DlgAutoDJ::~DlgAutoDJ() {
@@ -283,6 +291,16 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
         default:
             break;
     }
+
+    // Update the label to display the configured transition unit
+    // just in case it was changed in the preferences dialog
+    QString transitionUnit;
+    if (m_pAutoDJProcessor->getTransitionUnit() == AutoDJProcessor::TransitionUnit::SECONDS) {
+        transitionUnit = tr("sec.");
+    } else {
+        transitionUnit = tr("beats.");
+    }
+    labelTransitionAppendix->setText(transitionUnit);
 }
 
 void DlgAutoDJ::transitionTimeChanged(int time) {
