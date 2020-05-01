@@ -498,11 +498,6 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
             if (m_pSoundSource->verifyReadable()) {
                 m_pAudioSource = mixxx::AudioSourceTrackProxy::create(m_pTrack, m_pSoundSource);
                 DEBUG_ASSERT(m_pAudioSource);
-                if (m_pAudioSource->frameIndexRange().empty()) {
-                    kLogger.warning()
-                            << "File is empty"
-                            << getUrl().toString();
-                }
                 // Overwrite metadata with actual audio properties
                 if (m_pTrack) {
                     m_pTrack->updateAudioPropertiesFromStream(

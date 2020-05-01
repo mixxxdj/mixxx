@@ -181,7 +181,7 @@ bool AudioSource::verifyReadable() {
     }
     if (frameIndexRange().empty()) {
         kLogger.warning()
-                << "No audio data available";
+                << "No audio data available, i.e. stream is empty";
         // Don't return false, even if reading from an empty source
         // is pointless. It is still a valid audio stream.
         return true;
