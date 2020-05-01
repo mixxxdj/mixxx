@@ -512,13 +512,22 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
                     << getUrl().toString()
                     << "with provider"
                     << getSoundSourceProvider()->getName();
-            if (openMode == mixxx::SoundSource::OpenMode::Permissive &&
-                    openResult == mixxx::SoundSource::OpenResult::Failed) {
-                // Do NOT retry with the next SoundSource provider if the file
-                // itself seems to be the cause when opening fails during the
-                // 2nd (= permissive) round.
-                DEBUG_ASSERT(!m_pAudioSource);
-                return m_pAudioSource;
+            if (openMode == mixxx::SoundSource::OpenMode::Permissive) {
+                if (openResult == mixxx::SoundSource::OpenResult::Failed) {
+                    // Do NOT retry with the next SoundSource provider if the file
+                    // itself seems to be the cause when opening still fails during
+                    // the 2nd (= permissive) round.
+                    DEBUG_ASSERT(!m_pAudioSource);
+                    return m_pAudioSource;
+                } else {
+                    // Continue and give other providers the chance to open the file
+                    // in turn.
+                    DEBUG_ASSERT(openResult == mixxx::SoundSource::OpenResult::Aborted);
+                }
+            } else {
+                // Continue and give other providers the chance to open the file
+                // in turn, independent of why opening the file failed.
+                DEBUG_ASSERT(openMode == mixxx::SoundSource::OpenMode::Strict);
             }
         }
         kLogger.warning() << "Unable to open file"
