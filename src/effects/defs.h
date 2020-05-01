@@ -47,6 +47,9 @@ constexpr bool kEffectDebugOutput = false;
 class EffectsBackend;
 typedef QSharedPointer<EffectsBackend> EffectsBackendPointer;
 
+class EffectsMessenger;
+typedef QSharedPointer<EffectsMessenger> EffectsMessengerPointer;
+
 class EffectState;
 // For sending EffectStates along the MessagePipe
 typedef ChannelHandleMap<EffectState*> EffectStatesMap;

@@ -13,7 +13,7 @@
 #include "effects/presets/effectchainpresetmanager.h"
 #include "effects/specialeffectchainslots.h"
 #include "engine/channelhandle.h"
-#include "engine/effects/message.h"
+#include "engine/effects/engineeffectsmanager.h"
 #include "preferences/usersettings.h"
 #include "util/class.h"
 #include "util/fifo.h"
@@ -168,10 +168,6 @@ class EffectsManager : public QObject {
 
     void setup();
 
-    /// Write an EffectsRequest to the EngineEffectsManager. EffectsManager takes
-    /// ownership of request and deletes it once a response is received.
-    bool writeRequest(EffectsRequest* request);
-
   signals:
     void visibleEffectsUpdated();
     void effectChainPresetListUpdated();
@@ -192,20 +188,11 @@ class EffectsManager : public QObject {
     void readEffectsXml();
     void saveEffectsXml();
 
-    void processEffectsResponses();
-    void collectGarbage(const EffectsRequest* pResponse);
-
     ChannelHandleFactory* m_pChannelHandleFactory;
 
     QHash<EffectBackendType, EffectsBackendPointer> m_effectsBackends;
     QList<EffectManifestPointer> m_availableEffectManifests;
     QList<EffectManifestPointer> m_visibleEffectManifests;
-
-    EngineEffectsManager* m_pEngineEffectsManager;
-
-    QScopedPointer<EffectsRequestPipe> m_pRequestPipe;
-    qint64 m_nextRequestId;
-    QHash<qint64, EffectsRequest*> m_activeRequests;
 
     ControlObject* m_pNumEffectsAvailable;
     // We need to create Control Objects for Equalizers' frequencies
@@ -228,6 +215,8 @@ class EffectsManager : public QObject {
 
     QHash<EffectManifestPointer, EffectPresetPointer> m_defaultPresets;
 
+    EngineEffectsManager* m_pEngineEffectsManager;
+    EffectsMessengerPointer m_pMessenger;
     EffectChainPresetManagerPointer m_pChainPresetManager;
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);

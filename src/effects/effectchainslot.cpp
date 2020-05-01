@@ -6,10 +6,8 @@
 #include "effects/effectprocessor.h"
 #include "effects/effectslot.h"
 #include "effects/effectsmanager.h"
-#include "effects/effectxmlelements.h"
-#include "effects/specialeffectchainslots.h"
+#include "effects/effectsmessenger.h"
 #include "engine/effects/engineeffectchain.h"
-#include "engine/effects/message.h"
 #include "engine/engine.h"
 #include "mixer/playermanager.h"
 #include "util/defs.h"
@@ -19,11 +17,13 @@
 
 EffectChainSlot::EffectChainSlot(const QString& group,
         EffectsManager* pEffectsManager,
+        EffectsMessengerPointer pEffectsMessenger,
         SignalProcessingStage stage,
         const QString& id)
         : // The control group names are 1-indexed while internally everything
           // is 0-indexed.
           m_pEffectsManager(pEffectsManager),
+          m_pMessenger(pEffectsMessenger),
           m_group(group),
           m_presetName(""),
           m_mixMode(EffectChainMixMode::DrySlashWet),
@@ -159,7 +159,7 @@ void EffectChainSlot::addToEngine() {
     pRequest->type = EffectsRequest::ADD_EFFECT_CHAIN;
     pRequest->AddEffectChain.signalProcessingStage = m_signalProcessingStage;
     pRequest->AddEffectChain.pChain = m_pEngineEffectChain;
-    m_pEffectsManager->writeRequest(pRequest);
+    m_pMessenger->writeRequest(pRequest);
 
     sendParameterUpdate();
 }
@@ -173,7 +173,7 @@ void EffectChainSlot::removeFromEngine() {
     pRequest->type = EffectsRequest::REMOVE_EFFECT_CHAIN;
     pRequest->RemoveEffectChain.signalProcessingStage = m_signalProcessingStage;
     pRequest->RemoveEffectChain.pChain = m_pEngineEffectChain;
-    m_pEffectsManager->writeRequest(pRequest);
+    m_pMessenger->writeRequest(pRequest);
 
     m_pEngineEffectChain = nullptr;
 }
@@ -212,7 +212,7 @@ void EffectChainSlot::sendParameterUpdate() {
     pRequest->SetEffectChainParameters.mix_mode = static_cast<EffectChainMixMode>(
                                                     static_cast<int>(m_pControlChainMixMode->get()));
     pRequest->SetEffectChainParameters.mix = m_pControlChainMix->get();
-    m_pEffectsManager->writeRequest(pRequest);
+    m_pMessenger->writeRequest(pRequest);
 }
 
 QString EffectChainSlot::group() const {
@@ -241,8 +241,11 @@ EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
     if (kEffectDebugOutput) {
         qDebug() << debugString() << "addEffectSlot" << group;
     }
-    EffectSlotPointer pEffectSlot = EffectSlotPointer(
-            new EffectSlot(group, m_pEffectsManager, m_effectSlots.size(), m_pEngineEffectChain));
+    EffectSlotPointer pEffectSlot = EffectSlotPointer(new EffectSlot(group,
+            m_pEffectsManager,
+            m_pMessenger,
+            m_effectSlots.size(),
+            m_pEngineEffectChain));
 
     m_effectSlots.append(pEffectSlot);
     int numEffectSlots = m_pControlNumEffectSlots->get() + 1;
@@ -364,7 +367,7 @@ void EffectChainSlot::enableForInputChannel(const ChannelHandleAndGroup& handle_
     }
     request->EnableInputChannelForChain.pEffectStatesMapArray = pEffectStatesMapArray;
 
-    m_pEffectsManager->writeRequest(request);
+    m_pMessenger->writeRequest(request);
 
     m_enabledInputChannels.insert(handle_group);
 }
@@ -378,5 +381,5 @@ void EffectChainSlot::disableForInputChannel(const ChannelHandleAndGroup& handle
     request->type = EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL;
     request->pTargetChain = m_pEngineEffectChain;
     request->DisableInputChannelForChain.pChannelHandle = &handle_group.handle();
-    m_pEffectsManager->writeRequest(request);
+    m_pMessenger->writeRequest(request);
 }

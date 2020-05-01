@@ -56,9 +56,10 @@ class EffectSlot : public QObject {
     Q_OBJECT
   public:
     EffectSlot(const QString& group,
-               EffectsManager* pEffectsManager,
-               const unsigned int iEffectNumber,
-               EngineEffectChain* pEngineEffectChain);
+            EffectsManager* pEffectsManager,
+            EffectsMessengerPointer pEffectsMessenger,
+            const unsigned int iEffectNumber,
+            EngineEffectChain* pEngineEffectChain);
     virtual ~EffectSlot();
 
     /// Call with nullptr for pManifest and pProcessor to unload an effect
@@ -156,6 +157,7 @@ class EffectSlot : public QObject {
     const QString m_group;
     UserSettingsPointer m_pConfig;
     EffectsManager* m_pEffectsManager;
+    EffectsMessengerPointer m_pMessenger;
     EffectManifestPointer m_pManifest;
     EngineEffectChain* m_pEngineEffectChain;
     EngineEffect* m_pEngineEffect;

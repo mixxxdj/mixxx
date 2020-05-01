@@ -7,6 +7,7 @@
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "effects/defs.h"
+#include "effects/effectsmessenger.h"
 #include "util/defs.h"
 #include "util/math.h"
 
@@ -14,12 +15,14 @@
 const unsigned int kDefaultMaxParameters = 16;
 
 EffectSlot::EffectSlot(const QString& group,
-                       EffectsManager* pEffectsManager,
-                       const unsigned int iEffectnumber,
-                       EngineEffectChain* pEngineEffectChain)
+        EffectsManager* pEffectsManager,
+        EffectsMessengerPointer pEffectsMessenger,
+        const unsigned int iEffectnumber,
+        EngineEffectChain* pEngineEffectChain)
         : m_iEffectNumber(iEffectnumber),
           m_group(group),
           m_pEffectsManager(pEffectsManager),
+          m_pMessenger(pEffectsMessenger),
           m_pEngineEffectChain(pEngineEffectChain),
           m_pEngineEffect(nullptr) {
     VERIFY_OR_DEBUG_ASSERT(m_pEngineEffectChain != nullptr) {
@@ -128,7 +131,7 @@ void EffectSlot::addToEngine(std::unique_ptr<EffectProcessor> pProcessor,
     request->pTargetChain = m_pEngineEffectChain;
     request->AddEffectToChain.pEffect = m_pEngineEffect;
     request->AddEffectToChain.iIndex = m_iEffectNumber;
-    m_pEffectsManager->writeRequest(request);
+    m_pMessenger->writeRequest(request);
 }
 
 void EffectSlot::removeFromEngine() {
@@ -141,7 +144,7 @@ void EffectSlot::removeFromEngine() {
     request->pTargetChain = m_pEngineEffectChain;
     request->RemoveEffectFromChain.pEffect = m_pEngineEffect;
     request->RemoveEffectFromChain.iIndex = m_iEffectNumber;
-    m_pEffectsManager->writeRequest(request);
+    m_pMessenger->writeRequest(request);
 
     m_pEngineEffect = nullptr;
 }
@@ -155,7 +158,7 @@ void EffectSlot::updateEngineState() {
     pRequest->type = EffectsRequest::SET_EFFECT_PARAMETERS;
     pRequest->pTargetEffect = m_pEngineEffect;
     pRequest->SetEffectParameters.enabled = m_pControlEnabled->get();
-    m_pEffectsManager->writeRequest(pRequest);
+    m_pMessenger->writeRequest(pRequest);
 
     for (const auto& parameterList : m_allParameters) {
         for (auto const& pParameter : parameterList) {
@@ -263,7 +266,7 @@ void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
             }
         }
         EffectParameterPointer pParameter(new EffectParameter(
-                m_pEngineEffect, m_pEffectsManager, pManifestParameter, parameterPreset));
+                m_pEngineEffect, m_pMessenger, pManifestParameter, parameterPreset));
         m_allParameters[pManifestParameter->parameterType()].append(pParameter);
     }
 
