@@ -74,7 +74,10 @@ void EffectsManager::registerInputChannel(const ChannelHandleAndGroup& handle_gr
     }
     m_registeredInputChannels.insert(handle_group);
 
-    foreach (EffectChainSlotPointer pChainSlot, m_standardEffectChainSlots) {
+    // EqualizerEffectChainSlots, QuickEffectChainSlots, and OutputEffectChainSlots
+    // only process one input channel, so they do not need to have new input
+    // channels registered.
+    for (EffectChainSlotPointer pChainSlot : m_standardEffectChainSlots) {
         pChainSlot->registerInputChannel(handle_group);
     }
 }
