@@ -27,9 +27,6 @@ class BaseSyncableListener : public SyncableListener {
     Syncable* getMasterSyncable() override {
         return m_pMasterSyncable;
     }
-    // Returns the engine buffer for the Master, or if a
-    // non-deck is master, returns the next-best choice.
-    EngineBuffer* getEngineBufferForMaster();
 
   protected:
     // This utility method returns true if it finds a deck not in SYNC_NONE mode.

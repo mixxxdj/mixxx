@@ -58,6 +58,10 @@ class EngineSync : public BaseSyncableListener {
     // then it will fall back to the first non-playing deck.
     Syncable* pickSyncTarget(Syncable* pDontPick) const;
 
+    // Returns the engine buffer for the Master, or if a
+    // non-deck is master, returns the next-best choice.
+    EngineBuffer* getEngineBufferForMaster() const;
+
     // Used to test whether changing the rate of a Syncable would change the rate
     // of other Syncables that are playing
     bool otherSyncedPlaying(const QString& group);
