@@ -4,9 +4,11 @@
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 #include "effects/effectprocessor.h"
+#include "effects/backends/effectsbackendmanager.h"
 #include "effects/effectslot.h"
 #include "effects/effectsmanager.h"
 #include "effects/effectsmessenger.h"
+#include "effects/presets/effectchainpresetmanager.h"
 #include "engine/effects/engineeffectchain.h"
 #include "engine/engine.h"
 #include "mixer/playermanager.h"
@@ -23,6 +25,8 @@ EffectChainSlot::EffectChainSlot(const QString& group,
         : // The control group names are 1-indexed while internally everything
           // is 0-indexed.
           m_pEffectsManager(pEffectsManager),
+          m_pBackendManager(pEffectsManager->getBackendManager()),
+          m_pChainPresetManager(pEffectsManager->getChainPresetManager()),
           m_pMessenger(pEffectsMessenger),
           m_group(group),
           m_presetName(""),
@@ -187,10 +191,6 @@ void EffectChainSlot::setPresetName(const QString& name) {
     emit nameChanged(name);
 }
 
-void EffectChainSlot::setLoadedPresetIndex(int index) {
-    m_pControlLoadedPreset->setAndConfirm(index);
-}
-
 void EffectChainSlot::loadEffect(const unsigned int iEffectSlotNumber,
         const EffectManifestPointer pManifest,
         std::unique_ptr<EffectProcessor> pProcessor,
@@ -202,6 +202,34 @@ void EffectChainSlot::loadEffect(const unsigned int iEffectSlotNumber,
             pPreset,
             m_enabledInputChannels,
             adoptMetaknobFromPreset);
+}
+
+void EffectChainSlot::loadChainPreset(EffectChainPresetPointer pPreset) {
+    VERIFY_OR_DEBUG_ASSERT(pPreset) {
+        return;
+    }
+    slotControlClear(1);
+
+    int effectSlot = 0;
+    for (const auto& pEffectPreset : pPreset->effectPresets()) {
+        if (pEffectPreset->isEmpty()) {
+            loadEffect(effectSlot, nullptr, nullptr, nullptr, true);
+            effectSlot++;
+            continue;
+        }
+        EffectManifestPointer pManifest = m_pBackendManager->getManifest(
+                pEffectPreset->id(), pEffectPreset->backendType());
+        std::unique_ptr<EffectProcessor> pProcessor = m_pBackendManager->createProcessor(pManifest);
+        loadEffect(effectSlot, pManifest, std::move(pProcessor), pEffectPreset, true);
+        effectSlot++;
+    }
+
+    setMixMode(pPreset->mixMode());
+    setSuperParameter(pPreset->superKnob());
+    m_pControlChainSuperParameter->setDefaultValue(pPreset->superKnob());
+
+    setPresetName(pPreset->name());
+    m_pControlLoadedPreset->setAndConfirm(m_pChainPresetManager->presetIndex(pPreset));
 }
 
 void EffectChainSlot::sendParameterUpdate() {
@@ -226,10 +254,6 @@ double EffectChainSlot::getSuperParameter() const {
 void EffectChainSlot::setSuperParameter(double value, bool force) {
     m_pControlChainSuperParameter->set(value);
     slotControlChainSuperParameter(value, force);
-}
-
-void EffectChainSlot::setSuperParameterDefaultValue(double value) {
-    m_pControlChainSuperParameter->setDefaultValue(value);
 }
 
 void EffectChainSlot::setMixMode(EffectChainMixMode mixMode) {
@@ -302,27 +326,31 @@ void EffectChainSlot::slotControlChainSuperParameter(double v, bool force) {
 }
 
 void EffectChainSlot::slotControlChainSelector(double value) {
+    int presetIndex = m_pChainPresetManager->presetIndex(m_presetName);
     if (value > 0) {
-        emit selectChainPreset(this, 1);
+        presetIndex++;
     } else {
-        emit selectChainPreset(this, -1);
+        presetIndex--;
     }
+    loadChainPreset(m_pChainPresetManager->presetAtIndex(presetIndex));
 }
 
 void EffectChainSlot::slotControlLoadChainPreset(double value) {
     // subtract 1 to make the ControlObject 1-indexed like other ControlObjects
-    emit loadChainPreset(this, value - 1);
+    loadChainPreset(m_pChainPresetManager->presetAtIndex(value - 1));
 }
 
 void EffectChainSlot::slotControlChainNextPreset(double value) {
     if (value > 0) {
-        emit selectChainPreset(this, 1);
+        int presetIndex = m_pChainPresetManager->presetIndex(m_presetName);
+        loadChainPreset(m_pChainPresetManager->presetAtIndex(presetIndex + 1));
     }
 }
 
 void EffectChainSlot::slotControlChainPrevPreset(double value) {
     if (value > 0) {
-        emit selectChainPreset(this, -1);
+        int presetIndex = m_pChainPresetManager->presetIndex(m_presetName);
+        loadChainPreset(m_pChainPresetManager->presetAtIndex(presetIndex - 1));
     }
 }
 

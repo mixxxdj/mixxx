@@ -9,6 +9,7 @@ WEffectChainPresetSelector::WEffectChainPresetSelector(
         QWidget* pParent, EffectsManager* pEffectsManager)
         : QComboBox(pParent),
           WBaseWidget(this),
+          m_pChainPresetManager(pEffectsManager->getChainPresetManager()),
           m_pEffectsManager(pEffectsManager) {
     // Prevent this widget from getting focused to avoid
     // interfering with using the library via keyboard.
@@ -60,7 +61,9 @@ void WEffectChainPresetSelector::populate() {
 }
 
 void WEffectChainPresetSelector::slotEffectChainPresetSelected(int index) {
-    m_pEffectsManager->loadEffectChainPreset(m_pChainSlot.get(), currentData().toString());
+    Q_UNUSED(index);
+    m_pChainSlot->loadChainPreset(
+            m_pChainPresetManager->getPreset(currentData().toString()));
 }
 
 void WEffectChainPresetSelector::slotEffectChainNameChanged(const QString& name) {

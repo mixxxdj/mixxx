@@ -142,61 +142,8 @@ void EffectsManager::showParameter(int chainNumber, int effectNumber, EffectPara
     m_standardEffectChainSlots.at(chainNumber)->getEffectSlot(effectNumber)->showParameter(pParameter);
 }
 
-// This needs to be in EffectsManager rather than EffectChainSlot because it
-// needs access to the EffectsBackends.
-void EffectsManager::loadEffectChainPreset(EffectChainSlot* pChainSlot,
-        EffectChainPresetPointer pPreset) {
-    VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
-        return;
-    }
-    VERIFY_OR_DEBUG_ASSERT(pPreset) {
-        return;
-    }
-    pChainSlot->slotControlClear(1);
-
-    int effectSlot = 0;
-    for (const auto& pEffectPreset : pPreset->effectPresets()) {
-        if (pEffectPreset->isEmpty()) {
-            pChainSlot->loadEffect(
-                    effectSlot,
-                    nullptr,
-                    nullptr,
-                    nullptr,
-                    true);
-            effectSlot++;
-            continue;
-        }
-        EffectManifestPointer pManifest = m_pBackendManager->getManifest(
-                pEffectPreset->id(), pEffectPreset->backendType());
-        pChainSlot->loadEffect(
-                effectSlot,
-                pManifest,
-                m_pBackendManager->createProcessor(pManifest),
-                pEffectPreset,
-                true);
-        effectSlot++;
-    }
-
-    pChainSlot->setMixMode(pPreset->mixMode());
-    pChainSlot->setSuperParameterDefaultValue(pPreset->superKnob());
-    pChainSlot->setSuperParameter(pPreset->superKnob());
-    pChainSlot->setPresetName(pPreset->name());
-    pChainSlot->setLoadedPresetIndex(m_pChainPresetManager->presetIndex(pPreset));
-}
-
-void EffectsManager::loadEffectChainPreset(EffectChainSlot* pChainSlot, const QString& name) {
-    VERIFY_OR_DEBUG_ASSERT(pChainSlot != nullptr) {
-        return;
-    }
-    EffectChainPresetPointer pChainPreset = m_pChainPresetManager->getPreset(name);
-    VERIFY_OR_DEBUG_ASSERT(pChainPreset != nullptr) {
-        return;
-    }
-    loadEffectChainPreset(pChainSlot, pChainPreset);
-}
-
 void EffectsManager::loadPresetToStandardChain(int chainNumber, EffectChainPresetPointer pPreset) {
-    loadEffectChainPreset(m_standardEffectChainSlots.at(chainNumber).get(), pPreset);
+    m_standardEffectChainSlots.at(chainNumber)->loadChainPreset(pPreset);
 }
 
 QString EffectsManager::getNextEffectId(const QString& effectId) {
@@ -248,7 +195,6 @@ void EffectsManager::addStandardEffectChainSlots() {
 
         auto pChainSlot = StandardEffectChainSlotPointer(
                 new StandardEffectChainSlot(i, this, m_pMessenger));
-        connectChainSlotSignals(pChainSlot);
 
         m_standardEffectChainSlots.append(pChainSlot);
         m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
@@ -258,7 +204,6 @@ void EffectsManager::addStandardEffectChainSlots() {
 void EffectsManager::addOutputEffectChainSlot() {
     m_outputEffectChainSlot = OutputEffectChainSlotPointer(
             new OutputEffectChainSlot(this, m_pMessenger));
-    connectChainSlotSignals(m_outputEffectChainSlot);
     m_effectChainSlotsByGroup.insert(m_outputEffectChainSlot->group(), m_outputEffectChainSlot);
 }
 
@@ -281,7 +226,6 @@ void EffectsManager::addEqualizerEffectChainSlot(const QString& deckGroupName) {
 
     auto pChainSlot = EqualizerEffectChainSlotPointer(
             new EqualizerEffectChainSlot(deckGroupName, this, m_pMessenger));
-    connectChainSlotSignals(pChainSlot);
 
     m_equalizerEffectChainSlots.insert(deckGroupName, pChainSlot);
     m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
@@ -295,31 +239,9 @@ void EffectsManager::addQuickEffectChainSlot(const QString& deckGroupName) {
 
     auto pChainSlot = QuickEffectChainSlotPointer(
             new QuickEffectChainSlot(deckGroupName, this, m_pMessenger));
-    connectChainSlotSignals(pChainSlot);
 
     m_quickEffectChainSlots.insert(deckGroupName, pChainSlot);
     m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
-}
-
-void EffectsManager::connectChainSlotSignals(EffectChainSlotPointer pChainSlot) {
-    connect(pChainSlot.get(),
-            &EffectChainSlot::loadChainPreset,
-            this,
-            &EffectsManager::loadChainPresetFromList);
-    connect(pChainSlot.get(),
-            &EffectChainSlot::selectChainPreset,
-            this,
-            &EffectsManager::loadChainPresetSelector);
-}
-
-void EffectsManager::loadChainPresetFromList(EffectChainSlot* pChainSlot, int listIndex) {
-    loadEffectChainPreset(pChainSlot, m_pChainPresetManager->presetAtIndex(listIndex));
-}
-
-void EffectsManager::loadChainPresetSelector(EffectChainSlot* pChainSlot, int delta) {
-    int listIndex = m_pChainPresetManager->presetIndex(pChainSlot->presetName());
-    auto pChainPreset = m_pChainPresetManager->presetAtIndex(listIndex + delta);
-    loadEffectChainPreset(pChainSlot, pChainPreset);
 }
 
 EffectChainSlotPointer EffectsManager::getEffectChainSlot(
@@ -490,14 +412,13 @@ void EffectsManager::readEffectsXml() {
     EffectsXmlData data = m_pChainPresetManager->readEffectsXml(deckStrings);
 
     for (int i = 0; i < data.standardEffectChainPresets.size(); i++) {
-        loadEffectChainPreset(
-                m_standardEffectChainSlots.value(i).get(), data.standardEffectChainPresets.at(i));
+        m_standardEffectChainSlots.value(i)->loadChainPreset(data.standardEffectChainPresets.at(i));
     }
 
     for (auto it = data.quickEffectChainPresets.begin();
             it != data.quickEffectChainPresets.end();
             it++) {
-        loadEffectChainPreset(m_quickEffectChainSlots.value(it.key()).get(), it.value());
+        m_quickEffectChainSlots.value(it.key())->loadChainPreset(it.value());
     }
 }
 

@@ -104,9 +104,6 @@ class EffectsManager : public QObject {
     void hideParameter(int chainNumber, int effectNumber, EffectParameterPointer pParameter);
     void showParameter(int chainNumber, int effectNumber, EffectParameterPointer pParameter);
 
-    void loadEffectChainPreset(EffectChainSlot* pChainSlot,
-            EffectChainPresetPointer pPreset);
-    void loadEffectChainPreset(EffectChainSlot* pChainSlot, const QString& name);
     void loadPresetToStandardChain(int chainNumber, EffectChainPresetPointer pPreset);
 
     void addStandardEffectChainSlots();
@@ -146,10 +143,6 @@ class EffectsManager : public QObject {
   signals:
     void visibleEffectsUpdated();
     void effectChainPresetListUpdated();
-
-  private slots:
-    void loadChainPresetFromList(EffectChainSlot* pChainSlot, int listIndex);
-    void loadChainPresetSelector(EffectChainSlot* pChainSlot, int listIndex);
 
   private:
     QString debugString() const {
