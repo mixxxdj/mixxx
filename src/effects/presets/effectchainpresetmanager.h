@@ -3,6 +3,7 @@
 #include <QHash>
 #include <QList>
 
+#include "effects/backends/effectsbackendmanager.h"
 #include "effects/presets/effectchainpreset.h"
 #include "preferences/usersettings.h"
 
@@ -23,8 +24,7 @@ class EffectChainPresetManager : public QObject {
   public:
     EffectChainPresetManager(
             UserSettingsPointer pConfig,
-            EffectsManager* pEffectsManager,
-            EffectManifestPointer pDefaultQuickEffectManifest);
+            EffectsBackendManagerPointer pBackendManager);
     ~EffectChainPresetManager() = default;
 
     const QList<EffectChainPresetPointer> getPresetsSorted() const {
@@ -61,7 +61,7 @@ class EffectChainPresetManager : public QObject {
     QList<EffectChainPresetPointer> m_effectChainPresetsSorted;
 
     UserSettingsPointer m_pConfig;
-    EffectsManager* m_pEffectsManager;
+    EffectsBackendManagerPointer m_pBackendManager;
 
     EffectChainPresetPointer m_pDefaultQuickEffectChainPreset;
 };

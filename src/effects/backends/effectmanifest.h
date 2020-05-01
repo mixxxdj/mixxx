@@ -196,6 +196,8 @@ class EffectManifest {
         return other.id() < m_id;
     }
 
+    static bool alphabetize(EffectManifestPointer pManifest1, EffectManifestPointer pManifest2);
+
   private:
     QString debugString() const {
         return QString("EffectManifest(%1)").arg(m_id);

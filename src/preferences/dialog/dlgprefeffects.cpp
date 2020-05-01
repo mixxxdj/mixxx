@@ -10,7 +10,8 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
         : DlgPreferencePage(pParent),
           m_pConfig(pConfig),
           m_pEffectsManager(pEffectsManager),
-          m_pChainPresetManager(pEffectsManager->getChainPresetManager()) {
+          m_pChainPresetManager(pEffectsManager->getChainPresetManager()),
+          m_pBackendManager(pEffectsManager->getBackendManager()) {
     setupUi(this);
 
     m_availableEffectsModel.resetFromEffectManager(pEffectsManager);
@@ -128,7 +129,7 @@ void DlgPrefEffects::availableEffectsListItemSelected(const QModelIndex& selecte
     if (effectId == QVariant().toString())
         return;
 
-    EffectManifestPointer pManifest = m_pEffectsManager->getManifestFromUniqueId(effectId);
+    EffectManifestPointer pManifest = m_pBackendManager->getManifestFromUniqueId(effectId);
 
     effectName->setText(pManifest->name());
     effectAuthor->setText(pManifest->author());
@@ -146,7 +147,7 @@ void DlgPrefEffects::slotChainPresetSelected(const QString& chainPresetName) {
     for (int i = 0; i < pChainPreset->effectPresets().size() - 1; ++i) {
         EffectPresetPointer pEffectPreset = pChainPreset->effectPresets().at(i);
         if (!pEffectPreset->isEmpty()) {
-            QString displayName = m_pEffectsManager->getDisplayNameForEffectPreset(pEffectPreset);
+            QString displayName = m_pBackendManager->getDisplayNameForEffectPreset(pEffectPreset);
             // Code uses 0-indexed numbers; users see 1 indexed numbers
             m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + displayName);
         } else {
