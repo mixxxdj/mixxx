@@ -254,8 +254,8 @@ void BpmControl::slotControlBeatSync(double v) {
 }
 
 bool BpmControl::syncTempo() {
-    qDebug() << "BpmControl::syncTempo";
     EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
+
     if (!pOtherEngineBuffer) {
         return false;
     }
@@ -605,10 +605,8 @@ double BpmControl::getNearestPositionInPhase(
     if (syncMode == SYNC_FOLLOWER) {
         // If we're a follower, it's easy to get the other beat fraction
         dOtherBeatFraction = m_dSyncTargetBeatDistance.getValue();
-        qDebug() << "hoo hooo hoo it was a follower";
     } else {
         // If not, we have to figure it out
-        qDebug() << "BpmControl::getNearestPositionInPhase";
         EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
         if (playing) {
             if (!pOtherEngineBuffer || pOtherEngineBuffer->getSpeed() == 0.0) {
@@ -621,7 +619,6 @@ double BpmControl::getNearestPositionInPhase(
 
         if (!pOtherEngineBuffer) {
             // no suitable sync buffer found
-            qDebug() << "no engine buffer";
             return dThisPosition;
         }
 
@@ -630,7 +627,6 @@ double BpmControl::getNearestPositionInPhase(
 
         // If either track does not have beats, then we can't adjust the phase.
         if (!otherBeats) {
-            qDebug() << "no beats";
             return dThisPosition;
         }
 
@@ -723,8 +719,6 @@ double BpmControl::getNearestPositionInPhase(
             // loops are catching
         }
     }
-
-    qDebug() << "worked fine" << dNewPlaypos;
 
     return dNewPlaypos;
 }

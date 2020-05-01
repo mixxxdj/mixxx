@@ -117,7 +117,6 @@ EngineBuffer* EngineControl::pickSyncTarget() {
     }
 
     Syncable* pSyncable = pEngineSync->pickNonSyncSyncTarget(pThisChannel);
-    qDebug() << "SYNC TARGET" << (pSyncable ? pSyncable->getGroup() : "NONE");
     // pickNonSyncSyncTarget can return nullptr, but if it doesn't the Syncable
     // definitely has an EngineChannel.
     if (pSyncable) {

@@ -430,6 +430,7 @@ void EngineSync::deactivateSync(Syncable* pSyncable) {
 }
 
 Syncable* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const {
+    // First choice: the sync master, if it's a deck
     if (m_pMasterSyncable &&
             m_pMasterSyncable->getChannel() &&
             m_pMasterSyncable->getChannel() != pDontPick) {
@@ -452,8 +453,7 @@ Syncable* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const {
             if (pBuffer && pBuffer->getBpm() > 0) {
                 if (pBuffer->getSpeed() != 0.0) {
                     if (pSyncable->getSyncMode() != SYNC_NONE) {
-                        // First choice: first playing sync deck
-                        qDebug() << "SYNC PLAYING";
+                        // Second choice: first playing sync deck
                         return pSyncable;
                     }
                     if (pFirstPlayingDeck == nullptr) {
@@ -466,14 +466,12 @@ Syncable* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const {
         }
     }
     if (pFirstPlayingDeck) {
-        // Second choice: first playing non-sync deck
-        qDebug() << "PLAYING NON SYNC";
+        // Third choice: first playing non-sync deck
         return pFirstPlayingDeck;
     }
 
     // No playing decks have a BPM. Go with the first deck that was stopped but
     // had a BPM.
-    qDebug() << "FIRST NON PLAYING";
     return pFirstNonplayingDeck;
 }
 
