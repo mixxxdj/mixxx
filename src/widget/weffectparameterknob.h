@@ -17,18 +17,15 @@ class WEffectParameterKnob : public WKnob {
     WEffectParameterKnob(QWidget* pParent, EffectsManager* pEffectsManager) :
         WKnob(pParent),
         m_pEffectsManager(pEffectsManager) {
+        setFocusPolicy(Qt::NoFocus);
     };
 
-    void setupEffectParameterSlot(const ConfigKey& configKey);
+    void setup(const QDomNode& node, const SkinContext& context) override;
 
   private slots:
     void parameterUpdated();
 
   private:
-    // Set the EffectKnobParameterSlot that should be monitored by this
-    // WEffectKnobComposed.
-    void setEffectKnobParameterSlot(EffectParameterSlotBasePointer pParameterSlot);
-
     EffectsManager* m_pEffectsManager;
     EffectParameterSlotBasePointer m_pEffectParameterSlot;
 };

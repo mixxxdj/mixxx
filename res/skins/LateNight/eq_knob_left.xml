@@ -1,7 +1,8 @@
 <!DOCTYPE template>
 <Template>
+  <SetVariable name="FxUnit">[EqualizerRack1_<Variable name="group"/>]</SetVariable>
   <SetVariable name="FxNum">1</SetVariable>
-  <SetVariable name="FxRack_FxUnit_FxNum">[EqualizerRack1_<Variable name="group"/>_Effect1]</SetVariable>
+  <SetVariable name="FxUnit_FxNum">[EqualizerRack1_<Variable name="group"/>_Effect<Variable name="FxNum"/>]</SetVariable>
 
   <WidgetGroup>
     <Layout>horizontal</Layout>
@@ -18,6 +19,9 @@
             <ObjectName>EQKillButton</ObjectName>
             <Size>18f,18f</Size>
             <NumberStates>2</NumberStates>
+            <EffectUnitGroup><Variable name="FxUnit"/></EffectUnitGroup>
+            <Effect><Variable name="FxNum"/></Effect>
+            <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
             <State>
               <Number>0</Number>
               <Text><Variable name="Text"/></Text>
@@ -30,7 +34,7 @@
               <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_eqkill_active.svg</Pressed>
             </State>
             <Connection>
-              <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,button_parameter<Variable name="FxParameter"/></ConfigKey>
+              <ConfigKey><Variable name="FxUnit_FxNum"/>,button_parameter<Variable name="FxParameter"/></ConfigKey>
               <ButtonState>LeftButton</ButtonState>
             </Connection>
           </EffectPushButton>
@@ -57,14 +61,17 @@
         <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
         <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
         <KnobCenterYOffset>1.598</KnobCenterYOffset>
+        <EffectUnitGroup><Variable name="FxUnit"/></EffectUnitGroup>
+        <Effect><Variable name="FxNum"/></Effect>
+        <EffectParameter><Variable name="FxParameter"/></EffectParameter>
         <Connection>
-          <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/></ConfigKey>
+          <ConfigKey><Variable name="FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/></ConfigKey>
         </Connection>
       </EffectParameterKnobComposed>
 
     </Children>
     <Connection>
-      <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/>_loaded</ConfigKey>
+      <ConfigKey><Variable name="FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/>_loaded</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

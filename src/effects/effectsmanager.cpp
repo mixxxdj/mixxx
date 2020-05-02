@@ -149,41 +149,6 @@ EffectChainSlotPointer EffectsManager::getEffectChainSlot(
     return m_effectChainSlotsByGroup.value(group);
 }
 
-EffectSlotPointer EffectsManager::getEffectSlot(
-        const QString& group) {
-    QRegExp intRegEx(".*(\\d+).*");
-
-    QStringList parts = group.split(kEffectGroupSeparator);
-
-    // NOTE(Kshitij) : Assuming the group is valid
-    const QString chainGroup = parts.at(0) + kEffectGroupSeparator + parts.at(1) + kGroupClose;
-    EffectChainSlotPointer pChainSlot = getEffectChainSlot(chainGroup);
-    VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
-        return EffectSlotPointer();
-    }
-
-    intRegEx.indexIn(parts.at(2));
-    EffectSlotPointer pEffectSlot =
-            pChainSlot->getEffectSlot(intRegEx.cap(1).toInt() - 1);
-    return pEffectSlot;
-}
-
-EffectParameterSlotBasePointer EffectsManager::getEffectParameterSlot(
-        const EffectParameterType parameterType,
-        const ConfigKey& configKey) {
-    EffectSlotPointer pEffectSlot =
-             getEffectSlot(configKey.group);
-    VERIFY_OR_DEBUG_ASSERT(pEffectSlot) {
-        return EffectParameterSlotBasePointer();
-    }
-
-    QRegExp intRegEx(".*(\\d+).*");
-    intRegEx.indexIn(configKey.item);
-    EffectParameterSlotBasePointer pParameterSlot = pEffectSlot->getEffectParameterSlot(
-            parameterType, intRegEx.cap(1).toInt() - 1);
-    return pParameterSlot;
-}
-
 void EffectsManager::setEffectVisibility(EffectManifestPointer pManifest, bool visible) {
     if (visible && !m_visibleEffectManifests.contains(pManifest)) {
         auto insertion_point = std::lower_bound(m_visibleEffectManifests.begin(),
@@ -224,7 +189,10 @@ void EffectsManager::readEffectsXml() {
     for (auto it = data.quickEffectChainPresets.begin();
             it != data.quickEffectChainPresets.end();
             it++) {
-        m_quickEffectChainSlots.value(it.key())->loadChainPreset(it.value());
+        auto pChainSlot = m_quickEffectChainSlots.value(it.key());
+        if (pChainSlot) {
+            pChainSlot->loadChainPreset(it.value());
+        }
     }
 }
 
