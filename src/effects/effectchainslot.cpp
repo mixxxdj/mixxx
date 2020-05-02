@@ -36,9 +36,6 @@ EffectChainSlot::EffectChainSlot(const QString& group,
     connect(m_pControlClear, &ControlObject::valueChanged,
             this, &EffectChainSlot::slotControlClear);
 
-    m_pControlNumEffects = new ControlObject(ConfigKey(m_group, "num_effects"));
-    m_pControlNumEffects->setReadOnly();
-
     m_pControlNumEffectSlots = new ControlObject(ConfigKey(m_group, "num_effectslots"));
     m_pControlNumEffectSlots->setReadOnly();
 
@@ -126,7 +123,6 @@ EffectChainSlot::~EffectChainSlot() {
     m_effectSlots.clear();
 
     delete m_pControlClear;
-    delete m_pControlNumEffects;
     delete m_pControlNumEffectSlots;
     delete m_pControlChainLoaded;
     delete m_pControlChainEnabled;
