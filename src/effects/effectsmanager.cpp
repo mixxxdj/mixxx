@@ -58,6 +58,7 @@ EffectsManager::~EffectsManager() {
     m_standardEffectChainSlots.clear();
     m_outputEffectChainSlot.clear();
     m_effectChainSlotsByGroup.clear();
+
     m_pMessenger->processEffectsResponses();
 }
 
@@ -171,6 +172,7 @@ void EffectsManager::setup() {
     // Add postfader effect chain slots
     addStandardEffectChainSlots();
     addOutputEffectChainSlot();
+    // EQ and QuickEffect chain slots are initialized when PlayerManager creates decks.
 
     readEffectsXml();
 }
