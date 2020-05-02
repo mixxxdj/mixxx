@@ -97,8 +97,6 @@ class EffectsManager : public QObject {
 
     void connectChainSlotSignals(EffectChainSlotPointer pChainSlot);
 
-    void loadDefaultEffectPresets();
-
     void readEffectsXml();
     void saveEffectsXml();
 
