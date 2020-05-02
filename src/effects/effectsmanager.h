@@ -60,6 +60,10 @@ class EffectsManager : public QObject {
         return m_pChainPresetManager;
     }
 
+    const EffectPresetManagerPointer getEffectPresetManager() const {
+        return m_pEffectPresetManager;
+    }
+
     const EffectsBackendManagerPointer getBackendManager() const {
         return m_pBackendManager;
     }
@@ -178,11 +182,10 @@ class EffectsManager : public QObject {
 
     EffectChainPresetPointer m_defaultQuickEffectChainPreset;
 
-    QHash<EffectManifestPointer, EffectPresetPointer> m_defaultPresets;
-
     EffectsBackendManagerPointer m_pBackendManager;
     EngineEffectsManager* m_pEngineEffectsManager;
     EffectsMessengerPointer m_pMessenger;
+    EffectPresetManagerPointer m_pEffectPresetManager;
     EffectChainPresetManagerPointer m_pChainPresetManager;
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
