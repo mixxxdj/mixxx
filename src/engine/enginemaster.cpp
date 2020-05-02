@@ -664,11 +664,13 @@ void EngineMaster::process(const int iBufferSize) {
             }
         }
 
-        // Submit buffer to the side chain to do broadcasting, recording,
-        // etc. (CPU intensive non-realtime tasks)
-        // If recording/broadcasting from a sound card input,
-        // SoundManager will send the input buffer from the sound card to m_pSidechain
-        // so skip sending a buffer to m_pSidechain here.
+        // Submit buffer to the side chain to do CPU intensive non-realtime
+        // tasks like recording. The SoundDeviceNetwork, responsible for
+        // passing samples to the network reads directly from m_pSidechainMix,
+        // registering it with SoundDevice::addOutput().
+        // Note: In case the broadcast/recording input is configured,
+        // EngineSideChain::receiveBuffer has copied the input buffer to m_pSidechainMix
+        // via before (called by SoundManager::pushInputBuffers())
         if (m_pEngineSideChain) {
             m_pEngineSideChain->writeSamples(m_pSidechainMix, iFrames);
         }

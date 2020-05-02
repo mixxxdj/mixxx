@@ -86,6 +86,8 @@ void EngineSideChain::receiveBuffer(AudioInput input,
         qDebug() << "WARNING: AudioInput type is not RECORD_BROADCAST. Ignoring incoming buffer.";
         return;
     }
+    // Just copy the received samples form the sound card input to the
+    // engine. After processing we get it back via writeSamples()
     SampleUtil::copy(m_pSidechainMix, pBuffer, iFrames * mixxx::kEngineChannelCount);
 }
 
