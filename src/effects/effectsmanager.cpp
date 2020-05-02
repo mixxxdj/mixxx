@@ -7,11 +7,11 @@
 #include "effects/effectslot.h"
 #include "effects/effectsmessenger.h"
 #include "effects/presets/effectchainpreset.h"
+#include "effects/presets/effectpresetmanager.h"
 #include "effects/effectxmlelements.h"
 #include "util/assert.h"
 
 namespace {
-const QString kEffectDefaultsDirectory = "/effects/defaults";
 const QString kStandardEffectRackGroup = "[EffectRack1]";
 const QString kOutputEffectRackGroup = "[OutputEffectRack]";
 const QString kQuickEffectRackGroup = "[QuickEffectRack1]";
@@ -40,6 +40,9 @@ EffectsManager::EffectsManager(QObject* pParent,
             requestPipes.first, requestPipes.second));
     m_pEngineEffectsManager = new EngineEffectsManager(requestPipes.second);
 
+    m_pEffectPresetManager = EffectPresetManagerPointer(
+            new EffectPresetManager(pConfig, m_pBackendManager));
+
     m_pChainPresetManager = EffectChainPresetManagerPointer(
             new EffectChainPresetManager(pConfig, m_pBackendManager));
 }
@@ -48,9 +51,6 @@ EffectsManager::~EffectsManager() {
     m_pMessenger->startShutdownProcess();
 
     saveEffectsXml();
-    for (const auto pEffectPreset : m_defaultPresets) {
-        saveDefaultForEffect(pEffectPreset);
-    }
 
     // The EffectChainSlots must be deleted before the EffectsBackends in case
     // there is an LV2 effect currently loaded.
@@ -119,7 +119,7 @@ void EffectsManager::loadEffect(EffectChainSlotPointer pChainSlot,
         EffectPresetPointer pPreset,
         bool adoptMetaknobFromPreset) {
     if (pPreset == nullptr) {
-        pPreset = m_defaultPresets.value(pManifest);
+        pPreset = m_pEffectPresetManager->getDefaultPreset(pManifest);
     }
     pChainSlot->loadEffect(
             iEffectSlotNumber,
@@ -310,94 +310,13 @@ void EffectsManager::setup() {
     addStandardEffectChainSlots();
     addOutputEffectChainSlot();
 
-    loadDefaultEffectPresets();
-
     readEffectsXml();
-}
-
-void EffectsManager::loadDefaultEffectPresets() {
-    // Load saved defaults from settings directory
-    QString dirPath(m_pConfig->getSettingsPath() + kEffectDefaultsDirectory);
-    QDir effectsDefaultsDir(dirPath);
-    effectsDefaultsDir.setFilter(QDir::Files | QDir::Readable);
-    for (const auto& filePath : effectsDefaultsDir.entryList()) {
-        QFile file(dirPath + "/" + filePath);
-        if (!file.open(QIODevice::ReadOnly)) {
-            continue;
-        }
-        QDomDocument doc;
-        if (!doc.setContent(&file)) {
-            file.close();
-            continue;
-        }
-        EffectPresetPointer pEffectPreset(new EffectPreset(doc.documentElement()));
-        if (!pEffectPreset->isEmpty()) {
-            EffectManifestPointer pManifest = m_pBackendManager->getManifest(
-                    pEffectPreset->id(), pEffectPreset->backendType());
-            m_defaultPresets.insert(pManifest, pEffectPreset);
-        }
-        file.close();
-    }
-
-    // If no preset was found, generate one from the manifest
-    for (const auto& pManifest : m_pBackendManager->getManifests()) {
-        if (!m_defaultPresets.contains(pManifest)) {
-            m_defaultPresets.insert(pManifest,
-                    EffectPresetPointer(new EffectPreset(pManifest)));
-        }
-    }
-}
-
-void EffectsManager::saveDefaultForEffect(EffectPresetPointer pEffectPreset) {
-    if (pEffectPreset->isEmpty()) {
-        return;
-    }
-
-    const auto pManifest = m_pBackendManager->getManifest(
-            pEffectPreset->id(), pEffectPreset->backendType());
-    m_defaultPresets.insert(pManifest, pEffectPreset);
-
-    QDomDocument doc(EffectXml::Effect);
-    doc.setContent(QString("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"));
-    doc.appendChild(pEffectPreset->toXml(&doc));
-
-    QString path(m_pConfig->getSettingsPath() + kEffectDefaultsDirectory);
-    QDir effectsDefaultsDir(path);
-    if (!effectsDefaultsDir.exists()) {
-        effectsDefaultsDir.mkpath(path);
-    }
-
-    // The file name does not matter as long as it is unique. The actual id string
-    // is safely stored in the UTF8 document, regardless of what the filesystem
-    // supports for file names.
-    QString fileName = pEffectPreset->id();
-    // LV2 ids are URLs
-    fileName.replace("/", "-");
-    QStringList forbiddenCharacters;
-    forbiddenCharacters << "<"
-                        << ">"
-                        << ":"
-                        << "\""
-                        << "\'"
-                        << "|"
-                        << "?"
-                        << "*"
-                        << "\\";
-    for (const auto& character : forbiddenCharacters) {
-        fileName.remove(character);
-    }
-    QFile file(path + "/" + fileName + ".xml");
-    if (!file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
-        return;
-    }
-    file.write(doc.toString().toUtf8());
-    file.close();
 }
 
 void EffectsManager::saveDefaultForEffect(int unitNumber, int effectNumber) {
     auto pSlot = m_standardEffectChainSlots.at(unitNumber)->getEffectSlot(effectNumber);
     EffectPresetPointer pPreset(new EffectPreset(pSlot));
-    saveDefaultForEffect(pPreset);
+    m_pEffectPresetManager->saveDefaultForEffect(pPreset);
 }
 
 void EffectsManager::savePresetFromStandardEffectChain(int chainNumber) {

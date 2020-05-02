@@ -53,6 +53,9 @@ typedef QSharedPointer<EffectsMessenger> EffectsMessengerPointer;
 class EffectsBackendManager;
 typedef QSharedPointer<EffectsBackendManager> EffectsBackendManagerPointer;
 
+class EffectPresetManager;
+typedef QSharedPointer<EffectPresetManager> EffectPresetManagerPointer;
+
 class EffectChainPresetManager;
 typedef QSharedPointer<EffectChainPresetManager> EffectChainPresetManagerPointer;
 

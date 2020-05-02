@@ -267,6 +267,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/presets/effectchainpresetmanager.cpp
   src/effects/presets/effectparameterpreset.cpp
   src/effects/presets/effectpreset.cpp
+  src/effects/presets/effectpresetmanager.cpp
   src/encoder/encoder.cpp
   src/encoder/encoderbroadcastsettings.cpp
   src/encoder/encoderflacsettings.cpp
