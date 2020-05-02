@@ -180,6 +180,11 @@ AutoDJProcessor::AutoDJProcessor(
             m_pConfig->getValue(
                     ConfigKey(kConfigKey, kTransitionUnitPreferenceName),
                     static_cast<int>(TransitionUnit::SECONDS)));
+
+    m_pLeftBPM = make_parented<ControlProxy>(ConfigKey("[Channel1]", "bpm"), this);
+    m_pRightBPM = make_parented<ControlProxy>(ConfigKey("[Channel2]", "bpm"), this);
+    m_pLeftSyncMode = make_parented<ControlProxy>(ConfigKey("[Channel1]", "sync_mode"), this);
+    m_pRightSyncMode = make_parented<ControlProxy>(ConfigKey("[Channel2]", "sync_mode"), this);
 }
 
 AutoDJProcessor::~AutoDJProcessor() {
@@ -302,11 +307,11 @@ void AutoDJProcessor::fadeNow() {
             fadeTime = math_min(spinboxTime, timeUntilOutroEnd);
         }
     } else {
-        fadeTime = spinboxTime;
+        fadeTime = getFadeTime();
     }
 
     double timeUntilEndOfFromTrack = fromDeckEndSecond - fromDeckCurrentSecond;
-    fadeTime = math_min(fadeTime, timeUntilEndOfFromTrack);
+    fadeTime = math_min((double)fadeTime, timeUntilEndOfFromTrack);
     pFromDeck->fadeEndPos = fromDeckCurrentSecond + fadeTime;
 
     // These are expected to be a fraction of the track length.
@@ -1671,4 +1676,49 @@ bool AutoDJProcessor::nextTrackLoaded() {
     }
 
     return loadedTrack == getNextTrackFromQueue();
+}
+
+double AutoDJProcessor::getFadeTime() {
+    // TODO(c3n7): Is there a better place for this? Find out.
+    // Copied from syncable.h
+    enum SyncMode {
+        SYNC_INVALID = -1,
+        SYNC_NONE = 0,
+        SYNC_FOLLOWER = 1,
+        // SYNC_MASTER_SOFT is a master that Mixxx has chosen automatically.
+        // depending on how decks stop and start, it may reassign soft master at will.
+        SYNC_MASTER_SOFT = 2,
+        // SYNC_MASTER_EXPLICIT represents an explicit request that the synacable be
+        // master. Mixxx will only remove a SYNC_MASTER_SOFT if the track is stopped or
+        // ejected.
+        SYNC_MASTER_EXPLICIT = 3,
+        SYNC_NUM_MODES
+    };
+
+    double leftBPM = m_pLeftBPM->get();
+    double rightBPM = m_pRightBPM->get();
+    int leftSyncMode = m_pLeftSyncMode->get();
+    int rightSyncMode = m_pRightSyncMode->get();
+
+    double transitionTime = fabs(m_transitionTime);
+    double fadeTime;
+
+    if (m_transitionUnit == TransitionUnit::BEATS) {
+        if ((leftSyncMode == SYNC_FOLLOWER && rightSyncMode == SYNC_MASTER_SOFT) ||
+                (leftSyncMode == SYNC_MASTER_SOFT && rightSyncMode == SYNC_FOLLOWER)) {
+            // Both the left and right bpm should be equal if point is reached
+            VERIFY_OR_DEBUG_ASSERT(leftBPM == rightBPM) {
+                qDebug() << tr("leftBPM: %1   - rightBPM %2").arg(leftBPM).arg(rightBPM);
+            }
+
+            fadeTime = (transitionTime * 60) / leftBPM;
+        } else {
+            // TODO(c3n7): handle other cases
+            fadeTime = transitionTime;
+        }
+    } else {
+        fadeTime = transitionTime;
+    }
+
+    return fadeTime;
 }

@@ -297,6 +297,8 @@ class AutoDJProcessor : public QObject {
     TransitionMode m_transitionMode;
     TransitionUnit m_transitionUnit;
 
+    double getFadeTime();
+
     QList<DeckAttributes*> m_decks;
 
     ControlProxy* m_pCOCrossfader;
@@ -306,6 +308,11 @@ class AutoDJProcessor : public QObject {
     ControlPushButton* m_pFadeNow;
     ControlPushButton* m_pShufflePlaylist;
     ControlPushButton* m_pEnabledAutoDJ;
+
+    ControlProxy* m_pLeftBPM;
+    ControlProxy* m_pRightBPM;
+    ControlProxy* m_pLeftSyncMode;
+    ControlProxy* m_pRightSyncMode;
 
     DISALLOW_COPY_AND_ASSIGN(AutoDJProcessor);
 };
