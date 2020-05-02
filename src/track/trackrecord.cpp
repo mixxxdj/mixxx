@@ -2,7 +2,6 @@
 
 #include "track/keyfactory.h"
 
-
 namespace mixxx {
 
 /*static*/ const QString TrackRecord::kTrackTotalPlaceholder = QStringLiteral("//");
@@ -52,87 +51,152 @@ bool TrackRecord::updateGlobalKeyText(
 namespace {
 
 #if defined(__EXTRA_METADATA__)
-void mergeReplayGainMetadataProperty(
-        ReplayGain& mergedReplayGain,
+bool mergeReplayGainMetadataProperty(
+        ReplayGain* pMergedReplayGain,
         const ReplayGain& importedReplayGain) {
+    bool modified = false;
     // Preserve the values calculated by Mixxx and only merge missing
     // values from the imported replay gain.
-    if (!mergedReplayGain.hasRatio()) {
-        mergedReplayGain.setRatio(importedReplayGain.getRatio());
+    if (!pMergedReplayGain->hasRatio() &&
+            importedReplayGain.hasRatio()) {
+        pMergedReplayGain->setRatio(importedReplayGain.getRatio());
+        modified = true;
     }
-    if (!mergedReplayGain.hasPeak()) {
-        mergedReplayGain.setPeak(importedReplayGain.getPeak());
+    if (!pMergedReplayGain->hasPeak() &&
+            importedReplayGain.hasPeak()) {
+        pMergedReplayGain->setPeak(importedReplayGain.getPeak());
+        modified = true;
     }
+    return modified;
 }
 #endif // __EXTRA_METADATA__
 
 // This conditional copy operation only works for nullable properties
 // like QString or QUuid.
 template<typename T>
-void copyIfNotNull(
-        T& mergedProperty,
+bool copyIfNotNull(
+        T* pMergedProperty,
         const T& importedProperty) {
-    if (mergedProperty.isNull()) {
-        mergedProperty = importedProperty;
+    if (pMergedProperty->isNull() &&
+            *pMergedProperty != importedProperty) {
+        *pMergedProperty = importedProperty;
+        return true;
     }
+    return false;
 }
 
 // This conditional copy operation only works for properties where
 // empty = missing.
 template<typename T>
-void copyIfNotEmpty(
-        T& mergedProperty,
+bool copyIfNotEmpty(
+        T* pMergedProperty,
         const T& importedProperty) {
-    if (mergedProperty.isEmpty()) {
-        mergedProperty = importedProperty;
+    if (pMergedProperty->isEmpty() &&
+            *pMergedProperty != importedProperty) {
+        *pMergedProperty = importedProperty;
+        return true;
     }
+    return false;
 }
 
 } // anonymous namespace
 
-void TrackRecord::mergeImportedMetadata(
+bool TrackRecord::mergeImportedMetadata(
         const TrackMetadata& importedFromFile) {
-    TrackInfo& mergedTrackInfo = refMetadata().refTrackInfo();
+    bool modified = false;
+    TrackInfo* pMergedTrackInfo = m_metadata.ptrTrackInfo();
     const TrackInfo& importedTrackInfo = importedFromFile.getTrackInfo();
-    if (mergedTrackInfo.getTrackTotal() == kTrackTotalPlaceholder) {
-        mergedTrackInfo.setTrackTotal(importedTrackInfo.getTrackTotal());
+    if (pMergedTrackInfo->getTrackTotal() == kTrackTotalPlaceholder) {
+        pMergedTrackInfo->setTrackTotal(importedTrackInfo.getTrackTotal());
         // Also set the track number if it is still empty due
         // to insufficient parsing capabilities of Mixxx in
         // previous versions.
-        if (mergedTrackInfo.getTrackNumber().isEmpty() &&
+        if (pMergedTrackInfo->getTrackNumber().isEmpty() &&
                 !importedTrackInfo.getTrackNumber().isEmpty()) {
-            mergedTrackInfo.setTrackNumber(importedTrackInfo.getTrackNumber());
+            pMergedTrackInfo->setTrackNumber(importedTrackInfo.getTrackNumber());
+            modified = true;
         }
     }
 #if defined(__EXTRA_METADATA__)
-    copyIfNotNull(mergedTrackInfo.refConductor(), importedTrackInfo.getConductor());
-    copyIfNotNull(mergedTrackInfo.refDiscNumber(), importedTrackInfo.getDiscNumber());
-    copyIfNotNull(mergedTrackInfo.refDiscTotal(), importedTrackInfo.getDiscTotal());
-    copyIfNotNull(mergedTrackInfo.refEncoder(), importedTrackInfo.getEncoder());
-    copyIfNotNull(mergedTrackInfo.refEncoderSettings(), importedTrackInfo.getEncoderSettings());
-    copyIfNotNull(mergedTrackInfo.refISRC(), importedTrackInfo.getISRC());
-    copyIfNotNull(mergedTrackInfo.refLanguage(), importedTrackInfo.getLanguage());
-    copyIfNotNull(mergedTrackInfo.refLyricist(), importedTrackInfo.getLyricist());
-    copyIfNotNull(mergedTrackInfo.refMood(), importedTrackInfo.getMood());
-    copyIfNotNull(mergedTrackInfo.refMovement(), importedTrackInfo.getMovement());
-    copyIfNotNull(mergedTrackInfo.refMusicBrainzArtistId(), importedTrackInfo.getMusicBrainzArtistId());
-    copyIfNotNull(mergedTrackInfo.refMusicBrainzRecordingId(), importedTrackInfo.getMusicBrainzRecordingId());
-    copyIfNotNull(mergedTrackInfo.refMusicBrainzReleaseId(), importedTrackInfo.getMusicBrainzReleaseId());
-    copyIfNotNull(mergedTrackInfo.refMusicBrainzWorkId(), importedTrackInfo.getMusicBrainzWorkId());
-    copyIfNotNull(mergedTrackInfo.refRemixer(), importedTrackInfo.getRemixer());
-    copyIfNotEmpty(mergedTrackInfo.refSeratoTags(), importedTrackInfo.getSeratoTags());
-    copyIfNotNull(mergedTrackInfo.refSubtitle(), importedTrackInfo.getSubtitle());
-    copyIfNotNull(mergedTrackInfo.refWork(), importedTrackInfo.getWork());
-    AlbumInfo& mergedAlbumInfo = refMetadata().refAlbumInfo();
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrConductor(),
+            importedTrackInfo.getConductor());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrDiscNumber(),
+            importedTrackInfo.getDiscNumber());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrDiscTotal(),
+            importedTrackInfo.getDiscTotal());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrEncoder(),
+            importedTrackInfo.getEncoder());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrEncoderSettings(),
+            importedTrackInfo.getEncoderSettings());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrISRC(),
+            importedTrackInfo.getISRC());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrLanguage(),
+            importedTrackInfo.getLanguage());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrLyricist(),
+            importedTrackInfo.getLyricist());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrMood(),
+            importedTrackInfo.getMood());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrMovement(),
+            importedTrackInfo.getMovement());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrMusicBrainzArtistId(),
+            importedTrackInfo.getMusicBrainzArtistId());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrMusicBrainzRecordingId(),
+            importedTrackInfo.getMusicBrainzRecordingId());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrMusicBrainzReleaseId(),
+            importedTrackInfo.getMusicBrainzReleaseId());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrMusicBrainzWorkId(),
+            importedTrackInfo.getMusicBrainzWorkId());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrRemixer(),
+            importedTrackInfo.getRemixer());
+    modified |= copyIfNotEmpty(
+            pMergedTrackInfo->ptrSeratoTags(),
+            importedTrackInfo.getSeratoTags());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrSubtitle(),
+            importedTrackInfo.getSubtitle());
+    modified |= copyIfNotNull(
+            pMergedTrackInfo->ptrWork(),
+            importedTrackInfo.getWork());
+    AlbumInfo* pMergedAlbumInfo = refMetadata().ptrAlbumInfo();
     const AlbumInfo& importedAlbumInfo = importedFromFile.getAlbumInfo();
-    mergeReplayGainMetadataProperty(mergedAlbumInfo.refReplayGain(), importedAlbumInfo.getReplayGain());
-    copyIfNotNull(mergedAlbumInfo.refCopyright(), importedAlbumInfo.getCopyright());
-    copyIfNotNull(mergedAlbumInfo.refLicense(), importedAlbumInfo.getLicense());
-    copyIfNotNull(mergedAlbumInfo.refMusicBrainzArtistId(), importedAlbumInfo.getMusicBrainzArtistId());
-    copyIfNotNull(mergedAlbumInfo.refMusicBrainzReleaseGroupId(), importedAlbumInfo.getMusicBrainzReleaseGroupId());
-    copyIfNotNull(mergedAlbumInfo.refMusicBrainzReleaseId(), importedAlbumInfo.getMusicBrainzReleaseId());
-    copyIfNotNull(mergedAlbumInfo.refRecordLabel(), importedAlbumInfo.getRecordLabel());
+    modified |= mergeReplayGainMetadataProperty(
+            pMergedAlbumInfo->ptrReplayGain(),
+            importedAlbumInfo.getReplayGain());
+    modified |= copyIfNotNull(
+            pMergedAlbumInfo->ptrCopyright(),
+            importedAlbumInfo.getCopyright());
+    modified |= copyIfNotNull(
+            pMergedAlbumInfo->ptrLicense(),
+            importedAlbumInfo.getLicense());
+    modified |= copyIfNotNull(
+            pMergedAlbumInfo->ptrMusicBrainzArtistId(),
+            importedAlbumInfo.getMusicBrainzArtistId());
+    modified |= copyIfNotNull(
+            pMergedAlbumInfo->ptrMusicBrainzReleaseGroupId(),
+            importedAlbumInfo.getMusicBrainzReleaseGroupId());
+    modified |= copyIfNotNull(
+            pMergedAlbumInfo->ptrMusicBrainzReleaseId(),
+            importedAlbumInfo.getMusicBrainzReleaseId());
+    modified |= copyIfNotNull(
+            pMergedAlbumInfo->ptrRecordLabel(),
+            importedAlbumInfo.getRecordLabel());
 #endif // __EXTRA_METADATA__
+    return modified;
 }
 
-} //namespace mixxx
+} // namespace mixxx

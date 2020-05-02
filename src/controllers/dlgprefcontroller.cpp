@@ -5,19 +5,21 @@
 * @brief Configuration dialog for a DJ controller
 */
 
-#include <QtDebug>
-#include <QFileInfo>
+#include "controllers/dlgprefcontroller.h"
+
+#include <QDesktopServices>
 #include <QFileDialog>
+#include <QFileInfo>
+#include <QStandardPaths>
 #include <QTableWidget>
 #include <QTableWidgetItem>
-#include <QDesktopServices>
-#include <QStandardPaths>
+#include <QtDebug>
 
-#include "controllers/dlgprefcontroller.h"
-#include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controller.h"
+#include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
+#include "defs_urls.h"
 #include "preferences/usersettings.h"
 #include "util/version.h"
 
@@ -367,8 +369,10 @@ void DlgPrefController::slotUpdate() {
     m_ui.outputMappingsTab->setEnabled(isMappable);
 }
 
-void DlgPrefController::slotCancel() {
-    slotShowPreset(m_pController->getPreset());
+void DlgPrefController::slotResetToDefaults() {
+    m_ui.chkEnabledDevice->setChecked(false);
+    enumeratePresets(QString());
+    slotPresetSelected(m_ui.comboBoxPreset->currentIndex());
 }
 
 void DlgPrefController::applyPresetChanges() {
@@ -412,6 +416,10 @@ void DlgPrefController::slotApply() {
 
     // Mark the dialog as not dirty
     setDirty(false);
+}
+
+QUrl DlgPrefController::helpUrl() const {
+    return QUrl(MIXXX_MANUAL_CONTROLLERS_URL);
 }
 
 void DlgPrefController::slotPresetSelected(int chosenIndex) {

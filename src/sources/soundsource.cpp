@@ -30,4 +30,4 @@ SoundSource::SoundSource(QUrl url, QString type)
           m_type(type) {
 }
 
-} //namespace mixxx
+} // namespace mixxx

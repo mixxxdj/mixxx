@@ -13,6 +13,7 @@ class Library;
 class LibraryControl;
 class WLibrary;
 class WLibrarySidebar;
+class WSearchLineEdit;
 class KeyboardEventFilter;
 
 class LoadToGroupController : public QObject {
@@ -42,6 +43,10 @@ class LibraryControl : public QObject {
 
     void bindLibraryWidget(WLibrary* pLibrary, KeyboardEventFilter* pKeyboard);
     void bindSidebarWidget(WLibrarySidebar* pLibrarySidebar);
+    void bindSearchboxWidget(WSearchLineEdit* pSearchbox);
+
+  signals:
+    void clearSearch();
 
   public slots:
     // Deprecated navigation slots
@@ -50,6 +55,7 @@ class LibraryControl : public QObject {
   private slots:
     void libraryWidgetDeleted();
     void sidebarWidgetDeleted();
+    void searchboxWidgetDeleted();
 
     void slotMoveUp(double);
     void slotMoveDown(double);
@@ -64,6 +70,9 @@ class LibraryControl : public QObject {
     void slotMoveFocusBackward(double);
     void slotMoveFocus(double);
     void slotGoToItem(double v);
+
+    void slotTrackColorPrev(double v);
+    void slotTrackColorNext(double v);
 
     // Deprecated navigation slots
     void slotSelectNextTrack(double v);
@@ -129,6 +138,10 @@ class LibraryControl : public QObject {
     std::unique_ptr<ControlEncoder> m_pSortColumnToggle;
     std::unique_ptr<ControlPushButton> m_pSortOrder;
 
+    // Controls to change track color
+    std::unique_ptr<ControlPushButton> m_pTrackColorPrev;
+    std::unique_ptr<ControlPushButton> m_pTrackColorNext;
+
     // Font sizes
     std::unique_ptr<ControlPushButton> m_pFontSizeIncrement;
     std::unique_ptr<ControlPushButton> m_pFontSizeDecrement;
@@ -147,6 +160,7 @@ class LibraryControl : public QObject {
     // Library widgets
     WLibrary* m_pLibraryWidget;
     WLibrarySidebar* m_pSidebarWidget;
+    WSearchLineEdit* m_pSearchbox;
 
     // Other variables
     ControlProxy m_numDecks;

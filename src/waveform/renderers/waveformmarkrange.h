@@ -19,7 +19,7 @@ class WaveformMarkRange {
             const QDomNode& node,
             const SkinContext& context,
             const WaveformSignalColors& signalColors);
-    // This class is only moveable, but not copyable!
+    // This class is only moveable, but not copiable!
     WaveformMarkRange(WaveformMarkRange&&) = default;
     WaveformMarkRange(const WaveformMarkRange&) = delete;
 

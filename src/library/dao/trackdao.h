@@ -54,40 +54,45 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     TrackId getTrackIdByRef(
             const TrackRef& trackRef) const;
     QList<TrackRef> getAllTrackRefs(
-            const QDir& rootDir);
+            const QDir& rootDir) const;
 
     TrackPointer getTrackByRef(
             const TrackRef& trackRef) const;
 
     // Returns a set of all track locations in the library.
-    QSet<QString> getAllTrackLocations();
-    QString getTrackLocation(TrackId trackId);
+    QSet<QString> getAllTrackLocations() const;
+    QString getTrackLocation(TrackId trackId) const;
 
     // Only used by friend class LibraryScanner, but public for testing!
     bool detectMovedTracks(
             QList<RelocatedTrack>* pRelocatedTracks,
             const QStringList& addedTracks,
-            volatile const bool* pCancel);
+            volatile const bool* pCancel) const;
 
     // Only used by friend class TrackCollection, but public for testing!
-    void saveTrack(Track* pTrack);
+    void saveTrack(Track* pTrack) const;
 
   signals:
+    // Forwarded from Track object
     void trackDirty(TrackId trackId) const;
     void trackClean(TrackId trackId) const;
-    void trackChanged(TrackId trackId);
-    void tracksChanged(QSet<TrackId> trackIds);
-    void tracksAdded(QSet<TrackId> trackIds);
-    void tracksRemoved(QSet<TrackId> trackIds);
-    void dbTrackAdded(TrackPointer pTrack);
+
+    // Multiple tracks
+    void tracksAdded(QSet<TrackId> trackIds) const;
+    void tracksChanged(QSet<TrackId> trackIds) const;
+    void tracksRemoved(QSet<TrackId> trackIds) const;
+
     void progressVerifyTracksOutside(QString path);
     void progressCoverArt(QString file);
     void forceModelUpdate();
 
   public slots:
-    void databaseTrackAdded(TrackPointer pTrack);
-    void databaseTracksChanged(QSet<TrackId> changedTracks);
-    void databaseTracksRelocated(QList<RelocatedTrack> relocatedTracks);
+    // Slots to inform the TrackDAO about changes that
+    // have been applied directly to the database.
+    void slotDatabaseTracksChanged(
+            QSet<TrackId> changedTrackIds);
+    void slotDatabaseTracksRelocated(
+            QList<RelocatedTrack> relocatedTracks);
 
   private:
     friend class LibraryScanner;
@@ -116,29 +121,29 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             bool unremove);
     void addTracksFinish(bool rollback = false);
 
-    bool updateTrack(Track* pTrack);
+    bool updateTrack(Track* pTrack) const;
 
-    void hideAllTracks(const QDir& rootDir);
+    void hideAllTracks(const QDir& rootDir) const;
 
     bool hideTracks(
-            const QList<TrackId>& trackIds);
+            const QList<TrackId>& trackIds) const;
     void afterHidingTracks(
             const QList<TrackId>& trackIds);
 
     bool unhideTracks(
-            const QList<TrackId>& trackIds);
+            const QList<TrackId>& trackIds) const;
     void afterUnhidingTracks(
             const QList<TrackId>& trackIds);
 
     bool onPurgingTracks(
-            const QList<TrackId>& trackIds);
+            const QList<TrackId>& trackIds) const;
     void afterPurgingTracks(
             const QList<TrackId>& trackIds);
 
     // Scanning related calls.
-    void markTrackLocationsAsVerified(const QStringList& locations);
-    void markTracksInDirectoriesAsVerified(const QStringList& directories);
-    void invalidateTrackLocationsInLibrary();
+    void markTrackLocationsAsVerified(const QStringList& locations) const;
+    void markTracksInDirectoriesAsVerified(const QStringList& directories) const;
+    void invalidateTrackLocationsInLibrary() const;
     void markUnverifiedTracksAsDeleted();
 
     bool verifyRemainingTracks(

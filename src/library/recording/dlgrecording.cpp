@@ -57,7 +57,8 @@ DlgRecording::DlgRecording(
     connect(m_pRecordingManager,
             &RecordingManager::isRecording,
             this,
-            &DlgRecording::slotRecordingEnabled);
+            &DlgRecording::slotRecordingStateChanged);
+
     connect(m_pRecordingManager,
             &RecordingManager::bytesRecorded,
             this,
@@ -84,11 +85,17 @@ DlgRecording::DlgRecording(
     m_pTrackTableView->loadTrackModel(&m_proxyModel);
 
     connect(pushButtonRecording,
-            &QPushButton::toggled,
+            &QPushButton::clicked,
             this,
-            &DlgRecording::toggleRecording);
-    label->setText("");
-    label->setEnabled(false);
+            &DlgRecording::slotRecButtonClicked);
+
+    labelRecPrefix->hide();
+    labelRecFilename->hide();
+    labelRecStatistics->hide();
+    labelRecPrefix->setText(tr("Recording to file:"));
+
+    // Sync GUI with recording state, also refreshes labels
+    slotRecordingStateChanged(m_pRecordingManager->isRecordingActive());
 }
 
 DlgRecording::~DlgRecording() {
@@ -100,7 +107,7 @@ void DlgRecording::onShow() {
 }
 
 bool DlgRecording::hasFocus() const {
-    return QWidget::hasFocus();
+    return m_pTrackTableView->hasFocus();
 }
 
 void DlgRecording::refreshBrowseModel() {
@@ -139,28 +146,24 @@ void DlgRecording::moveSelection(int delta) {
     m_pTrackTableView->moveSelection(delta);
 }
 
-void DlgRecording::toggleRecording(bool toggle) {
+void DlgRecording::slotRecButtonClicked(bool toggle) {
     Q_UNUSED(toggle);
-    if (!m_pRecordingManager->isRecordingActive()) //If recording is enabled
-    {
-        //pushButtonRecording->setText(tr("Stop Recording"));
-        m_pRecordingManager->startRecording();
-    }
-    else if(m_pRecordingManager->isRecordingActive()) //If we disable recording
-    {
-        //pushButtonRecording->setText(tr("Start Recording"));
-        m_pRecordingManager->stopRecording();
-    }
+    m_pRecordingManager->slotToggleRecording(1);
 }
 
-void DlgRecording::slotRecordingEnabled(bool isRecording) {
+void DlgRecording::slotRecordingStateChanged(bool isRecording) {
     if (isRecording) {
-        pushButtonRecording->setText((tr("Stop Recording")));
-        label->setEnabled(true);
+        pushButtonRecording->setChecked(true);
+        pushButtonRecording->setText(tr("Stop Recording"));
+        labelRecPrefix->show();
+        labelRecFilename->show();
+        labelRecStatistics->show();
     } else {
-        pushButtonRecording->setText((tr("Start Recording")));
-        label->setText("");
-        label->setEnabled(false);
+        pushButtonRecording->setChecked(false);
+        pushButtonRecording->setText(tr("Start Recording"));
+        labelRecPrefix->hide();
+        labelRecFilename->hide();
+        labelRecStatistics->hide();
     }
     //This will update the recorded track table view
     m_browseModel.setPath(m_recordingDir);
@@ -170,20 +173,21 @@ void DlgRecording::slotRecordingEnabled(bool isRecording) {
 void DlgRecording::slotBytesRecorded(int bytes) {
     double megabytes = bytes / 1048576.0;
     m_bytesRecordedStr = QString::number(megabytes,'f',2);
-    refreshLabel();
+    refreshLabels();
 }
 
 // gets recorded duration and update label
 void DlgRecording::slotDurationRecorded(QString durationRecorded) {
     m_durationRecordedStr = durationRecorded;
-    refreshLabel();
+    refreshLabels();
 }
 
 // update label besides start/stop button
-void DlgRecording::refreshLabel() {
-    QString text = tr("Recording to file: %1 (%2 MiB written in %3)")
-              .arg(m_pRecordingManager->getRecordingFile())
-              .arg(m_bytesRecordedStr)
-              .arg(m_durationRecordedStr);
-    label->setText(text);
- }
+void DlgRecording::refreshLabels() {
+    QString recFile = m_pRecordingManager->getRecordingFile();
+    QString recData = QString(QStringLiteral("(") + tr("%1 MiB written in %2") + QStringLiteral(")"))
+            .arg(m_bytesRecordedStr)
+            .arg(m_durationRecordedStr);
+    labelRecFilename->setText(recFile);
+    labelRecStatistics->setText(recData);
+}

@@ -112,8 +112,9 @@ public:
             const TrackId& trackId) const;
     TrackPointer lookupTrackByRef(
             const TrackRef& trackRef) const;
+    QSet<TrackId> getCachedTrackIds() const;
 
-private:
+  private:
     friend class GlobalTrackCache;
 
     void lockCache();
@@ -220,6 +221,7 @@ private:
             const TrackId& trackId);
     TrackPointer lookupByRef(
             const TrackRef& trackRef);
+    QSet<TrackId> getCachedTrackIds() const;
 
     TrackPointer revive(GlobalTrackCacheEntryPointer entryPtr);
 

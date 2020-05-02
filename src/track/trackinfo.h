@@ -43,8 +43,8 @@ class TrackInfo final {
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    remixer,              Remixer)
 #endif // __EXTRA_METADATA__
     PROPERTY_SET_BYVAL_GET_BYREF(ReplayGain, replayGain,           ReplayGain)
-#if defined(__EXTRA_METADATA__)
     PROPERTY_SET_BYVAL_GET_BYREF(SeratoTags, seratoTags,           SeratoTags)
+#if defined(__EXTRA_METADATA__)
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    subtitle,             Subtitle)
 #endif // __EXTRA_METADATA__
     PROPERTY_SET_BYVAL_GET_BYREF(QString,    title,                Title)
@@ -72,8 +72,8 @@ public:
     // Adjusts floating-point properties to match their string representation
     // in file tags to account for rounding errors.
     void normalizeBeforeExport() {
-        refBpm().normalizeBeforeExport();
-        refReplayGain().normalizeBeforeExport();
+        m_bpm.normalizeBeforeExport();
+        m_replayGain.normalizeBeforeExport();
     }
 
     bool compareEq(

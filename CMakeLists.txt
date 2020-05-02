@@ -235,6 +235,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/dialog/dlgaboutdlg.ui
   src/dialog/dlgdevelopertools.cpp
   src/dialog/dlgdevelopertoolsdlg.ui
+  src/dialog/dlgreplacecuecolor.cpp
+  src/dialog/dlgreplacecuecolordlg.ui
   src/effects/builtin/autopaneffect.cpp
   src/effects/builtin/balanceeffect.cpp
   src/effects/builtin/bessel4lvmixeqeffect.cpp
@@ -353,6 +355,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/baseplaylistfeature.cpp
   src/library/basesqltablemodel.cpp
   src/library/basetrackcache.cpp
+  src/library/basetracksetfeature.cpp
   src/library/basetracktablemodel.cpp
   src/library/bpmdelegate.cpp
   src/library/browse/browsefeature.cpp
@@ -548,12 +551,14 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/bpm.cpp
   src/track/cue.cpp
   src/track/cueinfo.cpp
+  src/track/cueinfoimporter.cpp
   src/track/globaltrackcache.cpp
   src/track/keyfactory.cpp
   src/track/keys.cpp
   src/track/keyutils.cpp
   src/track/playcounter.cpp
   src/track/replaygain.cpp
+  src/track/serato/cueinfoimporter.cpp
   src/track/serato/markers.cpp
   src/track/serato/markers2.cpp
   src/track/serato/tags.cpp
@@ -561,10 +566,16 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/trackfile.cpp
   src/track/trackinfo.cpp
   src/track/trackmetadata.cpp
-  src/track/trackmetadatataglib.cpp
   src/track/tracknumbers.cpp
   src/track/trackrecord.cpp
   src/track/trackref.cpp
+  src/track/taglib/trackmetadata_ape.cpp
+  src/track/taglib/trackmetadata_common.cpp
+  src/track/taglib/trackmetadata_file.cpp
+  src/track/taglib/trackmetadata_id3v2.cpp
+  src/track/taglib/trackmetadata_mp4.cpp
+  src/track/taglib/trackmetadata_riff.cpp
+  src/track/taglib/trackmetadata_xiph.cpp
   src/util/autohidpi.cpp
   src/util/battery/battery.cpp
   src/util/cache.cpp
@@ -613,7 +624,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/timer.cpp
   src/util/valuetransformer.cpp
   src/util/version.cpp
-  src/util/widgethider.cpp
   src/util/widgetrendertimer.cpp
   src/util/workerthread.cpp
   src/util/workerthreadscheduler.cpp
@@ -722,6 +732,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wstarrating.cpp
   src/widget/wstatuslight.cpp
   src/widget/wtime.cpp
+  src/widget/wtrackmenu.cpp
   src/widget/wtrackproperty.cpp
   src/widget/wtracktableview.cpp
   src/widget/wtracktableviewheader.cpp
@@ -847,123 +858,155 @@ target_link_libraries(mixxx PUBLIC mixxx-lib)
 #
 # Installation and Packaging
 #
-include(GNUInstallDirs)
+set(MIXXX_INSTALL_BINDIR ".")
+set(MIXXX_INSTALL_DATADIR ".")
+set(MIXXX_INSTALL_DOCDIR ".")
+set(MIXXX_INSTALL_LICENSEDIR ".")
+if (UNIX)
+  include(GNUInstallDirs)
+  set(MIXXX_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}")
+  set(MIXXX_INSTALL_DATADIR "${CMAKE_INSTALL_DATADIR}/mixxx")
+  set(MIXXX_INSTALL_DOCDIR "${CMAKE_INSTALL_DOCDIR}/mixxx")
+  set(MIXXX_INSTALL_LICENSEDIR "${CMAKE_INSTALL_DATADIR}/licenses/mixxx")
+endif()
+
 install(
   TARGETS
     mixxx
   RUNTIME DESTINATION
-    ${CMAKE_INSTALL_BINDIR}
+    "${MIXXX_INSTALL_BINDIR}"
 )
 
 # Skins
 install(
   DIRECTORY
-    ${CMAKE_CURRENT_SOURCE_DIR}/res/skins
+    "${CMAKE_CURRENT_SOURCE_DIR}/res/skins"
   DESTINATION
-    ${CMAKE_INSTALL_DATADIR}/mixxx
+    "${MIXXX_INSTALL_DATADIR}"
 )
 
 # Controller mappings
 install(
   DIRECTORY
-    ${CMAKE_CURRENT_SOURCE_DIR}/res/controllers
+    "${CMAKE_CURRENT_SOURCE_DIR}/res/controllers"
   DESTINATION
-    ${CMAKE_INSTALL_DATADIR}/mixxx
+    "${MIXXX_INSTALL_DATADIR}"
 )
 
 # Translation files
 install(
   DIRECTORY
-    ${CMAKE_CURRENT_SOURCE_DIR}/res/translations
+    "${CMAKE_CURRENT_SOURCE_DIR}/res/translations"
   DESTINATION
-    ${CMAKE_INSTALL_DATADIR}/mixxx
+    "${MIXXX_INSTALL_DATADIR}"
   FILES_MATCHING PATTERN
     "*.qm"
 )
 # Font files
 install(
   DIRECTORY
-    ${CMAKE_CURRENT_SOURCE_DIR}/res/fonts
-  DESTINATION
-    ${CMAKE_INSTALL_DATADIR}/mixxx
+    "${CMAKE_CURRENT_SOURCE_DIR}/res/fonts"
+  "DESTINATION"
+    "${MIXXX_INSTALL_DATADIR}"
 )
 
 # Keyboard mapping(s)
 install(
   DIRECTORY
-    ${CMAKE_CURRENT_SOURCE_DIR}/res/keyboard
+    "${CMAKE_CURRENT_SOURCE_DIR}/res/keyboard"
   DESTINATION
-    ${CMAKE_INSTALL_DATADIR}/mixxx
+    "${MIXXX_INSTALL_DATADIR}"
 )
 
 # QScriptEngine extensions
 install(
   DIRECTORY
-    ${CMAKE_CURRENT_SOURCE_DIR}/script
+    "${CMAKE_CURRENT_SOURCE_DIR}/script"
   DESTINATION
-    ${CMAKE_INSTALL_DATADIR}/mixxx
+    "${MIXXX_INSTALL_DATADIR}"
 )
 
 # Licenses
 install(
   FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
-    ${CMAKE_CURRENT_SOURCE_DIR}/COPYING
+    "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"
+    "${CMAKE_CURRENT_SOURCE_DIR}/COPYING"
   DESTINATION
-    ${CMAKE_INSTALL_DATADIR}/licenses/mixxx
+    "${MIXXX_INSTALL_LICENSEDIR}"
 )
 
 # Documentation
 install(
   FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/README
-    ${CMAKE_CURRENT_SOURCE_DIR}/Mixxx-Manual.pdf
+    "${CMAKE_CURRENT_SOURCE_DIR}/README"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Mixxx-Manual.pdf"
   DESTINATION
-    ${CMAKE_INSTALL_DOCDIR}
+    "${MIXXX_INSTALL_DOCDIR}"
 )
 
-# .desktop file for KDE/GNOME menu
-install(
-  FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.desktop
-  DESTINATION
-    ${CMAKE_INSTALL_DATADIR}/applications
-)
+# Additional Linux-only files
+if(UNIX AND NOT APPLE)
+  # .desktop file for KDE/GNOME menu
+  install(
+    FILES
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.desktop"
+    DESTINATION
+      "${CMAKE_INSTALL_DATADIR}/applications"
+  )
 
-# Icon file for menu entry
-install(
-  FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/res/images/mixxx_icon.svg
-  DESTINATION
-    ${CMAKE_INSTALL_DATADIR}/pixmaps
-)
+  # Icon file for menu entry
+  install(
+    FILES
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/images/mixxx_icon.svg"
+    DESTINATION
+      "${CMAKE_INSTALL_DATADIR}/pixmaps"
+  )
 
-# .appdata.xml file for KDE/GNOME AppStream initiative
-install(
-  FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.appdata.xml
-  DESTINATION
-    ${CMAKE_INSTALL_DATADIR}/appdata
-)
+  # .appdata.xml file for KDE/GNOME AppStream initiative
+  install(
+    FILES
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.appdata.xml"
+    DESTINATION
+      "${CMAKE_INSTALL_DATADIR}/appdata"
+  )
 
-# udev rule file for USB HID and Bulk controllers
-install(
-  FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx-usb-uaccess.rules
-  DESTINATION
-    ${CMAKE_INSTALL_SYSCONFDIR}/udev/rules.d
-)
+  # udev rule file for USB HID and Bulk controllers
+  install(
+    FILES
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx-usb-uaccess.rules"
+    DESTINATION
+      "${CMAKE_INSTALL_SYSCONFDIR}/udev/rules.d"
+  )
+endif()
 
 # Packaging
 set(CPACK_PACKAGE_VENDOR "Mixxx Project")
 set(CPACK_PACKAGE_CONTACT "RJ Skerry-Ryan <rryan@mixxx.org>")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack_package_description.txt")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "Mixxx")
+set(CPACK_PACKAGE_EXECUTABLES "mixxx" "Mixxx")
+set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/res/images/mixxx_install_logo.bmp")
+set(CPACK_PACKAGE_HOMEPAGE_URL "https://www.mixxx.org/")
+
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README")
+set(CPACK_STRIP_FILES ON)
+set(CPACK_CREATE_DESKTOP_LINKS "mixxx")
+
 set(CPACK_DEBIAN_PACKAGE_SECTION "sound")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 set(CPACK_DEBIAN_PACKAGE_SUGGESTS "pdf-viewer")
 set(CPACK_DEBIAN_PACKAGE_REPLACES "mixxx-data")
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5opengl5, libqt5svg5, libqt5xml5, libqt5sql5, libqt5sql5-sqlite")
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+
+set(CPACK_WIX_UPGRADE_GUID "921DC99C-4DCF-478D-B950-50685CB9E6BE")
+set(CPACK_WIX_LICENSE_RTF "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/LICENSE.rtf")
+set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/res/images/ic_mixxx.ico")
+set(CPACK_WIX_PROPERTY_ARPHELPLINK "${CPACK_PACKAGE_HOMEPAGE_URL}")
+set(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/images/banner.bmp")
+set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/images/dialog.bmp")
+
 include(CPack)
 
 #
@@ -1213,8 +1256,11 @@ option(STATIC_DEPS "Link dependencies statically" OFF)
 # Chromaprint
 find_package(Chromaprint REQUIRED)
 target_link_libraries(mixxx-lib PUBLIC Chromaprint::Chromaprint)
-if(WIN32 AND STATIC_DEPS)
-  target_compile_definitions(mixxx-lib PUBLIC CHROMAPRINT_NODLL)
+if(WIN32)
+  if(STATIC_DEPS)
+    target_compile_definitions(mixxx-lib PUBLIC CHROMAPRINT_NODLL)
+  endif()
+   # Rubberband is always built statically and needs fftw.
   find_package(FFTW REQUIRED)
   target_link_libraries(mixxx-lib PUBLIC FFTW::FFTW)
 endif()
@@ -1268,6 +1314,15 @@ else()
 endif()
 target_include_directories(mixxx-lib SYSTEM PUBLIC lib/fidlib)
 target_link_libraries(mixxx-lib PUBLIC fidlib)
+
+# KeyFinder
+find_package(KeyFinder)
+option(KEYFINDER "KeyFinder" OFF)
+if(KEYFINDER)
+  target_sources(mixxx-lib PRIVATE src/analyzer/plugins/analyzerkeyfinder.cpp)
+  target_compile_definitions(mixxx-lib PUBLIC __KEYFINDER__)
+  target_link_libraries(mixxx-lib PUBLIC KeyFinder::KeyFinder)
+endif()
 
 # FLAC
 find_package(FLAC REQUIRED)
@@ -1474,6 +1529,12 @@ elseif(WIN32)
     target_link_libraries(mixxx-lib PUBLIC "${QTLIBPNG_LIBRARY}")
     find_library(QTPCRE2_LIBRARY qtpcre2)
     target_link_libraries(mixxx-lib PUBLIC "${QTPCRE2_LIBRARY}")
+  else()
+    #libshout is always built statically
+    target_link_libraries(mixxx-lib PUBLIC
+      ws2_32      # libshout
+      gdi32       # libshout
+    )
   endif()
 endif()
 
@@ -1567,7 +1628,8 @@ if(SndFile_SUPPORTS_SET_COMPRESSION_LEVEL)
   target_compile_definitions(mixxx-lib PUBLIC SFC_SUPPORTS_SET_COMPRESSION_LEVEL)
 endif()
 
-if(WIN32 AND STATIC_DEPS)
+#libsndfile is always build statically, so we don't check for STATIC_DEPS
+if(WIN32)
   find_package(G72X REQUIRED)
   target_link_libraries(mixxx-lib PUBLIC G72X::G72X)
 endif()
@@ -1864,7 +1926,8 @@ if(OPUS)
   target_compile_definitions(mixxx-lib PUBLIC __OPUS__)
   target_include_directories(mixxx-lib SYSTEM PUBLIC ${Opus_INCLUDE_DIRS})
   target_link_libraries(mixxx-lib PUBLIC ${Opus_LIBRARIES})
-  if(WIN32 AND STATIC_DEPS)
+  # Opus is always built statically so we don't check STATIC_DEPS
+  if(WIN32)
     find_package(Celt)
     if(NOT Celt_FOUND)
       message(FATAL_ERROR "Opus support with static dependencies requires the celt library.")
@@ -2099,6 +2162,8 @@ if(NOT OPTIMIZE STREQUAL "off")
       # Jenkins logs) Should we turn on PGO ?
       # http://msdn.microsoft.com/en-us/library/xbf3tbeh.aspx
       target_link_options(mixxx-lib PUBLIC "/LTCG:OFF")
+    elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+      target_compile_options(mixxx-lib PUBLIC "/GL-")
     else()
       target_compile_options(mixxx-lib PUBLIC "/GL")
       target_link_options(mixxx-lib PUBLIC "/LTCG:NOSTATUS")

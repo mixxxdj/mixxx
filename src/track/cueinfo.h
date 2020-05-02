@@ -2,6 +2,7 @@
 // cueinfo.h
 // Created 2020-02-28 by Jan Holthuis
 
+#include "audio/signalinfo.h"
 #include "util/color/rgbcolor.h"
 #include "util/optional.h"
 
@@ -72,5 +73,8 @@ inline bool operator!=(
         const CueInfo& rhs) {
     return !(lhs == rhs);
 }
+
+QDebug operator<<(QDebug debug, const CueType& cueType);
+QDebug operator<<(QDebug debug, const CueInfo& cueInfo);
 
 } // namespace mixxx

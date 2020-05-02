@@ -59,15 +59,14 @@ DlgAnalysis::DlgAnalysis(WLibrary* parent,
             &QRadioButton::clicked,
             this,
             &DlgAnalysis::showAllSongs);
-
-    // TODO(rryan): This triggers a library search before the UI has even
-    // started up. Accounts for 0.2% of skin creation time. Get rid of this!
-    radioButtonRecentlyAdded->click();
+    // Don't click those radio buttons now reduce skin loading time.
+    // 'RecentlyAdded' is clicked in onShow()
 
     connect(pushButtonAnalyze,
             &QPushButton::clicked,
             this,
             &DlgAnalysis::analyze);
+    pushButtonAnalyze->setEnabled(false);
 
     connect(pushButtonSelectAll,
             &QPushButton::clicked,
@@ -96,13 +95,17 @@ DlgAnalysis::DlgAnalysis(WLibrary* parent,
 }
 
 void DlgAnalysis::onShow() {
+    if (!radioButtonRecentlyAdded->isChecked() &&
+            !radioButtonAllSongs->isChecked()) {
+        radioButtonRecentlyAdded->click();
+    }
     // Refresh table
     // There might be new tracks dropped to other views
     m_pAnalysisLibraryTableModel->select();
 }
 
 bool DlgAnalysis::hasFocus() const {
-    return QWidget::hasFocus();
+    return m_pAnalysisLibraryTableView->hasFocus();
 }
 
 void DlgAnalysis::onSearch(const QString& text) {
@@ -170,10 +173,11 @@ void DlgAnalysis::slotAnalysisActive(bool bActive) {
     //qDebug() << this << "slotAnalysisActive" << bActive;
     m_bAnalysisActive = bActive;
     if (bActive) {
-        pushButtonAnalyze->setEnabled(true);
+        pushButtonAnalyze->setChecked(true);
         pushButtonAnalyze->setText(tr("Stop Analysis"));
         labelProgress->setEnabled(true);
     } else {
+        pushButtonAnalyze->setChecked(false);
         pushButtonAnalyze->setText(tr("Analyze"));
         labelProgress->setText("");
         labelProgress->setEnabled(false);

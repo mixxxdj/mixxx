@@ -71,46 +71,12 @@ Variables:
             </Connection>
           </WidgetGroup><!-- / Small Cover/Spinny 2 -->
 
-          <WidgetGroup><!-- Vinyl Controls toggles -->
-            <Size>15f,50f</Size>
-            <Layout>vertical</Layout>
-            <Children>
-              <WidgetGroup><!-- Vinyl Controls toggle with passthrough -->
-                <Size>15f,50f</Size>
-                <Layout>horizontal</Layout>
-                <Children>
-                  <Template src="skin:button_2state.xml">
-                    <SetVariable name="ObjectName">VinylTogglerRightPassthrough</SetVariable>
-                    <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
-                    <SetVariable name="Size">15f,50f</SetVariable>
-                    <SetVariable name="ConfigKey">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
-                  </Template>
-                </Children>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-
-              <WidgetGroup><!-- Vinyl Controls toggle without passthrough -->
-                <Size>15f,50f</Size>
-                <Layout>horizontal</Layout>
-                <Children>
-                  <Template src="skin:button_2state.xml">
-                    <SetVariable name="ObjectName">VinylTogglerRight</SetVariable>
-                    <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
-                    <SetVariable name="Size">15f,50f</SetVariable>
-                    <SetVariable name="ConfigKey">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
-                  </Template>
-                </Children>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
-                  <Transform><Not/></Transform>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-            </Children>
-          </WidgetGroup><!-- /Vinyl Controls toggles -->
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="ObjectName">VinylTogglerLeft</SetVariable>
+            <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
+            <SetVariable name="Size">15f,50f</SetVariable>
+            <SetVariable name="ConfigKey">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
+          </Template>
 
           <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 

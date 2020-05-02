@@ -24,6 +24,14 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     static constexpr int kDefaultDebouncingTimeoutMillis = 300;
     static constexpr int kMaxDebouncingTimeoutMillis = 9999;
 
+    // Use 'active' property to apply an alternative style to the
+    // placeholder text
+    Q_PROPERTY(bool active READ isActive);
+
+    bool isActive() const {
+        return m_state == State::Active ? true : false;
+    }
+
     // TODO(XXX): Replace with a public slot
     static void setDebouncingTimeoutMillis(int debouncingTimeoutMillis);
 
@@ -45,12 +53,13 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     void restoreSearch(const QString& text);
     void disableSearch();
     void slotSetFont(const QFont& font);
+    bool clearBtnHasFocus() const;
+    void clearSearch();
 
   private slots:
     void setShortcutFocus();
     void updateText(const QString& text);
 
-    void clearSearch();
     void triggerSearch();
 
   private:

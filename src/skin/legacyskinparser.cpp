@@ -613,7 +613,7 @@ QWidget* LegacySkinParser::parseSplitter(const QDomElement& node) {
     m_pParent = pSplitter;
 
     if (!childrenNode.isNull()) {
-        // Descend chilren
+        // Descend children
         QDomNodeList children = childrenNode.childNodes();
 
         for (int i = 0; i < children.count(); ++i) {
@@ -724,7 +724,7 @@ QWidget* LegacySkinParser::parseWidgetStack(const QDomElement& node) {
 
     QDomNode childrenNode = m_pContext->selectNode(node, "Children");
     if (!childrenNode.isNull()) {
-        // Descend chilren
+        // Descend children
         QDomNodeList children = childrenNode.childNodes();
 
         for (int i = 0; i < children.count(); ++i) {
@@ -798,7 +798,7 @@ QWidget* LegacySkinParser::parseSizeAwareStack(const QDomElement& node) {
 
     QDomNode childrenNode = m_pContext->selectNode(node, "Children");
     if (!childrenNode.isNull()) {
-        // Descend chilren
+        // Descend children
         QDomNodeList children = childrenNode.childNodes();
 
         for (int i = 0; i < children.count(); ++i) {
@@ -1010,7 +1010,10 @@ QWidget* LegacySkinParser::parseText(const QDomElement& node) {
     if (!pPlayer)
         return NULL;
 
-    WTrackText* p = new WTrackText(pSafeChannelStr, m_pConfig, m_pParent);
+    WTrackText* p = new WTrackText(m_pParent,
+            m_pConfig,
+            m_pLibrary->trackCollections(),
+            pSafeChannelStr);
     setupLabelWidget(node, p);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
@@ -1039,7 +1042,10 @@ QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
     if (!pPlayer)
         return NULL;
 
-    WTrackProperty* p = new WTrackProperty(pSafeChannelStr, m_pConfig, m_pParent);
+    WTrackProperty* p = new WTrackProperty(m_pParent,
+            m_pConfig,
+            m_pLibrary->trackCollections(),
+            pSafeChannelStr);
     setupLabelWidget(node, p);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
@@ -1271,7 +1277,7 @@ void LegacySkinParser::parseSingletonDefinition(const QDomElement& node) {
                 << "SingletonDefinition requires a Children tag with one child";
     }
 
-    // Descend chilren, taking the first valid element.
+    // Descend children, taking the first valid element.
     QDomNode child_node;
     QDomNodeList children = childrenNode.childNodes();
     for (int i = 0; i < children.count(); ++i) {

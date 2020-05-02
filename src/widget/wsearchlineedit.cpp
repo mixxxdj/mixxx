@@ -72,6 +72,9 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
             this,
             &WSearchLineEdit::clearSearch);
 
+    // This prevents the searchbox from being focused by Tab key (real or emulated)
+    // so it is skipped when using the library controls 'MoveFocus[...]'
+    // The Clear button can still be focused by Tab.
     setFocusPolicy(Qt::ClickFocus);
     QShortcut* setFocusShortcut = new QShortcut(QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
     connect(setFocusShortcut,
@@ -182,8 +185,11 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
     // we will resize the Clear button icon only if height has changed.
     if (m_clearButton->size().height() != m_innerHeight) {
         QSize newSize = QSize(m_innerHeight, m_innerHeight);
-        m_clearButton->resize(m_innerHeight, m_innerHeight);
+        m_clearButton->resize(newSize);
         m_clearButton->setIconSize(newSize);
+        // Note(ronso0): For some reason this ensures the search text
+        // is being displayed after skin change/reload.
+        updateEditBox(getSearchText());
     }
     int top = rect().top() + m_frameWidth;
     if (layoutDirection() == Qt::LeftToRight) {
@@ -299,6 +305,11 @@ bool WSearchLineEdit::event(QEvent* pEvent) {
         updateTooltip();
     }
     return QLineEdit::event(pEvent);
+}
+
+// slot
+bool WSearchLineEdit::clearBtnHasFocus() const {
+    return m_clearButton->hasFocus();
 }
 
 // slot

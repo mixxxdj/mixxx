@@ -1,11 +1,12 @@
-#include <QDesktopServices>
-
 #include "controllers/dlgprefcontrollers.h"
 
-#include "preferences/dialog/dlgpreferences.h"
+#include <QDesktopServices>
+
 #include "controllers/controllermanager.h"
-#include "controllers/dlgprefcontroller.h"
 #include "controllers/defs_controllers.h"
+#include "controllers/dlgprefcontroller.h"
+#include "defs_urls.h"
+#include "preferences/dialog/dlgpreferences.h"
 
 DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
                                        UserSettingsPointer pConfig,
@@ -37,24 +38,31 @@ void DlgPrefControllers::slotOpenLocalFile(const QString& file) {
 }
 
 void DlgPrefControllers::slotUpdate() {
-    // Update our sub-windows.
-    foreach (DlgPrefController* pControllerWindows, m_controllerWindows) {
+    for (DlgPrefController* pControllerWindows : qAsConst(m_controllerWindows)) {
         pControllerWindows->slotUpdate();
     }
 }
 
 void DlgPrefControllers::slotCancel() {
-    // Update our sub-windows.
-    foreach (DlgPrefController* pControllerWindows, m_controllerWindows) {
+    for (DlgPrefController* pControllerWindows : qAsConst(m_controllerWindows)) {
         pControllerWindows->slotCancel();
     }
 }
 
 void DlgPrefControllers::slotApply() {
-    // Update our sub-windows.
-    foreach (DlgPrefController* pControllerWindows, m_controllerWindows) {
+    for (DlgPrefController* pControllerWindows : qAsConst(m_controllerWindows)) {
         pControllerWindows->slotApply();
     }
+}
+
+void DlgPrefControllers::slotResetToDefaults() {
+    for (DlgPrefController* pControllerWindows : qAsConst(m_controllerWindows)) {
+        pControllerWindows->slotResetToDefaults();
+    }
+}
+
+QUrl DlgPrefControllers::helpUrl() const {
+    return QUrl(MIXXX_MANUAL_CONTROLLERS_URL);
 }
 
 bool DlgPrefControllers::handleTreeItemClick(QTreeWidgetItem* clickedItem) {

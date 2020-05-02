@@ -759,6 +759,7 @@
                 }
                 delete this.previouslyFocusedEffect;
             }
+            engine.setValue(this.group, "controller_input_active", 0);
 
             this.group = "[EffectRack1_EffectUnit" + newNumber + "]";
 
@@ -774,6 +775,7 @@
                     this.onShowParametersChange);
                 this.showParametersConnection.trigger();
             }
+            engine.setValue(this.group, "controller_input_active", 1);
 
             // Do not enable soft takeover upon EffectUnit construction
             // so initial values can be loaded from knobs.

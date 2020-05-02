@@ -5,9 +5,8 @@
 #include <QMutexLocker>
 
 #include "control/controlobject.h"
-#include "control/controlobject.h"
-#include "effects/effectsmanager.h"
 #include "effects/effectrack.h"
+#include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
 #include "engine/enginemaster.h"
 #include "library/library.h"
@@ -17,14 +16,14 @@
 #include "mixer/previewdeck.h"
 #include "mixer/sampler.h"
 #include "mixer/samplerbank.h"
+#include "preferences/dialog/dlgprefdeck.h"
 #include "soundio/soundmanager.h"
 #include "track/track.h"
 #include "util/assert.h"
+#include "util/defs.h"
 #include "util/logger.h"
-#include "util/stat.h"
 #include "util/sleepableqthread.h"
-#include "preferences/dialog/dlgprefdeck.h"
-
+#include "util/stat.h"
 
 namespace {
 
@@ -267,6 +266,13 @@ unsigned int PlayerManager::numPreviewDecks() {
 void PlayerManager::slotChangeNumDecks(double v) {
     QMutexLocker locker(&m_mutex);
     int num = (int)v;
+
+    VERIFY_OR_DEBUG_ASSERT(num <= kMaxNumberOfDecks) {
+        qWarning() << "Number of decks exceeds the maximum we expect."
+                   << num << "vs" << kMaxNumberOfDecks
+                   << " Refusing to add another deck. Please update util/defs.h";
+        return;
+    }
 
     // Update the soundmanager config even if the number of decks has been
     // reduced.
