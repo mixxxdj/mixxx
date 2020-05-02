@@ -206,6 +206,14 @@ void EffectChainPresetManager::deletePreset(const QString& chainPresetName) {
     if (pressedButton != QMessageBox::Yes) {
         return;
     }
+    QFile file(m_pConfig->getSettingsPath() + kEffectChainPresetDirectory +
+            "/" + chainPresetName + ".xml");
+    if (!file.remove()) {
+        QMessageBox::critical(
+                nullptr,
+                tr("Could not delete effect chain preset"),
+                tr("Could not delete effect chain preset \"%1\"").arg(chainPresetName));
+    }
 
     EffectChainPresetPointer pPreset =
             m_effectChainPresets.take(chainPresetName);
