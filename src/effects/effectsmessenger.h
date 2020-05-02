@@ -2,7 +2,13 @@
 
 #include "engine/effects/message.h"
 
-/// EffectsMessenger sends EffectsRequest and receives EffectsResponses
+/// EffectsMessenger sends EffectsRequests from the main thread and receives
+/// EffectsResponses from the audio thread. This allows memory allocation and
+/// deallocation on the heap, which is slow, to be done in the main thread to
+/// avoid blocking the audio thread and causing audible glitches.
+/// Refer to
+/// http://www.rossbencina.com/code/real-time-audio-programming-101-time-waits-for-nothing
+/// for background information.
 class EffectsMessenger {
   public:
     EffectsMessenger(EffectsRequestPipe* pRequestPipe, EffectsResponsePipe* m_pResponsePipe);
