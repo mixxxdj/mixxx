@@ -19,9 +19,10 @@ class EffectManifest;
 
 typedef QMap<EffectParameterType, QList<EffectParameterPointer>> ParameterMap;
 
-/// EffectsManager creates/destroys a fixed set of EffectChainSlots on Mixxx
-/// startup/shutdown and creates a QuickEffectChainSlot and EqualizerEffectChainSlot
-/// for each deck.
+/// EffectsManager initializes and shuts down the effects system. It creates
+/// destroys a fixed set of StandardEffectChainSlots on Mixxx startup/shutdown
+/// and creates a QuickEffectChainSlot and EqualizerEffectChainSlot when
+/// PlayerManager creates decks.
 class EffectsManager : public QObject {
     Q_OBJECT
   public:
