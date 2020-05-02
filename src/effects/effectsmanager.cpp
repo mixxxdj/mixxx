@@ -89,46 +89,6 @@ void EffectsManager::registerOutputChannel(const ChannelHandleAndGroup& handle_g
     m_registeredOutputChannels.insert(handle_group);
 }
 
-QString EffectsManager::getNextEffectId(const QString& effectId) {
-    if (m_visibleEffectManifests.isEmpty()) {
-        return QString();
-    }
-    if (effectId.isNull()) {
-        return m_visibleEffectManifests.first()->id();
-    }
-
-    int index;
-    for (index = 0; index < m_visibleEffectManifests.size(); ++index) {
-        if (effectId == m_visibleEffectManifests.at(index)->id()) {
-            break;
-        }
-    }
-    if (++index >= m_visibleEffectManifests.size()) {
-        index = 0;
-    }
-    return m_visibleEffectManifests.at(index)->id();
-}
-
-QString EffectsManager::getPrevEffectId(const QString& effectId) {
-    if (m_visibleEffectManifests.isEmpty()) {
-        return QString();
-    }
-    if (effectId.isNull()) {
-        return m_visibleEffectManifests.last()->id();
-    }
-
-    int index;
-    for (index = 0; index < m_visibleEffectManifests.size(); ++index) {
-        if (effectId == m_visibleEffectManifests.at(index)->id()) {
-            break;
-        }
-    }
-    if (--index < 0) {
-        index = m_visibleEffectManifests.size() - 1;
-    }
-    return m_visibleEffectManifests.at(index)->id();
-}
-
 void EffectsManager::addStandardEffectChainSlots() {
     for (int i = 0; i < EffectsManager::kNumStandardEffectChains; ++i) {
         VERIFY_OR_DEBUG_ASSERT(!m_effectChainSlotsByGroup.contains(
@@ -251,12 +211,6 @@ void EffectsManager::setup() {
     addOutputEffectChainSlot();
 
     readEffectsXml();
-}
-
-void EffectsManager::saveDefaultForEffect(int unitNumber, int effectNumber) {
-    auto pSlot = m_standardEffectChainSlots.at(unitNumber)->getEffectSlot(effectNumber);
-    EffectPresetPointer pPreset(new EffectPreset(pSlot));
-    m_pEffectPresetManager->saveDefaultForEffect(pPreset);
 }
 
 void EffectsManager::readEffectsXml() {
