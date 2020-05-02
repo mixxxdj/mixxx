@@ -8,6 +8,7 @@
 #include "effects/backends/builtin/filtereffect.h"
 #include "effects/effectsmanager.h"
 #include "effects/presets/effectxmlelements.h"
+#include "util/xml.h"
 
 namespace {
 const QString kEffectChainPresetDirectory = "/effects/chains";
