@@ -26,8 +26,8 @@ void WEffectChainPresetSelector::setup(const QDomNode& node, const SkinContext& 
         return;
     }
 
-    connect(m_pEffectsManager,
-            &EffectsManager::effectChainPresetListUpdated,
+    connect(m_pChainPresetManager.get(),
+            &EffectChainPresetManager::effectChainPresetListUpdated,
             this,
             &WEffectChainPresetSelector::populate);
     connect(m_pChainSlot.data(),
