@@ -82,16 +82,11 @@ class EffectsManager : public QObject {
     }
     void addQuickEffectChainSlot(const QString& deckGroupName);
 
-    // TODO: Remove these methods to reduce coupling between GUI and
-    // effects system implementation details.
     EffectChainSlotPointer getEffectChainSlot(const QString& group) const;
     EffectSlotPointer getEffectSlot(const QString& group);
 
     EffectParameterSlotBasePointer getEffectParameterSlot(
             const EffectParameterType parameterType, const ConfigKey& configKey);
-
-    QString getNextEffectId(const QString& effectId);
-    QString getPrevEffectId(const QString& effectId);
 
     inline const QList<EffectManifestPointer>& getVisibleEffectManifests() const {
         return m_visibleEffectManifests;
@@ -99,9 +94,6 @@ class EffectsManager : public QObject {
 
     void setEffectVisibility(EffectManifestPointer pManifest, bool visibility);
     bool getEffectVisibility(EffectManifestPointer pManifest);
-
-    void saveDefaultForEffect(EffectPresetPointer pEffectPreset);
-    void saveDefaultForEffect(int chainNumber, int effcectNumber);
 
     void setup();
 
