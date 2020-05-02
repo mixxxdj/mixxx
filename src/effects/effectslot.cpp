@@ -123,7 +123,8 @@ void EffectSlot::addToEngine(std::unique_ptr<EffectProcessor> pProcessor,
 
     m_pEngineEffect = new EngineEffect(m_pManifest,
             activeInputChannels,
-            m_pEffectsManager,
+            m_pEffectsManager->registeredInputChannels(),
+            m_pEffectsManager->registeredOutputChannels(),
             std::move(pProcessor));
 
     EffectsRequest* request = new EffectsRequest();
