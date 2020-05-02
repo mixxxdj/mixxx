@@ -506,6 +506,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
         if (m_pHoveredMark != nullptr) {
             dValue = m_pHoveredMark->getSamplePosition() / m_trackSamplesControl->get();
             m_iPickupPos = valueToPosition(dValue);
+            m_iPlayPos = m_iPickupPos;
             setControlParameterUp(dValue);
             m_bLeftClickDragging = false;
         } else {
