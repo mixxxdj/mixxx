@@ -3,8 +3,6 @@
 #include "control/controlencoder.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
-#include "effects/effectprocessor.h"
-#include "effects/backends/effectsbackendmanager.h"
 #include "effects/effectslot.h"
 #include "effects/effectsmanager.h"
 #include "effects/effectsmessenger.h"
@@ -25,7 +23,6 @@ EffectChainSlot::EffectChainSlot(const QString& group,
         : // The control group names are 1-indexed while internally everything
           // is 0-indexed.
           m_pEffectsManager(pEffectsManager),
-          m_pBackendManager(pEffectsManager->getBackendManager()),
           m_pChainPresetManager(pEffectsManager->getChainPresetManager()),
           m_pMessenger(pEffectsMessenger),
           m_group(group),
