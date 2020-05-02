@@ -21,9 +21,10 @@
 class EngineEffect : public EffectsRequestHandler {
   public:
     EngineEffect(EffectManifestPointer pManifest,
-                 const QSet<ChannelHandleAndGroup>& activeInputChannels,
-                 EffectsManager* pEffectsManager,
-                 std::unique_ptr<EffectProcessor> pProcessor);
+            const QSet<ChannelHandleAndGroup>& activeInputChannels,
+            const QSet<ChannelHandleAndGroup>& registeredInputChannels,
+            const QSet<ChannelHandleAndGroup>& registeredOutputChannels,
+            std::unique_ptr<EffectProcessor> pProcessor);
     virtual ~EngineEffect();
 
     const QString& name() const {

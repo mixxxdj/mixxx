@@ -5,13 +5,13 @@
 #include "util/sample.h"
 
 EngineEffect::EngineEffect(EffectManifestPointer pManifest,
-                           const QSet<ChannelHandleAndGroup>& activeInputChannels,
-                           EffectsManager* pEffectsManager,
-                           std::unique_ptr<EffectProcessor> pProcessor)
+        const QSet<ChannelHandleAndGroup>& activeInputChannels,
+        const QSet<ChannelHandleAndGroup>& registeredInputChannels,
+        const QSet<ChannelHandleAndGroup>& registeredOutputChannels,
+        std::unique_ptr<EffectProcessor> pProcessor)
         : m_pManifest(pManifest),
           m_pProcessor(std::move(pProcessor)),
-          m_parameters(pManifest->parameters().size()),
-          m_pEffectsManager(pEffectsManager) {
+          m_parameters(pManifest->parameters().size()) {
     const QList<EffectManifestParameterPointer>& parameters = m_pManifest->parameters();
     for (int i = 0; i < parameters.size(); ++i) {
         EffectManifestParameterPointer param = parameters.at(i);
@@ -20,11 +20,9 @@ EngineEffect::EngineEffect(EffectManifestPointer pManifest,
         m_parametersById[param->id()] = pParameter;
     }
 
-    for (const ChannelHandleAndGroup& inputChannel :
-            pEffectsManager->registeredInputChannels()) {
+    for (const ChannelHandleAndGroup& inputChannel : registeredInputChannels) {
         ChannelHandleMap<EffectEnableState> outputChannelMap;
-        for (const ChannelHandleAndGroup& outputChannel :
-                pEffectsManager->registeredOutputChannels()) {
+        for (const ChannelHandleAndGroup& outputChannel : registeredOutputChannels) {
             outputChannelMap.insert(outputChannel.handle(), EffectEnableState::Disabled);
         }
         m_effectEnableStateForChannelMatrix.insert(inputChannel.handle(), outputChannelMap);
@@ -34,10 +32,9 @@ EngineEffect::EngineEffect(EffectManifestPointer pManifest,
 
     //TODO: get actual configuration of engine
     const mixxx::EngineParameters bufferParameters(
-          mixxx::AudioSignal::SampleRate(96000),
-          MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
-    m_pProcessor->initialize(activeInputChannels,
-                             pEffectsManager->registeredOutputChannels(), bufferParameters);
+            mixxx::AudioSignal::SampleRate(96000),
+            MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
+    m_pProcessor->initialize(activeInputChannels, registeredOutputChannels, bufferParameters);
     m_effectRampsFromDry = pManifest->effectRampsFromDry();
 }
 
