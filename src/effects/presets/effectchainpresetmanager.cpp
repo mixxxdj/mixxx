@@ -85,8 +85,8 @@ void EffectChainPresetManager::importPreset() {
                 bool okay = false;
                 QString newName = QInputDialog::getText(nullptr,
                         tr("Rename effect chain preset"),
-                        tr("An effect chain preset with the name") + " " +
-                                pPreset->name() + " " +
+                        tr("An effect chain preset with the name") + " \"" +
+                                pPreset->name() + "\" " +
                                 tr("already exists. Choose a new name for the "
                                    "imported effect chain preset:"),
                         QLineEdit::Normal,
@@ -158,8 +158,8 @@ void EffectChainPresetManager::exportPreset(const QString& chainPresetName) {
         file.close();
         QMessageBox::critical(nullptr,
                 tr("Error exporting effect chain preset"),
-                tr("Could not save effect chain preset") + " " +
-                        chainPresetName + tr("to file") + " " + fileName);
+                tr("Could not save effect chain preset") + " \"" +
+                        chainPresetName + "\" " + tr("to file") + " " + fileName);
         return;
     }
 
@@ -178,7 +178,7 @@ void EffectChainPresetManager::renamePreset(const QString& oldName) {
     bool okay = false;
     QString newName = QInputDialog::getText(nullptr,
             tr("Rename effect chain preset"),
-            tr("New name effect chain preset") + " " + oldName,
+            tr("New name for effect chain preset") + " \"" + oldName + "\"",
             QLineEdit::Normal,
             oldName,
             &okay);
@@ -202,10 +202,11 @@ void EffectChainPresetManager::deletePreset(const QString& chainPresetName) {
     auto pressedButton = QMessageBox::question(nullptr,
             tr("Remove effect chain preset"),
             tr("Are you sure you want to delete the effect chain preset") +
-                    " " + chainPresetName + "?");
+                    " \"" + chainPresetName + "\"?");
     if (pressedButton != QMessageBox::Yes) {
         return;
     }
+
     QFile file(m_pConfig->getSettingsPath() + kEffectChainPresetDirectory +
             "/" + chainPresetName + ".xml");
     if (!file.remove()) {
