@@ -70,14 +70,6 @@ class EffectsManager : public QObject {
         return m_registeredOutputChannels;
     }
 
-    ParameterMap getLoadedParameters(int chainNumber, int effectNumber) const;
-    ParameterMap getHiddenParameters(int chainNumber, int effectNumber) const;
-
-    void hideParameter(int chainNumber, int effectNumber, EffectParameterPointer pParameter);
-    void showParameter(int chainNumber, int effectNumber, EffectParameterPointer pParameter);
-
-    void loadPresetToStandardChain(int chainNumber, EffectChainPresetPointer pPreset);
-
     void addStandardEffectChainSlots();
     EffectChainSlotPointer getStandardEffectChainSlot(int unitNumber) const;
 
@@ -110,8 +102,6 @@ class EffectsManager : public QObject {
 
     void saveDefaultForEffect(EffectPresetPointer pEffectPreset);
     void saveDefaultForEffect(int chainNumber, int effcectNumber);
-
-    void savePresetFromStandardEffectChain(int chainNumber);
 
     void setup();
 

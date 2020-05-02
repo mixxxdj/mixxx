@@ -15,6 +15,7 @@ class EffectPresetManager {
     }
 
     void saveDefaultForEffect(EffectPresetPointer pEffectPreset);
+    void saveDefaultForEffect(EffectSlotPointer pEffectSlot);
 
   private:
     void loadDefaultEffectPresets();

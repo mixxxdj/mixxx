@@ -138,6 +138,7 @@ class EffectSlot : public QObject {
 
   signals:
     void effectChanged();
+    void parametersChanged();
 
   private slots:
     void updateEngineState();

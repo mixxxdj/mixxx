@@ -424,6 +424,7 @@ void EffectSlot::hideParameter(EffectParameterPointer pParameter) {
     }
     m_loadedParameters[parameterType].removeAll(pParameter);
     loadParameters();
+    emit parametersChanged();
 }
 
 void EffectSlot::showParameter(EffectParameterPointer pParameter) {
@@ -436,6 +437,7 @@ void EffectSlot::showParameter(EffectParameterPointer pParameter) {
     }
     m_loadedParameters[parameterType].append(pParameter);
     loadParameters();
+    emit parametersChanged();
 }
 
 void EffectSlot::slotPrevEffect(double v) {

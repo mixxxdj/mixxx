@@ -4,6 +4,7 @@
 #include <QPushButton>
 
 #include "effects/effectsmanager.h"
+#include "effects/presets/effectchainpresetmanager.h"
 #include "skin/skincontext.h"
 #include "util/parented_ptr.h"
 #include "widget/wbasewidget.h"
@@ -17,10 +18,12 @@ class WEffectChainPresetButton : public QPushButton, public WBaseWidget {
 
   private slots:
     void populateMenu();
-    void saveChainPreset();
 
   private:
     int m_iChainNumber;
+    EffectChainSlotPointer m_pChainSlot;
+
     EffectsManager* m_pEffectsManager;
+    EffectChainPresetManagerPointer m_pChainPresetManager;
     parented_ptr<QMenu> m_pMenu;
 };
