@@ -7,7 +7,6 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QIODevice>
-#include <QLoggingCategory>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QString>
@@ -16,6 +15,18 @@
 
 #include "controllers/controllerdebug.h"
 #include "util/assert.h"
+
+Q_LOGGING_CATEGORY(mixxxLog, MIXXX_LOGGING_CATEGORY_ROOT)
+
+Q_LOGGING_CATEGORY(mixxxLogConfig, MIXXX_LOGGING_CATEGORY_CONFIG)
+Q_LOGGING_CATEGORY(mixxxLogControl, MIXXX_LOGGING_CATEGORY_CONTROL)
+Q_LOGGING_CATEGORY(mixxxLogDatabase, MIXXX_LOGGING_CATEGORY_DATABASE)
+Q_LOGGING_CATEGORY(mixxxLogDevice, MIXXX_LOGGING_CATEGORY_DEVICE)
+Q_LOGGING_CATEGORY(mixxxLogEngine, MIXXX_LOGGING_CATEGORY_ENGINE)
+Q_LOGGING_CATEGORY(mixxxLogLibrary, MIXXX_LOGGING_CATEGORY_LIBRARY)
+Q_LOGGING_CATEGORY(mixxxLogNetwork, MIXXX_LOGGING_CATEGORY_NETWORK)
+Q_LOGGING_CATEGORY(mixxxLogScript, MIXXX_LOGGING_CATEGORY_SCRIPT)
+Q_LOGGING_CATEGORY(mixxxLogSource, MIXXX_LOGGING_CATEGORY_SOURCE)
 
 namespace {
 

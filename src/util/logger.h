@@ -12,6 +12,8 @@
 
 namespace mixxx {
 
+/// THIS CLASS IS DEPRECATED
+/// Please refer to util/logging.h how to log in Mixxx
 class Logger final {
 public:
     Logger() = default;

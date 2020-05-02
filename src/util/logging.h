@@ -1,9 +1,78 @@
 #pragma once
 
 #include <QDir>
+#include <QLoggingCategory>
+
+/// Macro for composing parent/child logging category names
+///
+/// Use this macro to compose a new child logging category from a
+/// parent category.
+#define MIXXX_LOGGING_CATEGORY_PARENT_CHILD(parentName, childName) \
+    parentName "." childName
+
+/// Root logging category for Mixxx
+///
+/// Only use this as a parent if none of the predefined base logging
+/// categories (see below) are suitable. In this case discuss with the
+/// team if a new base category needs to be introduced.
+Q_DECLARE_LOGGING_CATEGORY(mixxxLog)
+#define MIXXX_LOGGING_CATEGORY_ROOT "mixxx"
+
+/// Base logging category for configuration
+Q_DECLARE_LOGGING_CATEGORY(mixxxLogConfig)
+#define MIXXX_LOGGING_CATEGORY_CONFIG \
+    MIXXX_LOGGING_CATEGORY_PARENT_CHILD(MIXXX_LOGGING_CATEGORY_ROOT, "config")
+
+/// Base logging category for controls and controllers
+Q_DECLARE_LOGGING_CATEGORY(mixxxLogControl)
+#define MIXXX_LOGGING_CATEGORY_CONTROL \
+    MIXXX_LOGGING_CATEGORY_PARENT_CHILD(MIXXX_LOGGING_CATEGORY_ROOT, "control")
+
+/// Base logging category for generic database access
+Q_DECLARE_LOGGING_CATEGORY(mixxxLogDatabase)
+#define MIXXX_LOGGING_CATEGORY_DATABASE \
+    MIXXX_LOGGING_CATEGORY_PARENT_CHILD(MIXXX_LOGGING_CATEGORY_ROOT, "database")
+
+/// Base logging category for hardware I/O sound devices
+Q_DECLARE_LOGGING_CATEGORY(mixxxLogDevice)
+#define MIXXX_LOGGING_CATEGORY_DEVICE \
+    MIXXX_LOGGING_CATEGORY_PARENT_CHILD(MIXXX_LOGGING_CATEGORY_ROOT, "device")
+
+/// Base logging category for audio processing (not real-time safe!)
+Q_DECLARE_LOGGING_CATEGORY(mixxxLogEngine)
+#define MIXXX_LOGGING_CATEGORY_ENGINE \
+    MIXXX_LOGGING_CATEGORY_PARENT_CHILD(MIXXX_LOGGING_CATEGORY_ROOT, "engine")
+
+/// Base logging category for library management
+Q_DECLARE_LOGGING_CATEGORY(mixxxLogLibrary)
+#define MIXXX_LOGGING_CATEGORY_LIBRARY \
+    MIXXX_LOGGING_CATEGORY_PARENT_CHILD(MIXXX_LOGGING_CATEGORY_ROOT, "library")
+
+/// Base logging category for generic network communication
+Q_DECLARE_LOGGING_CATEGORY(mixxxLogNetwork)
+#define MIXXX_LOGGING_CATEGORY_NETWORK \
+    MIXXX_LOGGING_CATEGORY_PARENT_CHILD(MIXXX_LOGGING_CATEGORY_ROOT, "network")
+
+/// Base logging category for scripting
+Q_DECLARE_LOGGING_CATEGORY(mixxxLogScript)
+#define MIXXX_LOGGING_CATEGORY_SCRIPT \
+    MIXXX_LOGGING_CATEGORY_PARENT_CHILD(MIXXX_LOGGING_CATEGORY_ROOT, "script")
+
+/// Base logging category for audio and metadata sources
+Q_DECLARE_LOGGING_CATEGORY(mixxxLogSource)
+#define MIXXX_LOGGING_CATEGORY_SOURCE \
+    MIXXX_LOGGING_CATEGORY_PARENT_CHILD(MIXXX_LOGGING_CATEGORY_ROOT, "source")
 
 namespace mixxx {
 
+/// Custom enumeration that contains a subset of QtMsgType
+///
+/// Uses a reverse ordering compared to QtMsgType, i.e. the
+/// most severe level has the lowest number!
+///
+/// TODO: Reverse the ordering and use the corresponding QtMsgType
+/// ordinals for the numbering after `Trace` has been removed. Check
+/// for ALL occurences that might be affected by this reordering!!
 enum class LogLevel {
     Critical = 0,
     Warning = 1,
@@ -20,8 +89,28 @@ constexpr LogLevel kLogLevelDefault = LogLevel::Warning;
 /// been written before Mixxx crashes.
 constexpr LogLevel kLogFlushLevelDefault = LogLevel::Critical;
 
-/// Utility class for accessing the logging settings that are
-/// configured at startup.
+/// Utility class for accessing the logging settings that are configured
+/// at startup.
+///
+/// Do not use this class directly!! Instead use the following Qt functions
+/// (= macros) for logging:
+///
+///   - qCCritical(): Unexpected errors that might not be recoverable,
+///                   e.g. failed database queries (HTTP Status 5xx)
+///   - qCWarning(): Expected errors that could be handled and are
+///                  recoverable, e.g. invalid or inconsistent input data
+///                  (HTTP Status 4xx)
+///   - qCInfo(): Everything that should appear in the log file and that
+///               could help to analyze and identify issues that might occur
+///   - qCDebug(): Information that is only relevant during development
+///
+/// If you need more detailed trace logs during debugging or implementing
+/// new functionality then hide this code behind `#define ENABLE_TRACE_LOG false`
+/// in the corresponding compilation unit (= .cpp file). Enable it temporarily
+/// in your local repo while debugging. Disable it before submitting a pull
+/// request. Use qCDebug() for these trace logs.
+///
+/// See also: https://doc.qt.io/qt-5/qloggingcategory.html
 class Logging {
   public:
     // These are not thread safe. Only call them on Mixxx startup and shutdown.
