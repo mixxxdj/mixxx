@@ -47,9 +47,6 @@ GLVSyncTestWidget::GLVSyncTestWidget(const char* group, QWidget* parent)
 }
 
 GLVSyncTestWidget::~GLVSyncTestWidget() {
-    if (QGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
 }
 
 void GLVSyncTestWidget::castToQWidget() {

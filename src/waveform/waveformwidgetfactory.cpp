@@ -95,7 +95,10 @@ WaveformWidgetHolder::WaveformWidgetHolder(WaveformWidgetAbstract* waveformWidge
 ///////////////////////////////////////////
 
 WaveformWidgetFactory::WaveformWidgetFactory()
-        : m_type(WaveformWidgetType::Count_WaveformwidgetType),
+        // Set an empty waveform initially. We will set the correct one when skin load finishes.
+        // Concretely, we want to set a non-GL waveform when loading the skin so that the window
+        // loads correctly.
+        : m_type(WaveformWidgetType::EmptyWaveform),
           m_config(0),
           m_skipRender(false),
           m_frameRate(30),
@@ -311,8 +314,10 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
 
     WaveformWidgetType::Type type = static_cast<WaveformWidgetType::Type>(
             m_config->getValueString(ConfigKey("[Waveform]","WaveformType")).toInt(&ok));
-    if (!ok || !setWidgetType(type)) {
-        setWidgetType(autoChooseWidgetType());
+    // Store the widget type on m_configType for later initialization.
+    // We will initialize the objects later because of a problem with GL on QT 5.14.2 on Windows
+    if (!ok || !setWidgetType(type, m_configType)) {
+        setWidgetType(autoChooseWidgetType(), m_configType);
     }
 
     for (int i = 0; i < FilterCount; i++) {
@@ -359,6 +364,18 @@ void WaveformWidgetFactory::addTimerListener(QWidget* pWidget) {
             Qt::DirectConnection);
 }
 
+
+void WaveformWidgetFactory::slotSkinLoaded() {
+    setWidgetTypeFromConfig();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0) && defined __WINDOWS__
+    // This regenerates the waveforms twice because of a bug found on Windows
+    // where the first one fails.
+    // The problem is that the window of the widget thinks that it is not exposed.
+    // (https://doc.qt.io/qt-5/qwindow.html#exposeEvent )
+    setWidgetTypeFromConfig();
+#endif
+}
+
 bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
                                               const QDomElement& node,
                                               const SkinContext& parentContext) {
@@ -390,6 +407,8 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
     viewer->setZoom(m_defaultZoom);
     viewer->setDisplayBeatGridAlpha(m_beatGridAlpha);
     viewer->setPlayMarkerPosition(m_playMarkerPosition);
+    waveformWidget->resize(viewer->width(), viewer->height());
+    waveformWidget->getWidget()->show();
     viewer->update();
 
     qDebug() << "WaveformWidgetFactory::setWaveformWidget - waveform widget added in factory, index" << index;
@@ -430,32 +449,43 @@ int WaveformWidgetFactory::getVSyncType() {
 }
 
 bool WaveformWidgetFactory::setWidgetType(WaveformWidgetType::Type type) {
-    if (type == m_type)
+    return setWidgetType(type, m_type);
+}
+
+bool WaveformWidgetFactory::setWidgetType(WaveformWidgetType::Type type, WaveformWidgetType::Type& currentType) {
+    if (type == currentType)
         return true;
 
     // check if type is acceptable
-    for (int i = 0; i < m_waveformWidgetHandles.size(); i++) {
-        WaveformWidgetAbstractHandle& handle = m_waveformWidgetHandles[i];
-        if (handle.m_type == type) {
-            // type is acceptable
-            m_type = type;
-            if (m_config) {
-                m_config->set(ConfigKey("[Waveform]","WaveformType"), ConfigValue((int)m_type));
-            }
-            return true;
+    int index = findHandleIndexFromType(type);
+    if (index > -1) {
+        // type is acceptable
+        currentType = type;
+        if (m_config) {
+            m_config->setValue(ConfigKey("[Waveform]", "WaveformType"), static_cast<int>(currentType));
         }
+        return true;
     }
 
     // fallback
-    m_type = WaveformWidgetType::EmptyWaveform;
+    currentType = WaveformWidgetType::EmptyWaveform;
     if (m_config) {
-        m_config->set(ConfigKey("[Waveform]","WaveformType"), ConfigValue((int)m_type));
+        m_config->setValue(ConfigKey("[Waveform]", "WaveformType"), static_cast<int>(currentType));
     }
     return false;
 }
 
-bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
-    if (handleIndex < 0 || handleIndex >= (int)m_waveformWidgetHandles.size()) {
+bool WaveformWidgetFactory::setWidgetTypeFromConfig() {
+    int empty = findHandleIndexFromType(WaveformWidgetType::EmptyWaveform);
+    int desired = findHandleIndexFromType(m_configType);
+    if (desired == -1) {
+        desired = empty;
+    }
+    return setWidgetTypeFromHandle(desired, true);
+}
+
+bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force) {
+    if (handleIndex < 0 || handleIndex >= m_waveformWidgetHandles.size()) {
         qDebug() << "WaveformWidgetFactory::setWidgetType - invalid handle --> use of 'EmptyWaveform'";
         // fallback empty type
         setWidgetType(WaveformWidgetType::EmptyWaveform);
@@ -463,7 +493,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
     }
 
     WaveformWidgetAbstractHandle& handle = m_waveformWidgetHandles[handleIndex];
-    if (handle.m_type == m_type) {
+    if (handle.m_type == m_type && !force) {
         qDebug() << "WaveformWidgetFactory::setWidgetType - type already in use";
         return true;
     }
@@ -972,4 +1002,23 @@ void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick, VisualsManager* pVisua
 
 void WaveformWidgetFactory::getAvailableVSyncTypes(QList<QPair<int, QString > >* pList) {
     m_vsyncThread->getAvailableVSyncTypes(pList);
+}
+
+WaveformWidgetType::Type WaveformWidgetFactory::findTypeFromHandleIndex(int index) {
+    WaveformWidgetType::Type type = WaveformWidgetType::Count_WaveformwidgetType;
+    if (index >= 0 && index < m_waveformWidgetHandles.size()) {
+        type = m_waveformWidgetHandles[index].m_type;
+    }
+    return type;
+}
+
+int WaveformWidgetFactory::findHandleIndexFromType(WaveformWidgetType::Type type) {
+    int index = -1;
+    for (int i = 0; i < m_waveformWidgetHandles.size(); i++) {
+        WaveformWidgetAbstractHandle& handle = m_waveformWidgetHandles[i];
+        if (handle.m_type == type) {
+            index = i;
+        }
+    }
+    return index;
 }
