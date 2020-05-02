@@ -82,26 +82,6 @@ class EffectsManager : public QObject {
         return m_registeredOutputChannels;
     }
 
-    void loadStandardEffect(
-            const int iChainSlotNumber,
-            const int iEffectSlotNumber,
-            const EffectManifestPointer pManifest);
-
-    void loadOutputEffect(
-            const int iEffectSlotNumber,
-            const EffectManifestPointer pManifest);
-
-    void loadEqualizerEffect(const QString& group,
-            const int iEffectSlotNumber,
-            const EffectManifestPointer pManifest);
-
-    void loadEffect(
-            EffectChainSlotPointer pChainSlot,
-            const int iEffectSlotNumber,
-            const EffectManifestPointer pManifest,
-            EffectPresetPointer pPreset = nullptr,
-            bool adoptMetaknobFromPreset = false);
-
     ParameterMap getLoadedParameters(int chainNumber, int effectNumber) const;
     ParameterMap getHiddenParameters(int chainNumber, int effectNumber) const;
 
@@ -117,6 +97,9 @@ class EffectsManager : public QObject {
     EffectChainSlotPointer getOutputEffectChainSlot() const;
 
     void addEqualizerEffectChainSlot(const QString& deckGroupName);
+    EffectChainSlotPointer getEqualizerEffectChainSlot(const QString& deckGroupName) {
+        return m_equalizerEffectChainSlots.value(deckGroupName);
+    }
     void addQuickEffectChainSlot(const QString& deckGroupName);
 
     // TODO: Remove these methods to reduce coupling between GUI and

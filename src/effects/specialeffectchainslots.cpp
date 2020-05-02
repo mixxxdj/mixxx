@@ -149,14 +149,12 @@ EqualizerEffectChainSlot::EqualizerEffectChainSlot(const QString& group,
     setupLegacyAliasesForGroup(group);
 }
 
-void EqualizerEffectChainSlot::loadEffect(
+void EqualizerEffectChainSlot::loadEffectWithDefaults(
         const unsigned int iEffectSlotNumber,
-        const EffectManifestPointer pManifest,
-        EffectPresetPointer pPreset,
-        bool adoptMetaknobFromPreset) {
+        const EffectManifestPointer pManifest) {
     // TODO: preserve effect parameters when loading new effect. This will allow
     // for easy comparison of the sound of different equalizer effects.
-    EffectChainSlot::loadEffect(iEffectSlotNumber, pManifest, pPreset, adoptMetaknobFromPreset);
+    EffectChainSlot::loadEffectWithDefaults(iEffectSlotNumber, pManifest);
     m_pCOFilterWaveform->set(pManifest->isMixingEQ());
 }
 

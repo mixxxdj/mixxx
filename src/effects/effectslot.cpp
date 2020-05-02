@@ -8,6 +8,7 @@
 #include "control/controlpushbutton.h"
 #include "effects/defs.h"
 #include "effects/effectsmessenger.h"
+#include "effects/presets/effectpresetmanager.h"
 #include "util/defs.h"
 #include "util/math.h"
 
@@ -23,6 +24,7 @@ EffectSlot::EffectSlot(const QString& group,
           m_group(group),
           m_pEffectsManager(pEffectsManager),
           m_pPresetManager(pEffectsManager->getEffectPresetManager()),
+          m_pBackendManager(pEffectsManager->getBackendManager()),
           m_pMessenger(pEffectsMessenger),
           m_pEngineEffectChain(pEngineEffectChain),
           m_pEngineEffect(nullptr) {
@@ -231,7 +233,30 @@ EffectParameterSlotBasePointer EffectSlot::getEffectParameterSlot(
     return m_parameterSlots.value(parameterType).at(slotNumber);
 }
 
-void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
+void EffectSlot::loadEffectFromPreset(
+        const EffectPresetPointer pPreset,
+        const QSet<ChannelHandleAndGroup>& activeChannels) {
+    if (pPreset == nullptr) {
+        loadEffectInner(nullptr, nullptr, activeChannels, true);
+        return;
+    }
+    EffectManifestPointer pManifest = m_pBackendManager->getManifest(
+            pPreset->id(), pPreset->backendType());
+    loadEffectInner(pManifest, pPreset, activeChannels, true);
+}
+
+void EffectSlot::loadEffectWithDefaults(
+        const EffectManifestPointer pManifest,
+        const QSet<ChannelHandleAndGroup>& activeChannels) {
+    if (pManifest == nullptr) {
+        loadEffectInner(nullptr, nullptr, activeChannels, false);
+        return;
+    }
+    EffectPresetPointer pPreset = m_pPresetManager->getDefaultPreset(pManifest);
+    loadEffectInner(pManifest, pPreset, activeChannels, false);
+}
+
+void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
         EffectPresetPointer pEffectPreset,
         const QSet<ChannelHandleAndGroup>& activeChannels,
         bool adoptMetaknobFromPreset) {

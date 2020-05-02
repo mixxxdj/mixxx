@@ -8,6 +8,7 @@
 WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManager)
         : QComboBox(pParent),
           WBaseWidget(this),
+          m_iEffectSlotIndex(-1),
           m_pEffectsManager(pEffectsManager) {
     // Prevent this widget from getting focused to avoid
     // interfering with using the library via keyboard.
@@ -20,6 +21,8 @@ void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
             node, context, m_pEffectsManager);
     m_pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(
             node, context, m_pChainSlot);
+    m_iEffectSlotIndex = EffectWidgetUtils::getEffectSlotIndexFromNode(
+            node, context);
 
     if (m_pEffectSlot != nullptr) {
         connect(m_pEffectsManager,
@@ -81,10 +84,7 @@ void WEffectSelector::slotEffectSelected(int newIndex) {
             m_pEffectsManager->getBackendManager()->getManifestFromUniqueId(
                     itemData(newIndex).toString());
 
-    m_pEffectsManager->loadEffect(
-            m_pChainSlot,
-            m_pEffectSlot->getEffectSlotNumber(),
-            pManifest);
+    m_pChainSlot->loadEffectWithDefaults(m_iEffectSlotIndex, pManifest);
 
     setBaseTooltip(itemData(newIndex, Qt::ToolTipRole).toString());
 }

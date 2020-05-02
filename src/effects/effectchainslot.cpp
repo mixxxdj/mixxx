@@ -196,15 +196,12 @@ void EffectChainSlot::setPresetName(const QString& name) {
     emit nameChanged(name);
 }
 
-void EffectChainSlot::loadEffect(const unsigned int iEffectSlotNumber,
-        const EffectManifestPointer pManifest,
-        EffectPresetPointer pPreset,
-        bool adoptMetaknobFromPreset) {
-    m_effectSlots[iEffectSlotNumber]->loadEffect(
+void EffectChainSlot::loadEffectWithDefaults(
+        const unsigned int iEffectSlotNumber,
+        const EffectManifestPointer pManifest) {
+    m_effectSlots[iEffectSlotNumber]->loadEffectWithDefaults(
             pManifest,
-            pPreset,
-            m_enabledInputChannels,
-            adoptMetaknobFromPreset);
+            m_enabledInputChannels);
 }
 
 void EffectChainSlot::loadChainPreset(EffectChainPresetPointer pPreset) {
@@ -217,13 +214,11 @@ void EffectChainSlot::loadChainPreset(EffectChainPresetPointer pPreset) {
     for (const auto& pEffectPreset : pPreset->effectPresets()) {
         EffectSlotPointer pEffectSlot = m_effectSlots.at(effectSlotIndex);
         if (pEffectPreset->isEmpty()) {
-            loadEffect(effectSlotIndex, nullptr, nullptr, true);
+            pEffectSlot->loadEffectFromPreset(nullptr, m_enabledInputChannels);
             effectSlotIndex++;
             continue;
         }
-        EffectManifestPointer pManifest = m_pBackendManager->getManifest(
-                pEffectPreset->id(), pEffectPreset->backendType());
-        loadEffect(effectSlotIndex, pManifest, pEffectPreset, true);
+        pEffectSlot->loadEffectFromPreset(pEffectPreset, m_enabledInputChannels);
         effectSlotIndex++;
     }
 
