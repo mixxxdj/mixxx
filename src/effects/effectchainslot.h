@@ -34,13 +34,6 @@ class EngineEffectChain;
 ///
 /// The state of an EffectChainSlot can be saved to and loaded from an
 /// EffectChainPreset, which can serialize/deserialize that state to/from XML.
-///
-/// Currently EffectChainSlot has a fixed number of EffectSlots. In the future
-/// this may be extended to create an Effect class to decouple an EngineEffect's
-/// state from the ControlObjects so that EffectChainSlot could arbitrarily hide
-/// and rearrange Effects by loading/unloading them from EffectSlots. This would
-/// be similar to the relationship between EffectSlot and
-/// EffectParameterSlotBase/EffectParameter.
 class EffectChainSlot : public QObject {
     Q_OBJECT
   public:
