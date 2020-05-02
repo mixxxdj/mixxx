@@ -2,13 +2,9 @@
 
 #include <QHash>
 #include <QList>
-#include <QObject>
-#include <QPair>
-#include <QScopedPointer>
 #include <QSet>
 
 #include "control/controlpotmeter.h"
-#include "control/controlpushbutton.h"
 #include "effects/effectmanifestparameter.h"
 #include "effects/backends/effectsbackendmanager.h"
 #include "effects/presets/effectchainpresetmanager.h"
@@ -17,9 +13,6 @@
 #include "engine/effects/engineeffectsmanager.h"
 #include "preferences/usersettings.h"
 #include "util/class.h"
-#include "util/fifo.h"
-#include "util/memory.h"
-#include "util/xml.h"
 
 class EngineEffectsManager;
 class EffectManifest;

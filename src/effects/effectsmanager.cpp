@@ -1,14 +1,11 @@
 #include "effects/effectsmanager.h"
 
-#include <QDir>
 #include <QMetaType>
-#include <algorithm>
 
+#include "control/controlpotmeter.h"
 #include "effects/effectslot.h"
 #include "effects/effectsmessenger.h"
-#include "effects/presets/effectchainpreset.h"
 #include "effects/presets/effectpresetmanager.h"
-#include "effects/effectxmlelements.h"
 #include "util/assert.h"
 
 namespace {
