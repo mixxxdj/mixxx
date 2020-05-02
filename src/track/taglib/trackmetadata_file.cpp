@@ -2,6 +2,7 @@
 
 #include <taglib/tfile.h>
 
+#include "track/taglib/trackmetadata_common.h"
 #include "util/logger.h"
 
 // TagLib has support for has<TagType>() style functions since version 1.9

@@ -97,21 +97,17 @@ TrackCollectionManager::TrackCollectionManager(
 
         // Force the GUI thread's Track cache to be cleared when a library
         // scan is finished, because we might have modified the database directly
-        // when we detected moved files, and the TIOs corresponding to the moved
-        // files would then have the wrong track location.
+        // when we detected moved files, and the track objects and table entries
+        // corresponding to the moved files would then have the wrong track location.
         TrackDAO* pTrackDAO = &(m_pInternalCollection->getTrackDAO());
-        connect(m_pScanner.get(),
-                &LibraryScanner::trackAdded,
-                pTrackDAO,
-                &TrackDAO::databaseTrackAdded);
         connect(m_pScanner.get(),
                 &LibraryScanner::tracksChanged,
                 pTrackDAO,
-                &TrackDAO::databaseTracksChanged);
+                &TrackDAO::slotDatabaseTracksChanged);
         connect(m_pScanner.get(),
                 &LibraryScanner::tracksRelocated,
                 pTrackDAO,
-                &TrackDAO::databaseTracksRelocated);
+                &TrackDAO::slotDatabaseTracksRelocated);
 
         kLogger.info() << "Starting library scanner thread";
         m_pScanner->start();

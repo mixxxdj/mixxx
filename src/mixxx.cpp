@@ -428,9 +428,14 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     launchProgress(52);
 
     connect(this,
-            &MixxxMainWindow::newSkinLoaded,
+            &MixxxMainWindow::skinLoaded,
             m_pLibrary,
             &Library::onSkinLoadFinished);
+
+    connect(this,
+            &MixxxMainWindow::skinLoaded,
+            WaveformWidgetFactory::instance(),
+            &WaveformWidgetFactory::slotSkinLoaded);
 
     // Inhibit the screensaver if the option is set. (Do it before creating the preferences dialog)
     int inhibit = pConfig->getValue<int>(ConfigKey("[Config]","InhibitScreensaver"),-1);
@@ -508,7 +513,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     if (args.getStartInFullscreen() || fullscreenPref) {
         slotViewFullScreen(true);
     }
-    emit newSkinLoaded();
+    emit skinLoaded();
 
 
     // Wait until all other ControlObjects are set up before initializing
@@ -1076,7 +1081,7 @@ void MixxxMainWindow::createMenuBar() {
 void MixxxMainWindow::connectMenuBar() {
     ScopedTimer t("MixxxMainWindow::connectMenuBar");
     connect(this,
-            &MixxxMainWindow::newSkinLoaded,
+            &MixxxMainWindow::skinLoaded,
             m_pMenuBar,
             &WMainMenuBar::onNewSkinLoaded);
 
@@ -1468,7 +1473,7 @@ void MixxxMainWindow::rebootMixxxView() {
     }
 
     qDebug() << "rebootMixxxView DONE";
-    emit newSkinLoaded();
+    emit skinLoaded();
 }
 
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {

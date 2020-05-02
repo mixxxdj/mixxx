@@ -9,6 +9,7 @@
 #include "sources/metadatasource.h"
 #include "track/beats.h"
 #include "track/cue.h"
+#include "track/cueinfoimporter.h"
 #include "track/trackfile.h"
 #include "track/trackrecord.h"
 #include "util/memory.h"
@@ -268,7 +269,7 @@ class Track : public QObject {
     /// If the list is empty it tries to complete any pending
     /// import and returns the corresponding status.
     CueImportStatus importCueInfos(
-            const QList<mixxx::CueInfo>& cueInfos = {});
+            mixxx::CueInfoImporterPointer pCueInfoImporter);
     CueImportStatus getCueImportStatus() const;
 
     bool isDirty();
@@ -433,7 +434,7 @@ class Track : public QObject {
     ConstWaveformPointer m_waveform;
     ConstWaveformPointer m_waveformSummary;
 
-    QList<mixxx::CueInfo> m_importCueInfosPending;
+    mixxx::CueInfoImporterPointer m_pCueInfoImporterPending;
 
     friend class TrackDAO;
     friend class GlobalTrackCache;
