@@ -193,12 +193,10 @@ void EffectChainSlot::setPresetName(const QString& name) {
 
 void EffectChainSlot::loadEffect(const unsigned int iEffectSlotNumber,
         const EffectManifestPointer pManifest,
-        std::unique_ptr<EffectProcessor> pProcessor,
         EffectPresetPointer pPreset,
         bool adoptMetaknobFromPreset) {
     m_effectSlots[iEffectSlotNumber]->loadEffect(
             pManifest,
-            std::move(pProcessor),
             pPreset,
             m_enabledInputChannels,
             adoptMetaknobFromPreset);
@@ -210,18 +208,18 @@ void EffectChainSlot::loadChainPreset(EffectChainPresetPointer pPreset) {
     }
     slotControlClear(1);
 
-    int effectSlot = 0;
+    int effectSlotIndex = 0;
     for (const auto& pEffectPreset : pPreset->effectPresets()) {
+        EffectSlotPointer pEffectSlot = m_effectSlots.at(effectSlotIndex);
         if (pEffectPreset->isEmpty()) {
-            loadEffect(effectSlot, nullptr, nullptr, nullptr, true);
-            effectSlot++;
+            loadEffect(effectSlotIndex, nullptr, nullptr, true);
+            effectSlotIndex++;
             continue;
         }
         EffectManifestPointer pManifest = m_pBackendManager->getManifest(
                 pEffectPreset->id(), pEffectPreset->backendType());
-        std::unique_ptr<EffectProcessor> pProcessor = m_pBackendManager->createProcessor(pManifest);
-        loadEffect(effectSlot, pManifest, std::move(pProcessor), pEffectPreset, true);
-        effectSlot++;
+        loadEffect(effectSlotIndex, pManifest, pEffectPreset, true);
+        effectSlotIndex++;
     }
 
     setMixMode(pPreset->mixMode());

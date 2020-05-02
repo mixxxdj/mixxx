@@ -120,19 +120,6 @@ QuickEffectChainSlot::QuickEffectChainSlot(const QString& group,
     }
 }
 
-void QuickEffectChainSlot::loadEffect(const unsigned int iEffectSlotNumber,
-        const EffectManifestPointer pManifest,
-        std::unique_ptr<EffectProcessor> pProcessor,
-        EffectPresetPointer pPreset,
-        bool adoptMetaknobFromPreset) {
-    EffectChainSlot::loadEffect(iEffectSlotNumber,
-            pManifest,
-            std::move(pProcessor),
-            pPreset,
-            adoptMetaknobFromPreset);
-    slotControlChainSuperParameter(m_pControlChainSuperParameter->get(), true);
-}
-
 QString QuickEffectChainSlot::formatEffectChainSlotGroup(const QString& group) {
     return QString("[QuickEffectRack1_%1]").arg(group);
 }
@@ -165,12 +152,11 @@ EqualizerEffectChainSlot::EqualizerEffectChainSlot(const QString& group,
 void EqualizerEffectChainSlot::loadEffect(
         const unsigned int iEffectSlotNumber,
         const EffectManifestPointer pManifest,
-        std::unique_ptr<EffectProcessor> pProcessor,
         EffectPresetPointer pPreset,
         bool adoptMetaknobFromPreset) {
     // TODO: preserve effect parameters when loading new effect. This will allow
     // for easy comparison of the sound of different equalizer effects.
-    EffectChainSlot::loadEffect(iEffectSlotNumber, pManifest, std::move(pProcessor), pPreset, adoptMetaknobFromPreset);
+    EffectChainSlot::loadEffect(iEffectSlotNumber, pManifest, pPreset, adoptMetaknobFromPreset);
     m_pCOFilterWaveform->set(pManifest->isMixingEQ());
 }
 

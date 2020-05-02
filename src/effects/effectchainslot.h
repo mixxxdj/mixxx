@@ -110,7 +110,6 @@ class EffectChainSlot : public QObject {
 
     virtual void loadEffect(const unsigned int iEffectSlotNumber,
             const EffectManifestPointer pManifest,
-            std::unique_ptr<EffectProcessor> pProcessor,
             EffectPresetPointer pPreset,
             bool adoptMetaknobFromPreset = false);
 

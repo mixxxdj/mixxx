@@ -124,7 +124,6 @@ void EffectsManager::loadEffect(EffectChainSlotPointer pChainSlot,
     pChainSlot->loadEffect(
             iEffectSlotNumber,
             pManifest,
-            m_pBackendManager->createProcessor(pManifest),
             pPreset,
             adoptMetaknobFromPreset);
 }

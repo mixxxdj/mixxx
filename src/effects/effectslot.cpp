@@ -22,6 +22,7 @@ EffectSlot::EffectSlot(const QString& group,
         : m_iEffectNumber(iEffectnumber),
           m_group(group),
           m_pEffectsManager(pEffectsManager),
+          m_pPresetManager(pEffectsManager->getEffectPresetManager()),
           m_pMessenger(pEffectsMessenger),
           m_pEngineEffectChain(pEngineEffectChain),
           m_pEngineEffect(nullptr) {
@@ -111,8 +112,7 @@ EffectSlot::~EffectSlot() {
     delete m_pMetaknobSoftTakeover;
 }
 
-void EffectSlot::addToEngine(std::unique_ptr<EffectProcessor> pProcessor,
-        const QSet<ChannelHandleAndGroup>& activeInputChannels) {
+void EffectSlot::addToEngine(const QSet<ChannelHandleAndGroup>& activeInputChannels) {
     VERIFY_OR_DEBUG_ASSERT(!isLoaded()) {
         return;
     }
@@ -121,11 +121,12 @@ void EffectSlot::addToEngine(std::unique_ptr<EffectProcessor> pProcessor,
         return;
     }
 
-    m_pEngineEffect = new EngineEffect(m_pManifest,
+    m_pEngineEffect = new EngineEffect(
+            m_pManifest,
+            m_pEffectsManager->getBackendManager(),
             activeInputChannels,
             m_pEffectsManager->registeredInputChannels(),
-            m_pEffectsManager->registeredOutputChannels(),
-            std::move(pProcessor));
+            m_pEffectsManager->registeredOutputChannels());
 
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::ADD_EFFECT_TO_CHAIN;
@@ -231,7 +232,6 @@ EffectParameterSlotBasePointer EffectSlot::getEffectParameterSlot(
 }
 
 void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
-        std::unique_ptr<EffectProcessor> pProcessor,
         EffectPresetPointer pEffectPreset,
         const QSet<ChannelHandleAndGroup>& activeChannels,
         bool adoptMetaknobFromPreset) {
@@ -252,7 +252,7 @@ void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
         return;
     }
 
-    addToEngine(std::move(pProcessor), activeChannels);
+    addToEngine(activeChannels);
 
     // Create EffectParameters. Every parameter listed in the manifest must have
     // an EffectParameter created, regardless of whether it is loaded in a slot.
