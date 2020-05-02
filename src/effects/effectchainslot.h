@@ -145,7 +145,6 @@ class EffectChainSlot : public QObject {
     const QString m_group;
 
     ControlPushButton* m_pControlClear;
-    ControlObject* m_pControlNumEffects;
     ControlObject* m_pControlNumEffectSlots;
     ControlObject* m_pControlChainLoaded;
     ControlPushButton* m_pControlChainEnabled;
