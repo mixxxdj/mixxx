@@ -186,6 +186,15 @@ void EffectChainPresetManager::renamePreset(const QString& oldName) {
         return;
     }
 
+    QString directoryPath = m_pConfig->getSettingsPath() + kEffectChainPresetDirectory + "/";
+    QFile file(directoryPath + oldName + ".xml");
+    if (!file.rename(directoryPath + newName + ".xml")) {
+        QMessageBox::critical(
+                nullptr,
+                tr("Could not rename effect chain preset"),
+                tr("Could not rename effect chain preset \"%1\"").arg(oldName));
+    }
+
     EffectChainPresetPointer pPreset = m_effectChainPresets.take(oldName);
     int index = m_effectChainPresetsSorted.indexOf(pPreset);
     pPreset->setName(newName);
