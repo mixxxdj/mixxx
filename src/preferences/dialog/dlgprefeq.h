@@ -83,12 +83,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
             const QList<QComboBox*> boxList,
             EffectManifestFilterFnc filterFunc);
 
-    typedef std::function<void(QString, int, EffectManifestPointer)> loadEffectFunction;
-    void applySelectionsToDecks(
-        const QList<QComboBox*>& boxList,
-        QList<int>& indiciesOnUpdate,
-        loadEffectFunction loadFunc,
-        const QString& configKeyPrefix);
+    void applySelectionsToDecks();
 
     ControlProxy m_COLoFreq;
     ControlProxy m_COHiFreq;

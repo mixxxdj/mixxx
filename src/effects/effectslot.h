@@ -62,12 +62,6 @@ class EffectSlot : public QObject {
             EngineEffectChain* pEngineEffectChain);
     virtual ~EffectSlot();
 
-    /// Call with nullptr for pManifest and pProcessor to unload an effect
-    void loadEffect(const EffectManifestPointer pManifest,
-            EffectPresetPointer pPreset,
-            const QSet<ChannelHandleAndGroup>& activeChannels,
-            bool adoptMetaknobFromPreset = false);
-
     inline int getEffectSlotNumber() const {
         return m_iEffectNumber;
     }
@@ -97,6 +91,15 @@ class EffectSlot : public QObject {
     const ParameterMap getHiddenParameters() const {
         return m_hiddenParameters;
     }
+
+    /// Call with nullptr for pPreset to unload an effect
+    void loadEffectFromPreset(
+            const EffectPresetPointer pPreset,
+            const QSet<ChannelHandleAndGroup>& activeChannels);
+    /// Call with nullptr for pManifest to unload an effect
+    void loadEffectWithDefaults(
+            const EffectManifestPointer pManifest,
+            const QSet<ChannelHandleAndGroup>& activeChannels);
 
     void hideParameter(EffectParameterPointer pParameter);
     void showParameter(EffectParameterPointer pParameter);
@@ -147,6 +150,12 @@ class EffectSlot : public QObject {
     void addToEngine(const QSet<ChannelHandleAndGroup>& activeInputChannels);
     void removeFromEngine();
 
+    /// Call with nullptr for pManifest and pPreset to unload an effect
+    void loadEffectInner(const EffectManifestPointer pManifest,
+            EffectPresetPointer pPreset,
+            const QSet<ChannelHandleAndGroup>& activeChannels,
+            bool adoptMetaknobFromPreset = false);
+
     void loadParameters();
     void unloadEffect();
 
@@ -156,6 +165,7 @@ class EffectSlot : public QObject {
     UserSettingsPointer m_pConfig;
     EffectsManager* m_pEffectsManager;
     EffectPresetManagerPointer m_pPresetManager;
+    EffectsBackendManagerPointer m_pBackendManager;
     EffectsMessengerPointer m_pMessenger;
     EffectManifestPointer m_pManifest;
     EngineEffectChain* m_pEngineEffectChain;

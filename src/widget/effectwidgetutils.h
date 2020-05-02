@@ -44,6 +44,18 @@ class EffectWidgetUtils {
         return pEffectsManager->getEffectChainSlot(unitGroup);
     }
 
+    static int getEffectSlotIndexFromNode(
+            const QDomNode& node,
+            const SkinContext& context) {
+        bool effectSlotOk = false;
+        int effectSlotIndex = context.selectInt(node, "Effect", &effectSlotOk);
+        if (effectSlotOk) {
+            // XML effect nodes are 1-indexed.
+            return effectSlotIndex - 1;
+        }
+        return -1;
+    }
+
     static EffectSlotPointer getEffectSlotFromNode(
             const QDomNode& node,
             const SkinContext& context,
@@ -52,13 +64,8 @@ class EffectWidgetUtils {
             return EffectSlotPointer();
         }
 
-        bool effectSlotOk = false;
-        int effectSlot = context.selectInt(node, "Effect", &effectSlotOk);
-        if (effectSlotOk) {
-            // XML effect nodes are 1-indexed.
-            return pChainSlot->getEffectSlot(effectSlot - 1);
-        }
-        return EffectSlotPointer();
+        int effectSlotIndex = getEffectSlotIndexFromNode(node, context);
+        return pChainSlot->getEffectSlot(effectSlotIndex);
     }
 
     static EffectParameterSlotBasePointer getParameterSlotFromNode(

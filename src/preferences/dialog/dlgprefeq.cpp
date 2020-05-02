@@ -30,7 +30,9 @@
 #include "mixer/playermanager.h"
 #include "effects/specialeffectchainslots.h"
 
+namespace {
 const QString kConfigKey = "[Mixer Profile]";
+const QString kConfigKeyPrefix = "EffectForGroup_";
 const QString kEnableEqs = "EnableEQs";
 const QString kEqsOnly = "EQsOnly";
 const QString kSingleEq = "SingleEQEffect";
@@ -39,6 +41,7 @@ const QString kDefaultMasterEqId = QString();
 
 const int kFrequencyUpperLimit = 20050;
 const int kFrequencyLowerLimit = 16;
+} // anonymous namespace
 
 DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager, UserSettingsPointer pConfig)
         : DlgPreferencePage(pParent),
@@ -129,7 +132,8 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
         // if none is configured
         QString group = PlayerManager::groupForDeck(i);
         QString configuredEffect = m_pConfig->getValue(ConfigKey(kConfigKey,
-                "EffectForGroup_" + group), kDefaultEqId);
+                                                               kConfigKeyPrefix + group),
+                kDefaultEqId);
 
         const EffectManifestPointer pEQManifest =
                 m_pBackendManager->getManifestFromUniqueId(configuredEffect);
@@ -354,20 +358,12 @@ void DlgPrefEQ::applySelections() {
         return;
     }
 
-    loadEffectFunction loadFunc = std::bind(
-            &EffectsManager::loadEqualizerEffect, m_pEffectsManager,
-            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-    applySelectionsToDecks(m_deckEqEffectSelectors, m_eqIndiciesOnUpdate,
-            loadFunc, "EffectForGroup_");
+    applySelectionsToDecks();
 }
 
-void DlgPrefEQ::applySelectionsToDecks(
-        const QList<QComboBox*>& boxList,
-        QList<int>& indiciesOnUpdate,
-        loadEffectFunction loadFunc,
-        const QString& configKeyPrefix) {
+void DlgPrefEQ::applySelectionsToDecks() {
     int deck = 0;
-    for (QComboBox* box : boxList) {
+    for (QComboBox* box : m_deckEqEffectSelectors) {
         const EffectManifestPointer pManifest =
                 m_pBackendManager->getManifestFromUniqueId(
                         box->itemData(box->currentIndex()).toString());
@@ -375,22 +371,23 @@ void DlgPrefEQ::applySelectionsToDecks(
         QString group = PlayerManager::groupForDeck(deck);
 
         bool needLoad = true;
-        bool startingUp = (indiciesOnUpdate.size() < (deck + 1));
+        bool startingUp = (m_eqIndiciesOnUpdate.size() < (deck + 1));
         if (!startingUp) {
-            needLoad = (box->currentIndex() != indiciesOnUpdate[deck]);
+            needLoad = (box->currentIndex() != m_eqIndiciesOnUpdate[deck]);
         }
         if (needLoad) {
-            loadFunc(group, 0, pManifest);
+            auto pChainSlot = m_pEffectsManager->getEqualizerEffectChainSlot(group);
+            pChainSlot->loadEffectWithDefaults(0, pManifest);
 
             if (!startingUp) {
-                indiciesOnUpdate[deck] = box->currentIndex();
+                m_eqIndiciesOnUpdate[deck] = box->currentIndex();
             }
 
             QString configString;
             if (pManifest) {
                 configString = pManifest->uniqueId();
             }
-            m_pConfig->set(ConfigKey(kConfigKey, configKeyPrefix + group),
+            m_pConfig->set(ConfigKey(kConfigKey, kConfigKeyPrefix + group),
                     configString);
 
             // This is required to remove a previous selected effect that does not
@@ -607,7 +604,7 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
 
     auto pChainSlot = m_pEffectsManager->getOutputEffectChainSlot();
     if (pChainSlot) {
-        m_pEffectsManager->loadOutputEffect(0, pManifest);
+        pChainSlot->loadEffectWithDefaults(0, pManifest);
 
         auto pEffectSlot = pChainSlot->getEffectSlot(0);
 

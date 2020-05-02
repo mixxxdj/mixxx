@@ -89,45 +89,6 @@ void EffectsManager::registerOutputChannel(const ChannelHandleAndGroup& handle_g
     m_registeredOutputChannels.insert(handle_group);
 }
 
-void EffectsManager::loadStandardEffect(const int iChainSlotNumber,
-        const int iEffectSlotNumber, const EffectManifestPointer pManifest) {
-    auto pChainSlot = getStandardEffectChainSlot(iChainSlotNumber);
-    if (pChainSlot) {
-        loadEffect(pChainSlot, iEffectSlotNumber, pManifest);
-    }
-}
-
-void EffectsManager::loadOutputEffect(const int iEffectSlotNumber,
-    const EffectManifestPointer pManifest) {
-    if (m_outputEffectChainSlot) {
-        loadEffect(m_outputEffectChainSlot, iEffectSlotNumber, pManifest);
-    }
-}
-
-void EffectsManager::loadEqualizerEffect(const QString& deckGroup,
-        const int iEffectSlotNumber, const EffectManifestPointer pManifest) {
-    auto pChainSlot = m_equalizerEffectChainSlots.value(deckGroup);
-    VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
-        return;
-    }
-    loadEffect(pChainSlot, iEffectSlotNumber, pManifest);
-}
-
-void EffectsManager::loadEffect(EffectChainSlotPointer pChainSlot,
-        const int iEffectSlotNumber,
-        const EffectManifestPointer pManifest,
-        EffectPresetPointer pPreset,
-        bool adoptMetaknobFromPreset) {
-    if (pPreset == nullptr) {
-        pPreset = m_pEffectPresetManager->getDefaultPreset(pManifest);
-    }
-    pChainSlot->loadEffect(
-            iEffectSlotNumber,
-            pManifest,
-            pPreset,
-            adoptMetaknobFromPreset);
-}
-
 ParameterMap EffectsManager::getLoadedParameters(int chainNumber, int effectNumber) const {
     return m_standardEffectChainSlots.at(chainNumber)->getEffectSlot(effectNumber)->getLoadedParameters();
 }
