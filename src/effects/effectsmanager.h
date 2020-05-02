@@ -117,7 +117,6 @@ class EffectsManager : public QObject {
 
   signals:
     void visibleEffectsUpdated();
-    void effectChainPresetListUpdated();
 
   private:
     QString debugString() const {
