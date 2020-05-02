@@ -89,26 +89,6 @@ void EffectsManager::registerOutputChannel(const ChannelHandleAndGroup& handle_g
     m_registeredOutputChannels.insert(handle_group);
 }
 
-ParameterMap EffectsManager::getLoadedParameters(int chainNumber, int effectNumber) const {
-    return m_standardEffectChainSlots.at(chainNumber)->getEffectSlot(effectNumber)->getLoadedParameters();
-}
-
-ParameterMap EffectsManager::getHiddenParameters(int chainNumber, int effectNumber) const {
-    return m_standardEffectChainSlots.at(chainNumber)->getEffectSlot(effectNumber)->getHiddenParameters();
-}
-
-void EffectsManager::hideParameter(int chainNumber, int effectNumber, EffectParameterPointer pParameter) {
-    m_standardEffectChainSlots.at(chainNumber)->getEffectSlot(effectNumber)->hideParameter(pParameter);
-}
-
-void EffectsManager::showParameter(int chainNumber, int effectNumber, EffectParameterPointer pParameter) {
-    m_standardEffectChainSlots.at(chainNumber)->getEffectSlot(effectNumber)->showParameter(pParameter);
-}
-
-void EffectsManager::loadPresetToStandardChain(int chainNumber, EffectChainPresetPointer pPreset) {
-    m_standardEffectChainSlots.at(chainNumber)->loadChainPreset(pPreset);
-}
-
 QString EffectsManager::getNextEffectId(const QString& effectId) {
     if (m_visibleEffectManifests.isEmpty()) {
         return QString();
@@ -277,13 +257,6 @@ void EffectsManager::saveDefaultForEffect(int unitNumber, int effectNumber) {
     auto pSlot = m_standardEffectChainSlots.at(unitNumber)->getEffectSlot(effectNumber);
     EffectPresetPointer pPreset(new EffectPreset(pSlot));
     m_pEffectPresetManager->saveDefaultForEffect(pPreset);
-}
-
-void EffectsManager::savePresetFromStandardEffectChain(int chainNumber) {
-    StandardEffectChainSlotPointer pStandardChainSlot = m_standardEffectChainSlots.at(chainNumber);
-    EffectChainSlot* genericChainSlot = static_cast<EffectChainSlot*>(pStandardChainSlot.get());
-    EffectChainPresetPointer pPreset(new EffectChainPreset(genericChainSlot));
-    m_pChainPresetManager->savePreset(pPreset);
 }
 
 void EffectsManager::readEffectsXml() {

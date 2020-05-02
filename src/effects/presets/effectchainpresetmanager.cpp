@@ -289,6 +289,11 @@ void EffectChainPresetManager::loadEffectChainPresets() {
     emit effectChainPresetListUpdated();
 }
 
+void EffectChainPresetManager::savePreset(EffectChainSlotPointer pChainSlot) {
+    EffectChainPresetPointer pPreset(new EffectChainPreset(pChainSlot.get()));
+    savePreset(pPreset);
+}
+
 void EffectChainPresetManager::savePreset(EffectChainPresetPointer pPreset) {
     bool okay = false;
     QString name = QInputDialog::getText(nullptr,

@@ -55,6 +55,11 @@ void EffectPresetManager::loadDefaultEffectPresets() {
     }
 }
 
+void EffectPresetManager::saveDefaultForEffect(EffectSlotPointer pEffectSlot) {
+    EffectPresetPointer pPreset(new EffectPreset(pEffectSlot));
+    saveDefaultForEffect(pPreset);
+}
+
 void EffectPresetManager::saveDefaultForEffect(EffectPresetPointer pEffectPreset) {
     if (pEffectPreset->isEmpty()) {
         return;

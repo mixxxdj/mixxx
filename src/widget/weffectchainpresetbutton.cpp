@@ -3,42 +3,75 @@
 #include <QCheckBox>
 #include <QWidgetAction>
 
+#include "effects/presets/effectpresetmanager.h"
 #include "widget/effectwidgetutils.h"
 
 WEffectChainPresetButton::WEffectChainPresetButton(QWidget* parent, EffectsManager* pEffectsManager)
         : QPushButton(parent),
           WBaseWidget(this),
           m_pEffectsManager(pEffectsManager),
+          m_pChainPresetManager(pEffectsManager->getChainPresetManager()),
           m_pMenu(make_parented<QMenu>(new QMenu(this))) {
     setMenu(m_pMenu.get());
     connect(this,
             &QPushButton::pressed,
+            this,
+            &QPushButton::showMenu);
+    connect(m_pChainPresetManager.get(),
+            &EffectChainPresetManager::effectChainPresetListUpdated,
             this,
             &WEffectChainPresetButton::populateMenu);
 }
 
 void WEffectChainPresetButton::setup(const QDomNode& node, const SkinContext& context) {
     m_iChainNumber = EffectWidgetUtils::getEffectUnitNumberFromNode(node, context);
+    m_pChainSlot = EffectWidgetUtils::getEffectChainSlotFromNode(
+            node, context, m_pEffectsManager);
+    for (const auto& pEffectSlot : m_pChainSlot->getEffectSlots()) {
+        connect(pEffectSlot.get(),
+                &EffectSlot::effectChanged,
+                this,
+                &WEffectChainPresetButton::populateMenu);
+        connect(pEffectSlot.get(),
+                &EffectSlot::parametersChanged,
+                this,
+                &WEffectChainPresetButton::populateMenu);
+    }
+    populateMenu();
     // TODO: set icon
 }
 
 void WEffectChainPresetButton::populateMenu() {
     m_pMenu->clear();
-    for (const auto pChainPreset : m_pEffectsManager->getChainPresetManager()->getPresetsSorted()) {
+
+    // Chain preset items
+    for (const auto pChainPreset : m_pChainPresetManager->getPresetsSorted()) {
         m_pMenu->addAction(pChainPreset->name(), [=]() {
-            m_pEffectsManager->loadPresetToStandardChain(m_iChainNumber, pChainPreset);
+            m_pChainSlot->loadChainPreset(pChainPreset);
         });
     }
     m_pMenu->addSeparator();
-    m_pMenu->addAction(tr("Save preset"), this, &WEffectChainPresetButton::saveChainPreset);
+    m_pMenu->addAction(tr("Save preset"), this, [this]() {
+        m_pChainPresetManager->savePreset(m_pChainSlot);
+    });
 
     m_pMenu->addSeparator();
-    for (int i = 0; i < 3; ++i) {
-        const ParameterMap loadedParameters = m_pEffectsManager->getLoadedParameters(m_iChainNumber, i);
-        const ParameterMap hiddenParameters = m_pEffectsManager->getHiddenParameters(m_iChainNumber, i);
+
+    // Effect parameter hiding/showing and saving snapshots
+    int effectSlotIndex = 0;
+    for (const auto pEffectSlot : m_pChainSlot->getEffectSlots()) {
+        const ParameterMap loadedParameters = pEffectSlot->getLoadedParameters();
+        const ParameterMap hiddenParameters = pEffectSlot->getHiddenParameters();
+
+        auto pManifest = pEffectSlot->getManifest();
+        if (pManifest == nullptr) {
+            m_pMenu->addAction(tr("Empty Effect Slot %1").arg(effectSlotIndex));
+            effectSlotIndex++;
+            continue;
+        }
 
         auto pEffectMenu = make_parented<QMenu>(m_pMenu);
-        pEffectMenu->setTitle(tr("Effect") + " " + QString::number(i + 1));
+        pEffectMenu->setTitle(pEffectSlot->getManifest()->displayName());
 
         int numTypes = static_cast<int>(EffectManifestParameter::ParameterType::NUM_TYPES);
         for (int parameterTypeId = 0; parameterTypeId < numTypes; ++parameterTypeId) {
@@ -48,11 +81,11 @@ void WEffectChainPresetButton::populateMenu() {
                 auto pCheckbox = make_parented<QCheckBox>(pEffectMenu);
                 pCheckbox->setChecked(true);
                 pCheckbox->setText(pParameter->manifest()->name());
-                auto handler = [this, pCheckbox{pCheckbox.get()}, i, pParameter] {
+                auto handler = [pCheckbox{pCheckbox.get()}, pEffectSlot, pParameter] {
                     if (pCheckbox->isChecked()) {
-                        m_pEffectsManager->showParameter(m_iChainNumber, i, pParameter);
+                        pEffectSlot->showParameter(pParameter);
                     } else {
-                        m_pEffectsManager->hideParameter(m_iChainNumber, i, pParameter);
+                        pEffectSlot->hideParameter(pParameter);
                     }
                 };
                 connect(pCheckbox.get(), &QCheckBox::stateChanged, this, handler);
@@ -68,11 +101,11 @@ void WEffectChainPresetButton::populateMenu() {
                 auto pCheckbox = make_parented<QCheckBox>(pEffectMenu);
                 pCheckbox->setChecked(false);
                 pCheckbox->setText(pParameter->manifest()->name());
-                auto handler = [this, pCheckbox{pCheckbox.get()}, i, pParameter] {
+                auto handler = [pCheckbox{pCheckbox.get()}, pEffectSlot, pParameter] {
                     if (pCheckbox->isChecked()) {
-                        m_pEffectsManager->showParameter(m_iChainNumber, i, pParameter);
+                        pEffectSlot->showParameter(pParameter);
                     } else {
-                        m_pEffectsManager->hideParameter(m_iChainNumber, i, pParameter);
+                        pEffectSlot->hideParameter(pParameter);
                     }
                 };
                 connect(pCheckbox.get(), &QCheckBox::stateChanged, this, handler);
@@ -85,15 +118,10 @@ void WEffectChainPresetButton::populateMenu() {
             }
             pEffectMenu->addSeparator();
         }
-        pEffectMenu->addAction(tr("Save snapshot"), [=] {
-            m_pEffectsManager->saveDefaultForEffect(m_iChainNumber, i);
+        pEffectMenu->addAction(tr("Save snapshot"), [this, pEffectSlot] {
+            m_pEffectsManager->getEffectPresetManager()->saveDefaultForEffect(pEffectSlot);
         });
         m_pMenu->addMenu(pEffectMenu);
+        effectSlotIndex++;
     }
-
-    showMenu();
-}
-
-void WEffectChainPresetButton::saveChainPreset() {
-    m_pEffectsManager->savePresetFromStandardEffectChain(m_iChainNumber);
 }
