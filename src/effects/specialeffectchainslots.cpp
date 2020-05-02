@@ -5,13 +5,11 @@
 
 StandardEffectChainSlot::StandardEffectChainSlot(unsigned int iChainNumber,
         EffectsManager* pEffectsManager,
-        EffectsMessengerPointer pEffectsMessenger,
-        const QString& id)
+        EffectsMessengerPointer pEffectsMessenger)
         : EffectChainSlot(formatEffectChainSlotGroup(iChainNumber),
                   pEffectsManager,
                   pEffectsMessenger,
-                  SignalProcessingStage::Postfader,
-                  formatEffectChainSlotGroup(iChainNumber)) {
+                  SignalProcessingStage::Postfader) {
     for (int i = 0; i < kNumEffectsPerUnit; ++i) {
         addEffectSlot(formatEffectSlotGroup(iChainNumber, i));
     }
@@ -46,8 +44,7 @@ OutputEffectChainSlot::OutputEffectChainSlot(EffectsManager* pEffectsManager,
         : EffectChainSlot(formatEffectChainSlotGroup("[Master]"),
                   pEffectsManager,
                   pEffectsMessenger,
-                  SignalProcessingStage::Postfader,
-                  formatEffectChainSlotGroup("[Master]")) {
+                  SignalProcessingStage::Postfader) {
     addEffectSlot("[OutputEffectRack_[Master]_Effect1]");
     m_effectSlots[0]->setEnabled(true);
 
@@ -84,8 +81,7 @@ PerGroupEffectChainSlot::PerGroupEffectChainSlot(const QString& group,
         : EffectChainSlot(chainSlotGroup,
                   pEffectsManager,
                   pEffectsMessenger,
-                  stage,
-                  chainSlotGroup) {
+                  stage) {
     // Set the chain to be fully wet.
     m_pControlChainMix->set(1.0);
     sendParameterUpdate();

@@ -40,8 +40,7 @@ class EffectChainSlot : public QObject {
     EffectChainSlot(const QString& group,
             EffectsManager* pEffectsManager,
             EffectsMessengerPointer pEffectsMessenger,
-            SignalProcessingStage stage = SignalProcessingStage::Postfader,
-            const QString& id = QString());
+            SignalProcessingStage stage = SignalProcessingStage::Postfader);
     virtual ~EffectChainSlot();
 
     QString group() const;

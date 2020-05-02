@@ -11,8 +11,7 @@ class StandardEffectChainSlot : public EffectChainSlot {
   public:
     StandardEffectChainSlot(unsigned int iChainNumber,
             EffectsManager* pEffectsManager,
-            EffectsMessengerPointer pEffectsMessenger,
-            const QString& id = QString());
+            EffectsMessengerPointer pEffectsMessenger);
     static QString formatEffectChainSlotGroup(const int iChainNumber);
     static QString formatEffectSlotGroup(const int iChainSlotNumber,
                                          const int iEffectSlotNumber);

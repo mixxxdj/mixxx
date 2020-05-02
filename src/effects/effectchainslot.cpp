@@ -18,8 +18,7 @@
 EffectChainSlot::EffectChainSlot(const QString& group,
         EffectsManager* pEffectsManager,
         EffectsMessengerPointer pEffectsMessenger,
-        SignalProcessingStage stage,
-        const QString& id)
+        SignalProcessingStage stage)
         : // The control group names are 1-indexed while internally everything
           // is 0-indexed.
           m_pEffectsManager(pEffectsManager),
@@ -41,7 +40,7 @@ EffectChainSlot::EffectChainSlot(const QString& group,
 
     m_pControlChainLoaded = new ControlObject(ConfigKey(m_group, "loaded"));
     m_pControlChainLoaded->setReadOnly();
-    if (id != QString()) {
+    if (group != QString()) {
         m_pControlChainLoaded->forceSet(1.0);
     }
 
