@@ -564,7 +564,8 @@ void EngineMaster::process(const int iBufferSize) {
             m_masterGainOld = master_gain;
 
             // Record/broadcast signal is the same as the master output
-            if (!m_bExternalRecordBroadcastInputConnected) {
+            if (m_pEngineSideChain &&
+                    !m_bExternalRecordBroadcastInputConnected) {
                 SampleUtil::copy(m_pSidechainMix, m_pMaster, m_iBufferSize);
             }
         } else if (configuredMicMonitorMode == MicMonitorMode::MASTER_AND_BOOTH) {
@@ -601,7 +602,8 @@ void EngineMaster::process(const int iBufferSize) {
             m_masterGainOld = master_gain;
 
             // Record/broadcast signal is the same as the master output
-            if (!m_bExternalRecordBroadcastInputConnected) {
+            if (m_pEngineSideChain &&
+                    !m_bExternalRecordBroadcastInputConnected) {
                 SampleUtil::copy(m_pSidechainMix, m_pMaster, m_iBufferSize);
             }
         } else if (configuredMicMonitorMode == MicMonitorMode::DIRECT_MONITOR) {
