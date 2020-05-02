@@ -23,7 +23,7 @@ class WKnobComposed : public WWidget {
   public:
     explicit WKnobComposed(QWidget* pParent=nullptr);
 
-    void setup(const QDomNode& node, const SkinContext& context);
+    virtual void setup(const QDomNode& node, const SkinContext& context);
 
     void onConnectedControlChanged(double dParameter, double dValue) override;
 

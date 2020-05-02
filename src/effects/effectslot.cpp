@@ -125,7 +125,7 @@ void EffectSlot::addToEngine(const QSet<ChannelHandleAndGroup>& activeInputChann
 
     m_pEngineEffect = new EngineEffect(
             m_pManifest,
-            m_pEffectsManager->getBackendManager(),
+            m_pBackendManager,
             activeInputChannels,
             m_pEffectsManager->registeredInputChannels(),
             m_pEffectsManager->registeredOutputChannels());

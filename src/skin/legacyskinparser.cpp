@@ -1628,14 +1628,6 @@ QWidget* LegacySkinParser::parseEffectParameterKnob(const QDomElement& node) {
     pParameterKnob->installEventFilter(
         m_pControllerManager->getControllerLearningEventFilter());
     pParameterKnob->Init();
-    const QList<ControlParameterWidgetConnection*> connections =
-            pParameterKnob->connections();
-    if (!connections.isEmpty()) {
-        pParameterKnob->setupEffectParameterSlot(connections.at(0)->getKey());
-    } else {
-        SKIN_WARNING(node, *m_pContext)
-                << "EffectParameterKnob node could not attach to effect parameter.";
-    }
     return pParameterKnob;
 }
 
@@ -1648,14 +1640,6 @@ QWidget* LegacySkinParser::parseEffectParameterKnobComposed(const QDomElement& n
     pParameterKnob->installEventFilter(
         m_pControllerManager->getControllerLearningEventFilter());
     pParameterKnob->Init();
-    const QList<ControlParameterWidgetConnection*> connections =
-            pParameterKnob->connections();
-    if (!connections.isEmpty()) {
-        pParameterKnob->setupEffectParameterSlot(connections.at(0)->getKey());
-    } else {
-        SKIN_WARNING(node, *m_pContext)
-                << "EffectParameterKnobComposed node could not attach to effect parameter.";
-    }
     return pParameterKnob;
 }
 
@@ -1667,14 +1651,6 @@ QWidget* LegacySkinParser::parseEffectPushButton(const QDomElement& element) {
     pWidget->installEventFilter(
             m_pControllerManager->getControllerLearningEventFilter());
     pWidget->Init();
-    const QList<ControlParameterWidgetConnection*> connections =
-            pWidget->leftConnections();
-    if (!connections.isEmpty()) {
-        pWidget->setupEffectParameterSlot(connections.at(0)->getKey());
-    } else {
-        SKIN_WARNING(element, *m_pContext)
-                << "EffectPushButton node could not attach to effect parameter.";
-    }
     return pWidget;
 }
 

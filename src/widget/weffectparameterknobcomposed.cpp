@@ -1,35 +1,27 @@
 #include "widget/effectwidgetutils.h"
 #include "widget/weffectparameterknobcomposed.h"
 
-namespace {
-const QString effectGroupSeparator = "_";
-const QString groupClose = "]";
-} // anonymous namespace
-
-void WEffectParameterKnobComposed::setupEffectParameterSlot(const ConfigKey& configKey) {
-    EffectParameterSlotBasePointer pParameterSlot =
-            m_pEffectsManager->getEffectParameterSlot(EffectManifestParameter::ParameterType::KNOB, configKey);
-    if (!pParameterSlot) {
-        qWarning() << "EffectParameterKnobComposed" << configKey <<
-                "is not an effect parameter.";
+void WEffectParameterKnobComposed::setup(const QDomNode& node, const SkinContext& context) {
+    WKnobComposed::setup(node, context);
+    auto pChainSlot = EffectWidgetUtils::getEffectChainSlotFromNode(
+            node, context, m_pEffectsManager);
+    auto pEffectSlot =
+            EffectWidgetUtils::getEffectSlotFromNode(node, context, pChainSlot);
+    m_pEffectParameterSlot = EffectWidgetUtils::getParameterSlotFromNode(
+            node, context, pEffectSlot);
+    VERIFY_OR_DEBUG_ASSERT(m_pEffectParameterSlot) {
+        SKIN_WARNING(node, context) << "Could not find effect parameter slot";
         return;
     }
-    setEffectKnobParameterSlot(pParameterSlot);
-    setFocusPolicy(Qt::NoFocus);
-}
-
-void WEffectParameterKnobComposed::setEffectKnobParameterSlot(
-        EffectParameterSlotBasePointer pParameterSlot) {
-    m_pEffectParameterSlot = pParameterSlot;
-    if (m_pEffectParameterSlot) {
-        connect(m_pEffectParameterSlot.data(), SIGNAL(updated()),
-                this, SLOT(parameterUpdated()));
-    }
+    connect(m_pEffectParameterSlot.data(),
+            &EffectParameterSlotBase::updated,
+            this,
+            &WEffectParameterKnobComposed::parameterUpdated);
     parameterUpdated();
 }
 
 void WEffectParameterKnobComposed::parameterUpdated() {
-    if (m_pEffectParameterSlot) {
+    if (m_pEffectParameterSlot->isLoaded()) {
         setBaseTooltip(QString("%1\n%2").arg(
                        m_pEffectParameterSlot->name(),
                        m_pEffectParameterSlot->description()));

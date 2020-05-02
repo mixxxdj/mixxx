@@ -11,7 +11,7 @@ Variables:
   parameter     : the parameter
 -->
 <Template>
-  <SetVariable name="FxRack_FxUnit_FxNum">[<Variable name="FxRack_FxUnit"/>_Effect<Variable name="FxNum"/>]</SetVariable>
+  <SetVariable name="FxUnit_FxNum">[<Variable name="FxRack_FxUnit"/>_Effect<Variable name="FxNum"/>]</SetVariable>
 
   <WidgetGroup>
     <Layout>stacked</Layout>
@@ -21,9 +21,9 @@ Variables:
     <Children>
       <!-- Actual button, invisible except hover border -->
       <Template src="skin:fx_button.xml">
+        <SetVariable name="FxUnit">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
         <SetVariable name="ObjectName">FxParameterButtonOverlay</SetVariable>
         <SetVariable name="Size">51f,18f</SetVariable>
-        <SetVariable name="FxParameter">button_parameter<Variable name="FxParameter"/></SetVariable>
       </Template>
 
       <!-- Name of effect parameter when inactive-->
@@ -45,7 +45,7 @@ Variables:
           <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,button_parameter<Variable name="FxParameter"/></ConfigKey>
+          <ConfigKey><Variable name="FxUnit_FxNum"/>,button_parameter<Variable name="FxParameter"/></ConfigKey>
           <Transform><IsEqual>0</IsEqual></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
@@ -69,7 +69,7 @@ Variables:
           <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,button_parameter<Variable name="FxParameter"/></ConfigKey>
+          <ConfigKey><Variable name="FxUnit_FxNum"/>,button_parameter<Variable name="FxParameter"/></ConfigKey>
           <Transform><IsEqual>1</IsEqual></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
@@ -77,14 +77,14 @@ Variables:
 
       <!-- Button to indicate parameter state -->
       <Template src="skin:fx_button.xml">
+        <SetVariable name="FxUnit">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
         <SetVariable name="ObjectName">FxParameterButtonUnderlay</SetVariable>
         <SetVariable name="Size">51f,18f</SetVariable>
-        <SetVariable name="FxParameter">button_parameter<Variable name="FxParameter"/></SetVariable>
       </Template>
     </Children>
     <!-- show only if button parameter is loaded -->
     <Connection>
-      <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,button_parameter<Variable name="FxParameter"/>_loaded</ConfigKey>
+      <ConfigKey><Variable name="FxUnit_FxNum"/>,button_parameter<Variable name="FxParameter"/>_loaded</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

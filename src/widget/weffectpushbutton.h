@@ -18,7 +18,6 @@ class WEffectPushButton : public WPushButton {
     WEffectPushButton(QWidget* pParent, EffectsManager* pEffectsManager);
 
     void setup(const QDomNode& node, const SkinContext& context) override;
-    void setupEffectParameterSlot(const ConfigKey& configKey);
 
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;
@@ -32,11 +31,6 @@ class WEffectPushButton : public WPushButton {
     void slotActionChosen(QAction* action);
 
   private:
-    // Set the EffectKnobParameterSlot that should be monitored by this
-    // WEffectKnobComposed.
-    void setEffectKnobParameterSlot(EffectParameterSlotBasePointer pParameterSlot);
-
-
     EffectsManager* m_pEffectsManager;
     EffectParameterSlotBasePointer m_pEffectParameterSlot;
     QMenu* m_pButtonMenu;

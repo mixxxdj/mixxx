@@ -76,10 +76,6 @@ class EffectsManager : public QObject {
     void addQuickEffectChainSlot(const QString& deckGroupName);
 
     EffectChainSlotPointer getEffectChainSlot(const QString& group) const;
-    EffectSlotPointer getEffectSlot(const QString& group);
-
-    EffectParameterSlotBasePointer getEffectParameterSlot(
-            const EffectParameterType parameterType, const ConfigKey& configKey);
 
     inline const QList<EffectManifestPointer>& getVisibleEffectManifests() const {
         return m_visibleEffectManifests;
