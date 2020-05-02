@@ -42,12 +42,6 @@ class QuickEffectChainSlot : public PerGroupEffectChainSlot {
             EffectsManager* pEffectsManager,
             EffectsMessengerPointer pEffectsMessenger);
 
-    void loadEffect(const unsigned int iEffectSlotNumber,
-            const EffectManifestPointer pManifest,
-            std::unique_ptr<EffectProcessor> pProcessor,
-            EffectPresetPointer pPreset,
-            bool adoptMetaknobFromPreset = false) override;
-
     static QString formatEffectChainSlotGroup(const QString& group);
     static QString formatEffectSlotGroup(const QString& group,
                                          const int iEffectSlotNumber = 0);
@@ -61,7 +55,6 @@ class EqualizerEffectChainSlot : public PerGroupEffectChainSlot {
 
     void loadEffect(const unsigned int iEffectSlotNumber,
             const EffectManifestPointer pManifest,
-            std::unique_ptr<EffectProcessor> pProcessor,
             EffectPresetPointer pPreset,
             bool adoptMetaknobFromPreset = false) override;
 

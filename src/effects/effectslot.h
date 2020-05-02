@@ -64,7 +64,6 @@ class EffectSlot : public QObject {
 
     /// Call with nullptr for pManifest and pProcessor to unload an effect
     void loadEffect(const EffectManifestPointer pManifest,
-            std::unique_ptr<EffectProcessor> pProcessor,
             EffectPresetPointer pPreset,
             const QSet<ChannelHandleAndGroup>& activeChannels,
             bool adoptMetaknobFromPreset = false);
@@ -145,8 +144,7 @@ class EffectSlot : public QObject {
         return QString("EffectSlot(%1)").arg(m_group);
     }
 
-    void addToEngine(std::unique_ptr<EffectProcessor>,
-            const QSet<ChannelHandleAndGroup>& activeInputChannels);
+    void addToEngine(const QSet<ChannelHandleAndGroup>& activeInputChannels);
     void removeFromEngine();
 
     void loadParameters();
@@ -157,6 +155,7 @@ class EffectSlot : public QObject {
     const QString m_group;
     UserSettingsPointer m_pConfig;
     EffectsManager* m_pEffectsManager;
+    EffectPresetManagerPointer m_pPresetManager;
     EffectsMessengerPointer m_pMessenger;
     EffectManifestPointer m_pManifest;
     EngineEffectChain* m_pEngineEffectChain;

@@ -5,12 +5,12 @@
 #include "util/sample.h"
 
 EngineEffect::EngineEffect(EffectManifestPointer pManifest,
+        EffectsBackendManagerPointer pBackendManager,
         const QSet<ChannelHandleAndGroup>& activeInputChannels,
         const QSet<ChannelHandleAndGroup>& registeredInputChannels,
-        const QSet<ChannelHandleAndGroup>& registeredOutputChannels,
-        std::unique_ptr<EffectProcessor> pProcessor)
+        const QSet<ChannelHandleAndGroup>& registeredOutputChannels)
         : m_pManifest(pManifest),
-          m_pProcessor(std::move(pProcessor)),
+          m_pProcessor(pBackendManager->createProcessor(pManifest)),
           m_parameters(pManifest->parameters().size()) {
     const QList<EffectManifestParameterPointer>& parameters = m_pManifest->parameters();
     for (int i = 0; i < parameters.size(); ++i) {
