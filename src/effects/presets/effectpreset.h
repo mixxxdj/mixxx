@@ -7,7 +7,7 @@
 
 /// EffectPreset is a read-only snapshot of the state of an effect that can be
 /// serialized to/deserialized from XML. It is used by EffectChainPreset to
-/// save/load chain presets. It is also used by EffectsManager to save custom
+/// save/load chain presets. It is also used by EffectPresetManager to save custom
 /// defaults for each effect.
 class EffectPreset {
   public:
