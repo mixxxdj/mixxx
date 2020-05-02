@@ -121,7 +121,6 @@ class EffectChainSlot : public QObject {
     void disableForInputChannel(const ChannelHandleAndGroup& handle_group);
 
     EffectsManager* m_pEffectsManager;
-    EffectsBackendManagerPointer m_pBackendManager;
     EffectChainPresetManagerPointer m_pChainPresetManager;
     EffectsMessengerPointer m_pMessenger;
     ControlObject* m_pControlChainMix;
