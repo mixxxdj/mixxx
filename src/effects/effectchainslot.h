@@ -132,7 +132,7 @@ class EffectChainSlot : public QObject {
     void slotControlChainSelector(double value);
     void slotControlChainNextPreset(double value);
     void slotControlChainPrevPreset(double value);
-    void slotChannelStatusChanged(const QString& group);
+    void slotChannelStatusChanged(double value, const ChannelHandleAndGroup& handle_group);
 
   private:
     QString debugString() const {
@@ -167,25 +167,10 @@ class EffectChainSlot : public QObject {
     ControlPushButton* m_pControlChainShowParameters;
     ControlPushButton* m_pControlChainFocusedEffect;
 
-    struct ChannelInfo {
-        // Takes ownership of pEnabled.
-        ChannelInfo(const ChannelHandleAndGroup& handle_group, ControlObject* pEnabled)
-                : handle_group(handle_group),
-                  pEnabled(pEnabled) {
-
-        }
-        ~ChannelInfo() {
-            delete pEnabled;
-        }
-        ChannelHandleAndGroup handle_group;
-        ControlObject* pEnabled;
-    };
-
-    QMap<QString, ChannelInfo*> m_channelInfoByName;
-    QSignalMapper m_channelStatusMapper;
     QString m_presetName;
     EffectChainMixMode m_mixMode;
     SignalProcessingStage m_signalProcessingStage;
+    QHash<ChannelHandleAndGroup, std::shared_ptr<ControlPushButton>> m_channelEnableButtons;
     QSet<ChannelHandleAndGroup> m_enabledInputChannels;
     EngineEffectChain* m_pEngineEffectChain;
 

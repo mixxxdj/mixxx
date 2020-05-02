@@ -95,9 +95,6 @@ EffectChainSlot::EffectChainSlot(const QString& group,
     connect(m_pControlChainSelector, &ControlObject::valueChanged,
             this, &EffectChainSlot::slotControlChainSelector);
 
-    connect(&m_channelStatusMapper, QOverload<const QString &>::of(&QSignalMapper::mapped),
-            this, &EffectChainSlot::slotChannelStatusChanged);
-
     // ControlObjects for skin <-> controller mapping interaction.
     // Refer to comment in header for full explanation.
     m_pControlChainShowFocus = new ControlPushButton(
@@ -137,12 +134,6 @@ EffectChainSlot::~EffectChainSlot() {
     delete m_pControlChainShowFocus;
     delete m_pControlChainShowParameters;
     delete m_pControlChainFocusedEffect;
-
-    for (QMap<QString, ChannelInfo*>::iterator it = m_channelInfoByName.begin();
-         it != m_channelInfoByName.end();) {
-        delete it.value();
-        it = m_channelInfoByName.erase(it);
-    }
 
     removeFromEngine();
 }
@@ -266,26 +257,24 @@ EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
 
 void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handle_group,
                                            const double initialValue) {
-    VERIFY_OR_DEBUG_ASSERT(!m_channelInfoByName.contains(handle_group.name())) {
+    VERIFY_OR_DEBUG_ASSERT(!m_channelEnableButtons.contains(handle_group)) {
         return;
     }
 
-    ControlPushButton* pEnableControl = new ControlPushButton(
+    auto pEnableControl = std::make_shared<ControlPushButton>(
             ConfigKey(m_group, QString("group_%1_enable").arg(handle_group.name())),
-            true, initialValue);
+            true,
+            initialValue);
+    m_channelEnableButtons.insert(handle_group, pEnableControl);
     pEnableControl->setButtonMode(ControlPushButton::POWERWINDOW);
     if (pEnableControl->toBool()) {
         enableForInputChannel(handle_group);
     }
 
-    ChannelInfo* pInfo = new ChannelInfo(handle_group, pEnableControl);
-    m_channelInfoByName[handle_group.name()] = pInfo;
-
-    // m_channelStatusMapper will emit a mapped(handle_group.name()) signal whenever
-    // the valueChanged(double) signal is emitted by pEnableControl
-    m_channelStatusMapper.setMapping(pEnableControl, handle_group.name());
-    connect(pEnableControl, &ControlObject::valueChanged,
-            &m_channelStatusMapper,  static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
+    connect(pEnableControl.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this, handle_group](double value) { slotChannelStatusChanged(value, handle_group); });
 }
 
 EffectSlotPointer EffectChainSlot::getEffectSlot(unsigned int slotNumber) {
@@ -340,15 +329,12 @@ void EffectChainSlot::slotControlChainPrevPreset(double value) {
     }
 }
 
-void EffectChainSlot::slotChannelStatusChanged(const QString& group) {
-    ChannelInfo* pChannelInfo = m_channelInfoByName.value(group, NULL);
-    if (pChannelInfo != NULL && pChannelInfo->pEnabled != NULL) {
-        bool bEnable = pChannelInfo->pEnabled->toBool();
-        if (bEnable) {
-            enableForInputChannel(pChannelInfo->handle_group);
-        } else {
-            disableForInputChannel(pChannelInfo->handle_group);
-        }
+void EffectChainSlot::slotChannelStatusChanged(
+        double value, const ChannelHandleAndGroup& handle_group) {
+    if (value > 0) {
+        enableForInputChannel(handle_group);
+    } else {
+        disableForInputChannel(handle_group);
     }
 }
 
