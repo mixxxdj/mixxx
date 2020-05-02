@@ -26,21 +26,9 @@ class EffectManifest;
 
 typedef QMap<EffectParameterType, QList<EffectParameterPointer>> ParameterMap;
 
-/// EffectsManager is the interface between the parts of the effects system in
-/// the main thread and the rest of Mixxx. It creates/destroys a fixed
-/// set of EffectChainSlots on Mixxx startup/shutdown. EffectManager uses
-/// EffectBackends and EffectManifests to create EffectProcessors. The
-/// EffectProcessors are sent down to the EffectChainSlots, then down to the
-/// EffectSlots which use the EffectProcessors to create EngineEffects and add
-/// them to the audio engine.
-///
-/// EffectsManager saves/loads EffectPresets in the "effects/defaults" folder in
-/// the user settings folder to allow users to specify default states when each
-/// effect is loaded.
-///
-/// To maintain clear separation of responsibilities, GUI classes should NOT
-/// access the EffectChainSlots or EffectSlots directly. They should interface
-/// with them indirectly through EffectsManager.
+/// EffectsManager creates/destroys a fixed set of EffectChainSlots on Mixxx
+/// startup/shutdown and creates a QuickEffectChainSlot and EqualizerEffectChainSlot
+/// for each deck.
 class EffectsManager : public QObject {
     Q_OBJECT
   public:

@@ -34,10 +34,6 @@ class EngineEffectChain;
 ///
 /// The state of an EffectChainSlot can be saved to and loaded from an
 /// EffectChainPreset, which can serialize/deserialize that state to/from XML.
-/// Loading state from an EffectChainPreset is done by
-/// EffectsManager::loadEffectChainPreset rather than directly by EffectChainSlot
-/// because loading effects requires access to the EffectsBackends and default
-/// EffectPresets which are maintained by EffectsManager.
 ///
 /// Currently EffectChainSlot has a fixed number of EffectSlots. In the future
 /// this may be extended to create an Effect class to decouple an EngineEffect's
