@@ -277,22 +277,22 @@ void DlgPrefAutoDJ::slotSetAutoDJBPMtoUse(int a_iValue) {
     switch (a_iValue) {
     case 1:
         // To-deck's BPM
-        m_pConfig->set(ConfigKey("[Auto DJ]", "BPMToUseBuff"),
-                ConfigValue(1));
+        m_pConfig->setValue(ConfigKey("[Auto DJ]", "BPMToUseBuff"),
+                1);
         break;
     case 2:
         // Left deck's BPM
-        m_pConfig->set(ConfigKey("[Auto DJ]", "BPMToUseBuff"),
-                ConfigValue(2));
+        m_pConfig->setValue(ConfigKey("[Auto DJ]", "BPMToUseBuff"),
+                2);
         break;
     case 3:
         // Right deck's BPM
-        m_pConfig->set(ConfigKey("[Auto DJ]", "BPMToUseBuff"),
-                ConfigValue(3));
+        m_pConfig->setValue(ConfigKey("[Auto DJ]", "BPMToUseBuff"),
+                3);
         break;
     default:
         // From-deck's BPM
-        m_pConfig->set(ConfigKey("[Auto DJ]", "BPMToUseBuff"),
-                ConfigValue(0));
+        m_pConfig->setValue(ConfigKey("[Auto DJ]", "BPMToUseBuff"),
+                0);
     }
 }
