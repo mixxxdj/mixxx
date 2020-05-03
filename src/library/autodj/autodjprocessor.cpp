@@ -1,12 +1,13 @@
 #include "library/autodj/autodjprocessor.h"
 
-#include "library/trackcollection.h"
-#include "control/controlpushbutton.h"
 #include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
 #include "engine/engine.h"
-#include "util/math.h"
-#include "mixer/playermanager.h"
+#include "engine/sync/syncable.h"
+#include "library/trackcollection.h"
 #include "mixer/basetrackplayer.h"
+#include "mixer/playermanager.h"
+#include "util/math.h"
 
 #define kConfigKey "[Auto DJ]"
 namespace {
@@ -1680,22 +1681,6 @@ bool AutoDJProcessor::nextTrackLoaded() {
 }
 
 double AutoDJProcessor::getFadeTime() {
-    // TODO(c3n7): Is there a better place for this? Find out.
-    // Copied from syncable.h
-    enum SyncMode {
-        SYNC_INVALID = -1,
-        SYNC_NONE = 0,
-        SYNC_FOLLOWER = 1,
-        // SYNC_MASTER_SOFT is a master that Mixxx has chosen automatically.
-        // depending on how decks stop and start, it may reassign soft master at will.
-        SYNC_MASTER_SOFT = 2,
-        // SYNC_MASTER_EXPLICIT represents an explicit request that the synacable be
-        // master. Mixxx will only remove a SYNC_MASTER_SOFT if the track is stopped or
-        // ejected.
-        SYNC_MASTER_EXPLICIT = 3,
-        SYNC_NUM_MODES
-    };
-
     double leftBPM = m_pLeftBPM->get();
     double rightBPM = m_pRightBPM->get();
     int leftSyncMode = m_pLeftSyncMode->get();
