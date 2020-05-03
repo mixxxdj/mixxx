@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>658</width>
-    <height>239</height>
+    <height>254</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -126,7 +126,7 @@
      <item row="6" column="0">
       <widget class="QLabel" name="textAutoDjBPMToUse">
        <property name="text">
-        <string>Which deck's bpm to use</string>
+        <string>If both tracks' BPMs aren't equal, calculate transition</string>
        </property>
       </widget>
      </item>

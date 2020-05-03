@@ -173,11 +173,9 @@ class AutoDJProcessor : public QObject {
         BEATS
     };
 
-    enum class BpmToUse {
-        FromDeck,
-        ToDeck,
-        LeftDeck,
-        RightDeck
+    enum class CalculateTransitionPeriod {
+        BeforeTrackEnd,
+        FromNextTrackStart,
     };
 
     AutoDJProcessor(QObject* pParent,

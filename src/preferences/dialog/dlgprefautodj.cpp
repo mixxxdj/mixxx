@@ -58,19 +58,11 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
     connect(ComboBoxAutoDjTransitionUnit, SIGNAL(currentIndexChanged(int)), this, SLOT(slotSetAutoDJTransitionUnit(int)));
     connect(ComboBoxAutoDjTransitionUnit, SIGNAL(currentIndexChanged(int)), this, SLOT(slotEnableAutoDJBPMtoUseComboBox(int)));
 
-    ComboBoxAutoDjBPMToUse->addItem(tr("From-deck's BPM"));
-    ComboBoxAutoDjBPMToUse->addItem(tr("To-deck's BPM"));
-    // TODO(c3n7): Update these once Auto DJ starts using 4 decks
-    ComboBoxAutoDjBPMToUse->addItem(tr("Left Deck's BPM"));
-    ComboBoxAutoDjBPMToUse->addItem(tr("Right Deck's BPM"));
+    ComboBoxAutoDjBPMToUse->addItem(tr("Before track's end"));
+    ComboBoxAutoDjBPMToUse->addItem(tr("From next track's start"));
     QString bpmToUseToolTip = tr(
-            "Specifies which deck's BPM Auto DJ should use \n"
-            "when sync isn't enabled on both decks\n"
-            "\n"
-            "From Deck's BPM: Use the BPM of the deck Auto DJ will be transitioning from.\n"
-            "To Deck's BPM: Use the BPM of the deck Auto DJ will be transitioning to.\n"
-            "Left Deck's BPM: Use the left deck's BPM.\n"
-            "Right Deck's BPM: Use the right deck's BPM.\n");
+            "If the tracks do not have the same BPM, this specifies\n"
+            "before/from which point to calculate the transition period.");
     ComboBoxAutoDjBPMToUse->setToolTip(bpmToUseToolTip);
     ComboBoxAutoDjBPMToUse->setCurrentIndex(
             m_pConfig->getValue(
@@ -274,25 +266,11 @@ void DlgPrefAutoDJ::slotEnableAutoDJBPMtoUseComboBox(int a_iValue) {
 }
 
 void DlgPrefAutoDJ::slotSetAutoDJBPMtoUse(int a_iValue) {
-    switch (a_iValue) {
-    case 1:
-        // To-deck's BPM
-        m_pConfig->setValue(ConfigKey("[Auto DJ]", "BPMToUseBuff"),
-                1);
-        break;
-    case 2:
-        // Left deck's BPM
-        m_pConfig->setValue(ConfigKey("[Auto DJ]", "BPMToUseBuff"),
-                2);
-        break;
-    case 3:
-        // Right deck's BPM
-        m_pConfig->setValue(ConfigKey("[Auto DJ]", "BPMToUseBuff"),
-                3);
-        break;
-    default:
-        // From-deck's BPM
-        m_pConfig->setValue(ConfigKey("[Auto DJ]", "BPMToUseBuff"),
-                0);
+    if (a_iValue == 0) {
+        // Before track's end
+        m_pConfig->setValue(ConfigKey("[Auto DJ]", "BPMToUseBuff"), 0);
+    } else {
+        // From next track's start
+        m_pConfig->setValue(ConfigKey("[Auto DJ]", "BPMToUseBuff"), 1);
     }
 }

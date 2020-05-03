@@ -1720,17 +1720,12 @@ double AutoDJProcessor::getFadeTime() {
         } else {
             // Sync isn't enabled in both decks. Get the user's preference on which deck's bpm
             // to use
-            BpmToUse bpmToUse = static_cast<BpmToUse>(m_pConfig->getValue(
-                    ConfigKey("[Auto DJ]", "BPMToUse"), 0));
-            switch (bpmToUse) {
-            case BpmToUse::ToDeck:
+            CalculateTransitionPeriod calculateTransitionPeriod =
+                    static_cast<CalculateTransitionPeriod>(m_pConfig->getValue(
+                            ConfigKey("[Auto DJ]", "BPMToUse"), 0));
+            switch (calculateTransitionPeriod) {
+            case CalculateTransitionPeriod::FromNextTrackStart:
                 fadeTime = (transitionTime * 60) / toBPM;
-                break;
-            case BpmToUse::LeftDeck:
-                fadeTime = (transitionTime * 60) / leftBPM;
-                break;
-            case BpmToUse::RightDeck:
-                fadeTime = (transitionTime * 60) / rightBPM;
                 break;
             default:
                 fadeTime = (transitionTime * 60) / fromBPM;
