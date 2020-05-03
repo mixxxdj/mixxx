@@ -89,6 +89,7 @@ void handleMessage(
         QtMsgType type,
         const QMessageLogContext& context,
         const QString& input) {
+    int baSize = 2 + 3 + 1; // all separators + newline (see below)
     const char* levelName = nullptr;
     WriteFlags writeFlags = WriteFlag::None;
     bool isDebugAssert = false;
@@ -96,6 +97,7 @@ void handleMessage(
     switch (type) {
     case QtDebugMsg:
         levelName = "Debug";
+        baSize += strlen(levelName);
         isControllerDebug =
                 input.startsWith(QLatin1String(
                         ControllerDebug::kLogMessagePrefix));
@@ -115,6 +117,7 @@ void handleMessage(
         break;
     case QtInfoMsg:
         levelName = "Info";
+        baSize += strlen(levelName);
         if (Logging::enabled(LogLevel::Info)) {
             writeFlags |= WriteFlag::StdErr;
         }
@@ -126,6 +129,7 @@ void handleMessage(
         break;
     case QtWarningMsg:
         levelName = "Warning";
+        baSize += strlen(levelName);
         if (Logging::enabled(LogLevel::Warning)) {
             writeFlags |= WriteFlag::StdErr;
         }
@@ -137,19 +141,19 @@ void handleMessage(
         break;
     case QtCriticalMsg:
         levelName = "Critical";
+        baSize += strlen(levelName);
         writeFlags = WriteFlag::All;
         isDebugAssert = input.startsWith(QLatin1String(kDebugAssertPrefix));
         break;
     case QtFatalMsg:
         levelName = "Fatal";
+        baSize += strlen(levelName);
         writeFlags = WriteFlag::All;
         break;
     }
     VERIFY_OR_DEBUG_ASSERT(levelName) {
         return;
     }
-    int levelName_len = strlen(levelName);
-    int baSize = levelName_len + 2 + 3 + 1; // including separators (see below)
 
     QByteArray threadName =
             QThread::currentThread()->objectName().toLocal8Bit();
@@ -183,18 +187,18 @@ void handleMessage(
     QByteArray ba;
     ba.reserve(baSize);
 
-    ba.append(levelName, levelName_len);
-    ba.append(" [", 2);
-    ba.append(threadName);
-    if (categoryName_len > 0) {
-        ba.append("] ", 2);
+    ba.append(levelName);
+    ba.append(" [");
+    ba.append(threadName, threadName.size());
+    if (categoryName) {
+        ba.append("] ");
         ba.append(categoryName, categoryName_len);
-        ba.append(": ", 2);
+        ba.append(": ");
     } else {
-        ba.append("]: ", 3);
+        ba.append("]: ");
     }
-    ba.append(input8Bit);
-    ba.append('\n'); // len = 1
+    ba.append(input8Bit, input8Bit.size());
+    ba.append('\n');
 
     // Verify that the reserved size matches the actual size
     DEBUG_ASSERT(ba.size() == baSize);
