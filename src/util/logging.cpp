@@ -1,20 +1,20 @@
 #include "util/logging.h"
 
-#include <stdio.h>
 #include <signal.h>
+#include <stdio.h>
 
 #include <QByteArray>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QIODevice>
+#include <QLoggingCategory>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QString>
 #include <QThread>
 #include <QtDebug>
 #include <QtGlobal>
-#include <QLoggingCategory>
 
 #include "controllers/controllerdebug.h"
 #include "util/assert.h"
@@ -36,8 +36,10 @@ QFile g_logfile;
 bool g_debugAssertBreak = false;
 
 // Handles actually writing to stderr and the log.
-inline void writeToLog(const QByteArray& message, bool shouldPrint,
-                       bool shouldFlush) {
+inline void writeToLog(
+        const QByteArray& message,
+        bool shouldPrint,
+        bool shouldFlush) {
     if (shouldPrint) {
         fwrite(message.constData(), sizeof(char), message.size(), stderr);
     }
@@ -55,8 +57,10 @@ inline void writeToLog(const QByteArray& message, bool shouldPrint,
 
 // Debug message handler which outputs to stderr and a logfile, prepending the
 // thread name and log level.
-void MessageHandler(QtMsgType type,
-                    const QMessageLogContext&, const QString& input) {
+void MessageHandler(
+        QtMsgType type,
+        const QMessageLogContext&,
+        const QString& input) {
     // For "]: " and '\n'.
     size_t baSize = 4;
     const char* tag = nullptr;
@@ -65,47 +69,48 @@ void MessageHandler(QtMsgType type,
     bool isDebugAssert = false;
     bool isControllerDebug = false;
     switch (type) {
-        case QtDebugMsg:
-            tag = "Debug [";
-            baSize += strlen(tag);
-            isControllerDebug = input.startsWith(QLatin1String(
+    case QtDebugMsg:
+        tag = "Debug [";
+        baSize += strlen(tag);
+        isControllerDebug = input.startsWith(QLatin1String(
                 ControllerDebug::kLogMessagePrefix));
-            shouldPrint = Logging::enabled(LogLevel::Debug) ||
-                    isControllerDebug;
-            shouldFlush = Logging::flushing(LogLevel::Debug);
-            break;
-        case QtInfoMsg:
-            tag = "Info [";
-            baSize += strlen(tag);
-            shouldPrint = Logging::enabled(LogLevel::Info);
-            shouldFlush = Logging::flushing(LogLevel::Info);
-            break;
-        case QtWarningMsg:
-            tag = "Warning [";
-            baSize += strlen(tag);
-            shouldPrint = Logging::enabled(LogLevel::Warning);
-            shouldFlush = Logging::flushing(LogLevel::Warning);
-            break;
-        case QtCriticalMsg:
-            tag = "Critical [";
-            baSize += strlen(tag);
-            shouldFlush = true;
-            isDebugAssert = input.startsWith(QLatin1String(kDebugAssertPrefix));
-            break;
-        case QtFatalMsg:
-            tag = "Fatal [";
-            baSize += strlen(tag);
-            shouldFlush = true;
-            break;
-        default:
-            tag = "Unknown [";
-            baSize += strlen(tag);
+        shouldPrint = Logging::enabled(LogLevel::Debug) ||
+                isControllerDebug;
+        shouldFlush = Logging::flushing(LogLevel::Debug);
+        break;
+    case QtInfoMsg:
+        tag = "Info [";
+        baSize += strlen(tag);
+        shouldPrint = Logging::enabled(LogLevel::Info);
+        shouldFlush = Logging::flushing(LogLevel::Info);
+        break;
+    case QtWarningMsg:
+        tag = "Warning [";
+        baSize += strlen(tag);
+        shouldPrint = Logging::enabled(LogLevel::Warning);
+        shouldFlush = Logging::flushing(LogLevel::Warning);
+        break;
+    case QtCriticalMsg:
+        tag = "Critical [";
+        baSize += strlen(tag);
+        shouldFlush = true;
+        isDebugAssert = input.startsWith(QLatin1String(kDebugAssertPrefix));
+        break;
+    case QtFatalMsg:
+        tag = "Fatal [";
+        baSize += strlen(tag);
+        shouldFlush = true;
+        break;
+    default:
+        tag = "Unknown [";
+        baSize += strlen(tag);
     }
 
     // qthread.cpp contains a Q_ASSERT that currentThread does not return
     // nullptr.
     QByteArray threadName = QThread::currentThread()
-            ->objectName().toLocal8Bit();
+                                    ->objectName()
+                                    .toLocal8Bit();
     baSize += threadName.length();
 
     QByteArray input8Bit;
@@ -145,13 +150,14 @@ void MessageHandler(QtMsgType type,
     writeToLog(ba, shouldPrint, shouldFlush);
 }
 
-}  // namespace
+} // namespace
 
 // static
-void Logging::initialize(const QDir& settingsDir,
-                         LogLevel logLevel,
-                         LogLevel logFlushLevel,
-                         bool debugAssertBreak) {
+void Logging::initialize(
+        const QDir& settingsDir,
+        LogLevel logLevel,
+        LogLevel logFlushLevel,
+        bool debugAssertBreak) {
     VERIFY_OR_DEBUG_ASSERT(!g_logfile.isOpen()) {
         // Somebody already called Logging::initialize.
         return;
@@ -178,8 +184,7 @@ void Logging::initialize(const QDir& settingsDir,
                 QFile::remove(olderlogname);
             }
             if (!QFile::rename(logFileName, olderlogname)) {
-                fprintf(stderr, "Error rolling over logfile %s",
-                        logFileName.toLocal8Bit().constData());
+                fprintf(stderr, "Error rolling over logfile %s", logFileName.toLocal8Bit().constData());
             }
         }
     }
@@ -201,14 +206,10 @@ void Logging::initialize(const QDir& settingsDir,
     // Ubuntu: https://bugs.launchpad.net/ubuntu/+source/qtbase-opensource-src/+bug/1731646
     // Somehow this causes a segfault on macOS though?? https://bugs.launchpad.net/mixxx/+bug/1871238
 #ifdef __LINUX__
-    QLoggingCategory::setFilterRules("*.debug=true\n"
-                                     "qt.*.debug=false");
+    QLoggingCategory::setFilterRules(
+            "*.debug=true\n"
+            "qt.*.debug=false");
 #endif
-}
-
-// static
-void Logging::setLogLevel(LogLevel logLevel) {
-    g_logLevel = logLevel;
 }
 
 // static
@@ -232,4 +233,4 @@ void Logging::flushLogFile() {
     }
 }
 
-}  // namespace mixxx
+} // namespace mixxx
