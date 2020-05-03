@@ -49,9 +49,14 @@ typedef QMap<EffectParameterType, QList<EffectParameterPointer>> ParameterMap;
 /// parameters of EngineEffects. This allows EffectSlot to arbitrarily hide and
 /// rearrange EffectParameters by loading/unloading them from the
 /// EffectParameterSlotBases without changing the audio processing in the engine.
+/// This is useful to let the user customize which parameters are available for
+/// controlling with the finite amount of knobs and buttons on their controller.
+/// It is also useful for making external effects plugins such as LV2 plugins
+/// work better with Mixxx because they often have lots of parameters with only
+/// a few of them being useful in the context of Mixxx.
 ///
 /// The state of an EffectSlot is loaded from an EffectPreset and a snapshot
-/// of EffectSlot's state can be serialized into a EffectPreset.
+/// of an EffectSlot's state can be serialized into a EffectPreset.
 class EffectSlot : public QObject {
     Q_OBJECT
   public:
