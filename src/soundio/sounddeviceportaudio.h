@@ -26,16 +26,16 @@
 #include "soundio/sounddevice.h"
 #include "util/duration.h"
 #include "util/fifo.h"
+#include "util/logging.h"
+
+Q_DECLARE_LOGGING_CATEGORY(mixxxLogDevicePortAudio)
+#define MIXXX_LOGGING_CATEGORY_DEVICE_PORTAUDIO \
+MIXXX_LOGGING_CATEGORY_PARENT_CHILD(MIXXX_LOGGING_CATEGORY_DEVICE, "PortAudio")
 
 #define CPU_USAGE_UPDATE_RATE 30 // in 1/s, fits to display frame rate
 
 class SoundManager;
 class ControlProxy;
-
-/** Dynamically resolved function which allows us to enable a realtime-priority callback
-    thread from ALSA/PortAudio. This must be dynamically resolved because PortAudio can't
-    tell us if ALSA is compiled into it or not. */
-typedef int (*EnableAlsaRT)(PaStream* s, int enable);
 
 class SoundDevicePortAudio : public SoundDevice {
   public:
@@ -68,26 +68,23 @@ class SoundDevicePortAudio : public SoundDevice {
                         const PaStreamCallbackTimeInfo *timeInfo,
                         PaStreamCallbackFlags statusFlags);
 
-    unsigned int getDefaultSampleRate() const override {
-        return m_deviceInfo ? static_cast<unsigned int>(
-            m_deviceInfo->defaultSampleRate) : 44100;
-    }
+    unsigned int getDefaultSampleRate() const override;
 
   private:
     void updateCallbackEntryToDacTime(const PaStreamCallbackTimeInfo* timeInfo);
     void updateAudioLatencyUsage(const SINT framesPerBuffer);
 
     // PortAudio stream for this device.
-    PaStream* volatile m_pStream;
+    PaStream* volatile m_pStream{};
     // Struct containing information about this device. Don't free() it, it
     // belongs to PortAudio.
-    const PaDeviceInfo* m_deviceInfo;
+    const PaDeviceInfo* m_deviceInfo{};
     // Description of the output stream going to the soundcard.
     PaStreamParameters m_outputParams;
     // Description of the input stream coming from the soundcard.
     PaStreamParameters m_inputParams;
-    FIFO<CSAMPLE>* m_outputFifo;
-    FIFO<CSAMPLE>* m_inputFifo;
+    FIFO<CSAMPLE>* m_outputFifo{};
+    FIFO<CSAMPLE>* m_inputFifo{};
     bool m_outputDrift;
     bool m_inputDrift;
 
@@ -95,7 +92,7 @@ class SoundDevicePortAudio : public SoundDevice {
     QString m_lastError;
     // Whether we have set the thread priority to realtime or not.
     bool m_bSetThreadPriority;
-    ControlProxy* m_pMasterAudioLatencyUsage;
+    ControlProxy* m_pMasterAudioLatencyUsage{};
     mixxx::Duration m_timeInAudioCallback;
     int m_framesSinceAudioLatencyUsageUpdate;
     int m_syncBuffers;
