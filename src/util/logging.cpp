@@ -8,20 +8,16 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QIODevice>
+#include <QLoggingCategory>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QString>
 #include <QThread>
 #include <QtDebug>
 #include <QtGlobal>
-#ifdef __LINUX__
-#include <QLoggingCategory>
-#endif
 
 #include "controllers/controllerdebug.h"
 #include "util/assert.h"
-
-
 
 namespace {
 
@@ -34,6 +30,8 @@ QFile s_logfile;
 // The log level.
 // Whether to break on debug assertions.
 bool s_debugAssertBreak = false;
+
+const QLoggingCategory kDefaultLoggingCategory = QLoggingCategory(nullptr);
 
 enum class WriteFlag {
     None = 0,
@@ -161,13 +159,32 @@ void handleMessage(
     }
     baSize += input8Bit.size();
 
+    const char* categoryName = context.category;
+    int categoryName_len = strlen(categoryName);
+    if (categoryName_len > 0) {
+        if (strcmp(categoryName, kDefaultLoggingCategory.categoryName()) != 0) {
+            baSize += 1; // additional separator (see below)
+            baSize += categoryName_len;
+        } else {
+            // Suppress default category name
+            categoryName = nullptr;
+            categoryName_len = 0;
+        }
+    }
+
     QByteArray ba;
     ba.reserve(baSize);
 
     ba.append(levelName, levelName_len);
     ba.append(" [", 2);
     ba.append(threadName);
-    ba.append("]: ", 3);
+    if (categoryName_len > 0) {
+        ba.append("] ", 2);
+        ba.append(categoryName, categoryName_len);
+        ba.append(": ", 2);
+    } else {
+        ba.append("]: ", 3);
+    }
     ba.append(input8Bit);
     ba.append('\n'); // len = 1
 
