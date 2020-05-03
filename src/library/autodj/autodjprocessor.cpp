@@ -1728,7 +1728,7 @@ double AutoDJProcessor::getFadeTime() {
                 (leftSyncMode == SYNC_MASTER_SOFT && rightSyncMode == SYNC_FOLLOWER)) {
             // Both the left and right bpm should be equal if this point is reached
             VERIFY_OR_DEBUG_ASSERT(leftBPM == rightBPM) {
-                qDebug() << tr("leftBPM: %1   - rightBPM %2").arg(leftBPM).arg(rightBPM);
+                qWarning() << tr("leftBPM: %1   - rightBPM %2").arg(leftBPM).arg(rightBPM);
             }
 
             fadeTime = (transitionTime * 60) / leftBPM;
