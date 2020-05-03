@@ -564,8 +564,7 @@ void EngineMaster::process(const int iBufferSize) {
             m_masterGainOld = master_gain;
 
             // Record/broadcast signal is the same as the master output
-            if (m_pEngineSideChain &&
-                    !m_bExternalRecordBroadcastInputConnected) {
+            if (sidechainMixRequired()) {
                 SampleUtil::copy(m_pSidechainMix, m_pMaster, m_iBufferSize);
             }
         } else if (configuredMicMonitorMode == MicMonitorMode::MASTER_AND_BOOTH) {
@@ -602,8 +601,7 @@ void EngineMaster::process(const int iBufferSize) {
             m_masterGainOld = master_gain;
 
             // Record/broadcast signal is the same as the master output
-            if (m_pEngineSideChain &&
-                    !m_bExternalRecordBroadcastInputConnected) {
+            if (sidechainMixRequired()) {
                 SampleUtil::copy(m_pSidechainMix, m_pMaster, m_iBufferSize);
             }
         } else if (configuredMicMonitorMode == MicMonitorMode::DIRECT_MONITOR) {
@@ -636,33 +634,31 @@ void EngineMaster::process(const int iBufferSize) {
             SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld,
                                          master_gain, m_iBufferSize);
             m_masterGainOld = master_gain;
-            if (m_pEngineSideChain &&
-                    !m_bExternalRecordBroadcastInputConnected) {
+            if (sidechainMixRequired()) {
                 SampleUtil::copy(m_pSidechainMix, m_pMaster, m_iBufferSize);
-            }
 
-            // The talkover signal Mixxx receives is delayed by the round trip latency.
-            // There is an output latency between the time Mixxx processes the audio
-            // and the user hears it. So if the microphone user plays on beat with
-            // what they hear, they will be playing out of sync with the engine's
-            // processing by the output latency. Additionally, Mixxx gets input signals
-            // delayed by the input latency. By the time Mixxx receives the input signal,
-            // a full round trip through the signal chain has elapsed since Mixxx
-            // processed the output signal.
-            // Although Mixxx receives the input signal delayed, the user hears it mixed
-            // in hardware with the master & booth outputs without that
-            // latency, so to record/broadcast the same signal that is heard
-            // on the master & booth outputs, the master mix must be delayed before
-            // mixing the talkover signal for the record/broadcast mix.
-            // If not using microphone inputs or recording/broadcasting from
-            // a sound card input, skip unnecessary processing here.
-            if (m_pEngineSideChain &&
-                    !m_bExternalRecordBroadcastInputConnected &&
-                    m_pNumMicsConfigured->get() > 0) {
-                // Copy the master mix to a separate buffer before delaying it
-                // to avoid delaying the master output.
-                m_pLatencyCompensationDelay->process(m_pSidechainMix, m_iBufferSize);
-                SampleUtil::add(m_pSidechainMix, m_pTalkover, m_iBufferSize);
+                if (m_pNumMicsConfigured->get() > 0) {
+                    // The talkover signal Mixxx receives is delayed by the round trip latency.
+                    // There is an output latency between the time Mixxx processes the audio
+                    // and the user hears it. So if the microphone user plays on beat with
+                    // what they hear, they will be playing out of sync with the engine's
+                    // processing by the output latency. Additionally, Mixxx gets input signals
+                    // delayed by the input latency. By the time Mixxx receives the input signal,
+                    // a full round trip through the signal chain has elapsed since Mixxx
+                    // processed the output signal.
+                    // Although Mixxx receives the input signal delayed, the user hears it mixed
+                    // in hardware with the master & booth outputs without that
+                    // latency, so to record/broadcast the same signal that is heard
+                    // on the master & booth outputs, the master mix must be delayed before
+                    // mixing the talkover signal for the record/broadcast mix.
+                    // If not using microphone inputs or recording/broadcasting from
+                    // a sound card input, skip unnecessary processing here.
+
+                    // Copy the master mix to a separate buffer before delaying it
+                    // to avoid delaying the master output.
+                    m_pLatencyCompensationDelay->process(m_pSidechainMix, m_iBufferSize);
+                    SampleUtil::add(m_pSidechainMix, m_pTalkover, m_iBufferSize);
+                }
             }
         }
 
@@ -969,4 +965,8 @@ void EngineMaster::registerNonEngineChannelSoundIO(SoundManager* pSoundManager) 
         pSoundManager->registerOutput(AudioOutput(AudioOutput::BUS, 0, 2, o), this);
     }
     pSoundManager->registerOutput(AudioOutput(AudioOutput::RECORD_BROADCAST, 0, 2), this);
+}
+
+bool EngineMaster::sidechainMixRequired() {
+    return m_pEngineSideChain && !m_bExternalRecordBroadcastInputConnected;
 }
