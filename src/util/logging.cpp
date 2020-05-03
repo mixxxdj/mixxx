@@ -54,10 +54,12 @@ inline void writeToLog(
                 message.constData(), sizeof(char), message.size(), stderr);
         DEBUG_ASSERT(written == message.size());
         if (flags & WriteFlag::Flush) {
-            // Just in case, might not be necessary but this happens only
-            // infrequently when errors occur.
-            const int flushed = fflush(stderr);
-            DEBUG_ASSERT(flushed == 0);
+            // Flushing stderr might not be necessary, because message
+            // should end with a newline character. Flushing occcurs
+            // only infrequently (log level >= Critical), so better safe
+            // than sorry.
+            const int ret = fflush(stderr);
+            DEBUG_ASSERT(ret == 0);
         }
     }
     if (flags & WriteFlag::File) {
