@@ -26,7 +26,6 @@ EffectChainSlot::EffectChainSlot(const QString& group,
           m_pMessenger(pEffectsMessenger),
           m_group(group),
           m_presetName(""),
-          m_mixMode(EffectChainMixMode::DrySlashWet),
           m_signalProcessingStage(stage),
           m_pEngineEffectChain(nullptr) {
     // qDebug() << "EffectChainSlot::EffectChainSlot " << group << ' ' << iChainNumber;
@@ -54,6 +53,7 @@ EffectChainSlot::EffectChainSlot(const QString& group,
 
     m_pControlChainMix = new ControlPotmeter(ConfigKey(m_group, "mix"), 0.0, 1.0,
                                              false, true, false, true, 1.0);
+    m_pControlChainMix->set(static_cast<int>(EffectChainMixMode::DrySlashWet));
     connect(m_pControlChainMix, &ControlObject::valueChanged,
             this, &EffectChainSlot::sendParameterUpdate);
 
@@ -213,8 +213,7 @@ void EffectChainSlot::sendParameterUpdate() {
     pRequest->type = EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS;
     pRequest->pTargetChain = m_pEngineEffectChain;
     pRequest->SetEffectChainParameters.enabled = m_pControlChainEnabled->get();
-    pRequest->SetEffectChainParameters.mix_mode = static_cast<EffectChainMixMode>(
-                                                    static_cast<int>(m_pControlChainMixMode->get()));
+    pRequest->SetEffectChainParameters.mix_mode = mixMode();
     pRequest->SetEffectChainParameters.mix = m_pControlChainMix->get();
     m_pMessenger->writeRequest(pRequest);
 }
@@ -230,6 +229,12 @@ double EffectChainSlot::getSuperParameter() const {
 void EffectChainSlot::setSuperParameter(double value, bool force) {
     m_pControlChainSuperParameter->set(value);
     slotControlChainSuperParameter(value, force);
+}
+
+EffectChainMixMode EffectChainSlot::mixMode() const {
+    return static_cast<EffectChainMixMode>(
+            static_cast<int>(
+                    m_pControlChainMixMode->get()));
 }
 
 void EffectChainSlot::setMixMode(EffectChainMixMode mixMode) {

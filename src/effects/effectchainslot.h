@@ -56,9 +56,7 @@ class EffectChainSlot : public QObject {
     double getSuperParameter() const;
     void setSuperParameter(double value, bool force = false);
 
-    EffectChainMixMode mixMode() const {
-        return m_mixMode;
-    }
+    EffectChainMixMode mixMode() const;
     void setMixMode(EffectChainMixMode mixMode);
 
     const QString& getGroup() const {
@@ -167,7 +165,6 @@ class EffectChainSlot : public QObject {
     ControlPushButton* m_pControlChainFocusedEffect;
 
     QString m_presetName;
-    EffectChainMixMode m_mixMode;
     SignalProcessingStage m_signalProcessingStage;
     QHash<ChannelHandleAndGroup, std::shared_ptr<ControlPushButton>> m_channelEnableButtons;
     QSet<ChannelHandleAndGroup> m_enabledInputChannels;
