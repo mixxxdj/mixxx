@@ -1709,17 +1709,10 @@ double AutoDJProcessor::getFadeTime() {
     }
 
     if (m_transitionUnit == TransitionUnit::BEATS) {
-        if ((leftSyncMode == SYNC_FOLLOWER && rightSyncMode == SYNC_MASTER_SOFT) ||
-                (leftSyncMode == SYNC_MASTER_SOFT && rightSyncMode == SYNC_FOLLOWER)) {
-            // Both the left and right bpm should be equal if this point is reached
-            VERIFY_OR_DEBUG_ASSERT(leftBPM == rightBPM) {
-                qWarning() << tr("leftBPM: %1   - rightBPM %2").arg(leftBPM).arg(rightBPM);
-            }
-
+        if (leftBPM == rightBPM) {
             fadeTime = (transitionTime * 60) / leftBPM;
         } else {
-            // Sync isn't enabled in both decks. Get the user's preference on which deck's bpm
-            // to use
+            // Get the user's preference on which track's bpm to use
             CalculateTransitionPeriod calculateTransitionPeriod =
                     static_cast<CalculateTransitionPeriod>(m_pConfig->getValue(
                             ConfigKey("[Auto DJ]", "BPMToUse"), 0));
