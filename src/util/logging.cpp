@@ -4,7 +4,6 @@
 #include <stdio.h>
 
 #include <QByteArray>
-#include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QIODevice>
@@ -12,9 +11,8 @@
 #include <QMutex>
 #include <QMutexLocker>
 #include <QString>
+#include <QTextStream>
 #include <QThread>
-#include <QtDebug>
-#include <QtGlobal>
 
 #include "controllers/controllerdebug.h"
 #include "util/assert.h"
@@ -151,8 +149,12 @@ void handleMessage(
     int levelName_len = strlen(levelName);
     int baSize = levelName_len + 2 + 3 + 1; // including separators (see below)
 
-    const QByteArray threadName =
+    QByteArray threadName =
             QThread::currentThread()->objectName().toLocal8Bit();
+    if (threadName.isEmpty()) {
+        QTextStream textStream(&threadName);
+        textStream << QThread::currentThread();
+    }
     baSize += threadName.size();
 
     QByteArray input8Bit;
