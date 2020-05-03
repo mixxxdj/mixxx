@@ -8,110 +8,150 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QIODevice>
-#include <QLoggingCategory>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QString>
 #include <QThread>
 #include <QtDebug>
 #include <QtGlobal>
+#ifdef __LINUX__
+#include <QLoggingCategory>
+#endif
 
 #include "controllers/controllerdebug.h"
 #include "util/assert.h"
 
-namespace mixxx {
 
-// Initialize the log level with the default value
-LogLevel g_logLevel = kLogLevelDefault;
-LogLevel g_logFlushLevel = kLogFlushLevelDefault;
 
 namespace {
 
-// Mutex guarding g_logfile.
-QMutex g_mutexLogfile;
+// Mutex guarding s_logfile.
+QMutex s_mutexLogfile;
+
 // The file handle for Mixxx's log file.
-QFile g_logfile;
+QFile s_logfile;
+
 // The log level.
 // Whether to break on debug assertions.
-bool g_debugAssertBreak = false;
+bool s_debugAssertBreak = false;
 
-// Handles actually writing to stderr and the log.
+enum class WriteFlag {
+    None = 0,
+    StdErr = 1 << 0,
+    File = 1 << 1,
+    Flush = 1 << 2,
+    All = StdErr | File | Flush,
+};
+
+Q_DECLARE_FLAGS(WriteFlags, WriteFlag)
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(WriteFlags)
+
+// Handles actually writing to stderr and the log file.
 inline void writeToLog(
         const QByteArray& message,
-        bool shouldPrint,
-        bool shouldFlush) {
-    if (shouldPrint) {
-        fwrite(message.constData(), sizeof(char), message.size(), stderr);
+        WriteFlags flags) {
+    DEBUG_ASSERT(!message.isEmpty());
+    DEBUG_ASSERT(flags & (WriteFlag::StdErr | WriteFlag::File));
+    if (flags & WriteFlag::StdErr) {
+        const int written = fwrite(
+                message.constData(), sizeof(char), message.size(), stderr);
+        DEBUG_ASSERT(written == message.size());
+        if (flags & WriteFlag::Flush) {
+            // Just in case, might not be necessary but this happens only
+            // infrequently when errors occur.
+            const int flushed = fflush(stderr);
+            DEBUG_ASSERT(flushed == 0);
+        }
     }
-
-    QMutexLocker locker(&g_mutexLogfile);
-    // Writing to a closed QFile can cause a recursive loop, since it prints an
-    // error using qWarning.
-    if (g_logfile.isOpen()) {
-        g_logfile.write(message);
-        if (shouldFlush) {
-            g_logfile.flush();
+    if (flags & WriteFlag::File) {
+        QMutexLocker locked(&s_mutexLogfile);
+        // Writing to a closed QFile could cause an infinite recursive loop
+        // by logging to qWarning!
+        if (s_logfile.isOpen()) {
+            const int written = s_logfile.write(message);
+            DEBUG_ASSERT(written == message.size());
+            if (flags & WriteFlag::Flush) {
+                const bool flushed = s_logfile.flush();
+                DEBUG_ASSERT(flushed);
+            }
         }
     }
 }
 
-// Debug message handler which outputs to stderr and a logfile, prepending the
-// thread name and log level.
-void MessageHandler(
+} // anonymous namespace
+
+namespace mixxx {
+
+namespace {
+
+// Debug message handler which outputs to stderr and a logfile,
+// prepending the thread name, log category, and log level.
+void handleMessage(
         QtMsgType type,
-        const QMessageLogContext&,
+        const QMessageLogContext& context,
         const QString& input) {
-    // For "]: " and '\n'.
-    size_t baSize = 4;
-    const char* tag = nullptr;
-    bool shouldPrint = true;
-    bool shouldFlush = false;
+    const char* levelName = nullptr;
+    WriteFlags writeFlags = WriteFlag::None;
     bool isDebugAssert = false;
     bool isControllerDebug = false;
     switch (type) {
     case QtDebugMsg:
-        tag = "Debug [";
-        baSize += strlen(tag);
-        isControllerDebug = input.startsWith(QLatin1String(
-                ControllerDebug::kLogMessagePrefix));
-        shouldPrint = Logging::enabled(LogLevel::Debug) ||
-                isControllerDebug;
-        shouldFlush = Logging::flushing(LogLevel::Debug);
+        levelName = "Debug";
+        isControllerDebug =
+                input.startsWith(QLatin1String(
+                        ControllerDebug::kLogMessagePrefix));
+        if (isControllerDebug ||
+                Logging::enabled(LogLevel::Debug)) {
+            writeFlags |= WriteFlag::StdErr;
+            writeFlags |= WriteFlag::File;
+        }
+        if (Logging::shouldFlush(LogLevel::Debug)) {
+            writeFlags |= WriteFlag::Flush;
+        }
+        writeFlags |= WriteFlag::File;
         break;
     case QtInfoMsg:
-        tag = "Info [";
-        baSize += strlen(tag);
-        shouldPrint = Logging::enabled(LogLevel::Info);
-        shouldFlush = Logging::flushing(LogLevel::Info);
+        levelName = "Info";
+        if (Logging::enabled(LogLevel::Info)) {
+            writeFlags |= WriteFlag::StdErr;
+        }
+        if (Logging::shouldFlush(LogLevel::Info)) {
+            writeFlags |= WriteFlag::Flush;
+        }
+        // Write unconditionally into log file
+        writeFlags |= WriteFlag::File;
         break;
     case QtWarningMsg:
-        tag = "Warning [";
-        baSize += strlen(tag);
-        shouldPrint = Logging::enabled(LogLevel::Warning);
-        shouldFlush = Logging::flushing(LogLevel::Warning);
+        levelName = "Warning";
+        if (Logging::enabled(LogLevel::Warning)) {
+            writeFlags |= WriteFlag::StdErr;
+        }
+        if (Logging::shouldFlush(LogLevel::Warning)) {
+            writeFlags |= WriteFlag::Flush;
+        }
+        // Write unconditionally into log file
+        writeFlags |= WriteFlag::File;
         break;
     case QtCriticalMsg:
-        tag = "Critical [";
-        baSize += strlen(tag);
-        shouldFlush = true;
+        levelName = "Critical";
+        writeFlags = WriteFlag::All;
         isDebugAssert = input.startsWith(QLatin1String(kDebugAssertPrefix));
         break;
     case QtFatalMsg:
-        tag = "Fatal [";
-        baSize += strlen(tag);
-        shouldFlush = true;
+        levelName = "Fatal";
+        writeFlags = WriteFlag::All;
         break;
-    default:
-        tag = "Unknown [";
-        baSize += strlen(tag);
     }
+    VERIFY_OR_DEBUG_ASSERT(levelName) {
+        return;
+    }
+    int levelName_len = strlen(levelName);
+    int baSize = levelName_len + 2 + 3 + 1; // including separators (see below)
 
-    // qthread.cpp contains a Q_ASSERT that currentThread does not return
-    // nullptr.
-    QByteArray threadName = QThread::currentThread()
-                                    ->objectName()
-                                    .toLocal8Bit();
-    baSize += threadName.length();
+    const QByteArray threadName =
+            QThread::currentThread()->objectName().toLocal8Bit();
+    baSize += threadName.size();
 
     QByteArray input8Bit;
     if (isControllerDebug) {
@@ -124,17 +164,21 @@ void MessageHandler(
     QByteArray ba;
     ba.reserve(baSize);
 
-    ba += tag;
-    ba += threadName;
-    ba += "]: ";
-    ba += input8Bit;
-    ba += '\n';
+    ba.append(levelName, levelName_len);
+    ba.append(" [", 2);
+    ba.append(threadName);
+    ba.append("]: ", 3);
+    ba.append(input8Bit);
+    ba.append('\n'); // len = 1
+
+    // Verify that the reserved size matches the actual size
+    DEBUG_ASSERT(ba.size() == baSize);
 
     if (isDebugAssert) {
-        if (g_debugAssertBreak) {
-            writeToLog(ba, true, true);
+        if (s_debugAssertBreak) {
+            writeToLog(ba, WriteFlag::All);
             raise(SIGINT);
-            // If the debugger returns, continue normally.
+            // When the debugger returns, continue normally.
             return;
         }
         // If debug assertions are non-fatal, we will fall through to the normal
@@ -147,24 +191,27 @@ void MessageHandler(
 #endif // MIXXX_DEBUG_ASSERTIONS_FATAL
     }
 
-    writeToLog(ba, shouldPrint, shouldFlush);
+    writeToLog(ba, writeFlags);
 }
 
-} // namespace
+} // anonymous namespace
+
+// Initialize the log level with the default value
+LogLevel Logging::s_logLevel = kLogLevelDefault;
+LogLevel Logging::s_logFlushLevel = kLogFlushLevelDefault;
 
 // static
-void Logging::initialize(
-        const QDir& settingsDir,
+void Logging::initialize(const QDir& settingsDir,
         LogLevel logLevel,
         LogLevel logFlushLevel,
         bool debugAssertBreak) {
-    VERIFY_OR_DEBUG_ASSERT(!g_logfile.isOpen()) {
+    VERIFY_OR_DEBUG_ASSERT(!s_logfile.isOpen()) {
         // Somebody already called Logging::initialize.
         return;
     }
 
     setLogLevel(logLevel);
-    g_logFlushLevel = logFlushLevel;
+    s_logFlushLevel = logFlushLevel;
 
     QString logFileName;
 
@@ -189,14 +236,14 @@ void Logging::initialize(
         }
     }
 
-    // Since the message handler is not installed yet, we can touch g_logfile
+    // Since the message handler is not installed yet, we can touch s_logfile
     // without the lock.
-    g_logfile.setFileName(logFileName);
-    g_logfile.open(QIODevice::WriteOnly | QIODevice::Text);
-    g_debugAssertBreak = debugAssertBreak;
+    s_logfile.setFileName(logFileName);
+    s_logfile.open(QIODevice::WriteOnly | QIODevice::Text);
+    s_debugAssertBreak = debugAssertBreak;
 
     // Install the Qt message handler.
-    qInstallMessageHandler(MessageHandler);
+    qInstallMessageHandler(handleMessage);
 
     // Ugly hack around distributions disabling debugging in Qt applications.
     // This restores the default Qt behavior. It is required for getting useful
@@ -219,17 +266,17 @@ void Logging::shutdown() {
 
     // Even though we uninstalled the message handler, other threads may have
     // already entered it.
-    QMutexLocker locker(&g_mutexLogfile);
-    if (g_logfile.isOpen()) {
-        g_logfile.close();
+    QMutexLocker locker(&s_mutexLogfile);
+    if (s_logfile.isOpen()) {
+        s_logfile.close();
     }
 }
 
 // static
 void Logging::flushLogFile() {
-    QMutexLocker locker(&g_mutexLogfile);
-    if (g_logfile.isOpen()) {
-        g_logfile.flush();
+    QMutexLocker locker(&s_mutexLogfile);
+    if (s_logfile.isOpen()) {
+        s_logfile.flush();
     }
 }
 
