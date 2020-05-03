@@ -26,6 +26,8 @@ const int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
 // Now we have switched to a fixed latency of 8192 frames (stereo samples) =
 // which is 185 @ 44100 ms and twice the maximum of the max mixxx audio buffer
 
+const QString kSoundDeviceNetworkThreadName = QStringLiteral("SoundDeviceNetwork");
+
 const mixxx::Logger kLogger("SoundDeviceNetwork");
 }
 
@@ -99,6 +101,7 @@ SoundDeviceError SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) 
         m_targetTime = m_audioBufferTime.toIntegerMicros();
 
         m_pThread = std::make_unique<SoundDeviceNetworkThread>(this);
+        m_pThread->setObjectName(kSoundDeviceNetworkThreadName);
         m_pThread->start(QThread::TimeCriticalPriority);
     }
 
