@@ -53,19 +53,6 @@ class Logging {
         return s_logLevel >= logLevel;
     }
 
-    // TODO: Mark as deprecated
-    /*[[deprecated]]*/ static bool traceEnabled() {
-        return enabled(LogLevel::Trace);
-    }
-
-    static bool debugEnabled() {
-        return enabled(LogLevel::Debug);
-    }
-
-    static bool infoEnabled() {
-        return enabled(LogLevel::Info);
-    }
-
   private:
     // Almost constant, i.e. initialized once at startup and
     // then could safely be read from multiple threads.
