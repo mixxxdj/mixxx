@@ -47,6 +47,13 @@ class Logging {
 
     static void shutdown();
 
+    /// Write a custom message into the log.
+    ///
+    /// This function is needed to forward log messages received
+    /// from a child process into the main log.
+    static void writeMessage(
+            const QByteArray& message);
+
     static void flushLogFile();
 
     static bool shouldFlush(
