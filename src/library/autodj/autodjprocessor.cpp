@@ -1700,24 +1700,59 @@ double AutoDJProcessor::getFadeTime() {
     double rightBPM = m_pRightBPM->get();
     int leftSyncMode = m_pLeftSyncMode->get();
     int rightSyncMode = m_pRightSyncMode->get();
+    double fromBPM, toBPM;
 
     double transitionTime = fabs(m_transitionTime);
     double fadeTime;
 
+    double crossfader = getCrossfader();
+    DeckAttributes* pLeftDeck = m_decks[0];
+    DeckAttributes* pRightDeck = m_decks[1];
+
+    if (pLeftDeck->isPlaying() &&
+            (!pRightDeck->isPlaying() || crossfader < 0.0)) {
+        fromBPM = leftBPM;
+        toBPM = rightBPM;
+    } else if (pRightDeck->isPlaying()) {
+        fromBPM = rightBPM;
+        toBPM = leftBPM;
+    } else {
+        // Neither deck is playing. This state isn't reached.
+        // Use this as fallback though just in case.
+        fromBPM = leftBPM;
+        toBPM = rightBPM;
+    }
+
     if (m_transitionUnit == TransitionUnit::BEATS) {
         if ((leftSyncMode == SYNC_FOLLOWER && rightSyncMode == SYNC_MASTER_SOFT) ||
                 (leftSyncMode == SYNC_MASTER_SOFT && rightSyncMode == SYNC_FOLLOWER)) {
-            // Both the left and right bpm should be equal if point is reached
+            // Both the left and right bpm should be equal if this point is reached
             VERIFY_OR_DEBUG_ASSERT(leftBPM == rightBPM) {
                 qDebug() << tr("leftBPM: %1   - rightBPM %2").arg(leftBPM).arg(rightBPM);
             }
 
             fadeTime = (transitionTime * 60) / leftBPM;
         } else {
-            // TODO(c3n7): handle other cases
-            fadeTime = transitionTime;
+            // Sync isn't enabled in both decks. Get the user's preference on which deck's bpm
+            // to use
+            BpmToUse bpmToUse = static_cast<BpmToUse>(m_pConfig->getValue(
+                    ConfigKey("[Auto DJ]", "BPMToUse"), 0));
+            switch (bpmToUse) {
+            case BpmToUse::ToDeck:
+                fadeTime = (transitionTime * 60) / toBPM;
+                break;
+            case BpmToUse::LeftDeck:
+                fadeTime = (transitionTime * 60) / leftBPM;
+                break;
+            case BpmToUse::RightDeck:
+                fadeTime = (transitionTime * 60) / rightBPM;
+                break;
+            default:
+                fadeTime = (transitionTime * 60) / fromBPM;
+            }
         }
     } else {
+        // The transition time is in seconds, no conversion needed
         fadeTime = transitionTime;
     }
 

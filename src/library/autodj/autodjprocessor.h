@@ -173,6 +173,13 @@ class AutoDJProcessor : public QObject {
         BEATS
     };
 
+    enum class BpmToUse {
+        FromDeck,
+        ToDeck,
+        LeftDeck,
+        RightDeck
+    };
+
     AutoDJProcessor(QObject* pParent,
                     UserSettingsPointer pConfig,
                     PlayerManagerInterface* pPlayerManager,
