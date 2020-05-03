@@ -203,14 +203,7 @@ DlgAutoDJ::DlgAutoDJ(
     autoDJStateChanged(m_pAutoDJProcessor->getState());
 
     updateSelectionInfo();
-
-    QString transitionUnit;
-    if (m_pAutoDJProcessor->getTransitionUnit() == AutoDJProcessor::TransitionUnit::SECONDS) {
-        transitionUnit = tr("sec.");
-    } else {
-        transitionUnit = tr("beats.");
-    }
-    labelTransitionAppendix->setText(transitionUnit);
+    updateTransitionAppendixLabel();
 }
 
 DlgAutoDJ::~DlgAutoDJ() {
@@ -228,6 +221,16 @@ void DlgAutoDJ::setupActionButton(QPushButton* pButton,
     if (m_bShowButtonText) {
         pButton->setText(fallbackText);
     }
+}
+
+void DlgAutoDJ::updateTransitionAppendixLabel() {
+    QString transitionUnit;
+    if (m_pAutoDJProcessor->getTransitionUnit() == AutoDJProcessor::TransitionUnit::SECONDS) {
+        transitionUnit = tr("sec.");
+    } else {
+        transitionUnit = tr("beats.");
+    }
+    labelTransitionAppendix->setText(transitionUnit);
 }
 
 void DlgAutoDJ::onShow() {
@@ -294,13 +297,7 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
 
     // Update the label to display the configured transition unit
     // just in case it was changed in the preferences dialog
-    QString transitionUnit;
-    if (m_pAutoDJProcessor->getTransitionUnit() == AutoDJProcessor::TransitionUnit::SECONDS) {
-        transitionUnit = tr("sec.");
-    } else {
-        transitionUnit = tr("beats.");
-    }
-    labelTransitionAppendix->setText(transitionUnit);
+    updateTransitionAppendixLabel();
 }
 
 void DlgAutoDJ::transitionTimeChanged(int time) {

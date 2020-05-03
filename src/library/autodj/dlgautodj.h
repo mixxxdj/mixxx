@@ -57,6 +57,8 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
             void (DlgAutoDJ::*pSlot)(bool),
             QString fallbackText);
 
+    void updateTransitionAppendixLabel();
+
     const UserSettingsPointer m_pConfig;
 
     AutoDJProcessor* const m_pAutoDJProcessor;
