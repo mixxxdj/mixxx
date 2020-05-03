@@ -1683,8 +1683,6 @@ bool AutoDJProcessor::nextTrackLoaded() {
 double AutoDJProcessor::getFadeTime() {
     double leftBPM = m_pLeftBPM->get();
     double rightBPM = m_pRightBPM->get();
-    int leftSyncMode = m_pLeftSyncMode->get();
-    int rightSyncMode = m_pRightSyncMode->get();
     double fromBPM, toBPM;
 
     double transitionTime = m_transitionTime;
