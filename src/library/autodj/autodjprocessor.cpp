@@ -274,7 +274,7 @@ void AutoDJProcessor::fadeNow() {
 
     // If the user presses "Fade now", assume they want to fade *now*, not later.
     // So if the spinbox time is negative, do not insert silence.
-    double spinboxTime = fabs(m_transitionTime);
+    double spinboxTime = fabs(getFadeTime());
 
     double fadeTime;
     if (m_transitionMode == TransitionMode::FullIntroOutro ||
@@ -307,7 +307,7 @@ void AutoDJProcessor::fadeNow() {
             fadeTime = math_min(spinboxTime, timeUntilOutroEnd);
         }
     } else {
-        fadeTime = getFadeTime();
+        fadeTime = spinboxTime;
     }
 
     double timeUntilEndOfFromTrack = fromDeckEndSecond - fromDeckCurrentSecond;
@@ -1702,7 +1702,7 @@ double AutoDJProcessor::getFadeTime() {
     int rightSyncMode = m_pRightSyncMode->get();
     double fromBPM, toBPM;
 
-    double transitionTime = fabs(m_transitionTime);
+    double transitionTime = m_transitionTime;
     double fadeTime;
 
     double crossfader = getCrossfader();
