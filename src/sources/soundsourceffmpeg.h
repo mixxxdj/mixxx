@@ -10,7 +10,12 @@ extern "C" {
 
 #include "sources/soundsourceprovider.h"
 
+#include "util/logging.h"
 #include "util/readaheadsamplebuffer.h"
+
+Q_DECLARE_LOGGING_CATEGORY(mixxxLogSourceFFmpeg)
+#define MIXXX_LOGGING_CATEGORY_SOURCE_FFMPEG \
+MIXXX_LOGGING_CATEGORY_PARENT_CHILD(MIXXX_LOGGING_CATEGORY_SOURCE, "FFmpeg")
 
 namespace mixxx {
 
