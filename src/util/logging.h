@@ -110,6 +110,10 @@ constexpr LogLevel kLogFlushLevelDefault = LogLevel::Critical;
 /// in your local repo while debugging. Disable it before submitting a pull
 /// request. Use qCDebug() for these trace logs.
 ///
+/// Examples:
+///   - sources/soundsourceffmpeg.h/.cpp
+///   - soundio/sounddeviceportaudio.h/.cpp
+///
 /// See also: https://doc.qt.io/qt-5/qloggingcategory.html
 class Logging {
   public:
