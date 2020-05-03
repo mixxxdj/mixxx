@@ -165,17 +165,6 @@ Description:
                 <Size>50me,15f</Size>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <!-- button graphics are 15x15px + 1px margin-right -->
-                  <Template src="skin:../Tango/button_2state_persist.xml">
-                    <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
-                    <SetVariable name="Size">20f,15f</SetVariable>
-                    <SetVariable name="state_0_text">Q</SetVariable>
-                    <SetVariable name="state_1_text">Q</SetVariable>
-                    <SetVariable name="ConfigKey">[Tango],separate_cue_button</SetVariable>
-                  </Template>
-
-                  <WidgetGroup><Size>6f,0f</Size></WidgetGroup>
-
                   <WidgetGroup><!-- Star rating -->
                     <Layout>stacked</Layout>
                     <Size>16f,15f</Size>

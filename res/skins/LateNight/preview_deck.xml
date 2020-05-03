@@ -97,7 +97,7 @@
                     <Children>
                       <Template src="skin:button_2state_right_display.xml">
                         <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
-                        <SetVariable name="ObjectName">PlayButtonPreview</SetVariable>
+                        <SetVariable name="ObjectName">PlayPreview</SetVariable>
                         <SetVariable name="Size">34f,34f</SetVariable>
                         <SetVariable name="btn_type">embedded</SetVariable>
                         <SetVariable name="btn_format">square_big</SetVariable>

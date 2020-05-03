@@ -1542,7 +1542,8 @@ WPushButton {
     font-weight: bold;
 }
 
-WPushButton:hover {
+WPushButton:hover,
+#PlayToggle:hover {
     color: #D2D2D2;
     background-color: #5F5F5F;
     border: 1px solid #5F5F5F;
@@ -1550,14 +1551,16 @@ WPushButton:hover {
 
 /*"Pressed" state*/
 WPushButton[value="1"],
-WPushButton[value="2"] {
+WPushButton[value="2"],
+#PlayToggle[value="1"] {
     color: #FDFDFD;
     background-color: #006596;
     border: 1px solid #006596;
 }
 
 WPushButton[value="1"]:hover,
-WPushButton[value="2"]:hover {
+WPushButton[value="2"]:hover,
+#PlayToggle[value="1"]:hover {
     color: #FDFDFD;
     background-color: #0080BE;
     border: 1px solid #0080BE;
@@ -1569,6 +1572,11 @@ WPushButton[value="2"]:hover {
 
 #HotcueButton[light="true"] {
     color: #1f1e1e;
+}
+
+#PlayToggle {
+  background-color: none;
+  border: 1px solid transparent;
 }
 
 #PlayToggle[value="0"] {
