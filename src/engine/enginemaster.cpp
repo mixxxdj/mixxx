@@ -967,6 +967,6 @@ void EngineMaster::registerNonEngineChannelSoundIO(SoundManager* pSoundManager) 
     pSoundManager->registerOutput(AudioOutput(AudioOutput::RECORD_BROADCAST, 0, 2), this);
 }
 
-bool EngineMaster::sidechainMixRequired() {
+bool EngineMaster::sidechainMixRequired() const {
     return m_pEngineSideChain && !m_bExternalRecordBroadcastInputConnected;
 }
