@@ -311,7 +311,7 @@ void AutoDJProcessor::fadeNow() {
     }
 
     double timeUntilEndOfFromTrack = fromDeckEndSecond - fromDeckCurrentSecond;
-    fadeTime = math_min((double)fadeTime, timeUntilEndOfFromTrack);
+    fadeTime = math_min(fadeTime, timeUntilEndOfFromTrack);
     pFromDeck->fadeEndPos = fromDeckCurrentSecond + fadeTime;
 
     // These are expected to be a fraction of the track length.
@@ -1411,13 +1411,14 @@ void AutoDJProcessor::useFixedFadeTime(
         double fromDeckSecond,
         double fadeEndSecond,
         double toDeckStartSecond) {
-    if (m_transitionTime > 0.0) {
+    double fadeTime = getFadeTime();
+    if (fadeTime > 0.0) {
         // Guard against the next track being too short. This transition must finish
         // before the next transition starts.
         double toDeckOutroStart = pToDeck->fadeBeginPos;
         if (pToDeck->fadeBeginPos >= pToDeck->fadeEndPos) {
             // no outro defined, the toDeck will also use the transition time
-            toDeckOutroStart -= m_transitionTime;
+            toDeckOutroStart -= fadeTime;
         }
         if (toDeckOutroStart <= toDeckStartSecond) {
             // we are already too late
@@ -1436,7 +1437,7 @@ void AutoDJProcessor::useFixedFadeTime(
             toDeckOutroStart = (end - toDeckStartSecond) / 2 + toDeckStartSecond;
         }
         double transitionTime = math_min(toDeckOutroStart - toDeckStartSecond,
-                m_transitionTime);
+                fadeTime);
 
         pFromDeck->fadeBeginPos = math_max(fadeEndSecond - transitionTime, fromDeckSecond);
         pFromDeck->fadeEndPos = fadeEndSecond;
@@ -1444,7 +1445,7 @@ void AutoDJProcessor::useFixedFadeTime(
     } else {
         pFromDeck->fadeBeginPos = fadeEndSecond;
         pFromDeck->fadeEndPos = fadeEndSecond;
-        pToDeck->startPos = toDeckStartSecond + m_transitionTime;
+        pToDeck->startPos = toDeckStartSecond + fadeTime;
     }
 }
 
