@@ -335,6 +335,8 @@ void WSearchLineEdit::clearSearch() {
     // before returning the whole (and probably huge) library.
     // No need to manually trigger a search at this point!
     // See also: https://bugs.launchpad.net/mixxx/+bug/1635087
+    // Refocus the edit field
+    setFocus(Qt::OtherFocusReason);
 }
 
 // slot
