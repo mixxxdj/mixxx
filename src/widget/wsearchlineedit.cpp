@@ -98,7 +98,13 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     connect(this,
             &QLineEdit::returnPressed,
             this,
-            &WSearchLineEdit::triggerSearch);
+            [this] {
+                if (clearBtnHasFocus()) {
+                    clearSearch();
+                } else {
+                    triggerSearch();
+                }
+            });
 
     QSize clearButtonSize = m_clearButton->sizeHint();
     // Ensures the text does not obscure the clear image.
