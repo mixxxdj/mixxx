@@ -17,7 +17,6 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     enum class State {
         Active,
         Inactive,
-        InactivePlaceholder, // placeholder is displayed instead of an empty search text
     };
 
     // Delay for triggering a search while typing

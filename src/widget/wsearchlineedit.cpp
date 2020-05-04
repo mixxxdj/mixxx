@@ -50,9 +50,6 @@ QDebug operator<<(QDebug dbg, WSearchLineEdit::State state) {
         return dbg << "Active";
     case WSearchLineEdit::State::Inactive:
         return dbg << "Inactive";
-    case WSearchLineEdit::State::InactivePlaceholder:
-        return dbg << "InactivePlaceholder";
-    }
     DEBUG_ASSERT(!"unreachable");
     return dbg;
 }
@@ -82,11 +79,12 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
       WBaseWidget(this),
       m_clearButton(new QToolButton(this)),
       m_foregroundColor(kDefaultForegroundColor),
-      m_state(State::InactivePlaceholder) {
+      m_state(State::Inactive) {
     DEBUG_ASSERT(kEmptySearch.isEmpty());
     DEBUG_ASSERT(!kEmptySearch.isNull());
 
     setAcceptDrops(false);
+    setPlaceholderText(tr("Search...", "noun"));
 
     m_clearButton->setCursor(Qt::ArrowCursor);
     m_clearButton->setObjectName(kClearButtonName);
@@ -232,7 +230,8 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
 }
 
 QString WSearchLineEdit::getSearchText() const {
-    if (isEnabled() && m_state != State::InactivePlaceholder) {
+    if (isEnabled()) {
+        DEBUG_ASSERT(!text().isNull());
         return text();
     } else {
         return QString();
@@ -248,7 +247,6 @@ void WSearchLineEdit::switchState(State state) {
             << state;
 #endif // ENABLE_TRACE_LOG
     DEBUG_ASSERT(isEnabled());
-    DEBUG_ASSERT(state != State::InactivePlaceholder);
     if (m_state == state) {
         // Nothing to do
         return;
@@ -266,12 +264,6 @@ void WSearchLineEdit::switchState(State state) {
         // Get the current search text AFTER switching the state!
         m_state = State::Active;
         text = getSearchText();
-        break;
-    case State::InactivePlaceholder:
-        // InactivePlaceholder -> Active/Inactive
-        // Set the current search text to empty
-        m_state = state;
-        text = kEmptySearch;
         break;
     }
     updateEditBox(text);
@@ -298,10 +290,9 @@ void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
         // due to the debouncing timeout!
         triggerSearch();
     }
+    switchState(State::Inactive);
     if (getSearchText().isEmpty()) {
         showPlaceholder();
-    } else {
-        switchState(State::Inactive);
     }
 }
 
@@ -382,10 +373,9 @@ void WSearchLineEdit::showPlaceholder() {
             << "showPlaceholder"
             << getSearchText();
 #endif // ENABLE_TRACE_LOG
-    DEBUG_ASSERT(getSearchText().isEmpty());
+    DEBUG_ASSERT(getSearchText() == kEmptySearch);
+    DEBUG_ASSERT(shouldShowPlaceholder(getSearchText()));
 
-    setTextBlockSignals(tr("Search...", "noun"));
-    m_state = State::InactivePlaceholder;
     updateClearButton(kEmptySearch);
 
     QPalette pal = palette();
