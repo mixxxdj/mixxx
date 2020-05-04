@@ -18,9 +18,18 @@ const mixxx::Logger kLogger("WSearchLineEdit");
 const QColor kDefaultForegroundColor = QColor(0, 0, 0);
 const QColor kDefaultBackgroundColor = QColor(255, 255, 255);
 
-const QString kEmptySearch = "";
+const QString kEmptySearch = QStringLiteral("");
 
-const QString kDisabledText = "- - -";
+const QString kDisabledText = QStringLiteral("- - -");
+
+const QString kClearButtonName = QStringLiteral("SearchClearButton");
+
+inline QString clearButtonStyleSheet(int pxPaddingRight) {
+    DEBUG_ASSERT(pxPaddingRight >= 0);
+    return QString(
+            QStringLiteral("QLineEdit { padding-right: %1px; }"))
+            .arg(pxPaddingRight);
+}
 
 int verifyDebouncingTimeoutMillis(int debouncingTimeoutMillis) {
     VERIFY_OR_DEBUG_ASSERT(debouncingTimeoutMillis >= WSearchLineEdit::kMinDebouncingTimeoutMillis) {
@@ -63,7 +72,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     setAcceptDrops(false);
 
     m_clearButton->setCursor(Qt::ArrowCursor);
-    m_clearButton->setObjectName("SearchClearButton");
+    m_clearButton->setObjectName(kClearButtonName);
     // Assume the qss border is at least 1px wide
     m_frameWidth = 1;
     m_clearButton->hide();
@@ -107,9 +116,9 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
             });
 
     QSize clearButtonSize = m_clearButton->sizeHint();
+
     // Ensures the text does not obscure the clear image.
-    setStyleSheet(QString("QLineEdit { padding-right: %1px; } ")
-                          .arg(clearButtonSize.width() + m_frameWidth + 1));
+    setStyleSheet(clearButtonStyleSheet(clearButtonSize.width() + m_frameWidth + 1));
 
     showPlaceholder();
 }
@@ -297,12 +306,11 @@ void WSearchLineEdit::updateClearButton(const QString& text) {
     if (!text.isEmpty() && (m_state == State::Active)) {
         m_clearButton->setVisible(true);
         // make sure the text won't be drawn behind the Clear button icon
-        setStyleSheet(QString("QLineEdit { padding-right: %1px; } ")
-                              .arg(m_innerHeight + m_frameWidth));
+        setStyleSheet(clearButtonStyleSheet(m_innerHeight + m_frameWidth));
     } else {
         m_clearButton->setVisible(false);
         // no right padding
-        setStyleSheet(QString("QLineEdit { padding-right: 0px; } "));
+        setStyleSheet(clearButtonStyleSheet(0));
     }
 }
 
