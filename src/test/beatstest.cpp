@@ -306,4 +306,40 @@ TEST_F(BeatsTest, Signature) {
             << "setSignature after the end of track must have no effect";
 }
 
+// TODO(XXX) During testing some situations where calling isBar where generating
+// a SIGSEV where found. This simply crashes the test. Can be tested in a more
+// elegant way?
+TEST_F(BeatsTest, Iterator) {
+    FrameNum pos;
+
+    // Full Beatsbeat
+    auto iter1 = m_pBeats->findBeatsNew(m_pBeats->getFirstBeatPosition(),
+            m_pBeats->getLastBeatPosition());
+    EXPECT_DOUBLE_EQ(iter1->next(), m_pBeats->getFirstBeatPosition());
+    while (iter1->hasNext()) {
+        EXPECT_TRUE(pos = iter1->next());
+        iter1->isBar();
+    }
+    EXPECT_DOUBLE_EQ(pos, m_pBeats->getLastBeatPosition());
+
+    // Past end
+    auto iter2 = m_pBeats->findBeatsNew(m_pBeats->getFirstBeatPosition(),
+            m_pBeats->getLastBeatPosition() + 10000000000);
+    while (iter2->hasNext()) {
+        EXPECT_TRUE(pos = iter2->next());
+        iter2->isBar();
+    }
+    EXPECT_DOUBLE_EQ(pos, m_pBeats->getLastBeatPosition());
+
+    // Before begining
+    auto iter3 = m_pBeats->findBeatsNew(m_pBeats->getFirstBeatPosition() - 1000000,
+            m_pBeats->getLastBeatPosition());
+    EXPECT_DOUBLE_EQ(iter3->next(), m_pBeats->getFirstBeatPosition());
+    while (iter3->hasNext()) {
+        EXPECT_TRUE(pos = iter3->next());
+        iter3->isBar();
+    }
+    EXPECT_DOUBLE_EQ(pos, m_pBeats->getLastBeatPosition());
+}
+
 } // namespace

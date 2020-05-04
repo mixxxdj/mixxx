@@ -435,16 +435,19 @@ std::unique_ptr<BeatIterator> Beats::findBeatsNew(FrameNum startFrame, FrameNum 
     startBeat.set_frame_position(startFrame);
     stopBeat.set_frame_position(stopFrame);
 
-    BeatList::const_iterator curBeat =
+    BeatList::const_iterator firstBeat =
             std::lower_bound(m_beats.cbegin(), m_beats.cend(), startBeat, BeatLessThan);
 
     BeatList::const_iterator lastBeat =
             std::upper_bound(m_beats.cbegin(), m_beats.cend(), stopBeat, BeatLessThan);
+    if (lastBeat >= m_beats.cbegin()) {
+        lastBeat = m_beats.cend() - 1;
+    }
 
-    if (curBeat >= lastBeat) {
+    if (firstBeat >= lastBeat) {
         return std::unique_ptr<BeatIterator>();
     }
-    return std::make_unique<BeatIterator>(curBeat, lastBeat);
+    return std::make_unique<BeatIterator>(firstBeat, lastBeat);
 }
 
 bool Beats::hasBeatInRangeNew(double startSample, double stopSample) const {
