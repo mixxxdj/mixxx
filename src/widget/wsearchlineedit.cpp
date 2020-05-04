@@ -11,6 +11,8 @@
 #include "util/assert.h"
 #include "util/logger.h"
 
+#define ENABLE_TRACE_LOG false
+
 namespace {
 
 const mixxx::Logger kLogger("WSearchLineEdit");
@@ -223,22 +225,39 @@ QString WSearchLineEdit::getSearchText() const {
 }
 
 void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "focusInEvent";
+#endif // ENABLE_TRACE_LOG
     QLineEdit::focusInEvent(event);
     showSearchText(getSearchText());
 }
 
 void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "focusOutEvent";
+#endif // ENABLE_TRACE_LOG
     QLineEdit::focusOutEvent(event);
     updateEditBox(getSearchText());
 }
 
 // slot
 void WSearchLineEdit::disableSearch() {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "disableSearch";
+#endif // ENABLE_TRACE_LOG
     restoreSearch(QString());
 }
 
 // slot
 void WSearchLineEdit::restoreSearch(const QString& text) {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "restoreSearch"
+            << text;
+#endif // ENABLE_TRACE_LOG
     if (text.isNull()) {
         // disable
         setEnabled(false);
@@ -252,6 +271,11 @@ void WSearchLineEdit::restoreSearch(const QString& text) {
 
 // slot
 void WSearchLineEdit::triggerSearch() {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "triggerSearch"
+            << getSearchText();
+#endif // ENABLE_TRACE_LOG
     m_debouncingTimer.stop();
     emit search(getSearchText());
 }
@@ -261,6 +285,11 @@ void WSearchLineEdit::showPlaceholder() {
 
     // Deactivate text change listener
     m_state = State::Inactive;
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "showPlaceholder"
+            << getSearchText();
+#endif // ENABLE_TRACE_LOG
 
     setText(tr("Search...", "noun"));
 
@@ -270,6 +299,11 @@ void WSearchLineEdit::showPlaceholder() {
 }
 
 void WSearchLineEdit::showSearchText(const QString& text) {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "showSearchText"
+            << text;
+#endif // ENABLE_TRACE_LOG
     DEBUG_ASSERT(isEnabled());
 
     // Reactivate text change listener
@@ -295,6 +329,11 @@ void WSearchLineEdit::showSearchText(const QString& text) {
 }
 
 void WSearchLineEdit::updateEditBox(const QString& text) {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "updateEditBox"
+            << text;
+#endif // ENABLE_TRACE_LOG
     if (text.isEmpty()) {
         showPlaceholder();
     } else {
@@ -303,6 +342,11 @@ void WSearchLineEdit::updateEditBox(const QString& text) {
 }
 
 void WSearchLineEdit::updateClearButton(const QString& text) {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "updateClearButton"
+            << text;
+#endif // ENABLE_TRACE_LOG
     if (!text.isEmpty() && (m_state == State::Active)) {
         m_clearButton->setVisible(true);
         // make sure the text won't be drawn behind the Clear button icon
@@ -328,6 +372,10 @@ bool WSearchLineEdit::clearBtnHasFocus() const {
 
 // slot
 void WSearchLineEdit::clearSearch() {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "clearSearch";
+#endif // ENABLE_TRACE_LOG
     DEBUG_ASSERT(m_state == State::Active);
     setText(kEmptySearch);
     // Clearing the edit field will engage the debouncing timer
@@ -341,6 +389,11 @@ void WSearchLineEdit::clearSearch() {
 
 // slot
 void WSearchLineEdit::updateText(const QString& text) {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "updateText"
+            << text;
+#endif // ENABLE_TRACE_LOG
     if (isEnabled() && (m_state == State::Active)) {
         updateClearButton(text);
         DEBUG_ASSERT(m_debouncingTimer.isSingleShot());
