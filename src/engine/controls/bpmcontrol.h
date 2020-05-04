@@ -53,12 +53,12 @@ class BpmControl : public EngineControl {
     // next beat, the current beat length, and the beat ratio (how far dPosition
     // lies within the current beat). Returns false if a previous or next beat
     // does not exist. NULL arguments are safe and ignored.
-    static bool getBeatContext(const BeatsPointer& pBeats,
-                               const double dPosition,
-                               double* dpPrevBeat,
-                               double* dpNextBeat,
-                               double* dpBeatLength,
-                               double* dpBeatPercentage);
+    static bool getBeatContext(const mixxx::BeatsPointer& pBeats,
+            const double dPosition,
+            double* dpPrevBeat,
+            double* dpNextBeat,
+            double* dpBeatLength,
+            double* dpBeatPercentage);
 
     // Alternative version that works if the next and previous beat positions
     // are already known.
@@ -77,7 +77,7 @@ class BpmControl : public EngineControl {
     double getRateRatio() const;
     void notifySeek(double dNewPlaypos) override;
     void trackLoaded(TrackPointer pNewTrack) override;
-    void trackBeatsUpdated(BeatsPointer pBeats) override;
+    void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
   private slots:
     void slotAdjustBeatsFaster(double);
@@ -160,7 +160,7 @@ class BpmControl : public EngineControl {
     bool m_dUserTweakingSync;
 
     // m_pBeats is written from an engine worker thread
-    BeatsPointer m_pBeats;
+    mixxx::BeatsPointer m_pBeats;
 
     FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
 };

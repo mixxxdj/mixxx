@@ -579,7 +579,7 @@ void CueControl::trackCuesUpdated() {
     loadCuesFromTrack();
 }
 
-void CueControl::trackBeatsUpdated(BeatsPointer pBeats) {
+void CueControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     Q_UNUSED(pBeats);
     loadCuesFromTrack();
 }
@@ -1682,7 +1682,7 @@ double CueControl::quantizeCuePoint(double cuePos) {
         return cuePos;
     }
 
-    BeatsPointer pBeats = m_pLoadedTrack->getBeats();
+    mixxx::BeatsPointer pBeats = m_pLoadedTrack->getBeats();
     if (!pBeats) {
         return cuePos;
     }

@@ -322,14 +322,14 @@ void SyncControl::reportTrackPosition(double fractionalPlaypos) {
 
 // called from an engine worker thread
 void SyncControl::trackLoaded(TrackPointer pNewTrack) {
-    BeatsPointer pBeats;
+    mixxx::BeatsPointer pBeats;
     if (pNewTrack) {
         pBeats = pNewTrack->getBeats();
     }
     trackBeatsUpdated(pBeats);
 }
 
-void SyncControl::trackBeatsUpdated(BeatsPointer pBeats) {
+void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     // This slot is fired by a new file is loaded or if the user
     // has adjusted the beatgrid.
     if (kLogger.traceEnabled()) {
@@ -491,7 +491,7 @@ void SyncControl::notifySeek(double dNewPlaypos) {
 }
 
 double SyncControl::fileBpm() const {
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
         return pBeats->getBpm();
     }
