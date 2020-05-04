@@ -377,10 +377,6 @@ void WSearchLineEdit::showPlaceholder() {
     DEBUG_ASSERT(shouldShowPlaceholder(getSearchText()));
 
     updateClearButton(kEmptySearch);
-
-    QPalette pal = palette();
-    pal.setColor(foregroundRole(), Qt::lightGray);
-    setPalette(pal);
 }
 
 void WSearchLineEdit::showSearchText(const QString& text) {
@@ -398,10 +394,6 @@ void WSearchLineEdit::showSearchText(const QString& text) {
     }
     m_state = State::Active;
     updateClearButton(text);
-
-    QPalette pal = palette();
-    pal.setColor(foregroundRole(), m_foregroundColor);
-    setPalette(pal);
 
     // This gets rid of the blue mac highlight.
     setAttribute(Qt::WA_MacShowFocusRect, false);
