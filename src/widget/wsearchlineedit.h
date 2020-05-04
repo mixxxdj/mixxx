@@ -15,8 +15,9 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     Q_OBJECT
   public:
     enum class State {
-        Inactive,
         Active,
+        Inactive,
+        InactivePlaceholder, // placeholder is displayed instead of an empty search text
     };
 
     // Delay for triggering a search while typing
@@ -51,6 +52,7 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
 
   public slots:
     void restoreSearch(const QString& text);
+    void enableSearch(const QString& text);
     void disableSearch();
     void slotSetFont(const QFont& font);
     bool clearBtnHasFocus() const;
@@ -70,13 +72,20 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     // configuration value changes.
     static int s_debouncingTimeoutMillis;
 
-    void showPlaceholder();
-    void showSearchText(const QString& text);
+    void switchState(State state);
     void updateEditBox(const QString& text);
+    void refreshEditBox();
+
+    void showPlaceholder();
+    bool shouldShowPlaceholder(const QString& text) const;
+    void showSearchText(const QString& text);
 
     void updateClearButton(const QString& text);
 
     QString getSearchText() const;
+
+    // Update the displayed text without (re-)starting the timer
+    void setTextBlockSignals(const QString& text);
 
     QToolButton* const m_clearButton;
 

@@ -43,6 +43,21 @@ int verifyDebouncingTimeoutMillis(int debouncingTimeoutMillis) {
     return debouncingTimeoutMillis;
 }
 
+#if ENABLE_TRACE_LOG
+QDebug operator<<(QDebug dbg, WSearchLineEdit::State state) {
+    switch (state) {
+    case WSearchLineEdit::State::Active:
+        return dbg << "Active";
+    case WSearchLineEdit::State::Inactive:
+        return dbg << "Inactive";
+    case WSearchLineEdit::State::InactivePlaceholder:
+        return dbg << "InactivePlaceholder";
+    }
+    DEBUG_ASSERT(!"unreachable");
+    return dbg;
+}
+#endif // ENABLE_TRACE_LOG
+
 } // namespace
 
 //static
@@ -67,7 +82,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
       WBaseWidget(this),
       m_clearButton(new QToolButton(this)),
       m_foregroundColor(kDefaultForegroundColor),
-      m_state(State::Inactive) {
+      m_state(State::InactivePlaceholder) {
     DEBUG_ASSERT(kEmptySearch.isEmpty());
     DEBUG_ASSERT(!kEmptySearch.isNull());
 
@@ -206,7 +221,7 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
         m_clearButton->setIconSize(newSize);
         // Note(ronso0): For some reason this ensures the search text
         // is being displayed after skin change/reload.
-        updateEditBox(getSearchText());
+        refreshEditBox();
     }
     int top = rect().top() + m_frameWidth;
     if (layoutDirection() == Qt::LeftToRight) {
@@ -217,11 +232,49 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
 }
 
 QString WSearchLineEdit::getSearchText() const {
-    if (isEnabled() && (m_state == State::Active)) {
+    if (isEnabled() && m_state != State::InactivePlaceholder) {
         return text();
     } else {
         return QString();
     }
+}
+
+void WSearchLineEdit::switchState(State state) {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "switchState"
+            << m_state
+            << "->"
+            << state;
+#endif // ENABLE_TRACE_LOG
+    DEBUG_ASSERT(isEnabled());
+    DEBUG_ASSERT(state != State::InactivePlaceholder);
+    if (m_state == state) {
+        // Nothing to do
+        return;
+    }
+    QString text;
+    switch (m_state) {
+    case State::Active:
+        // Active -> Inactive
+        // Save the current search text BEFORE switching the state!
+        text = getSearchText();
+        m_state = State::Inactive;
+        break;
+    case State::Inactive:
+        // Inactive -> Active
+        // Get the current search text AFTER switching the state!
+        m_state = State::Active;
+        text = getSearchText();
+        break;
+    case State::InactivePlaceholder:
+        // InactivePlaceholder -> Active/Inactive
+        // Set the current search text to empty
+        m_state = state;
+        text = kEmptySearch;
+        break;
+    }
+    updateEditBox(text);
 }
 
 void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
@@ -230,7 +283,7 @@ void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
             << "focusInEvent";
 #endif // ENABLE_TRACE_LOG
     QLineEdit::focusInEvent(event);
-    showSearchText(getSearchText());
+    switchState(State::Active);
 }
 
 void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
@@ -239,7 +292,28 @@ void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
             << "focusOutEvent";
 #endif // ENABLE_TRACE_LOG
     QLineEdit::focusOutEvent(event);
-    updateEditBox(getSearchText());
+    if (m_debouncingTimer.isActive()) {
+        // Trigger a pending search before leaving the edit box.
+        // Otherwise the entered text might be ignored and get lost
+        // due to the debouncing timeout!
+        triggerSearch();
+    }
+    if (getSearchText().isEmpty()) {
+        showPlaceholder();
+    } else {
+        switchState(State::Inactive);
+    }
+}
+
+void WSearchLineEdit::setTextBlockSignals(const QString& text) {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "setTextBlockSignals"
+            << text;
+#endif // ENABLE_TRACE_LOG
+    blockSignals(true);
+    setText(text);
+    blockSignals(false);
 }
 
 // slot
@@ -248,7 +322,27 @@ void WSearchLineEdit::disableSearch() {
     kLogger.trace()
             << "disableSearch";
 #endif // ENABLE_TRACE_LOG
-    restoreSearch(QString());
+    if (!isEnabled()) {
+        return;
+    }
+    setTextBlockSignals(kDisabledText);
+    // Set disabled AFTER switching the state!
+    setEnabled(false);
+}
+
+// slot
+void WSearchLineEdit::enableSearch(const QString& text) {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "enableSearch"
+            << text;
+#endif // ENABLE_TRACE_LOG
+    if (isEnabled()) {
+        return;
+    }
+    // Set enabled BEFORE updating the edit box!
+    setEnabled(true);
+    updateEditBox(text);
 }
 
 // slot
@@ -259,13 +353,9 @@ void WSearchLineEdit::restoreSearch(const QString& text) {
             << text;
 #endif // ENABLE_TRACE_LOG
     if (text.isNull()) {
-        // disable
-        setEnabled(false);
-        setText(kDisabledText);
+        disableSearch();
     } else {
-        setEnabled(true);
-        // Updating the placeholder implicitly updates the text and the clear button
-        updateEditBox(text);
+        enableSearch(text);
     }
 }
 
@@ -276,22 +366,27 @@ void WSearchLineEdit::triggerSearch() {
             << "triggerSearch"
             << getSearchText();
 #endif // ENABLE_TRACE_LOG
+    DEBUG_ASSERT(isEnabled());
     m_debouncingTimer.stop();
     emit search(getSearchText());
 }
 
-void WSearchLineEdit::showPlaceholder() {
+bool WSearchLineEdit::shouldShowPlaceholder(const QString& text) const {
     DEBUG_ASSERT(isEnabled());
+    return text.isEmpty() && m_state != State::Active;
+}
 
-    // Deactivate text change listener
-    m_state = State::Inactive;
+void WSearchLineEdit::showPlaceholder() {
 #if ENABLE_TRACE_LOG
     kLogger.trace()
             << "showPlaceholder"
             << getSearchText();
 #endif // ENABLE_TRACE_LOG
+    DEBUG_ASSERT(getSearchText().isEmpty());
 
-    setText(tr("Search...", "noun"));
+    setTextBlockSignals(tr("Search...", "noun"));
+    m_state = State::InactivePlaceholder;
+    updateClearButton(kEmptySearch);
 
     QPalette pal = palette();
     pal.setColor(foregroundRole(), Qt::lightGray);
@@ -306,18 +401,12 @@ void WSearchLineEdit::showSearchText(const QString& text) {
 #endif // ENABLE_TRACE_LOG
     DEBUG_ASSERT(isEnabled());
 
-    // Reactivate text change listener
-    m_state = State::Active;
-
-    // Update the displayed text without (re-)starting the timer
-    blockSignals(true);
-    if (text.isNull()) {
-        setText(kEmptySearch);
+    if (text.isEmpty()) {
+        setTextBlockSignals(kEmptySearch);
     } else {
-        setText(text);
+        setTextBlockSignals(text);
     }
-    blockSignals(false);
-
+    m_state = State::Active;
     updateClearButton(text);
 
     QPalette pal = palette();
@@ -328,13 +417,27 @@ void WSearchLineEdit::showSearchText(const QString& text) {
     setAttribute(Qt::WA_MacShowFocusRect, false);
 }
 
+void WSearchLineEdit::refreshEditBox() {
+#if ENABLE_TRACE_LOG
+    kLogger.trace()
+            << "refreshEditBox";
+#endif // ENABLE_TRACE_LOG
+    if (isEnabled()) {
+        enableSearch(getSearchText());
+    } else {
+        disableSearch();
+    }
+}
+
 void WSearchLineEdit::updateEditBox(const QString& text) {
 #if ENABLE_TRACE_LOG
     kLogger.trace()
             << "updateEditBox"
             << text;
 #endif // ENABLE_TRACE_LOG
-    if (text.isEmpty()) {
+    // Updating the placeholder or search text implicitly updates
+    // both the text and the clear button
+    if (shouldShowPlaceholder(text)) {
         showPlaceholder();
     } else {
         showSearchText(text);
@@ -347,14 +450,16 @@ void WSearchLineEdit::updateClearButton(const QString& text) {
             << "updateClearButton"
             << text;
 #endif // ENABLE_TRACE_LOG
-    if (!text.isEmpty() && (m_state == State::Active)) {
-        m_clearButton->setVisible(true);
-        // make sure the text won't be drawn behind the Clear button icon
-        setStyleSheet(clearButtonStyleSheet(m_innerHeight + m_frameWidth));
-    } else {
+    if (shouldShowPlaceholder(text)) {
+        // Disable while placeholder is shown
         m_clearButton->setVisible(false);
         // no right padding
         setStyleSheet(clearButtonStyleSheet(0));
+    } else {
+        // Enable otherwise
+        m_clearButton->setVisible(true);
+        // make sure the text won't be drawn behind the Clear button icon
+        setStyleSheet(clearButtonStyleSheet(m_innerHeight + m_frameWidth));
     }
 }
 
@@ -376,13 +481,13 @@ void WSearchLineEdit::clearSearch() {
     kLogger.trace()
             << "clearSearch";
 #endif // ENABLE_TRACE_LOG
-    DEBUG_ASSERT(m_state == State::Active);
-    setText(kEmptySearch);
+    DEBUG_ASSERT(isEnabled());
     // Clearing the edit field will engage the debouncing timer
     // and gives the user the chance for entering a new search
     // before returning the whole (and probably huge) library.
     // No need to manually trigger a search at this point!
     // See also: https://bugs.launchpad.net/mixxx/+bug/1635087
+    setText(kEmptySearch);
     // Refocus the edit field
     setFocus(Qt::OtherFocusReason);
 }
@@ -394,20 +499,20 @@ void WSearchLineEdit::updateText(const QString& text) {
             << "updateText"
             << text;
 #endif // ENABLE_TRACE_LOG
-    if (isEnabled() && (m_state == State::Active)) {
-        updateClearButton(text);
-        DEBUG_ASSERT(m_debouncingTimer.isSingleShot());
-        if (s_debouncingTimeoutMillis > 0) {
-            m_debouncingTimer.start(s_debouncingTimeoutMillis);
-        } else {
-            // Deactivate the timer if the timeout is invalid.
-            // Disabling the timer permanently by setting the timeout
-            // to an invalid value is an expected and valid use case.
-            m_debouncingTimer.stop();
-        }
+    m_debouncingTimer.stop();
+    if (!isEnabled()) {
+        setTextBlockSignals(kDisabledText);
+        return;
+    }
+    updateClearButton(text);
+    DEBUG_ASSERT(m_debouncingTimer.isSingleShot());
+    if (s_debouncingTimeoutMillis > 0) {
+        m_debouncingTimer.start(s_debouncingTimeoutMillis);
     } else {
-        updateClearButton(QString());
-        m_debouncingTimer.stop();
+        // Don't (re-)activate the timer if the timeout is invalid.
+        // Disabling the timer permanently by setting the timeout
+        // to an invalid value is an expected and valid use case.
+        DEBUG_ASSERT(!m_debouncingTimer.isActive());
     }
 }
 
