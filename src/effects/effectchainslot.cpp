@@ -30,110 +30,118 @@ EffectChainSlot::EffectChainSlot(const QString& group,
           m_pEngineEffectChain(nullptr) {
     // qDebug() << "EffectChainSlot::EffectChainSlot " << group << ' ' << iChainNumber;
 
-    m_pControlClear = new ControlPushButton(ConfigKey(m_group, "clear"));
-    connect(m_pControlClear, &ControlObject::valueChanged,
-            this, &EffectChainSlot::slotControlClear);
+    m_pControlClear = std::make_unique<ControlPushButton>(ConfigKey(m_group, "clear"));
+    connect(m_pControlClear.get(),
+            &ControlObject::valueChanged,
+            this,
+            &EffectChainSlot::slotControlClear);
 
-    m_pControlNumEffectSlots = new ControlObject(ConfigKey(m_group, "num_effectslots"));
+    m_pControlNumEffectSlots = std::make_unique<ControlObject>(
+            ConfigKey(m_group, "num_effectslots"));
     m_pControlNumEffectSlots->setReadOnly();
 
-    m_pControlChainLoaded = new ControlObject(ConfigKey(m_group, "loaded"));
+    m_pControlChainLoaded =
+            std::make_unique<ControlObject>(ConfigKey(m_group, "loaded"));
     m_pControlChainLoaded->setReadOnly();
     if (group != QString()) {
         m_pControlChainLoaded->forceSet(1.0);
     }
 
-    m_pControlChainEnabled = new ControlPushButton(ConfigKey(m_group, "enabled"));
+    m_pControlChainEnabled =
+            std::make_unique<ControlPushButton>(ConfigKey(m_group, "enabled"));
     m_pControlChainEnabled->setButtonMode(ControlPushButton::POWERWINDOW);
     // Default to enabled. The skin might not show these buttons.
     m_pControlChainEnabled->setDefaultValue(true);
     m_pControlChainEnabled->set(true);
-    connect(m_pControlChainEnabled, &ControlObject::valueChanged,
-            this, &EffectChainSlot::sendParameterUpdate);
+    connect(m_pControlChainEnabled.get(),
+            &ControlObject::valueChanged,
+            this,
+            &EffectChainSlot::sendParameterUpdate);
 
-    m_pControlChainMix = new ControlPotmeter(ConfigKey(m_group, "mix"), 0.0, 1.0,
-                                             false, true, false, true, 1.0);
+    m_pControlChainMix = std::make_unique<ControlPotmeter>(
+            ConfigKey(m_group, "mix"), 0.0, 1.0, false, true, false, true, 1.0);
     m_pControlChainMix->set(static_cast<int>(EffectChainMixMode::DrySlashWet));
-    connect(m_pControlChainMix, &ControlObject::valueChanged,
-            this, &EffectChainSlot::sendParameterUpdate);
+    connect(m_pControlChainMix.get(),
+            &ControlObject::valueChanged,
+            this,
+            &EffectChainSlot::sendParameterUpdate);
 
-    m_pControlChainSuperParameter = new ControlPotmeter(ConfigKey(m_group, "super1"), 0.0, 1.0);
+    m_pControlChainSuperParameter = std::make_unique<ControlPotmeter>(
+            ConfigKey(m_group, "super1"), 0.0, 1.0);
     // QObject::connect cannot connect to slots with optional parameters using function
     // pointer syntax if the slot has more parameters than the signal, so use a lambda
     // to hack around this limitation.
-    connect(m_pControlChainSuperParameter, &ControlObject::valueChanged,
-            this, [=](double value){slotControlChainSuperParameter(value);} );
+    connect(m_pControlChainSuperParameter.get(),
+            &ControlObject::valueChanged,
+            this,
+            [=](double value) { slotControlChainSuperParameter(value); });
     m_pControlChainSuperParameter->set(0.0);
     m_pControlChainSuperParameter->setDefaultValue(0.0);
 
-    m_pControlChainMixMode = new ControlPushButton(ConfigKey(m_group, "mix_mode"));
+    m_pControlChainMixMode =
+            std::make_unique<ControlPushButton>(ConfigKey(m_group, "mix_mode"));
     m_pControlChainMixMode->setButtonMode(ControlPushButton::TOGGLE);
-    m_pControlChainMixMode->setStates(static_cast<int>(EffectChainMixMode::NumMixModes));
-    connect(m_pControlChainMixMode, &ControlObject::valueChanged,
-            this, &EffectChainSlot::sendParameterUpdate);
+    m_pControlChainMixMode->setStates(
+            static_cast<int>(EffectChainMixMode::NumMixModes));
+    connect(m_pControlChainMixMode.get(),
+            &ControlObject::valueChanged,
+            this,
+            &EffectChainSlot::sendParameterUpdate);
 
-    m_pControlLoadPreset = new ControlObject(ConfigKey(m_group, "load_preset"), false);
-    connect(m_pControlLoadPreset,
+    m_pControlLoadPreset = std::make_unique<ControlObject>(
+            ConfigKey(m_group, "load_preset"), false);
+    connect(m_pControlLoadPreset.get(),
             &ControlObject::valueChanged,
             this,
             &EffectChainSlot::slotControlLoadChainPreset);
 
-    m_pControlLoadedPreset = new ControlObject(ConfigKey(m_group, "loaded_preset"));
+    m_pControlLoadedPreset = std::make_unique<ControlObject>(
+            ConfigKey(m_group, "loaded_preset"));
     m_pControlLoadedPreset->setReadOnly();
 
-    m_pControlChainNextPreset = new ControlPushButton(ConfigKey(m_group, "next_chain"));
-    connect(m_pControlChainNextPreset, &ControlObject::valueChanged,
-            this, &EffectChainSlot::slotControlChainNextPreset);
+    m_pControlChainNextPreset = std::make_unique<ControlPushButton>(
+            ConfigKey(m_group, "next_chain"));
+    connect(m_pControlChainNextPreset.get(),
+            &ControlObject::valueChanged,
+            this,
+            &EffectChainSlot::slotControlChainNextPreset);
 
-    m_pControlChainPrevPreset = new ControlPushButton(ConfigKey(m_group, "prev_chain"));
-    connect(m_pControlChainPrevPreset, &ControlObject::valueChanged,
-            this, &EffectChainSlot::slotControlChainPrevPreset);
+    m_pControlChainPrevPreset = std::make_unique<ControlPushButton>(
+            ConfigKey(m_group, "prev_chain"));
+    connect(m_pControlChainPrevPreset.get(),
+            &ControlObject::valueChanged,
+            this,
+            &EffectChainSlot::slotControlChainPrevPreset);
 
     // Ignoring no-ops is important since this is for +/- tickers.
-    m_pControlChainSelector = new ControlEncoder(ConfigKey(m_group, "chain_selector"), false);
-    connect(m_pControlChainSelector, &ControlObject::valueChanged,
-            this, &EffectChainSlot::slotControlChainSelector);
+    m_pControlChainSelector = std::make_unique<ControlEncoder>(
+            ConfigKey(m_group, "chain_selector"), false);
+    connect(m_pControlChainSelector.get(),
+            &ControlObject::valueChanged,
+            this,
+            &EffectChainSlot::slotControlChainSelector);
 
     // ControlObjects for skin <-> controller mapping interaction.
     // Refer to comment in header for full explanation.
-    m_pControlChainShowFocus = new ControlPushButton(
-                                   ConfigKey(m_group, "show_focus"));
+    m_pControlChainShowFocus = std::make_unique<ControlPushButton>(
+            ConfigKey(m_group, "show_focus"));
     m_pControlChainShowFocus->setButtonMode(ControlPushButton::TOGGLE);
 
-    m_pControlChainShowParameters = new ControlPushButton(
-                                        ConfigKey(m_group, "show_parameters"),
-                                        true);
+    m_pControlChainShowParameters = std::make_unique<ControlPushButton>(
+            ConfigKey(m_group, "show_parameters"),
+            true);
     m_pControlChainShowParameters->setButtonMode(ControlPushButton::TOGGLE);
 
-    m_pControlChainFocusedEffect = new ControlPushButton(
-                                       ConfigKey(m_group, "focused_effect"),
-                                       true);
+    m_pControlChainFocusedEffect = std::make_unique<ControlPushButton>(
+            ConfigKey(m_group, "focused_effect"),
+            true);
     m_pControlChainFocusedEffect->setButtonMode(ControlPushButton::TOGGLE);
 
     addToEngine();
 }
 
 EffectChainSlot::~EffectChainSlot() {
-    //qDebug() << debugString() << "destroyed";
-
     m_effectSlots.clear();
-
-    delete m_pControlClear;
-    delete m_pControlNumEffectSlots;
-    delete m_pControlChainLoaded;
-    delete m_pControlChainEnabled;
-    delete m_pControlChainMix;
-    delete m_pControlChainSuperParameter;
-    delete m_pControlChainMixMode;
-    delete m_pControlLoadPreset;
-    delete m_pControlLoadedPreset;
-    delete m_pControlChainPrevPreset;
-    delete m_pControlChainNextPreset;
-    delete m_pControlChainSelector;
-    delete m_pControlChainShowFocus;
-    delete m_pControlChainShowParameters;
-    delete m_pControlChainFocusedEffect;
-
     removeFromEngine();
 }
 

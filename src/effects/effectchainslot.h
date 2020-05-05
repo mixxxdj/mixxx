@@ -120,8 +120,8 @@ class EffectChainSlot : public QObject {
     EffectsManager* m_pEffectsManager;
     EffectChainPresetManagerPointer m_pChainPresetManager;
     EffectsMessengerPointer m_pMessenger;
-    ControlObject* m_pControlChainMix;
-    ControlObject* m_pControlChainSuperParameter;
+    std::unique_ptr<ControlObject> m_pControlChainMix;
+    std::unique_ptr<ControlObject> m_pControlChainSuperParameter;
     QList<EffectSlotPointer> m_effectSlots;
 
   private slots:
@@ -141,16 +141,16 @@ class EffectChainSlot : public QObject {
 
     const QString m_group;
 
-    ControlPushButton* m_pControlClear;
-    ControlObject* m_pControlNumEffectSlots;
-    ControlObject* m_pControlChainLoaded;
-    ControlPushButton* m_pControlChainEnabled;
-    ControlPushButton* m_pControlChainMixMode;
-    ControlObject* m_pControlLoadPreset;
-    ControlObject* m_pControlLoadedPreset;
-    ControlEncoder* m_pControlChainSelector;
-    ControlPushButton* m_pControlChainNextPreset;
-    ControlPushButton* m_pControlChainPrevPreset;
+    std::unique_ptr<ControlPushButton> m_pControlClear;
+    std::unique_ptr<ControlObject> m_pControlNumEffectSlots;
+    std::unique_ptr<ControlObject> m_pControlChainLoaded;
+    std::unique_ptr<ControlPushButton> m_pControlChainEnabled;
+    std::unique_ptr<ControlPushButton> m_pControlChainMixMode;
+    std::unique_ptr<ControlObject> m_pControlLoadPreset;
+    std::unique_ptr<ControlObject> m_pControlLoadedPreset;
+    std::unique_ptr<ControlEncoder> m_pControlChainSelector;
+    std::unique_ptr<ControlPushButton> m_pControlChainNextPreset;
+    std::unique_ptr<ControlPushButton> m_pControlChainPrevPreset;
 
     /**
       These COs do not affect how the effects are processed;
@@ -160,9 +160,9 @@ class EffectChainSlot : public QObject {
       create a new CO with the same ConfigKey but actually be interacting with a different
       object than the mapping.
     **/
-    ControlPushButton* m_pControlChainShowFocus;
-    ControlPushButton* m_pControlChainShowParameters;
-    ControlPushButton* m_pControlChainFocusedEffect;
+    std::unique_ptr<ControlPushButton> m_pControlChainShowFocus;
+    std::unique_ptr<ControlPushButton> m_pControlChainShowParameters;
+    std::unique_ptr<ControlPushButton> m_pControlChainFocusedEffect;
 
     QString m_presetName;
     SignalProcessingStage m_signalProcessingStage;
