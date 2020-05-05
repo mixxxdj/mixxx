@@ -132,7 +132,7 @@ class CueControl : public EngineControl {
     bool getPlayFlashingAtPause();
     SeekOnLoadMode getSeekOnLoadPreference();
     void trackLoaded(TrackPointer pNewTrack) override;
-    void trackBeatsUpdated(BeatsPointer pBeats) override;
+    void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
   private slots:
     void quantizeChanged(double v);

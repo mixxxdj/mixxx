@@ -47,7 +47,7 @@ void QuantizeControl::trackLoaded(TrackPointer pNewTrack) {
     }
 }
 
-void QuantizeControl::trackBeatsUpdated(BeatsPointer pBeats) {
+void QuantizeControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     m_pBeats = pBeats;
     double current = getSampleOfTrack().current;
     lookupBeatPositions(current);
@@ -79,7 +79,7 @@ void QuantizeControl::playPosChanged(double dNewPlaypos) {
 }
 
 void QuantizeControl::lookupBeatPositions(double dCurrentSample) {
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
         double prevBeat, nextBeat;
         pBeats->findPrevNextBeats(dCurrentSample, &prevBeat, &nextBeat);

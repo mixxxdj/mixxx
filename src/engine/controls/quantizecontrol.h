@@ -22,7 +22,7 @@ class QuantizeControl : public EngineControl {
             const double dTotalSamples, const double dTrackSampleRate) override;
     void notifySeek(double dNewPlaypos) override;
     void trackLoaded(TrackPointer pNewTrack) override;
-    void trackBeatsUpdated(BeatsPointer pBeats) override;
+    void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
   private:
     // Update positions of previous and next beats from beatgrid.
@@ -38,7 +38,7 @@ class QuantizeControl : public EngineControl {
     ControlObject* m_pCOClosestBeat;
 
     // m_pBeats is written from an engine worker thread
-    BeatsPointer m_pBeats;
+    mixxx::BeatsPointer m_pBeats;
 };
 
 #endif // QUANTIZECONTROL_H

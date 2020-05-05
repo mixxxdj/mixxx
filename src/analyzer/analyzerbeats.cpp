@@ -139,7 +139,7 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer tio) const {
 
     // If the track already has a Beats object then we need to decide whether to
     // analyze this track or not.
-    BeatsPointer pBeats = tio->getBeats();
+    mixxx::BeatsPointer pBeats = tio->getBeats();
     if (pBeats) {
         QString version = pBeats->getVersion();
         QString subVersion = pBeats->getSubVersion();
@@ -205,7 +205,7 @@ void AnalyzerBeats::storeResults(TrackPointer tio) {
         return;
     }
 
-    BeatsPointer pBeats;
+    mixxx::BeatsPointer pBeats;
     if (m_pPlugin->supportsBeatTracking()) {
         QVector<double> beats = m_pPlugin->getBeats();
         QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
@@ -228,7 +228,7 @@ void AnalyzerBeats::storeResults(TrackPointer tio) {
         pBeats = BeatFactory::makeBeatGrid(*tio, bpm, 0.0f);
     }
 
-    BeatsPointer pCurrentBeats = tio->getBeats();
+    mixxx::BeatsPointer pCurrentBeats = tio->getBeats();
 
     // If the track has no beats object then set our newly generated one
     // regardless of beat lock.
