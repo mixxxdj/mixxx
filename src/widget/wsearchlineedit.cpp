@@ -134,9 +134,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     showPlaceholder();
 }
 
-void WSearchLineEdit::setupSkin(
-        const QDomNode& node,
-        const SkinContext& context) {
+void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
     auto backgroundColor = kDefaultBackgroundColor;
     QString bgColorName;
     if (context.hasNodeSelectString(node, "BgColor", &bgColorName)) {

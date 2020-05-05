@@ -1230,7 +1230,7 @@ QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
 
     WSearchLineEdit* pLineEditSearch = new WSearchLineEdit(m_pParent);
     commonWidgetSetup(node, pLineEditSearch, false);
-    pLineEditSearch->setupSkin(node, *m_pContext);
+    pLineEditSearch->setup(node, *m_pContext);
 
     m_pLibrary->bindSearchboxWidget(pLineEditSearch);
 

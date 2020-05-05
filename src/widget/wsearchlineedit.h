@@ -28,9 +28,7 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     explicit WSearchLineEdit(QWidget* pParent);
     ~WSearchLineEdit() override = default;
 
-    void setupSkin(
-            const QDomNode& node,
-            const SkinContext& context);
+    void setup(const QDomNode& node, const SkinContext& context);
 
   protected:
     void resizeEvent(QResizeEvent*) override;
