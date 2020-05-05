@@ -42,18 +42,6 @@ int verifyDebouncingTimeoutMillis(int debouncingTimeoutMillis) {
     return debouncingTimeoutMillis;
 }
 
-#if ENABLE_TRACE_LOG
-QDebug operator<<(QDebug dbg, WSearchLineEdit::State state) {
-    switch (state) {
-    case WSearchLineEdit::State::Active:
-        return dbg << "Active";
-    case WSearchLineEdit::State::Inactive:
-        return dbg << "Inactive";
-    DEBUG_ASSERT(!"unreachable");
-    return dbg;
-}
-#endif // ENABLE_TRACE_LOG
-
 } // namespace
 
 //static
@@ -76,8 +64,7 @@ void WSearchLineEdit::setDebouncingTimeoutMillis(int debouncingTimeoutMillis) {
 WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     : QLineEdit(pParent),
       WBaseWidget(this),
-      m_clearButton(new QToolButton(this)),
-      m_state(State::Inactive) {
+      m_clearButton(new QToolButton(this)) {
     DEBUG_ASSERT(kEmptySearch.isEmpty());
     DEBUG_ASSERT(!kEmptySearch.isNull());
 
@@ -242,44 +229,12 @@ QString WSearchLineEdit::getSearchText() const {
     }
 }
 
-void WSearchLineEdit::switchState(State state) {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "switchState"
-            << m_state
-            << "->"
-            << state;
-#endif // ENABLE_TRACE_LOG
-    DEBUG_ASSERT(isEnabled());
-    if (m_state == state) {
-        // Nothing to do
-        return;
-    }
-    QString text;
-    switch (m_state) {
-    case State::Active:
-        // Active -> Inactive
-        // Save the current search text BEFORE switching the state!
-        text = getSearchText();
-        m_state = State::Inactive;
-        break;
-    case State::Inactive:
-        // Inactive -> Active
-        // Get the current search text AFTER switching the state!
-        m_state = State::Active;
-        text = getSearchText();
-        break;
-    }
-    updateEditBox(text);
-}
-
 void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
 #if ENABLE_TRACE_LOG
     kLogger.trace()
             << "focusInEvent";
 #endif // ENABLE_TRACE_LOG
     QLineEdit::focusInEvent(event);
-    switchState(State::Active);
 }
 
 void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
@@ -294,7 +249,6 @@ void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
         // due to the debouncing timeout!
         slotTriggerSearch();
     }
-    switchState(State::Inactive);
 }
 
 void WSearchLineEdit::setTextBlockSignals(const QString& text) {
@@ -317,7 +271,6 @@ void WSearchLineEdit::slotDisableSearch() {
         return;
     }
     setTextBlockSignals(kDisabledText);
-    // Set disabled AFTER switching the state!
     setEnabled(false);
 }
 
@@ -384,7 +337,6 @@ void WSearchLineEdit::updateEditBox(const QString& text) {
     } else {
         setTextBlockSignals(text);
     }
-    m_state = State::Active;
     updateClearButton(text);
 
     // This gets rid of the blue mac highlight.
@@ -399,7 +351,7 @@ void WSearchLineEdit::updateClearButton(const QString& text) {
 #endif // ENABLE_TRACE_LOG
     DEBUG_ASSERT(isEnabled());
 
-    if (text.isEmpty() && m_state != State::Active) {
+    if (text.isEmpty()) {
         // Disable while placeholder is shown
         m_clearButton->setVisible(false);
         // no right padding

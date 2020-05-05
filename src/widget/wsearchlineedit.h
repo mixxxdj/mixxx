@@ -18,10 +18,6 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     static constexpr int kDefaultDebouncingTimeoutMillis = 300;
     static constexpr int kMaxDebouncingTimeoutMillis = 9999;
 
-    // Use 'active' property to apply an alternative style to the
-    // placeholder text
-    Q_PROPERTY(bool active READ isActive);
-
     // TODO(XXX): Replace with a public slot
     static void setDebouncingTimeoutMillis(int debouncingTimeoutMillis);
 
@@ -79,16 +75,4 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     int m_innerHeight;
 
     QTimer m_debouncingTimer;
-
-    enum class State {
-        Active,
-        Inactive,
-    };
-    State m_state;
-
-    void switchState(State state);
-
-    bool isActive() const {
-        return m_state == State::Active ? true : false;
-    }
 };
