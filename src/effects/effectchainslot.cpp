@@ -177,9 +177,7 @@ void EffectChainSlot::setPresetName(const QString& name) {
 void EffectChainSlot::loadEffectWithDefaults(
         const unsigned int iEffectSlotNumber,
         const EffectManifestPointer pManifest) {
-    m_effectSlots[iEffectSlotNumber]->loadEffectWithDefaults(
-            pManifest,
-            m_enabledInputChannels);
+    m_effectSlots[iEffectSlotNumber]->loadEffectWithDefaults(pManifest);
 }
 
 void EffectChainSlot::loadChainPreset(EffectChainPresetPointer pPreset) {
@@ -192,11 +190,11 @@ void EffectChainSlot::loadChainPreset(EffectChainPresetPointer pPreset) {
     for (const auto& pEffectPreset : pPreset->effectPresets()) {
         EffectSlotPointer pEffectSlot = m_effectSlots.at(effectSlotIndex);
         if (pEffectPreset->isEmpty()) {
-            pEffectSlot->loadEffectFromPreset(nullptr, m_enabledInputChannels);
+            pEffectSlot->loadEffectFromPreset(nullptr);
             effectSlotIndex++;
             continue;
         }
-        pEffectSlot->loadEffectFromPreset(pEffectPreset, m_enabledInputChannels);
+        pEffectSlot->loadEffectFromPreset(pEffectPreset);
         effectSlotIndex++;
     }
 
@@ -250,6 +248,7 @@ EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
             m_pEffectsManager,
             m_pMessenger,
             m_effectSlots.size(),
+            this,
             m_pEngineEffectChain));
 
     m_effectSlots.append(pEffectSlot);

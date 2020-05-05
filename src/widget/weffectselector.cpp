@@ -19,10 +19,10 @@ WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManag
 
 void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
     // EffectWidgetUtils propagates NULLs so this is all safe.
-    m_pChainSlot = EffectWidgetUtils::getEffectChainSlotFromNode(
+    EffectChainSlotPointer pChainSlot = EffectWidgetUtils::getEffectChainSlotFromNode(
             node, context, m_pEffectsManager);
     m_pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(
-            node, context, m_pChainSlot);
+            node, context, pChainSlot);
     m_iEffectSlotIndex = EffectWidgetUtils::getEffectSlotIndexFromNode(
             node, context);
 
@@ -85,7 +85,7 @@ void WEffectSelector::slotEffectSelected(int newIndex) {
             m_pEffectsManager->getBackendManager()->getManifestFromUniqueId(
                     itemData(newIndex).toString());
 
-    m_pChainSlot->loadEffectWithDefaults(m_iEffectSlotIndex, pManifest);
+    m_pEffectSlot->loadEffectWithDefaults(pManifest);
 
     setBaseTooltip(itemData(newIndex, Qt::ToolTipRole).toString());
 }

@@ -64,6 +64,7 @@ class EffectSlot : public QObject {
             EffectsManager* pEffectsManager,
             EffectsMessengerPointer pEffectsMessenger,
             const unsigned int iEffectNumber,
+            EffectChainSlot* pChainSlot,
             EngineEffectChain* pEngineEffectChain);
     virtual ~EffectSlot();
 
@@ -99,12 +100,10 @@ class EffectSlot : public QObject {
 
     /// Call with nullptr for pPreset to unload an effect
     void loadEffectFromPreset(
-            const EffectPresetPointer pPreset,
-            const QSet<ChannelHandleAndGroup>& activeChannels);
+            const EffectPresetPointer pPreset);
     /// Call with nullptr for pManifest to unload an effect
     void loadEffectWithDefaults(
-            const EffectManifestPointer pManifest,
-            const QSet<ChannelHandleAndGroup>& activeChannels);
+            const EffectManifestPointer pManifest);
 
     void hideParameter(EffectParameterPointer pParameter);
     void showParameter(EffectParameterPointer pParameter);
@@ -153,13 +152,12 @@ class EffectSlot : public QObject {
         return QString("EffectSlot(%1)").arg(m_group);
     }
 
-    void addToEngine(const QSet<ChannelHandleAndGroup>& activeInputChannels);
+    void addToEngine();
     void removeFromEngine();
 
     /// Call with nullptr for pManifest and pPreset to unload an effect
     void loadEffectInner(const EffectManifestPointer pManifest,
             EffectPresetPointer pPreset,
-            const QSet<ChannelHandleAndGroup>& activeChannels,
             bool adoptMetaknobFromPreset = false);
 
     void loadParameters();
@@ -173,7 +171,9 @@ class EffectSlot : public QObject {
     EffectPresetManagerPointer m_pPresetManager;
     EffectsBackendManagerPointer m_pBackendManager;
     EffectsMessengerPointer m_pMessenger;
+    VisibleEffectsListPointer m_pVisibleEffects;
     EffectManifestPointer m_pManifest;
+    EffectChainSlot* m_pChainSlot;
     EngineEffectChain* m_pEngineEffectChain;
     EngineEffect* m_pEngineEffect;
     ParameterMap m_allParameters;

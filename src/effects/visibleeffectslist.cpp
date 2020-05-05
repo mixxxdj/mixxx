@@ -11,6 +11,34 @@ void VisibleEffectsList::setList(const QList<EffectManifestPointer>& newList) {
     emit visibleEffectsListChanged();
 }
 
+const EffectManifestPointer VisibleEffectsList::at(int index) const {
+    if (index < 0) {
+        index = 0;
+    } else if (index >= m_list.size()) {
+        index = m_list.size() - 1;
+    }
+    return m_list.at(index);
+}
+
+const EffectManifestPointer VisibleEffectsList::next(const EffectManifestPointer pManifest) const {
+    int index = m_list.indexOf(pManifest);
+    index++;
+    if (index == m_list.size()) {
+        index = 0;
+    }
+    return m_list.at(index);
+}
+
+const EffectManifestPointer VisibleEffectsList::previous(
+        const EffectManifestPointer pManifest) const {
+    int index = m_list.indexOf(pManifest);
+    index--;
+    if (index < 0) {
+        index = m_list.size() - 1;
+    }
+    return m_list.at(index);
+}
+
 void VisibleEffectsList::readEffectsXml(
         const QDomDocument& doc, EffectsBackendManagerPointer pBackendManager) {
     QDomElement root = doc.documentElement();
