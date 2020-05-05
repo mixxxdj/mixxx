@@ -13,11 +13,6 @@ class SkinContext;
 class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     Q_OBJECT
   public:
-    enum class State {
-        Active,
-        Inactive,
-    };
-
     // Delay for triggering a search while typing
     static constexpr int kMinDebouncingTimeoutMillis = 100;
     static constexpr int kDefaultDebouncingTimeoutMillis = 300;
@@ -26,10 +21,6 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     // Use 'active' property to apply an alternative style to the
     // placeholder text
     Q_PROPERTY(bool active READ isActive);
-
-    bool isActive() const {
-        return m_state == State::Active ? true : false;
-    }
 
     // TODO(XXX): Replace with a public slot
     static void setDebouncingTimeoutMillis(int debouncingTimeoutMillis);
@@ -71,7 +62,6 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     // configuration value changes.
     static int s_debouncingTimeoutMillis;
 
-    void switchState(State state);
     void updateEditBox(const QString& text);
     void refreshEditBox();
 
@@ -95,5 +85,15 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
 
     QTimer m_debouncingTimer;
 
+    enum class State {
+        Active,
+        Inactive,
+    };
     State m_state;
+
+    void switchState(State state);
+
+    bool isActive() const {
+        return m_state == State::Active ? true : false;
+    }
 };
