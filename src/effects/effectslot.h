@@ -181,17 +181,18 @@ class EffectSlot : public QObject {
     ParameterMap m_hiddenParameters;
     QMap<EffectParameterType, QList<EffectParameterSlotBasePointer>> m_parameterSlots;
 
-    ControlObject* m_pControlLoaded;
-    QHash<EffectParameterType, ControlObject*> m_pControlNumParameters;
-    QHash<EffectParameterType, ControlObject*> m_pControlNumParameterSlots;
-    ControlPushButton* m_pControlEnabled;
-    ControlObject* m_pControlNextEffect;
-    ControlObject* m_pControlPrevEffect;
-    ControlEncoder* m_pControlEffectSelector;
-    ControlObject* m_pControlClear;
-    ControlPotmeter* m_pControlMetaParameter;
+    std::unique_ptr<ControlObject> m_pControlLoaded;
+    // Apparently QHash doesn't work with std::unique_ptr
+    QHash<EffectParameterType, QSharedPointer<ControlObject>> m_pControlNumParameters;
+    QHash<EffectParameterType, QSharedPointer<ControlObject>> m_pControlNumParameterSlots;
+    std::unique_ptr<ControlPushButton> m_pControlEnabled;
+    std::unique_ptr<ControlObject> m_pControlNextEffect;
+    std::unique_ptr<ControlObject> m_pControlPrevEffect;
+    std::unique_ptr<ControlEncoder> m_pControlEffectSelector;
+    std::unique_ptr<ControlObject> m_pControlClear;
+    std::unique_ptr<ControlPotmeter> m_pControlMetaParameter;
 
-    SoftTakeover* m_pMetaknobSoftTakeover;
+    SoftTakeover m_metaknobSoftTakeover;
 
     DISALLOW_COPY_AND_ASSIGN(EffectSlot);
 };
