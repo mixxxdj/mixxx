@@ -187,8 +187,7 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     // Use only 25% instead of 50% transparency for the placeholder text color
     auto placeholderColor = foregroundColor;
-    placeholderColor.setAlpha(
-            placeholderColor.alpha() - placeholderColor.alpha() / 4);
+    placeholderColor.setAlpha(placeholderColor.alpha() * 3 / 4); // 75% opaque
     kLogger.debug()
             << "Placeholder color:"
             << placeholderColor;
