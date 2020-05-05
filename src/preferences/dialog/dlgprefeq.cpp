@@ -377,7 +377,11 @@ void DlgPrefEQ::applySelectionsToDecks() {
         }
         if (needLoad) {
             auto pChainSlot = m_pEffectsManager->getEqualizerEffectChainSlot(group);
-            pChainSlot->loadEffectWithDefaults(0, pManifest);
+            auto pEffectSlot = pChainSlot->getEffectSlot(0);
+            pEffectSlot->loadEffectWithDefaults(pManifest);
+            if (pManifest && pManifest->isMixingEQ()) {
+                pChainSlot->setFilterWaveform(true);
+            }
 
             if (!startingUp) {
                 m_eqIndiciesOnUpdate[deck] = box->currentIndex();
@@ -604,11 +608,9 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
 
     auto pChainSlot = m_pEffectsManager->getOutputEffectChainSlot();
     if (pChainSlot) {
-        pChainSlot->loadEffectWithDefaults(0, pManifest);
-
         auto pEffectSlot = pChainSlot->getEffectSlot(0);
-
         if (pEffectSlot) {
+            pEffectSlot->loadEffectWithDefaults(pManifest);
             pEffectSlot->setEnabled(true);
             m_pEffectMasterEQ = pEffectSlot;
 

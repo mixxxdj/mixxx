@@ -75,7 +75,7 @@ class EffectsManager : public QObject {
     EffectChainSlotPointer getOutputEffectChainSlot() const;
 
     void addEqualizerEffectChainSlot(const QString& deckGroupName);
-    EffectChainSlotPointer getEqualizerEffectChainSlot(const QString& deckGroupName) {
+    EqualizerEffectChainSlotPointer getEqualizerEffectChainSlot(const QString& deckGroupName) {
         return m_equalizerEffectChainSlots.value(deckGroupName);
     }
     void addQuickEffectChainSlot(const QString& deckGroupName);

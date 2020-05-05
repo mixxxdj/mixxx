@@ -49,7 +49,9 @@ class EffectChainSlot : public QObject {
 
     void registerInputChannel(const ChannelHandleAndGroup& handle_group,
                               const double initialValue = 0.0);
-    QSet<ChannelHandleAndGroup> getActiveChannels() const {
+    /// Do not store this in EffectSlot! The enabled input channels are a property
+    /// of the chain, not the effect.
+    const QSet<ChannelHandleAndGroup>& getActiveChannels() const {
         return m_enabledInputChannels;
     }
 
@@ -93,10 +95,6 @@ class EffectChainSlot : public QObject {
     const QList<EffectSlotPointer>& getEffectSlots() const {
         return m_effectSlots;
     }
-
-    virtual void loadEffectWithDefaults(
-            const unsigned int iEffectSlotNumber,
-            const EffectManifestPointer pManifest);
 
     void loadChainPreset(EffectChainPresetPointer pPreset);
 

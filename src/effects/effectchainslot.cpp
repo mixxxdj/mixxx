@@ -182,12 +182,6 @@ void EffectChainSlot::setPresetName(const QString& name) {
     emit nameChanged(name);
 }
 
-void EffectChainSlot::loadEffectWithDefaults(
-        const unsigned int iEffectSlotNumber,
-        const EffectManifestPointer pManifest) {
-    m_effectSlots[iEffectSlotNumber]->loadEffectWithDefaults(pManifest);
-}
-
 void EffectChainSlot::loadChainPreset(EffectChainPresetPointer pPreset) {
     VERIFY_OR_DEBUG_ASSERT(pPreset) {
         return;
