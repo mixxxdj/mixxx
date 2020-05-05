@@ -92,7 +92,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     connect(m_clearButton,
             &QAbstractButton::clicked,
             this,
-            &WSearchLineEdit::clearSearch);
+            &WSearchLineEdit::slotClearSearch);
 
     // This prevents the searchbox from being focused by Tab key (real or emulated)
     // so it is skipped when using the library controls 'MoveFocus[...]'
@@ -102,7 +102,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     connect(setFocusShortcut,
             &QShortcut::activated,
             this,
-            &WSearchLineEdit::setShortcutFocus);
+            &WSearchLineEdit::slotSetShortcutFocus);
 
     // Set up a timer to search after a few hundred milliseconds timeout.  This
     // stops us from thrashing the database if you type really fast.
@@ -110,19 +110,19 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     connect(&m_debouncingTimer,
             &QTimer::timeout,
             this,
-            &WSearchLineEdit::triggerSearch);
+            &WSearchLineEdit::slotTriggerSearch);
     connect(this,
             &QLineEdit::textChanged,
             this,
-            &WSearchLineEdit::updateText);
+            &WSearchLineEdit::slotTextChanged);
 
     // When you hit enter, it will trigger or clear the search.
     connect(this,
             &QLineEdit::returnPressed,
             this,
             [this] {
-                if (!clearSearchIfClearButtonHasFocus()) {
-                    triggerSearch();
+                if (!slotClearSearchIfClearButtonHasFocus()) {
+                    slotTriggerSearch();
                 }
             });
 
@@ -291,7 +291,7 @@ void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
         // Trigger a pending search before leaving the edit box.
         // Otherwise the entered text might be ignored and get lost
         // due to the debouncing timeout!
-        triggerSearch();
+        slotTriggerSearch();
     }
     switchState(State::Inactive);
     if (getSearchText().isEmpty()) {
@@ -310,11 +310,10 @@ void WSearchLineEdit::setTextBlockSignals(const QString& text) {
     blockSignals(false);
 }
 
-// slot
-void WSearchLineEdit::disableSearch() {
+void WSearchLineEdit::slotDisableSearch() {
 #if ENABLE_TRACE_LOG
     kLogger.trace()
-            << "disableSearch";
+            << "slotDisableSearch";
 #endif // ENABLE_TRACE_LOG
     if (!isEnabled()) {
         return;
@@ -338,25 +337,23 @@ void WSearchLineEdit::enableSearch(const QString& text) {
     updateEditBox(text);
 }
 
-// slot
-void WSearchLineEdit::restoreSearch(const QString& text) {
+void WSearchLineEdit::slotRestoreSearch(const QString& text) {
 #if ENABLE_TRACE_LOG
     kLogger.trace()
-            << "restoreSearch"
+            << "slotRestoreSearch"
             << text;
 #endif // ENABLE_TRACE_LOG
     if (text.isNull()) {
-        disableSearch();
+        slotDisableSearch();
     } else {
         enableSearch(text);
     }
 }
 
-// slot
-void WSearchLineEdit::triggerSearch() {
+void WSearchLineEdit::slotTriggerSearch() {
 #if ENABLE_TRACE_LOG
     kLogger.trace()
-            << "triggerSearch"
+            << "slotTriggerSearch"
             << getSearchText();
 #endif // ENABLE_TRACE_LOG
     DEBUG_ASSERT(isEnabled());
@@ -409,7 +406,7 @@ void WSearchLineEdit::refreshEditBox() {
     if (isEnabled()) {
         enableSearch(getSearchText());
     } else {
-        disableSearch();
+        slotDisableSearch();
     }
 }
 
@@ -454,11 +451,10 @@ bool WSearchLineEdit::event(QEvent* pEvent) {
     return QLineEdit::event(pEvent);
 }
 
-// slot
-void WSearchLineEdit::clearSearch() {
+void WSearchLineEdit::slotClearSearch() {
 #if ENABLE_TRACE_LOG
     kLogger.trace()
-            << "clearSearch";
+            << "slotClearSearch";
 #endif // ENABLE_TRACE_LOG
     DEBUG_ASSERT(isEnabled());
     // Clearing the edit field will engage the debouncing timer
@@ -471,20 +467,18 @@ void WSearchLineEdit::clearSearch() {
     setFocus(Qt::OtherFocusReason);
 }
 
-// slot
-bool WSearchLineEdit::clearSearchIfClearButtonHasFocus() {
+bool WSearchLineEdit::slotClearSearchIfClearButtonHasFocus() {
     if (!m_clearButton->hasFocus()) {
         return false;
     }
-    clearSearch();
+    slotClearSearch();
     return true;
 }
 
-// slot
-void WSearchLineEdit::updateText(const QString& text) {
+void WSearchLineEdit::slotTextChanged(const QString& text) {
 #if ENABLE_TRACE_LOG
     kLogger.trace()
-            << "updateText"
+            << "slotTextChanged"
             << text;
 #endif // ENABLE_TRACE_LOG
     m_debouncingTimer.stop();
@@ -504,8 +498,7 @@ void WSearchLineEdit::updateText(const QString& text) {
     }
 }
 
-// slot
-void WSearchLineEdit::setShortcutFocus() {
+void WSearchLineEdit::slotSetShortcutFocus() {
     setFocus(Qt::ShortcutFocusReason);
 }
 

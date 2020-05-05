@@ -335,7 +335,7 @@ void LibraryControl::bindSearchboxWidget(WSearchLineEdit* pSearchbox) {
     connect(this,
             &LibraryControl::clearSearchIfClearButtonHasFocus,
             m_pSearchbox,
-            &WSearchLineEdit::clearSearchIfClearButtonHasFocus);
+            &WSearchLineEdit::slotClearSearchIfClearButtonHasFocus);
     connect(m_pSearchbox,
             &WSearchLineEdit::destroyed,
             this,

@@ -49,18 +49,19 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     void search(const QString& text);
 
   public slots:
-    void restoreSearch(const QString& text);
-    void disableSearch();
     void slotSetFont(const QFont& font);
 
-    void clearSearch();
-    bool clearSearchIfClearButtonHasFocus();
+    void slotRestoreSearch(const QString& text);
+    void slotDisableSearch();
+
+    void slotClearSearch();
+    bool slotClearSearchIfClearButtonHasFocus();
 
   private slots:
-    void setShortcutFocus();
-    void updateText(const QString& text);
+    void slotSetShortcutFocus();
+    void slotTextChanged(const QString& text);
 
-    void triggerSearch();
+    void slotTriggerSearch();
 
   private:
     // TODO(XXX): This setting shouldn't be static and the widget
