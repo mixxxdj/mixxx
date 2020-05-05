@@ -52,9 +52,7 @@ class EqualizerEffectChainSlot : public PerGroupEffectChainSlot {
             EffectsManager* pEffectsManager,
             EffectsMessengerPointer pEffectsMessenger);
 
-    void loadEffectWithDefaults(
-            const unsigned int iEffectSlotNumber,
-            const EffectManifestPointer pManifest) override;
+    void setFilterWaveform(bool state);
 
     static QString formatEffectChainSlotGroup(const QString& group);
     static QString formatEffectSlotGroup(const QString& group);
