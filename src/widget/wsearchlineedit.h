@@ -62,8 +62,9 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     // configuration value changes.
     static int s_debouncingTimeoutMillis;
 
+    void refreshState();
+
     void updateEditBox(const QString& text);
-    void refreshEditBox();
 
     void showPlaceholder();
     bool shouldShowPlaceholder(const QString& text) const;

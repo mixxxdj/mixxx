@@ -224,7 +224,7 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
         m_clearButton->setIconSize(newSize);
         // Note(ronso0): For some reason this ensures the search text
         // is being displayed after skin change/reload.
-        refreshEditBox();
+        refreshState();
     }
     int top = rect().top() + m_frameWidth;
     if (layoutDirection() == Qt::LeftToRight) {
@@ -400,10 +400,10 @@ void WSearchLineEdit::showSearchText(const QString& text) {
     setAttribute(Qt::WA_MacShowFocusRect, false);
 }
 
-void WSearchLineEdit::refreshEditBox() {
+void WSearchLineEdit::refreshState() {
 #if ENABLE_TRACE_LOG
     kLogger.trace()
-            << "refreshEditBox";
+            << "refreshState";
 #endif // ENABLE_TRACE_LOG
     if (isEnabled()) {
         enableSearch(getSearchText());
