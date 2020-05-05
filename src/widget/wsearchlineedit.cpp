@@ -186,6 +186,13 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
     DEBUG_ASSERT(backgroundColor != foregroundColor);
     pal.setBrush(backgroundRole(), backgroundColor);
     pal.setBrush(foregroundRole(), foregroundColor);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+    // Use only 25% instead of 50% transparency for the placeholder text color
+    auto placeholderColor = foregroundColor;
+    placeholderColor.setAlpha(
+            placeholderColor.alpha() - placeholderColor.alpha() / 4);
+    pal.setBrush(QPalette::PlaceholderText, placeholderColor);
+#endif
     setPalette(pal);
 
     m_clearButton->setToolTip(tr("Clear input") + "\n" +
