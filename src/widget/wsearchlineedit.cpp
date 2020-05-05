@@ -17,7 +17,7 @@ namespace {
 
 const mixxx::Logger kLogger("WSearchLineEdit");
 
-const QColor kDefaultBackgroundColor = QColor(255, 255, 255);
+const QColor kDefaultBackgroundColor = QColor(0, 0, 0);
 
 const QString kEmptySearch = QStringLiteral("");
 
