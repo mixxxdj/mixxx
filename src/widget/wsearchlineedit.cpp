@@ -64,7 +64,7 @@ void WSearchLineEdit::setDebouncingTimeoutMillis(int debouncingTimeoutMillis) {
 WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     : QLineEdit(pParent),
       WBaseWidget(this),
-      m_clearButton(new QToolButton(this)) {
+      m_clearButton(make_parented<QToolButton>(this)) {
     DEBUG_ASSERT(kEmptySearch.isEmpty());
     DEBUG_ASSERT(!kEmptySearch.isNull());
 

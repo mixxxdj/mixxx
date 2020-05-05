@@ -6,6 +6,7 @@
 #include <QTimer>
 #include <QToolButton>
 
+#include "util/parented_ptr.h"
 #include "widget/wbasewidget.h"
 
 class SkinContext;
@@ -69,7 +70,7 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     // Update the displayed text without (re-)starting the timer
     void setTextBlockSignals(const QString& text);
 
-    QToolButton* const m_clearButton;
+    parented_ptr<QToolButton> const m_clearButton;
 
     int m_frameWidth;
     int m_innerHeight;
