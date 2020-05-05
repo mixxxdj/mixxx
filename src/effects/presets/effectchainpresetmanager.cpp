@@ -12,7 +12,6 @@
 
 namespace {
 const QString kEffectChainPresetDirectory = "/effects/chains";
-const QString kEffectsXmlFile = "effects.xml";
 } // anonymous namespace
 
 EffectChainPresetManager::EffectChainPresetManager(UserSettingsPointer pConfig,
@@ -349,7 +348,7 @@ void EffectChainPresetManager::savePreset(EffectChainPresetPointer pPreset) {
 }
 
 EffectsXmlData EffectChainPresetManager::readEffectsXml(
-        QStringList deckStrings) {
+        const QDomDocument& doc, QStringList deckStrings) {
     DEBUG_ASSERT(!m_effectChainPresets.isEmpty());
 
     QList<EffectChainPresetPointer> standardEffectChainPresets;
@@ -357,19 +356,6 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     for (const auto& deckString : deckStrings) {
         quickEffectPresets.insert(deckString, m_pDefaultQuickEffectChainPreset);
     }
-
-    QDir settingsPath(m_pConfig->getSettingsPath());
-    QFile file(settingsPath.absoluteFilePath(kEffectsXmlFile));
-    QDomDocument doc;
-
-    if (!file.open(QIODevice::ReadOnly)) {
-        file.close();
-        return EffectsXmlData{quickEffectPresets, standardEffectChainPresets};
-    } else if (!doc.setContent(&file)) {
-        file.close();
-        return EffectsXmlData{quickEffectPresets, standardEffectChainPresets};
-    }
-    file.close();
 
     // Reload state of standard chains
     QDomElement root = doc.documentElement();
@@ -401,7 +387,9 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
             chainPresetsSorted << presetNameNode.toElement().text();
         }
     }
-    setPresetOrder(chainPresetsSorted);
+    if (!chainPresetsSorted.isEmpty()) {
+        setPresetOrder(chainPresetsSorted);
+    }
 
     // Load QuickEffect presets
     QDomElement quickEffectPresetsElement =
@@ -423,28 +411,22 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     return EffectsXmlData{quickEffectPresets, standardEffectChainPresets};
 }
 
-void EffectChainPresetManager::saveEffectsXml(EffectsXmlData data) {
-    QDomDocument doc(EffectXml::Root);
-    doc.setContent(EffectXml::FileHeader);
-
+void EffectChainPresetManager::saveEffectsXml(QDomDocument* pDoc, EffectsXmlData data) {
     // Save presets for current state of standard chains
-    QDomElement rootElement = doc.createElement(EffectXml::Root);
-    rootElement.setAttribute(
-            "schemaVersion", QString::number(EffectXml::kXmlSchemaVersion));
-    doc.appendChild(rootElement);
-    QDomElement rackElement = doc.createElement(EffectXml::Rack);
+    QDomElement rootElement = pDoc->documentElement();
+    QDomElement rackElement = pDoc->createElement(EffectXml::Rack);
     rootElement.appendChild(rackElement);
-    QDomElement chainsElement = doc.createElement(EffectXml::ChainsRoot);
+    QDomElement chainsElement = pDoc->createElement(EffectXml::ChainsRoot);
     rackElement.appendChild(chainsElement);
     for (const auto pPreset : data.standardEffectChainPresets) {
-        chainsElement.appendChild(pPreset->toXml(&doc));
+        chainsElement.appendChild(pPreset->toXml(pDoc));
     }
 
     // Save order of custom chain presets
     QDomElement chainPresetListElement =
-            doc.createElement(EffectXml::ChainPresetList);
+            pDoc->createElement(EffectXml::ChainPresetList);
     for (const auto pPreset : m_effectChainPresetsSorted) {
-        XmlParse::addElement(doc,
+        XmlParse::addElement(*pDoc,
                 chainPresetListElement,
                 EffectXml::ChainPresetName,
                 pPreset->name());
@@ -453,27 +435,16 @@ void EffectChainPresetManager::saveEffectsXml(EffectsXmlData data) {
 
     // Save which presets are loaded to QuickEffects
     QDomElement quickEffectPresetsElement =
-            doc.createElement(EffectXml::QuickEffectChainPresets);
+            pDoc->createElement(EffectXml::QuickEffectChainPresets);
     for (auto it = data.quickEffectChainPresets.begin();
             it != data.quickEffectChainPresets.end();
             it++) {
         QDomElement quickEffectElement = XmlParse::addElement(
-                doc,
+                *pDoc,
                 quickEffectPresetsElement,
                 EffectXml::ChainPresetName,
                 it.value()->name());
         quickEffectElement.setAttribute("group", it.key());
     }
     rootElement.appendChild(quickEffectPresetsElement);
-
-    QDir settingsPath(m_pConfig->getSettingsPath());
-    if (!settingsPath.exists()) {
-        return;
-    }
-    QFile file(settingsPath.absoluteFilePath(kEffectsXmlFile));
-    if (!file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
-        return;
-    }
-    file.write(doc.toString().toUtf8());
-    file.close();
 }

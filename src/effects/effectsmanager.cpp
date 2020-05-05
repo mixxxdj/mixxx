@@ -1,11 +1,13 @@
 #include "effects/effectsmanager.h"
 
+#include <QDir>
 #include <QMetaType>
 
 #include "control/controlpotmeter.h"
 #include "effects/effectslot.h"
 #include "effects/effectsmessenger.h"
 #include "effects/presets/effectpresetmanager.h"
+#include "effects/effectxmlelements.h"
 #include "effects/visibleeffectslist.h"
 #include "util/assert.h"
 
@@ -17,6 +19,7 @@ const QString kEqualizerEffectRackGroup = "[EqualizerRack1]";
 const QString kEffectGroupSeparator = "_";
 const QString kGroupClose = "]";
 const unsigned int kEffectMessagePipeFifoSize = 2048;
+const QString kEffectsXmlFile = "effects.xml";
 } // anonymous namespace
 
 EffectsManager::EffectsManager(QObject* pParent,
@@ -45,8 +48,6 @@ EffectsManager::EffectsManager(QObject* pParent,
             new EffectChainPresetManager(pConfig, m_pBackendManager));
 
     m_pVisibleEffectsList = VisibleEffectsListPointer(new VisibleEffectsList());
-    // TODO: load from effects.xml
-    m_pVisibleEffectsList->setList(m_pBackendManager->getManifests());
 }
 
 EffectsManager::~EffectsManager() {
@@ -183,11 +184,20 @@ void EffectsManager::setup() {
 }
 
 void EffectsManager::readEffectsXml() {
+    QDir settingsPath(m_pConfig->getSettingsPath());
+    QFile file(settingsPath.absoluteFilePath(kEffectsXmlFile));
+    QDomDocument doc;
+
+    if (file.open(QIODevice::ReadOnly)) {
+        doc.setContent(&file);
+    }
+    file.close();
+
     QStringList deckStrings;
     for (auto it = m_quickEffectChainSlots.begin(); it != m_quickEffectChainSlots.end(); it++) {
         deckStrings << it.key();
     }
-    EffectsXmlData data = m_pChainPresetManager->readEffectsXml(deckStrings);
+    EffectsXmlData data = m_pChainPresetManager->readEffectsXml(doc, deckStrings);
 
     for (int i = 0; i < data.standardEffectChainPresets.size(); i++) {
         m_standardEffectChainSlots.value(i)->loadChainPreset(data.standardEffectChainPresets.at(i));
@@ -201,9 +211,18 @@ void EffectsManager::readEffectsXml() {
             pChainSlot->loadChainPreset(it.value());
         }
     }
+
+    m_pVisibleEffectsList->readEffectsXml(doc, m_pBackendManager);
 }
 
 void EffectsManager::saveEffectsXml() {
+    QDomDocument doc(EffectXml::Root);
+    doc.setContent(EffectXml::FileHeader);
+    QDomElement rootElement = doc.createElement(EffectXml::Root);
+    rootElement.setAttribute(
+            "schemaVersion", QString::number(EffectXml::kXmlSchemaVersion));
+    doc.appendChild(rootElement);
+
     QHash<QString, EffectChainPresetPointer> quickEffectChainPresets;
     for (auto it = m_quickEffectChainSlots.begin(); it != m_quickEffectChainSlots.end(); it++) {
         auto pPreset = EffectChainPresetPointer(new EffectChainPreset(it.value().get()));
@@ -216,6 +235,19 @@ void EffectsManager::saveEffectsXml() {
         standardEffectChainPresets.append(pPreset);
     }
 
-    m_pChainPresetManager->saveEffectsXml(EffectsXmlData{
-            quickEffectChainPresets, standardEffectChainPresets});
+    m_pChainPresetManager->saveEffectsXml(&doc,
+            EffectsXmlData{
+                    quickEffectChainPresets, standardEffectChainPresets});
+    m_pVisibleEffectsList->saveEffectsXml(&doc);
+
+    QDir settingsPath(m_pConfig->getSettingsPath());
+    if (!settingsPath.exists()) {
+        return;
+    }
+    QFile file(settingsPath.absoluteFilePath(kEffectsXmlFile));
+    if (!file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
+        return;
+    }
+    file.write(doc.toString().toUtf8());
+    file.close();
 }

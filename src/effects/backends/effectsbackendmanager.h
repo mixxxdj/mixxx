@@ -15,6 +15,7 @@ class EffectsBackendManager {
     inline const QList<EffectManifestPointer>& getManifests() const {
         return m_manifests;
     };
+    const QList<EffectManifestPointer> getManifestsForBackend(EffectBackendType backendType) const;
     EffectManifestPointer getManifestFromUniqueId(const QString& uid) const;
     EffectManifestPointer getManifest(const QString& id, EffectBackendType backendType) const;
     const QString getDisplayNameForEffectPreset(EffectPresetPointer pPreset) const;

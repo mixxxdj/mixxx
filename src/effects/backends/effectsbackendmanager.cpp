@@ -38,6 +38,17 @@ void EffectsBackendManager::addBackend(EffectsBackendPointer pBackend) {
             EffectManifest::alphabetize);
 }
 
+const QList<EffectManifestPointer> EffectsBackendManager::getManifestsForBackend(
+        EffectBackendType backendType) const {
+    auto pBackend = m_effectsBackends.value(backendType);
+    VERIFY_OR_DEBUG_ASSERT(pBackend) {
+        return QList<EffectManifestPointer>();
+    }
+    auto list = pBackend->getManifests();
+    std::sort(list.begin(), list.end(), EffectManifest::alphabetize);
+    return list;
+}
+
 EffectManifestPointer EffectsBackendManager::getManifestFromUniqueId(
         const QString& uid) const {
     if (kEffectDebugOutput) {
