@@ -69,7 +69,9 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     DEBUG_ASSERT(!kEmptySearch.isNull());
 
     setAcceptDrops(false);
-    setPlaceholderText(tr("Search...", "noun"));
+
+    //: This should be a noun.
+    setPlaceholderText(tr("Search..."));
 
     m_clearButton->setCursor(Qt::ArrowCursor);
     m_clearButton->setObjectName(kClearButtonName);
