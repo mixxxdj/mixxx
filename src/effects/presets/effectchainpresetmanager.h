@@ -49,8 +49,8 @@ class EffectChainPresetManager : public QObject {
     void savePreset(EffectChainPresetPointer pPreset);
     void savePreset(EffectChainSlotPointer pChainSlot);
 
-    EffectsXmlData readEffectsXml(QStringList deckStrings);
-    void saveEffectsXml(EffectsXmlData data);
+    EffectsXmlData readEffectsXml(const QDomDocument& doc, QStringList deckStrings);
+    void saveEffectsXml(QDomDocument* pDoc, EffectsXmlData data);
 
   signals:
     void effectChainPresetListUpdated();

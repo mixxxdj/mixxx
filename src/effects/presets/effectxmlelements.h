@@ -14,6 +14,8 @@ const QString ChainPresetList("ChainPresetList");
 const QString QuickEffectChainPresets("QuickEffectChains");
 const QString ChainPresetName("ChainPresetName");
 
+const QString VisibleEffects("VisibleEffects");
+
 const QString ChainsRoot("Chains");
 const QString Chain("EffectChain");
 const QString ChainSuperParameter("SuperParameterValue");
