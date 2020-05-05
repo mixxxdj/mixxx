@@ -64,14 +64,8 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
 
     void refreshState();
 
-    void updateEditBox(const QString& text);
-
-    void showPlaceholder();
-    bool shouldShowPlaceholder(const QString& text) const;
-
     void enableSearch(const QString& text);
-    void showSearchText(const QString& text);
-
+    void updateEditBox(const QString& text);
     void updateClearButton(const QString& text);
 
     QString getSearchText() const;

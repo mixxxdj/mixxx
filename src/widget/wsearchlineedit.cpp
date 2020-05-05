@@ -131,7 +131,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     // Ensures the text does not obscure the clear image.
     setStyleSheet(clearButtonStyleSheet(clearButtonSize.width() + m_frameWidth + 1));
 
-    showPlaceholder();
+    refreshState();
 }
 
 void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
@@ -296,9 +296,6 @@ void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
         slotTriggerSearch();
     }
     switchState(State::Inactive);
-    if (getSearchText().isEmpty()) {
-        showPlaceholder();
-    }
 }
 
 void WSearchLineEdit::setTextBlockSignals(const QString& text) {
@@ -363,43 +360,6 @@ void WSearchLineEdit::slotTriggerSearch() {
     emit search(getSearchText());
 }
 
-bool WSearchLineEdit::shouldShowPlaceholder(const QString& text) const {
-    DEBUG_ASSERT(isEnabled());
-    return text.isEmpty() && m_state != State::Active;
-}
-
-void WSearchLineEdit::showPlaceholder() {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "showPlaceholder"
-            << getSearchText();
-#endif // ENABLE_TRACE_LOG
-    DEBUG_ASSERT(getSearchText() == kEmptySearch);
-    DEBUG_ASSERT(shouldShowPlaceholder(getSearchText()));
-
-    updateClearButton(kEmptySearch);
-}
-
-void WSearchLineEdit::showSearchText(const QString& text) {
-#if ENABLE_TRACE_LOG
-    kLogger.trace()
-            << "showSearchText"
-            << text;
-#endif // ENABLE_TRACE_LOG
-    DEBUG_ASSERT(isEnabled());
-
-    if (text.isEmpty()) {
-        setTextBlockSignals(kEmptySearch);
-    } else {
-        setTextBlockSignals(text);
-    }
-    m_state = State::Active;
-    updateClearButton(text);
-
-    // This gets rid of the blue mac highlight.
-    setAttribute(Qt::WA_MacShowFocusRect, false);
-}
-
 void WSearchLineEdit::refreshState() {
 #if ENABLE_TRACE_LOG
     kLogger.trace()
@@ -418,13 +378,18 @@ void WSearchLineEdit::updateEditBox(const QString& text) {
             << "updateEditBox"
             << text;
 #endif // ENABLE_TRACE_LOG
-    // Updating the placeholder or search text implicitly updates
-    // both the text and the clear button
-    if (shouldShowPlaceholder(text)) {
-        showPlaceholder();
+    DEBUG_ASSERT(isEnabled());
+
+    if (text.isEmpty()) {
+        setTextBlockSignals(kEmptySearch);
     } else {
-        showSearchText(text);
+        setTextBlockSignals(text);
     }
+    m_state = State::Active;
+    updateClearButton(text);
+
+    // This gets rid of the blue mac highlight.
+    setAttribute(Qt::WA_MacShowFocusRect, false);
 }
 
 void WSearchLineEdit::updateClearButton(const QString& text) {
@@ -433,7 +398,9 @@ void WSearchLineEdit::updateClearButton(const QString& text) {
             << "updateClearButton"
             << text;
 #endif // ENABLE_TRACE_LOG
-    if (shouldShowPlaceholder(text)) {
+    DEBUG_ASSERT(isEnabled());
+
+    if (text.isEmpty() && m_state != State::Active) {
         // Disable while placeholder is shown
         m_clearButton->setVisible(false);
         // no right padding
