@@ -50,6 +50,9 @@ typedef QSharedPointer<EffectsBackend> EffectsBackendPointer;
 class EffectsMessenger;
 typedef QSharedPointer<EffectsMessenger> EffectsMessengerPointer;
 
+class VisibleEffectsList;
+typedef QSharedPointer<VisibleEffectsList> VisibleEffectsListPointer;
+
 class EffectsBackendManager;
 typedef QSharedPointer<EffectsBackendManager> EffectsBackendManagerPointer;
 

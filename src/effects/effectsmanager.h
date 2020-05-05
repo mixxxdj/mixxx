@@ -50,6 +50,10 @@ class EffectsManager : public QObject {
         return m_pBackendManager;
     }
 
+    const VisibleEffectsListPointer getVisibleEffectsList() const {
+        return m_pVisibleEffectsList;
+    }
+
     static const int kNumStandardEffectChains = 4;
 
     bool isAdoptMetaknobValueEnabled() const;
@@ -125,6 +129,7 @@ class EffectsManager : public QObject {
     EffectsBackendManagerPointer m_pBackendManager;
     EngineEffectsManager* m_pEngineEffectsManager;
     EffectsMessengerPointer m_pMessenger;
+    VisibleEffectsListPointer m_pVisibleEffectsList;
     EffectPresetManagerPointer m_pEffectPresetManager;
     EffectChainPresetManagerPointer m_pChainPresetManager;
 
