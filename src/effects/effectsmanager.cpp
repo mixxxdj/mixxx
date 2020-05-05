@@ -6,6 +6,7 @@
 #include "effects/effectslot.h"
 #include "effects/effectsmessenger.h"
 #include "effects/presets/effectpresetmanager.h"
+#include "effects/visibleeffectslist.h"
 #include "util/assert.h"
 
 namespace {
@@ -42,6 +43,10 @@ EffectsManager::EffectsManager(QObject* pParent,
 
     m_pChainPresetManager = EffectChainPresetManagerPointer(
             new EffectChainPresetManager(pConfig, m_pBackendManager));
+
+    m_pVisibleEffectsList = VisibleEffectsListPointer(new VisibleEffectsList());
+    // TODO: load from effects.xml
+    m_pVisibleEffectsList->setList(m_pBackendManager->getManifests());
 }
 
 EffectsManager::~EffectsManager() {

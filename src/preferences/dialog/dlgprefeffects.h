@@ -1,10 +1,9 @@
-#ifndef DLGPREFEFFECTS_H
-#define DLGPREFEFFECTS_H
+#pragma once
 
-#include "preferences/usersettings.h"
 #include "preferences/dialog/ui_dlgprefeffectsdlg.h"
 #include "preferences/dlgpreferencepage.h"
-#include "preferences/effectsettingsmodel.h"
+#include "preferences/effectmanifesttablemodel.h"
+#include "preferences/usersettings.h"
 
 class EffectsManager;
 
@@ -21,7 +20,7 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
     void slotResetToDefaults();
 
   private slots:
-    void availableEffectsListItemSelected(const QModelIndex& selected);
+    void effectsTableItemSelected(const QModelIndex& selected);
     void slotChainPresetSelected(const QString& chainPresetName);
     void slotImportPreset();
     void slotExportPreset();
@@ -31,17 +30,17 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
     void slotPresetMoveDown();
 
   private:
+    void setupManifestTableView(QTableView* pTableView);
+
     void clear();
     void loadChainPresetList();
 
     QList<QLabel*> m_effectsLabels;
 
-    EffectSettingsModel m_availableEffectsModel;
     UserSettingsPointer m_pConfig;
-    EffectsManager* m_pEffectsManager;
+    VisibleEffectsListPointer m_pVisibleEffectsList;
     EffectChainPresetManagerPointer m_pChainPresetManager;
     EffectsBackendManagerPointer m_pBackendManager;
-    EffectSettingsModel* m_pAvailableEffectsModel;
+    EffectManifestTableModel* m_pVisibleEffectsModel;
+    EffectManifestTableModel* m_pHiddenEffectsModel;
 };
-
-#endif /* DLGPREFEFFECTS_H */

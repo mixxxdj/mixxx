@@ -1,15 +1,17 @@
-#include <QtDebug>
-
 #include "widget/weffectselector.h"
 
+#include <QtDebug>
+
 #include "effects/effectsmanager.h"
+#include "effects/visibleeffectslist.h"
 #include "widget/effectwidgetutils.h"
 
 WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManager)
         : QComboBox(pParent),
           WBaseWidget(this),
           m_iEffectSlotIndex(-1),
-          m_pEffectsManager(pEffectsManager) {
+          m_pEffectsManager(pEffectsManager),
+          m_pVisibleEffectsList(pEffectsManager->getVisibleEffectsList()) {
     // Prevent this widget from getting focused to avoid
     // interfering with using the library via keyboard.
     setFocusPolicy(Qt::NoFocus);
@@ -25,8 +27,8 @@ void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
             node, context);
 
     if (m_pEffectSlot != nullptr) {
-        connect(m_pEffectsManager,
-                &EffectsManager::visibleEffectsUpdated,
+        connect(m_pVisibleEffectsList.get(),
+                &VisibleEffectsList::visibleEffectsListChanged,
                 this,
                 &WEffectSelector::populate);
         connect(m_pEffectSlot.data(),
@@ -50,8 +52,7 @@ void WEffectSelector::populate() {
     blockSignals(true);
     clear();
 
-    const QList<EffectManifestPointer> visibleEffectManifests =
-            m_pEffectsManager->getVisibleEffectManifests();
+    const QList<EffectManifestPointer> visibleEffectManifests = m_pVisibleEffectsList->getList();
     QFontMetrics metrics(font());
 
     for (int i = 0; i < visibleEffectManifests.size(); ++i) {

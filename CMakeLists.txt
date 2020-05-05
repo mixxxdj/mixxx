@@ -262,6 +262,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/effectsmanager.cpp
   src/effects/effectsmessenger.cpp
   src/effects/specialeffectchainslots.cpp
+  src/effects/visibleeffectslist.cpp
   src/effects/backends/effectsbackendmanager.cpp
   src/effects/presets/effectchainpreset.cpp
   src/effects/presets/effectchainpresetmanager.cpp
@@ -500,7 +501,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefwaveform.cpp
   src/preferences/dialog/dlgprefwaveformdlg.ui
   src/preferences/dlgpreferencepage.cpp
-  src/preferences/effectsettingsmodel.cpp
+  src/preferences/effectmanifesttablemodel.cpp
   src/preferences/colorpaletteeditor.cpp
   src/preferences/colorpaletteeditormodel.cpp
   src/preferences/colorpalettesettings.cpp
