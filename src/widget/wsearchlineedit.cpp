@@ -191,6 +191,9 @@ void WSearchLineEdit::setupSkin(
     auto placeholderColor = foregroundColor;
     placeholderColor.setAlpha(
             placeholderColor.alpha() - placeholderColor.alpha() / 4);
+    kLogger.debug()
+            << "Placeholder color:"
+            << placeholderColor;
     pal.setBrush(QPalette::PlaceholderText, placeholderColor);
 #endif
     setPalette(pal);
