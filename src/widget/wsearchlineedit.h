@@ -39,8 +39,6 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
 
     void setup(const QDomNode& node, const SkinContext& context);
 
-    bool clearBtnHasFocus() const;
-
   protected:
     void resizeEvent(QResizeEvent*) override;
     void focusInEvent(QFocusEvent*) override;
@@ -54,7 +52,9 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     void restoreSearch(const QString& text);
     void disableSearch();
     void slotSetFont(const QFont& font);
+
     void clearSearch();
+    bool clearSearchIfClearButtonHasFocus();
 
   private slots:
     void setShortcutFocus();

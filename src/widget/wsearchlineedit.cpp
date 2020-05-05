@@ -116,14 +116,12 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
             this,
             &WSearchLineEdit::updateText);
 
-    // When you hit enter, it will trigger the search.
+    // When you hit enter, it will trigger or clear the search.
     connect(this,
             &QLineEdit::returnPressed,
             this,
             [this] {
-                if (clearBtnHasFocus()) {
-                    clearSearch();
-                } else {
+                if (!clearSearchIfClearButtonHasFocus()) {
                     triggerSearch();
                 }
             });
@@ -326,7 +324,6 @@ void WSearchLineEdit::disableSearch() {
     setEnabled(false);
 }
 
-// slot
 void WSearchLineEdit::enableSearch(const QString& text) {
 #if ENABLE_TRACE_LOG
     kLogger.trace()
@@ -458,11 +455,6 @@ bool WSearchLineEdit::event(QEvent* pEvent) {
 }
 
 // slot
-bool WSearchLineEdit::clearBtnHasFocus() const {
-    return m_clearButton->hasFocus();
-}
-
-// slot
 void WSearchLineEdit::clearSearch() {
 #if ENABLE_TRACE_LOG
     kLogger.trace()
@@ -477,6 +469,15 @@ void WSearchLineEdit::clearSearch() {
     setText(kEmptySearch);
     // Refocus the edit field
     setFocus(Qt::OtherFocusReason);
+}
+
+// slot
+bool WSearchLineEdit::clearSearchIfClearButtonHasFocus() {
+    if (!m_clearButton->hasFocus()) {
+        return false;
+    }
+    clearSearch();
+    return true;
 }
 
 // slot
