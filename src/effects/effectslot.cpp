@@ -82,6 +82,13 @@ EffectSlot::EffectSlot(const QString& group,
             this,
             &EffectSlot::slotPrevEffect);
 
+    m_pControlLoadEffectAtListIndex = std::make_unique<ControlObject>(
+            ConfigKey(m_group, "load_effect"));
+    connect(m_pControlLoadEffectAtListIndex.get(),
+            &ControlObject::valueChanged,
+            this,
+            &EffectSlot::slotLoadEffectAtListIndex);
+
     // Ignoring no-ops is important since this is for +/- tickers.
     m_pControlEffectSelector = std::make_unique<ControlEncoder>(
             ConfigKey(m_group, "effect_selector"), false);
@@ -471,6 +478,11 @@ void EffectSlot::slotNextEffect(double v) {
     if (v > 0) {
         loadEffectWithDefaults(m_pVisibleEffects->next(m_pManifest));
     }
+}
+
+void EffectSlot::slotLoadEffectAtListIndex(double value) {
+    // ControlObjects are 1-indexed
+    loadEffectWithDefaults(m_pVisibleEffects->at(value - 1));
 }
 
 void EffectSlot::slotEffectSelector(double v) {
