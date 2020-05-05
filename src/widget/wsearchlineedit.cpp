@@ -70,7 +70,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
 
     setAcceptDrops(false);
 
-    //: This should be a noun.
+    //: Shown in the library search bar when it is empty.
     setPlaceholderText(tr("Search..."));
 
     m_clearButton->setCursor(Qt::ArrowCursor);
