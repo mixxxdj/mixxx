@@ -9,6 +9,7 @@
 #include "effects/defs.h"
 #include "effects/effectsmessenger.h"
 #include "effects/presets/effectpresetmanager.h"
+#include "effects/visibleeffectslist.h"
 #include "util/defs.h"
 #include "util/math.h"
 
@@ -19,6 +20,7 @@ EffectSlot::EffectSlot(const QString& group,
         EffectsManager* pEffectsManager,
         EffectsMessengerPointer pEffectsMessenger,
         const unsigned int iEffectnumber,
+        EffectChainSlot* pChainSlot,
         EngineEffectChain* pEngineEffectChain)
         : m_iEffectNumber(iEffectnumber),
           m_group(group),
@@ -26,6 +28,8 @@ EffectSlot::EffectSlot(const QString& group,
           m_pPresetManager(pEffectsManager->getEffectPresetManager()),
           m_pBackendManager(pEffectsManager->getBackendManager()),
           m_pMessenger(pEffectsMessenger),
+          m_pVisibleEffects(m_pEffectsManager->getVisibleEffectsList()),
+          m_pChainSlot(pChainSlot),
           m_pEngineEffectChain(pEngineEffectChain),
           m_pEngineEffect(nullptr) {
     VERIFY_OR_DEBUG_ASSERT(m_pEngineEffectChain != nullptr) {
@@ -114,7 +118,7 @@ EffectSlot::~EffectSlot() {
     delete m_pMetaknobSoftTakeover;
 }
 
-void EffectSlot::addToEngine(const QSet<ChannelHandleAndGroup>& activeInputChannels) {
+void EffectSlot::addToEngine() {
     VERIFY_OR_DEBUG_ASSERT(!isLoaded()) {
         return;
     }
@@ -126,7 +130,7 @@ void EffectSlot::addToEngine(const QSet<ChannelHandleAndGroup>& activeInputChann
     m_pEngineEffect = new EngineEffect(
             m_pManifest,
             m_pBackendManager,
-            activeInputChannels,
+            m_pChainSlot->getActiveChannels(),
             m_pEffectsManager->registeredInputChannels(),
             m_pEffectsManager->registeredOutputChannels());
 
@@ -233,32 +237,27 @@ EffectParameterSlotBasePointer EffectSlot::getEffectParameterSlot(
     return m_parameterSlots.value(parameterType).at(slotNumber);
 }
 
-void EffectSlot::loadEffectFromPreset(
-        const EffectPresetPointer pPreset,
-        const QSet<ChannelHandleAndGroup>& activeChannels) {
+void EffectSlot::loadEffectFromPreset(const EffectPresetPointer pPreset) {
     if (pPreset == nullptr) {
-        loadEffectInner(nullptr, nullptr, activeChannels, true);
+        loadEffectInner(nullptr, nullptr, true);
         return;
     }
     EffectManifestPointer pManifest = m_pBackendManager->getManifest(
             pPreset->id(), pPreset->backendType());
-    loadEffectInner(pManifest, pPreset, activeChannels, true);
+    loadEffectInner(pManifest, pPreset, true);
 }
 
-void EffectSlot::loadEffectWithDefaults(
-        const EffectManifestPointer pManifest,
-        const QSet<ChannelHandleAndGroup>& activeChannels) {
+void EffectSlot::loadEffectWithDefaults(const EffectManifestPointer pManifest) {
     if (pManifest == nullptr) {
-        loadEffectInner(nullptr, nullptr, activeChannels, false);
+        loadEffectInner(nullptr, nullptr, false);
         return;
     }
     EffectPresetPointer pPreset = m_pPresetManager->getDefaultPreset(pManifest);
-    loadEffectInner(pManifest, pPreset, activeChannels, false);
+    loadEffectInner(pManifest, pPreset, false);
 }
 
 void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
         EffectPresetPointer pEffectPreset,
-        const QSet<ChannelHandleAndGroup>& activeChannels,
         bool adoptMetaknobFromPreset) {
     if (kEffectDebugOutput) {
         if (pManifest != nullptr) {
@@ -277,7 +276,7 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
         return;
     }
 
-    addToEngine(activeChannels);
+    addToEngine();
 
     // Create EffectParameters. Every parameter listed in the manifest must have
     // an EffectParameter created, regardless of whether it is loaded in a slot.
@@ -442,23 +441,22 @@ void EffectSlot::showParameter(EffectParameterPointer pParameter) {
 
 void EffectSlot::slotPrevEffect(double v) {
     if (v > 0) {
-        slotEffectSelector(-1);
+        loadEffectWithDefaults(m_pVisibleEffects->previous(m_pManifest));
     }
 }
 
 void EffectSlot::slotNextEffect(double v) {
     if (v > 0) {
-        slotEffectSelector(1);
+        loadEffectWithDefaults(m_pVisibleEffects->next(m_pManifest));
     }
 }
 
 void EffectSlot::slotEffectSelector(double v) {
-    // TODO: reimplement
-    // if (v > 0) {
-    //     emit nextEffect(m_iChainNumber, m_iEffectNumber, m_pEffect);
-    // } else if (v < 0) {
-    //     emit prevEffect(m_iChainNumber, m_iEffectNumber, m_pEffect);
-    // }
+    if (v > 0) {
+        loadEffectWithDefaults(m_pVisibleEffects->next(m_pManifest));
+    } else if (v < 0) {
+        loadEffectWithDefaults(m_pVisibleEffects->previous(m_pManifest));
+    }
 }
 
 void EffectSlot::slotClear(double v) {
