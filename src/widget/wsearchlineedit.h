@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QColor>
 #include <QDomNode>
 #include <QEvent>
 #include <QLineEdit>
@@ -90,8 +89,6 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
 
     int m_frameWidth;
     int m_innerHeight;
-
-    QColor m_foregroundColor;
 
     QTimer m_debouncingTimer;
 

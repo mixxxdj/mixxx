@@ -17,7 +17,6 @@ namespace {
 
 const mixxx::Logger kLogger("WSearchLineEdit");
 
-const QColor kDefaultForegroundColor = QColor(0, 0, 0);
 const QColor kDefaultBackgroundColor = QColor(255, 255, 255);
 
 const QString kEmptySearch = QStringLiteral("");
@@ -78,7 +77,6 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     : QLineEdit(pParent),
       WBaseWidget(this),
       m_clearButton(new QToolButton(this)),
-      m_foregroundColor(kDefaultForegroundColor),
       m_state(State::Inactive) {
     DEBUG_ASSERT(kEmptySearch.isEmpty());
     DEBUG_ASSERT(!kEmptySearch.isNull());
@@ -158,36 +156,36 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
             << backgroundColor;
 
     const auto defaultForegroundColor =
-            QColor(
+            QColor::fromRgb(
                     255 - backgroundColor.red(),
                     255 - backgroundColor.green(),
                     255 - backgroundColor.blue());
-    m_foregroundColor = defaultForegroundColor;
+    auto foregroundColor = defaultForegroundColor;
     QString fgColorName;
     if (context.hasNodeSelectString(node, "FgColor", &fgColorName)) {
         auto namedColor = QColor(fgColorName);
         if (namedColor.isValid()) {
-            m_foregroundColor = namedColor;
+            foregroundColor = namedColor;
         } else {
             kLogger.warning()
                     << "Failed to parse foreground color"
                     << fgColorName;
         }
     }
-    m_foregroundColor = WSkinColor::getCorrectColor(m_foregroundColor);
-    VERIFY_OR_DEBUG_ASSERT(m_foregroundColor != backgroundColor) {
+    foregroundColor = WSkinColor::getCorrectColor(foregroundColor);
+    VERIFY_OR_DEBUG_ASSERT(foregroundColor != backgroundColor) {
         kLogger.warning()
                 << "Invisible foreground color - using default color as fallback";
-        m_foregroundColor = defaultForegroundColor;
+        foregroundColor = defaultForegroundColor;
     }
     kLogger.debug()
             << "Foreground color:"
-            << m_foregroundColor;
+            << foregroundColor;
 
     QPalette pal = palette();
-    DEBUG_ASSERT(backgroundColor != m_foregroundColor);
+    DEBUG_ASSERT(backgroundColor != foregroundColor);
     pal.setBrush(backgroundRole(), backgroundColor);
-    pal.setBrush(foregroundRole(), m_foregroundColor);
+    pal.setBrush(foregroundRole(), foregroundColor);
     setPalette(pal);
 
     m_clearButton->setToolTip(tr("Clear input") + "\n" +
