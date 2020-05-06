@@ -510,7 +510,7 @@ void CueControl::loadCuesFromTrack() {
             break;
         }
         default:
-            continue;
+            break;
         }
     }
 
