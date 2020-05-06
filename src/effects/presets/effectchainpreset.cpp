@@ -46,6 +46,13 @@ EffectChainPreset::EffectChainPreset(const EffectChainSlot* chain) {
     }
 }
 
+EffectChainPreset::EffectChainPreset(EffectManifestPointer pManifest) {
+    m_name = pManifest->displayName();
+    m_mixMode = EffectChainMixMode::DrySlashWet;
+    m_dSuper = pManifest->metaknobDefault();
+    m_effectPresets.append(EffectPresetPointer(new EffectPreset(pManifest)));
+}
+
 EffectChainPreset::EffectChainPreset(EffectPresetPointer pEffectPreset) {
     m_name = pEffectPreset->id();
     m_mixMode = EffectChainMixMode::DrySlashWet;
