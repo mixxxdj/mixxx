@@ -23,8 +23,6 @@ const QString kEmptySearch = QStringLiteral("");
 
 const QString kDisabledText = QStringLiteral("- - -");
 
-const QString kClearButtonName = QStringLiteral("SearchClearButton");
-
 inline QString clearButtonStyleSheet(int pxPaddingRight) {
     DEBUG_ASSERT(pxPaddingRight >= 0);
     return QString(
@@ -74,7 +72,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     setPlaceholderText(tr("Search..."));
 
     m_clearButton->setCursor(Qt::ArrowCursor);
-    m_clearButton->setObjectName(kClearButtonName);
+    m_clearButton->setObjectName(QStringLiteral("SearchClearButton"));
     // Assume the qss border is at least 1px wide
     m_frameWidth = 1;
     m_clearButton->hide();
