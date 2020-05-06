@@ -105,12 +105,11 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(
 
     } else */
     if (version == BEAT_MAP_VERSION) {
-        DEBUG_ASSERT(version == BEAT_MAP_VERSION);
         mixxx::Beats* pBeats = new mixxx::Beats(track.get(), beats, iSampleRate);
         pBeats->setSubVersion(subVersion);
         return mixxx::BeatsPointer(pBeats, &BeatFactory::deleteBeats);
     } else {
-        qDebug() << "ERROR: Could not determine what type of beatgrid to create.";
+        DEBUG_ASSERT("Could not determine what type of beatgrid to create.");
         return mixxx::BeatsPointer();
     }
 }
