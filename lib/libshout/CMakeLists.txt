@@ -3,11 +3,14 @@ project(shout_mixxx C)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DHAVE_CONFIG_H -Wall -ffast-math -pthread -g -O2")
  
+find_package(OpenSSL)
+
 include_directories(
   .
   src
   include
   src/common
+  "${OPENSSL_INCLUDE_DIR}"
 )
 
 add_library(shout_mixxx STATIC
