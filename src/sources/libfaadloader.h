@@ -67,15 +67,15 @@ class LibFaadLoader {
 
     static LibFaadLoader* Instance();
 
-    bool isLoaded();
+    bool isLoaded() const;
 
-    Handle Open();
+    Handle Open() const;
 
     Configuration* GetCurrentConfiguration(
-            Handle hDecoder);
+            Handle hDecoder) const;
 
     unsigned char SetConfiguration(
-            Handle hDecoder, Configuration* config);
+            Handle hDecoder, Configuration* config) const;
 
     // Init the library using a DecoderSpecificInfo
     char Init2(
@@ -83,11 +83,11 @@ class LibFaadLoader {
             unsigned char* pBuffer,
             unsigned long SizeOfDecoderSpecificInfo,
             unsigned long* pSamplerate,
-            unsigned char* pChannels);
+            unsigned char* pChannels) const;
 
-    void Close(Handle hDecoder);
+    void Close(Handle hDecoder) const;
 
-    void PostSeekReset(Handle hDecoder, long frame);
+    void PostSeekReset(Handle hDecoder, long frame) const;
 
     void* Decode2(
             Handle hDecoder,
@@ -95,9 +95,9 @@ class LibFaadLoader {
             unsigned char* pBuffer,
             unsigned long bufferSize,
             void** ppSampleBuffer,
-            unsigned long sampleBufferSize);
+            unsigned long sampleBufferSize) const;
 
-    char* GetErrorMessage(unsigned char errcode);
+    char* GetErrorMessage(unsigned char errcode) const;
 
     int GetVersion(
             char** faad_id_string,

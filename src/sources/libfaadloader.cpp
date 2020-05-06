@@ -106,14 +106,11 @@ LibFaadLoader::LibFaadLoader()
     kLogger.info() << "Successfully loaded library" << m_pLibrary->fileName();
 };
 
-bool LibFaadLoader::isLoaded() {
-    if (m_pLibrary) {
-        return m_pLibrary->isLoaded();
-    }
-    return false;
+bool LibFaadLoader::isLoaded() const {
+    return m_pLibrary && m_pLibrary->isLoaded();
 }
 
-LibFaadLoader::Handle LibFaadLoader::Open() {
+LibFaadLoader::Handle LibFaadLoader::Open() const {
     if (m_neAACDecOpen) {
         return m_neAACDecOpen();
     }
@@ -121,7 +118,7 @@ LibFaadLoader::Handle LibFaadLoader::Open() {
 }
 
 LibFaadLoader::Configuration*
-LibFaadLoader::GetCurrentConfiguration(Handle hDecoder) {
+LibFaadLoader::GetCurrentConfiguration(Handle hDecoder) const {
     if (m_neAACDecGetCurrentConfiguration) {
         return m_neAACDecGetCurrentConfiguration(hDecoder);
     }
@@ -129,7 +126,7 @@ LibFaadLoader::GetCurrentConfiguration(Handle hDecoder) {
 }
 
 unsigned char LibFaadLoader::SetConfiguration(
-        Handle hDecoder, Configuration* pConfig) {
+        Handle hDecoder, Configuration* pConfig) const {
     if (m_neAACDecSetConfiguration) {
         return m_neAACDecSetConfiguration(hDecoder, pConfig);
     }
@@ -145,7 +142,7 @@ char LibFaadLoader::Init2(
         unsigned char* pBuffer,
         unsigned long SizeOfDecoderSpecificInfo,
         unsigned long* pSamplerate,
-        unsigned char* pChannels) {
+        unsigned char* pChannels) const {
     if (m_neAACDecInit2) {
         return m_neAACDecInit2(hDecoder,
                 pBuffer,
@@ -159,13 +156,13 @@ char LibFaadLoader::Init2(
     return -1;
 }
 
-void LibFaadLoader::Close(Handle hDecoder) {
+void LibFaadLoader::Close(Handle hDecoder) const {
     if (m_neAACDecClose) {
         m_neAACDecClose(hDecoder);
     }
 }
 
-void LibFaadLoader::PostSeekReset(Handle hDecoder, long frame) {
+void LibFaadLoader::PostSeekReset(Handle hDecoder, long frame) const {
     if (m_neAACDecPostSeekReset) {
         m_neAACDecPostSeekReset(hDecoder, frame);
     }
@@ -177,7 +174,7 @@ void* LibFaadLoader::Decode2(
         unsigned char* pBuffer,
         unsigned long bufferSize,
         void** ppSampleBuffer,
-        unsigned long sampleBufferSize) {
+        unsigned long sampleBufferSize) const {
     if (m_neAACDecDecode2) {
         return m_neAACDecDecode2(
                 hDecoder,
@@ -190,7 +187,7 @@ void* LibFaadLoader::Decode2(
     return nullptr;
 }
 
-char* LibFaadLoader::GetErrorMessage(unsigned char errcode) {
+char* LibFaadLoader::GetErrorMessage(unsigned char errcode) const {
     if (m_neAACDecGetErrorMessage) {
         return m_neAACDecGetErrorMessage(errcode);
     }
