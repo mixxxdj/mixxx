@@ -33,14 +33,14 @@
             <TooltipId>EffectSlot_enabled</TooltipId>
             <NumberStates>2</NumberStates>
             <State>
-            <Number>0</Number>
-            <Pressed>skin:/btn/btn_hotcue_<Variable name="effectnum"/>_down.png</Pressed>
-            <Unpressed>skin:/btn/btn_hotcue_<Variable name="effectnum"/>.png</Unpressed>
+              <Number>0</Number>
+              <Pressed>skin:/btn/btn_beatloop_<Variable name="effectnum"/>_down.png</Pressed>
+              <Unpressed>skin:/btn/btn_beatloop_<Variable name="effectnum"/>.png</Unpressed>
             </State>
             <State>
               <Number>1</Number>
-              <Pressed>skin:/btn/btn_hotcue_<Variable name="effectnum"/>_overdown.png</Pressed>
-              <Unpressed>skin:/btn/btn_hotcue_<Variable name="effectnum"/>_over.png</Unpressed>
+              <Pressed>skin:/btn/btn_beatloop_<Variable name="effectnum"/>_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_beatloop_<Variable name="effectnum"/>_over.png</Unpressed>
             </State>
             <Connection>
               <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],enabled</ConfigKey>
@@ -85,6 +85,3 @@
     </Children>
   </WidgetGroup>
 </Template>
-
-
-

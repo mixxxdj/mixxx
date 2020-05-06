@@ -602,7 +602,7 @@ DJ505.Deck = function(deckNumbers, offset) {
         outKey: "sync_mode",
         flickerState: false,
         output: function(value, _group, _control) {
-            if (value === 2) {
+            if (value === 3) {
                 value = this.flickerState;
             }
             midi.sendShortMsg(this.midi[0], value ? 0x02 : 0x03, this.on);

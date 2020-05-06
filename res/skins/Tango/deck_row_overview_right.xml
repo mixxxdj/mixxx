@@ -18,7 +18,7 @@ Variables:
 <Template>
   <WidgetGroup>
     <ObjectName>Spacer0f</ObjectName>
-    <Layout>stacked</Layout>
+    <Layout>horizontal</Layout>
     <SizePolicy>me,f</SizePolicy>
     <Children>
       <WidgetGroup>

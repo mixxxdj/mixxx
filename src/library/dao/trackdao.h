@@ -73,21 +73,26 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     void saveTrack(Track* pTrack) const;
 
   signals:
+    // Forwarded from Track object
     void trackDirty(TrackId trackId) const;
     void trackClean(TrackId trackId) const;
-    void trackChanged(TrackId trackId);
-    void tracksChanged(QSet<TrackId> trackIds);
-    void tracksAdded(QSet<TrackId> trackIds);
-    void tracksRemoved(QSet<TrackId> trackIds);
-    void dbTrackAdded(TrackPointer pTrack);
+
+    // Multiple tracks
+    void tracksAdded(QSet<TrackId> trackIds) const;
+    void tracksChanged(QSet<TrackId> trackIds) const;
+    void tracksRemoved(QSet<TrackId> trackIds) const;
+
     void progressVerifyTracksOutside(QString path);
     void progressCoverArt(QString file);
     void forceModelUpdate();
 
   public slots:
-    void databaseTrackAdded(TrackPointer pTrack);
-    void databaseTracksChanged(QSet<TrackId> changedTracks);
-    void databaseTracksRelocated(QList<RelocatedTrack> relocatedTracks);
+    // Slots to inform the TrackDAO about changes that
+    // have been applied directly to the database.
+    void slotDatabaseTracksChanged(
+            QSet<TrackId> changedTrackIds);
+    void slotDatabaseTracksRelocated(
+            QList<RelocatedTrack> relocatedTracks);
 
   private:
     friend class LibraryScanner;

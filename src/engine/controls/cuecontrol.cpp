@@ -369,10 +369,6 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
             this, &CueControl::trackCuesUpdated,
             Qt::DirectConnection);
 
-    connect(m_pLoadedTrack.get(), &Track::beatsUpdated,
-            this, &CueControl::trackBeatsUpdated,
-            Qt::DirectConnection);
-
     CuePointer pMainCue;
     for (const CuePointer& pCue : m_pLoadedTrack->getCuePoints()) {
         if (pCue->getType() == mixxx::CueType::MainCue) {
@@ -583,7 +579,8 @@ void CueControl::trackCuesUpdated() {
     loadCuesFromTrack();
 }
 
-void CueControl::trackBeatsUpdated() {
+void CueControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
+    Q_UNUSED(pBeats);
     loadCuesFromTrack();
 }
 
@@ -1685,7 +1682,7 @@ double CueControl::quantizeCuePoint(double cuePos) {
         return cuePos;
     }
 
-    BeatsPointer pBeats = m_pLoadedTrack->getBeats();
+    mixxx::BeatsPointer pBeats = m_pLoadedTrack->getBeats();
     if (!pBeats) {
         return cuePos;
     }

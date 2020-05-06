@@ -151,32 +151,50 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
     // left and right channel respectively.
     static constexpr audio::SampleLayout kSampleLayout = mixxx::kEngineSampleLayout;
 
+    /// Defines how thoroughly the stream properties should be verified
+    /// when opening an audio stream.
     enum class OpenMode {
-        // In Strict mode the opening operation should be aborted
-        // as soon as any inconsistencies are detected.
+        /// In Strict mode the opening operation should be aborted
+        /// as soon as any inconsistencies of the stream properties
+        /// are detected when setting up the decoding.
         Strict,
-        // Opening in Permissive mode is used only after opening
-        // in Strict mode has been aborted by all available
-        // SoundSource implementations.
+
+        /// Opening in Permissive mode is used only after opening
+        /// in Strict mode has been aborted by all available
+        /// SoundSource implementations.
+        ///
+        /// Example: Assume safe default values if mandatory stream
+        /// properties could not be determined when setting up the
+        /// decoding.
         Permissive,
     };
 
+    /// Result of opening an audio stream.
     enum class OpenResult {
+        /// The file has been opened successfully and should be readable.
         Succeeded,
-        // If a SoundSource is not able to open a file because of
-        // internal errors of if the format of the content is not
-        // supported it should return Aborted. This gives SoundSources
-        // with a lower priority the chance to open the same file.
-        // Example: A SoundSourceProvider has been registered for
-        // files with a certain extension, but the corresponding
-        // SoundSource does only support a subset of all possible
-        // data formats that might be stored in files with this
-        // extension.
+
+        /// If a SoundSource is not able to open a file because of
+        /// internal errors of if the format of the content is not
+        /// supported it should return Aborted.
+        ///
+        /// Returing this error result gives other decoders with a
+        /// lower priority the chance to open the same file.
+        /// Example: A SoundSourceProvider has been registered for
+        /// files with a certain extension, but the corresponding
+        /// SoundSource does only support a subset of all possible
+        /// data formats that might be stored in files with this
+        /// extension.
+
         Aborted,
-        // If a SoundSource return Failed while opening a file
-        // the entire operation will fail immediately. No other
-        // sources with lower priority will be given the chance
-        // to open the same file.
+        /// If a SoundSource return Failed while opening a file the
+        /// file itself is supposed to be corrupt.
+        ///
+        /// If this happens during OpenMode::Strict then other decoders
+        /// with a lower priority are still given a chance to try
+        /// opening the file. In OpenMode::Permissive the first
+        /// SoundSource that returns Failed will declare this file
+        /// corrupt.
         Failed,
     };
 
@@ -286,10 +304,11 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
         return getSignalInfo().frames2secs(frameLength());
     }
 
-    // Verifies various properties to ensure that the audio data is
-    // actually readable. Warning messages are logged for properties
-    // with invalid values for diagnostic purposes.
-    bool verifyReadable() const;
+    /// Verifies various properties to ensure that the audio data is
+    /// actually readable. Warning messages are logged for properties
+    /// with invalid values for diagnostic purposes. Also performs a
+    /// basic read test.
+    bool verifyReadable();
 
     ReadableSampleFrames readSampleFrames(
             WritableSampleFrames sampleFrames);

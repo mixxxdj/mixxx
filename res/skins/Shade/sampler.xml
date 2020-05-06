@@ -118,8 +118,8 @@
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Pressed>skin:/btn/btn_play_sampler_overdown.png</Pressed>
-                      <Unpressed>skin:/btn/btn_play_sampler_over.png</Unpressed>
+                      <Pressed>skin:/btn/btn_pause_sampler_overdown.png</Pressed>
+                      <Unpressed>skin:/btn/btn_pause_sampler_over.png</Unpressed>
                     </State>
                     <Pos>3,7</Pos>
                     <Connection>
@@ -131,7 +131,7 @@
                       <ButtonState>RightButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,play</ConfigKey>
                     </Connection>
                   </PushButton>
                 </Children>

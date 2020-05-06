@@ -164,7 +164,7 @@ Library::Library(
     // TODO(XXX) Rekordbox feature added persistently as the only way to enable it to
     // dynamically appear/disappear when correctly prepared removable devices
     // are mounted/unmounted would be to have some form of timed thread to check
-    // periodically. Not ideal perfomance wise.
+    // periodically. Not ideal performance wise.
     if (m_pConfig->getValue(ConfigKey(kConfigGroup, "ShowRekordboxLibrary"), true)) {
         addFeature(new RekordboxFeature(this, m_pConfig));
     }
@@ -236,16 +236,17 @@ void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
     connect(this,
             &Library::disableSearch,
             pSearchboxWidget,
-            &WSearchLineEdit::disableSearch);
+            &WSearchLineEdit::slotDisableSearch);
     connect(this,
             &Library::restoreSearch,
             pSearchboxWidget,
-            &WSearchLineEdit::restoreSearch);
+            &WSearchLineEdit::slotRestoreSearch);
     connect(this,
             &Library::setTrackTableFont,
             pSearchboxWidget,
             &WSearchLineEdit::slotSetFont);
     emit setTrackTableFont(m_trackTableFont);
+    m_pLibraryControl->bindSearchboxWidget(pSearchboxWidget);
 }
 
 void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {

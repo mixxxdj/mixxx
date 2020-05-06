@@ -427,7 +427,7 @@ void LibraryScanner::cancelAndQuit() {
     changeScannerState(CANCELING);
     cancel();
     // Quit the event loop gracefully and stay in CANCELING state until all
-    // pendig signals are processed
+    // pending signals are processed
     quit();
     wait();
     changeScannerState(IDLE);

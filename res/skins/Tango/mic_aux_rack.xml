@@ -83,34 +83,14 @@ Description:
 
                   <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 
-                  <WidgetGroup><!-- Duck strength, hidden when Duck is OFF -->
-                    <Layout>stacked</Layout>
-                    <SizePolicy>max,min</SizePolicy>
-                    <Children>
-                      <!-- index 0 due to bug -->
-                      <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
-                      <WidgetGroup><!-- translucent cover when ducking is off -->
-                        <ObjectName>GuiCover</ObjectName>
-                        <Layout>vertical</Layout>
-                        <SizePolicy>min,min</SizePolicy>
-                        <Connection>
-                          <ConfigKey persist="true">[Master],talkoverDucking</ConfigKey>
-                          <BindProperty>visible</BindProperty>
-                          <Transform><Not/></Transform>
-                        </Connection>
-                      </WidgetGroup>
-
-                      <Template src="skin:knob_textless.xml">
-                        <SetVariable name="TooltipId">talkover_duck_strength</SetVariable>
-                        <SetVariable name="ObjectName">MicAuxKnob</SetVariable>
-                        <SetVariable name="Size">30f,30f</SetVariable>
-                        <SetVariable name="group">[Master]</SetVariable>
-                        <SetVariable name="ConfigKey">duckStrength</SetVariable>
-                        <SetVariable name="Color">blue</SetVariable>
-                      </Template>
-                    </Children>
-                  </WidgetGroup><!-- /Duck strength, hidden when Duck is OFF -->
+                  <Template src="skin:knob_textless.xml">
+                    <SetVariable name="TooltipId">talkover_duck_strength</SetVariable>
+                    <SetVariable name="ObjectName">MicAuxKnob</SetVariable>
+                    <SetVariable name="Size">30f,30f</SetVariable>
+                    <SetVariable name="group">[Master]</SetVariable>
+                    <SetVariable name="ConfigKey">duckStrength</SetVariable>
+                    <SetVariable name="Color">blue</SetVariable>
+                  </Template>
 
                   <WidgetGroup><Size>3f,0min</Size></WidgetGroup>
 
