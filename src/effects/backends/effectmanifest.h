@@ -24,12 +24,12 @@
 class EffectManifest {
   public:
     EffectManifest()
-        : m_backendType(EffectBackendType::Unknown),
-          m_isMixingEQ(false),
-          m_isMasterEQ(false),
-          m_effectRampsFromDry(false),
-          m_bAddDryToWet(false),
-          m_metaknobDefault(0.5) {
+            : m_backendType(EffectBackendType::Unknown),
+              m_isMixingEQ(false),
+              m_isMasterEQ(false),
+              m_effectRampsFromDry(false),
+              m_bAddDryToWet(false),
+              m_metaknobDefault(0.0) {
     }
 
     /// Hack to store unique IDs in QComboBox models

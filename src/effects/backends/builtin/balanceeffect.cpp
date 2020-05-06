@@ -23,6 +23,7 @@ EffectManifestPointer BalanceEffect::getManifest() {
     pManifest->setDescription(QObject::tr(
         "Adjust the left/right balance and stereo width"));
     pManifest->setEffectRampsFromDry(true);
+    pManifest->setMetaknobDefault(0.5);
 
     EffectManifestParameterPointer balance = pManifest->addParameter();
     balance->setId("balance");

@@ -22,6 +22,7 @@ EffectManifestPointer FilterEffect::getManifest() {
     pManifest->setDescription(QObject::tr(
         "Allows only high or low frequencies to play."));
     pManifest->setEffectRampsFromDry(true);
+    pManifest->setMetaknobDefault(0.5);
 
     EffectManifestParameterPointer lpf = pManifest->addParameter();
     lpf->setId("lpf");

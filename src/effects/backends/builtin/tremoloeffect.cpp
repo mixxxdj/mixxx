@@ -20,7 +20,6 @@ EffectManifestPointer TremoloEffect::getManifest() {
     pManifest->setVersion("1.0");
     pManifest->setDescription(QObject::tr(
         "Cycles the volume up and down"));
-    pManifest->setMetaknobDefault(1.0);
 
     EffectManifestParameterPointer depth = pManifest->addParameter();
     depth->setId("depth");
