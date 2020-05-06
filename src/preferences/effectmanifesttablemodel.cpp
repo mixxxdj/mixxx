@@ -129,9 +129,7 @@ bool EffectManifestTableModel::dropMimeData(const QMimeData* data,
 }
 
 QStringList EffectManifestTableModel::mimeTypes() const {
-    QStringList list;
-    list << QLatin1String("text/plain");
-    return list;
+    return {QLatin1String("text/plain")};
 }
 
 Qt::DropActions EffectManifestTableModel::supportedDropActions() const {
