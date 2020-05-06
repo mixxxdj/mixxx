@@ -135,6 +135,11 @@ EffectChainPresetPointer QuickEffectChainSlot::presetAtIndex(int index) const {
     return m_pChainPresetManager->quickEffectPresetAtIndex(index);
 }
 
+void QuickEffectChainSlot::loadChainPreset(EffectChainPresetPointer pPreset) {
+    EffectChainSlot::loadChainPreset(pPreset);
+    setSuperParameter(pPreset->superKnob(), true);
+}
+
 EqualizerEffectChainSlot::EqualizerEffectChainSlot(const QString& group,
         EffectsManager* pEffectsManager,
         EffectsMessengerPointer pEffectsMessenger)

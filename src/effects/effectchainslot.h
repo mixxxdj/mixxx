@@ -96,7 +96,7 @@ class EffectChainSlot : public QObject {
         return m_effectSlots;
     }
 
-    void loadChainPreset(EffectChainPresetPointer pPreset);
+    virtual void loadChainPreset(EffectChainPresetPointer pPreset);
 
   public slots:
     void slotControlClear(double value);
