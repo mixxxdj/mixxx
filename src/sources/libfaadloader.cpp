@@ -21,7 +21,8 @@ LibFaadLoader::LibFaadLoader()
           m_neAACDecClose(nullptr),
           m_neAACDecPostSeekReset(nullptr),
           m_neAACDecDecode2(nullptr),
-          m_neAACDecGetErrorMessage(nullptr) {
+          m_neAACDecGetErrorMessage(nullptr),
+          m_neAACDecGetVersion(nullptr) {
     // Load shared library
     QStringList libnames;
 #ifdef __WINDOWS__
@@ -68,6 +69,8 @@ LibFaadLoader::LibFaadLoader()
             m_pLibrary->resolve("NeAACDecDecode2"));
     m_neAACDecGetErrorMessage = reinterpret_cast<NeAACDecGetErrorMessage_t>(
             m_pLibrary->resolve("NeAACDecGetErrorMessage"));
+    m_neAACDecGetVersion = reinterpret_cast<NeAACDecGetVersion_t>(
+            m_pLibrary->resolve("NeAACDecGetVersion"));
 
     if (!m_neAACDecOpen ||
             !m_neAACDecGetCurrentConfiguration ||
@@ -76,15 +79,17 @@ LibFaadLoader::LibFaadLoader()
             !m_neAACDecClose ||
             !m_neAACDecPostSeekReset ||
             !m_neAACDecDecode2 ||
-            !m_neAACDecGetErrorMessage) {
-        kLogger.debug() << "NeAACDecOpen:" << m_neAACDecOpen;
-        kLogger.debug() << "NeAACDecGetCurrentConfiguration:" << m_neAACDecGetCurrentConfiguration;
-        kLogger.debug() << "NeAACDecSetConfiguration:" << m_neAACDecSetConfiguration;
-        kLogger.debug() << "NeAACDecInit2:" << m_neAACDecInit2;
-        kLogger.debug() << "NeAACDecClose:" << m_neAACDecClose;
-        kLogger.debug() << "NeAACDecPostSeekReset:" << m_neAACDecPostSeekReset;
-        kLogger.debug() << "NeAACDecDecode2:" << m_neAACDecDecode2;
-        kLogger.debug() << "NeAACDecGetErrorMessage:" << m_neAACDecGetErrorMessage;
+            !m_neAACDecGetErrorMessage ||
+            !m_neAACDecGetVersion) {
+        kLogger.warning() << "NeAACDecOpen:" << m_neAACDecOpen;
+        kLogger.warning() << "NeAACDecGetCurrentConfiguration:" << m_neAACDecGetCurrentConfiguration;
+        kLogger.warning() << "NeAACDecSetConfiguration:" << m_neAACDecSetConfiguration;
+        kLogger.warning() << "NeAACDecInit2:" << m_neAACDecInit2;
+        kLogger.warning() << "NeAACDecClose:" << m_neAACDecClose;
+        kLogger.warning() << "NeAACDecPostSeekReset:" << m_neAACDecPostSeekReset;
+        kLogger.warning() << "NeAACDecDecode2:" << m_neAACDecDecode2;
+        kLogger.warning() << "NeAACDecGetErrorMessage:" << m_neAACDecGetErrorMessage;
+        kLogger.warning() << "NeAACDecGetVersion:" << m_neAACDecGetVersion;
         m_neAACDecOpen = nullptr;
         m_neAACDecGetCurrentConfiguration = nullptr;
         m_neAACDecSetConfiguration = nullptr;
@@ -93,6 +98,7 @@ LibFaadLoader::LibFaadLoader()
         m_neAACDecPostSeekReset = nullptr;
         m_neAACDecDecode2 = nullptr;
         m_neAACDecGetErrorMessage = nullptr;
+        m_neAACDecGetVersion = nullptr;
         m_pLibrary->unload();
         m_pLibrary.reset();
         return;
@@ -189,4 +195,16 @@ char* LibFaadLoader::GetErrorMessage(unsigned char errcode) {
         return m_neAACDecGetErrorMessage(errcode);
     }
     return nullptr;
+}
+
+int LibFaadLoader::GetVersion(
+        char** faad_id_string,
+        char** faad_copyright_string) const {
+    if (m_neAACDecGetVersion) {
+        return m_neAACDecGetVersion(faad_id_string, faad_copyright_string);
+    }
+    // Return values:
+    // < 0 – Error
+    // 0 - OK
+    return -1;
 }

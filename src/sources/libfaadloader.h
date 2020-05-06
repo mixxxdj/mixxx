@@ -99,6 +99,10 @@ class LibFaadLoader {
 
     char* GetErrorMessage(unsigned char errcode);
 
+    int GetVersion(
+            char** faad_id_string,
+            char** faad_copyright_string) const;
+
   private:
     LibFaadLoader();
 
@@ -134,4 +138,9 @@ class LibFaadLoader {
 
     typedef char* (*NeAACDecGetErrorMessage_t)(unsigned char);
     NeAACDecGetErrorMessage_t m_neAACDecGetErrorMessage;
+
+    typedef int (*NeAACDecGetVersion_t)(
+            char** faad_id_string,
+            char** faad_copyright_string);
+    NeAACDecGetVersion_t m_neAACDecGetVersion;
 };
