@@ -21,6 +21,7 @@ class WEffectChainPresetSelector : public QComboBox, public WBaseWidget {
     void slotEffectChainNameChanged(const QString& name);
 
   private:
+    bool m_bQuickEffectChain;
     EffectChainPresetManagerPointer m_pChainPresetManager;
     EffectsManager* m_pEffectsManager;
     EffectChainSlotPointer m_pChainSlot;

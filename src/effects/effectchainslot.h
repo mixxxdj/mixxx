@@ -115,6 +115,12 @@ class EffectChainSlot : public QObject {
     void enableForInputChannel(const ChannelHandleAndGroup& handle_group);
     void disableForInputChannel(const ChannelHandleAndGroup& handle_group);
 
+    // Protected so QuickEffectChainSlot can use the separate QuickEffect
+    // chain preset list.
+    QString m_presetName;
+    virtual int presetIndex() const;
+    virtual EffectChainPresetPointer presetAtIndex(int index) const;
+
     EffectsManager* m_pEffectsManager;
     EffectChainPresetManagerPointer m_pChainPresetManager;
     EffectsMessengerPointer m_pMessenger;
@@ -162,7 +168,6 @@ class EffectChainSlot : public QObject {
     std::unique_ptr<ControlPushButton> m_pControlChainShowParameters;
     std::unique_ptr<ControlPushButton> m_pControlChainFocusedEffect;
 
-    QString m_presetName;
     SignalProcessingStage m_signalProcessingStage;
     QHash<ChannelHandleAndGroup, std::shared_ptr<ControlPushButton>> m_channelEnableButtons;
     QSet<ChannelHandleAndGroup> m_enabledInputChannels;

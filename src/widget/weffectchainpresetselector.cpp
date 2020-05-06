@@ -9,6 +9,7 @@ WEffectChainPresetSelector::WEffectChainPresetSelector(
         QWidget* pParent, EffectsManager* pEffectsManager)
         : QComboBox(pParent),
           WBaseWidget(this),
+          m_bQuickEffectChain(false),
           m_pChainPresetManager(pEffectsManager->getChainPresetManager()),
           m_pEffectsManager(pEffectsManager) {
     // Prevent this widget from getting focused to avoid
@@ -26,8 +27,14 @@ void WEffectChainPresetSelector::setup(const QDomNode& node, const SkinContext& 
         return;
     }
 
+    auto chainPresetListUpdateSignal = &EffectChainPresetManager::effectChainPresetListUpdated;
+    auto pQuickEffectChainSlot = dynamic_cast<QuickEffectChainSlot*>(m_pChainSlot.get());
+    if (pQuickEffectChainSlot) {
+        chainPresetListUpdateSignal = &EffectChainPresetManager::quickEffectChainPresetListUpdated;
+        m_bQuickEffectChain = true;
+    }
     connect(m_pChainPresetManager.get(),
-            &EffectChainPresetManager::effectChainPresetListUpdated,
+            chainPresetListUpdateSignal,
             this,
             &WEffectChainPresetSelector::populate);
     connect(m_pChainSlot.data(),
@@ -48,8 +55,13 @@ void WEffectChainPresetSelector::populate() {
 
     QFontMetrics metrics(font());
 
-    for (const auto& pChainPreset :
-            m_pEffectsManager->getChainPresetManager()->getPresetsSorted()) {
+    QList<EffectChainPresetPointer> presetList;
+    if (m_bQuickEffectChain) {
+        presetList = m_pEffectsManager->getChainPresetManager()->getQuickEffectPresetsSorted();
+    } else {
+        presetList = m_pEffectsManager->getChainPresetManager()->getPresetsSorted();
+    }
+    for (const auto& pChainPreset : presetList) {
         QString elidedDisplayName = metrics.elidedText(pChainPreset->name(),
                 Qt::ElideMiddle,
                 width() - 2);

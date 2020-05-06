@@ -44,6 +44,9 @@ class QuickEffectChainSlot : public PerGroupEffectChainSlot {
     static QString formatEffectChainSlotGroup(const QString& group);
     static QString formatEffectSlotGroup(const QString& group,
                                          const int iEffectSlotNumber = 0);
+
+    int presetIndex() const override;
+    EffectChainPresetPointer presetAtIndex(int index) const override;
 };
 
 class EqualizerEffectChainSlot : public PerGroupEffectChainSlot {

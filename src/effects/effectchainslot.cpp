@@ -205,7 +205,7 @@ void EffectChainSlot::loadChainPreset(EffectChainPresetPointer pPreset) {
     m_pControlChainSuperParameter->setDefaultValue(pPreset->superKnob());
 
     setPresetName(pPreset->name());
-    m_pControlLoadedPreset->setAndConfirm(m_pChainPresetManager->presetIndex(pPreset));
+    m_pControlLoadedPreset->setAndConfirm(presetIndex());
 }
 
 void EffectChainSlot::sendParameterUpdate() {
@@ -306,31 +306,29 @@ void EffectChainSlot::slotControlChainSuperParameter(double v, bool force) {
 }
 
 void EffectChainSlot::slotControlChainSelector(double value) {
-    int presetIndex = m_pChainPresetManager->presetIndex(m_presetName);
+    int index = presetIndex();
     if (value > 0) {
-        presetIndex++;
+        index++;
     } else {
-        presetIndex--;
+        index--;
     }
-    loadChainPreset(m_pChainPresetManager->presetAtIndex(presetIndex));
+    loadChainPreset(presetAtIndex(index));
 }
 
 void EffectChainSlot::slotControlLoadChainPreset(double value) {
     // subtract 1 to make the ControlObject 1-indexed like other ControlObjects
-    loadChainPreset(m_pChainPresetManager->presetAtIndex(value - 1));
+    loadChainPreset(presetAtIndex(value - 1));
 }
 
 void EffectChainSlot::slotControlChainNextPreset(double value) {
     if (value > 0) {
-        int presetIndex = m_pChainPresetManager->presetIndex(m_presetName);
-        loadChainPreset(m_pChainPresetManager->presetAtIndex(presetIndex + 1));
+        loadChainPreset(presetAtIndex(presetIndex() + 1));
     }
 }
 
 void EffectChainSlot::slotControlChainPrevPreset(double value) {
     if (value > 0) {
-        int presetIndex = m_pChainPresetManager->presetIndex(m_presetName);
-        loadChainPreset(m_pChainPresetManager->presetAtIndex(presetIndex - 1));
+        loadChainPreset(m_pChainPresetManager->presetAtIndex(presetIndex() - 1));
     }
 }
 
@@ -387,4 +385,12 @@ void EffectChainSlot::disableForInputChannel(const ChannelHandleAndGroup& handle
     request->pTargetChain = m_pEngineEffectChain;
     request->DisableInputChannelForChain.pChannelHandle = &handle_group.handle();
     m_pMessenger->writeRequest(request);
+}
+
+int EffectChainSlot::presetIndex() const {
+    return m_pChainPresetManager->presetIndex(m_presetName);
+}
+
+EffectChainPresetPointer EffectChainSlot::presetAtIndex(int index) const {
+    return m_pChainPresetManager->presetAtIndex(index);
 }

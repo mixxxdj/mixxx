@@ -15,25 +15,29 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
                    EffectsManager* pEffectsManager);
     virtual ~DlgPrefEffects();
 
-    void slotUpdate();
-    void slotApply();
-    void slotResetToDefaults();
+    void slotUpdate() override;
+    void slotApply() override;
+    void slotResetToDefaults() override;
 
   private slots:
     void effectsTableItemSelected(const QModelIndex& selected);
-    void slotChainPresetSelected(const QString& chainPresetName);
+    void slotChainPresetSelected(const QModelIndex& selected);
     void slotImportPreset();
     void slotExportPreset();
     void slotRenamePreset();
     void slotDeletePreset();
-    void slotPresetMoveUp();
-    void slotPresetMoveDown();
 
   private:
     void setupManifestTableView(QTableView* pTableView);
+    void setupChainListView(QListView* pListView);
 
     void clear();
-    void loadChainPresetList();
+    void loadChainPresetLists();
+    void saveChainPresetLists();
+
+    bool eventFilter(QObject* pChainList, QEvent* event) override;
+    QListView* m_pFocusedChainList;
+    QListView* unfocusedChainList();
 
     QList<QLabel*> m_effectsLabels;
 

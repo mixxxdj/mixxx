@@ -127,6 +127,14 @@ QString QuickEffectChainSlot::formatEffectSlotGroup(
             .arg(QString::number(iEffectSlotNumber + 1));
 }
 
+int QuickEffectChainSlot::presetIndex() const {
+    return m_pChainPresetManager->quickEffectPresetIndex(m_presetName);
+}
+
+EffectChainPresetPointer QuickEffectChainSlot::presetAtIndex(int index) const {
+    return m_pChainPresetManager->quickEffectPresetAtIndex(index);
+}
+
 EqualizerEffectChainSlot::EqualizerEffectChainSlot(const QString& group,
         EffectsManager* pEffectsManager,
         EffectsMessengerPointer pEffectsMessenger)

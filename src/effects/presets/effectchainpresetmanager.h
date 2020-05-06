@@ -31,9 +31,17 @@ class EffectChainPresetManager : public QObject {
         return m_effectChainPresetsSorted;
     }
 
+    const QList<EffectChainPresetPointer> getQuickEffectPresetsSorted() const {
+        return m_quickEffectChainPresetsSorted;
+    }
+
     int presetIndex(const QString& presetName) const;
     int presetIndex(EffectChainPresetPointer pChainPreset) const;
     EffectChainPresetPointer presetAtIndex(int index) const;
+
+    int quickEffectPresetIndex(const QString& presetName) const;
+    int quickEffectPresetIndex(EffectChainPresetPointer pChainPreset) const;
+    EffectChainPresetPointer quickEffectPresetAtIndex(int index) const;
 
     void importPreset();
     void exportPreset(const QString& chainPresetName);
@@ -41,6 +49,7 @@ class EffectChainPresetManager : public QObject {
     void deletePreset(const QString& chainPresetName);
 
     void setPresetOrder(const QStringList& chainPresetList);
+    void setQuickEffectPresetOrder(const QStringList& chainPresetList);
 
     EffectChainPresetPointer getPreset(const QString& name) const {
         return m_effectChainPresets.value(name);
@@ -54,12 +63,15 @@ class EffectChainPresetManager : public QObject {
 
   signals:
     void effectChainPresetListUpdated();
+    void quickEffectChainPresetListUpdated();
 
   private:
     void loadEffectChainPresets();
+    void savePresetXml(EffectChainPresetPointer pPreset);
 
     QHash<QString, EffectChainPresetPointer> m_effectChainPresets;
     QList<EffectChainPresetPointer> m_effectChainPresetsSorted;
+    QList<EffectChainPresetPointer> m_quickEffectChainPresetsSorted;
 
     UserSettingsPointer m_pConfig;
     EffectsBackendManagerPointer m_pBackendManager;

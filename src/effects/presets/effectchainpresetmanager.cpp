@@ -18,16 +18,6 @@ EffectChainPresetManager::EffectChainPresetManager(UserSettingsPointer pConfig,
         EffectsBackendManagerPointer pBackendManager)
         : m_pConfig(pConfig),
           m_pBackendManager(pBackendManager) {
-    // Generate the default QuickEffect chain preset instead of shipping it in
-    // res/effects/chains because this uses the translated name.
-    EffectManifestPointer pDefaultQuickEffectManifest = m_pBackendManager->getManifest(
-            FilterEffect::getId(), EffectBackendType::BuiltIn);
-    m_pDefaultQuickEffectChainPreset = EffectChainPresetPointer(
-            new EffectChainPreset(EffectPresetPointer(
-                    new EffectPreset(pDefaultQuickEffectManifest))));
-    m_pDefaultQuickEffectChainPreset->setName(
-            pDefaultQuickEffectManifest->displayName());
-
     loadEffectChainPresets();
 }
 
@@ -53,6 +43,30 @@ EffectChainPresetPointer EffectChainPresetManager::presetAtIndex(
         index = 0;
     }
     return m_effectChainPresetsSorted.at(index);
+}
+
+int EffectChainPresetManager::quickEffectPresetIndex(const QString& presetName) const {
+    if (m_effectChainPresets.contains(presetName)) {
+        EffectChainPresetPointer pPreset =
+                m_effectChainPresets.value(presetName);
+        return m_quickEffectChainPresetsSorted.indexOf(pPreset);
+    }
+    return -1;
+}
+
+int EffectChainPresetManager::quickEffectPresetIndex(
+        EffectChainPresetPointer pPreset) const {
+    return m_quickEffectChainPresetsSorted.indexOf(pPreset);
+}
+
+EffectChainPresetPointer EffectChainPresetManager::quickEffectPresetAtIndex(
+        int index) const {
+    if (index < 0) {
+        index = m_quickEffectChainPresetsSorted.size() - 1;
+    } else if (index >= m_quickEffectChainPresetsSorted.size()) {
+        index = 0;
+    }
+    return m_quickEffectChainPresetsSorted.at(index);
 }
 
 void EffectChainPresetManager::importPreset() {
@@ -130,6 +144,9 @@ void EffectChainPresetManager::importPreset() {
 
             m_effectChainPresets.insert(pPreset->name(), pPreset);
             m_effectChainPresetsSorted.append(pPreset);
+            m_quickEffectChainPresetsSorted.append(pPreset);
+            emit effectChainPresetListUpdated();
+            emit quickEffectChainPresetListUpdated();
         } else {
             QMessageBox::critical(
                     nullptr, importFailed, importFailed + " " + filePath);
@@ -199,8 +216,15 @@ void EffectChainPresetManager::renamePreset(const QString& oldName) {
     int index = m_effectChainPresetsSorted.indexOf(pPreset);
     pPreset->setName(newName);
     m_effectChainPresets.insert(newName, pPreset);
-    m_effectChainPresetsSorted.removeAt(index);
-    m_effectChainPresetsSorted.insert(index, pPreset);
+    if (index != -1) {
+        m_effectChainPresetsSorted.removeAt(index);
+        m_effectChainPresetsSorted.insert(index, pPreset);
+    }
+    index = m_quickEffectChainPresetsSorted.indexOf(pPreset);
+    if (index != -1) {
+        m_quickEffectChainPresetsSorted.removeAt(index);
+        m_quickEffectChainPresetsSorted.insert(index, pPreset);
+    }
     emit effectChainPresetListUpdated();
 }
 
@@ -228,7 +252,9 @@ void EffectChainPresetManager::deletePreset(const QString& chainPresetName) {
     EffectChainPresetPointer pPreset =
             m_effectChainPresets.take(chainPresetName);
     m_effectChainPresetsSorted.removeAll(pPreset);
+    m_quickEffectChainPresetsSorted.removeAll(pPreset);
     emit effectChainPresetListUpdated();
+    emit quickEffectChainPresetListUpdated();
 }
 
 void EffectChainPresetManager::setPresetOrder(
@@ -243,12 +269,22 @@ void EffectChainPresetManager::setPresetOrder(
                 m_effectChainPresets.value(chainPresetName));
     }
 
-    for (const auto pPreset : m_effectChainPresets) {
-        VERIFY_OR_DEBUG_ASSERT(m_effectChainPresetsSorted.contains(pPreset)) {
-            m_effectChainPresetsSorted.append(pPreset);
-        }
-    }
     emit effectChainPresetListUpdated();
+}
+
+void EffectChainPresetManager::setQuickEffectPresetOrder(
+        const QStringList& chainPresetList) {
+    m_quickEffectChainPresetsSorted.clear();
+
+    for (const auto chainPresetName : chainPresetList) {
+        VERIFY_OR_DEBUG_ASSERT(m_effectChainPresets.contains(chainPresetName)) {
+            continue;
+        }
+        m_quickEffectChainPresetsSorted.append(
+                m_effectChainPresets.value(chainPresetName));
+    }
+
+    emit quickEffectChainPresetListUpdated();
 }
 
 void EffectChainPresetManager::loadEffectChainPresets() {
@@ -271,16 +307,6 @@ void EffectChainPresetManager::loadEffectChainPresets() {
             QFile::copy(defaultPresetsPath + "/" + fileName,
                     savedPresetsPath + "/" + fileName);
         }
-
-        QFile file(savedPresetsPath + "/" +
-                m_pDefaultQuickEffectChainPreset->name() + ".xml");
-        if (file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
-            QDomDocument doc(EffectXml::Chain);
-            doc.setContent(EffectXml::FileHeader);
-            doc.appendChild(m_pDefaultQuickEffectChainPreset->toXml(&doc));
-            file.write(doc.toString().toUtf8());
-        }
-        file.close();
     }
 
     savedPresetsDir.setFilter(QDir::Files | QDir::Readable);
@@ -327,15 +353,21 @@ void EffectChainPresetManager::savePreset(EffectChainPresetPointer pPreset) {
     pPreset->setName(name);
     m_effectChainPresets.insert(name, pPreset);
     m_effectChainPresetsSorted.append(pPreset);
+    m_quickEffectChainPresetsSorted.append(pPreset);
     emit effectChainPresetListUpdated();
+    emit quickEffectChainPresetListUpdated();
 
+    savePresetXml(pPreset);
+}
+
+void EffectChainPresetManager::savePresetXml(EffectChainPresetPointer pPreset) {
     QString path(m_pConfig->getSettingsPath() + kEffectChainPresetDirectory);
     QDir effectsChainsDir(path);
     if (!effectsChainsDir.exists()) {
         effectsChainsDir.mkpath(path);
     }
     // TODO: sanitize file name?
-    QFile file(path + "/" + name + ".xml");
+    QFile file(path + "/" + pPreset->name() + ".xml");
     if (!file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
         return;
     }
@@ -351,10 +383,15 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
         const QDomDocument& doc, QStringList deckStrings) {
     DEBUG_ASSERT(!m_effectChainPresets.isEmpty());
 
+    EffectManifestPointer pDefaultQuickEffectManifest = m_pBackendManager->getManifest(
+            FilterEffect::getId(), EffectBackendType::BuiltIn);
+    auto defaultQuickEffectChainPreset = EffectChainPresetPointer(
+            new EffectChainPreset(pDefaultQuickEffectManifest));
+
     QList<EffectChainPresetPointer> standardEffectChainPresets;
     QHash<QString, EffectChainPresetPointer> quickEffectPresets;
     for (const auto& deckString : deckStrings) {
-        quickEffectPresets.insert(deckString, m_pDefaultQuickEffectChainPreset);
+        quickEffectPresets.insert(deckString, defaultQuickEffectChainPreset);
     }
 
     // Reload state of standard chains
@@ -391,7 +428,46 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
         setPresetOrder(chainPresetsSorted);
     }
 
-    // Load QuickEffect presets
+    // Reload order of QuickEffect chain presets
+    QStringList quickEffectChainPresetsSorted;
+    QDomElement quickEffectChainPresetsElement =
+            XmlParse::selectElement(root, EffectXml::QuickEffectList);
+    QDomNodeList quickEffectPresetNameList =
+            quickEffectChainPresetsElement.elementsByTagName(EffectXml::ChainPresetName);
+    for (int i = 0; i < quickEffectPresetNameList.count(); ++i) {
+        QDomNode presetNameNode = quickEffectPresetNameList.at(i);
+        if (presetNameNode.isElement()) {
+            quickEffectChainPresetsSorted << presetNameNode.toElement().text();
+        }
+    }
+    if (!quickEffectChainPresetsSorted.isEmpty()) {
+        setQuickEffectPresetOrder(quickEffectChainPresetsSorted);
+    } else {
+        // Prepend all chain presets to the QuickEffect preset list
+        for (const auto& pChainPreset : m_effectChainPresetsSorted) {
+            m_quickEffectChainPresetsSorted.append(pChainPreset);
+        }
+        // On first run of Mixxx, generate QuickEffect chain presets for every
+        // effect with a default metaknob linking. These are generated rather
+        // than included with Mixxx in res/effects/chains so the translated
+        // names are used.
+        QList<EffectManifestPointer> manifestList;
+        for (const auto& pManifest : m_pBackendManager->getManifests()) {
+            if (pManifest->hasMetaKnobLinking()) {
+                manifestList.append(pManifest);
+            }
+        }
+        std::sort(manifestList.begin(), manifestList.end(), EffectManifest::alphabetize);
+        for (const auto& pManifest : manifestList) {
+            auto pChainPreset = EffectChainPresetPointer(new EffectChainPreset(pManifest));
+            pChainPreset->setName(pManifest->displayName());
+            m_effectChainPresets.insert(pChainPreset->name(), pChainPreset);
+            m_quickEffectChainPresetsSorted.append(pChainPreset);
+            savePresetXml(pChainPreset);
+        }
+    }
+
+    // Reload presets that were loaded into QuickEffects on last shutdown
     QDomElement quickEffectPresetsElement =
             XmlParse::selectElement(root, EffectXml::QuickEffectChainPresets);
     QDomNodeList quickEffectNodeList =
@@ -432,6 +508,17 @@ void EffectChainPresetManager::saveEffectsXml(QDomDocument* pDoc, EffectsXmlData
                 pPreset->name());
     }
     rootElement.appendChild(chainPresetListElement);
+
+    // Save order of QuickEffect chain presets
+    QDomElement quickEffectChainPresetListElement =
+            pDoc->createElement(EffectXml::QuickEffectList);
+    for (const auto pPreset : m_quickEffectChainPresetsSorted) {
+        XmlParse::addElement(*pDoc,
+                quickEffectChainPresetListElement,
+                EffectXml::ChainPresetName,
+                pPreset->name());
+    }
+    rootElement.appendChild(quickEffectChainPresetListElement);
 
     // Save which presets are loaded to QuickEffects
     QDomElement quickEffectPresetsElement =
