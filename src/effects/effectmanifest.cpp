@@ -4,6 +4,16 @@ QDebug operator<<(QDebug dbg, const EffectManifest& manifest) {
     return dbg.maybeSpace() << QString("EffectManifest(%1)").arg(manifest.id());
 }
 
+bool EffectManifest::hasMetaKnobLinking() const {
+    for (const auto& pParameterManifest : m_parameters) {
+        if (pParameterManifest->defaultLinkType() !=
+                EffectManifestParameter::LinkType::NONE) {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool EffectManifest::alphabetize(
         EffectManifestPointer pManifest1, EffectManifestPointer pManifest2) {
     // Sort built-in effects first before external plugins

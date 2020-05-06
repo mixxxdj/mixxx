@@ -41,6 +41,14 @@ const QString kDefaultMasterEqId = QString();
 
 const int kFrequencyUpperLimit = 20050;
 const int kFrequencyLowerLimit = 16;
+
+static bool isMixingEQ(EffectManifest* pManifest) {
+    return pManifest->isMixingEQ();
+}
+
+static bool isMasterEQ(EffectManifest* pManifest) {
+    return pManifest->isMasterEQ();
+}
 } // anonymous namespace
 
 DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager, UserSettingsPointer pConfig)
@@ -151,24 +159,6 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
     }
     applySelections();
     slotSingleEqChecked(CheckBoxSingleEqEffect->isChecked());
-}
-
-static bool isMixingEQ(EffectManifest* pManifest) {
-    return pManifest->isMixingEQ();
-}
-
-static bool isMasterEQ(EffectManifest* pManifest) {
-    return pManifest->isMasterEQ();
-}
-
-static bool hasSuperKnobLinking(EffectManifest* pManifest) {
-    for (const auto& pParameterManifest : pManifest->parameters()) {
-        if (pParameterManifest->defaultLinkType() !=
-            EffectManifestParameter::LinkType::NONE) {
-            return true;
-        }
-    }
-    return false;
 }
 
 void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
