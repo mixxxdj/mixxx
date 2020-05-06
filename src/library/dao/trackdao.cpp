@@ -521,9 +521,7 @@ bool insertTrackLibrary(QSqlQuery* pTrackLibraryInsert, const Track& track, DbId
     // We no longer store the wavesummary in the library table.
     pTrackLibraryInsert->bindValue(":wavesummaryhex", QVariant(QVariant::ByteArray));
 
-    if (pTrackLibraryInsert->exec()) {
-        return true;
-    } else {
+    VERIFY_OR_DEBUG_ASSERT(pTrackLibraryInsert->exec()) {
         // We failed to insert the track. Maybe it is already in the library
         // but marked deleted? Skip this track.
         LOG_FAILED_QUERY(*pTrackLibraryInsert)
@@ -531,6 +529,7 @@ bool insertTrackLibrary(QSqlQuery* pTrackLibraryInsert, const Track& track, DbId
                 << track.getLocation();
         return false;
     }
+    return true;
 }
 
 } // anonymous namespace
