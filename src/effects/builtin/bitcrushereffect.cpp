@@ -18,7 +18,6 @@ EffectManifestPointer BitCrusherEffect::getManifest() {
     pManifest->setDescription(QObject::tr(
         "Adds noise by the reducing the bit depth and sample rate"));
     pManifest->setEffectRampsFromDry(true);
-    pManifest->setMetaknobDefault(0.0);
 
     EffectManifestParameterPointer depth = pManifest->addParameter();
     depth->setId("bit_depth");

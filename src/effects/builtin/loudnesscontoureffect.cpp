@@ -30,7 +30,7 @@ EffectManifestPointer LoudnessContourEffect::getManifest() {
     pManifest->setDescription(QObject::tr(
         "Amplifies low and high frequencies at low volumes to compensate for reduced sensitivity of the human ear."));
     pManifest->setEffectRampsFromDry(true);
-    pManifest->setMetaknobDefault(-kMaxLoGain / 2);
+    pManifest->setMetaknobDefault(1.0);
 
     EffectManifestParameterPointer loudness = pManifest->addParameter();
     loudness->setId("loudness");

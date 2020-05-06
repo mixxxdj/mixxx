@@ -21,6 +21,7 @@ EffectManifestPointer MoogLadder4FilterEffect::getManifest() {
     pManifest->setDescription(QObject::tr(
             "A 4-pole Moog ladder filter, based on Antti Houvilainen's non linear digital implementation"));
     pManifest->setEffectRampsFromDry(true);
+    pManifest->setMetaknobDefault(0.5);
 
     EffectManifestParameterPointer lpf = pManifest->addParameter();
     lpf->setId("lpf");

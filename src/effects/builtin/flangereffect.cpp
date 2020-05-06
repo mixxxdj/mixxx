@@ -30,7 +30,6 @@ EffectManifestPointer FlangerEffect::getManifest() {
     pManifest->setVersion("1.0");
     pManifest->setDescription(QObject::tr(
         "Mixes the input with a delayed, pitch modulated copy of itself to create comb filtering"));
-    pManifest->setMetaknobDefault(1.0);
 
     EffectManifestParameterPointer speed = pManifest->addParameter();
     speed->setId("speed");
