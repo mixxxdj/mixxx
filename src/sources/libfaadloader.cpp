@@ -103,7 +103,16 @@ LibFaadLoader::LibFaadLoader()
         m_pLibrary.reset();
         return;
     }
-    kLogger.info() << "Successfully loaded library" << m_pLibrary->fileName();
+    char* faad_id_string = nullptr;
+    char const* version =
+            GetVersion(&faad_id_string, nullptr) == 0 ?
+            faad_id_string :
+            "<unknown>";
+    kLogger.info()
+            << "Successfully loaded FAAD2 library"
+            << m_pLibrary->fileName()
+            << "version"
+            << version;
 };
 
 bool LibFaadLoader::isLoaded() const {
