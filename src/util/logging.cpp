@@ -281,8 +281,6 @@ void Logging::initialize(const QDir& settingsDir,
     // Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=886437
     // Ubuntu: https://bugs.launchpad.net/ubuntu/+source/qtbase-opensource-src/+bug/1731646
     // Somehow this causes a segfault on macOS though?? https://bugs.launchpad.net/mixxx/+bug/1871238
-    // TODO: Remove this code after switching the minmium log level
-    // in the log file from Debug to Info.
 #ifdef __LINUX__
     QLoggingCategory::setFilterRules(
             "*.debug=true\n"
