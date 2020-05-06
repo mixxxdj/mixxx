@@ -111,6 +111,8 @@ class EffectManifest {
         m_isMasterEQ = value;
     }
 
+    bool hasMetaKnobLinking() const;
+
     void setDescription(const QString& description) {
         m_description = description;
     }
