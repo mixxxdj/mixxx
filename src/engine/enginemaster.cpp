@@ -464,11 +464,21 @@ void EngineMaster::process(const int iBufferSize) {
             m_pTalkover,
             m_iBufferSize, m_iSampleRate, busFeatures);
 
-
-    // Clear talkover compressor for the next round of gain calculation.
-    m_pTalkoverDucking->clearKeys();
-    if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF) {
+    switch (m_pTalkoverDucking->getMode()) {
+    case EngineTalkoverDucking::OFF:
+        m_pTalkoverDucking->setAboveThreshold(false);
+        break;
+    case EngineTalkoverDucking::AUTO:
         m_pTalkoverDucking->processKey(m_pTalkover, m_iBufferSize);
+        break;
+    case EngineTalkoverDucking::MANUAL:
+        qDebug() << "m_activeTalkoverChannels.size()" << m_activeTalkoverChannels.size();
+        m_pTalkoverDucking->setAboveThreshold(m_activeTalkoverChannels.size());
+        break;
+    default:
+        DEBUG_ASSERT("!Unknown Ducking mode");
+        m_pTalkoverDucking->setAboveThreshold(false);
+        break;
     }
 
     // Calculate the crossfader gains for left and right side of the crossfader
