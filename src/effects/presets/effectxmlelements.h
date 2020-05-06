@@ -11,6 +11,7 @@ const QString Rack("Rack");
 const QString RackGroup("Group");
 
 const QString ChainPresetList("ChainPresetList");
+const QString QuickEffectList("QuickEffectPresetList");
 const QString QuickEffectChainPresets("QuickEffectChains");
 const QString ChainPresetName("ChainPresetName");
 

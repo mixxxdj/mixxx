@@ -67,7 +67,7 @@
          <item row="0" column="0" colspan="2">
           <widget class="QLabel" name="effectsTablesHeaderLabel">
            <property name="text">
-            <string>Drag and drop to rearrange visible effects list in effect selection menus.</string>
+            <string>Drag and drop to rearrange effects list and hide effects.</string>
            </property>
           </widget>
          </item>
@@ -266,16 +266,37 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="effectChainPresetSectionLabel">
-     <property name="text">
-      <string>Effect Chain Presets</string>
-     </property>
-    </widget>
-   </item>
-   <item>
     <layout class="QHBoxLayout" name="chainPresetHBox">
      <item>
-      <widget class="QListWidget" name="chainListWidget"/>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="1" column="0">
+        <widget class="QLabel" name="chainPresetsLabel">
+         <property name="text">
+          <string>Effect Chain Presets</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="quickEffectChainPresetsLabel">
+         <property name="text">
+          <string>QuickEffect Chain Presets</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QListView" name="quickEffectListView"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QListView" name="chainListView"/>
+       </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Drag and drop to rearrange lists and move chains between lists.</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
       <layout class="QVBoxLayout" name="chainWidgets">
@@ -310,16 +331,6 @@
        <item>
         <layout class="QHBoxLayout" name="chainButtonsTopRow">
          <item>
-          <widget class="QPushButton" name="chainPresetMoveUpButton">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Move Up</string>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QPushButton" name="chainPresetImportButton">
            <property name="text">
             <string>Import</string>
@@ -340,16 +351,6 @@
        </item>
        <item>
         <layout class="QHBoxLayout" name="chainButtonsBottomRow">
-         <item>
-          <widget class="QPushButton" name="chainPresetMoveDownButton">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Move Down</string>
-           </property>
-          </widget>
-         </item>
          <item>
           <widget class="QPushButton" name="chainPresetExportButton">
            <property name="enabled">
