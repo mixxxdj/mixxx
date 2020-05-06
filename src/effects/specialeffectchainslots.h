@@ -47,6 +47,8 @@ class QuickEffectChainSlot : public PerGroupEffectChainSlot {
 
     int presetIndex() const override;
     EffectChainPresetPointer presetAtIndex(int index) const override;
+
+    void loadChainPreset(EffectChainPresetPointer pPreset) override;
 };
 
 class EqualizerEffectChainSlot : public PerGroupEffectChainSlot {

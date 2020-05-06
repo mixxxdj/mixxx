@@ -205,7 +205,6 @@ void EffectChainSlot::loadChainPreset(EffectChainPresetPointer pPreset) {
     }
 
     setMixMode(pPreset->mixMode());
-    setSuperParameter(pPreset->superKnob());
     m_pControlChainSuperParameter->setDefaultValue(pPreset->superKnob());
 
     setPresetName(pPreset->name());
