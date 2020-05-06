@@ -14,6 +14,7 @@ namespace {
 const char* kTransitionPreferenceName = "Transition";
 const char* kTransitionModePreferenceName = "TransitionMode";
 const char* kTransitionUnitPreferenceName = "TransitionUnit";
+const char* kCalcTransitionPeriodPreferenceName = "CalcTransitionPeriod";
 const double kTransitionPreferenceDefault = 10.0;
 const double kKeepPosition = -1.0;
 
@@ -182,10 +183,13 @@ AutoDJProcessor::AutoDJProcessor(
                     ConfigKey(kConfigKey, kTransitionUnitPreferenceName),
                     static_cast<int>(TransitionUnit::SECONDS)));
 
+    m_calcTransitionPeriod = static_cast<CalcTransitionPeriod>(
+            m_pConfig->getValue(
+                    ConfigKey(kConfigKey, kCalcTransitionPeriodPreferenceName),
+                    static_cast<int>(CalcTransitionPeriod::BeforeTrackEnd)));
+
     m_pLeftBPM = make_parented<ControlProxy>(ConfigKey("[Channel1]", "bpm"), this);
     m_pRightBPM = make_parented<ControlProxy>(ConfigKey("[Channel2]", "bpm"), this);
-    m_pLeftSyncMode = make_parented<ControlProxy>(ConfigKey("[Channel1]", "sync_mode"), this);
-    m_pRightSyncMode = make_parented<ControlProxy>(ConfigKey("[Channel2]", "sync_mode"), this);
 }
 
 AutoDJProcessor::~AutoDJProcessor() {
@@ -565,12 +569,6 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         m_pCOCrossfader->set(0);
         emitAutoDJStateChanged(m_eState);
     }
-
-    // Update this value just in case it was changed in the preferences
-    m_transitionUnit = static_cast<TransitionUnit>(
-            m_pConfig->getValue(
-                    ConfigKey(kConfigKey, kTransitionUnitPreferenceName),
-                    static_cast<int>(TransitionUnit::SECONDS)));
 
     return ADJ_OK;
 }
@@ -1711,11 +1709,11 @@ double AutoDJProcessor::getFadeTime() {
             fadeTime = (transitionTime * 60) / leftBPM;
         } else {
             // Get the user's preference on which track's bpm to use
-            CalculateTransitionPeriod calculateTransitionPeriod =
-                    static_cast<CalculateTransitionPeriod>(m_pConfig->getValue(
-                            ConfigKey("[Auto DJ]", "BPMToUse"), 0));
-            switch (calculateTransitionPeriod) {
-            case CalculateTransitionPeriod::FromNextTrackStart:
+            CalcTransitionPeriod calcTransitionPeriod =
+                    static_cast<CalcTransitionPeriod>(m_pConfig->getValue(
+                            ConfigKey("[Auto DJ]", kCalcTransitionPeriodPreferenceName), 0));
+            switch (calcTransitionPeriod) {
+            case CalcTransitionPeriod::FromNextTrackStart:
                 fadeTime = (transitionTime * 60) / toBPM;
                 break;
             default:
@@ -1728,4 +1726,16 @@ double AutoDJProcessor::getFadeTime() {
     }
 
     return fadeTime;
+}
+
+void AutoDJProcessor::setAutoDJTransitionUnit(TransitionUnit transitionUnit) {
+    m_transitionUnit = transitionUnit;
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", kTransitionUnitPreferenceName),
+            static_cast<int>(transitionUnit));
+}
+
+void AutoDJProcessor::setAutoDJCalcTransitionPeriod(CalcTransitionPeriod calcTransitionPeriod) {
+    m_calcTransitionPeriod = calcTransitionPeriod;
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", kCalcTransitionPeriodPreferenceName),
+            static_cast<int>(calcTransitionPeriod));
 }

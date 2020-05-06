@@ -145,6 +145,11 @@ DlgAutoDJ::DlgAutoDJ(
             "Play the whole track except for silence at the beginning and end.\n"
             "Begin crossfading from the selected number of seconds before the\n"
             "last sound.");
+    QString transitionUnitToolTip = tr(
+            "Sets the units to use when specifying how long a transition should last.\n");
+    QString calcTransitionPeriodToolTip = tr(
+            "If the tracks do not have the same BPM, this specifies\n"
+            "before/from which point to calculate the transition period.");
 
     pushButtonFadeNow->setToolTip(fadeBtnTooltip);
     pushButtonSkipNext->setToolTip(skipBtnTooltip);
@@ -204,6 +209,28 @@ DlgAutoDJ::DlgAutoDJ(
 
     updateSelectionInfo();
     updateTransitionAppendixLabel();
+
+    ComboBoxAutoDjTransitionUnit->addItem(tr("Seconds"));
+    ComboBoxAutoDjTransitionUnit->addItem(tr("Beats"));
+    ComboBoxAutoDjTransitionUnit->setToolTip(transitionUnitToolTip);
+    ComboBoxAutoDjTransitionUnit->setCurrentIndex(
+            static_cast<int>(m_pAutoDJProcessor->getTransitionUnit()));
+    connect(ComboBoxAutoDjTransitionUnit,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgAutoDJ::slotSetAutoDJTransitionUnit);
+
+    ComboBoxAutoDjCalcTransitionPeriod->addItem(tr("Before track's end"));
+    ComboBoxAutoDjCalcTransitionPeriod->addItem(tr("From next track's start"));
+    ComboBoxAutoDjCalcTransitionPeriod->setToolTip(calcTransitionPeriodToolTip);
+    ComboBoxAutoDjCalcTransitionPeriod->setCurrentIndex(
+            static_cast<int>(m_pAutoDJProcessor->getCalcTransitionPeriod()));
+    ComboBoxAutoDjCalcTransitionPeriod->setEnabled(
+            static_cast<bool>(m_pAutoDJProcessor->getTransitionUnit()));
+    connect(ComboBoxAutoDjCalcTransitionPeriod,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgAutoDJ::slotSetAutoDJCalcTransitionPeriod);
 }
 
 DlgAutoDJ::~DlgAutoDJ() {
@@ -294,10 +321,6 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
         default:
             break;
     }
-
-    // Update the label to display the configured transition unit
-    // just in case it was changed in the preferences dialog
-    updateTransitionAppendixLabel();
 }
 
 void DlgAutoDJ::transitionTimeChanged(int time) {
@@ -378,4 +401,14 @@ void DlgAutoDJ::updateSelectionInfo() {
 
 bool DlgAutoDJ::hasFocus() const {
     return m_pTrackTableView->hasFocus();
+}
+
+void DlgAutoDJ::slotSetAutoDJTransitionUnit(int transitionUnit) {
+    m_pAutoDJProcessor->setAutoDJTransitionUnit(static_cast<AutoDJProcessor::TransitionUnit>(transitionUnit));
+    ComboBoxAutoDjCalcTransitionPeriod->setEnabled((bool)(transitionUnit));
+    updateTransitionAppendixLabel();
+}
+
+void DlgAutoDJ::slotSetAutoDJCalcTransitionPeriod(int calcTransitionPeriod) {
+    m_pAutoDJProcessor->setAutoDJCalcTransitionPeriod(static_cast<AutoDJProcessor::CalcTransitionPeriod>(calcTransitionPeriod));
 }

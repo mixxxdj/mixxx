@@ -173,7 +173,7 @@ class AutoDJProcessor : public QObject {
         BEATS
     };
 
-    enum class CalculateTransitionPeriod {
+    enum class CalcTransitionPeriod {
         BeforeTrackEnd,
         FromNextTrackStart,
     };
@@ -207,6 +207,10 @@ class AutoDJProcessor : public QObject {
         return m_transitionUnit;
     }
 
+    CalcTransitionPeriod getCalcTransitionPeriod() const {
+        return m_calcTransitionPeriod;
+    }
+
   public slots:
     void setTransitionTime(int seconds);
 
@@ -216,6 +220,8 @@ class AutoDJProcessor : public QObject {
     AutoDJError skipNext();
     void fadeNow();
     AutoDJError toggleAutoDJ(bool enable);
+    void setAutoDJTransitionUnit(TransitionUnit transitionUnit);
+    void setAutoDJCalcTransitionPeriod(CalcTransitionPeriod calcTransitionPeriod);
 
   signals:
     void loadTrackToPlayer(TrackPointer pTrack, QString group,
@@ -301,6 +307,7 @@ class AutoDJProcessor : public QObject {
     double m_transitionTime; // the desired value set by the user
     TransitionMode m_transitionMode;
     TransitionUnit m_transitionUnit;
+    CalcTransitionPeriod m_calcTransitionPeriod;
 
     double getFadeTime();
 
