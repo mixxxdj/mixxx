@@ -258,12 +258,19 @@ bool SoundSourceM4A::openDecoder() {
     DEBUG_ASSERT(m_hDecoder == nullptr); // not already opened
 
     m_hDecoder = m_pFaad->Open();
-    if (m_hDecoder == nullptr) {
-        kLogger.warning() << "Failed to open the AAC decoder!";
+    if (!m_hDecoder) {
+        kLogger.warning() << "Failed to open the AAC decoder";
         return false;
     }
-    LibFaadLoader::Configuration* pDecoderConfig = m_pFaad->GetCurrentConfiguration(
-            m_hDecoder);
+    LibFaadLoader::Configuration* pDecoderConfig =
+            m_pFaad->GetCurrentConfiguration(m_hDecoder);
+    if (!pDecoderConfig) {
+        kLogger.warning() << "Failed to get the current AAC decoder configuration";
+        return false;
+    }
+    kLogger.debug()
+            << "Default AAC decoder configuration"
+            << *pDecoderConfig;
     pDecoderConfig->outputFormat = FAAD_FMT_FLOAT;
     if ((m_openParams.getSignalInfo().getChannelCount() == 1) ||
             (m_openParams.getSignalInfo().getChannelCount() == 2)) {
@@ -277,6 +284,9 @@ bool SoundSourceM4A::openDecoder() {
         kLogger.warning() << "Failed to configure AAC decoder!";
         return false;
     }
+    kLogger.debug()
+            << "Modified AAC decoder configuration"
+            << *pDecoderConfig;
 
     u_int8_t* configBuffer = nullptr;
     u_int32_t configBufferSize = 0;

@@ -214,3 +214,17 @@ int LibFaadLoader::GetVersion(
     // 0 - OK
     return -1;
 }
+
+QDebug operator<<(
+        QDebug dbg,
+        const LibFaadLoader::Configuration& cfg) {
+    return dbg
+            << "FAAD2 Configuration{"
+            << "defObjectType:" << static_cast<int>(cfg.defObjectType)
+            << "defSampleRate:" << cfg.defSampleRate
+            << "outputFormat:" << static_cast<int>(cfg.outputFormat)
+            << "downMatrix:" << static_cast<int>(cfg.downMatrix)
+            << "useOldADTSFormat:" << static_cast<int>(cfg.useOldADTSFormat)
+            << "dontUpSampleImplicitSBR:" << static_cast<int>(cfg.dontUpSampleImplicitSBR)
+            << '}';
+}

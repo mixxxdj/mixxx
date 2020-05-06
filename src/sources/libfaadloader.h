@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QLibrary>
+#include <QtDebug>
 
 #include "util/memory.h"
 
@@ -144,3 +145,7 @@ class LibFaadLoader {
             char** faad_copyright_string);
     NeAACDecGetVersion_t m_neAACDecGetVersion;
 };
+
+QDebug operator<<(
+        QDebug dbg,
+        const LibFaadLoader::Configuration& cfg);
