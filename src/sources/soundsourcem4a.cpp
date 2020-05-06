@@ -279,7 +279,6 @@ bool SoundSourceM4A::openDecoder() {
         pDecoderConfig->downMatrix = 0;
     }
 
-    pDecoderConfig->defObjectType = LC;
     if (!m_pFaad->SetConfiguration(m_hDecoder, pDecoderConfig)) {
         kLogger.warning() << "Failed to configure AAC decoder!";
         return false;
