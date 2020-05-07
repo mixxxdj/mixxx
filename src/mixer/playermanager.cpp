@@ -393,16 +393,13 @@ void PlayerManager::addDeckInner() {
     m_pSoundManager->registerInput(
             AudioInput(AudioInput::VINYLCONTROL, 0, 2, number - 1), pEngineDeck);
 
-    // Setup equalizer rack for this deck.
-    m_pEffectsManager->addEqualizerEffectChainSlot(group);
+    // Setup equalizer and QuickEffect chain for this deck.
+    m_pEffectsManager->addDeck(group);
 
     // BaseTrackPlayer needs to delay until we have setup the equalizer rack for
     // this deck to fetch the legacy EQ controls.
     // TODO(rryan): Find a way to remove this cruft.
     pDeck->setupEqControls();
-
-    // Setup quick effect rack for this deck.
-    m_pEffectsManager->addQuickEffectChainSlot(group);
 }
 
 void PlayerManager::loadSamplers() {
