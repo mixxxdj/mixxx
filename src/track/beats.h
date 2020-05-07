@@ -88,7 +88,7 @@ class Beats : public QObject {
                 BEATSCAP_MOVEBEAT | BEATSCAP_HASBAR;
     }
     /// Serializes into a protobuff.
-    virtual QByteArray toByteArray() const;
+    virtual QByteArray toProtobuff() const;
     virtual BeatsPointer clone() const;
 
     /// Returns a string representing the version of the beat-processing code that

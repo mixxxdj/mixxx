@@ -467,7 +467,7 @@ namespace {
         double dBpm = track.getBpm();
         const mixxx::BeatsPointer pBeats(track.getBeats());
         if (pBeats) {
-            beatsBlob = pBeats->toByteArray();
+            beatsBlob = pBeats->toProtobuff();
             beatsVersion = pBeats->getVersion();
             beatsSubVersion = pBeats->getSubVersion();
             dBpm = pBeats->getBpm();
