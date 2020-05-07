@@ -218,16 +218,29 @@ void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
     if (!m_pChannelToCloneFrom) {
         const QList<CuePointer> trackCues(m_pLoadedTrack->getCuePoints());
         QListIterator<CuePointer> it(trackCues);
+        CuePointer pLoopCue;
+        // Restore loop from the first loop cue with minimum hotcue number.
+        // For the volatile "most recent loop" the hotcue number will be -1.
+        // If no such loop exists, restore a saved loop cue.
         while (it.hasNext()) {
             CuePointer pCue(it.next());
-            if (pCue->getType() == mixxx::CueType::Loop) {
-                double loopStart = pCue->getPosition();
-                double loopEnd = loopStart + pCue->getLength();
-                if (loopStart != kNoTrigger && loopEnd != kNoTrigger && loopStart <= loopEnd) {
-                    m_pLoopInPoint->set(loopStart);
-                    m_pLoopOutPoint->set(loopEnd);
-                    break;
-                }
+            if (pCue->getType() != mixxx::CueType::Loop) {
+                continue;
+            }
+
+            if (pLoopCue && pLoopCue->getHotCue() <= pCue->getHotCue()) {
+                continue;
+            }
+
+            pLoopCue = pCue;
+        }
+
+        if (pLoopCue) {
+            double loopStart = pLoopCue->getPosition();
+            double loopEnd = loopStart + pLoopCue->getLength();
+            if (loopStart != kNoTrigger && loopEnd != kNoTrigger && loopStart <= loopEnd) {
+                m_pLoopInPoint->set(loopStart);
+                m_pLoopOutPoint->set(loopEnd);
             }
         }
     } else {
@@ -258,8 +271,9 @@ TrackPointer BaseTrackPlayerImpl::unloadTrack() {
         QListIterator<CuePointer> it(cuePoints);
         while (it.hasNext()) {
             CuePointer pCue(it.next());
-            if (pCue->getType() == mixxx::CueType::Loop) {
+            if (pCue->getType() == mixxx::CueType::Loop && pCue->getHotCue() == Cue::kNoHotCue) {
                 pLoopCue = pCue;
+                break;
             }
         }
         if (!pLoopCue) {
