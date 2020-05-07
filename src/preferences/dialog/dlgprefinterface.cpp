@@ -18,6 +18,8 @@
 #include "defs_urls.h"
 #include "util/autohidpi.h"
 
+using mixxx::skin::SkinManifest;
+
 DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
                                  SkinLoader* pSkinLoader,
                                  UserSettingsPointer pConfig)
@@ -70,9 +72,12 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
     warningLabel->setText(warningString);
 
     ComboBoxSkinconf->clear();
-    // align left edge of preview image with comboboxes
-    skinPreviewLabel->setStyleSheet("QLabel { margin-left: 2px; }");
+    // align left edge of preview image and skin description with comboboxes
+    skinPreviewLabel->setStyleSheet("QLabel { margin-left: 4px; }");
     skinPreviewLabel->setText("");
+    skinDescriptionText->setStyleSheet("QLabel { margin-left: 2px; }");
+    skinDescriptionText->setText("");
+    skinDescriptionText->hide();
 
     QList<QDir> skinSearchPaths = m_pSkinLoader->getSkinSearchPaths();
     QList<QFileInfo> skins;
@@ -103,6 +108,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
             } else {
                 warningLabel->show();
             }
+            slotSetSkinDescription(m_skin);
         }
         index++;
     }
@@ -297,6 +303,18 @@ void DlgPrefInterface::slotSetScheme(int) {
     skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin, m_colorScheme));
 }
 
+void DlgPrefInterface::slotSetSkinDescription(QString skin) {
+    SkinManifest manifest = LegacySkinParser::getSkinManifest(
+            LegacySkinParser::openSkin(m_pSkinLoader->getSkinPath(skin)));
+    QString description = QString::fromStdString(manifest.description());
+    if (manifest.has_description() && !description.isEmpty()) {
+        skinDescriptionText->show();
+        skinDescriptionText->setText(description);
+    } else {
+        skinDescriptionText->hide();
+    }
+}
+
 void DlgPrefInterface::slotSetSkin(int) {
     QString newSkin = ComboBoxSkinconf->currentText();
     if (newSkin != m_skin) {
@@ -305,7 +323,9 @@ void DlgPrefInterface::slotSetSkin(int) {
         checkSkinResolution(ComboBoxSkinconf->currentText())
             ? warningLabel->hide() : warningLabel->show();
         slotUpdateSchemes();
+        slotSetSkinDescription(m_skin);
     }
+
     skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(newSkin, m_colorScheme));
 }
 

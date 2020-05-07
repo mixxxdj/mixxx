@@ -19,7 +19,12 @@ class DlgPrefLV2 : public DlgPreferencePage, public Ui::DlgPrefLV2Dlg  {
     virtual ~DlgPrefLV2();
 
   public slots:
+    /// Called when the preference dialog (not this page) is shown to the user.
+    void slotUpdate();
+    /// Called when the user clicks the global "Apply" button.
     void slotApply();
+    /// Called when the user clicks the global "Reset to Defaults" button.
+    void slotResetToDefaults();
 
   private slots:
     void slotDisplayParameters();

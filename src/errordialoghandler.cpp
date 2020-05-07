@@ -27,6 +27,7 @@
 
 ErrorDialogProperties::ErrorDialogProperties()
         : m_title(Version::applicationName()),
+          m_detailsUseMonospaceFont(false),
           m_modal(true),
           m_shouldQuit(false),
           m_type(DLG_NONE),
@@ -161,6 +162,9 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
     }
     if (!props->m_details.isEmpty()) {
         pMsgBox->setDetailedText(props->m_details);
+        if (props->m_detailsUseMonospaceFont) {
+            pMsgBox->setStyleSheet("QTextEdit { font-family: monospace; }");
+        }
     }
 
     while (!props->m_buttons.isEmpty()) {

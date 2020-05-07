@@ -47,6 +47,10 @@ QToolTip,
 WBeatSpinBox QMenu,
 #LibraryContainer QMenu,
 #LibraryContainer QMenu QCheckBox,
+WTrackMenu,
+WTrackMenu QCheckBox,
+WTrackMenu QMenu,
+WTrackMenu QMenu QCheckBox,
 WCoverArtMenu,
 WCueMenuPopup,
 WCueMenuPopup QMenu,
@@ -95,6 +99,14 @@ WSearchLineEdit,
   WBeatSpinBox QMenu::item:selected,
   #LibraryContainer QMenu::item:selected,
   WCoverArtMenu::item:selected,
+  WTrackMenu::item:selected,
+  WTrackMenu QMenu::item:selected,
+  WTrackMenu QCheckBox:selected,
+  WTrackMenu QCheckBox:focus,
+  WTrackMenu QCheckBox:hover,
+  WTrackMenu QMenu QCheckBox:selected,
+  WTrackMenu QMenu QCheckBox:focus,
+  WTrackMenu QMenu QCheckBox:hover,
   #LibraryContainer QMenu QCheckBox:selected,
   #LibraryContainer QMenu QCheckBox:focus,  /* selected by keyboard */
   #LibraryContainer QMenu QCheckBox:hover /* mouse hover */ {
@@ -108,10 +120,14 @@ WSearchLineEdit,
     border: 1px solid #c88500;
     background-color: #050504;
   }
-  #LibraryContainer QMenu::right-arrow {
+  #LibraryContainer QMenu::right-arrow,
+  WTrackMenu::right-arrow,
+  WTrackMenu QMenu::right-arrow {
     image: url(skin:/style_classic/menu_arrow_gold.svg);
     }
-  #LibraryContainer QMenu::right-arrow:selected {
+  #LibraryContainer QMenu::right-arrow:selected,
+  WTrackMenu::right-arrow:selected,
+  WTrackMenu QMenu::right-arrow:selected {
     image: url(skin:/style_classic/menu_arrow_black.svg);
   }
 /* BPM lock icon */
@@ -274,11 +290,11 @@ WSearchLineEdit {
 #QuickEffectButton[displayValue="0"],
 #FxUnitControlsCollapsed WPushButton, #FxUnitControlsExpanded WPushButton,
 #FxExpandCollapseButton,
-#PlayButtonSampler[displayValue="0"], #PlayButtonDeckMini[displayValue="0"],
+#PlaySampler[displayValue="0"], #PlayDeckMini[displayValue="0"],
 #SamplerSyncButton[displayValue="0"],
-#MicTalkButton[value="0"], #AuxPlayButton[value="0"], #MicAuxAddButton,
+#MicTalk[value="0"], #PlayAux[value="0"], #MicAuxAddButton,
 #MicDuckingButton[value="0"],
-#PlayButtonPreview[displayValue="0"],
+#PlayPreview[displayValue="0"],
 #DlgMissing > QPushButton:enabled:!checked,
 #DlgHidden > QPushButton:enabled:!checked,
 #DlgAutoDJ > QPushButton:enabled:!checked,
@@ -455,14 +471,14 @@ WBeatSpinBox#Spinbox_embedded:focus,
     image: url(skin:/buttons_flip/btn__splitcue_active.svg) no-repeat center center;
   }
 
-#PlayButtonSampler[value="0"],
-#PlayButtonDeckMini[value="0"],
-#PlayButtonPreview[displayValue="0"] {
+#PlaySampler[value="0"],
+#PlayDeckMini[value="0"],
+#PlayPreview[displayValue="0"] {
   image: url(skin:/buttons_flip/btn__play_sampler.svg) no-repeat center center;
   }
-  #PlayButtonSampler[value="1"],
-  #PlayButtonDeckMini[value="1"],
-  #PlayButtonPreview[displayValue="1"] {
+  #PlaySampler[value="1"],
+  #PlayDeckMini[value="1"],
+  #PlayPreview[displayValue="1"] {
     image: url(skin:/buttons_flip/btn__pause_sampler.svg) no-repeat center center;
   }
 
@@ -586,10 +602,10 @@ WBeatSpinBox#Spinbox_embedded:focus,
       image: url(skin:/buttons_flip/btn__beats_faster.svg) no-repeat center center;
     }
 
-#MicTalkButton {
+#MicTalk {
   image: url(skin:/buttons_flip/btn__mic_talk.svg) no-repeat center center;
 }
-#AuxPlayButton {
+#PlayAux {
   image: url(skin:/buttons_flip/btn__aux_play.svg) no-repeat center center;
 }
 #MicAuxAddButton {
@@ -878,7 +894,7 @@ WEffectSelector {
   margin: 2px 0px;
 }
 
-  #MicAuxPlayButtonBox {
+  #MicAuxPlayBox {
     margin: 0px 1px 1px 1px;
   }
 

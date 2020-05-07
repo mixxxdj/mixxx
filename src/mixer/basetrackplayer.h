@@ -52,14 +52,15 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     Q_OBJECT
   public:
     BaseTrackPlayerImpl(QObject* pParent,
-                        UserSettingsPointer pConfig,
-                        EngineMaster* pMixingEngine,
-                        EffectsManager* pEffectsManager,
-                        VisualsManager* pVisualsManager,
-                        EngineChannel::ChannelOrientation defaultOrientation,
-                        const QString& group,
-                        bool defaultMaster,
-                        bool defaultHeadphones);
+            UserSettingsPointer pConfig,
+            EngineMaster* pMixingEngine,
+            EffectsManager* pEffectsManager,
+            VisualsManager* pVisualsManager,
+            EngineChannel::ChannelOrientation defaultOrientation,
+            const QString& group,
+            bool defaultMaster,
+            bool defaultHeadphones,
+            bool primaryDeck);
     virtual ~BaseTrackPlayerImpl();
 
     TrackPointer getLoadedTrack() const final;
@@ -80,11 +81,13 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotLoadFailed(TrackPointer pTrack, QString reason);
     void slotSetReplayGain(mixxx::ReplayGain replayGain);
+    void slotSetTrackColor(mixxx::RgbColor::optional_t color);
     void slotPlayToggled(double);
 
   private slots:
     void slotCloneChannel(EngineChannel* pChannel);
     void slotCloneFromDeck(double deck);
+    void slotTrackColorChangeRequest(double value);
     void slotVinylControlEnabled(double v);
     void slotWaveformZoomValueChangeRequest(double pressed);
     void slotWaveformZoomUp(double pressed);
@@ -110,6 +113,9 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     // Deck clone control
     std::unique_ptr<ControlObject> m_pCloneFromDeck;
 
+    // Track color control
+    std::unique_ptr<ControlObject> m_pTrackColor;
+
     // Waveform display related controls
     std::unique_ptr<ControlObject> m_pWaveformZoom;
     std::unique_ptr<ControlPushButton> m_pWaveformZoomUp;
@@ -123,7 +129,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
     // TODO() these COs are reconnected during runtime
     // This may lock the engine
-    std::unique_ptr<ControlProxy> m_pFileBPM;
+    std::unique_ptr<ControlObject> m_pFileBPM;
     std::unique_ptr<ControlProxy> m_pKey;
 
     std::unique_ptr<ControlProxy> m_pReplayGain;

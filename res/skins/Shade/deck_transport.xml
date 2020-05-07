@@ -101,8 +101,8 @@
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>skin:/btn/btn_play_sampler_overdown.png</Pressed>
-          <Unpressed>skin:/btn/btn_play_sampler_over.png</Unpressed>
+          <Pressed>skin:/btn/btn_pause_sampler_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_pause_sampler_over.png</Unpressed>
         </State>
         <Pos>53,14</Pos>
         <Connection>
@@ -114,7 +114,7 @@
           <ButtonState>RightButton</ButtonState>
         </Connection>
         <Connection>
-          <ConfigKey>[Sampler<Variable name="samplernum1"/>],play_indicator</ConfigKey>
+          <ConfigKey>[Sampler<Variable name="samplernum1"/>],play</ConfigKey>
         </Connection>
       </PushButton>
 
@@ -128,8 +128,8 @@
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>skin:/btn/btn_play_sampler_overdown.png</Pressed>
-          <Unpressed>skin:/btn/btn_play_sampler_over.png</Unpressed>
+          <Pressed>skin:/btn/btn_pause_sampler_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_pause_sampler_over.png</Unpressed>
         </State>
         <Pos>74,14</Pos>
         <Connection>
@@ -141,7 +141,7 @@
           <ButtonState>RightButton</ButtonState>
         </Connection>
         <Connection>
-          <ConfigKey>[Sampler<Variable name="samplernum2"/>],play_indicator</ConfigKey>
+          <ConfigKey>[Sampler<Variable name="samplernum2"/>],play</ConfigKey>
         </Connection>
       </PushButton>
 
@@ -155,8 +155,8 @@
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>skin:/btn/btn_play_sampler_overdown.png</Pressed>
-          <Unpressed>skin:/btn/btn_play_sampler_over.png</Unpressed>
+          <Pressed>skin:/btn/btn_pause_sampler_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_pause_sampler_over.png</Unpressed>
         </State>
         <Pos>53,35</Pos>
         <Connection>
@@ -168,7 +168,7 @@
           <ButtonState>RightButton</ButtonState>
         </Connection>
         <Connection>
-          <ConfigKey>[Sampler<Variable name="samplernum3"/>],play_indicator</ConfigKey>
+          <ConfigKey>[Sampler<Variable name="samplernum3"/>],play</ConfigKey>
         </Connection>
       </PushButton>
 
@@ -182,8 +182,8 @@
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>skin:/btn/btn_play_sampler_overdown.png</Pressed>
-          <Unpressed>skin:/btn/btn_play_sampler_over.png</Unpressed>
+          <Pressed>skin:/btn/btn_pause_sampler_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_pause_sampler_over.png</Unpressed>
         </State>
         <Pos>74,35</Pos>
         <Connection>
@@ -195,7 +195,7 @@
           <ButtonState>RightButton</ButtonState>
         </Connection>
         <Connection>
-          <ConfigKey>[Sampler<Variable name="samplernum4"/>],play_indicator</ConfigKey>
+          <ConfigKey>[Sampler<Variable name="samplernum4"/>],play</ConfigKey>
         </Connection>
       </PushButton>
 

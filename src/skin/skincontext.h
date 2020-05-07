@@ -32,7 +32,7 @@ class SkinContext {
             const SkinContext* parent);
     virtual ~SkinContext();
 
-    // Not copyable
+    // Not copiable
     SkinContext(const SkinContext&) = delete;
     SkinContext& operator=(const SkinContext&) = delete;
 
@@ -101,16 +101,16 @@ class SkinContext {
         return nodeToString(child);
     }
 
-    inline float selectFloat(const QDomNode& node, const QString& nodeName) const {
+    inline float selectFloat(const QDomNode& node, const QString& nodeName, float defaultValue = 0.0) const {
         bool ok = false;
         float conv = nodeToString(selectElement(node, nodeName)).toFloat(&ok);
-        return ok ? conv : 0.0f;
+        return ok ? conv : defaultValue;
     }
 
-    inline double selectDouble(const QDomNode& node, const QString& nodeName) const {
+    inline double selectDouble(const QDomNode& node, const QString& nodeName, double defaultValue = 0.0) const {
         bool ok = false;
         double conv = nodeToString(selectElement(node, nodeName)).toDouble(&ok);
-        return ok ? conv : 0.0;
+        return ok ? conv : defaultValue;
     }
 
     inline int selectInt(const QDomNode& node, const QString& nodeName,

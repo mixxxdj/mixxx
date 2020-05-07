@@ -55,4 +55,4 @@ class MetadataSource {
 
 typedef std::shared_ptr<MetadataSource> MetadataSourcePointer;
 
-} //namespace mixxx
+} // namespace mixxx

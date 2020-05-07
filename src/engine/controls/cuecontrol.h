@@ -152,20 +152,20 @@ class CueControl : public EngineControl {
     void hintReader(HintVector* pHintList) override;
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible);
     void updateIndicators();
-    bool isTrackAtZeroPos();
     bool isTrackAtIntroCue();
     void resetIndicators();
     bool isPlayingByPlayButton();
     bool getPlayFlashingAtPause();
     SeekOnLoadMode getSeekOnLoadPreference();
     void trackLoaded(TrackPointer pNewTrack) override;
+    void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
   private slots:
     void quantizeChanged(double v);
 
     void cueUpdated();
+    void trackAnalyzed();
     void trackCuesUpdated();
-    void trackBeatsUpdated();
     void hotcueSet(HotcueControl* pControl, double v);
     void hotcueSetCue(HotcueControl* pControl, double v);
     void hotcueSetLoop(HotcueControl* pControl, double v);
@@ -224,7 +224,6 @@ class CueControl : public EngineControl {
     void attachCue(CuePointer pCue, HotcueControl* pControl);
     void detachCue(HotcueControl* pControl);
     void loadCuesFromTrack();
-    void reloadCuesFromTrack();
     double quantizeCuePoint(double position);
     double getQuantizedCurrentPosition();
     TrackAt getTrackAt() const;

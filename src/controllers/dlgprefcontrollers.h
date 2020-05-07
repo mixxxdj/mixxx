@@ -1,5 +1,4 @@
-#ifndef DLGPREFCONTROLLERS_H
-#define DLGPREFCONTROLLERS_H
+#pragma once
 
 #include <QTreeWidgetItem>
 
@@ -11,6 +10,10 @@ class DlgPreferences;
 class DlgPrefController;
 class ControllerManager;
 
+/// Controllers Overview in the preferences
+///
+/// This dialog allows selecting controllers for configuration.
+
 class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControllersDlg {
     Q_OBJECT
   public:
@@ -21,11 +24,17 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
     virtual ~DlgPrefControllers();
 
     bool handleTreeItemClick(QTreeWidgetItem* clickedItem);
+    QUrl helpUrl() const override;
 
   public slots:
+    /// Called when the preference dialog (not this page) is shown to the user.
     void slotUpdate();
+    /// Called when the user clicks the global "Apply" button.
     void slotApply();
+    /// Called when the user clicks the global "Cancel" button.
     void slotCancel();
+    /// Called when the user clicks the global "Reset to Defaults" button.
+    void slotResetToDefaults();
 
   private slots:
     void rescanControllers();
@@ -43,5 +52,3 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
     QList<DlgPrefController*> m_controllerWindows;
     QList<QTreeWidgetItem*> m_controllerTreeItems;
 };
-
-#endif /* DLGPREFCONTROLLERS_H */

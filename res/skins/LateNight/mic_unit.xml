@@ -148,19 +148,19 @@
 
               <Label>
                 <ObjectName>MicAuxSubTitle</ObjectName>
-                <Size>,17f</Size>
+                <Size>,21f</Size>
                 <Text>mic <Variable name="mic1hack"/><Variable name="micnum"/></Text>
                 <Alignment>center</Alignment>
               </Label>
 
               <WidgetGroup>
-                <ObjectName>MicAuxPlayButtonBox</ObjectName>
+                <ObjectName>MicAuxPlayBox</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,me</SizePolicy>
                 <Children>
                   <Template src="skin:button_2state.xml">
                     <SetVariable name="TooltipId">microphone_talkover</SetVariable>
-                    <SetVariable name="ObjectName">MicTalkButton</SetVariable>
+                    <SetVariable name="ObjectName">MicTalk</SetVariable>
                     <SetVariable name="Size">42f,26f</SetVariable>
                     <SetVariable name="btn_type">embedded</SetVariable>
                     <SetVariable name="btn_format">medium</SetVariable>

@@ -266,21 +266,25 @@ QString toUnicode(std::string toConvert) {
 // getText is needed because the strings in the PDB file "have a variety of obscure representations".
 
 QString getText(rekordbox_pdb_t::device_sql_string_t* deviceString) {
+    QString text;
+
     if (instanceof <rekordbox_pdb_t::device_sql_short_ascii_t>(deviceString->body())) {
         rekordbox_pdb_t::device_sql_short_ascii_t* shortAsciiString =
                 static_cast<rekordbox_pdb_t::device_sql_short_ascii_t*>(deviceString->body());
-        return QString::fromStdString(shortAsciiString->text());
+        text =  QString::fromStdString(shortAsciiString->text());
     } else if (instanceof <rekordbox_pdb_t::device_sql_long_ascii_t>(deviceString->body())) {
         rekordbox_pdb_t::device_sql_long_ascii_t* longAsciiString =
                 static_cast<rekordbox_pdb_t::device_sql_long_ascii_t*>(deviceString->body());
-        return QString::fromStdString(longAsciiString->text());
+        text =  QString::fromStdString(longAsciiString->text());
     } else if (instanceof <rekordbox_pdb_t::device_sql_long_utf16be_t>(deviceString->body())) {
         rekordbox_pdb_t::device_sql_long_utf16be_t* longUtf16beString =
                 static_cast<rekordbox_pdb_t::device_sql_long_utf16be_t*>(deviceString->body());
-        return toUnicode(longUtf16beString->text());
+        text =  toUnicode(longUtf16beString->text());
     }
 
-    return QString();
+    // Some strings read from Rekordbox *.PDB files contain random null characters
+    // which if not removed cause Mixxx to crash when attempting to read file paths
+    return text.remove(QChar('\x0'));
 }
 
 int createDevicePlaylist(QSqlDatabase& database, QString devicePath) {
@@ -857,7 +861,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
 
             QHash<QString, QString> extraVersionInfo;
 
-            BeatsPointer pBeats = BeatFactory::makePreferredBeats(
+            mixxx::BeatsPointer pBeats = BeatFactory::makePreferredBeats(
                     *track, beats, extraVersionInfo, false, false, sampleRate, 0, 0, 0);
 
             track->setBeats(pBeats);
@@ -887,7 +891,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                         memoryCues << memoryCue;
                     } break;
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_LOOP: {
-                        // As Mixxx can only have 1 saved loop, use the first occurance of a memory loop relative to the start of the track
+                        // As Mixxx can only have 1 saved loop, use the first occurrence of a memory loop relative to the start of the track
                         if (position < cueLoopStartPosition) {
                             cueLoopStartPosition = position;
                             int endTime = static_cast<int>((*cueEntry)->loop_time()) - timingOffset;
@@ -932,7 +936,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                         memoryCues << memoryCue;
                     } break;
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_LOOP: {
-                        // As Mixxx can only have 1 saved loop, use the first occurance of a memory loop relative to the start of the track
+                        // As Mixxx can only have 1 saved loop, use the first occurrence of a memory loop relative to the start of the track
                         if (position < cueLoopStartPosition) {
                             cueLoopStartPosition = position;
                             int endTime = static_cast<int>((*cueExtendedEntry)->loop_time()) - timingOffset;
@@ -1047,7 +1051,7 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
     // exported from Rekordbox. This is caused by different MP3
     // decoders treating MP3s encoded in a variety of different cases
     // differently. The mp3guessenc library is used to determine which
-    // case the MP3 is clasified in. See the following PR for more
+    // case the MP3 is classified in. See the following PR for more
     // detailed information:
     // https://github.com/mixxxdj/mixxx/pull/2119
 

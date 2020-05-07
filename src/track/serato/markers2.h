@@ -6,7 +6,8 @@
 #include <QList>
 #include <memory>
 
-#include "util/color/rgbcolor.h"
+#include "track/cueinfo.h"
+#include "track/taglib/trackmetadata_file.h"
 #include "util/types.h"
 
 namespace mixxx {
@@ -259,10 +260,16 @@ inline QDebug operator<<(QDebug dbg, const SeratoMarkers2CueEntry& arg) {
 
 class SeratoMarkers2LoopEntry : public SeratoMarkers2Entry {
   public:
-    SeratoMarkers2LoopEntry(quint8 index, quint32 startposition, quint32 endposition, bool locked, QString label)
+    SeratoMarkers2LoopEntry(quint8 index,
+            quint32 startposition,
+            quint32 endposition,
+            RgbColor color,
+            bool locked,
+            QString label)
             : m_index(index),
               m_startposition(startposition),
               m_endposition(endposition),
+              m_color(color),
               m_locked(locked),
               m_label(label) {
     }
@@ -304,6 +311,14 @@ class SeratoMarkers2LoopEntry : public SeratoMarkers2Entry {
         m_endposition = endposition;
     }
 
+    RgbColor getColor() const {
+        return m_color;
+    }
+
+    void setColor(RgbColor color) {
+        m_color = color;
+    }
+
     bool isLocked() const {
         return m_locked;
     }
@@ -326,6 +341,7 @@ class SeratoMarkers2LoopEntry : public SeratoMarkers2Entry {
     quint8 m_index;
     quint32 m_startposition;
     quint32 m_endposition;
+    RgbColor m_color;
     bool m_locked;
     QString m_label;
 };
@@ -374,9 +390,24 @@ class SeratoMarkers2 final {
 
     // Parsing and formatting of gain values according to the
     // SeratoMarkers2 1.0/2.0 specification.
-    static bool parse(SeratoMarkers2* seratoMarkers2, const QByteArray& outerData);
+    static bool parse(
+            SeratoMarkers2* seratoMarkers2,
+            const QByteArray& outerData,
+            taglib::FileType fileType);
+    static bool parseCommon(
+            SeratoMarkers2* seratoMarkers2,
+            const QByteArray& data);
+    static bool parseID3(
+            SeratoMarkers2* seratoMarkers2,
+            const QByteArray& outerData);
+    static bool parseBase64Encoded(
+            SeratoMarkers2* seratoMarkers2,
+            const QByteArray& base64EncodedData);
 
-    QByteArray dump() const;
+    QByteArray dump(taglib::FileType fileType) const;
+    QByteArray dumpCommon() const;
+    QByteArray dumpID3() const;
+    QByteArray dumpBase64Encoded() const;
 
     int getAllocatedSize() const {
         return m_allocatedSize;
@@ -398,6 +429,7 @@ class SeratoMarkers2 final {
         m_entries = std::move(entries);
     }
 
+    QList<CueInfo> getCues() const;
     RgbColor::optional_t getTrackColor() const;
     bool isBpmLocked() const;
 

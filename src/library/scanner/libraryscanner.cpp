@@ -427,7 +427,7 @@ void LibraryScanner::cancelAndQuit() {
     changeScannerState(CANCELING);
     cancel();
     // Quit the event loop gracefully and stay in CANCELING state until all
-    // pendig signals are processed
+    // pending signals are processed
     quit();
     wait();
     changeScannerState(IDLE);
@@ -537,6 +537,7 @@ void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
     // For statistics tracking and to detect moved tracks
     TrackPointer pTrack(m_trackDao.addTracksAddFile(trackPath, false));
     if (pTrack) {
+        DEBUG_ASSERT(!pTrack->isDirty());
         // The track's actual location might differ from the
         // given trackPath
         const QString trackLocation(pTrack->getLocation());

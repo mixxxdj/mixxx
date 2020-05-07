@@ -147,6 +147,7 @@ class EffectChainSlot : public QObject {
       object than the mapping.
     **/
     ControlPushButton* m_pControlChainShowFocus;
+    ControlPushButton* m_pControlChainHasControllerFocus;
     ControlPushButton* m_pControlChainShowParameters;
     ControlPushButton* m_pControlChainFocusedEffect;
 

@@ -145,6 +145,11 @@ TrackPointer GlobalTrackCacheLocker::lookupTrackByRef(
     return m_pInstance->lookupByRef(trackRef);
 }
 
+QSet<TrackId> GlobalTrackCacheLocker::getCachedTrackIds() const {
+    DEBUG_ASSERT(m_pInstance);
+    return m_pInstance->getCachedTrackIds();
+}
+
 GlobalTrackCacheResolver::GlobalTrackCacheResolver(
         TrackFile fileInfo,
         SecurityTokenPointer pSecurityToken)
@@ -465,6 +470,14 @@ TrackPointer GlobalTrackCache::lookupByRef(
             return TrackPointer();
         }
     }
+}
+
+QSet<TrackId> GlobalTrackCache::getCachedTrackIds() const {
+    QSet<TrackId> trackIds;
+    for (const auto& entry : m_tracksById) {
+        trackIds << entry.first;
+    }
+    return trackIds;
 }
 
 TrackPointer GlobalTrackCache::revive(
