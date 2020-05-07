@@ -14,7 +14,9 @@
 #include "util/sample.h"
 
 EngineAux::EngineAux(const ChannelHandleAndGroup& handle_group, EffectsManager* pEffectsManager)
-        : EngineChannel(handle_group, EngineChannel::CENTER, pEffectsManager),
+        : EngineChannel(handle_group, EngineChannel::CENTER, pEffectsManager,
+                  /*isTalkoverChannel*/ false,
+                  /*isPrimaryDeck*/ false),
           m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),
           m_pPregain(new ControlAudioTaperPot(ConfigKey(getGroup(), "pregain"), -12, 12, 0.5)),
           m_wasActive(false) {

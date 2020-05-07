@@ -99,7 +99,6 @@ DlgPreferences(MixxxMainWindow* mixxx,
     void changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void showSoundHardwarePage();
     void slotButtonPressed(QAbstractButton* pButton);
-    void pageStateChanged();
   signals:
     void closeDlg();
     void showDlg();

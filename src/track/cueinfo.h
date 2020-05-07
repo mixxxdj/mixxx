@@ -2,6 +2,7 @@
 // cueinfo.h
 // Created 2020-02-28 by Jan Holthuis
 
+#include "audio/signalinfo.h"
 #include "util/color/rgbcolor.h"
 #include "util/optional.h"
 

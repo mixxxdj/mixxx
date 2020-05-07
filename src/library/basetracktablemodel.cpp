@@ -14,6 +14,7 @@
 #include "mixer/playermanager.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
+#include "util/datetime.h"
 #include "util/logger.h"
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
@@ -497,13 +498,9 @@ QVariant BaseTrackTableModel::roleValue(
             }
             return QString("(%1)").arg(rawValue.toInt());
         } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED)) {
-            QDateTime gmtDate = rawValue.toDateTime();
-            gmtDate.setTimeSpec(Qt::UTC);
-            return gmtDate.toLocalTime();
+            return mixxx::localDateTimeFromUtc(mixxx::convertVariantToDateTime(rawValue));
         } else if (column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
-            QDateTime gmtDate = rawValue.toDateTime();
-            gmtDate.setTimeSpec(Qt::UTC);
-            return gmtDate.toLocalTime();
+            return mixxx::localDateTimeFromUtc(mixxx::convertVariantToDateTime(rawValue));
         } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
             bool ok;
             const auto bpmValue = rawValue.toDouble(&ok);
@@ -538,17 +535,19 @@ QVariant BaseTrackTableModel::roleValue(
             // currently stored in the DB) then lookup the key and render it
             // using the user's selected notation.
             int keyIdColumn = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
-            if (keyIdColumn != -1) {
-                mixxx::track::io::key::ChromaticKey key =
-                        KeyUtils::keyFromNumericValue(
-                                index.sibling(index.row(), keyIdColumn).data().toInt());
-                if (key != mixxx::track::io::key::INVALID) {
-                    // Render this key with the user-provided notation.
-                    return KeyUtils::keyToString(key);
-                }
+            if (keyIdColumn == -1) {
+                // Otherwise, just use the column value
+                return std::move(rawValue);
             }
-            // clear invalid values
-            return QVariant();
+            mixxx::track::io::key::ChromaticKey key =
+                    KeyUtils::keyFromNumericValue(
+                            index.sibling(index.row(), keyIdColumn).data().toInt());
+            if (key == mixxx::track::io::key::INVALID) {
+                // clear invalid values
+                return QVariant();
+            }
+            // Render this key with the user-provided notation.
+            return KeyUtils::keyToString(key);
         } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) {
             bool ok;
             const auto gainValue = rawValue.toDouble(&ok);

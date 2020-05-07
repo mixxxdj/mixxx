@@ -99,6 +99,9 @@ class TrackCollection : public QObject,
             bool unremove);
 
   signals:
+    // Forwarded signals from LibraryScanner
+    void scanTrackAdded(TrackPointer pTrack);
+
     // Forwarded signals from TrackDAO
     void trackClean(TrackId trackId);
     void trackDirty(TrackId trackId);

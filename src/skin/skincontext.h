@@ -32,7 +32,7 @@ class SkinContext {
             const SkinContext* parent);
     virtual ~SkinContext();
 
-    // Not copyable
+    // Not copiable
     SkinContext(const SkinContext&) = delete;
     SkinContext& operator=(const SkinContext&) = delete;
 

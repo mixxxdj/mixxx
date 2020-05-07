@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QString>
+#include <QUrl>
 #include <QWidget>
 
 /// Interface that all preference pages have to implement.
@@ -16,12 +18,10 @@ class DlgPreferencePage : public QWidget {
     DlgPreferencePage(QWidget* pParent);
     virtual ~DlgPreferencePage();
 
-    virtual State state() {
-        return State::valid;
-    }
-
-  signals:
-    void stateChanged();
+    /// Returns the help URL for the current page.
+    /// Subclasses can provide a path to the appropriate manual page by
+    /// overriding this. The default implementation returns an invalid QUrl.
+    virtual QUrl helpUrl() const;
 
   public slots:
     /// Called when the preference dialog is shown to the user (not necessarily

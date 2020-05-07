@@ -262,12 +262,24 @@ void WTrackMenu::createActions() {
         m_pBpmFourThirdsAction = new QAction(tr("4/3 BPM"), m_pBPMMenu);
         m_pBpmThreeHalvesAction = new QAction(tr("3/2 BPM"), m_pBPMMenu);
 
-        connect(m_pBpmDoubleAction, &QAction::triggered, this, [this] { slotScaleBpm(Beats::DOUBLE); });
-        connect(m_pBpmHalveAction, &QAction::triggered, this, [this] { slotScaleBpm(Beats::HALVE); });
-        connect(m_pBpmTwoThirdsAction, &QAction::triggered, this, [this] { slotScaleBpm(Beats::TWOTHIRDS); });
-        connect(m_pBpmThreeFourthsAction, &QAction::triggered, this, [this] { slotScaleBpm(Beats::THREEFOURTHS); });
-        connect(m_pBpmFourThirdsAction, &QAction::triggered, this, [this] { slotScaleBpm(Beats::FOURTHIRDS); });
-        connect(m_pBpmThreeHalvesAction, &QAction::triggered, this, [this] { slotScaleBpm(Beats::THREEHALVES); });
+        connect(m_pBpmDoubleAction, &QAction::triggered, this, [this] {
+            slotScaleBpm(mixxx::Beats::DOUBLE);
+        });
+        connect(m_pBpmHalveAction, &QAction::triggered, this, [this] {
+            slotScaleBpm(mixxx::Beats::HALVE);
+        });
+        connect(m_pBpmTwoThirdsAction, &QAction::triggered, this, [this] {
+            slotScaleBpm(mixxx::Beats::TWOTHIRDS);
+        });
+        connect(m_pBpmThreeFourthsAction, &QAction::triggered, this, [this] {
+            slotScaleBpm(mixxx::Beats::THREEFOURTHS);
+        });
+        connect(m_pBpmFourThirdsAction, &QAction::triggered, this, [this] {
+            slotScaleBpm(mixxx::Beats::FOURTHIRDS);
+        });
+        connect(m_pBpmThreeHalvesAction, &QAction::triggered, this, [this] {
+            slotScaleBpm(mixxx::Beats::THREEHALVES);
+        });
 
         m_pBpmResetAction = new QAction(tr("Reset BPM"), m_pBPMMenu);
         connect(m_pBpmResetAction,
@@ -628,6 +640,11 @@ void WTrackMenu::updateMenus() {
     if (featureIsEnabled(Feature::Color)) {
         m_pColorPickerAction->setColorPalette(
                 ColorPaletteSettings(m_pConfig).getTrackColorPalette());
+
+        // Resize Menu to fit changed palette
+        QResizeEvent resizeEvent(QSize(), m_pColorMenu->size());
+        qApp->sendEvent(m_pColorMenu, &resizeEvent);
+
         const auto commonColor = getCommonTrackColor();
         if (commonColor) {
             m_pColorPickerAction->setSelectedColor(commonColor);
@@ -1004,11 +1021,11 @@ void WTrackMenu::slotScaleBpm(int scale) {
         if (pTrack->isBpmLocked()) {
             continue;
         }
-        BeatsPointer pBeats = pTrack->getBeats();
+        mixxx::BeatsPointer pBeats = pTrack->getBeats();
         if (!pBeats) {
             continue;
         }
-        pBeats->scale(static_cast<Beats::BPMScale>(scale));
+        pBeats->scale(static_cast<mixxx::Beats::BPMScale>(scale));
     }
 }
 
@@ -1068,7 +1085,7 @@ void WTrackMenu::slotClearBeats() {
         if (pTrack->isBpmLocked()) {
             continue;
         }
-        pTrack->setBeats(BeatsPointer());
+        pTrack->setBeats(mixxx::BeatsPointer());
     }
 }
 

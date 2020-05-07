@@ -591,18 +591,19 @@ WEffectSelector:open {
 }
 
 #RateControls WPushButton, #SyncButton,
-#DeckRow_5_LoopCuesTransport WPushButton,
+#DeckRow_5_LoopCuesTransport WPushButton, #PlayBg,
+#PlayContainerSmall WPushButton,
 #PflButton, #EQKillButton, #QuickEffectButton,
-#PlayButtonSampler, #PlayButtonDeckMini,
+#PlaySampler, #PlayDeckMini,
 #SamplerButtons WPushButton,
 #SamplerSyncButton,
 #FxUnitControlsExpanded WPushButton, #FxUnitControlsCollapsed  WPushButton,
 #FxExpandCollapseButton,
 #FxAssignButton, #FxToggleButton, #FxParameterButton, #FxFocusButton,
 #SplitCueButton,
-#PlayButtonPreview,
+#PlayPreview,
 #BeatgridButtons WPushButton,
-#MicTalkButton, #AuxPlayButton, #MicAuxAddButton, #MicDuckingButton {
+#MicTalk, #PlayAux, #MicAuxAddButton, #MicDuckingButton {
   /* limit background to button surface resulting from SVG backpath.
     border width wouldn't be applied.
     otoh, margin would set in the colored background area and not
@@ -621,11 +622,11 @@ WEffectSelector:open {
 #QuickEffectButton[displayValue="0"],
 #FxUnitControlsCollapsed WPushButton, #FxUnitControlsExpanded WPushButton,
 #FxExpandCollapseButton,
-#PlayButtonSampler[displayValue="0"], #PlayButtonDeckMini[displayValue="0"],
+#PlaySampler[displayValue="0"], #PlayDeckMini[displayValue="0"],
 #SamplerSyncButton[displayValue="0"],
-#MicTalkButton[value="0"], #AuxPlayButton[value="0"], #MicAuxAddButton,
+#MicTalk[value="0"], #PlayAux[value="0"], #MicAuxAddButton,
 #MicDuckingButton[value="0"],
-#PlayButtonPreview[displayValue="0"],
+#PlayPreview[displayValue="0"],
 QPushButton#pushButtonAutoDJ:enabled:!checked,
 #DlgMissing > QPushButton:enabled,
 #DlgHidden > QPushButton:enabled,
@@ -643,13 +644,21 @@ QPushButton#pushButtonAutoDJ:enabled:!checked,
 /* elevated buttons & embedded buttons in top row & toolbar
       brighter bg color to enhance contrast in darker containers
       and with small size respectively */
-#DeckRow_5_LoopCuesTransport WPushButton[value="0"],
+#DeckRow_5_LoopCuesTransport WPushButton[value="0"], #PlayBg,
 #HotcueButton,
 #FxAssignButton[displayValue="0"], #FxFocusButton[displayValue="0"],
 #FxToggleButton[displayValue="0"], #FxParameterButton[displayValue="0"],
 #SplitCueButton[value="0"],
 #MicAuxGainPFlContainer WPushButton[displayValue="0"] {
   background-color: #2c2c2c;
+}
+/* Exception: #PlayDeck is transparent. #PlayIndicator & #PlayBg shine through */
+WPushButton#PlayDeck[value="0"],
+WPushButton#PlayDeck[value="1"],
+WPushButton#PlayDeckMini[value="0"],
+WPushButton#PlayDeckMini[value="1"],
+WPushButton#PlayIndicator[value="0"] {
+  background-color: none;
 }
 
 /* Green/Lime Fx-related buttons */
@@ -672,20 +681,15 @@ QPushButton#pushButtonAutoDJ:enabled:!checked,
 /* define red buttons in DeckRow_5_LoopCuesTransport indivually,
 because somehow bg color for #SpecialCueButton can't be overwritten */
 #LoopControls WPushButton[value="1"], #BeatjumpControls WPushButton[value="1"],
-#CueDeck[value="1"], #Reverse[value="1"],
-/* Indicating play_from_cue. Not working 100%, will be fixed later on
-#PlayDeck[value="1"][highlight="0"], #PlayDeck[value="1"][highlight="1"],
-#PlayButtonDeckMini[value="1"][highlight="0"], #PlayButtonDeckMini[value="1"][highlight="1"],
-#PlayButtonSampler[value="1"][highlight="0"], #PlayButtonSampler[value="1"][highlight="1"], */
-#PlayDeck[displayValue="1"],
-#PlayButtonDeckMini[displayValue="1"],
-#PlayButtonSampler[displayValue="1"],
+#CueDeck[value="1"], #Reverse[value="1"], #PlayIndicator[displayValue="1"],
+#PlayDeckMini[displayValue="1"],
+#PlaySampler[displayValue="1"],
 #PflButton[value="1"],
 #SamplerSyncButton[displayValue="1"],
 #EQKillButton[displayValue="1"],
-#MicTalkButton[value="1"], #AuxPlayButton[value="1"],
+#MicTalk[value="1"], #PlayAux[value="1"],
 #MicDuckingButton[value="1"],
-#PlayButtonPreview[displayValue="1"],
+#PlayPreview[displayValue="1"],
 QPushButton#pushButtonRecording:checked,
 #RecFeedback[displayValue="2"],
 #BeatgridButtons WPushButton[value="1"],
@@ -701,10 +705,6 @@ QPushButton#pushButtonRecording:checked,
 }
 
 /* Orange/yellow */
-/* Play bg when playing from Cue / hotcue
-#PlayDeck[value="0"][highlight="1"],
-#PlayButtonDeckMini[value="0"][highlight="1"],
-#PlayButtonSampler[value="0"][highlight="1"], */
 #VinylButton[displayValue="1"], #VinylButton[displayValue="2"],
 #FxFocusButton[displayValue="1"],
 #GuiToggleButton[displayValue="1"], #GuiToggleButton[displayValue="2"],
@@ -864,14 +864,14 @@ QPushButton#pushButtonAutoDJ:checked,
     image: url(skin:/buttons_classic/btn__splitcue_active.svg) no-repeat center center;
   }
 
-#PlayButtonSampler[value="0"],
-#PlayButtonDeckMini[value="0"],
-#PlayButtonPreview[displayValue="0"] {
+#PlaySampler[value="0"],
+#PlayDeckMini[value="0"],
+#PlayPreview[displayValue="0"] {
   image: url(skin:/buttons_classic/btn__play_sampler.svg) no-repeat center center;
   }
-  #PlayButtonSampler[value="1"],
-  #PlayButtonDeckMini[value="1"],
-  #PlayButtonPreview[displayValue="1"] {
+  #PlaySampler[value="1"],
+  #PlayDeckMini[value="1"],
+  #PlayPreview[displayValue="1"] {
     image: url(skin:/buttons_classic/btn__pause_sampler.svg) no-repeat center center;
   }
 
@@ -995,10 +995,10 @@ QPushButton#pushButtonAutoDJ:checked,
       image: url(skin:/buttons_classic/btn__beats_faster.svg) no-repeat center center;
     }
 
-#MicTalkButton {
+#MicTalk {
   image: url(skin:/buttons_classic/btn__mic_talk.svg) no-repeat center center;
 }
-#AuxPlayButton {
+#PlayAux {
   image: url(skin:/buttons_classic/btn__aux_play.svg) no-repeat center center;
 }
 #MicAuxAddButton {
@@ -1237,7 +1237,7 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
   }
   #PlayContainerSmall {
     margin: 1px 0px;
-    padding: 0px 1px 0px 2px;
+    padding: 5px 1px 0px 2px;
     border-width: 0px 0px 0px 1px;
   }
   #MiniDeckSpinnyCoverContainer {
@@ -1657,7 +1657,7 @@ WBeatSpinBox,
         qproperty-alignment: 'AlignCenter | AlignTop';
         padding: 0px 0px 3px 1px;
       }
-      #MicAuxPlayButtonBox {
+      #MicAuxPlayBox {
         qproperty-alignment: 'AlignCenter | AlignBottom';
         padding: 0px 0px 2px 1px;
       }
@@ -2192,7 +2192,7 @@ WCueMenuPopup QPushButton:focus {
     padding-right: 3px;
     border-right: 1px solid #000;
     /* gradient colors should match those of QHeaderView gradient,
-      with a litte transparency added to not cut off the header label */
+      with a little transparency added to not cut off the header label */
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
       stop:0 rgba(34,34,34,190),
       stop:1 rgba(17,17,17,190));

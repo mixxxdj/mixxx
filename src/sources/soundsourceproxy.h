@@ -88,11 +88,12 @@ class SoundSourceProxy {
     // properly. The application log will contain warning messages for a detailed
     // analysis in case unexpected behavior has been reported.
     void updateTrackFromSource(
-            ImportTrackMetadataMode importTrackMetadataMode = ImportTrackMetadataMode::Default) const;
+            ImportTrackMetadataMode importTrackMetadataMode = ImportTrackMetadataMode::Default);
 
     // Parse only the metadata from the file without modifying
     // the referenced track.
-    mixxx::MetadataSource::ImportResult importTrackMetadata(mixxx::TrackMetadata* pTrackMetadata) const;
+    mixxx::MetadataSource::ImportResult importTrackMetadata(
+            mixxx::TrackMetadata* pTrackMetadata) const;
 
     // Opening the audio source through the proxy will update the
     // audio properties of the corresponding track object. Returns

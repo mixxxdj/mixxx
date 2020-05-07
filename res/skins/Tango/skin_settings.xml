@@ -92,13 +92,9 @@ Description:
                 <SizePolicy>me,me</SizePolicy>
                 <Layout>stacked</Layout>
                 <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
-                  <!-- translucent cover when Hot Cues are invisble -->
+                  <!-- translucent cover when Hot Cues are invisible -->
                   <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>vertical</Layout>
                     <Size>182f,13me</Size>
                     <Connection>
                       <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
@@ -169,28 +165,13 @@ Description:
                 <Size>50me,15f</Size>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <!-- button graphics are 15x15px + 1px margin-right -->
-                  <Template src="skin:../Tango/button_2state_persist.xml">
-                    <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
-                    <SetVariable name="Size">20f,15f</SetVariable>
-                    <SetVariable name="state_0_text">Q</SetVariable>
-                    <SetVariable name="state_1_text">Q</SetVariable>
-                    <SetVariable name="ConfigKey">[Tango],separate_cue_button</SetVariable>
-                  </Template>
-
-                  <WidgetGroup><Size>6f,0f</Size></WidgetGroup>
-
                   <WidgetGroup><!-- Star rating -->
                     <Layout>stacked</Layout>
                     <Size>16f,15f</Size>
                     <Children>
-                      <!-- index 0 due to bug -->
-                      <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
                       <!-- translucent cover when Stars don't fit into transport row -->
                       <WidgetGroup>
                         <ObjectName>SubmenuCover</ObjectName>
-                        <Layout>vertical</Layout>
                         <Size>16f,15f</Size>
                         <Connection>
                           <ConfigKey persist="true">[Tango],starrating_fits</ConfigKey>
@@ -281,13 +262,9 @@ Description:
             <MaximumSize>-1,40</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Children>
-              <!-- index 0 due to bug -->
-              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
               <!-- translucent cover when Pitch slider is hidden -->
               <WidgetGroup>
                 <ObjectName>SubmenuCover</ObjectName>
-                <Layout>vertical</Layout>
                 <MinimumSize>182,26</MinimumSize>
                 <MaximumSize>-1,40</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
@@ -387,12 +364,8 @@ Description:
             <SizePolicy>me,me</SizePolicy>
             <Layout>stacked</Layout>
             <Children>
-              <!-- index 0 due to bug -->
-              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
               <WidgetGroup><!-- translucent cover when Spinny/Cover is disabled -->
                 <ObjectName>SubmenuCover</ObjectName>
-                <Layout>vertical</Layout>
                 <SizePolicy>me,me</SizePolicy>
                 <Connection>
                   <ConfigKey persist="true">[Tango],no_spinny_no_cover</ConfigKey>
@@ -532,13 +505,9 @@ Description:
             <MaximumSize>182,60</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Children>
-              <!-- index 0 due to bug -->
-              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
               <!-- translucent cover when Channel Mixer is hidden -->
               <WidgetGroup>
                 <ObjectName>SubmenuCover</ObjectName>
-                <Layout>vertical</Layout>
                 <MinimumSize>182,39</MinimumSize>
                 <MaximumSize>182,60</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
@@ -563,13 +532,9 @@ Description:
                     <MaximumSize>182,20</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
                     <Children>
-                      <!-- index 0 due to bug -->
-                      <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
                       <!-- translucent cover when EQ knobs are hidden -->
                       <WidgetGroup>
                         <ObjectName>SubmenuCover</ObjectName>
-                        <Layout>vertical</Layout>
                         <MinimumSize>182,13</MinimumSize>
                         <MaximumSize>182,20</MaximumSize>
                         <SizePolicy>me,me</SizePolicy>
@@ -605,13 +570,9 @@ Description:
             <MaximumSize>182,20</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Children>
-              <!-- index 0 due to bug -->
-              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
               <!-- translucent cover when Channel Mixer is hidden -->
               <WidgetGroup>
                 <ObjectName>SubmenuCover</ObjectName>
-                <Layout>vertical</Layout>
                 <MinimumSize>182,13</MinimumSize>
                 <MaximumSize>182,20</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
@@ -657,13 +618,9 @@ Description:
                 <Size>40f,20f</Size>
                 <Layout>stacked</Layout>
                 <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
                   <!-- translucent cover when Effects are invisible -->
                   <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>vertical</Layout>
                     <Size>40f,20f</Size>
                     <Connection>
                       <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
@@ -702,10 +659,7 @@ Description:
             <SizePolicy>me,me</SizePolicy>
             <Layout>stacked</Layout>
             <Children>
-              <!-- index 0 due to bug -->
-              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
-              <!-- translucent cover when Effects are invisble -->
+              <!-- translucent cover when Effects are invisible -->
               <WidgetGroup>
                 <ObjectName>SubmenuCover</ObjectName>
                 <Layout>vertical</Layout>
@@ -765,13 +719,9 @@ Description:
                 <MaximumSize>112,20</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
                   <!-- translucent cover when Samlers are hidden -->
                   <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>vertical</Layout>
                     <MinimumSize>112,13</MinimumSize>
                     <MaximumSize>112,20</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>

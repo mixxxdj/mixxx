@@ -15,7 +15,7 @@ double colorDistance(QRgb a, QRgb b) {
     // of colors into account. More accurate algorithms like the CIELAB2000
     // Delta-E rely on sophisticated color space conversions and need a lot
     // of costly computations. In contrast, this is a low-cost
-    // approximation and should be sufficently accurate.
+    // approximation and should be sufficiently accurate.
     // More details: https://www.compuphase.com/cmetric.htm
     long mean_red = (static_cast<long>(qRed(a)) + static_cast<long>(qRed(b))) / 2;
     long delta_red = static_cast<long>(qRed(a)) - static_cast<long>(qRed(b));
@@ -41,22 +41,32 @@ QRgb ColorMapper::getNearestColor(QRgb desiredColor) {
     }
 
     // Color is not cached
-    QRgb nearestColor;
+    auto iNearestColor = m_availableColors.constEnd();
     double nearestColorDistance = qInf();
-    for (auto j = m_availableColors.constBegin(); j != m_availableColors.constEnd(); j++) {
-        QRgb availableColor = j.key();
+    for (auto i = m_availableColors.constBegin(); i != m_availableColors.constEnd(); ++i) {
+        const QRgb availableColor = i.key();
         double distance = colorDistance(desiredColor, availableColor);
         if (distance < nearestColorDistance) {
             nearestColorDistance = distance;
-            nearestColor = j.key();
+            iNearestColor = i;
         }
     }
+    if (iNearestColor != m_availableColors.constEnd()) {
+        const QRgb nearestColor = iNearestColor.key();
+        if (kLogger.traceEnabled()) {
+            kLogger.trace()
+                    << "Found matching color"
+                    << nearestColor
+                    << "for"
+                    << desiredColor;
+        }
+        m_cache.insert(desiredColor, nearestColor);
+        return nearestColor;
+    }
 
-    kLogger.trace()
-            << "ColorMapper found matching color for" << desiredColor << ":"
-            << "Color =" << nearestColor;
-    m_cache.insert(desiredColor, nearestColor);
-    return nearestColor;
+    DEBUG_ASSERT(m_availableColors.isEmpty());
+    DEBUG_ASSERT(!"Unreachable: No matching color found");
+    return desiredColor;
 }
 
 QVariant ColorMapper::getValueForNearestColor(QRgb desiredColor) {

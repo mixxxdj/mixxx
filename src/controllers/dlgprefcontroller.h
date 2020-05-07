@@ -31,8 +31,6 @@ class DlgPrefController : public DlgPreferencePage {
                       UserSettingsPointer pConfig);
     virtual ~DlgPrefController();
 
-    DlgPreferencePage::State state() override;
-
   public slots:
     /// Called when the preference dialog (not this page) is shown to the user.
     void slotUpdate() override;
@@ -40,6 +38,8 @@ class DlgPrefController : public DlgPreferencePage {
     void slotApply() override;
     /// Called when the user clicks the global "Reset to Defaults" button.
     void slotResetToDefaults() override;
+
+    QUrl helpUrl() const override;
 
   signals:
     void applyPreset(Controller* pController, ControllerPresetPointer pPreset, bool bEnabled);
@@ -81,7 +81,7 @@ class DlgPrefController : public DlgPreferencePage {
 
     /// Set dirty state (i.e. changes have been made).
     ///
-    /// When this preferences page is marked as "dirty", changes have occured
+    /// When this preferences page is marked as "dirty", changes have occurred
     /// that can be applied or discarded.
     ///
     /// @param bDirty The new dialog's dirty state.
@@ -91,7 +91,7 @@ class DlgPrefController : public DlgPreferencePage {
 
     /// Set dirty state (i.e. changes have been made).
     ///
-    /// When this preferences page is marked as "dirty", changes have occured
+    /// When this preferences page is marked as "dirty", changes have occurred
     /// that can be applied or discarded.
     ///
     /// @param bDirty The new dialog's dirty state.

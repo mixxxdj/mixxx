@@ -552,12 +552,14 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/bpm.cpp
   src/track/cue.cpp
   src/track/cueinfo.cpp
+  src/track/cueinfoimporter.cpp
   src/track/globaltrackcache.cpp
   src/track/keyfactory.cpp
   src/track/keys.cpp
   src/track/keyutils.cpp
   src/track/playcounter.cpp
   src/track/replaygain.cpp
+  src/track/serato/cueinfoimporter.cpp
   src/track/serato/markers.cpp
   src/track/serato/markers2.cpp
   src/track/serato/tags.cpp
@@ -565,10 +567,16 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/trackfile.cpp
   src/track/trackinfo.cpp
   src/track/trackmetadata.cpp
-  src/track/trackmetadatataglib.cpp
   src/track/tracknumbers.cpp
   src/track/trackrecord.cpp
   src/track/trackref.cpp
+  src/track/taglib/trackmetadata_ape.cpp
+  src/track/taglib/trackmetadata_common.cpp
+  src/track/taglib/trackmetadata_file.cpp
+  src/track/taglib/trackmetadata_id3v2.cpp
+  src/track/taglib/trackmetadata_mp4.cpp
+  src/track/taglib/trackmetadata_riff.cpp
+  src/track/taglib/trackmetadata_xiph.cpp
   src/util/autohidpi.cpp
   src/util/battery/battery.cpp
   src/util/cache.cpp
@@ -1308,6 +1316,15 @@ endif()
 target_include_directories(mixxx-lib SYSTEM PUBLIC lib/fidlib)
 target_link_libraries(mixxx-lib PUBLIC fidlib)
 
+# KeyFinder
+find_package(KeyFinder)
+option(KEYFINDER "KeyFinder" OFF)
+if(KEYFINDER)
+  target_sources(mixxx-lib PRIVATE src/analyzer/plugins/analyzerkeyfinder.cpp)
+  target_compile_definitions(mixxx-lib PUBLIC __KEYFINDER__)
+  target_link_libraries(mixxx-lib PUBLIC KeyFinder::KeyFinder)
+endif()
+
 # FLAC
 find_package(FLAC REQUIRED)
 target_link_libraries(mixxx-lib PUBLIC FLAC::FLAC)
@@ -1860,11 +1877,29 @@ if(LILV)
 endif()
 
 # Live Broadcasting (Shoutcast)
-find_package(Shout)
-cmake_dependent_option(BROADCAST "Live Broadcasting (Shoutcast) support" ON "Shout_FOUND" OFF)
+option(BROADCAST "Live Broadcasting (Shoutcast) support" ON)
 if(BROADCAST)
-  if(NOT Shout_FOUND)
+  find_package(Shout)
+  if(UNIX AND NOT APPLE)
+    # Check if system lib is at least 2.4.4 and not suffering bug
+    # https://bugs.launchpad.net/mixxx/+bug/1833225
+    if(Shout_FOUND AND Shout_VERSION VERSION_LESS 2.4.4)
+        message(STATUS "Installed libshout version is suffering from bug lp1833225")
+    endif()
+    if(NOT Shout_FOUND OR Shout_VERSION VERSION_LESS 2.4.4)
+      # Fall back to internal libraray in the lib tree
+      message(STATUS "Using internal libshout")
+      add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/lib/libshout")
+      target_include_directories(mixxx-lib PUBLIC lib/libshout/include)
+      target_link_libraries(mixxx-lib PUBLIC shout_mixxx)
+    else()
+      target_link_libraries(mixxx-lib PUBLIC Shout::Shout)
+    endif()
+  else()
+    if(NOT Shout_FOUND)
       message(FATAL_ERROR "Live Broadcasting support requires the libshout and its development headers.")
+    endif()
+    target_link_libraries(mixxx-lib PUBLIC Shout::Shout)
   endif()
   target_sources(mixxx-lib PRIVATE
     src/preferences/dialog/dlgprefbroadcastdlg.ui
@@ -1873,7 +1908,6 @@ if(BROADCAST)
     src/engine/sidechain/shoutconnection.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __BROADCAST__)
-  target_link_libraries(mixxx-lib PUBLIC Shout::Shout)
 endif()
 
 # Locale Aware Compare for SQLite

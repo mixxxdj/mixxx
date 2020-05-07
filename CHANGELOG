@@ -17,6 +17,7 @@
 * Add controller mapping for Hercules DJControl Inpulse 300 #2465
 * Add controller mapping for Denon MC7000 #2546
 * Add controller mapping for Stanton DJC.4 #2607
+* Fix broadcasting via broadcast/recording input lp:1876222 #2743
 
 ==== 2.2.3 2019-11-24 ====
 * Don't make users reconfigure sound hardware when it has not changed #2253

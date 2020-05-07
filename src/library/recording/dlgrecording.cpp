@@ -107,7 +107,7 @@ void DlgRecording::onShow() {
 }
 
 bool DlgRecording::hasFocus() const {
-    return QWidget::hasFocus();
+    return m_pTrackTableView->hasFocus();
 }
 
 void DlgRecording::refreshBrowseModel() {

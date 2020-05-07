@@ -44,9 +44,6 @@ GLSimpleWaveformWidget::GLSimpleWaveformWidget(const char* group, QWidget* paren
 }
 
 GLSimpleWaveformWidget::~GLSimpleWaveformWidget() {
-    if (QGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
 }
 
 void GLSimpleWaveformWidget::castToQWidget() {
