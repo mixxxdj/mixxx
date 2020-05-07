@@ -11,12 +11,11 @@
 * Add hotcue color find-and-replace tool [#2547](https://github.com/mixxxdj/mixxx/pull/2547)
 
 ### Importing From Other DJ Software ###
-
-  * Note: Mixxx does not yet support multiple loops per track. We are working on this for Mixxx 2.4. In Mixxx 2.3, if you import a track with multiple loops from Rekordbox or Serato, Mixxx will use the first loop cue as the single loop Mixxx currently supports. The loops are still stored in Mixxx's database and are treated as hotcues for 2.3. If you do not delete these hotcues, they will be usable as loops in Mixxx 2.4.
-
 * Import cue points, track colors, and playlists from Rekordbox USB drives [#2119](https://github.com/mixxxdj/mixxx/pull/2119) [#2555](https://github.com/mixxxdj/mixxx/pull/2555) [#2543](https://github.com/mixxxdj/mixxx/pull/2543)
+  * Note: Mixxx does not yet support multiple loops per track. We are working on this for Mixxx 2.4. In Mixxx 2.3, if you import a track with multiple loops from Rekordbox, Mixxx will use the first loop cue as the single loop Mixxx currently supports. The loops are still stored in Mixxx's database and are treated as hotcues in Mixxx 2.3. If you do not delete these hotcues, they will be usable as loops in Mixxx 2.4.
   * Note: The first Rekordbox memory cue is imported for the main cue button in Mixxx and the remaining Rekordbox memory cues are imported as Mixxx hotcues, starting with the next hotcue number after the last hotcue from Rekordbox.
 * Import cue points, track colors, and playlists from Serato file tags & database [#2480](https://github.com/mixxxdj/mixxx/pull/2480) [#2526](https://github.com/mixxxdj/mixxx/pull/2526) [#2499](https://github.com/mixxxdj/mixxx/pull/2499) [#2495](https://github.com/mixxxdj/mixxx/pull/2495)
+  * Note: Mixxx treats loops imported from Serato as hotcues similar to how loops from Rekordbox are treated. Refer to the note above for details. Serato keeps loops and hotcues in separate lists, but Mixxx does not, so loops from Serato are imported starting as hotcue 9.
 
 ### Intro & Outro Cues ###
 * Add intro & outro range cues with automatic silence detection [#1242](https://github.com/mixxxdj/mixxx/pull/1242)
