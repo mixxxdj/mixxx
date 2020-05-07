@@ -5,30 +5,26 @@
 #include <QSet>
 
 #include "control/controlpotmeter.h"
-#include "effects/effectmanifestparameter.h"
 #include "effects/backends/effectsbackendmanager.h"
 #include "effects/presets/effectchainpresetmanager.h"
 #include "effects/specialeffectchainslots.h"
 #include "engine/channelhandle.h"
-#include "engine/effects/engineeffectsmanager.h"
 #include "preferences/usersettings.h"
 #include "util/class.h"
 
 class EngineEffectsManager;
-class EffectManifest;
-
-typedef QMap<EffectParameterType, QList<EffectParameterPointer>> ParameterMap;
 
 /// EffectsManager initializes and shuts down the effects system. It creates and
 /// destroys a fixed set of StandardEffectChainSlots on Mixxx startup/shutdown
 /// and creates a QuickEffectChainSlot and EqualizerEffectChainSlot when
 /// PlayerManager creates decks.
-class EffectsManager : public QObject {
-    Q_OBJECT
+class EffectsManager {
   public:
-    EffectsManager(QObject* pParent, UserSettingsPointer pConfig,
-                   ChannelHandleFactory* pChannelHandleFactory);
+    EffectsManager(UserSettingsPointer pConfig,
+            ChannelHandleFactory* pChannelHandleFactory);
     virtual ~EffectsManager();
+
+    void setup();
 
     EngineEffectsManager* getEngineEffectsManager() {
         return m_pEngineEffectsManager;
@@ -54,10 +50,6 @@ class EffectsManager : public QObject {
         return m_pVisibleEffectsList;
     }
 
-    static const int kNumStandardEffectChains = 4;
-
-    bool isAdoptMetaknobValueEnabled() const;
-
     void registerInputChannel(const ChannelHandleAndGroup& handle_group);
     const QSet<ChannelHandleAndGroup>& registeredInputChannels() const {
         return m_registeredInputChannels;
@@ -68,10 +60,7 @@ class EffectsManager : public QObject {
         return m_registeredOutputChannels;
     }
 
-    void addStandardEffectChainSlots();
     EffectChainSlotPointer getStandardEffectChainSlot(int unitNumber) const;
-
-    void addOutputEffectChainSlot();
     EffectChainSlotPointer getOutputEffectChainSlot() const;
 
     void addEqualizerEffectChainSlot(const QString& deckGroupName);
@@ -82,37 +71,14 @@ class EffectsManager : public QObject {
 
     EffectChainSlotPointer getEffectChainSlot(const QString& group) const;
 
-    inline const QList<EffectManifestPointer>& getVisibleEffectManifests() const {
-        return m_visibleEffectManifests;
-    };
-
-    void setEffectVisibility(EffectManifestPointer pManifest, bool visibility);
-    bool getEffectVisibility(EffectManifestPointer pManifest);
-
-    void setup();
-
-  signals:
-    void visibleEffectsUpdated();
+    bool isAdoptMetaknobValueEnabled() const;
 
   private:
-    QString debugString() const {
-        return "EffectsManager";
-    }
-
-    void connectChainSlotSignals(EffectChainSlotPointer pChainSlot);
+    void addStandardEffectChainSlots();
+    void addOutputEffectChainSlot();
 
     void readEffectsXml();
     void saveEffectsXml();
-
-    ChannelHandleFactory* m_pChannelHandleFactory;
-
-    QList<EffectManifestPointer> m_visibleEffectManifests;
-
-    // We need to create Control Objects for Equalizers' frequencies
-    ControlPotmeter m_loEqFreq;
-    ControlPotmeter m_hiEqFreq;
-
-    bool m_underDestruction;
 
     QSet<ChannelHandleAndGroup> m_registeredInputChannels;
     QSet<ChannelHandleAndGroup> m_registeredOutputChannels;
@@ -124,14 +90,18 @@ class EffectsManager : public QObject {
     QHash<QString, EqualizerEffectChainSlotPointer> m_equalizerEffectChainSlots;
     QHash<QString, QuickEffectChainSlotPointer> m_quickEffectChainSlots;
 
-    EffectChainPresetPointer m_defaultQuickEffectChainPreset;
-
     EffectsBackendManagerPointer m_pBackendManager;
+    ChannelHandleFactory* m_pChannelHandleFactory;
     EngineEffectsManager* m_pEngineEffectsManager;
     EffectsMessengerPointer m_pMessenger;
     VisibleEffectsListPointer m_pVisibleEffectsList;
     EffectPresetManagerPointer m_pEffectPresetManager;
     EffectChainPresetManagerPointer m_pChainPresetManager;
+
+    // ControlObjects for Equalizers' frequencies
+    // TODO: replace these with effect parameters that are hidden by default
+    ControlPotmeter m_loEqFreq;
+    ControlPotmeter m_hiEqFreq;
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };

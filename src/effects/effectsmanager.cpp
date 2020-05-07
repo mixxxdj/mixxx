@@ -9,6 +9,7 @@
 #include "effects/presets/effectpresetmanager.h"
 #include "effects/effectxmlelements.h"
 #include "effects/visibleeffectslist.h"
+#include "engine/effects/engineeffectsmanager.h"
 #include "util/assert.h"
 
 namespace {
@@ -19,17 +20,17 @@ const QString kEqualizerEffectRackGroup = "[EqualizerRack1]";
 const QString kEffectGroupSeparator = "_";
 const QString kGroupClose = "]";
 const unsigned int kEffectMessagePipeFifoSize = 2048;
+const int kNumStandardEffectChains = 4;
 const QString kEffectsXmlFile = "effects.xml";
 } // anonymous namespace
 
-EffectsManager::EffectsManager(QObject* pParent,
+EffectsManager::EffectsManager(
         UserSettingsPointer pConfig,
         ChannelHandleFactory* pChannelHandleFactory)
-        : QObject(pParent),
+        : m_pConfig(pConfig),
           m_pChannelHandleFactory(pChannelHandleFactory),
           m_loEqFreq(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040),
-          m_hiEqFreq(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040),
-          m_pConfig(pConfig) {
+          m_hiEqFreq(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040) {
     qRegisterMetaType<EffectChainMixMode>("EffectChainMixMode");
 
     m_pBackendManager = EffectsBackendManagerPointer(new EffectsBackendManager());
@@ -68,8 +69,13 @@ EffectsManager::~EffectsManager() {
     m_pMessenger->processEffectsResponses();
 }
 
-bool EffectsManager::isAdoptMetaknobValueEnabled() const {
-    return m_pConfig->getValue(ConfigKey("[Effects]", "AdoptMetaknobValue"), true);
+void EffectsManager::setup() {
+    // Add postfader effect chain slots
+    addStandardEffectChainSlots();
+    addOutputEffectChainSlot();
+    // EQ and QuickEffect chain slots are initialized when PlayerManager creates decks.
+
+    readEffectsXml();
 }
 
 void EffectsManager::registerInputChannel(const ChannelHandleAndGroup& handle_group) {
@@ -94,7 +100,7 @@ void EffectsManager::registerOutputChannel(const ChannelHandleAndGroup& handle_g
 }
 
 void EffectsManager::addStandardEffectChainSlots() {
-    for (int i = 0; i < EffectsManager::kNumStandardEffectChains; ++i) {
+    for (int i = 0; i < kNumStandardEffectChains; ++i) {
         VERIFY_OR_DEBUG_ASSERT(!m_effectChainSlotsByGroup.contains(
                 StandardEffectChainSlot::formatEffectChainSlotGroup(i))) {
             continue;
@@ -156,31 +162,8 @@ EffectChainSlotPointer EffectsManager::getEffectChainSlot(
     return m_effectChainSlotsByGroup.value(group);
 }
 
-void EffectsManager::setEffectVisibility(EffectManifestPointer pManifest, bool visible) {
-    if (visible && !m_visibleEffectManifests.contains(pManifest)) {
-        auto insertion_point = std::lower_bound(m_visibleEffectManifests.begin(),
-                m_visibleEffectManifests.end(),
-                pManifest,
-                EffectManifest::alphabetize);
-        m_visibleEffectManifests.insert(insertion_point, pManifest);
-        emit visibleEffectsUpdated();
-    } else if (!visible) {
-        m_visibleEffectManifests.removeOne(pManifest);
-        emit visibleEffectsUpdated();
-    }
-}
-
-bool EffectsManager::getEffectVisibility(EffectManifestPointer pManifest) {
-    return m_visibleEffectManifests.contains(pManifest);
-}
-
-void EffectsManager::setup() {
-    // Add postfader effect chain slots
-    addStandardEffectChainSlots();
-    addOutputEffectChainSlot();
-    // EQ and QuickEffect chain slots are initialized when PlayerManager creates decks.
-
-    readEffectsXml();
+bool EffectsManager::isAdoptMetaknobValueEnabled() const {
+    return m_pConfig->getValue(ConfigKey("[Effects]", "AdoptMetaknobValue"), true);
 }
 
 void EffectsManager::readEffectsXml() {
@@ -246,6 +229,7 @@ void EffectsManager::saveEffectsXml() {
     }
     QFile file(settingsPath.absoluteFilePath(kEffectsXmlFile));
     if (!file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
+        qWarning() << "EffectsManager: could not save effects.xml file";
         return;
     }
     file.write(doc.toString().toUtf8());

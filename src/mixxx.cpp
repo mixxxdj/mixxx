@@ -247,7 +247,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     }
 
     // Create the Effects subsystem.
-    m_pEffectsManager = new EffectsManager(this, pConfig, m_pChannelHandleFactory);
+    m_pEffectsManager = new EffectsManager(pConfig, m_pChannelHandleFactory);
 
     // Starting the master (mixing of the channels and effects):
     m_pEngine = new EngineMaster(pConfig, "[Master]", m_pEffectsManager,
