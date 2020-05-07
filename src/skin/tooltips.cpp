@@ -396,6 +396,18 @@ void Tooltips::addStandardTooltips() {
             << tempoDisplay
             << tr("When tapped repeatedly, adjusts the BPM to match the tapped BPM.");
 
+    add("shift_cues_earlier")
+            << tr("Shift cues earlier")
+            << tr("Shift cues imported from Serato or Rekordbox if they are slightly off time.")
+            << tr("Left click: shift 1 millisecond earlier")
+            << tr("Right click: shift 0.1 milliseconds earlier");
+
+    add("shift_cues_later")
+            << tr("Shift cues later")
+            << tr("Shift cues imported from Serato or Rekordbox if they are slightly off time.")
+            << tr("Left click: shift 1 millisecond later")
+            << tr("Right click: shift 0.1 milliseconds later");
+
     add("show_spinny")
             << tr("Spinning Vinyl")
             << tr("Show/hide the spinning vinyl section.");
