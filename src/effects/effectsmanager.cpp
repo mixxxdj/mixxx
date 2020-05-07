@@ -131,6 +131,11 @@ EffectChainSlotPointer EffectsManager::getStandardEffectChainSlot(int unitNumber
     return m_standardEffectChainSlots.at(unitNumber);
 }
 
+void EffectsManager::addDeck(const QString& deckGroupName) {
+    addEqualizerEffectChainSlot(deckGroupName);
+    addQuickEffectChainSlot(deckGroupName);
+}
+
 void EffectsManager::addEqualizerEffectChainSlot(const QString& deckGroupName) {
     VERIFY_OR_DEBUG_ASSERT(!m_equalizerEffectChainSlots.contains(
             EqualizerEffectChainSlot::formatEffectChainSlotGroup(deckGroupName))) {

@@ -25,12 +25,21 @@ class EffectsManager {
     virtual ~EffectsManager();
 
     void setup();
+    void addDeck(const QString& deckGroupName);
 
-    EngineEffectsManager* getEngineEffectsManager() {
+    EffectChainSlotPointer getEffectChainSlot(const QString& group) const;
+    EqualizerEffectChainSlotPointer getEqualizerEffectChainSlot(
+            const QString& deckGroupName) const {
+        return m_equalizerEffectChainSlots.value(deckGroupName);
+    }
+    EffectChainSlotPointer getStandardEffectChainSlot(int unitNumber) const;
+    EffectChainSlotPointer getOutputEffectChainSlot() const;
+
+    EngineEffectsManager* getEngineEffectsManager() const {
         return m_pEngineEffectsManager;
     }
 
-    const ChannelHandle getMasterHandle() {
+    const ChannelHandle getMasterHandle() const {
         return m_pChannelHandleFactory->getOrCreateHandle("[Master]");
     }
 
@@ -60,22 +69,14 @@ class EffectsManager {
         return m_registeredOutputChannels;
     }
 
-    EffectChainSlotPointer getStandardEffectChainSlot(int unitNumber) const;
-    EffectChainSlotPointer getOutputEffectChainSlot() const;
-
-    void addEqualizerEffectChainSlot(const QString& deckGroupName);
-    EqualizerEffectChainSlotPointer getEqualizerEffectChainSlot(const QString& deckGroupName) {
-        return m_equalizerEffectChainSlots.value(deckGroupName);
-    }
-    void addQuickEffectChainSlot(const QString& deckGroupName);
-
-    EffectChainSlotPointer getEffectChainSlot(const QString& group) const;
-
     bool isAdoptMetaknobValueEnabled() const;
 
   private:
     void addStandardEffectChainSlots();
     void addOutputEffectChainSlot();
+
+    void addEqualizerEffectChainSlot(const QString& deckGroupName);
+    void addQuickEffectChainSlot(const QString& deckGroupName);
 
     void readEffectsXml();
     void saveEffectsXml();
