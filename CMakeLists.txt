@@ -1620,14 +1620,12 @@ endif()
 # Denon Engine Prime library export support (using libdjinterop)
 option(ENGINEPRIME "Support for library export to Denon Engine Prime" OFF)
 if(ENGINEPRIME)
-  target_compile_definitions(mixxx-lib PUBLIC __ENGINEPRIME__)
-
   # Look for an existing installation of libdjinterop and use that if available.
   # Otherwise, download and build from GitHub.
   find_package(DjInterop)
   if(DjInterop_FOUND)
     # An existing installation of djinterop is available.
-    message(STATUS "Linking dynamically to existing installation of libdjinterop")
+    message(STATUS "Using existing system installation of libdjinterop")
     target_include_directories(mixxx-lib PUBLIC ${DjInterop_INCLUDE_DIRS})
     target_link_libraries(mixxx-lib PUBLIC DjInterop::DjInterop)
   else()
@@ -1672,11 +1670,19 @@ if(ENGINEPRIME)
 
     # Since we have built libdjinterop from sources as a static library, its
     # transitive dependencies are not automatically recognised.  libdjinterop
-    # depends on zlib and sqlite3.  Mixxx already has a dependency on sqlite3,
-    # but not zlib, so we explicitly add that here.
+    # depends on zlib and optionally sqlite3.  If libdjinterop was configured
+    # to depend on system SQLite, Mixxx will already have the dependency.
+    # But it does not have zlib, so we explicitly add that here.
     find_package(ZLIB 1.2.8 REQUIRED)
     target_link_libraries(mixxx-lib PUBLIC ${ZLIB_LIBRARIES})
   endif()
+
+  # Include conditional sources only required with Engine Prime export support.
+  target_sources(mixxx-lib PRIVATE
+    src/library/export/dlglibraryexport.cpp
+    src/library/export/engineprimeexportjob.cpp
+    src/library/export/libraryexporter.cpp)
+  target_compile_definitions(mixxx-lib PUBLIC __ENGINEPRIME__)
 endif()
 
 # Ebur128

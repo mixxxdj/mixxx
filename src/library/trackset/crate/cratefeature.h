@@ -49,6 +49,12 @@ class CrateFeature : public BaseTrackSetFeature {
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
     void slotCreateCrate();
 
+#ifdef __ENGINEPRIME__
+  signals:
+    void exportAllCrates();
+    void exportCrate(CrateId crateId);
+#endif
+
   private slots:
     void slotDeleteCrate();
     void slotRenameCrate();
@@ -61,6 +67,10 @@ class CrateFeature : public BaseTrackSetFeature {
     void slotExportPlaylist();
     // Copy all of the tracks in a crate to a new directory (like a thumbdrive).
     void slotExportTrackFiles();
+#ifdef __ENGINEPRIME__
+    void slotExportAllCrates();
+    void slotExportCrate();
+#endif
     void slotAnalyzeCrate();
     void slotCrateTableChanged(CrateId crateId);
     void slotCrateContentChanged(CrateId crateId);
@@ -112,6 +122,10 @@ class CrateFeature : public BaseTrackSetFeature {
     parented_ptr<QAction> m_pCreateImportPlaylistAction;
     parented_ptr<QAction> m_pExportPlaylistAction;
     parented_ptr<QAction> m_pExportTrackFilesAction;
+#ifdef __ENGINEPRIME__
+    parented_ptr<QAction> m_pExportAllCratesAction;
+    parented_ptr<QAction> m_pExportCrateAction;
+#endif
     parented_ptr<QAction> m_pAnalyzeCrateAction;
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;

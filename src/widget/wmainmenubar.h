@@ -55,6 +55,9 @@ class WMainMenuBar : public QMenuBar {
     void loadTrackToDeck(int deck);
     void reloadSkin();
     void rescanLibrary();
+#ifdef __ENGINEPRIME__
+    void exportLibrary();
+#endif
     void showAbout();
     void showPreferences();
     void toggleDeveloperTools(bool toggle);
