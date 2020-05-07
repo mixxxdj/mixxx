@@ -52,11 +52,13 @@ class BeatIterator final {
 
     /// The current beat becomes a down beat.
     void makeBeat() {
+        // TODO(JVC) Const_cast is needed until we manage to make BeatIterator read/write
         const_cast<mixxx::track::io::Beat&>(*m_currentBeat).set_type(mixxx::track::io::BEAT);
     }
 
     /// The current beat becomes a phrase beat.
     void makeBar() {
+        // TODO(JVC) Const_cast is needed until we manage to make BeatIterator read/write
         const_cast<mixxx::track::io::Beat&>(*m_currentBeat).set_type(mixxx::track::io::BAR);
     }
 
