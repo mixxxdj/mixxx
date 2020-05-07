@@ -540,7 +540,7 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
     }
 
     qDebug() << "TrackDAO: Adding track"
-            << pTrack->getFileInfo();
+             << pTrack->getFileInfo();
 
     TrackId trackId;
 
