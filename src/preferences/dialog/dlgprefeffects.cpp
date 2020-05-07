@@ -163,16 +163,19 @@ void DlgPrefEffects::slotChainPresetSelected(const QModelIndex& selected) {
         return;
     }
 
-    for (int i = 0; i < pChainPreset->effectPresets().size(); ++i) {
-        EffectPresetPointer pEffectPreset = pChainPreset->effectPresets().at(i);
-        if (!pEffectPreset->isEmpty()) {
-            QString displayName = m_pBackendManager->getDisplayNameForEffectPreset(pEffectPreset);
-            // Code uses 0-indexed numbers; users see 1 indexed numbers
-            m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + displayName);
-        } else {
-            if (i >= m_effectsLabels.size()) {
-                break;
+    for (int i = 0; i < m_effectsLabels.size(); ++i) {
+        if (i < pChainPreset->effectPresets().size()) {
+            EffectPresetPointer pEffectPreset = pChainPreset->effectPresets().at(i);
+            if (!pEffectPreset->isEmpty()) {
+                QString displayName =
+                        m_pBackendManager->getDisplayNameForEffectPreset(
+                                pEffectPreset);
+                // Code uses 0-indexed numbers; users see 1 indexed numbers
+                m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + displayName);
+            } else {
+                m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + tr("None"));
             }
+        } else {
             m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + tr("None"));
         }
     }
