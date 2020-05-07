@@ -1,10 +1,3 @@
-///////////////////////////////////////////////////////////////////////////////
-// JSHint configuration                                                      //
-///////////////////////////////////////////////////////////////////////////////
-/* global engine                                                             */
-/* global print                                                              */
-/* global midi                                                               */
-/////////////////////////////////////////////////////////////////////////////// 
 // ****************************************************************************
 // * Mixxx mapping script file for the Hercules DJControl Jogvision.
 // * Author: DJ Phatso, contributions by Kerrick Staley and David TV
@@ -42,11 +35,11 @@
 // Changes to v1.2
 // - Enabled Jogwheel Outer LED rotation
 // - Enabled Beat LEDs
-// 
+//
 // Changes to v1.1
 // - Controller knob/slider values are queried on startup, so MIXXX is synced.
 // - Fixed vinyl button behavior the first time it"s pressed.
-// 
+//
 // v1.0 : Original release
 //
 // ****************************************************************************
@@ -70,7 +63,7 @@ DJCJV.Channel["[Channel2]"] = {"central": 0x91, "deck": 0xB1, "beatPosition": 1,
 DJCJV.init = function(id) {
 
     print("Hercules DJControl Jogvision id: \""+id+"\" initializing...");
-    
+
     //Set all LED states to off
     midi.sendShortMsg(DJCJV.Channel["[Channel1]"].deck, 0x7F, off);
     midi.sendShortMsg(DJCJV.Channel["[Channel2]"].deck, 0x7F, off);
@@ -93,7 +86,7 @@ DJCJV.init = function(id) {
     engine.softTakeover("[Master]", "crossfader", true);
     engine.softTakeover("[QuickEffectRack1_[Channel1]]", "super1", true);
     engine.softTakeover("[QuickEffectRack1_[Channel2]]", "super1", true);
-    
+
     // Set effects Levels - Dry/Wet - Filters
     // Done to work around the limited amount of controls in the Jogvision controller
     engine.setParameter("[EffectRack1_EffectUnit1_Effect1]", "meta", 0.6);
@@ -118,29 +111,29 @@ DJCJV.init = function(id) {
     engine.connectControl("[Channel2]", "beat_active", "DJCJV.beatActive");
     engine.connectControl("[Channel1]", "stop", "DJCJV.beatInactive");
     engine.connectControl("[Channel2]", "stop", "DJCJV.beatInactive");
-    
+
     // Set inner jog leds to 0
     midi.sendShortMsg(DJCJV.Channel["[Channel1]"].deck, 0x61, 0);
     midi.sendShortMsg(DJCJV.Channel["[Channel2]"].deck, 0x61, 0);
     // Set outer jog leds to 0
     midi.sendShortMsg(DJCJV.Channel["[Channel1]"].deck, 0x60, 1);
     midi.sendShortMsg(DJCJV.Channel["[Channel2]"].deck, 0x60, 1);
-    
+
     // Enable wheels" outer leds rotation by timer (when channel is playing)
     ledRotationTimer = engine.beginTimer(20, function() {
         if (engine.getValue("[Channel1]", "play") === 1) {
             midi.sendShortMsg(DJCJV.Channel["[Channel1]"].deck, 0x60, DJCJV.Channel["[Channel1]"].rotation);
-            DJCJV.Channel["[Channel1]"].rotation = DJCJV.Channel["[Channel1]"].rotation >= 127 ? 1 : DJCJV.Channel["[Channel1]"].rotation + ( engine.getValue("[Channel1]", "bpm") / ledRotationSpeed );
+            DJCJV.Channel["[Channel1]"].rotation = DJCJV.Channel["[Channel1]"].rotation >= 127 ? 1 : DJCJV.Channel["[Channel1]"].rotation + (engine.getValue("[Channel1]", "bpm") / ledRotationSpeed);
         }
         if (engine.getValue("[Channel2]", "play") === 1) {
             midi.sendShortMsg(DJCJV.Channel["[Channel2]"].deck, 0x60, DJCJV.Channel["[Channel2]"].rotation);
-            DJCJV.Channel["[Channel2]"].rotation = DJCJV.Channel["[Channel2]"].rotation >= 127 ? 1 : DJCJV.Channel["[Channel2]"].rotation + ( engine.getValue("[Channel2]", "bpm") / ledRotationSpeed );
+            DJCJV.Channel["[Channel2]"].rotation = DJCJV.Channel["[Channel2]"].rotation >= 127 ? 1 : DJCJV.Channel["[Channel2]"].rotation + (engine.getValue("[Channel2]", "bpm") / ledRotationSpeed);
         }
     });
 
     // Ask the controller to send all current knob/slider values over MIDI, which will update the corresponding GUI controls in MIXXX.
     midi.sendShortMsg(0xB0, 0x7F, on);
-    
+
     print("Hercules DJControl Jogvision id: \""+id+"\" initialized");
 };
 
@@ -156,7 +149,7 @@ DJCJV.shutdown = function() {
 };
 
 // Beat led ACTIVATE (move)
-DJCJV.beatActive = function(value, group, control) {
+DJCJV.beatActive = function(value, group, _control) {
     if (value === 1) {
         return;
     }
@@ -164,21 +157,21 @@ DJCJV.beatActive = function(value, group, control) {
     midi.sendShortMsg(DJCJV.Channel[group].central, 0x3B, DJCJV.Channel[group].beatPosition === 2 ? on : off);
     midi.sendShortMsg(DJCJV.Channel[group].central, 0x3C, DJCJV.Channel[group].beatPosition === 3 ? on : off);
     midi.sendShortMsg(DJCJV.Channel[group].central, 0x3D, DJCJV.Channel[group].beatPosition === 4 ? on : off);
-    
+
     DJCJV.Channel[group].beatPosition = DJCJV.Channel[group].beatPosition >= 4 ? 1 : DJCJV.Channel[group].beatPosition  + 1;
 };
 // Beat led DEACTIVATE (off all)
-DJCJV.beatInactive = function(value, group, control) {
+DJCJV.beatInactive = function(value, group, _control) {
     midi.sendShortMsg(DJCJV.Channel[group].central, 0x3A, off);
     midi.sendShortMsg(DJCJV.Channel[group].central, 0x3B, off);
     midi.sendShortMsg(DJCJV.Channel[group].central, 0x3C, off);
     midi.sendShortMsg(DJCJV.Channel[group].central, 0x3D, off);
-    
+
     DJCJV.Channel[group].beatPosition = 1;
 };
 
 //Jogwheels inner LED display - Play position
-DJCJV.wheelInnerUpdate = function(value, group, control) {
+DJCJV.wheelInnerUpdate = function(value, group, _control) {
     var playPos = value * 127;
     midi.sendShortMsg(DJCJV.Channel[group].deck, 0x61, playPos);
     if (engine.getValue(group, "end_of_track")) {
@@ -194,20 +187,20 @@ DJCJV.wheelInnerUpdate = function(value, group, control) {
 };
 
 //Vu Meter
-DJCJV.vuMeterUpdate = function(value, group, control) {
+DJCJV.vuMeterUpdate = function(value, group, _control) {
     midi.sendShortMsg(DJCJV.Channel[group].central, 0x44, value * 6);
 };
 
 // Headphone CUE/MIX buttons status
 DJCJV.headCue = function(midino, control, value, status, group) {
-    if(engine.getValue(group, "headMix") == 0) {
+    if (engine.getValue(group, "headMix") === 0) {
         engine.setValue(group, "headMix", -1.0);
         midi.sendShortMsg(masterLeds, 0x4D, 0x7f);
         midi.sendShortMsg(masterLeds, 0x4C, 0x00);
     }
 };
 DJCJV.headMix = function(midino, control, value, status, group) {
-    if(engine.getValue(group, "headMix") !== 1) {
+    if (engine.getValue(group, "headMix") !== 1) {
         engine.setValue(group, "headMix", 0);
         midi.sendShortMsg(masterLeds, 0x4D, 0x00);
         midi.sendShortMsg(masterLeds, 0x4C, 0x7f);
@@ -246,7 +239,7 @@ DJCJV.beatjumpSize = function(channel, control, value, status, group) {
 };
 
 // The Vinyl button, used to enable or disable scratching on the jog wheels.
-DJCJV.vinylButton = function(channel, control, value, status, group) {
+DJCJV.vinylButton = function(channel, control, value, _status, _group) {
     if (!value) {
         return;
     }
