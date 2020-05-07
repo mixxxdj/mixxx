@@ -49,27 +49,6 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
             SLOT(slotEnableAutoDJRandomQueue(int)));
     connect(autoDJRandomQueueMinimumSpinBox, SIGNAL(valueChanged(int)), this,
             SLOT(slotSetAutoDJRandomQueueMin(int)));
-
-    ComboBoxAutoDjTransitionUnit->addItem(tr("Seconds"));
-    ComboBoxAutoDjTransitionUnit->addItem(tr("Beats"));
-    ComboBoxAutoDjTransitionUnit->setCurrentIndex(
-            m_pConfig->getValue(
-                    ConfigKey("[Auto DJ]", "TransitionUnit"), 0));
-    connect(ComboBoxAutoDjTransitionUnit, SIGNAL(currentIndexChanged(int)), this, SLOT(slotSetAutoDJTransitionUnit(int)));
-    connect(ComboBoxAutoDjTransitionUnit, SIGNAL(currentIndexChanged(int)), this, SLOT(slotEnableAutoDJBPMtoUseComboBox(int)));
-
-    ComboBoxAutoDjBPMToUse->addItem(tr("Before track's end"));
-    ComboBoxAutoDjBPMToUse->addItem(tr("From next track's start"));
-    QString bpmToUseToolTip = tr(
-            "If the tracks do not have the same BPM, this specifies\n"
-            "before/from which point to calculate the transition period.");
-    ComboBoxAutoDjBPMToUse->setToolTip(bpmToUseToolTip);
-    ComboBoxAutoDjBPMToUse->setCurrentIndex(
-            m_pConfig->getValue(
-                    ConfigKey("[Auto DJ]", "BPMToUse"), 0));
-    connect(ComboBoxAutoDjBPMToUse, SIGNAL(currentIndexChanged(int)), this, SLOT(slotSetAutoDJBPMtoUse(int)));
-    slotEnableAutoDJBPMtoUseComboBox(
-            m_pConfig->getValue(ConfigKey("[Auto DJ]", "EnableAutoDJBPMToUse"), 0));
 }
 
 DlgPrefAutoDJ::~DlgPrefAutoDJ() {
@@ -97,17 +76,6 @@ void DlgPrefAutoDJ::slotApply() {
     m_pConfig->setValue(ConfigKey("[Auto DJ]", "EnableRandomQueue"),
             m_pConfig->getValue(
                     ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"), 0));
-
-    m_pConfig->setValue(ConfigKey("[Auto DJ]", "TransitionUnit"),
-            m_pConfig->getValue(
-                    ConfigKey("[Auto DJ]", "TransitionUnitBuff"), 0));
-
-    m_pConfig->setValue(ConfigKey("[Auto DJ]", "BPMToUse"),
-            m_pConfig->getValue(
-                    ConfigKey("[Auto DJ]", "BPMToUseBuff"), 0));
-    m_pConfig->setValue(ConfigKey("[Auto DJ]", "EnableAutoDJBPMToUse"),
-            m_pConfig->getValue(
-                    ConfigKey("[Auto DJ]", "EnableAutoDJBPMToUseBuff"), 0));
 }
 
 void DlgPrefAutoDJ::slotCancel() {
@@ -144,22 +112,6 @@ void DlgPrefAutoDJ::slotCancel() {
                     ConfigKey("[Auto DJ]", "EnableRandomQueue"), 0));
     slotEnableAutoDJRandomQueueComboBox(
             m_pConfig->getValue<int>(ConfigKey("[Auto DJ]", "Requeue")));
-
-    ComboBoxAutoDjTransitionUnit->setCurrentIndex(
-            m_pConfig->getValue(
-                    ConfigKey("[Auto DJ]", "TransitionUnit"), 0));
-    m_pConfig->setValue(ConfigKey("[Auto DJ]", "TransitionUnitBuff"),
-            m_pConfig->getValue(
-                    ConfigKey("[Auto DJ]", "TransitionUnit"), 0));
-
-    ComboBoxAutoDjBPMToUse->setCurrentIndex(
-            m_pConfig->getValue(
-                    ConfigKey("[Auto DJ]", "BPMToUseBuff"), 0));
-    m_pConfig->setValue(ConfigKey("[Auto DJ]", "BPMToUseBuff"),
-            m_pConfig->getValue(
-                    ConfigKey("[Auto DJ]", "BPMToUse"), 0));
-    slotEnableAutoDJBPMtoUseComboBox(
-            m_pConfig->getValue(ConfigKey("[Auto DJ]", "EnableAutoDJBPMToUse"), 0));
 }
 
 void DlgPrefAutoDJ::slotResetToDefaults() {
@@ -177,13 +129,6 @@ void DlgPrefAutoDJ::slotResetToDefaults() {
     m_pConfig->set(ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),QString("0"));
     autoDJRandomQueueMinimumSpinBox->setEnabled(false);
     ComboBoxAutoDjRandomQueue->setEnabled(true);
-
-    ComboBoxAutoDjTransitionUnit->setCurrentIndex(0);
-    m_pConfig->set(ConfigKey("[Auto DJ]", "TransitionUnitBuff"), ConfigValue(0));
-    ComboBoxAutoDjBPMToUse->setCurrentIndex(0);
-    m_pConfig->set(ConfigKey("[Auto DJ]", "BPMToUseBuff"), ConfigValue(0));
-    m_pConfig->set(ConfigKey("[Auto DJ]", "EnableAutoDJBPMToUse"), ConfigValue(0));
-    ComboBoxAutoDjBPMToUse->setEnabled(false);
 }
 
 void DlgPrefAutoDJ::slotSetAutoDjMinimumAvailable(int a_iValue) {
@@ -237,40 +182,5 @@ void DlgPrefAutoDJ::slotEnableAutoDJRandomQueue(int a_iValue) {
         autoDJRandomQueueMinimumSpinBox->setEnabled(true);
         m_pConfig->set(ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),
                 ConfigValue(1));
-    }
-}
-
-void DlgPrefAutoDJ::slotSetAutoDJTransitionUnit(int a_iValue) {
-    if (a_iValue == 0) {
-        // Use seconds
-        m_pConfig->set(ConfigKey("[Auto DJ]", "TransitionUnitBuff"),
-                ConfigValue(0));
-    } else {
-        // Use beats
-        m_pConfig->set(ConfigKey("[Auto DJ]", "TransitionUnitBuff"),
-                ConfigValue(1));
-    }
-}
-
-void DlgPrefAutoDJ::slotEnableAutoDJBPMtoUseComboBox(int a_iValue) {
-    if (a_iValue == 0) {
-        // Using seconds, disable the combo box
-        m_pConfig->set(ConfigKey("[Auto DJ]", "EnableAutoDJBPMToUseBuff"),
-                ConfigValue(0));
-        ComboBoxAutoDjBPMToUse->setEnabled(false);
-    } else {
-        m_pConfig->set(ConfigKey("[Auto DJ]", "EnableAutoDJBPMToUseBuff"),
-                ConfigValue(1));
-        ComboBoxAutoDjBPMToUse->setEnabled(true);
-    }
-}
-
-void DlgPrefAutoDJ::slotSetAutoDJBPMtoUse(int a_iValue) {
-    if (a_iValue == 0) {
-        // Before track's end
-        m_pConfig->setValue(ConfigKey("[Auto DJ]", "BPMToUseBuff"), 0);
-    } else {
-        // From next track's start
-        m_pConfig->setValue(ConfigKey("[Auto DJ]", "BPMToUseBuff"), 1);
     }
 }
