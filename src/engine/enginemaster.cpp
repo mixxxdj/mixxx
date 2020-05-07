@@ -472,7 +472,6 @@ void EngineMaster::process(const int iBufferSize) {
         m_pTalkoverDucking->processKey(m_pTalkover, m_iBufferSize);
         break;
     case EngineTalkoverDucking::MANUAL:
-        qDebug() << "m_activeTalkoverChannels.size()" << m_activeTalkoverChannels.size();
         m_pTalkoverDucking->setAboveThreshold(m_activeTalkoverChannels.size());
         break;
     default:
