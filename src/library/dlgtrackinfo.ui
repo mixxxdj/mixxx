@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>700</width>
+    <width>575</width>
     <height>595</height>
    </rect>
   </property>
@@ -50,9 +50,6 @@
       <layout class="QVBoxLayout" name="verticalLayout_5">
        <item>
         <widget class="QGroupBox" name="groupBox">
-         <property name="title">
-          <string>Details</string>
-         </property>
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
            <layout class="QGridLayout" name="gridLayout_5" columnstretch="0,10,0,2">
@@ -333,6 +330,20 @@
             <item row="7" column="1" colspan="3">
              <layout class="QHBoxLayout" name="horizontalLayout_3">
               <item>
+               <widget class="QPushButton" name="btnImportMetadataFromMusicBrainz">
+                <property name="text">
+                 <string>Import Metadata from MusicBrainz</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnImportMetadataFromFile">
+                <property name="text">
+                 <string>Re-Import Metadata from file</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <spacer name="horizontalSpacer_4">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -344,20 +355,6 @@
                  </size>
                 </property>
                </spacer>
-              </item>
-              <item>
-               <widget class="QPushButton" name="btnImportMetadataFromMusicBrainz">
-                <property name="text">
-                 <string>Import Metadata from MusicBrainz</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="btnImportMetadataFromFile">
-                <property name="text">
-                 <string>Re-Import Metadata</string>
-                </property>
-               </widget>
               </item>
              </layout>
             </item>
@@ -411,14 +408,24 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <property name="title">
-          <string>File</string>
-         </property>
          <layout class="QGridLayout" name="gridLayout_3">
           <item row="0" column="0">
            <layout class="QGridLayout" name="gridLayout_4" rowstretch="0,0,0,0,0" columnstretch="0,1,0,1">
-            <item row="0" column="3">
-             <widget class="QLabel" name="txtBpm">
+            <item row="0" column="0">
+             <widget class="QLabel" name="lblDuration">
+              <property name="text">
+               <string>Duration:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLabel" name="txtDuration">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
                <string/>
               </property>
@@ -427,8 +434,44 @@
               </property>
              </widget>
             </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="lblBpm">
+              <property name="text">
+               <string>BPM:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLabel" name="txtBpm">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="textInteractionFlags">
+               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="lblReplayGain">
+              <property name="text">
+               <string>ReplayGain:</string>
+              </property>
+             </widget>
+            </item>
             <item row="2" column="1">
-             <widget class="QLabel" name="txtBitrate">
+             <widget class="QLabel" name="txtReplayGain">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
                <string/>
               </property>
@@ -438,16 +481,75 @@
              </widget>
             </item>
             <item row="0" column="2">
-             <widget class="QLabel" name="lblBpm">
+             <widget class="QLabel" name="lblType">
               <property name="text">
-               <string>BPM:</string>
+               <string>Filetype:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QLabel" name="txtType">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="textInteractionFlags">
+               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
               </property>
              </widget>
             </item>
             <item row="1" column="2">
-             <widget class="QLabel" name="lblReplayGain">
+             <widget class="QLabel" name="lblBitrate">
               <property name="text">
-               <string>ReplayGain:</string>
+               <string>Bitrate:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3">
+             <widget class="QLabel" name="txtBitrate">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="textInteractionFlags">
+               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="QLabel" name="lblDateAdded">
+              <property name="text">
+               <string>Date added:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="3">
+             <widget class="QLabel" name="txtDateAdded">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="textInteractionFlags">
+               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="lblLocation">
+              <property name="text">
+               <string>Location:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
               </property>
              </widget>
             </item>
@@ -464,79 +566,15 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="lblDuration">
-              <property name="text">
-               <string>Duration:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="lblLocation">
-              <property name="text">
-               <string>Location:</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QLabel" name="txtDuration">
-              <property name="text">
-               <string/>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="lblBitrate">
-              <property name="text">
-               <string>Bitrate:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLabel" name="txtType">
-              <property name="text">
-               <string/>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="3">
-             <widget class="QLabel" name="txtDateAdded">
-              <property name="text">
-               <string/>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="3">
-             <widget class="QLabel" name="txtReplayGain">
-              <property name="text">
-               <string/>
-              </property>
-              <property name="textInteractionFlags">
-               <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="lblType">
-              <property name="text">
-               <string>Filetype:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="3">
+            <item row="4" column="1" colspan="3">
              <layout class="QHBoxLayout" name="horizontalLayout_5">
+              <item>
+               <widget class="QPushButton" name="btnOpenFileBrowser">
+                <property name="text">
+                 <string>Open in File Browser</string>
+                </property>
+               </widget>
+              </item>
               <item>
                <spacer name="horizontalSpacer_5">
                 <property name="orientation">
@@ -549,13 +587,6 @@
                  </size>
                 </property>
                </spacer>
-              </item>
-              <item>
-               <widget class="QPushButton" name="btnOpenFileBrowser">
-                <property name="text">
-                 <string>Open in File Browser</string>
-                </property>
-               </widget>
               </item>
              </layout>
             </item>
@@ -601,6 +632,13 @@
         <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
           <layout class="QGridLayout" name="gridLayout">
+           <item row="0" column="0">
+            <widget class="QLabel" name="labelBpm">
+             <property name="text">
+              <string>Track BPM: </string>
+             </property>
+            </widget>
+           </item>
            <item row="0" column="1">
             <widget class="QDoubleSpinBox" name="spinBpm">
              <property name="toolTip">
@@ -617,19 +655,15 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="labelBpm">
-             <property name="text">
-              <string>Track BPM: </string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
+           <item row="1" column="0" colspan="2">
             <widget class="QCheckBox" name="bpmConst">
              <property name="toolTip">
               <string>Converts beats detected by the analyzer into a fixed-tempo beatgrid.
 Use this setting if your tracks have a constant tempo (e.g. most electronic music).
 Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</string>
+             </property>
+             <property name="layoutDirection">
+              <enum>Qt::RightToLeft</enum>
              </property>
              <property name="text">
               <string>Assume constant tempo</string>
@@ -637,22 +671,6 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
             </widget>
            </item>
            <item row="2" column="0">
-            <widget class="QPushButton" name="bpmTwoThirds">
-             <property name="minimumSize">
-              <size>
-               <width>125</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Sets the BPM to 66% of the current value.</string>
-             </property>
-             <property name="text">
-              <string>2/3 BPM</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
             <widget class="QPushButton" name="bpmDouble">
              <property name="minimumSize">
               <size>
@@ -669,22 +687,6 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QPushButton" name="bpmThreeFourth">
-             <property name="minimumSize">
-              <size>
-               <width>125</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Sets the BPM to 75% of the current value.</string>
-             </property>
-             <property name="text">
-              <string>3/4 BPM</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
             <widget class="QPushButton" name="bpmHalve">
              <property name="minimumSize">
               <size>
@@ -701,6 +703,38 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
             </widget>
            </item>
            <item row="3" column="0">
+            <widget class="QPushButton" name="bpmTwoThirds">
+             <property name="minimumSize">
+              <size>
+               <width>125</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Sets the BPM to 66% of the current value.</string>
+             </property>
+             <property name="text">
+              <string>2/3 BPM</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QPushButton" name="bpmThreeFourth">
+             <property name="minimumSize">
+              <size>
+               <width>125</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Sets the BPM to 75% of the current value.</string>
+             </property>
+             <property name="text">
+              <string>3/4 BPM</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
             <widget class="QPushButton" name="bpmThreeHalves">
              <property name="minimumSize">
               <size>
@@ -716,7 +750,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
+           <item row="4" column="1">
             <widget class="QPushButton" name="bpmFourThirds">
              <property name="minimumSize">
               <size>
@@ -732,49 +766,29 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
              </property>
             </widget>
            </item>
-           <item row="1" column="2">
-            <widget class="QPushButton" name="bpmClear">
+           <item row="2" column="2" rowspan="3">
+            <widget class="QPushButton" name="bpmTap">
+             <property name="minimumSize">
+              <size>
+               <width>121</width>
+               <height>91</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>123</width>
+               <height>128</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Tap with the beat to set the BPM to the speed you are tapping.</string>
+             </property>
              <property name="text">
-              <string>Clear BPM and Beatgrid</string>
+              <string>Tap to Beat</string>
              </property>
             </widget>
            </item>
           </layout>
-         </item>
-         <item>
-          <widget class="QPushButton" name="bpmTap">
-           <property name="minimumSize">
-            <size>
-             <width>121</width>
-             <height>91</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>123</width>
-             <height>128</height>
-            </size>
-           </property>
-           <property name="toolTip">
-            <string>Tap with the beat to set the BPM to the speed you are tapping.</string>
-           </property>
-           <property name="text">
-            <string>Tap to Beat</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
          </item>
         </layout>
        </item>
@@ -782,6 +796,13 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
         <widget class="Line" name="line">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="bpmClear">
+         <property name="text">
+          <string>Clear BPM and Beatgrid</string>
          </property>
         </widget>
        </item>

@@ -158,8 +158,8 @@ double BpmControl::getBpm() const {
 }
 
 void BpmControl::slotAdjustBeatsFaster(double v) {
-    BeatsPointer pBeats = m_pBeats;
-    if (v > 0 && pBeats && (pBeats->getCapabilities() & Beats::BEATSCAP_SETBPM)) {
+    mixxx::BeatsPointer pBeats = m_pBeats;
+    if (v > 0 && pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
         double bpm = pBeats->getBpm();
         double adjustedBpm = bpm + kBpmAdjustStep;
         pBeats->setBpm(adjustedBpm);
@@ -167,8 +167,8 @@ void BpmControl::slotAdjustBeatsFaster(double v) {
 }
 
 void BpmControl::slotAdjustBeatsSlower(double v) {
-    BeatsPointer pBeats = m_pBeats;
-    if (v > 0 && pBeats && (pBeats->getCapabilities() & Beats::BEATSCAP_SETBPM)) {
+    mixxx::BeatsPointer pBeats = m_pBeats;
+    if (v > 0 && pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
         double bpm = pBeats->getBpm();
         double adjustedBpm = math_max(kBpmAdjustMin, bpm - kBpmAdjustStep);
         pBeats->setBpm(adjustedBpm);
@@ -176,18 +176,18 @@ void BpmControl::slotAdjustBeatsSlower(double v) {
 }
 
 void BpmControl::slotTranslateBeatsEarlier(double v) {
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     if (v > 0 && pBeats &&
-            (pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
+            (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
         const int translate_dist = getSampleOfTrack().rate * -.01;
         pBeats->translate(translate_dist);
     }
 }
 
 void BpmControl::slotTranslateBeatsLater(double v) {
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     if (v > 0 && pBeats &&
-            (pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
+            (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
         // TODO(rryan): Track::getSampleRate is possibly inaccurate!
         const int translate_dist = getSampleOfTrack().rate * .01;
         pBeats->translate(translate_dist);
@@ -208,7 +208,7 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
         return;
     }
 
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     if (!pBeats) {
         return;
     }
@@ -508,12 +508,12 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
 }
 
 // static
-bool BpmControl::getBeatContext(const BeatsPointer& pBeats,
-                                const double dPosition,
-                                double* dpPrevBeat,
-                                double* dpNextBeat,
-                                double* dpBeatLength,
-                                double* dpBeatPercentage) {
+bool BpmControl::getBeatContext(const mixxx::BeatsPointer& pBeats,
+        const double dPosition,
+        double* dpPrevBeat,
+        double* dpNextBeat,
+        double* dpBeatLength,
+        double* dpBeatPercentage) {
     if (!pBeats) {
         return false;
     }
@@ -567,7 +567,7 @@ bool BpmControl::getBeatContextNoLookup(
 double BpmControl::getNearestPositionInPhase(
         double dThisPosition, bool respectLoops, bool playing) {
     // Without a beatgrid, we don't know the phase offset.
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     if (!pBeats) {
         return dThisPosition;
     }
@@ -625,7 +625,8 @@ double BpmControl::getNearestPositionInPhase(
         }
 
         TrackPointer otherTrack = pOtherEngineBuffer->getLoadedTrack();
-        BeatsPointer otherBeats = otherTrack ? otherTrack->getBeats() : BeatsPointer();
+        mixxx::BeatsPointer otherBeats =
+                otherTrack ? otherTrack->getBeats() : mixxx::BeatsPointer();
 
         // If either track does not have beats, then we can't adjust the phase.
         if (!otherBeats) {
@@ -784,7 +785,7 @@ double BpmControl::getBeatMatchPosition(
     }
 
     TrackPointer otherTrack = pOtherEngineBuffer->getLoadedTrack();
-    BeatsPointer otherBeats = otherTrack ? otherTrack->getBeats() : BeatsPointer();
+    mixxx::BeatsPointer otherBeats = otherTrack ? otherTrack->getBeats() : mixxx::BeatsPointer();
 
     // If either track does not have beats, then we can't adjust the phase.
     if (!otherBeats) {
@@ -922,14 +923,14 @@ void BpmControl::notifySeek(double dNewPlaypos) {
 
 // called from an engine worker thread
 void BpmControl::trackLoaded(TrackPointer pNewTrack) {
-    BeatsPointer pBeats;
+    mixxx::BeatsPointer pBeats;
     if (pNewTrack) {
         pBeats = pNewTrack->getBeats();
     }
     trackBeatsUpdated(pBeats);
 }
 
-void BpmControl::trackBeatsUpdated(BeatsPointer pBeats) {
+void BpmControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "BpmControl::trackBeatsUpdated"
                         << (pBeats ? pBeats->getBpm() : 0.0);
@@ -940,8 +941,8 @@ void BpmControl::trackBeatsUpdated(BeatsPointer pBeats) {
 }
 
 void BpmControl::slotBeatsTranslate(double v) {
-    BeatsPointer pBeats = m_pBeats;
-    if (v > 0 && pBeats && (pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
+    mixxx::BeatsPointer pBeats = m_pBeats;
+    if (v > 0 && pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
         double currentSample = getSampleOfTrack().current;
         double closestBeat = pBeats->findClosestBeat(currentSample);
         int delta = currentSample - closestBeat;
@@ -953,8 +954,8 @@ void BpmControl::slotBeatsTranslate(double v) {
 }
 
 void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
-    BeatsPointer pBeats = m_pBeats;
-    if (v > 0 && pBeats && (pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
+    mixxx::BeatsPointer pBeats = m_pBeats;
+    if (v > 0 && pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
         // Must reset the user offset *before* calling getPhaseOffset(),
         // otherwise it will always return 0 if master sync is active.
         m_dUserOffset.setValue(0.0);
@@ -967,7 +968,7 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
 double BpmControl::updateLocalBpm() {
     double prev_local_bpm = m_pLocalBpm->get();
     double local_bpm = 0;
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
         local_bpm = pBeats->getBpmAroundPosition(
                 getSampleOfTrack().current, kLocalBpmSpan);

@@ -343,7 +343,7 @@
              <set>Qt::ImhUrlCharactersOnly</set>
             </property>
             <property name="text">
-             <string>(links to loaded preset script files go here)</string>
+             <string notr="true">(links to loaded preset script files go here)</string>
             </property>
             <property name="openExternalLinks">
              <bool>false</bool>

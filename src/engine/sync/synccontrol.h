@@ -61,7 +61,7 @@ class SyncControl : public EngineControl, public Syncable {
     void reportPlayerSpeed(double speed, bool scratching);
     void notifySeek(double dNewPlaypos) override;
     void trackLoaded(TrackPointer pNewTrack) override;
-    void trackBeatsUpdated(BeatsPointer pBeats) override;
+    void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
   private slots:
     // Fired by changes in play.
@@ -133,7 +133,7 @@ class SyncControl : public EngineControl, public Syncable {
     ControlProxy* m_pQuantize;
 
     // m_pBeats is written from an engine worker thread
-    BeatsPointer m_pBeats;
+    mixxx::BeatsPointer m_pBeats;
 };
 
 

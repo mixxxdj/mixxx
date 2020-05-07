@@ -19,11 +19,13 @@ QImage importCoverImageFromPictureList(
 
 void importTrackMetadataFromTag(
         TrackMetadata* pTrackMetadata,
-        const TagLib::Ogg::XiphComment& tag);
+        const TagLib::Ogg::XiphComment& tag,
+        FileType fileType);
 
 bool exportTrackMetadataIntoTag(
         TagLib::Ogg::XiphComment* pTag,
-        const TrackMetadata& trackMetadata);
+        const TrackMetadata& trackMetadata,
+        FileType fileType);
 
 } // namespace xiph
 

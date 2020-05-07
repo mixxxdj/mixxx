@@ -85,8 +85,6 @@ Description:
                 <Layout>stacked</Layout>
                 <Size>180min,17f</Size>
                 <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
                   <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>stacked</Layout>
@@ -131,8 +129,6 @@ Description:
                 <Layout>stacked</Layout>
                 <Size>190f,17f</Size>
                 <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
                   <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
@@ -179,9 +175,6 @@ Description:
                 <Layout>stacked</Layout>
                 <Size>180min,17f</Size>
                 <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
                   <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
@@ -205,9 +198,6 @@ Description:
                 <Layout>stacked</Layout>
                 <Size>180min,17f</Size>
                 <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
                   <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
@@ -231,9 +221,6 @@ Description:
                 <Layout>stacked</Layout>
                 <Size>180min,17f</Size>
                 <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
                   <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
@@ -277,9 +264,6 @@ Description:
                 <Layout>stacked</Layout>
                 <Size>180min,17f</Size>
                 <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
                   <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>stacked</Layout>
@@ -302,9 +286,6 @@ Description:
                 <Layout>stacked</Layout>
                 <Size>180min,17f</Size>
                 <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
                   <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>stacked</Layout>
@@ -348,8 +329,6 @@ Description:
                 <Layout>stacked</Layout>
                 <Size>180min,17f</Size>
                 <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
                   <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>stacked</Layout>

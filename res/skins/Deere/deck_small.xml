@@ -167,20 +167,25 @@
                 </Children>
               </WidgetGroup><!-- DeckTextRowSmall -->
 
-              <WidgetGroup>
+              <WidgetGroup><!-- Play button + play_indicator -->
                 <ObjectName>PlayGutterSmall</ObjectName>
-                <Layout>horizontal</Layout>
+                <Layout>stacked</Layout>
                 <SizePolicy>f,me</SizePolicy>
                 <Children>
-                  <Template src="skin:left_right_display_2state_button.xml">
-                    <SetVariable name="TooltipId">play_cue_set</SetVariable>
+                  <Template src="skin:left_right_2state_button.xml">
+                    <SetVariable name="TooltipId">play_cue_default</SetVariable>
                     <SetVariable name="ObjectName">PlayToggle</SetVariable>
                     <SetVariable name="MinimumSize">24,30</SetVariable>
                     <SetVariable name="MaximumSize">24,</SetVariable>
                     <SetVariable name="SizePolicy">f,me</SetVariable>
                     <SetVariable name="left_connection_control"><Variable name="group"/>,play</SetVariable>
-                    <SetVariable name="right_connection_control"><Variable name="group"/>,cue_set</SetVariable>
-                    <SetVariable name="display_connection_control"><Variable name="group"/>,play_indicator</SetVariable>
+                    <SetVariable name="right_connection_control"><Variable name="group"/>,cue_default</SetVariable>
+                  </Template>
+                  <Template src="skin:left_2state_button.xml">
+                    <SetVariable name="MinimumSize">24,30</SetVariable>
+                    <SetVariable name="MaximumSize">24,</SetVariable>
+                    <SetVariable name="SizePolicy">f,me</SetVariable>
+                    <SetVariable name="left_connection_control"><Variable name="group"/>,play_indicator</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup>

@@ -22,14 +22,14 @@ class ClockControl: public EngineControl {
             const int iBufferSize) override;
 
     void trackLoaded(TrackPointer pNewTrack) override;
-    void trackBeatsUpdated(BeatsPointer pBeats) override;
+    void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
   private:
     ControlObject* m_pCOBeatActive;
     ControlProxy* m_pCOSampleRate;
 
     // m_pBeats is written from an engine worker thread
-    BeatsPointer m_pBeats;
+    mixxx::BeatsPointer m_pBeats;
 };
 
 #endif /* CLOCKCONTROL_H */

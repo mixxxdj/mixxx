@@ -290,19 +290,13 @@ void TrackDAO::saveTrack(Track* pTrack) const {
     }
 }
 
-void TrackDAO::databaseTrackAdded(TrackPointer pTrack) {
-    DEBUG_ASSERT(pTrack);
-    emit dbTrackAdded(pTrack);
-}
-
-void TrackDAO::databaseTracksChanged(QSet<TrackId> changedTracks) {
-    // results in a call of BaseTrackCache::updateTracksInIndex(trackIds);
-    if (!changedTracks.isEmpty()) {
-        emit tracksChanged(changedTracks);
+void TrackDAO::slotDatabaseTracksChanged(QSet<TrackId> changedTrackIds) {
+    if (!changedTrackIds.isEmpty()) {
+        emit tracksChanged(changedTrackIds);
     }
 }
 
-void TrackDAO::databaseTracksRelocated(QList<RelocatedTrack> relocatedTracks) {
+void TrackDAO::slotDatabaseTracksRelocated(QList<RelocatedTrack> relocatedTracks) {
     QSet<TrackId> removedTrackIds;
     QSet<TrackId> changedTrackIds;
     for (const auto& relocatedTrack : qAsConst(relocatedTracks)) {
@@ -323,7 +317,9 @@ void TrackDAO::databaseTracksRelocated(QList<RelocatedTrack> relocatedTracks) {
     if (!removedTrackIds.isEmpty()) {
         emit tracksRemoved(removedTrackIds);
     }
-    databaseTracksChanged(changedTrackIds);
+    if (!changedTrackIds.isEmpty()) {
+        emit tracksChanged(changedTrackIds);
+    }
 }
 
 void TrackDAO::addTracksPrepare() {
@@ -465,7 +461,7 @@ namespace {
         QString beatsSubVersion;
         // Fall back on cached BPM
         double dBpm = track.getBpm();
-        const BeatsPointer pBeats(track.getBeats());
+        const mixxx::BeatsPointer pBeats(track.getBeats());
         if (!pBeats.isNull()) {
             beatsBlob = pBeats->toByteArray();
             beatsVersion = pBeats->getVersion();
@@ -1063,7 +1059,7 @@ bool setTrackBeats(const QSqlRecord& record, const int column,
     QString beatsSubVersion = record.value(column + 2).toString();
     QByteArray beatsBlob = record.value(column + 3).toByteArray();
     bool bpmLocked = record.value(column + 4).toBool();
-    BeatsPointer pBeats = BeatFactory::loadBeatsFromByteArray(
+    mixxx::BeatsPointer pBeats = BeatFactory::loadBeatsFromByteArray(
             *pTrack, beatsVersion, beatsSubVersion, beatsBlob);
     if (pBeats) {
         pTrack->setBeats(pBeats);
@@ -1296,7 +1292,7 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
 
     // Listen to signals from Track objects and forward them to
     // receivers. TrackDAO works as a relay for selected track signals
-    // that allows receivers to use permament connections with
+    // that allows receivers to use permanent connections with
     // TrackDAO instead of connecting to individual Track objects.
     connect(pTrack.get(),
             &Track::dirty,
@@ -1311,8 +1307,10 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     connect(pTrack.get(),
             &Track::changed,
             this,
-            &TrackDAO::trackChanged,
-            /*signal-to-signal*/ Qt::DirectConnection);
+            [this](TrackId trackId) {
+                // Adapt and forward signal
+                emit tracksChanged(QSet<TrackId>{trackId});
+            });
 
     // BaseTrackCache cares about track trackDirty/trackClean notifications
     // from TrackDAO that are triggered by the track itself. But the preceding

@@ -30,6 +30,8 @@ bool BeatLessThan(const Beat& beat1, const Beat& beat2) {
     return beat1.frame_position() < beat2.frame_position();
 }
 
+namespace mixxx {
+
 class BeatMapIterator : public BeatIterator {
   public:
     BeatMapIterator(BeatList::const_iterator start, BeatList::const_iterator end)
@@ -723,3 +725,5 @@ double BeatMap::calculateBpm(const Beat& startBeat, const Beat& stopBeat) const 
 
     return BeatUtils::calculateBpm(beatvect, m_iSampleRate, 0, 9999);
 }
+
+} // namespace mixxx

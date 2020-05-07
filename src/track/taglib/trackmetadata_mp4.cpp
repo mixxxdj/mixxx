@@ -30,6 +30,10 @@ const TagLib::String kAtomKeyReplayGainTrackPeak = "----:com.apple.iTunes:replay
 const TagLib::String kAtomKeyReplayGainAlbumGain = "----:com.apple.iTunes:replaygain_album_gain";
 const TagLib::String kAtomKeyReplayGainAlbumPeak = "----:com.apple.iTunes:replaygain_album_peak";
 
+// Serato atom keys
+const TagLib::String kAtomKeySeratoMarkers = "----:com.serato.dj:markers";
+const TagLib::String kAtomKeySeratoMarkers2 = "----:com.serato.dj:markersv2";
+
 // Workaround for missing const member function in TagLib
 inline const TagLib::MP4::ItemListMap& getItemListMap(
         const TagLib::MP4::Tag& tag) {
@@ -305,6 +309,28 @@ void importTrackMetadataFromTag(
         pTrackMetadata->refTrackInfo().setMovement(movement);
     }
 #endif // __EXTRA_METADATA__
+
+    // Serato tags
+    TagLib::String seratoMarkersData;
+    if (readAtom(
+                tag,
+                kAtomKeySeratoMarkers,
+                &seratoMarkersData)) {
+        parseSeratoMarkers(
+                pTrackMetadata,
+                seratoMarkersData,
+                FileType::MP4);
+    }
+    TagLib::String seratoMarkers2Data;
+    if (readAtom(
+                tag,
+                kAtomKeySeratoMarkers2,
+                &seratoMarkers2Data)) {
+        parseSeratoMarkers2(
+                pTrackMetadata,
+                seratoMarkers2Data,
+                FileType::MP4);
+    }
 }
 
 bool exportTrackMetadataIntoTag(
@@ -416,6 +442,20 @@ bool exportTrackMetadataIntoTag(
     writeAtom(pTag, "\251wrk", toTString(trackMetadata.getTrackInfo().getWork()));
     writeAtom(pTag, "\251mvn", toTString(trackMetadata.getTrackInfo().getMovement()));
 #endif // __EXTRA_METADATA__
+
+    // Export of Serato markers is disabled, because Mixxx
+    // does not modify them.
+#if defined(__EXPORT_SERATO_MARKERS__)
+    // Serato tags
+    writeAtom(
+            pTag,
+            kAtomKeySeratoMarkers,
+            dumpSeratoMarkers(trackMetadata, FileType::MP4));
+    writeAtom(
+            pTag,
+            kAtomKeySeratoMarkers2,
+            dumpSeratoMarkers2(trackMetadata, FileType::MP4));
+#endif // __EXPORT_SERATO_MARKERS__
 
     return true;
 }

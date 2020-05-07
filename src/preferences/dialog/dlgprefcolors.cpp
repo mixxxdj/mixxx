@@ -40,7 +40,7 @@ DlgPrefColors::DlgPrefColors(
     connect(m_pReplaceCueColorDlg,
             &DlgReplaceCueColor::databaseTracksChanged,
             &(pLibrary->trackCollections()->internalCollection()->getTrackDAO()),
-            &TrackDAO::databaseTracksChanged);
+            &TrackDAO::slotDatabaseTracksChanged);
 
     connect(comboBoxHotcueColors,
             QOverload<const QString&>::of(&QComboBox::currentIndexChanged),

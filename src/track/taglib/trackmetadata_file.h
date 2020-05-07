@@ -7,11 +7,12 @@
 #include <taglib/wavfile.h>
 #include <taglib/wavpackfile.h>
 
-#include "track/taglib/trackmetadata_common.h"
-
 #include <QFile>
 
 namespace mixxx {
+
+// Forward declaration
+class TrackMetadata;
 
 namespace taglib {
 
@@ -58,6 +59,6 @@ bool readAudioPropertiesFromFile(
         TrackMetadata* pTrackMetadata,
         const TagLib::File& file);
 
-} // namespace mixxx
+} // namespace taglib
 
 } // namespace mixxx

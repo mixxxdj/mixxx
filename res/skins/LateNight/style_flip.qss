@@ -290,11 +290,11 @@ WSearchLineEdit {
 #QuickEffectButton[displayValue="0"],
 #FxUnitControlsCollapsed WPushButton, #FxUnitControlsExpanded WPushButton,
 #FxExpandCollapseButton,
-#PlayButtonSampler[displayValue="0"], #PlayButtonDeckMini[displayValue="0"],
+#PlaySampler[displayValue="0"], #PlayDeckMini[displayValue="0"],
 #SamplerSyncButton[displayValue="0"],
-#MicTalkButton[value="0"], #AuxPlayButton[value="0"], #MicAuxAddButton,
+#MicTalk[value="0"], #PlayAux[value="0"], #MicAuxAddButton,
 #MicDuckingButton[value="0"],
-#PlayButtonPreview[displayValue="0"],
+#PlayPreview[displayValue="0"],
 #DlgMissing > QPushButton:enabled:!checked,
 #DlgHidden > QPushButton:enabled:!checked,
 #DlgAutoDJ > QPushButton:enabled:!checked,
@@ -471,14 +471,14 @@ WBeatSpinBox#Spinbox_embedded:focus,
     image: url(skin:/buttons_flip/btn__splitcue_active.svg) no-repeat center center;
   }
 
-#PlayButtonSampler[value="0"],
-#PlayButtonDeckMini[value="0"],
-#PlayButtonPreview[displayValue="0"] {
+#PlaySampler[value="0"],
+#PlayDeckMini[value="0"],
+#PlayPreview[displayValue="0"] {
   image: url(skin:/buttons_flip/btn__play_sampler.svg) no-repeat center center;
   }
-  #PlayButtonSampler[value="1"],
-  #PlayButtonDeckMini[value="1"],
-  #PlayButtonPreview[displayValue="1"] {
+  #PlaySampler[value="1"],
+  #PlayDeckMini[value="1"],
+  #PlayPreview[displayValue="1"] {
     image: url(skin:/buttons_flip/btn__pause_sampler.svg) no-repeat center center;
   }
 
@@ -602,10 +602,10 @@ WBeatSpinBox#Spinbox_embedded:focus,
       image: url(skin:/buttons_flip/btn__beats_faster.svg) no-repeat center center;
     }
 
-#MicTalkButton {
+#MicTalk {
   image: url(skin:/buttons_flip/btn__mic_talk.svg) no-repeat center center;
 }
-#AuxPlayButton {
+#PlayAux {
   image: url(skin:/buttons_flip/btn__aux_play.svg) no-repeat center center;
 }
 #MicAuxAddButton {
@@ -894,7 +894,7 @@ WEffectSelector {
   margin: 2px 0px;
 }
 
-  #MicAuxPlayButtonBox {
+  #MicAuxPlayBox {
     margin: 0px 1px 1px 1px;
   }
 

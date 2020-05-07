@@ -46,7 +46,7 @@ class LibraryControl : public QObject {
     void bindSearchboxWidget(WSearchLineEdit* pSearchbox);
 
   signals:
-    void clearSearch();
+    void clearSearchIfClearButtonHasFocus();
 
   public slots:
     // Deprecated navigation slots

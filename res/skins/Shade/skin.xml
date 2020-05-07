@@ -347,7 +347,7 @@
                   <SetVariable name="samplernum2">2</SetVariable>
                   <SetVariable name="samplernum3">3</SetVariable>
                   <SetVariable name="samplernum4">4</SetVariable>
-                  <SetVariable name="micnum">1</SetVariable>
+                  <SetVariable name="micnum"></SetVariable>
                   <SetVariable name="auxnum">1</SetVariable>
                 </Template>
 

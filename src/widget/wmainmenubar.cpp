@@ -265,7 +265,11 @@ void WMainMenuBar::initialize() {
     QString fullScreenTitle = tr("&Full Screen");
     QString fullScreenText = tr("Display Mixxx using the full screen");
     auto pViewFullScreen = new QAction(fullScreenTitle, this);
-    pViewFullScreen->setShortcut(QKeySequence(QKeySequence::FullScreen));
+    QList<QKeySequence> shortcuts;
+    shortcuts << QKeySequence::FullScreen;
+    shortcuts << QKeySequence("F11");
+
+    pViewFullScreen->setShortcuts(shortcuts);
     pViewFullScreen->setShortcutContext(Qt::ApplicationShortcut);
     pViewFullScreen->setCheckable(true);
     pViewFullScreen->setChecked(false);

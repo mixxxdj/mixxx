@@ -506,6 +506,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
         if (m_pHoveredMark != nullptr) {
             dValue = m_pHoveredMark->getSamplePosition() / m_trackSamplesControl->get();
             m_iPickupPos = valueToPosition(dValue);
+            m_iPlayPos = m_iPickupPos;
             setControlParameterUp(dValue);
             m_bLeftClickDragging = false;
         } else {
@@ -835,7 +836,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                 }
             }
             // Sometimes QFontMetrics::elidedText turns the QString into just an
-            // elipsis character, so always show at least the hotcue number if
+            // ellipsis character, so always show at least the hotcue number if
             // the label does not fit.
             if ((text.isEmpty() || text == "…") && pMark->getHotCue() != Cue::kNoHotCue) {
                 text = QString::number(pMark->getHotCue() + 1);
