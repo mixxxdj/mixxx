@@ -284,7 +284,7 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
 
     m_pManifest = pManifest;
 
-    if (pManifest == EffectManifestPointer()) {
+    if (pManifest == nullptr || pEffectPreset == nullptr) {
         // No new effect to load; just unload the old effect and return.
         emit effectChanged();
         return;
