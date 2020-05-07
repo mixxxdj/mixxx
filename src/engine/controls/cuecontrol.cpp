@@ -482,6 +482,10 @@ void CueControl::loadCuesFromTrack() {
             break;
         case mixxx::CueType::HotCue:
         case mixxx::CueType::Loop: {
+            // FIXME: While it's not possible to save Loops in Mixxx yet, we do
+            // support importing them from Serato and Rekordbox. For the time
+            // being we treat them like regular hotcues and ignore their end
+            // position until #2194 has been merged.
             if (pCue->getHotCue() == Cue::kNoHotCue) {
                 continue;
             }
