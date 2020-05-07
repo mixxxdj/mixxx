@@ -309,6 +309,8 @@ class AutoDJProcessor : public QObject {
     TransitionUnit m_transitionUnit;
     CalcTransitionPeriod m_calcTransitionPeriod;
 
+    void calculateFadeThresholds();
+
     double getFadeTime();
 
     QList<DeckAttributes*> m_decks;

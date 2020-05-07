@@ -1589,6 +1589,10 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
             ConfigValue(static_cast<int>(newMode)));
     m_transitionMode = newMode;
 
+    calculateFadeThresholds();
+}
+
+void AutoDJProcessor::calculateFadeThresholds() {
     if (m_eState != ADJ_IDLE) {
         // We don't want to recalculate a running transition
         return;
@@ -1732,10 +1736,12 @@ void AutoDJProcessor::setAutoDJTransitionUnit(TransitionUnit transitionUnit) {
     m_transitionUnit = transitionUnit;
     m_pConfig->setValue(ConfigKey("[Auto DJ]", kTransitionUnitPreferenceName),
             static_cast<int>(transitionUnit));
+    calculateFadeThresholds();
 }
 
 void AutoDJProcessor::setAutoDJCalcTransitionPeriod(CalcTransitionPeriod calcTransitionPeriod) {
     m_calcTransitionPeriod = calcTransitionPeriod;
     m_pConfig->setValue(ConfigKey("[Auto DJ]", kCalcTransitionPeriodPreferenceName),
             static_cast<int>(calcTransitionPeriod));
+    calculateFadeThresholds();
 }
