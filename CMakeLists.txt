@@ -393,7 +393,10 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/dlgtrackinfo.cpp
   src/library/dlgtrackinfo.ui
   src/library/dlgtrackmetadataexport.cpp
+  src/library/export/dlglibraryexport.cpp
   src/library/export/dlgtrackexport.ui
+  src/library/export/enginelibraryexportjob.cpp
+  src/library/export/libraryexporter.cpp
   src/library/export/trackexportdlg.cpp
   src/library/export/trackexportwizard.cpp
   src/library/export/trackexportworker.cpp
@@ -1263,6 +1266,16 @@ if(WIN32)
    # Rubberband is always built statically and needs fftw.
   find_package(FFTW REQUIRED)
   target_link_libraries(mixxx-lib PUBLIC FFTW::FFTW)
+endif()
+
+# libdjinterop
+find_package(DjInterop)
+if (DjInterop_FOUND)
+  message(STATUS "Compiling with libdjinterop functionality")
+  target_compile_definitions(mixxx-lib PUBLIC __DJINTEROP__)
+  target_link_libraries(mixxx-lib PUBLIC DjInterop::DjInterop)
+else()
+  message(STATUS "No libdjinterop library available - compiling without export support")
 endif()
 
 # Ebur128

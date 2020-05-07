@@ -33,6 +33,7 @@
 #include "library/rhythmbox/rhythmboxfeature.h"
 #include "library/serato/seratofeature.h"
 #include "library/setlogfeature.h"
+#include "library/export/libraryexporter.h"
 #include "library/traktor/traktorfeature.h"
 
 #include "mixer/playermanager.h"
@@ -42,6 +43,7 @@
 #include "util/db/dbconnectionpooled.h"
 #include "util/sandbox.h"
 #include "util/logger.h"
+#include "util/memory.h"
 #include "util/assert.h"
 
 #include "widget/wtracktableview.h"
@@ -546,3 +548,13 @@ TrackCollection& Library::trackCollection() {
     DEBUG_ASSERT(m_pTrackCollectionManager->internalCollection());
     return *m_pTrackCollectionManager->internalCollection();
 }
+
+#ifdef __DJINTEROP__
+std::unique_ptr<mixxx::LibraryExporter> Library::makeLibraryExporter(
+        QWidget* parent) {
+    // New object is expected to be owned (and lifecycle-managed)
+    // by the supplied parent widget.
+    return std::make_unique<mixxx::LibraryExporter>(
+            parent, m_pConfig, *m_pTrackCollectionManager);
+}
+#endif

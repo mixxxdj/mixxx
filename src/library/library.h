@@ -32,6 +32,12 @@ class WSearchLineEdit;
 class WLibrarySidebar;
 class WLibrary;
 
+#ifdef __DJINTEROP__
+namespace mixxx {
+class LibraryExporter;
+} // namespace mixxx
+#endif
+
 // A Library class is a container for all the model-side aspects of the library.
 // A library widget can be attached to the Library object by calling bindLibraryWidget.
 class Library: public QObject {
@@ -88,6 +94,10 @@ class Library: public QObject {
     void setFont(const QFont& font);
     void setRowHeight(int rowHeight);
     void setEditMedatataSelectedClick(bool enable);
+
+#ifdef __DJINTEROP__
+    std::unique_ptr<mixxx::LibraryExporter> makeLibraryExporter(QWidget* parent);
+#endif
 
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);

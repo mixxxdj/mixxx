@@ -1228,3 +1228,21 @@ class QtKeychain(Feature):
         if not conf.CheckLib('qt5keychain'):
             raise Exception("Could not find qt5keychain.")
         build.env.Append(CPPDEFINES='__QTKEYCHAIN__')
+
+class DjInterop(Feature):
+    def description(self):
+        return "Interopability with other DJ library formats"
+
+    def enabled(self, build):
+        build.flags['djinterop'] = util.get_flags(build.env, 'djinterop', 1)
+        if int(build.flags['djinterop']):
+            return True
+        return False
+
+    def configure(self, build, conf):
+        """(Currently only tested on Linux)"""
+        if not build.platform_is_linux:
+            return
+        build.env.ParseConfig(
+                'pkg-config djinterop --silence-errors --cflags --libs')
+        build.env.Append(CPPDEFINES='__DJINTEROP__')
