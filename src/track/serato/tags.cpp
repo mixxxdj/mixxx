@@ -20,7 +20,7 @@ const QString kDecoderName(QStringLiteral("Unknown"));
 
 /// In Serato, loops and hotcues are kept separate, i. e. you can
 /// have a loop and a hotcue with the same number. In Mixxx, loops
-/// and hotcues share indices. Hence, we import them with and offset
+/// and hotcues share indices. Hence, we import them with an offset
 /// of 8 (the maximum number of hotcues in Serato).
 const int kLoopIndexOffset = 8;
 
