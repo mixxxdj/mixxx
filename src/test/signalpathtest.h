@@ -58,7 +58,7 @@ class BaseSignalPathTest : public MixxxTest {
         m_pGuiTick = std::make_unique<GuiTick>();
         m_pChannelHandleFactory = new ChannelHandleFactory();
         m_pNumDecks = new ControlObject(ConfigKey("[Master]", "num_decks"));
-        m_pEffectsManager = new EffectsManager(NULL, config(), m_pChannelHandleFactory);
+        m_pEffectsManager = new EffectsManager(config(), m_pChannelHandleFactory);
         m_pVisualsManager = new VisualsManager();
         m_pEngineMaster = new TestEngineMaster(m_pConfig, "[Master]",
                                                m_pEffectsManager, m_pChannelHandleFactory,
