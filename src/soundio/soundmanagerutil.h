@@ -98,6 +98,7 @@ public:
             const AudioPath& path,
             uint seed = 0) {
         return qHash(static_cast<uint>(path.m_type), seed) ^
+                qHash(path.m_channelGroup, seed) ^
                 qHash(path.m_index, seed);
     }
 
