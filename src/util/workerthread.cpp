@@ -71,42 +71,41 @@ void WorkerThread::run() {
 void WorkerThread::suspend() {
     logTrace(m_logger, "Suspending");
     m_suspend.store(true);
+    // The thread will suspend processing and fall asleep the
+    // next time it checks m_suspend. If it has already been
+    // suspended or is currently sleeping that's fine.
 }
 
 void WorkerThread::resume() {
-    bool suspended = true;
+    // Reset m_suspend to false to allow the thread to make progress.
+    bool suspended = true; // expected value
     // Reset value: true -> false
     if (m_suspend.compare_exchange_strong(suspended, false)) {
         logTrace(m_logger, "Resuming");
-        // The thread might just be preparing to suspend after
-        // loading and detecting that m_suspend was true. To avoid
-        // a race condition we need to acquire the mutex that
-        // is associated with the wait condition, before
-        // signalling the condition. Otherwise the signal
-        // of the wait condition might arrive before the
-        // thread actually got suspended.
-        std::unique_lock<std::mutex> locked(m_sleepMutex);
-        wake();
-    } else {
-        // Just in case, wake up the thread even if it wasn't
-        // explicitly suspended without locking the mutex. The
-        // thread will suspend itself if it is idle.
-        wake();
     }
+    // Wake up the thread so that it is able to check m_suspend and
+    // continue processing. To avoid race conditions this needs to
+    // be performed unconditionally even if m_suspend was false and has
+    // not been modified above! The thread might have checked m_suspend
+    // while it was still true. We need to give it the chance to check
+    // m_suspend again.
+    wake();
 }
 
 void WorkerThread::wake() {
-    m_logger.debug() << "Waking up";
+    logTrace(m_logger, "Waking up");
+    std::unique_lock<std::mutex> locked(m_sleepMutex);
     m_sleepWaitCond.notify_one();
 }
 
 void WorkerThread::stop() {
-    m_logger.debug() << "Stopping";
+    logTrace(m_logger, "Stopping");
     m_stop.store(true);
     // Wake up the thread to make sure that the stop flag is
-    // detected and the thread commits suicide by exiting the
-    // run loop in exec(). Resuming will reset the suspend flag
-    // to wake up not only an idle but also a suspended thread!
+    // detected to exit the run loop. Resuming will reset the
+    // suspend flag to wake up not only idle but also a suspended
+    // threads! Otherwise suspended threads would sleep forever
+    // and never notice that they have been stopped.
     resume();
 }
 
