@@ -176,15 +176,18 @@ void handleMessage(
     baSize += input8Bit.size();
 
     const char* categoryName = context.category;
-    int categoryName_len = strlen(categoryName);
-    if (categoryName_len > 0) {
-        if (strcmp(categoryName, kDefaultLoggingCategory.categoryName()) != 0) {
-            baSize += 1; // additional separator (see below)
-            baSize += categoryName_len;
-        } else {
-            // Suppress default category name
-            categoryName = nullptr;
-            categoryName_len = 0;
+    int categoryName_len = 0;
+    if (categoryName) {
+        categoryName_len = strlen(categoryName);
+        if (categoryName_len > 0) {
+            if (strcmp(categoryName, kDefaultLoggingCategory.categoryName()) != 0) {
+                baSize += 1; // additional separator (see below)
+                baSize += categoryName_len;
+            } else {
+                // Suppress default category name
+                categoryName = nullptr;
+                categoryName_len = 0;
+            }
         }
     }
 
