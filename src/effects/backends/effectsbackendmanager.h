@@ -19,7 +19,6 @@ class EffectsBackendManager {
     EffectManifestPointer getManifestFromUniqueId(const QString& uid) const;
     EffectManifestPointer getManifest(const QString& id, EffectBackendType backendType) const;
     const QString getDisplayNameForEffectPreset(EffectPresetPointer pPreset) const;
-    bool isEQ(const QString& effectId) const;
 
     std::unique_ptr<EffectProcessor> createProcessor(const EffectManifestPointer pManifest);
 
