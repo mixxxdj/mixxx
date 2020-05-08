@@ -392,7 +392,7 @@ def main(argv=None):
     parser.add_argument(
         "-p",
         "--extra-skins-path",
-        help="Additonal skin path, to check (.e.g. ~/.mixxx/skins)",
+        help="Additional skin path, to check (.e.g. ~/.mixxx/skins)",
     )
     parser.add_argument("-s", "--skin", help="Only check skin with this name")
     parser.add_argument(

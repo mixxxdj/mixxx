@@ -15,6 +15,7 @@
 #include "track/keyutils.h"
 #include "util/color/colorpalette.h"
 #include "util/compatibility.h"
+#include "util/datetime.h"
 #include "util/desktophelper.h"
 #include "util/duration.h"
 
@@ -43,6 +44,9 @@ DlgTrackInfo::~DlgTrackInfo() {
 void DlgTrackInfo::init() {
     setupUi(this);
 
+    coverBox->setAlignment(Qt::AlignRight | Qt::AlignTop);
+    coverBox->setSpacing(0);
+    coverBox->setContentsMargins(0, 0, 0, 0);
     coverBox->insertWidget(1, m_pWCoverArtLabel);
 
     m_pTagFetcher.reset(new DlgTagFetcher(this, m_pTrackModel));
@@ -249,6 +253,7 @@ void DlgTrackInfo::populateFields(const Track& track) {
 
     // Non-editable fields
     txtDuration->setText(track.getDurationText(mixxx::Duration::Precision::SECONDS));
+    txtDateAdded->setText(mixxx::displayLocalDateTime(track.getDateAdded()));
     txtLocation->setText(QDir::toNativeSeparators(track.getLocation()));
     txtType->setText(track.getType());
     txtBitrate->setText(QString(track.getBitrateText()) + (" ") +

@@ -890,34 +890,48 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                         memoryCues << memoryCue;
                     } break;
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_LOOP: {
-                        // As Mixxx can only have 1 saved loop, use the first occurance of a memory loop relative to the start of the track
+                        // As Mixxx can only have 1 saved loop, use the first occurrence of a memory loop relative to the start of the track
                         if (position < cueLoopStartPosition) {
                             cueLoopStartPosition = position;
-                            int endTime = static_cast<int>((*cueEntry)->loop_time()) - timingOffset;
+                            int endTime =
+                                    static_cast<int>((*cueEntry)->loop_time()) -
+                                    timingOffset;
                             // Ensure no offset times are less than 1
                             if (endTime < 1) {
                                 endTime = 1;
                             }
-                            cueLoopEndPosition = samples * static_cast<double>(endTime);
+                            cueLoopEndPosition =
+                                    samples * static_cast<double>(endTime);
                         }
                     } break;
                     }
                 } break;
                 case rekordbox_anlz_t::CUE_LIST_TYPE_HOT_CUES: {
-                    int hotCueIndex = static_cast<int>((*cueEntry)->hot_cue() - 1);
+                    int hotCueIndex =
+                            static_cast<int>((*cueEntry)->hot_cue() - 1);
                     if (hotCueIndex > lastHotCueIndex) {
                         lastHotCueIndex = hotCueIndex;
                     }
-                    setHotCue(track, position, hotCueIndex, QString(), mixxx::RgbColor::nullopt());
+                    setHotCue(track,
+                            position,
+                            hotCueIndex,
+                            QString(),
+                            mixxx::RgbColor::nullopt());
                 } break;
                 }
             }
         } break;
         case rekordbox_anlz_t::SECTION_TAGS_CUES_2: {
-            rekordbox_anlz_t::cue_extended_tag_t* cuesExtendedTag = static_cast<rekordbox_anlz_t::cue_extended_tag_t*>((*section)->body());
+            rekordbox_anlz_t::cue_extended_tag_t* cuesExtendedTag =
+                    static_cast<rekordbox_anlz_t::cue_extended_tag_t*>(
+                            (*section)->body());
 
-            for (std::vector<rekordbox_anlz_t::cue_extended_entry_t*>::iterator cueExtendedEntry = cuesExtendedTag->cues()->begin(); cueExtendedEntry != cuesExtendedTag->cues()->end(); ++cueExtendedEntry) {
-                int time = static_cast<int>((*cueExtendedEntry)->time()) - timingOffset;
+            for (std::vector<rekordbox_anlz_t::cue_extended_entry_t*>::iterator
+                            cueExtendedEntry = cuesExtendedTag->cues()->begin();
+                    cueExtendedEntry != cuesExtendedTag->cues()->end();
+                    ++cueExtendedEntry) {
+                int time = static_cast<int>((*cueExtendedEntry)->time()) -
+                        timingOffset;
                 // Ensure no offset times are less than 1
                 if (time < 1) {
                     time = 1;
@@ -930,12 +944,19 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_MEMORY_CUE: {
                         memory_cue_t memoryCue;
                         memoryCue.position = position;
-                        memoryCue.comment = toUnicode((*cueExtendedEntry)->comment());
-                        memoryCue.color = mixxx::RgbColor(qRgb(static_cast<int>((*cueExtendedEntry)->color_red()), static_cast<int>((*cueExtendedEntry)->color_green()), static_cast<int>((*cueExtendedEntry)->color_blue())));
+                        memoryCue.comment =
+                                toUnicode((*cueExtendedEntry)->comment());
+                        memoryCue.color = mixxx::RgbColor(qRgb(
+                                static_cast<int>(
+                                        (*cueExtendedEntry)->color_red()),
+                                static_cast<int>(
+                                        (*cueExtendedEntry)->color_green()),
+                                static_cast<int>(
+                                        (*cueExtendedEntry)->color_blue())));
                         memoryCues << memoryCue;
                     } break;
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_LOOP: {
-                        // As Mixxx can only have 1 saved loop, use the first occurance of a memory loop relative to the start of the track
+                        // As Mixxx can only have 1 saved loop, use the first occurrence of a memory loop relative to the start of the track
                         if (position < cueLoopStartPosition) {
                             cueLoopStartPosition = position;
                             int endTime = static_cast<int>((*cueExtendedEntry)->loop_time()) - timingOffset;
@@ -1050,7 +1071,7 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
     // exported from Rekordbox. This is caused by different MP3
     // decoders treating MP3s encoded in a variety of different cases
     // differently. The mp3guessenc library is used to determine which
-    // case the MP3 is clasified in. See the following PR for more
+    // case the MP3 is classified in. See the following PR for more
     // detailed information:
     // https://github.com/mixxxdj/mixxx/pull/2119
 

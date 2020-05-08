@@ -69,7 +69,7 @@ WTrackTableView::WTrackTableView(QWidget* parent,
     connect(setFocusShortcut,
             &QShortcut::activated,
             this,
-            qOverload<>(&WTrackTableView::setFocus));
+            QOverload<>::of(&WTrackTableView::setFocus));
 }
 
 WTrackTableView::~WTrackTableView() {
@@ -433,7 +433,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     }
     // Update track indices in context menu
     QModelIndexList indices = selectionModel()->selectedRows();
-    m_pTrackMenu->loadTracks(indices);
+    m_pTrackMenu->loadTrackModelIndices(indices);
 
     //Create the right-click menu
     m_pTrackMenu->popup(event->globalPos());
@@ -733,6 +733,37 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
         return;
     } else {
         QTableView::keyPressEvent(event);
+    }
+}
+
+void WTrackTableView::loadSelectedTrack() {
+    auto indices = selectionModel()->selectedRows();
+    if (indices.size() > 0) {
+        slotMouseDoubleClicked(indices.at(0));
+    }
+}
+
+void WTrackTableView::loadSelectedTrackToGroup(QString group, bool play) {
+    auto indices = selectionModel()->selectedRows();
+    if (indices.size() > 0) {
+        // If the track load override is disabled, check to see if a track is
+        // playing before trying to load it
+        if (!(m_pConfig->getValueString(
+                               ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"))
+                            .toInt())) {
+            // TODO(XXX): Check for other than just the first preview deck.
+            if (group != "[PreviewDeck1]" &&
+                    ControlObject::get(ConfigKey(group, "play")) > 0.0) {
+                return;
+            }
+        }
+        auto index = indices.at(0);
+        auto trackModel = getTrackModel();
+        TrackPointer pTrack;
+        if (trackModel &&
+                (pTrack = trackModel->getTrack(index))) {
+            emit loadTrackToPlayer(pTrack, group, play);
+        }
     }
 }
 

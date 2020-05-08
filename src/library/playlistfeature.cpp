@@ -1,26 +1,24 @@
-#include <QtDebug>
-#include <QMenu>
-#include <QFile>
-#include <QFileInfo>
-
 #include "library/playlistfeature.h"
 
-#include "widget/wlibrary.h"
-#include "widget/wlibrarysidebar.h"
-#include "widget/wlibrarytextbrowser.h"
+#include <QFile>
+#include <QMenu>
+#include <QtDebug>
+
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/library.h"
+#include "library/parser.h"
+#include "library/playlisttablemodel.h"
+#include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
-#include "library/playlisttablemodel.h"
 #include "library/treeitem.h"
-#include "library/queryutil.h"
-#include "library/parser.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
 #include "sources/soundsourceproxy.h"
-#include "util/compatibility.h"
 #include "util/db/dbconnection.h"
 #include "util/dnd.h"
 #include "util/duration.h"
+#include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
+#include "widget/wlibrarytextbrowser.h"
 
 namespace {
 
@@ -28,27 +26,24 @@ QString createPlaylistLabel(
         QString name,
         int count,
         int duration) {
-    return QString("%1 (%2) %3").arg(name, QString::number(count),
-            mixxx::Duration::formatTime(duration, mixxx::Duration::Precision::SECONDS));
+    return QString("%1 (%2) %3").arg(name, QString::number(count), mixxx::Duration::formatTime(duration, mixxx::Duration::Precision::SECONDS));
 }
 
 } // anonymous namespace
-
 
 PlaylistFeature::PlaylistFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig)
         : BasePlaylistFeature(
-                pLibrary,
-                pConfig,
-                QStringLiteral("PLAYLISTHOME")),
+                  pLibrary,
+                  pConfig,
+                  new PlaylistTableModel(
+                          nullptr,
+                          pLibrary->trackCollections(),
+                          "mixxx.db.model.playlist"),
+                  QStringLiteral("PLAYLISTHOME")),
           m_icon(QStringLiteral(":/images/library/ic_library_playlist.svg")) {
-    initTableModel(new PlaylistTableModel(
-            this,
-            pLibrary->trackCollections(),
-            "mixxx.db.model.playlist"));
-
-    //construct child model
+    // construct child model
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     m_childModel.setRootItem(std::move(pRootItem));
     constructChildModel(-1);
@@ -93,14 +88,14 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreatePlaylistAction);
     menu.addSeparator();
-    menu.addAction(m_pAddToAutoDJAction);
-    menu.addAction(m_pAddToAutoDJTopAction);
-    menu.addAction(m_pAddToAutoDJReplaceAction);
-    menu.addSeparator();
     menu.addAction(m_pRenamePlaylistAction);
     menu.addAction(m_pDuplicatePlaylistAction);
     menu.addAction(m_pDeletePlaylistAction);
     menu.addAction(m_pLockPlaylistAction);
+    menu.addSeparator();
+    menu.addAction(m_pAddToAutoDJAction);
+    menu.addAction(m_pAddToAutoDJTopAction);
+    menu.addAction(m_pAddToAutoDJReplaceAction);
     menu.addSeparator();
     menu.addAction(m_pAnalyzePlaylistAction);
     menu.addSeparator();
@@ -110,8 +105,7 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     menu.exec(globalPos);
 }
 
-bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
-                                      QObject* pSource) {
+bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls, QObject* pSource) {
     int playlistId = playlistIdFromIndex(index);
     VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
         return false;
@@ -145,18 +139,18 @@ QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
 
     QList<BasePlaylistFeature::IdAndLabel> playlistLabels;
     QString queryString = QString(
-        "CREATE TEMPORARY VIEW IF NOT EXISTS PlaylistsCountsDurations "
-        "AS SELECT "
-        "  Playlists.id AS id, "
-        "  Playlists.name AS name, "
-        "  LOWER(Playlists.name) AS sort_name, "
-        "  COUNT(case library.mixxx_deleted when 0 then 1 else null end) AS count, "
-        "  SUM(case library.mixxx_deleted when 0 then library.duration else 0 end) AS durationSeconds "
-        "FROM Playlists "
-        "LEFT JOIN PlaylistTracks ON PlaylistTracks.playlist_id = Playlists.id "
-        "LEFT JOIN library ON PlaylistTracks.track_id = library.id "
-        "WHERE Playlists.hidden = 0 "
-        "GROUP BY Playlists.id");
+            "CREATE TEMPORARY VIEW IF NOT EXISTS PlaylistsCountsDurations "
+            "AS SELECT "
+            "  Playlists.id AS id, "
+            "  Playlists.name AS name, "
+            "  LOWER(Playlists.name) AS sort_name, "
+            "  COUNT(case library.mixxx_deleted when 0 then 1 else null end) AS count, "
+            "  SUM(case library.mixxx_deleted when 0 then library.duration else 0 end) AS durationSeconds "
+            "FROM Playlists "
+            "LEFT JOIN PlaylistTracks ON PlaylistTracks.playlist_id = Playlists.id "
+            "LEFT JOIN library ON PlaylistTracks.track_id = library.id "
+            "WHERE Playlists.hidden = 0 "
+            "GROUP BY Playlists.id");
     queryString.append(mixxx::DbConnection::collateLexicographically(
             " ORDER BY sort_name"));
     QSqlQuery query(database);
@@ -179,13 +173,17 @@ QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
 
     for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
         int id = playlistTableModel.data(
-                playlistTableModel.index(row, idColumn)).toInt();
+                                           playlistTableModel.index(row, idColumn))
+                         .toInt();
         QString name = playlistTableModel.data(
-                playlistTableModel.index(row, nameColumn)).toString();
+                                                 playlistTableModel.index(row, nameColumn))
+                               .toString();
         int count = playlistTableModel.data(
-                playlistTableModel.index(row, countColumn)).toInt();
+                                              playlistTableModel.index(row, countColumn))
+                            .toInt();
         int duration = playlistTableModel.data(
-                playlistTableModel.index(row, durationColumn)).toInt();
+                                                 playlistTableModel.index(row, durationColumn))
+                               .toInt();
         BasePlaylistFeature::IdAndLabel idAndLabel;
         idAndLabel.id = id;
         idAndLabel.label = createPlaylistLabel(name, count, duration);
@@ -213,11 +211,14 @@ QString PlaylistFeature::fetchPlaylistLabel(int playlistId) {
     DEBUG_ASSERT(playlistTableModel.rowCount() <= 1);
     if (playlistTableModel.rowCount() > 0) {
         QString name = playlistTableModel.data(
-                playlistTableModel.index(0, nameColumn)).toString();
+                                                 playlistTableModel.index(0, nameColumn))
+                               .toString();
         int count = playlistTableModel.data(
-                playlistTableModel.index(0, countColumn)).toInt();
+                                              playlistTableModel.index(0, countColumn))
+                            .toInt();
         int duration = playlistTableModel.data(
-                playlistTableModel.index(0, durationColumn)).toInt();
+                                                 playlistTableModel.index(0, durationColumn))
+                               .toInt();
         return createPlaylistLabel(name, count, duration);
     }
     return QString();
@@ -232,28 +233,20 @@ void PlaylistFeature::decorateChild(TreeItem* item, int playlistId) {
 }
 
 void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
-    if (!m_pPlaylistTableModel) {
-        return;
-    }
-
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
-        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+            type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
         clearChildModel();
         m_lastRightClickedIndex = constructChildModel(playlistId);
     }
 }
 
 void PlaylistFeature::slotPlaylistContentChanged(QSet<int> playlistIds) {
-    if (!m_pPlaylistTableModel) {
-        return;
-    }
-
     for (const auto playlistId : qAsConst(playlistIds)) {
         enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
         if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
-            type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+                type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
             updateChildModel(playlistId);
         }
     }
@@ -263,14 +256,10 @@ void PlaylistFeature::slotPlaylistTableRenamed(
         int playlistId,
         QString newName) {
     Q_UNUSED(newName);
-    if (!m_pPlaylistTableModel) {
-        return;
-    }
-
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
-        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+            type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
         clearChildModel();
         m_lastRightClickedIndex = constructChildModel(playlistId);
         if (type != PlaylistDAO::PLHT_UNKNOWN) {
@@ -291,9 +280,8 @@ QString PlaylistFeature::getRootViewHtml() const {
     html.append(QString("<h2>%1</h2>").arg(playlistsTitle));
     html.append(QString("<p>%1</p>").arg(playlistsSummary));
     html.append(QString("<p>%1</p>").arg(playlistsSummary2));
-    html.append(QString("<p>%1<br>%2</p>").arg(playlistsSummary3,
-                                            playlistsSummary4));
+    html.append(QString("<p>%1<br>%2</p>").arg(playlistsSummary3, playlistsSummary4));
     html.append(QString("<a style=\"color:#0496FF;\" href=\"create\">%1</a>")
-                .arg(createPlaylistLink));
+                        .arg(createPlaylistLink));
     return html;
 }

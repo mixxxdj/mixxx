@@ -153,7 +153,9 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
     }
 
     // Starts a thread for recording and broadcast
-    m_pEngineSideChain = bEnableSidechain ? new EngineSideChain(pConfig) : NULL;
+    m_pEngineSideChain =
+            bEnableSidechain ?
+                    new EngineSideChain(pConfig, m_pSidechainMix) : nullptr;
 
     // X-Fader Setup
     m_pXFaderMode = new ControlPushButton(
@@ -267,6 +269,9 @@ const CSAMPLE* EngineMaster::getSidechainBuffer() const {
 }
 
 void EngineMaster::processChannels(int iBufferSize) {
+    // Update internal master sync rate.
+    m_pMasterSync->onCallbackStart(m_iSampleRate, m_iBufferSize);
+
     m_activeBusChannels[EngineChannel::LEFT].clear();
     m_activeBusChannels[EngineChannel::CENTER].clear();
     m_activeBusChannels[EngineChannel::RIGHT].clear();
@@ -361,6 +366,10 @@ void EngineMaster::processChannels(int iBufferSize) {
         }
     }
 
+    // Do internal master sync post-processing before the other
+    // channels.
+    m_pMasterSync->onCallbackEnd(m_iSampleRate, m_iBufferSize);
+
     // After all the engines have been processed, trigger post-processing
     // which ensures that all channels are updating certain values at the
     // same point in time.  This prevents sync from failing depending on
@@ -393,12 +402,8 @@ void EngineMaster::process(const int iBufferSize) {
         m_pEngineEffectsManager->onCallbackStart();
     }
 
-    // Update internal master sync rate.
-    m_pMasterSync->onCallbackStart(m_iSampleRate, m_iBufferSize);
-    // Prepare each channel for output
+    // Prepare all channels for output
     processChannels(m_iBufferSize);
-    // Do internal master sync post-processing
-    m_pMasterSync->onCallbackEnd(m_iSampleRate, m_iBufferSize);
 
     // Compute headphone mix
     // Head phone left/right mix
@@ -464,11 +469,20 @@ void EngineMaster::process(const int iBufferSize) {
             m_pTalkover,
             m_iBufferSize, m_iSampleRate, busFeatures);
 
-
-    // Clear talkover compressor for the next round of gain calculation.
-    m_pTalkoverDucking->clearKeys();
-    if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF) {
+    switch (m_pTalkoverDucking->getMode()) {
+    case EngineTalkoverDucking::OFF:
+        m_pTalkoverDucking->setAboveThreshold(false);
+        break;
+    case EngineTalkoverDucking::AUTO:
         m_pTalkoverDucking->processKey(m_pTalkover, m_iBufferSize);
+        break;
+    case EngineTalkoverDucking::MANUAL:
+        m_pTalkoverDucking->setAboveThreshold(m_activeTalkoverChannels.size());
+        break;
+    default:
+        DEBUG_ASSERT("!Unknown Ducking mode");
+        m_pTalkoverDucking->setAboveThreshold(false);
+        break;
     }
 
     // Calculate the crossfader gains for left and right side of the crossfader
@@ -562,7 +576,7 @@ void EngineMaster::process(const int iBufferSize) {
             m_masterGainOld = master_gain;
 
             // Record/broadcast signal is the same as the master output
-            if (!m_bExternalRecordBroadcastInputConnected) {
+            if (sidechainMixRequired()) {
                 SampleUtil::copy(m_pSidechainMix, m_pMaster, m_iBufferSize);
             }
         } else if (configuredMicMonitorMode == MicMonitorMode::MASTER_AND_BOOTH) {
@@ -599,7 +613,7 @@ void EngineMaster::process(const int iBufferSize) {
             m_masterGainOld = master_gain;
 
             // Record/broadcast signal is the same as the master output
-            if (!m_bExternalRecordBroadcastInputConnected) {
+            if (sidechainMixRequired()) {
                 SampleUtil::copy(m_pSidechainMix, m_pMaster, m_iBufferSize);
             }
         } else if (configuredMicMonitorMode == MicMonitorMode::DIRECT_MONITOR) {
@@ -632,41 +646,42 @@ void EngineMaster::process(const int iBufferSize) {
             SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld,
                                          master_gain, m_iBufferSize);
             m_masterGainOld = master_gain;
-            if (!m_bExternalRecordBroadcastInputConnected) {
+            if (sidechainMixRequired()) {
                 SampleUtil::copy(m_pSidechainMix, m_pMaster, m_iBufferSize);
-            }
 
-            // The talkover signal Mixxx receives is delayed by the round trip latency.
-            // There is an output latency between the time Mixxx processes the audio
-            // and the user hears it. So if the microphone user plays on beat with
-            // what they hear, they will be playing out of sync with the engine's
-            // processing by the output latency. Additionally, Mixxx gets input signals
-            // delayed by the input latency. By the time Mixxx receives the input signal,
-            // a full round trip through the signal chain has elapsed since Mixxx
-            // processed the output signal.
-            // Although Mixxx receives the input signal delayed, the user hears it mixed
-            // in hardware with the master & booth outputs without that
-            // latency, so to record/broadcast the same signal that is heard
-            // on the master & booth outputs, the master mix must be delayed before
-            // mixing the talkover signal for the record/broadcast mix.
-            // If not using microphone inputs or recording/broadcasting from
-            // a sound card input, skip unnecessary processing here.
-            if (m_pNumMicsConfigured->get() > 0
-                && !m_bExternalRecordBroadcastInputConnected) {
-                // Copy the master mix to a separate buffer before delaying it
-                // to avoid delaying the master output.
-                m_pLatencyCompensationDelay->process(m_pSidechainMix, m_iBufferSize);
-                SampleUtil::add(m_pSidechainMix, m_pTalkover, m_iBufferSize);
+                if (m_pNumMicsConfigured->get() > 0) {
+                    // The talkover signal Mixxx receives is delayed by the round trip latency.
+                    // There is an output latency between the time Mixxx processes the audio
+                    // and the user hears it. So if the microphone user plays on beat with
+                    // what they hear, they will be playing out of sync with the engine's
+                    // processing by the output latency. Additionally, Mixxx gets input signals
+                    // delayed by the input latency. By the time Mixxx receives the input signal,
+                    // a full round trip through the signal chain has elapsed since Mixxx
+                    // processed the output signal.
+                    // Although Mixxx receives the input signal delayed, the user hears it mixed
+                    // in hardware with the master & booth outputs without that
+                    // latency, so to record/broadcast the same signal that is heard
+                    // on the master & booth outputs, the master mix must be delayed before
+                    // mixing the talkover signal for the record/broadcast mix.
+                    // If not using microphone inputs or recording/broadcasting from
+                    // a sound card input, skip unnecessary processing here.
+
+                    // Copy the master mix to a separate buffer before delaying it
+                    // to avoid delaying the master output.
+                    m_pLatencyCompensationDelay->process(m_pSidechainMix, m_iBufferSize);
+                    SampleUtil::add(m_pSidechainMix, m_pTalkover, m_iBufferSize);
+                }
             }
         }
 
-        // Submit buffer to the side chain to do broadcasting, recording,
-        // etc. (CPU intensive non-realtime tasks)
-        // If recording/broadcasting from a sound card input,
-        // SoundManager will send the input buffer from the sound card to m_pSidechain
-        // so skip sending a buffer to m_pSidechain here.
-        if (!m_bExternalRecordBroadcastInputConnected
-            && m_pEngineSideChain != nullptr) {
+        // Submit buffer to the side chain to do CPU intensive non-realtime
+        // tasks like recording. The SoundDeviceNetwork, responsible for
+        // passing samples to the network reads directly from m_pSidechainMix,
+        // registering it with SoundDevice::addOutput().
+        // Note: In case the broadcast/recording input is configured,
+        // EngineSideChain::receiveBuffer has copied the input buffer to m_pSidechainMix
+        // via before (called by SoundManager::pushInputBuffers())
+        if (m_pEngineSideChain) {
             m_pEngineSideChain->writeSamples(m_pSidechainMix, iFrames);
         }
 
@@ -962,4 +977,8 @@ void EngineMaster::registerNonEngineChannelSoundIO(SoundManager* pSoundManager) 
         pSoundManager->registerOutput(AudioOutput(AudioOutput::BUS, 0, 2, o), this);
     }
     pSoundManager->registerOutput(AudioOutput(AudioOutput::RECORD_BROADCAST, 0, 2), this);
+}
+
+bool EngineMaster::sidechainMixRequired() const {
+    return m_pEngineSideChain && !m_bExternalRecordBroadcastInputConnected;
 }

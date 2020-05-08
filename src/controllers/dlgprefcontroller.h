@@ -39,6 +39,8 @@ class DlgPrefController : public DlgPreferencePage {
     /// Called when the user clicks the global "Reset to Defaults" button.
     void slotResetToDefaults();
 
+    QUrl helpUrl() const override;
+
   signals:
     void applyPreset(Controller* pController, ControllerPresetPointer pPreset, bool bEnabled);
     void mappingStarted();
@@ -78,7 +80,7 @@ class DlgPrefController : public DlgPreferencePage {
 
     /// Set dirty state (i.e. changes have been made).
     ///
-    /// When this preferences page is marked as "dirty", changes have occured
+    /// When this preferences page is marked as "dirty", changes have occurred
     /// that can be applied or discarded.
     ///
     /// @param bDirty The new dialog's dirty state.
@@ -88,7 +90,7 @@ class DlgPrefController : public DlgPreferencePage {
 
     /// Set dirty state (i.e. changes have been made).
     ///
-    /// When this preferences page is marked as "dirty", changes have occured
+    /// When this preferences page is marked as "dirty", changes have occurred
     /// that can be applied or discarded.
     ///
     /// @param bDirty The new dialog's dirty state.

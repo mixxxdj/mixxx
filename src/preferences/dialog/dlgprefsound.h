@@ -16,12 +16,13 @@
 #ifndef DLGPREFSOUND_H
 #define DLGPREFSOUND_H
 
+#include "defs_urls.h"
 #include "preferences/dialog/ui_dlgprefsounddlg.h"
-#include "preferences/usersettings.h"
-#include "soundio/soundmanagerconfig.h"
-#include "soundio/sounddeviceerror.h"
 #include "preferences/dlgpreferencepage.h"
+#include "preferences/usersettings.h"
 #include "soundio/sounddevice.h"
+#include "soundio/sounddeviceerror.h"
+#include "soundio/soundmanagerconfig.h"
 
 class SoundManager;
 class PlayerManager;
@@ -46,6 +47,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
                  PlayerManager* pPlayerManager,
                  UserSettingsPointer pSettings);
     virtual ~DlgPrefSound();
+
+    QUrl helpUrl() const override;
 
   signals:
     void loadPaths(const SoundManagerConfig &config);

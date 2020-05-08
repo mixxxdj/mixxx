@@ -16,6 +16,7 @@
 #include "sources/soundsourceproxy.h"
 #include "track/beats.h"
 #include "track/track.h"
+#include "util/compatibility.h"
 #include "util/platform.h"
 #include "util/sandbox.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -36,14 +37,15 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent, const QString& group)
 }
 
 BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
-                                         UserSettingsPointer pConfig,
-                                         EngineMaster* pMixingEngine,
-                                         EffectsManager* pEffectsManager,
-                                         VisualsManager* pVisualsManager,
-                                         EngineChannel::ChannelOrientation defaultOrientation,
-                                         const QString& group,
-                                         bool defaultMaster,
-                                         bool defaultHeadphones)
+        UserSettingsPointer pConfig,
+        EngineMaster* pMixingEngine,
+        EffectsManager* pEffectsManager,
+        VisualsManager* pVisualsManager,
+        EngineChannel::ChannelOrientation defaultOrientation,
+        const QString& group,
+        bool defaultMaster,
+        bool defaultHeadphones,
+        bool primaryDeck)
         : BaseTrackPlayer(pParent, group),
           m_pConfig(pConfig),
           m_pEngineMaster(pMixingEngine),
@@ -52,8 +54,12 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
           m_pChannelToCloneFrom(nullptr) {
     ChannelHandleAndGroup channelGroup =
             pMixingEngine->registerChannelGroup(group);
-    m_pChannel = new EngineDeck(channelGroup, pConfig, pMixingEngine,
-                                pEffectsManager, defaultOrientation);
+    m_pChannel = new EngineDeck(channelGroup,
+            pConfig,
+            pMixingEngine,
+            pEffectsManager,
+            defaultOrientation,
+            primaryDeck);
 
     m_pInputConfigured = std::make_unique<ControlProxy>(group, "input_configured", this);
 #ifdef __VINYLCONTROL__
@@ -134,7 +140,8 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
 
     m_pPreGain = std::make_unique<ControlProxy>(group, "pregain", this);
     // BPM of the current song
-    m_pFileBPM = std::make_unique<ControlProxy>(group, "file_bpm", this);
+
+    m_pFileBPM = std::make_unique<ControlObject>(ConfigKey(group, "file_bpm"));
     m_pKey = std::make_unique<ControlProxy>(group, "file_key", this);
 
     m_pReplayGain = std::make_unique<ControlProxy>(group, "replaygain", this);
@@ -166,7 +173,7 @@ TrackPointer BaseTrackPlayerImpl::loadFakeTrack(bool bPlay, double filebpm) {
         connect(m_pLoadedTrack.get(),
                 &Track::bpmUpdated,
                 m_pFileBPM.get(),
-                &ControlProxy::set);
+                QOverload<double>::of(&ControlObject::set));
 
         connect(m_pLoadedTrack.get(),
                 &Track::keyUpdated,
@@ -216,16 +223,29 @@ void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
     if (!m_pChannelToCloneFrom) {
         const QList<CuePointer> trackCues(m_pLoadedTrack->getCuePoints());
         QListIterator<CuePointer> it(trackCues);
+        CuePointer pLoopCue;
+        // Restore loop from the first loop cue with minimum hotcue number.
+        // For the volatile "most recent loop" the hotcue number will be -1.
+        // If no such loop exists, restore a saved loop cue.
         while (it.hasNext()) {
             CuePointer pCue(it.next());
-            if (pCue->getType() == mixxx::CueType::Loop) {
-                double loopStart = pCue->getPosition();
-                double loopEnd = loopStart + pCue->getLength();
-                if (loopStart != kNoTrigger && loopEnd != kNoTrigger && loopStart <= loopEnd) {
-                    m_pLoopInPoint->set(loopStart);
-                    m_pLoopOutPoint->set(loopEnd);
-                    break;
-                }
+            if (pCue->getType() != mixxx::CueType::Loop) {
+                continue;
+            }
+
+            if (pLoopCue && pLoopCue->getHotCue() <= pCue->getHotCue()) {
+                continue;
+            }
+
+            pLoopCue = pCue;
+        }
+
+        if (pLoopCue) {
+            double loopStart = pLoopCue->getPosition();
+            double loopEnd = loopStart + pLoopCue->getLength();
+            if (loopStart != kNoTrigger && loopEnd != kNoTrigger && loopStart <= loopEnd) {
+                m_pLoopInPoint->set(loopStart);
+                m_pLoopOutPoint->set(loopEnd);
             }
         }
     } else {
@@ -256,8 +276,9 @@ TrackPointer BaseTrackPlayerImpl::unloadTrack() {
         QListIterator<CuePointer> it(cuePoints);
         while (it.hasNext()) {
             CuePointer pCue(it.next());
-            if (pCue->getType() == mixxx::CueType::Loop) {
+            if (pCue->getType() == mixxx::CueType::Loop && pCue->getHotCue() == Cue::kNoHotCue) {
                 pLoopCue = pCue;
+                break;
             }
         }
         if (!pLoopCue) {
@@ -284,7 +305,7 @@ void BaseTrackPlayerImpl::connectLoadedTrack() {
     connect(m_pLoadedTrack.get(),
             &Track::bpmUpdated,
             m_pFileBPM.get(),
-            &ControlProxy::set);
+            QOverload<double>::of(&ControlObject::set));
     connect(m_pLoadedTrack.get(),
             &Track::keyUpdated,
             m_pKey.get(),

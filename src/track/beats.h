@@ -11,7 +11,12 @@
 #include "util/memory.h"
 #include "util/types.h"
 
+namespace {
+double kMaxBpm = 500;
+}
+
 namespace mixxx {
+
 class Beats;
 using BeatsPointer = std::shared_ptr<Beats>;
 using BeatList = QList<track::io::Beat>;

@@ -67,8 +67,16 @@ WTrackMenu::~WTrackMenu() {
     // forward declared in the header file.
 }
 
+int WTrackMenu::getTrackCount() const {
+    if (m_pTrackModel) {
+        return m_trackIndexList.size();
+    } else {
+        return m_trackPointerList.size();
+    }
+}
+
 void WTrackMenu::popup(const QPoint& pos, QAction* at) {
-    if (getTrackPointers().empty()) {
+    if (isEmpty()) {
         return;
     }
     QMenu::popup(pos, at);
@@ -254,12 +262,30 @@ void WTrackMenu::createActions() {
         m_pBpmFourThirdsAction = new QAction(tr("4/3 BPM"), m_pBPMMenu);
         m_pBpmThreeHalvesAction = new QAction(tr("3/2 BPM"), m_pBPMMenu);
 
-        connect(m_pBpmDoubleAction, &QAction::triggered, this, [this] { slotScaleBpm(mixxx::Beats::DOUBLE); });
-        connect(m_pBpmHalveAction, &QAction::triggered, this, [this] { slotScaleBpm(mixxx::Beats::HALVE); });
-        connect(m_pBpmTwoThirdsAction, &QAction::triggered, this, [this] { slotScaleBpm(mixxx::Beats::TWOTHIRDS); });
-        connect(m_pBpmThreeFourthsAction, &QAction::triggered, this, [this] { slotScaleBpm(mixxx::Beats::THREEFOURTHS); });
-        connect(m_pBpmFourThirdsAction, &QAction::triggered, this, [this] { slotScaleBpm(mixxx::Beats::FOURTHIRDS); });
-        connect(m_pBpmThreeHalvesAction, &QAction::triggered, this, [this] { slotScaleBpm(mixxx::Beats::THREEHALVES); });
+        connect(m_pBpmDoubleAction, &QAction::triggered, this, [this] {
+            slotScaleBpm(mixxx::Beats::DOUBLE);
+        });
+        connect(m_pBpmHalveAction, &QAction::triggered, this, [this] {
+            slotScaleBpm(mixxx::Beats::HALVE);
+        });
+        connect(m_pBpmTwoThirdsAction, &QAction::triggered, this, [this] {
+            slotScaleBpm(mixxx::Beats::TWOTHIRDS);
+        });
+        connect(m_pBpmThreeFourthsAction, &QAction::triggered, this, [this] {
+            slotScaleBpm(mixxx::Beats::THREEFOURTHS);
+        });
+        connect(m_pBpmFourThirdsAction, &QAction::triggered, this, [this] {
+            slotScaleBpm(mixxx::Beats::FOURTHIRDS);
+        });
+        connect(m_pBpmThreeHalvesAction, &QAction::triggered, this, [this] {
+            slotScaleBpm(mixxx::Beats::THREEHALVES);
+        });
+
+        m_pBpmResetAction = new QAction(tr("Reset BPM"), m_pBPMMenu);
+        connect(m_pBpmResetAction,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotClearBeats);
     }
 
     if (featureIsEnabled(Feature::Color)) {
@@ -335,6 +361,8 @@ void WTrackMenu::setupActions() {
         m_pBPMMenu->addAction(m_pBpmLockAction);
         m_pBPMMenu->addAction(m_pBpmUnlockAction);
         m_pBPMMenu->addSeparator();
+        m_pBPMMenu->addAction(m_pBpmResetAction);
+        m_pBPMMenu->addSeparator();
 
         addMenu(m_pBPMMenu);
     }
@@ -407,12 +435,118 @@ void WTrackMenu::setupActions() {
     }
 }
 
+bool WTrackMenu::isAnyTrackBpmLocked() const {
+    if (m_pTrackModel) {
+        const int column =
+                m_pTrackModel->fieldIndex(LIBRARYTABLE_BPM_LOCK);
+        for (const auto trackIndex : m_trackIndexList) {
+            QModelIndex bpmLockedIndex =
+                    trackIndex.sibling(trackIndex.row(), column);
+            if (bpmLockedIndex.data().toBool()) {
+                return true;
+            }
+        }
+    } else {
+        for (const auto& pTrack : m_trackPointerList) {
+            if (pTrack->isBpmLocked()) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+std::optional<mixxx::RgbColor> WTrackMenu::getCommonTrackColor() const {
+    VERIFY_OR_DEBUG_ASSERT(!isEmpty()) {
+        return std::nullopt;
+    }
+    std::optional<mixxx::RgbColor> commonColor;
+    if (m_pTrackModel) {
+        const int column =
+                m_pTrackModel->fieldIndex(LIBRARYTABLE_COLOR);
+        commonColor = mixxx::RgbColor::fromQVariant(
+                m_trackIndexList.first().sibling(m_trackIndexList.first().row(), column).data());
+        if (!commonColor) {
+            return std::nullopt;
+        }
+        for (const auto trackIndex : m_trackIndexList) {
+            const auto otherColor = mixxx::RgbColor::fromQVariant(
+                    trackIndex.sibling(trackIndex.row(), column).data());
+            if (commonColor != otherColor) {
+                // Multiple, different colors
+                return std::nullopt;
+            }
+        }
+    } else {
+        auto commonColor = m_trackPointerList.first()->getColor();
+        if (!commonColor) {
+            return std::nullopt;
+        }
+        for (const auto& pTrack : m_trackPointerList) {
+            if (commonColor != pTrack->getColor()) {
+                // Multiple, different colors
+                return std::nullopt;
+            }
+        }
+    }
+    return commonColor;
+}
+
+CoverInfo WTrackMenu::getCoverInfoOfLastTrack() const {
+    VERIFY_OR_DEBUG_ASSERT(!isEmpty()) {
+        return CoverInfo();
+    }
+    if (m_pTrackModel) {
+        const QModelIndex lastIndex = m_trackIndexList.last();
+        CoverInfo coverInfo;
+        coverInfo.source = static_cast<CoverInfo::Source>(
+                lastIndex
+                        .sibling(
+                                lastIndex.row(),
+                                m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_SOURCE))
+                        .data()
+                        .toInt());
+        coverInfo.type = static_cast<CoverInfo::Type>(
+                lastIndex
+                        .sibling(
+                                lastIndex.row(),
+                                m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_TYPE))
+                        .data()
+                        .toInt());
+        coverInfo.hash =
+                lastIndex
+                        .sibling(
+                                lastIndex.row(),
+                                m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_HASH))
+                        .data()
+                        .toUInt();
+        coverInfo.coverLocation =
+                lastIndex
+                        .sibling(
+                                lastIndex.row(),
+                                m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_LOCATION))
+                        .data()
+                        .toString();
+        coverInfo.trackLocation =
+                lastIndex
+                        .sibling(
+                                lastIndex.row(),
+                                m_pTrackModel->fieldIndex(LIBRARYTABLE_LOCATION))
+                        .data()
+                        .toString();
+        return coverInfo;
+    } else {
+        return m_trackPointerList.last()->getCoverInfoWithLocation();
+    }
+}
+
 void WTrackMenu::updateMenus() {
-    const auto trackIds = getTrackIds();
-    const auto trackPointers = getTrackPointers();
+    if (isEmpty()) {
+        return;
+    }
 
     // Gray out some stuff if multiple songs were selected.
-    const bool singleTrackSelected = trackPointers.size() == 1;
+    const bool singleTrackSelected = getTrackCount() == 1;
 
     if (featureIsEnabled(Feature::LoadTo)) {
         int iNumDecks = m_pNumDecks->get();
@@ -478,49 +612,28 @@ void WTrackMenu::updateMenus() {
     if (featureIsEnabled(Feature::Metadata)) {
         m_pImportMetadataFromMusicBrainzAct->setEnabled(singleTrackSelected);
 
-        // We load a single track to get the necessary context for the cover (we use
-        // last to be consistent with selectionChanged above).
-        TrackPointer pTrack = trackPointers.last();
-
-        m_pCoverMenu->setCoverArt(
-                pTrack->getCoverInfoWithLocation());
+        // We use the last selected track for the cover art context to be
+        // consistent with selectionChanged above.
+        m_pCoverMenu->setCoverArt(getCoverInfoOfLastTrack());
+        m_pMetadataMenu->addMenu(m_pCoverMenu);
     }
 
-    if (featureIsEnabled(Feature::Reset)) {
-        bool allowClear = true;
-        for (int i = 0; i < trackPointers.size() && allowClear; ++i) {
-            if (trackPointers.at(0)->isBpmLocked()) {
-                allowClear = false;
-            }
+    if (featureIsEnabled(Feature::Reset) ||
+            featureIsEnabled(Feature::BPM)) {
+        const bool anyBpmLocked = isAnyTrackBpmLocked();
+        if (featureIsEnabled(Feature::Reset)) {
+            m_pClearBeatsAction->setEnabled(!anyBpmLocked);
         }
-        m_pClearBeatsAction->setEnabled(allowClear);
-    }
-
-    if (featureIsEnabled(Feature::BPM)) {
-        bool anyLocked = false; //true if any of the selected items are locked
-        for (int i = 0; i < trackPointers.size() && !anyLocked; ++i) {
-            if (trackPointers.at(i)->isBpmLocked()) {
-                anyLocked = true;
-            }
-        }
-        if (anyLocked) {
-            m_pBpmUnlockAction->setEnabled(true);
-            m_pBpmLockAction->setEnabled(false);
-            m_pBpmDoubleAction->setEnabled(false);
-            m_pBpmHalveAction->setEnabled(false);
-            m_pBpmTwoThirdsAction->setEnabled(false);
-            m_pBpmThreeFourthsAction->setEnabled(false);
-            m_pBpmFourThirdsAction->setEnabled(false);
-            m_pBpmThreeHalvesAction->setEnabled(false);
-        } else {
-            m_pBpmUnlockAction->setEnabled(false);
-            m_pBpmLockAction->setEnabled(true);
-            m_pBpmDoubleAction->setEnabled(true);
-            m_pBpmHalveAction->setEnabled(true);
-            m_pBpmTwoThirdsAction->setEnabled(true);
-            m_pBpmThreeFourthsAction->setEnabled(true);
-            m_pBpmFourThirdsAction->setEnabled(true);
-            m_pBpmThreeHalvesAction->setEnabled(true);
+        if (featureIsEnabled(Feature::BPM)) {
+            m_pBpmUnlockAction->setEnabled(anyBpmLocked);
+            m_pBpmLockAction->setEnabled(!anyBpmLocked);
+            m_pBpmDoubleAction->setEnabled(!anyBpmLocked);
+            m_pBpmHalveAction->setEnabled(!anyBpmLocked);
+            m_pBpmTwoThirdsAction->setEnabled(!anyBpmLocked);
+            m_pBpmThreeFourthsAction->setEnabled(!anyBpmLocked);
+            m_pBpmFourThirdsAction->setEnabled(!anyBpmLocked);
+            m_pBpmThreeHalvesAction->setEnabled(!anyBpmLocked);
+            m_pBpmResetAction->setEnabled(!anyBpmLocked);
         }
     }
 
@@ -528,24 +641,15 @@ void WTrackMenu::updateMenus() {
         m_pColorPickerAction->setColorPalette(
                 ColorPaletteSettings(m_pConfig).getTrackColorPalette());
 
-        // Get color of first selected track
-        TrackPointer pTrack = trackPointers.at(0);
-        auto trackColor = pTrack->getColor();
+        // Resize Menu to fit changed palette
+        QResizeEvent resizeEvent(QSize(), m_pColorMenu->size());
+        qApp->sendEvent(m_pColorMenu, &resizeEvent);
 
-        // Check if all other selected tracks have the same color
-        bool multipleTrackColors = false;
-        for (int i = 1; i < trackPointers.size(); ++i) {
-            if (trackColor != trackPointers.at(i)->getColor()) {
-                trackColor = mixxx::RgbColor::nullopt();
-                multipleTrackColors = true;
-                break;
-            }
-        }
-
-        if (multipleTrackColors) {
-            m_pColorPickerAction->resetSelectedColor();
+        const auto commonColor = getCommonTrackColor();
+        if (commonColor) {
+            m_pColorPickerAction->setSelectedColor(commonColor);
         } else {
-            m_pColorPickerAction->setSelectedColor(trackColor);
+            m_pColorPickerAction->resetSelectedColor();
         }
     }
 
@@ -567,34 +671,27 @@ void WTrackMenu::updateMenus() {
     }
 }
 
-void WTrackMenu::loadTracks(TrackIdList trackIdList) {
-    // Clean all forms of track store
-    clearTrackSelection();
-
+void WTrackMenu::loadTrack(
+        const TrackPointer& pTrack) {
     // This asserts that this function is only accessible when a track model is not set,
     // thus maintaining only the TrackPointerList in state and avoiding storing
     // duplicate state with TrackIdList and QModelIndexList.
-    DEBUG_ASSERT(!m_pTrackModel);
-
-    TrackPointerList trackPointers;
-    trackPointers.reserve(trackIdList.size());
-    for (const auto& trackId : trackIdList) {
-        TrackPointer pTrack = m_pTrackCollectionManager->internalCollection()->getTrackById(trackId);
-        if (pTrack) {
-            trackPointers.push_back(pTrack);
-        }
+    VERIFY_OR_DEBUG_ASSERT(!m_pTrackModel) {
+        return;
     }
-    m_pTrackPointerList = trackPointers;
 
-    if (!m_pTrackPointerList.empty()) {
-        updateMenus();
-    }
-}
-
-void WTrackMenu::loadTracks(QModelIndexList indexList) {
     // Clean all forms of track store
     clearTrackSelection();
 
+    if (!pTrack) {
+        return;
+    }
+    m_trackPointerList = TrackPointerList{pTrack};
+    updateMenus();
+}
+
+void WTrackMenu::loadTrackModelIndices(
+        const QModelIndexList& trackIndexList) {
     // This asserts that this function is only accessible when a track model is set,
     // thus maintaining only the QModelIndexList in state and avoiding storing
     // duplicate state with TrackIdList and TrackPointerList.
@@ -602,64 +699,55 @@ void WTrackMenu::loadTracks(QModelIndexList indexList) {
         return;
     }
 
-    QModelIndexList indices;
-    indices.reserve(indexList.size());
-    for (const auto& index : indexList) {
-        TrackPointer pTrack = m_pTrackModel->getTrack(index);
-        // Checking if passed indexList is valid
-        if (pTrack) {
-            indices.push_back(index);
-        }
-    }
-    m_pTrackIndexList = indices;
+    // Clean all forms of track store
+    clearTrackSelection();
 
-    if (!m_pTrackIndexList.empty()) {
-        updateMenus();
-    }
-}
-
-void WTrackMenu::loadTrack(TrackId trackId) {
-    loadTracks(TrackIdList{trackId});
-}
-
-void WTrackMenu::loadTrack(QModelIndex index) {
-    loadTracks(QModelIndexList{index});
+    m_trackIndexList = trackIndexList;
+    updateMenus();
 }
 
 TrackIdList WTrackMenu::getTrackIds() const {
     TrackIdList trackIds;
     if (m_pTrackModel) {
-        const QModelIndexList indices = getTrackIndices();
-        trackIds.reserve(indices.size());
-        for (const auto& index : indices) {
+        trackIds.reserve(m_trackIndexList.size());
+        for (const auto& index : m_trackIndexList) {
             const auto trackId = m_pTrackModel->getTrackId(index);
-            if (trackId.isValid()) {
-                trackIds.push_back(trackId);
+            if (!trackId.isValid()) {
+                // Skip unavailable tracks
+                continue;
             }
+            trackIds.push_back(trackId);
         }
     } else {
-        trackIds.reserve(m_pTrackPointerList.size());
-        for (const auto& pTrack : m_pTrackPointerList) {
+        trackIds.reserve(m_trackPointerList.size());
+        for (const auto& pTrack : m_trackPointerList) {
             const auto trackId = pTrack->getId();
             DEBUG_ASSERT(trackId.isValid());
-            trackIds.push_back(pTrack->getId());
+            trackIds.push_back(trackId);
         }
     }
     return trackIds;
 }
 
-TrackPointerList WTrackMenu::getTrackPointers() const {
+TrackPointerList WTrackMenu::getTrackPointers(
+        int maxSize) const {
     if (!m_pTrackModel) {
-        return m_pTrackPointerList;
+        return m_trackPointerList;
     }
-    const QModelIndexList indices = getTrackIndices();
     TrackPointerList trackPointers;
-    trackPointers.reserve(indices.size());
-    for (const auto& index : indices) {
-        const auto pTrack = m_pTrackModel->getTrack(index);
-        if (pTrack) {
-            trackPointers.push_back(pTrack);
+    trackPointers.reserve(m_trackIndexList.size());
+    for (const auto& index : m_trackIndexList) {
+        DEBUG_ASSERT(maxSize < 0 ||
+                maxSize <= trackPointers.size());
+        if (maxSize >= 0 && maxSize <= trackPointers.size()) {
+            return trackPointers;
         }
+        const auto pTrack = m_pTrackModel->getTrack(index);
+        if (!pTrack) {
+            // Skip unavailable tracks
+            continue;
+        }
+        trackPointers.push_back(pTrack);
     }
     return trackPointers;
 }
@@ -668,46 +756,39 @@ QModelIndexList WTrackMenu::getTrackIndices() const {
     // Indices are associated with a TrackModel. Can only be obtained
     // if a TrackModel is available.
     DEBUG_ASSERT(m_pTrackModel);
-    return m_pTrackIndexList;
+    return m_trackIndexList;
 }
 
 void WTrackMenu::slotOpenInFileBrowser() {
-    TrackPointerList trackPointerList = getTrackPointers();
+    const auto trackPointers = getTrackPointers();
     QStringList locations;
-    for (const TrackPointer& trackPointer : trackPointerList) {
-        locations << trackPointer->getLocation();
+    locations.reserve(trackPointers.size());
+    for (const auto& pTrack : trackPointers) {
+        locations << pTrack->getLocation();
     }
     mixxx::DesktopHelper::openInFileBrowser(locations);
 }
 
 void WTrackMenu::slotImportTrackMetadataFromFileTags() {
-    auto trackPointers = getTrackPointers();
-
-    for (const auto& pTrack : trackPointers) {
-        if (pTrack) {
-            // The user has explicitly requested to reload metadata from the file
-            // to override the information within Mixxx! Custom cover art must be
-            // reloaded separately.
-            SoundSourceProxy(pTrack).updateTrackFromSource(
-                    SoundSourceProxy::ImportTrackMetadataMode::Again);
-        }
+    for (const auto& pTrack : getTrackPointers()) {
+        // The user has explicitly requested to reload metadata from the file
+        // to override the information within Mixxx! Custom cover art must be
+        // reloaded separately.
+        SoundSourceProxy(pTrack).updateTrackFromSource(
+                SoundSourceProxy::ImportTrackMetadataMode::Again);
     }
 }
 
 void WTrackMenu::slotExportTrackMetadataIntoFileTags() {
-    auto trackPointers = getTrackPointers();
-
     mixxx::DlgTrackMetadataExport::showMessageBoxOncePerSession();
 
-    for (const auto& pTrack : trackPointers) {
-        if (pTrack) {
-            // Export of metadata is deferred until all references to the
-            // corresponding track object have been dropped. Otherwise
-            // writing to files that are still used for playback might
-            // cause crashes or at least audible glitches!
-            mixxx::DlgTrackMetadataExport::showMessageBoxOncePerSession();
-            pTrack->markForMetadataExport();
-        }
+    for (const auto& pTrack : getTrackPointers()) {
+        // Export of metadata is deferred until all references to the
+        // corresponding track object have been dropped. Otherwise
+        // writing to files that are still used for playback might
+        // cause crashes or at least audible glitches!
+        mixxx::DlgTrackMetadataExport::showMessageBoxOncePerSession();
+        pTrack->markForMetadataExport();
     }
 }
 
@@ -936,29 +1017,28 @@ void WTrackMenu::slotUnlockBpm() {
 }
 
 void WTrackMenu::slotScaleBpm(int scale) {
-    const TrackPointerList trackPointers = getTrackPointers();
-    for (const auto& pTrack : trackPointers) {
-        if (!pTrack->isBpmLocked()) {
-            mixxx::BeatsPointer pBeats = pTrack->getBeats();
-            if (pBeats) {
-                pBeats->scale(static_cast<mixxx::Beats::BPMScale>(scale));
-            }
+    for (const auto& pTrack : getTrackPointers()) {
+        if (pTrack->isBpmLocked()) {
+            continue;
         }
+        mixxx::BeatsPointer pBeats = pTrack->getBeats();
+        if (!pBeats) {
+            continue;
+        }
+        pBeats->scale(static_cast<mixxx::Beats::BPMScale>(scale));
     }
 }
 
 void WTrackMenu::lockBpm(bool lock) {
-    const TrackPointerList trackPointers = getTrackPointers();
     // TODO: This should be done in a thread for large selections
-    for (const auto& pTrack : trackPointers) {
+    for (const auto& pTrack : getTrackPointers()) {
         pTrack->setBpmLocked(lock);
     }
 }
 
 void WTrackMenu::slotColorPicked(mixxx::RgbColor::optional_t color) {
-    const TrackPointerList trackPointers = getTrackPointers();
     // TODO: This should be done in a thread for large selections
-    for (const auto& pTrack : trackPointers) {
+    for (const auto& pTrack : getTrackPointers()) {
         pTrack->setColor(color);
     }
 
@@ -966,10 +1046,12 @@ void WTrackMenu::slotColorPicked(mixxx::RgbColor::optional_t color) {
 }
 
 void WTrackMenu::loadSelectionToGroup(QString group, bool play) {
-    const TrackPointerList trackPointers = getTrackPointers();
+    const auto trackPointers = getTrackPointers(1);
     if (trackPointers.empty()) {
         return;
     }
+    // Only the first track was requested
+    DEBUG_ASSERT(trackPointers.size() == 1);
     // If the track load override is disabled, check to see if a track is
     // playing before trying to load it
     if (!(m_pConfig->getValueString(
@@ -992,61 +1074,54 @@ void WTrackMenu::loadSelectionToGroup(QString group, bool play) {
 
 //slot for reset played count, sets count to 0 of one or more tracks
 void WTrackMenu::slotClearPlayCount() {
-    const TrackPointerList trackPointers = getTrackPointers();
-    for (const auto& pTrack : trackPointers) {
+    for (const auto& pTrack : getTrackPointers()) {
         pTrack->resetPlayCounter();
     }
 }
 
 void WTrackMenu::slotClearBeats() {
-    const TrackPointerList trackPointers = getTrackPointers();
     // TODO: This should be done in a thread for large selections
-    for (const auto& pTrack : trackPointers) {
-        if (!pTrack->isBpmLocked()) {
-            pTrack->setBeats(mixxx::BeatsPointer());
+    for (const auto& pTrack : getTrackPointers()) {
+        if (pTrack->isBpmLocked()) {
+            continue;
         }
+        pTrack->setBeats(mixxx::BeatsPointer());
     }
 }
 
 void WTrackMenu::slotClearMainCue() {
-    const TrackPointerList trackPointers = getTrackPointers();
-    for (const auto& pTrack : trackPointers) {
+    for (const auto& pTrack : getTrackPointers()) {
         pTrack->removeCuesOfType(mixxx::CueType::MainCue);
     }
 }
 
 void WTrackMenu::slotClearOutroCue() {
-    const TrackPointerList trackPointers = getTrackPointers();
-    for (const auto& pTrack : trackPointers) {
+    for (const auto& pTrack : getTrackPointers()) {
         pTrack->removeCuesOfType(mixxx::CueType::Outro);
     }
 }
 
 void WTrackMenu::slotClearIntroCue() {
-    const TrackPointerList trackPointers = getTrackPointers();
-    for (const auto& pTrack : trackPointers) {
+    for (const auto& pTrack : getTrackPointers()) {
         pTrack->removeCuesOfType(mixxx::CueType::Intro);
     }
 }
 
 void WTrackMenu::slotClearKey() {
-    const TrackPointerList trackPointers = getTrackPointers();
-    for (const auto& pTrack : trackPointers) {
+    for (const auto& pTrack : getTrackPointers()) {
         pTrack->resetKeys();
     }
 }
 
 void WTrackMenu::slotClearReplayGain() {
-    const TrackPointerList trackPointers = getTrackPointers();
-    for (const auto& pTrack : trackPointers) {
+    for (const auto& pTrack : getTrackPointers()) {
         pTrack->setReplayGain(mixxx::ReplayGain());
     }
 }
 
 void WTrackMenu::slotClearWaveform() {
-    const TrackPointerList trackPointers = getTrackPointers();
     AnalysisDao& analysisDao = m_pTrackCollectionManager->internalCollection()->getAnalysisDAO();
-    for (const auto& pTrack : trackPointers) {
+    for (const auto& pTrack : getTrackPointers()) {
         analysisDao.deleteAnalysesForTrack(pTrack->getId());
         pTrack->setWaveform(WaveformPointer());
         pTrack->setWaveformSummary(WaveformPointer());
@@ -1054,15 +1129,13 @@ void WTrackMenu::slotClearWaveform() {
 }
 
 void WTrackMenu::slotClearLoop() {
-    const TrackPointerList trackPointers = getTrackPointers();
-    for (const auto& pTrack : trackPointers) {
+    for (const auto& pTrack : getTrackPointers()) {
         pTrack->removeCuesOfType(mixxx::CueType::Loop);
     }
 }
 
 void WTrackMenu::slotClearHotCues() {
-    const TrackPointerList trackPointers = getTrackPointers();
-    for (const auto& pTrack : trackPointers) {
+    for (const auto& pTrack : getTrackPointers()) {
         pTrack->removeCuesOfType(mixxx::CueType::HotCue);
     }
 }
@@ -1081,29 +1154,25 @@ void WTrackMenu::slotClearAllMetadata() {
 }
 
 void WTrackMenu::slotShowTrackInfo() {
-    const auto trackPointers = getTrackPointers();
-    if (trackPointers.empty()) {
+    if (isEmpty()) {
         return;
     }
     if (m_pTrackModel) {
-        const auto indices = getTrackIndices();
-        m_pTrackInfo->loadTrack(indices.at(0));
+        m_pTrackInfo->loadTrack(m_trackIndexList.at(0));
     } else {
-        m_pTrackInfo->loadTrack(trackPointers.at(0));
+        m_pTrackInfo->loadTrack(m_trackPointerList.at(0));
     }
     m_pTrackInfo->show();
 }
 
 void WTrackMenu::slotShowDlgTagFetcher() {
-    const auto trackPointers = getTrackPointers();
-    if (trackPointers.empty()) {
+    if (isEmpty()) {
         return;
     }
     if (m_pTrackModel) {
-        const auto indices = getTrackIndices();
-        m_pTagFetcher->loadTrack(indices.at(0));
+        m_pTagFetcher->loadTrack(m_trackIndexList.at(0));
     } else {
-        m_pTagFetcher->loadTrack(trackPointers.at(0));
+        m_pTagFetcher->loadTrack(m_trackPointerList.at(0));
     }
     m_pTagFetcher->show();
 }
@@ -1136,58 +1205,46 @@ void WTrackMenu::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
 }
 
 void WTrackMenu::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
-    const TrackPointerList trackPointers = getTrackPointers();
-    for (const auto& pTrack : trackPointers) {
+    for (const auto& pTrack : getTrackPointers()) {
         pTrack->setCoverInfo(coverInfo);
     }
 }
 
 void WTrackMenu::slotReloadCoverArt() {
-    const TrackPointerList trackPointers = getTrackPointers();
-    if (!trackPointers.empty()) {
-        guessTrackCoverInfoConcurrently(trackPointers);
-    }
+    guessTrackCoverInfoConcurrently(getTrackPointers());
 }
 
 void WTrackMenu::slotRemove() {
-    if (m_pTrackModel) {
-        const QModelIndexList indices = getTrackIndices();
-        if (!indices.empty()) {
-            m_pTrackModel->removeTracks(indices);
-        }
+    if (!m_pTrackModel) {
+        return;
     }
+    m_pTrackModel->removeTracks(getTrackIndices());
 }
 
 void WTrackMenu::slotHide() {
-    if (m_pTrackModel) {
-        const QModelIndexList indices = getTrackIndices();
-        if (!indices.empty()) {
-            m_pTrackModel->hideTracks(indices);
-        }
+    if (!m_pTrackModel) {
+        return;
     }
+    m_pTrackModel->hideTracks(getTrackIndices());
 }
 
 void WTrackMenu::slotUnhide() {
-    if (m_pTrackModel) {
-        const QModelIndexList indices = getTrackIndices();
-        if (!indices.empty()) {
-            m_pTrackModel->unhideTracks(indices);
-        }
+    if (!m_pTrackModel) {
+        return;
     }
+    m_pTrackModel->unhideTracks(getTrackIndices());
 }
 
 void WTrackMenu::slotPurge() {
-    if (m_pTrackModel) {
-        const QModelIndexList indices = getTrackIndices();
-        if (!indices.empty()) {
-            m_pTrackModel->purgeTracks(indices);
-        }
+    if (!m_pTrackModel) {
+        return;
     }
+    m_pTrackModel->purgeTracks(getTrackIndices());
 }
 
 void WTrackMenu::clearTrackSelection() {
-    m_pTrackPointerList.clear();
-    m_pTrackIndexList.clear();
+    m_trackPointerList.clear();
+    m_trackIndexList.clear();
 }
 
 bool WTrackMenu::featureIsEnabled(Feature flag) const {
@@ -1196,48 +1253,52 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
         return false;
     }
 
-    if (m_pTrackModel) {
-        if (flag == Feature::AutoDJ) {
-            return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ);
-        } else if (flag == Feature::LoadTo) {
-            return m_pTrackModel->hasCapabilities(
-                           TrackModel::TRACKMODELCAPS_LOADTODECK) ||
-                    m_pTrackModel->hasCapabilities(
-                            TrackModel::TRACKMODELCAPS_LOADTOSAMPLER) ||
-                    m_pTrackModel->hasCapabilities(
-                            TrackModel::TRACKMODELCAPS_LOADTOPREVIEWDECK);
-        } else if (flag == Feature::Playlist) {
-            return m_pTrackModel->hasCapabilities(
-                    TrackModel::TRACKMODELCAPS_ADDTOPLAYLIST);
-        } else if (flag == Feature::Crate) {
-            return m_pTrackModel->hasCapabilities(
-                    TrackModel::TRACKMODELCAPS_ADDTOCRATE);
-        } else if (flag == Feature::Remove) {
-            return m_pTrackModel->hasCapabilities(
-                           TrackModel::TRACKMODELCAPS_REMOVE) ||
-                    m_pTrackModel->hasCapabilities(
-                            TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST) ||
-                    m_pTrackModel->hasCapabilities(
-                            TrackModel::TRACKMODELCAPS_REMOVE_CRATE);
-        } else if (flag == Feature::Metadata) {
-            return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
-        } else if (flag == Feature::Reset) {
-            return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA) &&
-                    m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_RESETPLAYED);
-        } else if (flag == Feature::BPM) {
-            return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
-        } else if (flag == Feature::Color) {
-            return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
-        } else if (flag == Feature::HideUnhidePurge) {
-            return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_HIDE) ||
-                    m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE) ||
-                    m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_PURGE);
-        } else if (flag == Feature::Properties) {
-            return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
-        } else {
-            return true;
-        }
+    if (!m_pTrackModel) {
+        return !m_eTrackModelFeatures.testFlag(flag);
     }
 
-    return !m_eTrackModelFeatures.testFlag(flag);
+    switch (flag) {
+    case Feature::AutoDJ:
+        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ);
+    case Feature::LoadTo:
+        return m_pTrackModel->hasCapabilities(
+                       TrackModel::TRACKMODELCAPS_LOADTODECK) ||
+                m_pTrackModel->hasCapabilities(
+                        TrackModel::TRACKMODELCAPS_LOADTOSAMPLER) ||
+                m_pTrackModel->hasCapabilities(
+                        TrackModel::TRACKMODELCAPS_LOADTOPREVIEWDECK);
+    case Feature::Playlist:
+        return m_pTrackModel->hasCapabilities(
+                TrackModel::TRACKMODELCAPS_ADDTOPLAYLIST);
+    case Feature::Crate:
+        return m_pTrackModel->hasCapabilities(
+                TrackModel::TRACKMODELCAPS_ADDTOCRATE);
+    case Feature::Remove:
+        return m_pTrackModel->hasCapabilities(
+                       TrackModel::TRACKMODELCAPS_REMOVE) ||
+                m_pTrackModel->hasCapabilities(
+                        TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST) ||
+                m_pTrackModel->hasCapabilities(
+                        TrackModel::TRACKMODELCAPS_REMOVE_CRATE);
+    case Feature::Metadata:
+        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+    case Feature::Reset:
+        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA) &&
+                m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_RESETPLAYED);
+    case Feature::BPM:
+        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+    case Feature::Color:
+        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+    case Feature::HideUnhidePurge:
+        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_HIDE) ||
+                m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE) ||
+                m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_PURGE);
+    case Feature::FileBrowser:
+        return true;
+    case Feature::Properties:
+        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+    default:
+        DEBUG_ASSERT(!"unreachable");
+        return true;
+    }
 }

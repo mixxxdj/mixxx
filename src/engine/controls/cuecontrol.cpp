@@ -369,10 +369,6 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
             this, &CueControl::trackCuesUpdated,
             Qt::DirectConnection);
 
-    connect(m_pLoadedTrack.get(), &Track::beatsUpdated,
-            this, &CueControl::trackBeatsUpdated,
-            Qt::DirectConnection);
-
     CuePointer pMainCue;
     for (const CuePointer& pCue : m_pLoadedTrack->getCuePoints()) {
         if (pCue->getType() == mixxx::CueType::MainCue) {
@@ -471,21 +467,34 @@ void CueControl::loadCuesFromTrack() {
         return;
 
     for (const CuePointer& pCue: m_pLoadedTrack->getCuePoints()) {
-        if (pCue->getType() == mixxx::CueType::MainCue) {
+        switch (pCue->getType()) {
+        case mixxx::CueType::MainCue:
             DEBUG_ASSERT(!pLoadCue); // There should be only one MainCue cue
             pLoadCue = pCue;
-        } else if (pCue->getType() == mixxx::CueType::Intro) {
+            break;
+        case mixxx::CueType::Intro:
             DEBUG_ASSERT(!pIntroCue); // There should be only one Intro cue
             pIntroCue = pCue;
-        } else if (pCue->getType() == mixxx::CueType::Outro) {
+            break;
+        case mixxx::CueType::Outro:
             DEBUG_ASSERT(!pOutroCue); // There should be only one Outro cue
             pOutroCue = pCue;
-        } else if (pCue->getType() == mixxx::CueType::HotCue && pCue->getHotCue() != Cue::kNoHotCue) {
+            break;
+        case mixxx::CueType::HotCue:
+        case mixxx::CueType::Loop: {
+            // FIXME: While it's not possible to save Loops in Mixxx yet, we do
+            // support importing them from Serato and Rekordbox. For the time
+            // being we treat them like regular hotcues and ignore their end
+            // position until #2194 has been merged.
+            if (pCue->getHotCue() == Cue::kNoHotCue) {
+                continue;
+            }
+
             int hotcue = pCue->getHotCue();
             HotcueControl* pControl = m_hotcueControls.value(hotcue, NULL);
 
             // Cue's hotcue doesn't have a hotcue control.
-            if (pControl == NULL) {
+            if (pControl == nullptr) {
                 continue;
             }
 
@@ -502,6 +511,10 @@ void CueControl::loadCuesFromTrack() {
             }
             // Add the hotcue to the list of active hotcues
             active_hotcues.insert(hotcue);
+            break;
+        }
+        default:
+            break;
         }
     }
 
@@ -583,7 +596,8 @@ void CueControl::trackCuesUpdated() {
     loadCuesFromTrack();
 }
 
-void CueControl::trackBeatsUpdated() {
+void CueControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
+    Q_UNUSED(pBeats);
     loadCuesFromTrack();
 }
 

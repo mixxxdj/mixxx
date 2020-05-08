@@ -2,7 +2,7 @@
 Description:
   Size-aware container that hides the toggle for deck controls if it is not
   necessary (when all deck controls are permanently visible).
-  Overall width of all controls is XYpx, the SizeAwareStack fills remainig space.
+  Overall width of all controls is XYpx, the SizeAwareStack fills remaining space.
   If it can grow broader than 1px the toggle should be visible.
 
 -->

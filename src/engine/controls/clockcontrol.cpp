@@ -19,31 +19,17 @@ ClockControl::~ClockControl() {
 
 // called from an engine worker thread
 void ClockControl::trackLoaded(TrackPointer pNewTrack) {
-    // Clear on-beat control
-    m_pCOBeatActive->set(0.0);
-
-    // Disconnect any previously loaded track/beats
-    if (m_pTrack) {
-        disconnect(m_pTrack.get(), &Track::beatsUpdated,
-                   this, &ClockControl::slotBeatsUpdated);
-    }
+    mixxx::BeatsPointer pBeats;
     if (pNewTrack) {
-        m_pTrack = pNewTrack;
-        m_pBeats = m_pTrack->getBeats();
-        connect(m_pTrack.get(), &Track::beatsUpdated,
-                this, &ClockControl::slotBeatsUpdated);
-    } else {
-        m_pBeats.reset();
-        m_pTrack.reset();
+        pBeats = pNewTrack->getBeats();
     }
-
+    trackBeatsUpdated(pBeats);
 }
 
-void ClockControl::slotBeatsUpdated() {
-    TrackPointer pTrack = m_pTrack;
-    if(pTrack) {
-        m_pBeats = pTrack->getBeats();
-    }
+void ClockControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
+    // Clear on-beat control
+    m_pCOBeatActive->set(0.0);
+    m_pBeats = pBeats;
 }
 
 void ClockControl::process(const double dRate,

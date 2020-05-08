@@ -602,7 +602,7 @@ DJ505.Deck = function(deckNumbers, offset) {
         outKey: "sync_mode",
         flickerState: false,
         output: function(value, _group, _control) {
-            if (value === 2) {
+            if (value === 3) {
                 value = this.flickerState;
             }
             midi.sendShortMsg(this.midi[0], value ? 0x02 : 0x03, this.on);
@@ -1017,22 +1017,22 @@ DJ505.PadColor = {
 };
 
 DJ505.PadColorMap = new ColorMapper({
-    "#CC0000": DJ505.PadColor.RED,
-    "#CC4400": DJ505.PadColor.CORAL,
-    "#CC8800": DJ505.PadColor.ORANGE,
-    "#CCCC00": DJ505.PadColor.YELLOW,
-    "#88CC00": DJ505.PadColor.GREEN,
-    "#00CC00": DJ505.PadColor.APPLEGREEN,
-    "#00CC88": DJ505.PadColor.AQUAMARINE,
-    "#00CCCC": DJ505.PadColor.TURQUOISE,
-    "#0088CC": DJ505.PadColor.CELESTE,
-    "#0000CC": DJ505.PadColor.BLUE,
-    "#4400CC": DJ505.PadColor.AZURE,
-    "#8800CC": DJ505.PadColor.PURPLE,
-    "#CC00CC": DJ505.PadColor.MAGENTA,
-    "#CC0044": DJ505.PadColor.RED,
-    "#FFCCCC": DJ505.PadColor.APRICOT,
-    "#FFFFFF": DJ505.PadColor.WHITE,
+    0xCC0000: DJ505.PadColor.RED,
+    0xCC4400: DJ505.PadColor.CORAL,
+    0xCC8800: DJ505.PadColor.ORANGE,
+    0xCCCC00: DJ505.PadColor.YELLOW,
+    0x88CC00: DJ505.PadColor.GREEN,
+    0x00CC00: DJ505.PadColor.APPLEGREEN,
+    0x00CC88: DJ505.PadColor.AQUAMARINE,
+    0x00CCCC: DJ505.PadColor.TURQUOISE,
+    0x0088CC: DJ505.PadColor.CELESTE,
+    0x0000CC: DJ505.PadColor.BLUE,
+    0x4400CC: DJ505.PadColor.AZURE,
+    0x8800CC: DJ505.PadColor.PURPLE,
+    0xCC00CC: DJ505.PadColor.MAGENTA,
+    0xCC0044: DJ505.PadColor.RED,
+    0xFFCCCC: DJ505.PadColor.APRICOT,
+    0xFFFFFF: DJ505.PadColor.WHITE,
 });
 
 DJ505.PadSection = function(deck, offset) {

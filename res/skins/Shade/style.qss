@@ -613,9 +613,9 @@ WEffectSelector QAbstractScrollArea QScrollBar:vertical,
 }
 #LibraryContainer QHeaderView {
   /* Note(ronso0)
-  This previously interferred with skin scaling:
+  This previously interfered with skin scaling:
   font-size: 13px/13px;
-  This doesnt't scale when usinf QT_SCALE_FACTOR manually:
+  This doesn't scale when using QT_SCALE_FACTOR manually:
   font-size: 10pt;	*/
   font-size: 13px/13px;
   font-weight: bold;

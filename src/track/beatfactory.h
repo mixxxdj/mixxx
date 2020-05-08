@@ -24,8 +24,15 @@ class BeatFactory {
         const int iMinBpm, const int iMaxBpm,
         const QHash<QString, QString> extraVersionInfo);
 
-    static mixxx::BeatsPointer makePreferredBeats(
-            const TrackPointer& track, QVector<double> beats, const QHash<QString, QString> extraVersionInfo, const bool bEnableFixedTempoCorrection, const bool bEnableOffsetCorrection, const SINT iSampleRate, const int iTotalSamples, const int iMinBpm, const int iMaxBpm);
+    static mixxx::BeatsPointer makePreferredBeats(const TrackPointer& track,
+            QVector<double> beats,
+            const QHash<QString, QString> extraVersionInfo,
+            const bool bEnableFixedTempoCorrection,
+            const bool bEnableOffsetCorrection,
+            const int iSampleRate,
+            const int iTotalSamples,
+            const int iMinBpm,
+            const int iMaxBpm);
 
   private:
     static void deleteBeats(mixxx::Beats* pBeats);

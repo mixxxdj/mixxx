@@ -67,13 +67,13 @@ void EngineTalkoverDucking::slotDuckModeChanged(double mode) {
 CSAMPLE EngineTalkoverDucking::getGain(int numFrames) {
     // Apply microphone ducking.
     switch (getMode()) {
-      case EngineTalkoverDucking::OFF:
+    case EngineTalkoverDucking::OFF:
         return 1.0;
-      case EngineTalkoverDucking::AUTO:
+    case EngineTalkoverDucking::AUTO:
+    case EngineTalkoverDucking::MANUAL:
         return calculateCompressedGain(numFrames);
-      case EngineTalkoverDucking::MANUAL:
-        return m_pDuckStrength->get();
+    default:
+        DEBUG_ASSERT("!Unknown Ducking mode");
+        return 1.0;
     }
-    qWarning() << "Invalid ducking mode, returning 1.0";
-    return 1.0;
 }

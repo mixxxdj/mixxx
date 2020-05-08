@@ -17,6 +17,7 @@ using TrackPointerList = QList<TrackPointer>;
 #include "sources/metadatasource.h"
 #include "track/beats.h"
 #include "track/cue.h"
+#include "track/cueinfoimporter.h"
 #include "track/trackfile.h"
 #include "track/trackrecord.h"
 #include "waveform/waveform.h"
@@ -250,12 +251,25 @@ class Track : public QObject {
     // Calls for managing the track's cue points
     CuePointer createAndAddCue();
     CuePointer findCueByType(mixxx::CueType type) const; // NOTE: Cannot be used for hotcues.
+    CuePointer findCueById(int id) const;
     void removeCue(const CuePointer& pCue);
     void removeCuesOfType(mixxx::CueType);
     QList<CuePointer> getCuePoints() const;
 
     void setCuePoints(const QList<CuePointer>& cuePoints);
-    void importCueInfos(const QList<mixxx::CueInfo>& cueInfos);
+
+    enum class CueImportStatus {
+        Pending,
+        Complete,
+    };
+    /// Imports the given list of cue infos as cue points,
+    /// thereby replacing all existing cue points!
+    ///
+    /// If the list is empty it tries to complete any pending
+    /// import and returns the corresponding status.
+    CueImportStatus importCueInfos(
+            mixxx::CueInfoImporterPointer pCueInfoImporter);
+    CueImportStatus getCueImportStatus() const;
 
     bool isDirty();
 
@@ -367,9 +381,8 @@ class Track : public QObject {
     void setCuePointsMarkDirtyAndUnlock(
             QMutexLocker* pLock,
             const QList<CuePointer>& cuePoints);
-    void importCueInfosMarkDirtyAndUnlock(
-            QMutexLocker* pLock,
-            const QList<mixxx::CueInfo>& cueInfos);
+    void importPendingCueInfosMarkDirtyAndUnlock(
+            QMutexLocker* pLock);
 
     enum class DurationRounding {
         SECONDS, // rounded to full seconds
@@ -420,7 +433,7 @@ class Track : public QObject {
     ConstWaveformPointer m_waveform;
     ConstWaveformPointer m_waveformSummary;
 
-    QList<mixxx::CueInfo> m_importCueInfosPending;
+    mixxx::CueInfoImporterPointer m_pCueInfoImporterPending;
 
     /// Prints track contents information, for debugging purposes only
     friend QDebug operator<<(QDebug dbg, const TrackPointer& arg);

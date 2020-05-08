@@ -15,6 +15,9 @@ class ControlPushButton;
 class EngineBuffer;
 class SyncControl;
 
+/// BpmControl is an EngineControl that manages the bpm and beat distance of
+/// tracks.  It understands the tempo of the underlying track and the musical
+/// position of the playhead.
 class BpmControl : public EngineControl {
     Q_OBJECT
 
@@ -74,9 +77,9 @@ class BpmControl : public EngineControl {
     double getRateRatio() const;
     void notifySeek(double dNewPlaypos) override;
     void trackLoaded(TrackPointer pNewTrack) override;
+    void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
   private slots:
-    void slotFileBpmChanged(double);
     void slotAdjustBeatsFaster(double);
     void slotAdjustBeatsSlower(double);
     void slotTranslateBeatsEarlier(double);
@@ -88,7 +91,6 @@ class BpmControl : public EngineControl {
     void slotBpmTap(double);
     void slotUpdateRateSlider(double v = 0.0);
     void slotUpdateEngineBpm(double v = 0.0);
-    void slotUpdatedTrackBeats();
     void slotBeatsTranslate(double);
     void slotBeatsTranslateMatchAlignment(double);
     void slotSetDownbeatOnClosestBeat(double);
@@ -122,8 +124,6 @@ class BpmControl : public EngineControl {
     std::unique_ptr<ControlProxy> m_pLoopStartPosition;
     std::unique_ptr<ControlProxy> m_pLoopEndPosition;
 
-    // The current loaded file's detected BPM
-    ControlObject* m_pFileBpm;
     // The average bpm around the current playposition;
     ControlObject* m_pLocalBpm;
     ControlPushButton* m_pAdjustBeatsFaster;
@@ -161,9 +161,9 @@ class BpmControl : public EngineControl {
     // used in the engine thread only
     double m_dSyncInstantaneousBpm;
     double m_dLastSyncAdjustment;
+    bool m_dUserTweakingSync;
 
-    // objects below are written from an engine worker thread
-    TrackPointer m_pTrack;
+    // m_pBeats is written from an engine worker thread
     mixxx::BeatsPointer m_pBeats;
 
     FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);

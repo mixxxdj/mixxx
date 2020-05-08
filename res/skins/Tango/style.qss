@@ -111,16 +111,6 @@ WWidgetGroup {
       image: url(skin:/graphics/splitterVert_handle_pressed.svg);
     }
 
-/* ################################################################
-####### Colors ##################################################
-###############################################################*/
-
-/* All deck-specific colors are now defined in <Schemes> in skin.xml.
-  - deck labels
-  - waveform & overview background/signal colors
-  - Spinny mini mask, mini default cover
- */
-
 
 
 /*################################################################
@@ -891,13 +881,9 @@ WLabel#TrackComment {
 
 /* Actual Play button. Receives click events, turns red
   when playing regularly, not from Cue or HotCue */
-#PlayCue[displayValue="0"] {
-  background-color: transparent;  /*
-  image: url(skin:/buttons/btn_play.svg) no-repeat center center; */
-  }
-  #PlayCue[displayValue="0"]:hover {
-    background-color: transparent;  /*
-    image: url(skin:/buttons/btn_play_hover.svg) no-repeat center center; */
+#PlayCue[displayValue="0"],
+#PlayCue[displayValue="0"]:hover {
+  background-color: transparent;
   }
 
 #SamplerPlayCue[displayValue="0"] {
@@ -936,7 +922,8 @@ WLabel#TrackComment {
 #SamplerPlayCue[displayValue="1"] { /*
   image: url(skin:/buttons/btn_pause.svg) no-repeat center center;  */
 }
-#PlayCue[displayValue="1"],
+#PlayCue[value="1"],
+#PlayIndicator[value="1"],
 #SamplerPlayCue[displayValue="1"],
 #MicTalkover[displayValue="1"],
 #AuxEnable[displayValue="1"],
@@ -988,7 +975,8 @@ WLabel#TrackComment {
   }
   #SpecialCueButton[displayValue="0"],
   #HotcueButton[displayValue="0"],
-  #CueUnderlay {
+  #CueUnderlay,
+  #PlayIndicator[value="0"] {
     color: #888;
     background-color: #333;
     }
@@ -1297,6 +1285,34 @@ WBeatSpinBox,
       #KeyDown:hover {
         image: url(skin:/buttons/btn_key_down_hover.svg) no-repeat center center;
       }
+
+
+/* ################################################################
+####### Deck Colors ##################################################
+###############################################################*/
+#Deck1 WLabel, #DeckMini1 WLabel,
+#Deck2 WLabel, #DeckMini2 WLabel,
+#RateContainer1 WLabel, #RateContainer1 WPushButton,
+#RateContainer2 WLabel, #RateContainer2 WPushButton {
+  color: #e145f3;
+}
+#Deck3 WLabel, #DeckMini3 WLabel,
+#Deck4 WLabel, #DeckMini4 WLabel,
+#RateContainer3 WLabel, #RateContainer3 WPushButton,
+#RateContainer4 WLabel, #RateContainer4 WPushButton {
+  color: #7DBF36;
+}
+WLabel#TrackBy,
+WLabel#TrackByMini,
+WLabel#TrackComment {
+  color: #888;
+}
+#DeckOverviewRow1, #DeckOverviewRow2 {
+  background-color: #3A0440;
+}
+#DeckOverviewRow3, #DeckOverviewRow4 {
+  background-color: #19260B;
+}
 
 
 /*################################################################
@@ -2414,9 +2430,9 @@ WTrackMenu QMenu::right-arrow {
     }
 
 #LibraryContainer QTableView,
-#LibraryContainer #LibraryContainer QTextBrowser,
+#LibraryContainer QTextBrowser,
 #LibraryContainer QTreeView {
-  border: 1px solid #585858;
+  border: 2px solid #585858;
   font-weight: normal;
   color: #9e9e9e;
   background-color: #0f0f0f;
@@ -2472,12 +2488,14 @@ WTrackMenu QMenu::right-arrow {
   }
   #LibraryContainer QTableView:focus,
   #LibraryContainer QTreeView:focus,
+  #LibraryContainer QTableView:focus,
+  #LibraryContainer WSearchLineEdit:focus { /*
   #LibraryContainer QTextBrowser:focus { /*
     New Library navigation COs only work if TreeView or TableView have focus.
     Clicking on buttons, sliders and visuals elsewhere removes focus from Library.
     In conjunction with [Library],MoveFocusBackward/..Forward, some highlight
     helps a lot. */
-    border-color: #ff6600;
+    border-color: #ff8800;
   }
 
 /*  Closed branch icon in tree */
@@ -2947,7 +2965,6 @@ WSearchLineEdit {
   }
   WSearchLineEdit:focus {
     padding: 1px;
-    border: 2px solid #ff6600;
     color: #eeeeee;
   }
   /* Clear button: see /skins/default.qss */
