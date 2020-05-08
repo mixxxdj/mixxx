@@ -20,17 +20,17 @@ class EffectsManager;
 class EffectProcessor;
 class EngineEffectChain;
 
-/// EffectChainSlot is the main thread representation of an effect chain which
-/// adds/removes exactly one EngineEffectChain from the engine. Unlike EffectSlot,
-/// EffectChainSlot does not add/remove EngineEffectChains apart from Mixxx
-/// startup and shutdown. The lifetime of EngineEffectChain is coupled with
-/// EffectChainSlot. Do not change this relationship; there is no use case for
-/// that.
-///
+/// EffectChainSlot is the main thread representation of an effect chain.
 /// EffectChainSlot owns the ControlObjects for the routing switches that assign
 /// chains to process audio inputs (decks, microphones, auxiliary inputs,
 /// master mix). EffectChainSlot also owns the ControlObject for the superknob
 /// which manipulates the metaknob of each effect in the chain.
+///
+/// EffectChainSlots are created and destroyed by EffectsManager during Mixxx
+/// startup and shutdown. EffectChainSlot adds exactly one EngineEffectChain to
+/// the audio engine which is removed from the engine in the EffectChainSlot
+/// destructor. This is in contrast to EffectSlot, which loads/unloads
+/// EngineEffects at the user's request.
 ///
 /// The state of an EffectChainSlot can be saved to and loaded from an
 /// EffectChainPreset, which can serialize/deserialize that state to/from XML.
