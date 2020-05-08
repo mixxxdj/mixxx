@@ -275,10 +275,10 @@ class Track : public QObject {
     bool isDirty();
 
     // Get the track's Beats list
-    BeatsPointer getBeats() const;
+    mixxx::BeatsPointer getBeats() const;
 
     // Set the track's Beats
-    void setBeats(BeatsPointer beats);
+    void setBeats(mixxx::BeatsPointer beats);
 
     void resetKeys();
     void setKeys(const Keys& keys);
@@ -375,7 +375,7 @@ class Track : public QObject {
     void markDirtyAndUnlock(QMutexLocker* pLock, bool bDirty = true);
     void setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty);
 
-    void setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats);
+    void setBeatsAndUnlock(QMutexLocker* pLock, mixxx::BeatsPointer pBeats);
 
     void afterKeysUpdated(QMutexLocker* pLock);
 
@@ -428,7 +428,7 @@ class Track : public QObject {
     QList<CuePointer> m_cuePoints;
 
     // Storage for the track's beats
-    BeatsPointer m_pBeats;
+    mixxx::BeatsPointer m_pBeats;
 
     //Visual waveform data
     ConstWaveformPointer m_waveform;

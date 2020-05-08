@@ -11,6 +11,8 @@ struct BeatGridData {
     double firstBeat;
 };
 
+namespace mixxx {
+
 class BeatGridIterator : public BeatIterator {
   public:
     BeatGridIterator(double dBeatLength, double dFirstBeat, double dEndSample)
@@ -362,3 +364,5 @@ void BeatGrid::setBpm(double dBpm) {
     locker.unlock();
     emit updated();
 }
+
+} // namespace mixxx

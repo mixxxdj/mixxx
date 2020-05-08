@@ -1,12 +1,12 @@
 #pragma once
 
-#include <QColor>
 #include <QDomNode>
 #include <QEvent>
 #include <QLineEdit>
 #include <QTimer>
 #include <QToolButton>
 
+#include "util/parented_ptr.h"
 #include "widget/wbasewidget.h"
 
 class SkinContext;
@@ -14,23 +14,10 @@ class SkinContext;
 class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     Q_OBJECT
   public:
-    enum class State {
-        Inactive,
-        Active,
-    };
-
     // Delay for triggering a search while typing
     static constexpr int kMinDebouncingTimeoutMillis = 100;
     static constexpr int kDefaultDebouncingTimeoutMillis = 300;
     static constexpr int kMaxDebouncingTimeoutMillis = 9999;
-
-    // Use 'active' property to apply an alternative style to the
-    // placeholder text
-    Q_PROPERTY(bool active READ isActive);
-
-    bool isActive() const {
-        return m_state == State::Active ? true : false;
-    }
 
     // TODO(XXX): Replace with a public slot
     static void setDebouncingTimeoutMillis(int debouncingTimeoutMillis);
@@ -50,17 +37,19 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     void search(const QString& text);
 
   public slots:
-    void restoreSearch(const QString& text);
-    void disableSearch();
     void slotSetFont(const QFont& font);
-    bool clearBtnHasFocus() const;
-    void clearSearch();
+
+    void slotRestoreSearch(const QString& text);
+    void slotDisableSearch();
+
+    void slotClearSearch();
+    bool slotClearSearchIfClearButtonHasFocus();
 
   private slots:
-    void setShortcutFocus();
-    void updateText(const QString& text);
+    void slotSetShortcutFocus();
+    void slotTextChanged(const QString& text);
 
-    void triggerSearch();
+    void slotTriggerSearch();
 
   private:
     // TODO(XXX): This setting shouldn't be static and the widget
@@ -70,22 +59,21 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     // configuration value changes.
     static int s_debouncingTimeoutMillis;
 
-    void showPlaceholder();
-    void showSearchText(const QString& text);
-    void updateEditBox(const QString& text);
+    void refreshState();
 
+    void enableSearch(const QString& text);
+    void updateEditBox(const QString& text);
     void updateClearButton(const QString& text);
 
     QString getSearchText() const;
 
-    QToolButton* const m_clearButton;
+    // Update the displayed text without (re-)starting the timer
+    void setTextBlockSignals(const QString& text);
+
+    parented_ptr<QToolButton> const m_clearButton;
 
     int m_frameWidth;
     int m_innerHeight;
 
-    QColor m_foregroundColor;
-
     QTimer m_debouncingTimer;
-
-    State m_state;
 };

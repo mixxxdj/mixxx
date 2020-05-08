@@ -199,6 +199,11 @@ TrackPointer SoundSourceProxy::importTemporaryTrack(
 QImage SoundSourceProxy::importTemporaryCoverImage(
         TrackFile trackFile,
         SecurityTokenPointer pSecurityToken) {
+    if (!trackFile.checkFileExists()) {
+        // Silently ignore missing files to avoid spaming the log:
+        // https://bugs.launchpad.net/mixxx/+bug/1875237
+        return QImage();
+    }
     TrackPointer pTrack = Track::newTemporary(
             std::move(trackFile),
             std::move(pSecurityToken));

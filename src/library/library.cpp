@@ -236,11 +236,11 @@ void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
     connect(this,
             &Library::disableSearch,
             pSearchboxWidget,
-            &WSearchLineEdit::disableSearch);
+            &WSearchLineEdit::slotDisableSearch);
     connect(this,
             &Library::restoreSearch,
             pSearchboxWidget,
-            &WSearchLineEdit::restoreSearch);
+            &WSearchLineEdit::slotRestoreSearch);
     connect(this,
             &Library::setTrackTableFont,
             pSearchboxWidget,

@@ -18,6 +18,12 @@ const QString kDecoderName(QStringLiteral("FFMPEG"));
 const QString kDecoderName(QStringLiteral("Unknown"));
 #endif
 
+/// In Serato, loops and hotcues are kept separate, i. e. you can
+/// have a loop and a hotcue with the same number. In Mixxx, loops
+/// and hotcues share indices. Hence, we import them with an offset
+/// of 8 (the maximum number of hotcues in Serato).
+const int kLoopIndexOffset = 8;
+
 mixxx::RgbColor getColorFromOtherPalette(
         const ColorPalette& source,
         const ColorPalette& dest,
@@ -30,20 +36,50 @@ mixxx::RgbColor getColorFromOtherPalette(
     return color;
 }
 
+std::optional<int> findIndexForCueInfo(const mixxx::CueInfo& cueInfo) {
+    VERIFY_OR_DEBUG_ASSERT(cueInfo.getHotCueNumber()) {
+        qWarning() << "SeratoTags::getCues: Cue without number found!";
+        return std::nullopt;
+    }
+
+    int index = *cueInfo.getHotCueNumber();
+    VERIFY_OR_DEBUG_ASSERT(index >= 0) {
+        qWarning() << "SeratoTags::getCues: Cue with number < 0 found!";
+        return std::nullopt;
+    }
+
+    switch (cueInfo.getType()) {
+    case mixxx::CueType::HotCue:
+        if (index >= kLoopIndexOffset) {
+            qWarning()
+                    << "SeratoTags::getCues: Non-loop Cue with number >="
+                    << kLoopIndexOffset << "found!";
+            return std::nullopt;
+        }
+        break;
+    case mixxx::CueType::Loop:
+        index += kLoopIndexOffset;
+        break;
+    default:
+        return std::nullopt;
+    }
+
+    return index;
+}
+
 } // namespace
 
 namespace mixxx {
 
+/// Serato stores Track colors differently from how they are displayed in
+/// the library column. Instead of the color from the library view, the
+/// value from the color picker is stored instead (which is different).
+/// To make sure that the track looks the same in both Mixxx' and Serato's
+/// libraries, we need to convert between the two values.
+///
+/// See this for details:
+/// https://github.com/Holzhaus/serato-tags/blob/master/docs/colors.md#track-colors
 RgbColor::optional_t SeratoTags::storedToDisplayedTrackColor(RgbColor color) {
-    // Serato stores Track colors differently from how they are displayed in
-    // the library column. Instead of the color from the library view, the
-    // value from the color picker is stored instead (which is different).
-    // To make sure that the track looks the same in both Mixxx' and Serato's
-    // libraries, we need to convert between the two values.
-    //
-    // See this for details:
-    // https://github.com/Holzhaus/serato-tags/blob/master/docs/colors.md#track-colors
-
     if (color == 0xFFFFFF) {
         return RgbColor::nullopt();
     }
@@ -144,7 +180,9 @@ double SeratoTags::guessTimingOffsetMillis(
             timingOffset = -26;
             break;
         default:
-            qWarning() << "Unknown timing offset for Serato tags with sample rate" << signalInfo.getSampleRate();
+            qWarning()
+                    << "Unknown timing offset for Serato tags with sample rate"
+                    << signalInfo.getSampleRate();
         }
 #endif
         qDebug()
@@ -167,29 +205,20 @@ CueInfoImporterPointer SeratoTags::importCueInfos() const {
 
     QMap<int, CueInfo> cueMap;
     for (const CueInfo& cueInfo : m_seratoMarkers2.getCues()) {
-        VERIFY_OR_DEBUG_ASSERT(cueInfo.getHotCueNumber()) {
-            qWarning() << "SeratoTags::getCues: Cue without number found!";
-            continue;
-        }
-
-        int index = *cueInfo.getHotCueNumber();
-        VERIFY_OR_DEBUG_ASSERT(index >= 0) {
-            qWarning() << "SeratoTags::getCues: Cue with number < 0 found!";
-        }
-
-        if (cueInfo.getType() != CueType::HotCue) {
-            qWarning() << "SeratoTags::getCues: Ignoring cue with non-hotcue type!";
+        std::optional<int> index = findIndexForCueInfo(cueInfo);
+        if (!index) {
             continue;
         }
 
         CueInfo newCueInfo(cueInfo);
+        newCueInfo.setHotCueNumber(index);
+
         RgbColor::optional_t color = cueInfo.getColor();
         if (color) {
             // TODO: Make this conversion configurable
             newCueInfo.setColor(storedToDisplayedSeratoDJProCueColor(*color));
         }
-        newCueInfo.setHotCueNumber(index);
-        cueMap.insert(index, newCueInfo);
+        cueMap.insert(*index, newCueInfo);
     };
 
     // If the "Serato Markers_" tag does not exist at all, Serato DJ Pro just
@@ -207,19 +236,9 @@ CueInfoImporterPointer SeratoTags::importCueInfos() const {
     // this function.
     QSet<int> unsetCuesInMarkersTag = {0, 1, 2, 3, 4};
 
-    for (const CueInfo& cueInfo : m_seratoMarkers2.getCues()) {
-        VERIFY_OR_DEBUG_ASSERT(cueInfo.getHotCueNumber()) {
-            qWarning() << "SeratoTags::getCues: Cue without number found!";
-            continue;
-        }
-
-        int index = *cueInfo.getHotCueNumber();
-        VERIFY_OR_DEBUG_ASSERT(index >= 0) {
-            qWarning() << "SeratoTags::getCues: Cue with number < 0 found!";
-        }
-
-        if (cueInfo.getType() != CueType::HotCue) {
-            qWarning() << "SeratoTags::getCues: Ignoring cue with non-hotcue type!";
+    for (const CueInfo& cueInfo : m_seratoMarkers.getCues()) {
+        std::optional<int> index = findIndexForCueInfo(cueInfo);
+        if (!index) {
             continue;
         }
 
@@ -228,7 +247,7 @@ CueInfoImporterPointer SeratoTags::importCueInfos() const {
         // object if none exists) and use it as template for the new CueInfo
         // object. Then overwrite all object values that are present in the
         // "SeratoMarkers_"tag.
-        CueInfo newCueInfo(cueMap.value(index));
+        CueInfo newCueInfo = cueMap.value(*index);
         newCueInfo.setType(cueInfo.getType());
         newCueInfo.setStartPositionMillis(cueInfo.getStartPositionMillis());
         newCueInfo.setEndPositionMillis(cueInfo.getEndPositionMillis());
@@ -239,11 +258,11 @@ CueInfoImporterPointer SeratoTags::importCueInfos() const {
             // TODO: Make this conversion configurable
             newCueInfo.setColor(storedToDisplayedSeratoDJProCueColor(*color));
         }
-        cueMap.insert(index, newCueInfo);
+        cueMap.insert(*index, newCueInfo);
 
         // This cue is set in the "Serato Markers_" tag, so remove it from the
         // set of unset cues
-        unsetCuesInMarkersTag.remove(index);
+        unsetCuesInMarkersTag.remove(*index);
     };
 
     // Now that we know which cues should be present in the "Serato Markers_"

@@ -535,7 +535,8 @@ QByteArray SeratoMarkers::dumpMP4() const {
             base64Data.append('\n');
         }
         QByteArray block = data.mid(offset, 54);
-        base64Data.append(block.toBase64(QByteArray::Base64Encoding | QByteArray::OmitTrailingEquals));
+        base64Data.append(block.toBase64(
+                QByteArray::Base64Encoding | QByteArray::OmitTrailingEquals));
         offset += block.size();
     }
 
@@ -550,6 +551,7 @@ QList<CueInfo> SeratoMarkers::getCues() const {
 
     QList<CueInfo> cueInfos;
     int cueIndex = 0;
+    int loopIndex = 0;
     for (const auto& pEntry : m_entries) {
         DEBUG_ASSERT(pEntry);
         switch (pEntry->typeId()) {
@@ -567,7 +569,21 @@ QList<CueInfo> SeratoMarkers::getCues() const {
             cueIndex++;
             break;
         }
-        // TODO: Add support for Loops
+        case SeratoMarkersEntry::TypeId::Loop: {
+            if (pEntry->hasStartPosition()) {
+                CueInfo loopInfo = CueInfo(
+                        CueType::Loop,
+                        pEntry->getStartPosition(),
+                        pEntry->getEndPosition(),
+                        loopIndex,
+                        "",
+                        std::nullopt);
+                cueInfos.append(loopInfo);
+                // TODO: Add support for the "locked" attribute
+            }
+            loopIndex++;
+            break;
+        }
         default:
             break;
         }

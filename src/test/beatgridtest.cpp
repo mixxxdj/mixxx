@@ -4,6 +4,8 @@
 #include "track/beatgrid.h"
 #include "util/memory.h"
 
+using namespace mixxx;
+
 namespace {
 
 const double kMaxBeatError = 1e-9;

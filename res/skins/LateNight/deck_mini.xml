@@ -126,18 +126,37 @@
 
           <WidgetGroup>
             <ObjectName>PlayContainerSmall</ObjectName>
-            <Layout>horizontal</Layout>
+            <Layout>stacked</Layout>
+            <Size>37f,46f</Size>
             <Children>
               <Template src="skin:button_2state_right_display.xml">
-                <SetVariable name="TooltipId">play_cue_set</SetVariable>
-                <SetVariable name="ObjectName">PlayButtonDeckMini</SetVariable>
+                <SetVariable name="TooltipId">play_cue_default</SetVariable>
+                <SetVariable name="ObjectName">PlayDeckMini</SetVariable>
                 <SetVariable name="Size">34f,34f</SetVariable>
                 <SetVariable name="btn_type"><Variable name="TopRegion_btn_type"/></SetVariable>
                 <SetVariable name="btn_format">square_big</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
-                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_set</SetVariable>
-                <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
               </Template>
+              <PushButton>
+                <ObjectName>PlayIndicator</ObjectName>
+                <Size>34f,34f</Size>
+                <NumberStates>2</NumberStates>
+                <RightClickIsPushButton>false</RightClickIsPushButton>
+                <State>
+                  <Number>0</Number>
+                </State>
+                <State>
+                  <Number>1</Number>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
+                </Connection>
+              </PushButton>
+              <WidgetGroup>
+                <ObjectName>PlayBg</ObjectName>
+                <Size>34f,34f</Size>
+              </WidgetGroup>
             </Children>
           </WidgetGroup><!-- PlayContainerSmall -->
 
