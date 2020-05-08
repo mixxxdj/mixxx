@@ -95,6 +95,10 @@ void WorkerThread::resume() {
 void WorkerThread::wake() {
     logTrace(m_logger, "Waking up");
     std::unique_lock<std::mutex> locked(m_sleepMutex);
+    // We need to always aquire the mutex before notifying the
+    // worker thread! Otherwise the worker thread might invoke
+    // m_sleepWaitCond.wait(locked) just after the notification
+    // has been signaled and remain waiting forever!
     m_sleepWaitCond.notify_one();
 }
 
