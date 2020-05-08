@@ -30,14 +30,21 @@
  *        Mixxx.
  */
 class ChannelGroup {
-public:
+  public:
     ChannelGroup(unsigned char channelBase, unsigned char channels);
     unsigned char getChannelBase() const;
     unsigned char getChannelCount() const;
-    bool operator==(const ChannelGroup &other) const;
-    bool clashesWith(const ChannelGroup &other) const;
-    unsigned int getHash() const;
-private:
+    bool operator==(const ChannelGroup& other) const;
+    bool clashesWith(const ChannelGroup& other) const;
+
+    friend uint qHash(
+            const ChannelGroup& group,
+            uint seed = 0) {
+        return qHash(group.m_channelBase, seed) |
+                qHash(group.m_channels, seed);
+    }
+
+  private:
     unsigned char m_channelBase; // base (first) channel used on device
     unsigned char m_channels; // number of channels used (s/b 2 in most cases)
 };
@@ -71,7 +78,6 @@ public:
     ChannelGroup getChannelGroup() const;
     unsigned char getIndex() const;
     bool operator==(const AudioPath &other) const;
-    unsigned int getHash() const;
     bool channelsClash(const AudioPath &other) const;
     QString getString() const;
     static QString getStringFromType(AudioPathType type);
@@ -87,6 +93,13 @@ public:
     // Returns the maximum number of channels needed on a sound device for an
     // AudioPathType.
     static unsigned char maxChannelsForType(AudioPathType type);
+
+    friend uint qHash(
+            const AudioPath& path,
+            uint seed = 0) {
+        return qHash(static_cast<uint>(path.m_type), seed) ^
+                qHash(path.m_index, seed);
+    }
 
 protected:
     virtual void setType(AudioPathType type) = 0;
@@ -227,17 +240,18 @@ inline bool operator<(const SoundDeviceId& lhs, const SoundDeviceId& rhs) {
 
 Q_DECLARE_METATYPE(SoundDeviceId);
 
-inline unsigned int qHash(const SoundDeviceId& id) {
-    return qHash(id.name) + qHash(id.alsaHwDevice) + id.portAudioIndex;
+inline uint qHash(
+        const SoundDeviceId& id,
+        uint seed = 0) {
+    return qHash(id.name, seed) ^
+            qHash(id.alsaHwDevice, seed) ^
+            qHash(id.portAudioIndex, seed);
 }
 
 inline QDebug operator<<(QDebug dbg, const SoundDeviceId& soundDeviceId) {
     return dbg << QString("SoundDeviceId(" + soundDeviceId.debugName() + ")");
 }
 
-// globals for QHash
-unsigned int qHash(const ChannelGroup &group);
 unsigned int qHash(const AudioOutput &output);
 unsigned int qHash(const AudioInput &input);
-
 #endif
