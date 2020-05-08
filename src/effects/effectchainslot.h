@@ -156,14 +156,12 @@ class EffectChainSlot : public QObject {
     std::unique_ptr<ControlPushButton> m_pControlChainNextPreset;
     std::unique_ptr<ControlPushButton> m_pControlChainPrevPreset;
 
-    /**
-      These COs do not affect how the effects are processed;
-      they are defined here for skins and controller mappings to communicate
-      with each other. They cannot be defined in skins because they must be present
-      when both skins and mappings are loaded, otherwise the skin will
-      create a new CO with the same ConfigKey but actually be interacting with a different
-      object than the mapping.
-    **/
+    // These COs do not affect how the effects are processed;
+    // they are defined here for skins and controller mappings to communicate
+    // with each other. They cannot be defined in skins because they must be present
+    // when both skins and mappings are loaded, otherwise the skin will
+    // create a new CO with the same ConfigKey but actually be interacting with a different
+    // object than the mapping.
     std::unique_ptr<ControlPushButton> m_pControlChainShowFocus;
     std::unique_ptr<ControlPushButton> m_pControlChainShowParameters;
     std::unique_ptr<ControlPushButton> m_pControlChainFocusedEffect;
