@@ -453,17 +453,3 @@ QString SoundDeviceId::debugName() const {
         return name + QStringLiteral(", ") + alsaHwDevice + QStringLiteral(", ") + QString::number(portAudioIndex);
     }
 }
-
-/**
- * Defined for QHash, so AudioOutput can be used as a QHash key.
- */
-unsigned int qHash(const AudioOutput &output) {
-    return output.getHash();
-}
-
-/**
- * Defined for QHash, so AudioInput can be used as a QHash key.
- */
-unsigned int qHash(const AudioInput &input) {
-    return input.getHash();
-}

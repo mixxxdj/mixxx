@@ -253,6 +253,4 @@ inline QDebug operator<<(QDebug dbg, const SoundDeviceId& soundDeviceId) {
     return dbg << QString("SoundDeviceId(" + soundDeviceId.debugName() + ")");
 }
 
-unsigned int qHash(const AudioOutput &output);
-unsigned int qHash(const AudioInput &input);
 #endif
