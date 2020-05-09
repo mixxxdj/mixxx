@@ -86,6 +86,8 @@ public:
         INVALID, // if this isn't last bad things will happen -bkgood
     };
     AudioPath(unsigned char channelBase, unsigned char channels);
+    virtual ~AudioPath() = default;
+
     AudioPathType getType() const;
     ChannelGroup getChannelGroup() const;
     unsigned char getIndex() const;
@@ -132,7 +134,7 @@ class AudioOutput : public AudioPath {
     AudioOutput(AudioPathType type, unsigned char channelBase,
                 unsigned char channels,
                 unsigned char index = 0);
-    virtual ~AudioOutput();
+    ~AudioOutput() override;
     QDomElement toXML(QDomElement *element) const;
     static AudioOutput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
@@ -149,6 +151,7 @@ class AudioOutputBuffer : public AudioOutput {
              m_pBuffer(pBuffer) {
 
     };
+    ~AudioOutputBuffer() override = default;
     inline const CSAMPLE* getBuffer() const { return m_pBuffer; }
   private:
     const CSAMPLE* m_pBuffer;
@@ -164,7 +167,7 @@ class AudioInput : public AudioPath {
   public:
     AudioInput(AudioPathType type = INVALID, unsigned char channelBase = 0,
                unsigned char channels = 0, unsigned char index = 0);
-    virtual ~AudioInput();
+    ~AudioInput() override;
     QDomElement toXML(QDomElement *element) const;
     static AudioInput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
@@ -181,6 +184,7 @@ class AudioInputBuffer : public AudioInput {
               m_pBuffer(pBuffer) {
 
     }
+    ~AudioInputBuffer() override = default;
     inline CSAMPLE* getBuffer() const { return m_pBuffer; }
   private:
     CSAMPLE* m_pBuffer;
@@ -189,6 +193,8 @@ class AudioInputBuffer : public AudioInput {
 
 class AudioSource {
 public:
+    virtual ~AudioSource() = default;
+
     virtual const CSAMPLE* buffer(AudioOutput output) const = 0;
 
     // This is called by SoundManager whenever an output is connected for this
@@ -204,6 +210,8 @@ public:
 
 class AudioDestination {
 public:
+    virtual ~AudioDestination() = default;
+
     // This is called by SoundManager whenever there are new samples from the
     // configured input to be processed. This is run in the clock reference
     // callback thread
@@ -223,7 +231,7 @@ public:
 
 typedef AudioPath::AudioPathType AudioPathType;
 
-class SoundDeviceId {
+class SoundDeviceId final {
   public:
     QString name;
     // The "hw:X,Y" device name. Remains an empty string if not using ALSA
