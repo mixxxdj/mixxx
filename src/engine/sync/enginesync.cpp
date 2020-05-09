@@ -113,11 +113,11 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     } else if (mode == SYNC_FOLLOWER ||
             mode == SYNC_MASTER_SOFT ||
             pSyncable == m_pInternalClock) {
-        // Note: SYNC_MASTER_SOFT and SYNC_FOLLOWER cannot be set explicit,
+        // Note: SYNC_MASTER_SOFT and SYNC_FOLLOWER cannot be set explicitly,
         // they are calculated by pickMaster.
         // Internal clock cannot be disabled, it is always listening
         if (m_pMasterSyncable == pSyncable) {
-            // Was this  pSyncable was master before. Hand off.
+            // This Syncable was master before. Hand off.
             m_pMasterSyncable = nullptr;
             pSyncable->setSyncMode(SYNC_FOLLOWER);
         }
