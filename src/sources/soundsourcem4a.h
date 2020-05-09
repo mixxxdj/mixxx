@@ -18,6 +18,14 @@
 
 namespace mixxx {
 
+/// Decode M4A (AAC in MP4) files using FAAD2.
+///
+/// NOTE(2020-05-01): Decoding in version v2.9.1 of the library
+/// is broken and any attempt to open files will fail.
+///
+/// https://github.com/mixxxdj/mixxx/pull/2738
+/// https://github.com/knik0/faad2/commit/a8dc3f8ce67f4069cfa4d5cf0fcc2c6e8ef2c2aa
+/// https://github.com/knik0/faad2/commit/920ec985a74c6f88fe507181df07a0cd7e51d519
 class SoundSourceM4A : public SoundSource {
   public:
     explicit SoundSourceM4A(const QUrl& url);

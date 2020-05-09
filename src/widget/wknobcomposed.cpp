@@ -17,6 +17,8 @@ WKnobComposed::WKnobComposed(QWidget* pParent)
           m_dArcThickness(0),
           m_dArcBgThickness(0),
           m_arcUnipolar(true),
+          m_arcReversed(false),
+          m_arcPenCap(Qt::FlatCap),
           m_renderTimer(mixxx::Duration::fromMillis(20),
                         mixxx::Duration::fromSeconds(1)) {
     connect(&m_renderTimer, SIGNAL(update()),
@@ -63,9 +65,14 @@ void WKnobComposed::setup(const QDomNode& node, const SkinContext& context) {
             m_dArcBgThickness *= scaleFactor;
             m_arcBgColor = WSkinColor::getCorrectColor(context.selectColor(node, "ArcBgColor"));
         }
+        if (context.selectBool(node, "ArcRoundCaps", false)) {
+            m_arcPenCap = Qt::RoundCap;
+        }
+        // ToDo: Make these properties configurable by the connected control.
+        // Example: Meta knobs that are fully dry when centered, or parameters
+        // that work reversed, like microphone ducking or BitCrusher parameters.
         m_arcUnipolar = context.selectBool(node, "ArcUnipolar", false);
-        // ToDo(ronso0) Also allow customizing the pen shape?
-        // Qt::FlatCap (default) | Qt::RoundCap
+        m_arcReversed = context.selectBool(node, "ArcReversed", false);
     }
 
     m_dKnobCenterXOffset *= scaleFactor;
@@ -161,22 +168,29 @@ void WKnobComposed::drawArc(QPainter* pPainter) {
     QPointF bottomRight = QPointF((centerX + m_dArcRadius), (centerY + m_dArcRadius));
     QRectF rect = QRectF(topLeft, bottomRight);
 
+    // draw background arc
     if (m_dArcBgThickness > 0.0) {
         QPen arcBgPen = QPen(m_arcBgColor);
         arcBgPen.setWidth(m_dArcBgThickness);
-        arcBgPen.setCapStyle(Qt::FlatCap);
+        arcBgPen.setCapStyle(m_arcPenCap);
         pPainter->setPen(arcBgPen);
         pPainter->drawArc(rect, (90 - m_dMinAngle) * 16, (m_dMinAngle - m_dMaxAngle) * 16);
     }
 
+    // draw foreground arc
     QPen arcPen = QPen(m_arcColor);
     arcPen.setWidth(m_dArcThickness);
-    arcPen.setCapStyle(Qt::FlatCap);
+    arcPen.setCapStyle(m_arcPenCap);
 
     pPainter->setPen(arcPen);
     if (m_arcUnipolar) {
-        // draw arc from minAngle to current position
-        pPainter->drawArc(rect, (90 - m_dMinAngle) * 16, (m_dCurrentAngle - m_dMinAngle) * -16);
+        if (m_arcReversed) {
+           // draw arc from maxAngle to current position
+           pPainter->drawArc(rect, (90 - m_dCurrentAngle) * 16, (m_dMaxAngle - m_dCurrentAngle) * -16);
+        } else {
+            // draw arc from minAngle to current position
+            pPainter->drawArc(rect, (90 - m_dMinAngle) * 16, (m_dCurrentAngle - m_dMinAngle) * -16);
+        }
     } else {
         // draw arc from center to current position
         pPainter->drawArc(rect, 90 * 16, m_dCurrentAngle * -16);

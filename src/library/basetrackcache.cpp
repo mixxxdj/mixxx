@@ -76,20 +76,16 @@ QString BaseTrackCache::columnSortForFieldIndex(int index) const {
 
 void BaseTrackCache::slotTracksAddedOrChanged(QSet<TrackId> trackIds) {
     if (sDebug) {
-        qDebug() << this << "slotTracksAdded" << trackIds.size();
+        qDebug() << this << "slotTracksAddedOrChanged" << trackIds.size();
     }
-    QSet<TrackId> updateTrackIds;
-    for (const auto& trackId: qAsConst(trackIds)) {
-        updateTrackIds.insert(trackId);
-    }
-    updateTracksInIndex(updateTrackIds);
+    updateTracksInIndex(trackIds);
 }
 
-void BaseTrackCache::slotDbTrackAdded(TrackPointer pTrack) {
+void BaseTrackCache::slotScanTrackAdded(TrackPointer pTrack) {
     if (sDebug) {
-        qDebug() << this << "slotDbTrackAdded";
+        qDebug() << this << "slotScanTrackAdded";
     }
-    updateIndexWithTrackpointer(pTrack);
+    updateTrackInIndex(pTrack);
 }
 
 void BaseTrackCache::slotTracksRemoved(QSet<TrackId> trackIds) {
@@ -109,18 +105,12 @@ void BaseTrackCache::slotTrackDirty(TrackId trackId) {
     m_dirtyTracks.insert(trackId);
 }
 
-void BaseTrackCache::slotTrackChanged(TrackId trackId) {
-    if (sDebug) {
-        qDebug() << this << "slotTrackChanged" << trackId;
-    }
-    emit tracksChanged(QSet<TrackId>{trackId});
-}
-
 void BaseTrackCache::slotTrackClean(TrackId trackId) {
     if (sDebug) {
         qDebug() << this << "slotTrackClean" << trackId;
     }
     m_dirtyTracks.remove(trackId);
+    // The track might have been reloaded from the database
     updateTrackInIndex(trackId);
 }
 
@@ -217,13 +207,13 @@ void BaseTrackCache::resetRecentTrack() const {
     m_recentTrackPtr.reset();
 }
 
-bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
-    if (sDebug) {
-        qDebug() << "updateIndexWithTrackpointer:" << pTrack->getFileInfo();
-    }
-
-    if (!pTrack) {
+bool BaseTrackCache::updateTrackInIndex(
+        const TrackPointer& pTrack) {
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
         return false;
+    }
+    if (sDebug) {
+        qDebug() << "updateTrackInIndex:" << pTrack->getFileInfo();
     }
 
     int numColumns = columnCount();

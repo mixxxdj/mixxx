@@ -183,52 +183,29 @@ Variables:
             </Connection>
           </WidgetGroup>
 
-          <WidgetGroup><!-- Play button incl. Cue (right click)
-            <ObjectName>Spacer0f</ObjectName> -->
+          <WidgetGroup><!-- Play button incl. Cue & PlayIndicator -->
+            <ObjectName>Spacer0f</ObjectName>
             <Layout>stacked</Layout>
             <Size>23f,40f</Size>
             <Children>
-              <!-- index 0 due to bug -->
-              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
-              <!-- Block Play button if passthrough is active,
-                  show speaker icon instead -->
-              <WidgetGroup>
-                <ObjectName>PassthroughPlayCover</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>me,me</SizePolicy>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-              <!-- Play -->
+              <!-- Play button -->
               <Template src="skin:button_2state_right_display.xml">
                 <SetVariable name="ObjectName">PlayCue</SetVariable>
-                <SetVariable name="TooltipId">play_cue_set</SetVariable>
+                <SetVariable name="TooltipId">play_cue_default</SetVariable>
                 <SetVariable name="Size">23f,40f</SetVariable>
                 <SetVariable name="state_0_icon">play_deck_mini.svg</SetVariable>
                 <SetVariable name="state_1_icon">pause_deck_mini.svg</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
-                <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
               </Template>
-          <!--	Play indicator: turns Orange when playing from Cue/HotCue position.
-              Only visible when play_indicator above is zero0, otherwise it's covered. -->
+              <!--	Play indicator -->
               <Template src="skin:button_2state.xml">
-                <SetVariable name="ObjectName">PlayUnderlay</SetVariable>
+                <SetVariable name="ObjectName">PlayIndicator</SetVariable>
                 <SetVariable name="Size">23f,40f</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
-              </Template>
-          <!--	Cue indicator: shows coloured border i.e. if play position is at cue point.
-              See Cue settings in Preferences > Interface > Deck Options -->
-              <Template src="skin:button_2state.xml">
-                <SetVariable name="ObjectName">CueUnderlay</SetVariable>
-                <SetVariable name="Size">23f,40f</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="group"/>,cue_indicator</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,play_indicator</SetVariable>
               </Template>
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- Play button incl. Cue & PlayIndicator -->
 
         </Children>
       </WidgetGroup>

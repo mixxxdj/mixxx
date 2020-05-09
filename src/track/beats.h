@@ -14,6 +14,8 @@ namespace {
     double kMaxBpm = 500;
 }
 
+namespace mixxx {
+
 class Beats;
 typedef QSharedPointer<Beats> BeatsPointer;
 
@@ -171,4 +173,5 @@ class Beats : public QObject {
     void updated();
 };
 
+} // namespace mixxx
 #endif /* BEATS_H */

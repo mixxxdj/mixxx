@@ -80,7 +80,7 @@ class DlgPrefController : public DlgPreferencePage {
 
     /// Set dirty state (i.e. changes have been made).
     ///
-    /// When this preferences page is marked as "dirty", changes have occured
+    /// When this preferences page is marked as "dirty", changes have occurred
     /// that can be applied or discarded.
     ///
     /// @param bDirty The new dialog's dirty state.
@@ -90,7 +90,7 @@ class DlgPrefController : public DlgPreferencePage {
 
     /// Set dirty state (i.e. changes have been made).
     ///
-    /// When this preferences page is marked as "dirty", changes have occured
+    /// When this preferences page is marked as "dirty", changes have occurred
     /// that can be applied or discarded.
     ///
     /// @param bDirty The new dialog's dirty state.

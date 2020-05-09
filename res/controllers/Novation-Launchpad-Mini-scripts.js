@@ -405,7 +405,7 @@ NLM.init = function()
 
         //Init hw
         midi.sendShortMsg(0xb0, 0x0, 0x0);
-        //midi.sendShortMsg(0xb0, 0x0, 0x28); //Enable buffer cycling <-- Figure out whats wrong with this
+        //midi.sendShortMsg(0xb0, 0x0, 0x28); //Enable buffer cycling <-- Figure out what's wrong with this
 
         // select buffer 0
         midi.sendShortMsg(0xb0, 0x68, 3);

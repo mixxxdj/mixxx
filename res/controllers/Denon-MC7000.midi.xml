@@ -2125,7 +2125,7 @@
                 </options>
             </control>
 <!-- EFFECTS -->
-    <!-- ASSIGN EFECT RACK TO DECK -->
+    <!-- ASSIGN EFFECT RACK TO DECK -->
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>group_[Channel1]_enable</key>
@@ -3768,7 +3768,7 @@
             </output>
 <!-- PAD LEDs -->
 
-<!-- ASSIGN EFECT RACK TO DECK -->
+<!-- ASSIGN EFFECT RACK TO DECK -->
             <output>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>group_[Channel1]_enable</key>
