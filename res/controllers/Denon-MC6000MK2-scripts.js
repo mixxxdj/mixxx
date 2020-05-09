@@ -35,9 +35,6 @@ DenonMC6000MK2.JOG_SCRATCH_RPM = 33.333333; // 33 1/3
 DenonMC6000MK2.JOG_SCRATCH_ALPHA = 0.125; // 1/8
 DenonMC6000MK2.JOG_SCRATCH_BETA = DenonMC6000MK2.JOG_SCRATCH_ALPHA / 32.0;
 DenonMC6000MK2.JOG_SCRATCH_RAMP = true; // required for back spins
-DenonMC6000MK2.JOG_SCRATCH2_ABS_MIN = 0.01;
-DenonMC6000MK2.JOG_SCRATCH2_PLAY_MIN = -0.7;
-DenonMC6000MK2.JOG_SCRATCH2_PLAY_MAX = 1.0;
 
 DenonMC6000MK2.EFX_MIX_ENCODER_STEPS = 20;
 
@@ -47,8 +44,6 @@ DenonMC6000MK2.JOG_SEEK_REVOLUTIONS = 2;
 
 DenonMC6000MK2.GLOBAL_SHIFT_STATE = true;
 
-// Echo loop feedback 90% = slow decay
-DenonMC6000MK2.ECHO_LOOP_FEEDBACK = 0.9;
 
 ////////////////////////////////////////////////////////////////////////
 // Fixed constants                                                    //
@@ -79,8 +74,6 @@ DenonMC6000MK2.MIDI_JOG_DELTA_RANGE = 0x3F; // both forward (= positive) and rev
 // Mixxx constants
 DenonMC6000MK2.MIXXX_JOG_RANGE = 3.0;
 DenonMC6000MK2.MIXXX_SYNC_NONE = 0;
-DenonMC6000MK2.MIXXX_SYNC_FOLLOWER = 1;
-DenonMC6000MK2.MIXXX_SYNC_MASTER = 2;
 DenonMC6000MK2.MIXXX_XFADER_LEFT = 0;
 DenonMC6000MK2.MIXXX_XFADER_CENTER = 1;
 DenonMC6000MK2.MIXXX_XFADER_RIGHT = 2;
