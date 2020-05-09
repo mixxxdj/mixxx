@@ -34,7 +34,6 @@ class ChannelGroup {
     ChannelGroup(unsigned char channelBase, unsigned char channels);
     unsigned char getChannelBase() const;
     unsigned char getChannelCount() const;
-    bool operator==(const ChannelGroup& other) const;
     bool clashesWith(const ChannelGroup& other) const;
 
     friend uint qHash(
@@ -44,10 +43,23 @@ class ChannelGroup {
                 qHash(group.m_channels, seed);
     }
 
+    friend bool operator==(
+            const ChannelGroup& lhs,
+            const ChannelGroup& rhs) {
+        return lhs.m_channelBase == rhs.m_channelBase &&
+                lhs.m_channels == rhs.m_channels;
+    }
+
   private:
     unsigned char m_channelBase; // base (first) channel used on device
     unsigned char m_channels; // number of channels used (s/b 2 in most cases)
 };
+
+inline bool operator!=(
+        const ChannelGroup& lhs,
+        const ChannelGroup& rhs) {
+    return !(lhs == rhs);
+}
 
 /**
  * @class AudioPath
@@ -228,10 +240,18 @@ class SoundDeviceId {
 // This must be registered with QMetaType::registerComparators for
 // QVariant::operator== to use it, which is required for QComboBox::findData to
 // work in DlgPrefSoundItem.
-inline bool operator==(const SoundDeviceId& lhs, const SoundDeviceId& rhs) {
+inline bool operator==(
+        const SoundDeviceId& lhs,
+        const SoundDeviceId& rhs) {
     return lhs.name == rhs.name
             && lhs.alsaHwDevice == rhs.alsaHwDevice
             && lhs.portAudioIndex == rhs.portAudioIndex;
+}
+
+inline bool operator!=(
+        const SoundDeviceId& lhs,
+        const SoundDeviceId& rhs) {
+    return !(lhs == rhs);
 }
 
 // There is not really a use case for this, but it is required for QMetaType::registerComparators.

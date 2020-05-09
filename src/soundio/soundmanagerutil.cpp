@@ -42,16 +42,6 @@ unsigned char ChannelGroup::getChannelCount() const {
 }
 
 /**
- * Defines equality between two ChannelGroups.
- * @return true if the two ChannelGroups share a common base channel
- *          and channel count, otherwise false.
- */
-bool ChannelGroup::operator==(const ChannelGroup &other) const {
-    return m_channelBase == other.m_channelBase
-        && m_channels == other.m_channels;
-}
-
-/**
  * Checks if another ChannelGroup shares channels with this one.
  * @param other the other ChannelGroup to check for a clash with.
  * @return true if the other and this ChannelGroup share any channels,
