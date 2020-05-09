@@ -741,6 +741,7 @@ class LiveBroadcasting(Feature):
             SCons.Export('build')
             env.SConscript(env.File('SConscript', libshout_dir))
 
+            build.env.Append(CPPPATH="#lib/libshout/include")
             build.env.Append(LIBPATH=libshout_dir)
             build.env.Append(LIBS=['shout_mixxx', 'ogg', 'vorbis', 'theora', 'speex', 'ssl', 'crypto'])
 

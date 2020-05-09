@@ -14,13 +14,13 @@
         <Children>
           <Template src="skin:button_2state_right_display.xml">
             <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
-            <SetVariable name="ObjectName">PlayButtonSampler</SetVariable>
+            <SetVariable name="ObjectName">PlaySampler</SetVariable>
             <SetVariable name="Size">34f,34f</SetVariable>
             <SetVariable name="btn_type"><Variable name="TopRegion_btn_type"/></SetVariable>
             <SetVariable name="btn_format">square_big</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,cue_gotoandplay</SetVariable>
             <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
-            <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
+            <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>

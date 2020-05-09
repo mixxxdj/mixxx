@@ -333,13 +333,13 @@ void LibraryControl::bindSearchboxWidget(WSearchLineEdit* pSearchbox) {
     }
     m_pSearchbox = pSearchbox;
     connect(this,
-            &LibraryControl::clearSearch,
+            &LibraryControl::clearSearchIfClearButtonHasFocus,
             m_pSearchbox,
-            &WSearchLineEdit::clearSearch);
+            &WSearchLineEdit::slotClearSearchIfClearButtonHasFocus);
     connect(m_pSearchbox,
             &WSearchLineEdit::destroyed,
             this,
-            &LibraryControl::libraryWidgetDeleted);
+            &LibraryControl::searchboxWidgetDeleted);
 }
 
 
@@ -621,9 +621,8 @@ void LibraryControl::slotGoToItem(double v) {
     }
 
     // Clear the search if the searchbox has focus
-    if (m_pSearchbox->clearBtnHasFocus()) {
-        return emit clearSearch();
-    }
+    emit clearSearchIfClearButtonHasFocus();
+
     // TODO(xxx) instead of remote control the widgets individual, we should
     // translate this into Alt+Return and handle it at each library widget
     // individual https://bugs.launchpad.net/mixxx/+bug/1758618

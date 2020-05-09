@@ -32,7 +32,7 @@
 class EngineSideChain : public QThread, public AudioDestination {
     Q_OBJECT
   public:
-    EngineSideChain(UserSettingsPointer pConfig);
+    EngineSideChain(UserSettingsPointer pConfig, CSAMPLE* sidechainMix);
     virtual ~EngineSideChain();
 
     // Not thread-safe, wait-free. Submit buffer of samples to the sidechain for
@@ -60,6 +60,7 @@ class EngineSideChain : public QThread, public AudioDestination {
 
     FIFO<CSAMPLE> m_sampleFifo;
     CSAMPLE* m_pWorkBuffer;
+    CSAMPLE* m_pSidechainMix;
 
     // Provides thread safety around the wait condition below.
     QMutex m_waitLock;

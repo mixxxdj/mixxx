@@ -861,7 +861,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
 
             QHash<QString, QString> extraVersionInfo;
 
-            BeatsPointer pBeats = BeatFactory::makePreferredBeats(
+            mixxx::BeatsPointer pBeats = BeatFactory::makePreferredBeats(
                     *track, beats, extraVersionInfo, false, false, sampleRate, 0, 0, 0);
 
             track->setBeats(pBeats);
@@ -891,7 +891,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                         memoryCues << memoryCue;
                     } break;
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_LOOP: {
-                        // As Mixxx can only have 1 saved loop, use the first occurance of a memory loop relative to the start of the track
+                        // As Mixxx can only have 1 saved loop, use the first occurrence of a memory loop relative to the start of the track
                         if (position < cueLoopStartPosition) {
                             cueLoopStartPosition = position;
                             int endTime = static_cast<int>((*cueEntry)->loop_time()) - timingOffset;
@@ -936,7 +936,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                         memoryCues << memoryCue;
                     } break;
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_LOOP: {
-                        // As Mixxx can only have 1 saved loop, use the first occurance of a memory loop relative to the start of the track
+                        // As Mixxx can only have 1 saved loop, use the first occurrence of a memory loop relative to the start of the track
                         if (position < cueLoopStartPosition) {
                             cueLoopStartPosition = position;
                             int endTime = static_cast<int>((*cueExtendedEntry)->loop_time()) - timingOffset;
@@ -1051,7 +1051,7 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
     // exported from Rekordbox. This is caused by different MP3
     // decoders treating MP3s encoded in a variety of different cases
     // differently. The mp3guessenc library is used to determine which
-    // case the MP3 is clasified in. See the following PR for more
+    // case the MP3 is classified in. See the following PR for more
     // detailed information:
     // https://github.com/mixxxdj/mixxx/pull/2119
 

@@ -273,6 +273,7 @@ class EngineMaster : public QObject, public AudioSource {
     ChannelHandleFactory* m_pChannelHandleFactory;
     void applyMasterEffects();
     void processHeadphones(const double masterMixGainInHeadphones);
+    bool sidechainMixRequired() const;
 
     EngineEffectsManager* m_pEngineEffectsManager;
 

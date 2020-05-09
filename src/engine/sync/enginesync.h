@@ -23,6 +23,10 @@
 #include "engine/sync/syncable.h"
 #include "engine/sync/basesyncablelistener.h"
 
+/// EngineSync is the heart of the Mixxx Master Sync engine.  It knows which objects
+/// (Decks, Internal Clock, etc) are participating in Sync and what their statuses
+/// are. It also orchestrates sync handoffs between different decks as they play,
+/// stop, or request their status to change.
 class EngineSync : public BaseSyncableListener {
   public:
     explicit EngineSync(UserSettingsPointer pConfig);
@@ -46,7 +50,6 @@ class EngineSync : public BaseSyncableListener {
     void notifyBeatDistanceChanged(Syncable* pSyncable, double beatDistance) override;
     void notifyPlaying(Syncable* pSyncable, bool playing) override;
     void notifyScratching(Syncable* pSyncable, bool scratching) override;
-    void notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) override;
 
     // Used to pick a sync target for non-master-sync mode.
     EngineChannel* pickNonSyncSyncTarget(EngineChannel* pDontPick) const;
@@ -56,8 +59,18 @@ class EngineSync : public BaseSyncableListener {
     bool otherSyncedPlaying(const QString& group);
 
   private:
+    // Iterate over decks, and based on sync and play status, pick a new master.
+    // if enabling_syncable is not null, we treat it as if it were enabled because we may
+    // be in the process of enabling it.
+    Syncable* pickMaster(Syncable* enabling_syncable);
+
+    // Find a deck to match against, used in the case where there is no sync master.
+    // Looks first for a playing deck, and falls back to the first non-playing deck.
+    // Returns nullptr if none can be found.
+    Syncable* findBpmMatchTarget(Syncable* requester);
+
     // Activate a specific syncable as master.
-    void activateMaster(Syncable* pSyncable);
+    void activateMaster(Syncable* pSyncable, bool explicitMaster);
 
     // Activate a specific channel as Follower. Sets the syncable's bpm and
     // beat_distance to match the master.
