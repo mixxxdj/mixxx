@@ -199,6 +199,11 @@ TrackPointer SoundSourceProxy::importTemporaryTrack(
 QImage SoundSourceProxy::importTemporaryCoverImage(
         TrackFile trackFile,
         SecurityTokenPointer pSecurityToken) {
+    if (!trackFile.checkFileExists()) {
+        // Silently ignore missing files to avoid spaming the log:
+        // https://bugs.launchpad.net/mixxx/+bug/1875237
+        return QImage();
+    }
     TrackPointer pTrack = Track::newTemporary(
             std::move(trackFile),
             std::move(pSecurityToken));
@@ -299,7 +304,7 @@ void SoundSourceProxy::initSoundSource() {
 }
 
 void SoundSourceProxy::updateTrackFromSource(
-        ImportTrackMetadataMode importTrackMetadataMode) const {
+        ImportTrackMetadataMode importTrackMetadataMode) {
     DEBUG_ASSERT(m_pTrack);
 
     if (getUrl().isEmpty()) {
@@ -434,6 +439,16 @@ void SoundSourceProxy::updateTrackFromSource(
             }
         }
         m_pTrack->importMetadata(trackMetadata, metadataImported.second);
+        if (m_pTrack->getCueImportStatus() == Track::CueImportStatus::Pending) {
+            // Try to open the audio source once to determine the actual
+            // stream properties for finishing the pending import.
+            kLogger.debug()
+                    << "Opening audio source to finish import of cue points";
+            const auto pAudioSource = openAudioSource();
+            Q_UNUSED(pAudioSource); // only used in debug assertion
+            DEBUG_ASSERT(!pAudioSource ||
+                    m_pTrack->getCueImportStatus() == Track::CueImportStatus::Complete);
+        }
     }
 
     if (pCoverImg) {
@@ -471,68 +486,75 @@ QImage SoundSourceProxy::importCoverImage() const {
 mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSource::OpenParams& params) {
     DEBUG_ASSERT(m_pTrack);
     auto openMode = mixxx::SoundSource::OpenMode::Strict;
+    int attemptCount = 0;
     while (m_pSoundSource && !m_pAudioSource) {
-        // NOTE(uklotzde): Log unconditionally (with debug level) to
-        // identify files in the log file that might have caused a
-        // crash while importing metadata or decoding audio subsequently.
-        kLogger.debug() << "Opening file"
-                        << getUrl().toString()
-                        << "with provider"
-                        << getSoundSourceProvider()->getName()
-                        << "using mode"
-                        << openMode;
+        ++attemptCount;
         const mixxx::SoundSource::OpenResult openResult =
                 m_pSoundSource->open(openMode, params);
-        if ((openResult == mixxx::SoundSource::OpenResult::Aborted) ||
-                ((openMode == mixxx::SoundSource::OpenMode::Strict) && (openResult == mixxx::SoundSource::OpenResult::Failed))) {
-            kLogger.warning() << "Unable to open file"
-                              << getUrl().toString()
-                              << "with provider"
-                              << getSoundSourceProvider()->getName()
-                              << "using mode"
-                              << openMode;
-            // Continue with the next SoundSource provider
-            nextSoundSourceProvider();
-            if (!getSoundSourceProvider() && (openMode == mixxx::SoundSource::OpenMode::Strict)) {
-                // No provider was able to open the source in Strict mode.
-                // Retry to open the file in Permissive mode starting with
-                // the first provider...
-                m_soundSourceProviderRegistrationIndex = 0;
-                openMode = mixxx::SoundSource::OpenMode::Permissive;
+        if (openResult == mixxx::SoundSource::OpenResult::Succeeded) {
+            if (m_pSoundSource->verifyReadable()) {
+                m_pAudioSource = mixxx::AudioSourceTrackProxy::create(m_pTrack, m_pSoundSource);
+                DEBUG_ASSERT(m_pAudioSource);
+                // Overwrite metadata with actual audio properties
+                if (m_pTrack) {
+                    m_pTrack->updateAudioPropertiesFromStream(
+                            m_pAudioSource->getStreamInfo());
+                }
+                return m_pAudioSource;
             }
-            initSoundSource();
-            continue; // try again
-        }
-        if ((openResult == mixxx::SoundSource::OpenResult::Succeeded) && m_pSoundSource->verifyReadable()) {
-            m_pAudioSource = mixxx::AudioSourceTrackProxy::create(m_pTrack, m_pSoundSource);
-            DEBUG_ASSERT(m_pAudioSource);
-            if (m_pAudioSource->frameIndexRange().empty()) {
-                kLogger.warning() << "File is empty"
-                                  << getUrl().toString();
-            }
-            // Overwrite metadata with actual audio properties
-            if (m_pTrack) {
-                m_pTrack->updateAudioPropertiesFromStream(
-                        m_pAudioSource->getStreamInfo());
-            }
+            kLogger.warning()
+                    << "Failed to read file"
+                    << getUrl().toString()
+                    << "with provider"
+                    << getSoundSourceProvider()->getName();
+            m_pSoundSource->close(); // cleanup
         } else {
-            kLogger.warning() << "Failed to open file"
-                              << getUrl().toString()
-                              << "with provider"
-                              << getSoundSourceProvider()->getName();
-            if (openResult == mixxx::SoundSource::OpenResult::Succeeded) {
-                m_pSoundSource->close(); // cleanup
+            kLogger.warning()
+                    << "Failed to open file"
+                    << getUrl().toString()
+                    << "with provider"
+                    << getSoundSourceProvider()->getName()
+                    << "using mode"
+                    << openMode;
+            if (openMode == mixxx::SoundSource::OpenMode::Permissive) {
+                if (openResult == mixxx::SoundSource::OpenResult::Failed) {
+                    // Do NOT retry with the next SoundSource provider if the file
+                    // itself seems to be the cause when opening still fails during
+                    // the 2nd (= permissive) round.
+                    DEBUG_ASSERT(!m_pAudioSource);
+                    return m_pAudioSource;
+                } else {
+                    // Continue and give other providers the chance to open the file
+                    // in turn.
+                    DEBUG_ASSERT(openResult == mixxx::SoundSource::OpenResult::Aborted);
+                }
+            } else {
+                // Continue and give other providers the chance to open the file
+                // in turn, independent of why opening the file failed.
+                DEBUG_ASSERT(openMode == mixxx::SoundSource::OpenMode::Strict);
             }
-            // Do NOT retry with the next SoundSource provider if the file
-            // itself is the cause!
-            DEBUG_ASSERT(!m_pAudioSource);
         }
-        return m_pAudioSource; // either success or failure
+        // Continue with the next SoundSource provider
+        nextSoundSourceProvider();
+        if (!getSoundSourceProvider() &&
+                (openMode == mixxx::SoundSource::OpenMode::Strict)) {
+            // No provider was able to open the source in Strict mode.
+            // Retry to open the file in Permissive mode starting with
+            // the first provider...
+            m_soundSourceProviderRegistrationIndex = 0;
+            openMode = mixxx::SoundSource::OpenMode::Permissive;
+        }
+        initSoundSource();
+        // try again
     }
     // All available providers have returned OpenResult::Aborted when
     // getting here. m_pSoundSource might already be invalid/null!
-    kLogger.warning() << "Unable to decode file"
-                      << getUrl().toString();
+    kLogger.warning()
+            << "Giving up to open file"
+            << getUrl().toString()
+            << "after"
+            << attemptCount
+            << "unsuccessful attempts";
     DEBUG_ASSERT(!m_pAudioSource);
     return m_pAudioSource;
 }

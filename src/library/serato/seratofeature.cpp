@@ -34,7 +34,7 @@
 namespace {
 
 // Serato Database Field IDs
-// The "magic" value is the short 4 byte ascii code intepreted as quint32, so
+// The "magic" value is the short 4 byte ascii code interpreted as quint32, so
 // that we can use the value in a switch statement instead of going through
 // a strcmp if/else ladder.
 enum class FieldId : quint32 {

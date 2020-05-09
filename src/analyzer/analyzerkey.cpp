@@ -4,6 +4,9 @@
 #include <QtDebug>
 
 #include "analyzer/constants.h"
+#if defined __KEYFINDER__
+#include "analyzer/plugins/analyzerkeyfinder.h"
+#endif
 #include "analyzer/plugins/analyzerqueenmarykey.h"
 #include "proto/keys.pb.h"
 #include "track/keyfactory.h"
@@ -12,6 +15,9 @@
 QList<mixxx::AnalyzerPluginInfo> AnalyzerKey::availablePlugins() {
     QList<mixxx::AnalyzerPluginInfo> analyzers;
     // First one below is the default
+#if defined __KEYFINDER__
+    analyzers.push_back(mixxx::AnalyzerKeyFinder::pluginInfo());
+#endif
     analyzers.push_back(mixxx::AnalyzerQueenMaryKey::pluginInfo());
     return analyzers;
 }
@@ -75,6 +81,10 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
     if (bShouldAnalyze) {
         if (m_pluginId == mixxx::AnalyzerQueenMaryKey::pluginInfo().id) {
             m_pPlugin = std::make_unique<mixxx::AnalyzerQueenMaryKey>();
+#if defined __KEYFINDER__
+        } else if (m_pluginId == mixxx::AnalyzerKeyFinder::pluginInfo().id) {
+            m_pPlugin = std::make_unique<mixxx::AnalyzerKeyFinder>();
+#endif
         } else {
             // This must not happen, because we have already verified above
             // that the PlugInId is valid

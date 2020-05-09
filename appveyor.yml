@@ -149,20 +149,19 @@ for:
   environment:
     ENVIRONMENTS_URL: https://downloads.mixxx.org/builds/buildserver/2.3.x-windows/
     ENVIRONMENTS_PATH: C:\mixxx-buildserver
-    ENVIRONMENT_NAME: 2.3-j00013-PLATFORM-CONFIGURATION-static-36f44bd2-minimal
-    QT_VERSION: 5.12.0
     MSVC_PATH: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community"
     PATH: 'C:\Python37-x64;C:\Python37-x64\Scripts;%PATH%'
 
 
   install:
+    - set /P ENVIRONMENT_NAME=<build/windows/golden_environment
     - set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:PLATFORM=%platform%%%
     - set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:CONFIGURATION=%configuration%%%
     - set WINLIB_PATH=%ENVIRONMENTS_PATH%\%ENVIRONMENT_NAME%
     - IF EXIST %WINLIB_PATH% (
         echo Using cached environment %WINLIB_PATH%...
       ) else (
-        mkdir %ENVIRONMENTS_PATH% &&
+        mkdir %ENVIRONMENTS_PATH% &
         echo Downloading environment %ENVIRONMENT_NAME%... &&
         curl -fsS -L -o%ENVIRONMENTS_PATH%\%ENVIRONMENT_NAME%.zip %ENVIRONMENTS_URL%/%ENVIRONMENT_NAME%.zip &&
         echo Unpacking environment %ENVIRONMENT_NAME% to %ENVIRONMENTS_PATH%... &&
@@ -172,8 +171,12 @@ for:
     - python -m pip install git+https://github.com/frerich/clcache.git
 
   before_build:
+    - FOR /D %%G IN (%WINLIB_PATH%\Qt-*) DO SET QT_PATH=%%G
+    - IF "%QT_PATH%" EQU "" (
+        echo QT not found on %WINLIB_PATH%
+      )
+    # Remove C:\Program Files\Git\usr\bin from the PATH
     - set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
-    - set QT_PATH=%WINLIB_PATH%\Qt-%QT_VERSION%
     - set CMAKE_BUILD_PARALLEL_LEVEL=%NUMBER_OF_CORES%
     - call "%MSVC_PATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
     - cd %APPVEYOR_BUILD_FOLDER%

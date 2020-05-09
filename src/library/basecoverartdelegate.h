@@ -36,7 +36,7 @@ class BaseCoverArtDelegate : public TableItemDelegate {
     // (background) color is painted.
     //
     // It is useful to handle cases when the user scroll down
-    // very fast or when they hold an arrow key. In thise case
+    // very fast or when they hold an arrow key. In this case
     // it is NOT desirable to start multiple expensive file
     // system operations in worker threads for loading and
     // scaling cover images that are not even displayed after
