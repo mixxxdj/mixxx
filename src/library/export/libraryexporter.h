@@ -6,7 +6,7 @@
 #include <QWidget>
 
 #include "library/export/dlglibraryexport.h"
-#include "library/export/enginelibraryexportrequest.h"
+#include "library/export/engineprimeexportrequest.h"
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 
@@ -18,7 +18,6 @@ class TrackLoader;
 /// The LibraryExporter class allows an export of the Mixxx library to be
 /// initiated.  It can present a dialog that gathers information from the user
 /// about the nature of the export, and schedules a job to perform the export.
-/// The class uses libdjinterop to perform the export.
 class LibraryExporter : public QWidget {
     Q_OBJECT
   public:
@@ -31,7 +30,7 @@ class LibraryExporter : public QWidget {
     void requestExport();
 
   private slots:
-    void beginEngineLibraryExport(EngineLibraryExportRequest request);
+    void beginEnginePrimeExport(EnginePrimeExportRequest request);
 
   private:
     UserSettingsPointer m_pConfig;

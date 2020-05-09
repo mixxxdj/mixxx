@@ -395,7 +395,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/dlgtrackmetadataexport.cpp
   src/library/export/dlglibraryexport.cpp
   src/library/export/dlgtrackexport.ui
-  src/library/export/enginelibraryexportjob.cpp
+  src/library/export/engineprimeexportjob.cpp
   src/library/export/libraryexporter.cpp
   src/library/export/trackexportdlg.cpp
   src/library/export/trackexportwizard.cpp

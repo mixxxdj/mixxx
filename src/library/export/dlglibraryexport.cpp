@@ -13,7 +13,7 @@
 #include <djinterop/enginelibrary.hpp>
 
 #include "library/crate/crateid.h"
-#include "library/export/enginelibraryexportrequest.h"
+#include "library/export/engineprimeexportrequest.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 
@@ -75,7 +75,7 @@ DlgLibraryExport::DlgLibraryExport(
 
     auto pFormLayout = make_parented<QFormLayout>();
     pFormLayout->addRow(tr("Base export directory"), pExportDirLayout);
-    pFormLayout->addRow(tr("Engine Library export directory"), m_pDatabaseDirectoryTextField);
+    pFormLayout->addRow(tr("Engine Prime database export directory"), m_pDatabaseDirectoryTextField);
     pFormLayout->addRow(tr("Copy music files to"), m_pMusicDirectoryTextField);
 
     // Buttons to begin the export or cancel.
@@ -171,9 +171,9 @@ void DlgLibraryExport::exportRequested() {
     }
 
     // Construct a request to export the library/crates.
-    // Assumed to always be an Engine Library export in this iteration of the
+    // Assumed to always be an Engine Prime export in this iteration of the
     // dialog.
-    EngineLibraryExportRequest request;
+    EnginePrimeExportRequest request;
     request.engineLibraryDbDir = QDir{m_pDatabaseDirectoryTextField->text()};
     request.musicFilesDir = QDir{m_pMusicDirectoryTextField->text()};
     request.exportSelectedCrates = m_pCratesList->isEnabled();
@@ -184,7 +184,7 @@ void DlgLibraryExport::exportRequested() {
         }
     }
 
-    emit startEngineLibraryExport(std::move(request));
+    emit startEnginePrimeExport(std::move(request));
     accept();
 }
 

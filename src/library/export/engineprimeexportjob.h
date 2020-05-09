@@ -12,20 +12,21 @@
 
 #include <djinterop/database.hpp>
 
-#include "library/export/enginelibraryexportrequest.h"
+#include "library/export/engineprimeexportrequest.h"
 #include "library/trackcollectionmanager.h"
 #include "library/trackloader.h"
 
 namespace mixxx {
 
-/// The Engine Library export job performs the work of exporting the Mixxx
-/// library to an external Engine Library database, using the libdjinterop
-/// library, in accordance with the export request with which it is constructed.
-class EngineLibraryExportJob : public QThread {
+/// The Engine Prime export job performs the work of exporting the Mixxx
+/// library to an external Engine Prime (also known as "Engine Library")
+/// database, using the libdjinterop library, in accordance with the export
+/// request with which it is constructed.
+class EnginePrimeExportJob : public QThread {
     Q_OBJECT
   public:
-    EngineLibraryExportJob(
-            QObject* parent, TrackCollectionManager& trackCollectionManager, TrackLoader& trackLoader, EngineLibraryExportRequest request);
+    EnginePrimeExportJob(
+            QObject* parent, TrackCollectionManager& trackCollectionManager, TrackLoader& trackLoader, EnginePrimeExportRequest request);
 
     void run() override;
 
@@ -49,8 +50,8 @@ class EngineLibraryExportJob : public QThread {
 
     TrackCollectionManager& m_trackCollectionManager;
     TrackLoader& m_trackLoader;
-    EngineLibraryExportRequest m_request;
-    QHash<TrackId, int64_t> m_mixxxToEngineLibraryTrackIdMap;
+    EnginePrimeExportRequest m_request;
+    QHash<TrackId, int64_t> m_mixxxToEnginePrimeTrackIdMap;
     std::unique_ptr<djinterop::database> m_pDb;
 };
 

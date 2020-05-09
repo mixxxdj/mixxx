@@ -1,5 +1,5 @@
 #ifdef __DJINTEROP__
-#include "library/export/enginelibraryexportjob.h"
+#include "library/export/engineprimeexportjob.h"
 
 #include <optional>
 #include <stdexcept>
@@ -55,7 +55,7 @@ std::optional<djinterop::musical_key> toDjinteropKey(
     return keyMap[key];
 }
 
-std::string exportFile(const EngineLibraryExportRequest& request,
+std::string exportFile(const EnginePrimeExportRequest& request,
         TrackPointer pTrack) {
     if (!request.engineLibraryDbDir.exists()) {
         auto msg = QString(
@@ -101,21 +101,21 @@ djinterop::track getTrackByRelativePath(
 }
 
 void exportMetadata(djinterop::database& db,
-        QHash<TrackId, int64_t>& mixxxToEngineLibraryTrackIdMap,
+        QHash<TrackId, int64_t>& mixxxToEnginePrimeTrackIdMap,
         TrackPointer pTrack,
         std::unique_ptr<Waveform> pWaveform,
         const std::string& relativePath) {
-    // Create or load the track in the EL database, using the relative path to
-    // the music file.  We will record the mapping from Mixxx track id to EL
-    // track id as well.
+    // Create or load the track in the database, using the relative path to
+    // the music file.  We will record the mapping from Mixxx track id to
+    // exported track id as well.
     auto externalTrack = getTrackByRelativePath(db, relativePath);
-    mixxxToEngineLibraryTrackIdMap.insert(pTrack->getId(), externalTrack.id());
+    mixxxToEnginePrimeTrackIdMap.insert(pTrack->getId(), externalTrack.id());
 
-    // Note that the Engine Library format has the scope for recording meta-data
-    // about whteher track was imported from an external database.  However,
-    // that meta-data only extends as far as other Engine Library databases,
-    // which Mixxx is not.  So we do not set any import information on the EL
-    // track.
+    // Note that the Engine Prime format has the scope for recording meta-data
+    // about whether track was imported from an external database.  However,
+    // that meta-data only extends as far as other Engine Prime databases,
+    // which Mixxx is not.  So we do not set any import information on the
+    // exported track.
     externalTrack.set_track_number(pTrack->getTrackNumber().toInt());
     externalTrack.set_bpm(pTrack->getBpm());
     externalTrack.set_year(pTrack->getYear().toInt());
@@ -186,9 +186,9 @@ void exportMetadata(djinterop::database& db,
 
         int hot_cue_index = pCue->getHotCue(); // Note: Mixxx uses 0-based.
         if (hot_cue_index < 0 || hot_cue_index >= 8) {
-            // EL only supports a maximum of 8 hot cues.
+            // Only supports a maximum of 8 hot cues.
             qInfo() << "Skipping hot cue" << hot_cue_index
-                    << "as the Engine Library format only supports at most 8"
+                    << "as the Engine Prime format only supports at most 8"
                     << "hot cues.";
             continue;
         }
@@ -209,7 +209,7 @@ void exportMetadata(djinterop::database& db,
     // remember the position of a single ad-hoc loop between track loads.
     // However, since this single ad-hoc loop is likely to be different in use
     // from a set of stored loops (and is easily overwritten), we do not export
-    // it to the Engine Library database here.
+    // it to the external database here.
     externalTrack.set_loops({});
 
     // Write waveform.
@@ -236,9 +236,9 @@ void exportMetadata(djinterop::database& db,
 }
 
 void exportTrack(TrackCollection& trackCollection,
-        const EngineLibraryExportRequest& request,
+        const EnginePrimeExportRequest& request,
         djinterop::database& db,
-        QHash<TrackId, int64_t>& mixxxToEngineLibraryTrackIdMap,
+        QHash<TrackId, int64_t>& mixxxToEnginePrimeTrackIdMap,
         const TrackPointer pTrack) {
     // Load high-resolution waveform from analysis info.
     auto& analysisDao = trackCollection.getAnalysisDAO();
@@ -263,12 +263,12 @@ void exportTrack(TrackCollection& trackCollection,
     auto musicFileRelativePath = exportFile(request, pTrack);
 
     // Export meta-data.
-    exportMetadata(db, mixxxToEngineLibraryTrackIdMap, pTrack, std::move(pWaveform), musicFileRelativePath);
+    exportMetadata(db, mixxxToEnginePrimeTrackIdMap, pTrack, std::move(pWaveform), musicFileRelativePath);
 }
 
 void exportCrate(TrackCollection& trackCollection,
         djinterop::crate& extRootCrate,
-        QHash<TrackId, int64_t>& mixxxToEngineLibraryTrackIdMap,
+        QHash<TrackId, int64_t>& mixxxToEnginePrimeTrackIdMap,
         const CrateId& crateId) {
     // Load the crate (synchronously, as TrackCollection should not be accessed
     // in an unchecked parallel manner).
@@ -281,22 +281,22 @@ void exportCrate(TrackCollection& trackCollection,
     // Loop through all track ids in this crate and add.
     auto result = trackCollection.crates().selectCrateTracksSorted(crateId);
     while (result.next()) {
-        auto extTrackId = mixxxToEngineLibraryTrackIdMap[result.trackId()];
+        auto extTrackId = mixxxToEnginePrimeTrackIdMap[result.trackId()];
         extCrate.add_track(extTrackId);
     }
 }
 
 } // namespace
 
-EngineLibraryExportJob::EngineLibraryExportJob(QObject* parent,
+EnginePrimeExportJob::EnginePrimeExportJob(QObject* parent,
         TrackCollectionManager& trackCollectionManager,
         TrackLoader& trackLoader,
-        EngineLibraryExportRequest request)
+        EnginePrimeExportRequest request)
         : QThread(parent), m_trackCollectionManager(trackCollectionManager), m_trackLoader(trackLoader), m_request{std::move(request)} {
-    connect(&m_trackLoader, &TrackLoader::trackLoaded, this, &EngineLibraryExportJob::trackLoaded);
+    connect(&m_trackLoader, &TrackLoader::trackLoaded, this, &EnginePrimeExportJob::trackLoaded);
 }
 
-void EngineLibraryExportJob::trackLoaded(TrackRef trackRef, TrackPointer trackPtr) {
+void EnginePrimeExportJob::trackLoaded(TrackRef trackRef, TrackPointer trackPtr) {
     // See if this track is in our queue.
     auto index = m_trackQueue.indexOf(trackRef);
     if (index == -1) {
@@ -306,7 +306,7 @@ void EngineLibraryExportJob::trackLoaded(TrackRef trackRef, TrackPointer trackPt
 
     qInfo() << "Exporting track" << trackRef.getId().value() << "at"
             << trackRef.getLocation() << "...";
-    exportTrack(*m_trackCollectionManager.internalCollection(), m_request, *m_pDb, m_mixxxToEngineLibraryTrackIdMap, trackPtr);
+    exportTrack(*m_trackCollectionManager.internalCollection(), m_request, *m_pDb, m_mixxxToEnginePrimeTrackIdMap, trackPtr);
 
     // Removing this track from the queue and notify it has been exported.
     QMutexLocker lock{&m_trackMutex};
@@ -315,7 +315,7 @@ void EngineLibraryExportJob::trackLoaded(TrackRef trackRef, TrackPointer trackPt
 }
 
 // Obtain a set of all track refs across all directories in the whole Mixxx library.
-QSet<TrackRef> EngineLibraryExportJob::getAllTrackRefs() const {
+QSet<TrackRef> EnginePrimeExportJob::getAllTrackRefs() const {
     QSet<TrackRef> trackRefs;
     auto dirs = m_trackCollectionManager.internalCollection()
                         ->getDirectoryDAO()
@@ -330,7 +330,7 @@ QSet<TrackRef> EngineLibraryExportJob::getAllTrackRefs() const {
 }
 
 // Obtain a set of track refs in a set of crates.
-QSet<TrackRef> EngineLibraryExportJob::getTracksRefsInCrates(
+QSet<TrackRef> EnginePrimeExportJob::getTracksRefsInCrates(
         const QSet<CrateId>& crateIds) const {
     QSet<TrackRef> trackRefs;
     for (auto iter = crateIds.cbegin(); iter != crateIds.cend(); ++iter) {
@@ -349,7 +349,7 @@ QSet<TrackRef> EngineLibraryExportJob::getTracksRefsInCrates(
     return trackRefs;
 }
 
-void EngineLibraryExportJob::run() {
+void EnginePrimeExportJob::run() {
     // Crate music directory if it doesn't already exist.
     QDir().mkpath(m_request.musicFilesDir.path());
 
@@ -394,7 +394,7 @@ void EngineLibraryExportJob::run() {
     emit(jobProgress(currProgress));
 
     // We will build up a map from Mixxx track id to EL track id during export.
-    m_mixxxToEngineLibraryTrackIdMap.clear();
+    m_mixxxToEnginePrimeTrackIdMap.clear();
 
     // Load all tracks (asynchronously).
     m_trackQueue = trackRefs.toList();
@@ -426,13 +426,13 @@ void EngineLibraryExportJob::run() {
             : m_pDb->create_root_crate(MixxxRootCrateName);
     for (const TrackRef& trackRef : trackRefs) {
         // Add each track to the root crate, even if it also belongs to others.
-        if (!m_mixxxToEngineLibraryTrackIdMap.contains(trackRef.getId())) {
+        if (!m_mixxxToEnginePrimeTrackIdMap.contains(trackRef.getId())) {
             qInfo() << "Not adding track" << trackRef.getId()
                     << "to any crates, as it was not exported";
             continue;
         }
 
-        auto extTrackId = m_mixxxToEngineLibraryTrackIdMap.value(
+        auto extTrackId = m_mixxxToEnginePrimeTrackIdMap.value(
                 trackRef.getId());
         extRootCrate.add_track(extTrackId);
     }
@@ -442,17 +442,17 @@ void EngineLibraryExportJob::run() {
         qInfo() << "Exporting crate" << crateId.value() << "...";
         exportCrate(*m_trackCollectionManager.internalCollection(),
                 extRootCrate,
-                m_mixxxToEngineLibraryTrackIdMap,
+                m_mixxxToEnginePrimeTrackIdMap,
                 crateId);
 
         ++currProgress;
         emit(jobProgress(currProgress));
     }
 
-    qInfo() << "Engine Library Export Job completed successfully";
+    qInfo() << "Engine Prime Export Job completed successfully";
 }
 
-void EngineLibraryExportJob::cancel()
+void EnginePrimeExportJob::cancel()
 {
     // TODO(mr-smidge): implement cancellation!
     qInfo() << "Would cancel...";
