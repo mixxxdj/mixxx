@@ -77,12 +77,9 @@ void WorkerThread::suspend() {
 }
 
 void WorkerThread::resume() {
+    logTrace(m_logger, "Resuming");
     // Reset m_suspend to false to allow the thread to make progress.
-    bool suspended = true; // expected value
-    // Reset value: true -> false
-    if (m_suspend.compare_exchange_strong(suspended, false)) {
-        logTrace(m_logger, "Resuming");
-    }
+    m_suspend.store(false);
     // Wake up the thread so that it is able to check m_suspend and
     // continue processing. To avoid race conditions this needs to
     // be performed unconditionally even if m_suspend was false and has
