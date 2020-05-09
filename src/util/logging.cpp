@@ -52,6 +52,7 @@ inline void writeToLog(
     if (flags & WriteFlag::StdErr) {
         const int written = fwrite(
                 message.constData(), sizeof(char), message.size(), stderr);
+        Q_UNUSED(written);
         DEBUG_ASSERT(written == message.size());
         if (flags & WriteFlag::Flush) {
             // Flushing stderr might not be necessary, because message
@@ -59,6 +60,7 @@ inline void writeToLog(
             // only infrequently (log level >= Critical), so better safe
             // than sorry.
             const int ret = fflush(stderr);
+            Q_UNUSED(ret);
             DEBUG_ASSERT(ret == 0);
         }
     }
@@ -68,9 +70,11 @@ inline void writeToLog(
         // by logging to qWarning!
         if (s_logfile.isOpen()) {
             const int written = s_logfile.write(message);
+            Q_UNUSED(written);
             DEBUG_ASSERT(written == message.size());
             if (flags & WriteFlag::Flush) {
                 const bool flushed = s_logfile.flush();
+                Q_UNUSED(flushed);
                 DEBUG_ASSERT(flushed);
             }
         }
@@ -172,15 +176,18 @@ void handleMessage(
     baSize += input8Bit.size();
 
     const char* categoryName = context.category;
-    int categoryName_len = strlen(categoryName);
-    if (categoryName_len > 0) {
-        if (strcmp(categoryName, kDefaultLoggingCategory.categoryName()) != 0) {
-            baSize += 1; // additional separator (see below)
-            baSize += categoryName_len;
-        } else {
-            // Suppress default category name
-            categoryName = nullptr;
-            categoryName_len = 0;
+    int categoryName_len = 0;
+    if (categoryName) {
+        categoryName_len = strlen(categoryName);
+        if (categoryName_len > 0) {
+            if (strcmp(categoryName, kDefaultLoggingCategory.categoryName()) != 0) {
+                baSize += 1; // additional separator (see below)
+                baSize += categoryName_len;
+            } else {
+                // Suppress default category name
+                categoryName = nullptr;
+                categoryName_len = 0;
+            }
         }
     }
 
