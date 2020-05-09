@@ -1,4 +1,4 @@
-==== 2.2.4 2020-mm-dd ====
+==== 2.2.4 2020-05-10 ====
 * Store default recording format after "Restore Defaults" lp:1857806 #2414
 * Prevent infinite loop when decoding corrupt MP3 files #2417
 * Add workaround for broken libshout versions #2040 #2438
@@ -18,8 +18,10 @@
 * Add controller mapping for Denon MC7000 #2546
 * Add controller mapping for Stanton DJC.4 #2607
 * Fix broadcasting via broadcast/recording input lp:1876222 #2743
+* Only apply ducking gain in manual ducking mode when talkover is enabed lp:1394968 lp:1737113 lp:1662536 #2759
 
 ==== 2.2.3 2019-11-24 ====
+
 * Don't make users reconfigure sound hardware when it has not changed #2253
 * Fix MusicBrainz metadata lookup lp:1848887 #2328
 * Fix high DPI scaling of cover art #2247
