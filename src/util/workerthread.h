@@ -45,18 +45,30 @@ class WorkerThread : public QThread {
     }
 
     /// Commands the thread to suspend itself asap.
+    ///
+    /// Must not be invoked from the worker thread itself to
+    /// avoid race conditions!
     void suspend();
 
     /// Resumes a suspended thread by waking it up.
+    ///
+    /// Must not be invoked from the worker thread itself to
+    /// avoid race conditions!
     void resume();
 
     /// Wakes up a sleeping thread. If the thread has been suspended
     /// it will fall asleep again. A suspended thread needs to be
     /// resumed.
+    ///
+    /// Must not be invoked from the worker thread itself to
+    /// avoid race conditions!
     void wake();
 
     /// Commands the thread to stop asap. This action is irreversible,
     /// i.e. the thread cannot be restarted once it has been stopped.
+    ///
+    /// Must not be invoked from the worker thread itself to
+    /// avoid race conditions!
     void stop();
 
     /// Non-blocking atomic read of the stop flag which indicates that
@@ -81,8 +93,6 @@ class WorkerThread : public QThread {
     enum class FetchWorkResult {
         Ready,
         Idle,
-        Suspend,
-        Stop,
     };
 
     /// Non-blocking function that determines whether the worker thread

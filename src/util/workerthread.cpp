@@ -69,6 +69,7 @@ void WorkerThread::run() {
 }
 
 void WorkerThread::suspend() {
+    DEBUG_ASSERT(QThread::currentThread() != this);
     logTrace(m_logger, "Suspending");
     m_suspend.store(true);
     // The thread will suspend processing and fall asleep the
@@ -77,6 +78,7 @@ void WorkerThread::suspend() {
 }
 
 void WorkerThread::resume() {
+    DEBUG_ASSERT(QThread::currentThread() != this);
     logTrace(m_logger, "Resuming");
     // Reset m_suspend to false to allow the thread to make progress.
     m_suspend.store(false);
@@ -90,6 +92,7 @@ void WorkerThread::resume() {
 }
 
 void WorkerThread::wake() {
+    DEBUG_ASSERT(QThread::currentThread() != this);
     logTrace(m_logger, "Waking up");
     std::unique_lock<std::mutex> locked(m_sleepMutex);
     // We need to always aquire the mutex before notifying the
@@ -100,6 +103,7 @@ void WorkerThread::wake() {
 }
 
 void WorkerThread::stop() {
+    DEBUG_ASSERT(QThread::currentThread() != this);
     logTrace(m_logger, "Stopping");
     m_stop.store(true);
     // Wake up the thread to make sure that the stop flag is
@@ -148,16 +152,6 @@ bool WorkerThread::waitUntilWorkItemsFetched() {
             logTrace(m_logger, "Sleeping while idle");
             m_sleepWaitCond.wait(locked) ;
             logTrace(m_logger, "Continuing after slept while idle");
-            break;
-        case FetchWorkResult::Suspend:
-            logTrace(m_logger, "Suspending while idle");
-            suspend();
-            sleepWhileSuspended(&locked);
-            logTrace(m_logger, "Continuing after suspended while idle");
-            break;
-        case FetchWorkResult::Stop:
-            logTrace(m_logger, "Stopping after trying to fetch work items");
-            stop();
             break;
         }
     }
