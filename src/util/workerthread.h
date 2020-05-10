@@ -117,7 +117,7 @@ class WorkerThread : public QThread {
     /// Blocks while idle and not stopped. Returns true when new work items
     /// for processing have been fetched and false if the thread has been
     /// stopped while waiting.
-    bool waitUntilWorkItemsFetched();
+    bool awaitWorkItemsFetched();
 
     /// Blocks the worker thread while the suspend flag is set.
     /// This function must not be called from tryFetchWorkItems()

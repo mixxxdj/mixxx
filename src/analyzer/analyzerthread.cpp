@@ -125,7 +125,7 @@ void AnalyzerThread::doRun() {
     mixxx::AudioSource::OpenParams openParams;
     openParams.setChannelCount(mixxx::kAnalysisChannels);
 
-    while (waitUntilWorkItemsFetched()) {
+    while (awaitWorkItemsFetched()) {
         DEBUG_ASSERT(m_currentTrack);
         kLogger.debug() << "Analyzing" << m_currentTrack->getFileInfo();
 

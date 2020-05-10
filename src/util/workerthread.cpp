@@ -135,7 +135,7 @@ void WorkerThread::sleepWhileSuspended(std::unique_lock<std::mutex>* locked) {
     }
 }
 
-bool WorkerThread::waitUntilWorkItemsFetched() {
+bool WorkerThread::awaitWorkItemsFetched() {
     if (isStopping()) {
         // Early exit without locking the mutex
         return false;

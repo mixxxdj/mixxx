@@ -44,7 +44,7 @@ WorkerThread::TryFetchWorkItemsResult WorkerThreadScheduler::tryFetchWorkItems()
 }
 
 void WorkerThreadScheduler::doRun() {
-    while (waitUntilWorkItemsFetched()) {
+    while (awaitWorkItemsFetched()) {
         m_fetchedWorker->resume();
         m_fetchedWorker = nullptr;
     }
