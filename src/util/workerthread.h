@@ -120,6 +120,10 @@ class WorkerThread : public QThread {
     bool awaitWorkItemsFetched();
 
     /// Blocks the worker thread while the suspend flag is set.
+    ///
+    /// Worker threads should invoke this function before starting
+    /// computational intensive work that is expected to take some time.
+    ///
     /// This function must not be called from tryFetchWorkItems()
     /// to avoid a deadlock on the non-recursive mutex!
     void sleepWhileSuspended();
