@@ -599,12 +599,8 @@ DJ505.Deck = function(deckNumbers, offset) {
     this.sync = new components.Button({
         midi: [0x90 + offset, 0x02],
         group: "[Channel" + deckNumbers + "]",
-        outKey: "sync_mode",
-        flickerState: false,
+        outKey: "sync_enabled",
         output: function(value, _group, _control) {
-            if (value === 3) {
-                value = this.flickerState;
-            }
             midi.sendShortMsg(this.midi[0], value ? 0x02 : 0x03, this.on);
         },
         input: function(channel, control, value, _status, _group) {
@@ -625,11 +621,7 @@ DJ505.Deck = function(deckNumbers, offset) {
                 script.triggerControl(this.group, "beatsync", 1);
             };
             this.onLongPress = function() {
-                if (engine.getValue(this.group, "sync_enabled")) {
-                    script.toggleControl(this.group, "sync_master");
-                } else {
-                    engine.setValue(this.group, "sync_enabled", 1);
-                }
+                engine.setValue(this.group, "sync_enabled", 1);
             };
         },
         shift: function() {
@@ -639,20 +631,6 @@ DJ505.Deck = function(deckNumbers, offset) {
             this.onLongPress = function() {
                 script.toggleControl(this.group, "quantize");
             };
-        },
-        connect: function() {
-            components.Button.prototype.connect.call(this); // call parent connect
-            this.flickerTimer = engine.beginTimer(500, function() {
-                this.flickerState = !this.flickerState;
-                this.trigger();
-            });
-        },
-        disconnect: function() {
-            components.Button.prototype.disconnect.call(this); // call parent disconnect
-            if (this.flickerTimer) {
-                engine.stopTimer(this.flickerTimer);
-                this.flickerTimer = 0;
-            }
         },
     });
 

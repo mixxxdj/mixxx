@@ -22,6 +22,12 @@ QList<mixxx::AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() {
     return plugins;
 }
 
+// static
+mixxx::AnalyzerPluginInfo AnalyzerBeats::defaultPlugin() {
+    DEBUG_ASSERT(availablePlugins().size() > 0);
+    return availablePlugins().at(0);
+}
+
 AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetection)
         : m_bpmSettings(pConfig),
           m_enforceBpmDetection(enforceBpmDetection),
@@ -63,10 +69,10 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
     m_bPreferencesReanalyzeOldBpm = m_bpmSettings.getReanalyzeWhenSettingsChange();
     m_bPreferencesFastAnalysis = m_bpmSettings.getFastAnalysis();
 
-    if (AnalyzerBeats::availablePlugins().size() > 0) {
-        m_pluginId = AnalyzerBeats::availablePlugins().at(0).id; // first is default
+    if (availablePlugins().size() > 0) {
+        m_pluginId = defaultPlugin().id;
         QString pluginId = m_bpmSettings.getBeatPluginId();
-        for (const auto& info : AnalyzerBeats::availablePlugins()) {
+        for (const auto& info : availablePlugins()) {
             if (info.id == pluginId) {
                 m_pluginId = pluginId; // configured Plug-In available
                 break;
@@ -136,6 +142,9 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer tio) const {
     }
 
     QString pluginID = m_bpmSettings.getBeatPluginId();
+    if (pluginID.isEmpty()) {
+        pluginID = defaultPlugin().id;
+    }
 
     // If the track already has a Beats object then we need to decide whether to
     // analyze this track or not.

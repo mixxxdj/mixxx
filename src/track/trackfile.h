@@ -123,3 +123,7 @@ inline QDebug operator<<(QDebug debug, const TrackFile& trackFile) {
     return debug << trackFile.location();
 #endif
 }
+
+inline uint qHash(const TrackFile& key, uint seed) {
+    return qHash(key.location(), seed);
+}

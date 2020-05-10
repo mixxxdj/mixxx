@@ -167,7 +167,7 @@ void ControllerEngine::gracefulShutdown() {
     // Stop all timers
     stopAllTimers();
 
-    // Call each script's shutdown function if it exists
+    qDebug() << "Invoking shutdown() hook in scripts";
     callFunctionOnObjects(m_scriptFunctionPrefixes, "shutdown");
 
     // Prevents leaving decks in an unstable state
@@ -185,18 +185,21 @@ void ControllerEngine::gracefulShutdown() {
         }
     }
 
-    // Clear the cache of function wrappers
+    qDebug() << "Clearing function wrapper cache";
     m_scriptWrappedFunctionCache.clear();
 
     // Free all the ControlObjectScripts
-    QList<ConfigKey> keys = m_controlCache.keys();
-    QList<ConfigKey>::iterator it = keys.begin();
-    QList<ConfigKey>::iterator end = keys.end();
-    while (it != end) {
-        ConfigKey key = *it;
-        ControlObjectScript* coScript = m_controlCache.take(key);
-        delete coScript;
-        ++it;
+    {
+        auto it = m_controlCache.begin();
+        while (it != m_controlCache.end()) {
+            qDebug()
+                    << "Deleting ControlObjectScript"
+                    << it.key().group
+                    << it.key().item;
+            delete it.value();
+            // Advance iterator
+            it = m_controlCache.erase(it);
+        }
     }
 
     delete m_pBaClass;
