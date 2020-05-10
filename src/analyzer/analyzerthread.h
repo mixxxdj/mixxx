@@ -88,7 +88,7 @@ class AnalyzerThread : public WorkerThread {
   protected:
     void doRun() override;
 
-    FetchWorkResult tryFetchWorkItems() override;
+    TryFetchWorkItemsResult tryFetchWorkItems() override;
 
   private:
     /////////////////////////////////////////////////////////////////////////

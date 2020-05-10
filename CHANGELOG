@@ -3,8 +3,6 @@
 * Prevent infinite loop when decoding corrupt MP3 files #2417
 * Add workaround for broken libshout versions #2040 #2438
 * Speed up purging of tracks lp:1845837 #2393
-* Prevent infinite loop when decoding corrupt MP3 files #2417
-* Store default recording format after "Restore Defaults" lp:1857806 #2414
 * Don't stop playback if vinyl passthrough input is configured and PASS button is pressed #2474
 * Fix debug assertion for invalid crate names lp:1861431 #2477
 * Fix crashes when executing actions on tracks that already disappeared from the DB #2527
