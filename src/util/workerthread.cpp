@@ -94,11 +94,13 @@ void WorkerThread::resume() {
 void WorkerThread::wake() {
     DEBUG_ASSERT(QThread::currentThread() != this);
     logTrace(m_logger, "Waking up");
+    // Suspend the calling thread until the worker thread actually
+    // is sleeping, i.e. is blocking on m_sleepWaitCond. Otherwise
+    // the worker thread might invoke m_sleepWaitCond.wait(locked)
+    // and become sleeping just after the following notification
+    // has been signaled. In this case the signal would be lost
+    // and the worker thread would remain sleeping forever!
     std::unique_lock<std::mutex> locked(m_sleepMutex);
-    // We need to always aquire the mutex before notifying the
-    // worker thread! Otherwise the worker thread might invoke
-    // m_sleepWaitCond.wait(locked) just after the notification
-    // has been signaled and remain waiting forever!
     m_sleepWaitCond.notify_one();
 }
 
