@@ -121,8 +121,12 @@ class WorkerThread : public QThread {
 
     /// Blocks the worker thread while the suspend flag is set.
     ///
-    /// Worker threads should invoke this function before starting
-    /// computational intensive work that is expected to take some time.
+    /// Worker threads should invoke this yield-like method periodically.
+    /// Especially before starting any computational intensive work that
+    /// is expected to take some time.
+    ///
+    /// After returning from this function worker threads should also
+    /// check isStopping() and exit if they have been asked to stop.
     ///
     /// This function must not be called from tryFetchWorkItems()
     /// to avoid a deadlock on the non-recursive mutex!
