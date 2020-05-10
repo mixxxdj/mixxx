@@ -6,6 +6,7 @@
 #include <QHash>
 #include <QList>
 #include <QMutex>
+#include <QQueue>
 #include <QSet>
 #include <QThread>
 #include <QWaitCondition>
@@ -44,9 +45,12 @@ class EnginePrimeExportJob : public QThread {
     QSet<TrackRef> getAllTrackRefs() const;
     QSet<TrackRef> getTracksRefsInCrates(const QSet<CrateId>& crateIds) const;
 
-    QList<TrackRef> m_trackQueue;
+    QList<TrackRef> m_trackRefs;
+    QQueue<TrackPointer> m_loadedTrackQueue;
+    int m_tracksLoaded = 0;
     QMutex m_trackMutex;
     QWaitCondition m_waitAnyTrack;
+    bool m_cancellationRequested = false;
 
     TrackCollectionManager& m_trackCollectionManager;
     TrackLoader& m_trackLoader;

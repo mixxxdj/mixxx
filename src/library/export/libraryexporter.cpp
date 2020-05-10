@@ -42,8 +42,7 @@ void LibraryExporter::beginEnginePrimeExport(
             this, m_trackCollectionManager, *m_pTrackLoader, std::move(request)};
     connect(pJobThread, &EnginePrimeExportJob::finished, pJobThread, &QObject::deleteLater);
 
-    // Construct a modal dialog to monitor job progress.
-    // TODO(mr-smidge) - dialog doesn't appear to update with new progress until after track export?
+    // Construct a dialog to monitor job progress and offer cancellation.
     auto *pd = new QProgressDialog(this);
     pd->setLabelText(tr("Exporting to Engine Prime..."));
     pd->setMinimumDuration(0);

@@ -231,8 +231,6 @@ void exportMetadata(djinterop::database& db,
         qInfo() << "No waveform data found for track" << pTrack->getId()
                 << "(" << pTrack->getFileInfo().fileName() << ")";
     }
-
-    qInfo() << "Wrote all meta-data for track";
 }
 
 void exportTrack(TrackCollection& trackCollection,
@@ -293,24 +291,26 @@ EnginePrimeExportJob::EnginePrimeExportJob(QObject* parent,
         TrackLoader& trackLoader,
         EnginePrimeExportRequest request)
         : QThread(parent), m_trackCollectionManager(trackCollectionManager), m_trackLoader(trackLoader), m_request{std::move(request)} {
-    connect(&m_trackLoader, &TrackLoader::trackLoaded, this, &EnginePrimeExportJob::trackLoaded);
+    // Note that the `trackLoaded()` slot will, by default, execute in whatever
+    // thread constructs this object, and not this object's worker thread.  This
+    // is not a problem, as the slot simply enqueues each loaded track for
+    // subsequent processing in the worker thread.
+    connect(&m_trackLoader, &TrackLoader::trackLoaded,
+            this, &EnginePrimeExportJob::trackLoaded);
 }
 
 void EnginePrimeExportJob::trackLoaded(TrackRef trackRef, TrackPointer trackPtr) {
     // See if this track is in our queue.
-    auto index = m_trackQueue.indexOf(trackRef);
+    auto index = m_trackRefs.indexOf(trackRef);
     if (index == -1) {
         // Not a track we're interested in.
         return;
     }
 
-    qInfo() << "Exporting track" << trackRef.getId().value() << "at"
-            << trackRef.getLocation() << "...";
-    exportTrack(*m_trackCollectionManager.internalCollection(), m_request, *m_pDb, m_mixxxToEnginePrimeTrackIdMap, trackPtr);
-
-    // Removing this track from the queue and notify it has been exported.
+    // Enqueue the loaded track onto the queue, and notify that it is loaded.
     QMutexLocker lock{&m_trackMutex};
-    m_trackQueue.removeAt(index);
+    m_loadedTrackQueue.enqueue(trackPtr);
+    m_tracksLoaded++;
     m_waitAnyTrack.wakeAll();
 }
 
@@ -397,23 +397,47 @@ void EnginePrimeExportJob::run() {
     m_mixxxToEnginePrimeTrackIdMap.clear();
 
     // Load all tracks (asynchronously).
-    m_trackQueue = trackRefs.toList();
-    for (auto iter = m_trackQueue.cbegin(); iter != m_trackQueue.cend(); ++iter) {
+    m_trackRefs = trackRefs.toList();
+    for (auto iter = m_trackRefs.cbegin(); iter != m_trackRefs.cend(); ++iter) {
         m_trackLoader.invokeSlotLoadTrack(*iter);
     }
 
     // Run a consumer queue, waiting for tracks that have been loaded.
-    int tracksDone = 0;
-    while (!m_trackQueue.isEmpty()) {
-        // Wait for a track to be loaded and exported.
+    while (true) {
+        TrackPointer pTrack;
+
         {
             QMutexLocker lock(&m_trackMutex);
-            m_waitAnyTrack.wait(&m_trackMutex);
+            if (m_cancellationRequested) {
+                qInfo() << "Cancelling export";
+                return;
+            }
+
+            if (m_loadedTrackQueue.isEmpty()) {
+                if (m_tracksLoaded == trackRefs.size()) {
+                    break;
+                }
+
+                // We expect to be informed when there are more tracks.
+                m_waitAnyTrack.wait(&m_trackMutex);
+                if (m_loadedTrackQueue.isEmpty()) {
+                    // Note that this branch is not a warning/error situation:
+                    // it can happen if an export job is cancelled mid-load.
+                    qDebug() << "Track export woken with no tracks to process";
+                    continue;
+                }
+            }
+
+            // We have at least one loaded track we can export right now.
+            pTrack = m_loadedTrackQueue.dequeue();
         }
 
+        qInfo() << "Exporting track" << pTrack->getId().value() << "at"
+            << pTrack->getFileInfo().location() << "...";
+        exportTrack(*m_trackCollectionManager.internalCollection(), m_request,
+                *m_pDb, m_mixxxToEnginePrimeTrackIdMap, pTrack);
+
         ++currProgress;
-        ++tracksDone;
-        qInfo() << "Track export progress" << tracksDone << "/" << trackRefs.size();
         emit(jobProgress(currProgress));
     }
 
@@ -439,6 +463,14 @@ void EnginePrimeExportJob::run() {
 
     // Export all Mixxx crates
     for (const CrateId& crateId : crateIds) {
+        {
+            QMutexLocker lock(&m_trackMutex);
+            if (m_cancellationRequested) {
+                qInfo() << "Cancelling export";
+                return;
+            }
+        }
+
         qInfo() << "Exporting crate" << crateId.value() << "...";
         exportCrate(*m_trackCollectionManager.internalCollection(),
                 extRootCrate,
@@ -454,8 +486,9 @@ void EnginePrimeExportJob::run() {
 
 void EnginePrimeExportJob::cancel()
 {
-    // TODO(mr-smidge): implement cancellation!
-    qInfo() << "Would cancel...";
+    QMutexLocker lock(&m_trackMutex);
+    m_cancellationRequested = true;
+    m_waitAnyTrack.wakeAll();
 }
 
 } // namespace mixxx
