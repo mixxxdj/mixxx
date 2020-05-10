@@ -125,8 +125,6 @@ class WorkerThread : public QThread {
     void sleepWhileSuspended();
 
   private:
-    void sleepWhileSuspended(std::unique_lock<std::mutex>* locked);
-
     const QString m_name;
 
     const mixxx::Logger m_logger;

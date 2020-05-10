@@ -123,14 +123,9 @@ void WorkerThread::sleepWhileSuspended() {
         return;
     }
     std::unique_lock<std::mutex> locked(m_sleepMutex);
-    sleepWhileSuspended(&locked);
-}
-
-void WorkerThread::sleepWhileSuspended(std::unique_lock<std::mutex>* locked) {
-    DEBUG_ASSERT(locked);
     while (m_suspend.load()) {
         logTrace(m_logger, "Sleeping while suspended");
-        m_sleepWaitCond.wait(*locked) ;
+        m_sleepWaitCond.wait(locked) ;
         logTrace(m_logger, "Continuing after sleeping while suspended");
     }
 }
