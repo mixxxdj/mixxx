@@ -37,9 +37,9 @@ WorkerThread::FetchWorkResult WorkerThreadScheduler::tryFetchWorkItems() {
         m_fetchedWorker = worker;
         return FetchWorkResult::Ready;
     } else {
-        // Suspend the thread after all scheduled workers have
-        // have been resumed.
-        return FetchWorkResult::Suspend;
+        // Fall asleep after all scheduled workers have have
+        // been resumed.
+        return FetchWorkResult::Idle;
     }
 }
 
