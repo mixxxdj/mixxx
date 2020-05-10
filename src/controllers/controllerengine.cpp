@@ -189,14 +189,17 @@ void ControllerEngine::gracefulShutdown() {
     m_scriptWrappedFunctionCache.clear();
 
     // Free all the ControlObjectScripts
-    for (auto it = m_controlCache.begin(); it != m_controlCache.end(); /*see loop body*/) {
-        qDebug()
-                << "Deleting ControlObjectScript"
-                << it.key().group
-                << it.key().item;
-        delete it.value();
-        // Advance iterator
-        it = m_controlCache.erase(it);
+    {
+        auto it = m_controlCache.begin();
+        while (it != m_controlCache.end()) {
+            qDebug()
+                    << "Deleting ControlObjectScript"
+                    << it.key().group
+                    << it.key().item;
+            delete it.value();
+            // Advance iterator
+            it = m_controlCache.erase(it);
+        }
     }
 
     delete m_pBaClass;
