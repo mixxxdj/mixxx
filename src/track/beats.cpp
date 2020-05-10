@@ -851,15 +851,16 @@ FrameNum Beats::getLastBeatPosition() const {
 }
 
 QDebug operator<<(QDebug dbg, const BeatsPointer& arg) {
-    dbg << "Beats State";
-    dbg << "\tm_subVersion:" << arg->m_subVersion;
-    dbg << "\tm_iSampleRate:" << arg->m_iSampleRate;
-    dbg << "\tm_dCachedBpm:" << arg->m_dCachedBpm;
-    dbg << "\tm_dLastFrame:" << arg->m_dLastFrame;
-    dbg << "Beats content:";
+    dbg << "Beats State\n";
+    dbg << "\tm_subVersion:" << arg->m_subVersion << "\n";
+    dbg << "\tm_iSampleRate:" << arg->m_iSampleRate << "\n";
+    dbg << "\tm_dCachedBpm:" << arg->m_dCachedBpm << "\n";
+    dbg << "\tm_dLastFrame:" << arg->m_dLastFrame << "\n";
+    dbg << "Beats content(size: " << arg->m_beats.size() << ":\n";
     for (auto beat : arg->m_beats) {
-        dbg << "pos:" << beat.frame_position();
+        dbg << "pos:" << beat.frame_position() << "\n";
     }
+    return dbg;
 }
 
 } // namespace mixxx
