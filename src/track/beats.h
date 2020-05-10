@@ -287,7 +287,7 @@ class Beats : public QObject {
     /// Translate all beats in the song by dNumSamples samples. Beats that lie
     /// before the start of the track or after the end of the track are not
     /// removed. Beats instance must have the capability BEATSCAP_TRANSLATE.
-    virtual void translate(double dNumSamples);
+    virtual void translate(FrameNum dNumFrames);
 
     /// Scale the position of every beat in the song by dScalePercentage. Beats
     /// class must have the capability BEATSCAP_SCALE.
