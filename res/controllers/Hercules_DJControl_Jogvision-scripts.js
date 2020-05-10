@@ -54,7 +54,7 @@ var beta = alpha / 16;
 var ledRotationSpeed = 60; // The bigger, the slower
 var ledRotationTimer = 0;
 var masterLeds = 0x90;
-var beatActiveMode = "follow"; // normal, reverse, blink, follow
+var beatActiveMode = "normal"; // normal, reverse, blink, follow
 if (beatActiveMode.match(/^(?:normal|reverse)$/g)) {
     beatMax = 4;
 } else if (beatActiveMode === "blink") {
