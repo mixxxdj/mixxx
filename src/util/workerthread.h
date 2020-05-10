@@ -90,7 +90,7 @@ class WorkerThread : public QThread {
     /// especially before starting any expensive subtasks.
     virtual void doRun() = 0;
 
-    enum class FetchWorkResult {
+    enum class TryFetchWorkItemsResult {
         Ready,
         Idle,
     };
@@ -100,7 +100,7 @@ class WorkerThread : public QThread {
     /// either suspended until resumed or put to sleep until woken up.
     ///
     /// Implementing classes are able to control what to do if no more
-    /// work is currently available. Returning FetchWorkResult::Idle
+    /// work is currently available. Returning TryFetchWorkItemsResult::Idle
     /// preserves the current suspend state and lets the thread sleep
     /// until wake() is called.
     ///
@@ -112,7 +112,7 @@ class WorkerThread : public QThread {
     /// because it has already been checked just before the invocation. Though
     /// the fetch operation may check again before starting any expensive
     /// internal subtask.
-    virtual FetchWorkResult tryFetchWorkItems() = 0;
+    virtual TryFetchWorkItemsResult tryFetchWorkItems() = 0;
 
     /// Blocks while idle and not stopped. Returns true when new work items
     /// for processing have been fetched and false if the thread has been

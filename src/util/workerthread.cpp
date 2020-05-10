@@ -143,12 +143,12 @@ bool WorkerThread::waitUntilWorkItemsFetched() {
     // Keep the mutex locked while idle or suspended
     std::unique_lock<std::mutex> locked(m_sleepMutex);
     while (!isStopping()) {
-        FetchWorkResult fetchWorkResult = tryFetchWorkItems();
+        TryFetchWorkItemsResult fetchWorkResult = tryFetchWorkItems();
         switch (fetchWorkResult) {
-        case FetchWorkResult::Ready:
+        case TryFetchWorkItemsResult::Ready:
             logTrace(m_logger, "Work items fetched and ready");
             return true;
-        case FetchWorkResult::Idle:
+        case TryFetchWorkItemsResult::Idle:
             logTrace(m_logger, "Sleeping while idle");
             m_sleepWaitCond.wait(locked) ;
             logTrace(m_logger, "Continuing after slept while idle");

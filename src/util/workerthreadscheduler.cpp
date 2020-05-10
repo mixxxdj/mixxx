@@ -29,17 +29,17 @@ bool WorkerThreadScheduler::resumeWorkers() {
     }
 }
 
-WorkerThread::FetchWorkResult WorkerThreadScheduler::tryFetchWorkItems() {
+WorkerThread::TryFetchWorkItemsResult WorkerThreadScheduler::tryFetchWorkItems() {
     DEBUG_ASSERT(!m_fetchedWorker);
     WorkerThread* worker;
     if (m_scheduledWorkers.read(&worker, 1) == 1) {
         DEBUG_ASSERT(worker);
         m_fetchedWorker = worker;
-        return FetchWorkResult::Ready;
+        return TryFetchWorkItemsResult::Ready;
     } else {
         // Fall asleep after all scheduled workers have have
         // been resumed.
-        return FetchWorkResult::Idle;
+        return TryFetchWorkItemsResult::Idle;
     }
 }
 

@@ -23,7 +23,7 @@ class WorkerThreadScheduler : public WorkerThread {
   protected:
     void doRun() override;
 
-    FetchWorkResult tryFetchWorkItems() override;
+    TryFetchWorkItemsResult tryFetchWorkItems() override;
 
   private:
     FIFO<WorkerThread*> m_scheduledWorkers;
