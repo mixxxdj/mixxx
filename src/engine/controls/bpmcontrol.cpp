@@ -626,7 +626,8 @@ double BpmControl::getNearestPositionInPhase(
         }
 
         TrackPointer otherTrack = pOtherEngineBuffer->getLoadedTrack();
-        BeatsPointer otherBeats = otherTrack ? otherTrack->getBeats() : BeatsPointer();
+        mixxx::BeatsPointer otherBeats =
+                otherTrack ? otherTrack->getBeats() : mixxx::BeatsPointer();
 
         // If either track does not have beats, then we can't adjust the phase.
         if (!otherBeats) {
@@ -641,7 +642,6 @@ double BpmControl::getNearestPositionInPhase(
                     NULL,
                     NULL,
                     &dOtherBeatFraction)) {
-            qDebug() << "error getting beat context";
             return dThisPosition;
         }
     }
@@ -669,8 +669,6 @@ double BpmControl::getNearestPositionInPhase(
 
     double dNewPlaypos =
             (dOtherBeatFraction + m_dUserOffset.getValue()) * dThisBeatLength;
-    qDebug() << "new playpos is" << dOtherBeatFraction
-             << m_dUserOffset.getValue() << dThisBeatLength;
     if (this_near_next == other_near_next) {
         dNewPlaypos += dThisPrevBeat;
     } else if (this_near_next && !other_near_next) {
@@ -786,7 +784,7 @@ double BpmControl::getBeatMatchPosition(
     }
 
     TrackPointer otherTrack = pOtherEngineBuffer->getLoadedTrack();
-    BeatsPointer otherBeats = otherTrack ? otherTrack->getBeats() : BeatsPointer();
+    mixxx::BeatsPointer otherBeats = otherTrack ? otherTrack->getBeats() : mixxx::BeatsPointer();
 
     // If either track does not have beats, then we can't adjust the phase.
     if (!otherBeats) {
