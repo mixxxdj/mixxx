@@ -165,7 +165,7 @@ rekordbox_anlz_t::song_structure_tag_t::song_structure_tag_t(kaitai::kstream* p_
 void rekordbox_anlz_t::song_structure_tag_t::_read() {
     m_len_entry_bytes = m__io->read_u4be();
     m_len_entries = m__io->read_u2be();
-    m_style = static_cast<rekordbox_anlz_t::phrase_style_t>(m__io->read_u2be());
+    m_style = m__io->read_u2be();
     m__unnamed3 = m__io->read_bytes(6);
     m_end_beat = m__io->read_u2be();
     m__unnamed5 = m__io->read_bytes(4);
@@ -199,7 +199,8 @@ void rekordbox_anlz_t::cue_extended_entry_t::_read() {
     m__unnamed5 = m__io->read_bytes(3);
     m_time = m__io->read_u4be();
     m_loop_time = m__io->read_u4be();
-    m__unnamed8 = m__io->read_bytes(12);
+    m_color_id = m__io->read_u1();
+    m__unnamed9 = m__io->read_bytes(11);
     n_len_comment = true;
     if (len_entry() > 43) {
         n_len_comment = false;
@@ -230,10 +231,10 @@ void rekordbox_anlz_t::cue_extended_entry_t::_read() {
         n_color_blue = false;
         m_color_blue = m__io->read_u1();
     }
-    n__unnamed15 = true;
+    n__unnamed16 = true;
     if ((len_entry() - len_comment()) > 48) {
-        n__unnamed15 = false;
-        m__unnamed15 = m__io->read_bytes(((len_entry() - 48) - len_comment()));
+        n__unnamed16 = false;
+        m__unnamed16 = m__io->read_bytes(((len_entry() - 48) - len_comment()));
     }
 }
 
@@ -250,7 +251,7 @@ rekordbox_anlz_t::cue_extended_entry_t::~cue_extended_entry_t() {
     }
     if (!n_color_blue) {
     }
-    if (!n__unnamed15) {
+    if (!n__unnamed16) {
     }
 }
 
@@ -284,11 +285,11 @@ void rekordbox_anlz_t::song_structure_entry_t::_read() {
     m_phrase_number = m__io->read_u2be();
     m_beat_number = m__io->read_u2be();
     switch (_parent()->style()) {
-    case PHRASE_STYLE_UP_DOWN: {
+    case 1: {
         m_phrase_id = new phrase_up_down_t(m__io, this, m__root);
         break;
     }
-    case PHRASE_STYLE_VERSE_BRIDGE: {
+    case 2: {
         m_phrase_id = new phrase_verse_bridge_t(m__io, this, m__root);
         break;
     }
