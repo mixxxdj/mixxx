@@ -4,20 +4,23 @@
 #ifndef MIXXXLIBRARYFEATURE_H
 #define MIXXXLIBRARYFEATURE_H
 
+#include <QAction>
+#include <QIcon>
+#include <QList>
+#include <QModelIndex>
+#include <QObject>
+#include <QPointer>
+#include <QSharedPointer>
+#include <QString>
 #include <QStringListModel>
 #include <QUrl>
 #include <QVariant>
-#include <QIcon>
-#include <QModelIndex>
-#include <QList>
-#include <QString>
-#include <QSharedPointer>
-#include <QObject>
 
 #include "library/libraryfeature.h"
 #include "library/dao/trackdao.h"
 #include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
+#include "util/parented_ptr.h"
 
 class DlgHidden;
 class DlgMissing;
@@ -39,6 +42,7 @@ class MixxxLibraryFeature final : public LibraryFeature {
     TreeItemModel* getChildModel() override;
     void bindLibraryWidget(WLibrary* pLibrary,
                     KeyboardEventFilter* pKeyboard) override;
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
     bool hasTrackTable() override {
         return true;
@@ -47,7 +51,14 @@ class MixxxLibraryFeature final : public LibraryFeature {
   public slots:
     void activate() override;
     void activateChild(const QModelIndex& index) override;
+    void onRightClick(const QPoint& globalPos) override;
     void refreshLibraryModels();
+
+  signals:
+    void exportLibrary();
+
+  private slots:
+    void slotExportLibrary();
 
   private:
     const QString kMissingTitle;
@@ -62,6 +73,10 @@ class MixxxLibraryFeature final : public LibraryFeature {
 
     DlgMissing* m_pMissingView;
     DlgHidden* m_pHiddenView;
+
+    parented_ptr<QAction> m_pExportLibraryAction;
+
+    QPointer<WLibrarySidebar> m_pSidebarWidget;
 };
 
 #endif /* MIXXXLIBRARYFEATURE_H */

@@ -481,6 +481,10 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 #ifdef __DJINTEROP__
     // Initialise library exporter
     m_pLibraryExporter = m_pLibrary->makeLibraryExporter(this);
+    connect(m_pLibrary, &Library::exportLibrary,
+            m_pLibraryExporter.get(), &mixxx::LibraryExporter::requestExport);
+    connect(m_pLibrary, &Library::exportCrate,
+            m_pLibraryExporter.get(), &mixxx::LibraryExporter::requestExportWithInitialCrate);
 #endif
 
     launchProgress(60);

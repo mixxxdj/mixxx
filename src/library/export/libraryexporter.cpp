@@ -19,7 +19,8 @@ LibraryExporter::LibraryExporter(QWidget* parent,
     m_pTrackLoader = new TrackLoader(&m_trackCollectionManager, this);
 }
 
-void LibraryExporter::requestExport() {
+void LibraryExporter::requestExportWithOptionalInitialCrate(
+        std::optional<CrateId> initialSelectedCrate) {
     if (!m_pDialog) {
         m_pDialog = make_parented<DlgLibraryExport>(this, m_pConfig, m_trackCollectionManager);
         connect(m_pDialog.get(),
@@ -32,6 +33,10 @@ void LibraryExporter::requestExport() {
         m_pDialog->setWindowState(
                 (m_pDialog->windowState() & ~Qt::WindowMinimized) |
                 Qt::WindowActive);
+    }
+
+    if (initialSelectedCrate) {
+        m_pDialog->setSelectedCrate(initialSelectedCrate.value());
     }
 }
 

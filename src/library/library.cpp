@@ -102,12 +102,19 @@ Library::Library(
             this,
             m_pConfig);
     addFeature(m_pMixxxLibraryFeature);
+    connect(m_pMixxxLibraryFeature, &MixxxLibraryFeature::exportLibrary,
+            this, &Library::exportLibrary);
 
     addFeature(new AutoDJFeature(this, m_pConfig, pPlayerManager));
     m_pPlaylistFeature = new PlaylistFeature(this, UserSettingsPointer(m_pConfig));
     addFeature(m_pPlaylistFeature);
+
     m_pCrateFeature = new CrateFeature(this, m_pConfig);
     addFeature(m_pCrateFeature);
+    connect(m_pCrateFeature, &CrateFeature::exportAllCrates,
+            this, &Library::exportLibrary);
+    connect(m_pCrateFeature, &CrateFeature::exportCrate,
+            this, &Library::exportCrate);
 
     BrowseFeature* browseFeature = new BrowseFeature(
         this, m_pConfig, pRecordingManager);

@@ -6,9 +6,11 @@
 #include <QDialog>
 #include <QLineEdit>
 #include <QListWidget>
+#include <QRadioButton>
 #include <QTreeWidget>
 #include <QWidget>
 
+#include "library/crate/crateid.h"
 #include "library/export/engineprimeexportrequest.h"
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
@@ -29,6 +31,7 @@ class DlgLibraryExport : public QDialog {
   public:
     DlgLibraryExport(
             QWidget* parent, UserSettingsPointer pConfig, TrackCollectionManager& trackCollectionManager);
+    void setSelectedCrate(CrateId crateId);
 
   signals:
     /// The startEnginePrimeExport signal is emitted when sufficient information
@@ -46,6 +49,8 @@ class DlgLibraryExport : public QDialog {
     UserSettingsPointer m_pConfig;
     TrackCollectionManager& m_trackCollectionManager;
 
+    parented_ptr<QRadioButton> m_pWholeLibraryRadio;
+    parented_ptr<QRadioButton> m_pCratesRadio;
     parented_ptr<QListWidget> m_pCratesList;
     parented_ptr<QLineEdit> m_pBaseDirectoryTextField;
     parented_ptr<QLineEdit> m_pDatabaseDirectoryTextField;

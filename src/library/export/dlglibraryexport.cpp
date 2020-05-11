@@ -7,7 +7,6 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
-#include <QRadioButton>
 #include <QStandardPaths>
 
 #include <djinterop/enginelibrary.hpp>
@@ -50,15 +49,15 @@ DlgLibraryExport::DlgLibraryExport(
 
     // Radio buttons to allow choice between exporting the whole music library
     // or just tracks in a selection of crates.
-    auto pWholeLibraryRadio = make_parented<QRadioButton>(tr("Entire music library"));
-    pWholeLibraryRadio->setChecked(true);
+    m_pWholeLibraryRadio = make_parented<QRadioButton>(tr("Entire music library"));
+    m_pWholeLibraryRadio->setChecked(true);
     this->exportWholeLibrarySelected();
-    connect(pWholeLibraryRadio,
+    connect(m_pWholeLibraryRadio,
             &QRadioButton::clicked,
             this,
             &DlgLibraryExport::exportWholeLibrarySelected);
-    auto pCratesRadio = make_parented<QRadioButton>(tr("Selected crates"));
-    connect(pCratesRadio,
+    m_pCratesRadio = make_parented<QRadioButton>(tr("Selected crates"));
+    connect(m_pCratesRadio,
             &QRadioButton::clicked,
             this,
             &DlgLibraryExport::exportSelectedCratedSelected);
@@ -94,8 +93,8 @@ DlgLibraryExport::DlgLibraryExport(
     auto pLayout = make_parented<QGridLayout>();
     pLayout->setColumnStretch(0, 1);
     pLayout->setColumnStretch(1, 2);
-    pLayout->addWidget(pWholeLibraryRadio, 0, 0);
-    pLayout->addWidget(pCratesRadio, 1, 0);
+    pLayout->addWidget(m_pWholeLibraryRadio, 0, 0);
+    pLayout->addWidget(m_pCratesRadio, 1, 0);
     pLayout->addWidget(m_pCratesList, 2, 0);
     pLayout->addLayout(pFormLayout, 0, 1, 3, 1);
     pLayout->addLayout(pButtonBarLayout, 3, 0, 1, 2);
@@ -106,6 +105,19 @@ DlgLibraryExport::DlgLibraryExport(
     show();
     raise();
     activateWindow();
+}
+
+void DlgLibraryExport::setSelectedCrate(CrateId crateId) {
+    m_pCratesRadio->setChecked(true);
+    exportSelectedCratedSelected();
+    for (auto i = 0; i < m_pCratesList->count(); ++i) {
+        auto* pItem = m_pCratesList->item(i);
+        auto currCrateId = pItem->data(Qt::UserRole).toInt();
+        if (currCrateId == crateId.value()) {
+            m_pCratesList->setCurrentItem(pItem);
+            return;
+        }
+    }
 }
 
 void DlgLibraryExport::exportWholeLibrarySelected() {

@@ -8,6 +8,7 @@
 #include "library/export/dlglibraryexport.h"
 #include "library/export/engineprimeexportrequest.h"
 #include "preferences/usersettings.h"
+#include "util/optional.h"
 #include "util/parented_ptr.h"
 
 class TrackCollectionManager;
@@ -27,12 +28,19 @@ class LibraryExporter : public QWidget {
 
   public slots:
     /// Begin the process of a library export.
-    void requestExport();
+    void requestExport() { requestExportWithOptionalInitialCrate(std::nullopt); }
+    void requestExportWithInitialCrate(CrateId initialSelectedCrate) {
+        requestExportWithOptionalInitialCrate(
+                std::make_optional(initialSelectedCrate));
+    }
 
   private slots:
     void beginEnginePrimeExport(EnginePrimeExportRequest request);
 
   private:
+    void requestExportWithOptionalInitialCrate(
+            std::optional<CrateId> initialSelectedCrate);
+
     UserSettingsPointer m_pConfig;
     TrackCollectionManager& m_trackCollectionManager;
     TrackLoader* m_pTrackLoader;

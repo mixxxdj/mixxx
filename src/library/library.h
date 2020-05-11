@@ -7,6 +7,7 @@
 #include <QPointer>
 
 #include "analyzer/analyzerprogress.h"
+#include "library/crate/crateid.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/db/dbconnectionpool.h"
@@ -124,6 +125,8 @@ class Library: public QObject {
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);
+    void exportLibrary();
+    void exportCrate(CrateId crateId);
 
     void setTrackTableFont(const QFont& font);
     void setTrackTableRowHeight(int rowHeight);
