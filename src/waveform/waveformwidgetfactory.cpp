@@ -99,6 +99,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
         // Concretely, we want to set a non-GL waveform when loading the skin so that the window
         // loads correctly.
         : m_type(WaveformWidgetType::EmptyWaveform),
+          m_configType(WaveformWidgetType::EmptyWaveform),
           m_config(0),
           m_skipRender(false),
           m_frameRate(30),
