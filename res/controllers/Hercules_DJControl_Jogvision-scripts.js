@@ -307,11 +307,11 @@ DJCJV.beatjumpMove = function(channel, control, value, status, group) {
 };
 // FX(Loop) Knob changes the AMOUNT of beats to move the loop when requested
 DJCJV.beatjumpSize = function(channel, control, value, status, group) {
-    var currentValue = engine.getValue(group, "beatjumpSize");
+    var currentValue = engine.getValue(group, "beatjump_size");
     if (value > 64) {
-        engine.setValue(group, "beatjumpSize", currentValue /= 2);
+        engine.setValue(group, "beatjump_size", currentValue /= 2);
     } else {
-        engine.setValue(group, "beatjumpSize", currentValue *= 2);
+        engine.setValue(group, "beatjump_size", currentValue *= 2);
     }
 };
 
