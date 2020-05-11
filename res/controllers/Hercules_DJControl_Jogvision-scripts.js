@@ -91,7 +91,7 @@ var spinJogLed = function(jog, direction, value) {
         DJCJV.Channel[jog].rotation = DJCJV.Channel[jog].rotation <= 1 ? 127 : DJCJV.Channel[jog].rotation - value;
     }
     midi.sendShortMsg(DJCJV.Channel[jog].deck, 0x60, DJCJV.Channel[jog].rotation);
-}
+};
 
 // Initialization
 DJCJV.init = function(id) {
@@ -156,10 +156,10 @@ DJCJV.init = function(id) {
 
     // Enable jogs' outer leds rotation by timer (when channel is playing)
     ledRotationTimer = engine.beginTimer(20, function() {
-        if ((engine.getValue("[Channel1]", "play") === 1) && (! engine.isScratching(DJCJV.Channel["[Channel1]"].n))){
+        if ((engine.getValue("[Channel1]", "play") === 1) && (! engine.isScratching(DJCJV.Channel["[Channel1]"].n))) {
             spinJogLed("[Channel1]");
         }
-        if ((engine.getValue("[Channel2]", "play") === 1) && (! engine.isScratching(DJCJV.Channel["[Channel2]"].n))){
+        if ((engine.getValue("[Channel2]", "play") === 1) && (! engine.isScratching(DJCJV.Channel["[Channel2]"].n))) {
             spinJogLed("[Channel2]");
         }
     });
