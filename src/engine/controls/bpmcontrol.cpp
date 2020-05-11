@@ -254,6 +254,9 @@ void BpmControl::slotControlBeatSync(double v) {
 }
 
 bool BpmControl::syncTempo() {
+    if (getSyncMode() == SYNC_MASTER_EXPLICIT) {
+        return false;
+    }
     EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
 
     if (!pOtherEngineBuffer) {
@@ -729,10 +732,6 @@ double BpmControl::getBeatMatchPosition(
     if (!m_pBeats) {
         return dThisPosition;
     }
-    // Explicit master buffer is always in sync!
-    if (getSyncMode() == SYNC_MASTER_EXPLICIT) {
-        return dThisPosition;
-    }
 
     // Get the current position of this deck.
     double dThisPrevBeat = m_pPrevBeat->get();
@@ -769,8 +768,12 @@ double BpmControl::getBeatMatchPosition(
     double dOtherNextBeat;
     double dOtherBeatLength;
     double dOtherBeatFraction;
-    // If not, we have to figure it out
-    EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
+
+    EngineBuffer* pOtherEngineBuffer = nullptr;
+    // explicit master always syncs to itself, so set to null
+    if (getSyncMode() != SYNC_MASTER_EXPLICIT) {
+        pOtherEngineBuffer = pickSyncTarget();
+    }
     if (playing) {
         if (!pOtherEngineBuffer || pOtherEngineBuffer->getSpeed() == 0.0) {
             // "this" track is playing, or just starting
