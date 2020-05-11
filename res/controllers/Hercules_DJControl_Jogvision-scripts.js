@@ -1,6 +1,7 @@
 // ****************************************************************************
 // * Mixxx mapping script file for the Hercules DJControl Jogvision.
 // * Author: DJ Phatso, contributions by Kerrick Staley and David TV
+// * Version 1.9 (May 2020)
 // * Version 1.8 (May 2020)
 // * Version 1.6 (January 2020)
 // * Version 1.5 (January 2020)
@@ -10,6 +11,9 @@
 // * Version 1.1 (March 2019)
 // * Forum: https://www.mixxx.org/forums/viewtopic.php?f=7&t=12580
 // * Wiki: https://www.mixxx.org/wiki/doku.php/hercules_dj_control_jogvision
+//
+// Changes to v1.9
+// - Added jogwheel outer led movement when scratch and back/forward spin
 //
 // Changes to v1.8
 // - Added normal, reverse, blink and follow modes for beat active led (see variable: beatActiveMode)
@@ -70,6 +74,24 @@ DJCJV.vinylModeActive = true;
 DJCJV.Channel = [];
 DJCJV.Channel["[Channel1]"] = {"central": 0x90, "deck": 0xB0, "beatPosition": 1, "rotation": 0x00, "n": 1};
 DJCJV.Channel["[Channel2]"] = {"central": 0x91, "deck": 0xB1, "beatPosition": 1, "rotation": 0x00, "n": 2};
+
+// Function to rotate jogs' outer led in the given direction and speed (default is forwards, speed based on BPM)
+var spinJogLed = function(jog, direction, value) {
+    if (!direction || direction === '') {
+        direction = "forward";
+    }
+
+    if (!value || value === '') {
+        value = engine.getValue(jog, "bpm") / ledRotationSpeed;
+    }
+
+    if (direction === "forward") {
+        DJCJV.Channel[jog].rotation = DJCJV.Channel[jog].rotation >= 127 ? 1 : DJCJV.Channel[jog].rotation + value;
+    } else {
+        DJCJV.Channel[jog].rotation = DJCJV.Channel[jog].rotation <= 1 ? 127 : DJCJV.Channel[jog].rotation - value;
+    }
+    midi.sendShortMsg(DJCJV.Channel[jog].deck, 0x60, DJCJV.Channel[jog].rotation);
+}
 
 // Initialization
 DJCJV.init = function(id) {
@@ -134,13 +156,11 @@ DJCJV.init = function(id) {
 
     // Enable jogs' outer leds rotation by timer (when channel is playing)
     ledRotationTimer = engine.beginTimer(20, function() {
-        if (engine.getValue("[Channel1]", "play") === 1) {
-            midi.sendShortMsg(DJCJV.Channel["[Channel1]"].deck, 0x60, DJCJV.Channel["[Channel1]"].rotation);
-            DJCJV.Channel["[Channel1]"].rotation = DJCJV.Channel["[Channel1]"].rotation >= 127 ? 1 : DJCJV.Channel["[Channel1]"].rotation + (engine.getValue("[Channel1]", "bpm") / ledRotationSpeed);
+        if ((engine.getValue("[Channel1]", "play") === 1) && (! engine.isScratching(DJCJV.Channel["[Channel1]"].n))){
+            spinJogLed("[Channel1]");
         }
-        if (engine.getValue("[Channel2]", "play") === 1) {
-            midi.sendShortMsg(DJCJV.Channel["[Channel2]"].deck, 0x60, DJCJV.Channel["[Channel2]"].rotation);
-            DJCJV.Channel["[Channel2]"].rotation = DJCJV.Channel["[Channel2]"].rotation >= 127 ? 1 : DJCJV.Channel["[Channel2]"].rotation + (engine.getValue("[Channel2]", "bpm") / ledRotationSpeed);
+        if ((engine.getValue("[Channel2]", "play") === 1) && (! engine.isScratching(DJCJV.Channel["[Channel2]"].n))){
+            spinJogLed("[Channel2]");
         }
     });
 
@@ -322,9 +342,19 @@ DJCJV.wheelTouch = function(channel, control, value, status, group) {
 // Using the top of wheel for scratching (Vinyl button On) and bending (Vinyl button Off)
 DJCJV.scratchWheel = function(channel, control, value, status, group) {
     if (engine.isScratching(DJCJV.Channel[group].n)) {
-        engine.scratchTick(DJCJV.Channel[group].n, (value >= 64) ? value - 128 : value); // Scratch!
+        // Scratch!
+        if (value >= 64) {
+            // Backward
+            engine.scratchTick(DJCJV.Channel[group].n, value - 128);
+            spinJogLed(group, "backward", 1);
+        } else {
+            // Forward
+            engine.scratchTick(DJCJV.Channel[group].n, value);
+            spinJogLed(group, "forward", 1);
+        }
     } else {
-        DJCJV.bendWheel(channel, control, value, status, group); // Pitch bend
+        // Pitch bend
+        DJCJV.bendWheel(channel, control, value, status, group);
     }
 };
 
@@ -332,7 +362,15 @@ DJCJV.scratchWheel = function(channel, control, value, status, group) {
 DJCJV.bendWheel = function(channel, control, value, status, group) {
     //if scratching engaged, do back/forward spin (keep on scratching while jog wheel moves...)
     if (engine.isScratching(DJCJV.Channel[group].n)) {
-        engine.scratchTick(DJCJV.Channel[group].n, (value >= 64) ? -1.5 : 1.5); // back/forward spin
+        if (value >= 64) {
+            // Backward spin
+            engine.scratchTick(DJCJV.Channel[group].n, -1.5);
+            spinJogLed(group, "backward", 1);
+        } else {
+            // Forward spin
+            engine.scratchTick(DJCJV.Channel[group].n, 1.5);
+            spinJogLed(group, "forward", 1);
+        }
     } else {
         engine.setValue(group, "jog", (value >= 64) ? value - 128 : value); // Pitch bend
     }
