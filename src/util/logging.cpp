@@ -29,7 +29,7 @@ QFile s_logfile;
 // Whether to break on debug assertions.
 bool s_debugAssertBreak = false;
 
-const QLoggingCategory kDefaultLoggingCategory = QLoggingCategory(nullptr);
+const QLoggingCategory kDefaultLoggingCategory(nullptr);
 
 enum class WriteFlag {
     None = 0,
