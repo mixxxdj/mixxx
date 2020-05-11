@@ -41,10 +41,10 @@ bool DownmixAndOverlapHelper::processInner(
     double* pDownmix = m_buffer.data();
 
     while (inRead < numInputFrames) {
-        size_t writeAvailable = math_min(numInputFrames,
-                m_windowSize - m_bufferWritePosition);
         size_t readAvailable = numInputFrames - inRead;
-        size_t numFrames = math_min(writeAvailable, readAvailable);
+        DEBUG_ASSERT(m_bufferWritePosition <= m_windowSize);
+        size_t writeAvailable = m_windowSize - m_bufferWritePosition;
+        size_t numFrames = math_min(readAvailable, writeAvailable);
         if (pInput) {
             for (size_t i = 0; i < numFrames; ++i) {
                 // We analyze a mono downmix of the signal since we don't think
