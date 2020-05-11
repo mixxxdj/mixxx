@@ -55,6 +55,7 @@ var ledRotationSpeed = 60; // The bigger, the slower
 var ledRotationTimer = 0;
 var masterLeds = 0x90;
 var beatActiveMode = "normal"; // normal, reverse, blink, follow
+var beatMax;
 if (beatActiveMode.match(/^(?:normal|reverse)$/g)) {
     beatMax = 4;
 } else if (beatActiveMode === "blink") {
@@ -167,7 +168,7 @@ DJCJV.beatActive = function(value, group, _control) {
     }
     var led = DJCJV.Channel[group].central;
     var pos = DJCJV.Channel[group].beatPosition;
-    
+
     // Normal
     if (beatActiveMode === "normal") {
         midi.sendShortMsg(led, 0x3A, pos === 1 ? on : off);
