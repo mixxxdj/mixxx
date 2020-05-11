@@ -1119,6 +1119,12 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
         }
     }
 
+#ifdef __COREAUDIO__
+    if (location.toLower().endsWith(".m4a")) {
+        timingOffset = 48;
+    }
+#endif
+
     double sampleRate = static_cast<double>(track->getSampleRate());
 
     QString anlzPath = index.sibling(index.row(), fieldIndex("analyze_path")).data().toString();
