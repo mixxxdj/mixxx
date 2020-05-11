@@ -10,7 +10,6 @@ include_directories(
   src
   include
   src/common
-  "${OPENSSL_INCLUDE_DIR}"
 )
 
 add_library(shout_mixxx STATIC
@@ -38,6 +37,6 @@ add_library(shout_mixxx STATIC
   src/tls.c
 )
 
-target_link_libraries(shout_mixxx ogg vorbis theora speex ssl crypto)
+target_link_libraries(shout_mixxx ogg vorbis theora speex OpenSSL::SSL OpenSSL::Crypto)
 
 
