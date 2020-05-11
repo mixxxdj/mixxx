@@ -67,6 +67,7 @@ constexpr mixxx::RgbColor kTrackColorGreen(0x1EE000);
 constexpr mixxx::RgbColor kTrackColorAqua(0x16C0F8);
 constexpr mixxx::RgbColor kTrackColorBlue(0x0150F8);
 constexpr mixxx::RgbColor kTrackColorPurple(0x9808F8);
+constexpr mixxx::RgbColor kTrackNoColor(0x0);
 
 struct memory_cue_t {
     double position;
@@ -321,6 +322,28 @@ int createDevicePlaylist(QSqlDatabase& database, QString devicePath) {
     return playlistID;
 }
 
+mixxx::RgbColor colorFromID(int colorID) {
+    switch (static_cast<TrackColor>(colorID)) {
+    case TrackColor::Pink:
+        return kTrackColorPink;
+    case TrackColor::Red:
+        return kTrackColorRed;
+    case TrackColor::Orange:
+        return kTrackColorOrange;
+    case TrackColor::Yellow:
+        return kTrackColorYellow;
+    case TrackColor::Green:
+        return kTrackColorGreen;
+    case TrackColor::Aqua:
+        return kTrackColorAqua;
+    case TrackColor::Blue:
+        return kTrackColorBlue;
+    case TrackColor::Purple:
+        return kTrackColorPurple;
+    }
+    return kTrackNoColor;
+}
+
 void insertTrack(
         QSqlDatabase& database,
         rekordbox_pdb_t::track_row_t* track,
@@ -348,36 +371,6 @@ void insertTrack(
     QString comment = getText(track->comment());
     QString tracknumber = QString::number(track->track_number());
     QString anlzPath = devicePath + getText(track->analyze_path());
-    mixxx::RgbColor::optional_t color = mixxx::RgbColor::nullopt();
-
-    switch (static_cast<TrackColor>(track->color_id())) {
-    case TrackColor::Pink:
-        color = kTrackColorPink;
-        break;
-    case TrackColor::Red:
-        color = kTrackColorRed;
-        break;
-    case TrackColor::Orange:
-        color = kTrackColorOrange;
-        break;
-    case TrackColor::Yellow:
-        color = kTrackColorYellow;
-        break;
-    case TrackColor::Green:
-        color = kTrackColorGreen;
-        break;
-    case TrackColor::Aqua:
-        color = kTrackColorAqua;
-        break;
-    case TrackColor::Blue:
-        color = kTrackColorBlue;
-        break;
-    case TrackColor::Purple:
-        color = kTrackColorPurple;
-        break;
-    default:
-        break;
-    }
 
     query.bindValue(":rb_id", rbID);
     query.bindValue(":artist", artist);
@@ -395,7 +388,7 @@ void insertTrack(
     query.bindValue(":bitrate", bitrate);
     query.bindValue(":analyze_path", anlzPath);
     query.bindValue(":device", device);
-    query.bindValue(":color", mixxx::RgbColor::toQVariant(color));
+    query.bindValue(":color", mixxx::RgbColor::toQVariant(colorFromID(static_cast<int>(track->color_id()))));
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
