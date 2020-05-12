@@ -1608,7 +1608,7 @@ DJ505.SavedLoopMode = function(deck, offset) {
     this.PerformancePad = function(n) {
         this.midi = [0x94 + offset, 0x14 + n];
         this.number = n + 8 + 1;
-        this.outKey = 'hotcue_' + this.number + '_enabled';
+        this.outKey = "hotcue_" + this.number + "_enabled";
 
         components.Button.call(this);
     };
@@ -1625,14 +1625,14 @@ DJ505.SavedLoopMode = function(deck, offset) {
         blinkStateOn: false,
         unshift: function() {
             this.inKey = "hotcue_" + this.number + "_activateloop";
-            this. input = function (channel, control, value, status, group) {
+            this. input = function(channel, control, value, status, _group) {
                 this.pressed = this.isPress(channel, control, value, status);
                 this.inSetValue(this.pressed);
 
                 if (this.pressed) {
                     this.longPressTimer = engine.beginTimer(
                         this.longPressTimeout,
-                        function () {
+                        function() {
                             if (this.pressed) {
                                 engine.setValue(this.group, "hotcue_" + this.number + "_clear", 1);
                             }
@@ -1657,17 +1657,17 @@ DJ505.SavedLoopMode = function(deck, offset) {
                 this.blinkTimer = 0;
             }
         },
-        output: function (value, group, control) {
+        output: function(value, _group, _control) {
             this.stopBlinking();
-            if (value == 2) {
+            if (value === 2) {
                 this.blinkTimer = engine.beginTimer(
                     this.blinkTimeout,
-                    function () {
-                        if(this.blinkStateOn) {
-                            this.send(this.off)
+                    function() {
+                        if (this.blinkStateOn) {
+                            this.send(this.off);
                             this.blinkStateOn = false;
                         } else {
-                            this.send(this.blinkColor)
+                            this.send(this.blinkColor);
                             this.blinkStateOn = true;
                         }
                     }
