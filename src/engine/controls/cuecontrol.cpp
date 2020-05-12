@@ -667,19 +667,16 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v, HotcueMode mode) {
 
     CuePointer pCue(m_pLoadedTrack->createAndAddCue());
 
-    double cueStartPosition;
-    double cueEndPosition;
-    mixxx::CueType cueType;
+    double cueStartPosition = Cue::kNoPosition;
+    double cueEndPosition = Cue::kNoPosition;
+    mixxx::CueType cueType = mixxx::CueType::Invalid;
+
     switch (mode) {
     case HotcueMode::Auto: {
         if (m_pLoopEnabled->get()) {
             // If a loop is enabled, the hotcue will be a saved loop
             cueStartPosition = m_pLoopStartPosition->get();
             cueEndPosition = m_pLoopEndPosition->get();
-            if (cueStartPosition == Cue::kNoPosition ||
-                    cueEndPosition == Cue::kNoPosition) {
-                return;
-            }
             cueType = mixxx::CueType::Loop;
         } else {
             // If no loop is enabled, just store regular jump cue
@@ -700,14 +697,22 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v, HotcueMode mode) {
         // If no loop is enabled, just store regular jump cue
         cueStartPosition = m_pLoopStartPosition->get();
         cueEndPosition = m_pLoopEndPosition->get();
-        if (cueStartPosition == Cue::kNoPosition ||
-                cueEndPosition == Cue::kNoPosition) {
-            return;
-        }
         cueType = mixxx::CueType::Loop;
         break;
     }
     }
+
+    VERIFY_OR_DEBUG_ASSERT(cueType != mixxx::CueType::Invalid) {
+        return;
+    }
+
+    // Abort if no position has been found. This can happen if a loop cue is
+    // requested while no loop is set, so we can't debug assert here.
+    if (cueStartPosition == Cue::kNoPosition ||
+            (cueType == mixxx::CueType::Loop && cueEndPosition == Cue::kNoPosition)) {
+        return;
+    }
+
     pCue->setStartPosition(cueStartPosition);
     pCue->setEndPosition(cueEndPosition);
     pCue->setHotCue(hotcue);
