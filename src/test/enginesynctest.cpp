@@ -291,8 +291,11 @@ TEST_F(EngineSyncTest, DisableSyncOnMaster) {
     auto pButtonSyncMaster2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_master");
     pButtonSyncMaster2->slotSet(1.0);
 
+    // TODO(owilliams): explicit master is disabled, so regular master sync is
+    // enabled instead.
     ASSERT_TRUE(isFollower(m_sGroup1));
-    ASSERT_TRUE(isExplicitMaster(m_sGroup2));
+    ASSERT_TRUE(isFollower(m_sGroup2));
+    ASSERT_TRUE(isSoftMaster(m_sInternalClockGroup));
 
     // Unset enabled on channel2, it should work.
     auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
@@ -430,7 +433,9 @@ TEST_F(EngineSyncTest, SetExplicitMasterByLights) {
     ProcessBuffer();
 
     // The master sync should now be channel 1.
-    ASSERT_TRUE(isExplicitMaster(m_sGroup1));
+    // TODO(owilliams): Because explicit master is broken, currently this deck will just
+    // be a soft master.  This is intended but will be fixed.
+    ASSERT_TRUE(isSoftMaster(m_sGroup1));
 
     // Set channel 2 to be follower.
     pButtonSyncEnabled2->slotSet(1);
@@ -441,15 +446,20 @@ TEST_F(EngineSyncTest, SetExplicitMasterByLights) {
     pButtonSyncMaster2->slotSet(1);
 
     // Now channel 2 should be master, and channel 1 should be a follower.
+    // TODO(owilliams): Because explicit master is broken, these will both be followers.
+    // This will be fixed
     ASSERT_TRUE(isFollower(m_sGroup1));
-    ASSERT_TRUE(isExplicitMaster(m_sGroup2));
+    ASSERT_TRUE(isFollower(m_sGroup2));
+    ASSERT_TRUE(isSoftMaster(m_sInternalClockGroup));
 
     // Now back again.
     pButtonSyncMaster1->slotSet(1);
 
     // Now channel 1 should be master, and channel 2 should be a follower.
-    ASSERT_TRUE(isExplicitMaster(m_sGroup1));
+    // TODO(owilliams): See above
+    ASSERT_TRUE(isFollower(m_sGroup1));
     ASSERT_TRUE(isFollower(m_sGroup2));
+    ASSERT_TRUE(isSoftMaster(m_sInternalClockGroup));
 
     // Now set channel 1 to not-master, all will become follower.
     // handing over master to the internal clock
@@ -461,7 +471,7 @@ TEST_F(EngineSyncTest, SetExplicitMasterByLights) {
 }
 
 TEST_F(EngineSyncTest, SetExplicitMasterByLightsNoTracks) {
-    // Same as above, except we use the midi lights to change state.
+    // Similar to the above, but we don't load any tracks.
     auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
     auto pButtonSyncMaster1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_master");
 
@@ -472,15 +482,18 @@ TEST_F(EngineSyncTest, SetExplicitMasterByLightsNoTracks) {
     pButtonSyncEnabled2->slotSet(1);
 
     // Now channel 1 should be master, and channel 2 should be a follower.
-    ASSERT_TRUE(isExplicitMaster(m_sGroup1));
+    // Because there are no bpms anywhere, internal clock is also follower.
+    // TODO(owilliams): Because explicit master is broken, both tracks are followers.
+    ASSERT_TRUE(isFollower(m_sGroup1));
     ASSERT_TRUE(isFollower(m_sGroup2));
+    ASSERT_TRUE(isFollower(m_sInternalClockGroup));
 
     // Now set channel 1 to not-master, all will be follower waiting for a valid bpm.
     pButtonSyncMaster1->slotSet(0);
 
-    ASSERT_TRUE(isFollower(m_sInternalClockGroup));
     ASSERT_TRUE(isFollower(m_sGroup1));
     ASSERT_TRUE(isFollower(m_sGroup2));
+    ASSERT_TRUE(isFollower(m_sInternalClockGroup));
 }
 
 TEST_F(EngineSyncTest, RateChangeTest) {
