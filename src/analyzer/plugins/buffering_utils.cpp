@@ -41,11 +41,12 @@ bool DownmixAndOverlapHelper::processInner(
     double* pDownmix = m_buffer.data();
 
     while (inRead < numInputFrames) {
-        size_t writeAvailable = math_min(numInputFrames,
-                m_windowSize - m_bufferWritePosition);
-
+        size_t readAvailable = numInputFrames - inRead;
+        DEBUG_ASSERT(m_bufferWritePosition <= m_windowSize);
+        size_t writeAvailable = m_windowSize - m_bufferWritePosition;
+        size_t numFrames = math_min(readAvailable, writeAvailable);
         if (pInput) {
-            for (size_t i = 0; i < writeAvailable; ++i) {
+            for (size_t i = 0; i < numFrames; ++i) {
                 // We analyze a mono downmix of the signal since we don't think
                 // stereo does us any good.
                 pDownmix[m_bufferWritePosition + i] = (pInput[(inRead + i) * 2] +
@@ -55,12 +56,12 @@ bool DownmixAndOverlapHelper::processInner(
         } else {
             // we are in the finalize call. Add silence to
             // complete samples left in th buffer.
-            for (size_t i = 0; i < writeAvailable; ++i) {
+            for (size_t i = 0; i < numFrames; ++i) {
                 pDownmix[m_bufferWritePosition + i] = 0;
             }
         }
-        m_bufferWritePosition += writeAvailable;
-        inRead += writeAvailable;
+        m_bufferWritePosition += numFrames;
+        inRead += numFrames;
 
         if (m_bufferWritePosition == m_windowSize) {
             bool result = m_callback(pDownmix, m_windowSize);
