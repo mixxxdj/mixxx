@@ -69,44 +69,50 @@ void WorkerThread::run() {
 }
 
 void WorkerThread::suspend() {
+    DEBUG_ASSERT(QThread::currentThread() != this);
     logTrace(m_logger, "Suspending");
     m_suspend.store(true);
+    // The thread will suspend processing and fall asleep the
+    // next time it checks m_suspend. If it has already been
+    // suspended or is currently sleeping that's fine.
 }
 
 void WorkerThread::resume() {
-    bool suspended = true;
-    // Reset value: true -> false
-    if (m_suspend.compare_exchange_strong(suspended, false)) {
-        logTrace(m_logger, "Resuming");
-        // The thread might just be preparing to suspend after
-        // loading and detecting that m_suspend was true. To avoid
-        // a race condition we need to acquire the mutex that
-        // is associated with the wait condition, before
-        // signalling the condition. Otherwise the signal
-        // of the wait condition might arrive before the
-        // thread actually got suspended.
-        std::unique_lock<std::mutex> locked(m_sleepMutex);
-        wake();
-    } else {
-        // Just in case, wake up the thread even if it wasn't
-        // explicitly suspended without locking the mutex. The
-        // thread will suspend itself if it is idle.
-        wake();
-    }
+    DEBUG_ASSERT(QThread::currentThread() != this);
+    logTrace(m_logger, "Resuming");
+    // Reset m_suspend to false to allow the thread to make progress.
+    m_suspend.store(false);
+    // Wake up the thread so that it is able to check m_suspend and
+    // continue processing. To avoid race conditions this needs to
+    // be performed unconditionally even if m_suspend was false and has
+    // not been modified above! The thread might have checked m_suspend
+    // while it was still true. We need to give it the chance to check
+    // m_suspend again.
+    wake();
 }
 
 void WorkerThread::wake() {
-    m_logger.debug() << "Waking up";
+    DEBUG_ASSERT(QThread::currentThread() != this);
+    logTrace(m_logger, "Waking up");
+    // Suspend the calling thread until the worker thread actually
+    // is sleeping, i.e. is blocking on m_sleepWaitCond. Otherwise
+    // the worker thread might invoke m_sleepWaitCond.wait(locked)
+    // and become sleeping just after the following notification
+    // has been signaled. In this case the signal would be lost
+    // and the worker thread would remain sleeping forever!
+    std::unique_lock<std::mutex> locked(m_sleepMutex);
     m_sleepWaitCond.notify_one();
 }
 
 void WorkerThread::stop() {
-    m_logger.debug() << "Stopping";
+    DEBUG_ASSERT(QThread::currentThread() != this);
+    logTrace(m_logger, "Stopping");
     m_stop.store(true);
     // Wake up the thread to make sure that the stop flag is
-    // detected and the thread commits suicide by exiting the
-    // run loop in exec(). Resuming will reset the suspend flag
-    // to wake up not only an idle but also a suspended thread!
+    // detected to exit the run loop. Resuming will reset the
+    // suspend flag to wake up not only idle but also a suspended
+    // threads! Otherwise suspended threads would sleep forever
+    // and never notice that they have been stopped.
     resume();
 }
 
@@ -119,19 +125,14 @@ void WorkerThread::sleepWhileSuspended() {
         return;
     }
     std::unique_lock<std::mutex> locked(m_sleepMutex);
-    sleepWhileSuspended(&locked);
-}
-
-void WorkerThread::sleepWhileSuspended(std::unique_lock<std::mutex>* locked) {
-    DEBUG_ASSERT(locked);
     while (m_suspend.load()) {
         logTrace(m_logger, "Sleeping while suspended");
-        m_sleepWaitCond.wait(*locked) ;
+        m_sleepWaitCond.wait(locked) ;
         logTrace(m_logger, "Continuing after sleeping while suspended");
     }
 }
 
-bool WorkerThread::waitUntilWorkItemsFetched() {
+bool WorkerThread::awaitWorkItemsFetched() {
     if (isStopping()) {
         // Early exit without locking the mutex
         return false;
@@ -139,25 +140,15 @@ bool WorkerThread::waitUntilWorkItemsFetched() {
     // Keep the mutex locked while idle or suspended
     std::unique_lock<std::mutex> locked(m_sleepMutex);
     while (!isStopping()) {
-        FetchWorkResult fetchWorkResult = tryFetchWorkItems();
+        TryFetchWorkItemsResult fetchWorkResult = tryFetchWorkItems();
         switch (fetchWorkResult) {
-        case FetchWorkResult::Ready:
+        case TryFetchWorkItemsResult::Ready:
             logTrace(m_logger, "Work items fetched and ready");
             return true;
-        case FetchWorkResult::Idle:
+        case TryFetchWorkItemsResult::Idle:
             logTrace(m_logger, "Sleeping while idle");
             m_sleepWaitCond.wait(locked) ;
             logTrace(m_logger, "Continuing after slept while idle");
-            break;
-        case FetchWorkResult::Suspend:
-            logTrace(m_logger, "Suspending while idle");
-            suspend();
-            sleepWhileSuspended(&locked);
-            logTrace(m_logger, "Continuing after suspended while idle");
-            break;
-        case FetchWorkResult::Stop:
-            logTrace(m_logger, "Stopping after trying to fetch work items");
-            stop();
             break;
         }
     }

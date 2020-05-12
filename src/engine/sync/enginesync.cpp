@@ -113,11 +113,11 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     } else if (mode == SYNC_FOLLOWER ||
             mode == SYNC_MASTER_SOFT ||
             pSyncable == m_pInternalClock) {
-        // Note: SYNC_MASTER_SOFT and SYNC_FOLLOWER cannot be set explicit,
+        // Note: SYNC_MASTER_SOFT and SYNC_FOLLOWER cannot be set explicitly,
         // they are calculated by pickMaster.
         // Internal clock cannot be disabled, it is always listening
         if (m_pMasterSyncable == pSyncable) {
-            // Was this  pSyncable was master before. Hand off.
+            // This Syncable was master before. Hand off.
             m_pMasterSyncable = nullptr;
             pSyncable->setSyncMode(SYNC_FOLLOWER);
         }
@@ -429,30 +429,45 @@ void EngineSync::deactivateSync(Syncable* pSyncable) {
     }
 }
 
-EngineChannel* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const {
-    EngineChannel* pFirstNonplayingDeck = nullptr;
+Syncable* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const {
+    // First choice: the sync master, if it's a deck
+    if (m_pMasterSyncable &&
+            m_pMasterSyncable->getChannel() &&
+            m_pMasterSyncable->getChannel() != pDontPick) {
+        return m_pMasterSyncable;
+    }
+
+    Syncable* pFirstPlayingDeck = nullptr;
+    Syncable* pFirstNonplayingDeck = nullptr;
     foreach (Syncable* pSyncable, m_syncables) {
         EngineChannel* pChannel = pSyncable->getChannel();
+        // Exclude non-decks
         if (pChannel == nullptr || pChannel == pDontPick) {
             continue;
         }
 
-        // Only consider channels that have a track loaded and are in the master
-        // mix.
-        if (pChannel->isActive() && pChannel->isMasterEnabled()) {
+        // Only consider channels that have a track loaded, are in the master
+        // mix, and are primary decks.
+        if (pChannel->isActive() && pChannel->isMasterEnabled() && pChannel->isPrimaryDeck()) {
             EngineBuffer* pBuffer = pChannel->getEngineBuffer();
             if (pBuffer && pBuffer->getBpm() > 0) {
-                // If the deck is playing then go with it immediately.
                 if (pBuffer->getSpeed() != 0.0) {
-                    return pChannel;
-                }
-                // Otherwise hold out for a deck that might be playing but
-                // remember the first deck that matched our criteria.
-                if (pFirstNonplayingDeck == nullptr) {
-                    pFirstNonplayingDeck = pChannel;
+                    if (pSyncable->getSyncMode() != SYNC_NONE) {
+                        // Second choice: first playing sync deck
+                        return pSyncable;
+                    }
+                    if (pFirstPlayingDeck == nullptr) {
+                        pFirstPlayingDeck = pSyncable;
+                    }
+                } else if (pFirstNonplayingDeck == nullptr) {
+                    pFirstNonplayingDeck = pSyncable;
                 }
             }
         }
+    }
+    if (pFirstPlayingDeck) {
+        // Third choice: first playing non-sync deck
+        return pFirstPlayingDeck;
     }
 
     // No playing decks have a BPM. Go with the first deck that was stopped but

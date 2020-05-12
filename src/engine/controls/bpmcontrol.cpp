@@ -254,6 +254,9 @@ void BpmControl::slotControlBeatSync(double v) {
 }
 
 bool BpmControl::syncTempo() {
+    if (getSyncMode() == SYNC_MASTER_EXPLICIT) {
+        return false;
+    }
     EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
 
     if (!pOtherEngineBuffer) {
@@ -313,8 +316,7 @@ bool BpmControl::syncTempo() {
             desiredRate *= 2.0;
         }
 
-        if (desiredRate < 2.0 && desiredRate > 0.5)
-        {
+        if (desiredRate < 2.0 && desiredRate > 0.5) {
             m_pEngineBpm->set(m_pLocalBpm->get() * desiredRate);
             m_pRateRatio->set(desiredRate);
             return true;
@@ -635,13 +637,18 @@ double BpmControl::getNearestPositionInPhase(
 
         double dOtherPosition = pOtherEngineBuffer->getExactPlayPos();
 
-        if (!BpmControl::getBeatContext(otherBeats, dOtherPosition,
-                                        NULL, NULL, NULL, &dOtherBeatFraction)) {
+        if (!BpmControl::getBeatContext(otherBeats,
+                    dOtherPosition,
+                    NULL,
+                    NULL,
+                    NULL,
+                    &dOtherBeatFraction)) {
             return dThisPosition;
         }
     }
 
-    bool this_near_next = dThisNextBeat - dThisPosition <= dThisPosition - dThisPrevBeat;
+    bool this_near_next =
+            dThisNextBeat - dThisPosition <= dThisPosition - dThisPrevBeat;
     bool other_near_next = dOtherBeatFraction >= 0.5;
 
     // We want our beat fraction to be identical to theirs.
@@ -661,12 +668,13 @@ double BpmControl::getNearestPositionInPhase(
     // infinite beatgrids because the assumption that findNthBeat(-2) always
     // works will be wrong then.
 
-    double dNewPlaypos = (dOtherBeatFraction + m_dUserOffset.getValue()) * dThisBeatLength;
+    double dNewPlaypos =
+            (dOtherBeatFraction + m_dUserOffset.getValue()) * dThisBeatLength;
     if (this_near_next == other_near_next) {
         dNewPlaypos += dThisPrevBeat;
     } else if (this_near_next && !other_near_next) {
         dNewPlaypos += dThisNextBeat;
-    } else {  //!this_near_next && other_near_next
+    } else { //!this_near_next && other_near_next
         dThisPrevBeat = pBeats->findNthBeat(dThisPosition, -2);
         dNewPlaypos += dThisPrevBeat;
     }
@@ -728,22 +736,20 @@ double BpmControl::getBeatMatchPosition(
         return dThisPosition;
     }
 
-    EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
-    if (pOtherEngineBuffer == nullptr) {
-        if (playing) {
-            // Sync to itself if we are already playing
-            pOtherEngineBuffer = getEngineBuffer();
-        } else {
-            return dThisPosition;
-        }
+    EngineBuffer* pOtherEngineBuffer = nullptr;
+    // explicit master always syncs to itself, so set to null
+    if (getSyncMode() != SYNC_MASTER_EXPLICIT) {
+        pOtherEngineBuffer = pickSyncTarget();
     }
-
     if (playing) {
-        // "this" track is playing, or just starting
-        // only match phase if the sync target is playing as well
-        if (pOtherEngineBuffer->getSpeed() == 0.0) {
-            return dThisPosition;
+        if (!pOtherEngineBuffer || pOtherEngineBuffer->getSpeed() == 0.0) {
+            // "this" track is playing, or just starting
+            // only match phase if the sync target is playing as well
+            // else use the previous phase of "this" track before the seek
+            pOtherEngineBuffer = getEngineBuffer();
         }
+    } else if (!pOtherEngineBuffer) {
+        return dThisPosition;
     }
 
     // Get the current position of this deck.
