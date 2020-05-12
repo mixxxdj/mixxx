@@ -36,6 +36,15 @@ enum class SeekOnLoadMode {
     IntroStart = 3, // Use intro start cue point
 };
 
+/// Used for requesting a specific hotcue type when activating/setting a
+/// hotcue. Auto will make CueControl determine the type automatically (i.e.
+/// create a loop cue if a loop is set, and a regular cue in all other cases).
+enum class HotcueMode {
+    Auto = 0,
+    Cue = 1,
+    Loop = 2,
+};
+
 inline SeekOnLoadMode seekOnLoadModeFromDouble(double value) {
     return static_cast<SeekOnLoadMode>(int(value));
 }
@@ -93,16 +102,12 @@ class HotcueControl : public QObject {
     void slotHotcueColorChanged(double newColor);
 
   signals:
-    void hotcueSet(HotcueControl* pHotcue, double v);
-    void hotcueSetCue(HotcueControl* pHotcue, double v);
-    void hotcueSetLoop(HotcueControl* pHotcue, double v);
+    void hotcueSet(HotcueControl* pHotcue, double v, HotcueMode mode);
     void hotcueGoto(HotcueControl* pHotcue, double v);
     void hotcueGotoAndPlay(HotcueControl* pHotcue, double v);
     void hotcueGotoAndStop(HotcueControl* pHotcue, double v);
     void hotcueGotoAndLoop(HotcueControl* pHotcue, double v);
-    void hotcueActivate(HotcueControl* pHotcue, double v);
-    void hotcueActivateCue(HotcueControl* pHotcue, double v);
-    void hotcueActivateLoop(HotcueControl* pHotcue, double v);
+    void hotcueActivate(HotcueControl* pHotcue, double v, HotcueMode mode);
     void hotcueActivatePreview(HotcueControl* pHotcue, double v);
     void hotcueClear(HotcueControl* pHotcue, double v);
     void hotcuePositionChanged(HotcueControl* pHotcue, double newPosition);
@@ -166,17 +171,13 @@ class CueControl : public EngineControl {
     void cueUpdated();
     void trackAnalyzed();
     void trackCuesUpdated();
-    void hotcueSet(HotcueControl* pControl, double v);
-    void hotcueSetCue(HotcueControl* pControl, double v);
-    void hotcueSetLoop(HotcueControl* pControl, double v);
+    void hotcueSet(HotcueControl* pControl, double v, HotcueMode mode);
     void hotcueGoto(HotcueControl* pControl, double v);
     void hotcueGotoAndPlay(HotcueControl* pControl, double v);
     void hotcueGotoAndStop(HotcueControl* pControl, double v);
     void hotcueGotoAndLoop(HotcueControl* pControl, double v);
     void hotcueLoopToggle(HotcueControl* pControl, double v);
-    void hotcueActivate(HotcueControl* pControl, double v);
-    void hotcueActivateCue(HotcueControl* pControl, double v);
-    void hotcueActivateLoop(HotcueControl* pControl, double v);
+    void hotcueActivate(HotcueControl* pControl, double v, HotcueMode mode);
     void hotcueActivatePreview(HotcueControl* pControl, double v);
     void hotcueClear(HotcueControl* pControl, double v);
     void hotcuePositionChanged(HotcueControl* pControl, double newPosition);

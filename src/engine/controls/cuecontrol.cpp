@@ -297,12 +297,6 @@ void CueControl::createControls() {
         connect(pControl, &HotcueControl::hotcueSet,
                 this, &CueControl::hotcueSet,
                 Qt::DirectConnection);
-        connect(pControl, &HotcueControl::hotcueSetCue,
-                this, &CueControl::hotcueSetCue,
-                Qt::DirectConnection);
-        connect(pControl, &HotcueControl::hotcueSetLoop,
-                this, &CueControl::hotcueSetLoop,
-                Qt::DirectConnection);
         connect(pControl, &HotcueControl::hotcueGoto,
                 this, &CueControl::hotcueGoto,
                 Qt::DirectConnection);
@@ -317,12 +311,6 @@ void CueControl::createControls() {
                 Qt::DirectConnection);
         connect(pControl, &HotcueControl::hotcueActivate,
                 this, &CueControl::hotcueActivate,
-                Qt::DirectConnection);
-        connect(pControl, &HotcueControl::hotcueActivateCue,
-                this, &CueControl::hotcueActivateCue,
-                Qt::DirectConnection);
-        connect(pControl, &HotcueControl::hotcueActivateLoop,
-                this, &CueControl::hotcueActivateLoop,
                 Qt::DirectConnection);
         connect(pControl, &HotcueControl::hotcueActivatePreview,
                 this, &CueControl::hotcueActivatePreview,
@@ -660,7 +648,7 @@ void CueControl::quantizeChanged(double v) {
     }
 }
 
-void CueControl::hotcueSet(HotcueControl* pControl, double v) {
+void CueControl::hotcueSet(HotcueControl* pControl, double v, HotcueMode mode) {
     //qDebug() << "CueControl::hotcueSet" << v;
 
     if (!v)
@@ -682,8 +670,34 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     double cueStartPosition;
     double cueEndPosition;
     mixxx::CueType cueType;
-    if (m_pLoopEnabled->get()) {
-        // If a loop is enabled, the hotcue will be saved loop
+    switch (mode) {
+    case HotcueMode::Auto: {
+        if (m_pLoopEnabled->get()) {
+            // If a loop is enabled, the hotcue will be a saved loop
+            cueStartPosition = m_pLoopStartPosition->get();
+            cueEndPosition = m_pLoopEndPosition->get();
+            if (cueStartPosition == Cue::kNoPosition ||
+                    cueEndPosition == Cue::kNoPosition) {
+                return;
+            }
+            cueType = mixxx::CueType::Loop;
+        } else {
+            // If no loop is enabled, just store regular jump cue
+            cueStartPosition = getQuantizedCurrentPosition();
+            cueEndPosition = Cue::kNoPosition;
+            cueType = mixxx::CueType::HotCue;
+        }
+        break;
+    }
+    case HotcueMode::Cue: {
+        // If no loop is enabled, just store regular jump cue
+        cueStartPosition = getQuantizedCurrentPosition();
+        cueEndPosition = Cue::kNoPosition;
+        cueType = mixxx::CueType::HotCue;
+        break;
+    }
+    case HotcueMode::Loop: {
+        // If no loop is enabled, just store regular jump cue
         cueStartPosition = m_pLoopStartPosition->get();
         cueEndPosition = m_pLoopEndPosition->get();
         if (cueStartPosition == Cue::kNoPosition ||
@@ -691,13 +705,9 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
             return;
         }
         cueType = mixxx::CueType::Loop;
-    } else {
-        // If no loop is enabled, just store regular jump cue
-        cueStartPosition = getQuantizedCurrentPosition();
-        cueEndPosition = Cue::kNoPosition;
-        cueType = mixxx::CueType::HotCue;
+        break;
     }
-
+    }
     pCue->setStartPosition(cueStartPosition);
     pCue->setEndPosition(cueEndPosition);
     pCue->setHotCue(hotcue);
@@ -728,105 +738,6 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
         // Enginebuffer will quantize more exactly than we can.
         seekAbs(cueStartPosition);
     }
-}
-
-void CueControl::hotcueSetCue(HotcueControl* pControl, double v) {
-    //qDebug() << "CueControl::hotcueSetCue" << v;
-
-    if (!v)
-        return;
-
-    QMutexLocker lock(&m_mutex);
-    if (!m_pLoadedTrack)
-        return;
-
-    int hotcue = pControl->getHotcueNumber();
-    // Note: the cue is just detached from the hotcue control
-    // It remains in the database for later use
-    // TODO: find a rule, that allows us to delete the cue as well
-    // https://bugs.launchpad.net/mixxx/+bug/1653276
-    hotcueClear(pControl, v);
-
-    CuePointer pCue(m_pLoadedTrack->createAndAddCue());
-    double cueStartPosition = getQuantizedCurrentPosition();
-    pCue->setStartPosition(cueStartPosition);
-    pCue->setEndPosition(Cue::kNoPosition);
-    pCue->setHotCue(hotcue);
-    pCue->setLabel();
-    pCue->setType(mixxx::CueType::HotCue);
-
-    const ColorPalette hotcueColorPalette =
-            m_colorPaletteSettings.getHotcueColorPalette();
-    if (getConfig()->getValue(
-                ConfigKey("[Controls]", "auto_hotcue_colors"), false)) {
-        pCue->setColor(hotcueColorPalette.colorForHotcueIndex(hotcue));
-    } else {
-        int hotcueDefaultColorIndex = m_pConfig->getValue(
-                ConfigKey("[Controls]", "HotcueDefaultColorIndex"), -1);
-        if (hotcueDefaultColorIndex < 0 ||
-                hotcueDefaultColorIndex >= hotcueColorPalette.size()) {
-            hotcueDefaultColorIndex = hotcueColorPalette.size() -
-                    1; // default to last color (orange)
-        }
-        pCue->setColor(hotcueColorPalette.at(hotcueDefaultColorIndex));
-    }
-
-    // TODO(XXX) deal with spurious signals
-    attachCue(pCue, pControl);
-
-    // If quantize is enabled and we are not playing, jump to the cue point
-    // since it's not necessarily where we currently are. TODO(XXX) is this
-    // potentially invalid for vinyl control?
-    bool playing = m_pPlay->toBool();
-    if (!playing && m_pQuantizeEnabled->toBool()) {
-        lock.unlock();  // prevent deadlock.
-        // Enginebuffer will quantize more exactly than we can.
-        seekAbs(cueStartPosition);
-    }
-}
-
-void CueControl::hotcueSetLoop(HotcueControl* pControl, double v) {
-    //qDebug() << "CueControl::hotcueSetLoop" << v;
-
-    if (!v) {
-        return;
-    }
-
-    QMutexLocker lock(&m_mutex);
-    if (!m_pLoadedTrack)
-        return;
-
-    int hotcue = pControl->getHotcueNumber();
-    // Note: the cue is just detached from the hotcue control
-    // It remains in the database for later use
-    // TODO: find a rule, that allows us to delete the cue as well
-    // https://bugs.launchpad.net/mixxx/+bug/1653276
-    hotcueClear(pControl, v);
-
-    CuePointer pCue(m_pLoadedTrack->createAndAddCue());
-    double cueStartPosition = m_pLoopStartPosition->get();
-    double cueEndPosition = m_pLoopEndPosition->get();
-    if (cueStartPosition == Cue::kNoPosition || cueEndPosition == Cue::kNoPosition) {
-        return;
-    }
-
-    pCue->setStartPosition(cueStartPosition);
-    pCue->setEndPosition(cueEndPosition);
-    pCue->setHotCue(hotcue);
-    pCue->setLabel("");
-    pCue->setType(mixxx::CueType::Loop);
-    // TODO(XXX) deal with spurious signals
-    attachCue(pCue, pControl);
-
-    ConfigKey autoHotcueColorsKey("[Controls]", "auto_hotcue_colors");
-    if (getConfig()->getValue(autoHotcueColorsKey, false)) {
-        auto hotcueColorPalette = m_colorPaletteSettings.getHotcueColorPalette();
-        pCue->setColor(hotcueColorPalette.colorForHotcueIndex(hotcue));
-    } else {
-        pCue->setColor(mixxx::PredefinedColorPalettes::kDefaultCueColor);
-    }
-
-    setSavedLoop(pCue);
 }
 
 void CueControl::hotcueGoto(HotcueControl* pControl, double v) {
@@ -978,7 +889,7 @@ void CueControl::hotcueLoopToggle(HotcueControl* pControl, double v) {
     }
 }
 
-void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
+void CueControl::hotcueActivate(HotcueControl* pControl, double v, HotcueMode mode) {
     //qDebug() << "CueControl::hotcueActivate" << v;
 
     QMutexLocker lock(&m_mutex);
@@ -994,7 +905,7 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
     if (pCue) {
         if (v) {
             if (pCue->getPosition() == Cue::kNoPosition) {
-                hotcueSet(pControl, v);
+                hotcueSet(pControl, v, mode);
             } else {
                 if (isPlayingByPlayButton()) {
                     if (pCue->getLength() > 0) {
@@ -1015,7 +926,7 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
         // The cue is non-existent ...
         if (v) {
             // set it to the current position
-            hotcueSet(pControl, v);
+            hotcueSet(pControl, v, mode);
         } else if (m_iCurrentlyPreviewingHotcues) {
             // yet we got a release for it and are
             // currently previewing a hotcue. This is indicative of a corner
@@ -1026,100 +937,6 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
     }
 
     m_pHotcueFocus->set(pControl->getHotcueNumber());
-}
-
-void CueControl::hotcueActivateCue(HotcueControl* pControl, double v) {
-    //qDebug() << "CueControl::hotcueActivateCue" << v;
-
-    QMutexLocker lock(&m_mutex);
-
-    if (!m_pLoadedTrack) {
-        return;
-    }
-
-    CuePointer pCue(pControl->getCue());
-
-    lock.unlock();
-
-    if (pCue) {
-        if (v) {
-            if (pCue->getPosition() == Cue::kNoPosition) {
-                hotcueSetCue(pControl, v);
-            } else {
-                if (isPlayingByPlayButton()) {
-                    if (pCue->getLength() > 0) {
-                        hotcueLoopToggle(pControl, v);
-                    } else {
-                        hotcueGoto(pControl, v);
-                    }
-                } else {
-                    hotcueActivatePreview(pControl, v);
-                }
-            }
-        } else {
-            if (pCue->getPosition() != Cue::kNoPosition) {
-                hotcueActivatePreview(pControl, v);
-            }
-        }
-    } else {
-        if (v) {
-            // just in case
-            hotcueSetCue(pControl, v);
-        } else if (m_iCurrentlyPreviewingHotcues) {
-            // The cue is non-existent, yet we got a release for it and are
-            // currently previewing a hotcue. This is indicative of a corner
-            // case where the cue was detached while we were pressing it. Let
-            // hotcueActivatePreview handle it.
-            hotcueActivatePreview(pControl, v);
-        }
-    }
-}
-
-void CueControl::hotcueActivateLoop(HotcueControl* pControl, double v) {
-    //qDebug() << "CueControl::hotcueActivate" << v;
-
-    QMutexLocker lock(&m_mutex);
-
-    if (!m_pLoadedTrack) {
-        return;
-    }
-
-    CuePointer pCue(pControl->getCue());
-
-    lock.unlock();
-
-    if (pCue) {
-        if (v) {
-            if (pCue->getPosition() == Cue::kNoPosition) {
-                hotcueSetLoop(pControl, v);
-            } else {
-                if (isPlayingByPlayButton()) {
-                    if (pCue->getLength() > 0) {
-                        hotcueLoopToggle(pControl, v);
-                    } else {
-                        hotcueGoto(pControl, v);
-                    }
-                } else {
-                    hotcueActivatePreview(pControl, v);
-                }
-            }
-        } else {
-            if (pCue->getPosition() != Cue::kNoPosition) {
-                hotcueActivatePreview(pControl, v);
-            }
-        }
-    } else {
-        if (v) {
-            // just in case
-            hotcueSetLoop(pControl, v);
-        } else if (m_iCurrentlyPreviewingHotcues) {
-            // The cue is non-existent, yet we got a release for it and are
-            // currently previewing a hotcue. This is indicative of a corner
-            // case where the cue was detached while we were pressing it. Let
-            // hotcueActivatePreview handle it.
-            hotcueActivatePreview(pControl, v);
-        }
-    }
 }
 
 void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
@@ -2279,15 +2096,15 @@ HotcueControl::~HotcueControl() {
 }
 
 void HotcueControl::slotHotcueSet(double v) {
-    emit hotcueSet(this, v);
+    emit hotcueSet(this, v, HotcueMode::Auto);
 }
 
 void HotcueControl::slotHotcueSetCue(double v) {
-    emit(hotcueSetCue(this, v));
+    emit(hotcueSet(this, v, HotcueMode::Cue));
 }
 
 void HotcueControl::slotHotcueSetLoop(double v) {
-    emit(hotcueSetLoop(this, v));
+    emit(hotcueSet(this, v, HotcueMode::Loop));
 }
 
 void HotcueControl::slotHotcueGoto(double v) {
@@ -2307,15 +2124,15 @@ void HotcueControl::slotHotcueGotoAndLoop(double v) {
 }
 
 void HotcueControl::slotHotcueActivate(double v) {
-    emit hotcueActivate(this, v);
+    emit hotcueActivate(this, v, HotcueMode::Auto);
 }
 
 void HotcueControl::slotHotcueActivateCue(double v) {
-    emit(hotcueActivateCue(this, v));
+    emit(hotcueActivate(this, v, HotcueMode::Cue));
 }
 
 void HotcueControl::slotHotcueActivateLoop(double v) {
-    emit(hotcueActivateLoop(this, v));
+    emit(hotcueActivate(this, v, HotcueMode::Loop));
 }
 
 void HotcueControl::slotHotcueActivatePreview(double v) {
