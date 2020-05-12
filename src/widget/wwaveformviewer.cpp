@@ -16,13 +16,14 @@
 #include "util/dnd.h"
 #include "util/math.h"
 
-WWaveformViewer::WWaveformViewer(const char *group, UserSettingsPointer pConfig, QWidget * parent)
+WWaveformViewer::WWaveformViewer(const char* group, UserSettingsPointer pConfig, QWidget* parent)
         : WWidget(parent),
           m_pGroup(group),
           m_pConfig(pConfig),
           m_zoomZoneWidth(20),
           m_bScratching(false),
           m_bBending(false),
+          m_pCueMenuPopup(make_parented<WCueMenuPopup>(pConfig, this)),
           m_waveformWidget(nullptr) {
     setAcceptDrops(true);
 
@@ -77,6 +78,12 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         m_pScratchPosition->set(targetPosition);
         m_pScratchPositionEnable->slotSet(1.0);
     } else if (event->button() == Qt::RightButton) {
+        const auto currentTrack = m_waveformWidget->getTrackInfo();
+        auto cueAtClickPos = m_waveformWidget->getCueAtPoint(event->pos());
+        if (cueAtClickPos) {
+            m_pCueMenuPopup->setTrackAndCue(currentTrack, *cueAtClickPos);
+            m_pCueMenuPopup->popup(event->globalPos());
+        }
         // If we are scratching then disable and reset because the two shouldn't
         // be used at once.
         if (m_bScratching) {

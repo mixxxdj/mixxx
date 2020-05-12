@@ -8,9 +8,10 @@
 
 #include "track/track.h"
 #include "util/class.h"
+#include "util/performancetimer.h"
+#include "waveform/renderers/waveformmark.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/renderers/waveformsignalcolors.h"
-#include "util/performancetimer.h"
 
 //#define WAVEFORMWIDGETRENDERER_DEBUG
 
@@ -39,6 +40,8 @@ class WaveformWidgetRenderer {
 
     inline const char* getGroup() const { return m_group;}
     const TrackPointer getTrackInfo() const { return m_pTrack;}
+    // Get cue at a point on the waveform widget.
+    std::optional<CuePointer> getCueAtPoint(QPoint point);
 
     double getFirstDisplayedPosition() const { return m_firstDisplayedPosition;}
     double getLastDisplayedPosition() const { return m_lastDisplayedPosition;}
@@ -93,6 +96,10 @@ class WaveformWidgetRenderer {
     }
 
     void setTrack(TrackPointer track);
+    inline void setMarkLabelBoundaries(
+            const QMap<WaveformMarkPointer, QRect>& markLabelBoundaries) {
+        m_markBoundaries = markLabelBoundaries;
+    }
 
     double getPlayMarkerPosition() {
         return m_playMarkerPosition;
@@ -151,6 +158,7 @@ class WaveformWidgetRenderer {
 private:
     DISALLOW_COPY_AND_ASSIGN(WaveformWidgetRenderer);
     friend class WaveformWidgetFactory;
+    QMap<WaveformMarkPointer, QRect> m_markBoundaries;
 };
 
 #endif // WAVEFORMWIDGETRENDERER_H

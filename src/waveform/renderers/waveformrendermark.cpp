@@ -69,7 +69,10 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
                 // Check if the current point need to be displayed
                 if (currentMarkPoint > -markHalfWidth && currentMarkPoint < m_waveformRenderer->getWidth() + markHalfWidth) {
-                    painter->drawImage(QPoint(currentMarkPoint - markHalfWidth, 0), pMark->m_image);
+                    int drawOffset = currentMarkPoint - markHalfWidth;
+                    const auto topLeft = QPoint(drawOffset, 0);
+                    painter->drawImage(topLeft, pMark->m_image);
+                    m_markBoundaries[pMark].setTopLeft(topLeft);
                 }
             } else {
                 const int markHalfHeight = pMark->m_image.height() / 2.0;
@@ -80,6 +83,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
             }
         }
     }
+    m_waveformRenderer->setMarkLabelBoundaries(m_markBoundaries);
 }
 
 void WaveformRenderMark::onResize() {
@@ -185,6 +189,8 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
     int labelRectHeight = wordRect.height() + 2 * marginY + 4;
 
     QRectF labelRect(0, 0, (float)labelRectWidth, (float)labelRectHeight);
+    m_markBoundaries[pMark].setWidth(labelRectWidth);
+    m_markBoundaries[pMark].setHeight(labelRectHeight);
 
     int width;
     int height;

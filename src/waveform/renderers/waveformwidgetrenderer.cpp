@@ -288,3 +288,30 @@ void WaveformWidgetRenderer::setTrack(TrackPointer track) {
         m_rendererStack[i]->onSetTrack();
     }
 }
+
+std::optional<CuePointer> WaveformWidgetRenderer::getCueAtPoint(QPoint point) {
+    WaveformMarkPointer pSelectedMark;
+    for (auto pMark : m_markBoundaries.keys()) {
+        if (m_markBoundaries[pMark].contains(point)) {
+            pSelectedMark = pMark;
+            break;
+        }
+    }
+    if (!pSelectedMark) {
+        return std::nullopt;
+    }
+
+    CuePointer pSelectedCue;
+    QList<CuePointer> cueList = getTrackInfo()->getCuePoints();
+    for (const auto& pCue : cueList) {
+        if (pCue->getHotCue() == pSelectedMark->getHotCue()) {
+            pSelectedCue = pCue;
+            break;
+        }
+    }
+    if (pSelectedCue != nullptr) {
+        return pSelectedCue;
+    }
+
+    return std::nullopt;
+}

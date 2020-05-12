@@ -8,10 +8,12 @@
 #include <QList>
 #include <QMutex>
 
-#include "track/track.h"
-#include "widget/trackdroptarget.h"
-#include "widget/wwidget.h"
 #include "skin/skincontext.h"
+#include "track/track.h"
+#include "util/parented_ptr.h"
+#include "widget/trackdroptarget.h"
+#include "widget/wcuemenupopup.h"
+#include "widget/wwidget.h"
 
 class ControlProxy;
 class WaveformWidgetAbstract;
@@ -72,6 +74,7 @@ private:
     bool m_bScratching;
     bool m_bBending;
     QPoint m_mouseAnchor;
+    parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
 
     WaveformWidgetAbstract* m_waveformWidget;
 
