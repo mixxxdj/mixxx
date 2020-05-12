@@ -60,7 +60,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
         if (samplePosition != -1.0) {
             double currentMarkPoint =
                     m_waveformRenderer->transformSamplePositionInRendererWorld(samplePosition);
-            const auto& labelBoundingRect = m_markBoundaries[pMark];
+            const auto& labelBoundingRect = pMark->m_label.area();
             if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
                 // NOTE: vRince I guess image width is odd to display the center on the exact line !
                 // external image should respect that ...
@@ -235,8 +235,10 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
         labelRect.moveBottom(height - 1);
     }
 
-    m_markBoundaries[pMark].setRect(
-            labelRect.left(), labelRect.top(), labelRectWidth, labelRectHeight);
+    pMark->m_label.setAreaRect(QRectF(labelRect.left(),
+            labelRect.top(),
+            labelRectWidth,
+            labelRectHeight));
 
     // Fill with transparent pixels
     pMark->m_image.fill(QColor(0, 0, 0, 0).rgba());

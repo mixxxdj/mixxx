@@ -36,7 +36,6 @@ class WaveformRenderMark : public QObject, public WaveformRendererAbstract {
     void generateMarkImage(WaveformMarkPointer pMark);
 
     WaveformMarkSet m_marks;
-    QMap<WaveformMarkPointer, QRect> m_markBoundaries;
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);
 };
 
