@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   id="svg29"
+   version="1.1"
+   height="34"
+   width="40">
+  <metadata
+     id="metadata33">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs17">
+    <radialGradient
+       fy="355.35999"
+       fx="366.93451"
+       id="f"
+       cx="366.93451"
+       cy="355.35999"
+       r="25.759201"
+       gradientTransform="matrix(0.69980946,-0.00367881,0.00393052,0.76229507,108.75351,85.820703)"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         stop-color="#fefefe"
+         stop-opacity=".94901961"
+         offset="0"
+         id="stop10" />
+      <stop
+         style="stop-color:#909090;stop-opacity:1"
+         stop-color="#a3a4a2"
+         stop-opacity=".02352941"
+         offset="1"
+         id="stop14" />
+    </radialGradient>
+    <filter
+       id="d"
+       x="-0.0059850197"
+       y="-0.0060153441"
+       width="1.01197"
+       height="1.0120307"
+       style="color-interpolation-filters:sRGB">
+      <feGaussianBlur
+         stdDeviation="0.10706202"
+         id="feGaussianBlur2" />
+    </filter>
+  </defs>
+  <g
+     id="g23"
+     stroke="#000"
+     fill="none">
+    <path
+       id="path19"
+       stroke-width="1.60000002"
+       d="m18 7.5102553c0-.7709527.64828-1.4446214 1.9809-1.4446214 1.2699 0 1.9692.6439408 1.9947 1.4271876 0 2.1984691.0244 8.6535835.0244 8.6535835-.0742.735839-.9885 1.42949-2.0444 1.42949s-1.937-.837151-1.937-1.446512c-.009-3.291208-.0184-5.537373-.0185-8.6190455z" />
+    <path
+       id="path21"
+       d="m18 5.3358c0-.9375.64828-1.7567 1.9809-1.7567 1.2699 0 1.9692.78305 1.9947 1.7355 0 2.6734.0244 10.523.0244 10.523-.0742.8948-.9885 1.7383-2.0444 1.7383s-1.937-1.018-1.937-1.759c-.009-4.0022-.0184-6.7336-.0185-10.481z" />
+  </g>
+  <rect
+     rx="2"
+     y="3.5790999"
+     x="18"
+     height="13.9968"
+     width="4"
+     id="rect825"
+     style="fill:#888;fill-opacity:1;stroke:none;stroke-width:1.60000002;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  <path
+     transform="matrix(0.088928,0,0,0.088072,-12.631,-25.838)"
+     d="m 388.4,355.36 a 21.466,21.213 0 1 1 -42.931,0 21.466,21.213 0 1 1 42.931,0 z"
+     style="fill:url(#f);filter:url(#d)"
+     id="path27" />
+</svg>

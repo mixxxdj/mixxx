@@ -1,0 +1,155 @@
+<!--
+Description:
+  1 Size-aware container that checks which deck size is currently selected,
+    and shows the respective skin settings options.
+  2 Size-aware container that checks if the spinny options need to
+    be covered in the skin menu.
+
+Controls:
+  [LateNight],show_full_deck
+  [LateNight],show_compact_deck
+
+  [LateNight],show_spinny-options
+
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <Children>
+      <!-- checks which deck size is currently selected -->
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Size>3f,0f</Size>
+        <Children>
+
+          <WidgetGroup><!-- Minimal deck -->
+            <Size>1f,0f</Size>
+            <Connection>
+              <ConfigKey>[LateNight],deck_size</ConfigKey>
+              <Transform><IsEqual>2</IsEqual></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup><!-- Compact deck -->
+            <Size>2f,0f</Size>
+            <Connection>
+              <ConfigKey>[LateNight],deck_size</ConfigKey>
+              <Transform><IsEqual>1</IsEqual></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup><!-- Full deck -->
+            <Size>3f,0f</Size>
+            <Connection>
+              <ConfigKey>[LateNight],deck_size</ConfigKey>
+              <Transform><IsEqual>0</IsEqual></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <Size>2f,0f</Size>
+            <Connection>
+              <ConfigKey>[Master],show_mixer</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <SizeAwareStack><!-- Size detector -->
+            <Children>
+              <!-- Either full deck is selected or the mixer is shown -->
+              <WidgetStack>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>0,0</MinimumSize>
+                <MaximumSize>0,0</MaximumSize>
+                <Children>
+                  <WidgetGroup trigger="[LateNight],show_full_deck"></WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],show_compact_deck"></WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],show_minimal_deck"></WidgetGroup>
+                </Children>
+              </WidgetStack>
+
+              <!-- Compact  deck is selected -->
+              <WidgetStack>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>1,0</MinimumSize>
+                <MaximumSize>1,0</MaximumSize>
+                <Children>
+                  <WidgetGroup trigger="[LateNight],show_compact_deck"></WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],show_full_deck"></WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],show_minimal_deck"></WidgetGroup>
+                </Children>
+              </WidgetStack>
+
+              <!-- Minimal deck is selected -->
+              <WidgetStack>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>2,0</MinimumSize>
+                <MaximumSize>2,0</MaximumSize>
+                <Children>
+                  <WidgetGroup trigger="[LateNight],show_minimal_deck"></WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],show_compact_deck"></WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],show_full_deck"></WidgetGroup>
+                </Children>
+              </WidgetStack>
+            </Children>
+          </SizeAwareStack><!-- /Size detector -->
+
+        </Children>
+      </WidgetGroup><!-- checks which deck size is currently selected -->
+
+      <WidgetGroup><!-- checks if spinny options need to be covered -->
+        <Layout>horizontal</Layout>
+        <Size>3f,0f</Size>
+        <Children>
+
+          <WidgetGroup>
+            <Size>1f,0f</Size>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_minimal_decks</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <Size>1f,0f</Size>
+            <Connection>
+              <ConfigKey>[Master],maximize_library</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <SizeAwareStack><!-- Size detector -->
+            <Children>
+              <!-- Hide spinny options -->
+              <WidgetStack>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>1,0</MinimumSize>
+                <MaximumSize>1,0</MaximumSize>
+                <Children>
+                  <WidgetGroup trigger="[LateNight],hide_spinny_options"></WidgetGroup>
+                  <WidgetGroup></WidgetGroup>
+                </Children>
+              </WidgetStack>
+
+              <!-- Cover spinny options -->
+              <WidgetStack>
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>2,0</MinimumSize>
+                <MaximumSize>3,0</MaximumSize>
+                <Children>
+                  <WidgetGroup></WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],hide_spinny_options"></WidgetGroup>
+                </Children>
+              </WidgetStack>
+            </Children>
+          </SizeAwareStack><!-- /Size detector -->
+
+        </Children>
+      </WidgetGroup><!-- checks if spinny options need to be covered -->
+    </Children>
+  </WidgetGroup>
+</Template>

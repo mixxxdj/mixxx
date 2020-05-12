@@ -20,7 +20,7 @@ Description:
       <WidgetGroup>
         <ObjectName>SkinSettings</ObjectName>
         <Layout>vertical</Layout>
-        <Size>190f,1me</Size>
+        <Size>240f,1me</Size>
         <Children>
           <WidgetGroup>
             <ObjectName>SkinSettingsHeader</ObjectName>
@@ -29,124 +29,314 @@ Description:
             <Children>
               <Label>
                 <ObjectName>CategoryLabel</ObjectName>
-                <Text>Decks / General</Text>
+                <Text>Decks</Text>
                 <Size>180min,21f</Size>
               </Label>
 
               <!-- push Close button to far right -->
               <WidgetGroup><Size>1me,1min</Size></WidgetGroup>
 
-              <Template src="skin:button_2state.xml">
+              <!--Template src="skin:/controls/button_2state.xml">
                 <SetVariable name="TooltipId">skin_settings</SetVariable>
                 <SetVariable name="ObjectName">SkinSettingsClose</SetVariable>
                 <SetVariable name="Size">20f,21f</SetVariable>
                 <SetVariable name="ConfigKey">[Master],skin_settings</SetVariable>
-              </Template>
+              </Template-->
             </Children>
           </WidgetGroup>
 
-          <!-- Decks / General -->
-          <WidgetGroup><!-- 4 buttons -->
-            <ObjectName>SkinSettingsCategory</ObjectName>
+          <WidgetGroup><!-- Full/Compact deck options with regular library -->
+            <ObjectName></ObjectName>
             <SizePolicy>me,min</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
 
-              <!-- 2/4 Decks toggle -->
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="TooltipId">toggle_4decks</SetVariable>
-                <SetVariable name="text">4 Decks</SetVariable>
-                <SetVariable name="Setting">[Skin],show_4decks</SetVariable>
-              </Template>
-
-              <!-- 4/8 Hotcues toggle -->
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="TooltipId">hotcue_toggle</SetVariable>
-                <SetVariable name="text">8 Hotcues</SetVariable>
-                <SetVariable name="Setting">[Skin],show_8_hotcues</SetVariable>
-              </Template>
-
-              <!-- Intro & Outro cues toggle -->
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
-                <SetVariable name="text">Intro &amp; Outro Cues</SetVariable>
-                <SetVariable name="Setting">[Skin],show_intro_outro_cues</SetVariable>
-              </Template>
-
-              <!-- Rate Control toggle -->
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="TooltipId">rate_toggle</SetVariable>
-                <SetVariable name="text">Rate Slider &amp; Sync</SetVariable>
-                <SetVariable name="Setting">[Skin],show_rate_controls</SetVariable>
-              </Template>
-
-              <!-- Rate Control buttons toggle -->
-              <WidgetGroup>
-                <Layout>stacked</Layout>
-                <Size>180min,17f</Size>
+              <WidgetGroup><!-- Deck size selectors -->
+                <Size>225f,18f</Size>
+                <Layout>horizontal</Layout>
                 <Children>
-                  <WidgetGroup>
-                    <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>stacked</Layout>
-                    <Size>180min,17f</Size>
+                  <WidgetGroup><Size>6f,0min</Size></WidgetGroup>
+                  <Label>
+                    <ObjectName>SkinSettingsText</ObjectName>
+                    <Size>64f,18f</Size>
+                    <Text>Deck Size: </Text>
+                    <Alignment>left</Alignment>
+                  </Label>
+                  <Label>
+                    <ObjectName>SkinSettingsText</ObjectName>
+                    <Size>0me,18f</Size>
+                    <Style>WLabel {color: #666;}</Style>
+                    <Text> hide Mixer to select </Text>
+                    <Alignment>left</Alignment>
                     <Connection>
-                      <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
+                      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </Label>
+                  <WidgetGroup><!-- Normal / Compact / Mini Decks -->
+                    <ObjectName>DeckSizeToggleContainer</ObjectName>
+                    <Size>0me,18f</Size>
+                    <Layout>horizontal</Layout>
+                    <Style>WPushButton[value="1"] {font-weight: bold;}
+                          WPushButton {margin-left: 1px;}
+                    </Style>
+                    <Children>
+                      <Template src="skin:/helpers/skin_settings_button_deckSize.xml">
+                        <SetVariable name="TooltipId"></SetVariable>
+                        <SetVariable name="Text">  FULL  </SetVariable>
+                        <SetVariable name="Width">42</SetVariable>
+                        <SetVariable name="DeckSize">0</SetVariable>
+                      </Template>
+                      <Template src="skin:/helpers/skin_settings_button_deckSize.xml">
+                        <SetVariable name="TooltipId"></SetVariable>
+                        <SetVariable name="Text">  Compact  </SetVariable>
+                        <SetVariable name="Width">70</SetVariable>
+                        <SetVariable name="DeckSize">1</SetVariable>
+                      </Template>
+                      <Template src="skin:/helpers/skin_settings_button_deckSize.xml">
+                        <SetVariable name="TooltipId"></SetVariable>
+                        <SetVariable name="Text">  mini  </SetVariable>
+                        <SetVariable name="Width">38</SetVariable>
+                        <SetVariable name="DeckSize">2</SetVariable>
+                      </Template>
+                      <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
+                    </Children>
+                    <Connection>
+                      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
                       <Transform><Not/></Transform>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
-                  <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="TooltipId">rate_toggle</SetVariable>
-                    <SetVariable name="text">Rate Control Buttons</SetVariable>
-                    <SetVariable name="Setting">[Skin],show_rate_control_buttons</SetVariable>
-                  </Template>
+
                 </Children>
+              </WidgetGroup><!-- Deck size selectors -->
+
+              <WidgetGroup><!-- Full Deck Options -->
+                <ObjectName></ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>SkinSettingsCategory</ObjectName>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Layout>vertical</Layout>
+                    <Children>
+
+                      <!-- 2/4 Decks -->
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId">toggle_4decks</SetVariable>
+                        <SetVariable name="Text">4 Decks</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_4decks</SetVariable>
+                      </Template>
+
+                      <!-- 4/8 Hotcues -->
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId">hotcue_toggle</SetVariable>
+                        <SetVariable name="Text">8 Hotcues</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_8_hotcues</SetVariable>
+                      </Template>
+
+                      <!-- Intro & Outro cues -->
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
+                        <SetVariable name="Text">Intro &amp; Outro Cues</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_intro_outro_cues</SetVariable>
+                      </Template>
+
+                      <!-- Rate Controls -->
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId">rate_toggle</SetVariable>
+                        <SetVariable name="Text">Rate Controls</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_rate_controls</SetVariable>
+                      </Template>
+
+                      <!-- Rate Adjust Buttons -->
+                      <WidgetGroup>
+                        <Layout>stacked</Layout>
+                        <Size>180min,17f</Size>
+                        <Children>
+                          <!-- index 0 due to bug -->
+                          <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+                          <WidgetGroup>
+                            <ObjectName>SubmenuCover</ObjectName>
+                            <Layout>stacked</Layout>
+                            <Size>180min,17f</Size>
+                            <Connection>
+                              <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
+                              <Transform><Not/></Transform>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </WidgetGroup>
+                          <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                            <SetVariable name="TooltipId">rate_toggle</SetVariable>
+                            <SetVariable name="Text">Rate Adjust Buttons</SetVariable>
+                            <SetVariable name="Setting">[Skin],show_rate_control_buttons</SetVariable>
+                          </Template>
+                        </Children>
+                      </WidgetGroup>
+
+                      <!-- Vinyl Control -->
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
+                        <SetVariable name="Text">Vinyl Control</SetVariable>
+                        <SetVariable name="Setting">[VinylControl],show_vinylcontrol</SetVariable>
+                      </Template>
+
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey>[LateNight],show_full_deck</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- Full Deck Options -->
+
+              <WidgetGroup><!-- Compact Deck Options -->
+                <ObjectName></ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>SkinSettingsCategory</ObjectName>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Layout>vertical</Layout>
+                    <Children>
+
+                      <!-- 2/4 Decks -->
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId">toggle_4decks</SetVariable>
+                        <SetVariable name="Text">4 Decks</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_4decks</SetVariable>
+                      </Template>
+
+                      <!-- Deck Settings in compact decks
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId"></SetVariable>
+                        <SetVariable name="Text">Deck Settings</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_deck_settings</SetVariable>
+                      </Template>-->
+
+                      <!-- Key Controls in compact decks
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId"></SetVariable>
+                        <SetVariable name="Text">Key Controls</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_key_controls_compact</SetVariable>
+                      </Template>-->
+
+                      <!-- Loop/Jump Controls in compact decks-->
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId"></SetVariable>
+                        <SetVariable name="Text">Loop / Jump Controls</SetVariable>
+                        <SetVariable name="Setting">[LateNight],show_loopjump_controls_compact</SetVariable>
+                      </Template>
+
+                      <!-- Rate Control -->
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId">rate_toggle</SetVariable>
+                        <SetVariable name="Text">Rate Controls</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_rate_controls_compact</SetVariable>
+                      </Template>
+
+                      <!-- Sync button in compact decks -->
+                      <WidgetGroup>
+                        <Layout>stacked</Layout>
+                        <Size>180min,17f</Size>
+                        <Children>
+                          <!-- index 0 due to bug -->
+                          <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+                          <WidgetGroup>
+                            <ObjectName>SubmenuCover</ObjectName>
+                            <Layout>stacked</Layout>
+                            <Size>180min,17f</Size>
+                            <Connection>
+                              <ConfigKey persist="true">[Skin],show_rate_controls_compact</ConfigKey>
+                              <Transform><Not/></Transform>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </WidgetGroup>
+                          <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                            <SetVariable name="TooltipId">rate_toggle</SetVariable>
+                            <SetVariable name="Text">Sync Button</SetVariable>
+                            <SetVariable name="Setting">[LateNight],show_sync_button_compact</SetVariable>
+                          </Template>
+                        </Children>
+                      </WidgetGroup>
+
+                      <!-- Vinyl Control -->
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
+                        <SetVariable name="Text">Vinyl Control</SetVariable>
+                        <SetVariable name="Setting">[VinylControl],show_vinylcontrol</SetVariable>
+                      </Template>
+
+                      <!-- Level meters -->
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
+                        <SetVariable name="Text">VU meters</SetVariable>
+                        <SetVariable name="Setting">[LateNight],show_vumeters_compact</SetVariable>
+                      </Template>
+
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey>[LateNight],show_compact_deck</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- Compact Deck Options -->
+            </Children>
+            <Connection>
+              <ConfigKey>[Master],maximize_library</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- Full/Compact deck options with regular library -->
+
+          <WidgetGroup><!-- spinny options, covered when even minimal decks are hidden -->
+            <ObjectName></ObjectName>
+            <SizePolicy>me,f</SizePolicy>
+            <Layout>stacked</Layout>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>SubmenuCover</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <Connection>
+                  <ConfigKey>[LateNight],hide_spinny_options</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
               </WidgetGroup>
 
-              <!-- Vinyl Control toggle -->
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
-                <SetVariable name="text">Vinyl Control</SetVariable>
-                <SetVariable name="Setting">[VinylControl],show_vinylcontrol</SetVariable>
-              </Template>
-
-              <!-- Spinny -->
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="TooltipId">show_spinny</SetVariable>
-                <SetVariable name="text">Spinny</SetVariable>
-                <SetVariable name="Setting">[Skin],show_spinnies</SetVariable>
-              </Template>
-
-              <!-- Cover Art -->
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="TooltipId">show_coverart</SetVariable>
-                <SetVariable name="text">Cover Art</SetVariable>
-                <SetVariable name="Setting">[Skin],show_coverart</SetVariable>
-              </Template>
-
-              <!-- Big Spinny -->
               <WidgetGroup>
-                <Layout>stacked</Layout>
-                <Size>190f,17f</Size>
+                <ObjectName>SkinSettingsCategory</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <Layout>vertical</Layout>
                 <Children>
-                  <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
-                    <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>vertical</Layout>
-                    <Size>190f,17f</Size>
-                    <Connection>
-                      <ConfigKey persist="true">[LateNight],no_spinny_no_cover</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-                  <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="text">Big Spinny/Cover Art</SetVariable>
-                    <SetVariable name="Setting">[Skin],show_big_spinny_coverart</SetVariable>
-                  </Template>
-                </Children>
-              </WidgetGroup><!-- Big Spinny -->
 
+                  <!-- 2/4 Decks -->
+                  <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                    <SetVariable name="TooltipId">toggle_4decks</SetVariable>
+                    <SetVariable name="Text">4 Decks</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_4decks</SetVariable>
+                  </Template>
+
+                  <!-- Spinny -->
+                  <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                    <SetVariable name="TooltipId">show_spinny</SetVariable>
+                    <SetVariable name="Text">Spinny</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_spinnies</SetVariable>
+                  </Template>
+
+                  <!-- Cover Art -->
+                  <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                    <SetVariable name="TooltipId">show_coverart</SetVariable>
+                    <SetVariable name="Text">Cover Art</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_coverart</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup>
             </Children>
-          </WidgetGroup><!-- /Deck / General -->
+          </WidgetGroup><!-- spinny options, hidden when even minimal decks are hidden -->
 
           <WidgetGroup>
             <ObjectName>SkinSettingsSeparator</ObjectName>
@@ -154,92 +344,76 @@ Description:
           </WidgetGroup>
 
           <!--  Mixer -->
-          <Template src="skin:skin_settings_labelbutton_2state.xml">
-            <SetVariable name="text">Mixer</SetVariable>
+          <Template src="skin:/helpers/skin_settings_labelbutton_2state.xml">
+            <SetVariable name="Text">Mixer</SetVariable>
             <SetVariable name="Setting">[Master],show_mixer</SetVariable>
             <SetVariable name="TooltipId">show_mixer</SetVariable>
           </Template>
 
           <WidgetGroup>
             <ObjectName>SkinSettingsCategory</ObjectName>
-            <SizePolicy>me,min</SizePolicy>
-            <Layout>vertical</Layout>
+            <SizePolicy>me,f</SizePolicy>
+            <Layout>stacked</Layout>
             <Children>
+              <!-- index 0 due to bug -->
+              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="text">Master / Headphone Mixer</SetVariable>
-                <SetVariable name="Setting">[Skin],show_master_head_mixer</SetVariable>
-              </Template>
+              <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+                <ObjectName>SubmenuCover</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Connection>
+                  <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
 
-              <WidgetGroup><!-- EQ knobs -->
-                <Layout>stacked</Layout>
-                <Size>180min,17f</Size>
+              <WidgetGroup>
+                <SizePolicy>me,min</SizePolicy>
+                <Layout>vertical</Layout>
                 <Children>
-                  <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
-                    <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>vertical</Layout>
-                    <Size>180min,17f</Size>
-                    <Connection>
-                      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
-                      <Transform><Not/></Transform>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
 
-                  <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="text">EQ Knobs</SetVariable>
+                  <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                    <SetVariable name="Text">Master / Headphone Mixer</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_master_head_mixer</SetVariable>
+                  </Template>
+
+                  <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                    <SetVariable name="Text">EQ Knobs</SetVariable>
                     <SetVariable name="Setting">[Skin],show_eq_knobs</SetVariable>
                   </Template>
 
-                </Children>
-              </WidgetGroup><!-- /EQ knobs -->
-
-              <WidgetGroup><!-- EQ Kill -->
-                <Layout>stacked</Layout>
-                <Size>180min,17f</Size>
-                <Children>
-                  <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
-                    <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>vertical</Layout>
+                  <WidgetGroup><!-- EQ Kill -->
+                    <Layout>stacked</Layout>
                     <Size>180min,17f</Size>
-                    <Connection>
-                      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
-                      <Transform><Not/></Transform>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
+                    <Children>
+                      <!-- index 0 due to bug -->
+                      <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+                      <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+                        <ObjectName>SubmenuCover</ObjectName>
+                        <Layout>vertical</Layout>
+                        <Size>180min,17f</Size>
+                        <Connection>
+                          <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
+                          <Transform><Not/></Transform>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="Text">EQ Kill Buttons</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_eq_kill_buttons</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup><!-- /EQ Kill -->
 
-                  <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="text">EQ Kill</SetVariable>
-                    <SetVariable name="Setting">[Skin],show_eq_kill_buttons</SetVariable>
-                  </Template>
-
-                </Children>
-              </WidgetGroup><!-- /EQ Kill -->
-
-              <WidgetGroup><!-- crossfader -->
-                <Layout>stacked</Layout>
-                <Size>180min,17f</Size>
-                <Children>
-                  <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
-                    <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>vertical</Layout>
-                    <Size>180min,17f</Size>
-                    <Connection>
-                      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
-                      <Transform><Not/></Transform>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-
-                  <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="text">Crossfader</SetVariable>
+                  <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                    <SetVariable name="Text">Crossfader</SetVariable>
                     <SetVariable name="Setting">[Skin],show_xfader</SetVariable>
                   </Template>
 
                 </Children>
-              </WidgetGroup><!-- /crossfader -->
-
+              </WidgetGroup>
             </Children>
           </WidgetGroup><!-- /Mixer -->
 
@@ -249,61 +423,45 @@ Description:
           </WidgetGroup>
 
           <!-- Effects -->
-          <Template src="skin:skin_settings_labelbutton_2state.xml">
-            <SetVariable name="text">Effects </SetVariable>
+          <Template src="skin:/helpers/skin_settings_labelbutton_2state.xml">
+            <SetVariable name="Text">Effects </SetVariable>
             <SetVariable name="Setting">[EffectRack1],show</SetVariable>
             <SetVariable name="TooltipId">show_effects</SetVariable>
           </Template>
 
-          <WidgetGroup><!-- 4 buttons -->
+          <WidgetGroup>
             <ObjectName>SkinSettingsCategory</ObjectName>
-            <SizePolicy>me,min</SizePolicy>
-            <Layout>vertical</Layout>
+            <SizePolicy>me,f</SizePolicy>
+            <Layout>stacked</Layout>
             <Children>
-              <WidgetGroup><!-- 4 Effect Units -->
-                <Layout>stacked</Layout>
-                <Size>180min,17f</Size>
-                <Children>
-                  <WidgetGroup>
-                    <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>stacked</Layout>
-                    <Size>180min,17f</Size>
-                    <Connection>
-                      <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
-                      <Transform><Not/></Transform>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
+              <!-- index 0 due to bug -->
+              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-                  <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="text">4 EFFECT UNITS</SetVariable>
+              <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+                <ObjectName>SubmenuCover</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Connection>
+                  <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <SizePolicy>me,min</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+                  <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                    <SetVariable name="Text">4 Effect Units</SetVariable>
                     <SetVariable name="Setting">[Skin],show_4effectunits</SetVariable>
                   </Template>
-                </Children>
-              </WidgetGroup><!-- /4 Effect Units -->
-
-              <WidgetGroup><!-- Super knobs -->
-                <Layout>stacked</Layout>
-                <Size>180min,17f</Size>
-                <Children>
-                  <WidgetGroup>
-                    <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>stacked</Layout>
-                    <Size>180min,17f</Size>
-                    <Connection>
-                      <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
-                      <Transform><Not/></Transform>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-
-                  <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="text">Super Knobs</SetVariable>
+                  <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                    <SetVariable name="Text">Super Knobs</SetVariable>
                     <SetVariable name="Setting">[Skin],show_superknobs</SetVariable>
                   </Template>
                 </Children>
-              </WidgetGroup><!-- /Super knobs -->
-
+              </WidgetGroup>
             </Children>
           </WidgetGroup><!-- /Effects -->
 
@@ -313,75 +471,92 @@ Description:
           </WidgetGroup>
 
           <!-- Samplers -->
-          <Template src="skin:skin_settings_labelbutton_2state.xml">
+          <Template src="skin:/helpers/skin_settings_labelbutton_2state.xml">
             <SetVariable name="TooltipId">show_samplers</SetVariable>
-            <SetVariable name="text">Samplers </SetVariable>
+            <SetVariable name="Text">Samplers </SetVariable>
             <SetVariable name="Setting">[Samplers],show_samplers</SetVariable>
           </Template>
 
-          <WidgetGroup><!-- 4 buttons -->
+          <WidgetGroup>
             <ObjectName>SkinSettingsCategory</ObjectName>
-            <SizePolicy>me,min</SizePolicy>
-            <Layout>vertical</Layout>
+            <SizePolicy>me,f</SizePolicy>
+            <Layout>stacked</Layout>
             <Children>
+              <!-- index 0 due to bug -->
+              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-              <WidgetGroup><!-- 8 Samplers -->
-                <Layout>stacked</Layout>
-                <Size>180min,17f</Size>
-                <Children>
-                  <WidgetGroup>
-                    <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>stacked</Layout>
-                    <Size>180min,17f</Size>
-                    <Connection>
-                      <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
-                      <Transform><Not/></Transform>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-                  <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="text">8 Samplers</SetVariable>
-                    <SetVariable name="Setting">[Skin],8_samplers</SetVariable>
-                  </Template>
-                </Children>
-              </WidgetGroup><!-- / 8 Samplers -->
+              <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+                <ObjectName>SubmenuCover</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Connection>
+                  <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
 
               <WidgetGroup>
-                <ObjectName>SamplerLoadSaveBox</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
                 <Layout>vertical</Layout>
-                <Size>180min,1min</Size>
                 <Children>
-                  <PushButton>
-                    <TooltipId>LoadSamplerBank</TooltipId>
-                    <ObjectName>SkinSettingsButton</ObjectName>
-                    <Size>160min,18f</Size>
-                    <NumberStates>1</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Text> Load Sampler Bank</Text>
-                      <Alignment>left</Alignment>
-                    </State>
-                    <Connection>
-                      <ConfigKey>[Sampler],LoadSamplerBank</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                  </PushButton>
 
-                  <PushButton>
-                    <TooltipId>SaveSamplerBank</TooltipId>
-                    <ObjectName>SkinSettingsButton</ObjectName>
-                    <Size>160min,18f</Size>
-                    <NumberStates>1</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Text> Save Sampler Bank</Text>
-                      <Alignment>left</Alignment>
-                    </State>
-                    <Connection>
-                      <ConfigKey>[Sampler],SaveSamplerBank</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                  </PushButton>
+                  <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                    <SetVariable name="Text">8 Samplers</SetVariable>
+                    <SetVariable name="Setting">[Skin],8_samplers</SetVariable>
+                  </Template>
+
+                  <WidgetGroup>
+                    <ObjectName>SamplerLoadSaveBox</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <Size>180min,1min</Size>
+                    <Children>
+                      <PushButton>
+                        <TooltipId>LoadSamplerBank</TooltipId>
+                        <ObjectName>SkinSettingsButton</ObjectName>
+                        <Size>35f,18f</Size>
+                        <NumberStates>1</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text> Load </Text>
+                          <Alignment>left</Alignment>
+                        </State>
+                        <Connection>
+                          <ConfigKey>[Sampler],LoadSamplerBank</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                      </PushButton>
+                      <Label>
+                        <TooltipId>SaveSamplerBank</TooltipId>
+                        <ObjectName>SkinSettingsText</ObjectName>
+                        <Size>6min,18f</Size>
+                        <Text>/</Text>
+                        <Alignment>center</Alignment>
+                      </Label>
+                      <PushButton>
+                        <TooltipId>SaveSamplerBank</TooltipId>
+                        <ObjectName>SkinSettingsButton</ObjectName>
+                        <Size>35f,18f</Size>
+                        <NumberStates>1</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text> Save </Text>
+                          <Alignment>left</Alignment>
+                        </State>
+                        <Connection>
+                          <ConfigKey>[Sampler],SaveSamplerBank</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                      </PushButton>
+                      <Label>
+                        <TooltipId>SaveSamplerBank</TooltipId>
+                        <ObjectName>SkinSettingsText</ObjectName>
+                        <Size>140min,18f</Size>
+                        <Text>Sampler Bank</Text>
+                        <Alignment>left</Alignment>
+                      </Label>
+                    </Children>
+                  </WidgetGroup>
                 </Children>
               </WidgetGroup>
 
@@ -406,20 +581,18 @@ Description:
             <Children>
 
               <!-- Preview Deck -->
-              <Template src="skin:skin_settings_button_2state.xml">
+              <Template src="skin:/helpers/skin_settings_button_2state.xml">
                 <SetVariable name="TooltipId">show_previewdeck</SetVariable>
-                <SetVariable name="text">Preview Deck</SetVariable>
+                <SetVariable name="Text">Preview Deck</SetVariable>
                 <SetVariable name="Setting">[PreviewDeck],show_previewdeck</SetVariable>
               </Template>
 
               <!-- Cover Art -->
-              <Template src="skin:skin_settings_button_2state.xml">
+              <Template src="skin:/helpers/skin_settings_button_2state.xml">
                 <SetVariable name="TooltipId">show_coverart</SetVariable>
-                <SetVariable name="text">Cover Art</SetVariable>
+                <SetVariable name="Text">Cover Art</SetVariable>
                 <SetVariable name="Setting">[Library],show_coverart</SetVariable>
               </Template>
-
-
 
             </Children>
           </WidgetGroup><!-- /Library -->

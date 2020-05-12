@@ -1,0 +1,65 @@
+<Template>
+  <SetVariable name="BtnType"></SetVariable>
+
+  <WidgetGroup>
+    <ObjectName>DeckRow_4_OverviewSpinny</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+
+      <!-- Small spinny / cover art -->
+      <WidgetGroup>
+        <SizePolicy>min,me</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup>
+            <SizePolicy>min,me</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>SpinnyCoverContainerSmall</ObjectName>
+                <Size><Variable name="SmallSpinnySize"/></Size>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>SpinnyCoverart<Variable name="ChanNum"/></ObjectName>
+                  </SingletonContainer>
+                </Children>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[LateNight],show_spinny_cover</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- Small spinny / cover art -->
+
+      <WidgetGroup>
+        <ObjectName>OverviewBox</ObjectName>
+        <!--Size>0me,56f</Size-->
+        <SizePolicy>min,me</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <SingletonContainer>
+            <ObjectName>DeckOverview<Variable name="ChanNum"/></ObjectName>
+          </SingletonContainer>
+        </Children>
+        <Connection>
+          <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
+          <BindProperty>highlight</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <SingletonContainer>
+        <ObjectName>DeckSettings<Variable name="ChanNum"/></ObjectName>
+      </SingletonContainer>
+
+    </Children>
+  </WidgetGroup><!-- DeckRow_4_OverviewSpinny -->
+</Template>

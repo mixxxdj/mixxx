@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   id="svg35"
+   version="1.1"
+   height="24"
+   width="24">
+  <metadata
+     id="metadata39">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs21">
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.93478259,0,0,0.93478259,-0.15220394,-24.152202)"
+       y2="18.657106"
+       y1="18.657106"
+       x2="23.988836"
+       x1="1.8333464"
+       id="e">
+      <stop
+         id="stop2"
+         offset="0"
+         stop-color="#393939" />
+      <stop
+         id="stop4"
+         offset=".49880221"
+         stop-color="#393939" />
+      <stop
+         id="stop6"
+         offset="1"
+         stop-color="#121212" />
+    </linearGradient>
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(.95652174 0 0 .95652174 -.4348113 -22.521739)"
+       y2="12"
+       y1="12"
+       x2="24"
+       x1="2"
+       id="f">
+      <stop
+         id="stop9"
+         offset="0"
+         stop-opacity=".0047619" />
+      <stop
+         id="stop11"
+         offset=".5"
+         stop-opacity="0" />
+      <stop
+         id="stop13"
+         offset="1"
+         stop-opacity=".47451" />
+    </linearGradient>
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.93877551,0,0,0.93877551,-7.4358636,38.778969)"
+       y2="27.211864"
+       y1=".22033899"
+       x2="12.889831"
+       x1="12.889831"
+       id="d">
+      <stop
+         id="stop16"
+         offset="0"
+         stop-color="#f60" />
+      <stop
+         id="stop18"
+         offset="1"
+         stop-color="#bf4c00" />
+    </linearGradient>
+  </defs>
+  <rect
+     id="rect23"
+     fill="url(#f)"
+     color="#000001"
+     height="22"
+     width="22"
+     y="-23"
+     x="1"
+     transform="rotate(90)" />
+  <rect
+     id="rect25"
+     fill-opacity=".09019608"
+     color="#000001"
+     height="22"
+     width="22"
+     y="-23"
+     x="1"
+     transform="rotate(90)" />
+  <rect
+     x="0.5"
+     y="0.5"
+     width="23"
+     height="23"
+     rx="0.30000001"
+     ry="0.30000001"
+     style="fill:none;stroke:#000001;stroke-linecap:round;stroke-linejoin:round;paint-order:fill markers stroke"
+     id="rect27" />
+  <rect
+     transform="rotate(90)"
+     x="1.24997"
+     y="-22.75"
+     width="21.5"
+     height="21.5"
+     style="fill:none;stroke:url(#e);stroke-width:0.5;stroke-linecap:round;paint-order:fill markers stroke"
+     id="rect29" />
+  <rect
+     x="0.5"
+     y="0.5"
+     width="23"
+     height="23"
+     rx="0.30000007"
+     ry="0.30000007"
+     style="opacity:0.59200003;fill:none;stroke:#438225;stroke-width:0.99999994;stroke-linecap:round;stroke-linejoin:round;paint-order:fill markers stroke;stroke-opacity:1"
+     id="rect31" />
+</svg>

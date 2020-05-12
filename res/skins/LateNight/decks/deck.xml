@@ -1,0 +1,97 @@
+<Template>
+  <SetVariable name="Type">deck</SetVariable>
+  <SetVariable name="Group">[Channel<Variable name="ChanNum"/>]</SetVariable>
+
+  <!-- We need those singletons first because they're used in DeckN singletons -->
+  <SingletonDefinition>
+    <ObjectName>SpinnyCoverart<Variable name="ChanNum"/></ObjectName>
+    <Children>
+      <Template src="skin:spinny_coverart.xml"/>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>DeckOverview<Variable name="ChanNum"/></ObjectName>
+    <Children>
+      <Template src="skin:/decks/overview.xml">
+      </Template>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>DeckSettings<Variable name="ChanNum"/></ObjectName>
+    <Children>
+      <Template src="skin:/decks/deck_settings.xml"/>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>KeyControls<Variable name="ChanNum"/></ObjectName>
+    <Children>
+      <Template src="skin:/decks/key_controls.xml"/>
+    </Children>
+  </SingletonDefinition>
+
+  <!-- Deck sizes -->
+  <SingletonDefinition>
+    <ObjectName>Deck<Variable name="ChanNum"/>_Mini</ObjectName>
+    <Children>
+      <Template src="skin:/decks/deck_mini.xml"/>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>Deck<Variable name="ChanNum"/>_Normal</ObjectName>
+    <Children>
+      <Template src="skin:/decks/deck_normal.xml"/>
+    </Children>
+  </SingletonDefinition>
+
+  <!-- Stack to choose Full // Full / Compact / Minimal deck -->
+  <WidgetStack currentpage="[Master],show_mixer" persist="true">
+    <Children>
+
+      <!-- Stack to choose Full / Compact / Minimal deck -->
+      <WidgetStack currentpage="[LateNight],deck_size" persist="true">
+        <Children>
+          <SingletonContainer>
+            <ObjectName>Deck<Variable name="ChanNum"/>_Normal</ObjectName>
+          </SingletonContainer>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+              <Template src="skin:/decks/deck_compact.xml"/>
+            </Children>
+          </WidgetGroup>
+
+          <SingletonContainer>
+            <ObjectName>Deck<Variable name="ChanNum"/>_Mini</ObjectName>
+          </SingletonContainer>
+        </Children>
+        <Connection>
+          <ConfigKey>[Master],show_mixer</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetStack>
+
+      <!-- Always show full decks when Mixer is visible -->
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <SingletonContainer>
+            <ObjectName>Deck<Variable name="ChanNum"/>_Normal</ObjectName>
+          </SingletonContainer>
+        </Children>
+        <Connection>
+          <ConfigKey>[Master],show_mixer</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetStack>
+</Template>

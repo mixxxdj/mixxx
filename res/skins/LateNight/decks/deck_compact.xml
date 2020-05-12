@@ -1,0 +1,97 @@
+<Template>
+  <WidgetGroup>
+    <ObjectName>DeckContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>DeckCompact<Variable name="ChanNum" /></ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>DeckRows2345</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+            <Layout>vertical</Layout>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>DeckRows234</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+
+                  <WidgetGroup><!-- Big spinny /cover -->
+                    <SizePolicy>min,min</SizePolicy>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <WidgetGroup>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Layout>horizontal</Layout>
+                        <Children>
+                          <!-- draws a line to separate rate rate controls and spinny/cover
+                          <Template src="skin:separator_spinny_cover.xml"/> -->
+                          <WidgetGroup>
+                            <ObjectName>SpinnyCoverContainerBig</ObjectName>
+                            <Size><Variable name="BigSpinnySize"/></Size>
+                            <Layout>horizontal</Layout>
+                            <Children>
+                              <SingletonContainer>
+                                <ObjectName>SpinnyCoverart<Variable name="ChanNum"/></ObjectName>
+                              </SingletonContainer>
+                            </Children>
+                          </WidgetGroup>
+                        </Children>
+                        <Connection>
+                          <ConfigKey persist="true">[LateNight],show_spinny_cover</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
+                    </Children>
+                    <Connection>
+                      <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup><!-- Big spinny /cover -->
+
+                  <WidgetGroup>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <Template src="skin:/decks/row_2_3_TitleArtistTime_compact.xml" />
+                      <Template src="skin:/decks/row_4_overviewSpinny_compact.xml" />
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <Size>1f,0min</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[Skin],show_rate_controls_compact</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup><!-- DeckRows234 -->
+
+              <Template src="skin:/decks/row_5_transportLoopJump_compact.xml" />
+            </Children>
+            <!--Connection>
+              <ConfigKey persist="true">[Skin],show_rate_controls_compact</ConfigKey>
+              <BindProperty>highlight</BindProperty>
+            </Connection-->
+          </WidgetGroup><!-- DeckRows2345 -->
+
+          <Template src="skin:/decks/rate_controls_compact.xml"/>
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[LateNight],show_vumeters_compact</ConfigKey>
+          <BindProperty>highlight</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- DeckCompactN -->
+
+    </Children>
+  </WidgetGroup><!-- DeckContainer -->
+</Template>

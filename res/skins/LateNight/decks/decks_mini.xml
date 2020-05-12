@@ -1,0 +1,57 @@
+<Template>
+  <WidgetGroup>
+    <ObjectName>DecksSizer</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <SingletonContainer>
+            <ObjectName>Deck1_Mini</ObjectName>
+          </SingletonContainer>
+
+          <SingletonContainer>
+            <ObjectName>Deck2_Mini</ObjectName>
+          </SingletonContainer>
+
+          <WidgetGroup>
+            <Size>5f,1min</Size>
+            <Connection>
+              <ConfigKey>[Master],skin_settings</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <SingletonContainer>
+            <ObjectName>Deck3_Mini</ObjectName>
+          </SingletonContainer>
+
+          <SingletonContainer>
+            <ObjectName>Deck4_Mini</ObjectName>
+          </SingletonContainer>
+
+          <WidgetGroup>
+            <Size>3f,1min</Size>
+            <Connection>
+              <ConfigKey>[Master],skin_settings</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

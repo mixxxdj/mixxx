@@ -22,21 +22,49 @@
             <Collapsible>1,0</Collapsible>
             <Children>
               <WidgetGroup>
+                <ObjectName>SidebarSearchPreviewContainer</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,me</SizePolicy>
                 <MinimumSize>100,</MinimumSize>
                 <Children>
 
-                  <Template src="skin:preview_deck.xml"/>
-
-                  <!--Search Input Field-->
+                  <!--Search Input Field + Library Expand toggle -->
                   <WidgetGroup>
                     <ObjectName>SearchLineBox</ObjectName>
-                    <Layout>vertical</Layout>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,max</SizePolicy>
                     <Children>
+
                       <SearchBox></SearchBox>
+
+                      <WidgetGroup>
+                        <ObjectName>LibExpandBox</ObjectName>
+                        <Layout>vertical</Layout>
+                        <Children>
+                          <WidgetGroup><MaximumSize>,3</MaximumSize></WidgetGroup>
+                          <PushButton>
+                            <TooltipId>maximize_library</TooltipId>
+                            <ObjectName>LibExpand</ObjectName>
+                            <Size>14f,18min</Size>
+                            <NumberStates>2</NumberStates>
+                            <State>
+                              <Number>0</Number>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                            </State>
+                            <Connection>
+                              <ConfigKey>[Master],maximize_library</ConfigKey>
+                              <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                          </PushButton>
+                          <WidgetGroup><SizePolicy>min,me</SizePolicy></WidgetGroup>
+                        </Children>
+                      </WidgetGroup><!-- LibExpandBox -->
                     </Children>
-                  </WidgetGroup>
+                  </WidgetGroup><!-- SearchLineBox -->
+
+                  <Template src="skin:/decks/preview_deck.xml"/>
 
                   <Splitter>
                     <ObjectName>HorizontalSplitter</ObjectName>
@@ -64,10 +92,10 @@
                         </Connection>
                       </CoverArt>
                     </Children>
-                  </Splitter>
+                  </Splitter><!-- HorizontalSplitter -->
 
                 </Children>
-              </WidgetGroup>
+              </WidgetGroup><!-- SidebarSearchPreviewContainer -->
 
               <!-- Library Table-->
               <Library>
@@ -78,10 +106,10 @@
               </Library>
 
             </Children>
-          </Splitter>
+          </Splitter><!-- VerticalSplitter -->
 
           <WidgetGroup>
-            <Size>5f,1min</Size>
+            <Size>3f,1min</Size>
             <Connection>
               <ConfigKey>[Master],skin_settings</ConfigKey>
               <BindProperty>visible</BindProperty>

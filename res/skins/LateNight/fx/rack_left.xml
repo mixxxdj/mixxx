@@ -1,0 +1,53 @@
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <SizePolicy>i,min</SizePolicy>
+    <Children>
+
+      <!-- EffectUnit 1 -->
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:/fx/unit.xml">
+            <SetVariable name="FxUnit">1</SetVariable>
+          </Template>
+
+          <WidgetGroup>
+            <ObjectName>FxRackFillerL</ObjectName>
+            <SizePolicy>min,me</SizePolicy>
+            <Connection>
+              <ConfigKey>[EffectRack1_EffectUnit2],show_parameters</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+      <!-- EffectUnit 3 -->
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:/fx/unit.xml">
+            <SetVariable name="FxUnit">3</SetVariable>
+          </Template>
+
+          <WidgetGroup>
+            <ObjectName>FxRackFillerL</ObjectName>
+            <SizePolicy>min,me</SizePolicy>
+            <Connection>
+              <ConfigKey>[EffectRack1_EffectUnit4],show_parameters</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_4effectunits</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

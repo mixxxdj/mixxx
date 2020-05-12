@@ -1,0 +1,61 @@
+<!--
+Description:
+  Size-aware container that checks if Spinny and/or Cover are visible.
+  If none is visible the spinny/cover container is hidden.
+
+Controls:
+  [LateNight],no_spinny_no_cover
+  [LateNight],show_spinny_cover
+
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Size>2f,0f</Size>
+    <Children>
+
+      <WidgetGroup>
+        <Size>1f,0f</Size>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Size>1f,0f</Size>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <SizeAwareStack>
+        <Children>
+          <WidgetStack>
+            <SizePolicy>me,f</SizePolicy>
+            <MaximumSize>0,0</MaximumSize>
+            <Children>
+              <WidgetGroup trigger="[LateNight],no_spinny_no_cover"><Size>1f,0f</Size></WidgetGroup>
+              <WidgetGroup trigger="[LateNight],show_spinny_cover"><Size>1f,0f</Size></WidgetGroup>
+            </Children>
+          </WidgetStack>
+
+          <WidgetStack>
+            <SizePolicy>me,f</SizePolicy>
+            <MinimumSize>1,0</MinimumSize>
+            <MaximumSize>-1,0</MaximumSize>
+            <Children>
+              <WidgetGroup trigger="[LateNight],show_spinny_cover"><Size>1f,0f</Size></WidgetGroup>
+              <WidgetGroup trigger="[LateNight],no_spinny_no_cover"><Size>1f,0f</Size></WidgetGroup>
+            </Children>
+          </WidgetStack>
+
+        </Children>
+      </SizeAwareStack>
+
+    </Children>
+  </WidgetGroup>
+</Template>

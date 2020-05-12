@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   id="svg26"
+   version="1.1"
+   height="34"
+   width="34">
+  <metadata
+     id="metadata30">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs16">
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.3478261 0 0 1.3478261 -.5217492 -31.826087)"
+       y2="12"
+       y1="12"
+       x2="24"
+       x1="2"
+       id="c">
+      <stop
+         id="stop2"
+         offset="0"
+         stop-opacity=".0047619" />
+      <stop
+         id="stop4"
+         offset=".5"
+         stop-opacity="0" />
+      <stop
+         id="stop6"
+         offset="1"
+         stop-opacity=".47451" />
+    </linearGradient>
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.2826086 0 0 1.2826086 .32608726 -33.673951)"
+       y2="18.657106"
+       y1="18.657106"
+       x2="23.988836"
+       x1="1.8333464"
+       id="b">
+      <stop
+         id="stop9"
+         offset="0"
+         stop-color="#393939" />
+      <stop
+         id="stop11"
+         offset=".49880221"
+         stop-color="#393939" />
+      <stop
+         id="stop13"
+         offset="1"
+         stop-color="#121212" />
+    </linearGradient>
+  </defs>
+  <rect
+     id="rect18"
+     fill-opacity=".09019608"
+     color="#000001"
+     height="30"
+     width="30"
+     y="-32"
+     x="2"
+     transform="rotate(90)" />
+  <rect
+     id="rect20"
+     fill="url(#c)"
+     color="#000001"
+     ry="1.5"
+     rx="1.5"
+     height="31"
+     width="31"
+     y="-32.5"
+     x="1.5000298"
+     transform="rotate(90)" />
+  <rect
+     id="rect22"
+     style="paint-order:fill markers stroke"
+     stroke-linejoin="round"
+     stroke-linecap="round"
+     stroke="#020201"
+     fill="none"
+     ry=".30000001"
+     rx=".30000001"
+     height="31"
+     width="31"
+     y="1.5000311"
+     x="1.5" />
+</svg>
