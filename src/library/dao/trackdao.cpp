@@ -1450,6 +1450,7 @@ bool TrackDAO::updateTrack(Track* pTrack) const {
             "samplerate=:samplerate,"
             "bitrate=:bitrate,"
             "duration=:duration,"
+            "beats_version=:beats_version,"
             "beats_sub_version=:beats_sub_version,"
             "beats=:beats,"
             "bpm_lock=:bpm_lock,"

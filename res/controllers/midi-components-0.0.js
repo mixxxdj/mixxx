@@ -349,9 +349,9 @@
         connect: function() {
             Button.prototype.connect.call(this); // call parent connect
             if (undefined !== this.group && this.colorKey !== undefined) {
-                this.connections[1] = engine.makeConnection(this.group, this.colorKey, function(id) {
+                this.connections[1] = engine.makeConnection(this.group, this.colorKey, function(color) {
                     if (engine.getValue(this.group, this.outKey)) {
-                        this.outputColor(id);
+                        this.outputColor(color);
                     }
                 });
             }

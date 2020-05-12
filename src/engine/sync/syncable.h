@@ -69,6 +69,7 @@ class Syncable {
     // include scratch or FF/REW values.
     virtual double getBpm() const = 0;
 
+    // Gets the beat distance as a fraction from 0 to 1
     virtual double getBeatDistance() const = 0;
     // Gets the speed of the syncable if it was playing at 1.0 rate.
     virtual double getBaseBpm() const = 0;

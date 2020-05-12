@@ -4,16 +4,17 @@
 #ifndef ENGINECONTROL_H
 #define ENGINECONTROL_H
 
-#include <QObject>
-#include <QList>
-
 #include <gtest/gtest_prod.h>
 
+#include <QList>
+#include <QObject>
+
+#include "control/controlvalue.h"
+#include "engine/cachingreader/cachingreader.h"
+#include "engine/effects/groupfeaturestate.h"
+#include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
-#include "control/controlvalue.h"
-#include "engine/effects/groupfeaturestate.h"
-#include "engine/cachingreader/cachingreader.h"
 
 class EngineMaster;
 class EngineBuffer;
@@ -83,6 +84,7 @@ class EngineControl : public QObject {
     void seekAbs(double sample);
     // Seek to an exact sample and don't allow quantizing adjustment.
     void seekExact(double sample);
+    // Returns an EngineBuffer to target for syncing. Returns nullptr if none found
     EngineBuffer* pickSyncTarget();
 
     UserSettingsPointer getConfig();
