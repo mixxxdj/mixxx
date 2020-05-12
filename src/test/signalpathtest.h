@@ -138,7 +138,7 @@ class BaseSignalPathTest : public MixxxTest {
     // will write out the actual buffers to the testdata/reference_buffers/
     // directory. Remove the ".actual" extension to create the file the test
     // will compare against.  On the next run, the test should pass.
-    // Use scripts/AudioPlot.py to look at the reference file and make sure it
+    // Use tools/AudioPlot.py to look at the reference file and make sure it
     // looks correct.  Each line of the generated file contains the left sample
     // followed by the right sample.
     void assertBufferMatchesReference(const CSAMPLE* pBuffer, const int iBufferSize,
