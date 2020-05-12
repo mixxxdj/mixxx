@@ -1704,6 +1704,19 @@ DJ505.SavedLoopMode = function(deck, offset) {
     for (var n = 0; n <= 7; n++) {
         this.pads[n] = new this.PerformancePad(n);
     }
+
+    this.paramMinusButton = new components.Button({
+        midi: [0x94 + offset, 0x28],
+        group: deck.currentDeck,
+        outKey: "hotcue_focus_color_prev",
+        inKey: "hotcue_focus_color_prev",
+    });
+    this.paramPlusButton = new components.Button({
+        midi: [0x94 + offset, 0x29],
+        group: deck.currentDeck,
+        outKey: "hotcue_focus_color_next",
+        inKey: "hotcue_focus_color_next",
+    });
 };
 DJ505.SavedLoopMode.prototype = Object.create(components.ComponentContainer.prototype);
 
