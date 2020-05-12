@@ -1114,9 +1114,15 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
     double sampleRate = static_cast<double>(track->getSampleRate());
 
     QString anlzPath = index.sibling(index.row(), fieldIndex("analyze_path")).data().toString();
-    readAnalyze(track, sampleRate, timingOffset, true, anlzPath);
     QString anlzPathExt = anlzPath.left(anlzPath.length() - 3) + "EXT";
-    readAnalyze(track, sampleRate, timingOffset, false, anlzPathExt);
+
+    if (QFile(anlzPathExt).exists()) {
+        // Beatgrids appear to be only correct in legacy ANLZ file
+        readAnalyze(track, sampleRate, timingOffset, true, anlzPath);
+        readAnalyze(track, sampleRate, timingOffset, false, anlzPathExt);
+    } else {
+        readAnalyze(track, sampleRate, timingOffset, false, anlzPath);
+    }
 
     // Assume that the key of the file the has been analyzed in Recordbox is correct
     // and prevent the AnalyzerKey from re-analyzing.
