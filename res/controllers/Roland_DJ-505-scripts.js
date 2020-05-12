@@ -1609,6 +1609,7 @@ DJ505.SavedLoopMode = function(deck, offset) {
         this.midi = [0x94 + offset, 0x14 + n];
         this.number = n + 8 + 1;
         this.outKey = "hotcue_" + this.number + "_enabled";
+        this.colorKey = "hotcue_" + this.number + "_color";
 
         components.Button.call(this);
     };
@@ -1619,9 +1620,9 @@ DJ505.SavedLoopMode = function(deck, offset) {
         group: deck.currentDeck,
         outConnect: false,
         on: this.color,
+        colorMapper: DJ505.PadColorMap,
         blinkTimer: 0,
         blinkTimeout: 250,
-        blinkColor: DJ505.PadColor.BLUE,
         blinkStateOn: false,
         unshift: function() {
             this.inKey = "hotcue_" + this.number + "_activateloop";
@@ -1663,17 +1664,34 @@ DJ505.SavedLoopMode = function(deck, offset) {
                 this.blinkTimer = engine.beginTimer(
                     this.blinkTimeout,
                     function() {
+                        var colorValue = this.colorMapper.getValueForNearestColor(
+                            engine.getValue(this.group, this.colorKey));
                         if (this.blinkStateOn) {
-                            this.send(this.off);
+                            this.send(colorValue + DJ505.PadColor.DIM_MODIFIER);
                             this.blinkStateOn = false;
                         } else {
-                            this.send(this.blinkColor);
+                            this.send(colorValue);
                             this.blinkStateOn = true;
                         }
                     }
                 );
+            } else if (value === 1) {
+                var colorValue = this.colorMapper.getValueForNearestColor(
+                    engine.getValue(this.group, this.colorKey));
+                this.send(colorValue);
             } else {
-                this.send((value > 0) ? this.on : this.off);
+                this.send(this.on + DJ505.PadColor.DIM_MODIFIER);
+            }
+        },
+        connect: function() {
+            components.Button.prototype.connect.call(this); // call parent connect
+            if (undefined !== this.group && this.colorKey !== undefined) {
+                this.connections[1] = engine.makeConnection(this.group, this.colorKey, function(color) {
+                    if (engine.getValue(this.group, this.outKey) === 1) {
+                        var colorValue = this.colorMapper.getValueForNearestColor(color);
+                        this.send(colorValue);
+                    }
+                });
             }
         },
         disconnect: function() {
