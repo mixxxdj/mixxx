@@ -71,18 +71,17 @@
 
 ## [2.2.4](https://launchpad.net/mixxx/+milestone/2.2.4) (Unreleased)
 
-* Store default recording format after "Restore Defaults" [lp:1857806](https://bugs.launchpad.net/mixxx/+bug/1857806) #2414
+* Store default recording format after "Restore Defaults" lp:1857806 #2414
 * Prevent infinite loop when decoding corrupt MP3 files #2417
 * Add workaround for broken libshout versions #2040 #2438
-* Speed up purging of tracks [lp:1845837](https://bugs.launchpad.net/mixxx/+bug/1845837) #2393
-* Prevent infinite loop when decoding corrupt MP3 files #2417
-* Store default recording format after "Restore Defaults" [lp:1857806](https://bugs.launchpad.net/mixxx/+bug/1857806) #2414
+* Speed up purging of tracks lp:1845837 #2393
 * Don't stop playback if vinyl passthrough input is configured and PASS button is pressed #2474
-* Fix debug assertion for invalid crate names [lp:1861431](https://bugs.launchpad.net/mixxx/+bug/1861431) #2477
+* Fix debug assertion for invalid crate names lp:1861431 #2477
 * Fix crashes when executing actions on tracks that already disappeared from the DB #2527
-* AutoDJ: Skip next track when both deck are playing [lp:1399974](https://bugs.launchpad.net/mixxx/+bug/1399974) #2531
+* AutoDJ: Skip next track when both deck are playing lp:1399974 #2531
 * Tweak scratch parameters for Mixtrack Platinum #2028
 * Fix auto tempo going to infinity on Pioneer DDJ-SB2 #2559
+* Fix bpm.tapButton logic and reject missed & double taps #2594
 * Add controller mapping for Native Instruments Traktor Kontrol S2 MK3 #2348
 * Add controller mapping for Soundless joyMIDI #2425
 * Add controller mapping for Hercules DJControl Inpulse 300 #2465
