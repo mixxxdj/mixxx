@@ -991,7 +991,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
             } else {
                 // Mixxx v2.4 will feature multiple loops, so these saved here will be usable
                 // For 2.3, Mixxx treats them as hotcues and the first one will be loaded as the single loop Mixxx supports
-		lastHotCueIndex++;
+                lastHotCueIndex++;
                 setHotCue(track, memoryCueOrLoop.startPosition, memoryCueOrLoop.endPosition, lastHotCueIndex, memoryCueOrLoop.comment, memoryCueOrLoop.color);
             }
         }
