@@ -37,11 +37,6 @@ class WCueMenuPopup : public QWidget {
         show();
     }
 
-    void hide() {
-        emit aboutToHide();
-        QWidget::hide();
-    }
-
     void show() {
         setColorPalette(m_colorPaletteSettings.getHotcueColorPalette());
         m_pEditLabel->setFocus();
@@ -59,6 +54,8 @@ class WCueMenuPopup : public QWidget {
     void slotChangeCueColor(mixxx::RgbColor::optional_t color);
 
   private:
+    void closeEvent(QCloseEvent* event) override;
+
     ColorPaletteSettings m_colorPaletteSettings;
     CuePointer m_pCue;
     TrackPointer m_pTrack;

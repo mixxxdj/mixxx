@@ -23,6 +23,7 @@ WWaveformViewer::WWaveformViewer(const char* group, UserSettingsPointer pConfig,
           m_zoomZoneWidth(20),
           m_bScratching(false),
           m_bBending(false),
+          m_bHotcueMenuShowing(false),
           m_pCueMenuPopup(make_parented<WCueMenuPopup>(pConfig, this)),
           m_waveformWidget(nullptr) {
     setAcceptDrops(true);
@@ -37,6 +38,10 @@ WWaveformViewer::WWaveformViewer(const char* group, UserSettingsPointer pConfig,
     m_pWheel = new ControlProxy(
             group, "wheel", this);
 
+    connect(m_pCueMenuPopup.get(),
+            &WCueMenuPopup::aboutToHide,
+            this,
+            &WWaveformViewer::slotCueMenuPopupAboutToHide);
     setAttribute(Qt::WA_OpaquePaintEvent);
 }
 
@@ -79,10 +84,11 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         m_pScratchPositionEnable->slotSet(1.0);
     } else if (event->button() == Qt::RightButton) {
         const auto currentTrack = m_waveformWidget->getTrackInfo();
-        auto cueAtClickPos = m_waveformWidget->getCueAtPoint(event->pos());
+        auto cueAtClickPos = m_waveformWidget->getCueAtPoint(m_mouseAnchor);
         if (cueAtClickPos) {
             m_pCueMenuPopup->setTrackAndCue(currentTrack, *cueAtClickPos);
             m_pCueMenuPopup->popup(event->globalPos());
+            m_bHotcueMenuShowing = true;
         }
         // If we are scratching then disable and reset because the two shouldn't
         // be used at once.
@@ -95,7 +101,9 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
     }
 
     // Set the cursor to a hand while the mouse is down.
-    setCursor(Qt::ClosedHandCursor);
+    if (!m_bHotcueMenuShowing) {
+        setCursor(Qt::ClosedHandCursor);
+    }
 }
 
 void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
@@ -224,4 +232,8 @@ void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) 
         connect(pWidget, SIGNAL(destroyed()),
                 this, SLOT(slotWidgetDead()));
     }
+}
+
+void WWaveformViewer::slotCueMenuPopupAboutToHide() {
+    m_bHotcueMenuShowing = false;
 }
