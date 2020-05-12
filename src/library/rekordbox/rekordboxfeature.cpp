@@ -67,13 +67,12 @@ constexpr mixxx::RgbColor kColorForIDAqua(0x16C0F8);
 constexpr mixxx::RgbColor kColorForIDBlue(0x0150F8);
 constexpr mixxx::RgbColor kColorForIDPurple(0x9808F8);
 constexpr mixxx::RgbColor kColorForIDNoColor(0x0);
-constexpr int kNoColorID = -1;;
 
 struct memory_cue_loop_t {
     double startPosition;
     double endPosition;
     QString comment;
-    int colorID;
+    mixxx::RgbColor::optional_t color;
 };
 
 bool createLibraryTable(QSqlDatabase& database, const QString& tableName) {
@@ -273,15 +272,15 @@ QString getText(rekordbox_pdb_t::device_sql_string_t* deviceString) {
     if (instanceof <rekordbox_pdb_t::device_sql_short_ascii_t>(deviceString->body())) {
         rekordbox_pdb_t::device_sql_short_ascii_t* shortAsciiString =
                 static_cast<rekordbox_pdb_t::device_sql_short_ascii_t*>(deviceString->body());
-        text =  QString::fromStdString(shortAsciiString->text());
+        text = QString::fromStdString(shortAsciiString->text());
     } else if (instanceof <rekordbox_pdb_t::device_sql_long_ascii_t>(deviceString->body())) {
         rekordbox_pdb_t::device_sql_long_ascii_t* longAsciiString =
                 static_cast<rekordbox_pdb_t::device_sql_long_ascii_t*>(deviceString->body());
-        text =  QString::fromStdString(longAsciiString->text());
+        text = QString::fromStdString(longAsciiString->text());
     } else if (instanceof <rekordbox_pdb_t::device_sql_long_utf16be_t>(deviceString->body())) {
         rekordbox_pdb_t::device_sql_long_utf16be_t* longUtf16beString =
                 static_cast<rekordbox_pdb_t::device_sql_long_utf16be_t*>(deviceString->body());
-        text =  toUnicode(longUtf16beString->text());
+        text = toUnicode(longUtf16beString->text());
     }
 
     // Some strings read from Rekordbox *.PDB files contain random null characters
@@ -788,7 +787,7 @@ void clearDeviceTables(QSqlDatabase& database, TreeItem* child) {
     transaction.commit();
 }
 
-void setHotCue(TrackPointer track, double startPosition, double endPosition, int id, QString label, mixxx::RgbColor::optional_t color, int colorID) {
+void setHotCue(TrackPointer track, double startPosition, double endPosition, int id, QString label, mixxx::RgbColor::optional_t color) {
     CuePointer pCue;
     bool hotCueFound = false;
 
@@ -815,8 +814,6 @@ void setHotCue(TrackPointer track, double startPosition, double endPosition, int
     pCue->setLabel(label);
     if (color) {
         pCue->setColor(*color);
-    } else if (colorID != kNoColorID) {
-        pCue->setColor(colorFromID(colorID));
     }
 }
 
@@ -887,7 +884,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                         memory_cue_loop_t memoryCue;
                         memoryCue.startPosition = position;
                         memoryCue.endPosition = Cue::kNoPosition;
-                        memoryCue.colorID = kNoColorID;
+                        memoryCue.color = mixxx::RgbColor::nullopt();
                         memoryCuesAndLoops << memoryCue;
                     } break;
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_LOOP: {
@@ -900,7 +897,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                         memory_cue_loop_t loop;
                         loop.startPosition = position;
                         loop.endPosition = samples * static_cast<double>(endTime);
-                        loop.colorID = kNoColorID;
+                        loop.color = mixxx::RgbColor::nullopt();
                         memoryCuesAndLoops << loop;
                     } break;
                     }
@@ -910,7 +907,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                     if (hotCueIndex > lastHotCueIndex) {
                         lastHotCueIndex = hotCueIndex;
                     }
-                    setHotCue(track, position, Cue::kNoPosition, hotCueIndex, QString(), mixxx::RgbColor::nullopt(), kNoColorID);
+                    setHotCue(track, position, Cue::kNoPosition, hotCueIndex, QString(), mixxx::RgbColor::nullopt());
                 } break;
                 }
             }
@@ -938,7 +935,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                         memoryCue.startPosition = position;
                         memoryCue.endPosition = Cue::kNoPosition;
                         memoryCue.comment = toUnicode((*cueExtendedEntry)->comment());
-                        memoryCue.colorID = static_cast<int>((*cueExtendedEntry)->color_id());
+                        memoryCue.color = colorFromID(static_cast<int>((*cueExtendedEntry)->color_id()));
                         memoryCuesAndLoops << memoryCue;
                     } break;
                     case rekordbox_anlz_t::CUE_ENTRY_TYPE_LOOP: {
@@ -952,7 +949,7 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                         loop.startPosition = position;
                         loop.endPosition = samples * static_cast<double>(endTime);
                         loop.comment = toUnicode((*cueExtendedEntry)->comment());
-                        loop.colorID = static_cast<int>((*cueExtendedEntry)->color_id());
+                        loop.color = colorFromID(static_cast<int>((*cueExtendedEntry)->color_id()));
                         memoryCuesAndLoops << loop;
                     } break;
                     }
@@ -962,7 +959,8 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                     if (hotCueIndex > lastHotCueIndex) {
                         lastHotCueIndex = hotCueIndex;
                     }
-                    setHotCue(track, position, Cue::kNoPosition, hotCueIndex, toUnicode((*cueExtendedEntry)->comment()), mixxx::RgbColor(qRgb(static_cast<int>((*cueExtendedEntry)->color_red()), static_cast<int>((*cueExtendedEntry)->color_green()), static_cast<int>((*cueExtendedEntry)->color_blue()))), kNoColorID);
+                    setHotCue(
+                            track, position, Cue::kNoPosition, hotCueIndex, toUnicode((*cueExtendedEntry)->comment()), mixxx::RgbColor(qRgb(static_cast<int>((*cueExtendedEntry)->color_red()), static_cast<int>((*cueExtendedEntry)->color_green()), static_cast<int>((*cueExtendedEntry)->color_blue()))));
                 } break;
                 }
             }
@@ -978,29 +976,23 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
         });
 
         bool mainCueFound = false;
-        
-	// Add memory cues and loops
+
+        // Add memory cues and loops
         for (int memoryCueOrLoopIndex = 0; memoryCueOrLoopIndex < memoryCuesAndLoops.size(); memoryCueOrLoopIndex++) {
             memory_cue_loop_t memoryCueOrLoop = memoryCuesAndLoops[memoryCueOrLoopIndex];
 
-            if (memoryCueOrLoop.endPosition == Cue::kNoPosition) {
-                if (mainCueFound) {
-                    // Add remaining memory cues as hot cues (after actual found hotcues) as Mixxx can only have 1 cue
-                    setHotCue(track, memoryCueOrLoop.startPosition, -1, ++lastHotCueIndex, memoryCueOrLoop.comment, mixxx::RgbColor::nullopt(), memoryCueOrLoop.colorID);
-                } else {
-                    // Set first chronological memory cue as Mixxx MainCue
-                    track->setCuePoint(CuePosition(memoryCueOrLoop.startPosition));
-                    CuePointer pMainCue = track->findCueByType(mixxx::CueType::MainCue);
-                    pMainCue->setLabel(memoryCueOrLoop.comment);
-                    if (memoryCueOrLoop.colorID != kNoColorID) {
-                        pMainCue->setColor(colorFromID(memoryCueOrLoop.colorID));
-                    }
-                    mainCueFound = true;
-                }
+            if (!mainCueFound && memoryCueOrLoop.endPosition == Cue::kNoPosition) {
+                // Set first chronological memory cue as Mixxx MainCue
+                track->setCuePoint(CuePosition(memoryCueOrLoop.startPosition));
+                CuePointer pMainCue = track->findCueByType(mixxx::CueType::MainCue);
+                pMainCue->setLabel(memoryCueOrLoop.comment);
+                pMainCue->setColor(*memoryCueOrLoop.color);
+                mainCueFound = true;
             } else {
-                // Add remaining loops as hot cues (after actual found hotcues) as Mixxx can only have 1 loop
-                // Mixxx v2.4 will feature multiple loops, so these saved here will be usable 
-                setHotCue(track, memoryCueOrLoop.startPosition, memoryCueOrLoop.endPosition, ++lastHotCueIndex, memoryCueOrLoop.comment, mixxx::RgbColor::nullopt(), memoryCueOrLoop.colorID);
+                // Mixxx v2.4 will feature multiple loops, so these saved here will be usable
+                // For 2.3, Mixxx treats them as hotcues and the first one will be loaded as the single loop Mixxx supports
+		lastHotCueIndex++;
+                setHotCue(track, memoryCueOrLoop.startPosition, memoryCueOrLoop.endPosition, lastHotCueIndex, memoryCueOrLoop.comment, memoryCueOrLoop.color);
             }
         }
     }
