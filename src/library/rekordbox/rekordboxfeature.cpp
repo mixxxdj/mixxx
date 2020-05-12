@@ -806,9 +806,9 @@ void setHotCue(TrackPointer track, double startPosition, double endPosition, int
 
     pCue->setStartPosition(startPosition);
     if (endPosition == Cue::kNoPosition) {
-    	pCue->setType(mixxx::CueType::HotCue);
+        pCue->setType(mixxx::CueType::HotCue);
     } else {
-    	pCue->setType(mixxx::CueType::Loop);
+        pCue->setType(mixxx::CueType::Loop);
         pCue->setEndPosition(endPosition);
     }
     pCue->setHotCue(id);
