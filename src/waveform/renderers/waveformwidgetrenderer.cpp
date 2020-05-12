@@ -292,7 +292,8 @@ void WaveformWidgetRenderer::setTrack(TrackPointer track) {
 std::optional<CuePointer> WaveformWidgetRenderer::getCueAtPoint(QPoint point) {
     WaveformMarkPointer pSelectedMark;
     for (auto pMark : m_markBoundaries.keys()) {
-        if (m_markBoundaries[pMark].contains(point)) {
+        const auto labelRectangle = m_markBoundaries[pMark];
+        if (labelRectangle.contains(point)) {
             pSelectedMark = pMark;
             break;
         }
