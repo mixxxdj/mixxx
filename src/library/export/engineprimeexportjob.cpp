@@ -378,8 +378,8 @@ void EnginePrimeExportJob::run() {
     // additional count for setting up the database at the start.
     double maxProgress = trackRefs.size() + crateIds.size() + 1;
     double currProgress = 0;
-    emit(jobMaximum(maxProgress));
-    emit(jobProgress(currProgress));
+    emit jobMaximum(maxProgress);
+    emit jobProgress(currProgress);
 
     // Ensure that the database exists, creating an empty one if not.
     bool created;
@@ -391,7 +391,7 @@ void EnginePrimeExportJob::run() {
         m_pDb.reset(new djinterop::database{db});
     }
     ++currProgress;
-    emit(jobProgress(currProgress));
+    emit jobProgress(currProgress);
 
     // We will build up a map from Mixxx track id to EL track id during export.
     m_mixxxToEnginePrimeTrackIdMap.clear();
@@ -438,7 +438,7 @@ void EnginePrimeExportJob::run() {
                 *m_pDb, m_mixxxToEnginePrimeTrackIdMap, pTrack);
 
         ++currProgress;
-        emit(jobProgress(currProgress));
+        emit jobProgress(currProgress);
     }
 
     // We will ensure that there is a special top-level crate representing the
@@ -478,7 +478,7 @@ void EnginePrimeExportJob::run() {
                 crateId);
 
         ++currProgress;
-        emit(jobProgress(currProgress));
+        emit jobProgress(currProgress);
     }
 
     qInfo() << "Engine Prime Export Job completed successfully";

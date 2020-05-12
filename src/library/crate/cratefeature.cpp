@@ -834,14 +834,16 @@ void CrateFeature::slotResetSelectedTrack() {
 }
 
 void CrateFeature::slotExportAllCrates() {
-    emit(exportAllCrates());
+    emit exportAllCrates();
 }
 
 void CrateFeature::slotExportCrate() {
-    if (m_lastRightClickedIndex.isValid()) {
-        CrateId crateId = crateIdFromIndex(m_lastRightClickedIndex);
-        if (crateId.isValid()) {
-            emit(exportCrate(crateId));
-        }
+    if (!m_lastRightClickedIndex.isValid()) {
+        return;
+    }
+
+    CrateId crateId = crateIdFromIndex(m_lastRightClickedIndex);
+    if (crateId.isValid()) {
+        emit exportCrate(crateId);
     }
 }

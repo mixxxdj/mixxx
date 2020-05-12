@@ -198,5 +198,5 @@ void MixxxLibraryFeature::onRightClick(const QPoint& globalPos) {
 }
 
 void MixxxLibraryFeature::slotExportLibrary() {
-    emit(exportLibrary());
+    emit exportLibrary();
 }
