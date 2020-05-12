@@ -51,8 +51,13 @@ class EngineSync : public BaseSyncableListener {
     void notifyPlaying(Syncable* pSyncable, bool playing) override;
     void notifyScratching(Syncable* pSyncable, bool scratching) override;
 
-    // Used to pick a sync target for non-master-sync mode.
-    EngineChannel* pickNonSyncSyncTarget(EngineChannel* pDontPick) const;
+    // Used to pick a sync target for cases where master sync mode is not sufficient.
+    // Guaranteed to pick a Syncable that is a real deck and has an EngineBuffer.
+    // First choice is master sync, if it's a real deck,
+    // then it will fall back to the first playing syncable deck,
+    // then it will fall back to the first playing deck,
+    // then it will fall back to the first non-playing deck.
+    Syncable* pickNonSyncSyncTarget(EngineChannel* pDontPick) const;
 
     // Used to test whether changing the rate of a Syncable would change the rate
     // of other Syncables that are playing
