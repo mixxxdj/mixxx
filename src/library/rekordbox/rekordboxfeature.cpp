@@ -907,7 +907,13 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                     if (hotCueIndex > lastHotCueIndex) {
                         lastHotCueIndex = hotCueIndex;
                     }
-                    setHotCue(track, position, Cue::kNoPosition, hotCueIndex, QString(), mixxx::RgbColor::nullopt());
+                    setHotCue(
+                            track,
+                            position,
+                            Cue::kNoPosition,
+                            hotCueIndex,
+                            QString(),
+                            mixxx::RgbColor::nullopt());
                 } break;
                 }
             }
@@ -959,8 +965,18 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                     if (hotCueIndex > lastHotCueIndex) {
                         lastHotCueIndex = hotCueIndex;
                     }
-                    setHotCue(
-                            track, position, Cue::kNoPosition, hotCueIndex, toUnicode((*cueExtendedEntry)->comment()), mixxx::RgbColor(qRgb(static_cast<int>((*cueExtendedEntry)->color_red()), static_cast<int>((*cueExtendedEntry)->color_green()), static_cast<int>((*cueExtendedEntry)->color_blue()))));
+                    setHotCue(track,
+                            position,
+                            Cue::kNoPosition,
+                            hotCueIndex,
+                            toUnicode((*cueExtendedEntry)->comment()),
+                            mixxx::RgbColor(qRgb(
+                                    static_cast<int>(
+                                            (*cueExtendedEntry)->color_red()),
+                                    static_cast<int>(
+                                            (*cueExtendedEntry)->color_green()),
+                                    static_cast<int>((*cueExtendedEntry)
+                                                             ->color_blue()))));
                 } break;
                 }
             }
@@ -992,7 +1008,13 @@ void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool i
                 // Mixxx v2.4 will feature multiple loops, so these saved here will be usable
                 // For 2.3, Mixxx treats them as hotcues and the first one will be loaded as the single loop Mixxx supports
                 lastHotCueIndex++;
-                setHotCue(track, memoryCueOrLoop.startPosition, memoryCueOrLoop.endPosition, lastHotCueIndex, memoryCueOrLoop.comment, memoryCueOrLoop.color);
+                setHotCue(
+                        track,
+                        memoryCueOrLoop.startPosition,
+                        memoryCueOrLoop.endPosition,
+                        lastHotCueIndex,
+                        memoryCueOrLoop.comment,
+                        memoryCueOrLoop.color);
             }
         }
     }
