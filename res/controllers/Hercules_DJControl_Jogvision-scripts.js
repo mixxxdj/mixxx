@@ -55,8 +55,8 @@ var on = 0x7F;
 var off = 0x00;
 var alpha = 1.0 / 8;
 var beta = alpha / 16;
-var ledRotationSpeed = 60; // The bigger, the slower
-var ledRotationTimer = 0;
+var speed = 33 + 1/3;
+var ledSpeed = (speed / 60) * 127;
 var masterLeds = 0x90;
 var beatActiveMode = "normal"; // normal, reverse, blink, follow
 var beatMax;
@@ -75,22 +75,19 @@ DJCJV.Channel = [];
 DJCJV.Channel["[Channel1]"] = {"central": 0x90, "deck": 0xB0, "beatPosition": 1, "rotation": 0x00, "n": 1};
 DJCJV.Channel["[Channel2]"] = {"central": 0x91, "deck": 0xB1, "beatPosition": 1, "rotation": 0x00, "n": 2};
 
-// Function to rotate jogs' outer led in the given direction and speed (default is forwards, speed based on BPM)
-var spinJogLed = function(jog, direction, value) {
-    if (!direction || direction === '') {
-        direction = "forward";
+// Function to rotate jogs' outer led (borrowed from the 'Pioneer-DDJ-SX-scripts.js' mapping)
+DJCJV.updateJogLeds = function(value, group, control) {
+    var duration = engine.getValue(group, "duration");
+    var elapsedTime = value * duration;
+    var wheelPos = parseInt(((value >= 0) ? 0 : 127) + 1 + ((ledSpeed * elapsedTime) % 127));
+
+    // Only send midi message when the position is actually updated.
+    if (DJCJV.Channel[group].rotation !== wheelPos) {
+        midi.sendShortMsg(DJCJV.Channel[group].deck, 0x60, wheelPos); // Update the outer (spin) jog leds
+        DJCJV.wheelInnerUpdate(value, group, control); // Also update the inner jog leds with updated song position
     }
 
-    if (!value || value === '') {
-        value = engine.getValue(jog, "bpm") / ledRotationSpeed;
-    }
-
-    if (direction === "forward") {
-        DJCJV.Channel[jog].rotation = DJCJV.Channel[jog].rotation >= 127 ? 1 : DJCJV.Channel[jog].rotation + value;
-    } else {
-        DJCJV.Channel[jog].rotation = DJCJV.Channel[jog].rotation <= 1 ? 127 : DJCJV.Channel[jog].rotation - value;
-    }
-    midi.sendShortMsg(DJCJV.Channel[jog].deck, 0x60, DJCJV.Channel[jog].rotation);
+    DJCJV.Channel[group].rotation = wheelPos;
 };
 
 // Initialization
@@ -135,11 +132,9 @@ DJCJV.init = function(id) {
     engine.setParameter("[QuickEffectRack1_[Channel1]]", "super1", 0.5);
     engine.setParameter("[QuickEffectRack1_[Channel2]]", "super1", 0.5);
 
-    // Connect the VUMeters and Jog Inner LED
+    // Connect the VUMeters
     engine.connectControl("[Channel1]", "VuMeter", "DJCJV.vuMeterUpdate");
     engine.connectControl("[Channel2]", "VuMeter", "DJCJV.vuMeterUpdate");
-    engine.connectControl("[Channel1]", "playposition", "DJCJV.wheelInnerUpdate");
-    engine.connectControl("[Channel2]", "playposition", "DJCJV.wheelInnerUpdate");
 
     // Connect the beat_active with beat leds
     engine.connectControl("[Channel1]", "beat_active", "DJCJV.beatActive");
@@ -154,15 +149,9 @@ DJCJV.init = function(id) {
     midi.sendShortMsg(DJCJV.Channel["[Channel1]"].deck, 0x60, 1);
     midi.sendShortMsg(DJCJV.Channel["[Channel2]"].deck, 0x60, 1);
 
-    // Enable jogs' outer leds rotation by timer (when channel is playing)
-    ledRotationTimer = engine.beginTimer(20, function() {
-        if ((engine.getValue("[Channel1]", "play") === 1) && (! engine.isScratching(DJCJV.Channel["[Channel1]"].n))) {
-            spinJogLed("[Channel1]");
-        }
-        if ((engine.getValue("[Channel2]", "play") === 1) && (! engine.isScratching(DJCJV.Channel["[Channel2]"].n))) {
-            spinJogLed("[Channel2]");
-        }
-    });
+    // Enable jogs' outer leds rotation and Inner LEDs song position update
+    engine.connectControl("[Channel1]", "playposition", "DJCJV.updateJogLeds");
+    engine.connectControl("[Channel2]", "playposition", "DJCJV.updateJogLeds");
 
     // Ask the controller to send all current knob/slider values over MIDI, which will update the corresponding GUI controls in MIXXX.
     midi.sendShortMsg(0xB0, 0x7F, on);
@@ -172,10 +161,6 @@ DJCJV.init = function(id) {
 
 // Finalization
 DJCJV.shutdown = function() {
-    if (ledRotationTimer) {
-        engine.stopTimer(ledRotationTimer);
-        ledRotationTimer = 0;
-    }
     //Set all LED states to off
     midi.sendShortMsg(DJCJV.Channel["[Channel1]"].deck, 0x7F, off);
     midi.sendShortMsg(DJCJV.Channel["[Channel2]"].deck, 0x7F, off);
@@ -333,7 +318,7 @@ DJCJV.vinylButton = function(channel, control, value, _status, _group) {
 // The pressure action over the jog wheel
 DJCJV.wheelTouch = function(channel, control, value, status, group) {
     if (value > 0 && (engine.getValue(group, "play") !== 1 || DJCJV.vinylModeActive)) {
-        engine.scratchEnable(DJCJV.Channel[group].n, 400, 33 + 1/3, alpha, beta); //  Touching the wheel
+        engine.scratchEnable(DJCJV.Channel[group].n, 400, speed, alpha, beta); //  Touching the wheel
     } else {
         engine.scratchDisable(DJCJV.Channel[group].n); // Released the wheel
     }
@@ -346,11 +331,9 @@ DJCJV.scratchWheel = function(channel, control, value, status, group) {
         if (value >= 64) {
             // Backward
             engine.scratchTick(DJCJV.Channel[group].n, value - 128);
-            spinJogLed(group, "backward", 1);
         } else {
             // Forward
             engine.scratchTick(DJCJV.Channel[group].n, value);
-            spinJogLed(group, "forward", 1);
         }
     } else {
         // Pitch bend
@@ -365,11 +348,9 @@ DJCJV.bendWheel = function(channel, control, value, status, group) {
         if (value >= 64) {
             // Backward spin
             engine.scratchTick(DJCJV.Channel[group].n, -1.5);
-            spinJogLed(group, "backward", 1);
         } else {
             // Forward spin
             engine.scratchTick(DJCJV.Channel[group].n, 1.5);
-            spinJogLed(group, "forward", 1);
         }
     } else {
         engine.setValue(group, "jog", (value >= 64) ? value - 128 : value); // Pitch bend
