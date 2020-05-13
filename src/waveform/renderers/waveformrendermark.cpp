@@ -226,10 +226,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
         labelRect.moveBottom(height - 1);
     }
 
-    pMark->m_label.setAreaRect(QRectF(labelRect.left(),
-            labelRect.top(),
-            labelRectWidth,
-            labelRectHeight));
+    pMark->m_label.setAreaRect(labelRect);
 
     // Fill with transparent pixels
     pMark->m_image.fill(QColor(0, 0, 0, 0).rgba());
