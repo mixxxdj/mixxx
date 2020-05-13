@@ -728,6 +728,7 @@ class LiveBroadcasting(Feature):
             # Clone our main environment so we don't change any settings in the
             # Mixxx environment
             libshout_env = build.env.Clone()
+            libshout_env['LIB_OUTPUT'] = '#lib/libshout/lib'
 
             if build.toolchain_is_gnu:
                 libshout_env.Append(CCFLAGS='-pthread')
@@ -739,10 +740,14 @@ class LiveBroadcasting(Feature):
             env = libshout_env
             SCons.Export('env')
             SCons.Export('build')
-            env.SConscript(env.File('SConscript', libshout_dir))
+            env.SConscript(
+                env.File('SConscript', libshout_dir),
+                variant_dir="lib/libshout2",
+                duplicate=0,
+                exports=['build'])
 
             build.env.Append(CPPPATH="#lib/libshout/include")
-            build.env.Append(LIBPATH=libshout_dir)
+            build.env.Append(LIBPATH='#lib/libshout/lib')
             build.env.Append(LIBS=['shout_mixxx', 'ogg', 'vorbis', 'theora', 'speex', 'ssl', 'crypto'])
 
         depends.Qt.uic(build)('src/preferences/dialog/dlgprefbroadcastdlg.ui')
