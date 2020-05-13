@@ -27,7 +27,6 @@ WWaveformViewer::WWaveformViewer(const char* group, UserSettingsPointer pConfig,
           m_waveformWidget(nullptr) {
     setMouseTracking(true);
     setAcceptDrops(true);
-
     m_pZoom = new ControlProxy(group, "waveform_zoom", this);
     m_pZoom->connectValueChanged(this, &WWaveformViewer::onZoomChange);
 
@@ -37,6 +36,7 @@ WWaveformViewer::WWaveformViewer(const char* group, UserSettingsPointer pConfig,
             group, "scratch_position", this);
     m_pWheel = new ControlProxy(
             group, "wheel", this);
+    m_pPlayEnabled = new ControlProxy(group, "play", this);
 
     setAttribute(Qt::WA_OpaquePaintEvent);
 }
@@ -80,7 +80,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         m_pScratchPositionEnable->slotSet(1.0);
     } else if (event->button() == Qt::RightButton) {
         const auto currentTrack = m_waveformWidget->getTrackInfo();
-        if (m_pHoveredMark) {
+        if (!isPlaying() && m_pHoveredMark) {
             auto cueAtClickPos = getCuePointerFromCueMark(m_pHoveredMark);
             if (cueAtClickPos) {
                 m_pCueMenuPopup->setTrackAndCue(currentTrack, cueAtClickPos);
@@ -133,7 +133,7 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
         // clamp to [0.0, 1.0]
         v = math_clamp(v, 0.0, 1.0);
         m_pWheel->setParameter(v);
-    } else {
+    } else if (!isPlaying()) {
         WaveformMarkPointer pMark;
         pMark = m_waveformWidget->getCueMarkAtPoint(event->pos());
         if (pMark) {
@@ -278,4 +278,8 @@ void WWaveformViewer::highlightMark(WaveformMarkPointer pMark) {
 void WWaveformViewer::unhighlightMark(WaveformMarkPointer pMark) {
     QColor originalColor = mixxx::RgbColor::toQColor(getCuePointerFromCueMark(pMark)->getColor());
     pMark->setBaseColor(originalColor);
+}
+
+bool WWaveformViewer::isPlaying() {
+    return m_pPlayEnabled->get();
 }

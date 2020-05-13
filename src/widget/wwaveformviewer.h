@@ -72,6 +72,7 @@ private:
     ControlProxy* m_pScratchPositionEnable;
     ControlProxy* m_pScratchPosition;
     ControlProxy* m_pWheel;
+    ControlProxy* m_pPlayEnabled;
     bool m_bScratching;
     bool m_bBending;
     QPoint m_mouseAnchor;
@@ -85,6 +86,7 @@ private:
     CuePointer getCuePointerFromCueMark(WaveformMarkPointer pMark);
     void highlightMark(WaveformMarkPointer pMark);
     void unhighlightMark(WaveformMarkPointer pMark);
+    bool isPlaying();
 };
 
 #endif
