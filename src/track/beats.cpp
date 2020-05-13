@@ -28,6 +28,7 @@ Beats::Beats(const Track* track, const QVector<double>& beats, SINT iSampleRate)
 Beats::Beats(const Track* track, const QByteArray& byteArray, SINT iSampleRate)
         : Beats(track, iSampleRate) {
     readByteArray(byteArray);
+    setGlobalBpm(calculateBpm(m_beats.first(), m_beats.last()));
 }
 
 Beats::Beats(const Track* track, SINT iSampleRate)
@@ -49,6 +50,8 @@ Beats::Beats(const Beats& other)
           m_track(other.m_track),
           m_subVersion(other.m_subVersion),
           m_iSampleRate(other.m_iSampleRate),
+          m_isTempoConst(other.m_isTempoConst),
+          m_globalBpm(other.m_globalBpm),
           m_dCachedBpm(other.m_dCachedBpm),
           m_dLastFrame(other.m_dLastFrame),
           m_beats(other.m_beats) {
