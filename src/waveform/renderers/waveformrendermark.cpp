@@ -31,7 +31,8 @@ void WaveformRenderMark::setup(const QDomNode& node, const SkinContext& context)
 
 void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
     PainterScope PainterScope(painter);
-    QMap<WaveformMarkPointer, QRect> marksOnScreen;
+    // Maps mark image offset to mark object.
+    QMap<WaveformMarkPointer, int> marksOnScreen;
     /*
     //DEBUG
     for (int i = 0; i < m_markPoints.size(); i++) {
@@ -60,7 +61,6 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
         if (samplePosition != -1.0) {
             double currentMarkPoint =
                     m_waveformRenderer->transformSamplePositionInRendererWorld(samplePosition);
-            const auto& labelBoundingRect = pMark->m_label.area();
             if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
                 // NOTE: vRince I guess image width is odd to display the center on the exact line !
                 // external image should respect that ...
@@ -70,12 +70,8 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                 // Check if the current point need to be displayed
                 if (currentMarkPoint > -markHalfWidth && currentMarkPoint < m_waveformRenderer->getWidth() + markHalfWidth) {
                     int drawOffset = currentMarkPoint - markHalfWidth;
-                    int labelBoundaryStartOffset = drawOffset + labelBoundingRect.left();
                     painter->drawImage(QPoint(drawOffset, 0), pMark->m_image);
-                    marksOnScreen[pMark] = QRect(labelBoundaryStartOffset,
-                            labelBoundingRect.top(),
-                            labelBoundingRect.width(),
-                            labelBoundingRect.height());
+                    marksOnScreen[pMark] = drawOffset;
                 }
             } else {
                 const int markHalfHeight = pMark->m_image.height() / 2.0;
@@ -83,13 +79,8 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                         currentMarkPoint < m_waveformRenderer->getHeight() +
                                         markHalfHeight) {
                     int drawOffset = currentMarkPoint - markHalfHeight;
-                    int labelBoundaryStartOffset =
-                            drawOffset + labelBoundingRect.top();
                     painter->drawImage(QPoint(0, drawOffset), pMark->m_image);
-                    marksOnScreen[pMark] = QRect(labelBoundingRect.left(),
-                            labelBoundaryStartOffset,
-                            labelBoundingRect.width(),
-                            labelBoundingRect.height());
+                    marksOnScreen[pMark] = drawOffset;
                 }
             }
         }
@@ -251,6 +242,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
     // Draw marker lines
     if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
         int middle = width / 2;
+        pMark->m_linePosition = middle;
         if (markAlignH == Qt::AlignHCenter) {
             if (labelRect.top() > 0) {
                 painter.setPen(pMark->fillColor());
@@ -279,6 +271,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
         }
     } else { // Vertical
         int middle = height / 2;
+        pMark->m_linePosition = middle;
         if (markAlignV == Qt::AlignVCenter) {
             if (labelRect.left() > 0) {
                 painter.setPen(pMark->fillColor());

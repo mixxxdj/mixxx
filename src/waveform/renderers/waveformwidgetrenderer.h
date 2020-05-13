@@ -97,8 +97,8 @@ class WaveformWidgetRenderer {
 
     void setTrack(TrackPointer track);
     inline void setMarkLabelBoundaries(
-            const QMap<WaveformMarkPointer, QRect>& markLabelBoundaries) {
-        m_markBoundaries = markLabelBoundaries;
+            QMap<WaveformMarkPointer, int> markLabelOffsets) {
+        m_markLabelOffsets = markLabelOffsets;
     }
 
     double getPlayMarkerPosition() {
@@ -158,7 +158,7 @@ class WaveformWidgetRenderer {
 private:
     DISALLOW_COPY_AND_ASSIGN(WaveformWidgetRenderer);
     friend class WaveformWidgetFactory;
-    QMap<WaveformMarkPointer, QRect> m_markBoundaries;
+    QMap<WaveformMarkPointer, int> m_markLabelOffsets;
 };
 
 #endif // WAVEFORMWIDGETRENDERER_H

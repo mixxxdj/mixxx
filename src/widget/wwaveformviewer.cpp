@@ -109,7 +109,6 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
 }
 
 void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
-    qWarning() << event;
     if (!m_waveformWidget) {
         return;
     }

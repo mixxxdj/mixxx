@@ -291,9 +291,43 @@ void WaveformWidgetRenderer::setTrack(TrackPointer track) {
 
 std::optional<CuePointer> WaveformWidgetRenderer::getCueAtPoint(QPoint point) {
     WaveformMarkPointer pSelectedMark;
-    for (auto pMark : m_markBoundaries.keys()) {
-        const auto labelRectangle = m_markBoundaries[pMark];
-        if (labelRectangle.contains(point)) {
+    const int lineHoverpadding = 5;
+    for (const auto& pMark : m_markLabelOffsets.keys()) {
+        QRectF labelBoundingRectInMarkImageSpace = pMark->m_label.area();
+        int markImageOffsetInWaveformWidgetSpace = m_markLabelOffsets[pMark];
+        int markLineOffset = markImageOffsetInWaveformWidgetSpace + pMark->m_linePosition;
+        QRect labelRectangleInWaveformWidgetSpace;
+        QRect markLineVicinity;
+        if (getOrientation() == Qt::Horizontal) {
+            int labelBoundaryStartOffset =
+                    markImageOffsetInWaveformWidgetSpace +
+                    labelBoundingRectInMarkImageSpace.left();
+            labelRectangleInWaveformWidgetSpace =
+                    QRect(labelBoundaryStartOffset,
+                            labelBoundingRectInMarkImageSpace.top(),
+                            labelBoundingRectInMarkImageSpace.width(),
+                            labelBoundingRectInMarkImageSpace.height());
+            markLineVicinity = QRect(markLineOffset - lineHoverpadding,
+                    0,
+                    lineHoverpadding * 2,
+                    getHeight());
+        } else { /* Vertical */
+            int labelBoundaryStartOffset =
+                    markImageOffsetInWaveformWidgetSpace +
+                    labelBoundingRectInMarkImageSpace.top();
+            labelRectangleInWaveformWidgetSpace =
+                    QRect(labelBoundingRectInMarkImageSpace.left(),
+                            labelBoundaryStartOffset,
+                            labelBoundingRectInMarkImageSpace.width(),
+                            labelBoundingRectInMarkImageSpace.height());
+            markLineVicinity = QRect(0,
+                    markLineOffset - lineHoverpadding,
+                    getWidth(),
+                    lineHoverpadding * 2);
+        }
+
+        if (labelRectangleInWaveformWidgetSpace.contains(point) ||
+                markLineVicinity.contains(point)) {
             pSelectedMark = pMark;
             break;
         }
@@ -301,7 +335,6 @@ std::optional<CuePointer> WaveformWidgetRenderer::getCueAtPoint(QPoint point) {
     if (!pSelectedMark) {
         return std::nullopt;
     }
-
     CuePointer pSelectedCue;
     QList<CuePointer> cueList = getTrackInfo()->getCuePoints();
     for (const auto& pCue : cueList) {
