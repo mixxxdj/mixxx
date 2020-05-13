@@ -26,6 +26,7 @@ WWaveformViewer::WWaveformViewer(const char* group, UserSettingsPointer pConfig,
           m_bHotcueMenuShowing(false),
           m_pCueMenuPopup(make_parented<WCueMenuPopup>(pConfig, this)),
           m_waveformWidget(nullptr) {
+    setMouseTracking(true);
     setAcceptDrops(true);
 
     m_pZoom = new ControlProxy(group, "waveform_zoom", this);
@@ -107,6 +108,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
 }
 
 void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
+    qWarning() << event;
     if (!m_waveformWidget) {
         return;
     }
@@ -231,6 +233,7 @@ void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) 
         QWidget* pWidget = m_waveformWidget->getWidget();
         connect(pWidget, SIGNAL(destroyed()),
                 this, SLOT(slotWidgetDead()));
+        m_waveformWidget->getWidget()->setMouseTracking(true);
     }
 }
 
