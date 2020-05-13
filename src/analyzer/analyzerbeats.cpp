@@ -153,6 +153,11 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer tio) const {
         return true;
     }
     if (!mixxx::Bpm::isValidValue(pBeats->getBpm())) {
+        // Tracks with an invalid bpm <= 0 should be re-analyzed,
+        // independent of the preference settings. We expect that
+        // all tracks have a bpm > 0 when analyzed. Users that want
+        // to keep their zero bpm tracks could lock them to prevent
+        // this re-analysis (see the check above).
         qDebug() << "Re-analyzing track with invalid BPM despite preference settings.";
         return true;
     }
