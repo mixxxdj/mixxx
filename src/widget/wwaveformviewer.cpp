@@ -80,10 +80,12 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         m_pScratchPositionEnable->slotSet(1.0);
     } else if (event->button() == Qt::RightButton) {
         const auto currentTrack = m_waveformWidget->getTrackInfo();
-        auto cueAtClickPos = m_waveformWidget->getCueAtPoint(m_mouseAnchor);
-        if (cueAtClickPos) {
-            m_pCueMenuPopup->setTrackAndCue(currentTrack, cueAtClickPos);
-            m_pCueMenuPopup->popup(event->globalPos());
+        if (m_pHoveredMark) {
+            auto cueAtClickPos = getCuePointerFromCueMark(m_pHoveredMark);
+            if (cueAtClickPos) {
+                m_pCueMenuPopup->setTrackAndCue(currentTrack, cueAtClickPos);
+                m_pCueMenuPopup->popup(event->globalPos());
+            }
         } else {
             // If we are scratching then disable and reset because the two shouldn't
             // be used at once.
@@ -131,6 +133,24 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
         // clamp to [0.0, 1.0]
         v = math_clamp(v, 0.0, 1.0);
         m_pWheel->setParameter(v);
+    } else {
+        WaveformMarkPointer pMark;
+        pMark = m_waveformWidget->getCueMarkAtPoint(event->pos());
+        if (pMark) {
+            if (!m_pHoveredMark) {
+                m_pHoveredMark = pMark;
+                highlightMark(pMark);
+            } else if (pMark != m_pHoveredMark) {
+                unhighlightMark(m_pHoveredMark);
+                m_pHoveredMark = pMark;
+                highlightMark(pMark);
+            }
+        } else {
+            if (m_pHoveredMark) {
+                unhighlightMark(m_pHoveredMark);
+                m_pHoveredMark = nullptr;
+            }
+        }
     }
 }
 
@@ -165,6 +185,13 @@ void WWaveformViewer::dragEnterEvent(QDragEnterEvent* event) {
 
 void WWaveformViewer::dropEvent(QDropEvent* event) {
     DragAndDropHelper::handleTrackDropEvent(event, *this, m_pGroup, m_pConfig);
+}
+
+void WWaveformViewer::leaveEvent(QEvent*) {
+    if (m_pHoveredMark) {
+        unhighlightMark(m_pHoveredMark);
+        m_pHoveredMark = nullptr;
+    }
 }
 
 void WWaveformViewer::slotTrackLoaded(TrackPointer track) {
@@ -229,4 +256,26 @@ void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) 
                 this, SLOT(slotWidgetDead()));
         m_waveformWidget->getWidget()->setMouseTracking(true);
     }
+}
+
+CuePointer WWaveformViewer::getCuePointerFromCueMark(WaveformMarkPointer pMark) {
+    if (pMark) {
+        QList<CuePointer> cueList = m_waveformWidget->getTrackInfo()->getCuePoints();
+        for (const auto& pCue : cueList) {
+            if (pCue->getHotCue() == pMark->getHotCue()) {
+                return pCue;
+            }
+        }
+    }
+    return static_cast<CuePointer>(nullptr);
+}
+
+void WWaveformViewer::highlightMark(WaveformMarkPointer pMark) {
+    QColor highlightColor = Color::chooseContrastColor(pMark->fillColor());
+    pMark->setBaseColor(highlightColor);
+}
+
+void WWaveformViewer::unhighlightMark(WaveformMarkPointer pMark) {
+    QColor originalColor = mixxx::RgbColor::toQColor(getCuePointerFromCueMark(pMark)->getColor());
+    pMark->setBaseColor(originalColor);
 }

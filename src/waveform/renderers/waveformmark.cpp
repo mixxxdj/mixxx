@@ -99,6 +99,7 @@ WaveformMark::WaveformMark(const QString& group,
 }
 
 void WaveformMark::setBaseColor(QColor baseColor) {
+    m_image = QImage();
     m_fillColor = baseColor;
     m_borderColor = Color::chooseContrastColor(baseColor);
     m_labelColor = Color::chooseColorByBrightness(baseColor, QColor(255,255,255,255), QColor(0,0,0,255));

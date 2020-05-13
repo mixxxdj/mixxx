@@ -289,7 +289,7 @@ void WaveformWidgetRenderer::setTrack(TrackPointer track) {
     }
 }
 
-CuePointer WaveformWidgetRenderer::getCueAtPoint(QPoint point) {
+WaveformMarkPointer WaveformWidgetRenderer::getCueMarkAtPoint(QPoint point) {
     WaveformMarkPointer pSelectedMark;
     const int lineHoverpadding = 5;
     for (const auto& pMark : m_markLabelOffsets.keys()) {
@@ -328,19 +328,8 @@ CuePointer WaveformWidgetRenderer::getCueAtPoint(QPoint point) {
 
         if (labelRectangleInWaveformWidgetSpace.contains(point) ||
                 markLineVicinity.contains(point)) {
-            pSelectedMark = pMark;
-            break;
+            return pMark;
         }
     }
-    if (!pSelectedMark) {
-        return static_cast<CuePointer>(nullptr);
-    }
-
-    QList<CuePointer> cueList = getTrackInfo()->getCuePoints();
-    for (const auto& pCue : cueList) {
-        if (pCue->getHotCue() == pSelectedMark->getHotCue()) {
-            return pCue;
-        }
-    }
-    return static_cast<CuePointer>(nullptr);
+    return static_cast<WaveformMarkPointer>(nullptr);
 }

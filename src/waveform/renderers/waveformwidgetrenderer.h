@@ -41,7 +41,7 @@ class WaveformWidgetRenderer {
     inline const char* getGroup() const { return m_group;}
     const TrackPointer getTrackInfo() const { return m_pTrack;}
     // Get cue at a point on the waveform widget.
-    CuePointer getCueAtPoint(QPoint point);
+    WaveformMarkPointer getCueMarkAtPoint(QPoint point);
 
     double getFirstDisplayedPosition() const { return m_firstDisplayedPosition;}
     double getLastDisplayedPosition() const { return m_lastDisplayedPosition;}

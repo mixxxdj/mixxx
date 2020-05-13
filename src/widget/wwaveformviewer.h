@@ -34,8 +34,9 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     void mousePressEvent(QMouseEvent * /*unused*/) override;
     void mouseMoveEvent(QMouseEvent * /*unused*/) override;
     void mouseReleaseEvent(QMouseEvent * /*unused*/) override;
+    void leaveEvent(QEvent* /*unused*/) override;
 
-signals:
+  signals:
     void trackDropped(QString filename, QString group) override;
     void cloneDeck(QString source_group, QString target_group) override;
 
@@ -75,10 +76,15 @@ private:
     bool m_bBending;
     QPoint m_mouseAnchor;
     parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
+    WaveformMarkPointer m_pHoveredMark;
 
     WaveformWidgetAbstract* m_waveformWidget;
 
     friend class WaveformWidgetFactory;
+
+    CuePointer getCuePointerFromCueMark(WaveformMarkPointer pMark);
+    void highlightMark(WaveformMarkPointer pMark);
+    void unhighlightMark(WaveformMarkPointer pMark);
 };
 
 #endif
