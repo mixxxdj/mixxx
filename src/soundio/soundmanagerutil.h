@@ -1,20 +1,4 @@
-/**
- * @file soundmanagerutil.h
- * @author Bill Good <bkgood at gmail dot com>
- * @date 20100611
- */
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef SOUNDMANAGERUTIL_U
-#define SOUNDMANAGERUTIL_U
+#pragma once
 
 #include <QString>
 #include <QMutex>
@@ -24,11 +8,7 @@
 #include "util/types.h"
 #include "util/fifo.h"
 
-/**
- * @class ChannelGroup
- * @brief Describes a group of channels, typically a pair for stereo sound in
- *        Mixxx.
- */
+/// Describes a group of channels, typically a pair for stereo sound in Mixxx.
 class ChannelGroup {
   public:
     ChannelGroup(unsigned char channelBase, unsigned char channels);
@@ -61,18 +41,17 @@ inline bool operator!=(
     return !(lhs == rhs);
 }
 
-/**
- * @class AudioPath
- * @brief Describes a path for audio to take.
- * @note This needs a new name, the current one sucks. If you find one,
- *       feel free to rename as necessary.
- */
+/// Describes a path for audio to take.
+///
+/// TODO: Choose a better name for this class
 class AudioPath {
 public:
-    // XXX if you add a new type here, be sure to add it to the various
-    // methods including getStringFromType, isIndexed, getTypeFromInt,
-    // channelsNeededForType (if necessary), the subclasses' getSupportedTypes
-    // (if necessary), etc. -- bkgood
+    /// Predefined types.
+    ///
+    /// If you add a new type here, be sure to add it to the various
+    /// methods including getStringFromType, isIndexed, getTypeFromInt,
+    /// channelsNeededForType (if necessary), the subclasses' getSupportedTypes
+    /// (if necessary), etc.
     enum AudioPathType {
         MASTER,
         HEADPHONES,
@@ -100,8 +79,8 @@ public:
     static bool isIndexed(AudioPathType type);
     static AudioPathType getTypeFromInt(int typeInt);
 
-    // Returns the minimum number of channels needed on a sound device for an
-    // AudioPathType.
+    /// Returns the minimum number of channels needed on a sound device for an
+    /// AudioPathType.
     static unsigned char minChannelsForType(AudioPathType type);
 
     // Returns the maximum number of channels needed on a sound device for an
@@ -123,12 +102,8 @@ protected:
     unsigned char m_index;
 };
 
-/**
- * @class AudioOutput
- * @extends AudioPath
- * @brief A source of audio in Mixxx that is to be output to a group of
- *        channels on an audio interface.
- */
+/// A source of audio in Mixxx that is to be output to a group of
+/// channels on an audio interface.
 class AudioOutput : public AudioPath {
   public:
     AudioOutput(AudioPathType type, unsigned char channelBase,
@@ -157,12 +132,8 @@ class AudioOutputBuffer : public AudioOutput {
     const CSAMPLE* m_pBuffer;
 };
 
-/**
- * @class AudioInput
- * @extends AudioPath
- * @brief A source of audio at a group of channels on an audio interface
- *        that is be processed in Mixxx.
- */
+/// A source of audio at a group of channels on an audio interface
+/// that is be processed in Mixxx.
 class AudioInput : public AudioPath {
   public:
     AudioInput(AudioPathType type = INVALID, unsigned char channelBase = 0,
@@ -197,14 +168,14 @@ public:
 
     virtual const CSAMPLE* buffer(AudioOutput output) const = 0;
 
-    // This is called by SoundManager whenever an output is connected for this
-    // source. When this is called it is guaranteed that no callback is
-    // active.
+    /// This is called by SoundManager whenever an output is connected for this
+    /// source. When this is called it is guaranteed that no callback is
+    /// active.
     virtual void onOutputConnected(AudioOutput output) { Q_UNUSED(output); };
 
-    // This is called by SoundManager whenever an output is disconnected for
-    // this source. When this is called it is guaranteed that no callback is
-    // active.
+    /// This is called by SoundManager whenever an output is disconnected for
+    /// this source. When this is called it is guaranteed that no callback is
+    /// active.
     virtual void onOutputDisconnected(AudioOutput output) { Q_UNUSED(output); };
 };
 
@@ -212,20 +183,20 @@ class AudioDestination {
 public:
     virtual ~AudioDestination() = default;
 
-    // This is called by SoundManager whenever there are new samples from the
-    // configured input to be processed. This is run in the clock reference
-    // callback thread
+    /// This is called by SoundManager whenever there are new samples from the
+    /// configured input to be processed. This is run in the clock reference
+    /// callback thread
     virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
                                unsigned int iNumFrames) = 0;
 
-    // This is called by SoundManager whenever an input is configured for this
-    // destination. When this is called it is guaranteed that no callback is
-    // active.
+    /// This is called by SoundManager whenever an input is configured for this
+    /// destination. When this is called it is guaranteed that no callback is
+    /// active.
     virtual void onInputConfigured(AudioInput input) { Q_UNUSED(input); };
 
-    // This is called by SoundManager whenever an input is unconfigured for this
-    // destination. When this is called it is guaranteed that no callback is
-    // active.
+    /// This is called by SoundManager whenever an input is unconfigured for this
+    /// destination. When this is called it is guaranteed that no callback is
+    /// active.
     virtual void onInputUnconfigured(AudioInput input) { Q_UNUSED(input); };
 };
 
@@ -234,8 +205,8 @@ typedef AudioPath::AudioPathType AudioPathType;
 class SoundDeviceId final {
   public:
     QString name;
-    // The "hw:X,Y" device name. Remains an empty string if not using ALSA
-    // or using a non-hw ALSA device such as "default" or "pulse".
+    /// The "hw:X,Y" device name. Remains an empty string if not using ALSA
+    /// or using a non-hw ALSA device such as "default" or "pulse".
     QString alsaHwDevice;
     int portAudioIndex;
 
@@ -245,9 +216,9 @@ class SoundDeviceId final {
        : portAudioIndex(-1) {}
 };
 
-// This must be registered with QMetaType::registerComparators for
-// QVariant::operator== to use it, which is required for QComboBox::findData to
-// work in DlgPrefSoundItem.
+/// This must be registered with QMetaType::registerComparators for
+/// QVariant::operator== to use it, which is required for QComboBox::findData to
+/// work in DlgPrefSoundItem.
 inline bool operator==(
         const SoundDeviceId& lhs,
         const SoundDeviceId& rhs) {
@@ -262,7 +233,7 @@ inline bool operator!=(
     return !(lhs == rhs);
 }
 
-// There is not really a use case for this, but it is required for QMetaType::registerComparators.
+/// There is not really a use case for this, but it is required for QMetaType::registerComparators.
 inline bool operator<(const SoundDeviceId& lhs, const SoundDeviceId& rhs) {
     DEBUG_ASSERT(!"should never be invoked");
     return lhs.portAudioIndex < rhs.portAudioIndex;
@@ -281,5 +252,3 @@ inline uint qHash(
 inline QDebug operator<<(QDebug dbg, const SoundDeviceId& soundDeviceId) {
     return dbg << QString("SoundDeviceId(" + soundDeviceId.debugName() + ")");
 }
-
-#endif
