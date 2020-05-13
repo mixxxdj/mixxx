@@ -289,7 +289,7 @@ void WaveformWidgetRenderer::setTrack(TrackPointer track) {
     }
 }
 
-std::optional<CuePointer> WaveformWidgetRenderer::getCueAtPoint(QPoint point) {
+CuePointer WaveformWidgetRenderer::getCueAtPoint(QPoint point) {
     WaveformMarkPointer pSelectedMark;
     const int lineHoverpadding = 5;
     for (const auto& pMark : m_markLabelOffsets.keys()) {
@@ -333,19 +333,14 @@ std::optional<CuePointer> WaveformWidgetRenderer::getCueAtPoint(QPoint point) {
         }
     }
     if (!pSelectedMark) {
-        return std::nullopt;
+        return static_cast<CuePointer>(nullptr);
     }
-    CuePointer pSelectedCue;
+
     QList<CuePointer> cueList = getTrackInfo()->getCuePoints();
     for (const auto& pCue : cueList) {
         if (pCue->getHotCue() == pSelectedMark->getHotCue()) {
-            pSelectedCue = pCue;
-            break;
+            return pCue;
         }
     }
-    if (pSelectedCue != nullptr) {
-        return pSelectedCue;
-    }
-
-    return std::nullopt;
+    return static_cast<CuePointer>(nullptr);
 }

@@ -87,7 +87,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         const auto currentTrack = m_waveformWidget->getTrackInfo();
         auto cueAtClickPos = m_waveformWidget->getCueAtPoint(m_mouseAnchor);
         if (cueAtClickPos) {
-            m_pCueMenuPopup->setTrackAndCue(currentTrack, *cueAtClickPos);
+            m_pCueMenuPopup->setTrackAndCue(currentTrack, cueAtClickPos);
             m_pCueMenuPopup->popup(event->globalPos());
             m_bHotcueMenuShowing = true;
         } else {
