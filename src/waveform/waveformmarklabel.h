@@ -27,7 +27,7 @@ class WaveformMarkLabel {
         return m_areaRect;
     };
 
-    inline void setAreaRect(const QRectF& areaRect) {
+    void setAreaRect(const QRectF& areaRect) {
         m_areaRect = areaRect;
     }
 

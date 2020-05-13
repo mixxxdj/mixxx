@@ -96,8 +96,7 @@ class WaveformWidgetRenderer {
     }
 
     void setTrack(TrackPointer track);
-    inline void setMarkLabelBoundaries(
-            QMap<WaveformMarkPointer, int> markLabelOffsets) {
+    void setMarkLabelBoundaries(QMap<WaveformMarkPointer, int> markLabelOffsets) {
         m_markLabelOffsets = markLabelOffsets;
     }
 
