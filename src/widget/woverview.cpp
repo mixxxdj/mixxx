@@ -61,7 +61,6 @@ WOverview::WOverview(
           m_iPickupPos(0),
           m_iPlayPos(0),
           m_pHoveredMark(nullptr),
-          m_bHotcueMenuShowing(false),
           m_bTimeRulerActive(false),
           m_orientation(Qt::Horizontal),
           m_iLabelFontSize(10),
@@ -539,21 +538,19 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
             if (pHoveredCue != nullptr) {
                 m_pCueMenuPopup->setTrackAndCue(m_pCurrentTrack, pHoveredCue);
                 m_pCueMenuPopup->popup(e->globalPos());
-                m_bHotcueMenuShowing = true;
             }
         }
     }
 }
 
 void WOverview::slotCueMenuPopupAboutToHide() {
-    m_bHotcueMenuShowing = false;
     m_pHoveredMark.clear();
     update();
 }
 
 void WOverview::leaveEvent(QEvent* pEvent) {
     Q_UNUSED(pEvent);
-    if (!m_bHotcueMenuShowing) {
+    if (!m_pCueMenuPopup->isVisible()) {
         m_pHoveredMark.clear();
     }
     m_bLeftClickDragging = false;

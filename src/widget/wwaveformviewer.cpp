@@ -23,7 +23,6 @@ WWaveformViewer::WWaveformViewer(const char* group, UserSettingsPointer pConfig,
           m_zoomZoneWidth(20),
           m_bScratching(false),
           m_bBending(false),
-          m_bHotcueMenuShowing(false),
           m_pCueMenuPopup(make_parented<WCueMenuPopup>(pConfig, this)),
           m_waveformWidget(nullptr) {
     setMouseTracking(true);
@@ -39,10 +38,6 @@ WWaveformViewer::WWaveformViewer(const char* group, UserSettingsPointer pConfig,
     m_pWheel = new ControlProxy(
             group, "wheel", this);
 
-    connect(m_pCueMenuPopup.get(),
-            &WCueMenuPopup::aboutToHide,
-            this,
-            &WWaveformViewer::slotCueMenuPopupAboutToHide);
     setAttribute(Qt::WA_OpaquePaintEvent);
 }
 
@@ -89,7 +84,6 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         if (cueAtClickPos) {
             m_pCueMenuPopup->setTrackAndCue(currentTrack, cueAtClickPos);
             m_pCueMenuPopup->popup(event->globalPos());
-            m_bHotcueMenuShowing = true;
         } else {
             // If we are scratching then disable and reset because the two shouldn't
             // be used at once.
@@ -102,8 +96,8 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         }
     }
 
-    // Set the cursor to a hand while the mouse is down.
-    if (!m_bHotcueMenuShowing) {
+    // Set the cursor to a hand while the mouse is down (when cue menu is not open).
+    if (!m_pCueMenuPopup->isVisible()) {
         setCursor(Qt::ClosedHandCursor);
     }
 }
@@ -235,8 +229,4 @@ void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) 
                 this, SLOT(slotWidgetDead()));
         m_waveformWidget->getWidget()->setMouseTracking(true);
     }
-}
-
-void WWaveformViewer::slotCueMenuPopupAboutToHide() {
-    m_bHotcueMenuShowing = false;
 }

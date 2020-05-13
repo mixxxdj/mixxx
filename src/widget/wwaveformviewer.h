@@ -52,7 +52,6 @@ private slots:
     void slotWidgetDead() {
         m_waveformWidget = nullptr;
     }
-    void slotCueMenuPopupAboutToHide();
 
   private:
     void setWaveformWidget(WaveformWidgetAbstract* waveformWidget);
@@ -74,7 +73,6 @@ private:
     ControlProxy* m_pWheel;
     bool m_bScratching;
     bool m_bBending;
-    bool m_bHotcueMenuShowing;
     QPoint m_mouseAnchor;
     parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
 
