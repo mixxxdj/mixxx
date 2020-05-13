@@ -90,15 +90,16 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
             m_pCueMenuPopup->setTrackAndCue(currentTrack, *cueAtClickPos);
             m_pCueMenuPopup->popup(event->globalPos());
             m_bHotcueMenuShowing = true;
+        } else {
+            // If we are scratching then disable and reset because the two shouldn't
+            // be used at once.
+            if (m_bScratching) {
+                m_pScratchPositionEnable->slotSet(0.0);
+                m_bScratching = false;
+            }
+            m_pWheel->setParameter(0.5);
+            m_bBending = true;
         }
-        // If we are scratching then disable and reset because the two shouldn't
-        // be used at once.
-        if (m_bScratching) {
-            m_pScratchPositionEnable->slotSet(0.0);
-            m_bScratching = false;
-        }
-        m_pWheel->setParameter(0.5);
-        m_bBending = true;
     }
 
     // Set the cursor to a hand while the mouse is down.
