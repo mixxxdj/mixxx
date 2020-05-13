@@ -246,14 +246,12 @@ void WWaveformViewer::setPlayMarkerPosition(double position) {
 void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) {
     if (m_waveformWidget) {
         QWidget* pWidget = m_waveformWidget->getWidget();
-        disconnect(pWidget, SIGNAL(destroyed()),
-                   this, SLOT(slotWidgetDead()));
+        disconnect(pWidget, &QWidget::destroyed, this, &WWaveformViewer::slotWidgetDead);
     }
     m_waveformWidget = waveformWidget;
     if (m_waveformWidget) {
         QWidget* pWidget = m_waveformWidget->getWidget();
-        connect(pWidget, SIGNAL(destroyed()),
-                this, SLOT(slotWidgetDead()));
+        connect(pWidget, &QWidget::destroyed, this, &WWaveformViewer::slotWidgetDead);
         m_waveformWidget->getWidget()->setMouseTracking(true);
     }
 }

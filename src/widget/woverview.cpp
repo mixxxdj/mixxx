@@ -307,8 +307,10 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
     //qDebug() << this << "WOverview::slotLoadingTrack" << pNewTrack.get() << pOldTrack.get();
     DEBUG_ASSERT(m_pCurrentTrack == pOldTrack);
     if (m_pCurrentTrack != nullptr) {
-        disconnect(m_pCurrentTrack.get(), SIGNAL(waveformSummaryUpdated()),
-                   this, SLOT(slotWaveformSummaryUpdated()));
+        disconnect(m_pCurrentTrack.get(),
+                &Track::waveformSummaryUpdated,
+                this,
+                &WOverview::slotWaveformSummaryUpdated);
     }
 
     m_waveformSourceImage = QImage();
@@ -323,11 +325,12 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
         m_pCurrentTrack = pNewTrack;
         m_pWaveform = pNewTrack->getWaveformSummary();
 
-        connect(pNewTrack.get(), SIGNAL(waveformSummaryUpdated()),
-                this, SLOT(slotWaveformSummaryUpdated()));
+        connect(pNewTrack.get(),
+                &Track::waveformSummaryUpdated,
+                this,
+                &WOverview::slotWaveformSummaryUpdated);
         slotWaveformSummaryUpdated();
-        connect(pNewTrack.get(), SIGNAL(cuesUpdated()),
-                this, SLOT(receiveCuesUpdated()));
+        connect(pNewTrack.get(), &Track::cuesUpdated, this, &WOverview::receiveCuesUpdated);
     } else {
         m_pCurrentTrack.reset();
         m_pWaveform.clear();
