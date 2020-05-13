@@ -1,6 +1,7 @@
 // ****************************************************************************
 // * Mixxx mapping script file for the Hercules DJControl Jogvision.
 // * Author: DJ Phatso, contributions by Kerrick Staley and David TV
+// * Version 1.10 (May 2020)
 // * Version 1.9 (May 2020)
 // * Version 1.8 (May 2020)
 // * Version 1.6 (January 2020)
@@ -11,6 +12,11 @@
 // * Version 1.1 (March 2019)
 // * Forum: https://www.mixxx.org/forums/viewtopic.php?f=7&t=12580
 // * Wiki: https://www.mixxx.org/wiki/doku.php/hercules_dj_control_jogvision
+//
+// Changes to v1.10
+// - Changed jogwheel outer led movement based on playposition (much better!)
+// - Added a user variable to set or not some effects at ini
+// - Minor code convention corrections
 //
 // Changes to v1.9
 // - Added jogwheel outer led movement when scratch and back/forward spin
@@ -51,6 +57,13 @@
 //
 // ****************************************************************************
 
+// ****************************************************************************
+// User available variables (you may modify them)
+var beatActiveMode = "normal"; // normal (default), reverse, blink, follow
+var initUpdateEffects = 1; // 1 (default) - set some effects values at startup; 0 - do not touch effects at startup
+
+// ****************************************************************************
+// Other internal constants (you may NOT modify anything from here)
 var on = 0x7F;
 var off = 0x00;
 var alpha = 1.0 / 8;
@@ -58,7 +71,6 @@ var beta = alpha / 16;
 var speed = 33 + 1/3;
 var ledSpeed = (speed / 60) * 127;
 var masterLeds = 0x90;
-var beatActiveMode = "normal"; // normal, reverse, blink, follow
 var beatMax;
 if (beatActiveMode.match(/^(?:normal|reverse)$/g)) {
     beatMax = 4;
@@ -69,16 +81,17 @@ if (beatActiveMode.match(/^(?:normal|reverse)$/g)) {
 }
 
 var DJCJV = {};
-
 DJCJV.vinylModeActive = true;
 DJCJV.Channel = [];
 DJCJV.Channel["[Channel1]"] = {"central": 0x90, "deck": 0xB0, "beatPosition": 1, "rotation": 0x00, "n": 1};
 DJCJV.Channel["[Channel2]"] = {"central": 0x91, "deck": 0xB1, "beatPosition": 1, "rotation": 0x00, "n": 2};
 
+// ****************************************************************************
+// General functions
+
 // Function to rotate jogs' outer led (borrowed from the 'Pioneer-DDJ-SX-scripts.js' mapping)
 DJCJV.updateJogLeds = function(value, group, control) {
-    var duration = engine.getValue(group, "duration");
-    var elapsedTime = value * duration;
+    var elapsedTime = value * engine.getValue(group, "duration");
     var wheelPos = parseInt(((value >= 0) ? 0 : 127) + 1 + ((ledSpeed * elapsedTime) % 127));
 
     // Only send midi message when the position is actually updated.
@@ -119,18 +132,20 @@ DJCJV.init = function(id) {
     engine.softTakeover("[QuickEffectRack1_[Channel1]]", "super1", true);
     engine.softTakeover("[QuickEffectRack1_[Channel2]]", "super1", true);
 
-    // Set effects Levels - Dry/Wet - Filters
-    // Done to work around the limited amount of controls in the Jogvision controller
-    engine.setParameter("[EffectRack1_EffectUnit1_Effect1]", "meta", 0.6);
-    engine.setParameter("[EffectRack1_EffectUnit1_Effect2]", "meta", 0.6);
-    engine.setParameter("[EffectRack1_EffectUnit1_Effect3]", "meta", 0.6);
-    engine.setParameter("[EffectRack1_EffectUnit2_Effect1]", "meta", 0.6);
-    engine.setParameter("[EffectRack1_EffectUnit2_Effect2]", "meta", 0.6);
-    engine.setParameter("[EffectRack1_EffectUnit2_Effect3]", "meta", 0.6);
-    engine.setParameter("[EffectRack1_EffectUnit1]", "mix", 0.6);
-    engine.setParameter("[EffectRack1_EffectUnit2]", "mix", 0.6);
-    engine.setParameter("[QuickEffectRack1_[Channel1]]", "super1", 0.5);
-    engine.setParameter("[QuickEffectRack1_[Channel2]]", "super1", 0.5);
+    if (initUpdateEffects === 1) {
+        // Set effects Levels - Dry/Wet - Filters
+        // Done to work around the limited amount of controls in the Jogvision controller
+        engine.setParameter("[EffectRack1_EffectUnit1_Effect1]", "meta", 0.6);
+        engine.setParameter("[EffectRack1_EffectUnit1_Effect2]", "meta", 0.6);
+        engine.setParameter("[EffectRack1_EffectUnit1_Effect3]", "meta", 0.6);
+        engine.setParameter("[EffectRack1_EffectUnit2_Effect1]", "meta", 0.6);
+        engine.setParameter("[EffectRack1_EffectUnit2_Effect2]", "meta", 0.6);
+        engine.setParameter("[EffectRack1_EffectUnit2_Effect3]", "meta", 0.6);
+        engine.setParameter("[EffectRack1_EffectUnit1]", "mix", 0.6);
+        engine.setParameter("[EffectRack1_EffectUnit2]", "mix", 0.6);
+        engine.setParameter("[QuickEffectRack1_[Channel1]]", "super1", 0.5);
+        engine.setParameter("[QuickEffectRack1_[Channel2]]", "super1", 0.5);
+    }
 
     // Connect the VUMeters
     engine.connectControl("[Channel1]", "VuMeter", "DJCJV.vuMeterUpdate");
@@ -248,7 +263,7 @@ DJCJV.wheelInnerUpdate = function(value, group, _control) {
     }
 };
 
-//Vu Meter
+// Vu Meter
 DJCJV.vuMeterUpdate = function(value, group, _control) {
     midi.sendShortMsg(DJCJV.Channel[group].central, 0x44, value * 6);
 };
