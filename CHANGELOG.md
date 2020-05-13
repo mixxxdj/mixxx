@@ -89,6 +89,7 @@
 * Add controller mapping for Stanton DJC.4 #2607
 * Fix broadcasting via broadcast/recording input lp:1876222 #2743
 * Only apply ducking gain in manual ducking mode when talkover is enabed lp:1394968 lp:1737113 lp:1662536 #2759
+* Ignore MIDI Clock Messages (0xF8) because they are not usable in Mixxx and inhibited the screensaver #2786
 
 ## [2.2.3](https://launchpad.net/mixxx/+milestone/2.2.3) (2019-11-24)
 
