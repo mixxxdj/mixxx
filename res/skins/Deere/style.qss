@@ -1062,6 +1062,10 @@ WBeatSpinBox,
   qproperty-layoutSpacing: 2;
 }
 
+#HotcueShiftButtons {
+  qproperty-layoutSpacing: 2;
+}
+
 #BpmKeyEditTriggerLabel {
   padding-right: 1px;
 }
