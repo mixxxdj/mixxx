@@ -1,4 +1,3 @@
-#ifdef __DJINTEROP__
 #pragma once
 
 #include <memory>
@@ -58,4 +57,3 @@ class DlgLibraryExport : public QDialog {
 };
 
 } // namespace mixxx
-#endif

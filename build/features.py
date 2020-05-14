@@ -1246,3 +1246,10 @@ class DjInterop(Feature):
         build.env.ParseConfig(
                 'pkg-config djinterop --silence-errors --cflags --libs')
         build.env.Append(CPPDEFINES='__DJINTEROP__')
+
+    def sources(self, build):
+        return [
+           "src/library/export/dlglibraryexport.cpp",
+           "src/library/export/engineprimeexportjob.cpp",
+           "src/library/export/libraryexporter.cpp",
+        ]

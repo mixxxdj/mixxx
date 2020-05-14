@@ -51,7 +51,9 @@ class MixxxLibraryFeature final : public LibraryFeature {
   public slots:
     void activate() override;
     void activateChild(const QModelIndex& index) override;
+#ifdef __DJINTEROP__
     void onRightClick(const QPoint& globalPos) override;
+#endif
     void refreshLibraryModels();
 
   signals:

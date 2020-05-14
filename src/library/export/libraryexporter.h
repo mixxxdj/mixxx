@@ -1,10 +1,10 @@
-#ifdef __DJINTEROP__
 #pragma once
 
 #include <memory>
 
 #include <QWidget>
 
+#include "library/crate/crateid.h"
 #include "library/export/dlglibraryexport.h"
 #include "library/export/engineprimeexportrequest.h"
 #include "preferences/usersettings.h"
@@ -48,4 +48,3 @@ class LibraryExporter : public QWidget {
 };
 
 } // namespace mixxx
-#endif

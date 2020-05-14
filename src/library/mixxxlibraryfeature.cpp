@@ -191,11 +191,13 @@ bool MixxxLibraryFeature::dragMoveAccept(QUrl url) {
             Parser::isPlaylistFilenameSupported(url.toLocalFile());
 }
 
+#ifdef __DJINTEROP__
 void MixxxLibraryFeature::onRightClick(const QPoint& globalPos) {
     QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pExportLibraryAction.get());
     menu.exec(globalPos);
 }
+#endif
 
 void MixxxLibraryFeature::slotExportLibrary() {
     emit exportLibrary();

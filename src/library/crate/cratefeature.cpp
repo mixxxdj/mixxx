@@ -339,8 +339,10 @@ void CrateFeature::onRightClick(const QPoint& globalPos) {
     menu.addAction(m_pCreateCrateAction.get());
     menu.addSeparator();
     menu.addAction(m_pCreateImportPlaylistAction.get());
+#ifdef __DJINTEROP__
     menu.addSeparator();
     menu.addAction(m_pExportAllCratesAction.get());
+#endif
     menu.exec(globalPos);
 }
 
@@ -381,7 +383,9 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     }
     menu.addAction(m_pExportPlaylistAction.get());
     menu.addAction(m_pExportTrackFilesAction.get());
+#ifdef __DJINTEROP__
     menu.addAction(m_pExportCrateAction.get());
+#endif
     menu.exec(globalPos);
 }
 

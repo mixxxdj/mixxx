@@ -1,4 +1,3 @@
-#ifdef __DJINTEROP__
 #include "library/export/dlglibraryexport.h"
 
 #include <QFileDialog>
@@ -201,4 +200,3 @@ void DlgLibraryExport::exportRequested() {
 }
 
 } // namespace mixxx
-#endif

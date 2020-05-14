@@ -1,4 +1,3 @@
-#ifdef __DJINTEROP__
 #include "library/export/libraryexporter.h"
 
 #include <QProgressDialog>
@@ -60,4 +59,3 @@ void LibraryExporter::beginEnginePrimeExport(
 }
 
 } // namespace mixxx
-#endif

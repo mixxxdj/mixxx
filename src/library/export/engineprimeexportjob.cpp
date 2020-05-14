@@ -1,4 +1,3 @@
-#ifdef __DJINTEROP__
 #include "library/export/engineprimeexportjob.h"
 
 #include <optional>
@@ -492,4 +491,3 @@ void EnginePrimeExportJob::cancel()
 }
 
 } // namespace mixxx
-#endif

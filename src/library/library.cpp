@@ -33,7 +33,9 @@
 #include "library/rhythmbox/rhythmboxfeature.h"
 #include "library/serato/seratofeature.h"
 #include "library/setlogfeature.h"
+#ifdef __DJINTEROP__
 #include "library/export/libraryexporter.h"
+#endif
 #include "library/traktor/traktorfeature.h"
 
 #include "mixer/playermanager.h"

@@ -1077,9 +1077,6 @@ class MixxxCore(Feature):
                    "src/library/browse/browsefeature.cpp",
                    "src/library/browse/foldertreemodel.cpp",
 
-                   "src/library/export/dlglibraryexport.cpp",
-                   "src/library/export/engineprimeexportjob.cpp",
-                   "src/library/export/libraryexporter.cpp",
                    "src/library/export/trackexportdlg.cpp",
                    "src/library/export/trackexportwizard.cpp",
                    "src/library/export/trackexportworker.cpp",

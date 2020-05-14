@@ -1,4 +1,3 @@
-#ifdef __DJINTEROP__
 #pragma once
 
 #include <memory>
@@ -60,4 +59,3 @@ class EnginePrimeExportJob : public QThread {
 };
 
 } // namespace mixxx
-#endif
