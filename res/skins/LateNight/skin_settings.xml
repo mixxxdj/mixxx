@@ -16,7 +16,7 @@ Description:
     <Layout>horizontal</Layout>
     <SizePolicy>min,me</SizePolicy>
     <Children>
-      
+
       <WidgetGroup>
         <ObjectName>SkinSettings</ObjectName>
         <Layout>vertical</Layout>
@@ -148,6 +148,13 @@ Description:
                   </Template>
                 </Children>
               </WidgetGroup><!-- Big Spinny -->
+
+              <!-- Cover Art -->
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="TooltipId">show_coverart</SetVariable>
+                <SetVariable name="text">Hotcue Shift Buttons</SetVariable>
+                <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
+              </Template>
 
             </Children>
           </WidgetGroup><!-- /Deck / General -->
