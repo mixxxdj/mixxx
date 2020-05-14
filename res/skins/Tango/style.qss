@@ -458,8 +458,8 @@ WWidgetGroup {
 #BeatgridFaster,
 #BeatgridEarlier,
 #BeatgridLater,
-#ShiftEarlier,
-#ShiftLater {
+#HotcuesEarlier,
+#HotcuesLater {
   background-color: #333;
   }
   #BeatgridCurpos:hover,
@@ -486,11 +486,11 @@ WWidgetGroup {
   #BeatgridLater {
     image: url(skin:/buttons/btn_beats_later.svg) no-repeat center center;
   }
-  #ShiftEarlier {
-    image: url(skin:/buttons/btn_arrow_left.svg) no-repeat center center;
+  #HotcuesEarlier {
+    image: url(skin:/buttons/btn_hotcues_earlier.svg) no-repeat center center;
   }
-  #ShiftLater {
-    image: url(skin:/buttons/btn_arrow_right.svg) no-repeat center center;
+  #HotcuesLater {
+    image: url(skin:/buttons/btn_hotcues_later.svg) no-repeat center center;
   }
 
 /*################################################################

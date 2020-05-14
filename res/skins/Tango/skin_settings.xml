@@ -457,7 +457,7 @@ Description:
           </WidgetGroup><!-- /small/BIG selector -->
 
           <Template src="skin:../Tango/skin_settings_button_2state.xml">
-            <SetVariable name="text">Cue Timing Correction Buttons</SetVariable>
+            <SetVariable name="text">Hotcue Shift Buttons</SetVariable>
             <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
           </Template>
 

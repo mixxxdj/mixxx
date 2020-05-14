@@ -181,7 +181,7 @@ Variables:
                     <Children>
                       <Template src="skin:button_1state_right.xml">
                         <SetVariable name="TooltipId">shift_cues_earlier</SetVariable>
-                        <SetVariable name="ObjectName">ShiftEarlier</SetVariable>
+                        <SetVariable name="ObjectName">HotcuesEarlier</SetVariable>
                         <SetVariable name="Size">24f,24f</SetVariable>
                         <SetVariable name="ConfigKey"><Variable name="group"/>,shift_cues_earlier</SetVariable>
                         <SetVariable name="ConfigKeyRight"><Variable name="group"/>,shift_cues_earlier_small</SetVariable>
@@ -189,7 +189,7 @@ Variables:
                       <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
                       <Template src="skin:button_1state_right.xml">
                         <SetVariable name="TooltipId">shift_cues_later</SetVariable>
-                        <SetVariable name="ObjectName">ShiftLater</SetVariable>
+                        <SetVariable name="ObjectName">HotcuesLater</SetVariable>
                         <SetVariable name="Size">24f,24f</SetVariable>
                         <SetVariable name="ConfigKey"><Variable name="group"/>,shift_cues_later</SetVariable>
                         <SetVariable name="ConfigKeyRight"><Variable name="group"/>,shift_cues_later_small</SetVariable>
