@@ -531,7 +531,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
             if (pHoveredCue != nullptr) {
                 m_pCueMenuPopup->setTrackAndCue(m_pCurrentTrack, pHoveredCue);
 
-                QPoint cueMenuTopLeft = mixxx::WidgetHelper::mapPopupToScreen(
+                QPoint cueMenuTopLeft = mixxx::widgethelper::mapPopupToScreen(
                         windowHandle()->screen()->size(),
                         e->globalPos(),
                         m_pCueMenuPopup->size());

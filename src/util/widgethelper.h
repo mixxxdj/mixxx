@@ -3,7 +3,7 @@
 #include <QScreen>
 
 namespace mixxx {
-namespace WidgetHelper {
+namespace widgethelper {
 /// Returns an adjusted upper left point for displaying the popup
 /// with the given size on the screen, shifting the popup if it would go off
 /// the right or bottom edges of the screen.
@@ -20,5 +20,5 @@ QPoint mapPopupToScreen(
     }
     return newTopLeft;
 }
-} // namespace WidgetHelper
+} // namespace widgethelper
 } // namespace mixxx
