@@ -173,8 +173,8 @@
                                     <SetVariable name="state_0_text"></SetVariable>
                                     <SetVariable name="state_0_pressed">icon/ic_hotcues_earlier_48px.svg</SetVariable>
                                     <SetVariable name="state_0_unpressed">icon/ic_hotcues_earlier_48px.svg</SetVariable>
-                                    <SetVariable name="left_connection_control"><Variable name="group"/>,shift_times_earlier</SetVariable>
-                                    <SetVariable name="right_connection_control"><Variable name="group"/>,shift_times_earlier_small</SetVariable>
+                                    <SetVariable name="left_connection_control"><Variable name="group"/>,shift_cues_earlier</SetVariable>
+                                    <SetVariable name="right_connection_control"><Variable name="group"/>,shift_cues_earlier_small</SetVariable>
                                   </Template>
 
                                   <Template src="skin:left_right_1state_button.xml">
@@ -186,8 +186,8 @@
                                     <SetVariable name="state_0_text"></SetVariable>
                                     <SetVariable name="state_0_pressed">icon/ic_hotcues_later_48px.svg</SetVariable>
                                     <SetVariable name="state_0_unpressed">icon/ic_hotcues_later_48px.svg</SetVariable>
-                                    <SetVariable name="left_connection_control"><Variable name="group"/>,shift_times_later</SetVariable>
-                                    <SetVariable name="right_connection_control"><Variable name="group"/>,shift_times_later_small</SetVariable>
+                                    <SetVariable name="left_connection_control"><Variable name="group"/>,shift_cues_later</SetVariable>
+                                    <SetVariable name="right_connection_control"><Variable name="group"/>,shift_cues_later_small</SetVariable>
                                   </Template>
                                 </Children>
                                 <Connection>
