@@ -1,4 +1,3 @@
-
 #include <QtDebug>
 #include <QDomNode>
 #include <QEvent>
