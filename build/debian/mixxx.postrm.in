@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# debhelper will insert its stuff here, e.g. update-rc.d-calls
+
+#DEBHELPER#
+
+exit 0

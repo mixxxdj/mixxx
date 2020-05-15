@@ -2417,6 +2417,7 @@ if(WAVPACK)
 endif()
 
 # Packaging
+set(CPACK_PACKAGE_NAME "mixxx")
 set(CPACK_PACKAGE_VENDOR "Mixxx Project")
 set(CPACK_PACKAGE_CONTACT "RJ Skerry-Ryan <rryan@mixxx.org>")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack_package_description.txt")
@@ -2431,12 +2432,24 @@ set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README")
 set(CPACK_STRIP_FILES ON)
 set(CPACK_CREATE_DESKTOP_LINKS "mixxx")
 
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "${CPACK_PACKAGE_CONTACT}")
 set(CPACK_DEBIAN_PACKAGE_SECTION "sound")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 set(CPACK_DEBIAN_PACKAGE_SUGGESTS "pdf-viewer")
 set(CPACK_DEBIAN_PACKAGE_REPLACES "mixxx-data")
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5opengl5, libqt5svg5, libqt5xml5, libqt5sql5, libqt5sql5-sqlite")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5sql5-sqlite, pulseaudio-utils")
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+set(CPACK_DEBIAN_PACKAGE_VERSION "2.4.0~alpha~pre-ppa1~master~git7371~bionic")
+set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "${CPACK_PACKAGE_HOMEPAGE_URL}")
+set(CPACK_DEBIAN_PACKAGE_DESCRIPTION
+"Digital Disc Jockey Interface
+ Mixxx is a digital DJ system, where Wave, Ogg, FLAC and MP3 files can be
+ mixed on a computer for use in live performances. Filters, crossfader, and
+ speed control are provided. Mixxx can sync the 2 streams automatically, using
+ an algorithm to detect the beat.
+ .
+ Mixxx works with Jack or OSS, can be controlled from the GUI or from external
+ controllers, including MIDI devices and joysticks, and supports skins.")
 
 set(CPACK_WIX_UPGRADE_GUID "921DC99C-4DCF-478D-B950-50685CB9E6BE")
 set(CPACK_WIX_LICENSE_RTF "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/LICENSE.rtf")
@@ -2444,6 +2457,13 @@ set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/res/images/ic_mixxx.ico")
 set(CPACK_WIX_PROPERTY_ARPHELPLINK "${CPACK_PACKAGE_HOMEPAGE_URL}")
 set(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/images/banner.bmp")
 set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/images/dialog.bmp")
+
+if(UNIX AND NOT APPLE)
+  add_subdirectory(build/debian)
+  add_subdirectory(build/rpm)
+endif()
+
+set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_SOURCE_DIR}/build/CPackConfig.cmake" )
 
 include(CPack)
 
