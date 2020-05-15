@@ -1,19 +1,21 @@
-#include <QtDebug>
+#include "widget/wwaveformviewer.h"
+
 #include <QDomNode>
-#include <QEvent>
 #include <QDragEnterEvent>
-#include <QUrl>
-#include <QPainter>
+#include <QEvent>
 #include <QMimeData>
+#include <QPainter>
+#include <QUrl>
+#include <QtDebug>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "track/track.h"
-#include "waveform/widgets/waveformwidgetabstract.h"
-#include "widget/wwaveformviewer.h"
-#include "waveform/waveformwidgetfactory.h"
 #include "util/dnd.h"
 #include "util/math.h"
+#include "util/widgethelper.h"
+#include "waveform/waveformwidgetfactory.h"
+#include "waveform/widgets/waveformwidgetabstract.h"
 
 WWaveformViewer::WWaveformViewer(const char* group, UserSettingsPointer pConfig, QWidget* parent)
         : WWidget(parent),
@@ -83,7 +85,11 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
             auto cueAtClickPos = getCuePointerFromCueMark(m_pHoveredMark);
             if (cueAtClickPos) {
                 m_pCueMenuPopup->setTrackAndCue(currentTrack, cueAtClickPos);
-                m_pCueMenuPopup->popup(event->globalPos());
+                QPoint cueMenuTopLeft = mixxx::widgethelper::mapPopupToScreen(
+                        windowHandle()->screen()->size(),
+                        event->globalPos(),
+                        m_pCueMenuPopup->size());
+                m_pCueMenuPopup->popup(cueMenuTopLeft);
             }
         } else {
             // If we are scratching then disable and reset because the two shouldn't
