@@ -197,10 +197,6 @@ Variables:
                     </Children>
                   </WidgetGroup>
                 </Children>
-                <Connection>
-                  <ConfigKey persist="true">[Skin],timing_shift_buttons</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
               </WidgetGroup>
 
               <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
