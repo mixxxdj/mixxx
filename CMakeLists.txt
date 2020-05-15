@@ -2442,13 +2442,13 @@ set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 set(CPACK_DEBIAN_PACKAGE_VERSION "2.4.0~alpha~pre-ppa1~master~git7371~bionic")
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "${CPACK_PACKAGE_HOMEPAGE_URL}")
 set(CPACK_DEBIAN_PACKAGE_DESCRIPTION
-"Digital Disc Jockey Interface
+"Digital Disc Jockey Application
  Mixxx is a digital DJ system, where Wave, Ogg, FLAC and MP3 files can be
  mixed on a computer for use in live performances. Filters, crossfader, and
- speed control are provided. Mixxx can sync the 2 streams automatically, using
+ speed control are provided. Mixxx can sync the 4 decks automatically, using
  an algorithm to detect the beat.
  .
- Mixxx works with Jack or OSS, can be controlled from the GUI or from external
+ Mixxx works with ALSA or Jack, can be controlled from the GUI or from external
  controllers, including MIDI devices and joysticks, and supports skins.")
 
 set(CPACK_WIX_UPGRADE_GUID "921DC99C-4DCF-478D-B950-50685CB9E6BE")
