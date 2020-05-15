@@ -1,3 +1,15 @@
+mixxx (2.2.3-0ubuntu1) bionic; urgency=medium
+
+  * Bugfix release
+
+ -- Daniel Schürmann <daschuer@mixxx.org>  Fri, 15 May 2020 23:22:20 +0200
+
+mixxx (2.2.3-0ubuntu1) bionic; urgency=medium
+
+  * Bugfix release
+
+ -- Be <be@mixxx.org>  Wed, 27 Nov 2019 01:02:42 +0200
+
 mixxx (2.2.2-0ubuntu1) bionic; urgency=medium
 
   * Bugfix release
@@ -8,13 +20,13 @@ mixxx (2.2.1-0ubuntu1) bionic; urgency=medium
 
   * Bugfix release 
 
- -- Daniel <daniel@mixxx.org>  Thu, 22 Apr 2019 23:05:28 +0100
+ -- Daniel Schürmann <daschuer@mixxx.org>  Thu, 22 Apr 2019 23:05:28 +0100
 
 mixxx (2.2.0-0ubuntu1) bionic; urgency=medium
 
   * Bugfix release 
 
- -- Daniel <daniel@mixxx.org>  Fr, 11 Jan 2019 23:26:08 +0100
+ -- Daniel Schürmann <daschuer@mixxx.org>  Fr, 11 Jan 2019 23:26:08 +0100
  
 mixxx (2.1.8-0ubuntu1) bionic; urgency=medium
 
