@@ -142,33 +142,33 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
     connect(m_pShiftCuesEarlier.get(),
             &ControlObject::valueChanged,
             this,
-            [this](double value) { slotShiftTimesButton(value, -1 * kShiftCuesOffsetMillis); });
+            [this](double value) { slotShiftCuesButton(value, -1 * kShiftCuesOffsetMillis); });
     m_pShiftCuesLater = std::make_unique<ControlPushButton>(
             ConfigKey(group, "shift_cues_later"));
     connect(m_pShiftCuesLater.get(),
             &ControlObject::valueChanged,
             this,
-            [this](double value) { slotShiftTimesButton(value, kShiftCuesOffsetMillis); });
+            [this](double value) { slotShiftCuesButton(value, kShiftCuesOffsetMillis); });
     m_pShiftCuesEarlierSmall = std::make_unique<ControlPushButton>(
             ConfigKey(group, "shift_cues_earlier_small"));
     connect(m_pShiftCuesEarlierSmall.get(),
             &ControlObject::valueChanged,
             this,
             [this](double value) {
-                slotShiftTimesButton(value, -1 * kShiftCuesOffsetSmallMillis);
+                slotShiftCuesButton(value, -1 * kShiftCuesOffsetSmallMillis);
             });
     m_pShiftCuesLaterSmall = std::make_unique<ControlPushButton>(
             ConfigKey(group, "shift_cues_later_small"));
     connect(m_pShiftCuesLaterSmall.get(),
             &ControlObject::valueChanged,
             this,
-            [this](double value) { slotShiftTimesButton(value, kShiftCuesOffsetSmallMillis); });
+            [this](double value) { slotShiftCuesButton(value, kShiftCuesOffsetSmallMillis); });
     m_pShiftCues = std::make_unique<ControlObject>(
             ConfigKey(group, "shift_cues"));
     connect(m_pShiftCues.get(),
             &ControlObject::valueChanged,
             this,
-            &BaseTrackPlayerImpl::slotShiftTimes);
+            &BaseTrackPlayerImpl::slotShiftCues);
 
     // BPM of the current song
     m_pFileBPM = std::make_unique<ControlObject>(ConfigKey(group, "file_bpm"));
@@ -653,18 +653,18 @@ void BaseTrackPlayerImpl::slotWaveformZoomSetDefault(double pressed) {
     m_pWaveformZoom->set(defaultZoom);
 }
 
-void BaseTrackPlayerImpl::slotShiftTimes(double milliseconds) {
+void BaseTrackPlayerImpl::slotShiftCues(double milliseconds) {
     if (m_pLoadedTrack == nullptr) {
         return;
     }
     m_pLoadedTrack->shiftCuePositions(milliseconds);
 }
 
-void BaseTrackPlayerImpl::slotShiftTimesButton(double value, double milliseconds) {
+void BaseTrackPlayerImpl::slotShiftCuesButton(double value, double milliseconds) {
     if (value <= 0) {
         return;
     }
-    slotShiftTimes(milliseconds);
+    slotShiftCues(milliseconds);
 }
 
 void BaseTrackPlayerImpl::setReplayGain(double value) {
