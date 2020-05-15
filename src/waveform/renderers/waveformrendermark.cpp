@@ -31,7 +31,7 @@ void WaveformRenderMark::setup(const QDomNode& node, const SkinContext& context)
 
 void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
     PainterScope PainterScope(painter);
-    // Maps mark image offset to mark object.
+    // Maps mark objects to their positions in the widget.
     QMap<WaveformMarkPointer, int> marksOnScreen;
     /*
     //DEBUG
@@ -67,7 +67,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                 const int markHalfWidth = pMark->m_image.width() / 2.0
                         / m_waveformRenderer->getDevicePixelRatio();
 
-                // Check if the current point need to be displayed
+                // Check if the current point needs to be displayed.
                 if (currentMarkPoint > -markHalfWidth && currentMarkPoint < m_waveformRenderer->getWidth() + markHalfWidth) {
                     int drawOffset = currentMarkPoint - markHalfWidth;
                     painter->drawImage(QPoint(drawOffset, 0), pMark->m_image);
@@ -85,7 +85,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
             }
         }
     }
-    m_waveformRenderer->setMarkLabelBoundaries(marksOnScreen);
+    m_waveformRenderer->setMarkPositions(marksOnScreen);
 }
 
 void WaveformRenderMark::onResize() {

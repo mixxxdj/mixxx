@@ -40,7 +40,7 @@ class WaveformWidgetRenderer {
 
     inline const char* getGroup() const { return m_group;}
     const TrackPointer getTrackInfo() const { return m_pTrack;}
-    // Get cue at a point on the waveform widget.
+    /// Get cue mark at a point on the waveform widget.
     WaveformMarkPointer getCueMarkAtPoint(QPoint point);
 
     double getFirstDisplayedPosition() const { return m_firstDisplayedPosition;}
@@ -96,8 +96,8 @@ class WaveformWidgetRenderer {
     }
 
     void setTrack(TrackPointer track);
-    void setMarkLabelBoundaries(QMap<WaveformMarkPointer, int> markLabelOffsets) {
-        m_markLabelOffsets = markLabelOffsets;
+    void setMarkPositions(QMap<WaveformMarkPointer, int> markPositions) {
+        m_markPositions = markPositions;
     }
 
     double getPlayMarkerPosition() {
@@ -157,7 +157,7 @@ class WaveformWidgetRenderer {
 private:
     DISALLOW_COPY_AND_ASSIGN(WaveformWidgetRenderer);
     friend class WaveformWidgetFactory;
-    QMap<WaveformMarkPointer, int> m_markLabelOffsets;
+    QMap<WaveformMarkPointer, int> m_markPositions;
 };
 
 #endif // WAVEFORMWIDGETRENDERER_H

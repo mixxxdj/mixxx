@@ -290,8 +290,8 @@ void WaveformWidgetRenderer::setTrack(TrackPointer track) {
 }
 
 WaveformMarkPointer WaveformWidgetRenderer::getCueMarkAtPoint(QPoint point) {
-    for (const auto& pMark : m_markLabelOffsets.keys()) {
-        int markImagePositionInWidgetSpace = m_markLabelOffsets[pMark];
+    for (const auto& pMark : m_markPositions.keys()) {
+        int markImagePositionInWidgetSpace = m_markPositions[pMark];
         QPoint pointInImageSpace;
         if (getOrientation() == Qt::Horizontal) {
             pointInImageSpace = QPoint(point.x() - markImagePositionInWidgetSpace, point.y());
@@ -302,5 +302,5 @@ WaveformMarkPointer WaveformWidgetRenderer::getCueMarkAtPoint(QPoint point) {
             return pMark;
         }
     }
-    return static_cast<WaveformMarkPointer>(nullptr);
+    return nullptr;
 }

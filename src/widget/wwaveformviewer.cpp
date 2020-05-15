@@ -265,7 +265,7 @@ CuePointer WWaveformViewer::getCuePointerFromCueMark(WaveformMarkPointer pMark) 
             }
         }
     }
-    return static_cast<CuePointer>(nullptr);
+    return CuePointer();
 }
 
 void WWaveformViewer::highlightMark(WaveformMarkPointer pMark) {
