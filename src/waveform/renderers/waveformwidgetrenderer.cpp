@@ -290,44 +290,15 @@ void WaveformWidgetRenderer::setTrack(TrackPointer track) {
 }
 
 WaveformMarkPointer WaveformWidgetRenderer::getCueMarkAtPoint(QPoint point) {
-    WaveformMarkPointer pSelectedMark;
-    const int lineHoverpadding = 5;
     for (const auto& pMark : m_markLabelOffsets.keys()) {
-        QRectF labelBoundingRectInMarkImageSpace = pMark->m_label.area();
-        int markImageOffsetInWaveformWidgetSpace = m_markLabelOffsets[pMark];
-        int markLineOffset = markImageOffsetInWaveformWidgetSpace + pMark->m_linePosition;
-        QRect labelRectangleInWaveformWidgetSpace;
-        QRect markLineVicinity;
+        int markImagePositionInWidgetSpace = m_markLabelOffsets[pMark];
+        QPoint pointInImageSpace;
         if (getOrientation() == Qt::Horizontal) {
-            int labelBoundaryStartOffset =
-                    markImageOffsetInWaveformWidgetSpace +
-                    labelBoundingRectInMarkImageSpace.left();
-            labelRectangleInWaveformWidgetSpace =
-                    QRect(labelBoundaryStartOffset,
-                            labelBoundingRectInMarkImageSpace.top(),
-                            labelBoundingRectInMarkImageSpace.width(),
-                            labelBoundingRectInMarkImageSpace.height());
-            markLineVicinity = QRect(markLineOffset - lineHoverpadding,
-                    0,
-                    lineHoverpadding * 2,
-                    getHeight());
+            pointInImageSpace = QPoint(point.x() - markImagePositionInWidgetSpace, point.y());
         } else { /* Vertical */
-            int labelBoundaryStartOffset =
-                    markImageOffsetInWaveformWidgetSpace +
-                    labelBoundingRectInMarkImageSpace.top();
-            labelRectangleInWaveformWidgetSpace =
-                    QRect(labelBoundingRectInMarkImageSpace.left(),
-                            labelBoundaryStartOffset,
-                            labelBoundingRectInMarkImageSpace.width(),
-                            labelBoundingRectInMarkImageSpace.height());
-            markLineVicinity = QRect(0,
-                    markLineOffset - lineHoverpadding,
-                    getWidth(),
-                    lineHoverpadding * 2);
+            pointInImageSpace = QPoint(point.x(), point.y() - markImagePositionInWidgetSpace);
         }
-
-        if (labelRectangleInWaveformWidgetSpace.contains(point) ||
-                markLineVicinity.contains(point)) {
+        if (pMark->contains(pointInImageSpace, getOrientation())) {
             return pMark;
         }
     }
