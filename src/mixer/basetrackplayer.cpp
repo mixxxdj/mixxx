@@ -142,7 +142,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
     connect(m_pShiftCuesEarlier.get(),
             &ControlObject::valueChanged,
             this,
-            [this](double value) { slotShiftCuesButton(value, -1 * kShiftCuesOffsetMillis); });
+            [this](double value) { slotShiftCuesButton(value, -kShiftCuesOffsetMillis); });
     m_pShiftCuesLater = std::make_unique<ControlPushButton>(
             ConfigKey(group, "shift_cues_later"));
     connect(m_pShiftCuesLater.get(),
@@ -155,7 +155,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
             &ControlObject::valueChanged,
             this,
             [this](double value) {
-                slotShiftCuesButton(value, -1 * kShiftCuesOffsetSmallMillis);
+                slotShiftCuesButton(value, -kShiftCuesOffsetSmallMillis);
             });
     m_pShiftCuesLaterSmall = std::make_unique<ControlPushButton>(
             ConfigKey(group, "shift_cues_later_small"));
