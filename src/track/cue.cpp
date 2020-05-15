@@ -195,7 +195,7 @@ void Cue::setEndPosition(double samplePosition) {
     emit updated();
 }
 
-void Cue::shiftPosition(double frameOffset) {
+void Cue::shiftPositionFrames(double frameOffset) {
     QMutexLocker lock(&m_mutex);
     if (m_sampleStartPosition != kNoPosition) {
         m_sampleStartPosition += frameOffset * mixxx::kEngineChannelCount;

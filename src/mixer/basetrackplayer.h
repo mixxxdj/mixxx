@@ -93,8 +93,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotWaveformZoomUp(double pressed);
     void slotWaveformZoomDown(double pressed);
     void slotWaveformZoomSetDefault(double pressed);
-    void slotShiftCues(double milliseconds);
-    void slotShiftCuesButton(double value, double milliseconds);
+    void slotShiftCuesMillis(double milliseconds);
+    void slotShiftCuesMillisButton(double value, double milliseconds);
 
   private:
     void setReplayGain(double value);
