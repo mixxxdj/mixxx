@@ -654,7 +654,7 @@ void BaseTrackPlayerImpl::slotWaveformZoomSetDefault(double pressed) {
 }
 
 void BaseTrackPlayerImpl::slotShiftCues(double milliseconds) {
-    if (m_pLoadedTrack == nullptr) {
+    if (m_pLoadedTrack) {
         return;
     }
     m_pLoadedTrack->shiftCuePositions(milliseconds);
