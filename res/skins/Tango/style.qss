@@ -467,8 +467,8 @@ WWidgetGroup {
   #BeatgridFaster:hover,
   #BeatgridEarlier:hover,
   #BeatgridLater:hover,
-  #ShiftEarlier:hover,
-  #ShiftLater:hover {
+  #HotcuesEarlier:hover,
+  #HotcuesLater:hover {
     background-color: #0f0f0f;
   }
   #BeatgridCurpos {
