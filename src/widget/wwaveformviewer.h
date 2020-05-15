@@ -84,10 +84,10 @@ private:
 
     friend class WaveformWidgetFactory;
 
-    CuePointer getCuePointerFromCueMark(WaveformMarkPointer pMark);
+    CuePointer getCuePointerFromCueMark(WaveformMarkPointer pMark) const;
     void highlightMark(WaveformMarkPointer pMark);
     void unhighlightMark(WaveformMarkPointer pMark);
-    bool isPlaying();
+    bool isPlaying() const;
 };
 
 #endif

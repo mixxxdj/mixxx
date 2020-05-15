@@ -255,7 +255,7 @@ void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) 
     }
 }
 
-CuePointer WWaveformViewer::getCuePointerFromCueMark(WaveformMarkPointer pMark) {
+CuePointer WWaveformViewer::getCuePointerFromCueMark(WaveformMarkPointer pMark) const {
     if (pMark && pMark->getHotCue() != Cue::kNoHotCue) {
         QList<CuePointer> cueList = m_waveformWidget->getTrackInfo()->getCuePoints();
         for (const auto& pCue : cueList) {
@@ -277,6 +277,6 @@ void WWaveformViewer::unhighlightMark(WaveformMarkPointer pMark) {
     pMark->setBaseColor(originalColor);
 }
 
-bool WWaveformViewer::isPlaying() {
+bool WWaveformViewer::isPlaying() const {
     return m_pPlayEnabled->get();
 }

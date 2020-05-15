@@ -67,7 +67,7 @@ class WaveformMark {
     }
 
     // Check if a point (in image co-ordinates) lies on drawn image.
-    bool contains(QPoint point, Qt::Orientation orientation);
+    bool contains(QPoint point, Qt::Orientation orientation) const;
 
     QColor m_textColor;
     QString m_text;
