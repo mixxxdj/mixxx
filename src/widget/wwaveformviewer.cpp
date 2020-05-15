@@ -136,7 +136,7 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
     } else if (!isPlaying()) {
         WaveformMarkPointer pMark;
         pMark = m_waveformWidget->getCueMarkAtPoint(event->pos());
-        if (pMark) {
+        if (pMark && getCuePointerFromCueMark(pMark)) {
             if (!m_pHoveredMark) {
                 m_pHoveredMark = pMark;
                 highlightMark(pMark);
@@ -257,7 +257,7 @@ void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) 
 }
 
 CuePointer WWaveformViewer::getCuePointerFromCueMark(WaveformMarkPointer pMark) {
-    if (pMark) {
+    if (pMark && pMark->getHotCue() != Cue::kNoHotCue) {
         QList<CuePointer> cueList = m_waveformWidget->getTrackInfo()->getCuePoints();
         for (const auto& pCue : cueList) {
             if (pCue->getHotCue() == pMark->getHotCue()) {
