@@ -35,6 +35,7 @@
 #include "util/math.h"
 #include "util/painterscope.h"
 #include "util/timer.h"
+#include "util/widgethelper.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/controlwidgetconnection.h"
@@ -530,14 +531,11 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
             if (pHoveredCue != nullptr) {
                 m_pCueMenuPopup->setTrackAndCue(m_pCurrentTrack, pHoveredCue);
 
-                // Shift the popup left if it would go off screen shown at the
-                // current cursor position.
-                QPoint popupPoint = e->globalPos();
-                int screenWidth = windowHandle()->screen()->size().width();
-                if (popupPoint.x() + m_pCueMenuPopup->width() > screenWidth) {
-                    popupPoint.setX(screenWidth - m_pCueMenuPopup->width());
-                }
-                m_pCueMenuPopup->popup(popupPoint);
+                QPoint cueMenuTopLeft = mixxx::WidgetHelper::mapPopupToScreen(
+                        windowHandle()->screen()->size(),
+                        e->globalPos(),
+                        m_pCueMenuPopup->size());
+                m_pCueMenuPopup->popup(cueMenuTopLeft);
 
                 m_bHotcueMenuShowing = true;
             }
