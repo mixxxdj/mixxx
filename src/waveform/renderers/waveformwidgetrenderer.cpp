@@ -303,5 +303,5 @@ WaveformMarkPointer WaveformWidgetRenderer::getCueMarkAtPoint(QPoint point) cons
             return pMark;
         }
     }
-    return nullptr;
+    return WaveformMarkPointer();
 }
