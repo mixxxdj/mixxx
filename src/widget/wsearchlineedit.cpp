@@ -280,9 +280,6 @@ void WSearchLineEdit::enableSearch(const QString& text) {
             << "enableSearch"
             << text;
 #endif // ENABLE_TRACE_LOG
-    if (isEnabled()) {
-        return;
-    }
     // Set enabled BEFORE updating the edit box!
     setEnabled(true);
     updateEditBox(text);
