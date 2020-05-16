@@ -13012,20 +13012,20 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="711"/>
+        <location filename="../../src/widget/woverview.cpp" line="705"/>
         <source>Ready to play, analyzing ..</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="714"/>
-        <location filename="../../src/widget/woverview.cpp" line="724"/>
+        <location filename="../../src/widget/woverview.cpp" line="708"/>
+        <location filename="../../src/widget/woverview.cpp" line="718"/>
         <source>Loading track ..</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="718"/>
+        <location filename="../../src/widget/woverview.cpp" line="712"/>
         <source>Finalizing ..</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation type="unfinished"></translation>
