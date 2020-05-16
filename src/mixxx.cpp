@@ -850,7 +850,7 @@ bool MixxxMainWindow::initializeDatabase() {
 
 void MixxxMainWindow::initializeWindow() {
     // be sure createMenuBar() is called first
-    DEBUG_ASSERT(m_pMenuBar != nullptr);
+    DEBUG_ASSERT(m_pMenuBar);
 
     QPalette Pal(palette());
     // safe default QMenuBar background
@@ -1094,8 +1094,7 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
 void MixxxMainWindow::createMenuBar() {
     ScopedTimer t("MixxxMainWindow::createMenuBar");
     DEBUG_ASSERT(m_pKbdConfig != nullptr);
-    m_pMenuBar = new WMainMenuBar(this, m_pSettingsManager->settings(),
-                                  m_pKbdConfig);
+    m_pMenuBar = make_parented<WMainMenuBar>(this, m_pSettingsManager->settings(), m_pKbdConfig);
     setMenuBar(m_pMenuBar);
 }
 
