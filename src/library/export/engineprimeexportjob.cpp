@@ -136,8 +136,13 @@ void exportMetadata(djinterop::database& db,
     auto sampleCount = static_cast<int64_t>(pTrack->getDuration() * pTrack->getSampleRate());
     externalTrack.set_sampling({static_cast<double>(pTrack->getSampleRate()), sampleCount});
 
-    // TODO(mr-smidge) - Set average loudness.  Where does Mixxx store this?
-    externalTrack.set_average_loudness(0.5f);
+    // Set track loudness.
+    // Note that the djinterop API method for setting loudness may be revised
+    // in future, as more is discovered about the exact meaning of the loudness
+    // field in the Engine Library format.  Make the assumption for now that
+    // ReplayGain ratio is an appropriate value to set, which has been validated
+    // by basic experimental testing.
+    externalTrack.set_average_loudness(pTrack->getReplayGain().getRatio());
 
     // Set main cue-point.
     double cuePlayPos = pTrack->getCuePoint().getPosition();
@@ -179,7 +184,7 @@ void exportMetadata(djinterop::database& db,
     auto cues = pTrack->getCuePoints();
     for (const CuePointer& pCue : cues) {
         // We are only interested in hot cues.
-        if (pCue.get() == nullptr || pCue->getType() != CueType::HotCue) {
+        if (pCue->getType() != CueType::HotCue) {
             continue;
         }
 
