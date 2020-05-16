@@ -99,7 +99,24 @@ WaveformMark::WaveformMark(const QString& group,
 }
 
 void WaveformMark::setBaseColor(QColor baseColor) {
+    m_image = QImage();
     m_fillColor = baseColor;
     m_borderColor = Color::chooseContrastColor(baseColor);
     m_labelColor = Color::chooseColorByBrightness(baseColor, QColor(255,255,255,255), QColor(0,0,0,255));
 };
+
+bool WaveformMark::contains(QPoint point, Qt::Orientation orientation) const {
+    // Without some padding, the user would only have a single pixel width that
+    // would count as hovering over the WaveformMark.
+    float lineHoverPadding = 5.0;
+    int position;
+    if (orientation == Qt::Horizontal) {
+        position = point.x();
+    } else {
+        position = point.y();
+    }
+    bool lineHovered = m_linePosition >= position - lineHoverPadding &&
+            m_linePosition <= position + lineHoverPadding;
+
+    return m_label.area().contains(point) || lineHovered;
+}
