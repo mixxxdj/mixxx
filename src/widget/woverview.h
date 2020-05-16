@@ -156,7 +156,6 @@ class WOverview : public WWidget, public TrackDropTarget {
     int m_iPlayPos;
 
     WaveformMarkPointer m_pHoveredMark;
-    bool m_bHotcueMenuShowing;
     bool m_bTimeRulerActive;
     QPointF m_timeRulerPos;
     WaveformMarkLabel m_timeRulerPositionLabel;
