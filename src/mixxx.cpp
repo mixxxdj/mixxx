@@ -238,8 +238,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     setAttribute(Qt::WA_AcceptTouchEvents);
     m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));
 
-    m_pChannelHandleFactory = new ChannelHandleFactory();
-
     m_pDbConnectionPool = MixxxDb(pConfig).connectionPool();
     if (!m_pDbConnectionPool) {
         // TODO(XXX) something a little more elegant
@@ -252,12 +250,19 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         exit(-1);
     }
 
+    ChannelHandleFactoryPtr pChannelHandleFactory =
+            std::make_shared<ChannelHandleFactory>();
+
     // Create the Effects subsystem.
-    m_pEffectsManager = new EffectsManager(this, pConfig, m_pChannelHandleFactory);
+    m_pEffectsManager = new EffectsManager(this, pConfig, pChannelHandleFactory);
 
     // Starting the master (mixing of the channels and effects):
-    m_pEngine = new EngineMaster(pConfig, "[Master]", m_pEffectsManager,
-                                 m_pChannelHandleFactory, true);
+    m_pEngine = new EngineMaster(
+            pConfig,
+            "[Master]",
+            m_pEffectsManager,
+            pChannelHandleFactory,
+            true);
 
     // Create effect backends. We do this after creating EngineMaster to allow
     // effect backends to refer to controls that are produced by the engine.

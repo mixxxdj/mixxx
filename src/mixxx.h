@@ -144,8 +144,6 @@ class MixxxMainWindow : public QMainWindow {
 
     SettingsManager* m_pSettingsManager;
 
-    ChannelHandleFactory* m_pChannelHandleFactory;
-
     // The effects processing system
     EffectsManager* m_pEffectsManager;
 

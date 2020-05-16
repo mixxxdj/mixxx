@@ -30,10 +30,10 @@
 #include "util/trace.h"
 
 EngineMaster::EngineMaster(UserSettingsPointer pConfig,
-                           const char* group,
-                           EffectsManager* pEffectsManager,
-                           ChannelHandleFactory* pChannelHandleFactory,
-                           bool bEnableSidechain)
+        const char* group,
+        EffectsManager* pEffectsManager,
+        ChannelHandleFactoryPtr pChannelHandleFactory,
+        bool bEnableSidechain)
         : m_pChannelHandleFactory(pChannelHandleFactory),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
           m_masterGainOld(0.0),

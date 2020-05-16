@@ -36,12 +36,15 @@ using ::testing::_;
 class TestEngineMaster : public EngineMaster {
   public:
     TestEngineMaster(UserSettingsPointer _config,
-                     const char* group,
-                     EffectsManager* pEffectsManager,
-                     ChannelHandleFactory* pChannelHandleFactory,
-                     bool bEnableSidechain)
-        : EngineMaster(_config, group, pEffectsManager, pChannelHandleFactory,
-                       bEnableSidechain) {
+            const char* group,
+            EffectsManager* pEffectsManager,
+            ChannelHandleFactoryPtr pChannelHandleFactory,
+            bool bEnableSidechain)
+            : EngineMaster(_config,
+                      group,
+                      pEffectsManager,
+                      pChannelHandleFactory,
+                      bEnableSidechain) {
         m_pMasterEnabled->forceSet(1);
         m_pHeadphoneEnabled->forceSet(1);
         m_pBoothEnabled->forceSet(1);
@@ -56,7 +59,7 @@ class BaseSignalPathTest : public MixxxTest {
   protected:
     BaseSignalPathTest() {
         m_pGuiTick = std::make_unique<GuiTick>();
-        m_pChannelHandleFactory = new ChannelHandleFactory();
+        m_pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
         m_pNumDecks = new ControlObject(ConfigKey("[Master]", "num_decks"));
         m_pEffectsManager = new EffectsManager(NULL, config(), m_pChannelHandleFactory);
         m_pVisualsManager = new VisualsManager();
@@ -200,7 +203,7 @@ class BaseSignalPathTest : public MixxxTest {
         m_pEngineMaster->process(kProcessBufferSize);
     }
 
-    ChannelHandleFactory* m_pChannelHandleFactory;
+    ChannelHandleFactoryPtr m_pChannelHandleFactory;
     ControlObject* m_pNumDecks;
     std::unique_ptr<GuiTick> m_pGuiTick;
     VisualsManager* m_pVisualsManager;
