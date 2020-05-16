@@ -116,6 +116,10 @@ std::ostream& operator<<(std::ostream& os, const TrackRef& trackRef);
 
 QDebug operator<<(QDebug debug, const TrackRef& trackRef);
 
-inline uint qHash(const TrackRef& key, uint seed) {
-    return qHash(key.getLocation(), seed) ^ qHash(key.getId(), seed);
+inline uint qHash(
+        const TrackRef& key,
+        uint seed = 0) {
+    return qHash(
+            key.getLocation(), seed) ^
+            qHash(key.getId(), seed);
 }
