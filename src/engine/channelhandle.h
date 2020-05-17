@@ -144,7 +144,7 @@ class ChannelHandleFactory {
     QHash<ChannelHandle, QString> m_handleToGroup;
 };
 
-typedef std::shared_ptr<ChannelHandleFactory> ChannelHandleFactoryPtr;
+typedef std::shared_ptr<ChannelHandleFactory> ChannelHandleFactoryPointer;
 
 // An associative container mapping ChannelHandle to a template type T. Backed
 // by a QVarLengthArray with ChannelHandleMap::kMaxExpectedGroups pre-allocated

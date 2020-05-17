@@ -74,7 +74,7 @@ class BaseEffectTest : public MixxxTest {
 
     void registerTestEffect(EffectManifestPointer pManifest, bool willAddToEngine);
 
-    ChannelHandleFactoryPtr m_pChannelHandleFactory;
+    ChannelHandleFactoryPointer m_pChannelHandleFactory;
 
     // Deleted by EffectsManager. Do not delete.
     TestEffectBackend* m_pTestBackend;

@@ -21,7 +21,7 @@ const unsigned int kEffectMessagPipeFifoSize = 2048;
 
 EffectsManager::EffectsManager(QObject* pParent,
         UserSettingsPointer pConfig,
-        ChannelHandleFactoryPtr pChannelHandleFactory)
+        ChannelHandleFactoryPointer pChannelHandleFactory)
         : QObject(pParent),
           m_pChannelHandleFactory(pChannelHandleFactory),
           m_pEffectChainManager(new EffectChainManager(pConfig, this)),

@@ -28,7 +28,7 @@ class EffectsManager : public QObject {
 
     EffectsManager(QObject* pParent,
             UserSettingsPointer pConfig,
-            ChannelHandleFactoryPtr pChannelHandleFactory);
+            ChannelHandleFactoryPointer pChannelHandleFactory);
     virtual ~EffectsManager();
 
     EngineEffectsManager* getEngineEffectsManager() {
@@ -121,7 +121,7 @@ class EffectsManager : public QObject {
     void processEffectsResponses();
     void collectGarbage(const EffectsRequest* pResponse);
 
-    ChannelHandleFactoryPtr m_pChannelHandleFactory;
+    ChannelHandleFactoryPointer m_pChannelHandleFactory;
 
     EffectChainManager* m_pEffectChainManager;
     QList<EffectsBackend*> m_effectsBackends;

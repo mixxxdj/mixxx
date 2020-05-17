@@ -32,7 +32,7 @@
 EngineMaster::EngineMaster(UserSettingsPointer pConfig,
         const char* group,
         EffectsManager* pEffectsManager,
-        ChannelHandleFactoryPtr pChannelHandleFactory,
+        ChannelHandleFactoryPointer pChannelHandleFactory,
         bool bEnableSidechain)
         : m_pChannelHandleFactory(pChannelHandleFactory),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),

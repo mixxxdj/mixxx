@@ -250,8 +250,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         exit(-1);
     }
 
-    ChannelHandleFactoryPtr pChannelHandleFactory =
-            std::make_shared<ChannelHandleFactory>();
+    auto pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
 
     // Create the Effects subsystem.
     m_pEffectsManager = new EffectsManager(this, pConfig, pChannelHandleFactory);

@@ -58,7 +58,7 @@ class EngineMaster : public QObject, public AudioSource {
     EngineMaster(UserSettingsPointer pConfig,
             const char* pGroup,
             EffectsManager* pEffectsManager,
-            ChannelHandleFactoryPtr pChannelHandleFactory,
+            ChannelHandleFactoryPointer pChannelHandleFactory,
             bool bEnableSidechain);
     virtual ~EngineMaster();
 
@@ -270,7 +270,7 @@ class EngineMaster : public QObject, public AudioSource {
     // respective output.
     void processChannels(int iBufferSize);
 
-    ChannelHandleFactoryPtr m_pChannelHandleFactory;
+    ChannelHandleFactoryPointer m_pChannelHandleFactory;
     void applyMasterEffects();
     void processHeadphones(const double masterMixGainInHeadphones);
     bool sidechainMixRequired() const;

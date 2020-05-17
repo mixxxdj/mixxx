@@ -38,7 +38,7 @@ class TestEngineMaster : public EngineMaster {
     TestEngineMaster(UserSettingsPointer _config,
             const char* group,
             EffectsManager* pEffectsManager,
-            ChannelHandleFactoryPtr pChannelHandleFactory,
+            ChannelHandleFactoryPointer pChannelHandleFactory,
             bool bEnableSidechain)
             : EngineMaster(_config,
                       group,
@@ -203,7 +203,7 @@ class BaseSignalPathTest : public MixxxTest {
         m_pEngineMaster->process(kProcessBufferSize);
     }
 
-    ChannelHandleFactoryPtr m_pChannelHandleFactory;
+    ChannelHandleFactoryPointer m_pChannelHandleFactory;
     ControlObject* m_pNumDecks;
     std::unique_ptr<GuiTick> m_pGuiTick;
     VisualsManager* m_pVisualsManager;
