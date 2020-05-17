@@ -153,7 +153,7 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
         } else {
             if (m_pHoveredMark) {
                 unhighlightMark(m_pHoveredMark);
-                m_pHoveredMark = nullptr;
+                m_pHoveredMark.clear();
             }
         }
     }
@@ -195,7 +195,7 @@ void WWaveformViewer::dropEvent(QDropEvent* event) {
 void WWaveformViewer::leaveEvent(QEvent*) {
     if (m_pHoveredMark) {
         unhighlightMark(m_pHoveredMark);
-        m_pHoveredMark = nullptr;
+        m_pHoveredMark.clear();
     }
 }
 
