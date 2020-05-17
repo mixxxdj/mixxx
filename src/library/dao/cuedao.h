@@ -22,8 +22,6 @@ class CueDAO : public DAO {
         m_database = database;
     }
 
-    int cueCount();
-    int numCuesForTrack(TrackId trackId);
     QList<CuePointer> getCuesForTrack(TrackId trackId) const;
     bool deleteCuesForTrack(TrackId trackId);
     bool deleteCuesForTracks(const QList<TrackId>& trackIds);

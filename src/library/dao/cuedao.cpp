@@ -39,36 +39,6 @@ inline QString labelFromQVariant(const QVariant& value) {
 
 } // namespace
 
-int CueDAO::cueCount() {
-    qDebug() << "CueDAO::cueCount" << QThread::currentThread() << m_database.connectionName();
-    QSqlQuery query(m_database);
-    query.prepare("SELECT COUNT(*) FROM " CUE_TABLE);
-    if (query.exec()) {
-        if (query.next()) {
-            return query.value(0).toInt();
-        }
-    } else {
-        LOG_FAILED_QUERY(query);
-    }
-    //query.finish();
-    return 0;
-}
-
-int CueDAO::numCuesForTrack(TrackId trackId) {
-    qDebug() << "CueDAO::numCuesForTrack" << QThread::currentThread() << m_database.connectionName();
-    QSqlQuery query(m_database);
-    query.prepare("SELECT COUNT(*) FROM " CUE_TABLE " WHERE track_id = :id");
-    query.bindValue(":id", trackId.toVariant());
-    if (query.exec()) {
-        if (query.next()) {
-            return query.value(0).toInt();
-        }
-    } else {
-        LOG_FAILED_QUERY(query);
-    }
-    return 0;
-}
-
 CuePointer CueDAO::cueFromRow(const QSqlQuery& query) const {
     QSqlRecord record = query.record();
     int id = record.value(record.indexOf("id")).toInt();
