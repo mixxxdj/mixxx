@@ -236,6 +236,7 @@ EngineMaster::~EngineMaster() {
     SampleUtil::free(m_pBooth);
     SampleUtil::free(m_pTalkover);
     SampleUtil::free(m_pTalkoverHeadphones);
+    SampleUtil::free(m_pSidechainMix);
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
         SampleUtil::free(m_pOutputBusBuffers[o]);
     }
