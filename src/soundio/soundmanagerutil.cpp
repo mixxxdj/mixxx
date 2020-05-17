@@ -93,15 +93,6 @@ unsigned char AudioPath::getIndex() const {
 }
 
 /**
- * Defines equality for AudioPath objects.
- * @return true of this and other share a common type and index.
- */
-bool AudioPath::operator==(const AudioPath &other) const {
-    return m_type == other.m_type
-        && m_index == other.m_index;
-}
-
-/**
  * Checks if this AudioPath's channels clash with another's
  * (see ChannelGroup::clashesWith).
  */

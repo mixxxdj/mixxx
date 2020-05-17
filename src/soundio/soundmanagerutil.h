@@ -73,7 +73,6 @@ public:
     AudioPathType getType() const;
     ChannelGroup getChannelGroup() const;
     unsigned char getIndex() const;
-    bool operator==(const AudioPath &other) const;
     bool channelsClash(const AudioPath &other) const;
     QString getString() const;
     static QString getStringFromType(AudioPathType type);
@@ -103,12 +102,28 @@ public:
         return qHash(path.hashValue(), seed);
     }
 
+    friend bool operator==(
+            const AudioPath& lhs,
+            const AudioPath& rhs) {
+        // Exclude m_channelGroup from comparison!
+        // See also: hashValue()/qHash()
+        // TODO: Why??
+        return lhs.m_type == rhs.m_type &&
+                lhs.m_index == rhs.m_index;
+    }
+
 protected:
     virtual void setType(AudioPathType type) = 0;
     ChannelGroup m_channelGroup;
     AudioPathType m_type;
     unsigned char m_index;
 };
+
+inline bool operator!=(
+        const AudioPath& lhs,
+        const AudioPath& rhs) {
+    return !(lhs == rhs);
+}
 
 /// A source of audio in Mixxx that is to be output to a group of
 /// channels on an audio interface.
