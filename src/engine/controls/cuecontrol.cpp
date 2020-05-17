@@ -569,23 +569,22 @@ void CueControl::trackAnalyzed() {
         return;
     }
 
-    // if we are playing (no matter what reason for) do not seek
-    if (m_pPlay->toBool()) {
+    SampleOfTrack sampleOfTrack = getSampleOfTrack();
+    if (sampleOfTrack.current) {
+        // the track is already cued, don't re-cue
         return;
     }
-
-    // Retrieve current position of cues from COs.
-    double cue = m_pCuePoint->get();
-    double intro = m_pIntroStartPosition->get();
 
     // Make track follow the updated cues.
     SeekOnLoadMode seekOnLoadMode = getSeekOnLoadPreference();
 
     if (seekOnLoadMode == SeekOnLoadMode::MainCue) {
+        double cue = m_pCuePoint->get();
         if (cue != Cue::kNoPosition) {
             seekExact(cue);
         }
     } else if (seekOnLoadMode == SeekOnLoadMode::IntroStart) {
+        double intro = m_pIntroStartPosition->get();
         if (intro != Cue::kNoPosition) {
             seekExact(intro);
         }
