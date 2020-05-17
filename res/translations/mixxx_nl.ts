@@ -8260,7 +8260,7 @@ Wil je je bibliotheek nu scannen op hoezen?</translation>
     <name>QObject</name>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="6"/>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="187"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="161"/>
         <source>Invalid</source>
         <translation>Ongeldig</translation>
     </message>
@@ -8366,67 +8366,67 @@ Wil je je bibliotheek nu scannen op hoezen?</translation>
         <translation>14-bit (MSB)</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="189"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="163"/>
         <source>Master</source>
         <translation>Hoofduitgang</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="165"/>
         <source>Booth</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="193"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="167"/>
         <source>Headphones</source>
         <translation>Hoofdtelefoons</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="197"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="171"/>
         <source>Left Bus</source>
         <translation>Linkerbus</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="199"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="173"/>
         <source>Center Bus</source>
         <translation>Middenbus</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="201"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="175"/>
         <source>Right Bus</source>
         <translation>Rechterbus</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="203"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="177"/>
         <source>Invalid Bus</source>
         <translation>Ongeldige bus</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="206"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="180"/>
         <source>Deck</source>
         <translation>Speler</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="209"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="183"/>
         <source>Record/Broadcast</source>
         <translation>Opnemen/Uitzenden</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="211"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="185"/>
         <source>Vinyl Control</source>
         <translation>Vinylbediening</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="214"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="188"/>
         <source>Microphone</source>
         <translation>Microfoon</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="217"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
         <source>Auxiliary</source>
         <translation>Auxiliary</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="220"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="194"/>
         <source>Unknown path type %1</source>
         <translation>Onbekend padtype %1</translation>
     </message>

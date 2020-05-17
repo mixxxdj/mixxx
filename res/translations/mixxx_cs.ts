@@ -8268,7 +8268,7 @@ Chcete nyní kvůli souborům s obaly prohledat knihovnu?</translation>
     <name>QObject</name>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="6"/>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="187"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="161"/>
         <source>Invalid</source>
         <translation>Neplatný</translation>
     </message>
@@ -8374,67 +8374,67 @@ Chcete nyní kvůli souborům s obaly prohledat knihovnu?</translation>
         <translation>14-bit (MSB)</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="189"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="163"/>
         <source>Master</source>
         <translation>Hlavní</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="165"/>
         <source>Booth</source>
         <translation>Kukaň</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="193"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="167"/>
         <source>Headphones</source>
         <translation>Sluchátka</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="197"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="171"/>
         <source>Left Bus</source>
         <translation>Levá sběrnice</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="199"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="173"/>
         <source>Center Bus</source>
         <translation>Střední sběrnice</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="201"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="175"/>
         <source>Right Bus</source>
         <translation>Pravá sběrnice</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="203"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="177"/>
         <source>Invalid Bus</source>
         <translation>Neplatná sběrnice</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="206"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="180"/>
         <source>Deck</source>
         <translation>Přehrávač</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="209"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="183"/>
         <source>Record/Broadcast</source>
         <translation>Nahrávat/Vysílat</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="211"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="185"/>
         <source>Vinyl Control</source>
         <translation>Vinyl</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="214"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="188"/>
         <source>Microphone</source>
         <translation>Mikrofon</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="217"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
         <source>Auxiliary</source>
         <translation>Pomocný (Aux)</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="220"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="194"/>
         <source>Unknown path type %1</source>
         <translation>Neznámý typ cesty %1</translation>
     </message>
