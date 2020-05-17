@@ -104,7 +104,7 @@ QList<CuePointer> CueDAO::getCuesForTrack(TrackId trackId) const {
     return cues;
 }
 
-bool CueDAO::deleteCuesForTrack(TrackId trackId) {
+bool CueDAO::deleteCuesForTrack(TrackId trackId) const {
     qDebug() << "CueDAO::deleteCuesForTrack" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("DELETE FROM " CUE_TABLE " WHERE track_id = :track_id");
@@ -117,7 +117,7 @@ bool CueDAO::deleteCuesForTrack(TrackId trackId) {
     return false;
 }
 
-bool CueDAO::deleteCuesForTracks(const QList<TrackId>& trackIds) {
+bool CueDAO::deleteCuesForTracks(const QList<TrackId>& trackIds) const {
     qDebug() << "CueDAO::deleteCuesForTracks" << QThread::currentThread() << m_database.connectionName();
 
     QStringList idList;
@@ -136,7 +136,7 @@ bool CueDAO::deleteCuesForTracks(const QList<TrackId>& trackIds) {
     return false;
 }
 
-bool CueDAO::saveCue(Cue* cue) {
+bool CueDAO::saveCue(Cue* cue) const {
     //qDebug() << "CueDAO::saveCue" << QThread::currentThread() << m_database.connectionName();
     VERIFY_OR_DEBUG_ASSERT(cue) {
         return false;
@@ -191,7 +191,7 @@ bool CueDAO::saveCue(Cue* cue) {
     return false;
 }
 
-bool CueDAO::deleteCue(Cue* cue) {
+bool CueDAO::deleteCue(Cue* cue) const {
     //qDebug() << "CueDAO::deleteCue" << QThread::currentThread() << m_database.connectionName();
     if (cue->getId() != -1) {
         QSqlQuery query(m_database);
@@ -208,7 +208,9 @@ bool CueDAO::deleteCue(Cue* cue) {
     return false;
 }
 
-void CueDAO::saveTrackCues(TrackId trackId, const QList<CuePointer>& cueList) {
+void CueDAO::saveTrackCues(
+        TrackId trackId,
+        const QList<CuePointer>& cueList) const {
     //qDebug() << "CueDAO::saveTrackCues" << QThread::currentThread() << m_database.connectionName();
     // TODO(XXX) transaction, but people who are already in a transaction call
     // this.

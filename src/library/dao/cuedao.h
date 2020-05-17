@@ -19,14 +19,13 @@ class CueDAO : public DAO {
     }
 
     QList<CuePointer> getCuesForTrack(TrackId trackId) const;
-    bool deleteCuesForTrack(TrackId trackId);
-    bool deleteCuesForTracks(const QList<TrackId>& trackIds);
-    bool saveCue(Cue* cue);
-    bool deleteCue(Cue* cue);
-    // TODO(XXX) once we refer to all tracks by their id and TIO has a getId()
-    // method the first parameter here won't be necessary.
-    void saveTrackCues(TrackId trackId, const QList<CuePointer>& cueList);
+
+    void saveTrackCues(TrackId trackId, const QList<CuePointer>& cueList) const;
+    bool deleteCuesForTrack(TrackId trackId) const;
+    bool deleteCuesForTracks(const QList<TrackId>& trackIds) const;
   private:
+    bool saveCue(Cue* pCue) const;
+    bool deleteCue(Cue* pCue) const;
     CuePointer cueFromRow(const QSqlQuery& query) const;
 
     QSqlDatabase m_database;
