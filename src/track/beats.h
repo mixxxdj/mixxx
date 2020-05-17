@@ -236,9 +236,6 @@ class Beats : public QObject {
     /// BPM returns -1.
     // TODO(JVC) Temporary adaptor. Will be removed before finalizing the PR
     virtual double getBpmAroundPosition(double curSampleNum, int n) const {
-        if(isTempoConst()) {
-            return getGlobalBpm();
-        }
         return getBpmAroundPositionNew(curSampleNum / 2.0, n);
     }
     virtual double getBpmAroundPositionNew(FrameNum curFrameNum, int n) const;
@@ -304,18 +301,7 @@ class Beats : public QObject {
     inline int size() {
         return m_beats.size();
     }
-    virtual bool isTempoConst() const {
-        return m_isTempoConst;
-    }
-    virtual double getGlobalBpm() const {
-        return m_globalBpm;
-    }
-    virtual void setIsTempoConst(bool isTempoConst)  {
-        m_isTempoConst = isTempoConst;
-    }
-    virtual void setGlobalBpm(double globalBpm)  {
-        m_globalBpm = globalBpm;
-    }
+
     /// Returns the frame number for the first beat, -1 is no beats
     FrameNum getFirstBeatPosition() const;
     /// Returns the frame number for the last beat, -1 if no beats
@@ -338,8 +324,6 @@ class Beats : public QObject {
     void scaleThird();
     void scaleFourth();
 
-    bool m_isTempoConst;
-    double m_globalBpm;
     mutable QMutex m_mutex;
     const Track* m_track;
     QString m_subVersion;
