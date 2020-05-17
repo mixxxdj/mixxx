@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QMap>
 #include <QSqlDatabase>
 
 #include "track/track.h"
@@ -23,11 +22,10 @@ class CueDAO : public DAO {
     void saveTrackCues(TrackId trackId, const QList<CuePointer>& cueList) const;
     bool deleteCuesForTrack(TrackId trackId) const;
     bool deleteCuesForTracks(const QList<TrackId>& trackIds) const;
+
   private:
     bool saveCue(Cue* pCue) const;
     bool deleteCue(Cue* pCue) const;
-    CuePointer cueFromRow(const QSqlQuery& query) const;
 
     QSqlDatabase m_database;
-    mutable QMap<int, CuePointer> m_cues;
 };

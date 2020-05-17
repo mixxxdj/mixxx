@@ -12,6 +12,7 @@
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/color/rgbcolor.h"
+#include "util/db/fwdsqlquery.h"
 #include "util/performancetimer.h"
 
 namespace {
@@ -37,18 +38,15 @@ inline QString labelFromQVariant(const QVariant& value) {
     }
 }
 
-} // namespace
-
-CuePointer CueDAO::cueFromRow(const QSqlQuery& query) const {
-    QSqlRecord record = query.record();
-    int id = record.value(record.indexOf("id")).toInt();
-    TrackId trackId(record.value(record.indexOf("track_id")));
-    int type = record.value(record.indexOf("type")).toInt();
-    int position = record.value(record.indexOf("position")).toInt();
-    int length = record.value(record.indexOf("length")).toInt();
-    int hotcue = record.value(record.indexOf("hotcue")).toInt();
-    QString label = labelFromQVariant(record.value(record.indexOf("label")));
-    mixxx::RgbColor::optional_t color = mixxx::RgbColor::fromQVariant(record.value(record.indexOf("color")));
+CuePointer cueFromRow(const QSqlRecord& row) {
+    int id = row.value(row.indexOf("id")).toInt();
+    TrackId trackId(row.value(row.indexOf("track_id")));
+    int type = row.value(row.indexOf("type")).toInt();
+    int position = row.value(row.indexOf("position")).toInt();
+    int length = row.value(row.indexOf("length")).toInt();
+    int hotcue = row.value(row.indexOf("hotcue")).toInt();
+    QString label = labelFromQVariant(row.value(row.indexOf("label")));
+    mixxx::RgbColor::optional_t color = mixxx::RgbColor::fromQVariant(row.value(row.indexOf("color")));
     VERIFY_OR_DEBUG_ASSERT(color) {
         return CuePointer();
     }
@@ -60,46 +58,33 @@ CuePointer CueDAO::cueFromRow(const QSqlQuery& query) const {
             hotcue,
             label,
             *color));
-    m_cues[id] = pCue;
     return pCue;
 }
+
+} // namespace
 
 QList<CuePointer> CueDAO::getCuesForTrack(TrackId trackId) const {
     //qDebug() << "CueDAO::getCuesForTrack" << QThread::currentThread() << m_database.connectionName();
     QList<CuePointer> cues;
-    // A hash from hotcue index to cue id and cue*, used to detect if more
-    // than one cue has been assigned to a single hotcue id.
-    QMap<int, QPair<int, CuePointer> > dupe_hotcues;
 
-    QSqlQuery query(m_database);
-    query.prepare("SELECT * FROM " CUE_TABLE " WHERE track_id = :id");
+    FwdSqlQuery query(
+            m_database,
+            QStringLiteral("SELECT * FROM " CUE_TABLE " WHERE track_id=:id"));
+    VERIFY_OR_DEBUG_ASSERT(
+            query.isPrepared() &&
+            !query.hasError()) {
+        return cues;
+    }
     query.bindValue(":id", trackId.toVariant());
-    if (query.exec()) {
-        const int idColumn = query.record().indexOf("id");
-        const int hotcueIdColumn = query.record().indexOf("hotcue");
-        while (query.next()) {
-            CuePointer pCue;
-            int cueId = query.value(idColumn).toInt();
-            if (m_cues.contains(cueId)) {
-                pCue = m_cues[cueId];
-            }
-            if (!pCue) {
-                pCue = cueFromRow(query);
-            }
-            int hotcueId = query.value(hotcueIdColumn).toInt();
-            if (hotcueId != -1) {
-                if (dupe_hotcues.contains(hotcueId)) {
-                    m_cues.remove(dupe_hotcues[hotcueId].first);
-                    cues.removeOne(dupe_hotcues[hotcueId].second);
-                }
-                dupe_hotcues[hotcueId] = qMakePair(cueId, pCue);
-            }
-            if (pCue) {
-                cues.push_back(pCue);
-            }
+    VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
+        return cues;
+    }
+    while (query.next()) {
+        CuePointer pCue = cueFromRow(query.record());
+        VERIFY_OR_DEBUG_ASSERT(pCue) {
+            continue;
         }
-    } else {
-        LOG_FAILED_QUERY(query);
+        cues.push_back(pCue);
     }
     return cues;
 }
