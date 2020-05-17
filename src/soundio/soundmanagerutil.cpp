@@ -66,8 +66,8 @@ bool ChannelGroup::clashesWith(const ChannelGroup &other) const {
  * @param channels the number of channels used.
  */
 AudioPath::AudioPath(unsigned char channelBase, unsigned char channels)
-    : m_type(INVALID),
-      m_channelGroup(channelBase, channels),
+    : m_channelGroup(channelBase, channels),
+      m_type(INVALID),
       m_index(0) {
 }
 

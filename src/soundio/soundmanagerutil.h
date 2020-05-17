@@ -16,11 +16,14 @@ class ChannelGroup {
     unsigned char getChannelCount() const;
     bool clashesWith(const ChannelGroup& other) const;
 
+    uint hashValue() const {
+        return (m_channels << 8) |
+                m_channelBase;
+    }
     friend uint qHash(
             const ChannelGroup& group,
             uint seed = 0) {
-        return qHash(group.m_channelBase, seed) |
-                qHash(group.m_channels, seed);
+        return qHash(group.hashValue(), seed);
     }
 
     friend bool operator==(
@@ -87,18 +90,23 @@ public:
     // AudioPathType.
     static unsigned char maxChannelsForType(AudioPathType type);
 
+    uint hashValue() const {
+        // Exclude m_channelGroup from hash value!
+        // See also: operator==()
+        // TODO: Why??
+        return (m_type << 8) |
+                m_index;
+    }
     friend uint qHash(
             const AudioPath& path,
             uint seed = 0) {
-        return qHash(static_cast<uint>(path.m_type), seed) ^
-                qHash(path.m_channelGroup, seed) ^
-                qHash(path.m_index, seed);
+        return qHash(path.hashValue(), seed);
     }
 
 protected:
     virtual void setType(AudioPathType type) = 0;
-    AudioPathType m_type;
     ChannelGroup m_channelGroup;
+    AudioPathType m_type;
     unsigned char m_index;
 };
 
