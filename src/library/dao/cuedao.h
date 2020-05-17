@@ -1,8 +1,4 @@
-// cuedao.h
-// Created 10/26/2009 by RJ Ryan (rryan@mit.edu)
-
-#ifndef CUEDAO_H
-#define CUEDAO_H
+#pragma once
 
 #include <QMap>
 #include <QSqlDatabase>
@@ -16,7 +12,7 @@ class Cue;
 
 class CueDAO : public DAO {
   public:
-    ~CueDAO() override {}
+    ~CueDAO() override = default;
 
     void initialize(const QSqlDatabase& database) override {
         m_database = database;
@@ -36,5 +32,3 @@ class CueDAO : public DAO {
     QSqlDatabase m_database;
     mutable QMap<int, CuePointer> m_cues;
 };
-
-#endif /* CUEDAO_H */
