@@ -47,7 +47,7 @@ repos:
   rev: v2.3.0
   hooks:
   - id: check-byte-order-marker
-    exclude: ^.*(\.cbproj|\.groupproj|\.props|\.sln|\.vcxproj|\.vcxproj.filters)$
+    exclude: ^.*(\.cbproj|\.groupproj|\.props|\.sln|\.vcxproj|\.vcxproj.filters|\.ts)$
   - id: check-case-conflict
   - id: check-json
   - id: check-merge-conflict
