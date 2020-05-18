@@ -47,13 +47,14 @@ repos:
   rev: v2.3.0
   hooks:
   - id: check-byte-order-marker
-    exclude: ^.*(\.cbproj|\.groupproj|\.props|\.sln|\.vcxproj|\.vcxproj.filters|\.ts)$
+    exclude: ^.*(\.cbproj|\.groupproj|\.props|\.sln|\.vcxproj|\.vcxproj.filters)$
   - id: check-case-conflict
   - id: check-json
   - id: check-merge-conflict
   - id: check-xml
   - id: check-yaml
   - id: end-of-file-fixer
+    exclude: ^.*(\.ts)$
     stages:
     - commit
     - manual
