@@ -28,9 +28,12 @@ mixxx::AnalyzerPluginInfo AnalyzerBeats::defaultPlugin() {
     return availablePlugins().at(0);
 }
 
-AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetection)
+AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig,
+        bool enforceBpmDetection,
+        AnalyzerBeatsOverride modeOverride)
         : m_bpmSettings(pConfig),
           m_enforceBpmDetection(enforceBpmDetection),
+          m_modeOverride(modeOverride),
           m_bPreferencesReanalyzeOldBpm(false),
           m_bPreferencesFixedTempo(true),
           m_bPreferencesOffsetCorrection(false),
@@ -68,6 +71,18 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
     m_bPreferencesOffsetCorrection = m_bpmSettings.getFixedTempoOffsetCorrection();
     m_bPreferencesReanalyzeOldBpm = m_bpmSettings.getReanalyzeWhenSettingsChange();
     m_bPreferencesFastAnalysis = m_bpmSettings.getFastAnalysis();
+    switch (m_modeOverride) {
+    case FixedBpm:
+        m_bPreferencesFixedTempo = true;
+        break;
+    case UnfixedBpm:
+        m_bPreferencesFixedTempo = false;
+        m_bPreferencesOffsetCorrection = false;
+        m_bPreferencesFastAnalysis = false;
+        break;
+    default:
+        break;
+    }
 
     if (availablePlugins().size() > 0) {
         m_pluginId = defaultPlugin().id;

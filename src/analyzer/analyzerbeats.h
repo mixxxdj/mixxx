@@ -17,11 +17,18 @@
 #include "preferences/usersettings.h"
 #include "util/memory.h"
 
+enum AnalyzerBeatsOverride {
+    UsePreference,
+    FixedBpm,
+    UnfixedBpm,
+};
+
 class AnalyzerBeats : public Analyzer {
   public:
     explicit AnalyzerBeats(
             UserSettingsPointer pConfig,
-            bool enforceBpmDetection = false);
+            bool enforceBpmDetection = false,
+            AnalyzerBeatsOverride = UsePreference);
     ~AnalyzerBeats() override = default;
 
     static QList<mixxx::AnalyzerPluginInfo> availablePlugins();
@@ -40,6 +47,7 @@ class AnalyzerBeats : public Analyzer {
     BeatDetectionSettings m_bpmSettings;
     std::unique_ptr<mixxx::AnalyzerBeatsPlugin> m_pPlugin;
     const bool m_enforceBpmDetection;
+    AnalyzerBeatsOverride m_modeOverride;
     QString m_pluginId;
     bool m_bPreferencesReanalyzeOldBpm;
     bool m_bPreferencesFixedTempo;

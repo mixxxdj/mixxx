@@ -1059,7 +1059,7 @@ void WTrackMenu::slotRescanBpmConstant() {
         }
         pTrack->setBeats(mixxx::BeatsPointer());
     }
-    emit analyzeTracks(getTrackPointers());
+    emit analyzeTracks(getTrackPointers(), AnalyzerBeatsOverride::FixedBpm);
 }
 
 void WTrackMenu::slotRescanBpmNonConstant() {
@@ -1070,7 +1070,7 @@ void WTrackMenu::slotRescanBpmNonConstant() {
         }
         pTrack->setBeats(mixxx::BeatsPointer());
     }
-    emit analyzeTracks(getTrackPointers());
+    emit analyzeTracks(getTrackPointers(), AnalyzerBeatsOverride::UnfixedBpm);
 }
 
 void WTrackMenu::slotColorPicked(mixxx::RgbColor::optional_t color) {

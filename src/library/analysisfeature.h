@@ -5,17 +5,18 @@
 #ifndef ANALYSISFEATURE_H
 #define ANALYSISFEATURE_H
 
-#include <QStringListModel>
-#include <QUrl>
-#include <QObject>
-#include <QVariant>
 #include <QIcon>
 #include <QList>
+#include <QObject>
+#include <QStringListModel>
+#include <QUrl>
+#include <QVariant>
 
-#include "library/libraryfeature.h"
-#include "library/dlganalysis.h"
-#include "library/treeitemmodel.h"
+#include "analyzer/analyzerbeats.h"
 #include "analyzer/trackanalysisscheduler.h"
+#include "library/dlganalysis.h"
+#include "library/libraryfeature.h"
+#include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
 
 class TrackCollection;
@@ -42,6 +43,8 @@ class AnalysisFeature : public LibraryFeature {
 
     TreeItemModel* getChildModel() override;
     void refreshLibraryModels();
+    void analyzeTracksWithBeatsMode(QList<TrackId> trackIds,
+            AnalyzerBeatsOverride beatsOverride);
 
   signals:
     void analysisActive(bool bActive);

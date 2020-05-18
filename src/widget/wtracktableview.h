@@ -4,6 +4,7 @@
 #include <QAbstractItemModel>
 #include <QSortFilterProxyModel>
 
+#include "analyzer/analyzerbeats.h"
 #include "control/controlproxy.h"
 #include "library/dao/playlistdao.h"
 #include "library/trackmodel.h" // Can't forward declare enums
@@ -52,7 +53,7 @@ class WTrackTableView : public WLibraryTableView {
     }
 
   signals:
-    void analyzeTracks(TrackPointerList);
+    void analyzeTracks(TrackPointerList, AnalyzerBeatsOverride);
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model);

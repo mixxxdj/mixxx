@@ -20,6 +20,8 @@ enum AnalyzerModeFlags {
     WithBeats = 0x01,
     WithWaveform = 0x02,
     All = WithBeats | WithWaveform,
+    ForceFixedBpm = 0x04,
+    ForceUnfixedBpm = 0x08,
 };
 
 enum class AnalyzerThreadState {

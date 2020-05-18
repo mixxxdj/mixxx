@@ -4,6 +4,7 @@
 #include <QModelIndex>
 #include <QPointer>
 
+#include "analyzer/analyzerbeats.h"
 #include "library/dao/playlistdao.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
@@ -68,7 +69,7 @@ class WTrackMenu : public QMenu {
 
   signals:
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
-    void analyzeTracks(TrackPointerList);
+    void analyzeTracks(TrackPointerList, AnalyzerBeatsOverride);
 
   private slots:
     // File

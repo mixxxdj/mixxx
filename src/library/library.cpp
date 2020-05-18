@@ -526,12 +526,12 @@ void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
     }
 }
 
-void Library::slotAnalyzeTracks(TrackPointerList tracks) {
+void Library::slotAnalyzeTracks(TrackPointerList tracks, AnalyzerBeatsOverride beatsOverride) {
     QList<TrackId> ids;
     for (auto pTrack : tracks) {
         ids.append(pTrack->getId());
     }
-    m_pAnalysisFeature->analyzeTracks(ids);
+    m_pAnalysisFeature->analyzeTracksWithBeatsMode(ids, beatsOverride);
 }
 
 QStringList Library::getDirs() {

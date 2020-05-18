@@ -1,11 +1,12 @@
 #pragma once
 
-#include <QList>
-#include <QObject>
 #include <QAbstractItemModel>
 #include <QFont>
+#include <QList>
+#include <QObject>
 #include <QPointer>
 
+#include "analyzer/analyzerbeats.h"
 #include "analyzer/analyzerprogress.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
@@ -102,7 +103,7 @@ class Library: public QObject {
     void slotRequestRemoveDir(QString directory, Library::RemovalType removalType);
     void slotRequestRelocateDir(QString previousDirectory, QString newDirectory);
     void onSkinLoadFinished();
-    void slotAnalyzeTracks(TrackPointerList);
+    void slotAnalyzeTracks(TrackPointerList, AnalyzerBeatsOverride);
 
   signals:
     void showTrackModel(QAbstractItemModel* model);

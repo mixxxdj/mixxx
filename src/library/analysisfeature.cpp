@@ -32,9 +32,9 @@ int numberOfAnalyzerThreads() {
     return kNumberOfAnalyzerThreads;
 }
 
-inline
-AnalyzerModeFlags getAnalyzerModeFlags(
-        const UserSettingsPointer& pConfig) {
+inline AnalyzerModeFlags getAnalyzerModeFlags(
+        const UserSettingsPointer& pConfig,
+        AnalyzerBeatsOverride beatsOverride) {
     // Always enable at least BPM detection for batch analysis, even if disabled
     // in the config for ad-hoc analysis of tracks.
     // NOTE(uklotzde, 2018-12-26): The previous comment just states the status-quo
@@ -44,6 +44,17 @@ AnalyzerModeFlags getAnalyzerModeFlags(
     if (pConfig->getValue<bool>(ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"), true)) {
         modeFlags |= AnalyzerModeFlags::WithWaveform;
     }
+    switch (beatsOverride) {
+    case AnalyzerBeatsOverride::FixedBpm:
+        modeFlags |= AnalyzerModeFlags::ForceFixedBpm;
+        break;
+    case AnalyzerBeatsOverride::UnfixedBpm:
+        modeFlags |= AnalyzerModeFlags::ForceUnfixedBpm;
+        break;
+    default:
+        break;
+    }
+
     return static_cast<AnalyzerModeFlags>(modeFlags);
 }
 
@@ -135,6 +146,11 @@ void AnalysisFeature::activate() {
 }
 
 void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
+    analyzeTracksWithBeatsMode(trackIds, AnalyzerBeatsOverride::UsePreference);
+}
+
+void AnalysisFeature::analyzeTracksWithBeatsMode(QList<TrackId> trackIds,
+        AnalyzerBeatsOverride beatsOverride) {
     if (!m_pTrackAnalysisScheduler) {
         const int numAnalyzerThreads =
                 math_min(trackIds.size(), numberOfAnalyzerThreads());
@@ -146,7 +162,7 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
                 m_pLibrary,
                 numAnalyzerThreads,
                 m_pConfig,
-                getAnalyzerModeFlags(m_pConfig));
+                getAnalyzerModeFlags(m_pConfig, beatsOverride));
 
         connect(m_pTrackAnalysisScheduler.get(),
                 &TrackAnalysisScheduler::progress,
