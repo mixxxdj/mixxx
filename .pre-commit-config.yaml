@@ -60,6 +60,7 @@ repos:
     - manual
   - id: mixed-line-ending
   - id: trailing-whitespace
+    exclude: ^.*(\.ts)$
     stages:
     - commit
     - manual
