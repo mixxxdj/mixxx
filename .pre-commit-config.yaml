@@ -39,7 +39,7 @@
 # Using the `$SKIP` var is preferable to using `git commit --no-verify`
 # because it won't prevent catching other, unrelated issues.
 
-exclude: ^(lib/|src/test/.*data/).*$
+exclude: ^(lib/|src/test/.*data/).*|res/translations/.*\.ts$
 default_language_version:
   python: python3
 repos:
@@ -54,13 +54,11 @@ repos:
   - id: check-xml
   - id: check-yaml
   - id: end-of-file-fixer
-    exclude: ^.*(\.ts)$
     stages:
     - commit
     - manual
   - id: mixed-line-ending
   - id: trailing-whitespace
-    exclude: ^.*(\.ts)$
     stages:
     - commit
     - manual
