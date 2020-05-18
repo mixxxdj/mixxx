@@ -51,6 +51,9 @@ class WTrackTableView : public WLibraryTableView {
         return m_backgroundColorOpacity;
     }
 
+  signals:
+    void analyzeTracks(TrackPointerList);
+
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
     void slotMouseDoubleClicked(const QModelIndex &);

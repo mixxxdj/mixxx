@@ -311,6 +311,10 @@ void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
             &WTrackTableView::loadTrackToPlayer,
             this,
             &Library::slotLoadTrackToPlayer);
+    connect(pTrackTableView,
+            &WTrackTableView::analyzeTracks,
+            this,
+            &Library::slotAnalyzeTracks);
     pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
 
     connect(this,
@@ -520,6 +524,14 @@ void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
     if (oldDir == conDir) {
         m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, newDir);
     }
+}
+
+void Library::slotAnalyzeTracks(TrackPointerList tracks) {
+    QList<TrackId> ids;
+    for (auto pTrack : tracks) {
+        ids.append(pTrack->getId());
+    }
+    m_pAnalysisFeature->analyzeTracks(ids);
 }
 
 QStringList Library::getDirs() {

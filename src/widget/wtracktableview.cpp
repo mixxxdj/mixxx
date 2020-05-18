@@ -329,6 +329,10 @@ void WTrackTableView::initTrackMenu() {
             &WTrackMenu::loadTrackToPlayer,
             this,
             &WTrackTableView::loadTrackToPlayer);
+    connect(m_pTrackMenu.get(),
+            &WTrackMenu::analyzeTracks,
+            this,
+            &WTrackTableView::analyzeTracks);
 }
 
 // slot

@@ -102,6 +102,7 @@ class Library: public QObject {
     void slotRequestRemoveDir(QString directory, Library::RemovalType removalType);
     void slotRequestRelocateDir(QString previousDirectory, QString newDirectory);
     void onSkinLoadFinished();
+    void slotAnalyzeTracks(TrackPointerList);
 
   signals:
     void showTrackModel(QAbstractItemModel* model);

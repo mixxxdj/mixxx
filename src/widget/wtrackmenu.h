@@ -68,6 +68,7 @@ class WTrackMenu : public QMenu {
 
   signals:
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
+    void analyzeTracks(TrackPointerList);
 
   private slots:
     // File
@@ -93,6 +94,8 @@ class WTrackMenu : public QMenu {
     void slotLockBpm();
     void slotUnlockBpm();
     void slotScaleBpm(int);
+    void slotRescanBpmConstant();
+    void slotRescanBpmNonConstant();
 
     // Info and metadata
     void slotShowTrackInfo();
@@ -221,6 +224,8 @@ class WTrackMenu : public QMenu {
     QAction* m_pBpmFourThirdsAction{};
     QAction* m_pBpmThreeHalvesAction{};
     QAction* m_pBpmResetAction{};
+    QAction* m_pBpmRescanConstantTempo{};
+    QAction* m_pBpmRescanNonConstantTempo{};
 
     // Track color
     WColorPickerAction* m_pColorPickerAction{};

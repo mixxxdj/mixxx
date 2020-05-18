@@ -286,6 +286,19 @@ void WTrackMenu::createActions() {
                 &QAction::triggered,
                 this,
                 &WTrackMenu::slotClearBeats);
+
+        m_pBpmRescanConstantTempo = new QAction(tr("Rescan BPM, Constant tempo"), m_pBPMMenu);
+        connect(m_pBpmRescanConstantTempo,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotRescanBpmConstant);
+
+        m_pBpmRescanNonConstantTempo =
+                new QAction(tr("Rescan BPM, Non-constant tempo"), m_pBPMMenu);
+        connect(m_pBpmRescanNonConstantTempo,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotRescanBpmNonConstant);
     }
 
     if (featureIsEnabled(Feature::Color)) {
@@ -361,6 +374,8 @@ void WTrackMenu::setupActions() {
         m_pBPMMenu->addAction(m_pBpmLockAction);
         m_pBPMMenu->addAction(m_pBpmUnlockAction);
         m_pBPMMenu->addSeparator();
+        m_pBPMMenu->addAction(m_pBpmRescanConstantTempo);
+        m_pBPMMenu->addAction(m_pBpmRescanNonConstantTempo);
         m_pBPMMenu->addAction(m_pBpmResetAction);
         m_pBPMMenu->addSeparator();
 
@@ -1034,6 +1049,28 @@ void WTrackMenu::lockBpm(bool lock) {
     for (const auto& pTrack : getTrackPointers()) {
         pTrack->setBpmLocked(lock);
     }
+}
+
+void WTrackMenu::slotRescanBpmConstant() {
+    // TODO: This should be done in a thread for large selections
+    for (const auto& pTrack : getTrackPointers()) {
+        if (pTrack->isBpmLocked()) {
+            continue;
+        }
+        pTrack->setBeats(mixxx::BeatsPointer());
+    }
+    emit analyzeTracks(getTrackPointers());
+}
+
+void WTrackMenu::slotRescanBpmNonConstant() {
+    // TODO: This should be done in a thread for large selections
+    for (const auto& pTrack : getTrackPointers()) {
+        if (pTrack->isBpmLocked()) {
+            continue;
+        }
+        pTrack->setBeats(mixxx::BeatsPointer());
+    }
+    emit analyzeTracks(getTrackPointers());
 }
 
 void WTrackMenu::slotColorPicked(mixxx::RgbColor::optional_t color) {

@@ -136,7 +136,8 @@ void AnalysisFeature::activate() {
 
 void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
     if (!m_pTrackAnalysisScheduler) {
-        const int numAnalyzerThreads = numberOfAnalyzerThreads();
+        const int numAnalyzerThreads =
+                math_min(trackIds.size(), numberOfAnalyzerThreads());
         kLogger.info()
                 << "Starting analysis using"
                 << numAnalyzerThreads
