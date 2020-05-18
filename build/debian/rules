@@ -6,18 +6,15 @@ DEB_BUILD_OPTIONS= noopt
 
 # Build flags are passed in from the SConscript.
 MIXXX_SCONS_FLAGS = ""
-MIXXX_BUILD_FOLDER = "linux_build"
 
 # If ARCH is set to a different architecture when running pbuilder, pbuilder
 # will be set to create an environment to build packages for the architecture
 # specified in ARCH.
 ifneq (,$(findstring i386,$(ARCH)))
     MIXXX_SCONS_FLAGS += machine=x86
-    MIXXX_BUILD_FOLDER = "lin32_build"
 endif
 ifneq (,$(findstring amd64,$(ARCH)))
     MIXXX_SCONS_FLAGS += machine=x86_64
-    MIXXX_BUILD_FOLDER = "lin64_build"
 endif
 
 # parallel builds for scons
@@ -38,7 +35,7 @@ override_dh_auto_build:
 
 override_dh_auto_clean:
 	scons $(MIXXX_SCONS_FLAGS) -c || true
-	rm -rf .sconf_temp/ cache/ $(MIXXX_BUILD_FOLDER)/ 
+	rm -rf .sconf_temp/ cache/ lin*_build/ 
 	dh_clean .sconsign.dblite cachecustom.py \
 		config.log src/build.h build/*.pyc mixxx.1 lib/*/lib/*.a
 	dh_auto_clean
