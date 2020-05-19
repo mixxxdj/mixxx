@@ -1,6 +1,7 @@
 // ****************************************************************************
 // * Mixxx mapping script file for the Hercules DJControl Jogvision.
 // * Author: DJ Phatso, contributions by Kerrick Staley and David TV
+// * Version 1.12 (May 2020)
 // * Version 1.11 (May 2020)
 // * Version 1.10 (May 2020)
 // * Version 1.9 (May 2020)
@@ -13,6 +14,10 @@
 // * Version 1.1 (March 2019)
 // * Forum: https://www.mixxx.org/forums/viewtopic.php?f=7&t=12580
 // * Wiki: https://www.mixxx.org/wiki/doku.php/hercules_dj_control_jogvision
+//
+// Changes to v1.12
+// - Added "alternate" beat leds mode
+// - Changed "follow" beats led algorithm with a better/more elegant version
 //
 // Changes to v1.11
 // - Changed beats led algorithm to match song beats (forward and backward) and fix leads positions,
@@ -64,7 +69,7 @@
 
 // ****************************************************************************
 // User available variables (you may modify them)
-var beatActiveMode = "normal"; // normal (default), reverse, blink, follow
+var beatActiveMode = "normal"; // normal (default), reverse, blink, follow, alternate
 var initUpdateEffects = 1; // 1 (default) - set some effects values at startup; 0 - do not touch effects at startup
 
 // ****************************************************************************
@@ -79,7 +84,7 @@ var masterLeds = 0x90;
 var beatMax;
 if (beatActiveMode.match(/^(?:normal|reverse)$/g)) {
     beatMax = 4;
-} else if (beatActiveMode === "blink") {
+} else if (beatActiveMode.match(/^(?:blink|alternate)$/g)) {
     beatMax = 2;
 } else {
     beatMax = 8;
@@ -219,47 +224,16 @@ DJCJV.beatActive = function(value, group, _control) {
         midi.sendShortMsg(led, 0x3D, pos === 1 ? on : off);
     // Follow
     } else if (beatActiveMode === "follow") {
-        if (pos === 1) {
-            midi.sendShortMsg(led, 0x3A, on);
-            midi.sendShortMsg(led, 0x3B, off);
-            midi.sendShortMsg(led, 0x3C, off);
-            midi.sendShortMsg(led, 0x3D, off);
-        } else if (pos === 2) {
-            midi.sendShortMsg(led, 0x3A, on);
-            midi.sendShortMsg(led, 0x3B, on);
-            midi.sendShortMsg(led, 0x3C, off);
-            midi.sendShortMsg(led, 0x3D, off);
-        } else if (pos === 3) {
-            midi.sendShortMsg(led, 0x3A, on);
-            midi.sendShortMsg(led, 0x3B, on);
-            midi.sendShortMsg(led, 0x3C, on);
-            midi.sendShortMsg(led, 0x3D, off);
-        } else if (pos === 4) {
-            midi.sendShortMsg(led, 0x3A, on);
-            midi.sendShortMsg(led, 0x3B, on);
-            midi.sendShortMsg(led, 0x3C, on);
-            midi.sendShortMsg(led, 0x3D, on);
-        } else if (pos === 5) {
-            midi.sendShortMsg(led, 0x3A, off);
-            midi.sendShortMsg(led, 0x3B, on);
-            midi.sendShortMsg(led, 0x3C, on);
-            midi.sendShortMsg(led, 0x3D, on);
-        } else if (pos === 6) {
-            midi.sendShortMsg(led, 0x3A, off);
-            midi.sendShortMsg(led, 0x3B, off);
-            midi.sendShortMsg(led, 0x3C, on);
-            midi.sendShortMsg(led, 0x3D, on);
-        } else if (pos === 7) {
-            midi.sendShortMsg(led, 0x3A, off);
-            midi.sendShortMsg(led, 0x3B, off);
-            midi.sendShortMsg(led, 0x3C, off);
-            midi.sendShortMsg(led, 0x3D, on);
-        } else if (pos === 8) {
-            midi.sendShortMsg(led, 0x3A, off);
-            midi.sendShortMsg(led, 0x3B, off);
-            midi.sendShortMsg(led, 0x3C, off);
-            midi.sendShortMsg(led, 0x3D, off);
-        }
+        midi.sendShortMsg(led, 0x3A, ((pos >= 1) && (pos <= 4)) ? on : off);
+        midi.sendShortMsg(led, 0x3B, ((pos >= 2) && (pos <= 5)) ? on : off);
+        midi.sendShortMsg(led, 0x3C, ((pos >= 3) && (pos <= 6)) ? on : off);
+        midi.sendShortMsg(led, 0x3D, ((pos >= 4) && (pos <= 7)) ? on : off);
+    // Alternate
+    } else if (beatActiveMode === "alternate") {
+        midi.sendShortMsg(led, 0x3A, pos === 1 ? on : off);
+        midi.sendShortMsg(led, 0x3B, pos === 1 ? on : off);
+        midi.sendShortMsg(led, 0x3C, pos === 2 ? on : off);
+        midi.sendShortMsg(led, 0x3D, pos === 2 ? on : off);
     }
 };
 // Beat led DEACTIVATE (off all)
