@@ -79,10 +79,19 @@ QList<CuePointer> CueDAO::getCuesForTrack(TrackId trackId) const {
     VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
         return cues;
     }
+    QMap<int, CuePointer> hotCuesByNumber;
     while (query.next()) {
         CuePointer pCue = cueFromRow(query.record());
         VERIFY_OR_DEBUG_ASSERT(pCue) {
             continue;
+        }
+        int hotCueNumber = pCue->getHotCue();
+        if (hotCueNumber != Cue::kNoHotCue) {
+            const auto pDuplicateCue = hotCuesByNumber.take(hotCueNumber);
+            if (pDuplicateCue) {
+                cues.removeOne(pDuplicateCue);
+            }
+            hotCuesByNumber.insert(hotCueNumber, pCue);
         }
         cues.push_back(pCue);
     }
