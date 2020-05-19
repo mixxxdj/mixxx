@@ -6,12 +6,11 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 
-#include "mixer/playermanager.h"
-
-PlaylistTableModel::PlaylistTableModel(QObject* parent,
-                                       TrackCollectionManager* pTrackCollectionManager,
-                                       const char* settingsNamespace,
-                                       bool keepDeletedTracks)
+PlaylistTableModel::PlaylistTableModel(
+        QObject* parent,
+        TrackCollectionManager* pTrackCollectionManager,
+        const char* settingsNamespace,
+        bool keepDeletedTracks)
         : TrackSetTableModel(parent, pTrackCollectionManager, settingsNamespace),
           m_iPlaylistId(-1),
           m_keepDeletedTracks(keepDeletedTracks) {

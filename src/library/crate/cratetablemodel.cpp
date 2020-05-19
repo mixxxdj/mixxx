@@ -6,11 +6,10 @@
 #include "mixer/playermanager.h"
 #include "util/db/fwdsqlquery.h"
 
-#include <QtDebug>
-
-CrateTableModel::CrateTableModel(QObject* pParent, TrackCollectionManager* pTrackCollectionManager)
-        : TrackSetTableModel(pParent, pTrackCollectionManager,
-                            "mixxx.db.model.crate") {
+CrateTableModel::CrateTableModel(
+        QObject* pParent,
+        TrackCollectionManager* pTrackCollectionManager)
+        : TrackSetTableModel(pParent, pTrackCollectionManager, "mixxx.db.model.crate") {
 }
 
 void CrateTableModel::selectCrate(CrateId crateId) {

@@ -2,7 +2,10 @@
 
 #include "mixer/playermanager.h"
 
-TrackSetTableModel::TrackSetTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager, const char* settingsNamespace)
+TrackSetTableModel::TrackSetTableModel(
+        QObject* parent,
+        TrackCollectionManager* pTrackCollectionManager,
+        const char* settingsNamespace)
         : BaseSqlTableModel(parent, pTrackCollectionManager, settingsNamespace) {
 }
 

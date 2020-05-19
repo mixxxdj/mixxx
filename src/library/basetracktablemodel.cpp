@@ -88,7 +88,10 @@ QStringList BaseTrackTableModel::defaultTableColumns() {
     return kDefaultTableColumns;
 }
 
-BaseTrackTableModel::BaseTrackTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager, const char* settingsNamespace)
+BaseTrackTableModel::BaseTrackTableModel(
+        QObject* parent,
+        TrackCollectionManager* pTrackCollectionManager,
+        const char* settingsNamespace)
         : QAbstractTableModel(parent),
           TrackModel(cloneDatabase(pTrackCollectionManager), settingsNamespace),
           m_pTrackCollectionManager(pTrackCollectionManager),

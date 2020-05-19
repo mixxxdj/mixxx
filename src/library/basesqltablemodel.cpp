@@ -39,12 +39,15 @@ const QString kEmptyString = QStringLiteral("");
 
 } // anonymous namespace
 
-BaseSqlTableModel::BaseSqlTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager, const char* settingsNamespace)
+BaseSqlTableModel::BaseSqlTableModel(
+        QObject* parent,
+        TrackCollectionManager* pTrackCollectionManager,
+        const char* settingsNamespace)
         : BaseTrackTableModel(parent, pTrackCollectionManager, settingsNamespace),
-                m_pTrackCollectionManager(pTrackCollectionManager),
-                m_database(pTrackCollectionManager->internalCollection()->database()),
-                m_bInitialized(false),
-                m_currentSearch(kEmptyString) {
+          m_pTrackCollectionManager(pTrackCollectionManager),
+          m_database(pTrackCollectionManager->internalCollection()->database()),
+          m_bInitialized(false),
+          m_currentSearch(kEmptyString) {
 }
 
 BaseSqlTableModel::~BaseSqlTableModel() {
