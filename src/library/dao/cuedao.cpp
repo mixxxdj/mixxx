@@ -214,55 +214,45 @@ bool CueDAO::deleteCue(Cue* cue) const {
 void CueDAO::saveTrackCues(
         TrackId trackId,
         const QList<CuePointer>& cueList) const {
-    //qDebug() << "CueDAO::saveTrackCues" << QThread::currentThread() << m_database.connectionName();
-    // TODO(XXX) transaction, but people who are already in a transaction call
-    // this.
-    PerformanceTimer time;
-
-    // qDebug() << "CueDAO::saveTrackCues old size:" << oldCueList.size()
-    //          << "new size:" << cueList.size();
-
-    QString list = "";
-
-    time.start();
-    // For each id still in the TIO, save or delete it.
-    QListIterator<CuePointer> cueIt(cueList);
-    while (cueIt.hasNext()) {
-        CuePointer pCue(cueIt.next());
-        int cueId = pCue->getId();
-        bool newCue = cueId == -1;
-        if (newCue) {
-            // New cue
+    QStringList cueIds;
+    cueIds.reserve(cueList.size());
+    for (const auto& pCue : cueList) {
+        VERIFY_OR_DEBUG_ASSERT(pCue->getTrackId() == trackId) {
             pCue->setTrackId(trackId);
-        } else {
-            //idList.append(QString("%1").arg(cueId));
-            list.append(QStringLiteral("%1,").arg(cueId));
         }
+        // New cues (without an id) must always be marked as dirty
+        DEBUG_ASSERT(pCue->getId() >= 0 || pCue->isDirty());
         // Update or save cue
         if (pCue->isDirty()) {
             saveCue(pCue.get());
-
-            // Since this cue didn't have an id until now, add it to the list of
-            // cues not to delete.
-            if (newCue)
-                list.append(QStringLiteral("%1,").arg(pCue->getId()));
         }
+        // After saving each cue must have a valid id
+        VERIFY_OR_DEBUG_ASSERT(pCue->getId() >= 0) {
+            continue;
+        }
+        cueIds.append(QString::number(pCue->getId()));
     }
-    //qDebug() << "Saving cues took " << time.formatMillisWithUnit();
-    time.start();
 
-    // Strip the last ,
-    if (list.count() > 0)
-        list.truncate(list.count()-1);
-
-    // Delete cues that are no longer on the track.
-    QSqlQuery query(m_database);
-    query.prepare(QStringLiteral("DELETE FROM " CUE_TABLE " WHERE track_id=:track_id AND NOT id IN (%1)")
-                  .arg(list));
+    // Delete orphaned cues
+    FwdSqlQuery query(
+            m_database,
+            QStringLiteral("DELETE FROM " CUE_TABLE " WHERE track_id=:track_id AND id NOT IN (%1)")
+                    .arg(cueIds.join(QChar(','))));
+    DEBUG_ASSERT(
+            query.isPrepared() &&
+            !query.hasError());
     query.bindValue(":track_id", trackId.toVariant());
-
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "Delete cues failed.";
+    VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
+        kLogger.warning()
+                << "Failed to delete orphaned cues of track"
+                << trackId;
+        return;
     }
-    //qDebug() << "Deleting cues took " << time.formatMillisWithUnit();
+    if (query.numRowsAffected() > 0) {
+        kLogger.debug()
+                << "Deleted"
+                << query.numRowsAffected()
+                << "orphaned cue(s) of track"
+                << trackId;
+    }
 }
