@@ -17,7 +17,7 @@ This repository contains the Mixxx source code, skins, controller mappings, and 
 * [mixxxdj/manual](https://github.com/mixxxdj/manual): content for the Mixxx manual, which uses [Sphinx](https://www.sphinx-doc.org/)
 * [mixxxdj/buildserver](https://github.com/mixxxdj/buildserver): scripts for generating our prebuilt dependencies for macOS and Windows
 
-All of these are automatically built and deployed by our [Jenkins build servers](https://builds.renegadetech.mixxx.org/) whenever a change is committed. Anyone is welcome to open a pull request for all of these repositories.
+All of these are automatically built and deployed by our [Jenkins build servers](https://builds.renegadetech.mixxx.org/) whenever a change is committed. You are welcome to open a pull request in any of these repositories.
 
 ## Git Workflow ##
 ### All Contributors ###
