@@ -13,9 +13,12 @@
 #include "util/assert.h"
 #include "util/color/rgbcolor.h"
 #include "util/db/fwdsqlquery.h"
+#include "util/logger.h"
 #include "util/performancetimer.h"
 
 namespace {
+
+const mixxx::Logger kLogger = mixxx::Logger("CueDAO");
 
 // The label column is not nullable!
 const QVariant kEmptyLabel = QVariant(QStringLiteral(""));
@@ -70,13 +73,14 @@ QList<CuePointer> CueDAO::getCuesForTrack(TrackId trackId) const {
     FwdSqlQuery query(
             m_database,
             QStringLiteral("SELECT * FROM " CUE_TABLE " WHERE track_id=:id"));
-    VERIFY_OR_DEBUG_ASSERT(
+    DEBUG_ASSERT(
             query.isPrepared() &&
-            !query.hasError()) {
-        return cues;
-    }
+            !query.hasError());
     query.bindValue(":id", trackId.toVariant());
     VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
+        kLogger.warning()
+                << "Failed to load cues of track"
+                << trackId;
         return cues;
     }
     QMap<int, CuePointer> hotCuesByNumber;
@@ -89,6 +93,11 @@ QList<CuePointer> CueDAO::getCuesForTrack(TrackId trackId) const {
         if (hotCueNumber != Cue::kNoHotCue) {
             const auto pDuplicateCue = hotCuesByNumber.take(hotCueNumber);
             if (pDuplicateCue) {
+                kLogger.warning()
+                        << "Dropping hot cue"
+                        << pDuplicateCue->getId()
+                        << "with duplicate number"
+                        << hotCueNumber;
                 cues.removeOne(pDuplicateCue);
             }
             hotCuesByNumber.insert(hotCueNumber, pCue);
