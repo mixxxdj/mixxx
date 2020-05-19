@@ -86,7 +86,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
             if (cueAtClickPos) {
                 m_pCueMenuPopup->setTrackAndCue(currentTrack, cueAtClickPos);
                 QPoint cueMenuTopLeft = mixxx::widgethelper::mapPopupToScreen(
-                        windowHandle()->screen()->size(),
+                        *this,
                         event->globalPos(),
                         m_pCueMenuPopup->size());
                 m_pCueMenuPopup->popup(cueMenuTopLeft);
