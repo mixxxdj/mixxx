@@ -13,24 +13,18 @@ HiddenTableModel::HiddenTableModel(QObject* parent,
 HiddenTableModel::~HiddenTableModel() {
 }
 
-void HiddenTableModel::setTableModel(int id) {
-    Q_UNUSED(id);
+void HiddenTableModel::setTableModel() {
     QSqlQuery query(m_database);
     const QString tableName("hidden_songs");
 
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID;
-    QString filter("mixxx_deleted=1");
-    query.prepare(
-            "CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName +
-            " AS "
-            "SELECT " +
-            columns.join(",") +
-            " FROM library "
+    // clang-format off
+    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
+            "SELECT " + columns.join(",") + " FROM library "
             "INNER JOIN track_locations "
             "ON library.location=track_locations.id "
-            "WHERE " +
-            filter);
+            "WHERE mixxx_deleted=1");
     if (!query.exec()) {
         qDebug() << query.executedQuery() << query.lastError();
     }
@@ -64,8 +58,7 @@ void HiddenTableModel::unhideTracks(const QModelIndexList& indices) {
 
     m_pTrackCollectionManager->unhideTracks(trackIds);
 
-    // TODO(rryan) : do not select, instead route event to BTC and notify from
-    // there.
+    // TODO(rryan) : do not select, instead route event to BTC and notify from there.
     select(); // Repopulate the data model.
 }
 
