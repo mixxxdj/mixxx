@@ -236,15 +236,6 @@ DJCJV.beatActive = function(value, group, _control) {
         midi.sendShortMsg(led, 0x3D, pos === 2 ? on : off);
     }
 };
-// Beat led DEACTIVATE (off all)
-DJCJV.beatInactive = function(value, group, _control) {
-    midi.sendShortMsg(DJCJV.Channel[group].central, 0x3A, off);
-    midi.sendShortMsg(DJCJV.Channel[group].central, 0x3B, off);
-    midi.sendShortMsg(DJCJV.Channel[group].central, 0x3C, off);
-    midi.sendShortMsg(DJCJV.Channel[group].central, 0x3D, off);
-
-    DJCJV.Channel[group].beatPosition = 1;
-};
 
 // Jogwheels inner LED display - Play position
 DJCJV.wheelInnerUpdate = function(value, group, _control) {
