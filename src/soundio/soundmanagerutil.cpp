@@ -42,16 +42,6 @@ unsigned char ChannelGroup::getChannelCount() const {
 }
 
 /**
- * Defines equality between two ChannelGroups.
- * @return true if the two ChannelGroups share a common base channel
- *          and channel count, otherwise false.
- */
-bool ChannelGroup::operator==(const ChannelGroup &other) const {
-    return m_channelBase == other.m_channelBase
-        && m_channels == other.m_channels;
-}
-
-/**
  * Checks if another ChannelGroup shares channels with this one.
  * @param other the other ChannelGroup to check for a clash with.
  * @return true if the other and this ChannelGroup share any channels,
@@ -67,14 +57,6 @@ bool ChannelGroup::clashesWith(const ChannelGroup &other) const {
         (other.m_channelBase > m_channelBase
         && other.m_channelBase < m_channelBase + m_channels)
         || m_channelBase == other.m_channelBase;
-}
-
-/**
- * Generates a hash of this ChannelGroup, so it can act as a key in a QHash.
- * @return a hash for this ChannelGroup
- */
-unsigned int ChannelGroup::getHash() const {
-    return 0 | (m_channels << 8) | m_channelBase;
 }
 
 /**
@@ -117,14 +99,6 @@ unsigned char AudioPath::getIndex() const {
 bool AudioPath::operator==(const AudioPath &other) const {
     return m_type == other.m_type
         && m_index == other.m_index;
-}
-
-/**
- * Generates a hash of this AudioPath, so it can act as a key in a QHash.
- * @return a hash for this AudioPath
- */
-unsigned int AudioPath::getHash() const {
-    return 0 | (m_type << 8) | m_index;
 }
 
 /**
@@ -468,25 +442,4 @@ QString SoundDeviceId::debugName() const {
     } else {
         return name + QStringLiteral(", ") + alsaHwDevice + QStringLiteral(", ") + QString::number(portAudioIndex);
     }
-}
-
-/**
- * Defined for QHash, so ChannelGroup can be used as a QHash key.
- */
-unsigned int qHash(const ChannelGroup &group) {
-    return group.getHash();
-}
-
-/**
- * Defined for QHash, so AudioOutput can be used as a QHash key.
- */
-unsigned int qHash(const AudioOutput &output) {
-    return output.getHash();
-}
-
-/**
- * Defined for QHash, so AudioInput can be used as a QHash key.
- */
-unsigned int qHash(const AudioInput &input) {
-    return input.getHash();
 }

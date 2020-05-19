@@ -47,7 +47,7 @@ repos:
   rev: v2.3.0
   hooks:
   - id: check-byte-order-marker
-    exclude: ^.*(\.cbproj|\.groupproj|\.props|\.sln|\.vcxproj|\.vcxproj.filters)$
+    exclude: ^.*(\.cbproj|\.groupproj|\.props|\.sln|\.vcxproj|\.vcxproj.filters|\.ts)$
   - id: check-case-conflict
   - id: check-json
   - id: check-merge-conflict
@@ -88,18 +88,18 @@ repos:
     rev: stable
     hooks:
     -   id: black
-        files: ^scripts/.*$
+        files: ^tools/.*$
 -   repo: https://gitlab.com/pycqa/flake8
     rev: '3.7.9'
     hooks:
     -   id: flake8
-        files: ^scripts/.*$
+        files: ^tools/.*$
 - repo: local
   hooks:
   - id: qsscheck
     name: qsscheck
     description: Run qsscheck to detect broken QSS.
-    entry: ./scripts/qsscheck.py
+    entry: ./tools/qsscheck.py
     args: [.]
     pass_filenames: false
     language: python
@@ -116,7 +116,7 @@ repos:
   - id: line-length
     name: line-length
     description: Check for lines longer 100 and brakes them before 80.
-    entry: ./scripts/line_length.py
+    entry: ./tools/line_length.py
     stages:
     - commit
     - push

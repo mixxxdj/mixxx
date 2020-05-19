@@ -66,8 +66,10 @@ inline QDebug operator<<(QDebug stream, const ChannelHandle& h) {
     return stream;
 }
 
-inline uint qHash(const ChannelHandle& handle) {
-    return qHash(handle.handle());
+inline uint qHash(
+        const ChannelHandle& handle,
+        uint seed = 0) {
+    return qHash(handle.handle(), seed);
 }
 
 // Convenience class that mimics QPair<ChannelHandle, QString> except with
@@ -104,8 +106,10 @@ inline QDebug operator<<(QDebug stream, const ChannelHandleAndGroup& g) {
     return stream;
 }
 
-inline uint qHash(const ChannelHandleAndGroup& handle_group) {
-    return qHash(handle_group.handle());
+inline uint qHash(
+        const ChannelHandleAndGroup& handle_group,
+        uint seed = 0) {
+    return qHash(handle_group.handle(), seed);
 }
 
 // A helper class used by EngineMaster to assign ChannelHandles to channel group
