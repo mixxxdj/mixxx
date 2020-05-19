@@ -28,7 +28,11 @@ namespace {
 
 QString formatLabel(
         const CrateSummary& crateSummary) {
-    return QString("%1 (%2) %3").arg(crateSummary.getName(), QString::number(crateSummary.getTrackCount()), crateSummary.getTrackDurationText());
+    return QString("%1 (%2) %3")
+            .arg(
+                    crateSummary.getName(),
+                    QString::number(crateSummary.getTrackCount()),
+                    crateSummary.getTrackDurationText());
 }
 
 } // anonymous namespace

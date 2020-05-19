@@ -124,7 +124,7 @@ TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
             qWarning() << "Failed to read create" << m_selectedCrate;
         }
     }
-    
+
     return caps;
 }
 
