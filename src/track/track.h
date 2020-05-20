@@ -74,6 +74,8 @@ class Track : public QObject {
     Q_PROPERTY(QString durationFormatted READ getDurationTextSeconds STORED false)
     Q_PROPERTY(QString durationFormattedCentiseconds READ getDurationTextCentiseconds STORED false)
     Q_PROPERTY(QString durationFormattedMilliseconds READ getDurationTextMilliseconds STORED false)
+    Q_PROPERTY(QString info READ getInfo STORED false)
+    Q_PROPERTY(QString titleInfo READ getTitleInfo STORED false)
 
     TrackFile getFileInfo() const {
         // Copying TrackFile/QFileInfo is thread-safe (implicit sharing), no locking needed.
