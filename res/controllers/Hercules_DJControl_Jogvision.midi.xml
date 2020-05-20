@@ -1157,6 +1157,16 @@
       </control>
       <!-- FX section -->
       <control>
+        <group>[Channel1]</group>
+        <key>beats_translate_curpos</key>
+        <description>Align beat grid Deck 1 to current playposition</description>
+        <status>0x90</status>
+        <midino>0x52</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
         <group>[EffectRack1_EffectUnit1_Effect1]</group>
         <key>meta</key>
         <description>Effect Rack 1 - Slot 2 Level</description>
@@ -1323,6 +1333,16 @@
         </options>
       </control>
       <!-- FX section -->
+      <control>
+        <group>[Channel2]</group>
+        <key>beats_translate_curpos</key>
+        <description>Align beat grid Deck 2 to current playposition</description>
+        <status>0x91</status>
+        <midino>0x52</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
       <control>
         <group>[EffectRack1_EffectUnit2_Effect1]</group>
         <key>meta</key>
