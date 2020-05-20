@@ -362,11 +362,25 @@ bool Track::isMetadataSynchronized() const {
 QString Track::getInfo() const {
     QMutexLocker lock(&m_qMutex);
     if (m_record.getMetadata().getTrackInfo().getArtist().trimmed().isEmpty()) {
-        return m_record.getMetadata().getTrackInfo().getTitle();
+        if (m_record.getMetadata().getTrackInfo().getTitle().trimmed().isEmpty()) {
+            return m_fileInfo.fileName();
+        } else {
+            return m_record.getMetadata().getTrackInfo().getTitle();
+        }
     } else {
         return m_record.getMetadata().getTrackInfo().getArtist() +
                 QStringLiteral(" - ") +
                 m_record.getMetadata().getTrackInfo().getTitle();
+    }
+}
+
+QString Track::getTitleInfo() const {
+    QMutexLocker lock(&m_qMutex);
+    if (m_record.getMetadata().getTrackInfo().getArtist().trimmed().isEmpty() &&
+            m_record.getMetadata().getTrackInfo().getTitle().trimmed().isEmpty()) {
+        return m_fileInfo.fileName();
+    } else {
+        return m_record.getMetadata().getTrackInfo().getTitle();
     }
 }
 

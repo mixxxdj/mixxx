@@ -233,8 +233,12 @@ class Track : public QObject {
     // Set URL for track
     void setURL(const QString& url);
 
-    // Output a formatted string with artist and title.
+    /// Formatted string with artist and title.
     QString getInfo() const;
+
+    /// The filename if BOTH artist AND title are empty, e.g. for tracks without
+    /// any metadata in file tags. Otherwise just the title (even if it is empty).
+    QString getTitleInfo() const;
 
     ConstWaveformPointer getWaveform() const;
     void setWaveform(ConstWaveformPointer pWaveform);
