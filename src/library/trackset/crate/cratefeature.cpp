@@ -202,24 +202,6 @@ void CrateFeature::updateTreeItemForCrateSummary(
     pTreeItem->setIcon(crateSummary.isLocked() ? m_lockedCrateIcon : QIcon());
 }
 
-namespace {
-
-void updateTreeItemForTrackSelection(
-        TreeItem* pTreeItem,
-        TrackId selectedTrackId,
-        const std::vector<CrateId>& sortedTrackCrates) {
-    DEBUG_ASSERT(pTreeItem != nullptr);
-    bool crateContainsSelectedTrack =
-            selectedTrackId.isValid() &&
-            std::binary_search(
-                    sortedTrackCrates.begin(),
-                    sortedTrackCrates.end(),
-                    CrateId(pTreeItem->getData()));
-    pTreeItem->setBold(crateContainsSelectedTrack);
-}
-
-} // anonymous namespace
-
 bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls, QObject* pSource) {
     CrateId crateId(crateIdFromIndex(index));
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
@@ -806,7 +788,14 @@ void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
     // Set all crates the track is in bold (or if there is no track selected,
     // clear all the bolding).
     for (TreeItem* pTreeItem : pRootItem->children()) {
-        updateTreeItemForTrackSelection(pTreeItem, selectedTrackId, sortedTrackCrates);
+        DEBUG_ASSERT(pTreeItem != nullptr);
+        bool crateContainsSelectedTrack =
+                selectedTrackId.isValid() &&
+                std::binary_search(
+                        sortedTrackCrates.begin(),
+                        sortedTrackCrates.end(),
+                        CrateId(pTreeItem->getData()));
+        pTreeItem->setBold(crateContainsSelectedTrack);
     }
 
     m_childModel.triggerRepaint();
