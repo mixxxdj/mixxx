@@ -1,7 +1,7 @@
 // ****************************************************************************
 // * Mixxx mapping script file for the Hercules DJControl Jogvision.
 // * Author: DJ Phatso, contributions by Kerrick Staley and David TV
-// * Version 1.12 (May 2020)
+// * Version 1.13 (May 2020)
 // * Version 1.11 (May 2020)
 // * Version 1.10 (May 2020)
 // * Version 1.9 (May 2020)
@@ -119,7 +119,6 @@ DJCJV.updateJogLeds = function(value, group, control) {
     DJCJV.Channel[group].beatPosition = Math.floor((DJCJV.Channel[group].beatsPassed % beatMax)) + 1;
 
     // If on beat_active, update the beat leds
-    var ba = engine.getValue(group, "beat_active");
     if ((engine.getValue(group, "beat_closest") < engine.getValue(group, "beat_next")) && (!DJCJV.Channel[group].onBeat)) {
         DJCJV.beatActive(0, group);
         DJCJV.Channel[group].onBeat = true;
