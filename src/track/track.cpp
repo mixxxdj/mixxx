@@ -364,7 +364,9 @@ QString Track::getInfo() const {
     if (m_record.getMetadata().getTrackInfo().getArtist().trimmed().isEmpty()) {
         return m_record.getMetadata().getTrackInfo().getTitle();
     } else {
-        return m_record.getMetadata().getTrackInfo().getArtist() + ", " + m_record.getMetadata().getTrackInfo().getTitle();
+        return m_record.getMetadata().getTrackInfo().getArtist() +
+                QStringLiteral(" - ") +
+                m_record.getMetadata().getTrackInfo().getTitle();
     }
 }
 
