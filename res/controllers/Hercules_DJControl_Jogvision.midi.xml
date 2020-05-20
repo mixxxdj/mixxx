@@ -14,6 +14,26 @@
       <file functionprefix="DJCJV" filename="Hercules_DJControl_Jogvision-scripts.js" />
     </scriptfiles>
     <controls>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJCJV.shiftKey</key>
+        <description>Deck A Shift key management</description>
+        <status>0x90</status>
+        <midino>0x56</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DJCJV.shiftKey</key>
+        <description>Deck B Shift key management</description>
+        <status>0x91</status>
+        <midino>0x56</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
       <!-- NN's MIDI Channel 1 (0x90 - Deck A) -->
       <!-- Play -->
       <control>

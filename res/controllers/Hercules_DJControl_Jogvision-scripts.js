@@ -15,6 +15,10 @@
 // * Forum: https://www.mixxx.org/forums/viewtopic.php?f=7&t=12580
 // * Wiki: https://www.mixxx.org/wiki/doku.php/hercules_dj_control_jogvision
 //
+// Changes to v1.13
+// - Added "shift"+AIRFX to do a high pass (apart from the default low pass)
+// - Added shift+<multi FX> to set beatgrid at current play position
+//
 // Changes to v1.12
 // - Added "alternate" beat leds mode
 // - Changed "follow" beats led algorithm with a better/more elegant version
@@ -93,8 +97,8 @@ if (beatActiveMode.match(/^(?:normal|reverse)$/g)) {
 var DJCJV = {};
 DJCJV.vinylModeActive = true;
 DJCJV.Channel = [];
-DJCJV.Channel["[Channel1]"] = {"central": 0x90, "deck": 0xB0, "beatPosition": 1, "rotation": 0x00, "n": 1, "onBeat": 0};
-DJCJV.Channel["[Channel2]"] = {"central": 0x91, "deck": 0xB1, "beatPosition": 1, "rotation": 0x00, "n": 2, "onBeat": 0};
+DJCJV.Channel["[Channel1]"] = {"central": 0x90, "deck": 0xB0, "beatPosition": 1, "rotation": 0x00, "n": 1, "onBeat": 0, "beatsPassed": 0, "shiftPressed": 0};
+DJCJV.Channel["[Channel2]"] = {"central": 0x91, "deck": 0xB1, "beatPosition": 1, "rotation": 0x00, "n": 2, "onBeat": 0, "beatsPassed": 0, "shiftPressed": 0};
 
 // ****************************************************************************
 // General functions
@@ -241,6 +245,8 @@ DJCJV.beatActive = function(value, group, _control) {
 DJCJV.wheelInnerUpdate = function(value, group, _control) {
     var playPos = value * 127;
     midi.sendShortMsg(DJCJV.Channel[group].deck, 0x61, playPos);
+
+    // Also update the "track" led information
     if (engine.getValue(group, "end_of_track")) {
         // Let Mixxx"s engine turn flashing red automatically
         return;
@@ -274,9 +280,17 @@ DJCJV.headMix = function(midino, control, value, status, group) {
     }
 };
 
-// Filter (Hercules" AIR FX)
+// Filter (AIR FX)
 DJCJV.Filter = function(channel, control, value, status, group) {
-    engine.setValue(group, "super1", 0.5 - value / 255);
+    var deck = group.substr(18, 10);
+    var delta = DJCJV.Channel[deck].shiftPressed ? (value / 255) : (-1 * (value / 255));
+    engine.setValue(group, "super1", 0.5 + delta);
+};
+
+// Sniff decks' SHIFT presses and store them
+DJCJV.shiftKey = function(channel, control, value, status, group) {
+    DJCJV.Channel[group].shiftPressed = (value !== 127) ? 0 : 1;
+    return value;
 };
 
 // Loop section
