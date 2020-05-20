@@ -625,6 +625,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/timer.cpp
   src/util/valuetransformer.cpp
   src/util/version.cpp
+  src/util/widgethelper.cpp
   src/util/widgetrendertimer.cpp
   src/util/workerthread.cpp
   src/util/workerthreadscheduler.cpp
