@@ -2229,12 +2229,12 @@ if(NOT OPTIMIZE STREQUAL "off")
       if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86|x64|x86_64|AMD64)$")
         message(STATUS "Enabling SS2 CPU optimizations (>= Pentium 4)")
         target_compile_options(mixxx-lib PUBLIC "-mtune=generic")
-        # -mtune=generic pick the most common, but compatible options.
+        # -mtune=generic picks the most common, but compatible options.
         # on arm platforms equivalent to -march=arch
-        if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
           # the sse flags are not set by default on 32 bit builds
           # but are not supported on arm builds
-          target_compile_options(mixxx-lib PUBLIC "-msse" "-mfpmath=sse")
+          target_compile_options(mixxx-lib PUBLIC "-msse2" "-mfpmath=sse")
         endif()
         # TODO(rryan): macOS can use SSE3, and possibly SSE 4.1 once
         # we require macOS 10.12.
