@@ -2262,14 +2262,7 @@ if(NOT OPTIMIZE STREQUAL "off")
       # Note: requires gcc >= 4.2.0
       # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
       # are set automatically
-      if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86|x64|x86_64|AMD64)$"
-         AND NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
-        # For 32 bit builds using gcc < 5.0, the mfpmath=sse is
-        # not set by default (not supported on arm builds)
-        # If -msse is not implicitly set, it falls back to mfpmath=387
-        # and a compiler warning is issued (tested with gcc 4.8.4)
-        target_compile_options(mixxx-lib PUBLIC "-mfpmath=sse")
-      elseif(CMAKE_SYSTEM_PROCESSOR EQUAL "arm")
+      if(CMAKE_SYSTEM_PROCESSOR EQUAL "arm")
         target_compile_options(mixxx-lib PUBLIC
           "-mfloat-abi=hard"
           "-mfpu=neon"
