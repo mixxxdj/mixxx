@@ -2259,7 +2259,6 @@ if(NOT OPTIMIZE STREQUAL "off")
     elseif(OPTIMIZE STREQUAL "native")
       message("Enabling native optimizations for ${CMAKE_SYSTEM_PROCESSOR}")
       target_compile_options(mixxx-lib PUBLIC "-march=native")
-      # http://en.chys.info/2010/04/what-exactly-marchnative-means/
       # Note: requires gcc >= 4.2.0
       # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
       # are set automatically

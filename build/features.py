@@ -1058,7 +1058,6 @@ class Optimize(Feature):
                 self.status = self.build_status(
                     optimize_level, "tuned for this CPU (%s)" % build.machine)
                 build.env.Append(CCFLAGS='-march=native')
-                # http://en.chys.info/2010/04/what-exactly-marchnative-means/
                 # Note: requires gcc >= 4.2.0
                 # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
                 # are set automatically
