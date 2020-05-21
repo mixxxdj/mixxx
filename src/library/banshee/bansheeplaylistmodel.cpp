@@ -101,48 +101,30 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
             LOG_FAILED_QUERY(query);
         }
 
-        query.prepare(QStringLiteral(
-                "INSERT INTO %1 ("    //
-                CLM_TRACK_ID ", "     //
-                CLM_VIEW_ORDER ", "   //
-                CLM_ARTIST ", "       //
-                CLM_TITLE ", "        //
-                CLM_DURATION ", "     //
-                CLM_URI ", "          //
-                CLM_ALBUM ", "        //
-                CLM_ALBUM_ARTIST ", " //
-                CLM_YEAR ", "         //
-                CLM_RATING ", "       //
-                CLM_GENRE ", "        //
-                CLM_GROUPING ", "     //
-                CLM_TRACKNUMBER ", "  //
-                CLM_DATEADDED ", "    //
-                CLM_BPM ", "          //
-                CLM_BITRATE ", "      //
-                CLM_COMMENT ", "      //
-                CLM_PLAYCOUNT ", "    //
-                CLM_COMPOSER
-                ") VALUES (:"          //
-                CLM_TRACK_ID ", :"     //
-                CLM_VIEW_ORDER ", :"   //
-                CLM_ARTIST ", :"       //
-                CLM_TITLE ", :"        //
-                CLM_DURATION ", :"     //
-                CLM_URI ", :"          //
-                CLM_ALBUM ", :"        //
-                CLM_ALBUM_ARTIST ", :" //
-                CLM_YEAR ", :"         //
-                CLM_RATING ", :"       //
-                CLM_GENRE ", :"        //
-                CLM_GROUPING ", :"     //
-                CLM_TRACKNUMBER ", :"  //
-                CLM_DATEADDED ", :"    //
-                CLM_BPM ", :"          //
-                CLM_BITRATE ", :"      //
-                CLM_COMMENT ", :"      //
-                CLM_PLAYCOUNT ", :"    //
-                CLM_COMPOSER ") ")
-                              .arg(m_tempTableName));
+        QStringList insertColumns;
+        insertColumns
+                << CLM_TRACK_ID
+                << CLM_VIEW_ORDER
+                << CLM_ARTIST
+                << CLM_TITLE
+                << CLM_DURATION
+                << CLM_URI
+                << CLM_ALBUM
+                << CLM_ALBUM_ARTIST
+                << CLM_YEAR
+                << CLM_RATING
+                << CLM_GENRE
+                << CLM_GROUPING
+                << CLM_TRACKNUMBER
+                << CLM_DATEADDED
+                << CLM_BPM
+                << CLM_BITRATE
+                << CLM_COMMENT
+                << CLM_PLAYCOUNT
+                << CLM_COMPOSER;
+        query.prepare(
+                QStringLiteral("INSERT INTO %1 (%2) VALUES (:%3)")
+                        .arg(m_tempTableName, insertColumns.join(", "), insertColumns.join(", :")));
 
         QList<struct BansheeDbConnection::PlaylistEntry> list =
                 m_pConnection->getPlaylistEntries(playlistId);
