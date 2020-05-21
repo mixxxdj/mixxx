@@ -114,8 +114,7 @@ Qt::ItemFlags BaseExternalTrackModel::flags(const QModelIndex& index) const {
 }
 
 TrackModel::CapabilitiesFlags BaseExternalTrackModel::getCapabilities() const {
-    return TRACKMODELCAPS_ADDTOPLAYLIST |
-            TRACKMODELCAPS_ADDTOCRATE |
+    return TRACKMODELCAPS_ADDTOTRACKSET |
             TRACKMODELCAPS_ADDTOAUTODJ |
             TRACKMODELCAPS_LOADTODECK |
             TRACKMODELCAPS_LOADTOPREVIEWDECK |

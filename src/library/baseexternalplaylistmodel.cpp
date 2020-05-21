@@ -149,8 +149,7 @@ TrackId BaseExternalPlaylistModel::doGetTrackId(const TrackPointer& pTrack) cons
 }
 
 TrackModel::CapabilitiesFlags BaseExternalPlaylistModel::getCapabilities() const {
-    return TRACKMODELCAPS_ADDTOPLAYLIST |
-            TRACKMODELCAPS_ADDTOCRATE |
+    return TRACKMODELCAPS_ADDTOTRACKSET |
             TRACKMODELCAPS_ADDTOAUTODJ |
             TRACKMODELCAPS_LOADTODECK |
             TRACKMODELCAPS_LOADTOPREVIEWDECK |

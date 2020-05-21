@@ -1266,11 +1266,9 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
                 m_pTrackModel->hasCapabilities(
                         TrackModel::TRACKMODELCAPS_LOADTOPREVIEWDECK);
     case Feature::Playlist:
-        return m_pTrackModel->hasCapabilities(
-                TrackModel::TRACKMODELCAPS_ADDTOPLAYLIST);
     case Feature::Crate:
         return m_pTrackModel->hasCapabilities(
-                TrackModel::TRACKMODELCAPS_ADDTOCRATE);
+                TrackModel::TRACKMODELCAPS_ADDTOTRACKSET);
     case Feature::Remove:
         return m_pTrackModel->hasCapabilities(
                        TrackModel::TRACKMODELCAPS_REMOVE) ||

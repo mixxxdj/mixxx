@@ -9,8 +9,8 @@
 #include "track/track.h"
 #include "track/trackref.h"
 
-/** Pure virtual (abstract) class that provides an interface for data models which
-    display track lists. */
+/// Pure virtual (abstract) class that provides an interface for data models
+/// which display track lists.
 class TrackModel {
   public:
     static const int kHeaderWidthRole = Qt::UserRole + 0;
@@ -26,26 +26,25 @@ class TrackModel {
     virtual ~TrackModel() {}
 
     // These enums are the bits in a bitvector. Any individual column cannot
-    // have a value other than 0, 1, 2, 4, or 8!
+    // have a value other than 0, 1, 2, or 4!
     enum Capabilities {
-        TRACKMODELCAPS_NONE = 0x00000u,
-        TRACKMODELCAPS_REORDER = 0x00001u,
-        TRACKMODELCAPS_RECEIVEDROPS = 0x00002u,
-        TRACKMODELCAPS_ADDTOPLAYLIST = 0x00004u,
-        TRACKMODELCAPS_ADDTOCRATE = 0x00008u,
-        TRACKMODELCAPS_ADDTOAUTODJ = 0x00010u,
-        TRACKMODELCAPS_LOCKED = 0x00020u,
-        TRACKMODELCAPS_EDITMETADATA = 0x00040u,
-        TRACKMODELCAPS_LOADTODECK = 0x00080u,
-        TRACKMODELCAPS_LOADTOSAMPLER = 0x00100u,
-        TRACKMODELCAPS_LOADTOPREVIEWDECK = 0x00200u,
-        TRACKMODELCAPS_REMOVE = 0x00400u,
-        TRACKMODELCAPS_RESETPLAYED = 0x02000u,
-        TRACKMODELCAPS_HIDE = 0x04000u,
-        TRACKMODELCAPS_UNHIDE = 0x08000u,
-        TRACKMODELCAPS_PURGE = 0x10000u,
-        TRACKMODELCAPS_REMOVE_PLAYLIST = 0x20000u,
-        TRACKMODELCAPS_REMOVE_CRATE = 0x40000u,
+        TRACKMODELCAPS_NONE = 0u,
+        TRACKMODELCAPS_REORDER = 1u << 0u,
+        TRACKMODELCAPS_RECEIVEDROPS = 1u << 1u,
+        TRACKMODELCAPS_ADDTOTRACKSET = 1u << 2u,
+        TRACKMODELCAPS_ADDTOAUTODJ = 1u << 3u,
+        TRACKMODELCAPS_LOCKED = 1u << 4u,
+        TRACKMODELCAPS_EDITMETADATA = 1u << 5u,
+        TRACKMODELCAPS_LOADTODECK = 1u << 6u,
+        TRACKMODELCAPS_LOADTOSAMPLER = 1u << 7u,
+        TRACKMODELCAPS_LOADTOPREVIEWDECK = 1u << 8u,
+        TRACKMODELCAPS_REMOVE = 1u << 9u,
+        TRACKMODELCAPS_RESETPLAYED = 1u << 10u,
+        TRACKMODELCAPS_HIDE = 1u << 11u,
+        TRACKMODELCAPS_UNHIDE = 1u << 12u,
+        TRACKMODELCAPS_PURGE = 1u << 13u,
+        TRACKMODELCAPS_REMOVE_PLAYLIST = 1u << 14u,
+        TRACKMODELCAPS_REMOVE_CRATE = 1u << 15u,
     };
     /// Enables the use of bitwise operators
     typedef unsigned int CapabilitiesFlags;

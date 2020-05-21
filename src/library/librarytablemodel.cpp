@@ -86,8 +86,7 @@ bool LibraryTableModel::isColumnInternal(int column) {
 
 TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const {
     return TRACKMODELCAPS_RECEIVEDROPS |
-            TRACKMODELCAPS_ADDTOPLAYLIST |
-            TRACKMODELCAPS_ADDTOCRATE |
+            TRACKMODELCAPS_ADDTOTRACKSET |
             TRACKMODELCAPS_ADDTOAUTODJ |
             TRACKMODELCAPS_EDITMETADATA |
             TRACKMODELCAPS_LOADTODECK |

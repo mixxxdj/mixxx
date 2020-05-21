@@ -283,8 +283,7 @@ void BrowseTableModel::slotInsert(const QList<QList<QStandardItem*> >& rows,
 }
 
 TrackModel::CapabilitiesFlags BrowseTableModel::getCapabilities() const {
-    return TRACKMODELCAPS_ADDTOPLAYLIST |
-            TRACKMODELCAPS_ADDTOCRATE |
+    return TRACKMODELCAPS_ADDTOTRACKSET |
             TRACKMODELCAPS_ADDTOAUTODJ |
             TRACKMODELCAPS_LOADTODECK |
             TRACKMODELCAPS_LOADTOPREVIEWDECK |

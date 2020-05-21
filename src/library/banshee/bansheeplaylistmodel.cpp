@@ -208,8 +208,7 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
 }
 
 TrackModel::CapabilitiesFlags BansheePlaylistModel::getCapabilities() const {
-    return TRACKMODELCAPS_ADDTOPLAYLIST |
-            TRACKMODELCAPS_ADDTOCRATE |
+    return TRACKMODELCAPS_ADDTOTRACKSET |
             TRACKMODELCAPS_ADDTOAUTODJ |
             TRACKMODELCAPS_LOADTODECK |
             TRACKMODELCAPS_LOADTOSAMPLER;
