@@ -15,8 +15,7 @@ class CrateFeatureHelper : public QObject {
     CrateFeatureHelper(
             TrackCollection* pTrackCollection,
             UserSettingsPointer pConfig);
-    ~CrateFeatureHelper() override {
-    }
+    ~CrateFeatureHelper() override = default;
 
     CrateId createEmptyCrate();
     CrateId duplicateCrate(const Crate& oldCrate);

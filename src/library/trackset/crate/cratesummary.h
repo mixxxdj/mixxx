@@ -11,8 +11,7 @@ class CrateSummary : public Crate {
               m_trackCount(0),
               m_trackDuration(0.0) {
     }
-    ~CrateSummary() override {
-    }
+    ~CrateSummary() override = default;
 
     // The number of all tracks in this crate
     uint getTrackCount() const {

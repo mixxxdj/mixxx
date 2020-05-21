@@ -10,8 +10,7 @@ class Crate : public DbNamedEntity<CrateId> {
               m_locked(false),
               m_autoDjSource(false) {
     }
-    ~Crate() override {
-    }
+    ~Crate() override = default;
 
     bool isLocked() const {
         return m_locked;

@@ -22,7 +22,7 @@ class PlaylistFeature : public BasePlaylistFeature {
     PlaylistFeature(
             Library* pLibrary,
             UserSettingsPointer pConfig);
-    virtual ~PlaylistFeature();
+    ~PlaylistFeature() override = default;
 
     QVariant title() override;
     QIcon getIcon() override;

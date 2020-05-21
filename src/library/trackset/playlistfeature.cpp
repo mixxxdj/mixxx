@@ -49,9 +49,6 @@ PlaylistFeature::PlaylistFeature(
     constructChildModel(-1);
 }
 
-PlaylistFeature::~PlaylistFeature() {
-}
-
 QVariant PlaylistFeature::title() {
     return tr("Playlists");
 }
