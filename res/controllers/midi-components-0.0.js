@@ -501,11 +501,12 @@
     };
     Encoder.prototype = new Component();
 
-    var ComponentContainer = function (initialLayer) {
-        Object.assign(this, initialLayer);
-    };
-    ComponentContainer.prototype = {
-        forEachComponent: function(operation, recursive) {
+    var ComponentContainer = class {
+        constructor(initialLayer) {
+            Object.assign(this, initialLayer);
+            this.isShifted = false;
+        }
+        forEachComponent(operation, recursive) {
             if (typeof operation !== "function") {
                 print("ERROR: ComponentContainer.forEachComponent requires a function argument");
                 return;
@@ -530,8 +531,8 @@
                     applyOperationTo(this[memberName]);
                 }
             }
-        },
-        forEachComponentContainer: function(operation, recursive) {
+        }
+        forEachComponentContainer(operation, recursive) {
             if (typeof operation !== "function") {
                 print("ERROR: ComponentContainer.forEachComponentContainer requires a function argument");
                 return;
@@ -558,8 +559,8 @@
                     applyOperationTo(this[memberName]);
                 }
             }
-        },
-        reconnectComponents: function(operation, recursive) {
+        }
+        reconnectComponents(operation, recursive) {
             this.forEachComponent(function(component) {
                 component.disconnect();
                 if (typeof operation === "function") {
@@ -568,9 +569,8 @@
                 component.connect();
                 component.trigger();
             }, recursive);
-        },
-        isShifted: false,
-        shift: function() {
+        }
+        shift() {
             // Shift direct child Components
             this.forEachComponent(function(component) {
                 // Controls for push type Buttons depend on getting reset to 0 when the
@@ -604,8 +604,8 @@
 
             // Set isShifted for each ComponentContainer recursively
             this.isShifted = true;
-        },
-        unshift: function() {
+        }
+        unshift() {
             // Unshift direct child Components
             this.forEachComponent(function(component) {
                 // Refer to comment in ComponentContainer.shift() above for explanation
@@ -631,15 +631,15 @@
 
             // Unset isShifted for each ComponentContainer recursively
             this.isShifted = false;
-        },
-        shutdown: function() {
+        }
+        shutdown() {
             this.forEachComponent(function(component) {
                 if (component.shutdown !== undefined
                     && typeof component.shutdown === "function") {
                     component.shutdown();
                 }
             });
-        },
+        }
     };
 
     var Deck = function(deckNumbers) {
