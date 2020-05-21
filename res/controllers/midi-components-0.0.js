@@ -31,7 +31,7 @@
         if (Array.isArray(options) && typeof options[0] === "number") {
             this.midi = options;
         } else {
-            _.assign(this, options);
+            Object.assign(this, options);
         }
 
         if (typeof this.unshift === "function") {
@@ -501,10 +501,8 @@
     };
     Encoder.prototype = new Component();
 
-    var ComponentContainer = function(initialLayer) {
-        if (typeof initialLayer === "object") {
-            this.applyLayer(initialLayer);
-        }
+    var ComponentContainer = function (initialLayer) {
+        Object.assign(this, initialLayer);
     };
     ComponentContainer.prototype = {
         forEachComponent: function(operation, recursive) {
@@ -633,25 +631,6 @@
 
             // Unset isShifted for each ComponentContainer recursively
             this.isShifted = false;
-        },
-        applyLayer: function(newLayer, reconnectComponents) {
-            if (reconnectComponents !== false) {
-                reconnectComponents = true;
-            }
-            if (reconnectComponents === true) {
-                this.forEachComponent(function(component) {
-                    component.disconnect();
-                });
-            }
-
-            _.merge(this, newLayer);
-
-            if (reconnectComponents === true) {
-                this.forEachComponent(function(component) {
-                    component.connect();
-                    component.trigger();
-                });
-            }
         },
         shutdown: function() {
             this.forEachComponent(function(component) {
