@@ -5,15 +5,15 @@
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
-#include "mixer/playermanager.h"
+
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
         const char* settingsNamespace,
-        bool showAll)
-        : BaseSqlTableModel(parent, pTrackCollectionManager, settingsNamespace),
+        bool keepDeletedTracks)
+        : TrackSetTableModel(parent, pTrackCollectionManager, settingsNamespace),
           m_iPlaylistId(-1),
-          m_showAll(showAll) {
+          m_keepDeletedTracks(keepDeletedTracks) {
 }
 
 void PlaylistTableModel::initSortColumnMapping() {
@@ -61,10 +61,10 @@ void PlaylistTableModel::setTableModel(int playlistId) {
 
     m_iPlaylistId = playlistId;
 
-    if (!m_showAll) {
+    if (!m_keepDeletedTracks) {
         // From Mixxx 2.1 we drop tracks that have been explicitly deleted
         // in the library (mixxx_deleted = 0) from playlists.
-        // These invisible tracks, consuming a playlist position number where
+        // These invisible tracks, consuming a playlist position number were
         // a source user of confusion in the past.
         m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().removeHiddenTracks(m_iPlaylistId);
     }
@@ -245,22 +245,8 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
 }
 
 bool PlaylistTableModel::isColumnInternal(int column) {
-    if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID) ||
-            column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TRACKID) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_MIXXXDELETED) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID) ||
-            column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED) ||
-            (PlayerManager::numPreviewDecks() == 0 &&
-                    column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH)) {
-        return true;
-    }
-    return false;
+    return column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TRACKID) ||
+            TrackSetTableModel::isColumnInternal(column);
 }
 
 bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
