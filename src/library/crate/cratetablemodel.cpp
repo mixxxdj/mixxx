@@ -1,4 +1,3 @@
-
 #include "library/crate/cratetablemodel.h"
 
 #include "library/dao/trackschema.h"
@@ -7,15 +6,10 @@
 #include "mixer/playermanager.h"
 #include "util/db/fwdsqlquery.h"
 
-#include <QtDebug>
-
-CrateTableModel::CrateTableModel(QObject* pParent,
-                                 TrackCollectionManager* pTrackCollectionManager)
-        : BaseSqlTableModel(pParent, pTrackCollectionManager,
-                            "mixxx.db.model.crate") {
-}
-
-CrateTableModel::~CrateTableModel() {
+CrateTableModel::CrateTableModel(
+        QObject* pParent,
+        TrackCollectionManager* pTrackCollectionManager)
+        : TrackSetTableModel(pParent, pTrackCollectionManager, "mixxx.db.model.crate") {
 }
 
 void CrateTableModel::selectCrate(CrateId crateId) {
@@ -125,21 +119,6 @@ TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
         }
     }
     return caps;
-}
-
-bool CrateTableModel::isColumnInternal(int column) {
-    return column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_MIXXXDELETED) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID)||
-            column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED) ||
-            (PlayerManager::numPreviewDecks() == 0 &&
-             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH);;
 }
 
 int CrateTableModel::addTracks(const QModelIndex& index,

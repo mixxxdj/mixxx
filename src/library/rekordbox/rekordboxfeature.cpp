@@ -1155,10 +1155,7 @@ bool RekordboxPlaylistModel::isColumnHiddenByDefault(int column) {
 }
 
 bool RekordboxPlaylistModel::isColumnInternal(int column) {
-    if (column == fieldIndex(ColumnCache::COLUMN_REKORDBOX_ANALYZE_PATH)) {
-        return true;
-    }
-    return BaseExternalPlaylistModel::isColumnInternal(column);
+    return column == fieldIndex(ColumnCache::COLUMN_REKORDBOX_ANALYZE_PATH) || BaseExternalPlaylistModel::isColumnInternal(column);
 }
 
 RekordboxFeature::RekordboxFeature(
