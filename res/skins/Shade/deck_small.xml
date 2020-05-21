@@ -58,7 +58,7 @@
                           padding: 0px 2px;
                         }
                         </Style>
-                        <Property>title</Property>
+                        <Property>titleInfo</Property>
                         <Channel><Variable name="channum"/></Channel>
                         <SizePolicy>me,f</SizePolicy>
                         <MinimumSize>50,19</MinimumSize>
@@ -184,7 +184,7 @@
                 <Size>1f,38f</Size>
                 <BackPath>style/style_component_border.png</BackPath>
               </WidgetGroup>
-              
+
               <!-- Play -->
               <WidgetGroup>
                 <Size>41f,38f</Size>
@@ -246,4 +246,3 @@
     </Children>
   </WidgetGroup>
 </Template>
-
