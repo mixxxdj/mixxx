@@ -10,8 +10,10 @@
 /// elements that make it up.
 class HidControllerPreset : public ControllerPreset {
   public:
-    HidControllerPreset() {}
-    virtual ~HidControllerPreset() {}
+    HidControllerPreset() {
+    }
+    ~HidControllerPreset() override {
+    }
 
     bool savePreset(const QString& fileName) const override;
 
