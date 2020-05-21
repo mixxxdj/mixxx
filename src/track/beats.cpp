@@ -129,11 +129,8 @@ void Beats::setSubVersion(QString subVersion) {
     m_subVersion = subVersion;
 }
 
-void Beats::setGridNew(double dBpm, FrameNum firstBeatFrame) {
+void Beats::setGridNew(Bpm dBpm, FrameNum firstBeatFrame) {
     QMutexLocker lock(&m_mutex);
-    if (dBpm < 0) {
-        dBpm = 0.0;
-    }
 
     // If the track duration is not know assume 120 seconds, useful for tests
     // TODO(JVC) - Check if there are other cases that can be affected.
@@ -144,7 +141,8 @@ void Beats::setGridNew(double dBpm, FrameNum firstBeatFrame) {
 
     track::io::Beat beat;
     beat.set_frame_position(firstBeatFrame);
-    for (FrameNum pos = firstBeatFrame; pos <= trackLength; pos += m_iSampleRate * (60 / dBpm)) {
+    for (FrameNum pos = firstBeatFrame; pos <= trackLength;
+            pos += m_iSampleRate * (60 / dBpm.getValue())) {
         beat.set_frame_position(pos);
         m_beats.push_back(beat);
     }
@@ -193,22 +191,23 @@ double Beats::findNBeatsFromSampleNew(double fromSample, double beats) const {
 void Beats::onBeatlistChanged() {
     if (!isValid()) {
         m_dLastFrame = 0;
-        m_dCachedBpm = 0;
+        m_dCachedBpm = Bpm();
         return;
     }
     m_dLastFrame = m_beats.last().frame_position();
     track::io::Beat startBeat = m_beats.first();
     track::io::Beat stopBeat = m_beats.last();
-    m_dCachedBpm = calculateBpm(startBeat, stopBeat);
+    m_dCachedBpm = calculateBpmNew(startBeat, stopBeat);
 }
 
 bool Beats::isValid() const {
     return m_iSampleRate > 0 && m_beats.size() > 0;
 }
 
-double Beats::calculateBpm(const track::io::Beat& startBeat, const track::io::Beat& stopBeat) const {
+Bpm Beats::calculateBpmNew(const track::io::Beat& startBeat,
+        const track::io::Beat& stopBeat) const {
     if (startBeat.frame_position() > stopBeat.frame_position()) {
-        return -1;
+        return Bpm();
     }
 
     BeatList::const_iterator curBeat =
@@ -226,7 +225,7 @@ double Beats::calculateBpm(const track::io::Beat& startBeat, const track::io::Be
     }
 
     if (beatvect.isEmpty()) {
-        return -1;
+        return Bpm();
     }
 
     return BeatUtils::calculateBpm(beatvect, m_iSampleRate, 0, 9999);
@@ -339,7 +338,7 @@ double Beats::findClosestBeatNew(FrameNum frames) const {
     return (nextBeat - frames > frames - prevBeat) ? prevBeat : nextBeat;
 }
 
-double Beats::findNthBeatNew(FrameNum frame, int n) const {
+FrameNum Beats::findNthBeatNew(FrameNum frame, int n) const {
     QMutexLocker locker(&m_mutex);
 
     if (!isValid() || n == 0) {
@@ -462,10 +461,10 @@ bool Beats::hasBeatInRangeNew(double startSample, double stopSample) const {
     return false;
 }
 
-double Beats::getBpmNew() const {
+Bpm Beats::getBpmNew() const {
     QMutexLocker locker(&m_mutex);
     if (!isValid()) {
-        return -1;
+        return Bpm();
     }
     return m_dCachedBpm;
 }
@@ -480,23 +479,23 @@ double Beats::getBpmRangeNew(FrameNum startFrame, FrameNum stopFrame) const {
     return calculateBpm(startBeat, stopBeat);
 }
 
-double Beats::getBpmAroundPositionNew(FrameNum curFrame, int n) const {
+Bpm Beats::getBpmAroundPositionNew(FrameNum curFrame, int n) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid()) {
-        return -1;
+        return Bpm();
     }
 
     // To make sure we are always counting n beats, iterate backward to the
     // lower bound, then iterate forward from there to the upper bound.
     // a value of -1 indicates we went off the map -- count from the beginning.
-    double lower_bound = findNthBeatNew(curFrame, -n);
+    FrameNum lower_bound = findNthBeatNew(curFrame, -n);
     if (lower_bound == -1) {
         lower_bound = m_beats.first().frame_position();
     }
 
     // If we hit the end of the beat map, recalculate the lower bound.
     //double upper_bound = findNthBeat(lower_bound, n * 2);
-    double upper_bound = findNthBeatNew(lower_bound, n);
+    FrameNum upper_bound = findNthBeatNew(lower_bound, n);
     if (upper_bound == -1) {
         upper_bound = m_beats.last().frame_position();
         //lower_bound = findNthBeat(upper_bound, n * -2);
@@ -508,10 +507,15 @@ double Beats::getBpmAroundPositionNew(FrameNum curFrame, int n) const {
         }
     }
 
+    // TODO(JVC) We are extracting frame numbers to then construct beats.
+    // Then in calculateBpm we are using the frame position to find
+    // the beats to  use them to calculate. Seems inefficient
+    // Will not make more sense to extract the Beats straight?
+    // We can use getBpmRange and move the logic of calculateBpm there
     track::io::Beat startBeat, stopBeat;
     startBeat.set_frame_position(lower_bound);
     stopBeat.set_frame_position(upper_bound);
-    return calculateBpm(startBeat, stopBeat);
+    return calculateBpmNew(startBeat, stopBeat);
 }
 
 void Beats::addBeatNew(FrameNum beatFrame) {
@@ -797,7 +801,7 @@ void Beats::scaleFourth() {
 }
 
 // TODO(JVC) If we use a Beatmap we can't just set the BPM
-void Beats::setBpm(double dBpm) {
+void Beats::setBpmNew(Bpm dBpm) {
     Q_UNUSED(dBpm);
     DEBUG_ASSERT(!"Beats::setBpm() not implemented");
     return;

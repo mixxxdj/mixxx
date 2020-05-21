@@ -7,6 +7,7 @@
 #include <QString>
 
 #include "proto/beats.pb.h"
+#include "track/bpm.h"
 #include "util/logger.h"
 #include "util/memory.h"
 #include "util/types.h"
@@ -101,7 +102,13 @@ class Beats : public QObject {
     virtual void setSubVersion(QString subVersion);
     bool isValid() const;
     /// Calculates the BPM between two beat positions.
+    // TODO(JVC) Temporary adaptor. Will be removed before finalizing the PR
     double calculateBpm(const track::io::Beat& startBeat,
+            const track::io::Beat& stopBeat) const {
+        Bpm value = calculateBpmNew(startBeat, stopBeat);
+        return value.getValue();
+    }
+    Bpm calculateBpmNew(const track::io::Beat& startBeat,
             const track::io::Beat& stopBeat) const;
 
     /// Initializes the BeatGrid to have a BPM of dBpm and the first beat offset
@@ -109,9 +116,9 @@ class Beats : public QObject {
     /// meant for initialization.
     // TODO(JVC) Temporary adaptor. Will be removed before finalizing the PR
     void setGrid(double dBpm, double sample = 0) {
-        setGridNew(dBpm, sample / 2.0);
+        setGridNew(Bpm(dBpm), sample / 2.0);
     }
-    void setGridNew(double dBpm, FrameNum dFirstBeatFrame = 0);
+    void setGridNew(Bpm dBpm, FrameNum dFirstBeatFrame = 0);
 
     // TODO: We may want to implement these with common code that returns
     //       the triple of closest, next, and prev.
@@ -211,10 +218,11 @@ class Beats : public QObject {
 
     /// Return the average BPM over the entire track if the BPM is
     /// valid, otherwise returns -1
+    // TODO(JVC) Temporary adaptor. Will be removed before finalizing the PR
     virtual double getBpm() const {
-        return getBpmNew();
+        return getBpmNew().getValue();
     }
-    virtual double getBpmNew() const;
+    virtual Bpm getBpmNew() const;
 
     /// Return the average BPM over the range from startFrameNum to endFrameNum,
     /// specified in frames if the BPM is valid, otherwise returns -1
@@ -231,9 +239,9 @@ class Beats : public QObject {
     /// BPM returns -1.
     // TODO(JVC) Temporary adaptor. Will be removed before finalizing the PR
     virtual double getBpmAroundPosition(double curSampleNum, int n) const {
-        return getBpmAroundPositionNew(curSampleNum / 2.0, n);
+        return getBpmAroundPositionNew(curSampleNum / 2.0, n).getValue();
     }
-    virtual double getBpmAroundPositionNew(FrameNum curFrameNum, int n) const;
+    virtual Bpm getBpmAroundPositionNew(FrameNum curFrameNum, int n) const;
 
     virtual double getMaxBpm() const {
         // TODO(JVC) Why is returning a constant? MaxBpm must be taken from somewhere
@@ -290,7 +298,11 @@ class Beats : public QObject {
 
     /// Adjust the beats so the global average BPM matches dBpm. Beats class must
     /// have the capability BEATSCAP_SET.
-    virtual void setBpm(double dBpm);
+    // TODO(JVC) Temporary adaptor. Will be removed before finalizing the PR
+    virtual void setBpm(double dBpm) {
+        setBpmNew(Bpm(dBpm));
+    }
+    virtual void setBpmNew(Bpm dBpm);
 
     /// Returns the number of beats
     inline int size() {
@@ -321,7 +333,7 @@ class Beats : public QObject {
     const Track* m_track;
     QString m_subVersion;
     SINT m_iSampleRate;
-    double m_dCachedBpm;
+    Bpm m_dCachedBpm;
     FrameNum m_dLastFrame;
     BeatList m_beats;
 

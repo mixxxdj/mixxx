@@ -11,6 +11,7 @@
 
 // Included to get mixxx::kEngineChannelCount
 #include "engine/engine.h"
+#include "track/bpm.h"
 
 class BeatUtils {
   public:
@@ -48,8 +49,10 @@ class BeatUtils {
      * from which the statistical median is computed. This value provides
      * a pretty good guess of the global BPM value.
      */
-    static double calculateBpm(const QVector<double>& beats, int SampleRate,
-                               int min_bpm, int max_bpm);
+    static mixxx::Bpm calculateBpm(const QVector<double>& beats,
+            int SampleRate,
+            int min_bpm,
+            int max_bpm);
     static double findFirstCorrectBeat(const QVector<double> rawBeats,
                                        const int SampleRate, const double global_bpm);
 
