@@ -141,7 +141,9 @@ double BeatUtils::computeFilteredWeightedAverage(
     return filterWeightedAverage / static_cast<double>(filterSum);
 }
 
-double BeatUtils::calculateBpm(const QVector<double>& beats, int frameRate, int min_bpm, int max_bpm) {
+// TODO(JVC) Use Bpm class internally instead of only convert the calculated on return
+mixxx::Bpm BeatUtils::calculateBpm(
+        const QVector<double>& beats, int frameRate, int min_bpm, int max_bpm) {
     /*
      * Let's compute the average local
      * BPM for N subsequent beats.
@@ -175,14 +177,23 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int frameRate, int 
      * BPM.
      */
 
+    if (sDebug) {
+        qDebug() << "Analisys data(Frame numbers):" << beats;
+    }
+
     if (beats.size() < 2) {
-        return 0;
+        return mixxx::Bpm();
     }
 
     // If we don't have enough beats for our regular approach, just divide the #
     // of beats by the duration in minutes.
     if (beats.size() <= N) {
-        return 60.0 * (beats.size() - 1) * frameRate / (beats.last() - beats.first());
+        mixxx::Bpm result(60.0 * (beats.size() - 1) * frameRate /
+                (beats.last() - beats.first()));
+        if (sDebug) {
+            qDebug() << "Simplified calculation. BPM:" << result;
+        }
+        return result;
     }
 
     QMap<double, int> frequency_table;
@@ -251,7 +262,10 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int frameRate, int 
          // round BPM to have two decimal places
          local_bpm = floor(local_bpm * kHistogramDecimalScale + 0.5) / kHistogramDecimalScale;
 
-         //qDebug() << "Local BPM beat " << i << ": " << local_bpm;
+         if (sDebug) {
+             qDebug() << "Local BPM beat " << i << ": " << local_bpm;
+         }
+
          if (!foundFirstCorrectBeat &&
              filtered_bpm_frequency_table.contains(local_bpm) &&
              fabs(local_bpm - filterWeightedAverageBpm) < BPM_ERROR) {
@@ -305,7 +319,7 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int frameRate, int 
          qDebug() << "Perform rounding=" << perform_rounding;
          qDebug() << "Constrained to Range [" << min_bpm << "," << max_bpm << "]=" << constrainedBpm;
      }
-     return constrainedBpm;
+     return mixxx::Bpm(constrainedBpm);
 }
 
 double BeatUtils::calculateOffset(

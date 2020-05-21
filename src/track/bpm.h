@@ -97,6 +97,17 @@ QDebug operator<<(QDebug dbg, const Bpm& arg) {
     return dbg << arg.getValue();
 }
 
+inline Bpm operator*(const Bpm& bpm, const int val) {
+    return (Bpm(bpm.getValue() * val));
+}
+
+inline Bpm operator/(const Bpm& bpm, const int val) {
+    return (Bpm(bpm.getValue() / val));
+}
+
+inline Bpm operator+(const Bpm& bpm, const int val) {
+    return (Bpm(bpm.getValue() + val));
+}
 }
 
 Q_DECLARE_TYPEINFO(mixxx::Bpm, Q_MOVABLE_TYPE);
