@@ -10,7 +10,7 @@ class LibraryTableModel : public BaseSqlTableModel {
                       const char* settingsNamespace);
     ~LibraryTableModel() override;
 
-    void setTableModel(int id =-1);
+    void setTableModel();
 
     bool isColumnInternal(int column) final;
     // Takes a list of locations and add the tracks to the library. Returns the

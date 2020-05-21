@@ -100,7 +100,10 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     // columns[2] = PLAYLISTTRACKSTABLE_DATETIMEADDED from above
     columns[3] = LIBRARYTABLE_PREVIEW;
     columns[4] = LIBRARYTABLE_COVERART;
-    setTable(playlistTableName, LIBRARYTABLE_ID, columns, m_pTrackCollectionManager->internalCollection()->getTrackSource());
+    setTable(playlistTableName,
+            LIBRARYTABLE_ID,
+            columns,
+            m_pTrackCollectionManager->internalCollection()->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     setSort(defaultSortColumn(), defaultSortOrder());
@@ -281,14 +284,16 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
             TRACKMODELCAPS_LOADTOPREVIEWDECK |
             TRACKMODELCAPS_RESETPLAYED;
 
-    if (m_iPlaylistId != m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().getPlaylistIdFromName(AUTODJ_TABLE)) {
+    if (m_iPlaylistId !=
+            m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().getPlaylistIdFromName(AUTODJ_TABLE)) {
         // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
         caps |= TRACKMODELCAPS_ADDTOAUTODJ | TRACKMODELCAPS_REMOVE_PLAYLIST;
     } else {
         caps |= TRACKMODELCAPS_REMOVE;
     }
-    if (m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().getHiddenType(m_iPlaylistId) == PlaylistDAO::PLHT_SET_LOG) {
-        // Disable reording tracks for history playlists
+    if (PlaylistDAO::PLHT_SET_LOG ==
+            m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().getHiddenType(m_iPlaylistId)) {
+        // Disable track reordering for history playlists
         caps &= ~(TRACKMODELCAPS_REORDER | TRACKMODELCAPS_REMOVE_PLAYLIST);
     }
     bool locked = m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId);

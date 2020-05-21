@@ -6,13 +6,6 @@
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
 
-namespace {
-
-const QString kDefaultLibraryFilter =
-        "mixxx_deleted=0 AND fs_deleted=0";
-
-} // anonymous namespace
-
 LibraryTableModel::LibraryTableModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
         const char* settingsNamespace)
@@ -23,8 +16,9 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
 LibraryTableModel::~LibraryTableModel() {
 }
 
-void LibraryTableModel::setTableModel(int id) {
-    Q_UNUSED(id);
+void LibraryTableModel::setTableModel() {
+    const QString tableName("library_view");
+
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
             << "'' AS " + LIBRARYTABLE_PREVIEW
@@ -32,19 +26,14 @@ void LibraryTableModel::setTableModel(int id) {
             // the same value as the cover hash.
             << LIBRARYTABLE_COVERART_HASH + " AS " + LIBRARYTABLE_COVERART;
 
-    const QString tableName = "library_view";
-
     QSqlQuery query(m_database);
-    QString queryString =
+    query.prepare(
             "CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName +
-            " AS "
-            "SELECT " +
-            columns.join(", ") +
-            " FROM library INNER JOIN track_locations "
-            "ON library.location = track_locations.id "
-            "WHERE (" +
-            kDefaultLibraryFilter + ")";
-    query.prepare(queryString);
+            " AS SELECT " + columns.join(",") +
+            " FROM library "
+            "INNER JOIN track_locations "
+            "ON library.location=track_locations.id "
+            "WHERE (mixxx_deleted=0 AND fs_deleted=0)");
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
@@ -53,7 +42,10 @@ void LibraryTableModel::setTableModel(int id) {
     tableColumns << LIBRARYTABLE_ID;
     tableColumns << LIBRARYTABLE_PREVIEW;
     tableColumns << LIBRARYTABLE_COVERART;
-    setTable(tableName, LIBRARYTABLE_ID, tableColumns, m_pTrackCollectionManager->internalCollection()->getTrackSource());
+    setTable(tableName,
+            LIBRARYTABLE_ID,
+            tableColumns,
+            m_pTrackCollectionManager->internalCollection()->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 

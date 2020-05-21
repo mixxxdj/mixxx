@@ -14,14 +14,16 @@ HiddenTableModel::~HiddenTableModel() {
 }
 
 void HiddenTableModel::setTableModel() {
-    QSqlQuery query(m_database);
     const QString tableName("hidden_songs");
 
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID;
-    // clang-format off
-    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
-            "SELECT " + columns.join(",") + " FROM library "
+
+    QSqlQuery query(m_database);
+    query.prepare(
+            "CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName +
+            " AS SELECT " + columns.join(",") +
+            " FROM library "
             "INNER JOIN track_locations "
             "ON library.location=track_locations.id "
             "WHERE mixxx_deleted=1");
