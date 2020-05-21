@@ -235,7 +235,12 @@ class Track : public QObject {
     // Set URL for track
     void setURL(const QString& url);
 
-    /// Formatted string with artist and title.
+    /// Separator between artist and title string that is
+    /// used for composing the track info.
+    static const QString kArtistTitleSeparator;
+
+    /// Formatted string with artist and title, separated by
+    /// kArtistTitleSeparator.
     QString getInfo() const;
 
     /// The filename if BOTH artist AND title are empty, e.g. for tracks without

@@ -57,6 +57,13 @@ inline mixxx::Bpm getActualBpm(
 
 } // anonymous namespace
 
+// Don't change this string without an entry in the CHANGELOG!
+// Otherwise 3rd party software that picks up the currently
+// playing track from the main window and relies on this
+// formatting would stop working.
+//static
+const QString Track::kArtistTitleSeparator = QStringLiteral(" - ");
+
 Track::Track(
         TrackFile fileInfo,
         SecurityTokenPointer pSecurityToken,
@@ -369,7 +376,7 @@ QString Track::getInfo() const {
         }
     } else {
         return m_record.getMetadata().getTrackInfo().getArtist() +
-                QStringLiteral(" - ") +
+                kArtistTitleSeparator +
                 m_record.getMetadata().getTrackInfo().getTitle();
     }
 }
