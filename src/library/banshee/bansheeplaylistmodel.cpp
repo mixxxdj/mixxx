@@ -75,76 +75,74 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
         m_playlistId = playlistId;
 
         QSqlQuery query(m_database);
-        QString strQuery(QStringLiteral(
-                "CREATE TEMP TABLE IF NOT EXISTS %1 (" //
-                CLM_TRACK_ID " INTEGER, "              //
-                CLM_VIEW_ORDER " INTEGER, "            //
-                CLM_ARTIST " TEXT, "                   //
-                CLM_TITLE " TEXT, "                    //
-                CLM_DURATION " INTEGER, "              //
-                CLM_URI " TEXT, "                      //
-                CLM_ALBUM " TEXT, "                    //
-                CLM_ALBUM_ARTIST " TEXT, "             //
-                CLM_YEAR " INTEGER, "                  //
-                CLM_RATING " INTEGER, "                //
-                CLM_GENRE " TEXT, "                    //
-                CLM_GROUPING " TEXT, "                 //
-                CLM_TRACKNUMBER " INTEGER, "           //
-                CLM_DATEADDED " INTEGER, "             //
-                CLM_BPM " INTEGER, "                   //
-                CLM_BITRATE " INTEGER, "               //
-                CLM_COMMENT " TEXT, "                  //
-                CLM_PLAYCOUNT " INTEGER, "             //
-                CLM_COMPOSER " TEXT, "                 //
-                CLM_PREVIEW " TEXT)"));
-        if (!query.exec(strQuery.arg(m_tempTableName))) {
+        if (!query.exec(QStringLiteral(
+                    "CREATE TEMP TABLE IF NOT EXISTS %1 (" //
+                    CLM_TRACK_ID " INTEGER, "              //
+                    CLM_VIEW_ORDER " INTEGER, "            //
+                    CLM_ARTIST " TEXT, "                   //
+                    CLM_TITLE " TEXT, "                    //
+                    CLM_DURATION " INTEGER, "              //
+                    CLM_URI " TEXT, "                      //
+                    CLM_ALBUM " TEXT, "                    //
+                    CLM_ALBUM_ARTIST " TEXT, "             //
+                    CLM_YEAR " INTEGER, "                  //
+                    CLM_RATING " INTEGER, "                //
+                    CLM_GENRE " TEXT, "                    //
+                    CLM_GROUPING " TEXT, "                 //
+                    CLM_TRACKNUMBER " INTEGER, "           //
+                    CLM_DATEADDED " INTEGER, "             //
+                    CLM_BPM " INTEGER, "                   //
+                    CLM_BITRATE " INTEGER, "               //
+                    CLM_COMMENT " TEXT, "                  //
+                    CLM_PLAYCOUNT " INTEGER, "             //
+                    CLM_COMPOSER " TEXT, "                 //
+                    CLM_PREVIEW " TEXT)")
+                                .arg(m_tempTableName))) {
             LOG_FAILED_QUERY(query);
         }
 
-        QString strQuery2(
-                "INSERT INTO %1"
-                " (" CLM_TRACK_ID
-                ", " CLM_VIEW_ORDER
-                ", " CLM_ARTIST
-                ", " CLM_TITLE
-                ", " CLM_DURATION
-                ", " CLM_URI
-                ", " CLM_ALBUM
-                ", " CLM_ALBUM_ARTIST
-                ", " CLM_YEAR
-                ", " CLM_RATING
-                ", " CLM_GENRE
-                ", " CLM_GROUPING
-                ", " CLM_TRACKNUMBER
-                ", " CLM_DATEADDED
-                ", " CLM_BPM
-                ", " CLM_BITRATE
-                ", " CLM_COMMENT
-                ", " CLM_PLAYCOUNT
-                ", " CLM_COMPOSER
-                ") "
-                "VALUES (:" CLM_TRACK_ID
-                ", :" CLM_VIEW_ORDER
-                ", :" CLM_ARTIST
-                ", :" CLM_TITLE
-                ", :" CLM_DURATION
-                ", :" CLM_URI
-                ", :" CLM_ALBUM
-                ", :" CLM_ALBUM_ARTIST
-                ", :" CLM_YEAR
-                ", :" CLM_RATING
-                ", :" CLM_GENRE
-                ", :" CLM_GROUPING
-                ", :" CLM_TRACKNUMBER
-                ", :" CLM_DATEADDED
-                ", :" CLM_BPM
-                ", :" CLM_BITRATE
-                ", :" CLM_COMMENT
-                ", :" CLM_PLAYCOUNT
-                ", :" CLM_COMPOSER
-                ") ");
-
-        query.prepare(strQuery2.arg(m_tempTableName));
+        query.prepare(QStringLiteral(
+                "INSERT INTO %1 ("    //
+                CLM_TRACK_ID ", "     //
+                CLM_VIEW_ORDER ", "   //
+                CLM_ARTIST ", "       //
+                CLM_TITLE ", "        //
+                CLM_DURATION ", "     //
+                CLM_URI ", "          //
+                CLM_ALBUM ", "        //
+                CLM_ALBUM_ARTIST ", " //
+                CLM_YEAR ", "         //
+                CLM_RATING ", "       //
+                CLM_GENRE ", "        //
+                CLM_GROUPING ", "     //
+                CLM_TRACKNUMBER ", "  //
+                CLM_DATEADDED ", "    //
+                CLM_BPM ", "          //
+                CLM_BITRATE ", "      //
+                CLM_COMMENT ", "      //
+                CLM_PLAYCOUNT ", "    //
+                CLM_COMPOSER
+                ") VALUES (:"          //
+                CLM_TRACK_ID ", :"     //
+                CLM_VIEW_ORDER ", :"   //
+                CLM_ARTIST ", :"       //
+                CLM_TITLE ", :"        //
+                CLM_DURATION ", :"     //
+                CLM_URI ", :"          //
+                CLM_ALBUM ", :"        //
+                CLM_ALBUM_ARTIST ", :" //
+                CLM_YEAR ", :"         //
+                CLM_RATING ", :"       //
+                CLM_GENRE ", :"        //
+                CLM_GROUPING ", :"     //
+                CLM_TRACKNUMBER ", :"  //
+                CLM_DATEADDED ", :"    //
+                CLM_BPM ", :"          //
+                CLM_BITRATE ", :"      //
+                CLM_COMMENT ", :"      //
+                CLM_PLAYCOUNT ", :"    //
+                CLM_COMPOSER ") ")
+                              .arg(m_tempTableName));
 
         QList<struct BansheeDbConnection::PlaylistEntry> list =
                 m_pConnection->getPlaylistEntries(playlistId);
