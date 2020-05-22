@@ -110,7 +110,7 @@ void BaseCoverArtDelegate::paintItem(
     paintItemBackground(painter, option, index);
 
     CoverInfo coverInfo = coverInfoForIndex(index);
-    if (CoverImageUtils::isValidHash(coverInfo.hash)) {
+    if (coverInfo.hasImage()) {
         VERIFY_OR_DEBUG_ASSERT(m_pCache) {
             return;
         }
@@ -131,7 +131,7 @@ void BaseCoverArtDelegate::paintItem(
             } else {
                 // If we asked for a non-cache image and got a null pixmap,
                 // then our request was queued.
-                m_pendingCacheRows.insert(coverInfo.hash, index.row());
+                m_pendingCacheRows.insert(coverInfo.imageHash(), index.row());
             }
         } else {
             // Cache hit

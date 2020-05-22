@@ -513,13 +513,21 @@ CoverInfo WTrackMenu::getCoverInfoOfLastTrack() const {
                                 m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_TYPE))
                         .data()
                         .toInt());
-        coverInfo.hash =
+        const auto imageDigest =
+                lastIndex
+                        .sibling(
+                                lastIndex.row(),
+                                m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_DIGEST))
+                        .data()
+                        .toByteArray();
+        const auto legacyHash =
                 lastIndex
                         .sibling(
                                 lastIndex.row(),
                                 m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_HASH))
                         .data()
                         .toUInt();
+        coverInfo.setImageDigest(imageDigest, legacyHash);
         coverInfo.coverLocation =
                 lastIndex
                         .sibling(

@@ -22,7 +22,7 @@ mixxx::Logger kLogger("CoverArtCache");
 // in order to allow CoverCache handle more covers (performance gain).
 constexpr int kPixmapCacheLimit = 20480;
 
-QString pixmapCacheKey(quint16 hash, int width) {
+QString pixmapCacheKey(mixxx::cache_key_t hash, int width) {
     return QString("CoverArtCache_%1_%2")
             .arg(QString::number(hash), QString::number(width));
 }
@@ -88,16 +88,18 @@ QPixmap CoverArtCache::tryLoadCover(
     DEBUG_ASSERT(!pTrack ||
                 pTrack->getLocation() == coverInfo.trackLocation);
 
+    const auto requestedImageHash = coverInfo.imageHash();
+
     if (coverInfo.type == CoverInfo::NONE) {
         if (loading == Loading::Default) {
-            emit coverFound(pRequestor, coverInfo, QPixmap(), coverInfo.hash, false);
+            emit coverFound(pRequestor, coverInfo, QPixmap(), requestedImageHash, false);
         }
         return QPixmap();
     }
 
     // keep a list of trackIds for which a future is currently running
     // to avoid loading the same picture again while we are loading it
-    QPair<const QObject*, quint16> requestId = qMakePair(pRequestor, coverInfo.hash);
+    QPair<const QObject*, mixxx::cache_key_t> requestId = qMakePair(pRequestor, requestedImageHash);
     if (m_runningRequests.contains(requestId)) {
         return QPixmap();
     }
@@ -107,7 +109,7 @@ QPixmap CoverArtCache::tryLoadCover(
     // column). It's very important to keep the cropped covers in cache because
     // it avoids having to rescale+crop it ALWAYS (which brings a lot of
     // performance issues).
-    QString cacheKey = pixmapCacheKey(coverInfo.hash, desiredWidth);
+    QString cacheKey = pixmapCacheKey(requestedImageHash, desiredWidth);
 
     QPixmap pixmap;
     if (QPixmapCache::find(cacheKey, &pixmap)) {
@@ -118,7 +120,7 @@ QPixmap CoverArtCache::tryLoadCover(
                     << loading;
         }
         if (loading == Loading::Default) {
-            emit coverFound(pRequestor, coverInfo, pixmap, coverInfo.hash, false);
+            emit coverFound(pRequestor, coverInfo, pixmap, requestedImageHash, false);
         }
         return pixmap;
     }
@@ -170,17 +172,17 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
     DEBUG_ASSERT(!pTrack ||
             pTrack->getLocation() == coverInfo.trackLocation);
 
-    FutureResult res;
-    res.pRequestor = pRequestor;
-    res.requestedHash = coverInfo.hash;
-    res.signalWhenDone = signalWhenDone;
+    auto res = FutureResult(
+            pRequestor,
+            coverInfo.imageHash(),
+            signalWhenDone);
     DEBUG_ASSERT(!res.coverInfoUpdated);
 
     auto loadedImage = coverInfo.loadImage(
             pTrack ? pTrack->getSecurityToken() : SecurityTokenPointer());
     if (!loadedImage.image.isNull()) {
         // Refresh hash before resizing the original image!
-        res.coverInfoUpdated = coverInfo.refreshImageHash(loadedImage.image);
+        res.coverInfoUpdated = coverInfo.refreshImageDigest(loadedImage.image);
         if (pTrack && res.coverInfoUpdated) {
             kLogger.info()
                     << "Updating cover info of track"
@@ -259,19 +261,19 @@ void CoverArtCache::coverLoaded() {
             // same hash for different images. Otherwise the wrong image would
             // be displayed when loaded from the cache.
             QString cacheKey = pixmapCacheKey(
-                    res.coverArt.hash, res.coverArt.resizedToWidth);
+                    res.coverArt.imageHash(), res.coverArt.resizedToWidth);
             QPixmapCache::insert(cacheKey, pixmap);
         }
     }
 
-    m_runningRequests.remove(qMakePair(res.pRequestor, res.requestedHash));
+    m_runningRequests.remove(qMakePair(res.pRequestor, res.requestedImageHash));
 
     if (res.signalWhenDone) {
         emit coverFound(
                 res.pRequestor,
                 std::move(res.coverArt),
                 pixmap,
-                res.requestedHash,
+                res.requestedImageHash,
                 res.coverInfoUpdated);
     }
 }

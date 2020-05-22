@@ -4,20 +4,25 @@
 #include <QString>
 #include <QtDebug>
 
+#include "util/cache.h"
+#include "util/color/rgbcolor.h"
+#include "util/imageutils.h"
 #include "util/sandbox.h"
 
 class CoverImageUtils {
   public:
-    static quint16 calculateHash(
-            const QImage& image);
-
-    static constexpr quint16 defaultHash() {
-        return 0;
+    static QByteArray calculateDigest(
+            const QImage& image) {
+        return mixxx::digestImage(image);
     }
 
-    static constexpr bool isValidHash(
-            quint16 hash) {
-        return hash != defaultHash();
+    static mixxx::cache_key_t cacheKeyFromDigest(
+            const QByteArray& digest) {
+        return mixxx::cacheKeyFromMessageDigest(digest);
+    }
+
+    static constexpr mixxx::cache_key_t defaultHash() {
+        return mixxx::invalidCacheKey();
     }
 };
 
@@ -59,14 +64,51 @@ class CoverInfoRelative {
         *this = CoverInfoRelative();
     }
 
+    void setImage(
+            const QImage& image = QImage());
+    void setImageDigest(
+            QByteArray imageDigest,
+            quint16 legacyHash = defaultLegacyHash()) {
+        m_imageDigest = imageDigest;
+        m_legacyHash = legacyHash;
+    }
+
+    bool hasImage() const {
+        return imageHash() != CoverImageUtils::defaultHash();
+    }
+
+    const QByteArray imageDigest() const {
+        return m_imageDigest;
+    }
+    mixxx::cache_key_t imageHash() const {
+        if (m_imageDigest.isEmpty()) {
+            // Legacy fallback, required for incremental migration
+            return m_legacyHash;
+        } else {
+            return CoverImageUtils::cacheKeyFromDigest(m_imageDigest);
+        }
+    }
+
+    static constexpr quint16 defaultLegacyHash() {
+        return static_cast<quint16>(CoverImageUtils::defaultHash());
+    }
+
+    quint16 legacyHash() const {
+        return m_legacyHash;
+    }
+
     Source source;
     Type type;
     QString coverLocation; // relative path, from track location
-    quint16 hash;
+
+  private:
+    QByteArray m_imageDigest;
+    // Only for backwards compatibility of database
+    quint16 m_legacyHash;
 };
 
-bool operator==(const CoverInfoRelative& a, const CoverInfoRelative& b);
-bool operator!=(const CoverInfoRelative& a, const CoverInfoRelative& b);
+bool operator==(const CoverInfoRelative& lhs, const CoverInfoRelative& rhs);
+bool operator!=(const CoverInfoRelative& lhs, const CoverInfoRelative& rhs);
 QDebug operator<<(QDebug dbg, const CoverInfoRelative& info);
 
 class CoverInfo : public CoverInfoRelative {
@@ -121,11 +163,11 @@ class CoverInfo : public CoverInfoRelative {
     LoadedImage loadImage(
             const SecurityTokenPointer& pTrackLocationToken = SecurityTokenPointer()) const;
 
-    // Verify the image hash and update it if necessary.
+    // Verify the image digest and update it if necessary.
     // If the corresponding image has already been loaded it
     // could be provided as a parameter to avoid reloading
     // if actually needed.
-    bool refreshImageHash(
+    bool refreshImageDigest(
             const QImage& loadedImage = QImage(),
             const SecurityTokenPointer& pTrackLocationToken = SecurityTokenPointer());
 
@@ -134,7 +176,7 @@ class CoverInfo : public CoverInfoRelative {
 
 bool operator==(const CoverInfo& a, const CoverInfo& b);
 bool operator!=(const CoverInfo& a, const CoverInfo& b);
-QDebug operator<<(QDebug dbg, const CoverInfo& info);
+QDebug operator<<(QDebug dbg, const CoverInfoRelative& info);
 
 QDebug operator<<(QDebug dbg, const CoverInfo::LoadedImage::Result& result);
 QDebug operator<<(QDebug dbg, const CoverInfo::LoadedImage& loadedImage);

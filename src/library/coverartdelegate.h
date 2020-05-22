@@ -16,8 +16,9 @@ class CoverArtDelegate : public BaseCoverArtDelegate {
 
     int m_iCoverSourceColumn;
     int m_iCoverTypeColumn;
+    int m_iCoverDigestColumn;
+    int m_iCoverLegacyHashColumn;
     int m_iCoverLocationColumn;
-    int m_iCoverHashColumn;
     int m_iTrackIdColumn;
     int m_iTrackLocationColumn;
 };
