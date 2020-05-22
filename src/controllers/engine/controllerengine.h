@@ -75,6 +75,15 @@ class ControllerEngine : public QObject {
     /// Returns a timer ID to the script
     int beginTimer(int intervalMillis, QJSValue scriptCode, bool oneShot = false);
     void stopTimer(int timerId);
+
+    /// [En/dis]able soft-takeover status for a particular ControlObject
+    void softTakeover(QString group, QString name, bool set);
+    /// Ignores the next value for the given ControlObject. This should be called
+    /// before or after an absolute physical control (slider or knob with hard limits)
+    /// is changed to operate on a different ControlObject, allowing it to sync up to the
+    /// soft-takeover state without an abrupt jump.
+    void softTakeoverIgnoreNextValue(QString group, QString name);
+
     void scratchEnable(
             int deck,
             int intervalsPerRev,
@@ -86,13 +95,6 @@ class ControllerEngine : public QObject {
     void scratchTick(int deck, int interval);
     void scratchDisable(int deck, bool ramp = true);
     bool isScratching(int deck);
-    /// [En/dis]able soft-takeover status for a particular ControlObject
-    void softTakeover(QString group, QString name, bool set);
-    /// Ignores the next value for the given ControlObject. This should be called
-    /// before or after an absolute physical control (slider or knob with hard limits)
-    /// is changed to operate on a different ControlObject, allowing it to sync up to the
-    /// soft-takeover state without an abrupt jump.
-    void softTakeoverIgnoreNextValue(QString group, QString name);
     void brake(int deck, bool activate, double factor = 1.0, double rate = 1.0);
     void spinback(int deck, bool activate, double factor = 1.8, double rate = -10.0);
     void softStart(int deck, bool activate, double factor = 1.0);

@@ -895,6 +895,27 @@ void ControllerEngine::timerEvent(QTimerEvent* event) {
     executeFunction(timerTarget.callback, QJSValueList());
 }
 
+void ControllerEngine::softTakeover(QString group, QString name, bool set) {
+    ControlObject* pControl = ControlObject::getControl(ConfigKey(group, name));
+    if (!pControl) {
+        return;
+    }
+    if (set) {
+        m_st.enable(pControl);
+    } else {
+        m_st.disable(pControl);
+    }
+}
+
+void ControllerEngine::softTakeoverIgnoreNextValue(QString group, const QString name) {
+    ControlObject* pControl = ControlObject::getControl(ConfigKey(group, name));
+    if (!pControl) {
+        return;
+    }
+
+    m_st.ignoreNext(pControl);
+}
+
 double ControllerEngine::getDeckRate(const QString& group) {
     double rate = 0.0;
     ControlObjectScript* pRateRatio = getControlObjectScript(group, "rate_ratio");
@@ -1109,27 +1130,6 @@ bool ControllerEngine::isScratching(int deck) {
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
     return getValue(group, "scratch2_enable") > 0;
-}
-
-void ControllerEngine::softTakeover(QString group, QString name, bool set) {
-    ControlObject* pControl = ControlObject::getControl(ConfigKey(group, name));
-    if (!pControl) {
-        return;
-    }
-    if (set) {
-        m_st.enable(pControl);
-    } else {
-        m_st.disable(pControl);
-    }
-}
-
-void ControllerEngine::softTakeoverIgnoreNextValue(QString group, const QString name) {
-    ControlObject* pControl = ControlObject::getControl(ConfigKey(group, name));
-    if (!pControl) {
-        return;
-    }
-
-    m_st.ignoreNext(pControl);
 }
 
 void ControllerEngine::spinback(int deck, bool activate, double factor, double rate) {
