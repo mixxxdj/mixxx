@@ -759,6 +759,20 @@ void Track::setCuePoint(CuePosition cue) {
     emit cuesUpdated();
 }
 
+void Track::shiftCuePositionsMillis(double milliseconds) {
+    QMutexLocker lock(&m_qMutex);
+
+    VERIFY_OR_DEBUG_ASSERT(m_streamInfo) {
+        return;
+    }
+    double frames = m_streamInfo->getSignalInfo().millis2frames(milliseconds);
+    for (const CuePointer& pCue : m_cuePoints) {
+        pCue->shiftPositionFrames(frames);
+    }
+
+    markDirtyAndUnlock(&lock);
+}
+
 void Track::analysisFinished() {
     emit analyzed();
 }

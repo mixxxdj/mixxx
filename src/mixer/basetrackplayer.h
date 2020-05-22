@@ -93,6 +93,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotWaveformZoomUp(double pressed);
     void slotWaveformZoomDown(double pressed);
     void slotWaveformZoomSetDefault(double pressed);
+    void slotShiftCuesMillis(double milliseconds);
+    void slotShiftCuesMillisButton(double value, double milliseconds);
 
   private:
     void setReplayGain(double value);
@@ -131,6 +133,12 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     // This may lock the engine
     std::unique_ptr<ControlObject> m_pFileBPM;
     std::unique_ptr<ControlProxy> m_pKey;
+
+    std::unique_ptr<ControlPushButton> m_pShiftCuesEarlier;
+    std::unique_ptr<ControlPushButton> m_pShiftCuesEarlierSmall;
+    std::unique_ptr<ControlPushButton> m_pShiftCuesLater;
+    std::unique_ptr<ControlPushButton> m_pShiftCuesLaterSmall;
+    std::unique_ptr<ControlObject> m_pShiftCues;
 
     std::unique_ptr<ControlProxy> m_pReplayGain;
     std::unique_ptr<ControlProxy> m_pPlay;

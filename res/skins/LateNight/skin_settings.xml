@@ -16,7 +16,7 @@ Description:
     <Layout>horizontal</Layout>
     <SizePolicy>min,me</SizePolicy>
     <Children>
-      
+
       <WidgetGroup>
         <ObjectName>SkinSettings</ObjectName>
         <Layout>vertical</Layout>
