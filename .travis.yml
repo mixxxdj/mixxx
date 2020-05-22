@@ -155,6 +155,9 @@ jobs:
         - mkdir "${MIXXX_ENVPATH}"
         - read -r MIXXX_ENVNAME < build/osx/golden_environment
         - curl "https://downloads.mixxx.org/builds/buildserver/2.3.x-macosx/${MIXXX_ENVNAME}.tar.gz" | tar xzf -  --strip 1 -C "${MIXXX_ENVPATH}"
+        # FIXME: This fixes some wrong hardcoded paths inside pkg-config files of the build environment (e.g. in "lib/pkgconfig/taglib.pc")
+        # This will only work if neither MIXXX_ENVNAME nor MIXXX_ENVPATH contain special regex characters!
+        - find "${MIXXX_ENVPATH}" -name "*.pc" -or -path "*/bin/taglib-config" -exec sed -i".orig" -e "s|/Users/mixxx/bs-2.3-mac/amd64/environment/${MIXXX_ENVNAME}|${MIXXX_ENVPATH}|g" {} \;
         - cmake --version
         - ccache -s
       install:
