@@ -88,7 +88,7 @@ CrateId CrateFeatureHelper::duplicateCrate(const Crate& oldCrate) {
     const QString proposedCrateName =
             proposeNameForNewCrate(
                     QStringLiteral("%1 %2")
-                            .arg(oldCrate.getName(), tr("copy", "[noun]")));
+                            .arg(oldCrate.getName(), tr("copy", "//:")));
     Crate newCrate;
     for (;;) {
         bool ok = false;

@@ -238,7 +238,7 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
                 tr("Enter name for new playlist:"),
                 QLineEdit::Normal,
                 //: Appendix to default name when duplicating a playlist
-                oldName + tr("_copy", "[noun]"),
+                oldName + tr("_copy", "//:"),
                 &ok)
                        .trimmed();
         if (!ok || oldName == name) {
