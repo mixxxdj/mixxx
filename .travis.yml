@@ -162,10 +162,11 @@ jobs:
         # FIXME: This fixes some wrong hardcoded paths inside pkg-config files of the build environment (e.g. in "lib/pkgconfig/taglib.pc")
         # This will only work if neither MIXXX_ENVNAME nor MIXXX_ENVPATH contain special regex characters!
         - find "${MIXXX_ENVPATH}" -name "*.pc" -or -path "*/bin/taglib-config" -exec sed -i".orig" -e "s|/Users/mixxx/bs-2.3-mac/amd64/environment/${MIXXX_ENVNAME}|${MIXXX_ENVPATH}|g" {} \;
+        - export QT_DIR="$(find "${MIXXX_ENVPATH}" -type d -path "*/cmake/Qt5")"
       install:
         - mkdir cmake_build
         - cd cmake_build
-        - cmake -L $CMAKEFLAGS $CMAKEFLAGS_EXTRA -DCMAKE_PREFIX_PATH=${MIXXX_ENVPATH} -DQt5_DIR=${MIXXX_ENVPATH}/Qt-5.12.3/lib/cmake/Qt5/ ..
+        - cmake -L $CMAKEFLAGS $CMAKEFLAGS_EXTRA -DCMAKE_PREFIX_PATH=${MIXXX_ENVPATH} -DQt5_DIR=${QT_DIR} ..
         - cmake --build .
         - sudo cmake --build . --target install
       script:
