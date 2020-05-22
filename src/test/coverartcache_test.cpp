@@ -33,20 +33,20 @@ class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
     }
 
     void loadCoverFromFile(QString trackLocation, QString coverLocation, QString absoluteCoverLocation) {
-        QImage img = QImage(absoluteCoverLocation);
+        const QImage img = QImage(absoluteCoverLocation);
+        ASSERT_FALSE(img.isNull());
 
         CoverInfo info;
         info.type = CoverInfo::FILE;
         info.source = CoverInfo::GUESSED;
         info.coverLocation = coverLocation;
         info.trackLocation = trackLocation;
-        info.hash = 39287; // actual cover image hash!
 
         CoverArtCache::FutureResult res;
         res = CoverArtCache::loadCover(nullptr, TrackPointer(), info, 0, false);
-        EXPECT_TRUE(res.coverInfoUpdated);
+        EXPECT_TRUE(res.coverInfoUpdated); // hash updated
         EXPECT_EQ(img, res.coverArt.loadedImage.image);
-        EXPECT_EQ(info.hash, res.coverArt.hash);
+        EXPECT_EQ(CoverImageUtils::calculateHash(img), res.coverArt.hash);
         EXPECT_QSTRING_EQ(info.coverLocation, res.coverArt.coverLocation);
     }
 };
