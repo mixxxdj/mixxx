@@ -59,9 +59,9 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void updatedAPI();
 
   public slots:
-    void slotUpdate(); // called on show
-    void slotApply();  // called on ok button
-    void slotResetToDefaults();
+    void slotUpdate() override; // called on show
+    void slotApply() override;  // called on ok button
+    void slotResetToDefaults() override;
     void bufferUnderflow(double count);
     void masterLatencyChanged(double latency);
     void latencyCompensationSpinboxChanged(double value);
