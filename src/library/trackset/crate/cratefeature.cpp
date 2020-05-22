@@ -28,7 +28,7 @@ namespace {
 
 QString formatLabel(
         const CrateSummary& crateSummary) {
-    return QString("%1 (%2) %3")
+    return QStringLiteral("%1 (%2) %3")
             .arg(
                     crateSummary.getName(),
                     QString::number(crateSummary.getTrackCount()),
@@ -167,14 +167,14 @@ QString CrateFeature::formatRootViewHtml() const {
 
     QString html;
     QString createCrateLink = tr("Create New Crate");
-    html.append(QString("<h2>%1</h2>").arg(cratesTitle));
-    html.append(QString("<p>%1</p>").arg(cratesSummary));
-    html.append(QString("<p>%1</p>").arg(cratesSummary2));
-    html.append(QString("<p>%1</p>").arg(cratesSummary3));
+    html.append(QStringLiteral("<h2>%1</h2>").arg(cratesTitle));
+    html.append(QStringLiteral("<p>%1</p>").arg(cratesSummary));
+    html.append(QStringLiteral("<p>%1</p>").arg(cratesSummary2));
+    html.append(QStringLiteral("<p>%1</p>").arg(cratesSummary3));
     //Colorize links in lighter blue, instead of QT default dark blue.
     //Links are still different from regular text, but readable on dark/light backgrounds.
     //https://bugs.launchpad.net/mixxx/+bug/1744816
-    html.append(QString("<a style=\"color:#0496FF;\" href=\"create\">%1</a>")
+    html.append(QStringLiteral("<a style=\"color:#0496FF;\" href=\"create\">%1</a>")
                         .arg(createCrateLink));
     return html;
 }
@@ -605,7 +605,7 @@ void CrateFeature::slotCreateImportCrate() {
         for (int i = 0;; ++i) {
             auto name = baseName;
             if (i > 0) {
-                name += QString(" %1").arg(i);
+                name += QStringLiteral(" %1").arg(i);
             }
             name = name.trimmed();
             if (!name.isEmpty()) {

@@ -22,7 +22,7 @@ void CrateTableModel::selectCrate(CrateId crateId) {
     }
     m_selectedCrate = crateId;
 
-    QString tableName = QString("crate_%1").arg(m_selectedCrate.toString());
+    QString tableName = QStringLiteral("crate_%1").arg(m_selectedCrate.toString());
     QStringList columns;
     columns << LIBRARYTABLE_ID
             << "'' AS " + LIBRARYTABLE_PREVIEW

@@ -20,8 +20,8 @@ QString CrateFeatureHelper::proposeNameForNewCrate(
     do {
         if (suffixCounter++ > 0) {
             // Append suffix " 2", " 3", ...
-            proposedName = QString("%1 %2")
-                    .arg(initialName, QString::number(suffixCounter));
+            proposedName = QStringLiteral("%1 %2")
+                                   .arg(initialName, suffixCounter);
         } else {
             proposedName = initialName;
         }
@@ -87,8 +87,8 @@ CrateId CrateFeatureHelper::createEmptyCrate() {
 CrateId CrateFeatureHelper::duplicateCrate(const Crate& oldCrate) {
     const QString proposedCrateName =
             proposeNameForNewCrate(
-                    QString("%1 %2")
-                            .arg( oldCrate.getName(), tr("copy", "[noun]")));
+                    QStringLiteral("%1 %2")
+                            .arg(oldCrate.getName(), tr("copy", "[noun]")));
     Crate newCrate;
     for (;;) {
         bool ok = false;

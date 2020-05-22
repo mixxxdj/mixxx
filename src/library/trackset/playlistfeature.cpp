@@ -26,7 +26,7 @@ QString createPlaylistLabel(
         QString name,
         int count,
         int duration) {
-    return QString("%1 (%2) %3").arg(name, QString::number(count), mixxx::Duration::formatTime(duration, mixxx::Duration::Precision::SECONDS));
+    return QStringLiteral("%1 (%2) %3").arg(name, QString::number(count), mixxx::Duration::formatTime(duration, mixxx::Duration::Precision::SECONDS));
 }
 
 } // anonymous namespace
@@ -274,11 +274,11 @@ QString PlaylistFeature::getRootViewHtml() const {
     QString createPlaylistLink = tr("Create New Playlist");
 
     QString html;
-    html.append(QString("<h2>%1</h2>").arg(playlistsTitle));
-    html.append(QString("<p>%1</p>").arg(playlistsSummary));
-    html.append(QString("<p>%1</p>").arg(playlistsSummary2));
-    html.append(QString("<p>%1<br>%2</p>").arg(playlistsSummary3, playlistsSummary4));
-    html.append(QString("<a style=\"color:#0496FF;\" href=\"create\">%1</a>")
+    html.append(QStringLiteral("<h2>%1</h2>").arg(playlistsTitle));
+    html.append(QStringLiteral("<p>%1</p>").arg(playlistsSummary));
+    html.append(QStringLiteral("<p>%1</p>").arg(playlistsSummary2));
+    html.append(QStringLiteral("<p>%1<br>%2</p>").arg(playlistsSummary3, playlistsSummary4));
+    html.append(QStringLiteral("<a style=\"color:#0496FF;\" href=\"create\">%1</a>")
                         .arg(createPlaylistLink));
     return html;
 }
