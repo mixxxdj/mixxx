@@ -73,7 +73,6 @@ class DlgPrefController : public DlgPreferencePage {
     QString presetDescription(const ControllerPresetPointer pPreset) const;
     QString presetForumLink(const ControllerPresetPointer pPreset) const;
     QString presetWikiLink(const ControllerPresetPointer pPreset) const;
-    void checkPresetCompatibility(ControllerPresetPointer preset);
     QString presetScriptFileLinks(const ControllerPresetPointer pPreset) const;
     void applyPresetChanges();
     void savePreset();
@@ -108,8 +107,6 @@ class DlgPrefController : public DlgPreferencePage {
     void enableDevice();
     void disableDevice();
 
-    inline bool presetIsSupported(ControllerPresetPointer preset);
-
     Ui::DlgPrefControllerDlg m_ui;
     UserSettingsPointer m_pConfig;
     ControllerManager* m_pControllerManager;
@@ -121,7 +118,6 @@ class DlgPrefController : public DlgPreferencePage {
     ControllerOutputMappingTableModel* m_pOutputTableModel;
     QSortFilterProxyModel* m_pOutputProxyModel;
     bool m_bDirty;
-    State m_bState;
 };
 
 #endif /*DLGPREFCONTROLLER_H*/

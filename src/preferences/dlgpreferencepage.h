@@ -8,13 +8,6 @@
 class DlgPreferencePage : public QWidget {
     Q_OBJECT
   public:
-    enum class State {
-        // The preferences are valid and can be applied.
-        valid,
-        // There's something wrong with the preferences and they cannot be applied.
-        invalid
-    };
-
     DlgPreferencePage(QWidget* pParent);
     virtual ~DlgPreferencePage();
 

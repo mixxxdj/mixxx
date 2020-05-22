@@ -33,8 +33,7 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller, Co
           m_pInputProxyModel(NULL),
           m_pOutputTableModel(NULL),
           m_pOutputProxyModel(NULL),
-          m_bDirty(false),
-          m_bState(State::valid) {
+          m_bDirty(false) {
     m_ui.setupUi(this);
 
     initTableView(m_ui.m_pInputMappingTableView);
@@ -545,7 +544,6 @@ void DlgPrefController::slotShowPreset(ControllerPresetPointer preset) {
     m_ui.labelLoadedPreset->setText(presetName(preset));
     m_ui.labelLoadedPresetDescription->setText(presetDescription(preset));
     m_ui.labelLoadedPresetAuthor->setText(presetAuthor(preset));
-    checkPresetCompatibility(preset);
     QStringList supportLinks;
 
     QString forumLink = presetForumLink(preset);
@@ -623,36 +621,6 @@ void DlgPrefController::slotShowPreset(ControllerPresetPointer preset) {
     m_pOutputProxyModel = pOutputProxyModel;
     delete m_pOutputTableModel;
     m_pOutputTableModel = pOutputModel;
-}
-
-void DlgPrefController::checkPresetCompatibility(ControllerPresetPointer preset) {
-    if (m_ui.chkEnabledDevice->isChecked() && !presetIsSupported(preset)) {
-        m_bState = State::invalid;
-        m_ui.groupBoxWarning->show();
-        m_ui.btnLearningWizard->setEnabled(false);
-        m_ui.btnAddInputMapping->setEnabled(false);
-        m_ui.btnRemoveInputMappings->setEnabled(false);
-        m_ui.btnClearAllInputMappings->setEnabled(false);
-        m_ui.btnAddOutputMapping->setEnabled(false);
-        m_ui.btnRemoveOutputMappings->setEnabled(false);
-        m_ui.btnClearAllOutputMappings->setEnabled(false);
-    } else {
-        m_bState = State::valid;
-        m_ui.groupBoxWarning->hide();
-        bool isMappable = m_pController->isMappable();
-        m_ui.btnLearningWizard->setEnabled(isMappable);
-        m_ui.btnAddInputMapping->setEnabled(true);
-        m_ui.btnRemoveInputMappings->setEnabled(true);
-        m_ui.btnClearAllInputMappings->setEnabled(true);
-        m_ui.btnAddOutputMapping->setEnabled(true);
-        m_ui.btnRemoveOutputMappings->setEnabled(true);
-        m_ui.btnClearAllOutputMappings->setEnabled(true);
-    }
-}
-
-
-bool DlgPrefController::presetIsSupported(ControllerPresetPointer preset) {
-    return ControllerEngine::version >= preset->controllerEngineVersion();
 }
 
 void DlgPrefController::addInputMapping() {

@@ -82,15 +82,6 @@ class ControllerEngine : public QObject {
     ControllerEngine(Controller* controller);
     virtual ~ControllerEngine();
 
-    // The controller engine version is used to check compatibility of presets.
-#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
-    // Qt >= 5.12.0 supports ECMAScript 7 (2016)
-    static const int version = 2;
-#else
-    // Qt < 5.12.0 supports ECMAScript 5 (2009)
-    static const int version = 1;
-#endif
-
     // Execute a JS function in the engine
     bool executeFunction(QJSValue functionObject, QJSValueList arguments);
     bool executeFunction(QJSValue functionObject, const QByteArray& data);

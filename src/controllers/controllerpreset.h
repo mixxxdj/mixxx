@@ -151,14 +151,6 @@ class ControllerPreset {
         return m_mixxxVersion;
     }
 
-    inline void setControllerEngineVersion(int iControllerEngineVersion) {
-        m_iControllerEngineVersion = iControllerEngineVersion;
-    }
-
-    inline int controllerEngineVersion() const {
-        return m_iControllerEngineVersion;
-    }
-
     inline void addProductMatch(QHash<QString,QString> match) {
         m_productMatches.append(match);
         setDirty(true);
