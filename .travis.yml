@@ -163,6 +163,7 @@ jobs:
         # This will only work if neither MIXXX_ENVNAME nor MIXXX_ENVPATH contain special regex characters!
         - find "${MIXXX_ENVPATH}" -name "*.pc" -or -path "*/bin/taglib-config" -exec sed -i".orig" -e "s|/Users/mixxx/bs-2.3-mac/amd64/environment/${MIXXX_ENVNAME}|${MIXXX_ENVPATH}|g" {} \;
         - export QT_DIR="$(find "${MIXXX_ENVPATH}" -type d -path "*/cmake/Qt5")"
+        - export QT_QPA_PLATFORM_PLUGIN_PATH="$(find "${MIXXX_ENVPATH}" -type d -path "*/plugins")"
       install:
         - mkdir cmake_build
         - cd cmake_build
