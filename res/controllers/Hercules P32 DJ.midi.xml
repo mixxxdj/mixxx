@@ -9,7 +9,6 @@
     </info>
     <controller id="Hercules">
         <scriptfiles>
-            <file filename="lodash.mixxx.js"/>
             <file filename="midi-components-0.0.js"/>
             <file functionprefix="P32" filename="Hercules-P32-scripts.js"/>
         </scriptfiles>
