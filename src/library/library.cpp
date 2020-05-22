@@ -125,9 +125,9 @@ Library::Library(
     connect(pPlayerManager, &PlayerManager::trackAnalyzerProgress, this, &Library::onPlayerManagerTrackAnalyzerProgress);
     connect(pPlayerManager, &PlayerManager::trackAnalyzerIdle, this, &Library::onPlayerManagerTrackAnalyzerIdle);
 
-    //iTunes and Rhythmbox should be last until we no longer have an obnoxious
-    //messagebox popup when you select them. (This forces you to reach for your
-    //mouse or keyboard if you're using MIDI control and you scroll through them...)
+    // iTunes and Rhythmbox should be last until we no longer have an obnoxious
+    // messagebox popup when you select them. (This forces you to reach for your
+    // mouse or keyboard if you're using MIDI control and you scroll through them...)
     if (RhythmboxFeature::isSupported() &&
             m_pConfig->getValue(ConfigKey(kConfigGroup, "ShowRhythmboxLibrary"), true)) {
         addFeature(new RhythmboxFeature(this, m_pConfig));
