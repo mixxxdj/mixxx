@@ -15,7 +15,7 @@ class HidControllerPreset : public ControllerPreset {
 
     bool savePreset(const QString& fileName) const override;
 
-    virtual void accept(ControllerPresetVisitor* visitor);
-    virtual void accept(ConstControllerPresetVisitor* visitor) const;
-    virtual bool isMappable() const;
+    virtual void accept(ControllerPresetVisitor* visitor) override;
+    virtual void accept(ConstControllerPresetVisitor* visitor) const override;
+    virtual bool isMappable() const override;
 };
