@@ -626,7 +626,6 @@ void DlgPrefController::slotShowPreset(ControllerPresetPointer preset) {
 }
 
 void DlgPrefController::checkPresetCompatibility(ControllerPresetPointer preset) {
-    State bPreviousState = m_bState;
     if (m_ui.chkEnabledDevice->isChecked() && !presetIsSupported(preset)) {
         m_bState = State::invalid;
         m_ui.groupBoxWarning->show();

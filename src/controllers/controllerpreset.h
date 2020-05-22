@@ -22,7 +22,7 @@ class ControllerPreset {
             : m_bDirty(false),
               m_iControllerEngineVersion(0) {
     }
-    virtual ~ControllerPreset() {}
+    virtual ~ControllerPreset() = default;
 
     struct ScriptFileInfo {
         ScriptFileInfo()

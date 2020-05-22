@@ -73,8 +73,7 @@ BulkController::BulkController(
         libusb_context* context,
         libusb_device_handle* handle,
         struct libusb_device_descriptor* desc)
-        : Controller(),
-          m_context(context),
+        : m_context(context),
           m_phandle(handle),
           in_epaddr(0),
           out_epaddr(0) {

@@ -14,8 +14,7 @@
 #include "util/screensaver.h"
 
 Controller::Controller()
-        : QObject(),
-          m_pEngine(NULL),
+        : m_pEngine(nullptr),
           m_bIsOutputDevice(false),
           m_bIsInputDevice(false),
           m_bIsOpen(false),
