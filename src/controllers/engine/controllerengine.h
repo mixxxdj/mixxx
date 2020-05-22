@@ -1,12 +1,4 @@
-/**
-* @file controllerengine.h
-* @author Sean M. Pappalardo spappalardo@mixxx.org
-* @date Sat Apr 30 2011
-* @brief The script engine for use by a Controller.
-*/
-
-#ifndef CONTROLLERENGINE_H
-#define CONTROLLERENGINE_H
+#pragma once
 
 #include <QFileSystemWatcher>
 #include <QJSEngine>
@@ -21,7 +13,6 @@
 #include "util/alphabetafilter.h"
 #include "util/duration.h"
 
-// Forward declaration(s)
 class Controller;
 class ControlObjectScript;
 class ControllerEngine;
@@ -35,14 +26,15 @@ class ControllerEngine : public QObject {
     ControllerEngine(Controller* controller);
     virtual ~ControllerEngine();
 
-    // Execute a JS function in the engine
     bool executeFunction(QJSValue functionObject, QJSValueList arguments);
     bool executeFunction(QJSValue functionObject, const QByteArray& data);
 
-    // Wrap a snippet of JS code in an anonymous function
+    /// Wrap a string of JS code in an anonymous function. This allows any JS
+    /// string that evaluates to a function to be used in MIDI mapping XML files
+    /// and ensures the function is executed with the correct 'this' object.
     QJSValue wrapFunctionCode(const QString& codeSnippet, int numberOfArgs);
 
-    // Look up registered script function prefixes
+    /// Look up registered script function prefixes
     const QList<QString>& getScriptFunctionPrefixes() {
         return m_scriptFunctionPrefixes;
     };
@@ -51,8 +43,8 @@ class ControllerEngine : public QObject {
     /// Precondition: QJSValue.isError() == true
     void showScriptExceptionDialog(QJSValue evaluationResult, bool bFatal = false);
 
-    // Disconnect a ScriptConnection
     bool removeScriptConnection(const ScriptConnection conn);
+    /// Execute a ScriptConnection's JS callback
     void triggerScriptConnection(const ScriptConnection conn);
 
     inline void setTesting(bool testing) {
@@ -68,33 +60,47 @@ class ControllerEngine : public QObject {
     void reset(QString group, QString name);
     double getDefaultValue(QString group, QString name);
     double getDefaultParameter(QString group, QString name);
+    /// Connect a ControlObject's valueChanged() signal to a script callback function
+    /// Returns to the script a ScriptConnectionJSProxy
     QJSValue makeConnection(QString group, QString name, const QJSValue callback);
-    // DEPRECATED: Use makeConnection instead.
+    /// DEPRECATED: Use makeConnection instead.
     QJSValue connectControl(QString group,
             QString name,
             QJSValue passedCallback,
             bool disconnect = false);
-    // Called indirectly by the objects returned by connectControl
+    /// Execute callbacks for all ScriptConnections connected to a ControlObject
+    /// DEPRECATED: Use ScriptConnectionJSProxy::trigger instead.
     void trigger(QString group, QString name);
     void log(QString message);
-    int beginTimer(int interval, QJSValue scriptCode, bool oneShot = false);
+    /// Returns a timer ID to the script
+    int beginTimer(int intervalMillis, QJSValue scriptCode, bool oneShot = false);
     void stopTimer(int timerId);
-    void scratchEnable(int deck, int intervalsPerRev, double rpm, double alpha, double beta, bool ramp = true);
+    void scratchEnable(
+            int deck,
+            int intervalsPerRev,
+            double rpm,
+            double alpha,
+            double beta,
+            bool ramp = true);
+    /// Accumulates ticks of the controller wheel
     void scratchTick(int deck, int interval);
     void scratchDisable(int deck, bool ramp = true);
     bool isScratching(int deck);
+    /// [En/dis]able soft-takeover status for a particular ControlObject
     void softTakeover(QString group, QString name, bool set);
+    /// Ignores the next value for the given ControlObject. This should be called
+    /// before or after an absolute physical control (slider or knob with hard limits)
+    /// is changed to operate on a different ControlObject, allowing it to sync up to the
+    /// soft-takeover state without an abrupt jump.
     void softTakeoverIgnoreNextValue(QString group, QString name);
     void brake(int deck, bool activate, double factor = 1.0, double rate = 1.0);
     void spinback(int deck, bool activate, double factor = 1.8, double rate = -10.0);
     void softStart(int deck, bool activate, double factor = 1.0);
 
-    // Handler for timers that scripts set.
+    /// Handler for timers that scripts set.
     virtual void timerEvent(QTimerEvent* event);
 
   public slots:
-    // Evaluates all provided script files and returns true if no script errors
-    // occurred while evaluating them.
     bool loadScriptFiles(const QList<ControllerPreset::ScriptFileInfo>& scripts);
     void initializeScripts(const QList<ControllerPreset::ScriptFileInfo>& scripts);
     void gracefulShutdown();
@@ -111,14 +117,14 @@ class ControllerEngine : public QObject {
 
     void scriptErrorDialog(const QString& detailedError, const QString& key, bool bFatal = false);
     void generateScriptFunctions(const QString& code);
-    // Stops and removes all timers (for shutdown).
+    /// Stops and removes all timers (for shutdown).
     void stopAllTimers();
 
     bool callFunctionOnObjects(QList<QString>,
             const QString&,
             QJSValueList args = QJSValueList(),
             bool bFatalError = false);
-    // Convert a byteArray to a JS typed array over an ArrayBuffer
+    /// Convert a byteArray to a JS typed array over an ArrayBuffer
     QJSValue byteArrayToScriptValue(const QByteArray& byteArray);
     QJSValue evaluateCodeString(const QString& program, const QString& fileName = QString(), int lineNumber = 1);
 
@@ -130,6 +136,8 @@ class ControllerEngine : public QObject {
     ControlObjectScript* getControlObjectScript(const QString& group, const QString& name);
 
     // Scratching functions & variables
+
+    /// Applies the accumulated movement to the track speed
     void scratchProcess(int timerId);
 
     bool isDeckPlaying(const QString& group);
@@ -145,7 +153,7 @@ class ControllerEngine : public QObject {
     QHash<int, TimerInfo> m_timers;
     SoftTakeoverCtrl m_st;
     // 256 (default) available virtual decks is enough I would think.
-    //  If more are needed at run-time, these will move to the heap automatically
+    // If more are needed at run-time, these will move to the heap automatically
     QVarLengthArray<int> m_intervalAccumulator;
     QVarLengthArray<mixxx::Duration> m_lastMovement;
     QVarLengthArray<double> m_dx, m_rampTo, m_rampFactor;
@@ -166,5 +174,3 @@ class ControllerEngine : public QObject {
     friend class ColorMapperJSProxy;
     friend class ControllerEngineTest;
 };
-
-#endif

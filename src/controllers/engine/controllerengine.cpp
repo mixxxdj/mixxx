@@ -1,11 +1,3 @@
-/***************************************************************************
-                          controllerengine.cpp  -  description
-                          -------------------
-    begin                : Sat Apr 30 2011
-    copyright            : (C) 2011 by Sean M. Pappalardo
-    email                : spappalardo@mixxx.org
- ***************************************************************************/
-
 #include "controllers/engine/controllerengine.h"
 
 #include "control/controlobject.h"
@@ -66,11 +58,6 @@ ControllerEngine::~ControllerEngine() {
     uninitializeScriptEngine();
 }
 
-/* -------- ------------------------------------------------------
-Purpose: Calls the same method on a list of JS Objects
-Input:   -
-Output:  -
--------- ------------------------------------------------------ */
 bool ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefixes,
         const QString& function,
         QJSValueList args,
@@ -117,16 +104,6 @@ QJSValue ControllerEngine::byteArrayToScriptValue(const QByteArray& byteArray) {
     return result;
 }
 
-/* ------------------------------------------------------------------
-Purpose: Turn a snippet of JS into a QJSValue function.
-         Wrapping it in an anonymous function allows any JS that
-         evaluates to a function to be used in MIDI mapping XML files
-         and ensures the function is executed with the correct
-         'this' object.
-Input:   QString snippet of JS that evaluates to a function,
-         int number of arguments that the function takes
-Output:  QJSValue of JS snippet wrapped in an anonymous function
-------------------------------------------------------------------- */
 QJSValue ControllerEngine::wrapFunctionCode(const QString& codeSnippet,
         int numberOfArgs) {
     // This function is called from outside the controller engine, so we can't
@@ -159,12 +136,6 @@ QJSValue ControllerEngine::wrapFunctionCode(const QString& codeSnippet,
     return wrappedFunction;
 }
 
-/* -------- ------------------------------------------------------
-Purpose: Shuts down scripts in an orderly fashion
-            (stops timers then executes shutdown functions)
-Input:   -
-Output:  -
--------- ------------------------------------------------------ */
 void ControllerEngine::gracefulShutdown() {
     if (m_pScriptEngine == nullptr) {
         return;
@@ -252,11 +223,6 @@ void ControllerEngine::uninitializeScriptEngine() {
     }
 }
 
-/* -------- ------------------------------------------------------
-   Purpose: Load all script files given in the supplied list
-   Input:   List of script paths and file names to load
-   Output:  Returns true if no errors occurred.
-   -------- ------------------------------------------------------ */
 bool ControllerEngine::loadScriptFiles(const QList<ControllerPreset::ScriptFileInfo>& scripts) {
     bool scriptsEvaluatedCorrectly = true;
     for (const auto& script : scripts) {
@@ -277,7 +243,6 @@ bool ControllerEngine::loadScriptFiles(const QList<ControllerPreset::ScriptFileI
     return scriptsEvaluatedCorrectly;
 }
 
-// Slot to run when a script file has changed
 void ControllerEngine::scriptHasChanged(const QString& scriptFilename) {
     Q_UNUSED(scriptFilename);
     disconnect(&m_scriptWatcher, &QFileSystemWatcher::fileChanged, this, &ControllerEngine::scriptHasChanged);
@@ -300,12 +265,6 @@ void ControllerEngine::reloadScripts() {
     initializeScripts(m_lastScriptFiles);
 }
 
-/* -------- ------------------------------------------------------
-   Purpose: Run the initialization function for each loaded script
-                if it exists
-   Input:   -
-   Output:  -
-   -------- ------------------------------------------------------ */
 void ControllerEngine::initializeScripts(const QList<ControllerPreset::ScriptFileInfo>& scripts) {
     m_scriptFunctionPrefixes.clear();
     for (const ControllerPreset::ScriptFileInfo& script : scripts) {
@@ -424,12 +383,6 @@ void ControllerEngine::showScriptExceptionDialog(QJSValue evaluationResult, bool
     }
 }
 
-/*  -------- ------------------------------------------------------
-    Purpose: Common error dialog creation code for run-time exceptions
-                Allows users to ignore the error or reload the mappings
-    Input:   Detailed error string
-    Output:  -
-    -------- ------------------------------------------------------ */
 void ControllerEngine::scriptErrorDialog(
         const QString& detailedError, const QString& key, bool bFatalError) {
     if (m_bTesting) {
@@ -488,19 +441,19 @@ void ControllerEngine::scriptErrorDialog(
     }
 }
 
-/* -------- ------------------------------------------------------
-    Purpose: Slot to handle custom button clicks in error dialogs
-    Input:   Key of dialog, StandardButton that was clicked
-    Output:  -
-    -------- ------------------------------------------------------ */
-void ControllerEngine::errorDialogButton(const QString& key, QMessageBox::StandardButton button) {
+void ControllerEngine::errorDialogButton(
+        const QString& key, QMessageBox::StandardButton clickedButton) {
     Q_UNUSED(key);
 
     m_bDisplayingExceptionDialog = false;
     // Something was clicked, so disable this signal now
-    disconnect(ErrorDialogHandler::instance(), &ErrorDialogHandler::stdButtonClicked, this, &ControllerEngine::errorDialogButton);
+    disconnect(
+            ErrorDialogHandler::instance(),
+            &ErrorDialogHandler::stdButtonClicked,
+            this,
+            &ControllerEngine::errorDialogButton);
 
-    if (button == QMessageBox::Retry) {
+    if (clickedButton == QMessageBox::Retry) {
         reloadScripts();
     }
 }
@@ -521,11 +474,6 @@ ControlObjectScript* ControllerEngine::getControlObjectScript(const QString& gro
     return coScript;
 }
 
-/* -------- ------------------------------------------------------
-   Purpose: Returns the current value of a Mixxx control (for scripts)
-   Input:   Control group (e.g. [Channel1]), Key name (e.g. [filterHigh])
-   Output:  The value
-   -------- ------------------------------------------------------ */
 double ControllerEngine::getValue(QString group, QString name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
@@ -535,11 +483,6 @@ double ControllerEngine::getValue(QString group, QString name) {
     return coScript->get();
 }
 
-/* -------- ------------------------------------------------------
-   Purpose: Sets new value of a Mixxx control (for scripts)
-   Input:   Control group, Key name, new value
-   Output:  -
-   -------- ------------------------------------------------------ */
 void ControllerEngine::setValue(QString group, QString name, double newValue) {
     if (isnan(newValue)) {
         qWarning() << "ControllerEngine: script setting [" << group << "," << name
@@ -557,11 +500,6 @@ void ControllerEngine::setValue(QString group, QString name, double newValue) {
     }
 }
 
-/* -------- ------------------------------------------------------
-   Purpose: Returns the normalized value of a Mixxx control (for scripts)
-   Input:   Control group (e.g. [Channel1]), Key name (e.g. [filterHigh])
-   Output:  The value
-   -------- ------------------------------------------------------ */
 double ControllerEngine::getParameter(QString group, QString name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
@@ -571,11 +509,6 @@ double ControllerEngine::getParameter(QString group, QString name) {
     return coScript->getParameter();
 }
 
-/* -------- ------------------------------------------------------
-   Purpose: Sets new normalized parameter of a Mixxx control (for scripts)
-   Input:   Control group, Key name, new value
-   Output:  -
-   -------- ------------------------------------------------------ */
 void ControllerEngine::setParameter(QString group, QString name, double newParameter) {
     if (isnan(newParameter)) {
         qWarning() << "ControllerEngine: script setting [" << group << "," << name
@@ -593,11 +526,6 @@ void ControllerEngine::setParameter(QString group, QString name, double newParam
     }
 }
 
-/* -------- ------------------------------------------------------
-   Purpose: normalize a value of a Mixxx control (for scripts)
-   Input:   Control group, Key name, new value
-   Output:  -
-   -------- ------------------------------------------------------ */
 double ControllerEngine::getParameterForValue(QString group, QString name, double value) {
     if (isnan(value)) {
         qWarning() << "ControllerEngine: script setting [" << group << "," << name
@@ -615,11 +543,6 @@ double ControllerEngine::getParameterForValue(QString group, QString name, doubl
     return coScript->getParameterForValue(value);
 }
 
-/* -------- ------------------------------------------------------
-   Purpose: Resets the value of a Mixxx control (for scripts)
-   Input:   Control group, Key name, new value
-   Output:  -
-   -------- ------------------------------------------------------ */
 void ControllerEngine::reset(QString group, QString name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript != nullptr) {
@@ -627,11 +550,6 @@ void ControllerEngine::reset(QString group, QString name) {
     }
 }
 
-/* -------- ------------------------------------------------------
-   Purpose: default value of a Mixxx control (for scripts)
-   Input:   Control group, Key name, new value
-   Output:  -
-   -------- ------------------------------------------------------ */
 double ControllerEngine::getDefaultValue(QString group, QString name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
@@ -643,11 +561,6 @@ double ControllerEngine::getDefaultValue(QString group, QString name) {
     return coScript->getDefault();
 }
 
-/* -------- ------------------------------------------------------
-   Purpose: default parameter of a Mixxx control (for scripts)
-   Input:   Control group, Key name, new value
-   Output:  -
-   -------- ------------------------------------------------------ */
 double ControllerEngine::getDefaultParameter(QString group, QString name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
@@ -659,21 +572,10 @@ double ControllerEngine::getDefaultParameter(QString group, QString name) {
     return coScript->getParameterForValue(coScript->getDefault());
 }
 
-/* -------- ------------------------------------------------------
-   Purpose: qDebugs script output so it ends up in mixxx.log
-   Input:   String to log
-   Output:  -
-   -------- ------------------------------------------------------ */
 void ControllerEngine::log(QString message) {
     controllerDebug(message);
 }
 
-// Purpose: Connect a ControlObject's valueChanged() signal to a script callback function
-// Input:   Control group (e.g. '[Channel1]'), Key name (e.g. 'pfl'), script callback
-// Output:  a ScriptConnectionInvokableWrapper turned into a QJSValue.
-//          The script should store this object to call its
-//          'disconnect' and 'trigger' methods as needed.
-//          If unsuccessful, returns undefined.
 QJSValue ControllerEngine::makeConnection(QString group, QString name, const QJSValue callback) {
     VERIFY_OR_DEBUG_ASSERT(m_pScriptEngine != nullptr) {
         return QJSValue();
@@ -709,10 +611,6 @@ QJSValue ControllerEngine::makeConnection(QString group, QString name, const QJS
     return QJSValue();
 }
 
-/* -------- ------------------------------------------------------
-   Purpose: (Dis)connects a ScriptConnection
-   Input:   the ScriptConnection to disconnect
-   -------- ------------------------------------------------------ */
 bool ControllerEngine::removeScriptConnection(const ScriptConnection connection) {
     ControlObjectScript* coScript = getControlObjectScript(connection.key.group,
             connection.key.item);
@@ -724,10 +622,6 @@ bool ControllerEngine::removeScriptConnection(const ScriptConnection connection)
     return coScript->removeScriptConnection(connection);
 }
 
-/* -------- ------------------------------------------------------
-   Purpose: Triggers the callback function of a ScriptConnection
-   Input:   the ScriptConnection to trigger
-   -------- ------------------------------------------------------ */
 void ControllerEngine::triggerScriptConnection(const ScriptConnection connection) {
     VERIFY_OR_DEBUG_ASSERT(m_pScriptEngine) {
         return;
@@ -854,13 +748,6 @@ QJSValue ControllerEngine::connectControl(
     return makeConnection(group, name, actualCallbackFunction);
 }
 
-/* -------- ------------------------------------------------------
-   DEPRECATED: Use ScriptConnectionInvokableWrapper::trigger instead
-   Purpose: Emits valueChanged() so all ScriptConnections held by a
-            ControlObjectScript have their callback executed
-   Input:   -
-   Output:  -
-   -------- ------------------------------------------------------ */
 void ControllerEngine::trigger(QString group, QString name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript != nullptr) {
@@ -868,11 +755,6 @@ void ControllerEngine::trigger(QString group, QString name) {
     }
 }
 
-/* -------- ------------------------------------------------------
-   Purpose: Evaluate a script file
-   Input:   Script filename
-   Output:  false if the script file has errors or doesn't exist
-   -------- ------------------------------------------------------ */
 bool ControllerEngine::evaluateScriptFile(const QFileInfo& scriptFile) {
     VERIFY_OR_DEBUG_ASSERT(m_pScriptEngine) {
         return false;
@@ -930,14 +812,7 @@ bool ControllerEngine::evaluateScriptFile(const QFileInfo& scriptFile) {
     return true;
 }
 
-/* -------- ------------------------------------------------------
-   Purpose: Creates & starts a timer that runs some script code
-                on timeout
-   Input:   Number of milliseconds, script function to call,
-                whether it should fire just once
-   Output:  The timer's ID, 0 if starting it failed
-   -------- ------------------------------------------------------ */
-int ControllerEngine::beginTimer(int interval, QJSValue timerCallback, bool oneShot) {
+int ControllerEngine::beginTimer(int intervalMillis, QJSValue timerCallback, bool oneShot) {
     if (timerCallback.isString()) {
         timerCallback = evaluateCodeString(timerCallback.toString());
     } else if (!timerCallback.isCallable()) {
@@ -951,16 +826,16 @@ int ControllerEngine::beginTimer(int interval, QJSValue timerCallback, bool oneS
         return 0;
     }
 
-    if (interval < 20) {
-        qWarning() << "Timer request for" << interval
+    if (intervalMillis < 20) {
+        qWarning() << "Timer request for" << intervalMillis
                    << "ms is too short. Setting to the minimum of 20ms.";
-        interval = 20;
+        intervalMillis = 20;
     }
 
     // This makes use of every QObject's internal timer mechanism. Nice, clean,
     // and simple. See http://doc.trolltech.com/4.6/qobject.html#startTimer for
     // details
-    int timerId = startTimer(interval);
+    int timerId = startTimer(intervalMillis);
     TimerInfo info;
     info.callback = timerCallback;
     info.oneShot = oneShot;
@@ -975,11 +850,6 @@ int ControllerEngine::beginTimer(int interval, QJSValue timerCallback, bool oneS
     return timerId;
 }
 
-/* -------- ------------------------------------------------------
-   Purpose: Stops & removes a timer
-   Input:   ID of timer to stop
-   Output:  -
-   -------- ------------------------------------------------------ */
 void ControllerEngine::stopTimer(int timerId) {
     if (!m_timers.contains(timerId)) {
         qWarning() << "Killing timer" << timerId << ": That timer does not exist!";
@@ -1052,16 +922,13 @@ bool ControllerEngine::isDeckPlaying(const QString& group) {
     return pPlay->get() > 0.0;
 }
 
-/* -------- ------------------------------------------------------
-    Purpose: Enables scratching for relative controls
-    Input:   Virtual deck to scratch,
-             Number of intervals per revolution of the controller wheel,
-             RPM for the track at normal speed (usually 33+1/3),
-             (optional) alpha value for the filter,
-             (optional) beta value for the filter
-    Output:  -
-    -------- ------------------------------------------------------ */
-void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, double rpm, double alpha, double beta, bool ramp) {
+void ControllerEngine::scratchEnable(
+        int deck,
+        int intervalsPerRev,
+        double rpm,
+        double alpha,
+        double beta,
+        bool ramp) {
     // If we're already scratching this deck, override that with this request
     if (m_dx[deck]) {
         //qDebug() << "Already scratching deck" << deck << ". Overriding.";
@@ -1131,21 +998,11 @@ void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, double rpm, 
     }
 }
 
-/* -------- ------------------------------------------------------
-    Purpose: Accumulates "ticks" of the controller wheel
-    Input:   Virtual deck to scratch, interval value (usually +1 or -1)
-    Output:  -
-    -------- ------------------------------------------------------ */
 void ControllerEngine::scratchTick(int deck, int interval) {
     m_lastMovement[deck] = mixxx::Time::elapsed();
     m_intervalAccumulator[deck] += interval;
 }
 
-/* -------- ------------------------------------------------------
-    Purpose: Applies the accumulated movement to the track speed
-    Input:   ID of timer for this deck
-    Output:  -
-    -------- ------------------------------------------------------ */
 void ControllerEngine::scratchProcess(int timerId) {
     int deck = m_scratchTimers[timerId];
     // PlayerManager::groupForDeck is 0-indexed.
@@ -1224,11 +1081,6 @@ void ControllerEngine::scratchProcess(int timerId) {
     }
 }
 
-/* -------- ------------------------------------------------------
-    Purpose: Stops scratching the specified virtual deck
-    Input:   Virtual deck to stop scratching
-    Output:  -
-    -------- ------------------------------------------------------ */
 void ControllerEngine::scratchDisable(int deck, bool ramp) {
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
@@ -1253,24 +1105,12 @@ void ControllerEngine::scratchDisable(int deck, bool ramp) {
     m_ramp[deck] = true; // Activate the ramping in scratchProcess()
 }
 
-/* -------- ------------------------------------------------------
-    Purpose: Tells if the specified deck is currently scratching
-             (Scripts need this to implement spinback-after-lift-off)
-    Input:   Virtual deck to inquire about
-    Output:  True if so
-    -------- ------------------------------------------------------ */
 bool ControllerEngine::isScratching(int deck) {
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
     return getValue(group, "scratch2_enable") > 0;
 }
 
-/*  -------- ------------------------------------------------------
-    Purpose: [En/dis]ables soft-takeover status for a particular ControlObject
-    Input:   ControlObject group and key values,
-                whether to set the soft-takeover status or not
-    Output:  -
-    -------- ------------------------------------------------------ */
 void ControllerEngine::softTakeover(QString group, QString name, bool set) {
     ControlObject* pControl = ControlObject::getControl(ConfigKey(group, name));
     if (!pControl) {
@@ -1283,15 +1123,6 @@ void ControllerEngine::softTakeover(QString group, QString name, bool set) {
     }
 }
 
-/*  -------- ------------------------------------------------------
-     Purpose: Ignores the next value for the given ControlObject
-                This should be called before or after an absolute physical
-                control (slider or knob with hard limits) is changed to operate
-                on a different ControlObject, allowing it to sync up to the
-                soft-takeover state without an abrupt jump.
-     Input:   ControlObject group and key values
-     Output:  -
-     -------- ------------------------------------------------------ */
 void ControllerEngine::softTakeoverIgnoreNextValue(QString group, const QString name) {
     ControlObject* pControl = ControlObject::getControl(ConfigKey(group, name));
     if (!pControl) {
@@ -1301,23 +1132,11 @@ void ControllerEngine::softTakeoverIgnoreNextValue(QString group, const QString 
     m_st.ignoreNext(pControl);
 }
 
-/*  -------- ------------------------------------------------------
-    Purpose: [En/dis]ables spinback effect for the channel
-    Input:   deck, activate/deactivate, factor (optional),
-             rate (optional)
-    Output:  -
-    -------- ------------------------------------------------------ */
 void ControllerEngine::spinback(int deck, bool activate, double factor, double rate) {
     // defaults for args set in header file
     brake(deck, activate, factor, rate);
 }
 
-/*  -------- ------------------------------------------------------
-    Purpose: [En/dis]ables brake/spinback effect for the channel
-    Input:   deck, activate/deactivate, factor (optional),
-             rate (optional, necessary for spinback)
-    Output:  -
-    -------- ------------------------------------------------------ */
 void ControllerEngine::brake(int deck, bool activate, double factor, double rate) {
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
@@ -1381,11 +1200,6 @@ void ControllerEngine::brake(int deck, bool activate, double factor, double rate
     }
 }
 
-/*  -------- ------------------------------------------------------
-    Purpose: [En/dis]ables softStart effect for the channel
-    Input:   deck, activate/deactivate, factor (optional)
-    Output:  -
-    -------- ------------------------------------------------------ */
 void ControllerEngine::softStart(int deck, bool activate, double factor) {
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
