@@ -923,6 +923,8 @@ class MixxxCore(Feature):
                    "src/controllers/engine/controllerenginejsproxy.cpp",
                    "src/controllers/engine/colorjsproxy.cpp",
                    "src/controllers/engine/colormapperjsproxy.cpp",
+                   "src/controllers/engine/scriptconnection.cpp",
+                   "src/controllers/engine/scriptconnectionjsproxy.cpp",
                    "src/controllers/midi/midimessage.cpp",
                    "src/controllers/midi/midiutils.cpp",
                    "src/controllers/midi/midicontroller.cpp",

@@ -218,6 +218,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/controllers/engine/controllerenginejsproxy.cpp
   src/controllers/engine/colormapper.cpp
   src/controllers/engine/colormapperjsproxy.cpp
+  src/controllers/engine/scriptconnection.cpp
+  src/controllers/engine/scriptconnectionjsproxy.cpp
   src/controllers/keyboard/keyboardeventfilter.cpp
   src/controllers/learningutils.cpp
   src/controllers/midi/midicontroller.cpp

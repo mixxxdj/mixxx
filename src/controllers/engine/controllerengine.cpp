@@ -14,15 +14,12 @@
 #include "controllers/controllerdebug.h"
 #include "controllers/engine/colormapperjsproxy.h"
 #include "controllers/engine/controllerenginejsproxy.h"
+#include "controllers/engine/scriptconnectionjsproxy.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
 // to tell the msvs compiler about `isnan`
 #include "util/math.h"
 #include "util/time.h"
-
-// Used for id's inside controlConnection objects
-// (closure compatible version of connectControl)
-#include <QUuid>
 
 const int kDecks = 16;
 
@@ -706,31 +703,10 @@ QJSValue ControllerEngine::makeConnection(QString group, QString name, const QJS
     connection.id = QUuid::createUuid();
 
     if (coScript->addScriptConnection(connection)) {
-        return m_pScriptEngine->newQObject(new ScriptConnectionInvokableWrapper(connection));
+        return m_pScriptEngine->newQObject(new ScriptConnectionJSProxy(connection));
     }
 
     return QJSValue();
-}
-
-/* -------- ------------------------------------------------------
-   Purpose: Execute a ScriptConnection's callback
-   Input:   the value of the connected ControlObject to pass to the callback
-   -------- ------------------------------------------------------ */
-void ScriptConnection::executeCallback(double value) const {
-    QJSValueList args;
-    args << QJSValue(value);
-    args << QJSValue(key.group);
-    args << QJSValue(key.item);
-    QJSValue func = callback; // copy function because QJSValue::call is not const
-    QJSValue result = func.call(args);
-    if (result.isError()) {
-        if (controllerEngine != nullptr) {
-            controllerEngine->showScriptExceptionDialog(result);
-        }
-        qWarning() << "ControllerEngine: Invocation of connection " << id.toString()
-                   << "connected to (" + key.group + ", " + key.item + ") failed:"
-                   << result.toString();
-    }
 }
 
 /* -------- ------------------------------------------------------
@@ -746,13 +722,6 @@ bool ControllerEngine::removeScriptConnection(const ScriptConnection connection)
     }
 
     return coScript->removeScriptConnection(connection);
-}
-
-bool ScriptConnectionInvokableWrapper::disconnect() {
-    // if the removeScriptConnection succeeded, the connection has been successfully disconnected
-    bool success = m_scriptConnection.controllerEngine->removeScriptConnection(m_scriptConnection);
-    m_isConnected = !success;
-    return success;
 }
 
 /* -------- ------------------------------------------------------
@@ -771,10 +740,6 @@ void ControllerEngine::triggerScriptConnection(const ScriptConnection connection
     }
 
     connection.executeCallback(coScript->get());
-}
-
-void ScriptConnectionInvokableWrapper::trigger() {
-    m_scriptConnection.controllerEngine->triggerScriptConnection(m_scriptConnection);
 }
 
 // This function is a legacy version of makeConnection with several alternate
@@ -850,7 +815,7 @@ QJSValue ControllerEngine::connectControl(
                             "use engine.makeConnection. Returning reference to connection " +
                             connection.id.toString();
 
-            return m_pScriptEngine->newQObject(new ScriptConnectionInvokableWrapper(connection));
+            return m_pScriptEngine->newQObject(new ScriptConnectionJSProxy(connection));
         }
     } else if (passedCallback.isQObject()) {
         // Assume a ScriptConnection and assume that the script author
@@ -864,8 +829,8 @@ QJSValue ControllerEngine::connectControl(
                    << "a connection object to disconnect and returning false.";
         if (!strcmp(qmeta->className(),
                     "ScriptConnectionInvokableWrapper")) {
-            ScriptConnectionInvokableWrapper* proxy =
-                    (ScriptConnectionInvokableWrapper*)qobject;
+            ScriptConnectionJSProxy* proxy =
+                    (ScriptConnectionJSProxy*)qobject;
             proxy->disconnect();
         }
         return QJSValue(false);

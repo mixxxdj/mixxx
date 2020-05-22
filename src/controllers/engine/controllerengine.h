@@ -27,54 +27,7 @@ class ControlObjectScript;
 class ControllerEngine;
 class ControllerEngineJSProxy;
 class EvaluationException;
-
-// ScriptConnection represents a connection between
-// a ControlObject and a script callback function that gets executed when
-// the value of the ControlObject changes.
-class ScriptConnection {
-  public:
-    ConfigKey key;
-    QUuid id;
-    QJSValue callback;
-    ControllerEngine* controllerEngine;
-
-    void executeCallback(double value) const;
-
-    // Required for various QList methods and iteration to work.
-    inline bool operator==(const ScriptConnection& other) const {
-        return id == other.id;
-    }
-    inline bool operator!=(const ScriptConnection& other) const {
-        return !(*this == other);
-    }
-};
-
-// ScriptConnectionInvokableWrapper is a class providing scripts
-// with an interface to ScriptConnection.
-class ScriptConnectionInvokableWrapper : public QObject {
-    Q_OBJECT
-    Q_PROPERTY(QString id READ readId)
-    Q_PROPERTY(bool isConnected READ readIsConnected)
-  public:
-    ScriptConnectionInvokableWrapper(ScriptConnection conn) {
-        m_scriptConnection = conn;
-        m_idString = conn.id.toString();
-        m_isConnected = true;
-    }
-    const QString& readId() const {
-        return m_idString;
-    }
-    bool readIsConnected() const {
-        return m_isConnected;
-    }
-    Q_INVOKABLE bool disconnect();
-    Q_INVOKABLE void trigger();
-
-  private:
-    ScriptConnection m_scriptConnection;
-    QString m_idString;
-    bool m_isConnected;
-};
+class ScriptConnection;
 
 class ControllerEngine : public QObject {
     Q_OBJECT
@@ -93,6 +46,10 @@ class ControllerEngine : public QObject {
     const QList<QString>& getScriptFunctionPrefixes() {
         return m_scriptFunctionPrefixes;
     };
+
+    /// Shows a UI dialog notifying of a script evaluation error.
+    /// Precondition: QJSValue.isError() == true
+    void showScriptExceptionDialog(QJSValue evaluationResult, bool bFatal = false);
 
     // Disconnect a ScriptConnection
     bool removeScriptConnection(const ScriptConnection conn);
@@ -167,9 +124,6 @@ class ControllerEngine : public QObject {
 
     void throwJSError(const QString& message);
 
-    // Shows a UI dialog notifying of a script evaluation error.
-    // Precondition: QJSValue.isError() == true
-    void showScriptExceptionDialog(QJSValue evaluationResult, bool bFatal = false);
     bool m_bDisplayingExceptionDialog;
     QJSEngine* m_pScriptEngine;
 

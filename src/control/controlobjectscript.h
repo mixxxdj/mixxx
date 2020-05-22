@@ -5,7 +5,7 @@
 
 #include "control/controlproxy.h"
 #include "controllers/controllerdebug.h"
-#include "controllers/engine/controllerengine.h"
+#include "controllers/engine/scriptconnection.h"
 
 // this is used for communicate with controller scripts
 class ControlObjectScript : public ControlProxy {
