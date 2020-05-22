@@ -994,6 +994,12 @@ QPushButton#pushButtonAutoDJ:checked,
     #BeatsFaster {
       image: url(skin:/buttons_classic/btn__beats_faster.svg) no-repeat center center;
     }
+    #HotcuesEarlier {
+      image: url(skin:/buttons_classic/btn__hotcues_earlier.svg) no-repeat center center;
+    }
+    #HotcuesLater {
+      image: url(skin:/buttons_classic/btn__hotcues_later.svg) no-repeat center center;
+    }
 
 #MicTalk {
   image: url(skin:/buttons_classic/btn__mic_talk.svg) no-repeat center center;

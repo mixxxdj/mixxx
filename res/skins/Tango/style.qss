@@ -457,14 +457,18 @@ WWidgetGroup {
 #BeatgridSlower,
 #BeatgridFaster,
 #BeatgridEarlier,
-#BeatgridLater {
+#BeatgridLater,
+#HotcuesEarlier,
+#HotcuesLater {
   background-color: #333;
   }
   #BeatgridCurpos:hover,
   #BeatgridSlower:hover,
   #BeatgridFaster:hover,
   #BeatgridEarlier:hover,
-  #BeatgridLater:hover {
+  #BeatgridLater:hover,
+  #HotcuesEarlier:hover,
+  #HotcuesLater:hover {
     background-color: #0f0f0f;
   }
   #BeatgridCurpos {
@@ -482,7 +486,12 @@ WWidgetGroup {
   #BeatgridLater {
     image: url(skin:/buttons/btn_beats_later.svg) no-repeat center center;
   }
-
+  #HotcuesEarlier {
+    image: url(skin:/buttons/btn_hotcues_earlier.svg) no-repeat center center;
+  }
+  #HotcuesLater {
+    image: url(skin:/buttons/btn_hotcues_later.svg) no-repeat center center;
+  }
 
 /*################################################################
  ######  Mic & Aux  #############################################
