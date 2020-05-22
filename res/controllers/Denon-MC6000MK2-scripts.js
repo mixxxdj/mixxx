@@ -1712,15 +1712,29 @@ DenonMC6000MK2.init = function(id, debug) {
     components.Button.prototype.off = DenonMC6000MK2.MIDI_TRI_LED_OFF;
     components.Button.prototype.on = DenonMC6000MK2.MIDI_TRI_LED_ON;
     components.Button.prototype.onShifted = DenonMC6000MK2.MIDI_TRI_LED_BLINK;
+    components.Button.prototype.outValueScale = function(value) {
+        if (value > 0) {
+            if (this.sendShifted) {
+                return this.onShifted;
+            } else {
+                return this.on;
+            }
+        } else {
+            return this.off;
+        }
+    },
     components.Button.prototype.send = function(value) {
         if (this.midi === undefined || this.midi[0] === undefined || this.midi[1] === undefined) {
             return;
         }
         // For Denon hardware we need to swap the 2 midi bytes (= 2nd/3rd param) in sendShortMsg()!
-        if (value === this.on && this.sendShifted) {
-            midi.sendShortMsg(this.midi[0], this.onShifted, this.midi[1]);
-        } else {
-            midi.sendShortMsg(this.midi[0], value, this.midi[1]);
+        midi.sendShortMsg(this.midi[0], value, this.midi[1]);
+        if (this.sendShifted) {
+            if (this.shiftChannel) {
+                midi.sendShortMsg(this.midi[0] + this.shiftOffset, value, this.midi[1]);
+            } else if (this.shiftControl) {
+                midi.sendShortMsg(this.midi[0], value, this.midi[1] + this.shiftOffset);
+            }
         }
     };
 
