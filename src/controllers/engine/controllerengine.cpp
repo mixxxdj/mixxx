@@ -107,14 +107,13 @@ bool ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefix
     return success;
 }
 
-QJSValue ControllerEngine::byteArrayToScriptValue(const QByteArray byteArray) {
+QJSValue ControllerEngine::byteArrayToScriptValue(const QByteArray& byteArray) {
     // The QJSEngine converts the QByteArray to an ArrayBuffer object.
     QJSValue arrayBuffer = m_pScriptEngine->toScriptValue(byteArray);
-    // We convert the ArrayBuffer to a Uint8 typed array so we can access its bytes
+    // Convert the ArrayBuffer to a Uint8 typed array so scripts can access its bytes
     // with the [] operator.
-    QJSValueList args;
-    args << arrayBuffer;
-    QJSValue result = m_byteArrayToScriptValueJSFunction.call(args);
+    QJSValue result = m_byteArrayToScriptValueJSFunction.call(
+            QJSValueList{arrayBuffer});
     if (result.isError()) {
         showScriptExceptionDialog(result);
     }
@@ -150,8 +149,9 @@ QJSValue ControllerEngine::wrapFunctionCode(const QString& codeSnippet,
             wrapperArgList << QString("arg%1").arg(i);
         }
         QString wrapperArgs = wrapperArgList.join(",");
-        QString wrappedCode = "(function (" + wrapperArgs + ") { (" +
-                codeSnippet + ")(" + wrapperArgs + "); })";
+        QString wrappedCode = QStringLiteral("(function (") + wrapperArgs +
+                QStringLiteral(") { (") + codeSnippet + QStringLiteral(")(") +
+                wrapperArgs + QStringLiteral("); })");
 
         wrappedFunction = evaluateCodeString(wrappedCode);
         if (wrappedFunction.isError()) {
@@ -363,7 +363,7 @@ bool ControllerEngine::executeFunction(QJSValue functionObject, QJSValueList arg
     return true;
 }
 
-bool ControllerEngine::executeFunction(QJSValue functionObject, const QByteArray data) {
+bool ControllerEngine::executeFunction(QJSValue functionObject, const QByteArray& data) {
     // This function is called from outside the controller engine, so we can't
     // use VERIFY_OR_DEBUG_ASSERT here
     if (!m_pScriptEngine) {
@@ -376,11 +376,10 @@ bool ControllerEngine::executeFunction(QJSValue functionObject, const QByteArray
 }
 
 QJSValue ControllerEngine::evaluateCodeString(const QString& program, const QString& fileName, int lineNumber) {
-    VERIFY_OR_DEBUG_ASSERT(!(m_pScriptEngine == nullptr)) {
+    VERIFY_OR_DEBUG_ASSERT(m_pScriptEngine) {
         return QJSValue::UndefinedValue;
     }
-    QJSValue returnValue = m_pScriptEngine->evaluate(program, fileName, lineNumber);
-    return returnValue;
+    return m_pScriptEngine->evaluate(program, fileName, lineNumber);
 }
 
 void ControllerEngine::throwJSError(const QString& message) {
@@ -761,7 +760,7 @@ bool ScriptConnectionInvokableWrapper::disconnect() {
    Input:   the ScriptConnection to trigger
    -------- ------------------------------------------------------ */
 void ControllerEngine::triggerScriptConnection(const ScriptConnection connection) {
-    VERIFY_OR_DEBUG_ASSERT(!(m_pScriptEngine == nullptr)) {
+    VERIFY_OR_DEBUG_ASSERT(m_pScriptEngine) {
         return;
     }
 
@@ -787,7 +786,7 @@ void ScriptConnectionInvokableWrapper::trigger() {
 // WARNING: These behaviors are quirky and confusing, so if you change this function,
 // be sure to run the ControllerEngineTest suite to make sure you do not break old scripts.
 QJSValue ControllerEngine::connectControl(
-        QString group, QString name, const QJSValue passedCallback, bool disconnect) {
+        QString group, QString name, QJSValue passedCallback, bool disconnect) {
     // The passedCallback may or may not actually be a function, so when
     // the actual callback function is found, store it in this variable.
     QJSValue actualCallbackFunction;

@@ -93,7 +93,7 @@ class ControllerEngine : public QObject {
 
     // Execute a JS function in the engine
     bool executeFunction(QJSValue functionObject, QJSValueList arguments);
-    bool executeFunction(QJSValue functionObject, const QByteArray data);
+    bool executeFunction(QJSValue functionObject, const QByteArray& data);
 
     // Wrap a snippet of JS code in an anonymous function
     QJSValue wrapFunctionCode(const QString& codeSnippet, int numberOfArgs);
@@ -122,7 +122,10 @@ class ControllerEngine : public QObject {
     double getDefaultParameter(QString group, QString name);
     QJSValue makeConnection(QString group, QString name, const QJSValue callback);
     // DEPRECATED: Use makeConnection instead.
-    QJSValue connectControl(QString group, QString name, const QJSValue passedCallback, bool disconnect = false);
+    QJSValue connectControl(QString group,
+            QString name,
+            QJSValue passedCallback,
+            bool disconnect = false);
     // Called indirectly by the objects returned by connectControl
     void trigger(QString group, QString name);
     void log(QString message);
@@ -168,7 +171,7 @@ class ControllerEngine : public QObject {
             QJSValueList args = QJSValueList(),
             bool bFatalError = false);
     // Convert a byteArray to a JS typed array over an ArrayBuffer
-    QJSValue byteArrayToScriptValue(const QByteArray byteArray);
+    QJSValue byteArrayToScriptValue(const QByteArray& byteArray);
     QJSValue evaluateCodeString(const QString& program, const QString& fileName = QString(), int lineNumber = 1);
 
     void throwJSError(const QString& message);
