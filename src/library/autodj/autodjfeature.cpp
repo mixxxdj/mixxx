@@ -2,20 +2,20 @@
 // FORK FORK FORK on 11/1/2009 by Albert Santoni (alberts@mixxx.org)
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 
-#include <QtDebug>
-#include <QMetaObject>
-#include <QMenu>
-
 #include "library/autodj/autodjfeature.h"
+
+#include <QMenu>
+#include <QMetaObject>
+#include <QtDebug>
 
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/autodj/autodjprocessor.h"
 #include "library/autodj/dlgautodj.h"
-#include "library/trackset/crate/cratestorage.h"
 #include "library/library.h"
 #include "library/parser.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "library/trackset/crate/cratestorage.h"
 #include "library/treeitem.h"
 #include "mixer/playermanager.h"
 #include "sources/soundsourceproxy.h"

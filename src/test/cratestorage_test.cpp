@@ -1,7 +1,6 @@
-#include "test/librarytest.h"
-
 #include "library/trackset/crate/cratestorage.h"
 
+#include "test/librarytest.h"
 
 class CrateStorageTest : public LibraryTest {
   protected:

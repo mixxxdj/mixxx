@@ -195,7 +195,11 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
             << CLM_COMPOSER;
 
     QSharedPointer<BaseTrackCache> trackSource(
-            new BaseTrackCache(m_pTrackCollectionManager->internalCollection(), m_tempTableName, CLM_TRACK_ID, trackSourceColumns, false));
+            new BaseTrackCache(m_pTrackCollectionManager->internalCollection(),
+                    m_tempTableName,
+                    CLM_TRACK_ID,
+                    trackSourceColumns,
+                    false));
 
     setTable(m_tempTableName, CLM_TRACK_ID, tableColumns, trackSource);
     setSearch("");

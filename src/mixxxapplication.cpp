@@ -1,8 +1,8 @@
-#include <QtDebug>
-#include <QTouchEvent>
-#include <QThreadPool>
-
 #include "mixxxapplication.h"
+
+#include <QThreadPool>
+#include <QTouchEvent>
+#include <QtDebug>
 
 #include "audio/types.h"
 #include "control/controlproxy.h"

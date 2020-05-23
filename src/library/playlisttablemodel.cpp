@@ -6,7 +6,6 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 
-
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
         const char* settingsNamespace,
@@ -271,14 +270,18 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
             TRACKMODELCAPS_RESETPLAYED;
 
     if (m_iPlaylistId !=
-            m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().getPlaylistIdFromName(AUTODJ_TABLE)) {
+            m_pTrackCollectionManager->internalCollection()
+                    ->getPlaylistDAO()
+                    .getPlaylistIdFromName(AUTODJ_TABLE)) {
         // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
         caps |= TRACKMODELCAPS_ADDTOAUTODJ | TRACKMODELCAPS_REMOVE_PLAYLIST;
     } else {
         caps |= TRACKMODELCAPS_REMOVE;
     }
     if (PlaylistDAO::PLHT_SET_LOG ==
-            m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().getHiddenType(m_iPlaylistId)) {
+            m_pTrackCollectionManager->internalCollection()
+                    ->getPlaylistDAO()
+                    .getHiddenType(m_iPlaylistId)) {
         // Disable track reordering for history playlists
         caps &= ~(TRACKMODELCAPS_REORDER | TRACKMODELCAPS_REMOVE_PLAYLIST);
     }

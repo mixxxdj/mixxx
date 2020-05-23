@@ -192,23 +192,29 @@ void CrateStorage::repairDatabase(QSqlDatabase database) {
     {
         // Remove tracks from non-existent crates
         FwdSqlQuery query(database,
-                QStringLiteral("DELETE FROM %1 WHERE %2 NOT IN (SELECT %3 FROM %4)")
-                        .arg(CRATE_TRACKS_TABLE, CRATETRACKSTABLE_CRATEID, CRATETABLE_ID, CRATE_TABLE));
+                QStringLiteral(
+                        "DELETE FROM %1 WHERE %2 NOT IN (SELECT %3 FROM %4)")
+                        .arg(CRATE_TRACKS_TABLE,
+                                CRATETRACKSTABLE_CRATEID,
+                                CRATETABLE_ID,
+                                CRATE_TABLE));
         if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            kLogger.warning()
-                    << "Removed" << query.numRowsAffected()
-                    << "crate tracks from non-existent crates";
+            kLogger.warning() << "Removed" << query.numRowsAffected()
+                              << "crate tracks from non-existent crates";
         }
     }
     {
         // Remove library purged tracks from crates
         FwdSqlQuery query(database,
-                QStringLiteral("DELETE FROM %1 WHERE %2 NOT IN (SELECT %3 FROM %4)")
-                        .arg(CRATE_TRACKS_TABLE, CRATETRACKSTABLE_TRACKID, LIBRARYTABLE_ID, LIBRARY_TABLE));
+                QStringLiteral(
+                        "DELETE FROM %1 WHERE %2 NOT IN (SELECT %3 FROM %4)")
+                        .arg(CRATE_TRACKS_TABLE,
+                                CRATETRACKSTABLE_TRACKID,
+                                LIBRARYTABLE_ID,
+                                LIBRARY_TABLE));
         if (query.execPrepared() && (query.numRowsAffected() > 0)) {
-            kLogger.warning()
-                    << "Removed" << query.numRowsAffected()
-                    << "library purged tracks from crates";
+            kLogger.warning() << "Removed" << query.numRowsAffected()
+                              << "library purged tracks from crates";
         }
     }
 }
@@ -225,7 +231,8 @@ void CrateStorage::disconnectDatabase() {
 }
 
 void CrateStorage::createViews() {
-    VERIFY_OR_DEBUG_ASSERT(FwdSqlQuery(m_database, kCrateSummaryViewQuery).execPrepared()) {
+    VERIFY_OR_DEBUG_ASSERT(
+            FwdSqlQuery(m_database, kCrateSummaryViewQuery).execPrepared()) {
         kLogger.critical()
                 << "Failed to create database view for crate summaries!";
     }
@@ -233,8 +240,7 @@ void CrateStorage::createViews() {
 
 uint CrateStorage::countCrates() const {
     FwdSqlQuery query(m_database,
-            QStringLiteral("SELECT COUNT(*) FROM %1")
-                    .arg(CRATE_TABLE));
+            QStringLiteral("SELECT COUNT(*) FROM %1").arg(CRATE_TABLE));
     if (query.execPrepared() && query.next()) {
         uint result = query.fieldValue(0).toUInt();
         DEBUG_ASSERT(!query.next());
@@ -253,13 +259,11 @@ bool CrateStorage::readCrateById(CrateId id, Crate* pCrate) const {
         CrateSelectResult crates(std::move(query));
         if ((pCrate != nullptr) ? crates.populateNext(pCrate) : crates.next()) {
             VERIFY_OR_DEBUG_ASSERT(!crates.next()) {
-                kLogger.warning()
-                        << "Ambiguous crate id:" << id;
+                kLogger.warning() << "Ambiguous crate id:" << id;
             }
             return true;
         } else {
-            kLogger.warning()
-                    << "Crate not found by id:" << id;
+            kLogger.warning() << "Crate not found by id:" << id;
         }
     }
     return false;
@@ -274,15 +278,12 @@ bool CrateStorage::readCrateByName(const QString& name, Crate* pCrate) const {
         CrateSelectResult crates(std::move(query));
         if ((pCrate != nullptr) ? crates.populateNext(pCrate) : crates.next()) {
             VERIFY_OR_DEBUG_ASSERT(!crates.next()) {
-                kLogger.warning()
-                        << "Ambiguous crate name:" << name;
+                kLogger.warning() << "Ambiguous crate name:" << name;
             }
             return true;
         } else {
             if (kLogger.debugEnabled()) {
-                kLogger.debug()
-                        << "Crate not found by name:"
-                        << name;
+                kLogger.debug() << "Crate not found by name:" << name;
             }
         }
     }
@@ -327,12 +328,10 @@ CrateSelectResult CrateStorage::selectCratesByIds(
 
     FwdSqlQuery query(m_database,
             mixxx::DbConnection::collateLexicographically(
-                    QStringLiteral(
-                            "SELECT * FROM %1 "
-                            "WHERE %2 %3 (%4) "
-                            "ORDER BY %5")
-                            .arg(
-                                    CRATE_TABLE,
+                    QStringLiteral("SELECT * FROM %1 "
+                                   "WHERE %2 %3 (%4) "
+                                   "ORDER BY %5")
+                            .arg(CRATE_TABLE,
                                     CRATETABLE_ID,
                                     subselectPrefix,
                                     subselectForCrateIds,
@@ -348,8 +347,11 @@ CrateSelectResult CrateStorage::selectCratesByIds(
 CrateSelectResult CrateStorage::selectAutoDjCrates(bool autoDjSource) const {
     FwdSqlQuery query(m_database,
             mixxx::DbConnection::collateLexicographically(
-                    QStringLiteral("SELECT * FROM %1 WHERE %2=:autoDjSource ORDER BY %3")
-                            .arg(CRATE_TABLE, CRATETABLE_AUTODJ_SOURCE, CRATETABLE_NAME)));
+                    QStringLiteral("SELECT * FROM %1 WHERE %2=:autoDjSource "
+                                   "ORDER BY %3")
+                            .arg(CRATE_TABLE,
+                                    CRATETABLE_AUTODJ_SOURCE,
+                                    CRATETABLE_NAME)));
     query.bindValue(":autoDjSource", autoDjSource);
     if (query.execPrepared()) {
         return CrateSelectResult(std::move(query));
@@ -370,22 +372,23 @@ CrateSummarySelectResult CrateStorage::selectCrateSummaries() const {
     }
 }
 
-bool CrateStorage::readCrateSummaryById(CrateId id, CrateSummary* pCrateSummary) const {
+bool CrateStorage::readCrateSummaryById(
+        CrateId id, CrateSummary* pCrateSummary) const {
     FwdSqlQuery query(m_database,
             QStringLiteral("SELECT * FROM %1 WHERE %2=:id")
                     .arg(CRATE_SUMMARY_VIEW, CRATETABLE_ID));
     query.bindValue(":id", id);
     if (query.execPrepared()) {
         CrateSummarySelectResult crateSummaries(std::move(query));
-        if ((pCrateSummary != nullptr) ? crateSummaries.populateNext(pCrateSummary) : crateSummaries.next()) {
+        if ((pCrateSummary != nullptr)
+                        ? crateSummaries.populateNext(pCrateSummary)
+                        : crateSummaries.next()) {
             VERIFY_OR_DEBUG_ASSERT(!crateSummaries.next()) {
-                kLogger.warning()
-                        << "Ambiguous crate id:" << id;
+                kLogger.warning() << "Ambiguous crate id:" << id;
             }
             return true;
         } else {
-            kLogger.warning()
-                    << "Crate summary not found by id:" << id;
+            kLogger.warning() << "Crate summary not found by id:" << id;
         }
     }
     return false;
@@ -406,22 +409,24 @@ uint CrateStorage::countCrateTracks(CrateId crateId) const {
 }
 
 //static
-QString CrateStorage::formatSubselectQueryForCrateTrackIds(
-        CrateId crateId) {
+QString CrateStorage::formatSubselectQueryForCrateTrackIds(CrateId crateId) {
     return QStringLiteral("SELECT %1 FROM %2 WHERE %3=%4")
-            .arg(CRATETRACKSTABLE_TRACKID, CRATE_TRACKS_TABLE, CRATETRACKSTABLE_CRATEID, crateId.toString());
+            .arg(CRATETRACKSTABLE_TRACKID,
+                    CRATE_TRACKS_TABLE,
+                    CRATETRACKSTABLE_CRATEID,
+                    crateId.toString());
 }
 
 QString CrateStorage::formatQueryForTrackIdsByCrateNameLike(
         const QString& crateNameLike) const {
     FieldEscaper escaper(m_database);
-    QString escapedCrateNameLike = escaper.escapeString(kSqlLikeMatchAll + crateNameLike + kSqlLikeMatchAll);
+    QString escapedCrateNameLike = escaper.escapeString(
+            kSqlLikeMatchAll + crateNameLike + kSqlLikeMatchAll);
     return QString(
             "SELECT DISTINCT %1 FROM %2 "
             "JOIN %3 ON %4=%5 WHERE %6 LIKE %7 "
             "ORDER BY %1")
-            .arg(
-                    CRATETRACKSTABLE_TRACKID,
+            .arg(CRATETRACKSTABLE_TRACKID,
                     CRATE_TRACKS_TABLE,
                     CRATE_TABLE,
                     CRATETRACKSTABLE_CRATEID,
@@ -432,14 +437,22 @@ QString CrateStorage::formatQueryForTrackIdsByCrateNameLike(
 
 //static
 QString CrateStorage::formatQueryForTrackIdsWithCrate() {
-    return QStringLiteral("SELECT DISTINCT %1 FROM %2 JOIN %3 ON %4=%5 ORDER BY %1")
-            .arg(CRATETRACKSTABLE_TRACKID, CRATE_TRACKS_TABLE, CRATE_TABLE, CRATETRACKSTABLE_CRATEID, CRATETABLE_ID);
+    return QStringLiteral(
+            "SELECT DISTINCT %1 FROM %2 JOIN %3 ON %4=%5 ORDER BY %1")
+            .arg(CRATETRACKSTABLE_TRACKID,
+                    CRATE_TRACKS_TABLE,
+                    CRATE_TABLE,
+                    CRATETRACKSTABLE_CRATEID,
+                    CRATETABLE_ID);
 }
 
-CrateTrackSelectResult CrateStorage::selectCrateTracksSorted(CrateId crateId) const {
+CrateTrackSelectResult CrateStorage::selectCrateTracksSorted(
+        CrateId crateId) const {
     FwdSqlQuery query(m_database,
             QStringLiteral("SELECT * FROM %1 WHERE %2=:crateId ORDER BY %3")
-                    .arg(CRATE_TRACKS_TABLE, CRATETRACKSTABLE_CRATEID, CRATETRACKSTABLE_TRACKID));
+                    .arg(CRATE_TRACKS_TABLE,
+                            CRATETRACKSTABLE_CRATEID,
+                            CRATETRACKSTABLE_TRACKID));
     query.bindValue(":crateId", crateId);
     if (query.execPrepared()) {
         return CrateTrackSelectResult(std::move(query));
@@ -448,10 +461,13 @@ CrateTrackSelectResult CrateStorage::selectCrateTracksSorted(CrateId crateId) co
     }
 }
 
-CrateTrackSelectResult CrateStorage::selectTrackCratesSorted(TrackId trackId) const {
+CrateTrackSelectResult CrateStorage::selectTrackCratesSorted(
+        TrackId trackId) const {
     FwdSqlQuery query(m_database,
             QStringLiteral("SELECT * FROM %1 WHERE %2=:trackId ORDER BY %3")
-                    .arg(CRATE_TRACKS_TABLE, CRATETRACKSTABLE_TRACKID, CRATETRACKSTABLE_CRATEID));
+                    .arg(CRATE_TRACKS_TABLE,
+                            CRATETRACKSTABLE_TRACKID,
+                            CRATETRACKSTABLE_CRATEID));
     query.bindValue(":trackId", trackId);
     if (query.execPrepared()) {
         return CrateTrackSelectResult(std::move(query));
@@ -460,13 +476,14 @@ CrateTrackSelectResult CrateStorage::selectTrackCratesSorted(TrackId trackId) co
     }
 }
 
-CrateSummarySelectResult CrateStorage::selectCratesWithTrackCount(const QList<TrackId>& trackIds) const {
+CrateSummarySelectResult CrateStorage::selectCratesWithTrackCount(
+        const QList<TrackId>& trackIds) const {
     FwdSqlQuery query(m_database,
             QStringLiteral("SELECT *, "
-                           "(SELECT COUNT(*) FROM %1 WHERE %2.%3 = %1.%4 and %1.%5 in (%9)) AS %6, "
+                           "(SELECT COUNT(*) FROM %1 WHERE %2.%3 = %1.%4 and "
+                           "%1.%5 in (%9)) AS %6, "
                            "0 as %7 FROM %2 ORDER BY %8")
-                    .arg(
-                            CRATE_TRACKS_TABLE,
+                    .arg(CRATE_TRACKS_TABLE,
                             CRATE_TABLE,
                             CRATETABLE_ID,
                             CRATETRACKSTABLE_CRATEID,
@@ -483,21 +500,22 @@ CrateSummarySelectResult CrateStorage::selectCratesWithTrackCount(const QList<Tr
     }
 }
 
-CrateTrackSelectResult CrateStorage::selectTracksSortedByCrateNameLike(const QString& crateNameLike) const {
+CrateTrackSelectResult CrateStorage::selectTracksSortedByCrateNameLike(
+        const QString& crateNameLike) const {
     FwdSqlQuery query(m_database,
             QStringLiteral("SELECT %1,%2 FROM %3 "
                            "JOIN %4 ON %5 = %6 "
                            "WHERE %7 LIKE :crateNameLike "
                            "ORDER BY %1")
-                    .arg(
-                            CRATETRACKSTABLE_TRACKID,
+                    .arg(CRATETRACKSTABLE_TRACKID,
                             CRATETRACKSTABLE_CRATEID,
                             CRATE_TRACKS_TABLE,
                             CRATE_TABLE,
                             CRATETABLE_ID,
                             CRATETRACKSTABLE_CRATEID,
                             CRATETABLE_NAME));
-    query.bindValue(":crateNameLike", QVariant(kSqlLikeMatchAll + crateNameLike + kSqlLikeMatchAll));
+    query.bindValue(":crateNameLike",
+            QVariant(kSqlLikeMatchAll + crateNameLike + kSqlLikeMatchAll));
 
     if (query.execPrepared()) {
         return CrateTrackSelectResult(std::move(query));

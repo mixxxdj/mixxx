@@ -5,22 +5,22 @@
 #ifndef AUTODJFEATURE_H
 #define AUTODJFEATURE_H
 
-#include <QObject>
-#include <QStringListModel>
-#include <QVariant>
+#include <QAction>
 #include <QIcon>
-#include <QUrl>
 #include <QList>
 #include <QModelIndex>
+#include <QObject>
 #include <QPoint>
-#include <QAction>
 #include <QPointer>
+#include <QStringListModel>
+#include <QUrl>
+#include <QVariant>
 
-#include "library/libraryfeature.h"
-#include "preferences/usersettings.h"
-#include "library/treeitemmodel.h"
-#include "library/trackset/crate/crate.h"
 #include "library/dao/autodjcratesdao.h"
+#include "library/libraryfeature.h"
+#include "library/trackset/crate/crate.h"
+#include "library/treeitemmodel.h"
+#include "preferences/usersettings.h"
 
 class DlgAutoDJ;
 class Library;

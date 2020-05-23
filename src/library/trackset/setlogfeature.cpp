@@ -27,7 +27,7 @@ SetlogFeature::SetlogFeature(
                           nullptr,
                           pLibrary->trackCollections(),
                           "mixxx.db.model.setlog",
-                          /*keep deleted tracks*/true),
+                          /*keep deleted tracks*/ true),
                   QStringLiteral("SETLOGHOME")),
           m_playlistId(-1),
           m_libraryWidget(nullptr),
@@ -139,11 +139,12 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 QList<BasePlaylistFeature::IdAndLabel> SetlogFeature::createPlaylistLabels() {
     QList<BasePlaylistFeature::IdAndLabel> playlistLabels;
     // Setup the sidebar playlist model
-    QSqlTableModel playlistTableModel(this, m_pLibrary->trackCollections()->internalCollection()->database());
+    QSqlTableModel playlistTableModel(this,
+            m_pLibrary->trackCollections()->internalCollection()->database());
     playlistTableModel.setTable("Playlists");
     playlistTableModel.setFilter("hidden=2"); // PLHT_SET_LOG
-    playlistTableModel.setSort(playlistTableModel.fieldIndex("id"),
-            Qt::AscendingOrder);
+    playlistTableModel.setSort(
+            playlistTableModel.fieldIndex("id"), Qt::AscendingOrder);
     playlistTableModel.select();
     while (playlistTableModel.canFetchMore()) {
         playlistTableModel.fetchMore();
@@ -153,11 +154,11 @@ QList<BasePlaylistFeature::IdAndLabel> SetlogFeature::createPlaylistLabels() {
     int idColumn = record.indexOf("id");
 
     for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
-        int id = playlistTableModel.data(
-                                           playlistTableModel.index(row, idColumn))
-                         .toInt();
-        QString name = playlistTableModel.data(
-                                                 playlistTableModel.index(row, nameColumn))
+        int id =
+                playlistTableModel.data(playlistTableModel.index(row, idColumn))
+                        .toInt();
+        QString name = playlistTableModel
+                               .data(playlistTableModel.index(row, nameColumn))
                                .toString();
         BasePlaylistFeature::IdAndLabel idAndLabel;
         idAndLabel.id = id;
@@ -169,7 +170,8 @@ QList<BasePlaylistFeature::IdAndLabel> SetlogFeature::createPlaylistLabels() {
 
 QString SetlogFeature::fetchPlaylistLabel(int playlistId) {
     // Setup the sidebar playlist model
-    QSqlTableModel playlistTableModel(this, m_pLibrary->trackCollections()->internalCollection()->database());
+    QSqlTableModel playlistTableModel(this,
+            m_pLibrary->trackCollections()->internalCollection()->database());
     playlistTableModel.setTable("Playlists");
     QString filter = "id=" + QString::number(playlistId);
     playlistTableModel.setFilter(filter);
@@ -182,8 +184,7 @@ QString SetlogFeature::fetchPlaylistLabel(int playlistId) {
 
     DEBUG_ASSERT(playlistTableModel.rowCount() <= 1);
     if (playlistTableModel.rowCount() > 0) {
-        return playlistTableModel.data(
-                                         playlistTableModel.index(0, nameColumn))
+        return playlistTableModel.data(playlistTableModel.index(0, nameColumn))
                 .toString();
     }
     return QString();
@@ -216,12 +217,13 @@ void SetlogFeature::slotGetNewPlaylist() {
     }
 
     //qDebug() << "Creating session history playlist name:" << set_log_name;
-    m_playlistId = m_playlistDao.createPlaylist(set_log_name,
-            PlaylistDAO::PLHT_SET_LOG);
+    m_playlistId = m_playlistDao.createPlaylist(
+            set_log_name, PlaylistDAO::PLHT_SET_LOG);
 
     if (m_playlistId == -1) {
         qDebug() << "Setlog playlist Creation Failed";
-        qDebug() << "An unknown error occurred while creating playlist: " << set_log_name;
+        qDebug() << "An unknown error occurred while creating playlist: "
+                 << set_log_name;
     }
 
     slotPlaylistTableChanged(m_playlistId); // For moving selection
@@ -239,12 +241,14 @@ void SetlogFeature::slotJoinWithPrevious() {
             bool locked = m_playlistDao.isPlaylistLocked(currentPlaylistId);
 
             if (locked) {
-                qDebug() << "Skipping playlist deletion because playlist" << currentPlaylistId << "is locked.";
+                qDebug() << "Skipping playlist deletion because playlist"
+                         << currentPlaylistId << "is locked.";
                 return;
             }
 
             // Add every track from right-clicked playlist to that with the next smaller ID
-            int previousPlaylistId = m_playlistDao.getPreviousPlaylist(currentPlaylistId, PlaylistDAO::PLHT_SET_LOG);
+            int previousPlaylistId = m_playlistDao.getPreviousPlaylist(
+                    currentPlaylistId, PlaylistDAO::PLHT_SET_LOG);
             if (previousPlaylistId >= 0) {
                 m_pPlaylistTableModel->setTableModel(previousPlaylistId);
 
@@ -256,7 +260,8 @@ void SetlogFeature::slotJoinWithPrevious() {
                     for (int i = 0; i < rows; ++i) {
                         QModelIndex index = m_pPlaylistTableModel->index(i, 0);
                         if (index.isValid()) {
-                            TrackPointer track = m_pPlaylistTableModel->getTrack(index);
+                            TrackPointer track =
+                                    m_pPlaylistTableModel->getTrack(index);
                             // Do not update the play count, just set played status.
                             PlayCounter playCounter(track->getPlayCounter());
                             playCounter.setPlayed();
@@ -267,10 +272,14 @@ void SetlogFeature::slotJoinWithPrevious() {
                     // Change current setlog
                     m_playlistId = previousPlaylistId;
                 }
-                qDebug() << "slotJoinWithPrevious() current:" << currentPlaylistId << " previous:" << previousPlaylistId;
-                if (m_playlistDao.copyPlaylistTracks(currentPlaylistId, previousPlaylistId)) {
+                qDebug() << "slotJoinWithPrevious() current:"
+                         << currentPlaylistId
+                         << " previous:" << previousPlaylistId;
+                if (m_playlistDao.copyPlaylistTracks(
+                            currentPlaylistId, previousPlaylistId)) {
                     m_playlistDao.deletePlaylist(currentPlaylistId);
-                    slotPlaylistTableChanged(previousPlaylistId); // For moving selection
+                    slotPlaylistTableChanged(
+                            previousPlaylistId); // For moving selection
                     emit showTrackModel(m_pPlaylistTableModel);
                 }
             }
@@ -317,7 +326,8 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
     if (m_pPlaylistTableModel->getPlaylist() == m_playlistId) {
         // View needs a refresh
 
-        WTrackTableView* view = dynamic_cast<WTrackTableView*>(m_libraryWidget->getActiveView());
+        WTrackTableView* view = dynamic_cast<WTrackTableView*>(
+                m_libraryWidget->getActiveView());
         if (view != nullptr) {
             // We have a active view on the history. The user may have some
             // important active selection. For example putting track into crates
@@ -331,8 +341,8 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
         }
     } else {
         // TODO(XXX): Care whether the append succeeded.
-        m_playlistDao.appendTrackToPlaylist(currentPlayingTrackId,
-                m_playlistId);
+        m_playlistDao.appendTrackToPlaylist(
+                currentPlayingTrackId, m_playlistId);
     }
 }
 
@@ -348,7 +358,8 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
 
 void SetlogFeature::slotPlaylistContentChanged(QSet<int> playlistIds) {
     for (const auto playlistId : qAsConst(playlistIds)) {
-        enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
+        enum PlaylistDAO::HiddenType type =
+                m_playlistDao.getHiddenType(playlistId);
         if (type == PlaylistDAO::PLHT_SET_LOG ||
                 type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
             updateChildModel(playlistId);
@@ -356,9 +367,7 @@ void SetlogFeature::slotPlaylistContentChanged(QSet<int> playlistIds) {
     }
 }
 
-void SetlogFeature::slotPlaylistTableRenamed(
-        int playlistId,
-        QString newName) {
+void SetlogFeature::slotPlaylistTableRenamed(int playlistId, QString newName) {
     Q_UNUSED(newName);
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
@@ -374,10 +383,20 @@ void SetlogFeature::slotPlaylistTableRenamed(
 
 QString SetlogFeature::getRootViewHtml() const {
     QString playlistsTitle = tr("History");
-    QString playlistsSummary = tr("The history section automatically keeps a list of tracks you play in your DJ sets.");
-    QString playlistsSummary2 = tr("This is handy for remembering what worked in your DJ sets, posting set-lists, or reporting your plays to licensing organizations.");
-    QString playlistsSummary3 = tr("Every time you start Mixxx, a new history section is created. You can export it as a playlist in various formats or play it again with Auto DJ.");
-    QString playlistsSummary4 = tr("You can join the current history session with a previous one by right-clicking and selecting \"Join with previous\".");
+    QString playlistsSummary =
+            tr("The history section automatically keeps a list of tracks you "
+               "play in your DJ sets.");
+    QString playlistsSummary2 =
+            tr("This is handy for remembering what worked in your DJ sets, "
+               "posting set-lists, or reporting your plays to licensing "
+               "organizations.");
+    QString playlistsSummary3 =
+            tr("Every time you start Mixxx, a new history section is created. "
+               "You can export it as a playlist in various formats or play it "
+               "again with Auto DJ.");
+    QString playlistsSummary4 =
+            tr("You can join the current history session with a previous one "
+               "by right-clicking and selecting \"Join with previous\".");
 
     QString html;
     html.append(QStringLiteral("<h2>%1</h2>").arg(playlistsTitle));

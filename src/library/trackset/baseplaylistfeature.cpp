@@ -482,11 +482,14 @@ void BasePlaylistFeature::slotExportPlaylist() {
     // Create a new table model since the main one might have an active search.
     // This will only export songs that we think exist on default
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-            new PlaylistTableModel(this, m_pLibrary->trackCollections(), "mixxx.db.model.playlist_export"));
+            new PlaylistTableModel(this,
+                    m_pLibrary->trackCollections(),
+                    "mixxx.db.model.playlist_export"));
 
     pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
-    pPlaylistTableModel->setSort(pPlaylistTableModel->fieldIndex(
-                                         ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
+    pPlaylistTableModel->setSort(
+            pPlaylistTableModel->fieldIndex(
+                    ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
             Qt::AscendingOrder);
     pPlaylistTableModel->select();
 
@@ -495,12 +498,16 @@ void BasePlaylistFeature::slotExportPlaylist() {
             ConfigKey("[Library]", "UseRelativePathOnExport"));
 
     if (file_location.endsWith(".csv", Qt::CaseInsensitive)) {
-        ParserCsv::writeCSVFile(file_location, pPlaylistTableModel.data(), useRelativePath);
+        ParserCsv::writeCSVFile(
+                file_location, pPlaylistTableModel.data(), useRelativePath);
     } else if (file_location.endsWith(".txt", Qt::CaseInsensitive)) {
-        if (m_playlistDao.getHiddenType(pPlaylistTableModel->getPlaylist()) == PlaylistDAO::PLHT_SET_LOG) {
-            ParserCsv::writeReadableTextFile(file_location, pPlaylistTableModel.data(), true);
+        if (m_playlistDao.getHiddenType(pPlaylistTableModel->getPlaylist()) ==
+                PlaylistDAO::PLHT_SET_LOG) {
+            ParserCsv::writeReadableTextFile(
+                    file_location, pPlaylistTableModel.data(), true);
         } else {
-            ParserCsv::writeReadableTextFile(file_location, pPlaylistTableModel.data(), false);
+            ParserCsv::writeReadableTextFile(
+                    file_location, pPlaylistTableModel.data(), false);
         }
     } else {
         // Create and populate a list of files of the playlist
@@ -511,15 +518,15 @@ void BasePlaylistFeature::slotExportPlaylist() {
             playlist_items << pPlaylistTableModel->getTrackLocation(index);
         }
         exportPlaylistItemsIntoFile(
-                file_location,
-                playlist_items,
-                useRelativePath);
+                file_location, playlist_items, useRelativePath);
     }
 }
 
 void BasePlaylistFeature::slotExportTrackFiles() {
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-            new PlaylistTableModel(this, m_pLibrary->trackCollections(), "mixxx.db.model.playlist_export"));
+            new PlaylistTableModel(this,
+                    m_pLibrary->trackCollections(),
+                    "mixxx.db.model.playlist_export"));
 
     pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
     pPlaylistTableModel->setSort(pPlaylistTableModel->fieldIndex(

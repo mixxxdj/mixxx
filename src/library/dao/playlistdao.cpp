@@ -876,7 +876,9 @@ void PlaylistDAO::searchForDuplicateTrack(const int fromPosition,
     }
 }
 
-void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& positions, const QHash<int, TrackId>& allIds) {
+void PlaylistDAO::shuffleTracks(const int playlistId,
+        const QList<int>& positions,
+        const QHash<int, TrackId>& allIds) {
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
 

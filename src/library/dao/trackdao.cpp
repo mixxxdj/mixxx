@@ -1,43 +1,42 @@
 #include "library/dao/trackdao.h"
 
-#include <QtDebug>
+#include <QChar>
 #include <QDir>
 #include <QDirIterator>
 #include <QFileInfo>
-#include <QtSql>
 #include <QImage>
 #include <QRegExp>
-#include <QChar>
+#include <QtDebug>
+#include <QtSql>
 
-#include "sources/soundsourceproxy.h"
-#include "track/track.h"
-#include "library/queryutil.h"
-#include "util/db/sqlstringformatter.h"
-#include "util/db/sqllikewildcards.h"
-#include "util/db/sqllikewildcardescaper.h"
-#include "util/db/sqltransaction.h"
 #include "library/coverart.h"
 #include "library/coverartutils.h"
-#include "library/dao/trackschema.h"
-#include "library/trackset/crate/cratestorage.h"
-#include "library/dao/cuedao.h"
-#include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
+#include "library/dao/cuedao.h"
 #include "library/dao/libraryhashdao.h"
+#include "library/dao/playlistdao.h"
+#include "library/dao/trackschema.h"
+#include "library/queryutil.h"
+#include "library/trackset/crate/cratestorage.h"
+#include "sources/soundsourceproxy.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
+#include "track/globaltrackcache.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
-#include "track/globaltrackcache.h"
+#include "track/track.h"
 #include "track/tracknumbers.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/datetime.h"
+#include "util/db/sqllikewildcardescaper.h"
+#include "util/db/sqllikewildcards.h"
+#include "util/db/sqlstringformatter.h"
+#include "util/db/sqltransaction.h"
 #include "util/file.h"
 #include "util/logger.h"
-#include "util/timer.h"
 #include "util/math.h"
-
+#include "util/timer.h"
 
 namespace {
 

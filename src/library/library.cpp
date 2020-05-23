@@ -12,7 +12,6 @@
 #include "library/autodj/autodjfeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/browse/browsefeature.h"
-#include "library/trackset/crate/cratefeature.h"
 #include "library/externaltrackcollection.h"
 #include "library/itunes/itunesfeature.h"
 #include "library/library_preferences.h"
@@ -28,6 +27,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/trackmodel.h"
+#include "library/trackset/crate/cratefeature.h"
 #include "library/trackset/playlistfeature.h"
 #include "library/trackset/setlogfeature.h"
 #include "library/traktor/traktorfeature.h"
@@ -117,33 +117,49 @@ Library::Library(
     addFeature(new SetlogFeature(this, UserSettingsPointer(m_pConfig)));
 
     m_pAnalysisFeature = new AnalysisFeature(this, m_pConfig);
-    connect(m_pPlaylistFeature, &PlaylistFeature::analyzeTracks, m_pAnalysisFeature, &AnalysisFeature::analyzeTracks);
-    connect(m_pCrateFeature, &CrateFeature::analyzeTracks, m_pAnalysisFeature, &AnalysisFeature::analyzeTracks);
+    connect(m_pPlaylistFeature,
+            &PlaylistFeature::analyzeTracks,
+            m_pAnalysisFeature,
+            &AnalysisFeature::analyzeTracks);
+    connect(m_pCrateFeature,
+            &CrateFeature::analyzeTracks,
+            m_pAnalysisFeature,
+            &AnalysisFeature::analyzeTracks);
     addFeature(m_pAnalysisFeature);
     // Suspend a batch analysis while an ad-hoc analysis of
     // loaded tracks is in progress and resume it afterwards.
-    connect(pPlayerManager, &PlayerManager::trackAnalyzerProgress, this, &Library::onPlayerManagerTrackAnalyzerProgress);
-    connect(pPlayerManager, &PlayerManager::trackAnalyzerIdle, this, &Library::onPlayerManagerTrackAnalyzerIdle);
+    connect(pPlayerManager,
+            &PlayerManager::trackAnalyzerProgress,
+            this,
+            &Library::onPlayerManagerTrackAnalyzerProgress);
+    connect(pPlayerManager,
+            &PlayerManager::trackAnalyzerIdle,
+            this,
+            &Library::onPlayerManagerTrackAnalyzerIdle);
 
     // iTunes and Rhythmbox should be last until we no longer have an obnoxious
     // messagebox popup when you select them. (This forces you to reach for your
     // mouse or keyboard if you're using MIDI control and you scroll through them...)
     if (RhythmboxFeature::isSupported() &&
-            m_pConfig->getValue(ConfigKey(kConfigGroup, "ShowRhythmboxLibrary"), true)) {
+            m_pConfig->getValue(
+                    ConfigKey(kConfigGroup, "ShowRhythmboxLibrary"), true)) {
         addFeature(new RhythmboxFeature(this, m_pConfig));
     }
-    if (m_pConfig->getValue(ConfigKey(kConfigGroup, "ShowBansheeLibrary"), true)) {
+    if (m_pConfig->getValue(
+                ConfigKey(kConfigGroup, "ShowBansheeLibrary"), true)) {
         BansheeFeature::prepareDbPath(m_pConfig);
         if (BansheeFeature::isSupported()) {
             addFeature(new BansheeFeature(this, m_pConfig));
         }
     }
     if (ITunesFeature::isSupported() &&
-            m_pConfig->getValue(ConfigKey(kConfigGroup, "ShowITunesLibrary"), true)) {
+            m_pConfig->getValue(
+                    ConfigKey(kConfigGroup, "ShowITunesLibrary"), true)) {
         addFeature(new ITunesFeature(this, m_pConfig));
     }
     if (TraktorFeature::isSupported() &&
-            m_pConfig->getValue(ConfigKey(kConfigGroup, "ShowTraktorLibrary"), true)) {
+            m_pConfig->getValue(
+                    ConfigKey(kConfigGroup, "ShowTraktorLibrary"), true)) {
         addFeature(new TraktorFeature(this, m_pConfig));
     }
 
@@ -151,26 +167,28 @@ Library::Library(
     // dynamically appear/disappear when correctly prepared removable devices
     // are mounted/unmounted would be to have some form of timed thread to check
     // periodically. Not ideal performance wise.
-    if (m_pConfig->getValue(ConfigKey(kConfigGroup, "ShowRekordboxLibrary"), true)) {
+    if (m_pConfig->getValue(
+                ConfigKey(kConfigGroup, "ShowRekordboxLibrary"), true)) {
         addFeature(new RekordboxFeature(this, m_pConfig));
     }
 
-    if (m_pConfig->getValue(ConfigKey(kConfigGroup, "ShowSeratoLibrary"), true)) {
+    if (m_pConfig->getValue(
+                ConfigKey(kConfigGroup, "ShowSeratoLibrary"), true)) {
         addFeature(new SeratoFeature(this, m_pConfig));
     }
 
-    for (const auto& externalTrackCollection : m_pTrackCollectionManager->externalCollections()) {
-        auto feature = externalTrackCollection->newLibraryFeature(this, m_pConfig);
+    for (const auto& externalTrackCollection :
+            m_pTrackCollectionManager->externalCollections()) {
+        auto feature =
+                externalTrackCollection->newLibraryFeature(this, m_pConfig);
         if (feature) {
-            kLogger.info()
-                    << "Adding library feature for"
-                    << externalTrackCollection->name();
+            kLogger.info() << "Adding library feature for"
+                           << externalTrackCollection->name();
             addFeature(feature);
         } else {
-            kLogger.info()
-                    << "Library feature for"
-                    << externalTrackCollection->name()
-                    << "is not available";
+            kLogger.info() << "Library feature for"
+                           << externalTrackCollection->name()
+                           << "is not available";
         }
     }
 
@@ -181,12 +199,14 @@ Library::Library(
     foreach (QString directoryPath, getDirs()) {
         QFileInfo directory(directoryPath);
         bool hasAccess = Sandbox::askForAccess(directory.canonicalFilePath());
-        qDebug() << "Checking for access to" << directoryPath << ":" << hasAccess;
+        qDebug() << "Checking for access to" << directoryPath << ":"
+                 << hasAccess;
     }
 
     m_iTrackTableRowHeight = m_pConfig->getValue(
             ConfigKey(kConfigGroup, "RowHeight"), kDefaultRowHeightPx);
-    QString fontStr = m_pConfig->getValueString(ConfigKey(kConfigGroup, "Font"));
+    QString fontStr =
+            m_pConfig->getValueString(ConfigKey(kConfigGroup, "Font"));
     if (!fontStr.isEmpty()) {
         m_trackTableFont.fromString(fontStr);
     } else {
@@ -215,10 +235,7 @@ void Library::stopPendingTasks() {
 }
 
 void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
-    connect(pSearchboxWidget,
-            &WSearchLineEdit::search,
-            this,
-            &Library::search);
+    connect(pSearchboxWidget, &WSearchLineEdit::search, this, &Library::search);
     connect(this,
             &Library::disableSearch,
             pSearchboxWidget,
@@ -274,15 +291,13 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     }
 }
 
-void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
-        KeyboardEventFilter* pKeyboard) {
-    WTrackTableView* pTrackTableView =
-            new WTrackTableView(
-                    pLibraryWidget,
-                    m_pConfig,
-                    m_pTrackCollectionManager,
-                    pLibraryWidget->getTrackTableBackgroundColorOpacity(),
-                    true);
+void Library::bindLibraryWidget(
+        WLibrary* pLibraryWidget, KeyboardEventFilter* pKeyboard) {
+    WTrackTableView* pTrackTableView = new WTrackTableView(pLibraryWidget,
+            m_pConfig,
+            m_pTrackCollectionManager,
+            pLibraryWidget->getTrackTableBackgroundColorOpacity(),
+            true);
     pTrackTableView->installEventFilter(pKeyboard);
     connect(this,
             &Library::showTrackModel,
@@ -348,10 +363,7 @@ void Library::addFeature(LibraryFeature* feature) {
             &LibraryFeature::switchToView,
             this,
             &Library::slotSwitchToView);
-    connect(feature,
-            &LibraryFeature::loadTrack,
-            this,
-            &Library::slotLoadTrack);
+    connect(feature, &LibraryFeature::loadTrack, this, &Library::slotLoadTrack);
     connect(feature,
             &LibraryFeature::loadTrackToPlayer,
             this,
@@ -415,7 +427,8 @@ void Library::slotLoadLocationToPlayer(QString location, QString group) {
     }
 }
 
-void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
+void Library::slotLoadTrackToPlayer(
+        TrackPointer pTrack, QString group, bool play) {
     emit loadTrackToPlayer(pTrack, group, play);
 }
 
@@ -448,9 +461,11 @@ void Library::slotRequestAddDir(QString dir) {
     Sandbox::createSecurityToken(directory);
 
     if (!m_pTrackCollectionManager->addDirectory(dir)) {
-        QMessageBox::information(0, tr("Add Directory to Library"), tr("Could not add the directory to your library. Either this "
-                                                                       "directory is already in your library or you are currently "
-                                                                       "rescanning your library."));
+        QMessageBox::information(0,
+                tr("Add Directory to Library"),
+                tr("Could not add the directory to your library. Either this "
+                   "directory is already in your library or you are currently "
+                   "rescanning your library."));
     }
     // set at least one directory in the config file so that it will be possible
     // to downgrade from 1.12
