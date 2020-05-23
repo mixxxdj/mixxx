@@ -9,9 +9,15 @@
 
 namespace mixxx {
 namespace {
-// stepsize should be equivalent to ~10ms and this constant (11.61ms) make the number 
-// of samples an exact power of 2 for 22.1k, 44.1k, and very close to, for 96k and 192k
-constexpr float kStepSecs = 0.01161; 
+
+// This sets the resolution of the resulting BeatMap.
+// ~12 ms (86 Hz) is a fair compromise between accuracy and analysis speed.
+// These are the preferred window/step sizes from the BeatTrack VAMP
+// With a 44.1 kHz Track we go in 512 Sample Steps
+// TODO: The waveform sample rate of 441 is at an odd factor of 5.12 producing visual jitter.
+constexpr float kStepSecs = 0.01161;
+// results in 43 Hz @ 44.1 kHz / 47 Hz @ 48 kHz / 47 Hz @ 96 kHz
+constexpr int kMaximimBinSizeHz = 50; // Hz
 
 DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
     // These are the defaults for the VAMP beat tracker plugin we used in Mixxx
@@ -30,7 +36,9 @@ DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
 } // namespace
 
 AnalyzerQueenMaryBeats::AnalyzerQueenMaryBeats()
-        : m_iSampleRate(0) {
+        : m_iSampleRate(0),
+          m_windowSize(0),
+          m_stepSize(0) {
 }
 
 AnalyzerQueenMaryBeats::~AnalyzerQueenMaryBeats() {
@@ -39,9 +47,8 @@ AnalyzerQueenMaryBeats::~AnalyzerQueenMaryBeats() {
 bool AnalyzerQueenMaryBeats::initialize(int samplerate) {
     m_detectionResults.clear();
     m_iSampleRate = samplerate;
-    // These are the preferred window/step sizes from the BeatTrack VAMP
-    m_stepSize = int(m_iSampleRate * kStepSecs + 0.0001);
-    m_windowSize = m_stepSize * 2;
+    m_stepSize = m_iSampleRate * kStepSecs;
+    m_windowSize = MathUtilities::nextPowerOfTwo(m_iSampleRate / kMaximimBinSizeHz);
     m_pDetectionFunction = std::make_unique<DetectionFunction>(
             makeDetectionFunctionConfig(m_stepSize, m_windowSize));
     qDebug() << "input sample rate is " << m_iSampleRate << ", step size is " << m_stepSize;
