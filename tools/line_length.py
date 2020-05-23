@@ -26,11 +26,12 @@ FileLines = typing.NamedTuple(
 
 
 def get_git_added_lines() -> LineGenerator:
-    proc = subprocess.run(
-        ["git", "diff", "--cached", "--unified=0"],
-        capture_output=True,
-        text=True,
-    )
+    cmd = ["git", "diff", "--cached", "--unified=0"]
+    source_commit = os.environ.get("PRE_COMMIT_SOURCE")
+    if source_commit:
+        cmd += [source_commit]
+    source_commit = os.environ.get("PRE_COMMIT_SOURCE")
+    proc = subprocess.run(cmd, capture_output=True, text=True,)
     proc.check_returncode()
     current_file = None
     current_lineno = None
@@ -92,14 +93,9 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
     logging.basicConfig()
     logger = logging.getLogger(__name__)
 
-    import sys
-
-    print(sys.argv)
-
     parser = argparse.ArgumentParser()
     parser.add_argument("files", nargs="*", help="only check these files")
     args = parser.parse_args(argv)
-    print(args)
 
     all_lines = get_git_added_lines()
 
