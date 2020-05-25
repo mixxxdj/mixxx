@@ -110,6 +110,13 @@ WSearchLineEdit {
   background-color: #151517;
   }
 
+#ToolBar[highlight="0"] {
+  border-bottom: 1px solid #0c0c0c;
+  }
+  #ToolBar[highlight="1"] {
+    border-bottom: 1px solid #1e1e20;
+  }
+
 /* background of fillers */
 #FxRackFillerL,
 #FxRackFillerR,
@@ -143,17 +150,18 @@ WLibrary {
 }
 #WaveformsContainer {
   padding: 0px 0px 1px 0px;
-}
-#WaveformsContainer[highlight="0"] {
-  padding: 0px 0px 1px 0px;
-  border-width: 0px 0px 1px 0px;
-  border-bottom-right-radius: 0px;
-  border-bottom-left-radius: 0px;
-}
-#WaveformsContainer[highlight="1"] {
-  /* the right border is necessary only when the skin settings menu is visible */
-  border-width: 0px 1px 1px 0px;
-}
+  border-bottom: 1px solid #0c0c0c;
+  }
+  #WaveformsContainer[highlight="0"] {
+    padding: 0px 0px 1px 0px;
+    border-width: 0px 0px 1px 0px;
+    border-bottom-right-radius: 0px;
+  }
+  #WaveformsContainer[highlight="1"] {
+    /* the right border is necessary only when the skin settings menu is visible */
+    border-width: 0px 1px 1px 0px;
+    border-bottom-right-radius: 1px;
+  }
 
 #SeparatorV,
 #SeparatorFxV,

@@ -324,6 +324,8 @@ CHECK! -->
       <Layout>vertical</Layout>
       <SizePolicy>me,me</SizePolicy>
       <Children>
+
+        <Template src="skin:toolbar.xml"/>
         <!-- regular/maximized library + skin settings menu -->
         <WidgetGroup>
           <Layout>horizontal</Layout>
@@ -433,8 +435,6 @@ CHECK! -->
 
           </Children>
         </WidgetGroup><!-- regular/maximized library + skin settings menu -->
-
-        <Template src="skin:toolbar.xml"/>
 
         <!-- Some helpers to show widgets and switch between different layouts. -->
         <Template src="skin:/helpers/skin_helper_mic_ducking.xml"/>
