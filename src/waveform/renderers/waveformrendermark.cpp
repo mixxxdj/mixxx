@@ -31,7 +31,8 @@ void WaveformRenderMark::setup(const QDomNode& node, const SkinContext& context)
 
 void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
     PainterScope PainterScope(painter);
-
+    // Maps mark objects to their positions in the widget.
+    QMap<WaveformMarkPointer, int> marksOnScreen;
     /*
     //DEBUG
     for (int i = 0; i < m_markPoints.size(); i++) {
@@ -60,32 +61,37 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
         if (samplePosition != -1.0) {
             double currentMarkPoint =
                     m_waveformRenderer->transformSamplePositionInRendererWorld(samplePosition);
-
             if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
                 // NOTE: vRince I guess image width is odd to display the center on the exact line !
                 // external image should respect that ...
                 const int markHalfWidth = pMark->m_image.width() / 2.0
                         / m_waveformRenderer->getDevicePixelRatio();
 
-                // Check if the current point need to be displayed
+                // Check if the current point needs to be displayed.
                 if (currentMarkPoint > -markHalfWidth && currentMarkPoint < m_waveformRenderer->getWidth() + markHalfWidth) {
-                    painter->drawImage(QPoint(currentMarkPoint - markHalfWidth, 0), pMark->m_image);
+                    int drawOffset = currentMarkPoint - markHalfWidth;
+                    painter->drawImage(QPoint(drawOffset, 0), pMark->m_image);
+                    marksOnScreen[pMark] = drawOffset;
                 }
             } else {
                 const int markHalfHeight = pMark->m_image.height() / 2.0;
-
-                if (currentMarkPoint > -markHalfHeight && currentMarkPoint < m_waveformRenderer->getHeight() + markHalfHeight) {
-                    painter->drawImage(QPoint(0,currentMarkPoint - markHalfHeight), pMark->m_image);
+                if (currentMarkPoint > -markHalfHeight &&
+                        currentMarkPoint < m_waveformRenderer->getHeight() +
+                                        markHalfHeight) {
+                    int drawOffset = currentMarkPoint - markHalfHeight;
+                    painter->drawImage(QPoint(0, drawOffset), pMark->m_image);
+                    marksOnScreen[pMark] = drawOffset;
                 }
             }
         }
     }
+    m_waveformRenderer->setMarkPositions(marksOnScreen);
 }
 
 void WaveformRenderMark::onResize() {
     // Delete all marks' images. New images will be created on next paint.
-    for (const auto& pMark: m_marks) {
-    	pMark->m_image = QImage();
+    for (const auto& pMark : m_marks) {
+        pMark->m_image = QImage();
     }
 }
 
@@ -104,12 +110,12 @@ void WaveformRenderMark::onSetTrack() {
 
 void WaveformRenderMark::slotCuesUpdated() {
     TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
-    if (!trackInfo){
+    if (!trackInfo) {
         return;
     }
 
     QList<CuePointer> loadedCues = trackInfo->getCuePoints();
-    for (const CuePointer pCue: loadedCues) {
+    for (const CuePointer pCue : loadedCues) {
         int hotCue = pCue->getHotCue();
         if (hotCue == Cue::kNoHotCue) {
             continue;
@@ -125,7 +131,8 @@ void WaveformRenderMark::slotCuesUpdated() {
         QString newLabel = pCue->getLabel();
         QColor newColor = mixxx::RgbColor::toQColor(pCue->getColor());
         if (pMark->m_text.isNull() || newLabel != pMark->m_text ||
-                !pMark->fillColor().isValid() || newColor != pMark->fillColor()) {
+                !pMark->fillColor().isValid() ||
+                newColor != pMark->fillColor()) {
             pMark->m_text = newLabel;
             pMark->setBaseColor(newColor);
             generateMarkImage(pMark);
@@ -142,7 +149,8 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
         // If loading the image didn't fail, then we're done. Otherwise fall
         // through and render a label.
         if (!image.isNull()) {
-            pMark->m_image = image.convertToFormat(QImage::Format_ARGB32_Premultiplied);
+            pMark->m_image =
+                    image.convertToFormat(QImage::Format_ARGB32_Premultiplied);
             //WImageStore::correctImageColors(&pMark->m_image);
             return;
         }
@@ -200,7 +208,8 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
     pMark->m_image = QImage(width * m_waveformRenderer->getDevicePixelRatio(),
             height * m_waveformRenderer->getDevicePixelRatio(),
             QImage::Format_ARGB32_Premultiplied);
-    pMark->m_image.setDevicePixelRatio(m_waveformRenderer->getDevicePixelRatio());
+    pMark->m_image.setDevicePixelRatio(
+            m_waveformRenderer->getDevicePixelRatio());
 
     Qt::Alignment markAlignH = pMark->m_align & Qt::AlignHorizontal_Mask;
     Qt::Alignment markAlignV = pMark->m_align & Qt::AlignVertical_Mask;
@@ -217,6 +226,8 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
         labelRect.moveBottom(height - 1);
     }
 
+    pMark->m_label.setAreaRect(labelRect);
+
     // Fill with transparent pixels
     pMark->m_image.fill(QColor(0, 0, 0, 0).rgba());
 
@@ -228,6 +239,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
     // Draw marker lines
     if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
         int middle = width / 2;
+        pMark->m_linePosition = middle;
         if (markAlignH == Qt::AlignHCenter) {
             if (labelRect.top() > 0) {
                 painter.setPen(pMark->fillColor());
@@ -256,6 +268,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
         }
     } else { // Vertical
         int middle = height / 2;
+        pMark->m_linePosition = middle;
         if (markAlignV == Qt::AlignVCenter) {
             if (labelRect.left() > 0) {
                 painter.setPen(pMark->fillColor());

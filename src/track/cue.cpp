@@ -195,6 +195,19 @@ void Cue::setEndPosition(double samplePosition) {
     emit updated();
 }
 
+void Cue::shiftPositionFrames(double frameOffset) {
+    QMutexLocker lock(&m_mutex);
+    if (m_sampleStartPosition != kNoPosition) {
+        m_sampleStartPosition += frameOffset * mixxx::kEngineChannelCount;
+    }
+    if (m_sampleEndPosition != kNoPosition) {
+        m_sampleEndPosition += frameOffset * mixxx::kEngineChannelCount;
+    }
+    m_bDirty = true;
+    lock.unlock();
+    emit updated();
+}
+
 double Cue::getLength() const {
     QMutexLocker lock(&m_mutex);
     if (m_sampleEndPosition == Cue::kNoPosition) {

@@ -387,7 +387,7 @@ SoundDeviceError SoundManager::setupDevices() {
             AudioInputBuffer aib(in, SampleUtil::alloc(MAX_BUFFER_LEN));
             err = pDevice->addInput(aib);
             if (err != SOUNDDEVICE_ERROR_OK) {
-                delete [] aib.getBuffer();
+                SampleUtil::free(aib.getBuffer());
                 goto closeAndError;
             }
 

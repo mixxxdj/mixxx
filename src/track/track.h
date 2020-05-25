@@ -74,6 +74,8 @@ class Track : public QObject {
     Q_PROPERTY(QString durationFormatted READ getDurationTextSeconds STORED false)
     Q_PROPERTY(QString durationFormattedCentiseconds READ getDurationTextCentiseconds STORED false)
     Q_PROPERTY(QString durationFormattedMilliseconds READ getDurationTextMilliseconds STORED false)
+    Q_PROPERTY(QString info READ getInfo STORED false)
+    Q_PROPERTY(QString titleInfo READ getTitleInfo STORED false)
 
     TrackFile getFileInfo() const {
         // Copying TrackFile/QFileInfo is thread-safe (implicit sharing), no locking needed.
@@ -233,8 +235,17 @@ class Track : public QObject {
     // Set URL for track
     void setURL(const QString& url);
 
-    // Output a formatted string with artist and title.
+    /// Separator between artist and title string that is
+    /// used for composing the track info.
+    static const QString kArtistTitleSeparator;
+
+    /// Formatted string with artist and title, separated by
+    /// kArtistTitleSeparator.
     QString getInfo() const;
+
+    /// The filename if BOTH artist AND title are empty, e.g. for tracks without
+    /// any metadata in file tags. Otherwise just the title (even if it is empty).
+    QString getTitleInfo() const;
 
     ConstWaveformPointer getWaveform() const;
     void setWaveform(ConstWaveformPointer pWaveform);
@@ -246,6 +257,8 @@ class Track : public QObject {
     CuePosition getCuePoint() const;
     // Set the track's main cue point
     void setCuePoint(CuePosition cue);
+    /// Shift all cues by a constant offset
+    void shiftCuePositionsMillis(double milliseconds);
     // Call when analysis is done.
     void analysisFinished();
 

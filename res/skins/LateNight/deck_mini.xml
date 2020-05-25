@@ -60,12 +60,12 @@
                     <TooltipId>track_title</TooltipId>
                     <ObjectName>TitleTextSmall</ObjectName>
                     <Size>100me,23f</Size>
-                    <Property>title</Property>
+                    <Property>titleInfo</Property>
                     <Alignment>left</Alignment>
                     <Elide>right</Elide>
                     <Channel><Variable name="channum"/></Channel>
                   </TrackProperty>
-                  
+
                   <NumberPos>
                     <TooltipId>track_time</TooltipId>
                     <ObjectName>PlayPositionTextSmall</ObjectName>

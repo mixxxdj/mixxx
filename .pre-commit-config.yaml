@@ -39,7 +39,7 @@
 # Using the `$SKIP` var is preferable to using `git commit --no-verify`
 # because it won't prevent catching other, unrelated issues.
 
-exclude: ^(lib/|src/test/.*data/).*$
+exclude: ^(lib/|src/test/.*data/).*|res/translations/.*\.ts$
 default_language_version:
   python: python3
 repos:
@@ -88,18 +88,18 @@ repos:
     rev: stable
     hooks:
     -   id: black
-        files: ^scripts/.*$
+        files: ^tools/.*$
 -   repo: https://gitlab.com/pycqa/flake8
     rev: '3.7.9'
     hooks:
     -   id: flake8
-        files: ^scripts/.*$
+        files: ^tools/.*$
 - repo: local
   hooks:
   - id: qsscheck
     name: qsscheck
     description: Run qsscheck to detect broken QSS.
-    entry: ./scripts/qsscheck.py
+    entry: ./tools/qsscheck.py
     args: [.]
     pass_filenames: false
     language: python
@@ -116,7 +116,7 @@ repos:
   - id: line-length
     name: line-length
     description: Check for lines longer 100 and brakes them before 80.
-    entry: ./scripts/line_length.py
+    entry: ./tools/line_length.py
     stages:
     - commit
     - push

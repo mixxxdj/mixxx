@@ -51,7 +51,7 @@ def write_channelmixer_autogen(output, num_channels):
     output.append('#include "util/timer.h"')
     output.append("////////////////////////////////////////////////////////")
     output.append("// THIS FILE IS AUTO-GENERATED. DO NOT EDIT DIRECTLY! //")
-    output.append("// SEE scripts/generate_sample_functions.py           //")
+    output.append("// SEE tools/generate_sample_functions.py             //")
     output.append("////////////////////////////////////////////////////////")
     output.append("")
     output.append("// static")

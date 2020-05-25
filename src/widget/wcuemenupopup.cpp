@@ -132,3 +132,8 @@ void WCueMenuPopup::slotDeleteCue() {
     m_pTrack->removeCue(m_pCue);
     hide();
 }
+
+void WCueMenuPopup::closeEvent(QCloseEvent* event) {
+    emit aboutToHide();
+    QWidget::closeEvent(event);
+}

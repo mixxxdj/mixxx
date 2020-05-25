@@ -26,6 +26,8 @@
 namespace {
 
 const double kNoTrackColor = -1;
+const double kShiftCuesOffsetMillis = 10;
+const double kShiftCuesOffsetSmallMillis = 1;
 
 inline double trackColorToDouble(mixxx::RgbColor::optional_t color) {
     return (color ? static_cast<double>(*color) : kNoTrackColor);
@@ -134,8 +136,43 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
             SLOT(slotWaveformZoomSetDefault(double)));
 
     m_pPreGain = std::make_unique<ControlProxy>(group, "pregain", this);
-    // BPM of the current song
 
+    m_pShiftCuesEarlier = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "shift_cues_earlier"));
+    connect(m_pShiftCuesEarlier.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) { slotShiftCuesMillisButton(value, -kShiftCuesOffsetMillis); });
+    m_pShiftCuesLater = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "shift_cues_later"));
+    connect(m_pShiftCuesLater.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) { slotShiftCuesMillisButton(value, kShiftCuesOffsetMillis); });
+    m_pShiftCuesEarlierSmall = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "shift_cues_earlier_small"));
+    connect(m_pShiftCuesEarlierSmall.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                slotShiftCuesMillisButton(value, -kShiftCuesOffsetSmallMillis);
+            });
+    m_pShiftCuesLaterSmall = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "shift_cues_later_small"));
+    connect(m_pShiftCuesLaterSmall.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                slotShiftCuesMillisButton(value, kShiftCuesOffsetSmallMillis);
+            });
+    m_pShiftCues = std::make_unique<ControlObject>(
+            ConfigKey(group, "shift_cues"));
+    connect(m_pShiftCues.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BaseTrackPlayerImpl::slotShiftCuesMillis);
+
+    // BPM of the current song
     m_pFileBPM = std::make_unique<ControlObject>(ConfigKey(group, "file_bpm"));
     m_pKey = std::make_unique<ControlProxy>(group, "file_key", this);
 
@@ -490,7 +527,8 @@ TrackPointer BaseTrackPlayerImpl::getLoadedTrack() const {
 }
 
 void BaseTrackPlayerImpl::slotCloneDeck() {
-    slotCloneChannel(m_pEngineMaster->getEngineSync()->pickNonSyncSyncTarget(m_pChannel));
+    Syncable* syncable = m_pEngineMaster->getEngineSync()->pickNonSyncSyncTarget(m_pChannel);
+    slotCloneChannel(syncable->getChannel());
 }
 
 void BaseTrackPlayerImpl::slotCloneFromGroup(const QString& group) {
@@ -630,6 +668,20 @@ void BaseTrackPlayerImpl::slotWaveformZoomSetDefault(double pressed) {
     double defaultZoom = m_pConfig->getValue(ConfigKey("[Waveform]","DefaultZoom"),
         WaveformWidgetRenderer::s_waveformDefaultZoom);
     m_pWaveformZoom->set(defaultZoom);
+}
+
+void BaseTrackPlayerImpl::slotShiftCuesMillis(double milliseconds) {
+    if (!m_pLoadedTrack) {
+        return;
+    }
+    m_pLoadedTrack->shiftCuePositionsMillis(milliseconds);
+}
+
+void BaseTrackPlayerImpl::slotShiftCuesMillisButton(double value, double milliseconds) {
+    if (value <= 0) {
+        return;
+    }
+    slotShiftCuesMillis(milliseconds);
 }
 
 void BaseTrackPlayerImpl::setReplayGain(double value) {
