@@ -65,7 +65,7 @@
                   <WidgetGroup>
                     <Size>1f,0min</Size>
                     <Connection>
-                      <ConfigKey persist="true">[Skin],show_rate_controls_compact</ConfigKey>
+                      <ConfigKey persist="true">[Skin],show_rate_key_controls_compact</ConfigKey>
                       <Transform><Not/></Transform>
                       <BindProperty>visible</BindProperty>
                     </Connection>
@@ -75,10 +75,6 @@
 
               <Template src="skin:/decks/row_5_transportLoopJump_compact.xml" />
             </Children>
-            <!--Connection>
-              <ConfigKey persist="true">[Skin],show_rate_controls_compact</ConfigKey>
-              <BindProperty>highlight</BindProperty>
-            </Connection-->
           </WidgetGroup><!-- DeckRows2345 -->
 
           <Template src="skin:/decks/rate_controls_compact.xml"/>

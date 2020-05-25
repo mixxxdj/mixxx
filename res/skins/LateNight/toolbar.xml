@@ -84,15 +84,6 @@
         <Layout>horizontal</Layout>
         <Children>
 
-          <!--Template src="skin:/controls/button_2state.xml">
-            <SetVariable name="TooltipId">FIXME_waveforms</SetVariable>
-            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">80f,20f</SetVariable>
-            <SetVariable name="state_0_text">WAVEFORMS</SetVariable>
-            <SetVariable name="state_1_text">WAVEFORMS</SetVariable>
-            <SetVariable name="ConfigKey">[Skin],show_waveforms</SetVariable>
-          </Template-->
-
           <Template src="skin:/controls/button_2state.xml">
             <SetVariable name="TooltipId">FIXME_waveforms</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>

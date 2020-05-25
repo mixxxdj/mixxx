@@ -260,8 +260,8 @@ Description:
                       <!-- Rate Control -->
                       <Template src="skin:/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">rate_toggle</SetVariable>
-                        <SetVariable name="Text">Rate Controls</SetVariable>
-                        <SetVariable name="Setting">[Skin],show_rate_controls_compact</SetVariable>
+                        <SetVariable name="Text">Rate / Key Controls</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_rate_key_controls_compact</SetVariable>
                       </Template>
 
                       <!-- Sync button in compact decks -->
@@ -276,7 +276,7 @@ Description:
                             <Layout>stacked</Layout>
                             <Size>180min,17f</Size>
                             <Connection>
-                              <ConfigKey persist="true">[Skin],show_rate_controls_compact</ConfigKey>
+                              <ConfigKey persist="true">[Skin],show_rate_key_controls_compact</ConfigKey>
                               <Transform><Not/></Transform>
                               <BindProperty>visible</BindProperty>
                             </Connection>
@@ -404,7 +404,8 @@ Description:
                 <ObjectName>SubmenuCover</ObjectName>
                 <SizePolicy>me,min</SizePolicy>
                 <Connection>
-                  <ConfigKey>[LateNight],no_decks_visible</ConfigKey>
+                  <ConfigKey>[Skin],show_minimal_decks</ConfigKey>
+                  <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
