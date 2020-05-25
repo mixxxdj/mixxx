@@ -9,7 +9,7 @@
 class ColorPaletteEditorModel : public QStandardItemModel {
     Q_OBJECT
   public:
-    static constexpr int kNoHotcueIndex = -1;
+    static const int kNoHotcueIndex;
 
     ColorPaletteEditorModel(QObject* parent = nullptr);
 

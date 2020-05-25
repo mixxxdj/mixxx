@@ -79,6 +79,10 @@ namespace mixxx {
 ///
 /// See this for details:
 /// https://github.com/Holzhaus/serato-tags/blob/master/docs/colors.md#track-colors
+
+const RgbColor SeratoTags::kDefaultTrackColor = RgbColor(0xFF9999);
+const RgbColor SeratoTags::kDefaultCueColor = RgbColor(0xCC0000);
+
 RgbColor::optional_t SeratoTags::storedToDisplayedTrackColor(RgbColor color) {
     if (color == 0xFFFFFF) {
         return RgbColor::nullopt();

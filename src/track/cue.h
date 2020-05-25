@@ -18,8 +18,8 @@ class Cue : public QObject {
     Q_OBJECT
 
   public:
-    static constexpr double kNoPosition = -1.0;
-    static constexpr int kNoHotCue = -1;
+    static const double kNoPosition;
+    static const int kNoHotCue;
 
     Cue();
     Cue(

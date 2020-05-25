@@ -48,16 +48,16 @@ class RgbColor {
 
     typedef std::optional<RgbColor> optional_t;
 
-    static constexpr optional_t nullopt() {
+    static optional_t nullopt() {
         return std::nullopt;
     }
 
     // Overloaded conversion functions for conveniently creating
     // std::optional<RgbColor>.
-    static constexpr optional_t optional(code_t code) {
+    static optional_t optional(code_t code) {
         return optional(RgbColor(code));
     }
-    static constexpr optional_t optional(RgbColor color) {
+    static optional_t optional(RgbColor color) {
         return std::make_optional(color);
     }
 

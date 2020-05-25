@@ -517,7 +517,7 @@ QByteArray SeratoMarkers::dumpMP4() const {
         stream.writeRawData(pEntry->dumpMP4(), kEntrySizeMP4);
     }
 
-    RgbColor trackColor = m_trackColor.value_or(SeratoTags::kDefaultTrackColor);
+    RgbColor trackColor = m_trackColor.value_or(RgbColor(SeratoTags::kDefaultTrackColor));
     stream << static_cast<quint8>(0x00)
            << static_cast<quint8>(qRed(trackColor))
            << static_cast<quint8>(qGreen(trackColor))

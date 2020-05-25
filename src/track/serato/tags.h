@@ -11,8 +11,8 @@ namespace mixxx {
 /// Serato DJ Pro software.
 class SeratoTags final {
   public:
-    static constexpr RgbColor kDefaultTrackColor = RgbColor(0xFF9999);
-    static constexpr RgbColor kDefaultCueColor = RgbColor(0xCC0000);
+    static const RgbColor kDefaultTrackColor;
+    static const RgbColor kDefaultCueColor;
 
     SeratoTags() = default;
 

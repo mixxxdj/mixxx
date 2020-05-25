@@ -41,6 +41,10 @@ inline double positionMillisToSamples(
 }
 
 //static
+const double Cue::kNoPosition = -1.0;
+const int Cue::kNoHotCue = -1;
+
+//static
 void CuePointer::deleteLater(Cue* pCue) {
     if (pCue) {
         pCue->deleteLater();

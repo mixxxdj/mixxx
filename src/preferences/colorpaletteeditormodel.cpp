@@ -10,6 +10,9 @@ QIcon toQIcon(const QColor& color) {
 
 } // namespace
 
+//static
+const int ColorPaletteEditorModel::kNoHotcueIndex = -1;
+
 ColorPaletteEditorModel::ColorPaletteEditorModel(QObject* parent)
         : QStandardItemModel(parent),
           m_bEmpty(true),
