@@ -1490,8 +1490,11 @@ endif()
 
 # FpClassify This is a wrapper around the fpclassify function that prevents
 # inlining It is compiled without optimization and allows to use these function
-# from -ffast-math optimized objects
+# from -ffast-math optimized objects. The MSVC option /fp:fast does not suffer this issue
 add_library(FpClassify STATIC EXCLUDE_FROM_ALL src/util/fpclassify.cpp)
+if(GNU_GCC)
+  target_compile_options(FpClassify PRIVATE -fno-fast-math)
+endif()
 target_link_libraries(mixxx-lib PUBLIC FpClassify)
 
 # googletest
