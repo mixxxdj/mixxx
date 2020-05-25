@@ -289,7 +289,7 @@ WOverview QLabel {
       #ArtistText,
       #TitleText {
         /* for some reason the padding/margin is double in the skin... */
-        padding: 0px 2px 1px 2px;
+        padding: 0px 2px 1px 0px;
       }
     #PlayPositionGutter, #DurationGutter {
       qproperty-layoutAlignment: 'AlignRight | AlignBottom';

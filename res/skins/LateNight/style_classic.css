@@ -1026,10 +1026,6 @@ WPushButton#SamplerExpand[displayValue="0"],
     image: url(skin:/classic/buttons/btn__arrow_left_up.svg) no-repeat center center;
   }
 
-  #RateCenter {
-    image: url(skin:/classic/buttons/btn__rate_center_off.svg) no-repeat center center;
-  }
-
 /* Mixer buttons */
 #PflButton {
   image: url(skin:/classic/buttons/btn__pfl.svg) no-repeat center center;

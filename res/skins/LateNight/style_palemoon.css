@@ -947,15 +947,10 @@ WPushButton#RecButton[displayValue="1"],
     }
 
   #RateTempDownRev {
-    image: url(skin:/palemoon/buttons/btn__arrow_left_up.svg) no-repeat center center;}
-  #RateTempDownRev[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__arrow_left_up_active.svg) no-repeat center center;
+    image: url(skin:/palemoon/buttons/btn__arrow_left_up.svg) no-repeat center center;
     }
-
-  #RateCenter[highlight="0"] {
-    image: url(skin:/palemoon/buttons/btn__rate_center_off.svg) no-repeat center center;}
-    #RateCenter[highlight="1"] {
-      image: url(skin:/palemoon/buttons/btn__rate_center_cyan.svg) no-repeat center center;
+    #RateTempDownRev[pressed="true"] {
+      image: url(skin:/palemoon/buttons/btn__arrow_left_up_active.svg) no-repeat center center;
     }
 
 /* Mixer buttons */
@@ -980,6 +975,13 @@ WPushButton#RecButton[displayValue="1"],
   }
   #QuickEffectDot[displayValue="1"] {
     image: url(skin:/palemoon/buttons/btn__eq_kill_dot_active_green.svg) no-repeat center center;
+  }
+
+#RateCenter[highlight="0"] {
+  image: url(skin:/palemoon/buttons/btn__rate_center_off.svg) no-repeat center center;
+  }
+  #RateCenter[highlight="1"] {
+    image: url(skin:/palemoon/buttons/btn__rate_center_cyan.svg) no-repeat center center;
   }
 
 #SplitCue[value="0"] {
