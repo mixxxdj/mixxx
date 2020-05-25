@@ -4,7 +4,6 @@
   <Template src="skin:/samplers/singletons.xml"/>
 
   <WidgetGroup>
-    <ObjectName>DeckContainer</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
@@ -29,14 +28,6 @@
       </WidgetGroup>
 
       <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
-
-      <WidgetGroup>
-        <Size>2f,0f</Size>
-        <Connection>
-          <ConfigKey>[Master],skin_settings</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
 
     </Children>
     <Connection>

@@ -1358,6 +1358,9 @@ WBeatSpinBox,
   margin-bottom: 3px;
 }
 
+#SkinSettingsContainer {
+}
+
 #Deck1, #Deck2, #Deck3, #Deck4,
 #DeckCompact1, #DeckCompact2, #DeckCompact3, #DeckCompact4 {  /*
   padding: 0px 3px 0px 2px; */
@@ -1699,8 +1702,10 @@ WPushButton#FxSuperLinkInvertButton[displayValue="0"] {
 #SkinSettings {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   padding: 3px;
-  border-left: 1px solid #585858;
+  border-top: 1px solid #585858;
   border-bottom: 1px solid #585858;
+  border-left: 1px solid #585858;
+  border-top-left-radius: 2px;
   border-bottom-left-radius: 2px;
 
 }

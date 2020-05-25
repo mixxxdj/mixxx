@@ -49,29 +49,106 @@
 
       <!-- EffectUnit 1 + 3 -->
       <WidgetGroup>
-        <Layout>horizontal</Layout>
+        <Layout>vertical</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <Template src="skin:/fx/rack_left.xml"/>
+
+          <!-- EffectUnit 1 -->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>i,min</SizePolicy>
+            <Children>
+              <Template src="skin:/fx/unit.xml">
+                <SetVariable name="FxUnit">1</SetVariable>
+              </Template>
+
+              <WidgetGroup>
+                <ObjectName>FxRackFillerL</ObjectName>
+                <SizePolicy>min,me</SizePolicy>
+                <Connection>
+                  <ConfigKey>[EffectRack1_EffectUnit2],show_parameters</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <!-- EffectUnit 3 -->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>i,min</SizePolicy>
+            <Children>
+              <Template src="skin:/fx/unit.xml">
+                <SetVariable name="FxUnit">3</SetVariable>
+              </Template>
+
+              <WidgetGroup>
+                <ObjectName>FxRackFillerL</ObjectName>
+                <SizePolicy>min,me</SizePolicy>
+                <Connection>
+                  <ConfigKey>[EffectRack1_EffectUnit4],show_parameters</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_4effectunits</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- EffectUnit 1 + 3 -->
 
       <!-- EffectUnit 2 + 4 -->
       <WidgetGroup>
-        <Layout>horizontal</Layout>
+        <Layout>vertical</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <Template src="skin:/fx/rack_right.xml"/>
-        </Children>
-      </WidgetGroup>
+          <!-- EffectUnit 2 -->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>i,min</SizePolicy>
+            <Children>
+              <Template src="skin:/fx/unit.xml">
+                <SetVariable name="FxUnit">2</SetVariable>
+              </Template>
 
-      <WidgetGroup>
-        <Size>2f,0f</Size>
-        <Connection>
-          <ConfigKey>[Master],skin_settings</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
+              <WidgetGroup>
+                <ObjectName>FxRackFillerR</ObjectName>
+                <SizePolicy>min,me</SizePolicy>
+                <Connection>
+                  <ConfigKey>[EffectRack1_EffectUnit1],show_parameters</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <!-- EffectUnit 4 -->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>i,min</SizePolicy>
+            <Children>
+              <Template src="skin:/fx/unit.xml">
+                <SetVariable name="FxUnit">4</SetVariable>
+              </Template>
+
+              <WidgetGroup>
+                <ObjectName>FxRackFillerR</ObjectName>
+                <SizePolicy>min,me</SizePolicy>
+                <Connection>
+                  <ConfigKey>[EffectRack1_EffectUnit3],show_parameters</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_4effectunits</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup><!-- EffectUnit 2 + 4 -->
 
     </Children>
     <Connection>

@@ -47,14 +47,6 @@
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup>
-        <Size>2f,0f</Size>
-        <Connection>
-          <ConfigKey>[Master],skin_settings</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
-
     </Children>
-  </WidgetGroup>
+  </WidgetGroup><!-- DecksRight -->
 </Template>

@@ -22,6 +22,7 @@ Description:
         <Layout>vertical</Layout>
         <Size>240f,1me</Size>
         <Children>
+
           <WidgetGroup>
             <ObjectName>SkinSettingsHeader</ObjectName>
             <Layout>horizontal</Layout>
@@ -35,27 +36,27 @@ Description:
 
               <!-- push Close button to far right -->
               <WidgetGroup><Size>1me,1min</Size></WidgetGroup>
-
-              <!--Template src="skin:/controls/button_2state.xml">
-                <SetVariable name="TooltipId">skin_settings</SetVariable>
-                <SetVariable name="ObjectName">SkinSettingsClose</SetVariable>
-                <SetVariable name="Size">20f,21f</SetVariable>
-                <SetVariable name="ConfigKey">[Master],skin_settings</SetVariable>
-              </Template-->
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- SkinSettingsHeader -->
 
-          <WidgetGroup><!-- Full/Compact deck options with regular library -->
-            <ObjectName></ObjectName>
-            <SizePolicy>me,min</SizePolicy>
-            <Layout>vertical</Layout>
+          <WidgetGroup><!-- Deck size selectors -->
+            <Size>225f,18f</Size>
+            <Layout>stacked</Layout>
             <Children>
-
+              <WidgetGroup>
+                <ObjectName>SubmenuCover</ObjectName>
+                <Layout>stacked</Layout>
+                <Size>180min,17f</Size>
+                <Connection>
+                  <ConfigKey persist="true">[Master],maximize_library</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
               <WidgetGroup><!-- Deck size selectors -->
                 <Size>225f,18f</Size>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <!--WidgetGroup><Size>6f,0min</Size></WidgetGroup-->
+                  <WidgetGroup><Size>8f,0min</Size></WidgetGroup>
                   <Label>
                     <ObjectName>SkinSettingsText</ObjectName>
                     <Size>64f,18f</Size>
@@ -106,11 +107,18 @@ Description:
                       <Transform><Not/></Transform>
                       <BindProperty>visible</BindProperty>
                     </Connection>
-                  </WidgetGroup>
-
+                  </WidgetGroup><!-- DeckSizeToggleContainer -->
                 </Children>
-              </WidgetGroup><!-- Deck size selectors -->
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup><!-- Deck size selectors -->
 
+          <WidgetGroup><!-- Regular library: Deck Options FULL / Compact / mini -->
+            <ObjectName></ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+            <!-- Horizontal layout to reduce graphic glitches when switching deck size -->
+            <Layout>horizontal</Layout>
+            <Children>
               <WidgetGroup><!-- Full Deck Options -->
                 <ObjectName></ObjectName>
                 <SizePolicy>me,min</SizePolicy>
@@ -155,8 +163,6 @@ Description:
                         <Layout>stacked</Layout>
                         <Size>180min,17f</Size>
                         <Children>
-                          <!-- index 0 due to bug -->
-                          <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
                           <WidgetGroup>
                             <ObjectName>SubmenuCover</ObjectName>
                             <Layout>stacked</Layout>
@@ -180,6 +186,27 @@ Description:
                         <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
                         <SetVariable name="Text">Vinyl Control</SetVariable>
                         <SetVariable name="Setting">[VinylControl],show_vinylcontrol</SetVariable>
+                      </Template>
+
+                      <!-- Spinny -->
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId">show_spinny</SetVariable>
+                        <SetVariable name="Text">Spinny</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_spinnies</SetVariable>
+                      </Template>
+
+                      <!-- Cover Art -->
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId">show_coverart</SetVariable>
+                        <SetVariable name="Text">Cover Art</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_coverart</SetVariable>
+                      </Template>
+
+                      <!-- Cover Art -->
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId">show_coverart</SetVariable>
+                        <SetVariable name="Text">Big Spinny/Cover Art</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_big_spinny_coverart</SetVariable>
                       </Template>
 
                     </Children>
@@ -276,6 +303,27 @@ Description:
                         <SetVariable name="Setting">[LateNight],show_vumeters_compact</SetVariable>
                       </Template>
 
+                      <!-- Spinny -->
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId">show_spinny</SetVariable>
+                        <SetVariable name="Text">Spinny</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_spinnies</SetVariable>
+                      </Template>
+
+                      <!-- Cover Art -->
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId">show_coverart</SetVariable>
+                        <SetVariable name="Text">Cover Art</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_coverart</SetVariable>
+                      </Template>
+
+                      <!-- Cover Art -->
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId">show_coverart</SetVariable>
+                        <SetVariable name="Text">Big Spinny/Cover Art</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_big_spinny_coverart</SetVariable>
+                      </Template>
+
                     </Children>
                   </WidgetGroup>
                 </Children>
@@ -284,24 +332,79 @@ Description:
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- Compact Deck Options -->
+
+              <WidgetGroup><!-- Minimal Deck Options -->
+                <ObjectName></ObjectName>
+                <SizePolicy>me,f</SizePolicy>
+                <Layout>stacked</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Connection>
+                      <ConfigKey>[LateNight],no_decks_visible</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <ObjectName>SkinSettingsCategory</ObjectName>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Layout>vertical</Layout>
+                    <Children>
+
+                      <!-- 2/4 Decks -->
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId">toggle_4decks</SetVariable>
+                        <SetVariable name="Text">4 Decks</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_4decks</SetVariable>
+                      </Template>
+
+                      <WidgetGroup><Size>0me,85f</Size></WidgetGroup>
+
+                      <!-- Spinny -->
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId">show_spinny</SetVariable>
+                        <SetVariable name="Text">Spinny</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_spinnies</SetVariable>
+                      </Template>
+
+                      <!-- Cover Art -->
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId">show_coverart</SetVariable>
+                        <SetVariable name="Text">Cover Art</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_coverart</SetVariable>
+                      </Template>
+
+                      <WidgetGroup><Size>0me,17f</Size></WidgetGroup>
+
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey>[LateNight],show_minimal_deck</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- Minmal Deck Options -->
             </Children>
             <Connection>
               <ConfigKey>[Master],maximize_library</ConfigKey>
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
-          </WidgetGroup><!-- Full/Compact deck options with regular library -->
+          </WidgetGroup><!-- Regular library: Deck Options FULL / Compact / mini -->
 
-          <WidgetGroup><!-- spinny options, covered when even minimal decks are hidden -->
+          <WidgetGroup><!-- Maximized libaryr: minimal deck options -->
             <ObjectName></ObjectName>
             <SizePolicy>me,f</SizePolicy>
             <Layout>stacked</Layout>
             <Children>
+              <!-- Simply cover deck options when minimal decks are disabled -->
               <WidgetGroup>
                 <ObjectName>SubmenuCover</ObjectName>
                 <SizePolicy>me,min</SizePolicy>
                 <Connection>
-                  <ConfigKey>[LateNight],decks_not_visible</ConfigKey>
+                  <ConfigKey>[LateNight],no_decks_visible</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
@@ -319,6 +422,8 @@ Description:
                     <SetVariable name="Setting">[Skin],show_4decks</SetVariable>
                   </Template>
 
+                  <WidgetGroup><Size>0me,85f</Size></WidgetGroup>
+
                   <!-- Spinny -->
                   <Template src="skin:/helpers/skin_settings_button_2state.xml">
                     <SetVariable name="TooltipId">show_spinny</SetVariable>
@@ -333,17 +438,16 @@ Description:
                     <SetVariable name="Setting">[Skin],show_coverart</SetVariable>
                   </Template>
 
-                  <!-- Cover Art -->
-                  <Template src="skin:/helpers/skin_settings_button_2state.xml">
-                    <SetVariable name="TooltipId">show_coverart</SetVariable>
-                    <SetVariable name="Text">Big Spinny/Cover Art</SetVariable>
-                    <SetVariable name="Setting">[Skin],show_big_spinny_coverart</SetVariable>
-                  </Template>
+                  <WidgetGroup><Size>0me,17f</Size></WidgetGroup>
 
                 </Children>
-              </WidgetGroup>
+              </WidgetGroup><!-- Minmal Deck Options -->
             </Children>
-          </WidgetGroup><!-- spinny options, hidden when even minimal decks are hidden -->
+            <Connection>
+              <ConfigKey>[Master],maximize_library</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- Maximized libaryr: minimal deck options -->
 
           <WidgetGroup>
             <ObjectName>SkinSettingsSeparator</ObjectName>

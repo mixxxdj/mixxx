@@ -205,6 +205,10 @@ WLibrary,
   margin-bottom: 4px;
 }
 
+#SkinSettingsContainer {
+  margin-left: 3px;
+}
+
 #Deck1, #DeckCompact1[highlight="0"], #DeckMini1,
 #Deck3, #DeckCompact3[highlight="0"], #DeckMini3,
 #FxUnit1, #FxUnit3 {
@@ -1387,8 +1391,10 @@ WBeatSpinBox,
 #SkinSettings {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   padding: 3px;
-  border-left: 1px solid #585858;
+  border-top: 1px solid #585858;
   border-bottom: 1px solid #585858;
+  border-left: 1px solid #585858;
+  border-top-left-radius: 2px;
   border-bottom-left-radius: 2px;
 
 }

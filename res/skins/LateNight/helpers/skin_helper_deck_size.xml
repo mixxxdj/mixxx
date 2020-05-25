@@ -130,7 +130,7 @@ Controls:
                 <MinimumSize>1,0</MinimumSize>
                 <MaximumSize>1,0</MaximumSize>
                 <Children>
-                  <WidgetGroup trigger="[LateNight],decks_not_visible"></WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],no_decks_visible"></WidgetGroup>
                   <WidgetGroup></WidgetGroup>
                 </Children>
               </WidgetStack>
@@ -142,7 +142,7 @@ Controls:
                 <MaximumSize>3,0</MaximumSize>
                 <Children>
                   <WidgetGroup></WidgetGroup>
-                  <WidgetGroup trigger="[LateNight],decks_not_visible"></WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],no_decks_visible"></WidgetGroup>
                 </Children>
               </WidgetStack>
             </Children>
