@@ -48,7 +48,7 @@ WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck {
 #FxParametersBg,
 #SamplerHotcues,
 WSearchLineEdit,
-#OverviewBox {
+#OverviewBox, #OverviewBoxMini {
   border-top: 1px solid #0a0a0a;
   border-left: 1px solid #0a0a0a;
   border-bottom: 1px solid #333;
@@ -76,7 +76,8 @@ WSearchLineEdit,
   background-color: rgba(0,0,0,50);
 }
 
-#OverviewBox[highlight="1"] {
+#OverviewBox[highlight="1"],
+#OverviewBoxMini[highlight="1"] {
   background-color: #080808;
 }
 
@@ -175,9 +176,9 @@ WLibrary,
 #DeckRow_5_SpacerCompact,
 #DeckSettingsStars, #DeckSettingsContainerCompact,
 #DeckRateSeparator,
-#TitleText, #PlayPositionText,
+#TitleText, #TitleTextSmall,
+#PlayPositionText, #PlayPositionTextSmall,
 #BpmTextSmall, #KeyTextSmall, #ArtistTextSmall, #PlayPositionTextSmall,
-#PlayContainerSmall,
 #PreviewPlayBox,
 #SamplerTitle, #SamplerPlay, #SamplerSettings,
 #SamplerGain, #SamplerVU, #SamplerPfl {
@@ -261,26 +262,17 @@ WLibrary,
 }
 #DeckRows234 {
 }
-/*
-#DeckRows2345[highlight="0"] {
-  border-width: 0px 0px 0px 0px;
-  }
-  #DeckRows2345[highlight="1"] {
-    border-width: 0px 1px 0px 0px;
-  } */
 
-#SpinnyCoverContainerSmall,
-#SpinnyCoverContainerBig,
-#SpinnyCoverContainerBigCompact {
-  }
-  #SpinnyCoverContainerSmall{
-    padding: 0px 2px 0px 0px;
+#SpinnyCoverContainerSmall{
+  padding: 0px 2px 0px 0px;
   }
   #SpinnyCoverContainerBig {
     padding: 2px 2px 0px 0px;
   }
   #SpinnyCoverContainerBigCompact {
     padding: 0px 2px 0px 0px;
+  }
+  #SpinnyCoverContainerMiniDeck {
   }
 
 #DeckRow_2_3_ArtistTitleTime {
@@ -1396,17 +1388,7 @@ WBeatSpinBox,
   border-left: 1px solid #585858;
   border-top-left-radius: 2px;
   border-bottom-left-radius: 2px;
-
 }
-#SkinSettingsHeader {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding-right: 2px;
-  }
-  #SkinSettingsClose {
-    margin-bottom: 1px; /*
-    background-color: transparent;  */
-    image: url(skin:/classic/buttons/btn__settings_close.svg) no-repeat center top;
-  }
 
 #SkinSettingsCategory {
   padding: 2px 5px 7px 3px;
@@ -1414,7 +1396,7 @@ WBeatSpinBox,
   border-width: 0px;
   }
   #CategoryLabel {
-    padding: 3px 0px 2px 3px;
+    padding: 3px 0px 2px 0px;
   }
   #SkinSettingsLabelButton {
     padding: 0px 0px 0px 3px;

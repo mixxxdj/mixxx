@@ -79,7 +79,7 @@ WLibrary, #SidebarBox, #SearchLineBox, #PreviewDeck {
 }
 
 /* borders of embedded regions */
-#OverviewBox,
+#OverviewBox, #OverviewBoxMini,
 WSearchLineEdit {
   border-top: 1px solid #0d0d0d;
   border-left: 1px solid #121212;
@@ -94,7 +94,8 @@ WSearchLineEdit {
   background-color: #19191a;
 }
 
-#OverviewBox[highlight="1"] {
+#OverviewBox[highlight="1"],
+#OverviewBoxMini[highlight="1"] {
   background-color: #151515;
 }
 
@@ -1366,8 +1367,20 @@ WBeatSpinBox,
   padding: 0px 3px 0px 2px; */
 }
 #DeckMini1, #DeckMini2, #DeckMini3, #DeckMini4 {
-  padding: 1px;
-}
+  }
+  /* Add margin to mini deck containers except spinny container to
+    replace mini deck padding */
+  #PlayCueSmall {
+    margin: 1px 2px 1px 1px;
+  }
+  #OverviewBoxMini {
+    margin: 1px 0px;
+  }
+  #DeckMini_TitlePlayPosKeyBPM {
+    margin: 1px 1px 1px 0px;
+  }
+
+
 #DeckMini1, #DeckMini2 {
   margin-top: 3px;
 }
@@ -1402,18 +1415,16 @@ WBeatSpinBox,
     border-bottom-left-radius: 0px;
   }
 
-#SpinnyCoverContainerSmall,
-#SpinnyCoverContainerBig,
-#SpinnyCoverContainerBigCompact {
-  }
-  #SpinnyCoverContainerSmall{
-    padding: 0px 1px 0px 1px;
+#SpinnyCoverContainerSmall{
+  padding: 0px 1px 0px 1px;
   }
   #SpinnyCoverContainerBig{
     padding: 1px 1px 0px 1px;
   }
   #SpinnyCoverContainerBigCompact {
     padding: 0px 2px 0px 0px;
+  }
+  #SpinnyCoverContainerMiniDeck {
   }
 
 #SamplerRow {
@@ -1707,17 +1718,7 @@ WPushButton#FxSuperLinkInvertButton[displayValue="0"] {
   border-left: 1px solid #585858;
   border-top-left-radius: 2px;
   border-bottom-left-radius: 2px;
-
 }
-#SkinSettingsHeader {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding-right: 2px;
-  }
-  #SkinSettingsClose {
-    margin-bottom: 1px;
-    background-color: transparent;
-    image: url(skin:/palemoon/buttons/btn__settings_close.svg) no-repeat center top;
-  }
 
 #SkinSettingsCategory {
   padding: 2px 5px 7px 3px;
@@ -1725,7 +1726,7 @@ WPushButton#FxSuperLinkInvertButton[displayValue="0"] {
   border-width: 0px;
   }
   #CategoryLabel {
-    padding: 3px 0px 2px 3px;
+    padding: 3px 0px 2px 0px;
   }
   #SkinSettingsLabelButton {
     padding: 0px 0px 0px 3px;

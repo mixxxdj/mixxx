@@ -23,24 +23,14 @@ Description:
         <Size>240f,1me</Size>
         <Children>
 
-          <WidgetGroup>
-            <ObjectName>SkinSettingsHeader</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>me,f</SizePolicy>
-            <Children>
-              <Label>
-                <ObjectName>CategoryLabel</ObjectName>
-                <Text>Decks</Text>
-                <Size>180min,21f</Size>
-              </Label>
-
-              <!-- push Close button to far right -->
-              <WidgetGroup><Size>1me,1min</Size></WidgetGroup>
-            </Children>
-          </WidgetGroup><!-- SkinSettingsHeader -->
+          <Label>
+            <ObjectName>CategoryLabel</ObjectName>
+            <Text>Decks</Text>
+            <Size>180me,21f</Size>
+          </Label>>
 
           <WidgetGroup><!-- Deck size selectors -->
-            <Size>225f,18f</Size>
+            <Size>220me,18f</Size>
             <Layout>stacked</Layout>
             <Children>
               <WidgetGroup>
@@ -56,7 +46,7 @@ Description:
                 <Size>225f,18f</Size>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <WidgetGroup><Size>8f,0min</Size></WidgetGroup>
+                  <WidgetGroup><Size>7f,0min</Size></WidgetGroup>
                   <Label>
                     <ObjectName>SkinSettingsText</ObjectName>
                     <Size>64f,18f</Size>

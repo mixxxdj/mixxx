@@ -32,7 +32,7 @@
                         <Children>
                           <WidgetGroup>
                             <ObjectName>SpinnyCoverContainerBigCompact</ObjectName>
-                            <Size><Variable name="BigSpinnyCompactSize"/></Size>
+                            <Size><Variable name="SpinnySizeBigCompact"/></Size>
                             <Layout>horizontal</Layout>
                             <Children>
                               <SingletonContainer>

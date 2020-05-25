@@ -15,14 +15,6 @@
           <SingletonContainer>
             <ObjectName>Deck2_Mini</ObjectName>
           </SingletonContainer>
-
-          <WidgetGroup>
-            <Size>5f,1min</Size>
-            <Connection>
-              <ConfigKey>[Master],skin_settings</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
         </Children>
       </WidgetGroup>
 
@@ -37,14 +29,6 @@
           <SingletonContainer>
             <ObjectName>Deck4_Mini</ObjectName>
           </SingletonContainer>
-
-          <WidgetGroup>
-            <Size>3f,1min</Size>
-            <Connection>
-              <ConfigKey>[Master],skin_settings</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey>[Skin],show_4decks</ConfigKey>
