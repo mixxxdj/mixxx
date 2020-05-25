@@ -56,9 +56,17 @@
         </Connection>
       </WidgetGroup>
 
-      <SingletonContainer>
-        <ObjectName>DeckSettings<Variable name="ChanNum"/></ObjectName>
-      </SingletonContainer>
+      <WidgetGroup>
+        <ObjectName>DeckSettingsContainerCompact</ObjectName>
+        <!--Size>0me,56f</Size-->
+        <SizePolicy>min,me</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <SingletonContainer>
+            <ObjectName>DeckSettings<Variable name="ChanNum"/></ObjectName>
+          </SingletonContainer>
+        </Children>
+      </WidgetGroup>
 
     </Children>
   </WidgetGroup><!-- DeckRow_4_OverviewSpinny -->

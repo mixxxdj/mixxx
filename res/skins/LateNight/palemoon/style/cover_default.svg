@@ -5,10 +5,34 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    id="svg8"
    version="1.1"
    height="444"
-   width="444">
+   width="444"
+   sodipodi:docname="cover_default.svg"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1056"
+     id="namedview7"
+     showgrid="false"
+     inkscape:zoom="1.5033982"
+     inkscape:cx="299.39176"
+     inkscape:cy="225.86414"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg8" />
   <metadata
      id="metadata14">
     <rdf:RDF>
@@ -25,7 +49,7 @@
      id="defs12" />
   <rect
      id="rect2"
-     style="paint-order:fill markers stroke;fill:#313131;fill-opacity:1"
+     style="paint-order:fill markers stroke;fill:#313131;fill-opacity:1;stroke:none"
      stroke-width="1.10000002"
      stroke-linecap="round"
      stroke="#000"

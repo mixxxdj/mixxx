@@ -30,11 +30,9 @@
                         <SizePolicy>min,min</SizePolicy>
                         <Layout>horizontal</Layout>
                         <Children>
-                          <!-- draws a line to separate rate rate controls and spinny/cover
-                          <Template src="skin:separator_spinny_cover.xml"/> -->
                           <WidgetGroup>
-                            <ObjectName>SpinnyCoverContainerBig</ObjectName>
-                            <Size><Variable name="BigSpinnySize"/></Size>
+                            <ObjectName>SpinnyCoverContainerBigCompact</ObjectName>
+                            <Size><Variable name="BigSpinnyCompactSize"/></Size>
                             <Layout>horizontal</Layout>
                             <Children>
                               <SingletonContainer>

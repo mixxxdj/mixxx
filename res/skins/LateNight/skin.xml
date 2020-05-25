@@ -136,8 +136,9 @@
           This sets the size of the parent container which might have padding,
           margin or a border which need to be considered.
 CHECK! -->
-      <SetVariable name="SmallSpinnySize">54f,56f</SetVariable>
-      <SetVariable name="BigSpinnySize">109f,110f</SetVariable>
+      <SetVariable name="SmallSpinnySize">64f,62f</SetVariable>
+      <SetVariable name="BigSpinnySize">112f,111f</SetVariable>
+      <SetVariable name="BigSpinnyCompactSize">112f,111f</SetVariable>
       <SetVariable name="MiniDeckSpinnySize">56f,52f</SetVariable>
 
       <!-- black lines & spacers to separate widgets -->
@@ -223,8 +224,9 @@ CHECK! -->
       <SetVariable name="SubRegion_BtnType">elevated</SetVariable>
 
       <!-- CHECK! -->
-      <SetVariable name="SmallSpinnySize">54f,56f</SetVariable>
-      <SetVariable name="BigSpinnySize">108f,111f</SetVariable>
+      <SetVariable name="SmallSpinnySize">63f,61f</SetVariable>
+      <SetVariable name="BigSpinnySize">106f,106f</SetVariable>
+      <SetVariable name="BigSpinnyCompactSize">108f,106f</SetVariable>
       <SetVariable name="MiniDeckSpinnySize">56f,52f</SetVariable>
 
       <SetVariable name="SeparatorWidthDecksBottom">2f</SetVariable>

@@ -272,15 +272,6 @@ WOverview QLabel {
     padding: 0px 1px 0px 0px;
   }
 
-#SpinnyCoverContainerBig,
-#SpinnyCoverContainerSmall {
-  border-width: 0px;
-  margin-bottom: 1px;
-  }
-  #SpinnyCoverContainerBig{
-    padding-top: 2px;
-  }
-
 #DeckRow_2_3_ArtistTitleTime {
   margin: 2px 0px 2px 0px;
   }
@@ -315,9 +306,6 @@ WOverview QLabel {
 
 #DeckRow_4_OverviewSpinny {
   padding: 0px 0px 0px 0px;
-}
-  #SpinnyCoverContainerSmall {
-    border-width: 1px 0px 0px 0px;
   }
   #DeckSettingsStars {
     qproperty-layoutAlignment: 'AlignCenter';

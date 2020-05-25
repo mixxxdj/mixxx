@@ -223,7 +223,6 @@ WLibrary,
 
 /************ separator lines within decks, samplers etc. *********************/
 #DeckRow_1_BottomBorder, #DeckSettingsStars, #DeckRateSeparator,
-#SpinnyCoverContainerBig, #SpinnyCoverContainerSmall,
 #TitleText, #TitleTextSmall,
 #PlayPositionText, #PlayPositionTextSmall,
 #BpmTextSmall, #KeyTextSmall, #ArtistTextSmall, #PlayPositionTextSmall,
@@ -1398,6 +1397,20 @@ WBeatSpinBox,
     border-left: 0px;
     border-top-left-radius: 0px;
     border-bottom-left-radius: 0px;
+  }
+
+#SpinnyCoverContainerSmall,
+#SpinnyCoverContainerBig,
+#SpinnyCoverContainerBigCompact {
+  }
+  #SpinnyCoverContainerSmall{
+    padding: 0px 1px 0px 1px;
+  }
+  #SpinnyCoverContainerBig{
+    padding: 1px 1px 0px 1px;
+  }
+  #SpinnyCoverContainerBigCompact {
+    padding: 0px 2px 0px 0px;
   }
 
 #SamplerRow {

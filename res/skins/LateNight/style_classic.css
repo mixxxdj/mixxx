@@ -175,7 +175,6 @@ WLibrary,
 #DeckRow_5_SpacerCompact,
 #DeckSettingsStars, #DeckSettingsContainerCompact,
 #DeckRateSeparator,
-#SpinnyCoverContainerBig, #SpinnyCoverContainerSmall,
 #TitleText, #PlayPositionText,
 #BpmTextSmall, #KeyTextSmall, #ArtistTextSmall, #PlayPositionTextSmall,
 #PlayContainerSmall,
@@ -265,6 +264,20 @@ WLibrary,
   #DeckRows2345[highlight="1"] {
     border-width: 0px 1px 0px 0px;
   } */
+
+#SpinnyCoverContainerSmall,
+#SpinnyCoverContainerBig,
+#SpinnyCoverContainerBigCompact {
+  }
+  #SpinnyCoverContainerSmall{
+    padding: 0px 2px 0px 0px;
+  }
+  #SpinnyCoverContainerBig {
+    padding: 2px 2px 0px 0px;
+  }
+  #SpinnyCoverContainerBigCompact {
+    padding: 0px 2px 0px 0px;
+  }
 
 #DeckRow_2_3_ArtistTitleTime {
   padding-left: 1px;
