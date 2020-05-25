@@ -45,7 +45,7 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 
 # Speed up builds on HDDs
-if(GNU_GCC)
+if(GNU_GCC OR LLVM_CLANG)
   add_compile_options(-pipe)
 endif()
 
@@ -148,7 +148,7 @@ if(NOT OPTIMIZE STREQUAL "off")
     else()
       message(FATAL_ERROR "Invalid value passed to OPTIMIZE option: ${OPTIMIZE}")
     endif()
-  elseif(GNU_GCC)
+  elseif(GNU_GCC OR LLVM_CLANG)
     # Common flags to all optimizations.
     # -ffast-math will prevent a performance penalty by denormals
     # (floating point values almost Zero are treated as Zero)
@@ -1492,7 +1492,7 @@ endif()
 # inlining It is compiled without optimization and allows to use these function
 # from -ffast-math optimized objects. The MSVC option /fp:fast does not suffer this issue
 add_library(FpClassify STATIC EXCLUDE_FROM_ALL src/util/fpclassify.cpp)
-if(GNU_GCC)
+if(GNU_GCC OR LLVM_CLANG)
   target_compile_options(FpClassify PRIVATE -fno-fast-math)
 endif()
 target_link_libraries(mixxx-lib PUBLIC FpClassify)
