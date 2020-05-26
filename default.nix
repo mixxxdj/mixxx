@@ -7,10 +7,15 @@ let inherit (nixroot) stdenv pkgs lib
     libusb1 libvorbis libebur128 pkgconfig portaudio portmidi protobuf qt5 glib
     rubberband scons sqlite taglib soundtouch vamp opusfile hidapi upower ccache git
     libGLU x11 lame lv2 makeWrapper
+    boost
     clang-tools
     fetchurl
+    fetchFromGitHub
     gdb
-    python3;
+    meson
+    ninja
+    python3
+    zlib;
 
   git-clang-format = stdenv.mkDerivation {
     name = "git-clang-format";
@@ -35,6 +40,27 @@ let inherit (nixroot) stdenv pkgs lib
         --add-flags --binary \
         --add-flags ${clang-tools}/bin/clang-format
     '';
+  };
+
+  libdjinterop = stdenv.mkDerivation {
+    name = "libdjinterop";
+    version = "2019-09-03";
+    src = fetchFromGitHub {
+      owner = "xsco";
+      repo = "libdjinterop";
+      rev = "19bfefb8fd4e16ace02106dd51f68ce10f3f459e";
+      sha256 = "sha256:1mmcpfacyfa9vy59l19lpg97v3hrzhqkz6hwc7rbq0wd4smm1r82";
+    };
+    nativeBuildInputs = [
+      meson
+      ninja
+      pkgconfig
+    ];
+    outputs = [ "out" "dev" ];
+    buildInputs = [
+      zlib
+      boost
+    ];
   };
 
   shell-build = nixroot.writeShellScriptBin "build" ''
@@ -91,6 +117,7 @@ in stdenv.mkDerivation rec {
     libusb1 libvorbis libebur128 pkgconfig portaudio portmidi protobuf qt5.full
     rubberband scons sqlite taglib soundtouch vamp.vampSDK opusfile upower hidapi
     ccache git glib x11 libGLU lilv lame lv2 makeWrapper qt5.qtbase
+    libdjinterop
   ] ++ allLv2Plugins;
 
   sconsFlags = [
