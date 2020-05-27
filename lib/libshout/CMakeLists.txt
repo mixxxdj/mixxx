@@ -36,7 +36,7 @@ add_library(shout_mixxx STATIC
 )
 
 target_compile_definitions(shout_mixxx PRIVATE HAVE_CONFIG_H)
-target_compile_options(shout_mixxx PRIVATE -pthread)
+target_compile_options(shout_mixxx PRIVATE -pthread -Wall)
 
 target_link_libraries(shout_mixxx ogg vorbis theora speex OpenSSL::SSL OpenSSL::Crypto)
 
