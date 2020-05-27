@@ -89,13 +89,11 @@ QStringList BaseTrackTableModel::defaultTableColumns() {
 }
 
 BaseTrackTableModel::BaseTrackTableModel(
-        const char* settingsNamespace,
+        QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
-        QObject* parent)
+        const char* settingsNamespace)
         : QAbstractTableModel(parent),
-          TrackModel(
-                  cloneDatabase(pTrackCollectionManager),
-                  settingsNamespace),
+          TrackModel(cloneDatabase(pTrackCollectionManager), settingsNamespace),
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
           m_backgroundColorOpacity(WLibrary::kDefaultTrackTableBackgroundColorOpacity) {

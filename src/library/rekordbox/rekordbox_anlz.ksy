@@ -244,7 +244,11 @@ types:
         doc: |
           The position, in milliseconds, at which the player loops
           back to the cue time if this is a loop.
-      - size: 12  # Loops seem to have some non-zero values in the last four bytes of this.
+      - id: color_id
+        type: u1
+        doc: |
+          Color ID of memory cues and loops, same color IDs as track colors
+      - size: 11  # Loops seem to have some non-zero values in the last four bytes of this.
       - id: len_comment
         type: u4
         if: len_entry > 43

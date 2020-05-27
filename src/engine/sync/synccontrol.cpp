@@ -393,30 +393,20 @@ void SyncControl::slotSyncModeChangeRequest(double state) {
 }
 
 void SyncControl::slotSyncMasterEnabledChangeRequest(double state) {
-    SyncMode mode = getSyncMode();
     if (state > 0.0) {
-        if (mode == SYNC_MASTER_EXPLICIT) {
+        if (isMaster(getSyncMode())) {
             // Already master.
-            return;
-        }
-        if (mode == SYNC_MASTER_SOFT) {
-            // user request: make master explicit
-            m_pSyncMode->setAndConfirm(SYNC_MASTER_EXPLICIT);
             return;
         }
         if (m_pPassthroughEnabled->get()) {
             qDebug() << "Disallowing enabling of sync mode when passthrough active";
             return;
         }
-        m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_MASTER_EXPLICIT);
-    } else {
-        // Turning off master goes back to follower mode.
-        if (mode == SYNC_FOLLOWER) {
-            // Already not master.
-            return;
-        }
-        m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
     }
+    // TODO(owilliams): Because SYNC_MASTER_EXPLICIT has issues, for now we
+    // actually just enable follower mode even when they ask for master. This
+    // is equivalent to the behavior in 2.2
+    m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
 }
 
 void SyncControl::slotSyncEnabledChangeRequest(double enabled) {

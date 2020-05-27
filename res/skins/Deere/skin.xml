@@ -15,13 +15,14 @@
       <attribute persist="true" config_key="[Deere],show_parallel_waveforms">1</attribute>
       <!-- Decks -->
       <attribute persist="true" config_key="[Skin],show_4decks">0</attribute>
-      <attribute persist="true" config_key="[Skin],show_8_hotcues">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_8_hotcues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_coverart">1</attribute>
       <attribute persist="true" config_key="[Skin],show_spinnies">1</attribute>
       <attribute persist="true" config_key="[Skin],show_starrating">1</attribute>
       <attribute persist="true" config_key="[Deere],show_track_info">1</attribute>
       <attribute persist="true" config_key="[Deere],show_bpm_info">1</attribute>
+      <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
       <!-- Mixer -->
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Skin],show_faders">1</attribute>

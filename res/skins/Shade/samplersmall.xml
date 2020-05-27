@@ -77,7 +77,7 @@
                       text-align: left;
                       padding-left: 1px; }
                   </Style>
-                  <Property>title</Property>
+                  <Property>titleInfo</Property>
                   <Group>[Sampler<Variable name="samplernum"/>]</Group>
                   <SizePolicy>me,max</SizePolicy>
                   <Elide>right</Elide>
@@ -172,4 +172,3 @@
     </Children>
   </WidgetGroup>
 </Template>
-

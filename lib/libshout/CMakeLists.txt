@@ -3,6 +3,8 @@ project(shout_mixxx C)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DHAVE_CONFIG_H -Wall -ffast-math -pthread -g -O2")
  
+find_package(OpenSSL)
+
 include_directories(
   .
   src
@@ -35,6 +37,6 @@ add_library(shout_mixxx STATIC
   src/tls.c
 )
 
-target_link_libraries(shout_mixxx ogg vorbis theora speex ssl crypto)
+target_link_libraries(shout_mixxx ogg vorbis theora speex OpenSSL::SSL OpenSSL::Crypto)
 
 

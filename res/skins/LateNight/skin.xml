@@ -40,7 +40,7 @@
       <attribute config_key="[Master],num_samplers">8</attribute>
       <!-- Decks -->
       <attribute persist="true" config_key="[Skin],show_4decks">0</attribute>
-      <attribute persist="true" config_key="[Skin],show_8_hotcues">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_8_hotcues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_spinnies">1</attribute>
       <attribute persist="true" config_key="[Skin],show_coverart">1</attribute>
@@ -48,6 +48,7 @@
       <attribute persist="true" config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
       <attribute persist="true" config_key="[Skin],show_rate_controls">1</attribute>
       <attribute persist="true" config_key="[Skin],show_rate_control_buttons">1</attribute>
+      <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
       <!-- Mixer -->
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Skin],show_master_head_mixer">1</attribute>
@@ -246,7 +247,7 @@
     <SetVariable name="BgTile">skin:/style_<Variable name="bg_tile"/>/background_tile.png</SetVariable>
 
     <SetVariable name="Align">center</SetVariable>
-    
+
     <SetVariable name="PotiMinAngle">-135</SetVariable>
     <SetVariable name="PotiMaxAngle">135</SetVariable>
     <!-- Define singletons as early in the skin as possible.  Note that the

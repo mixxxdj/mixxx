@@ -47,7 +47,7 @@
       <attribute persist="true" config_key="[Tango],separate_cue_button">1</attribute>
       <attribute persist="true" config_key="[Tango],hotcues">0</attribute>
       <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
-      <attribute persist="true" config_key="[Skin],show_8_hotcues">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_8_hotcues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_coverart">1</attribute>
       <attribute persist="true" config_key="[Skin],show_spinnies">1</attribute>
       <attribute persist="true" config_key="[Skin],show_big_spinny_coverart">1</attribute>
@@ -70,6 +70,7 @@
       <attribute persist="true" config_key="[Tango],always_visible_repeat">0</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_orientation">0</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_quantize">1</attribute>
+      <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
       <!-- Mixer -->
       <attribute persist="true" config_key="[Master],show_mixer">0</attribute>
       <attribute persist="true" config_key="[Tango],master_mixer">1</attribute>

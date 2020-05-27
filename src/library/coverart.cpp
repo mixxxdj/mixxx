@@ -121,11 +121,14 @@ QImage CoverInfo::loadImage(
         }
         DEBUG_ASSERT(coverFile.isAbsolute());
         if (!coverFile.exists()) {
-            kLogger.warning()
-                    << "loadImage"
-                    << type
-                    << "cover does not exist:"
-                    << coverFile.filePath();
+            // Disabled because this code can cause high CPU and thus possibly
+            // xruns as it might print the warning repeatedly.
+            // ToDo: Print warning about missing cover image only once.
+            //            kLogger.warning()
+            //                    << "loadImage"
+            //                    << type
+            //                    << "cover does not exist:"
+            //                    << coverFile.filePath();
             return QImage();
         }
         SecurityTokenPointer pToken =

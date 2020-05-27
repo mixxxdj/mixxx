@@ -441,6 +441,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/trackcollection.cpp
   src/library/trackcollectionmanager.cpp
   src/library/trackloader.cpp
+  src/library/tracksettablemodel.cpp
   src/library/traktor/traktorfeature.cpp
   src/library/treeitem.cpp
   src/library/treeitemmodel.cpp
@@ -624,6 +625,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/timer.cpp
   src/util/valuetransformer.cpp
   src/util/version.cpp
+  src/util/widgethelper.cpp
   src/util/widgetrendertimer.cpp
   src/util/workerthread.cpp
   src/util/workerthreadscheduler.cpp
@@ -2242,12 +2244,12 @@ if(NOT OPTIMIZE STREQUAL "off")
       if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86|x64|x86_64|AMD64)$")
         message(STATUS "Enabling SS2 CPU optimizations (>= Pentium 4)")
         target_compile_options(mixxx-lib PUBLIC "-mtune=generic")
-        # -mtune=generic pick the most common, but compatible options.
+        # -mtune=generic picks the most common, but compatible options.
         # on arm platforms equivalent to -march=arch
-        if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
           # the sse flags are not set by default on 32 bit builds
           # but are not supported on arm builds
-          target_compile_options(mixxx-lib PUBLIC "-msse" "-mfpmath=sse")
+          target_compile_options(mixxx-lib PUBLIC "-msse2" "-mfpmath=sse")
         endif()
         # TODO(rryan): macOS can use SSE3, and possibly SSE 4.1 once
         # we require macOS 10.12.
@@ -2272,18 +2274,10 @@ if(NOT OPTIMIZE STREQUAL "off")
     elseif(OPTIMIZE STREQUAL "native")
       message("Enabling native optimizations for ${CMAKE_SYSTEM_PROCESSOR}")
       target_compile_options(mixxx-lib PUBLIC "-march=native")
-      # http://en.chys.info/2010/04/what-exactly-marchnative-means/
       # Note: requires gcc >= 4.2.0
       # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
       # are set automatically
-      if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86|x64|x86_64|AMD64)$"
-         AND NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
-        # For 32 bit builds using gcc < 5.0, the mfpmath=sse is
-        # not set by default (not supported on arm builds)
-        # If -msse is not implicitly set, it falls back to mfpmath=387
-        # and a compiler warning is issued (tested with gcc 4.8.4)
-        target_compile_options(mixxx-lib PUBLIC "-mfpmath=sse")
-      elseif(CMAKE_SYSTEM_PROCESSOR EQUAL "arm")
+      if(CMAKE_SYSTEM_PROCESSOR EQUAL "arm")
         target_compile_options(mixxx-lib PUBLIC
           "-mfloat-abi=hard"
           "-mfpu=neon"

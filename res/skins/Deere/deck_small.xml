@@ -63,7 +63,7 @@
                             <TooltipId>track_title</TooltipId>
                             <ObjectName>TitleTextSmall</ObjectName>
                             <Size>100me,23f</Size>
-                            <Property>title</Property>
+                            <Property>titleInfo</Property>
                             <Group><Variable name="group"/></Group>
                             <Alignment>left</Alignment>
                             <Elide>right</Elide>
@@ -89,7 +89,7 @@
                           </Label>
                         </Children>
                       </WidgetGroup><!-- TitleGutter -->
-                      
+
                       <NumberPos>
                         <TooltipId>track_time</TooltipId>
                         <ObjectName>PlayPositionTextSmall</ObjectName>

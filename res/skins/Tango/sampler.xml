@@ -67,7 +67,7 @@ Variables:
             <TooltipId>text</TooltipId>
             <Size>i,14f</Size>
             <Group><Variable name="group"/></Group>
-            <Property>title</Property>
+            <Property>titleInfo</Property>
           </TrackProperty>
 
           <WidgetGroup><!-- Sync, CF assign, Volume -->
@@ -165,7 +165,7 @@ Variables:
                 <TooltipId>text</TooltipId>
                 <Size>i,18f</Size>
                 <Group><Variable name="group"/></Group>
-                <Property>title</Property>
+                <Property>titleInfo</Property>
                 <Elide>right</Elide>
               </TrackProperty>
 
@@ -228,7 +228,7 @@ Variables:
 
             </Children>
           </WidgetGroup><!-- /Title + [Play / Overview] -->
-    
+
           <SliderComposed>
             <ObjectName>SamplerPitchSlider</ObjectName>
             <TooltipId>rate</TooltipId>
