@@ -104,13 +104,9 @@ TrackId BaseExternalTrackModel::doGetTrackId(const TrackPointer& pTrack) const {
 }
 
 bool BaseExternalTrackModel::isColumnInternal(int column) {
-    // Used for preview deck widgets.
-    if (column == fieldIndex(LIBRARYTABLE_ID) ||
+    return column == fieldIndex(LIBRARYTABLE_ID) ||
             (PlayerManager::numPreviewDecks() == 0 &&
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW))) {
-        return true;
-    }
-    return false;
+                    column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW));
 }
 
 Qt::ItemFlags BaseExternalTrackModel::flags(const QModelIndex &index) const {

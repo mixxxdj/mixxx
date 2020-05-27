@@ -70,6 +70,7 @@
       <attribute persist="true" config_key="[Tango],always_visible_repeat">0</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_orientation">0</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_quantize">1</attribute>
+      <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
       <!-- Mixer -->
       <attribute persist="true" config_key="[Master],show_mixer">0</attribute>
       <attribute persist="true" config_key="[Tango],master_mixer">1</attribute>

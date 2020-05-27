@@ -1051,6 +1051,7 @@ class MixxxCore(Feature):
                    "src/library/crate/cratetablemodel.cpp",
 
                    "src/library/playlisttablemodel.cpp",
+                   "src/library/tracksettablemodel.cpp",
                    "src/library/libraryfeature.cpp",
                    "src/library/analysisfeature.cpp",
                    "src/library/autodj/autodjfeature.cpp",
