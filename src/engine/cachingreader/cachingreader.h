@@ -1,12 +1,10 @@
 // cachingreader.h
 // Created 7/9/2009 by RJ Ryan (rryan@mit.edu)
 
-#ifndef ENGINE_CACHINGREADER_H
-#define ENGINE_CACHINGREADER_H
+#pragma once
 
 #include <QAtomicInt>
 #include <QHash>
-#include <QLinkedList>
 #include <QList>
 #include <QVarLengthArray>
 #include <QVector>
@@ -164,7 +162,7 @@ class CachingReader : public QObject {
 
     // List of free chunks. Linked list so that we have constant time insertions
     // and deletions. Iteration is not necessary.
-    QLinkedList<CachingReaderChunkForOwner*> m_freeChunks;
+    std::list<CachingReaderChunkForOwner*> m_freeChunks;
 
     // Keeps track of what CachingReaderChunks we've allocated and indexes them based on what
     // chunk number they are allocated to.
@@ -182,6 +180,3 @@ class CachingReader : public QObject {
 
     CachingReaderWorker m_worker;
 };
-
-
-#endif /* ENGINE_CACHINGREADER_H */

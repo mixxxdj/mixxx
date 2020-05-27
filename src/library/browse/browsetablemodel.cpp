@@ -198,10 +198,10 @@ TrackId BrowseTableModel::getTrackId(const QModelIndex& index) const {
     }
 }
 
-const QLinkedList<int> BrowseTableModel::getTrackRows(TrackId trackId) const {
+const std::list<int> BrowseTableModel::getTrackRows(TrackId trackId) const {
     Q_UNUSED(trackId);
     // We can't implement this as it stands.
-    return QLinkedList<int>();
+    return std::list<int>();
 }
 
 void BrowseTableModel::search(const QString& searchText, const QString& extraFilter) {

@@ -1,8 +1,6 @@
-#ifndef TRACKMODEL_H
-#define TRACKMODEL_H
+#pragma once
 
 #include <QList>
-#include <QLinkedList>
 #include <QItemDelegate>
 #include <QtSql>
 
@@ -102,7 +100,7 @@ class TrackModel {
 
     // Gets the rows of the track in the current result set. Returns an
     // empty list if the track ID is not present in the result set.
-    virtual const QLinkedList<int> getTrackRows(TrackId trackId) const = 0;
+    virtual const std::list<int> getTrackRows(TrackId trackId) const = 0;
 
     bool isTrackModel() { return true;}
     virtual void search(const QString& searchText, const QString& extraFilter=QString()) = 0;
@@ -207,5 +205,3 @@ class TrackModel {
     int m_iDefaultSortColumn;
     Qt::SortOrder m_eDefaultSortOrder;
 };
-
-#endif
