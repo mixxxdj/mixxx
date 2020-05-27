@@ -69,10 +69,8 @@ int main(int argc, char * argv[]) {
     QCoreApplication::setOrganizationDomain("mixxx.org");
 
     // This needs to be set before initializing the QApplication.
-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-#endif
 
     // Setting the organization name results in a QDesktopStorage::DataLocation
     // of "$HOME/Library/Application Support/Mixxx/Mixxx" on OS X. Leave the
