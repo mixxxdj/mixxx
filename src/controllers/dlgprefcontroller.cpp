@@ -23,7 +23,11 @@
 #include "preferences/usersettings.h"
 #include "util/version.h"
 
-DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller, ControllerManager* controllerManager, UserSettingsPointer pConfig)
+DlgPrefController::DlgPrefController(
+        QWidget* parent,
+        Controller* controller,
+        ControllerManager* controllerManager,
+        UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
           m_pControllerManager(controllerManager),
