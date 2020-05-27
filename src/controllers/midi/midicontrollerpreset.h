@@ -4,7 +4,7 @@
 /// @date Mon 9 Apr 2012
 /// @brief MIDI Controller preset
 
-#include <QHash>
+#include <QMultiHash>
 
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetvisitor.h"
@@ -26,17 +26,17 @@ class MidiControllerPreset : public ControllerPreset {
     // Input mappings
     void addInputMapping(uint16_t key, MidiInputMapping mapping);
     void removeInputMapping(uint16_t key);
-    const QHash<uint16_t, MidiInputMapping>& getInputMappings() const;
-    void setInputMappings(const QHash<uint16_t, MidiInputMapping>& mappings);
+    const QMultiHash<uint16_t, MidiInputMapping>& getInputMappings() const;
+    void setInputMappings(const QMultiHash<uint16_t, MidiInputMapping>& mappings);
 
     // Output mappings
     void addOutputMapping(ConfigKey key, MidiOutputMapping mapping);
     void removeOutputMapping(ConfigKey key);
-    const QHash<ConfigKey, MidiOutputMapping>& getOutputMappings() const;
-    void setOutputMappings(const QHash<ConfigKey, MidiOutputMapping>& mappings);
+    const QMultiHash<ConfigKey, MidiOutputMapping>& getOutputMappings() const;
+    void setOutputMappings(const QMultiHash<ConfigKey, MidiOutputMapping>& mappings);
 
   private:
     // MIDI input and output mappings.
-    QHash<uint16_t, MidiInputMapping> m_inputMappings;
-    QHash<ConfigKey, MidiOutputMapping> m_outputMappings;
+    QMultiHash<uint16_t, MidiInputMapping> m_inputMappings;
+    QMultiHash<ConfigKey, MidiOutputMapping> m_outputMappings;
 };
