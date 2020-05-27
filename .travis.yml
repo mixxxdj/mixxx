@@ -83,7 +83,7 @@ jobs:
         - cd cmake_build
         - cmake -L $CMAKEFLAGS $CMAKEFLAGS_EXTRA ..
         - cmake --build .
-        - sudo env "PATH=$PATH" cmake --build . --target install
+        - cpack -G DEB
       script:
         # Run tests and benchmarks
         - ctest
@@ -169,7 +169,7 @@ jobs:
         - cd cmake_build
         - cmake -L $CMAKEFLAGS $CMAKEFLAGS_EXTRA -DCMAKE_PREFIX_PATH=${MIXXX_ENVPATH} -DQt5_DIR=${QT_DIR} ..
         - cmake --build .
-        - sudo cmake --build . --target install
+        - cpack -G DragNDrop
       script:
         # Run tests and benchmarks
         - ctest
