@@ -29,7 +29,7 @@ class Encoder {
         };
 
     Encoder() {}
-    virtual ~Encoder() {}
+    virtual ~Encoder() = default;
 
     virtual int initEncoder(int samplerate, QString errorMessage) = 0;
     // encodes the provided buffer of audio.
@@ -56,7 +56,7 @@ class EncoderFactory {
     Encoder::Format getFormatFor(QString format) const;
     EncoderPointer createRecordingEncoder(
             Encoder::Format format,
-            UserSettingsPointer pConfig, 
+            UserSettingsPointer pConfig,
             EncoderCallback* pCallback) const;
     EncoderPointer createEncoder(
             EncoderSettingsPointer pSettings,
