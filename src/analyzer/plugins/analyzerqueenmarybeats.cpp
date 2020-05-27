@@ -14,7 +14,8 @@ namespace {
 // ~12 ms (86 Hz) is a fair compromise between accuracy and analysis speed.
 // These are the preferred window/step sizes from the BeatTrack VAMP
 // With a 44.1 kHz Track we go in 512 Sample Steps
-// TODO: The waveform sample rate of 441 is at an odd factor of 5.12 producing visual jitter.
+// TODO: The waveform sample rate of 441 (defined in AnalyzerWaveform::initialize)
+// is at an odd factor of 441 * 0.01161 = 5.12 producing visual jitter.
 constexpr float kStepSecs = 0.01161;
 // results in 43 Hz @ 44.1 kHz / 47 Hz @ 48 kHz / 47 Hz @ 96 kHz
 constexpr int kMaximimBinSizeHz = 50; // Hz
