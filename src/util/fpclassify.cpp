@@ -1,4 +1,4 @@
-// this is a wapper around the fpclassify functions which prevents inlining
+// this is a wrapper around the fpclassify functions which prevents inlining
 // It is compiled without optimization
 // The rest of the source of Mixxx is compiled with -ffast-math, which breaks
 // the fpclassify functions
