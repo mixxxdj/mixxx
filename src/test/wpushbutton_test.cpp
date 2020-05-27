@@ -45,7 +45,7 @@ TEST_F(WPushButtonTest, QuickPressNoLatchTest) {
     // This test can be flaky if the event simulator takes too long to deliver
     // the event.
     m_Events.addMousePress(Qt::LeftButton);
-    m_Events.addMouseRelease(Qt::LeftButton, 0, QPoint(), 1);
+    m_Events.addMouseRelease(Qt::LeftButton, Qt::NoModifier, QPoint(), 1);
 
     m_Events.simulate(m_pButton.data());
 
@@ -68,7 +68,7 @@ TEST_F(WPushButtonTest, LongPressLatchTest) {
             ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE));
 
     m_Events.addMousePress(Qt::LeftButton);
-    m_Events.addMouseRelease(Qt::LeftButton, 0, QPoint(), 1000);
+    m_Events.addMouseRelease(Qt::LeftButton, Qt::NoModifier, QPoint(), 1000);
 
     m_Events.simulate(m_pButton.data());
 
