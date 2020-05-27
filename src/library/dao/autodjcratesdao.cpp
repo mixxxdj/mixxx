@@ -1,16 +1,17 @@
+#include "library/dao/autodjcratesdao.h"
+
+#include <QRandomGenerator>
 #include <QtDebug>
 #include <QtSql>
 
-#include "library/dao/autodjcratesdao.h"
-
-#include "mixer/playerinfo.h"
-#include "mixer/playermanager.h"
 #include "library/crate/crateschema.h"
 #include "library/dao/settingsdao.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
+#include "mixer/playerinfo.h"
+#include "mixer/playermanager.h"
 
 #define AUTODJCRATESTABLE_TRACKID "track_id"
 #define AUTODJCRATESTABLE_CRATEREFS "craterefs"
@@ -1172,25 +1173,25 @@ TrackId AutoDJCratesDAO::getRandomTrackIdFromLibrary(int iPlaylistId) {
         // Least Preferred is not disabled
         iIgnoreIndex1 = (kLeastPreferredPercent * iTotalTracks) / 100;
         iIgnoreIndex2 = iTotalTracks - iIgnoreIndex1;
-        int iRandomNo = qrand() % 16 ;
+        int iRandomNo = QRandomGenerator::global()->bounded(16);
         if(iRandomNo == 0 && iIgnoreIndex1 != 0) {
             // Select a track from the first [1, iIgnoredIndex1]
             beginIndex = 0;
-            offset = qrand() % iIgnoreIndex1 + 1 ;
+            offset = QRandomGenerator::global()->bounded(iIgnoreIndex1) + 1;
         } else if(iRandomNo == 1 && iTotalTracks > iIgnoreIndex2){
             // Select from [iIgnoredIndex2 + 1, iTotalTracks];
             beginIndex = iIgnoreIndex2;
             // We need a number between [1, Total - iIgnoreIndex2]
-            offset = qrand() % (iTotalTracks - iIgnoreIndex2) + 1;
+            offset = QRandomGenerator::global()->bounded(iTotalTracks - iIgnoreIndex2) + 1;
         } else {
             // Select from [iIgnoreIndex1 + 1, iIgnoreIndex2];
             beginIndex = iIgnoreIndex1;
             // We need a number between [1, iIgnoreIndex2 - iIgnoreIndex1]
-            offset = qrand() % (iIgnoreIndex2 - iIgnoreIndex1) + 1;
+            offset = QRandomGenerator::global()->bounded(iIgnoreIndex2 - iIgnoreIndex1) + 1;
         }
         offset = beginIndex + offset;
         // In case we end up doing a qRand()%1 above
-        if( offset >= iTotalTracks) {
+        if (offset >= iTotalTracks) {
             offset= 0 ;
         }
     }

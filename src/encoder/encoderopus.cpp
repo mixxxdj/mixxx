@@ -1,16 +1,18 @@
 // encoderopus.cpp
 // Create on August 15th 2017 by Palakis
 
+#include "encoder/encoderopus.h"
+
 #include <stdlib.h>
+
 #include <QByteArray>
 #include <QMapIterator>
+#include <QRandomGenerator>
 #include <QtGlobal>
 
 #include "encoder/encoderopussettings.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "util/logger.h"
-
-#include "encoder/encoderopus.h"
 
 namespace {
 // From libjitsi's Opus encoder:
@@ -63,8 +65,8 @@ int getSerial() {
 
     int serial;
     do {
-        serial = qrand();
-    } while(prevSerial == serial);
+        serial = static_cast<int>(QRandomGenerator::global()->generate());
+    } while (prevSerial == serial);
 
     prevSerial = serial;
     kLogger.debug() << "RETURNING SERIAL " << serial;
@@ -110,7 +112,7 @@ EncoderOpus::EncoderOpus(EncoderCallback* pCallback)
     // the Live Broadcasting implementation
 
     m_opusComments.insert("ENCODER", "mixxx/libopus");
-    ogg_stream_init(&m_oggStream, qrand());
+    ogg_stream_init(&m_oggStream, static_cast<int>(QRandomGenerator::global()->generate()));
 }
 
 EncoderOpus::~EncoderOpus() {
