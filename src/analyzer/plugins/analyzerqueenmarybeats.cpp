@@ -18,7 +18,7 @@ namespace {
 // is at an odd factor of 441 * 0.01161 = 5.12 producing visual jitter.
 constexpr float kStepSecs = 0.01161;
 // results in 43 Hz @ 44.1 kHz / 47 Hz @ 48 kHz / 47 Hz @ 96 kHz
-constexpr int kMaximimBinSizeHz = 50; // Hz
+constexpr int kMaximumBinSizeHz = 50; // Hz
 
 DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
     // These are the defaults for the VAMP beat tracker plugin we used in Mixxx
@@ -49,7 +49,7 @@ bool AnalyzerQueenMaryBeats::initialize(int samplerate) {
     m_detectionResults.clear();
     m_iSampleRate = samplerate;
     m_stepSize = m_iSampleRate * kStepSecs;
-    m_windowSize = MathUtilities::nextPowerOfTwo(m_iSampleRate / kMaximimBinSizeHz);
+    m_windowSize = MathUtilities::nextPowerOfTwo(m_iSampleRate / kMaximumBinSizeHz);
     m_pDetectionFunction = std::make_unique<DetectionFunction>(
             makeDetectionFunctionConfig(m_stepSize, m_windowSize));
     qDebug() << "input sample rate is " << m_iSampleRate << ", step size is " << m_stepSize;
