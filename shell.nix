@@ -46,7 +46,7 @@ let inherit (nixroot) stdenv pkgs lib
   '';
 
   shell-build = nixroot.writeShellScriptBin "build" ''
-    if [ -d "$cbuild" ]; then
+    if [ ! -d "cbuild" ]; then
       >&2 echo "First you have to run configure."
       exit 1
     fi
@@ -55,11 +55,19 @@ let inherit (nixroot) stdenv pkgs lib
   '';
 
   shell-run = nixroot.writeShellScriptBin "run" ''
+    if [ ! -f "cbuild/mixxx" ]; then
+      >&2 echo "First you have to run build."
+      exit 1
+    fi
     cd cbuild
     ./mixxx --resourcePath res/ "$@"
   '';
 
   shell-debug = nixroot.writeShellScriptBin "debug" ''
+    if [ ! -f "cbuild/mixxx" ]; then
+      >&2 echo "First you have to run build."
+      exit 1
+    fi
     cd cbuild
     gdb --args ./mixxx --resourcePath res/ "$@"
   '';
