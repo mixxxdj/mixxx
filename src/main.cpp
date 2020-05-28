@@ -75,7 +75,7 @@ int main(int argc, char * argv[]) {
 #endif
 
     // workaround for https://bugreports.qt.io/browse/QTBUG-84363
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0) && QT_VERSION < QT_VERSION_CHECK(5, 15, 1)
     qputenv("QV4_FORCE_INTERPRETER", QByteArrayLiteral("1"));
 #endif
 
