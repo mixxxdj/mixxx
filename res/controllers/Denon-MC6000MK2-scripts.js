@@ -338,13 +338,13 @@ DenonMC6000MK2.getSamplerByGroup = function(group) {
 };
 
 DenonMC6000MK2.Sampler = function(side, midiChannel, midiLedValue, midiDimmerLedValue) {
-    this.side = side;
     this.number = ++DenonMC6000MK2.samplerCount;
     this.group = "[Sampler" + this.number + "]";
+    DenonMC6000MK2.samplersByGroup[this.group] = this;
+    DenonMC6000MK2.sidesByGroup[this.group] = side;
     this.midiChannel = midiChannel;
     this.midiLedValue = midiLedValue;
     this.midiDimmerLedValue = midiDimmerLedValue;
-    DenonMC6000MK2.samplersByGroup[this.group] = this;
 };
 
 DenonMC6000MK2.Sampler.prototype.isTrackLoaded = function() {
@@ -364,11 +364,13 @@ DenonMC6000MK2.Sampler.prototype.isPlaying = function() {
 };
 
 DenonMC6000MK2.Sampler.prototype.onButton = function(isButtonPressed) {
+    var side;
     switch (DenonMC6000MK2.DEFAULT_SAMPLER_MODE) {
     case DenonMC6000MK2.SAMPLER_MODE.TRIGGER:
         if (isButtonPressed) {
             if (this.isTrackLoaded()) {
-                if (this.side.getShiftState()) {
+                side = DenonMC6000MK2.getSideByGroup(this.group);
+                if (side.getShiftState()) {
                     engine.setValue(this.group, "start_stop", true);
                 } else {
                     engine.setValue(this.group, "start_play", true);
@@ -380,8 +382,9 @@ DenonMC6000MK2.Sampler.prototype.onButton = function(isButtonPressed) {
         break;
     case DenonMC6000MK2.SAMPLER_MODE.HOLD:
         if (this.isTrackLoaded()) {
+            side = DenonMC6000MK2.getSideByGroup(this.group);
             if (isButtonPressed) {
-                if (this.side.getShiftState()) {
+                if (side.getShiftState()) {
                     engine.setValue(this.group, "eject", true);
                 } else {
                     engine.setValue(this.group, "start_play", true);
@@ -389,7 +392,7 @@ DenonMC6000MK2.Sampler.prototype.onButton = function(isButtonPressed) {
             } else {
                 // continue playing if shift is pressed when
                 // releasing the pressed button
-                if (!this.side.getShiftState()) {
+                if (!side.getShiftState()) {
                     engine.setValue(this.group, "start_stop", true);
                 }
             }
@@ -440,7 +443,6 @@ DenonMC6000MK2.getDeckByGroup = function(group) {
 /* Constructor */
 
 DenonMC6000MK2.OldDeck = function(number, midiChannel) {
-    this.side = undefined;
     this.number = number;
     this.group = "[Channel" + number + "]";
     this.filterGroup = "[QuickEffectRack1_" + this.group + "_Effect1]";
@@ -455,8 +457,9 @@ DenonMC6000MK2.OldDeck = function(number, midiChannel) {
 
 /* Shift */
 
-DenonMC6000MK2.OldDeck.prototype.getShiftState = function(_group) {
-    return this.side.getShiftState();
+DenonMC6000MK2.OldDeck.prototype.getShiftState = function() {
+    var side = DenonMC6000MK2.getSideByGroup(this.group);
+    return side.getShiftState();
 };
 
 /* Values & Parameters */
@@ -740,8 +743,9 @@ DenonMC6000MK2.OldDeck.prototype.spinJog = function(jogDelta) {
 /* Filter */
 
 DenonMC6000MK2.OldDeck.prototype.applyFilter = function() {
-    engine.setValue(this.filterGroup, "enabled", this.side.filterEnabled);
-    engine.setParameter(this.filterGroup, "meta", this.side.filterParam);
+    var side = DenonMC6000MK2.getSideByGroup(this.group);
+    engine.setValue(this.filterGroup, "enabled", side.filterEnabled);
+    engine.setParameter(this.filterGroup, "meta", side.filterParam);
 };
 
 /* Loops */
@@ -937,9 +941,9 @@ DenonMC6000MK2.EfxParam = function(group) {
 ////////////////////////////////////////////////////////////////////////
 
 DenonMC6000MK2.EfxUnit = function(side, unit) {
-    this.side = side;
     this.unit = DenonMC6000MK2.EFX_RACK + "_" + unit;
     this.group = "[" + this.unit + "]";
+    DenonMC6000MK2.sidesByGroup[this.group] = side;
     this.params = [];
     this.params[1] = new DenonMC6000MK2.EfxParam("[" + this.unit + "_Effect1]");
     this.params[2] = new DenonMC6000MK2.EfxParam("[" + this.unit + "_Effect2]");
@@ -947,7 +951,8 @@ DenonMC6000MK2.EfxUnit = function(side, unit) {
 };
 
 DenonMC6000MK2.EfxUnit.prototype.getShiftState = function() {
-    return this.side.getShiftState();
+    var side = DenonMC6000MK2.getSideByGroup(this.group);
+    return side.getShiftState();
 };
 
 DenonMC6000MK2.EfxUnit.prototype.isEnabled = function() {
@@ -973,7 +978,8 @@ DenonMC6000MK2.EfxUnit.prototype.isDeckAssigned = function(deck) {
 };
 
 DenonMC6000MK2.EfxUnit.prototype.isActiveDeckAssigned = function() {
-    return engine.getValue(this.group, this.getDeckAssignKey(this.side.activeDeck));
+    var side = DenonMC6000MK2.getSideByGroup(this.group);
+    return engine.getValue(this.group, this.getDeckAssignKey(side.activeDeck));
 };
 
 DenonMC6000MK2.EfxUnit.prototype.isAnyDeckAssigned = function() {
@@ -1034,7 +1040,6 @@ DenonMC6000MK2.Side = function(decks, efxUnit, samplerMidiChannel) {
     this.decksByGroup = {};
     for (var deckIndex in decks) {
         var deck = decks[deckIndex];
-        deck.side = this;
         this.decksByGroup[deck.group] = deck;
         DenonMC6000MK2.sidesByGroup[deck.group] = this;
     }
@@ -1051,7 +1056,7 @@ DenonMC6000MK2.Side = function(decks, efxUnit, samplerMidiChannel) {
 
 /* Shift */
 
-DenonMC6000MK2.Side.prototype.getShiftState = function(_group) {
+DenonMC6000MK2.Side.prototype.getShiftState = function() {
     if (DenonMC6000MK2.GLOBAL_SHIFT_STATE) {
         return DenonMC6000MK2.getShiftState();
     } else {
@@ -1592,7 +1597,6 @@ DenonMC6000MK2.Side = function(name, oldSide) {
     DenonMC6000MK2.logDebug("Creating '" + name + "' side");
 
     components.ComponentContainer.call(this);
-    //var thisSide = this;
 
     this.name = name;
     this.oldSide = oldSide;
@@ -1612,7 +1616,6 @@ DenonMC6000MK2.Side.prototype.connectDeck = function(deck) {
     var group = deck.currentDeck;
     DenonMC6000MK2.logDebug("Connecting deck " + group + " to '" + this.name + "' side");
     this.decksByGroup[group] = deck;
-    deck.side = this;
 };
 
 DenonMC6000MK2.Side.prototype.shiftButtonInput = function(channel, control, value, status) {
@@ -1655,8 +1658,6 @@ DenonMC6000MK2.Deck = function(number, channel) {
     components.Deck.call(this, number);
     //var thisDeck = this;
 
-    this.side = undefined;
-
     this.loadButton = new DenonMC6000MK2.LoadButton();
 
     this.cueButton = new components.CueButton([0xB0 + channel, 0x26]);
@@ -1685,7 +1686,8 @@ DenonMC6000MK2.Deck = function(number, channel) {
 DenonMC6000MK2.Deck.prototype = Object.create(components.Deck.prototype);
 
 DenonMC6000MK2.Deck.prototype.shiftButtonInput = function(channel, control, value, status) {
-    this.side.shiftButtonInput(channel, control, value, status);
+    var side = DenonMC6000MK2.getSideByGroup(this.group);
+    side.shiftButtonInput(channel, control, value, status);
 };
 
 DenonMC6000MK2.Deck.prototype.loopInButtonInput = function(channel, control, value, status, group) {
