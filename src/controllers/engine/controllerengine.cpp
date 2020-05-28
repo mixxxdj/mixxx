@@ -722,7 +722,7 @@ QJSValue ControllerEngine::connectControl(
         qWarning() << "QObject passed to engine.connectControl. Assuming it is"
                    << "a connection object to disconnect and returning false.";
         if (!strcmp(qmeta->className(),
-                    "ScriptConnectionInvokableWrapper")) {
+                    "ScriptConnectionJSProxy")) {
             ScriptConnectionJSProxy* proxy =
                     (ScriptConnectionJSProxy*)qobject;
             proxy->disconnect();
