@@ -115,7 +115,7 @@
 
         Note:   Icons for buttons that have images set in xml already are set in the
                 respective style-[theme].qss -->
-      <Style src="skin:style_palemoon.css"/>
+      <Style src="skin:style_palemoon.qss"/>
       <SetVariable name="BtnScheme">palemoon</SetVariable>
       <SetVariable name="KnobScheme">palemoon</SetVariable>
       <SetVariable name="SliderScheme">palemoon</SetVariable>
@@ -214,7 +214,7 @@ CHECK! -->
 
     <Scheme>
       <Name>Classic</Name>
-      <Style src="skin:style_classic.css"/>
+      <Style src="skin:style_classic.qss"/>
       <SetVariable name="BtnScheme">classic</SetVariable>
       <SetVariable name="KnobScheme">classic</SetVariable>
       <SetVariable name="SliderScheme">classic</SetVariable>
@@ -268,7 +268,7 @@ CHECK! -->
   </Schemes>
 
   <ObjectName>Mixxx</ObjectName>
-  <Style src="skin:style.css"/>
+  <Style src="skin:style.qss"/>
   <!-- MinimumSize should not be an exact monitor resolution. There needs
   to be space for the title bar or other chrome at full screen.
   https://www.mixxx.org/wiki/doku.php/skin_guidelines#the_optimal_size_for_skins -->
