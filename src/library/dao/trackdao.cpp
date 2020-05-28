@@ -316,7 +316,9 @@ void TrackDAO::slotDatabaseTracksRelocated(QList<RelocatedTrack> relocatedTracks
         }
     }
     DEBUG_ASSERT(removedTrackIds.size() <= changedTrackIds.size());
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     DEBUG_ASSERT(!removedTrackIds.intersects(changedTrackIds));
+#endif
     if (!removedTrackIds.isEmpty()) {
         emit tracksRemoved(removedTrackIds);
     }
