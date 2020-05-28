@@ -225,7 +225,7 @@ void exportMetadata(djinterop::database& db,
     // overview waveform too.
     if (pWaveform) {
         int64_t samplesPerEntry = externalTrack.required_waveform_samples_per_entry();
-        int64_t externalWaveformSize = (sampleCount / samplesPerEntry) + 1;
+        int64_t externalWaveformSize = (sampleCount + samplesPerEntry - 1) / samplesPerEntry;
         std::vector<djinterop::waveform_entry> externalWaveform;
         externalWaveform.reserve(externalWaveformSize);
         for (int64_t i = 0; i < externalWaveformSize; ++i) {
