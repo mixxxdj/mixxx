@@ -52,6 +52,7 @@
       <attribute persist="true" config_key="[Skin],show_rate_controls">1</attribute>
       <attribute persist="true" config_key="[Skin],show_rate_control_buttons">1</attribute>
       <attribute persist="true" config_key="[Skin],show_beatgrid_controls">1</attribute>
+      <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
       <!-- Mixer -->
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Skin],show_master_head_mixer">1</attribute>

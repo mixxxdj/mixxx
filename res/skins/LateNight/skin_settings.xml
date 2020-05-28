@@ -141,6 +141,13 @@ Description:
                         <SetVariable name="Setting">[Skin],show_intro_outro_cues</SetVariable>
                       </Template>
 
+                      <!-- Cue shift buttons in beatgrid editing section -->
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
+                        <SetVariable name="Text">Hotcue Shift Buttons</SetVariable>
+                        <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
+                      </Template>
+
                       <!-- Rate Controls -->
                       <Template src="skin:/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">rate_toggle</SetVariable>
@@ -226,19 +233,12 @@ Description:
                         <SetVariable name="Setting">[Skin],show_4decks</SetVariable>
                       </Template>
 
-                      <!-- Deck Settings in compact decks
+                      <!-- Cue shift buttons in beatgrid editing section -->
                       <Template src="skin:/helpers/skin_settings_button_2state.xml">
-                        <SetVariable name="TooltipId"></SetVariable>
-                        <SetVariable name="Text">Deck Settings</SetVariable>
-                        <SetVariable name="Setting">[Skin],show_deck_settings</SetVariable>
-                      </Template>-->
-
-                      <!-- Key Controls in compact decks
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
-                        <SetVariable name="TooltipId"></SetVariable>
-                        <SetVariable name="Text">Key Controls</SetVariable>
-                        <SetVariable name="Setting">[Skin],show_key_controls_compact</SetVariable>
-                      </Template>-->
+                        <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
+                        <SetVariable name="Text">Hotcue Shift Buttons</SetVariable>
+                        <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
+                      </Template>
 
                       <!-- Loop/Jump Controls in compact decks-->
                       <Template src="skin:/helpers/skin_settings_button_2state.xml">
@@ -348,6 +348,13 @@ Description:
                         <SetVariable name="TooltipId">toggle_4decks</SetVariable>
                         <SetVariable name="Text">4 Decks</SetVariable>
                         <SetVariable name="Setting">[Skin],show_4decks</SetVariable>
+                      </Template>
+
+                      <!-- Cue shift buttons in beatgrid editing section -->
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
+                        <SetVariable name="Text">Hotcue Shift Buttons</SetVariable>
+                        <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
                       </Template>
 
                       <WidgetGroup><Size>0me,85f</Size></WidgetGroup>

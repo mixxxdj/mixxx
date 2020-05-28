@@ -1159,6 +1159,12 @@ WPushButton#SamplerExpand[displayValue="0"],
     #BeatsFaster {
       image: url(skin:/classic/buttons/btn__beats_faster.svg) no-repeat center center;
     }
+    #HotcuesEarlier {
+      image: url(skin:/classic/buttons/btn__hotcues_earlier.svg) no-repeat center center;
+    }
+    #HotcuesLater {
+      image: url(skin:/classic/buttons/btn__hotcues_later.svg) no-repeat center center;
+    }
 
 #MicTalk {
   image: url(skin:/classic/buttons/btn__mic_talk.svg) no-repeat center center;

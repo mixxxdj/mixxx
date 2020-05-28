@@ -1138,6 +1138,18 @@ WPushButton#RecButton[displayValue="1"],
     #BeatsFaster[pressed="true"] {
       image: url(skin:/palemoon/buttons/btn__beats_faster_active.svg) no-repeat center center;
     }
+  #HotcuesEarlier {
+    image: url(skin:/palemoon/buttons/btn__hotcues_earlier.svg) no-repeat center center;
+  }
+    #HotcuesEarlier[pressed="true"] {
+      image: url(skin:/palemoon/buttons/btn__hotcues_earlier_active.svg) no-repeat center center;
+    }
+  #HotcuesLater {
+    image: url(skin:/palemoon/buttons/btn__hotcues_later.svg) no-repeat center center;
+  }
+    #HotcuesLater[pressed="true"] {
+      image: url(skin:/palemoon/buttons/btn__hotcues_later_active.svg) no-repeat center center;
+    }
 
 #MicTalk[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__mic_talk.svg) no-repeat center center;

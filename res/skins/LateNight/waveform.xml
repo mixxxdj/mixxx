@@ -122,8 +122,6 @@
       <WidgetGroup>
         <ObjectName>BeatgridControls</ObjectName>
         <Layout>vertical</Layout>
-        <!-- Horizontal size is 82px and we'll add the WaveformContainer's negative margin
-            (shifts waveform center mark) so that all buttons are visible -->
         <SizePolicy>f,f</SizePolicy>
         <Children>
           <WidgetGroup><Size>1me,0me</Size></WidgetGroup>
@@ -135,16 +133,16 @@
 
               <WidgetGroup><!-- CurPos only -->
                 <Layout>vertical</Layout>
-                <SizePolicy>f,f</SizePolicy>
+                <Size>26f,52f</Size>
                 <Children>
-	              <Template src="skin:button_1state_right.xml">
-	                <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
-	                <SetVariable name="ObjectName">BeatCurposLarge</SetVariable>
-	                <SetVariable name="Size">26f,52f</SetVariable>
-	                <SetVariable name="btn_format">tall</SetVariable>
-	                <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_curpos</SetVariable>
-	                <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beats_translate_match_alignment</SetVariable>
-	              </Template>
+  	              <Template src="skin:/controls/button_1state_right.xml">
+  	                <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
+  	                <SetVariable name="ObjectName">BeatCurposLarge</SetVariable>
+  	                <SetVariable name="Size">26f,52f</SetVariable>
+  	                <SetVariable name="BtnSize">tall</SetVariable>
+  	                <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_curpos</SetVariable>
+  	                <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beats_translate_match_alignment</SetVariable>
+  	              </Template>
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Skin],timing_shift_buttons</ConfigKey>
@@ -155,22 +153,22 @@
 
               <WidgetGroup><!-- CurPos + hotcue shift -->
                 <Layout>vertical</Layout>
-                <SizePolicy>f,f</SizePolicy>
+                <Size>52f,52f</Size>
                 <Children>
-                  <Template src="skin:button_1state_right.xml">
+                  <Template src="skin:/controls/button_1state_right.xml">
                     <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
                     <SetVariable name="ObjectName">BeatCurposLarge</SetVariable>
                     <SetVariable name="Size">52f,26f</SetVariable>
-                    <SetVariable name="btn_format">wide</SetVariable>
+                    <SetVariable name="BtnSize">wide</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_curpos</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beats_translate_match_alignment</SetVariable>
                   </Template>
 
                   <WidgetGroup><!-- hotcue shift -->
                     <Layout>horizontal</Layout>
-                    <SizePolicy>f,f</SizePolicy>
+                    <Size>52f,26f</Size>
                     <Children>
-                      <Template src="skin:button_1state_right.xml">
+                      <Template src="skin:/controls/button_1state_right.xml">
                         <SetVariable name="TooltipId">shift_cues_earlier</SetVariable>
                         <SetVariable name="ObjectName">HotcuesEarlier</SetVariable>
                         <SetVariable name="Size">26f,26f</SetVariable>
@@ -178,7 +176,7 @@
                         <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,shift_cues_earlier_small</SetVariable>
                       </Template>
 
-                      <Template src="skin:button_1state_right.xml">
+                      <Template src="skin:/controls/button_1state_right.xml">
                         <SetVariable name="TooltipId">shift_cues_later</SetVariable>
                         <SetVariable name="ObjectName">HotcuesLater</SetVariable>
                         <SetVariable name="Size">26f,26f</SetVariable>
@@ -188,11 +186,15 @@
                     </Children>
                   </WidgetGroup><!-- hotcue shift -->
                 </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],timing_shift_buttons</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
               </WidgetGroup><!-- CurPos + hotcue shift -->
 
               <WidgetGroup><!-- beats earlier & faster -->
                 <Layout>vertical</Layout>
-                <SizePolicy>f,f</SizePolicy>
+                <Size>26f,52f</Size>
                 <Children>
                   <Template src="skin:/controls/button_1state.xml">
                     <SetVariable name="TooltipId">beats_translate_earlier</SetVariable>
@@ -212,7 +214,7 @@
 
               <WidgetGroup><!-- beats later & slower -->
                 <Layout>vertical</Layout>
-                <SizePolicy>f,f</SizePolicy>
+                <Size>26f,52f</Size>
                 <Children>
                   <Template src="skin:/controls/button_1state.xml">
                     <SetVariable name="TooltipId">beats_translate_later</SetVariable>

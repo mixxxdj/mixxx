@@ -5,10 +5,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   width="24"
-   height="24"
+   id="svg14"
    version="1.1"
-   id="svg14">
+   height="24"
+   width="24">
   <metadata
      id="metadata20">
     <rdf:RDF>
@@ -24,15 +24,15 @@
   <defs
      id="defs18" />
   <path
-     style="fill:#bfbfbe"
+     d="m 12,16 h -2 v 3 l -7,-4 7,-4 v 3 h 2 z"
      id="path6"
-     d="m 12,16 h -2 v 3 l -7,-4 7,-4 v 3 h 2 z" />
+     style="fill:#000001;fill-opacity:1" />
   <path
-     style="fill:#888888;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     id="path833"
      d="m 20,3 h -8 v 7 h 6 v 11 h 2 z M 19,9 H 13 V 4 h 6 z"
-     id="path833" />
+     style="fill:#000001;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
   <path
-     id="rect835"
+     style="opacity:1;fill:#000001;fill-opacity:1;stroke:none;stroke-width:1.60000002;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      d="m 13,4 h 6 v 5 h -6 z"
-     style="opacity:1;fill:#555555;fill-opacity:1;stroke:none;stroke-width:1.60000002;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+     id="rect835" />
 </svg>
