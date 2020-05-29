@@ -1337,11 +1337,33 @@ DenonMC6000MK2.getJogDeltaValue = function(value) {
 
 DenonMC6000MK2.initValues = function() {
     DenonMC6000MK2.backupSampleRate = engine.getValue(DenonMC6000MK2.group, "samplerate");
-    DenonMC6000MK2.setValue("samplerate", DenonMC6000MK2.SAMPLE_RATE);
+    if (DenonMC6000MK2.backupSampleRate !== DenonMC6000MK2.SAMPLE_RATE) {
+        DenonMC6000MK2.logInfo(
+            "Adjusting sample rate: " +
+            DenonMC6000MK2.backupSampleRate +
+            " -> " +
+            DenonMC6000MK2.SAMPLE_RATE);
+        DenonMC6000MK2.setValue("samplerate", DenonMC6000MK2.SAMPLE_RATE);
+    }
     DenonMC6000MK2.backupNumDecks = DenonMC6000MK2.getValue("num_decks");
-    DenonMC6000MK2.setValue("num_decks", DenonMC6000MK2.DECK_COUNT);
+    if (DenonMC6000MK2.backupNumDecks !== DenonMC6000MK2.DECK_COUNT) {
+        DenonMC6000MK2.logInfo(
+            "Adjusting number of decks: " +
+            DenonMC6000MK2.backupNumDecks +
+            " -> " +
+            DenonMC6000MK2.DECK_COUNT);
+        DenonMC6000MK2.setValue("num_decks", DenonMC6000MK2.DECK_COUNT);
+    }
     DenonMC6000MK2.backupNumSamplers = DenonMC6000MK2.getValue("num_samplers");
-    DenonMC6000MK2.setValue("num_samplers", DenonMC6000MK2.SIDE_COUNT * DenonMC6000MK2.SAMPLER_COUNT_PER_SIDE);
+    var numSamplers = DenonMC6000MK2.SIDE_COUNT * DenonMC6000MK2.SAMPLER_COUNT_PER_SIDE;
+    if (DenonMC6000MK2.backupNumSamplers !== numSamplers) {
+        DenonMC6000MK2.logInfo(
+            "Adjusting number of samplers: " +
+            DenonMC6000MK2.backupNumSamplers +
+            " -> " +
+            numSamplers);
+        DenonMC6000MK2.setValue("num_samplers", numSamplers);
+    }
 };
 
 DenonMC6000MK2.connectLeds = function() {
@@ -1394,9 +1416,33 @@ DenonMC6000MK2.restoreValues = function() {
         var oldSide = DenonMC6000MK2.oldSides[index];
         oldSide.restoreValues();
     }
-    DenonMC6000MK2.setValue("num_samplers", DenonMC6000MK2.backupNumSamplers);
-    DenonMC6000MK2.setValue("num_decks", DenonMC6000MK2.backupNumDecks);
-    DenonMC6000MK2.setValue("samplerate", DenonMC6000MK2.backupSampleRate);
+    var numSamplers = DenonMC6000MK2.getValue("num_samplers");
+    if (numSamplers !== DenonMC6000MK2.backupNumSamplers) {
+        DenonMC6000MK2.logInfo(
+            "Restoring number of samplers: " +
+            numSamplers +
+            " -> " +
+            DenonMC6000MK2.backupNumSamplers);
+        DenonMC6000MK2.setValue("num_samplers", DenonMC6000MK2.backupNumSamplers);
+    }
+    var numDecks = DenonMC6000MK2.getValue("num_decks");
+    if (numDecks !== DenonMC6000MK2.backupNumDecks) {
+        DenonMC6000MK2.logInfo(
+            "Restoring number of decks: " +
+            numDecks +
+            " -> " +
+            DenonMC6000MK2.backupNumDecks);
+        DenonMC6000MK2.setValue("num_decks", DenonMC6000MK2.backupNumDecks);
+    }
+    var sampleRate = DenonMC6000MK2.getValue("samplerate");
+    if (sampleRate !== DenonMC6000MK2.backupSampleRate) {
+        DenonMC6000MK2.logInfo(
+            "Restoring sample rate: " +
+            sampleRate +
+            " -> " +
+            DenonMC6000MK2.backupSampleRate);
+        DenonMC6000MK2.setValue("samplerate", DenonMC6000MK2.backupSampleRate);
+    }
 };
 
 
