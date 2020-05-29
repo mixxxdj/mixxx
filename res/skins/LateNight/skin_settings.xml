@@ -38,7 +38,7 @@ Description:
                 <Layout>stacked</Layout>
                 <Size>180min,17f</Size>
                 <Connection>
-                  <ConfigKey persist="true">[Master],maximize_library</ConfigKey>
+                  <ConfigKey>[Master],maximize_library</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>

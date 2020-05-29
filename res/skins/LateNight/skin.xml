@@ -348,21 +348,14 @@ CHECK! -->
               <Children>
 
                 <!-- Waveforms, Decks, Effects... /  Library
-                This view needs to be set up first, before the view with the
-                maximized library, because decks_left/_right.xml contain Singletons
-                for a regular and minimal of each deck which we need above the
-                maximized library view. -->
+                This view needs to be set up first because it instantiates
+                the mini deck Singletons we need in maximized library view. -->
                 <Splitter>
                   <ObjectName>HorizontalSplitter</ObjectName>
                   <Orientation>vertical</Orientation>
                   <SizePolicy>me,min</SizePolicy>
                   <SplitSizesConfigKey>[Skin],stackedWaveforms_splitSize</SplitSizesConfigKey>
                   <Collapsible>0,0</Collapsible>
-                  <Connection>
-                    <ConfigKey>[Master],maximize_library</ConfigKey>
-                    <Transform><Not/></Transform>
-                    <BindProperty>visible</BindProperty>
-                  </Connection>
                   <Children>
 
                     <WidgetGroup>
@@ -377,8 +370,8 @@ CHECK! -->
                       </Connection>
                     </WidgetGroup>
 
-
                     <WidgetGroup>
+                      <ObjectName>DecksMixerContainer</ObjectName>
                       <Layout>vertical</Layout>
                       <SizePolicy>me,me</SizePolicy>
                       <Children>
@@ -400,9 +393,11 @@ CHECK! -->
                             <Template src="skin:/decks/decks_right.xml"/>
                           </Children>
                         </WidgetGroup>
+
                         <Template src="skin:fx_rack.xml"/>
                         <Template src="skin:samplers_rack.xml"/>
                         <Template src="skin:mic_aux_rack.xml"/>
+
                         <SingletonContainer>
                           <ObjectName>LibrarySingleton</ObjectName>
                         </SingletonContainer>
@@ -413,26 +408,12 @@ CHECK! -->
                 </Splitter><!-- Decks, Effects, Samplers, Mic/Aux, Library -->
 
                 <!-- Mini decks + maximized Library only -->
-                <WidgetGroup>
+                <WidgetGroup trigger="[Master],maximize_library" on_hide_select="0">
                   <Layout>vertical</Layout>
                   <SizePolicy>me,me</SizePolicy>
-                  <Connection>
-                    <ConfigKey>[Master],maximize_library</ConfigKey>
-                    <BindProperty>visible</BindProperty>
-                  </Connection>
                   <Children>
 
-                    <WidgetGroup>
-                      <Layout>vertical</Layout>
-                      <SizePolicy>me,max</SizePolicy>
-                      <Children>
-                        <Template src="skin:/decks/decks_mini.xml"/>
-                      </Children>
-                      <Connection>
-                        <ConfigKey persist="true">[Skin],show_minimal_decks</ConfigKey>
-                        <BindProperty>visible</BindProperty>
-                      </Connection>
-                    </WidgetGroup>
+                    <Template src="skin:/decks/decks_mini.xml"/>
 
                     <SingletonContainer>
                       <ObjectName>LibrarySingleton</ObjectName>

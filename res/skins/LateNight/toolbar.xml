@@ -251,11 +251,11 @@
           <Text>Conn. Failed</Text>
         </State>
         <Connection>
-          <ConfigKey persist="true">[Shoutcast],enabled</ConfigKey>
+          <ConfigKey>[Shoutcast],enabled</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
         </Connection>
         <Connection>
-          <ConfigKey persist="true">[Shoutcast],status</ConfigKey>
+          <ConfigKey>[Shoutcast],status</ConfigKey>
         </Connection>
       </PushButton>
 
