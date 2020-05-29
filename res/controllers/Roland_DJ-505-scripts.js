@@ -658,12 +658,15 @@ DJ505.Deck = function(deckNumbers, offset) {
 
     this.pfl = new components.Button({
         midi: [0x90 + offset, 0x1B],
+        group: "[Channel" + deckNumbers + "]",
         type: components.Button.prototype.types.toggle,
         inKey: "pfl",
         outKey: "pfl",
     });
 
     this.tapBPM = new components.Button({
+        midi: [0x90 + offset, 0x12],
+        group: "[Channel" + deckNumbers + "]",
         input: function(_channel, _control, value, _status, group) {
             if (value) {
                 this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
