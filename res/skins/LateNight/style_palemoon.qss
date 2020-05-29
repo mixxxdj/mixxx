@@ -285,7 +285,7 @@ WTrackMenu QCheckBox,
 WTrackMenu QMenu,
 WTrackMenu QMenu QCheckBox,
 #LibraryContainer QHeaderView,
-#LatencyLabel, WTime {
+WTime {
   color: #c2b3a5;
   }
   WSearchLineEdit,
@@ -369,8 +369,9 @@ WLibrary QLabel, WLibrary QRadioButton {
 #GuiToggleButton[displayValue="0"],
 #RecDuration[highlight="0"],
 #BroadcastButton[displayValue="0"],
-#SkinSettingsToggle[displayValue="0"] {
-  color: #777;
+#SkinSettingsToggle[displayValue="0"],
+#LatencyLabel {
+  color: #948a80;
   }
 
 #VinylButton[displayValue="1"],
