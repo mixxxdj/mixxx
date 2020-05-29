@@ -21,8 +21,10 @@ namespace {
 const mixxx::Logger kLogger("SyncControl");
 } // namespace
 
-SyncControl::SyncControl(const QString& group, UserSettingsPointer pConfig,
-                         EngineChannel* pChannel, SyncableListener* pEngineSync)
+SyncControl::SyncControl(const QString& group,
+        UserSettingsPointer pConfig,
+        EngineChannel* pChannel,
+        SyncableListener* pEngineSync)
         : EngineControl(group, pConfig),
           m_sGroup(group),
           m_pChannel(pChannel),
@@ -36,7 +38,8 @@ SyncControl::SyncControl(const QString& group, UserSettingsPointer pConfig,
           m_pLocalBpm(nullptr),
           m_pRateRatio(nullptr),
           m_pVCEnabled(nullptr),
-          m_pSyncPhaseButton(nullptr) {
+          m_pSyncPhaseButton(nullptr),
+          m_bPlaying(false) {
     // Play button.  We only listen to this to disable master if the deck is
     // stopped.
     m_pPlayButton = new ControlProxy(group, "play", this);
@@ -167,7 +170,7 @@ void SyncControl::requestSync() {
 }
 
 bool SyncControl::isPlaying() const {
-    return m_pPlayButton->toBool();
+    return m_bPlaying;
 }
 
 double SyncControl::adjustSyncBeatDistance(double beatDistance) const {
@@ -355,7 +358,15 @@ void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
 }
 
 void SyncControl::slotControlPlay(double play) {
-    m_pEngineSync->notifyPlaying(this, play > 0.0);
+    bool playing = play > 0.0;
+
+    // Only notify engine sync when the play state has actually changed to
+    // avoid re-syncing when the user presses play while holding the cue
+    // button.
+    if (m_bPlaying != playing) {
+        m_bPlaying = playing;
+        m_pEngineSync->notifyPlaying(this, playing);
+    }
 }
 
 void SyncControl::slotVinylControlChanged(double enabled) {

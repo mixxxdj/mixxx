@@ -134,6 +134,8 @@ class SyncControl : public EngineControl, public Syncable {
 
     // m_pBeats is written from an engine worker thread
     mixxx::BeatsPointer m_pBeats;
+
+    bool m_bPlaying;
 };
 
 
