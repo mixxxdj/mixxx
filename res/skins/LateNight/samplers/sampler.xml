@@ -90,6 +90,7 @@
                           <Template src="skin:/decks/overview.xml">
                             <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
                             <SetVariable name="BgColor"><Variable name="BgColorOverview_12"/></SetVariable>
+                            <SetVariable name="OverviewFontSize"><Variable name="OverviewFontSizeSampler"/></SetVariable>
                           </Template>
                         </Children>
                         <Connection>

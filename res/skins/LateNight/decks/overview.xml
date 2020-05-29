@@ -2,7 +2,7 @@
   <Overview>
     <TooltipId>waveform_overview</TooltipId>
     <Group><Variable name="Group"/></Group>
-    <Size>150me,40me</Size>
+    <Size>150me,20me</Size>
     <BgColor><Variable name="SignalBgColor"/></BgColor>
     <SignalColor><Variable name="SignalColor"/></SignalColor>
     <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
@@ -11,7 +11,7 @@
     <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
     <PlayPosColor><Variable name="PlayPosColor"/></PlayPosColor>
     <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
-    <LabelFontSize>13</LabelFontSize>
+    <LabelFontSize><Variable name="OverviewFontSize"/></LabelFontSize>
     <!--LabelTextColor>#fff</LabelTextColor>
     <LabelBackgroundColor>rgba(0,0,0,255)</LabelBackgroundColor>
     <LabelBackgroundColor>0,0,0,255</LabelBackgroundColor>

@@ -99,9 +99,9 @@
                 <MinimumSize>200,46</MinimumSize>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <SingletonContainer>
-                    <ObjectName>DeckOverview<Variable name="ChanNum"/></ObjectName>
-                  </SingletonContainer>
+                  <Template src="skin:/decks/overview.xml">
+                    <SetVariable name="OverviewFontSize"><Variable name="OverviewFontSizeDeckMini"/></SetVariable>
+                  </Template>
                 </Children>
                 <Connection>
                   <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>

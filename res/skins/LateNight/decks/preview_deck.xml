@@ -121,7 +121,9 @@
                     <Layout>vertical</Layout>
                     <Size>0me,32f</Size>
                     <Children>
-                      <Template src="skin:/decks/overview.xml"/>
+                      <Template src="skin:/decks/overview.xml">
+                        <SetVariable name="OverviewFontSize"><Variable name="OverviewFontSizePreview"/></SetVariable>
+                      </Template>
                     </Children>
                     <Connection>
                       <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
