@@ -555,7 +555,7 @@ NumarkN4.Deck = function (channel) {
     inKey: "jog",
     group: theDeck.group,
     input: function (channelmidi, control, value, status, group) {
-      value=(value<0x40?value:value-0x7F); // centers values at 0
+      value=(value<0x40?value:value-0x80); // centers values at 0
       if (theDeck.isSearching) {value*=NumarkN4.searchAmplification;}
       if (engine.isScratching(channel)) {
         engine.scratchTick(channel,value);
