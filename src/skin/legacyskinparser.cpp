@@ -230,19 +230,21 @@ QDomElement LegacySkinParser::openSkin(const QString& skinPath) {
 QList<QString> LegacySkinParser::getSchemeList(const QString& qSkinPath) {
 
     QDomElement docElem = openSkin(qSkinPath);
-    QList<QString> schlist;
+    QList<QString> schemeList;
 
-    QDomNode colsch = docElem.namedItem("Schemes");
-    if (!colsch.isNull() && colsch.isElement()) {
-        QDomNode sch = colsch.firstChild();
+    QDomNode colScheme = docElem.namedItem("Schemes");
+    if (!colScheme.isNull() && colScheme.isElement()) {
+        QDomNode scheme = colScheme.firstChild();
 
-        while (!sch.isNull()) {
-            QString thisname = XmlParse::selectNodeQString(sch, "Name");
-            schlist.append(thisname);
-            sch = sch.nextSibling();
+        while (!scheme.isNull()) {
+            if (scheme.isElement()) {
+                QString schemeName = XmlParse::selectNodeQString(scheme, "Name");
+                schemeList.append(schemeName);
+            }
+            scheme = scheme.nextSibling();
         }
     }
-    return schlist;
+    return schemeList;
 }
 
 // static
