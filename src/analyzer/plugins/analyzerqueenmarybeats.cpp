@@ -10,12 +10,14 @@
 namespace mixxx {
 namespace {
 
-// This sets the resolution of the resulting BeatMap.
-// ~12 ms (86 Hz) is a fair compromise between accuracy and analysis speed.
-// These are the preferred window/step sizes from the BeatTrack VAMP
-// With a 44.1 kHz Track we go in 512 Sample Steps
-// TODO: The waveform sample rate of 441 (defined in AnalyzerWaveform::initialize)
-// is at an odd factor of 441 * 0.01161 = 5.12 producing visual jitter.
+// This determines the resolution of the resulting BeatMap.
+// ~12 ms (86 Hz) is a fair compromise between accuracy and analysis speed,
+// also matching the preferred window/step sizes from BeatTrack VAMP.
+// For a 44.1 kHz track, we go in 512 sample steps
+// TODO: kStepSecs and the waveform sample rate of 441
+// (defined in AnalyzerWaveform::initialize) do not align well and thus
+// generate interference. Currently we are at this odd factor: 441 * 0.01161 = 5.12.
+// This should be adjusted to be an integer.
 constexpr float kStepSecs = 0.01161;
 // results in 43 Hz @ 44.1 kHz / 47 Hz @ 48 kHz / 47 Hz @ 96 kHz
 constexpr int kMaximumBinSizeHz = 50; // Hz
