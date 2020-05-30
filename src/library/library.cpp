@@ -235,7 +235,10 @@ void Library::stopPendingTasks() {
 }
 
 void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
-    connect(pSearchboxWidget, &WSearchLineEdit::search, this, &Library::search);
+    connect(pSearchboxWidget,
+            &WSearchLineEdit::search,
+            this,
+            &Library::search);
     connect(this,
             &Library::disableSearch,
             pSearchboxWidget,
@@ -363,7 +366,10 @@ void Library::addFeature(LibraryFeature* feature) {
             &LibraryFeature::switchToView,
             this,
             &Library::slotSwitchToView);
-    connect(feature, &LibraryFeature::loadTrack, this, &Library::slotLoadTrack);
+    connect(feature,
+            &LibraryFeature::loadTrack,
+            this,
+            &Library::slotLoadTrack);
     connect(feature,
             &LibraryFeature::loadTrackToPlayer,
             this,

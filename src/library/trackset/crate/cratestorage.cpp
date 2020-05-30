@@ -483,7 +483,8 @@ CrateSummarySelectResult CrateStorage::selectCratesWithTrackCount(
                            "(SELECT COUNT(*) FROM %1 WHERE %2.%3 = %1.%4 and "
                            "%1.%5 in (%9)) AS %6, "
                            "0 as %7 FROM %2 ORDER BY %8")
-                    .arg(CRATE_TRACKS_TABLE,
+                    .arg(
+                            CRATE_TRACKS_TABLE,
                             CRATE_TABLE,
                             CRATETABLE_ID,
                             CRATETRACKSTABLE_CRATEID,

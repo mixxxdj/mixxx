@@ -358,9 +358,9 @@ void CrateFeature::onRightClickChild(
 }
 
 void CrateFeature::slotCreateCrate() {
-    CrateId crateId = CrateFeatureHelper(m_pTrackCollection,
-            m_pConfig)
-                              .createEmptyCrate();
+    CrateId crateId =
+            CrateFeatureHelper(m_pTrackCollection, m_pConfig)
+                    .createEmptyCrate();
     if (crateId.isValid()) {
         activateCrate(crateId);
     }
@@ -388,13 +388,14 @@ void CrateFeature::slotRenameCrate() {
         crate.resetName();
         for (;;) {
             bool ok = false;
-            auto newName = QInputDialog::getText(nullptr,
-                    tr("Rename Crate"),
-                    tr("Enter new name for crate:"),
-                    QLineEdit::Normal,
-                    oldName,
-                    &ok)
-                                   .trimmed();
+            auto newName =
+                    QInputDialog::getText(nullptr,
+                            tr("Rename Crate"),
+                            tr("Enter new name for crate:"),
+                            QLineEdit::Normal,
+                            oldName,
+                            &ok)
+                            .trimmed();
             if (!ok || newName.isEmpty()) {
                 return;
             }
@@ -426,9 +427,9 @@ void CrateFeature::slotRenameCrate() {
 void CrateFeature::slotDuplicateCrate() {
     Crate crate;
     if (readLastRightClickedCrate(&crate)) {
-        CrateId crateId = CrateFeatureHelper(m_pTrackCollection,
-                m_pConfig)
-                                  .duplicateCrate(crate);
+        CrateId crateId =
+                CrateFeatureHelper(m_pTrackCollection, m_pConfig)
+                        .duplicateCrate(crate);
         if (crateId.isValid()) {
             activateCrate(crateId);
         }

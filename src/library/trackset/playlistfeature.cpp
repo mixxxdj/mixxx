@@ -139,24 +139,26 @@ QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
             m_pLibrary->trackCollections()->internalCollection()->database();
 
     QList<BasePlaylistFeature::IdAndLabel> playlistLabels;
-    QString queryString = QString(
+    QString queryString = QStringLiteral(
             "CREATE TEMPORARY VIEW IF NOT EXISTS PlaylistsCountsDurations "
             "AS SELECT "
             "  Playlists.id AS id, "
             "  Playlists.name AS name, "
             "  LOWER(Playlists.name) AS sort_name, "
             "  COUNT(case library.mixxx_deleted when 0 then 1 else null end) "
-            "AS count, "
-            "  SUM(case library.mixxx_deleted when 0 then library.duration "
-            "else 0 end) AS durationSeconds "
+            "    AS count, "
+            "  SUM(case library.mixxx_deleted "
+            "    when 0 then library.duration else 0 end) AS durationSeconds "
             "FROM Playlists "
-            "LEFT JOIN PlaylistTracks ON PlaylistTracks.playlist_id = "
-            "Playlists.id "
-            "LEFT JOIN library ON PlaylistTracks.track_id = library.id "
-            "WHERE Playlists.hidden = 0 "
-            "GROUP BY Playlists.id");
-    queryString.append(mixxx::DbConnection::collateLexicographically(
-            " ORDER BY sort_name"));
+            "LEFT JOIN PlaylistTracks "
+            "  ON PlaylistTracks.playlist_id = Playlists.id "
+            "LEFT JOIN library "
+            "  ON PlaylistTracks.track_id = library.id "
+            "  WHERE Playlists.hidden = 0 "
+            "  GROUP BY Playlists.id");
+    queryString.append(
+            mixxx::DbConnection::collateLexicographically(
+                    " ORDER BY sort_name"));
     QSqlQuery query(database);
     if (!query.exec(queryString)) {
         LOG_FAILED_QUERY(query);
@@ -177,14 +179,17 @@ QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
 
     for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
         int id =
-                playlistTableModel.data(playlistTableModel.index(row, idColumn))
+                playlistTableModel
+                        .data(playlistTableModel.index(row, idColumn))
                         .toInt();
-        QString name = playlistTableModel
-                               .data(playlistTableModel.index(row, nameColumn))
-                               .toString();
-        int count = playlistTableModel
-                            .data(playlistTableModel.index(row, countColumn))
-                            .toInt();
+        QString name =
+                playlistTableModel
+                        .data(playlistTableModel.index(row, nameColumn))
+                        .toString();
+        int count =
+                playlistTableModel
+                        .data(playlistTableModel.index(row, countColumn))
+                        .toInt();
         int duration =
                 playlistTableModel
                         .data(playlistTableModel.index(row, durationColumn))

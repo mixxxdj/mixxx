@@ -70,10 +70,9 @@ QIcon SetlogFeature::getIcon() {
     return m_icon;
 }
 
-void SetlogFeature::bindLibraryWidget(WLibrary* libraryWidget,
-        KeyboardEventFilter* keyboard) {
-    BasePlaylistFeature::bindLibraryWidget(libraryWidget,
-            keyboard);
+void SetlogFeature::bindLibraryWidget(
+        WLibrary* libraryWidget, KeyboardEventFilter* keyboard) {
+    BasePlaylistFeature::bindLibraryWidget(libraryWidget, keyboard);
     connect(&PlayerInfo::instance(),
             &PlayerInfo::currentPlayingTrackChanged,
             this,
@@ -155,11 +154,13 @@ QList<BasePlaylistFeature::IdAndLabel> SetlogFeature::createPlaylistLabels() {
 
     for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
         int id =
-                playlistTableModel.data(playlistTableModel.index(row, idColumn))
+                playlistTableModel
+                        .data(playlistTableModel.index(row, idColumn))
                         .toInt();
-        QString name = playlistTableModel
-                               .data(playlistTableModel.index(row, nameColumn))
-                               .toString();
+        QString name =
+                playlistTableModel
+                        .data(playlistTableModel.index(row, nameColumn))
+                        .toString();
         BasePlaylistFeature::IdAndLabel idAndLabel;
         idAndLabel.id = id;
         idAndLabel.label = name;
