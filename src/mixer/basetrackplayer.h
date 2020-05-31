@@ -32,7 +32,7 @@ class BaseTrackPlayer : public BasePlayer {
     };
 
     BaseTrackPlayer(QObject* pParent, const QString& group);
-    virtual ~BaseTrackPlayer() {}
+    ~BaseTrackPlayer() override = default;
 
     virtual TrackPointer getLoadedTrack() const = 0;
 
@@ -61,7 +61,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
             bool defaultMaster,
             bool defaultHeadphones,
             bool primaryDeck);
-    virtual ~BaseTrackPlayerImpl();
+    ~BaseTrackPlayerImpl() override;
 
     TrackPointer getLoadedTrack() const final;
 
