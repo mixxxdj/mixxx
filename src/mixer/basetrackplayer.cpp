@@ -406,7 +406,7 @@ void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer pTrack, QString reason) {
 
 void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                                           TrackPointer pOldTrack) {
-    qDebug() << "BaseTrackPlayerImpl::slotTrackLoaded";
+    //qDebug() << "BaseTrackPlayerImpl::slotTrackLoaded";
     if (!pNewTrack &&
             pOldTrack &&
             pOldTrack == m_pLoadedTrack) {
