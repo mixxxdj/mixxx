@@ -443,22 +443,22 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
 
         if(m_pConfig->getValue(
                 ConfigKey("[Mixer Profile]", "EqAutoReset"), false)) {
-            if (m_pLowFilter != NULL) {
+            if (m_pLowFilter != nullptr) {
                 m_pLowFilter->set(1.0);
             }
-            if (m_pMidFilter != NULL) {
+            if (m_pMidFilter != nullptr) {
                 m_pMidFilter->set(1.0);
             }
-            if (m_pHighFilter != NULL) {
+            if (m_pHighFilter != nullptr) {
                 m_pHighFilter->set(1.0);
             }
-            if (m_pLowFilterKill != NULL) {
+            if (m_pLowFilterKill != nullptr) {
                 m_pLowFilterKill->set(0.0);
             }
-            if (m_pMidFilterKill != NULL) {
+            if (m_pMidFilterKill != nullptr) {
                 m_pMidFilterKill->set(0.0);
             }
-            if (m_pHighFilterKill != NULL) {
+            if (m_pHighFilterKill != nullptr) {
                 m_pHighFilterKill->set(0.0);
             }
         }
