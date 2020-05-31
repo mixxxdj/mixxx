@@ -180,6 +180,9 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
     m_pPlay = std::make_unique<ControlProxy>(group, "play", this);
     m_pPlay->connectValueChanged(this, &BaseTrackPlayerImpl::slotPlayToggled);
 
+    m_pRateRatio = std::make_unique<ControlProxy>(group, "rate_ratio", this);
+    m_pPitchAdjust = std::make_unique<ControlProxy>(group, "pitch_adjust", this);
+
     pVisualsManager->addDeck(group);
 }
 
@@ -471,32 +474,26 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                 // Avoid resetting speed if master sync is enabled and other decks with sync enabled
                 // are playing, as this would change the speed of already playing decks.
                 if (!m_pEngineMaster->getEngineSync()->otherSyncedPlaying(getGroup())) {
-                    if (m_pRateRatio != NULL) {
-                        m_pRateRatio->set(1.0);
-                    }
+                    m_pRateRatio->set(1.0);
                 }
             }
             if (reset == RESET_PITCH || reset == RESET_PITCH_AND_SPEED) {
-                if (m_pPitchAdjust != NULL) {
-                    m_pPitchAdjust->set(0.0);
-                }
+                m_pPitchAdjust->set(0.0);
             }
         } else {
             // perform a clone of the given channel
 
             // copy rate
-            if (m_pRateRatio != nullptr) {
-                m_pRateRatio->set(ControlObject::get(ConfigKey(m_pChannelToCloneFrom->getGroup(), "rate_ratio")));
-            }
+            m_pRateRatio->set(ControlObject::get(ConfigKey(
+                    m_pChannelToCloneFrom->getGroup(), "rate_ratio")));
 
             // copy pitch
-            if (m_pPitchAdjust != nullptr) {
-                m_pPitchAdjust->set(ControlObject::get(ConfigKey(m_pChannelToCloneFrom->getGroup(), "pitch_adjust")));
-            }
+            m_pPitchAdjust->set(ControlObject::get(ConfigKey(
+                    m_pChannelToCloneFrom->getGroup(), "pitch_adjust")));
 
             // copy play state
             ControlObject::set(ConfigKey(getGroup(), "play"),
-                ControlObject::get(ConfigKey(m_pChannelToCloneFrom->getGroup(), "play")));
+                    ControlObject::get(ConfigKey(m_pChannelToCloneFrom->getGroup(), "play")));
 
             // copy the play position
             m_pChannel->getEngineBuffer()->requestClonePosition(m_pChannelToCloneFrom);
@@ -618,8 +615,6 @@ void BaseTrackPlayerImpl::setupEqControls() {
     m_pLowFilterKill = std::make_unique<ControlProxy>(group, "filterLowKill", this);
     m_pMidFilterKill = std::make_unique<ControlProxy>(group, "filterMidKill", this);
     m_pHighFilterKill = std::make_unique<ControlProxy>(group, "filterHighKill", this);
-    m_pRateRatio = std::make_unique<ControlProxy>(group, "rate_ratio", this);
-    m_pPitchAdjust = std::make_unique<ControlProxy>(group, "pitch_adjust", this);
 }
 
 void BaseTrackPlayerImpl::slotVinylControlEnabled(double v) {
