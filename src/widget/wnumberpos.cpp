@@ -8,6 +8,7 @@
 
 WNumberPos::WNumberPos(const char* group, QWidget* parent)
         : WNumber(parent),
+          m_displayFormat(TrackTime::DisplayFormat::TRADITIONAL),
           m_dOldTimeElapsed(0.0) {
     m_pTimeElapsed = new ControlProxy(group, "time_elapsed", this);
     m_pTimeElapsed->connectValueChanged(this, &WNumberPos::slotSetTimeElapsed);

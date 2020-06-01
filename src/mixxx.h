@@ -144,8 +144,6 @@ class MixxxMainWindow : public QMainWindow {
 
     SettingsManager* m_pSettingsManager;
 
-    ChannelHandleFactory* m_pChannelHandleFactory;
-
     // The effects processing system
     EffectsManager* m_pEffectsManager;
 
@@ -183,7 +181,7 @@ class MixxxMainWindow : public QMainWindow {
     // The library management object
     Library* m_pLibrary;
 
-    WMainMenuBar* m_pMenuBar;
+    parented_ptr<WMainMenuBar> m_pMenuBar;
 
     DlgDeveloperTools* m_pDeveloperToolsDlg;
 
