@@ -38,8 +38,8 @@ TrackId ProxyTrackModel::getTrackId(const QModelIndex& index) const {
     return m_pTrackModel ? m_pTrackModel->getTrackId(indexSource) : TrackId();
 }
 
-const std::list<int> ProxyTrackModel::getTrackRows(TrackId trackId) const {
-    return m_pTrackModel ? m_pTrackModel->getTrackRows(trackId) : std::list<int>();
+const std::vector<int> ProxyTrackModel::getTrackRows(TrackId trackId) const {
+    return m_pTrackModel ? m_pTrackModel->getTrackRows(trackId) : std::vector<int>();
 }
 
 TrackPointer ProxyTrackModel::getTrack(const QModelIndex& index) const {

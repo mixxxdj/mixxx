@@ -709,7 +709,7 @@ void BaseTrackTableModel::slotTrackLoaded(
         // preview state will update.
         if (m_previewDeckTrackId.isValid()) {
             const int numColumns = columnCount();
-            const std::list<int> rows = getTrackRows(m_previewDeckTrackId);
+            const std::vector<int> rows = getTrackRows(m_previewDeckTrackId);
             m_previewDeckTrackId = TrackId(); // invalidate
             for (int row : rows) {
                 QModelIndex topLeft = index(row, 0);

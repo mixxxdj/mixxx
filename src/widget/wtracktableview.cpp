@@ -811,7 +811,7 @@ void WTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
     }
 
     for (const auto& trackId : trackIds) {
-        const std::list<int> gts = pTrackModel->getTrackRows(trackId);
+        const auto gts = pTrackModel->getTrackRows(trackId);
 
         for (int trackRow : gts) {
             pSelectionModel->select(model()->index(trackRow, 0),
@@ -866,7 +866,7 @@ void WTrackTableView::doSortByColumn(int headerSection, Qt::SortOrder sortOrder)
         // the TrackModel. This will allow the playlist table model to use the
         // table index as the unique id instead of this code stupidly using
         // trackid.
-        std::list<int> rows = trackModel->getTrackRows(trackId);
+        const auto rows = trackModel->getTrackRows(trackId);
         for (int row : rows) {
             // Restore sort order by rows, so the following commands will act as expected
             selectedRows.insert(row, 0);

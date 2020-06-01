@@ -1,12 +1,13 @@
 #pragma once
 
-#include <QList>
 #include <QItemDelegate>
+#include <QList>
 #include <QtSql>
+#include <vector>
 
+#include "library/dao/settingsdao.h"
 #include "track/track.h"
 #include "track/trackref.h"
-#include "library/dao/settingsdao.h"
 
 /** Pure virtual (abstract) class that provides an interface for data models which
     display track lists. */
@@ -100,7 +101,7 @@ class TrackModel {
 
     // Gets the rows of the track in the current result set. Returns an
     // empty list if the track ID is not present in the result set.
-    virtual const std::list<int> getTrackRows(TrackId trackId) const = 0;
+    virtual const std::vector<int> getTrackRows(TrackId trackId) const = 0;
 
     bool isTrackModel() { return true;}
     virtual void search(const QString& searchText, const QString& extraFilter=QString()) = 0;
