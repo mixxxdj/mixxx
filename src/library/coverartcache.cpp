@@ -252,7 +252,9 @@ void CoverArtCache::coverLoaded() {
                 !m_filePathLoadImageFailed.contains(res.coverArt.loadedImage.filePath)) {
             kLogger.warning()
                     << "Failed to load cover art image"
-                    << res.coverArt.loadedImage;
+                    << res.coverArt.loadedImage
+                    << "for track"
+                    << res.coverArt.trackLocation;
         }
         if (!res.coverArt.loadedImage.filePath.isEmpty()) {
             m_filePathLoadImageFailed.insert(res.coverArt.loadedImage.filePath);
