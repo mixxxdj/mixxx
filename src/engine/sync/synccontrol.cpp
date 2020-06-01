@@ -75,6 +75,9 @@ SyncControl::SyncControl(const QString& group, UserSettingsPointer pConfig,
 
     m_pQuantize = new ControlProxy(group, "quantize", this);
 
+    // Adopt an invalid to not ignore the first call setLocalBpm()
+    m_prevLocalBpm.setValue(-1);
+
     // BPMControl and RateControl will be initialized later.
 }
 

@@ -26,8 +26,9 @@ class EffectsManager : public QObject {
   public:
     typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
 
-    EffectsManager(QObject* pParent, UserSettingsPointer pConfig,
-                   ChannelHandleFactory* pChannelHandleFactory);
+    EffectsManager(QObject* pParent,
+            UserSettingsPointer pConfig,
+            ChannelHandleFactoryPointer pChannelHandleFactory);
     virtual ~EffectsManager();
 
     EngineEffectsManager* getEngineEffectsManager() {
@@ -92,7 +93,7 @@ class EffectsManager : public QObject {
     EffectPointer instantiateEffect(const QString& effectId);
 
     void setEffectVisibility(EffectManifestPointer pManifest, bool visibility);
-    bool getEffectVisibility(EffectManifestPointer pManifest); 
+    bool getEffectVisibility(EffectManifestPointer pManifest);
 
     // Temporary, but for setting up all the default EffectChains and EffectRacks
     void setup();
@@ -120,7 +121,7 @@ class EffectsManager : public QObject {
     void processEffectsResponses();
     void collectGarbage(const EffectsRequest* pResponse);
 
-    ChannelHandleFactory* m_pChannelHandleFactory;
+    ChannelHandleFactoryPointer m_pChannelHandleFactory;
 
     EffectChainManager* m_pEffectChainManager;
     QList<EffectsBackend*> m_effectsBackends;
