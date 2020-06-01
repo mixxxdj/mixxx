@@ -32,7 +32,7 @@ double MovingInterquartileMean::insert(double value) {
     }
 
     // If list was already full, delete the oldest value:
-    if (m_list.size() == m_iListMaxSize + 1) {
+    if (m_list.size() == static_cast<unsigned int>(m_iListMaxSize + 1)) {
         m_list.erase(m_queue.dequeue());
     }
     return mean();
