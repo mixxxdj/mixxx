@@ -1,5 +1,7 @@
 #include "library/coverart.h"
 
+#include <QDebugStateSaver>
+
 #include "library/coverartutils.h"
 #include "util/debug.h"
 #include "util/logger.h"
@@ -211,6 +213,7 @@ QDebug operator<<(QDebug dbg, const CoverInfo::LoadedImage::Result& result) {
 }
 
 QDebug operator<<(QDebug dbg, const CoverInfo::LoadedImage& loadedImage) {
+    const QDebugStateSaver saver(dbg);
     dbg = dbg.maybeSpace() << "CoverInfo::LoadedImage";
     return dbg.nospace()
             << '{'
@@ -223,6 +226,7 @@ QDebug operator<<(QDebug dbg, const CoverInfo::LoadedImage& loadedImage) {
 }
 
 QDebug operator<<(QDebug dbg, const CoverArt& art) {
+    const QDebugStateSaver saver(dbg);
     dbg = dbg.maybeSpace() << "CoverArt";
     return dbg.nospace()
             << '{'
