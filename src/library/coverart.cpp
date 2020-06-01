@@ -85,7 +85,7 @@ QDebug operator<<(QDebug dbg, const CoverInfoRelative& infoRelative) {
 
 CoverInfo::LoadedImage CoverInfo::loadImage(
         const SecurityTokenPointer& pTrackLocationToken) const {
-    LoadedImage loadedImage;
+    LoadedImage loadedImage(LoadedImage::Result::ErrorUnknown);
     if (type == CoverInfo::METADATA) {
         VERIFY_OR_DEBUG_ASSERT(!trackLocation.isEmpty()) {
             loadedImage.result = LoadedImage::Result::ErrorMetadataWithEmptyTrackLocation;

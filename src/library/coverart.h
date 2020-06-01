@@ -93,12 +93,9 @@ class CoverInfo : public CoverInfoRelative {
             ErrorRelativeFilePathWithEmptyTrackLocation,
             ErrorFilePathDoesNotExist,
             ErrorLoadingFailed, // if the image file is not readable or the format is not supported
-            ErrorUnknown,
+            ErrorUnknown,       // should never happen
         };
 
-        LoadedImage()
-                : result(Result::ErrorUnknown) {
-        }
         LoadedImage(const LoadedImage&) = default;
         LoadedImage(LoadedImage&&) = default;
         LoadedImage& operator=(const LoadedImage&) = default;
@@ -113,6 +110,13 @@ class CoverInfo : public CoverInfoRelative {
 
         /// The result of the operation.
         Result result;
+
+      private:
+        friend class CoverArt;
+        friend class CoverInfo;
+        LoadedImage(Result result)
+                : result(result) {
+        }
     };
     LoadedImage loadImage(
             const SecurityTokenPointer& pTrackLocationToken = SecurityTokenPointer()) const;
@@ -138,7 +142,8 @@ QDebug operator<<(QDebug dbg, const CoverInfo::LoadedImage& loadedImage);
 class CoverArt : public CoverInfo {
   public:
     CoverArt()
-        : resizedToWidth(0) {
+            : loadedImage(LoadedImage::Result::NoImage), // not loaded = no image
+              resizedToWidth(0) {
     }
     CoverArt(
             const CoverInfo&& base,
