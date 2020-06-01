@@ -10,9 +10,13 @@ let inherit (nixroot) stdenv pkgs lib
     clang-tools
     cmake
     fetchurl
-    nix-gitignore
+    ffmpeg
     gdb
-    python3;
+    libmodplug
+    mp4v2
+    nix-gitignore
+    python3
+    wavpack;
 
   git-clang-format = stdenv.mkDerivation {
     name = "git-clang-format";
@@ -102,6 +106,10 @@ in stdenv.mkDerivation rec {
     libusb1 libvorbis libebur128 pkgconfig portaudio portmidi protobuf qt5.full
     rubberband sqlite taglib soundtouch vamp.vampSDK opusfile upower hidapi
     git glib x11 libGLU lilv lame lv2 makeWrapper qt5.qtbase
+    ffmpeg
+    libmodplug
+    mp4v2
+    wavpack
   ] ++ allLv2Plugins;
 
   meta = with nixroot.stdenv.lib; {
