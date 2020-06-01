@@ -222,28 +222,30 @@ void CoverArtCache::coverLoaded() {
 
     QPixmap pixmap;
     if (res.coverArt.loadedImage.result != CoverInfo::LoadedImage::Result::NoImage) {
-        QImage image;
         if (res.coverArt.loadedImage.result == CoverInfo::LoadedImage::Result::Ok) {
             DEBUG_ASSERT(!res.coverArt.loadedImage.filePath.isEmpty());
-            image = res.coverArt.loadedImage.image;
         } else {
+            DEBUG_ASSERT(res.coverArt.loadedImage.image.isNull());
             kLogger.warning()
                     << "Failed to load cover art image"
                     << res.coverArt.loadedImage
                     << "for track"
                     << res.coverArt.trackLocation;
-            // Replace with a 1x1 pixel dummy image to avoid high CPU load
+            // Substitute missing cover art with a placeholder image to avoid high CPU load
             // See also: https://bugs.launchpad.net/mixxx/+bug/1879160
-            image = QImage(1, 1, QImage::Format_RGB32);
-            // TODO: Use cover art background color (if available)
+            const int imageSize = math_max(1, res.coverArt.resizedToWidth);
+            QImage placeholderImage(imageSize, imageSize, QImage::Format_RGB32);
+            // TODO(uklotzde): Use optional cover art background color (if available)
             // instead of Qt::darkGray
-            image.setPixel(0, 0, Qt::darkGray);
+            placeholderImage.fill(
+                    mixxx::RgbColor::toQColor(std::nullopt /*res.coverArt.color*/, Qt::darkGray));
+            res.coverArt.loadedImage.image = placeholderImage;
         }
         // Create pixmap, GUI thread only!
         DEBUG_ASSERT(QThread::currentThread() ==
                 QCoreApplication::instance()->thread());
-        DEBUG_ASSERT(!image.isNull());
-        pixmap = QPixmap::fromImage(image);
+        DEBUG_ASSERT(!res.coverArt.loadedImage.image.isNull());
+        pixmap = QPixmap::fromImage(res.coverArt.loadedImage.image);
         // Don't cache full size covers (resizedToWidth = 0)
         // Large cover art wastes space in our cache and will likely
         // uncache a lot of the small covers we need in the library
