@@ -1401,11 +1401,11 @@ QWidget* LegacySkinParser::parseTableView(const QDomElement& node) {
     // Add the splitter to the library page's layout, so it's
     // positioned/sized automatically
     pLibraryPageLayout->addWidget(pSplitter,
-            1,
-            0,                //From row 1, col 0,
-            1,                //Span 1 row
-            3,                //Span 3 cols
-            Qt::Alignment()); //Default alignment
+            1,                // From row 1
+            0,                // From column 0
+            1,                // Span 1 row
+            3,                // Span 3 columns
+            Qt::Alignment()); // Default alignment
 
     pTabWidget->addWidget(pLibraryPage);
     pTabWidget->setStyleSheet(getLibraryStyle(node));
