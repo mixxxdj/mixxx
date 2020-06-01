@@ -2,8 +2,8 @@
 
 #include <QItemDelegate>
 #include <QList>
+#include <QVector>
 #include <QtSql>
-#include <vector>
 
 #include "library/dao/settingsdao.h"
 #include "track/track.h"
@@ -101,7 +101,7 @@ class TrackModel {
 
     // Gets the rows of the track in the current result set. Returns an
     // empty list if the track ID is not present in the result set.
-    virtual const std::vector<int> getTrackRows(TrackId trackId) const = 0;
+    virtual const QVector<int> getTrackRows(TrackId trackId) const = 0;
 
     bool isTrackModel() { return true;}
     virtual void search(const QString& searchText, const QString& extraFilter=QString()) = 0;

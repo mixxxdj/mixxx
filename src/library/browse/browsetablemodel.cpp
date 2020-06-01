@@ -198,10 +198,10 @@ TrackId BrowseTableModel::getTrackId(const QModelIndex& index) const {
     }
 }
 
-const std::vector<int> BrowseTableModel::getTrackRows(TrackId trackId) const {
+const QVector<int> BrowseTableModel::getTrackRows(TrackId trackId) const {
     Q_UNUSED(trackId);
     // We can't implement this as it stands.
-    return std::vector<int>();
+    return QVector<int>();
 }
 
 void BrowseTableModel::search(const QString& searchText, const QString& extraFilter) {
