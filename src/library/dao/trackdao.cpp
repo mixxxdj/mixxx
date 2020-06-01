@@ -356,24 +356,28 @@ void TrackDAO::addTracksPrepare() {
     m_pQueryLibraryInsert->prepare(
             "INSERT INTO library "
             "("
-            "artist,title,album,album_artist,year,genre,tracknumber,tracktotal,composer,"
-            "grouping,filetype,location,color,comment,url,rating,key,key_id,"
+            "artist,title,album,album_artist,year,genre,"
+            "tracknumber,tracktotal,composer,grouping,"
+            "filetype,location,color,comment,url,rating,key,key_id,"
             "cuepoint,bpm,replaygain,replaygain_peak,wavesummaryhex,"
             "timesplayed,played,mixxx_deleted,header_parsed,"
             "channels,samplerate,bitrate,duration,"
             "beats_version,beats_sub_version,beats,bpm_lock,"
             "keys_version,keys_sub_version,keys,"
-            "coverart_source,coverart_type,coverart_location,coverart_digest,coverart_hash,"
+            "coverart_source,coverart_type,coverart_location,"
+            "coverart_color,coverart_digest,coverart_hash,"
             "datetime_added"
             ") VALUES ("
-            ":artist,:title,:album,:album_artist,:year,:genre,:tracknumber,:tracktotal,:composer,"
-            ":grouping,:filetype,:location,:color,:comment,:url,:rating,:key,:key_id,"
+            ":artist,:title,:album,:album_artist,:year,:genre,"
+            ":tracknumber,:tracktotal,:composer,:grouping,"
+            ":filetype,:location,:color,:comment,:url,:rating,:key,:key_id,"
             ":cuepoint,:bpm,:replaygain,:replaygain_peak,:wavesummaryhex,"
             ":timesplayed,:played,:mixxx_deleted,:header_parsed,"
             ":channels,:samplerate,:bitrate,:duration,"
             ":beats_version,:beats_sub_version,:beats,:bpm_lock,"
             ":keys_version,:keys_sub_version,:keys,"
-            ":coverart_source,:coverart_type,:coverart_location,:coverart_digest,:coverart_hash,"
+            ":coverart_source,:coverart_type,:coverart_location,"
+            ":coverart_color,:coverart_digest,:coverart_hash,"
             ":datetime_added"
             ")");
 
@@ -473,6 +477,7 @@ void bindTrackLibraryValues(
     pTrackLibraryQuery->bindValue(":coverart_source", coverInfo.source);
     pTrackLibraryQuery->bindValue(":coverart_type", coverInfo.type);
     pTrackLibraryQuery->bindValue(":coverart_location", coverInfo.coverLocation);
+    pTrackLibraryQuery->bindValue(":coverart_color", mixxx::RgbColor::toQVariant(coverInfo.color));
     pTrackLibraryQuery->bindValue(":coverart_digest", coverInfo.imageDigest());
     pTrackLibraryQuery->bindValue(":coverart_hash", coverInfo.legacyHash());
 
@@ -1144,9 +1149,10 @@ bool setTrackCoverInfo(const QSqlRecord& record, const int column,
             record.value(column + 1).toInt(&ok));
     if (!ok) coverInfo.type = CoverInfo::NONE;
     coverInfo.coverLocation = record.value(column + 2).toString();
+    coverInfo.color = mixxx::RgbColor::fromQVariant(record.value(column + 3));
     coverInfo.setImageDigest(
-            record.value(column + 3).toByteArray(),
-            record.value(column + 4).toUInt());
+            record.value(column + 4).toByteArray(),
+            record.value(column + 5).toUInt());
     pTrack->setCoverInfo(coverInfo);
     return false;
 }
@@ -1231,8 +1237,10 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
             {"coverart_source", setTrackCoverInfo},
             {"coverart_type", nullptr},
             {"coverart_location", nullptr},
+            {"coverart_color", nullptr},
             {"coverart_digest", nullptr},
-            {"coverart_hash", nullptr}};
+            {"coverart_hash", nullptr},
+    };
 
     QString columnsStr;
     int columnsSize = 0;
@@ -1463,6 +1471,7 @@ bool TrackDAO::updateTrack(Track* pTrack) const {
             "coverart_source=:coverart_source,"
             "coverart_type=:coverart_type,"
             "coverart_location=:coverart_location,"
+            "coverart_color=:coverart_color,"
             "coverart_digest=:coverart_digest,"
             "coverart_hash=:coverart_hash "
             "WHERE id=:track_id");
@@ -1921,7 +1930,8 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
             "UPDATE library SET "
             "coverart_type=:coverart_type,"
             "coverart_source=:coverart_source,"
-            "coverart_location=:coverart_location, "
+            "coverart_location=:coverart_location,"
+            "coverart_color=:coverart_color,"
             "coverart_digest=:coverart_digest,"
             "coverart_hash=:coverart_hash "
             "WHERE id=:track_id");
@@ -1960,6 +1970,7 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
         updateQuery.bindValue(":coverart_source",
                               static_cast<int>(coverInfo.source));
         updateQuery.bindValue(":coverart_location", coverInfo.coverLocation);
+        updateQuery.bindValue(":coverart_color", mixxx::RgbColor::toQVariant(coverInfo.color));
         updateQuery.bindValue(":coverart_digest", coverInfo.imageDigest());
         updateQuery.bindValue(":coverart_hash", coverInfo.legacyHash());
 

@@ -11,6 +11,8 @@ CoverArtDelegate::CoverArtDelegate(
                   LIBRARYTABLE_COVERART_SOURCE)),
           m_iCoverTypeColumn(m_pTrackModel->fieldIndex(
                   LIBRARYTABLE_COVERART_TYPE)),
+          m_iCoverColorColumn(m_pTrackModel->fieldIndex(
+                  LIBRARYTABLE_COVERART_COLOR)),
           m_iCoverDigestColumn(m_pTrackModel->fieldIndex(
                   LIBRARYTABLE_COVERART_DIGEST)),
           m_iCoverLegacyHashColumn(m_pTrackModel->fieldIndex(
@@ -23,6 +25,7 @@ CoverArtDelegate::CoverArtDelegate(
                   TRACKLOCATIONSTABLE_LOCATION)) {
     DEBUG_ASSERT(m_iCoverSourceColumn >= 0);
     DEBUG_ASSERT(m_iCoverTypeColumn >= 0);
+    DEBUG_ASSERT(m_iCoverColorColumn >= 0);
     DEBUG_ASSERT(m_iCoverDigestColumn >= 0);
     DEBUG_ASSERT(m_iCoverLegacyHashColumn >= 0);
     DEBUG_ASSERT(m_iCoverLocationColumn >= 0);
@@ -36,6 +39,8 @@ CoverInfo CoverArtDelegate::coverInfoForIndex(
     coverInfo.setImageDigest(
             index.sibling(index.row(), m_iCoverDigestColumn).data().toByteArray(),
             index.sibling(index.row(), m_iCoverLegacyHashColumn).data().toUInt());
+    coverInfo.color = mixxx::RgbColor::fromQVariant(
+            index.sibling(index.row(), m_iCoverColorColumn).data());
     if (coverInfo.hasImage()) {
         coverInfo.type = static_cast<CoverInfo::Type>(
                 index.sibling(index.row(), m_iCoverTypeColumn).data().toInt());

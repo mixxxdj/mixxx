@@ -59,6 +59,7 @@ CoverInfoRelative::CoverInfoRelative()
 
 void CoverInfoRelative::setImage(
         const QImage& image) {
+    color = CoverImageUtils::extractBackgroundColor(image);
     m_imageDigest = CoverImageUtils::calculateDigest(image);
     DEBUG_ASSERT(image.isNull() == m_imageDigest.isEmpty());
     m_legacyHash = calculateLegacyHash(image);
@@ -69,6 +70,7 @@ void CoverInfoRelative::setImage(
 bool operator==(const CoverInfoRelative& lhs, const CoverInfoRelative& rhs) {
     return lhs.source == rhs.source &&
             lhs.type == rhs.type &&
+            lhs.color == rhs.color &&
             lhs.legacyHash() == rhs.legacyHash() &&
             lhs.imageDigest() == rhs.imageDigest() &&
             lhs.coverLocation == rhs.coverLocation;
@@ -86,6 +88,8 @@ QDebug operator<<(QDebug dbg, const CoverInfoRelative& info) {
             << typeToString(info.type)
             << ','
             << sourceToString(info.source)
+            << ','
+            << info.color
             << ','
             << info.coverLocation
             << ','

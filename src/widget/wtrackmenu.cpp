@@ -513,6 +513,12 @@ CoverInfo WTrackMenu::getCoverInfoOfLastTrack() const {
                                 m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_TYPE))
                         .data()
                         .toInt());
+        coverInfo.color = mixxx::RgbColor::fromQVariant(
+                lastIndex
+                        .sibling(
+                                lastIndex.row(),
+                                m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_COLOR))
+                        .data());
         const auto imageDigest =
                 lastIndex
                         .sibling(

@@ -140,4 +140,9 @@ void BaseCoverArtDelegate::paintItem(
             return;
         }
     }
+    // As a fallback use the (background) color a placeholder
+    // until the cover has been loaded
+    if (coverInfo.color) {
+        painter->fillRect(option.rect, mixxx::RgbColor::toQColor(coverInfo.color));
+    }
 }

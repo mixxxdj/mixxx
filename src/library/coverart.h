@@ -11,6 +11,12 @@
 
 class CoverImageUtils {
   public:
+    static mixxx::RgbColor::optional_t extractBackgroundColor(
+            const QImage& image) {
+        return mixxx::RgbColor::fromQColor(
+                mixxx::extractImageBackgroundColor(image));
+    }
+
     static QByteArray calculateDigest(
             const QImage& image) {
         return mixxx::digestImage(image);
@@ -99,6 +105,7 @@ class CoverInfoRelative {
 
     Source source;
     Type type;
+    mixxx::RgbColor::optional_t color;
     QString coverLocation; // relative path, from track location
 
   private:

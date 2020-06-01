@@ -237,10 +237,8 @@ void CoverArtCache::coverLoaded() {
             // See also: https://bugs.launchpad.net/mixxx/+bug/1879160
             const int imageSize = math_max(1, res.coverArt.resizedToWidth);
             QImage placeholderImage(imageSize, imageSize, QImage::Format_RGB32);
-            // TODO(uklotzde): Use optional cover art background color (if available)
-            // instead of Qt::darkGray
             placeholderImage.fill(
-                    mixxx::RgbColor::toQColor(std::nullopt /*res.coverArt.color*/, Qt::darkGray));
+                    mixxx::RgbColor::toQColor(res.coverArt.color, Qt::darkGray));
             res.coverArt.loadedImage.image = placeholderImage;
         }
         // Create pixmap, GUI thread only!

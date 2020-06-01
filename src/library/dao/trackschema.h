@@ -41,6 +41,7 @@ const QString LIBRARYTABLE_COVERART = QStringLiteral("coverart");
 const QString LIBRARYTABLE_COVERART_SOURCE = QStringLiteral("coverart_source");
 const QString LIBRARYTABLE_COVERART_TYPE = QStringLiteral("coverart_type");
 const QString LIBRARYTABLE_COVERART_LOCATION = QStringLiteral("coverart_location");
+const QString LIBRARYTABLE_COVERART_COLOR = QStringLiteral("coverart_color");
 const QString LIBRARYTABLE_COVERART_DIGEST = QStringLiteral("coverart_digest");
 const QString LIBRARYTABLE_COVERART_HASH = QStringLiteral("coverart_hash");
 
