@@ -5,10 +5,11 @@
 
 #include <QList>
 #include <QPair>
+#include <list>
 
-#include "util/types.h"
-#include "util/math.h"
 #include "engine/cachingreader/cachingreader.h"
+#include "util/math.h"
+#include "util/types.h"
 
 class LoopingControl;
 class RateControl;

@@ -8,13 +8,14 @@
 #include <QList>
 #include <QVarLengthArray>
 #include <QVector>
+#include <list>
 
-#include "util/types.h"
+#include "engine/cachingreader/cachingreaderworker.h"
+#include "engine/engineworker.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
-#include "engine/engineworker.h"
 #include "util/fifo.h"
-#include "engine/cachingreader/cachingreaderworker.h"
+#include "util/types.h"
 
 // A Hint is an indication to the CachingReader that a certain section of a
 // SoundSource will be used 'soon' and so it should be brought into memory by
