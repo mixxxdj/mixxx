@@ -221,14 +221,29 @@ void CoverArtCache::coverLoaded() {
     }
 
     QPixmap pixmap;
-    if (res.coverArt.loadedImage.result == CoverInfo::LoadedImage::Result::Ok) {
-        DEBUG_ASSERT(!res.coverArt.loadedImage.image.isNull());
-        DEBUG_ASSERT(!res.coverArt.loadedImage.filePath.isEmpty());
-        m_filePathLoadImageFailed.remove(res.coverArt.loadedImage.filePath);
+    if (res.coverArt.loadedImage.result != CoverInfo::LoadedImage::Result::NoImage) {
+        QImage image;
+        if (res.coverArt.loadedImage.result == CoverInfo::LoadedImage::Result::Ok) {
+            DEBUG_ASSERT(!res.coverArt.loadedImage.filePath.isEmpty());
+            image = res.coverArt.loadedImage.image;
+        } else {
+            kLogger.warning()
+                    << "Failed to load cover art image"
+                    << res.coverArt.loadedImage
+                    << "for track"
+                    << res.coverArt.trackLocation;
+            // Replace with a 1x1 pixel dummy image to avoid high CPU load
+            // See also: https://bugs.launchpad.net/mixxx/+bug/1879160
+            image = QImage(1, 1, QImage::Format_RGB32);
+            // TODO: Use cover art background color (if available)
+            // instead of Qt::darkGray
+            image.setPixel(0, 0, Qt::darkGray);
+        }
         // Create pixmap, GUI thread only!
         DEBUG_ASSERT(QThread::currentThread() ==
                 QCoreApplication::instance()->thread());
-        pixmap = QPixmap::fromImage(res.coverArt.loadedImage.image);
+        DEBUG_ASSERT(!image.isNull());
+        pixmap = QPixmap::fromImage(image);
         // Don't cache full size covers (resizedToWidth = 0)
         // Large cover art wastes space in our cache and will likely
         // uncache a lot of the small covers we need in the library
@@ -244,20 +259,6 @@ void CoverArtCache::coverLoaded() {
             QString cacheKey = pixmapCacheKey(
                     res.coverArt.hash, res.coverArt.resizedToWidth);
             QPixmapCache::insert(cacheKey, pixmap);
-        }
-    } else if (res.coverArt.loadedImage.result == CoverInfo::LoadedImage::Result::NoImage) {
-        m_filePathLoadImageFailed.remove(res.coverArt.loadedImage.filePath);
-    } else {
-        if (res.coverArt.loadedImage.filePath.isEmpty() ||
-                !m_filePathLoadImageFailed.contains(res.coverArt.loadedImage.filePath)) {
-            kLogger.warning()
-                    << "Failed to load cover art image"
-                    << res.coverArt.loadedImage
-                    << "for track"
-                    << res.coverArt.trackLocation;
-        }
-        if (!res.coverArt.loadedImage.filePath.isEmpty()) {
-            m_filePathLoadImageFailed.insert(res.coverArt.loadedImage.filePath);
         }
     }
 

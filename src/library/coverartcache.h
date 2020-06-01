@@ -108,7 +108,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
             Loading loading);
 
     QSet<QPair<const QObject*, quint16>> m_runningRequests;
-    QSet<QString> m_filePathLoadImageFailed;
 };
 
 inline
