@@ -18,11 +18,13 @@ class WPushButtonTest : public MixxxTest {
 
   protected:
     void SetUp() override {
+        m_pTouchShift.reset(new ControlPushButton(ConfigKey("[Controls]", "touch_shift")));
         m_pButton.reset(new WPushButton());
         m_pButton->setStates(2);
     }
 
     QScopedPointer<WPushButton> m_pButton;
+    QScopedPointer<ControlPushButton> m_pTouchShift;
     QTestEventList m_Events;
     const char* m_pGroup;
 };
