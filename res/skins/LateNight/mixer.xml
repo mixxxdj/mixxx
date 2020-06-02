@@ -1,9 +1,5 @@
 <Template>
   <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
-  <SetVariable name="KnobBg">regular</SetVariable>
-  <SetVariable name="KnobIndicator">regular</SetVariable>
-  <SetVariable name="ArcRadius"><Variable name="ArcRadiusBig"/></SetVariable>
-  <SetVariable name="ArcThickness"><Variable name="ArcThicknessBig"/></SetVariable>
 
   <WidgetGroup>
     <SizePolicy>max,me</SizePolicy>

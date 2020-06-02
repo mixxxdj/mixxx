@@ -5,10 +5,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   id="svg39"
-   version="1.1"
+   width="17"
    height="11"
-   width="17">
+   version="1.1"
+   id="svg39">
   <metadata
      id="metadata43">
     <rdf:RDF>
@@ -24,99 +24,99 @@
   <defs
      id="defs21">
     <linearGradient
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(.96801856 0 0 1.0311015 -18.062401 -11.387575)"
-       y2="11.044087"
-       y1="32.380493"
-       x2="12.460919"
+       id="a"
        x1="12.460919"
-       id="a">
+       x2="12.460919"
+       y1="32.380493"
+       y2="11.044087"
+       gradientTransform="matrix(.96801856 0 0 1.0311015 -18.062401 -11.387575)"
+       gradientUnits="userSpaceOnUse">
       <stop
-         id="stop2"
+         stop-color="#141414"
          offset="0"
-         stop-color="#141414" />
+         id="stop2" />
       <stop
-         id="stop4"
+         stop-color="#1c1c1c"
          offset="1"
-         stop-color="#1c1c1c" />
+         id="stop4" />
     </linearGradient>
     <linearGradient
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(-24.5,-1.5)"
-       y2="24.007122"
-       x2="1"
+       id="b"
        x1="1"
-       id="b">
+       x2="1"
+       y2="24.007122"
+       gradientTransform="translate(-24.5,-1.5)"
+       gradientUnits="userSpaceOnUse">
       <stop
-         id="stop7"
+         stop-color="#393939"
          offset="0"
-         stop-color="#393939" />
+         id="stop7" />
       <stop
-         id="stop9"
+         stop-color="#393939"
          offset=".30102351"
-         stop-color="#393939" />
+         id="stop9" />
       <stop
-         id="stop11"
+         stop-color="#141414"
          offset="1"
-         stop-color="#141414" />
+         id="stop11" />
     </linearGradient>
     <linearGradient
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1,0,0,1.6956521,-1.50003,-38.152173)"
-       y2="12"
-       y1="12"
-       x2="24"
+       id="c"
        x1="2"
-       id="c">
+       x2="24"
+       y1="12"
+       y2="12"
+       gradientTransform="matrix(1,0,0,1.6956521,-1.50003,-38.152173)"
+       gradientUnits="userSpaceOnUse">
       <stop
-         id="stop14"
+         stop-opacity=".0047619"
          offset="0"
-         stop-opacity=".0047619" />
+         id="stop14" />
       <stop
-         id="stop16"
+         stop-opacity="0"
          offset=".5"
-         stop-opacity="0" />
+         id="stop16" />
       <stop
-         id="stop18"
+         stop-opacity=".47451"
          offset="1"
-         stop-opacity=".47451" />
+         id="stop18" />
     </linearGradient>
   </defs>
   <rect
-     id="rect23"
-     style="paint-order:fill markers stroke;fill:#222222;fill-opacity:1"
-     fill="#1c1c1c"
-     ry="1.5"
-     rx="1.5"
-     height="16.573771"
+     x="-3.4557376"
      width="20.455738"
-     x="-3.4557376" />
+     height="16.573771"
+     rx="1.5"
+     ry="1.5"
+     fill="#1c1c1c"
+     style="paint-order:fill markers stroke;fill:#222222;fill-opacity:1"
+     id="rect23" />
   <path
-     id="path33"
-     stroke-width="1.6"
-     stroke="#000001"
+     d="M 9.0050588,2.9999997 5.5409159,9 h 6.9282001 z"
      fill="none"
-     d="M 9.0050588,2.9999997 5.5409159,9 h 6.9282001 z" />
+     stroke="#000001"
+     stroke-width="1.6"
+     id="path33" />
   <path
-     style="fill:#999998;fill-opacity:1"
-     id="path35"
-     stroke-width=".85714287"
+     d="M 9.0050588,2.9999997 5.5409159,9 h 6.9282001 z"
      fill="#bfbfbe"
-     d="M 9.0050588,2.9999997 5.5409159,9 h 6.9282001 z" />
+     stroke-width=".85714287"
+     id="path35"
+     style="fill:#a89a8c;fill-opacity:1" />
   <rect
-     id="rect37"
-     style="paint-order:fill markers stroke;fill:#252525;fill-opacity:1"
-     fill="#333334"
-     height="24.007122"
+     y="-13.007122"
      width="1"
-     y="-13.007122" />
+     height="24.007122"
+     fill="#333334"
+     style="paint-order:fill markers stroke;fill:#252525;fill-opacity:1"
+     id="rect37" />
   <rect
-     id="rect27"
-     fill="url(#c)"
      color="#000001"
-     height="39"
-     width="23"
-     y="-39"
+     fill="url(#c)"
+     transform="rotate(90)"
      x="1.0817554e-18"
-     transform="rotate(90)" />
+     y="-39"
+     width="23"
+     height="39"
+     id="rect27" />
 </svg>

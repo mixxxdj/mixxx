@@ -2,7 +2,7 @@
   <SetVariable name="BtnType"><Variable name="SubRegion_BtnType"/></SetVariable>
 
   <WidgetGroup>
-    <ObjectName>DeckRow_5_SpacerCompact</ObjectName>
+    <ObjectName>DeckRow_5_Compact</ObjectName>
     <SizePolicy>me,min</SizePolicy>
     <Layout>horizontal</Layout>
     <Children>
@@ -131,12 +131,6 @@
               <ConfigKey persist="true">[LateNight],show_loopjump_controls_compact</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
-          </WidgetGroup>
-
-          <WidgetGroup>
-            <SizePolicy>me,min</SizePolicy>
-            <MinimumSize>2,</MinimumSize>
-            <MaximumSize>30,</MaximumSize>
           </WidgetGroup>
         </Children>
       </WidgetGroup><!-- DeckRow_5_LoopCuesTransportCompact -->

@@ -16,7 +16,7 @@
               <PushButton>
                 <TooltipId>show_samplers</TooltipId>
                 <ObjectName>SamplerExpand</ObjectName>
-                <Size>16f,18f</Size>
+                <Size>16f,36f</Size>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -30,11 +30,11 @@
                 </Connection>
               </PushButton>
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- SamplerExpandBox -->
         </Children>
       </WidgetGroup>
     </Children>
-  </SingletonDefinition>
+  </SingletonDefinition><!-- SamplerExpand_Singleton -->
 
   <SingletonDefinition>
     <ObjectName>SamplerMini1_Singleton</ObjectName>

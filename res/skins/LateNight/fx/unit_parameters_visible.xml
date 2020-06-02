@@ -110,19 +110,18 @@
           </WidgetGroup>
 
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- FxSlotsExpanded -->
 
-      <WidgetGroup><!-- Expand/Collapse + Mix/Super + Pfl -->
+      <WidgetGroup><!-- FxUnitHeader + FxUnitControlsExpanded -->
         <ObjectName></ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>max,min</SizePolicy>
         <Children>
 
-          <!-- Fx label + Expand_Collapsed -->
           <WidgetGroup>
             <ObjectName>FxUnitHeaderExpanded</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>min,max</SizePolicy>
             <Children>
               <SingletonContainer>
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_Header</ObjectName>
@@ -153,7 +152,7 @@
 
               <WidgetGroup><Size>,1me</Size></WidgetGroup>
 
-              <WidgetGroup><!-- Super knob, optional -->
+              <WidgetGroup>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>

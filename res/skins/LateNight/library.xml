@@ -30,22 +30,28 @@
 
                   <!--Search Input Field + Library Expand toggle -->
                   <WidgetGroup>
-                    <ObjectName>SearchLineBox</ObjectName>
+                    <ObjectName></ObjectName>
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,max</SizePolicy>
                     <Children>
 
-                      <SearchBox></SearchBox>
+                      <WidgetGroup>
+                        <ObjectName>SearchLineBox</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>min,max</SizePolicy>
+                        <Children>
+                          <SearchBox></SearchBox>
+                        </Children>
+                      </WidgetGroup>
 
                       <WidgetGroup>
                         <ObjectName>LibExpandBox</ObjectName>
                         <Layout>vertical</Layout>
                         <Children>
-                          <WidgetGroup><MaximumSize>,3</MaximumSize></WidgetGroup>
                           <PushButton>
                             <TooltipId>maximize_library</TooltipId>
                             <ObjectName>LibExpand</ObjectName>
-                            <Size>14f,18min</Size>
+                            <Size>16f,18me</Size>
                             <NumberStates>2</NumberStates>
                             <State>
                               <Number>0</Number>
@@ -58,7 +64,6 @@
                               <ButtonState>LeftButton</ButtonState>
                             </Connection>
                           </PushButton>
-                          <WidgetGroup><SizePolicy>min,me</SizePolicy></WidgetGroup>
                         </Children>
                       </WidgetGroup><!-- LibExpandBox -->
                     </Children>

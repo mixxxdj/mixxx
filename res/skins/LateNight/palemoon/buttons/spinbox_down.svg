@@ -5,10 +5,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   width="17"
-   height="11"
+   id="svg21"
    version="1.1"
-   id="svg21">
+   height="11"
+   width="17">
   <metadata
      id="metadata25">
     <rdf:RDF>
@@ -24,63 +24,63 @@
   <defs
      id="defs9">
     <linearGradient
-       id="a"
-       x1="2"
-       x2="24"
-       y1="12"
-       y2="12"
+       gradientUnits="userSpaceOnUse"
        gradientTransform="matrix(1,0,0,1.6956521,-13.50003,-38.152173)"
-       gradientUnits="userSpaceOnUse">
+       y2="12"
+       y1="12"
+       x2="24"
+       x1="2"
+       id="a">
       <stop
-         stop-opacity=".0047619"
+         id="stop2"
          offset="0"
-         id="stop2" />
+         stop-opacity=".0047619" />
       <stop
-         stop-opacity="0"
+         id="stop4"
          offset=".5"
-         id="stop4" />
+         stop-opacity="0" />
       <stop
-         stop-opacity=".47451"
+         id="stop6"
          offset="1"
-         id="stop6" />
+         stop-opacity=".47451" />
     </linearGradient>
   </defs>
   <rect
-     x="-3.4557388"
-     y="-5.57377"
-     width="20.455738"
-     height="16.573771"
-     rx="1.5"
-     ry="1.5"
-     fill="#1c1c1c"
+     id="rect11"
      style="paint-order:fill markers stroke;fill:#222222;fill-opacity:1"
-     id="rect11" />
+     fill="#1c1c1c"
+     ry="1.5"
+     rx="1.5"
+     height="16.573771"
+     width="20.455738"
+     y="-5.57377"
+     x="-3.4557388" />
   <path
-     d="m9 7.9999994-3.4641429-6h6.9281999z"
-     fill="none"
-     stroke="#000001"
+     id="path15"
      stroke-width="1.6"
-     id="path15" />
+     stroke="#000001"
+     fill="none"
+     d="m9 7.9999994-3.4641429-6h6.9281999z" />
   <path
-     style="fill:#999998;fill-opacity:1"
-     d="m9 7.9999994-3.4641429-6h6.9281999z"
-     fill="#bfbfbe"
+     id="path17"
      stroke-width=".85714287"
-     id="path17" />
+     fill="#bfbfbe"
+     d="m9 7.9999994-3.4641429-6h6.9281999z"
+     style="fill:#a89a8c;fill-opacity:1" />
   <rect
-     y="-13.007122"
-     width="1"
-     height="24.007122"
-     fill="#333334"
+     id="rect19"
      style="paint-order:fill markers stroke;fill:#252525;fill-opacity:1"
-     id="rect19" />
+     fill="#333334"
+     height="24.007122"
+     width="1"
+     y="-13.007122" />
   <rect
-     transform="rotate(90)"
-     x="-12"
-     y="-39"
-     width="23"
-     height="39"
      color="#000001"
      fill="url(#a)"
-     id="rect13" />
+     id="rect13"
+     height="39"
+     width="23"
+     y="-39"
+     x="-12"
+     transform="rotate(90)" />
 </svg>

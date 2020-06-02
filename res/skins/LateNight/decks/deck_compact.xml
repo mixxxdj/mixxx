@@ -1,6 +1,6 @@
 <Template>
   <WidgetGroup>
-    <ObjectName>DeckContainer</ObjectName>
+    <ObjectName>DeckContainer<Variable name="ChanNum" /></ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
@@ -80,10 +80,15 @@
           <Template src="skin:/decks/rate_controls_compact.xml"/>
 
         </Children>
+        <!-- This is supposed to reduce margin and eliminate the border that
+          touches the optional VU meters when they're visible.
+          Unfortunately it is buggy and works only for the state that is
+          active while the skin is loaded. If the highlight value changes the
+          layout may be screwed and inner widgets overlap the outer border.. wtf?
         <Connection>
           <ConfigKey persist="true">[LateNight],show_vumeters_compact</ConfigKey>
           <BindProperty>highlight</BindProperty>
-        </Connection>
+        </Connection> -->
       </WidgetGroup><!-- DeckCompactN -->
 
     </Children>

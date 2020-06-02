@@ -10,7 +10,7 @@
         <ObjectName>SeparatorV</ObjectName>
         <!-- Tis fixes the height of the entire rate container so nothing shrinks
             or expands when the mixer or big spinny are toggled. -->
-        <Size><Variable name="SeparatorWidthRate"/>,144f</Size>
+        <Size><Variable name="SeparatorWidthRate"/>,0me</Size>
        </WidgetGroup>
 
       <WidgetGroup>

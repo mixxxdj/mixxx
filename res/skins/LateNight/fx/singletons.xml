@@ -13,101 +13,6 @@
   <SetVariable name="FxRack_FxUnit">EffectRack1_EffectUnit<Variable name="FxUnit"/></SetVariable>
   <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
 
-  <SingletonDefinition>
-    <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlotControls1</ObjectName>
-    <Children>
-      <WidgetGroup>
-        <SizePolicy>min,min</SizePolicy>
-        <MaximumSize>220,</MaximumSize>
-        <Layout>vertical</Layout>
-        <Children>
-          <Template src="skin:/fx/slot_controls.xml">
-            <SetVariable name="FxNum">1</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
-    </Children>
-  </SingletonDefinition>
-
-  <SingletonDefinition>
-    <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlotControls2</ObjectName>
-    <Children>
-      <WidgetGroup>
-        <SizePolicy>p,min</SizePolicy>
-        <MaximumSize>220,</MaximumSize>
-        <Layout>vertical</Layout>
-        <Children>
-          <Template src="skin:/fx/slot_controls.xml">
-            <SetVariable name="FxNum">2</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
-    </Children>
-  </SingletonDefinition>
-
-  <SingletonDefinition>
-    <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlotControls3</ObjectName>
-    <Children>
-      <WidgetGroup>
-        <SizePolicy>p,min</SizePolicy>
-        <MaximumSize>220,</MaximumSize>
-        <Layout>vertical</Layout>
-        <Children>
-          <Template src="skin:/fx/slot_controls.xml">
-            <SetVariable name="FxNum">3</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
-    </Children>
-  </SingletonDefinition>
-
-  <SingletonDefinition>
-    <ObjectName>FxUnit<Variable name="FxUnit"/>_SuperKnob</ObjectName>
-    <Children>
-      <WidgetGroup>
-        <SizePolicy>me,min</SizePolicy>
-        <Layout>vertical</Layout>
-        <Children>
-          <Template src="skin:/controls/knob_textless.xml">
-            <SetVariable name="Size">40f,34f</SetVariable>
-            <SetVariable name="ObjectName">SuperMixKnob</SetVariable>
-            <SetVariable name="KnobBg">regular</SetVariable>
-            <SetVariable name="KnobIndicator">regular</SetVariable>
-            <SetVariable name="Color">green</SetVariable>
-            <SetVariable name="ArcColor"><Variable name="ArcColorSuper"/></SetVariable>
-            <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
-            <SetVariable name="Group">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
-            <SetVariable name="Control">super1</SetVariable>
-            <SetVariable name="Label">Super</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
-    </Children>
-  </SingletonDefinition>
-
-  <SingletonDefinition>
-    <ObjectName>FxUnit<Variable name="FxUnit"/>_DryWetKnob</ObjectName>
-    <Children>
-      <WidgetGroup>
-        <SizePolicy>me,min</SizePolicy>
-        <Layout>vertical</Layout>
-        <Children>
-          <Template src="skin:/controls/knob_textless.xml">
-            <SetVariable name="Size">40f,34f</SetVariable>
-            <SetVariable name="ObjectName">SuperMixKnob</SetVariable>
-            <SetVariable name="KnobBg">regular</SetVariable>
-            <SetVariable name="KnobIndicator">regular</SetVariable>
-            <SetVariable name="Color">red</SetVariable>
-            <SetVariable name="ArcColor"><Variable name="ArcColorFxMix"/></SetVariable>
-            <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
-            <SetVariable name="Group">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
-            <SetVariable name="Control">mix</SetVariable>
-            <SetVariable name="Label">Mix</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
-    </Children>
-  </SingletonDefinition>
 
   <SingletonDefinition>
     <ObjectName>FxUnit<Variable name="FxUnit"/>_Header</ObjectName>
@@ -119,14 +24,14 @@
         <Children>
           <Label>
             <ObjectName>FxUnitLabel</ObjectName>
-            <Size>32f,20min</Size>
+            <Size>32f,20me</Size>
             <Text>FX&#8202;<Variable name="FxUnit"/></Text>
           </Label>
           <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
           <PushButton>
             <TooltipId>EffectUnit_show_parameters</TooltipId>
             <ObjectName>FxExpand</ObjectName>
-            <Size>16f,18min</Size>
+            <Size>16f,18me</Size>
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
@@ -179,6 +84,101 @@
             <SetVariable name="Size">26f,26f</SetVariable>
             <SetVariable name="BtnSize">square</SetVariable>
             <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],group_[Headphone]_enable</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>FxUnit<Variable name="FxUnit"/>_SuperKnob</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <SizePolicy>me,min</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skin:/controls/knob_textless.xml">
+            <SetVariable name="Size">40f,34f</SetVariable>
+            <SetVariable name="ObjectName">SuperMixKnob</SetVariable>
+            <SetVariable name="KnobBg">regular</SetVariable>
+            <SetVariable name="KnobIndicator">regular</SetVariable>
+            <SetVariable name="ArcColor"><Variable name="ArcColorSuper"/></SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
+            <SetVariable name="Group">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
+            <SetVariable name="Control">super1</SetVariable>
+            <SetVariable name="Label">Super</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>FxUnit<Variable name="FxUnit"/>_DryWetKnob</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <SizePolicy>me,min</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skin:/controls/knob_textless.xml">
+            <SetVariable name="Size">40f,34f</SetVariable>
+            <SetVariable name="ObjectName">DryWetKnob</SetVariable>
+            <SetVariable name="KnobBg">regular</SetVariable>
+            <SetVariable name="KnobIndicator">regular</SetVariable>
+            <SetVariable name="KnobColor">red</SetVariable>
+            <SetVariable name="ArcColor"><Variable name="ArcColorFxMix"/></SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
+            <SetVariable name="Group">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
+            <SetVariable name="Control">mix</SetVariable>
+            <SetVariable name="Label">Mix</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlotControls1</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <SizePolicy>min,min</SizePolicy>
+        <MaximumSize>220,</MaximumSize>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skin:/fx/slot_controls.xml">
+            <SetVariable name="FxNum">1</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlotControls2</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <SizePolicy>p,min</SizePolicy>
+        <MaximumSize>220,</MaximumSize>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skin:/fx/slot_controls.xml">
+            <SetVariable name="FxNum">2</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlotControls3</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <SizePolicy>p,min</SizePolicy>
+        <MaximumSize>220,</MaximumSize>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skin:/fx/slot_controls.xml">
+            <SetVariable name="FxNum">3</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>

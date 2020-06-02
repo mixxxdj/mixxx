@@ -42,8 +42,7 @@
 
       <WidgetGroup>
         <ObjectName>OverviewBox</ObjectName>
-        <!--Size>0me,56f</Size-->
-        <SizePolicy>min,me</SizePolicy>
+        <Size>min,64f</Size>
         <Layout>horizontal</Layout>
         <Children>
           <SingletonContainer>
@@ -58,7 +57,6 @@
 
       <WidgetGroup>
         <ObjectName>DeckSettingsContainerCompact</ObjectName>
-        <!--Size>0me,56f</Size-->
         <SizePolicy>min,me</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
@@ -66,6 +64,10 @@
             <ObjectName>DeckSettings<Variable name="ChanNum"/></ObjectName>
           </SingletonContainer>
         </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_rate_key_controls_compact</ConfigKey>
+          <BindProperty>highlight</BindProperty>
+        </Connection>
       </WidgetGroup>
 
     </Children>

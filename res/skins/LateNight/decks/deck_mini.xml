@@ -199,7 +199,7 @@
                         <ObjectName>BpmTextSmall</ObjectName>
                         <TooltipId>visual_bpm</TooltipId>
                         <Size>60f,25f</Size>
-                        <Alignment>center</Alignment>
+                        <Alignment>right</Alignment>
                         <Channel><Variable name="ChanNum" /></Channel>
                         <NumberOfDigits>2</NumberOfDigits>
                         <Connection>

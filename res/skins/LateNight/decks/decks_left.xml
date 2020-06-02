@@ -1,12 +1,12 @@
 <Template>
   <SetVariable name="Type">deck</SetVariable>
   <WidgetGroup>
-    <ObjectName>DecksLeft</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
 
       <WidgetGroup>
+        <ObjectName>DecksLeft</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>

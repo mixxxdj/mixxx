@@ -5,34 +5,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   id="svg16"
-   version="1.1"
-   height="23"
    width="16"
-   sodipodi:docname="btn__expand_dim.svg"
-   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
-  <sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="1056"
-     id="namedview12"
-     showgrid="false"
-     inkscape:zoom="13.111111"
-     inkscape:cx="-6.1949153"
-     inkscape:cy="8.9999999"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="svg16" />
+   height="18"
+   version="1.1"
+   id="svg16">
   <metadata
      id="metadata22">
     <rdf:RDF>
@@ -48,36 +24,32 @@
   <defs
      id="defs20" />
   <g
-     style="fill:none;stroke:#000001;stroke-width:1.60000002;stroke-linejoin:round"
+     transform="translate(-3.0000331,-1.999548)"
      id="g8"
-     transform="translate(-3.0000331,0.500452)">
+     style="fill:none;stroke:#000001;stroke-width:1.60000002;stroke-linejoin:round">
     <g
-       style="fill:none;stroke:#000001;stroke-width:1.70226443;stroke-linejoin:round"
+       transform="matrix(0.93992449,0,0,0.93992449,1.6003517,1.6003969)"
        id="g6"
-       transform="matrix(0.93992449,0,0,0.93992449,1.6003517,1.6003969)">
+       style="fill:none;stroke:#000001;stroke-width:1.70226443;stroke-linejoin:round">
       <path
-         id="path2"
          d="m 14.70815,11.4378 -4.708,4.7081 -4.708,-4.7081 -1.177,1.1771 5.885,5.8851 5.885,-5.8851 z"
-         inkscape:connector-curvature="0" />
+         id="path2" />
       <path
-         id="path4"
          d="M 14.70815,8.562 10.00005,3.8539004 5.29195,8.562 4.11485,7.3849 9.99995,1.4998004 15.88505,7.3849 14.70795,8.562 Z"
-         inkscape:connector-curvature="0" />
+         id="path4" />
     </g>
   </g>
   <g
-     style="fill:#666668;fill-opacity:1"
+     transform="matrix(0.93992449,0,0,0.93992449,-1.3996814,-0.3991511)"
      id="g14"
-     transform="matrix(0.93992449,0,0,0.93992449,-1.3996814,2.1008489)">
+     style="fill:#666668;fill-opacity:1">
     <path
-       id="path10"
+       style="fill:#666668;fill-opacity:1"
        d="m 14.70815,11.4378 -4.708,4.7081 -4.708,-4.7081 -1.177,1.1771 5.885,5.8851 5.885,-5.8851 z"
-       style="fill:#666668;fill-opacity:1"
-       inkscape:connector-curvature="0" />
+       id="path10" />
     <path
-       id="path12"
-       d="M 14.70815,8.562 10.00005,3.8539004 5.29195,8.562 4.11485,7.3849 9.99995,1.4998004 15.88505,7.3849 14.70795,8.562 Z"
        style="fill:#666668;fill-opacity:1"
-       inkscape:connector-curvature="0" />
+       d="M 14.70815,8.562 10.00005,3.8539004 5.29195,8.562 4.11485,7.3849 9.99995,1.4998004 15.88505,7.3849 14.70795,8.562 Z"
+       id="path12" />
   </g>
 </svg>

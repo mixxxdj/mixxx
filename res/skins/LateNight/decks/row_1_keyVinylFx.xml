@@ -10,18 +10,18 @@
       <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
 
       <WidgetGroup>
-        <ObjectName>DeckRow_1_BottomBorder</ObjectName>
+        <ObjectName>ExpandingBottomBorder</ObjectName>
         <SizePolicy>min,me</SizePolicy>
-        <MinimumSize>2,0</MinimumSize>
+        <MinimumSize>2,1</MinimumSize>
         <Children/>
       </WidgetGroup>
 
       <Template src="skin:/decks/vinyl_controls.xml"/>
 
       <WidgetGroup>
-        <ObjectName>DeckRow_1_BottomBorder</ObjectName>
+        <ObjectName>ExpandingBottomBorder</ObjectName>
         <SizePolicy>min,me</SizePolicy>
-        <MinimumSize>2,0</MinimumSize>
+        <MinimumSize>2,1</MinimumSize>
       </WidgetGroup>
 
       <WidgetGroup><Size>2f,0me</Size></WidgetGroup>

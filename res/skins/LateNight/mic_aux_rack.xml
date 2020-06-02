@@ -10,6 +10,7 @@
     <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
+
       <WidgetGroup>
         <ObjectName>MicAuxRack</ObjectName>
         <Layout>horizontal</Layout>
@@ -28,7 +29,7 @@
             <Children>
 
               <Template src="skin:/mic_aux/ducking_controls.xml">
-                <SetVariable name="Mic1Hack">1</SetVariable>
+                <SetVariable name="KnobColor">red</SetVariable>
               </Template>
 
               <WidgetGroup>

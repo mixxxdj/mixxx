@@ -42,7 +42,7 @@
 
       <WidgetGroup>
         <ObjectName>OverviewBox</ObjectName>
-        <SizePolicy>min,me</SizePolicy>
+        <Size>min,64f</Size>
         <Layout>horizontal</Layout>
         <Children>
           <SingletonContainer>
@@ -55,9 +55,20 @@
         </Connection>
       </WidgetGroup>
 
-      <SingletonContainer>
-        <ObjectName>DeckSettings<Variable name="ChanNum"/></ObjectName>
-      </SingletonContainer>
+      <WidgetGroup>
+        <ObjectName>DeckSettingsContainer</ObjectName>
+        <SizePolicy>min,me</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <SingletonContainer>
+            <ObjectName>DeckSettings<Variable name="ChanNum"/></ObjectName>
+          </SingletonContainer>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
+          <BindProperty>highlight</BindProperty>
+        </Connection>
+      </WidgetGroup>
 
     </Children>
   </WidgetGroup><!-- DeckRow_4_OverviewSpinny -->

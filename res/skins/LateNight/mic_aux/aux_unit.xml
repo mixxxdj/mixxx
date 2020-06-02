@@ -72,10 +72,8 @@
                   <Template src="skin:/controls/knob_textless.xml">
                     <SetVariable name="TooltipId">auxiliary_pregain</SetVariable>
                     <SetVariable name="Size">35f,30f</SetVariable>
-                    <SetVariable name="Color">orange</SetVariable>
+                    <SetVariable name="KnobColor">orange</SetVariable>
                     <SetVariable name="ArcColor"><Variable name="ArcColorGain"/></SetVariable>
-                    <SetVariable name="ArcThickness"><Variable name="ArcThicknessBig"/></SetVariable>
-                    <SetVariable name="ArcRadius"><Variable name="ArcRadiusCompact"/></SetVariable>
                     <SetVariable name="Control">pregain</SetVariable>
                   </Template>
                   <WidgetGroup><Size>4f,0min</Size></WidgetGroup>

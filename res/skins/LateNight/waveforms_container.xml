@@ -13,12 +13,12 @@
         <SizePolicy>me,min</SizePolicy>
         <Children>
 
-          <WidgetGroup><!-- Waveforms -->
+          <WidgetGroup>
             <Layout>vertical</Layout>
             <Size>100me,40me</Size>
             <Children>
 
-              <WidgetGroup><!-- Waveform 3 -->
+              <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
@@ -26,15 +26,16 @@
                     <SetVariable name="ChanNum">3</SetVariable>
                     <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
                     <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_34"/></SetVariable>
+                    <SetVariable name="Highlight">[Skin],show_4decks</SetVariable>
                   </Template>
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup><!-- Waveform 3 -->
+              </WidgetGroup>
 
-              <WidgetGroup><!-- Waveform 1 -->
+              <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
@@ -42,11 +43,12 @@
                     <SetVariable name="ChanNum">1</SetVariable>
                     <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
                     <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_12"/></SetVariable>
+                    <SetVariable name="Highlight">[Skin],show_4decks</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup>
 
-              <WidgetGroup><!-- Waveform 2 -->
+              <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
@@ -54,11 +56,12 @@
                     <SetVariable name="ChanNum">2</SetVariable>
                     <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
                     <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_12"/></SetVariable>
+                    <SetVariable name="Highlight">[Skin],show_4decks</SetVariable>
                   </Template>
                 </Children>
-              </WidgetGroup><!-- Waveform 2 -->
+              </WidgetGroup>
 
-              <WidgetGroup><!-- Waveform 4 -->
+              <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
@@ -72,17 +75,10 @@
                   <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup><!-- Waveform 4 -->
-
-              <!-- 3D border like in all embedded containers.
-                   Right border is a similar widget in each instance of waveform.xml -->
-              <WidgetGroup>
-                <ObjectName>WaveformsBottomBorder</ObjectName>
-                <Size>0me,0min</Size>
               </WidgetGroup>
 
             </Children>
-          </WidgetGroup><!-- /Waveforms -->
+          </WidgetGroup>
 
           <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
@@ -90,7 +86,7 @@
             <SetVariable name="TooltipId">FIXME_beatgrid_controls</SetVariable>
             <SetVariable name="ObjectName">BeatgridControlsToggle</SetVariable>
             <SetVariable name="Size">26f,52f</SetVariable>
-            <SetVariable name="BtnSize">tall</SetVariable>
+            <SetVariable name="BtnSize"></SetVariable>
             <SetVariable name="ConfigKey">[Skin],show_beatgrid_controls</SetVariable>
           </Template>
 

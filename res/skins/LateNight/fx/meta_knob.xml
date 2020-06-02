@@ -13,11 +13,12 @@
     <Children>
       <KnobComposed>
         <TooltipId>EffectSlot_metaknob</TooltipId>
-        <Size>26f,26f</Size>
-        <Knob>skin:/<Variable name="KnobScheme"/>/knobs/knob_indicator_fx_<Variable name="KnobColor"/>.svg</Knob>
-        <BackPath>skin:/<Variable name="KnobScheme"/>/knobs/knob_bg_fx.svg</BackPath>
+        <Size>35f,30f</Size>
+        <Knob>skin:/<Variable name="KnobScheme"/>/knobs/knob_indicator_small_<Variable name="KnobColor"/>.svg</Knob>
+        <BackPath>skin:/<Variable name="KnobScheme"/>/knobs/knob_bg_small.svg</BackPath>
         <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
         <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+        <KnobCenterYOffset>1.598</KnobCenterYOffset>
         <ArcRadius><Variable name="ArcRadius"/></ArcRadius>
         <ArcThickness><Variable name="ArcThickness"/></ArcThickness>
         <ArcColor><Variable name="ArcColorSuper"/></ArcColor>

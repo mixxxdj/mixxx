@@ -33,13 +33,41 @@
               <ConfigKey><Variable name="Group"/>,visual_key</ConfigKey>
             </Connection>
             <!-- unfortunately this can't be used to highlight if the key is
-                offset from original file key -->
+                offset from original file key
             <Connection>
               <ConfigKey><Variable name="Group"/>,visual_key</ConfigKey>
               <Transform><Not><Variable name="Group"/>,file_key</Not></Transform>
               <BindProperty>highlight</BindProperty>
-            </Connection>
+            </Connection> -->
           </Key>
+
+          <!-- Another idea to group all keycontrols
+          <WidgetGroup>
+            <ObjectName>KeyTextBox</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,f</SizePolicy>
+            <MinimumSize>30,20</MinimumSize>
+            <MaximumSize>65,20</MaximumSize>
+            <Children>
+              <Key>
+                <ObjectName>KeyText</ObjectName>
+                <TooltipId>track_key</TooltipId>
+                <Group><Variable name="Group"/></Group>
+                <MinimumSize>30,18</MinimumSize>
+                <MaximumSize>65,18</MaximumSize>
+                <SizePolicy>me,f</SizePolicy>
+                <Elide>right</Elide>
+                <Connection>
+                  <ConfigKey><Variable name="Group"/>,visual_key</ConfigKey>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="Group"/>,visual_key</ConfigKey>
+                  <Transform><Not><Variable name="Group"/>,file_key</Not></Transform>
+                  <BindProperty>highlight</BindProperty>
+                </Connection>
+              </Key>
+            </Children>
+          </WidgetGroup>KeyTextBox -->
 
           <WidgetGroup>
             <ObjectName>KeyUpDown</ObjectName>

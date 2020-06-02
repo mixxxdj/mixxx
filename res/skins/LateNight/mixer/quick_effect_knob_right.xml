@@ -23,11 +23,8 @@
                 <Children>
                   <Template src="skin:/controls/knob_textless.xml">
                     <SetVariable name="Size">40f,34f</SetVariable>
-                    <SetVariable name="Color">green</SetVariable>
-                    <SetVariable name="ArcRadius"><Variable name="ArcRadius"/></SetVariable>
-                    <SetVariable name="ArcThickness"><Variable name="ArcThickness"/></SetVariable>
+                    <SetVariable name="KnobColor">green</SetVariable>
                     <SetVariable name="ArcColor"><Variable name="ArcColorFx12Quick"/></SetVariable>
-                    <SetVariable name="ArcRoundCaps"><Variable name="ArcRoundCaps"/></SetVariable>
                     <SetVariable name="Group"><Variable name="QuickEffectGroup"/></SetVariable>
                     <SetVariable name="Control">super1</SetVariable>
                     <SetVariable name="TooltipId">QuickEffectRack_super1</SetVariable>

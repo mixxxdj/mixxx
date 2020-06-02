@@ -65,14 +65,14 @@
                     </Children>
                   </WidgetGroup>
 
-                  <WidgetGroup>
+                  <!--WidgetGroup>
                     <Size>3f,0min</Size>
                     <Connection>
                       <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
                       <Transform><Not/></Transform>
                       <BindProperty>visible</BindProperty>
                     </Connection>
-                  </WidgetGroup>
+                  </WidgetGroup-->
                 </Children>
               </WidgetGroup><!-- DeckRows234 -->
 

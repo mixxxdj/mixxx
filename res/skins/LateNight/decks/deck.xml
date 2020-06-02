@@ -42,9 +42,9 @@
   </SingletonDefinition>
 
   <SingletonDefinition>
-    <ObjectName>Deck<Variable name="ChanNum"/>_Normal</ObjectName>
+    <ObjectName>Deck<Variable name="ChanNum"/>_Full</ObjectName>
     <Children>
-      <Template src="skin:/decks/deck_normal.xml"/>
+      <Template src="skin:/decks/deck_full.xml"/>
     </Children>
   </SingletonDefinition>
 
@@ -55,8 +55,9 @@
       <!-- Stack to choose Full / Compact / Minimal deck -->
       <WidgetStack currentpage="[LateNight],deck_size" persist="true">
         <Children>
+
           <SingletonContainer>
-            <ObjectName>Deck<Variable name="ChanNum"/>_Normal</ObjectName>
+            <ObjectName>Deck<Variable name="ChanNum"/>_Full</ObjectName>
           </SingletonContainer>
 
           <WidgetGroup>
@@ -70,9 +71,10 @@
           <SingletonContainer>
             <ObjectName>Deck<Variable name="ChanNum"/>_Mini</ObjectName>
           </SingletonContainer>
+
         </Children>
         <Connection>
-          <ConfigKey>[Master],show_mixer</ConfigKey>
+          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
@@ -84,11 +86,11 @@
         <SizePolicy>me,min</SizePolicy>
         <Children>
           <SingletonContainer>
-            <ObjectName>Deck<Variable name="ChanNum"/>_Normal</ObjectName>
+            <ObjectName>Deck<Variable name="ChanNum"/>_Full</ObjectName>
           </SingletonContainer>
         </Children>
         <Connection>
-          <ConfigKey>[Master],show_mixer</ConfigKey>
+          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>

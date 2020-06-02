@@ -6,123 +6,127 @@
     <Layout>horizontal</Layout>
     <SizePolicy>me,me</SizePolicy>
     <Children>
-      <Visual>
-        <TooltipId>waveform_display</TooltipId>
-        <Channel><Variable name="ChanNum"/></Channel>
-        <BgColor><Variable name="BgColorWaveform"/></BgColor>
-        <SignalColor><Variable name="SignalColor"/></SignalColor>
-        <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
-        <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
-        <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
-        <BeatColor><Variable name="BeatColor"/></BeatColor>
-        <AxesColor><Variable name="AxesColor"/></AxesColor>
-        <BeatHighlightColor></BeatHighlightColor>
-        <PlayPosColor><Variable name="PlayPosColor"/></PlayPosColor>
-        <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
-        <!--
-        The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
-          - if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
-          - if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
-        -->
-        <DefaultMark>
-          <Align>bottom|right</Align>
-          <Color>#FF0000</Color>
-          <TextColor>#FFFFFF</TextColor>
-          <Text> %1 </Text>
-        </DefaultMark>
-        <!-- Cue -->
-        <Mark>
-          <Control>cue_point</Control>
-          <Text>CUE</Text>
-          <Align>top|right</Align>
-          <Color><Variable name="CueColor"/></Color>
-          <TextColor>#FFFFFF</TextColor>
-        </Mark>
-        <!-- Loop -->
-        <MarkRange>
-          <StartControl>loop_start_position</StartControl>
-          <EndControl>loop_end_position</EndControl>
-          <EnabledControl>loop_enabled</EnabledControl>
-          <Color><Variable name="LoopColor"/></Color>
-          <DisabledColor>#FFFFFF</DisabledColor>
-        </MarkRange>
-        <Mark>
-          <Control>loop_start_position</Control>
-          <!--Text>IN</Text-->
-          <Align>bottom|right</Align>
-          <Color><Variable name="LoopColor"/></Color>
-          <TextColor>#FFFFFF</TextColor>
-        </Mark>
-        <Mark>
-          <Control>loop_end_position</Control>
-          <!--Text>OUT</Text-->
-          <Align>bottom|right</Align>
-          <Color><Variable name="LoopColor"/></Color>
-          <TextColor>#FFFFFF</TextColor>
-        </Mark>
-        <!-- Intro -->
-        <MarkRange>
-          <StartControl>intro_start_position</StartControl>
-          <EndControl>intro_end_position</EndControl>
-          <Color><Variable name="IntroOutroColor"/></Color>
-          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-          <DurationTextColor>#ffffff</DurationTextColor>
-          <DurationTextLocation>after</DurationTextLocation>
-        </MarkRange>
-        <Mark>
-          <Control>intro_start_position</Control>
-          <Text></Text>
-          <Align>top|right</Align>
-          <Color><Variable name="IntroOutroColor"/></Color>
-          <TextColor>#FFFFFF</TextColor>
-          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-        </Mark>
-        <Mark>
-          <Control>intro_end_position</Control>
-          <Text>&#9698;</Text>
-          <Align>top|left</Align>
-          <Color><Variable name="IntroOutroColor"/></Color>
-          <TextColor>#FFFFFF</TextColor>
-          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-        </Mark>
-        <!-- Outro -->
-        <MarkRange>
-          <StartControl>outro_start_position</StartControl>
-          <EndControl>outro_end_position</EndControl>
-          <Color><Variable name="IntroOutroColor"/></Color>
-          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-          <DurationTextColor>#ffffff</DurationTextColor>
-          <DurationTextLocation>before</DurationTextLocation>
-        </MarkRange>
-        <Mark>
-          <Control>outro_start_position</Control>
-          <Text>&#9699;</Text>
-          <Align>top|right</Align>
-          <Color><Variable name="IntroOutroColor"/></Color>
-          <TextColor>#FFFFFF</TextColor>
-          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-        </Mark>
-        <Mark>
-          <Control>outro_end_position</Control>
-          <Text></Text>
-          <Align>top|left</Align>
-          <Color><Variable name="IntroOutroColor"/></Color>
-          <TextColor>#FFFFFF</TextColor>
-          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-        </Mark>
-      </Visual>
-
-      <!-- 3D border like in all embedded containers.
-            Bottom border is created in waveforms_container.xml -->
       <WidgetGroup>
-        <ObjectName>WaveformsRightBorder</ObjectName>
-        <Size>1f,0min</Size>
+        <ObjectName>WaveformBox<Variable name="ChanNum"/></ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+          <Visual>
+            <TooltipId>waveform_display</TooltipId>
+            <Channel><Variable name="ChanNum"/></Channel>
+            <BgColor><Variable name="BgColorWaveform"/></BgColor>
+            <SignalColor><Variable name="SignalColor"/></SignalColor>
+            <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
+            <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
+            <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
+            <BeatColor><Variable name="BeatColor"/></BeatColor>
+            <AxesColor><Variable name="AxesColor"/></AxesColor>
+            <BeatHighlightColor></BeatHighlightColor>
+            <PlayPosColor><Variable name="PlayPosColor"/></PlayPosColor>
+            <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
+            <!--
+            The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
+              - if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
+              - if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
+            -->
+            <DefaultMark>
+              <Align>bottom|right</Align>
+              <Color>#FF0000</Color>
+              <TextColor>#FFFFFF</TextColor>
+              <Text> %1 </Text>
+            </DefaultMark>
+            <!-- Cue -->
+            <Mark>
+              <Control>cue_point</Control>
+              <Text>CUE</Text>
+              <Align>top|right</Align>
+              <Color><Variable name="CueColor"/></Color>
+              <TextColor>#FFFFFF</TextColor>
+            </Mark>
+            <!-- Loop -->
+            <MarkRange>
+              <StartControl>loop_start_position</StartControl>
+              <EndControl>loop_end_position</EndControl>
+              <EnabledControl>loop_enabled</EnabledControl>
+              <Color><Variable name="LoopColor"/></Color>
+              <DisabledColor>#FFFFFF</DisabledColor>
+            </MarkRange>
+            <Mark>
+              <Control>loop_start_position</Control>
+              <!--Text>IN</Text-->
+              <Align>bottom|right</Align>
+              <Color><Variable name="LoopColor"/></Color>
+              <TextColor>#FFFFFF</TextColor>
+            </Mark>
+            <Mark>
+              <Control>loop_end_position</Control>
+              <!--Text>OUT</Text-->
+              <Align>bottom|right</Align>
+              <Color><Variable name="LoopColor"/></Color>
+              <TextColor>#FFFFFF</TextColor>
+            </Mark>
+            <!-- Intro -->
+            <MarkRange>
+              <StartControl>intro_start_position</StartControl>
+              <EndControl>intro_end_position</EndControl>
+              <Color><Variable name="IntroOutroColor"/></Color>
+              <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+              <DurationTextColor>#ffffff</DurationTextColor>
+              <DurationTextLocation>after</DurationTextLocation>
+            </MarkRange>
+            <Mark>
+              <Control>intro_start_position</Control>
+              <Text></Text>
+              <Align>top|right</Align>
+              <Color><Variable name="IntroOutroColor"/></Color>
+              <TextColor>#FFFFFF</TextColor>
+              <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+            </Mark>
+            <Mark>
+              <Control>intro_end_position</Control>
+              <Text>&#9698;</Text>
+              <Align>top|left</Align>
+              <Color><Variable name="IntroOutroColor"/></Color>
+              <TextColor>#FFFFFF</TextColor>
+              <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+            </Mark>
+            <!-- Outro -->
+            <MarkRange>
+              <StartControl>outro_start_position</StartControl>
+              <EndControl>outro_end_position</EndControl>
+              <Color><Variable name="IntroOutroColor"/></Color>
+              <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+              <DurationTextColor>#ffffff</DurationTextColor>
+              <DurationTextLocation>before</DurationTextLocation>
+            </MarkRange>
+            <Mark>
+              <Control>outro_start_position</Control>
+              <Text>&#9699;</Text>
+              <Align>top|right</Align>
+              <Color><Variable name="IntroOutroColor"/></Color>
+              <TextColor>#FFFFFF</TextColor>
+              <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+            </Mark>
+            <Mark>
+              <Control>outro_end_position</Control>
+              <Text></Text>
+              <Align>top|left</Align>
+              <Color><Variable name="IntroOutroColor"/></Color>
+              <TextColor>#FFFFFF</TextColor>
+              <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+            </Mark>
+          </Visual>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true"><Variable name="Highlight"/></ConfigKey>
+          <BindProperty>highlight</BindProperty>
+        </Connection>
       </WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>BeatgridControls</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>f,f</SizePolicy>
+        <SizePolicy>max,me</SizePolicy>
         <Children>
           <WidgetGroup><Size>1me,0me</Size></WidgetGroup>
 
@@ -130,6 +134,8 @@
             <Layout>horizontal</Layout>
             <SizePolicy>f,f</SizePolicy>
             <Children>
+
+              <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
 
               <WidgetGroup><!-- CurPos only -->
                 <Layout>vertical</Layout>
@@ -235,7 +241,7 @@
             </Children>
           </WidgetGroup><!-- /beat grid buttons row -->
 
-          <WidgetGroup><Size>1me,0me</Size></WidgetGroup>
+          <WidgetGroup><Size>1me,1me</Size></WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey persist="true">[Skin],show_beatgrid_controls</ConfigKey>

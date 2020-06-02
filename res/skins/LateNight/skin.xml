@@ -59,6 +59,7 @@
       <attribute persist="true" config_key="[Skin],show_eq_knobs">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_kill_buttons">1</attribute>
       <attribute persist="true" config_key="[Skin],show_xfader">1</attribute>
+      <attribute persist="true" config_key="[LateNight],show_vumeters_compact">1</attribute>
       <!-- Effects -->
       <attribute persist="true" config_key="[EffectRack1],show">1</attribute>
       <attribute persist="true" config_key="[Skin],show_4effectunits">0</attribute>
@@ -137,9 +138,9 @@
           This sets the size of the parent container which might have padding,
           margin or a border which need to be considered.
 CHECK! -->
-      <SetVariable name="SpinnySizeSmall">64f,62f</SetVariable>
-      <SetVariable name="SpinnySizeBig">112f,111f</SetVariable>
-      <SetVariable name="SpinnySizeBigCompact">112f,111f</SetVariable>
+      <SetVariable name="SpinnySizeSmall">65f,64f</SetVariable>
+      <SetVariable name="SpinnySizeBig">116f,116f</SetVariable>
+      <SetVariable name="SpinnySizeBigCompact">117f,116f</SetVariable>
       <SetVariable name="SpinnySizeMiniDeck">54f,54f</SetVariable>
 
       <!-- black lines & spacers to separate widgets -->
@@ -160,17 +161,18 @@ CHECK! -->
       <SetVariable name="ArcColorEq">#999</SetVariable>
       <SetVariable name="ArcColorGain">#b96300</SetVariable>
       <SetVariable name="ArcColorFx12Quick">#5ba000</SetVariable>
-      <SetVariable name="ArcColorFx34">#257b82</SetVariable>
-      <SetVariable name="ArcColorFxParameter">#aaa</SetVariable>
+      <SetVariable name="ArcColorFx34">#009ba7</SetVariable>
+      <SetVariable name="ArcColorFxParameter">#999</SetVariable>
       <!--SetVariable name="ArcColorGainLow">#a05600</SetVariable-->
       <SetVariable name="ArcColorGainLow">#7d4a0f</SetVariable>
       <!--SetVariable name="ArcColorMstBal">#aa0000</SetVariable-->
-      <SetVariable name="ArcColorMstBal">#7d0f0f</SetVariable>
+      <SetVariable name="ArcColorMstBal">#a00000</SetVariable>
       <SetVariable name="ArcColorFxMix">#aa0000</SetVariable>
       <!-- Suffix for the knob indicator SVGs -->
       <SetVariable name="KnobColorEq">grey</SetVariable>
       <SetVariable name="KnobColorFx12">green</SetVariable>
       <SetVariable name="KnobColorFx34">blue</SetVariable>
+      <SetVariable name="KnobColorFxParameter">grey</SetVariable>
       <!-- Size of the small EQ kill indicator button: SVG is 6x6 px.
           Set size to '0f,0f' to hide them. -->
       <SetVariable name="EqKillDotSize">6f,6f</SetVariable>
@@ -188,7 +190,7 @@ CHECK! -->
 
       <!-- Waveform & Overview colors -->
       <!-- This is a hack to have a grey background in empty decks.
-          When a track is laoded the bg becomes black for better contrast -->
+          When a track is laoded the bg gets darker for better contrast -->
       <SetVariable name="BgColorOverview_12">rgba(15, 15, 15, 20)</SetVariable>
       <SetVariable name="BgColorOverview_34">rgba(0, 27, 35, 120)</SetVariable>
       <SetVariable name="BgColorOverview_SamPre">rgba(15, 15, 15, 20)</SetVariable>
@@ -229,9 +231,9 @@ CHECK! -->
       <SetVariable name="SubRegion_BtnType">elevated</SetVariable>
 
       <!-- CHECK! -->
-      <SetVariable name="SpinnySizeSmall">63f,61f</SetVariable>
-      <SetVariable name="SpinnySizeBig">106f,106f</SetVariable>
-      <SetVariable name="SpinnySizeBigCompact">108f,106f</SetVariable>
+      <SetVariable name="SpinnySizeSmall">64f,64f</SetVariable>
+      <SetVariable name="SpinnySizeBig">111f,112f</SetVariable>
+      <SetVariable name="SpinnySizeBigCompact">112f,112f</SetVariable>
       <SetVariable name="SpinnySizeMiniDeck">52f,52f</SetVariable>
 
       <SetVariable name="SeparatorWidthDecksBottom">2f</SetVariable>
@@ -246,8 +248,10 @@ CHECK! -->
       <SetVariable name="KnobColorEq">red</SetVariable>
       <SetVariable name="KnobColorFx12">green</SetVariable>
       <SetVariable name="KnobColorFx34">blue</SetVariable>
-      <!-- EQ kill dots conflict with arcs in Classic knob backgrounds,
-        so we don't show them -->
+      <SetVariable name="KnobColorFxParameter">white</SetVariable>
+      <!-- EQ kill dots conflict with arcs in Classic knob backgrounds.
+        Leaving it blank could cause users to accidentially click it
+        without having a 'kill' indicator, so we 'remove' it. -->
       <SetVariable name="EqKillDotSize">0f,0f</SetVariable>
 
       <!-- Waveform & Overview colors -->
@@ -376,13 +380,14 @@ CHECK! -->
                       <SizePolicy>me,me</SizePolicy>
                       <Children>
                         <WidgetGroup><!-- Top spacer when waveforms are hidden -->
-                          <Size>0me,3f</Size>
+                          <ObjectName>ToolbarDeckSpacer</ObjectName>
                           <Connection>
                             <ConfigKey persist="true">[Skin],show_waveforms</ConfigKey>
                             <Transform><Not/></Transform>
                             <BindProperty>visible</BindProperty>
                           </Connection>
-                        </WidgetGroup>
+                        </WidgetGroup><!-- ToolbarDeckSpacer -->
+
                         <WidgetGroup>
                           <Layout>horizontal</Layout>
                           <SizePolicy>me,max</SizePolicy>

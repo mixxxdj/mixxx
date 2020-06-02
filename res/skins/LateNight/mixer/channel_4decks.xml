@@ -1,5 +1,10 @@
 <Template>
   <SetVariable name="Group">[Channel<Variable name="ChanNum"/>]</SetVariable>
+  <SetVariable name="KnobBg">regular</SetVariable>
+  <SetVariable name="KnobIndicator">regular</SetVariable>
+  <SetVariable name="ArcRadius"><Variable name="ArcRadiusBig"/></SetVariable>
+  <SetVariable name="ArcThickness"><Variable name="ArcThicknessBig"/></SetVariable>
+
   <WidgetGroup>
     <ObjectName>MixerChannel_4Decks</ObjectName>
     <Layout>vertical</Layout>
@@ -17,9 +22,7 @@
         <Children>
           <Template src="skin:/controls/knob_textless.xml">
             <SetVariable name="Size">40f,34f</SetVariable>
-            <SetVariable name="KnobBg">regular</SetVariable>
-            <SetVariable name="KnobIndicator">regular</SetVariable>
-            <SetVariable name="Color">orange</SetVariable>
+            <SetVariable name="KnobColor">orange</SetVariable>
             <SetVariable name="ArcColor"><Variable name="ArcColorGain"/></SetVariable>
             <SetVariable name="Control">pregain</SetVariable>
             <SetVariable name="TooltipId">pregain</SetVariable>

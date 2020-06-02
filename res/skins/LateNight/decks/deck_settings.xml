@@ -3,7 +3,7 @@
     <Layout>vertical</Layout>
     <Children>
       <WidgetGroup>
-        <ObjectName>DeckSettingsStars</ObjectName>
+        <ObjectName>DeckSettings</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>f,min</SizePolicy>
         <Children>
@@ -87,10 +87,6 @@
           <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
 
         </Children>
-        <Connection>
-          <ConfigKey persist="true">[Skin],show_rate_key_controls_compact</ConfigKey>
-          <BindProperty>highlight</BindProperty>
-        </Connection>
       </WidgetGroup>
     </Children>
   </WidgetGroup>

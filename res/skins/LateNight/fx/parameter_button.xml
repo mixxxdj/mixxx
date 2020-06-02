@@ -19,7 +19,7 @@
     <Children>
 
       <WidgetGroup>
-        <ObjectName>FxButtonBox</ObjectName>
+        <ObjectName>FxParameterButtonBox</ObjectName>
         <Layout>horizontal</Layout>
         <Size>40me,20f</Size>
         <Children>
