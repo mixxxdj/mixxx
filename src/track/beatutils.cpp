@@ -13,6 +13,7 @@
 
 #include "track/beatutils.h"
 #include "util/math.h"
+#include "track/beatstats.h"
 
 // we are generous and assume the global_BPM to be at most 0.05 BPM far away
 // from the correct one
@@ -22,7 +23,9 @@
 // computed. Tweaked from 8 to 12 which improves the BPM accuracy for 'problem songs'.
 #define N 12
 
-static bool sDebug = false;
+constexpr int kBeatsToCountTempo = 12;
+
+static bool sDebug = true;
 
 const double kCorrectBeatLocalBpmEpsilon = 0.05; //0.2;
 const int kHistogramDecimalPlaces = 2;
@@ -33,29 +36,49 @@ void BeatUtils::printBeatStatistics(const QVector<double>& beats, int SampleRate
     if (!sDebug) {
         return;
     }
-    QMap<double, int> frequency;
+    QMap<double, int> tempoFrequency;
+    QList<double> tempoList = computeWindowedBpmsAndFrequencyHistogram(
+            beats, 2, 1, SampleRate, &tempoFrequency);
+    // Get the median BPM.
+    auto sortedTempoList = tempoList;
+    std::sort(sortedTempoList.begin(), sortedTempoList.end());
+    const double median = computeSampleMedian(sortedTempoList);
 
-    for (int i = N; i < beats.size(); i += 1) {
-        double beat_start = beats.at(i - N);
-        double beat_end = beats.at(i);
-
-        // Time needed to count a bar (N beats)
-        const double time = (beat_end - beat_start) / SampleRate;
-        if (time == 0) continue;
-        double local_bpm = 60.0 * N / time;
-
-        qDebug() << "Beat" << i << "local BPM:" << local_bpm;
-
-        local_bpm = floor(local_bpm * kHistogramDecimalScale + 0.5) / kHistogramDecimalScale;
-        frequency[local_bpm] += 1;
+    // The analyzer sometimes detect false beats that generate outliers
+    // values for the tempo so we use a median filter to remove them
+    MovingMedian filterTempo(kBeatsToCountTempo / 2 + 1); // even samples for a precise median
+    // The outliers value might have still caused some fluctation in the
+    // middle tempo so we need to find the mode to get a stable value
+    MovingMode stabilizeTempo(kBeatsToCountTempo * 2); // larger window to keep fluctuations out
+    // Here we are going to track the tempo changes over the track
+    int currentBeat = 0, lastBeatChange = 0;
+    QMap<int, double> stableTemposAndPositions;
+    stableTemposAndPositions[lastBeatChange] = median;
+    for (double tempo : tempoList) {
+        double newStableTempo = stabilizeTempo(filterTempo(tempo));
+        // The analyzer has some jitter that caused a steady beat to flucate around the
+        // correct value so we don't consider tempos +-1 from the mendian as changes
+        if (newStableTempo == stableTemposAndPositions.last()) {
+            ;
+        } else if (stableTemposAndPositions.last() != tempoFrequency.lastKey() and
+                newStableTempo == (tempoFrequency.find(stableTemposAndPositions.last()) + 1).key()) {
+            ;
+        } else if (stableTemposAndPositions.last() != tempoFrequency.firstKey() and
+                newStableTempo == (tempoFrequency.find(stableTemposAndPositions.last()) - 1).key()) {
+            ;
+        } else {
+            if (currentBeat >= kBeatsToCountTempo / 2){
+            // our filters introduces some delay, this is rough guess of where the change happens
+                lastBeatChange = currentBeat - kBeatsToCountTempo / 2;
+                stableTemposAndPositions[lastBeatChange] = newStableTempo;
+            }
+        }
+        currentBeat += 1;
     }
-
-    qDebug() << "Rounded local BPM histogram:";
-
-    QMapIterator<double, int> it(frequency);
-    while (it.hasNext()) {
-        it.next();
-        qDebug() << it.key() << ":" << it.value();
+    stableTemposAndPositions[tempoList.count()] = median;
+    qDebug() << "Number of unique BPMs" << stableTemposAndPositions.count();
+    for (auto tempo : stableTemposAndPositions.keys()) {
+        qDebug() << ", at beat #," << tempo << "tempo is" << stableTemposAndPositions[tempo];
     }
 }
 
