@@ -159,7 +159,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 #endif
           m_pKeyboard(nullptr),
           m_pLibrary(nullptr),
-          m_pMenuBar(nullptr),
           m_pDeveloperToolsDlg(nullptr),
           m_pPrefDlg(nullptr),
           m_pKbdConfig(nullptr),
@@ -693,7 +692,10 @@ void MixxxMainWindow::finalize() {
     // outside of MixxxMainWindow the parent relationship will directly destroy
     // the WMainMenuBar and this will no longer be a problem.
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting menubar";
-    QPointer<QWidget> pMenuBar(menuBar());
+
+    QPointer<WMainMenuBar> pMenuBar = m_pMenuBar.toWeakRef();
+    DEBUG_ASSERT(menuBar() == m_pMenuBar.get());
+    m_pMenuBar = nullptr;
     setMenuBar(nullptr);
     if (!pMenuBar.isNull()) {
         QCoreApplication::sendPostedEvents(pMenuBar, QEvent::DeferredDelete);
