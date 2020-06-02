@@ -3,14 +3,20 @@
 , lv2Plugins ? []
 }:
 let inherit (nixroot) stdenv pkgs lib
-    chromaprint fftw flac libid3tag libmad libopus libshout libsndfile lilv 
+    chromaprint fftw flac libid3tag libmad libopus libshout libsndfile lilv
     libusb1 libvorbis libebur128 pkgconfig portaudio portmidi protobuf qt5 glib
-    rubberband scons sqlite taglib soundtouch vamp opusfile hidapi upower ccache git
+    rubberband sqlite taglib soundtouch vamp opusfile hidapi upower ccache git
     libGLU x11 lame lv2 makeWrapper
     clang-tools
+    cmake
     fetchurl
+    ffmpeg
     gdb
-    python3;
+    libmodplug
+    mp4v2
+    nix-gitignore
+    python3
+    wavpack;
 
   git-clang-format = stdenv.mkDerivation {
     name = "git-clang-format";
@@ -37,20 +43,37 @@ let inherit (nixroot) stdenv pkgs lib
     '';
   };
 
+  shell-configure = nixroot.writeShellScriptBin "configure" ''
+    mkdir -p cbuild
+    cd cbuild
+    cmake .. "$@"
+  '';
+
   shell-build = nixroot.writeShellScriptBin "build" ''
-    scons \
-      -j$NIX_BUILD_CORES \
-      $sconsFlags "prefix=$HOME/mixxx" "$@";
+    if [ ! -d "cbuild" ]; then
+      >&2 echo "First you have to run configure."
+      exit 1
+    fi
+    cd cbuild
+    cmake --build . --parallel $NIX_BUILD_CORES "$@"
   '';
 
   shell-run = nixroot.writeShellScriptBin "run" ''
-      BUILDDIR=$(ls -1 -d -t lin64_build lin_build | head -1)
-      /usr/bin/env LV2_PATH=${lib.makeSearchPathOutput "lib" "lib/lv2" allLv2Plugins}:$LV2_PATH $BUILDDIR/mixxx --settingsPath ./devsettings/ --resourcePath ./res "$@"
+    if [ ! -f "cbuild/mixxx" ]; then
+      >&2 echo "First you have to run build."
+      exit 1
+    fi
+    cd cbuild
+    ./mixxx --resourcePath res/ "$@"
   '';
 
   shell-debug = nixroot.writeShellScriptBin "debug" ''
-      BUILDDIR=$(ls -1 -d -t lin64_build lin_build | head -1)
-      gdb --args $BUILDDIR/mixxx --settingsPath ./devsettings/ --resourcePath ./res "$@"
+    if [ ! -f "cbuild/mixxx" ]; then
+      >&2 echo "First you have to run build."
+      exit 1
+    fi
+    cd cbuild
+    gdb --args ./mixxx --resourcePath res/ "$@"
   '';
 
   allLv2Plugins = lv2Plugins ++ (if defaultLv2Plugins then [
@@ -60,59 +83,42 @@ let inherit (nixroot) stdenv pkgs lib
 
 in stdenv.mkDerivation rec {
   name = "mixxx-${version}";
-  # reading the version from git output is very hard to do without wasting lots of diskspace and runtime
-  # reading version file is easy
+  # Reading the version from git output is very hard to do without wasting lots of diskspace and
+  # runtime. Reading version file is easy.
   version = lib.strings.removeSuffix "\"\n" (
               lib.strings.removePrefix "#define MIXXX_VERSION \"" (
                 builtins.readFile ./src/_version.h ));
 
   shellHook =  ''
-    export CC="ccache gcc"
-    export CXX="ccache g++"
-
     echo -e "Mixxx development shell. Available commands:\n"
+    echo " configure - configures cmake (only has to run once)"
     echo " build - compiles Mixxx"
     echo " run - runs Mixxx with development settings"
     echo " debug - runs Mixxx inside gdb"
       '';
 
-  src = builtins.filterSource
-     (path: type: ! builtins.any (x: x == baseNameOf path) [ ".git" "cache" "lin64_build" "lin_build" "debian" ])
-     ./.;
+  src = nix-gitignore.gitignoreSource ''
+    /cbuild
+  '' ./.;
 
   nativeBuildInputs = [
+    ccache # If you want to build Mixxx as a derivation, then you have to remove ccache here.
+    cmake
     gdb
     git-clang-format
-    shell-build shell-run shell-debug
+    shell-configure shell-build shell-run shell-debug
   ];
 
   buildInputs = [
     chromaprint fftw flac libid3tag libmad libopus libshout libsndfile
     libusb1 libvorbis libebur128 pkgconfig portaudio portmidi protobuf qt5.full
-    rubberband scons sqlite taglib soundtouch vamp.vampSDK opusfile upower hidapi
-    ccache git glib x11 libGLU lilv lame lv2 makeWrapper qt5.qtbase
+    rubberband sqlite taglib soundtouch vamp.vampSDK opusfile upower hidapi
+    git glib x11 libGLU lilv lame lv2 makeWrapper qt5.qtbase
+    ffmpeg
+    libmodplug
+    mp4v2
+    wavpack
   ] ++ allLv2Plugins;
-
-  sconsFlags = [
-    "build=debug"
-    "qtdir=${qt5.full}"
-  ];
-
-  buildPhase = ''
-    runHook preBuild;
-    mkdir -p "$out";
-    scons \
-      -j$NIX_BUILD_CORES \
-      $sconsFlags "prefix=$out";
-    runHook postBuild
-  '';
-
-  installPhase = ''
-    runHook preInstall
-    scons $sconsFlags "prefix=$out" install
-    wrapProgram $out/bin/mixxx --suffix QT_PLUGIN_PATH : ${qt5.qtbase}/${qt5.qtbase.qtPluginPrefix} --set QTDIR ${qt5.full} --prefix LV2_PATH : ${lib.makeSearchPath "lib/lv2" allLv2Plugins}
-    runHook postInstall
-  '';
 
   meta = with nixroot.stdenv.lib; {
     homepage = https://mixxx.org;

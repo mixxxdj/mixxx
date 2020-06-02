@@ -106,7 +106,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="293"/>
         <source>New Playlist</source>
-        <translation>Νέα λίστα αναπαραγωγής</translation>
+        <translation>Νέα Λίστα Αναπαραγωγής</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="64"/>
@@ -1610,7 +1610,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="128"/>
         <source>Pitch Adjust</source>
-        <translation>Ρύθμιση τόνου</translation>
+        <translation>Ρύθμιση Τόνου</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="129"/>
@@ -2948,7 +2948,7 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="694"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-        <translation>Λίστα M3U (*.m3u);;Λίστα M3U8 (*.m3u8);;Λίστα PLS (*.pls);;Κείμενο CSV (*.csv);;Απλό κείμενο (*.txt)</translation>
+        <translation>Λίστα αναπαραγωγής M3U (*.m3u);;Λίστα αναπαραγωγής M3U8 (*.m3u8);;Λίστα αναπαραγωγής PLS (*.pls);;Κείμενο CSV (*.csv);;Απλό κείμενο (*.txt)</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="169"/>
@@ -4305,7 +4305,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="81"/>
         <source>Enabled</source>
-        <translation>Ενεργοποιημένο</translation>
+        <translation>Ενεργό</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="230"/>
@@ -5436,7 +5436,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="103"/>
         <source>You added one or more music directories. The tracks in these directories won&apos;t be available until you rescan your library. Would you like to rescan now?</source>
-        <translation>Προσθέσατε έναν ή περισσότερους μουσικούς καταλόγους. Τα κομμάτια σε αυτούς τους καταλόγους δεν θα είναι διαθέσιμα μέχρι να ανανεωθεί η συλλογή σας. Θέλετε να γίνει τώρα η ανανέωση;  </translation>
+        <translation>Προσθέσατε έναν ή περισσότερους μουσικούς καταλόγους. Τα κομμάτια σε αυτούς τους καταλόγους δεν θα είναι διαθέσιμα μέχρι να επανασαρωθεί η συλλογή σας. Θέλετε να γίνει τώρα επανασάρωση;  </translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="107"/>
@@ -6135,7 +6135,7 @@ The loudness target is approximate and assumes track pregain and master output l
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="165"/>
         <source>Enabled</source>
-        <translation>Ενεργοποιημένο</translation>
+        <translation>Ενεργό</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="172"/>
@@ -7151,7 +7151,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="213"/>
         <source>Key</source>
-        <translation>Τόνος</translation>
+        <translation>Κλειδί</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="236"/>
@@ -8227,7 +8227,7 @@ Do you want to scan your library for cover files now?</source>
     <name>QObject</name>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="6"/>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="187"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="161"/>
         <source>Invalid</source>
         <translation>Μη έγκυρο</translation>
     </message>
@@ -8333,67 +8333,67 @@ Do you want to scan your library for cover files now?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="189"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="163"/>
         <source>Master</source>
         <translation>Πρωτεύων</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="165"/>
         <source>Booth</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="193"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="167"/>
         <source>Headphones</source>
         <translation>Ακουστικά</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="197"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="171"/>
         <source>Left Bus</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="199"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="173"/>
         <source>Center Bus</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="201"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="175"/>
         <source>Right Bus</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="203"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="177"/>
         <source>Invalid Bus</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="206"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="180"/>
         <source>Deck</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="209"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="183"/>
         <source>Record/Broadcast</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="211"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="185"/>
         <source>Vinyl Control</source>
         <translation>Έλεγχος βινυλίου</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="214"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="188"/>
         <source>Microphone</source>
         <translation>Μικρόφωνο</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="217"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
         <source>Auxiliary</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="220"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="194"/>
         <source>Unknown path type %1</source>
         <translation type="unfinished"/>
     </message>
@@ -10668,7 +10668,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="361"/>
         <source>Key</source>
-        <translation>Τόνος</translation>
+        <translation>Κλειδί</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="365"/>
@@ -11847,7 +11847,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="550"/>
         <source>Pitch Adjust</source>
-        <translation>Ρύθμιση τόνου</translation>
+        <translation>Ρύθμιση Τόνου</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="551"/>
@@ -12672,7 +12672,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="149"/>
         <source>Ctrl+Shift+N</source>
-        <translation>Ctrl+q </translation>
+        <translation>Ctrl+Shift+N</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="165"/>
@@ -13020,20 +13020,20 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <translation>Διέλευση</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="711"/>
+        <location filename="../../src/widget/woverview.cpp" line="705"/>
         <source>Ready to play, analyzing ..</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="714"/>
-        <location filename="../../src/widget/woverview.cpp" line="724"/>
+        <location filename="../../src/widget/woverview.cpp" line="708"/>
+        <location filename="../../src/widget/woverview.cpp" line="718"/>
         <source>Loading track ..</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="718"/>
+        <location filename="../../src/widget/woverview.cpp" line="712"/>
         <source>Finalizing ..</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation type="unfinished"/>

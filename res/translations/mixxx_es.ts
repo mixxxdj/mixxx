@@ -21,7 +21,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="73"/>
         <source>Crates</source>
-        <translation>Cajones</translation>
+        <translation>Cajas</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="97"/>
@@ -2129,7 +2129,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="114"/>
         <source>One-time beat sync tempo (and phase with quantize enabled)</source>
-        <translation>toque para sincronizar solo una vez el tempo y fase </translation>
+        <translation>toque para sincronizar solo una vez (el tempo y fase) </translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="124"/>
@@ -2904,7 +2904,7 @@
         <location filename="../../src/library/crate/cratefeature.cpp" line="160"/>
         <location filename="../../src/library/crate/cratefeature.cpp" line="168"/>
         <source>Crates</source>
-        <translation>Cajones</translation>
+        <translation>Cajas</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="103"/>
@@ -3047,22 +3047,22 @@
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="36"/>
         <source>With contributions from:</source>
-        <translation>Con colaboradores de:</translation>
+        <translation>Con contribuciones de:</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="37"/>
         <source>And special thanks to:</source>
-        <translation>Y agradecimientos especiales a:</translation>
+        <translation>Y un agradecimiento especial a:</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="38"/>
         <source>Past Developers</source>
-        <translation>Antiguos desarrolladores</translation>
+        <translation>Desarrolladores Anteriores</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="39"/>
         <source>Past Contributors</source>
-        <translation>Antiguos colaboradores</translation>
+        <translation>Contribuyentes anteriores</translation>
     </message>
 </context>
 <context>
@@ -8265,7 +8265,7 @@ Do you want to scan your library for cover files now?</source>
     <name>QObject</name>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="6"/>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="187"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="161"/>
         <source>Invalid</source>
         <translation>No válido</translation>
     </message>
@@ -8371,67 +8371,67 @@ Do you want to scan your library for cover files now?</source>
         <translation>14-bit (MSB)</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="189"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="163"/>
         <source>Master</source>
         <translation>Principal</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="165"/>
         <source>Booth</source>
         <translation>Cabina</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="193"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="167"/>
         <source>Headphones</source>
         <translation>Auriculares</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="197"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="171"/>
         <source>Left Bus</source>
         <translation>Bus izquierdo</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="199"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="173"/>
         <source>Center Bus</source>
         <translation>Bus central</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="201"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="175"/>
         <source>Right Bus</source>
         <translation>Bus derecho</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="203"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="177"/>
         <source>Invalid Bus</source>
         <translation>Bus inválido</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="206"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="180"/>
         <source>Deck</source>
         <translation>Plato</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="209"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="183"/>
         <source>Record/Broadcast</source>
         <translation>Grabación / Emisión en vivo</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="211"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="185"/>
         <source>Vinyl Control</source>
         <translation>Control de vinilo</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="214"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="188"/>
         <source>Microphone</source>
         <translation>Micrófono</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="217"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
         <source>Auxiliary</source>
         <translation>Auxiliar</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="220"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="194"/>
         <source>Unknown path type %1</source>
         <translation>Tipo de ruta %1 desconocida</translation>
     </message>
@@ -13090,20 +13090,20 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <translation>Paso</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="711"/>
+        <location filename="../../src/widget/woverview.cpp" line="705"/>
         <source>Ready to play, analyzing ..</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>Listo para reproducir,analizando ..</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="714"/>
-        <location filename="../../src/widget/woverview.cpp" line="724"/>
+        <location filename="../../src/widget/woverview.cpp" line="708"/>
+        <location filename="../../src/widget/woverview.cpp" line="718"/>
         <source>Loading track ..</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>Cargando pista ..</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="718"/>
+        <location filename="../../src/widget/woverview.cpp" line="712"/>
         <source>Finalizing ..</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>Terminando ..</translation>

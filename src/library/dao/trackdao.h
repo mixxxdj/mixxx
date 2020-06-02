@@ -42,9 +42,8 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             UserSettingsPointer pConfig);
     ~TrackDAO() override;
 
-    void initialize(const QSqlDatabase& database) override {
-        m_database = database;
-    }
+    void initialize(
+            const QSqlDatabase& database) override;
     void finish();
 
     QList<TrackId> resolveTrackIds(

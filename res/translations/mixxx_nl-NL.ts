@@ -111,7 +111,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="64"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation>Voeg toe aan Auto DJ Wachtrij (onderaan)</translation>
+        <translation>Voeg toe aan Auto DJ Wachtrij (onder)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="37"/>
@@ -148,7 +148,7 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="86"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="91"/>
         <source>Import Playlist</source>
-        <translation>Importeer afspeellijst</translation>
+        <translation>Importeer Afspeellijst</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="101"/>
@@ -163,7 +163,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="196"/>
         <source>Enter new name for playlist:</source>
-        <translation>Geef nieuwe naam voor afspeellijst</translation>
+        <translation>Geef nieuwe naam voor afspeellijst:</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="237"/>
@@ -1272,12 +1272,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="51"/>
         <source>Fast Rewind</source>
-        <translation>Snel terugspoelen</translation>
+        <translation>Snel Terugspoelen</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="51"/>
         <source>Fast Rewind button</source>
-        <translation>Snel terugspoel knop</translation>
+        <translation>Snel Terugspoel knop</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="52"/>
@@ -1297,7 +1297,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="55"/>
         <source>Play Reverse</source>
-        <translation>Achteruit afspelen</translation>
+        <translation>Achteruit Afspelen</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="55"/>
@@ -1834,7 +1834,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="418"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation>Voeg toe aan Auto DJ Wachtrij (onderaan)</translation>
+        <translation>Voeg toe aan Auto DJ Wachtrij (onder)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="419"/>
@@ -2149,7 +2149,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="132"/>
         <source>Increase Speed</source>
-        <translation>Laat snelheid toenemen</translation>
+        <translation>Versnellen</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="133"/>
@@ -2160,17 +2160,17 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="134"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="138"/>
         <source>Increase Speed (Fine)</source>
-        <translation>Laat snelheid toenemen (Fijn)</translation>
+        <translation>Versnellen (Fijn)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="135"/>
         <source>Adjust speed faster (fine)</source>
-        <translation>Versnellen (fijn)</translation>
+        <translation>Aanpassen versnellen (fijn)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="136"/>
         <source>Decrease Speed</source>
-        <translation>Langzamer</translation>
+        <translation>Vertragen</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="137"/>
@@ -2180,7 +2180,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="139"/>
         <source>Adjust speed slower (fine)</source>
-        <translation>Vertragen (fijn)</translation>
+        <translation>Aanpassen vertragen (fijn)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="140"/>
@@ -2200,7 +2200,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="143"/>
         <source>Temporarily increase speed (fine)</source>
-        <translation>Tijdelijk Versnellen (fijn)</translation>
+        <translation>Tijdelijk versnellen (fijn)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="144"/>
@@ -2220,7 +2220,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="147"/>
         <source>Temporarily decrease speed (fine)</source>
-        <translation>Tijdelijk Vertragen (fijn)</translation>
+        <translation>Tijdelijk vertragen (fijn)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="170"/>
@@ -2342,7 +2342,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="370"/>
         <source>Move down</source>
-        <translation>Naar beneden</translation>
+        <translation>Omlaag</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="371"/>
@@ -2382,7 +2382,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="386"/>
         <source>Scroll up/down</source>
-        <translation>Scroll Omhoog/Omlaag</translation>
+        <translation>Scroll omhoog/omlaag</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="387"/>
@@ -2967,7 +2967,7 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="420"/>
         <source>A crate cannot have a blank name.</source>
-        <translation>Een krat kan geen blanco naam hebben</translation>
+        <translation>Een krat kan geen blanco naam hebben.</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="427"/>
@@ -3004,7 +3004,7 @@
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="55"/>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="110"/>
         <source>A crate cannot have a blank name.</source>
-        <translation>Een krat kan geen blanco naam hebben</translation>
+        <translation>Een krat kan geen blanco naam hebben.</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="62"/>
@@ -5436,7 +5436,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="107"/>
         <source>Scan</source>
-        <translation>Zoek</translation>
+        <translation>Scan</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="214"/>
@@ -7146,7 +7146,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="213"/>
         <source>Key</source>
-        <translation>Sleutel</translation>
+        <translation>Toonsoort</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="236"/>
@@ -7702,7 +7702,7 @@ support.</source>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="37"/>
         <source>Import Playlist</source>
-        <translation>Importeer afspeellijst</translation>
+        <translation>Importeer Afspeellijst</translation>
     </message>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="39"/>
@@ -8172,7 +8172,7 @@ Do you want to scan your library for cover files now?</source>
     <message>
         <location filename="../../src/preferences/upgrade.cpp" line="439"/>
         <source>Scan</source>
-        <translation>Zoek</translation>
+        <translation>Scan</translation>
     </message>
     <message>
         <location filename="../../src/preferences/upgrade.cpp" line="440"/>
@@ -8219,7 +8219,7 @@ Do you want to scan your library for cover files now?</source>
     <name>QObject</name>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="6"/>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="187"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="161"/>
         <source>Invalid</source>
         <translation type="unfinished"/>
     </message>
@@ -8325,67 +8325,67 @@ Do you want to scan your library for cover files now?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="189"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="163"/>
         <source>Master</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="165"/>
         <source>Booth</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="193"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="167"/>
         <source>Headphones</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="197"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="171"/>
         <source>Left Bus</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="199"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="173"/>
         <source>Center Bus</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="201"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="175"/>
         <source>Right Bus</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="203"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="177"/>
         <source>Invalid Bus</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="206"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="180"/>
         <source>Deck</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="209"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="183"/>
         <source>Record/Broadcast</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="211"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="185"/>
         <source>Vinyl Control</source>
         <translation>Vinyl Besturing</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="214"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="188"/>
         <source>Microphone</source>
         <translation>Microfoon</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="217"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
         <source>Auxiliary</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="220"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="194"/>
         <source>Unknown path type %1</source>
         <translation type="unfinished"/>
     </message>
@@ -10660,7 +10660,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="361"/>
         <source>Key</source>
-        <translation>Sleutel</translation>
+        <translation>Toonsoort</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="365"/>
@@ -12024,7 +12024,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="487"/>
         <source>Fast Rewind</source>
-        <translation>Snel terugspoelen</translation>
+        <translation>Snel Terugspoelen</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="488"/>
@@ -13012,20 +13012,20 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="711"/>
+        <location filename="../../src/widget/woverview.cpp" line="705"/>
         <source>Ready to play, analyzing ..</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="714"/>
-        <location filename="../../src/widget/woverview.cpp" line="724"/>
+        <location filename="../../src/widget/woverview.cpp" line="708"/>
+        <location filename="../../src/widget/woverview.cpp" line="718"/>
         <source>Loading track ..</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="718"/>
+        <location filename="../../src/widget/woverview.cpp" line="712"/>
         <source>Finalizing ..</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation type="unfinished"/>

@@ -31,7 +31,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="110"/>
         <source>Auto DJ</source>
-        <translation>AutoDJ</translation>
+        <translation>Auto DJ</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="298"/>
@@ -2593,7 +2593,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="733"/>
         <source>Auto DJ</source>
-        <translation>AutoDJ</translation>
+        <translation>Auto DJ</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="735"/>
@@ -3057,12 +3057,12 @@
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="38"/>
         <source>Past Developers</source>
-        <translation>Vroegere ontwikkelaars:</translation>
+        <translation>Eerdere ontwikkelaars</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="39"/>
         <source>Past Contributors</source>
-        <translation>Vroegere bijdragers:</translation>
+        <translation>Eerdere medewerkers</translation>
     </message>
 </context>
 <context>
@@ -3301,7 +3301,7 @@ last sound.</source>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="269"/>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="277"/>
         <source>Auto DJ</source>
-        <translation>AutoDJ</translation>
+        <translation>Auto DJ</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="92"/>
@@ -5767,7 +5767,7 @@ en stelt je in staat de toonhoogte aan te passen voor harmonisch mixen.</transla
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="299"/>
         <source>Reverb</source>
-        <translation>Galm</translation>
+        <translation>Reverb</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="306"/>
@@ -6574,7 +6574,7 @@ De doel-loudness is bij benadering en veronderstelt dat de track-voorregeling en
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="339"/>
         <source>End of track warning</source>
-        <translation>Waarschuwing einde track</translation>
+        <translation>Waarschuwing Einde Track</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="139"/>
@@ -6744,7 +6744,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="274"/>
         <source>Auto DJ</source>
-        <translation>AutoDJ</translation>
+        <translation>Auto DJ</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="248"/>
@@ -6805,7 +6805,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="281"/>
         <source>Live Broadcasting</source>
-        <translation>Live uitzenden</translation>
+        <translation>Live Uitzenden</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="313"/>
@@ -7422,7 +7422,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/effects/effectsmanager.cpp" line="375"/>
         <source>Reverb</source>
-        <translation>Galm</translation>
+        <translation>Reverb</translation>
     </message>
     <message>
         <location filename="../../src/effects/effectsmanager.cpp" line="383"/>
@@ -8260,7 +8260,7 @@ Wil je je bibliotheek nu scannen op hoezen?</translation>
     <name>QObject</name>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="6"/>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="187"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="161"/>
         <source>Invalid</source>
         <translation>Ongeldig</translation>
     </message>
@@ -8366,67 +8366,67 @@ Wil je je bibliotheek nu scannen op hoezen?</translation>
         <translation>14-bit (MSB)</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="189"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="163"/>
         <source>Master</source>
         <translation>Hoofduitgang</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="165"/>
         <source>Booth</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="193"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="167"/>
         <source>Headphones</source>
         <translation>Hoofdtelefoons</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="197"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="171"/>
         <source>Left Bus</source>
         <translation>Linkerbus</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="199"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="173"/>
         <source>Center Bus</source>
         <translation>Middenbus</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="201"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="175"/>
         <source>Right Bus</source>
         <translation>Rechterbus</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="203"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="177"/>
         <source>Invalid Bus</source>
         <translation>Ongeldige bus</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="206"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="180"/>
         <source>Deck</source>
         <translation>Speler</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="209"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="183"/>
         <source>Record/Broadcast</source>
         <translation>Opnemen/Uitzenden</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="211"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="185"/>
         <source>Vinyl Control</source>
         <translation>Vinylbediening</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="214"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="188"/>
         <source>Microphone</source>
         <translation>Microfoon</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="217"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
         <source>Auxiliary</source>
         <translation>Auxiliary</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="220"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="194"/>
         <source>Unknown path type %1</source>
         <translation>Onbekend padtype %1</translation>
     </message>
@@ -8821,7 +8821,7 @@ With width at zero, this allows for manually sweeping over the entire delay rang
     <message>
         <location filename="../../src/effects/builtin/reverbeffect.cpp" line="19"/>
         <source>Reverb</source>
-        <translation>Galm</translation>
+        <translation>Reverb</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/reverbeffect.cpp" line="22"/>
@@ -9082,7 +9082,7 @@ Higher values result in less attenuation of high frequencies.</source>
     <message>
         <location filename="../../src/effects/builtin/phasereffect.cpp" line="72"/>
         <source>Number of stages</source>
-        <translation>Aantal stadia.</translation>
+        <translation>Aantal stadia</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/phasereffect.cpp" line="112"/>
@@ -10426,7 +10426,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="238"/>
         <source>Preview Deck</source>
-        <translation>Voorbeeldspeler</translation>
+        <translation>Voorbeluisterdeck</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="239"/>
@@ -13059,20 +13059,20 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <translation>Doorvoeren</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="711"/>
+        <location filename="../../src/widget/woverview.cpp" line="705"/>
         <source>Ready to play, analyzing ..</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>Klaar om af te spelen, verder aan het analyseren ...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="714"/>
-        <location filename="../../src/widget/woverview.cpp" line="724"/>
+        <location filename="../../src/widget/woverview.cpp" line="708"/>
+        <location filename="../../src/widget/woverview.cpp" line="718"/>
         <source>Loading track ..</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>Track aan het laden ...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="718"/>
+        <location filename="../../src/widget/woverview.cpp" line="712"/>
         <source>Finalizing ..</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>Aan het afwerken ...</translation>
@@ -13240,7 +13240,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="150"/>
         <source>Preview Deck</source>
-        <translation>Voorbeeldspeler</translation>
+        <translation>Voorbeluisterdeck</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="157"/>

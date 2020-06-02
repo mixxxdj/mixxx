@@ -5359,7 +5359,7 @@ et vous permet d&apos;ajuster la hauteur tonale pour un mix harmonique.</transla
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="167"/>
         <source>A</source>
-        <translation>LA</translation>
+        <translation>A</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="190"/>
@@ -5369,12 +5369,12 @@ et vous permet d&apos;ajuster la hauteur tonale pour un mix harmonique.</transla
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="213"/>
         <source>B</source>
-        <translation>SI</translation>
+        <translation>B</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="236"/>
         <source>C</source>
-        <translation>DO</translation>
+        <translation>C</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="259"/>
@@ -5384,7 +5384,7 @@ et vous permet d&apos;ajuster la hauteur tonale pour un mix harmonique.</transla
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="282"/>
         <source>D</source>
-        <translation>RÉ</translation>
+        <translation>D</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="305"/>
@@ -5394,12 +5394,12 @@ et vous permet d&apos;ajuster la hauteur tonale pour un mix harmonique.</transla
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="328"/>
         <source>E</source>
-        <translation>MI</translation>
+        <translation>E</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="351"/>
         <source>F</source>
-        <translation>FA</translation>
+        <translation>F</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="374"/>
@@ -5409,7 +5409,7 @@ et vous permet d&apos;ajuster la hauteur tonale pour un mix harmonique.</transla
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="397"/>
         <source>G</source>
-        <translation>SOL</translation>
+        <translation>G</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="420"/>
@@ -5525,7 +5525,7 @@ et vous permet d&apos;ajuster la hauteur tonale pour un mix harmonique.</transla
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="242"/>
         <source>Metadata means all track details (artist, title, playcount, etc.) as well as beatgrids, hotcues, and loops. This choice only affects the Mixxx library. No files on disk will be changed or deleted.</source>
-        <translation>Les métadonnées regroupent tous les détails de la piste (artiste, titre, nombre de lectures, etc...) ainsi que les grilles rythmiques, les repères rapides et les boucles. Ce choix n&apos;affecte que la bibliothèque de Mixxx. Aucun fichier sur disque ne sera modifié ou supprimé.</translation>
+        <translation>Les métadonnées regroupent tous les détails de la piste (artiste, titre, nombre de lectures, etc...) ainsi que les grilles rythmiques, les repères rapides et les boucles. Ce choix n&apos;affecte que la bibliothèque de Mixxx. Aucun fichier sur le disque ne sera modifié ou supprimé.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="250"/>
@@ -6265,7 +6265,7 @@ Le niveau sonore visé est approximatif et suppose que les gains d&apos;entrée 
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="22"/>
         <source>Sound API</source>
-        <translation>Pilote audio</translation>
+        <translation>API sonore</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="35"/>
@@ -6728,7 +6728,7 @@ Sélectionner depuis les différents types d&apos;affichage de la forme d&apos;o
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="483"/>
         <source>Beat grid opacity</source>
-        <translation>Opacité de la grille de tempo</translation>
+        <translation>Opacité de la grille rythmique</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="506"/>
@@ -8308,7 +8308,7 @@ Désirez-vous rechercher maintenant les pochettes dans votre bibliothèque?</tra
     <name>QObject</name>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="6"/>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="187"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="161"/>
         <source>Invalid</source>
         <translation>Invalide</translation>
     </message>
@@ -8414,67 +8414,67 @@ Désirez-vous rechercher maintenant les pochettes dans votre bibliothèque?</tra
         <translation>14-bit (MSB)</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="189"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="163"/>
         <source>Master</source>
         <translation>Principal</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="165"/>
         <source>Booth</source>
         <translation>Cabine</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="193"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="167"/>
         <source>Headphones</source>
         <translation>Casque</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="197"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="171"/>
         <source>Left Bus</source>
         <translation>Bus gauche</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="199"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="173"/>
         <source>Center Bus</source>
         <translation>Bus central</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="201"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="175"/>
         <source>Right Bus</source>
         <translation>Bus droit</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="203"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="177"/>
         <source>Invalid Bus</source>
         <translation>Bus non valable</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="206"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="180"/>
         <source>Deck</source>
         <translation>Platine</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="209"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="183"/>
         <source>Record/Broadcast</source>
         <translation>Enregistrer/Diffuser</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="211"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="185"/>
         <source>Vinyl Control</source>
         <translation>Contrôle Vinyle</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="214"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="188"/>
         <source>Microphone</source>
         <translation>Microphone</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="217"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
         <source>Auxiliary</source>
         <translation>Auxilliaire</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="220"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="194"/>
         <source>Unknown path type %1</source>
         <translation>Chemin inconnu type %1</translation>
     </message>
@@ -8904,7 +8904,7 @@ Des valeurs élevées entraînent une moindre atténuation des hautes fréquence
     <message>
         <location filename="../../src/effects/builtin/reverbeffect.cpp" line="69"/>
         <source>How much of the signal to send in to the effect</source>
-        <translation>Quantité du sign</translation>
+        <translation>Quantité du signal envoyée dans l&apos;effet</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/reverbeffect.cpp" line="40"/>
@@ -9581,7 +9581,7 @@ Complètement à droite: fin de la période d&apos;effet</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflv2.cpp" line="52"/>
         <source>Unknown status</source>
-        <translation>Etat inconnu</translation>
+        <translation>Etat indéterminé</translation>
     </message>
     <message>
         <location filename="../../src/analyzer/plugins/analyzerqueenmarybeats.h" line="24"/>
@@ -9686,7 +9686,7 @@ Complètement à droite: fin de la période d&apos;effet</translation>
     <message>
         <location filename="../../src/recording/recordingmanager.cpp" line="274"/>
         <source>There is less than 1 GiB of useable space in the recording folder</source>
-        <translation>Il reste moins d&apos;un gigaoctet d&apos;espace disponible dans le dossier d&apos;enregistrement</translation>
+        <translation>Il reste moins d&apos;1 Go d&apos;espace disponible dans le dossier d&apos;enregistrement</translation>
     </message>
     <message>
         <location filename="../../src/recording/recordingmanager.cpp" line="295"/>
@@ -9755,12 +9755,12 @@ Complètement à droite: fin de la période d&apos;effet</translation>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1294"/>
         <source>Memory cues</source>
-        <translation type="unfinished"/>
+        <translation>Repères mémoire</translation>
     </message>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1295"/>
         <source>Loops (after first not usable in Mixxx 2.3 yet)</source>
-        <translation type="unfinished"/>
+        <translation>Boucles (après la première non encore utilisable dans Mixxx 2.3)</translation>
     </message>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1298"/>
@@ -9982,7 +9982,7 @@ Complètement à droite: fin de la période d&apos;effet</translation>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="341"/>
         <source>Error setting stream IRC!</source>
-        <translation>Erreur lors de la définition du flux IRC!</translation>
+        <translation>Erreur lors de la définition de l&apos;IRC du flux !</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="348"/>
@@ -11145,7 +11145,7 @@ Complètement à droite: fin de la période d&apos;effet</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="817"/>
         <source>D/W mode: Crossfade between dry and wet</source>
-        <translation>Mode D / W: Fondu enchaîné entre original et traité</translation>
+        <translation>Mode D/W: Fondu enchaîné entre original (dry) et traité (wet)</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="818"/>
@@ -11986,7 +11986,7 @@ Utiliser ceci pour modifier uniquement le signal affecté (traité) avec EQ et l
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="587"/>
         <source>Enable Live Broadcasting</source>
-        <translation>Activer la Diffusion en Direct</translation>
+        <translation>Activer la diffusion en direct</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="588"/>
@@ -13134,20 +13134,20 @@ Utiliser ceci pour modifier uniquement le signal affecté (traité) avec EQ et l
         <translation>Contrôle intermédiaire</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="711"/>
+        <location filename="../../src/widget/woverview.cpp" line="705"/>
         <source>Ready to play, analyzing ..</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>Prêt à lire, analyse en cours ..</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="714"/>
-        <location filename="../../src/widget/woverview.cpp" line="724"/>
+        <location filename="../../src/widget/woverview.cpp" line="708"/>
+        <location filename="../../src/widget/woverview.cpp" line="718"/>
         <source>Loading track ..</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>Chargement piste ..</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="718"/>
+        <location filename="../../src/widget/woverview.cpp" line="712"/>
         <source>Finalizing ..</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>Finalisation ..</translation>

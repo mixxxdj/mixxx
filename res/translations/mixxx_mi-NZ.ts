@@ -86,7 +86,7 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="41"/>
         <source>Import Playlist</source>
-        <translation>Kawemai he tūtira waiata</translation>
+        <translation>Kawemai Rārangipāho</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="119"/>
@@ -104,7 +104,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="293"/>
         <source>New Playlist</source>
-        <translation>Tūtira waiata hōu</translation>
+        <translation>Rārangipāho Hōu</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="64"/>
@@ -115,7 +115,7 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="37"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="290"/>
         <source>Create New Playlist</source>
-        <translation>Auaha he tūtira waiata hōu</translation>
+        <translation>Waihangaia he Rārangipāho</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="69"/>
@@ -146,7 +146,7 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="86"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="91"/>
         <source>Import Playlist</source>
-        <translation>Kawemai he tūtira waiata</translation>
+        <translation>Kawemai Rārangipāho</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="101"/>
@@ -178,7 +178,7 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="96"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="463"/>
         <source>Export Playlist</source>
-        <translation>Kaweake tēnei tūtira waiata</translation>
+        <translation>Kaweake Rārangipāho</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="74"/>
@@ -236,7 +236,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="460"/>
         <source>M3U Playlist (*.m3u)</source>
-        <translation>Tūtira waiata M3U (*.m3u)</translation>
+        <translation>Rārangipāho M3U (*.m3u)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="465"/>
@@ -2876,7 +2876,7 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="118"/>
         <source>Export Track Files</source>
-        <translation>Kaweake ngā kōnae waiatak</translation>
+        <translation>Kaweake ngā kōnae waiata</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="74"/>
@@ -7700,7 +7700,7 @@ support.</source>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="37"/>
         <source>Import Playlist</source>
-        <translation>Kawemai he tūtira waiata</translation>
+        <translation>Kawemai Rārangipāho</translation>
     </message>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="39"/>
@@ -8121,7 +8121,7 @@ Do you want to select an input device?</source>
         <location filename="../../src/library/playlistfeature.cpp" line="56"/>
         <location filename="../../src/library/playlistfeature.cpp" line="272"/>
         <source>Playlists</source>
-        <translation>Ngā tūtira waiata</translation>
+        <translation>Ngā Rārangipāho</translation>
     </message>
     <message>
         <location filename="../../src/library/playlistfeature.cpp" line="86"/>
@@ -8151,7 +8151,7 @@ Do you want to select an input device?</source>
     <message>
         <location filename="../../src/library/playlistfeature.cpp" line="277"/>
         <source>Create New Playlist</source>
-        <translation>Auaha he tūtira waiata</translation>
+        <translation>Waihangaia he Rārangipāho</translation>
     </message>
 </context>
 <context>
@@ -8217,7 +8217,7 @@ Do you want to scan your library for cover files now?</source>
     <name>QObject</name>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="6"/>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="187"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="161"/>
         <source>Invalid</source>
         <translation type="unfinished"/>
     </message>
@@ -8323,67 +8323,67 @@ Do you want to scan your library for cover files now?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="189"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="163"/>
         <source>Master</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="165"/>
         <source>Booth</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="193"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="167"/>
         <source>Headphones</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="197"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="171"/>
         <source>Left Bus</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="199"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="173"/>
         <source>Center Bus</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="201"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="175"/>
         <source>Right Bus</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="203"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="177"/>
         <source>Invalid Bus</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="206"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="180"/>
         <source>Deck</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="209"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="183"/>
         <source>Record/Broadcast</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="211"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="185"/>
         <source>Vinyl Control</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="214"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="188"/>
         <source>Microphone</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="217"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
         <source>Auxiliary</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="220"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="194"/>
         <source>Unknown path type %1</source>
         <translation type="unfinished"/>
     </message>
@@ -9613,7 +9613,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1291"/>
         <source>Playlists</source>
-        <translation>Ngā tūtira waiata</translation>
+        <translation>Ngā Rārangipāho</translation>
     </message>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1290"/>
@@ -13010,20 +13010,20 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="711"/>
+        <location filename="../../src/widget/woverview.cpp" line="705"/>
         <source>Ready to play, analyzing ..</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="714"/>
-        <location filename="../../src/widget/woverview.cpp" line="724"/>
+        <location filename="../../src/widget/woverview.cpp" line="708"/>
+        <location filename="../../src/widget/woverview.cpp" line="718"/>
         <source>Loading track ..</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="718"/>
+        <location filename="../../src/widget/woverview.cpp" line="712"/>
         <source>Finalizing ..</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation type="unfinished"/>
@@ -13362,7 +13362,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <location filename="../../src/widget/wtrackmenu.cpp" line="844"/>
         <location filename="../../src/widget/wtrackmenu.cpp" line="866"/>
         <source>Create New Playlist</source>
-        <translation>Auaha he tūtira waiata hōu</translation>
+        <translation>Waihangaia he Rārangipāho</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="867"/>
@@ -13372,7 +13372,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="869"/>
         <source>New Playlist</source>
-        <translation>Tūtira waiata hōu</translation>
+        <translation>Rārangipāho Hōu</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="877"/>

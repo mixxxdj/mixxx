@@ -30,8 +30,7 @@ class RecordingManager : public QObject
     Q_OBJECT
   public:
     RecordingManager(UserSettingsPointer pConfig, EngineMaster* pEngine);
-    virtual ~RecordingManager();
-
+    ~RecordingManager() override;
 
     // This will try to start recording. If successful, slotIsRecording will be
     // called and a signal isRecording will be emitted.

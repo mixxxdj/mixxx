@@ -73,6 +73,13 @@ Description:
                 <SetVariable name="Setting">[Skin],show_intro_outro_cues</SetVariable>
               </Template>
 
+              <!-- Cue shift buttons in beatgrid editing section -->
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
+                <SetVariable name="Text">Hotcue Shift Buttons</SetVariable>
+                <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
+              </Template>
+
               <!-- Rate Control toggle -->
               <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="TooltipId">rate_toggle</SetVariable>

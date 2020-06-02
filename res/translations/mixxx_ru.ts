@@ -31,7 +31,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="110"/>
         <source>Auto DJ</source>
-        <translation>Авто DJ</translation>
+        <translation>Автодиджей</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="298"/>
@@ -755,7 +755,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="14"/>
         <source>Master Output</source>
-        <translation>Master Output</translation>
+        <translation>Главный выход</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="15"/>
@@ -817,12 +817,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="32"/>
         <source>Master balance</source>
-        <translation>Мастер баланс</translation>
+        <translation>Баланс главного выхода</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="33"/>
         <source>Master delay</source>
-        <translation>Мастер задержки</translation>
+        <translation>Задержка главного выхода</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="35"/>
@@ -832,7 +832,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="36"/>
         <source>Toggle headphone split cueing</source>
-        <translation>Наушников переключения Сплит намекать</translation>
+        <translation>Раздельный сигнал наушников</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="37"/>
@@ -911,25 +911,25 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="39"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="712"/>
         <source>Mix orientation (e.g. left, right, center)</source>
-        <translation>Mix ориентацию (например влево, вправо, центр)</translation>
+        <translation>Направление сведения (например левый, правый, центр)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="41"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="716"/>
         <source>Set mix orientation to left</source>
-        <translation>Установка микс ориентация слева</translation>
+        <translation>Установить направления сведения слева</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="43"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="721"/>
         <source>Set mix orientation to center</source>
-        <translation>Установка микс ориентацию по центру</translation>
+        <translation>Установить направление сведения по центру</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="45"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="725"/>
         <source>Set mix orientation to right</source>
-        <translation>Установка микс ориентация справа</translation>
+        <translation>Установка направление сведения справа</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="73"/>
@@ -965,7 +965,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="82"/>
         <source>BPM tap button</source>
-        <translation>BPM нажмите кнопку</translation>
+        <translation>Кнопка набивания темпа</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="91"/>
@@ -1045,7 +1045,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="197"/>
         <source>Cues</source>
-        <translation>Подсказки</translation>
+        <translation>Метки</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="198"/>
@@ -1055,22 +1055,22 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="199"/>
         <source>Set cue point</source>
-        <translation>Задать ключевую точку</translation>
+        <translation>Установить стартовую метку</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="200"/>
         <source>Go to cue point</source>
-        <translation>Перейти к точке Cue</translation>
+        <translation>Перейти к стартовой метке</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="202"/>
         <source>Go to cue point and play</source>
-        <translation>Перейти к точке Cue и играть</translation>
+        <translation>Перейти к стартовой метке и играть</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="204"/>
         <source>Go to cue point and stop</source>
-        <translation>Перейти к точке Cue и остановить</translation>
+        <translation>Перейти к стартовой метке и остановить</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="206"/>
@@ -2593,7 +2593,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="733"/>
         <source>Auto DJ</source>
-        <translation>Авто DJ</translation>
+        <translation>Автодиджей</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="735"/>
@@ -3047,7 +3047,7 @@
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="36"/>
         <source>With contributions from:</source>
-        <translation>С взносы:</translation>
+        <translation>При участии:</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="37"/>
@@ -3057,7 +3057,7 @@
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="38"/>
         <source>Past Developers</source>
-        <translation>В прошлом разработчиков</translation>
+        <translation>Бывшие разработчики</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="39"/>
@@ -3301,7 +3301,7 @@ last sound.</source>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="269"/>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="277"/>
         <source>Auto DJ</source>
-        <translation>Авто DJ</translation>
+        <translation>Автодиджей</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="92"/>
@@ -4586,7 +4586,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="26"/>
         <source>Crossfader Curve</source>
-        <translation>Кроссфейдер кривая</translation>
+        <translation>Кривая кроссфейдера</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="38"/>
@@ -4621,7 +4621,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="199"/>
         <source>Reverse crossfader (Hamster Style)</source>
-        <translation>Обратный кроссфейдера (хомяк стиль)</translation>
+        <translation>Обратный кроссфейдер  (Hamster style)</translation>
     </message>
 </context>
 <context>
@@ -5475,7 +5475,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="252"/>
         <source>Delete Track Metadata</source>
-        <translation>Удаление метаданных трек</translation>
+        <translation>Удалить метаданные трека</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="254"/>
@@ -5747,7 +5747,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="299"/>
         <source>Reverb</source>
-        <translation>Реверберации</translation>
+        <translation>Реверберация</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="306"/>
@@ -6724,7 +6724,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="274"/>
         <source>Auto DJ</source>
-        <translation>Авто DJ</translation>
+        <translation>Автодиджей</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="248"/>
@@ -7001,12 +7001,12 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="574"/>
         <source>&amp;Apply</source>
-        <translation>&amp; Применить</translation>
+        <translation>&amp;Применить</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="581"/>
         <source>&amp;Close</source>
-        <translation>&amp; Закрыть</translation>
+        <translation>&amp;Закрыть</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.cpp" line="234"/>
@@ -7064,7 +7064,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/export/dlgtrackexport.ui" line="112"/>
         <source>&amp;Cancel</source>
-        <translation>&amp; Отмена</translation>
+        <translation>&amp;Отмена</translation>
     </message>
 </context>
 <context>
@@ -7322,7 +7322,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="936"/>
         <source>&amp;OK</source>
-        <translation>&amp; OK</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="895"/>
@@ -7339,12 +7339,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="917"/>
         <source>&amp;Apply</source>
-        <translation>&amp; Применить</translation>
+        <translation>&amp;Применить</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="898"/>
         <source>&amp;Cancel</source>
-        <translation>&amp; Отмена</translation>
+        <translation>&amp;Отмена</translation>
     </message>
 </context>
 <context>
@@ -7402,7 +7402,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/effects/effectsmanager.cpp" line="375"/>
         <source>Reverb</source>
-        <translation>Реверберации</translation>
+        <translation>Реверберация</translation>
     </message>
     <message>
         <location filename="../../src/effects/effectsmanager.cpp" line="383"/>
@@ -8239,7 +8239,7 @@ Do you want to scan your library for cover files now?</source>
     <name>QObject</name>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="6"/>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="187"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="161"/>
         <source>Invalid</source>
         <translation>Недопустимый</translation>
     </message>
@@ -8345,67 +8345,67 @@ Do you want to scan your library for cover files now?</source>
         <translation>14-бит (MSB)</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="189"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="163"/>
         <source>Master</source>
         <translation>Мастер</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="165"/>
         <source>Booth</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="193"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="167"/>
         <source>Headphones</source>
         <translation>Наушники</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="197"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="171"/>
         <source>Left Bus</source>
         <translation>Левый автобус</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="199"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="173"/>
         <source>Center Bus</source>
         <translation>Центр автобус</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="201"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="175"/>
         <source>Right Bus</source>
         <translation>Правый автобус</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="203"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="177"/>
         <source>Invalid Bus</source>
         <translation>Недопустимый автобус</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="206"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="180"/>
         <source>Deck</source>
         <translation>Дека</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="209"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="183"/>
         <source>Record/Broadcast</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="211"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="185"/>
         <source>Vinyl Control</source>
         <translation>Винил-Контроль</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="214"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="188"/>
         <source>Microphone</source>
         <translation>Микрофон</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="217"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
         <source>Auxiliary</source>
         <translation>Вспомогательный</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="220"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="194"/>
         <source>Unknown path type %1</source>
         <translation>Тип %1 неизвестный пути</translation>
     </message>
@@ -8796,7 +8796,7 @@ With width at zero, this allows for manually sweeping over the entire delay rang
     <message>
         <location filename="../../src/effects/builtin/reverbeffect.cpp" line="19"/>
         <source>Reverb</source>
-        <translation>Реверберации</translation>
+        <translation>Реверберация</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/reverbeffect.cpp" line="22"/>
@@ -10401,7 +10401,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="238"/>
         <source>Preview Deck</source>
-        <translation>Предпросмотр деки</translation>
+        <translation>Предпросмотр Деки</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="239"/>
@@ -11079,7 +11079,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="863"/>
         <source>Route the left crossfader bus through this effect unit.</source>
-        <translation>Направить левую шину через обозначенную цепь эффектов</translation>
+        <translation>Направить сигнал левой шины через обозначенную цепь эффектов</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="868"/>
@@ -12258,7 +12258,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="712"/>
         <source>Information is loaded from the track&apos;s metadata tags.</source>
-        <translation>Информация загружается из тегов метаданных трек.</translation>
+        <translation>Информация загружается из тегов метаданных трека.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="714"/>
@@ -12611,7 +12611,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="64"/>
         <source>&amp;File</source>
-        <translation>&amp; Файл</translation>
+        <translation>&amp;Файл</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="66"/>
@@ -12631,7 +12631,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="96"/>
         <source>&amp;Exit</source>
-        <translation>&amp; Выхода</translation>
+        <translation>&amp;Выход</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="97"/>
@@ -12646,12 +12646,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="112"/>
         <source>&amp;Library</source>
-        <translation>&amp; Библиотека</translation>
+        <translation>&amp;Библиотека</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="114"/>
         <source>&amp;Rescan Library</source>
-        <translation>&amp; Сканирование библиотеки</translation>
+        <translation>&amp;Сканирование библиотеки</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="115"/>
@@ -12661,7 +12661,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="129"/>
         <source>Create &amp;New Playlist</source>
-        <translation>Создание &amp; новый плейлист</translation>
+        <translation>Создать &amp;новый плейлист</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="130"/>
@@ -12798,7 +12798,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="265"/>
         <source>&amp;Full Screen</source>
-        <translation>&amp; Полный экран</translation>
+        <translation>&amp;Полный экран</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="266"/>
@@ -13034,20 +13034,20 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <translation>Пересылка</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="711"/>
+        <location filename="../../src/widget/woverview.cpp" line="705"/>
         <source>Ready to play, analyzing ..</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>Готовы играть, анализируя...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="714"/>
-        <location filename="../../src/widget/woverview.cpp" line="724"/>
+        <location filename="../../src/widget/woverview.cpp" line="708"/>
+        <location filename="../../src/widget/woverview.cpp" line="718"/>
         <source>Loading track ..</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>Загрузка трека...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="718"/>
+        <location filename="../../src/widget/woverview.cpp" line="712"/>
         <source>Finalizing ..</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>Завершить...</translation>

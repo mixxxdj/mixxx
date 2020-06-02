@@ -1025,7 +1025,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="184"/>
         <source>Vinyl Control</source>
-        <translation>Ovládání vinylem</translation>
+        <translation>Vinyl</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="190"/>
@@ -1136,7 +1136,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="263"/>
         <source>Looping</source>
-        <translation>Smyčkování</translation>
+        <translation>Opakování ve smyčce</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="271"/>
@@ -2533,32 +2533,32 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="612"/>
         <source>Meta Knob</source>
-        <translation>Metaknoflík</translation>
+        <translation>Otočné řízení</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="612"/>
         <source>Effect Meta Knob (control linked effect parameters)</source>
-        <translation>Metaknoflík efektu (řízení parametrů propojených efektů)</translation>
+        <translation>Otočné řízení efektu (ovládání parametrů propojených efektů)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="655"/>
         <source>Meta Knob Mode</source>
-        <translation>Režim metaknoflíku</translation>
+        <translation>Režim otočného řízení</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="656"/>
         <source>Set how linked effect parameters change when turning the Meta Knob.</source>
-        <translation>Nastavit, jak se parametry propojených efektů budou měnit, když se otáčí metaknoflíkem.</translation>
+        <translation>Nastavit, jak se parametry propojených efektů budou měnit, když se otáčí otočným řízením.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="660"/>
         <source>Meta Knob Mode Invert</source>
-        <translation>Obrácení režimu metaknoflíku</translation>
+        <translation>Obrácení režimu otočného řízení</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="661"/>
         <source>Invert how linked effect parameters change when turning the Meta Knob.</source>
-        <translation>Obrátit, jak se parametry propojených efektů budou měnit, když se otáčí metaknoflíkem.</translation>
+        <translation>Obrátit, jak se parametry propojených efektů budou měnit, když se otáčí otočným řízením.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="671"/>
@@ -4541,12 +4541,12 @@ Použít nastavení a pokračovat?</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="316"/>
         <source>Keep metaknob position</source>
-        <translation>Zachovat polohu meta-regulátoru</translation>
+        <translation>Zachovat polohu otočného řízení</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="326"/>
         <source>Reset metaknob to effect default</source>
-        <translation>Vrátit meta-regulátor na výchozí hodnotu efektu</translation>
+        <translation>Vrátit otočné řízení na výchozí hodnotu efektu</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="286"/>
@@ -8268,7 +8268,7 @@ Chcete nyní kvůli souborům s obaly prohledat knihovnu?</translation>
     <name>QObject</name>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="6"/>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="187"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="161"/>
         <source>Invalid</source>
         <translation>Neplatný</translation>
     </message>
@@ -8374,67 +8374,67 @@ Chcete nyní kvůli souborům s obaly prohledat knihovnu?</translation>
         <translation>14-bit (MSB)</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="189"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="163"/>
         <source>Master</source>
         <translation>Hlavní</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="165"/>
         <source>Booth</source>
         <translation>Kukaň</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="193"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="167"/>
         <source>Headphones</source>
         <translation>Sluchátka</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="197"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="171"/>
         <source>Left Bus</source>
         <translation>Levá sběrnice</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="199"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="173"/>
         <source>Center Bus</source>
         <translation>Střední sběrnice</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="201"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="175"/>
         <source>Right Bus</source>
         <translation>Pravá sběrnice</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="203"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="177"/>
         <source>Invalid Bus</source>
         <translation>Neplatná sběrnice</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="206"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="180"/>
         <source>Deck</source>
         <translation>Přehrávač</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="209"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="183"/>
         <source>Record/Broadcast</source>
         <translation>Nahrávat/Vysílat</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="211"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="185"/>
         <source>Vinyl Control</source>
-        <translation>Ovládání vinylem</translation>
+        <translation>Vinyl</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="214"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="188"/>
         <source>Microphone</source>
         <translation>Mikrofon</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="217"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
         <source>Auxiliary</source>
         <translation>Pomocný (Aux)</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="220"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="194"/>
         <source>Unknown path type %1</source>
         <translation>Neznámý typ cesty %1</translation>
     </message>
@@ -10431,7 +10431,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="233"/>
         <source>Vinyl Control</source>
-        <translation>Ovládání vinylem</translation>
+        <translation>Vinyl</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="234"/>
@@ -11174,17 +11174,17 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="929"/>
         <source>Meta Knob Link</source>
-        <translation>Spojení metaknoflíku</translation>
+        <translation>Spojení otočného řízení</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="930"/>
         <source>Set how this parameter is linked to the effect&apos;s Meta Knob.</source>
-        <translation>Nastavit, jak je tento parametr spojen s metaknoflíkem efektu.</translation>
+        <translation>Nastavit, jak je tento parametr spojen s otočným řízením efektu.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="938"/>
         <source>Meta Knob Link Inversion</source>
-        <translation>Obrácení spojení metaknoflíku</translation>
+        <translation>Obrácení spojení otočného řízení</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="939"/>
@@ -11362,7 +11362,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="913"/>
         <source>Meta Knob</source>
-        <translation>Metaknoflík</translation>
+        <translation>Otočné řízení</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="914"/>
@@ -11412,7 +11412,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="933"/>
         <source>Left side active: parameter moves with left half of Meta Knob turn</source>
-        <translation>Levá strana činná: parametr se pohybuje po polovině otočení otočného řízení vlevo</translation>
+        <translation>Levá strana činná: parametr se pohybuje pomocí levé poloviny otočení otočného řízení.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="935"/>
@@ -13074,20 +13074,20 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <translation>Propustit skrz</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="711"/>
+        <location filename="../../src/widget/woverview.cpp" line="705"/>
         <source>Ready to play, analyzing ..</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>Připraven k přehrávání, provádí se rozbor...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="714"/>
-        <location filename="../../src/widget/woverview.cpp" line="724"/>
+        <location filename="../../src/widget/woverview.cpp" line="708"/>
+        <location filename="../../src/widget/woverview.cpp" line="718"/>
         <source>Loading track ..</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>Nahrává se skladba...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="718"/>
+        <location filename="../../src/widget/woverview.cpp" line="712"/>
         <source>Finalizing ..</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>Dokončuje se...</translation>
@@ -13511,7 +13511,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/library/dlgtrackmetadataexport.cpp" line="15"/>
         <source>Export Modified Track Metadata</source>
-        <translation>Uložit změněná popisná data skladby</translation>
+        <translation>Vyvedení změněných popisných dat skladby</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackmetadataexport.cpp" line="16"/>

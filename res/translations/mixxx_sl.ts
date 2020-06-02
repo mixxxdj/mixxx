@@ -31,7 +31,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="110"/>
         <source>Auto DJ</source>
-        <translation>Avtomatski DJ (Auto DJ)</translation>
+        <translation>Auto DJ</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="298"/>
@@ -93,12 +93,12 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="119"/>
         <source>Playlist Creation Failed</source>
-        <translation>Napaka pri ustvarjanju seznama predvajanja</translation>
+        <translation>Ustvarjanje seznama predvajanja je spodletelo</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="120"/>
         <source>An unknown error occurred while creating playlist: </source>
-        <translation>Pri ustvarjanju seznama predvajanja se je zgodila neznana napaka:</translation>
+        <translation>Neznana napaka pri ustvarjanju novega seznama predvajanja:</translation>
     </message>
 </context>
 <context>
@@ -521,7 +521,7 @@
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="177"/>
         <source>You added one or more music directories. The tracks in these directories won&apos;t be available until you rescan your library. Would you like to rescan now?</source>
-        <translation>Dodali ste enega ali več glasbenih imenikov. Skladbe v teh imenikih ne bodo na voljo dokler ne boste ponovno pregledali vaše knjižnice. Ali bi radi takoj zagnali ponoven pregled?</translation>
+        <translation>Dodali ste enega ali več glasbenih direktorijev. Skladbe v teh direktorijih ne bodo na voljo dokler ne boste ponovno pregledali vaše knjižnice. Ali bi radi takoj zagnali ponoven pregled?</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="181"/>
@@ -609,12 +609,12 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="43"/>
         <source>Bitrate</source>
-        <translation>Birna hitrost</translation>
+        <translation>Bitna hitrost</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="44"/>
         <source>ReplayGain</source>
-        <translation>ReplayGain normalizacija</translation>
+        <translation>ReplayGain</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="45"/>
@@ -760,7 +760,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="15"/>
         <source>Headphone Output</source>
-        <translation>Izhod za slušalke</translation>
+        <translation>Izhod slušalk</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="16"/>
@@ -940,7 +940,7 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="76"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="77"/>
         <source>BPM</source>
-        <translation>Tempo v BPM</translation>
+        <translation>BPM</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="78"/>
@@ -1502,7 +1502,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="87"/>
         <source>Adjust Beatgrid</source>
-        <translation>Prilagodi ritmično mrežo</translation>
+        <translation>Prestavi ritmično mrežo.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="88"/>
@@ -1774,22 +1774,22 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="273"/>
         <source>Loop Exit</source>
-        <translation>Izstop iz zanke</translation>
+        <translation>Izhod iz zanke</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="274"/>
         <source>Reloop/Exit Loop</source>
-        <translation>Ponovi zanko/ izstop iz zanke</translation>
+        <translation>Ponovi zanko/ izhod iz zanke</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="276"/>
         <source>Loop Halve</source>
-        <translation>Razpolovi zanko</translation>
+        <translation>Polovična zanka</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="277"/>
         <source>Loop Double</source>
-        <translation>Podvoji zanko</translation>
+        <translation>Dvojna zanka</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="284"/>
@@ -1874,7 +1874,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="439"/>
         <source>Record Mix</source>
-        <translation>Snemaj miks</translation>
+        <translation>Posnemi miks</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="440"/>
@@ -1899,13 +1899,13 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="451"/>
         <source>Quick Effect Super Knob (control linked effect parameters)</source>
-        <translation>Super regulator za hitre efekte (kontrola povezanih parametrov efekta)</translation>
+        <translation>Super regulator za hitre učinke (kontrola povezanih parametrov učinka)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="452"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="456"/>
         <source>Quick Effect</source>
-        <translation>Hitri efekt</translation>
+        <translation>Hitri učinek</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="467"/>
@@ -1915,7 +1915,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="467"/>
         <source>Clear Effect Rack</source>
-        <translation>Izbriše učinke, ki so v regalu</translation>
+        <translation>Izprazni regal z učinki</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="484"/>
@@ -1982,7 +1982,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="615"/>
         <source>Toggle the current effect</source>
-        <translation>Preklapljaj trenutni učinek</translation>
+        <translation>Preklopi trenutni učinek</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="618"/>
@@ -2262,7 +2262,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="274"/>
         <source>Toggle loop on/off and jump to Loop In point if loop is behind play position</source>
-        <translation>Vklopi/izklopi zanko in skoči na vhodno točko zanke, če je se zanka nahaja za položajem predvajanja</translation>
+        <translation>Vklopi/izklopi zanko in skoči na točko V zanko, če je zanka za položajem predvajanja</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="275"/>
@@ -2272,7 +2272,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="275"/>
         <source>Enable loop, jump to Loop In point, and stop</source>
-        <translation>Vklopi zanko, skoči na vhodno točko zanke in ustavi</translation>
+        <translation>Vklopi zanko, skoči na točko V zanko in ustavi</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="276"/>
@@ -2593,7 +2593,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="733"/>
         <source>Auto DJ</source>
-        <translation>Avtomatski DJ (Auto DJ)</translation>
+        <translation>Auto DJ</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="735"/>
@@ -2678,7 +2678,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="780"/>
         <source>Waveform Zoom</source>
-        <translation>Valovna oblika zumiraj</translation>
+        <translation>Valovna oblika povečava</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="781"/>
@@ -2947,7 +2947,7 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="694"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-        <translation>seznam predvajanja M3U (*.m3u);;seznam predvajanja M3U8 (*.m3u8);;seznam predvajanja PLS (*.pls);;tekst CSV (*.csv);;berljiv tekst (*.txt)</translation>
+        <translation>M3U seznam predvajanja (*.m3u);;M3U8 seznam predvajanja (*.m3u8);;PLS seznam predvajanja (*.pls);;z vejicami ločen tekst (*.csv);;berljiv tekst (*.txt)</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="169"/>
@@ -3057,12 +3057,12 @@
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="38"/>
         <source>Past Developers</source>
-        <translation>Biviši razvijalci:</translation>
+        <translation>Bivši razvijalci</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="39"/>
         <source>Past Contributors</source>
-        <translation>Bivši prispevki:</translation>
+        <translation>Bivši sodelujoči</translation>
     </message>
 </context>
 <context>
@@ -3075,7 +3075,7 @@
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="110"/>
         <source>Credits</source>
-        <translation>Zasluge:</translation>
+        <translation>Zasluge</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="145"/>
@@ -3320,7 +3320,7 @@ Prehod začne na izbranem številu sekund pred zadnjim zvokom.</translation>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="269"/>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="277"/>
         <source>Auto DJ</source>
-        <translation>Avtomatski DJ (Auto DJ)</translation>
+        <translation>Auto DJ</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="92"/>
@@ -5091,7 +5091,7 @@ Vedno lahko skladbe tudi povlečete in sputite, da podvojite nek predvajalnik.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="26"/>
         <source>Only allow EQ knobs to control EQ-specific effects</source>
-        <translation>Omeji EQ regulatorje, da kontrolirajo zgolj učinka, ki so vezani na izravnalnik.</translation>
+        <translation>Omeji EQ regulatorje, da kontrolirajo zgolj učinke, ki so vezani na izravnalnik.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="32"/>
@@ -5353,7 +5353,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="213"/>
         <source>B</source>
-        <translation>H</translation>
+        <translation>B</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="236"/>
@@ -6185,7 +6185,7 @@ Ciljna glasnost je približna in predpostavlja, da ostaneta predojačitev in izh
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="165"/>
         <source>Enabled</source>
-        <translation>Omogočeno</translation>
+        <translation>Vklopljeno</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="172"/>
@@ -6205,7 +6205,7 @@ Ciljna glasnost je približna in predpostavlja, da ostaneta predojačitev in izh
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="706"/>
         <source>Measure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
-        <translation>Izmerite latenco kroženja zvoka in jo vnesite zgoraj za kompenzacijo latence mikrofona in poravnavo časa mikrofona.</translation>
+        <translation>Izmerite latenco zvoka na krožni poti in jo vnesite zgoraj, za kompenzacijo latence mikrofona, da se poravna s časom mikrofona .</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="707"/>
@@ -6259,7 +6259,7 @@ Ciljna glasnost je približna in predpostavlja, da ostaneta predojačitev in izh
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="48"/>
         <source>Audio Buffer</source>
-        <translation>Medpomnilnik za zvok</translation>
+        <translation>Zvočni medpomnilnik</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="71"/>
@@ -6770,7 +6770,7 @@ Izbirajte med različnimi vrstami prikaza valovne oblike, ki se primarno razliku
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="274"/>
         <source>Auto DJ</source>
-        <translation>Avtomatski DJ (Auto DJ)</translation>
+        <translation>Auto DJ</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="248"/>
@@ -6795,7 +6795,7 @@ Izbirajte med različnimi vrstami prikaza valovne oblike, ki se primarno razliku
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="260"/>
         <source>Effects</source>
-        <translation>Efekti</translation>
+        <translation>Učinki</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="267"/>
@@ -6831,7 +6831,7 @@ Izbirajte med različnimi vrstami prikaza valovne oblike, ki se primarno razliku
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="281"/>
         <source>Live Broadcasting</source>
-        <translation>Prenos v živo</translation>
+        <translation>Oddajanje v živo</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="313"/>
@@ -7047,7 +7047,7 @@ Izbirajte med različnimi vrstami prikaza valovne oblike, ki se primarno razliku
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="574"/>
         <source>&amp;Apply</source>
-        <translation>&amp;Prevzemi</translation>
+        <translation>&amp;Potrdi</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="581"/>
@@ -7387,7 +7387,7 @@ Večinoma ustrvarja bolj kakovostno ritmično mrežo, vendar ne deluje dobro s s
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="917"/>
         <source>&amp;Apply</source>
-        <translation>&amp;Prevzemi</translation>
+        <translation>&amp;Potrdi</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="898"/>
@@ -8287,7 +8287,7 @@ Do you want to scan your library for cover files now?</source>
     <name>QObject</name>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="6"/>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="187"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="161"/>
         <source>Invalid</source>
         <translation>Nepravilno</translation>
     </message>
@@ -8393,67 +8393,67 @@ Do you want to scan your library for cover files now?</source>
         <translation>14-bit (MSB)</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="189"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="163"/>
         <source>Master</source>
         <translation>Glavni master</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="165"/>
         <source>Booth</source>
         <translation>Dodatni booth</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="193"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="167"/>
         <source>Headphones</source>
         <translation>Slušalke</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="197"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="171"/>
         <source>Left Bus</source>
         <translation>Levo vodilo</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="199"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="173"/>
         <source>Center Bus</source>
         <translation>Osrednje vodilo</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="201"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="175"/>
         <source>Right Bus</source>
         <translation>Desno vodilo</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="203"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="177"/>
         <source>Invalid Bus</source>
         <translation>Napačno vodilo</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="206"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="180"/>
         <source>Deck</source>
         <translation>Predvajalnik</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="209"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="183"/>
         <source>Record/Broadcast</source>
         <translation>Snemanje/Prenos</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="211"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="185"/>
         <source>Vinyl Control</source>
         <translation>Gramofonsko upravljanje</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="214"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="188"/>
         <source>Microphone</source>
         <translation>Mikrofon</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="217"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
         <source>Auxiliary</source>
         <translation>Pomožno AUX vodilo</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="220"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="194"/>
         <source>Unknown path type %1</source>
         <translation>Neznana vrsta poti %1</translation>
     </message>
@@ -8587,7 +8587,7 @@ Po kliku na V redu boste videli izbirnik datotek. Da bi Mixxx pridobil pravice j
     <message>
         <location filename="../../src/effects/builtin/echoeffect.cpp" line="63"/>
         <source>Amount the echo fades each time it loops</source>
-        <translation>Stopnja manjšanja odmeva po vsaki ponovitvi</translation>
+        <translation>Koliko odmev zamira, vsakič ko se ponovi.</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/echoeffect.cpp" line="76"/>
@@ -8649,7 +8649,7 @@ Po kliku na V redu boste videli izbirnik datotek. Da bi Mixxx pridobil pravice j
         <location filename="../../src/effects/builtin/filtereffect.cpp" line="30"/>
         <location filename="../../src/effects/builtin/moogladder4filtereffect.cpp" line="28"/>
         <source>Corner frequency ratio of the low pass filter</source>
-        <translation>Naklon frekvenčne krivulje nizkotonskega filtra</translation>
+        <translation>Ostrina ob robu frekvence nizkopasovnega filtra</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/filtereffect.cpp" line="44"/>
@@ -8678,7 +8678,7 @@ Privteto: raven vrh</translation>
         <location filename="../../src/effects/builtin/filtereffect.cpp" line="59"/>
         <location filename="../../src/effects/builtin/moogladder4filtereffect.cpp" line="53"/>
         <source>Corner frequency ratio of the high pass filter</source>
-        <translation>Naklon frekvenčne krivulje visokotonskega filtra</translation>
+        <translation>Ostrina ob robu frekvence nizkopasovnega filtra</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/phasereffect.cpp" line="83"/>
@@ -10765,7 +10765,7 @@ Stopnjo zmanjšanja glasnosti se nastavlja regulatorjem Jakost.</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="365"/>
         <source>BPM Tap</source>
-        <translation>tapkanje BPM tempa</translation>
+        <translation>Tapkanje tempa v BPM</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="366"/>
@@ -10911,17 +10911,17 @@ Stopnjo zmanjšanja glasnosti se nastavlja regulatorjem Jakost.</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="625"/>
         <source>Sets the track Loop-In Marker to the current play position.</source>
-        <translation>Postavi vhodno oznako zanke na trenutno pozicijo predvajanja.</translation>
+        <translation>Postavi vhodno točko zanke na trenutno pozicijo predvajanja.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="628"/>
         <source>Press and hold to move Loop-In Marker.</source>
-        <translation>Pritisnite in držite za premik vhodne oznake zanke.</translation>
+        <translation>Pritisnite in držite za premik vhodne točke zanke</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="629"/>
         <source>Jump to Loop-In Marker.</source>
-        <translation>Skoči na vhodno oznako zanke.</translation>
+        <translation>Skoči na vhodno točko zanke.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="634"/>
@@ -11041,17 +11041,17 @@ Stopnjo zmanjšanja glasnosti se nastavlja regulatorjem Jakost.</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="694"/>
         <source>If the loop is ahead of the current position, looping will start when the loop is reached.</source>
-        <translation>Če je zanka naprej od trenutne pozicije, se zažene, ko je dosežen začetek zanke.</translation>
+        <translation>Če se zanka nahaja naprej od trenutne pozicije, se bo ponavljanje zanke začelo, ko bo dosežena zanka.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="695"/>
         <source>Works only if Loop-In and Loop-Out Marker are set.</source>
-        <translation>Deluje samo, če sta postavljni oznaki za vhod v zanko in izhod iz zanke</translation>
+        <translation>Deluje samo, če sta postavljeni oznaki V zanko in Iz zanke</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="696"/>
         <source>Enable loop, jump to Loop-In Marker, and stop playback.</source>
-        <translation>Vklopi zanko, skoči na vhod zanke in ustavi predvajanje.</translation>
+        <translation>Vklopi zanko, skoči na oznako V zanko in ustavi predvajanje.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="705"/>
@@ -11184,7 +11184,7 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="976"/>
         <source>Save Sampler Bank</source>
-        <translation>Shrani banko vzorčevalnika</translation>
+        <translation>Shrani banko vzorcev</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="977"/>
@@ -11204,7 +11204,7 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="808"/>
         <source>Show Effect Parameters</source>
-        <translation>Prikaži parametre efekta</translation>
+        <translation>Prikaži parametre učinka</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="897"/>
@@ -11788,7 +11788,7 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="258"/>
         <source>Maximize Library</source>
-        <translation>Maksimalno povečaj knjižnico</translation>
+        <translation>Povečaj knjižnico</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="259"/>
@@ -11956,7 +11956,7 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="576"/>
         <source>Record Mix</source>
-        <translation>Snemaj miks</translation>
+        <translation>Posnemi miks</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="577"/>
@@ -11996,12 +11996,12 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="666"/>
         <source>Playback will resume where the track would have been if it had not entered the loop.</source>
-        <translation>Predvajanje se bo nadaljevalo tam, kjer bi skladba bila, če se se bi izvedla zanka.</translation>
+        <translation>Predvajanje se bo nadaljevalo tam, kjer bi se skladba nahajala, če se ne bi zagnala zanka.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="687"/>
         <source>Loop Exit</source>
-        <translation>Izstop iz zanke</translation>
+        <translation>Izhod iz zanke</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="688"/>
@@ -12258,12 +12258,12 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="641"/>
         <source>Loop Halve</source>
-        <translation>Razpolovi zanko</translation>
+        <translation>Polovična zanka</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="642"/>
         <source>Halves the current loop&apos;s length by moving the end marker.</source>
-        <translation>Razpolovi trenutno dolžino zanke, tako da premakne zaključno oznako.</translation>
+        <translation>Razpolovi trenutno dolžino zanke, tako da premakne zaključno oznako</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="643"/>
@@ -12273,7 +12273,7 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="646"/>
         <source>Loop Double</source>
-        <translation>Podvoji zanko</translation>
+        <translation>Dvojna zanka</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="647"/>
@@ -12293,7 +12293,7 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="689"/>
         <source>Works only if Loop-In and Loop-Out marker are set.</source>
-        <translation>Deluje le, če sta postavljeni vhodna in izhodna oznaka zanke.</translation>
+        <translation>Deluje le, če sta postavljeni oznaki V zanko in Iz zanke.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="441"/>
@@ -12830,7 +12830,7 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="217"/>
         <source>Show Preview Deck</source>
-        <translation>Prikaži predvajalnik za preogled</translation>
+        <translation>Prikaži predvajalnik za predogled</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="218"/>
@@ -12846,7 +12846,7 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="232"/>
         <source>Show Cover Art</source>
-        <translation>Prikaži naslovnice</translation>
+        <translation>Prikaži naslovnico</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="233"/>
@@ -12862,7 +12862,7 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="247"/>
         <source>Maximize Library</source>
-        <translation>Maksimalno povečaj knjižnico</translation>
+        <translation>Povečaj knjižnico</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="248"/>
@@ -12873,7 +12873,7 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
         <location filename="../../src/widget/wmainmenubar.cpp" line="255"/>
         <source>Space</source>
         <comment>Menubar|View|Maximize Library</comment>
-        <translation>Prostor</translation>
+        <translation>Space</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="265"/>
@@ -13114,20 +13114,20 @@ To se uporablja za spreminjanje zvoka zgolj z učinki obogatenega signala (wet) 
         <translation>Prehod</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="711"/>
+        <location filename="../../src/widget/woverview.cpp" line="705"/>
         <source>Ready to play, analyzing ..</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>Pripravljen za predvajanje, analiziram ..</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="714"/>
-        <location filename="../../src/widget/woverview.cpp" line="724"/>
+        <location filename="../../src/widget/woverview.cpp" line="708"/>
+        <location filename="../../src/widget/woverview.cpp" line="718"/>
         <source>Loading track ..</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>Nalaganje skladbe ..</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="718"/>
+        <location filename="../../src/widget/woverview.cpp" line="712"/>
         <source>Finalizing ..</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>Finalizacija ..</translation>

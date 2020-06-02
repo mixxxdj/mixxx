@@ -1834,7 +1834,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="418"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation>Dodaj Do Kolejki AutoDJ (dół)</translation>
+        <translation>Dodaj do kolejki Auto DJ (dół)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="419"/>
@@ -1844,7 +1844,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="422"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation>Dodaj Do Kolejki AutoDJ (góra)</translation>
+        <translation>Dodaj do kolejki Auto DJ (góra)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="423"/>
@@ -5438,7 +5438,7 @@ i pozwala skorygować ich wysokość tonu dla bardziej harmonijnego miksowania.<
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="103"/>
         <source>You added one or more music directories. The tracks in these directories won&apos;t be available until you rescan your library. Would you like to rescan now?</source>
-        <translation>Dodałeś jeden lub więcej katalogów z muzyką. Utwory z tych katalogów nie będą dostępne dopóki ponownie nie przeskanujesz biblioteki. Czy chcesz to zrobić teraz?</translation>
+        <translation>Dodałeś jeden lub więcej katalogów z muzyką. Utwory z tych katalogów nie będą dostępne dopóki ponownie nie przeskanujesz biblioteki. Czy chcesz zrobić to teraz?</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="107"/>
@@ -6950,7 +6950,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="60"/>
         <source>Album Artist</source>
-        <translation>Wykonawca Albumu</translation>
+        <translation>Wykonawca albumu</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="115"/>
@@ -7133,7 +7133,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="114"/>
         <source>Album Artist</source>
-        <translation>Wykonawca Albumu</translation>
+        <translation>Wykonawca albumu</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="124"/>
@@ -8234,7 +8234,7 @@ Czy chcesz przeskanować Twoją bibliotekę plików teraz?</translation>
     <name>QObject</name>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="6"/>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="187"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="161"/>
         <source>Invalid</source>
         <translation>Nieprawidłowy</translation>
     </message>
@@ -8340,67 +8340,67 @@ Czy chcesz przeskanować Twoją bibliotekę plików teraz?</translation>
         <translation>14-bit (MSB)</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="189"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="163"/>
         <source>Master</source>
         <translation>Główny</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="165"/>
         <source>Booth</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="193"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="167"/>
         <source>Headphones</source>
         <translation>Słuchawki</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="197"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="171"/>
         <source>Left Bus</source>
         <translation>Magistrala Lewa</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="199"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="173"/>
         <source>Center Bus</source>
         <translation>Magistrala Środkowa</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="201"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="175"/>
         <source>Right Bus</source>
         <translation>Magistrala Prawa</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="203"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="177"/>
         <source>Invalid Bus</source>
         <translation>Nieprawidłowa Magistrala</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="206"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="180"/>
         <source>Deck</source>
         <translation>Odtwarzacz</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="209"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="183"/>
         <source>Record/Broadcast</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="211"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="185"/>
         <source>Vinyl Control</source>
         <translation>Kontrola vinylem</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="214"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="188"/>
         <source>Microphone</source>
         <translation>Mikrofon</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="217"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
         <source>Auxiliary</source>
         <translation>Zewnętrzne</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="220"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="194"/>
         <source>Unknown path type %1</source>
         <translation>Nieznany typ ścieżki %1</translation>
     </message>
@@ -13034,20 +13034,20 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <translation>Passthrough</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="711"/>
+        <location filename="../../src/widget/woverview.cpp" line="705"/>
         <source>Ready to play, analyzing ..</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>Gotowy do otwarzania, analizowanie ...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="714"/>
-        <location filename="../../src/widget/woverview.cpp" line="724"/>
+        <location filename="../../src/widget/woverview.cpp" line="708"/>
+        <location filename="../../src/widget/woverview.cpp" line="718"/>
         <source>Loading track ..</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>Ładowanie ścieżĸi ...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="718"/>
+        <location filename="../../src/widget/woverview.cpp" line="712"/>
         <source>Finalizing ..</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>Finalizowanie ...</translation>
@@ -13201,12 +13201,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="139"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation>Dodaj Do Kolejki AutoDJ (dół)</translation>
+        <translation>Dodaj do kolejki Auto DJ (dół)</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="142"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation>Dodaj Do Kolejki AutoDJ (góra)</translation>
+        <translation>Dodaj do kolejki Auto DJ (góra)</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="145"/>
@@ -13291,7 +13291,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="226"/>
         <source>Hotcues</source>
-        <translation>Skróty</translation>
+        <translation>Znaczniki hotcue</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="229"/>
@@ -13397,7 +13397,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="869"/>
         <source>New Playlist</source>
-        <translation>Nowa Lista Odtwarzania</translation>
+        <translation>Nowa lista odtwarzania</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="877"/>

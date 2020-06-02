@@ -238,8 +238,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     setAttribute(Qt::WA_AcceptTouchEvents);
     m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));
 
-    m_pChannelHandleFactory = new ChannelHandleFactory();
-
     m_pDbConnectionPool = MixxxDb(pConfig).connectionPool();
     if (!m_pDbConnectionPool) {
         // TODO(XXX) something a little more elegant
@@ -252,12 +250,18 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         exit(-1);
     }
 
+    auto pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
+
     // Create the Effects subsystem.
-    m_pEffectsManager = new EffectsManager(this, pConfig, m_pChannelHandleFactory);
+    m_pEffectsManager = new EffectsManager(this, pConfig, pChannelHandleFactory);
 
     // Starting the master (mixing of the channels and effects):
-    m_pEngine = new EngineMaster(pConfig, "[Master]", m_pEffectsManager,
-                                 m_pChannelHandleFactory, true);
+    m_pEngine = new EngineMaster(
+            pConfig,
+            "[Master]",
+            m_pEffectsManager,
+            pChannelHandleFactory,
+            true);
 
     // Create effect backends. We do this after creating EngineMaster to allow
     // effect backends to refer to controls that are produced by the engine.
@@ -850,7 +854,7 @@ bool MixxxMainWindow::initializeDatabase() {
 
 void MixxxMainWindow::initializeWindow() {
     // be sure createMenuBar() is called first
-    DEBUG_ASSERT(m_pMenuBar != nullptr);
+    DEBUG_ASSERT(m_pMenuBar);
 
     QPalette Pal(palette());
     // safe default QMenuBar background
@@ -1094,8 +1098,7 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
 void MixxxMainWindow::createMenuBar() {
     ScopedTimer t("MixxxMainWindow::createMenuBar");
     DEBUG_ASSERT(m_pKbdConfig != nullptr);
-    m_pMenuBar = new WMainMenuBar(this, m_pSettingsManager->settings(),
-                                  m_pKbdConfig);
+    m_pMenuBar = make_parented<WMainMenuBar>(this, m_pSettingsManager->settings(), m_pKbdConfig);
     setMenuBar(m_pMenuBar);
 }
 

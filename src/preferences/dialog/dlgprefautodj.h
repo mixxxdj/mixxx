@@ -14,10 +14,10 @@ class DlgPrefAutoDJ : public DlgPreferencePage, public Ui::DlgPrefAutoDJDlg {
     virtual ~DlgPrefAutoDJ();
 
   public slots:
-    void slotUpdate();
-    void slotApply();
-    void slotResetToDefaults();
-    void slotCancel() ;
+    void slotUpdate() override;
+    void slotApply() override;
+    void slotResetToDefaults() override;
+    void slotCancel() override;
 
   private slots:
     void slotSetAutoDjMinimumAvailable(int);

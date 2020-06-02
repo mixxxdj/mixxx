@@ -8263,7 +8263,7 @@ Deseja examinar a sua biblioteca para encontrar ficheiros de capa de disco, agor
     <name>QObject</name>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="6"/>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="187"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="161"/>
         <source>Invalid</source>
         <translation>Inválido</translation>
     </message>
@@ -8369,67 +8369,67 @@ Deseja examinar a sua biblioteca para encontrar ficheiros de capa de disco, agor
         <translation>14-bit (MSB)</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="189"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="163"/>
         <source>Master</source>
         <translation>Master</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="165"/>
         <source>Booth</source>
         <translation>Cabine</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="193"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="167"/>
         <source>Headphones</source>
         <translation>Auscultadores</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="197"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="171"/>
         <source>Left Bus</source>
         <translation>Bus Esquerdo</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="199"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="173"/>
         <source>Center Bus</source>
         <translation>Bus Central</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="201"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="175"/>
         <source>Right Bus</source>
         <translation>Bus Direito</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="203"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="177"/>
         <source>Invalid Bus</source>
         <translation>Bus Inválido</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="206"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="180"/>
         <source>Deck</source>
         <translation>Leitor</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="209"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="183"/>
         <source>Record/Broadcast</source>
         <translation>Gravar/Emitir</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="211"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="185"/>
         <source>Vinyl Control</source>
         <translation>Controlo de Vinil</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="214"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="188"/>
         <source>Microphone</source>
         <translation>Microfone</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="217"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
         <source>Auxiliary</source>
         <translation>Auxiliar</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="220"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="194"/>
         <source>Unknown path type %1</source>
         <translation>Caminho desconhecido tipo %1</translation>
     </message>
@@ -8860,7 +8860,7 @@ Valores mais altos resultam em menos atenuação das altas frequências.</transl
     <message>
         <location filename="../../src/effects/builtin/reverbeffect.cpp" line="69"/>
         <source>How much of the signal to send in to the effect</source>
-        <translation>Quanto do sinal a enviar para o efeito</translation>
+        <translation>Quantidade do sinal a enviar para o efeito</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/reverbeffect.cpp" line="40"/>
@@ -9526,7 +9526,7 @@ Tudo direita: fim do período do efeito</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflv2.cpp" line="44"/>
         <source>This plugin does not support stereo samples as input/output</source>
-        <translation>Este módulo não suporta amostras em estéreo com entrada/saída</translation>
+        <translation>Este módulo não suporta amostras em estéreo como entrada/saída</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflv2.cpp" line="48"/>
@@ -9937,17 +9937,17 @@ Tudo direita: fim do período do efeito</translation>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="341"/>
         <source>Error setting stream IRC!</source>
-        <translation>Erro a definir o stream IRC!</translation>
+        <translation>Erro a definir a stream IRC!</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="348"/>
         <source>Error setting stream AIM!</source>
-        <translation>Erro a definir o stream AIM!</translation>
+        <translation>Erro a definir a stream AIM!</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="355"/>
         <source>Error setting stream ICQ!</source>
-        <translation>Erro a definir o stream ICQ!</translation>
+        <translation>Erro a definir a stream ICQ!</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="361"/>
@@ -10811,7 +10811,7 @@ Tudo direita: fim do período do efeito</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="413"/>
         <source>Toggle visibility of Rate Control</source>
-        <translation>Mostrar/ocultar a visibilidade o Controlo da Taxa</translation>
+        <translation>Alterna a visibilidade do Controlo da Taxa</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="437"/>
@@ -11100,36 +11100,36 @@ Tudo direita: fim do período do efeito</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="817"/>
         <source>D/W mode: Crossfade between dry and wet</source>
-        <translation>Modo M/S: crossfade entre molhado e seco</translation>
+        <translation>Modo S/M: crossfade entre seco e molhado</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="818"/>
         <source>D+W mode: Add wet to dry</source>
-        <translation>Modo M/S: adicionar molhado para seco</translation>
+        <translation>Modo S/M: adicionar molhado ao seco</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="822"/>
         <source>Mix Mode</source>
-        <translation>Modo Mix</translation>
+        <translation>Modo Mistura</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="823"/>
         <source>Adjust how the dry (input) signal is mixed with the wet (output) signal of the effect unit</source>
-        <translation>Ajustar a mistura do sinal molhado (entrada) com o seco (saída) da unidade de efeito</translation>
+        <translation>Ajustar a mistura do sinal seco (entrada) com o sinal molhado (saída) da unidade de efeito</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="824"/>
         <source>Dry/Wet mode (crossed lines): Mix knob crossfades between dry and wet
 Use this to change the sound of the track with EQ and filter effects.</source>
-        <translation>Modo Molhado/Seco (lixo cruzado): misturar crossfades de knob entre seco e molhado.
-Usar isto para alterar o som da faixa com EQ e efeitos de filtros.</translation>
+        <translation>Modo Seco/Molhado (linhas cruzadas): o botão de Mistura faz a transição entre seco e molhado.
+Usar isto para alterar o som da faixa com EQ e filtros de efeitos.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="826"/>
         <source>Dry+Wet mode (flat dry line): Mix knob adds wet to dry
 Use this to change only the effected (wet) signal with EQ and filter effects.</source>
-        <translation>Modo Molhado/Seco (linha molhada plana): mistura de knob adiciona seco para molhado.
-Usar isto para alterar apenas o sinal com efeito (molhado) com EQ e efeitos de filtros.</translation>
+        <translation>Modo Seco+Molhado (linha seca plana): o botão de Mistura adiciona o molhado ao seco.
+Usar isto para alterar apenas o sinal já com os efeitos (molhado) de EQ e filtros de efeitos.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="863"/>
@@ -11279,7 +11279,7 @@ Usar isto para alterar apenas o sinal com efeito (molhado) com EQ e efeitos de f
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="831"/>
         <source>Controls the Meta Knob of all effects in this unit together.</source>
-        <translation>Controla o Meta Botão de todos ao efeitos conjuntamente nesta unidade.</translation>
+        <translation>Controla o Meta Botão de todos os efeitos conjuntamente nesta unidade.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="836"/>
@@ -12143,7 +12143,7 @@ Usar isto para alterar apenas o sinal com efeito (molhado) com EQ e efeitos de f
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="557"/>
         <source>Displays the current playback rate of the track.</source>
-        <translation>Mostra a taxa de variação de velocidade - em % em relação ao centro - da reprodução atual da faixa.</translation>
+        <translation>Mostra a taxa de variação de velocidade da reprodução atual da faixa.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="560"/>
@@ -13089,20 +13089,20 @@ Usar isto para alterar apenas o sinal com efeito (molhado) com EQ e efeitos de f
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="711"/>
+        <location filename="../../src/widget/woverview.cpp" line="705"/>
         <source>Ready to play, analyzing ..</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>Pronto para tocar, analisando ...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="714"/>
-        <location filename="../../src/widget/woverview.cpp" line="724"/>
+        <location filename="../../src/widget/woverview.cpp" line="708"/>
+        <location filename="../../src/widget/woverview.cpp" line="718"/>
         <source>Loading track ..</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>A carregar faixa ...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="718"/>
+        <location filename="../../src/widget/woverview.cpp" line="712"/>
         <source>Finalizing ..</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>A finalizar ...</translation>

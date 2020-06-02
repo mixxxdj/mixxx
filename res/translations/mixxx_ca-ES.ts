@@ -13,7 +13,7 @@
     <message>
         <location filename="../../src/library/analysisfeature.cpp" line="56"/>
         <source>Analyze</source>
-        <translation>Tria l&apos;analitzador</translation>
+        <translation>Analitza</translation>
     </message>
 </context>
 <context>
@@ -132,7 +132,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="43"/>
         <source>Rename</source>
-        <translation>Canvia-li el nom</translation>
+        <translation>Canvia el nom</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="58"/>
@@ -190,7 +190,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="195"/>
         <source>Rename Playlist</source>
-        <translation>Reanomena la llista de reproducció</translation>
+        <translation>Canvia el nom a la llista de reproducció</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="209"/>
@@ -405,7 +405,7 @@
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="114"/>
         <source>Please enable at least one connection to use Live Broadcasting.</source>
-        <translation>Si us plau, activa almenys una font per a utilitzar la emissió en viu.</translation>
+        <translation>Si us plau, activa almenys una font per a utilitzar la retransmissió en directe.</translation>
     </message>
 </context>
 <context>
@@ -1090,48 +1090,48 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="215"/>
         <source>Hotcues</source>
-        <translation>Hotcue</translation>
+        <translation>Marca directa</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="223"/>
         <source>Set, preview from or jump to hotcue %1</source>
-        <translation>Defineix, pre-escolta des de o vés al Hotcue %1</translation>
+        <translation>Defineix, pre-escolta des de o vés a la marca directa %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="224"/>
         <source>Clear hotcue %1</source>
-        <translation>Esborra Hotcue %1</translation>
+        <translation>Esborra la marca directa %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="225"/>
         <source>Set hotcue %1</source>
-        <translation>Defineix Hotcue %1</translation>
+        <translation>Defineix la marca directa %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="226"/>
         <source>Jump to hotcue %1</source>
-        <translation>Ves al Hotcue %1</translation>
+        <translation>Ves a la marca directa %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="227"/>
         <source>Jump to hotcue %1 and stop</source>
-        <translation>Ves al Hotcue %1 i atura&apos;t</translation>
+        <translation>Ves a la marca directa %1 i atura&apos;t</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="228"/>
         <source>Jump to hotcue %1 and play</source>
-        <translation>Ves al Hotcue %1 i reprodueix</translation>
+        <translation>Ves a la marca directa %1 i reprodueix</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="229"/>
         <source>Preview from hotcue %1</source>
-        <translation>Pre-escolta des del Hotcue %1</translation>
+        <translation>Pre-escolta des de la marca directa %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="216"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="231"/>
         <source>Hotcue %1</source>
-        <translation>Hotcue %1</translation>
+        <translation>Marca directa %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="263"/>
@@ -1734,32 +1734,32 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="217"/>
         <source>Clear Hotcue %1</source>
-        <translation>Esborra el Hotcue %1</translation>
+        <translation>Esborra la marca directa %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="218"/>
         <source>Set Hotcue %1</source>
-        <translation>Defineix el Hotcue %1</translation>
+        <translation>Defineix la marca directa %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="219"/>
         <source>Jump To Hotcue %1</source>
-        <translation>Ves al Hotcue %1</translation>
+        <translation>Ves a la marca directa %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="220"/>
         <source>Jump To Hotcue %1 And Stop</source>
-        <translation>Ves al Hotcue %1 i atura&apos;t</translation>
+        <translation>Ves a la marca directa %1 i atura&apos;t</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="221"/>
         <source>Jump To Hotcue %1 And Play</source>
-        <translation>Ves al Hotcue %1 i reprodueix</translation>
+        <translation>Ves a la marca directa %1 i reprodueix</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="222"/>
         <source>Preview Hotcue %1</source>
-        <translation>Pre-escolta del Hotcue %1</translation>
+        <translation>Pre-escolta la marca directa %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="271"/>
@@ -2867,7 +2867,7 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="69"/>
         <source>Rename</source>
-        <translation>Canvia-li el nom</translation>
+        <translation>Canvia el nom</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="84"/>
@@ -2931,7 +2931,7 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="408"/>
         <source>Rename Crate</source>
-        <translation>Reanomena la caixa</translation>
+        <translation>Canvia el nom a la caixa</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="419"/>
@@ -3095,7 +3095,7 @@
         <location filename="../../src/library/dlganalysis.ui" line="97"/>
         <location filename="../../src/library/dlganalysis.cpp" line="181"/>
         <source>Analyze</source>
-        <translation>Tria l&apos;analitzador</translation>
+        <translation>Analitza</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="55"/>
@@ -3857,7 +3857,7 @@ Dues connexions font al mateix servidor no poden tenir el mateix punt de muntatg
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="592"/>
         <source>Are you sure you want to disconnect every active source connection?</source>
-        <translation>Segur que voleu desconnectar totes les connexions fonts actives?</translation>
+        <translation>Segur que voleu desconnectar totes les connexions font actives?</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="554"/>
@@ -3883,7 +3883,7 @@ Dues connexions font al mateix servidor no poden tenir el mateix punt de muntatg
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="582"/>
         <source>Can&apos;t rename &apos;%1&apos; to &apos;%2&apos;: name already in use</source>
-        <translation>No es pot reanomenar &apos;%1&apos; a &apos;%2&apos;: Aquest nom ja existeix</translation>
+        <translation>No es pot canviar el nom de &apos;%1&apos; a &apos;%2&apos;: Aquest nom ja existeix</translation>
     </message>
 </context>
 <context>
@@ -3891,7 +3891,7 @@ Dues connexions font al mateix servidor no poden tenir el mateix punt de muntatg
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="14"/>
         <source>Live Broadcasting Preferences</source>
-        <translation>Preferències de l&apos;emissió en viu</translation>
+        <translation>Preferències de la retransmissió en directe</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="506"/>
@@ -3921,7 +3921,7 @@ Dues connexions font al mateix servidor no poden tenir el mateix punt de muntatg
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="20"/>
         <source>Live Broadcasting source connections</source>
-        <translation>Connexions font per a la emissió en viu</translation>
+        <translation>Connexions font per a la retransmissió en directe</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="65"/>
@@ -3936,7 +3936,7 @@ Dues connexions font al mateix servidor no poden tenir el mateix punt de muntatg
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="115"/>
         <source>Rename selected</source>
-        <translation>Reanomena la seleccionada</translation>
+        <translation>Canvia el nom a la seleccionada</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="72"/>
@@ -3946,7 +3946,7 @@ Dues connexions font al mateix servidor no poden tenir el mateix punt de muntatg
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="124"/>
         <source>Turn on Live Broadcasting when applying these settings</source>
-        <translation>Activa la emissió en viu a l&apos;aplicar els canvis.</translation>
+        <translation>Activa la retransmissió en directe a l&apos;aplicar els canvis.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="137"/>
@@ -5488,7 +5488,7 @@ i permet que es pugui ajustar el to per a una mescla harmònica.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="242"/>
         <source>Metadata means all track details (artist, title, playcount, etc.) as well as beatgrids, hotcues, and loops. This choice only affects the Mixxx library. No files on disk will be changed or deleted.</source>
-        <translation>Metadades significa tots els detalls de la pista (artista, títol, comptador de reproducció, etc.) així com les graelles de rtime, Hotcues i bucles. Aquesta acció només afecta a la biblioteca de Mixxx. Els fitxers del disc no es canviaran ni s&apos;esborraran.</translation>
+        <translation>Metadades significa tots els detalls de la pista (artista, títol, comptador de reproducció, etc.) així com les graelles de rtime, les marques directes i els bucles. Aquesta acció només afecta a la biblioteca del Mixxx. Els fitxers del disc no es canviaran ni s&apos;esborraran.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="250"/>
@@ -6154,7 +6154,7 @@ El valor desitjat és aproximat i assumeix que els pre-guanys i el volum de sort
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="116"/>
         <source>Direct monitor (recording and broadcasting only)</source>
-        <translation>Monitor directe (només gravació i emissió)</translation>
+        <translation>Monitor directe (només gravació i retransmissió)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="164"/>
@@ -6179,7 +6179,7 @@ El valor desitjat és aproximat i assumeix que els pre-guanys i el volum de sort
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="705"/>
         <source>Microphone inputs are out of time in the record &amp; broadcast signal compared to what you hear.</source>
-        <translation>L&apos;entrada de micròfon queda desincronitzada al gravar o emetre comparat amb el que es sent.</translation>
+        <translation>L&apos;entrada de micròfon queda desincronitzada al gravar o retransmetre comparat amb el que es sent.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="706"/>
@@ -6577,7 +6577,7 @@ El valor desitjat és aproximat i assumeix que els pre-guanys i el volum de sort
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="339"/>
         <source>End of track warning</source>
-        <translation>Avís de final de pista</translation>
+        <translation>Avís de finalització de la pista</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="139"/>
@@ -6810,7 +6810,7 @@ Seleccioneu entre els diferents tipus de gràfics per a la forma d&apos;ona loca
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="281"/>
         <source>Live Broadcasting</source>
-        <translation>Emissió en viu</translation>
+        <translation>Retransmissió en directe</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="313"/>
@@ -8243,7 +8243,7 @@ Voleu escanejar ara la biblioteca cercant les caràtules?</translation>
     <message>
         <location filename="../../src/preferences/upgrade.cpp" line="456"/>
         <source>This does not affect saved cues, hotcues, playlists, or crates.</source>
-        <translation>Això no afecta als punts Cue, Hotcues, Llistes de reproducció o caixes.</translation>
+        <translation>Això no afecta als punts Cue, marques directe, llistes de reproducció o caixes.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/upgrade.cpp" line="458"/>
@@ -8265,7 +8265,7 @@ Voleu escanejar ara la biblioteca cercant les caràtules?</translation>
     <name>QObject</name>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="6"/>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="187"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="161"/>
         <source>Invalid</source>
         <translation>No vàlid</translation>
     </message>
@@ -8371,67 +8371,67 @@ Voleu escanejar ara la biblioteca cercant les caràtules?</translation>
         <translation>14-bit (MSB)</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="189"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="163"/>
         <source>Master</source>
         <translation>Mestre</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="165"/>
         <source>Booth</source>
         <translation>Sortida de cabina</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="193"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="167"/>
         <source>Headphones</source>
         <translation>Auriculars</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="197"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="171"/>
         <source>Left Bus</source>
         <translation>Bus esquerra</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="199"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="173"/>
         <source>Center Bus</source>
         <translation>Bus central</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="201"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="175"/>
         <source>Right Bus</source>
         <translation>Bus dret</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="203"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="177"/>
         <source>Invalid Bus</source>
         <translation>Bus invàlid</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="206"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="180"/>
         <source>Deck</source>
         <translation>Plat</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="209"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="183"/>
         <source>Record/Broadcast</source>
         <translation>Enregistrament/Retransmissió</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="211"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="185"/>
         <source>Vinyl Control</source>
         <translation>Control de Vinil</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="214"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="188"/>
         <source>Microphone</source>
         <translation>Micròfon</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="217"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
         <source>Auxiliary</source>
         <translation>Auxiliar</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanagerutil.cpp" line="220"/>
+        <location filename="../../src/soundio/soundmanagerutil.cpp" line="194"/>
         <source>Unknown path type %1</source>
         <translation>Tipus de ruta %1 desconegut</translation>
     </message>
@@ -8862,7 +8862,7 @@ Valors més alts atenuaran menys les freqüències altes.</translation>
     <message>
         <location filename="../../src/effects/builtin/reverbeffect.cpp" line="69"/>
         <source>How much of the signal to send in to the effect</source>
-        <translation>La quantitat de senyal que s&apos;envia a l&apos;efecte</translation>
+        <translation>Intensitat del senyal que s&apos;envia a l&apos;efecte</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/reverbeffect.cpp" line="40"/>
@@ -9235,7 +9235,7 @@ Valors més alts atenuaran menys les freqüències altes.</translation>
     <message>
         <location filename="../../src/effects/builtin/loudnesscontoureffect.cpp" line="30"/>
         <source>Amplifies low and high frequencies at low volumes to compensate for reduced sensitivity of the human ear.</source>
-        <translation>Amplifica les freqüències alta i baixa amb volums baixos per a compensar per la sensitivitat reduïda de la orella humana.</translation>
+        <translation>Amplifica les freqüències de greus i aguts que tenen poc volum per a compensar la sensitivitat reduïda de la orella humana.</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/loudnesscontoureffect.cpp" line="39"/>
@@ -9534,7 +9534,7 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflv2.cpp" line="48"/>
         <source>This plugin has features which are not yet supported</source>
-        <translation>Aquest complement té característiques no suportades per ara</translation>
+        <translation>Aquest complement té característiques no suportades encara</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflv2.cpp" line="52"/>
@@ -9920,22 +9920,22 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="320"/>
         <source>Error setting stream name!</source>
-        <translation>Error establint el nom del stream!</translation>
+        <translation>Error establint el nom de la font d&apos;emissió!</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="325"/>
         <source>Error setting stream description!</source>
-        <translation>Error establint la descripció del stream!</translation>
+        <translation>Error establint la descripció de la font d&apos;emissió!</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="330"/>
         <source>Error setting stream genre!</source>
-        <translation>Error establint el gènere del stream!</translation>
+        <translation>Error establint el gènere de la font d&apos;emissió!</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="335"/>
         <source>Error setting stream url!</source>
-        <translation>Error establint la URL del stream!</translation>
+        <translation>Error establint la Pàgina web de la font d&apos;emissió!</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="341"/>
@@ -9955,7 +9955,7 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="361"/>
         <source>Error setting stream public!</source>
-        <translation>Error establint la emissió com a pública!</translation>
+        <translation>Error establint la retransmissió com a pública!</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="388"/>
@@ -10005,7 +10005,7 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="867"/>
         <source>One of the Live Broadcasting connections raised this error:&lt;br&gt;&lt;b&gt;Error with connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
-        <translation>Una de les fonts d&apos;emissió en viu ha provocat aquest error:&lt;br&gt;&lt;b&gt;Error amb la font &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</translation>
+        <translation>Una de les fonts de retransmissió en directe ha provocat aquest error:&lt;br&gt;&lt;b&gt;Error amb la font &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="881"/>
@@ -10015,7 +10015,7 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="882"/>
         <source>&lt;b&gt;Message from Live Broadcasting connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
-        <translation>&lt;b&gt;Missatge de la font d&apos;emissió en viu &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</translation>
+        <translation>&lt;b&gt;Missatge de la font de retransmissió en directe &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="932"/>
@@ -11098,7 +11098,7 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="816"/>
         <source>Adjust the mixing of the dry (input) signal with the wet (output) signal of the effect unit</source>
-        <translation>Ajusta la mescla de la senyal directa (entrada) anb la senyal processada (sortida) de la unitat d&apos;efecte</translation>
+        <translation>Ajusta la mescla de la senyal directa (entrada) anb la senyal processada (sortida) de la unitat d&apos;efectes</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="817"/>
@@ -11167,7 +11167,7 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="977"/>
         <source>Save the collection of samples loaded in the samplers.</source>
-        <translation>Desa la col·lecciói de mostres carregades als reproductors de mostres.</translation>
+        <translation>Desa la col·lecció de mostres carregades als reproductors de mostres.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="980"/>
@@ -11944,7 +11944,7 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="587"/>
         <source>Enable Live Broadcasting</source>
-        <translation>Activa l&apos;emissió en viu</translation>
+        <translation>Activa la retransmissió en directe</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="588"/>
@@ -11954,7 +11954,7 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="589"/>
         <source>Provides visual feedback for Live Broadcasting status:</source>
-        <translation>Mostra una representació visual de l&apos;estat de l&apos;emissió en directe:</translation>
+        <translation>Mostra una representació visual de l&apos;estat de la retransmissió en directe:</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="590"/>
@@ -12171,17 +12171,17 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="568"/>
         <source>Hotcue</source>
-        <translation>Hotcue</translation>
+        <translation>Marca directa</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="569"/>
         <source>If hotcue is set, jumps to the hotcue.</source>
-        <translation>Si el Hotcue està definit, va al Hotcue</translation>
+        <translation>Si la marca directa està definida, hi va</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="570"/>
         <source>If hotcue is not set, sets the hotcue to the current play position.</source>
-        <translation>Si el Hotcue no està definit, defineix el hotcue a la posició de reproducció actual.</translation>
+        <translation>Si la marca directa no està definida, la defineix en la posició de reproducció actual.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="610"/>
@@ -12901,7 +12901,7 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="344"/>
         <source>Enable Live &amp;Broadcasting</source>
-        <translation>Activa la emissió en viu(&amp;B)</translation>
+        <translation>Activa la retransmissió en directe(&amp;B)</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="345"/>
@@ -13092,20 +13092,20 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="711"/>
+        <location filename="../../src/widget/woverview.cpp" line="705"/>
         <source>Ready to play, analyzing ..</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>Preparat per reproduir, analitzant...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="714"/>
-        <location filename="../../src/widget/woverview.cpp" line="724"/>
+        <location filename="../../src/widget/woverview.cpp" line="708"/>
+        <location filename="../../src/widget/woverview.cpp" line="718"/>
         <source>Loading track ..</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>Carregant la pista...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="718"/>
+        <location filename="../../src/widget/woverview.cpp" line="712"/>
         <source>Finalizing ..</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>Finalitzant...</translation>
