@@ -1,6 +1,7 @@
 // ****************************************************************************
 // * Mixxx mapping script file for the Hercules DJControl Jogvision.
 // * Author: DJ Phatso, contributions by Kerrick Staley and David TV
+// * Version 1.14 (Jun 2020)
 // * Version 1.13 (May 2020)
 // * Version 1.11 (May 2020)
 // * Version 1.10 (May 2020)
@@ -14,6 +15,9 @@
 // * Version 1.1 (March 2019)
 // * Forum: https://www.mixxx.org/forums/viewtopic.php?f=7&t=12580
 // * Wiki: https://www.mixxx.org/wiki/doku.php/hercules_dj_control_jogvision
+//
+// Changes to v1.14
+// - Better beat_active matching
 //
 // Changes to v1.13
 // - Added "shift"+AIRFX to do a high pass (apart from the default low pass)
@@ -119,7 +123,7 @@ DJCJV.updateJogLeds = function(value, group, control) {
     DJCJV.Channel[group].beatPosition = Math.floor((DJCJV.Channel[group].beatsPassed % beatMax)) + 1;
 
     // If on beat_active, update the beat leds
-    if ((engine.getValue(group, "beat_closest") < engine.getValue(group, "beat_next")) && (!DJCJV.Channel[group].onBeat)) {
+    if (engine.getValue(group, "beat_active") || ((engine.getValue(group, "beat_closest") < engine.getValue(group, "beat_next"))) && (!DJCJV.Channel[group].onBeat)) {
         DJCJV.beatActive(0, group);
         DJCJV.Channel[group].onBeat = true;
     } else if (engine.getValue(group, "beat_closest") >= engine.getValue(group, "beat_next")) {
