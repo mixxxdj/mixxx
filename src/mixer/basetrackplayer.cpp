@@ -58,11 +58,11 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
             pMixingEngine->registerChannelGroup(group);
     m_pChannel = new EngineDeck(channelGroup, pConfig, pMixingEngine, pEffectsManager, defaultOrientation, primaryDeck);
 
-    m_pInputConfigured = std::make_unique<ControlProxy>(group, "input_configured", this);
+    m_pInputConfigured = make_parented<ControlProxy>(group, "input_configured", this);
 #ifdef __VINYLCONTROL__
-    m_pVinylControlEnabled = std::make_unique<ControlProxy>(group, "vinylcontrol_enabled", this);
+    m_pVinylControlEnabled = make_parented<ControlProxy>(group, "vinylcontrol_enabled", this);
     m_pVinylControlEnabled->connectValueChanged(this, &BaseTrackPlayerImpl::slotVinylControlEnabled);
-    m_pVinylControlStatus = std::make_unique<ControlProxy>(group, "vinylcontrol_status", this);
+    m_pVinylControlStatus = make_parented<ControlProxy>(group, "vinylcontrol_status", this);
 #endif
 
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
@@ -81,9 +81,9 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
             this, SLOT(slotLoadFailed(TrackPointer, QString)));
 
     // Get loop point control objects
-    m_pLoopInPoint = std::make_unique<ControlProxy>(
+    m_pLoopInPoint = make_parented<ControlProxy>(
             getGroup(), "loop_start_position", this);
-    m_pLoopOutPoint = std::make_unique<ControlProxy>(
+    m_pLoopOutPoint = make_parented<ControlProxy>(
             getGroup(), "loop_end_position", this);
 
     // Duration of the current song, we create this one because nothing else does.
@@ -135,7 +135,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
             this,
             SLOT(slotWaveformZoomSetDefault(double)));
 
-    m_pPreGain = std::make_unique<ControlProxy>(group, "pregain", this);
+    m_pPreGain = make_parented<ControlProxy>(group, "pregain", this);
 
     m_pShiftCuesEarlier = std::make_unique<ControlPushButton>(
             ConfigKey(group, "shift_cues_earlier"));
@@ -174,14 +174,14 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
 
     // BPM of the current song
     m_pFileBPM = std::make_unique<ControlObject>(ConfigKey(group, "file_bpm"));
-    m_pKey = std::make_unique<ControlProxy>(group, "file_key", this);
+    m_pKey = make_parented<ControlProxy>(group, "file_key", this);
 
-    m_pReplayGain = std::make_unique<ControlProxy>(group, "replaygain", this);
-    m_pPlay = std::make_unique<ControlProxy>(group, "play", this);
+    m_pReplayGain = make_parented<ControlProxy>(group, "replaygain", this);
+    m_pPlay = make_parented<ControlProxy>(group, "play", this);
     m_pPlay->connectValueChanged(this, &BaseTrackPlayerImpl::slotPlayToggled);
 
-    m_pRateRatio = std::make_unique<ControlProxy>(group, "rate_ratio", this);
-    m_pPitchAdjust = std::make_unique<ControlProxy>(group, "pitch_adjust", this);
+    m_pRateRatio = make_parented<ControlProxy>(group, "rate_ratio", this);
+    m_pPitchAdjust = make_parented<ControlProxy>(group, "pitch_adjust", this);
 
     pVisualsManager->addDeck(group);
 }
@@ -609,12 +609,12 @@ EngineDeck* BaseTrackPlayerImpl::getEngineDeck() const {
 
 void BaseTrackPlayerImpl::setupEqControls() {
     const QString group = getGroup();
-    m_pLowFilter = std::make_unique<ControlProxy>(group, "filterLow", this);
-    m_pMidFilter = std::make_unique<ControlProxy>(group, "filterMid", this);
-    m_pHighFilter = std::make_unique<ControlProxy>(group, "filterHigh", this);
-    m_pLowFilterKill = std::make_unique<ControlProxy>(group, "filterLowKill", this);
-    m_pMidFilterKill = std::make_unique<ControlProxy>(group, "filterMidKill", this);
-    m_pHighFilterKill = std::make_unique<ControlProxy>(group, "filterHighKill", this);
+    m_pLowFilter = make_parented<ControlProxy>(group, "filterLow", this);
+    m_pMidFilter = make_parented<ControlProxy>(group, "filterMid", this);
+    m_pHighFilter = make_parented<ControlProxy>(group, "filterHigh", this);
+    m_pLowFilterKill = make_parented<ControlProxy>(group, "filterLowKill", this);
+    m_pMidFilterKill = make_parented<ControlProxy>(group, "filterMidKill", this);
+    m_pHighFilterKill = make_parented<ControlProxy>(group, "filterHighKill", this);
 }
 
 void BaseTrackPlayerImpl::slotVinylControlEnabled(double v) {
