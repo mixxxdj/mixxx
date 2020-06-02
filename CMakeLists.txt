@@ -441,6 +441,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/trackcollection.cpp
   src/library/trackcollectionmanager.cpp
   src/library/trackloader.cpp
+  src/library/tracksettablemodel.cpp
   src/library/traktor/traktorfeature.cpp
   src/library/treeitem.cpp
   src/library/treeitemmodel.cpp
@@ -543,6 +544,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/sources/soundsourceproxy.cpp
   src/sources/soundsourcesndfile.cpp
   src/track/albuminfo.cpp
+  src/track/beatstats.cpp
   src/track/beatfactory.cpp
   src/track/beatgrid.cpp
   src/track/beatmap.cpp
