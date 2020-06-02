@@ -1,16 +1,20 @@
+#include "waveform/renderers/waveformrenderbeat.h"
+
 #include <QDomNode>
 #include <QPaintEvent>
 #include <QPainter>
 
-#include "waveform/renderers/waveformrenderbeat.h"
-
 #include "control/controlobject.h"
 #include "track/beats.h"
 #include "track/track.h"
+#include "util/painterscope.h"
+#include "waveform/renderers/waveformbeat.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
-#include "util/painterscope.h"
+
+// Remove from here
+#include <QPolygon>
 
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererAbstract(waveformWidgetRenderer) {
@@ -32,6 +36,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         return;
 
     mixxx::BeatsPointer trackBeats = trackInfo->getBeats();
+
     if (!trackBeats)
         return;
 
@@ -89,13 +94,22 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
             m_beats.resize(m_beats.size() * 2);
         }
 
+        m_beats[beatCount].setPosition(xBeatPoint);
+        m_beats[beatCount].setLength(rendererHeight);
+        if (beatCount % 4 == 0) {
+            m_beats[beatCount].setAsDownbeat();
+        }
+        beatCount++;
+        /*
         if (orientation == Qt::Horizontal) {
             m_beats[beatCount++].setLine(xBeatPoint, 0.0f, xBeatPoint, rendererHeight);
         } else {
             m_beats[beatCount++].setLine(0.0f, xBeatPoint, rendererWidth, xBeatPoint);
-        }
+        }*/
     }
 
     // Make sure to use constData to prevent detaches!
-    painter->drawLines(m_beats.constData(), beatCount);
+    for (auto beat : m_beats) {
+        beat.draw(painter);
+    }
 }

@@ -639,6 +639,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/waveform/renderers/qtvsynctestrenderer.cpp
   src/waveform/renderers/qtwaveformrendererfilteredsignal.cpp
   src/waveform/renderers/qtwaveformrenderersimplesignal.cpp
+  src/waveform/renderers/waveformbeat.cpp
   src/waveform/renderers/waveformmark.cpp
   src/waveform/renderers/waveformmarkrange.cpp
   src/waveform/renderers/waveformmarkset.cpp
