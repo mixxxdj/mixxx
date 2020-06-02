@@ -401,7 +401,7 @@ void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer pTrack, QString reason) {
     }
     m_pChannelToCloneFrom = nullptr;
     // Alert user.
-    QMessageBox::warning(NULL, tr("Couldn't load track."), reason);
+    QMessageBox::warning(nullptr, tr("Couldn't load track."), reason);
 }
 
 void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
@@ -443,22 +443,22 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
 
         if(m_pConfig->getValue(
                 ConfigKey("[Mixer Profile]", "EqAutoReset"), false)) {
-            if (m_pLowFilter != nullptr) {
+            if (m_pLowFilter) {
                 m_pLowFilter->set(1.0);
             }
-            if (m_pMidFilter != nullptr) {
+            if (m_pMidFilter) {
                 m_pMidFilter->set(1.0);
             }
-            if (m_pHighFilter != nullptr) {
+            if (m_pHighFilter) {
                 m_pHighFilter->set(1.0);
             }
-            if (m_pLowFilterKill != nullptr) {
+            if (m_pLowFilterKill) {
                 m_pLowFilterKill->set(0.0);
             }
-            if (m_pMidFilterKill != nullptr) {
+            if (m_pMidFilterKill) {
                 m_pMidFilterKill->set(0.0);
             }
-            if (m_pHighFilterKill != nullptr) {
+            if (m_pHighFilterKill) {
                 m_pHighFilterKill->set(0.0);
             }
         }
