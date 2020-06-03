@@ -10,7 +10,7 @@
 class NetworkInputStreamWorker {
   public:
     NetworkInputStreamWorker();
-    virtual ~NetworkInputStreamWorker();
+    virtual ~NetworkInputStreamWorker() = default;
 
     void setSourceFifo(FIFO<CSAMPLE>* pFifo);
 };
