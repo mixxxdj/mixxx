@@ -2,12 +2,12 @@
 #include <waveform/renderers/waveformbeat.h>
 
 WaveformBeat::WaveformBeat()
-        : m_orientation(Qt::Horizontal), m_bDownbeat(false) {
+        : m_orientation(Qt::Horizontal), m_beatType(mixxx::track::io::BEAT) {
 }
 
-void WaveformBeat::draw(QPainter* painter) {
+void WaveformBeat::draw(QPainter* painter) const {
     painter->drawLine(QPointF(m_position, 0), QPoint(m_position, m_length));
-    if (m_bDownbeat) {
+    if (m_beatType == mixxx::track::io::BAR) {
         const int triangleLength = 10;
         QPolygonF polygon;
         QPointF origin = QPointF(m_position, 0);

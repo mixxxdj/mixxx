@@ -13,9 +13,6 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
-// Remove from here
-#include <QPolygon>
-
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererAbstract(waveformWidgetRenderer) {
     m_beats.resize(128);
@@ -83,7 +80,9 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     int beatCount = 0;
 
     while (it->hasNext()) {
-        double beatPosition = it->next();
+        auto beat = it->next();
+        // TODO: Wrap into a utility function/class to convert frame to sample
+        double beatPosition = beat.frame_position() * 2;
         double xBeatPoint =
                 m_waveformRenderer->transformSamplePositionInRendererWorld(beatPosition);
 
@@ -96,9 +95,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
         m_beats[beatCount].setPosition(xBeatPoint);
         m_beats[beatCount].setLength(rendererHeight);
-        if (beatCount % 4 == 0) {
-            m_beats[beatCount].setAsDownbeat();
-        }
+        m_beats[beatCount].setType(beat.type());
         beatCount++;
         /*
         if (orientation == Qt::Horizontal) {
@@ -109,7 +106,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     }
 
     // Make sure to use constData to prevent detaches!
-    for (auto beat : m_beats) {
-        beat.draw(painter);
+    for (int i = 0; i < beatCount; i++) {
+        (m_beats.constData() + i)->draw(painter);
     }
 }

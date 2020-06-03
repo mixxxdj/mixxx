@@ -47,8 +47,8 @@ class BeatMapIterator : public BeatIterator {
         return m_currentBeat != m_endBeat;
     }
 
-    virtual double next() {
-        double beat = framesToSamples(m_currentBeat->frame_position());
+    virtual Beat next() {
+        Beat beat = *m_currentBeat;
         ++m_currentBeat;
         while (m_currentBeat != m_endBeat && !m_currentBeat->enabled()) {
             ++m_currentBeat;
@@ -137,7 +137,7 @@ void BeatMap::createFromBeatVector(const QVector<double>& beats) {
     }
     double previous_beatpos = -1;
     Beat beat;
-
+    int beatCount = 0;
     foreach (double beatpos, beats) {
         // beatpos is in frames. Do not accept fractional frames.
         beatpos = floor(beatpos);
@@ -146,6 +146,11 @@ void BeatMap::createFromBeatVector(const QVector<double>& beats) {
             qDebug() << "discarding beat " << beatpos;
         } else {
             beat.set_frame_position(beatpos);
+            if (beatCount++ % 4 == 0) {
+                beat.set_type(mixxx::track::io::BAR);
+            } else {
+                beat.set_type(mixxx::track::io::BEAT);
+            }
             m_beats.append(beat);
             previous_beatpos = beatpos;
         }
