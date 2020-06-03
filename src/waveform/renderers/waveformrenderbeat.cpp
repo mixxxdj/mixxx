@@ -78,11 +78,12 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     const float rendererHeight = m_waveformRenderer->getHeight();
 
     int beatCount = 0;
+    QMap<BeatPointer, float> beatPositions;
 
     while (it->hasNext()) {
         auto beat = it->next();
         // TODO: Wrap into a utility function/class to convert frame to sample
-        double beatPosition = beat.frame_position() * 2;
+        double beatPosition = beat->frame_position() * 2;
         double xBeatPoint =
                 m_waveformRenderer->transformSamplePositionInRendererWorld(beatPosition);
 
@@ -94,7 +95,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         }
 
         m_beats[beatCount].setPosition(xBeatPoint);
-        m_beats[beatCount].setType(beat.type());
+        m_beats[beatCount].setType(beat->type());
 
         if (orientation == Qt::Horizontal) {
             m_beats[beatCount].setLength(rendererHeight);
@@ -103,10 +104,13 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
             m_beats[beatCount].setOrientation(Qt::Vertical);
         }
         beatCount++;
+        beatPositions[beat] = xBeatPoint;
     }
 
     // Make sure to use constData to prevent detaches!
     for (int i = 0; i < beatCount; i++) {
-        (m_beats.constData() + i)->draw(painter);
+        const auto currentBeat = m_beats.constData() + i;
+        currentBeat->draw(painter);
     }
+    m_waveformRenderer->setBeatPositions(beatPositions);
 }

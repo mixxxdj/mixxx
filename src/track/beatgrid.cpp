@@ -11,8 +11,6 @@ struct BeatGridData {
     double firstBeat;
 };
 
-using Beat = mixxx::track::io::Beat;
-
 namespace mixxx {
 
 class BeatGridIterator : public BeatIterator {
@@ -27,14 +25,14 @@ class BeatGridIterator : public BeatIterator {
         return m_dBeatLength > 0 && m_dCurrentSample <= m_dEndSample;
     }
 
-    virtual Beat next() {
-        Beat beat;
-        beat.set_frame_position(m_dCurrentSample / kFrameSize);
+    virtual BeatPointer next() {
+        BeatPointer beat = BeatPointer(new Beat);
+        beat->set_frame_position(m_dCurrentSample / kFrameSize);
         if (((int)m_dCurrentSample % (int)(4 * m_dBeatLength) +
                     (int)(4 * m_dBeatLength)) %
                         (int)(4 * m_dBeatLength) <
                 m_dBeatLength) {
-            beat.set_type(mixxx::track::io::BAR);
+            beat->set_type(mixxx::track::io::BAR);
         }
         m_dCurrentSample += m_dBeatLength;
         return beat;

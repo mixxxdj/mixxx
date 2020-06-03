@@ -10,13 +10,14 @@
 
 #include <QMutex>
 
-#include "track/track.h"
-#include "track/beats.h"
 #include "proto/beats.pb.h"
+#include "track/beat.h"
+#include "track/beats.h"
+#include "track/track.h"
 
 #define BEAT_MAP_VERSION "BeatMap-1.0"
 
-typedef QList<mixxx::track::io::Beat> BeatList;
+typedef QList<Beat> BeatList;
 
 namespace mixxx {
 
@@ -91,8 +92,8 @@ class BeatMap final : public Beats {
     void createFromBeatVector(const QVector<double>& beats);
     void onBeatlistChanged();
 
-    double calculateBpm(const mixxx::track::io::Beat& startBeat,
-                        const mixxx::track::io::Beat& stopBeat) const;
+    double calculateBpm(const Beat& startBeat,
+            const Beat& stopBeat) const;
     // For internal use only.
     bool isValid() const;
 

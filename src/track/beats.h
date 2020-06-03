@@ -7,7 +7,7 @@
 #include <QSharedPointer>
 #include <QString>
 
-#include "proto/beats.pb.h"
+#include "track/beat.h"
 #include "util/memory.h"
 #include "util/types.h"
 
@@ -24,7 +24,7 @@ class BeatIterator {
   public:
     virtual ~BeatIterator() {}
     virtual bool hasNext() const = 0;
-    virtual mixxx::track::io::Beat next() = 0;
+    virtual BeatPointer next() = 0;
 };
 
 // Beats is a pure abstract base class for BPM and beat management classes. It

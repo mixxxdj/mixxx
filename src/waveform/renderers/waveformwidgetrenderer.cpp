@@ -305,3 +305,19 @@ WaveformMarkPointer WaveformWidgetRenderer::getCueMarkAtPoint(QPoint point) cons
     }
     return nullptr;
 }
+
+BeatPointer WaveformWidgetRenderer::getBeatAtPoint(QPoint point) const {
+    for (const auto& pBeat : m_beatPositions.keys()) {
+        float position = m_beatPositions[pBeat];
+        if (getOrientation() == Qt::Horizontal) {
+            if (position - 5 < point.x() && point.x() < position + 5) {
+                return pBeat;
+            }
+        } else {
+            if (position - 5 < point.y() && point.y() < position + 5) {
+                return pBeat;
+            }
+        }
+    }
+    return nullptr;
+}

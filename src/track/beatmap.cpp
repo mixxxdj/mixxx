@@ -14,7 +14,6 @@
 #include "track/beatutils.h"
 #include "util/math.h"
 
-using mixxx::track::io::Beat;
 
 const int kFrameSize = 2;
 
@@ -43,12 +42,15 @@ class BeatMapIterator : public BeatIterator {
         }
     }
 
-    virtual bool hasNext() const {
+    virtual bool hasNext() const override {
         return m_currentBeat != m_endBeat;
     }
 
-    virtual Beat next() {
-        Beat beat = *m_currentBeat;
+    virtual BeatPointer next() override {
+        BeatPointer beat = BeatPointer(new Beat);
+        beat->set_frame_position(
+                m_currentBeat->frame_position());
+        beat->set_type(m_currentBeat->type());
         ++m_currentBeat;
         while (m_currentBeat != m_endBeat && !m_currentBeat->enabled()) {
             ++m_currentBeat;

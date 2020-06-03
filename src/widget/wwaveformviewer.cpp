@@ -157,6 +157,11 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
             }
         }
     }
+
+    auto beat = m_waveformWidget->getBeatAtPoint(event->pos());
+    if (beat) {
+        // Do beat type dependent actions.
+    }
 }
 
 void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/) {
