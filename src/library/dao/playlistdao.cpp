@@ -909,7 +909,7 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
                     QRandomGenerator::global()->generateDouble() *
 #else
-                    (qrand() / static_cast<double>(RAND_MAX + 1.0)) *
+                    (qrand() / (RAND_MAX + 1.0)) *
 #endif
                     newPositions.count());
 
