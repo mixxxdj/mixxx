@@ -685,7 +685,8 @@ void MixxxMainWindow::finalize() {
         qWarning() << "Central widget was not deleted by our sendPostedEvents trick.";
     }
 
-    // TODO(rryan): WMainMenuBar holds references to controls so we need to delete it
+    // TODO() Verify if this comment still applies:
+    // WMainMenuBar holds references to controls so we need to delete it
     // before MixxxMainWindow is destroyed. QMainWindow calls deleteLater() in
     // setMenuBar() but we need to delete it now so we can ask for
     // DeferredDelete events to be processed for it. Once Mixxx shutdown lives
@@ -695,6 +696,8 @@ void MixxxMainWindow::finalize() {
 
     QPointer<WMainMenuBar> pMenuBar = m_pMenuBar.toWeakRef();
     DEBUG_ASSERT(menuBar() == m_pMenuBar.get());
+    // We need to reset the parented pointer here that it does not become a
+    // dangling pinter after the object has been deleted.
     m_pMenuBar = nullptr;
     setMenuBar(nullptr);
     if (!pMenuBar.isNull()) {
