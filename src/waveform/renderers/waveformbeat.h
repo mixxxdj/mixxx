@@ -6,6 +6,13 @@
 
 using BeatType = mixxx::track::io::Type;
 
+enum Direction {
+    UP = 0,
+    DOWN,
+    LEFT,
+    RIGHT
+};
+
 class WaveformBeat {
   public:
     WaveformBeat();
@@ -24,6 +31,10 @@ class WaveformBeat {
     }
 
   private:
+    QPolygonF getEquilateralTriangle(float edgeLength,
+            QPointF baseMidPoint,
+            Direction pointingDirection) const;
+
     Qt::Orientation m_orientation;
     int m_position;
     int m_length;
