@@ -141,8 +141,7 @@ WTime {
 WKey,
 #DurationText,
 WBeatSpinBox,
-#spinBoxTransition,
-WLibrary QHeaderView {
+#spinBoxTransition {
   font-size: 13px;
 }
 
@@ -170,6 +169,24 @@ WEffectSelector QAbstractScrollArea,
 #FxButtonLabel {
   qproperty-alignment: 'AlignLeft | AlignVCenter';
 }
+
+
+#LibraryContainer QHeaderView {
+  /* use relative font size, adjusts with OS font size */
+  font-size: 1em;
+  line-height: 1.2em;
+  border-bottom: 1px solid #000;
+  }
+  #LibraryContainer QHeaderView::section {
+    height: 1.2em;
+    border: 0px;
+    padding: 0px 2px;
+  }
+  #LibraryContainer QHeaderView::up-arrow,
+  #LibraryContainer QHeaderView::down-arrow {
+    width: 0.8em;
+    padding: 0px 3px;
+    }
 
 
 /* This does NOT style the cue labels in the overview

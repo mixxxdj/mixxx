@@ -1967,32 +1967,25 @@ WCueMenuPopup QPushButton:focus {
 
 
 /*********** table header styles *********************************/
+
 #LibraryContainer QHeaderView {
-  font-size: 13px/15px;
   color: #bbb;
   border-bottom: 1px solid #000;
   }
-#LibraryContainer QHeaderView,
-#LibraryContainer QHeaderView::section,
-#LibraryContainer QHeaderView::up-arrow,
-#LibraryContainer QHeaderView::down-arrow {
-  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 #222,
-    stop:1 #111);
-}
-  #LibraryContainer QHeaderView::section {
-    height: 18px;
-    border: 0px;
-    border-right: 1px solid #000;
-    border-bottom: 1px solid #000;
-    padding: 0px 2px;
-  }
-
+  #LibraryContainer QHeaderView,
+  #LibraryContainer QHeaderView::section,
   #LibraryContainer QHeaderView::up-arrow,
   #LibraryContainer QHeaderView::down-arrow {
-    width: 12px;
-    padding-left: 3px;
-    padding-right: 3px;
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+      stop:0 #222,
+      stop:1 #111);
+  }
+  #LibraryContainer QHeaderView::section {
+    border-right: 1px solid #000;
+    border-bottom: 1px solid #000;
+  }
+  #LibraryContainer QHeaderView::up-arrow,
+  #LibraryContainer QHeaderView::down-arrow {
     border-right: 1px solid #000;
     /* gradient colors should match those of QHeaderView gradient,
       with a little transparency added to not cut off the header label */
