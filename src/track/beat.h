@@ -17,6 +17,7 @@ class Beat : public mixxx::track::io::Beat {
     }
 
     void init(const mixxx::track::io::Beat& protoBeat);
+    float sample_position();
 
     bool operator<(const Beat& compBeat) const {
         return frame_position() < compBeat.frame_position();

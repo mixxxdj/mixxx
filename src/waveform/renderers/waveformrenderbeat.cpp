@@ -82,8 +82,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     while (it->hasNext()) {
         auto beat = it->next();
-        // TODO: Wrap into a utility function/class to convert frame to sample
-        double beatPosition = beat->frame_position() * 2;
+        double beatPosition = beat->sample_position();
         double xBeatPoint =
                 m_waveformRenderer->transformSamplePositionInRendererWorld(beatPosition);
 
