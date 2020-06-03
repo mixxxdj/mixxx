@@ -645,7 +645,7 @@ void SoundManager::registerInput(AudioInput input, AudioDestination *dest) {
         qDebug() << "WARNING: AudioInput already registered!";
     }
 
-    m_registeredDestinations.insertMulti(input, dest);
+    m_registeredDestinations.insert(input, dest);
 
     emit inputRegistered(input, dest);
 }

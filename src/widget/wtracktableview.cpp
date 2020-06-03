@@ -1,7 +1,6 @@
 #include "widget/wtracktableview.h"
 
 #include <QDrag>
-#include <QLinkedList>
 #include <QModelIndex>
 #include <QScrollBar>
 #include <QShortcut>
@@ -812,12 +811,11 @@ void WTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
     }
 
     for (const auto& trackId : trackIds) {
-        const QLinkedList<int> gts = pTrackModel->getTrackRows(trackId);
+        const auto gts = pTrackModel->getTrackRows(trackId);
 
-        QLinkedList<int>::const_iterator i;
-        for (i = gts.constBegin(); i != gts.constEnd(); ++i) {
-            pSelectionModel->select(model()->index(*i, 0),
-                                    QItemSelectionModel::Select | QItemSelectionModel::Rows);
+        for (int trackRow : gts) {
+            pSelectionModel->select(model()->index(trackRow, 0),
+                    QItemSelectionModel::Select | QItemSelectionModel::Rows);
         }
     }
 }
@@ -868,7 +866,7 @@ void WTrackTableView::doSortByColumn(int headerSection, Qt::SortOrder sortOrder)
         // the TrackModel. This will allow the playlist table model to use the
         // table index as the unique id instead of this code stupidly using
         // trackid.
-        QLinkedList<int> rows = trackModel->getTrackRows(trackId);
+        const auto rows = trackModel->getTrackRows(trackId);
         for (int row : rows) {
             // Restore sort order by rows, so the following commands will act as expected
             selectedRows.insert(row, 0);
