@@ -61,12 +61,12 @@ class PlayerInfo : public QObject {
     };
 
     void clearControlCache();
-    void timerEvent(QTimerEvent* pTimerEvent);
+    void timerEvent(QTimerEvent* pTimerEvent) override;
     void updateCurrentPlayingDeck();
     DeckControls* getDeckControls(int i);
 
     PlayerInfo();
-    virtual ~PlayerInfo();
+    ~PlayerInfo() override;
 
     mutable QMutex m_mutex;
     ControlProxy* m_pCOxfader;
