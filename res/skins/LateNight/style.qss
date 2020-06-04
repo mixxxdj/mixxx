@@ -610,7 +610,7 @@ WEffectSelector {
 
 #PreviewTitleEjectRow {
   }
-  #PreviewDeckText {
+  #PreviewDeckTextBox {
     qproperty-layoutAlignment: 'AlignLeft | AlignTop';
     }
     #PreviewLabel { /* Placeholder */

@@ -273,9 +273,10 @@ WLibrary {
 #MicAuxRack,
 #SamplerRow,
 #LibExpandBox,
-#SearchLineBox {
+#SearchLineBox,
+#PreviewDeck {
   margin-bottom: 3px;
-  }
+}
 
 #Deck1, #DeckMini1,
 #Deck3, #DeckMini3,
@@ -318,6 +319,10 @@ WLibrary {
 
 #MicRack, #AuxRack {
   qproperty-layoutSpacing: 3;
+}
+
+#PreviewDeck {
+  margin-right: 3px;
 }
 
 #SkinSettingsContainer {
@@ -519,35 +524,31 @@ WBeatSpinBox,
 #LibraryBPMSpinBox  {
   selection-color: #000;
   selection-background-color: #d2d2d2;
+}
+WBeatSpinBox,
+#spinBoxTransition {
+  border-width: 3px 19px 2px 3px;
+  border-image: url(skin:/palemoon/buttons/spinbox_embedded_border.svg) 3 19 2 3;
+  margin: 1px 0px 1px 1px;
+  padding: 0px -17px 2px 1px;
+  background-color: #0a0a0a;
+}
+WBeatSpinBox {
+  margin: 1px 0px 1px 1px;
+  padding: 0px -17px 2px 1px;
+  background-color: #0a0a0a;
+}
+#spinBoxTransition {
+  width: 24px;
+  height: 19px;
+  padding: 0px -15px 0px 0px;
+  margin: 0px 2px 3px 5px;
   }
-  WBeatSpinBox,
-  #spinBoxTransition {
-    border-width: 3px 19px 2px 3px;
-    border-image: url(skin:/palemoon/buttons/spinbox_embedded_border.svg) 3 19 2 3;
-    margin: 1px 0px 1px 1px;
-    padding: 0px -17px 2px 1px;
-    background-color: #0a0a0a;
-    }
-    WBeatSpinBox:focus,
-    #spinBoxTransition:focus {
-      border-image: url(skin:/palemoon/buttons/spinbox_embedded_border_focus_blue.svg) 3 19 2 3;
-      background-color: #000;
-    }
-  WBeatSpinBox {
-    margin: 1px 0px 1px 1px;
-    padding: 0px -17px 2px 1px;
-    background-color: #0a0a0a;
+  WBeatSpinBox:focus,
+  #spinBoxTransition:focus {
+    border-image: url(skin:/palemoon/buttons/spinbox_embedded_border_focus_blue.svg) 3 19 2 3;
+    background-color: #000;
   }
-  #spinBoxTransition {
-    width: 24px;
-    height: 19px;
-    padding: 0px -15px 0px 0px;
-    margin: 0px 2px 3px 5px;
-  } /*
-  WBeatSpinBox:hover,
-  #spinBoxTransition:hover {
-    background-color: #0a0a0a;
-  } */
   WBeatSpinBox:focus,
   #spinBoxTransition:focus {
     background-color: #000;
@@ -940,48 +941,32 @@ WPushButton#FxSuperLinkInvertButton {
 
 
 /************** PreviewDeck ***************************************************/
+
 #PreviewDeck {
-  padding: 1px 1px 0x 1px;
-  margin: 0px 3px 3px 0px;
-}
-
-#PreviewDeckLeftPart,
-#PreviewDeckRightPart {
-  margin-bottom: 1px;
-}
-
-#PreviewTitleEjectRow {
+  padding: 2px 1px;
   }
-  #PreviewDeckText {
-    padding: 0px;
+
+  #PreviewDeckTextBox {
     }
     #PreviewLabel { /* Placeholder */
-      padding: 1px 3px 1px 2px;
-      margin-bottom: 1px;
+      padding-left: 2px;
     }
     #PreviewTitle {
-      margin: 2px 2px 2px 0px;
+      margin: 0px 2px 0px 0px;
     }
     #PreviewBPM {
-      padding: 4px 0px 2px 2px;
+      padding-left: 2px;
     }
-  #PreviewEjectButton {
+    #PreviewEjectBox {
+      padding-bottom: 2px;
+    }
+
+  #PreviewDeck #OverviewBox {
+    margin: 1px 2px 0px 2px;
   }
-
-#PreviewPlayBox {
-  padding: 0px;
-  margin: 0px 1px 0px 0px;
-  border-width: 0px;
-}
-
-#PreviewVuMeter {
-  margin: 0px 0px 0px 2px;
-}
 
 
 /************** SkinSettings **************************************************/
-#SkinSettingsContainer {
-}
 
 #SkinSettings {
   padding: 3px;
@@ -1034,8 +1019,7 @@ WPushButton#FxSuperLinkInvertButton {
   #Deck2 #BpmText, #DeckCompact2 #BpmText, #DeckMini2 #BpmTextSmall,
 #MicAuxLabel,
 #SamplerTitle, #SamplerTitleMini,
-#PreviewDeckText, #PreviewTitle, #PreviewBPM,
-#CategoryLabel, #SkinSettingsLabelButton,
+#PreviewDeckTextBox, #PreviewTitle, #PreviewBPM,
 WSearchLineEdit,
 #LibraryBPMSpinBox,
 #LibraryBPMButton::item,
@@ -1070,7 +1054,11 @@ WTime {
     selection-color: #c2b3a5;
   }
   #Deck1 WStarRating, #DeckCompact1 WStarRating,
-  #Deck2 WStarRating, #DeckCompact2 WStarRating {
+  #Deck2 WStarRating, #DeckCompact2 WStarRating,
+  #SkinSettingsLabelButton, #CategoryLabel,
+  #SkinSettingsButton,
+  #DeckSizeButton,
+  #SkinSettingsText {
     color: #988f86;
   }
   #Deck1 #PlayPositionText, #DeckCompact1 #PlayPositionTextSmall, #DeckMini1 #PlayPositionTextSmall,
@@ -1358,6 +1346,7 @@ WPushButton#PlayDeckMini[displayValue="1"],
 #PlaySampler[displayValue="1"],
 #PlayPreview[displayValue="1"],
 WPushButton#PlayIndicator[displayValue="1"],
+#LibraryPreviewButton:checked,
 #CueDeck[displayValue="1"],
 WPushButton#Reverse[pressed="true"],
 #LoopActivate[value="1"], #Reloop[value="1"],
@@ -1532,8 +1521,7 @@ WPushButton#FxExpand[displayValue="0"],
 WPushButton#SamplerExpand[displayValue="0"],
 WPushButton#RecButton[displayValue="0"],
 WPushButton#RecButton[displayValue="1"],
-#RecDot,
-#LibraryPreviewButton {
+#RecDot {
   background-color: transparent;
 }
 
@@ -2168,25 +2156,13 @@ WLibrary,
   margin: 0px;
   padding: 0px;
   }
-  #LibraryContainer QTableView::indicator:hover {
-    border: 1px solid #888;
-  }
   #LibraryContainer QTableView::indicator:checked,
   #LibraryContainer QTableView::indicator:checked:selected {
-    image: url(skin:/palemoon/buttons/btn__lib_checkmark_blue.svg); /*
-    border: 1px solid #ff6600;  */
-    }
-    #LibraryContainer QTableView::indicator:checked:hover,
-    #LibraryContainer QTableView::indicator:selected:hover {  /*
-      border: 1px solid #aaa; */
+    image: url(skin:/palemoon/buttons/btn__lib_checkmark_blue.svg);
     }
   #LibraryContainer QTableView::indicator:unchecked {
     image: none;
     border: 1px solid rgba(151,151,151,128);
-    }
-    #LibraryContainer QTableView::indicator:unchecked:hover /*,
-    #LibraryContainer QTableView::indicator:show-decoration-selected*/ {
-      border: 1px solid #888;
     }
 
 /* Table cell in edit mode */
@@ -2211,20 +2187,22 @@ WLibrary QLineEdit,
 #LibraryBPMButton::item {
   }
 #LibraryBPMSpinBox {
-  border-left: 0px;
+  border-width: 1px 2px 1px 0px;
 }
 /* When activated, the left border of the spinbox shows an
   artefact of the inactive BPM value. */
 #LibraryBPMSpinBox::up-button,
 #LibraryBPMSpinBox::down-button {
-  background-color: #2c454f;
+  margin-right: 2px;
+  background-color: #19272d;
   }
   #LibraryBPMSpinBox::up-button {
-    image: url(skin:/palemoon/buttons/btn__lib_spinbox_up_white.svg) no-repeat;
+    image: url(skin:/palemoon/buttons/btn__lib_spinbox_up.svg) no-repeat center center;
     }
   #LibraryBPMSpinBox::down-button {
-    image: url(skin:/palemoon/buttons/btn__lib_spinbox_down_white.svg) no-repeat;
+    image: url(skin:/palemoon/buttons/btn__lib_spinbox_down.svg) no-repeat center center;
     }
+
 /* remove OS focus indicator from BPM cell */
 WLibrary QCheckBox,
 #LibraryBPMButton::item:selected,
@@ -2240,19 +2218,10 @@ WCueMenuPopup QPushButton:focus {
   border: 1px solid transparent;
   }
   #LibraryPreviewButton:!checked {
-    image: url(skin:/palemoon/buttons/btn__lib_preview_play_grey.svg);
-    }
-    #LibraryPreviewButton:!checked:hover {
-      border: 1px solid #214554;
-      background: #0f0f0f;
+    image: url(skin:/palemoon/buttons/btn__lib_preview_play.svg);
     }
   #LibraryPreviewButton:checked {
     image: url(skin:/palemoon/buttons/btn__lib_preview_pause.svg);
-    background-color: #000;
-    border: 1px solid #214554;
-    }
-    #LibraryPreviewButton:checked:hover {
-      border: 1px solid #888;
     }
 
 

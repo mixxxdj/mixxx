@@ -2,7 +2,6 @@
   <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
 
   <WidgetGroup>
-    <ObjectName>DeckContainer</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
@@ -216,7 +215,7 @@
             </Children>
           </WidgetGroup>
         </Children>
-      </WidgetGroup><!-- DeckMini -->
+      </WidgetGroup><!-- DeckMiniN -->
     </Children>
   </WidgetGroup>
 </Template>

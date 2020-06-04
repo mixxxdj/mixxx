@@ -1,9 +1,9 @@
 <Template>
   <SetVariable name="Group">[PreviewDeck1]</SetVariable>
   <SetVariable name="Type">preview</SetVariable>
-  <!-- This outer widget group makes the PreviewDeck borders work correctly -->
+
+  <!-- This wrapper makes the PreviewDeck borders work correctly -->
   <WidgetGroup>
-    <ObjectName>DeckContainer</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
@@ -11,17 +11,16 @@
       <WidgetGroup>
         <ObjectName>PreviewDeck</ObjectName>
         <Layout>horizontal</Layout>
-        <Size>100min,66f</Size>
+        <SizePolicy>min,min</SizePolicy>
+        <MinimumSize>100,</MinimumSize>
         <Children>
 
-          <!-- PreviewDeck left: Play, text, overview -->
           <WidgetGroup>
             <ObjectName>PreviewDeckLeftPart</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
-            <MinimumSize>,40</MinimumSize>
             <Children>
-              <!-- Row 1 PreviewTitleEjectRow -->
+
               <WidgetGroup>
                 <ObjectName>PreviewTitleEjectRow</ObjectName>
                 <Layout>horizontal</Layout>
@@ -29,7 +28,7 @@
                 <Children>
 
                   <WidgetGroup>
-                    <ObjectName>PreviewDeckText</ObjectName>
+                    <ObjectName>PreviewDeckTextBoxBox</ObjectName>
                     <Layout>stacked</Layout>
                     <SizePolicy>i,min</SizePolicy>
                     <Children>
@@ -40,14 +39,14 @@
                           <Text>
                             <ObjectName>PreviewTitle</ObjectName>
                             <TooltipId>text</TooltipId>
-                            <SizePolicy>me,min</SizePolicy>
+                            <Size>0me,20f</Size>
                             <Group><Variable name="Group"/></Group>
                             <Elide>right</Elide>
                           </Text>
                           <Number>
                             <ObjectName>PreviewBPM</ObjectName>
                             <TooltipId>visual_bpm</TooltipId>
-                            <Size>45f,21f</Size>
+                            <Size>45f,20f</Size>
                             <Group><Variable name="Group"/></Group>
                             <!--CSS alignments not respected, bug lp:605530 -->
                             <Alignment>right</Alignment>
@@ -61,10 +60,11 @@
                           </Number>
                         </Children>
                       </WidgetGroup>
-                      <Label><!-- "Preview" label when preview deck is empty -->
+                      <!-- "Preview" label when preview deck is empty.
+                        It's underneath so the empty title is still drag'n'drop target -->
+                      <Label>
                         <ObjectName>PreviewLabel</ObjectName>
-                        <TooltipId>text</TooltipId>
-                        <SizePolicy>min,min</SizePolicy>
+                        <Size>0me,20f</Size>
                         <Text>Preview</Text>
                         <Connection>
                           <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
@@ -73,10 +73,10 @@
                         </Connection>
                       </Label>
                     </Children>
-                  </WidgetGroup>
+                  </WidgetGroup><!-- PreviewDeckTextBox -->
 
                   <WidgetGroup>
-                    <ObjectName>PreviewEjectButton</ObjectName>
+                    <ObjectName>PreviewEjectBox</ObjectName>
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
@@ -88,11 +88,14 @@
                         <SetVariable name="Size">21f,18f</SetVariable>
                       </Template>
                     </Children>
-                  </WidgetGroup>
+                    <Connection>
+                      <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup><!-- PreviewEjectBox -->
                 </Children>
-              </WidgetGroup><!-- Row 1 PreviewTitleEjectRow -->
+              </WidgetGroup><!-- PreviewTitleEjectRow -->
 
-              <!-- Row 2 PreviewPlayOverview -->
               <WidgetGroup>
                 <ObjectName>PreviewPlayOverview</ObjectName>
                 <Layout>horizontal</Layout>
@@ -114,12 +117,12 @@
                         <SetVariable name="ConfigKeyDisp"><Variable name="Group"/>,play_indicator</SetVariable>
                       </Template>
                     </Children>
-                  </WidgetGroup>
+                  </WidgetGroup><!-- PreviewPlayBox -->
 
                   <WidgetGroup>
                     <ObjectName>OverviewBox</ObjectName>
                     <Layout>vertical</Layout>
-                    <Size>0me,32f</Size>
+                    <Size>0me,34f</Size>
                     <Children>
                       <Template src="skin:/decks/overview.xml">
                         <SetVariable name="OverviewFontSize"><Variable name="OverviewFontSizePreview"/></SetVariable>
@@ -129,40 +132,34 @@
                       <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
                       <BindProperty>highlight</BindProperty>
                     </Connection>
-                  </WidgetGroup>
+                  </WidgetGroup><!-- OverviewBox -->
                 </Children>
-              </WidgetGroup><!-- Row 2 PreviewPlayOverview -->
+              </WidgetGroup><!-- PreviewPlayOverview -->
             </Children>
-          </WidgetGroup><!-- PreviewDeck left: Play, text, overview -->
+          </WidgetGroup><!-- PreviewDeckLeftPart -->
 
-          <!-- PreviewDeck right: VU, pregain -->
           <WidgetGroup>
-            <ObjectName>PreviewDeckRightPart</ObjectName>
-            <Layout>horizontal</Layout>
+            <ObjectName>PreviewVuMeter</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
             <Children>
-              <WidgetGroup>
-                <ObjectName>PreviewVuMeter</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>min,min</SizePolicy>
-                <Children>
-                  <Template src="skin:/mixer/vumeter_single.xml">
-                    <SetVariable name="ChannelType">preview</SetVariable>
-                    <SetVariable name="VuSize">small</SetVariable>
-                  </Template>
-                </Children>
-              </WidgetGroup>
-
-              <SliderComposed>
-                <TooltipId>pregain</TooltipId>
-                <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_volume_previewdeck.svg</Handle>
-                <Slider>skin:/<Variable name="SliderScheme"/>/sliders/slider_volume_previewdeck.svg</Slider>
-                <Horizontal>false</Horizontal>
-                <Connection>
-                  <ConfigKey><Variable name="Group"/>,pregain</ConfigKey>
-                </Connection>
-              </SliderComposed>
+              <Template src="skin:/mixer/vumeter_single.xml">
+                <SetVariable name="ChannelType">preview</SetVariable>
+                <SetVariable name="VuSize">small</SetVariable>
+              </Template>
             </Children>
-          </WidgetGroup><!-- PreviewDeck right: VU, pregain -->
+          </WidgetGroup>
+
+          <SliderComposed>
+            <TooltipId>pregain</TooltipId>
+            <Size>10f,54f</Size>
+            <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_volume_previewdeck.svg</Handle>
+            <Slider>skin:/<Variable name="SliderScheme"/>/sliders/slider_volume_previewdeck.svg</Slider>
+            <Horizontal>false</Horizontal>
+            <Connection>
+              <ConfigKey><Variable name="Group"/>,pregain</ConfigKey>
+            </Connection>
+          </SliderComposed>
 
         </Children>
       </WidgetGroup><!-- PreviewDeck -->

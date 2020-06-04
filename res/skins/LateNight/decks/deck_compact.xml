@@ -1,6 +1,5 @@
 <Template>
   <WidgetGroup>
-    <ObjectName>DeckContainer<Variable name="ChanNum" /></ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
@@ -92,5 +91,5 @@
       </WidgetGroup><!-- DeckCompactN -->
 
     </Children>
-  </WidgetGroup><!-- DeckContainer -->
+  </WidgetGroup>
 </Template>
