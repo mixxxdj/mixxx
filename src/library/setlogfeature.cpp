@@ -288,7 +288,15 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
     if (currentPlayingTrackId.isValid()) {
         // Remove the track from the recent tracks list if it's present and put
         // at the front of the list.
-        track_played_recently = m_recentTracks.removeOne(currentPlayingTrackId);
+        auto it = std::find(std::begin(m_recentTracks),
+                std::end(m_recentTracks),
+                currentPlayingTrackId);
+        if (it == std::end(m_recentTracks)) {
+            track_played_recently = false;
+        } else {
+            track_played_recently = true;
+            m_recentTracks.erase(it);
+        }
         m_recentTracks.push_front(currentPlayingTrackId);
 
         // Keep a window of 6 tracks (inspired by 2 decks, 4 samplers)

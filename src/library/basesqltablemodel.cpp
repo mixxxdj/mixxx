@@ -728,8 +728,8 @@ void BaseSqlTableModel::tracksChanged(QSet<TrackId> trackIds) {
 
     const int numColumns = columnCount();
     for (const auto& trackId : trackIds) {
-        QLinkedList<int> rows = getTrackRows(trackId);
-        foreach (int row, rows) {
+        const auto rows = getTrackRows(trackId);
+        for (int row : rows) {
             //qDebug() << "Row in this result set was updated. Signalling update. track:" << trackId << "row:" << row;
             QModelIndex topLeft = index(row, 0);
             QModelIndex bottomRight = index(row, numColumns);
