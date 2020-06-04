@@ -49,7 +49,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     TrackId getTrackId(const QModelIndex& index) const override;
     QString getTrackLocation(const QModelIndex& index) const override;
 
-    const QLinkedList<int> getTrackRows(TrackId trackId) const override {
+    const QVector<int> getTrackRows(TrackId trackId) const override {
         return m_trackIdToRows.value(trackId);
     }
 
@@ -136,7 +136,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
         }
     };
 
-    typedef QHash<TrackId, QLinkedList<int>> TrackId2Rows;
+    typedef QHash<TrackId, QVector<int>> TrackId2Rows;
 
     void clearRows();
     void replaceRows(

@@ -11,8 +11,8 @@ Qt::Alignment decodeAlignmentFlags(QString alignString, Qt::Alignment defaultFla
     QStringList stringFlags = alignString.toLower()
             .split("|", QString::SkipEmptyParts);
 
-    Qt::Alignment hflags = 0L;
-    Qt::Alignment vflags = 0L;
+    Qt::Alignment hflags;
+    Qt::Alignment vflags;
 
     for (auto stringFlag : stringFlags) {
         if (stringFlag == "center") {
