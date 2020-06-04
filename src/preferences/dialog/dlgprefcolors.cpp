@@ -45,7 +45,7 @@ DlgPrefColors::DlgPrefColors(
     connect(comboBoxHotcueColors,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
-            &DlgPrefColors::slotHotcuePaletteChanged);
+            &DlgPrefColors::slotHotcuePaletteIndexChanged);
 
     connect(pushButtonEditHotcuePalette,
             &QPushButton::clicked,
@@ -107,7 +107,7 @@ void DlgPrefColors::slotUpdate() {
             m_colorPaletteSettings.getHotcueColorPalette();
     comboBoxHotcueColors->setCurrentText(
             hotcuePalette.getName());
-    slotHotcuePaletteChanged(comboBoxHotcueColors->currentIndex());
+    slotHotcuePaletteIndexChanged(comboBoxHotcueColors->currentIndex());
 
     bool autoHotcueColors = m_pConfig->getValue(kAutoHotcueColorsConfigKey, false);
     if (autoHotcueColors) {
@@ -251,7 +251,7 @@ QIcon DlgPrefColors::drawHotcueColorByPaletteIcon(const QString& paletteName) {
     return QIcon();
 }
 
-void DlgPrefColors::slotHotcuePaletteChanged(int paletteIndex) {
+void DlgPrefColors::slotHotcuePaletteIndexChanged(int paletteIndex) {
     QString paletteName = comboBoxHotcueColors->itemText(paletteIndex);
     ColorPalette palette =
             m_colorPaletteSettings.getHotcueColorPalette(paletteName);
