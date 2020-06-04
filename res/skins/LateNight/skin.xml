@@ -144,7 +144,6 @@ CHECK! -->
       <SetVariable name="SpinnySizeMiniDeck">54f,54f</SetVariable>
 
       <!-- black lines & spacers to separate widgets -->
-      <SetVariable name="SeparatorWidthDecksBottom">0f</SetVariable>
       <SetVariable name="SeparatorWidthRate">2f</SetVariable>
       <SetVariable name="SeparatorWidthMixer">0f</SetVariable>
       <SetVariable name="SeparatorWidthFxV">4f</SetVariable>
@@ -236,7 +235,6 @@ CHECK! -->
       <SetVariable name="SpinnySizeBigCompact">112f,112f</SetVariable>
       <SetVariable name="SpinnySizeMiniDeck">52f,52f</SetVariable>
 
-      <SetVariable name="SeparatorWidthDecksBottom">2f</SetVariable>
       <SetVariable name="SeparatorWidthRate">0f</SetVariable>
       <SetVariable name="SeparatorWidthMixer">0f</SetVariable>
       <SetVariable name="SeparatorWidthFxV">6f</SetVariable>

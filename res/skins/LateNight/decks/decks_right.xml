@@ -34,16 +34,6 @@
             </Connection>
           </WidgetGroup>
 
-          <!-- this needs to be an extra WidgetGroup because 'highlight' property
-              is only applied to the state active when the skin is loaded -->
-          <WidgetGroup>
-            <Size>0me,<Variable name="SeparatorWidthDecksBottom"/></Size>
-            <Connection>
-              <ConfigKey>[Master],show_mixer</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-
         </Children>
       </WidgetGroup>
 
