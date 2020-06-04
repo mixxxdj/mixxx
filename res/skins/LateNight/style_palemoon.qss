@@ -194,56 +194,51 @@ WLibrary {
   border-top-right-radius: 0px;
 }
 
-#SeparatorV,
-#SeparatorFxV,
-#SeparatorMixerV,
-#SeparatorH,
-#SeparatorFxH,
-#SeparatorMixerH,
+
+/************ separator lines within decks, samplers etc. *********************/
+
+#DeckRateSeparator,
+#MasterMixerSeparator,
+#MasterHeadphoneSeparator,
+#FxSlotSeparatorV,
+#FxSlotSeparatorH,
 #SeparatorToolbar {
   /* needs a background color to paint the borders */
   background-color: transparent;
   }
-  #SeparatorV,
-  #SeparatorFxV /*,
-  #SeparatorToolbar*/ {
+  #DeckRateSeparator,
+  #FxSlotSeparatorV {
+    min-width: 0px;
+    max-width: 0px;
     border-left: 1px solid #0c0c0c;
     border-right: 1px solid #333;
   }
-  #SeparatorMixerV {
+  #MasterMixerSeparator {
     border-left: 1px solid #0c0c0c;
     border-right: 1px solid #222;
   }
-  #SeparatorFxV {
-    margin: 1px 0px 1px 2px;
+  #FxSlotSeparatorV {
+    margin: 0px 0px 0px 2px;
   }
 
-  #SeparatorH,
-  #SeparatorFxH {
-    border-top: 1px solid #0c0c0c;
-    border-bottom: 1px solid #333;
-  }
-  #SeparatorMixerH {
-    border-top: 1px solid #000;
-    border-bottom: 1px solid #222;
-    /* needs a background color to paint the borders */
-    background-color: transparent;
-  }
-  #SeparatorFxH {
-    margin: 0px 2px;
-  }
-  #SeparatorToolbar {
-    margin: 0px 5px;
-  }
-  /* dynamic bottom border in #DeckRow1_ */
-  #ExpandingBottomBorder {
-    /* border shows up if we set a bg color... */
-    background-color: transparent;
-    border-bottom: 1px solid #0c0c0c;
-  }
+#FxSlotSeparatorH {
+  min-height: 0px;
+  max-height: 0px;
+  border-top: 1px solid #0c0c0c;
+  border-bottom: 1px solid #333;
+}
 
+#ToolbarSeparator {
+  margin: 0px 5px;
+}
 
-/************ separator lines within decks, samplers etc. *********************/
+/* dynamic bottom border in #DeckRow1_ */
+#ExpandingBottomBorder {
+  /* border shows up if we set a bg color... */
+  background-color: transparent;
+  border-bottom: 1px solid #0c0c0c;
+}
+
 #DeckSettingsContainer, #DeckSettingsContainerCompact,
 #PreviewPlayBox,
 #SamplerTitle, #SamplerPlay, #SamplerSettings,
@@ -374,16 +369,39 @@ WLibrary {
   }
 
 #SpinnyCoverContainerSmall{
+  min-width: 69px;
+  max-width: 69px;
+  min-height: 69px;
+  max-height: 69px;
   padding: 0px 1px 0px 0px;
   }
-  #SpinnyCoverContainerBig{
-    padding: 1px 1px 0px 0px;
+  #SpinnyCoverContainerSmallCompact {
+    min-width: 63px;
+    max-width: 63px;
+    min-height: 63px;
+    max-height: 63px;
+    padding: 0px 1px 1px 0px;
+  }
+#SpinnyCoverContainerBig{
+  min-width: 115px;
+  max-width: 115px;
+  min-height: 115px;
+  max-height: 115px;
+  padding: 1px 1px 0px 0px;
   }
   #SpinnyCoverContainerBigCompact {
+    min-width: 115px;
+    max-width: 115px;
+    min-height: 115px;
+    max-height: 115px;
     padding: 0px 1px 0px 0px;
   }
-  #SpinnyCoverContainerMiniDeck {
-  }
+#SpinnyCoverContainerMiniDeck {
+  min-width: 54px;
+  max-width: 54px;
+  min-height: 54px;
+  max-height: 54px;
+}
 
   /* Replacement for #DeckMiniN padding */
   #PlayCueSmall {
@@ -454,7 +472,7 @@ WLibrary {
     }
 
 #DeckRow_5_LoopCuesTransport {
-  margin-top: 2px;
+  margin-top: 1px;
 }
 #DeckRow_5_Compact {
 }
@@ -700,7 +718,8 @@ WBeatSpinBox,
   }
 
 #FxSlotsCollapsed {
-  padding: 1px 0px 2px 0px;
+  padding: 0px 0px 0px 0px;
+  border-right: 0px;
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
 }

@@ -15,7 +15,7 @@
       </Template>
 
       <WidgetGroup>
-        <ObjectName>SeparatorToolbar</ObjectName>
+        <ObjectName>ToolbarSeparator</ObjectName>
         <Size>12f,9min</Size>
       </WidgetGroup>
 
@@ -260,7 +260,7 @@
       </PushButton>
 
       <WidgetGroup>
-        <ObjectName>SeparatorToolbar</ObjectName>
+        <ObjectName>ToolbarSeparator</ObjectName>
         <Size>12f,9min</Size>
       </WidgetGroup>
 

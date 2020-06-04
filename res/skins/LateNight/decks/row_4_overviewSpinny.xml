@@ -18,8 +18,8 @@
             <Children>
               <WidgetGroup>
                 <ObjectName>SpinnyCoverContainerSmall</ObjectName>
-                <Size><Variable name="SpinnySizeSmall"/></Size>
                 <Layout>horizontal</Layout>
+                <SizePolicy>f,f</SizePolicy>
                 <Children>
                   <SingletonContainer>
                     <ObjectName>SpinnyCoverart<Variable name="ChanNum"/></ObjectName>
@@ -42,7 +42,7 @@
 
       <WidgetGroup>
         <ObjectName>OverviewBox</ObjectName>
-        <Size>min,64f</Size>
+        <Size>min,69f</Size>
         <Layout>horizontal</Layout>
         <Children>
           <SingletonContainer>

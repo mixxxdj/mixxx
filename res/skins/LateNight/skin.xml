@@ -132,23 +132,6 @@
       <!-- Buttons in recessed regions: transport row, mic/aux units... -->
       <SetVariable name="SubRegion_BtnType">embedded</SetVariable>
 
-      <!-- Some widget sizes that are scheme specific to align them with sorrounding
-          elements. -->
-      <!-- Spinnies inside need 1:1 aspect ratio to get painted circular.
-          This sets the size of the parent container which might have padding,
-          margin or a border which need to be considered.
-CHECK! -->
-      <SetVariable name="SpinnySizeSmall">65f,64f</SetVariable>
-      <SetVariable name="SpinnySizeBig">116f,116f</SetVariable>
-      <SetVariable name="SpinnySizeBigCompact">117f,116f</SetVariable>
-      <SetVariable name="SpinnySizeMiniDeck">54f,54f</SetVariable>
-
-      <!-- black lines & spacers to separate widgets -->
-      <SetVariable name="SeparatorWidthRate">2f</SetVariable>
-      <SetVariable name="SeparatorWidthMixer">0f</SetVariable>
-      <SetVariable name="SeparatorWidthFxV">4f</SetVariable>
-      <SetVariable name="SeparatorWidthFxH">2f</SetVariable>
-
       <!-- Knob settings -->
       <SetVariable name="PotiMinAngle">-130</SetVariable>
       <SetVariable name="PotiMaxAngle">130</SetVariable>
@@ -228,17 +211,6 @@ CHECK! -->
 
       <SetVariable name="TopRegion_BtnType">embedded</SetVariable>
       <SetVariable name="SubRegion_BtnType">elevated</SetVariable>
-
-      <!-- CHECK! -->
-      <SetVariable name="SpinnySizeSmall">64f,64f</SetVariable>
-      <SetVariable name="SpinnySizeBig">111f,112f</SetVariable>
-      <SetVariable name="SpinnySizeBigCompact">112f,112f</SetVariable>
-      <SetVariable name="SpinnySizeMiniDeck">52f,52f</SetVariable>
-
-      <SetVariable name="SeparatorWidthRate">0f</SetVariable>
-      <SetVariable name="SeparatorWidthMixer">0f</SetVariable>
-      <SetVariable name="SeparatorWidthFxV">6f</SetVariable>
-      <SetVariable name="SeparatorWidthFxH">1f</SetVariable>
 
       <!-- Knob settings -->
       <SetVariable name="PotiMinAngle">-135</SetVariable>

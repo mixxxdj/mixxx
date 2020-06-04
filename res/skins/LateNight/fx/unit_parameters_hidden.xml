@@ -34,8 +34,10 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>SeparatorFxV</ObjectName>
-            <Size><Variable name="SeparatorWidthFxV"/>,0me</Size>
+            <ObjectName>FxSlotSeparatorV</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children/>
           </WidgetGroup>
 
           <WidgetGroup>
@@ -50,8 +52,9 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>SeparatorFxV</ObjectName>
-            <Size><Variable name="SeparatorWidthFxV"/>,0me</Size>
+            <ObjectName>FxSlotSeparatorV</ObjectName>
+            <Layout>horizontal</Layout>
+            <Children/>
           </WidgetGroup>
 
           <WidgetGroup>
@@ -66,8 +69,9 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>SeparatorFxV</ObjectName>
-            <Size><Variable name="SeparatorWidthFxV"/>,0me</Size>
+            <ObjectName>FxSlotSeparatorV</ObjectName>
+            <Layout>horizontal</Layout>
+            <Children/>
           </WidgetGroup>
         </Children>
       </WidgetGroup><!-- FxSlotsCollapsed -->

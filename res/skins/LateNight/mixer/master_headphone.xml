@@ -11,10 +11,12 @@
     <SizePolicy>max,min</SizePolicy>
     <Layout>horizontal</Layout>
     <Children>
+
       <WidgetGroup>
-        <ObjectName>SeparatorV</ObjectName>
-        <Size><Variable name="SeparatorWidthMixer"/>,0me</Size>
-       </WidgetGroup>
+        <ObjectName>MasterMixerSeparator</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children/>
+      </WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>MixerMasterHeadphone</ObjectName>
@@ -142,8 +144,9 @@
           </WidgetGroup><!-- MasterControls -->
 
           <WidgetGroup>
-            <ObjectName>SeparatorH</ObjectName>
-            <Size>0min,<Variable name="SeparatorWidthMixer"/></Size>
+            <ObjectName>MasterHeadphoneSeparator</ObjectName>
+            <Layout>horizontal</Layout>
+            <Children/>
           </WidgetGroup>
 
           <WidgetGroup>

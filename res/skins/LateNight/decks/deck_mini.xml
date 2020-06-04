@@ -111,12 +111,12 @@
 
               <!-- Small spinny / cover art -->
               <WidgetGroup>
-                <Size><Variable name="SpinnySizeMiniDeck"/></Size>
                 <Layout>horizontal</Layout>
+                <SizePolicy>f,f</SizePolicy>
                 <Children>
                   <WidgetGroup>
                     <ObjectName>SpinnyCoverContainerMiniDeck</ObjectName>
-                    <SizePolicy>me,me</SizePolicy>
+                    <SizePolicy>f,f</SizePolicy>
                     <Layout>horizontal</Layout>
                     <Children>
                       <SingletonContainer>

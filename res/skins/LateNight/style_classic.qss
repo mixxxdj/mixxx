@@ -167,6 +167,7 @@ WSearchLineEdit,
 #ToolBar {
   padding: 1px 2px 0px 2px;
   }
+  #ToolBarSeparator {}
   #BatteryBox {
     margin-bottom: 1px;
   }
@@ -177,23 +178,22 @@ WSearchLineEdit,
     padding-bottom: 2px;
   }
 
-#SeparatorV,
-#SeparatorFxV {
-  /* needs a background color to paint the borders */
-  background-color: transparent;
-  }
-  #SeparatorFxV {
-    image: url(skin:/classic/style/fx_separator.png) repeat center center;
-    margin: 2px 0px;
-  }
-#SeparatorH,
-#SeparatorFxH {
-  /* needs a background color to paint the borders */
-  background-color: transparent;
-  }
-  #SeparatorFxH {
-    margin: 0px 2px;
-  }
+#DeckRateSeparator,
+#MasterMixerSeparator {
+  min-width: 0px;
+  max-width: 0px;
+}
+
+#FxSlotSeparatorV {
+  min-width: 2px;
+  max-width: 2px;
+  image: url(skin:/classic/style/fx_separator.png) repeat center center;
+  margin: 2px 0px;
+}
+#FxSlotSeparatorH {
+  min-height: 2px;
+  max-height: 2px;
+}
 
 WBeatSpinBox,
 #spinBoxTransition,
@@ -290,7 +290,7 @@ WLibrary,
 #MixerContainer,
 #FxUnit1,
 #FxUnit3,
-#FxRackFillerR,
+#FxRackFillerL,
 #MicRack, #AuxRack,
 #MicAuxRackFiller {
   margin-right: 2px;
@@ -387,17 +387,41 @@ WLibrary,
     padding: 0px 1px 0px 0px;
   }
 
-#SpinnyCoverContainerSmall{
+
+#SpinnyCoverContainerSmall {
+  min-width: 68px;
+  max-width: 68px;
+  min-height: 68px;
+  max-height: 68px;
   padding: 0px 1px 1px 0px;
   }
-  #SpinnyCoverContainerBig {
-    padding: 1px 1px 1px 0px;
-  }
-  #SpinnyCoverContainerBigCompact {
+  #SpinnyCoverContainerSmallCompact {
+    min-width: 63px;
+    max-width: 63px;
+    min-height: 63px;
+    max-height: 63px;
     padding: 0px 1px 1px 0px;
   }
-  #SpinnyCoverContainerMiniDeck {
+#SpinnyCoverContainerBig {
+  min-width: 115px;
+  max-width: 115px;
+  min-height: 115px;
+  max-height: 115px;
+  padding: 1px 1px 1px 0px;
   }
+  #SpinnyCoverContainerBigCompact {
+    min-width: 111px;
+    max-width: 111px;
+    min-height: 111px;
+    max-height: 111px;
+    padding: 0px 1px 1px 0px;
+  }
+#SpinnyCoverContainerMiniDeck {
+  min-width: 54px;
+  max-width: 54px;
+  min-height: 54px;
+  max-height: 54px;
+}
 
 #DeckRow_2_3_ArtistTitleTime {
   padding-left: 1px;
@@ -636,13 +660,14 @@ WLibrary,
     padding: 3px;
     margin-bottom: 2px;
   }
+  #MasterHeadphoneSeparator {
+    min-height: 2px;
+    max-height: 2px;
+  }
   #HeadphoneControls {
     padding: 3px;
   }
-  #MasterHeadphoneSeparator {
-    /* set the height of the separator gap */
-    padding-top: 2px;
-  }
+
 #VuMeterContainerCompactDeck1,
 #VuMeterContainerCompactDeck2,
 #VuMeterContainerCompactDeck3,
@@ -1729,7 +1754,7 @@ WPushButton#SamplerExpand[displayValue="0"],
 #ToolbarLogo {
   image: url(skin:/classic/style/mixxx_logo_small.svg) no-repeat center center;
 }
-#SeparatorToolbar {
+#ToolbarSeparator {
   image: url(skin:/classic/style/toolbar_separator.png) no-repeat center center;
   margin: 0px 3px;
 }

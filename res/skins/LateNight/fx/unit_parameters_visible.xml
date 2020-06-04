@@ -40,16 +40,17 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <Size>0me,<Variable name="SeparatorWidthFxH"/></Size>
+            <ObjectName></ObjectName>
             <Layout>horizontal</Layout>
             <Children>
               <WidgetGroup>
-                <ObjectName>SeparatorFxH</ObjectName>
-                <Size>0min,<Variable name="SeparatorWidthFxH"/></Size>
+                <ObjectName>FxSlotSeparatorH</ObjectName>
+                <Layout>horizontal</Layout>
+                <Children/>
               </WidgetGroup>
               <WidgetGroup>
-                <SizePolicy>me,me</SizePolicy>
-                <MaximumSize>205,</MaximumSize>
+                <SizePolicy>me,f</SizePolicy>
+                <MaximumSize>205,0</MaximumSize>
               </WidgetGroup>
             </Children>
           </WidgetGroup>
@@ -75,16 +76,17 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <Size>0me,<Variable name="SeparatorWidthFxH"/></Size>
+            <ObjectName></ObjectName>
             <Layout>horizontal</Layout>
             <Children>
               <WidgetGroup>
-                <ObjectName>SeparatorFxH</ObjectName>
-                <Size>0min,<Variable name="SeparatorWidthFxH"/></Size>
+                <ObjectName>FxSlotSeparatorH</ObjectName>
+                <Layout>horizontal</Layout>
+                <Children/>
               </WidgetGroup>
               <WidgetGroup>
-                <SizePolicy>me,me</SizePolicy>
-                <MaximumSize>205,</MaximumSize>
+                <SizePolicy>me,f</SizePolicy>
+                <MaximumSize>205,0</MaximumSize>
               </WidgetGroup>
             </Children>
           </WidgetGroup>

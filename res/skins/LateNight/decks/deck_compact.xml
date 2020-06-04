@@ -32,8 +32,8 @@
                         <Children>
                           <WidgetGroup>
                             <ObjectName>SpinnyCoverContainerBigCompact</ObjectName>
-                            <Size><Variable name="SpinnySizeBigCompact"/></Size>
                             <Layout>horizontal</Layout>
+                            <SizePolicy>f,f</SizePolicy>
                             <Children>
                               <SingletonContainer>
                                 <ObjectName>SpinnyCoverart<Variable name="ChanNum"/></ObjectName>
