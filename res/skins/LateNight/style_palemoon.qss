@@ -1465,8 +1465,9 @@ WPushButton#FxSuperLinkInvertButton[displayValue="0"] {
   background-color: #d09300;
 }
 
-#SpecialCueButton[value="1"] {
-  background-color: #2c5c9a;
+#SpecialCueButton[value="1"] {  /*
+  background-color: #2c5c9a;  */
+  background-color: #3166ab;
 }
 
 /* Red */
