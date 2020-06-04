@@ -1,6 +1,7 @@
 // ****************************************************************************
 // * Mixxx mapping script file for the Hercules DJControl Jogvision.
 // * Author: DJ Phatso, contributions by Kerrick Staley and David TV
+// * Version 1.15 (Jun 2020)
 // * Version 1.14 (Jun 2020)
 // * Version 1.13 (May 2020)
 // * Version 1.11 (May 2020)
@@ -15,6 +16,10 @@
 // * Version 1.1 (March 2019)
 // * Forum: https://www.mixxx.org/forums/viewtopic.php?f=7&t=12580
 // * Wiki: https://www.mixxx.org/wiki/doku.php/hercules_dj_control_jogvision
+//
+// Changes to v1.15
+// - Reset shift-"Loop ON", to do what Hercules wanted it to be: select FX2 for given channel. Now,
+//   the loop creation is done with "MODE"+"Loop ON" combo (here, MODE key works like "SHIFT" key ;)
 //
 // Changes to v1.14
 // - Better beat_active matching
@@ -101,8 +106,8 @@ if (beatActiveMode.match(/^(?:normal|reverse)$/g)) {
 var DJCJV = {};
 DJCJV.vinylModeActive = true;
 DJCJV.Channel = [];
-DJCJV.Channel["[Channel1]"] = {"central": 0x90, "deck": 0xB0, "beatPosition": 1, "rotation": 0x00, "n": 1, "onBeat": 0, "beatsPassed": 0, "shiftPressed": 0};
-DJCJV.Channel["[Channel2]"] = {"central": 0x91, "deck": 0xB1, "beatPosition": 1, "rotation": 0x00, "n": 2, "onBeat": 0, "beatsPassed": 0, "shiftPressed": 0};
+DJCJV.Channel["[Channel1]"] = {"central": 0x90, "deck": 0xB0, "beatPosition": 1, "rotation": 0x00, "n": 1, "onBeat": 0, "beatsPassed": 0, "shiftPressed": 0, "modePressed": 0};
+DJCJV.Channel["[Channel2]"] = {"central": 0x91, "deck": 0xB1, "beatPosition": 1, "rotation": 0x00, "n": 2, "onBeat": 0, "beatsPassed": 0, "shiftPressed": 0, "modePressed": 0};
 
 // ****************************************************************************
 // General functions
@@ -292,14 +297,23 @@ DJCJV.Filter = function(channel, control, value, status, group) {
 
 // Sniff decks' SHIFT presses and store them
 DJCJV.shiftKey = function(channel, control, value, status, group) {
-    DJCJV.Channel[group].shiftPressed = (value !== 127) ? 0 : 1;
+    DJCJV.Channel[group].shiftPressed = (value === 127);
+    return value;
+};
+
+// Sniff decks' MODE presses and store them
+DJCJV.modeKey = function(channel, control, value, status, group) {
+    DJCJV.Channel[group].modePressed = (value === 127);
     return value;
 };
 
 // Loop section
 // SHIFT + Loop ON creates a loop at given point
 DJCJV.beatloopActivate = function(channel, control, value, status, group) {
-    engine.setValue(group, "beatloop_activate", value === 0 ? 0 : 1);
+    if (!DJCJV.Channel[group].modePressed) {
+        return value;
+    }
+    engine.setValue(group, "beatloop_activate", (value !== 0));
 };
 
 // SHIFT+FX(Loop) Knob MOVES the existing loop one beat forward/backward

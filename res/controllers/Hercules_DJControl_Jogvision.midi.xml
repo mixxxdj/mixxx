@@ -16,6 +16,26 @@
     <controls>
       <control>
         <group>[Channel1]</group>
+        <key>DJCJV.modeKey</key>
+        <description>Deck A MODE key management</description>
+        <status>0x90</status>
+        <midino>0x57</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DJCJV.modeKey</key>
+        <description>Deck B MODE key management</description>
+        <status>0x91</status>
+        <midino>0x57</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
         <key>DJCJV.shiftKey</key>
         <description>Deck A Shift key management</description>
         <status>0x90</status>
@@ -199,7 +219,7 @@
         <key>DJCJV.beatloopActivate</key>
         <description>Beatloop activate button</description>
         <status>0x90</status>
-        <midino>0x09</midino>
+        <midino>0x01</midino>
         <options>
           <script-binding />
         </options>
@@ -663,7 +683,7 @@
         <key>DJCJV.beatloopActivate</key>
         <description>Beatloop activate button</description>
         <status>0x91</status>
-        <midino>0x09</midino>
+        <midino>0x01</midino>
         <options>
           <script-binding />
         </options>
