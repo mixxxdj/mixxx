@@ -43,7 +43,7 @@ DlgPrefColors::DlgPrefColors(
             &TrackDAO::slotDatabaseTracksChanged);
 
     connect(comboBoxHotcueColors,
-            QOverload<const QString&>::of(&QComboBox::currentIndexChanged),
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefColors::slotHotcuePaletteChanged);
 
@@ -107,7 +107,7 @@ void DlgPrefColors::slotUpdate() {
             m_colorPaletteSettings.getHotcueColorPalette();
     comboBoxHotcueColors->setCurrentText(
             hotcuePalette.getName());
-    slotHotcuePaletteChanged(hotcuePalette.getName());
+    slotHotcuePaletteChanged(comboBoxHotcueColors->currentIndex());
 
     bool autoHotcueColors = m_pConfig->getValue(kAutoHotcueColorsConfigKey, false);
     if (autoHotcueColors) {
@@ -251,7 +251,8 @@ QIcon DlgPrefColors::drawHotcueColorByPaletteIcon(const QString& paletteName) {
     return QIcon();
 }
 
-void DlgPrefColors::slotHotcuePaletteChanged(const QString& paletteName) {
+void DlgPrefColors::slotHotcuePaletteChanged(int paletteIndex) {
+    QString paletteName = comboBoxHotcueColors->itemText(paletteIndex);
     ColorPalette palette =
             m_colorPaletteSettings.getHotcueColorPalette(paletteName);
 
