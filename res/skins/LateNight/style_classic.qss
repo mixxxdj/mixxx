@@ -279,7 +279,7 @@ WLibrary,
 #FxRackFillerR,
 #FxRackFillerL,
 #MicAuxRack,
-#SamplerRack,
+#SamplerRow,
 #LibExpandBox,
 #SearchLineBox {
   margin-bottom: 4px;
@@ -287,39 +287,36 @@ WLibrary,
 
 #Deck1, #DeckMini1,
 #Deck3, #DeckMini3,
+#CompactDecksCenterSpacer,
 #MixerContainer,
 #FxUnit1,
 #FxUnit3,
 #FxRackFillerL,
-#MicRack, #AuxRack,
-#MicAuxRackFiller {
+#FxRackFillerR,
+#MicRack, #AuxRack {
   margin-right: 2px;
 }
+
 #Deck2, #DeckMini2,
 #Deck4, #DeckMini4,
+#CompactDecksCenterSpacer,
 #MixerContainer,
 #FxUnit2,
 #FxUnit4,
+#FxRackFillerL,
 #FxRackFillerR,
-#MicRack, #AuxRack,
-#MicAuxRackFiller {
+#MicRack, #AuxRack {
   margin-left: 2px;
 }
 /* gap in between compact decks is managed
-  by #CompactDeckCenterSpacer in order to have VU meters
+  by #CompactDecksCenterSpacer in order to have VU meters
   directly attached to each deck.
   A highlight connection to [LateNight],show_vumeters_compact
   can be used for the borders but screws up the margin: contents
   are rendered beyond the parent border */
-#CompactDeckCenterSpacer {
-  margin: 0px 2px;
-}
 
-#FxRackFillerL {
-  margin-left: 2px;
-}
-#FxRackFillerR {
-  margin-right: : 2px;
+#SamplerRow {
+  qproperty-layoutSpacing: 4;
 }
 
 #MicRack, #AuxRack {
@@ -329,6 +326,7 @@ WLibrary,
 #SkinSettingsContainer {
   margin-left: 3px;
 }
+
 
 /************** Waveforms *****************************************************/
 
@@ -350,6 +348,7 @@ WLibrary,
   #WaveformBox4 {
     border-top: 0px;
   }
+  /* Hide some borders when 4 decks are visible */
   #WaveformBox1[highlight="1"] {
     border-top: 0px;
   }
@@ -367,11 +366,13 @@ WLibrary,
   padding: 1px 4px 1px 1px;
 }
 
+/* All rows in FULL deck */
 #DeckRows12345,
 #DeckRows2345 {
   margin: 2px 0px 3px 2px;
   background-color: transparent;
 }
+  /* All rows in compact deck */
 #DeckRows2345 {
 }
 #DeckRows234 {
@@ -495,6 +496,7 @@ WLibrary,
 
 
 /************** RateControls ********************************************/
+
 #RateContainer {
   padding: 4px 0px 0px 0px;
   }
@@ -766,10 +768,7 @@ WPushButton#FxSuperLinkInvertButton {
 
 
 /************** Sampler ****************************************************/
-#SamplerRow {
-  margin: 0px 1px 4px 1px;
-  qproperty-layoutSpacing: 4;
-  }
+
 #SamplerExpandBox {
   padding: 0px 1px 0px 1px;
   }

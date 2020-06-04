@@ -5,7 +5,7 @@
     <Children>
 
       <WidgetGroup>
-        <ObjectName>CompactDeckCenterSpacer</ObjectName>
+        <ObjectName>CompactDecksCenterSpacer</ObjectName>
         <SizePolicy>f,max</SizePolicy>
         <Layout>vertical</Layout>
         <Children/>
