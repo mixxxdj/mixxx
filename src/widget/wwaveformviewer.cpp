@@ -25,6 +25,7 @@ WWaveformViewer::WWaveformViewer(const char* group, UserSettingsPointer pConfig,
           m_bScratching(false),
           m_bBending(false),
           m_pCueMenuPopup(make_parented<WCueMenuPopup>(pConfig, this)),
+          m_pBeatMenu(make_parented<WBeatMenu>(pConfig, this)),
           m_waveformWidget(nullptr) {
     setMouseTracking(true);
     setAcceptDrops(true);
@@ -38,6 +39,8 @@ WWaveformViewer::WWaveformViewer(const char* group, UserSettingsPointer pConfig,
     m_pWheel = new ControlProxy(
             group, "wheel", this);
     m_pPlayEnabled = new ControlProxy(group, "play", this);
+
+    connect(m_pBeatMenu, &WBeatMenu::updateDownbeat, this, &WWaveformViewer::slotDownbeatUpdated);
 
     setAttribute(Qt::WA_OpaquePaintEvent);
 }
@@ -81,7 +84,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         m_pScratchPositionEnable->slotSet(1.0);
     } else if (event->button() == Qt::RightButton) {
         const auto currentTrack = m_waveformWidget->getTrackInfo();
-        if (!isPlaying() && m_pHoveredMark) {
+        if (!isPlaying() && (m_pHoveredMark || m_pHoveredBeat)) {
             auto cueAtClickPos = getCuePointerFromCueMark(m_pHoveredMark);
             if (cueAtClickPos) {
                 m_pCueMenuPopup->setTrackAndCue(currentTrack, cueAtClickPos);
@@ -91,6 +94,11 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
                         m_pCueMenuPopup->size());
                 m_pCueMenuPopup->popup(cueMenuTopLeft);
             }
+
+            if (m_pHoveredBeat) {
+                m_pBeatMenu->popup(event->globalPos());
+            }
+
         } else {
             // If we are scratching then disable and reset because the two shouldn't
             // be used at once.
@@ -156,11 +164,12 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
                 m_pHoveredMark = nullptr;
             }
         }
-    }
-
-    auto beat = m_waveformWidget->getBeatAtPoint(event->pos());
-    if (beat) {
-        // Do beat type dependent actions.
+        BeatPointer pBeat = m_pHoveredBeat = m_waveformWidget->getBeatAtPoint(event->pos());
+        if (pBeat) {
+            m_pHoveredBeat = pBeat;
+        } else {
+            m_pHoveredBeat = nullptr;
+        }
     }
 }
 
@@ -208,6 +217,7 @@ void WWaveformViewer::slotTrackLoaded(TrackPointer track) {
     if (m_waveformWidget) {
         m_waveformWidget->setTrack(track);
     }
+    m_pBeatMenu->setTrack(track);
 }
 
 void WWaveformViewer::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
@@ -290,4 +300,8 @@ void WWaveformViewer::unhighlightMark(WaveformMarkPointer pMark) {
 
 bool WWaveformViewer::isPlaying() const {
     return m_pPlayEnabled->get();
+}
+
+void WWaveformViewer::slotDownbeatUpdated() {
+    m_waveformWidget->getTrackInfo()->getBeats()->setDownbeatOffset(m_pHoveredBeat->getIndex() % 4);
 }

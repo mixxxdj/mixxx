@@ -306,6 +306,7 @@ WaveformMarkPointer WaveformWidgetRenderer::getCueMarkAtPoint(QPoint point) cons
     return nullptr;
 }
 
+// TODO(hacksdump): Optimize this search
 BeatPointer WaveformWidgetRenderer::getBeatAtPoint(QPoint point) const {
     for (const auto& pBeat : m_beatPositions.keys()) {
         float position = m_beatPositions[pBeat];

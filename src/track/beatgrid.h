@@ -76,6 +76,8 @@ class BeatGrid final : public Beats {
         return m_iSampleRate;
     }
 
+    void setDownbeatOffset(int offset) override;
+
   private:
     BeatGrid(const BeatGrid& other);
     double firstBeatSample() const;
@@ -94,6 +96,7 @@ class BeatGrid final : public Beats {
     mixxx::track::io::BeatGrid m_grid;
     // The length of a beat in samples
     double m_dBeatLength;
+    int m_iDownbeatOffset;
 };
 
 } // namespace mixxx

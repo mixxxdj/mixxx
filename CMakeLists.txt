@@ -686,6 +686,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wanalysislibrarytableview.cpp
   src/widget/wbasewidget.cpp
   src/widget/wbattery.cpp
+  src/widget/wbeatmenu.cpp
   src/widget/wbeatspinbox.cpp
   src/widget/wcolorpicker.cpp
   src/widget/wcolorpickeraction.cpp

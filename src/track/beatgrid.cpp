@@ -15,50 +15,55 @@ namespace mixxx {
 
 class BeatGridIterator : public BeatIterator {
   public:
-    BeatGridIterator(double dBeatLength, double dFirstBeat, double dEndSample)
+    BeatGridIterator(double dBeatLength,
+            double firstBeatSample,
+            int startIndex,
+            int endIndex,
+            int downbeatOffset = 0)
             : m_dBeatLength(dBeatLength),
-              m_dCurrentSample(dFirstBeat),
-              m_dEndSample(dEndSample) {
+              m_dFirstBeatSample(firstBeatSample),
+              m_iCurrentBeatIndex(startIndex),
+              m_iEndBeatIndex(endIndex),
+              m_iDownbeatOffset(downbeatOffset) {
     }
 
     virtual bool hasNext() const {
-        return m_dBeatLength > 0 && m_dCurrentSample <= m_dEndSample;
+        return m_dBeatLength > 0 && m_iCurrentBeatIndex <= m_iEndBeatIndex;
     }
 
     virtual BeatPointer next() {
         BeatPointer beat = BeatPointer(new Beat);
-        beat->set_frame_position(m_dCurrentSample / kFrameSize);
-        if (((int)m_dCurrentSample % (int)(4 * m_dBeatLength) +
-                    (int)(4 * m_dBeatLength)) %
-                        (int)(4 * m_dBeatLength) <
-                m_dBeatLength) {
+        beat->set_frame_position(
+                (m_dFirstBeatSample + m_iCurrentBeatIndex * m_dBeatLength) /
+                kFrameSize);
+        beat->setIndex(m_iCurrentBeatIndex);
+        if ((m_iCurrentBeatIndex % 4) == (m_iDownbeatOffset % 4)) {
             beat->set_type(mixxx::track::io::BAR);
         }
-        m_dCurrentSample += m_dBeatLength;
+        m_iCurrentBeatIndex++;
         return beat;
     }
 
   private:
     double m_dBeatLength;
-    double m_dCurrentSample;
-    double m_dEndSample;
+    double m_dFirstBeatSample;
+    int m_iCurrentBeatIndex;
+    int m_iEndBeatIndex;
+    int m_iDownbeatOffset;
 };
 
-BeatGrid::BeatGrid(
-        const Track& track,
-        SINT iSampleRate)
+BeatGrid::BeatGrid(const Track& track, SINT iSampleRate)
         : m_mutex(QMutex::Recursive),
           m_iSampleRate(iSampleRate > 0 ? iSampleRate : track.getSampleRate()),
-          m_dBeatLength(0.0) {
+          m_dBeatLength(0.0),
+          m_iDownbeatOffset(0) {
     // BeatGrid should live in the same thread as the track it is associated
     // with.
     moveToThread(track.thread());
 }
 
 BeatGrid::BeatGrid(
-        const Track& track,
-        SINT iSampleRate,
-        const QByteArray& byteArray)
+        const Track& track, SINT iSampleRate, const QByteArray& byteArray)
         : BeatGrid(track, iSampleRate) {
     readByteArray(byteArray);
 }
@@ -79,7 +84,8 @@ void BeatGrid::setGrid(double dBpm, double dFirstBeatSample) {
 
     QMutexLocker lock(&m_mutex);
     m_grid.mutable_bpm()->set_bpm(dBpm);
-    m_grid.mutable_first_beat()->set_frame_position(dFirstBeatSample / kFrameSize);
+    m_grid.mutable_first_beat()->set_frame_position(
+            dFirstBeatSample / kFrameSize);
     // Calculate beat length as sample offsets
     m_dBeatLength = (60.0 * m_iSampleRate / dBpm) * kFrameSize;
 }
@@ -109,7 +115,8 @@ void BeatGrid::readByteArray(const QByteArray& byteArray) {
     if (byteArray.size() != sizeof(BeatGridData)) {
         return;
     }
-    const BeatGridData* blob = reinterpret_cast<const BeatGridData*>(byteArray.constData());
+    const BeatGridData* blob =
+            reinterpret_cast<const BeatGridData*>(byteArray.constData());
 
     // We serialize into frame offsets but use sample offsets at runtime
     setGrid(blob->bpm, blob->firstBeat * kFrameSize);
@@ -218,8 +225,8 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
 }
 
 bool BeatGrid::findPrevNextBeats(double dSamples,
-                                 double* dpPrevBeatSamples,
-                                 double* dpNextBeatSamples) const {
+        double* dpPrevBeatSamples,
+        double* dpNextBeatSamples) const {
     double dFirstBeatSample;
     double dBeatLength;
     {
@@ -255,8 +262,8 @@ bool BeatGrid::findPrevNextBeats(double dSamples,
     return true;
 }
 
-
-std::unique_ptr<BeatIterator> BeatGrid::findBeats(double startSample, double stopSample) const {
+std::unique_ptr<BeatIterator> BeatGrid::findBeats(
+        double startSample, double stopSample) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid() || startSample > stopSample) {
         return std::unique_ptr<BeatIterator>();
@@ -267,7 +274,13 @@ std::unique_ptr<BeatIterator> BeatGrid::findBeats(double startSample, double sto
     if (curBeat == -1.0) {
         return std::unique_ptr<BeatIterator>();
     }
-    return std::make_unique<BeatGridIterator>(m_dBeatLength, curBeat, stopSample);
+    int curBeatIndex = (int)((curBeat - firstBeatSample()) / m_dBeatLength);
+    int endBeatIndex = (int)((stopSample - firstBeatSample()) / m_dBeatLength);
+    return std::make_unique<BeatGridIterator>(m_dBeatLength,
+            firstBeatSample(),
+            curBeatIndex,
+            endBeatIndex,
+            m_iDownbeatOffset);
 }
 
 bool BeatGrid::hasBeatInRange(double startSample, double stopSample) const {
@@ -370,6 +383,10 @@ void BeatGrid::setBpm(double dBpm) {
     m_dBeatLength = (60.0 * m_iSampleRate / dBpm) * kFrameSize;
     locker.unlock();
     emit updated();
+}
+
+void BeatGrid::setDownbeatOffset(int offset) {
+    m_iDownbeatOffset = offset;
 }
 
 } // namespace mixxx

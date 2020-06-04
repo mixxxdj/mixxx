@@ -13,6 +13,7 @@
 #include "util/parented_ptr.h"
 #include "waveform/renderers/waveformmark.h"
 #include "widget/trackdroptarget.h"
+#include "widget/wbeatmenu.h"
 #include "widget/wcuemenupopup.h"
 #include "widget/wwidget.h"
 
@@ -54,6 +55,7 @@ private slots:
     void slotWidgetDead() {
         m_waveformWidget = nullptr;
     }
+    void slotDownbeatUpdated();
 
   private:
     void setWaveformWidget(WaveformWidgetAbstract* waveformWidget);
@@ -78,7 +80,9 @@ private:
     bool m_bBending;
     QPoint m_mouseAnchor;
     parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
+    parented_ptr<WBeatMenu> m_pBeatMenu;
     WaveformMarkPointer m_pHoveredMark;
+    BeatPointer m_pHoveredBeat;
 
     WaveformWidgetAbstract* m_waveformWidget;
 

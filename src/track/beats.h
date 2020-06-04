@@ -170,6 +170,8 @@ class Beats : public QObject {
 
     virtual SINT getSampleRate() const = 0;
 
+    virtual void setDownbeatOffset(int offset) = 0;
+
   signals:
     void updated();
 };

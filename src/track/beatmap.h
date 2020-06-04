@@ -17,7 +17,7 @@
 
 #define BEAT_MAP_VERSION "BeatMap-1.0"
 
-typedef QList<Beat> BeatList;
+typedef QList<BeatPointer> BeatList;
 
 namespace mixxx {
 
@@ -86,14 +86,16 @@ class BeatMap final : public Beats {
         return m_iSampleRate;
     }
 
+    void setDownbeatOffset(int offset) override;
+
   private:
     BeatMap(const BeatMap& other);
     bool readByteArray(const QByteArray& byteArray);
     void createFromBeatVector(const QVector<double>& beats);
     void onBeatlistChanged();
 
-    double calculateBpm(const Beat& startBeat,
-            const Beat& stopBeat) const;
+    double calculateBpm(const BeatPointer& startBeat,
+            const BeatPointer& stopBeat) const;
     // For internal use only.
     bool isValid() const;
 
@@ -110,6 +112,7 @@ class BeatMap final : public Beats {
     double m_dCachedBpm;
     double m_dLastFrame;
     BeatList m_beats;
+    int m_iDownbeatOffset;
 };
 
 } // namespace mixxx
