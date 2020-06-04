@@ -20,7 +20,7 @@
             <SetVariable name="BtnSize">square_big</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="Group"/>,cue_gotoandplay</SetVariable>
             <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,cue_default</SetVariable>
-            <SetVariable name="ConfigKeyDisp"><Variable name="Group"/>,play_indicator</SetVariable>
+            <SetVariable name="ConfigKeyDisp"><Variable name="Group"/>,play</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>

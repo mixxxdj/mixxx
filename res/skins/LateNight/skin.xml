@@ -37,9 +37,10 @@
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
       <!-- Set skin defaults -->
+      <!-- Decks -->
       <attribute config_key="[Master],num_decks">4</attribute>
       <attribute config_key="[Master],num_samplers">8</attribute>
-      <!-- Decks -->
+
       <attribute persist="true" config_key="[Skin],show_waveforms">1</attribute>
       <attribute persist="true" config_key="[Skin],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Skin],show_8_hotcues">1</attribute>
@@ -51,6 +52,7 @@
       <attribute persist="true" config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
       <attribute persist="true" config_key="[Skin],show_rate_controls">1</attribute>
       <attribute persist="true" config_key="[Skin],show_rate_control_buttons">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_rate_key_controls_compact">1</attribute>
       <attribute persist="true" config_key="[Skin],show_beatgrid_controls">1</attribute>
       <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
       <!-- Mixer -->
@@ -75,7 +77,7 @@
       <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
 
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
-      <attribute persist="true" config_key="[Master],skin_settings">0</attribute>
+      <attribute config_key="[Master],skin_settings">0</attribute>
       <!-- Disable hidden effect routing Buttons -->
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MasterOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusLeft]_enable">0</attribute>
@@ -108,15 +110,14 @@
 
         BtnScheme     borders / background images for pushbuttons, spinboxes,
                       effect selector, AutoDJ fade mode selector.
-                      If variable BtnSize is empty the templates will link to icons,
-                      for example skin:/classic/btn__slipmode.svg
+                      If 'BtnSize' variable is undefined it links to transparent
+                      dummy icons like btn_embedded__active.svg
+              Note:   Icons for buttons that have images set in xml already are set
+                      in the respective style-[theme].qss
         KnobScheme    guess what
         SliderScheme  ...exactly!
         StyleScheme   icons & backgrounds for library, splitters, spinnies,
-                      VU meter, default cover art etc.
-
-        Note:   Icons for buttons that have images set in xml already are set in the
-                respective style-[theme].qss -->
+                      VU meter, default cover art etc. -->
       <Style src="skin:style_palemoon.qss"/>
       <SetVariable name="BtnScheme">palemoon</SetVariable>
       <SetVariable name="KnobScheme">palemoon</SetVariable>
@@ -124,12 +125,12 @@
       <SetVariable name="StyleScheme">palemoon</SetVariable>
 
       <!-- Set the button type
-          * elevated: buttons stand out, have a 3D border and a drop shadow
-          * embedded: buttons are domed and seem leveled with surface,
-            and they have surrounding groove -->
-      <!-- Buttons in top-level containers: mixer, rate controls, collapsed Fx... -->
+        * elevated: buttons stand out, have a 3D border and a drop shadow
+        * embedded: buttons are domed and seem leveled with surface, and they have surrounding groove
+        In PaleMoon there's only the _embedded_ style set -->
+      <!-- Buttons in top-level containers like mixer, rate controls, collapsed FxUnits etc. -->
       <SetVariable name="TopRegion_BtnType">embedded</SetVariable>
-      <!-- Buttons in recessed regions: transport row, mic/aux units... -->
+      <!-- Buttons in subregions like transport row, mic/aux units etc. -->
       <SetVariable name="SubRegion_BtnType">embedded</SetVariable>
 
       <!-- Knob settings -->
@@ -145,9 +146,7 @@
       <SetVariable name="ArcColorFx12Quick">#5ba000</SetVariable>
       <SetVariable name="ArcColorFx34">#009ba7</SetVariable>
       <SetVariable name="ArcColorFxParameter">#999</SetVariable>
-      <!--SetVariable name="ArcColorGainLow">#a05600</SetVariable-->
       <SetVariable name="ArcColorGainLow">#7d4a0f</SetVariable>
-      <!--SetVariable name="ArcColorMstBal">#aa0000</SetVariable-->
       <SetVariable name="ArcColorMstBal">#a00000</SetVariable>
       <SetVariable name="ArcColorFxMix">#aa0000</SetVariable>
       <!-- Suffix for the knob indicator SVGs -->
@@ -255,7 +254,7 @@
   <!-- MinimumSize should not be an exact monitor resolution. There needs
   to be space for the title bar or other chrome at full screen.
   https://www.mixxx.org/wiki/doku.php/skin_guidelines#the_optimal_size_for_skins -->
-  <MinimumSize>1340,680</MinimumSize>
+  <MinimumSize>1302,668</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
   <LaunchImageStyle>

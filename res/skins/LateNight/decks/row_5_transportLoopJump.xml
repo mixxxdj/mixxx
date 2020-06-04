@@ -83,15 +83,6 @@
                     <ObjectName>PlayIndicator</ObjectName>
                     <Size>68f,26f</Size>
                     <NumberStates>2</NumberStates>
-                    <RightClickIsPushButton>false</RightClickIsPushButton>
-                    <State>
-                      <Number>0</Number>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Pressed></Pressed>
-                      <Unpressed></Unpressed>
-                    </State>
                     <Connection>
                       <ConfigKey><Variable name="Group"/>,play_indicator</ConfigKey>
                     </Connection>
@@ -104,7 +95,7 @@
               </WidgetGroup><!-- Play + PlayBlink + default grey background -->
 
             </Children>
-          </WidgetGroup><!-- /HotCues, Play, Cue, Reverse -->
+          </WidgetGroup><!-- Play, Cue, Reverse -->
 
           <WidgetGroup><Size>2f,0min</Size></WidgetGroup><!--  = 2-10px wide -->
           <WidgetGroup><SizePolicy>i,min</SizePolicy><MaximumSize>8,</MaximumSize></WidgetGroup>
@@ -114,7 +105,6 @@
             <SizePolicy>max,min</SizePolicy>
             <Children>
               <WidgetGroup><!-- HotCues 1-2 / 1-4 -->
-                <ObjectName>PlayCueRevHotCues</ObjectName>
                 <Layout>horizontal</Layout>
                 <Children>
 
