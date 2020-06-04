@@ -38,15 +38,21 @@ WEffectSelector QAbstractScrollArea,
 
 /* Bold */
 #KnobLabel,
+/* Passthrough label on overview waveform */
+WOverview #PassthroughLabel,
 #FxUnitLabel,
 #MicAuxLabel, #MicAuxLabelUnconfigured,
 #LatencyLabel,
 #VinylControls WPushButton,
 #FxAssignButtons WPushButton,
+#SamplerTitleMini,
+/* ToolBar */
 #GuiToggleButton,
-#DeckSizeButton[value="1"],
 #RecFeedback, #RecDuration,
 #BroadcastButton,
+/* SKin settings & Library */
+#SkinSettingsToggle,
+#DeckSizeButton[value="1"],
 WLibrary QPushButton {
   font-weight: bold;
 }
@@ -58,9 +64,11 @@ WLibrary QPushButton {
 #LatencyLabel,
 #VinylControls WPushButton,
 #FxAssignButtons WPushButton,
+/* ToolBar */
 #GuiToggleButton,
 #RecFeedback, #RecDuration,
 #BroadcastButton,
+#SkinSettingsToggle,
 WLibrary QPushButton {
   text-transform: uppercase;
 }

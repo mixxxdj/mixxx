@@ -1005,7 +1005,12 @@ WLibrary QLabel, WLibrary QRadioButton {
 #KnobLabel,
 #FxKnobLabel,
 #FxButtonLabel,
-#MicAuxLabelUnconfigured {
+#MicAuxLabelUnconfigured,
+#DlgMissing > QPushButton:!enabled,
+#DlgHidden > QPushButton:!enabled,
+#DlgAutoDJ > QPushButton:!enabled,
+#DlgRecording > QPushButton:!enabled,
+#DlgAnalysis > QPushButton:!enabled {
   color: #666;
 }
 
@@ -1015,9 +1020,7 @@ WLibrary QLabel, WLibrary QRadioButton {
 #GuiToggleButton[displayValue="0"],
 #BroadcastButton[displayValue="0"],
 #SkinSettingsToggle[displayValue="0"],
-#RecDuration[highlight="0"],
-#RecDuration[highlight="1"],
-#RecDuration[highlight="2"] {
+#RecDuration[highlight="0"] {
   color: #d2d2d1;
   }
 
@@ -1029,11 +1032,22 @@ WLibrary QLabel, WLibrary QRadioButton {
 #GuiToggleButton[displayValue="1"],
 #GuiToggleButton[displayValue="2"],
 #BroadcastButton[displayValue="1"], /* connecting: yellow */
-#SkinSettingsToggle[displayValue="1"] {
+#RecDuration[highlight="1"],
+#RecDuration[highlight="2"],
+#SkinSettingsToggle[displayValue="1"],
+QPushButton#pushButtonAutoDJ:checked,
+QPushButton#pushButtonRepeatPlaylist:checked,
+#DlgAnalysis > QPushButton:checked,
+QPushButton#pushButtonRecording:checked {
   color: #000;
 }
 
-#EQKillButton[displayValue="0"] {
+#EQKillButton[displayValue="0"],
+#DlgMissing > QPushButton:pressed,
+#DlgHidden > QPushButton:pressed,
+#DlgAutoDJ > QPushButton:pressed,
+#DlgRecording > QPushButton:pressed,
+#DlgAnalysis > QPushButton:pressed {
   color: #999;
 }
 
@@ -1069,7 +1083,25 @@ WOverview #PassthroughLabel {
   font-weight: bold;
   color: #d09300;
 }
+  #SkinSettingsButton,
+  #DeckSizeButton,
+  #SkinSettingsText {
+    color: #d2d2d2;
+  }
+  #DeckSizeButton[value="1"] {
+    background-color: #555;
+    color: #fff;
+  }
 
+
+/* Library controls in AutoDJ etc. */
+#DlgMissing > QPushButton,
+#DlgHidden > QPushButton,
+#DlgAutoDJ > QPushButton,
+#DlgRecording > QPushButton,
+#DlgAnalysis > QPushButton {
+  color: #bbb;
+  }
 /*****************************************************************************/
 /************** font colors **************************************************/
 
@@ -1088,7 +1120,9 @@ WOverview #PassthroughLabel {
 #DlgHidden > QPushButton,
 #DlgAutoDJ > QPushButton,
 #DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton {
+#DlgAnalysis > QPushButton,
+WEffectSelector,
+WEffectSelector:on {
   border-width: 2px;
   border-image: url(skin:/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
   }
@@ -1105,6 +1139,11 @@ WOverview #PassthroughLabel {
   #BroadcastButton[displayValue="2"],
   #BroadcastButton[displayValue="3"],
   #SkinSettingsToggle[displayValue="1"],
+  #DlgMissing > QPushButton:pressed,
+  #DlgHidden > QPushButton:pressed,
+  #DlgAutoDJ > QPushButton:pressed,
+  #DlgRecording > QPushButton:pressed,
+  #DlgAnalysis > QPushButton:pressed,
   QPushButton#pushButtonAutoDJ:checked,
   QPushButton#pushButtonRepeatPlaylist:checked,
   #DlgAnalysis > QPushButton:checked,
@@ -1122,13 +1161,6 @@ WOverview #PassthroughLabel {
     }
 
 /* Library controls in AutoDJ etc. */
-#DlgMissing > QPushButton,
-#DlgHidden > QPushButton,
-#DlgAutoDJ > QPushButton,
-#DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton {
-  color: #bbb;
-  }
   #DlgMissing > QPushButton:focus,
   #DlgHidden > QPushButton:focus,
   #DlgAutoDJ > QPushButton:focus,
@@ -1136,36 +1168,7 @@ WOverview #PassthroughLabel {
   #DlgAnalysis > QPushButton:focus {
     outline: none;
   }
-  #DlgMissing > QPushButton:pressed,
-  #DlgHidden > QPushButton:pressed,
-  #DlgAutoDJ > QPushButton:pressed,
-  #DlgRecording > QPushButton:pressed,
-  #DlgAnalysis > QPushButton:pressed {
-    border-image: url(skin:/classic/buttons/btn_embedded_library_active.svg) 2 2 2 2;
-    color: #000;
-  }
-  #DlgMissing > QPushButton:!enabled,
-  #DlgHidden > QPushButton:!enabled,
-  #DlgAutoDJ > QPushButton:!enabled,
-  #DlgRecording > QPushButton:!enabled,
-  #DlgAnalysis > QPushButton:!enabled {
-    color: #666;
-  }
-  QPushButton#pushButtonAutoDJ:checked,
-  QPushButton#pushButtonRepeatPlaylist:checked,
-  #DlgAnalysis > QPushButton:checked,
-  QPushButton#pushButtonRecording:checked {
-    color: #000;
-  }
 
-WEffectSelector,
-WEffectSelector:on {
-  border-width: 2px 2px 2px 2px;
-  }
-  WEffectSelector,
-  WEffectSelector:on {
-    border-image: url(skin:/palemoon/buttons/btn_embedded_library.svg) 2 2 2 2;
-  }
   WEffectSelector:on {
     /* not applied. Only visible on Windows (nad macOS?)
     padding-left: 10px; */
@@ -1707,9 +1710,12 @@ WPushButton#SamplerExpand[displayValue="0"],
     image: url(skin:/classic/buttons/btn__mic_duck_manual.svg) no-repeat center center;
   }
 
-#RecDot {
+#RecDot[highlight="0"] {
   image: url(skin:/classic/buttons/btn__rec_dot.svg) no-repeat center center;
-}
+  }
+  #RecDot[highlight="1"], #RecDot[highlight="2"] {
+    image: url(skin:/classic/buttons/btn__rec_dot_active.svg) no-repeat center center;
+  }
 
 #SkinSettingsToggle[displayValue="0"] {
   /* for some reason the alignment isn't rescpected, so the icons

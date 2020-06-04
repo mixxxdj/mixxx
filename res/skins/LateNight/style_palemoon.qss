@@ -977,18 +977,9 @@ WPushButton#FxSuperLinkInvertButton {
   #SkinSettingsLabelButton {
     padding: 0px 0px 0px 3px;
   }
-  #SkinSettingsButton,
-  #DeckSizeButton,
-  #SkinSettingsText {
-    color: #d2d2d2;
-    }
-    #DeckSizeButton[value="1"] {
-      background-color: #555;
-    }
 
   #DeckSizeToggleContainer {
     padding: 0px 0px 0px 0px;
-    qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   }
 
   #SamplerLoadSaveBox {
@@ -1130,7 +1121,16 @@ WLibrary QLabel, WLibrary QRadioButton {
 #SkinSettingsToggle[displayValue="0"],
 #LatencyLabel {
   color: #948a80;
-  }
+}
+
+/* Library controls in AutoDJ etc. */
+#DlgMissing > QPushButton,
+#DlgHidden > QPushButton,
+#DlgAutoDJ > QPushButton,
+#DlgRecording > QPushButton,
+#DlgAnalysis > QPushButton {
+  color: #bbb;
+}
 
 #VinylButton[displayValue="1"],
 #VinylCueButton[displayValue="1"],
@@ -1143,11 +1143,20 @@ WLibrary QLabel, WLibrary QRadioButton {
 #BroadcastButton[displayValue="3"], /* failure */
 #RecDuration[highlight="1"],  /* initializing */
 #RecDuration[highlight="2"],  /* recording */
-#SkinSettingsToggle[displayValue="1"] {
+#SkinSettingsToggle[displayValue="1"],
+QPushButton#pushButtonAutoDJ:checked,
+QPushButton#pushButtonRepeatPlaylist:checked,
+#DlgAnalysis > QPushButton:checked,
+QPushButton#pushButtonRecording:checked {
   color: #000;
 }
 
-#EQKillButton[displayValue="0"] {
+#EQKillButton[displayValue="0"],
+#DlgMissing > QPushButton:!enabled,
+#DlgHidden > QPushButton:!enabled,
+#DlgAutoDJ > QPushButton:!enabled,
+#DlgRecording > QPushButton:!enabled,
+#DlgAnalysis > QPushButton:!enabled {
   color: #666;
 }
 
@@ -1156,27 +1165,14 @@ WOverview #PassthroughLabel {
   color: #d09300;
 }
 
-/* Library controls in AutoDJ etc. */
-#DlgMissing > QPushButton,
-#DlgHidden > QPushButton,
-#DlgAutoDJ > QPushButton,
-#DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton {
-  color: #bbb;
-}
-#DlgMissing > QPushButton:!enabled,
-#DlgHidden > QPushButton:!enabled,
-#DlgAutoDJ > QPushButton:!enabled,
-#DlgRecording > QPushButton:!enabled,
-#DlgAnalysis > QPushButton:!enabled {
-  color: #666;
-}
-QPushButton#pushButtonAutoDJ:checked,
-QPushButton#pushButtonRepeatPlaylist:checked,
-#DlgAnalysis > QPushButton:checked,
-QPushButton#pushButtonRecording:checked {
-  color: #000;
-}
+#SkinSettingsButton,
+#DeckSizeButton,
+#SkinSettingsText {
+  color: #d2d2d2;
+  }
+  #DeckSizeButton[value="1"] {
+    background-color: #555;
+  }
 
 /************** font colors **************************************************/
 /************** font settings *************************************************/
@@ -1512,6 +1508,7 @@ WPushButton#FxExpand[displayValue="0"],
 WPushButton#SamplerExpand[displayValue="0"],
 WPushButton#RecButton[displayValue="0"],
 WPushButton#RecButton[displayValue="1"],
+#RecDot,
 #LibraryPreviewButton {
   background-color: transparent;
 }
@@ -1984,11 +1981,9 @@ WPushButton#RecButton[displayValue="1"],
   }
 
 #RecDot[highlight="0"] {
-  background: transparent;
   image: url(skin:/palemoon/buttons/btn__rec_dot.svg) no-repeat center center;
   }
   #RecDot[highlight="1"], #RecDot[highlight="2"] {
-    background: transparent;
     image: url(skin:/palemoon/buttons/btn__rec_dot_active.svg) no-repeat center center;
   }
 
