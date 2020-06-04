@@ -551,7 +551,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     QList<QString> prev_plugins_list =
             pConfig->getValueString(
                            ConfigKey("[Library]", "SupportedFileExtensions"))
-                    .split(",",
+                    .split(',',
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
                             Qt::SkipEmptyParts);
 #else
