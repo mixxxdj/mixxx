@@ -111,8 +111,8 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         }
     }
 
-    // Set the cursor to a hand while the mouse is down (when cue menu is not open).
-    if (!m_pCueMenuPopup->isVisible()) {
+    // Set the cursor to a hand while the mouse is down (when menu is not open).
+    if (!m_pCueMenuPopup->isVisible() && !m_pBeatMenu) {
         setCursor(Qt::ClosedHandCursor);
     }
 }
@@ -304,4 +304,5 @@ bool WWaveformViewer::isPlaying() const {
 
 void WWaveformViewer::slotDownbeatUpdated() {
     m_waveformWidget->getTrackInfo()->getBeats()->setDownbeatOffset(m_pHoveredBeat->getIndex() % 4);
+    setFocus();
 }
