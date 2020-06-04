@@ -420,7 +420,7 @@ Description:
                     <SetVariable name="Setting">[Skin],show_4decks</SetVariable>
                   </Template>
 
-                  <WidgetGroup><Size>0me,85f</Size></WidgetGroup>
+                  <WidgetGroup><Size>0me,102f</Size></WidgetGroup>
 
                   <!-- Spinny -->
                   <Template src="skin:/helpers/skin_settings_button_2state.xml">

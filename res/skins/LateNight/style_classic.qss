@@ -16,9 +16,12 @@
 /******************************************************************************
 ************** Container styles, backgrounds *********************************/
 
-#Deck1, #Deck2, #Deck3,  #Deck4,
-  #DeckCompact1, #DeckCompact2, #DeckCompact3, #DeckCompact4,
-  #DeckMini1, #DeckMini2, #DeckMini3, #DeckMini4,
+#ToolBar,
+#WaveformsContainer,
+#Deck1, #DeckCompact1, #DeckMini1,
+#Deck2, #DeckCompact2, #DeckMini2,
+#Deck3, #DeckCompact3, #DeckMini3,
+#Deck4, #DeckCompact4, #DeckMini4,
 #VuMeterContainerCompactDeck1,
   #VuMeterContainerCompactDeck2,
   #VuMeterContainerCompactDeck3,
@@ -31,7 +34,6 @@
 #MicDuckingContainer, #MicAuxUnit, #MicAuxAddFrame,
 #Sampler, #SamplerMini,
 WEffectSelector::checked, #fadeModeCombobox::checked,
-#ToolBar, #WaveformsContainer,
 WLibrary,
 #SidebarBox,
 #PreviewDeck,
@@ -43,9 +45,10 @@ QAbstractScrollArea::corner {
 
 /* borders of elevated containers */
 #WaveformsContainer,
-#Deck1, #Deck2, #Deck3, #Deck4,
-  #DeckCompact1, #DeckCompact2, #DeckCompact3, #DeckCompact4,
-  #DeckMini1, #DeckMini2, #DeckMini3, #DeckMini4,
+#Deck1, #DeckCompact1, #DeckMini1,
+#Deck2, #DeckCompact2, #DeckMini2,
+#Deck3, #DeckCompact3, #DeckMini3,
+#Deck4, #DeckCompact4, #DeckMini4,
 #MixerContainer,
   #VuMeterContainerCompactDeck1,
   #VuMeterContainerCompactDeck2,
@@ -65,7 +68,11 @@ WLibrary,
   border-bottom: 1px solid #0a0a0a;
   border-right: 1px solid #0a0a0a;
   border-radius: 2px;
-}
+  }
+  #WaveformsContainer {
+    border-width: 1px 0px;
+    border-radius: 0px;
+  }
 
 /* borders of embedded regions like deck buttons & Master mixer */
 #WaveformBox1,
@@ -90,6 +97,12 @@ WSearchLineEdit,
   #KeyText {
     border-top: 1px solid #0c0c0c;
     border-bottom: 1px solid #0c0c0c;
+  }
+  #WaveformBox1,
+  #WaveformBox2,
+  #WaveformBox3,
+  #WaveformBox4 {
+    border-radius: 0px;
   }
   /* some get a background image */
   #DeckRow_5_LoopCuesTransport,
@@ -132,6 +145,19 @@ WSearchLineEdit,
 
 #VuMasterCover {
   background-color: rgba(21, 21, 21, 150);
+}
+
+#SkinSettings {
+  padding: 3px;
+  border-top: 1px solid #585858;
+  border-bottom: 1px solid #585858;
+  border-left: 1px solid #585858;
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+}
+
+#SubmenuCover {
+  background-color: rgba(15, 15, 15, 180);
 }
 
 /**** ToolBar *******************************/
@@ -243,59 +269,65 @@ WLibrary,
   max-height: 4px;
 }
 
-#Deck1, #Deck2, #Deck3, #Deck4,
-#DeckCompact1, #DeckCompact2, #DeckCompact3, #DeckCompact4,
-#DeckMini1, #DeckMini2, #DeckMini3, #DeckMini4,
+#Deck1, #DeckCompact1, #DeckMini1,
+#Deck2, #DeckCompact2, #DeckMini2,
+#Deck3, #DeckCompact3, #DeckMini3,
+#Deck4, #DeckCompact4, #DeckMini4,
+#MixerContainer,
 #FxUnit1, #FxUnit3,
 #FxUnit2, #FxUnit4,
+#FxRackFillerR,
+#FxRackFillerL,
 #MicAuxRack,
 #SamplerRack,
-#MixerContainer,
 #LibExpandBox,
 #SearchLineBox {
   margin-bottom: 4px;
 }
-#DeckMini1, #DeckMini2 {
-  margin-top: 3px;
+
+#Deck1, #DeckMini1,
+#Deck3, #DeckMini3,
+#MixerContainer,
+#FxUnit1,
+#FxUnit3,
+#FxRackFillerR,
+#MicRack, #AuxRack,
+#MicAuxRackFiller {
+  margin-right: 2px;
+}
+#Deck2, #DeckMini2,
+#Deck4, #DeckMini4,
+#MixerContainer,
+#FxUnit2,
+#FxUnit4,
+#FxRackFillerR,
+#MicRack, #AuxRack,
+#MicAuxRackFiller {
+  margin-left: 2px;
+}
+/* gap in between compact decks is managed
+  by #CompactDeckCenterSpacer in order to have VU meters
+  directly attached to each deck.
+  A highlight connection to [LateNight],show_vumeters_compact
+  can be used for the borders but screws up the margin: contents
+  are rendered beyond the parent border */
+#CompactDeckCenterSpacer {
+  margin: 0px 2px;
+}
+
+#FxRackFillerL {
+  margin-left: 2px;
+}
+#FxRackFillerR {
+  margin-right: : 2px;
+}
+
+#MicRack, #AuxRack {
+  qproperty-layoutSpacing: 3;
 }
 
 #SkinSettingsContainer {
   margin-left: 3px;
-}
-
-#Deck1, #Deck2, #Deck3, #Deck4,
-#DeckMini1, #DeckMini2, #DeckMini3, #DeckMini4,
-#FxUnit1, #FxUnit2, #FxUnit3, #FxUnit4 {
-  margin-right: 3px;
-  margin-left: 3px;
-  }
-  #DeckCompact1,
-  #DeckCompact3 {
-    margin-left: 3px;
-  }
-  #DeckCompact2,
-  #DeckCompact4 {
-    margin-right: 3px;
-  }
-  #CompactDeckCenterSpacer {
-    margin: 0px 2px;
-  }
-
-#Deck1,
-#Deck2,
-#Deck3,
-#Deck4 {
-  padding: 1px 2px 0px 1px;
-}
-#DeckMini1, #DeckMini2, #DeckMini3, #DeckMini4 {
-  padding: 1px;
-}
-
-#FxRackFillerL {
-  margin: 0px 3px 4px 3px;
-}
-#FxRackFillerR {
-  margin: 0px 3px 4px 3px;
 }
 
 /************** Waveforms *****************************************************/
@@ -328,8 +360,11 @@ WLibrary,
 
 /************** Decks *********************************************************/
 
-#DeckMini1, #DeckMini2, #DeckMini3, #DeckMini4 {
-  padding-right: 4px;
+#DeckMini1,
+#DeckMini2,
+#DeckMini3,
+#DeckMini4 {
+  padding: 1px 4px 1px 1px;
 }
 
 #DeckRows12345,
@@ -536,10 +571,6 @@ WLibrary,
 
 
 /************** Mixer *********************************************************/
-#MixerContainer {
-  margin-left: 1px;
-  margin-right: 1px;
-}
 
 #MixerDecks {
   padding: 2px 6px 2px 6px;
@@ -781,11 +812,6 @@ WPushButton#FxSuperLinkInvertButton {
 
 /************** MicAux *****************************************************/
 
-#MicRack, #AuxRack {
-  padding: 0px 4px;
-  qproperty-layoutSpacing: 4;
-}
-
 #MicDuckingContainer {
   padding: 2px 2px 2px 2px;
   }
@@ -871,23 +897,9 @@ WPushButton#FxSuperLinkInvertButton {
 
 
 /************** SkinSettings **************************************************/
-#SkinSettingsContainer {
-}
-
-#SkinSettings {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding: 3px;
-  border-top: 1px solid #585858;
-  border-bottom: 1px solid #585858;
-  border-left: 1px solid #585858;
-  border-top-left-radius: 2px;
-  border-bottom-left-radius: 2px;
-}
 
 #SkinSettingsCategory {
   padding: 2px 5px 7px 3px;
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  border-width: 0px;
   }
   #CategoryLabel {
     padding: 3px 0px 2px 0px;
@@ -895,28 +907,14 @@ WPushButton#FxSuperLinkInvertButton {
   #SkinSettingsLabelButton {
     padding: 0px 0px 0px 3px;
   }
-  #SkinSettingsButton,
-  #DeckSizeButton,
-  #SkinSettingsText {
-    color: #d2d2d2;
-  }
-  #DeckSizeButton[value="1"] {
-    background-color: #555;
-    color: #fff;
-  }
 
   #DeckSizeToggleContainer {
     padding: 0px 0px 0px 0px;
-    qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   }
 
   #SamplerLoadSaveBox {
     padding-left: 18px;
   }
-
-#SubmenuCover {
-  background-color: rgba(15, 15, 15, 180);
-}
 
 
 /******************************************************************************

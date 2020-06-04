@@ -16,9 +16,10 @@
 /******************************************************************************
 ************** Scheme-specific layout adjustments & colors ********************/
 
-#Deck1, #Deck2, #Deck3,  #Deck4,
-  #DeckCompact1, #DeckCompact2, #DeckCompact3, #DeckCompact4,
-  #DeckMini1, #DeckMini2, #DeckMini3, #DeckMini4,
+#Deck1, #DeckCompact1, #DeckMini1,
+#Deck2, #DeckCompact2, #DeckMini2,
+#Deck3, #DeckCompact3, #DeckMini3,
+#Deck4, #DeckCompact4, #DeckMini4,
   #FxUnitControlsExpanded, #FxUnitControlsCollapsed,
   #FxSlotsExpanded, #FxSlotsCollapsed, #FxSlotContainer,
 #MixerDecks,
@@ -34,9 +35,10 @@ QAbstractScrollArea::corner {
 }
 
 /* borders of elevated containers */
-#Deck1, #Deck2, #Deck3, #Deck4,
-  #DeckCompact1, #DeckCompact2, #DeckCompact3, #DeckCompact4,
-  #DeckMini1, #DeckMini2, #DeckMini3, #DeckMini4,
+#Deck1, #DeckCompact1, #DeckMini1,
+#Deck2, #DeckCompact2, #DeckMini2,
+#Deck3, #DeckCompact3, #DeckMini3,
+#Deck4, #DeckCompact4, #DeckMini4,
 #FxSlotsCollapsed, #FxSlotsExpanded,
 #FxUnitControlsCollapsed, #FxUnitControlsExpanded,
 #MixerDecks,
@@ -260,66 +262,71 @@ WLibrary {
 /************ Decks, Fx, Samplers, MixAux *************************/
 
 #ToolbarDeckSpacer {
-  min-height: 4px;
-  max-height: 4px;
+  min-height: 3px;
+  max-height: 3px;
 }
 
-#Deck1, #Deck2, #Deck3, #Deck4,
-#DeckCompact1, #DeckCompact2, #DeckCompact3, #DeckCompact4,
-#DeckMini1, #DeckMini2, #DeckMini3, #DeckMini4,
+#Deck1, #DeckCompact1, #DeckMini1,
+#Deck2, #DeckCompact2, #DeckMini2,
+#Deck3, #DeckCompact3, #DeckMini3,
+#Deck4, #DeckCompact4, #DeckMini4,
+#MixerContainer,
 #FxUnit1, #FxUnit3,
 #FxUnit2, #FxUnit4,
+#FxRackFillerR,
+#FxRackFillerL,
 #MicAuxRack,
 #SamplerRack,
-#MixerContainer,
 #LibExpandBox,
 #SearchLineBox {
   margin-bottom: 3px;
-}
+  }
 
-#DeckMini1, #DeckMini2 {
-  margin-top: 3px;
-}
-
-#Deck1, #Deck3,
-#DeckMini1, #DeckMini3,
-#FxUnit1, #FxUnit3 {
+#Deck1, #DeckMini1,
+#Deck3, #DeckMini3,
+#FxUnit1,
+#FxUnit3,
+#FxRackFillerL,
+#MicRack, #AuxRack,
+#MicAuxRackFiller {
   margin-right: 2px;
-  margin-left: 1px;
-  }
-  #DeckCompact1,
-  #DeckCompact3 {
-    margin-left: 1px;
-  }
-
-#Deck2, #Deck4,
-#DeckMini2, #DeckMini4,
-#FxUnit2, #FxUnit4 {
-  margin-right: 1px;
+}
+#Deck2, #DeckMini2,
+#Deck4, #DeckMini4,
+#FxUnit2,
+#FxUnit4,
+#FxRackFillerR,
+#MicRack, #AuxRack,
+#MicAuxRackFiller {
   margin-left: 2px;
-  }
-  #DeckCompact2,
-  #DeckCompact4 {
-    margin-right: 1px;
-  }
-  #CompactDeckCenterSpacer {
-    margin: 0px 2px;
-  }
+}
+/* gap in between compact decks is managed
+  by #CompactDeckCenterSpacer in order to have VU meters
+  directly attached to each deck.
+  A highlight connection to [LateNight],show_vumeters_compact
+  can be used for the borders but screws up the margin: contents
+  are rendered beyond the parent border */
+#CompactDeckCenterSpacer {
+  margin: 0px 2px;
+}
 
 #MixerContainer {
   padding: 0px 1px;
 }
 
 #FxRackFillerL {
-  margin: 0px 2px 3px 1px;
+  margin-left: 2px;
 }
 #FxRackFillerR {
-  margin: 0px 1px 3px 2px;
+  margin-right: : 2px;
 }
 
-#MicAuxRack {
-  margin-right: 1px;
-  margin-left: 1px;
+#MicRack, #AuxRack {
+  qproperty-layoutSpacing: 3;
+}
+
+#SkinSettingsContainer {
+  margin-left: 3px;
 }
 
 
@@ -871,13 +878,6 @@ WPushButton#FxSuperLinkInvertButton {
 
 
 /************** MicAux **************************************************/
-#MicRack, #AuxRack {
-  padding: 0px 3px;
-  qproperty-layoutSpacing: 3;
-}
-
-#MicDuckingContainer {
-}
 
 #MicAuxMainControls {
   border-radius: 2px;
@@ -960,7 +960,6 @@ WPushButton#FxSuperLinkInvertButton {
 }
 
 #SkinSettings {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   padding: 3px;
   border-top: 1px solid #585858;
   border-bottom: 1px solid #585858;
@@ -971,8 +970,6 @@ WPushButton#FxSuperLinkInvertButton {
 
 #SkinSettingsCategory {
   padding: 2px 5px 7px 3px;
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  border-width: 0px;
   }
   #CategoryLabel {
     padding: 3px 0px 2px 0px;
