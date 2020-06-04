@@ -832,77 +832,76 @@ WPushButton#FxSuperLinkInvertButton {
 
 /************** Sampler *************************************************/
 
-#SamplerRow {
-  margin: 0px 1px 3px 1px;
-}
 #SamplerExpandBox {
   padding: 0px 1px 0px 1px;
+}
+
+#Sampler {
+  padding: 1px 0px 2px 2px;
+  }
+  #SamplerTitleBox {
+    border-width: 0px 1px 0px 0px;
+    }
+    #SamplerTitle {
+      padding: 1px 3px 1px 4px;
+    }
+  #SamplerBpm {
+    margin-right: 2px;
   }
 
-  #Sampler {
-    padding: 1px 0px 2px 2px;
+  #SamplerPlayBox {
+    padding: 1px 2px 1px 0px;
   }
 
-  #SamplerMini {
+  #SamplerSettings {
+    border-width: 1px 1px 1px 0px;
+    padding: 0px 0px 2px 0px;
+  }
+
+  #SamplerHotcues {
+    padding: 1px 0px 0px 0px;
+  }
+
+  #SamplerGain {
+    padding: 0px 0px 0px 2px;
+    border-width: 1px 0px 0px 0px;
+  }
+  #SamplerPfl {
+    border-width: 0px 0px 0px 1px;
+    padding: 0px 5px 1px 6px;
+  }
+
+  #SamplerVU {
+    padding: 2px 3px 0px 1px;
+    border-width: 1px 1px 0px 0px;
+  }
+
+  #SamplerRateControls {
+    padding: 0px 1px 1px 0px;
+    }
+    #SamplerPitchSlider {
+      padding: 0px 0px 1px 0px;
+    }
+
+#SamplerMini {
+  padding: 1px;
+  }
+  #SamplerPlayBoxSmall {
     padding: 1px;
-    }
-    #SamplerTitleBox {
-      border-width: 0px 1px 0px 0px;
-      }
-      #SamplerTitle {
-        padding: 1px 3px 1px 4px;
-      }
-    #SamplerBpm {
-      margin-right: 2px;
-    }
-
-    #SamplerPlayBox {
-      padding: 1px 2px 1px 0px;
-    }
-
-    #SamplerPlayBoxSmall {
-      padding: 1px;
-    }
-    #SamplerTitleBoxSmall {
-      padding: 0px 0px 0px 2px;
-    }
-
-    #SamplerSettings {
-      border-width: 1px 1px 1px 0px;
-      padding: 0px 0px 2px 0px;
-    }
-
-    #SamplerButtons {
-      padding: 0px;
-    }
-
-    #SamplerHotcues {
-      padding: 1px 0px 0px 0px;
-    }
-
-    #SamplerGain {
-      padding: 0px 0px 0px 2px;
-      border-width: 1px 0px 0px 0px;
-    }
-    #SamplerPfl {
-      border-width: 0px 0px 0px 1px;
-      padding: 0px 5px 1px 6px;
-    }
-
-    #SamplerVU {
-      padding: 2px 3px 0px 1px;
-      border-width: 1px 1px 0px 0px;
-    }
-
-    #SamplerRateControls {
-      padding: 0px 1px 1px 0px;
-      }
-      #SamplerPitchSlider {
-        padding: 0px 0px 1px 0px;
-      }
+  }
+  #SamplerTitleBoxSmall {
+    padding: 0px 0px 0px 2px;
+  }
 
 
 /************** MicAux **************************************************/
+
+#MicDuckingContainer {
+  padding: 2px;
+  }
+  #MicDuckingStrengthBox {
+    padding-top: 3px;
+  }
 
 #MicAuxMainControls {
   border-radius: 2px;
@@ -917,10 +916,10 @@ WPushButton#FxSuperLinkInvertButton {
     padding: 0px 0px 2px 1px;
   }
   #MicTalkBox {
-    padding: 0px 0px 2px 1px;
+    padding: 0px 0px 0px 1px;
   }
   #MicAuxVUMeter {
-    padding: 2px 1px 3px 0px;
+    padding: 4px 1px 1px 0px;
     margin-left: 2px;
   }
   #MicAuxAddBox {

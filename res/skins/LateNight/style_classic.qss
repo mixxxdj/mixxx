@@ -769,24 +769,17 @@ WPushButton#FxSuperLinkInvertButton {
 
 #SamplerExpandBox {
   padding: 0px 1px 0px 1px;
-  }
+}
 
-  #Sampler {
-    padding: 1px 0px 2px 2px;
+#Sampler {
+  padding: 1px 0px 2px 2px;
   }
-  #SamplerMini {
-    padding: 1px;
-  }
-
   #SamplerTitleRow {
     margin: 0px 1px 0px 0px;
     }
     #SamplerTitleBox {
       border-width: 0px 1px 0px 0px;
       }
-    #SamplerTitleBoxSmall {
-      padding: 0px 0px 0px 2px;
-    }
     #SamplerTitle {
       padding: 1px 3px 1px 0px;
     }
@@ -796,15 +789,12 @@ WPushButton#FxSuperLinkInvertButton {
 
   #SamplerPlayBox {
     padding: 0px 2px 1px 0px;
-    }
-    #SamplerPlayBoxSmall {
-      padding: 1px;
-    }
+  }
 
-    #SamplerGain {
-      padding: 0px 0px 0px 2px;
-      border-width: 1px 0px 0px 0px;
-    }
+  #SamplerGain {
+    padding: 0px 0px 0px 2px;
+    border-width: 1px 0px 0px 0px;
+  }
 
   #SamplerSettings {
     border-width: 1px 1px 0px 0px;
@@ -831,6 +821,15 @@ WPushButton#FxSuperLinkInvertButton {
       padding: 0px 0px 1px 0px;
     }
 
+#SamplerMini {
+  padding: 1px;
+  }
+  #SamplerTitleBoxSmall {
+    padding: 0px 0px 0px 2px;
+  }
+  #SamplerPlayBoxSmall {
+    padding: 1px;
+  }
 
 /************** MicAux *****************************************************/
 
