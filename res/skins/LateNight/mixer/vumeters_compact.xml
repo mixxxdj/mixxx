@@ -1,4 +1,8 @@
 <Template>
+  <SetVariable name="ChannelType">channel</SetVariable>
+  <SetVariable name="VuSize">deck</SetVariable>
+  <SetVariable name="VuColor">light</SetVariable>
+
   <WidgetGroup>
     <SizePolicy>min,me</SizePolicy>
     <Layout>vertical</Layout>
@@ -9,35 +13,35 @@
         <SizePolicy>min,me</SizePolicy>
         <Children>
           <WidgetGroup>
-            <ObjectName>VuMeterContainerCompactDeck1</ObjectName>
+            <ObjectName>VuMeterDeck1_Compact</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <Template src="skin:/mixer/vumeter_single.xml">
+                <SetVariable name="Group">[Channel1]</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>VuMeterMaster_Compact</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
               <SingletonContainer>
-                <ObjectName>VuMeterChannel1</ObjectName>
+                <ObjectName>VuMeterMaster_Light</ObjectName>
               </SingletonContainer>
             </Children>
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>VuMeterContainerCompactMaster</ObjectName>
+            <ObjectName>VuMeterDeck2_Compact</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
-              <SingletonContainer>
-                <ObjectName>VuMeterMaster</ObjectName>
-              </SingletonContainer>
-            </Children>
-          </WidgetGroup>
-
-          <WidgetGroup>
-            <ObjectName>VuMeterContainerCompactDeck2</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>min,me</SizePolicy>
-            <Children>
-              <SingletonContainer>
-                <ObjectName>VuMeterChannel2</ObjectName>
-              </SingletonContainer>
+              <Template src="skin:/mixer/vumeter_single.xml">
+                <SetVariable name="Group">[Channel2]</SetVariable>
+              </Template>
             </Children>
           </WidgetGroup>
         </Children>
@@ -48,18 +52,18 @@
         <SizePolicy>min,me</SizePolicy>
         <Children>
           <WidgetGroup>
-            <ObjectName>VuMeterContainerCompactDeck3</ObjectName>
+            <ObjectName>VuMeterDeck3_Compact</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
-              <SingletonContainer>
-                <ObjectName>VuMeterChannel3</ObjectName>
-              </SingletonContainer>
+              <Template src="skin:/mixer/vumeter_single.xml">
+                <SetVariable name="Group">[Channel3]</SetVariable>
+              </Template>
             </Children>
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>VuMeterContainerCompactMaster</ObjectName>
+            <ObjectName>VuMeterMaster_Compact</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
@@ -79,13 +83,13 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>VuMeterContainerCompactDeck4</ObjectName>
+            <ObjectName>VuMeterDeck4_Compact</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
-              <SingletonContainer>
-                <ObjectName>VuMeterChannel4</ObjectName>
-              </SingletonContainer>
+              <Template src="skin:/mixer/vumeter_single.xml">
+                <SetVariable name="Group">[Channel4]</SetVariable>
+              </Template>
             </Children>
           </WidgetGroup>
         </Children>
@@ -93,7 +97,7 @@
           <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- 3 / (Master) / 4 -->
+      </WidgetGroup><!-- 3 / dimmed Master / 4 -->
 
     </Children>
   </WidgetGroup>

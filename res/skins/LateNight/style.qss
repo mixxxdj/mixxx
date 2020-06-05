@@ -346,7 +346,7 @@ WSpinny { /*
     qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   }
 
-  #VuAndSlider4decks {
+  #VuAndSlider_4Decks {
     qproperty-layoutAlignment: 'AlignRight | AlignTop';
   }
 #VuMeterBox,
@@ -364,10 +364,10 @@ WSpinny { /*
   /* gap in between Master lft/right Vu */
   qproperty-layoutSpacing: 1;
   }
-  #VuMeterChannel2Decks,
-  #VuMeterChannel4Decks,
-  #VuMeterMaster2Decks,
-  #VuMeterMaster4Decks {
+  #VuMeterChannel_2Decks,
+  #VuMeterChannel_4Decks,
+  #VuMeterMaster_2Decks,
+  #VuMeterMaster_4Decks {
     qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
     }
 
@@ -389,7 +389,7 @@ WSpinny { /*
 #CrossfaderAndSwitches2Decks {
   qproperty-layoutAlignment: 'AlignHCenter';
 }
-#CrossfaderSwitch4Decks {
+#CrossfaderSwitch_4Decks {
   qproperty-layoutAlignment: 'AlignRight';
 }
 #Crossfader {

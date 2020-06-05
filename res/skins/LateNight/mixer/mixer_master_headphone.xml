@@ -124,12 +124,12 @@
                 <SizePolicy>min,me</SizePolicy>
                 <Children>
                   <WidgetGroup>
-                    <ObjectName>VuMeterMaster4Decks</ObjectName>
+                    <ObjectName>VuMeterMaster_4Decks</ObjectName>
                     <Layout>horizontal</Layout>
                     <SizePolicy>max,max</SizePolicy>
                     <Children>
                       <SingletonContainer>
-                        <ObjectName>VuMeterMaster</ObjectName>
+                        <ObjectName>VuMeterMaster_Light</ObjectName>
                       </SingletonContainer>
                     </Children>
                   </WidgetGroup>

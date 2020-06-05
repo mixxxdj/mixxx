@@ -1,15 +1,15 @@
-<!DOCTYPE template>
 <!--
   Description:
-    A standard knob.
+    A stereo meter for the Master VU level
+
   Variables:
-    group
-    control: The control to connect to
-    label
-    Size
-    TooltipId
-    PotiMinAngle
-    PotiMaxAngle
+    Group
+    ChannelType   channel | sampler | microphone | ...
+    StyleScheme
+    VuSize        deck | sampler | small
+    VuColor       dark | light
+            (in PaleMoon theme the Vu meters are different
+             in mixer or 'standalone' in between compact decks)
 -->
 <Template>
   <WidgetGroup>
@@ -17,6 +17,7 @@
     <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
+      <!-- Left -->
       <WidgetGroup>
         <ObjectName>VuMeterBoxMasterSingle</ObjectName>
         <Layout>vertical</Layout>
@@ -24,16 +25,16 @@
         <Children>
           <StatusLight>
             <TooltipId>master_PeakIndicatorL</TooltipId>
-            <PathStatusLight>skin:/<Variable name="StyleScheme"/>/style/vu_clipping_deck_over.png</PathStatusLight>
-            <PathBack>skin:/<Variable name="StyleScheme"/>/style/vu_clipping_deck.png</PathBack>
+            <PathBack>skin:/<Variable name="StyleScheme"/>/style/vu_deck_clipping_bg_<Variable name="VuColor"/>.png</PathBack>
+            <PathStatusLight>skin:/<Variable name="StyleScheme"/>/style/vu_deck_clipping_active.png</PathStatusLight>
             <Connection>
               <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
             </Connection>
           </StatusLight>
           <VuMeter>
             <TooltipId>master_VuMeterL</TooltipId>
-            <PathVu>skin:/<Variable name="StyleScheme"/>/style/vu_level_deck_over.png</PathVu>
-            <PathBack>skin:/<Variable name="StyleScheme"/>/style/vu_level_deck.png</PathBack>
+            <PathBack>skin:/<Variable name="StyleScheme"/>/style/vu_deck_level_bg_<Variable name="VuColor"/>.png</PathBack>
+            <PathVu>skin:/<Variable name="StyleScheme"/>/style/vu_deck_level_active.png</PathVu>
             <Horizontal>false</Horizontal>
             <PeakHoldSize>5</PeakHoldSize>
             <PeakHoldTime>500</PeakHoldTime>
@@ -44,24 +45,25 @@
             </Connection>
           </VuMeter>
         </Children>
-      </WidgetGroup>
-      <WidgetGroup>
+      </WidgetGroup><!-- VuMeterBoxMasterSingle -->
+      <!-- Left -->
+      <WidgetGroup><!-- Right -->
         <ObjectName>VuMeterBoxMasterSingle</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
           <StatusLight>
             <TooltipId>master_PeakIndicatorR</TooltipId>
-            <PathStatusLight>skin:/<Variable name="StyleScheme"/>/style/vu_clipping_deck_over.png</PathStatusLight>
-            <PathBack>skin:/<Variable name="StyleScheme"/>/style/vu_clipping_deck.png</PathBack>
+            <PathBack>skin:/<Variable name="StyleScheme"/>/style/vu_deck_clipping_bg_<Variable name="VuColor"/>.png</PathBack>
+            <PathStatusLight>skin:/<Variable name="StyleScheme"/>/style/vu_deck_clipping_active.png</PathStatusLight>
             <Connection>
               <ConfigKey>[Master],PeakIndicatorR</ConfigKey>
             </Connection>
           </StatusLight>
           <VuMeter>
             <TooltipId>master_VuMeterR</TooltipId>
-            <PathVu>skin:/<Variable name="StyleScheme"/>/style/vu_level_deck_over.png</PathVu>
-            <PathBack>skin:/<Variable name="StyleScheme"/>/style/vu_level_deck.png</PathBack>
+            <PathBack>skin:/<Variable name="StyleScheme"/>/style/vu_deck_level_bg_<Variable name="VuColor"/>.png</PathBack>
+            <PathVu>skin:/<Variable name="StyleScheme"/>/style/vu_deck_level_active.png</PathVu>
             <Horizontal>false</Horizontal>
             <PeakHoldSize>5</PeakHoldSize>
             <PeakHoldTime>500</PeakHoldTime>
@@ -72,7 +74,8 @@
             </Connection>
           </VuMeter>
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- VuMeterBoxMasterSingle -->
+      <!-- Right -->
     </Children>
-  </WidgetGroup>
+  </WidgetGroup><!-- VuMeterBoxMaster -->
 </Template>

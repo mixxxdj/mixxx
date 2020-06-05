@@ -12,7 +12,7 @@
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>CrossfaderButtonContainerDeck</ObjectName>
+    <ObjectName>CrossfaderButtonContainer_Deck</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>

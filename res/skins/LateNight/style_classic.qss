@@ -22,11 +22,11 @@
 #Deck2, #DeckCompact2, #DeckMini2,
 #Deck3, #DeckCompact3, #DeckMini3,
 #Deck4, #DeckCompact4, #DeckMini4,
-#VuMeterContainerCompactDeck1,
-  #VuMeterContainerCompactDeck2,
-  #VuMeterContainerCompactDeck3,
-  #VuMeterContainerCompactDeck4,
-  #VuMeterContainerCompactMaster,
+#VuMeterDeck1_Compact,
+  #VuMeterDeck2_Compact,
+  #VuMeterDeck3_Compact,
+  #VuMeterDeck4_Compact,
+  #VuMeterMaster_Compact,
 #FxUnit1, #FxUnit2, #FxUnit3, #FxUnit4,
   #FxUnitControlsExpanded, #FxUnitControlsCollapsed,
   #FxSlotsExpanded, #FxSlotsCollapsed,
@@ -50,11 +50,11 @@ QAbstractScrollArea::corner {
 #Deck3, #DeckCompact3, #DeckMini3,
 #Deck4, #DeckCompact4, #DeckMini4,
 #MixerContainer,
-  #VuMeterContainerCompactDeck1,
-  #VuMeterContainerCompactDeck2,
-  #VuMeterContainerCompactDeck3,
-  #VuMeterContainerCompactDeck4,
-  #VuMeterContainerCompactMaster,
+  #VuMeterDeck1_Compact,
+  #VuMeterDeck2_Compact,
+  #VuMeterDeck3_Compact,
+  #VuMeterDeck4_Compact,
+  #VuMeterMaster_Compact,
 #FxUnit1, #FxUnit2, #FxUnit3, #FxUnit4,
 #MicDuckingContainer, #MicAuxUnit, #MicAuxAddFrame,
 #Sampler, #SamplerMini,
@@ -607,43 +607,30 @@ WLibrary,
   #VolumeGain2Decks {
     margin: 0px 2px;
   }
-  #VuAndSlider4decks {
+  #VuAndSlider_4Decks {
     margin-right: 1px;
     }
     #ChannelMixerKnobContainer {
       qproperty-layoutSpacing: 3;
     }
-  #PflBox4Decks {
+  #PflBox_4Decks {
     margin: 3px 0px 0px 20px;
   }
 
-  #VuMeterChannel2Decks {
-    margin: 0px 9px 2px 9px;
-  }
-  #VuMeterChannel4Decks {
-    margin: 6px 0px 6px 11px;
-  }
-  #VuMeterMaster2Decks {
-    margin: 0px 0px 2px 0px;
-  }
-  #VuMeterMaster4Decks {
-    margin: 5px 0px;
-  }
-
-  #CrossfaderSwitch4Decks {
+  #CrossfaderSwitch_4Decks {
     margin: 0px 3px 3px 0px;
   }
   #Crossfader {
     padding: 0px 0px 0px 1px;
   }
 
-  #CrossfaderButtonContainerDeck {
+  #CrossfaderButtonContainer_Deck {
     padding: 1px;
     border-bottom: 1px solid #333;
     border-right: 1px solid #333;
     border-bottom-right-radius: 1px;
     }
-  #CrossfaderButtonContainerAux {
+  #CrossfaderButtonContainer_Aux {
     padding: 1px 1px 0px 1px;
     margin-left: 5px;
     border-right: 1px solid #333;
@@ -667,29 +654,43 @@ WLibrary,
     padding: 3px;
   }
 
-#VuMeterContainerCompactDeck1,
-#VuMeterContainerCompactDeck2,
-#VuMeterContainerCompactDeck3,
-#VuMeterContainerCompactDeck4 {
+/* All VU meter instances */
+#VuMeterChannel_2Decks {
+  margin: 0px 9px 2px 9px;
+}
+#VuMeterChannel_4Decks {
+  margin: 6px 0px 6px 11px;
+}
+#VuMeterMaster_2Decks {
+  margin: 0px 0px 2px 0px;
+}
+#VuMeterMaster_4Decks {
+  margin: 5px 0px;
+}
+
+#VuMeterMaster_Compact {
+  margin: 0px 4px 4px 4px;
+  padding: 0px 5px;
+}
+
+#VuMeterDeck1_Compact,
+#VuMeterDeck2_Compact,
+#VuMeterDeck3_Compact,
+#VuMeterDeck4_Compact {
   margin: 0px 0px 4px 0px;
   }
-  #VuMeterContainerCompactDeck1,
-  #VuMeterContainerCompactDeck3 {
+  #VuMeterDeck1_Compact,
+  #VuMeterDeck3_Compact {
     padding: 0px 4px 0px 5px;
     border-top-left-radius: 0px;
     border-bottom-left-radius: 1px;
   }
-  #VuMeterContainerCompactDeck2,
-  #VuMeterContainerCompactDeck4 {
+  #VuMeterDeck2_Compact,
+  #VuMeterDeck4_Compact {
     padding: 0px 5px 0px 4px;
     border-top-right-radius: 0px;
     border-bottom-right-radius: 1px;
   }
-
-#VuMeterContainerCompactMaster {
-  margin: 0px 4px 4px 4px;
-  padding: 0px 5px;
-}
 
 /************** Fx *********************************************************/
 #FxUnitHeaderCollapsed {
@@ -2207,8 +2208,8 @@ WTrackMenu QMenu {
 #SkinContainer {
   background-color: #0f0f0f;
 }
-#CrossfaderButtonContainerDeck,
-#CrossfaderButtonContainerAux,
+#CrossfaderButtonContainer_Deck,
+#CrossfaderButtonContainer_Aux,
 WPushButton#CrossfaderButton[value="0"],
 #LibraryContainer QTableView,
 #LibraryContainer QTextBrowser,

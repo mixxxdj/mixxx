@@ -60,7 +60,7 @@
       <Template src="skin:/mixer/quick_effect_knob_4decks.xml"/>
 
       <WidgetGroup>
-        <ObjectName>PflBox4Decks</ObjectName>
+        <ObjectName>PflBox_4Decks</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
@@ -75,13 +75,13 @@
       </WidgetGroup>
 
       <WidgetGroup>
-        <ObjectName>VuAndSlider4decks</ObjectName>
+        <ObjectName>VuAndSlider_4Decks</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
 
           <WidgetGroup>
-            <ObjectName>VuMeterChannel4Decks</ObjectName>
+            <ObjectName>VuMeterChannel_4Decks</ObjectName>
             <Size>20f,0min</Size>
             <Layout>horizontal</Layout>
             <Children>
@@ -108,10 +108,10 @@
           </SliderComposed>
 
         </Children>
-      </WidgetGroup><!-- VuAndSlider4decks -->
+      </WidgetGroup><!-- VuAndSlider_4Decks -->
 
       <WidgetGroup>
-        <ObjectName>CrossfaderSwitch4Decks</ObjectName>
+        <ObjectName>CrossfaderSwitch_4Decks</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
