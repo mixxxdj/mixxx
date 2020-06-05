@@ -11,6 +11,3 @@ Deck::Deck(QObject* pParent,
                   /*defaultHeadphones*/ false,
                   /*primaryDeck*/ true) {
 }
-
-Deck::~Deck() {
-}

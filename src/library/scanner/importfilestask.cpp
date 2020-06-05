@@ -5,13 +5,13 @@
 #include "util/timer.h"
 
 ImportFilesTask::ImportFilesTask(LibraryScanner* pScanner,
-                                 const ScannerGlobalPointer scannerGlobal,
-                                 const QString& dirPath,
-                                 const bool prevHashExists,
-                                 const mixxx::cache_key_t newHash,
-                                 const QLinkedList<QFileInfo>& filesToImport,
-                                 const QLinkedList<QFileInfo>& possibleCovers,
-                                 SecurityTokenPointer pToken)
+        const ScannerGlobalPointer scannerGlobal,
+        const QString& dirPath,
+        const bool prevHashExists,
+        const mixxx::cache_key_t newHash,
+        const std::list<QFileInfo>& filesToImport,
+        const std::list<QFileInfo>& possibleCovers,
+        SecurityTokenPointer pToken)
         : ScannerTask(pScanner, scannerGlobal),
           m_dirPath(dirPath),
           m_prevHashExists(prevHashExists),

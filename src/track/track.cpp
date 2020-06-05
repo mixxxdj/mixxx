@@ -57,6 +57,13 @@ inline mixxx::Bpm getActualBpm(
 
 } // anonymous namespace
 
+// Don't change this string without an entry in the CHANGELOG!
+// Otherwise 3rd party software that picks up the currently
+// playing track from the main window and relies on this
+// formatting would stop working.
+//static
+const QString Track::kArtistTitleSeparator = QStringLiteral(" - ");
+
 Track::Track(
         TrackFile fileInfo,
         SecurityTokenPointer pSecurityToken,
@@ -362,9 +369,25 @@ bool Track::isMetadataSynchronized() const {
 QString Track::getInfo() const {
     QMutexLocker lock(&m_qMutex);
     if (m_record.getMetadata().getTrackInfo().getArtist().trimmed().isEmpty()) {
-        return m_record.getMetadata().getTrackInfo().getTitle();
+        if (m_record.getMetadata().getTrackInfo().getTitle().trimmed().isEmpty()) {
+            return m_fileInfo.fileName();
+        } else {
+            return m_record.getMetadata().getTrackInfo().getTitle();
+        }
     } else {
-        return m_record.getMetadata().getTrackInfo().getArtist() + ", " + m_record.getMetadata().getTrackInfo().getTitle();
+        return m_record.getMetadata().getTrackInfo().getArtist() +
+                kArtistTitleSeparator +
+                m_record.getMetadata().getTrackInfo().getTitle();
+    }
+}
+
+QString Track::getTitleInfo() const {
+    QMutexLocker lock(&m_qMutex);
+    if (m_record.getMetadata().getTrackInfo().getArtist().trimmed().isEmpty() &&
+            m_record.getMetadata().getTrackInfo().getTitle().trimmed().isEmpty()) {
+        return m_fileInfo.fileName();
+    } else {
+        return m_record.getMetadata().getTrackInfo().getTitle();
     }
 }
 
@@ -741,6 +764,20 @@ void Track::setCuePoint(CuePosition cue) {
 
     markDirtyAndUnlock(&lock);
     emit cuesUpdated();
+}
+
+void Track::shiftCuePositionsMillis(double milliseconds) {
+    QMutexLocker lock(&m_qMutex);
+
+    VERIFY_OR_DEBUG_ASSERT(m_streamInfo) {
+        return;
+    }
+    double frames = m_streamInfo->getSignalInfo().millis2frames(milliseconds);
+    for (const CuePointer& pCue : m_cuePoints) {
+        pCue->shiftPositionFrames(frames);
+    }
+
+    markDirtyAndUnlock(&lock);
 }
 
 void Track::analysisFinished() {

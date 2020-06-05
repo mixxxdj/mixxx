@@ -132,7 +132,7 @@ Description:
             <SetVariable name="Setting">[Skin],show_intro_outro_cues</SetVariable>
           </Template>
 
-          
+
           <Template src="skin:../Tango/skin_settings_button_2state.xml">
             <SetVariable name="text">Loop / Beatjump Buttons</SetVariable>
             <SetVariable name="Setting">[Skin],show_loop_beatjump_controls</SetVariable>
@@ -433,6 +433,11 @@ Description:
               </WidgetGroup><!-- /small/BIG selector, hidden mixer -->
             </Children>
           </WidgetGroup><!-- /small/BIG selector -->
+
+          <Template src="skin:../Tango/skin_settings_button_2state.xml">
+            <SetVariable name="text">Hotcue Shift Buttons</SetVariable>
+            <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
+          </Template>
           <!-- /Decks -->
 
           <WidgetGroup>

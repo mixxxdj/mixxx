@@ -6,9 +6,6 @@
 NetworkInputStreamWorker::NetworkInputStreamWorker() {
 }
 
-NetworkInputStreamWorker::~NetworkInputStreamWorker() {
-}
-
 void NetworkInputStreamWorker::setSourceFifo(FIFO<CSAMPLE>* pFifo) {
     (void)pFifo;
 }

@@ -83,7 +83,7 @@
           <TrackProperty>
             <TooltipId>track_title</TooltipId>
             <SizePolicy>me,min</SizePolicy>
-            <Property>title</Property>
+            <Property>titleInfo</Property>
             <Group><Variable name="group"/></Group>
             <Elide>right</Elide>
           </TrackProperty>

@@ -155,6 +155,8 @@ double SeratoTags::guessTimingOffsetMillis(
     double timingOffset = 0;
     if (taglib::getFileTypeFromFileName(filePath) == taglib::FileType::MP3) {
 #if defined(__COREAUDIO__)
+        Q_UNUSED(signalInfo);
+
         int timingShiftCase = mp3guessenc_timing_shift_case(filePath.toStdString().c_str());
 
         // TODO: Find missing timing offsets

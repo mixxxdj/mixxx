@@ -465,8 +465,9 @@ void BeatMap::addBeat(double dBeatSample) {
 
     // Don't insert a duplicate beat. TODO(XXX) determine what epsilon to
     // consider a beat identical to another.
-    if (it->frame_position() == beat.frame_position())
+    if (it != m_beats.end() && it->frame_position() == beat.frame_position()) {
         return;
+    }
 
     m_beats.insert(it, beat);
     onBeatlistChanged();

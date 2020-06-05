@@ -56,10 +56,10 @@ class EngineMaster : public QObject, public AudioSource {
     Q_OBJECT
   public:
     EngineMaster(UserSettingsPointer pConfig,
-                 const char* pGroup,
-                 EffectsManager* pEffectsManager,
-                 ChannelHandleFactory* pChannelHandleFactory,
-                 bool bEnableSidechain);
+            const char* pGroup,
+            EffectsManager* pEffectsManager,
+            ChannelHandleFactoryPointer pChannelHandleFactory,
+            bool bEnableSidechain);
     virtual ~EngineMaster();
 
     // Get access to the sample buffers. None of these are thread safe. Only to
@@ -270,7 +270,7 @@ class EngineMaster : public QObject, public AudioSource {
     // respective output.
     void processChannels(int iBufferSize);
 
-    ChannelHandleFactory* m_pChannelHandleFactory;
+    ChannelHandleFactoryPointer m_pChannelHandleFactory;
     void applyMasterEffects();
     void processHeadphones(const double masterMixGainInHeadphones);
     bool sidechainMixRequired() const;
