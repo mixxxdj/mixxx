@@ -3,7 +3,7 @@
 
 #include "library/basesqltablemodel.h"
 
-class PlaylistTableModel : public BaseSqlTableModel {
+class PlaylistTableModel final : public BaseSqlTableModel {
     Q_OBJECT
   public:
     PlaylistTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager,
