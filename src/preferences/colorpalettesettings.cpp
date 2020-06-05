@@ -48,7 +48,12 @@ ColorPalette ColorPaletteSettings::getColorPalette(
     for (const ConfigKey& key : m_pConfig->getKeysWithGroup(group)) {
         if (key.item == kColorPaletteHotcueIndicesConfigItem) {
             for (const QString& stringIndex :
-                    m_pConfig->getValueString(key).split(kColorPaletteHotcueIndicesConfigSeparator, QString::SkipEmptyParts)) {
+                    m_pConfig->getValueString(key).split(kColorPaletteHotcueIndicesConfigSeparator,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+                            Qt::SkipEmptyParts)) {
+#else
+                            QString::SkipEmptyParts)) {
+#endif
                 bool ok;
                 int index = stringIndex.toInt(&ok);
                 if (ok && index >= 0) {
