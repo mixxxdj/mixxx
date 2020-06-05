@@ -274,8 +274,8 @@ bool JsonWebTask::doStart(
             Qt::UniqueConnection);
 
     connect(m_pendingNetworkReply,
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-            qOverload<QNetworkReply::NetworkError>(&QNetworkReply::error),
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+            &QNetworkReply::errorOccurred,
 #else
             QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error),
 #endif

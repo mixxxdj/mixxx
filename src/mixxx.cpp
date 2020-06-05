@@ -548,9 +548,15 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     bool rescan = pConfig->getValue<bool>(
             ConfigKey("[Library]","RescanOnStartup"));
     // rescan the library if we get a new plugin
-    QList<QString> prev_plugins_list = pConfig->getValueString(
-        ConfigKey("[Library]", "SupportedFileExtensions")).split(
-        ",", QString::SkipEmptyParts);
+    QList<QString> prev_plugins_list =
+            pConfig->getValueString(
+                           ConfigKey("[Library]", "SupportedFileExtensions"))
+                    .split(',',
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+                            Qt::SkipEmptyParts);
+#else
+                            QString::SkipEmptyParts);
+#endif
 
     // TODO: QSet<T>::fromList(const QList<T>&) is deprecated and should be
     // replaced with QSet<T>(list.begin(), list.end()).
