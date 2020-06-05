@@ -40,6 +40,10 @@ class WindowedStatistics {
     void operator++(int) {
         m_period += 1;
     }
+    int lag() {
+        // expected latency
+        return (m_window.size() - 1)/2;
+    }
 };
 class BeatStatistics {
   public:

@@ -119,7 +119,10 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const Track& track,
         pGrid->setSubVersion(subVersion);
         return mixxx::BeatsPointer(pGrid, &BeatFactory::deleteBeats);
     } else if (version == BEAT_MAP_VERSION) {
-        mixxx::BeatMap* pBeatMap = new mixxx::BeatMap(track, iSampleRate, beats);
+        // iTotalSamples is in samples and FixConstantBeats expects frames
+        QVector<double> fixedBeats = BeatUtils::FixBeatmap(
+            beats, iSampleRate, iMinBpm, iMaxBpm);
+        mixxx::BeatMap* pBeatMap = new mixxx::BeatMap(track, iSampleRate, fixedBeats);
         pBeatMap->setSubVersion(subVersion);
         return mixxx::BeatsPointer(pBeatMap, &BeatFactory::deleteBeats);
     } else {
