@@ -194,7 +194,7 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
 }
 
 EngineMaster::~EngineMaster() {
-    qDebug() << "in ~EngineMaster()";
+    //qDebug() << "in ~EngineMaster()";
     delete m_pKeylockEngine;
     delete m_pCrossfader;
     delete m_pBalance;

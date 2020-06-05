@@ -5,12 +5,13 @@
 #include <QScopedPointer>
 #include <QString>
 
-#include "preferences/usersettings.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/channels/enginedeck.h"
 #include "mixer/baseplayer.h"
+#include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/memory.h"
+#include "util/parented_ptr.h"
 
 class EngineMaster;
 class ControlObject;
@@ -32,7 +33,7 @@ class BaseTrackPlayer : public BasePlayer {
     };
 
     BaseTrackPlayer(QObject* pParent, const QString& group);
-    virtual ~BaseTrackPlayer() {}
+    ~BaseTrackPlayer() override = default;
 
     virtual TrackPointer getLoadedTrack() const = 0;
 
@@ -61,7 +62,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
             bool defaultMaster,
             bool defaultHeadphones,
             bool primaryDeck);
-    virtual ~BaseTrackPlayerImpl();
+    ~BaseTrackPlayerImpl() override;
 
     TrackPointer getLoadedTrack() const final;
 
@@ -124,15 +125,14 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlPushButton> m_pWaveformZoomDown;
     std::unique_ptr<ControlPushButton> m_pWaveformZoomSetDefault;
 
-
-    std::unique_ptr<ControlProxy> m_pLoopInPoint;
-    std::unique_ptr<ControlProxy> m_pLoopOutPoint;
+    parented_ptr<ControlProxy> m_pLoopInPoint;
+    parented_ptr<ControlProxy> m_pLoopOutPoint;
     std::unique_ptr<ControlObject> m_pDuration;
 
     // TODO() these COs are reconnected during runtime
     // This may lock the engine
     std::unique_ptr<ControlObject> m_pFileBPM;
-    std::unique_ptr<ControlProxy> m_pKey;
+    parented_ptr<ControlProxy> m_pKey;
 
     std::unique_ptr<ControlPushButton> m_pShiftCuesEarlier;
     std::unique_ptr<ControlPushButton> m_pShiftCuesEarlierSmall;
@@ -140,20 +140,20 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlPushButton> m_pShiftCuesLaterSmall;
     std::unique_ptr<ControlObject> m_pShiftCues;
 
-    std::unique_ptr<ControlProxy> m_pReplayGain;
-    std::unique_ptr<ControlProxy> m_pPlay;
-    std::unique_ptr<ControlProxy> m_pLowFilter;
-    std::unique_ptr<ControlProxy> m_pMidFilter;
-    std::unique_ptr<ControlProxy> m_pHighFilter;
-    std::unique_ptr<ControlProxy> m_pLowFilterKill;
-    std::unique_ptr<ControlProxy> m_pMidFilterKill;
-    std::unique_ptr<ControlProxy> m_pHighFilterKill;
-    std::unique_ptr<ControlProxy> m_pPreGain;
-    std::unique_ptr<ControlProxy> m_pRateRatio;
-    std::unique_ptr<ControlProxy> m_pPitchAdjust;
-    std::unique_ptr<ControlProxy> m_pInputConfigured;
-    std::unique_ptr<ControlProxy> m_pVinylControlEnabled;
-    std::unique_ptr<ControlProxy> m_pVinylControlStatus;
+    parented_ptr<ControlProxy> m_pReplayGain;
+    parented_ptr<ControlProxy> m_pPlay;
+    parented_ptr<ControlProxy> m_pLowFilter;
+    parented_ptr<ControlProxy> m_pMidFilter;
+    parented_ptr<ControlProxy> m_pHighFilter;
+    parented_ptr<ControlProxy> m_pLowFilterKill;
+    parented_ptr<ControlProxy> m_pMidFilterKill;
+    parented_ptr<ControlProxy> m_pHighFilterKill;
+    parented_ptr<ControlProxy> m_pPreGain;
+    parented_ptr<ControlProxy> m_pRateRatio;
+    parented_ptr<ControlProxy> m_pPitchAdjust;
+    parented_ptr<ControlProxy> m_pInputConfigured;
+    parented_ptr<ControlProxy> m_pVinylControlEnabled;
+    parented_ptr<ControlProxy> m_pVinylControlStatus;
 };
 
 #endif // MIXER_BASETRACKPLAYER_H

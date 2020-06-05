@@ -11,6 +11,3 @@ PreviewDeck::PreviewDeck(QObject* pParent,
                   /*defaultHeadphones*/ true,
                   /*primaryDeck*/ false) {
 }
-
-PreviewDeck::~PreviewDeck() {
-}

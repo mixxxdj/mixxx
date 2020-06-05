@@ -239,8 +239,8 @@ void DlgCoverArtFullSize::wheelEvent(QWheelEvent* event) {
     // Scale the image size
     int oldWidth = width();
     int oldHeight = height();
-    int newWidth = oldWidth + (0.2 * event->delta());
-    int newHeight = oldHeight + (0.2 * event->delta());
+    int newWidth = oldWidth + (0.2 * event->angleDelta().y());
+    int newHeight = oldHeight + (0.2 * event->angleDelta().y());
     QSize newSize = size();
     newSize.scale(newWidth, newHeight, Qt::KeepAspectRatio);
 

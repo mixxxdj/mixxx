@@ -21,7 +21,7 @@ class Microphone : public BasePlayer {
                SoundManager* pSoundManager,
                EngineMaster* pMixingEngine,
                EffectsManager* pEffectsManager);
-    virtual ~Microphone();
+    ~Microphone() override;
 
   signals:
     void noMicrophoneInputConfigured();
