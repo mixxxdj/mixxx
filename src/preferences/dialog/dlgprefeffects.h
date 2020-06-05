@@ -16,9 +16,9 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
                    EffectsManager* pEffectsManager);
     virtual ~DlgPrefEffects();
 
-    void slotUpdate();
-    void slotApply();
-    void slotResetToDefaults();
+    void slotUpdate() override;
+    void slotApply() override;
+    void slotResetToDefaults() override;
 
   private slots:
     void availableEffectsListItemSelected(const QModelIndex& selected);

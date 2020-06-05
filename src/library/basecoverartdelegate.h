@@ -71,5 +71,5 @@ class BaseCoverArtDelegate : public TableItemDelegate {
     // We need to record rows in paint() (which is const) so
     // these are marked mutable.
     mutable QList<int> m_cacheMissRows;
-    mutable QHash<mixxx::cache_key_t, int> m_pendingCacheRows;
+    mutable QMultiHash<mixxx::cache_key_t, int> m_pendingCacheRows;
 };

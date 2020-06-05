@@ -1,5 +1,8 @@
 #include "library/dao/autodjcratesdao.h"
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+#include <QRandomGenerator>
+#endif
 #include <QtDebug>
 #include <QtSql>
 
@@ -40,6 +43,15 @@ const int kLeastPreferredPercent = 15;
 const int kLeastPreferredPercentMin = 0;
 const int kLeastPreferredPercentMax = 50;
 #endif
+
+int bounded_rand(int highest) {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+    return QRandomGenerator::global()->bounded(highest);
+#else
+    return qrand() % highest;
+#endif
+}
+
 } // anonymous namespace
 
 AutoDJCratesDAO::AutoDJCratesDAO(
@@ -1172,25 +1184,25 @@ TrackId AutoDJCratesDAO::getRandomTrackIdFromLibrary(int iPlaylistId) {
         // Least Preferred is not disabled
         iIgnoreIndex1 = (kLeastPreferredPercent * iTotalTracks) / 100;
         iIgnoreIndex2 = iTotalTracks - iIgnoreIndex1;
-        int iRandomNo = qrand() % 16 ;
+        int iRandomNo = bounded_rand(16);
         if(iRandomNo == 0 && iIgnoreIndex1 != 0) {
             // Select a track from the first [1, iIgnoredIndex1]
             beginIndex = 0;
-            offset = qrand() % iIgnoreIndex1 + 1 ;
+            offset = bounded_rand(iIgnoreIndex1) + 1;
         } else if(iRandomNo == 1 && iTotalTracks > iIgnoreIndex2){
             // Select from [iIgnoredIndex2 + 1, iTotalTracks];
             beginIndex = iIgnoreIndex2;
             // We need a number between [1, Total - iIgnoreIndex2]
-            offset = qrand() % (iTotalTracks - iIgnoreIndex2) + 1;
+            offset = bounded_rand(iTotalTracks - iIgnoreIndex2) + 1;
         } else {
             // Select from [iIgnoreIndex1 + 1, iIgnoreIndex2];
             beginIndex = iIgnoreIndex1;
             // We need a number between [1, iIgnoreIndex2 - iIgnoreIndex1]
-            offset = qrand() % (iIgnoreIndex2 - iIgnoreIndex1) + 1;
+            offset = bounded_rand(iIgnoreIndex2 - iIgnoreIndex1) + 1;
         }
         offset = beginIndex + offset;
         // In case we end up doing a qRand()%1 above
-        if( offset >= iTotalTracks) {
+        if (offset >= iTotalTracks) {
             offset= 0 ;
         }
     }

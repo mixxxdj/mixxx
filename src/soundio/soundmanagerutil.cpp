@@ -66,8 +66,8 @@ bool ChannelGroup::clashesWith(const ChannelGroup &other) const {
  * @param channels the number of channels used.
  */
 AudioPath::AudioPath(unsigned char channelBase, unsigned char channels)
-    : m_type(INVALID),
-      m_channelGroup(channelBase, channels),
+    : m_channelGroup(channelBase, channels),
+      m_type(INVALID),
       m_index(0) {
 }
 
@@ -90,15 +90,6 @@ ChannelGroup AudioPath::getChannelGroup() const {
  */
 unsigned char AudioPath::getIndex() const {
     return m_index;
-}
-
-/**
- * Defines equality for AudioPath objects.
- * @return true of this and other share a common type and index.
- */
-bool AudioPath::operator==(const AudioPath &other) const {
-    return m_type == other.m_type
-        && m_index == other.m_index;
 }
 
 /**

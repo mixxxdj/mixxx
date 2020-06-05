@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QAction>
-#include <QLinkedList>
 #include <QPointer>
 #include <QSqlTableModel>
 
@@ -43,7 +42,7 @@ class SetlogFeature : public BasePlaylistFeature {
   private:
     QString getRootViewHtml() const override;
 
-    QLinkedList<TrackId> m_recentTracks;
+    std::list<TrackId> m_recentTracks;
     QAction* m_pJoinWithPreviousAction;
     QAction* m_pGetNewPlaylist;
     int m_playlistId;

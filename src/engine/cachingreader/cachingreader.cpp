@@ -136,10 +136,12 @@ void CachingReader::freeAllChunks() {
 }
 
 CachingReaderChunkForOwner* CachingReader::allocateChunk(SINT chunkIndex) {
-    if (m_freeChunks.isEmpty()) {
+    if (m_freeChunks.empty()) {
         return nullptr;
     }
-    CachingReaderChunkForOwner* pChunk = m_freeChunks.takeFirst();
+    CachingReaderChunkForOwner* pChunk = m_freeChunks.front();
+    m_freeChunks.pop_front();
+
     pChunk->init(chunkIndex);
 
     m_allocatedCachingReaderChunks.insert(chunkIndex, pChunk);

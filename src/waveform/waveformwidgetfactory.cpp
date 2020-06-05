@@ -99,6 +99,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
         // Concretely, we want to set a non-GL waveform when loading the skin so that the window
         // loads correctly.
         : m_type(WaveformWidgetType::EmptyWaveform),
+          m_configType(WaveformWidgetType::EmptyWaveform),
           m_config(0),
           m_skipRender(false),
           m_frameRate(30),
@@ -316,8 +317,8 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
             m_config->getValueString(ConfigKey("[Waveform]","WaveformType")).toInt(&ok));
     // Store the widget type on m_configType for later initialization.
     // We will initialize the objects later because of a problem with GL on QT 5.14.2 on Windows
-    if (!ok || !setWidgetType(type, m_configType)) {
-        setWidgetType(autoChooseWidgetType(), m_configType);
+    if (!ok || !setWidgetType(type, &m_configType)) {
+        setWidgetType(autoChooseWidgetType(), &m_configType);
     }
 
     for (int i = 0; i < FilterCount; i++) {
@@ -449,28 +450,35 @@ int WaveformWidgetFactory::getVSyncType() {
 }
 
 bool WaveformWidgetFactory::setWidgetType(WaveformWidgetType::Type type) {
-    return setWidgetType(type, m_type);
+    return setWidgetType(type, &m_type);
 }
 
-bool WaveformWidgetFactory::setWidgetType(WaveformWidgetType::Type type, WaveformWidgetType::Type& currentType) {
-    if (type == currentType)
+bool WaveformWidgetFactory::setWidgetType(
+        WaveformWidgetType::Type type,
+        WaveformWidgetType::Type* pCurrentType) {
+    if (type == *pCurrentType) {
         return true;
+    }
 
     // check if type is acceptable
     int index = findHandleIndexFromType(type);
     if (index > -1) {
         // type is acceptable
-        currentType = type;
+        *pCurrentType = type;
         if (m_config) {
-            m_config->setValue(ConfigKey("[Waveform]", "WaveformType"), static_cast<int>(currentType));
+            m_config->setValue(
+                    ConfigKey("[Waveform]", "WaveformType"),
+                    static_cast<int>(*pCurrentType));
         }
         return true;
     }
 
     // fallback
-    currentType = WaveformWidgetType::EmptyWaveform;
+    *pCurrentType = WaveformWidgetType::EmptyWaveform;
     if (m_config) {
-        m_config->setValue(ConfigKey("[Waveform]", "WaveformType"), static_cast<int>(currentType));
+        m_config->setValue(
+                ConfigKey("[Waveform]", "WaveformType"),
+                static_cast<int>(*pCurrentType));
     }
     return false;
 }

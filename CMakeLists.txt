@@ -45,8 +45,164 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 
 # Speed up builds on HDDs
-if(GNU_GCC)
+if(GNU_GCC OR LLVM_CLANG)
   add_compile_options(-pipe)
+endif()
+
+# Profiling
+if(UNIX AND NOT APPLE)
+  option(PROFILING "Profiling (e.g. gprof) support" OFF)
+  if(PROFILING)
+    add_compile_options(-pg)
+    add_link_options(-pg)
+  endif()
+endif()
+
+#
+# Optimizations
+#
+set(OPTIMIZE "portable" CACHE STRING "Optimization and Tuning (set to off, portable, native, legacy, fastbuild)")
+message(STATUS "Optimization level: ${OPTIMIZE}")
+if(NOT OPTIMIZE STREQUAL "off")
+  if(MSVC)
+    # Use the fastest floating point math library
+    # http://msdn.microsoft.com/en-us/library/e7s85ffb.aspx
+    # http://msdn.microsoft.com/en-us/library/ms235601.aspx
+    add_compile_options(/fp:fast)
+
+    # Suggested for unused code removal
+    # http://msdn.microsoft.com/en-us/library/ms235601.aspx
+    # http://msdn.microsoft.com/en-us/library/xsa71f43.aspx
+    # http://msdn.microsoft.com/en-us/library/bxwfs976.aspx
+    add_compile_options(/Gy)
+    add_link_options(/OPT:REF /OPT:ICF)
+
+    # Don't worry about aligning code on 4KB boundaries
+    # ALBERT: NOWIN98 is not supported in MSVC 2010.
+    #add_link_options(mixxx-lib PUBLIC "/OPT:NOWIN98")
+
+    # http://msdn.microsoft.com/en-us/library/59a3b321.aspx
+    # In general, you should pick /O2 over /Ox
+    add_compile_options($<$<NOT:$<CONFIG:Debug>>:/O2>)
+
+    # Remove /RTC1 flag (conflicts with /O2)
+    string(REGEX REPLACE "/RTC[^ ]*" "" CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS}")
+
+    # Re-add /RTC1 for Debug builds
+    add_compile_options($<$<CONFIG:Debug>:/RTC1>)
+
+
+    if(OPTIMIZE STREQUAL "fastbuild")
+      # /GL : http://msdn.microsoft.com/en-us/library/0zza0de8.aspx
+      # !!! /GL is incompatible with /ZI, which is set by mscvdebug
+      add_compile_options(/GL-)
+
+      # Do link-time code generation (and don't show a progress indicator
+      # -- this relies on ANSI control characters and tends to overwhelm
+      # Jenkins logs) Should we turn on PGO ?
+      # http://msdn.microsoft.com/en-us/library/xbf3tbeh.aspx
+      add_link_options(/LTCG:OFF)
+    elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+      add_compile_options(/GL-)
+    else()
+      add_compile_options(/GL)
+      add_link_options(/LTCG:NOSTATUS)
+    endif()
+
+    if(OPTIMIZE STREQUAL "portable" OR OPTIMIZE STREQUAL "fastbuild")
+      message(STATUS "Enabling SS2 CPU optimizations (>= Pentium 4)")
+      # SSE and SSE2 are core instructions on x64
+      # and consequently raise a warning message from compiler with this flag on x64.
+      if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+        add_compile_options(/arch:SSE2)
+      endif()
+      add_compile_definitions("__SSE__" "__SSE2__")
+    elseif(OPTIMIZE STREQUAL "native")
+      message("Enabling native optimizations for ${CMAKE_SYSTEM_PROCESSOR}")
+      add_compile_options("/favor:${CMAKE_SYSTEM_PROCESSOR}")
+    elseif(OPTIMIZE STREQUAL "legacy")
+      message("Enabling pure i386 code")
+    else()
+      message(FATAL_ERROR "Invalid value passed to OPTIMIZE option: ${OPTIMIZE}")
+    endif()
+  elseif(GNU_GCC OR LLVM_CLANG)
+    # Common flags to all optimizations.
+    # -ffast-math will prevent a performance penalty by denormals
+    # (floating point values almost Zero are treated as Zero)
+    # unfortunately that work only on 64 bit CPUs or with sse2 enabled
+    # The following optimisation flags makes the engine code ~3 times
+    # faster, measured on a Atom CPU.
+    add_compile_options(
+      -O3
+      -ffast-math
+      -funroll-loops
+    )
+
+    # set -fomit-frame-pointer when we don't profile and are not using
+    # Clang sanitizers.
+    # Note: It is only included in -O on machines where it does not
+    # interfere with debugging
+    if(NOT PROFILING AND NOT CLANG_SANITIZERS)
+      add_compile_options(-fomit-frame-pointer)
+    endif()
+
+    if(OPTIMIZE STREQUAL "portable" OR OPTIMIZE STREQUAL "fastbuild")
+      # portable: sse2 CPU (>= Pentium 4)
+      if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86|x64|x86_64|AMD64)$")
+        message(STATUS "Enabling SS2 CPU optimizations (>= Pentium 4)")
+        add_compile_options(-mtune=generic)
+        # -mtune=generic picks the most common, but compatible options.
+        # on arm platforms equivalent to -march=arch
+        if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+          # the sse flags are not set by default on 32 bit builds
+          # but are not supported on arm builds
+          add_compile_options(
+            -msse2
+            -mfpmath=sse)
+        endif()
+        # TODO(rryan): macOS can use SSE3, and possibly SSE 4.1 once
+        # we require macOS 10.12.
+        # https://stackoverflow.com/questions/45917280/mac-osx-minumum-support-sse-version
+      elseif(CMAKE_SYSTEM_PROCESSOR EQUAL "arm")
+        add_compile_options(
+          -mflat-abi=hard
+          -mfpu=neon
+        )
+      endif()
+      # this sets macros __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
+      # This should be our default build for distribution
+      # It's a little sketchy, but turning on SSE2 will gain
+      # 100% performance in our filter code and allows us to
+      # turns on denormal zeroing.
+      # We don't really support CPU's earlier than Pentium 4,
+      # which is the class of CPUs this decision affects.
+      # The downside of this is that we aren't truly
+      # i386 compatible, so builds that claim 'i386' will crash.
+      # -- rryan 2/2011
+      # Note: SSE2 is a core part of x64 CPUs
+    elseif(OPTIMIZE STREQUAL "native")
+      message("Enabling native optimizations for ${CMAKE_SYSTEM_PROCESSOR}")
+      add_compile_options(-march=native)
+      # Note: requires gcc >= 4.2.0
+      # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
+      # are set automatically
+      if(CMAKE_SYSTEM_PROCESSOR EQUAL "arm")
+        add_compile_options(
+          -mfloat-abi=hard
+          -mfpu=neon
+        )
+      endif()
+    elseif(OPTIMIZE STREQUAL "legacy")
+      if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86|x64|x86_64|AMD64)$")
+        message("Enabling pure i386 code")
+        add_compile_options(-mtune=generic)
+        # -mtune=generic pick the most common, but compatible options.
+        # on arm platforms equivalent to -march=arch
+      endif()
+    else()
+      message(FATAL_ERROR "Invalid value passed to OPTIMIZE option: ${OPTIMIZE}")
+    endif()
+  endif()
 endif()
 
 include(CMakeDependentOption)
@@ -1335,8 +1491,11 @@ endif()
 
 # FpClassify This is a wrapper around the fpclassify function that prevents
 # inlining It is compiled without optimization and allows to use these function
-# from -ffast-math optimized objects
+# from -ffast-math optimized objects. The MSVC option /fp:fast does not suffer this issue
 add_library(FpClassify STATIC EXCLUDE_FROM_ALL src/util/fpclassify.cpp)
+if(GNU_GCC OR LLVM_CLANG)
+  target_compile_options(FpClassify PRIVATE -fno-fast-math)
+endif()
 target_link_libraries(mixxx-lib PUBLIC FpClassify)
 
 # googletest
@@ -2020,15 +2179,6 @@ if(MODPLUG)
   target_link_libraries(mixxx-lib PUBLIC Modplug::Modplug)
 endif()
 
-# Profiling
-if(UNIX AND NOT APPLE)
-  option(PROFILING "Profiling (e.g. gprof) support" OFF)
-  if(PROFILING)
-    target_compile_options(mixxx-lib PUBLIC -pg)
-    target_link_options(mixxx-lib PUBLIC -pg)
-  endif()
-endif()
-
 # QtKeychain
 find_package(Qt5Keychain QUIET)
 option(QTKEYCHAIN "Secure credentials storage support for Live Broadcasting profiles" OFF)
@@ -2135,157 +2285,4 @@ if(WAVPACK)
   target_sources(mixxx-lib PRIVATE src/sources/soundsourcewv.cpp)
   target_compile_definitions(mixxx-lib PUBLIC __WV__)
   target_link_libraries(mixxx-lib PUBLIC WavPack::WavPack)
-endif()
-
-#
-# Optimizations
-#
-set(OPTIMIZE "portable" CACHE STRING "Optimization and Tuning (set to off, portable, native, legacy, fastbuild)")
-message(STATUS "Optimization level: ${OPTIMIZE}")
-if(NOT OPTIMIZE STREQUAL "off")
-  if(MSVC)
-    # Use the fastest floating point math library
-    # http://msdn.microsoft.com/en-us/library/e7s85ffb.aspx
-    # http://msdn.microsoft.com/en-us/library/ms235601.aspx
-    target_compile_options(mixxx-lib PUBLIC "/fp:fast")
-
-    # Suggested for unused code removal
-    # http://msdn.microsoft.com/en-us/library/ms235601.aspx
-    # http://msdn.microsoft.com/en-us/library/xsa71f43.aspx
-    # http://msdn.microsoft.com/en-us/library/bxwfs976.aspx
-    target_compile_options(mixxx-lib PUBLIC "/Gy")
-    target_link_options(mixxx-lib PUBLIC "/OPT:REF" "/OPT:ICF")
-
-    # Don't worry about aligning code on 4KB boundaries
-    # ALBERT: NOWIN98 is not supported in MSVC 2010.
-    #target_link_options(mixxx-lib PUBLIC "/OPT:NOWIN98")
-
-    # http://msdn.microsoft.com/en-us/library/59a3b321.aspx
-    # In general, you should pick /O2 over /Ox
-    target_compile_options(mixxx-lib PUBLIC $<$<NOT:$<CONFIG:Debug>>:/O2>)
-
-    # Remove /RTC1 flag (conflicts with /O2)
-    string(REGEX REPLACE "/RTC[^ ]*" "" CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS}")
-
-    # Re-add /RTC1 for Debug builds
-    target_compile_options(mixxx-lib PRIVATE $<$<CONFIG:Debug>:/RTC1>)
-
-
-    if(OPTIMIZE STREQUAL "fastbuild")
-      # /GL : http://msdn.microsoft.com/en-us/library/0zza0de8.aspx
-      # !!! /GL is incompatible with /ZI, which is set by mscvdebug
-      target_compile_options(mixxx-lib PUBLIC "/GL-")
-
-      # Do link-time code generation (and don't show a progress indicator
-      # -- this relies on ANSI control characters and tends to overwhelm
-      # Jenkins logs) Should we turn on PGO ?
-      # http://msdn.microsoft.com/en-us/library/xbf3tbeh.aspx
-      target_link_options(mixxx-lib PUBLIC "/LTCG:OFF")
-    elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-      target_compile_options(mixxx-lib PUBLIC "/GL-")
-    else()
-      target_compile_options(mixxx-lib PUBLIC "/GL")
-      target_link_options(mixxx-lib PUBLIC "/LTCG:NOSTATUS")
-    endif()
-
-    if(OPTIMIZE STREQUAL "portable" OR OPTIMIZE STREQUAL "fastbuild")
-      message(STATUS "Enabling SS2 CPU optimizations (>= Pentium 4)")
-      # SSE and SSE2 are core instructions on x64
-      # and consequently raise a warning message from compiler with this flag on x64.
-      if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
-        target_compile_options(mixxx-lib PUBLIC "/arch:SSE2")
-      endif()
-      target_compile_definitions(mixxx-lib PUBLIC "__SSE__" "__SSE2__")
-    elseif(OPTIMIZE STREQUAL "native")
-      message("Enabling native optimizations for ${CMAKE_SYSTEM_PROCESSOR}")
-      target_compile_options(mixxx-lib PUBLIC "/favor:${CMAKE_SYSTEM_PROCESSOR}")
-    elseif(OPTIMIZE STREQUAL "legacy")
-      message("Enabling pure i386 code")
-    else()
-      message(FATAL_ERROR "Invalid value passed to OPTIMIZE option: ${OPTIMIZE}")
-    endif()
-  elseif(GNU_GCC)
-    # Common flags to all optimizations.
-    # -ffast-math will prevent a performance penalty by denormals
-    # (floating point values almost Zero are treated as Zero)
-    # unfortunately that work only on 64 bit CPUs or with sse2 enabled
-    # The following optimisation flags makes the engine code ~3 times
-    # faster, measured on a Atom CPU.
-    target_compile_options(mixxx-lib PUBLIC
-      "-O3"
-      "-ffast-math"
-      "-funroll-loops"
-    )
-
-    # set -fomit-frame-pointer when we don't profile and are not using
-    # Clang sanitizers.
-    # Note: It is only included in -O on machines where it does not
-    # interfere with debugging
-    if(NOT PROFILING AND NOT CLANG_SANITIZERS)
-      target_compile_options(mixxx-lib PUBLIC "-fomit-frame-pointer")
-    endif()
-
-    if(OPTIMIZE STREQUAL "portable" OR OPTIMIZE STREQUAL "fastbuild")
-      # portable: sse2 CPU (>= Pentium 4)
-      if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86|x64|x86_64|AMD64)$")
-        message(STATUS "Enabling SS2 CPU optimizations (>= Pentium 4)")
-        target_compile_options(mixxx-lib PUBLIC "-mtune=generic")
-        # -mtune=generic pick the most common, but compatible options.
-        # on arm platforms equivalent to -march=arch
-        if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-          # the sse flags are not set by default on 32 bit builds
-          # but are not supported on arm builds
-          target_compile_options(mixxx-lib PUBLIC "-msse" "-mfpmath=sse")
-        endif()
-        # TODO(rryan): macOS can use SSE3, and possibly SSE 4.1 once
-        # we require macOS 10.12.
-        # https://stackoverflow.com/questions/45917280/mac-osx-minumum-support-sse-version
-      elseif(CMAKE_SYSTEM_PROCESSOR EQUAL "arm")
-        target_compile_options(mixxx-lib PUBLIC
-          "-mflat-abi=hard"
-          "-mfpu=neon"
-        )
-      endif()
-      # this sets macros __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
-      # This should be our default build for distribution
-      # It's a little sketchy, but turning on SSE2 will gain
-      # 100% performance in our filter code and allows us to
-      # turns on denormal zeroing.
-      # We don't really support CPU's earlier than Pentium 4,
-      # which is the class of CPUs this decision affects.
-      # The downside of this is that we aren't truly
-      # i386 compatible, so builds that claim 'i386' will crash.
-      # -- rryan 2/2011
-      # Note: SSE2 is a core part of x64 CPUs
-    elseif(OPTIMIZE STREQUAL "native")
-      message("Enabling native optimizations for ${CMAKE_SYSTEM_PROCESSOR}")
-      target_compile_options(mixxx-lib PUBLIC "-march=native")
-      # http://en.chys.info/2010/04/what-exactly-marchnative-means/
-      # Note: requires gcc >= 4.2.0
-      # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
-      # are set automatically
-      if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86|x64|x86_64|AMD64)$"
-         AND NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
-        # For 32 bit builds using gcc < 5.0, the mfpmath=sse is
-        # not set by default (not supported on arm builds)
-        # If -msse is not implicitly set, it falls back to mfpmath=387
-        # and a compiler warning is issued (tested with gcc 4.8.4)
-        target_compile_options(mixxx-lib PUBLIC "-mfpmath=sse")
-      elseif(CMAKE_SYSTEM_PROCESSOR EQUAL "arm")
-        target_compile_options(mixxx-lib PUBLIC
-          "-mfloat-abi=hard"
-          "-mfpu=neon"
-        )
-      endif()
-    elseif(OPTIMIZE STREQUAL "legacy")
-      if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86|x64|x86_64|AMD64)$")
-        message("Enabling pure i386 code")
-        target_compile_options(mixxx-lib PUBLIC "-mtune=generic")
-        # -mtune=generic pick the most common, but compatible options.
-        # on arm platforms equivalent to -march=arch
-      endif()
-    else()
-      message(FATAL_ERROR "Invalid value passed to OPTIMIZE option: ${OPTIMIZE}")
-    endif()
-  endif()
 endif()

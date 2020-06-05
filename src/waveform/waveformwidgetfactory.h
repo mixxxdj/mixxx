@@ -96,7 +96,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     WaveformWidgetType::Type getType() const { return m_type;}
 
   protected:
-    bool setWidgetType(WaveformWidgetType::Type type, WaveformWidgetType::Type& currentType);
+    bool setWidgetType(
+            WaveformWidgetType::Type type,
+            WaveformWidgetType::Type* pCurrentType);
 
   public:
     void setDefaultZoom(double zoom);

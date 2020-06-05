@@ -737,8 +737,6 @@ TrackPointerList WTrackMenu::getTrackPointers(
     TrackPointerList trackPointers;
     trackPointers.reserve(m_trackIndexList.size());
     for (const auto& index : m_trackIndexList) {
-        DEBUG_ASSERT(maxSize < 0 ||
-                maxSize <= trackPointers.size());
         if (maxSize >= 0 && maxSize <= trackPointers.size()) {
             return trackPointers;
         }
