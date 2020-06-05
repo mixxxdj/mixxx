@@ -578,14 +578,9 @@ QVector<double> BeatUtils::calculateFixedTempoBeatMap(
     
     // Length of a beat at globalBpm in mono samples.
     const double beat_length = floor(((60.0 * sampleRate) / globalBpm) + 0.5);
-    double firstCorrectBeat;
-    if (rawbeats.count() < kBeatsToCountTempo) {
-        firstCorrectBeat = rawbeats.first();
-    }
-    else {
-        firstCorrectBeat = findFirstCorrectBeat(
+    double firstCorrectBeat = findFirstCorrectBeat(
         rawbeats, sampleRate, globalBpm);
-    }
+
     // We start building a fixed beat grid at globalBpm and the first beat from
     // rawbeats that matches globalBpm.
     double beatOffset = firstCorrectBeat;

@@ -57,6 +57,11 @@ class BeatUtils {
         const QVector<double> beats1, const double bpm1,
         const QVector<double> beats2, const int SampleRate);
 
+    // the detected beats are too noisy, this method clears then a bit
+    static QVector<double> FixBeatmap(
+            const QVector<double>& rawBeats, int SampleRate,
+            double minBpm, double maxBpm);
+
     // By default Vamp does not assume a 4/4 signature. This is basically a good
     // property of Vamp, however, it leads to inaccurate beat grids if a 4/4
     // signature is given.  What is the problem? Almost all modern dance music
@@ -69,6 +74,17 @@ class BeatUtils {
         const int totalSamples, const double globalBpm);
 
   private:
+    // Given a list of beats estimate the beats where the tempo changes and it's bpm
+    // Returned map will always have first and last beat with the median tempo
+    static QMap<int, double> findTempoChanges(
+            QMap<double, int> tempoFrequency, QList<double> tempoList);
+
+    static QVector<double> calculateFixedTempoBeatMap(
+            const QVector<double>& beats, const int sampleRate, const double bpm);
+
+    static double medianBpm(const QVector<double>& beats, int SampleRate,
+            int min_bpm, int max_bpm);
+            
     static double computeSampleMedian(QList<double> sortedItems);
     static double computeFilteredWeightedAverage(
         const QMap<double, int> frequencyTable,
