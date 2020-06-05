@@ -102,8 +102,8 @@ QMap<int, double> BeatUtils::findTempoChanges(
 }
 
 
-QVector<double> BeatUtils::FixBeatmap(
-    const QVector<double>& rawBeats, int SampleRate, 
+std::tuple <QVector<double>, QMap<int, double>> BeatUtils::FixBeatmap(
+    QVector<double>& rawBeats, int SampleRate, 
     double minBpm, double maxBpm) {
     
     QMap<double, int> tempoFrequency;
@@ -112,6 +112,7 @@ QVector<double> BeatUtils::FixBeatmap(
     QMap<int, double> stableTemposAndPositions = BeatUtils::findTempoChanges(
         tempoFrequency, tempoList);
     QVector<double> fixedBeats;
+    QMap<int, double> fixedTempoAndBeats;
     // here we only care about where the change happened
     auto tempoChanges = stableTemposAndPositions.keys();    
     for (int lastTempoChage = 0; 
@@ -129,6 +130,8 @@ QVector<double> BeatUtils::FixBeatmap(
                     rawBeats.begin() + beatStart, rawBeats.begin() + beatStart + middle);
             QVector<double> beatsAtRight(
                     rawBeats.begin() + beatStart + middle, rawBeats.begin() + beatEnd);
+            // the median is a better guess of similarity than our more
+            // sophisticated method calculatebpm that might consider outliers
             double beginBpm = BeatUtils::medianBpm(beatsAtLeft, SampleRate, minBpm, maxBpm);
             double endBpm = BeatUtils::medianBpm(beatsAtRight, SampleRate, minBpm, maxBpm);
             bpmDiff = fabs(beginBpm - endBpm);
@@ -139,9 +142,11 @@ QVector<double> BeatUtils::FixBeatmap(
             while (beatStart < beatEnd - 4) {
                 QVector<double> splittedAtMeasure(
                         rawBeats.begin() + beatStart, rawBeats.begin() + beatStart + 4);
+                // for such a small vector the median is also more realible
                 double measureBpm = medianBpm(splittedAtMeasure, SampleRate, minBpm, maxBpm);
+                fixedTempoAndBeats[beatStart] = measureBpm;
                 fixedBeats << BeatUtils::calculateFixedTempoBeatMap(
-                        splittedAtMeasure, SampleRate, measureBpm);
+                        splittedAtMeasure, SampleRate, measureBpm, false);
                 beatStart += 4;
             }
         } else {
@@ -151,9 +156,10 @@ QVector<double> BeatUtils::FixBeatmap(
             double bpm = calculateBpm(splittedAtTempoChange, SampleRate, minBpm, maxBpm);
             fixedBeats << BeatUtils::calculateFixedTempoBeatMap(
                     splittedAtTempoChange, SampleRate, bpm);
+            fixedTempoAndBeats[beatStart] = bpm;
         }
     }
-    return fixedBeats;
+    return std::make_tuple(fixedBeats, fixedTempoAndBeats);
 }
 
 void BeatUtils::printBeatStatistics(const QVector<double>& beats, int SampleRate) {
@@ -571,16 +577,20 @@ double BeatUtils::calculateFixedTempoFirstBeat(
 }
 
 QVector<double> BeatUtils::calculateFixedTempoBeatMap(
-    const QVector<double> &rawbeats, const int sampleRate, const double globalBpm) {
+        const QVector<double> &rawbeats, const int sampleRate,
+        const double globalBpm, bool correctFirst) {
+    
     if (rawbeats.size() == 0) {
         return rawbeats;
     }
     
     // Length of a beat at globalBpm in mono samples.
     const double beat_length = floor(((60.0 * sampleRate) / globalBpm) + 0.5);
-    double firstCorrectBeat = findFirstCorrectBeat(
-        rawbeats, sampleRate, globalBpm);
-
+    double firstCorrectBeat = rawbeats.first();
+    if (correctFirst) {
+        firstCorrectBeat = findFirstCorrectBeat(
+                rawbeats, sampleRate, globalBpm);
+    }
     // We start building a fixed beat grid at globalBpm and the first beat from
     // rawbeats that matches globalBpm.
     double beatOffset = firstCorrectBeat;
@@ -592,7 +602,7 @@ QVector<double> BeatUtils::calculateFixedTempoBeatMap(
     }
     // Here we add the beats that were before our first "correct" beat to the grid
     beatOffset = firstCorrectBeat - beat_length;
-    while (beatOffset >= rawbeats.first()) {
+    while (beatOffset > rawbeats.first()) {
         // this runs in O(n) for each call
         // TODO(Cristiano) Use QList instead of QVector?
         fixedBeats.prepend(beatOffset);
