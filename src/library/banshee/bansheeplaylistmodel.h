@@ -11,7 +11,7 @@
 #include "library/stardelegate.h"
 #include "library/basesqltablemodel.h"
 
-class BansheePlaylistModel : public BaseSqlTableModel {
+class BansheePlaylistModel final : public BaseSqlTableModel {
     Q_OBJECT
   public:
     BansheePlaylistModel(QObject* pParent, TrackCollectionManager* pTrackCollectionManager, BansheeDbConnection* pConnection);

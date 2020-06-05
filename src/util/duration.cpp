@@ -27,7 +27,8 @@ QChar DurationBase::kDecimalSeparator = QChar(0x002E);
 // static
 QString DurationBase::formatTime(double dSeconds, Precision precision) {
     if (dSeconds < 0.0 || !isfinite(dSeconds)
-            || dSeconds > std::numeric_limits<qint64>::max()) {
+            // Use >= instead of >: 2^63-1 (qint64) is rounded to 2^63 (double)
+            || dSeconds >= static_cast<double>(std::numeric_limits<qint64>::max())) {
         // negative durations and infinity or isNaN values are not supported
         return kInvalidDurationString;
     }
