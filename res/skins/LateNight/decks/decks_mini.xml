@@ -41,13 +41,4 @@
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>
-
-  <WidgetGroup><!-- Top spacer when waveforms are hidden -->
-    <Size>0me,3f</Size>
-    <Connection>
-      <ConfigKey persist="true">[Skin],show_minimal_decks</ConfigKey>
-      <Transform><Not/></Transform>
-      <BindProperty>visible</BindProperty>
-    </Connection>
-  </WidgetGroup>
 </Template>

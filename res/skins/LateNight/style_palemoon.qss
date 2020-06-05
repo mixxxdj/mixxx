@@ -13,8 +13,8 @@
 * menu & special widget styles
 
 
-/******************************************************************************
-************** Scheme-specific layout adjustments & colors ********************/
+/**********************************************************************
+************** Colors & borders of GUI containers ********************/
 
 #Deck1, #DeckCompact1, #DeckMini1,
 #Deck2, #DeckCompact2, #DeckMini2,
@@ -246,15 +246,15 @@ WLibrary {
   border-style: solid;
   border-color: #0c0c0c;
 }
-/************** Backgrounds & 3D borders *************************************
-************** of major GUI containers **************************************/
+
+/**********************************************************************
+************** Colors & borders of GUI containers ********************/
+
 
 
 
 /******************* Container layouts, margins etc. ******************
 **********************************************************************/
-
-/************ Decks, Fx, Samplers, MixAux *************************/
 
 #ToolbarDeckSpacer {
   min-height: 3px;

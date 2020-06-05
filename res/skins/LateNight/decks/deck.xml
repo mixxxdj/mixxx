@@ -2,7 +2,8 @@
   <SetVariable name="Type">deck</SetVariable>
   <SetVariable name="Group">[Channel<Variable name="ChanNum"/>]</SetVariable>
 
-  <!-- We need those singletons first because they're used in DeckN singletons -->
+  <!-- We need those singletons first because they're... -->
+  <!-- ...used in all three deck variants -->
   <SingletonDefinition>
     <ObjectName>SpinnyCoverart<Variable name="ChanNum"/></ObjectName>
     <Children>
@@ -10,6 +11,8 @@
     </Children>
   </SingletonDefinition>
 
+  <!-- ...used in full & compact deck, minimal deck has its own instance
+       with smaller labels. -->
   <SingletonDefinition>
     <ObjectName>DeckOverview<Variable name="ChanNum"/></ObjectName>
     <Children>
@@ -19,6 +22,7 @@
     </Children>
   </SingletonDefinition>
 
+  <!-- ...used in full & compact deck. -->
   <SingletonDefinition>
     <ObjectName>DeckSettings<Variable name="ChanNum"/></ObjectName>
     <Children>
@@ -26,6 +30,7 @@
     </Children>
   </SingletonDefinition>
 
+  <!-- ...used in full & compact deck -->
   <SingletonDefinition>
     <ObjectName>KeyControls<Variable name="ChanNum"/></ObjectName>
     <Children>
@@ -33,7 +38,7 @@
     </Children>
   </SingletonDefinition>
 
-  <!-- Deck sizes -->
+  <!-- Minimal deck, used in deck stack and above library -->
   <SingletonDefinition>
     <ObjectName>Deck<Variable name="ChanNum"/>_Mini</ObjectName>
     <Children>
@@ -41,58 +46,36 @@
     </Children>
   </SingletonDefinition>
 
-  <SingletonDefinition>
-    <ObjectName>Deck<Variable name="ChanNum"/>_Full</ObjectName>
-    <Children>
-      <Template src="skin:/decks/deck_full.xml"/>
-    </Children>
-  </SingletonDefinition>
-
-  <!-- Stack to choose Full // Full / Compact / Minimal deck -->
-  <WidgetStack currentpage="[Master],show_mixer" persist="true">
+  <!-- Stack to show FULL, Compact or minimal decks, depending on
+        the skin configuration:
+        See /helpers/skin_helper_deck_size.xml for documentation. -->
+  <WidgetStack>
     <Children>
 
-      <!-- Stack to choose Full / Compact / Minimal deck -->
-      <WidgetStack currentpage="[LateNight],deck_size" persist="true">
+      <WidgetGroup trigger="[LateNight],show_full_deck">
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
-
-          <SingletonContainer>
-            <ObjectName>Deck<Variable name="ChanNum"/>_Full</ObjectName>
-          </SingletonContainer>
-
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <SizePolicy>me,min</SizePolicy>
-            <Children>
-              <Template src="skin:/decks/deck_compact.xml"/>
-            </Children>
-          </WidgetGroup>
-
-          <SingletonContainer>
-            <ObjectName>Deck<Variable name="ChanNum"/>_Mini</ObjectName>
-          </SingletonContainer>
-
+          <Template src="skin:/decks/deck_full.xml"/>
         </Children>
-        <Connection>
-          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
-          <Transform><Not/></Transform>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetStack>
+      </WidgetGroup>
 
-      <!-- Always show full decks when Mixer is visible -->
-      <WidgetGroup>
+      <WidgetGroup trigger="[LateNight],show_compact_deck">
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <Template src="skin:/decks/deck_compact.xml"/>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup trigger="[LateNight],show_minimal_deck">
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
           <SingletonContainer>
-            <ObjectName>Deck<Variable name="ChanNum"/>_Full</ObjectName>
+            <ObjectName>Deck<Variable name="ChanNum"/>_Mini</ObjectName>
           </SingletonContainer>
         </Children>
-        <Connection>
-          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
       </WidgetGroup>
 
     </Children>

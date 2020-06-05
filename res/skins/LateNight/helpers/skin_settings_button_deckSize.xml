@@ -24,8 +24,8 @@ Variables:
       <Alignment>left</Alignment>
     </State>
     <Connection>
-      <ConfigKey persist="true">[LateNight],deck_size</ConfigKey>
-      <Transform><IsEqual><Variable name="DeckSize"/></IsEqual></Transform>
+      <ConfigKey persist="true">[LateNight],selected_deck_size</ConfigKey>
+      <Transform><IsEqual><Variable name="SelectedDeckSize"/></IsEqual></Transform>
       <ButtonState>LeftButton</ButtonState>
     </Connection>
   </PushButton>

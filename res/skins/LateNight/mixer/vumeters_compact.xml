@@ -4,121 +4,97 @@
     <Layout>vertical</Layout>
     <Children>
 
-      <WidgetGroup>
-        <ObjectName>CompactDecksCenterSpacer</ObjectName>
-        <SizePolicy>f,max</SizePolicy>
-        <Layout>vertical</Layout>
-        <Children/>
-      </WidgetGroup>
-
-      <WidgetGroup>
-        <ObjectName></ObjectName>
+      <WidgetGroup><!-- 1 / Master / 2 -->
+        <Layout>horizontal</Layout>
         <SizePolicy>min,me</SizePolicy>
-        <Layout>vertical</Layout>
         <Children>
-
-          <WidgetGroup><!-- 1 / Master / 2 -->
+          <WidgetGroup>
+            <ObjectName>VuMeterContainerCompactDeck1</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
-              <WidgetGroup>
-                <ObjectName>VuMeterContainerCompactDeck1</ObjectName>
-                <Layout>horizontal</Layout>
-                <SizePolicy>min,me</SizePolicy>
-                <Children>
-                  <SingletonContainer>
-                    <ObjectName>VuMeterChannel1</ObjectName>
-                  </SingletonContainer>
-                </Children>
-              </WidgetGroup>
-
-              <WidgetGroup>
-                <ObjectName>VuMeterContainerCompactMaster</ObjectName>
-                <Layout>horizontal</Layout>
-                <SizePolicy>min,me</SizePolicy>
-                <Children>
-                  <SingletonContainer>
-                    <ObjectName>VuMeterMaster</ObjectName>
-                  </SingletonContainer>
-                </Children>
-              </WidgetGroup>
-
-              <WidgetGroup>
-                <ObjectName>VuMeterContainerCompactDeck2</ObjectName>
-                <Layout>horizontal</Layout>
-                <SizePolicy>min,me</SizePolicy>
-                <Children>
-                  <SingletonContainer>
-                    <ObjectName>VuMeterChannel2</ObjectName>
-                  </SingletonContainer>
-                </Children>
-              </WidgetGroup>
+              <SingletonContainer>
+                <ObjectName>VuMeterChannel1</ObjectName>
+              </SingletonContainer>
             </Children>
-          </WidgetGroup><!-- 1 / Master / 2 -->
+          </WidgetGroup>
 
-          <WidgetGroup><!-- 3 / (Master) / 4 -->
+          <WidgetGroup>
+            <ObjectName>VuMeterContainerCompactMaster</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>VuMeterMaster</ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>VuMeterContainerCompactDeck2</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>VuMeterChannel2</ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup><!-- 1 / Master / 2 -->
+
+      <WidgetGroup><!-- 3 / (Master) / 4 -->
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,me</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>VuMeterContainerCompactDeck3</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>VuMeterChannel3</ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>VuMeterContainerCompactMaster</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
               <WidgetGroup>
-                <ObjectName>VuMeterContainerCompactDeck3</ObjectName>
-                <Layout>horizontal</Layout>
-                <SizePolicy>min,me</SizePolicy>
-                <Children>
-                  <SingletonContainer>
-                    <ObjectName>VuMeterChannel3</ObjectName>
-                  </SingletonContainer>
-                </Children>
-              </WidgetGroup>
-
-              <WidgetGroup>
-                <ObjectName>VuMeterContainerCompactMaster</ObjectName>
-                <Layout>horizontal</Layout>
-                <SizePolicy>min,me</SizePolicy>
+                <Layout>stacked</Layout>
+                <Size>15f,96f</Size>
                 <Children>
                   <WidgetGroup>
-                    <Layout>stacked</Layout>
-                    <Size>15f,96f</Size>
-                    <Children>
-                      <WidgetGroup>
-                        <ObjectName>VuMasterCover</ObjectName>
-                      </WidgetGroup>
-                      <!-- Unfortnately we can load a Singleton only once,
-                          so we need a separate vu meter instance -->
-                      <Template src="skin:/mixer/vumeter_master.xml"/>
-                    </Children>
+                    <ObjectName>VuMasterCover</ObjectName>
                   </WidgetGroup>
-                </Children>
-              </WidgetGroup>
-
-              <WidgetGroup>
-                <ObjectName>VuMeterContainerCompactDeck4</ObjectName>
-                <Layout>horizontal</Layout>
-                <SizePolicy>min,me</SizePolicy>
-                <Children>
-                  <SingletonContainer>
-                    <ObjectName>VuMeterChannel4</ObjectName>
-                  </SingletonContainer>
+                  <!-- Unfortnately we can load a Singleton only once,
+                      so we need a separate vu meter instance -->
+                  <Template src="skin:/mixer/vumeter_master.xml"/>
                 </Children>
               </WidgetGroup>
             </Children>
-            <Connection>
-              <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup><!-- 3 / (Master) / 4 -->
+          </WidgetGroup>
 
+          <WidgetGroup>
+            <ObjectName>VuMeterContainerCompactDeck4</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>VuMeterChannel4</ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[LateNight],show_vumeters_compact</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup>
+      </WidgetGroup><!-- 3 / (Master) / 4 -->
 
     </Children>
-    <Connection>
-      <ConfigKey>[LateNight],show_compact_deck</ConfigKey>
-      <BindProperty>visible</BindProperty>
-    </Connection>
   </WidgetGroup>
 </Template>

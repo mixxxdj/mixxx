@@ -295,6 +295,20 @@
     Note that Singletons don't actually appear here, they are just instantiated
     and configured. -->
     <SingletonDefinition>
+      <ObjectName>DecksLeft_Singleton</ObjectName>
+      <Children>
+        <Template src="skin:/decks/decks_left.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DecksRight_Singleton</ObjectName>
+      <Children>
+        <Template src="skin:/decks/decks_right.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
       <ObjectName>LibrarySingleton</ObjectName>
       <Children>
         <Template src="skin:library.xml"/>
@@ -361,10 +375,13 @@
                           <Layout>horizontal</Layout>
                           <SizePolicy>me,max</SizePolicy>
                           <Children>
-                            <Template src="skin:/decks/decks_left.xml"/>
+                            <SingletonContainer>
+                              <ObjectName>DecksLeft_Singleton</ObjectName>
+                            </SingletonContainer>
                             <Template src="skin:mixer.xml"/>
-                            <Template src="skin:/mixer/vumeters_compact.xml"/>
-                            <Template src="skin:/decks/decks_right.xml"/>
+                            <SingletonContainer>
+                              <ObjectName>DecksRight_Singleton</ObjectName>
+                            </SingletonContainer>
                           </Children>
                         </WidgetGroup>
 
@@ -379,9 +396,10 @@
                     </WidgetGroup>
 
                   </Children>
-                </Splitter><!-- Decks, Effects, Samplers, Mic/Aux, Library -->
+                </Splitter>
+                <!-- Decks, Effects, Samplers, Mic/Aux, Library -->
 
-                <!-- Mini decks + maximized Library only -->
+                <!-- Maximized Library & mini decks only -->
                 <WidgetGroup trigger="[Master],maximize_library" on_hide_select="0">
                   <Layout>vertical</Layout>
                   <SizePolicy>me,me</SizePolicy>
@@ -393,7 +411,7 @@
                       <ObjectName>LibrarySingleton</ObjectName>
                     </SingletonContainer>
                   </Children>
-                </WidgetGroup><!-- Mini decks + maximized Library only -->
+                </WidgetGroup><!-- Maximized Library & mini decks only -->
 
               </Children>
             </WidgetStack>
