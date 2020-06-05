@@ -2190,20 +2190,8 @@ if(QTKEYCHAIN)
   target_include_directories(mixxx-lib PUBLIC ${QTKEYCHAIN_INCLUDE_DIRS})
 endif()
 
-# USB Bulk controller support
+# USB HID or/and Bulk controller support
 find_package(LibUSB)
-cmake_dependent_option(BULK "USB Bulk controller support" ON "LibUSB_FOUND" OFF)
-if(BULK)
-  if(NOT LibUSB_FOUND)
-    message(FATAL_ERROR "USB Bulk controller support requires libusb 1.0 and its development headers.")
-  endif()
-  target_sources(mixxx-lib PRIVATE
-    src/controllers/bulk/bulkcontroller.cpp
-    src/controllers/bulk/bulkenumerator.cpp
-  )
-  target_compile_definitions(mixxx-lib PUBLIC __BULK__)
-  target_link_libraries(mixxx-lib PUBLIC LibUSB::LibUSB)
-endif()
 
 # USB HID controller support
 find_package(HIDAPI)
@@ -2242,6 +2230,26 @@ if(HID)
     endif()
     target_link_libraries(mixxx-lib PUBLIC HIDAPI::LibUSB)
   endif()
+endif()
+
+# USB Bulk controller support
+cmake_dependent_option(BULK "USB Bulk controller support" ON "LibUSB_FOUND" OFF)
+if(BULK)
+  if(NOT LibUSB_FOUND)
+    message(FATAL_ERROR "USB Bulk controller support requires libusb 1.0 and its development headers.")
+  endif()
+  target_sources(mixxx-lib PRIVATE
+    src/controllers/bulk/bulkcontroller.cpp
+    src/controllers/bulk/bulkenumerator.cpp
+  )
+  if(NOT HID)
+    target_sources(mixxx-lib PRIVATE
+      src/controllers/hid/hidcontrollerpreset.cpp
+      src/controllers/hid/hidcontrollerpresetfilehandler.cpp
+    )
+  endif()
+  target_compile_definitions(mixxx-lib PUBLIC __BULK__)
+  target_link_libraries(mixxx-lib PUBLIC LibUSB::LibUSB)
 endif()
 
 # Vinyl Control
