@@ -675,11 +675,6 @@ void GlobalTrackCache::slotEvictAndSave(
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     DEBUG_ASSERT(cacheEntryPtr);
 
-    // We need to be sure this is always called from the main thread
-    // because we can only access the DB from it and we must not lose the
-    // the lock until all changes are persistently stored in file and DB
-    // to not hand out the track again with old metadata.
-    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
     GlobalTrackCacheLocker cacheLocker;
 
     if (!cacheEntryPtr->expired()) {

@@ -174,13 +174,25 @@ private:
     TrackRef m_trackRef;
 };
 
+/// Callback interface for pre-delete actions
 class /*interface*/ GlobalTrackCacheSaver {
 private:
     friend class GlobalTrackCache;
-    virtual void saveEvictedTrack(Track* pEvictedTrack) noexcept = 0;
 
-protected:
-    virtual ~GlobalTrackCacheSaver() {}
+    /// Perform actions that are necessary to save any pending
+    /// modifications of a Track object before it finally gets
+    /// deleted.
+    ///
+    /// GlobalTrackCache ensures that the given pointer is valid
+    /// and the last and only reference to this Track object.
+    ///
+    /// This callback method will always be invoked from the
+    /// event loop thread of the owning GlobalTrackCache instance.
+    virtual void saveEvictedTrack(
+            Track* pEvictedTrack) noexcept = 0;
+
+  protected:
+    virtual ~GlobalTrackCacheSaver() = default;
 };
 
 class GlobalTrackCache : public QObject {
