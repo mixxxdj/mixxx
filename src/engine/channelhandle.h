@@ -16,10 +16,11 @@
 // A helper class, ChannelHandleFactory, keeps a running count of handles that
 // have been assigned.
 
-#include <QtDebug>
 #include <QHash>
 #include <QString>
 #include <QVarLengthArray>
+#include <QtDebug>
+#include <memory>
 
 #include "util/assert.h"
 
@@ -146,6 +147,8 @@ class ChannelHandleFactory {
     QHash<QString, ChannelHandle> m_groupToHandle;
     QHash<ChannelHandle, QString> m_handleToGroup;
 };
+
+typedef std::shared_ptr<ChannelHandleFactory> ChannelHandleFactoryPointer;
 
 // An associative container mapping ChannelHandle to a template type T. Backed
 // by a QVarLengthArray with ChannelHandleMap::kMaxExpectedGroups pre-allocated

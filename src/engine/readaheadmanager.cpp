@@ -221,12 +221,12 @@ void ReadAheadManager::addReadLogEntry(double virtualPlaypositionStart,
     ReadLogEntry newEntry(virtualPlaypositionStart,
                           virtualPlaypositionEndNonInclusive);
     if (m_readAheadLog.size() > 0) {
-        ReadLogEntry& last = m_readAheadLog.last();
+        ReadLogEntry& last = m_readAheadLog.back();
         if (last.merge(newEntry)) {
             return;
         }
     }
-    m_readAheadLog.append(newEntry);
+    m_readAheadLog.push_back(newEntry);
 }
 
 // Not thread-save, call from engine thread only
@@ -247,7 +247,7 @@ double ReadAheadManager::getFilePlaypositionFromLog(
     double filePlayposition = 0;
     bool shouldNotifySeek = false;
     while (m_readAheadLog.size() > 0 && numConsumedSamples > 0) {
-        ReadLogEntry& entry = m_readAheadLog.first();
+        ReadLogEntry& entry = m_readAheadLog.front();
 
         // Notify EngineControls that we have taken a seek.
         // Every new entry start with a seek
@@ -264,7 +264,7 @@ double ReadAheadManager::getFilePlaypositionFromLog(
 
         if (entry.length() == 0) {
             // This entry is empty now.
-            m_readAheadLog.removeFirst();
+            m_readAheadLog.pop_front();
         }
         shouldNotifySeek = true;
     }

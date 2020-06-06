@@ -130,12 +130,12 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
     // Screensaver mode
     //
     comboBoxScreensaver->clear();
-    comboBoxScreensaver->addItem(tr("Allow screensaver to run"), 
-        static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_OFF));
-    comboBoxScreensaver->addItem(tr("Prevent screensaver from running"), 
-        static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON));
-    comboBoxScreensaver->addItem(tr("Prevent screensaver while playing"), 
-        static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON_PLAY));
+    comboBoxScreensaver->addItem(tr("Allow screensaver to run"),
+            static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_OFF));
+    comboBoxScreensaver->addItem(tr("Prevent screensaver from running"),
+            static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON));
+    comboBoxScreensaver->addItem(tr("Prevent screensaver while playing"),
+            static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON_PLAY));
 
     int inhibitsettings = static_cast<int>(mixxx->getInhibitScreensaver());
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));

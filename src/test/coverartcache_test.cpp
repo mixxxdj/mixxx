@@ -20,8 +20,8 @@ class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
 
         CoverArtCache::FutureResult res;
         res = CoverArtCache::loadCover(nullptr, TrackPointer(), info, 0, false);
-        EXPECT_QSTRING_EQ(QString(), res.cover.coverLocation);
-        EXPECT_TRUE(CoverImageUtils::isValidHash(res.cover.hash));
+        EXPECT_QSTRING_EQ(QString(), res.coverArt.coverLocation);
+        EXPECT_TRUE(CoverImageUtils::isValidHash(res.coverArt.hash));
         EXPECT_TRUE(res.coverInfoUpdated);
 
         SecurityTokenPointer securityToken =
@@ -29,25 +29,25 @@ class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
         QImage img = SoundSourceProxy::importTemporaryCoverImage(
                 trackLocation, securityToken);
         EXPECT_FALSE(img.isNull());
-        EXPECT_EQ(img, res.cover.image);
+        EXPECT_EQ(img, res.coverArt.loadedImage.image);
     }
 
     void loadCoverFromFile(QString trackLocation, QString coverLocation, QString absoluteCoverLocation) {
-        QImage img = QImage(absoluteCoverLocation);
+        const QImage img = QImage(absoluteCoverLocation);
+        ASSERT_FALSE(img.isNull());
 
         CoverInfo info;
         info.type = CoverInfo::FILE;
         info.source = CoverInfo::GUESSED;
         info.coverLocation = coverLocation;
         info.trackLocation = trackLocation;
-        info.hash = 39287; // actual cover image hash!
 
         CoverArtCache::FutureResult res;
         res = CoverArtCache::loadCover(nullptr, TrackPointer(), info, 0, false);
-        EXPECT_QSTRING_EQ(info.coverLocation, res.cover.coverLocation);
-        EXPECT_EQ(info.hash, res.cover.hash);
-        EXPECT_FALSE(img.isNull());
-        EXPECT_EQ(img, res.cover.image);
+        EXPECT_TRUE(res.coverInfoUpdated); // hash updated
+        EXPECT_EQ(img, res.coverArt.loadedImage.image);
+        EXPECT_EQ(CoverImageUtils::calculateHash(img), res.coverArt.hash);
+        EXPECT_QSTRING_EQ(info.coverLocation, res.coverArt.coverLocation);
     }
 };
 

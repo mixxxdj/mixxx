@@ -69,7 +69,14 @@ bool SongDownloader::downloadFromQueue() {
             &QNetworkReply::readyRead,
             this,
             &SongDownloader::slotReadyRead);
-    connect(m_pReply, QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error), this, &SongDownloader::slotError);
+    connect(m_pReply,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+            &QNetworkReply::errorOccurred,
+#else
+            QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error),
+#endif
+            this,
+            &SongDownloader::slotError);
     connect(m_pReply,
             &QNetworkReply::downloadProgress,
             this,

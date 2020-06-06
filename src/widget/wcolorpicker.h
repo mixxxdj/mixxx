@@ -1,13 +1,15 @@
 #pragma once
 
 #include <QGridLayout>
-#include <QPushButton>
 #include <QMap>
-#include <QWidget>
+#include <QPushButton>
+#include <QStyle>
 #include <QStyleFactory>
+#include <QWidget>
 
 #include "util/color/color.h"
 #include "util/color/colorpalette.h"
+#include "util/parented_ptr.h"
 
 class WColorPicker : public QWidget {
     Q_OBJECT
@@ -44,7 +46,7 @@ class WColorPicker : public QWidget {
     QPushButton* m_pNoColorButton;
     QPushButton* m_pCustomColorButton;
     QList<QPushButton*> m_colorButtons;
-    QStyle* m_pStyle;
+    parented_ptr<QStyle> m_pStyle;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(WColorPicker::Options);

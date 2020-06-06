@@ -9,10 +9,15 @@
 namespace {
 Qt::Alignment decodeAlignmentFlags(QString alignString, Qt::Alignment defaultFlags) {
     QStringList stringFlags = alignString.toLower()
-            .split("|", QString::SkipEmptyParts);
+                                      .split('|',
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+                                              Qt::SkipEmptyParts);
+#else
+                                              QString::SkipEmptyParts);
+#endif
 
-    Qt::Alignment hflags = 0L;
-    Qt::Alignment vflags = 0L;
+    Qt::Alignment hflags;
+    Qt::Alignment vflags;
 
     for (auto stringFlag : stringFlags) {
         if (stringFlag == "center") {

@@ -60,7 +60,10 @@ WColorPicker::WColorPicker(Options options, const ColorPalette& palette, QWidget
     // from the rest of the application (when not styled via QSS), but that's
     // better than having buttons without any colors (which would make the
     // color picker unusable).
-    m_pStyle = QStyleFactory::create(QString("fusion"));
+    QStyle* pStyle = QStyleFactory::create(QString("fusion"));
+    pStyle->setParent(this);
+    m_pStyle = parented_ptr<QStyle>(pStyle);
+
     setLayout(pLayout);
     addColorButtons();
 

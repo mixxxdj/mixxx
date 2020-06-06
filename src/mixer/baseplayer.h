@@ -8,7 +8,7 @@ class BasePlayer : public QObject {
     Q_OBJECT
   public:
     BasePlayer(QObject* pParent, QString group);
-    virtual ~BasePlayer();
+    ~BasePlayer() override = default;
 
     inline const QString& getGroup() {
         return m_group;

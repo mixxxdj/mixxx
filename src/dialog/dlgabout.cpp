@@ -45,7 +45,6 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
             << "Sean Pappalardo"
             << "Daniel Sch&uuml;rmann"
             << "S. Brandt"
-            << "Nicu Badescu"
             << "Uwe Klotz"
             << "Be"
             << "S&eacute;bastien Blaisot"
@@ -143,7 +142,8 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
             << "Thomas Vincent"
             << "Ilkka Tuohela"
             << "Max Linke"
-            << "Marcos Cardinot";
+            << "Marcos Cardinot"
+            << "Nicu Badescu";
 
     QStringList pastContributors;
     pastContributors

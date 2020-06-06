@@ -327,7 +327,7 @@ void TrackCollectionManager::purgeTracks(const QList<TrackRef>& trackRefs) {
     {
         QList<TrackId> trackIds;
         trackIds.reserve(trackRefs.size());
-        for (const auto trackRef : trackRefs) {
+        for (const auto& trackRef : trackRefs) {
             DEBUG_ASSERT(trackRef.hasId());
             trackIds.append(trackRef.getId());
         }
@@ -342,7 +342,7 @@ void TrackCollectionManager::purgeTracks(const QList<TrackRef>& trackRefs) {
     }
     QList<QString> trackLocations;
     trackLocations.reserve(trackLocations.size());
-    for (const auto trackRef : trackRefs) {
+    for (const auto& trackRef : trackRefs) {
         DEBUG_ASSERT(trackRef.hasLocation());
         trackLocations.append(trackRef.getLocation());
     }
