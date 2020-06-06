@@ -706,8 +706,12 @@ void GlobalTrackCache::slotEvictAndSave(
     DEBUG_ASSERT(!isCached(cacheEntryPtr->getPlainPtr()));
     saveEvictedTrack(cacheEntryPtr->getPlainPtr());
 
-    // here the cacheEntryPtr goes out of scope, the cache entry is
-    // deleted including the owned track
+    // Explicitly release the cacheEntryPtr including the owned
+    // track object while the cache is still locked.
+    cacheEntryPtr = {};
+
+    // Finally the exclusive lock on the cache is released implicitly
+    // when exiting the scope of this method.
 }
 
 bool GlobalTrackCache::tryEvict(Track* plainPtr) {
