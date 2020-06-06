@@ -31,13 +31,18 @@ double colorDistance(QRgb a, QRgb b) {
 
 QRgb ColorMapper::getNearestColor(QRgb desiredColor) {
     // If desired color is already in cache, use cache entry
-    QMap<QRgb, QRgb>::const_iterator i = m_cache.constFind(desiredColor);
-    if (i != m_cache.constEnd()) {
-        DEBUG_ASSERT(m_availableColors.contains(i.key()));
-        kLogger.trace()
-                << "ColorMapper cache hit for" << desiredColor << ":"
-                << "Color =" << i.value();
-        return i.value();
+    const auto iCachedColor = m_cache.constFind(desiredColor);
+    if (iCachedColor != m_cache.constEnd()) {
+        const QRgb cachedColor = iCachedColor.value();
+        DEBUG_ASSERT(m_availableColors.contains(cachedColor));
+        if (kLogger.traceEnabled()) {
+            kLogger.trace()
+                    << "Found cached color"
+                    << cachedColor
+                    << "for"
+                    << desiredColor;
+        }
+        return cachedColor;
     }
 
     // Color is not cached
