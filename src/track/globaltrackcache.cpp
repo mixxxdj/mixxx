@@ -708,7 +708,7 @@ void GlobalTrackCache::slotEvictAndSave(
 
     // Explicitly release the cacheEntryPtr including the owned
     // track object while the cache is still locked.
-    cacheEntryPtr = {};
+    cacheEntryPtr.reset();
 
     // Finally the exclusive lock on the cache is released implicitly
     // when exiting the scope of this method.
