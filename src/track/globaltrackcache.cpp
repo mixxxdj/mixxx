@@ -1,11 +1,10 @@
 #include "track/globaltrackcache.h"
 
-#include <QApplication>
-#include <QThread>
+#include <QCoreApplication>
 
 #include "util/assert.h"
 #include "util/logger.h"
-
+#include "util/thread_affinity.h"
 
 namespace {
 
@@ -209,7 +208,8 @@ void GlobalTrackCache::createInstance(
 
 //static
 void GlobalTrackCache::destroyInstance() {
-    DEBUG_ASSERT(s_pInstance);
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(s_pInstance);
+
     kLogger.info() << "Destroying instance";
     // Processing all pending events is required to evict all
     // remaining references from the cache.
@@ -220,7 +220,6 @@ void GlobalTrackCache::destroyInstance() {
     // Reset the static/global pointer before entering the destructor
     s_pInstance = nullptr;
     // Delete the singular instance
-    DEBUG_ASSERT(QThread::currentThread() == pInstance->thread());
     pInstance->deleteLater();
 }
 
@@ -264,7 +263,7 @@ void GlobalTrackCache::evictAndSaveCachedTrack(GlobalTrackCacheEntryPointer cach
                 "evictAndSave"
 #else
                 [cacheEntryPtr = std::move(cacheEntryPtr)] {
-                    s_pInstance->evictAndSave(cacheEntryPtr);
+                    s_pInstance->slotEvictAndSave(cacheEntryPtr);
                 }
 #endif
                 // Qt will choose either a direct or a queued connection
@@ -371,7 +370,7 @@ void GlobalTrackCache::saveEvictedTrack(Track* pEvictedTrack) const {
 }
 
 void GlobalTrackCache::deactivate() {
-    DEBUG_ASSERT(QThread::currentThread() == QCoreApplication::instance()->thread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     if (isEmpty()) {
         return;
@@ -625,7 +624,7 @@ void GlobalTrackCache::resolve(
     // function might be called from any thread, even from worker
     // threads without an event loop. We need to move the newly
     // created object to the main thread.
-    savingPtr->moveToThread(QApplication::instance()->thread());
+    savingPtr->moveToThread(QCoreApplication::instance()->thread());
 
     pCacheResolver->initLookupResult(
             GlobalTrackCacheLookupResult::MISS,
@@ -672,6 +671,7 @@ void GlobalTrackCache::purgeTrackId(TrackId trackId) {
 
 void GlobalTrackCache::evictAndSave(
         GlobalTrackCacheEntryPointer cacheEntryPtr) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     DEBUG_ASSERT(cacheEntryPtr);
 
     // We need to be sure this is always called from the main thread
@@ -679,7 +679,6 @@ void GlobalTrackCache::evictAndSave(
     // the lock until all changes are persistently stored in file and DB
     // to not hand out the track again with old metadata.
     DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
-
     GlobalTrackCacheLocker cacheLocker;
 
     if (!cacheEntryPtr->expired()) {

@@ -5,14 +5,15 @@
 #include <QSharedPointer>
 #include <QSqlDatabase>
 
-#include "preferences/usersettings.h"
 #include "library/crate/cratestorage.h"
-#include "library/dao/trackdao.h"
-#include "library/dao/cuedao.h"
-#include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
+#include "library/dao/cuedao.h"
 #include "library/dao/directorydao.h"
 #include "library/dao/libraryhashdao.h"
+#include "library/dao/playlistdao.h"
+#include "library/dao/trackdao.h"
+#include "preferences/usersettings.h"
+#include "util/thread_affinity.h"
 
 // forward declaration(s)
 class BaseTrackCache;
@@ -36,23 +37,29 @@ class TrackCollection : public QObject,
     void disconnectDatabase() override;
 
     QSqlDatabase database() const {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_database;
     }
 
     const CrateStorage& crates() const {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_crates;
     }
 
     TrackDAO& getTrackDAO() {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_trackDao;
     }
     PlaylistDAO& getPlaylistDAO() {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_playlistDao;
     }
     DirectoryDAO& getDirectoryDAO() {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_directoryDao;
     }
     AnalysisDao& getAnalysisDAO() {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_analysisDao;
     }
 
@@ -60,6 +67,7 @@ class TrackCollection : public QObject,
     QWeakPointer<BaseTrackCache> disconnectTrackSource();
 
     QSharedPointer<BaseTrackCache> getTrackSource() const {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_pTrackSource;
     }
 
