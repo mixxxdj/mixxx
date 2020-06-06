@@ -675,6 +675,9 @@ void GlobalTrackCache::slotEvictAndSave(
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     DEBUG_ASSERT(cacheEntryPtr);
 
+    // GlobalTrackCacheSaver::saveEvictedTrack() requires that
+    // exclusive access is guaranteed for the duration of the
+    // whole invocation!
     GlobalTrackCacheLocker cacheLocker;
 
     if (!cacheEntryPtr->expired()) {

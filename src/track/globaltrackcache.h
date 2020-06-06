@@ -185,9 +185,18 @@ private:
     ///
     /// GlobalTrackCache ensures that the given pointer is valid
     /// and the last and only reference to this Track object.
+    /// While invoked the GlobalTrackCache is locked to ensure
+    /// that this particular track is not accessible while
+    /// saving the Track object, e.g. by updating the database
+    /// and exporting file tags.
     ///
     /// This callback method will always be invoked from the
     /// event loop thread of the owning GlobalTrackCache instance.
+    /// Typically the GlobalTrackCache lives on the main thread
+    /// that also controls access to the database.
+    /// NOTE(2020-06-06): If these assumptions about thread affinity
+    /// are no longer valid the design decisions need to be revisited
+    /// carefully!
     virtual void saveEvictedTrack(
             Track* pEvictedTrack) noexcept = 0;
 
