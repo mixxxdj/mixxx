@@ -186,7 +186,7 @@ protected:
 class GlobalTrackCache : public QObject {
     Q_OBJECT
 
-public:
+  public:
     static void createInstance(
             GlobalTrackCacheSaver* pSaver,
             // A custom deleter is only needed for tests without an event loop!
@@ -202,10 +202,10 @@ public:
     // Deleter callbacks for the smart-pointer
     static void evictAndSaveCachedTrack(GlobalTrackCacheEntryPointer cacheEntryPtr);
 
-private slots:
-    void evictAndSave(GlobalTrackCacheEntryPointer cacheEntryPtr);
+  private slots:
+    void slotEvictAndSave(GlobalTrackCacheEntryPointer cacheEntryPtr);
 
-private:
+  private:
     friend class GlobalTrackCacheLocker;
     friend class GlobalTrackCacheResolver;
 
