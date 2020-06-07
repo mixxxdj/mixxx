@@ -2,12 +2,18 @@
 
 #include "skin/skincontext.h"
 #include "track/track.h"
+#include "util/parented_ptr.h"
 #include "widget/wwidgetgroup.h"
+
+class WTrackMenu;
+class TrackCollectionManager;
 
 class WTrackWidgetGroup : public WWidgetGroup {
     Q_OBJECT
   public:
-    WTrackWidgetGroup(QWidget* pParent);
+    WTrackWidgetGroup(QWidget* pParent,
+            UserSettingsPointer pConfig,
+            TrackCollectionManager* pTrackCollectionManager);
     void setup(const QDomNode& node, const SkinContext& context) override;
 
   public slots:
@@ -16,6 +22,7 @@ class WTrackWidgetGroup : public WWidgetGroup {
 
   protected:
     void paintEvent(QPaintEvent* pe) override;
+    void contextMenuEvent(QContextMenuEvent* event) override;
 
   private slots:
     void slotTrackChanged(TrackId);
@@ -26,4 +33,6 @@ class WTrackWidgetGroup : public WWidgetGroup {
     TrackPointer m_pCurrentTrack;
     QColor m_trackColor;
     int m_trackColorAlpha;
+
+    const parented_ptr<WTrackMenu> m_pTrackMenu;
 };

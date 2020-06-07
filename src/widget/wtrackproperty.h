@@ -34,9 +34,11 @@ signals:
     void slotTrackLoaded(TrackPointer track);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
+  protected:
+    void contextMenuEvent(QContextMenuEvent* event) override;
+
   private slots:
     void slotTrackChanged(TrackId);
-    void contextMenuEvent(QContextMenuEvent* event) override;
 
   private:
     void dragEnterEvent(QDragEnterEvent *event) override;

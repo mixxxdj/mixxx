@@ -7,7 +7,7 @@
 #include "util/dnd.h"
 
 namespace {
-const WTrackMenu::Features trackMenuFeatures =
+const WTrackMenu::Features kTrackMenuFeatures =
         WTrackMenu::Feature::Playlist |
         WTrackMenu::Feature::Crate |
         WTrackMenu::Feature::Metadata |
@@ -26,7 +26,7 @@ WTrackProperty::WTrackProperty(QWidget* pParent,
           m_pGroup(group),
           m_pConfig(pConfig),
           m_pTrackMenu(make_parented<WTrackMenu>(
-                  this, pConfig, pTrackCollectionManager, trackMenuFeatures)) {
+                  this, pConfig, pTrackCollectionManager, kTrackMenuFeatures)) {
     setAcceptDrops(true);
 }
 
@@ -77,21 +77,22 @@ void WTrackProperty::updateLabel() {
     setText("");
 }
 
-void WTrackProperty::mouseMoveEvent(QMouseEvent *event) {
+void WTrackProperty::mouseMoveEvent(QMouseEvent* event) {
     if ((event->buttons() & Qt::LeftButton) && m_pCurrentTrack) {
         DragAndDropHelper::dragTrack(m_pCurrentTrack, this, m_pGroup);
     }
 }
 
-void WTrackProperty::dragEnterEvent(QDragEnterEvent *event) {
+void WTrackProperty::dragEnterEvent(QDragEnterEvent* event) {
     DragAndDropHelper::handleTrackDragEnterEvent(event, m_pGroup, m_pConfig);
 }
 
-void WTrackProperty::dropEvent(QDropEvent *event) {
+void WTrackProperty::dropEvent(QDropEvent* event) {
     DragAndDropHelper::handleTrackDropEvent(event, *this, m_pGroup, m_pConfig);
 }
 
-void WTrackProperty::contextMenuEvent(QContextMenuEvent *event) {
+void WTrackProperty::contextMenuEvent(QContextMenuEvent* event) {
+    event->accept();
     if (m_pCurrentTrack) {
         m_pTrackMenu->loadTrack(m_pCurrentTrack);
         // Create the right-click menu

@@ -1073,7 +1073,10 @@ QWidget* LegacySkinParser::parseTrackWidgetGroup(const QDomElement& node) {
         return nullptr;
     }
 
-    WTrackWidgetGroup* pGroup = new WTrackWidgetGroup(m_pParent);
+    WTrackWidgetGroup* pGroup = new WTrackWidgetGroup(
+            m_pParent,
+            m_pConfig,
+            m_pLibrary->trackCollections());
     commonWidgetSetup(node, pGroup);
     pGroup->setup(node, *m_pContext);
     pGroup->Init();

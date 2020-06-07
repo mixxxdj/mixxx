@@ -6,16 +6,31 @@
 #include <QUrl>
 
 #include "control/controlobject.h"
+#include "widget/wtrackmenu.h"
 
 namespace {
 
 int kDefaultTrackColorAplha = 255;
 
+const WTrackMenu::Features kTrackMenuFeatures =
+        WTrackMenu::Feature::Playlist |
+        WTrackMenu::Feature::Crate |
+        WTrackMenu::Feature::Metadata |
+        WTrackMenu::Feature::Reset |
+        WTrackMenu::Feature::BPM |
+        WTrackMenu::Feature::Color |
+        WTrackMenu::Feature::FileBrowser |
+        WTrackMenu::Feature::Properties;
+
 } // anonymous namespace
 
-WTrackWidgetGroup::WTrackWidgetGroup(QWidget* pParent)
+WTrackWidgetGroup::WTrackWidgetGroup(QWidget* pParent,
+        UserSettingsPointer pConfig,
+        TrackCollectionManager* pTrackCollectionManager)
         : WWidgetGroup(pParent),
-          m_trackColorAlpha(kDefaultTrackColorAplha) {
+          m_trackColorAlpha(kDefaultTrackColorAplha),
+          m_pTrackMenu(make_parented<WTrackMenu>(
+                  this, pConfig, pTrackCollectionManager, kTrackMenuFeatures)) {
 }
 
 void WTrackWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
@@ -74,5 +89,14 @@ void WTrackWidgetGroup::paintEvent(QPaintEvent* pe) {
         QStylePainter p(this);
 
         p.fillRect(rect(), QBrush(m_trackColor));
+    }
+}
+
+void WTrackWidgetGroup::contextMenuEvent(QContextMenuEvent* event) {
+    event->accept();
+    if (m_pCurrentTrack) {
+        m_pTrackMenu->loadTrack(m_pCurrentTrack);
+        // Create the right-click menu
+        m_pTrackMenu->popup(event->globalPos());
     }
 }
