@@ -20,6 +20,7 @@ LibLoader::LibLoader()
         : m_neAACDecOpen(nullptr),
           m_neAACDecGetCurrentConfiguration(nullptr),
           m_neAACDecSetConfiguration(nullptr),
+          m_neAACDecInit(nullptr),
           m_neAACDecInit2(nullptr),
           m_neAACDecClose(nullptr),
           m_neAACDecPostSeekReset(nullptr),
@@ -62,6 +63,8 @@ LibLoader::LibLoader()
             m_pLibrary->resolve("NeAACDecGetCurrentConfiguration"));
     m_neAACDecSetConfiguration = reinterpret_cast<NeAACDecSetConfiguration_t>(
             m_pLibrary->resolve("NeAACDecSetConfiguration"));
+    m_neAACDecInit = reinterpret_cast<NeAACDecInit_t>(
+            m_pLibrary->resolve("NeAACDecInit"));
     m_neAACDecInit2 = reinterpret_cast<NeAACDecInit2_t>(
             m_pLibrary->resolve("NeAACDecInit2"));
     m_neAACDecClose = reinterpret_cast<NeAACDecClose_t>(
@@ -78,6 +81,7 @@ LibLoader::LibLoader()
     if (!m_neAACDecOpen ||
             !m_neAACDecGetCurrentConfiguration ||
             !m_neAACDecSetConfiguration ||
+            !m_neAACDecInit ||
             !m_neAACDecInit2 ||
             !m_neAACDecClose ||
             !m_neAACDecPostSeekReset ||
@@ -87,6 +91,7 @@ LibLoader::LibLoader()
         kLogger.warning() << "NeAACDecOpen:" << m_neAACDecOpen;
         kLogger.warning() << "NeAACDecGetCurrentConfiguration:" << m_neAACDecGetCurrentConfiguration;
         kLogger.warning() << "NeAACDecSetConfiguration:" << m_neAACDecSetConfiguration;
+        kLogger.warning() << "NeAACDecInit:" << m_neAACDecInit;
         kLogger.warning() << "NeAACDecInit2:" << m_neAACDecInit2;
         kLogger.warning() << "NeAACDecClose:" << m_neAACDecClose;
         kLogger.warning() << "NeAACDecPostSeekReset:" << m_neAACDecPostSeekReset;
@@ -96,6 +101,7 @@ LibLoader::LibLoader()
         m_neAACDecOpen = nullptr;
         m_neAACDecGetCurrentConfiguration = nullptr;
         m_neAACDecSetConfiguration = nullptr;
+        m_neAACDecInit = nullptr;
         m_neAACDecInit2 = nullptr;
         m_neAACDecClose = nullptr;
         m_neAACDecPostSeekReset = nullptr;
@@ -148,18 +154,36 @@ unsigned char LibLoader::SetConfiguration(
     return 0;
 }
 
-// Init the library using a DecoderSpecificInfo
+long LibLoader::Init(
+        DecoderHandle hDecoder,
+        unsigned char* pBuffer,
+        unsigned long sizeofBuffer,
+        unsigned long* pSampleRate,
+        unsigned char* pChannels) const {
+    if (m_neAACDecInit) {
+        return m_neAACDecInit(hDecoder,
+                pBuffer,
+                sizeofBuffer,
+                pSampleRate,
+                pChannels);
+    }
+    // Return values:
+    // < 0 – Error
+    // 0 - OK
+    return -1;
+}
+
 char LibLoader::Init2(
         DecoderHandle hDecoder,
         unsigned char* pBuffer,
-        unsigned long SizeOfDecoderSpecificInfo,
-        unsigned long* pSamplerate,
+        unsigned long sizeofBuffer,
+        unsigned long* pSampleRate,
         unsigned char* pChannels) const {
     if (m_neAACDecInit2) {
         return m_neAACDecInit2(hDecoder,
                 pBuffer,
-                SizeOfDecoderSpecificInfo,
-                pSamplerate,
+                sizeofBuffer,
+                pSampleRate,
                 pChannels);
     }
     // Return values:

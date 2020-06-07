@@ -89,12 +89,20 @@ class LibLoader {
     unsigned char SetConfiguration(
             DecoderHandle hDecoder, Configuration* config) const;
 
-    // Init the library using a DecoderSpecificInfo
+    // Init the decoder using the AAC stream (ADTS/ADIF)
+    long Init(
+            DecoderHandle hDecoder,
+            unsigned char* pBuffer,
+            unsigned long sizeofBuffer,
+            unsigned long* pSampleRate,
+            unsigned char* pChannels) const;
+
+    // Init the decoder using a DecoderSpecificInfo
     char Init2(
             DecoderHandle hDecoder,
             unsigned char* pBuffer,
-            unsigned long SizeOfDecoderSpecificInfo,
-            unsigned long* pSamplerate,
+            unsigned long sizeofBuffer,
+            unsigned long* pSampleRate,
             unsigned char* pChannels) const;
 
     void Close(DecoderHandle hDecoder) const;
@@ -133,6 +141,10 @@ class LibLoader {
     typedef unsigned char (*NeAACDecSetConfiguration_t)(
             DecoderHandle, Configuration*);
     NeAACDecSetConfiguration_t m_neAACDecSetConfiguration;
+
+    typedef long (*NeAACDecInit_t)(
+            DecoderHandle, unsigned char*, unsigned long, unsigned long*, unsigned char*);
+    NeAACDecInit_t m_neAACDecInit;
 
     typedef char (*NeAACDecInit2_t)(
             DecoderHandle, unsigned char*, unsigned long, unsigned long*, unsigned char*);

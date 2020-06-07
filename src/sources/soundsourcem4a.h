@@ -43,9 +43,10 @@ class SoundSourceM4A : public SoundSource {
             const OpenParams& params) override;
 
     bool openDecoder();
-    bool initDecoder();
-    void closeDecoder();
     bool reopenDecoder();
+    bool replaceDecoder(
+            faad2::DecoderHandle hNewDecoder);
+    void closeDecoder();
 
     bool isValidSampleBlockId(MP4SampleId sampleBlockId) const;
 
@@ -58,10 +59,13 @@ class SoundSourceM4A : public SoundSource {
     MP4Duration m_framesPerSampleBlock;
     MP4SampleId m_maxSampleBlockId;
 
+    u_int8_t* m_pMP4ESConfigBuffer{};
+    u_int32_t m_sizeofMP4ESConfigBuffer;
+
     typedef std::vector<u_int8_t> InputBuffer;
     InputBuffer m_inputBuffer;
-    SINT m_inputBufferLength;
-    SINT m_inputBufferOffset;
+    InputBuffer::size_type m_inputBufferLength;
+    InputBuffer::size_type m_inputBufferOffset;
 
     OpenParams m_openParams;
 
