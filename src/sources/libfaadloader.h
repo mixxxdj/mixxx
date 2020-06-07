@@ -26,6 +26,11 @@ constexpr unsigned char FMT_FLOAT = 4;
 constexpr unsigned char FMT_FIXED = FMT_FLOAT;
 constexpr unsigned char FMT_DOUBLE = 5;
 
+enum class FrameError : unsigned char {
+    InvalidNumberOfChannels = 12,
+    InvalidChannelConfiguration = 21,
+};
+
 typedef void* DecoderHandle;
 
 extern "C" {

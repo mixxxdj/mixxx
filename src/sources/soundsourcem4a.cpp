@@ -458,6 +458,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
 
     SINT numberOfSamplesRemaining = numberOfSamplesTotal;
     SINT outputSampleOffset = 0;
+    bool frameErrorOccurred = false;
     while (0 < numberOfSamplesRemaining) {
         if (!m_sampleBuffer.empty()) {
             // Consume previously decoded sample data
@@ -534,12 +535,27 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
         void* pDecodeResult = m_pFaad->Decode2(
                 m_hDecoder, &decFrameInfo, &m_inputBuffer[m_inputBufferOffset], m_inputBufferLength, reinterpret_cast<void**>(&pDecodeBuffer), decodeBufferCapacity * sizeof(*pDecodeBuffer));
         // Verify the decoding result
-        if (0 != decFrameInfo.error) {
+        if (decFrameInfo.error != 0) {
+            if (faad2::FrameError(decFrameInfo.error) ==
+                            faad2::FrameError::InvalidNumberOfChannels ||
+                    faad2::FrameError(decFrameInfo.error) ==
+                            faad2::FrameError::InvalidChannelConfiguration) {
+                // Workaround for bug in FAAD2 2.9.x, adopted from VLC
+                // Try to re-initialize the decoder...
+                if (!frameErrorOccurred && initDecoder()) {
+                    // ...and try again
+                    continue;
+                }
+                // Prevent unlimited retries otherwise
+                frameErrorOccurred = true;
+            }
             kLogger.warning() << "AAC decoding error:"
                               << decFrameInfo.error
                               << m_pFaad->GetErrorMessage(decFrameInfo.error)
                               << getUrlString();
             break; // abort
+        } else {
+            frameErrorOccurred = false;
         }
         Q_UNUSED(pDecodeResult); // only used in DEBUG_ASSERT
         DEBUG_ASSERT(pDecodeResult == pDecodeBuffer); // verify the in/out parameter
