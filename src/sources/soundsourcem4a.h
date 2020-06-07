@@ -43,6 +43,7 @@ class SoundSourceM4A : public SoundSource {
             const OpenParams& params) override;
 
     bool openDecoder();
+    bool initDecoder();
     void closeDecoder();
     bool reopenDecoder();
 

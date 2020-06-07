@@ -262,30 +262,11 @@ bool SoundSourceM4A::openDecoder() {
         kLogger.warning() << "Failed to open the AAC decoder";
         return false;
     }
-    faad2::Configuration* pDecoderConfig =
-            m_pFaad->GetCurrentConfiguration(m_hDecoder);
-    if (!pDecoderConfig) {
-        kLogger.warning() << "Failed to get the current AAC decoder configuration";
-        return false;
-    }
-    kLogger.debug()
-            << "Default AAC decoder configuration"
-            << *pDecoderConfig;
-    pDecoderConfig->outputFormat = faad2::FMT_FLOAT;
-    if ((m_openParams.getSignalInfo().getChannelCount() == 1) ||
-            (m_openParams.getSignalInfo().getChannelCount() == 2)) {
-        pDecoderConfig->downMatrix = 1;
-    } else {
-        pDecoderConfig->downMatrix = 0;
-    }
 
-    if (!m_pFaad->SetConfiguration(m_hDecoder, pDecoderConfig)) {
-        kLogger.warning() << "Failed to configure AAC decoder!";
+    if (!initDecoder()) {
+        kLogger.warning() << "Failed to initialize the AAC decoder";
         return false;
     }
-    kLogger.debug()
-            << "Modified AAC decoder configuration"
-            << *pDecoderConfig;
 
     u_int8_t* configBuffer = nullptr;
     u_int32_t configBufferSize = 0;
@@ -333,6 +314,51 @@ bool SoundSourceM4A::openDecoder() {
     m_curSampleBlockId = MP4_INVALID_SAMPLE_ID;
     m_curFrameIndex = frameIndexMax();
 
+    return true;
+}
+
+bool SoundSourceM4A::initDecoder() {
+    faad2::Configuration* pDecoderConfig =
+            m_pFaad->GetCurrentConfiguration(m_hDecoder);
+    if (!pDecoderConfig) {
+        kLogger.warning()
+                << "Failed to get the current AAC decoder configuration";
+        return false;
+    }
+    if (getSignalInfo().getSampleRate().isValid() &&
+            getSignalInfo().getSampleRate() !=
+                    mixxx::audio::SampleRate(pDecoderConfig->defSampleRate)) {
+        kLogger.warning()
+                << "Sample rate unexpectedly changed from"
+                << getSignalInfo().getSampleRate()
+                << "to"
+                << pDecoderConfig->defSampleRate
+                << "while re-initializing the AAC decoder";
+        return false;
+    }
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "Default AAC decoder configuration"
+                << *pDecoderConfig;
+    }
+    pDecoderConfig->outputFormat = faad2::FMT_FLOAT;
+    if ((m_openParams.getSignalInfo().getChannelCount() == 1) ||
+            (m_openParams.getSignalInfo().getChannelCount() == 2)) {
+        pDecoderConfig->downMatrix = 1;
+    } else {
+        pDecoderConfig->downMatrix = 0;
+    }
+
+    if (!m_pFaad->SetConfiguration(m_hDecoder, pDecoderConfig)) {
+        kLogger.warning()
+                << "Failed to configure AAC decoder!";
+        return false;
+    }
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "Modified AAC decoder configuration"
+                << *pDecoderConfig;
+    }
     return true;
 }
 
