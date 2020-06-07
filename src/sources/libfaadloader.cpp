@@ -1,19 +1,22 @@
 #include "sources/libfaadloader.h"
+
 #include "util/logger.h"
 
 namespace {
 
-mixxx::Logger kLogger("LibFaadLoader");
+mixxx::Logger kLogger("faad2::LibLoader");
 
 } // anonymous namespace
 
+namespace faad2 {
+
 // static
-LibFaadLoader* LibFaadLoader::Instance() {
-    static LibFaadLoader libFaadLoader;
+LibLoader* LibLoader::Instance() {
+    static LibLoader libFaadLoader;
     return &libFaadLoader;
 }
 
-LibFaadLoader::LibFaadLoader()
+LibLoader::LibLoader()
         : m_neAACDecOpen(nullptr),
           m_neAACDecGetCurrentConfiguration(nullptr),
           m_neAACDecSetConfiguration(nullptr),
@@ -105,9 +108,7 @@ LibFaadLoader::LibFaadLoader()
     }
     char* faad_id_string = nullptr;
     char const* version =
-            GetVersion(&faad_id_string, nullptr) == 0 ?
-            faad_id_string :
-            "<unknown>";
+            GetVersion(&faad_id_string, nullptr) == 0 ? faad_id_string : "<unknown>";
     kLogger.info()
             << "Successfully loaded FAAD2 library"
             << m_pLibrary->fileName()
@@ -115,27 +116,29 @@ LibFaadLoader::LibFaadLoader()
             << version;
 };
 
-bool LibFaadLoader::isLoaded() const {
+bool LibLoader::isLoaded() const {
     return m_pLibrary && m_pLibrary->isLoaded();
 }
 
-LibFaadLoader::Handle LibFaadLoader::Open() const {
+DecoderHandle LibLoader::Open() const {
     if (m_neAACDecOpen) {
         return m_neAACDecOpen();
     }
     return nullptr;
 }
 
-LibFaadLoader::Configuration*
-LibFaadLoader::GetCurrentConfiguration(Handle hDecoder) const {
+Configuration*
+LibLoader::GetCurrentConfiguration(
+        DecoderHandle hDecoder) const {
     if (m_neAACDecGetCurrentConfiguration) {
         return m_neAACDecGetCurrentConfiguration(hDecoder);
     }
     return nullptr;
 }
 
-unsigned char LibFaadLoader::SetConfiguration(
-        Handle hDecoder, Configuration* pConfig) const {
+unsigned char LibLoader::SetConfiguration(
+        DecoderHandle hDecoder,
+        Configuration* pConfig) const {
     if (m_neAACDecSetConfiguration) {
         return m_neAACDecSetConfiguration(hDecoder, pConfig);
     }
@@ -146,8 +149,8 @@ unsigned char LibFaadLoader::SetConfiguration(
 }
 
 // Init the library using a DecoderSpecificInfo
-char LibFaadLoader::Init2(
-        Handle hDecoder,
+char LibLoader::Init2(
+        DecoderHandle hDecoder,
         unsigned char* pBuffer,
         unsigned long SizeOfDecoderSpecificInfo,
         unsigned long* pSamplerate,
@@ -165,20 +168,23 @@ char LibFaadLoader::Init2(
     return -1;
 }
 
-void LibFaadLoader::Close(Handle hDecoder) const {
+void LibLoader::Close(
+        DecoderHandle hDecoder) const {
     if (m_neAACDecClose) {
         m_neAACDecClose(hDecoder);
     }
 }
 
-void LibFaadLoader::PostSeekReset(Handle hDecoder, long frame) const {
+void LibLoader::PostSeekReset(
+        DecoderHandle hDecoder,
+        long frame) const {
     if (m_neAACDecPostSeekReset) {
         m_neAACDecPostSeekReset(hDecoder, frame);
     }
 }
 
-void* LibFaadLoader::Decode2(
-        Handle hDecoder,
+void* LibLoader::Decode2(
+        DecoderHandle hDecoder,
         FrameInfo* pInfo,
         unsigned char* pBuffer,
         unsigned long bufferSize,
@@ -196,14 +202,15 @@ void* LibFaadLoader::Decode2(
     return nullptr;
 }
 
-char* LibFaadLoader::GetErrorMessage(unsigned char errcode) const {
+char* LibLoader::GetErrorMessage(
+        unsigned char errcode) const {
     if (m_neAACDecGetErrorMessage) {
         return m_neAACDecGetErrorMessage(errcode);
     }
     return nullptr;
 }
 
-int LibFaadLoader::GetVersion(
+int LibLoader::GetVersion(
         char** faad_id_string,
         char** faad_copyright_string) const {
     if (m_neAACDecGetVersion) {
@@ -215,9 +222,11 @@ int LibFaadLoader::GetVersion(
     return -1;
 }
 
+} // namespace faad2
+
 QDebug operator<<(
         QDebug dbg,
-        const LibFaadLoader::Configuration& cfg) {
+        const faad2::Configuration& cfg) {
     return dbg
             << "FAAD2 Configuration{"
             << "defObjectType:" << static_cast<int>(cfg.defObjectType)

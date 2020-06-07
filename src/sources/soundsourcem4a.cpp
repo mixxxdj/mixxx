@@ -160,7 +160,7 @@ SoundSourceM4A::SoundSourceM4A(const QUrl& url)
           m_numberOfPrefetchSampleBlocks(0),
           m_curSampleBlockId(MP4_INVALID_SAMPLE_ID),
           m_curFrameIndex(0),
-          m_pFaad(LibFaadLoader::Instance()) {
+          m_pFaad(faad2::LibLoader::Instance()) {
 }
 
 SoundSourceM4A::~SoundSourceM4A() {
@@ -262,7 +262,7 @@ bool SoundSourceM4A::openDecoder() {
         kLogger.warning() << "Failed to open the AAC decoder";
         return false;
     }
-    LibFaadLoader::Configuration* pDecoderConfig =
+    faad2::Configuration* pDecoderConfig =
             m_pFaad->GetCurrentConfiguration(m_hDecoder);
     if (!pDecoderConfig) {
         kLogger.warning() << "Failed to get the current AAC decoder configuration";
@@ -271,7 +271,7 @@ bool SoundSourceM4A::openDecoder() {
     kLogger.debug()
             << "Default AAC decoder configuration"
             << *pDecoderConfig;
-    pDecoderConfig->outputFormat = FAAD_FMT_FLOAT;
+    pDecoderConfig->outputFormat = faad2::FMT_FLOAT;
     if ((m_openParams.getSignalInfo().getChannelCount() == 1) ||
             (m_openParams.getSignalInfo().getChannelCount() == 2)) {
         pDecoderConfig->downMatrix = 1;
@@ -504,7 +504,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
         }
         DEBUG_ASSERT(decodeBufferCapacityMin <= decodeBufferCapacity);
 
-        LibFaadLoader::FrameInfo decFrameInfo;
+        faad2::FrameInfo decFrameInfo;
         void* pDecodeResult = m_pFaad->Decode2(
                 m_hDecoder, &decFrameInfo, &m_inputBuffer[m_inputBufferOffset], m_inputBufferLength, reinterpret_cast<void**>(&pDecodeBuffer), decodeBufferCapacity * sizeof(*pDecodeBuffer));
         // Verify the decoding result
@@ -596,7 +596,7 @@ QString SoundSourceProviderM4A::getName() const {
 
 QStringList SoundSourceProviderM4A::getSupportedFileExtensions() const {
     QStringList supportedFileExtensions;
-    if (LibFaadLoader::Instance()->isLoaded()) {
+    if (faad2::LibLoader::Instance()->isLoaded()) {
         supportedFileExtensions.append("m4a");
         supportedFileExtensions.append("mp4");
     }

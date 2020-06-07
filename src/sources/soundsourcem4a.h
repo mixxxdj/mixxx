@@ -62,7 +62,7 @@ class SoundSourceM4A : public SoundSource {
 
     OpenParams m_openParams;
 
-    LibFaadLoader::Handle m_hDecoder;
+    faad2::DecoderHandle m_hDecoder;
     SINT m_numberOfPrefetchSampleBlocks;
     MP4SampleId m_curSampleBlockId;
 
@@ -70,7 +70,7 @@ class SoundSourceM4A : public SoundSource {
 
     SINT m_curFrameIndex;
 
-    LibFaadLoader* m_pFaad;
+    faad::LibLoader* m_pFaad;
 };
 
 class SoundSourceProviderM4A : public SoundSourceProvider {
