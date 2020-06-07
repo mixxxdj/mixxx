@@ -50,6 +50,8 @@ class SoundSourceM4A : public SoundSource {
 
     void restartDecoding(MP4SampleId sampleBlockId);
 
+    faad2::LibLoader* const m_pFaad;
+
     MP4FileHandle m_hFile;
     MP4TrackId m_trackId;
     MP4Duration m_framesPerSampleBlock;
@@ -69,8 +71,6 @@ class SoundSourceM4A : public SoundSource {
     ReadAheadSampleBuffer m_sampleBuffer;
 
     SINT m_curFrameIndex;
-
-    faad::LibLoader* m_pFaad;
 };
 
 class SoundSourceProviderM4A : public SoundSourceProvider {

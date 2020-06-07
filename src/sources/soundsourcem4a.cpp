@@ -150,6 +150,7 @@ MP4TrackId findFirstAudioTrackId(MP4FileHandle hFile, const QString& fileName) {
 
 SoundSourceM4A::SoundSourceM4A(const QUrl& url)
         : SoundSource(url, "m4a"),
+          m_pFaad(faad2::LibLoader::Instance()),
           m_hFile(MP4_INVALID_FILE_HANDLE),
           m_trackId(MP4_INVALID_TRACK_ID),
           m_framesPerSampleBlock(MP4_INVALID_DURATION),
@@ -159,8 +160,7 @@ SoundSourceM4A::SoundSourceM4A(const QUrl& url)
           m_hDecoder(nullptr),
           m_numberOfPrefetchSampleBlocks(0),
           m_curSampleBlockId(MP4_INVALID_SAMPLE_ID),
-          m_curFrameIndex(0),
-          m_pFaad(faad2::LibLoader::Instance()) {
+          m_curFrameIndex(0) {
 }
 
 SoundSourceM4A::~SoundSourceM4A() {
