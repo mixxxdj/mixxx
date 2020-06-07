@@ -22,7 +22,7 @@ namespace {
 const Logger kLogger("SoundSourceM4A");
 
 // MP4SampleId is 1-based
-const MP4SampleId kSampleBlockIdMin = 1;
+constexpr MP4SampleId kSampleBlockIdMin = 1;
 
 // Decoding will be restarted one or more blocks of samples
 // before the actual position after seeking randomly in the
@@ -33,16 +33,16 @@ const MP4SampleId kSampleBlockIdMin = 1;
 // "It must also be assumed that without an explicit value, the playback
 // system will trim 2112 samples from the AAC decoder output when starting
 // playback from any point in the bitstream."
-const SINT kNumberOfPrefetchFrames = 2112;
+constexpr SINT kNumberOfPrefetchFrames = 2112;
 
 // The TrackId is a 1-based index of the tracks in an MP4 file
-const u_int32_t kMinTrackId = 1;
+constexpr u_int32_t kMinTrackId = 1;
 
 // http://www.iis.fraunhofer.de/content/dam/iis/de/doc/ame/wp/FraunhoferIIS_Application-Bulletin_AAC-Transport-Formats.pdf
 // Footnote 13: "The usual frame length for AAC-LC is 1024 samples, but a 960 sample version
 // is used for radio broadcasting, and 480 or 512 sample versions are used for the low-delay
 // codecs AAC-LD and AAC-ELD."
-const MP4Duration kDefaultFramesPerSampleBlock = 1024;
+constexpr MP4Duration kDefaultFramesPerSampleBlock = 1024;
 
 // According to various references DecoderConfigDescriptor.bufferSizeDB
 // is a 24-bit unsigned integer value.
@@ -52,7 +52,7 @@ const MP4Duration kDefaultFramesPerSampleBlock = 1024;
 //   https://github.com/sannies/mp4parser/blob/master/isoparser/src/main/java/org/mp4parser/boxes/iso14496/part1/objectdescriptors/DecoderConfigDescriptor.java
 //   http://mutagen-specs.readthedocs.io/en/latest/mp4/
 //   http://perso.telecom-paristech.fr/~dufourd/mpeg-4/tools.html
-const u_int32_t kMaxSampleBlockInputSizeLimit = (u_int32_t(1) << 24) - 1;
+constexpr u_int32_t kMaxSampleBlockInputSizeLimit = (u_int32_t(1) << 24) - 1;
 
 inline u_int32_t getMaxTrackId(MP4FileHandle hFile) {
     // The maximum TrackId equals the number of all tracks
