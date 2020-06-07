@@ -175,11 +175,16 @@ void exportMetadata(djinterop::database& db,
         // correctly assign an index for the last beat.
         double lastBeatPlayPos = beats->findPrevBeat(sampleCount * 2);
         int numBeats = beats->numBeatsInRange(firstBarAlignedBeatPlayPos, lastBeatPlayPos);
-        std::vector<djinterop::beatgrid_marker> beatgrid{
-                {0, firstBarAlignedBeatPlayPos / 2}, {numBeats, lastBeatPlayPos / 2}};
-        beatgrid = el::normalize_beatgrid(std::move(beatgrid), sampleCount);
-        externalTrack.set_default_beatgrid(beatgrid);
-        externalTrack.set_adjusted_beatgrid(beatgrid);
+        if (numBeats > 0) {
+            std::vector<djinterop::beatgrid_marker> beatgrid{
+                    {0, firstBarAlignedBeatPlayPos / 2}, {numBeats, lastBeatPlayPos / 2}};
+            beatgrid = el::normalize_beatgrid(std::move(beatgrid), sampleCount);
+            externalTrack.set_default_beatgrid(beatgrid);
+            externalTrack.set_adjusted_beatgrid(beatgrid);
+        } else {
+            qWarning() << "Non-positive number of beats in beat data of track" << pTrack->getId()
+                       << "(" << pTrack->getFileInfo().fileName() << ")";
+        }
     } else {
         qInfo() << "No beats data found for track" << pTrack->getId()
                 << "(" << pTrack->getFileInfo().fileName() << ")";
