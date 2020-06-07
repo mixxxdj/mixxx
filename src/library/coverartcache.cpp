@@ -1,13 +1,14 @@
+#include "library/coverartcache.h"
+
 #include <QFutureWatcher>
 #include <QPixmapCache>
 #include <QtConcurrentRun>
 #include <QtDebug>
 
-#include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "util/compatibility.h"
 #include "util/logger.h"
-
+#include "util/thread_affinity.h"
 
 namespace {
 
@@ -242,8 +243,7 @@ void CoverArtCache::coverLoaded() {
             res.coverArt.loadedImage.image = placeholderImage;
         }
         // Create pixmap, GUI thread only!
-        DEBUG_ASSERT(QThread::currentThread() ==
-                QCoreApplication::instance()->thread());
+        DEBUG_ASSERT_MAIN_THREAD_AFFINITY();
         DEBUG_ASSERT(!res.coverArt.loadedImage.image.isNull());
         pixmap = QPixmap::fromImage(res.coverArt.loadedImage.image);
         // Don't cache full size covers (resizedToWidth = 0)

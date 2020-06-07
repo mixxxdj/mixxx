@@ -1,11 +1,10 @@
 #include "track/globaltrackcache.h"
 
-#include <QApplication>
-#include <QThread>
+#include <QCoreApplication>
 
 #include "util/assert.h"
 #include "util/logger.h"
-
+#include "util/thread_affinity.h"
 
 namespace {
 
@@ -209,7 +208,8 @@ void GlobalTrackCache::createInstance(
 
 //static
 void GlobalTrackCache::destroyInstance() {
-    DEBUG_ASSERT(s_pInstance);
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(s_pInstance);
+
     kLogger.info() << "Destroying instance";
     // Processing all pending events is required to evict all
     // remaining references from the cache.
@@ -220,7 +220,6 @@ void GlobalTrackCache::destroyInstance() {
     // Reset the static/global pointer before entering the destructor
     s_pInstance = nullptr;
     // Delete the singular instance
-    DEBUG_ASSERT(QThread::currentThread() == pInstance->thread());
     pInstance->deleteLater();
 }
 
@@ -261,20 +260,21 @@ void GlobalTrackCache::evictAndSaveCachedTrack(GlobalTrackCacheEntryPointer cach
         QMetaObject::invokeMethod(
                 s_pInstance,
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-                "evictAndSave"
+                "slotEvictAndSave",
 #else
                 [cacheEntryPtr = std::move(cacheEntryPtr)] {
-                    s_pInstance->evictAndSave(cacheEntryPtr);
-                }
+                    s_pInstance->slotEvictAndSave(cacheEntryPtr);
+                },
 #endif
                 // Qt will choose either a direct or a queued connection
                 // depending on the thread from which this method has
                 // been invoked!
-                , Qt::AutoConnection
+                Qt::AutoConnection
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-                , Q_ARG(GlobalTrackCacheEntryPointer, std::move(cacheEntryPtr))
+                ,
+                Q_ARG(GlobalTrackCacheEntryPointer, std::move(cacheEntryPtr))
 #endif
-                );
+        );
     } else {
         // After the singular instance has been destroyed we are
         // not able to save pending changes. The track is deleted
@@ -371,7 +371,7 @@ void GlobalTrackCache::saveEvictedTrack(Track* pEvictedTrack) const {
 }
 
 void GlobalTrackCache::deactivate() {
-    DEBUG_ASSERT(QThread::currentThread() == QCoreApplication::instance()->thread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     if (isEmpty()) {
         return;
@@ -625,7 +625,7 @@ void GlobalTrackCache::resolve(
     // function might be called from any thread, even from worker
     // threads without an event loop. We need to move the newly
     // created object to the main thread.
-    savingPtr->moveToThread(QApplication::instance()->thread());
+    savingPtr->moveToThread(QCoreApplication::instance()->thread());
 
     pCacheResolver->initLookupResult(
             GlobalTrackCacheLookupResult::MISS,
@@ -670,16 +670,14 @@ void GlobalTrackCache::purgeTrackId(TrackId trackId) {
     }
 }
 
-void GlobalTrackCache::evictAndSave(
+void GlobalTrackCache::slotEvictAndSave(
         GlobalTrackCacheEntryPointer cacheEntryPtr) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     DEBUG_ASSERT(cacheEntryPtr);
 
-    // We need to be sure this is always called from the main thread
-    // because we can only access the DB from it and we must not lose the
-    // the lock until all changes are persistently stored in file and DB
-    // to not hand out the track again with old metadata.
-    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
-
+    // GlobalTrackCacheSaver::saveEvictedTrack() requires that
+    // exclusive access is guaranteed for the duration of the
+    // whole invocation!
     GlobalTrackCacheLocker cacheLocker;
 
     if (!cacheEntryPtr->expired()) {
@@ -708,8 +706,12 @@ void GlobalTrackCache::evictAndSave(
     DEBUG_ASSERT(!isCached(cacheEntryPtr->getPlainPtr()));
     saveEvictedTrack(cacheEntryPtr->getPlainPtr());
 
-    // here the cacheEntryPtr goes out of scope, the cache entry is
-    // deleted including the owned track
+    // Explicitly release the cacheEntryPtr including the owned
+    // track object while the cache is still locked.
+    cacheEntryPtr.reset();
+
+    // Finally the exclusive lock on the cache is released implicitly
+    // when exiting the scope of this method.
 }
 
 bool GlobalTrackCache::tryEvict(Track* plainPtr) {

@@ -1,12 +1,12 @@
 #include "network/webtask.h"
 
-#include <QThread>
 #include <QTimerEvent>
 #include <mutex> // std::once_flag
 
 #include "util/assert.h"
 #include "util/counter.h"
 #include "util/logger.h"
+#include "util/thread_affinity.h"
 
 namespace mixxx {
 
@@ -166,7 +166,7 @@ void WebTask::invokeAbort() {
 }
 
 void WebTask::slotStart(int timeoutMillis) {
-    DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     DEBUG_ASSERT(m_status != Status::Pending);
     VERIFY_OR_DEBUG_ASSERT(m_networkAccessManager) {
         onNetworkError(
@@ -207,7 +207,7 @@ void WebTask::slotStart(int timeoutMillis) {
 
 QUrl WebTask::abortPendingNetworkReply(
         QNetworkReply* pendingNetworkReply) {
-    DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     DEBUG_ASSERT(pendingNetworkReply);
     if (pendingNetworkReply->isRunning()) {
         pendingNetworkReply->abort();
@@ -219,7 +219,7 @@ QUrl WebTask::abortPendingNetworkReply(
 
 QUrl WebTask::timeOutPendingNetworkReply(
         QNetworkReply* pendingNetworkReply) {
-    DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     DEBUG_ASSERT(pendingNetworkReply);
     if (pendingNetworkReply->isRunning()) {
         //pendingNetworkReply->abort();
@@ -230,7 +230,7 @@ QUrl WebTask::timeOutPendingNetworkReply(
 }
 
 QUrl WebTask::abort() {
-    DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     if (m_status != Status::Pending) {
         DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
         return QUrl();
@@ -252,7 +252,7 @@ void WebTask::slotAbort() {
 }
 
 void WebTask::timerEvent(QTimerEvent* event) {
-    DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     const auto timerId = event->timerId();
     DEBUG_ASSERT(timerId != kInvalidTimerId);
     if (timerId != m_timeoutTimerId) {
@@ -270,7 +270,7 @@ void WebTask::timerEvent(QTimerEvent* event) {
 }
 
 QPair<QNetworkReply*, HttpStatusCode> WebTask::receiveNetworkReply() {
-    DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     DEBUG_ASSERT(m_status != Status::Idle);
     auto* const networkReply = qobject_cast<QNetworkReply*>(sender());
     HttpStatusCode statusCode = kHttpStatusCodeInvalid;

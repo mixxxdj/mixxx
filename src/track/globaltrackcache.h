@@ -174,19 +174,40 @@ private:
     TrackRef m_trackRef;
 };
 
+/// Callback interface for pre-delete actions
 class /*interface*/ GlobalTrackCacheSaver {
 private:
     friend class GlobalTrackCache;
-    virtual void saveEvictedTrack(Track* pEvictedTrack) noexcept = 0;
 
-protected:
-  virtual ~GlobalTrackCacheSaver() = default;
+    /// Perform actions that are necessary to save any pending
+    /// modifications of a Track object before it finally gets
+    /// deleted.
+    ///
+    /// GlobalTrackCache ensures that the given pointer is valid
+    /// and the last and only reference to this Track object.
+    /// While invoked the GlobalTrackCache is locked to ensure
+    /// that this particular track is not accessible while
+    /// saving the Track object, e.g. by updating the database
+    /// and exporting file tags.
+    ///
+    /// This callback method will always be invoked from the
+    /// event loop thread of the owning GlobalTrackCache instance.
+    /// Typically the GlobalTrackCache lives on the main thread
+    /// that also controls access to the database.
+    /// NOTE(2020-06-06): If these assumptions about thread affinity
+    /// are no longer valid the design decisions need to be revisited
+    /// carefully!
+    virtual void saveEvictedTrack(
+            Track* pEvictedTrack) noexcept = 0;
+
+  protected:
+    virtual ~GlobalTrackCacheSaver() = default;
 };
 
 class GlobalTrackCache : public QObject {
     Q_OBJECT
 
-public:
+  public:
     static void createInstance(
             GlobalTrackCacheSaver* pSaver,
             // A custom deleter is only needed for tests without an event loop!
@@ -202,10 +223,10 @@ public:
     // Deleter callbacks for the smart-pointer
     static void evictAndSaveCachedTrack(GlobalTrackCacheEntryPointer cacheEntryPtr);
 
-private slots:
-    void evictAndSave(GlobalTrackCacheEntryPointer cacheEntryPtr);
+  private slots:
+    void slotEvictAndSave(GlobalTrackCacheEntryPointer cacheEntryPtr);
 
-private:
+  private:
     friend class GlobalTrackCacheLocker;
     friend class GlobalTrackCacheResolver;
 
