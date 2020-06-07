@@ -14,6 +14,7 @@ class WTrackWidgetGroup : public WWidgetGroup {
     WTrackWidgetGroup(QWidget* pParent,
             UserSettingsPointer pConfig,
             TrackCollectionManager* pTrackCollectionManager);
+    ~WTrackWidgetGroup() override;
     void setup(const QDomNode& node, const SkinContext& context) override;
 
   public slots:

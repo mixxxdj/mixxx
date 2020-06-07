@@ -33,6 +33,9 @@ WTrackWidgetGroup::WTrackWidgetGroup(QWidget* pParent,
                   this, pConfig, pTrackCollectionManager, kTrackMenuFeatures)) {
 }
 
+WTrackWidgetGroup::~WTrackWidgetGroup() {
+}
+
 void WTrackWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
     WWidgetGroup::setup(node, context);
 
