@@ -8,7 +8,7 @@
 #include "library/basesqltablemodel.h"
 #include "library/trackmodel.h"
 
-class MissingTableModel : public BaseSqlTableModel {
+class MissingTableModel final : public BaseSqlTableModel {
     Q_OBJECT
   public:
     MissingTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager);

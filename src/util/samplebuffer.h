@@ -31,7 +31,7 @@ namespace mixxx {
 //     ...
 //     SampleBuffer(newSize).swap(sampleBuffer);
 //
-class SampleBuffer {
+class SampleBuffer final {
   public:
     SampleBuffer()
         : m_data(nullptr),

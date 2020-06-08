@@ -2,7 +2,7 @@
 
 #include "library/basecoverartdelegate.h"
 
-class CoverArtDelegate : public BaseCoverArtDelegate {
+class CoverArtDelegate final : public BaseCoverArtDelegate {
     Q_OBJECT
 
   public:
