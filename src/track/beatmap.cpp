@@ -586,20 +586,24 @@ void BeatMap::scaleDouble() {
 }
 
 void BeatMap::scaleTriple() {
+    qWarning() << "Before scale triple:" << m_beats.size();
     BeatPointer prevBeat = m_beats.first();
     // Skip the first beat to preserve the first beat in a measure
     BeatList::iterator it = m_beats.begin() + 1;
     for (; it != m_beats.end(); ++it) {
         // Need to not accrue fractional frames.
         int distance = it->get()->frame_position() - prevBeat->frame_position();
-        BeatPointer beat = BeatPointer(new Beat());
+        BeatPointer beat;
+        beat = BeatPointer(new Beat());
         beat->set_frame_position(prevBeat->frame_position() + distance / 3);
         it = m_beats.insert(it, beat);
         ++it;
+        beat = BeatPointer(new Beat());
         beat->set_frame_position(prevBeat->frame_position() + distance * 2 / 3);
         it = m_beats.insert(it, beat);
         prevBeat = (++it)[0];
     }
+    qWarning() << "After scale triple:" << m_beats.size();
 }
 
 void BeatMap::scaleQuadruple() {
@@ -609,8 +613,9 @@ void BeatMap::scaleQuadruple() {
     for (; it != m_beats.end(); ++it) {
         // Need to not accrue fractional frames.
         int distance = it->get()->frame_position() - prevBeat->frame_position();
-        BeatPointer beat = BeatPointer(new Beat());
+        BeatPointer beat;
         for (int i = 1; i <= 3; i++) {
+            beat = BeatPointer(new Beat());
             beat->set_frame_position(prevBeat->frame_position() + distance * i / 4);
             it = m_beats.insert(it, beat);
             ++it;
@@ -646,6 +651,8 @@ void BeatMap::scaleThird() {
 }
 
 void BeatMap::scaleFourth() {
+    qWarning() << "Before scale fourth:" << m_beats.size();
+
     // Skip the first beat to preserve the first beat in a measure
     BeatList::iterator it = m_beats.begin() + 1;
     for (; it != m_beats.end(); ++it) {
@@ -662,6 +669,8 @@ void BeatMap::scaleFourth() {
             break;
         }
     }
+
+    qWarning() << "After scale fourth:" << m_beats.size();
 }
 
 void BeatMap::setBpm(double dBpm) {
