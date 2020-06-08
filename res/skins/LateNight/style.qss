@@ -90,14 +90,6 @@ WBeatSpinBox QMenu {
 
 
 /************** font sizes / alignment ****************************************/
-WPushButton, WLibrary QPushButton,
-#RecDuration[highlight="0"],
-#RecDuration[highlight="1"] {
-  font-size: 11px/12px;
-}
-#RecDuration[highlight="2"] {
-	font-size: 12px/12px;
-}
 
 #KnobLabel,
 #FxKnobLabel,
@@ -106,35 +98,31 @@ WPushButton, WLibrary QPushButton,
   font-size: 10px;
   text-align: center;
 }
-#EQKillButton {
-  font-size: 12px;
+
+WPushButton, WLibrary QPushButton, WLibrary QRadioButton,
+#RecDuration[highlight="0"],
+#RecDuration[highlight="1"] {
+  font-size: 11px;
 }
 
-#ArtistText,
-#TitleText {
-  font-size: 18px;
-  }
-  #ArtistText,
-  #TitleText {
-  }
-
-#SkinSettingsLabelButton,
-#CategoryLabel  {
-  font-size: 17px;
-  text-align: left;
+#RecDuration[highlight="2"],
+#SamplerTitleMini,
+#EQKillButton,
+#RateText,
+#PreviewBPM,
+WEffectSelector,
+WEffectSelector QAbstractScrollArea,
+#fadeModeCombobox,
+#fadeModeCombobox QAbstractScrollArea {
+	font-size: 12px;
 }
 
-#TitleTextSmall,
-#ArtistTextSmall,
-#PlayPositionText,
-#BpmText, #BpmTextSmall,
-#FxUnitLabel,
-#SamplerTitle {
-	font-size: 16px;
-  }
-  #SamplerTitleMini {
-    font-size: 12px;
-  }
+WKey,
+#DurationText,
+WBeatSpinBox,
+#spinBoxTransition {
+  font-size: 13px;
+}
 
 #PlayPositionTextSmall,
 #SamplerTitleMini,
@@ -146,26 +134,31 @@ WTime {
   text-align: left;
 }
 
-WKey,
-#DurationText,
-WBeatSpinBox,
-#spinBoxTransition {
-  font-size: 13px;
+#TitleTextSmall,
+#ArtistTextSmall,
+#PlayPositionText,
+#BpmText, #BpmTextSmall,
+#FxUnitLabel,
+#SamplerTitle {
+  font-size: 16px;
+}
+
+#SkinSettingsLabelButton,
+#CategoryLabel  {
+  font-size: 17px;
+  text-align: left;
+}
+
+#ArtistText,
+#TitleText {
+  font-size: 18px;
 }
 
 #RateText,
-#PreviewBPM,
-WEffectSelector,
-WEffectSelector QAbstractScrollArea,
-#fadeModeCombobox,
-#fadeModeCombobox QAbstractScrollArea {
-  font-size: 12px;
-  }
-  #RateText,
-  #MicAuxLabel,
-  #PreviewBPM {
-    text-align: center;
-  }
+#MicAuxLabel,
+#PreviewBPM {
+  text-align: center;
+}
 
 #SamplerTitle,
 #SamplerTitleMini {

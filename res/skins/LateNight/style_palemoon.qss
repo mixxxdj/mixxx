@@ -84,6 +84,10 @@ WLibrary {
   border-radius: 1px;
   background-color: #151517;
   }
+  #WaveformsContainer {
+    border-width: 1px 0px;
+    border-radius: 0px;
+  }
 
 /* borders of embedded regions */
 #WaveformBox1,
@@ -333,7 +337,7 @@ WLibrary {
 /************** Waveforms *****************************************************/
 
 #WaveformsContainer {
-  padding: 0px 0px 1px 0px;
+  padding-bottom: 1px;
 }
 
 #WaveformBox1,
@@ -560,8 +564,7 @@ WBeatSpinBox {
   #spinBoxTransition::down-button {
     subcontrol-origin: content;
     position: relative;
-    /* as with spinbox: border is added to size.
-      define it with same width as hover border, otherwise size jumps */
+    /* as with spinbox: border is added to size. */
     width: 17px;
     padding: 0px;
     }
@@ -1106,7 +1109,7 @@ WTime {
 WEffectSelector, WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox, #fadeModeCombobox QAbstractScrollArea,
 WBeatSpinBox, #spinBoxTransition,
-WLibrary QLabel, WLibrary QRadioButton {
+WLibrary QLabel {
   color: #777;
 }
 
@@ -1133,7 +1136,10 @@ WLibrary QLabel, WLibrary QRadioButton {
 #SkinSettingsToggle[displayValue="0"],
 #LatencyLabel {
   color: #948a80;
-}
+  }
+  #MasterControls #FxAssignButtons WPushButton[displayValue="0"] {
+    color: #887868;
+  }
 
 /* Library controls in AutoDJ etc. */
 #DlgMissing > QPushButton,
@@ -1141,7 +1147,7 @@ WLibrary QLabel, WLibrary QRadioButton {
 #DlgAutoDJ > QPushButton,
 #DlgRecording > QPushButton,
 #DlgAnalysis > QPushButton {
-  color: #bbb;
+  color: #c2b3a5;
 }
 
 #VinylButton[displayValue="1"],
@@ -1486,8 +1492,7 @@ QPushButton#pushButtonRecording:checked,
 
 /* Pale blue for GUI toggles */
 #GuiToggleButton[displayValue="1"],
-#SkinSettingsToggle[displayValue="1"] { /*
-  background-color: #258fab;  */
+#SkinSettingsToggle[displayValue="1"] {
   background-color: #216e75;
 }
 

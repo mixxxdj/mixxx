@@ -24,23 +24,35 @@
   <defs
      id="defs10">
     <filter
-       height="1.920339"
-       y="-0.46016949"
-       width="2.7238095"
-       x="-0.86190477"
-       id="filter818"
+       height="1.8975376"
+       y="-0.44876881"
+       width="2.809931"
+       x="-0.90496552"
+       id="filter827"
        style="color-interpolation-filters:sRGB">
       <feGaussianBlur
-         id="feGaussianBlur820"
-         stdDeviation="1.342161" />
+         id="feGaussianBlur829"
+         stdDeviation="1.9577637" />
     </filter>
   </defs>
-  <path
-     style="stroke:#d2d2d3;stroke-width:4;stroke-opacity:0.5714286;stroke-miterlimit:4;stroke-dasharray:none;fill:none;filter:url(#filter818)"
-     id="path2-3"
-     d="M 7.2627119,8 H 11 v 7 H 9 V 9 H 7.2627119 Z" />
-  <path
-     style="fill:#000001;fill-opacity:1"
-     id="path4"
-     d="M 7.2627119,8 11,8 v 7 H 9 V 9 L 7.2627119,9 V 8" />
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#a89a8c;fill-opacity:1;stroke:#a89a8c;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter827)"
+     x="5.8255696"
+     y="17.235025"
+     id="text836"><tspan
+       id="tspan834"
+       x="5.8255696"
+       y="17.235025"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:14.66666698px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';fill:#a89a8c;fill-opacity:1;stroke:#a89a8c;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">1</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;"
+     x="5.8255696"
+     y="17.235025"
+     id="text836-5"><tspan
+       id="tspan834-8"
+       x="5.8255696"
+       y="17.235025"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:14.66666698px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';fill:#000000;fill-opacity:1;">1</tspan></text>
 </svg>

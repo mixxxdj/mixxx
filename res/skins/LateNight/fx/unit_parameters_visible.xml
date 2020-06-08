@@ -123,7 +123,7 @@
           <WidgetGroup>
             <ObjectName>FxUnitHeaderExpanded</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>min,max</SizePolicy>
+            <Size>0min,35f</Size>
             <Children>
               <SingletonContainer>
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_Header</ObjectName>
@@ -140,7 +140,7 @@
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_MixmodePfl</ObjectName>
               </SingletonContainer>
 
-              <WidgetGroup><Size>3f,</Size></WidgetGroup>
+              <WidgetGroup><Size>,3f</Size></WidgetGroup>
 
               <WidgetGroup>
                 <SizePolicy>min,me</SizePolicy>

@@ -331,7 +331,7 @@ WLibrary,
 /************** Waveforms *****************************************************/
 
 #WaveformsContainer {
-  padding: 0px 0px 1px 0px;
+  padding-bottom: 1px;
 }
 
 #WaveformBox1,
@@ -553,8 +553,7 @@ WLibrary,
   #spinBoxTransition::down-button {
     subcontrol-origin: content;
     position: relative;
-    /* as with spinbox: border is added to size.
-      define it with same width as hover border, otherwise size jumps */
+    /* as with spinbox: border is added to size. */
     width: 17px;
     padding: 0px;
     }
@@ -693,6 +692,7 @@ WLibrary,
   }
 
 /************** Fx *********************************************************/
+
 #FxUnitHeaderCollapsed {
   padding: 0px 2px 0px 4px;
   border-left: 0px;
