@@ -29,7 +29,7 @@ private:
             TrackFile fileInfo) = 0;
 
 protected:
-    virtual ~GlobalTrackCacheRelocator() {}
+  virtual ~GlobalTrackCacheRelocator() = default;
 };
 
 typedef void (*deleteTrackFn_t)(Track*);
@@ -233,7 +233,7 @@ class GlobalTrackCache : public QObject {
     GlobalTrackCache(
             GlobalTrackCacheSaver* pSaver,
             deleteTrackFn_t deleteTrackFn);
-    ~GlobalTrackCache();
+    ~GlobalTrackCache() override;
 
     void relocateTracks(
             GlobalTrackCacheRelocator* /*nullable*/ pRelocator);
