@@ -121,7 +121,7 @@ class LibraryControl : public QObject {
     std::unique_ptr<ControlPushButton> m_pMoveRight;
     std::unique_ptr<ControlEncoder> m_pMoveHorizontal;
 
-    // Controls to navigate between widgets (tab/shit+tab button)
+    // Controls to navigate between widgets (tab/shift+tab button)
     std::unique_ptr<ControlPushButton> m_pMoveFocusForward;
     std::unique_ptr<ControlPushButton> m_pMoveFocusBackward;
     std::unique_ptr<ControlEncoder> m_pMoveFocus;

@@ -119,7 +119,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
             this,
             &LibraryControl::slotMoveHorizontal);
 
-    // Control to navigate between widgets (tab/shit+tab button)
+    // Control to navigate between widgets (tab/shift+tab button)
     m_pMoveFocusForward = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveFocusForward"));
     m_pMoveFocusBackward = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveFocusBackward"));
     m_pMoveFocus = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "MoveFocus"), false);
