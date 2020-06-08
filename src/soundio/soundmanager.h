@@ -58,7 +58,7 @@ class SoundManager : public QObject {
     Q_OBJECT
   public:
     SoundManager(UserSettingsPointer pConfig, EngineMaster *_master);
-    virtual ~SoundManager();
+    ~SoundManager() override;
 
     // Returns a list of all devices we've enumerated that match the provided
     // filterApi, and have at least one output or input channel if the
