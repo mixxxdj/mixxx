@@ -29,6 +29,10 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
                                       handles[i].getType());
     }
 
+    // Populate beatgrid options.
+    beatGridModeComboBox->addItem(tr("Beats"));
+    beatGridModeComboBox->addItem(tr("Beats + Downbeats"));
+
     // Populate zoom options.
     for (int i = WaveformWidgetRenderer::s_waveformMinZoom;
          i <= WaveformWidgetRenderer::s_waveformMaxZoom; i++) {
