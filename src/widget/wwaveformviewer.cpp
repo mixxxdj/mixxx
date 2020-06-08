@@ -257,6 +257,10 @@ void WWaveformViewer::setDisplayBeatGridAlpha(int alpha) {
     m_waveformWidget->setDisplayBeatGridAlpha(alpha);
 }
 
+void WWaveformViewer::setBeatGridMode(int mode) {
+    m_waveformWidget->setBeatGridMode(mode);
+}
+
 void WWaveformViewer::setPlayMarkerPosition(double position) {
     if (m_waveformWidget) {
         m_waveformWidget->setPlayMarkerPosition(position);

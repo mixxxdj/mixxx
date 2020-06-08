@@ -52,6 +52,7 @@ class WaveformWidgetRenderer {
 
     void setDisplayBeatGrid(bool set);
     void setDisplayBeatGridAlpha(int alpha);
+    void setBeatGridMode(int mode);
 
     double getVisualSamplePerPixel() const { return m_visualSamplePerPixel;};
     double getAudioSamplePerPixel() const { return m_audioSamplePerPixel;};
@@ -80,6 +81,9 @@ class WaveformWidgetRenderer {
     int getTrackSamples() const { return m_trackSamples;}
 
     int beatGridAlpha() const { return m_alphaBeatGrid; }
+    int beatGridMode() const {
+        return m_modeBeatGrid;
+    }
 
     void resize(int width, int height, float devicePixelRatio);
     int getHeight() const { return m_height;}
@@ -136,6 +140,7 @@ class WaveformWidgetRenderer {
     double m_audioSamplePerPixel;
 
     int m_alphaBeatGrid;
+    int m_modeBeatGrid;
 
     //TODO: vRince create some class to manage control/value
     //ControlConnection

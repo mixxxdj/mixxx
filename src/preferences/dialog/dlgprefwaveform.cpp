@@ -64,6 +64,10 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
 
     connect(waveformTypeComboBox, SIGNAL(activated(int)),
             this, SLOT(slotSetWaveformType(int)));
+    connect(beatGridModeComboBox,
+            QOverload<int>::of(&QComboBox::activated),
+            this,
+            &DlgPrefWaveform::slotSetBeatGridMode);
     connect(defaultZoomComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(slotSetDefaultZoom(int)));
     connect(synchronizeZoomCheckBox, SIGNAL(clicked(bool)),
@@ -118,6 +122,7 @@ void DlgPrefWaveform::slotUpdate() {
     normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
     // Round zoom to int to get a default zoom index.
     defaultZoomComboBox->setCurrentIndex(static_cast<int>(factory->getDefaultZoom()) - 1);
+    beatGridModeComboBox->setCurrentIndex(factory->beatGridMode());
     playMarkerPositionSlider->setValue(factory->getPlayMarkerPosition() * 100);
     beatGridAlphaSpinBox->setValue(factory->beatGridAlpha());
     beatGridAlphaSlider->setValue(factory->beatGridAlpha());
@@ -161,6 +166,9 @@ void DlgPrefWaveform::slotResetToDefaults() {
 
     // Default zoom level is 3 in WaveformWidgetFactory.
     defaultZoomComboBox->setCurrentIndex(3 + 1);
+
+    // Default Beat grid mode is "beats + downbeats"
+    beatGridModeComboBox->setCurrentIndex(1);
 
     // Don't synchronize zoom by default.
     synchronizeZoomCheckBox->setChecked(false);
@@ -214,6 +222,11 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
 void DlgPrefWaveform::slotSetWaveformOverviewType(int index) {
     m_pConfig->set(ConfigKey("[Waveform]","WaveformOverviewType"), ConfigValue(index));
     m_pMixxx->rebootMixxxView();
+}
+
+void DlgPrefWaveform::slotSetBeatGridMode(int index) {
+    m_pConfig->setValue(ConfigKey("[Waveform]", "beatGridMode"), index);
+    WaveformWidgetFactory::instance()->setBeatGridMode(index);
 }
 
 void DlgPrefWaveform::slotSetDefaultZoom(int index) {

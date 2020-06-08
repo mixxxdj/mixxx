@@ -29,6 +29,9 @@ class WaveformBeat {
     void setLength(int length) {
         m_length = length;
     }
+    void setBeatGridMode(int mode) {
+        m_beatGridMode = mode;
+    }
 
   private:
     QPolygonF getEquilateralTriangle(float edgeLength,
@@ -38,5 +41,6 @@ class WaveformBeat {
     Qt::Orientation m_orientation;
     int m_position;
     int m_length;
+    int m_beatGridMode;
     BeatType m_beatType;
 };

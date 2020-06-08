@@ -65,6 +65,7 @@ private slots:
     //direct access to let factory sync/set default zoom
     void setZoom(double zoom);
     void setDisplayBeatGridAlpha(int alpha);
+    void setBeatGridMode(int mode);
     void setPlayMarkerPosition(double position);
 
 private:

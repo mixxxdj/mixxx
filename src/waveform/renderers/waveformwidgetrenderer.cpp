@@ -279,6 +279,10 @@ void WaveformWidgetRenderer::setDisplayBeatGridAlpha(int alpha) {
     m_alphaBeatGrid = alpha;
 }
 
+void WaveformWidgetRenderer::setBeatGridMode(int mode) {
+    m_modeBeatGrid = mode;
+}
+
 void WaveformWidgetRenderer::setTrack(TrackPointer track) {
     m_pTrack = track;
     //used to postpone first display until track sample is actually available

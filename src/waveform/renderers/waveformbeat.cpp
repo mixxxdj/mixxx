@@ -1,15 +1,17 @@
+#include "waveform/renderers/waveformbeat.h"
+
 #include <math.h>
-#include <waveform/renderers/waveformbeat.h>
 
 WaveformBeat::WaveformBeat()
-        : m_orientation(Qt::Horizontal), m_beatType(mixxx::track::io::BEAT) {
+        : m_orientation(Qt::Horizontal), m_beatType(mixxx::track::io::BEAT), m_beatGridMode(1) {
 }
 
 void WaveformBeat::draw(QPainter* painter) const {
     const float edgeLength = 10;
+
     if (m_orientation == Qt::Horizontal) {
         painter->drawLine(QPointF(m_position, 0), QPoint(m_position, m_length));
-        if (m_beatType == mixxx::track::io::BAR) {
+        if (m_beatType == mixxx::track::io::BAR && m_beatGridMode == 1) {
             // TODO: Get color from skin context
             painter->setBrush(Qt::red);
             painter->drawPolygon(getEquilateralTriangle(
@@ -19,7 +21,7 @@ void WaveformBeat::draw(QPainter* painter) const {
         }
     } else {
         painter->drawLine(QPointF(0, m_position), QPoint(m_length, m_position));
-        if (m_beatType == mixxx::track::io::BAR) {
+        if (m_beatType == mixxx::track::io::BAR && m_beatGridMode == 1) {
             painter->setBrush(Qt::red);
             painter->drawPolygon(getEquilateralTriangle(
                     edgeLength, QPointF(0, m_position), Direction::RIGHT));

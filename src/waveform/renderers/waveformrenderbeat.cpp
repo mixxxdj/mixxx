@@ -28,10 +28,8 @@ void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context)
 
 void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
-
     if (!trackInfo)
         return;
-
     mixxx::BeatsPointer trackBeats = trackInfo->getBeats();
 
     if (!trackBeats)
@@ -93,8 +91,10 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
             m_beats.resize(m_beats.size() * 2);
         }
 
-        m_beats[beatCount].setPosition(xBeatPoint);
-        m_beats[beatCount].setType(beat->type());
+        auto* waveformBeat = &m_beats[beatCount];
+        waveformBeat->setPosition(xBeatPoint);
+        waveformBeat->setType(beat->type());
+        waveformBeat->setBeatGridMode(m_waveformRenderer->beatGridMode());
 
         if (orientation == Qt::Horizontal) {
             m_beats[beatCount].setLength(rendererHeight);
