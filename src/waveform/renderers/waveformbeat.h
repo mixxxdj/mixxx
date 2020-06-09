@@ -13,7 +13,7 @@ enum class Direction : int {
     RIGHT
 };
 
-class WaveformBeat {
+class WaveformBeat final {
   public:
     WaveformBeat();
     void draw(QPainter* painter) const;
