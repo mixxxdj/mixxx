@@ -105,7 +105,13 @@ class CoverInfoRelative {
 
     Source source;
     Type type;
+
+    /// An otional color that is calculated from the cover art
+    /// image if available. Supposed to be used as a background
+    /// color when displaying a placeholder for the actual
+    /// image.
     mixxx::RgbColor::optional_t color;
+
     QString coverLocation; // relative path, from track location
 
   private:
