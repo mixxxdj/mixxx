@@ -1067,6 +1067,7 @@ QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
 
 QWidget* LegacySkinParser::parseTrackWidgetGroup(const QDomElement& node) {
     QString channelStr = lookupNodeGroup(node);
+    const char* pSafeChannelStr = safeChannelString(channelStr);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     if (!pPlayer) {
@@ -1076,7 +1077,8 @@ QWidget* LegacySkinParser::parseTrackWidgetGroup(const QDomElement& node) {
     WTrackWidgetGroup* pGroup = new WTrackWidgetGroup(
             m_pParent,
             m_pConfig,
-            m_pLibrary->trackCollections());
+            m_pLibrary->trackCollections(),
+            pSafeChannelStr);
     commonWidgetSetup(node, pGroup);
     pGroup->setup(node, *m_pContext);
     pGroup->Init();
@@ -1090,6 +1092,14 @@ QWidget* LegacySkinParser::parseTrackWidgetGroup(const QDomElement& node) {
             &BaseTrackPlayer::loadingTrack,
             pGroup,
             &WTrackWidgetGroup::slotLoadingTrack);
+    connect(pGroup,
+            &WTrackWidgetGroup::trackDropped,
+            m_pPlayerManager,
+            &PlayerManager::slotLoadToPlayer);
+    connect(pGroup,
+            &WTrackWidgetGroup::cloneDeck,
+            m_pPlayerManager,
+            &PlayerManager::slotCloneDeck);
 
     TrackPointer pTrack = pPlayer->getLoadedTrack();
     if (pTrack) {

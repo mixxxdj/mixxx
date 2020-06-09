@@ -289,12 +289,10 @@ TEST_F(CueControlTest, SeekOnLoadDefault_CueInPreroll) {
     config()->set(ConfigKey("[Controls]", "CueRecall"),
             ConfigValue(static_cast<int>(SeekOnLoadMode::MainCue)));
     TrackPointer pTrack = createTestTrack();
-    pTrack->setCuePoint(CuePosition(-100.0));
-
     loadTrack(pTrack);
 
-    EXPECT_DOUBLE_EQ(-100.0, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(-100.0, getCurrentSample());
+    EXPECT_DOUBLE_EQ(0.0, m_pCuePoint->get());
+    EXPECT_DOUBLE_EQ(0.0, getCurrentSample());
 
     // Move cue like silence analysis does and check if track is following it
     pTrack->setCuePoint(CuePosition(-200.0));
