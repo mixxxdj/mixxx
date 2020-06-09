@@ -726,8 +726,9 @@ WLibrary,
     margin-right: 2px;
   }
 
-#DryWetKnob {
-  margin-bottom: 1px;
+#DryWetKnob,
+#SuperKnob {
+  margin: 0px 1px;
 }
 
 #FxUnitControlsCollapsed #FxUnitLabel {

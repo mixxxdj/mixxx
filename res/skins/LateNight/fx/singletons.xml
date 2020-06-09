@@ -99,7 +99,7 @@
         <Children>
           <Template src="skin:/controls/knob_textless.xml">
             <SetVariable name="Size">40f,34f</SetVariable>
-            <SetVariable name="ObjectName">SuperMixKnob</SetVariable>
+            <SetVariable name="ObjectName">SuperKnob</SetVariable>
             <SetVariable name="KnobBg">regular</SetVariable>
             <SetVariable name="KnobIndicator">regular</SetVariable>
             <SetVariable name="ArcColor"><Variable name="ArcColorSuper"/></SetVariable>

@@ -704,7 +704,8 @@ WBeatSpinBox {
   }
 
 #FxUnitControlsCollapsed {
-  padding: 1px 2px 0px 0px;
+  padding: 1px 2px 3px 2px;
+  qproperty-layoutSpacing: 2;
   border-left: 0px;
   border-right: 0px;
   border-radius: 0px;
@@ -732,7 +733,7 @@ WBeatSpinBox {
   #FxSlot1,
   #FxSlot2,
   #FxSlot3 {
-    padding: 2px 4px 1px 2px;
+    padding: 2px 4px 2px 2px;
   }
   #FxSlotsExpanded #FxSlot1,
   #FxSlotsExpanded #FxSlot2,

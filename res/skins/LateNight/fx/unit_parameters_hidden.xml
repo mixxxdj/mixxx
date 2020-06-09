@@ -89,8 +89,6 @@
               <SingletonContainer>
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_SuperKnob</ObjectName>
               </SingletonContainer>
-
-              <WidgetGroup><Size>3f,</Size></WidgetGroup>
             </Children>
             <Connection>
               <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
@@ -101,8 +99,6 @@
           <SingletonContainer>
             <ObjectName>FxUnit<Variable name="FxUnit"/>_DryWetKnob</ObjectName>
           </SingletonContainer>
-
-          <WidgetGroup><Size>3f,</Size></WidgetGroup>
 
           <SingletonContainer>
             <ObjectName>FxUnit<Variable name="FxUnit"/>_MixmodePfl</ObjectName>
