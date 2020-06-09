@@ -169,14 +169,7 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
                 m_pHoveredMark = nullptr;
             }
         }
-        Beat beat = m_hoveredBeat = m_waveformWidget->getBeatAtPoint(event->pos());
-        if (beat.isEnabled()) {
-            m_hoveredBeat = beat;
-        } else {
-            Beat beat;
-            beat.setEnabled(false);
-            m_hoveredBeat = beat;
-        }
+        m_hoveredBeat = m_waveformWidget->getBeatAtPoint(event->pos());
     }
 }
 
