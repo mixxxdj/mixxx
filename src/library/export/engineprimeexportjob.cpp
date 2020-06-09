@@ -98,7 +98,7 @@ djinterop::track getTrackByRelativePath(
     case 1:
         return trackCandidates.front();
     default:
-        qInfo() << "Warning: More than one external track with the same relative path";
+        qWarning() << "More than one external track with the same relative path.";
         return trackCandidates.front();
     }
 }
