@@ -17,7 +17,7 @@ env:
     # For SCons builds
     - SCONSFLAGS="test=1 mad=1 faad=1 opus=1 modplug=1 wv=1 hss1394=0 virtualize=0 debug_assertions_fatal=1 verbose=0"
     # For CMake builds
-    - CMAKEFLAGS="-DMAD=ON -DFAAD=ON -DOPUS=ON -DMODPLUG=ON -DWAVPACK=ON -DHSS1394=OFF"
+    - CMAKEFLAGS="-DOPUS=ON -DHSS1394=OFF"
     - GTEST_COLOR=1
     - CTEST_OUTPUT_ON_FAILURE=1
 
@@ -70,7 +70,7 @@ jobs:
       compiler: gcc
       cache: ccache
       # Ubuntu Bionic build prerequisites
-      env: CMAKEFLAGS_EXTRA="-DLOCALECOMPARE=ON"
+      env: CMAKEFLAGS_EXTRA="-DLOCALECOMPARE=ON -DFAAD=ON -DWAVPACK=ON -DMAD=ON -DMODPLUG=ON"
       before_install:
         - export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
         - export CTEST_PARALLEL_LEVEL="$(nproc)"
@@ -83,7 +83,7 @@ jobs:
         - cd cmake_build
         - cmake -L $CMAKEFLAGS $CMAKEFLAGS_EXTRA ..
         - cmake --build .
-        - sudo env "PATH=$PATH" cmake --build . --target install
+        - cpack -G DEB
       script:
         # Run tests and benchmarks
         - ctest
@@ -139,22 +139,37 @@ jobs:
       # Workaround for bug in libopus's opus.h including <opus_multistream.h>
       # instead of <opus/opus_multistream.h>.
       # Virtual X (Xvfb) is needed for analyzer waveform tests
+      addons:
+        homebrew:
+          update: true
+          packages:
+            - ccache
       env: >-
-        CMAKEFLAGS_EXTRA="-DLOCALECOMPARE=OFF -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5/"
+        MIXXX_ENVPATH="${HOME}/buildenv"
+        CMAKEFLAGS_EXTRA="-DLOCALECOMPARE=OFF -DFAAD=OFF -DWAVPACK=OFF -DWAVPACK=OFF -DMAD=OFF -DMODPLUG=OFF"
+        PATH="/usr/local/opt/ccache/bin:$PATH"
         DISPLAY=:99.0
         CMAKE_BUILD_PARALLEL_LEVEL=4
         CTEST_PARALLEL_LEVEL=1
       before_install:
-        - brew install ccache
-        - export PATH="/usr/local/opt/ccache/bin:$PATH"
+        # Print some information about CMake and ccache
         - cmake --version
         - ccache -s
+        # Download and prepare our build environment
+        - mkdir "${MIXXX_ENVPATH}"
+        - read -r MIXXX_ENVNAME < build/osx/golden_environment
+        - curl "https://downloads.mixxx.org/builds/buildserver/2.3.x-macosx/${MIXXX_ENVNAME}.tar.gz" | tar xzf -  --strip 1 -C "${MIXXX_ENVPATH}"
+        # FIXME: This fixes some wrong hardcoded paths inside pkg-config files of the build environment (e.g. in "lib/pkgconfig/taglib.pc")
+        # This will only work if neither MIXXX_ENVNAME nor MIXXX_ENVPATH contain special regex characters!
+        - find "${MIXXX_ENVPATH}" -name "*.pc" -or -path "*/bin/taglib-config" -exec sed -i".orig" -e "s|/Users/mixxx/bs-2.3-mac/amd64/environment/${MIXXX_ENVNAME}|${MIXXX_ENVPATH}|g" {} \;
+        - export QT_DIR="$(find "${MIXXX_ENVPATH}" -type d -path "*/cmake/Qt5")"
+        - export QT_QPA_PLATFORM_PLUGIN_PATH="$(find "${MIXXX_ENVPATH}" -type d -path "*/plugins")"
       install:
         - mkdir cmake_build
         - cd cmake_build
-        - cmake -L $CMAKEFLAGS $CMAKEFLAGS_EXTRA ..
+        - cmake -L $CMAKEFLAGS $CMAKEFLAGS_EXTRA -DCMAKE_PREFIX_PATH=${MIXXX_ENVPATH} -DQt5_DIR=${QT_DIR} ..
         - cmake --build .
-        - sudo cmake --build . --target install
+        - cpack -G DragNDrop
       script:
         # Run tests and benchmarks
         - ctest

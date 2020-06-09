@@ -387,7 +387,7 @@ SoundDeviceError SoundManager::setupDevices() {
             AudioInputBuffer aib(in, SampleUtil::alloc(MAX_BUFFER_LEN));
             err = pDevice->addInput(aib);
             if (err != SOUNDDEVICE_ERROR_OK) {
-                delete [] aib.getBuffer();
+                SampleUtil::free(aib.getBuffer());
                 goto closeAndError;
             }
 
@@ -645,7 +645,7 @@ void SoundManager::registerInput(AudioInput input, AudioDestination *dest) {
         qDebug() << "WARNING: AudioInput already registered!";
     }
 
-    m_registeredDestinations.insertMulti(input, dest);
+    m_registeredDestinations.insert(input, dest);
 
     emit inputRegistered(input, dest);
 }
@@ -682,6 +682,10 @@ void SoundManager::setJACKName() const {
 }
 
 void SoundManager::setConfiguredDeckCount(int count) {
+    if (getConfiguredDeckCount() == count) {
+        // Unchanged
+        return;
+    }
     m_config.setDeckCount(count);
     checkConfig();
     m_config.writeToDisk();

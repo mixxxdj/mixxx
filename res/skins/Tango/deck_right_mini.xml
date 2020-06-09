@@ -91,7 +91,7 @@ Variables:
                     <TooltipId>track_title</TooltipId>
                     <ObjectName>TrackTitleMini</ObjectName>
                     <Size>100me,20f</Size>
-                    <Property>title</Property>
+                    <Property>titleInfo</Property>
                     <Alignment>right</Alignment>
                     <Elide>right</Elide>
                     <Channel><Variable name="chanNum"/></Channel>

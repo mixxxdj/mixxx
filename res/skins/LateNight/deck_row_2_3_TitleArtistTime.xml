@@ -28,7 +28,7 @@
                     <ObjectName>TitleText</ObjectName>
                     <Size>0me,22f</Size>
                     <TooltipId>track_title</TooltipId>
-                    <Property>title</Property>
+                    <Property>titleInfo</Property>
                     <Alignment>Left</Alignment>
                     <Elide>right</Elide>
                     <Channel><Variable name="channum"/></Channel>

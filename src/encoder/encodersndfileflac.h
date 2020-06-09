@@ -27,11 +27,11 @@ class EncoderCallback;
 
 class EncoderSndfileFlac : public EncoderWave {
   public:
-    EncoderSndfileFlac(EncoderCallback* pCallback=nullptr);
-    virtual ~EncoderSndfileFlac();
+    EncoderSndfileFlac(EncoderCallback* pCallback = nullptr);
+    ~EncoderSndfileFlac() override = default;
 
     void setEncoderSettings(const EncoderSettings& settings) override;
-    
+
   protected:
     void initStream() override;
   private:

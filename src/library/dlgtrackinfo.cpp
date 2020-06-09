@@ -237,7 +237,7 @@ void DlgTrackInfo::loadPrevTrack() {
 }
 
 void DlgTrackInfo::populateFields(const Track& track) {
-    setWindowTitle(track.getArtist() % " - " % track.getTitle());
+    setWindowTitle(track.getInfo());
 
     // Editable fields
     txtTrackName->setText(track.getTitle());

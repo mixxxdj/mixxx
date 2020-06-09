@@ -34,6 +34,7 @@
 #include "util/math.h"
 #include "util/painterscope.h"
 #include "util/timer.h"
+#include "util/widgethelper.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/controlwidgetconnection.h"
@@ -61,7 +62,6 @@ WOverview::WOverview(
           m_iPickupPos(0),
           m_iPlayPos(0),
           m_pHoveredMark(nullptr),
-          m_bHotcueMenuShowing(false),
           m_bTimeRulerActive(false),
           m_orientation(Qt::Horizontal),
           m_iLabelFontSize(10),
@@ -308,8 +308,10 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
     //qDebug() << this << "WOverview::slotLoadingTrack" << pNewTrack.get() << pOldTrack.get();
     DEBUG_ASSERT(m_pCurrentTrack == pOldTrack);
     if (m_pCurrentTrack != nullptr) {
-        disconnect(m_pCurrentTrack.get(), SIGNAL(waveformSummaryUpdated()),
-                   this, SLOT(slotWaveformSummaryUpdated()));
+        disconnect(m_pCurrentTrack.get(),
+                &Track::waveformSummaryUpdated,
+                this,
+                &WOverview::slotWaveformSummaryUpdated);
     }
 
     m_waveformSourceImage = QImage();
@@ -324,11 +326,12 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
         m_pCurrentTrack = pNewTrack;
         m_pWaveform = pNewTrack->getWaveformSummary();
 
-        connect(pNewTrack.get(), SIGNAL(waveformSummaryUpdated()),
-                this, SLOT(slotWaveformSummaryUpdated()));
+        connect(pNewTrack.get(),
+                &Track::waveformSummaryUpdated,
+                this,
+                &WOverview::slotWaveformSummaryUpdated);
         slotWaveformSummaryUpdated();
-        connect(pNewTrack.get(), SIGNAL(cuesUpdated()),
-                this, SLOT(receiveCuesUpdated()));
+        connect(pNewTrack.get(), &Track::cuesUpdated, this, &WOverview::receiveCuesUpdated);
     } else {
         m_pCurrentTrack.reset();
         m_pWaveform.clear();
@@ -440,9 +443,7 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
     }
 
     m_pHoveredMark.clear();
-    // Without some padding, the user would only have a single pixel width that
-    // would count as hovering over the WaveformMark.
-    float lineHoverPadding = 5.0;
+
     // Non-hotcue marks (intro/outro cues, main cue, loop in/out) are sorted
     // before hotcues in m_marksToRender so if there is a hotcue in the same
     // location, the hotcue gets rendered on top. When right clicking, the
@@ -451,16 +452,7 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
     // reverse and the loop breaks as soon as m_pHoveredMark is set.
     for (int i = m_marksToRender.size() - 1; i >= 0; --i) {
         WaveformMarkPointer pMark = m_marksToRender.at(i);
-        int hoveredPosition;
-        if (m_orientation == Qt::Horizontal) {
-            hoveredPosition = e->x();
-        } else {
-            hoveredPosition = e->y();
-        }
-        bool lineHovered =
-                pMark->m_linePosition >= hoveredPosition - lineHoverPadding && pMark->m_linePosition <= hoveredPosition + lineHoverPadding;
-
-        if (pMark->m_label.area().contains(e->pos()) || lineHovered) {
+        if (pMark->contains(e->pos(), m_orientation)) {
             m_pHoveredMark = pMark;
             break;
         }
@@ -538,22 +530,24 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
             }
             if (pHoveredCue != nullptr) {
                 m_pCueMenuPopup->setTrackAndCue(m_pCurrentTrack, pHoveredCue);
-                m_pCueMenuPopup->popup(e->globalPos());
-                m_bHotcueMenuShowing = true;
+                QPoint cueMenuTopLeft = mixxx::widgethelper::mapPopupToScreen(
+                        *this,
+                        e->globalPos(),
+                        m_pCueMenuPopup->size());
+                m_pCueMenuPopup->popup(cueMenuTopLeft);
             }
         }
     }
 }
 
 void WOverview::slotCueMenuPopupAboutToHide() {
-    m_bHotcueMenuShowing = false;
     m_pHoveredMark.clear();
     update();
 }
 
 void WOverview::leaveEvent(QEvent* pEvent) {
     Q_UNUSED(pEvent);
-    if (!m_bHotcueMenuShowing) {
+    if (!m_pCueMenuPopup->isVisible()) {
         m_pHoveredMark.clear();
     }
     m_bLeftClickDragging = false;

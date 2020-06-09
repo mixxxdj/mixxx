@@ -16,7 +16,7 @@ Description:
     <Layout>horizontal</Layout>
     <SizePolicy>min,me</SizePolicy>
     <Children>
-      
+
       <WidgetGroup>
         <ObjectName>SkinSettings</ObjectName>
         <Layout>vertical</Layout>
@@ -71,6 +71,13 @@ Description:
                 <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
                 <SetVariable name="text">Intro &amp; Outro Cues</SetVariable>
                 <SetVariable name="Setting">[Skin],show_intro_outro_cues</SetVariable>
+              </Template>
+
+              <!-- Cue shift buttons in beatgrid editing section -->
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
+                <SetVariable name="Text">Hotcue Shift Buttons</SetVariable>
+                <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
               </Template>
 
               <!-- Rate Control toggle -->

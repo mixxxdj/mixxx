@@ -21,17 +21,17 @@ class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
 
   public slots:
     /// Called when the preference dialog (not this page) is shown to the user.
-    void slotUpdate();
+    void slotUpdate() override;
     /// Called when the user clicks the global "Apply" button.
-    void slotApply();
+    void slotApply() override;
     /// Called when the user clicks the global "Reset to Defaults" button.
-    void slotResetToDefaults();
+    void slotResetToDefaults() override;
 
   signals:
     void apply(const QString&);
 
   private slots:
-    void slotHotcuePaletteChanged(const QString& palette);
+    void slotHotcuePaletteIndexChanged(int paletteIndex);
     void trackPaletteUpdated(const QString& palette);
     void hotcuePaletteUpdated(const QString& palette);
     void palettesUpdated();

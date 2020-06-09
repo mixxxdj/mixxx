@@ -25,6 +25,15 @@ class Cue : public QObject {
     Cue(
             const mixxx::CueInfo& cueInfo,
             mixxx::audio::SampleRate sampleRate);
+    Cue(
+            int id,
+            TrackId trackId,
+            mixxx::CueType type,
+            double position,
+            double length,
+            int hotCue,
+            QString label,
+            mixxx::RgbColor color);
     ~Cue() override = default;
 
     bool isDirty() const;
@@ -44,6 +53,7 @@ class Cue : public QObject {
             double samplePosition = kNoPosition);
     void setEndPosition(
             double samplePosition = kNoPosition);
+    void shiftPositionFrames(double frameOffset);
 
     double getLength() const;
 
@@ -67,16 +77,6 @@ class Cue : public QObject {
     void updated();
 
   private:
-    Cue(
-            int id,
-            TrackId trackId,
-            mixxx::CueType type,
-            double position,
-            double length,
-            int hotCue,
-            QString label,
-            mixxx::RgbColor color);
-
     void setDirty(bool dirty);
 
     void setId(int id);

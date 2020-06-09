@@ -239,15 +239,20 @@ void DlgCoverArtFullSize::wheelEvent(QWheelEvent* event) {
     // Scale the image size
     int oldWidth = width();
     int oldHeight = height();
-    int newWidth = oldWidth + (0.2 * event->delta());
-    int newHeight = oldHeight + (0.2 * event->delta());
+    int newWidth = oldWidth + (0.2 * event->angleDelta().y());
+    int newHeight = oldHeight + (0.2 * event->angleDelta().y());
     QSize newSize = size();
     newSize.scale(newWidth, newHeight, Qt::KeepAspectRatio);
 
     // To keep the same part of the image under the cursor, shift the
     // origin (top left point) by the distance the point moves under the cursor.
     QPoint oldOrigin = geometry().topLeft();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    QPoint oldPointUnderCursor = event->position().toPoint();
+#else
     QPoint oldPointUnderCursor = event->pos();
+#endif
+
     int newPointX = (double) oldPointUnderCursor.x() / oldWidth * newSize.width();
     int newPointY = (double) oldPointUnderCursor.y() / oldHeight * newSize.height();
     QPoint newOrigin = QPoint(

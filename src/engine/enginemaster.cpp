@@ -30,10 +30,10 @@
 #include "util/trace.h"
 
 EngineMaster::EngineMaster(UserSettingsPointer pConfig,
-                           const char* group,
-                           EffectsManager* pEffectsManager,
-                           ChannelHandleFactory* pChannelHandleFactory,
-                           bool bEnableSidechain)
+        const char* group,
+        EffectsManager* pEffectsManager,
+        ChannelHandleFactoryPointer pChannelHandleFactory,
+        bool bEnableSidechain)
         : m_pChannelHandleFactory(pChannelHandleFactory),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
           m_masterGainOld(0.0),
@@ -194,7 +194,7 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
 }
 
 EngineMaster::~EngineMaster() {
-    qDebug() << "in ~EngineMaster()";
+    //qDebug() << "in ~EngineMaster()";
     delete m_pKeylockEngine;
     delete m_pCrossfader;
     delete m_pBalance;
@@ -236,6 +236,7 @@ EngineMaster::~EngineMaster() {
     SampleUtil::free(m_pBooth);
     SampleUtil::free(m_pTalkover);
     SampleUtil::free(m_pTalkoverHeadphones);
+    SampleUtil::free(m_pSidechainMix);
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
         SampleUtil::free(m_pOutputBusBuffers[o]);
     }

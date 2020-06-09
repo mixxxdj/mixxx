@@ -32,4 +32,8 @@ env.Append(CPPDEFINES='HAVE_CONFIG_H')
 env.Append(CPPPATH='src/common')
 env.Append(CPPPATH='include')
 
-env.StaticLibrary(target='libshout_mixxx', source=libshout_sources)
+libshout_mixxx = env.StaticLibrary(target='libshout_mixxx', source=libshout_sources)
+
+# Install the libraries if needed.
+if 'LIB_OUTPUT' in env.Dictionary():
+    env.Install('$LIB_OUTPUT', source=[libshout_mixxx])
