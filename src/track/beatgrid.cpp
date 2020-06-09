@@ -5,6 +5,9 @@
 #include "util/math.h"
 
 static const int kFrameSize = 2;
+namespace {
+constexpr int kDefaultBeatsPerMeasure = 4;
+}
 
 struct BeatGridData {
     double bpm;
@@ -37,7 +40,8 @@ class BeatGridIterator : public BeatIterator {
                 (m_dFirstBeatSample + m_iCurrentBeatIndex * m_dBeatLength) /
                 kFrameSize);
         beat.setIndex(m_iCurrentBeatIndex);
-        if ((m_iCurrentBeatIndex % 4) == (m_iDownbeatOffset % 4)) {
+        if ((m_iCurrentBeatIndex % kDefaultBeatsPerMeasure) ==
+                (m_iDownbeatOffset % kDefaultBeatsPerMeasure)) {
             beat.setType(mixxx::track::io::BAR);
         }
         m_iCurrentBeatIndex++;

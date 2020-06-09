@@ -1,8 +1,8 @@
 #pragma once
 
-#include <proto/beats.pb.h>
-
 #include <QPainter>
+
+#include "proto/beats.pb.h"
 
 using BeatType = mixxx::track::io::Type;
 

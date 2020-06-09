@@ -17,6 +17,10 @@
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 
+namespace {
+constexpr int kDefaultBeatsPerMeasure = 4;
+}
+
 WWaveformViewer::WWaveformViewer(const char* group, UserSettingsPointer pConfig, QWidget* parent)
         : WWidget(parent),
           m_pGroup(group),
@@ -311,5 +315,5 @@ bool WWaveformViewer::isPlaying() const {
 
 void WWaveformViewer::slotDownbeatUpdated() {
     m_waveformWidget->getTrackInfo()->getBeats()->setDownbeatStartIndex(
-            m_hoveredBeat.getIndex() % 4);
+            m_hoveredBeat.getIndex() % kDefaultBeatsPerMeasure);
 }

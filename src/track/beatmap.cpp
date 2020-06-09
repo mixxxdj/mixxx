@@ -16,6 +16,10 @@
 
 
 const int kFrameSize = 2;
+namespace {
+// This constant will soon be removed with multiple time signature support.
+constexpr int kDefaultBeatsPerMeasure = 4;
+} // namespace
 
 inline double samplesToFrames(const double samples) {
     return floor(samples / kFrameSize);
@@ -132,7 +136,7 @@ bool BeatMap::readByteArray(const QByteArray& byteArray) {
     for (int i = 0; i < map.beat_size(); ++i) {
         Beat beat(map.beat(i));
         beat.setIndex(i);
-        beat.setType((i % 4 == m_iFirstDownbeatIndex)
+        beat.setType((i % kDefaultBeatsPerMeasure == m_iFirstDownbeatIndex)
                         ? mixxx::track::io::BAR
                         : mixxx::track::io::BEAT);
         m_beats.append(beat);
@@ -158,7 +162,7 @@ void BeatMap::createFromBeatVector(const QVector<double>& beats) {
         } else {
             beat.setFramePosition(beatpos);
             beat.setIndex(beatCount);
-            beat.setType((beatCount % 4 == m_iFirstDownbeatIndex)
+            beat.setType((beatCount % kDefaultBeatsPerMeasure == m_iFirstDownbeatIndex)
                             ? mixxx::track::io::BAR
                             : mixxx::track::io::BEAT);
             m_beats.append(beat);
@@ -533,7 +537,7 @@ void BeatMap::translate(double dNumSamples) {
 }
 
 void BeatMap::scale(enum BPMScale scale) {
-
+    // TODO(hacksdump): Update downbeat on scale.
     QMutexLocker locker(&m_mutex);
     if (!isValid() || m_beats.isEmpty()) {
         return;
@@ -750,7 +754,9 @@ double BeatMap::calculateBpm(const Beat& startBeat, const Beat& stopBeat) const 
 
 void BeatMap::setDownbeatStartIndex(int index) {
     for (int i = 0; i < m_beats.size(); i++) {
-        m_beats[i].setType((i % 4 == index) ? mixxx::track::io::BAR : mixxx::track::io::BEAT);
+        m_beats[i].setType((i % kDefaultBeatsPerMeasure == index)
+                        ? mixxx::track::io::BAR
+                        : mixxx::track::io::BEAT);
     }
     m_iFirstDownbeatIndex = index;
     emit updated();
