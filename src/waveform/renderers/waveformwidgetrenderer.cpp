@@ -311,7 +311,7 @@ WaveformMarkPointer WaveformWidgetRenderer::getCueMarkAtPoint(QPoint point) cons
 }
 
 // TODO(hacksdump): Optimize this search
-BeatPointer WaveformWidgetRenderer::getBeatAtPoint(QPoint point) const {
+Beat WaveformWidgetRenderer::getBeatAtPoint(QPoint point) const {
     for (const auto& pBeat : m_beatPositions.keys()) {
         float position = m_beatPositions[pBeat];
         if (getOrientation() == Qt::Horizontal) {
@@ -324,5 +324,10 @@ BeatPointer WaveformWidgetRenderer::getBeatAtPoint(QPoint point) const {
             }
         }
     }
-    return nullptr;
+    // Maybe consider using std::optional return type for this function.
+    // Optional wrapper should be suitable for searches.
+    Beat beat;
+    // Currently relying on setting enabled status to false.
+    beat.setEnabled(false);
+    return beat;
 }

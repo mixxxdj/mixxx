@@ -31,14 +31,14 @@ class BeatGridIterator : public BeatIterator {
         return m_dBeatLength > 0 && m_iCurrentBeatIndex <= m_iEndBeatIndex;
     }
 
-    virtual BeatPointer next() {
-        BeatPointer beat = BeatPointer(new Beat);
-        beat->set_frame_position(
+    virtual Beat next() {
+        Beat beat;
+        beat.setFramePosition(
                 (m_dFirstBeatSample + m_iCurrentBeatIndex * m_dBeatLength) /
                 kFrameSize);
-        beat->setIndex(m_iCurrentBeatIndex);
+        beat.setIndex(m_iCurrentBeatIndex);
         if ((m_iCurrentBeatIndex % 4) == (m_iDownbeatOffset % 4)) {
-            beat->set_type(mixxx::track::io::BAR);
+            beat.setType(mixxx::track::io::BAR);
         }
         m_iCurrentBeatIndex++;
         return beat;

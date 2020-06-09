@@ -24,7 +24,7 @@ class BeatIterator {
   public:
     virtual ~BeatIterator() {}
     virtual bool hasNext() const = 0;
-    virtual BeatPointer next() = 0;
+    virtual Beat next() = 0;
 };
 
 // Beats is a pure abstract base class for BPM and beat management classes. It

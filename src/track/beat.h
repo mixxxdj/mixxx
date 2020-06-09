@@ -5,42 +5,63 @@
 
 #include "proto/beats.pb.h"
 
-class Beat : public mixxx::track::io::Beat {
+class Beat {
   public:
-    Beat() = default;
-    Beat(const mixxx::track::io::Beat& protoBeat) {
-        init(protoBeat);
+    Beat();
+    explicit Beat(const mixxx::track::io::Beat& protoBeat);
+
+    int getIndex() const {
+        return m_iIndex;
     }
 
-    Beat(const QSharedPointer<Beat>& pBeat) {
-        set_enabled(pBeat->enabled());
-        set_frame_position(pBeat->frame_position());
-        set_source(pBeat->source());
-        set_type(pBeat->type());
+    int getFramePosition() const {
+        return m_beat.frame_position();
     }
 
-    Beat& operator=(const mixxx::track::io::Beat& protoBeat) {
-        init(protoBeat);
-        return *this;
+    int getSamplePosition() const;
+
+    mixxx::track::io::Type getType() const {
+        return m_beat.type();
     }
 
-    void init(const mixxx::track::io::Beat& protoBeat);
-    float sample_position();
+    bool isEnabled() const {
+        return m_beat.enabled();
+    }
+
+    mixxx::track::io::Source getSource() const {
+        return m_beat.source();
+    }
+
+    // Return the underlying proto object.
+    mixxx::track::io::Beat getProto() const {
+        return m_beat;
+    }
 
     void setIndex(int index) {
         m_iIndex = index;
     }
 
-    int getIndex() {
-        return m_iIndex;
+    void setFramePosition(int framePosition) {
+        m_beat.set_frame_position(framePosition);
     }
 
-    bool operator<(const Beat& compBeat) const {
-        return frame_position() < compBeat.frame_position();
+    void setSamplePosition(int samplePosition);
+
+    void setType(const mixxx::track::io::Type& type) {
+        m_beat.set_type(type);
+    }
+
+    void setEnabled(bool enabled) {
+        m_beat.set_enabled(enabled);
+    }
+
+    void setSource(const mixxx::track::io::Source& source) {
+        m_beat.set_source(source);
     }
 
   private:
     int m_iIndex;
+    mixxx::track::io::Beat m_beat;
 };
 
-using BeatPointer = QSharedPointer<Beat>;
+bool operator<(const Beat& beat1, const Beat& beat2);

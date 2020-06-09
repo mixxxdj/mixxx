@@ -83,7 +83,7 @@ private:
     parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
     parented_ptr<WBeatMenu> m_pBeatMenu;
     WaveformMarkPointer m_pHoveredMark;
-    BeatPointer m_pHoveredBeat;
+    Beat m_hoveredBeat;
 
     WaveformWidgetAbstract* m_waveformWidget;
 

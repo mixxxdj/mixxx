@@ -43,7 +43,7 @@ class WaveformWidgetRenderer {
     /// Get cue mark at a point on the waveform widget.
     WaveformMarkPointer getCueMarkAtPoint(QPoint point) const;
     /// Get beat near a point on the waveform widget.
-    BeatPointer getBeatAtPoint(QPoint point) const;
+    Beat getBeatAtPoint(QPoint point) const;
 
     double getFirstDisplayedPosition() const { return m_firstDisplayedPosition;}
     double getLastDisplayedPosition() const { return m_lastDisplayedPosition;}
@@ -106,7 +106,7 @@ class WaveformWidgetRenderer {
         m_markPositions = markPositions;
     }
 
-    void setBeatPositions(QMap<BeatPointer, float> beatPositions) {
+    void setBeatPositions(QMap<Beat, float> beatPositions) {
         m_beatPositions = beatPositions;
     }
 
@@ -169,7 +169,7 @@ private:
     DISALLOW_COPY_AND_ASSIGN(WaveformWidgetRenderer);
     friend class WaveformWidgetFactory;
     QMap<WaveformMarkPointer, int> m_markPositions;
-    QMap<BeatPointer, float> m_beatPositions;
+    QMap<Beat, float> m_beatPositions;
 };
 
 #endif // WAVEFORMWIDGETRENDERER_H

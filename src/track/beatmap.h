@@ -17,7 +17,7 @@
 
 #define BEAT_MAP_VERSION "BeatMap-1.0"
 
-typedef QList<BeatPointer> BeatList;
+typedef QList<Beat> BeatList;
 
 namespace mixxx {
 
@@ -94,8 +94,8 @@ class BeatMap final : public Beats {
     void createFromBeatVector(const QVector<double>& beats);
     void onBeatlistChanged();
 
-    double calculateBpm(const BeatPointer& startBeat,
-            const BeatPointer& stopBeat) const;
+    double calculateBpm(const Beat& startBeat,
+            const Beat& stopBeat) const;
     // For internal use only.
     bool isValid() const;
 

@@ -76,11 +76,11 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     const float rendererHeight = m_waveformRenderer->getHeight();
 
     int beatCount = 0;
-    QMap<BeatPointer, float> beatPositions;
+    QMap<Beat, float> beatPositions;
 
     while (it->hasNext()) {
         auto beat = it->next();
-        double beatPosition = beat->sample_position();
+        double beatPosition = beat.getSamplePosition();
         double xBeatPoint =
                 m_waveformRenderer->transformSamplePositionInRendererWorld(beatPosition);
 
@@ -93,7 +93,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
         auto* waveformBeat = &m_beats[beatCount];
         waveformBeat->setPosition(xBeatPoint);
-        waveformBeat->setType(beat->type());
+        waveformBeat->setType(beat.getType());
         waveformBeat->setBeatGridMode(m_waveformRenderer->beatGridMode());
 
         if (orientation == Qt::Horizontal) {
