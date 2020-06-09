@@ -86,8 +86,7 @@ LibLoader::LibLoader()
             !m_neAACDecClose ||
             !m_neAACDecPostSeekReset ||
             !m_neAACDecDecode2 ||
-            !m_neAACDecGetErrorMessage ||
-            !m_neAACDecGetVersion) {
+            !m_neAACDecGetErrorMessage) {
         kLogger.warning() << "NeAACDecOpen:" << m_neAACDecOpen;
         kLogger.warning() << "NeAACDecGetCurrentConfiguration:" << m_neAACDecGetCurrentConfiguration;
         kLogger.warning() << "NeAACDecSetConfiguration:" << m_neAACDecSetConfiguration;
@@ -97,7 +96,7 @@ LibLoader::LibLoader()
         kLogger.warning() << "NeAACDecPostSeekReset:" << m_neAACDecPostSeekReset;
         kLogger.warning() << "NeAACDecDecode2:" << m_neAACDecDecode2;
         kLogger.warning() << "NeAACDecGetErrorMessage:" << m_neAACDecGetErrorMessage;
-        kLogger.warning() << "NeAACDecGetVersion:" << m_neAACDecGetVersion;
+        kLogger.warning() << "NeAACDecGetVersion:" << m_neAACDecGetVersion; // From FAAD 2.8.2
         m_neAACDecOpen = nullptr;
         m_neAACDecGetCurrentConfiguration = nullptr;
         m_neAACDecSetConfiguration = nullptr;
