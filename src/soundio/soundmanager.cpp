@@ -682,6 +682,10 @@ void SoundManager::setJACKName() const {
 }
 
 void SoundManager::setConfiguredDeckCount(int count) {
+    if (getConfiguredDeckCount() == count) {
+        // Unchanged
+        return;
+    }
     m_config.setDeckCount(count);
     checkConfig();
     m_config.writeToDisk();
