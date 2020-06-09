@@ -136,20 +136,9 @@ WSearchLineEdit {
   background-color: #040404;
 }
 
-#ToolBar, #ToolBarSection {
-  qproperty-layoutSpacing: 2;
-  border-width: 0px;
-}
 #ToolBar {
   padding: 1px 2px 0px 2px;
-  } /*
-  #ToolBar[highlight="0"] {
-    border-bottom: 1px solid #0c0c0c;
   }
-  #ToolBar[highlight="1"] {
-    border-bottom: 1px solid #1e1e20;
-  } */
-
   #BatteryBox {
     margin-bottom: 1px;
   }
@@ -261,6 +250,13 @@ WLibrary {
 #ToolbarDeckSpacer {
   min-height: 3px;
   max-height: 3px;
+}
+
+/* Since the toolbar is dim in PaleMoon, we don't need an extra margin
+    in between mini decks and the toolbar. */
+#MiniDecksTopSpacer {
+  min-height: 0px;
+  max-height: 0px;
 }
 
 #Deck1, #DeckCompact1, #DeckMini1,
@@ -746,10 +742,6 @@ WBeatSpinBox {
 
 #FxParametersContainer {
   padding: 5px 0px 2px 0px;
-}
-
-#DryWetKnob {
-  margin-bottom: 1px;
 }
 
 #FxUnitControlsCollapsed #FxUnitLabel {

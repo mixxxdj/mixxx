@@ -264,6 +264,11 @@ WLibrary,
   max-height: 4px;
 }
 
+#MiniDecksTopSpacer {
+  min-height: 4px;
+  max-height: 4px;
+}
+
 #Deck1, #DeckCompact1, #DeckMini1,
 #Deck2, #DeckCompact2, #DeckMini2,
 #Deck3, #DeckCompact3, #DeckMini3,

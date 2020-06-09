@@ -3,6 +3,13 @@
     <Layout>vertical</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
+
+      <!-- Create a margin in between mini decks and the toolbar.
+            Height set in qss, for now only used in Classic theme. -->
+      <WidgetGroup>
+        <ObjectName>MiniDecksTopSpacer</ObjectName>
+      </WidgetGroup>
+
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
