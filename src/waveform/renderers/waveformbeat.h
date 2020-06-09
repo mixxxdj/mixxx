@@ -6,7 +6,7 @@
 
 using BeatType = mixxx::track::io::Type;
 
-enum Direction {
+enum class Direction : int {
     UP = 0,
     DOWN,
     LEFT,
