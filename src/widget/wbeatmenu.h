@@ -15,10 +15,12 @@ class WBeatMenu : public QMenu {
     void setTrack(const TrackPointer& track) {
         m_pTrack = track;
     }
+    void update();
   signals:
     void updateDownbeat();
 
   private:
     QAction* m_pSetAsDownbeat;
     TrackPointer m_pTrack;
+    UserSettingsPointer m_pConfig;
 };

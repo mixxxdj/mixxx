@@ -96,6 +96,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
             }
 
             if (m_pHoveredBeat) {
+                m_pBeatMenu->update();
                 m_pBeatMenu->popup(event->globalPos());
             }
 
@@ -308,5 +309,4 @@ bool WWaveformViewer::isPlaying() const {
 
 void WWaveformViewer::slotDownbeatUpdated() {
     m_waveformWidget->getTrackInfo()->getBeats()->setDownbeatOffset(m_pHoveredBeat->getIndex() % 4);
-    setFocus();
 }
