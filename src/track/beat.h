@@ -7,7 +7,7 @@
 
 class Beat : public mixxx::track::io::Beat {
   public:
-    Beat(){};
+    Beat() = default;
     Beat(const mixxx::track::io::Beat& protoBeat) {
         init(protoBeat);
     }
