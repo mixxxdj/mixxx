@@ -40,6 +40,7 @@ WEffectSelector QAbstractScrollArea,
 #KnobLabel,
 /* Passthrough label on overview waveform */
 WOverview #PassthroughLabel,
+#EQKillButton,
 #FxUnitLabel,
 #MicAuxLabel, #MicAuxLabelUnconfigured,
 #LatencyLabel,
@@ -53,7 +54,8 @@ WOverview #PassthroughLabel,
 /* SKin settings & Library */
 #SkinSettingsToggle,
 #DeckSizeButton[value="1"],
-WLibrary QPushButton {
+WLibrary QPushButton,
+#labelRecFilename {
   font-weight: bold;
 }
 
@@ -83,7 +85,9 @@ WCueMenuPopup QMenu,
 WCoverArtMenu,
 WTrackMenu,
 WTrackMenu QMenu,
-WBeatSpinBox QMenu {
+WBeatSpinBox QMenu,
+#labelRecPrefix,
+#labelRecStatistics {
   font-weight: normal;
 }
 
@@ -109,18 +113,24 @@ WPushButton, WLibrary QPushButton, WLibrary QRadioButton,
 #SamplerTitleMini,
 #EQKillButton,
 #RateText,
-#PreviewBPM,
-WEffectSelector,
-WEffectSelector QAbstractScrollArea,
-#fadeModeCombobox,
-#fadeModeCombobox QAbstractScrollArea {
+#PreviewBPM {
 	font-size: 12px;
 }
 
 WKey,
 #DurationText,
 WBeatSpinBox,
-#spinBoxTransition {
+#spinBoxTransition,
+WEffectSelector,
+WEffectSelector QAbstractScrollArea,
+#fadeModeCombobox,
+#fadeModeCombobox QAbstractScrollArea,
+#labelRecPrefix,
+#labelRecFilename,
+#labelRecStatistics,
+#SkinSettingsButton,
+#DeckSizeButton,
+#SkinSettingsText  {
   font-size: 13px;
 }
 
@@ -696,15 +706,7 @@ WLibrary QRadioButton {
 #labelRecFilename,
 #labelRecStatistics {
   text-transform: none;
-  font-size: 13px;
   padding: 0px 0px 3px 0px;
-  }
-  #labelRecFilename {
-    font-weight: bold;
-  }
-  #labelRecPrefix,
-  #labelRecStatistics {
-    font-weight: normal;
   }
 
 #LibraryContainer QTreeView {

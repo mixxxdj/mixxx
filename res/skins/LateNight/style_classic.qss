@@ -2252,17 +2252,6 @@ WEffectSelector::item,
 WEffectSelector, #fadeModeCombobox {
   background-color: #161616;
 }
-WBeatSpinBox,
-#spinBoxTransition,
-WEffectSelector, WEffectSelector QAbstractScrollArea,
-#fadeModeCombobox, #fadeModeCombobox QAbstractScrollArea {
-  font-size: 13px/13px;
-}
-#SkinSettingsButton,
-#DeckSizeButton,
-#SkinSettingsText {
-  font-size: 13px/13px;
-}
   /* hovered items */
   WEffectSelector::item:selected,
   #fadeModeCombobox::item:selected,
