@@ -56,7 +56,6 @@ class CoverInfoRelative {
 
     CoverInfoRelative();
 
-    // all-default memory management
     CoverInfoRelative(const CoverInfoRelative&) = default;
     CoverInfoRelative& operator=(const CoverInfoRelative&) = default;
     virtual ~CoverInfoRelative() = default;
@@ -133,10 +132,9 @@ class CoverInfo : public CoverInfoRelative {
           trackLocation(tl) {
     }
 
-    // all-default memory management
     CoverInfo(const CoverInfo&) = default;
     CoverInfo& operator=(const CoverInfo&) = default;
-    virtual ~CoverInfo() override = default;
+    ~CoverInfo() override = default;
     CoverInfo(CoverInfo&&) = default;
     CoverInfo& operator=(CoverInfo&&) = default;
 
@@ -209,9 +207,8 @@ class CoverArt : public CoverInfo {
               resizedToWidth(resizedToWidth) {
     }
 
-    // all-default memory management
     CoverArt(const CoverArt&) = default;
-    virtual ~CoverArt() override = default;
+    ~CoverArt() override = default;
     CoverArt(CoverArt&&) = default;
     CoverArt& operator=(CoverArt&&) = default;
 
