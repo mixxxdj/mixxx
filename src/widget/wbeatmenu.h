@@ -10,7 +10,7 @@ class WBeatMenu : public QMenu {
   public:
     WBeatMenu(UserSettingsPointer pConfig, QWidget* parent = nullptr);
 
-    virtual ~WBeatMenu() override;
+    ~WBeatMenu() override;
 
     void setTrack(const TrackPointer& track) {
         m_pTrack = track;

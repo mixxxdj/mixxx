@@ -42,11 +42,11 @@ class BeatMapIterator : public BeatIterator {
         }
     }
 
-    virtual bool hasNext() const override {
+    bool hasNext() const override {
         return m_currentBeat != m_endBeat;
     }
 
-    virtual Beat next() override {
+    Beat next() override {
         auto beat = *m_currentBeat;
         ++m_currentBeat;
         while (m_currentBeat != m_endBeat && !m_currentBeat->isEnabled()) {
