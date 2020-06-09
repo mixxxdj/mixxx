@@ -4,6 +4,7 @@
 
 #include "preferences/usersettings.h"
 #include "track/track.h"
+#include "util/parented_ptr.h"
 
 class WBeatMenu : public QMenu {
     Q_OBJECT
@@ -21,7 +22,7 @@ class WBeatMenu : public QMenu {
     void updateDownbeat();
 
   private:
-    QAction* m_pSetAsDownbeat;
+    parented_ptr<QAction> m_pSetAsDownbeat;
     TrackPointer m_pTrack;
     UserSettingsPointer m_pConfig;
 };
