@@ -174,10 +174,10 @@ class CoverInfo : public CoverInfoRelative {
     LoadedImage loadImage(
             const SecurityTokenPointer& pTrackLocationToken = SecurityTokenPointer()) const;
 
-    // Verify the image digest and update it if necessary.
-    // If the corresponding image has already been loaded it
-    // could be provided as a parameter to avoid reloading
-    // if actually needed.
+    /// Verify the image digest and update it if necessary.
+    /// If the corresponding image has already been loaded it
+    /// could be provided as a parameter to avoid reloading
+    /// if actually needed.
     bool refreshImageDigest(
             const QImage& loadedImage = QImage(),
             const SecurityTokenPointer& pTrackLocationToken = SecurityTokenPointer());
