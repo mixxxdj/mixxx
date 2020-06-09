@@ -140,8 +140,10 @@ void BaseCoverArtDelegate::paintItem(
             return;
         }
     }
-    // As a fallback use the (background) color a placeholder
-    // until the cover has been loaded
+    // Fallback: Use the (background) color as a placeholder
+    //  - while the cover art is loaded asynchronously in the background
+    //  - if the audio file with embedded cover art is missing
+    //  - if the external image file with custom cover art is missing
     if (coverInfo.color) {
         painter->fillRect(option.rect, mixxx::RgbColor::toQColor(coverInfo.color));
     }
