@@ -10,12 +10,13 @@ class WBeatMenu : public QMenu {
   public:
     WBeatMenu(UserSettingsPointer pConfig, QWidget* parent = nullptr);
 
-    ~WBeatMenu() override;
+    ~WBeatMenu() override = default;
 
     void setTrack(const TrackPointer& track) {
         m_pTrack = track;
     }
     void update();
+
   signals:
     void updateDownbeat();
 
