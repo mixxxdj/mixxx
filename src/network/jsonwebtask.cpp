@@ -1,21 +1,14 @@
 #include "network/jsonwebtask.h"
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 8, 0)
-#include <QBuffer>
-#endif
 #include <QMetaMethod>
 #include <QMimeDatabase>
 #include <QNetworkRequest>
-#include <QThread>
 #include <QTimerEvent>
 #include <mutex> // std::once_flag
 
-#include "util/assert.h"
-#if QT_VERSION < QT_VERSION_CHECK(5, 7, 0)
-#include "util/compatibility.h"
-#endif
 #include "util/counter.h"
 #include "util/logger.h"
+#include "util/thread_affinity.h"
 
 namespace mixxx {
 
@@ -100,9 +93,7 @@ QNetworkRequest newRequest(
         const QUrl& url) {
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, JSON_CONTENT_TYPE);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-#endif
     return request;
 }
 
@@ -207,19 +198,10 @@ QNetworkReply* JsonWebTask::sendNetworkRequest(
                     << url
                     << body;
         }
-#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
         return networkAccessManager->sendCustomRequest(
                 newRequest(url),
                 "PATCH",
                 body);
-#else
-        auto* buffer = new QBuffer(this);
-        buffer->setData(body);
-        return networkAccessManager->sendCustomRequest(
-                newRequest(url),
-                "PATCH",
-                buffer);
-#endif
     }
     case HttpRequestMethod::Delete: {
         DEBUG_ASSERT(content.isEmpty());
@@ -240,7 +222,7 @@ bool JsonWebTask::doStart(
         QNetworkAccessManager* networkAccessManager,
         int parentTimeoutMillis) {
     Q_UNUSED(parentTimeoutMillis);
-    DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     DEBUG_ASSERT(networkAccessManager);
     VERIFY_OR_DEBUG_ASSERT(!m_pendingNetworkReply) {
         kLogger.warning()
@@ -274,8 +256,8 @@ bool JsonWebTask::doStart(
             Qt::UniqueConnection);
 
     connect(m_pendingNetworkReply,
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-            qOverload<QNetworkReply::NetworkError>(&QNetworkReply::error),
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+            &QNetworkReply::errorOccurred,
 #else
             QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error),
 #endif
@@ -287,7 +269,7 @@ bool JsonWebTask::doStart(
 }
 
 QUrl JsonWebTask::doAbort() {
-    DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     QUrl requestUrl;
     if (m_pendingNetworkReply) {
         requestUrl = abortPendingNetworkReply(m_pendingNetworkReply);
@@ -301,7 +283,7 @@ QUrl JsonWebTask::doAbort() {
 }
 
 QUrl JsonWebTask::doTimeOut() {
-    DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     QUrl requestUrl;
     if (m_pendingNetworkReply) {
         requestUrl = timeOutPendingNetworkReply(m_pendingNetworkReply);
@@ -313,7 +295,7 @@ QUrl JsonWebTask::doTimeOut() {
 }
 
 void JsonWebTask::slotNetworkReplyFinished() {
-    DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     const QPair<QNetworkReply*, HttpStatusCode> networkReplyWithStatusCode =
             receiveNetworkReply();
     auto* const networkReply = networkReplyWithStatusCode.first;

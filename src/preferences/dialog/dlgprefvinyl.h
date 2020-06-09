@@ -37,12 +37,12 @@ class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
     QUrl helpUrl() const override;
 
   public slots:
-    void slotUpdate();
-    void slotApply();
-    void slotResetToDefaults();
+    void slotUpdate() override;
+    void slotApply() override;
+    void slotResetToDefaults() override;
 
-    void slotHide();
-    void slotShow();
+    void slotHide() override;
+    void slotShow() override;
     void VinylTypeSlotApply();
     void slotVinylGainApply();
     void slotUpdateVinylGain();

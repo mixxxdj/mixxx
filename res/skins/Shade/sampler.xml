@@ -44,7 +44,7 @@
                     text-align: left;
                     padding-left: 1px; }
                 </Style>
-                <Property>title</Property>
+                <Property>titleInfo</Property>
                 <Group><Variable name="group"/></Group>
                 <SizePolicy>me,max</SizePolicy>
                 <Elide>right</Elide>
@@ -405,4 +405,3 @@
     </Children>
   </WidgetGroup>
 </Template>
-

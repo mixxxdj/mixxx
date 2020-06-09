@@ -7,7 +7,7 @@
 
  #include "encoder/encoderwavesettings.h"
  #include "recording/defs_recording.h"
- 
+
 const QString EncoderWaveSettings::BITS_GROUP = "BITS";
 
 EncoderWaveSettings::EncoderWaveSettings(UserSettingsPointer pConfig,
@@ -26,22 +26,15 @@ EncoderWaveSettings::EncoderWaveSettings(UserSettingsPointer pConfig,
     m_radioList.append(OptionsGroup(QObject::tr("Bit depth"), BITS_GROUP, names));
 }
 
-EncoderWaveSettings::~EncoderWaveSettings()
-{
-    
-}
-
-
 // Returns the list of radio options to show to the user
 QList<EncoderSettings::OptionsGroup> EncoderWaveSettings::getOptionGroups() const
 {
     return m_radioList;
 }
 
-// Selects the option by its index. If it is a single-element option, 
+// Selects the option by its index. If it is a single-element option,
 // index 0 means disabled and 1 enabled.
-void EncoderWaveSettings::setGroupOption(QString groupCode, int optionIndex) 
-{
+void EncoderWaveSettings::setGroupOption(QString groupCode, int optionIndex) {
     bool found=false;
     for (const auto& group : m_radioList) {
         if (groupCode == group.groupCode) {
@@ -51,8 +44,8 @@ void EncoderWaveSettings::setGroupOption(QString groupCode, int optionIndex)
                         ConfigKey(RECORDING_PREF_KEY, m_format + "_" + groupCode),
                         ConfigValue(optionIndex));
             } else {
-                qWarning() << "Received an index out of range for: " 
-                    << groupCode << ", index: " << optionIndex;
+                qWarning() << "Received an index out of range for: "
+                           << groupCode << ", index: " << optionIndex;
             }
         }
     }
@@ -60,10 +53,9 @@ void EncoderWaveSettings::setGroupOption(QString groupCode, int optionIndex)
         qWarning() << "Received an unknown groupCode on setGroupOption: " << groupCode;
     }
 }
-// Return the selected option of the group. If it is a single-element option, 
+// Return the selected option of the group. If it is a single-element option,
 // 0 means disabled and 1 enabled.
-int EncoderWaveSettings::getSelectedOption(QString groupCode) const 
-{
+int EncoderWaveSettings::getSelectedOption(QString groupCode) const {
     bool found=false;
     int value = m_pConfig->getValue(
             ConfigKey(RECORDING_PREF_KEY, m_format + "_" + groupCode), 0);
@@ -71,8 +63,9 @@ int EncoderWaveSettings::getSelectedOption(QString groupCode) const
         if (groupCode == group.groupCode) {
             found=true;
             if (value >= group.controlNames.size() && value > 1) {
-                qWarning() << "Value saved for " << groupCode << 
-                    " on preferences is out of range " << value << ". Returning 0";
+                qWarning() << "Value saved for " << groupCode
+                           << " on preferences is out of range " << value
+                           << ". Returning 0";
                 value=0;
             }
         }

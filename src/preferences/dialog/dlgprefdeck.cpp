@@ -79,15 +79,9 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     connect(m_pControlTrackTimeDisplay, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetTrackTimeDisplay(double)));
 
-    // If not present in the config, set the default value
-    if (!m_pConfig->exists(ConfigKey("[Controls]","PositionDisplay"))) {
-        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"),
-          QString::number(static_cast<int>(TrackTime::DisplayMode::REMAINING)));
-    }
-
     double positionDisplayType = m_pConfig->getValue(
             ConfigKey("[Controls]", "PositionDisplay"),
-            static_cast<double>(TrackTime::DisplayMode::ELAPSED));
+            static_cast<double>(TrackTime::DisplayMode::ELAPSED_AND_REMAINING));
     if (positionDisplayType ==
             static_cast<double>(TrackTime::DisplayMode::REMAINING)) {
         radioButtonRemaining->setChecked(true);

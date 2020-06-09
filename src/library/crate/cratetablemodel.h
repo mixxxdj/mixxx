@@ -1,32 +1,27 @@
-#ifndef MIXXX_CRATETABLEMODEL_H
-#define MIXXX_CRATETABLEMODEL_H
-
+#pragma once
 
 #include "library/basesqltablemodel.h"
-
 #include "library/crate/crateid.h"
+#include "library/tracksettablemodel.h"
 
-
-class CrateTableModel : public BaseSqlTableModel {
+class CrateTableModel final : public TrackSetTableModel {
     Q_OBJECT
 
   public:
     CrateTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager);
-    ~CrateTableModel() final;
+    ~CrateTableModel() final = default;
 
-    void selectCrate(
-        CrateId crateId = CrateId());
+    void selectCrate(CrateId crateId = CrateId());
     CrateId selectedCrate() const {
         return m_selectedCrate;
     }
 
-    bool addTrack(const QModelIndex &index, QString location);
+    bool addTrack(const QModelIndex& index, QString location);
 
-    // From TrackModel
-    bool isColumnInternal(int column) final;
     void removeTracks(const QModelIndexList& indices) final;
-    // Returns the number of unsuccessful track additions
+    /// Returns the number of unsuccessful additions.
     int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
+
     CapabilitiesFlags getCapabilities() const final;
 
     QString getModelSetting(QString name) override;
@@ -35,6 +30,3 @@ class CrateTableModel : public BaseSqlTableModel {
   private:
     CrateId m_selectedCrate;
 };
-
-
-#endif // MIXXX_CRATETABLEMODEL_H

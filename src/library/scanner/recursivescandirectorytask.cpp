@@ -36,9 +36,9 @@ void RecursiveScanDirectoryTask::run() {
 
     QString currentFile;
     QFileInfo currentFileInfo;
-    QLinkedList<QFileInfo> filesToImport;
-    QLinkedList<QFileInfo> possibleCovers;
-    QLinkedList<QDir> dirsToScan;
+    std::list<QFileInfo> filesToImport;
+    std::list<QFileInfo> possibleCovers;
+    std::list<QDir> dirsToScan;
 
     QCryptographicHash hasher(QCryptographicHash::Sha256);
 
@@ -57,9 +57,9 @@ void RecursiveScanDirectoryTask::run() {
             const QString& fileName = currentFileInfo.fileName();
             if (supportedExtensionsRegex.indexIn(fileName) != -1) {
                 hasher.addData(currentFile.toUtf8());
-                filesToImport.append(currentFileInfo);
+                filesToImport.push_back(currentFileInfo);
             } else if (supportedCoverExtensionsRegex.indexIn(fileName) != -1) {
-                possibleCovers.append(currentFileInfo);
+                possibleCovers.push_back(currentFileInfo);
             }
         } else {
             // File is a directory
@@ -69,7 +69,7 @@ void RecursiveScanDirectoryTask::run() {
                 continue;
             }
             const QDir currentDir(currentFile);
-            dirsToScan.append(currentDir);
+            dirsToScan.push_back(currentDir);
         }
     }
 
@@ -89,7 +89,7 @@ void RecursiveScanDirectoryTask::run() {
         if (prevHash != newHash) {
             // Rescan that mofo! If importing fails then the scan was cancelled so
             // we return immediately.
-            if (!filesToImport.isEmpty()) {
+            if (!filesToImport.empty()) {
                 m_pScanner->queueTask(
                         new ImportFilesTask(m_pScanner, m_scannerGlobal, dirPath,
                                             prevHashExists, newHash, filesToImport,

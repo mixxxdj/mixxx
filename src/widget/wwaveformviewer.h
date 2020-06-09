@@ -8,10 +8,13 @@
 #include <QList>
 #include <QMutex>
 
-#include "track/track.h"
-#include "widget/trackdroptarget.h"
-#include "widget/wwidget.h"
 #include "skin/skincontext.h"
+#include "track/track.h"
+#include "util/parented_ptr.h"
+#include "waveform/renderers/waveformmark.h"
+#include "widget/trackdroptarget.h"
+#include "widget/wcuemenupopup.h"
+#include "widget/wwidget.h"
 
 class ControlProxy;
 class WaveformWidgetAbstract;
@@ -32,8 +35,9 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     void mousePressEvent(QMouseEvent * /*unused*/) override;
     void mouseMoveEvent(QMouseEvent * /*unused*/) override;
     void mouseReleaseEvent(QMouseEvent * /*unused*/) override;
+    void leaveEvent(QEvent* /*unused*/) override;
 
-signals:
+  signals:
     void trackDropped(QString filename, QString group) override;
     void cloneDeck(QString source_group, QString target_group) override;
 
@@ -51,7 +55,7 @@ private slots:
         m_waveformWidget = nullptr;
     }
 
-private:
+  private:
     void setWaveformWidget(WaveformWidgetAbstract* waveformWidget);
     WaveformWidgetAbstract* getWaveformWidget() {
         return m_waveformWidget;
@@ -69,13 +73,21 @@ private:
     ControlProxy* m_pScratchPositionEnable;
     ControlProxy* m_pScratchPosition;
     ControlProxy* m_pWheel;
+    ControlProxy* m_pPlayEnabled;
     bool m_bScratching;
     bool m_bBending;
     QPoint m_mouseAnchor;
+    parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
+    WaveformMarkPointer m_pHoveredMark;
 
     WaveformWidgetAbstract* m_waveformWidget;
 
     friend class WaveformWidgetFactory;
+
+    CuePointer getCuePointerFromCueMark(WaveformMarkPointer pMark) const;
+    void highlightMark(WaveformMarkPointer pMark);
+    void unhighlightMark(WaveformMarkPointer pMark);
+    bool isPlaying() const;
 };
 
 #endif

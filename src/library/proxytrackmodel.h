@@ -1,5 +1,4 @@
-#ifndef MIXXX_PROXYTRACKMODEL_H
-#define MIXXX_PROXYTRACKMODEL_H
+#pragma once
 
 #include <QSortFilterProxyModel>
 #include <QAbstractItemModel>
@@ -28,7 +27,7 @@ class ProxyTrackModel : public QSortFilterProxyModel, public TrackModel {
     TrackPointer getTrackByRef(const TrackRef& trackRef) const final;
     QString getTrackLocation(const QModelIndex& index) const final;
     TrackId getTrackId(const QModelIndex& index) const final;
-    const QLinkedList<int> getTrackRows(TrackId trackId) const final;
+    const QVector<int> getTrackRows(TrackId trackId) const final;
     void search(const QString& searchText,const QString& extraFilter = QString()) final;
     const QString currentSearch() const final;
     bool isColumnInternal(int column) final;
@@ -52,5 +51,3 @@ class ProxyTrackModel : public QSortFilterProxyModel, public TrackModel {
     QString m_currentSearch;
     bool m_bHandleSearches;
 };
-
-#endif // MIXXX_PROXYTRACKMODEL_H

@@ -1,6 +1,7 @@
 # 
 # Translators:
 # Henk Gordebeke <scheidsinfo@ziggo.nl>, 2017
+# Mario Moens <marimo.it4u@gmail.com>, 2020
 # Raf Van De Meirssche <raf@rafke.be>, 2016
 # Raf Van De Meirssche <raf@rafke.be>, 2016
 # S.Brandt <s.brandt@mixxx.org>, 2018
@@ -9,8 +10,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2019-04-17 21:53+0000\n"
-"Last-Translator: S.Brandt <s.brandt@mixxx.org>\n"
+"PO-Revision-Date: 2020-05-05 13:41+0000\n"
+"Last-Translator: Mario Moens <marimo.it4u@gmail.com>\n"
 "Language-Team: Dutch (Netherlands) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/nl_NL/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -166,23 +167,23 @@ msgstr "Hulpbestanden die Mixxx toelaten om te werken met andere talen dan Ameri
 #.  Bootstrapper
 msgctxt "Caption"
 msgid "[WixBundleName] Setup"
-msgstr ""
+msgstr "[WixBundleName] Setup"
 
 msgctxt "Title"
 msgid "[WixBundleName]"
-msgstr ""
+msgstr "[WixBundleName]"
 
 msgctxt "ConfirmCancelMessage"
 msgid "Are you sure you want to cancel?"
-msgstr ""
+msgstr "Weet je zeker dat je dit wilt annuleren?"
 
 msgctxt "ExecuteUpgradeRelatedBundleMessage"
 msgid "Previous version"
-msgstr ""
+msgstr "Vorige versie"
 
 msgctxt "HelpHeader"
 msgid "Setup Help"
-msgstr ""
+msgstr "Setup Help"
 
 msgctxt "HelpText"
 msgid ""
@@ -196,178 +197,178 @@ msgid ""
 " /norestart - suppress any attempts to restart. By default user interface will prompt before restart.\n"
 "\n"
 " /log log.txt - logs to a specific file. By default a log file is created in %TEMP%."
-msgstr ""
+msgstr "/installeren | /herstellen | /verwijderen | /layout [directory] - installeert, repareert, verwijdert of\n   maakt een complete lokale kopie van de bundel in de directory.\n    Installeren is de standaard.\n\n  /passief | /stil - geeft een minimale gebruikersinterface weer zonder prompts of geeft geen gebruikersinterface weer\n    en geen prompts. Standaard worden de gebruikersinterface en alle prompts weergegeven.\n\n /norestart - onderdruk pogingen om opnieuw op te starten. Standaard vraagt de gebruikersinterface om opnieuw op te starten.\n\n /log log.txt - logt in op een specifiek bestand. Standaard wordt een logbestand gemaakt in% TEMP%."
 
 msgctxt "HelpCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Sluiten"
 
 msgctxt "InstallHeader"
 msgid "Welcome"
-msgstr ""
+msgstr "Welkom"
 
 msgctxt "InstallMessage"
 msgid ""
 "Setup will install Mixxx on your computer.\n"
 "It will first install required third party libraries, then Mixxx itself.\n"
 "Click Install to continue or Close to exit."
-msgstr ""
+msgstr "Setup installeert Mixxx op uw computer.\nHet zal eerst de vereiste bibliotheken van derden installeren en vervolgens Mixxx zelf.\nKlik op Installeren om door te gaan of op Sluiten om af te sluiten."
 
 msgctxt "InstallVersion"
 msgid "Version [WixBundleVersion]"
-msgstr ""
+msgstr "[WixBundleVersion] Versie"
 
 msgctxt "InstallOptionsButton"
 msgid "&Options"
-msgstr ""
+msgstr "&Opties"
 
 msgctxt "InstallInstallButton"
 msgid "&Install"
-msgstr ""
+msgstr "&Installeer"
 
 msgctxt "InstallCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Sluiten"
 
 msgctxt "OptionsHeader"
 msgid "Setup Options"
-msgstr ""
+msgstr "Setup Opties"
 
 msgctxt "OptionsLocationLabel"
 msgid "Install location:"
-msgstr ""
+msgstr "Installatielocatie:"
 
 msgctxt "OptionsBrowseButton"
 msgid "&Browse"
-msgstr ""
+msgstr "&Bladeren"
 
 msgctxt "OptionsOkButton"
 msgid "&OK"
-msgstr ""
+msgstr "&OK"
 
 msgctxt "OptionsCancelButton"
 msgid "&Cancel"
-msgstr ""
+msgstr "&Anulleren"
 
 msgctxt "FilesInUseHeader"
 msgid "Files In Use"
-msgstr ""
+msgstr "Bestanden in gebruik"
 
 msgctxt "FilesInUseLabel"
 msgid "The following applications are using files that need to be updated:"
-msgstr ""
+msgstr "De volgende toepassingen maken gebruik van bestanden die moeten worden bijgewerkt:"
 
 msgctxt "FilesInUseCloseRadioButton"
 msgid "Close the &applications and attempt to restart them."
-msgstr ""
+msgstr "Sluit de &applicaties en probeer ze opnieuw op te starten."
 
 msgctxt "FilesInUseDontCloseRadioButton"
 msgid "&Do not close applications. A reboot will be required."
-msgstr ""
+msgstr "&Sluit applicaties niet. Opnieuw opstarten is vereist."
 
 msgctxt "FilesInUseOkButton"
 msgid "&OK"
-msgstr ""
+msgstr "&OK"
 
 msgctxt "FilesInUseCancelButton"
 msgid "&Cancel"
-msgstr ""
+msgstr "&Anulleren"
 
 msgctxt "ProgressHeader"
 msgid "Setup Progress"
-msgstr ""
+msgstr "Setup Voortgang"
 
 msgctxt "ProgressLabel"
 msgid "Processing:"
-msgstr ""
+msgstr "Verwerken:"
 
 msgctxt "OverallProgressPackageText"
 msgid "Initializing..."
-msgstr ""
+msgstr "Initialiseren..."
 
 msgctxt "ProgressCancelButton"
 msgid "&Cancel"
-msgstr ""
+msgstr "&Anulleren"
 
 msgctxt "ModifyHeader"
 msgid "Modify Setup"
-msgstr ""
+msgstr "Setup wijzigen"
 
 msgctxt "ModifyRepairButton"
 msgid "&Repair"
-msgstr ""
+msgstr "&Herstellen"
 
 msgctxt "ModifyUninstallButton"
 msgid "&Uninstall"
-msgstr ""
+msgstr "&Verwijderen"
 
 msgctxt "ModifyCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Sluten"
 
 msgctxt "SuccessHeader"
 msgid "Setup Successful"
-msgstr ""
+msgstr "Setup succesvol"
 
 msgctxt "SuccessInstallHeader"
 msgid "Mixxx installation has been successful"
-msgstr ""
+msgstr "Mixxx-installatie is geslaagd"
 
 msgctxt "SuccessRepairHeader"
 msgid "Mixxx repair has been successful"
-msgstr ""
+msgstr "Mixxx-herstel is geslaagd"
 
 msgctxt "SuccessUninstallHeader"
 msgid "Mixxx uninstall has been successful"
-msgstr ""
+msgstr "Mixxx verwijderen is geslaagd"
 
 msgctxt "SuccessLaunchButton"
 msgid "&Launch"
-msgstr ""
+msgstr "&Opstarten"
 
 msgctxt "SuccessRestartText"
 msgid "You must restart your computer before you can use the software."
-msgstr ""
+msgstr "U moet uw computer opnieuw opstarten voordat u de software kunt gebruiken."
 
 msgctxt "SuccessRestartButton"
 msgid "&Restart"
-msgstr ""
+msgstr "&Herstarten"
 
 msgctxt "SuccessCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Sluten"
 
 msgctxt "FailureHeader"
 msgid "Setup Failed"
-msgstr ""
+msgstr "Installatie mislukt"
 
 msgctxt "FailureInstallHeader"
 msgid "Mixxx installation failed"
-msgstr ""
+msgstr "Mixxx-installatie mislukt"
 
 msgctxt "FailureRepairHeader"
 msgid "Mixxx repair failed"
-msgstr ""
+msgstr "Mixxx-herstel mislukt"
 
 msgctxt "FailureUninstallHeader"
 msgid "Mixxx uninstall failed"
-msgstr ""
+msgstr "Mixxx verwijderen is mislukt"
 
 msgctxt "FailureHyperlinkLogText"
 msgid ""
 "One or more issues caused the setup to fail. Please fix the issues and then "
 "retry setup. For more information see the <a href=\"#\">log file</a>."
-msgstr ""
+msgstr "Door een of meer problemen is de installatie mislukt. Los de problemen op en probeer het opnieuw. Zie het <a href=\"#\">logbestand</a> voor meer informatie."
 
 msgctxt "FailureRestartText"
 msgid ""
 "You must restart your computer to complete the rollback of the software."
-msgstr ""
+msgstr "U moet uw computer opnieuw opstarten om het terugdraaien van de software te voltooien."
 
 msgctxt "FailureRestartButton"
 msgid "&Restart"
-msgstr ""
+msgstr "&Herstarten"
 
 msgctxt "FailureCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Sluten"
