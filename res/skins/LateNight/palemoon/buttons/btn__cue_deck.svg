@@ -5,10 +5,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   width="38"
-   height="24"
+   id="svg18"
    version="1.1"
-   id="svg18">
+   height="24"
+   width="38">
   <metadata
      id="metadata24">
     <rdf:RDF>
@@ -24,23 +24,23 @@
   <defs
      id="defs22" />
   <text
-     xml:space="preserve"
+     id="text836"
+     y="16.762369"
+     x="5.9856772"
      style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#a89a8c;fill-opacity:1;stroke:#000000;stroke-width:1.60000002;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     x="4.6842446"
-     y="17.238607"
-     id="text836"><tspan
-       id="tspan834"
-       x="4.6842446"
-       y="17.238607"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:14.66666698px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';fill:#a89a8c;fill-opacity:1;stroke:#000000;stroke-width:1.60000002;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">CUE</tspan></text>
+     xml:space="preserve"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:13.33333302px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';fill:#a89a8c;fill-opacity:1;stroke:#000000;stroke-width:1.60000002;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       y="16.762369"
+       x="5.9856772"
+       id="tspan834">CUE</tspan></text>
   <text
-     xml:space="preserve"
+     id="text836-5"
+     y="16.762369"
+     x="5.9856772"
      style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#a89a8c;fill-opacity:1;stroke:none"
-     x="4.6842446"
-     y="17.238607"
-     id="text836-5"><tspan
-       id="tspan834-8"
-       x="4.6842446"
-       y="17.238607"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:14.66666698px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';fill:#a89a8c;fill-opacity:1">CUE</tspan></text>
+     xml:space="preserve"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:13.33333302px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';fill:#a89a8c;fill-opacity:1"
+       y="16.762369"
+       x="5.9856772"
+       id="tspan834-8">CUE</tspan></text>
 </svg>

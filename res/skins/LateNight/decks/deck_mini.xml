@@ -18,8 +18,9 @@
             <Children>
 
               <WidgetGroup>
-                <ObjectName>PlayCueSmall</ObjectName>
+                <ObjectName>PlayCueMini</ObjectName>
                 <Layout>vertical</Layout>
+                <SizePolicy>min,f</SizePolicy>
                 <Children>
                   <PushButton>
                     <TooltipId>cue_default_cue_gotoandstop</TooltipId>
@@ -108,27 +109,20 @@
                 </Connection>
               </WidgetGroup><!-- OverviewBoxMini -->
 
-              <!-- Small spinny / cover art -->
               <WidgetGroup>
-                <Layout>horizontal</Layout>
+                <ObjectName>SpinnyCoverContainer_MiniDeck</ObjectName>
                 <SizePolicy>f,f</SizePolicy>
+                <Layout>horizontal</Layout>
                 <Children>
-                  <WidgetGroup>
-                    <ObjectName>SpinnyCoverContainerMiniDeck</ObjectName>
-                    <SizePolicy>f,f</SizePolicy>
-                    <Layout>horizontal</Layout>
-                    <Children>
-                      <SingletonContainer>
-                        <ObjectName>SpinnyCoverart<Variable name="ChanNum"/></ObjectName>
-                      </SingletonContainer>
-                    </Children>
-                  </WidgetGroup><!-- SpinnyCoverContainerMiniDeck -->
+                  <SingletonContainer>
+                    <ObjectName>SpinnyCoverart<Variable name="ChanNum"/></ObjectName>
+                  </SingletonContainer>
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[LateNight],show_spinny_cover</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup>
+              </WidgetGroup><!-- SpinnyCoverContainer_MiniDeck -->
 
               <WidgetGroup>
                 <ObjectName>DeckMini_TitlePlayPosKeyBPM</ObjectName>

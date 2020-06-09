@@ -25,36 +25,20 @@
                 <Layout>horizontal</Layout>
                 <Children>
 
-                  <WidgetGroup><!-- Big spinny /cover -->
-                    <SizePolicy>min,min</SizePolicy>
+                  <WidgetGroup>
+                    <ObjectName>SpinnyCoverContainer_Big</ObjectName>
                     <Layout>horizontal</Layout>
+                    <SizePolicy>f,f</SizePolicy>
                     <Children>
-                      <WidgetGroup>
-                        <SizePolicy>min,min</SizePolicy>
-                        <Layout>horizontal</Layout>
-                        <Children>
-                          <WidgetGroup>
-                            <ObjectName>SpinnyCoverContainerBig</ObjectName>
-                            <Layout>horizontal</Layout>
-                            <SizePolicy>f,f</SizePolicy>
-                            <Children>
-                              <SingletonContainer>
-                                <ObjectName>SpinnyCoverart<Variable name="ChanNum"/></ObjectName>
-                              </SingletonContainer>
-                            </Children>
-                          </WidgetGroup>
-                        </Children>
-                        <Connection>
-                          <ConfigKey persist="true">[LateNight],show_spinny_cover</ConfigKey>
-                          <BindProperty>visible</BindProperty>
-                        </Connection>
-                      </WidgetGroup>
+                      <SingletonContainer>
+                        <ObjectName>SpinnyCoverart<Variable name="ChanNum"/></ObjectName>
+                      </SingletonContainer>
                     </Children>
                     <Connection>
-                      <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
+                      <ConfigKey>[LateNight],show_big_spinny_cover</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
-                  </WidgetGroup><!-- Big spinny /cover -->
+                  </WidgetGroup><!-- SpinnyCoverContainer_Big -->
 
                   <WidgetGroup>
                     <SizePolicy>me,min</SizePolicy>
@@ -65,18 +49,11 @@
                     </Children>
                   </WidgetGroup>
 
-                  <!--WidgetGroup>
-                    <Size>3f,0min</Size>
-                    <Connection>
-                      <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
-                      <Transform><Not/></Transform>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup-->
                 </Children>
               </WidgetGroup><!-- DeckRows234 -->
 
               <Template src="skin:/decks/row_5_transportLoopJump.xml" />
+
             </Children>
             <Connection>
               <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>

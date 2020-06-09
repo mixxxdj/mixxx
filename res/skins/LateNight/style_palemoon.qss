@@ -55,10 +55,6 @@ WLibrary {
   border-radius: 1px;
   border-bottom-left-radius: 2px;
   }
-  #KeyText {
-    border-top: 1px solid #333;
-    border-bottom: 1px solid #0c0c0c;
-  }
   #MixerDecks[highlight="1"] {
     border-top-right-radius: 0px;
     border-bottom-right-radius: 1px;
@@ -95,7 +91,8 @@ WLibrary {
 #WaveformBox3,
 #WaveformBox4,
 #WaveformsFrame,
-#OverviewBox, #OverviewBoxMini,
+#OverviewBox,
+#OverviewBoxMini,
 WSearchLineEdit {
   border-top: 1px solid #0d0d0d;
   border-left: 1px solid #121212;
@@ -104,13 +101,20 @@ WSearchLineEdit {
   border-radius: 1px;
   background-color: #19191a;
   }
-  #KeyTextBox {
-    border-top: 1px solid #0d0d0d;
-    border-bottom: 1px solid #2a2a2a;
-  }
   #OverviewBox[highlight="1"],
   #OverviewBoxMini[highlight="1"] {
     background-color: #151515;
+  }
+  #KeyText,
+  #DeckSettingsContainer,
+  #DeckSettingsContainerCompact {
+    border-top: 1px solid #0d0d0d;
+    border-bottom: 1px solid #2a2a2a;
+    background-color: #19191a;
+  }
+  #DeckSettings {
+    border-top: 1px solid #1c1c1c;
+    border-bottom: 1px solid #050505;
   }
 
 /* background of fillers */
@@ -158,11 +162,6 @@ WSearchLineEdit {
 
 #WaveformsContainer {
   border-bottom: 1px solid #0c0c0c;
-}
-
-#KeyText {
-  border-top: 1px solid #0d0d0d;
-  border-bottom: 1px solid #2a2a2a;
 }
 
 #FxParametersFocusBg {
@@ -243,7 +242,6 @@ WLibrary {
   border-bottom: 1px solid #0c0c0c;
 }
 
-#DeckSettingsContainer, #DeckSettingsContainerCompact,
 #PreviewPlayBox,
 #SamplerTitle, #SamplerPlay, #SamplerSettings,
 #SamplerGain, #SamplerVU, #SamplerPfl {
@@ -382,44 +380,44 @@ WLibrary {
     padding: 0px 0px 2px 1px;
   }
 
-#SpinnyCoverContainerSmall{
+#SpinnyCoverContainer_Small{
   min-width: 69px;
   max-width: 69px;
   min-height: 69px;
   max-height: 69px;
-  padding: 0px 1px 0px 0px;
+  margin: 0px 1px 0px 0px;
   }
-  #SpinnyCoverContainerSmallCompact {
+  #SpinnyCoverContainer_SmallCompact {
     min-width: 63px;
     max-width: 63px;
     min-height: 63px;
     max-height: 63px;
-    padding: 0px 1px 1px 0px;
+    margin: 0px 1px 1px 0px;
   }
-#SpinnyCoverContainerBig{
+#SpinnyCoverContainer_Big{
   min-width: 120px;
   max-width: 120px;
   min-height: 120px;
   max-height: 120px;
-  padding: 1px 1px 0px 0px;
+  margin: 1px 2px 0px 0px;
   }
-  #SpinnyCoverContainerBigCompact {
+  #SpinnyCoverContainer_BigCompact {
     min-width: 116px;
     max-width: 116px;
     min-height: 116px;
     max-height: 116px;
-    padding: 0px 1px 0px 0px;
+    margin: 0px 2px 0px 0px;
   }
-#SpinnyCoverContainerMiniDeck {
-  min-width: 54px;
-  max-width: 54px;
-  min-height: 54px;
-  max-height: 54px;
+#SpinnyCoverContainer_MiniDeck {
+  min-width: 53px;
+  max-width: 53px;
+  min-height: 53px;
+  max-height: 53px;
 }
 
   /* Replacement for #DeckMiniN padding */
-  #PlayCueSmall {
-    margin: 1px 2px 1px 1px;
+  #PlayCueMini {
+    margin: 0px 1px 1px 0px;
   }
   #OverviewBoxMini {
     margin: 1px 0px;
@@ -490,10 +488,6 @@ WLibrary {
 }
 #DeckRow_5_Compact {
 }
-
-  #PlayCueSmall {
-    margin: 0px 1px 0px 0px;
-  }
 
 
 /************** RateControls ********************************************/
@@ -1287,7 +1281,7 @@ WEffectSelector,
 #BeatgridControls WPushButton, #BeatgridControlsToggle,
 #DeckRow_5_LoopCuesTransport WPushButton,
 #PlayDeck, #PlayIndicator, #PlayBg,
-#CueDeck, #PlayCueSmall WPushButton,
+#CueDeck, #PlayCueMini WPushButton,
 #LoopActivate,
 #RateControls WPushButton,
 #SyncDeck, #SyncSampler,
@@ -1319,7 +1313,7 @@ WPushButton#CrossfaderButton,
 /************** button background colors **************************************/
 #BeatgridControls WPushButton[displayValue="0"],
 #DeckRow_5_LoopCuesTransport WPushButton[displayValue="0"],
-#PlayBg, #PlayCueSmall WPushButton[displayValue="0"],
+#PlayBg, #PlayCueMini WPushButton[displayValue="0"],
 #CueDeck[displayValue="0"], #LoopActivate[displayValue="0"],
 #FxAssignButtons WPushButton[displayValue="0"],
 #VinylControls WPushButton[displayValue="0"],

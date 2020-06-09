@@ -25,11 +25,11 @@
   <defs
      id="defs10" />
   <path
-     style="color:#000001;fill:#559b99;stroke-width:0.91413999;fill-opacity:1"
-     id="path4"
-     d="M 7.33344,14.96998 1.0000953,4.0003 l 6.3331619,-2e-7 3.1673578,5.4836521 z" />
+     style="color:#000001;fill:#3d3d3c;stroke-width:0.91413999"
+     d="M 7.33344,14.96998 1.0000953,4.0003003 13.666419,4.0003 Z"
+     id="path2-3" />
   <path
-     style="fill:#e6e6e6;fill-opacity:1"
+     style="fill:#71b1af;fill-opacity:1"
      id="path2"
      fill="#fff"
      color="#000001"

@@ -5,34 +5,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   id="svg8"
-   version="1.1"
-   height="444"
    width="444"
-   sodipodi:docname="cover_default.svg"
-   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
-  <sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="1056"
-     id="namedview7"
-     showgrid="false"
-     inkscape:zoom="1.5033982"
-     inkscape:cx="299.39176"
-     inkscape:cy="225.86414"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="svg8" />
+   height="444"
+   version="1.1"
+   id="svg8">
   <metadata
      id="metadata14">
     <rdf:RDF>
@@ -48,18 +24,18 @@
   <defs
      id="defs12" />
   <rect
-     id="rect2"
-     style="paint-order:fill markers stroke;fill:#313131;fill-opacity:1;stroke:none"
-     stroke-width="1.10000002"
-     stroke-linecap="round"
-     stroke="#000"
-     opacity=".5"
-     fill-opacity=".52156866"
-     fill="#696969"
+     width="444"
      height="444"
-     width="444" />
+     fill="#696969"
+     fill-opacity=".52156866"
+     opacity=".5"
+     stroke="#000"
+     stroke-linecap="round"
+     stroke-width="1.10000002"
+     style="paint-order:fill markers stroke;fill:#282829;fill-opacity:1;stroke:none;opacity:1"
+     id="rect2" />
   <path
-     style="fill:#4e4e4e;fill-opacity:1"
+     d="M 222 124.2793 C 168.033 124.2793 124.2832 168.02909 124.2832 221.99609 C 124.2832 275.96309 168.033 319.71289 222 319.71289 C 275.967 319.71289 319.7168 275.96309 319.7168 221.99609 C 319.7168 168.02909 275.967 124.2793 222 124.2793 z M 222.00195 216.44141 C 225.07195 216.44141 227.56055 218.93 227.56055 222 C 227.56055 225.07 225.07205 227.55859 222.00195 227.55859 C 218.93195 227.55859 216.44336 225.0699 216.44336 222 C 216.44336 218.93 218.93185 216.44141 222.00195 216.44141 z "
      id="path4"
-     d="M 222 124.2793 C 168.033 124.2793 124.2832 168.02909 124.2832 221.99609 C 124.2832 275.96309 168.033 319.71289 222 319.71289 C 275.967 319.71289 319.7168 275.96309 319.7168 221.99609 C 319.7168 168.02909 275.967 124.2793 222 124.2793 z M 222.00195 216.44141 C 225.07195 216.44141 227.56055 218.93 227.56055 222 C 227.56055 225.07 225.07205 227.55859 222.00195 227.55859 C 218.93195 227.55859 216.44336 225.0699 216.44336 222 C 216.44336 218.93 218.93185 216.44141 222.00195 216.44141 z " />
+     style="fill:#363636;fill-opacity:1" />
 </svg>

@@ -203,7 +203,7 @@ Description:
                       <Template src="skin:/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">show_coverart</SetVariable>
                         <SetVariable name="Text">Big Spinny/Cover Art</SetVariable>
-                        <SetVariable name="Setting">[Skin],show_big_spinny_coverart</SetVariable>
+                        <SetVariable name="Setting">[Skin],select_big_spinny_coverart</SetVariable>
                       </Template>
 
                     </Children>
@@ -311,7 +311,7 @@ Description:
                       <Template src="skin:/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">show_coverart</SetVariable>
                         <SetVariable name="Text">Big Spinny/Cover Art</SetVariable>
-                        <SetVariable name="Setting">[Skin],show_big_spinny_coverart</SetVariable>
+                        <SetVariable name="Setting">[Skin],select_big_spinny_coverart</SetVariable>
                       </Template>
 
                     </Children>
