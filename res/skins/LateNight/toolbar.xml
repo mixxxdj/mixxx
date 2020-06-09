@@ -35,6 +35,15 @@
           </Template>
 
           <Template src="skin:/controls/button_2state_persist.xml">
+            <SetVariable name="TooltipId">show_4decks</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">52f,20f</SetVariable>
+            <SetVariable name="state_0_text">4 DECKS</SetVariable>
+            <SetVariable name="state_1_text">4 DECKS</SetVariable>
+            <SetVariable name="ConfigKey">[Skin],show_4decks</SetVariable>
+          </Template>
+
+          <Template src="skin:/controls/button_2state_persist.xml">
             <SetVariable name="TooltipId">show_mixer</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">48f,20f</SetVariable>
@@ -91,6 +100,15 @@
             <SetVariable name="state_0_text">DECKS</SetVariable>
             <SetVariable name="state_1_text">DECKS</SetVariable>
             <SetVariable name="ConfigKey">[Skin],show_minimal_decks</SetVariable>
+          </Template>
+
+          <Template src="skin:/controls/button_2state_persist.xml">
+            <SetVariable name="TooltipId">show_4decks</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">52f,20f</SetVariable>
+            <SetVariable name="state_0_text">4 DECKS</SetVariable>
+            <SetVariable name="state_1_text">4 DECKS</SetVariable>
+            <SetVariable name="ConfigKey">[Skin],show_4decks</SetVariable>
           </Template>
 
         </Children>
