@@ -54,7 +54,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
             const QObject* pRequestor,
             const CoverInfo& coverInfo,
             const QPixmap& pixmap,
-            mixxx::cache_key_t requestedImageHash,
+            mixxx::cache_key_t requestedCacheKey,
             bool coverInfoUpdated);
     void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();

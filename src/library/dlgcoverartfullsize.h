@@ -32,7 +32,7 @@ class DlgCoverArtFullSize
             const QObject* pRequestor,
             const CoverInfo& coverInfo,
             const QPixmap& pixmap,
-            mixxx::cache_key_t requestedImageHash,
+            mixxx::cache_key_t requestedCacheKey,
             bool coverInfoUpdated);
     void slotTrackCoverArtUpdated();
 

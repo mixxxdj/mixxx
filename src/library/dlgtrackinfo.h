@@ -74,7 +74,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
             const QObject* pRequestor,
             const CoverInfo& info,
             const QPixmap& pixmap,
-            mixxx::cache_key_t requestedImageHash,
+            mixxx::cache_key_t requestedCacheKey,
             bool coverInfoUpdated);
     void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();

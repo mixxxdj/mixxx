@@ -121,9 +121,9 @@ void DlgCoverArtFullSize::slotCoverFound(
         const QObject* pRequestor,
         const CoverInfo& coverInfo,
         const QPixmap& pixmap,
-        mixxx::cache_key_t requestedImageHash,
+        mixxx::cache_key_t requestedCacheKey,
         bool coverInfoUpdated) {
-    Q_UNUSED(requestedImageHash);
+    Q_UNUSED(requestedCacheKey);
     Q_UNUSED(coverInfoUpdated);
     if (pRequestor == this &&
             m_pLoadedTrack &&

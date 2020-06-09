@@ -73,7 +73,7 @@ void BaseCoverArtDelegate::slotCoverFound(
         const QObject* pRequestor,
         const CoverInfo& coverInfo,
         const QPixmap& pixmap,
-        mixxx::cache_key_t requestedImageHash,
+        mixxx::cache_key_t requestedCacheKey,
         bool coverInfoUpdated) {
     Q_UNUSED(pixmap);
     if (pRequestor != this) {
@@ -89,8 +89,8 @@ void BaseCoverArtDelegate::slotCoverFound(
             pTrack->setCoverInfo(coverInfo);
         }
     }
-    QList<int> refreshRows = m_pendingCacheRows.values(requestedImageHash);
-    m_pendingCacheRows.remove(requestedImageHash);
+    QList<int> refreshRows = m_pendingCacheRows.values(requestedCacheKey);
+    m_pendingCacheRows.remove(requestedCacheKey);
     emitRowsChanged(std::move(refreshRows));
 }
 
@@ -131,7 +131,7 @@ void BaseCoverArtDelegate::paintItem(
             } else {
                 // If we asked for a non-cache image and got a null pixmap,
                 // then our request was queued.
-                m_pendingCacheRows.insert(coverInfo.imageHash(), index.row());
+                m_pendingCacheRows.insert(coverInfo.cacheKey(), index.row());
             }
         } else {
             // Cache hit

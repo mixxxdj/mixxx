@@ -56,22 +56,22 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     struct FutureResult {
         FutureResult()
                 : pRequestor(nullptr),
-                  requestedImageHash(CoverImageUtils::defaultHash()),
+                  requestedCacheKey(CoverImageUtils::defaultCacheKey()),
                   signalWhenDone(false),
                   coverInfoUpdated(false) {
         }
         FutureResult(
                 const QObject* pRequestorArg,
-                mixxx::cache_key_t requestedImageHashArg,
+                mixxx::cache_key_t requestedCacheKeyArg,
                 bool signalWhenDoneArg)
                 : pRequestor(pRequestorArg),
-                  requestedImageHash(requestedImageHashArg),
+                  requestedCacheKey(requestedCacheKeyArg),
                   signalWhenDone(signalWhenDoneArg),
                   coverInfoUpdated(false) {
         }
 
         const QObject* pRequestor;
-        mixxx::cache_key_t requestedImageHash;
+        mixxx::cache_key_t requestedCacheKey;
         bool signalWhenDone;
 
         CoverArt coverArt;
@@ -95,7 +95,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
             const QObject* requestor,
             const CoverInfo& coverInfo,
             const QPixmap& pixmap,
-            mixxx::cache_key_t requestedImageHash,
+            mixxx::cache_key_t requestedCacheKey,
             bool coverInfoUpdated);
 
   protected:

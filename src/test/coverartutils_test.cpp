@@ -132,7 +132,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     EXPECT_EQ(result.type, CoverInfo::METADATA);
     EXPECT_EQ(result.source, CoverInfo::GUESSED);
     EXPECT_EQ(result.coverLocation, QString());
-    EXPECT_NE(result.imageHash(), CoverInfoRelative().imageHash());
+    EXPECT_NE(result.cacheKey(), CoverInfoRelative().cacheKey());
 
     const char* format("jpg");
     const QString qFormat(format);
@@ -248,7 +248,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
         res2 = CoverArtUtils::selectCoverArtForTrack(trackBaseName, trackAlbum,
                                                     prefCovers);
         EXPECT_QSTRING_EQ(expected2.coverLocation, res2.coverLocation);
-        EXPECT_EQ(expected2.imageHash(), res2.imageHash());
+        EXPECT_EQ(expected2.cacheKey(), res2.cacheKey());
         EXPECT_EQ(expected2, res2);
 
         QFile::remove(cover.filePath());

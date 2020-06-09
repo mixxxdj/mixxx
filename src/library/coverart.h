@@ -27,7 +27,7 @@ class CoverImageUtils {
         return mixxx::cacheKeyFromMessageDigest(digest);
     }
 
-    static constexpr mixxx::cache_key_t defaultHash() {
+    static constexpr mixxx::cache_key_t defaultCacheKey() {
         return mixxx::invalidCacheKey();
     }
 };
@@ -80,13 +80,13 @@ class CoverInfoRelative {
     }
 
     bool hasImage() const {
-        return imageHash() != CoverImageUtils::defaultHash();
+        return cacheKey() != CoverImageUtils::defaultCacheKey();
     }
 
     const QByteArray imageDigest() const {
         return m_imageDigest;
     }
-    mixxx::cache_key_t imageHash() const {
+    mixxx::cache_key_t cacheKey() const {
         if (m_imageDigest.isEmpty()) {
             // Legacy fallback, required for incremental migration
             return m_legacyHash;
@@ -96,7 +96,7 @@ class CoverInfoRelative {
     }
 
     static constexpr quint16 defaultLegacyHash() {
-        return static_cast<quint16>(CoverImageUtils::defaultHash());
+        return static_cast<quint16>(CoverImageUtils::defaultCacheKey());
     }
 
     quint16 legacyHash() const {

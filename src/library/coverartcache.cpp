@@ -89,18 +89,18 @@ QPixmap CoverArtCache::tryLoadCover(
     DEBUG_ASSERT(!pTrack ||
                 pTrack->getLocation() == coverInfo.trackLocation);
 
-    const auto requestedImageHash = coverInfo.imageHash();
+    const auto requestedCacheKey = coverInfo.cacheKey();
 
     if (coverInfo.type == CoverInfo::NONE) {
         if (loading == Loading::Default) {
-            emit coverFound(pRequestor, coverInfo, QPixmap(), requestedImageHash, false);
+            emit coverFound(pRequestor, coverInfo, QPixmap(), requestedCacheKey, false);
         }
         return QPixmap();
     }
 
     // keep a list of trackIds for which a future is currently running
     // to avoid loading the same picture again while we are loading it
-    QPair<const QObject*, mixxx::cache_key_t> requestId = qMakePair(pRequestor, requestedImageHash);
+    QPair<const QObject*, mixxx::cache_key_t> requestId = qMakePair(pRequestor, requestedCacheKey);
     if (m_runningRequests.contains(requestId)) {
         return QPixmap();
     }
@@ -110,7 +110,7 @@ QPixmap CoverArtCache::tryLoadCover(
     // column). It's very important to keep the cropped covers in cache because
     // it avoids having to rescale+crop it ALWAYS (which brings a lot of
     // performance issues).
-    QString cacheKey = pixmapCacheKey(requestedImageHash, desiredWidth);
+    QString cacheKey = pixmapCacheKey(requestedCacheKey, desiredWidth);
 
     QPixmap pixmap;
     if (QPixmapCache::find(cacheKey, &pixmap)) {
@@ -121,7 +121,7 @@ QPixmap CoverArtCache::tryLoadCover(
                     << loading;
         }
         if (loading == Loading::Default) {
-            emit coverFound(pRequestor, coverInfo, pixmap, requestedImageHash, false);
+            emit coverFound(pRequestor, coverInfo, pixmap, requestedCacheKey, false);
         }
         return pixmap;
     }
@@ -175,7 +175,7 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
 
     auto res = FutureResult(
             pRequestor,
-            coverInfo.imageHash(),
+            coverInfo.cacheKey(),
             signalWhenDone);
     DEBUG_ASSERT(!res.coverInfoUpdated);
 
@@ -259,19 +259,19 @@ void CoverArtCache::coverLoaded() {
             // same hash for different images. Otherwise the wrong image would
             // be displayed when loaded from the cache.
             QString cacheKey = pixmapCacheKey(
-                    res.coverArt.imageHash(), res.coverArt.resizedToWidth);
+                    res.coverArt.cacheKey(), res.coverArt.resizedToWidth);
             QPixmapCache::insert(cacheKey, pixmap);
         }
     }
 
-    m_runningRequests.remove(qMakePair(res.pRequestor, res.requestedImageHash));
+    m_runningRequests.remove(qMakePair(res.pRequestor, res.requestedCacheKey));
 
     if (res.signalWhenDone) {
         emit coverFound(
                 res.pRequestor,
                 std::move(res.coverArt),
                 pixmap,
-                res.requestedImageHash,
+                res.requestedCacheKey,
                 res.coverInfoUpdated);
     }
 }
