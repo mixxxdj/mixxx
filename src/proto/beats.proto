@@ -28,10 +28,12 @@ message Bpm {
 }
 
 message BeatMap {
-  repeated Beat beat = 1;
+  optional int32 first_downbeat_index = 1 [ default = 0 ];
+  repeated Beat beat = 2;
 }
 
 message BeatGrid {
-  optional Bpm bpm = 1;
-  optional Beat first_beat = 2;
+  optional int32 first_downbeat_index = 1 [ default = 0 ];
+  optional Bpm bpm = 2;
+  optional Beat first_beat = 3;
 }

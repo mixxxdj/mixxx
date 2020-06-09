@@ -55,8 +55,7 @@ class BeatGridIterator : public BeatIterator {
 BeatGrid::BeatGrid(const Track& track, SINT iSampleRate)
         : m_mutex(QMutex::Recursive),
           m_iSampleRate(iSampleRate > 0 ? iSampleRate : track.getSampleRate()),
-          m_dBeatLength(0.0),
-          m_iDownbeatOffset(0) {
+          m_dBeatLength(0.0) {
     // BeatGrid should live in the same thread as the track it is associated
     // with.
     moveToThread(track.thread());
@@ -280,7 +279,7 @@ std::unique_ptr<BeatIterator> BeatGrid::findBeats(
             firstBeatSample(),
             curBeatIndex,
             endBeatIndex,
-            m_iDownbeatOffset);
+            m_grid.first_downbeat_index());
 }
 
 bool BeatGrid::hasBeatInRange(double startSample, double stopSample) const {
@@ -385,8 +384,9 @@ void BeatGrid::setBpm(double dBpm) {
     emit updated();
 }
 
-void BeatGrid::setDownbeatOffset(int offset) {
-    m_iDownbeatOffset = offset;
+void BeatGrid::setDownbeatStartIndex(int index) {
+    m_grid.set_first_downbeat_index(index);
+    emit updated();
 }
 
 } // namespace mixxx

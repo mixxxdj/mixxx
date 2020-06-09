@@ -86,7 +86,7 @@ class BeatMap final : public Beats {
         return m_iSampleRate;
     }
 
-    void setDownbeatOffset(int offset) override;
+    void setDownbeatStartIndex(int index) override;
 
   private:
     BeatMap(const BeatMap& other);
@@ -112,7 +112,7 @@ class BeatMap final : public Beats {
     double m_dCachedBpm;
     double m_dLastFrame;
     BeatList m_beats;
-    int m_iDownbeatOffset;
+    int m_iFirstDownbeatIndex;
 };
 
 } // namespace mixxx

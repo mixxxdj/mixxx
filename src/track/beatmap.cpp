@@ -80,17 +80,22 @@ BeatMap::BeatMap(const Track& track, SINT iSampleRate,
                  const QVector<double>& beats)
         : BeatMap(track, iSampleRate) {
     if (beats.size() > 0) {
+        // WARNING: This function is essentially called by the analyzer thread
+        // and this overrides the downbeat index read from the database
+        // since the analyser does not currently generate downbeat index.
+        // Persistence and restore for downbeats works as expected in beatgrid though.
         createFromBeatVector(beats);
     }
 }
 
-BeatMap::BeatMap (const BeatMap& other)
+BeatMap::BeatMap(const BeatMap& other)
         : m_mutex(QMutex::Recursive),
           m_subVersion(other.m_subVersion),
           m_iSampleRate(other.m_iSampleRate),
           m_dCachedBpm(other.m_dCachedBpm),
           m_dLastFrame(other.m_dLastFrame),
-          m_beats(other.m_beats) {
+          m_beats(other.m_beats),
+          m_iFirstDownbeatIndex(other.m_iFirstDownbeatIndex) {
     moveToThread(other.thread());
 }
 
@@ -100,6 +105,7 @@ QByteArray BeatMap::toByteArray() const {
     // items in adjacent memory locations.
     mixxx::track::io::BeatMap map;
 
+    map.set_first_downbeat_index(m_iFirstDownbeatIndex);
     for (int i = 0; i < m_beats.size(); ++i) {
         map.add_beat()->CopyFrom(*m_beats[i]);
     }
@@ -122,8 +128,13 @@ bool BeatMap::readByteArray(const QByteArray& byteArray) {
                 << byteArray.size();
         return false;
     }
+    m_iFirstDownbeatIndex = map.first_downbeat_index();
     for (int i = 0; i < map.beat_size(); ++i) {
         const BeatPointer& beat = BeatPointer(new Beat(map.beat(i)));
+        beat->setIndex(i);
+        beat->set_type((i % 4 == m_iFirstDownbeatIndex)
+                        ? mixxx::track::io::BAR
+                        : mixxx::track::io::BEAT);
         m_beats.append(beat);
     }
     onBeatlistChanged();
@@ -132,7 +143,7 @@ bool BeatMap::readByteArray(const QByteArray& byteArray) {
 
 void BeatMap::createFromBeatVector(const QVector<double>& beats) {
     if (beats.isEmpty()) {
-       return;
+        return;
     }
     double previous_beatpos = -1;
     int beatCount = 0;
@@ -141,16 +152,15 @@ void BeatMap::createFromBeatVector(const QVector<double>& beats) {
         // beatpos is in frames. Do not accept fractional frames.
         beatpos = floor(beatpos);
         if (beatpos <= previous_beatpos || beatpos < 0) {
-            qDebug() << "BeatMap::createFromVector: beats not in increasing order or negative";
+            qDebug() << "BeatMap::createFromVector: beats not in increasing "
+                        "order or negative";
             qDebug() << "discarding beat " << beatpos;
         } else {
             beat->set_frame_position(beatpos);
             beat->setIndex(beatCount);
-            if (beatCount % 4 == 0) {
-                beat->set_type(mixxx::track::io::BAR);
-            } else {
-                beat->set_type(mixxx::track::io::BEAT);
-            }
+            beat->set_type((beatCount % 4 == m_iFirstDownbeatIndex)
+                            ? mixxx::track::io::BAR
+                            : mixxx::track::io::BEAT);
             m_beats.append(beat);
             previous_beatpos = beatpos;
             beatCount++;
@@ -741,15 +751,12 @@ double BeatMap::calculateBpm(const BeatPointer& startBeat, const BeatPointer& st
     return BeatUtils::calculateBpm(beatvect, m_iSampleRate, 0, 9999);
 }
 
-void BeatMap::setDownbeatOffset(int offset) {
-    m_iDownbeatOffset = offset;
+void BeatMap::setDownbeatStartIndex(int index) {
     for (int i = 0; i < m_beats.size(); i++) {
-        if (i % 4 == offset) {
-            m_beats.at(i)->set_type(mixxx::track::io::BAR);
-        } else {
-            m_beats.at(i)->set_type(mixxx::track::io::BEAT);
-        }
+        m_beats.at(i)->set_type((i % 4 == index) ? mixxx::track::io::BAR : mixxx::track::io::BEAT);
     }
+    m_iFirstDownbeatIndex = index;
+    emit updated();
 }
 
 } // namespace mixxx

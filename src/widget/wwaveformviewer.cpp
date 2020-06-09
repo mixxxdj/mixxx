@@ -308,5 +308,6 @@ bool WWaveformViewer::isPlaying() const {
 }
 
 void WWaveformViewer::slotDownbeatUpdated() {
-    m_waveformWidget->getTrackInfo()->getBeats()->setDownbeatOffset(m_pHoveredBeat->getIndex() % 4);
+    m_waveformWidget->getTrackInfo()->getBeats()->setDownbeatStartIndex(
+            m_pHoveredBeat->getIndex() % 4);
 }

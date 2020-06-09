@@ -9,6 +9,7 @@ WBeatMenu::~WBeatMenu() {
 }
 
 void WBeatMenu::update() {
+    // TODO(hacksdump): Declare enum type for beat grid mode setting.
     int beatMode = m_pConfig->getValue(ConfigKey("[Waveform]", "beatGridMode"), 0);
     clear();
     if (beatMode == 1) {
