@@ -794,17 +794,21 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
             numberOfSamplesRemaining -= numberOfSamplesRead;
         }
         DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-        if (!retryAfterReopeningDecoder) {
-            DEBUG_ASSERT(numberOfSamplesTotal >= numberOfSamplesRemaining);
-            const SINT numberOfSamples = numberOfSamplesTotal - numberOfSamplesRemaining;
-            return ReadableSampleFrames(
-                    IndexRange::forward(
-                            firstFrameIndex,
-                            getSignalInfo().samples2frames(numberOfSamples)),
-                    SampleBuffer::ReadableSlice(
-                            writableSampleFrames.writableData(),
-                            std::min(writableSampleFrames.writableLength(), numberOfSamples)));
+        if (retryAfterReopeningDecoder) {
+            // Continue by retrying to decode the current sample block again
+            // with a new decoder instance after errors occurred.
+            continue;
         }
+        // The current sample block has been decoded successfully
+        DEBUG_ASSERT(numberOfSamplesTotal >= numberOfSamplesRemaining);
+        const SINT numberOfSamples = numberOfSamplesTotal - numberOfSamplesRemaining;
+        return ReadableSampleFrames(
+                IndexRange::forward(
+                        firstFrameIndex,
+                        getSignalInfo().samples2frames(numberOfSamples)),
+                SampleBuffer::ReadableSlice(
+                        writableSampleFrames.writableData(),
+                        std::min(writableSampleFrames.writableLength(), numberOfSamples)));
     } while (retryAfterReopeningDecoder);
     DEBUG_ASSERT(!"unreachable");
     return {};
