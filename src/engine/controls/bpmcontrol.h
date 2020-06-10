@@ -39,8 +39,8 @@ class BpmControl : public EngineControl {
     double getNearestPositionInPhase(double dThisPosition, bool respectLoops, bool playing);
     double getBeatMatchPosition(double dThisPosition, bool respectLoops, bool playing);
     double getPhaseOffset(double dThisPosition);
-    // getBeatDistance is adjusted to include the user offset so it's
-    // transparent to other decks.
+    /// getBeatDistance is adjusted to include the user offset so it's
+    /// transparent to other decks.
     double getBeatDistance(double dThisPosition) const;
 
     void setTargetBeatDistance(double beatDistance);
