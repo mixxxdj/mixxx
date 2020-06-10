@@ -47,8 +47,8 @@ class BpmControl : public EngineControl {
     void setInstantaneousBpm(double instantaneousBpm);
     void resetSyncAdjustment();
     double updateLocalBpm();
-    // updateBeatDistance is adjusted to include the user offset so
-    // it's transparent to other decks.
+    /// updateBeatDistance is adjusted to include the user offset so
+    /// it's transparent to other decks.
     double updateBeatDistance();
 
     void collectFeatures(GroupFeatureState* pGroupFeatures) const;
