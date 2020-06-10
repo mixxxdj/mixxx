@@ -243,6 +243,8 @@ addons:
       - qt5-default
       - qtscript5-dev
       - qt5keychain-dev
+      - fakeroot
+      - debhelper
 
 
 notifications:
