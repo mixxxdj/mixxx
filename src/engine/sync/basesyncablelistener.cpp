@@ -4,7 +4,7 @@
 
 #include "engine/sync/internalclock.h"
 
-static const char* kInternalClockGroup = "[InternalClock]";
+const QString kInternalClockGroup = QStringLiteral("[InternalClock]");
 
 BaseSyncableListener::BaseSyncableListener(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),

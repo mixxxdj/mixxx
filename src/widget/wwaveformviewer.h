@@ -23,10 +23,15 @@ class ControlPotmeter;
 class WWaveformViewer : public WWidget, public TrackDropTarget {
     Q_OBJECT
   public:
-    WWaveformViewer(const char *group, UserSettingsPointer pConfig, QWidget *parent=nullptr);
+    WWaveformViewer(
+            const QString& group,
+            UserSettingsPointer pConfig,
+            QWidget* parent = nullptr);
     ~WWaveformViewer() override;
 
-    const char* getGroup() const { return m_pGroup;}
+    const QString& getGroup() const {
+        return m_group;
+    }
     void setup(const QDomNode& node, const SkinContext& context);
 
     void dragEnterEvent(QDragEnterEvent *event) override;
@@ -41,15 +46,15 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     void trackDropped(QString filename, QString group) override;
     void cloneDeck(QString source_group, QString target_group) override;
 
-public slots:
+  public slots:
     void slotTrackLoaded(TrackPointer track);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
-protected:
+  protected:
     void resizeEvent(QResizeEvent *event) override;
     void wheelEvent(QWheelEvent *event) override;
 
-private slots:
+  private slots:
     void onZoomChange(double zoom);
     void slotWidgetDead() {
         m_waveformWidget = nullptr;
@@ -65,8 +70,8 @@ private slots:
     void setDisplayBeatGridAlpha(int alpha);
     void setPlayMarkerPosition(double position);
 
-private:
-    const char* m_pGroup;
+  private:
+    QString m_group;
     UserSettingsPointer m_pConfig;
     int m_zoomZoneWidth;
     ControlProxy* m_pZoom;

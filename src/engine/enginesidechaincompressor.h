@@ -5,7 +5,7 @@
 
 class EngineSideChainCompressor {
   public:
-    EngineSideChainCompressor(const char* group);
+    EngineSideChainCompressor(const QString& group);
     virtual ~EngineSideChainCompressor() { };
 
     void setParameters(CSAMPLE threshold, CSAMPLE strength,

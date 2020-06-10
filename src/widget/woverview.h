@@ -51,7 +51,7 @@ class WOverview : public WWidget, public TrackDropTarget {
 
   protected:
     WOverview(
-            const char* group,
+            const QString& group,
             PlayerManager* pPlayerManager,
             UserSettingsPointer pConfig,
             QWidget* parent = nullptr);

@@ -6,7 +6,7 @@
 #include "util/math.h"
 #include "util/duration.h"
 
-WNumberPos::WNumberPos(const char* group, QWidget* parent)
+WNumberPos::WNumberPos(const QString& group, QWidget* parent)
         : WNumber(parent),
           m_displayFormat(TrackTime::DisplayFormat::TRADITIONAL),
           m_dOldTimeElapsed(0.0) {

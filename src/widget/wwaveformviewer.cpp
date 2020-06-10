@@ -17,9 +17,12 @@
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 
-WWaveformViewer::WWaveformViewer(const char* group, UserSettingsPointer pConfig, QWidget* parent)
+WWaveformViewer::WWaveformViewer(
+        const QString& group,
+        UserSettingsPointer pConfig,
+        QWidget* parent)
         : WWidget(parent),
-          m_pGroup(group),
+          m_group(group),
           m_pConfig(pConfig),
           m_zoomZoneWidth(20),
           m_bScratching(false),
@@ -185,11 +188,11 @@ void WWaveformViewer::wheelEvent(QWheelEvent *event) {
 }
 
 void WWaveformViewer::dragEnterEvent(QDragEnterEvent* event) {
-    DragAndDropHelper::handleTrackDragEnterEvent(event, m_pGroup, m_pConfig);
+    DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
 }
 
 void WWaveformViewer::dropEvent(QDropEvent* event) {
-    DragAndDropHelper::handleTrackDropEvent(event, *this, m_pGroup, m_pConfig);
+    DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
 }
 
 void WWaveformViewer::leaveEvent(QEvent*) {

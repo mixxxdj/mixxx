@@ -22,7 +22,7 @@ class EngineSync;
 class InternalClock : public QObject, public Clock, public Syncable {
     Q_OBJECT
   public:
-    InternalClock(const char* pGroup, SyncableListener* pEngineSync);
+    InternalClock(const QString& group, SyncableListener* pEngineSync);
     ~InternalClock() override;
 
     const QString& getGroup() const override {

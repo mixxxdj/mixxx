@@ -14,34 +14,33 @@ const double WaveformWidgetRenderer::s_waveformMaxZoom = 10.0;
 const double WaveformWidgetRenderer::s_waveformDefaultZoom = 3.0;
 const double WaveformWidgetRenderer::s_defaultPlayMarkerPosition = 0.5;
 
-WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
-    : m_group(group),
-      m_orientation(Qt::Horizontal),
-      m_height(-1),
-      m_width(-1),
-      m_devicePixelRatio(1.0f),
+WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
+        : m_group(group),
+          m_orientation(Qt::Horizontal),
+          m_height(-1),
+          m_width(-1),
+          m_devicePixelRatio(1.0f),
 
-      m_firstDisplayedPosition(0.0),
-      m_lastDisplayedPosition(0.0),
-      m_trackPixelCount(0.0),
+          m_firstDisplayedPosition(0.0),
+          m_lastDisplayedPosition(0.0),
+          m_trackPixelCount(0.0),
 
-      m_zoomFactor(1.0),
-      m_visualSamplePerPixel(1.0),
-      m_audioSamplePerPixel(1.0),
-      m_alphaBeatGrid(90),
-      // Really create some to manage those;
-      m_visualPlayPosition(NULL),
-      m_playPos(-1),
-      m_playPosVSample(0),
-      m_pRateRatioCO(NULL),
-      m_rateRatio(1.0),
-      m_pGainControlObject(NULL),
-      m_gain(1.0),
-      m_pTrackSamplesControlObject(NULL),
-      m_trackSamples(0.0),
-      m_scaleFactor(1.0),
-      m_playMarkerPosition(s_defaultPlayMarkerPosition) {
-
+          m_zoomFactor(1.0),
+          m_visualSamplePerPixel(1.0),
+          m_audioSamplePerPixel(1.0),
+          m_alphaBeatGrid(90),
+          // Really create some to manage those;
+          m_visualPlayPosition(NULL),
+          m_playPos(-1),
+          m_playPosVSample(0),
+          m_pRateRatioCO(NULL),
+          m_rateRatio(1.0),
+          m_pGainControlObject(NULL),
+          m_gain(1.0),
+          m_pTrackSamplesControlObject(NULL),
+          m_trackSamples(0.0),
+          m_scaleFactor(1.0),
+          m_playMarkerPosition(s_defaultPlayMarkerPosition) {
     //qDebug() << "WaveformWidgetRenderer";
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG

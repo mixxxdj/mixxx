@@ -16,9 +16,9 @@
 
 #include "util/performancetimer.h"
 
-QtVSyncTestWidget::QtVSyncTestWidget(const char* group, QWidget* parent)
-    : QGLWidget(parent, SharedGLContext::getWidget()),
-      WaveformWidgetAbstract(group) {
+QtVSyncTestWidget::QtVSyncTestWidget(const QString& group, QWidget* parent)
+        : QGLWidget(parent, SharedGLContext::getWidget()),
+          WaveformWidgetAbstract(group) {
     qDebug() << "Created QGLWidget. Context"
              << "Valid:" << context()->isValid()
              << "Sharing:" << context()->isSharing();
