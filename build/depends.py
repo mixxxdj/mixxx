@@ -1220,7 +1220,7 @@ class MixxxCore(Feature):
                    "src/skin/pixmapsource.cpp",
                    "src/skin/launchimage.cpp",
 
-                   "src/track/beat.cpp"
+                   "src/track/beat.cpp",
                    "src/track/beatfactory.cpp",
                    "src/track/beatgrid.cpp",
                    "src/track/beatmap.cpp",
