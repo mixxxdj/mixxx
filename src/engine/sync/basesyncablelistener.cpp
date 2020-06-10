@@ -4,7 +4,11 @@
 
 #include "engine/sync/internalclock.h"
 
+namespace {
+
 const QString kInternalClockGroup = QStringLiteral("[InternalClock]");
+
+} // anonymous namespace
 
 BaseSyncableListener::BaseSyncableListener(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
