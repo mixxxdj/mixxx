@@ -676,17 +676,22 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
                     m_inputBufferLength - m_inputBufferOffset,
                     reinterpret_cast<void**>(&pDecodeBuffer),
                     decodeBufferCapacity * sizeof(*pDecodeBuffer));
-            // Verify the decoding result
             if (decFrameInfo.error != 0) {
+                // A decoding error has occurred
                 if (retryAfterReopeningDecoder) {
-                    // Reset the retry flag before continuing with the next block
-                    retryAfterReopeningDecoder = false;
+                    // At this point we have failed to decode the current sample
+                    // block twice and need to discard it. The content of the
+                    // sample block is unknown and we simply continue with the
+                    // next block. This is just a workaround! The reason why FAAD2
+                    // v2.9.2 rejects these blocks is unknown.
                     kLogger.warning()
                             << "Skipping block"
                             << m_curSampleBlockId
                             << "of length"
                             << m_inputBufferLength
                             << "after an AAC decoding error occurred";
+                    // Reset the retry flag before continuing with the next block
+                    retryAfterReopeningDecoder = false;
                     m_inputBufferLength = 0;
                     m_inputBufferOffset = 0;
                     continue;
