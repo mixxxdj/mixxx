@@ -505,7 +505,7 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
     } else if (nodeName == "EffectPushButton") {
         result = wrapWidget(parseEffectPushButton(node));
     } else if (nodeName == "HotcueButton") {
-        result = wrapWidget(parseStandardWidget<WHotcueButton>(node));
+        result = wrapWidget(parseHotcueButton(node));
     } else if (nodeName == "ComboBox") {
         result = wrapWidget(parseStandardWidget<WComboBox>(node));
     } else if (nodeName == "Overview") {
@@ -1218,15 +1218,15 @@ QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseCoverArt(const QDomElement& node) {
-    QString channel = lookupNodeGroup(node);
-    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channel);
+    QString group = lookupNodeGroup(node);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
 
-    WCoverArt* pCoverArt = new WCoverArt(m_pParent, m_pConfig, channel, pPlayer);
+    WCoverArt* pCoverArt = new WCoverArt(m_pParent, m_pConfig, group, pPlayer);
     commonWidgetSetup(node, pCoverArt);
     pCoverArt->setup(node, *m_pContext);
 
     // If no group was provided, hook the widget up to the Library.
-    if (channel.isEmpty()) {
+    if (group.isEmpty()) {
         // Connect cover art signals to the library
         connect(m_pLibrary, SIGNAL(switchToView(const QString&)),
                 pCoverArt, SLOT(slotReset()));
@@ -1549,6 +1549,18 @@ QString LegacySkinParser::lookupNodeGroup(const QDomElement& node) {
 QString LegacySkinParser::getSharedGroupString(const QString& channelStr) {
     QSet<QString>::iterator i = s_sharedGroupStrings.insert(channelStr);
     return *i;
+}
+
+QWidget* LegacySkinParser::parseHotcueButton(const QDomElement& element) {
+    QString group = lookupNodeGroup(element);
+    WHotcueButton* pWidget = new WHotcueButton(group, m_pParent);
+    commonWidgetSetup(element, pWidget);
+    pWidget->setup(element, *m_pContext);
+    pWidget->installEventFilter(m_pKeyboard);
+    pWidget->installEventFilter(
+            m_pControllerManager->getControllerLearningEventFilter());
+    pWidget->Init();
+    return pWidget;
 }
 
 QWidget* LegacySkinParser::parseEffectChainName(const QDomElement& node) {
