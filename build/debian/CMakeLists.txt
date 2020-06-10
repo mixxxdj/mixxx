@@ -33,6 +33,3 @@ set(DH_RUN
 include( ../CMakeDebHelper )
 
 # CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA and CPACK_INSTALL_SCRIPT are set now, don't modify them!
-
-
-
