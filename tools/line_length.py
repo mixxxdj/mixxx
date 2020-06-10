@@ -27,15 +27,13 @@ FileLines = typing.NamedTuple(
 
 def get_git_added_lines() -> LineGenerator:
     proc = subprocess.run(
-        ["git", "diff", "--cached", "--unified=0"],
-        capture_output=True,
-        text=True,
+        ["git", "diff", "--cached", "--unified=0"], capture_output=True
     )
     proc.check_returncode()
     current_file = None
     current_lineno = None
     lines_left = 0
-    for line in proc.stdout.splitlines():
+    for line in str(proc.stdout).splitlines():
         match_file = re.match(r"^\+\+\+ b/(.*)$", line)
         if match_file:
             current_file = match_file.group(1)
