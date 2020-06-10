@@ -71,7 +71,7 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     void setPlayMarkerPosition(double position);
 
   private:
-    QString m_group;
+    const QString m_group;
     UserSettingsPointer m_pConfig;
     int m_zoomZoneWidth;
     ControlProxy* m_pZoom;

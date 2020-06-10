@@ -42,7 +42,7 @@ class WTrackText : public WLabel, public TrackDropTarget {
 
     void updateLabel();
 
-    QString m_group;
+    const QString m_group;
     UserSettingsPointer m_pConfig;
     TrackPointer m_pCurrentTrack;
     const parented_ptr<WTrackMenu> m_pTrackMenu;

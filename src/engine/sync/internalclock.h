@@ -65,7 +65,7 @@ class InternalClock : public QObject, public Clock, public Syncable {
   private:
     void updateBeatLength(int sampleRate, double bpm);
 
-    QString m_group;
+    const QString m_group;
     SyncableListener* m_pEngineSync;
     QScopedPointer<ControlLinPotmeter> m_pClockBpm;
     QScopedPointer<ControlObject> m_pClockBeatDistance;
