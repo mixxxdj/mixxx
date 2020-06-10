@@ -1213,7 +1213,7 @@ class QtKeychain(Feature):
         return "Secure credentials storage support for Live Broadcasting profiles"
 
     def enabled(self, build):
-        build.flags['qtkeychain'] = util.get_flags(build.env, 'qtkeychain', 0)
+        build.flags['qtkeychain'] = util.get_flags(build.env, 'qtkeychain', 1)
         if int(build.flags['qtkeychain']):
             return True
         return False
