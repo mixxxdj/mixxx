@@ -705,20 +705,30 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
                                 << m_pFaad->GetErrorMessage(decFrameInfo.error)
                                 << getUrlString();
                         retryAfterReopeningDecoder = reopenDecoder();
+                        // If reopening the decoder failed retrying the same sample
+                        // block with the same decoder instance will fail again. In
+                        // this case we will simply abort the decoding of the stream
+                        // immediately, see below.
                     }
                 }
                 if (!retryAfterReopeningDecoder) {
+                    // A decoding error occurred and no retry is pending
                     kLogger.warning()
                             << "AAC decoding error:" << decFrameInfo.error
                             << m_pFaad->GetErrorMessage(decFrameInfo.error)
                             << getUrlString();
+                    // In turn the decoding will be aborted
                 }
-                // Either abort or retry
+                // Either abort or retry by exiting the inner loop
                 break;
             } else {
                 // Reset the retry flag after succesfully decoding a block
                 retryAfterReopeningDecoder = false;
             }
+            // Upon a pending retry the inner loop is exited immediately and
+            // we must never get to this point.
+            DEBUG_ASSERT(!retryAfterReopeningDecoder);
+
             Q_UNUSED(pDecodeResult); // only used in DEBUG_ASSERT
             DEBUG_ASSERT(pDecodeResult ==
                     pDecodeBuffer); // verify the in/out parameter
