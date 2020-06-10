@@ -696,12 +696,9 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
                     m_inputBufferOffset = 0;
                     continue;
                 } else {
-                    if (faad2::FrameError(decFrameInfo.error) ==
-                                    faad2::FrameError::
-                                            InvalidNumberOfChannels ||
-                            faad2::FrameError(decFrameInfo.error) ==
-                                    faad2::FrameError::
-                                            InvalidChannelConfiguration) {
+                    const auto frameError = faad2::FrameError(decFrameInfo.error);
+                    if (frameError == faad2::FrameError::InvalidNumberOfChannels ||
+                            frameError == faad2::FrameError::InvalidChannelConfiguration) {
                         kLogger.debug()
                                 << "Reopening decoder after AAC decoding error"
                                 << decFrameInfo.error
