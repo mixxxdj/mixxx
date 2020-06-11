@@ -24,10 +24,6 @@ class Beat {
         return m_beat.type();
     }
 
-    bool isEnabled() const {
-        return m_beat.enabled();
-    }
-
     mixxx::track::io::Source getSource() const {
         return m_beat.source();
     }
@@ -49,10 +45,6 @@ class Beat {
 
     void setType(const mixxx::track::io::Type& type) {
         m_beat.set_type(type);
-    }
-
-    void setEnabled(bool enabled) {
-        m_beat.set_enabled(enabled);
     }
 
     void setSource(const mixxx::track::io::Source& source) {

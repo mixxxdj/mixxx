@@ -29,10 +29,6 @@ inline double framesToSamples(const int frames) {
     return frames * kFrameSize;
 }
 
-bool BeatLessThan(const Beat& beat1, const Beat& beat2) {
-    return beat1.getFramePosition() < beat2.getFramePosition();
-}
-
 namespace mixxx {
 
 class BeatMapIterator : public BeatIterator {
@@ -40,10 +36,6 @@ class BeatMapIterator : public BeatIterator {
     BeatMapIterator(BeatList::const_iterator start, BeatList::const_iterator end)
             : m_currentBeat(start),
               m_endBeat(end) {
-        // Advance to the first enabled beat.
-        while (m_currentBeat != m_endBeat && !m_currentBeat->isEnabled()) {
-            ++m_currentBeat;
-        }
     }
 
     bool hasNext() const override {
@@ -53,9 +45,6 @@ class BeatMapIterator : public BeatIterator {
     Beat next() override {
         auto beat = *m_currentBeat;
         ++m_currentBeat;
-        while (m_currentBeat != m_endBeat && !m_currentBeat->isEnabled()) {
-            ++m_currentBeat;
-        }
         return beat;
     }
 
@@ -229,7 +218,7 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
 
     // it points at the first occurrence of beat or the next largest beat
     BeatList::const_iterator it =
-            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), beat, BeatLessThan);
+            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), beat);
 
     // If the position is within 1/10th of a second of the next or previous
     // beat, pretend we are on that beat.
@@ -275,9 +264,6 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
 
     if (n > 0) {
         for (; next_beat != m_beats.end(); ++next_beat) {
-            if (!next_beat->isEnabled()) {
-                continue;
-            }
             if (n == 1) {
                 // Return a sample offset
                 return framesToSamples(next_beat->getFramePosition());
@@ -286,13 +272,11 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
         }
     } else if (n < 0 && previous_beat != m_beats.end()) {
         for (; true; --previous_beat) {
-            if (previous_beat->isEnabled()) {
                 if (n == -1) {
                     // Return a sample offset
                     return framesToSamples(previous_beat->getFramePosition());
                 }
                 ++n;
-            }
 
             // Don't step before the start of the list.
             if (previous_beat == m_beats.begin()) {
@@ -320,7 +304,7 @@ bool BeatMap::findPrevNextBeats(double dSamples,
 
     // it points at the first occurrence of beat or the next largest beat
     BeatList::const_iterator it =
-            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), beat, BeatLessThan);
+            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), beat);
 
     // If the position is within 1/10th of a second of the next or previous
     // beat, pretend we are on that beat.
@@ -367,25 +351,11 @@ bool BeatMap::findPrevNextBeats(double dSamples,
     *dpPrevBeatSamples = -1;
     *dpNextBeatSamples = -1;
 
-    for (; next_beat != m_beats.end(); ++next_beat) {
-        if (!next_beat->isEnabled()) {
-            continue;
-        }
+    if (next_beat != m_beats.end()) {
         *dpNextBeatSamples = framesToSamples(next_beat->getFramePosition());
-        break;
     }
     if (previous_beat != m_beats.end()) {
-        for (; true; --previous_beat) {
-            if (previous_beat->isEnabled()) {
-                *dpPrevBeatSamples = framesToSamples(previous_beat->getFramePosition());
-                break;
-            }
-
-            // Don't step before the start of the list.
-            if (previous_beat == m_beats.begin()) {
-                break;
-            }
-        }
+        *dpPrevBeatSamples = framesToSamples(previous_beat->getFramePosition());
     }
     return *dpPrevBeatSamples != -1 && *dpNextBeatSamples != -1;
 }
@@ -403,12 +373,10 @@ std::unique_ptr<BeatIterator> BeatMap::findBeats(double startSample, double stop
     stopBeat.setFramePosition(samplesToFrames(stopSample));
 
     BeatList::const_iterator curBeat =
-            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(),
-                        startBeat, BeatLessThan);
+            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), startBeat);
 
     BeatList::const_iterator lastBeat =
-            std::upper_bound(m_beats.constBegin(), m_beats.constEnd(),
-                        stopBeat, BeatLessThan);
+            std::upper_bound(m_beats.constBegin(), m_beats.constEnd(), stopBeat);
 
     if (curBeat >= lastBeat) {
         return std::unique_ptr<BeatIterator>();
@@ -481,7 +449,7 @@ void BeatMap::addBeat(double dBeatSample) {
     Beat beat;
     beat.setFramePosition(samplesToFrames(dBeatSample));
     BeatList::iterator it = std::lower_bound(
-        m_beats.begin(), m_beats.end(), beat, BeatLessThan);
+            m_beats.begin(), m_beats.end(), beat);
 
     // Don't insert a duplicate beat. TODO(XXX) determine what epsilon to
     // consider a beat identical to another.
@@ -500,7 +468,7 @@ void BeatMap::removeBeat(double dBeatSample) {
     Beat beat;
     beat.setFramePosition(samplesToFrames(dBeatSample));
     BeatList::iterator it = std::lower_bound(
-        m_beats.begin(), m_beats.end(), beat, BeatLessThan);
+            m_beats.begin(), m_beats.end(), beat);
 
     // In case there are duplicates, remove every instance of dBeatSample
     // TODO(XXX) add invariant checks against this
@@ -726,17 +694,15 @@ double BeatMap::calculateBpm(const Beat& startBeat, const Beat& stopBeat) const 
     }
 
     BeatList::const_iterator curBeat =
-            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), startBeat, BeatLessThan);
+            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), startBeat);
 
     BeatList::const_iterator lastBeat =
-            std::upper_bound(m_beats.constBegin(), m_beats.constEnd(), stopBeat, BeatLessThan);
+            std::upper_bound(m_beats.constBegin(), m_beats.constEnd(), stopBeat);
 
     QVector<double> beatvect;
     for (; curBeat != lastBeat; ++curBeat) {
         const Beat& beat = *curBeat;
-        if (beat.isEnabled()) {
-            beatvect.append(beat.getFramePosition());
-        }
+        beatvect.append(beat.getFramePosition());
     }
 
     if (beatvect.isEmpty()) {

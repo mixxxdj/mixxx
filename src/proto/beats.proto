@@ -17,9 +17,8 @@ enum Type {
 
 message Beat {
   optional int32 frame_position = 1;
-  optional bool enabled = 2 [ default = true ];
-  optional Source source = 3 [ default = ANALYZER ];
-  optional Type type = 4 [ default = BEAT ];
+  optional Source source = 2 [ default = ANALYZER ];
+  optional Type type = 3 [ default = BEAT ];
 }
 
 message Bpm {
