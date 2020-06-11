@@ -508,10 +508,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/baseexternallibraryfeature.cpp
   src/library/baseexternalplaylistmodel.cpp
   src/library/baseexternaltrackmodel.cpp
-  src/library/baseplaylistfeature.cpp
   src/library/basesqltablemodel.cpp
   src/library/basetrackcache.cpp
-  src/library/basetracksetfeature.cpp
   src/library/basetracktablemodel.cpp
   src/library/bpmdelegate.cpp
   src/library/browse/browsefeature.cpp
@@ -524,10 +522,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/coverartcache.cpp
   src/library/coverartdelegate.cpp
   src/library/coverartutils.cpp
-  src/library/crate/cratefeature.cpp
-  src/library/crate/cratefeaturehelper.cpp
-  src/library/crate/cratestorage.cpp
-  src/library/crate/cratetablemodel.cpp
   src/library/dao/analysisdao.cpp
   src/library/dao/autodjcratesdao.cpp
   src/library/dao/cuedao.cpp
@@ -567,7 +561,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/parsercsv.cpp
   src/library/parserm3u.cpp
   src/library/parserpls.cpp
-  src/library/playlistfeature.cpp
   src/library/playlisttablemodel.cpp
   src/library/previewbuttondelegate.cpp
   src/library/proxytrackmodel.cpp
@@ -587,7 +580,16 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/searchqueryparser.cpp
   src/library/serato/seratofeature.cpp
   src/library/serato/seratoplaylistmodel.cpp
-  src/library/setlogfeature.cpp
+  src/library/trackset/baseplaylistfeature.cpp
+  src/library/trackset/basetracksetfeature.cpp
+  src/library/trackset/crate/cratefeature.cpp
+  src/library/trackset/crate/cratefeaturehelper.cpp
+  src/library/trackset/crate/cratestorage.cpp
+  src/library/trackset/crate/cratetablemodel.cpp
+  src/library/trackset/playlistfeature.cpp
+  src/library/trackset/setlogfeature.cpp
+  src/library/trackset/tracksettablemodel.cpp
+  src/library/traktor/traktorfeature.cpp
   src/library/sidebarmodel.cpp
   src/library/songdownloader.cpp
   src/library/stardelegate.cpp
@@ -597,8 +599,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/trackcollection.cpp
   src/library/trackcollectionmanager.cpp
   src/library/trackloader.cpp
-  src/library/tracksettablemodel.cpp
-  src/library/traktor/traktorfeature.cpp
   src/library/treeitem.cpp
   src/library/treeitemmodel.cpp
   src/mixer/auxiliary.cpp

@@ -1,4 +1,4 @@
-#include "library/tracksettablemodel.h"
+#include "tracksettablemodel.h"
 
 #include "mixer/playermanager.h"
 
