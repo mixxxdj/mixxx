@@ -426,7 +426,8 @@ double BpmControl::calcSyncAdjustment(bool userTweakingSync) {
     // boundaries too.
 
     double syncTargetBeatDistance = m_dSyncTargetBeatDistance.getValue();
-    double thisBeatDistance = m_pThisBeatDistance->get();
+    // We want the untweaked beat distance, so we have to add the offset here.
+    double thisBeatDistance = m_pThisBeatDistance->get() + m_dUserOffset.getValue();
     double shortest_distance = shortestPercentageChange(
             syncTargetBeatDistance, thisBeatDistance);
 
@@ -737,7 +738,7 @@ double BpmControl::getBeatMatchPosition(
     }
 
     EngineBuffer* pOtherEngineBuffer = nullptr;
-    // explicit master always syncs to itself, so set to null
+    // explicit master always syncs to itself, so keep it null
     if (getSyncMode() != SYNC_MASTER_EXPLICIT) {
         pOtherEngineBuffer = pickSyncTarget();
     }
@@ -762,11 +763,11 @@ double BpmControl::getBeatMatchPosition(
             dThisPosition > dThisNextBeat ||
             (dThisPrevBeat != -1 && dThisPosition < dThisPrevBeat)) {
         if (kLogger.traceEnabled()) {
-            kLogger.trace() << "BpmControl::getNearestPositionInPhase out of date"
-                            << dThisPosition << dThisNextBeat << dThisPrevBeat;
+            kLogger.trace() << "BpmControl::getBeatMatchPosition out of date"
+                            << dThisPrevBeat << dThisPosition << dThisNextBeat;
         }
         // This happens if dThisPosition is the target position of a requested
-        // seek command
+        // seek command.  Get new prev and next beats for the calculation.
         getBeatContext(
                 m_pBeats,
                 dThisPosition,
@@ -780,6 +781,10 @@ double BpmControl::getBeatMatchPosition(
             return dThisPosition;
         }
     } else {
+        if (kLogger.traceEnabled()) {
+            kLogger.trace() << "BpmControl::getBeatMatchPosition up to date"
+                            << dThisPrevBeat << dThisPosition << dThisNextBeat;
+        }
         // We are between the previous and next beats so we can try a standard
         // lookup of the beat length.
         getBeatContextNoLookup(
