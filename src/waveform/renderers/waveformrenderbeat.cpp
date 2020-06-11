@@ -92,7 +92,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         }
 
         auto* waveformBeat = &m_beats[beatCount];
-        waveformBeat->setPosition(beatPixelPositionInWidgetSpace);
+        waveformBeat->setPositionPixels(beatPixelPositionInWidgetSpace);
         waveformBeat->setBeatGridMode(m_waveformRenderer->beatGridMode());
         waveformBeat->setBeat(beat);
         waveformBeat->setOrientation(orientation);

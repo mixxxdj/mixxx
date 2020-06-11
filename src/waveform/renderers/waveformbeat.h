@@ -20,7 +20,7 @@ class WaveformBeat final : WaveformElementRightClickable {
   public:
     WaveformBeat();
     void draw(QPainter* painter) const;
-    void setPosition(int position) {
+    void setPositionPixels(int position) {
         m_position = position;
     }
     void setOrientation(Qt::Orientation orientation) {
