@@ -2181,7 +2181,7 @@ endif()
 
 # QtKeychain
 find_package(Qt5Keychain QUIET)
-option(QTKEYCHAIN "Secure credentials storage support for Live Broadcasting profiles" OFF)
+option(QTKEYCHAIN "Secure credentials storage support for Live Broadcasting profiles" ON)
 if(QTKEYCHAIN)
   if(NOT Qt5Keychain_FOUND)
     message(FATAL_ERROR "Secure credential storage support requires the Qt5::Keychain component.")

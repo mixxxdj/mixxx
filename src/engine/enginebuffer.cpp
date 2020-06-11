@@ -1198,7 +1198,9 @@ void EngineBuffer::processSeek(bool paused) {
         double syncPosition = m_pBpmControl->getBeatMatchPosition(position, true, true);
         position = m_pLoopingControl->getSyncPositionInsideLoop(requestedPosition, syncPosition);
         if (kLogger.traceEnabled()) {
-            kLogger.trace() << "EngineBuffer::processSeek seek info: " << m_filepos_play << " " << position;
+            kLogger.trace()
+                    << "EngineBuffer::processSeek seek info: " << m_filepos_play
+                    << " -> " << position;
         }
     }
     if (position != m_filepos_play) {
