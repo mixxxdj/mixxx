@@ -41,10 +41,6 @@ class WaveformBeat final : WaveformElementRightClickable {
     bool contains(QPoint point, Qt::Orientation orientation) const override;
 
   private:
-    QPolygonF getEquilateralTriangle(float edgeLength,
-            QPointF baseMidPoint,
-            Direction pointingDirection) const;
-
     Qt::Orientation m_orientation;
     int m_position;
     int m_length;

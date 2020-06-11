@@ -9,6 +9,39 @@ constexpr int kClickableLinePaddingPixels = 5;
 inline float getEquilateralTriangleAltitude(float triangleEdgeLength) {
     return sqrt(3) / 2 * triangleEdgeLength;
 }
+
+QPolygonF getEquilateralTriangle(float edgeLength,
+        QPointF baseMidPoint,
+        Direction pointingDirection) {
+    QPolygonF polygon;
+    QPointF firstPoint = baseMidPoint;
+    QPointF secondPoint = baseMidPoint;
+    QPointF thirdPoint = baseMidPoint;
+
+    float halfBase = edgeLength / 2;
+    float altitude = getEquilateralTriangleAltitude(edgeLength);
+
+    if (pointingDirection == Direction::DOWN || pointingDirection == Direction::UP) {
+        firstPoint.setX(baseMidPoint.x() - halfBase);
+        secondPoint.setX(baseMidPoint.x() + halfBase);
+        if (pointingDirection == Direction::DOWN) {
+            thirdPoint.setY(baseMidPoint.y() + altitude);
+        } else {
+            thirdPoint.setY(baseMidPoint.y() - altitude);
+        }
+    } else {
+        firstPoint.setY(baseMidPoint.y() - halfBase);
+        secondPoint.setY(baseMidPoint.y() + halfBase);
+        if (pointingDirection == Direction::RIGHT) {
+            thirdPoint.setX(baseMidPoint.x() + altitude);
+        } else {
+            thirdPoint.setX(baseMidPoint.x() - altitude);
+        }
+    }
+
+    polygon << firstPoint << secondPoint << thirdPoint;
+    return polygon;
+}
 } // namespace
 
 WaveformBeat::WaveformBeat()
@@ -40,39 +73,6 @@ void WaveformBeat::draw(QPainter* painter) const {
                     Direction::LEFT));
         }
     }
-}
-
-QPolygonF WaveformBeat::getEquilateralTriangle(float edgeLength,
-        QPointF baseMidPoint,
-        Direction pointingDirection) const {
-    QPolygonF polygon;
-    QPointF firstPoint = baseMidPoint;
-    QPointF secondPoint = baseMidPoint;
-    QPointF thirdPoint = baseMidPoint;
-
-    float halfBase = edgeLength / 2;
-    float altitude = getEquilateralTriangleAltitude(edgeLength);
-
-    if (m_orientation == Qt::Horizontal) {
-        firstPoint.setX(baseMidPoint.x() - halfBase);
-        secondPoint.setX(baseMidPoint.x() + halfBase);
-        if (pointingDirection == Direction::DOWN) {
-            thirdPoint.setY(baseMidPoint.y() + altitude);
-        } else {
-            thirdPoint.setY(baseMidPoint.y() - altitude);
-        }
-    } else {
-        firstPoint.setY(baseMidPoint.y() - halfBase);
-        secondPoint.setY(baseMidPoint.y() + halfBase);
-        if (pointingDirection == Direction::DOWN) {
-            thirdPoint.setX(baseMidPoint.x() + altitude);
-        } else {
-            thirdPoint.setY(baseMidPoint.x() - altitude);
-        }
-    }
-
-    polygon << firstPoint << secondPoint << thirdPoint;
-    return polygon;
 }
 
 bool WaveformBeat::contains(QPoint point, Qt::Orientation orientation) const {
