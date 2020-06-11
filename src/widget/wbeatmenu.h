@@ -10,6 +10,10 @@
 class WBeatMenu : public QMenu {
     Q_OBJECT
   public:
+    enum Option {
+        SetDownbeat = 1 << 0,
+    };
+    Q_DECLARE_FLAGS(Options, Option)
     WBeatMenu(UserSettingsPointer pConfig, QWidget* parent = nullptr);
 
     ~WBeatMenu() override = default;
@@ -22,6 +26,10 @@ class WBeatMenu : public QMenu {
         m_beat = beat;
     }
 
+    void setOptions(Options selectedOptions) {
+        m_eSelectedOptions = selectedOptions;
+    }
+
     void update();
 
   private slots:
@@ -32,4 +40,7 @@ class WBeatMenu : public QMenu {
     UserSettingsPointer m_pConfig;
     mixxx::BeatsPointer m_pBeats;
     Beat m_beat;
+    Options m_eSelectedOptions;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(WBeatMenu::Options)

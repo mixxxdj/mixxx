@@ -254,6 +254,9 @@ void WWaveformViewer::setDisplayBeatGridAlpha(int alpha) {
 
 void WWaveformViewer::setBeatGridMode(BeatGridMode mode) {
     m_waveformWidget->setBeatGridMode(mode);
+    m_pBeatMenu->setOptions(mode == BeatGridMode::BEATS_DOWNBEATS
+                    ? WBeatMenu::Option::SetDownbeat
+                    : WBeatMenu::Options());
 }
 
 void WWaveformViewer::setPlayMarkerPosition(double position) {

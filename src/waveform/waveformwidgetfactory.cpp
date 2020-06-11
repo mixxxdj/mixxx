@@ -588,6 +588,7 @@ void WaveformWidgetFactory::setBeatGridMode(BeatGridMode mode) {
 
     for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
         m_waveformWidgetHolders[i].m_waveformWidget->setBeatGridMode(m_beatGridMode);
+        m_waveformWidgetHolders[i].m_waveformViewer->setBeatGridMode(m_beatGridMode);
     }
 }
 
