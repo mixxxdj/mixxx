@@ -577,9 +577,6 @@ void WaveformWidgetFactory::setZoomSync(bool sync) {
 
 void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
     m_beatGridAlpha = alpha;
-    if (m_waveformWidgetHolders.size() == 0) {
-        return;
-    }
 
     for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
         m_waveformWidgetHolders[i].m_waveformWidget->setDisplayBeatGridAlpha(m_beatGridAlpha);
@@ -588,9 +585,6 @@ void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
 
 void WaveformWidgetFactory::setBeatGridMode(BeatGridMode mode) {
     m_beatGridMode = mode;
-    if (m_waveformWidgetHolders.size() == 0) {
-        return;
-    }
 
     for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
         m_waveformWidgetHolders[i].m_waveformWidget->setBeatGridMode(m_beatGridMode);
