@@ -3,8 +3,8 @@
 #include <QObject>
 #include <QSqlDatabase>
 
+#include "library/trackset/crate/crateid.h"
 #include "preferences/usersettings.h"
-#include "library/crate/crateid.h"
 #include "track/track.h"
 #include "util/class.h"
 

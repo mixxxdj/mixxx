@@ -5,13 +5,13 @@
 #include <QSharedPointer>
 #include <QSqlDatabase>
 
-#include "library/crate/cratestorage.h"
 #include "library/dao/analysisdao.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/directorydao.h"
 #include "library/dao/libraryhashdao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
+#include "library/trackset/crate/cratestorage.h"
 #include "preferences/usersettings.h"
 #include "util/thread_affinity.h"
 

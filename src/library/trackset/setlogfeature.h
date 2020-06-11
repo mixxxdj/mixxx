@@ -4,11 +4,12 @@
 #include <QPointer>
 #include <QSqlTableModel>
 
-#include "library/baseplaylistfeature.h"
+#include "library/trackset/baseplaylistfeature.h"
 #include "preferences/usersettings.h"
 
 class SetlogFeature : public BasePlaylistFeature {
     Q_OBJECT
+
   public:
     SetlogFeature(Library* pLibrary,
             UserSettingsPointer pConfig);

@@ -1,23 +1,21 @@
-#ifndef MIXXX_CRATEFEATUREHELPER_H
-#define MIXXX_CRATEFEATUREHELPER_H
-
+#pragma once
 
 #include <QObject>
 
-#include "library/crate/crate.h"
+#include "library/trackset/crate/crate.h"
 #include "preferences/usersettings.h"
 
 // forward declaration(s)
 class TrackCollection;
 
-
-class CrateFeatureHelper: public QObject {
+class CrateFeatureHelper : public QObject {
     Q_OBJECT
+
   public:
     CrateFeatureHelper(
             TrackCollection* pTrackCollection,
             UserSettingsPointer pConfig);
-    ~CrateFeatureHelper() override {}
+    ~CrateFeatureHelper() override = default;
 
     CrateId createEmptyCrate();
     CrateId duplicateCrate(const Crate& oldCrate);
@@ -30,6 +28,3 @@ class CrateFeatureHelper: public QObject {
 
     UserSettingsPointer m_pConfig;
 };
-
-
-#endif // MIXXX_CRATEFEATUREHELPER_H

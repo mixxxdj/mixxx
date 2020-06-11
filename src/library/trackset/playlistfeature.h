@@ -8,7 +8,7 @@
 #include <QUrl>
 #include <QVariant>
 
-#include "library/baseplaylistfeature.h"
+#include "library/trackset/baseplaylistfeature.h"
 #include "preferences/usersettings.h"
 
 class TrackCollection;
@@ -17,11 +17,12 @@ class WLibrarySidebar;
 
 class PlaylistFeature : public BasePlaylistFeature {
     Q_OBJECT
+
   public:
     PlaylistFeature(
             Library* pLibrary,
             UserSettingsPointer pConfig);
-    virtual ~PlaylistFeature();
+    ~PlaylistFeature() override = default;
 
     QVariant title() override;
     QIcon getIcon() override;

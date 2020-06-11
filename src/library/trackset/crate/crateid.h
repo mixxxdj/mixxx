@@ -2,8 +2,8 @@
 
 #include "util/db/dbid.h"
 
-class CrateId: public DbId {
-public:
+class CrateId : public DbId {
+  public:
     // Inherit constructors from base class
     using DbId::DbId;
 };
