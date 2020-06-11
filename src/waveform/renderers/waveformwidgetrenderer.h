@@ -10,6 +10,7 @@
 #include "track/track.h"
 #include "util/class.h"
 #include "util/performancetimer.h"
+#include "waveform/renderers/waveformbeat.h"
 #include "waveform/renderers/waveformmark.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/renderers/waveformsignalcolors.h"
@@ -44,7 +45,7 @@ class WaveformWidgetRenderer {
     /// Get cue mark at a point on the waveform widget.
     WaveformMarkPointer getCueMarkAtPoint(QPoint point) const;
     /// Get beat near a point on the waveform widget.
-    Beat getBeatAtPoint(QPoint point) const;
+    std::optional<WaveformBeat> getBeatAtPoint(QPoint point) const;
 
     double getFirstDisplayedPosition() const { return m_firstDisplayedPosition;}
     double getLastDisplayedPosition() const { return m_lastDisplayedPosition;}
@@ -107,7 +108,7 @@ class WaveformWidgetRenderer {
         m_markPositions = markPositions;
     }
 
-    void setBeatPositions(QMap<Beat, float> beatPositions) {
+    void setBeatPositions(QMap<WaveformBeat, float> beatPositions) {
         m_beatPositions = beatPositions;
     }
 
@@ -170,7 +171,7 @@ private:
     DISALLOW_COPY_AND_ASSIGN(WaveformWidgetRenderer);
     friend class WaveformWidgetFactory;
     QMap<WaveformMarkPointer, int> m_markPositions;
-    QMap<Beat, float> m_beatPositions;
+    QMap<WaveformBeat, float> m_beatPositions;
 };
 
 #endif // WAVEFORMWIDGETRENDERER_H

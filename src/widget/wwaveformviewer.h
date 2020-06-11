@@ -12,6 +12,7 @@
 #include "skin/skincontext.h"
 #include "track/track.h"
 #include "util/parented_ptr.h"
+#include "waveform/renderers/waveformbeat.h"
 #include "waveform/renderers/waveformmark.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wbeatmenu.h"
@@ -84,12 +85,13 @@ private:
     parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
     parented_ptr<WBeatMenu> m_pBeatMenu;
     WaveformMarkPointer m_pHoveredMark;
-    Beat m_hoveredBeat;
+    std::optional<WaveformBeat> m_hoveredBeat;
 
     WaveformWidgetAbstract* m_waveformWidget;
 
     friend class WaveformWidgetFactory;
 
+    // TODO(hacksdump): Make this an internal function of WaveformMark class.
     CuePointer getCuePointerFromCueMark(WaveformMarkPointer pMark) const;
     void highlightMark(WaveformMarkPointer pMark);
     void unhighlightMark(WaveformMarkPointer pMark);

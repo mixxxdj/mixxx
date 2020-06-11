@@ -88,7 +88,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         m_pScratchPositionEnable->slotSet(1.0);
     } else if (event->button() == Qt::RightButton) {
         const auto currentTrack = m_waveformWidget->getTrackInfo();
-        if (!isPlaying() && (m_pHoveredMark || m_hoveredBeat.isEnabled())) {
+        if (!isPlaying() && (m_pHoveredMark || m_hoveredBeat)) {
             auto cueAtClickPos = getCuePointerFromCueMark(m_pHoveredMark);
             if (cueAtClickPos) {
                 m_pCueMenuPopup->setTrackAndCue(currentTrack, cueAtClickPos);
@@ -99,7 +99,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
                 m_pCueMenuPopup->popup(cueMenuTopLeft);
             }
 
-            if (m_hoveredBeat.isEnabled()) {
+            if (m_hoveredBeat) {
                 m_pBeatMenu->update();
                 m_pBeatMenu->popup(event->globalPos());
             }
@@ -308,5 +308,5 @@ bool WWaveformViewer::isPlaying() const {
 
 void WWaveformViewer::slotDownbeatUpdated() {
     m_waveformWidget->getTrackInfo()->getBeats()->setDownbeatStartIndex(
-            m_hoveredBeat.getIndex() % kDefaultBeatsPerMeasure);
+            m_hoveredBeat->getBeat().getIndex() % kDefaultBeatsPerMeasure);
 }

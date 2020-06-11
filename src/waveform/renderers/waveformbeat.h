@@ -4,6 +4,8 @@
 
 #include "preferences/beatgridmode.h"
 #include "proto/beats.pb.h"
+#include "track/beat.h"
+#include "waveform/renderers/waveformelementrightclickable.h"
 
 using BeatType = mixxx::track::io::Type;
 
@@ -14,15 +16,12 @@ enum class Direction : int {
     RIGHT
 };
 
-class WaveformBeat final {
+class WaveformBeat final : WaveformElementRightClickable {
   public:
     WaveformBeat();
     void draw(QPainter* painter) const;
     void setPosition(int position) {
         m_position = position;
-    }
-    void setType(BeatType beatType) {
-        m_beatType = beatType;
     }
     void setOrientation(Qt::Orientation orientation) {
         m_orientation = orientation;
@@ -33,6 +32,13 @@ class WaveformBeat final {
     void setBeatGridMode(BeatGridMode mode) {
         m_beatGridMode = mode;
     }
+    void setBeat(Beat beat) {
+        m_beat = beat;
+    }
+    Beat getBeat() const {
+        return m_beat;
+    }
+    bool contains(QPoint point, Qt::Orientation orientation) const override;
 
   private:
     QPolygonF getEquilateralTriangle(float edgeLength,
@@ -43,5 +49,7 @@ class WaveformBeat final {
     int m_position;
     int m_length;
     BeatGridMode m_beatGridMode;
-    BeatType m_beatType;
+    Beat m_beat;
 };
+
+bool operator<(const WaveformBeat& beat1, const WaveformBeat& beat2);

@@ -4,6 +4,7 @@
 
 namespace {
 constexpr int kTriangleEdgeLength = 10;
+constexpr int kClickableLinePaddingPixels = 5;
 
 inline float getEquilateralTriangleAltitude(float triangleEdgeLength) {
     return sqrt(3) / 2 * triangleEdgeLength;
@@ -12,14 +13,13 @@ inline float getEquilateralTriangleAltitude(float triangleEdgeLength) {
 
 WaveformBeat::WaveformBeat()
         : m_orientation(Qt::Horizontal),
-          m_beatGridMode(BeatGridMode::BEATS_DOWNBEATS),
-          m_beatType(mixxx::track::io::BEAT) {
+          m_beatGridMode(BeatGridMode::BEATS_DOWNBEATS) {
 }
 
 void WaveformBeat::draw(QPainter* painter) const {
     if (m_orientation == Qt::Horizontal) {
         painter->drawLine(QPointF(m_position, 0), QPoint(m_position, m_length));
-        if (m_beatType == mixxx::track::io::BAR &&
+        if (m_beat.getType() == mixxx::track::io::BAR &&
                 m_beatGridMode == BeatGridMode::BEATS_DOWNBEATS) {
             // TODO: Get color from skin context
             painter->setBrush(Qt::red);
@@ -30,7 +30,7 @@ void WaveformBeat::draw(QPainter* painter) const {
         }
     } else {
         painter->drawLine(QPointF(0, m_position), QPoint(m_length, m_position));
-        if (m_beatType == mixxx::track::io::BAR &&
+        if (m_beat.getType() == mixxx::track::io::BAR &&
                 m_beatGridMode == BeatGridMode::BEATS_DOWNBEATS) {
             painter->setBrush(Qt::red);
             painter->drawPolygon(getEquilateralTriangle(
@@ -73,4 +73,20 @@ QPolygonF WaveformBeat::getEquilateralTriangle(float edgeLength,
 
     polygon << firstPoint << secondPoint << thirdPoint;
     return polygon;
+}
+
+bool WaveformBeat::contains(QPoint point, Qt::Orientation orientation) const {
+    Q_UNUSED(orientation);
+    return (m_orientation == Qt::Horizontal &&
+                   (m_position - kClickableLinePaddingPixels < point.x() &&
+                           point.x() <
+                                   m_position + kClickableLinePaddingPixels)) ||
+            (m_orientation == Qt::Vertical &&
+                    (m_position - kClickableLinePaddingPixels < point.y() &&
+                            point.y() <
+                                    m_position + kClickableLinePaddingPixels));
+}
+
+bool operator<(const WaveformBeat& beat1, const WaveformBeat& beat2) {
+    return beat1.getBeat() < beat2.getBeat();
 }

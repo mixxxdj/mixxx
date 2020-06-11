@@ -76,7 +76,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     const float rendererHeight = m_waveformRenderer->getHeight();
 
     int beatCount = 0;
-    QMap<Beat, float> beatPositions;
+    QMap<WaveformBeat, float> beatPositions;
 
     while (it->hasNext()) {
         auto beat = it->next();
@@ -93,17 +93,12 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
         auto* waveformBeat = &m_beats[beatCount];
         waveformBeat->setPosition(xBeatPoint);
-        waveformBeat->setType(beat.getType());
         waveformBeat->setBeatGridMode(m_waveformRenderer->beatGridMode());
-
-        if (orientation == Qt::Horizontal) {
-            m_beats[beatCount].setLength(rendererHeight);
-        } else {
-            m_beats[beatCount].setLength(rendererWidth);
-            m_beats[beatCount].setOrientation(Qt::Vertical);
-        }
+        waveformBeat->setBeat(beat);
+        waveformBeat->setOrientation(orientation);
+        waveformBeat->setLength((orientation == Qt::Horizontal) ? rendererHeight : rendererWidth);
+        beatPositions[*waveformBeat] = xBeatPoint;
         beatCount++;
-        beatPositions[beat] = xBeatPoint;
     }
 
     // Make sure to use constData to prevent detaches!
