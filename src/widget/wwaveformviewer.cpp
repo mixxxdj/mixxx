@@ -126,7 +126,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
     }
 
     // Set the cursor to a hand while the mouse is down (when menu is not open).
-    if (!m_pCueMenuPopup->isVisible() && !m_pBeatMenu) {
+    if (!m_pCueMenuPopup->isVisible() && !m_pBeatMenu->isVisible()) {
         setCursor(Qt::ClosedHandCursor);
     }
 }
