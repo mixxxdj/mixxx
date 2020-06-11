@@ -39,12 +39,16 @@ class BpmControl : public EngineControl {
     double getNearestPositionInPhase(double dThisPosition, bool respectLoops, bool playing);
     double getBeatMatchPosition(double dThisPosition, bool respectLoops, bool playing);
     double getPhaseOffset(double dThisPosition);
+    /// getBeatDistance is adjusted to include the user offset so it's
+    /// transparent to other decks.
     double getBeatDistance(double dThisPosition) const;
 
     void setTargetBeatDistance(double beatDistance);
     void setInstantaneousBpm(double instantaneousBpm);
     void resetSyncAdjustment();
     double updateLocalBpm();
+    /// updateBeatDistance is adjusted to include the user offset so
+    /// it's transparent to other decks.
     double updateBeatDistance();
 
     void collectFeatures(GroupFeatureState* pGroupFeatures) const;
@@ -163,7 +167,7 @@ class BpmControl : public EngineControl {
     mixxx::BeatsPointer m_pBeats;
 
     FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
+    FRIEND_TEST(EngineSyncTest, UserTweakPreservedInSeek);
 };
-
 
 #endif // BPMCONTROL_H
