@@ -14,7 +14,7 @@ void WBeatMenu::update() {
     BeatGridMode beatMode = BeatGridMode(m_pConfig->getValue(
             ConfigKey("[Waveform]", "beatGridMode"), (int)BeatGridMode::BEATS));
     clear();
-    if (beatMode == BeatGridMode::BEATS_DOWNBEATS) {
+    if (beatMode == BeatGridMode::BEATS_DOWNBEATS && m_beat.getType() == mixxx::track::io::BEAT) {
         m_pSetAsDownbeat = make_parented<QAction>(tr("Set as Downbeat"), this);
         connect(m_pSetAsDownbeat, &QAction::triggered, this, &WBeatMenu::slotDownbeatUpdated);
         addAction(m_pSetAsDownbeat);
