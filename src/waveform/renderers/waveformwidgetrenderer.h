@@ -108,8 +108,8 @@ class WaveformWidgetRenderer {
         m_markPositions = markPositions;
     }
 
-    void setBeatPositions(QMap<WaveformBeat, float> beatPositions) {
-        m_beatPositions = beatPositions;
+    void setBeatsOnScreen(QList<WaveformBeat> beatsOnScreen) {
+        m_beatsOnScreen = beatsOnScreen;
     }
 
     double getPlayMarkerPosition() {
@@ -171,7 +171,7 @@ private:
     DISALLOW_COPY_AND_ASSIGN(WaveformWidgetRenderer);
     friend class WaveformWidgetFactory;
     QMap<WaveformMarkPointer, int> m_markPositions;
-    QMap<WaveformBeat, float> m_beatPositions;
+    QList<WaveformBeat> m_beatsOnScreen;
 };
 
 #endif // WAVEFORMWIDGETRENDERER_H

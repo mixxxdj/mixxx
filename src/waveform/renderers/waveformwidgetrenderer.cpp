@@ -312,9 +312,9 @@ WaveformMarkPointer WaveformWidgetRenderer::getCueMarkAtPoint(QPoint point) cons
 
 // TODO(hacksdump): Optimize this search
 std::optional<WaveformBeat> WaveformWidgetRenderer::getBeatAtPoint(QPoint point) const {
-    for (const auto& pBeat : m_beatPositions.keys()) {
-        if (pBeat.contains(point, getOrientation())) {
-            return pBeat;
+    for (const auto& beat : m_beatsOnScreen) {
+        if (beat.contains(point, getOrientation())) {
+            return beat;
         }
     }
     return std::nullopt;
