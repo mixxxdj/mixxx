@@ -3,6 +3,7 @@
 #include <QMenu>
 
 #include "preferences/usersettings.h"
+#include "track/beat.h"
 #include "track/track.h"
 #include "util/parented_ptr.h"
 
@@ -13,16 +14,22 @@ class WBeatMenu : public QMenu {
 
     ~WBeatMenu() override = default;
 
-    void setTrack(const TrackPointer& track) {
-        m_pTrack = track;
+    void setBeatgrid(mixxx::BeatsPointer pBeats) {
+        m_pBeats = pBeats;
     }
+
+    void setBeat(Beat beat) {
+        m_beat = beat;
+    }
+
     void update();
 
-  signals:
-    void updateDownbeat();
+  private slots:
+    void slotDownbeatUpdated();
 
   private:
     parented_ptr<QAction> m_pSetAsDownbeat;
-    TrackPointer m_pTrack;
     UserSettingsPointer m_pConfig;
+    mixxx::BeatsPointer m_pBeats;
+    Beat m_beat;
 };

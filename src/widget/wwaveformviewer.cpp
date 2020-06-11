@@ -17,10 +17,6 @@
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 
-namespace {
-constexpr int kDefaultBeatsPerMeasure = 4;
-}
-
 WWaveformViewer::WWaveformViewer(const char* group, UserSettingsPointer pConfig, QWidget* parent)
         : WWidget(parent),
           m_pGroup(group),
@@ -43,8 +39,6 @@ WWaveformViewer::WWaveformViewer(const char* group, UserSettingsPointer pConfig,
     m_pWheel = new ControlProxy(
             group, "wheel", this);
     m_pPlayEnabled = new ControlProxy(group, "play", this);
-
-    connect(m_pBeatMenu, &WBeatMenu::updateDownbeat, this, &WWaveformViewer::slotDownbeatUpdated);
 
     setAttribute(Qt::WA_OpaquePaintEvent);
 }
@@ -100,6 +94,8 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
             }
 
             if (m_hoveredBeat) {
+                m_pBeatMenu->setBeatgrid(m_waveformWidget->getTrackInfo()->getBeats());
+                m_pBeatMenu->setBeat(m_hoveredBeat->getBeat());
                 m_pBeatMenu->update();
                 m_pBeatMenu->popup(event->globalPos());
             }
@@ -217,7 +213,6 @@ void WWaveformViewer::slotTrackLoaded(TrackPointer track) {
     if (m_waveformWidget) {
         m_waveformWidget->setTrack(track);
     }
-    m_pBeatMenu->setTrack(track);
 }
 
 void WWaveformViewer::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
@@ -304,9 +299,4 @@ void WWaveformViewer::unhighlightMark(WaveformMarkPointer pMark) {
 
 bool WWaveformViewer::isPlaying() const {
     return m_pPlayEnabled->get();
-}
-
-void WWaveformViewer::slotDownbeatUpdated() {
-    m_waveformWidget->getTrackInfo()->getBeats()->setDownbeatStartIndex(
-            m_hoveredBeat->getBeat().getIndex() % kDefaultBeatsPerMeasure);
 }

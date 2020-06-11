@@ -57,7 +57,6 @@ private slots:
     void slotWidgetDead() {
         m_waveformWidget = nullptr;
     }
-    void slotDownbeatUpdated();
 
   private:
     void setWaveformWidget(WaveformWidgetAbstract* waveformWidget);
