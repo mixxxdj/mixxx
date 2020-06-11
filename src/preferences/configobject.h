@@ -197,7 +197,7 @@ template <class ValueType> class ConfigObject {
 
   protected:
     // We use QMap because we want a sorted list in mixxx.cfg
-    QMultiMap<ConfigKey, ValueType> m_values;
+    QMap<ConfigKey, ValueType> m_values;
     mutable QReadWriteLock m_valuesLock;
     QString m_filename;
     const QString m_resourcePath;
