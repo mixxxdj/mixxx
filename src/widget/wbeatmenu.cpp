@@ -10,6 +10,11 @@ WBeatMenu::WBeatMenu(UserSettingsPointer pConfig, QWidget* parent)
         : QMenu(parent), m_pConfig(pConfig) {
 }
 
+void WBeatMenu::popup(const QPoint& pos, QAction* at) {
+    update();
+    QMenu::popup(pos, at);
+}
+
 void WBeatMenu::update() {
     clear();
     if (m_eSelectedOptions.testFlag(WBeatMenu::Option::SetDownbeat) &&
@@ -18,6 +23,11 @@ void WBeatMenu::update() {
         connect(m_pSetAsDownbeat, &QAction::triggered, this, &WBeatMenu::slotDownbeatUpdated);
         addAction(m_pSetAsDownbeat);
     }
+    if (m_eSelectedOptions.testFlag(WBeatMenu::Option::CueMenu)) {
+        m_pCueMenu = make_parented<QAction>(tr("Cue Menu"), this);
+        addAction(m_pCueMenu);
+        connect(m_pCueMenu, &QAction::triggered, this, &WBeatMenu::cueButtonClicked);
+    }
 }
 
 void WBeatMenu::slotDownbeatUpdated() {
@@ -25,4 +35,13 @@ void WBeatMenu::slotDownbeatUpdated() {
         m_pBeats->setDownbeatStartIndex(
                 m_beat.getIndex() % kDefaultBeatsPerMeasure);
     }
+}
+
+void WBeatMenu::addOptions(Options newOptions) {
+    m_eSelectedOptions = m_eSelectedOptions | newOptions;
+}
+
+void WBeatMenu::removeOptions(Options removeOptions) {
+    m_eSelectedOptions = WBeatMenu::Options(
+            m_eSelectedOptions - (m_eSelectedOptions & removeOptions));
 }

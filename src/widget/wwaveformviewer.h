@@ -57,6 +57,7 @@ private slots:
     void slotWidgetDead() {
         m_waveformWidget = nullptr;
     }
+    void slotCueMenuButtonClickedInBeatMenu();
 
   private:
     void setWaveformWidget(WaveformWidgetAbstract* waveformWidget);
