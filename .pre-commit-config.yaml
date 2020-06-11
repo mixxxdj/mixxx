@@ -44,7 +44,7 @@ default_language_version:
   python: python3
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v2.3.0
+  rev: v3.1.0
   hooks:
   - id: check-byte-order-marker
     exclude: ^.*(\.cbproj|\.groupproj|\.props|\.sln|\.vcxproj|\.vcxproj.filters)$
@@ -64,7 +64,7 @@ repos:
     - manual
   - id: no-commit-to-branch
 - repo: https://github.com/pre-commit/mirrors-eslint
-  rev: v6.8.0
+  rev: v7.2.0
   hooks:
   - id: eslint
     args: [--fix, --report-unused-disable-directives]
@@ -90,7 +90,7 @@ repos:
     -   id: black
         files: ^tools/.*$
 -   repo: https://gitlab.com/pycqa/flake8
-    rev: '3.7.9'
+    rev: '3.8.3'
     hooks:
     -   id: flake8
         files: ^tools/.*$
