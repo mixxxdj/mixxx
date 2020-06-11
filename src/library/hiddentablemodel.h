@@ -3,7 +3,7 @@
 
 #include "library/basesqltablemodel.h"
 
-class HiddenTableModel : public BaseSqlTableModel {
+class HiddenTableModel final : public BaseSqlTableModel {
     Q_OBJECT
   public:
     HiddenTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager);

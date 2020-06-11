@@ -102,7 +102,7 @@ QString SkinLoader::getConfiguredSkinPath() const {
 }
 
 QString SkinLoader::getDefaultSkinName() const {
-    return "Deere";
+    return "LateNight";
 }
 
 QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,

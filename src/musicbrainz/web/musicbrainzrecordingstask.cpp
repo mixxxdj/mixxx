@@ -1,7 +1,6 @@
 #include "musicbrainz/web/musicbrainzrecordingstask.h"
 
 #include <QMetaMethod>
-#include <QThread>
 #include <QXmlStreamReader>
 
 #include "defs_urls.h"
@@ -11,6 +10,7 @@
 #include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/logger.h"
+#include "util/thread_affinity.h"
 #include "util/version.h"
 
 namespace mixxx {
@@ -85,7 +85,7 @@ bool MusicBrainzRecordingsTask::doStart(
         QNetworkAccessManager* networkAccessManager,
         int parentTimeoutMillis) {
     m_parentTimeoutMillis = parentTimeoutMillis;
-    DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     DEBUG_ASSERT(networkAccessManager);
     VERIFY_OR_DEBUG_ASSERT(!m_pendingNetworkReply) {
         kLogger.warning()
@@ -124,7 +124,11 @@ bool MusicBrainzRecordingsTask::doStart(
             Qt::UniqueConnection);
 
     connect(m_pendingNetworkReply,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+            &QNetworkReply::errorOccurred,
+#else
             QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error),
+#endif
             this,
             &MusicBrainzRecordingsTask::slotNetworkReplyFinished,
             Qt::UniqueConnection);
@@ -146,7 +150,7 @@ QUrl MusicBrainzRecordingsTask::doAbort() {
 }
 
 QUrl MusicBrainzRecordingsTask::doTimeOut() {
-    DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     QUrl requestUrl;
     if (m_pendingNetworkReply) {
         requestUrl = timeOutPendingNetworkReply(m_pendingNetworkReply);
@@ -158,7 +162,7 @@ QUrl MusicBrainzRecordingsTask::doTimeOut() {
 }
 
 void MusicBrainzRecordingsTask::slotNetworkReplyFinished() {
-    DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     const QPair<QNetworkReply*, network::HttpStatusCode>
             networkReplyWithStatusCode = receiveNetworkReply();
     auto* const networkReply = networkReplyWithStatusCode.first;

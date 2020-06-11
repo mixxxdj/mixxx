@@ -301,8 +301,7 @@ namespace {
 // and variants of this function in derived subclasses.
 class TagSaver {
   public:
-    virtual ~TagSaver() {
-    }
+    virtual ~TagSaver() = default;
 
     virtual bool hasModifiedTags() const = 0;
 

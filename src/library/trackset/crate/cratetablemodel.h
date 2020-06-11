@@ -4,7 +4,7 @@
 #include "library/trackset/crate/crateid.h"
 #include "library/trackset/tracksettablemodel.h"
 
-class CrateTableModel : public TrackSetTableModel {
+class CrateTableModel final : public TrackSetTableModel {
     Q_OBJECT
 
   public:

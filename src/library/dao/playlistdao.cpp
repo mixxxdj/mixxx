@@ -885,7 +885,7 @@ void PlaylistDAO::shuffleTracks(const int playlistId,
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
     // Seed the randomness generator
     qsrand(QDateTime::currentDateTimeUtc().toTime_t());
 #endif

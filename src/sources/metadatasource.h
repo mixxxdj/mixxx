@@ -18,8 +18,7 @@ namespace mixxx {
 // and can be used for synchronization purposes.
 class MetadataSource {
   public:
-    virtual ~MetadataSource() {
-    }
+    virtual ~MetadataSource() = default;
 
     enum class ImportResult {
         Succeeded,
