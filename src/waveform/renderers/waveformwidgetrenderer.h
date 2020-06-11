@@ -6,6 +6,7 @@
 #include <QVector>
 #include <QtDebug>
 
+#include "preferences/beatgridmode.h"
 #include "track/track.h"
 #include "util/class.h"
 #include "util/performancetimer.h"
@@ -52,7 +53,7 @@ class WaveformWidgetRenderer {
 
     void setDisplayBeatGrid(bool set);
     void setDisplayBeatGridAlpha(int alpha);
-    void setBeatGridMode(int mode);
+    void setBeatGridMode(BeatGridMode mode);
 
     double getVisualSamplePerPixel() const { return m_visualSamplePerPixel;};
     double getAudioSamplePerPixel() const { return m_audioSamplePerPixel;};
@@ -81,7 +82,7 @@ class WaveformWidgetRenderer {
     int getTrackSamples() const { return m_trackSamples;}
 
     int beatGridAlpha() const { return m_alphaBeatGrid; }
-    int beatGridMode() const {
+    BeatGridMode beatGridMode() const {
         return m_modeBeatGrid;
     }
 
@@ -140,7 +141,7 @@ class WaveformWidgetRenderer {
     double m_audioSamplePerPixel;
 
     int m_alphaBeatGrid;
-    int m_modeBeatGrid;
+    BeatGridMode m_modeBeatGrid;
 
     //TODO: vRince create some class to manage control/value
     //ControlConnection

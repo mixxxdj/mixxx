@@ -257,7 +257,7 @@ void WWaveformViewer::setDisplayBeatGridAlpha(int alpha) {
     m_waveformWidget->setDisplayBeatGridAlpha(alpha);
 }
 
-void WWaveformViewer::setBeatGridMode(int mode) {
+void WWaveformViewer::setBeatGridMode(BeatGridMode mode) {
     m_waveformWidget->setBeatGridMode(mode);
 }
 

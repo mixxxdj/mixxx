@@ -313,7 +313,8 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     int beatGridAlpha = m_config->getValue(ConfigKey("[Waveform]", "beatGridAlpha"), m_beatGridAlpha);
     setDisplayBeatGridAlpha(beatGridAlpha);
 
-    int beatGridMode = m_config->getValue(ConfigKey("[Waveform]", "beatGridMode"), m_beatGridMode);
+    BeatGridMode beatGridMode = BeatGridMode(m_config->getValue(
+            ConfigKey("[Waveform]", "beatGridMode"), (int)m_beatGridMode));
     setBeatGridMode(beatGridMode);
 
     WaveformWidgetType::Type type = static_cast<WaveformWidgetType::Type>(
@@ -585,7 +586,7 @@ void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
     }
 }
 
-void WaveformWidgetFactory::setBeatGridMode(int mode) {
+void WaveformWidgetFactory::setBeatGridMode(BeatGridMode mode) {
     m_beatGridMode = mode;
     if (m_waveformWidgetHolders.size() == 0) {
         return;

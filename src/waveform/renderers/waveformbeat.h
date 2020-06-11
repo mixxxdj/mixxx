@@ -2,6 +2,7 @@
 
 #include <QPainter>
 
+#include "preferences/beatgridmode.h"
 #include "proto/beats.pb.h"
 
 using BeatType = mixxx::track::io::Type;
@@ -29,7 +30,7 @@ class WaveformBeat final {
     void setLength(int length) {
         m_length = length;
     }
-    void setBeatGridMode(int mode) {
+    void setBeatGridMode(BeatGridMode mode) {
         m_beatGridMode = mode;
     }
 

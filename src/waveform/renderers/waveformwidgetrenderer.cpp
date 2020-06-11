@@ -279,7 +279,7 @@ void WaveformWidgetRenderer::setDisplayBeatGridAlpha(int alpha) {
     m_alphaBeatGrid = alpha;
 }
 
-void WaveformWidgetRenderer::setBeatGridMode(int mode) {
+void WaveformWidgetRenderer::setBeatGridMode(BeatGridMode mode) {
     m_modeBeatGrid = mode;
 }
 

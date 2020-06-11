@@ -11,13 +11,16 @@ inline float getEquilateralTriangleAltitude(float triangleEdgeLength) {
 } // namespace
 
 WaveformBeat::WaveformBeat()
-        : m_orientation(Qt::Horizontal), m_beatType(mixxx::track::io::BEAT), m_beatGridMode(1) {
+        : m_orientation(Qt::Horizontal),
+          m_beatGridMode(BeatGridMode::BEATS_DOWNBEATS),
+          m_beatType(mixxx::track::io::BEAT) {
 }
 
 void WaveformBeat::draw(QPainter* painter) const {
     if (m_orientation == Qt::Horizontal) {
         painter->drawLine(QPointF(m_position, 0), QPoint(m_position, m_length));
-        if (m_beatType == mixxx::track::io::BAR && m_beatGridMode == 1) {
+        if (m_beatType == mixxx::track::io::BAR &&
+                m_beatGridMode == BeatGridMode::BEATS_DOWNBEATS) {
             // TODO: Get color from skin context
             painter->setBrush(Qt::red);
             painter->drawPolygon(getEquilateralTriangle(

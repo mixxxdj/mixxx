@@ -1,12 +1,13 @@
 #include "preferences/dialog/dlgprefwaveform.h"
 
-#include "mixxx.h"
-#include "library/library.h"
 #include "library/dao/analysisdao.h"
+#include "library/library.h"
+#include "mixxx.h"
+#include "preferences/beatgridmode.h"
 #include "preferences/waveformsettings.h"
-#include "waveform/waveformwidgetfactory.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "util/db/dbconnectionpooled.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/waveformwidgetfactory.h"
 
 DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
                                  UserSettingsPointer pConfig, Library* pLibrary)
@@ -30,8 +31,8 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
     }
 
     // Populate beatgrid options.
-    beatGridModeComboBox->addItem(tr("Beats"));
-    beatGridModeComboBox->addItem(tr("Beats + Downbeats"));
+    beatGridModeComboBox->addItem(tr("Beats"));             // BeatGridMode::BEATS = 0
+    beatGridModeComboBox->addItem(tr("Beats + Downbeats")); // BeatGridMode::BEATS_DOWNBEATS = 1
 
     // Populate zoom options.
     for (int i = WaveformWidgetRenderer::s_waveformMinZoom;
@@ -168,7 +169,7 @@ void DlgPrefWaveform::slotResetToDefaults() {
     defaultZoomComboBox->setCurrentIndex(3 + 1);
 
     // Default Beat grid mode is "beats + downbeats"
-    beatGridModeComboBox->setCurrentIndex(1);
+    beatGridModeComboBox->setCurrentIndex(BeatGridMode::BEATS_DOWNBEATS);
 
     // Don't synchronize zoom by default.
     synchronizeZoomCheckBox->setChecked(false);
@@ -226,7 +227,7 @@ void DlgPrefWaveform::slotSetWaveformOverviewType(int index) {
 
 void DlgPrefWaveform::slotSetBeatGridMode(int index) {
     m_pConfig->setValue(ConfigKey("[Waveform]", "beatGridMode"), index);
-    WaveformWidgetFactory::instance()->setBeatGridMode(index);
+    WaveformWidgetFactory::instance()->setBeatGridMode(BeatGridMode(index));
 }
 
 void DlgPrefWaveform::slotSetDefaultZoom(int index) {

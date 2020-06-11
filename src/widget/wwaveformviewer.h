@@ -8,6 +8,7 @@
 #include <QList>
 #include <QMutex>
 
+#include "preferences/beatgridmode.h"
 #include "skin/skincontext.h"
 #include "track/track.h"
 #include "util/parented_ptr.h"
@@ -65,7 +66,7 @@ private slots:
     //direct access to let factory sync/set default zoom
     void setZoom(double zoom);
     void setDisplayBeatGridAlpha(int alpha);
-    void setBeatGridMode(int mode);
+    void setBeatGridMode(BeatGridMode mode);
     void setPlayMarkerPosition(double position);
 
 private:
