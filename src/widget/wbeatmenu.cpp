@@ -8,8 +8,8 @@ WBeatMenu::WBeatMenu(UserSettingsPointer pConfig, QWidget* parent)
 
 void WBeatMenu::update() {
     // TODO(hacksdump): Declare enum type for beat grid mode setting.
-    int beatMode = m_pConfig->getValue(
-            ConfigKey("[Waveform]", "beatGridMode"), (int)BeatGridMode::BEATS);
+    BeatGridMode beatMode = BeatGridMode(m_pConfig->getValue(
+            ConfigKey("[Waveform]", "beatGridMode"), (int)BeatGridMode::BEATS));
     clear();
     if (beatMode == BeatGridMode::BEATS_DOWNBEATS) {
         m_pSetAsDownbeat = make_parented<QAction>(tr("Set as Downbeat"), this);

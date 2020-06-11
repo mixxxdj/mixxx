@@ -30,7 +30,8 @@ void WaveformBeat::draw(QPainter* painter) const {
         }
     } else {
         painter->drawLine(QPointF(0, m_position), QPoint(m_length, m_position));
-        if (m_beatType == mixxx::track::io::BAR && m_beatGridMode == 1) {
+        if (m_beatType == mixxx::track::io::BAR &&
+                m_beatGridMode == BeatGridMode::BEATS_DOWNBEATS) {
             painter->setBrush(Qt::red);
             painter->drawPolygon(getEquilateralTriangle(
                     kTriangleEdgeLength, QPointF(0, m_position), Direction::RIGHT));

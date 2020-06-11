@@ -42,6 +42,6 @@ class WaveformBeat final {
     Qt::Orientation m_orientation;
     int m_position;
     int m_length;
-    int m_beatGridMode;
+    BeatGridMode m_beatGridMode;
     BeatType m_beatType;
 };

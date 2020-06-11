@@ -123,7 +123,7 @@ void DlgPrefWaveform::slotUpdate() {
     normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
     // Round zoom to int to get a default zoom index.
     defaultZoomComboBox->setCurrentIndex(static_cast<int>(factory->getDefaultZoom()) - 1);
-    beatGridModeComboBox->setCurrentIndex(factory->beatGridMode());
+    beatGridModeComboBox->setCurrentIndex(static_cast<int>(factory->beatGridMode()));
     playMarkerPositionSlider->setValue(factory->getPlayMarkerPosition() * 100);
     beatGridAlphaSpinBox->setValue(factory->beatGridAlpha());
     beatGridAlphaSlider->setValue(factory->beatGridAlpha());
@@ -169,7 +169,7 @@ void DlgPrefWaveform::slotResetToDefaults() {
     defaultZoomComboBox->setCurrentIndex(3 + 1);
 
     // Default Beat grid mode is "beats + downbeats"
-    beatGridModeComboBox->setCurrentIndex(BeatGridMode::BEATS_DOWNBEATS);
+    beatGridModeComboBox->setCurrentIndex(static_cast<int>(BeatGridMode::BEATS_DOWNBEATS));
 
     // Don't synchronize zoom by default.
     synchronizeZoomCheckBox->setChecked(false);
