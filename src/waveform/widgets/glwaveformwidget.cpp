@@ -15,7 +15,7 @@
 #include "waveform/sharedglcontext.h"
 #include "util/performancetimer.h"
 
-GLWaveformWidget::GLWaveformWidget(const char* group, QWidget* parent)
+GLWaveformWidget::GLWaveformWidget(const QString& group, QWidget* parent)
         : QGLWidget(parent, SharedGLContext::getWidget()),
           WaveformWidgetAbstract(group) {
     qDebug() << "Created QGLWidget. Context"

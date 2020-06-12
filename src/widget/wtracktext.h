@@ -20,7 +20,7 @@ class WTrackText : public WLabel, public TrackDropTarget {
             QWidget* pParent,
             UserSettingsPointer pConfig,
             TrackCollectionManager* pTrackCollectionManager,
-            const char* group);
+            const QString& group);
     ~WTrackText() override;
 
   signals:
@@ -42,7 +42,7 @@ class WTrackText : public WLabel, public TrackDropTarget {
 
     void updateLabel();
 
-    const char* m_pGroup;
+    const QString m_group;
     UserSettingsPointer m_pConfig;
     TrackPointer m_pCurrentTrack;
     const parented_ptr<WTrackMenu> m_pTrackMenu;

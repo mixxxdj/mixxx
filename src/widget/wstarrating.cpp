@@ -7,14 +7,14 @@
 
 WStarRating::WStarRating(QString group, QWidget* pParent)
         : WWidget(pParent),
-          m_starRating(0,5),
-          m_pGroup(group),
+          m_starRating(0, 5),
+          m_group(group),
           m_focused(false) {
-  // Controls to change the star rating with controllers
-  m_pStarsUp = std::make_unique<ControlPushButton>(ConfigKey(group, "stars_up"));
-  m_pStarsDown = std::make_unique<ControlPushButton>(ConfigKey(group, "stars_down"));
-  connect(m_pStarsUp.get(), SIGNAL(valueChanged(double)),this, SLOT(slotStarsUp(double)));
-  connect(m_pStarsDown.get(), SIGNAL(valueChanged(double)),this, SLOT(slotStarsDown(double)));
+    // Controls to change the star rating with controllers
+    m_pStarsUp = std::make_unique<ControlPushButton>(ConfigKey(group, "stars_up"));
+    m_pStarsDown = std::make_unique<ControlPushButton>(ConfigKey(group, "stars_down"));
+    connect(m_pStarsUp.get(), SIGNAL(valueChanged(double)), this, SLOT(slotStarsUp(double)));
+    connect(m_pStarsDown.get(), SIGNAL(valueChanged(double)), this, SLOT(slotStarsDown(double)));
 }
 
 void WStarRating::setup(const QDomNode& node, const SkinContext& context) {

@@ -181,8 +181,7 @@ int BulkController::open() {
         m_pReader = new BulkReader(m_phandle, in_epaddr);
         m_pReader->setObjectName(QString("BulkReader %1").arg(getName()));
 
-        connect(m_pReader, SIGNAL(incomingData(QByteArray, mixxx::Duration)),
-                this, SLOT(receive(QByteArray, mixxx::Duration)));
+        connect(m_pReader, &BulkReader::incomingData, this, &BulkController::receive);
 
         // Controller input needs to be prioritized since it can affect the
         // audio directly, like when scratching
@@ -205,8 +204,7 @@ int BulkController::close() {
         qWarning() << "BulkReader not present for" << getName()
                    << "yet the device is open!";
     } else {
-        disconnect(m_pReader, SIGNAL(incomingData(QByteArray, mixxx::Duration)),
-                   this, SLOT(receive(QByteArray, mixxx::Duration)));
+        disconnect(m_pReader, &BulkReader::incomingData, this, &BulkController::receive);
         m_pReader->stop();
         controllerDebug("  Waiting on reader to finish");
         m_pReader->wait();

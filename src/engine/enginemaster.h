@@ -56,7 +56,7 @@ class EngineMaster : public QObject, public AudioSource {
     Q_OBJECT
   public:
     EngineMaster(UserSettingsPointer pConfig,
-            const char* pGroup,
+            const QString& group,
             EffectsManager* pEffectsManager,
             ChannelHandleFactoryPointer pChannelHandleFactory,
             bool bEnableSidechain);
