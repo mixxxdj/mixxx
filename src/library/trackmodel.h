@@ -28,23 +28,23 @@ class TrackModel {
     // These enums are the bits in a bitvector. Any individual column cannot
     // have a value other than 0, 1, 2, or 4!
     enum class Capability {
-        TRACKMODELCAPS_NONE = 0u,
-        TRACKMODELCAPS_REORDER = 1u << 0u,
-        TRACKMODELCAPS_RECEIVEDROPS = 1u << 1u,
-        TRACKMODELCAPS_ADDTOTRACKSET = 1u << 2u,
-        TRACKMODELCAPS_ADDTOAUTODJ = 1u << 3u,
-        TRACKMODELCAPS_LOCKED = 1u << 4u,
-        TRACKMODELCAPS_EDITMETADATA = 1u << 5u,
-        TRACKMODELCAPS_LOADTODECK = 1u << 6u,
-        TRACKMODELCAPS_LOADTOSAMPLER = 1u << 7u,
-        TRACKMODELCAPS_LOADTOPREVIEWDECK = 1u << 8u,
-        TRACKMODELCAPS_REMOVE = 1u << 9u,
-        TRACKMODELCAPS_RESETPLAYED = 1u << 10u,
-        TRACKMODELCAPS_HIDE = 1u << 11u,
-        TRACKMODELCAPS_UNHIDE = 1u << 12u,
-        TRACKMODELCAPS_PURGE = 1u << 13u,
-        TRACKMODELCAPS_REMOVE_PLAYLIST = 1u << 14u,
-        TRACKMODELCAPS_REMOVE_CRATE = 1u << 15u,
+        None = 0u,
+        Reorder = 1u << 0u,
+        ReceiveDrops = 1u << 1u,
+        AddToTrackSet = 1u << 2u,
+        AddToAutoDJ = 1u << 3u,
+        Locked = 1u << 4u,
+        EditMetadata = 1u << 5u,
+        LoadToDeck = 1u << 6u,
+        LoadToSampler = 1u << 7u,
+        LoadToPreviewDeck = 1u << 8u,
+        Remove = 1u << 9u,
+        ResetPlayed = 1u << 10u,
+        Hide = 1u << 11u,
+        Unhide = 1u << 12u,
+        Purge = 1u << 13u,
+        RemovePlaylist = 1u << 14u,
+        RemoveCrate = 1u << 15u,
     };
     Q_DECLARE_FLAGS(Capabilities, Capability)
 
@@ -143,7 +143,7 @@ class TrackModel {
         return NULL;
     }
     virtual TrackModel::Capabilities getCapabilities() const {
-        return Capability::TRACKMODELCAPS_NONE;
+        return Capability::None;
     }
     virtual bool hasCapabilities(TrackModel::Capabilities caps) const {
         Q_UNUSED(caps);

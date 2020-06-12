@@ -208,10 +208,10 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
 }
 
 TrackModel::Capabilities BansheePlaylistModel::getCapabilities() const {
-    return Capability::TRACKMODELCAPS_ADDTOTRACKSET |
-            Capability::TRACKMODELCAPS_ADDTOAUTODJ |
-            Capability::TRACKMODELCAPS_LOADTODECK |
-            Capability::TRACKMODELCAPS_LOADTOSAMPLER;
+    return Capability::AddToTrackSet |
+            Capability::AddToAutoDJ |
+            Capability::LoadToDeck |
+            Capability::LoadToSampler;
 }
 
 Qt::ItemFlags BansheePlaylistModel::flags(const QModelIndex& index) const {

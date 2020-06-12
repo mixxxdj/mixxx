@@ -85,13 +85,13 @@ bool LibraryTableModel::isColumnInternal(int column) {
 }
 
 TrackModel::Capabilities LibraryTableModel::getCapabilities() const {
-    return Capability::TRACKMODELCAPS_RECEIVEDROPS |
-            Capability::TRACKMODELCAPS_ADDTOTRACKSET |
-            Capability::TRACKMODELCAPS_ADDTOAUTODJ |
-            Capability::TRACKMODELCAPS_EDITMETADATA |
-            Capability::TRACKMODELCAPS_LOADTODECK |
-            Capability::TRACKMODELCAPS_LOADTOSAMPLER |
-            Capability::TRACKMODELCAPS_LOADTOPREVIEWDECK |
-            Capability::TRACKMODELCAPS_HIDE |
-            Capability::TRACKMODELCAPS_RESETPLAYED;
+    return Capability::ReceiveDrops |
+            Capability::AddToTrackSet |
+            Capability::AddToAutoDJ |
+            Capability::EditMetadata |
+            Capability::LoadToDeck |
+            Capability::LoadToSampler |
+            Capability::LoadToPreviewDeck |
+            Capability::Hide |
+            Capability::ResetPlayed;
 }

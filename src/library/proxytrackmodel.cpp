@@ -107,7 +107,7 @@ QAbstractItemDelegate* ProxyTrackModel::delegateForColumn(const int i, QObject* 
 }
 
 TrackModel::Capabilities ProxyTrackModel::getCapabilities() const {
-    return m_pTrackModel ? m_pTrackModel->getCapabilities() : Capability::TRACKMODELCAPS_NONE;
+    return m_pTrackModel ? m_pTrackModel->getCapabilities() : Capability::None;
 }
 
 bool ProxyTrackModel::filterAcceptsRow(int sourceRow,

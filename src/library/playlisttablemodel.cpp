@@ -259,34 +259,34 @@ bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
 
 TrackModel::Capabilities PlaylistTableModel::getCapabilities() const {
     TrackModel::Capabilities caps =
-            Capability::TRACKMODELCAPS_RECEIVEDROPS |
-            Capability::TRACKMODELCAPS_REORDER |
-            Capability::TRACKMODELCAPS_ADDTOTRACKSET |
-            Capability::TRACKMODELCAPS_EDITMETADATA |
-            Capability::TRACKMODELCAPS_LOADTODECK |
-            Capability::TRACKMODELCAPS_LOADTOSAMPLER |
-            Capability::TRACKMODELCAPS_LOADTOPREVIEWDECK |
-            Capability::TRACKMODELCAPS_RESETPLAYED;
+            Capability::ReceiveDrops |
+            Capability::Reorder |
+            Capability::AddToTrackSet |
+            Capability::EditMetadata |
+            Capability::LoadToDeck |
+            Capability::LoadToSampler |
+            Capability::LoadToPreviewDeck |
+            Capability::ResetPlayed;
 
     if (m_iPlaylistId !=
             m_pTrackCollectionManager->internalCollection()
                     ->getPlaylistDAO()
                     .getPlaylistIdFromName(AUTODJ_TABLE)) {
         // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
-        caps |= Capability::TRACKMODELCAPS_ADDTOAUTODJ | Capability::TRACKMODELCAPS_REMOVE_PLAYLIST;
+        caps |= Capability::AddToAutoDJ | Capability::RemovePlaylist;
     } else {
-        caps |= Capability::TRACKMODELCAPS_REMOVE;
+        caps |= Capability::Remove;
     }
     if (PlaylistDAO::PLHT_SET_LOG ==
             m_pTrackCollectionManager->internalCollection()
                     ->getPlaylistDAO()
                     .getHiddenType(m_iPlaylistId)) {
         // Disable track reordering for history playlists
-        caps &= ~(Capability::TRACKMODELCAPS_REORDER | Capability::TRACKMODELCAPS_REMOVE_PLAYLIST);
+        caps &= ~(Capability::Reorder | Capability::RemovePlaylist);
     }
     bool locked = m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId);
     if (locked) {
-        caps |= Capability::TRACKMODELCAPS_LOCKED;
+        caps |= Capability::Locked;
     }
 
     return caps;
