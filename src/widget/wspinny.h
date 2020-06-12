@@ -82,7 +82,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     QPixmap scaledCoverArt(const QPixmap& normal);
 
   private:
-    QString m_group;
+    const QString m_group;
     UserSettingsPointer m_pConfig;
     std::shared_ptr<QImage> m_pBgImage;
     std::shared_ptr<QImage> m_pMaskImage;

@@ -10,8 +10,10 @@ class GLSLWaveformRendererSignal;
 class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
     Q_OBJECT
   public:
-    GLSLWaveformWidget(const char* group, QWidget* parent,
-                       bool rgbRenderer);
+    GLSLWaveformWidget(
+            const QString& group,
+            QWidget* parent,
+            bool rgbRenderer);
     ~GLSLWaveformWidget() override;
 
     void resize(int width, int height) override;
@@ -31,7 +33,7 @@ class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
 class GLSLFilteredWaveformWidget : public GLSLWaveformWidget {
     Q_OBJECT
   public:
-    GLSLFilteredWaveformWidget(const char* group, QWidget* parent);
+    GLSLFilteredWaveformWidget(const QString& group, QWidget* parent);
     ~GLSLFilteredWaveformWidget() override = default;
 
     WaveformWidgetType::Type getType() const override { return WaveformWidgetType::GLSLFilteredWaveform; }
@@ -46,7 +48,7 @@ class GLSLFilteredWaveformWidget : public GLSLWaveformWidget {
 class GLSLRGBWaveformWidget : public GLSLWaveformWidget {
     Q_OBJECT
   public:
-    GLSLRGBWaveformWidget(const char* group, QWidget* parent);
+    GLSLRGBWaveformWidget(const QString& group, QWidget* parent);
     ~GLSLRGBWaveformWidget() override = default;
 
     WaveformWidgetType::Type getType() const override { return WaveformWidgetType::GLSLRGBWaveform; }

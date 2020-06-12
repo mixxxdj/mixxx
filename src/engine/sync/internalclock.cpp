@@ -13,8 +13,8 @@ namespace {
 const mixxx::Logger kLogger("InternalClock");
 } // namespace
 
-InternalClock::InternalClock(const char* pGroup, SyncableListener* pEngineSync)
-        : m_group(pGroup),
+InternalClock::InternalClock(const QString& group, SyncableListener* pEngineSync)
+        : m_group(group),
           m_pEngineSync(pEngineSync),
           m_mode(SYNC_NONE),
           m_iOldSampleRate(44100),
@@ -28,8 +28,8 @@ InternalClock::InternalClock(const char* pGroup, SyncableListener* pEngineSync)
     // and bpm_down controls.
     // bpm_up / bpm_down steps by 1
     // bpm_up_small / bpm_down_small steps by 0.1
-    m_pClockBpm.reset(new ControlLinPotmeter(ConfigKey(m_group, "bpm"),
-                                          1, 200, 1, 0.1, true));
+    m_pClockBpm.reset(
+            new ControlLinPotmeter(ConfigKey(m_group, "bpm"), 1, 200, 1, 0.1, true));
     connect(m_pClockBpm.data(), &ControlObject::valueChanged,
             this, &InternalClock::slotBpmChanged,
             Qt::DirectConnection);
@@ -41,11 +41,10 @@ InternalClock::InternalClock(const char* pGroup, SyncableListener* pEngineSync)
             Qt::DirectConnection);
 
     m_pSyncMasterEnabled.reset(
-        new ControlPushButton(ConfigKey(pGroup, "sync_master")));
+            new ControlPushButton(ConfigKey(m_group, "sync_master")));
     m_pSyncMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
     m_pSyncMasterEnabled->connectValueChangeRequest(
-        this, &InternalClock::slotSyncMasterEnabledChangeRequest,
-        Qt::DirectConnection);
+            this, &InternalClock::slotSyncMasterEnabledChangeRequest, Qt::DirectConnection);
 }
 
 InternalClock::~InternalClock() {
