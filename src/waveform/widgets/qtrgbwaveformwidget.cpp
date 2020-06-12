@@ -14,7 +14,7 @@
 #include "waveform/renderers/waveformrenderbeat.h"
 #include "waveform/sharedglcontext.h"
 
-QtRGBWaveformWidget::QtRGBWaveformWidget(const char* group, QWidget* parent)
+QtRGBWaveformWidget::QtRGBWaveformWidget(const QString& group, QWidget* parent)
         : QGLWidget(parent, SharedGLContext::getWidget()),
           WaveformWidgetAbstract(group) {
     qDebug() << "Created QGLWidget. Context"

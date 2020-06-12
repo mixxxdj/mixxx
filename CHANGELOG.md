@@ -75,6 +75,11 @@
   * Note: The old SCons build system is still supported for 2.3. We will be removing it for Mixxx 2.4.
 * Make Mixxx compile even though `QT_NO_OPENGL` or `QT_OPENGL_ES_2` is defined (fixes build on Raspberry Pi) [lp:1863440](https://bugs.launchpad.net/mixxx/+bug/1863440) [#2504](https://github.com/mixxxdj/mixxx/pull/2504)
 
+## [2.2.5](https://launchpad.net/mixxx/+milestone/2.2.5) (Unreleased)
+
+* Add controller mapping for Hercules DJControl Inpulse 200 [#2542](https://github.com/mixxxdj/mixxx/pull/2542)
+* Add controller mapping for Hercules DJControl Jogvision [#2370](https://github.com/mixxxdj/mixxx/pull/2370)
+
 ## [2.2.4](https://launchpad.net/mixxx/+milestone/2.2.4) (Unreleased)
 
 * Store default recording format after "Restore Defaults" lp:1857806 #2414
