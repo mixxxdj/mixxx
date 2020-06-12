@@ -1,6 +1,7 @@
 // ****************************************************************************
 // * Mixxx mapping script file for the Hercules DJControl Jogvision.
 // * Author: DJ Phatso, contributions by Kerrick Staley and David TV
+// * Version 1.16 (Jun 2020)
 // * Version 1.15 (Jun 2020)
 // * Version 1.14 (Jun 2020)
 // * Version 1.13 (May 2020)
@@ -16,6 +17,9 @@
 // * Version 1.1 (March 2019)
 // * Forum: https://www.mixxx.org/forums/viewtopic.php?f=7&t=12580
 // * Wiki: https://www.mixxx.org/wiki/doku.php/hercules_dj_control_jogvision
+//
+// Changes to v1.16
+// - Added a "beatDetection" variable to use old school one (way better beat match, but no song position relative)
 //
 // Changes to v1.15
 // - Reset shift-"Loop ON", to do what Hercules wanted it to be: select FX2 for given channel. Now,
@@ -83,6 +87,7 @@
 // ****************************************************************************
 // User available variables (you may modify them)
 var beatActiveMode = "normal"; // normal (default), reverse, blink, follow, alternate
+var beatDetection = "normal"; // normal (default), follow (song position accurate, beat much less accurate)
 var initUpdateEffects = 1; // 1 (default) - set some effects values at startup; 0 - do not touch effects at startup
 
 // ****************************************************************************
@@ -94,6 +99,7 @@ var beta = alpha / 16;
 var speed = 33 + 1/3;
 var ledSpeed = (speed / 60) * 127;
 var masterLeds = 0x90;
+var ledRotationTimer = 0;
 var beatMax;
 if (beatActiveMode.match(/^(?:normal|reverse)$/g)) {
     beatMax = 4;
@@ -127,12 +133,14 @@ DJCJV.updateJogLeds = function(value, group, control) {
     DJCJV.Channel[group].beatsPassed = Math.round((value * engine.getValue(group, "duration")) * (engine.getValue(group, "bpm") / 60));
     DJCJV.Channel[group].beatPosition = Math.floor((DJCJV.Channel[group].beatsPassed % beatMax)) + 1;
 
-    // If on beat_active, update the beat leds
-    if (engine.getValue(group, "beat_active") || ((engine.getValue(group, "beat_closest") < engine.getValue(group, "beat_next"))) && (!DJCJV.Channel[group].onBeat)) {
-        DJCJV.beatActive(0, group);
-        DJCJV.Channel[group].onBeat = true;
-    } else if (engine.getValue(group, "beat_closest") >= engine.getValue(group, "beat_next")) {
-        DJCJV.Channel[group].onBeat = false;
+    if (beatDetection === "follow") {
+        // If on beat_active, update the beat leds
+        if (engine.getValue(group, "beat_active") || ((engine.getValue(group, "beat_closest") < engine.getValue(group, "beat_next"))) && (!DJCJV.Channel[group].onBeat)) {
+            DJCJV.beatActive(0, group);
+            DJCJV.Channel[group].onBeat = true;
+        } else if (engine.getValue(group, "beat_closest") >= engine.getValue(group, "beat_next")) {
+            DJCJV.Channel[group].onBeat = false;
+        }
     }
 };
 
@@ -194,6 +202,13 @@ DJCJV.init = function(id) {
     // Enable jogs' outer leds rotation and Inner LEDs song position update
     engine.connectControl("[Channel1]", "playposition", "DJCJV.updateJogLeds");
     engine.connectControl("[Channel2]", "playposition", "DJCJV.updateJogLeds");
+    if (beatDetection === "normal") {
+        // Connect the beat_active with beat leds
+        engine.connectControl("[Channel1]", "beat_active", "DJCJV.beatActive");
+        engine.connectControl("[Channel2]", "beat_active", "DJCJV.beatActive");
+        engine.connectControl("[Channel1]", "stop", "DJCJV.beatInactive");
+        engine.connectControl("[Channel2]", "stop", "DJCJV.beatInactive");
+    }
 
     // Ask the controller to send all current knob/slider values over MIDI, which will update the corresponding GUI controls in MIXXX.
     midi.sendShortMsg(0xB0, 0x7F, on);
@@ -203,6 +218,10 @@ DJCJV.init = function(id) {
 
 // Finalization
 DJCJV.shutdown = function() {
+    if (ledRotationTimer) {
+        engine.stopTimer(ledRotationTimer);
+        ledRotationTimer = 0;
+    }
     // Set all LED states to off
     midi.sendShortMsg(DJCJV.Channel["[Channel1]"].deck, 0x7F, off);
     midi.sendShortMsg(DJCJV.Channel["[Channel2]"].deck, 0x7F, off);
@@ -247,6 +266,15 @@ DJCJV.beatActive = function(value, group, _control) {
         midi.sendShortMsg(led, 0x3C, pos === 2 ? on : off);
         midi.sendShortMsg(led, 0x3D, pos === 2 ? on : off);
     }
+};
+// Beat led DEACTIVATE (off all)
+DJCJV.beatInactive = function(value, group, _control) {
+    midi.sendShortMsg(DJCJV.Channel[group].central, 0x3A, off);
+    midi.sendShortMsg(DJCJV.Channel[group].central, 0x3B, off);
+    midi.sendShortMsg(DJCJV.Channel[group].central, 0x3C, off);
+    midi.sendShortMsg(DJCJV.Channel[group].central, 0x3D, off);
+
+    DJCJV.Channel[group].beatPosition = 1;
 };
 
 // Jogwheels inner LED display - Play position
