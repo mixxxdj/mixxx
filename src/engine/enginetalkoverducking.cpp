@@ -4,10 +4,10 @@
 #define DUCK_THRESHOLD 0.1
 
 EngineTalkoverDucking::EngineTalkoverDucking(
-        UserSettingsPointer pConfig, const char* group)
-    : EngineSideChainCompressor(group),
-      m_pConfig(pConfig),
-      m_group(group) {
+        UserSettingsPointer pConfig, const QString& group)
+        : EngineSideChainCompressor(group),
+          m_pConfig(pConfig),
+          m_group(group) {
     m_pMasterSampleRate = new ControlProxy(m_group, "samplerate", this);
     m_pMasterSampleRate->connectValueChanged(this, &EngineTalkoverDucking::slotSampleRateChanged,
                                              Qt::DirectConnection);

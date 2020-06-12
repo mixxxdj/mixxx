@@ -91,7 +91,7 @@ class EngineControl : public QObject {
     EngineMaster* getEngineMaster();
     EngineBuffer* getEngineBuffer();
 
-    QString m_group;
+    const QString m_group;
     UserSettingsPointer m_pConfig;
 
   private:

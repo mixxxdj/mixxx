@@ -2,7 +2,7 @@
 
 #include "engine/enginesidechaincompressor.h"
 
-EngineSideChainCompressor::EngineSideChainCompressor(const char* group)
+EngineSideChainCompressor::EngineSideChainCompressor(const QString& group)
         : m_compressRatio(1.0),
           m_bAboveThreshold(false),
           m_threshold(1.0),
