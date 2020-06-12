@@ -794,6 +794,6 @@ TrackPointer BaseTrackTableModel::getTrackByRef(
 }
 
 bool BaseTrackTableModel::hasCapabilities(
-        TrackModel::CapabilitiesFlags capabilities) const {
-    return (getCapabilities() & capabilities) == capabilities;
+        TrackModel::CapabilitiesFlags caps) const {
+    return (getCapabilities() & caps) == caps;
 }

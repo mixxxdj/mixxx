@@ -23,12 +23,12 @@
 
 class EngineSyncTest : public MockedEngineBackendTest {
   public:
-    std::string getMasterGroup() {
+    QString getMasterGroup() {
         Syncable* pMasterSyncable = m_pEngineSync->getMasterSyncable();
         if (pMasterSyncable) {
-            return pMasterSyncable->getGroup().toStdString();
+            return pMasterSyncable->getGroup();
         }
-        return "";
+        return QString();
     }
     bool isExplicitMaster(QString group) {
         return isMaster(group, true);
@@ -109,7 +109,7 @@ class EngineSyncTest : public MockedEngineBackendTest {
                 return false;
             }
         }
-        if (getMasterGroup() != group.toStdString()) {
+        if (getMasterGroup() != group) {
             return false;
         }
 

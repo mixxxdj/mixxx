@@ -1,10 +1,9 @@
-#include "library/crate/cratefeaturehelper.h"
+#include "library/trackset/crate/cratefeaturehelper.h"
 
 #include <QInputDialog>
 #include <QLineEdit>
 
 #include "library/trackcollection.h"
-
 
 CrateFeatureHelper::CrateFeatureHelper(
         TrackCollection* pTrackCollection,
@@ -21,8 +20,8 @@ QString CrateFeatureHelper::proposeNameForNewCrate(
     do {
         if (suffixCounter++ > 0) {
             // Append suffix " 2", " 3", ...
-            proposedName = QString("%1 %2").arg(
-                    initialName, QString::number(suffixCounter));
+            proposedName = QStringLiteral("%1 %2")
+                                   .arg(initialName, suffixCounter);
         } else {
             proposedName = initialName;
         }
@@ -44,7 +43,8 @@ CrateId CrateFeatureHelper::createEmptyCrate() {
                         tr("Enter name for new crate:"),
                         QLineEdit::Normal,
                         proposedCrateName,
-                        &ok).trimmed();
+                        &ok)
+                        .trimmed();
         if (!ok) {
             return CrateId();
         }
@@ -75,7 +75,7 @@ CrateId CrateFeatureHelper::createEmptyCrate() {
     } else {
         DEBUG_ASSERT(!newCrateId.isValid());
         qWarning() << "Failed to create new crate"
-                << "->"  << newCrate.getName();
+                   << "->" << newCrate.getName();
         QMessageBox::warning(
                 nullptr,
                 tr("Creating Crate Failed"),
@@ -87,19 +87,20 @@ CrateId CrateFeatureHelper::createEmptyCrate() {
 CrateId CrateFeatureHelper::duplicateCrate(const Crate& oldCrate) {
     const QString proposedCrateName =
             proposeNameForNewCrate(
-                    QString("%1 %2").arg(
-                            oldCrate.getName(), tr("copy" , "[noun]")));
+                    QStringLiteral("%1 %2")
+                            .arg(oldCrate.getName(), tr("copy", "//:")));
     Crate newCrate;
     for (;;) {
         bool ok = false;
         auto newName =
                 QInputDialog::getText(
                         nullptr,
-                         tr("Duplicate Crate"),
-                         tr("Enter name for new crate:"),
-                         QLineEdit::Normal,
-                         proposedCrateName,
-                         &ok).trimmed();
+                        tr("Duplicate Crate"),
+                        tr("Enter name for new crate:"),
+                        QLineEdit::Normal,
+                        proposedCrateName,
+                        &ok)
+                        .trimmed();
         if (!ok) {
             return CrateId();
         }
@@ -139,14 +140,14 @@ CrateId CrateFeatureHelper::duplicateCrate(const Crate& oldCrate) {
         }
         if (m_pTrackCollection->addCrateTracks(newCrateId, trackIds)) {
             qDebug() << "Duplicated crate"
-                << oldCrate << "->" << newCrate;
+                     << oldCrate << "->" << newCrate;
         } else {
             qWarning() << "Failed to copy tracks from"
-                    << oldCrate << "into" << newCrate;
+                       << oldCrate << "into" << newCrate;
         }
     } else {
         qWarning() << "Failed to duplicate crate"
-                << oldCrate << "->" << newCrate.getName();
+                   << oldCrate << "->" << newCrate.getName();
         QMessageBox::warning(
                 nullptr,
                 tr("Duplicating Crate Failed"),

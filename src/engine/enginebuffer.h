@@ -249,7 +249,7 @@ class EngineBuffer : public EngineObject {
     void processTrackLocked(CSAMPLE* pOutput, const int iBufferSize, int sample_rate);
 
     // Holds the name of the control group
-    QString m_group;
+    const QString m_group;
     UserSettingsPointer m_pConfig;
 
     friend class CueControlTest;
