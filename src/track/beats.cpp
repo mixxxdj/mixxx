@@ -569,7 +569,7 @@ TimeSignature Beats::getSignatureNew(FrameNum frame) const {
     if (frame == 0) {
         auto beat = m_beats.cbegin();
         if (beat->has_signature()) {
-            result.setBeats(beat->signature().beats());
+            result.setBeats(beat->signature().beats_per_bar());
             result.setNoteValue(beat->signature().note_value());
         }
     } else {
@@ -578,7 +578,7 @@ TimeSignature Beats::getSignatureNew(FrameNum frame) const {
                 beat != m_beats.end() && beat->frame_position() < frame;
                 beat++) {
             if (beat->has_signature()) {
-                result.setBeats(beat->signature().beats());
+                result.setBeats(beat->signature().beats_per_bar());
                 result.setNoteValue(beat->signature().note_value());
             }
         }
@@ -608,7 +608,7 @@ void Beats::setSignatureNew(TimeSignature sig, FrameNum frame) {
     }
 
     // Sets the TimeSignature value
-    beat->mutable_signature()->set_beats(sig.getBeats());
+    beat->mutable_signature()->set_beats_per_bar(sig.getBeats());
     beat->mutable_signature()->set_note_value(sig.getNoteValue());
     locker.unlock();
     emit(updated());
