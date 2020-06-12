@@ -26,7 +26,7 @@ const QString kEffectsXmlFile = "effects.xml";
 
 EffectsManager::EffectsManager(
         UserSettingsPointer pConfig,
-        ChannelHandleFactory* pChannelHandleFactory)
+        std::shared_ptr<ChannelHandleFactory> pChannelHandleFactory)
         : m_pConfig(pConfig),
           m_pChannelHandleFactory(pChannelHandleFactory),
           m_loEqFreq(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040),

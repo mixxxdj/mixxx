@@ -4,6 +4,7 @@
 
 class BaseTrackSetFeature : public LibraryFeature {
     Q_OBJECT
+
   public:
     BaseTrackSetFeature(Library* pLibrary,
             UserSettingsPointer pConfig,
@@ -17,4 +18,6 @@ class BaseTrackSetFeature : public LibraryFeature {
 
   protected:
     const QString m_rootViewName;
+
+    TreeItemModel m_childModel;
 };

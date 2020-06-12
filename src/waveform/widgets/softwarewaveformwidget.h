@@ -23,7 +23,7 @@ class SoftwareWaveformWidget : public QWidget, public WaveformWidgetAbstract {
     virtual void paintEvent(QPaintEvent* event);
 
   private:
-    SoftwareWaveformWidget(const char* group, QWidget* parent);
+    SoftwareWaveformWidget(const QString& groupp, QWidget* parent);
     friend class WaveformWidgetFactory;
 };
 

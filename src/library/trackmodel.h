@@ -1,14 +1,13 @@
-#ifndef TRACKMODEL_H
-#define TRACKMODEL_H
+#pragma once
 
-#include <QList>
-#include <QLinkedList>
 #include <QItemDelegate>
+#include <QList>
+#include <QVector>
 #include <QtSql>
 
+#include "library/dao/settingsdao.h"
 #include "track/track.h"
 #include "track/trackref.h"
-#include "library/dao/settingsdao.h"
 
 /** Pure virtual (abstract) class that provides an interface for data models which
     display track lists. */
@@ -29,26 +28,27 @@ class TrackModel {
     // These enums are the bits in a bitvector. Any individual column cannot
     // have a value other than 0, 1, 2, 4, or 8!
     enum Capabilities {
-        TRACKMODELCAPS_NONE              = 0x00000,
-        TRACKMODELCAPS_REORDER           = 0x00001,
-        TRACKMODELCAPS_RECEIVEDROPS      = 0x00002,
-        TRACKMODELCAPS_ADDTOPLAYLIST     = 0x00004,
-        TRACKMODELCAPS_ADDTOCRATE        = 0x00008,
-        TRACKMODELCAPS_ADDTOAUTODJ       = 0x00010,
-        TRACKMODELCAPS_LOCKED            = 0x00020,
-        TRACKMODELCAPS_EDITMETADATA      = 0x00040,
-        TRACKMODELCAPS_LOADTODECK        = 0x00080,
-        TRACKMODELCAPS_LOADTOSAMPLER     = 0x00100,
-        TRACKMODELCAPS_LOADTOPREVIEWDECK = 0x00200,
-        TRACKMODELCAPS_REMOVE            = 0x00400,
-        TRACKMODELCAPS_RESETPLAYED       = 0x02000,
-        TRACKMODELCAPS_HIDE              = 0x04000,
-        TRACKMODELCAPS_UNHIDE            = 0x08000,
-        TRACKMODELCAPS_PURGE             = 0x10000,
-        TRACKMODELCAPS_REMOVE_PLAYLIST   = 0x20000,
-        TRACKMODELCAPS_REMOVE_CRATE      = 0x40000,
+        TRACKMODELCAPS_NONE = 0x00000u,
+        TRACKMODELCAPS_REORDER = 0x00001u,
+        TRACKMODELCAPS_RECEIVEDROPS = 0x00002u,
+        TRACKMODELCAPS_ADDTOPLAYLIST = 0x00004u,
+        TRACKMODELCAPS_ADDTOCRATE = 0x00008u,
+        TRACKMODELCAPS_ADDTOAUTODJ = 0x00010u,
+        TRACKMODELCAPS_LOCKED = 0x00020u,
+        TRACKMODELCAPS_EDITMETADATA = 0x00040u,
+        TRACKMODELCAPS_LOADTODECK = 0x00080u,
+        TRACKMODELCAPS_LOADTOSAMPLER = 0x00100u,
+        TRACKMODELCAPS_LOADTOPREVIEWDECK = 0x00200u,
+        TRACKMODELCAPS_REMOVE = 0x00400u,
+        TRACKMODELCAPS_RESETPLAYED = 0x02000u,
+        TRACKMODELCAPS_HIDE = 0x04000u,
+        TRACKMODELCAPS_UNHIDE = 0x08000u,
+        TRACKMODELCAPS_PURGE = 0x10000u,
+        TRACKMODELCAPS_REMOVE_PLAYLIST = 0x20000u,
+        TRACKMODELCAPS_REMOVE_CRATE = 0x40000u,
     };
-    typedef int CapabilitiesFlags; /** Enables us to do ORing */
+    /// Enables the use of bitwise operators
+    typedef unsigned int CapabilitiesFlags;
 
     enum SortColumnId {
         SORTCOLUMN_INVALID = -1,
@@ -102,7 +102,7 @@ class TrackModel {
 
     // Gets the rows of the track in the current result set. Returns an
     // empty list if the track ID is not present in the result set.
-    virtual const QLinkedList<int> getTrackRows(TrackId trackId) const = 0;
+    virtual const QVector<int> getTrackRows(TrackId trackId) const = 0;
 
     bool isTrackModel() { return true;}
     virtual void search(const QString& searchText, const QString& extraFilter=QString()) = 0;
@@ -147,8 +147,8 @@ class TrackModel {
     virtual TrackModel::CapabilitiesFlags getCapabilities() const {
         return TRACKMODELCAPS_NONE;
     }
-    virtual bool hasCapabilities(TrackModel::CapabilitiesFlags flags) const {
-        Q_UNUSED(flags);
+    virtual bool hasCapabilities(TrackModel::CapabilitiesFlags caps) const {
+        Q_UNUSED(caps);
         return false;
     }
     virtual QString getModelSetting(QString name) {
@@ -207,5 +207,3 @@ class TrackModel {
     int m_iDefaultSortColumn;
     Qt::SortOrder m_eDefaultSortOrder;
 };
-
-#endif

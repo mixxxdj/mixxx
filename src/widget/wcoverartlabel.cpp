@@ -50,7 +50,11 @@ void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
         setPixmap(m_loadedCover);
     }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+    QSize frameSize = pixmap(Qt::ReturnByValue).size() / getDevicePixelRatioF(this);
+#else
     QSize frameSize = pixmap()->size() / getDevicePixelRatioF(this);
+#endif
     frameSize += QSize(2,2); // margin
     setMinimumSize(frameSize);
     setMaximumSize(frameSize);

@@ -1,22 +1,19 @@
-#ifndef MIXXX_CRATESTORAGE_H
-#define MIXXX_CRATESTORAGE_H
+#pragma once
 
-
-#include <QObject>
 #include <QList>
+#include <QObject>
 #include <QSet>
 
-#include "library/crate/cratesummary.h"
+#include "library/trackset/crate/cratesummary.h"
 #include "track/trackid.h"
-
 #include "util/db/fwdsqlqueryselectresult.h"
-#include "util/db/sqlsubselectmode.h"
 #include "util/db/sqlstorage.h"
-
+#include "util/db/sqlsubselectmode.h"
 
 class CrateQueryFields {
   public:
-    CrateQueryFields() {}
+    CrateQueryFields() {
+    }
     explicit CrateQueryFields(const FwdSqlQuery& query);
     virtual ~CrateQueryFields() = default;
 
@@ -44,11 +41,11 @@ class CrateQueryFields {
     DbFieldIndex m_iAutoDjSource;
 };
 
-class CrateSelectResult: public FwdSqlQuerySelectResult {
-public:
+class CrateSelectResult : public FwdSqlQuerySelectResult {
+  public:
     CrateSelectResult(CrateSelectResult&& other)
-        : FwdSqlQuerySelectResult(std::move(other)),
-          m_queryFields(std::move(other.m_queryFields)) {
+            : FwdSqlQuerySelectResult(std::move(other)),
+              m_queryFields(std::move(other.m_queryFields)) {
     }
     ~CrateSelectResult() override = default;
 
@@ -61,18 +58,18 @@ public:
         }
     }
 
-private:
+  private:
     friend class CrateStorage;
     CrateSelectResult() = default;
     explicit CrateSelectResult(FwdSqlQuery&& query)
-        : FwdSqlQuerySelectResult(std::move(query)),
-          m_queryFields(FwdSqlQuerySelectResult::query()) {
+            : FwdSqlQuerySelectResult(std::move(query)),
+              m_queryFields(FwdSqlQuerySelectResult::query()) {
     }
 
     CrateQueryFields m_queryFields;
 };
 
-class CrateSummaryQueryFields: public CrateQueryFields {
+class CrateSummaryQueryFields : public CrateQueryFields {
   public:
     CrateSummaryQueryFields() = default;
     explicit CrateSummaryQueryFields(const FwdSqlQuery& query);
@@ -104,11 +101,11 @@ class CrateSummaryQueryFields: public CrateQueryFields {
     DbFieldIndex m_iTrackDuration;
 };
 
-class CrateSummarySelectResult: public FwdSqlQuerySelectResult {
-public:
+class CrateSummarySelectResult : public FwdSqlQuerySelectResult {
+  public:
     CrateSummarySelectResult(CrateSummarySelectResult&& other)
-        : FwdSqlQuerySelectResult(std::move(other)),
-          m_queryFields(std::move(other.m_queryFields)) {
+            : FwdSqlQuerySelectResult(std::move(other)),
+              m_queryFields(std::move(other.m_queryFields)) {
     }
     ~CrateSummarySelectResult() override = default;
 
@@ -121,12 +118,12 @@ public:
         }
     }
 
-private:
+  private:
     friend class CrateStorage;
     CrateSummarySelectResult() = default;
     explicit CrateSummarySelectResult(FwdSqlQuery&& query)
-        : FwdSqlQuerySelectResult(std::move(query)),
-          m_queryFields(FwdSqlQuerySelectResult::query()) {
+            : FwdSqlQuerySelectResult(std::move(query)),
+              m_queryFields(FwdSqlQuerySelectResult::query()) {
     }
 
     CrateSummaryQueryFields m_queryFields;
@@ -164,11 +161,11 @@ class TrackQueryFields {
     DbFieldIndex m_iTrackId;
 };
 
-class CrateTrackSelectResult: public FwdSqlQuerySelectResult {
-public:
+class CrateTrackSelectResult : public FwdSqlQuerySelectResult {
+  public:
     CrateTrackSelectResult(CrateTrackSelectResult&& other)
-        : FwdSqlQuerySelectResult(std::move(other)),
-          m_queryFields(std::move(other.m_queryFields)) {
+            : FwdSqlQuerySelectResult(std::move(other)),
+              m_queryFields(std::move(other.m_queryFields)) {
     }
     ~CrateTrackSelectResult() override = default;
 
@@ -179,22 +176,22 @@ public:
         return m_queryFields.trackId(query());
     }
 
-private:
+  private:
     friend class CrateStorage;
     CrateTrackSelectResult() = default;
     explicit CrateTrackSelectResult(FwdSqlQuery&& query)
-        : FwdSqlQuerySelectResult(std::move(query)),
-          m_queryFields(FwdSqlQuerySelectResult::query()) {
+            : FwdSqlQuerySelectResult(std::move(query)),
+              m_queryFields(FwdSqlQuerySelectResult::query()) {
     }
 
     CrateTrackQueryFields m_queryFields;
 };
 
-class TrackSelectResult: public FwdSqlQuerySelectResult {
-public:
+class TrackSelectResult : public FwdSqlQuerySelectResult {
+  public:
     TrackSelectResult(TrackSelectResult&& other)
-        : FwdSqlQuerySelectResult(std::move(other)),
-          m_queryFields(std::move(other.m_queryFields)) {
+            : FwdSqlQuerySelectResult(std::move(other)),
+              m_queryFields(std::move(other.m_queryFields)) {
     }
     ~TrackSelectResult() override = default;
 
@@ -202,18 +199,18 @@ public:
         return m_queryFields.trackId(query());
     }
 
-private:
+  private:
     friend class CrateStorage;
     TrackSelectResult() = default;
     explicit TrackSelectResult(FwdSqlQuery&& query)
-        : FwdSqlQuerySelectResult(std::move(query)),
-          m_queryFields(FwdSqlQuerySelectResult::query()) {
+            : FwdSqlQuerySelectResult(std::move(query)),
+              m_queryFields(FwdSqlQuerySelectResult::query()) {
     }
 
     TrackQueryFields m_queryFields;
 };
 
-class CrateStorage: public virtual /*implements*/ SqlStorage {
+class CrateStorage : public virtual /*implements*/ SqlStorage {
   public:
     CrateStorage() = default;
     ~CrateStorage() override = default;
@@ -263,7 +260,6 @@ class CrateStorage: public virtual /*implements*/ SqlStorage {
     bool onPurgingTracks(
             const QList<TrackId>& trackIds);
 
-
     /////////////////////////////////////////////////////////////////////////
     // Crate read operations (read-only, const)
     /////////////////////////////////////////////////////////////////////////
@@ -282,7 +278,7 @@ class CrateStorage: public virtual /*implements*/ SqlStorage {
     //  - case-insensitive
     //  - locale-aware
     CrateSelectResult selectCrates() const; // all crates
-    CrateSelectResult selectCratesByIds( // subset of crates
+    CrateSelectResult selectCratesByIds(    // subset of crates
             const QString& subselectForCrateIds,
             SqlSubselectMode subselectMode) const;
 
@@ -304,7 +300,7 @@ class CrateStorage: public virtual /*implements*/ SqlStorage {
             CrateId crateId); // no db access
 
     QString formatQueryForTrackIdsByCrateNameLike(
-            const QString& crateNameLike) const; // no db access
+            const QString& crateNameLike) const;      // no db access
     static QString formatQueryForTrackIdsWithCrate(); // no db access
     // Select the track ids of a crate or the crate ids of a track respectively.
     // The results are sorted (ascending) by the target id, i.e. the id that is
@@ -344,6 +340,3 @@ class CrateStorage: public virtual /*implements*/ SqlStorage {
 
     QSqlDatabase m_database;
 };
-
-
-#endif // MIXXX_CRATESTORAGE_H

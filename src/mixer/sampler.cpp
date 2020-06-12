@@ -13,6 +13,3 @@ Sampler::Sampler(QObject* pParent,
                   /*defaultHeadphones*/ false,
                   /*primaryDeck*/ false) {
 }
-
-Sampler::~Sampler() {
-}

@@ -140,7 +140,7 @@ class IAudioSourceReader {
 // closed upon destruction.
 class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSourceReader {
   public:
-    virtual ~AudioSource() = default;
+    ~AudioSource() override = default;
 
     // All sources are required to produce a signal of frames
     // where each frame contains samples from all channels that are

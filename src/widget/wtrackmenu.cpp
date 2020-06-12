@@ -7,7 +7,6 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "library/coverartutils.h"
-#include "library/crate/cratefeaturehelper.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/trackschema.h"
 #include "library/dlgtagfetcher.h"
@@ -19,6 +18,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/trackmodel.h"
+#include "library/trackset/crate/cratefeaturehelper.h"
 #include "mixer/playermanager.h"
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
@@ -737,8 +737,6 @@ TrackPointerList WTrackMenu::getTrackPointers(
     TrackPointerList trackPointers;
     trackPointers.reserve(m_trackIndexList.size());
     for (const auto& index : m_trackIndexList) {
-        DEBUG_ASSERT(maxSize < 0 ||
-                maxSize <= trackPointers.size());
         if (maxSize >= 0 && maxSize <= trackPointers.size()) {
             return trackPointers;
         }

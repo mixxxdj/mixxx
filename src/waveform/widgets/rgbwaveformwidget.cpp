@@ -11,7 +11,7 @@
 #include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrenderbeat.h"
 
-RGBWaveformWidget::RGBWaveformWidget(const char* group, QWidget* parent)
+RGBWaveformWidget::RGBWaveformWidget(const QString& group, QWidget* parent)
         : QWidget(parent),
           WaveformWidgetAbstract(group) {
     addRenderer<WaveformRenderBackground>();

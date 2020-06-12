@@ -33,7 +33,7 @@ class EngineSideChain : public QThread, public AudioDestination {
     Q_OBJECT
   public:
     EngineSideChain(UserSettingsPointer pConfig, CSAMPLE* sidechainMix);
-    virtual ~EngineSideChain();
+    ~EngineSideChain() override;
 
     // Not thread-safe, wait-free. Submit buffer of samples to the sidechain for
     // processing. Should only be called from a single writer thread (typically

@@ -12,10 +12,9 @@
 
 #include "util/performancetimer.h"
 
-GLRGBWaveformWidget::GLRGBWaveformWidget(const char* group, QWidget* parent)
+GLRGBWaveformWidget::GLRGBWaveformWidget(const QString& group, QWidget* parent)
         : QGLWidget(parent, SharedGLContext::getWidget()),
           WaveformWidgetAbstract(group) {
-
     qDebug() << "Created QGLWidget. Context"
              << "Valid:" << context()->isValid()
              << "Sharing:" << context()->isSharing();

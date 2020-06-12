@@ -10,9 +10,13 @@ let inherit (nixroot) stdenv pkgs lib
     clang-tools
     cmake
     fetchurl
-    nix-gitignore
+    ffmpeg
     gdb
-    python3;
+    libmodplug
+    mp4v2
+    nix-gitignore
+    python3
+    wavpack;
 
   git-clang-format = stdenv.mkDerivation {
     name = "git-clang-format";
@@ -46,7 +50,7 @@ let inherit (nixroot) stdenv pkgs lib
   '';
 
   shell-build = nixroot.writeShellScriptBin "build" ''
-    if [ -d "$cbuild" ]; then
+    if [ ! -d "cbuild" ]; then
       >&2 echo "First you have to run configure."
       exit 1
     fi
@@ -55,11 +59,19 @@ let inherit (nixroot) stdenv pkgs lib
   '';
 
   shell-run = nixroot.writeShellScriptBin "run" ''
+    if [ ! -f "cbuild/mixxx" ]; then
+      >&2 echo "First you have to run build."
+      exit 1
+    fi
     cd cbuild
     ./mixxx --resourcePath res/ "$@"
   '';
 
   shell-debug = nixroot.writeShellScriptBin "debug" ''
+    if [ ! -f "cbuild/mixxx" ]; then
+      >&2 echo "First you have to run build."
+      exit 1
+    fi
     cd cbuild
     gdb --args ./mixxx --resourcePath res/ "$@"
   '';
@@ -102,6 +114,10 @@ in stdenv.mkDerivation rec {
     libusb1 libvorbis libebur128 pkgconfig portaudio portmidi protobuf qt5.full
     rubberband sqlite taglib soundtouch vamp.vampSDK opusfile upower hidapi
     git glib x11 libGLU lilv lame lv2 makeWrapper qt5.qtbase
+    ffmpeg
+    libmodplug
+    mp4v2
+    wavpack
   ] ++ allLv2Plugins;
 
   meta = with nixroot.stdenv.lib; {

@@ -1,5 +1,7 @@
 #include "library/coverart.h"
 
+#include <QDebugStateSaver>
+
 #include "library/coverartutils.h"
 #include "util/debug.h"
 #include "util/logger.h"
@@ -83,19 +85,27 @@ QDebug operator<<(QDebug dbg, const CoverInfoRelative& infoRelative) {
             .arg(coverInfoRelativeToString(infoRelative));
 }
 
-QImage CoverInfo::loadImage(
+CoverInfo::LoadedImage CoverInfo::loadImage(
         const SecurityTokenPointer& pTrackLocationToken) const {
+    LoadedImage loadedImage(LoadedImage::Result::ErrorUnknown);
     if (type == CoverInfo::METADATA) {
         VERIFY_OR_DEBUG_ASSERT(!trackLocation.isEmpty()) {
-            kLogger.warning()
-                    << "loadImage"
-                    << type
-                    << "cover with empty trackLocation";
-            return QImage();
+            loadedImage.result = LoadedImage::Result::ErrorMetadataWithEmptyTrackLocation;
+            return loadedImage;
         }
-        return CoverArtUtils::extractEmbeddedCover(
+        loadedImage.filePath = trackLocation;
+        loadedImage.image = CoverArtUtils::extractEmbeddedCover(
                 TrackFile(trackLocation),
                 pTrackLocationToken);
+        if (loadedImage.image.isNull()) {
+            // TODO: extractEmbeddedCover() should indicate if no image
+            // is available or if loading the embedded image failed.
+            // Until then we assume optimistically that no image is
+            // available instead of presuming that an error occurred.
+            loadedImage.result = LoadedImage::Result::NoImage;
+        } else {
+            loadedImage.result = LoadedImage::Result::Ok;
+        }
     } else if (type == CoverInfo::FILE) {
         auto coverFile = QFileInfo(coverLocation);
         if (coverFile.isRelative()) {
@@ -104,13 +114,9 @@ QImage CoverInfo::loadImage(
                 // must have a valid location, i.e. a file path. Most
                 // likely a programming error, but might also be caused
                 // by yet unknown circumstances.
-                kLogger.warning()
-                        << "loadImage"
-                        << type
-                        << "cover with empty track location"
-                        << "and relative file path:"
-                        << coverFile.filePath();
-                return QImage();
+                loadedImage.result = LoadedImage::Result::
+                        ErrorRelativeFilePathWithEmptyTrackLocation;
+                return loadedImage;
             }
             // Compose track directory with relative path
             const auto trackFile = TrackFile(trackLocation);
@@ -120,28 +126,28 @@ QImage CoverInfo::loadImage(
                     coverLocation);
         }
         DEBUG_ASSERT(coverFile.isAbsolute());
+        loadedImage.filePath = coverFile.filePath();
         if (!coverFile.exists()) {
-            // Disabled because this code can cause high CPU and thus possibly
-            // xruns as it might print the warning repeatedly.
-            // ToDo: Print warning about missing cover image only once.
-            //            kLogger.warning()
-            //                    << "loadImage"
-            //                    << type
-            //                    << "cover does not exist:"
-            //                    << coverFile.filePath();
-            return QImage();
+            loadedImage.result = LoadedImage::Result::ErrorFilePathDoesNotExist;
+            return loadedImage;
         }
         SecurityTokenPointer pToken =
                 Sandbox::openSecurityToken(
                         coverFile,
                         true);
-        return QImage(coverFile.filePath());
+        if (loadedImage.image.load(loadedImage.filePath)) {
+            DEBUG_ASSERT(!loadedImage.image.isNull());
+            loadedImage.result = LoadedImage::Result::Ok;
+        } else {
+            DEBUG_ASSERT(loadedImage.image.isNull());
+            loadedImage.result = LoadedImage::Result::ErrorLoadingFailed;
+        }
     } else if (type == CoverInfo::NONE) {
-        return QImage();
+        loadedImage.result = LoadedImage::Result::NoImage;
     } else {
         DEBUG_ASSERT(!"unhandled CoverInfo::Type");
-        return QImage();
     }
+    return loadedImage;
 }
 
 bool CoverInfo::refreshImageHash(
@@ -154,8 +160,8 @@ bool CoverInfo::refreshImageHash(
         return false;
     }
     QImage image = loadedImage;
-    if (loadedImage.isNull()) {
-        image = loadImage(pTrackLocationToken);
+    if (image.isNull()) {
+        image = loadImage(pTrackLocationToken).image;
     }
     if (image.isNull() && type != CoverInfo::NONE) {
         kLogger.warning()
@@ -185,9 +191,49 @@ QDebug operator<<(QDebug dbg, const CoverInfo& info) {
             .arg(coverInfoToString(info));
 }
 
+QDebug operator<<(QDebug dbg, const CoverInfo::LoadedImage::Result& result) {
+    switch (result) {
+    case CoverInfo::LoadedImage::Result::Ok:
+        return dbg << "Ok";
+    case CoverInfo::LoadedImage::Result::NoImage:
+        return dbg << "NoImage";
+    case CoverInfo::LoadedImage::Result::ErrorMetadataWithEmptyTrackLocation:
+        return dbg << "ErrorMetadataWithEmptyTrackLocation";
+    case CoverInfo::LoadedImage::Result::ErrorRelativeFilePathWithEmptyTrackLocation:
+        return dbg << "ErrorRelativeFilePathWithEmptyTrackLocation";
+    case CoverInfo::LoadedImage::Result::ErrorFilePathDoesNotExist:
+        return dbg << "ErrorFilePathDoesNotExist";
+    case CoverInfo::LoadedImage::Result::ErrorLoadingFailed:
+        return dbg << "ErrorLoadingFailed";
+    case CoverInfo::LoadedImage::Result::ErrorUnknown:
+        return dbg << "ErrorUnknown";
+    }
+    DEBUG_ASSERT(!"unreachable");
+    return dbg;
+}
+
+QDebug operator<<(QDebug dbg, const CoverInfo::LoadedImage& loadedImage) {
+    const QDebugStateSaver saver(dbg);
+    dbg = dbg.maybeSpace() << "CoverInfo::LoadedImage";
+    return dbg.nospace()
+            << '{'
+            << loadedImage.filePath
+            << ','
+            << loadedImage.image.size()
+            << ','
+            << loadedImage.result
+            << '}';
+}
+
 QDebug operator<<(QDebug dbg, const CoverArt& art) {
-    return dbg.maybeSpace() << QString("CoverArt(%1,%2,%3)")
-            .arg(coverInfoToString(art),
-                 toDebugString(art.image.size()),
-                 QString::number(art.resizedToWidth));
+    const QDebugStateSaver saver(dbg);
+    dbg = dbg.maybeSpace() << "CoverArt";
+    return dbg.nospace()
+            << '{'
+            << static_cast<const CoverInfo&>(art)
+            << ','
+            << art.loadedImage
+            << ','
+            << art.resizedToWidth
+            << '}';
 }

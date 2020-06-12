@@ -1,4 +1,4 @@
-#include "library/basetracksetfeature.h"
+#include "library/trackset/basetracksetfeature.h"
 
 BaseTrackSetFeature::BaseTrackSetFeature(
         Library* pLibrary,
