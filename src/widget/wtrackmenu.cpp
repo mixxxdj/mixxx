@@ -337,13 +337,13 @@ void WTrackMenu::setupActions() {
     }
 
     if (featureIsEnabled(Feature::Remove)) {
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::TRACKMODELCAPS_REMOVE)) {
             addAction(m_pRemoveAct);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::TRACKMODELCAPS_REMOVE_PLAYLIST)) {
             addAction(m_pRemovePlaylistAct);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_CRATE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::TRACKMODELCAPS_REMOVE_CRATE)) {
             addAction(m_pRemoveCrateAct);
         }
     }
@@ -414,13 +414,13 @@ void WTrackMenu::setupActions() {
 
     addSeparator();
     if (featureIsEnabled(Feature::HideUnhidePurge)) {
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_HIDE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::TRACKMODELCAPS_HIDE)) {
             addAction(m_pHideAct);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::TRACKMODELCAPS_UNHIDE)) {
             addAction(m_pUnhideAct);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_PURGE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::TRACKMODELCAPS_PURGE)) {
             addAction(m_pPurgeAct);
         }
     }
@@ -597,14 +597,14 @@ void WTrackMenu::updateMenus() {
     }
 
     if (featureIsEnabled(Feature::Remove)) {
-        bool locked = m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
+        bool locked = m_pTrackModel->hasCapabilities(TrackModel::Capability::TRACKMODELCAPS_LOCKED);
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::TRACKMODELCAPS_REMOVE)) {
             m_pRemoveAct->setEnabled(!locked);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::TRACKMODELCAPS_REMOVE_PLAYLIST)) {
             m_pRemovePlaylistAct->setEnabled(!locked);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_CRATE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::TRACKMODELCAPS_REMOVE_CRATE)) {
             m_pRemoveCrateAct->setEnabled(!locked);
         }
     }
@@ -654,14 +654,14 @@ void WTrackMenu::updateMenus() {
     }
 
     if (featureIsEnabled(Feature::HideUnhidePurge)) {
-        bool locked = m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_HIDE)) {
+        bool locked = m_pTrackModel->hasCapabilities(TrackModel::Capability::TRACKMODELCAPS_LOCKED);
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::TRACKMODELCAPS_HIDE)) {
             m_pHideAct->setEnabled(!locked);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::TRACKMODELCAPS_UNHIDE)) {
             m_pUnhideAct->setEnabled(!locked);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_PURGE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::TRACKMODELCAPS_PURGE)) {
             m_pPurgeAct->setEnabled(!locked);
         }
     }
@@ -1257,42 +1257,42 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
 
     switch (flag) {
     case Feature::AutoDJ:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::TRACKMODELCAPS_ADDTOAUTODJ);
     case Feature::LoadTo:
         return m_pTrackModel->hasCapabilities(
-                       TrackModel::TRACKMODELCAPS_LOADTODECK) ||
+                       TrackModel::Capability::TRACKMODELCAPS_LOADTODECK) ||
                 m_pTrackModel->hasCapabilities(
-                        TrackModel::TRACKMODELCAPS_LOADTOSAMPLER) ||
+                        TrackModel::Capability::TRACKMODELCAPS_LOADTOSAMPLER) ||
                 m_pTrackModel->hasCapabilities(
-                        TrackModel::TRACKMODELCAPS_LOADTOPREVIEWDECK);
+                        TrackModel::Capability::TRACKMODELCAPS_LOADTOPREVIEWDECK);
     case Feature::Playlist:
     case Feature::Crate:
         return m_pTrackModel->hasCapabilities(
-                TrackModel::TRACKMODELCAPS_ADDTOTRACKSET);
+                TrackModel::Capability::TRACKMODELCAPS_ADDTOTRACKSET);
     case Feature::Remove:
         return m_pTrackModel->hasCapabilities(
-                       TrackModel::TRACKMODELCAPS_REMOVE) ||
+                       TrackModel::Capability::TRACKMODELCAPS_REMOVE) ||
                 m_pTrackModel->hasCapabilities(
-                        TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST) ||
+                        TrackModel::Capability::TRACKMODELCAPS_REMOVE_PLAYLIST) ||
                 m_pTrackModel->hasCapabilities(
-                        TrackModel::TRACKMODELCAPS_REMOVE_CRATE);
+                        TrackModel::Capability::TRACKMODELCAPS_REMOVE_CRATE);
     case Feature::Metadata:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::TRACKMODELCAPS_EDITMETADATA);
     case Feature::Reset:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA) &&
-                m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_RESETPLAYED);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::TRACKMODELCAPS_EDITMETADATA) &&
+                m_pTrackModel->hasCapabilities(TrackModel::Capability::TRACKMODELCAPS_RESETPLAYED);
     case Feature::BPM:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::TRACKMODELCAPS_EDITMETADATA);
     case Feature::Color:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::TRACKMODELCAPS_EDITMETADATA);
     case Feature::HideUnhidePurge:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_HIDE) ||
-                m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE) ||
-                m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_PURGE);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::TRACKMODELCAPS_HIDE) ||
+                m_pTrackModel->hasCapabilities(TrackModel::Capability::TRACKMODELCAPS_UNHIDE) ||
+                m_pTrackModel->hasCapabilities(TrackModel::Capability::TRACKMODELCAPS_PURGE);
     case Feature::FileBrowser:
         return true;
     case Feature::Properties:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::TRACKMODELCAPS_EDITMETADATA);
     default:
         DEBUG_ASSERT(!"unreachable");
         return true;

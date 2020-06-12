@@ -207,11 +207,11 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
     setSort(defaultSortColumn(), defaultSortOrder());
 }
 
-TrackModel::CapabilitiesFlags BansheePlaylistModel::getCapabilities() const {
-    return TRACKMODELCAPS_ADDTOTRACKSET |
-            TRACKMODELCAPS_ADDTOAUTODJ |
-            TRACKMODELCAPS_LOADTODECK |
-            TRACKMODELCAPS_LOADTOSAMPLER;
+TrackModel::Capabilities BansheePlaylistModel::getCapabilities() const {
+    return Capability::TRACKMODELCAPS_ADDTOTRACKSET |
+            Capability::TRACKMODELCAPS_ADDTOAUTODJ |
+            Capability::TRACKMODELCAPS_LOADTODECK |
+            Capability::TRACKMODELCAPS_LOADTOSAMPLER;
 }
 
 Qt::ItemFlags BansheePlaylistModel::flags(const QModelIndex& index) const {

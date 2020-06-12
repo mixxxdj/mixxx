@@ -27,7 +27,7 @@ class TrackModel {
 
     // These enums are the bits in a bitvector. Any individual column cannot
     // have a value other than 0, 1, 2, or 4!
-    enum Capabilities {
+    enum class Capability {
         TRACKMODELCAPS_NONE = 0u,
         TRACKMODELCAPS_REORDER = 1u << 0u,
         TRACKMODELCAPS_RECEIVEDROPS = 1u << 1u,
@@ -46,8 +46,7 @@ class TrackModel {
         TRACKMODELCAPS_REMOVE_PLAYLIST = 1u << 14u,
         TRACKMODELCAPS_REMOVE_CRATE = 1u << 15u,
     };
-    /// Enables the use of bitwise operators
-    typedef unsigned int CapabilitiesFlags;
+    Q_DECLARE_FLAGS(Capabilities, Capability)
 
     enum SortColumnId {
         SORTCOLUMN_INVALID = -1,
@@ -143,10 +142,10 @@ class TrackModel {
         Q_UNUSED(pParent);
         return NULL;
     }
-    virtual TrackModel::CapabilitiesFlags getCapabilities() const {
-        return TRACKMODELCAPS_NONE;
+    virtual TrackModel::Capabilities getCapabilities() const {
+        return Capability::TRACKMODELCAPS_NONE;
     }
-    virtual bool hasCapabilities(TrackModel::CapabilitiesFlags caps) const {
+    virtual bool hasCapabilities(TrackModel::Capabilities caps) const {
         Q_UNUSED(caps);
         return false;
     }
@@ -206,3 +205,4 @@ class TrackModel {
     int m_iDefaultSortColumn;
     Qt::SortOrder m_eDefaultSortOrder;
 };
+Q_DECLARE_OPERATORS_FOR_FLAGS(TrackModel::Capabilities)

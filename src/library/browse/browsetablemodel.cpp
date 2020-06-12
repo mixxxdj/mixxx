@@ -282,12 +282,12 @@ void BrowseTableModel::slotInsert(const QList<QList<QStandardItem*> >& rows,
     }
 }
 
-TrackModel::CapabilitiesFlags BrowseTableModel::getCapabilities() const {
-    return TRACKMODELCAPS_ADDTOTRACKSET |
-            TRACKMODELCAPS_ADDTOAUTODJ |
-            TRACKMODELCAPS_LOADTODECK |
-            TRACKMODELCAPS_LOADTOPREVIEWDECK |
-            TRACKMODELCAPS_LOADTOSAMPLER;
+TrackModel::Capabilities BrowseTableModel::getCapabilities() const {
+    return Capability::TRACKMODELCAPS_ADDTOTRACKSET |
+            Capability::TRACKMODELCAPS_ADDTOAUTODJ |
+            Capability::TRACKMODELCAPS_LOADTODECK |
+            Capability::TRACKMODELCAPS_LOADTOPREVIEWDECK |
+            Capability::TRACKMODELCAPS_LOADTOSAMPLER;
 }
 
 Qt::ItemFlags BrowseTableModel::flags(const QModelIndex& index) const {

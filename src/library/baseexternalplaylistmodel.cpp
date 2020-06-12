@@ -148,10 +148,10 @@ TrackId BaseExternalPlaylistModel::doGetTrackId(const TrackPointer& pTrack) cons
     return TrackId();
 }
 
-TrackModel::CapabilitiesFlags BaseExternalPlaylistModel::getCapabilities() const {
-    return TRACKMODELCAPS_ADDTOTRACKSET |
-            TRACKMODELCAPS_ADDTOAUTODJ |
-            TRACKMODELCAPS_LOADTODECK |
-            TRACKMODELCAPS_LOADTOPREVIEWDECK |
-            TRACKMODELCAPS_LOADTOSAMPLER;
+TrackModel::Capabilities BaseExternalPlaylistModel::getCapabilities() const {
+    return Capability::TRACKMODELCAPS_ADDTOTRACKSET |
+            Capability::TRACKMODELCAPS_ADDTOAUTODJ |
+            Capability::TRACKMODELCAPS_LOADTODECK |
+            Capability::TRACKMODELCAPS_LOADTOPREVIEWDECK |
+            Capability::TRACKMODELCAPS_LOADTOSAMPLER;
 }
