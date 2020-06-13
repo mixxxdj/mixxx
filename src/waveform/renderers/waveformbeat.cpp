@@ -77,14 +77,15 @@ void WaveformBeat::draw(QPainter* painter) const {
 
 bool WaveformBeat::contains(QPoint point, Qt::Orientation orientation) const {
     Q_UNUSED(orientation);
-    return (m_orientation == Qt::Horizontal &&
-                   (m_position - kClickableLinePaddingPixels < point.x() &&
-                           point.x() <
-                                   m_position + kClickableLinePaddingPixels)) ||
-            (m_orientation == Qt::Vertical &&
-                    (m_position - kClickableLinePaddingPixels < point.y() &&
-                            point.y() <
-                                    m_position + kClickableLinePaddingPixels));
+    int paddedPositionPixelsBeforeLine = m_position - kClickableLinePaddingPixels;
+    int paddedPositionPixelsAfterLine = m_position + kClickableLinePaddingPixels;
+    if (m_orientation == Qt::Horizontal) {
+        return paddedPositionPixelsBeforeLine < point.x() &&
+                point.x() < paddedPositionPixelsAfterLine;
+    } else {
+        return paddedPositionPixelsBeforeLine < point.y() &&
+                point.y() < paddedPositionPixelsAfterLine;
+    }
 }
 
 bool operator<(const WaveformBeat& beat1, const WaveformBeat& beat2) {
