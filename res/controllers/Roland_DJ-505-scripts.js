@@ -1175,8 +1175,10 @@ DJ505.PadSection.prototype.controlToPadMode = function(control) {
     return mode;
 };
 
-DJ505.PadSection.prototype.padModeButtonPressed = function(channel, control, _value, _status, _group) {
-    this.setPadMode(control);
+DJ505.PadSection.prototype.padModeButtonPressed = function(channel, control, value, _status, _group) {
+    if (value) {
+        this.setPadMode(control);
+    }
 };
 
 DJ505.PadSection.prototype.paramButtonPressed = function(channel, control, value, status, group) {
