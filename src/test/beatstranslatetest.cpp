@@ -9,7 +9,7 @@ class BeatsTranslateTest : public MockedEngineBackendTest {
 
 TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     const mixxx::Bpm bpm = Bpm(60.0);
-    const FrameNum firstBeat = 0.0;
+    const Frame firstBeat(0.0);
     const FrameNum baseOffset = 30123;
     const FrameNum delta = 2222.0;
 
@@ -17,11 +17,11 @@ TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     auto beats1 = std::make_shared<Beats>(m_pTrack1.get());
     beats1->setGrid(bpm, firstBeat);
     m_pTrack1->setBeats(beats1);
-    ASSERT_DOUBLE_EQ(firstBeat, beats1->findClosestBeat(firstBeat));
+    ASSERT_DOUBLE_EQ(firstBeat.getValue(), beats1->findClosestBeat(firstBeat.getValue()));
     auto beats2 = std::make_shared<Beats>(m_pTrack2.get());
     beats2->setGrid(bpm, firstBeat);
     m_pTrack2->setBeats(beats2);
-    ASSERT_DOUBLE_EQ(firstBeat, beats2->findClosestBeat(firstBeat));
+    ASSERT_DOUBLE_EQ(firstBeat.getValue(), beats2->findClosestBeat(firstBeat.getValue()));
 
     // Seek deck 1 forward baseOffset+delta frames
     // Seek deck 2 forward baseOffset frames

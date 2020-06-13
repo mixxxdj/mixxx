@@ -10,6 +10,7 @@
 
 #include "proto/beats.pb.h"
 #include "track/bpm.h"
+#include "track/frame.h"
 #include "util/types.h"
 
 namespace mixxx {
@@ -110,7 +111,7 @@ class Beats final : public QObject {
     /// Initializes the BeatGrid to have a BPM of dBpm and the first beat offset
     /// of dFirstBeatSample. Does not generate an updated() signal, since it is
     /// meant for initialization.
-    void setGrid(Bpm dBpm, FrameNum dFirstBeatFrame = 0);
+    void setGrid(Bpm dBpm, Frame firstBeatFrame = Frame());
 
     // TODO: We may want to implement these with common code that returns
     //       the triple of closest, next, and prev.

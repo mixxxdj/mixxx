@@ -525,7 +525,8 @@ void DlgTrackInfo::slotBpmConstChanged(int state) {
             CuePosition cue = m_pLoadedTrack->getCuePoint();
             m_pBeatsClone = std::make_shared<mixxx::Beats>(m_pLoadedTrack.get());
             // setGrid accepts position in frames thus dividing by 2
-            m_pBeatsClone->setGrid(mixxx::Bpm(spinBpm->value()), cue.getPosition() / 2.0);
+            m_pBeatsClone->setGrid(mixxx::Bpm(spinBpm->value()),
+                    mixxx::Frame(cue.getPosition() / 2.0));
         } else {
             m_pBeatsClone.reset();
         }
@@ -559,7 +560,7 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     if (!m_pBeatsClone) {
         CuePosition cue = m_pLoadedTrack->getCuePoint();
         m_pBeatsClone = std::make_shared<mixxx::Beats>(m_pLoadedTrack.get());
-        m_pBeatsClone->setGrid(mixxx::Bpm(spinBpm->value()), cue.getPosition() / 2.0);
+        m_pBeatsClone->setGrid(mixxx::Bpm(spinBpm->value()), mixxx::Frame(cue.getPosition() / 2.0));
     }
 
     double oldValue = m_pBeatsClone->getBpm();

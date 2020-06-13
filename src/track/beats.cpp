@@ -135,7 +135,7 @@ void Beats::setSubVersion(QString subVersion) {
     m_subVersion = subVersion;
 }
 
-void Beats::setGrid(Bpm dBpm, FrameNum firstBeatFrame) {
+void mixxx::Beats::setGrid(Bpm dBpm, Frame firstBeatFrame) {
     QMutexLocker lock(&m_mutex);
 
     // If the track duration is not know assume 120 seconds, useful for tests
@@ -146,10 +146,10 @@ void Beats::setGrid(Bpm dBpm, FrameNum firstBeatFrame) {
     m_beats.clear();
 
     track::io::Beat beat;
-    beat.set_frame_position(firstBeatFrame);
-    for (FrameNum pos = firstBeatFrame; pos <= trackLength;
-            pos += m_iSampleRate * (60 / dBpm.getValue())) {
-        beat.set_frame_position(pos);
+    beat.set_frame_position(firstBeatFrame.getValue());
+    for (Frame frame = firstBeatFrame; frame.getValue() <= trackLength;
+            frame += m_iSampleRate * (60 / dBpm.getValue())) {
+        beat.set_frame_position(frame.getValue());
         m_beats.push_back(beat);
     }
 
