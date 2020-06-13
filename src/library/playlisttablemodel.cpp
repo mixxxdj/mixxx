@@ -257,37 +257,36 @@ bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
     return BaseSqlTableModel::isColumnHiddenByDefault(column);
 }
 
-TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
-    TrackModel::CapabilitiesFlags caps =
-            TRACKMODELCAPS_RECEIVEDROPS |
-            TRACKMODELCAPS_REORDER |
-            TRACKMODELCAPS_ADDTOCRATE |
-            TRACKMODELCAPS_ADDTOPLAYLIST |
-            TRACKMODELCAPS_EDITMETADATA |
-            TRACKMODELCAPS_LOADTODECK |
-            TRACKMODELCAPS_LOADTOSAMPLER |
-            TRACKMODELCAPS_LOADTOPREVIEWDECK |
-            TRACKMODELCAPS_RESETPLAYED;
+TrackModel::Capabilities PlaylistTableModel::getCapabilities() const {
+    TrackModel::Capabilities caps =
+            Capability::ReceiveDrops |
+            Capability::Reorder |
+            Capability::AddToTrackSet |
+            Capability::EditMetadata |
+            Capability::LoadToDeck |
+            Capability::LoadToSampler |
+            Capability::LoadToPreviewDeck |
+            Capability::ResetPlayed;
 
     if (m_iPlaylistId !=
             m_pTrackCollectionManager->internalCollection()
                     ->getPlaylistDAO()
                     .getPlaylistIdFromName(AUTODJ_TABLE)) {
         // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
-        caps |= TRACKMODELCAPS_ADDTOAUTODJ | TRACKMODELCAPS_REMOVE_PLAYLIST;
+        caps |= Capability::AddToAutoDJ | Capability::RemovePlaylist;
     } else {
-        caps |= TRACKMODELCAPS_REMOVE;
+        caps |= Capability::Remove;
     }
     if (PlaylistDAO::PLHT_SET_LOG ==
             m_pTrackCollectionManager->internalCollection()
                     ->getPlaylistDAO()
                     .getHiddenType(m_iPlaylistId)) {
         // Disable track reordering for history playlists
-        caps &= ~(TRACKMODELCAPS_REORDER | TRACKMODELCAPS_REMOVE_PLAYLIST);
+        caps &= ~(Capability::Reorder | Capability::RemovePlaylist);
     }
     bool locked = m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId);
     if (locked) {
-        caps |= TRACKMODELCAPS_LOCKED;
+        caps |= Capability::Locked;
     }
 
     return caps;

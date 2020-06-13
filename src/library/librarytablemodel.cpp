@@ -86,15 +86,14 @@ bool LibraryTableModel::isColumnInternal(int column) {
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH);
 }
 
-TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const {
-    return TRACKMODELCAPS_RECEIVEDROPS |
-            TRACKMODELCAPS_ADDTOPLAYLIST |
-            TRACKMODELCAPS_ADDTOCRATE |
-            TRACKMODELCAPS_ADDTOAUTODJ |
-            TRACKMODELCAPS_EDITMETADATA |
-            TRACKMODELCAPS_LOADTODECK |
-            TRACKMODELCAPS_LOADTOSAMPLER |
-            TRACKMODELCAPS_LOADTOPREVIEWDECK |
-            TRACKMODELCAPS_HIDE |
-            TRACKMODELCAPS_RESETPLAYED;
+TrackModel::Capabilities LibraryTableModel::getCapabilities() const {
+    return Capability::ReceiveDrops |
+            Capability::AddToTrackSet |
+            Capability::AddToAutoDJ |
+            Capability::EditMetadata |
+            Capability::LoadToDeck |
+            Capability::LoadToSampler |
+            Capability::LoadToPreviewDeck |
+            Capability::Hide |
+            Capability::ResetPlayed;
 }
