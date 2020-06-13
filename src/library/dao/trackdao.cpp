@@ -479,7 +479,7 @@ void bindTrackLibraryValues(
     // Fall back on cached BPM
     double dBpm = trackInfo.getBpm().getValue();
     if (pBeats) {
-        beatsBlob = pBeats->toProtobuff();
+        beatsBlob = pBeats->toProtobuf();
         beatsVersion = pBeats->getVersion();
         beatsSubVersion = pBeats->getSubVersion();
         dBpm = pBeats->getBpm();

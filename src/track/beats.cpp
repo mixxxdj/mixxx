@@ -95,7 +95,7 @@ int Beats::numBeatsInRangeNew(FrameNum startFrame, FrameNum endFrame) {
     return iBeatsCounter - 2;
 };
 
-QByteArray Beats::toProtobuff() const {
+QByteArray Beats::toProtobuf() const {
     QMutexLocker locker(&m_mutex);
     // No guarantees BeatLists are made of a data type which located adjacent
     // items in adjacent memory locations.

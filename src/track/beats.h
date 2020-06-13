@@ -91,8 +91,8 @@ class Beats final : public QObject {
         return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_ADDREMOVE |
                 BEATSCAP_MOVEBEAT | BEATSCAP_HASBAR;
     }
-    /// Serializes into a protobuff.
-    QByteArray toProtobuff() const;
+    /// Serializes into a protobuf.
+    QByteArray toProtobuf() const;
     BeatsPointer clone() const;
 
     /// Returns a string representing the version of the beat-processing code that
