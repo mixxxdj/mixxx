@@ -21,11 +21,6 @@ using SamplePos = double;
 using FrameNum = double;
 } // namespace mixxx
 
-#define BEAT_MAP_VERSION "BeatMap-1.0"
-// TODO(JVC) This two are deprecated
-#define BEAT_GRID_1_VERSION "BeatGrid-1.0"
-#define BEAT_GRID_2_VERSION "BeatGrid-2.0"
-
 #include "track/beatiterator.h"
 #include "track/timesignature.h"
 
@@ -83,6 +78,12 @@ class Beats final : public QObject {
         FOURTHIRDS,
         THREEHALVES,
     };
+
+    // TODO(hacksdump): These versions are retained for backward compatibility.
+    // In future, There will be no versions at all.
+    static const QString BEAT_MAP_VERSION;
+    static const QString BEAT_GRID_1_VERSION;
+    static const QString BEAT_GRID_2_VERSION;
 
     // TODO(JVC) Not needed
     Beats::CapabilitiesFlags getCapabilities() const {

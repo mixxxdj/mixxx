@@ -11,8 +11,8 @@ mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const TrackPointer& trac
         QString beatsVersion,
         QString beatsSubVersion,
         const QByteArray& beatsSerialized) {
-    if (beatsVersion == BEAT_GRID_1_VERSION ||
-        beatsVersion == BEAT_GRID_2_VERSION) {
+    if (beatsVersion == mixxx::Beats::BEAT_GRID_1_VERSION ||
+            beatsVersion == mixxx::Beats::BEAT_GRID_2_VERSION) {
         // TODO(JVC) Add code to migrate from BeatGrid proto into the new Beats
         /*
         BeatGrid* pGrid = new BeatGrid(track, 0, beatsSerialized);
@@ -20,7 +20,7 @@ mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const TrackPointer& trac
         qDebug() << "Successfully deserialized BeatGrid";
         return BeatsPointer(pGrid, &BeatFactory::deleteBeats);
         */
-    } else if (beatsVersion == BEAT_MAP_VERSION) {
+    } else if (beatsVersion == mixxx::Beats::BEAT_MAP_VERSION) {
         mixxx::Beats* pMap = new mixxx::Beats(track.get(), beatsSerialized);
         pMap->setSubVersion(beatsSubVersion);
         qDebug() << "Successfully deserialized Beats";
@@ -35,9 +35,9 @@ mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const TrackPointer& trac
 QString BeatFactory::getPreferredVersion(
         const bool bEnableFixedTempoCorrection) {
     if (bEnableFixedTempoCorrection) {
-        return BEAT_GRID_2_VERSION;
+        return mixxx::Beats::BEAT_GRID_2_VERSION;
     }
-    return BEAT_MAP_VERSION;
+    return mixxx::Beats::BEAT_MAP_VERSION;
 }
 
 QString BeatFactory::getPreferredSubVersion(
@@ -119,7 +119,7 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const TrackPointer& track,
         return BeatsPointer(pGrid, &BeatFactory::deleteBeats);
 
     } else */
-    if (version == BEAT_MAP_VERSION) {
+    if (version == mixxx::Beats::BEAT_MAP_VERSION) {
         mixxx::Beats* pBeats = new mixxx::Beats(track.get(), beats, iSampleRate);
         pBeats->setSubVersion(subVersion);
         return mixxx::BeatsPointer(pBeats, &BeatFactory::deleteBeats);

@@ -6,6 +6,10 @@
 
 namespace mixxx {
 
+const QString Beats::BEAT_MAP_VERSION = "BeatMap-1.0";
+const QString Beats::BEAT_GRID_1_VERSION = "BeatGrid-1.0";
+const QString Beats::BEAT_GRID_2_VERSION = "BeatGrid-2.0";
+
 namespace {
 
 constexpr int kSamplesPerFrame = 2;
