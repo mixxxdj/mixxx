@@ -92,14 +92,15 @@ class SoundSourceProxyTest: public MixxxTest {
         const auto channelCount = mixxx::audio::ChannelCount(2);
         openParams.setChannelCount(mixxx::audio::ChannelCount(2));
         auto pAudioSource = proxy.openAudioSource(openParams);
-        EXPECT_FALSE(!pAudioSource);
-        if (pAudioSource->getSignalInfo().getChannelCount() != channelCount) {
-            // Wrap into proxy object
-            pAudioSource = mixxx::AudioSourceStereoProxy::create(
-                    pAudioSource,
-                    kMaxReadFrameCount);
+        if (pAudioSource) {
+            if (pAudioSource->getSignalInfo().getChannelCount() != channelCount) {
+                // Wrap into proxy object
+                pAudioSource = mixxx::AudioSourceStereoProxy::create(
+                        pAudioSource,
+                        kMaxReadFrameCount);
+            }
+            EXPECT_EQ(pAudioSource->getSignalInfo().getChannelCount(), channelCount);
         }
-        EXPECT_EQ(pAudioSource->getSignalInfo().getChannelCount(), channelCount);
         return pAudioSource;
     }
 
