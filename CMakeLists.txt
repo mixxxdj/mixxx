@@ -1795,24 +1795,32 @@ if(WIN32)
 endif()
 
 # SoundTouch
-add_library(SoundTouch STATIC EXCLUDE_FROM_ALL
-  lib/soundtouch/AAFilter.cpp
-  lib/soundtouch/BPMDetect.cpp
-  lib/soundtouch/FIFOSampleBuffer.cpp
-  lib/soundtouch/FIRFilter.cpp
-  lib/soundtouch/InterpolateCubic.cpp
-  lib/soundtouch/InterpolateLinear.cpp
-  lib/soundtouch/InterpolateShannon.cpp
-  lib/soundtouch/PeakFinder.cpp
-  lib/soundtouch/RateTransposer.cpp
-  lib/soundtouch/SoundTouch.cpp
-  lib/soundtouch/TDStretch.cpp
-  lib/soundtouch/cpu_detect_x86.cpp
-  lib/soundtouch/mmx_optimized.cpp
-  lib/soundtouch/sse_optimized.cpp
-)
-target_include_directories(SoundTouch SYSTEM PUBLIC lib/soundtouch)
-target_link_libraries(mixxx-lib PUBLIC SoundTouch)
+find_package(SoundTouch)
+cmake_dependent_option(SoundTouch_STATIC "Link libSoundTouch statically" OFF "SoundTouch_FOUND" ON)
+if(SoundTouch_STATIC)
+  message(STATUS "Preparing internal libSoundTouch")
+  add_library(SoundTouch STATIC EXCLUDE_FROM_ALL
+    lib/soundtouch/AAFilter.cpp
+    lib/soundtouch/BPMDetect.cpp
+    lib/soundtouch/FIFOSampleBuffer.cpp
+    lib/soundtouch/FIRFilter.cpp
+    lib/soundtouch/InterpolateCubic.cpp
+    lib/soundtouch/InterpolateLinear.cpp
+    lib/soundtouch/InterpolateShannon.cpp
+    lib/soundtouch/PeakFinder.cpp
+    lib/soundtouch/RateTransposer.cpp
+    lib/soundtouch/SoundTouch.cpp
+    lib/soundtouch/TDStretch.cpp
+    lib/soundtouch/cpu_detect_x86.cpp
+    lib/soundtouch/mmx_optimized.cpp
+    lib/soundtouch/sse_optimized.cpp
+  )
+  target_include_directories(SoundTouch SYSTEM PUBLIC lib)
+  target_link_libraries(mixxx-lib PUBLIC SoundTouch)
+else()
+  message(STATUS "Linking libSoundTouch dynamically")
+  target_link_libraries(mixxx-lib PUBLIC SoundTouch::SoundTouch)
+endif()
 
 # TagLib
 find_package(Taglib REQUIRED)
