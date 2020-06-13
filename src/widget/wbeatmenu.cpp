@@ -19,7 +19,7 @@ void WBeatMenu::updateMenu() {
         addAction(m_pSetAsDownbeat);
     }
     if (m_eSelectedOptions.testFlag(WBeatMenu::Option::CueMenu)) {
-        m_pCueMenu = make_parented<QAction>(tr("Cue Menu"), this);
+        m_pCueMenu = make_parented<QAction>(tr("Edit Cue"), this);
         addAction(m_pCueMenu);
         connect(m_pCueMenu, &QAction::triggered, this, &WBeatMenu::cueButtonClicked);
     }
