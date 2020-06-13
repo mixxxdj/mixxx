@@ -81,10 +81,8 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     while (it->hasNext()) {
         auto beat = it->next();
         double beatPosition = beat.getSamplePosition();
-        double beatPixelPositionInWidgetSpace =
-                m_waveformRenderer->transformSamplePositionInRendererWorld(beatPosition);
-
-        beatPixelPositionInWidgetSpace = qRound(beatPixelPositionInWidgetSpace);
+        int beatPixelPositionInWidgetSpace =
+                qRound(m_waveformRenderer->transformSamplePositionInRendererWorld(beatPosition));
 
         // If we don't have enough space, double the size.
         if (beatCount >= m_beats.size()) {
