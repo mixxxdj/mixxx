@@ -110,11 +110,7 @@ class Beats final : public QObject {
     /// Initializes the BeatGrid to have a BPM of dBpm and the first beat offset
     /// of dFirstBeatSample. Does not generate an updated() signal, since it is
     /// meant for initialization.
-    // TODO(JVC) Temporary adaptor. Will be removed before finalizing the PR
-    void setGrid(double dBpm, double sample = 0) {
-        setGridNew(Bpm(dBpm), sample / 2.0);
-    }
-    void setGridNew(Bpm dBpm, FrameNum dFirstBeatFrame = 0);
+    void setGrid(Bpm dBpm, FrameNum dFirstBeatFrame = 0);
 
     // TODO: We may want to implement these with common code that returns
     //       the triple of closest, next, and prev.

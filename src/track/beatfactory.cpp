@@ -113,8 +113,8 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const TrackPointer& track,
             bEnableOffsetCorrection,
             beats, iSampleRate, iTotalSamples, globalBpm);
         mixxx::BeatGrid* pGrid = new mixxx::BeatGrid(track, iSampleRate);
-        // firstBeat is in frames here and setGrid() takes samples.
-        pGrid->setGrid(globalBpm, firstBeat * 2);
+        // firstBeat is in frames here
+        pGrid->setGrid(globalBpm, firstBeat);
         pGrid->setSubVersion(subVersion);
         return BeatsPointer(pGrid, &BeatFactory::deleteBeats);
 

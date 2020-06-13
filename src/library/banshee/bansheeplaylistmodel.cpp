@@ -280,7 +280,7 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
         // If the track has a BPM, then give it a static beatgrid.
         if (bpm > 0) {
             mixxx::BeatsPointer pBeats = std::make_shared<mixxx::Beats>(mixxx::Beats(pTrack.get()));
-            pBeats->setGrid(bpm);
+            pBeats->setGrid(mixxx::Bpm(bpm));
             pTrack->setBeats(pBeats);
         }
     }

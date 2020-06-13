@@ -33,9 +33,9 @@ TEST_F(BpmControlTest, BeatContext_BeatGrid) {
             mixxx::audio::Bitrate(),
             mixxx::Duration::fromSeconds(180));
 
-    const double bpm = 60.0;
+    const mixxx::Bpm bpm = mixxx::Bpm(60.0);
     const int kFrameSize = 2;
-    const double expectedBeatLength = (60.0 * sampleRate / bpm) * kFrameSize;
+    const double expectedBeatLength = (60.0 * sampleRate / bpm.getValue()) * kFrameSize;
 
     auto pBeats = std::make_shared<mixxx::Beats>(pTrack.get());
     pBeats->setGrid(bpm);

@@ -135,7 +135,7 @@ void Beats::setSubVersion(QString subVersion) {
     m_subVersion = subVersion;
 }
 
-void Beats::setGridNew(Bpm dBpm, FrameNum firstBeatFrame) {
+void Beats::setGrid(Bpm dBpm, FrameNum firstBeatFrame) {
     QMutexLocker lock(&m_mutex);
 
     // If the track duration is not know assume 120 seconds, useful for tests

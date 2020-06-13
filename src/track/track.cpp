@@ -288,7 +288,8 @@ double Track::setBpm(double bpmValue) {
         */
         m_pBeats = std::make_shared<mixxx::Beats>(this);
         //m_pBeats = std::make_shared<mixxx::Beats>(mixxx::Beats(this));
-        m_pBeats->setGrid(bpmValue, cue);
+        // setGrid accepts frames, but cue is in samples.
+        m_pBeats->setGrid(mixxx::Bpm(bpmValue), cue / 2.0);
         setBeatsAndUnlock(&lock, m_pBeats);
         qDebug() << "JVC Track->setBpm no beats!!";
         return bpmValue;
