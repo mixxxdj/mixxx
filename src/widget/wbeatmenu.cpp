@@ -10,7 +10,7 @@ WBeatMenu::WBeatMenu(UserSettingsPointer pConfig, QWidget* parent)
         : QMenu(parent), m_pConfig(pConfig) {
 }
 
-void WBeatMenu::update() {
+void WBeatMenu::updateMenu() {
     clear();
     if (m_eSelectedOptions.testFlag(WBeatMenu::Option::SetDownbeat) &&
             m_beat.getType() == mixxx::track::io::BEAT) {

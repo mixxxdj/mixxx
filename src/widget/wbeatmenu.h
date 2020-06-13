@@ -30,7 +30,7 @@ class WBeatMenu : public QMenu {
 
     void setOptions(Options selectedOptions) {
         m_eSelectedOptions = selectedOptions;
-        update();
+        updateMenu();
     }
 
     void addOptions(Options newOptions);
@@ -44,7 +44,7 @@ class WBeatMenu : public QMenu {
     void slotDownbeatUpdated();
 
   private:
-    void update();
+    void updateMenu();
 
     parented_ptr<QAction> m_pSetAsDownbeat;
     parented_ptr<QAction> m_pCueMenu;
