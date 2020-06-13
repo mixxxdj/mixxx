@@ -2,14 +2,14 @@
 
 #include <QByteArray>
 #include <QList>
+#include <QMutex>
 #include <QObject>
-#include <QSharedPointer>
 #include <QString>
+#include <QVector>
+#include <memory>
 
 #include "proto/beats.pb.h"
 #include "track/bpm.h"
-#include "util/logger.h"
-#include "util/memory.h"
 #include "util/types.h"
 
 namespace mixxx {
@@ -28,22 +28,24 @@ using FrameNum = double;
 
 #include "track/beatiterator.h"
 #include "track/timesignature.h"
-#include "track/track.h"
 
-namespace {
-}
+class Track;
 
 namespace mixxx {
 /// Beats is a class for BPM and beat management classes.
 /// It stores beats information including beats position, down beats position,
 /// phrase beat position and changes in tempo.
 // TODO(JVC) To make it final
+// TODO(XXX): Split into 2 classes:
+// - Beats: Final, no base class, no mutex, copyable/movable
+// - BeatsObject: Derived from QObject, with mutex, not copyable/movable
+// TODO(XXX): Remove cyclic dependency on Track object, probably not necessary
 class Beats : public QObject {
     Q_OBJECT
   public:
     /// Construct a BeatMap. iSampleRate may be provided if a more accurate
     /// sample rate is known than the one associated with the Track.
-    Beats(const Track* track, SINT iSampleRate = 0);
+    explicit Beats(const Track* track, SINT iSampleRate = 0);
     /// Construct a BeatMap. iSampleRate may be provided if a more accurate
     /// sample rate is known than the one associated with the Track. If it is
     /// zero then the track's sample rate will be used. The BeatMap will be
@@ -55,11 +57,9 @@ class Beats : public QObject {
     /// in audio frames may be provided.
     Beats(const Track* track, const QVector<double>& beats, SINT iSampleRate = 0);
 
-    virtual ~Beats() {
-    }
-
     // TODO(JVC) Is a copy constructor needed? of we can force a move logic??
     Beats(const Beats&);
+    ~Beats() override = default;
 
     /// Populate a Beats with a vector of beat positions.
     void createFromBeatVector(const QVector<double>& beats);

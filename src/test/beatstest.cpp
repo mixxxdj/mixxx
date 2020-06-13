@@ -3,6 +3,7 @@
 #include <QtDebug>
 
 #include "track/beats.h"
+#include "track/track.h"
 #include "util/memory.h"
 
 using namespace mixxx;

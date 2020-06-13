@@ -2,18 +2,20 @@
 #include "track/beats.h"
 
 #include "track/beatutils.h"
+#include "track/track.h"
 
 namespace mixxx {
 
 namespace {
-const int kFrameSize = 2;
 
-bool BeatLessThan(const track::io::Beat& beat1, const track::io::Beat& beat2) {
+constexpr int kSamplesPerFrame = 2;
+
+inline bool BeatLessThan(const track::io::Beat& beat1, const track::io::Beat& beat2) {
     return beat1.frame_position() < beat2.frame_position();
 }
 
-double framesToSamples(const int frames) {
-    return frames * kFrameSize;
+inline double framesToSamples(const int frames) {
+    return frames * kSamplesPerFrame;
 }
 
 } // namespace
@@ -623,7 +625,7 @@ void Beats::setDownBeatNew(FrameNum frame) {
     // Set the proper type for the remaining beats on the track or to the next phrasebeat
     int beat_counter = 0;
     std::unique_ptr<BeatIterator> beat = findBeats(
-            closest_sample, (m_beats.last().frame_position() - 1) * kFrameSize);
+            closest_sample, framesToSamples(m_beats.last().frame_position() - 1));
     while (beat->hasNext()) {
         beat->next();
         if (beat->isPhrase()) {
