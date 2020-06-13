@@ -353,7 +353,7 @@
                     if (engine.getValue(this.group, this.outKey)) {
                         this.outputColor(color);
                     }
-                });
+                }.bind(this));
             }
         },
     });
