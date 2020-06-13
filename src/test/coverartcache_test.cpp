@@ -19,9 +19,10 @@ class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
         info.trackLocation = trackLocation;
 
         CoverArtCache::FutureResult res;
-        res = CoverArtCache::loadCover(info, NULL, 0, false);
+        res = CoverArtCache::loadCover(nullptr, TrackPointer(), info, 0, false);
         EXPECT_QSTRING_EQ(QString(), res.cover.coverLocation);
-        EXPECT_EQ(info.hash, res.cover.hash);
+        EXPECT_TRUE(CoverImageUtils::isValidHash(res.cover.hash));
+        EXPECT_TRUE(res.coverInfoUpdated);
 
         SecurityTokenPointer securityToken =
                 Sandbox::openSecurityToken(QDir(trackLocation), true);
@@ -39,10 +40,10 @@ class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
         info.source = CoverInfo::GUESSED;
         info.coverLocation = coverLocation;
         info.trackLocation = trackLocation;
-        info.hash = 4321; // fake cover hash
+        info.hash = 39287; // actual cover image hash!
 
         CoverArtCache::FutureResult res;
-        res = CoverArtCache::loadCover(info, NULL, 0, false);
+        res = CoverArtCache::loadCover(nullptr, TrackPointer(), info, 0, false);
         EXPECT_QSTRING_EQ(info.coverLocation, res.cover.coverLocation);
         EXPECT_EQ(info.hash, res.cover.hash);
         EXPECT_FALSE(img.isNull());

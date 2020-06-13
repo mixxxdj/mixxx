@@ -619,7 +619,7 @@ bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay) {
     if ((!m_pCurrentTrack && atomicLoadRelaxed(m_iTrackLoading) == 0) ||
             (m_pCurrentTrack && atomicLoadRelaxed(m_iTrackLoading) == 0 &&
              m_filepos_play >= m_pTrackSamples->get() &&
-             !atomicLoadRelaxed(m_iSeekQueued))) {
+             !atomicLoadRelaxed(m_iSeekQueued)) || m_pPassthroughEnabled->toBool()) {
         // play not possible
         playPossible = false;
     }
@@ -741,7 +741,12 @@ void EngineBuffer::processTrackLocked(
     // pass for every 1 real second). Depending on whether
     // keylock is enabled, this is applied to either the rate or the tempo.
     double speed = m_pRateControl->calculateSpeed(
-            baserate, tempoRatio, paused, iBufferSize, &is_scratching, &is_reverse);
+            baserate,
+            tempoRatio,
+            paused,
+            iBufferSize,
+            &is_scratching,
+            &is_reverse);
 
     bool useIndependentPitchAndTempoScaling = false;
 
@@ -948,9 +953,9 @@ void EngineBuffer::processTrackLocked(
                             m_filepos_play, samplesRead);
         }
         // Note: The last buffer of a track is padded with silence.
-        // This silence is played together with the last samples in the last 
-        // callback and the m_filepos_play is advanced behind the end of the track. 
-          
+        // This silence is played together with the last samples in the last
+        // callback and the m_filepos_play is advanced behind the end of the track.
+
         if (m_bCrossfadeReady) {
            SampleUtil::linearCrossfadeBuffers(
                     pOutput, m_pCrossfadeBuffer, pOutput, iBufferSize);
@@ -1020,21 +1025,19 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     // - Set last sample value (m_fLastSampleValue) so that rampOut works? Other
     //   miscellaneous upkeep issues.
 
-    int sample_rate = static_cast<int>(m_pSampleRate->get());
+    m_iSampleRate = static_cast<int>(m_pSampleRate->get());
 
     // If the sample rate has changed, force Rubberband to reset so that
     // it doesn't reallocate when the user engages keylock during playback.
     // We do this even if rubberband is not active.
-    if (sample_rate != m_iSampleRate) {
-        m_pScaleLinear->setSampleRate(sample_rate);
-        m_pScaleST->setSampleRate(sample_rate);
-        m_pScaleRB->setSampleRate(sample_rate);
-        m_iSampleRate = sample_rate;
-    }
+    const auto sampleRate = mixxx::audio::SampleRate(m_iSampleRate);
+    m_pScaleLinear->setSampleRate(sampleRate);
+    m_pScaleST->setSampleRate(sampleRate);
+    m_pScaleRB->setSampleRate(sampleRate);
 
     bool bTrackLoading = atomicLoadRelaxed(m_iTrackLoading) != 0;
     if (!bTrackLoading && m_pause.tryLock()) {
-        processTrackLocked(pOutput, iBufferSize, sample_rate);
+        processTrackLocked(pOutput, iBufferSize, m_iSampleRate);
         // release the pauselock
         m_pause.unlock();
     } else {
@@ -1179,7 +1182,7 @@ void EngineBuffer::processSeek(bool paused) {
 
     if (!paused && (seekType & SEEK_PHASE)) {
         double requestedPosition = position;
-        double syncPosition = m_pBpmControl->getNearestPositionInPhase(position, true, true);
+        double syncPosition = m_pBpmControl->getBeatMatchPosition(position, true, true);
         position = m_pLoopingControl->getSyncPositionInsideLoop(requestedPosition, syncPosition);
     }
     if (position != m_filepos_play) {
@@ -1194,15 +1197,14 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     // values from the first update.
     double local_bpm = m_pBpmControl->updateLocalBpm();
     double beat_distance = m_pBpmControl->updateBeatDistance();
+    m_pSyncControl->setLocalBpm(local_bpm);
     SyncMode mode = m_pSyncControl->getSyncMode();
     if (mode == SYNC_MASTER) {
-        m_pSyncControl->setLocalBpm(local_bpm);
         m_pEngineSync->notifyBeatDistanceChanged(m_pSyncControl, beat_distance);
     } else if (mode == SYNC_FOLLOWER) {
         // Report our speed to SyncControl.  If we are master, we already did this.
-        m_pSyncControl->setLocalBpm(local_bpm);
         m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
-        m_pSyncControl->setBeatDistance(beat_distance);
+        m_pSyncControl->updateTargetBeatDistance();
     }
 
     // Update all the indicators that EngineBuffer publishes to allow
@@ -1332,7 +1334,14 @@ void EngineBuffer::slotEjectTrack(double v) {
 }
 
 double EngineBuffer::getExactPlayPos() {
-    return getVisualPlayPos() * getTrackSamples();
+    double visualPlayPos = getVisualPlayPos();
+    if (visualPlayPos > 0) {
+        return getVisualPlayPos() * getTrackSamples();
+    } else {
+        // Track was just loaded and the first buffer was not processed yet.
+        // asume it is at 0:00
+        return 0.0;
+    }
 }
 
 double EngineBuffer::getVisualPlayPos() {
@@ -1358,6 +1367,13 @@ void EngineBuffer::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     if (m_pBpmControl != NULL) {
         m_pBpmControl->collectFeatures(pGroupFeatures);
     }
+}
+
+double EngineBuffer::getRateRatio() const {
+    if (m_pBpmControl != NULL) {
+        return m_pBpmControl->getRateRatio();
+    }
+    return 1.0;
 }
 
 void EngineBuffer::notifyTrackLoaded(

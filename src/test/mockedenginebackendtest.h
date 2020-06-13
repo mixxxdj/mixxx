@@ -44,7 +44,7 @@ class MockScaler : public EngineBufferScale {
         m_processedPitch = m_dPitchRatio;
         DEBUG_ASSERT((buf_size % 2) == 0); // 2 channels
         SINT numFrames = buf_size / 2;
-        double framesRead = round(numFrames * m_dTempoRatio);
+        double framesRead = numFrames * m_dTempoRatio;
         return framesRead;
     }
 
@@ -57,6 +57,8 @@ class MockScaler : public EngineBufferScale {
     }
 
   private:
+    void onSampleRateChanged() override {}
+
     double m_processedTempo;
     double m_processedPitch;
 };

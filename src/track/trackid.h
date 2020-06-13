@@ -14,5 +14,6 @@ public:
 Q_DECLARE_TYPEINFO(TrackId, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(TrackId)
 
+typedef QList<TrackId> TrackIdList;
 
 #endif // TRACKID_H

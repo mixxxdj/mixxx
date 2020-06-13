@@ -187,6 +187,9 @@ template <class ValueType> class ConfigObject {
         return m_settingsPath;
     }
 
+    QSet<QString> getGroups();
+    QList<ConfigKey> getKeysWithGroup(QString group) const;
+
   protected:
     // We use QMap because we want a sorted list in mixxx.cfg
     QMap<ConfigKey, ValueType> m_values;

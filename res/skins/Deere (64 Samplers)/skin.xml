@@ -3,8 +3,8 @@
   <manifest>
     <title>Deere</title>
     <author>RJ Ryan, S.Brandt</author>
-    <version>2.1.0.01</version>
-    <description>A flexible skin.</description>
+    <version>2.3.0.01</version>
+    <description>A flexible skin with stacked or split waveforms, 4 decks and 64 samplers.</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
@@ -46,6 +46,7 @@
       <attribute persist="true" config_key="[Skin],sampler_row_8_expanded">0</attribute>
 
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
+
       <!-- Library -->
       <attribute config_key="[Skin],show_library">1</attribute>
       <attribute config_key="[Master],maximize_library">0</attribute>

@@ -14,11 +14,11 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent, BaseTrackPlayer* pPlay
           m_pPlayer(pPlayer),
           m_pCoverMenu(make_parented<WCoverArtMenu>(this)) {
     CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != nullptr) {
-        connect(pCache, SIGNAL(coverFound(const QObject*,
-                                          const CoverInfoRelative&, QPixmap, bool)),
-                this, SLOT(slotCoverFound(const QObject*,
-                                          const CoverInfoRelative&, QPixmap, bool)));
+    if (pCache) {
+        connect(pCache,
+                &CoverArtCache::coverFound,
+                this,
+                &DlgCoverArtFullSize::slotCoverFound);
     }
 
     setContextMenuPolicy(Qt::CustomContextMenu);
@@ -112,21 +112,22 @@ void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
 }
 
 void DlgCoverArtFullSize::slotTrackCoverArtUpdated() {
-    if (m_pLoadedTrack != nullptr) {
-        CoverArtCache::requestCover(*m_pLoadedTrack, this);
+    if (m_pLoadedTrack) {
+        CoverArtCache::requestTrackCover(this, m_pLoadedTrack);
     }
 }
 
-void DlgCoverArtFullSize::slotCoverFound(const QObject* pRequestor,
-                                         const CoverInfoRelative& info, QPixmap pixmap,
-                                         bool fromCache) {
-    Q_UNUSED(info);
-    Q_UNUSED(fromCache);
-
-    if (pRequestor == this && m_pLoadedTrack != nullptr &&
-            m_pLoadedTrack->getCoverHash() == info.hash) {
-        // qDebug() << "DlgCoverArtFullSize::slotCoverFound" << pRequestor << info
-        //          << pixmap.size();
+void DlgCoverArtFullSize::slotCoverFound(
+        const QObject* pRequestor,
+        const CoverInfo& coverInfo,
+        const QPixmap& pixmap,
+        quint16 requestedHash,
+        bool coverInfoUpdated) {
+    Q_UNUSED(requestedHash);
+    Q_UNUSED(coverInfoUpdated);
+    if (pRequestor == this &&
+            m_pLoadedTrack &&
+            m_pLoadedTrack->getLocation() == coverInfo.trackLocation) {
         m_pixmap = pixmap;
         // Scale down dialog if the pixmap is larger than the screen.
         // Use 90% of screen size instead of 100% to prevent an issue with

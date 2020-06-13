@@ -89,16 +89,17 @@ class SoundSourceProxyTest: public MixxxTest {
         // All test files are mono, but we are requesting a stereo signal
         // to test the upscaling of channels
         mixxx::AudioSource::OpenParams openParams;
-        openParams.setChannelCount(2);
+        const auto channelCount = mixxx::audio::ChannelCount(2);
+        openParams.setChannelCount(mixxx::audio::ChannelCount(2));
         auto pAudioSource = proxy.openAudioSource(openParams);
         EXPECT_FALSE(!pAudioSource);
-        if (pAudioSource->channelCount() != 2) {
+        if (pAudioSource->getSignalInfo().getChannelCount() != channelCount) {
             // Wrap into proxy object
             pAudioSource = mixxx::AudioSourceStereoProxy::create(
                     pAudioSource,
                     kMaxReadFrameCount);
         }
-        EXPECT_EQ(pAudioSource->channelCount(), 2);
+        EXPECT_EQ(pAudioSource->getSignalInfo().getChannelCount(), channelCount);
         return pAudioSource;
     }
 
@@ -124,7 +125,7 @@ class SoundSourceProxyTest: public MixxxTest {
                             skippedRange.empty() ? skipRange.start() : skippedRange.end(),
                             math_min(
                                     skipRange.length() - skippedRange.length(),
-                                    pAudioSource->samples2frames(m_skipSampleBuffer.size())));
+                                    pAudioSource->getSignalInfo().samples2frames(m_skipSampleBuffer.size())));
             EXPECT_FALSE(nextRange.empty());
             EXPECT_TRUE(intersect(nextRange, skipRange) == nextRange);
             const auto readRange = pAudioSource->readSampleFrames(
@@ -168,8 +169,8 @@ TEST_F(SoundSourceProxyTest, open) {
             // skip test file
             continue;
         }
-        EXPECT_LT(0, pAudioSource->channelCount());
-        EXPECT_LT(0, pAudioSource->sampleRate());
+        EXPECT_LT(0, pAudioSource->getSignalInfo().getChannelCount());
+        EXPECT_LT(0, pAudioSource->getSignalInfo().getSampleRate());
         EXPECT_FALSE(pAudioSource->frameIndexRange().empty());
     }
 }
@@ -230,9 +231,9 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
             continue;
         }
         mixxx::SampleBuffer contReadData(
-                pContReadSource->frames2samples(kReadFrameCount));
+                pContReadSource->getSignalInfo().frames2samples(kReadFrameCount));
         mixxx::SampleBuffer seekReadData(
-                pContReadSource->frames2samples(kReadFrameCount));
+                pContReadSource->getSignalInfo().frames2samples(kReadFrameCount));
 
         SINT contFrameIndex = pContReadSource->frameIndexMin();
         while (pContReadSource->frameIndexRange().containsIndex(contFrameIndex)) {
@@ -252,11 +253,13 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
             contFrameIndex += contSampleFrames.frameLength();
 
             const SINT sampleCount =
-                    pContReadSource->frames2samples(contSampleFrames.frameLength());
+                    pContReadSource->getSignalInfo().frames2samples(contSampleFrames.frameLength());
 
             mixxx::AudioSourcePointer pSeekReadSource(openAudioSource(filePath));
             ASSERT_FALSE(!pSeekReadSource);
-            ASSERT_EQ(pContReadSource->channelCount(), pSeekReadSource->channelCount());
+            ASSERT_EQ(
+                    pContReadSource->getSignalInfo().getChannelCount(),
+                    pSeekReadSource->getSignalInfo().getChannelCount());
             ASSERT_EQ(pContReadSource->frameIndexRange(), pSeekReadSource->frameIndexRange());
 
             // Seek source to next chunk and read it
@@ -311,14 +314,16 @@ TEST_F(SoundSourceProxyTest, skipAndRead) {
 
             mixxx::AudioSourcePointer pSkipReadSource(openAudioSource(filePath));
             ASSERT_FALSE(!pSkipReadSource);
-            ASSERT_EQ(pContReadSource->channelCount(), pSkipReadSource->channelCount());
+            ASSERT_EQ(
+                    pContReadSource->getSignalInfo().getChannelCount(),
+                    pSkipReadSource->getSignalInfo().getChannelCount());
             ASSERT_EQ(pContReadSource->frameIndexRange(), pSkipReadSource->frameIndexRange());
             SINT skipFrameIndex = pSkipReadSource->frameIndexMin();
 
             mixxx::SampleBuffer contReadData(
-                    pContReadSource->frames2samples(kReadFrameCount));
+                    pContReadSource->getSignalInfo().frames2samples(kReadFrameCount));
             mixxx::SampleBuffer skipReadData(
-                    pSkipReadSource->frames2samples(kReadFrameCount));
+                    pSkipReadSource->getSignalInfo().frames2samples(kReadFrameCount));
 
             SINT minFrameIndex = pContReadSource->frameIndexMin();
             SINT skipCount = 1;
@@ -359,7 +364,7 @@ TEST_F(SoundSourceProxyTest, skipAndRead) {
                 contFrameIndex += contSampleFrames.frameLength();
 
                 const SINT sampleCount =
-                        pContReadSource->frames2samples(contSampleFrames.frameLength());
+                        pContReadSource->getSignalInfo().frames2samples(contSampleFrames.frameLength());
 
                 // Skip until reaching the frame index and read next chunk
                 ASSERT_LE(skipFrameIndex, minFrameIndex);
@@ -411,7 +416,7 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
             continue;
         }
         mixxx::SampleBuffer seekReadData(
-                pSeekReadSource->frames2samples(kReadFrameCount));
+                pSeekReadSource->getSignalInfo().frames2samples(kReadFrameCount));
 
         std::vector<SINT> seekFrameIndices;
         // Seek to boundaries (alternating)...
@@ -464,7 +469,9 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
 
             mixxx::AudioSourcePointer pContReadSource(openAudioSource(filePath));
             ASSERT_FALSE(!pContReadSource);
-            ASSERT_EQ(pSeekReadSource->channelCount(), pContReadSource->channelCount());
+            ASSERT_EQ(
+                    pSeekReadSource->getSignalInfo().getChannelCount(),
+                    pContReadSource->getSignalInfo().getChannelCount());
             ASSERT_EQ(pSeekReadSource->frameIndexRange(), pContReadSource->frameIndexRange());
             const auto skipFrameIndexRange =
                     skipSampleFrames(pContReadSource,
@@ -474,7 +481,7 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
             ASSERT_TRUE(skipFrameIndexRange.empty() ||
                     (skipFrameIndexRange.end() == seekFrameIndex));
             mixxx::SampleBuffer contReadData(
-                    pContReadSource->frames2samples(kReadFrameCount));
+                    pContReadSource->getSignalInfo().frames2samples(kReadFrameCount));
             const auto contSampleFrames =
                     pContReadSource->readSampleFrames(
                             mixxx::WritableSampleFrames(
@@ -494,7 +501,7 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
             }
 
             const SINT sampleCount =
-                    pSeekReadSource->frames2samples(seekSampleFrames.frameLength());
+                    pSeekReadSource->getSignalInfo().frames2samples(seekSampleFrames.frameLength());
             expectDecodedSamplesEqual(
                     sampleCount,
                     &contReadData[0],
@@ -529,7 +536,7 @@ TEST_F(SoundSourceProxyTest, readBeyondEnd) {
 
         // Read beyond the end
         mixxx::SampleBuffer readBuffer(
-                pAudioSource->frames2samples(kReadFrameCount));
+                pAudioSource->getSignalInfo().frames2samples(kReadFrameCount));
         EXPECT_EQ(
                 mixxx::IndexRange::forward(seekIndex, remainingFrames),
                 pAudioSource->readSampleFrames(
@@ -558,7 +565,7 @@ TEST_F(SoundSourceProxyTest, regressionTestCachingReaderChunkJumpForward) {
                 continue;
             }
             mixxx::SampleBuffer readBuffer(
-                    pAudioSource->frames2samples(kReadFrameCount));
+                    pAudioSource->getSignalInfo().frames2samples(kReadFrameCount));
 
             // Read chunk from beginning
             auto firstChunkRange = mixxx::IndexRange::forward(

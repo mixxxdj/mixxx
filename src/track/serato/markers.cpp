@@ -2,7 +2,7 @@
 
 #include <QtEndian>
 
-#include "util/color/rgbcolor.h"
+#include "track/serato/tags.h"
 
 namespace {
 
@@ -10,61 +10,59 @@ const int kNumEntries = 14;
 const int kLoopEntryStartIndex = 5;
 const int kEntrySize = 22;
 const quint16 kVersion = 0x0205;
-constexpr mixxx::RgbColor kDefaultTrackColor = mixxx::RgbColor(0xFF9999);
 
-// These functions conversion between the 4-byte "Serato Markers_" color format
-// and RgbColor (3-Byte RGB, transparency disabled).
-//
-// Serato's custom color format that is used here also represents RGB colors,
-// but inserts a single null bit after every 7 payload bits, starting from the
-// rightmost bit.
+// These functions convert between a custom 4-byte format (that we'll call
+// "serato32" for brevity) and 3-byte plaintext (both quint32).
+// Serato's custom format inserts a single null bit after every 7 payload
+// bits, starting from the rightmost bit.
 //
 // Here's an example:
 //
-//                   | Hex          Binary
-//     ------------- | -----------  --------------------------------
-//     3-byte RGB    |    00 00 cc       000 0000000 0000001 1001100
-//     Serato format | 00 00 01 4c  00000000000000000000000101001100
-//                   |
-//     3-byte RGB    |    cc 88 00       110 0110010 0010000 0000000
-//     Serato format | 06 32 10 00  00000110001100100001000000000000
+//                      | Hex          Binary
+//     ---------------- | -----------  --------------------------------
+//     3-byte plaintext |    00 00 cc       000 0000000 0000001 1001100
+//     serato32 value   | 00 00 01 4c  00000000000000000000000101001100
+//                      |
+//     3-byte plaintext |    cc 88 00       110 0110010 0010000 0000000
+//     serato32 value   | 06 32 10 00  00000110001100100001000000000000
 //
 // See this for details:
-// https://github.com/Holzhaus/serato-tags/blob/master/docs/serato_markers_.md#color-format
+// https://github.com/Holzhaus/serato-tags/blob/master/docs/serato_markers_.md#custom-serato32-binary-format
 
-mixxx::RgbColor seratoColorToRgb(quint8 w, quint8 x, quint8 y, quint8 z) {
-    quint8 b = (z & 0x7F) | ((y & 0x01) << 7);
-    quint8 g = ((y & 0x7F) >> 1) | ((x & 0x03) << 6);
-    quint8 r = ((x & 0x7F) >> 2) | ((w & 0x07) << 5);
-    return mixxx::RgbColor((r << 16) | (g << 8) | b);
-}
-
-mixxx::RgbColor seratoColorToRgb(quint32 color) {
-    return seratoColorToRgb(
-            (color >> 24) & 0xFF,
-            (color >> 16) & 0xFF,
-            (color >> 8) & 0xFF,
-            color & 0xFF);
+/// Decode value from Serato's 32-bit custom format to 24-bit plaintext.
+quint32 serato32toUint24(quint8 w, quint8 x, quint8 y, quint8 z) {
+    quint8 c = (z & 0x7F) | ((y & 0x01) << 7);
+    quint8 b = ((y & 0x7F) >> 1) | ((x & 0x03) << 6);
+    quint8 a = ((x & 0x7F) >> 2) | ((w & 0x07) << 5);
+    return ((static_cast<quint32>(a) << 16) | (static_cast<quint32>(b) << 8) |
+            static_cast<quint32>(c));
 }
 
-quint32 seratoColorFromRgb(quint8 r, quint8 g, quint8 b) {
-    quint8 z = b & 0x7F;
-    quint8 y = ((b >> 7) | (g << 1)) & 0x7F;
-    quint8 x = ((g >> 6) | (r << 2)) & 0x7F;
-    quint8 w = (r >> 5);
-    return (static_cast<quint32>(w) << 24) |
-            (static_cast<quint32>(x) << 16) |
-            (static_cast<quint32>(y) << 8) |
-            static_cast<quint32>(z);
+/// Decode value from Serato's 32-bit custom format to 24-bit plaintext.
+quint32 serato32toUint24(quint32 value) {
+    return serato32toUint24((value >> 24) & 0xFF,
+            (value >> 16) & 0xFF,
+            (value >> 8) & 0xFF,
+            value & 0xFF);
 }
 
-quint32 seratoColorFromRgb(mixxx::RgbColor rgb) {
-    return seratoColorFromRgb(
-            (rgb >> 16) & 0xFF,
-            (rgb >> 8) & 0xFF,
-            rgb & 0xFF);
+/// Encode a 24-bit plaintext value into Serato's 32-bit custom format.
+quint32 serato32fromUint24(quint8 a, quint8 b, quint8 c) {
+    quint8 z = c & 0x7F;
+    quint8 y = ((c >> 7) | (b << 1)) & 0x7F;
+    quint8 x = ((b >> 6) | (a << 2)) & 0x7F;
+    quint8 w = (a >> 5);
+    return (static_cast<quint32>(w) << 24) | (static_cast<quint32>(x) << 16) |
+            (static_cast<quint32>(y) << 8) | static_cast<quint32>(z);
 }
+
+/// Encode a 24-bit plaintext value into Serato's 32-bit custom format. The 8
+/// most significant bits of the quint32 will be ignored.
+quint32 serato32fromUint24(quint32 value) {
+    return serato32fromUint24(
+            (value >> 16) & 0xFF, (value >> 8) & 0xFF, value & 0xFF);
 }
+} // namespace
 
 namespace mixxx {
 
@@ -76,13 +74,16 @@ QByteArray SeratoMarkersEntry::dump() const {
     stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
     stream << static_cast<quint8>((m_hasStartPosition ? 0x00 : 0x7F))
-           << static_cast<quint32>((m_hasStartPosition ? m_startPosition : 0x7F7F7F7F))
+           << static_cast<quint32>(
+                      (m_hasStartPosition ? serato32fromUint24(m_startPosition)
+                                          : 0x7F7F7F7F))
            << static_cast<quint8>((m_hasEndPosition ? 0x00 : 0x7F))
-           << static_cast<quint32>((m_hasEndPosition ? m_endPosition : 0x7F7F7F7F));
+           << static_cast<quint32>(
+                      (m_hasEndPosition ? serato32fromUint24(m_endPosition)
+                                        : 0x7F7F7F7F));
     stream.writeRawData("\x00\x7F\x7F\x7F\x7F\x7F", 6);
-    stream << static_cast<quint32>(seratoColorFromRgb(m_color))
-           << static_cast<quint8>(m_type)
-           << static_cast<quint8>(m_isLocked);
+    stream << serato32fromUint24(static_cast<quint32>(m_color))
+           << static_cast<quint8>(m_type) << static_cast<quint8>(m_isLocked);
     return data;
 }
 
@@ -96,16 +97,17 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parse(const QByteArray& data) {
     quint8 type;
     quint8 startPositionStatus;
     quint8 endPositionStatus;
-    quint32 startPosition;
-    quint32 endPosition;
-    quint32 colorRaw;
+    quint32 startPositionSerato32;
+    quint32 endPositionSerato32;
+    quint32 colorSerato32;
     bool isLocked;
     char buffer[6];
 
     QDataStream stream(data);
     stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
-    stream >> startPositionStatus >> startPosition >> endPositionStatus >> endPosition;
+    stream >> startPositionStatus >> startPositionSerato32 >>
+            endPositionStatus >> endPositionSerato32;
 
     if (stream.readRawData(buffer, sizeof(buffer)) != sizeof(buffer)) {
         qWarning() << "Parsing SeratoMarkersEntry failed:"
@@ -113,32 +115,38 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parse(const QByteArray& data) {
         return nullptr;
     }
 
-    stream >> colorRaw >> type >> isLocked;
+    stream >> colorSerato32 >> type >> isLocked;
 
-    const RgbColor color = seratoColorToRgb(colorRaw);
+    const RgbColor color = RgbColor(serato32toUint24(colorSerato32));
 
     // Parse Start Position
     bool hasStartPosition = (startPositionStatus != 0x7F);
+    quint32 startPosition = 0x7F7F7F7F;
     if (!hasStartPosition) {
         // Start position not set
-        if (startPosition != 0x7F7F7F7F) {
+        if (startPositionSerato32 != 0x7F7F7F7F) {
             qWarning() << "Parsing SeratoMarkersEntry failed:"
                        << "startPosition != 0x7F7F7F7F";
 
             return nullptr;
         }
+    } else {
+        startPosition = serato32toUint24(startPositionSerato32);
     }
 
     // Parse End Position
     bool hasEndPosition = (endPositionStatus != 0x7F);
+    quint32 endPosition = 0x7F7F7F7F;
     if (!hasEndPosition) {
         // End position not set
-        if (endPosition != 0x7F7F7F7F) {
+        if (endPositionSerato32 != 0x7F7F7F7F) {
             qWarning() << "Parsing SeratoMarkersEntry failed:"
                        << "endPosition != 0x7F7F7F7F";
 
             return nullptr;
         }
+    } else {
+        endPosition = serato32toUint24(endPositionSerato32);
     }
 
     // Make sure that the unknown (and probably unused) bytes have the expected value
@@ -160,19 +168,20 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parse(const QByteArray& data) {
         return nullptr;
     }
 
-    SeratoMarkersEntryPointer pEntry = SeratoMarkersEntryPointer(new SeratoMarkersEntry(
-            hasStartPosition,
-            startPosition,
-            hasEndPosition,
-            endPosition,
-            color,
-            type,
-            isLocked));
+    SeratoMarkersEntryPointer pEntry =
+            SeratoMarkersEntryPointer(new SeratoMarkersEntry(hasStartPosition,
+                    startPosition,
+                    hasEndPosition,
+                    endPosition,
+                    color,
+                    type,
+                    isLocked));
     qDebug() << "SeratoMarkersEntry" << *pEntry;
     return pEntry;
 }
 
-bool SeratoMarkers::parse(SeratoMarkers* seratoMarkers, const QByteArray& data) {
+bool SeratoMarkers::parse(
+        SeratoMarkers* seratoMarkers, const QByteArray& data) {
     QDataStream stream(data);
     stream.setVersion(QDataStream::Qt_5_0);
     stream.setByteOrder(QDataStream::BigEndian);
@@ -190,7 +199,8 @@ bool SeratoMarkers::parse(SeratoMarkers* seratoMarkers, const QByteArray& data) 
 
     if (numEntries != kNumEntries) {
         qWarning() << "Parsing SeratoMarkers_ failed:"
-                   << "Expected" << kNumEntries << "entries but found" << numEntries;
+                   << "Expected" << kNumEntries << "entries but found"
+                   << numEntries;
         return false;
     }
 
@@ -204,8 +214,8 @@ bool SeratoMarkers::parse(SeratoMarkers* seratoMarkers, const QByteArray& data) 
         }
 
         QByteArray entryData = QByteArray(buffer, kEntrySize);
-        SeratoMarkersEntryPointer pEntry = SeratoMarkersEntryPointer(
-                SeratoMarkersEntry::parse(entryData));
+        SeratoMarkersEntryPointer pEntry =
+                SeratoMarkersEntryPointer(SeratoMarkersEntry::parse(entryData));
         if (!pEntry) {
             qWarning() << "Parsing SeratoMarkers_ failed:"
                        << "Unable to parse entry!";
@@ -222,16 +232,17 @@ bool SeratoMarkers::parse(SeratoMarkers* seratoMarkers, const QByteArray& data) 
         if (i >= kLoopEntryStartIndex &&
                 pEntry->typeId() != SeratoMarkersEntry::TypeId::Loop) {
             qWarning() << "Parsing SeratoMarkers_ failed:"
-                       << "Expected loop entry but found type" << pEntry->type();
+                       << "Expected loop entry but found type"
+                       << pEntry->type();
             return false;
         }
 
         entries.append(pEntry);
     }
 
-    quint32 trackColorRaw;
-    stream >> trackColorRaw;
-    RgbColor trackColor = seratoColorToRgb(trackColorRaw);
+    quint32 trackColorSerato32;
+    stream >> trackColorSerato32;
+    RgbColor trackColor = RgbColor(serato32toUint24(trackColorSerato32));
 
     if (stream.status() != QDataStream::Status::Ok) {
         qWarning() << "Parsing SeratoMarkers_ failed:"
@@ -252,7 +263,13 @@ bool SeratoMarkers::parse(SeratoMarkers* seratoMarkers, const QByteArray& data) 
 
 QByteArray SeratoMarkers::dump() const {
     QByteArray data;
-    data.resize(sizeof(quint16) + 2 * sizeof(quint32) + kEntrySize * m_entries.size());
+    if (isEmpty()) {
+        // Return empty QByteArray
+        return data;
+    }
+
+    data.resize(sizeof(quint16) + 2 * sizeof(quint32) +
+            kEntrySize * m_entries.size());
 
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream.setVersion(QDataStream::Qt_5_0);
@@ -262,7 +279,8 @@ QByteArray SeratoMarkers::dump() const {
         SeratoMarkersEntryPointer pEntry = m_entries.at(i);
         stream.writeRawData(pEntry->dump(), kEntrySize);
     }
-    stream << seratoColorFromRgb(m_trackColor.value_or(kDefaultTrackColor));
+    stream << serato32fromUint24(static_cast<quint32>(
+            m_trackColor.value_or(SeratoTags::kDefaultTrackColor)));
     return data;
 }
 

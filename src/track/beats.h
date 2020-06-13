@@ -315,6 +315,8 @@ class Beats : public QObject {
     BeatList m_beats;
     Logger m_logger;
 
+    virtual SINT getSampleRate() const = 0;
+
   signals:
     void updated();
 };

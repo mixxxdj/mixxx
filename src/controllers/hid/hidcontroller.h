@@ -20,7 +20,7 @@
 class HidController final : public Controller {
     Q_OBJECT
   public:
-    HidController(const hid_device_info deviceInfo);
+    HidController(const hid_device_info& deviceInfo, UserSettingsPointer pConfig);
     ~HidController() override;
 
     QString presetExtension() override;
@@ -30,8 +30,6 @@ class HidController final : public Controller {
         *pClone = m_preset;
         return ControllerPresetPointer(pClone);
     }
-
-    bool savePreset(const QString fileName) const override;
 
     void visit(const MidiControllerPreset* preset) override;
     void visit(const HidControllerPreset* preset) override;

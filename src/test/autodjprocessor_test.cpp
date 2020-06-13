@@ -19,7 +19,7 @@ using ::testing::_;
 using ::testing::Return;
 
 static int kDefaultTransitionTime = 10;
-const mixxx::AudioSignal::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
+const mixxx::audio::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
 const QString kTrackLocationTest(QDir::currentPath() %
                                  "/src/test/id3-test-data/cover-test-png.mp3");
 
@@ -211,8 +211,8 @@ class AutoDJProcessorTest : public LibraryTest {
     }
 
     TrackId addTrackToCollection(const QString& trackLocation) {
-        TrackPointer pTrack = internalCollection()->getOrAddTrack(
-                TrackRef::fromFileInfo(trackLocation));
+        TrackPointer pTrack =
+                getOrAddTrackByLocation(trackLocation);
         return pTrack ? pTrack->getId() : TrackId();
     }
 

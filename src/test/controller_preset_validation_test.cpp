@@ -15,7 +15,7 @@
 
 class FakeController : public Controller {
   public:
-    FakeController();
+    explicit FakeController(UserSettingsPointer pConfig);
     ~FakeController() override;
 
     QString presetExtension() override {
@@ -33,11 +33,6 @@ class FakeController : public Controller {
             *pClone = m_midiPreset;
             return ControllerPresetPointer(pClone);
         }
-    }
-
-    bool savePreset(const QString fileName) const override {
-        Q_UNUSED(fileName);
-        return true;
     }
 
     void visit(const MidiControllerPreset* preset) override {
@@ -112,9 +107,8 @@ class FakeController : public Controller {
     HidControllerPreset m_hidPreset;
 };
 
-FakeController::FakeController()
-        : m_bMidiPreset(false),
-          m_bHidPreset(false) {
+FakeController::FakeController(UserSettingsPointer pConfig)
+        : Controller(pConfig), m_bMidiPreset(false), m_bHidPreset(false) {
 }
 
 FakeController::~FakeController() {
@@ -123,30 +117,31 @@ FakeController::~FakeController() {
 class ControllerPresetValidationTest : public MixxxTest {
   protected:
     void SetUp() override {
-        m_presetPaths << QDir::currentPath() + "/res/controllers";
-        m_pEnumerator.reset(new PresetInfoEnumerator(m_presetPaths));
+        m_presetPath = QDir::current();
+        m_presetPath.cd("res/controllers");
+        m_pEnumerator.reset(new PresetInfoEnumerator(QList<QString>{m_presetPath.absolutePath()}));
     }
 
     bool testLoadPreset(const PresetInfo& preset) {
         ControllerPresetPointer pPreset =
-                ControllerPresetFileHandler::loadPreset(preset.getPath(),
-                                                        m_presetPaths);
+                ControllerPresetFileHandler::loadPreset(
+                        preset.getPath(),
+                        m_presetPath);
         if (pPreset.isNull()) {
             return false;
         }
 
-        FakeController controller;
+        FakeController controller(config());
         controller.setDeviceName("Test Controller");
         controller.startEngine();
         controller.setPreset(*pPreset);
         // Do not initialize the scripts.
-        bool result = controller.applyPreset(m_presetPaths, false);
+        bool result = controller.applyPreset(false);
         controller.stopEngine();
         return result;
     }
 
-
-    QStringList m_presetPaths;
+    QDir m_presetPath;
     QScopedPointer<PresetInfoEnumerator> m_pEnumerator;
 };
 

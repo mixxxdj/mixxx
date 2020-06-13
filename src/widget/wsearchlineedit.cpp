@@ -182,8 +182,11 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
     // we will resize the Clear button icon only if height has changed.
     if (m_clearButton->size().height() != m_innerHeight) {
         QSize newSize = QSize(m_innerHeight, m_innerHeight);
-        m_clearButton->resize(m_innerHeight, m_innerHeight);
+        m_clearButton->resize(newSize);
         m_clearButton->setIconSize(newSize);
+        // Note(ronso0): For some reason this ensures the search text
+        // is being displayed after skin change/reload.
+        updateEditBox(getSearchText());
     }
     int top = rect().top() + m_frameWidth;
     if (layoutDirection() == Qt::LeftToRight) {

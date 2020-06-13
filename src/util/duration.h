@@ -1,5 +1,4 @@
-#ifndef MIXXX_UTIL_DURATION_H
-#define MIXXX_UTIL_DURATION_H
+#pragma once
 
 #include <QMetaType>
 #include <QString>
@@ -23,43 +22,43 @@ class DurationBase {
     };
 
     // Returns the duration as an integer number of seconds (rounded-down).
-    qint64 toIntegerSeconds() const {
+    constexpr qint64 toIntegerSeconds() const {
         return m_durationNanos / kNanosPerSecond;
     }
 
     // Returns the duration as a floating point number of seconds.
-    double toDoubleSeconds() const {
+    constexpr double toDoubleSeconds() const {
         return static_cast<double>(m_durationNanos) / kNanosPerSecond;
     }
 
     // Returns the duration as an integer number of milliseconds (rounded-down).
-    qint64 toIntegerMillis() const {
+    constexpr qint64 toIntegerMillis() const {
         return m_durationNanos / kNanosPerMilli;
     }
 
     // Returns the duration as a floating point number of milliseconds.
-    double toDoubleMillis() const {
+    constexpr double toDoubleMillis() const {
         return static_cast<double>(m_durationNanos) / kNanosPerMilli;
     }
 
     // Returns the duration as an integer number of microseconds (rounded-down).
-    qint64 toIntegerMicros() const {
+    constexpr qint64 toIntegerMicros() const {
         return m_durationNanos / kNanosPerMicro;
     }
 
     // Returns the duration as a floating point number of microseconds.
-    double toDoubleMicros() const {
+    constexpr double toDoubleMicros() const {
         return static_cast<double>(m_durationNanos) / kNanosPerMicro;
     }
 
     // Returns the duration as an integer number of nanoseconds. The duration is
     // represented internally as nanoseconds so no rounding occurs.
-    qint64 toIntegerNanos() const {
+    constexpr qint64 toIntegerNanos() const {
         return m_durationNanos;
     }
 
     // Returns the duration as an integer number of nanoseconds.
-    double toDoubleNanos() const {
+    constexpr double toDoubleNanos() const {
         return static_cast<double>(m_durationNanos);
     }
 
@@ -96,7 +95,7 @@ class DurationBase {
     static QChar kDecimalSeparator;
 
   protected:
-    explicit DurationBase(qint64 durationNanos)
+    explicit constexpr DurationBase(qint64 durationNanos)
         : m_durationNanos(durationNanos) {
     }
 
@@ -105,7 +104,7 @@ class DurationBase {
 
 class DurationDebug : public DurationBase {
   public:
-    DurationDebug(const DurationBase& duration, Units unit)
+    constexpr DurationDebug(const DurationBase& duration, Units unit)
         : DurationBase(duration),
           m_unit(unit) {
     }
@@ -136,30 +135,30 @@ class Duration : public DurationBase {
   public:
     // Returns a Duration object representing a duration of 'seconds'.
     template<typename T>
-    static Duration fromSeconds(T seconds) {
+    static constexpr Duration fromSeconds(T seconds) {
         return Duration(seconds * kNanosPerSecond);
     }
 
     // Returns a Duration object representing a duration of 'millis'.
-    static Duration fromMillis(qint64 millis) {
+    static constexpr Duration fromMillis(qint64 millis) {
         return Duration(millis * kNanosPerMilli);
     }
 
     // Returns a Duration object representing a duration of 'micros'.
-    static Duration fromMicros(qint64 micros) {
+    static constexpr Duration fromMicros(qint64 micros) {
         return Duration(micros * kNanosPerMicro);
     }
 
     // Returns a Duration object representing a duration of 'nanos'.
-    static Duration fromNanos(qint64 nanos) {
+    static constexpr Duration fromNanos(qint64 nanos) {
         return Duration(nanos);
     }
 
-    static Duration empty() {
+    static constexpr Duration empty() {
         return Duration();
     }
 
-    Duration()
+    constexpr Duration()
         : DurationBase(0) {
     }
 
@@ -265,7 +264,7 @@ class Duration : public DurationBase {
     }
 
   private:
-    explicit Duration(qint64 durationNanos)
+    explicit constexpr Duration(qint64 durationNanos)
             : DurationBase(durationNanos) {
     }
 };
@@ -274,5 +273,3 @@ class Duration : public DurationBase {
 
 Q_DECLARE_TYPEINFO(mixxx::Duration, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(mixxx::Duration)
-
-#endif /* MIXXX_UTIL_DURATION_H */

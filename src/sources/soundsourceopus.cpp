@@ -1,5 +1,6 @@
 #include "sources/soundsourceopus.h"
 
+#include "audio/streaminfo.h"
 #include "util/logger.h"
 
 namespace mixxx {
@@ -9,7 +10,7 @@ namespace {
 const Logger kLogger("SoundSourceOpus");
 
 // Decoded output of opusfile has a fixed sample rate of 48 kHz (fullband)
-constexpr AudioSignal::SampleRate kSampleRate = AudioSignal::SampleRate(48000);
+constexpr audio::SampleRate kSampleRate = audio::SampleRate(48000);
 
 // http://opus-codec.org
 //  - Sample rate 48 kHz (fullband)
@@ -121,13 +122,17 @@ SoundSourceOpus::importTrackMetadataAndCoverImage(
         return imported;
     }
 
-    pTrackMetadata->setChannels(ChannelCount(op_channel_count(pOggOpusFile, -1)));
-    pTrackMetadata->setSampleRate(kSampleRate);
-    pTrackMetadata->setBitrate(Bitrate(op_bitrate(pOggOpusFile, -1) / 1000));
+    pTrackMetadata->setChannelCount(
+            audio::ChannelCount(op_channel_count(pOggOpusFile, -1)));
+    pTrackMetadata->setSampleRate(
+            kSampleRate);
+    pTrackMetadata->setBitrate(
+            audio::Bitrate(op_bitrate(pOggOpusFile, -1) / 1000));
     // Cast to double is required for duration with sub-second precision
     const double dTotalFrames = op_pcm_total(pOggOpusFile, -1);
-    pTrackMetadata->setDuration(Duration::fromMicros(
-            1000000 * dTotalFrames / pTrackMetadata->getSampleRate()));
+    const auto duration = Duration::fromMicros(
+            1000000 * dTotalFrames / pTrackMetadata->getSampleRate());
+    pTrackMetadata->setDuration(duration);
 
 #ifndef TAGLIB_HAS_OPUSFILE
     const OpusTags* l_ptrOpusTags = op_tags(pOggOpusFile, -1);
@@ -224,14 +229,14 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(
     if (0 < streamChannelCount) {
         // opusfile supports to enforce stereo decoding
         bool enforceStereoDecoding =
-                params.channelCount().valid() &&
-                (params.channelCount() <= 2) &&
+                params.getSignalInfo().getChannelCount().isValid() &&
+                (params.getSignalInfo().getChannelCount() <= 2) &&
                 // preserve mono signals if stereo signal is not requested explicitly
-                ((params.channelCount() == 2) || (streamChannelCount > 2));
+                ((params.getSignalInfo().getChannelCount() == 2) || (streamChannelCount > 2));
         if (enforceStereoDecoding) {
-            setChannelCount(2);
+            initChannelCountOnce(2);
         } else {
-            setChannelCount(streamChannelCount);
+            initChannelCountOnce(streamChannelCount);
         }
     } else {
         kLogger.warning()
@@ -241,7 +246,7 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(
     }
 
     // Reserve enough capacity for buffering a stereo signal!
-    const auto prefetchChannelCount = std::min(channelCount(), ChannelCount(2));
+    const auto prefetchChannelCount = std::min(getSignalInfo().getChannelCount(), audio::ChannelCount(2));
     SampleBuffer(prefetchChannelCount * kNumberOfPrefetchFrames).swap(m_prefetchSampleBuffer);
 
     const ogg_int64_t pcmTotal = op_pcm_total(m_pOggOpusFile, kEntireStreamLink);
@@ -264,7 +269,7 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(
         return OpenResult::Failed;
     }
 
-    setSampleRate(kSampleRate);
+    initSampleRateOnce(kSampleRate);
 
     m_curFrameIndex = frameIndexMin();
 
@@ -328,7 +333,7 @@ ReadableSampleFrames SoundSourceOpus::readSampleFramesClamped(
     SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         SINT numberOfSamplesToRead =
-                frames2samples(numberOfFramesRemaining);
+                getSignalInfo().frames2samples(numberOfFramesRemaining);
         if (!writableSampleFrames.writableData()) {
             // NOTE(uklotzde): The opusfile API does not provide any
             // functions for skipping samples in the audio stream. Calling
@@ -342,7 +347,7 @@ ReadableSampleFrames SoundSourceOpus::readSampleFramesClamped(
             }
         }
         int readResult;
-        if (channelCount() == 2) {
+        if (getSignalInfo().getChannelCount() == 2) {
             readResult = op_read_float_stereo(
                     m_pOggOpusFile,
                     pSampleBuffer,
@@ -356,7 +361,7 @@ ReadableSampleFrames SoundSourceOpus::readSampleFramesClamped(
         }
         if (0 < readResult) {
             m_curFrameIndex += readResult;
-            pSampleBuffer += frames2samples(readResult);
+            pSampleBuffer += getSignalInfo().frames2samples(readResult);
             numberOfFramesRemaining -= readResult;
         } else {
             kLogger.warning() << "Failed to read sample data from OggOpus file:"
@@ -372,7 +377,7 @@ ReadableSampleFrames SoundSourceOpus::readSampleFramesClamped(
             IndexRange::forward(firstFrameIndex, numberOfFrames),
             SampleBuffer::ReadableSlice(
                     writableSampleFrames.writableData(),
-                    std::min(writableSampleFrames.writableLength(), frames2samples(numberOfFrames))));
+                    std::min(writableSampleFrames.writableLength(), getSignalInfo().frames2samples(numberOfFrames))));
 }
 
 QString SoundSourceProviderOpus::getName() const {
