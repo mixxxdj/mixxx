@@ -704,6 +704,10 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
                                 << decFrameInfo.error
                                 << m_pFaad->GetErrorMessage(decFrameInfo.error)
                                 << getUrlString();
+                        // Assumption: All samples from the preceding blocks have been
+                        // decoded and consumed before decoding continues with the new,
+                        // reopened decoder. Otherwise the decoded stream of samples
+                        // might be discontinuous, but we can't do anything about it.
                         retryAfterReopeningDecoder = reopenDecoder();
                         // If reopening the decoder failed retrying the same sample
                         // block with the same decoder instance will fail again. In
