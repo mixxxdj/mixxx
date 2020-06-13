@@ -20,10 +20,6 @@ class WBeatMenu : public QMenu {
 
     ~WBeatMenu() override = default;
 
-    // This function hides (not overrides) non-virtual QMenu::popup().
-    // This has been done on purpose to update menu before showing.
-    void popup(const QPoint& pos, QAction* at = nullptr);
-
     void setBeatgrid(mixxx::BeatsPointer pBeats) {
         m_pBeats = pBeats;
     }
@@ -34,6 +30,7 @@ class WBeatMenu : public QMenu {
 
     void setOptions(Options selectedOptions) {
         m_eSelectedOptions = selectedOptions;
+        update();
     }
 
     void addOptions(Options newOptions);

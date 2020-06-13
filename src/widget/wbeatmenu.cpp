@@ -10,11 +10,6 @@ WBeatMenu::WBeatMenu(UserSettingsPointer pConfig, QWidget* parent)
         : QMenu(parent), m_pConfig(pConfig) {
 }
 
-void WBeatMenu::popup(const QPoint& pos, QAction* at) {
-    update();
-    QMenu::popup(pos, at);
-}
-
 void WBeatMenu::update() {
     clear();
     if (m_eSelectedOptions.testFlag(WBeatMenu::Option::SetDownbeat) &&
@@ -38,10 +33,10 @@ void WBeatMenu::slotDownbeatUpdated() {
 }
 
 void WBeatMenu::addOptions(Options newOptions) {
-    m_eSelectedOptions = m_eSelectedOptions | newOptions;
+    setOptions(m_eSelectedOptions | newOptions);
 }
 
 void WBeatMenu::removeOptions(Options removeOptions) {
-    m_eSelectedOptions = WBeatMenu::Options(
-            m_eSelectedOptions - (m_eSelectedOptions & removeOptions));
+    setOptions(WBeatMenu::Options(
+            m_eSelectedOptions - (m_eSelectedOptions & removeOptions)));
 }
