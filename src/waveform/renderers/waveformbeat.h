@@ -38,6 +38,9 @@ class WaveformBeat final : WaveformElementRightClickable {
     Beat getBeat() const {
         return m_beat;
     }
+    void setVisible(bool bVisible) {
+        m_bVisible = bVisible;
+    }
     bool contains(QPoint point, Qt::Orientation orientation) const override;
 
   private:
@@ -46,6 +49,7 @@ class WaveformBeat final : WaveformElementRightClickable {
     int m_length;
     BeatGridMode m_beatGridMode;
     Beat m_beat;
+    bool m_bVisible;
 };
 
 bool operator<(const WaveformBeat& beat1, const WaveformBeat& beat2);

@@ -13,6 +13,10 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
+namespace {
+constexpr int kMaxZoomFactorToDisplayBeats = 15;
+}
+
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererAbstract(waveformWidgetRenderer) {
     m_beats.resize(128);
@@ -95,6 +99,10 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         waveformBeat->setBeat(beat);
         waveformBeat->setOrientation(orientation);
         waveformBeat->setLength((orientation == Qt::Horizontal) ? rendererHeight : rendererWidth);
+        waveformBeat->setVisible(beat.getType() == mixxx::track::io::BAR ||
+                (beat.getType() == mixxx::track::io::BEAT &&
+                        m_waveformRenderer->getZoomFactor() <
+                                kMaxZoomFactorToDisplayBeats));
         beatsOnScreen.append(*waveformBeat);
         beatCount++;
     }
