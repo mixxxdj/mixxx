@@ -113,11 +113,10 @@ Qt::ItemFlags BaseExternalTrackModel::flags(const QModelIndex& index) const {
     return readOnlyFlags(index);
 }
 
-TrackModel::CapabilitiesFlags BaseExternalTrackModel::getCapabilities() const {
-    return TRACKMODELCAPS_ADDTOPLAYLIST |
-            TRACKMODELCAPS_ADDTOCRATE |
-            TRACKMODELCAPS_ADDTOAUTODJ |
-            TRACKMODELCAPS_LOADTODECK |
-            TRACKMODELCAPS_LOADTOPREVIEWDECK |
-            TRACKMODELCAPS_LOADTOSAMPLER;
+TrackModel::Capabilities BaseExternalTrackModel::getCapabilities() const {
+    return Capability::AddToTrackSet |
+            Capability::AddToAutoDJ |
+            Capability::LoadToDeck |
+            Capability::LoadToPreviewDeck |
+            Capability::LoadToSampler;
 }

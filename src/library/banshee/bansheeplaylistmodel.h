@@ -26,7 +26,7 @@ class BansheePlaylistModel final : public BaseSqlTableModel {
     bool isColumnInternal(int column) final;
 
     Qt::ItemFlags flags(const QModelIndex &index) const final;
-    CapabilitiesFlags getCapabilities() const final;
+    Capabilities getCapabilities() const final;
 
   private slots:
     void tracksChanged(QSet<TrackId> trackIds);
