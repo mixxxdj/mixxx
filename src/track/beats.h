@@ -104,13 +104,7 @@ class Beats final : public QObject {
     void setSubVersion(QString subVersion);
     bool isValid() const;
     /// Calculates the BPM between two beat positions.
-    // TODO(JVC) Temporary adaptor. Will be removed before finalizing the PR
-    double calculateBpm(const track::io::Beat& startBeat,
-            const track::io::Beat& stopBeat) const {
-        Bpm value = calculateBpmNew(startBeat, stopBeat);
-        return value.getValue();
-    }
-    Bpm calculateBpmNew(const track::io::Beat& startBeat,
+    Bpm calculateBpm(const track::io::Beat& startBeat,
             const track::io::Beat& stopBeat) const;
 
     /// Initializes the BeatGrid to have a BPM of dBpm and the first beat offset

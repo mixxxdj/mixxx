@@ -203,14 +203,14 @@ void Beats::onBeatlistChanged() {
     m_dLastFrame = m_beats.last().frame_position();
     track::io::Beat startBeat = m_beats.first();
     track::io::Beat stopBeat = m_beats.last();
-    m_dCachedBpm = calculateBpmNew(startBeat, stopBeat);
+    m_dCachedBpm = calculateBpm(startBeat, stopBeat);
 }
 
 bool Beats::isValid() const {
     return m_iSampleRate > 0 && m_beats.size() > 0;
 }
 
-Bpm Beats::calculateBpmNew(const track::io::Beat& startBeat,
+Bpm Beats::calculateBpm(const track::io::Beat& startBeat,
         const track::io::Beat& stopBeat) const {
     if (startBeat.frame_position() > stopBeat.frame_position()) {
         return Bpm();
@@ -482,7 +482,7 @@ double Beats::getBpmRangeNew(FrameNum startFrame, FrameNum stopFrame) const {
     track::io::Beat startBeat, stopBeat;
     startBeat.set_frame_position(startFrame);
     stopBeat.set_frame_position(stopFrame);
-    return calculateBpm(startBeat, stopBeat);
+    return calculateBpm(startBeat, stopBeat).getValue();
 }
 
 Bpm Beats::getBpmAroundPositionNew(FrameNum curFrame, int n) const {
@@ -521,7 +521,7 @@ Bpm Beats::getBpmAroundPositionNew(FrameNum curFrame, int n) const {
     track::io::Beat startBeat, stopBeat;
     startBeat.set_frame_position(lower_bound);
     stopBeat.set_frame_position(upper_bound);
-    return calculateBpmNew(startBeat, stopBeat);
+    return calculateBpm(startBeat, stopBeat);
 }
 
 void Beats::addBeatNew(FrameNum beatFrame) {
