@@ -5,10 +5,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   id="svg16"
-   version="1.1"
+   width="24"
    height="24"
-   width="24">
+   version="1.1"
+   id="svg16">
   <metadata
      id="metadata22">
     <rdf:RDF>
@@ -24,29 +24,62 @@
   <defs
      id="defs20" />
   <g
-     transform="translate(1,-10)"
-     id="g8"
-     style="fill:#666665">
-    <path
-       d="m 8,31 h 2 V 13 H 8 Z"
-       id="path2" />
-    <path
-       d="m 13,31 h 2 V 13 h -2 z"
-       id="path4" />
-    <path
-       d="m 18,31 h 2 V 13 h -2 z"
-       id="path6" />
+     style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round;stroke-linecap:round"
+     id="g862">
+    <g
+       transform="translate(1,-10)"
+       id="g8-3"
+       style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round;stroke-linecap:round">
+      <path
+         style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round;stroke-linecap:round"
+         d="m 8,31 h 2 V 13 H 8 Z"
+         id="path2-6" />
+      <path
+         style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round;stroke-linecap:round"
+         d="m 13,31 h 2 V 13 h -2 z"
+         id="path4-7" />
+      <path
+         style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round;stroke-linecap:round"
+         d="m 18,31 h 2 V 13 h -2 z"
+         id="path6-5" />
+    </g>
+    <g
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round;stroke-linecap:round"
+       id="g843-3">
+      <path
+         style="fill:none;fill-opacity:1;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round;stroke-linecap:round"
+         id="path10-5"
+         d="M 4,17 H 6 V 3 H 4 Z" />
+      <path
+         style="fill:none;fill-opacity:1;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round;stroke-linecap:round"
+         id="path12-6"
+         d="M 4,21 H 6 V 19 H 4 Z" />
+    </g>
   </g>
   <g
-     style="fill:#a89a8c;fill-opacity:1"
-     id="g843">
+     style="fill:#3f3d3d"
+     id="g8"
+     transform="translate(1,-10)">
     <path
-       style="fill:#a89a8c;fill-opacity:1"
+       id="path2"
+       d="m 8,31 h 2 V 13 H 8 Z" />
+    <path
+       id="path4"
+       d="m 13,31 h 2 V 13 h -2 z" />
+    <path
+       id="path6"
+       d="m 18,31 h 2 V 13 h -2 z" />
+  </g>
+  <g
+     id="g843"
+     style="fill:#928476;fill-opacity:1">
+    <path
+       d="M 4,17 H 6 V 3 H 4 Z"
        id="path10"
-       d="M 4,17 H 6 V 3 H 4 Z" />
+       style="fill:#928476;fill-opacity:1" />
     <path
-       style="fill:#a89a8c;fill-opacity:1"
+       d="M 4,21 H 6 V 19 H 4 Z"
        id="path12"
-       d="M 4,21 H 6 V 19 H 4 Z" />
+       style="fill:#928476;fill-opacity:1" />
   </g>
 </svg>

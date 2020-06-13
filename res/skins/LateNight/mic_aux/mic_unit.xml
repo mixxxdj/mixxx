@@ -44,8 +44,6 @@
                 </Children>
               </WidgetGroup>
 
-              <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
-
             </Children>
           </WidgetGroup><!-- MicAuxMainControls -->
 
@@ -56,7 +54,7 @@
             <Children>
               <Template src="skin:/mixer/vumeter_single.xml">
                 <SetVariable name="ChannelType">microphone</SetVariable>
-                <SetVariable name="VuSize">small</SetVariable>
+                <SetVariable name="VuSize">micaux</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>

@@ -58,7 +58,7 @@
                     <SetVariable name="BtnSize">square</SetVariable>
                     <SetVariable name="ConfigKey">[Channel1],pfl</SetVariable>
                   </Template>
-                  <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
+                  <WidgetGroup><Size>3f,0min</Size></WidgetGroup>
                   <Template src="skin:/controls/button_2state.xml">
                     <SetVariable name="TooltipId">pfl</SetVariable>
                     <SetVariable name="ObjectName">PflButton</SetVariable>
@@ -199,11 +199,14 @@
 
               <!-- 2 decks -->
               <WidgetGroup>
+                <ObjectName>AlignCenter</ObjectName>
                 <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
                 <Children>
 
                   <WidgetGroup><!-- with EQ knobs -->
                     <Layout>horizontal</Layout>
+                    <SizePolicy>max,min</SizePolicy>
                     <Children>
                       <SingletonContainer>
                         <ObjectName>CrossfaderSingleton</ObjectName>
@@ -276,7 +279,7 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
+              <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
               <WidgetGroup>
                 <Size>18f,0min</Size>
                 <Connection>

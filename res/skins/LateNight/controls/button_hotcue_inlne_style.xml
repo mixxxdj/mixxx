@@ -1,3 +1,5 @@
+<!-- ToDo (ronso0)
+      make inline <Style> accept <Variable> -->
 <!-- A hotcue button. The only variable that needs to be specified is "number" -->
 <Template>
 

@@ -128,7 +128,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>max,me</SizePolicy>
         <Children>
-          <WidgetGroup><Size>1me,0me</Size></WidgetGroup>
+          <WidgetGroup><Size>0me,1me</Size></WidgetGroup>
 
           <WidgetGroup><!-- beat grid buttons row -->
             <Layout>horizontal</Layout>
@@ -145,7 +145,7 @@
   	                <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
   	                <SetVariable name="ObjectName">BeatCurposLarge</SetVariable>
   	                <SetVariable name="Size">26f,52f</SetVariable>
-  	                <SetVariable name="BtnSize">tall</SetVariable>
+  	                <SetVariable name="BtnSize">library_tall</SetVariable>
   	                <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_curpos</SetVariable>
   	                <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beats_translate_match_alignment</SetVariable>
   	              </Template>
@@ -165,7 +165,7 @@
                     <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
                     <SetVariable name="ObjectName">BeatCurposLarge</SetVariable>
                     <SetVariable name="Size">52f,26f</SetVariable>
-                    <SetVariable name="BtnSize">wide</SetVariable>
+                    <SetVariable name="BtnSize">library_wide</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_curpos</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beats_translate_match_alignment</SetVariable>
                   </Template>

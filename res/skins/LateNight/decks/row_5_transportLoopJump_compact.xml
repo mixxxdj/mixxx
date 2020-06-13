@@ -82,8 +82,9 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName></ObjectName>
+            <ObjectName>LoopControls</ObjectName>
             <Layout>horizontal</Layout>
+            <SizePolicy>me,min</SizePolicy>
             <Children>
               <Template src="skin:/controls/button_2state_right_display.xml">
                 <SetVariable name="TooltipId">beatloop_activate</SetVariable>
@@ -102,12 +103,16 @@
                 <MinimumSize>46,26</MinimumSize>
                 <MaximumSize>72,26</MaximumSize>
                 <Value><Variable name="Group"/>,beatloop_size</Value>
+                <Connection>
+                  <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
+                  <BindProperty>highlight</BindProperty>
+                </Connection>
               </BeatSpinBox>
 
               <WidgetGroup>
                 <SizePolicy>me,min</SizePolicy>
                 <MinimumSize>2,</MinimumSize>
-                <MaximumSize>40,</MaximumSize>
+                <MaximumSize>20,</MaximumSize>
               </WidgetGroup>
 
               <BeatSpinBox>
@@ -116,7 +121,13 @@
                 <SizePolicy>me,min</SizePolicy>
                 <MinimumSize>46,26</MinimumSize>
                 <MaximumSize>72,26</MaximumSize>
+                <Align>center</Align>
+                <Alignment>center</Alignment>
                 <Value><Variable name="Group"/>,beatjump_size</Value>
+                <Connection>
+                  <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
+                  <BindProperty>highlight</BindProperty>
+                </Connection>
               </BeatSpinBox>
             </Children>
             <Connection>
@@ -128,20 +139,24 @@
       </WidgetGroup><!-- DeckRow_5_LoopCuesTransportCompact -->
 
       <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
-      <WidgetGroup><SizePolicy>i,min</SizePolicy></WidgetGroup>
-      <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
-
-      <Template src="skin:/fx/assign_buttons.xml"/>
-
-      <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
-      <WidgetGroup><SizePolicy>i,min</SizePolicy></WidgetGroup>
+      <WidgetGroup><SizePolicy>min,min</SizePolicy></WidgetGroup>
       <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
 
       <Template src="skin:/decks/vinyl_controls.xml"/>
 
-      <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
-      <WidgetGroup><SizePolicy>i,min</SizePolicy></WidgetGroup>
-      <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
+      <WidgetGroup>
+        <SizePolicy>me,min</SizePolicy>
+        <MinimumSize>2,</MinimumSize>
+        <MaximumSize>40,</MaximumSize>
+      </WidgetGroup>
+
+      <Template src="skin:/fx/assign_buttons.xml"/>
+
+      <WidgetGroup>
+        <SizePolicy>me,min</SizePolicy>
+        <MinimumSize>2,</MinimumSize>
+        <MaximumSize>40,</MaximumSize>
+      </WidgetGroup>
 
       <WidgetGroup>
         <SizePolicy>me,min</SizePolicy>
@@ -153,7 +168,7 @@
           </SingletonContainer>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Skin],show_rate_key_controls_compact</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_key_controls_compact</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>

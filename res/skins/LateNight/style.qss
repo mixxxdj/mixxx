@@ -29,7 +29,8 @@ WOverview /* Hotcue labels in the overview */,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox,
-#fadeModeCombobox QAbstractScrollArea {
+#fadeModeCombobox QAbstractScrollArea,
+WLibrary QRadioButton {
   font-family: "Open Sans";
   font-weight: 500; /* semi-bold */
   font-style: normal;
@@ -55,7 +56,10 @@ WOverview #PassthroughLabel,
 #SkinSettingsToggle,
 #DeckSizeButton[value="1"],
 WLibrary QPushButton,
-#labelRecFilename {
+#labelRecFilename,
+WEffectSelector,
+#fadeModeCombobox,
+WOverview #PassthroughLabel {
   font-weight: bold;
 }
 
@@ -103,7 +107,7 @@ WBeatSpinBox QMenu,
   text-align: center;
 }
 
-WPushButton, WLibrary QPushButton, WLibrary QRadioButton,
+WPushButton, WLibrary QPushButton,
 #RecDuration[highlight="0"],
 #RecDuration[highlight="1"] {
   font-size: 11px;
@@ -113,14 +117,14 @@ WPushButton, WLibrary QPushButton, WLibrary QRadioButton,
 #SamplerTitleMini,
 #EQKillButton,
 #RateText,
-#PreviewBPM {
+#SamplerBPM,
+#PreviewBPM,
+WLibrary QRadioButton {
 	font-size: 12px;
 }
 
 WKey,
 #DurationText,
-WBeatSpinBox,
-#spinBoxTransition,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox,
@@ -139,6 +143,8 @@ WEffectSelector QAbstractScrollArea,
 #MicAuxLabel, #MicAuxLabelUnconfigured,
 #PreviewTitle,
 #PreviewLabel,
+WBeatSpinBox,
+#spinBoxTransition,
 WTime {
   font-size: 14px;
   text-align: left;
@@ -166,8 +172,12 @@ WTime {
 
 #RateText,
 #MicAuxLabel,
-#PreviewBPM {
+#PreviewBPM,
+WBeatSpinBox, #spinBoxTransition {
   text-align: center;
+}
+WBeatSpinBox, #spinBoxTransition {
+  qproperty-alignment: 'AlignHCenter';
 }
 
 #SamplerTitle,
@@ -286,6 +296,11 @@ WOverview QLabel {
     qproperty-layoutAlignment: 'AlignLeft';
   }
 
+  #LoopControls,
+  #JumpControls {
+    qproperty-layoutAlignment: 'AlignCenter';
+  }
+
 WSpinny { /*
   This produces artifacts in spinny bg
   background-color: rgba(1, 1, 1, 10);
@@ -293,18 +308,15 @@ WSpinny { /*
   background: none;*/
 }
 
-#RateContainer,
-#RateContainerCompact,
-#BpmContainer,
-#RateButtons {
-  qproperty-layoutAlignment: 'AlignCenter';
-}
-
 #BpmText,
 #RateText {
   qproperty-alignment: 'AlignCenter';
 }
 
+#RateContainer,
+#RateContainerCompact,
+#BpmContainer,
+#RateButtons
 #SyncBox {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
@@ -320,15 +332,6 @@ WSpinny { /*
 #MixerContainer {
   qproperty-layoutAlignment: 'AlignTop';
 }
-
-#MixerMasterHeadphone {
-  }
-  #MasterControls,
-  #HeadphoneControls {
-    qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-  }
-  #MasterHeadphoneSeparator {
-  }
 
 #MixerDecks {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
@@ -349,9 +352,17 @@ WSpinny { /*
     qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   }
 
+  #VolumeGain2Decks {
+    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  }
   #VuAndSlider_4Decks {
     qproperty-layoutAlignment: 'AlignRight | AlignTop';
   }
+
+  #KnobCentered {
+    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  }
+
 #VuMeterBox,
 #VuMeterBoxMasterSingle {
   /* gap in between clipping and Vu level */
@@ -374,30 +385,28 @@ WSpinny { /*
     qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
     }
 
-#VolumeGain2Decks {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-}
-
-#KnobCentered {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-}
-
-#EQKillButtonBoxLeft {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-}
-#EQKillButtonBoxRight {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
-}
-
 #CrossfaderAndSwitches2Decks {
   qproperty-layoutAlignment: 'AlignHCenter';
 }
 #CrossfaderSwitch_4Decks {
   qproperty-layoutAlignment: 'AlignRight';
-}
-#Crossfader {
-  qproperty-layoutAlignment: 'AlignCenter';
-}
+  }
+  #CrossfaderContainer {
+    qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
+    }
+    #Crossfader {
+      qproperty-layoutAlignment: 'AlignCenter';
+    }
+
+#MixerMasterHeadphone {
+  }
+  #MasterControls,
+  #HeadphoneControls {
+    qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+  }
+  #MasterHeadphoneSeparator {
+  }
+
 /************** Mixer  ********************************************************/
 
 
@@ -411,6 +420,11 @@ WSpinny { /*
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
 }
 
+#FxUnitHeaderCollapsed,
+#FxUnitHeaderExpanded,
+#FxUnitHeader {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+}
 #FxUnitControlsExpanded, #FxUnitControlsCollapsed {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
 }

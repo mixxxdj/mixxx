@@ -399,28 +399,28 @@ WLibrary,
   max-width: 68px;
   min-height: 68px;
   max-height: 68px;
-  margin: 0px 1px 1px 0px;
+  margin: 0px 2px 1px 0px;
   }
   #SpinnyCoverContainer_SmallCompact {
     min-width: 63px;
     max-width: 63px;
     min-height: 63px;
     max-height: 63px;
-    margin: 0px 1px 1px 0px;
+    margin: 0px 2px 1px 0px;
   }
 #SpinnyCoverContainer_Big {
   min-width: 115px;
   max-width: 115px;
   min-height: 115px;
   max-height: 115px;
-  margin: 1px 1px 1px 0px;
+  margin: 1px 2px 1px 0px;
   }
   #SpinnyCoverContainer_BigCompact {
     min-width: 111px;
     max-width: 111px;
     min-height: 111px;
     max-height: 111px;
-    margin: 0px 1px 1px 0px;
+    margin: 0px 2px 1px 0px;
   }
 #SpinnyCoverContainer_MiniDeck {
   min-width: 53px;
@@ -619,10 +619,8 @@ WLibrary,
   }
   #VuAndSlider_4Decks {
     margin-right: 1px;
-    }
-    #ChannelMixerKnobContainer {
-      qproperty-layoutSpacing: 3;
-    }
+  }
+
   #PflBox_4Decks {
     margin: 3px 0px 0px 20px;
   }
@@ -705,14 +703,18 @@ WLibrary,
 /************** Fx *********************************************************/
 
 #FxUnitHeaderCollapsed {
-  padding: 0px 2px 0px 4px;
   border-left: 0px;
   border-top-left-radius: 0px;
   border-bottom-left-radius: 0px;
   }
   #FxUnitHeaderExpanded {
-    padding: 1px 2px 2px 6px;
     border-bottom-left-radius: 0px;
+  }
+  #FxUnitHeader {
+    padding: 0px 2px 0px 2px;
+  }
+  #FxUnitLabel {
+    alignment: left;
   }
 
 #FxUnitControlsExpanded,
@@ -783,6 +785,16 @@ WPushButton#FxSuperLinkInvertButton {
   padding: 0px 1px 0px 1px;
 }
 
+#SamplerMini {
+  padding: 1px;
+  }
+  #SamplerTitleBoxMini {
+    padding: 0px 0px 0px 2px;
+  }
+  #SamplerPlayBoxMini {
+    padding: 1px;
+  }
+
 #Sampler {
   padding: 1px 0px 2px 2px;
   }
@@ -833,23 +845,13 @@ WPushButton#FxSuperLinkInvertButton {
       padding: 0px 0px 1px 0px;
     }
 
-#SamplerMini {
-  padding: 1px;
-  }
-  #SamplerTitleBoxSmall {
-    padding: 0px 0px 0px 2px;
-  }
-  #SamplerPlayBoxSmall {
-    padding: 1px;
-  }
-
 /************** MicAux *****************************************************/
 
 #MicDuckingContainer {
   padding: 2px 2px 2px 2px;
   }
   #MicDuckingStrengthBox {
-    padding-top: 2px;
+    padding: 2px 0px;
   }
 
 #MicAuxMainControls {
@@ -865,7 +867,7 @@ WPushButton#FxSuperLinkInvertButton {
     padding: 0px 0px 2px 1px;
   }
   #MicTalkBox {
-    padding: 0px 0px 2px 1px;
+    padding: 0px 0px 7px 1px;
   }
   #MicAuxVUMeter {
     padding: 2px 1px 3px 0px;
@@ -917,6 +919,16 @@ WPushButton#FxSuperLinkInvertButton {
 
 /************** SkinSettings **************************************************/
 
+#DeckSizeSettings {
+  margin: 2px 0px 0px 0px;
+  }
+  #DeckSizeToggleContainer {
+    padding: 0px 0px 0px 0px;
+    }
+    #DeckSizeButton {
+      margin-left: 1px;
+    }
+
 #SkinSettingsCategory {
   padding: 2px 5px 7px 3px;
   }
@@ -925,10 +937,6 @@ WPushButton#FxSuperLinkInvertButton {
   }
   #SkinSettingsLabelButton {
     padding: 0px 0px 0px 3px;
-  }
-
-  #DeckSizeToggleContainer {
-    padding: 0px 0px 0px 0px;
   }
 
   #SamplerLoadSaveBox {
@@ -1061,7 +1069,6 @@ QPushButton#pushButtonRecording:checked {
   color: #000;
 }
 
-#EQKillButton[displayValue="0"],
 #DlgMissing > QPushButton:pressed,
 #DlgHidden > QPushButton:pressed,
 #DlgAutoDJ > QPushButton:pressed,
@@ -1099,7 +1106,6 @@ QPushButton#pushButtonRecording:checked {
 
 /* Passthrough label on overview waveform */
 WOverview #PassthroughLabel {
-  font-weight: bold;
   color: #d09300;
 }
   #SkinSettingsButton,
@@ -1235,6 +1241,7 @@ WPushButton#SamplerExpand,
 #SamplerSettings WPushButton,
 #SamplerSettingsMini WPushButton,
 WPushButton#CrossfaderButton,
+WPushButton#FxExpandOverlay,
 #LibExpand,
 #ToolBar WPushButton {
   margin: 0px;
@@ -1284,7 +1291,7 @@ WPushButton#PlayIndicator[displayValue="1"],
 WPushButton#Reverse[pressed="true"],
 #LoopControls WPushButton[value="1"], #LoopActivate[displayValue="1"],
 #BeatjumpControls WPushButton[value="1"],
-#EQKillButton[displayValue="1"],
+#EQKillButtonBox WPushButton[displayValue="1"],
 #PflButton[value="1"],
 #MicTalk[value="1"], #AuxPlay[value="1"],
 #MicDucking[value="1"], #MicDucking[value="2"],
@@ -1296,7 +1303,7 @@ QPushButton#pushButtonRecording:checked {
 /* Green for Fx buttons: QuickEffect + Fx 1/2 */
 #FxUnit1 #FxToggleButton[displayValue="1"],
 #FxUnit2 #FxToggleButton[displayValue="1"],
-#QuickEffectButton[displayValue="1"],
+WPushButton#QuickEffectButton[displayValue="1"],
 #FxAssignButton1[displayValue="1"],
 #FxAssignButton2[displayValue="1"],
 #BroadcastButton[displayValue="2"] {
@@ -1308,6 +1315,12 @@ QPushButton#pushButtonRecording:checked {
 #FxAssignButton3[displayValue="1"],
 #FxAssignButton4[displayValue="1"] {
   background-color: #0895bc;
+}
+
+/* Emphasize Fx parameter buttons on dark background
+    because they don't have bright icons */
+WPushButton#FxParameterButton[displayValue="0"] {
+  background-color: #333;
 }
 
 /* Grey for Pfl, Fx parameters & SplitCue */
@@ -1424,6 +1437,7 @@ WPushButton#FxFocusButton[displayValue="0"],
 #SamplerSettings WPushButton[displayValue="0"],
 #SamplerSettingsMini WPushButton[displayValue="0"],
 WPushButton#FxExpand[displayValue="0"],
+WPushButton#FxExpandOverlay[displayValue="0"],
 WPushButton#SamplerExpand[displayValue="0"],
 #BeatgridControlsToggle,
 #SamplerControlsMini WPushButton,
@@ -1571,6 +1585,17 @@ WPushButton#SamplerExpand[displayValue="0"],
 
 #QuickEffectButton[displayValue="0"] {
   image: url(skin:/classic/buttons/btn__star.svg) no-repeat center center;
+}
+
+/* EQ Kill button icons H / M / L */
+#EQKillButton_High[displayValue="0"] {
+  image: url(skin:/classic/buttons/btn__eq_kill_high.svg) no-repeat center center;
+}
+#EQKillButton_Mid[displayValue="0"] {
+  image: url(skin:/classic/buttons/btn__eq_kill_mid.svg) no-repeat center center;
+}
+#EQKillButton_Low[displayValue="0"] {
+  image: url(skin:/classic/buttons/btn__eq_kill_low.svg) no-repeat center center;
 }
 
 #SplitCue {
@@ -2288,7 +2313,6 @@ WEffectSelector, #fadeModeCombobox {
 
 WEffectSelector,
 #fadeModeCombobox {
-  font-weight: bold;
   /* The 3D frame on the combo box becomes flat when you give it a border
   border-radius: 3px; */
   }

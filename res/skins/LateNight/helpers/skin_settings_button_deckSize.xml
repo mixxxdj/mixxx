@@ -16,12 +16,12 @@ Variables:
     <State>
       <Number>0</Number>
       <Text><Variable name="Text"/></Text>
-      <Alignment>left</Alignment>
+      <Alignment>center</Alignment>
     </State>
     <State>
       <Number>1</Number>
       <Text><Variable name="Text"/></Text>
-      <Alignment>left</Alignment>
+      <Alignment>center</Alignment>
     </State>
     <Connection>
       <ConfigKey persist="true">[LateNight],selected_deck_size</ConfigKey>

@@ -16,7 +16,7 @@
     <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
-<!-- L -->
+      <!-- L -->
       <PushButton>
         <ObjectName>CrossfaderButton</ObjectName>
         <TooltipId>orientation</TooltipId>
@@ -41,7 +41,7 @@
           <ButtonState>LeftButton</ButtonState>
         </Connection>
       </PushButton>
-<!-- M -->
+      <!-- M -->
       <PushButton>
         <ObjectName>CrossfaderButton</ObjectName>
         <TooltipId>orientation</TooltipId>
@@ -61,13 +61,12 @@
         <Connection>
           <ConfigKey><Variable name="Group"/>,orientation</ConfigKey>
           <Transform>
-            <Add>-1</Add>
-            <IsEqual>0</IsEqual>
+            <IsEqual>1</IsEqual>
           </Transform>
           <ButtonState>LeftButton</ButtonState>
         </Connection>
       </PushButton>
-<!-- R -->
+      <!-- R -->
       <PushButton>
         <ObjectName>CrossfaderButton</ObjectName>
         <TooltipId>orientation</TooltipId>
@@ -87,12 +86,11 @@
         <Connection>
           <ConfigKey><Variable name="Group"/>,orientation</ConfigKey>
           <Transform>
-            <Add>-2</Add>
-            <IsEqual>0</IsEqual>
+            <IsEqual>2</IsEqual>
           </Transform>
           <ButtonState>LeftButton</ButtonState>
         </Connection>
       </PushButton>
     </Children>
-  </WidgetGroup>
+  </WidgetGroup><!-- CrossfaderButtonContainer_Deck -->
 </Template>

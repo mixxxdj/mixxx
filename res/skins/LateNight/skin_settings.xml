@@ -27,16 +27,17 @@ Description:
             <ObjectName>CategoryLabel</ObjectName>
             <Text>Decks</Text>
             <Size>180me,21f</Size>
-          </Label>>
+          </Label>
 
           <WidgetGroup><!-- Deck size selectors -->
-            <Size>220me,18f</Size>
+            <ObjectName>DeckSizeSettings</ObjectName>
+            <Size>220me,20f</Size>
             <Layout>stacked</Layout>
             <Children>
               <WidgetGroup>
                 <ObjectName>SubmenuCover</ObjectName>
                 <Layout>stacked</Layout>
-                <Size>180min,17f</Size>
+                <Size>180min,18f</Size>
                 <Connection>
                   <ConfigKey>[Master],maximize_library</ConfigKey>
                   <BindProperty>visible</BindProperty>
@@ -46,7 +47,7 @@ Description:
                 <Size>225f,18f</Size>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <WidgetGroup><Size>7f,0min</Size></WidgetGroup>
+                  <WidgetGroup><Size>13f,0min</Size></WidgetGroup>
                   <Label>
                     <ObjectName>SkinSettingsText</ObjectName>
                     <Size>64f,18f</Size>
@@ -65,28 +66,25 @@ Description:
                     </Connection>
                   </Label>
                   <WidgetGroup><!-- Normal / Compact / Mini Decks -->
-                    <ObjectName>DeckSizeToggleContainer</ObjectName>
+                    <ObjectName>DeckSizeToggles</ObjectName>
                     <Size>0me,18f</Size>
                     <Layout>horizontal</Layout>
-                    <Style>WPushButton[value="1"] {font-weight: bold;}
-                          WPushButton {margin-left: 1px;}
-                    </Style>
                     <Children>
                       <Template src="skin:/helpers/skin_settings_button_deckSize.xml">
                         <SetVariable name="TooltipId"></SetVariable>
-                        <SetVariable name="Text">  FULL  </SetVariable>
-                        <SetVariable name="Width">42</SetVariable>
+                        <SetVariable name="Text">FULL</SetVariable>
+                        <SetVariable name="Width">40</SetVariable>
                         <SetVariable name="SelectedDeckSize">0</SetVariable>
                       </Template>
                       <Template src="skin:/helpers/skin_settings_button_deckSize.xml">
                         <SetVariable name="TooltipId"></SetVariable>
-                        <SetVariable name="Text">  Compact  </SetVariable>
-                        <SetVariable name="Width">70</SetVariable>
+                        <SetVariable name="Text">Compact</SetVariable>
+                        <SetVariable name="Width">66</SetVariable>
                         <SetVariable name="SelectedDeckSize">1</SetVariable>
                       </Template>
                       <Template src="skin:/helpers/skin_settings_button_deckSize.xml">
                         <SetVariable name="TooltipId"></SetVariable>
-                        <SetVariable name="Text">  mini  </SetVariable>
+                        <SetVariable name="Text">mini</SetVariable>
                         <SetVariable name="Width">40</SetVariable>
                         <SetVariable name="SelectedDeckSize">2</SetVariable>
                       </Template>
@@ -97,7 +95,7 @@ Description:
                       <Transform><Not/></Transform>
                       <BindProperty>visible</BindProperty>
                     </Connection>
-                  </WidgetGroup><!-- DeckSizeToggleContainer -->
+                  </WidgetGroup><!-- DeckSizeToggles -->
                 </Children>
               </WidgetGroup>
             </Children>
@@ -157,6 +155,7 @@ Description:
 
                       <!-- Rate Adjust Buttons -->
                       <WidgetGroup>
+                        <ObjectName>SkinSettingsSubMenu</ObjectName>
                         <Layout>stacked</Layout>
                         <Size>180min,17f</Size>
                         <Children>
@@ -177,6 +176,13 @@ Description:
                           </Template>
                         </Children>
                       </WidgetGroup>
+
+                      <!-- Key Control -->
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId">rate_toggle</SetVariable>
+                        <SetVariable name="Text">Key Controls</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_key_controls</SetVariable>
+                      </Template>
 
                       <!-- Vinyl Control -->
                       <Template src="skin:/helpers/skin_settings_button_2state.xml">
@@ -199,12 +205,29 @@ Description:
                         <SetVariable name="Setting">[Skin],show_coverart</SetVariable>
                       </Template>
 
-                      <!-- Cover Art -->
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
-                        <SetVariable name="TooltipId">show_coverart</SetVariable>
-                        <SetVariable name="Text">Big Spinny/Cover Art</SetVariable>
-                        <SetVariable name="Setting">[Skin],select_big_spinny_coverart</SetVariable>
-                      </Template>
+                      <!-- Big Spinny / Cover Art -->
+                      <WidgetGroup>
+                        <ObjectName>SkinSettingsSubMenu</ObjectName>
+                        <Layout>stacked</Layout>
+                        <Size>180min,17f</Size>
+                        <Children>
+                          <WidgetGroup>
+                            <ObjectName>SubmenuCover</ObjectName>
+                            <Layout>stacked</Layout>
+                            <Size>180min,17f</Size>
+                            <Connection>
+                              <ConfigKey>[LateNight],show_spinny_cover</ConfigKey>
+                              <Transform><Not/></Transform>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </WidgetGroup>
+                          <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                            <SetVariable name="TooltipId">show_coverart</SetVariable>
+                            <SetVariable name="Text">Big Spinny/Cover Art</SetVariable>
+                            <SetVariable name="Setting">[Skin],select_big_spinny_coverart</SetVariable>
+                          </Template>
+                        </Children>
+                      </WidgetGroup>
 
                     </Children>
                   </WidgetGroup>
@@ -250,12 +273,13 @@ Description:
                       <!-- Rate Control -->
                       <Template src="skin:/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">rate_toggle</SetVariable>
-                        <SetVariable name="Text">Rate / Key Controls</SetVariable>
-                        <SetVariable name="Setting">[Skin],show_rate_key_controls_compact</SetVariable>
+                        <SetVariable name="Text">Rate Controls</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_rate_controls_compact</SetVariable>
                       </Template>
 
                       <!-- Sync button in compact decks -->
                       <WidgetGroup>
+                        <ObjectName>SkinSettingsSubMenu</ObjectName>
                         <Layout>stacked</Layout>
                         <Size>180min,17f</Size>
                         <Children>
@@ -266,7 +290,7 @@ Description:
                             <Layout>stacked</Layout>
                             <Size>180min,17f</Size>
                             <Connection>
-                              <ConfigKey persist="true">[Skin],show_rate_key_controls_compact</ConfigKey>
+                              <ConfigKey persist="true">[Skin],show_rate_controls_compact</ConfigKey>
                               <Transform><Not/></Transform>
                               <BindProperty>visible</BindProperty>
                             </Connection>
@@ -278,6 +302,13 @@ Description:
                           </Template>
                         </Children>
                       </WidgetGroup>
+
+                      <!-- Key Control -->
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId">rate_toggle</SetVariable>
+                        <SetVariable name="Text">Key Controls</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_key_controls_compact</SetVariable>
+                      </Template>
 
                       <!-- Vinyl Control -->
                       <Template src="skin:/helpers/skin_settings_button_2state.xml">
@@ -307,12 +338,29 @@ Description:
                         <SetVariable name="Setting">[Skin],show_coverart</SetVariable>
                       </Template>
 
-                      <!-- Cover Art -->
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
-                        <SetVariable name="TooltipId">show_coverart</SetVariable>
-                        <SetVariable name="Text">Big Spinny/Cover Art</SetVariable>
-                        <SetVariable name="Setting">[Skin],select_big_spinny_coverart</SetVariable>
-                      </Template>
+                      <!-- Big Spinny / Cover Art -->
+                      <WidgetGroup>
+                        <ObjectName>SkinSettingsSubMenu</ObjectName>
+                        <Layout>stacked</Layout>
+                        <Size>180min,17f</Size>
+                        <Children>
+                          <WidgetGroup>
+                            <ObjectName>SubmenuCover</ObjectName>
+                            <Layout>stacked</Layout>
+                            <Size>180min,17f</Size>
+                            <Connection>
+                              <ConfigKey>[LateNight],show_spinny_cover</ConfigKey>
+                              <Transform><Not/></Transform>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </WidgetGroup>
+                          <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                            <SetVariable name="TooltipId">show_coverart</SetVariable>
+                            <SetVariable name="Text">Big Spinny/Cover Art</SetVariable>
+                            <SetVariable name="Setting">[Skin],select_big_spinny_coverart</SetVariable>
+                          </Template>
+                        </Children>
+                      </WidgetGroup>
 
                     </Children>
                   </WidgetGroup>
@@ -357,7 +405,7 @@ Description:
                         <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
                       </Template>
 
-                      <WidgetGroup><Size>0me,85f</Size></WidgetGroup>
+                      <WidgetGroup><Size>0me,102f</Size></WidgetGroup>
 
                       <!-- Spinny -->
                       <Template src="skin:/helpers/skin_settings_button_2state.xml">
@@ -511,6 +559,7 @@ Description:
                           </Template>
 
                           <WidgetGroup><!-- EQ Kill -->
+                            <ObjectName>SkinSettingsSubMenu</ObjectName>
                             <Layout>stacked</Layout>
                             <Size>180min,17f</Size>
                             <Children>

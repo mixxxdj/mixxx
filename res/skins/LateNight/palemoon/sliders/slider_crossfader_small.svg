@@ -5,10 +5,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   width="85"
-   height="42"
+   id="svg46"
    version="1.1"
-   id="svg46">
+   height="40"
+   width="85">
   <metadata
      id="metadata52">
     <rdf:RDF>
@@ -24,127 +24,87 @@
   <defs
      id="defs50" />
   <path
-     d="m42.999797 24-2e-4 9h-.999596l2e-4-9z"
-     color="#000000"
-     fill="#050505"
-     stroke-width=".99979782"
-     id="path2" />
+     style="color:#000000;fill:#050505;stroke-width:0.99979782"
+     id="path2"
+     d="m 42.999797,24 -2e-4,9 h -0.999596 l 2e-4,-9 z" />
   <path
-     d="m42.999797 6-2e-4 9h-.999596l2e-4-9z"
-     color="#000000"
-     fill="#050505"
-     stroke-width=".99979782"
-     id="path4" />
+     style="color:#000000;fill:#050505;stroke-width:0.99979782"
+     id="path4"
+     d="m 42.999797,6 -2e-4,9 h -0.999596 l 2e-4,-9 z" />
   <path
-     d="m7.999796 24-2e-4 9h-.999596l2e-4-9z"
-     color="#000000"
-     fill="#050505"
-     stroke-width=".99979782"
-     id="path6" />
+     style="color:#000000;fill:#050505;stroke-width:0.99979782"
+     id="path6"
+     d="m 7.999796,24 -2e-4,9 H 7 l 2e-4,-9 z" />
   <path
-     d="m7.999796 6-2e-4 9h-.999596l2e-4-9z"
-     color="#000000"
-     fill="#050505"
-     stroke-width=".99979782"
-     id="path8" />
+     style="color:#000000;fill:#050505;stroke-width:0.99979782"
+     id="path8"
+     d="m 7.999796,6 -2e-4,9 H 7 l 2e-4,-9 z" />
   <path
-     d="m77.9998 24-2e-4 9h-.9996l2e-4-9z"
-     color="#000000"
-     fill="#050505"
-     stroke-width=".99979782"
-     id="path10" />
+     style="color:#000000;fill:#050505;stroke-width:0.99979782"
+     id="path10"
+     d="m 77.9998,24 -2e-4,9 H 77 l 2e-4,-9 z" />
   <path
-     d="m77.9998 6-2e-4 9h-.9996l2e-4-9z"
-     color="#000000"
-     fill="#050505"
-     stroke-width=".99979782"
-     id="path12" />
+     style="color:#000000;fill:#050505;stroke-width:0.99979782"
+     id="path12"
+     d="m 77.9998,6 -2e-4,9 H 77 l 2e-4,-9 z" />
   <path
-     d="m31.999797 24 2e-6 7h-.999596l-2e-6-7z"
-     color="#000000"
-     fill="#050505"
-     stroke-width=".99979782"
-     id="path14" />
+     style="color:#000000;fill:#050505;stroke-width:0.99979782"
+     id="path14"
+     d="m 31.999797,24 2e-6,7 h -0.999596 l -2e-6,-7 z" />
   <path
-     d="m31.999999 8-.000402 7h-.999596l.000402-7z"
-     color="#000000"
-     fill="#050505"
-     stroke-width=".99979782"
-     id="path16" />
+     style="color:#000000;fill:#050505;stroke-width:0.99979782"
+     id="path16"
+     d="m 31.999999,8 -4.02e-4,7 h -0.999596 l 4.02e-4,-7 z" />
   <path
-     d="m53.999797 24 2e-6 7h-.999596l-2e-6-7z"
-     color="#000000"
-     fill="#050505"
-     stroke-width=".99979782"
-     id="path18" />
+     style="color:#000000;fill:#050505;stroke-width:0.99979782"
+     id="path18"
+     d="m 53.999797,24 2e-6,7 h -0.999596 l -2e-6,-7 z" />
   <path
-     d="m53.999999 8-.000402 7h-.999596l.000402-7z"
-     color="#000000"
-     fill="#050505"
-     stroke-width=".99979782"
-     id="path20" />
+     style="color:#000000;fill:#050505;stroke-width:0.99979782"
+     id="path20"
+     d="m 53.999999,8 -4.02e-4,7 h -0.999596 l 4.02e-4,-7 z" />
   <path
-     d="m42.999898 7-2e-4 9h-.999596l2e-4-9z"
-     color="#000000"
-     fill="#636363"
-     stroke-width=".99979782"
-     id="path22" />
+     style="color:#000000;fill:#636363;stroke-width:0.99979782"
+     id="path22"
+     d="m 42.999898,7 -2e-4,9 h -0.999596 l 2e-4,-9 z" />
   <path
-     d="m42.999597 34 2e-4-9h-.999596l-2e-4 9z"
-     color="#000000"
-     fill="#636363"
-     stroke-width=".99979782"
-     id="path24" />
+     style="color:#000000;fill:#636363;stroke-width:0.99979782"
+     id="path24"
+     d="m 42.999597,34 2e-4,-9 h -0.999596 l -2e-4,9 z" />
   <path
-     d="m7.999796 7-2e-4 9h-.999596l2e-4-9z"
-     color="#000000"
-     fill="#4b4b4b"
-     stroke-width=".99979782"
-     id="path26" />
+     style="color:#000000;fill:#4b4b4b;stroke-width:0.99979782"
+     id="path26"
+     d="m 7.999796,7 -2e-4,9 H 7 l 2e-4,-9 z" />
   <path
-     d="m7.999596 34 2e-4-9h-.999596l-2e-4 9z"
-     color="#000000"
-     fill="#4b4b4b"
-     stroke-width=".99979782"
-     id="path28" />
+     style="color:#000000;fill:#4b4b4b;stroke-width:0.99979782"
+     id="path28"
+     d="m 7.999596,34 2e-4,-9 H 7.0002 L 7,34 Z" />
   <path
-     d="m77.9998 7-2e-4 9h-.9996l2e-4-9z"
-     color="#000000"
-     fill="#4b4b4b"
-     stroke-width=".99979782"
-     id="path30" />
+     style="color:#000000;fill:#4b4b4b;stroke-width:0.99979782"
+     id="path30"
+     d="m 77.9998,7 -2e-4,9 H 77 l 2e-4,-9 z" />
   <path
-     d="m77.9996 34 2e-4-9h-.9996l-2e-4 9z"
-     color="#000000"
-     fill="#4b4b4b"
-     stroke-width=".99979782"
-     id="path32" />
+     style="color:#000000;fill:#4b4b4b;stroke-width:0.99979782"
+     id="path32"
+     d="m 77.9996,34 2e-4,-9 H 77.0002 L 77,34 Z" />
   <path
-     d="m31.999999 9-.000402 7h-.999596l.000402-7z"
-     color="#000000"
-     fill="#4b4b4b"
-     stroke-width=".99979782"
-     id="path34" />
+     style="color:#000000;fill:#4b4b4b;stroke-width:0.99979782"
+     id="path34"
+     d="m 31.999999,9 -4.02e-4,7 h -0.999596 l 4.02e-4,-7 z" />
   <path
-     d="m31.999799 32-2e-6-7h-.999596l2e-6 7z"
-     color="#000000"
-     fill="#4b4b4b"
-     stroke-width=".99979782"
-     id="path36" />
+     style="color:#000000;fill:#4b4b4b;stroke-width:0.99979782"
+     id="path36"
+     d="m 31.999799,32 -2e-6,-7 h -0.999596 l 2e-6,7 z" />
   <path
-     d="m53.999999 9-.000402 7h-.999596l.000402-7z"
-     color="#000000"
-     fill="#4b4b4b"
-     stroke-width=".99979782"
-     id="path38" />
+     style="color:#000000;fill:#4b4b4b;stroke-width:0.99979782"
+     id="path38"
+     d="m 53.999999,9 -4.02e-4,7 h -0.999596 l 4.02e-4,-7 z" />
   <path
-     d="m53.999799 32-2e-6-7h-.999596l2e-6 7z"
-     color="#000000"
-     fill="#4b4b4b"
-     stroke-width=".99979782"
-     id="path40" />
+     style="color:#000000;fill:#4b4b4b;stroke-width:0.99979782"
+     id="path40"
+     d="m 53.999799,32 -2e-6,-7 h -0.999596 l 2e-6,7 z" />
   <path
-     d="M 78.67232,19.327679 V 20.67232 H 6.3276795 v -1.344641 z"
+     style="color:#000000;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.65535903;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      id="path42"
-     style="color:#000000;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.65535903;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+     d="M 78.67232,19.327679 V 20.67232 H 6.3276795 v -1.344641 z" />
 </svg>

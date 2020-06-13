@@ -6,35 +6,10 @@
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="35"
    height="30"
    version="1.1"
-   id="svg29"
-   sodipodi:docname="knob_indicator_small_orange.svg"
-   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
-  <sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="1056"
-     id="namedview25"
-     showgrid="false"
-     inkscape:snap-page="true"
-     inkscape:zoom="10.300189"
-     inkscape:cx="25.780511"
-     inkscape:cy="27.883742"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="svg29" />
+   id="svg29">
   <metadata
      id="metadata33">
     <rdf:RDF>
@@ -184,20 +159,43 @@
          id="stop14-1"
          style="stop-color:#8c5800;stop-opacity:0.49206349" />
     </radialGradient>
+    <radialGradient
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.07335364,0,0,0.03606549,-9.4161996,-6.7969665)"
+       r="21.466"
+       cy="355.35999"
+       cx="366.94"
+       id="f-7-2">
+      <stop
+         style="stop-color:#ffaa26;stop-opacity:1"
+         id="stop10-5-7"
+         offset="0"
+         stop-opacity=".94902"
+         stop-color="#fffefa" />
+      <stop
+         style="stop-color:#b34e13;stop-opacity:1"
+         id="stop12-0"
+         offset=".61062"
+         stop-opacity=".81961"
+         stop-color="#ff994e" />
+      <stop
+         style="stop-color:#b34e13;stop-opacity:0.00301151"
+         id="stop14-3-9"
+         offset="1"
+         stop-opacity="0"
+         stop-color="#ff902d" />
+    </radialGradient>
   </defs>
   <path
-     inkscape:connector-curvature="0"
      id="path19"
      d="m 15.145991,6.2038575 0.01709,6.0344235 c 6.8e-4,0.603026 0.242246,1.032396 0.663824,1.374023 0.422001,0.341972 0.986838,0.47359 1.633789,0.47359 0.615239,0 1.179802,-0.08046 1.625244,-0.400103 0.445441,-0.319645 0.705599,-0.778129 0.764654,-1.36377 l 0.0034,-0.0376 v -0.03588 l 0.0018,-5.9951175 C 17.648534,5.6779391 17.366715,5.6549567 15.145991,6.2038575 Z"
      style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;vector-effect:none;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.39999998;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
   <path
-     inkscape:connector-curvature="0"
-     id="rect825-3"
-     d="m 17.5,3.1592734 c 0.9695,0 1.613281,0.7321626 1.613281,1.7016626 v 7.03587 c 0,0.9695 -0.643781,1.488977 -1.613281,1.488977 -0.9695,0 -1.613281,-0.519477 -1.613281,-1.488977 v -7.03587 c 0,-0.9695 0.643781,-1.7016626 1.613281,-1.7016626 z"
-     style="fill:#8c5800;fill-opacity:1;stroke:none;stroke-width:1.39999998;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+     style="fill:#8d3b11;fill-opacity:1;stroke:none;stroke-width:1.39999998;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="m 17.452728,5.2313365 c 0.9695,0 1.660553,-0.025448 1.660553,0.9440524 v 5.8464171 c 0,0.9695 -0.643781,1.488977 -1.613281,1.488977 -0.9695,0 -1.613281,-0.519477 -1.613281,-1.488977 V 6.1753889 c 0,-0.9695 0.596509,-0.9440524 1.566009,-0.9440524 z"
+     id="rect825" />
   <path
-     d="m 19.090005,4.735601 a 1.5902593,1.5563894 0 1 1 -3.180445,0 1.5902593,1.5563894 0 1 1 3.180445,0 z"
-     id="path27-2"
-     style="opacity:0.43;fill:url(#f-6);stroke-width:0.07372528"
-     inkscape:connector-curvature="0" />
+     style="opacity:0.25767157;fill:url(#f-7-2);stroke-width:0.05173989"
+     id="path27"
+     d="m 19.074355,6.0192072 a 1.5746092,0.77416129 0 1 1 -3.149146,0 1.5746092,0.77416129 0 1 1 3.149146,0 z" />
 </svg>

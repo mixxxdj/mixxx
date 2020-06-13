@@ -43,7 +43,7 @@
     </radialGradient>
     <linearGradient
        gradientUnits="userSpaceOnUse"
-       gradientTransform="rotate(74.623253,50,50)"
+       gradientTransform="matrix(-0.26579674,-0.96388794,0.96650068,-0.26507821,114.97193,111.56218)"
        y2="50"
        y1="50"
        x2="97.375"
@@ -51,40 +51,40 @@
        id="b">
       <stop
          id="stop7"
-         offset="0" />
+         offset="0"
+         style="stop-color:#000000;stop-opacity:1" />
       <stop
          id="stop9"
          offset="1"
          stop-opacity=".5714286"
-         stop-color="#dedede" />
+         stop-color="#dedede"
+         style="stop-color:#a1a1a1;stop-opacity:0.56862748" />
     </linearGradient>
   </defs>
   <rect
-     y="0"
+     style="fill:#000000;fill-opacity:0.30000001;stroke-width:1.04167"
      x="0"
-     height="100"
+     y="0"
      width="100"
-     id="rect833"
-     style="opacity:0.5;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.60000002;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-  <path
-     id="path14"
-     opacity=".4"
-     fill="url(#c)"
-     d="m70.913 50a20.913 20.913 0 0 1-41.827 0 20.913 20.913 0 1 1 41.827 0z" />
-  <path
-     id="path16"
-     d="m52.66891 49.99266a2.6685924 2.6685924 0 0 1-5.337121 0 2.6685924 2.6685924 0 1 1 5.337121 0z" />
+     height="100"
+     color="#000000"
+     enable-background="accumulate"
+     fill="#020202"
+     id="rect2" />
   <path
      id="path18"
      fill="#1e1e1e"
      enable-background="accumulate"
      color="#000000"
-     d="m0 0v100h100v-100zm50 3.125c12.259 0 24.47 5.0688 33.138 13.737 8.6682 8.6682 13.737 20.879 13.737 33.138s-5.0688 24.47-13.737 33.138l-.09766.09766c-8.6622 8.6087-20.828 13.639-33.04 13.639-12.259 0-24.47-5.0688-33.138-13.737l-.09766-.09766c-8.6087-8.6622-13.639-20.828-13.639-33.04 0-12.259 5.0688-24.47 13.737-33.138 8.6682-8.6682 20.879-13.737 33.138-13.737z" />
+     d="m0 0v100h100v-100zm50 3.125c12.259 0 24.47 5.0688 33.138 13.737 8.6682 8.6682 13.737 20.879 13.737 33.138s-5.0688 24.47-13.737 33.138l-.09766.09766c-8.6622 8.6087-20.828 13.639-33.04 13.639-12.259 0-24.47-5.0688-33.138-13.737l-.09766-.09766c-8.6087-8.6622-13.639-20.828-13.639-33.04 0-12.259 5.0688-24.47 13.737-33.138 8.6682-8.6682 20.879-13.737 33.138-13.737z"
+     style="fill:#1e1e20;fill-opacity:1" />
+  <circle
+     style="fill:#887f6d;fill-opacity:0.4;stroke:none;stroke-width:1.10157;stroke-linecap:round;stroke-linejoin:round"
+     id="path1221-3-6"
+     cx="50"
+     cy="50"
+     r="15" />
   <path
-     id="path20"
-     stroke-width=".69999999"
-     stroke="url(#b)"
-     fill="none"
-     enable-background="new"
-     d="m62.429601 95.19702a46.875 46.875 0 0 1-24.859202-90.3940403 46.875 46.875 0 1 1 24.859202 90.3940403z" />
+     id="path16"
+     d="m 52.66856,50.01315 a 2.6685924,2.6685924 0 0 1 -5.33712,0 2.6685924,2.6685924 0 1 1 5.33712,0 z" />
 </svg>

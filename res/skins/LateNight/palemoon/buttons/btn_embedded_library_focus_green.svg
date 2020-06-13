@@ -5,12 +5,12 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   id="svg35"
-   version="1.1"
+   width="24"
    height="24"
-   width="24">
+   version="1.1"
+   id="svg17">
   <metadata
-     id="metadata39">
+     id="metadata21">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
@@ -22,109 +22,39 @@
     </rdf:RDF>
   </metadata>
   <defs
-     id="defs21">
+     id="defs9">
     <linearGradient
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.93478259,0,0,0.93478259,-0.15220394,-24.152202)"
-       y2="18.657106"
-       y1="18.657106"
-       x2="23.988836"
-       x1="1.8333464"
-       id="e">
-      <stop
-         id="stop2"
-         offset="0"
-         stop-color="#393939" />
-      <stop
-         id="stop4"
-         offset=".49880221"
-         stop-color="#393939" />
-      <stop
-         id="stop6"
-         offset="1"
-         stop-color="#121212" />
-    </linearGradient>
-    <linearGradient
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(.95652174 0 0 .95652174 -.4348113 -22.521739)"
-       y2="12"
-       y1="12"
-       x2="24"
+       id="a"
        x1="2"
-       id="f">
+       x2="24"
+       y1="12"
+       y2="12"
+       gradientTransform="matrix(.95652174 0 0 .95652174 -.4348113 -22.521739)"
+       gradientUnits="userSpaceOnUse">
       <stop
-         id="stop9"
+         stop-opacity=".0047619"
          offset="0"
-         stop-opacity=".0047619" />
+         id="stop2" />
       <stop
-         id="stop11"
+         stop-opacity="0"
          offset=".5"
-         stop-opacity="0" />
+         id="stop4" />
       <stop
-         id="stop13"
+         stop-opacity=".47451"
          offset="1"
-         stop-opacity=".47451" />
-    </linearGradient>
-    <linearGradient
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.93877551,0,0,0.93877551,-7.4358636,38.778969)"
-       y2="27.211864"
-       y1=".22033899"
-       x2="12.889831"
-       x1="12.889831"
-       id="d">
-      <stop
-         id="stop16"
-         offset="0"
-         stop-color="#f60" />
-      <stop
-         id="stop18"
-         offset="1"
-         stop-color="#bf4c00" />
+         id="stop6" />
     </linearGradient>
   </defs>
-  <rect
-     id="rect23"
-     fill="url(#f)"
-     color="#000001"
-     height="22"
-     width="22"
-     y="-23"
-     x="1"
-     transform="rotate(90)" />
-  <rect
-     id="rect25"
-     fill-opacity=".09019608"
-     color="#000001"
-     height="22"
-     width="22"
-     y="-23"
-     x="1"
-     transform="rotate(90)" />
-  <rect
-     x="0.5"
-     y="0.5"
-     width="23"
-     height="23"
-     rx="0.30000001"
-     ry="0.30000001"
-     style="fill:none;stroke:#000001;stroke-linecap:round;stroke-linejoin:round;paint-order:fill markers stroke"
-     id="rect27" />
-  <rect
-     transform="rotate(90)"
-     x="1.24997"
-     y="-22.75"
-     width="21.5"
-     height="21.5"
-     style="fill:none;stroke:url(#e);stroke-width:0.5;stroke-linecap:round;paint-order:fill markers stroke"
-     id="rect29" />
-  <rect
-     x="0.5"
-     y="0.5"
-     width="23"
-     height="23"
-     rx="0.30000007"
-     ry="0.30000007"
-     style="opacity:0.59200003;fill:none;stroke:#438225;stroke-width:0.99999994;stroke-linecap:round;stroke-linejoin:round;paint-order:fill markers stroke;stroke-opacity:1"
-     id="rect31" />
+  <path
+     style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;vector-effect:none;fill:#438225;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+     d="M 0.8007812,0 C 0.3662299,0 0,0.36623 0,0.800781 V 23.199219 C 0,23.63377 0.36623,24 0.8007812,24 H 23.199219 C 23.63377,24 24,23.63377 24,23.199219 V 0.800781 C 24,0.36623 23.63377,0 23.199219,0 Z M 2,1 h 20 c 0.562649,0 1,0.437351 1,1 v 20 c 0,0.562649 -0.437351,1 -1,1 H 2 C 1.4373514,23 1,22.562649 1,22 V 2 C 1,1.437351 1.4373514,1 2,1 Z"
+     id="rect15-9" />
+  <path
+     style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;vector-effect:none;fill:#dcdcdc;fill-opacity:0.07058824;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+     d="M 2,1 C 1.4373514,1 1,1.437352 1,2 V 2.5 H 2.1074219 C 2.2574996,2.206504 2.5543285,2 2.9082031,2 H 21.091797 c 0.353874,0 0.650703,0.206504 0.800781,0.5 H 23 V 2 C 23,1.437352 22.562649,1 22,1 Z"
+     id="rect15-3-7-1" />
+  <path
+     style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;vector-effect:none;fill:#d1d1d1;fill-opacity:0.01960784;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+     d="M 2,23 C 1.4373514,23 1,22.562648 1,22 V 2.5 h 1 v 13.060547 5.53125 C 2,21.595433 2.4045667,22 2.9082031,22 H 21.091797 C 21.595433,22 22,21.595433 22,21.091797 V 15.560547 2.5 h 1 V 22 c 0,0.562648 -0.437351,1 -1,1 z"
+     id="rect15-3-7-9" />
 </svg>

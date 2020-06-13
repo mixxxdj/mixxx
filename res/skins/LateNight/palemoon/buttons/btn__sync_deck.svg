@@ -5,10 +5,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   width="50"
-   height="24"
+   id="svg32"
    version="1.1"
-   id="svg32">
+   height="20"
+   width="46">
   <metadata
      id="metadata38">
     <rdf:RDF>
@@ -24,23 +24,23 @@
   <defs
      id="defs36" />
   <text
-     xml:space="preserve"
+     id="text847"
+     y="15.192383"
+     x="7.1855469"
      style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:#000001;stroke-width:1.60000002;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     x="7.4283857"
-     y="16.762369"
-     id="text847"><tspan
-       id="tspan845"
-       x="7.4283857"
-       y="16.762369"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:13.33333302px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';stroke:#000001;stroke-width:1.60000002;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">SYNC</tspan></text>
+     xml:space="preserve"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';stroke:#000001;stroke-width:1.60000002;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       y="15.192383"
+       x="7.1855469"
+       id="tspan845">SYNC</tspan></text>
   <text
-     xml:space="preserve"
+     id="text847-3"
+     y="15.192383"
+     x="7.1855469"
      style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#a89a8c;fill-opacity:1;stroke:none;stroke-width:1.60000002;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     x="7.4283857"
-     y="16.762369"
-     id="text847-3"><tspan
-       id="tspan845-0"
-       x="7.4283857"
-       y="16.762369"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:13.33333302px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';fill:#a89a8c;fill-opacity:1;stroke:none;stroke-width:1.60000002;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">SYNC</tspan></text>
+     xml:space="preserve"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Bold';fill:#a89a8c;fill-opacity:1;stroke:none;stroke-width:1.60000002;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       y="15.192383"
+       x="7.1855469"
+       id="tspan845-0">SYNC</tspan></text>
 </svg>

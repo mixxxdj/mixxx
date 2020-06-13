@@ -21,7 +21,7 @@
                 <MinimumSize>40,40</MinimumSize>
                 <Group><Variable name="Group"/></Group>
                 <PathBackground scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/spinny_bg.svg</PathBackground>
-                <PathMask scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/spinny<Variable name="ChanNum"/>_mask.svg</PathMask>
+                <PathMask scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/spinny_mask_<Variable name="DeckGroup"/>.svg</PathMask>
                 <PathForeground>skin:/<Variable name="StyleScheme"/>/style/spinny_indicator.svg</PathForeground>
                 <PathGhost>skin:/<Variable name="StyleScheme"/>/style/spinny_indicator_ghost.svg</PathGhost>
                 <ShowCover>false</ShowCover>
@@ -38,7 +38,7 @@
                 <MinimumSize>40,40</MinimumSize>
                 <Group><Variable name="Group"/></Group>
                 <PathBackground scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/spinny_bg.svg</PathBackground>
-                <PathMask scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/spinny<Variable name="ChanNum"/>_mask.svg</PathMask>
+                <PathMask scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/spinny_mask_<Variable name="DeckGroup"/>.svg</PathMask>
                 <PathForeground>skin:/<Variable name="StyleScheme"/>/style/spinny_indicator.svg</PathForeground>
                 <PathGhost>skin:/<Variable name="StyleScheme"/>/style/spinny_indicator_ghost.svg</PathGhost>
                 <ShowCover>true</ShowCover>

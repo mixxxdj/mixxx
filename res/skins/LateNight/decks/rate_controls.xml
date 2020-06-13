@@ -28,14 +28,14 @@
               <WidgetGroup><!-- BpmContainer + Tap overlay -->
                 <ObjectName>AlignCenter</ObjectName>
                 <Layout>stacked</Layout>
-                <Size>62f,22f</Size>
+                <Size>56f,22f</Size>
                 <Children>
                   <!-- In order to make the bpm display tappable, we use an old-style
                   widget group and put the bpm pushbutton on top of the display. -->
                   <PushButton>
                     <TooltipId>bpm_tap_visual_bpm</TooltipId>
                     <ObjectName>BpmTap</ObjectName>
-                    <Size>62f,22f</Size>
+                    <Size>56f,22f</Size>
                     <NumberStates>1</NumberStates>
                     <State>
                       <Number>0</Number>
@@ -45,13 +45,12 @@
                     </State>
                     <Connection>
                       <ConfigKey><Variable name="Group"/>,bpm_tap</ConfigKey>
-                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                     </Connection>
                   </PushButton>
                   <NumberBpm>
                     <ObjectName>BpmText</ObjectName>
                     <TooltipId>visual_bpm</TooltipId>
-                    <Size>62f,22f</Size>
+                    <Size>56f,22f</Size>
                     <Channel><Variable name="ChanNum" /></Channel>
                     <NumberOfDigits>2</NumberOfDigits>
                     <Connection>
@@ -78,8 +77,8 @@
               <Template src="skin:/controls/button_2state_right.xml">
                 <SetVariable name="TooltipId">sync_enabled</SetVariable>
                 <SetVariable name="ObjectName">SyncDeck</SetVariable>
-                <SetVariable name="Size">52f,26f</SetVariable>
-                <SetVariable name="BtnSize">wide</SetVariable>
+                <SetVariable name="Size">48f,22f</SetVariable>
+                <SetVariable name="BtnSize">sync</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="Group"/>,sync_enabled</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beatsync_tempo</SetVariable>
               </Template>
@@ -231,7 +230,8 @@
 
           <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- RateContainer -->
+
     </Children>
     <Connection>
       <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>

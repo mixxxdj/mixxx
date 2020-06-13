@@ -18,34 +18,76 @@
     <ObjectName>FxUnit<Variable name="FxUnit"/>_Header</ObjectName>
     <Children>
       <WidgetGroup>
-        <ObjectName>FxUnitHeader</ObjectName>
         <SizePolicy>me,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
-          <Label>
-            <ObjectName>FxUnitLabel</ObjectName>
-            <Size>32f,20me</Size>
-            <Text>FX&#8202;<Variable name="FxUnit"/></Text>
-          </Label>
-          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-          <PushButton>
-            <TooltipId>EffectUnit_show_parameters</TooltipId>
-            <ObjectName>FxExpand</ObjectName>
-            <Size>16f,18me</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-            </State>
-            <State>
-              <Number>1</Number>
-            </State>
-            <Connection>
-              <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_parameters</ConfigKey>
-              <ButtonState>LeftButton</ButtonState>
-            </Connection>
-          </PushButton>
+          <!-- transparent expand button on top of Fx label & icon -->
+          <WidgetGroup>
+            <ObjectName></ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+            <Layout>stacked</Layout>
+            <Children>
+
+              <!-- transparent expand button -->
+              <PushButton>
+                <TooltipId>EffectUnit_show_parameters</TooltipId>
+                <ObjectName>FxExpandOverlay</ObjectName>
+                <Size>0me,0me</Size>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                </State>
+                <State>
+                  <Number>1</Number>
+                </State>
+                <Connection>
+                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_parameters</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton><!-- transparent expand button -->
+
+              <!-- Fx label & icon -->
+              <WidgetGroup>
+                <ObjectName>FxUnitHeader</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <SizePolicy>me,min</SizePolicy>
+                    <MinimumSize>1,0</MinimumSize>
+                  </WidgetGroup>
+                  <Label>
+                    <ObjectName>FxUnitLabel</ObjectName>
+                    <SizePolicy>min,me</SizePolicy>
+                    <MinimunSize>30,20</MinimunSize>
+                    <MaximumSize>38,</MaximumSize>
+                    <Text>FX&#8202;<Variable name="FxUnit"/></Text>
+                  </Label>
+                  <WidgetGroup>
+                    <SizePolicy>me,min</SizePolicy>
+                    <MinimumSize>1,0</MinimumSize>
+                  </WidgetGroup>
+                  <PushButton>
+                    <ObjectName>FxExpand</ObjectName>
+                    <Size>16f,18me</Size>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                    </State>
+                    <Connection>
+                      <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_parameters</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                </Children>
+              </WidgetGroup><!-- Fx label & icon -->
+            </Children>
+          </WidgetGroup><!-- transparent expand button on top of Fx label & icon -->
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- FxUnitHeader -->
     </Children>
   </SingletonDefinition>
 

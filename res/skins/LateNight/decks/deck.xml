@@ -49,7 +49,7 @@
   <!-- Stack to show FULL, Compact or minimal decks, depending on
         the skin configuration:
         See /helpers/skin_helper_deck_size.xml for documentation. -->
-  <WidgetStack>
+  <WidgetStack current_page="[LateNight],deck_size_index_temp">
     <Children>
 
       <WidgetGroup trigger="[LateNight],show_full_deck">
@@ -79,5 +79,10 @@
       </WidgetGroup>
 
     </Children>
+    <Connection>
+      <ConfigKey>[Master],maximize_library</ConfigKey>
+      <Transform><Not/></Transform>
+      <BindProperty>visible</BindProperty>
+    </Connection>
   </WidgetStack>
 </Template>

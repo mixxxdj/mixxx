@@ -8,7 +8,7 @@
     <Children>
 
       <WidgetGroup>
-        <ObjectName>SamplerPlayBoxSmall</ObjectName>
+        <ObjectName>SamplerPlayBoxMini</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
@@ -32,7 +32,7 @@
         <Children>
 
           <WidgetGroup>
-            <ObjectName>SamplerTitleBoxSmall</ObjectName>
+            <ObjectName>SamplerTitleBoxMini</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>i,f</SizePolicy>
             <MinimumSize>,18</MinimumSize>

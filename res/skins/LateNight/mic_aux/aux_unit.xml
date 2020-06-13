@@ -54,7 +54,7 @@
             <Children>
               <Template src="skin:/mixer/vumeter_single.xml">
                 <SetVariable name="ChannelType">auxiliary</SetVariable>
-                <SetVariable name="VuSize">small</SetVariable>
+                <SetVariable name="VuSize">micaux</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>

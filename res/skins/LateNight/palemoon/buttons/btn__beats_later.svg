@@ -5,10 +5,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   id="svg18"
-   version="1.1"
+   width="24"
    height="24"
-   width="24">
+   version="1.1"
+   id="svg18">
   <metadata
      id="metadata24">
     <rdf:RDF>
@@ -23,31 +23,63 @@
   </metadata>
   <defs
      id="defs22" />
+  <g
+     style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round"
+     id="g862">
+    <path
+       d="m 15,3 v 3 l -11,1e-6 v 2 L 15,8 v 3 l 7,-4 z"
+       id="path6-3"
+       style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round" />
+    <g
+       style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round"
+       id="g849-6">
+      <path
+         style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round"
+         id="path2-7"
+         d="m 17,21 h -2 v -9 h 2 z" />
+      <path
+         style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round"
+         id="path4-5"
+         d="m 9,21 h 2 V 9 H 9 Z" />
+      <path
+         style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round"
+         d="m 9,5 h 2 V 3 H 9 Z"
+         id="path8-3" />
+      <path
+         style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round"
+         d="M 3,21 H 5 V 9 H 3 Z"
+         id="path10-5" />
+      <path
+         style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:1.6;stroke-miterlimit:4;stroke-dasharray:none;stroke-linejoin:round"
+         d="M 3,5 H 5 V 3 H 3 Z"
+         id="path12-6" />
+    </g>
+  </g>
   <path
-     d="m 15,3 v 3 l -11,1e-6 v 2 L 15,8 v 3 l 7,-4 z"
+     style="fill:#928476"
      id="path6"
-     style="fill:#a89a8c" />
+     d="m 15,3 v 3 l -11,1e-6 v 2 L 15,8 v 3 l 7,-4 z" />
   <g
      id="g849">
     <path
-       style="fill:#666665"
+       d="m 17,21 h -2 v -9 h 2 z"
        id="path2"
-       d="m 17,21 h -2 v -9 h 2 z" />
+       style="fill:#3f3d3d" />
     <path
-       style="fill:#666665"
+       d="m 9,21 h 2 V 9 H 9 Z"
        id="path4"
-       d="m 9,21 h 2 V 9 H 9 Z" />
+       style="fill:#3f3d3d" />
     <path
-       style="fill:#666665"
+       id="path8"
        d="m 9,5 h 2 V 3 H 9 Z"
-       id="path8" />
+       style="fill:#3f3d3d" />
     <path
-       style="fill:#666665"
+       id="path10"
        d="M 3,21 H 5 V 9 H 3 Z"
-       id="path10" />
+       style="fill:#3f3d3d" />
     <path
-       style="fill:#666665"
+       id="path12"
        d="M 3,5 H 5 V 3 H 3 Z"
-       id="path12" />
+       style="fill:#3f3d3d" />
   </g>
 </svg>

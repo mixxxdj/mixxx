@@ -124,6 +124,41 @@
       <SetVariable name="SliderScheme">palemoon</SetVariable>
       <SetVariable name="StyleScheme">palemoon</SetVariable>
 
+      <!-- Waveform & Overview colors -->
+      <!-- This is a hack to have a grey background in empty decks.
+          When a track is laoded the bg gets darker for better contrast -->
+      <SetVariable name="BgColorOverview_12">#19191a</SetVariable>
+      <SetVariable name="BgColorOverview_34">#001b23</SetVariable>
+      <SetVariable name="BgColorOverview_SamPre">rgba(15, 15, 15, 20)</SetVariable>
+      <SetVariable name="BgColorWaveform_12">#0f0f0e</SetVariable>
+      <SetVariable name="BgColorWaveform_34">#001b23</SetVariable>
+      <SetVariable name="SignalColor_12">#d9b28c</SetVariable>
+      <SetVariable name="SignalColor_34">#7bc6c3</SetVariable>
+    <!--
+      <SetVariable name="SignalRGBHighColor">slateblue</SetVariable>
+      <SetVariable name="SignalRGBMidColor">limegreen</SetVariable>
+      <SetVariable name="SignalRGBLowColor">firebrick</SetVariable>
+      <SetVariable name="SignalRGBHighColor">#100032</SetVariable>
+      <SetVariable name="SignalRGBMidColor">#102800</SetVariable>
+      <SetVariable name="SignalRGBLowColor">#3c0000</SetVariable>
+    -->
+      <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
+      <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
+      <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
+      <SetVariable name="AxesColor">#999</SetVariable>
+      <SetVariable name="BeatColor">#999</SetVariable>
+      <!--SetVariable name="PlayPosColor">#00c8ff</SetVariable-->
+      <SetVariable name="PlayPosColor">#ff9417</SetVariable>
+      <SetVariable name="CueColor">#ff7a01</SetVariable>
+      <SetVariable name="LoopColor">#00b400</SetVariable>
+      <SetVariable name="IntroOutroColor">#2c5c9a</SetVariable>
+      <SetVariable name="PlayedOverlayColor">#dd151515</SetVariable>
+      <SetVariable name="EndOfTrackColor">#f856e7</SetVariable>
+      <SetVariable name="OverviewFontSizeDeck">13</SetVariable>
+      <SetVariable name="OverviewFontSizeDeckMini">11</SetVariable>
+      <SetVariable name="OverviewFontSizeSampler">10</SetVariable>
+      <SetVariable name="OverviewFontSizePreview">9</SetVariable>
+
       <!-- Set the button type
         * elevated: buttons stand out, have a 3D border and a drop shadow
         * embedded: buttons are domed and seem leveled with surface, and they have surrounding groove
@@ -136,26 +171,30 @@
       <!-- Knob settings -->
       <SetVariable name="PotiMinAngle">-130</SetVariable>
       <SetVariable name="PotiMaxAngle">130</SetVariable>
+      <!-- Arc Settings -->
       <SetVariable name="ArcRadiusBig">14.5</SetVariable>
       <SetVariable name="ArcRadiusCompact">13.0</SetVariable>
       <SetVariable name="ArcRadiusSmall">12.0</SetVariable>
       <SetVariable name="ArcThicknessBig">2</SetVariable>
       <SetVariable name="ArcRoundCaps">true</SetVariable>
-      <SetVariable name="ArcColorEq">#af9f91</SetVariable>
+      <!-- Arc Colors -->
+      <SetVariable name="ArcColorEq">#858585</SetVariable>
       <SetVariable name="ArcColorGain">#b96300</SetVariable>
-      <SetVariable name="ArcColorFx12Quick">#5ba000</SetVariable>
-      <SetVariable name="ArcColorFx34">#009ba7</SetVariable>
-      <SetVariable name="ArcColorFxParameter">#999</SetVariable>
-      <SetVariable name="ArcColorGainLow">#7D340F</SetVariable>
+      <SetVariable name="ArcColorFx12Quick">#518f00</SetVariable>
+      <SetVariable name="ArcColorFx34">#028392</SetVariable>
+      <SetVariable name="ArcColorFxParameter">#6d6d6d</SetVariable>
+      <SetVariable name="ArcColorGainLow">#8d3b11</SetVariable>
       <SetVariable name="ArcColorMstBal">#a00000</SetVariable>
       <SetVariable name="ArcColorFxMix">#aa0000</SetVariable>
-      <!-- Suffix for the knob indicator SVGs -->
+      <!-- Knob pointers
+           = suffix for indicator image url -->
       <SetVariable name="KnobColorEq">grey</SetVariable>
+      <SetVariable name="KnobColorQuickEffect">green</SetVariable>
       <SetVariable name="KnobColorFx12">green</SetVariable>
       <SetVariable name="KnobColorFx34">blue</SetVariable>
       <SetVariable name="KnobColorFxParameter">grey</SetVariable>
-      <!-- Size of the small EQ kill indicator button: SVG is 6x6 px.
-          Set size to '0f,0f' to hide them. -->
+      <!-- Size of the small EQ kill indicators
+            svg is 6x6 px, set size to '0f,0f' to hide them -->
       <SetVariable name="EqKillDotSize">6f,6f</SetVariable>
 
       <!-- Slider bar settings -->
@@ -168,36 +207,6 @@
       <SetVariable name="BarMarginPitch">7,8</SetVariable>
       <SetVariable name="BarMarginPitchSampler">5,5</SetVariable>
       <SetVariable name="BarMarginCrossfader">7,7</SetVariable>
-
-      <!-- Waveform & Overview colors -->
-      <!-- This is a hack to have a grey background in empty decks.
-          When a track is laoded the bg gets darker for better contrast -->
-      <SetVariable name="BgColorOverview_12">rgba(15, 15, 15, 20)</SetVariable>
-      <SetVariable name="BgColorOverview_34">rgba(0, 27, 35, 120)</SetVariable>
-      <SetVariable name="BgColorOverview_SamPre">rgba(15, 15, 15, 20)</SetVariable>
-      <SetVariable name="BgColorWaveform_12">#0f0f0e</SetVariable>
-      <SetVariable name="BgColorWaveform_34">#001b23</SetVariable>
-      <SetVariable name="SignalColor_12">#d9b28c</SetVariable>
-      <SetVariable name="SignalColor_34">#7bc6c3</SetVariable>
-      <!--SetVariable name="SignalRGBHighColor">slateblue</SetVariable>
-      <SetVariable name="SignalRGBMidColor">limegreen</SetVariable>
-      <SetVariable name="SignalRGBLowColor">firebrick</SetVariable-->
-      <SetVariable name="SignalRGBHighColor">#0c0a32</SetVariable>
-      <SetVariable name="SignalRGBMidColor">#092800</SetVariable>
-      <SetVariable name="SignalRGBLowColor">#3c0a00</SetVariable>
-      <SetVariable name="AxesColor">#bbb</SetVariable>
-      <SetVariable name="BeatColor">#bbb</SetVariable>
-      <!--SetVariable name="PlayPosColor">#00c8ff</SetVariable-->
-      <SetVariable name="PlayPosColor">#ff9417</SetVariable>
-      <SetVariable name="CueColor">#ff7a01</SetVariable>
-      <SetVariable name="LoopColor">#00b400</SetVariable>
-      <SetVariable name="IntroOutroColor">#2c5c9a</SetVariable>
-      <SetVariable name="PlayedOverlayColor">#dd151515</SetVariable>
-      <SetVariable name="EndOfTrackColor">#f856e7</SetVariable>
-      <SetVariable name="OverviewFontSizeDeck">13</SetVariable>
-      <SetVariable name="OverviewFontSizeDeckMini">11</SetVariable>
-      <SetVariable name="OverviewFontSizeSampler">10</SetVariable>
-      <SetVariable name="OverviewFontSizePreview">9</SetVariable>
     </Scheme><!-- PaleMoon -->
 
     <Scheme>
@@ -215,6 +224,7 @@
       <SetVariable name="PotiMinAngle">-135</SetVariable>
       <SetVariable name="PotiMaxAngle">135</SetVariable>
       <SetVariable name="KnobColorEq">red</SetVariable>
+      <SetVariable name="KnobColorQuickEffect">green</SetVariable>
       <SetVariable name="KnobColorFx12">green</SetVariable>
       <SetVariable name="KnobColorFx34">blue</SetVariable>
       <SetVariable name="KnobColorFxParameter">white</SetVariable>
@@ -254,7 +264,7 @@
   <!-- MinimumSize should not be an exact monitor resolution. There needs
   to be space for the title bar or other chrome at full screen.
   https://www.mixxx.org/wiki/doku.php/skin_guidelines#the_optimal_size_for_skins -->
-  <MinimumSize>1302,668</MinimumSize>
+  <MinimumSize>1280,668</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
   <LaunchImageStyle>
@@ -324,7 +334,8 @@
       <Children>
 
         <Template src="skin:toolbar.xml"/>
-        <!-- regular/maximized library + skin settings menu -->
+
+        <!-- regular/maximized library  |  skin settings menu -->
         <WidgetGroup>
           <Layout>horizontal</Layout>
           <SizePolicy>me,me</SizePolicy>
@@ -392,6 +403,14 @@
                         <SingletonContainer>
                           <ObjectName>LibrarySingleton</ObjectName>
                         </SingletonContainer>
+
+                        <!-- Some helpers to show widgets and switch layouts
+                          depending on the skin configuration.
+                          Appearantly putting those here keeps i.e. the deck
+                          size when [Master],maximize_library is toggled. -->
+                        <Template src="skin:/helpers/skin_helper_mic_ducking.xml"/>
+                        <Template src="skin:/helpers/skin_helper_spinny-cover.xml"/>
+                        <Template src="skin:/helpers/skin_helper_deck_size.xml"/>
                       </Children>
                     </WidgetGroup>
 
@@ -419,11 +438,6 @@
 
           </Children>
         </WidgetGroup><!-- regular/maximized library + skin settings menu -->
-
-        <!-- Some helpers to show widgets and switch between different layouts. -->
-        <Template src="skin:/helpers/skin_helper_mic_ducking.xml"/>
-        <Template src="skin:/helpers/skin_helper_spinny-cover.xml"/>
-        <Template src="skin:/helpers/skin_helper_deck_size.xml"/>
 
       </Children>
     </WidgetGroup>

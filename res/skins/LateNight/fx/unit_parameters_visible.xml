@@ -28,7 +28,7 @@
               </Template>
               <WidgetGroup>
                 <SizePolicy>min,me</SizePolicy>
-                <MaximumSize>212,</MaximumSize>
+                <MaximumSize>182,</MaximumSize>
                 <Layout>horizontal</Layout>
                 <Children>
                   <SingletonContainer>
@@ -50,7 +50,7 @@
               </WidgetGroup>
               <WidgetGroup>
                 <SizePolicy>me,f</SizePolicy>
-                <MaximumSize>205,0</MaximumSize>
+                <MaximumSize>185,0</MaximumSize>
               </WidgetGroup>
             </Children>
           </WidgetGroup>
@@ -64,7 +64,7 @@
               </Template>
               <WidgetGroup>
                 <SizePolicy>min,me</SizePolicy>
-                <MaximumSize>212,</MaximumSize>
+                <MaximumSize>182,</MaximumSize>
                 <Layout>horizontal</Layout>
                 <Children>
                   <SingletonContainer>
@@ -86,7 +86,7 @@
               </WidgetGroup>
               <WidgetGroup>
                 <SizePolicy>me,f</SizePolicy>
-                <MaximumSize>205,0</MaximumSize>
+                <MaximumSize>185,0</MaximumSize>
               </WidgetGroup>
             </Children>
           </WidgetGroup>
@@ -100,7 +100,7 @@
               </Template>
               <WidgetGroup>
                 <SizePolicy>min,me</SizePolicy>
-                <MaximumSize>212,</MaximumSize>
+                <MaximumSize>182,</MaximumSize>
                 <Layout>horizontal</Layout>
                 <Children>
                   <SingletonContainer>

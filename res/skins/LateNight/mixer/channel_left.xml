@@ -3,6 +3,8 @@ vertical layout and a side-by-side layout for two-deck mode -->
 
 <Template>
   <SetVariable name="Group">[Channel<Variable name="ChanNum"/>]</SetVariable>
+  <SetVariable name="EqEffect">[EqualizerRack1_<Variable name="Group"/>_Effect1]</SetVariable>
+
   <SetVariable name="KnobBg">regular</SetVariable>
   <SetVariable name="KnobIndicator">regular</SetVariable>
   <SetVariable name="ArcRadius"><Variable name="ArcRadiusBig"/></SetVariable>
@@ -37,24 +39,21 @@ vertical layout and a side-by-side layout for two-deck mode -->
               </WidgetGroup>
 
               <Template src="skin:/mixer/eq_knob_left.xml">
-                <SetVariable name="FxParameter">3</SetVariable>
-                <SetVariable name="Text">H</SetVariable>
+                <SetVariable name="EqParameter">3</SetVariable>
                 <SetVariable name="EqRange">High</SetVariable>
               </Template>
 
               <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
 
               <Template src="skin:/mixer/eq_knob_left.xml">
-                <SetVariable name="FxParameter">2</SetVariable>
-                <SetVariable name="Text">M</SetVariable>
+                <SetVariable name="EqParameter">2</SetVariable>
                 <SetVariable name="EqRange">Mid</SetVariable>
               </Template>
 
               <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
 
               <Template src="skin:/mixer/eq_knob_left.xml">
-                <SetVariable name="FxParameter">1</SetVariable>
-                <SetVariable name="Text">L</SetVariable>
+                <SetVariable name="EqParameter">1</SetVariable>
                 <SetVariable name="EqRange">Low</SetVariable>
               </Template>
 

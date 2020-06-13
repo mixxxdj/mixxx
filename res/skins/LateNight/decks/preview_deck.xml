@@ -145,7 +145,7 @@
             <Children>
               <Template src="skin:/mixer/vumeter_single.xml">
                 <SetVariable name="ChannelType">preview</SetVariable>
-                <SetVariable name="VuSize">small</SetVariable>
+                <SetVariable name="VuSize">preview</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>

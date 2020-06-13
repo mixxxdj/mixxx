@@ -13,16 +13,15 @@
           <WidgetGroup>
             <ObjectName>TitleRow</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>i,min</SizePolicy>
+            <SizePolicy>i,me</SizePolicy>
             <Children>
               <WidgetGroup>
-                <ObjectName>TitleGutter</ObjectName>
                 <Layout>horizontal</Layout>
-                <SizePolicy>i,min</SizePolicy>
+                <SizePolicy>i,me</SizePolicy>
                 <Children>
                   <TrackProperty>
                     <ObjectName>TitleText</ObjectName>
-                    <Size>0me,24f</Size>
+                    <Size>0me,24me</Size>
                     <TooltipId>track_title</TooltipId>
                     <Property>title</Property>
                     <Alignment>Left</Alignment>
@@ -30,18 +29,18 @@
                     <Channel><Variable name="ChanNum"/></Channel>
                   </TrackProperty>
                 </Children>
-              </WidgetGroup><!-- TitleGutter -->
+              </WidgetGroup>
 
               <WidgetGroup>
                 <ObjectName>PlayPositionGutter</ObjectName>
                 <Layout>horizontal</Layout>
-                <SizePolicy>p,min</SizePolicy>
+                <SizePolicy>p,mme</SizePolicy>
                 <MinimumSize>80,</MinimumSize>
                 <Children>
                   <NumberPos>
                     <ObjectName>PlayPositionText</ObjectName>
                     <TooltipId>track_time</TooltipId>
-                    <Size>0min,24f</Size>
+                    <Size>0min,24me</Size>
                     <Alignment>right</Alignment>
                     <Channel><Variable name="ChanNum"/></Channel>
                     <Connection>
@@ -53,7 +52,7 @@
                   <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup><!-- PlayPositionGutter -->
+              </WidgetGroup>
 
             </Children>
           </WidgetGroup><!-- TitleRow -->
@@ -61,16 +60,15 @@
           <WidgetGroup>
             <ObjectName>ArtistRow</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>me,min</SizePolicy>
+            <SizePolicy>me,me</SizePolicy>
             <Children>
               <WidgetGroup>
-                <ObjectName>ArtistGutter</ObjectName>
                 <Layout>horizontal</Layout>
-                <SizePolicy>me,min</SizePolicy>
+                <SizePolicy>me,me</SizePolicy>
                 <Children>
                   <TrackProperty>
                     <ObjectName>ArtistText</ObjectName>
-                    <Size>0me,24f</Size>
+                    <Size>0me,24me</Size>
                     <TooltipId>track_artist</TooltipId>
                     <Property>artist</Property>
                     <Elide>right</Elide>
@@ -79,7 +77,7 @@
                     </Channel>
                   </TrackProperty>
                 </Children>
-              </WidgetGroup><!-- ArtistGutter -->
+              </WidgetGroup>
 
               <WidgetGroup>
                 <ObjectName>DurationGutter</ObjectName>
@@ -89,14 +87,14 @@
                   <TrackProperty>
                     <ObjectName>DurationText</ObjectName>
                     <TooltipId>track_duration</TooltipId>
-                    <Size>0min,24f</Size>
+                    <Size>0min,24me</Size>
                     <Property>durationFormatted</Property>
                     <Channel>
                       <Variable name="ChanNum"/>
                     </Channel>
                   </TrackProperty>
                 </Children>
-              </WidgetGroup><!-- DurationGutter -->
+              </WidgetGroup>
 
             </Children>
           </WidgetGroup><!-- ArtistRow -->

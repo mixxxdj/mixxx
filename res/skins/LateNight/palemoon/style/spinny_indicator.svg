@@ -1,8 +1,50 @@
-<svg width="110" height="110" version="1.1" xmlns="http://www.w3.org/2000/svg">
-		<g shape-rendering="auto">
-				<path d="m54.20605 3.0989008c-2.87145 0-5.20605-.1267242-5.20605 2.5090193v35.6198829c0 2.635743 2.3346 4.778706 5.20605 4.778706h1.587899c2.871451 0 5.206051-2.142963 5.206051-4.778706v-35.6198829c0-2.6357435-2.3346-2.5090193-5.206051-2.5090193z" color="#000000" color-rendering="auto" dominant-baseline="auto" fill-opacity=".62745098" image-rendering="auto" solid-color="#000000" stroke-width=".99999994" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
-				<path d="m54.4707 3.3479471c-1.9143 0-3.4707 2.9e-6-3.4707 1.6032609v35.235408c0 2.206414 1.5564 4.000313 3.4707 4.000313h1.0586c1.9143 0 3.4707-1.793899 3.4707-4.000313v-35.235408c0-1.603258-1.5564-1.6032609-3.4707-1.6032609z" color="#000000" color-rendering="auto" dominant-baseline="auto" fill-opacity=".62745098" image-rendering="auto" solid-color="#000000" stroke-width=".99999994" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
-				<path d="m54.65411 3.9496929h.69178c.921217 0 1.65411.6460174 1.65411 2.1569774v33.5984117c0 1.51107-.732909 2.71315-1.65411 2.71315h-.69178c-.921217 0-1.65411-1.20219-1.65411-2.71315v-33.5984117c0-1.51107.732909-2.1569774 1.65411-2.1569774z" color="#000000" color-rendering="auto" dominant-baseline="auto" fill="none" image-rendering="auto" solid-color="#000000" stroke="#000" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
-				<path d="m54.65411 3.9496929h.69178c.921217 0 1.65411.6460176 1.65411 2.1569776v33.5984115c0 1.51107-.732909 2.71315-1.65411 2.71315h-.69178c-.921217 0-1.65411-1.20219-1.65411-2.71315v-33.5984115c0-1.51107.732909-2.1569776 1.65411-2.1569776z" color="#000000" color-rendering="auto" dominant-baseline="auto" fill="#fff" image-rendering="auto" solid-color="#000000" stroke-width=".99999994" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
-		</g>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   width="110"
+   height="110"
+   version="1.1"
+   id="svg12">
+  <metadata
+     id="metadata18">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs16" />
+  <rect
+     rx="2"
+     y="3.9496899"
+     x="52.940231"
+     height="30.468542"
+     width="4.1195445"
+     id="rect929-7-3"
+     style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.5" />
+  <rect
+     style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="rect929-7"
+     width="4.1195445"
+     height="30.468542"
+     x="52.940231"
+     y="3.9496899"
+     rx="2" />
+  <rect
+     rx="2"
+     y="3.9496901"
+     x="52.940231"
+     height="30.468542"
+     width="4.1195445"
+     id="rect929"
+     style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.596692" />
 </svg>

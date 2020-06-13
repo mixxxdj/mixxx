@@ -1,32 +1,30 @@
 <!DOCTYPE template>
 <Template>
-  <SetVariable name="FxNum">1</SetVariable>
-  <SetVariable name="FxRack_FxUnit_FxNum">[EqualizerRack1_<Variable name="Group"/>_Effect1]</SetVariable>
 
   <WidgetGroup>
     <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
+
       <WidgetGroup>
-        <ObjectName>ChannelMixerKnobContainer</ObjectName>
+        <ObjectName>ChannelMixer_KnobContainer</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
 
-          <!-- Kill button -->
           <WidgetGroup>
+            <ObjectName>EQKillButtonBox</ObjectName>
             <Layout>vertical</Layout>
             <Size>18f,34f</Size>
             <Children>
               <WidgetGroup><Size>0min,5f</Size></WidgetGroup>
               <EffectPushButton>
                 <TooltipId>filter<Variable name="EqRange"/>Kill</TooltipId>
-                <ObjectName>EQKillButton</ObjectName>
+                <ObjectName>EQKillButton_<Variable name="EqRange"/></ObjectName>
                 <Size>18f,18f</Size>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Text><Variable name="Text"/></Text>
                   <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill.svg</Unpressed>
                   <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
                 </State>
@@ -36,7 +34,7 @@
                   <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
                 </State>
                 <Connection>
-                  <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,button_parameter<Variable name="FxParameter"/></ConfigKey>
+                  <ConfigKey><Variable name="EqEffect"/>,button_parameter<Variable name="EqParameter"/></ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
               </EffectPushButton>
@@ -45,7 +43,7 @@
               <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
-          </WidgetGroup>
+          </WidgetGroup><!-- EQKillButtonBox -->
 
           <WidgetGroup><!-- EQ knob + Kill status dot -->
             <Size>40f,34f</Size>
@@ -64,7 +62,7 @@
                 <ArcRoundCaps><Variable name="ArcRoundCaps"/></ArcRoundCaps>
                 <KnobCenterYOffset>1.598</KnobCenterYOffset>
                 <Connection>
-                  <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/></ConfigKey>
+                  <ConfigKey><Variable name="EqEffect"/>,parameter<Variable name="EqParameter"/></ConfigKey>
                 </Connection>
               </EffectParameterKnobComposed>
               <PushButton>
@@ -81,7 +79,7 @@
                   <Number>1</Number>
                 </State>
                 <Connection>
-                  <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,button_parameter<Variable name="FxParameter"/></ConfigKey>
+                  <ConfigKey><Variable name="EqEffect"/>,button_parameter<Variable name="EqParameter"/></ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
                 <Connection>
@@ -94,10 +92,11 @@
           </WidgetGroup><!-- EQ knob + Kill status dot -->
 
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- ChannelMixer_KnobContainer -->
+
     </Children>
     <Connection>
-      <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/>_loaded</ConfigKey>
+      <ConfigKey><Variable name="EqEffect"/>,parameter<Variable name="EqParameter"/>_loaded</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

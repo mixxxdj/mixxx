@@ -24,33 +24,34 @@
   <defs
      id="defs16" />
   <g
-     id="g10"
-     stroke-linecap="round"
-     fill="none"
-     transform="translate(-.49971785 -3.5964877e-5)">
+     style="stroke:#060202;stroke-opacity:0.99607998;stroke-linejoin:round;fill:none"
+     id="g899">
     <path
+       style="fill:none;stroke-linecap:round;stroke:#060202;stroke-opacity:0.99607998;stroke-linejoin:round"
        id="path2"
-       stroke-width="3.20000005"
-       stroke-opacity=".99608005"
+       stroke-width="3.2"
+       stroke-opacity="0.99608"
        stroke="#060202"
-       d="m4.0138036 7.00174c14.6820004 3.7456 20.9750004 9.9882 20.9750004 9.9882" />
+       d="m 3.5140858,7.001704 c 14.6820002,3.7456 20.9750002,9.9882 20.9750002,9.9882" />
     <path
-       style="stroke:#a89a8c;stroke-opacity:1"
-       id="path4"
-       stroke-width="2"
-       stroke-opacity=".99216003"
-       stroke="#b5b5b5"
-       d="m4.0138036 7.00174c14.6820004 3.7456 20.9750004 9.9882 20.9750004 9.9882" />
-    <path
+       style="fill:none;stroke-linecap:round;stroke:#060202;stroke-opacity:0.99607998;stroke-linejoin:round"
        id="path6"
-       stroke-width="3.20000005"
-       stroke-opacity=".99608005"
+       stroke-width="3.2"
+       stroke-opacity="0.99608"
        stroke="#060202"
-       d="m24.986004 7.00174c-14.682 3.7456-20.9750004 9.9882-20.9750004 9.9882" />
-    <path
-       id="path8"
-       stroke-width="2"
-       stroke="#da0606"
-       d="m24.986004 7.00174c-14.682 3.7456-20.9750004 9.9882-20.9750004 9.9882" />
+       d="m 24.486286,7.001704 c -14.6819998,3.7456 -20.9750002,9.9882 -20.9750002,9.9882" />
   </g>
+  <path
+     d="m 3.5140858,7.001704 c 14.6820002,3.7456 20.9750002,9.9882 20.9750002,9.9882"
+     stroke="#b5b5b5"
+     stroke-opacity=".99216003"
+     stroke-width="2"
+     id="path4"
+     style="fill:none;fill-opacity:1;stroke:#918273;stroke-linecap:round;stroke-opacity:1" />
+  <path
+     d="m 24.486286,7.001704 c -14.6819998,3.7456 -20.9750002,9.9882 -20.9750002,9.9882"
+     stroke="#da0606"
+     stroke-width="2"
+     id="path8"
+     style="fill:none;stroke-linecap:round" />
 </svg>

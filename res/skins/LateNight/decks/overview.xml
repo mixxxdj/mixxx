@@ -1,9 +1,12 @@
 <Template>
   <Overview>
     <TooltipId>waveform_overview</TooltipId>
-    <Group><Variable name="Group"/></Group>
     <Size>150me,20me</Size>
-    <BgColor><Variable name="SignalBgColor"/></BgColor>
+    <Group><Variable name="Group"/></Group>
+    <Connection>
+      <ConfigKey><Variable name="Group"/>,playposition</ConfigKey>
+    </Connection>
+    <BgColor><Variable name="BgColor"/></BgColor>
     <SignalColor><Variable name="SignalColor"/></SignalColor>
     <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
     <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
@@ -103,8 +106,5 @@
       <TextColor>#FFFFFF</TextColor>
       <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
     </Mark>
-    <Connection>
-      <ConfigKey><Variable name="Group"/>,playposition</ConfigKey>
-    </Connection>
   </Overview>
 </Template>

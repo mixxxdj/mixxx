@@ -11,7 +11,7 @@
 
       <WidgetGroup>
         <ObjectName>ExpandingBottomBorder</ObjectName>
-        <SizePolicy>min,me</SizePolicy>
+        <SizePolicy>me,me</SizePolicy>
         <MinimumSize>2,1</MinimumSize>
         <Children/>
       </WidgetGroup>
@@ -20,7 +20,7 @@
 
       <WidgetGroup>
         <ObjectName>ExpandingBottomBorder</ObjectName>
-        <SizePolicy>min,me</SizePolicy>
+        <SizePolicy>me,me</SizePolicy>
         <MinimumSize>2,1</MinimumSize>
       </WidgetGroup>
 
@@ -35,6 +35,10 @@
             <ObjectName>KeyControls<Variable name="ChanNum"/></ObjectName>
           </SingletonContainer>
         </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_key_controls</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
       </WidgetGroup>
 
     </Children>

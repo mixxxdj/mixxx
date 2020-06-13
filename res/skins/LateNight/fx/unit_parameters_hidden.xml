@@ -25,7 +25,7 @@
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <SizePolicy>me,min</SizePolicy>
-            <MaximumSize>220,</MaximumSize>
+            <MaximumSize>190,</MaximumSize>
             <Children>
               <SingletonContainer>
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlotControls1</ObjectName>
@@ -43,7 +43,7 @@
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <SizePolicy>me,min</SizePolicy>
-            <MaximumSize>220,</MaximumSize>
+            <MaximumSize>190,</MaximumSize>
             <Children>
               <SingletonContainer>
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlotControls2</ObjectName>
@@ -60,7 +60,7 @@
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <SizePolicy>me,min</SizePolicy>
-            <MaximumSize>220,</MaximumSize>
+            <MaximumSize>190,</MaximumSize>
             <Children>
               <SingletonContainer>
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlotControls3</ObjectName>

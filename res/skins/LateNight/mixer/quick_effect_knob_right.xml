@@ -8,7 +8,7 @@
     <SizePolicy>min,min</SizePolicy>
     <Children>
       <WidgetGroup>
-        <ObjectName>ChannelMixerKnobContainer</ObjectName>
+        <ObjectName>ChannelMixer_KnobContainer</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
@@ -16,21 +16,26 @@
           <WidgetGroup><!-- QuickEffect Meta knob + status dot -->
             <Size>40f,34f</Size>
             <Children>
-              <WidgetGroup>
+              <KnobComposed>
+                <TooltipId>QuickEffectRack_super1</TooltipId>
                 <Pos>0,0</Pos>
                 <Size>40f,34f</Size>
-                <Layout>horizontal</Layout>
-                <Children>
-                  <Template src="skin:/controls/knob_textless.xml">
-                    <SetVariable name="Size">40f,34f</SetVariable>
-                    <SetVariable name="KnobColor">green</SetVariable>
-                    <SetVariable name="ArcColor"><Variable name="ArcColorFx12Quick"/></SetVariable>
-                    <SetVariable name="Group"><Variable name="QuickEffectGroup"/></SetVariable>
-                    <SetVariable name="Control">super1</SetVariable>
-                    <SetVariable name="TooltipId">QuickEffectRack_super1</SetVariable>
-                  </Template>
-                </Children>
-              </WidgetGroup>
+                <Knob>skin:/<Variable name="KnobScheme"/>/knobs/knob_indicator_<Variable name="KnobIndicator"/>_<Variable name="KnobColorQuickEffect"/>.svg</Knob>
+                <BackPath>skin:/<Variable name="KnobScheme"/>/knobs/knob_bg_<Variable name="KnobBg"/>.svg</BackPath>
+                <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+                <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+                <ArcRadius><Variable name="ArcRadius"/></ArcRadius>
+                <ArcUnipolar><Variable name="ArcUnipolar"/></ArcUnipolar>
+                <ArcReversed><Variable name="ArcReversed"/></ArcReversed>
+                <ArcColor><Variable name="ArcColorFx12Quick"/></ArcColor>
+                <ArcThickness><Variable name="ArcThickness"/></ArcThickness>
+                <ArcRoundCaps><Variable name="ArcRoundCaps"/></ArcRoundCaps>
+                <KnobCenterYOffset>1.598</KnobCenterYOffset>
+                <Connection>
+                  <ConfigKey><Variable name="QuickEffectGroup"/>,super1</ConfigKey>
+                </Connection>
+              </KnobComposed>
+
               <PushButton>
                 <TooltipId>QuickEffectRack_enabled</TooltipId>
                 <ObjectName>QuickEffectDot</ObjectName>

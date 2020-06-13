@@ -16,7 +16,6 @@
             <SizePolicy>i,min</SizePolicy>
             <Children>
               <WidgetGroup>
-                <ObjectName>TitleGutter</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>i,min</SizePolicy>
                 <Children>
@@ -30,7 +29,7 @@
                     <Channel><Variable name="ChanNum"/></Channel>
                   </TrackProperty>
                 </Children>
-              </WidgetGroup><!-- TitleGutter -->
+              </WidgetGroup>
 
               <WidgetGroup>
                 <ObjectName>PlayPositionGutter</ObjectName>
@@ -53,8 +52,7 @@
                   <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup><!-- PlayPositionGutter -->
-
+              </WidgetGroup>
             </Children>
           </WidgetGroup><!-- TitleRow -->
 
@@ -64,7 +62,6 @@
             <SizePolicy>me,min</SizePolicy>
             <Children>
               <WidgetGroup>
-                <ObjectName>ArtistGutter</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,min</SizePolicy>
                 <Children>
@@ -79,7 +76,7 @@
                     </Channel>
                   </TrackProperty>
                 </Children>
-              </WidgetGroup><!-- ArtistGutter -->
+              </WidgetGroup>
               <WidgetGroup>
                 <ObjectName>DurationGutter</ObjectName>
                 <Layout>horizontal</Layout>
@@ -95,7 +92,7 @@
                     </Channel>
                   </TrackProperty>
                 </Children>
-              </WidgetGroup><!-- DurationGutter -->
+              </WidgetGroup>
 
             </Children>
           </WidgetGroup><!-- ArtistRow -->

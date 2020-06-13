@@ -5,10 +5,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   id="svg12"
-   version="1.1"
+   width="28"
    height="24"
-   width="28">
+   version="1.1"
+   id="svg12">
   <metadata
      id="metadata18">
     <rdf:RDF>
@@ -24,33 +24,33 @@
   <defs
      id="defs16" />
   <g
-     id="g10"
-     stroke-linecap="round"
-     fill="none"
-     transform="translate(-.55235449)">
+     id="g851">
     <path
-       id="path2"
-       stroke-width="3.20000005"
-       stroke-opacity=".99608005"
+       style="fill:none;stroke-linecap:round"
+       d="M 3.461888,8.0017027 H 24.433404"
        stroke="#0d0505"
-       d="m4.0142425 8.0017027h20.9715155" />
+       stroke-opacity="0.99608"
+       stroke-width="3.2"
+       id="path2" />
     <path
-       stroke="#b5b5b5"
-       stroke-width="2"
-       stroke-opacity=".99216003"
-       style="fill:#a89a8c;fill-opacity:1;stroke:#a89a8c;stroke-opacity:1"
-       id="path4"
-       d="m4.0142425 8.0017026h20.9715155" />
-    <path
-       id="path6"
-       stroke-width="3.20000005"
-       stroke-opacity=".99608005"
+       style="fill:none;stroke-linecap:round"
+       d="M 24.433204,8.0017027 C 9.7535425,11.747304 3.461688,17.989903 3.461688,17.989903"
        stroke="#0d0505"
-       d="m24.985558 8.0017027c-14.679661 3.7456013-20.9715155 9.9882003-20.9715155 9.9882003" />
-    <path
-       stroke="#da0606"
-       stroke-width="2"
-       id="path8"
-       d="m24.985558 8.0017026c-14.679661 3.7456004-20.9715155 9.9882004-20.9715155 9.9882004" />
+       stroke-opacity="0.99608"
+       stroke-width="3.2"
+       id="path6" />
   </g>
+  <path
+     stroke="#b5b5b5"
+     stroke-width="2"
+     stroke-opacity=".99216003"
+     style="fill:none;fill-opacity:1;stroke:#918273;stroke-linecap:round;stroke-opacity:1"
+     id="path4"
+     d="M 3.461888,8.0017026 H 24.433404" />
+  <path
+     stroke="#da0606"
+     stroke-width="2"
+     id="path8"
+     d="M 24.433204,8.0017026 C 9.7535425,11.747303 3.461688,17.989903 3.461688,17.989903"
+     style="fill:none;stroke-linecap:round" />
 </svg>
