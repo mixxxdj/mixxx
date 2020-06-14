@@ -48,7 +48,6 @@ EffectKnobParameterSlot::EffectKnobParameterSlot(const QString& group, const uns
 }
 
 EffectKnobParameterSlot::~EffectKnobParameterSlot() {
-    // qDebug() << debugString() << "destroyed";
     delete m_pControlValue;
     // m_pControlLoaded and m_pControlType are deleted by ~EffectParameterSlotBase
     delete m_pControlLinkType;
@@ -57,7 +56,6 @@ EffectKnobParameterSlot::~EffectKnobParameterSlot() {
 }
 
 void EffectKnobParameterSlot::loadParameter(EffectParameterPointer pEffectParameter) {
-    // qDebug() << debugString() << "loadParameter" << (pEffectSlot ? pEffectSlot->getManifest().name() : "(null)");
     clear();
 
     VERIFY_OR_DEBUG_ASSERT(pEffectParameter->manifest()->parameterType() ==
@@ -70,22 +68,12 @@ void EffectKnobParameterSlot::loadParameter(EffectParameterPointer pEffectParame
     if (m_pEffectParameter) {
         m_pManifestParameter = m_pEffectParameter->manifest();
 
-        //qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->manifest()->id();
-        double dValue = m_pEffectParameter->getValue();
-        double dMinimum = m_pManifestParameter->getMinimum();
-        double dMinimumLimit = dMinimum; // TODO(rryan) expose limit from EffectParameter
-        double dMaximum = m_pManifestParameter->getMaximum();
-        double dMaximumLimit = dMaximum; // TODO(rryan) expose limit from EffectParameter
-        double dDefault = m_pManifestParameter->getDefault();
-
-        // qDebug() << debugString()
-        //          << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6")
-        //          .arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault);
-
         EffectManifestParameter::ValueScaler type = m_pManifestParameter->valueScaler();
-        m_pControlValue->setBehaviour(type, dMinimum, dMaximum);
-        m_pControlValue->setDefaultValue(dDefault);
-        m_pControlValue->set(dValue);
+        m_pControlValue->setBehaviour(type,
+                m_pManifestParameter->getMinimum(),
+                m_pManifestParameter->getMaximum());
+        m_pControlValue->setDefaultValue(m_pManifestParameter->getDefault());
+        m_pControlValue->set(m_pEffectParameter->getValue());
         // TODO(rryan) expose this from EffectParameter
         m_pControlType->forceSet(static_cast<double>(type));
         // Default loaded parameters to loaded and unlinked
@@ -101,7 +89,6 @@ void EffectKnobParameterSlot::loadParameter(EffectParameterPointer pEffectParame
 }
 
 void EffectKnobParameterSlot::clear() {
-    //qDebug() << debugString() << "clear";
     if (m_pEffectParameter) {
         m_pEffectParameter = nullptr;
         m_pManifestParameter.clear();
@@ -119,7 +106,6 @@ void EffectKnobParameterSlot::clear() {
 }
 
 void EffectKnobParameterSlot::slotParameterValueChanged(double value) {
-    //qDebug() << debugString() << "slotParameterValueChanged" << value.toDouble();
     m_pControlValue->set(value);
 }
 
