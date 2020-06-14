@@ -21,11 +21,11 @@ EffectChainSlot::EffectChainSlot(const QString& group,
         SignalProcessingStage stage)
         : // The control group names are 1-indexed while internally everything
           // is 0-indexed.
+          m_presetName(""),
           m_pEffectsManager(pEffectsManager),
           m_pChainPresetManager(pEffectsManager->getChainPresetManager()),
           m_pMessenger(pEffectsMessenger),
           m_group(group),
-          m_presetName(""),
           m_signalProcessingStage(stage),
           m_pEngineEffectChain(nullptr) {
     // qDebug() << "EffectChainSlot::EffectChainSlot " << group << ' ' << iChainNumber;
