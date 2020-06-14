@@ -1,41 +1,27 @@
 <Template>
   <SetVariable name="Type">deck</SetVariable>
   <WidgetGroup>
-    <Layout>horizontal</Layout>
+    <ObjectName>DecksLeft</ObjectName>
+    <Layout>vertical</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
 
+      <SingletonContainer>
+        <ObjectName>Deck1_Src</ObjectName>
+      </SingletonContainer>
+
       <WidgetGroup>
-        <ObjectName>DecksLeft</ObjectName>
-        <Layout>vertical</Layout>
+        <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-
-          <Template src="skin:/decks/deck.xml">
-            <SetVariable name="ChanNum">1</SetVariable>
-            <SetVariable name="DeckGroup">12</SetVariable>
-            <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
-            <SetVariable name="BgColor"><Variable name="BgColorOverview_12"/></SetVariable>
-          </Template>
-
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <SizePolicy>me,min</SizePolicy>
-            <Children>
-              <Template src="skin:/decks/deck.xml">
-                <SetVariable name="ChanNum">3</SetVariable>
-                <SetVariable name="DeckGroup">34</SetVariable>
-                <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
-                <SetVariable name="BgColor"><Variable name="BgColorOverview_34"/></SetVariable>
-              </Template>
-            </Children>
-            <Connection>
-              <ConfigKey>[Skin],show_4decks</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-
+          <SingletonContainer>
+            <ObjectName>Deck3_Src</ObjectName>
+          </SingletonContainer>
         </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
       </WidgetGroup>
 
     </Children>

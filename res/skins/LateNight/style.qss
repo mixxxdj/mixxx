@@ -807,6 +807,31 @@ WLibrary QRadioButton {
   background-color: #999;
 }
 
+#SET_FULL_MIXER {
+  background-color: #ff0000;
+  }
+
+#SET_FULL {
+  background-color: #cc0000;
+  }
+  #IS_FULL {
+    background-color: #990000;
+  }
+
+#SET_COMPACT {
+  background-color: #00cc00;
+  }
+  #IS_COMPACT {
+    background-color: #009900;
+  }
+
+#SET_MINI {
+  background-color: #0000cc;
+  }
+  #IS_MINI {
+    background-color: #000099;
+  }
+
 #Spacer00 {
   background-color: #000;
 }

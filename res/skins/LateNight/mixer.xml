@@ -24,7 +24,7 @@
       </WidgetGroup><!-- MixerContainer -->
 
     </Children>
-  </WidgetGroup>
+  </WidgetGroup><!-- show_mixer -->
 
   <WidgetGroup>
     <SizePolicy>max,me</SizePolicy>
@@ -47,10 +47,8 @@
         <Children>
 
           <WidgetGroup>
+            <!--  width set in qss  -->
             <ObjectName>CompactDecksCenterSpacer</ObjectName>
-            <SizePolicy>f,max</SizePolicy>
-            <Layout>vertical</Layout>
-            <Children/>
           </WidgetGroup>
 
           <WidgetGroup>
@@ -67,7 +65,7 @@
           </WidgetGroup>
 
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- !show_mixer -->
 
     </Children>
   </WidgetGroup>

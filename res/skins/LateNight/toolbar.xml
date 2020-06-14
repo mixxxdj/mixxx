@@ -99,7 +99,7 @@
             <SetVariable name="Size">80f,20f</SetVariable>
             <SetVariable name="state_0_text">DECKS</SetVariable>
             <SetVariable name="state_1_text">DECKS</SetVariable>
-            <SetVariable name="ConfigKey">[Skin],show_minimal_decks</SetVariable>
+            <SetVariable name="ConfigKey">[LateNight],max_lib_show_decks</SetVariable>
           </Template>
 
           <Template src="skin:/controls/button_2state_persist.xml">

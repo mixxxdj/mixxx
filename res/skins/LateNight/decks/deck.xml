@@ -1,76 +1,21 @@
 <Template>
-  <SetVariable name="Type">deck</SetVariable>
-  <SetVariable name="Group">[Channel<Variable name="ChanNum"/>]</SetVariable>
 
-  <!-- We need those singletons first because they're... -->
-  <!-- ...used in all three deck variants -->
-  <SingletonDefinition>
-    <ObjectName>SpinnyCoverart<Variable name="ChanNum"/></ObjectName>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <MaximumSize>,208</MaximumSize>
     <Children>
-      <Template src="skin:spinny_coverart.xml"/>
-    </Children>
-  </SingletonDefinition>
 
-  <!-- ...used in full & compact deck, minimal deck has its own instance
-       with smaller labels. -->
-  <SingletonDefinition>
-    <ObjectName>DeckOverview<Variable name="ChanNum"/></ObjectName>
-    <Children>
-      <Template src="skin:/decks/overview.xml">
-        <SetVariable name="OverviewFontSize"><Variable name="OverviewFontSizeDeck"/></SetVariable>
+      <Template src="skin:/decks/deck_singletons.xml">
+        <SetVariable name="Type">deck</SetVariable>
+        <SetVariable name="Group">[Channel<Variable name="ChanNum"/>]</SetVariable>
       </Template>
-    </Children>
-  </SingletonDefinition>
 
-  <!-- ...used in full & compact deck. -->
-  <SingletonDefinition>
-    <ObjectName>DeckSettings<Variable name="ChanNum"/></ObjectName>
-    <Children>
-      <Template src="skin:/decks/deck_settings.xml"/>
-    </Children>
-  </SingletonDefinition>
-
-  <!-- ...used in full & compact deck -->
-  <SingletonDefinition>
-    <ObjectName>KeyControls<Variable name="ChanNum"/></ObjectName>
-    <Children>
-      <Template src="skin:/decks/key_controls.xml"/>
-    </Children>
-  </SingletonDefinition>
-
-  <!-- Minimal deck, used in deck stack and above library -->
-  <SingletonDefinition>
-    <ObjectName>Deck<Variable name="ChanNum"/>_Mini</ObjectName>
-    <Children>
-      <Template src="skin:/decks/deck_mini.xml"/>
-    </Children>
-  </SingletonDefinition>
-
-  <!-- Stack to show FULL, Compact or minimal decks, depending on
-        the skin configuration:
-        See /helpers/skin_helper_deck_size.xml for documentation. -->
-  <WidgetStack current_page="[LateNight],deck_size_index_temp">
-    <Children>
-
-      <WidgetGroup trigger="[LateNight],show_full_deck">
+      <WidgetGroup>
+        <Connection>
+          <ConfigKey>[LateNight],show_mini_deck</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
         <Layout>horizontal</Layout>
-        <SizePolicy>me,min</SizePolicy>
-        <Children>
-          <Template src="skin:/decks/deck_full.xml"/>
-        </Children>
-      </WidgetGroup>
-
-      <WidgetGroup trigger="[LateNight],show_compact_deck">
-        <Layout>horizontal</Layout>
-        <SizePolicy>me,min</SizePolicy>
-        <Children>
-          <Template src="skin:/decks/deck_compact.xml"/>
-        </Children>
-      </WidgetGroup>
-
-      <WidgetGroup trigger="[LateNight],show_minimal_deck">
-        <Layout>horizontal</Layout>
-        <SizePolicy>me,min</SizePolicy>
         <Children>
           <SingletonContainer>
             <ObjectName>Deck<Variable name="ChanNum"/>_Mini</ObjectName>
@@ -78,11 +23,32 @@
         </Children>
       </WidgetGroup>
 
+      <WidgetGroup>
+        <Connection>
+          <ConfigKey>[LateNight],show_compact_deck</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+        <Layout>horizontal</Layout>
+        <Children>
+          <SingletonContainer>
+            <ObjectName>Deck<Variable name="ChanNum"/>_Compact</ObjectName>
+          </SingletonContainer>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Connection>
+          <ConfigKey>[LateNight],show_full_deck</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+        <Layout>horizontal</Layout>
+        <Children>
+          <SingletonContainer>
+            <ObjectName>Deck<Variable name="ChanNum"/>_Full</ObjectName>
+          </SingletonContainer>
+        </Children>
+      </WidgetGroup>
+
     </Children>
-    <Connection>
-      <ConfigKey>[Master],maximize_library</ConfigKey>
-      <Transform><Not/></Transform>
-      <BindProperty>visible</BindProperty>
-    </Connection>
-  </WidgetStack>
+  </WidgetGroup>
 </Template>

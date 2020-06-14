@@ -23,9 +23,10 @@ Variables:
       <Text><Variable name="Text"/></Text>
       <Alignment>center</Alignment>
     </State>
-    <Connection>
-      <ConfigKey persist="true">[LateNight],selected_deck_size</ConfigKey>
-      <Transform><IsEqual><Variable name="SelectedDeckSize"/></IsEqual></Transform>
+    <Connection><!--
+      <ConfigKey persist="true">[LateNight],<Variable name="DeckSize"/>_deck_without_mixer</ConfigKey> -->
+      <ConfigKey persist="true">[LateNight],deck_size_without_mixer</ConfigKey>
+      <Transform><IsEqual><Variable name="DeckSize"/></IsEqual></Transform>
       <ButtonState>LeftButton</ButtonState>
     </Connection>
   </PushButton>

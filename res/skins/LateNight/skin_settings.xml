@@ -73,20 +73,23 @@ Description:
                       <Template src="skin:/helpers/skin_settings_button_deckSize.xml">
                         <SetVariable name="TooltipId"></SetVariable>
                         <SetVariable name="Text">FULL</SetVariable>
-                        <SetVariable name="Width">40</SetVariable>
-                        <SetVariable name="SelectedDeckSize">0</SetVariable>
+                        <SetVariable name="Width">40</SetVariable><!--
+                        <SetVariable name="DeckSize">full</SetVariable> -->
+                        <SetVariable name="DeckSize">2</SetVariable>
                       </Template>
                       <Template src="skin:/helpers/skin_settings_button_deckSize.xml">
                         <SetVariable name="TooltipId"></SetVariable>
                         <SetVariable name="Text">Compact</SetVariable>
-                        <SetVariable name="Width">66</SetVariable>
-                        <SetVariable name="SelectedDeckSize">1</SetVariable>
+                        <SetVariable name="Width">66</SetVariable><!--
+                        <SetVariable name="DeckSize">compact</SetVariable> -->
+                        <SetVariable name="DeckSize">1</SetVariable>
                       </Template>
                       <Template src="skin:/helpers/skin_settings_button_deckSize.xml">
                         <SetVariable name="TooltipId"></SetVariable>
                         <SetVariable name="Text">mini</SetVariable>
-                        <SetVariable name="Width">40</SetVariable>
-                        <SetVariable name="SelectedDeckSize">2</SetVariable>
+                        <SetVariable name="Width">40</SetVariable><!--
+                        <SetVariable name="DeckSize">mini</SetVariable> -->
+                        <SetVariable name="DeckSize">0</SetVariable>
                       </Template>
                       <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
                     </Children>
@@ -99,9 +102,12 @@ Description:
                 </Children>
               </WidgetGroup>
             </Children>
-          </WidgetGroup><!-- Deck size selectors -->
+          </WidgetGroup>
+<!-- Deck size selectors -->
 
-          <WidgetGroup><!-- Regular library: Deck Options FULL / Compact / mini -->
+
+<!-- Deck Options FULL / Compact / mini -->
+          <WidgetGroup>
             <ObjectName></ObjectName>
             <SizePolicy>me,min</SizePolicy>
             <!-- Horizontal layout to reduce graphic glitches when switching deck size -->
@@ -371,7 +377,7 @@ Description:
                 </Connection>
               </WidgetGroup><!-- Compact Deck Options -->
 
-              <WidgetGroup><!-- Minimal Deck Options -->
+              <WidgetGroup><!-- Mini Deck Options -->
                 <ObjectName></ObjectName>
                 <SizePolicy>me,f</SizePolicy>
                 <Layout>stacked</Layout>
@@ -427,73 +433,15 @@ Description:
                   </WidgetGroup>
                 </Children>
                 <Connection>
-                  <ConfigKey>[LateNight],show_minimal_deck</ConfigKey>
+                  <ConfigKey>[LateNight],show_mini_deck</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup><!-- Minmal Deck Options -->
+              </WidgetGroup><!-- Mini Deck Options -->
             </Children>
-            <Connection>
-              <ConfigKey>[Master],maximize_library</ConfigKey>
-              <Transform><Not/></Transform>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup><!-- Regular library: Deck Options FULL / Compact / mini -->
+          </WidgetGroup>
+<!-- Deck Options FULL / Compact / mini -->
 
-          <WidgetGroup><!-- Maximized libaryr: minimal deck options -->
-            <ObjectName></ObjectName>
-            <SizePolicy>me,f</SizePolicy>
-            <Layout>stacked</Layout>
-            <Children>
-              <!-- Simply cover deck options when minimal decks are disabled -->
-              <WidgetGroup>
-                <ObjectName>SubmenuCover</ObjectName>
-                <SizePolicy>me,min</SizePolicy>
-                <Connection>
-                  <ConfigKey>[Skin],show_minimal_decks</ConfigKey>
-                  <Transform><Not/></Transform>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
 
-              <WidgetGroup>
-                <ObjectName>SkinSettingsCategory</ObjectName>
-                <SizePolicy>me,min</SizePolicy>
-                <Layout>vertical</Layout>
-                <Children>
-
-                  <!-- 2/4 Decks -->
-                  <Template src="skin:/helpers/skin_settings_button_2state.xml">
-                    <SetVariable name="TooltipId">toggle_4decks</SetVariable>
-                    <SetVariable name="Text">4 Decks</SetVariable>
-                    <SetVariable name="Setting">[Skin],show_4decks</SetVariable>
-                  </Template>
-
-                  <WidgetGroup><Size>0me,102f</Size></WidgetGroup>
-
-                  <!-- Spinny -->
-                  <Template src="skin:/helpers/skin_settings_button_2state.xml">
-                    <SetVariable name="TooltipId">show_spinny</SetVariable>
-                    <SetVariable name="Text">Spinny</SetVariable>
-                    <SetVariable name="Setting">[Skin],show_spinnies</SetVariable>
-                  </Template>
-
-                  <!-- Cover Art -->
-                  <Template src="skin:/helpers/skin_settings_button_2state.xml">
-                    <SetVariable name="TooltipId">show_coverart</SetVariable>
-                    <SetVariable name="Text">Cover Art</SetVariable>
-                    <SetVariable name="Setting">[Skin],show_coverart</SetVariable>
-                  </Template>
-
-                  <WidgetGroup><Size>0me,17f</Size></WidgetGroup>
-
-                </Children>
-              </WidgetGroup><!-- Minmal Deck Options -->
-            </Children>
-            <Connection>
-              <ConfigKey>[Master],maximize_library</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup><!-- Maximized libaryr: minimal deck options -->
 
           <WidgetGroup>
             <ObjectName>SkinSettingsSeparator</ObjectName>
