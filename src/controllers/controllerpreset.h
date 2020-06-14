@@ -19,9 +19,10 @@ class ConstControllerPresetVisitor;
 class ControllerPreset {
   public:
     ControllerPreset()
-            : m_bDirty(false) {
+            : m_bDirty(false),
+              m_iControllerEngineVersion(0) {
     }
-    virtual ~ControllerPreset() {}
+    virtual ~ControllerPreset() = default;
 
     struct ScriptFileInfo {
         ScriptFileInfo()
@@ -161,7 +162,6 @@ class ControllerPreset {
     virtual void accept(ConstControllerPresetVisitor* visitor) const = 0;
     virtual bool isMappable() const = 0;
 
-    QList<ScriptFileInfo> scripts;
     // Optional list of controller device match details
     QList< QHash<QString,QString> > m_productMatches;
 
@@ -177,6 +177,7 @@ class ControllerPreset {
     QString m_wikilink;
     QString m_schemaVersion;
     QString m_mixxxVersion;
+    int m_iControllerEngineVersion;
 
     QList<ScriptFileInfo> m_scripts;
 };

@@ -17,7 +17,6 @@ SkinContext::SkinContext(UserSettingsPointer pConfig,
           m_scaleFactor(1.0) {
     DEBUG_ASSERT(isRoot());
 
-    enableDebugger(true);
 
     // the extensions are imported once and will be passed to the children
     // global object as properties of the parent's global object.
@@ -225,17 +224,6 @@ QScriptValue SkinContext::importScriptExtension(const QString& extensionName) {
         qWarning() << out.toString();
     }
     return out;
-}
-
-void SkinContext::enableDebugger(bool state) const {
-    if (CmdlineArgs::Instance().getDeveloper() && m_pConfig &&
-            m_pConfig->getValueString(ConfigKey("[ScriptDebugger]", "Enabled")) == "1") {
-        if (state) {
-            m_pSharedState->scriptDebugger.attachTo(&m_pSharedState->scriptEngine);
-        } else {
-            m_pSharedState->scriptDebugger.detach();
-        }
-    }
 }
 
 QDebug SkinContext::logWarning(const char* file, const int line,

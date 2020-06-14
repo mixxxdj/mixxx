@@ -1,11 +1,10 @@
 /* @flow */
-import { Colors } from '../../Launchpad'
-
 import { modes } from '../ModifierSidebar'
 import type { Modifier } from '../ModifierSidebar'
-import type { ChannelControl } from '../../Mixxx'
+import type { ChannelControl } from '@mixxx-launchpad/mixxx'
+import type { LaunchpadDevice } from '../../'
 
-export default (loops: number[], d: number) => (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => {
+export default (loops: number[], d: number) => (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => (device: LaunchpadDevice) => {
   const bindings = { }
   const onAttack = (l) => (modifier) => () => {
     modes(modifier.getState(),
@@ -15,9 +14,9 @@ export default (loops: number[], d: number) => (gridPosition: [number, number]) 
 
   const onUpdate = (i) => ({ value }, { bindings }) => {
     if (value) {
-      bindings[i].button.sendColor(Colors.hi_red)
+      bindings[i].button.sendColor(device.colors.hi_red)
     } else {
-      bindings[i].button.sendColor(Colors.lo_red)
+      bindings[i].button.sendColor(device.colors.lo_red)
     }
   }
 

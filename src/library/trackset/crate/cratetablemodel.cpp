@@ -97,13 +97,17 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     return true;
 }
 
-TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
-    CapabilitiesFlags caps = TRACKMODELCAPS_RECEIVEDROPS |
-            TRACKMODELCAPS_ADDTOPLAYLIST | TRACKMODELCAPS_ADDTOCRATE |
-            TRACKMODELCAPS_ADDTOAUTODJ | TRACKMODELCAPS_EDITMETADATA |
-            TRACKMODELCAPS_LOADTODECK | TRACKMODELCAPS_LOADTOSAMPLER |
-            TRACKMODELCAPS_LOADTOPREVIEWDECK | TRACKMODELCAPS_REMOVE_CRATE |
-            TRACKMODELCAPS_RESETPLAYED;
+TrackModel::Capabilities CrateTableModel::getCapabilities() const {
+    Capabilities caps =
+            Capability::ReceiveDrops |
+            Capability::AddToTrackSet |
+            Capability::AddToAutoDJ |
+            Capability::EditMetadata |
+            Capability::LoadToDeck |
+            Capability::LoadToSampler |
+            Capability::LoadToPreviewDeck |
+            Capability::RemoveCrate |
+            Capability::ResetPlayed;
 
     if (m_selectedCrate.isValid()) {
         Crate crate;
@@ -111,7 +115,7 @@ TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
                         ->crates()
                         .readCrateById(m_selectedCrate, &crate)) {
             if (crate.isLocked()) {
-                caps |= TRACKMODELCAPS_LOCKED;
+                caps |= Capability::Locked;
             }
         } else {
             qWarning() << "Failed to read create" << m_selectedCrate;
