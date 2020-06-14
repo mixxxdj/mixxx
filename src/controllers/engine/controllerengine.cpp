@@ -243,11 +243,15 @@ void ControllerEngine::loadModule(QFileInfo moduleFileInfo) {
     QJSValue receiveDataFunction = mod.property("receiveData");
     if (receiveDataFunction.isCallable()) {
         m_receiveDataFunction = receiveDataFunction;
+    } else {
+        qWarning() << "Module exports no receiveData function.";
     }
 
     QJSValue shutdownFunction = mod.property("shutdown");
     if (shutdownFunction.isCallable()) {
         m_shutdownFunction = shutdownFunction;
+    } else {
+        qDebug() << "Module exports no shutdown function.";
     }
 }
 
