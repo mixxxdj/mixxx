@@ -572,7 +572,9 @@ TimeSignature Beats::getSignatureNew(FrameNum frame) const {
         }
     } else {
         // Scans the list of beats to find the last time signature change before the sample
-        for (auto beat = m_beats.begin(); beat != m_beats.end() && beat->frame_position() < frame; beat++) {
+        for (auto beat = m_beats.begin();
+                beat != m_beats.end() && beat->frame_position() < frame;
+                beat++) {
             if (beat->has_signature()) {
                 result.setBeats(beat->signature().beats());
                 result.setNoteValue(beat->signature().note_value());
@@ -620,7 +622,8 @@ void Beats::setDownBeatNew(FrameNum frame) {
 
     // Set the proper type for the remaining beats on the track or to the next phrasebeat
     int beat_counter = 0;
-    std::unique_ptr<BeatIterator> beat = findBeats(closest_sample, (m_beats.last().frame_position() - 1) * kFrameSize);
+    std::unique_ptr<BeatIterator> beat = findBeats(
+            closest_sample, (m_beats.last().frame_position() - 1) * kFrameSize);
     while (beat->hasNext()) {
         beat->next();
         if (beat->isPhrase()) {
@@ -644,8 +647,7 @@ void Beats::translate(FrameNum numFrames) {
         return;
     }
 
-    for (BeatList::iterator it = m_beats.begin();
-            it != m_beats.end();) {
+    for (BeatList::iterator it = m_beats.begin(); it != m_beats.end();) {
         double newpos = it->frame_position() + numFrames;
         if (newpos >= 0) {
             it->set_frame_position(newpos);
@@ -747,7 +749,8 @@ void Beats::scaleQuadruple() {
         int distance = it->frame_position() - prevBeat.frame_position();
         track::io::Beat beat;
         for (int i = 1; i <= 3; i++) {
-            beat.set_frame_position(prevBeat.frame_position() + distance * i / 4);
+            beat.set_frame_position(
+                    prevBeat.frame_position() + distance * i / 4);
             it = m_beats.insert(it, beat);
             ++it;
         }

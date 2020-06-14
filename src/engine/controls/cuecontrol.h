@@ -132,6 +132,7 @@ class CueControl : public EngineControl {
     bool getPlayFlashingAtPause();
     SeekOnLoadMode getSeekOnLoadPreference();
     void trackLoaded(TrackPointer pNewTrack) override;
+    void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
   private slots:
     void quantizeChanged(double v);
@@ -139,7 +140,6 @@ class CueControl : public EngineControl {
     void cueUpdated();
     void trackAnalyzed();
     void trackCuesUpdated();
-    void trackBeatsUpdated();
     void hotcueSet(HotcueControl* pControl, double v);
     void hotcueGoto(HotcueControl* pControl, double v);
     void hotcueGotoAndPlay(HotcueControl* pControl, double v);

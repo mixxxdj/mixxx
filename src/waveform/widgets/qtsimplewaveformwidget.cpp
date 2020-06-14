@@ -42,9 +42,6 @@ QtSimpleWaveformWidget::QtSimpleWaveformWidget(const char* group, QWidget* paren
 }
 
 QtSimpleWaveformWidget::~QtSimpleWaveformWidget() {
-    if (QGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
 }
 
 void QtSimpleWaveformWidget::castToQWidget() {

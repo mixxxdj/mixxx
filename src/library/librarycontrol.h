@@ -13,6 +13,7 @@ class Library;
 class LibraryControl;
 class WLibrary;
 class WLibrarySidebar;
+class WSearchLineEdit;
 class KeyboardEventFilter;
 
 class LoadToGroupController : public QObject {
@@ -42,6 +43,10 @@ class LibraryControl : public QObject {
 
     void bindLibraryWidget(WLibrary* pLibrary, KeyboardEventFilter* pKeyboard);
     void bindSidebarWidget(WLibrarySidebar* pLibrarySidebar);
+    void bindSearchboxWidget(WSearchLineEdit* pSearchbox);
+
+  signals:
+    void clearSearchIfClearButtonHasFocus();
 
   public slots:
     // Deprecated navigation slots
@@ -50,6 +55,7 @@ class LibraryControl : public QObject {
   private slots:
     void libraryWidgetDeleted();
     void sidebarWidgetDeleted();
+    void searchboxWidgetDeleted();
 
     void slotMoveUp(double);
     void slotMoveDown(double);
@@ -154,6 +160,7 @@ class LibraryControl : public QObject {
     // Library widgets
     WLibrary* m_pLibraryWidget;
     WLibrarySidebar* m_pSidebarWidget;
+    WSearchLineEdit* m_pSearchbox;
 
     // Other variables
     ControlProxy m_numDecks;

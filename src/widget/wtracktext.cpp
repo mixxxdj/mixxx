@@ -85,7 +85,7 @@ void WTrackText::dropEvent(QDropEvent *event) {
 
 void WTrackText::contextMenuEvent(QContextMenuEvent* event) {
     if (m_pCurrentTrack) {
-        m_pTrackMenu->loadTrack(m_pCurrentTrack->getId());
+        m_pTrackMenu->loadTrack(m_pCurrentTrack);
         // Create the right-click menu
         m_pTrackMenu->popup(event->globalPos());
     }

@@ -6,9 +6,9 @@
 
 class WorkerThread;
 
-// Non-blocking scheduler for worker threads which itself runs
-// as a worker thread. The maximum number of worker threads is
-// limited.
+/// Non-blocking scheduler for worker threads which itself runs
+/// as a worker thread. The maximum number of worker threads is
+/// limited.
 class WorkerThreadScheduler : public WorkerThread {
   public:
     explicit WorkerThreadScheduler(
@@ -23,7 +23,7 @@ class WorkerThreadScheduler : public WorkerThread {
   protected:
     void doRun() override;
 
-    FetchWorkResult tryFetchWorkItems() override;
+    TryFetchWorkItemsResult tryFetchWorkItems() override;
 
   private:
     FIFO<WorkerThread*> m_scheduledWorkers;

@@ -36,7 +36,7 @@ class SoundSourceWV : public SoundSource {
     // A WavpackContext* type
     // we cannot use the type directly, because it has 
     // changing definitions with different wavpack.h versions. 
-    // wavpack.h can't be included here, bacause it has concurrent definitions 
+    // wavpack.h can't be included here, because it has concurrent definitions 
     // with other decoder's header.     
     void* m_wpc;
  

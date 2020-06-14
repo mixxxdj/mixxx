@@ -79,15 +79,9 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     connect(m_pControlTrackTimeDisplay, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetTrackTimeDisplay(double)));
 
-    // If not present in the config, set the default value
-    if (!m_pConfig->exists(ConfigKey("[Controls]","PositionDisplay"))) {
-        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"),
-          QString::number(static_cast<int>(TrackTime::DisplayMode::REMAINING)));
-    }
-
     double positionDisplayType = m_pConfig->getValue(
             ConfigKey("[Controls]", "PositionDisplay"),
-            static_cast<double>(TrackTime::DisplayMode::ELAPSED));
+            static_cast<double>(TrackTime::DisplayMode::ELAPSED_AND_REMAINING));
     if (positionDisplayType ==
             static_cast<double>(TrackTime::DisplayMode::REMAINING)) {
         radioButtonRemaining->setChecked(true);
@@ -206,9 +200,9 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
             this,
             SLOT(slotCloneDeckOnLoadDoubleTapCheckbox(bool)));
 
-    m_bRateInverted = m_pConfig->getValue(ConfigKey("[Controls]", "RateDir"), false);
-    setRateDirectionForAllDecks(m_bRateInverted);
-    checkBoxInvertSpeedSlider->setChecked(m_bRateInverted);
+    m_bRateDownIncreasesSpeed = m_pConfig->getValue(ConfigKey("[Controls]", "RateDir"), true);
+    setRateDirectionForAllDecks(m_bRateDownIncreasesSpeed);
+    checkBoxInvertSpeedSlider->setChecked(m_bRateDownIncreasesSpeed);
     connect(checkBoxInvertSpeedSlider, SIGNAL(toggled(bool)),
             this, SLOT(slotRateInversionCheckbox(bool)));
 
@@ -490,7 +484,7 @@ void DlgPrefDeck::setRateRangeForAllDecks(int rangePercent) {
 }
 
 void DlgPrefDeck::slotRateInversionCheckbox(bool inverted) {
-    m_bRateInverted = inverted;
+    m_bRateDownIncreasesSpeed = inverted;
 }
 
 void DlgPrefDeck::setRateDirectionForAllDecks(bool inverted) {
@@ -633,9 +627,9 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(ConfigKey("[Controls]", "RateRangePercent"),
                         m_iRateRangePercent);
 
-    setRateDirectionForAllDecks(m_bRateInverted);
+    setRateDirectionForAllDecks(m_bRateDownIncreasesSpeed);
     m_pConfig->setValue(ConfigKey("[Controls]", "RateDir"),
-                        static_cast<int>(m_bRateInverted));
+            static_cast<int>(m_bRateDownIncreasesSpeed));
 
     int configSPAutoReset = BaseTrackPlayer::RESET_NONE;
 

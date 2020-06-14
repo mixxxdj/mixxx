@@ -61,7 +61,7 @@
                               padding-top: 4px;
                             }
                             </Style>
-                            <Property>title</Property>
+                            <Property>titleInfo</Property>
                             <Channel><Variable name="channum"/></Channel>
                             <Size>0e,20f</Size>
                             <Elide>right</Elide>

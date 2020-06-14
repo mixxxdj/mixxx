@@ -15,6 +15,7 @@ using namespace QKeychain;
 #endif // __QTKEYCHAIN__
 
 #include "broadcast/defs_broadcast.h"
+#include "recording/defs_recording.h"
 #include "defs_urls.h"
 #include "util/compatibility.h"
 #include "util/xml.h"
@@ -322,6 +323,10 @@ bool BroadcastProfile::loadValues(const QString& filename) {
     m_streamICQ = XmlParse::selectNodeQString(doc, kStreamICQ);
 
     m_format = XmlParse::selectNodeQString(doc, kFormat);
+    if (m_format == BROADCAST_FORMAT_OV_LEGACY) {
+        // Upgrade to have the same codec name than the recording define.
+        m_format = ENCODING_OGG;
+    }
     m_bitrate = XmlParse::selectNodeInt(doc, kBitrate);
     m_channels = XmlParse::selectNodeInt(doc, kChannels);
 

@@ -16,6 +16,7 @@
 #include "track/keyutils.h"
 #include "track/trackmetadata.h"
 #include "util/assert.h"
+#include "util/datetime.h"
 #include "util/db/dbconnection.h"
 #include "util/duration.h"
 #include "util/performancetimer.h"
@@ -42,10 +43,7 @@ BaseSqlTableModel::BaseSqlTableModel(
         QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
         const char* settingsNamespace)
-        : BaseTrackTableModel(
-                  settingsNamespace,
-                  pTrackCollectionManager,
-                  parent),
+        : BaseTrackTableModel(parent, pTrackCollectionManager, settingsNamespace),
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_database(pTrackCollectionManager->internalCollection()->database()),
           m_bInitialized(false),
@@ -622,9 +620,7 @@ QVariant BaseSqlTableModel::roleValue(
         int role) const {
     if (role == Qt::DisplayRole &&
             index.column() == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
-        QDateTime gmtDate = rawValue.toDateTime();
-        gmtDate.setTimeSpec(Qt::UTC);
-        return gmtDate.toLocalTime();
+        return mixxx::localDateTimeFromUtc(mixxx::convertVariantToDateTime(rawValue));
     }
     return BaseTrackTableModel::roleValue(index, std::move(rawValue), role);
 }
@@ -732,8 +728,8 @@ void BaseSqlTableModel::tracksChanged(QSet<TrackId> trackIds) {
 
     const int numColumns = columnCount();
     for (const auto& trackId : trackIds) {
-        QLinkedList<int> rows = getTrackRows(trackId);
-        foreach (int row, rows) {
+        const auto rows = getTrackRows(trackId);
+        for (int row : rows) {
             //qDebug() << "Row in this result set was updated. Signalling update. track:" << trackId << "row:" << row;
             QModelIndex topLeft = index(row, 0);
             QModelIndex bottomRight = index(row, numColumns);

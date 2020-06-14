@@ -3,7 +3,6 @@
 #include <QDir>
 #include <QList>
 #include <QSet>
-
 #include <memory>
 
 #include "library/relocatedtrack.h"
@@ -11,6 +10,7 @@
 #include "track/globaltrackcache.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/parented_ptr.h"
+#include "util/thread_affinity.h"
 
 class LibraryScanner;
 class TrackCollection;
@@ -37,10 +37,12 @@ class TrackCollectionManager: public QObject,
     ~TrackCollectionManager() override;
 
     TrackCollection* internalCollection() {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_pInternalCollection;
     }
 
     const QList<ExternalTrackCollection*>& externalCollections() const {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_externalCollections;
     }
 

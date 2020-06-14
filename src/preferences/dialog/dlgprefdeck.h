@@ -61,9 +61,9 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     virtual ~DlgPrefDeck();
 
   public slots:
-    void slotUpdate();
-    void slotApply();
-    void slotResetToDefaults();
+    void slotUpdate() override;
+    void slotApply() override;
+    void slotResetToDefaults() override;
 
     void slotMoveIntroStartCheckbox(bool checked);
     void slotRateRangeComboBox(int index);
@@ -128,7 +128,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     bool m_bAssignHotcueColors;
 
     int m_iRateRangePercent;
-    bool m_bRateInverted;
+    bool m_bRateDownIncreasesSpeed;
 
     bool m_speedAutoReset;
     bool m_pitchAutoReset;

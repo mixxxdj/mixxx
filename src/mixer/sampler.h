@@ -13,7 +13,7 @@ class Sampler : public BaseTrackPlayerImpl {
             VisualsManager* pVisualsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
             QString group);
-    virtual ~Sampler();
+    ~Sampler() override = default;
 };
 
 #endif /* MIXER_SAMPLER_H */

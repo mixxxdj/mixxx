@@ -58,7 +58,7 @@ Q_OBJECT
         Disconnected,
     };
 
-    // Check if the connection to the extenal track collection
+    // Check if the connection to the external track collection
     // has been established, i.e. if the synchronization is active.
     virtual ConnectionState connectionState() const = 0;
 

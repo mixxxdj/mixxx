@@ -10,28 +10,32 @@
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 
+class DlgReplaceCueColor;
+class Library;
+
 class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
     Q_OBJECT
   public:
-    DlgPrefColors(QWidget* parent, UserSettingsPointer pConfig);
+    DlgPrefColors(QWidget* parent, UserSettingsPointer pConfig, Library* pLibrary);
     virtual ~DlgPrefColors();
 
   public slots:
     /// Called when the preference dialog (not this page) is shown to the user.
-    void slotUpdate();
+    void slotUpdate() override;
     /// Called when the user clicks the global "Apply" button.
-    void slotApply();
+    void slotApply() override;
     /// Called when the user clicks the global "Reset to Defaults" button.
-    void slotResetToDefaults();
+    void slotResetToDefaults() override;
 
   signals:
     void apply(const QString&);
 
   private slots:
-    void slotHotcuePaletteChanged(const QString& palette);
+    void slotHotcuePaletteIndexChanged(int paletteIndex);
     void trackPaletteUpdated(const QString& palette);
     void hotcuePaletteUpdated(const QString& palette);
     void palettesUpdated();
+    void slotReplaceCueColorClicked();
     void slotEditTrackPaletteClicked();
     void slotEditHotcuePaletteClicked();
 
@@ -48,4 +52,6 @@ class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
 
     const UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;
+    // Pointer to color replace dialog
+    DlgReplaceCueColor* m_pReplaceCueColorDlg;
 };

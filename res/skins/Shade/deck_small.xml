@@ -58,7 +58,7 @@
                           padding: 0px 2px;
                         }
                         </Style>
-                        <Property>title</Property>
+                        <Property>titleInfo</Property>
                         <Channel><Variable name="channum"/></Channel>
                         <SizePolicy>me,f</SizePolicy>
                         <MinimumSize>50,19</MinimumSize>
@@ -184,19 +184,36 @@
                 <Size>1f,38f</Size>
                 <BackPath>style/style_component_border.png</BackPath>
               </WidgetGroup>
-              
+
               <!-- Play -->
               <WidgetGroup>
                 <Size>41f,38f</Size>
                 <Children>
                   <PushButton>
-                    <TooltipId>play_cue_set</TooltipId>
+                    <Pos>5,8</Pos>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>skin:/btn/btn_play_deck_small.png</Pressed>
+                      <Unpressed>skin:/btn/btn_play_deck_small.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>skin:/btn/btn_play_deck_small_over.png</Pressed>
+                      <Unpressed>skin:/btn/btn_play_deck_small_over.png</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
+                    </Connection>
+                  </PushButton>
+                  <PushButton>
+                    <TooltipId>play_cue_default</TooltipId>
                     <Pos>5,8</Pos>
                     <NumberStates>2</NumberStates>
                     <State>
                       <Number>0</Number>
                       <Pressed>skin:/btn/btn_play_deck_small_down.png</Pressed>
-                      <Unpressed>skin:/btn/btn_play_deck_small.png</Unpressed>
+                      <Unpressed></Unpressed>
                     </State>
                     <State>
                       <Number>1</Number>
@@ -208,11 +225,8 @@
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey><Variable name="group"/>,cue_set</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
                       <ButtonState>RightButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
                     </Connection>
                   </PushButton>
                 </Children>
@@ -232,4 +246,3 @@
     </Children>
   </WidgetGroup>
 </Template>
-

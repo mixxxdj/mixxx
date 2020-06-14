@@ -1,7 +1,6 @@
 #include "widget/wtracktableview.h"
 
 #include <QDrag>
-#include <QLinkedList>
 #include <QModelIndex>
 #include <QScrollBar>
 #include <QShortcut>
@@ -69,7 +68,7 @@ WTrackTableView::WTrackTableView(QWidget* parent,
     connect(setFocusShortcut,
             &QShortcut::activated,
             this,
-            qOverload<>(&WTrackTableView::setFocus));
+            QOverload<>::of(&WTrackTableView::setFocus));
 }
 
 WTrackTableView::~WTrackTableView() {
@@ -433,7 +432,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     }
     // Update track indices in context menu
     QModelIndexList indices = selectionModel()->selectedRows();
-    m_pTrackMenu->loadTracks(indices);
+    m_pTrackMenu->loadTrackModelIndices(indices);
 
     //Create the right-click menu
     m_pTrackMenu->popup(event->globalPos());
@@ -736,6 +735,37 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
     }
 }
 
+void WTrackTableView::loadSelectedTrack() {
+    auto indices = selectionModel()->selectedRows();
+    if (indices.size() > 0) {
+        slotMouseDoubleClicked(indices.at(0));
+    }
+}
+
+void WTrackTableView::loadSelectedTrackToGroup(QString group, bool play) {
+    auto indices = selectionModel()->selectedRows();
+    if (indices.size() > 0) {
+        // If the track load override is disabled, check to see if a track is
+        // playing before trying to load it
+        if (!(m_pConfig->getValueString(
+                               ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"))
+                            .toInt())) {
+            // TODO(XXX): Check for other than just the first preview deck.
+            if (group != "[PreviewDeck1]" &&
+                    ControlObject::get(ConfigKey(group, "play")) > 0.0) {
+                return;
+            }
+        }
+        auto index = indices.at(0);
+        auto trackModel = getTrackModel();
+        TrackPointer pTrack;
+        if (trackModel &&
+                (pTrack = trackModel->getTrack(index))) {
+            emit loadTrackToPlayer(pTrack, group, play);
+        }
+    }
+}
+
 QList<TrackId> WTrackTableView::getSelectedTrackIds() const {
     QList<TrackId> trackIds;
 
@@ -781,12 +811,11 @@ void WTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
     }
 
     for (const auto& trackId : trackIds) {
-        const QLinkedList<int> gts = pTrackModel->getTrackRows(trackId);
+        const auto gts = pTrackModel->getTrackRows(trackId);
 
-        QLinkedList<int>::const_iterator i;
-        for (i = gts.constBegin(); i != gts.constEnd(); ++i) {
-            pSelectionModel->select(model()->index(*i, 0),
-                                    QItemSelectionModel::Select | QItemSelectionModel::Rows);
+        for (int trackRow : gts) {
+            pSelectionModel->select(model()->index(trackRow, 0),
+                    QItemSelectionModel::Select | QItemSelectionModel::Rows);
         }
     }
 }
@@ -837,7 +866,7 @@ void WTrackTableView::doSortByColumn(int headerSection, Qt::SortOrder sortOrder)
         // the TrackModel. This will allow the playlist table model to use the
         // table index as the unique id instead of this code stupidly using
         // trackid.
-        QLinkedList<int> rows = trackModel->getTrackRows(trackId);
+        const auto rows = trackModel->getTrackRows(trackId);
         for (int row : rows) {
             // Restore sort order by rows, so the following commands will act as expected
             selectedRows.insert(row, 0);

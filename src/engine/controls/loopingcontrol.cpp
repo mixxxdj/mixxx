@@ -872,19 +872,18 @@ bool LoopingControl::isLoopingEnabled() {
 }
 
 void LoopingControl::trackLoaded(TrackPointer pNewTrack) {
-    if (m_pTrack) {
-        disconnect(m_pTrack.get(), &Track::beatsUpdated,
-                   this, &LoopingControl::slotUpdatedTrackBeats);
-    }
-
-    clearActiveBeatLoop();
-
+    m_pTrack = pNewTrack;
+    mixxx::BeatsPointer pBeats;
     if (pNewTrack) {
-        m_pTrack = pNewTrack;
-        m_pBeats = m_pTrack->getBeats();
-        connect(m_pTrack.get(), &Track::beatsUpdated,
-                this, &LoopingControl::slotUpdatedTrackBeats);
+        pBeats = pNewTrack->getBeats();
+    }
+    trackBeatsUpdated(pBeats);
+}
 
+void LoopingControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
+    clearActiveBeatLoop();
+    m_pBeats = pBeats;
+    if (m_pBeats) {
         LoopSamples loopSamples = m_loopSamples.getValue();
         if (loopSamples.start != kNoTrigger && loopSamples.end != kNoTrigger) {
             double loaded_loop_size = findBeatloopSizeForLoop(
@@ -893,16 +892,6 @@ void LoopingControl::trackLoaded(TrackPointer pNewTrack) {
                 m_pCOBeatLoopSize->setAndConfirm(loaded_loop_size);
             }
         }
-    } else {
-        m_pTrack.reset();
-        m_pBeats.reset();
-    }
-}
-
-void LoopingControl::slotUpdatedTrackBeats() {
-    TrackPointer pTrack = m_pTrack;
-    if (pTrack) {
-        m_pBeats = pTrack->getBeats();
     }
 }
 

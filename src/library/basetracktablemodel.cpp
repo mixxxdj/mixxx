@@ -14,6 +14,7 @@
 #include "mixer/playermanager.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
+#include "util/datetime.h"
 #include "util/logger.h"
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
@@ -88,13 +89,11 @@ QStringList BaseTrackTableModel::defaultTableColumns() {
 }
 
 BaseTrackTableModel::BaseTrackTableModel(
-        const char* settingsNamespace,
+        QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
-        QObject* parent)
+        const char* settingsNamespace)
         : QAbstractTableModel(parent),
-          TrackModel(
-                  cloneDatabase(pTrackCollectionManager),
-                  settingsNamespace),
+          TrackModel(cloneDatabase(pTrackCollectionManager), settingsNamespace),
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
           m_backgroundColorOpacity(WLibrary::kDefaultTrackTableBackgroundColorOpacity) {
@@ -497,13 +496,9 @@ QVariant BaseTrackTableModel::roleValue(
             }
             return QString("(%1)").arg(rawValue.toInt());
         } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED)) {
-            QDateTime gmtDate = rawValue.toDateTime();
-            gmtDate.setTimeSpec(Qt::UTC);
-            return gmtDate.toLocalTime();
+            return mixxx::localDateTimeFromUtc(mixxx::convertVariantToDateTime(rawValue));
         } else if (column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
-            QDateTime gmtDate = rawValue.toDateTime();
-            gmtDate.setTimeSpec(Qt::UTC);
-            return gmtDate.toLocalTime();
+            return mixxx::localDateTimeFromUtc(mixxx::convertVariantToDateTime(rawValue));
         } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
             bool ok;
             const auto bpmValue = rawValue.toDouble(&ok);
@@ -538,17 +533,19 @@ QVariant BaseTrackTableModel::roleValue(
             // currently stored in the DB) then lookup the key and render it
             // using the user's selected notation.
             int keyIdColumn = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
-            if (keyIdColumn != -1) {
-                mixxx::track::io::key::ChromaticKey key =
-                        KeyUtils::keyFromNumericValue(
-                                index.sibling(index.row(), keyIdColumn).data().toInt());
-                if (key != mixxx::track::io::key::INVALID) {
-                    // Render this key with the user-provided notation.
-                    return KeyUtils::keyToString(key);
-                }
+            if (keyIdColumn == -1) {
+                // Otherwise, just use the column value
+                return std::move(rawValue);
             }
-            // clear invalid values
-            return QVariant();
+            mixxx::track::io::key::ChromaticKey key =
+                    KeyUtils::keyFromNumericValue(
+                            index.sibling(index.row(), keyIdColumn).data().toInt());
+            if (key == mixxx::track::io::key::INVALID) {
+                // clear invalid values
+                return QVariant();
+            }
+            // Render this key with the user-provided notation.
+            return KeyUtils::keyToString(key);
         } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) {
             bool ok;
             const auto gainValue = rawValue.toDouble(&ok);
@@ -710,9 +707,9 @@ void BaseTrackTableModel::slotTrackLoaded(
         // preview state will update.
         if (m_previewDeckTrackId.isValid()) {
             const int numColumns = columnCount();
-            QLinkedList<int> rows = getTrackRows(m_previewDeckTrackId);
+            const auto rows = getTrackRows(m_previewDeckTrackId);
             m_previewDeckTrackId = TrackId(); // invalidate
-            foreach (int row, rows) {
+            for (int row : rows) {
                 QModelIndex topLeft = index(row, 0);
                 QModelIndex bottomRight = index(row, numColumns);
                 emit dataChanged(topLeft, bottomRight);
@@ -797,6 +794,6 @@ TrackPointer BaseTrackTableModel::getTrackByRef(
 }
 
 bool BaseTrackTableModel::hasCapabilities(
-        TrackModel::CapabilitiesFlags capabilities) const {
-    return (getCapabilities() & capabilities) == capabilities;
+        TrackModel::CapabilitiesFlags caps) const {
+    return (getCapabilities() & caps) == caps;
 }

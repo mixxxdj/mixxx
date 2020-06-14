@@ -208,6 +208,7 @@ class EngineBuffer : public EngineObject {
                              QString reason);
     // Fired when passthrough mode is enabled or disabled.
     void slotPassthroughChanged(double v);
+    void slotUpdatedTrackBeats();
 
   private:
     // Add an engine control to the EngineBuffer
@@ -264,6 +265,8 @@ class EngineBuffer : public EngineObject {
     FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
     FRIEND_TEST(EngineSyncTest, HalfDoubleThenPlay);
     FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
+    FRIEND_TEST(EngineSyncTest, UserTweakPreservedInSeek);
+    FRIEND_TEST(EngineSyncTest, BeatMapQantizePlay);
     FRIEND_TEST(EngineBufferTest, ScalerNoTransport);
     EngineSync* m_pEngineSync;
     SyncControl* m_pSyncControl;

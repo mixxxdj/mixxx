@@ -10,12 +10,14 @@
 /// elements that make it up.
 class HidControllerPreset : public ControllerPreset {
   public:
-    HidControllerPreset() {}
-    virtual ~HidControllerPreset() {}
+    HidControllerPreset() {
+    }
+    ~HidControllerPreset() override {
+    }
 
     bool savePreset(const QString& fileName) const override;
 
-    virtual void accept(ControllerPresetVisitor* visitor);
-    virtual void accept(ConstControllerPresetVisitor* visitor) const;
-    virtual bool isMappable() const;
+    void accept(ControllerPresetVisitor* visitor) override;
+    void accept(ConstControllerPresetVisitor* visitor) const override;
+    bool isMappable() const override;
 };

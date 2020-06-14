@@ -455,6 +455,7 @@ var bpm = function() {
 };
 
 bpm.tapTime = 0.0;
+bpm.previousTapDelta = 0.0;
 bpm.tap = [];   // Tap sample values
 
 /* -------- ------------------------------------------------------
@@ -467,30 +468,50 @@ bpm.tap = [];   // Tap sample values
    Output:  -
    -------- ------------------------------------------------------ */
 bpm.tapButton = function(deck) {
-    var now = new Date() / 1000;   // Current time in seconds
+    var now = new Date() / 1000; // Current time in seconds
     var tapDelta = now - bpm.tapTime;
     bpm.tapTime = now;
-    if (tapDelta > 2.0) { // reset if longer than two seconds between taps
+
+    // assign tapDelta in cases where the button has not been pressed previously
+    if (bpm.tap.length < 1) {
+        bpm.previousTapDelta = tapDelta;
+    }
+    // reset if longer than two seconds between taps
+    if (tapDelta > 2.0) {
         bpm.tap = [];
         return;
     }
+    // reject occurrences of accidental double or missed taps
+    // a tap is considered missed when the delta of this press is 80% longer than the previous one
+    // and a tap is considered double when the delta is shorter than 40% of the previous one.
+    // these numbers are just guesses that produced good results in practice
+    if ((tapDelta > bpm.previousTapDelta * 1.8)||(tapDelta < bpm.previousTapDelta * 0.6)) {
+        return;
+    }
+    bpm.previousTapDelta = tapDelta;
     bpm.tap.push(60 / tapDelta);
-    if (bpm.tap.length > 8) bpm.tap.shift();  // Keep the last 8 samples for averaging
+    // Keep the last 8 samples for averaging
+    if (bpm.tap.length > 8) bpm.tap.shift();
     var sum = 0;
-    for (var i = 0; i < bpm.tap.length; i++) {
+    for (var i=0; i<bpm.tap.length; i++) {
         sum += bpm.tap[i];
     }
     var average = sum / bpm.tap.length;
 
-    var fRateScale = average / engine.getValue("[Channel" + deck + "]", "bpm");
+    var group = "[Channel" + deck + "]";
+
+    // "bpm" was changed in 1.10 to reflect the *adjusted* bpm, but I presume it
+    // was supposed to return the tracks bpm (which it did before the change).
+    // "file_bpm" is supposed to return the set BPM of the loaded track of the
+    // channel.
+    var fRateScale = average/engine.getValue(group, "file_bpm");
 
     // Adjust the rate:
-    fRateScale = (fRateScale - 1.) / engine.getValue("[Channel" + deck + "]", "rateRange");
+    fRateScale = (fRateScale - 1.) / engine.getValue(group, "rateRange");
 
     engine.setValue(
-        "[Channel" + deck + "]", "rate",
-        fRateScale * engine.getValue("[Channel" + deck + "]", "rate_dir"));
-//     print("Script: BPM="+average+" setting to "+fRateScale);
+        group, "rate",
+        fRateScale * engine.getValue(group, "rate_dir"));
 };
 
 // ----------------- Common regular expressions --------------------------

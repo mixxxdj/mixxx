@@ -1,5 +1,4 @@
 #include <QApplication>
-#include <QThread>
 
 #include "library/trackcollection.h"
 
@@ -35,13 +34,6 @@ TrackCollection::TrackCollection(
             &TrackCollection::trackDirty,
             /*signal-to-signal*/ Qt::DirectConnection);
     connect(&m_trackDao,
-            &TrackDAO::trackChanged,
-            this,
-            [this](TrackId trackId) {
-                emit tracksChanged(QSet<TrackId>{trackId});
-            },
-            /*signal-to-signal*/ Qt::DirectConnection);
-    connect(&m_trackDao,
             &TrackDAO::tracksAdded,
             this,
             &TrackCollection::tracksAdded,
@@ -72,14 +64,14 @@ TrackCollection::~TrackCollection() {
 }
 
 void TrackCollection::repairDatabase(QSqlDatabase database) {
-    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     kLogger.info() << "Repairing database";
     m_crates.repairDatabase(database);
 }
 
 void TrackCollection::connectDatabase(QSqlDatabase database) {
-    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     kLogger.info() << "Connecting database";
     m_database = database;
@@ -93,7 +85,7 @@ void TrackCollection::connectDatabase(QSqlDatabase database) {
 }
 
 void TrackCollection::disconnectDatabase() {
-    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     kLogger.info() << "Disconnecting database";
     m_database = QSqlDatabase();
@@ -102,7 +94,7 @@ void TrackCollection::disconnectDatabase() {
 }
 
 void TrackCollection::connectTrackSource(QSharedPointer<BaseTrackCache> pTrackSource) {
-    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     VERIFY_OR_DEBUG_ASSERT(m_pTrackSource.isNull()) {
         kLogger.warning() << "Track source has already been connected";
@@ -110,6 +102,10 @@ void TrackCollection::connectTrackSource(QSharedPointer<BaseTrackCache> pTrackSo
     }
     kLogger.info() << "Connecting track source";
     m_pTrackSource = pTrackSource;
+    connect(this,
+            &TrackCollection::scanTrackAdded,
+            m_pTrackSource.data(),
+            &BaseTrackCache::slotScanTrackAdded);
     connect(&m_trackDao,
             &TrackDAO::trackDirty,
             m_pTrackSource.data(),
@@ -118,10 +114,6 @@ void TrackCollection::connectTrackSource(QSharedPointer<BaseTrackCache> pTrackSo
             &TrackDAO::trackClean,
             m_pTrackSource.data(),
             &BaseTrackCache::slotTrackClean);
-    connect(&m_trackDao,
-            &TrackDAO::trackChanged,
-            m_pTrackSource.data(),
-            &BaseTrackCache::slotTrackChanged);
     connect(&m_trackDao,
             &TrackDAO::tracksAdded,
             m_pTrackSource.data(),
@@ -134,14 +126,10 @@ void TrackCollection::connectTrackSource(QSharedPointer<BaseTrackCache> pTrackSo
             &TrackDAO::tracksRemoved,
             m_pTrackSource.data(),
             &BaseTrackCache::slotTracksRemoved);
-    connect(&m_trackDao,
-            &TrackDAO::dbTrackAdded,
-            m_pTrackSource.data(),
-            &BaseTrackCache::slotDbTrackAdded);
 }
 
 QWeakPointer<BaseTrackCache> TrackCollection::disconnectTrackSource() {
-    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     auto pWeakPtr = m_pTrackSource.toWeakRef();
     if (m_pTrackSource) {
@@ -153,6 +141,8 @@ QWeakPointer<BaseTrackCache> TrackCollection::disconnectTrackSource() {
 }
 
 bool TrackCollection::addDirectory(const QString& dir) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
     SqlTransaction transaction(m_database);
     switch (m_directoryDao.addDirectory(dir)) {
     case SQL_ERROR:
@@ -169,6 +159,8 @@ bool TrackCollection::addDirectory(const QString& dir) {
 }
 
 bool TrackCollection::removeDirectory(const QString& dir) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
     SqlTransaction transaction(m_database);
     switch (m_directoryDao.removeDirectory(dir)) {
     case SQL_ERROR:
@@ -183,7 +175,7 @@ bool TrackCollection::removeDirectory(const QString& dir) {
 }
 
 void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
-    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     // We only call this method if the user has picked a relocated directory via
     // a file dialog. This means the system sandboxer (if we are sandboxed) has
@@ -203,7 +195,8 @@ void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
         return;
     }
 
-    m_trackDao.databaseTracksRelocated(std::move(relocatedTracks));
+    // Inform the TrackDAO about the changes
+    m_trackDao.slotDatabaseTracksRelocated(std::move(relocatedTracks));
 
     GlobalTrackCacheLocker().relocateCachedTracks(&m_trackDao);
 }
@@ -246,7 +239,7 @@ QList<TrackId> TrackCollection::resolveTrackIdsFromLocations(
 }
 
 bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
-    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     // Warn if tracks have a playlist membership
     QSet<int> allPlaylistIds;
@@ -312,11 +305,13 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
 }
 
 void TrackCollection::hideAllTracks(const QDir& rootDir) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
     m_trackDao.hideAllTracks(rootDir);
 }
 
 bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
-    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     VERIFY_OR_DEBUG_ASSERT(m_trackDao.unhideTracks(trackIds)) {
         return false;
@@ -340,7 +335,7 @@ bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
 
 bool TrackCollection::purgeTracks(
         const QList<TrackId>& trackIds) {
-    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     // Transactional
     SqlTransaction transaction(m_database);
@@ -379,10 +374,12 @@ bool TrackCollection::purgeTracks(
 
 bool TrackCollection::purgeAllTracks(
         const QDir& rootDir) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
     QList<TrackRef> trackRefs = m_trackDao.getAllTrackRefs(rootDir);
     QList<TrackId> trackIds;
     trackIds.reserve(trackRefs.size());
-    for (const auto trackRef : trackRefs) {
+    for (const auto& trackRef : trackRefs) {
         DEBUG_ASSERT(trackRef.hasId());
         trackIds.append(trackRef.getId());
     }
@@ -392,7 +389,7 @@ bool TrackCollection::purgeAllTracks(
 bool TrackCollection::insertCrate(
         const Crate& crate,
         CrateId* pCrateId) {
-    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     // Transactional
     SqlTransaction transaction(m_database);
@@ -419,7 +416,7 @@ bool TrackCollection::insertCrate(
 
 bool TrackCollection::updateCrate(
         const Crate& crate) {
-    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     // Transactional
     SqlTransaction transaction(m_database);
@@ -441,7 +438,7 @@ bool TrackCollection::updateCrate(
 
 bool TrackCollection::deleteCrate(
         CrateId crateId) {
-    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     // Transactional
     SqlTransaction transaction(m_database);
@@ -464,7 +461,7 @@ bool TrackCollection::deleteCrate(
 bool TrackCollection::addCrateTracks(
         CrateId crateId,
         const QList<TrackId>& trackIds) {
-    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     // Transactional
     SqlTransaction transaction(m_database);
@@ -487,7 +484,7 @@ bool TrackCollection::addCrateTracks(
 bool TrackCollection::removeCrateTracks(
         CrateId crateId,
         const QList<TrackId>& trackIds) {
-    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     // Transactional
     SqlTransaction transaction(m_database);
@@ -510,7 +507,7 @@ bool TrackCollection::removeCrateTracks(
 bool TrackCollection::updateAutoDjCrate(
         CrateId crateId,
         bool isAutoDjSource) {
-    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     Crate crate;
     VERIFY_OR_DEBUG_ASSERT(crates().readCrateById(crateId, &crate)) {
@@ -524,18 +521,22 @@ bool TrackCollection::updateAutoDjCrate(
 }
 
 void TrackCollection::saveTrack(Track* pTrack) {
-    DEBUG_ASSERT(QApplication::instance()->thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     m_trackDao.saveTrack(pTrack);
 }
 
 TrackPointer TrackCollection::getTrackById(
         TrackId trackId) const {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
     return m_trackDao.getTrackById(trackId);
 }
 
 TrackPointer TrackCollection::getTrackByRef(
         const TrackRef& trackRef) const {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
     return m_trackDao.getTrackByRef(trackRef);
 }
 
@@ -547,12 +548,16 @@ TrackId TrackCollection::getTrackIdByRef(
 TrackPointer TrackCollection::getOrAddTrack(
         const TrackRef& trackRef,
         bool* pAlreadyInLibrary) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
     return m_trackDao.getOrAddTrack(trackRef, pAlreadyInLibrary);
 }
 
 TrackId TrackCollection::addTrack(
         const TrackPointer& pTrack,
         bool unremove) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
     m_trackDao.addTracksPrepare();
     const auto trackId = m_trackDao.addTracksAddTrack(pTrack, unremove);
     m_trackDao.addTracksFinish(!trackId.isValid());

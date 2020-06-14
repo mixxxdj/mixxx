@@ -175,4 +175,4 @@ QDebug operator<<(QDebug dbg, const TrackMetadata& arg) {
     return dbg;
 }
 
-} //namespace mixxx
+} // namespace mixxx

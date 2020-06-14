@@ -349,9 +349,9 @@
         connect: function() {
             Button.prototype.connect.call(this); // call parent connect
             if (undefined !== this.group && this.colorKey !== undefined) {
-                this.connections[1] = engine.makeConnection(this.group, this.colorKey, function(id) {
+                this.connections[1] = engine.makeConnection(this.group, this.colorKey, function(color) {
                     if (engine.getValue(this.group, this.outKey)) {
-                        this.outputColor(id);
+                        this.outputColor(color);
                     }
                 });
             }
@@ -759,6 +759,7 @@
                 }
                 delete this.previouslyFocusedEffect;
             }
+            engine.setValue(this.group, "controller_input_active", 0);
 
             this.group = "[EffectRack1_EffectUnit" + newNumber + "]";
 
@@ -774,6 +775,7 @@
                     this.onShowParametersChange);
                 this.showParametersConnection.trigger();
             }
+            engine.setValue(this.group, "controller_input_active", 1);
 
             // Do not enable soft takeover upon EffectUnit construction
             // so initial values can be loaded from knobs.

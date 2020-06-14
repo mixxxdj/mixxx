@@ -37,7 +37,7 @@ class ShoutConnection
     Q_OBJECT
   public:
     ShoutConnection(BroadcastProfilePtr profile, UserSettingsPointer pConfig);
-    virtual ~ShoutConnection();
+    ~ShoutConnection() override;
 
     // This is called by the Engine implementation for each sample. Encode and
     // send the stream, as well as check for metadata changes.
@@ -167,4 +167,3 @@ class ShoutConnection
 typedef QSharedPointer<ShoutConnection> ShoutConnectionPtr;
 
 #endif // ENGINE_SIDECHAIN_SHOUTCONNECTION_H
-

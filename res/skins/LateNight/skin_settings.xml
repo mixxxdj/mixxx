@@ -16,7 +16,7 @@ Description:
     <Layout>horizontal</Layout>
     <SizePolicy>min,me</SizePolicy>
     <Children>
-      
+
       <WidgetGroup>
         <ObjectName>SkinSettings</ObjectName>
         <Layout>vertical</Layout>
@@ -73,6 +73,13 @@ Description:
                 <SetVariable name="Setting">[Skin],show_intro_outro_cues</SetVariable>
               </Template>
 
+              <!-- Cue shift buttons in beatgrid editing section -->
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
+                <SetVariable name="Text">Hotcue Shift Buttons</SetVariable>
+                <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
+              </Template>
+
               <!-- Rate Control toggle -->
               <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="TooltipId">rate_toggle</SetVariable>
@@ -85,8 +92,6 @@ Description:
                 <Layout>stacked</Layout>
                 <Size>180min,17f</Size>
                 <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
                   <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>stacked</Layout>
@@ -131,8 +136,6 @@ Description:
                 <Layout>stacked</Layout>
                 <Size>190f,17f</Size>
                 <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
                   <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
@@ -179,9 +182,6 @@ Description:
                 <Layout>stacked</Layout>
                 <Size>180min,17f</Size>
                 <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
                   <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
@@ -205,9 +205,6 @@ Description:
                 <Layout>stacked</Layout>
                 <Size>180min,17f</Size>
                 <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
                   <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
@@ -231,9 +228,6 @@ Description:
                 <Layout>stacked</Layout>
                 <Size>180min,17f</Size>
                 <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
                   <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
@@ -277,9 +271,6 @@ Description:
                 <Layout>stacked</Layout>
                 <Size>180min,17f</Size>
                 <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
                   <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>stacked</Layout>
@@ -302,9 +293,6 @@ Description:
                 <Layout>stacked</Layout>
                 <Size>180min,17f</Size>
                 <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
                   <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>stacked</Layout>
@@ -348,8 +336,6 @@ Description:
                 <Layout>stacked</Layout>
                 <Size>180min,17f</Size>
                 <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
                   <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>stacked</Layout>

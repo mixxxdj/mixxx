@@ -13,6 +13,7 @@
 #include "util/types.h"
 
 namespace mixxx {
+
 class Beats;
 using BeatsPointer = std::shared_ptr<Beats>;
 using BeatList = QList<track::io::Beat>;
@@ -315,6 +316,10 @@ class Beats : public QObject {
     FrameNum getFirstBeatPosition() const;
     /// Returns the frame number for the last beat, -1 if no beats
     FrameNum getLastBeatPosition() const;
+    /// Return the sample rate
+    SINT getSampleRate() const {
+        return m_iSampleRate;
+    }
 
     /// Prints debuging information in stderr
     friend QDebug operator<<(QDebug dbg, const BeatsPointer& arg);
@@ -336,8 +341,6 @@ class Beats : public QObject {
     Bpm m_dCachedBpm;
     FrameNum m_dLastFrame;
     BeatList m_beats;
-
-    virtual SINT getSampleRate() const = 0;
 
   signals:
     void updated();

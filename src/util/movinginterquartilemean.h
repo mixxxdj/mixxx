@@ -1,7 +1,5 @@
-#ifndef MOVINGINTERQUARTILEMEAN_H
-#define MOVINGINTERQUARTILEMEAN_H
+#pragma once
 
-#include <QLinkedList>
 #include <QQueue>
 
 // Truncated Interquartile mean
@@ -32,13 +30,11 @@ class MovingInterquartileMean {
     double m_dMean;
     int m_iListMaxSize;
     // The list keeps input doubles ordered by value.
-    QLinkedList<double> m_list;
+    std::list<double> m_list;
     // The queue keeps pointers to doubles in the list ordered
     // by the order they were received.
-    QQueue<QLinkedList<double>::iterator> m_queue;
+    QQueue<std::list<double>::iterator> m_queue;
 
     // sum() checks this to know if it has to recalculate the mean.
     bool m_bChanged;
 };
-
-#endif /* MOVINGINTERQUARTILEMEAN_H */

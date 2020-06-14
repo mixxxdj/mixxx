@@ -54,6 +54,9 @@ class LoopingControl : public EngineControl {
     void setRateControl(RateControl* rateControl);
     bool isLoopingEnabled();
 
+    void trackLoaded(TrackPointer pNewTrack) override;
+    void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
+
   public slots:
     void slotLoopIn(double pressed);
     void slotLoopInGoto(double);
@@ -64,8 +67,6 @@ class LoopingControl : public EngineControl {
     void slotReloopAndStop(double);
     void slotLoopStartPos(double);
     void slotLoopEndPos(double);
-    void trackLoaded(TrackPointer pNewTrack) override;
-    void slotUpdatedTrackBeats();
 
     // Generate a loop of 'beats' length. It can also do fractions for a
     // beatslicing effect.

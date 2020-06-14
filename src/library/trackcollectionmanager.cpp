@@ -65,7 +65,7 @@ TrackCollectionManager::TrackCollectionManager(
     // TODO: Extract and decouple LibraryScanner from TrackCollectionManager
     if (deleteTrackForTestingFn) {
         // Exclude the library scanner from tests
-        kLogger.info() << "Libary scanner is disabled in test mode";
+        kLogger.info() << "Library scanner is disabled in test mode";
     } else {
         m_pScanner = std::make_unique<LibraryScanner>(pDbConnectionPool, pConfig);
 
@@ -97,21 +97,17 @@ TrackCollectionManager::TrackCollectionManager(
 
         // Force the GUI thread's Track cache to be cleared when a library
         // scan is finished, because we might have modified the database directly
-        // when we detected moved files, and the TIOs corresponding to the moved
-        // files would then have the wrong track location.
+        // when we detected moved files, and the track objects and table entries
+        // corresponding to the moved files would then have the wrong track location.
         TrackDAO* pTrackDAO = &(m_pInternalCollection->getTrackDAO());
-        connect(m_pScanner.get(),
-                &LibraryScanner::trackAdded,
-                pTrackDAO,
-                &TrackDAO::databaseTrackAdded);
         connect(m_pScanner.get(),
                 &LibraryScanner::tracksChanged,
                 pTrackDAO,
-                &TrackDAO::databaseTracksChanged);
+                &TrackDAO::slotDatabaseTracksChanged);
         connect(m_pScanner.get(),
                 &LibraryScanner::tracksRelocated,
                 pTrackDAO,
-                &TrackDAO::databaseTracksRelocated);
+                &TrackDAO::slotDatabaseTracksRelocated);
 
         kLogger.info() << "Starting library scanner thread";
         m_pScanner->start();
@@ -179,7 +175,7 @@ bool TrackCollectionManager::saveTrack(const TrackPointer& pTrack) {
 }
 
 // Export metadata and save the track in both the internal database
-// and external libaries.
+// and external libraries.
 void TrackCollectionManager::saveEvictedTrack(Track* pTrack) noexcept {
     saveTrack(pTrack, TrackMetadataExportMode::Immediate);
 }
@@ -187,6 +183,7 @@ void TrackCollectionManager::saveEvictedTrack(Track* pTrack) noexcept {
 void TrackCollectionManager::saveTrack(
         Track* pTrack,
         TrackMetadataExportMode mode) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     DEBUG_ASSERT(pTrack);
     DEBUG_ASSERT(pTrack->getDateAdded().isValid());
 
@@ -278,14 +275,20 @@ void TrackCollectionManager::exportTrackMetadata(
 }
 
 bool TrackCollectionManager::addDirectory(const QString& dir) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
     return m_pInternalCollection->addDirectory(dir);
 }
 
 bool TrackCollectionManager::removeDirectory(const QString& dir) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
     return m_pInternalCollection->removeDirectory(dir);
 }
 
 void TrackCollectionManager::relocateDirectory(QString oldDir, QString newDir) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
     kLogger.debug()
             << "Relocating directory in internal track collection:"
             << oldDir
@@ -309,18 +312,26 @@ void TrackCollectionManager::relocateDirectory(QString oldDir, QString newDir) {
 }
 
 bool TrackCollectionManager::hideTracks(const QList<TrackId>& trackIds) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
     return m_pInternalCollection->hideTracks(trackIds);
 }
 
 bool TrackCollectionManager::unhideTracks(const QList<TrackId>& trackIds) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
     return m_pInternalCollection->unhideTracks(trackIds);
 }
 
 void TrackCollectionManager::hideAllTracks(const QDir& rootDir) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
     m_pInternalCollection->hideAllTracks(rootDir);
 }
 
 void TrackCollectionManager::purgeTracks(const QList<TrackRef>& trackRefs) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
     if (trackRefs.isEmpty()) {
         return;
     }
@@ -331,7 +342,7 @@ void TrackCollectionManager::purgeTracks(const QList<TrackRef>& trackRefs) {
     {
         QList<TrackId> trackIds;
         trackIds.reserve(trackRefs.size());
-        for (const auto trackRef : trackRefs) {
+        for (const auto& trackRef : trackRefs) {
             DEBUG_ASSERT(trackRef.hasId());
             trackIds.append(trackRef.getId());
         }
@@ -346,7 +357,7 @@ void TrackCollectionManager::purgeTracks(const QList<TrackRef>& trackRefs) {
     }
     QList<QString> trackLocations;
     trackLocations.reserve(trackLocations.size());
-    for (const auto trackRef : trackRefs) {
+    for (const auto& trackRef : trackRefs) {
         DEBUG_ASSERT(trackRef.hasLocation());
         trackLocations.append(trackRef.getLocation());
     }
@@ -362,6 +373,8 @@ void TrackCollectionManager::purgeTracks(const QList<TrackRef>& trackRefs) {
 }
 
 void TrackCollectionManager::purgeAllTracks(const QDir& rootDir) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
     kLogger.debug()
             << "Purging directory"
             << rootDir
@@ -388,6 +401,8 @@ void TrackCollectionManager::purgeAllTracks(const QDir& rootDir) {
 TrackPointer TrackCollectionManager::getOrAddTrack(
         const TrackRef& trackRef,
         bool* pAlreadyInLibrary) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
     bool alreadyInLibrary;
     if (pAlreadyInLibrary) {
         alreadyInLibrary = *pAlreadyInLibrary;
@@ -424,6 +439,8 @@ void TrackCollectionManager::slotScanTrackAdded(TrackPointer pTrack) {
 }
 
 void TrackCollectionManager::slotScanTracksUpdated(QSet<TrackId> updatedTrackIds) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
     // Already updated in m_pInternalCollection
     if (updatedTrackIds.isEmpty()) {
         return;
@@ -464,6 +481,8 @@ void TrackCollectionManager::slotScanTracksUpdated(QSet<TrackId> updatedTrackIds
 
 void TrackCollectionManager::slotScanTracksRelocated(
         QList<RelocatedTrack> relocatedTracks) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
     // Already replaced in m_pInternalCollection
     if (m_externalCollections.isEmpty()) {
         return;

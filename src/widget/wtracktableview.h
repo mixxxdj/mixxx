@@ -1,5 +1,4 @@
-#ifndef WTRACKTABLEVIEW_H
-#define WTRACKTABLEVIEW_H
+#pragma once
 
 #include <QAbstractItemModel>
 #include <QSortFilterProxyModel>
@@ -38,6 +37,8 @@ class WTrackTableView : public WLibraryTableView {
     void onShow() override;
     bool hasFocus() const override;
     void keyPressEvent(QKeyEvent* event) override;
+    void loadSelectedTrack() override;
+    void loadSelectedTrackToGroup(QString group, bool play) override;
     void assignNextTrackColor() override;
     void assignPreviousTrackColor() override;
     QList<TrackId> getSelectedTrackIds() const;
@@ -105,5 +106,3 @@ class WTrackTableView : public WLibraryTableView {
     ControlProxy* m_pSortColumn;
     ControlProxy* m_pSortOrder;
 };
-
-#endif

@@ -21,7 +21,7 @@ class Auxiliary : public BasePlayer {
               SoundManager* pSoundManager,
               EngineMaster* pMixingEngine,
               EffectsManager* pEffectsManager);
-    virtual ~Auxiliary();
+    ~Auxiliary() override;
 
   signals:
     void noAuxiliaryInputConfigured();

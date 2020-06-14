@@ -3,13 +3,13 @@
 
 #include "library/basesqltablemodel.h"
 
-class HiddenTableModel : public BaseSqlTableModel {
+class HiddenTableModel final : public BaseSqlTableModel {
     Q_OBJECT
   public:
     HiddenTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager);
     ~HiddenTableModel() final;
 
-    void setTableModel(int id = -1);
+    void setTableModel();
 
     bool isColumnInternal(int column) final;
     void purgeTracks(const QModelIndexList& indices) final;

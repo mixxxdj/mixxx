@@ -230,19 +230,21 @@ QDomElement LegacySkinParser::openSkin(const QString& skinPath) {
 QList<QString> LegacySkinParser::getSchemeList(const QString& qSkinPath) {
 
     QDomElement docElem = openSkin(qSkinPath);
-    QList<QString> schlist;
+    QList<QString> schemeList;
 
-    QDomNode colsch = docElem.namedItem("Schemes");
-    if (!colsch.isNull() && colsch.isElement()) {
-        QDomNode sch = colsch.firstChild();
+    QDomNode colScheme = docElem.namedItem("Schemes");
+    if (!colScheme.isNull() && colScheme.isElement()) {
+        QDomNode scheme = colScheme.firstChild();
 
-        while (!sch.isNull()) {
-            QString thisname = XmlParse::selectNodeQString(sch, "Name");
-            schlist.append(thisname);
-            sch = sch.nextSibling();
+        while (!scheme.isNull()) {
+            if (scheme.isElement()) {
+                QString schemeName = XmlParse::selectNodeQString(scheme, "Name");
+                schemeList.append(schemeName);
+            }
+            scheme = scheme.nextSibling();
         }
     }
-    return schlist;
+    return schemeList;
 }
 
 // static
@@ -613,7 +615,7 @@ QWidget* LegacySkinParser::parseSplitter(const QDomElement& node) {
     m_pParent = pSplitter;
 
     if (!childrenNode.isNull()) {
-        // Descend chilren
+        // Descend children
         QDomNodeList children = childrenNode.childNodes();
 
         for (int i = 0; i < children.count(); ++i) {
@@ -724,7 +726,7 @@ QWidget* LegacySkinParser::parseWidgetStack(const QDomElement& node) {
 
     QDomNode childrenNode = m_pContext->selectNode(node, "Children");
     if (!childrenNode.isNull()) {
-        // Descend chilren
+        // Descend children
         QDomNodeList children = childrenNode.childNodes();
 
         for (int i = 0; i < children.count(); ++i) {
@@ -798,7 +800,7 @@ QWidget* LegacySkinParser::parseSizeAwareStack(const QDomElement& node) {
 
     QDomNode childrenNode = m_pContext->selectNode(node, "Children");
     if (!childrenNode.isNull()) {
-        // Descend chilren
+        // Descend children
         QDomNodeList children = childrenNode.childNodes();
 
         for (int i = 0; i < children.count(); ++i) {
@@ -1277,7 +1279,7 @@ void LegacySkinParser::parseSingletonDefinition(const QDomElement& node) {
                 << "SingletonDefinition requires a Children tag with one child";
     }
 
-    // Descend chilren, taking the first valid element.
+    // Descend children, taking the first valid element.
     QDomNode child_node;
     QDomNodeList children = childrenNode.childNodes();
     for (int i = 0; i < children.count(); ++i) {
@@ -1401,10 +1403,11 @@ QWidget* LegacySkinParser::parseTableView(const QDomElement& node) {
     // Add the splitter to the library page's layout, so it's
     // positioned/sized automatically
     pLibraryPageLayout->addWidget(pSplitter,
-                                  1, 0, //From row 1, col 0,
-                                  1,    //Span 1 row
-                                  3,    //Span 3 cols
-                                  0);   //Default alignment
+            1,                // From row 1
+            0,                // From column 0
+            1,                // Span 1 row
+            3,                // Span 3 columns
+            Qt::Alignment()); // Default alignment
 
     pTabWidget->addWidget(pLibraryPage);
     pTabWidget->setStyleSheet(getLibraryStyle(node));
