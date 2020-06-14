@@ -73,6 +73,10 @@ bool Controller::applyPreset(bool initializeScripts) {
     if (success && initializeScripts) {
         m_pEngine->initializeScripts(scriptFiles);
     }
+
+    if (initializeScripts) {
+        m_pEngine->loadModule(pPreset->moduleFileInfo());
+    }
     return success;
 }
 
@@ -143,4 +147,6 @@ void Controller::receive(const QByteArray data, mixxx::Duration timestamp) {
         QJSValue incomingDataFunction = m_pEngine->wrapFunctionCode(function, 2);
         m_pEngine->executeFunction(incomingDataFunction, data);
     }
+
+    m_pEngine->receiveData(data, timestamp);
 }

@@ -149,6 +149,10 @@ void ControllerEngine::gracefulShutdown() {
     qDebug() << "Invoking shutdown() hook in scripts";
     callFunctionOnObjects(m_scriptFunctionPrefixes, "shutdown");
 
+    if (m_shutdownFunction.isCallable()) {
+        executeFunction(m_shutdownFunction, QJSValueList{});
+    }
+
     // Prevents leaving decks in an unstable state
     //  if the controller is shut down while scratching
     QHashIterator<int, int> i(m_scratchTimers);
@@ -220,6 +224,42 @@ void ControllerEngine::uninitializeScriptEngine() {
         QJSEngine* engine = m_pScriptEngine;
         m_pScriptEngine = nullptr;
         engine->deleteLater();
+    }
+}
+
+void ControllerEngine::loadModule(QFileInfo moduleFileInfo) {
+    QJSValue mod = m_pScriptEngine->importModule(moduleFileInfo.absoluteFilePath());
+    if (mod.isError()) {
+        showScriptExceptionDialog(mod);
+        return;
+    }
+    QJSValue initFunction = mod.property("init");
+    if (initFunction.isCallable()) {
+        initFunction.call();
+    } else {
+        qDebug() << "Module exports no init function.";
+    }
+
+    QJSValue receiveDataFunction = mod.property("receiveData");
+    if (receiveDataFunction.isCallable()) {
+        m_receiveDataFunction = receiveDataFunction;
+    }
+
+    QJSValue shutdownFunction = mod.property("shutdown");
+    if (shutdownFunction.isCallable()) {
+        m_shutdownFunction = shutdownFunction;
+    }
+}
+
+void ControllerEngine::receiveData(QByteArray data, mixxx::Duration timestamp) {
+    if (m_receiveDataFunction.isCallable()) {
+        QJSValueList args;
+        args << byteArrayToScriptValue(data);
+        args << timestamp.toDoubleNanos();
+        QJSValue returnValue = m_receiveDataFunction.call(args);
+        if (returnValue.isError()) {
+            showScriptExceptionDialog(returnValue);
+        }
     }
 }
 
