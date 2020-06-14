@@ -158,7 +158,6 @@ void EngineEffectsManager::processInner(
 
     const QList<EngineEffectChain*>& chains = m_chainsByStage.value(stage);
 
-    bool processingOccured = false;
     if (pIn == pOut) {
         // Gain and effects are applied to the buffer in place,
         // modifying the original input buffer
@@ -168,7 +167,6 @@ void EngineEffectsManager::processInner(
                 if (pChain->process(inputHandle, outputHandle,
                                     pIn, pOut,
                                     numSamples, sampleRate, groupFeatures)) {
-                    processingOccured = true;
                 }
             }
         }
@@ -203,7 +201,6 @@ void EngineEffectsManager::processInner(
                 if (pChain->process(inputHandle, outputHandle,
                                     pIntermediateInput, pIntermediateOutput,
                                     numSamples, sampleRate, groupFeatures)) {
-                    processingOccured = true;
                     // Output of this chain becomes the input of the next chain.
                     pIntermediateInput = pIntermediateOutput;
                 }
