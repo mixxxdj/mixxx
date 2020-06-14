@@ -307,13 +307,11 @@ void DlgPrefEQ::slotResetToDefaults() {
                pCombo->findData(kDefaultEqId));
     }
     loadSettings();
-    CheckBoxBypass->setChecked(Qt::Unchecked);
-    CheckBoxEqOnly->setChecked(Qt::Checked);
-    CheckBoxSingleEqEffect->setChecked(Qt::Checked);
-    m_bEqAutoReset = false;
-    CheckBoxEqAutoReset->setChecked(Qt::Unchecked);
-    m_bGainAutoReset = false;
-    CheckBoxGainAutoReset->setChecked(Qt::Unchecked);
+    CheckBoxBypass->setChecked(false);
+    CheckBoxEqOnly->setChecked(true);
+    CheckBoxSingleEqEffect->setChecked(true);
+    CheckBoxEqAutoReset->setChecked(m_bEqAutoReset);
+    CheckBoxGainAutoReset->setChecked(m_bGainAutoReset);
     slotUpdate();
     slotApply();
 }
