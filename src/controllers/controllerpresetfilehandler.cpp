@@ -146,7 +146,7 @@ void ControllerPresetFileHandler::addScriptFilesToPreset(
     }
 
     QString moduleFileName = controller.firstChildElement("module").text();
-    preset->setModuleFileInfo(findScriptFile(preset, moduleFileName, systemPresetsPath));
+    preset->setModuleFileInfo(preset->dirPath().absoluteFilePath(moduleFileName));
 }
 
 bool ControllerPresetFileHandler::writeDocument(
