@@ -2,14 +2,17 @@
   "name": "@mixxx-launchpad/mk2",
   "private": true,
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/index.js",
+  "module": "src/index.js",
   "dependencies": {
+    "@babel/runtime": "^7.3.1",
     "@mixxx-launchpad/app": "1.0.0",
-    "@mixxx-launchpad/mk-specs": "../mk-specs@2.0.0"
+    "lodash-es": "~4.17.4"
   },
   "controller": {
     "device": "Launchpad MK2",
     "manufacturer": "Novation",
-    "global": "NovationLaunchpadMK2"
+    "global": "NovationLaunchpadMK2",
+    "path": "src"
   }
 }

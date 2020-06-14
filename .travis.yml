@@ -224,6 +224,7 @@ addons:
       - portaudio19-dev
       - protobuf-compiler
       - qt5-default
+      - qtdeclarative5-dev
       - qtscript5-dev
       - qt5keychain-dev
   homebrew:
