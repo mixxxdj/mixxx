@@ -23,7 +23,7 @@ message TimeSignature {
 }
 
 message Beat {
-  optional int32 frame_position = 1;
+  optional double frame_position = 1;
   optional bool enabled = 2 [ default = true ];
   optional Source source = 3 [ default = ANALYZER ];
   optional Type type = 4 [ default = BEAT ];
