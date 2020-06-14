@@ -22,7 +22,7 @@ class CrateTableModel final : public TrackSetTableModel {
     /// Returns the number of unsuccessful additions.
     int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
 
-    CapabilitiesFlags getCapabilities() const final;
+    Capabilities getCapabilities() const final;
 
   private:
     CrateId m_selectedCrate;
