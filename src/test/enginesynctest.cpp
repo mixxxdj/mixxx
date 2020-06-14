@@ -1726,7 +1726,7 @@ TEST_F(EngineSyncTest, SetFileBpmUpdatesLocalBpm) {
     auto pBeats1 = BeatsPointer(new Beats(m_pTrack1.get()));
     pBeats1->setGrid(130);
     m_pTrack1->setBeats(pBeats1);
-    ASSERT_EQ(
+    EXPECT_FLOAT_EQ(
             130.0, m_pEngineSync->getSyncableForGroup(m_sGroup1)->getBaseBpm());
 }
 
@@ -2115,9 +2115,10 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
     EXPECT_DOUBLE_EQ(100, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     // we align here to the past beat, because beat_distance < 1.0/8
-    EXPECT_DOUBLE_EQ(
+    EXPECT_NEAR(
             ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")) / 130 * 100,
-            ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
+            ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")),
+            1e-15);
 }
 
 TEST_F(EngineSyncTest, SeekStayInPhase) {
