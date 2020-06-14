@@ -1,25 +1,23 @@
 /* @flow */
-import { makePlaylistSidebar } from './PlaylistSidebar'
-import { makeModifierSidebar } from './ModifierSidebar'
-import Layout, { makeLayout } from './Layout'
-import Component from '../Component'
+import PlaylistSidebar from './PlaylistSidebar'
+import ModifierSidebar from './ModifierSidebar'
+import Layout from './Layout'
+import MidiComponent from '../Controls/MidiComponent'
 
-import type { TimerBuilder } from '../Mixxx/Timer'
+import type { TimerBuilder } from '@mixxx-launchpad/mixxx'
 import type { ControlComponentBuilder } from '../Controls/ControlComponent'
-import type { MidiComponentBuilder } from '../Controls/MidiComponent'
-import type PlaylistSidebar from './PlaylistSidebar'
-import type ModifierSidebar from './ModifierSidebar'
+import type { MidiBus } from '../MidiBus'
 
-export default class Screen extends Component {
+export default class Screen extends MidiComponent {
   modifier: ModifierSidebar
   playListSidebar: PlaylistSidebar
   layout: Layout
 
-  constructor (timerBuilder: TimerBuilder, controlComponentBuilder: ControlComponentBuilder, midiComponentBuilder: MidiComponentBuilder, id: string) {
-    super()
-    this.modifier = makeModifierSidebar(midiComponentBuilder)
-    this.playListSidebar = makePlaylistSidebar(timerBuilder)(midiComponentBuilder)
-    this.layout = makeLayout(controlComponentBuilder)(midiComponentBuilder)(this.modifier)(`${id}.layout`)
+  constructor (midibus: MidiBus, timerBuilder: TimerBuilder, controlComponentBuilder: ControlComponentBuilder, id: string) {
+    super(midibus)
+    this.modifier = new ModifierSidebar(midibus)
+    this.playListSidebar = new PlaylistSidebar(midibus, timerBuilder)
+    this.layout = new Layout(midibus, controlComponentBuilder, this.modifier, `${id}.layout`)
   }
   onMount () {
     this.modifier.mount()
@@ -27,13 +25,8 @@ export default class Screen extends Component {
     this.layout.mount()
   }
   onUnmount () {
+    this.layout.unmount()
     this.playListSidebar.unmount()
     this.modifier.unmount()
-    this.layout.unmount()
   }
 }
-
-export const makeScreen = (timerBuilder: TimerBuilder) =>
-  (controlComponentBuilder: ControlComponentBuilder) =>
-    (midiComponentBuilder: MidiComponentBuilder) =>
-      (id: string) => new Screen(timerBuilder, controlComponentBuilder, midiComponentBuilder, id)

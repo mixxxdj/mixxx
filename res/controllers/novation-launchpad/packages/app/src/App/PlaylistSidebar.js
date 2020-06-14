@@ -1,16 +1,10 @@
 /* @flow */
-import { Buttons, Colors } from '../Launchpad'
-import { playListControl } from '../Mixxx'
-import Component from '../Component'
+import { playListControl } from '@mixxx-launchpad/mixxx'
+import MidiComponent from '../Controls/MidiComponent'
+import MidiButtonComponent from '../Controls/MidiButtonComponent'
 
-import type { TimerBuilder } from '../Mixxx'
-import type MidiComponent, { MidiComponentBuilder } from '../Controls/MidiComponent'
-
-const prevPlaylistBtn = Buttons.vol
-const nextPlaylistBtn = Buttons.pan
-const toggleItemBtn = Buttons.snda
-const prevTrackBtn = Buttons.sndb
-const nextTrackBtn = Buttons.stop
+import type { MidiBus } from '../MidiBus'
+import type { TimerBuilder } from '@mixxx-launchpad/mixxx'
 
 const autoscrolled = (binding) => (timerBuilder: TimerBuilder) => {
   let started
@@ -56,29 +50,68 @@ const autoscrolled = (binding) => (timerBuilder: TimerBuilder) => {
 
 const onScroll = (control) => () => { control.setValue(1) }
 
-const onMidi = (control) => ({ value, button }) => {
+const onMidi = (control) => ({ value, button, device }) => {
   if (value) {
     control.setValue(1)
-    button.sendColor(Colors.hi_red)
+    button.sendColor(device.colors.hi_red)
   } else {
-    button.sendColor(Colors.hi_yellow)
+    button.sendColor(device.colors.hi_yellow)
   }
 }
 
-const onMount = ({ button }) => {
-  button.sendColor(Colors.hi_yellow)
+const onMount = ({ button, device }) => {
+  button.sendColor(device.colors.hi_yellow)
 }
 
-const onUnmount = ({ button }) => {
-  button.sendColor(Colors.black)
+const onUnmount = ({ button, device }) => {
+  button.sendColor(device.colors.black)
 }
 
-export default class PlaylistSidebar extends Component {
-  buttons: MidiComponent[]
+export default class PlaylistSidebar extends MidiComponent {
+  buttons: MidiButtonComponent[]
 
-  constructor (buttons: MidiComponent[]) {
-    super()
-    this.buttons = buttons
+  constructor (midibus: MidiBus, timerBuilder: TimerBuilder) {
+    super(midibus)
+
+    const btns = [
+      new MidiButtonComponent(midibus, this.device.buttons.vol),
+      new MidiButtonComponent(midibus, this.device.buttons.pan),
+      new MidiButtonComponent(midibus, this.device.buttons.snda),
+      new MidiButtonComponent(midibus, this.device.buttons.sndb),
+      new MidiButtonComponent(midibus, this.device.buttons.stop)
+    ]
+
+    const prevPlaylist = autoscrolled(btns[0])(timerBuilder)
+    const nextPlaylist = autoscrolled(btns[1])(timerBuilder)
+    const toggleItem = btns[2]
+    const prevTrack = autoscrolled(btns[3])(timerBuilder)
+    const nextTrack = autoscrolled(btns[4])(timerBuilder)
+
+    prevPlaylist.on('scroll', onScroll(playListControl.SelectPrevPlaylist))
+    prevPlaylist.on('midi', onMidi(playListControl.SelectPrevPlaylist))
+    prevPlaylist.on('mount', onMount)
+    prevPlaylist.on('unmount', onUnmount)
+
+    nextPlaylist.on('scroll', onScroll(playListControl.SelectNextPlaylist))
+    nextPlaylist.on('midi', onMidi(playListControl.SelectNextPlaylist))
+    nextPlaylist.on('mount', onMount)
+    nextPlaylist.on('unmount', onUnmount)
+
+    prevTrack.on('scroll', onScroll(playListControl.SelectPrevTrack))
+    prevTrack.on('midi', onMidi(playListControl.SelectPrevTrack))
+    prevTrack.on('mount', onMount)
+    prevTrack.on('unmount', onUnmount)
+
+    nextTrack.on('scroll', onScroll(playListControl.SelectNextTrack))
+    nextTrack.on('midi', onMidi(playListControl.SelectNextTrack))
+    nextTrack.on('mount', onMount)
+    nextTrack.on('unmount', onUnmount)
+
+    toggleItem.on('midi', onMidi(playListControl.ToggleSelectedSidebarItem))
+    toggleItem.on('mount', onMount)
+    toggleItem.on('unmount', onUnmount)
+
+    this.buttons = btns
   }
   onMount () {
     this.buttons.forEach((button) => button.mount())
@@ -86,46 +119,4 @@ export default class PlaylistSidebar extends Component {
   onUnmount () {
     this.buttons.forEach((button) => button.unmount())
   }
-}
-
-export const makePlaylistSidebar = (timerBuilder: TimerBuilder) => (midiComponentBuilder: MidiComponentBuilder) => {
-  const btns = [
-    midiComponentBuilder(prevPlaylistBtn),
-    midiComponentBuilder(nextPlaylistBtn),
-    midiComponentBuilder(toggleItemBtn),
-    midiComponentBuilder(prevTrackBtn),
-    midiComponentBuilder(nextTrackBtn)
-  ]
-
-  const prevPlaylist = autoscrolled(btns[0])(timerBuilder)
-  const nextPlaylist = autoscrolled(btns[1])(timerBuilder)
-  const toggleItem = btns[2]
-  const prevTrack = autoscrolled(btns[3])(timerBuilder)
-  const nextTrack = autoscrolled(btns[4])(timerBuilder)
-
-  prevPlaylist.on('scroll', onScroll(playListControl.SelectPrevPlaylist))
-  prevPlaylist.on('midi', onMidi(playListControl.SelectPrevPlaylist))
-  prevPlaylist.on('mount', onMount)
-  prevPlaylist.on('unmount', onUnmount)
-
-  nextPlaylist.on('scroll', onScroll(playListControl.SelectNextPlaylist))
-  nextPlaylist.on('midi', onMidi(playListControl.SelectNextPlaylist))
-  nextPlaylist.on('mount', onMount)
-  nextPlaylist.on('unmount', onUnmount)
-
-  prevTrack.on('scroll', onScroll(playListControl.SelectPrevTrack))
-  prevTrack.on('midi', onMidi(playListControl.SelectPrevTrack))
-  prevTrack.on('mount', onMount)
-  prevTrack.on('unmount', onUnmount)
-
-  nextTrack.on('scroll', onScroll(playListControl.SelectNextTrack))
-  nextTrack.on('midi', onMidi(playListControl.SelectNextTrack))
-  nextTrack.on('mount', onMount)
-  nextTrack.on('unmount', onUnmount)
-
-  toggleItem.on('midi', onMidi(playListControl.ToggleSelectedSidebarItem))
-  toggleItem.on('mount', onMount)
-  toggleItem.on('unmount', onUnmount)
-
-  return new PlaylistSidebar(btns)
 }

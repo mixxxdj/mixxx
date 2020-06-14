@@ -1,12 +1,12 @@
 /* @flow */
-import { Colors } from '../../Launchpad'
-import { flatMap } from 'lodash-es'
+import type { LaunchpadDevice } from '../../'
+import flatMap from 'lodash-es/flatMap'
 
 import { modes, retainAttackMode } from '../ModifierSidebar'
 import type { Modifier } from '../ModifierSidebar'
-import type { ChannelControl } from '../../Mixxx'
+import type { ChannelControl } from '@mixxx-launchpad/mixxx'
 
-export const loopjump = (jumps: [number, number][]) => (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => {
+export const loopjump = (jumps: [number, number][]) => (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => (device: LaunchpadDevice) => {
   const bindings = { }
   const onMidi = (k, j, d) => (modifier) => retainAttackMode(modifier, (mode, { value }, { bindings, state }) => {
     modes(mode,
@@ -20,14 +20,14 @@ export const loopjump = (jumps: [number, number][]) => (gridPosition: [number, n
             const currentJump = j[state.set] * d
             deck.loop_move.setValue(currentJump)
             if (state.pressing != null) {
-              bindings[state.pressing].button.sendColor(Colors[`lo_${state.color[state.set]}`])
+              bindings[state.pressing].button.sendColor(device.colors[`lo_${state.color[state.set]}`])
             }
-            bindings[k].button.sendColor(Colors[`hi_${state.color[state.set]}`])
+            bindings[k].button.sendColor(device.colors[`hi_${state.color[state.set]}`])
             state.pressing = k
             state.diff = state.diff + currentJump
           } else {
             if (state.pressing === k) {
-              bindings[k].button.sendColor(Colors[`lo_${state.color[state.set]}`])
+              bindings[k].button.sendColor(device.colors[`lo_${state.color[state.set]}`])
               state.pressing = null
               deck.loop_move.setValue(-state.diff)
               state.diff = 0
@@ -41,7 +41,7 @@ export const loopjump = (jumps: [number, number][]) => (gridPosition: [number, n
             state.set = 0
             const prefix = state.mode ? 'lo' : 'hi'
             for (let b = 0; b < spec.length; ++b) {
-              bindings[b].button.sendColor(Colors[`${prefix}_${state.color[state.set]}`])
+              bindings[b].button.sendColor(device.colors[`${prefix}_${state.color[state.set]}`])
             }
           }
         }
@@ -52,7 +52,7 @@ export const loopjump = (jumps: [number, number][]) => (gridPosition: [number, n
             state.set = 1
             const prefix = state.mode ? 'lo' : 'hi'
             for (let b = 0; b < spec.length; ++b) {
-              bindings[b].button.sendColor(Colors[`${prefix}_${state.color[state.set]}`])
+              bindings[b].button.sendColor(device.colors[`${prefix}_${state.color[state.set]}`])
             }
           }
         }
@@ -62,17 +62,17 @@ export const loopjump = (jumps: [number, number][]) => (gridPosition: [number, n
           state.mode = !state.mode
           const prefix = state.mode ? 'lo' : 'hi'
           for (let b = 0; b < spec.length; ++b) {
-            bindings[b].button.sendColor(Colors[`${prefix}_${state.color[state.set]}`])
+            bindings[b].button.sendColor(device.colors[`${prefix}_${state.color[state.set]}`])
           }
         }
       }
     )
   })
-  const onMount = (k) => (dontKnow, { bindings, state }) => {
+  const onMount = (k) => (_, { bindings, state }) => {
     const prefix = state.mode ? 'lo' : 'hi'
-    bindings[k].button.sendColor(Colors[`${prefix}_${state.color[state.set]}`])
+    bindings[k].button.sendColor(device.colors[`${prefix}_${state.color[state.set]}`])
   }
-  const spec = flatMap(jumps, (j, i) => [[j, 1], [j, -1]])
+  const spec = flatMap((jumps: any), (j, i) => [[j, 1], [j, -1]]) // FIXME: flatMap is incorrectly typed see https://github.com/flow-typed/flow-typed/issues/2463
 
   spec.forEach(([jump, dir], i) => {
     bindings[i] = {
@@ -97,7 +97,7 @@ export const loopjump = (jumps: [number, number][]) => (gridPosition: [number, n
   }
 }
 
-export const loopjumpSmall = (amount: number) => (button: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => {
+export const loopjumpSmall = (amount: number) => (button: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => (device: LaunchpadDevice) => {
   const onAttack = (dir) => () => {
     modes(modifier.getState(),
       () => deck.loop_move.setValue(dir * amount)
@@ -110,7 +110,7 @@ export const loopjumpSmall = (amount: number) => (button: [number, number]) => (
         target: button,
         attack: onAttack(-1),
         mount: (dk: null, { bindings }: Object) => {
-          bindings.back.button.sendColor(Colors.hi_yellow)
+          bindings.back.button.sendColor(device.colors.hi_yellow)
         }
       },
       forth: {
@@ -118,7 +118,7 @@ export const loopjumpSmall = (amount: number) => (button: [number, number]) => (
         target: [button[0] + 1, button[1]],
         attack: onAttack(1),
         mount: (dk: null, { bindings }: Object) => {
-          bindings.forth.button.sendColor(Colors.hi_yellow)
+          bindings.forth.button.sendColor(device.colors.hi_yellow)
         }
       }
     }

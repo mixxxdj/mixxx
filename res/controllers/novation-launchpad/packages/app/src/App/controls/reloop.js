@@ -1,12 +1,12 @@
 /* @flow */
-import { Colors } from '../../Launchpad'
+import type { LaunchpadDevice } from '../../'
 
-import type { ChannelControl, ControlMessage } from '../../Mixxx'
+import type { ChannelControl, ControlMessage } from '@mixxx-launchpad/mixxx'
 
 import { modes } from '../ModifierSidebar'
 import type { Modifier } from '../ModifierSidebar'
 
-export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => {
+export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => (device: LaunchpadDevice) => {
   return {
     bindings: {
       button: {
@@ -21,9 +21,9 @@ export default (gridPosition: [number, number]) => (deck: ChannelControl) => (mo
         target: deck.loop_enabled,
         update: ({ value }: ControlMessage, { bindings }: Object) => {
           if (value) {
-            bindings.button.button.sendColor(Colors.hi_green)
+            bindings.button.button.sendColor(device.colors.hi_green)
           } else {
-            bindings.button.button.sendColor(Colors.lo_green)
+            bindings.button.button.sendColor(device.colors.lo_green)
           }
         }
       }

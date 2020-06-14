@@ -1,13 +1,13 @@
 /* @flow */
-import { Colors } from '../../Launchpad'
+import type { LaunchpadDevice } from '../../'
 
-import type { ChannelControl, ControlMessage } from '../../Mixxx'
+import type { ChannelControl, ControlMessage } from '@mixxx-launchpad/mixxx'
 import Bpm from '../../App/Bpm'
 
 import { modes } from '../ModifierSidebar'
 import type { Modifier } from '../ModifierSidebar'
 
-export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => {
+export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => (device: LaunchpadDevice) => {
   const tempoBpm = new Bpm()
   tempoBpm.on('tap', (avg) => {
     deck.bpm.setValue(avg)
@@ -37,9 +37,9 @@ export default (gridPosition: [number, number]) => (deck: ChannelControl) => (mo
         target: deck.beat_active,
         update: ({ value }: ControlMessage, { bindings }: Object) => {
           if (value) {
-            bindings.tap.button.sendColor(Colors.hi_red)
+            bindings.tap.button.sendColor(device.colors.hi_red)
           } else {
-            bindings.tap.button.sendColor(Colors.black)
+            bindings.tap.button.sendColor(device.colors.black)
           }
         }
       }

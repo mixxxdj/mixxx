@@ -1,3 +1,4 @@
+
 "use strict";
 ////////////////////////////////////////////////////////////////////////
 // JSHint configuration                                               //
@@ -15,7 +16,7 @@
 // amidi -p hw:1 -S F00001601501F7 # flat mode
 // amidi -p hw:1 -S 900302 # 90: note on, 03: id of a touch button, 02: red LED
 
-SCS3M = {
+var SCS3M = {
     // The device remembers the selected EQ/FX mode per deck
     // and switches to that mode on deck-switch. Set this to
     // false if you prefer the mode to stay the same on
