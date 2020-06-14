@@ -228,6 +228,7 @@ class Qt(Dependence):
             'QtGui',
             'QtNetwork',
             'QtOpenGL',
+            'QtQml', # Needed for QJSEngine
             'QtScript',
             'QtScriptTools',
             'QtSql',
@@ -702,14 +703,6 @@ class FpClassify(Dependence):
                 env['CCFLAGS'].remove('-ffast-math')
         return env.Object('src/util/fpclassify.cpp')
 
-class QtScriptByteArray(Dependence):
-    def configure(self, build, conf):
-        build.env.Append(CPPPATH='#lib/qtscript-bytearray')
-
-    def sources(self, build):
-        return ['lib/qtscript-bytearray/bytearrayclass.cpp',
-                'lib/qtscript-bytearray/bytearrayprototype.cpp']
-
 class PortAudioRingBuffer(Dependence):
     def configure(self, build, conf):
         build.env.Append(CPPPATH='#lib/portaudio')
@@ -743,6 +736,7 @@ class MixxxCore(Feature):
         return True
 
     def sources(self, build):
+
         sources = ["src/control/control.cpp",
                    "src/control/controlaudiotaperpot.cpp",
                    "src/control/controlbehavior.cpp",
@@ -909,7 +903,6 @@ class MixxxCore(Feature):
 
                    "src/controllers/controller.cpp",
                    "src/controllers/controllerdebug.cpp",
-                   "src/controllers/controllerengine.cpp",
                    "src/controllers/controllerenumerator.cpp",
                    "src/controllers/controllerlearningeventfilter.cpp",
                    "src/controllers/controllermanager.cpp",
@@ -926,6 +919,12 @@ class MixxxCore(Feature):
                    "src/controllers/delegates/midibytedelegate.cpp",
                    "src/controllers/delegates/midioptionsdelegate.cpp",
                    "src/controllers/learningutils.cpp",
+                   "src/controllers/engine/controllerengine.cpp",
+                   "src/controllers/engine/controllerenginejsproxy.cpp",
+                   "src/controllers/engine/colormapper.cpp",
+                   "src/controllers/engine/colormapperjsproxy.cpp",
+                   "src/controllers/engine/scriptconnection.cpp",
+                   "src/controllers/engine/scriptconnectionjsproxy.cpp",
                    "src/controllers/midi/midimessage.cpp",
                    "src/controllers/midi/midiutils.cpp",
                    "src/controllers/midi/midicontroller.cpp",
@@ -935,8 +934,6 @@ class MixxxCore(Feature):
                    "src/controllers/midi/midioutputhandler.cpp",
                    "src/controllers/softtakeover.cpp",
                    "src/controllers/keyboard/keyboardeventfilter.cpp",
-                   "src/controllers/colormapper.cpp",
-                   "src/controllers/colormapperjsproxy.cpp",
 
                    "src/main.cpp",
                    "src/mixxx.cpp",
@@ -1338,7 +1335,6 @@ class MixxxCore(Feature):
                    "src/util/workerthread.cpp",
                    "src/util/workerthreadscheduler.cpp"
                    ]
-
         proto_args = {
             'PROTOCPROTOPATH': ['src'],
             'PROTOCPYTHONOUTDIR': '',  # set to None to not generate python
@@ -1629,7 +1625,7 @@ class MixxxCore(Feature):
         return [SoundTouch, ReplayGain, Ebur128Mit, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
-                QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, LAME,
+                Reverb, FpClassify, PortAudioRingBuffer, LAME,
                 QueenMaryDsp, Kaitai, MP3GuessEnc, RigtorpSPSCQueue]
 
     def post_dependency_check_configure(self, build, conf):

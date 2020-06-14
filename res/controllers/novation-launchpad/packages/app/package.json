@@ -3,14 +3,13 @@
   "private": true,
   "version": "1.0.0",
   "main": "src/index.js",
+  "module": "src/index.js",
   "author": "Midiparse",
   "license": "MIT",
   "dependencies": {
-    "eventemitter3": "~2.0.2",
+    "@mixxx-launchpad/mixxx": "~1.0.0",
+    "eventemitter3": "~3.1.0",
     "json-stringify-safe": "~5.0.1",
     "lodash-es": "~4.17.4"
-  },
-  "peerDependencies": {
-    "@mixxx-launchpad/mk-specs": "*"
   }
 }

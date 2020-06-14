@@ -1,21 +1,20 @@
 /* @flow */
-import { Colors } from '../../Launchpad'
-import type { MidiMessage } from '../../Launchpad'
+import type { LaunchpadDevice, MidiMessage } from '../../'
 
-import type { ChannelControl, ControlMessage } from '../../Mixxx'
+import type { ChannelControl, ControlMessage } from '@mixxx-launchpad/mixxx'
 
 import { modes } from '../ModifierSidebar'
 import type { Modifier } from '../ModifierSidebar'
 
-export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => {
+export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => (device: LaunchpadDevice) => {
   return {
     bindings: {
       quantize: {
         type: 'control',
         target: deck.quantize,
         update: ({ value }: ControlMessage, { bindings }: Object) => value
-          ? bindings.button.button.sendColor(Colors.hi_orange)
-          : bindings.button.button.sendColor(Colors.black)
+          ? bindings.button.button.sendColor(device.colors.hi_orange)
+          : bindings.button.button.sendColor(device.colors.black)
       },
       button: {
         type: 'button',

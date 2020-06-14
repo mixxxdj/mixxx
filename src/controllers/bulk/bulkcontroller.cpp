@@ -69,12 +69,11 @@ static QString get_string(libusb_device_handle *handle, u_int8_t id) {
     return QString::fromLatin1((char*)buf);
 }
 
-BulkController::BulkController(UserSettingsPointer pConfig,
+BulkController::BulkController(
         libusb_context* context,
         libusb_device_handle* handle,
         struct libusb_device_descriptor* desc)
-        : Controller(pConfig),
-          m_context(context),
+        : m_context(context),
           m_phandle(handle),
           in_epaddr(0),
           out_epaddr(0) {

@@ -23,9 +23,11 @@
 #include "preferences/usersettings.h"
 #include "util/version.h"
 
-DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
-                                     ControllerManager* controllerManager,
-                                     UserSettingsPointer pConfig)
+DlgPrefController::DlgPrefController(
+        QWidget* parent,
+        Controller* controller,
+        ControllerManager* controllerManager,
+        UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
           m_pControllerManager(controllerManager),
@@ -57,6 +59,20 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
     } else {
         m_ui.labelDeviceCategory->hide();
     }
+
+    m_ui.groupBoxWarning->hide();
+    m_ui.labelWarning->setText(tr(
+            "<font color='#BB0000'><b>If you use this preset your controller may not work correctly. "
+            "Please select another preset or disable the controller.</b></font><br><br>"
+            "This preset was designed for a newer Mixxx Controller Engine "
+            "and cannot be used on your current Mixxx installation.<br>"
+            "Your Mixxx installation has Controller Engine version %1. "
+            "This preset requires a Controller Engine version >= %2.<br><br>"
+            "For more information visit the wiki page on "
+            "<a href='https://mixxx.org/wiki/doku.php/controller_engine_versions'>Controller Engine Versions</a>.")
+                                       .arg("2", "1"));
+    QIcon icon = style()->standardIcon(QStyle::SP_MessageBoxWarning);
+    m_ui.labelWarningIcon->setPixmap(icon.pixmap(50));
 
     // When the user picks a preset, load it.
     connect(m_ui.comboBoxPreset, SIGNAL(activated(int)), this, SLOT(slotPresetSelected(int)));
