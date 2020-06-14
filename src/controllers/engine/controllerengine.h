@@ -171,6 +171,7 @@ class ControllerEngine : public QObject {
     QJSValue m_byteArrayToScriptValueJSFunction;
     // Filesystem watcher for script auto-reload
     QFileSystemWatcher m_scriptWatcher;
+    QFileInfo m_moduleFileInfo;
     QList<ControllerPreset::ScriptFileInfo> m_lastScriptFiles;
 
     bool m_bTesting;

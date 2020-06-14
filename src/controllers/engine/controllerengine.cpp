@@ -228,11 +228,20 @@ void ControllerEngine::uninitializeScriptEngine() {
 }
 
 void ControllerEngine::loadModule(QFileInfo moduleFileInfo) {
+    m_moduleFileInfo = moduleFileInfo;
+
     QJSValue mod = m_pScriptEngine->importModule(moduleFileInfo.absoluteFilePath());
     if (mod.isError()) {
         showScriptExceptionDialog(mod);
         return;
     }
+
+    connect(&m_scriptWatcher,
+            &QFileSystemWatcher::fileChanged,
+            this,
+            &ControllerEngine::scriptHasChanged);
+    m_scriptWatcher.addPath(moduleFileInfo.absoluteFilePath());
+
     QJSValue initFunction = mod.property("init");
     if (initFunction.isCallable()) {
         initFunction.call();
@@ -307,6 +316,7 @@ void ControllerEngine::reloadScripts() {
 
     qDebug() << "Re-initializing scripts";
     initializeScripts(m_lastScriptFiles);
+    loadModule(m_moduleFileInfo);
 }
 
 void ControllerEngine::initializeScripts(const QList<ControllerPreset::ScriptFileInfo>& scripts) {
