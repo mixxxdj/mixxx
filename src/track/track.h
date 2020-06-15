@@ -5,14 +5,6 @@
 #include <QObject>
 #include <QUrl>
 
-#include "util/memory.h"
-#include "util/sandbox.h"
-
-class Track;
-using TrackPointer = std::shared_ptr<Track>;
-using TrackWeakPointer = std::weak_ptr<Track>;
-using TrackPointerList = QList<TrackPointer>;
-
 #include "audio/streaminfo.h"
 #include "sources/metadatasource.h"
 #include "track/beats.h"
@@ -20,7 +12,16 @@ using TrackPointerList = QList<TrackPointer>;
 #include "track/cueinfoimporter.h"
 #include "track/trackfile.h"
 #include "track/trackrecord.h"
+#include "util/memory.h"
+#include "util/sandbox.h"
 #include "waveform/waveform.h"
+
+// forward declaration(s)
+class Track;
+
+typedef std::shared_ptr<Track> TrackPointer;
+typedef std::weak_ptr<Track> TrackWeakPointer;
+typedef QList<TrackPointer> TrackPointerList;
 
 Q_DECLARE_METATYPE(TrackPointer);
 
