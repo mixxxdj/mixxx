@@ -8,6 +8,8 @@ export class MidiDispatcher {
         // JSONify the Array to make it usable as a Map key.
         const key = JSON.stringify(midiBytes);
         this.inputMap.set(key, callback);
+        // If passed a Note On message, also map the corresponding Note Off
+        // message to the same callback.
         if (this.noteOff === true && ((midiBytes[0] & 0xF0) === 0x90)) {
             const noteOffBytes = [midiBytes[0] - 0x10, midiBytes[1]];
             const noteOffKey = JSON.stringify(noteOffBytes);
