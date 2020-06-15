@@ -51,6 +51,7 @@
 #include "library/library_preferences.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "macros/macromanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "preferences/settingsmanager.h"
@@ -282,6 +283,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // needs to be called after m_pPlayerManager registers sound IO for each EngineChannel.
     m_pSoundManager = new SoundManager(pConfig, m_pEngine);
     m_pEngine->registerNonEngineChannelSoundIO(m_pSoundManager);
+
+    m_pMacroManager = new MacroManager(pConfig);
 
     m_pRecordingManager = new RecordingManager(pConfig, m_pEngine);
 

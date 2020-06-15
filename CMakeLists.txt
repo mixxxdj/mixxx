@@ -908,6 +908,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wwidget.cpp
   src/widget/wwidgetgroup.cpp
   src/widget/wwidgetstack.cpp
+  src/macros/macromanager.cpp
+  src/macros/macromanager.h
 )
 set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON AUTOUIC ON)
 target_include_directories(mixxx-lib PUBLIC src "${CMAKE_CURRENT_BINARY_DIR}/src")
