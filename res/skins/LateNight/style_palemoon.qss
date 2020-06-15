@@ -1034,7 +1034,9 @@ WPushButton#FxSuperLinkInvertButton {
 #SubmenuCover {
   background-color: rgba(15, 15, 15, 180);
 }
-
+#SkinSettingsMixerToggle {
+  background-color: rgba(15, 15, 15, 255);
+}
 /*********************************************************************
 ******************* Container layouts, margins etc. *****************/
 
@@ -1112,6 +1114,7 @@ WTrackMenu QMenu QCheckBox {
   #SkinSettingsLabelButton, #CategoryLabel,
   #SkinSettingsButton,
   #DeckSizeButton,
+  #SkinSettingsMixerToggle,
   #SkinSettingsText {
     color: #988f86;
   }
@@ -1242,7 +1245,8 @@ WOverview #PassthroughLabel {
 
 #SkinSettingsButton,
 #DeckSizeButton,
-#SkinSettingsText {
+#SkinSettingsText,
+#SkinSettingsMixerToggle {
   color: #d2d2d2;
   }
   #DeckSizeButton[value="1"] {
@@ -2711,6 +2715,7 @@ WEffectSelector::item,
   WTrackMenu QMenu QCheckBox:hover,
   #SkinSettingsButton[hover="true"],
   #DeckSizeButton[hover="true"],
+  #SkinSettingsMixerToggle[hover="true"],
   #SkinSettingsLabelButton[hover="true"] {
     background-color: #2c454f;
     color: #fff;

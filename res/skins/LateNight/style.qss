@@ -81,6 +81,7 @@ WLibrary QPushButton {
 /* regular font weight */
 #SkinSettingsButton,
 #DeckSizeButton,
+#SkinSettingsMixerToggle,
 #SkinSettingsText,
 QToolTip,
 #LibraryContainer QMenu,
@@ -134,6 +135,7 @@ WEffectSelector QAbstractScrollArea,
 #labelRecStatistics,
 #SkinSettingsButton,
 #DeckSizeButton,
+#SkinSettingsMixerToggle,
 #SkinSettingsText  {
   font-size: 13px;
 }
