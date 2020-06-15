@@ -1,5 +1,7 @@
 #pragma once
 
+class QDebug;
+
 namespace mixxx {
 class Frame {
   public:
@@ -21,6 +23,16 @@ class Frame {
         return m_dFrame;
     }
 
+    Frame& operator+=(const Frame& arg) {
+        m_dFrame += arg.getValue();
+        return *this;
+    }
+
+    Frame& operator-=(const Frame& arg) {
+        m_dFrame -= arg.getValue();
+        return *this;
+    }
+
   private:
     double m_dFrame;
 };
@@ -29,18 +41,36 @@ inline const Frame operator+(const Frame& frame1, const Frame& frame2) {
     return Frame(frame1.getValue() + frame2.getValue());
 }
 
-inline const Frame operator+(const Frame& frame1, const double& dFrame2) {
-    return Frame(frame1.getValue() + dFrame2);
+inline const Frame operator-(const Frame& frame1, const Frame& frame2) {
+    return Frame(frame1.getValue() - frame2.getValue());
 }
 
-inline Frame& operator+=(Frame& frame1, Frame& frame2) {
-    frame1.setValue(frame1.getValue() + frame2.getValue());
-    return frame1;
+inline bool operator<(const Frame& frame1, const Frame& frame2) {
+    return frame1.getValue() < frame2.getValue();
 }
 
-inline Frame& operator+=(Frame& frame1, double dFrame2) {
-    frame1.setValue(frame1.getValue() + dFrame2);
-    return frame1;
+inline bool operator<=(const Frame& frame1, const Frame& frame2) {
+    return frame1.getValue() <= frame2.getValue();
 }
 
+inline bool operator>(const Frame& frame1, const Frame& frame2) {
+    return frame1.getValue() > frame2.getValue();
+}
+
+inline bool operator>=(const Frame& frame1, const Frame& frame2) {
+    return frame1.getValue() >= frame2.getValue();
+}
+
+inline bool operator==(const Frame& frame1, const Frame& frame2) {
+    return frame1.getValue() == frame2.getValue();
+}
+
+inline bool operator!=(const Frame& frame1, const Frame& frame2) {
+    return frame1.getValue() != frame2.getValue();
+}
+
+inline QDebug operator<<(QDebug dbg, const Frame& arg) {
+    dbg << arg.getValue();
+    return dbg;
+}
 } // namespace mixxx
