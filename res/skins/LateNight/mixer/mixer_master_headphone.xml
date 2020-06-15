@@ -3,7 +3,7 @@
   <SetVariable name="Group">[Master]</SetVariable>
   <SetVariable name="Type">master</SetVariable>
   <SetVariable name="KnobBg">master</SetVariable>
-  <SetVariable name="KnobIndicator">small</SetVariable>
+  <SetVariable name="KnobIndicator">master</SetVariable>
   <SetVariable name="ArcRadius"><Variable name="ArcRadiusCompact"/></SetVariable>
   <SetVariable name="ArcThickness"><Variable name="ArcThicknessBig"/></SetVariable>
 
