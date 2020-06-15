@@ -1,17 +1,22 @@
 <!--
 Description:
 
-    A three-state GUI switch
-    Depending on how the following skin controls are combined
-    [Master],maximize_library
-    [Master],show_mixer
-    [LateNight],selected_deck_size
-    [Skin],select_minimal_decks
-    it picks the appropriate deck variant
-    FULL | Compact | minimal
+    A four-state GUI switch, outsourcing the complex deck size selection
+    from the deck.xml template.
 
-    A SizeAwareStack and WidgetStack hack that basically executes
-    an analogue version of a simple script like this:
+    It picks the appropriate deck variant
+      FULL
+      Compact
+      minimal
+      none
+    depending on how the following skin controls are combined
+      [Master],maximize_library
+      [LateNight],max_lib_show_decks
+      [Master],show_mixer
+      [LateNight],deck_size_without_mixer
+
+    This is a SizeAwareStack and WidgetStack hack that basically executes
+    an analogue version of a simple script similiar to this:
 
     if (![Master],maxmimize_library
           && [Skin],select_minimal_deck) {
@@ -30,15 +35,15 @@ Description:
     }
 
     This is a fixed-width container. The occupied space is defined
-    by widget connected to the above controls. The SizeAwareStack
-    then picks one fitting child widget.
-    Note: To make the whole thing work we need to be sure there's
-    only ONE fitting widget for every possible size the
-    SizeAwareStack could be shrunk to.
+    by widget connected to the above skin controls. The SizeAwareStack
+    then picks one child widget fitting into the remaining space.
+      Note: To make the whole thing work we need to be sure there's
+      only ONE fitting widget for every possible size the
+      SizeAwareStack could be shrunk to.
 
     Each widget inside the SizeAwareStack is a WidgetStack.
     By default, WidgetStacks pick their first child for display*,
-    then -optionally- toggle the child's trigger control to '1.
+    then toggle the child's 'trigger' control to 1 (if present).
     Example:
     <WidgetStack>
       <Children>
@@ -46,11 +51,6 @@ Description:
         <WidgetGroup trigger="[Another],config_key">  => set to '0'
       </Children>
     </WidgetStack>
-    The interesting part is: trigger="" works 2-way. If for example
-    [Another],config_key is set to '1' the respective WidgetStack
-    index is shown, others are hidden. The other way around, if you
-    show a previously hidden WidgetStack this will toggle the first
-    child's trigger control.
 
     So, let's put several copies of a WidgetStack into the
     SizeAwareStack, each with the identical set of children and
@@ -137,16 +137,6 @@ Description:
                 <MinimumSize>0,10</MinimumSize>
                 <MaximumSize>200,10</MaximumSize>
                 <Children>
-                  <!-- Full deck selected --><!--
-                  <WidgetGroup>
-                    <Size>100f,10f</Size>
-                    <ObjectName>SET_FULL</ObjectName>
-                    <Connection>
-                      <ConfigKey persist="true">[LateNight],deck_size_without_mixer</ConfigKey>
-                      <Transform><IsEqual>2</IsEqual></Transform>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup> -->
 
                   <WidgetGroup><!-- Compact deck selected -->
                     <Size>100f,10f</Size>
