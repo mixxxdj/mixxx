@@ -49,7 +49,7 @@ inline mixxx::Bpm getActualBpm(
     // Reason: The BPM value in the metadata might be normalized
     // or rounded, e.g. ID3v2 only supports integer values.
     if (pBeats) {
-        return mixxx::Bpm(pBeats->getBpm());
+        return mixxx::Bpm(pBeats->getBpm().getValue());
     } else {
         return bpm;
     }
@@ -258,7 +258,7 @@ double Track::getBpm() const {
         // BPM from beat grid overrides BPM from metadata
         // Reason: The BPM value in the metadata might be imprecise,
         // e.g. ID3v2 only supports integer values!
-        double beatsBpm = m_pBeats->getBpm();
+        double beatsBpm = m_pBeats->getBpm().getValue();
         if (mixxx::Bpm::isValidValue(beatsBpm)) {
             bpm = beatsBpm;
         }
@@ -296,11 +296,11 @@ double Track::setBpm(double bpmValue) {
     }
 
     // Continue with the regular case
-    if (m_pBeats->getBpm() != bpmValue) {
+    if (m_pBeats->getBpm().getValue() != bpmValue) {
         if (kLogger.debugEnabled()) {
             kLogger.debug() << "Updating BPM:" << getLocation();
         }
-        m_pBeats->setBpm(bpmValue);
+        m_pBeats->setBpm(mixxx::Bpm(bpmValue));
         markDirtyAndUnlock(&lock);
         // Tell the GUI to update the bpm label...
         //qDebug() << "Track signaling BPM update to" << f;
@@ -336,7 +336,7 @@ void Track::setBeatsAndUnlock(QMutexLocker* pLock, mixxx::BeatsPointer pBeats) {
 
     auto bpmValue = mixxx::Bpm::kValueUndefined;
     if (m_pBeats) {
-        bpmValue = m_pBeats->getBpm();
+        bpmValue = m_pBeats->getBpm().getValue();
         connect(m_pBeats.get(), &mixxx::Beats::updated, this, &Track::slotBeatsUpdated);
     }
     m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
@@ -356,7 +356,7 @@ void Track::slotBeatsUpdated() {
 
     auto bpmValue = mixxx::Bpm::kValueUndefined;
     if (m_pBeats) {
-        bpmValue = m_pBeats->getBpm();
+        bpmValue = m_pBeats->getBpm().getValue();
     }
     m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
 

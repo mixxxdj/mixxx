@@ -81,10 +81,10 @@ void QuantizeControl::playPosChanged(double dNewPlaypos) {
 void QuantizeControl::lookupBeatPositions(double dCurrentSample) {
     mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
-        double prevBeat, nextBeat;
-        pBeats->findPrevNextBeats(dCurrentSample, &prevBeat, &nextBeat);
-        m_pCOPrevBeat->set(prevBeat);
-        m_pCONextBeat->set(nextBeat);
+        mixxx::Frame prevBeat, nextBeat;
+        pBeats->findPrevNextBeats(mixxx::Frame(dCurrentSample / 2.0), &prevBeat, &nextBeat);
+        m_pCOPrevBeat->set(prevBeat.getValue() * 2.0);
+        m_pCONextBeat->set(nextBeat.getValue() * 2.0);
     }
 }
 

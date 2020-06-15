@@ -517,12 +517,12 @@ void LoopingControl::setLoopInToCurrentPosition() {
     mixxx::BeatsPointer pBeats = m_pBeats;
     LoopSamples loopSamples = m_loopSamples.getValue();
     double quantizedBeat = -1;
-    double pos = m_currentSample.getValue();
+    double dPosSample = m_currentSample.getValue();
     if (m_pQuantizeEnabled->toBool() && pBeats) {
         if (m_bAdjustingLoopIn) {
-            double closestBeat = m_pClosestBeat->get();
-            if (closestBeat == m_currentSample.getValue()) {
-                quantizedBeat = closestBeat;
+            mixxx::Frame closestBeat(m_pClosestBeat->get() / 2.0);
+            if (closestBeat.getValue() * 2.0 == m_currentSample.getValue()) {
+                quantizedBeat = closestBeat.getValue() * 2.0;
             } else {
                 quantizedBeat = m_pPreviousBeat->get();
             }
@@ -530,14 +530,14 @@ void LoopingControl::setLoopInToCurrentPosition() {
             quantizedBeat = m_pClosestBeat->get();
         }
         if (quantizedBeat != -1) {
-            pos = quantizedBeat;
+            dPosSample = quantizedBeat;
         }
     }
 
     // Reset the loop out position if it is before the loop in so that loops
     // cannot be inverted.
     if (loopSamples.end != kNoTrigger &&
-            loopSamples.end < pos) {
+            loopSamples.end < dPosSample) {
         loopSamples.end = kNoTrigger;
         m_pCOLoopEndPosition->set(kNoTrigger);
     }
@@ -546,18 +546,18 @@ void LoopingControl::setLoopInToCurrentPosition() {
     //  that the loop would be inaudible, set the in point to the smallest
     //  pre-defined beatloop size instead (when possible)
     if (loopSamples.end != kNoTrigger &&
-            (loopSamples.end - pos) < MINIMUM_AUDIBLE_LOOP_SIZE) {
+            (loopSamples.end - dPosSample) < MINIMUM_AUDIBLE_LOOP_SIZE) {
         if (quantizedBeat != -1 && pBeats) {
-            pos = pBeats->findNthBeat(quantizedBeat, -2);
-            if (pos == -1 || (loopSamples.end - pos) < MINIMUM_AUDIBLE_LOOP_SIZE) {
-                pos = loopSamples.end - MINIMUM_AUDIBLE_LOOP_SIZE;
+            dPosSample = pBeats->findNthBeat(mixxx::Frame(quantizedBeat / 2.0), -2).getValue();
+            if (dPosSample == -1 || (loopSamples.end - dPosSample) < MINIMUM_AUDIBLE_LOOP_SIZE) {
+                dPosSample = loopSamples.end - MINIMUM_AUDIBLE_LOOP_SIZE;
             }
         } else {
-            pos = loopSamples.end - MINIMUM_AUDIBLE_LOOP_SIZE;
+            dPosSample = loopSamples.end - MINIMUM_AUDIBLE_LOOP_SIZE;
         }
     }
 
-    loopSamples.start = pos;
+    loopSamples.start = dPosSample;
 
     m_pCOLoopStartPosition->set(loopSamples.start);
 
@@ -574,7 +574,8 @@ void LoopingControl::setLoopInToCurrentPosition() {
             && loopSamples.start < loopSamples.end
             && pBeats) {
         m_pCOBeatLoopSize->setAndConfirm(
-                pBeats->numBeatsInRange(loopSamples.start, loopSamples.end));
+                pBeats->numBeatsInRange(mixxx::Frame(loopSamples.start / 2.0),
+                        mixxx::Frame(loopSamples.end / 2.0)));
         updateBeatLoopingControls();
     } else {
         clearActiveBeatLoop();
@@ -610,8 +611,7 @@ void LoopingControl::slotLoopIn(double pressed) {
 
 void LoopingControl::slotLoopInGoto(double pressed) {
     if (pressed > 0.0) {
-        seekAbs(static_cast<double>(
-            m_loopSamples.getValue().start));
+        seekAbs(static_cast<double>(m_loopSamples.getValue().start));
     }
 }
 
@@ -647,8 +647,12 @@ void LoopingControl::setLoopOutToCurrentPosition() {
     //  use the smallest pre-defined beatloop instead (when possible)
     if ((pos - loopSamples.start) < MINIMUM_AUDIBLE_LOOP_SIZE) {
         if (quantizedBeat != -1 && pBeats) {
-            pos = static_cast<int>(floor(pBeats->findNthBeat(quantizedBeat, 2)));
-            if (pos == -1 || (pos - loopSamples.start) < MINIMUM_AUDIBLE_LOOP_SIZE) {
+            pos = static_cast<int>(floor(
+                    pBeats->findNthBeat(mixxx::Frame(quantizedBeat / 2.0), 1)
+                            .getValue() *
+                    2.0));
+            if (pos == -1 ||
+                    (pos - loopSamples.start) < MINIMUM_AUDIBLE_LOOP_SIZE) {
                 pos = loopSamples.start + MINIMUM_AUDIBLE_LOOP_SIZE;
             }
         } else {
@@ -662,8 +666,7 @@ void LoopingControl::setLoopOutToCurrentPosition() {
     m_pCOLoopEndPosition->set(loopSamples.end);
 
     // start looping
-    if (loopSamples.start != kNoTrigger &&
-            loopSamples.end != kNoTrigger) {
+    if (loopSamples.start != kNoTrigger && loopSamples.end != kNoTrigger) {
         setLoopingEnabled(true);
         loopSamples.seek = true;
     } else {
@@ -672,7 +675,8 @@ void LoopingControl::setLoopOutToCurrentPosition() {
 
     if (m_pQuantizeEnabled->toBool() && pBeats) {
         m_pCOBeatLoopSize->setAndConfirm(
-            pBeats->numBeatsInRange(loopSamples.start, loopSamples.end));
+                pBeats->numBeatsInRange(mixxx::Frame(loopSamples.start / 2.0),
+                        mixxx::Frame(loopSamples.end / 2.0)));
         updateBeatLoopingControls();
     } else {
         clearActiveBeatLoop();
@@ -720,8 +724,7 @@ void LoopingControl::slotLoopOut(double pressed) {
 
 void LoopingControl::slotLoopOutGoto(double pressed) {
     if (pressed > 0.0) {
-        seekAbs(static_cast<double>(
-            m_loopSamples.getValue().end));
+        seekAbs(static_cast<double>(m_loopSamples.getValue().end));
     }
 }
 
@@ -769,8 +772,7 @@ void LoopingControl::slotReloopToggle(double val) {
 void LoopingControl::slotReloopAndStop(double pressed) {
     if (pressed > 0) {
         m_pPlayButton->set(0.0);
-        seekAbs(static_cast<double>(
-            m_loopSamples.getValue().start));
+        seekAbs(static_cast<double>(m_loopSamples.getValue().start));
         setLoopingEnabled(true);
     }
 }
@@ -794,8 +796,7 @@ void LoopingControl::slotLoopStartPos(double pos) {
     loopSamples.start = pos;
     m_pCOLoopStartPosition->set(pos);
 
-    if (loopSamples.end != kNoTrigger &&
-            loopSamples.end <= loopSamples.start) {
+    if (loopSamples.end != kNoTrigger && loopSamples.end <= loopSamples.start) {
         loopSamples.end = kNoTrigger;
         m_pCOLoopEndPosition->set(kNoTrigger);
         setLoopingEnabled(false);
@@ -886,8 +887,8 @@ void LoopingControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     if (m_pBeats) {
         LoopSamples loopSamples = m_loopSamples.getValue();
         if (loopSamples.start != kNoTrigger && loopSamples.end != kNoTrigger) {
-            double loaded_loop_size = findBeatloopSizeForLoop(
-                loopSamples.start, loopSamples.end);
+            double loaded_loop_size =
+                    findBeatloopSizeForLoop(loopSamples.start, loopSamples.end);
             if (loaded_loop_size != -1) {
                 m_pCOBeatLoopSize->setAndConfirm(loaded_loop_size);
             }
@@ -895,7 +896,8 @@ void LoopingControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     }
 }
 
-void LoopingControl::slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl) {
+void LoopingControl::slotBeatLoopActivate(
+        BeatLoopingControl* pBeatLoopControl) {
     if (!m_pTrack) {
         return;
     }
@@ -907,10 +909,11 @@ void LoopingControl::slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl) 
     slotBeatLoop(pBeatLoopControl->getSize(), m_bLoopingEnabled, true);
 }
 
-void LoopingControl::slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopControl) {
-     if (!m_pTrack) {
-         return;
-     }
+void LoopingControl::slotBeatLoopActivateRoll(
+        BeatLoopingControl* pBeatLoopControl) {
+    if (!m_pTrack) {
+        return;
+    }
 
     // Disregard existing loops (except beatlooprolls).
     m_pSlipEnabled->set(1);
@@ -919,12 +922,14 @@ void LoopingControl::slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopContr
     m_activeLoopRolls.push(pBeatLoopControl->getSize());
 }
 
-void LoopingControl::slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl) {
+void LoopingControl::slotBeatLoopDeactivate(
+        BeatLoopingControl* pBeatLoopControl) {
     Q_UNUSED(pBeatLoopControl);
     setLoopingEnabled(false);
 }
 
-void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopControl) {
+void LoopingControl::slotBeatLoopDeactivateRoll(
+        BeatLoopingControl* pBeatLoopControl) {
     pBeatLoopControl->deactivate();
     const double size = pBeatLoopControl->getSize();
     auto i = m_activeLoopRolls.begin();
@@ -951,7 +956,8 @@ void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopCon
 }
 
 void LoopingControl::clearActiveBeatLoop() {
-    BeatLoopingControl* pOldBeatLoop = m_pActiveBeatLoop.fetchAndStoreAcquire(nullptr);
+    BeatLoopingControl* pOldBeatLoop =
+            m_pActiveBeatLoop.fetchAndStoreAcquire(nullptr);
     if (pOldBeatLoop != nullptr) {
         pOldBeatLoop->deactivate();
     }
@@ -966,11 +972,13 @@ bool LoopingControl::currentLoopMatchesBeatloopSize() {
     LoopSamples loopSamples = m_loopSamples.getValue();
 
     // Calculate where the loop out point would be if it is a beatloop
-    double beatLoopOutPoint =
-        pBeats->findNBeatsFromSample(loopSamples.start, m_pCOBeatLoopSize->get());
+    mixxx::Frame beatLoopOutPoint = pBeats->findNBeatsFromFrame(
+            mixxx::Frame(loopSamples.start / 2.0), m_pCOBeatLoopSize->get());
 
-    return loopSamples.end > beatLoopOutPoint - 2 &&
-            loopSamples.end < beatLoopOutPoint + 2;
+    return mixxx::Frame(loopSamples.end / 2.0) >
+            beatLoopOutPoint - mixxx::Frame(1) &&
+            mixxx::Frame(loopSamples.end / 2.0) <
+            beatLoopOutPoint + mixxx::Frame(1);
 }
 
 double LoopingControl::findBeatloopSizeForLoop(double start, double end) const {
@@ -979,9 +987,14 @@ double LoopingControl::findBeatloopSizeForLoop(double start, double end) const {
         return -1;
     }
 
-    for (unsigned int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0])); ++i) {
+    for (unsigned int i = 0;
+            i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0]));
+            ++i) {
         double beatLoopOutPoint =
-            pBeats->findNBeatsFromSample(start, s_dBeatSizes[i]);
+                pBeats->findNBeatsFromFrame(
+                              mixxx::Frame(start / 2.0), s_dBeatSizes[i])
+                        .getValue() *
+                2.0;
         if (end > beatLoopOutPoint - 2 && end < beatLoopOutPoint + 2) {
             return s_dBeatSizes[i];
         }
@@ -993,7 +1006,7 @@ void LoopingControl::updateBeatLoopingControls() {
     // O(n) search, but there are only ~10-ish beatloop controls so this is
     // fine.
     double dBeatloopSize = m_pCOBeatLoopSize->get();
-    for (BeatLoopingControl* pBeatLoopControl: qAsConst(m_beatLoops)) {
+    for (BeatLoopingControl* pBeatLoopControl : qAsConst(m_beatLoops)) {
         if (pBeatLoopControl->getSize() == dBeatloopSize) {
             if (m_bLoopingEnabled) {
                 pBeatLoopControl->activate();
@@ -1011,7 +1024,8 @@ void LoopingControl::updateBeatLoopingControls() {
     clearActiveBeatLoop();
 }
 
-void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable) {
+void LoopingControl::slotBeatLoop(
+        double beats, bool keepStartPoint, bool enable) {
     // if a seek was queued in the engine buffer move the current sample to its position
     double p_seekPosition = 0;
     if (getEngineBuffer()->getQueuedSeekPosition(&p_seekPosition)) {
@@ -1019,7 +1033,8 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         m_currentSample.setValue(p_seekPosition);
     }
 
-    double maxBeatSize = s_dBeatSizes[sizeof(s_dBeatSizes)/sizeof(s_dBeatSizes[0]) - 1];
+    double maxBeatSize =
+            s_dBeatSizes[sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0]) - 1];
     double minBeatSize = s_dBeatSizes[0];
     if (beats < 0) {
         // For now we do not handle negative beatloops.
@@ -1056,15 +1071,19 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     } else {
         // loop_in is set to the closest beat if quantize is on and the loop size is >= 1 beat.
         // The closest beat might be ahead of play position and will cause a catching loop.
-        double prevBeat;
-        double nextBeat;
-        pBeats->findPrevNextBeats(currentSample, &prevBeat, &nextBeat);
+        mixxx::Frame prevBeat;
+        mixxx::Frame nextBeat;
+        pBeats->findPrevNextBeats(
+                mixxx::Frame(currentSample / 2.0), &prevBeat, &nextBeat);
 
-        if (m_pQuantizeEnabled->toBool() && prevBeat != -1) {
-            double beatLength = nextBeat - prevBeat;
+        if (m_pQuantizeEnabled->toBool() && prevBeat.getValue() != -1) {
+            double beatLength = (nextBeat.getValue() - prevBeat.getValue()) * 2;
             double loopLength = beatLength * beats;
 
-            double closestBeat = pBeats->findClosestBeat(currentSample);
+            double closestBeat =
+                    pBeats->findClosestBeat(mixxx::Frame(currentSample / 2.0))
+                            .getValue() *
+                    2.0;
             if (beats >= 1.0) {
                 newloopSamples.start = closestBeat;
             } else {
@@ -1075,12 +1094,15 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
                 //
                 // If we press 1/2 beatloop we want loop from 50% to 100%,
                 // If I press 1/4 beatloop, we want loop from 50% to 75% etc
-                double samplesSinceLastBeat = currentSample - prevBeat;
+                double samplesSinceLastBeat =
+                        currentSample - prevBeat.getValue() * 2;
 
                 // find the previous beat fraction and check if the current position is closer to this or the next one
                 // place the new loop start to the closer one
-                double previousFractionBeat = prevBeat + floor(samplesSinceLastBeat / loopLength) * loopLength;
-                double samplesSinceLastFractionBeat = currentSample - previousFractionBeat;
+                double previousFractionBeat = prevBeat.getValue() * 2 +
+                        floor(samplesSinceLastBeat / loopLength) * loopLength;
+                double samplesSinceLastFractionBeat =
+                        currentSample - previousFractionBeat;
 
                 if (samplesSinceLastFractionBeat <= (loopLength / 2.0)) {
                     newloopSamples.start = previousFractionBeat;
@@ -1103,18 +1125,28 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         }
     }
 
-    newloopSamples.end = pBeats->findNBeatsFromSample(newloopSamples.start, beats);
-    if (newloopSamples.start >= newloopSamples.end // happens when the call above fails
-            || newloopSamples.end > samples) { // Do not allow beat loops to go beyond the end of the track
+    newloopSamples.end =
+            pBeats->findNBeatsFromFrame(
+                          mixxx::Frame(newloopSamples.start / 2.0), beats)
+                    .getValue() *
+            2;
+    if (newloopSamples.start >=
+                    newloopSamples.end // happens when the call above fails
+            || newloopSamples.end >
+                    samples) { // Do not allow beat loops to go beyond the end of the track
         // If a track is loaded with beatloop_size larger than
         // the distance between the loop in point and
         // the end of the track, let beatloop_size be set to
         // a smaller size, but not get larger.
         double previousBeatloopSize = m_pCOBeatLoopSize->get();
-        double previousBeatloopOutPoint = pBeats->findNBeatsFromSample(
-                newloopSamples.start, previousBeatloopSize);
-        if (previousBeatloopOutPoint < newloopSamples.start
-                && beats < previousBeatloopSize) {
+        double previousBeatloopOutPoint =
+                pBeats->findNBeatsFromFrame(
+                              mixxx::Frame(newloopSamples.start / 2.0),
+                              previousBeatloopSize)
+                        .getValue() *
+                2.0;
+        if (previousBeatloopOutPoint < newloopSamples.start &&
+                beats < previousBeatloopSize) {
             m_pCOBeatLoopSize->setAndConfirm(beats);
         }
         return;
@@ -1135,7 +1167,8 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
 
     // This check happens after setting m_pCOBeatLoopSize so
     // beatloop_size can be prepared without having a track loaded.
-    if ((newloopSamples.start == kNoTrigger) || (newloopSamples.end == kNoTrigger)) {
+    if ((newloopSamples.start == kNoTrigger) ||
+            (newloopSamples.end == kNoTrigger)) {
         return;
     }
 
@@ -1212,7 +1245,10 @@ void LoopingControl::slotBeatJump(double beats) {
         // If inside an active loop, move loop
         slotLoopMove(beats);
     } else {
-        seekAbs(pBeats->findNBeatsFromSample(currentSample, beats));
+        seekAbs(pBeats->findNBeatsFromFrame(
+                              mixxx::Frame(currentSample / 2.0), beats)
+                        .getValue() *
+                2);
     }
 }
 
@@ -1238,12 +1274,26 @@ void LoopingControl::slotLoopMove(double beats) {
         return;
     }
 
-    if (BpmControl::getBeatContext(pBeats, m_currentSample.getValue(),
-                                   nullptr, nullptr, nullptr, nullptr)) {
-        double new_loop_in = pBeats->findNBeatsFromSample(loopSamples.start, beats);
-        double new_loop_out = currentLoopMatchesBeatloopSize() ?
-                pBeats->findNBeatsFromSample(new_loop_in, m_pCOBeatLoopSize->get()) :
-                pBeats->findNBeatsFromSample(loopSamples.end, beats);
+    if (BpmControl::getBeatContext(pBeats,
+                m_currentSample.getValue(),
+                nullptr,
+                nullptr,
+                nullptr,
+                nullptr)) {
+        double new_loop_in =
+                pBeats->findNBeatsFromFrame(
+                              mixxx::Frame(loopSamples.start / 2.0), beats)
+                        .getValue() *
+                2;
+        double new_loop_out = currentLoopMatchesBeatloopSize()
+                ? pBeats->findNBeatsFromFrame(mixxx::Frame(new_loop_in / 2.0),
+                                m_pCOBeatLoopSize->get())
+                                .getValue() *
+                        2
+                : pBeats->findNBeatsFromFrame(
+                                mixxx::Frame(loopSamples.end / 2.0), beats)
+                                .getValue() *
+                        2;
 
         // If we are looping make sure that the play head does not leave the
         // loop as a result of our adjustment.

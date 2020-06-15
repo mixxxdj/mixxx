@@ -165,8 +165,8 @@ double BpmControl::getBpm() const {
 void BpmControl::slotAdjustBeatsFaster(double v) {
     mixxx::BeatsPointer pBeats = m_pBeats;
     if (v > 0 && pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
-        double bpm = pBeats->getBpm();
-        double adjustedBpm = bpm + kBpmAdjustStep;
+        auto bpm = pBeats->getBpm();
+        auto adjustedBpm = bpm + kBpmAdjustStep;
         pBeats->setBpm(adjustedBpm);
     }
 }
@@ -174,8 +174,8 @@ void BpmControl::slotAdjustBeatsFaster(double v) {
 void BpmControl::slotAdjustBeatsSlower(double v) {
     mixxx::BeatsPointer pBeats = m_pBeats;
     if (v > 0 && pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
-        double bpm = pBeats->getBpm();
-        double adjustedBpm = math_max(kBpmAdjustMin, bpm - kBpmAdjustStep);
+        auto bpm = pBeats->getBpm();
+        auto adjustedBpm = mixxx::Bpm(math_max(kBpmAdjustMin, (bpm - kBpmAdjustStep).getValue()));
         pBeats->setBpm(adjustedBpm);
     }
 }
@@ -185,7 +185,7 @@ void BpmControl::slotTranslateBeatsEarlier(double v) {
     if (v > 0 && pBeats &&
             (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
         const int translate_dist = getSampleOfTrack().rate * -.01;
-        pBeats->translate(translate_dist);
+        pBeats->translate(mixxx::Frame(translate_dist / 2.0));
     }
 }
 
@@ -195,14 +195,14 @@ void BpmControl::slotTranslateBeatsLater(double v) {
             (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
         // TODO(rryan): Track::getSampleRate is possibly inaccurate!
         const int translate_dist = getSampleOfTrack().rate * .01;
-        pBeats->translate(translate_dist);
+        pBeats->translate(mixxx::Frame(translate_dist / 2.0));
     }
 }
 
 void BpmControl::slotSetDownbeatOnClosestBeat(double v) {
     mixxx::BeatsPointer pBeats = m_pBeats;
     if (v > 0 && pBeats) {
-        pBeats->setDownBeat(getSampleOfTrack().current);
+        pBeats->setDownBeat(mixxx::Frame(getSampleOfTrack().current / 2.0));
     }
 }
 
@@ -232,7 +232,7 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
 
     // (60 seconds per minute) * (1000 milliseconds per second) / (X millis per
     // beat) = Y beats/minute
-    double averageBpm = 60.0 * 1000.0 / averageLength / rateRatio;
+    mixxx::Bpm averageBpm(60.0 * 1000.0 / averageLength / rateRatio);
     pBeats->setBpm(averageBpm);
 }
 
@@ -533,22 +533,25 @@ bool BpmControl::getBeatContext(const mixxx::BeatsPointer& pBeats,
         return false;
     }
 
-    double dPrevBeat;
-    double dNextBeat;
-    if (!pBeats->findPrevNextBeats(dPosition, &dPrevBeat, &dNextBeat)) {
+    mixxx::Frame prevBeat;
+    mixxx::Frame nextBeat;
+    if (!pBeats->findPrevNextBeats(mixxx::Frame(dPosition / 2.0), &prevBeat, &nextBeat)) {
         return false;
     }
 
     if (dpPrevBeat != NULL) {
-        *dpPrevBeat = dPrevBeat;
+        *dpPrevBeat = prevBeat.getValue() * 2;
     }
 
     if (dpNextBeat != NULL) {
-        *dpNextBeat = dNextBeat;
+        *dpNextBeat = nextBeat.getValue() * 2;
     }
 
-    return getBeatContextNoLookup(dPosition, dPrevBeat, dNextBeat,
-                                  dpBeatLength, dpBeatPercentage);
+    return getBeatContextNoLookup(dPosition,
+            prevBeat.getValue() * 2,
+            prevBeat.getValue() * 2,
+            dpBeatLength,
+            dpBeatPercentage);
 }
 
 // static
@@ -688,7 +691,7 @@ double BpmControl::getNearestPositionInPhase(
     } else if (this_near_next && !other_near_next) {
         dNewPlaypos += dThisNextBeat;
     } else { //!this_near_next && other_near_next
-        dThisPrevBeat = pBeats->findNthBeat(dThisPosition, -2);
+        dThisPrevBeat = pBeats->findNthBeat(mixxx::Frame(dThisPosition / 2.0), -1).getValue() * 2.0;
         dNewPlaypos += dThisPrevBeat;
     }
 
@@ -956,7 +959,7 @@ void BpmControl::trackLoaded(TrackPointer pNewTrack) {
 void BpmControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "BpmControl::trackBeatsUpdated"
-                        << (pBeats ? pBeats->getBpm() : 0.0);
+                        << (pBeats ? pBeats->getBpm() : mixxx::Bpm(0.0));
     }
     m_pBeats = pBeats;
     updateLocalBpm();
@@ -966,13 +969,13 @@ void BpmControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
 void BpmControl::slotBeatsTranslate(double v) {
     mixxx::BeatsPointer pBeats = m_pBeats;
     if (v > 0 && pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
-        double currentSample = getSampleOfTrack().current;
-        double closestBeat = pBeats->findClosestBeat(currentSample);
-        int delta = currentSample - closestBeat;
+        mixxx::Frame currentFrame(getSampleOfTrack().current / 2.0);
+        mixxx::Frame closestBeat = pBeats->findClosestBeat(currentFrame);
+        int delta = currentFrame.getValue() - closestBeat.getValue();
         if (delta % 2 != 0) {
             delta--;
         }
-        pBeats->translate(delta);
+        pBeats->translate(mixxx::Frame(delta));
     }
 }
 
@@ -984,18 +987,18 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
         m_dUserOffset.setValue(0.0);
 
         double offset = getPhaseOffset(getSampleOfTrack().current);
-        pBeats->translate(-offset);
+        pBeats->translate(mixxx::Frame(-offset / 2.0));
     }
 }
 
 double BpmControl::updateLocalBpm() {
-    double prev_local_bpm = m_pLocalBpm->get();
-    double local_bpm = 0;
+    mixxx::Bpm prev_local_bpm(m_pLocalBpm->get());
+    mixxx::Bpm local_bpm;
     mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
         local_bpm = pBeats->getBpmAroundPosition(
-                getSampleOfTrack().current, kLocalBpmSpan);
-        if (local_bpm == -1) {
+                mixxx::Frame(getSampleOfTrack().current / 2.0), kLocalBpmSpan);
+        if (local_bpm.getValue() == -1) {
             local_bpm = pBeats->getBpm();
         }
     }
@@ -1003,10 +1006,10 @@ double BpmControl::updateLocalBpm() {
         if (kLogger.traceEnabled()) {
             kLogger.trace() << getGroup() << "BpmControl::updateLocalBpm" << local_bpm;
         }
-        m_pLocalBpm->set(local_bpm);
+        m_pLocalBpm->set(local_bpm.getValue());
         slotUpdateEngineBpm();
     }
-    return local_bpm;
+    return local_bpm.getValue();
 }
 
 double BpmControl::updateBeatDistance() {

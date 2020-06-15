@@ -105,8 +105,12 @@ inline Bpm operator/(const Bpm& bpm, const int val) {
     return (Bpm(bpm.getValue() / val));
 }
 
-inline Bpm operator+(const Bpm& bpm, const int val) {
+inline Bpm operator+(const Bpm& bpm, const double val) {
     return (Bpm(bpm.getValue() + val));
+}
+
+inline Bpm operator-(const Bpm& bpm, const double val) {
+    return (Bpm(bpm.getValue() - val));
 }
 }
 

@@ -1704,11 +1704,11 @@ double CueControl::quantizeCuePoint(double cuePos) {
         return cuePos;
     }
 
-    double closestBeat = pBeats->findClosestBeat(cuePos);
+    mixxx::Frame closestBeat = pBeats->findClosestBeat(mixxx::Frame(cuePos / 2.0));
     // The closest beat can be an unreachable  interpolated beat past the end of
     // the track.
-    if (closestBeat != -1.0 && closestBeat <= total) {
-        return closestBeat;
+    if (closestBeat != mixxx::Frame(-1.0) && closestBeat <= mixxx::Frame(total / 2.0)) {
+        return closestBeat.getValue() * 2;
     }
 
     return cuePos;

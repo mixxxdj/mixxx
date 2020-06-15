@@ -151,7 +151,7 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
     if (!pBeats) {
         return true;
     }
-    if (!mixxx::Bpm::isValidValue(pBeats->getBpm())) {
+    if (!mixxx::Bpm::isValidValue(pBeats->getBpm().getValue())) {
         // Tracks with an invalid bpm <= 0 should be re-analyzed,
         // independent of the preference settings. We expect that
         // all tracks have a bpm > 0 when analyzed. Users that want
@@ -160,7 +160,7 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
         qDebug() << "Re-analyzing track with invalid BPM despite preference settings.";
         return true;
     }
-    if (pBeats->findNextBeat(0) <= 0.0) {
+    if (pBeats->findNextBeat(mixxx::Frame(0)) <= mixxx::Frame(0.0)) {
         qDebug() << "First beat is 0 for grid so analyzing track to find first beat.";
         return true;
     }
@@ -238,7 +238,7 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
                 m_iMinBpm,
                 m_iMaxBpm);
         qDebug() << "AnalyzerBeats plugin detected" << beats.size()
-                 << "beats. Average BPM:" << (pBeats ? pBeats->getBpm() : 0.0);
+                 << "beats. Average BPM:" << (pBeats ? pBeats->getBpm().getValue() : 0.0);
     } else {
         mixxx::Bpm bpm = mixxx::Bpm(m_pPlugin->getBpm());
         qDebug() << "AnalyzerBeats plugin detected constant BPM: " << bpm;
@@ -265,7 +265,7 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
 
     // If the user prefers to replace old beatgrids with newly generated ones or
     // the old beatgrid has 0-bpm then we replace it.
-    bool zeroCurrentBpm = pCurrentBeats->getBpm() == 0.0;
+    bool zeroCurrentBpm = pCurrentBeats->getBpm().getValue() == 0.0;
     if (m_bPreferencesReanalyzeOldBpm || zeroCurrentBpm) {
         if (zeroCurrentBpm) {
             qDebug() << "Replacing 0-BPM beatgrid with a" << pBeats->getBpm()
@@ -277,9 +277,9 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
 
     // If we got here then the user doesn't want to replace the beatgrid but
     // since the first beat is zero we'll apply the offset we just detected.
-    double currentFirstBeat = pCurrentBeats->findNextBeat(0);
-    double newFirstBeat = pBeats->findNextBeat(0);
-    if (currentFirstBeat == 0.0 && newFirstBeat > 0) {
+    mixxx::Frame currentFirstBeat = pCurrentBeats->findNextBeat(mixxx::Frame(0));
+    mixxx::Frame newFirstBeat = pBeats->findNextBeat(mixxx::Frame(0));
+    if (currentFirstBeat == mixxx::Frame(0.0) && newFirstBeat > mixxx::Frame(0)) {
         pCurrentBeats->translate(newFirstBeat);
     }
 }
