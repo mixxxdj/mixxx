@@ -8879,15 +8879,15 @@ Higher values result in less attenuation of high frequencies.</source>
     </message>
     <message>
         <location filename="../../src/effects/builtin/equalizer_util.h" line="22"/>
-        <location filename="../../src/test/metaknob_link_test.cpp" line="49"/>
-        <location filename="../../src/test/metaknob_link_test.cpp" line="215"/>
+        <location filename="../../test/metaknob_link_test.cpp" line="49"/>
+        <location filename="../../test/metaknob_link_test.cpp" line="215"/>
         <source>Low</source>
         <translation>低</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/equalizer_util.h" line="23"/>
         <location filename="../../src/effects/builtin/graphiceqeffect.cpp" line="32"/>
-        <location filename="../../src/test/metaknob_link_test.cpp" line="50"/>
+        <location filename="../../test/metaknob_link_test.cpp" line="50"/>
         <source>Gain for Low Filter</source>
         <translation>低通滤波器增益</translation>
     </message>
@@ -9030,7 +9030,7 @@ Higher values result in less attenuation of high frequencies.</source>
         <translation>碟机 1 的均衡器效果</translation>
     </message>
     <message>
-        <location filename="../../src/test/metaknob_link_test.cpp" line="216"/>
+        <location filename="../../test/metaknob_link_test.cpp" line="216"/>
         <source>Gain for Low Filter (neutral at 1.0)</source>
         <translation>低通滤波器增益（1.0 为中性）</translation>
     </message>

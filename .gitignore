@@ -39,8 +39,8 @@ lib/*/lib/*.a
 mixxx
 mixxx-test
 
-src/test/test_data
-src/test/golden_buffers/*.actual
+test/test_data
+test/golden_buffers/*.actual
 
 res/qrc_mixxx.cc
 

@@ -27,7 +27,7 @@ class CueControlTest : public BaseSignalPathTest {
     }
 
     TrackPointer createTestTrack() const {
-        const QString kTrackLocationTest = QDir::currentPath() + "/src/test/sine-30.wav";
+        const QString kTrackLocationTest = QDir::currentPath() + "/test/sine-30.wav";
         const auto pTrack = Track::newTemporary(kTrackLocationTest, SecurityTokenPointer());
         pTrack->setAudioProperties(
                 mixxx::audio::ChannelCount(2),

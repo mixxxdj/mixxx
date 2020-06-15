@@ -10,7 +10,7 @@
 
 namespace {
 
-const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
+const QDir kTestDir(QDir::current().absoluteFilePath("test/id3-test-data"));
 
 const TrackFile kTestFile(kTestDir.absoluteFilePath("cover-test.flac"));
 const TrackFile kTestFile2(kTestDir.absoluteFilePath("cover-test.ogg"));

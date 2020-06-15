@@ -8888,15 +8888,15 @@ Vyšší hodnoty vedou k menšímu zeslabení vysokých kmitočtů.</translation
     </message>
     <message>
         <location filename="../../src/effects/builtin/equalizer_util.h" line="22"/>
-        <location filename="../../src/test/metaknob_link_test.cpp" line="49"/>
-        <location filename="../../src/test/metaknob_link_test.cpp" line="215"/>
+        <location filename="../../test/metaknob_link_test.cpp" line="49"/>
+        <location filename="../../test/metaknob_link_test.cpp" line="215"/>
         <source>Low</source>
         <translation>Hloubky</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/equalizer_util.h" line="23"/>
         <location filename="../../src/effects/builtin/graphiceqeffect.cpp" line="32"/>
-        <location filename="../../src/test/metaknob_link_test.cpp" line="50"/>
+        <location filename="../../test/metaknob_link_test.cpp" line="50"/>
         <source>Gain for Low Filter</source>
         <translation>Zesílení pro filtr hloubek</translation>
     </message>
@@ -9039,7 +9039,7 @@ Vyšší hodnoty vedou k menšímu zeslabení vysokých kmitočtů.</translation
         <translation>Efekt ekvalizéru přehrávače 1</translation>
     </message>
     <message>
-        <location filename="../../src/test/metaknob_link_test.cpp" line="216"/>
+        <location filename="../../test/metaknob_link_test.cpp" line="216"/>
         <source>Gain for Low Filter (neutral at 1.0)</source>
         <translation>Zesílení pro filtr hloubek  (neutrální při 1,0)</translation>
     </message>

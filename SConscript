@@ -104,7 +104,7 @@ else:
 test_bin = None
 def define_test_targets(default=False):
         global test_bin
-        test_files = Glob('src/test/*.cpp', strings=True)
+        test_files = Glob('test/*.cpp', strings=True)
         test_env = env.Clone()
 
         test_env.Append(CPPPATH="lib/googletest-1.8.x/googletest/include")
@@ -120,7 +120,7 @@ def define_test_targets(default=False):
         test_env.Append(LIBS=['benchmark'])
 
         test_files = [test_env.StaticObject(filename)
-                      if filename !='src/test/main.cpp' else filename
+                      if filename !='test/main.cpp' else filename
                       for filename in test_files]
 
         if build.platform_is_windows:

@@ -8909,15 +8909,15 @@ Večje vrednosti manj dušijo visoke frekvence.</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/equalizer_util.h" line="22"/>
-        <location filename="../../src/test/metaknob_link_test.cpp" line="49"/>
-        <location filename="../../src/test/metaknob_link_test.cpp" line="215"/>
+        <location filename="../../test/metaknob_link_test.cpp" line="49"/>
+        <location filename="../../test/metaknob_link_test.cpp" line="215"/>
         <source>Low</source>
         <translation>Nizko</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/equalizer_util.h" line="23"/>
         <location filename="../../src/effects/builtin/graphiceqeffect.cpp" line="32"/>
-        <location filename="../../src/test/metaknob_link_test.cpp" line="50"/>
+        <location filename="../../test/metaknob_link_test.cpp" line="50"/>
         <source>Gain for Low Filter</source>
         <translation>Ojačitev za nizkotonski filter</translation>
     </message>
@@ -9060,7 +9060,7 @@ Večje vrednosti manj dušijo visoke frekvence.</translation>
         <translation>Predvajalnik 1 EQ efekt</translation>
     </message>
     <message>
-        <location filename="../../src/test/metaknob_link_test.cpp" line="216"/>
+        <location filename="../../test/metaknob_link_test.cpp" line="216"/>
         <source>Gain for Low Filter (neutral at 1.0)</source>
         <translation>Ojačitev nizkega filtra (nevtralno pri 1.0)</translation>
     </message>

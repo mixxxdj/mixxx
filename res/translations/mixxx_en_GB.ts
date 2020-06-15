@@ -8856,15 +8856,15 @@ Higher values result in less attenuation of high frequencies.</source>
     </message>
     <message>
         <location filename="../../src/effects/builtin/equalizer_util.h" line="22"/>
-        <location filename="../../src/test/metaknob_link_test.cpp" line="49"/>
-        <location filename="../../src/test/metaknob_link_test.cpp" line="215"/>
+        <location filename="../../test/metaknob_link_test.cpp" line="49"/>
+        <location filename="../../test/metaknob_link_test.cpp" line="215"/>
         <source>Low</source>
         <translation>Low</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/equalizer_util.h" line="23"/>
         <location filename="../../src/effects/builtin/graphiceqeffect.cpp" line="32"/>
-        <location filename="../../src/test/metaknob_link_test.cpp" line="50"/>
+        <location filename="../../test/metaknob_link_test.cpp" line="50"/>
         <source>Gain for Low Filter</source>
         <translation>Gain for Low Filter</translation>
     </message>
@@ -9007,7 +9007,7 @@ Higher values result in less attenuation of high frequencies.</source>
         <translation>Deck 1 EQ Effect</translation>
     </message>
     <message>
-        <location filename="../../src/test/metaknob_link_test.cpp" line="216"/>
+        <location filename="../../test/metaknob_link_test.cpp" line="216"/>
         <source>Gain for Low Filter (neutral at 1.0)</source>
         <translation>Gain for Low Filter (neutral at 1.0)</translation>
     </message>

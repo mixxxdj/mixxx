@@ -9,7 +9,7 @@
 
 namespace {
 
-const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
+const QDir kTestDir(QDir::current().absoluteFilePath("test/id3-test-data"));
 
 class TagLibTest : public testing::Test {
   protected:

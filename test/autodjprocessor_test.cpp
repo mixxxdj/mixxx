@@ -21,7 +21,7 @@ using ::testing::Return;
 static int kDefaultTransitionTime = 10;
 const mixxx::audio::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
 const QString kTrackLocationTest(QDir::currentPath() %
-                                 "/src/test/id3-test-data/cover-test-png.mp3");
+                                 "/test/id3-test-data/cover-test-png.mp3");
 
 class FakeMaster {
   public:

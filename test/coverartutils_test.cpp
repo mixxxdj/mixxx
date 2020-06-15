@@ -10,7 +10,7 @@
 
 namespace {
 
-const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
+const QDir kTestDir(QDir::current().absoluteFilePath("test/id3-test-data"));
 const QString kReferencePNGLocationTest(kTestDir.absoluteFilePath("reference_cover.png"));
 const QString kReferenceJPGLocationTest(kTestDir.absoluteFilePath("cover_test.jpg"));
 
