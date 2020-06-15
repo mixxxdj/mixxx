@@ -24,7 +24,7 @@
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup><Size>0min,1f</Size></WidgetGroup>
+          <WidgetGroup><Size>0min,1me</Size></WidgetGroup>
 
           <WidgetGroup>
             <ObjectName>DeckSettingsGrid</ObjectName>
