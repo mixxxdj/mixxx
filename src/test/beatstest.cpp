@@ -45,12 +45,12 @@ class BeatsTest : public testing::Test {
         return Frame((60.0 * m_framesPerSecond.getValue() / bpm.getValue()));
     }
 
-    QVector<double> createBeatVector(double first_beat,
+    QVector<Frame> createBeatVector(Frame first_beat,
             unsigned int num_beats,
-            double beat_length) {
-        QVector<double> beats;
+            Frame beat_length) {
+        QVector<Frame> beats;
         for (unsigned int i = 0; i < num_beats; ++i) {
-            beats.append(first_beat + i * beat_length);
+            beats.append(first_beat + beat_length * i);
         }
         return beats;
     }
@@ -222,10 +222,10 @@ TEST_F(BeatsTest, NthBeatWhenOnBeat_AfterEpsilon) {
 TEST_F(BeatsTest, NthBeatWhenNotOnBeat) {
     // Pretend we're half way between the 20th and 21st beat
     Frame previousBeat =
-            m_startOffsetFrames + Frame(m_beatLengthFrames.getValue() * 20.0);
+            m_startOffsetFrames + m_beatLengthFrames * 20.0;
     Frame nextBeat =
-            m_startOffsetFrames + Frame(m_beatLengthFrames.getValue() * 21.0);
-    Frame position = Frame((nextBeat + previousBeat).getValue() / 2.0);
+            m_startOffsetFrames + m_beatLengthFrames * 21.0;
+    Frame position = (nextBeat + previousBeat) / 2.0;
 
     // The spec dictates that a value of 0 is always invalid and returns -1
     EXPECT_EQ(Frame(-1), m_pBeats1->findNthBeat(position, 0));
@@ -234,11 +234,11 @@ TEST_F(BeatsTest, NthBeatWhenNotOnBeat) {
     // previous beat, depending on whether N is positive or negative.
     for (int i = 1; i < 20; ++i) {
         EXPECT_DOUBLE_EQ(
-                (nextBeat + Frame(m_beatLengthFrames.getValue() * (i - 1)))
+                (nextBeat + m_beatLengthFrames * (i - 1))
                         .getValue(),
                 m_pBeats1->findNthBeat(position, i).getValue());
         EXPECT_DOUBLE_EQ(
-                (nextBeat + Frame(m_beatLengthFrames.getValue() * (-i + 1)))
+                (nextBeat + m_beatLengthFrames * (-i + 1))
                         .getValue(),
                 m_pBeats1->findNthBeat(position, -i).getValue());
     }
@@ -256,7 +256,7 @@ TEST_F(BeatsTest, BpmAround) {
 
     // Constant BPM, constructed in BeatsTest
     for (unsigned int i = 0; i < 100; i++) {
-        EXPECT_EQ(Bpm(60), m_pBeats1->getBpmAroundPosition(Frame(10), 5));
+        EXPECT_EQ(Bpm(60), m_pBeats1->getBpmAroundPosition(Frame(i), 5));
     }
 
     // Prepare a new Beats to test the behavior for variable BPM
@@ -268,49 +268,27 @@ TEST_F(BeatsTest, BpmAround) {
         beats.append(beat_pos);
         beat_pos += beat_length;
     }
-    // Generate intermediate double vector to adapt to old constructor.
-    QVector<double> unsafeDoubleBeatsVector(beats.size());
-    for (auto beat : beats) {
-        unsafeDoubleBeatsVector.append(beat.getValue());
-    }
     BeatsPointer pMap =
-            std::make_unique<Beats>(m_pTrack.get(), unsafeDoubleBeatsVector, m_iSampleRate);
+            std::make_unique<Beats>(m_pTrack.get(), beats, m_iSampleRate);
 
-    // Values calculated externally using a spreadsheet, verifying the results
-    // and making some changes in the last decimals to fix rounding differences
-    // the real and the theoretical results. What this tests checks is that
-    // future changes do not modify the results.
-
-    // Test values of n < 12 for simplified algorithm
-    EXPECT_DOUBLE_EQ(67.990269973961901,
-            pMap->getBpmAroundPosition(Frame(10 * approx_beat_length.getValue()), 4)
-                    .getValue());
-    /*
-    EXPECT_DOUBLE_EQ(120.99503094229186,
-            pMap->getBpmAroundPosition(50 * approx_beat_length, 4).getValue());
-
+    // The average of the first 8 beats should be different than the average
+    // of the last 8 beats.
+    EXPECT_DOUBLE_EQ(64.024390243902445,
+            pMap->getBpmAroundPosition(approx_beat_length * 4, 4).getValue());
+    EXPECT_DOUBLE_EQ(118.98016997167139,
+            pMap->getBpmAroundPosition(approx_beat_length * 60, 4).getValue());
     // Also test at the beginning and end of the track
-    EXPECT_DOUBLE_EQ(60.989289610768779,
-            pMap->getBpmAroundPosition(0, 4).getValue());
-    EXPECT_DOUBLE_EQ(120.99503094229186,
-            pMap->getBpmAroundPosition(65 * approx_beat_length, 4).getValue());
+    EXPECT_DOUBLE_EQ(62.968515742128936,
+            pMap->getBpmAroundPosition(Frame(0), 4).getValue());
+    EXPECT_DOUBLE_EQ(118.98016997167139,
+            pMap->getBpmAroundPosition(approx_beat_length * 65, 4).getValue());
 
-    // Test values of n > 12 for complete algorithm
-    EXPECT_DOUBLE_EQ(75.340000000000003,
-            pMap->getBpmAroundPosition(20 * approx_beat_length, 15).getValue());
-    EXPECT_DOUBLE_EQ(115.40000000000001,
-            pMap->getBpmAroundPosition(60 * approx_beat_length, 15).getValue());
-    // Also test at the beginning and end of the track
-    EXPECT_DOUBLE_EQ(66.320000000000007,
-            pMap->getBpmAroundPosition(0, 15).getValue());
-    EXPECT_DOUBLE_EQ(115.40000000000001,
-            pMap->getBpmAroundPosition(65 * approx_beat_length, 15).getValue());
-
-    // Try a really, really short track, 3 beats, constant BPM
-    beats = createBeatVector(10, 3, getBeatLength(m_bpm));
-    m_pBeats1 = std::make_unique<mixxx::Beats>(m_pTrack.get(), beats, m_iSampleRate);
-    EXPECT_EQ(m_bpm.getValue(), m_pBeats1->getBpmAroundPosition(1 * approx_beat_length, 4).getValue());
-    */
+    // Try a really, really short track
+    beats = createBeatVector(Frame(10), 3, getBeatLength(bpm));
+    BeatsPointer pBeats =
+            std::make_unique<Beats>(m_pTrack.get(), beats, m_iSampleRate);
+    EXPECT_DOUBLE_EQ(bpm.getValue(),
+            pMap->getBpmAroundPosition(approx_beat_length * 1, 4).getValue());
 }
 
 TEST_F(BeatsTest, Signature) {

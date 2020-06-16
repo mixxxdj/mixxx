@@ -120,7 +120,14 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const TrackPointer& track,
 
     } else */
     if (version == mixxx::Beats::BEAT_MAP_VERSION) {
-        mixxx::Beats* pBeats = new mixxx::Beats(track.get(), beats, iSampleRate);
+        QVector<mixxx::Frame> intermediateBeatFrameVector;
+        intermediateBeatFrameVector.reserve(beats.size());
+        std::transform(beats.begin(),
+                beats.end(),
+                std::back_inserter(intermediateBeatFrameVector),
+                [](double value) { return mixxx::Frame(value); });
+        mixxx::Beats* pBeats = new mixxx::Beats(
+                track.get(), intermediateBeatFrameVector, iSampleRate);
         pBeats->setSubVersion(subVersion);
         return mixxx::BeatsPointer(pBeats, &BeatFactory::deleteBeats);
     } else {

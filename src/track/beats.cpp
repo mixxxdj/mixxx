@@ -23,7 +23,7 @@ inline double framesToSamples(const int frames) {
 
 } // namespace
 
-Beats::Beats(const Track* track, const QVector<double>& beats, SINT iSampleRate)
+Beats::Beats(const Track* track, const QVector<Frame>& beats, SINT iSampleRate)
         : Beats(track, iSampleRate) {
     if (beats.size() > 0) {
         createFromBeatVector(beats);
@@ -60,23 +60,23 @@ Beats::Beats(const Beats& other)
     moveToThread(m_track->thread());
 }
 
-void Beats::createFromBeatVector(const QVector<double>& beats) {
+void Beats::createFromBeatVector(const QVector<Frame>& beats) {
     if (beats.isEmpty()) {
         return;
     }
-    double previous_beatpos = -1;
-    track::io::Beat beat;
+    Frame previous_beatpos = Frame(-1);
+    track::io::Beat protoBeat;
 
-    foreach (double beatpos, beats) {
+    for (auto beat : beats) {
         // beatpos is in frames. Do not accept fractional frames.
-        beatpos = floor(beatpos);
-        if (beatpos <= previous_beatpos || beatpos < 0) {
+        beat.setValue(floor(beat.getValue()));
+        if (beat <= previous_beatpos || beat < Frame(0)) {
             qDebug() << "kBeatMap::createFromVector: beats not in increasing order or negative";
-            qDebug() << "discarding beat " << beatpos;
+            qDebug() << "discarding beat " << beat;
         } else {
-            beat.set_frame_position(beatpos);
-            m_beats.append(beat);
-            previous_beatpos = beatpos;
+            protoBeat.set_frame_position(beat.getValue());
+            m_beats.append(protoBeat);
+            previous_beatpos = beat;
         }
     }
     onBeatlistChanged();

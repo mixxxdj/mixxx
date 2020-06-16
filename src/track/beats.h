@@ -49,14 +49,14 @@ class Beats final : public QObject {
     /// sample rate is known than the one associated with the Track. If it is
     /// zero then the track's sample rate will be used. A list of beat locations
     /// in audio frames may be provided.
-    Beats(const Track* track, const QVector<double>& beats, SINT iSampleRate = 0);
+    Beats(const Track* track, const QVector<Frame>& beats, SINT iSampleRate = 0);
     ~Beats() override = default;
 
     // TODO(JVC) Is a copy constructor needed? of we can force a move logic??
     Beats(const Beats&);
 
     /// Populate a Beats with a vector of beat positions.
-    void createFromBeatVector(const QVector<double>& beats);
+    void createFromBeatVector(const QVector<Frame>& beats);
     // TODO(JVC) Not needed
     enum Capabilities {
         BEATSCAP_NONE = 0x0000,
