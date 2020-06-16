@@ -8,6 +8,7 @@
 #include "effects/builtin/filtereffect.h"
 #include "effects/effectsmanager.h"
 #include "effects/effectxmlelements.h"
+#include "util/filename.h"
 #include "util/xml.h"
 
 namespace {
@@ -366,8 +367,10 @@ void EffectChainPresetManager::savePresetXml(EffectChainPresetPointer pPreset) {
     if (!effectsChainsDir.exists()) {
         effectsChainsDir.mkpath(path);
     }
-    // TODO: sanitize file name?
-    QFile file(path + "/" + pPreset->name() + ".xml");
+    // The file name does not matter as long as it is unique. The actual name string
+    // is safely stored in the UTF8 document, regardless of what the filesystem
+    // supports for file names.
+    QFile file(path + "/" + mixxx::filename::sanitize(pPreset->name()) + ".xml");
     if (!file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
         return;
     }
