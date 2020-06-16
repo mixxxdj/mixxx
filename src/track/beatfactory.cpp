@@ -11,16 +11,11 @@ mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const TrackPointer& trac
         QString beatsVersion,
         QString beatsSubVersion,
         const QByteArray& beatsSerialized) {
+    // Now that the serialized representation is the same for BeatGrids and BeatMaps,
+    // they can be deserialized in a common function.
     if (beatsVersion == mixxx::Beats::BEAT_GRID_1_VERSION ||
-            beatsVersion == mixxx::Beats::BEAT_GRID_2_VERSION) {
-        // TODO(JVC) Add code to migrate from BeatGrid proto into the new Beats
-        /*
-        BeatGrid* pGrid = new BeatGrid(track, 0, beatsSerialized);
-        pGrid->setSubVersion(beatsSubVersion);
-        qDebug() << "Successfully deserialized BeatGrid";
-        return BeatsPointer(pGrid, &BeatFactory::deleteBeats);
-        */
-    } else if (beatsVersion == mixxx::Beats::BEAT_MAP_VERSION) {
+            beatsVersion == mixxx::Beats::BEAT_GRID_2_VERSION ||
+            beatsVersion == mixxx::Beats::BEAT_MAP_VERSION) {
         mixxx::Beats* pMap = new mixxx::Beats(track.get(), beatsSerialized);
         pMap->setSubVersion(beatsSubVersion);
         qDebug() << "Successfully deserialized Beats";
