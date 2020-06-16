@@ -55,8 +55,6 @@ class Beats final : public QObject {
     // TODO(JVC) Is a copy constructor needed? of we can force a move logic??
     Beats(const Beats&);
 
-    /// Populate a Beats with a vector of beat positions.
-    void createFromBeatVector(const QVector<Frame>& beats);
     // TODO(JVC) Not needed
     enum Capabilities {
         BEATSCAP_NONE = 0x0000,
@@ -226,7 +224,6 @@ class Beats final : public QObject {
 
   private:
     void onBeatlistChanged();
-    bool readByteArray(const QByteArray& byteArray);
     void scaleDouble();
     void scaleTriple();
     void scaleQuadruple();

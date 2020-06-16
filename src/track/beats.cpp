@@ -18,13 +18,37 @@ inline bool BeatLessThan(const track::io::Beat& beat1, const track::io::Beat& be
 Beats::Beats(const Track* track, const QVector<Frame>& beats, SINT iSampleRate)
         : Beats(track, iSampleRate) {
     if (beats.size() > 0) {
-        createFromBeatVector(beats);
+        Frame previous_beatpos = Frame(-1);
+        track::io::Beat protoBeat;
+
+        for (auto beat : beats) {
+            // beatpos is in frames. Do not accept fractional frames.
+            beat.setValue(floor(beat.getValue()));
+            if (beat <= previous_beatpos || beat < Frame(0)) {
+                qDebug() << "kBeatMap::createFromVector: beats not in increasing order or negative";
+                qDebug() << "discarding beat " << beat;
+            } else {
+                protoBeat.set_frame_position(beat.getValue());
+                m_beats.append(protoBeat);
+                previous_beatpos = beat;
+            }
+        }
+        onBeatlistChanged();
     }
 }
 
 Beats::Beats(const Track* track, const QByteArray& byteArray, SINT iSampleRate)
         : Beats(track, iSampleRate) {
-    readByteArray(byteArray);
+    track::io::Beats beatsProto;
+    if (!beatsProto.ParseFromArray(byteArray.constData(), byteArray.size())) {
+        qDebug() << "ERROR: Could not parse kBeatMap from QByteArray of size"
+                 << byteArray.size();
+    }
+    for (int i = 0; i < beatsProto.beat_size(); ++i) {
+        const track::io::Beat& beat = beatsProto.beat(i);
+        m_beats.append(beat);
+    }
+    onBeatlistChanged();
 }
 
 Beats::Beats(const Track* track, SINT iSampleRate)
@@ -50,28 +74,6 @@ Beats::Beats(const Beats& other)
           m_lastFrame(other.m_lastFrame),
           m_beats(other.m_beats) {
     moveToThread(m_track->thread());
-}
-
-void Beats::createFromBeatVector(const QVector<Frame>& beats) {
-    if (beats.isEmpty()) {
-        return;
-    }
-    Frame previous_beatpos = Frame(-1);
-    track::io::Beat protoBeat;
-
-    for (auto beat : beats) {
-        // beatpos is in frames. Do not accept fractional frames.
-        beat.setValue(floor(beat.getValue()));
-        if (beat <= previous_beatpos || beat < Frame(0)) {
-            qDebug() << "kBeatMap::createFromVector: beats not in increasing order or negative";
-            qDebug() << "discarding beat " << beat;
-        } else {
-            protoBeat.set_frame_position(beat.getValue());
-            m_beats.append(protoBeat);
-            previous_beatpos = beat;
-        }
-    }
-    onBeatlistChanged();
 }
 
 int Beats::numBeatsInRange(Frame startFrame, Frame endFrame) {
@@ -831,21 +833,6 @@ void Beats::setBpm(Bpm dBpm) {
      *
      * - vittorio.
      */
-}
-
-bool Beats::readByteArray(const QByteArray& byteArray) {
-    track::io::Beats beatsProto;
-    if (!beatsProto.ParseFromArray(byteArray.constData(), byteArray.size())) {
-        qDebug() << "ERROR: Could not parse kBeatMap from QByteArray of size"
-                 << byteArray.size();
-        return false;
-    }
-    for (int i = 0; i < beatsProto.beat_size(); ++i) {
-        const track::io::Beat& beat = beatsProto.beat(i);
-        m_beats.append(beat);
-    }
-    onBeatlistChanged();
-    return true;
 }
 
 Frame Beats::getFirstBeatPosition() const {
