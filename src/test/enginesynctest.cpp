@@ -2328,8 +2328,8 @@ TEST_F(EngineSyncTest, BeatMapQantizePlay) {
 
     auto pBeats2 = BeatsPointer(new Beats(m_pTrack2.get()));
     // Add two beats at 120 Bpm
-    pBeats2->addBeat(44100 / 2);
-    pBeats2->addBeat(44100);
+    pBeats2->addBeat(Frame(44100 / 2));
+    pBeats2->addBeat(Frame(44100));
     m_pTrack2->setBeats(pBeats2);
 
     ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 1.0);

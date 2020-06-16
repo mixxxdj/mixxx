@@ -33,6 +33,12 @@ class Frame {
         return *this;
     }
 
+    Frame operator++(int) {
+        Frame temp(*this);
+        m_dFrame++;
+        return temp;
+    }
+
   private:
     double m_dFrame;
 };
