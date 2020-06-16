@@ -114,7 +114,7 @@ void EffectChainPresetManager::importPreset() {
 
             // An imported chain preset might contain an LV2 plugin that the user does not
             // have installed.
-            for (const auto pEffectPreset : pPreset->effectPresets()) {
+            for (const auto& pEffectPreset : pPreset->effectPresets()) {
                 if (pEffectPreset == nullptr || pEffectPreset->isEmpty()) {
                     continue;
                 }
@@ -261,7 +261,7 @@ void EffectChainPresetManager::setPresetOrder(
         const QStringList& chainPresetList) {
     m_effectChainPresetsSorted.clear();
 
-    for (const auto chainPresetName : chainPresetList) {
+    for (const auto& chainPresetName : chainPresetList) {
         VERIFY_OR_DEBUG_ASSERT(m_effectChainPresets.contains(chainPresetName)) {
             continue;
         }
@@ -276,7 +276,7 @@ void EffectChainPresetManager::setQuickEffectPresetOrder(
         const QStringList& chainPresetList) {
     m_quickEffectChainPresetsSorted.clear();
 
-    for (const auto chainPresetName : chainPresetList) {
+    for (const auto& chainPresetName : chainPresetList) {
         VERIFY_OR_DEBUG_ASSERT(m_effectChainPresets.contains(chainPresetName)) {
             continue;
         }
@@ -494,14 +494,14 @@ void EffectChainPresetManager::saveEffectsXml(QDomDocument* pDoc, EffectsXmlData
     rootElement.appendChild(rackElement);
     QDomElement chainsElement = pDoc->createElement(EffectXml::ChainsRoot);
     rackElement.appendChild(chainsElement);
-    for (const auto pPreset : data.standardEffectChainPresets) {
+    for (const auto& pPreset : data.standardEffectChainPresets) {
         chainsElement.appendChild(pPreset->toXml(pDoc));
     }
 
     // Save order of custom chain presets
     QDomElement chainPresetListElement =
             pDoc->createElement(EffectXml::ChainPresetList);
-    for (const auto pPreset : m_effectChainPresetsSorted) {
+    for (const auto& pPreset : m_effectChainPresetsSorted) {
         XmlParse::addElement(*pDoc,
                 chainPresetListElement,
                 EffectXml::ChainPresetName,
@@ -512,7 +512,7 @@ void EffectChainPresetManager::saveEffectsXml(QDomDocument* pDoc, EffectsXmlData
     // Save order of QuickEffect chain presets
     QDomElement quickEffectChainPresetListElement =
             pDoc->createElement(EffectXml::QuickEffectList);
-    for (const auto pPreset : m_quickEffectChainPresetsSorted) {
+    for (const auto& pPreset : m_quickEffectChainPresetsSorted) {
         XmlParse::addElement(*pDoc,
                 quickEffectChainPresetListElement,
                 EffectXml::ChainPresetName,
