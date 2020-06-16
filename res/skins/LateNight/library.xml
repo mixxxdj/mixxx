@@ -95,13 +95,13 @@
                           <CoverArt>
                             <SizePolicy>me,me</SizePolicy>
                             <MinimumSize>40,40</MinimumSize>
-                            <Connection>
-                              <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
-                              <BindProperty>visible</BindProperty>
-                            </Connection>
                           </CoverArt>
                         </Children>
-                      </WidgetGroup>
+                        <Connection>
+                          <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup><!--Cover Art-->
                     </Children>
                   </Splitter><!-- HorizontalSplitter -->
 
