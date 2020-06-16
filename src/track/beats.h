@@ -236,7 +236,6 @@ class Beats final : public QObject {
     QString m_subVersion;
     SINT m_iSampleRate;
     Bpm m_dCachedBpm;
-    Frame m_lastFrame;
     BeatList m_beats;
 
   signals:

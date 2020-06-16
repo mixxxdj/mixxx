@@ -55,8 +55,7 @@ Beats::Beats(const Track* track, SINT iSampleRate)
         : m_mutex(QMutex::Recursive),
           m_track(track),
           m_iSampleRate(iSampleRate == 0 ? m_track->getSampleRate() : iSampleRate),
-          m_dCachedBpm(0),
-          m_lastFrame(0) {
+          m_dCachedBpm(0) {
     // TODO(JVC) iSampleRate == 0 creates problems. Apparently only in tests
 
     // BeatMap should live in the same thread as the track it is associated
@@ -71,7 +70,6 @@ Beats::Beats(const Beats& other)
           m_subVersion(other.m_subVersion),
           m_iSampleRate(other.m_iSampleRate),
           m_dCachedBpm(other.m_dCachedBpm),
-          m_lastFrame(other.m_lastFrame),
           m_beats(other.m_beats) {
     moveToThread(m_track->thread());
 }
@@ -190,11 +188,9 @@ Frame Beats::findNBeatsFromFrame(Frame fromFrame, double beats) const {
 
 void Beats::onBeatlistChanged() {
     if (!isValid()) {
-        m_lastFrame.setValue(0);
         m_dCachedBpm = Bpm();
         return;
     }
-    m_lastFrame = Frame(m_beats.last().frame_position());
     track::io::Beat startBeat = m_beats.first();
     track::io::Beat stopBeat = m_beats.last();
     m_dCachedBpm = calculateBpm(startBeat, stopBeat);
@@ -848,7 +844,6 @@ QDebug operator<<(QDebug dbg, const BeatsPointer& arg) {
     dbg << "\tm_subVersion:" << arg->m_subVersion << "\n";
     dbg << "\tm_iSampleRate:" << arg->m_iSampleRate << "\n";
     dbg << "\tm_dCachedBpm:" << arg->m_dCachedBpm << "\n";
-    dbg << "\tm_lastFrame:" << arg->m_lastFrame << "\n";
     dbg << "Beats content(size: " << arg->m_beats.size() << ":\n";
     for (auto beat : arg->m_beats) {
         dbg << "pos:" << beat.frame_position() << "\n";
