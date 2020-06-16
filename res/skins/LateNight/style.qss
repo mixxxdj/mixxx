@@ -55,12 +55,20 @@ WOverview #PassthroughLabel,
 /* SKin settings & Library */
 #SkinSettingsToggle,
 #DeckSizeButton[value="1"],
-WLibrary QPushButton,
+#DlgMissing > QPushButton,
+#DlgHidden > QPushButton,
+#DlgAutoDJ > QPushButton,
+#DlgRecording > QPushButton,
+#DlgAnalysis > QPushButton,
 #labelRecFilename,
 WEffectSelector,
 #fadeModeCombobox,
 WOverview #PassthroughLabel {
   font-weight: bold;
+}
+WLibrary QHeaderView {
+  /* not applied: */;
+  font-weight: 500;
 }
 
 /* All capitals */

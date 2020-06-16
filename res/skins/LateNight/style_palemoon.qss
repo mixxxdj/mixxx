@@ -2777,9 +2777,10 @@ WEffectSelector,
     margin: 0px;
   }
   #fadeModeCombobox {
-    height: 19px;
-    padding: 2px 0px 1px 5px;
-    margin: 0px 1px 2px 1px;
+    min-height: 17px;
+    max-height: 17px;
+    padding: 1px 0px 1px 5px;
+    margin: 0px 1px 4px 1px;
   }
   WEffectSelector::down-arrow,
   #fadeModeCombobox::down-arrow {
