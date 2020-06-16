@@ -1409,6 +1409,7 @@ WPushButton#QuickEffectButton[displayValue="0"],
 #FxToggleButton[displayValue="0"],
 #SamplerContainer WPushButton[displayValue="0"],
 #MicAuxUnit WPushButton[displayValue="0"],
+#MicAuxUnit WPushButton#CrossfaderButton[value="1"],
 #MicDuckingContainer WPushButton[displayValue="0"],
 /* Beatsize up/down buttons */
 WBeatSpinBox::up-button,
@@ -1419,10 +1420,10 @@ WBeatSpinBox::down-button {
   #LoopControls WPushButton[displayValue="0"],
   #BeatjumpControls WPushButton[displayValue="0"],
   #SyncDeck[value="0"],
-  WPushButton#CrossfaderButton[value="1"],
+  #MixerDecks WPushButton#CrossfaderButton[value="1"],
   WBeatSpinBox::up-button,
   WBeatSpinBox::down-button,
-  WPushButton#LoopActivate[displayValue="0"] /* in compact deck */,
+  WPushButton#LoopActivate[displayValue="0"], /* in compact deck */
   #FxParameterButton[displayValue="0"] {
     background-color: #171719;
   }

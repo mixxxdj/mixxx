@@ -5,10 +5,10 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   id="svg4"
-   version="1.1"
+   width="11"
    height="13"
-   width="11">
+   version="1.1"
+   id="svg4">
   <metadata
      id="metadata10">
     <rdf:RDF>
@@ -24,13 +24,13 @@
   <defs
      id="defs8" />
   <g
-     transform="translate(0,-1)"
-     style="font-style:normal;font-weight:normal;font-size:40.0002px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#9a9a9a;fill-opacity:1;stroke:none;stroke-width:1.00001"
+     aria-label="L"
      id="text838-3"
-     aria-label="L">
+     style="font-style:normal;font-weight:normal;font-size:40.0002px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#b2b2b2;fill-opacity:1;stroke:none;stroke-width:1.00001"
+     transform="translate(0,-1)">
     <path
-       id="path877"
-       style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:13.3334px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Semi-Bold';fill:#9a9a9a;fill-opacity:1;stroke-width:1.00001"
-       d="M 2.9999872,12.018282 3,3 h 1.5559974 l -1.28e-5,7.68364 h 4.029968 v 1.334642 z" />
+       d="M 2.9999872,12.018282 3,3 h 1.5559974 l -1.28e-5,7.68364 h 4.029968 v 1.334642 z"
+       style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:13.3334px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans Semi-Bold';fill:#b2b2b2;fill-opacity:1;stroke-width:1.00001"
+       id="path877" />
   </g>
 </svg>
