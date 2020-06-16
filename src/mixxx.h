@@ -119,8 +119,7 @@ class MixxxMainWindow : public QMainWindow {
             SoundDeviceError err, bool* retryClicked);
     QDialog::DialogCode noOutputDlg(bool* continueClicked);
 
-    // Pointer to the root GUI widget
-    QWidget* m_pWidgetParent;
+    QWidget* m_pRootWidget;
     LaunchImage* m_pLaunchImage;
 
     SettingsManager* m_pSettingsManager;

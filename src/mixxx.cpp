@@ -123,7 +123,7 @@ const int MixxxMainWindow::kMicrophoneCount = 4;
 const int MixxxMainWindow::kAuxiliaryCount = 4;
 
 MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
-        : m_pWidgetParent(nullptr),
+        : m_pRootWidget(nullptr),
           m_pLaunchImage(nullptr),
           m_pSettingsManager(nullptr),
           m_pEffectsManager(nullptr),
@@ -175,8 +175,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     // First load launch image to show a the user a quick responds
     m_pSkinLoader = new SkinLoader(m_pSettingsManager->settings());
     m_pLaunchImage = m_pSkinLoader->loadLaunchImage(this);
-    m_pWidgetParent = (QWidget*)m_pLaunchImage;
-    setCentralWidget(m_pWidgetParent);
+    m_pRootWidget = (QWidget*)m_pLaunchImage;
+    setCentralWidget(m_pRootWidget);
 
     show();
     pApp->processEvents();
@@ -468,7 +468,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     launchProgress(63);
 
-    QWidget* oldWidget = m_pWidgetParent;
+    QWidget* oldWidget = m_pRootWidget;
 
     // Load default styles that can be overridden by skins
     QFile file(":/skins/default.qss");
@@ -483,7 +483,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Load skin to a QWidget that we set as the central widget. Assignment
     // intentional in next line.
-    if (!(m_pWidgetParent = m_pSkinLoader->loadConfiguredSkin(this, m_pKeyboard,
+    if (!(m_pRootWidget = m_pSkinLoader->loadConfiguredSkin(this, m_pKeyboard,
                                                               m_pPlayerManager,
                                                               m_pControllerManager,
                                                               m_pLibrary,
@@ -493,7 +493,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         reportCriticalErrorAndQuit(
                 "default skin cannot be loaded see <b>mixxx</b> trace for more information.");
 
-        m_pWidgetParent = oldWidget;
+        m_pRootWidget = oldWidget;
         //TODO (XXX) add dialog to warn user and launch skin choice page
     }
 
@@ -631,7 +631,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // this has to be after the OpenGL widgets are created or depending on a
     // million different variables the first waveform may be horribly
     // corrupted. See bug 521509 -- bkgood ?? -- vrince
-    setCentralWidget(m_pWidgetParent);
+    setCentralWidget(m_pRootWidget);
     // The launch image widget is automatically disposed, but we still have a
     // pointer to it.
     m_pLaunchImage = nullptr;
@@ -663,7 +663,7 @@ void MixxxMainWindow::finalize() {
 
     // GUI depends on KeyboardEventFilter, PlayerManager, Library
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting skin";
-    m_pWidgetParent = nullptr;
+    m_pRootWidget = nullptr;
     QPointer<QWidget> pSkin(centralWidget());
     setCentralWidget(nullptr);
     if (!pSkin.isNull()) {
@@ -1432,11 +1432,11 @@ void MixxxMainWindow::rebootMixxxView() {
     // supports since the controls from the previous skin will be left over.
     m_pMenuBar->onNewSkinAboutToLoad();
 
-    if (m_pWidgetParent) {
-        m_pWidgetParent->hide();
+    if (m_pRootWidget) {
+        m_pRootWidget->hide();
         WaveformWidgetFactory::instance()->destroyWidgets();
-        delete m_pWidgetParent;
-        m_pWidgetParent = NULL;
+        delete m_pRootWidget;
+        m_pRootWidget = NULL;
     }
 
     // Workaround for changing skins while fullscreen, just go out of fullscreen
@@ -1448,7 +1448,7 @@ void MixxxMainWindow::rebootMixxxView() {
 
     // Load skin to a QWidget that we set as the central widget. Assignment
     // intentional in next line.
-    if (!(m_pWidgetParent = m_pSkinLoader->loadConfiguredSkin(this,
+    if (!(m_pRootWidget = m_pSkinLoader->loadConfiguredSkin(this,
                                                               m_pKeyboard,
                                                               m_pPlayerManager,
                                                               m_pControllerManager,
@@ -1464,7 +1464,7 @@ void MixxxMainWindow::rebootMixxxView() {
         return;
     }
 
-    setCentralWidget(m_pWidgetParent);
+    setCentralWidget(m_pRootWidget);
 #ifdef __LINUX__
     // don't adjustSize() on Linux as this wouldn't use the entire available area
     // to paint the new skin with X11
@@ -1477,13 +1477,13 @@ void MixxxMainWindow::rebootMixxxView() {
         slotViewFullScreen(true);
     } else if (!initSize.isEmpty()) {
         // Not all OSs and/or window managers keep the window inside of the screen, so force it.
-        int newX = initPosition.x() + (initSize.width() - m_pWidgetParent->width()) / 2;
-        int newY = initPosition.y() + (initSize.height() - m_pWidgetParent->height()) / 2;
+        int newX = initPosition.x() + (initSize.width() - m_pRootWidget->width()) / 2;
+        int newY = initPosition.y() + (initSize.height() - m_pRootWidget->height()) / 2;
 
         const QScreen* primaryScreen = getPrimaryScreen();
         if (primaryScreen) {
-            newX = std::max(0, std::min(newX, primaryScreen->geometry().width() - m_pWidgetParent->width()));
-            newY = std::max(0, std::min(newY, primaryScreen->geometry().height() - m_pWidgetParent->height()));
+            newX = std::max(0, std::min(newX, primaryScreen->geometry().width() - m_pRootWidget->width()));
+            newY = std::max(0, std::min(newY, primaryScreen->geometry().height() - m_pRootWidget->height()));
             move(newX,newY);
         } else {
             qWarning() << "Unable to move window inside screen borders.";
