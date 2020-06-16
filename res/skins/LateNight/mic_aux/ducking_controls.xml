@@ -4,14 +4,21 @@
     <Layout>vertical</Layout>
     <SizePolicy>f,min</SizePolicy>
     <Children>
-      <Template src="skin:/controls/button_3state.xml">
-        <SetVariable name="TooltipId">talkover_duck_mode</SetVariable>
-        <SetVariable name="ObjectName">MicDucking</SetVariable>
-        <SetVariable name="Size">42f,24f</SetVariable>
-        <SetVariable name="BtnType">embedded</SetVariable>
-        <SetVariable name="BtnSize">medium</SetVariable>
-        <SetVariable name="ConfigKey">[Master],talkoverDucking</SetVariable>
-      </Template>
+      <WidgetGroup>
+        <ObjectName>MicDuckingModeBox</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <Template src="skin:/controls/button_3state.xml">
+            <SetVariable name="TooltipId">talkover_duck_mode</SetVariable>
+            <SetVariable name="ObjectName">MicDucking</SetVariable>
+            <SetVariable name="Size">42f,24f</SetVariable>
+            <SetVariable name="BtnType">embedded</SetVariable>
+            <SetVariable name="BtnSize">medium</SetVariable>
+            <SetVariable name="ConfigKey">[Master],talkoverDucking</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
       <WidgetGroup>
         <ObjectName>MicDuckingStrengthBox</ObjectName>
         <Layout>horizontal</Layout>
