@@ -14,15 +14,17 @@ class BeatsTest : public testing::Test {
   protected:
     BeatsTest()
             : m_pTrack(Track::newTemporary()),
+              m_iChannelCount(2),
               m_iSampleRate(44100),
-              m_iFrameSize(2),
+              m_framesPerSecond(m_iSampleRate / m_iChannelCount),
+              m_frameSize(m_iChannelCount),
               m_pBeats1(new Beats(m_pTrack.get(), m_iSampleRate)),
               m_pBeats2(new Beats(m_pTrack.get(), m_iSampleRate)),
               m_bpm(60),
               m_startOffsetFrames(7),
               m_beatLengthFrames(getBeatLength(m_bpm)) {
         m_pTrack->setAudioProperties(
-                mixxx::audio::ChannelCount(2),
+                mixxx::audio::ChannelCount(m_iChannelCount),
                 mixxx::audio::SampleRate(m_iSampleRate),
                 mixxx::audio::Bitrate(),
                 mixxx::Duration::fromSeconds(180));
@@ -35,12 +37,12 @@ class BeatsTest : public testing::Test {
     ~BeatsTest() {
     }
 
-    double getBeatLength(Bpm bpm) {
+    Frame getBeatLength(Bpm bpm) {
         if (bpm == Bpm()) {
             DEBUG_ASSERT(false);
-            return 0;
+            return Frame();
         }
-        return (60.0 * m_iSampleRate / bpm.getValue());
+        return Frame((60.0 * m_framesPerSecond.getValue() / bpm.getValue()));
     }
 
     QVector<double> createBeatVector(double first_beat,
@@ -54,8 +56,13 @@ class BeatsTest : public testing::Test {
     }
 
     TrackPointer m_pTrack;
+    const int m_iChannelCount;
+    // Sample Rate is a standard unit
     const SINT m_iSampleRate;
-    const Frame m_iFrameSize;
+    // We internally use frames per second since a frame position
+    // actually matters when calculating beats.
+    const Frame m_framesPerSecond;
+    const Frame m_frameSize;
     BeatsPointer m_pBeats1;
     BeatsPointer m_pBeats2;
     const Bpm m_bpm;
@@ -244,7 +251,7 @@ TEST_F(BeatsTest, NthBeatWhenNotOnBeat) {
 }
 
 TEST_F(BeatsTest, BpmAround) {
-    double approx_beat_length = getBeatLength(m_bpm);
+    Frame approx_beat_length = getBeatLength(m_bpm);
     const int numBeats = 64;
 
     // Constant BPM, constructed in BeatsTest
@@ -253,17 +260,21 @@ TEST_F(BeatsTest, BpmAround) {
     }
 
     // Prepare a new Beats to test the behavior for variable BPM
-    QVector<double> beats;
-    double beat_pos = 0;
+    QVector<Frame> beats;
+    Frame beat_pos;
     Bpm bpm(60);
     for (unsigned int i = 0; i < numBeats; ++i, bpm = bpm + 1) {
-        double beat_length = getBeatLength(bpm);
+        Frame beat_length = getBeatLength(bpm);
         beats.append(beat_pos);
         beat_pos += beat_length;
     }
-
+    // Generate intermediate double vector to adapt to old constructor.
+    QVector<double> unsafeDoubleBeatsVector(beats.size());
+    for (auto beat : beats) {
+        unsafeDoubleBeatsVector.append(beat.getValue());
+    }
     BeatsPointer pMap =
-            std::make_unique<Beats>(m_pTrack.get(), beats, m_iSampleRate);
+            std::make_unique<Beats>(m_pTrack.get(), unsafeDoubleBeatsVector, m_iSampleRate);
 
     // Values calculated externally using a spreadsheet, verifying the results
     // and making some changes in the last decimals to fix rounding differences
@@ -272,7 +283,7 @@ TEST_F(BeatsTest, BpmAround) {
 
     // Test values of n < 12 for simplified algorithm
     EXPECT_DOUBLE_EQ(67.990269973961901,
-            pMap->getBpmAroundPosition(Frame(10 * approx_beat_length), 4)
+            pMap->getBpmAroundPosition(Frame(10 * approx_beat_length.getValue()), 4)
                     .getValue());
     /*
     EXPECT_DOUBLE_EQ(120.99503094229186,
