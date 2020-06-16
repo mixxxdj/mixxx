@@ -94,12 +94,12 @@
             <Children>
               <WidgetGroup>
                 <ObjectName></ObjectName>
-                <Size>40f,113f</Size>
+                <Size>50f,113f</Size>
                 <Children>
                   <Label>
                     <ObjectName>RateCenter</ObjectName>
                     <Size>5f,5f</Size>
-                    <Pos>0,55</Pos>
+                    <Pos>2,55</Pos>
                     <Connection>
                       <ConfigKey><Variable name="Group"/>,rate</ConfigKey>
                       <Transform><IsEqual>0.5</IsEqual></Transform>
@@ -109,7 +109,7 @@
                   <SliderComposed>
                     <ObjectName>RateSlider</ObjectName>
                     <Size>40f,113f</Size>
-                    <Pos>0,0</Pos>
+                    <Pos>5,0</Pos>
                     <TooltipId>rate</TooltipId>
                     <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck.svg</Handle>
                     <Slider scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/slider_pitch_deck.svg</Slider>
@@ -229,6 +229,7 @@
           </WidgetGroup><!-- RateControls -->
 
           <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+
         </Children>
       </WidgetGroup><!-- RateContainer -->
 

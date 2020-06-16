@@ -406,10 +406,10 @@ WLibrary,
 
 
 #SpinnyCoverContainer_Small {
-  min-width: 68px;
-  max-width: 68px;
-  min-height: 68px;
-  max-height: 68px;
+  min-width: 63px;
+  max-width: 63px;
+  min-height: 63px;
+  max-height: 63px;
   margin: 0px 2px 1px 0px;
   }
   #SpinnyCoverContainer_SmallCompact {
@@ -427,10 +427,10 @@ WLibrary,
   margin: 1px 2px 1px 0px;
   }
   #SpinnyCoverContainer_BigCompact {
-    min-width: 111px;
-    max-width: 111px;
-    min-height: 111px;
-    max-height: 111px;
+    min-width: 109px;
+    max-width: 109px;
+    min-height: 109px;
+    max-height: 109px;
     margin: 0px 2px 1px 0px;
   }
 #SpinnyCoverContainer_MiniDeck {
@@ -536,7 +536,7 @@ WLibrary,
   }
 
   #RateControls {
-    margin: 0px 2px 0px 2px;
+    margin: 0px 2px;
     }
     #RateButtons {
       margin-right: 3px;

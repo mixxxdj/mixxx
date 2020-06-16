@@ -24,7 +24,7 @@
 
       <WidgetGroup>
         <ObjectName>OverviewBox</ObjectName>
-        <Size>min,69f</Size>
+        <Size>min,63me</Size>
         <Layout>horizontal</Layout>
         <Children>
           <SingletonContainer>

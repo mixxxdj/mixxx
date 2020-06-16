@@ -425,10 +425,10 @@ WSearchLineEdit {
   }
 
 #SpinnyCoverContainer_Small{
-  min-width: 69px;
-  max-width: 69px;
-  min-height: 69px;
-  max-height: 69px;
+  min-width: 63px;
+  max-width: 63px;
+  min-height: 63px;
+  max-height: 63px;
   margin: 0px 1px 0px 0px;
   }
   #SpinnyCoverContainer_SmallCompact {
@@ -446,10 +446,10 @@ WSearchLineEdit {
   margin: 1px 2px 0px 0px;
   }
   #SpinnyCoverContainer_BigCompact {
-    min-width: 116px;
-    max-width: 116px;
-    min-height: 116px;
-    max-height: 116px;
+    min-width: 114px;
+    max-width: 114px;
+    min-height: 114px;
+    max-height: 114px;
     margin: 0px 2px 0px 0px;
   }
 #SpinnyCoverContainer_MiniDeck {
@@ -551,7 +551,7 @@ WSearchLineEdit {
     }
     #RateText {
       padding: 0px;
-      margin: 0px 4px 0px 0px;
+      margin: 0px 2px 0px 0px;
     }
 
   #SyncBox {
@@ -559,7 +559,7 @@ WSearchLineEdit {
   }
 
   #RateControls {
-    margin: 0px 2px 0px 2px;
+    margin: 0px 2px;
     }
     #RateButtons {
       margin-right: 2px;
