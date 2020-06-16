@@ -106,20 +106,27 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const TrackPointer& track,
                                                       extraVersionInfo);
 
     BeatUtils::printBeatStatistics(beats, iSampleRate);
-    /* TODO(JVC) Just ignore BeatGrids ?
-    if (version == BEAT_GRID_2_VERSION) {
-        double globalBpm = BeatUtils::calculateBpm(beats, iSampleRate, iMinBpm, iMaxBpm);
-        double firstBeat = BeatUtils::calculateFixedTempoFirstBeat(
-            bEnableOffsetCorrection,
-            beats, iSampleRate, iTotalSamples, globalBpm);
-        mixxx::BeatGrid* pGrid = new mixxx::BeatGrid(track, iSampleRate);
-        // firstBeat is in frames here
-        pGrid->setGrid(globalBpm, firstBeat);
-        pGrid->setSubVersion(subVersion);
-        return BeatsPointer(pGrid, &BeatFactory::deleteBeats);
-
-    } else */
-    if (version == mixxx::Beats::BEAT_MAP_VERSION) {
+    if (version == mixxx::Beats::BEAT_GRID_2_VERSION) {
+        mixxx::Bpm globalBpm = BeatUtils::calculateBpm(beats, iSampleRate, iMinBpm, iMaxBpm);
+        mixxx::Frame firstBeat(BeatUtils::calculateFixedTempoFirstBeat(
+                bEnableOffsetCorrection,
+                beats,
+                iSampleRate,
+                iTotalSamples,
+                globalBpm.getValue()));
+        mixxx::Frame framesPerSecond(iSampleRate / track->getChannels());
+        mixxx::Frame beatLength = framesPerSecond * 60 / globalBpm.getValue();
+        double trackLengthSeconds = track->getDuration();
+        int numberOfBeats = globalBpm.getValue() / 60.0 * trackLengthSeconds;
+        QVector<mixxx::Frame> generatedBeats;
+        for (int i = 0; i < numberOfBeats; i++) {
+            generatedBeats.append(firstBeat + beatLength * i);
+        }
+        mixxx::Beats* pBeats = new mixxx::Beats(
+                track.get(), generatedBeats, iSampleRate);
+        pBeats->setSubVersion(subVersion);
+        return mixxx::BeatsPointer(pBeats, &BeatFactory::deleteBeats);
+    } else if (version == mixxx::Beats::BEAT_MAP_VERSION) {
         QVector<mixxx::Frame> intermediateBeatFrameVector;
         intermediateBeatFrameVector.reserve(beats.size());
         std::transform(beats.begin(),
