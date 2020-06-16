@@ -578,7 +578,7 @@ WBeatSpinBox {
   }
   WBeatSpinBox:focus,
   #spinBoxTransition:focus {
-    border-image: url(skin:/palemoon/buttons/spinbox_embedded_border_focus_blue.svg) 3 19 2 3;
+    border-image: url(skin:/palemoon/buttons/btn_embedded_spinbox_focus_blue.svg) 3 19 2 3;
   }
 
 WBeatSpinBox::up-button,
