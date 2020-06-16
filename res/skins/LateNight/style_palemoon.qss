@@ -612,11 +612,7 @@ WBeatSpinBox::down-button,
   #spinBoxTransition::up-button {
     height: 11px;
     subcontrol-position: top right;
-    image: url(skin:/palemoon/buttons/spinbox_up.svg) no-repeat;
-    }
-    WBeatSpinBox::up-button:pressed,
-    #spinBoxTransition::up-button:pressed {
-      image: url(skin:/palemoon/buttons/spinbox_up_pressed.svg) no-repeat;
+    image: url(skin:/palemoon/buttons/btn__spinbox_up.svg) no-repeat;
     }
     WBeatSpinBox::up-button {
       margin: -2px -1px 0px 0px;
@@ -628,11 +624,7 @@ WBeatSpinBox::down-button,
   #spinBoxTransition::down-button {
     height: 11px;
     subcontrol-position: bottom right;
-    image: url(skin:/palemoon/buttons/spinbox_down.svg) no-repeat;
-    }
-    WBeatSpinBox::down-button:pressed,
-    #spinBoxTransition::down-button:pressed {
-      image: url(skin:/palemoon/buttons/spinbox_down_pressed.svg) no-repeat;
+    image: url(skin:/palemoon/buttons/btn__spinbox_down.svg) no-repeat;
     }
     WBeatSpinBox::down-button {
       margin: 0px -1px -3px 0px;
