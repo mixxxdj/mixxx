@@ -1603,9 +1603,12 @@ WPushButton#SamplerExpand[displayValue="0"],
   image: url(skin:/classic/buttons/btn__eq_kill_low.svg) no-repeat center center;
 }
 
-#SplitCue {
+#SplitCue[displayValue="0"] {
   image: url(skin:/classic/buttons/btn__split.svg) no-repeat center center;
-}
+  }
+  #SplitCue[displayValue="1"] {
+    image: url(skin:/classic/buttons/btn__split_active.svg) no-repeat center center;
+  }
 
 #FxExpand[value="0"],
 #LibExpand[value="0"] {
