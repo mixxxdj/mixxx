@@ -118,6 +118,15 @@ WSearchLineEdit {
   border-right: 1px solid #252525;
   background-color: #19191a;
   }
+#LibraryContainer QTableView,
+#LibraryContainer QTextBrowser,
+#LibraryContainer QTreeView,
+WSearchLineEdit {
+  border-top: 1px solid #000;
+  border-left: 1px solid #000;
+  border-bottom: 1px solid #1e1e1e;
+  border-right: 1px solid #222;
+  }
   #WaveformsFrame,
   #OverviewBox,
   #OverviewBoxMini,
@@ -1265,26 +1274,44 @@ WOverview #PassthroughLabel {
 /************** Button styles *************************************************
 *************** Button borders ************************************************/
 
+#GuiToggleButton[displayValue="0"],
+#RecFeedback[displayValue="0"],
+#BroadcastButton[displayValue="0"],
+#SkinSettingsToggle[displayValue="0"],
 #KeyMatchReset[displayValue="0"],
 #VinylButton[displayValue="0"],
 #VinylModeButton,
 #VinylCueButton[displayValue="0"],
 #FxAssignButtons WPushButton[displayValue="0"],
-#GuiToggleButton[displayValue="0"],
-#RecFeedback[displayValue="0"],
-#BroadcastButton[displayValue="0"],
-#SkinSettingsToggle[displayValue="0"],
+WEffectSelector,
 #DlgMissing > QPushButton:enabled,
 #DlgHidden > QPushButton:enabled,
 #DlgAutoDJ > QPushButton:enabled,
 #DlgRecording > QPushButton:enabled,
 #DlgAnalysis > QPushButton:enabled,
 #fadeModeCombobox,
-WEffectSelector,
-#CueDeleteButton {
+#CueDeleteButton,
+#LibraryContainer WBeatSpinBox {
   outline: none;
   border-width: 2px;
   border-image: url(skin:/palemoon/buttons/btn_embedded_library.svg) 2 2 2 2;
+  }
+  #LibraryContainer QHeaderView {
+    border-bottom-right-radius: 1px solid #000; /*
+    outline: none;
+    border-width: 1px 0px 1px 0px;
+    border-image: url(skin:/palemoon/buttons/btn_embedded_library_header.svg) 1 1 1 1;  */
+  }
+  #LibraryContainer QHeaderView::section {
+    outline: none;
+    border-width: 1px 2px 1px 1px;
+    border-image: url(skin:/palemoon/buttons/btn_embedded_library_header.svg) 1 2 1 1;
+  }
+  #LibraryContainer QHeaderView::up-arrow,
+  #LibraryContainer QHeaderView::down-arrow {
+    outline: none;
+    border-width: 1px 2px 1px 0px;
+    border-image: url(skin:/palemoon/buttons/btn_embedded_library_header_sort.svg) 1 2 1 1;
   }
   /*
   WPushButton#BpmTap[displayValue="0"] {
@@ -1427,7 +1454,9 @@ WBeatSpinBox::down-button {
   WBeatSpinBox::up-button,
   WBeatSpinBox::down-button,
   WPushButton#LoopActivate[displayValue="0"], /* in compact deck */
-  #FxParameterButton[displayValue="0"] {
+  #FxParameterButton[displayValue="0"],
+  #LibraryContainer QHeaderView,
+  #LibraryContainer QHeaderView::section {
     background-color: #171719;
   }
   /*  even buttons in 2nd level containers */
@@ -2257,13 +2286,13 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
 
 #LibraryContainer QTableView,
 #LibraryContainer QTextBrowser,
-#LibraryContainer QTreeView {
+#LibraryContainer QTreeView { /*
   border-top: 1px solid #0a0a0a;
   border-right: 1px solid qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #333,
     stop:1 #444);
   border-bottom: 1px solid #444;
-  border-left: 1px solid #0a0a0a;
+  border-left: 1px solid #0a0a0a; */
   alternate-background-color: #0a0a0a;
   selection-background-color: #2c454f;
 }
@@ -2374,11 +2403,9 @@ WCueMenuPopup QPushButton:focus {
 
 /*********** table header styles *********************************/
 
-#LibraryContainer QHeaderView {
+#LibraryContainer QHeaderView { /*
   border-bottom: 1px solid #000;
   }
-  #LibraryContainer QHeaderView,
-  #LibraryContainer QHeaderView::section,
   #LibraryContainer QHeaderView::up-arrow,
   #LibraryContainer QHeaderView::down-arrow {
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -2388,16 +2415,20 @@ WCueMenuPopup QPushButton:focus {
   #LibraryContainer QHeaderView::section {
     padding-top: 2px 1px 0px 2px;
     border-right: 1px solid #000;
-    border-bottom: 1px solid #000;
+    border-bottom: 1px solid #000; */
   }
   #LibraryContainer QHeaderView::up-arrow,
-  #LibraryContainer QHeaderView::down-arrow {
-    border-right: 1px solid #000;
-    /* gradient colors should match those of QHeaderView gradient,
-      with a little transparency added to not cut off the header label */
-    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-      stop:0 rgba(34,34,34,190),
-      stop:1 rgba(17,17,17,190));
+  #LibraryContainer QHeaderView::down-arrow {/*
+    border-right: 1px solid #000;*/
+    /* left > right gradient to fade out the header section label
+    background-color: qlineargradient(
+      x0: 0, y1: 0,
+      x2: 1, y2:0,
+      stop: 0     rgba(17,17,17,0),
+      stop: 0.2   rgba(17,17,17,0),
+      stop: 0.21  rgba(17,17,17,190),
+      stop: 1     rgba(17,17,17,255));
+    background-color: rgba(23, 23, 25, 190); */
     }
     #LibraryContainer QHeaderView::up-arrow {
       image: url(skin:/palemoon/buttons/btn__lib_sort_up.svg);
