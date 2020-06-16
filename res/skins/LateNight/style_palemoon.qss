@@ -1235,7 +1235,7 @@ QPushButton#pushButtonRecording:checked {
 #DlgAutoDJ > QPushButton:!enabled,
 #DlgRecording > QPushButton:!enabled,
 #DlgAnalysis > QPushButton:!enabled {
-  color: #666;
+  color: #444443;
 }
 
 /* Passthrough label on overview waveform */
