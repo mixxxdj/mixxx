@@ -269,11 +269,21 @@ WLibrary,
   max-height: 4px;
 }
 
+#CompactDecksCenterSpacer {
+  min-width: 4px;
+  max-width: 4px;
+}
+
 #Deck1, #DeckCompact1, #DeckMini1,
 #Deck2, #DeckCompact2, #DeckMini2,
 #Deck3, #DeckCompact3, #DeckMini3,
 #Deck4, #DeckCompact4, #DeckMini4,
 #MixerContainer,
+#VuMeterDeck1_Compact,
+#VuMeterDeck2_Compact,
+#VuMeterDeck3_Compact,
+#VuMeterDeck4_Compact,
+#VuMeterMaster_Compact,
 #FxUnit1, #FxUnit3,
 #FxUnit2, #FxUnit4,
 #FxRackFillerR,
@@ -288,7 +298,6 @@ WLibrary,
 
 #Deck1, #DeckMini1,
 #Deck3, #DeckMini3,
-#CompactDecksCenterSpacer,
 #MixerContainer,
 #FxUnit1,
 #FxUnit3,
@@ -300,7 +309,6 @@ WLibrary,
 
 #Deck2, #DeckMini2,
 #Deck4, #DeckMini4,
-#CompactDecksCenterSpacer,
 #MixerContainer,
 #FxUnit2,
 #FxUnit4,
@@ -677,28 +685,22 @@ WLibrary,
 }
 
 #VuMeterMaster_Compact {
-  margin: 0px 4px 4px 4px;
+  margin-right: 4px;
+  margin-left: 4px;
   padding: 0px 5px;
 }
-
 #VuMeterDeck1_Compact,
+#VuMeterDeck3_Compact {
+  padding: 0px 4px 0px 5px;
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 1px;
+}
 #VuMeterDeck2_Compact,
-#VuMeterDeck3_Compact,
 #VuMeterDeck4_Compact {
-  margin: 0px 0px 4px 0px;
-  }
-  #VuMeterDeck1_Compact,
-  #VuMeterDeck3_Compact {
-    padding: 0px 4px 0px 5px;
-    border-top-left-radius: 0px;
-    border-bottom-left-radius: 1px;
-  }
-  #VuMeterDeck2_Compact,
-  #VuMeterDeck4_Compact {
-    padding: 0px 5px 0px 4px;
-    border-top-right-radius: 0px;
-    border-bottom-right-radius: 1px;
-  }
+  padding: 0px 5px 0px 4px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 1px;
+}
 
 /************** Fx *********************************************************/
 

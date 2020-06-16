@@ -281,6 +281,11 @@ WSearchLineEdit {
   max-height: 0px;
 }
 
+#CompactDecksCenterSpacer {
+  min-width: 4px;
+  max-width: 4px;
+}
+
 #ToolBar {
   padding: 1px 2px 0px 2px;
   }
@@ -295,6 +300,11 @@ WSearchLineEdit {
 #Deck3, #DeckCompact3, #DeckMini3,
 #Deck4, #DeckCompact4, #DeckMini4,
 #MixerContainer,
+#VuMeterDeck1_Compact,
+#VuMeterDeck2_Compact,
+#VuMeterDeck3_Compact,
+#VuMeterDeck4_Compact,
+#VuMeterMaster_Compact,
 #FxUnit1, #FxUnit3,
 #FxUnit2, #FxUnit4,
 #FxRackFillerR,
@@ -309,7 +319,6 @@ WSearchLineEdit {
 
 #Deck1, #DeckMini1,
 #Deck3, #DeckMini3,
-#CompactDecksCenterSpacer,
 #MixerContainer,
 #FxUnit1,
 #FxUnit3,
@@ -321,7 +330,6 @@ WSearchLineEdit {
 
 #Deck2, #DeckMini2,
 #Deck4, #DeckMini4,
-#CompactDecksCenterSpacer,
 #MixerContainer,
 #FxUnit2,
 #FxUnit4,
@@ -692,30 +700,25 @@ WBeatSpinBox::down-button,
   margin: 5px 0px;
 }
 
+#VuMeterDeck1_Compact,
+#VuMeterDeck3_Compact {
+  padding: 0px 4px 0px 5px;
+  border-left: 0px;
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+#VuMeterDeck2_Compact,
+#VuMeterDeck4_Compact {
+  padding: 0px 5px 0px 4px;
+  border-right: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
 #VuMeterMaster_Compact {
-  margin: 0px 4px 3px 4px;
+  margin-right: 4px;
+  margin-left: 4px;
   padding: 0px 5px;
 }
-#VuMeterDeck1_Compact,
-#VuMeterDeck2_Compact,
-#VuMeterDeck3_Compact,
-#VuMeterDeck4_Compact {
-  margin: 0px 0px 3px 0px;
-  }
-  #VuMeterDeck1_Compact,
-  #VuMeterDeck3_Compact {
-    padding: 0px 4px 0px 5px;
-    border-left: 0px;
-    border-top-left-radius: 0px;
-    border-bottom-left-radius: 0px;
-  }
-  #VuMeterDeck2_Compact,
-  #VuMeterDeck4_Compact {
-    padding: 0px 5px 0px 4px;
-    border-right: 0px;
-    border-top-right-radius: 0px;
-    border-bottom-right-radius: 0px;
-  }
 
 
 /************** Effects *************************************************/
