@@ -6,6 +6,7 @@
 #include "analyzer/analyzerebur128.h"
 #include "analyzer/analyzergain.h"
 #include "analyzer/analyzerkey.h"
+#include "analyzer/analyzerrhythm.h"
 #include "analyzer/analyzersilence.h"
 #include "analyzer/analyzerwaveform.h"
 #include "analyzer/constants.h"
@@ -114,7 +115,7 @@ void AnalyzerThread::doRun() {
     // BPM detection might be disabled in the config, but can be overridden
     // and enabled by explicitly setting the mode flag.
     const bool enforceBpmDetection = (m_modeFlags & AnalyzerModeFlags::WithBeats) != 0;
-    m_analyzers.push_back(AnalyzerWithState(std::make_unique<AnalyzerBeats>(m_pConfig, enforceBpmDetection)));
+    m_analyzers.push_back(AnalyzerWithState(std::make_unique<AnalyzerRhythm>(m_pConfig)));
     m_analyzers.push_back(AnalyzerWithState(std::make_unique<AnalyzerKey>(m_pConfig)));
     m_analyzers.push_back(AnalyzerWithState(std::make_unique<AnalyzerSilence>(m_pConfig)));
     DEBUG_ASSERT(!m_analyzers.empty());
