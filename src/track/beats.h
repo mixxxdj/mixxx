@@ -175,12 +175,6 @@ class Beats final : public QObject {
     /// BPM returns -1.
     Bpm getBpmAroundPosition(Frame curFrame, int n) const;
 
-    double getMaxBpm() const {
-        // TODO(JVC) Why is returning a constant? MaxBpm must be taken from somewhere
-        constexpr double kMaxBpm = 500;
-        return kMaxBpm;
-    }
-
     /// Sets the track signature at the nearest frame
     void setSignature(TimeSignature signature, Frame frame = Frame());
 
