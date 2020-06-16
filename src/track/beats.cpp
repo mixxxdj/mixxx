@@ -10,17 +10,9 @@ const QString Beats::BEAT_GRID_1_VERSION = "BeatGrid-1.0";
 const QString Beats::BEAT_GRID_2_VERSION = "BeatGrid-2.0";
 
 namespace {
-
-constexpr int kSamplesPerFrame = 2;
-
 inline bool BeatLessThan(const track::io::Beat& beat1, const track::io::Beat& beat2) {
     return beat1.frame_position() < beat2.frame_position();
 }
-
-inline double framesToSamples(const int frames) {
-    return frames * kSamplesPerFrame;
-}
-
 } // namespace
 
 Beats::Beats(const Track* track, const QVector<Frame>& beats, SINT iSampleRate)
@@ -98,14 +90,14 @@ QByteArray Beats::toProtobuf() const {
     QMutexLocker locker(&m_mutex);
     // No guarantees BeatLists are made of a data type which located adjacent
     // items in adjacent memory locations.
-    track::io::BeatMap map;
+    track::io::Beats beatsProto;
 
     for (int i = 0; i < m_beats.size(); ++i) {
-        map.add_beat()->CopyFrom(m_beats[i]);
+        beatsProto.add_beat()->CopyFrom(m_beats[i]);
     }
 
     std::string output;
-    map.SerializeToString(&output);
+    beatsProto.SerializeToString(&output);
     return QByteArray(output.data(), output.length());
 }
 
@@ -842,14 +834,14 @@ void Beats::setBpm(Bpm dBpm) {
 }
 
 bool Beats::readByteArray(const QByteArray& byteArray) {
-    track::io::BeatMap map;
-    if (!map.ParseFromArray(byteArray.constData(), byteArray.size())) {
+    track::io::Beats beatsProto;
+    if (!beatsProto.ParseFromArray(byteArray.constData(), byteArray.size())) {
         qDebug() << "ERROR: Could not parse kBeatMap from QByteArray of size"
                  << byteArray.size();
         return false;
     }
-    for (int i = 0; i < map.beat_size(); ++i) {
-        const track::io::Beat& beat = map.beat(i);
+    for (int i = 0; i < beatsProto.beat_size(); ++i) {
+        const track::io::Beat& beat = beatsProto.beat(i);
         m_beats.append(beat);
     }
     onBeatlistChanged();

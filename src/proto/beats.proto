@@ -22,6 +22,11 @@ message TimeSignature {
   required int32 note_value = 2 [ default = 4 ];
 }
 
+message Bpm {
+  optional double bpm = 1;
+  optional Source source = 2 [ default = ANALYZER ];
+}
+
 message Beat {
   optional double frame_position = 1;
   optional bool enabled = 2 [ default = true ];
@@ -30,16 +35,6 @@ message Beat {
   optional TimeSignature signature = 5;
 }
 
-message Bpm {
-  optional double bpm = 1;
-  optional Source source = 2 [ default = ANALYZER ];
-}
-
-message BeatMap {
+message Beats {
   repeated Beat beat = 1;
-}
-
-message BeatGrid {
-  optional Bpm bpm = 1;
-  optional Beat first_beat = 2;
 }
