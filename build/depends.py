@@ -1280,6 +1280,7 @@ class MixxxCore(Feature):
                    "src/util/valuetransformer.cpp",
                    "src/util/sandbox.cpp",
                    "src/util/file.cpp",
+                   "src/util/filename.cpp",
                    "src/util/mac.cpp",
                    "src/util/task.cpp",
                    "src/util/experiment.cpp",

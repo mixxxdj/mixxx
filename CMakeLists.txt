@@ -587,6 +587,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/duration.cpp
   src/util/experiment.cpp
   src/util/file.cpp
+  src/util/filename.cpp
   src/util/indexrange.cpp
   src/util/logger.cpp
   src/util/logging.cpp
