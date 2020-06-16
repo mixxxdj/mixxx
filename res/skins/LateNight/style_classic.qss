@@ -159,6 +159,9 @@ WSearchLineEdit,
 #SubmenuCover {
   background-color: rgba(15, 15, 15, 180);
 }
+#SkinSettingsMixerToggle {
+  background-color: rgba(15, 15, 15, 255);
+}
 
 /**** ToolBar *******************************/
 #ToolBar, #ToolBarSection {
@@ -2299,6 +2302,7 @@ WEffectSelector, #fadeModeCombobox {
   WTrackMenu QMenu QCheckBox:hover,
   #SkinSettingsButton:hover,
   #DeckSizeButton:hover,
+  #SkinSettingsMixerToggle[hover="true"],
   #SkinSettingsLabelButton:hover {
     background-color: #5E4507;
     color: white;
