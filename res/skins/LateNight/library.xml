@@ -88,14 +88,20 @@
                         </Children>
                       </WidgetGroup>
                       <!--Cover Art-->
-                      <CoverArt>
-                        <SizePolicy>me,me</SizePolicy>
-                        <MinimumSize>40,40</MinimumSize>
-                        <Connection>
-                          <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
-                          <BindProperty>visible</BindProperty>
-                        </Connection>
-                      </CoverArt>
+                      <WidgetGroup>
+                        <ObjectName>AlignCenter</ObjectName>
+                        <Layout>vertical</Layout>
+                        <Children>
+                          <CoverArt>
+                            <SizePolicy>me,me</SizePolicy>
+                            <MinimumSize>40,40</MinimumSize>
+                            <Connection>
+                              <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </CoverArt>
+                        </Children>
+                      </WidgetGroup>
                     </Children>
                   </Splitter><!-- HorizontalSplitter -->
 
