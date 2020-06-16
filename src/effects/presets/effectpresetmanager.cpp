@@ -18,7 +18,7 @@ EffectPresetManager::EffectPresetManager(UserSettingsPointer pConfig,
 }
 
 EffectPresetManager::~EffectPresetManager() {
-    for (const auto pEffectPreset : m_defaultPresets) {
+    for (const auto& pEffectPreset : m_defaultPresets) {
         saveDefaultForEffect(pEffectPreset);
     }
 }
