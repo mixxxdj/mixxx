@@ -164,7 +164,7 @@ double BpmControl::getBpm() const {
 
 void BpmControl::slotAdjustBeatsFaster(double v) {
     mixxx::BeatsPointer pBeats = m_pBeats;
-    if (v > 0 && pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
+    if (v > 0 && pBeats) {
         auto bpm = pBeats->getBpm();
         auto adjustedBpm = bpm + kBpmAdjustStep;
         pBeats->setBpm(adjustedBpm);
@@ -173,7 +173,7 @@ void BpmControl::slotAdjustBeatsFaster(double v) {
 
 void BpmControl::slotAdjustBeatsSlower(double v) {
     mixxx::BeatsPointer pBeats = m_pBeats;
-    if (v > 0 && pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
+    if (v > 0 && pBeats) {
         auto bpm = pBeats->getBpm();
         auto adjustedBpm = mixxx::Bpm(math_max(kBpmAdjustMin, (bpm - kBpmAdjustStep).getValue()));
         pBeats->setBpm(adjustedBpm);
@@ -182,8 +182,7 @@ void BpmControl::slotAdjustBeatsSlower(double v) {
 
 void BpmControl::slotTranslateBeatsEarlier(double v) {
     mixxx::BeatsPointer pBeats = m_pBeats;
-    if (v > 0 && pBeats &&
-            (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
+    if (v > 0 && pBeats) {
         const int translate_dist = getSampleOfTrack().rate * -.01;
         pBeats->translate(mixxx::Frame(translate_dist / 2.0));
     }
@@ -191,8 +190,7 @@ void BpmControl::slotTranslateBeatsEarlier(double v) {
 
 void BpmControl::slotTranslateBeatsLater(double v) {
     mixxx::BeatsPointer pBeats = m_pBeats;
-    if (v > 0 && pBeats &&
-            (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
+    if (v > 0 && pBeats) {
         // TODO(rryan): Track::getSampleRate is possibly inaccurate!
         const int translate_dist = getSampleOfTrack().rate * .01;
         pBeats->translate(mixxx::Frame(translate_dist / 2.0));
@@ -968,7 +966,7 @@ void BpmControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
 
 void BpmControl::slotBeatsTranslate(double v) {
     mixxx::BeatsPointer pBeats = m_pBeats;
-    if (v > 0 && pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
+    if (v > 0 && pBeats) {
         mixxx::Frame currentFrame(getSampleOfTrack().current / 2.0);
         mixxx::Frame closestBeat = pBeats->findClosestBeat(currentFrame);
         int delta = currentFrame.getValue() - closestBeat.getValue();
@@ -981,7 +979,7 @@ void BpmControl::slotBeatsTranslate(double v) {
 
 void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
     mixxx::BeatsPointer pBeats = m_pBeats;
-    if (v > 0 && pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
+    if (v > 0 && pBeats) {
         // Must reset the user offset *before* calling getPhaseOffset(),
         // otherwise it will always return 0 if master sync is active.
         m_dUserOffset.setValue(0.0);

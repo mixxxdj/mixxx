@@ -92,7 +92,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     TrackPointer m_pLoadedTrack;
     mixxx::BeatsPointer m_pBeatsClone;
     Keys m_keysClone;
-    bool m_trackHasBeatMap;
+    bool m_bpmIsConst;
 
     QScopedPointer<TapFilter> m_pTapFilter;
     QScopedPointer<DlgTagFetcher> m_pTagFetcher;

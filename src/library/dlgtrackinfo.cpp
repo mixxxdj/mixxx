@@ -7,6 +7,7 @@
 
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "preferences/beatdetectionsettings.h"
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
 #include "track/beatfactory.h"
@@ -15,8 +16,8 @@
 #include "track/keyutils.h"
 #include "util/color/colorpalette.h"
 #include "util/compatibility.h"
-#include "util/desktophelper.h"
 #include "util/datetime.h"
+#include "util/desktophelper.h"
 #include "util/duration.h"
 
 const int kFilterLength = 80;
@@ -280,11 +281,14 @@ void DlgTrackInfo::reloadTrackBeats(const Track& track) {
         m_pBeatsClone.reset();
         spinBpm->setValue(0.0);
     }
-    m_trackHasBeatMap = pBeats && !(pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM);
-    bpmConst->setChecked(!m_trackHasBeatMap);
-    bpmConst->setEnabled(m_trackHasBeatMap); // We cannot make turn a BeatGrid to a BeatMap
-    spinBpm->setEnabled(!m_trackHasBeatMap); // We cannot change bpm continuously or tab them
-    bpmTap->setEnabled(!m_trackHasBeatMap);  // when we have a beatmap
+
+    m_bpmIsConst = pBeats &&
+            m_pConfig->getValue<bool>(
+                    ConfigKey(BPM_CONFIG_KEY, BPM_FIXED_TEMPO_ASSUMPTION));
+    bpmConst->setChecked(m_bpmIsConst);
+    bpmConst->setEnabled(!m_bpmIsConst);
+    spinBpm->setEnabled(m_bpmIsConst); // We cannot change bpm continuously or tap them
+    bpmTap->setEnabled(m_bpmIsConst);  // when we have a variable bpm.
 
     if (track.isBpmLocked()) {
         tabBPM->setEnabled(false);
@@ -507,7 +511,7 @@ void DlgTrackInfo::slotBpmClear() {
     m_pBeatsClone.reset();
 
     bpmConst->setChecked(true);
-    bpmConst->setEnabled(m_trackHasBeatMap);
+    bpmConst->setEnabled(!m_bpmIsConst);
     spinBpm->setEnabled(true);
     bpmTap->setEnabled(true);
 }
@@ -568,7 +572,7 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
         return;
     }
 
-    if (m_pBeatsClone->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM) {
+    if (m_bpmIsConst) {
         m_pBeatsClone->setBpm(mixxx::Bpm(value));
     }
 

@@ -55,18 +55,6 @@ class Beats final : public QObject {
     // TODO(JVC) Is a copy constructor needed? of we can force a move logic??
     Beats(const Beats&);
 
-    // TODO(JVC) Not needed
-    enum Capabilities {
-        BEATSCAP_NONE = 0x0000,
-        BEATSCAP_ADDREMOVE = 0x0001, // Add or remove a single beat
-        BEATSCAP_TRANSLATE = 0x0002, // Move all beat markers earlier or later
-        BEATSCAP_SCALE = 0x0004,     // Scale beat distance by a fixed ratio
-        BEATSCAP_MOVEBEAT = 0x0008,  // Move a single Beat
-        BEATSCAP_SETBPM = 0x0010,    // Set new bpm, beat grid only
-        BEATSCAP_HASBAR = 0x0020     // Manage Bar beats
-    };
-    typedef int CapabilitiesFlags; // Allows us to do ORing
-
     enum BPMScale {
         DOUBLE,
         HALVE,
@@ -82,11 +70,6 @@ class Beats final : public QObject {
     static const QString BEAT_GRID_1_VERSION;
     static const QString BEAT_GRID_2_VERSION;
 
-    // TODO(JVC) Not needed
-    Beats::CapabilitiesFlags getCapabilities() const {
-        return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_ADDREMOVE |
-                BEATSCAP_MOVEBEAT | BEATSCAP_HASBAR;
-    }
     /// Serializes into a protobuf.
     QByteArray toProtobuf() const;
     BeatsPointer clone() const;
@@ -182,25 +165,21 @@ class Beats final : public QObject {
     /// Sets the nearest beat as a bar beat
     void setDownBeat(Frame frame = Frame());
 
-    /// Add a beat at location frame. Beats instance must have the
-    /// capability BEATSCAP_ADDREMOVE.
+    /// Add a beat at location frame.
     void addBeat(Frame frame);
 
-    /// Remove a beat at location frame. Beats instance must have the
-    /// capability BEATSCAP_ADDREMOVE.
+    /// Remove a beat at location frame.
     void removeBeat(Frame frame);
 
     /// Translate all beats in the song by numFrames. Beats that lie
     /// before the start of the track or after the end of the track are not
-    /// removed. Beats instance must have the capability BEATSCAP_TRANSLATE.
+    /// removed.
     void translate(Frame numFrames);
 
-    /// Scale the position of every beat in the song by dScalePercentage. Beats
-    /// class must have the capability BEATSCAP_SCALE.
+    /// Scale the position of every beat in the song by dScalePercentage.
     void scale(enum BPMScale scale);
 
-    /// Adjust the beats so the global average BPM matches dBpm. Beats class must
-    /// have the capability BEATSCAP_SET.
+    /// Adjust the beats so the global average BPM matches dBpm.
     void setBpm(Bpm dBpm);
 
     /// Returns the number of beats
