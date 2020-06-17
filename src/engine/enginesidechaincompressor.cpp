@@ -2,7 +2,7 @@
 
 #include "engine/enginesidechaincompressor.h"
 
-EngineSideChainCompressor::EngineSideChainCompressor(const char* group)
+EngineSideChainCompressor::EngineSideChainCompressor(const QString& group)
         : m_compressRatio(1.0),
           m_bAboveThreshold(false),
           m_threshold(1.0),
@@ -34,8 +34,8 @@ void EngineSideChainCompressor::calculateRates() {
     if (m_decayPerFrame <= 0) {
         m_decayPerFrame = 0.005;
     }
-    qDebug() << "Compressor attack per frame: " << m_attackPerFrame
-             << "decay per frame: " << m_decayPerFrame;
+    //qDebug() << "Compressor attack per frame: " << m_attackPerFrame
+    //         << "decay per frame: " << m_decayPerFrame;
 }
 
 void EngineSideChainCompressor::setAboveThreshold(bool value) {

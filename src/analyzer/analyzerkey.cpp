@@ -22,6 +22,12 @@ QList<mixxx::AnalyzerPluginInfo> AnalyzerKey::availablePlugins() {
     return analyzers;
 }
 
+// static
+mixxx::AnalyzerPluginInfo AnalyzerKey::defaultPlugin() {
+    DEBUG_ASSERT(availablePlugins().size() > 0);
+    return availablePlugins().at(0);
+}
+
 AnalyzerKey::AnalyzerKey(KeyDetectionSettings keySettings)
         : m_keySettings(keySettings),
           m_iSampleRate(0),
@@ -47,10 +53,10 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
     m_bPreferencesFastAnalysisEnabled = m_keySettings.getFastAnalysis();
     m_bPreferencesReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChange();
 
-    if (AnalyzerKey::availablePlugins().size() > 0) {
-        m_pluginId = AnalyzerKey::availablePlugins().at(0).id; // first is default
+    if (availablePlugins().size() > 0) {
+        m_pluginId = defaultPlugin().id;
         QString pluginId = m_keySettings.getKeyPluginId();
-        for (const auto& info : AnalyzerKey::availablePlugins()) {
+        for (const auto& info : availablePlugins()) {
             if (info.id == pluginId) {
                 m_pluginId = pluginId; // configured Plug-In available
                 break;
@@ -109,6 +115,9 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
 bool AnalyzerKey::shouldAnalyze(TrackPointer tio) const {
     bool bPreferencesFastAnalysisEnabled = m_keySettings.getFastAnalysis();
     QString pluginID = m_keySettings.getKeyPluginId();
+    if (pluginID.isEmpty()) {
+        pluginID = defaultPlugin().id;
+    }
 
     const Keys keys(tio->getKeys());
     if (keys.isValid()) {

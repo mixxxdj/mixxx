@@ -89,13 +89,11 @@ QStringList BaseTrackTableModel::defaultTableColumns() {
 }
 
 BaseTrackTableModel::BaseTrackTableModel(
-        const char* settingsNamespace,
+        QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
-        QObject* parent)
+        const char* settingsNamespace)
         : QAbstractTableModel(parent),
-          TrackModel(
-                  cloneDatabase(pTrackCollectionManager),
-                  settingsNamespace),
+          TrackModel(cloneDatabase(pTrackCollectionManager), settingsNamespace),
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
           m_backgroundColorOpacity(WLibrary::kDefaultTrackTableBackgroundColorOpacity) {
@@ -718,9 +716,9 @@ void BaseTrackTableModel::slotTrackLoaded(
         // preview state will update.
         if (m_previewDeckTrackId.isValid()) {
             const int numColumns = columnCount();
-            QLinkedList<int> rows = getTrackRows(m_previewDeckTrackId);
+            const auto rows = getTrackRows(m_previewDeckTrackId);
             m_previewDeckTrackId = TrackId(); // invalidate
-            foreach (int row, rows) {
+            for (int row : rows) {
                 QModelIndex topLeft = index(row, 0);
                 QModelIndex bottomRight = index(row, numColumns);
                 emit dataChanged(topLeft, bottomRight);
@@ -805,6 +803,6 @@ TrackPointer BaseTrackTableModel::getTrackByRef(
 }
 
 bool BaseTrackTableModel::hasCapabilities(
-        TrackModel::CapabilitiesFlags capabilities) const {
-    return (getCapabilities() & capabilities) == capabilities;
+        TrackModel::Capabilities caps) const {
+    return (getCapabilities() & caps) == caps;
 }

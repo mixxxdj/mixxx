@@ -1,13 +1,12 @@
 /* @flow */
-import { range } from 'lodash-es'
-
-import { Colors } from '../../Launchpad'
+import range from 'lodash-es/range'
 
 import { modes } from '../ModifierSidebar'
 import type { Modifier } from '../ModifierSidebar'
-import type { ChannelControl } from '../../Mixxx'
+import type { ChannelControl } from '@mixxx-launchpad/mixxx'
+import type { LaunchpadDevice } from '../../'
 
-export default (n: number, d: number, s: number = 0) => (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => {
+export default (n: number, d: number, s: number = 0) => (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => (device: LaunchpadDevice) => {
   const onHotcueMidi = (i) => ({ value }, { bindings }) => {
     modes(modifier.getState(),
       () => {
@@ -29,9 +28,9 @@ export default (n: number, d: number, s: number = 0) => (gridPosition: [number, 
   }
   const onHotcueEnabled = (i) => ({ value }, { bindings }) => {
     if (value) {
-      bindings[`${i}.btn`].button.sendColor(Colors.lo_yellow)
+      bindings[`${i}.btn`].button.sendColor(device.colors.lo_yellow)
     } else {
-      bindings[`${i}.btn`].button.sendColor(Colors.black)
+      bindings[`${i}.btn`].button.sendColor(device.colors.black)
     }
   }
   const bindings = { }

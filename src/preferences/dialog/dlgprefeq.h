@@ -55,9 +55,9 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     // Update Lo EQ
     void slotUpdateLoEQ();
     // Apply changes to widget
-    void slotApply();
-    void slotUpdate();
-    void slotResetToDefaults();
+    void slotApply() override;
+    void slotUpdate() override;
+    void slotResetToDefaults() override;
     void slotUpdateEqAutoReset(int);
     void slotUpdateGainAutoReset(int);
     void slotBypass(int state);

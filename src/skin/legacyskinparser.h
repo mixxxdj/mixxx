@@ -48,7 +48,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     static QList<QString> getSchemeList(const QString& qSkinPath);
     // Parse a skin manifest from the provided skin document root.
     static mixxx::skin::SkinManifest getSkinManifest(const QDomElement& skinDocument);
-    static void freeChannelStrings();
+    static void clearSharedGroupStrings();
 
     static Qt::MouseButton parseButtonState(const QDomNode& node,
                                             const SkinContext& context);
@@ -88,6 +88,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseEffectButtonParameterName(const QDomElement& node);
     QWidget* parseEffectPushButton(const QDomElement& node);
     QWidget* parseEffectSelector(const QDomElement& node);
+    QWidget* parseHotcueButton(const QDomElement& node);
 
     // Legacy pre-1.12.0 skin support.
     QWidget* parseBackground(const QDomElement& node, QWidget* pOuterWidget, QWidget* pInnerWidget);
@@ -129,7 +130,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QString getLibraryStyle(const QDomNode& node);
 
     QString lookupNodeGroup(const QDomElement& node);
-    static const char* safeChannelString(const QString& channelStr);
+    static QString getSharedGroupString(const QString& channelStr);
     ControlObject* controlFromConfigNode(const QDomElement& element,
                                          const QString& nodeName,
                                          bool* created);
@@ -150,8 +151,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QString m_style;
     Tooltips m_tooltips;
     QHash<QString, QDomElement> m_templateCache;
-    static QList<const char*> s_channelStrs;
-    static QMutex s_safeStringMutex;
+    static QSet<QString> s_sharedGroupStrings;
 };
 
 

@@ -37,9 +37,6 @@ SoundDevice::SoundDevice(UserSettingsPointer config, SoundManager* sm)
           m_framesPerBuffer(0) {
 }
 
-SoundDevice::~SoundDevice() {
-}
-
 int SoundDevice::getNumInputChannels() const {
     return m_iNumInputChannels;
 }

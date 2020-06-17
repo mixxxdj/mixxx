@@ -9,7 +9,7 @@
 class AnalyzerEbur128 : public Analyzer {
   public:
     AnalyzerEbur128(UserSettingsPointer pConfig);
-    virtual ~AnalyzerEbur128();
+    ~AnalyzerEbur128() override;
 
     static bool isEnabled(const ReplayGainSettings& rgSettings) {
         return rgSettings.isAnalyzerEnabled(2);

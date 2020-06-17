@@ -47,10 +47,6 @@ class ControlObject : public QObject {
         ConfigKey key(group, item);
         return getControl(key, warn);
     }
-    static inline ControlObject* getControl(const char* group, const char* item, bool warn = true) {
-        ConfigKey key(group, item);
-        return getControl(key, warn);
-    }
 
     QString name() const {
         return m_pControl ?  m_pControl->name() : QString();

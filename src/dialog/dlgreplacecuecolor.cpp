@@ -379,7 +379,7 @@ void DlgReplaceCueColor::slotApply() {
 
     bool canceled = false;
 
-    QMap<TrackPointer, int> cues;
+    QMultiMap<TrackPointer, int> cues;
     for (const auto& row : rows) {
         QCoreApplication::processEvents();
         if (progress.wasCanceled()) {
@@ -401,7 +401,7 @@ void DlgReplaceCueColor::slotApply() {
             // after committing the database changes
             TrackPointer pTrack = GlobalTrackCacheLocker().lookupTrackById(row.trackId);
             if (pTrack) {
-                cues.insertMulti(pTrack, row.id);
+                cues.insert(pTrack, row.id);
             }
         }
     }

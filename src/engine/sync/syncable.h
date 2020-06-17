@@ -40,7 +40,7 @@ inline bool isMaster(SyncMode mode) {
 /// in Master Sync.
 class Syncable {
   public:
-    virtual ~Syncable() { }
+    virtual ~Syncable() = default;
     virtual const QString& getGroup() const = 0;
     virtual EngineChannel* getChannel() const = 0;
 
@@ -69,6 +69,7 @@ class Syncable {
     // include scratch or FF/REW values.
     virtual double getBpm() const = 0;
 
+    // Gets the beat distance as a fraction from 0 to 1
     virtual double getBeatDistance() const = 0;
     // Gets the speed of the syncable if it was playing at 1.0 rate.
     virtual double getBaseBpm() const = 0;
@@ -98,7 +99,7 @@ class Syncable {
 /// information about sync change requests.
 class SyncableListener {
   public:
-    virtual ~SyncableListener() {}
+    virtual ~SyncableListener() = default;
 
     // Used by Syncables to tell EngineSync it wants to be enabled in a
     // specific mode. If the state change is accepted, EngineSync calls

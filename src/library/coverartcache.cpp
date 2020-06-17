@@ -1,13 +1,14 @@
+#include "library/coverartcache.h"
+
 #include <QFutureWatcher>
 #include <QPixmapCache>
 #include <QtConcurrentRun>
 #include <QtDebug>
 
-#include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "util/compatibility.h"
 #include "util/logger.h"
-
+#include "util/thread_affinity.h"
 
 namespace {
 
@@ -176,26 +177,30 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
     res.signalWhenDone = signalWhenDone;
     DEBUG_ASSERT(!res.coverInfoUpdated);
 
-    QImage image = coverInfo.loadImage(
+    auto loadedImage = coverInfo.loadImage(
             pTrack ? pTrack->getSecurityToken() : SecurityTokenPointer());
+    if (!loadedImage.image.isNull()) {
+        // Refresh hash before resizing the original image!
+        res.coverInfoUpdated = coverInfo.refreshImageHash(loadedImage.image);
+        if (pTrack && res.coverInfoUpdated) {
+            kLogger.info()
+                    << "Updating cover info of track"
+                    << coverInfo.trackLocation;
+            pTrack->setCoverInfo(coverInfo);
+        }
 
-    // Refresh hash before resizing the original image!
-    res.coverInfoUpdated = coverInfo.refreshImageHash(image);
-    if (pTrack && res.coverInfoUpdated) {
-        kLogger.info()
-                << "Updating cover info of track"
-                << coverInfo.trackLocation;
-        pTrack->setCoverInfo(coverInfo);
+        // Resize image to requested size
+        if (desiredWidth > 0) {
+            // Adjust the cover size according to the request
+            // or downsize the image for efficiency.
+            loadedImage.image = resizeImageWidth(loadedImage.image, desiredWidth);
+        }
     }
 
-    // Resize image to requested size
-    if (!image.isNull() && desiredWidth > 0) {
-        // Adjust the cover size according to the request
-        // or downsize the image for efficiency.
-        image = resizeImageWidth(image, desiredWidth);
-    }
-
-    res.cover = CoverArt(coverInfo, image, desiredWidth);
+    res.coverArt = CoverArt(
+            std::move(coverInfo),
+            std::move(loadedImage),
+            desiredWidth);
     return res;
 }
 
@@ -213,30 +218,60 @@ void CoverArtCache::coverLoaded() {
     }
 
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "coverLoaded" << res.cover;
+        kLogger.trace() << "coverLoaded" << res.coverArt;
     }
 
-    // Don't cache full size covers (resizedToWidth = 0)
-    // Large cover art wastes space in our cache and will likely
-    // uncache a lot of the small covers we need in the library
-    // table.
-    // Full size covers are used in the Skin Widgets, which are
-    // loaded with an artificial delay anyway and an additional
-    // re-load delay can be accepted.
-
-    // Create pixmap, GUI thread only
-    QPixmap pixmap = QPixmap::fromImage(res.cover.image);
-    if (!pixmap.isNull() && res.cover.resizedToWidth != 0) {
-        // we have to be sure that res.cover.hash is unique
-        // because insert replaces the images with the same key
-        QString cacheKey = pixmapCacheKey(
-                res.cover.hash, res.cover.resizedToWidth);
-        QPixmapCache::insert(cacheKey, pixmap);
+    QPixmap pixmap;
+    if (res.coverArt.loadedImage.result != CoverInfo::LoadedImage::Result::NoImage) {
+        if (res.coverArt.loadedImage.result == CoverInfo::LoadedImage::Result::Ok) {
+            DEBUG_ASSERT(!res.coverArt.loadedImage.filePath.isEmpty());
+        } else {
+            DEBUG_ASSERT(res.coverArt.loadedImage.image.isNull());
+            kLogger.warning()
+                    << "Failed to load cover art image"
+                    << res.coverArt.loadedImage
+                    << "for track"
+                    << res.coverArt.trackLocation;
+            // Substitute missing cover art with a placeholder image to avoid high CPU load
+            // See also: https://bugs.launchpad.net/mixxx/+bug/1879160
+            const int imageSize = math_max(1, res.coverArt.resizedToWidth);
+            QImage placeholderImage(imageSize, imageSize, QImage::Format_RGB32);
+            // TODO(uklotzde): Use optional cover art background color (if available)
+            // instead of Qt::darkGray
+            placeholderImage.fill(
+                    mixxx::RgbColor::toQColor(std::nullopt /*res.coverArt.color*/, Qt::darkGray));
+            res.coverArt.loadedImage.image = placeholderImage;
+        }
+        // Create pixmap, GUI thread only!
+        DEBUG_ASSERT_MAIN_THREAD_AFFINITY();
+        DEBUG_ASSERT(!res.coverArt.loadedImage.image.isNull());
+        pixmap = QPixmap::fromImage(res.coverArt.loadedImage.image);
+        // Don't cache full size covers (resizedToWidth = 0)
+        // Large cover art wastes space in our cache and will likely
+        // uncache a lot of the small covers we need in the library
+        // table.
+        // Full size covers are used in the Skin Widgets, which are
+        // loaded with an artificial delay anyway and an additional
+        // re-load delay can be accepted.
+        if (res.coverArt.resizedToWidth > 0) {
+            DEBUG_ASSERT(!pixmap.isNull());
+            // It is very unlikely that res.coverArt.hash generates the
+            // same hash for different images. Otherwise the wrong image would
+            // be displayed when loaded from the cache.
+            QString cacheKey = pixmapCacheKey(
+                    res.coverArt.hash, res.coverArt.resizedToWidth);
+            QPixmapCache::insert(cacheKey, pixmap);
+        }
     }
 
     m_runningRequests.remove(qMakePair(res.pRequestor, res.requestedHash));
 
     if (res.signalWhenDone) {
-        emit coverFound(res.pRequestor, res.cover, pixmap, res.requestedHash, res.coverInfoUpdated);
+        emit coverFound(
+                res.pRequestor,
+                std::move(res.coverArt),
+                pixmap,
+                res.requestedHash,
+                res.coverInfoUpdated);
     }
 }

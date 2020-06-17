@@ -28,22 +28,22 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
 
   public slots:
     /// Called when the preference dialog (not this page) is shown to the user.
-    void slotUpdate();
+    void slotUpdate() override;
     /// Called when the user clicks the global "Apply" button.
-    void slotApply();
+    void slotApply() override;
     /// Called when the user clicks the global "Cancel" button.
-    void slotCancel();
+    void slotCancel() override;
     /// Called when the user clicks the global "Reset to Defaults" button.
-    void slotResetToDefaults();
+    void slotResetToDefaults() override;
 
   private slots:
     void rescanControllers();
     void slotHighlightDevice(DlgPrefController* dialog, bool enabled);
-    void slotOpenLocalFile(const QString& file);
 
   private:
     void destroyControllerWidgets();
     void setupControllerWidgets();
+    void openLocalFile(const QString& file);
 
     DlgPreferences* m_pDlgPreferences;
     UserSettingsPointer m_pConfig;

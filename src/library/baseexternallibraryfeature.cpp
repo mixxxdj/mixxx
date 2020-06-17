@@ -114,7 +114,7 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
         playlistDao.appendTracksToPlaylist(trackIds, playlistId);
     } else {
         // Do not change strings here without also changing strings in
-        // src/library/baseplaylistfeature.cpp
+        // src/library/trackset/baseplaylistfeature.cpp
         QMessageBox::warning(NULL,
                              tr("Playlist Creation Failed"),
                              tr("An unknown error occurred while creating playlist: ")

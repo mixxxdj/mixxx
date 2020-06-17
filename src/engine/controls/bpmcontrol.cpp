@@ -254,6 +254,9 @@ void BpmControl::slotControlBeatSync(double v) {
 }
 
 bool BpmControl::syncTempo() {
+    if (getSyncMode() == SYNC_MASTER_EXPLICIT) {
+        return false;
+    }
     EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
 
     if (!pOtherEngineBuffer) {
@@ -313,8 +316,7 @@ bool BpmControl::syncTempo() {
             desiredRate *= 2.0;
         }
 
-        if (desiredRate < 2.0 && desiredRate > 0.5)
-        {
+        if (desiredRate < 2.0 && desiredRate > 0.5) {
             m_pEngineBpm->set(m_pLocalBpm->get() * desiredRate);
             m_pRateRatio->set(desiredRate);
             return true;
@@ -424,7 +426,8 @@ double BpmControl::calcSyncAdjustment(bool userTweakingSync) {
     // boundaries too.
 
     double syncTargetBeatDistance = m_dSyncTargetBeatDistance.getValue();
-    double thisBeatDistance = m_pThisBeatDistance->get();
+    // We want the untweaked beat distance, so we have to add the offset here.
+    double thisBeatDistance = m_pThisBeatDistance->get() + m_dUserOffset.getValue();
     double shortest_distance = shortestPercentageChange(
             syncTargetBeatDistance, thisBeatDistance);
 
@@ -432,7 +435,8 @@ double BpmControl::calcSyncAdjustment(bool userTweakingSync) {
         kLogger.trace() << m_group << "****************";
         kLogger.trace() << "master beat distance:" << syncTargetBeatDistance;
         kLogger.trace() << "my     beat distance:" << thisBeatDistance;
-        kLogger.trace() << "error               :" << (shortest_distance - m_dUserOffset.getValue());
+        kLogger.trace() << "error               :"
+                        << (shortest_distance - m_dUserOffset.getValue());
         kLogger.trace() << "user offset         :" << m_dUserOffset.getValue();
     }
 
@@ -634,13 +638,18 @@ double BpmControl::getNearestPositionInPhase(
 
         double dOtherPosition = pOtherEngineBuffer->getExactPlayPos();
 
-        if (!BpmControl::getBeatContext(otherBeats, dOtherPosition,
-                                        NULL, NULL, NULL, &dOtherBeatFraction)) {
+        if (!BpmControl::getBeatContext(otherBeats,
+                    dOtherPosition,
+                    NULL,
+                    NULL,
+                    NULL,
+                    &dOtherBeatFraction)) {
             return dThisPosition;
         }
     }
 
-    bool this_near_next = dThisNextBeat - dThisPosition <= dThisPosition - dThisPrevBeat;
+    bool this_near_next =
+            dThisNextBeat - dThisPosition <= dThisPosition - dThisPrevBeat;
     bool other_near_next = dOtherBeatFraction >= 0.5;
 
     // We want our beat fraction to be identical to theirs.
@@ -660,12 +669,13 @@ double BpmControl::getNearestPositionInPhase(
     // infinite beatgrids because the assumption that findNthBeat(-2) always
     // works will be wrong then.
 
-    double dNewPlaypos = (dOtherBeatFraction + m_dUserOffset.getValue()) * dThisBeatLength;
+    double dNewPlaypos =
+            (dOtherBeatFraction + m_dUserOffset.getValue()) * dThisBeatLength;
     if (this_near_next == other_near_next) {
         dNewPlaypos += dThisPrevBeat;
     } else if (this_near_next && !other_near_next) {
         dNewPlaypos += dThisNextBeat;
-    } else {  //!this_near_next && other_near_next
+    } else { //!this_near_next && other_near_next
         dThisPrevBeat = pBeats->findNthBeat(dThisPosition, -2);
         dNewPlaypos += dThisPrevBeat;
     }
@@ -727,58 +737,62 @@ double BpmControl::getBeatMatchPosition(
         return dThisPosition;
     }
 
+    EngineBuffer* pOtherEngineBuffer = nullptr;
+    // explicit master always syncs to itself, so keep it null
+    if (getSyncMode() != SYNC_MASTER_EXPLICIT) {
+        pOtherEngineBuffer = pickSyncTarget();
+    }
+    if (playing) {
+        if (!pOtherEngineBuffer || pOtherEngineBuffer->getSpeed() == 0.0) {
+            // "this" track is playing, or just starting
+            // only match phase if the sync target is playing as well
+            // else use the previous phase of "this" track before the seek
+            pOtherEngineBuffer = getEngineBuffer();
+        }
+    } else if (!pOtherEngineBuffer) {
+        return dThisPosition;
+    }
+
     // Get the current position of this deck.
     double dThisPrevBeat = m_pPrevBeat->get();
     double dThisNextBeat = m_pNextBeat->get();
-    double dThisBeatLength;
-    if (dThisPosition > dThisNextBeat || dThisPosition < dThisPrevBeat) {
+    double dThisBeatLength = -1;
+
+    // Look up the next beat and beat length for the new position
+    if (dThisNextBeat == -1 ||
+            dThisPosition > dThisNextBeat ||
+            (dThisPrevBeat != -1 && dThisPosition < dThisPrevBeat)) {
         if (kLogger.traceEnabled()) {
-            kLogger.trace() << "BpmControl::getNearestPositionInPhase out of date"
-                            << dThisPosition << dThisNextBeat << dThisPrevBeat;
+            kLogger.trace() << "BpmControl::getBeatMatchPosition out of date"
+                            << dThisPrevBeat << dThisPosition << dThisNextBeat;
         }
         // This happens if dThisPosition is the target position of a requested
-        // seek command
-        if (!getBeatContext(
-                    m_pBeats,
-                    dThisPosition,
-                    &dThisPrevBeat,
-                    &dThisNextBeat,
-                    &dThisBeatLength,
-                    nullptr)) {
+        // seek command.  Get new prev and next beats for the calculation.
+        getBeatContext(
+                m_pBeats,
+                dThisPosition,
+                &dThisPrevBeat,
+                &dThisNextBeat,
+                &dThisBeatLength,
+                nullptr);
+        // now we either have a useful next beat or there is none
+        if (dThisNextBeat == -1) {
+            // We can't match the next beat, give up.
             return dThisPosition;
         }
     } else {
-        if (!getBeatContextNoLookup(
-                    dThisPosition,
-                    dThisPrevBeat,
-                    dThisNextBeat,
-                    &dThisBeatLength,
-                    nullptr)) {
-            return dThisPosition;
+        if (kLogger.traceEnabled()) {
+            kLogger.trace() << "BpmControl::getBeatMatchPosition up to date"
+                            << dThisPrevBeat << dThisPosition << dThisNextBeat;
         }
-    }
-
-    double dOtherPrevBeat;
-    double dOtherNextBeat;
-    double dOtherBeatLength;
-    double dOtherBeatFraction;
-    // If not, we have to figure it out
-    EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
-    if (pOtherEngineBuffer == nullptr) {
-        if (playing) {
-            // Sync to itself if we are already playing
-            pOtherEngineBuffer = getEngineBuffer();
-        } else {
-            return dThisPosition;
-        }
-    }
-
-    if (playing) {
-        // "this" track is playing, or just starting
-        // only match phase if the sync target is playing as well
-        if (pOtherEngineBuffer->getSpeed() == 0.0) {
-            return dThisPosition;
-        }
+        // We are between the previous and next beats so we can try a standard
+        // lookup of the beat length.
+        getBeatContextNoLookup(
+                dThisPosition,
+                dThisPrevBeat,
+                dThisNextBeat,
+                &dThisBeatLength,
+                nullptr);
     }
 
     TrackPointer otherTrack = pOtherEngineBuffer->getLoadedTrack();
@@ -791,6 +805,10 @@ double BpmControl::getBeatMatchPosition(
 
     double dOtherPosition = pOtherEngineBuffer->getExactPlayPos();
 
+    double dOtherPrevBeat = -1;
+    double dOtherNextBeat = -1;
+    double dOtherBeatLength = -1;
+    double dOtherBeatFraction = -1;
     if (!BpmControl::getBeatContext(
                 otherBeats,
                 dOtherPosition,
@@ -798,6 +816,11 @@ double BpmControl::getBeatMatchPosition(
                 &dOtherNextBeat,
                 &dOtherBeatLength,
                 &dOtherBeatFraction)) {
+        return dThisPosition;
+    }
+
+    if (dOtherBeatLength == -1 || dOtherBeatFraction == -1) {
+        // the other Track has no usable beat info, do not seek.
         return dThisPosition;
     }
 
@@ -823,12 +846,14 @@ double BpmControl::getBeatMatchPosition(
     double seekMatch = (thisDivSec - otherDivSec) *
             dThisSampleRate * dThisRateRatio;
 
-    if (dThisBeatLength / 2 < seekMatch) {
-        // seek to previous beat, because of shorter distance
-        seekMatch -= dThisBeatLength;
-    } else if (dThisBeatLength / 2 < -seekMatch) {
-        // seek to beat after next, because of shorter distance
-        seekMatch += dThisBeatLength;
+    if (dThisBeatLength > 0) {
+        if (dThisBeatLength / 2 < seekMatch) {
+            // seek to previous beat, because of shorter distance
+            seekMatch -= dThisBeatLength;
+        } else if (dThisBeatLength / 2 < -seekMatch) {
+            // seek to beat after next, because of shorter distance
+            seekMatch += dThisBeatLength;
+        }
     }
     double dNewPlaypos = dThisPosition + seekMatch;
 
@@ -873,7 +898,6 @@ double BpmControl::getBeatMatchPosition(
             // loops are catching
         }
     }
-
     return dNewPlaypos;
 }
 

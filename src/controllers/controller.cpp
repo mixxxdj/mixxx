@@ -6,27 +6,29 @@
 */
 
 #include <QApplication>
-#include <QScriptValue>
+#include <QJSValue>
 
 #include "controllers/controller.h"
 #include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
 #include "util/screensaver.h"
 
-Controller::Controller(UserSettingsPointer pConfig)
-        : QObject(),
-          m_pEngine(NULL),
+Controller::Controller()
+        : m_pEngine(nullptr),
           m_bIsOutputDevice(false),
           m_bIsInputDevice(false),
           m_bIsOpen(false),
-          m_bLearning(false),
-          m_pConfig(pConfig) {
+          m_bLearning(false) {
     m_userActivityInhibitTimer.start();
 }
 
 Controller::~Controller() {
     // Don't close the device here. Sub-classes should close the device in their
     // destructors.
+}
+
+ControllerJSProxy* Controller::jsProxy() {
+    return new ControllerJSProxy(this);
 }
 
 void Controller::startEngine()
@@ -36,7 +38,7 @@ void Controller::startEngine()
         qWarning() << "Controller: Engine already exists! Restarting:";
         stopEngine();
     }
-    m_pEngine = new ControllerEngine(this, m_pConfig);
+    m_pEngine = new ControllerEngine(this);
 }
 
 void Controller::stopEngine() {
@@ -138,9 +140,7 @@ void Controller::receive(const QByteArray data, mixxx::Duration timestamp) {
             continue;
         }
         function.append(".incomingData");
-        QScriptValue incomingData = m_pEngine->wrapFunctionCode(function, 2);
-        if (!m_pEngine->execute(incomingData, data, timestamp)) {
-            qWarning() << "Controller: Invalid script function" << function;
-        }
+        QJSValue incomingDataFunction = m_pEngine->wrapFunctionCode(function, 2);
+        m_pEngine->executeFunction(incomingDataFunction, data);
     }
 }

@@ -33,7 +33,7 @@ bool MidiControllerPreset::isMappable() const {
 }
 
 void MidiControllerPreset::addInputMapping(uint16_t key, MidiInputMapping mapping) {
-    m_inputMappings.insertMulti(key, mapping);
+    m_inputMappings.insert(key, mapping);
     setDirty(true);
 }
 
@@ -42,11 +42,12 @@ void MidiControllerPreset::removeInputMapping(uint16_t key) {
     setDirty(true);
 }
 
-const QHash<uint16_t, MidiInputMapping>& MidiControllerPreset::getInputMappings() const {
+const QMultiHash<uint16_t, MidiInputMapping>& MidiControllerPreset::getInputMappings() const {
     return m_inputMappings;
 }
 
-void MidiControllerPreset::setInputMappings(const QHash<uint16_t, MidiInputMapping>& mappings) {
+void MidiControllerPreset::setInputMappings(
+        const QMultiHash<uint16_t, MidiInputMapping>& mappings) {
     if (m_inputMappings != mappings) {
         m_inputMappings.clear();
         m_inputMappings.unite(mappings);
@@ -54,8 +55,9 @@ void MidiControllerPreset::setInputMappings(const QHash<uint16_t, MidiInputMappi
     }
 }
 
-void MidiControllerPreset::addOutputMapping(ConfigKey key, MidiOutputMapping mapping) {
-    m_outputMappings.insertMulti(key, mapping);
+void MidiControllerPreset::addOutputMapping(
+        ConfigKey key, MidiOutputMapping mapping) {
+    m_outputMappings.insert(key, mapping);
     setDirty(true);
 }
 
@@ -64,11 +66,13 @@ void MidiControllerPreset::removeOutputMapping(ConfigKey key) {
     setDirty(true);
 }
 
-const QHash<ConfigKey, MidiOutputMapping>& MidiControllerPreset::getOutputMappings() const {
+const QMultiHash<ConfigKey, MidiOutputMapping>&
+MidiControllerPreset::getOutputMappings() const {
     return m_outputMappings;
 }
 
-void MidiControllerPreset::setOutputMappings(const QHash<ConfigKey, MidiOutputMapping>& mappings) {
+void MidiControllerPreset::setOutputMappings(
+        const QMultiHash<ConfigKey, MidiOutputMapping>& mappings) {
     if (m_outputMappings != mappings) {
         m_outputMappings.clear();
         m_outputMappings.unite(mappings);

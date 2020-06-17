@@ -11,14 +11,13 @@
 
 #include "library/coverart.h"
 #include "library/coverartutils.h"
-#include "library/crate/cratestorage.h"
 #include "library/dao/analysisdao.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/libraryhashdao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackschema.h"
-#include "library/lastplayedcache.h"
 #include "library/queryutil.h"
+#include "library/trackset/crate/cratestorage.h"
 #include "sources/soundsourceproxy.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
@@ -318,9 +317,7 @@ void TrackDAO::slotDatabaseTracksRelocated(QList<RelocatedTrack> relocatedTracks
         }
     }
     DEBUG_ASSERT(removedTrackIds.size() <= changedTrackIds.size());
-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     DEBUG_ASSERT(!removedTrackIds.intersects(changedTrackIds));
-#endif
     if (!removedTrackIds.isEmpty()) {
         emit tracksRemoved(removedTrackIds);
     }
@@ -1459,6 +1456,7 @@ bool TrackDAO::updateTrack(Track* pTrack) const {
             "samplerate=:samplerate,"
             "bitrate=:bitrate,"
             "duration=:duration,"
+            "beats_version=:beats_version,"
             "beats_sub_version=:beats_sub_version,"
             "beats=:beats,"
             "bpm_lock=:bpm_lock,"

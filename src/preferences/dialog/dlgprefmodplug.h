@@ -20,10 +20,9 @@ class DlgPrefModplug : public DlgPreferencePage {
     virtual ~DlgPrefModplug();
 
   public slots:
-    /** Apply changes to widget */
-    void slotApply();
-    void slotUpdate();
-    void slotResetToDefaults();
+    void slotApply() override;
+    void slotUpdate() override;
+    void slotResetToDefaults() override;
 
     void loadSettings();
     void saveSettings();

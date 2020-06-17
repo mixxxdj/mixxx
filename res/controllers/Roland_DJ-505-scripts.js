@@ -222,7 +222,7 @@ DJ505.browseEncoder = new components.Encoder({
                 this.isLongPressed = false;
                 this.longPressTimer = engine.beginTimer(
                     this.longPressTimeout,
-                    function() { this.isLongPressed = true; },
+                    function() { this.isLongPressed = true; }.bind(this),
                     true
                 );
 
@@ -490,7 +490,7 @@ DJ505.Deck = function(deckNumbers, offset) {
 
         // Send a value between 0x00 and 0x7F to set jog wheel LED indicator
         midi.sendShortMsg(status, 0x06, Math.round(0x1f * value + 0x20 * this.beatIndex));
-    });
+    }.bind(this));
 
     // ========================== LOOP SECTION ==============================
 
@@ -599,12 +599,8 @@ DJ505.Deck = function(deckNumbers, offset) {
     this.sync = new components.Button({
         midi: [0x90 + offset, 0x02],
         group: "[Channel" + deckNumbers + "]",
-        outKey: "sync_mode",
-        flickerState: false,
+        outKey: "sync_enabled",
         output: function(value, _group, _control) {
-            if (value === 3) {
-                value = this.flickerState;
-            }
             midi.sendShortMsg(this.midi[0], value ? 0x02 : 0x03, this.on);
         },
         input: function(channel, control, value, _status, _group) {
@@ -612,7 +608,7 @@ DJ505.Deck = function(deckNumbers, offset) {
                 this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
                     this.onLongPress();
                     this.longPressTimer = 0;
-                }, true);
+                }.bind(this), true);
             } else if (this.longPressTimer !== 0) {
                 // Button released after short press
                 engine.stopTimer(this.longPressTimer);
@@ -625,11 +621,7 @@ DJ505.Deck = function(deckNumbers, offset) {
                 script.triggerControl(this.group, "beatsync", 1);
             };
             this.onLongPress = function() {
-                if (engine.getValue(this.group, "sync_enabled")) {
-                    script.toggleControl(this.group, "sync_master");
-                } else {
-                    engine.setValue(this.group, "sync_enabled", 1);
-                }
+                engine.setValue(this.group, "sync_enabled", 1);
             };
         },
         shift: function() {
@@ -639,20 +631,6 @@ DJ505.Deck = function(deckNumbers, offset) {
             this.onLongPress = function() {
                 script.toggleControl(this.group, "quantize");
             };
-        },
-        connect: function() {
-            components.Button.prototype.connect.call(this); // call parent connect
-            this.flickerTimer = engine.beginTimer(500, function() {
-                this.flickerState = !this.flickerState;
-                this.trigger();
-            });
-        },
-        disconnect: function() {
-            components.Button.prototype.disconnect.call(this); // call parent disconnect
-            if (this.flickerTimer) {
-                engine.stopTimer(this.flickerTimer);
-                this.flickerTimer = 0;
-            }
         },
     });
 
@@ -680,18 +658,21 @@ DJ505.Deck = function(deckNumbers, offset) {
 
     this.pfl = new components.Button({
         midi: [0x90 + offset, 0x1B],
+        group: "[Channel" + deckNumbers + "]",
         type: components.Button.prototype.types.toggle,
         inKey: "pfl",
         outKey: "pfl",
     });
 
     this.tapBPM = new components.Button({
+        midi: [0x90 + offset, 0x12],
+        group: "[Channel" + deckNumbers + "]",
         input: function(_channel, _control, value, _status, group) {
             if (value) {
                 this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
                     this.onLongPress(group);
                     this.longPressTimer = 0;
-                }, true);
+                }.bind(this), true);
             } else if (this.longPressTimer !== 0) {
                 // Button released after short press
                 engine.stopTimer(this.longPressTimer);
@@ -744,7 +725,7 @@ DJ505.DeckToggleButton.prototype.input = function(channel, control, value, statu
         // Button was pressed
         this.longPressTimer = engine.beginTimer(
             this.longPressTimeout,
-            function() { this.isLongPressed = true; },
+            function() { this.isLongPressed = true; }.bind(this),
             true
         );
         this.secondaryDeck = !this.secondaryDeck;
@@ -878,7 +859,7 @@ DJ505.Sampler = function() {
             this.playbackTimer = engine.beginTimer(500, function() {
                 midi.sendShortMsg(0xBA, 0x02, this.playbackCounter);
                 this.playbackCounter = (this.playbackCounter % 4) + 1;
-            });
+            }.bind(this));
         } else if (status === 0xFC) {
             if (this.playbackTimer) {
                 engine.stopTimer(this.playbackTimer);
@@ -959,7 +940,7 @@ DJ505.SlipModeButton.prototype.unshift = function() {
             function() {
                 this.doubleTapped = false;
                 this.doubleTapTimer = null;
-            },
+            }.bind(this),
             true
         );
     };
@@ -1701,7 +1682,7 @@ DJ505.PitchPlayMode = function(deck, offset) {
                         if (engine.getValue(this.group, this.outKey)) {
                             this.outputColor(id);
                         }
-                    });
+                    }.bind(this));
                 }
             };
             if (this.connections[0] !== undefined) {

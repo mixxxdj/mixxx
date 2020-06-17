@@ -15,7 +15,7 @@
 class EncoderFlacSettings : public EncoderRecordingSettings {
   public:
     EncoderFlacSettings(UserSettingsPointer pConfig);
-    virtual ~EncoderFlacSettings();
+    ~EncoderFlacSettings() override = default;
 
     // Indicates that it uses the compression slider section of the preferences
     bool usesCompressionSlider() const override;
@@ -27,10 +27,10 @@ class EncoderFlacSettings : public EncoderRecordingSettings {
     virtual int getCompression() const override;
     // Returns the list of radio options to show to the user
     QList<OptionsGroup> getOptionGroups() const override;
-    // Selects the option by its index. If it is a single-element option, 
+    // Selects the option by its index. If it is a single-element option,
     // index 0 means disabled and 1 enabled.
     void setGroupOption(QString groupCode, int optionIndex) override;
-    // Return the selected option of the group. If it is a single-element option, 
+    // Return the selected option of the group. If it is a single-element option,
     // 0 means disabled and 1 enabled.
     int getSelectedOption(QString groupCode) const override;
 
@@ -49,4 +49,3 @@ class EncoderFlacSettings : public EncoderRecordingSettings {
 };
 
 #endif // ENCODERFLACSETTINGS_H
-

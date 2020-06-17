@@ -43,10 +43,7 @@ BaseSqlTableModel::BaseSqlTableModel(
         QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
         const char* settingsNamespace)
-        : BaseTrackTableModel(
-                  settingsNamespace,
-                  pTrackCollectionManager,
-                  parent),
+        : BaseTrackTableModel(parent, pTrackCollectionManager, settingsNamespace),
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_database(pTrackCollectionManager->internalCollection()->database()),
           m_bInitialized(false),
@@ -734,8 +731,8 @@ void BaseSqlTableModel::tracksChanged(QSet<TrackId> trackIds) {
 
     const int numColumns = columnCount();
     for (const auto& trackId : trackIds) {
-        QLinkedList<int> rows = getTrackRows(trackId);
-        foreach (int row, rows) {
+        const auto rows = getTrackRows(trackId);
+        for (int row : rows) {
             //qDebug() << "Row in this result set was updated. Signalling update. track:" << trackId << "row:" << row;
             QModelIndex topLeft = index(row, 0);
             QModelIndex bottomRight = index(row, numColumns);

@@ -1,6 +1,6 @@
 <!--
 Description:
-  A minimal deck container, visible when the library is maximized 
+  A minimal deck container, visible when the library is maximized
   | loop      | Play/ | Cover/ | track title                   |
   | indicator | Pasue | Spinny | BPM | Key | elapsed/remaining |
 Variables:
@@ -37,7 +37,7 @@ Variables:
                     <TooltipId>track_title</TooltipId>
                     <ObjectName>TrackTitleMini</ObjectName>
                     <Size>90me,20f</Size>
-                    <Property>title</Property>
+                    <Property>titleInfo</Property>
                     <Alignment>left</Alignment>
                     <Elide>right</Elide>
                     <Channel><Variable name="chanNum"/></Channel>
