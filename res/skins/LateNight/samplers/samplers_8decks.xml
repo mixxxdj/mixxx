@@ -1,0 +1,133 @@
+<Template>
+  <WidgetGroup>
+    <ObjectName>SamplerContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+
+      <!-- Select between big or small samplers -->
+      <WidgetStack currentpage="[Skin],expand_samplers">
+        <Children>
+
+          <!--8 small Samplers -->
+          <WidgetGroup>
+            <ObjectName>SamplerRow</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <SingletonContainer>
+                <ObjectName>SamplerMini1_Singleton</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerMini2_Singleton</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerMini3_Singleton</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerMini4_Singleton</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerExpand_Singleton</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerMini5_Singleton</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerMini6_Singleton</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerMini7_Singleton</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerMini8_Singleton</ObjectName>
+              </SingletonContainer>
+
+            </Children>
+          </WidgetGroup>
+
+          <!--8 big Samplers -->
+          <WidgetGroup trigger="[Skin],expand_samplers" on_hide_select="0">
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <!-- First row -->
+              <WidgetGroup>
+                <ObjectName>SamplerRow</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+
+                  <SingletonContainer>
+                    <ObjectName>Sampler1_Singleton</ObjectName>
+                  </SingletonContainer>
+
+                  <SingletonContainer>
+                    <ObjectName>Sampler2_Singleton</ObjectName>
+                  </SingletonContainer>
+
+                  <SingletonContainer>
+                    <ObjectName>SamplerExpand_Singleton</ObjectName>
+                  </SingletonContainer>
+
+                  <Template src="skin:sampler.xml">
+                    <SetVariable name="SamplerNum">5</SetVariable>
+                  </Template>
+
+                  <Template src="skin:sampler.xml">
+                    <SetVariable name="SamplerNum">6</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup><!-- /First row -->
+
+              <WidgetGroup><!-- Second row -->
+                <ObjectName>SamplerRow</ObjectName>
+                <SizePolicy>min,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+
+                  <SingletonContainer>
+                    <ObjectName>Sampler3_Singleton</ObjectName>
+                  </SingletonContainer>
+
+                  <SingletonContainer>
+                    <ObjectName>Sampler4_Singleton</ObjectName>
+                  </SingletonContainer>
+
+                  <WidgetGroup>
+                    <ObjectName>MicAuxRackFiller</ObjectName>
+                    <Size>20f,1me</Size>
+                  </WidgetGroup>
+
+                  <Template src="skin:sampler.xml">
+                    <SetVariable name="SamplerNum">7</SetVariable>
+                  </Template>
+
+                  <Template src="skin:sampler.xml">
+                    <SetVariable name="SamplerNum">8</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup>
+              <!-- /Second row -->
+
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetStack>
+
+    </Children>
+  </WidgetGroup>
+</Template>
