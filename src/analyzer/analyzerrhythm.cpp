@@ -24,6 +24,8 @@ namespace {
 constexpr float kStepSecs = 0.01161f;
 // results in 43 Hz @ 44.1 kHz / 47 Hz @ 48 kHz / 47 Hz @ 96 kHz
 constexpr int kMaximumBinSizeHz = 50; // Hz
+// This is a quick hack to make a beatmap with only downbeats - will affect the bpm
+constexpr bool useDownbeatOnly = true;
 
 DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
     // These are the defaults for the VAMP beat tracker plugin we used in Mixxx
@@ -203,15 +205,14 @@ void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
     // qDebug() << bpb;
     // qDebug() << firstDownbeat;
 
-    constexpr bool useDownbeatOnly = true;
-    size_t downbeatPositions = 0;
+    size_t nextDownbeat = firstDownbeat;
     // convert beats positions from df increments to frams
     for (size_t i = 0; i < beats.size(); ++i) {
         double result = (beats.at(i) * m_stepSize) - m_stepSize / 2;
         if (useDownbeatOnly) {
-            if ((i + firstDownbeat) % bpb == 0) {
+            if (i == nextDownbeat) {
                 m_resultBeats.push_back(mixxx::audio::FramePos(result));
-                downbeatPositions++;
+                nextDownbeat += bpb;
             }
         } else {
             m_resultBeats.push_back(mixxx::audio::FramePos(result));
