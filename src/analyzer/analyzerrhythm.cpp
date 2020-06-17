@@ -145,11 +145,84 @@ std::vector<double> AnalyzerRhythm::computeBeatsSpectralDifference(std::vector<d
     return m_downbeat->beatsSD(downsampled, downLength, beats);
 }
 
+// This naive approach for bpb did't work
+// but that's how QM Lib compute the downbeat
+// leaving the outer for for now as it might be useful later
+std::tuple<int, int> AnalyzerRhythm::computeMeter(std::vector<double>& beatsSD) {
+    // lower is included, higher excluded [)
+    int lowerBeatsPerBar = 4, higherBeatsPerBar = 5;
+    int candidateDownbeatPosition = 0, candidateBeatsPerBar = 0;
+    std::vector<std::vector<double>> specDiffSeries(higherBeatsPerBar - lowerBeatsPerBar);
+    // let's considers all bpb candidates
+    for (candidateBeatsPerBar = lowerBeatsPerBar;
+            candidateBeatsPerBar < higherBeatsPerBar;
+            candidateBeatsPerBar += 1) {
+        specDiffSeries[candidateBeatsPerBar - lowerBeatsPerBar] =
+                std::vector<double>(candidateBeatsPerBar, 0);
+        // and all downbeats position candidates
+        for (candidateDownbeatPosition = 0;
+                candidateDownbeatPosition < candidateBeatsPerBar;
+                candidateDownbeatPosition += 1) {
+            int count = 0;
+            // to compute the mean spec diff of all possible measures
+            for (int barBegin = candidateDownbeatPosition - 1;
+                    barBegin < static_cast<int>(beatsSD.size());
+                    barBegin += candidateBeatsPerBar) {
+                if (barBegin >= 0) {
+                    specDiffSeries[candidateBeatsPerBar - lowerBeatsPerBar]
+                                  [candidateDownbeatPosition] += beatsSD[barBegin];
+                    count += 1;
+                }
+            }
+            specDiffSeries[candidateBeatsPerBar - lowerBeatsPerBar]
+                          [candidateDownbeatPosition] /= count;
+        }
+    }
+    // here we find the series with largest spec diff
+    int bestBpb = 0, bestDownbeatPos = 0;
+    double value = 0;
+    for (int i = 0; i < static_cast<int>(specDiffSeries.size()); i += 1) {
+        for (int j = 0; j < static_cast<int>(specDiffSeries[i].size()); j += 1) {
+            if (specDiffSeries[i][j] > value) {
+                value = specDiffSeries[i][j];
+                bestBpb = i;
+                bestDownbeatPos = j;
+            }
+            // qDebug() << specDiffSeries[i + lowerBeatsPerBar][j];
+        }
+    }
+    return std::make_tuple(bestBpb + lowerBeatsPerBar, bestDownbeatPos);
+}
+
 void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
     m_processor.finalize();
     auto beats = this->computeBeats();
     auto beatsSD = this->computeBeatsSpectralDifference(beats);
-    qDebug() << beats;
-    qDebug() << beatsSD;
-    // TODO(Cristiano) pass results to beats class...
+    auto [bpb, firstDownbeat] = this->computeMeter(beatsSD);
+    // qDebug() << beatsSD;
+    // qDebug() << bpb;
+    // qDebug() << firstDownbeat;
+
+    constexpr bool useDownbeatOnly = true;
+    size_t downbeatPositions = 0;
+    // convert beats positions from df increments to frams
+    for (size_t i = 0; i < beats.size(); ++i) {
+        double result = (beats.at(i) * m_stepSize) - m_stepSize / 2;
+        if (useDownbeatOnly) {
+            if ((i + firstDownbeat) % bpb == 0) {
+                m_resultBeats.push_back(mixxx::audio::FramePos(result));
+                downbeatPositions++;
+            }
+        } else {
+            m_resultBeats.push_back(mixxx::audio::FramePos(result));
+        }
+    }
+    // auto [m_resultBeats, tempos] = BeatUtils::FixBeatmap(m_resultBeats) #2847
+    //  TODO(Cristiano&Harshit) THIS IS WHERE A BEAT VECTOR IS CREATED
+    mixxx::BeatsPointer pBeats = BeatFactory::makePreferredBeats(
+            m_resultBeats,
+            QHash<QString, QString>{},
+            false,
+            m_sampleRate);
+    pTrack->trySetBeats(pBeats);
 }
