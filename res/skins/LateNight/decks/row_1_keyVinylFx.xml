@@ -1,0 +1,46 @@
+<Template>
+  <WidgetGroup>
+    <ObjectName>DeckRow_1_KeyVinylFx</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+
+      <Template src="skin:/fx/assign_buttons.xml"/>
+
+      <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>ExpandingBottomBorder</ObjectName>
+        <SizePolicy>me,me</SizePolicy>
+        <MinimumSize>2,1</MinimumSize>
+        <Children/>
+      </WidgetGroup>
+
+      <Template src="skin:/decks/vinyl_controls.xml"/>
+
+      <WidgetGroup>
+        <ObjectName>ExpandingBottomBorder</ObjectName>
+        <SizePolicy>me,me</SizePolicy>
+        <MinimumSize>2,1</MinimumSize>
+      </WidgetGroup>
+
+      <WidgetGroup><Size>2f,0me</Size></WidgetGroup>
+
+      <WidgetGroup>
+        <SizePolicy>me,min</SizePolicy>
+        <MaximumSize>111,</MaximumSize>
+        <Layout>vertical</Layout>
+        <Children>
+          <SingletonContainer>
+            <ObjectName>KeyControls<Variable name="ChanNum"/></ObjectName>
+          </SingletonContainer>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_key_controls</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup><!-- DeckRow_1_KeyVinylFx -->
+</Template>
