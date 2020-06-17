@@ -1047,8 +1047,7 @@ void AutoDJCratesDAO::slotPlaylistTrackAdded(int playlistId, TrackId trackId,
 
 // Signaled by the playlist DAO when a track is removed from a playlist.
 void AutoDJCratesDAO::slotPlaylistTrackRemoved(int playlistId,
-                                               TrackId trackId,
-                                               int /* a_iPosition */) {
+        TrackId trackId) {
     // Deal with changes to the auto-DJ playlist.
     if (playlistId == m_iAutoDjPlaylistId) {
         QSqlQuery oQuery(m_database);

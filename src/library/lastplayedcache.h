@@ -39,11 +39,9 @@ class LastPlayedCache : public QObject {
     explicit LastPlayedCache(TrackCollection* trackCollection);
     ~LastPlayedCache() override = default;
 
-  public slots:
-    void slotPlaylistTrackChanged(int playlistId, TrackId trackId, int position);
-
   private:
     void initTableView();
+    void playlistTrackChanged(int playlistId, TrackId trackId);
 
     TrackCollection* const m_pTrackCollection;
     LastPlayedFetcher m_helper;

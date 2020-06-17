@@ -38,11 +38,15 @@ LastPlayedCache::LastPlayedCache(TrackCollection* trackCollection)
     connect(&m_pTrackCollection->getPlaylistDAO(),
             &PlaylistDAO::trackAdded,
             this,
-            &LastPlayedCache::slotPlaylistTrackChanged);
+            [=](int playlistId, TrackId trackId) {
+                playlistTrackChanged(playlistId, trackId);
+            });
     connect(&m_pTrackCollection->getPlaylistDAO(),
             &PlaylistDAO::trackRemoved,
             this,
-            &LastPlayedCache::slotPlaylistTrackChanged);
+            [=](int playlistId, TrackId trackId) {
+                playlistTrackChanged(playlistId, trackId);
+            });
 }
 
 void LastPlayedCache::initTableView() {
@@ -66,10 +70,21 @@ void LastPlayedCache::initTableView() {
     }
 }
 
-void LastPlayedCache::slotPlaylistTrackChanged(
-        int playlistId, TrackId trackId, int /* a_iPosition */) {
-    if (m_pTrackCollection->getPlaylistDAO().getHiddenType(playlistId) !=
-            PlaylistDAO::PLHT_SET_LOG) {
+// void LastPlayedCache::slotPlaylistTrackAdded(
+//         int playlistId, TrackId trackId, int /* position */ ) {
+//     slotPlaylistTrackChanged(playlistId, trackId);
+// }
+
+// void LastPlayedCache::slotPlaylistTrackRemoved(
+//         int playlistId, TrackId trackId, int /* position */ ) {
+//     slotPlaylistTrackChanged(playlistId, trackId);
+// }
+
+void LastPlayedCache::playlistTrackChanged(
+        int playlistId, TrackId trackId) {
+    const auto type = m_pTrackCollection->getPlaylistDAO().getHiddenType(playlistId);
+    // Deleted playlists show up as unknown type
+    if (type != PlaylistDAO::PLHT_SET_LOG && type != PlaylistDAO::PLHT_UNKNOWN) {
         return;
     }
 

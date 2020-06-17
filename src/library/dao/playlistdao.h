@@ -126,7 +126,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void renamed(int playlistId, QString newName);
     void lockChanged(int playlistId);
     void trackAdded(int playlistId, TrackId trackId, int position);
-    void trackRemoved(int playlistId, TrackId trackId, int position);
+    void trackRemoved(int playlistId, TrackId trackId);
     void tracksChanged(QSet<int> playlistIds); // added/removed/reordered
 
   private:

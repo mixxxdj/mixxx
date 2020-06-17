@@ -86,8 +86,7 @@ class AutoDJCratesDAO : public QObject {
                                 int position);
 
     // Signaled by the playlist DAO when a track is removed from a playlist.
-    void slotPlaylistTrackRemoved(int playlistId, TrackId trackId,
-                                  int position);
+    void slotPlaylistTrackRemoved(int playlistId, TrackId trackId);
 
     // Signaled by the PlayerInfo singleton when a track is loaded to, or
     // unloaded from, a deck.
