@@ -1524,6 +1524,7 @@ WPushButton#LoopIn[pressed="true"],
 WPushButton#LoopOut[pressed="true"],
 #BeatjumpControls WPushButton[value="1"],
 #RateControls WPushButton[value="1"],
+#BeatgridControls WPushButton[pressed="true"],
 #CueDeleteButton[pressed="true"] {
   background-color: #7d350d;
 }
