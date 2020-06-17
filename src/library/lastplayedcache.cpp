@@ -10,7 +10,9 @@ const QString LASTPLAYEDTABLE_NAME = "last_played_datetimes";
 
 QDateTime LastPlayedFetcher::fetch(TrackPointer pTrack) {
     m_fetchQuery.prepare(
-            "SELECT datetime_played  FROM " + LASTPLAYEDTABLE_NAME + " WHERE track_id = :trackid");
+            "SELECT datetime_played  FROM " +
+            LASTPLAYEDTABLE_NAME +
+            " WHERE track_id = :trackid");
     m_fetchQuery.bindValue(":trackid", pTrack->getId().toVariant());
     if (!m_fetchQuery.exec()) {
         LOG_FAILED_QUERY(m_fetchQuery);
