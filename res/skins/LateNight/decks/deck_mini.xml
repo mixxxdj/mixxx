@@ -96,7 +96,7 @@
               <WidgetGroup>
                 <ObjectName>OverviewBoxMini</ObjectName>
                 <SizePolicy>me,min</SizePolicy>
-                <MinimumSize>200,46</MinimumSize>
+                <MinimumSize>250,46</MinimumSize>
                 <Layout>horizontal</Layout>
                 <Children>
                   <Template src="skin:/decks/overview.xml">
