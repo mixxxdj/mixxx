@@ -31,6 +31,7 @@ class AnalyzerRhythm : public Analyzer {
     bool shouldAnalyze(TrackPointer pTrack) const;
     std::vector<double> computeBeats();
     std::vector<double> computeBeatsSpectralDifference(std::vector<double>& beats);
+    std::tuple<int, int> computeMeter(std::vector<double>& beatsSD);
     int m_iSampleRate;
     int m_iTotalSamples;
     int m_iMaxSamplesToProcess;
