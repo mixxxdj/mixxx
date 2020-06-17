@@ -83,6 +83,6 @@ Qt::ItemFlags MissingTableModel::flags(const QModelIndex &index) const {
     return readOnlyFlags(index);
 }
 
-TrackModel::CapabilitiesFlags MissingTableModel::getCapabilities() const {
-    return TRACKMODELCAPS_NONE | TRACKMODELCAPS_PURGE;
+TrackModel::Capabilities MissingTableModel::getCapabilities() const {
+    return Capability::Purge;
 }

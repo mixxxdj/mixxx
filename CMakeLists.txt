@@ -347,11 +347,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/control/controlproxy.cpp
   src/control/controlpushbutton.cpp
   src/control/controlttrotary.cpp
-  src/controllers/colormapper.cpp
-  src/controllers/colormapperjsproxy.cpp
   src/controllers/controller.cpp
   src/controllers/controllerdebug.cpp
-  src/controllers/controllerengine.cpp
   src/controllers/controllerenumerator.cpp
   src/controllers/controllerinputmappingtablemodel.cpp
   src/controllers/controllerlearningeventfilter.cpp
@@ -373,6 +370,12 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/controllers/dlgprefcontrollerdlg.ui
   src/controllers/dlgprefcontrollers.cpp
   src/controllers/dlgprefcontrollersdlg.ui
+  src/controllers/engine/controllerengine.cpp
+  src/controllers/engine/controllerenginejsproxy.cpp
+  src/controllers/engine/colormapper.cpp
+  src/controllers/engine/colormapperjsproxy.cpp
+  src/controllers/engine/scriptconnection.cpp
+  src/controllers/engine/scriptconnectionjsproxy.cpp
   src/controllers/keyboard/keyboardeventfilter.cpp
   src/controllers/learningutils.cpp
   src/controllers/midi/midicontroller.cpp
@@ -508,10 +511,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/baseexternallibraryfeature.cpp
   src/library/baseexternalplaylistmodel.cpp
   src/library/baseexternaltrackmodel.cpp
-  src/library/baseplaylistfeature.cpp
   src/library/basesqltablemodel.cpp
   src/library/basetrackcache.cpp
-  src/library/basetracksetfeature.cpp
   src/library/basetracktablemodel.cpp
   src/library/bpmdelegate.cpp
   src/library/browse/browsefeature.cpp
@@ -524,10 +525,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/coverartcache.cpp
   src/library/coverartdelegate.cpp
   src/library/coverartutils.cpp
-  src/library/crate/cratefeature.cpp
-  src/library/crate/cratefeaturehelper.cpp
-  src/library/crate/cratestorage.cpp
-  src/library/crate/cratetablemodel.cpp
   src/library/dao/analysisdao.cpp
   src/library/dao/autodjcratesdao.cpp
   src/library/dao/cuedao.cpp
@@ -567,7 +564,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/parsercsv.cpp
   src/library/parserm3u.cpp
   src/library/parserpls.cpp
-  src/library/playlistfeature.cpp
   src/library/playlisttablemodel.cpp
   src/library/previewbuttondelegate.cpp
   src/library/proxytrackmodel.cpp
@@ -587,7 +583,16 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/searchqueryparser.cpp
   src/library/serato/seratofeature.cpp
   src/library/serato/seratoplaylistmodel.cpp
-  src/library/setlogfeature.cpp
+  src/library/trackset/baseplaylistfeature.cpp
+  src/library/trackset/basetracksetfeature.cpp
+  src/library/trackset/crate/cratefeature.cpp
+  src/library/trackset/crate/cratefeaturehelper.cpp
+  src/library/trackset/crate/cratestorage.cpp
+  src/library/trackset/crate/cratetablemodel.cpp
+  src/library/trackset/playlistfeature.cpp
+  src/library/trackset/setlogfeature.cpp
+  src/library/trackset/tracksettablemodel.cpp
+  src/library/traktor/traktorfeature.cpp
   src/library/sidebarmodel.cpp
   src/library/songdownloader.cpp
   src/library/stardelegate.cpp
@@ -597,8 +602,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/trackcollection.cpp
   src/library/trackcollectionmanager.cpp
   src/library/trackloader.cpp
-  src/library/tracksettablemodel.cpp
-  src/library/traktor/traktorfeature.cpp
   src/library/treeitem.cpp
   src/library/treeitemmodel.cpp
   src/mixer/auxiliary.cpp
@@ -1418,7 +1421,7 @@ if(WIN32)
   if(STATIC_DEPS)
     target_compile_definitions(mixxx-lib PUBLIC CHROMAPRINT_NODLL)
   endif()
-   # Rubberband is always built statically and needs fftw.
+   # Chromaprint is always built statically and needs fftw.
   find_package(FFTW REQUIRED)
   target_link_libraries(mixxx-lib PUBLIC FFTW::FFTW)
 endif()
@@ -1574,6 +1577,7 @@ find_package(Qt5
     Gui
     Network
     OpenGL
+    Qml
     Script
     ScriptTools
     Sql
@@ -1589,6 +1593,7 @@ target_link_libraries(mixxx-lib PUBLIC
   Qt5::Gui
   Qt5::Network
   Qt5::OpenGL
+  Qt5::Qml
   Qt5::Script
   Qt5::ScriptTools
   Qt5::Sql
@@ -1699,16 +1704,6 @@ elseif(WIN32)
   endif()
 endif()
 
-# QtScriptByteArray
-add_library(QtScriptByteArray STATIC EXCLUDE_FROM_ALL
-  lib/qtscript-bytearray/bytearrayclass.cpp
-  lib/qtscript-bytearray/bytearrayprototype.cpp
-)
-set_target_properties(QtScriptByteArray PROPERTIES AUTOMOC ON)
-target_link_libraries(QtScriptByteArray Qt5::Core)
-target_include_directories(mixxx-lib PUBLIC lib/qtscript-bytearray)
-target_link_libraries(mixxx-lib PUBLIC QtScriptByteArray)
-
 # Queen Mary DSP
 add_library(QueenMaryDsp STATIC EXCLUDE_FROM_ALL
   # lib/qm-dsp/base/KaiserWindow.cpp
@@ -1796,24 +1791,32 @@ if(WIN32)
 endif()
 
 # SoundTouch
-add_library(SoundTouch STATIC EXCLUDE_FROM_ALL
-  lib/soundtouch/AAFilter.cpp
-  lib/soundtouch/BPMDetect.cpp
-  lib/soundtouch/FIFOSampleBuffer.cpp
-  lib/soundtouch/FIRFilter.cpp
-  lib/soundtouch/InterpolateCubic.cpp
-  lib/soundtouch/InterpolateLinear.cpp
-  lib/soundtouch/InterpolateShannon.cpp
-  lib/soundtouch/PeakFinder.cpp
-  lib/soundtouch/RateTransposer.cpp
-  lib/soundtouch/SoundTouch.cpp
-  lib/soundtouch/TDStretch.cpp
-  lib/soundtouch/cpu_detect_x86.cpp
-  lib/soundtouch/mmx_optimized.cpp
-  lib/soundtouch/sse_optimized.cpp
-)
-target_include_directories(SoundTouch SYSTEM PUBLIC lib/soundtouch)
-target_link_libraries(mixxx-lib PUBLIC SoundTouch)
+find_package(SoundTouch)
+cmake_dependent_option(SoundTouch_STATIC "Link libSoundTouch statically" OFF "SoundTouch_FOUND" ON)
+if(SoundTouch_STATIC)
+  message(STATUS "Preparing internal libSoundTouch")
+  add_library(SoundTouch STATIC EXCLUDE_FROM_ALL
+    lib/soundtouch/AAFilter.cpp
+    lib/soundtouch/BPMDetect.cpp
+    lib/soundtouch/FIFOSampleBuffer.cpp
+    lib/soundtouch/FIRFilter.cpp
+    lib/soundtouch/InterpolateCubic.cpp
+    lib/soundtouch/InterpolateLinear.cpp
+    lib/soundtouch/InterpolateShannon.cpp
+    lib/soundtouch/PeakFinder.cpp
+    lib/soundtouch/RateTransposer.cpp
+    lib/soundtouch/SoundTouch.cpp
+    lib/soundtouch/TDStretch.cpp
+    lib/soundtouch/cpu_detect_x86.cpp
+    lib/soundtouch/mmx_optimized.cpp
+    lib/soundtouch/sse_optimized.cpp
+  )
+  target_include_directories(SoundTouch SYSTEM PUBLIC lib)
+  target_link_libraries(mixxx-lib PUBLIC SoundTouch)
+else()
+  message(STATUS "Linking libSoundTouch dynamically")
+  target_link_libraries(mixxx-lib PUBLIC SoundTouch::SoundTouch)
+endif()
 
 # TagLib
 find_package(Taglib REQUIRED)
@@ -1937,7 +1940,14 @@ endif()
 # FAAD AAC audio file decoder plugin
 find_package(MP4)
 find_package(MP4v2)
-option(FAAD "FAAD AAC audio file decoder support" OFF)
+# It is enabled by default on Linux only, because other targets have other solutions.
+# Used FAAD_DEFAULT because the complex expression is not supported by cmake_dependent_option()
+if(UNIX AND NOT APPLE AND (MP4_FOUND OR MP4v2_FOUND))
+  set(FAAD_DEFAULT TRUE)
+else()
+  set(FAAD_DEFAULT FALSE)
+endif()
+cmake_dependent_option(FAAD "FAAD AAC audio file decoder support" ON "FAAD_DEFAULT" OFF)
 if(FAAD)
   if(NOT MP4_FOUND AND NOT MP4v2_FOUND)
     message(FATAL_ERROR "FAAD AAC audio support requires libmp4 or libmp4v2 with development headers.")
@@ -2181,7 +2191,7 @@ endif()
 
 # QtKeychain
 find_package(Qt5Keychain QUIET)
-option(QTKEYCHAIN "Secure credentials storage support for Live Broadcasting profiles" OFF)
+option(QTKEYCHAIN "Secure credentials storage support for Live Broadcasting profiles" ON)
 if(QTKEYCHAIN)
   if(NOT Qt5Keychain_FOUND)
     message(FATAL_ERROR "Secure credential storage support requires the Qt5::Keychain component.")

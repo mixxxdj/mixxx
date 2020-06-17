@@ -23,12 +23,12 @@
 
 class EngineSyncTest : public MockedEngineBackendTest {
   public:
-    std::string getMasterGroup() {
+    QString getMasterGroup() {
         Syncable* pMasterSyncable = m_pEngineSync->getMasterSyncable();
         if (pMasterSyncable) {
-            return pMasterSyncable->getGroup().toStdString();
+            return pMasterSyncable->getGroup();
         }
-        return "";
+        return QString();
     }
     bool isExplicitMaster(QString group) {
         return isMaster(group, true);
@@ -109,7 +109,7 @@ class EngineSyncTest : public MockedEngineBackendTest {
                 return false;
             }
         }
-        if (getMasterGroup() != group.toStdString()) {
+        if (getMasterGroup() != group) {
             return false;
         }
 
@@ -1865,52 +1865,67 @@ TEST_F(EngineSyncTest, UserTweakBeatDistance) {
 }
 
 TEST_F(EngineSyncTest, UserTweakPreservedInSeek) {
-    mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 128, 0.0);
+    // Ensure that when we do a seek during master sync, the user offset is maintained.
+
+    // This is about 128 bpm, but results in nice round numbers of samples.
+    const double kDivisibleBpm = 44100.0 / 344.0;
+    mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, kDivisibleBpm, 0.0);
     m_pTrack1->setBeats(pBeats1);
     mixxx::BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 130, 0.0);
     m_pTrack2->setBeats(pBeats2);
 
-    ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
-    ControlObject::getControl(ConfigKey(m_sGroup2, "quantize"))->set(1.0);
-    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(1);
     ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(1);
-    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
-    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(1);
     ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup2, "quantize"), 1.0);
-
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
-    ProcessBuffer();
 
-    EXPECT_FLOAT_EQ(0.025154950869236584,
+    ProcessBuffer();
+    EXPECT_FLOAT_EQ(kDivisibleBpm,
+            ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    EXPECT_FLOAT_EQ(kDivisibleBpm,
+            ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+
+    EXPECT_FLOAT_EQ(0.024806201,
             ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
-    EXPECT_FLOAT_EQ(0.0023582766439909299,
+    EXPECT_FLOAT_EQ(0.0023219956,
             ControlObject::get(ConfigKey(m_sGroup1, "playposition")));
 
+    ControlObject::set(ConfigKey(m_sGroup2, "playposition"), 0.2);
+    ProcessBuffer();
     ControlObject::set(ConfigKey(m_sGroup1, "playposition"), 0.2);
     ProcessBuffer();
 
-    // We expect to be two buffers ahead in a beat near 0.2
-    EXPECT_FLOAT_EQ(0.050309901738473183,
+    // We are a few buffers past the seeked position.  It's less than 0.2 because
+    // of quantizing.  The playpositions are different because the tracks are at
+    // different bpms.
+    EXPECT_FLOAT_EQ(0.19417687, ControlObject::get(ConfigKey(m_sGroup1, "playposition")));
+    EXPECT_FLOAT_EQ(0.19148479, ControlObject::get(ConfigKey(m_sGroup2, "playposition")));
+    // The beat distances are identical though.
+    EXPECT_FLOAT_EQ(0.074418604,
             ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
-    EXPECT_FLOAT_EQ(0.19221655328798187, ControlObject::get(ConfigKey(m_sGroup1, "playposition")));
+    EXPECT_FLOAT_EQ(0.074418604,
+            ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
 
-    // Apply a small amount of offset
-    // Spin the wheel, causing the useroffset for group1 to get set.
-    ControlObject::getControl(ConfigKey(m_sGroup1, "wheel"))->set(0.4);
-    for (int i = 0; i < 2; ++i) {
-        ProcessBuffer();
-    }
-    ProcessBuffer();
+    // Apply user tweak offset.
+    m_pChannel1->getEngineBuffer()
+            ->m_pBpmControl->m_dUserOffset.setValue(0.3);
 
     // Seek back to 0.2
+    ControlObject::set(ConfigKey(m_sGroup2, "playposition"), 0.2);
+    ProcessBuffer();
     ControlObject::set(ConfigKey(m_sGroup1, "playposition"), 0.2);
     ProcessBuffer();
 
-    // The location is now different
-    EXPECT_FLOAT_EQ(0.1707440665154954, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
-    EXPECT_FLOAT_EQ(0.20350725623582769, ControlObject::get(ConfigKey(m_sGroup1, "playposition")));
+    // Now, the locations are much more different - but the beat distance appears
+    // to be the same because beat distance CO hides the user offset.
+    EXPECT_FLOAT_EQ(0.2269025, ControlObject::get(ConfigKey(m_sGroup1, "playposition")));
+    EXPECT_FLOAT_EQ(0.1960644, ControlObject::get(ConfigKey(m_sGroup2, "playposition")));
+    EXPECT_FLOAT_EQ(0.12403101,
+            ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
+    EXPECT_FLOAT_EQ(0.12403101,
+            ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
 }
 
 TEST_F(EngineSyncTest, MasterBpmNeverZero) {

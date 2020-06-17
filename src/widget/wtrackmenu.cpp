@@ -7,7 +7,6 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "library/coverartutils.h"
-#include "library/crate/cratefeaturehelper.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/trackschema.h"
 #include "library/dlgtagfetcher.h"
@@ -19,6 +18,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/trackmodel.h"
+#include "library/trackset/crate/cratefeaturehelper.h"
 #include "mixer/playermanager.h"
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
@@ -337,13 +337,13 @@ void WTrackMenu::setupActions() {
     }
 
     if (featureIsEnabled(Feature::Remove)) {
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Remove)) {
             addAction(m_pRemoveAct);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::RemovePlaylist)) {
             addAction(m_pRemovePlaylistAct);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_CRATE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::RemoveCrate)) {
             addAction(m_pRemoveCrateAct);
         }
     }
@@ -414,13 +414,13 @@ void WTrackMenu::setupActions() {
 
     addSeparator();
     if (featureIsEnabled(Feature::HideUnhidePurge)) {
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_HIDE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
             addAction(m_pHideAct);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Unhide)) {
             addAction(m_pUnhideAct);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_PURGE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Purge)) {
             addAction(m_pPurgeAct);
         }
     }
@@ -597,14 +597,14 @@ void WTrackMenu::updateMenus() {
     }
 
     if (featureIsEnabled(Feature::Remove)) {
-        bool locked = m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
+        bool locked = m_pTrackModel->hasCapabilities(TrackModel::Capability::Locked);
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Remove)) {
             m_pRemoveAct->setEnabled(!locked);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::RemovePlaylist)) {
             m_pRemovePlaylistAct->setEnabled(!locked);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_CRATE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::RemoveCrate)) {
             m_pRemoveCrateAct->setEnabled(!locked);
         }
     }
@@ -654,14 +654,14 @@ void WTrackMenu::updateMenus() {
     }
 
     if (featureIsEnabled(Feature::HideUnhidePurge)) {
-        bool locked = m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_HIDE)) {
+        bool locked = m_pTrackModel->hasCapabilities(TrackModel::Capability::Locked);
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
             m_pHideAct->setEnabled(!locked);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Unhide)) {
             m_pUnhideAct->setEnabled(!locked);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_PURGE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Purge)) {
             m_pPurgeAct->setEnabled(!locked);
         }
     }
@@ -1257,44 +1257,43 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
 
     switch (flag) {
     case Feature::AutoDJ:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::AddToAutoDJ);
     case Feature::LoadTo:
         return m_pTrackModel->hasCapabilities(
-                       TrackModel::TRACKMODELCAPS_LOADTODECK) ||
+                       TrackModel::Capability::LoadToDeck) ||
                 m_pTrackModel->hasCapabilities(
-                        TrackModel::TRACKMODELCAPS_LOADTOSAMPLER) ||
+                        TrackModel::Capability::LoadToSampler) ||
                 m_pTrackModel->hasCapabilities(
-                        TrackModel::TRACKMODELCAPS_LOADTOPREVIEWDECK);
+                        TrackModel::Capability::LoadToPreviewDeck);
     case Feature::Playlist:
-        return m_pTrackModel->hasCapabilities(
-                TrackModel::TRACKMODELCAPS_ADDTOPLAYLIST);
     case Feature::Crate:
         return m_pTrackModel->hasCapabilities(
-                TrackModel::TRACKMODELCAPS_ADDTOCRATE);
+                TrackModel::Capability::AddToTrackSet);
     case Feature::Remove:
         return m_pTrackModel->hasCapabilities(
-                       TrackModel::TRACKMODELCAPS_REMOVE) ||
+                       TrackModel::Capability::Remove) ||
                 m_pTrackModel->hasCapabilities(
-                        TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST) ||
+                        TrackModel::Capability::RemovePlaylist) ||
                 m_pTrackModel->hasCapabilities(
-                        TrackModel::TRACKMODELCAPS_REMOVE_CRATE);
+                        TrackModel::Capability::RemoveCrate);
     case Feature::Metadata:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
     case Feature::Reset:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA) &&
-                m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_RESETPLAYED);
+        return m_pTrackModel->hasCapabilities(
+                TrackModel::Capability::EditMetadata |
+                TrackModel::Capability::ResetPlayed);
     case Feature::BPM:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
     case Feature::Color:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
     case Feature::HideUnhidePurge:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_HIDE) ||
-                m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE) ||
-                m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_PURGE);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::Hide) ||
+                m_pTrackModel->hasCapabilities(TrackModel::Capability::Unhide) ||
+                m_pTrackModel->hasCapabilities(TrackModel::Capability::Purge);
     case Feature::FileBrowser:
         return true;
     case Feature::Properties:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
     default:
         DEBUG_ASSERT(!"unreachable");
         return true;

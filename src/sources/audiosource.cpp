@@ -60,7 +60,8 @@ bool AudioSource::initFrameIndexRangeOnce(
                 << frameIndexRange;
         return false; // abort
     }
-    VERIFY_OR_DEBUG_ASSERT(m_frameIndexRange.empty() || (m_frameIndexRange == frameIndexRange)) {
+    if (!m_frameIndexRange.empty() &&
+            m_frameIndexRange != frameIndexRange) {
         kLogger.warning()
                 << "Frame index range has already been initialized to"
                 << m_frameIndexRange
@@ -80,9 +81,8 @@ bool AudioSource::initChannelCountOnce(
                 << channelCount;
         return false; // abort
     }
-    VERIFY_OR_DEBUG_ASSERT(
-            !m_signalInfo.getChannelCount().isValid() ||
-            m_signalInfo.getChannelCount() == channelCount) {
+    if (m_signalInfo.getChannelCount().isValid() &&
+            m_signalInfo.getChannelCount() != channelCount) {
         kLogger.warning()
                 << "Channel count has already been initialized to"
                 << m_signalInfo.getChannelCount()
@@ -102,9 +102,8 @@ bool AudioSource::initSampleRateOnce(
                 << sampleRate;
         return false; // abort
     }
-    VERIFY_OR_DEBUG_ASSERT(
-            !m_signalInfo.getSampleRate().isValid() ||
-            m_signalInfo.getSampleRate() == sampleRate) {
+    if (m_signalInfo.getSampleRate().isValid() &&
+            m_signalInfo.getSampleRate() != sampleRate) {
         kLogger.warning()
                 << "Sample rate has already been initialized to"
                 << m_signalInfo.getSampleRate()

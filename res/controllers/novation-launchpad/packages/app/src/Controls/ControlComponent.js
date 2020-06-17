@@ -1,11 +1,9 @@
 /* @flow */
 
 import Component from '../Component'
-import { Control } from '../Mixxx'
+import { Control } from '@mixxx-launchpad/mixxx'
 
-import type { ControlBus } from '../Mixxx'
-
-export type ControlComponentBuilder = (string) => (Control) => ControlComponent
+import type { ControlBus } from '@mixxx-launchpad/mixxx'
 
 export const makeControlComponent = (controlBus: ControlBus) =>
   (id: string) =>
@@ -56,9 +54,11 @@ export default class ControlComponent extends Component {
   }
 
   getValue () {
-    if (!this.handle) {
+    if (!this._handle) {
       this.value = this.control.getValue()
     }
     return this.value
   }
 }
+
+export type ControlComponentBuilder = (string) => (Control) => ControlComponent

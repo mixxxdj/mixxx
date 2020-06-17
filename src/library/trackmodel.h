@@ -9,8 +9,8 @@
 #include "track/track.h"
 #include "track/trackref.h"
 
-/** Pure virtual (abstract) class that provides an interface for data models which
-    display track lists. */
+/// Pure virtual (abstract) class that provides an interface for data models
+/// which display track lists.
 class TrackModel {
   public:
     static const int kHeaderWidthRole = Qt::UserRole + 0;
@@ -26,28 +26,27 @@ class TrackModel {
     virtual ~TrackModel() {}
 
     // These enums are the bits in a bitvector. Any individual column cannot
-    // have a value other than 0, 1, 2, 4, or 8!
-    enum Capabilities {
-        TRACKMODELCAPS_NONE              = 0x00000,
-        TRACKMODELCAPS_REORDER           = 0x00001,
-        TRACKMODELCAPS_RECEIVEDROPS      = 0x00002,
-        TRACKMODELCAPS_ADDTOPLAYLIST     = 0x00004,
-        TRACKMODELCAPS_ADDTOCRATE        = 0x00008,
-        TRACKMODELCAPS_ADDTOAUTODJ       = 0x00010,
-        TRACKMODELCAPS_LOCKED            = 0x00020,
-        TRACKMODELCAPS_EDITMETADATA      = 0x00040,
-        TRACKMODELCAPS_LOADTODECK        = 0x00080,
-        TRACKMODELCAPS_LOADTOSAMPLER     = 0x00100,
-        TRACKMODELCAPS_LOADTOPREVIEWDECK = 0x00200,
-        TRACKMODELCAPS_REMOVE            = 0x00400,
-        TRACKMODELCAPS_RESETPLAYED       = 0x02000,
-        TRACKMODELCAPS_HIDE              = 0x04000,
-        TRACKMODELCAPS_UNHIDE            = 0x08000,
-        TRACKMODELCAPS_PURGE             = 0x10000,
-        TRACKMODELCAPS_REMOVE_PLAYLIST   = 0x20000,
-        TRACKMODELCAPS_REMOVE_CRATE      = 0x40000,
+    // have a value other than 0, 1, 2, or 4!
+    enum class Capability {
+        None = 0u,
+        Reorder = 1u << 0u,
+        ReceiveDrops = 1u << 1u,
+        AddToTrackSet = 1u << 2u,
+        AddToAutoDJ = 1u << 3u,
+        Locked = 1u << 4u,
+        EditMetadata = 1u << 5u,
+        LoadToDeck = 1u << 6u,
+        LoadToSampler = 1u << 7u,
+        LoadToPreviewDeck = 1u << 8u,
+        Remove = 1u << 9u,
+        ResetPlayed = 1u << 10u,
+        Hide = 1u << 11u,
+        Unhide = 1u << 12u,
+        Purge = 1u << 13u,
+        RemovePlaylist = 1u << 14u,
+        RemoveCrate = 1u << 15u,
     };
-    typedef int CapabilitiesFlags; /** Enables us to do ORing */
+    Q_DECLARE_FLAGS(Capabilities, Capability)
 
     enum SortColumnId {
         SORTCOLUMN_INVALID = -1,
@@ -143,11 +142,11 @@ class TrackModel {
         Q_UNUSED(pParent);
         return NULL;
     }
-    virtual TrackModel::CapabilitiesFlags getCapabilities() const {
-        return TRACKMODELCAPS_NONE;
+    virtual TrackModel::Capabilities getCapabilities() const {
+        return Capability::None;
     }
-    virtual bool hasCapabilities(TrackModel::CapabilitiesFlags flags) const {
-        Q_UNUSED(flags);
+    virtual bool hasCapabilities(TrackModel::Capabilities caps) const {
+        Q_UNUSED(caps);
         return false;
     }
     virtual QString getModelSetting(QString name) {
@@ -208,3 +207,4 @@ class TrackModel {
     int m_iDefaultSortColumn;
     Qt::SortOrder m_eDefaultSortOrder;
 };
+Q_DECLARE_OPERATORS_FOR_FLAGS(TrackModel::Capabilities)
