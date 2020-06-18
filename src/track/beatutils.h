@@ -50,7 +50,7 @@ class BeatUtils {
      * a pretty good guess of the global BPM value.
      */
     static mixxx::Bpm calculateBpm(const QVector<double>& beats,
-            int SampleRate,
+            int framesPerSecond,
             int min_bpm,
             int max_bpm);
     static double findFirstCorrectBeat(const QVector<double> rawBeats,
@@ -89,9 +89,11 @@ class BeatUtils {
         const double filterTolerance,
         QMap<double, int>* filteredFrequencyTable);
     static QList<double> computeWindowedBpmsAndFrequencyHistogram(
-        const QVector<double> beats, const int windowSize, const int windowStep,
-        const int sampleRate, QMap<double, int>* frequencyHistogram);
-
+            const QVector<double> beats,
+            const int windowSize,
+            const int windowStep,
+            const int framesPerSecond,
+            QMap<double, int>* frequencyHistogram);
 };
 
 #endif /* BEATUTILS_H_ */

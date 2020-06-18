@@ -82,7 +82,11 @@ double BeatUtils::computeSampleMedian(QList<double> sortedItems) {
 }
 
 QList<double> BeatUtils::computeWindowedBpmsAndFrequencyHistogram(
-        const QVector<double> beats, const int windowSize, const int windowStep, const int frameRate, QMap<double, int>* frequencyHistogram) {
+        const QVector<double> beats,
+        const int windowSize,
+        const int windowStep,
+        const int framesPerSecond,
+        QMap<double, int>* frequencyHistogram) {
     QList<double> averageBpmList;
     for (int i = windowSize; i < beats.size(); i += windowStep) {
         //get start and end sample of the beats
@@ -90,7 +94,7 @@ QList<double> BeatUtils::computeWindowedBpmsAndFrequencyHistogram(
         double end_sample = beats.at(i);
 
         // Time needed to count a bar (4 beats)
-        double time = (end_sample - start_sample) / frameRate;
+        double time = (end_sample - start_sample) / framesPerSecond;
         if (time == 0) continue;
         double localBpm = 60.0 * windowSize / time;
 
@@ -143,7 +147,7 @@ double BeatUtils::computeFilteredWeightedAverage(
 
 // TODO(JVC) Use Bpm class internally instead of only convert the calculated on return
 mixxx::Bpm BeatUtils::calculateBpm(
-        const QVector<double>& beats, int frameRate, int min_bpm, int max_bpm) {
+        const QVector<double>& beats, int framesPerSecond, int min_bpm, int max_bpm) {
     /*
      * Let's compute the average local
      * BPM for N subsequent beats.
@@ -188,7 +192,7 @@ mixxx::Bpm BeatUtils::calculateBpm(
     // If we don't have enough beats for our regular approach, just divide the #
     // of beats by the duration in minutes.
     if (beats.size() <= N) {
-        mixxx::Bpm result(60.0 * (beats.size() - 1) * frameRate /
+        mixxx::Bpm result(60.0 * (beats.size() - 1) * framesPerSecond /
                 (beats.last() - beats.first()));
         if (sDebug) {
             qDebug() << "Simplified calculation. BPM:" << result;
@@ -198,7 +202,7 @@ mixxx::Bpm BeatUtils::calculateBpm(
 
     QMap<double, int> frequency_table;
     QList<double> average_bpm_list = computeWindowedBpmsAndFrequencyHistogram(
-            beats, N, 1, frameRate, &frequency_table);
+            beats, N, 1, framesPerSecond, &frequency_table);
 
     // Get the median BPM.
     std::sort(average_bpm_list.begin(), average_bpm_list.end());
@@ -256,7 +260,7 @@ mixxx::Bpm BeatUtils::calculateBpm(
          double beat_end = beats.at(i);
 
          // Time needed to count a bar (N beats)
-         double time = (beat_end - beat_start) / frameRate;
+         double time = (beat_end - beat_start) / framesPerSecond;
          if (time == 0) continue;
          double local_bpm = 60.0 * N / time;
          // round BPM to have two decimal places
@@ -283,7 +287,7 @@ mixxx::Bpm BeatUtils::calculateBpm(
              } else {
                  counter += 1;
              }
-             double time2 = (beat_end - firstCorrectBeatSample) / frameRate;
+             double time2 = (beat_end - firstCorrectBeatSample) / framesPerSecond;
              double correctedBpm = 60 * counter / time2;
 
              if (fabs(correctedBpm - filterWeightedAverageBpm) <= BPM_ERROR) {
