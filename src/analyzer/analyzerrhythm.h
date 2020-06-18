@@ -2,6 +2,7 @@
 
 #include <QHash>
 #include <QList>
+#include <memory>
 
 #include <dsp/tempotracking/DownBeat.h>
 #include <dsp/onsets/DetectionFunction.h>
@@ -12,7 +13,6 @@
 
 #include "analyzer/plugins/buffering_utils.h"
 #include "util/samplebuffer.h"
-#include "util/memory.h"
 
 class DetectionFunction;
 
