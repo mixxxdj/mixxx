@@ -21,7 +21,7 @@ class TimeSignature final {
     ~TimeSignature() {
     }
 
-    inline void setBeats(int beatsPerBar) {
+    inline void setBeatsPerBar(int beatsPerBar) {
         m_beatsPerBar = beatsPerBar;
     }
 
@@ -29,7 +29,12 @@ class TimeSignature final {
         m_noteValue = noteValue;
     }
 
-    inline int getBeats() const {
+    inline void setTimeSignature(int beatsPerBar, int noteValue) {
+        m_beatsPerBar = beatsPerBar;
+        m_noteValue = noteValue;
+    }
+
+    inline int getBeatsPerBar() const {
         return m_beatsPerBar;
     }
 
