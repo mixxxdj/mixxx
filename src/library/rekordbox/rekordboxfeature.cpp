@@ -957,7 +957,6 @@ void readAnalyze(TrackPointer track,
                     extraVersionInfo,
                     false,
                     false,
-                    sampleRate,
                     0,
                     0,
                     0);
