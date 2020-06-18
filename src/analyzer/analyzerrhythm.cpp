@@ -68,7 +68,6 @@ bool AnalyzerRhythm::initialize(TrackPointer pTrack, int sampleRate, int totalSa
     m_iMaxSamplesToProcess = m_iTotalSamples;
     m_iCurrentSample = 0;
 
-    m_detectionResults.clear();
     m_stepSize = m_iSampleRate * kStepSecs;
     m_windowSize = MathUtilities::nextPowerOfTwo(m_iSampleRate / kMaximumBinSizeHz);
     m_pDetectionFunction = std::make_unique<DetectionFunction>(
@@ -110,8 +109,9 @@ bool AnalyzerRhythm::processSamples(const CSAMPLE *pIn, const int iLen) {
 }
 
 void AnalyzerRhythm::cleanup() {
-    //cleanup
-    ;
+    m_resultBeats.clear();
+    m_detectionResults.clear();
+    m_pDetectionFunction.reset();
 }
 
 std::vector<double> AnalyzerRhythm::computeBeats() {
