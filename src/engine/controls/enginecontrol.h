@@ -18,55 +18,63 @@ class EngineBuffer;
 
 const int kNoTrigger = -1;
 
-/**
- * EngineControl is an abstract base class for objects which implement
- * functionality pertaining to EngineBuffer. An EngineControl is meant to be a
- * succinct implementation of a given EngineBuffer feature. Previously,
- * EngineBuffer was an example of feature creep -- this is the result.
- *
- * When writing an EngineControl class, the following two properties hold:
- *
- * EngineControl::process will only be called during an EngineBuffer::process
- * callback from the sound engine. This implies that any ControlObject accesses
- * made in either of these methods are mutually exclusive, since one is
- * exclusively in the call graph of the other.
- */
+/// EngineControl is an abstract base class for objects which implement
+/// functionality pertaining to EngineBuffer. An EngineControl is meant to be a
+/// succinct implementation of a given EngineBuffer feature.
 class EngineControl : public QObject {
     Q_OBJECT
   public:
     EngineControl(const QString& group, UserSettingsPointer pConfig);
-
-    // Called by EngineBuffer::process every latency period. See the above
-    // comments for information about guarantees that hold during this call. An
-    // EngineControl can perform any upkeep operations that are necessary during
-    // this call.
-    virtual void process(const double dRate,
-                         const double dCurrentSample,
-                         const int iBufferSize);
-
-    // hintReader allows the EngineControl to provide hints to the reader to
-    // indicate that the given portion of a song is a potential imminent seek
-    // target.
-    virtual void hintReader(HintVector* pHintList);
+    QString getGroup() const;
 
     virtual void setEngineMaster(EngineMaster* pEngineMaster);
     void setEngineBuffer(EngineBuffer* pEngineBuffer);
-    virtual void setCurrentSample(const double dCurrentSample,
-            const double dTotalSamples, const double dTrackSampleRate);
-    QString getGroup() const;
+
+    virtual void setCurrentSample(
+            const double dCurrentSample,
+            const double dTotalSamples,
+            const double dTrackSampleRate);
 
     void setBeatLoop(double startPosition, bool enabled);
     void setLoop(double startPosition, double endPosition, bool enabled);
 
-    // Called to collect player features for effects processing.
+    /// Called whenever a seek occurs to allow the EngineControl to respond.
+    virtual void notifySeek(double dNewPlaypos);
+
+    /// Called by EngineBuffer::process every latency period. An EngineControl
+    /// can perform any necessary upkeep operations during this call.
+    ///
+    /// EngineControl::process will only be called during an
+    /// EngineBuffer::process callback from the sound engine. This implies that
+    /// any ControlObject accesses made in either of these methods are mutually
+    /// exclusive, since one is exclusively in the call graph of the other.
+    virtual void process(
+            const double dRate,
+            const double dCurrentSample,
+            const int iBufferSize) {
+        Q_UNUSED(dRate);
+        Q_UNUSED(dCurrentSample);
+        Q_UNUSED(iBufferSize);
+    };
+
+    /// Called to collect player features for effects processing.
     virtual void collectFeatureState(GroupFeatureState* pGroupFeatures) const {
         Q_UNUSED(pGroupFeatures);
     }
 
-    // Called whenever a seek occurs to allow the EngineControl to respond.
-    virtual void notifySeek(double dNewPlaypos);
-    virtual void trackLoaded(TrackPointer pNewTrack);
-    virtual void trackBeatsUpdated(mixxx::BeatsPointer pBeats);
+    virtual void trackLoaded(TrackPointer pNewTrack) {
+        Q_UNUSED(pNewTrack);
+    }
+    virtual void trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
+        Q_UNUSED(pBeats);
+    }
+
+    /// hintReader allows the EngineControl to provide hints to the reader to
+    /// indicate that the given portion of a song is a potential imminent seek
+    /// target.
+    virtual void hintReader(HintVector* pHintList) {
+        Q_UNUSED(pHintList);
+    };
 
   protected:
     struct SampleOfTrack {
@@ -80,9 +88,9 @@ class EngineControl : public QObject {
     }
     void seek(double fractionalPosition);
     void seekAbs(double sample);
-    // Seek to an exact sample and don't allow quantizing adjustment.
+    /// Seek to an exact sample and don't allow quantizing adjustment.
     void seekExact(double sample);
-    // Returns an EngineBuffer to target for syncing. Returns nullptr if none found
+    /// Returns an EngineBuffer to target for syncing. Returns nullptr if none found
     EngineBuffer* pickSyncTarget();
 
     UserSettingsPointer getConfig();
