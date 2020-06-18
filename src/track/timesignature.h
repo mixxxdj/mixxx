@@ -13,43 +13,44 @@ class TimeSignature final {
     int m_noteValue;
 
   public:
-    inline TimeSignature(int beatsPerBar, int noteValue)
-        : m_beatsPerBar(beatsPerBar),
-          m_noteValue(noteValue) {
+    TimeSignature(int beatsPerBar, int noteValue)
+            : m_beatsPerBar(beatsPerBar),
+              m_noteValue(noteValue) {
     }
 
     ~TimeSignature() {
     }
 
-    inline void setBeatsPerBar(int beatsPerBar) {
+    void setBeatsPerBar(int beatsPerBar) {
         m_beatsPerBar = beatsPerBar;
     }
 
-    inline void setNoteValue(int noteValue) {
+    void setNoteValue(int noteValue) {
         m_noteValue = noteValue;
     }
 
-    inline void setTimeSignature(int beatsPerBar, int noteValue) {
+    void setTimeSignature(int beatsPerBar, int noteValue) {
         m_beatsPerBar = beatsPerBar;
         m_noteValue = noteValue;
     }
 
-    inline int getBeatsPerBar() const {
+    int getBeatsPerBar() const {
         return m_beatsPerBar;
     }
 
-    inline int getNoteValue() const {
+    int getNoteValue() const {
         return m_noteValue;
     }
-
-    inline bool operator==(const TimeSignature& signature) const {
-        return(signature.m_beatsPerBar == m_beatsPerBar && signature.m_noteValue == m_noteValue);
-    }
-
-    inline bool operator!=(const TimeSignature& signature) const {
-        return (signature.m_beatsPerBar != m_beatsPerBar || signature.m_noteValue != m_noteValue);
-    }
 };
+
+inline bool operator==(TimeSignature signature1, TimeSignature signature2) {
+    return signature1.getBeatsPerBar() == signature2.getBeatsPerBar() &&
+            signature1.getNoteValue() == signature2.getNoteValue();
+}
+
+inline bool operator!=(TimeSignature signature1, TimeSignature signature2) {
+    return !(signature1 == signature2);
+}
 
 // Invalid Signature
 const TimeSignature kNullTimeSignature = TimeSignature(0,0);
