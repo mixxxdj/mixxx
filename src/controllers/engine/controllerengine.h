@@ -51,6 +51,8 @@ class ControllerEngine : public QObject {
         m_bTesting = testing;
     };
 
+    void reloadScripts();
+
   protected:
     double getValue(QString group, QString name);
     void setValue(QString group, QString name, double newValue);
@@ -115,7 +117,6 @@ class ControllerEngine : public QObject {
     bool evaluateScriptFile(const QFileInfo& scriptFile);
     void initializeScriptEngine();
     void uninitializeScriptEngine();
-    void reloadScripts();
 
     void scriptErrorDialog(const QString& detailedError, const QString& key, bool bFatal = false);
     void generateScriptFunctions(const QString& code);

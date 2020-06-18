@@ -19,7 +19,9 @@
 #include "controllers/controllervisitor.h"
 #include "controllers/engine/controllerengine.h"
 #include "util/duration.h"
+#include "util/parented_ptr.h"
 
+class ControlObject;
 class ControllerJSProxy;
 
 class Controller : public QObject, ConstControllerPresetVisitor {
@@ -106,6 +108,8 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     void startLearning();
     void stopLearning();
 
+    void slotReloadScripts(double v);
+
   protected:
     // The length parameter is here for backwards compatibility for when scripts
     // were required to specify it.
@@ -183,6 +187,8 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     bool m_bIsOpen;
     bool m_bLearning;
     QElapsedTimer m_userActivityInhibitTimer;
+
+    parented_ptr<ControlObject> m_pReloadScripts;
 
     friend class ControllerJSProxy;
     // accesses lots of our stuff, but in the same thread

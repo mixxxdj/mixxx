@@ -5,10 +5,12 @@
 * @brief Base class representing a physical (or software) controller.
 */
 
+#include "controllers/controller.h"
+
 #include <QApplication>
 #include <QJSValue>
 
-#include "controllers/controller.h"
+#include "control/controlobject.h"
 #include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
 #include "util/screensaver.h"
@@ -21,6 +23,9 @@ Controller::Controller(const QString& group)
           m_bIsOpen(false),
           m_bLearning(false) {
     m_userActivityInhibitTimer.start();
+
+    m_pReloadScripts = make_parented<ControlObject>(ConfigKey(group, "reload_scripts"), this);
+    connect(m_pReloadScripts, &ControlObject::valueChanged, this, &Controller::slotReloadScripts);
 }
 
 Controller::~Controller() {
@@ -86,6 +91,14 @@ void Controller::stopLearning() {
     //qDebug() << m_sDeviceName << "stopped learning.";
     m_bLearning = false;
 
+}
+
+void Controller::slotReloadScripts(double v) {
+    if (!v || !m_pEngine) {
+        return;
+    }
+
+    m_pEngine->reloadScripts();
 }
 
 void Controller::send(QList<int> data, unsigned int length) {
