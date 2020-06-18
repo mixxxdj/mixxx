@@ -1,8 +1,4 @@
-// cuecontrol.h
-// Created 11/5/2009 by RJ Ryan (rryan@mit.edu)
-
-#ifndef CUECONTROL_H
-#define CUECONTROL_H
+#pragma once
 
 #include <QList>
 #include <QMutex>
@@ -256,11 +252,8 @@ class CueControl : public EngineControl {
 
     TrackPointer m_pLoadedTrack; // is written from an engine worker thread
 
-    // Tells us which controls map to which hotcue
+    /// Which controls map to which hotcue
     QMap<QObject*, int> m_controlMap;
 
     QMutex m_mutex;
 };
-
-
-#endif /* CUECONTROL_H */

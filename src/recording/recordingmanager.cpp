@@ -46,7 +46,6 @@ RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pE
     m_split_size = getFileSplitSize();
     m_split_time = getFileSplitSeconds();
 
-
     // Register EngineRecord with the engine sidechain.
     EngineSideChain* pSidechain = pEngine->getSideChain();
     if (pSidechain) {

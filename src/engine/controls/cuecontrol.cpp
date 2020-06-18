@@ -1,6 +1,3 @@
-// cuecontrol.cpp
-// Created 11/5/2009 by RJ Ryan (rryan@mit.edu)
-
 #include "engine/controls/cuecontrol.h"
 
 #include <QMutexLocker>
@@ -628,8 +625,6 @@ void CueControl::quantizeChanged(double v) {
 }
 
 void CueControl::hotcueSet(HotcueControl* pControl, double v) {
-    //qDebug() << "CueControl::hotcueSet" << v;
-
     if (!v)
         return;
 
@@ -753,8 +748,6 @@ void CueControl::hotcueGotoAndPlay(HotcueControl* pControl, double v) {
 }
 
 void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
-    //qDebug() << "CueControl::hotcueActivate" << v;
-
     QMutexLocker lock(&m_mutex);
 
     if (!m_pLoadedTrack) {
@@ -897,12 +890,10 @@ void CueControl::hintReader(HintVector* pHintList) {
     }
 }
 
-// Moves the cue point to current position or to closest beat in case
-// quantize is enabled
+// Moves the cue point to current position
 void CueControl::cueSet(double v) {
     if (!v)
         return;
-
     QMutexLocker lock(&m_mutex);
 
     double cue = getQuantizedCurrentPosition();
@@ -917,11 +908,10 @@ void CueControl::cueSet(double v) {
 }
 
 void CueControl::cueClear(double v) {
-    if (!v) {
+    if (!v)
         return;
-    }
-
     QMutexLocker lock(&m_mutex);
+
     m_pCuePoint->set(Cue::kNoPosition);
     TrackPointer pLoadedTrack = m_pLoadedTrack;
     lock.unlock();
@@ -931,12 +921,11 @@ void CueControl::cueClear(double v) {
     }
 }
 
-void CueControl::cueGoto(double v)
-{
+void CueControl::cueGoto(double v) {
     if (!v)
         return;
-
     QMutexLocker lock(&m_mutex);
+
     // Seek to cue point
     double cuePoint = m_pCuePoint->get();
 
@@ -946,11 +935,11 @@ void CueControl::cueGoto(double v)
     seekAbs(cuePoint);
 }
 
-void CueControl::cueGotoAndPlay(double v)
-{
+void CueControl::cueGotoAndPlay(double v) {
     if (!v) return;
     cueGoto(v);
     QMutexLocker lock(&m_mutex);
+
     // Start playing if not already
     if (!isPlayingByPlayButton()) {
         // cueGoto is processed asynchrony.
@@ -962,8 +951,7 @@ void CueControl::cueGotoAndPlay(double v)
     }
 }
 
-void CueControl::cueGotoAndStop(double v)
-{
+void CueControl::cueGotoAndStop(double v) {
     if (!v)
         return;
 
@@ -977,15 +965,14 @@ void CueControl::cueGotoAndStop(double v)
     seekExact(cuePoint);
 }
 
-void CueControl::cuePreview(double v)
-{
+void CueControl::cuePreview(double v) {
     QMutexLocker lock(&m_mutex);
 
     if (v) {
         m_bPreviewing = true;
         m_bypassCueSetByPlay = true;
         m_pPlay->set(1.0);
-    } else if (!v && m_bPreviewing) {
+    } else if (m_bPreviewing) {
         m_bPreviewing = false;
         if (!m_iCurrentlyPreviewingHotcues) {
             m_pPlay->set(0.0);
@@ -1002,14 +989,14 @@ void CueControl::cuePreview(double v)
     seekAbs(m_pCuePoint->get());
 }
 
+/// This is how Pioneer cue buttons work:
+/// - If pressed while freely playing (i.e. playing and platter NOT being touched), stop playback and go to cue.
+/// - If pressed while NOT freely playing (i.e. stopped or playing but platter IS being touched), set new cue point.
+/// - If pressed while stopped and at cue, play while pressed.
+/// - If play is pressed while holding cue, the deck is now playing. (Handled in playFromCuePreview().)
 void CueControl::cueCDJ(double v) {
-    // This is how Pioneer cue buttons work:
-    // If pressed while freely playing (i.e. playing and platter NOT being touched), stop playback and go to cue.
-    // If pressed while NOT freely playing (i.e. stopped or playing but platter IS being touched), set new cue point.
-    // If pressed while stopped and at cue, play while pressed.
-    // If play is pressed while holding cue, the deck is now playing. (Handled in playFromCuePreview().)
-
     QMutexLocker lock(&m_mutex);
+
     const auto freely_playing = m_pPlay->toBool() && !getEngineBuffer()->getScratching();
     TrackAt trackAt = getTrackAt();
 
@@ -1070,13 +1057,14 @@ void CueControl::cueCDJ(double v) {
     }
 }
 
+/// This is how Denon DN-S 3700 cue buttons work:
+/// - If pressed go to cue and stop
+/// - Play if pressed while stopped at cue, jump back to Cue on release
+/// - Cue Point is moved on play
+/// See https://mixxx.org/manual/latest/en/chapters/user_interface.html#using-cue-modes
 void CueControl::cueDenon(double v) {
-    // This is how Denon DN-S 3700 cue buttons work:
-    // If pressed go to cue and stop.
-    // If pressed while stopped and at cue, play while pressed.
-    // Cue Point is moved by play from pause
-
     QMutexLocker lock(&m_mutex);
+
     bool playing = (m_pPlay->toBool());
     TrackAt trackAt = getTrackAt();
 
@@ -1114,18 +1102,16 @@ void CueControl::cueDenon(double v) {
     }
 }
 
+/// This is how CUP button works:
+/// - If freely playing (i.e. playing and platter NOT being touched), press to go to cue and stop.
+/// - If not freely playing (i.e. stopped or platter IS being touched), press to go to cue and stop.
+/// - On release, start playing from cue point.
 void CueControl::cuePlay(double v) {
-    // This is how CUP button works:
-    // If freely playing (i.e. playing and platter NOT being touched), press to go to cue and stop.
-    // If not freely playing (i.e. stopped or platter IS being touched), press to go to cue and stop.
-    // On release, start playing from cue point.
-
-
     QMutexLocker lock(&m_mutex);
+
     const auto freely_playing = m_pPlay->toBool() && !getEngineBuffer()->getScratching();
     TrackAt trackAt = getTrackAt();
 
-    // pressed
     if (v) {
         if (freely_playing) {
             m_bPreviewing = false;
@@ -1164,8 +1150,8 @@ void CueControl::cueDefault(double v) {
     } else if (cueMode == CUE_MODE_CUP) {
         cuePlay(v);
     } else {
-        // The modes CUE_MODE_PIONEER and CUE_MODE_MIXXX are similar
-        // are handled inside cueCDJ(v)
+        // The modes CUE_MODE_PIONEER and CUE_MODE_MIXXX are similar, so they
+        // are both handled by cueCDJ(v)
         // default to Pioneer mode
         cueCDJ(v);
     }
@@ -1173,16 +1159,13 @@ void CueControl::cueDefault(double v) {
 
 void CueControl::pause(double v) {
     QMutexLocker lock(&m_mutex);
-    //qDebug() << "CueControl::pause()" << v;
-    if (v != 0.0) {
+    if (v)
         m_pPlay->set(0.0);
-    }
 }
 
 void CueControl::playStutter(double v) {
     QMutexLocker lock(&m_mutex);
-    //qDebug() << "playStutter" << v;
-    if (v != 0.0) {
+    if (v) {
         if (isPlayingByPlayButton()) {
             cueGoto(1.0);
         } else {
