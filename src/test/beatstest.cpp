@@ -18,8 +18,8 @@ class BeatsTest : public testing::Test {
               m_iSampleRate(44100),
               m_framesPerSecond(m_iSampleRate / m_iChannelCount),
               m_frameSize(m_iChannelCount),
-              m_pBeats1(new Beats(m_pTrack.get(), m_iSampleRate)),
-              m_pBeats2(new Beats(m_pTrack.get(), m_iSampleRate)),
+              m_pBeats1(new Beats(m_pTrack.get())),
+              m_pBeats2(new Beats(m_pTrack.get())),
               m_bpm(60),
               m_startOffsetFrames(7),
               m_beatLengthFrames(getBeatLength(m_bpm)) {
@@ -269,7 +269,7 @@ TEST_F(BeatsTest, BpmAround) {
         beat_pos += beat_length;
     }
     BeatsPointer pMap =
-            std::make_unique<Beats>(m_pTrack.get(), beats, m_iSampleRate);
+            std::make_unique<Beats>(m_pTrack.get(), beats);
 
     // The average of the first 8 beats should be different than the average
     // of the last 8 beats.
@@ -286,7 +286,7 @@ TEST_F(BeatsTest, BpmAround) {
     // Try a really, really short track
     beats = createBeatVector(Frame(10), 3, getBeatLength(bpm));
     BeatsPointer pBeats =
-            std::make_unique<Beats>(m_pTrack.get(), beats, m_iSampleRate);
+            std::make_unique<Beats>(m_pTrack.get(), beats);
     EXPECT_DOUBLE_EQ(bpm.getValue(),
             pMap->getBpmAroundPosition(approx_beat_length * 1, 4).getValue());
 }

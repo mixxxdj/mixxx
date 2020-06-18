@@ -15,8 +15,8 @@ inline bool BeatLessThan(const track::io::Beat& beat1, const track::io::Beat& be
 }
 } // namespace
 
-Beats::Beats(const Track* track, const QVector<Frame>& beats, SINT iSampleRate)
-        : Beats(track, iSampleRate) {
+Beats::Beats(const Track* track, const QVector<Frame>& beats)
+        : Beats(track) {
     if (beats.size() > 0) {
         Frame previous_beatpos = Frame(-1);
         track::io::Beat protoBeat;
@@ -37,8 +37,8 @@ Beats::Beats(const Track* track, const QVector<Frame>& beats, SINT iSampleRate)
     }
 }
 
-Beats::Beats(const Track* track, const QByteArray& byteArray, SINT iSampleRate)
-        : Beats(track, iSampleRate) {
+Beats::Beats(const Track* track, const QByteArray& byteArray)
+        : Beats(track) {
     track::io::Beats beatsProto;
     if (!beatsProto.ParseFromArray(byteArray.constData(), byteArray.size())) {
         qDebug() << "ERROR: Could not parse kBeatMap from QByteArray of size"
@@ -51,13 +51,10 @@ Beats::Beats(const Track* track, const QByteArray& byteArray, SINT iSampleRate)
     onBeatlistChanged();
 }
 
-Beats::Beats(const Track* track, SINT iSampleRate)
+Beats::Beats(const Track* track)
         : m_mutex(QMutex::Recursive),
           m_track(track),
-          m_iSampleRate(iSampleRate == 0 ? m_track->getSampleRate() : iSampleRate),
           m_dCachedBpm(0) {
-    // TODO(JVC) iSampleRate == 0 creates problems. Apparently only in tests
-
     // BeatMap should live in the same thread as the track it is associated
     // with.
     moveToThread(track->thread());
@@ -68,7 +65,6 @@ Beats::Beats(const Beats& other)
         : m_mutex(QMutex::Recursive),
           m_track(other.m_track),
           m_subVersion(other.m_subVersion),
-          m_iSampleRate(other.m_iSampleRate),
           m_dCachedBpm(other.m_dCachedBpm),
           m_beats(other.m_beats) {
     moveToThread(m_track->thread());
@@ -132,14 +128,14 @@ void Beats::setGrid(Bpm dBpm, Frame firstBeatFrame) {
     // If the track duration is not know assume 120 seconds, useful for tests
     // TODO(JVC) - Check if there are other cases that can be affected.
     auto trackDuration = m_track->getDuration();
-    auto trackLength = (trackDuration == 0 ? 120 : trackDuration) * m_iSampleRate;
+    auto trackLength = (trackDuration == 0 ? 120 : trackDuration) * getSampleRate();
 
     m_beats.clear();
 
     track::io::Beat beat;
     beat.set_frame_position(firstBeatFrame.getValue());
     for (Frame frame = firstBeatFrame; frame.getValue() <= trackLength;
-            frame += Frame(m_iSampleRate * (60 / dBpm.getValue()))) {
+            frame += Frame(getSampleRate() * (60 / dBpm.getValue()))) {
         beat.set_frame_position(frame.getValue());
         m_beats.push_back(beat);
     }
@@ -197,7 +193,7 @@ void Beats::onBeatlistChanged() {
 }
 
 bool Beats::isValid() const {
-    return m_iSampleRate > 0 && m_beats.size() > 0;
+    return getSampleRate() > 0 && m_beats.size() > 0;
 }
 
 Bpm Beats::calculateBpm(const track::io::Beat& startBeat,
@@ -224,7 +220,7 @@ Bpm Beats::calculateBpm(const track::io::Beat& startBeat,
         return Bpm();
     }
 
-    return BeatUtils::calculateBpm(beatvect, m_iSampleRate, 0, 9999);
+    return BeatUtils::calculateBpm(beatvect, getSampleRate(), 0, 9999);
 }
 
 Frame Beats::findPrevBeat(Frame frame) const {
@@ -251,7 +247,7 @@ bool Beats::findPrevNextBeats(Frame frame,
 
     // If the position is within 1/10th of a second of the next or previous
     // beat, pretend we are on that beat.
-    const double kFrameEpsilon = 0.1 * m_iSampleRate;
+    const double kFrameEpsilon = 0.1 * getSampleRate();
 
     // Back-up by one.
     if (it != m_beats.begin()) {
@@ -350,7 +346,7 @@ Frame Beats::findNthBeat(Frame frame, int n) const {
 
     // If the position is within 1/10th of a second of the next or previous
     // beat, pretend we are on that beat.
-    const double kFrameEpsilon = 0.1 * m_iSampleRate;
+    const double kFrameEpsilon = 0.1 * getSampleRate();
 
     // Back-up by one.
     if (it != m_beats.begin()) {
@@ -839,10 +835,13 @@ Frame Beats::getLastBeatPosition() const {
     return Frame((m_beats.size() == 0) ? -1 : m_beats.back().frame_position());
 }
 
+SINT Beats::getSampleRate() const {
+    return m_track->getSampleRate();
+}
+
 QDebug operator<<(QDebug dbg, const BeatsPointer& arg) {
     dbg << "Beats State\n";
     dbg << "\tm_subVersion:" << arg->m_subVersion << "\n";
-    dbg << "\tm_iSampleRate:" << arg->m_iSampleRate << "\n";
     dbg << "\tm_dCachedBpm:" << arg->m_dCachedBpm << "\n";
     dbg << "Beats content(size: " << arg->m_beats.size() << ":\n";
     for (auto beat : arg->m_beats) {

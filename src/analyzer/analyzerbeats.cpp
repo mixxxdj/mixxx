@@ -233,7 +233,6 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
                 extraVersionInfo,
                 m_bPreferencesFixedTempo,
                 m_bPreferencesOffsetCorrection,
-                m_iSampleRate,
                 m_iTotalSamples,
                 m_iMinBpm,
                 m_iMaxBpm);

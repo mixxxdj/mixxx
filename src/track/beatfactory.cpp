@@ -90,10 +90,10 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const TrackPointer& track,
         const QHash<QString, QString> extraVersionInfo,
         const bool bEnableFixedTempoCorrection,
         const bool bEnableOffsetCorrection,
-        const int iSampleRate,
         const int iTotalSamples,
         const int iMinBpm,
         const int iMaxBpm) {
+    const int iSampleRate = track->getSampleRate();
     const QString version = getPreferredVersion(bEnableFixedTempoCorrection);
     const QString subVersion = getPreferredSubVersion(bEnableFixedTempoCorrection,
                                                       bEnableOffsetCorrection,
@@ -118,7 +118,7 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const TrackPointer& track,
             generatedBeats.append(firstBeat + beatLength * i);
         }
         mixxx::Beats* pBeats = new mixxx::Beats(
-                track.get(), generatedBeats, iSampleRate);
+                track.get(), generatedBeats);
         pBeats->setSubVersion(subVersion);
         return mixxx::BeatsPointer(pBeats, &BeatFactory::deleteBeats);
     } else if (version == mixxx::Beats::BEAT_MAP_VERSION) {
@@ -129,7 +129,7 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const TrackPointer& track,
                 std::back_inserter(intermediateBeatFrameVector),
                 [](double value) { return mixxx::Frame(value); });
         mixxx::Beats* pBeats = new mixxx::Beats(
-                track.get(), intermediateBeatFrameVector, iSampleRate);
+                track.get(), intermediateBeatFrameVector);
         pBeats->setSubVersion(subVersion);
         return mixxx::BeatsPointer(pBeats, &BeatFactory::deleteBeats);
     } else {
