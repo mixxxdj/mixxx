@@ -22,7 +22,7 @@ mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const TrackPointer& trac
         return mixxx::BeatsPointer(pMap, &BeatFactory::deleteBeats);
     }
     qDebug() << "BeatFactory::loadBeatsFromByteArray could not parse serialized beats.";
-    // TODO(JVC) May be launching a reanalisys to fix the data?
+    // TODO(JVC) May be launching a reanalysis to fix the data?
     return mixxx::BeatsPointer();
 }
 

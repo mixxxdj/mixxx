@@ -178,7 +178,7 @@ mixxx::Bpm BeatUtils::calculateBpm(
      */
 
     if (sDebug) {
-        qDebug() << "Analisys data(Frame numbers):" << beats;
+        qDebug() << "Analysis data(Frame numbers):" << beats;
     }
 
     if (beats.size() < 2) {
