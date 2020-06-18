@@ -19,7 +19,7 @@ class DlgControllerLearning;
 class MidiController : public Controller {
     Q_OBJECT
   public:
-    explicit MidiController();
+    explicit MidiController(const QString& group);
     ~MidiController() override;
 
     ControllerJSProxy* jsProxy() override;

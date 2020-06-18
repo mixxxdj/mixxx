@@ -65,10 +65,12 @@ static QString get_string(libusb_device_handle *handle, u_int8_t id) {
 }
 
 BulkController::BulkController(
+        const QString& group,
         libusb_context* context,
         libusb_device_handle* handle,
         struct libusb_device_descriptor* desc)
-        : m_context(context),
+        : Controller(group),
+          m_context(context),
           m_phandle(handle),
           in_epaddr(0),
           out_epaddr(0) {

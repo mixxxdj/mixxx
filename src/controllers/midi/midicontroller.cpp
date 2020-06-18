@@ -11,8 +11,8 @@
 #include "util/math.h"
 #include "util/screensaver.h"
 
-MidiController::MidiController()
-        : Controller() {
+MidiController::MidiController(const QString& group)
+        : Controller(group) {
     setDeviceCategory(tr("MIDI Controller"));
 }
 
