@@ -413,10 +413,10 @@ Frame Beats::findNthBeat(Frame frame, int n) const {
     return Frame(-1);
 }
 
-std::unique_ptr<BeatIterator> Beats::findBeats(Frame startFrame, Frame stopFrame) const {
+std::unique_ptr<Beats::iterator> Beats::findBeats(Frame startFrame, Frame stopFrame) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid() || startFrame > stopFrame) {
-        return std::unique_ptr<BeatIterator>();
+        return std::unique_ptr<Beats::iterator>();
     }
 
     track::io::Beat startBeat, stopBeat;
@@ -433,9 +433,9 @@ std::unique_ptr<BeatIterator> Beats::findBeats(Frame startFrame, Frame stopFrame
     }
 
     if (firstBeat >= lastBeat) {
-        return std::unique_ptr<BeatIterator>();
+        return std::unique_ptr<Beats::iterator>();
     }
-    return std::make_unique<BeatIterator>(firstBeat, lastBeat);
+    return std::make_unique<Beats::iterator>(firstBeat, lastBeat);
 }
 
 bool Beats::hasBeatInRange(Frame startFrame,
@@ -612,7 +612,7 @@ void Beats::setDownBeat(Frame frame) {
 
     // Set the proper type for the remaining beats on the track or to the next phrasebeat
     int beat_counter = 0;
-    std::unique_ptr<BeatIterator> beat = findBeats(
+    std::unique_ptr<Beats::iterator> beat = findBeats(
             closestFrame, Frame(m_beats.last().frame_position() - 1));
     while (beat->hasNext()) {
         beat->next();

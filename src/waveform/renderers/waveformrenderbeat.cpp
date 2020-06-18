@@ -57,7 +57,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     //         << "firstDisplayedPosition" << firstDisplayedPosition
     //         << "lastDisplayedPosition" << lastDisplayedPosition;
 
-    std::unique_ptr<mixxx::BeatIterator> it(trackBeats->findBeats(
+    std::unique_ptr<mixxx::Beats::iterator> it(trackBeats->findBeats(
             mixxx::Frame(firstDisplayedPosition * trackSamples / 2.0),
             mixxx::Frame(lastDisplayedPosition * trackSamples / 2.0)));
 

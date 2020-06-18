@@ -20,6 +20,8 @@ class BeatIterator final {
 
     ~BeatIterator() = default;
 
+    using iterator_category = std::forward_iterator_tag;
+
     bool hasNext() const {
         return !m_ended;
     }
@@ -39,6 +41,9 @@ class BeatIterator final {
         }
         return beat;
     }
+
+    // TODO(hacksdump): These will be removed from this iterator and
+    // will be made methods of the Beat class to be introduced in #2844.
 
     /// Returns true if the current beat is a down beat.
     bool isBar() const {

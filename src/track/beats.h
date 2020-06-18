@@ -16,6 +16,7 @@
 namespace mixxx {
 
 class Beats;
+class BeatIterator;
 using BeatsPointer = std::shared_ptr<Beats>;
 using BeatList = QList<track::io::Beat>;
 } // namespace mixxx
@@ -53,6 +54,8 @@ class Beats final : public QObject {
     /// The source of this data is the analyzer.
     Beats(const Track* track, const QVector<Frame>& beats);
     ~Beats() override = default;
+
+    using iterator = BeatIterator;
 
     // TODO(JVC) Is a copy constructor needed? of we can force a move logic??
     Beats(const Beats&);
@@ -137,7 +140,7 @@ class Beats final : public QObject {
     /// between startFrameNum and endFrameNum. THe BeatIterator must be iterated
     /// while a strong reference to the Beats object to ensure that the Beats
     /// object is not deleted. Caller takes ownership of the returned BeatsIterator
-    std::unique_ptr<BeatIterator> findBeats(Frame startFrame,
+    std::unique_ptr<Beats::iterator> findBeats(Frame startFrame,
             Frame stopFrame) const;
 
     /// Return whether or not a Beat lies between startFrameNum and endFrameNum
