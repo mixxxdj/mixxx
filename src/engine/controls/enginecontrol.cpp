@@ -1,6 +1,7 @@
 #include "engine/controls/enginecontrol.h"
-#include "engine/enginemaster.h"
+
 #include "engine/enginebuffer.h"
+#include "engine/enginemaster.h"
 #include "engine/sync/enginesync.h"
 #include "mixer/playermanager.h"
 
@@ -13,28 +14,6 @@ EngineControl::EngineControl(QString group,
     setCurrentSample(0.0, 0.0, 0.0);
 }
 
-EngineControl::~EngineControl() {
-}
-
-void EngineControl::process(const double dRate,
-                           const double dCurrentSample,
-                           const int iBufferSize) {
-    Q_UNUSED(dRate);
-    Q_UNUSED(dCurrentSample);
-    Q_UNUSED(iBufferSize);
-}
-
-void EngineControl::trackLoaded(TrackPointer pNewTrack) {
-    Q_UNUSED(pNewTrack);
-}
-
-void EngineControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
-    Q_UNUSED(pBeats);
-}
-
-void EngineControl::hintReader(HintVector*) {
-}
-
 void EngineControl::setEngineMaster(EngineMaster* pEngineMaster) {
     m_pEngineMaster = pEngineMaster;
 }
@@ -44,8 +23,10 @@ void EngineControl::setEngineBuffer(EngineBuffer* pEngineBuffer) {
 }
 
 void EngineControl::setCurrentSample(
-        const double dCurrentSample, const double dTotalSamples, const double dTrackSampleRate) {
-    SampleOfTrack sot;
+        const double dCurrentSample,
+        const double dTotalSamples,
+        const double dTrackSampleRate) {
+    SampleOfTrack sot{};
     sot.current = dCurrentSample;
     sot.total = dTotalSamples;
     sot.rate = dTrackSampleRate;
