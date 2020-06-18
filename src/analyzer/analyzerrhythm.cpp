@@ -10,6 +10,8 @@
 #include "track/beats.h"
 #include "track/beatutils.h"
 #include "track/track.h"
+// Included to get mixxx::kEngineChannelCount
+#include "engine/engine.h"
 
 namespace {
 
@@ -26,10 +28,12 @@ constexpr float kStepSecs = 0.01161f;
 constexpr int kMaximumBinSizeHz = 50; // Hz
 // This is a quick hack to make a beatmap with only downbeats - will affect the bpm
 constexpr bool useDownbeatOnly = true;
+// The range of bpbs considered for detection, lower is included, higher excluded [)
+constexpr int kLowerBeatsPerBar = 4;
+constexpr int kHigherBeatsPerBar = 5;
 
 DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
-    // These are the defaults for the VAMP beat tracker plugin we used in Mixxx
-    // 2.0.
+    // These are the defaults for the VAMP beat tracker plugin
     DFConfig config;
     config.DFType = DF_COMPLEXSD;
     config.stepSize = stepSize;
@@ -152,15 +156,14 @@ std::vector<double> AnalyzerRhythm::computeBeatsSpectralDifference(std::vector<d
 // but that's how QM Lib compute the downbeat
 // leaving the outer for for now as it might be useful later
 std::tuple<int, int> AnalyzerRhythm::computeMeter(std::vector<double>& beatsSD) {
-    // lower is included, higher excluded [)
-    int lowerBeatsPerBar = 4, higherBeatsPerBar = 5;
-    int candidateDownbeatPosition = 0, candidateBeatsPerBar = 0;
-    std::vector<std::vector<double>> specDiffSeries(higherBeatsPerBar - lowerBeatsPerBar);
+    int candidateDownbeatPosition = 0;
+    int candidateBeatsPerBar = 0;
+    std::vector<std::vector<double>> specDiffSeries(kHigherBeatsPerBar - kLowerBeatsPerBar);
     // let's considers all bpb candidates
-    for (candidateBeatsPerBar = lowerBeatsPerBar;
-            candidateBeatsPerBar < higherBeatsPerBar;
+    for (candidateBeatsPerBar = kLowerBeatsPerBar;
+            candidateBeatsPerBar < kHigherBeatsPerBar;
             candidateBeatsPerBar += 1) {
-        specDiffSeries[candidateBeatsPerBar - lowerBeatsPerBar] =
+        specDiffSeries[candidateBeatsPerBar - kLowerBeatsPerBar] =
                 std::vector<double>(candidateBeatsPerBar, 0);
         // and all downbeats position candidates
         for (candidateDownbeatPosition = 0;
@@ -172,12 +175,12 @@ std::tuple<int, int> AnalyzerRhythm::computeMeter(std::vector<double>& beatsSD) 
                     barBegin < static_cast<int>(beatsSD.size());
                     barBegin += candidateBeatsPerBar) {
                 if (barBegin >= 0) {
-                    specDiffSeries[candidateBeatsPerBar - lowerBeatsPerBar]
+                    specDiffSeries[candidateBeatsPerBar - kLowerBeatsPerBar]
                                   [candidateDownbeatPosition] += beatsSD[barBegin];
                     count += 1;
                 }
             }
-            specDiffSeries[candidateBeatsPerBar - lowerBeatsPerBar]
+            specDiffSeries[candidateBeatsPerBar - kLowerBeatsPerBar]
                           [candidateDownbeatPosition] /= count;
         }
     }
@@ -191,10 +194,10 @@ std::tuple<int, int> AnalyzerRhythm::computeMeter(std::vector<double>& beatsSD) 
                 bestBpb = i;
                 bestDownbeatPos = j;
             }
-            // qDebug() << specDiffSeries[i + lowerBeatsPerBar][j];
+            // qDebug() << specDiffSeries[i + kLowerBeatsPerBar][j];
         }
     }
-    return std::make_tuple(bestBpb + lowerBeatsPerBar, bestDownbeatPos);
+    return std::make_tuple(bestBpb + kLowerBeatsPerBar, bestDownbeatPos);
 }
 
 void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
@@ -209,7 +212,7 @@ void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
     size_t nextDownbeat = firstDownbeat;
     // convert beats positions from df increments to frams
     for (size_t i = 0; i < beats.size(); ++i) {
-        double result = (beats.at(i) * m_stepSize) - m_stepSize / 2;
+        double result = (beats.at(i) * m_stepSize) - m_stepSize / mixxx::kEngineChannelCount;
         if (useDownbeatOnly) {
             if (i == nextDownbeat) {
                 m_resultBeats.push_back(mixxx::audio::FramePos(result));

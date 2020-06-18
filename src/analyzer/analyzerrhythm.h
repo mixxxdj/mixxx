@@ -6,12 +6,12 @@
 
 #include <QHash>
 #include <QList>
+#include <memory>
 
 #include "analyzer/analyzer.h"
 #include "analyzer/plugins/buffering_utils.h"
 #include "audio/frame.h"
 #include "preferences/usersettings.h"
-#include "util/memory.h"
 #include "util/samplebuffer.h"
 
 class DetectionFunction;
