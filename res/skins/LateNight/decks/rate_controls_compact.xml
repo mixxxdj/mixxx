@@ -20,33 +20,34 @@
         <Children>
 
           <WidgetGroup><!-- BPM + rate -->
-            <ObjectName>BpmContainer</ObjectName>
-            <Layout>vertical</Layout>
-            <Size>60f,39f</Size>
+            <ObjectName>BpmRateTapContainer</ObjectName>
+            <Layout>stacked</Layout>
+            <Size>60f,42f</Size>
             <Children>
+              <!-- In order to make the bpm display tappable, we use an old-style
+              widget group and put the bpm pushbutton on top of the display. -->
+              <PushButton>
+                <TooltipId>bpm_tap_visual_bpm</TooltipId>
+                <ObjectName>BpmTap</ObjectName>
+                <!-- substract parent margin & padding -->
+                <Size>57f,40f</Size>
+                <NumberStates>1</NumberStates>
+                <State>
+                  <Number>0</Number>
+                </State>
+                <State>
+                  <Number>1</Number>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="Group"/>,bpm_tap</ConfigKey>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                </Connection>
+              </PushButton>
               <WidgetGroup><!-- BpmContainer + Tap overlay -->
                 <ObjectName>AlignCenter</ObjectName>
-                <Layout>stacked</Layout>
-                <Size>60f,22f</Size>
+                <Layout>vertical</Layout>
+                <Size>60f,39f</Size>
                 <Children>
-                  <!-- In order to make the bpm display tappable, we use an old-style
-                  widget group and put the bpm pushbutton on top of the display. -->
-                  <PushButton>
-                    <TooltipId>bpm_tap_visual_bpm</TooltipId>
-                    <ObjectName>BpmTap</ObjectName>
-                    <Size>60f,22f</Size>
-                    <NumberStates>1</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                    </State>
-                    <Connection>
-                      <ConfigKey><Variable name="Group"/>,bpm_tap</ConfigKey>
-                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                    </Connection>
-                  </PushButton>
                   <NumberBpm>
                     <ObjectName>BpmText</ObjectName>
                     <TooltipId>visual_bpm</TooltipId>
@@ -57,17 +58,17 @@
                       <ConfigKey><Variable name="Group"/>,visual_bpm</ConfigKey>
                     </Connection>
                   </NumberBpm>
+
+                  <NumberRate>
+                    <TooltipId>rate_display</TooltipId>
+                    <ObjectName>RateText</ObjectName>
+                    <Channel><Variable name="ChanNum" /></Channel>
+                    <NumberOfDigits>2</NumberOfDigits>
+                  </NumberRate>
                 </Children>
               </WidgetGroup><!-- BpmContainer + Tap overlay -->
-
-              <NumberRate>
-                <TooltipId>rate_display</TooltipId>
-                <ObjectName>RateText</ObjectName>
-                <Channel><Variable name="ChanNum" /></Channel>
-                <NumberOfDigits>2</NumberOfDigits>
-              </NumberRate>
             </Children>
-          </WidgetGroup><!-- BPM + rate -->
+          </WidgetGroup><!-- BpmContainer -->
 
           <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
 

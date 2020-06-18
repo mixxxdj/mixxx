@@ -268,6 +268,12 @@ WSearchLineEdit {
   border-color: #0c0c0c;
 }
 
+#BpmRateTapContainer:hover,
+#PlayPositionText:hover {
+  background-color: #151517;
+  border-radius: 1px;
+}
+
 
 /**********************************************************************
 ************** container background colors & borders *****************/
@@ -543,16 +549,17 @@ WSearchLineEdit {
     padding: 0px 0px 0px 0px;
   }
 
-  #BpmTapContainer {
-    margin: 0px 2px;
+  #BpmRateTapContainer {
+    margin: 1px;
+    padding: 0px 1px 0px 0px;
     }
     #BpmRateContainer {
       margin: 0px 0px 0px 3px;
-    }
-    #RateText {
-      padding: 0px;
-      margin: 0px 2px 0px 0px;
-    }
+      }
+      #RateText {
+        padding: 0px;
+        margin: 0px 2px 0px 0px;
+      }
 
   #SyncBox {
     margin: 2px 1px 1px 0px;
@@ -1528,11 +1535,10 @@ WPushButton#LoopOut[pressed="true"],
 #CueDeleteButton[pressed="true"] {
   background-color: #7d350d;
 }
-/*
-  #BpmTap {
-  background-color: rgba(125, 53, 13, 120);
+/*  */
+  #BpmTap[pressed="true"] {
+   border: 1px solid #7d350d;
 }
-*/
 
 /* Red */
 #EQKillButtonBox WPushButton[displayValue="1"],
