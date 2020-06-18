@@ -23,7 +23,7 @@ class FakeControllerJSProxy : public ControllerJSProxy {
 class FakeController : public Controller {
     Q_OBJECT
   public:
-    FakeController();
+    FakeController(const QString& group);
     ~FakeController() override;
 
     QString presetExtension() override {

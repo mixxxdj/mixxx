@@ -24,8 +24,9 @@ void FakeControllerJSProxy::sendShortMsg(unsigned char status,
     Q_UNUSED(byte2);
 }
 
-FakeController::FakeController()
-        : m_bMidiPreset(false),
+FakeController::FakeController(const QString& group)
+        : Controller(group),
+          m_bMidiPreset(false),
           m_bHidPreset(false) {
     startEngine();
     getEngine()->setTesting(true);
@@ -77,7 +78,7 @@ bool ControllerPresetValidationTest::testLoadPreset(const PresetInfo& preset) {
         return false;
     }
 
-    FakeController controller;
+    FakeController controller("[FakeController]");
     controller.setDeviceName("Test Controller");
     controller.setPreset(*pPreset);
     // Do not initialize the scripts.

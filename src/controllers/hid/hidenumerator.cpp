@@ -68,6 +68,7 @@ QList<Controller*> HidEnumerator::queryDevices() {
     struct hid_device_info *devs, *cur_dev;
     devs = hid_enumerate(0x0, 0x0);
 
+    int index = 1;
     for (cur_dev = devs; cur_dev; cur_dev = cur_dev->next) {
         if (isDeviceBlacklisted(cur_dev)) {
             // OS/X and windows use usage_page/usage not interface_number
@@ -99,7 +100,12 @@ QList<Controller*> HidEnumerator::queryDevices() {
             continue;
         }
 
-        HidController* currentDevice = new HidController(*cur_dev);
+        // Generate a group for this controller
+        QString group = QStringLiteral("[HidController") +
+                QString::number(index) + QStringLiteral("]");
+        index++;
+
+        HidController* currentDevice = new HidController(group, *cur_dev);
         m_devices.push_back(currentDevice);
     }
     hid_free_enumeration(devs);

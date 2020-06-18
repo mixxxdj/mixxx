@@ -20,10 +20,11 @@ ControllerJSProxy* HidController::jsProxy() {
     return new HidControllerJSProxy(this);
 }
 
-HidController::HidController(const hid_device_info& deviceInfo)
-        : Controller(),
+HidController::HidController(
+        const QString& group,
+        const hid_device_info& deviceInfo)
+        : Controller(group),
           m_pHidDevice(NULL) {
-
     // Copy required variables from deviceInfo, which will be freed after
     // this class is initialized by caller.
     hid_vendor_id = deviceInfo.vendor_id;

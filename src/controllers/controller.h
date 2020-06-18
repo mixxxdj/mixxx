@@ -25,7 +25,7 @@ class ControllerJSProxy;
 class Controller : public QObject, ConstControllerPresetVisitor {
     Q_OBJECT
   public:
-    Controller();
+    Controller(const QString& group);
     ~Controller() override;  // Subclass should call close() at minimum.
 
     /// The object that is exposed to the JS scripts as the "controller" object.
@@ -64,6 +64,10 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     inline const QString& getCategory() const {
         return m_sDeviceCategory;
     }
+    const QString& getGroup() const {
+        return m_group;
+    }
+
     virtual bool isMappable() const = 0;
     inline bool isLearning() const {
         return m_bLearning;
@@ -160,6 +164,10 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.
     virtual ControllerPreset* preset() = 0;
+
+    /// Group name for control objects
+    const QString m_group;
+
     ControllerEngine* m_pEngine;
 
     // Verbose and unique device name suitable for display.

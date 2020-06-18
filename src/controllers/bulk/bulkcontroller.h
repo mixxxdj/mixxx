@@ -43,6 +43,7 @@ class BulkController : public Controller {
     Q_OBJECT
   public:
     BulkController(
+            const QString& group,
             libusb_context* context,
             libusb_device_handle* handle,
             struct libusb_device_descriptor* desc);
