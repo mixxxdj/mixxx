@@ -277,6 +277,7 @@ void ControllerEngine::initializeScripts(const QList<ControllerPreset::ScriptFil
     QJSValueList args;
     args << QJSValue(m_pController->getName());
     args << QJSValue(ControllerDebug::enabled());
+    args << QJSValue(m_pController->getGroup());
 
     // Call the init method for all the prefixes.
     bool success = callFunctionOnObjects(m_scriptFunctionPrefixes, "init", args, true);
