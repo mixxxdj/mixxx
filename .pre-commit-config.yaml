@@ -110,7 +110,6 @@ repos:
     files: ^.*\.qss$
     stages:
     - commit
-    - push
     - manual
 - repo: local
   hooks:
@@ -120,6 +119,6 @@ repos:
     entry: ./tools/line_length.py
     stages:
     - commit
-    - push
+    - manual
     language: python
     files: \.(c|cpp|h)$
