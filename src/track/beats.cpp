@@ -703,37 +703,30 @@ void Beats::scale(enum BPMScale scale) {
 }
 
 void Beats::scaleDouble() {
-    track::io::Beat prevBeat = m_beats.first();
-    // Skip the first beat to preserve the first beat in a measure
-    BeatList::iterator it = m_beats.begin() + 1;
-    for (; it != m_beats.end(); ++it) {
-        // Need to not accrue fractional frames.
-        int distance = it->frame_position() - prevBeat.frame_position();
-        track::io::Beat beat;
-        beat.set_frame_position(prevBeat.frame_position() + distance / 2);
-        it = m_beats.insert(it, beat);
-        prevBeat = (++it)[0];
-    }
+    scaleMultiple(2);
 }
 
 void Beats::scaleTriple() {
-    track::io::Beat prevBeat = m_beats.first();
-    // Skip the first beat to preserve the first beat in a measure
-    BeatList::iterator it = m_beats.begin() + 1;
-    for (; it != m_beats.end(); ++it) {
-        // Need to not accrue fractional frames.
-        int distance = it->frame_position() - prevBeat.frame_position();
-        track::io::Beat beat;
-        beat.set_frame_position(prevBeat.frame_position() + distance / 3);
-        it = m_beats.insert(it, beat);
-        ++it;
-        beat.set_frame_position(prevBeat.frame_position() + distance * 2 / 3);
-        it = m_beats.insert(it, beat);
-        prevBeat = (++it)[0];
-    }
+    scaleMultiple(3);
 }
 
 void Beats::scaleQuadruple() {
+    scaleMultiple(4);
+}
+
+void Beats::scaleHalve() {
+    scaleFraction(2);
+}
+
+void Beats::scaleThird() {
+    scaleFraction(3);
+}
+
+void Beats::scaleFourth() {
+    scaleFraction(4);
+}
+
+void Beats::scaleMultiple(uint multiple) {
     track::io::Beat prevBeat = m_beats.first();
     // Skip the first beat to preserve the first beat in a measure
     BeatList::iterator it = m_beats.begin() + 1;
@@ -741,9 +734,9 @@ void Beats::scaleQuadruple() {
         // Need to not accrue fractional frames.
         int distance = it->frame_position() - prevBeat.frame_position();
         track::io::Beat beat;
-        for (int i = 1; i <= 3; i++) {
+        for (uint i = 1; i <= multiple - 1; i++) {
             beat.set_frame_position(
-                    prevBeat.frame_position() + distance * i / 4);
+                    prevBeat.frame_position() + distance * i / multiple);
             it = m_beats.insert(it, beat);
             ++it;
         }
@@ -751,47 +744,15 @@ void Beats::scaleQuadruple() {
     }
 }
 
-void Beats::scaleHalve() {
+void Beats::scaleFraction(uint fraction) {
     // Skip the first beat to preserve the first beat in a measure
     BeatList::iterator it = m_beats.begin() + 1;
     for (; it != m_beats.end(); ++it) {
-        it = m_beats.erase(it);
-        if (it == m_beats.end()) {
-            break;
-        }
-    }
-}
-
-void Beats::scaleThird() {
-    // Skip the first beat to preserve the first beat in a measure
-    BeatList::iterator it = m_beats.begin() + 1;
-    for (; it != m_beats.end(); ++it) {
-        it = m_beats.erase(it);
-        if (it == m_beats.end()) {
-            break;
-        }
-        it = m_beats.erase(it);
-        if (it == m_beats.end()) {
-            break;
-        }
-    }
-}
-
-void Beats::scaleFourth() {
-    // Skip the first beat to preserve the first beat in a measure
-    BeatList::iterator it = m_beats.begin() + 1;
-    for (; it != m_beats.end(); ++it) {
-        it = m_beats.erase(it);
-        if (it == m_beats.end()) {
-            break;
-        }
-        it = m_beats.erase(it);
-        if (it == m_beats.end()) {
-            break;
-        }
-        it = m_beats.erase(it);
-        if (it == m_beats.end()) {
-            break;
+        for (uint i = 1; i <= fraction - 1; i++) {
+            it = m_beats.erase(it);
+            if (it == m_beats.end()) {
+                return;
+            }
         }
     }
 }

@@ -209,6 +209,8 @@ class Beats final : public QObject {
     void scaleHalve();
     void scaleThird();
     void scaleFourth();
+    void scaleMultiple(uint multiple);
+    void scaleFraction(uint fraction);
 
     mutable QMutex m_mutex;
     const Track* m_track;
