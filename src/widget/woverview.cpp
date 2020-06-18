@@ -931,19 +931,23 @@ void WOverview::drawPickupPosition(QPainter* pPainter) {
         pPainter->setTransform(QTransform(0, 1, 1, 0, 0, 0));
     }
 
+    // draw dark play position outlines
     pPainter->setPen(QPen(QBrush(m_qColorBackground), 1 * m_scaleFactor));
     pPainter->setOpacity(0.5);
     pPainter->drawLine(m_iPickupPos + 1, 0, m_iPickupPos + 1, breadth());
     pPainter->drawLine(m_iPickupPos - 1, 0, m_iPickupPos - 1, breadth());
 
+    // draw play position line
     pPainter->setPen(QPen(m_signalColors.getPlayPosColor(), 1 * m_scaleFactor));
     pPainter->setOpacity(1.0);
     pPainter->drawLine(m_iPickupPos, 0, m_iPickupPos, breadth());
 
+    // draw triangle at the top
     pPainter->drawLine(m_iPickupPos - 2, 0, m_iPickupPos, 2);
     pPainter->drawLine(m_iPickupPos, 2, m_iPickupPos + 2, 0);
     pPainter->drawLine(m_iPickupPos - 2, 0, m_iPickupPos + 2, 0);
 
+    // draw triangle at the bottom
     pPainter->drawLine(m_iPickupPos - 2, breadth() - 1, m_iPickupPos, breadth() - 3);
     pPainter->drawLine(m_iPickupPos, breadth() - 3, m_iPickupPos + 2, breadth() - 1);
     pPainter->drawLine(m_iPickupPos - 2, breadth() - 1, m_iPickupPos + 2, breadth() - 1);
