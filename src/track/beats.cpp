@@ -125,10 +125,8 @@ void Beats::setSubVersion(QString subVersion) {
 void Beats::setGrid(Bpm dBpm, Frame firstBeatFrame) {
     QMutexLocker lock(&m_mutex);
 
-    // If the track duration is not know assume 120 seconds, useful for tests
-    // TODO(JVC) - Check if there are other cases that can be affected.
     auto trackDuration = m_track->getDuration();
-    auto trackLength = (trackDuration == 0 ? 120 : trackDuration) * getSampleRate();
+    auto trackLength = trackDuration * getSampleRate();
 
     m_beats.clear();
 
