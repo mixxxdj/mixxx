@@ -306,7 +306,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pVCManager = NULL;
 #endif
 
-    // Create the player manager. (long)
+    // Create the player manager (long)
     m_pPlayerManager = new PlayerManager(pConfig, m_pSoundManager,
             m_pEffectsManager, m_pVisualsManager, m_pEngine);
     connect(m_pPlayerManager,

@@ -1,5 +1,3 @@
-// playermanager.cpp
-// Created 6/1/2010 by RJ Ryan (rryan@mit.edu)
 #include "mixer/playermanager.h"
 
 #include <QMutexLocker>
@@ -34,11 +32,8 @@ const int kNumberOfAnalyzerThreads = math_max(1, QThread::idealThreadCount() / 2
 
 } // anonymous namespace
 
-//static
 QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumDecks;
-//static
 QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumSamplers;
-//static
 QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
 
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
@@ -369,13 +364,16 @@ void PlayerManager::addDeckInner() {
 
     int number = m_decks.count() + 1;
 
-    EngineChannel::ChannelOrientation orientation = EngineChannel::LEFT;
-    if (number % 2 == 0) {
-        orientation = EngineChannel::RIGHT;
-    }
+    EngineChannel::ChannelOrientation orientation =
+            number % 2 == 0 ? EngineChannel::RIGHT : EngineChannel::LEFT;
 
-    Deck* pDeck = new Deck(this, m_pConfig, m_pEngine, m_pEffectsManager,
-            m_pVisualsManager, orientation, group);
+    Deck* pDeck = new Deck(this,
+            m_pConfig,
+            m_pEngine,
+            m_pEffectsManager,
+            m_pVisualsManager,
+            orientation,
+            group);
     connect(pDeck->getEngineDeck(),
             &EngineDeck::noPassthroughInputConfigured,
             this,

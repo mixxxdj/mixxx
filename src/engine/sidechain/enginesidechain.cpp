@@ -1,27 +1,3 @@
-/***************************************************************************
-                          enginesidechain.cpp
-                             -------------------
-    copyright            : (C) 2008 Albert Santoni
-    email                : gamegod \a\t users.sf.net
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
-// This class provides a way to do audio processing that does not need
-// to be executed in real-time. For example, broadcast encoding
-// and recording encoding can be done here. This class uses double-buffering
-// to increase the amount of time the CPU has to do whatever work needs to
-// be done, and that work is executed in a separate thread. (Threading
-// allows the next buffer to be filled while processing a buffer that's is
-// already full.)
-
 #include "engine/sidechain/enginesidechain.h"
 
 #include <QtDebug>
@@ -37,6 +13,13 @@
 
 #define SIDECHAIN_BUFFER_SIZE 65536
 
+/// This class provides a way to do audio processing that does not need
+/// to be executed in real-time. For example, broadcast encoding
+/// and recording encoding can be done here. This class uses double-buffering
+/// to increase the amount of time the CPU has to do whatever work needs to
+/// be done, and that work is executed in a separate thread. (Threading
+/// allows the next buffer to be filled while processing a buffer that's is
+/// already full.)
 EngineSideChain::EngineSideChain(
         UserSettingsPointer pConfig,
         CSAMPLE* sidechainMix)
