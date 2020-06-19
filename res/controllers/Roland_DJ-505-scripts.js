@@ -1347,47 +1347,10 @@ DJ505.CueLoopMode = function(deck, offset) {
         colorMapper: DJ505.PadColorMap,
         outConnect: false,
         unshift: function() {
-            this.input = function(channel, control, value, status, group) {
-                if (value) {
-                    var hotcueEnabled = true;
-                    if (!engine.getValue(group, "hotcue_" + this.number + "_enabled")) {
-                        // set a new cue point and loop
-                        hotcueEnabled = false;
-                        script.triggerControl(group, "hotcue_" + this.number + "_activate");
-                    }
-                    // jump to existing cue and loop
-                    var startpos = engine.getValue(group, "hotcue_" + this.number + "_position");
-                    var loopseconds = engine.getValue(group, "beatloop_size") * (1 / (engine.getValue(group, "bpm") / 60));
-                    var loopsamples = loopseconds * engine.getValue(group, "track_samplerate") * 2;
-                    var endpos = startpos + loopsamples;
-
-                    // disable loop if currently enabled
-                    if (engine.getValue(group, "loop_enabled")) {
-                        if (hotcueEnabled &&
-                                engine.getValue(group, "loop_start_position") === startpos &&
-                                engine.getValue(group, "loop_end_position") === endpos) {
-                            script.triggerControl(group, "loop_in_goto", 1);
-                            return;
-                        } else {
-                            // disable active loop
-                            script.triggerControl(group, "reloop_toggle", 1);
-                        }
-                    }
-
-                    // set start and endpoints
-                    engine.setValue(group, "loop_start_position", startpos);
-                    engine.setValue(group, "loop_end_position", endpos);
-                    // enable loop
-                    script.triggerControl(group, "reloop_toggle", 1);
-                    if (hotcueEnabled) {
-                        script.triggerControl(group, "loop_in_goto", 1);
-                    }
-                }
-            };
+            this.inKey = "hotcue_" + this.number + "_loop_toggle";
         },
         shift: function() {
-            this.inKey = "hotcue_" + this.number + "_clear";
-            this.input = components.Button.prototype.input;
+            this.inKey = "hotcue_" + this.number + "_gotoandloop";
         },
         output: components.HotcueButton.prototype.output,
         outputColor: components.HotcueButton.prototype.outputColor,
