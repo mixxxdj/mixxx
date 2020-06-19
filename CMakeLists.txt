@@ -1821,7 +1821,7 @@ endif()
 # TagLib
 find_package(Taglib REQUIRED)
 target_include_directories(mixxx-lib SYSTEM PUBLIC ${TAGLIB_INCLUDE_DIRS})
-target_link_libraries(mixxx-lib PUBLIC ${TAGLIB_LIBRARIES})
+target_link_libraries(mixxx-lib PUBLIC ${TAGLIB_LIBRARIES} z)
 if(WIN32 AND STATIC_DEPS)
   target_compile_definitions(mixxx-lib PUBLIC TAGLIB_STATIC)
 endif()
