@@ -26,7 +26,7 @@
         <Children>
 
           <Template src="skin:/controls/button_2state.xml">
-            <SetVariable name="TooltipId">FIXME_waveforms</SetVariable>
+            <SetVariable name="TooltipId">toggle_waveforms</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">80f,20f</SetVariable>
             <SetVariable name="state_0_text">WAVEFORMS</SetVariable>
@@ -35,7 +35,7 @@
           </Template>
 
           <Template src="skin:/controls/button_2state_persist.xml">
-            <SetVariable name="TooltipId">show_4decks</SetVariable>
+            <SetVariable name="TooltipId">toggle_4decks</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">52f,20f</SetVariable>
             <SetVariable name="state_0_text">4 DECKS</SetVariable>
@@ -239,7 +239,6 @@
           <!-- Rec feedback color -->
           <Template src="skin:/controls/button_3state_display.xml">
             <SetVariable name="ObjectName">RecFeedback</SetVariable>
-            <SetVariable name="TooltipId">toggle_recording</SetVariable>
             <SetVariable name="Size">72f,20f</SetVariable>
             <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
             <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
@@ -249,7 +248,7 @@
 
       <PushButton>
         <Size>82f,20f</Size>
-        <TooltipId>skin_settings</TooltipId>
+        <TooltipId>broadcast_enabled</TooltipId>
         <ObjectName>BroadcastButton</ObjectName>
         <NumberStates>4</NumberStates>
         <State>
