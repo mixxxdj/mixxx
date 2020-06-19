@@ -35,10 +35,8 @@ class VinylControlManager;
 class VisualsManager;
 class WMainMenuBar;
 
-typedef QSharedPointer<SettingsManager> SettingsManagerPointer;
-
-/// This Class is the base class for Mixxx. It sets up the main
-/// window and providing a menubar.
+/// This Class is the base class for Mixxx.
+/// It sets up the main window providing a menubar.
 /// For the main view, an instance of class MixxxView is
 /// created which creates your view.
 class MixxxMainWindow : public QMainWindow {
@@ -66,20 +64,20 @@ class MixxxMainWindow : public QMainWindow {
     void slotFileLoadSongPlayer(int deck);
     /// toggle keyboard on-off
     void slotOptionsKeyboard(bool toggle);
-    /// Preference dialog
+    /// show the preferences dialog
     void slotOptionsPreferences();
-    /// shows an about dlalogg
+    /// show the about dialog
     void slotHelpAbout();
     /// toggle full screen mode
     void slotViewFullScreen(bool toggle);
-    /// Open the developer tools dialog.
+    /// open the developer tools dialog.
     void slotDeveloperTools(bool enable);
     void slotDeveloperToolsClosed();
 
     void slotUpdateWindowTitle(TrackPointer pTrack);
     void slotChangedPlayingDeck(int deck);
 
-    /// Warn the user when inputs are not configured.
+    /// warn the user when inputs are not configured.
     void slotNoMicrophoneInputConfigured();
     void slotNoAuxiliaryInputConfigured();
     void slotNoDeckPassthroughInputConfigured();
@@ -87,7 +85,7 @@ class MixxxMainWindow : public QMainWindow {
 
   signals:
     void skinLoaded();
-    /// used to uncheck the menu when the dialog of develeoper tools is closed
+    /// used to uncheck the menu when the dialog of developer tools is closed
     void developerToolsDlgClosed(int r);
     void closeDeveloperToolsDlgChecked(int r);
     void fullScreenChanged(bool fullscreen);
@@ -127,7 +125,7 @@ class MixxxMainWindow : public QMainWindow {
     /// The effects processing system
     EffectsManager* m_pEffectsManager;
 
-    /// The mixing engine.
+    /// The mixing engine
     EngineMaster* m_pEngine;
 
     SkinLoader* m_pSkinLoader; // TODO(rryan): doesn't need to be a member variable
@@ -164,7 +162,7 @@ class MixxxMainWindow : public QMainWindow {
     ConfigObject<ConfigValueKbd>* m_pKbdConfigEmpty;
 
     mixxx::TooltipsPreference m_toolTipsCfg;
-    /// Timer that tracks how long Mixxx has been running.
+    /// tracks how long Mixxx has been running
     Timer m_runtime_timer;
 
     const CmdlineArgs& m_cmdLineArgs;

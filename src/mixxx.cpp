@@ -483,16 +483,17 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Load skin to a QWidget that we set as the central widget. Assignment
     // intentional in next line.
-    if (!(m_pRootWidget = m_pSkinLoader->loadConfiguredSkin(this, m_pKeyboard,
-                                                              m_pPlayerManager,
-                                                              m_pControllerManager,
-                                                              m_pLibrary,
-                                                              m_pVCManager,
-                                                              m_pEffectsManager,
-                                                              m_pRecordingManager))) {
+    m_pRootWidget = m_pSkinLoader->loadConfiguredSkin(this,
+            m_pKeyboard,
+            m_pPlayerManager,
+            m_pControllerManager,
+            m_pLibrary,
+            m_pVCManager,
+            m_pEffectsManager,
+            m_pRecordingManager);
+    if (m_pRootWidget == nullptr) {
         reportCriticalErrorAndQuit(
-                "default skin cannot be loaded see <b>mixxx</b> trace for more information.");
-
+                "default skin cannot be loaded - see <b>mixxx</b> trace for more information");
         m_pRootWidget = oldWidget;
         //TODO (XXX) add dialog to warn user and launch skin choice page
     }
