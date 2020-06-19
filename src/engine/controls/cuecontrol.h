@@ -90,6 +90,7 @@ class HotcueControl : public QObject {
     void slotHotcueGotoAndPlay(double v);
     void slotHotcueGotoAndStop(double v);
     void slotHotcueGotoAndLoop(double v);
+    void slotHotcueLoopToggle(double v);
     void slotHotcueActivate(double v);
     void slotHotcueActivateCue(double v);
     void slotHotcueActivateLoop(double v);
@@ -107,6 +108,7 @@ class HotcueControl : public QObject {
     void hotcueGotoAndPlay(HotcueControl* pHotcue, double v);
     void hotcueGotoAndStop(HotcueControl* pHotcue, double v);
     void hotcueGotoAndLoop(HotcueControl* pHotcue, double v);
+    void hotcueLoopToggle(HotcueControl* pHotcue, double v);
     void hotcueActivate(HotcueControl* pHotcue, double v, HotcueMode mode);
     void hotcueActivatePreview(HotcueControl* pHotcue, double v);
     void hotcueClear(HotcueControl* pHotcue, double v);
@@ -137,6 +139,7 @@ class HotcueControl : public QObject {
     ControlObject* m_hotcueGotoAndPlay;
     ControlObject* m_hotcueGotoAndStop;
     ControlObject* m_hotcueGotoAndLoop;
+    ControlObject* m_hotcueLoopToggle;
     ControlObject* m_hotcueActivate;
     ControlObject* m_hotcueActivateCue;
     ControlObject* m_hotcueActivateLoop;

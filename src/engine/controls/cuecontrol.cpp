@@ -309,6 +309,11 @@ void CueControl::createControls() {
         connect(pControl, &HotcueControl::hotcueGotoAndLoop,
                 this, &CueControl::hotcueGotoAndLoop,
                 Qt::DirectConnection);
+        connect(pControl,
+                &HotcueControl::hotcueLoopToggle,
+                this,
+                &CueControl::hotcueLoopToggle,
+                Qt::DirectConnection);
         connect(pControl, &HotcueControl::hotcueActivate,
                 this, &CueControl::hotcueActivate,
                 Qt::DirectConnection);
@@ -847,9 +852,8 @@ void CueControl::hotcueGotoAndLoop(HotcueControl* pControl, double v) {
         hotcueGoto(pControl, v);
         setCurrentSavedLoop(pCue);
     } else if (pCue->getType() == mixxx::CueType::HotCue) {
-        setCurrentSavedLoop(CuePointer());
         hotcueGoto(pControl, v);
-        m_pBeatLoopActivate->set(1);
+        setLoop(pCue->getPosition(), Cue::kNoPosition, true);
     } else {
         return;
     }
@@ -883,12 +887,25 @@ void CueControl::hotcueLoopToggle(HotcueControl* pControl, double v) {
         return;
     }
 
-    bool enabled;
-    if (m_pCurrentSavedLoop != pCue) {
-        setCurrentSavedLoop(pCue);
-    } else {
-        enabled = !pCue->isActive();
-        setLoop(pCue->getPosition(), pCue->getEndPosition(), enabled);
+    switch (pCue->getType()) {
+    case mixxx::CueType::Loop: {
+        bool enabled;
+        if (m_pCurrentSavedLoop != pCue) {
+            setCurrentSavedLoop(pCue);
+        } else {
+            enabled = !pCue->isActive();
+            setLoop(pCue->getPosition(), pCue->getEndPosition(), enabled);
+        }
+    } break;
+    case mixxx::CueType::HotCue: {
+        double startPosition = pCue->getPosition();
+        bool enabled = startPosition != m_pLoopStartPosition->get() ||
+                !m_pLoopEnabled->get();
+        setLoop(startPosition, Cue::kNoPosition, enabled);
+        break;
+    }
+    default:
+        break;
     }
 }
 
@@ -2107,6 +2124,13 @@ HotcueControl::HotcueControl(QString group, int i)
             this, &HotcueControl::slotHotcueGotoAndLoop,
             Qt::DirectConnection);
 
+    m_hotcueLoopToggle = new ControlPushButton(keyForControl(i, "loop_toggle"));
+    connect(m_hotcueLoopToggle,
+            &ControlObject::valueChanged,
+            this,
+            &HotcueControl::slotHotcueLoopToggle,
+            Qt::DirectConnection);
+
     m_hotcueActivate = new ControlPushButton(keyForControl(i, "activate"));
     connect(m_hotcueActivate, &ControlObject::valueChanged,
             this, &HotcueControl::slotHotcueActivate,
@@ -2179,6 +2203,10 @@ void HotcueControl::slotHotcueGotoAndStop(double v) {
 
 void HotcueControl::slotHotcueGotoAndLoop(double v) {
     emit hotcueGotoAndLoop(this, v);
+}
+
+void HotcueControl::slotHotcueLoopToggle(double v) {
+    emit hotcueLoopToggle(this, v);
 }
 
 void HotcueControl::slotHotcueActivate(double v) {

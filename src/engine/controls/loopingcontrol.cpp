@@ -535,6 +535,16 @@ void LoopingControl::setLoop(double startPosition, double endPosition, bool enab
     qDebug() << "LoopingControl::setLoop" << startPosition << endPosition << enabled;
 
     LoopSamples loopSamples = m_loopSamples.getValue();
+    if (endPosition == Cue::kNoPosition) {
+        mixxx::BeatsPointer pBeats = m_pBeats;
+        if (!pBeats) {
+            return;
+        }
+
+        double beatloopSize = m_pCOBeatLoopSize->get();
+        endPosition = pBeats->findNBeatsFromSample(startPosition, beatloopSize);
+    }
+
     if (loopSamples.start != startPosition || loopSamples.end != endPosition) {
         // Copy saved loop parameters to active loop
         loopSamples.start = startPosition;
