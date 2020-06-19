@@ -31,11 +31,8 @@ const int kNumberOfAnalyzerThreads = math_max(1, QThread::idealThreadCount() / 2
 
 } // anonymous namespace
 
-//static
 QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumDecks;
-//static
 QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumSamplers;
-//static
 QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
 
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,

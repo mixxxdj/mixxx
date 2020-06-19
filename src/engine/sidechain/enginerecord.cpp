@@ -1,11 +1,3 @@
-/***************************************************************************
-                          enginerecord.cpp  -  class to record the mix
-                             -------------------
-    copyright            : (C) 2007 by John Sully
-    copyright            : (C) 2010 by Tobias Rafreider
-    email                :
-***************************************************************************/
-
 #include "engine/sidechain/enginerecord.h"
 
 #include "preferences/usersettings.h"
@@ -39,10 +31,6 @@ EngineRecord::~EngineRecord() {
     delete m_pSamplerate;
 }
 
-
-
-
-
 void EngineRecord::updateFromPreferences() {
     m_fileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Path"));
     m_baTitle = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Title"));
@@ -69,8 +57,7 @@ void EngineRecord::updateFromPreferences() {
     }
 }
 
-bool EngineRecord::metaDataHasChanged()
-{
+bool EngineRecord::metaDataHasChanged() {
     //Originally, m_iMetaDataLife was used so that getCurrentPlayingTrack was called
     //less often, because it was calculating it.
     //Nowadays (since Mixxx 1.11), it just accesses a map on a thread safe method.
