@@ -1,6 +1,7 @@
 ---
 version: '{branch}-{build}'
 skip_tags: true
+shallow_clone: true
 max_jobs: 1
 image:
   - Visual Studio 2017
