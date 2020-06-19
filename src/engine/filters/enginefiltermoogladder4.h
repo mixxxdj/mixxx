@@ -108,12 +108,13 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
     // this is can be used instead off a final process() call before pause
     // It fades to dry or 0 according to the m_startFromDry parameter
     // it is an alternative for using pauseFillter() calls
-    void processAndPauseFilter(const CSAMPLE* pIn, CSAMPLE* pOutput,
-                       const int iBufferSize) {
+    void processAndPauseFilter(const CSAMPLE* M_RESTRICT pIn,
+            CSAMPLE* M_RESTRICT pOutput,
+            const int iBufferSize) {
         process(pIn, pOutput, iBufferSize);
-        SampleUtil::copy2WithRampingGain(pOutput,
-                pOutput, 1.0, 0,  // fade out filtered
-                pIn, 0, 1.0,  // fade in dry
+        SampleUtil::linearCrossfadeBuffersOut(
+                pOutput, // fade out filtered
+                pIn,     // fade in dry
                 iBufferSize);
         initBuffers();
     }
@@ -143,7 +144,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
                 pOutput[i] = processSample(pIn[i], &m_buf[0]);
                 pOutput[i+1] = processSample(pIn[i+1], &m_buf[1]);
             }
-            
+
         } else {
             m_postGain = m_postGainNew;
             m_kacr = m_kacrNew;
