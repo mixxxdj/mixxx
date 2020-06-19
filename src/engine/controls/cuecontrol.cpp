@@ -1889,6 +1889,7 @@ void HotcueControl::slotHotcueGotoAndStop(double v) {
 }
 
 void HotcueControl::slotHotcueActivate(double v) {
+    qDebug() << "HOTCUE ACTIVATED:" << toDebugString(v);
     emit hotcueActivate(this, v);
 }
 
