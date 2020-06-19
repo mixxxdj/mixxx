@@ -290,10 +290,7 @@ void LoopingControl::slotLoopScale(double scaleFactor) {
     loopSamples.seekMode = (m_bLoopingEnabled && scaleFactor < 1.0) ? LoopSeekMode::Changed : LoopSeekMode::MovedOut;
 
     m_loopSamples.setValue(loopSamples);
-    if(m_pCue) {
-        m_pCue->setStartPosition(loopSamples.start);
-        m_pCue->setEndPosition(loopSamples.end);
-    }
+    emit loopUpdated(loopSamples.start, loopSamples.end);
 
     // Update CO for loop end marker
     m_pCOLoopEndPosition->set(loopSamples.end);
@@ -530,61 +527,25 @@ double LoopingControl::getSyncPositionInsideLoop(double dRequestedPlaypos, doubl
     return dSyncedPlayPos;
 }
 
-bool LoopingControl::setSavedLoop(CuePointer pCue) {
-    qDebug() << "setSavedLoop";
-
-    bool loopAlreadyActive = false;
-    if(!pCue) {
-        if(m_pCue) {
-            m_pCue->deactivate();
-            m_pCue.reset();
-        }
-        clearActiveBeatLoop();
-        return loopAlreadyActive;
+void LoopingControl::setLoop(double startPosition, double endPosition, bool enabled) {
+    VERIFY_OR_DEBUG_ASSERT(startPosition != Cue::kNoPosition &&
+            (startPosition < endPosition || endPosition == Cue::kNoPosition)) {
+        return;
     }
-    DEBUG_ASSERT(pCue->getType() == mixxx::CueType::Loop);
-
-    double startPosition = pCue->getPosition();
-    double endPosition = startPosition + pCue->getLength();
-    if(startPosition < 0 || startPosition >= endPosition) {
-        if(m_pCue) {
-            m_pCue->deactivate();
-            m_pCue.reset();
-        }
-        clearActiveBeatLoop();
-        return loopAlreadyActive;
-    }
+    qDebug() << "LoopingControl::setLoop" << startPosition << endPosition << enabled;
 
     LoopSamples loopSamples = m_loopSamples.getValue();
-    bool loopSamplesChanged = loopSamples.start != startPosition || loopSamples.end != endPosition;
-    if (m_pCue != pCue || loopSamplesChanged) {
-        if(m_pCue != pCue) {
-            if(m_pCue) {
-                m_pCue->deactivate();
-            }
-            m_pCue = pCue;
-        }
-        if(loopSamplesChanged) {
-            // Copy saved loop parameters to active loop
-            loopSamples.start = startPosition;
-            loopSamples.end = endPosition;
-            loopSamples.seekMode = LoopSeekMode::None;
-            clearActiveBeatLoop();
-            m_loopSamples.setValue(loopSamples);
-            m_pCOLoopStartPosition->set(loopSamples.start);
-            m_pCOLoopEndPosition->set(loopSamples.end);
-            setLoopingEnabled(true);
-        } else if(m_pCue && m_bLoopingEnabled) {
-            // Currently active loop became a saved loop, mark it as active
-            m_pCue->activate();
-        }
-    } else if (!m_bLoopingEnabled) {
-        setLoopingEnabled(true);
-    } else {
-        loopAlreadyActive = true;
+    if (loopSamples.start != startPosition || loopSamples.end != endPosition) {
+        // Copy saved loop parameters to active loop
+        loopSamples.start = startPosition;
+        loopSamples.end = endPosition;
+        loopSamples.seekMode = LoopSeekMode::None;
+        clearActiveBeatLoop();
+        m_loopSamples.setValue(loopSamples);
+        m_pCOLoopStartPosition->set(loopSamples.start);
+        m_pCOLoopEndPosition->set(loopSamples.end);
     }
-
-    return loopAlreadyActive;
+    setLoopingEnabled(enabled);
 }
 
 void LoopingControl::setLoopInToCurrentPosition() {
@@ -967,13 +928,8 @@ void LoopingControl::setLoopingEnabled(bool enabled) {
             pActiveBeatLoop->deactivate();
         }
     }
-    if (m_pCue) {
-        if (enabled) {
-            m_pCue->activate();
-        } else {
-            m_pCue->deactivate();
-        }
-    }
+
+    emit loopToggled(enabled);
 }
 
 bool LoopingControl::isLoopingEnabled() {
@@ -1122,9 +1078,8 @@ void LoopingControl::updateBeatLoopingControls() {
 
 void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable) {
     // If this is a "new" loop, stop tracking saved loop changes
-    if(!keepStartPoint && m_pCue) {
-        m_pCue->deactivate();
-        m_pCue.reset();
+    if (!keepStartPoint) {
+        emit loopReset();
     }
 
     // if a seek was queued in the engine buffer move the current sample to its position
@@ -1263,10 +1218,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     newloopSamples.seekMode = (keepStartPoint && (enable || m_bLoopingEnabled)) ? LoopSeekMode::Changed : LoopSeekMode::MovedOut;
 
     m_loopSamples.setValue(newloopSamples);
-    if(m_pCue) {
-        m_pCue->setStartPosition(newloopSamples.start);
-        m_pCue->setEndPosition(newloopSamples.end);
-    }
+    emit loopUpdated(newloopSamples.start, newloopSamples.end);
     m_pCOLoopStartPosition->set(newloopSamples.start);
     m_pCOLoopEndPosition->set(newloopSamples.end);
 
@@ -1371,10 +1323,7 @@ void LoopingControl::slotLoopMove(double beats) {
         loopSamples.start = new_loop_in;
         loopSamples.end = new_loop_out;
         m_loopSamples.setValue(loopSamples);
-        if (m_pCue)  {
-            m_pCue->setStartPosition(loopSamples.start);
-            m_pCue->setEndPosition(loopSamples.end);
-        }
+        emit loopUpdated(loopSamples.start, loopSamples.end);
         m_pCOLoopStartPosition->set(new_loop_in);
         m_pCOLoopEndPosition->set(new_loop_out);
     }

@@ -71,11 +71,10 @@ EngineBuffer* EngineControl::getEngineBuffer() {
     return m_pEngineBuffer;
 }
 
-bool EngineControl::setSavedLoop(CuePointer pCue) {
+void EngineControl::setLoop(double startPosition, double endPosition, bool enabled) {
     if (m_pEngineBuffer) {
-        return m_pEngineBuffer->setSavedLoop(pCue);
+        return m_pEngineBuffer->setLoop(startPosition, endPosition, enabled);
     }
-    return false;
 }
 
 void EngineControl::seekAbs(double samplePosition) {

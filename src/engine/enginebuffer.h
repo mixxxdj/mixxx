@@ -125,7 +125,7 @@ class EngineBuffer : public EngineObject {
     // Returns the BPM of the loaded track around the current position (not thread-safe)
     double getLocalBpm();
     // Sets a loop for the loaded track (not thread safe)
-    bool setSavedLoop(CuePointer);
+    void setLoop(double startPosition, double endPositon, bool enabled);
     // Sets pointer to other engine buffer/channel
     void setEngineMaster(EngineMaster*);
 

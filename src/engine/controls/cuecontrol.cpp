@@ -731,7 +731,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v, HotcueMode mode) {
     }
 
     if (cueType == mixxx::CueType::Loop) {
-        setSavedLoop(pCue);
+        setCurrentSavedLoop(pCue);
     }
 
     // If quantize is enabled and we are not playing, jump to the cue point
@@ -844,14 +844,10 @@ void CueControl::hotcueGotoAndLoop(HotcueControl* pControl, double v) {
     }
 
     if (pCue->getType() == mixxx::CueType::Loop) {
-        double endPosition = startPosition + pCue->getLength();
-        if (startPosition >= endPosition) {
-            return;
-        }
-
         hotcueGoto(pControl, v);
-        setSavedLoop(pCue);
+        setCurrentSavedLoop(pCue);
     } else if (pCue->getType() == mixxx::CueType::HotCue) {
+        setCurrentSavedLoop(CuePointer());
         hotcueGoto(pControl, v);
         m_pBeatLoopActivate->set(1);
     } else {
@@ -887,10 +883,12 @@ void CueControl::hotcueLoopToggle(HotcueControl* pControl, double v) {
         return;
     }
 
-    bool loopAlreadyActive = setSavedLoop(pCue);
-    if (loopAlreadyActive) {
-        // Loop is already set and active, disable it
-        m_pLoopToggle->set(1);
+    bool enabled;
+    if (m_pCurrentSavedLoop != pCue) {
+        setCurrentSavedLoop(pCue);
+    } else {
+        enabled = !pCue->isActive();
+        setLoop(pCue->getPosition(), pCue->getEndPosition(), enabled);
     }
 }
 
@@ -1969,6 +1967,61 @@ void CueControl::hotcueFocusColorNext(double v) {
 
     ColorPalette colorPalette = m_colorPaletteSettings.getHotcueColorPalette();
     pCue->setColor(colorPalette.nextColor(*color));
+}
+
+void CueControl::setCurrentSavedLoop(CuePointer pCue) {
+    if (m_pCurrentSavedLoop != pCue) {
+        if (m_pCurrentSavedLoop) {
+            m_pCurrentSavedLoop->deactivate();
+        }
+
+        if (!pCue) {
+            m_pCurrentSavedLoop.reset();
+            return;
+        }
+
+        VERIFY_OR_DEBUG_ASSERT(pCue->getType() == mixxx::CueType::Loop &&
+                pCue->getEndPosition() != Cue::kNoPosition) {
+            return;
+        }
+
+        m_pCurrentSavedLoop = pCue;
+    }
+
+    if (m_pCurrentSavedLoop) {
+        qDebug() << "CueControl::setLoop" << pCue->getPosition() << pCue->getEndPosition() << true;
+        setLoop(pCue->getPosition(), pCue->getEndPosition(), true);
+        pCue->activate();
+    }
+}
+
+void CueControl::slotLoopReset() {
+    setCurrentSavedLoop(CuePointer());
+}
+
+void CueControl::slotLoopToggled(bool enabled) {
+    if (!m_pCurrentSavedLoop) {
+        return;
+    }
+
+    if (enabled) {
+        m_pCurrentSavedLoop->activate();
+    } else {
+        m_pCurrentSavedLoop->deactivate();
+    }
+}
+
+void CueControl::slotLoopUpdated(double startPosition, double endPosition) {
+    if (!m_pCurrentSavedLoop) {
+        return;
+    }
+
+    DEBUG_ASSERT(startPosition != Cue::kNoPosition);
+    DEBUG_ASSERT(endPosition != Cue::kNoPosition);
+    DEBUG_ASSERT(startPosition > endPosition);
+
+    m_pCurrentSavedLoop->setStartPosition(startPosition);
+    m_pCurrentSavedLoop->setEndPosition(endPosition);
 }
 
 ConfigKey HotcueControl::keyForControl(int hotcue, const char* name) {

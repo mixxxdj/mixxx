@@ -165,6 +165,11 @@ class CueControl : public EngineControl {
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
+  public slots:
+    void slotLoopReset();
+    void slotLoopToggled(bool enabled);
+    void slotLoopUpdated(double startPosition, double endPosition);
+
   private slots:
     void quantizeChanged(double v);
 
@@ -224,6 +229,7 @@ class CueControl : public EngineControl {
     void createControls();
     void attachCue(CuePointer pCue, HotcueControl* pControl);
     void detachCue(HotcueControl* pControl);
+    void setCurrentSavedLoop(CuePointer pCue);
     void loadCuesFromTrack();
     double quantizeCuePoint(double position);
     double getQuantizedCurrentPosition();
@@ -295,6 +301,7 @@ class CueControl : public EngineControl {
     ControlObject* m_pHotcueFocusColorPrev;
 
     TrackPointer m_pLoadedTrack; // is written from an engine worker thread
+    CuePointer m_pCurrentSavedLoop;
 
     // Tells us which controls map to which hotcue
     QMap<QObject*, int> m_controlMap;

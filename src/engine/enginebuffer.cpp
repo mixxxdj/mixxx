@@ -232,6 +232,22 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pCueControl = new CueControl(group, pConfig);
     addControl(m_pCueControl);
 
+    connect(m_pLoopingControl,
+            &LoopingControl::loopReset,
+            m_pCueControl,
+            &CueControl::slotLoopReset,
+            Qt::DirectConnection);
+    connect(m_pLoopingControl,
+            &LoopingControl::loopUpdated,
+            m_pCueControl,
+            &CueControl::slotLoopUpdated,
+            Qt::DirectConnection);
+    connect(m_pLoopingControl,
+            &LoopingControl::loopToggled,
+            m_pCueControl,
+            &CueControl::slotLoopToggled,
+            Qt::DirectConnection);
+
     m_pReadAheadManager = new ReadAheadManager(m_pReader,
                                                m_pLoopingControl);
     m_pReadAheadManager->addRateControl(m_pRateControl);
@@ -357,8 +373,8 @@ double EngineBuffer::getLocalBpm() {
     return m_pBpmControl->getLocalBpm();
 }
 
-bool EngineBuffer::setSavedLoop(CuePointer pCue) {
-    return m_pLoopingControl->setSavedLoop(pCue);
+void EngineBuffer::setLoop(double startPosition, double endPositon, bool enabled) {
+    return m_pLoopingControl->setLoop(startPosition, endPositon, enabled);
 }
 
 void EngineBuffer::setEngineMaster(EngineMaster* pEngineMaster) {

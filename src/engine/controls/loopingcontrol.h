@@ -52,12 +52,17 @@ class LoopingControl : public EngineControl {
 
     void notifySeek(double dNewPlaypos) override;
 
-    bool setSavedLoop(CuePointer pCue);
+    void setLoop(double startPosition, double endPosition, bool enabled);
     void setRateControl(RateControl* rateControl);
     bool isLoopingEnabled();
 
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
+
+  signals:
+    void loopReset();
+    void loopToggled(bool enabled);
+    void loopUpdated(double startPosition, double endPosition);
 
   public slots:
     void slotLoopIn(double pressed);
