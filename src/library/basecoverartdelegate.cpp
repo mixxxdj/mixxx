@@ -73,7 +73,7 @@ void BaseCoverArtDelegate::slotCoverFound(
         const QObject* pRequestor,
         const CoverInfo& coverInfo,
         const QPixmap& pixmap,
-        mixxx::cache_key_t requestedImageHash,
+        mixxx::cache_key_t requestedCacheKey,
         bool coverInfoUpdated) {
     Q_UNUSED(pixmap);
     if (pRequestor != this) {
@@ -89,8 +89,8 @@ void BaseCoverArtDelegate::slotCoverFound(
             pTrack->setCoverInfo(coverInfo);
         }
     }
-    QList<int> refreshRows = m_pendingCacheRows.values(requestedImageHash);
-    m_pendingCacheRows.remove(requestedImageHash);
+    QList<int> refreshRows = m_pendingCacheRows.values(requestedCacheKey);
+    m_pendingCacheRows.remove(requestedCacheKey);
     emitRowsChanged(std::move(refreshRows));
 }
 
@@ -110,7 +110,7 @@ void BaseCoverArtDelegate::paintItem(
     paintItemBackground(painter, option, index);
 
     CoverInfo coverInfo = coverInfoForIndex(index);
-    if (CoverImageUtils::isValidHash(coverInfo.hash)) {
+    if (coverInfo.hasImage()) {
         VERIFY_OR_DEBUG_ASSERT(m_pCache) {
             return;
         }
@@ -131,7 +131,7 @@ void BaseCoverArtDelegate::paintItem(
             } else {
                 // If we asked for a non-cache image and got a null pixmap,
                 // then our request was queued.
-                m_pendingCacheRows.insert(coverInfo.hash, index.row());
+                m_pendingCacheRows.insert(coverInfo.cacheKey(), index.row());
             }
         } else {
             // Cache hit
@@ -139,5 +139,14 @@ void BaseCoverArtDelegate::paintItem(
             painter->drawPixmap(option.rect.topLeft(), pixmap);
             return;
         }
+    }
+    // Fallback: Use the (background) color as a placeholder:
+    //  - while the cover art is loaded asynchronously in the background
+    //  - if the audio file with embedded cover art is missing
+    //  - if the external image file with custom cover art is missing
+    // Since the background color is calculated from the cover art image
+    // it is optional and may not always be available
+    if (coverInfo.color) {
+        painter->fillRect(option.rect, mixxx::RgbColor::toQColor(coverInfo.color));
     }
 }

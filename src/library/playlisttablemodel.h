@@ -1,7 +1,7 @@
 #pragma once
 
 #include "library/basesqltablemodel.h"
-#include "library/tracksettablemodel.h"
+#include "library/trackset/tracksettablemodel.h"
 
 class PlaylistTableModel final : public TrackSetTableModel {
     Q_OBJECT
@@ -28,7 +28,7 @@ class PlaylistTableModel final : public TrackSetTableModel {
     int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
     bool isLocked() final;
 
-    CapabilitiesFlags getCapabilities() const final;
+    Capabilities getCapabilities() const final;
 
   private slots:
     void playlistsChanged(QSet<int> playlistIds);

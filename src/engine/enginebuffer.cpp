@@ -1205,7 +1205,7 @@ void EngineBuffer::processSeek(bool paused) {
         if (kLogger.traceEnabled()) {
             kLogger.trace()
                     << "EngineBuffer::processSeek seek info: " << m_filepos_play
-                    << " " << position;
+                    << " -> " << position;
         }
     }
     if (position != m_filepos_play) {

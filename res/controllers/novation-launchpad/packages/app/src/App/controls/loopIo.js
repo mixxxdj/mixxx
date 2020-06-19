@@ -1,22 +1,21 @@
 /* @flow */
-import { Colors } from '../../Launchpad'
-import type { MidiMessage } from '../../Launchpad'
+import type { LaunchpadDevice, MidiMessage } from '../../'
 
 import { modes } from '../ModifierSidebar'
 import type { Modifier } from '../ModifierSidebar'
-import type { ChannelControl } from '../../Mixxx'
+import type { ChannelControl } from '@mixxx-launchpad/mixxx'
 
-export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => {
+export default (gridPosition: [number, number]) => (deck: ChannelControl) => (modifier: Modifier) => (device: LaunchpadDevice) => {
   const onMidi = (dir: 'in' | 'out') => ({ value }: MidiMessage, { bindings }: Object) => {
     modes(modifier.getState(), () => {
       if (value) {
         // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
         deck[(`loop_${dir}`: any)].setValue(1)
-        bindings[dir].button.sendColor(Colors.hi_green)
+        bindings[dir].button.sendColor(device.colors.hi_green)
       } else {
         // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
         deck[(`loop_${dir}`: any)].setValue(0)
-        bindings[dir].button.sendColor(Colors.black)
+        bindings[dir].button.sendColor(device.colors.black)
       }
     })
   }

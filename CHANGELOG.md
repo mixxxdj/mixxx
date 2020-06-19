@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.4.0](https://launchpad.net/mixxx/+milestone/2.4.0) (Unreleased)
+
+* Cover art: Prevent wrong cover art display due to hash conflicts
+* Cover art: Add background color for quick cover art preview
+
 ## [2.3.0](https://launchpad.net/mixxx/+milestone/2.3.0) (Unreleased)
 ### Hotcues ###
 * Add hotcue colors and custom labels by right clicking hotcue buttons or right clicking hotcues on overview waveforms [#2016](https://github.com/mixxxdj/mixxx/pull/2016) [#2520](https://github.com/mixxxdj/mixxx/pull/2520) [#2238](https://github.com/mixxxdj/mixxx/pull/2238) [#2560](https://github.com/mixxxdj/mixxx/pull/2560) [#2557](https://github.com/mixxxdj/mixxx/pull/2557) [#2362](https://github.com/mixxxdj/mixxx/pull/2362)
@@ -69,6 +74,11 @@
 * Add CMake build system with Ccache support for faster compilation time [#2280](https://github.com/mixxxdj/mixxx/pull/2280)
   * Note: The old SCons build system is still supported for 2.3. We will be removing it for Mixxx 2.4.
 * Make Mixxx compile even though `QT_NO_OPENGL` or `QT_OPENGL_ES_2` is defined (fixes build on Raspberry Pi) [lp:1863440](https://bugs.launchpad.net/mixxx/+bug/1863440) [#2504](https://github.com/mixxxdj/mixxx/pull/2504)
+
+## [2.2.5](https://launchpad.net/mixxx/+milestone/2.2.5) (Unreleased)
+
+* Add controller mapping for Hercules DJControl Inpulse 200 [#2542](https://github.com/mixxxdj/mixxx/pull/2542)
+* Add controller mapping for Hercules DJControl Jogvision [#2370](https://github.com/mixxxdj/mixxx/pull/2370)
 
 ## [2.2.4](https://launchpad.net/mixxx/+milestone/2.2.4) (Unreleased)
 

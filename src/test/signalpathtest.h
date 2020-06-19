@@ -36,7 +36,7 @@ using ::testing::_;
 class TestEngineMaster : public EngineMaster {
   public:
     TestEngineMaster(UserSettingsPointer _config,
-            const char* group,
+            const QString& group,
             EffectsManager* pEffectsManager,
             ChannelHandleFactoryPointer pChannelHandleFactory,
             bool bEnableSidechain)
@@ -210,13 +210,13 @@ class BaseSignalPathTest : public MixxxTest {
     EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3;
     PreviewDeck* m_pPreview1;
 
-    static const char* m_sGroup1;
-    static const char* m_sGroup2;
-    static const char* m_sGroup3;
-    static const char* m_sMasterGroup;
-    static const char* m_sInternalClockGroup;
-    static const char* m_sPreviewGroup;
-    static const char* m_sSamplerGroup;
+    static const QString m_sGroup1;
+    static const QString m_sGroup2;
+    static const QString m_sGroup3;
+    static const QString m_sMasterGroup;
+    static const QString m_sInternalClockGroup;
+    static const QString m_sPreviewGroup;
+    static const QString m_sSamplerGroup;
     static const double kDefaultRateRange;
     static const double kDefaultRateDir;
     static const double kRateRangeDivisor;

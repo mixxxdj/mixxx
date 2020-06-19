@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="1.11+" schemaVersion="1">
+    <info>
+        <name><%= manufacturer %> <%= device %></name>
+        <author><%= author %></author>
+        <description><%= description %></description>
+        <forums><%= homepage %></forums>
+    </info>
+    <controller id="<%= manufacturer %> <%= device %>">
+        <scriptfiles>
+            <file functionprefix="<%= global %>" filename="<%= manufacturer %>-<%= device %>-scripts.js"/>
+        </scriptfiles>
+        <controls>
+            <% buttons.forEach(function (button) { %><control>
+                <group>[Master]</group>
+                <key><%= global %>.__midi_<%= hexFormat(button.status, 2) %>_<%= hexFormat(button.midino, 2) %></key>
+                <status><%= hexFormat(button.status, 2) %></status>
+                <midino><%= hexFormat(button.midino, 2) %></midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control><% }) %>
+        </controls>
+        <outputs/>
+    </controller>
+</MixxxControllerPreset>
