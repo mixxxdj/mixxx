@@ -144,7 +144,6 @@ for:
     - sudo apt-get update
     - sudo apt-get -y install
       ccache
-      gdb
       libavformat-dev
       libchromaprint-dev
       libfaad-dev
