@@ -1662,8 +1662,7 @@ DJ505.SavedLoopMode = function(deck, offset) {
             this.stopBlinking();
             if (value === 2) {
                 this.blinkTimer = engine.beginTimer(
-                    this.blinkTimeout,
-                    function() {
+                    this.blinkTimeout, function() {
                         var colorValue = this.colorMapper.getValueForNearestColor(
                             engine.getValue(this.group, this.colorKey));
                         if (this.blinkStateOn) {
@@ -1673,8 +1672,7 @@ DJ505.SavedLoopMode = function(deck, offset) {
                             this.send(colorValue);
                             this.blinkStateOn = true;
                         }
-                    }
-                );
+                    }.bind(this));
             } else if (value === 1) {
                 var colorValue = this.colorMapper.getValueForNearestColor(
                     engine.getValue(this.group, this.colorKey));
@@ -1691,7 +1689,7 @@ DJ505.SavedLoopMode = function(deck, offset) {
                         var colorValue = this.colorMapper.getValueForNearestColor(color);
                         this.send(colorValue);
                     }
-                });
+                }.bind(this));
             }
         },
         disconnect: function() {
