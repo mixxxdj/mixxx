@@ -849,8 +849,8 @@ void CueControl::hotcueGotoAndLoop(HotcueControl* pControl, double v) {
             return;
         }
 
-        setSavedLoop(pCue);
         hotcueGoto(pControl, v);
+        setSavedLoop(pCue);
     } else if (pCue->getType() == mixxx::CueType::HotCue) {
         hotcueGoto(pControl, v);
         m_pBeatLoopActivate->set(1);
