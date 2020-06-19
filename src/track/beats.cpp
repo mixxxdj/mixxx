@@ -551,7 +551,7 @@ TimeSignature Beats::getSignature(Frame frame) const {
         return kNullTimeSignature;
     }
 
-    auto result = kDefaultTimeSignature;
+    auto result = TimeSignature();
 
     // Special case, when looking for initial TimeSignature
     if (frame == Frame(0)) {

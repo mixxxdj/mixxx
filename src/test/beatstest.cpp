@@ -294,7 +294,7 @@ TEST_F(BeatsTest, BpmAround) {
 TEST_F(BeatsTest, Signature) {
     // Undefined time signature must be default
     EXPECT_EQ(m_pBeats1->getSignature(),
-            kDefaultTimeSignature)
+            TimeSignature())
             << "If no Time Signature defined, it must be default(4/4)";
 
     // Add time signature to the beginning

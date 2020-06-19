@@ -8,39 +8,41 @@ namespace mixxx {
 /// Musical Time signature
 /// Right now is to be used for bar detection only, so only the beats per bar is useful
 class TimeSignature final {
-  private:
-    int m_beatsPerBar;
-    int m_noteValue;
-
   public:
-    TimeSignature(int beatsPerBar, int noteValue)
-            : m_beatsPerBar(beatsPerBar),
-              m_noteValue(noteValue) {
+    // The default constructor will set time signature to 4/4
+    // since it is defined as the default in beats.proto
+    TimeSignature() = default;
+
+    TimeSignature(int beatsPerBar, int noteValue) {
+        setTimeSignature(beatsPerBar, noteValue);
     }
 
-    ~TimeSignature() {
-    }
+    ~TimeSignature() = default;
 
     void setBeatsPerBar(int beatsPerBar) {
-        m_beatsPerBar = beatsPerBar;
+        m_timeSignature.set_beats_per_bar(beatsPerBar);
     }
 
     void setNoteValue(int noteValue) {
-        m_noteValue = noteValue;
+        m_timeSignature.set_note_value(noteValue);
     }
 
     void setTimeSignature(int beatsPerBar, int noteValue) {
-        m_beatsPerBar = beatsPerBar;
-        m_noteValue = noteValue;
+        setBeatsPerBar(beatsPerBar);
+        setNoteValue(noteValue);
     }
 
     int getBeatsPerBar() const {
-        return m_beatsPerBar;
+        return m_timeSignature.beats_per_bar();
     }
 
     int getNoteValue() const {
-        return m_noteValue;
+        return m_timeSignature.note_value();
     }
+
+  private:
+    // Using the protocol buffer defined type.
+    mixxx::track::io::TimeSignature m_timeSignature;
 };
 
 inline bool operator==(TimeSignature signature1, TimeSignature signature2) {
@@ -52,9 +54,11 @@ inline bool operator!=(TimeSignature signature1, TimeSignature signature2) {
     return !(signature1 == signature2);
 }
 
+inline QDebug operator<<(QDebug dbg, TimeSignature timeSignature) {
+    return dbg << timeSignature.getBeatsPerBar() << "/" << timeSignature.getNoteValue();
+}
+
 // Invalid Signature
 const TimeSignature kNullTimeSignature = TimeSignature(0,0);
-// Default Signature 4/4
-const TimeSignature kDefaultTimeSignature = TimeSignature(4,4);
 
 } // namespace mixxx
