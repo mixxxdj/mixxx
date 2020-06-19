@@ -2105,11 +2105,11 @@ void HotcueControl::slotHotcueSet(double v) {
 }
 
 void HotcueControl::slotHotcueSetCue(double v) {
-    emit(hotcueSet(this, v, HotcueMode::Cue));
+    emit hotcueSet(this, v, HotcueMode::Cue);
 }
 
 void HotcueControl::slotHotcueSetLoop(double v) {
-    emit(hotcueSet(this, v, HotcueMode::Loop));
+    emit hotcueSet(this, v, HotcueMode::Loop);
 }
 
 void HotcueControl::slotHotcueGoto(double v) {
@@ -2125,7 +2125,7 @@ void HotcueControl::slotHotcueGotoAndStop(double v) {
 }
 
 void HotcueControl::slotHotcueGotoAndLoop(double v) {
-    emit(hotcueGotoAndLoop(this, v));
+    emit hotcueGotoAndLoop(this, v);
 }
 
 void HotcueControl::slotHotcueActivate(double v) {
@@ -2133,11 +2133,11 @@ void HotcueControl::slotHotcueActivate(double v) {
 }
 
 void HotcueControl::slotHotcueActivateCue(double v) {
-    emit(hotcueActivate(this, v, HotcueMode::Cue));
+    emit hotcueActivate(this, v, HotcueMode::Cue);
 }
 
 void HotcueControl::slotHotcueActivateLoop(double v) {
-    emit(hotcueActivate(this, v, HotcueMode::Loop));
+    emit hotcueActivate(this, v, HotcueMode::Loop);
 }
 
 void HotcueControl::slotHotcueActivatePreview(double v) {
@@ -2154,11 +2154,11 @@ void HotcueControl::slotHotcuePositionChanged(double newPosition) {
 }
 
 void HotcueControl::slotHotcueLengthChanged(double newLength) {
-    emit(hotcueLengthChanged(this, newLength));
+    emit hotcueLengthChanged(this, newLength);
 }
 
 void HotcueControl::slotHotcueTypeChanged(double newType) {
-    emit(hotcueTypeChanged(this, newType));
+    emit hotcueTypeChanged(this, newType);
 }
 
 void HotcueControl::slotHotcueColorChangeRequest(double color) {
