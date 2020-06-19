@@ -44,7 +44,7 @@ QList<Controller*> Hss1394Enumerator::queryDevices() {
 
             // Generate a group for this controller
             QString group = QStringLiteral("[Hss1374Controller") +
-                    QString::number(index) + QStringLiteral("]");
+                    QString::number(index) + QChar(']');
             index++;
 
             Hss1394Controller* currentDevice = new Hss1394Controller(

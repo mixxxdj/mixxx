@@ -267,7 +267,7 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
 
         // Generate a group for this controller
         QString group = QStringLiteral("[PortMidiController") +
-                QString::number(index) + QStringLiteral("]");
+                QString::number(index) + QChar(']');
         index++;
 
         // So at this point, we either have an input-only MIDI device

@@ -52,7 +52,7 @@ QList<Controller*> BulkEnumerator::queryDevices() {
 
             // Generate a group for this controller
             QString group = QStringLiteral("[BulkController") +
-                    QString::number(index) + QStringLiteral("]");
+                    QString::number(index) + QChar(']');
             index++;
 
             BulkController* currentDevice =
