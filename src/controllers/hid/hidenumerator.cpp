@@ -102,7 +102,7 @@ QList<Controller*> HidEnumerator::queryDevices() {
 
         // Generate a group for this controller
         QString group = QStringLiteral("[HidController") +
-                QString::number(index) + QStringLiteral("]");
+                QString::number(index) + QChar(']');
         index++;
 
         HidController* currentDevice = new HidController(group, *cur_dev);
