@@ -898,6 +898,7 @@ void CueControl::hotcueLoopToggle(HotcueControl* pControl, double v) {
         }
     } break;
     case mixxx::CueType::HotCue: {
+        setCurrentSavedLoop(CuePointer());
         double startPosition = pCue->getPosition();
         bool enabled = startPosition != m_pLoopStartPosition->get() ||
                 !m_pLoopEnabled->get();
