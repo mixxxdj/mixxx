@@ -20,10 +20,13 @@
 #Deck2, #DeckCompact2, #DeckMini2,
 #Deck3, #DeckCompact3, #DeckMini3,
 #Deck4, #DeckCompact4, #DeckMini4,
-  #FxUnitControlsExpanded, #FxUnitControlsCollapsed,
-  #FxSlotsExpanded, #FxSlotsCollapsed, #FxSlotContainer,
-#MixerDecks,
-#MicDuckingContainer, #MicAuxUnit, #MicAuxAddFrame,
+  #MixerDecks,
+#FxUnitControlsExpanded,
+#FxUnitControlsCollapsed,
+#FxSlotsExpanded,
+#FxSlotsCollapsed,
+#FxSlotContainer,
+  #MicDuckingContainer, #MicAuxUnit, #MicAuxAddFrame,
 #Sampler, #SamplerMini {
   background-color: #1e1e20;
 }
@@ -33,12 +36,12 @@
 #Deck2, #DeckCompact2, #DeckMini2,
 #Deck3, #DeckCompact3, #DeckMini3,
 #Deck4, #DeckCompact4, #DeckMini4,
-#MixerDecks,
+  #MixerDecks,
 #FxUnitControlsCollapsed,
 #FxUnitControlsExpanded,
 #FxSlotsCollapsed,
 #FxSlotsExpanded,
-#MicDuckingContainer, #MicAuxUnit, #MicAuxAddFrame,
+  #MicDuckingContainer, #MicAuxUnit, #MicAuxAddFrame,
 #Sampler, #SamplerMini {
   border-top: 1px solid #333;
   border-left: 1px solid #282828;
@@ -56,13 +59,15 @@
 /* dim 1st-level containers */
 #ToolBar,
 #WaveformsContainer,
-#MasterControls, #HeadphoneControls,
+#MasterControls,
+#HeadphoneControls,
 #VuMeterDeck1_Compact,
 #VuMeterDeck2_Compact,
 #VuMeterDeck3_Compact,
 #VuMeterDeck4_Compact,
 #VuMeterMaster_Compact,
-#FxUnitHeaderCollapsed, #FxUnitHeaderExpanded,
+#FxUnitHeaderCollapsed,
+#FxUnitHeaderExpanded,
 #SamplerExpandBox,
 #VerticalSplitter::handle,
 #SearchLineBox,
@@ -101,6 +106,15 @@ WLibrary, QAbstractScrollArea::corner {
     }
   WLibrary {
     border-width: 1px 0px 0px 0px;
+  }
+  QAbstractScrollArea::corner {
+    border: 0px;
+  }
+  #LibraryContainer QScrollBar::handle:horizontal,
+  #LibraryContainer QScrollBar::handle:vertical,
+  WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
+  WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical {
+    background-color: #333338;
   }
 
 /* recessed regions */
@@ -1314,12 +1328,6 @@ WEffectSelector,
     border-width: 1px 2px 1px 0px;
     border-image: url(skin:/palemoon/buttons/btn_embedded_library_header_sort.svg) 1 2 1 1;
   }
-  /*
-  WPushButton#BpmTap[displayValue="0"] {
-    outline: none;
-    border-width: 2px;
-    border-image: url(skin:/palemoon/buttons/btn_flat_square.svg) 2 2 2 2;
-  } */
   #DlgMissing > QPushButton:!enabled,
   #DlgHidden > QPushButton:!enabled,
   #DlgAutoDJ > QPushButton:!enabled,
@@ -1367,17 +1375,6 @@ WEffectSelector,
   WEffectSelector:on {
     padding-left: 10px;
   }
-  /* TEST
-      Highlight WEffectSelector when effect is active.
-      Also, the background is dark like dim top-level buttons
-  #FxUnit1 WEffectSelector[highlight="1"],
-  #FxUnit2 WEffectSelector[highlight="1"] {
-    border-image: url(skin:/palemoon/buttons/btn_embedded_fxselector_active_green.svg) 2 2 2 2;
-  }
-  #FxUnit3 WEffectSelector[highlight="1"],
-  #FxUnit4 WEffectSelector[highlight="1"] {
-    border-image: url(skin:/palemoon/buttons/btn_embedded_fxselector_active_blue.svg) 2 2 2 2;
-  }*/
 
 #KeyUp {
   border-width: 1px 2px 0px 2px;
@@ -1534,11 +1531,10 @@ WPushButton#LoopOut[pressed="true"],
 #BeatgridControls WPushButton[pressed="true"],
 #CueDeleteButton[pressed="true"] {
   background-color: #7d350d;
-}
-/*  */
+  }
   #BpmTap[pressed="true"] {
    border: 1px solid #7d350d;
-}
+  }
 
 /* Red */
 #EQKillButtonBox WPushButton[displayValue="1"],
@@ -1662,10 +1658,10 @@ WPushButton#FxSuperLinkInvertButton[displayValue="0"] {
   background-color: #f856e7;
 }
 
-/* Pale blue for GUI toggles */
+/* Grey for GUI toggles */
 #GuiToggleButton[displayValue="1"],
-#SkinSettingsToggle[displayValue="1"] {
-  background-color: #216e75;
+#SkinSettingsToggle[displayValue="1"] { /*
+  background-color: #216e75; Pale blue */
   background-color: #555;
 }
 
@@ -1688,9 +1684,6 @@ QPushButton#pushButtonRepeatPlaylist:checked {
 WPushButton#PlayDeck[displayValue="0"],
 WPushButton#PlayDeckMini[displayValue="0"],
 WPushButton#PlayIndicator[value="0"],
-/*
-WPushButton#BpmTap[displayValue="0"],
-*/
 WPushButton#FxFocusButton[displayValue="0"],
 #SamplerSettings WPushButton[displayValue="0"],
 #SamplerSettingsMini WPushButton[displayValue="0"],
@@ -2404,36 +2397,14 @@ WCueMenuPopup QPushButton:focus {
 
 /*********** table header styles *********************************/
 
-#LibraryContainer QHeaderView { /*
-  border-bottom: 1px solid #000;
-  }
-  #LibraryContainer QHeaderView::up-arrow,
-  #LibraryContainer QHeaderView::down-arrow {
-    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-      stop:0 #222,
-      stop:1 #111);
+#LibraryContainer QHeaderView {
   }
   #LibraryContainer QHeaderView::section {
-    padding-top: 2px 1px 0px 2px;
-    border-right: 1px solid #000;
-    border-bottom: 1px solid #000; */
-  }
-  #LibraryContainer QHeaderView::up-arrow,
-  #LibraryContainer QHeaderView::down-arrow {/*
-    border-right: 1px solid #000;*/
-    /* left > right gradient to fade out the header section label
-    background-color: qlineargradient(
-      x0: 0, y1: 0,
-      x2: 1, y2:0,
-      stop: 0     rgba(17,17,17,0),
-      stop: 0.2   rgba(17,17,17,0),
-      stop: 0.21  rgba(17,17,17,190),
-      stop: 1     rgba(17,17,17,255));
-    background-color: rgba(23, 23, 25, 190); */
+    padding: 2px 1px 0px 3px;
     }
     #LibraryContainer QHeaderView::up-arrow {
       image: url(skin:/palemoon/buttons/btn__lib_sort_up.svg);
-      }
+    }
     #LibraryContainer QHeaderView::down-arrow {
       image: url(skin:/palemoon/buttons/btn__lib_sort_down.svg);
     }
@@ -2447,7 +2418,7 @@ WEffectSelector QAbstractScrollArea QScrollBar {
   background: #000;
   border-radius: 2px;
   padding: 1px;
-  color: #999999;
+  color: #999;
   }
   #LibraryContainer QScrollBar:horizontal,
   WEffectSelector QAbstractScrollArea QScrollBar:horizontal {
@@ -2469,16 +2440,6 @@ WEffectSelector QAbstractScrollArea QScrollBar {
   /* catch scroll bar of focused treeview like this:
   #LibraryContainer QTreeView:focus QScrollBar:vertical {
   }*/
-#LibraryContainer QScrollBar::handle:horizontal,
-WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
-#LibraryContainer QScrollBar::handle:vertical,
-WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical {
-  border-radius: 2px;
-  background: #2c454f; /*
-  background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 #725309,
-    stop:1 #412f05);  */
-  }
   #LibraryContainer QScrollBar::handle:horizontal,
   WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal {
     min-width: 25px;
