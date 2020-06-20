@@ -11,6 +11,7 @@
 #include "track/beatutils.h"
 #include "track/track.h"
 // Included to get mixxx::kEngineChannelCount
+#include "analyzer/analyzerrhythmstats.h"
 #include "engine/engine.h"
 
 namespace {
@@ -52,6 +53,7 @@ AnalyzerRhythm::AnalyzerRhythm(UserSettingsPointer pConfig)
           m_iCurrentSample(0),
           m_iMinBpm(0),
           m_iMaxBpm(9999),
+          m_beatsPerBar(4),
           m_windowSize(0),
           m_stepSize(0) {
 }
@@ -184,7 +186,7 @@ std::tuple<int, int> AnalyzerRhythm::computeMeter(std::vector<double>& beatsSD) 
                           [candidateDownbeatPosition] /= count;
         }
     }
-    // here we find the series with largest spec diff
+    // here we find the series with the largest mean spec diff
     int bestBpb = 0, bestDownbeatPos = 0;
     double value = 0;
     for (int i = 0; i < static_cast<int>(specDiffSeries.size()); i += 1) {
@@ -194,7 +196,6 @@ std::tuple<int, int> AnalyzerRhythm::computeMeter(std::vector<double>& beatsSD) 
                 bestBpb = i;
                 bestDownbeatPos = j;
             }
-            // qDebug() << specDiffSeries[i + kLowerBeatsPerBar][j];
         }
     }
     return std::make_tuple(bestBpb + kLowerBeatsPerBar, bestDownbeatPos);
@@ -202,27 +203,36 @@ std::tuple<int, int> AnalyzerRhythm::computeMeter(std::vector<double>& beatsSD) 
 
 void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
     m_processor.finalize();
-    auto beats = this->computeBeats();
-    auto beatsSD = this->computeBeatsSpectralDifference(beats);
-    auto [bpb, firstDownbeat] = this->computeMeter(beatsSD);
-    // qDebug() << beatsSD;
-    // qDebug() << bpb;
-    // qDebug() << firstDownbeat;
+    std::vector<double> beats = computeBeats();
+    auto beatsSD = computeBeatsSpectralDifference(beats);
+    auto [bpb, firstDownbeat] = computeMeter(beatsSD);
 
+    m_beatsPerBar = bpb;
     size_t nextDownbeat = firstDownbeat;
     // convert beats positions from df increments to frams
     for (size_t i = 0; i < beats.size(); ++i) {
-        double result = (beats.at(i) * m_stepSize) - m_stepSize / mixxx::kEngineChannelCount;
-        if (useDownbeatOnly) {
-            if (i == nextDownbeat) {
-                m_resultBeats.push_back(mixxx::audio::FramePos(result));
-                nextDownbeat += bpb;
-            }
-        } else {
-            m_resultBeats.push_back(mixxx::audio::FramePos(result));
+        auto result = mixxx::audio::FramePos((beats.at(i) * m_stepSize) -
+                m_stepSize / mixxx::kEngineChannelCount);
+        if (i == nextDownbeat) {
+            m_downbeats.push_back(i);
+            nextDownbeat += bpb;
         }
+        m_resultBeats.push_back(result);
     }
-    // auto [m_resultBeats, tempos] = BeatUtils::FixBeatmap(m_resultBeats) #2847
+    QMap<int, double> beatsWithNewTempo;
+    std::tie(m_resultBeats, beatsWithNewTempo) = FixBeatsPositions();
+    // quick hack for manual testing of downbeats
+    if (useDownbeatOnly) {
+        QVector<mixxx::audio::FramePos> downbeats;
+        auto dbIt = m_downbeats.begin();
+        for (int i = 0; i < m_resultBeats.size(); i++) {
+            if (i == *dbIt) {
+                downbeats.push_back(m_resultBeats[i]);
+                dbIt += 1;
+            }
+        }
+        m_resultBeats = downbeats;
+    }
     //  TODO(Cristiano&Harshit) THIS IS WHERE A BEAT VECTOR IS CREATED
     mixxx::BeatsPointer pBeats = BeatFactory::makePreferredBeats(
             m_resultBeats,
