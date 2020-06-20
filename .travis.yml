@@ -70,7 +70,7 @@ jobs:
       compiler: gcc
       cache: ccache
       # Ubuntu Bionic build prerequisites
-      env: CMAKEFLAGS_EXTRA="-DLOCALECOMPARE=ON -DFAAD=ON -DWAVPACK=ON -DMAD=ON -DMODPLUG=ON"
+      env: CMAKEFLAGS_EXTRA="-DLOCALECOMPARE=ON -DFAAD=ON -DWAVPACK=ON -DMAD=ON -DMODPLUG=ON -DWARNINGS_FATAL=ON"
       before_install:
         - export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
         - export CTEST_PARALLEL_LEVEL="$(nproc)"
