@@ -107,6 +107,7 @@ for:
     - cd cmake_build
     - cmake
       -L
+      -DWARNINGS_FATAL=ON
       -DDEBUG_ASSERTIONS_FATAL=ON
       -DBATTERY=ON
       -DBROADCAST=ON
