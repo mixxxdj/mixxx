@@ -63,7 +63,7 @@ class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
   private:
     QPixmap scaledCoverArt(const QPixmap& normal);
 
-    QString m_group;
+    const QString m_group;
     UserSettingsPointer m_pConfig;
     bool m_bEnable;
     WCoverArtMenu* m_pMenu;

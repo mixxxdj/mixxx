@@ -67,6 +67,7 @@ public:
         INVALID, // if this isn't last bad things will happen -bkgood
     };
     AudioPath(unsigned char channelBase, unsigned char channels);
+    virtual ~AudioPath() = default;
     AudioPathType getType() const;
     ChannelGroup getChannelGroup() const;
     unsigned char getIndex() const;
@@ -106,13 +107,13 @@ class AudioOutput : public AudioPath {
     AudioOutput(AudioPathType type, unsigned char channelBase,
                 unsigned char channels,
                 unsigned char index = 0);
-    virtual ~AudioOutput();
+    ~AudioOutput() override = default;
     QDomElement toXML(QDomElement *element) const;
     static AudioOutput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
     bool isHidden();
   protected:
-    void setType(AudioPathType type);
+    void setType(AudioPathType type) override;
 };
 
 // This class is required to add the buffer, without changing the hash used as ID
@@ -143,7 +144,7 @@ class AudioInput : public AudioPath {
     static AudioInput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
   protected:
-    void setType(AudioPathType type);
+    void setType(AudioPathType type) override;
 };
 
 // This class is required to add the buffer, without changing the hash used as

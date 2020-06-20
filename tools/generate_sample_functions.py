@@ -284,8 +284,7 @@ def write_channelmixer_autogen(output, num_channels):
             write(
                 "pEngineEffectsManager->processPostFaderInPlace("
                 "pChannelInfo->m_handle, outputHandle, pBuffer, iBufferSize, "
-                "iSampleRate, pChannelInfo->m_features, oldGain, newGain);"
-                % {"j": j},
+                "iSampleRate, pChannelInfo->m_features, oldGain, newGain);",
                 depth=3,
             )
             write("SampleUtil::add(pOutput, pBuffer, iBufferSize);", depth=3)
@@ -294,7 +293,7 @@ def write_channelmixer_autogen(output, num_channels):
                 "pEngineEffectsManager->processPostFaderAndMix("
                 "pChannelInfo->m_handle, outputHandle, pBuffer, pOutput, "
                 "iBufferSize, iSampleRate, pChannelInfo->m_features, oldGain, "
-                "newGain);" % {"j": j},
+                "newGain);",
                 depth=3,
             )
 

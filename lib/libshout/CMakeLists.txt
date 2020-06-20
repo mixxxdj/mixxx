@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
 project(shout_mixxx C)
-
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DHAVE_CONFIG_H -Wall -ffast-math -pthread -g -O2")
  
 find_package(OpenSSL)
 
@@ -36,6 +34,9 @@ add_library(shout_mixxx STATIC
   src/codec_speex.c
   src/tls.c
 )
+
+target_compile_definitions(shout_mixxx PRIVATE HAVE_CONFIG_H)
+target_compile_options(shout_mixxx PRIVATE -pthread -Wall)
 
 target_link_libraries(shout_mixxx ogg vorbis theora speex OpenSSL::SSL OpenSSL::Crypto)
 

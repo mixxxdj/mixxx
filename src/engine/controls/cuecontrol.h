@@ -95,7 +95,7 @@ class HotcueControl : public QObject {
   private:
     ConfigKey keyForControl(int hotcue, const char* name);
 
-    QString m_group;
+    const QString m_group;
     int m_iHotcueNumber;
     CuePointer m_pCue;
 

@@ -131,7 +131,7 @@ void BaseCoverArtDelegate::paintItem(
             } else {
                 // If we asked for a non-cache image and got a null pixmap,
                 // then our request was queued.
-                m_pendingCacheRows.insertMulti(coverInfo.hash, index.row());
+                m_pendingCacheRows.insert(coverInfo.hash, index.row());
             }
         } else {
             // Cache hit

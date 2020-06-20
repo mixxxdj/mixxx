@@ -15,7 +15,7 @@ class WTrackWidgetGroup : public WWidgetGroup, public TrackDropTarget {
     WTrackWidgetGroup(QWidget* pParent,
             UserSettingsPointer pConfig,
             TrackCollectionManager* pTrackCollectionManager,
-            const char* group);
+            const QString& group);
     ~WTrackWidgetGroup() override;
     void setup(const QDomNode& node, const SkinContext& context) override;
 
@@ -41,7 +41,7 @@ class WTrackWidgetGroup : public WWidgetGroup, public TrackDropTarget {
 
     void updateColor();
 
-    const char* m_pGroup;
+    const QString m_group;
     UserSettingsPointer m_pConfig;
     TrackPointer m_pCurrentTrack;
     QColor m_trackColor;

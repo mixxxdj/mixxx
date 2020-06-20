@@ -18,12 +18,13 @@ const WTrackMenu::Features kTrackMenuFeatures =
         WTrackMenu::Feature::Properties;
 }
 
-WTrackProperty::WTrackProperty(QWidget* pParent,
+WTrackProperty::WTrackProperty(
+        QWidget* pParent,
         UserSettingsPointer pConfig,
         TrackCollectionManager* pTrackCollectionManager,
-        const char* group)
+        const QString& group)
         : WLabel(pParent),
-          m_pGroup(group),
+          m_group(group),
           m_pConfig(pConfig),
           m_pTrackMenu(make_parented<WTrackMenu>(
                   this, pConfig, pTrackCollectionManager, kTrackMenuFeatures)) {
@@ -79,16 +80,16 @@ void WTrackProperty::updateLabel() {
 
 void WTrackProperty::mouseMoveEvent(QMouseEvent* event) {
     if ((event->buttons() & Qt::LeftButton) && m_pCurrentTrack) {
-        DragAndDropHelper::dragTrack(m_pCurrentTrack, this, m_pGroup);
+        DragAndDropHelper::dragTrack(m_pCurrentTrack, this, m_group);
     }
 }
 
 void WTrackProperty::dragEnterEvent(QDragEnterEvent* event) {
-    DragAndDropHelper::handleTrackDragEnterEvent(event, m_pGroup, m_pConfig);
+    DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
 }
 
 void WTrackProperty::dropEvent(QDropEvent* event) {
-    DragAndDropHelper::handleTrackDropEvent(event, *this, m_pGroup, m_pConfig);
+    DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
 }
 
 void WTrackProperty::contextMenuEvent(QContextMenuEvent* event) {

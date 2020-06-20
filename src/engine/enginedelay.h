@@ -26,7 +26,7 @@ class ControlProxy;
 class EngineDelay : public EngineObject {
     Q_OBJECT
   public:
-    EngineDelay(const char* group, ConfigKey delayControl, bool bPersist = true);
+    EngineDelay(const QString& group, ConfigKey delayControl, bool bPersist = true);
     virtual ~EngineDelay();
 
     void process(CSAMPLE* pInOut, const int iBufferSize);

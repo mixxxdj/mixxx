@@ -85,8 +85,9 @@
 
 using mixxx::skin::SkinManifest;
 
-QList<const char*> LegacySkinParser::s_channelStrs;
-QMutex LegacySkinParser::s_safeStringMutex;
+/// This QSet allows to make use of the implicit sharing
+/// of QString instead of every widget keeping its own copy.
+QSet<QString> LegacySkinParser::s_sharedGroupStrings;
 
 static bool sDebug = false;
 
@@ -244,14 +245,9 @@ QList<QString> LegacySkinParser::getSchemeList(const QString& qSkinPath) {
 }
 
 // static
-void LegacySkinParser::freeChannelStrings() {
-    QMutexLocker lock(&s_safeStringMutex);
-    for (int i = 0; i < s_channelStrs.length(); ++i) {
-        if (s_channelStrs[i]) {
-            delete [] s_channelStrs[i];
-        }
-        s_channelStrs[i] = NULL;
-    }
+void LegacySkinParser::clearSharedGroupStrings() {
+    // This frees up the memory allocated by the QString objects
+    s_sharedGroupStrings.clear();
 }
 
 SkinManifest LegacySkinParser::getSkinManifest(const QDomElement& skinDocument) {
@@ -505,7 +501,7 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
     } else if (nodeName == "EffectPushButton") {
         result = wrapWidget(parseEffectPushButton(node));
     } else if (nodeName == "HotcueButton") {
-        result = wrapWidget(parseStandardWidget<WHotcueButton>(node));
+        result = wrapWidget(parseHotcueButton(node));
     } else if (nodeName == "ComboBox") {
         result = wrapWidget(parseStandardWidget<WComboBox>(node));
     } else if (nodeName == "Overview") {
@@ -917,25 +913,22 @@ void LegacySkinParser::setupLabelWidget(const QDomElement& element, WLabel* pLab
 }
 
 QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
-    QString channelStr = lookupNodeGroup(node);
+    QString group = lookupNodeGroup(node);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
+    if (!pPlayer) {
+        return nullptr;
+    }
 
-    const char* pSafeChannelStr = safeChannelString(channelStr);
-
-    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
-
-    if (pPlayer == NULL)
-        return NULL;
-
-    WOverview* overviewWidget = NULL;
+    WOverview* overviewWidget = nullptr;
 
     // "RGB" = "2", "HSV" = "1" or "Filtered" = "0" (LMH) waveform overview type
     int type = m_pConfig->getValue(ConfigKey("[Waveform]","WaveformOverviewType"), 2);
     if (type == 0) {
-        overviewWidget = new WOverviewLMH(pSafeChannelStr, m_pPlayerManager, m_pConfig, m_pParent);
+        overviewWidget = new WOverviewLMH(group, m_pPlayerManager, m_pConfig, m_pParent);
     } else if (type == 1) {
-        overviewWidget = new WOverviewHSV(pSafeChannelStr, m_pPlayerManager, m_pConfig, m_pParent);
+        overviewWidget = new WOverviewHSV(group, m_pPlayerManager, m_pConfig, m_pParent);
     } else {
-        overviewWidget = new WOverviewRGB(pSafeChannelStr, m_pPlayerManager, m_pConfig, m_pParent);
+        overviewWidget = new WOverviewRGB(group, m_pPlayerManager, m_pConfig, m_pParent);
     }
 
     connect(overviewWidget, SIGNAL(trackDropped(QString, QString)),
@@ -963,15 +956,13 @@ QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
-    QString channelStr = lookupNodeGroup(node);
-    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
+    QString group = lookupNodeGroup(node);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
+    if (!pPlayer) {
+        return nullptr;
+    }
 
-    const char* pSafeChannelStr = safeChannelString(channelStr);
-
-    if (pPlayer == NULL)
-        return NULL;
-
-    WWaveformViewer* viewer = new WWaveformViewer(pSafeChannelStr, m_pConfig, m_pParent);
+    WWaveformViewer* viewer = new WWaveformViewer(group, m_pConfig, m_pParent);
     viewer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
     factory->setWaveformWidget(viewer, node, *m_pContext);
@@ -1002,18 +993,16 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseText(const QDomElement& node) {
-    QString channelStr = lookupNodeGroup(node);
-    const char* pSafeChannelStr = safeChannelString(channelStr);
-
-    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
-
-    if (!pPlayer)
-        return NULL;
+    QString group = lookupNodeGroup(node);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
+    if (!pPlayer) {
+        return nullptr;
+    }
 
     WTrackText* p = new WTrackText(m_pParent,
             m_pConfig,
             m_pLibrary->trackCollections(),
-            pSafeChannelStr);
+            group);
     setupLabelWidget(node, p);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
@@ -1034,18 +1023,17 @@ QWidget* LegacySkinParser::parseText(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
-    QString channelStr = lookupNodeGroup(node);
-    const char* pSafeChannelStr = safeChannelString(channelStr);
+    QString group = lookupNodeGroup(node);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
+    if (!pPlayer) {
+        return nullptr;
+    }
 
-    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
-
-    if (!pPlayer)
-        return NULL;
-
-    WTrackProperty* p = new WTrackProperty(m_pParent,
+    WTrackProperty* p = new WTrackProperty(
+            m_pParent,
             m_pConfig,
             m_pLibrary->trackCollections(),
-            pSafeChannelStr);
+            group);
     setupLabelWidget(node, p);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
@@ -1066,9 +1054,8 @@ QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseTrackWidgetGroup(const QDomElement& node) {
-    QString channelStr = lookupNodeGroup(node);
-    const char* pSafeChannelStr = safeChannelString(channelStr);
-    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
+    QString group = lookupNodeGroup(node);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
 
     if (!pPlayer) {
         return nullptr;
@@ -1078,7 +1065,7 @@ QWidget* LegacySkinParser::parseTrackWidgetGroup(const QDomElement& node) {
             m_pParent,
             m_pConfig,
             m_pLibrary->trackCollections(),
-            pSafeChannelStr);
+            group);
     commonWidgetSetup(node, pGroup);
     pGroup->setup(node, *m_pContext);
     pGroup->Init();
@@ -1109,15 +1096,13 @@ QWidget* LegacySkinParser::parseTrackWidgetGroup(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseStarRating(const QDomElement& node) {
-    QString channelStr = lookupNodeGroup(node);
-    const char* pSafeChannelStr = safeChannelString(channelStr);
+    QString group = lookupNodeGroup(node);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
+    if (!pPlayer) {
+        return nullptr;
+    }
 
-    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
-
-    if (!pPlayer)
-        return NULL;
-
-    WStarRating* p = new WStarRating(pSafeChannelStr, m_pParent);
+    WStarRating* p = new WStarRating(group, m_pParent);
     commonWidgetSetup(node, p, false);
     p->setup(node, *m_pContext);
 
@@ -1135,10 +1120,7 @@ QWidget* LegacySkinParser::parseStarRating(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseNumberRate(const QDomElement& node) {
-    QString channelStr = lookupNodeGroup(node);
-
-    const char* pSafeChannelStr = safeChannelString(channelStr);
-
+    QString group = lookupNodeGroup(node);
     QColor c(255,255,255);
     QString cStr;
     if (m_pContext->hasNodeSelectString(node, "BgColor", &cStr)) {
@@ -1149,7 +1131,7 @@ QWidget* LegacySkinParser::parseNumberRate(const QDomElement& node) {
     //palette.setBrush(QPalette::Background, WSkinColor::getCorrectColor(c));
     palette.setBrush(QPalette::Button, Qt::NoBrush);
 
-    WNumberRate* p = new WNumberRate(pSafeChannelStr, m_pParent);
+    WNumberRate* p = new WNumberRate(group, m_pParent);
     setupLabelWidget(node, p);
 
     // TODO(rryan): Let's look at removing this palette change in 1.12.0. I
@@ -1160,19 +1142,15 @@ QWidget* LegacySkinParser::parseNumberRate(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseNumberPos(const QDomElement& node) {
-    QString channelStr = lookupNodeGroup(node);
-
-    const char* pSafeChannelStr = safeChannelString(channelStr);
-
-    WNumberPos* p = new WNumberPos(pSafeChannelStr, m_pParent);
+    QString group = lookupNodeGroup(node);
+    WNumberPos* p = new WNumberPos(group, m_pParent);
     setupLabelWidget(node, p);
     return p;
 }
 
 QWidget* LegacySkinParser::parseEngineKey(const QDomElement& node) {
-    QString channelStr = lookupNodeGroup(node);
-    const char* pSafeChannelStr = safeChannelString(channelStr);
-    WKey* pEngineKey = new WKey(pSafeChannelStr, m_pParent);
+    QString group = lookupNodeGroup(node);
+    WKey* pEngineKey = new WKey(group, m_pParent);
     setupLabelWidget(node, pEngineKey);
     return pEngineKey;
 }
@@ -1220,7 +1198,6 @@ QWidget* LegacySkinParser::parseRecordingDuration(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
-    QString channelStr = lookupNodeGroup(node);
     if (CmdlineArgs::Instance().getSafeMode()) {
         WLabel* dummy = new WLabel(m_pParent);
         //: Shown when Mixxx is running in safe mode.
@@ -1238,9 +1215,9 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
         return dummy;
     }
 
-    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
-    WSpinny* spinny = new WSpinny(m_pParent, channelStr, m_pConfig,
-                                  m_pVCManager, pPlayer);
+    QString group = lookupNodeGroup(node);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
+    WSpinny* spinny = new WSpinny(m_pParent, group, m_pConfig, m_pVCManager, pPlayer);
     commonWidgetSetup(node, spinny);
 
     connect(waveformWidgetFactory, SIGNAL(renderSpinnies(VSyncThread*)), spinny, SLOT(render(VSyncThread*)));
@@ -1279,15 +1256,15 @@ QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseCoverArt(const QDomElement& node) {
-    QString channel = lookupNodeGroup(node);
-    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channel);
+    QString group = lookupNodeGroup(node);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
 
-    WCoverArt* pCoverArt = new WCoverArt(m_pParent, m_pConfig, channel, pPlayer);
+    WCoverArt* pCoverArt = new WCoverArt(m_pParent, m_pConfig, group, pPlayer);
     commonWidgetSetup(node, pCoverArt);
     pCoverArt->setup(node, *m_pContext);
 
     // If no group was provided, hook the widget up to the Library.
-    if (channel.isEmpty()) {
+    if (group.isEmpty()) {
         // Connect cover art signals to the library
         connect(m_pLibrary, SIGNAL(switchToView(const QString&)),
                 pCoverArt, SLOT(slotReset()));
@@ -1442,10 +1419,11 @@ QWidget* LegacySkinParser::parseTableView(const QDomElement& node) {
     // Add the splitter to the library page's layout, so it's
     // positioned/sized automatically
     pLibraryPageLayout->addWidget(pSplitter,
-                                  1, 0, //From row 1, col 0,
-                                  1,    //Span 1 row
-                                  3,    //Span 3 cols
-                                  0);   //Default alignment
+            1,                // From row 1
+            0,                // From column 0
+            1,                // Span 1 row
+            3,                // Span 3 columns
+            Qt::Alignment()); // Default alignment
 
     pTabWidget->addWidget(pLibraryPage);
     pTabWidget->setStyleSheet(getLibraryStyle(node));
@@ -1601,24 +1579,26 @@ QString LegacySkinParser::lookupNodeGroup(const QDomElement& node) {
         }
     }
 
-    return group;
+    QString sharedGroup = getSharedGroupString(group);
+    return sharedGroup;
 }
 
 // static
-const char* LegacySkinParser::safeChannelString(const QString& channelStr) {
-    QMutexLocker lock(&s_safeStringMutex);
-    foreach (const char *s, s_channelStrs) {
-        if (channelStr == s) { // calls QString::operator==(const char*)
-            return s;
-        }
-    }
-    QByteArray qba(channelStr.toLatin1());
-    char *safe = new char[qba.size() + 1]; // +1 for \0
-    int i = 0;
-    // Copy string
-    while ((safe[i] = qba[i])) ++i;
-    s_channelStrs.append(safe);
-    return safe;
+QString LegacySkinParser::getSharedGroupString(const QString& channelStr) {
+    QSet<QString>::iterator i = s_sharedGroupStrings.insert(channelStr);
+    return *i;
+}
+
+QWidget* LegacySkinParser::parseHotcueButton(const QDomElement& element) {
+    QString group = lookupNodeGroup(element);
+    WHotcueButton* pWidget = new WHotcueButton(group, m_pParent);
+    commonWidgetSetup(element, pWidget);
+    pWidget->setup(element, *m_pContext);
+    pWidget->installEventFilter(m_pKeyboard);
+    pWidget->installEventFilter(
+            m_pControllerManager->getControllerLearningEventFilter());
+    pWidget->Init();
+    return pWidget;
 }
 
 QWidget* LegacySkinParser::parseEffectChainName(const QDomElement& node) {

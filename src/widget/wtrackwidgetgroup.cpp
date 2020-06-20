@@ -28,9 +28,9 @@ const WTrackMenu::Features kTrackMenuFeatures =
 WTrackWidgetGroup::WTrackWidgetGroup(QWidget* pParent,
         UserSettingsPointer pConfig,
         TrackCollectionManager* pTrackCollectionManager,
-        const char* group)
+        const QString& group)
         : WWidgetGroup(pParent),
-          m_pGroup(group),
+          m_group(group),
           m_pConfig(pConfig),
           m_trackColorAlpha(kDefaultTrackColorAplha),
           m_pTrackMenu(make_parented<WTrackMenu>(
@@ -102,16 +102,16 @@ void WTrackWidgetGroup::paintEvent(QPaintEvent* pe) {
 
 void WTrackWidgetGroup::mouseMoveEvent(QMouseEvent* event) {
     if ((event->buttons() & Qt::LeftButton) && m_pCurrentTrack) {
-        DragAndDropHelper::dragTrack(m_pCurrentTrack, this, m_pGroup);
+        DragAndDropHelper::dragTrack(m_pCurrentTrack, this, m_group);
     }
 }
 
 void WTrackWidgetGroup::dragEnterEvent(QDragEnterEvent* event) {
-    DragAndDropHelper::handleTrackDragEnterEvent(event, m_pGroup, m_pConfig);
+    DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
 }
 
 void WTrackWidgetGroup::dropEvent(QDropEvent* event) {
-    DragAndDropHelper::handleTrackDropEvent(event, *this, m_pGroup, m_pConfig);
+    DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
 }
 
 void WTrackWidgetGroup::contextMenuEvent(QContextMenuEvent* event) {

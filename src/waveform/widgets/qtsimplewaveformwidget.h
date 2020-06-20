@@ -8,7 +8,7 @@
 class QtSimpleWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
     Q_OBJECT
   public:
-    QtSimpleWaveformWidget(const char* group, QWidget* parent);
+    QtSimpleWaveformWidget(const QString& group, QWidget* parent);
     virtual ~QtSimpleWaveformWidget();
 
 

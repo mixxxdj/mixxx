@@ -28,7 +28,7 @@ class WaveformWidgetRenderer {
     static const double s_defaultPlayMarkerPosition;
 
   public:
-    explicit WaveformWidgetRenderer(const char* group);
+    explicit WaveformWidgetRenderer(const QString& group);
     virtual ~WaveformWidgetRenderer();
 
     bool init();
@@ -38,8 +38,12 @@ class WaveformWidgetRenderer {
     void onPreRender(VSyncThread* vsyncThread);
     void draw(QPainter* painter, QPaintEvent* event);
 
-    inline const char* getGroup() const { return m_group;}
-    const TrackPointer getTrackInfo() const { return m_pTrack;}
+    const QString& getGroup() const {
+        return m_group;
+    }
+    const TrackPointer getTrackInfo() const {
+        return m_pTrack;
+    }
     /// Get cue mark at a point on the waveform widget.
     WaveformMarkPointer getCueMarkAtPoint(QPoint point) const;
 
@@ -112,7 +116,7 @@ class WaveformWidgetRenderer {
     }
 
   protected:
-    const char* m_group;
+    const QString m_group;
     TrackPointer m_pTrack;
     QList<WaveformRendererAbstract*> m_rendererStack;
     Qt::Orientation m_orientation;
