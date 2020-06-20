@@ -107,12 +107,21 @@ for:
     - cd cmake_build
     - cmake
       -L
+      -DDEBUG_ASSERTIONS_FATAL=ON
+      -DBATTERY=ON
+      -DBROADCAST=ON
+      -DBULK=ON
+      -DFAAD=OFF
       -DFFMPEG=ON
+      -DHID=ON
       -DHSS1394=OFF
+      -DLILV=ON
       -DLOCALECOMPARE=ON
       -DMAD=ON
       -DMODPLUG=ON
       -DOPUS=ON
+      -DQTKEYCHAIN=ON
+      -DVINYLCONTROL=ON
       -DWAVPACK=ON
       ..
     - cmake --build .
@@ -205,9 +214,23 @@ for:
       -DCMAKE_BUILD_TYPE=Release
       -DCMAKE_INSTALL_PREFIX=C:\mixxx
       -DCMAKE_PREFIX_PATH=%WINLIB_PATH%;%QT_PATH%
-      -DMEDIAFOUNDATION=ON
-      -DOPUS=ON
+      -DDEBUG_ASSERTIONS_FATAL=ON
+      -DBATTERY=ON
+      -DBROADCAST=ON
+      -DBULK=ON
+      -DFAAD=OFF
+      -DFFMPEG=OFF
+      -DHID=ON
+      -DHSS1394=ON
+      -DLILV=OFF
       -DLOCALECOMPARE=ON
+      -DMAD=ON
+      -DMEDIAFOUNDATION=ON
+      -DMODPLUG=OFF
+      -DOPUS=ON
+      -DQTKEYCHAIN=ON
+      -DVINYLCONTROL=ON
+      -DWAVPACK=OFF
       -DSTATIC_DEPS=ON
       -G "Ninja"
       ..
