@@ -1415,7 +1415,7 @@ DJ505.CueLoopMode.prototype = Object.create(components.ComponentContainer.protot
 DJ505.EditMode = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = DJ505.PadMode.HOTCUE;
-    this.color = DJ505.PadColor.ORANGE;
+    this.color = DJ505.PadColor.RED;
 
     this.pads = new components.ComponentContainer();
     for (var i = 0; i <= 3; i++) {
