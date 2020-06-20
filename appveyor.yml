@@ -59,16 +59,16 @@ for:
     - sudo apt -y install
       ccache
       cmake
+      libavcodec-dev
       libavformat-dev
+      libavutil-dev
       libchromaprint-dev
-      libfaad-dev
       libflac-dev
       libid3tag0-dev
       liblilv-dev
       libmad0-dev
       libmodplug-dev
       libmp3lame-dev
-      libmp4v2-dev
       libopus-dev
       libopusfile-dev
       libportmidi-dev
@@ -82,6 +82,7 @@ for:
       libsndfile1-dev
       libsoundtouch-dev
       libsqlite3-dev
+      libswresample-dev
       libtag1-dev
       libupower-glib-dev
       libusb-1.0-0-dev
