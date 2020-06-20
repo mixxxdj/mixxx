@@ -12,44 +12,38 @@ MacroManager::MacroManager(
     m_hotcueActivate->connectValueChanged(
             this, &MacroManager::slotHotcueActivate, Qt::DirectConnection);
 
-    //m_pToggleRecording = new ControlPushButton(ConfigKey(MACRORECORDING_PREF_KEY, "toggle_recording"));
-    //connect(m_pToggleRecording,
-    //        &ControlPushButton::valueChanged,
-    //        this,
-    //        &MacroManager::slotToggleRecording);
-    //m_recStatusCO = new ControlObject(ConfigKey(MACRORECORDING_PREF_KEY, "status"));
-    //m_recStatus = new ControlProxy(m_recStatusCO->getKey(), this);
+    m_pToggleRecording = new ControlPushButton(
+            ConfigKey(MACRORECORDING_PREF_KEY, "recording_toggle"));
+    connect(m_pToggleRecording,
+            &ControlPushButton::valueChanged,
+            this,
+            &MacroManager::slotToggleRecording);
+    m_recStatusCO = new ControlObject(ConfigKey(MACRORECORDING_PREF_KEY, "recording_status"));
+    m_recStatus = new ControlProxy(m_recStatusCO->getKey(), this);
+
+    //m_deckCO = new ControlObject(ConfigKey(MACRORECORDING_PREF_KEY, "deck"));
+    //m_deck = new ControlProxy(m_recStatusCO->getKey(), this);
+}
+
+MacroManager::~MacroManager() {
+    qDebug() << "Delete MacroManager";
+
+    delete m_recStatusCO;
+    delete m_pToggleRecording;
 }
 
 void MacroManager::slotHotcueActivate(double v) {
     qDebug() << "MacroManager: HOTCUE 1 ACTIVATED WITH VALUE " << toDebugString(v);
 }
 
-void MacroManager::slotSetRecording(bool recording) {
-    if (recording && !isRecordingActive()) {
-        startRecording();
-    } else if (!recording && isRecordingActive()) {
-        stopRecording();
-    }
-}
-
-void MacroManager::slotToggleRecording(double value) {
-    bool toggle = static_cast<bool>(value);
-    if (toggle) {
-        if (isRecordingActive()) {
-            stopRecording();
-        } else {
-            startRecording();
-        }
-    }
-}
-
-bool MacroManager::isRecordingActive() const {
-    return false;
-}
-
 void MacroManager::startRecording() {
+    qDebug() << "MacroManager start recording";
+    m_recStatus->set(1);
+    m_bRecording = true;
 }
 
 void MacroManager::stopRecording() {
+    qDebug() << "MacroManager stop recording";
+    m_recStatus->set(0);
+    m_bRecording = false;
 }
