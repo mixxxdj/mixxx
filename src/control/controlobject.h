@@ -42,10 +42,12 @@ class ControlObject : public QObject {
     virtual ~ControlObject();
 
     // Returns a pointer to the ControlObject matching the given ConfigKey
-    static ControlObject* getControl(const ConfigKey& key, bool warn = true);
-    static inline ControlObject* getControl(const QString& group, const QString& item, bool warn = true) {
+    static ControlObject* getControl(const ConfigKey& key, ControlFlags flags = ControlFlag::None);
+    static inline ControlObject* getControl(const QString& group,
+            const QString& item,
+            ControlFlags flags = ControlFlag::None) {
         ConfigKey key(group, item);
-        return getControl(key, warn);
+        return getControl(key, flags);
     }
 
     QString name() const {

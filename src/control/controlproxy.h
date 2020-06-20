@@ -20,12 +20,20 @@ class ControlProxy : public QObject {
     Q_OBJECT
   public:
     ControlProxy(QObject* pParent = NULL);
-    ControlProxy(const QString& g, const QString& i, QObject* pParent = NULL);
-    ControlProxy(const char* g, const char* i, QObject* pParent = NULL);
-    ControlProxy(const ConfigKey& key, QObject* pParent = NULL);
+    ControlProxy(const QString& g,
+            const QString& i,
+            QObject* pParent = NULL,
+            ControlFlags flags = ControlFlag::None);
+    ControlProxy(const char* g,
+            const char* i,
+            QObject* pParent = NULL,
+            ControlFlags flags = ControlFlag::None);
+    ControlProxy(const ConfigKey& key,
+            QObject* pParent = NULL,
+            ControlFlags flags = ControlFlag::None);
     virtual ~ControlProxy();
 
-    void initialize(const ConfigKey& key, bool warn = true);
+    void initialize(const ConfigKey& key, ControlFlags flags = ControlFlag::None);
 
     const ConfigKey& getKey() const {
         return m_key;

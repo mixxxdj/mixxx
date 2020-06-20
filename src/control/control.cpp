@@ -102,16 +102,18 @@ void ControlDoublePrivate::insertAlias(const ConfigKey& alias, const ConfigKey& 
 
 // static
 QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
-        const ConfigKey& key, bool warn, ControlObject* pCreatorCO,
-        bool bIgnoreNops, bool bTrack, bool bPersist, double defaultValue) {
-    if (key.isEmpty()) {
-        if (warn) {
-            qWarning() << "ControlDoublePrivate::getControl returning NULL"
-                       << "for empty ConfigKey.";
-        }
+        const ConfigKey& key,
+        ControlFlags flags,
+        ControlObject* pCreatorCO,
+        bool bIgnoreNops,
+        bool bTrack,
+        bool bPersist,
+        double defaultValue) {
+    VERIFY_OR_DEBUG_ASSERT(!key.isEmpty()) {
+        qWarning() << "ControlDoublePrivate::getControl returning NULL"
+                   << "for empty ConfigKey.";
         return QSharedPointer<ControlDoublePrivate>();
     }
-
 
     QSharedPointer<ControlDoublePrivate> pControl;
     // Scope for MMutexLocker.
@@ -120,9 +122,8 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         auto it = s_qCOHash.constFind(key);
         if (it != s_qCOHash.constEnd()) {
             if (pCreatorCO) {
-                if (warn) {
-                    qDebug() << "ControlObject" << key.group << key.item << "already created";
-                }
+                qDebug() << "ControlObject" << key.group << key.item << "already created";
+                DEBUG_ASSERT(!"ControlObject already created");
             } else {
                 pControl = it.value();
             }
@@ -137,9 +138,12 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
             MMutexLocker locker(&s_qCOHashMutex);
             //qDebug() << "ControlDoublePrivate::s_qCOHash.insert(" << key.group << "," << key.item << ")";
             s_qCOHash.insert(key, pControl);
-        } else if (warn) {
+        } else if (!flags.testFlag(ControlFlag::NoWarnIfMissing)) {
             qWarning() << "ControlDoublePrivate::getControl returning NULL for ("
                        << key.group << "," << key.item << ")";
+            if (!flags.testFlag(ControlFlag::NoAssertIfMissing)) {
+                DEBUG_ASSERT(!"ControlObject not found");
+            }
         }
     }
     return pControl;
