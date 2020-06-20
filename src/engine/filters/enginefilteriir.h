@@ -62,9 +62,10 @@ class EngineFilterIIR : public EngineFilterIIRBase {
     // this is can be used instead off a final process() call before pause
     // It fades to dry or 0 according to the m_startFromDry parameter
     // it is an alternative for using pauseFillter() calls
-    void processAndPauseFilter(const CSAMPLE* M_RESTRICT pIn,
-            CSAMPLE* M_RESTRICT pOutput,
-            const int iBufferSize) {
+    void processAndPauseFilter(
+            const CSAMPLE* pIn,
+            CSAMPLE* pOutput,
+            int iBufferSize) {
         process(pIn, pOutput, iBufferSize);
         if (m_startFromDry) {
             SampleUtil::linearCrossfadeBuffersOut(
