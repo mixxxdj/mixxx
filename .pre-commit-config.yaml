@@ -55,11 +55,13 @@ repos:
   - id: check-xml
   - id: check-yaml
   - id: end-of-file-fixer
+    exclude: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|mm|proto|vert)$
     stages:
     - commit
     - manual
   - id: mixed-line-ending
   - id: trailing-whitespace
+    exclude: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|mm|proto|vert)$
     stages:
     - commit
     - manual
@@ -110,7 +112,6 @@ repos:
     files: ^.*\.qss$
     stages:
     - commit
-    - push
     - manual
 - repo: local
   hooks:
@@ -120,6 +121,6 @@ repos:
     entry: ./tools/line_length.py
     stages:
     - commit
-    - push
+    - manual
     language: python
     files: \.(c|cpp|h)$
