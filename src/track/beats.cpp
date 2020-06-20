@@ -756,9 +756,16 @@ void Beats::scaleFraction(uint fraction) {
 
 // TODO(JVC) If we use a Beatmap we can't just set the BPM
 void Beats::setBpm(Bpm dBpm) {
-    Q_UNUSED(dBpm);
-    DEBUG_ASSERT(!"Beats::setBpm() not implemented");
-    return;
+    //     Q_UNUSED(dBpm);
+    //     DEBUG_ASSERT(!"Beats::setBpm() not implemented");
+    //     return;
+
+    // Temporarily creating this adapter to generate beats from a given bpm assuming
+    // uniform bpm.
+    // TODO(hacksdump): A check for preferences will be added to only allow setting bpm
+    // when "Assume Constant Tempo" is checked.
+    // TODO(hacksdump): Tests depending on setBpm are still failing due to double precision.
+    setGrid(dBpm, Frame(m_beats.first().frame_position()));
 
     /*
      * One of the problems of beattracking algorithms is the so called "octave error"
