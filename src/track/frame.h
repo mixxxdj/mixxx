@@ -1,6 +1,6 @@
 #pragma once
 
-class QDebug;
+#include <QDebug>
 
 namespace mixxx {
 class Frame {
