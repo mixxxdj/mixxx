@@ -1419,7 +1419,12 @@ DJ505.EditMode = function(deck, offset) {
 
     this.pads = new components.ComponentContainer();
     for (var i = 0; i <= 3; i++) {
-        var baseKey = ((i < 2) ? "intro" : "outro") + "_" + ((i % 2) ? "end" : "start");
+        var baseKey = [
+            "intro_start",
+            "intro_end",
+            "outro_start",
+            "outro_end",
+        ][i];
         var color = (i % 2) ? DJ505.PadColor.AZURE : DJ505.PadColor.BLUE;
 
         this.pads[i] = new components.Button({
