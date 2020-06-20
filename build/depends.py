@@ -896,6 +896,8 @@ class MixxxCore(Feature):
                    "src/analyzer/analyzerebur128.cpp",
                    "src/analyzer/analyzersilence.cpp",
                    "src/analyzer/analyzerrhythm.cpp",
+                   "src/analyzer/analyzerrhythmstats.cpp",
+                   "src/analyzer/analyzerrhythmbpm.cpp",
                    "src/analyzer/plugins/analyzersoundtouchbeats.cpp",
                    "src/analyzer/plugins/analyzerqueenmarybeats.cpp",
                    "src/analyzer/plugins/analyzerqueenmarykey.cpp",
