@@ -6,21 +6,20 @@
 #include "mixer/playermanager.h"
 #include "preferences/usersettings.h"
 
-class MacroManager : public QObject {
+class MacroManager : public RecordingManagerBase {
     Q_OBJECT
   public:
     MacroManager(
             UserSettingsPointer pConfig,
             EngineMaster* pMaster,
             PlayerManager* pPlayerManager);
+    ~MacroManager() override;
+
     void startRecording();
     void stopRecording();
-    bool isRecordingActive() const;
 
   private slots:
     void slotHotcueActivate(double v);
-    void slotSetRecording(bool recording);
-    void slotToggleRecording(double value);
 
   private:
     ControlProxy* m_hotcueActivate;

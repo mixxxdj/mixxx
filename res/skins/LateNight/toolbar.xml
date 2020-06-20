@@ -247,6 +247,47 @@
         </Children>
       </WidgetGroup><!-- /Recording button & recording duration label -->
 
+      <WidgetGroup><!-- Macro Recording stuff -->
+        <ObjectName>MacroRecBox</ObjectName>
+        <Layout>stacked</Layout>
+        <Size>72f,20f</Size>
+        <!-- minus 1px border
+            = 70x18 available for text -->
+        <Children>
+          <!-- invisible Rec button -->
+          <Template src="skin:/controls/button_2state.xml">
+            <SetVariable name="ObjectName">RecButton</SetVariable>
+            <SetVariable name="TooltipId">toggle_recording</SetVariable>
+            <SetVariable name="Size">68f,20f</SetVariable>
+            <SetVariable name="ConfigKey">[MacroRecording],recording_toggle</SetVariable>
+          </Template>
+
+          <WidgetGroup><!-- Rec dot + RecDuration -->
+            <Layout>horizontal</Layout>
+            <Size>68f,20f</Size>
+            <Children>
+              <Label>
+                <ObjectName>RecDot</ObjectName>
+                <Size>15f,20f</Size>
+                <Connection>
+                  <ConfigKey>[MacroRecording],recording_status</ConfigKey>
+                  <BindProperty>highlight</BindProperty>
+                </Connection>
+              </Label>
+            </Children>
+          </WidgetGroup><!-- /Rec dot + RecDuration -->
+
+          <!-- Rec feedback color -->
+          <Template src="skin:/controls/button_3state_display.xml">
+            <SetVariable name="ObjectName">RecFeedback</SetVariable>
+            <SetVariable name="TooltipId">toggle_recording</SetVariable>
+            <SetVariable name="Size">72f,20f</SetVariable>
+            <SetVariable name="ConfigKey">[MacroRecording],recording_toggle</SetVariable>
+            <SetVariable name="ConfigKeyDisp">[MacroRecording],recording_status</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup><!-- /Recording button & recording duration label -->
+
       <PushButton>
         <Size>82f,20f</Size>
         <TooltipId>skin_settings</TooltipId>

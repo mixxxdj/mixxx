@@ -23,7 +23,7 @@ class ControlProxy;
 /// All methods in this class are thread-safe.
 ///
 /// Note: The RecordingManager lives in the GUI thread
-class RecordingManager : public QObject {
+class RecordingManager : public RecordingManagerBase {
     Q_OBJECT
   public:
     RecordingManager(UserSettingsPointer pConfig, EngineMaster* pEngine);
@@ -32,9 +32,8 @@ class RecordingManager : public QObject {
     // This will try to start recording. If successful, slotIsRecording will be
     // called and a signal isRecording will be emitted.
     // The method computes the filename based on date/time information.
-    void startRecording();
-    void stopRecording();
-    bool isRecordingActive() const;
+    void startRecording() override;
+    void stopRecording() override;
     void setRecordingDir();
     QString& getRecordingDir();
     // Returns the currently recording file
@@ -51,8 +50,6 @@ class RecordingManager : public QObject {
     void slotIsRecording(bool recording, bool error);
     void slotBytesRecorded(int);
     void slotDurationRecorded(quint64);
-    void slotSetRecording(bool recording);
-    void slotToggleRecording(double value);
 
   private:
     QString formatDateTimeForFilename(QDateTime dateTime) const;
@@ -78,7 +75,6 @@ class RecordingManager : public QObject {
     // Absolute file
     QString m_recordingLocation;
 
-    bool m_bRecording;
     bool m_dfSilence;
     qint64 m_dfCounter;
 

@@ -266,8 +266,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pSoundManager = new SoundManager(pConfig, m_pEngine);
     m_pEngine->registerNonEngineChannelSoundIO(m_pSoundManager);
 
-    m_pMacroManager = new MacroManager(pConfig, m_pEngine, m_pPlayerManager);
-
     m_pRecordingManager = new RecordingManager(pConfig, m_pEngine);
 
 #ifdef __BROADCAST__
@@ -322,6 +320,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addPreviewDeck();
+
+    m_pMacroManager = new MacroManager(pConfig, m_pEngine, m_pPlayerManager);
 
     launchProgress(30);
 
