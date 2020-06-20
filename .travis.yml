@@ -50,6 +50,8 @@ jobs:
       before_install:
         - pip install pre-commit==2.5.1
       script:
+        # HEAD is the not yet integrated PR merge commit +refs/pull/xxxx/merge
+        # HEAD^1 is the PR target branch and HEAD^2 is the HEAD of the source branch
         - pre-commit run --from-ref HEAD^1 --to-ref HEAD --show-diff-on-failure
       addons: []
 
