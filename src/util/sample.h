@@ -223,13 +223,12 @@ class SampleUtil {
     static void deinterleaveBuffer(CSAMPLE* pDest1, CSAMPLE* pDest2,
             const CSAMPLE* pSrc, SINT numSamples);
 
-    // Crossfade two buffers together and put the result in pDest.  All the
-    // buffers must be the same length.  pDest may be an alias of the source
-    // buffers.  It is preferable to use the copyWithRamping functions, but
-    // sometimes this function is necessary.
-    static void linearCrossfadeBuffers(CSAMPLE* pDest,
-            const CSAMPLE* pSrcFadeOut, const CSAMPLE* pSrcFadeIn,
-            SINT numSamples);
+    /// Crossfade two buffers together. All the buffers must be the same length.
+    /// pDest is in one version the Out and in the other version the In buffer.
+    static void linearCrossfadeBuffersOut(
+            CSAMPLE* pDestSrcFadeOut, const CSAMPLE* pSrcFadeIn, SINT numSamples);
+    static void linearCrossfadeBuffersIn(
+            CSAMPLE* pDestSrcFadeIn, const CSAMPLE* pSrcFadeOut, SINT numSamples);
 
     // Mix a buffer down to mono, putting the result in both of the channels.
     // This uses a simple (L+R)/2 method, which assumes that the audio is
