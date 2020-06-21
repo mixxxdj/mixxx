@@ -16,7 +16,7 @@ env:
     # For SCons builds
     - SCONSFLAGS="battery=1 bulk=1 debug_assertions_fatal=1 hid=1 hss1394=0 lilv=1 opus=1 qtkeychain=1 shoutcast=1 test=1 verbose=0 vinylcontrol=1 virtualize=0"
     # For CMake builds
-    # TODO: Set -DDEBUG_ASSERTIONS_FATAL=OFF before deploying CI builds!!!
+    # TODO: Set -DDEBUG_ASSERTIONS_FATAL=OFF before deploying CI builds as releases!!!
     - CMAKEFLAGS="-DBATTERY=ON -DBROADCAST=ON -DBULK=ON -DDEBUG_ASSERTIONS_FATAL=ON -DENABLE_TESTS=ON -DHID=ON -DLILV=ON -DOPUS=ON -DQTKEYCHAIN=ON -DVERBOSE=0 -DVINYLCONTROL=ON"
     - GTEST_COLOR=1
     - CTEST_OUTPUT_ON_FAILURE=1
