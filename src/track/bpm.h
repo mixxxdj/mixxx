@@ -52,7 +52,7 @@ public:
         m_value = kValueUndefined;
     }
 
-    static double valueFromString(const QString& str, bool* pValid = nullptr);
+    static double valueFromString(QString str, bool* pValid = nullptr);
     static QString valueToString(double value);
     static int valueToInteger(double value) {
         return std::round(value);
@@ -65,7 +65,7 @@ public:
     };
 
     bool compareEq(
-            const Bpm& bpm,
+            Bpm bpm,
             Comparison cmp = Comparison::Default) const {
         switch (cmp) {
         case Comparison::Integer:
@@ -82,34 +82,31 @@ private:
     double m_value;
 };
 
-inline
-bool operator==(const Bpm& lhs, const Bpm& rhs) {
+inline bool operator==(Bpm lhs, Bpm rhs) {
     return lhs.compareEq(rhs);
 }
 
-inline
-bool operator!=(const Bpm& lhs, const Bpm& rhs) {
+inline bool operator!=(Bpm lhs, Bpm rhs) {
     return !(lhs == rhs);
 }
 
-inline
-QDebug operator<<(QDebug dbg, const Bpm& arg) {
+inline QDebug operator<<(QDebug dbg, Bpm arg) {
     return dbg << arg.getValue();
 }
 
-inline Bpm operator*(const Bpm& bpm, const int val) {
+inline Bpm operator*(Bpm bpm, int val) {
     return Bpm(bpm.getValue() * val);
 }
 
-inline Bpm operator/(const Bpm& bpm, const int val) {
+inline Bpm operator/(Bpm bpm, int val) {
     return Bpm(bpm.getValue() / val);
 }
 
-inline Bpm operator+(const Bpm& bpm, const double val) {
+inline Bpm operator+(Bpm bpm, double val) {
     return Bpm(bpm.getValue() + val);
 }
 
-inline Bpm operator-(const Bpm& bpm, const double val) {
+inline Bpm operator-(Bpm& bpm, double val) {
     return Bpm(bpm.getValue() - val);
 }
 }
