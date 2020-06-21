@@ -17,8 +17,7 @@ class BeatUtils {
   public:
     static void printBeatStatistics(const QVector<double>& beats, int SampleRate);
 
-    static double constrainBpm(double bpm, const int min_bpm,
-                               const int max_bpm, bool aboveRange) {
+    static double constrainBpm(double bpm, int min_bpm, int max_bpm, bool aboveRange) {
         if (bpm <= 0.0 || min_bpm < 0 || max_bpm < 0 ||
             min_bpm >= max_bpm ||
             (bpm >= min_bpm && bpm <= max_bpm)) {
@@ -41,7 +40,6 @@ class BeatUtils {
         return bpm;
     }
 
-
     /*
      * This method detects the BPM given a set of beat positions.
      * We compute the average local BPM of by considering 8 beats
@@ -53,15 +51,17 @@ class BeatUtils {
             int framesPerSecond,
             int min_bpm,
             int max_bpm);
-    static double findFirstCorrectBeat(const QVector<double> rawBeats,
-                                       const int SampleRate, const double global_bpm);
+    static double findFirstCorrectBeat(const QVector<double>& rawBeats,
+            int SampleRate,
+            double global_bpm);
 
     /* This implement a method to find the best offset so that
      * the grid generated from bpm is close enough to the one we get from vamp.
      */
-    static double calculateOffset(
-        const QVector<double> beats1, const double bpm1,
-        const QVector<double> beats2, const int SampleRate);
+    static double calculateOffset(const QVector<double>& beats1,
+            double bpm1,
+            const QVector<double>& beats2,
+            int SampleRate);
 
     // By default Vamp does not assume a 4/4 signature. This is basically a good
     // property of Vamp, however, it leads to inaccurate beat grids if a 4/4
@@ -70,29 +70,31 @@ class BeatUtils {
     // positions, this method calculates the position of the first beat assuming
     // the beats have a fixed tempo given by globalBpm.
     static double calculateFixedTempoFirstBeat(
-        bool enableOffsetCorrection,
-        const QVector<double> rawbeats, const int sampleRate,
-        const int totalSamples, const double globalBpm);
+            bool enableOffsetCorrection,
+            const QVector<double>& rawbeats,
+            int sampleRate,
+            int totalSamples,
+            double globalBpm);
 
-    static double samplesToFrames(const double samples) {
+    static double samplesToFrames(double samples) {
         return floor(samples / mixxx::kEngineChannelCount);
     }
-    static double framesToSamples(const int frames) {
+    static double framesToSamples(int frames) {
         return frames * mixxx::kEngineChannelCount;
     }
 
   private:
     static double computeSampleMedian(QList<double> sortedItems);
     static double computeFilteredWeightedAverage(
-        const QMap<double, int> frequencyTable,
-        const double filterCenter,
-        const double filterTolerance,
-        QMap<double, int>* filteredFrequencyTable);
+            const QMap<double, int>& frequencyTable,
+            double filterCenter,
+            double filterTolerance,
+            QMap<double, int>* filteredFrequencyTable);
     static QList<double> computeWindowedBpmsAndFrequencyHistogram(
-            const QVector<double> beats,
-            const int windowSize,
-            const int windowStep,
-            const int framesPerSecond,
+            const QVector<double>& beats,
+            int windowSize,
+            int windowStep,
+            int framesPerSecond,
             QMap<double, int>* frequencyHistogram);
 };
 
