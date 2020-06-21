@@ -198,6 +198,7 @@ addons:
     packages:
       - libavformat-dev
       - libchromaprint-dev
+      - libebur128-dev
       - libfaad-dev
       - libflac-dev
       - libid3tag0-dev
