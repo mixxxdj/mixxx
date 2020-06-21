@@ -94,11 +94,11 @@ inline QDebug operator<<(QDebug dbg, Bpm arg) {
     return dbg << arg.getValue();
 }
 
-inline Bpm operator*(Bpm bpm, int val) {
+inline Bpm operator*(Bpm bpm, double val) {
     return Bpm(bpm.getValue() * val);
 }
 
-inline Bpm operator/(Bpm bpm, int val) {
+inline Bpm operator/(Bpm bpm, double val) {
     return Bpm(bpm.getValue() / val);
 }
 
