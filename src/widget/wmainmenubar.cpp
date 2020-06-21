@@ -679,7 +679,6 @@ VisibilityControlConnection::VisibilityControlConnection(
         : QObject(pParent),
           m_key(key),
           m_pAction(pAction) {
-    slotReconnectControl();
     connect(m_pAction, SIGNAL(triggered(bool)),
             this, SLOT(slotActionToggled(bool)));
 }
