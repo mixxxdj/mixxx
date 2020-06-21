@@ -438,7 +438,7 @@ std::unique_ptr<Beats::iterator> Beats::findBeats(FramePos startFrame, FramePos 
     if (firstBeat >= lastBeat) {
         return std::unique_ptr<Beats::iterator>();
     }
-    return std::make_unique<Beats::iterator>(firstBeat, lastBeat);
+    return std::make_unique<Beats::iterator>(firstBeat, lastBeat + 1);
 }
 
 bool Beats::hasBeatInRange(FramePos startFrame,
@@ -615,16 +615,16 @@ void Beats::setDownBeat(FramePos frame) {
 
     // Set the proper type for the remaining beats on the track or to the next phrasebeat
     int beat_counter = 0;
-    std::unique_ptr<Beats::iterator> beat = findBeats(
+    std::unique_ptr<Beats::iterator> it = findBeats(
             closestFrame, FramePos(m_beats.last().frame_position() - 1));
-    while (beat->hasNext()) {
-        beat->next();
-        if (beat->isPhrase()) {
+    while (it->hasNext()) {
+        auto beat = it->next();
+        if (beat.type() == track::io::PHRASE) {
             break;
         } else if (beat_counter % getSignature(frame).getBeatsPerBar() == 0) {
-            beat->makeBar();
+            beat.set_type(track::io::BAR);
         } else {
-            beat->makeBeat();
+            beat.set_type(track::io::BEAT);
         }
 
         beat_counter++;

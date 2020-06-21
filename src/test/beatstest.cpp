@@ -321,20 +321,17 @@ TEST_F(BeatsTest, Signature) {
             << "setSignature after the end of track must have no effect";
 }
 
-// TODO(XXX) During testing some situations where calling isBar where generating
-// a SIGSEV where found. This simply crashes the test. Can be tested in a more
-// elegant way?
 TEST_F(BeatsTest, Iterator) {
     FramePos pos;
 
     // Full Beatsbeat
     auto iter1 = m_pBeats1->findBeats(m_pBeats1->getFirstBeatPosition(),
             m_pBeats1->getLastBeatPosition());
-    EXPECT_DOUBLE_EQ(iter1->next(), m_pBeats1->getFirstBeatPosition().getValue());
+    EXPECT_DOUBLE_EQ(iter1->next().frame_position(), m_pBeats1->getFirstBeatPosition().getValue());
     while (iter1->hasNext()) {
-        pos = FramePos(iter1->next());
+        auto beat = iter1->next();
+        pos = FramePos(beat.frame_position());
         EXPECT_TRUE(pos.getValue());
-        iter1->isBar();
     }
     EXPECT_DOUBLE_EQ(pos.getValue(), m_pBeats1->getLastBeatPosition().getValue());
 
@@ -342,9 +339,9 @@ TEST_F(BeatsTest, Iterator) {
     auto iter2 = m_pBeats1->findBeats(m_pBeats1->getFirstBeatPosition(),
             FramePos(m_pBeats1->getLastBeatPosition().getValue() + 10000000000));
     while (iter2->hasNext()) {
-        pos = FramePos(iter2->next());
+        auto beat = iter2->next();
+        pos = FramePos(beat.frame_position());
         EXPECT_TRUE(pos.getValue());
-        iter2->isBar();
     }
     EXPECT_DOUBLE_EQ(pos.getValue(), m_pBeats1->getLastBeatPosition().getValue());
 
@@ -352,11 +349,11 @@ TEST_F(BeatsTest, Iterator) {
     auto iter3 = m_pBeats1->findBeats(
             FramePos(m_pBeats1->getFirstBeatPosition().getValue() - 1000000),
             m_pBeats1->getLastBeatPosition());
-    EXPECT_DOUBLE_EQ(iter3->next(), m_pBeats1->getFirstBeatPosition().getValue());
+    EXPECT_DOUBLE_EQ(iter3->next().frame_position(), m_pBeats1->getFirstBeatPosition().getValue());
     while (iter3->hasNext()) {
-        pos = FramePos(iter3->next());
+        auto beat = iter3->next();
+        pos = FramePos(beat.frame_position());
         EXPECT_TRUE(pos.getValue());
-        iter3->isBar();
     }
     EXPECT_DOUBLE_EQ(pos.getValue(), m_pBeats1->getLastBeatPosition().getValue());
 }
@@ -373,8 +370,8 @@ TEST_F(BeatsTest, Translate) {
     auto iter2 = m_pBeats2->findBeats(m_pBeats2->getFirstBeatPosition(),
             m_pBeats2->getLastBeatPosition());
     while (iter1->hasNext()) {
-        double pos1 = iter1->next();
-        double pos2 = iter2->next();
+        double pos1 = iter1->next().frame_position();
+        double pos2 = iter2->next().frame_position();
         EXPECT_DOUBLE_EQ(pos1, pos2 + delta);
     }
     EXPECT_EQ(iter1->hasNext(), iter2->hasNext());
@@ -386,7 +383,7 @@ TEST_F(BeatsTest, FindClosest) {
         auto iter1 = m_pBeats1->findBeats(m_pBeats1->getFirstBeatPosition(),
                 m_pBeats1->getLastBeatPosition());
         while (iter1->hasNext()) {
-            FramePos pos = FramePos(iter1->next());
+            FramePos pos = FramePos(iter1->next().frame_position());
             FramePos foundPos = m_pBeats1->findClosestBeat(pos + delta);
             // Correct change of beat
             FramePos expectedPos = pos +

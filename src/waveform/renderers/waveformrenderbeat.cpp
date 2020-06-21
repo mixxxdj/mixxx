@@ -81,14 +81,11 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     while (it->hasNext()) {
         // Beats->next returns Frame number and we need Sample number
-        double beatSamplePosition = it->next() * mixxx::kEngineChannelCount;
+        double beatSamplePosition = it->next().frame_position() * mixxx::kEngineChannelCount;
         double xBeatPoint =
                 m_waveformRenderer->transformSamplePositionInRendererWorld(beatSamplePosition);
 
         xBeatPoint = qRound(xBeatPoint);
-
-        // Set the color
-        painter->setPen((it->isBar() ? barPen : beatPen));
 
         if (orientation == Qt::Horizontal) {
             painter->drawLine(xBeatPoint, 0.0f, xBeatPoint, rendererHeight);

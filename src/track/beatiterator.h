@@ -11,10 +11,6 @@ class BeatIterator final {
     BeatIterator(BeatList::const_iterator start, BeatList::const_iterator end)
             : m_currentBeat(start),
               m_endBeat(end) {
-        // Advance to the first enabled beat.
-        while (m_currentBeat != m_endBeat && !m_currentBeat->enabled()) {
-            ++m_currentBeat;
-        }
     }
 
     using iterator_category = std::forward_iterator_tag;
@@ -26,17 +22,15 @@ class BeatIterator final {
     /// Advances the iterator and returns the current beat frame position.
     /// If you need the frame position make sure you store it, is not possible
     /// to get it again.
-    double next() {
-        double beatPosition = m_currentBeat->frame_position();
-        if (m_currentBeat != m_endBeat) {
-            ++m_currentBeat;
-            while (m_currentBeat != m_endBeat && !m_currentBeat->enabled()) {
-                ++m_currentBeat;
-            }
+    track::io::Beat next() {
+        if (hasNext()) {
+            return *m_currentBeat++;
+        } else {
+            return track::io::Beat();
         }
-        return beatPosition;
     }
 
+    /*
     // TODO(hacksdump): These will be removed from this iterator and
     // will be made methods of the Beat class to be introduced in #2844.
 
@@ -60,7 +54,7 @@ class BeatIterator final {
     void makeBar() {
         // TODO(JVC) Const_cast is needed until we manage to make BeatIterator read/write
         const_cast<mixxx::track::io::Beat&>(*m_currentBeat).set_type(mixxx::track::io::BAR);
-    }
+    }*/
 
   private:
     BeatList::const_iterator m_currentBeat;
