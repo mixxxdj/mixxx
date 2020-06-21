@@ -24,7 +24,7 @@ class BpmControl : public EngineControl {
 
   public:
     BpmControl(QString group, UserSettingsPointer pConfig);
-    ~BpmControl() override;
+    ~BpmControl() override = default;
 
     double getBpm() const;
     double getLocalBpm() const { return m_pLocalBpm ? m_pLocalBpm->get() : 0.0; }
@@ -130,30 +130,30 @@ class BpmControl : public EngineControl {
     parented_ptr<ControlProxy> m_pLoopEndPosition;
 
     // The average bpm around the current playposition;
-    ControlObject* m_pLocalBpm;
-    ControlPushButton* m_pAdjustBeatsFaster;
-    ControlPushButton* m_pAdjustBeatsSlower;
-    ControlPushButton* m_pTranslateBeatsEarlier;
-    ControlPushButton* m_pTranslateBeatsLater;
+    std::unique_ptr<ControlObject> m_pLocalBpm;
+    std::unique_ptr<ControlPushButton> m_pAdjustBeatsFaster;
+    std::unique_ptr<ControlPushButton> m_pAdjustBeatsSlower;
+    std::unique_ptr<ControlPushButton> m_pTranslateBeatsEarlier;
+    std::unique_ptr<ControlPushButton> m_pTranslateBeatsLater;
 
     // The current effective BPM of the engine
-    ControlLinPotmeter* m_pEngineBpm;
+    std::unique_ptr<ControlLinPotmeter> m_pEngineBpm;
 
     // Used for bpm tapping from GUI and MIDI
-    ControlPushButton* m_pButtonTap;
+    std::unique_ptr<ControlPushButton> m_pButtonTap;
 
     // Button for sync'ing with the other EngineBuffer
-    ControlPushButton* m_pButtonSync;
-    ControlPushButton* m_pButtonSyncPhase;
-    ControlPushButton* m_pButtonSyncTempo;
+    std::unique_ptr<ControlPushButton> m_pButtonSync;
+    std::unique_ptr<ControlPushButton> m_pButtonSyncPhase;
+    std::unique_ptr<ControlPushButton> m_pButtonSyncTempo;
 
     // Button that translates the beats so the nearest beat is on the current
     // playposition.
-    ControlPushButton* m_pTranslateBeats;
+    std::unique_ptr<ControlPushButton> m_pTranslateBeats;
     // Button that translates beats to match another playing deck
-    ControlPushButton* m_pBeatsTranslateMatchAlignment;
+    std::unique_ptr<ControlPushButton> m_pBeatsTranslateMatchAlignment;
     // Button to set the nearest beat as a bar beat
-    ControlPushButton* m_pBeatsSetBarBeat;
+    std::unique_ptr<ControlPushButton> m_pBeatsSetBarBeat;
 
     parented_ptr<ControlProxy> m_pThisBeatDistance;
     ControlValueAtomic<double> m_dSyncTargetBeatDistance;
