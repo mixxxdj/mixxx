@@ -27,14 +27,13 @@ void ControlProxy::initialize(ControlFlags flags) {
     DEBUG_ASSERT(!m_pControl);
 
     // Prevent empty keys
-    if (m_key.isNull()) {
-        DEBUG_ASSERT(flags.testFlag(ControlFlag::AllowEmptyKey));
+    VERIFY_OR_DEBUG_ASSERT(!m_key.isNull() || flags.testFlag(ControlFlag::AllowEmptyKey)) {
         return;
     }
 
     m_pControl = ControlDoublePrivate::getControl(m_key, flags);
-    DEBUG_ASSERT(flags.testFlag(ControlFlag::NoAssertIfMissing) || m_pControl);
-    DEBUG_ASSERT(flags.testFlag(ControlFlag::NoAssertIfMissing) || valid());
+    DEBUG_ASSERT(m_pControl || flags.testFlag(ControlFlag::NoAssertIfMissing));
+    DEBUG_ASSERT(valid() || flags.testFlag(ControlFlag::NoAssertIfMissing));
 }
 
 ControlProxy::~ControlProxy() {
