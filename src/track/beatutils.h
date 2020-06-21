@@ -77,9 +77,9 @@ class BeatUtils {
             double globalBpm);
 
     static double samplesToFrames(double samples) {
-        return floor(samples / mixxx::kEngineChannelCount);
+        return samples / mixxx::kEngineChannelCount;
     }
-    static double framesToSamples(int frames) {
+    static double framesToSamples(double frames) {
         return frames * mixxx::kEngineChannelCount;
     }
 
