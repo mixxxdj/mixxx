@@ -23,12 +23,14 @@ message TimeSignature {
 }
 
 message Bpm {
-  optional double bpm = 1;
+  required double bpm = 1;
   optional Source source = 2 [ default = ANALYZER ];
 }
 
 message Beat {
-  optional double frame_position = 1;
+  // The frame position should always be explicitly set
+  // otherwise serialization would lead to SIGABRT.
+  required double frame_position = 1 [ default = 0 ];
   optional bool enabled = 2 [ default = true ];
   optional Source source = 3 [ default = ANALYZER ];
   optional Type type = 4 [ default = BEAT ];
