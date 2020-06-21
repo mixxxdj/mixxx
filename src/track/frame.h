@@ -3,99 +3,105 @@
 #include <QDebug>
 
 namespace mixxx {
-class Frame {
+/// FrameDiff_t can be used to store the difference in position between
+/// two frames and to store the length of a segment of track in terms of frames.
+typedef double FrameDiff_t;
+typedef double value_t;
+
+/// FramePos defines the position of a frame in a track
+/// with respect to a fixed origin, i.e. start of the track.
+class FramePos final {
   public:
-    Frame()
-            : m_dFrame(0) {
+    FramePos()
+            : m_dFramePos(0) {
     }
 
-    explicit Frame(double dFrame)
-            : m_dFrame(dFrame) {
+    explicit FramePos(value_t dFramePos)
+            : m_dFramePos(dFramePos) {
     }
 
-    ~Frame() = default;
-
-    void setValue(double dFrame) {
-        m_dFrame = dFrame;
+    void setValue(value_t dFramePos) {
+        m_dFramePos = dFramePos;
     }
 
-    double getValue() const {
-        return m_dFrame;
+    value_t getValue() const {
+        return m_dFramePos;
     }
 
-    Frame& operator+=(const Frame& arg) {
-        m_dFrame += arg.getValue();
+    FramePos& operator+=(FrameDiff_t increment) {
+        m_dFramePos += increment;
         return *this;
     }
 
-    Frame& operator-=(const Frame& arg) {
-        m_dFrame -= arg.getValue();
+    FramePos& operator-=(FrameDiff_t decrement) {
+        m_dFramePos -= decrement;
         return *this;
     }
 
-    Frame& operator*=(const double arg) {
-        m_dFrame *= arg;
+    FramePos& operator*=(double multiple) {
+        m_dFramePos *= multiple;
         return *this;
     }
 
-    Frame& operator/=(const double arg) {
-        m_dFrame /= arg;
+    FramePos& operator/=(double divisor) {
+        m_dFramePos /= divisor;
         return *this;
-    }
-
-    Frame operator++(int) {
-        Frame temp(*this);
-        m_dFrame++;
-        return temp;
     }
 
   private:
-    double m_dFrame;
+    value_t m_dFramePos;
 };
 
-// Frames can be added to and subracted from other frames (not by a double)
-inline const Frame operator+(const Frame& frame1, const Frame& frame2) {
-    return Frame(frame1.getValue() + frame2.getValue());
+// FramePos can be added to and subracted from a FrameDiff_t
+inline FramePos operator+(FramePos framePos, FrameDiff_t frameDiff) {
+    return FramePos(framePos.getValue() + frameDiff);
 }
 
-inline const Frame operator-(const Frame& frame1, const Frame& frame2) {
-    return Frame(frame1.getValue() - frame2.getValue());
+inline FramePos operator-(FramePos framePos, FrameDiff_t frameDiff) {
+    return FramePos(framePos.getValue() - frameDiff);
 }
 
-// Frames can be multiplied or divided by a double (not by another frame)
-inline const Frame operator*(const Frame& frame1, const double dFrame2) {
-    return Frame(frame1.getValue() * dFrame2);
+inline FrameDiff_t operator-(FramePos framePos1, FramePos framePos2) {
+    return framePos1.getValue() - framePos2.getValue();
 }
 
-inline const Frame operator/(const Frame& frame1, const double dFrame2) {
-    return Frame(frame1.getValue() / dFrame2);
+// Adding two FramePos is not allowed since every FramePos shares a common
+// reference or origin i.e. the start of the track.
+
+// FramePos can be multiplied or divided by a double
+inline FramePos operator*(FramePos framePos, double multiple) {
+    return FramePos(framePos.getValue() * multiple);
 }
 
-inline bool operator<(const Frame& frame1, const Frame& frame2) {
+inline FramePos operator/(FramePos framePos, double divisor) {
+    return FramePos(framePos.getValue() / divisor);
+}
+
+inline bool operator<(FramePos frame1, FramePos frame2) {
     return frame1.getValue() < frame2.getValue();
 }
 
-inline bool operator<=(const Frame& frame1, const Frame& frame2) {
+inline bool operator<=(FramePos frame1, FramePos frame2) {
     return frame1.getValue() <= frame2.getValue();
 }
 
-inline bool operator>(const Frame& frame1, const Frame& frame2) {
+inline bool operator>(FramePos frame1, FramePos frame2) {
     return frame1.getValue() > frame2.getValue();
 }
 
-inline bool operator>=(const Frame& frame1, const Frame& frame2) {
+inline bool operator>=(FramePos frame1, FramePos frame2) {
     return frame1.getValue() >= frame2.getValue();
 }
 
-inline bool operator==(const Frame& frame1, const Frame& frame2) {
+inline bool operator==(FramePos frame1, FramePos frame2) {
     return frame1.getValue() == frame2.getValue();
 }
 
-inline bool operator!=(const Frame& frame1, const Frame& frame2) {
-    return frame1.getValue() != frame2.getValue();
+inline bool operator!=(FramePos frame1, FramePos frame2) {
+    return !(frame1.getValue() == frame2.getValue());
 }
 
-inline QDebug operator<<(QDebug dbg, const Frame& arg) {
+inline QDebug operator<<(QDebug dbg, FramePos arg) {
     dbg << arg.getValue();
     return dbg;
 }
