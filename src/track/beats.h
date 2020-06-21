@@ -52,7 +52,7 @@ class Beats final : public QObject {
     /// sample rate will be used.
     /// A list of beat locations in audio frames may be provided.
     /// The source of this data is the analyzer.
-    Beats(const Track* track, const QVector<Frame>& beats);
+    Beats(const Track* track, const QVector<FramePos>& beats);
     ~Beats() override = default;
 
     using iterator = BeatIterator;
@@ -95,7 +95,7 @@ class Beats final : public QObject {
     /// Initializes the BeatGrid to have a BPM of dBpm and the first beat offset
     /// of firstBeatFrame. Does not generate an updated() signal, since it is
     /// meant for initialization.
-    void setGrid(Bpm dBpm, Frame firstBeatFrame = Frame());
+    void setGrid(Bpm dBpm, FramePos firstBeatFrame = FramePos());
 
     // TODO: We may want to implement these with common code that returns
     //       the triple of closest, next, and prev.
@@ -103,12 +103,12 @@ class Beats final : public QObject {
     /// Starting from frame, return the frame number of the next beat
     /// in the track, or -1 if none exists. If frame refers to the location
     /// of a beat, frame is returned.
-    Frame findNextBeat(Frame frame) const;
+    FramePos findNextBeat(FramePos frame) const;
 
     /// Starting from frame frame, return the frame number of the previous
     /// beat in the track, or -1 if none exists. If frame refers to the
     /// location of beat, frame is returned.
-    Frame findPrevBeat(Frame frame) const;
+    FramePos findPrevBeat(FramePos frame) const;
 
     /// Starting from frame, fill the frame numbers of the previous beat
     /// and next beat.  Either can be -1 if none exists.  If frame refers
@@ -116,36 +116,36 @@ class Beats final : public QObject {
     /// value is the next beat position.  Non- -1 values are guaranteed to be
     /// even.  Returns false if *at least one* frame is -1.  (Can return false
     /// with one beat successfully filled)
-    bool findPrevNextBeats(Frame frame,
-            Frame* pPrevBeatFrame,
-            Frame* pNextBeatFrame) const;
+    bool findPrevNextBeats(FramePos frame,
+            FramePos* pPrevBeatFrame,
+            FramePos* pNextBeatFrame) const;
 
     /// Starting from frame, return the frame number of the closest beat
     /// in the track, or -1 if none exists.  Non- -1 values are guaranteed to be
     /// even.
-    Frame findClosestBeat(Frame frame) const;
+    FramePos findClosestBeat(FramePos frame) const;
 
     /// Find the Nth beat from frame. Works with both positive and
     /// negative values of n. If frame refers to the location of a beat,
     /// then frame is returned. If no beat can be found, returns -1.
-    Frame findNthBeat(Frame frame, int offset) const;
+    FramePos findNthBeat(FramePos frame, int offset) const;
 
-    int numBeatsInRange(Frame startFrame, Frame endFrame);
+    int numBeatsInRange(FramePos startFrame, FramePos endFrame);
 
     /// Find the frame N beats away from frame. The number of beats may be
     /// negative and does not need to be an integer.
-    Frame findNBeatsFromFrame(Frame fromFrame, double beats) const;
+    FramePos findNBeatsFromFrame(FramePos fromFrame, double beats) const;
 
     /// Return an iterator to a container of Beats containing the Beats
     /// between startFrameNum and endFrameNum. THe BeatIterator must be iterated
     /// while a strong reference to the Beats object to ensure that the Beats
     /// object is not deleted. Caller takes ownership of the returned BeatsIterator
-    std::unique_ptr<Beats::iterator> findBeats(Frame startFrame,
-            Frame stopFrame) const;
+    std::unique_ptr<Beats::iterator> findBeats(FramePos startFrame,
+            FramePos stopFrame) const;
 
     /// Return whether or not a Beat lies between startFrameNum and endFrameNum
-    bool hasBeatInRange(Frame startFrame,
-            Frame stopFrame) const;
+    bool hasBeatInRange(FramePos startFrame,
+            FramePos stopFrame) const;
 
     /// Return the average BPM over the entire track if the BPM is
     /// valid, otherwise returns -1
@@ -153,33 +153,33 @@ class Beats final : public QObject {
 
     /// Return the average BPM over the range from startFrameNum to endFrameNum,
     /// specified in frames if the BPM is valid, otherwise returns -1
-    double getBpmRange(Frame startFrame,
-            Frame stopFrame) const;
+    double getBpmRange(FramePos startFrame,
+            FramePos stopFrame) const;
 
     /// Return the average BPM over the range of n*2 beats centered around
     /// curFrameNum.  (An n of 4 results in an averaging of 8 beats).  Invalid
     /// BPM returns -1.
-    Bpm getBpmAroundPosition(Frame curFrame, int n) const;
+    Bpm getBpmAroundPosition(FramePos curFrame, int n) const;
 
     /// Sets the track signature at the nearest frame
-    void setSignature(TimeSignature signature, Frame frame = Frame());
+    void setSignature(TimeSignature signature, FramePos frame = FramePos());
 
     /// Return the track signature at the given frame position
-    TimeSignature getSignature(Frame frame = Frame()) const;
+    TimeSignature getSignature(FramePos frame = FramePos()) const;
 
     /// Sets the nearest beat as a bar beat
-    void setDownBeat(Frame frame = Frame());
+    void setDownBeat(FramePos frame = FramePos());
 
     /// Add a beat at location frame.
-    void addBeat(Frame frame);
+    void addBeat(FramePos frame);
 
     /// Remove a beat at location frame.
-    void removeBeat(Frame frame);
+    void removeBeat(FramePos frame);
 
     /// Translate all beats in the song by numFrames. Beats that lie
     /// before the start of the track or after the end of the track are not
     /// removed.
-    void translate(Frame numFrames);
+    void translate(FrameDiff_t numFrames);
 
     /// Scale the position of every beat in the song by dScalePercentage.
     void scale(enum BPMScale scale);
@@ -195,9 +195,9 @@ class Beats final : public QObject {
     /// Prints debuging information in stderr
     void printDebugInfo() const;
     /// Returns the frame number for the first beat, -1 is no beats
-    Frame getFirstBeatPosition() const;
+    FramePos getFirstBeatPosition() const;
     /// Returns the frame number for the last beat, -1 if no beats
-    Frame getLastBeatPosition() const;
+    FramePos getLastBeatPosition() const;
     /// Return the sample rate
     SINT getSampleRate() const;
 

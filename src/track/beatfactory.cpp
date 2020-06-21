@@ -103,17 +103,16 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const TrackPointer& track,
     BeatUtils::printBeatStatistics(beats, iSampleRate);
     if (version == mixxx::Beats::BEAT_GRID_2_VERSION) {
         mixxx::Bpm globalBpm = BeatUtils::calculateBpm(beats, iSampleRate, iMinBpm, iMaxBpm);
-        mixxx::Frame firstBeat(BeatUtils::calculateFixedTempoFirstBeat(
+        mixxx::FramePos firstBeat(BeatUtils::calculateFixedTempoFirstBeat(
                 bEnableOffsetCorrection,
                 beats,
                 iSampleRate,
                 iTotalSamples,
                 globalBpm.getValue()));
-        mixxx::Frame framesPerSecond(iSampleRate / track->getChannels());
-        mixxx::Frame beatLength = framesPerSecond * 60 / globalBpm.getValue();
+        mixxx::FrameDiff_t beatLength = iSampleRate * 60 / globalBpm.getValue();
         double trackLengthSeconds = track->getDuration();
         int numberOfBeats = globalBpm.getValue() / 60.0 * trackLengthSeconds;
-        QVector<mixxx::Frame> generatedBeats;
+        QVector<mixxx::FramePos> generatedBeats;
         for (int i = 0; i < numberOfBeats; i++) {
             generatedBeats.append(firstBeat + beatLength * i);
         }
@@ -122,12 +121,12 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const TrackPointer& track,
         pBeats->setSubVersion(subVersion);
         return mixxx::BeatsPointer(pBeats, &BeatFactory::deleteBeats);
     } else if (version == mixxx::Beats::BEAT_MAP_VERSION) {
-        QVector<mixxx::Frame> intermediateBeatFrameVector;
+        QVector<mixxx::FramePos> intermediateBeatFrameVector;
         intermediateBeatFrameVector.reserve(beats.size());
         std::transform(beats.begin(),
                 beats.end(),
                 std::back_inserter(intermediateBeatFrameVector),
-                [](double value) { return mixxx::Frame(value); });
+                [](double value) { return mixxx::FramePos(value); });
         mixxx::Beats* pBeats = new mixxx::Beats(
                 track.get(), intermediateBeatFrameVector);
         pBeats->setSubVersion(subVersion);

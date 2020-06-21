@@ -47,7 +47,7 @@ void ClockControl::process(const double dRate,
 
     mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
-        mixxx::Frame closestBeat = pBeats->findClosestBeat(mixxx::Frame(currentSample / 2.0));
+        mixxx::FramePos closestBeat = pBeats->findClosestBeat(mixxx::FramePos(currentSample / 2.0));
         double distanceToClosestBeat = fabs(currentSample - closestBeat.getValue() * 2.0);
         m_pCOBeatActive->set(distanceToClosestBeat < blinkIntervalSamples / 2.0);
     }

@@ -13,17 +13,21 @@ namespace {
 inline bool BeatLessThan(const track::io::Beat& beat1, const track::io::Beat& beat2) {
     return beat1.frame_position() < beat2.frame_position();
 }
+
+inline FrameDiff_t getBeatLengthFrames(Bpm bpm, double sampleRate) {
+    return 60.0 * sampleRate / bpm.getValue();
+}
 } // namespace
 
-Beats::Beats(const Track* track, const QVector<Frame>& beats)
+Beats::Beats(const Track* track, const QVector<FramePos>& beats)
         : Beats(track) {
     if (beats.size() > 0) {
-        Frame previous_beatpos = Frame(-1);
+        FramePos previous_beatpos = FramePos(-1);
         track::io::Beat protoBeat;
 
         for (auto beat : beats) {
             beat.setValue(beat.getValue());
-            if (beat <= previous_beatpos || beat < Frame(0)) {
+            if (beat <= previous_beatpos || beat < FramePos(0)) {
                 qDebug() << "kBeatMap::createFromVector: beats not in increasing order or negative";
                 qDebug() << "discarding beat " << beat;
             } else {
@@ -69,8 +73,8 @@ Beats::Beats(const Beats& other)
     moveToThread(m_track->thread());
 }
 
-int Beats::numBeatsInRange(Frame startFrame, Frame endFrame) {
-    Frame lastCountedBeat(0.0);
+int Beats::numBeatsInRange(FramePos startFrame, FramePos endFrame) {
+    FramePos lastCountedBeat(0.0);
     int iBeatsCounter;
     for (iBeatsCounter = 1; lastCountedBeat < endFrame; iBeatsCounter++) {
         lastCountedBeat = findNthBeat(startFrame, iBeatsCounter);
@@ -113,7 +117,7 @@ QString Beats::getSubVersion() const {
     return m_subVersion;
 }
 
-Frame Beats::findNextBeat(Frame frame) const {
+FramePos Beats::findNextBeat(FramePos frame) const {
     return findNthBeat(frame, 1);
 }
 
@@ -121,7 +125,7 @@ void Beats::setSubVersion(QString subVersion) {
     m_subVersion = subVersion;
 }
 
-void Beats::setGrid(Bpm dBpm, Frame firstBeatFrame) {
+void Beats::setGrid(Bpm dBpm, FramePos firstBeatFrame) {
     QMutexLocker lock(&m_mutex);
 
     auto trackDuration = m_track->getDuration();
@@ -131,8 +135,8 @@ void Beats::setGrid(Bpm dBpm, Frame firstBeatFrame) {
 
     track::io::Beat beat;
     beat.set_frame_position(firstBeatFrame.getValue());
-    for (Frame frame = firstBeatFrame; frame.getValue() <= trackLength;
-            frame += Frame(getSampleRate() * (60 / dBpm.getValue()))) {
+    for (FramePos frame = firstBeatFrame; frame.getValue() <= trackLength;
+            frame += getSampleRate() * (60 / dBpm.getValue())) {
         beat.set_frame_position(frame.getValue());
         m_beats.push_back(beat);
     }
@@ -140,20 +144,19 @@ void Beats::setGrid(Bpm dBpm, Frame firstBeatFrame) {
     onBeatlistChanged();
 }
 
-Frame Beats::findNBeatsFromFrame(Frame fromFrame, double beats) const {
-    Frame nthBeat;
-    Frame prevBeat;
-    Frame nextBeat;
+FramePos Beats::findNBeatsFromFrame(FramePos fromFrame, double beats) const {
+    FramePos nthBeat;
+    FramePos prevBeat;
+    FramePos nextBeat;
 
     if (!findPrevNextBeats(fromFrame, &prevBeat, &nextBeat)) {
         return fromFrame;
     }
-    Frame fromFractionBeats = Frame((fromFrame - prevBeat).getValue() /
-            (nextBeat - prevBeat).getValue());
-    Frame beatsFromPrevBeat = fromFractionBeats + Frame(beats);
+    double fromFractionBeats = (fromFrame - prevBeat) / (nextBeat - prevBeat);
+    double beatsFromPrevBeat = fromFractionBeats + beats;
 
-    int fullBeats = static_cast<int>(beatsFromPrevBeat.getValue());
-    Frame fractionBeats = beatsFromPrevBeat - Frame(fullBeats);
+    int fullBeats = static_cast<int>(beatsFromPrevBeat);
+    double fractionBeats = beatsFromPrevBeat - fullBeats;
 
     // Add the length between this beat and the fullbeats'th beat
     // to the end position
@@ -163,17 +166,17 @@ Frame Beats::findNBeatsFromFrame(Frame fromFrame, double beats) const {
         nthBeat = findNthBeat(prevBeat, fullBeats - 1);
     }
 
-    if (nthBeat == Frame(-1)) {
+    if (nthBeat == FramePos(-1)) {
         return fromFrame;
     }
 
     // Add the fraction of the beat
-    if (fractionBeats != Frame(0)) {
+    if (fractionBeats != 0) {
         nextBeat = findNthBeat(nthBeat, 2);
-        if (nextBeat == Frame(-1)) {
+        if (nextBeat == FramePos(-1)) {
             return fromFrame;
         }
-        nthBeat += Frame((nextBeat - nthBeat).getValue() * fractionBeats.getValue());
+        nthBeat += (nextBeat - nthBeat) * fractionBeats;
     }
 
     return nthBeat;
@@ -220,13 +223,13 @@ Bpm Beats::calculateBpm(const track::io::Beat& startBeat,
     return BeatUtils::calculateBpm(beatvect, getSampleRate(), 0, 9999);
 }
 
-Frame Beats::findPrevBeat(Frame frame) const {
+FramePos Beats::findPrevBeat(FramePos frame) const {
     return findNthBeat(frame, -1);
 }
 
-bool Beats::findPrevNextBeats(Frame frame,
-        Frame* pPrevBeatFrame,
-        Frame* pNextBeatFrame) const {
+bool Beats::findPrevNextBeats(FramePos frame,
+        FramePos* pPrevBeatFrame,
+        FramePos* pNextBeatFrame) const {
     QMutexLocker locker(&m_mutex);
 
     if (!isValid()) {
@@ -310,13 +313,13 @@ bool Beats::findPrevNextBeats(Frame frame,
     return pPrevBeatFrame->getValue() != -1 && pNextBeatFrame->getValue() != -1;
 }
 
-Frame Beats::findClosestBeat(Frame frame) const {
+FramePos Beats::findClosestBeat(FramePos frame) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid()) {
-        return Frame(-1);
+        return FramePos(-1);
     }
-    Frame prevBeat;
-    Frame nextBeat;
+    FramePos prevBeat;
+    FramePos nextBeat;
     findPrevNextBeats(frame, &prevBeat, &nextBeat);
     if (prevBeat.getValue() == -1) {
         // If both values are -1, we correctly return -1.
@@ -327,11 +330,11 @@ Frame Beats::findClosestBeat(Frame frame) const {
     return (nextBeat - frame > frame - prevBeat) ? prevBeat : nextBeat;
 }
 
-Frame Beats::findNthBeat(Frame frame, int n) const {
+FramePos Beats::findNthBeat(FramePos frame, int n) const {
     QMutexLocker locker(&m_mutex);
 
     if (!isValid() || n == 0) {
-        return Frame(-1);
+        return FramePos(-1);
     }
 
     track::io::Beat beat;
@@ -390,7 +393,7 @@ Frame Beats::findNthBeat(Frame frame, int n) const {
             }
             if (n == 1) {
                 // Return a sample offset
-                return Frame(next_beat->frame_position());
+                return FramePos(next_beat->frame_position());
             }
             --n;
         }
@@ -399,7 +402,7 @@ Frame Beats::findNthBeat(Frame frame, int n) const {
             if (previous_beat->enabled()) {
                 if (n == -1) {
                     // Return a sample offset
-                    return Frame(previous_beat->frame_position());
+                    return FramePos(previous_beat->frame_position());
                 }
                 ++n;
             }
@@ -410,10 +413,10 @@ Frame Beats::findNthBeat(Frame frame, int n) const {
             }
         }
     }
-    return Frame(-1);
+    return FramePos(-1);
 }
 
-std::unique_ptr<Beats::iterator> Beats::findBeats(Frame startFrame, Frame stopFrame) const {
+std::unique_ptr<Beats::iterator> Beats::findBeats(FramePos startFrame, FramePos stopFrame) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid() || startFrame > stopFrame) {
         return std::unique_ptr<Beats::iterator>();
@@ -438,13 +441,13 @@ std::unique_ptr<Beats::iterator> Beats::findBeats(Frame startFrame, Frame stopFr
     return std::make_unique<Beats::iterator>(firstBeat, lastBeat);
 }
 
-bool Beats::hasBeatInRange(Frame startFrame,
-        Frame stopFrame) const {
+bool Beats::hasBeatInRange(FramePos startFrame,
+        FramePos stopFrame) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid() || startFrame > stopFrame) {
         return false;
     }
-    Frame curBeat = findNextBeat(startFrame);
+    FramePos curBeat = findNextBeat(startFrame);
     if (curBeat <= stopFrame) {
         return true;
     }
@@ -458,7 +461,7 @@ Bpm Beats::getBpm() const {
     }
     return m_dCachedBpm;
 }
-double Beats::getBpmRange(Frame startFrame, Frame stopFrame) const {
+double Beats::getBpmRange(FramePos startFrame, FramePos stopFrame) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid()) {
         return -1;
@@ -469,7 +472,7 @@ double Beats::getBpmRange(Frame startFrame, Frame stopFrame) const {
     return calculateBpm(startBeat, stopBeat).getValue();
 }
 
-Bpm Beats::getBpmAroundPosition(Frame curFrame, int n) const {
+Bpm Beats::getBpmAroundPosition(FramePos curFrame, int n) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid()) {
         return Bpm();
@@ -478,22 +481,22 @@ Bpm Beats::getBpmAroundPosition(Frame curFrame, int n) const {
     // To make sure we are always counting n beats, iterate backward to the
     // lower bound, then iterate forward from there to the upper bound.
     // a value of -1 indicates we went off the map -- count from the beginning.
-    Frame lower_bound = findNthBeat(curFrame, -n);
-    if (lower_bound == Frame(-1)) {
-        lower_bound = Frame(m_beats.first().frame_position());
+    FramePos lower_bound = findNthBeat(curFrame, -n);
+    if (lower_bound == FramePos(-1)) {
+        lower_bound = FramePos(m_beats.first().frame_position());
     }
 
     // If we hit the end of the beat map, recalculate the lower bound.
     //double upper_bound = findNthBeat(lower_bound, n * 2);
-    Frame upper_bound = findNthBeat(lower_bound, n);
-    if (upper_bound == Frame(-1)) {
-        upper_bound = Frame(m_beats.last().frame_position());
+    FramePos upper_bound = findNthBeat(lower_bound, n);
+    if (upper_bound == FramePos(-1)) {
+        upper_bound = FramePos(m_beats.last().frame_position());
         //lower_bound = findNthBeat(upper_bound, n * -2);
         lower_bound = findNthBeat(upper_bound, n * -1);
         // Super edge-case -- the track doesn't have n beats!  Do the best
         // we can.
-        if (lower_bound == Frame(-1)) {
-            lower_bound = Frame(m_beats.first().frame_position());
+        if (lower_bound == FramePos(-1)) {
+            lower_bound = FramePos(m_beats.first().frame_position());
         }
     }
 
@@ -508,7 +511,7 @@ Bpm Beats::getBpmAroundPosition(Frame curFrame, int n) const {
     return calculateBpm(startBeat, stopBeat);
 }
 
-void Beats::addBeat(Frame beatFrame) {
+void Beats::addBeat(FramePos beatFrame) {
     QMutexLocker locker(&m_mutex);
     track::io::Beat beat;
     beat.set_frame_position(beatFrame.getValue());
@@ -527,7 +530,7 @@ void Beats::addBeat(Frame beatFrame) {
     emit updated();
 }
 
-void Beats::removeBeat(Frame beatFrame) {
+void Beats::removeBeat(FramePos beatFrame) {
     QMutexLocker locker(&m_mutex);
     track::io::Beat beat;
     beat.set_frame_position(beatFrame.getValue());
@@ -545,7 +548,7 @@ void Beats::removeBeat(Frame beatFrame) {
     emit updated();
 }
 
-TimeSignature Beats::getSignature(Frame frame) const {
+TimeSignature Beats::getSignature(FramePos frame) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid()) {
         return kNullTimeSignature;
@@ -554,7 +557,7 @@ TimeSignature Beats::getSignature(Frame frame) const {
     auto result = TimeSignature();
 
     // Special case, when looking for initial TimeSignature
-    if (frame == Frame(0)) {
+    if (frame == FramePos(0)) {
         auto beat = m_beats.cbegin();
         if (beat->has_signature()) {
             result.setTimeSignature(beat->signature().beats_per_bar(),
@@ -563,7 +566,7 @@ TimeSignature Beats::getSignature(Frame frame) const {
     } else {
         // Scans the list of beats to find the last time signature change before the sample
         for (auto beat = m_beats.begin();
-                beat != m_beats.end() && Frame(beat->frame_position()) < frame;
+                beat != m_beats.end() && FramePos(beat->frame_position()) < frame;
                 beat++) {
             if (beat->has_signature()) {
                 result.setTimeSignature(beat->signature().beats_per_bar(),
@@ -574,7 +577,7 @@ TimeSignature Beats::getSignature(Frame frame) const {
     return result;
 }
 
-void Beats::setSignature(TimeSignature sig, Frame frame) {
+void Beats::setSignature(TimeSignature sig, FramePos frame) {
     QMutexLocker locker(&m_mutex);
     if (!isValid()) {
         return;
@@ -582,7 +585,7 @@ void Beats::setSignature(TimeSignature sig, Frame frame) {
 
     // Moves to the beat before the sample
     BeatList::iterator beat = m_beats.begin();
-    for (; beat != m_beats.end() && Frame(beat->frame_position()) < frame; ++beat)
+    for (; beat != m_beats.end() && FramePos(beat->frame_position()) < frame; ++beat)
         ;
 
     // If at the end, change nothing
@@ -602,18 +605,18 @@ void Beats::setSignature(TimeSignature sig, Frame frame) {
     emit(updated());
 }
 
-void Beats::setDownBeat(Frame frame) {
+void Beats::setDownBeat(FramePos frame) {
     QMutexLocker locker(&m_mutex);
     if (!isValid()) {
         return;
     }
 
-    Frame closestFrame = findClosestBeat(frame);
+    FramePos closestFrame = findClosestBeat(frame);
 
     // Set the proper type for the remaining beats on the track or to the next phrasebeat
     int beat_counter = 0;
     std::unique_ptr<Beats::iterator> beat = findBeats(
-            closestFrame, Frame(m_beats.last().frame_position() - 1));
+            closestFrame, FramePos(m_beats.last().frame_position() - 1));
     while (beat->hasNext()) {
         beat->next();
         if (beat->isPhrase()) {
@@ -631,15 +634,15 @@ void Beats::setDownBeat(Frame frame) {
     emit(updated());
 }
 
-void Beats::translate(Frame numFrames) {
+void Beats::translate(FrameDiff_t numFrames) {
     QMutexLocker locker(&m_mutex);
     if (!isValid()) {
         return;
     }
 
     for (BeatList::iterator it = m_beats.begin(); it != m_beats.end();) {
-        Frame newpos = Frame(it->frame_position()) + numFrames;
-        if (newpos >= Frame(0)) {
+        FramePos newpos = FramePos(it->frame_position()) + numFrames;
+        if (newpos >= FramePos(0)) {
             it->set_frame_position(newpos.getValue());
             ++it;
         } else {
@@ -765,7 +768,7 @@ void Beats::setBpm(Bpm dBpm) {
     // TODO(hacksdump): A check for preferences will be added to only allow setting bpm
     // when "Assume Constant Tempo" is checked.
     // TODO(hacksdump): Tests depending on setBpm are still failing due to double precision.
-    setGrid(dBpm, Frame(m_beats.first().frame_position()));
+    setGrid(dBpm, FramePos(m_beats.first().frame_position()));
 
     /*
      * One of the problems of beattracking algorithms is the so called "octave error"
@@ -792,12 +795,12 @@ void Beats::setBpm(Bpm dBpm) {
      */
 }
 
-Frame Beats::getFirstBeatPosition() const {
-    return Frame((m_beats.size() == 0) ? -1 : m_beats.front().frame_position());
+FramePos Beats::getFirstBeatPosition() const {
+    return FramePos((m_beats.size() == 0) ? -1 : m_beats.front().frame_position());
 }
 
-Frame Beats::getLastBeatPosition() const {
-    return Frame((m_beats.size() == 0) ? -1 : m_beats.back().frame_position());
+FramePos Beats::getLastBeatPosition() const {
+    return FramePos((m_beats.size() == 0) ? -1 : m_beats.back().frame_position());
 }
 
 SINT Beats::getSampleRate() const {

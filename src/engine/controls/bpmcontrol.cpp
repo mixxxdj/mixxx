@@ -181,7 +181,7 @@ void BpmControl::slotAdjustBeatsSlower(double v) {
 void BpmControl::slotTranslateBeatsEarlier(double v) {
     if (v > 0 && m_pBeats) {
         const int translate_dist = getSampleOfTrack().rate * -.01;
-        m_pBeats->translate(mixxx::Frame(translate_dist / 2.0));
+        m_pBeats->translate(translate_dist / 2.0);
     }
 }
 
@@ -189,13 +189,13 @@ void BpmControl::slotTranslateBeatsLater(double v) {
     if (v > 0 && m_pBeats) {
         // TODO(rryan): Track::getSampleRate is possibly inaccurate!
         const int translate_dist = getSampleOfTrack().rate * .01;
-        m_pBeats->translate(mixxx::Frame(translate_dist / 2.0));
+        m_pBeats->translate(translate_dist / 2.0);
     }
 }
 
 void BpmControl::slotSetDownbeatOnClosestBeat(double v) {
     if (v > 0 && m_pBeats) {
-        m_pBeats->setDownBeat(mixxx::Frame(getSampleOfTrack().current / 2.0));
+        m_pBeats->setDownBeat(mixxx::FramePos(getSampleOfTrack().current / 2.0));
     }
 }
 
@@ -525,9 +525,9 @@ bool BpmControl::getBeatContext(const mixxx::BeatsPointer& pBeats,
         return false;
     }
 
-    mixxx::Frame prevBeat;
-    mixxx::Frame nextBeat;
-    if (!pBeats->findPrevNextBeats(mixxx::Frame(dPosition / 2.0), &prevBeat, &nextBeat)) {
+    mixxx::FramePos prevBeat;
+    mixxx::FramePos nextBeat;
+    if (!pBeats->findPrevNextBeats(mixxx::FramePos(dPosition / 2.0), &prevBeat, &nextBeat)) {
         return false;
     }
 
@@ -688,7 +688,7 @@ double BpmControl::getNearestPositionInPhase(
         dNewPlaypos += dThisNextBeat;
     } else { //!this_near_next && other_near_next
         dThisPrevBeat =
-                m_pBeats->findNthBeat(mixxx::Frame(dThisPosition / 2.0), -1)
+                m_pBeats->findNthBeat(mixxx::FramePos(dThisPosition / 2.0), -1)
                         .getValue() *
                 2.0;
         dNewPlaypos += dThisPrevBeat;
@@ -967,13 +967,13 @@ void BpmControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
 
 void BpmControl::slotBeatsTranslate(double v) {
     if (v > 0 && m_pBeats) {
-        mixxx::Frame currentFrame(getSampleOfTrack().current / 2.0);
-        mixxx::Frame closestBeat = m_pBeats->findClosestBeat(currentFrame);
+        mixxx::FramePos currentFrame(getSampleOfTrack().current / 2.0);
+        mixxx::FramePos closestBeat = m_pBeats->findClosestBeat(currentFrame);
         int delta = currentFrame.getValue() - closestBeat.getValue();
         if (delta % 2 != 0) {
             delta--;
         }
-        m_pBeats->translate(mixxx::Frame(delta));
+        m_pBeats->translate(delta);
     }
 }
 
@@ -984,7 +984,7 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
         m_dUserOffset.setValue(0.0);
 
         double offset = getPhaseOffset(getSampleOfTrack().current);
-        m_pBeats->translate(mixxx::Frame(-offset / 2.0));
+        m_pBeats->translate(-offset / 2.0);
     }
 }
 
@@ -993,7 +993,7 @@ double BpmControl::updateLocalBpm() {
     mixxx::Bpm local_bpm;
     if (m_pBeats) {
         local_bpm = m_pBeats->getBpmAroundPosition(
-                mixxx::Frame(getSampleOfTrack().current / 2.0), kLocalBpmSpan);
+                mixxx::FramePos(getSampleOfTrack().current / 2.0), kLocalBpmSpan);
         if (local_bpm.getValue() == -1) {
             local_bpm = m_pBeats->getBpm();
         }

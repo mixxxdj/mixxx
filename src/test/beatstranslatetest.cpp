@@ -9,9 +9,9 @@ class BeatsTranslateTest : public MockedEngineBackendTest {
 
 TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     const mixxx::Bpm bpm = Bpm(60.0);
-    const Frame firstBeat(0.0);
-    const Frame baseOffset = Frame(30123);
-    const Frame delta = Frame(2222.0);
+    const FramePos firstBeat(0.0);
+    const FramePos baseOffset(30123);
+    const FrameDiff_t delta = 2222.0;
 
     // Set up Beats for decks 1 and 2.
     auto beats1 = std::make_shared<Beats>(m_pTrack1.get());
@@ -25,7 +25,7 @@ TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
 
     // Seek deck 1 forward baseOffset+delta frames
     // Seek deck 2 forward baseOffset frames
-    m_pChannel1->getEngineBuffer()->slotControlSeekAbs(baseOffset.getValue() + delta.getValue());
+    m_pChannel1->getEngineBuffer()->slotControlSeekAbs((baseOffset + delta).getValue());
     m_pChannel2->getEngineBuffer()->slotControlSeekAbs(baseOffset.getValue());
     ProcessBuffer();
     ASSERT_DOUBLE_EQ(m_pChannel1->getEngineBuffer()->getExactPlayPos(),

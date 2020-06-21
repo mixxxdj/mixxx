@@ -160,7 +160,7 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
         qDebug() << "Re-analyzing track with invalid BPM despite preference settings.";
         return true;
     }
-    if (pBeats->findNextBeat(mixxx::Frame(0)) <= mixxx::Frame(0.0)) {
+    if (pBeats->findNextBeat(mixxx::FramePos(0)) <= mixxx::FramePos(0.0)) {
         qDebug() << "First beat is 0 for grid so analyzing track to find first beat.";
         return true;
     }
@@ -276,10 +276,10 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
 
     // If we got here then the user doesn't want to replace the beatgrid but
     // since the first beat is zero we'll apply the offset we just detected.
-    mixxx::Frame currentFirstBeat = pCurrentBeats->findNextBeat(mixxx::Frame(0));
-    mixxx::Frame newFirstBeat = pBeats->findNextBeat(mixxx::Frame(0));
-    if (currentFirstBeat == mixxx::Frame(0.0) && newFirstBeat > mixxx::Frame(0)) {
-        pCurrentBeats->translate(newFirstBeat);
+    mixxx::FramePos currentFirstBeat = pCurrentBeats->findNextBeat(mixxx::FramePos(0));
+    mixxx::FramePos newFirstBeat = pBeats->findNextBeat(mixxx::FramePos(0));
+    if (currentFirstBeat == mixxx::FramePos(0.0) && newFirstBeat > mixxx::FramePos(0)) {
+        pCurrentBeats->translate(newFirstBeat - currentFirstBeat);
     }
 }
 

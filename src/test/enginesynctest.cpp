@@ -1673,10 +1673,10 @@ TEST_F(EngineSyncTest, HalfDoubleInternalClockTest) {
 }
 
 namespace {
-QVector<Frame> createBeatVector(Frame first_beat,
+QVector<FramePos> createBeatVector(FramePos first_beat,
         unsigned int num_beats,
-        Frame beat_length) {
-    QVector<Frame> beats;
+        FrameDiff_t beat_length) {
+    QVector<FramePos> beats;
     for (unsigned int i = 0; i < num_beats; ++i) {
         beats.append(first_beat + beat_length * i);
     }
@@ -1686,16 +1686,16 @@ QVector<Frame> createBeatVector(Frame first_beat,
 
 TEST_F(EngineSyncTest, HalfDoubleConsistency) {
     // half-double matching should be consistent
-    Frame beatLengthFrames = Frame(60.0 * 44100 / 90.0);
-    Frame startOffsetFrames = Frame(0);
+    FrameDiff_t beatLengthFrames = 60.0 * 44100 / 90.0;
+    FramePos startOffsetFrames = FramePos(0);
     const int numBeats = 100;
-    QVector<Frame> beats1 =
+    QVector<FramePos> beats1 =
             createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
     auto pBeats1 = new mixxx::Beats(m_pTrack1.get(), beats1);
     m_pTrack1->setBeats(mixxx::BeatsPointer(pBeats1));
 
-    beatLengthFrames.setValue(60.0 * 44100 / 145.0);
-    QVector<Frame> beats2 =
+    beatLengthFrames = 60.0 * 44100 / 145.0;
+    QVector<FramePos> beats2 =
             createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
     auto pBeats2 = new mixxx::Beats(m_pTrack2.get(), beats2);
     m_pTrack2->setBeats(mixxx::BeatsPointer(pBeats2));
@@ -2329,8 +2329,8 @@ TEST_F(EngineSyncTest, BeatMapQantizePlay) {
 
     auto pBeats2 = BeatsPointer(new Beats(m_pTrack2.get()));
     // Add two beats at 120 Bpm
-    pBeats2->addBeat(Frame(44100 / 2));
-    pBeats2->addBeat(Frame(44100));
+    pBeats2->addBeat(FramePos(44100 / 2));
+    pBeats2->addBeat(FramePos(44100));
     m_pTrack2->setBeats(pBeats2);
 
     ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 1.0);
