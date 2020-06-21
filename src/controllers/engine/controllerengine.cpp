@@ -243,11 +243,7 @@ void ControllerEngine::loadModule(QFileInfo moduleFileInfo) {
     m_scriptWatcher.addPath(moduleFileInfo.absoluteFilePath());
 
     QJSValue initFunction = mod.property("init");
-    if (initFunction.isCallable()) {
-        initFunction.call();
-    } else {
-        qDebug() << "Module exports no init function.";
-    }
+    executeFunction(initFunction, QJSValueList{});
 
     QJSValue receiveDataFunction = mod.property("receiveData");
     if (receiveDataFunction.isCallable()) {
@@ -269,10 +265,7 @@ void ControllerEngine::receiveData(QByteArray data, mixxx::Duration timestamp) {
         QJSValueList args;
         args << byteArrayToScriptValue(data);
         args << timestamp.toDoubleNanos();
-        QJSValue returnValue = m_receiveDataFunction.call(args);
-        if (returnValue.isError()) {
-            showScriptExceptionDialog(returnValue);
-        }
+        executeFunction(m_receiveDataFunction, args);
     }
 }
 
