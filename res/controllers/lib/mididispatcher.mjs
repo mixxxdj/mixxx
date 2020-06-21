@@ -1,4 +1,17 @@
+/**
+* MidiDispatcher routes incoming MIDI messages to registered callbacks. Register callbacks with
+* the setInputCallback method in your controller script module's init function and call
+* MidiDispatcher's receiveData method in your controller script module's receiveData function.
+*
+* This class is not designed to handle System Exclusive or MIDI Clock messages. For those, implement logic
+* specific to your controller in the controller module's receiveData function before calling
+* MidiDispatcher.receiveData.
+*/
 export class MidiDispatcher {
+    /**
+     * @param {bool} noteOff - When setting the callback for a Note On message, also map the corresponding Note Off
+     * message to the same callback. Defaults to true.
+     */
     constructor(noteOff) {
         if (noteOff === undefined) {
             noteOff = true;
@@ -6,6 +19,17 @@ export class MidiDispatcher {
         this.noteOff = noteOff;
         this.inputMap = new Map();
     }
+    /**
+     * Set the callback for an incoming MIDI message.
+     * @param {Array} midiBytes - Array of numbers indicating the beginning of the MIDI messages. In most cases,
+     * this should be the first two bytes of the MIDI messages, for example [0x93, 0x27]
+     *
+     * Program change (starting with 0xC) and aftertouch (starting with 0xD) messages are distinguished by only
+     * their first byte, so in those cases the Array should only have one number.
+     *
+     * @param {function} callback - The callback that will be called by the receiveData method when a MIDI message
+     * matching midiBytes is received from the controller.
+     */
     setInputCallback(midiBytes, callback) {
         if (!Array.isArray(midiBytes)) {
             throw new Error('MidiDispatcher.setInputCallback midiBytes must be an Array, received ' + midiBytes);
@@ -28,6 +52,12 @@ export class MidiDispatcher {
             this.inputMap.set(noteOffKey, callback);
         }
     }
+    /**
+     * Receive incoming MIDI data from a controller and execute the callback registered to that
+     * MIDI message.
+     * @param {Array} data - The incoming MIDI data.
+     * @param {number} timestamp - The timestamp that Mixxx received the MIDI data at.
+     */
     receiveData(data, timestamp) {
         let key;
         // MIDI messages starting with 0xC (program change) or 0xD (aftertouch) messages are only
