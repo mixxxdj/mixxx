@@ -28,7 +28,7 @@ export class MidiDispatcher {
     receiveData(data, timestamp) {
         const key = JSON.stringify([data[0], data[1]]);
         const callback = this.inputMap.get(key);
-        if (callback !== undefined) {
+        if (typeof callback === 'function') {
             callback(data, timestamp);
         }
     }
