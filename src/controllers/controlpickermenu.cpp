@@ -11,7 +11,7 @@
 
 ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         : QMenu(pParent) {
-    m_effectMasterOutputStr = tr("Master Output");
+    m_effectMasterOutputStr = tr("Main Output");
     m_effectHeadphoneOutputStr = tr("Headphone Output");
     m_deckStr = tr("Deck %1");
     m_samplerStr = tr("Sampler %1");
@@ -27,10 +27,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Master Controls
     QMenu* mixerMenu = addSubmenu(tr("Mixer"));
-    addControl("[Master]", "crossfader", tr("Crossfader"), tr("Master crossfader"), mixerMenu, true);
-    addControl("[Master]", "gain", tr("Master Gain"), tr("Master gain"), mixerMenu, true);
-    addControl("[Master]", "balance", tr("Master Balance"), tr("Master balance"), mixerMenu, true);
-    addControl("[Master]", "delay", tr("Master Delay"), tr("Master delay"), mixerMenu, true);
+    addControl("[Master]", "balance", tr("Main Output Balance"), tr("Main output balance"), mixerMenu, true);
+    addControl("[Master]", "delay", tr("Main Output Delay"), tr("Main output delay"), mixerMenu, true);
+    addControl("[Master]", "crossfader", tr("Crossfader"), tr("Crossfader"), mixerMenu, true);
+    addControl("[Master]", "gain", tr("Main Output Gain"), tr("Main output gain"), mixerMenu, true);
     addControl("[Master]", "headGain", tr("Headphone Gain"), tr("Headphone gain"), mixerMenu, true);
     addControl("[Master]", "headMix", tr("Headphone Mix"), tr("Headphone mix (pre/main)"), mixerMenu, true);
     addControl("[Master]", "headSplit", tr("Headphone Split Cue"), tr("Toggle headphone split cueing"), mixerMenu);

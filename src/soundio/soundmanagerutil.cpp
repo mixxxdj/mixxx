@@ -154,7 +154,7 @@ QString AudioPath::getStringFromType(AudioPathType type) {
         // handle this -- bkgood
         return QStringLiteral("Invalid");
     case MASTER:
-        return QStringLiteral("Master");
+        return QStringLiteral("Main");
     case BOOTH:
         return QStringLiteral("Booth");
     case HEADPHONES:
@@ -186,7 +186,7 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
         // handle this -- bkgood
         return QObject::tr("Invalid");
     case MASTER:
-        return QObject::tr("Master");
+        return QObject::tr("Main");
     case BOOTH:
         return QObject::tr("Booth");
     case HEADPHONES:
