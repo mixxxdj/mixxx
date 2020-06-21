@@ -17,8 +17,6 @@ class BeatIterator final {
         }
     }
 
-    ~BeatIterator() = default;
-
     using iterator_category = std::forward_iterator_tag;
 
     bool hasNext() const {
@@ -52,13 +50,13 @@ class BeatIterator final {
         return m_currentBeat->type() == mixxx::track::io::PHRASE;
     }
 
-    /// The current beat becomes a down beat.
+    /// The current beat becomes a regular beat.
     void makeBeat() {
         // TODO(JVC) Const_cast is needed until we manage to make BeatIterator read/write
         const_cast<mixxx::track::io::Beat&>(*m_currentBeat).set_type(mixxx::track::io::BEAT);
     }
 
-    /// The current beat becomes a phrase beat.
+    /// The current beat becomes a downbeat.
     void makeBar() {
         // TODO(JVC) Const_cast is needed until we manage to make BeatIterator read/write
         const_cast<mixxx::track::io::Beat&>(*m_currentBeat).set_type(mixxx::track::io::BAR);
