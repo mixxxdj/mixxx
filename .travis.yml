@@ -101,6 +101,29 @@ jobs:
         directories:
           - $HOME/Library/Caches/Homebrew
           - /usr/local/Homebrew
+      addons:
+        homebrew:
+          update: true
+          packages:
+            - chromaprint
+            - flac
+            - lame
+            - libsndfile
+            - libogg
+            - libvorbis
+            - libshout
+            - libid3tag
+            - libmad
+            - lilv
+            - opusfile
+            - portaudio
+            - portmidi
+            - protobuf
+            - qt5
+            - qtkeychain
+            - rubberband
+            - sound-touch
+            - taglib
       # Workaround for bug in libopus's opus.h including <opus_multistream.h>
       # instead of <opus/opus_multistream.h>.
       # Virtual X (Xvfb) is needed for analyzer waveform tests
@@ -230,33 +253,6 @@ addons:
       - qt5-default
       - qtscript5-dev
       - qt5keychain-dev
-  homebrew:
-    update: true
-    packages:
-      - chromaprint
-      - faad2
-      - ffmpeg
-      - flac
-      - lame
-      - libsndfile
-      - libogg
-      - libvorbis
-      - libshout
-      - libmodplug
-      - libid3tag
-      - libmad
-      - lilv
-      - mp4v2
-      - opusfile
-      - portaudio
-      - portmidi
-      - protobuf
-      - qt5
-      - qtkeychain
-      - rubberband
-      - sound-touch
-      - taglib
-      - wavpack
 
 
 notifications:
