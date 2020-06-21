@@ -22,7 +22,6 @@
 #include "mixer/playermanager.h"
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
-#include "track/trackref.h"
 #include "util/desktophelper.h"
 #include "util/parented_ptr.h"
 #include "widget/wcolorpickeraction.h"
@@ -729,6 +728,33 @@ TrackIdList WTrackMenu::getTrackIds() const {
     return trackIds;
 }
 
+QList<TrackRef> WTrackMenu::getTrackRefs() const {
+    QList<TrackRef> trackRefs;
+    if (m_pTrackModel) {
+        trackRefs.reserve(m_trackIndexList.size());
+        for (const auto& index : m_trackIndexList) {
+            auto trackRef = TrackRef::fromFileInfo(
+                    m_pTrackModel->getTrackLocation(index),
+                    m_pTrackModel->getTrackId(index));
+            if (!trackRef.isValid()) {
+                // Skip unavailable tracks
+                continue;
+            }
+            trackRefs.push_back(std::move(trackRef));
+        }
+    } else {
+        trackRefs.reserve(m_trackPointerList.size());
+        for (const auto& pTrack : m_trackPointerList) {
+            DEBUG_ASSERT(pTrack);
+            auto trackRef = TrackRef::fromFileInfo(
+                    pTrack->getLocation(),
+                    pTrack->getId());
+            trackRefs.push_back(std::move(trackRef));
+        }
+    }
+    return trackRefs;
+}
+
 TrackPointerList WTrackMenu::getTrackPointers() const {
     if (!m_pTrackModel) {
         return m_trackPointerList;
@@ -773,11 +799,11 @@ QModelIndexList WTrackMenu::getTrackIndices() const {
 }
 
 void WTrackMenu::slotOpenInFileBrowser() {
-    const auto trackPointers = getTrackPointers();
+    const auto trackRefs = getTrackRefs();
     QStringList locations;
-    locations.reserve(trackPointers.size());
-    for (const auto& pTrack : trackPointers) {
-        locations << pTrack->getLocation();
+    locations.reserve(trackRefs.size());
+    for (const auto& trackRef : trackRefs) {
+        locations << trackRef.getLocation();
     }
     mixxx::DesktopHelper::openInFileBrowser(locations);
 }
@@ -810,18 +836,8 @@ void WTrackMenu::slotUpdateExternalTrackCollection(
     VERIFY_OR_DEBUG_ASSERT(externalTrackCollection) {
         return;
     }
-    auto trackPointers = getTrackPointers();
 
-    QList<TrackRef> trackRefs;
-    trackRefs.reserve(trackPointers.size());
-    for (const auto& pTrack : trackPointers) {
-        trackRefs.append(
-                TrackRef::fromFileInfo(
-                        pTrack->getLocation(),
-                        pTrack->getId()));
-    }
-
-    externalTrackCollection->updateTracks(std::move(trackRefs));
+    externalTrackCollection->updateTracks(getTrackRefs());
 }
 
 void WTrackMenu::slotPopulatePlaylistMenu() {
