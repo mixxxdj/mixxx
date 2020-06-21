@@ -604,7 +604,7 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bo
     // AutoDJProcessor is initialized after PlayerManager, so check that the
     // ControlProxy is pointing to the real ControlObject.
     if (!m_pAutoDjEnabled->valid()) {
-        m_pAutoDjEnabled->initialize(ConfigKey("[AutoDJ]", "enabled"));
+        m_pAutoDjEnabled->initialize();
     }
     bool autoDjSkipClone = m_pAutoDjEnabled->get() && (pPlayer == m_decks.at(0) || pPlayer == m_decks.at(1));
 

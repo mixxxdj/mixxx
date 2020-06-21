@@ -115,6 +115,10 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         return QSharedPointer<ControlDoublePrivate>();
     }
 
+    // Setting this flag makes no sense here and indicates that the programmer
+    // is confused and should consider taking a little break.
+    DEBUG_ASSERT(!flags.testFlag(ControlFlag::InitializeLater));
+
     QSharedPointer<ControlDoublePrivate> pControl;
     // Scope for MMutexLocker.
     {

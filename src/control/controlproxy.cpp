@@ -3,35 +3,41 @@
 #include "control/controlproxy.h"
 #include "control/control.h"
 
-ControlProxy::ControlProxy(QObject* pParent)
-        : QObject(pParent),
-          m_pControl(NULL) {
-}
-
 ControlProxy::ControlProxy(const QString& g, const QString& i, QObject* pParent, ControlFlags flags)
-        : QObject(pParent) {
-    initialize(ConfigKey(g, i), flags);
+        : ControlProxy(ConfigKey(g, i), pParent, flags) {
 }
 
 ControlProxy::ControlProxy(const char* g, const char* i, QObject* pParent, ControlFlags flags)
-        : QObject(pParent) {
-    initialize(ConfigKey(g, i), flags);
+        : ControlProxy(ConfigKey(g, i), pParent, flags) {
 }
 
 ControlProxy::ControlProxy(const ConfigKey& key, QObject* pParent, ControlFlags flags)
-        : QObject(pParent) {
-    initialize(key, flags);
+        : QObject(pParent),
+          m_pControl(nullptr) {
+    DEBUG_ASSERT(!key.isNull() || flags.testFlag(ControlFlag::AllowEmptyKey));
+    m_key = key;
+
+    if (!flags.testFlag(ControlFlag::InitializeLater)) {
+        flags.setFlag(ControlFlag::InitializeLater, false);
+        initialize(flags);
+    }
 }
 
-void ControlProxy::initialize(const ConfigKey& key, ControlFlags flags) {
-    m_key = key;
-    // Don't bother looking up the control if key is NULL. Prevents log spew.
-    if (!key.isNull()) {
-        m_pControl = ControlDoublePrivate::getControl(key, flags);
+void ControlProxy::initialize(ControlFlags flags) {
+    // Prevent double initialization
+    DEBUG_ASSERT(!m_pControl);
+
+    // Prevent empty keys
+    if (m_key.isNull()) {
+        DEBUG_ASSERT(flags.testFlag(ControlFlag::AllowEmptyKey));
+        return;
     }
+
+    m_pControl = ControlDoublePrivate::getControl(m_key, flags);
+    DEBUG_ASSERT(flags.testFlag(ControlFlag::NoAssertIfMissing) || m_pControl);
+    DEBUG_ASSERT(flags.testFlag(ControlFlag::NoAssertIfMissing) || valid());
 }
 
 ControlProxy::~ControlProxy() {
     //qDebug() << "ControlProxy::~ControlProxy()";
 }
-

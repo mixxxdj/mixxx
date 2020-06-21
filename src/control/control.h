@@ -15,8 +15,10 @@ class ControlObject;
 
 enum class ControlFlag {
     None = 0,
-    NoWarnIfMissing = 1,
-    NoAssertIfMissing = 2,
+    InitializeLater = 1,
+    AllowEmptyKey = 1 << 1,
+    NoAssertIfMissing = 1 << 2,
+    NoWarnIfMissing = (1 << 3) | NoAssertIfMissing,
 };
 
 Q_DECLARE_FLAGS(ControlFlags, ControlFlag)

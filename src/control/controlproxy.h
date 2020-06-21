@@ -19,7 +19,6 @@
 class ControlProxy : public QObject {
     Q_OBJECT
   public:
-    ControlProxy(QObject* pParent = NULL);
     ControlProxy(const QString& g,
             const QString& i,
             QObject* pParent = NULL,
@@ -33,7 +32,7 @@ class ControlProxy : public QObject {
             ControlFlags flags = ControlFlag::None);
     virtual ~ControlProxy();
 
-    void initialize(const ConfigKey& key, ControlFlags flags = ControlFlag::None);
+    void initialize(ControlFlags flags = ControlFlag::None);
 
     const ConfigKey& getKey() const {
         return m_key;
