@@ -126,7 +126,7 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         auto it = s_qCOHash.constFind(key);
         if (it != s_qCOHash.constEnd()) {
             if (pCreatorCO) {
-                qDebug() << "ControlObject" << key.group << key.item << "already created";
+                qWarning() << "ControlObject" << key.group << key.item << "already created";
                 DEBUG_ASSERT(!"ControlObject already created");
             } else {
                 pControl = it.value();
