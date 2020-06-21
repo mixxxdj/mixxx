@@ -27,14 +27,12 @@ class BeatsTest : public testing::Test {
                 mixxx::Duration::fromSeconds(180));
         m_pBeats1->setGrid(m_bpm, m_startOffsetFrames);
         m_pBeats2->setGrid(m_bpm, m_startOffsetFrames);
-        m_firstBeat = m_pBeats1->getFirstBeatPosition();
-        m_lastBeat = m_pBeats1->getLastBeatPosition();
     }
 
     ~BeatsTest() {
     }
 
-    FrameDiff_t getBeatLengthFrames(Bpm bpm) {
+    FrameDiff_t getBeatLengthFrames(Bpm bpm) const {
         if (bpm == Bpm()) {
             DEBUG_ASSERT(false);
             return 0;
@@ -62,8 +60,6 @@ class BeatsTest : public testing::Test {
     BeatsPointer m_pBeats2;
     const Bpm m_bpm;
     const FramePos m_startOffsetFrames;
-    FramePos m_firstBeat;
-    FramePos m_lastBeat;
 };
 
 TEST_F(BeatsTest, Scale) {
@@ -91,12 +87,20 @@ TEST_F(BeatsTest, Scale) {
 
 TEST_F(BeatsTest, NthBeat) {
     // Check edge cases
-    EXPECT_EQ(m_lastBeat, m_pBeats1->findNthBeat(m_lastBeat, 1));
-    EXPECT_EQ(m_lastBeat, m_pBeats1->findNextBeat(m_lastBeat));
-    EXPECT_EQ(-1, m_pBeats1->findNthBeat(m_lastBeat, 2).getValue());
-    EXPECT_EQ(m_firstBeat, m_pBeats1->findNthBeat(m_firstBeat, -1));
-    EXPECT_EQ(m_firstBeat, m_pBeats1->findPrevBeat(m_firstBeat));
-    EXPECT_EQ(-1, m_pBeats1->findNthBeat(m_firstBeat, -2).getValue());
+    EXPECT_EQ(m_pBeats1->getLastBeatPosition(),
+            m_pBeats1->findNthBeat(m_pBeats1->getLastBeatPosition(), 1));
+    EXPECT_EQ(m_pBeats1->getLastBeatPosition(),
+            m_pBeats1->findNextBeat(m_pBeats1->getLastBeatPosition()));
+    EXPECT_EQ(-1,
+            m_pBeats1->findNthBeat(m_pBeats1->getLastBeatPosition(), 2)
+                    .getValue());
+    EXPECT_EQ(m_pBeats1->getFirstBeatPosition(),
+            m_pBeats1->findNthBeat(m_pBeats1->getFirstBeatPosition(), -1));
+    EXPECT_EQ(m_pBeats1->getFirstBeatPosition(),
+            m_pBeats1->findPrevBeat(m_pBeats1->getFirstBeatPosition()));
+    EXPECT_EQ(-1,
+            m_pBeats1->findNthBeat(m_pBeats1->getFirstBeatPosition(), -2)
+                    .getValue());
 
     // TODO(JVC) Add some tests in the middle
 }
@@ -104,13 +108,20 @@ TEST_F(BeatsTest, NthBeat) {
 TEST_F(BeatsTest, PrevNextBeats) {
     FramePos prevBeat, nextBeat;
 
-    m_pBeats1->findPrevNextBeats(m_lastBeat, &prevBeat, &nextBeat);
-    EXPECT_DOUBLE_EQ(m_lastBeat.getValue(), prevBeat.getValue());
+    m_pBeats1->findPrevNextBeats(
+            m_pBeats1->getLastBeatPosition(), &prevBeat, &nextBeat);
+    EXPECT_DOUBLE_EQ(
+            m_pBeats1->getLastBeatPosition().getValue(), prevBeat.getValue());
     EXPECT_DOUBLE_EQ(-1, nextBeat.getValue());
 
-    m_pBeats1->findPrevNextBeats(m_firstBeat, &prevBeat, &nextBeat);
-    EXPECT_DOUBLE_EQ(m_firstBeat.getValue(), prevBeat.getValue());
-    EXPECT_DOUBLE_EQ((m_firstBeat + getBeatLengthFrames(m_bpm)).getValue(), nextBeat.getValue());
+    m_pBeats1->findPrevNextBeats(
+            m_pBeats1->getFirstBeatPosition(), &prevBeat, &nextBeat);
+    EXPECT_DOUBLE_EQ(
+            m_pBeats1->getFirstBeatPosition().getValue(), prevBeat.getValue());
+    EXPECT_DOUBLE_EQ(
+            (m_pBeats1->getFirstBeatPosition() + getBeatLengthFrames(m_bpm))
+                    .getValue(),
+            nextBeat.getValue());
 
     // TODO(JVC) Add some tests in the middle
 }
