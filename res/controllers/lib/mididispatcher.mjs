@@ -26,7 +26,17 @@ export class MidiDispatcher {
         }
     }
     receiveData(data, timestamp) {
-        const key = JSON.stringify([data[0], data[1]]);
+        let key;
+        // MIDI messages starting with 0xC (program change) or 0xD (aftertouch) messages are only
+        // two bytes long and distinguished by their first byte.
+        // https://www.midi.org/specifications-old/item/table-2-expanded-messages-list-status-bytes
+        if ((data[0] & 0xF0) == 0xC0 || (data[0] & 0xF0) === 0xD0) {
+            key = JSON.stringify([data[0]]);
+            print('SINGLE ' + data);
+        } else {
+            key = JSON.stringify([data[0], data[1]]);
+        }
+
         const callback = this.inputMap.get(key);
         if (typeof callback === 'function') {
             callback(data, timestamp);
