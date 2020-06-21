@@ -25,7 +25,7 @@ SkinLoader::SkinLoader(UserSettingsPointer pConfig) :
 }
 
 SkinLoader::~SkinLoader() {
-    LegacySkinParser::freeChannelStrings();
+    LegacySkinParser::clearSharedGroupStrings();
 }
 
 QList<QDir> SkinLoader::getSkinSearchPaths() const {
@@ -102,7 +102,7 @@ QString SkinLoader::getConfiguredSkinPath() const {
 }
 
 QString SkinLoader::getDefaultSkinName() const {
-    return "Deere";
+    return "LateNight";
 }
 
 QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,

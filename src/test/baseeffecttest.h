@@ -61,10 +61,10 @@ class MockEffectInstantiator : public EffectInstantiator {
 
 class BaseEffectTest : public MixxxTest {
   protected:
-    BaseEffectTest() : m_pChannelHandleFactory(new ChannelHandleFactory()),
-                       m_pTestBackend(nullptr),
-                       m_pEffectsManager(new EffectsManager(nullptr, config(),
-                                                            m_pChannelHandleFactory)) {
+    BaseEffectTest()
+            : m_pChannelHandleFactory(std::make_shared<ChannelHandleFactory>()),
+              m_pTestBackend(nullptr),
+              m_pEffectsManager(new EffectsManager(nullptr, config(), m_pChannelHandleFactory)) {
     }
 
     void registerTestBackend() {
@@ -74,7 +74,7 @@ class BaseEffectTest : public MixxxTest {
 
     void registerTestEffect(EffectManifestPointer pManifest, bool willAddToEngine);
 
-    ChannelHandleFactory* m_pChannelHandleFactory;
+    ChannelHandleFactoryPointer m_pChannelHandleFactory;
 
     // Deleted by EffectsManager. Do not delete.
     TestEffectBackend* m_pTestBackend;

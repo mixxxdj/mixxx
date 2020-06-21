@@ -1,5 +1,4 @@
-#ifndef WTRACKTABLEVIEW_H
-#define WTRACKTABLEVIEW_H
+#pragma once
 
 #include <QAbstractItemModel>
 #include <QSortFilterProxyModel>
@@ -107,5 +106,3 @@ class WTrackTableView : public WLibraryTableView {
     ControlProxy* m_pSortColumn;
     ControlProxy* m_pSortOrder;
 };
-
-#endif

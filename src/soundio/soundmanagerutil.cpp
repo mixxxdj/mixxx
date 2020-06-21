@@ -311,10 +311,6 @@ AudioOutput::AudioOutput(AudioPathType type,
     }
 }
 
-AudioOutput::~AudioOutput() {
-
-}
-
 /**
  * Writes this AudioOutput's data to an XML element, preallocated from an XML
  * DOM document.

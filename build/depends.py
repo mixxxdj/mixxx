@@ -557,7 +557,7 @@ class SoundTouch(Dependence):
 
         if build.platform_is_linux or build.platform_is_bsd:
             # Try using system lib
-            if conf.CheckForPKG('soundtouch', '2.0.0'):
+            if conf.CheckForPKG('soundtouch', '2.1.1'):
                 # System Lib found
                 if not conf.CheckLib(['SoundTouch']):
                     raise Exception(
@@ -566,7 +566,9 @@ class SoundTouch(Dependence):
                 self.INTERNAL_LINK = False
 
         if self.INTERNAL_LINK:
-            env.Append(CPPPATH=['#' + self.SOUNDTOUCH_INTERNAL_PATH])
+            # The system includes all start with <soundtouch/...>, i.e.
+            # we must omit the "soundtouch" path component here!
+            env.Append(CPPPATH=['#/lib'])
 
             # Prevents circular import.
             from .features import Optimize
@@ -1331,6 +1333,7 @@ class MixxxCore(Feature):
                    "src/util/screensaver.cpp",
                    "src/util/indexrange.cpp",
                    "src/util/desktophelper.cpp",
+                   "src/util/widgethelper.cpp",
                    "src/util/widgetrendertimer.cpp",
                    "src/util/workerthread.cpp",
                    "src/util/workerthreadscheduler.cpp"

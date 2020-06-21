@@ -6,7 +6,6 @@
 #include <QMetaMethod>
 #include <QMimeDatabase>
 #include <QNetworkRequest>
-#include <QThread>
 #include <QTimerEvent>
 #include <mutex> // std::once_flag
 
@@ -16,6 +15,7 @@
 #endif
 #include "util/counter.h"
 #include "util/logger.h"
+#include "util/thread_affinity.h"
 
 namespace mixxx {
 
@@ -240,7 +240,7 @@ bool JsonWebTask::doStart(
         QNetworkAccessManager* networkAccessManager,
         int parentTimeoutMillis) {
     Q_UNUSED(parentTimeoutMillis);
-    DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     DEBUG_ASSERT(networkAccessManager);
     VERIFY_OR_DEBUG_ASSERT(!m_pendingNetworkReply) {
         kLogger.warning()
@@ -274,8 +274,8 @@ bool JsonWebTask::doStart(
             Qt::UniqueConnection);
 
     connect(m_pendingNetworkReply,
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-            qOverload<QNetworkReply::NetworkError>(&QNetworkReply::error),
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+            &QNetworkReply::errorOccurred,
 #else
             QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error),
 #endif
@@ -287,7 +287,7 @@ bool JsonWebTask::doStart(
 }
 
 QUrl JsonWebTask::doAbort() {
-    DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     QUrl requestUrl;
     if (m_pendingNetworkReply) {
         requestUrl = abortPendingNetworkReply(m_pendingNetworkReply);
@@ -301,7 +301,7 @@ QUrl JsonWebTask::doAbort() {
 }
 
 QUrl JsonWebTask::doTimeOut() {
-    DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     QUrl requestUrl;
     if (m_pendingNetworkReply) {
         requestUrl = timeOutPendingNetworkReply(m_pendingNetworkReply);
@@ -313,7 +313,7 @@ QUrl JsonWebTask::doTimeOut() {
 }
 
 void JsonWebTask::slotNetworkReplyFinished() {
-    DEBUG_ASSERT(thread() == QThread::currentThread());
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     const QPair<QNetworkReply*, HttpStatusCode> networkReplyWithStatusCode =
             receiveNetworkReply();
     auto* const networkReply = networkReplyWithStatusCode.first;

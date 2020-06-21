@@ -157,7 +157,8 @@ class Bulk(Feature):
                    'src/controllers/bulk/bulkenumerator.cpp']
         if not int(build.flags['hid']):
             sources.append(
-                'src/controllers/hid/hidcontrollerpresetfilehandler.cpp')
+                ['src/controllers/hid/hidcontrollerpresetfilehandler.cpp',
+                 'src/controllers/hid/hidcontrollerpreset.cpp'])
         return sources
 
 
@@ -1058,17 +1059,10 @@ class Optimize(Feature):
                 self.status = self.build_status(
                     optimize_level, "tuned for this CPU (%s)" % build.machine)
                 build.env.Append(CCFLAGS='-march=native')
-                # http://en.chys.info/2010/04/what-exactly-marchnative-means/
                 # Note: requires gcc >= 4.2.0
                 # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
                 # are set automatically
-                if build.architecture_is_x86 and not build.machine_is_64bit:
-                    # For 32 bit builds using gcc < 5.0, the mfpmath=sse is
-                    # not set by default (not supported on arm builds)
-                    # If -msse is not implicitly set, it falls back to mfpmath=387
-                    # and a compiler warning is issued (tested with gcc 4.8.4)
-                    build.env.Append(CCFLAGS='-mfpmath=sse')
-                elif build.architecture_is_arm:
+                if build.architecture_is_arm:
                     self.status = self.build_status(optimize_level)
                     build.env.Append(CCFLAGS='-mfloat-abi=hard')
                     build.env.Append(CCFLAGS='-mfpu=neon')
@@ -1219,7 +1213,7 @@ class QtKeychain(Feature):
         return "Secure credentials storage support for Live Broadcasting profiles"
 
     def enabled(self, build):
-        build.flags['qtkeychain'] = util.get_flags(build.env, 'qtkeychain', 0)
+        build.flags['qtkeychain'] = util.get_flags(build.env, 'qtkeychain', 1)
         if int(build.flags['qtkeychain']):
             return True
         return False
