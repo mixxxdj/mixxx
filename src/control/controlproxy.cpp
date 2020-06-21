@@ -18,7 +18,6 @@ ControlProxy::ControlProxy(const ConfigKey& key, QObject* pParent, ControlFlags 
     m_key = key;
 
     if (!flags.testFlag(ControlFlag::InitializeLater)) {
-        flags.setFlag(ControlFlag::InitializeLater, false);
         initialize(flags);
     }
 }
