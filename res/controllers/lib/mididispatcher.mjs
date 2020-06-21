@@ -1,5 +1,8 @@
 export class MidiDispatcher {
     constructor(noteOff) {
+        if (noteOff === undefined) {
+            noteOff = true;
+        }
         this.noteOff = noteOff;
         this.inputMap = new Map();
     }
