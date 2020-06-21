@@ -75,6 +75,9 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     QPen barPen(m_barColor);
     barPen.setWidthF(std::max(1.0, scaleFactor()));
 
+    // Bar Pen is currently intentionally kept inactive
+    painter->setPen(beatPen);
+
     const Qt::Orientation orientation = m_waveformRenderer->getOrientation();
     const float rendererWidth = m_waveformRenderer->getWidth();
     const float rendererHeight = m_waveformRenderer->getHeight();
