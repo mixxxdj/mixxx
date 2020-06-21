@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CONTROLOBJECT_H
-#define CONTROLOBJECT_H
+#pragma once
 
 #include <QObject>
 #include <QEvent>
@@ -43,7 +42,7 @@ class ControlObject : public QObject {
 
     // Returns a pointer to the ControlObject matching the given ConfigKey
     static ControlObject* getControl(const ConfigKey& key, ControlFlags flags = ControlFlag::None);
-    static inline ControlObject* getControl(const QString& group,
+    static ControlObject* getControl(const QString& group,
             const QString& item,
             ControlFlags flags = ControlFlag::None) {
         ConfigKey key(group, item);
@@ -185,5 +184,3 @@ class ControlObject : public QObject {
         return m_pControl ? m_pControl->ignoreNops() : true;
     }
 };
-
-#endif

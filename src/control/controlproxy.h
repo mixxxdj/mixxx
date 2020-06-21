@@ -21,14 +21,14 @@ class ControlProxy : public QObject {
   public:
     ControlProxy(const QString& g,
             const QString& i,
-            QObject* pParent = NULL,
+            QObject* pParent = nullptr,
             ControlFlags flags = ControlFlag::None);
     ControlProxy(const char* g,
             const char* i,
-            QObject* pParent = NULL,
+            QObject* pParent = nullptr,
             ControlFlags flags = ControlFlag::None);
     ControlProxy(const ConfigKey& key,
-            QObject* pParent = NULL,
+            QObject* pParent = nullptr,
             ControlFlags flags = ControlFlag::None);
     virtual ~ControlProxy();
 
@@ -115,7 +115,7 @@ class ControlProxy : public QObject {
     }
 
     inline bool valid() const {
-        return m_pControl != NULL;
+        return m_pControl != nullptr;
     }
 
     // Returns the value of the object. Thread safe, non-blocking.
@@ -166,7 +166,7 @@ class ControlProxy : public QObject {
             // NOTE(rryan): This is important. The originator of this action does
             // not know the resulting value so it makes sense that we should emit a
             // general valueChanged() signal even though the change originated from
-            // us. For this reason, we provide NULL here so that the change is
+            // us. For this reason, we provide nullptr here so that the change is
             // not filtered in valueChanged()
             m_pControl->reset();
         }
