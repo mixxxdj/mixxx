@@ -6,6 +6,7 @@
 #include "control/controlobject.h"
 #include "engine/controls/enginecontrol.h"
 #include "engine/sync/syncable.h"
+#include "util/parented_ptr.h"
 #include "util/tapfilter.h"
 
 class ControlObject;
@@ -112,21 +113,21 @@ class BpmControl : public EngineControl {
     friend class SyncControl;
 
     // ControlObjects that come from EngineBuffer
-    std::unique_ptr<ControlProxy> m_pPlayButton;
+    parented_ptr<ControlProxy> m_pPlayButton;
     QAtomicInt m_oldPlayButton;
-    std::unique_ptr<ControlProxy> m_pReverseButton;
-    std::unique_ptr<ControlProxy> m_pRateRatio;
+    parented_ptr<ControlProxy> m_pReverseButton;
+    parented_ptr<ControlProxy> m_pRateRatio;
     ControlObject* m_pQuantize;
 
     // ControlObjects that come from QuantizeControl
-    std::unique_ptr<ControlProxy> m_pNextBeat;
-    std::unique_ptr<ControlProxy> m_pPrevBeat;
-    std::unique_ptr<ControlProxy> m_pClosestBeat;
+    parented_ptr<ControlProxy> m_pNextBeat;
+    parented_ptr<ControlProxy> m_pPrevBeat;
+    parented_ptr<ControlProxy> m_pClosestBeat;
 
     // ControlObjects that come from LoopingControl
-    std::unique_ptr<ControlProxy> m_pLoopEnabled;
-    std::unique_ptr<ControlProxy> m_pLoopStartPosition;
-    std::unique_ptr<ControlProxy> m_pLoopEndPosition;
+    parented_ptr<ControlProxy> m_pLoopEnabled;
+    parented_ptr<ControlProxy> m_pLoopStartPosition;
+    parented_ptr<ControlProxy> m_pLoopEndPosition;
 
     // The average bpm around the current playposition;
     ControlObject* m_pLocalBpm;
@@ -154,11 +155,11 @@ class BpmControl : public EngineControl {
     // Button to set the nearest beat as a bar beat
     ControlPushButton* m_pBeatsSetBarBeat;
 
-    std::unique_ptr<ControlProxy> m_pThisBeatDistance;
+    parented_ptr<ControlProxy> m_pThisBeatDistance;
     ControlValueAtomic<double> m_dSyncTargetBeatDistance;
     ControlValueAtomic<double> m_dUserOffset;
     QAtomicInt m_resetSyncAdjustment;
-    std::unique_ptr<ControlProxy> m_pSyncMode;
+    parented_ptr<ControlProxy> m_pSyncMode;
 
     TapFilter m_tapFilter; // threadsafe
 

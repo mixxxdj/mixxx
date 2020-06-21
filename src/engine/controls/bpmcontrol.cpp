@@ -48,20 +48,20 @@ BpmControl::BpmControl(QString group,
     m_dSyncTargetBeatDistance.setValue(0.0);
     m_dUserOffset.setValue(0.0);
 
-    m_pPlayButton = std::make_unique<ControlProxy>(group, "play", this);
-    m_pReverseButton = std::make_unique<ControlProxy>(group, "reverse", this);
-    m_pRateRatio = std::make_unique<ControlProxy>(group, "rate_ratio", this);
+    m_pPlayButton = make_parented<ControlProxy>(group, "play", this);
+    m_pReverseButton = make_parented<ControlProxy>(group, "reverse", this);
+    m_pRateRatio = make_parented<ControlProxy>(group, "rate_ratio", this);
     m_pRateRatio->connectValueChanged(this, &BpmControl::slotUpdateEngineBpm,
                                       Qt::DirectConnection);
 
     m_pQuantize = ControlObject::getControl(group, "quantize");
 
-    m_pPrevBeat.reset(new ControlProxy(group, "beat_prev"));
-    m_pNextBeat.reset(new ControlProxy(group, "beat_next"));
+    m_pPrevBeat = make_parented<ControlProxy>(group, "beat_prev", this);
+    m_pNextBeat = make_parented<ControlProxy>(group, "beat_next", this);
 
-    m_pLoopEnabled = std::make_unique<ControlProxy>(group, "loop_enabled", this);
-    m_pLoopStartPosition = std::make_unique<ControlProxy>(group, "loop_start_position", this);
-    m_pLoopEndPosition = std::make_unique<ControlProxy>(group, "loop_end_position", this);
+    m_pLoopEnabled = make_parented<ControlProxy>(group, "loop_enabled", this);
+    m_pLoopStartPosition = make_parented<ControlProxy>(group, "loop_start_position", this);
+    m_pLoopEndPosition = make_parented<ControlProxy>(group, "loop_end_position", this);
 
     m_pLocalBpm = new ControlObject(ConfigKey(group, "local_bpm"));
     m_pAdjustBeatsFaster = new ControlPushButton(ConfigKey(group, "beats_adjust_faster"), false);
@@ -138,8 +138,8 @@ BpmControl::BpmControl(QString group,
             Qt::DirectConnection);
 
     // Measures distance from last beat in percentage: 0.5 = half-beat away.
-    m_pThisBeatDistance = std::make_unique<ControlProxy>(group, "beat_distance", this);
-    m_pSyncMode = std::make_unique<ControlProxy>(group, "sync_mode", this);
+    m_pThisBeatDistance = make_parented<ControlProxy>(group, "beat_distance", this);
+    m_pSyncMode = make_parented<ControlProxy>(group, "sync_mode", this);
 }
 
 BpmControl::~BpmControl() {
