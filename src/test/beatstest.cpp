@@ -238,7 +238,7 @@ TEST_F(BeatsTest, NthBeatWhenNotOnBeat) {
                         .getValue(),
                 m_pBeats1->findNthBeat(position, i).getValue());
         EXPECT_DOUBLE_EQ(
-                (nextBeat + getBeatLengthFrames(m_bpm) * (-i + 1))
+                (previousBeat - getBeatLengthFrames(m_bpm) * (i - 1))
                         .getValue(),
                 m_pBeats1->findNthBeat(position, -i).getValue());
     }
