@@ -105,6 +105,7 @@ for:
     - export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
     - mkdir cmake_build
     - cd cmake_build
+    # TODO: Set -DDEBUG_ASSERTIONS_FATAL=OFF before deploying CI builds!!!
     - cmake
       -L
       -DWARNINGS_FATAL=ON
@@ -209,6 +210,7 @@ for:
   build_script:
     - mkdir cmake_build
     - cd cmake_build
+    # TODO: Set -DDEBUG_ASSERTIONS_FATAL=OFF before deploying CI builds!!!
     - cmake
       -L
       -DCPACK_PACKAGE_FILE_NAME=%MIXXX_PACKAGE_NAME%
