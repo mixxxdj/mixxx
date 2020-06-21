@@ -3,7 +3,7 @@ export class MidiDispatcher {
         this.noteOff = noteOff;
         this.inputMap = new Map();
     }
-    registerInputCallback(midiBytes, callback) {
+    setInputCallback(midiBytes, callback) {
         // JavaScript is broken and believes [1,2] === [1,2] is false, so
         // JSONify the Array to make it usable as a Map key.
         const key = JSON.stringify(midiBytes);
