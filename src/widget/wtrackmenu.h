@@ -131,7 +131,9 @@ class WTrackMenu : public QMenu {
     // TODO: This function desperately needs to be replaced
     // by an iterator pattern that loads (and drops) tracks
     // lazily one-by-one during the traversal!!
-    TrackPointerList getTrackPointers(int maxSize = -1) const;
+    TrackPointerList getTrackPointers() const;
+
+    TrackPointer getFirstTrackPointer() const;
 
     bool isEmpty() const {
         return getTrackCount() == 0;
