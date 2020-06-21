@@ -152,8 +152,8 @@ class BpmControl : public EngineControl {
     std::unique_ptr<ControlPushButton> m_pTranslateBeats;
     // Button that translates beats to match another playing deck
     std::unique_ptr<ControlPushButton> m_pBeatsTranslateMatchAlignment;
-    // Button to set the nearest beat as a bar beat
-    std::unique_ptr<ControlPushButton> m_pBeatsSetBarBeat;
+    // Button to set the nearest beat as a downbeat
+    std::unique_ptr<ControlPushButton> m_pBeatsSetDownbeat;
 
     parented_ptr<ControlProxy> m_pThisBeatDistance;
     ControlValueAtomic<double> m_dSyncTargetBeatDistance;

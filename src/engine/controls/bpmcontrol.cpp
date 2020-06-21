@@ -92,9 +92,9 @@ BpmControl::BpmControl(QString group,
             this,
             &BpmControl::slotTranslateBeatsLater,
             Qt::DirectConnection);
-    m_pBeatsSetBarBeat = std::make_unique<ControlPushButton>(
-            ConfigKey(group, "beats_set_bar_beat"));
-    connect(m_pBeatsSetBarBeat.get(),
+    m_pBeatsSetDownbeat = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_set_downbeat"));
+    connect(m_pBeatsSetDownbeat.get(),
             &ControlObject::valueChanged,
             this,
             &BpmControl::slotSetDownbeatOnClosestBeat,

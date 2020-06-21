@@ -160,7 +160,7 @@ class Beats final : public QObject {
     /// Return the track signature at the given frame position
     TimeSignature getSignature(FramePos frame = FramePos()) const;
 
-    /// Sets the nearest beat as a bar beat
+    /// Sets the nearest beat as a downbeat
     void setDownBeat(FramePos frame = FramePos());
 
     /// Add a beat at location frame.

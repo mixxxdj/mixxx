@@ -167,10 +167,10 @@ Variables:
                 <SizePolicy>f,f</SizePolicy>
                 <Children>
                   <Template src="skin:button_1state.xml">
-                    <SetVariable name="TooltipId">beats_set_bar_beat</SetVariable>
+                    <SetVariable name="TooltipId">beats_set_downbeat</SetVariable>
                     <SetVariable name="ObjectName">BeatgridSetBarBeat</SetVariable>
                     <SetVariable name="Size">28f,24f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="group"/>,beats_set_bar_beat</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,beats_set_downbeat</SetVariable>
                   </Template>
 
                   <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
