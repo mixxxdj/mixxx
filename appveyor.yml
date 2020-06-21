@@ -108,6 +108,7 @@ for:
     # TODO: Set -DDEBUG_ASSERTIONS_FATAL=OFF before deploying CI builds as releases!!!
     - cmake
       -L
+      -DCMAKE_BUILD_TYPE=Release
       -DWARNINGS_FATAL=ON
       -DDEBUG_ASSERTIONS_FATAL=ON
       -DBATTERY=ON
