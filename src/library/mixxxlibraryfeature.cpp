@@ -64,6 +64,8 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             << "library." + LIBRARYTABLE_COVERART_SOURCE
             << "library." + LIBRARYTABLE_COVERART_TYPE
             << "library." + LIBRARYTABLE_COVERART_LOCATION
+            << "library." + LIBRARYTABLE_COVERART_COLOR
+            << "library." + LIBRARYTABLE_COVERART_DIGEST
             << "library." + LIBRARYTABLE_COVERART_HASH;
 
     QSqlQuery query(m_pTrackCollection->database());
