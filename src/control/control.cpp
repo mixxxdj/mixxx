@@ -145,9 +145,7 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         } else if (!flags.testFlag(ControlFlag::NoWarnIfMissing)) {
             qWarning() << "ControlDoublePrivate::getControl returning NULL for ("
                        << key.group << "," << key.item << ")";
-            if (!flags.testFlag(ControlFlag::NoAssertIfMissing)) {
-                DEBUG_ASSERT(!"ControlObject not found");
-            }
+            DEBUG_ASSERT(flags.testFlag(ControlFlag::NoAssertIfMissing));
         }
     }
     return pControl;
