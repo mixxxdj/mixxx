@@ -10,10 +10,9 @@ class BeatIterator final {
   public:
     BeatIterator(BeatList::const_iterator start, BeatList::const_iterator end)
             : m_currentBeat(start),
-              m_endBeat(end),
-              m_ended(false) {
+              m_endBeat(end) {
         // Advance to the first enabled beat.
-        while (m_currentBeat <= m_endBeat && !m_currentBeat->enabled()) {
+        while (m_currentBeat != m_endBeat && !m_currentBeat->enabled()) {
             ++m_currentBeat;
         }
     }
@@ -23,23 +22,21 @@ class BeatIterator final {
     using iterator_category = std::forward_iterator_tag;
 
     bool hasNext() const {
-        return !m_ended;
+        return m_currentBeat != m_endBeat;
     }
 
-    /// Advances de iterator and returns the current beat frame position.
+    /// Advances the iterator and returns the current beat frame position.
     /// If you need the frame position make sure you store it, is not possible
     /// to get it again.
     double next() {
-        double beat = m_currentBeat->frame_position();
-        if (beat != m_endBeat->frame_position()) {
+        double beatPosition = m_currentBeat->frame_position();
+        if (m_currentBeat != m_endBeat) {
             ++m_currentBeat;
-            while (beat != m_endBeat->frame_position() && !m_currentBeat->enabled()) {
+            while (m_currentBeat != m_endBeat && !m_currentBeat->enabled()) {
                 ++m_currentBeat;
             }
-        } else {
-            m_ended = true;
         }
-        return beat;
+        return beatPosition;
     }
 
     // TODO(hacksdump): These will be removed from this iterator and
@@ -70,7 +67,6 @@ class BeatIterator final {
   private:
     BeatList::const_iterator m_currentBeat;
     BeatList::const_iterator m_endBeat;
-    bool m_ended;
 };
 
 } // Namespace mixxx
