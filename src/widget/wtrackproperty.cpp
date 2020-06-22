@@ -41,15 +41,16 @@ void WTrackProperty::setup(const QDomNode& node, const SkinContext& context) {
     m_property = context.selectString(node, "Property");
 }
 
-void WTrackProperty::slotTrackLoaded(TrackPointer track) {
-    if (track) {
-        m_pCurrentTrack = track;
-        connect(track.get(),
-                &Track::changed,
-                this,
-                &WTrackProperty::slotTrackChanged);
-        updateLabel();
+void WTrackProperty::slotTrackLoaded(TrackPointer pTrack) {
+    if (!pTrack) {
+        return;
     }
+    m_pCurrentTrack = pTrack;
+    connect(pTrack.get(),
+            &Track::changed,
+            this,
+            &WTrackProperty::slotTrackChanged);
+    updateLabel();
 }
 
 void WTrackProperty::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {

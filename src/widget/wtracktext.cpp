@@ -35,15 +35,16 @@ WTrackText::~WTrackText() {
     // Required to allow forward declaration of WTrackMenu in header
 }
 
-void WTrackText::slotTrackLoaded(TrackPointer track) {
-    if (track) {
-        m_pCurrentTrack = track;
-        connect(track.get(),
-                &Track::changed,
-                this,
-                &WTrackText::slotTrackChanged);
-        updateLabel();
+void WTrackText::slotTrackLoaded(TrackPointer pTrack) {
+    if (!pTrack) {
+        return;
     }
+    m_pCurrentTrack = pTrack;
+    connect(pTrack.get(),
+            &Track::changed,
+            this,
+            &WTrackText::slotTrackChanged);
+    updateLabel();
 }
 
 void WTrackText::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {

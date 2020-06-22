@@ -31,7 +31,7 @@ signals:
     void cloneDeck(QString source_group, QString target_group) override;
 
   public slots:
-    void slotTrackLoaded(TrackPointer track);
+    void slotTrackLoaded(TrackPointer pTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
   protected:

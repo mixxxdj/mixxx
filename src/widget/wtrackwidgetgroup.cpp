@@ -54,15 +54,16 @@ void WTrackWidgetGroup::setup(const QDomNode& node, const SkinContext& context) 
     }
 }
 
-void WTrackWidgetGroup::slotTrackLoaded(TrackPointer track) {
-    if (track) {
-        m_pCurrentTrack = track;
-        connect(track.get(),
-                &Track::changed,
-                this,
-                &WTrackWidgetGroup::slotTrackChanged);
-        updateColor();
+void WTrackWidgetGroup::slotTrackLoaded(TrackPointer pTrack) {
+    if (!pTrack) {
+        return;
     }
+    m_pCurrentTrack = pTrack;
+    connect(pTrack.get(),
+            &Track::changed,
+            this,
+            &WTrackWidgetGroup::slotTrackChanged);
+    updateColor();
 }
 
 void WTrackWidgetGroup::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
