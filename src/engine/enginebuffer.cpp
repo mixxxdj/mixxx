@@ -348,8 +348,7 @@ void EngineBuffer::enableIndependentPitchTempoScaling(bool bEnable,
     }
 }
 
-double EngineBuffer::getBpm()
-{
+double EngineBuffer::getBpm() {
     return m_pBpmControl->getBpm();
 }
 
@@ -1193,22 +1192,19 @@ void EngineBuffer::processSeek(bool paused) {
     }
 
     if (!paused && (seekType & SEEK_PHASE)) {
-        if (kLogger.traceEnabled()) {
+        if (kLogger.traceEnabled())
             kLogger.trace() << "EngineBuffer::processSeek Seeking phase";
-        }
         double requestedPosition = position;
         double syncPosition = m_pBpmControl->getBeatMatchPosition(position, true, true);
         position = m_pLoopingControl->getSyncPositionInsideLoop(requestedPosition, syncPosition);
-        if (kLogger.traceEnabled()) {
+        if (kLogger.traceEnabled())
             kLogger.trace()
                     << "EngineBuffer::processSeek seek info: " << m_filepos_play
                     << " -> " << position;
-        }
     }
     if (position != m_filepos_play) {
-        if (kLogger.traceEnabled()) {
+        if (kLogger.traceEnabled())
             kLogger.trace() << "EngineBuffer::processSeek Seek to" << position;
-        }
         setNewPlaypos(position);
     }
     m_iSeekQueued.storeRelease(SEEK_NONE);
