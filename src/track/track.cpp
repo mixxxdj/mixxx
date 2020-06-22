@@ -281,17 +281,10 @@ double Track::setBpm(double bpmValue) {
     if (!m_pBeats) {
         // No beat grid available -> create and initialize
         double cue = getCuePoint().getPosition();
-        /* TODO(JVC)
-        mixxx::BeatsPointer pBeats(BeatFactory::makeBeatGrid(*this, bpmValue, cue));
-        setBeatsAndUnlock(&lock, pBeats);
-        mixxx::BeatsPointer pBeats(new mixxx::Beats(this));
-        */
         m_pBeats = std::make_shared<mixxx::Beats>(this);
-        //m_pBeats = std::make_shared<mixxx::Beats>(mixxx::Beats(this));
         // setGrid accepts frames, but cue is in samples.
         m_pBeats->setGrid(mixxx::Bpm(bpmValue), mixxx::FramePos(cue / 2.0));
         setBeatsAndUnlock(&lock, m_pBeats);
-        qDebug() << "JVC Track->setBpm no beats!!";
         return bpmValue;
     }
 
