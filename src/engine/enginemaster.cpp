@@ -270,6 +270,16 @@ const CSAMPLE* EngineMaster::getSidechainBuffer() const {
     return m_pSidechainMix;
 }
 
+void EngineMaster::slotStartMacroRecording(Macro* pMacro) {
+    qDebug() << "ENGINEMASTER MACRO START!";
+    m_pMacroRecording = pMacro;
+}
+
+void EngineMaster::slotStopMacroRecording() {
+    qDebug() << "ENGINEMASTER MACRO STOP!";
+    m_pMacroRecording = nullptr;
+}
+
 void EngineMaster::processChannels(int iBufferSize) {
     // Update internal master sync rate.
     m_pMasterSync->onCallbackStart(m_iSampleRate, m_iBufferSize);
