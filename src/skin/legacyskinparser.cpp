@@ -916,6 +916,7 @@ QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
     QString group = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
     if (!pPlayer) {
+        SKIN_WARNING(node, *m_pContext) << "No player found for group:" << group;
         return nullptr;
     }
 
@@ -959,6 +960,7 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
     QString group = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
     if (!pPlayer) {
+        SKIN_WARNING(node, *m_pContext) << "No player found for group:" << group;
         return nullptr;
     }
 
@@ -996,6 +998,7 @@ QWidget* LegacySkinParser::parseText(const QDomElement& node) {
     QString group = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
     if (!pPlayer) {
+        SKIN_WARNING(node, *m_pContext) << "No player found for group:" << group;
         return nullptr;
     }
 
@@ -1026,6 +1029,7 @@ QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
     QString group = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
     if (!pPlayer) {
+        SKIN_WARNING(node, *m_pContext) << "No player found for group:" << group;
         return nullptr;
     }
 
@@ -1056,8 +1060,8 @@ QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
 QWidget* LegacySkinParser::parseTrackWidgetGroup(const QDomElement& node) {
     QString group = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
-
     if (!pPlayer) {
+        SKIN_WARNING(node, *m_pContext) << "No player found for group:" << group;
         return nullptr;
     }
 
@@ -1099,6 +1103,7 @@ QWidget* LegacySkinParser::parseStarRating(const QDomElement& node) {
     QString group = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
     if (!pPlayer) {
+        SKIN_WARNING(node, *m_pContext) << "No player found for group:" << group;
         return nullptr;
     }
 
@@ -1217,6 +1222,10 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
 
     QString group = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
+    if (!pPlayer) {
+        SKIN_WARNING(node, *m_pContext) << "No player found for group:" << group;
+        return nullptr;
+    }
     WSpinny* spinny = new WSpinny(m_pParent, group, m_pConfig, m_pVCManager, pPlayer);
     commonWidgetSetup(node, spinny);
 
@@ -1258,7 +1267,10 @@ QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
 QWidget* LegacySkinParser::parseCoverArt(const QDomElement& node) {
     QString group = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
-
+    if (!pPlayer) {
+        SKIN_WARNING(node, *m_pContext) << "No player found for group:" << group;
+        return nullptr;
+    }
     WCoverArt* pCoverArt = new WCoverArt(m_pParent, m_pConfig, group, pPlayer);
     commonWidgetSetup(node, pCoverArt);
     pCoverArt->setup(node, *m_pContext);
