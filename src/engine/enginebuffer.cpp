@@ -592,9 +592,14 @@ void EngineBuffer::slotControlSeek(double fractionalPos) {
 // WARNING: This method runs from SyncWorker and Engine Worker
 void EngineBuffer::slotControlSeekAbs(double playPosition) {
     auto pMacro = m_pEngineMaster->m_pMacroRecording;
-    if (pMacro != nullptr && pMacro->deck == NO_DECK)
-        pMacro->deck = this->getGroup();
-    m_bHotcueJumpPending = true;
+    if (pMacro != nullptr) {
+        if (pMacro->deck == NO_DECK) {
+            pMacro->deck = this->getGroup();
+        }
+        if (pMacro->deck == this->getGroup()) {
+            m_bHotcueJumpPending = true;
+        }
+    }
     doSeekPlayPos(playPosition, SEEK_STANDARD);
 }
 
@@ -1211,13 +1216,11 @@ void EngineBuffer::processSeek(bool paused) {
     if (position != m_filepos_play) {
         if (kLogger.traceEnabled())
             kLogger.trace() << "EngineBuffer::processSeek Seek to" << position;
-        if (m_bHotcueJumpPending &&
-                m_pEngineMaster->m_pMacroRecording != nullptr &&
-                m_pEngineMaster->m_pMacroRecording->deck == this->getGroup()) {
+        if (m_bHotcueJumpPending) {
+            m_bHotcueJumpPending = false;
             qDebug() << "Storing jump to Macro";
             m_pEngineMaster->m_pMacroRecording->appendHotcueJump(m_filepos_play, position);
         }
-        m_bHotcueJumpPending = false;
         setNewPlaypos(position);
     }
     m_iSeekQueued.storeRelease(SEEK_NONE);
