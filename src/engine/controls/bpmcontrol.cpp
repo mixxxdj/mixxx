@@ -548,21 +548,21 @@ bool BpmControl::getBeatContext(const mixxx::BeatsPointer& pBeats,
 
     mixxx::FramePos prevBeat;
     mixxx::FramePos nextBeat;
-    if (!pBeats->findPrevNextBeats(mixxx::FramePos(dPosition / 2.0), &prevBeat, &nextBeat)) {
+    if (!pBeats->findPrevNextBeats(mixxx::FramePos(dPosition), &prevBeat, &nextBeat)) {
         return false;
     }
 
     if (dpPrevBeat != NULL) {
-        *dpPrevBeat = prevBeat.getValue() * 2;
+        *dpPrevBeat = prevBeat.getValue();
     }
 
     if (dpNextBeat != NULL) {
-        *dpNextBeat = nextBeat.getValue() * 2;
+        *dpNextBeat = nextBeat.getValue();
     }
 
     return getBeatContextNoLookup(dPosition,
-            prevBeat.getValue() * 2,
-            prevBeat.getValue() * 2,
+            prevBeat.getValue(),
+            nextBeat.getValue(),
             dpBeatLength,
             dpBeatPercentage);
 }
