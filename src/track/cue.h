@@ -18,7 +18,9 @@ class Cue : public QObject {
     Q_OBJECT
 
   public:
+    /// A position value for the cue that signals its position is not set
     static constexpr double kNoPosition = -1.0;
+    /// A value for #m_iHotCue signaling it is not a hotcue
     static constexpr int kNoHotCue = -1;
 
     Cue();
