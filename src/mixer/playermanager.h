@@ -1,8 +1,4 @@
-// playermanager.h
-// Created 6/1/2010 by RJ Ryan (rryan@mit.edu)
-
-#ifndef MIXER_PLAYERMANAGER_H
-#define MIXER_PLAYERMANAGER_H
+#pragma once
 
 #include <QObject>
 #include <QList>
@@ -281,5 +277,3 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     QList<Auxiliary*> m_auxiliaries;
     QMap<QString, BaseTrackPlayer*> m_players;
 };
-
-#endif // MIXER_PLAYERMANAGER_H

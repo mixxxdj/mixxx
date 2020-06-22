@@ -1,29 +1,10 @@
-/***************************************************************************
-                          enginesync.h  -  master sync control for
-                          maintaining beatmatching amongst n decks
-                             -------------------
-    begin                : Mon Mar 12 2012
-    copyright            : (C) 2012 by Owen Williams
-    email                : owilliams@mixxx.org
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
-#ifndef ENGINESYNC_H
-#define ENGINESYNC_H
+#pragma once
 
 #include "preferences/usersettings.h"
 #include "engine/sync/syncable.h"
 #include "engine/sync/basesyncablelistener.h"
 
-/// EngineSync is the heart of the Mixxx Master Sync engine.  It knows which objects
+/// EngineSync is the heart of the Mixxx Master Sync engine. It knows which objects
 /// (Decks, Internal Clock, etc) are participating in Sync and what their statuses
 /// are. It also orchestrates sync handoffs between different decks as they play,
 /// stop, or request their status to change.
@@ -84,5 +65,3 @@ class EngineSync : public BaseSyncableListener {
     // Unsets all sync state on a Syncable.
     void deactivateSync(Syncable* pSyncable);
 };
-
-#endif

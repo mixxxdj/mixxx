@@ -1,9 +1,5 @@
-// Created 03/26/2011 by Tobias Rafreider
-
 #include <QMutex>
 #include <QDir>
-#include <QtDebug>
-#include <QDebug>
 #include <QMessageBox>
 #include <QStorageInfo>
 

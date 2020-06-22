@@ -1,52 +1,32 @@
-/***************************************************************************
-                          enginemaster.h  -  description
-                             -------------------
-    begin                : Sun Apr 28 2002
-    copyright            : (C) 2002 by
-    email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef ENGINEMASTER_H
-#define ENGINEMASTER_H
+#pragma once
 
 #include <QObject>
 #include <QVarLengthArray>
 
-#include "preferences/usersettings.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
-#include "engine/engineobject.h"
-#include "engine/channels/enginechannel.h"
 #include "engine/channelhandle.h"
+#include "engine/channels/enginechannel.h"
+#include "engine/engineobject.h"
+#include "preferences/usersettings.h"
+#include "recording/recordingmanager.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
-#include "recording/recordingmanager.h"
 
-class EngineWorkerScheduler;
+class ControlPotmeter;
+class ControlPushButton;
+class EffectsManager;
 class EngineBuffer;
 class EngineChannel;
 class EngineDeck;
-class EngineFlanger;
-class EngineVuMeter;
-class ControlPotmeter;
-class ControlPushButton;
-class EngineSideChain;
-class EffectsManager;
+class EngineDelay;
 class EngineEffectsManager;
-class SyncWorker;
-class GuiTick;
 class EngineSync;
 class EngineTalkoverDucking;
-class EngineDelay;
+class EngineVuMeter;
+class EngineSideChain;
+class EngineWorkerScheduler;
+class GuiTick;
 
 // The number of channels to pre-allocate in various structures in the
 // engine. Prevents memory allocation in EngineMaster::addChannel.
@@ -359,5 +339,3 @@ class EngineMaster : public QObject, public AudioSource {
     volatile bool m_bBusOutputConnected[3];
     bool m_bExternalRecordBroadcastInputConnected;
 };
-
-#endif
