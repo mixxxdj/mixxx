@@ -27,6 +27,7 @@
 #include "engine/sync/enginesync.h"
 #include "engine/sync/synccontrol.h"
 #include "preferences/usersettings.h"
+#include "recording/macromanager.h"
 #include "track/beatfactory.h"
 #include "track/keyutils.h"
 #include "track/track.h"
@@ -357,6 +358,7 @@ double EngineBuffer::getLocalBpm() {
 }
 
 void EngineBuffer::setEngineMaster(EngineMaster* pEngineMaster) {
+    m_pEngineMaster = pEngineMaster;
     for (const auto& pControl: qAsConst(m_engineControls)) {
         pControl->setEngineMaster(pEngineMaster);
     }
@@ -589,6 +591,10 @@ void EngineBuffer::slotControlSeek(double fractionalPos) {
 
 // WARNING: This method runs from SyncWorker and Engine Worker
 void EngineBuffer::slotControlSeekAbs(double playPosition) {
+    auto pMacro = m_pEngineMaster->m_pMacroRecording;
+    if (pMacro != nullptr && pMacro->deck == NO_DECK)
+        pMacro->deck = this->getGroup();
+    m_bHotcueJumpPending = true;
     doSeekPlayPos(playPosition, SEEK_STANDARD);
 }
 
@@ -1205,6 +1211,13 @@ void EngineBuffer::processSeek(bool paused) {
     if (position != m_filepos_play) {
         if (kLogger.traceEnabled())
             kLogger.trace() << "EngineBuffer::processSeek Seek to" << position;
+        if (m_bHotcueJumpPending &&
+                m_pEngineMaster->m_pMacroRecording != nullptr &&
+                m_pEngineMaster->m_pMacroRecording->deck == this->getGroup()) {
+            qDebug() << "Storing jump to Macro";
+            m_pEngineMaster->m_pMacroRecording->appendHotcueJump(m_filepos_play, position);
+        }
+        m_bHotcueJumpPending = false;
         setNewPlaypos(position);
     }
     m_iSeekQueued.storeRelease(SEEK_NONE);
