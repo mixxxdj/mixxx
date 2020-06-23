@@ -122,10 +122,10 @@ std::tuple <QVector<double>, QMap<int, double>> AnalyzerRhythm::FixBeatsPosition
         double bpmDiff = 0;
         if (partLenght >= m_beatsPerBar * 2) {
             int middle = partLenght / 2;            
-            QVector<double> beatsAtLeft(
-                    m_resultBeats.begin() + beatStart, m_resultBeats.begin() + beatStart + middle);
-            QVector<double> beatsAtRight(
-                    m_resultBeats.begin() + beatStart + middle, m_resultBeats.begin() + beatEnd);
+            auto beatsAtLeft = QVector<double>::fromStdVector(std::vector<double>(
+                    m_resultBeats.begin() + beatStart, m_resultBeats.begin() + beatStart + middle));
+            auto beatsAtRight = QVector<double>::fromStdVector(std::vector<double>(
+                    m_resultBeats.begin() + beatStart + middle, m_resultBeats.begin() + beatEnd));
             double beginBpm = medianTempo(beatsAtLeft);
             double endBpm = medianTempo(beatsAtRight);
             bpmDiff = fabs(beginBpm - endBpm);
@@ -133,21 +133,20 @@ std::tuple <QVector<double>, QMap<int, double>> AnalyzerRhythm::FixBeatsPosition
         // here we handle ramping or unsteady values by making a beatgrid for each bar
         if (bpmDiff >= kMaxBpmError) {
             while (beatStart <= beatEnd - m_beatsPerBar) {
-                QVector<double> splittedAtMeasure(
+                auto splittedAtMeasure = QVector<double>::fromStdVector(std::vector<double>(
                         m_resultBeats.begin() + beatStart, 
-                        m_resultBeats.begin() + beatStart + m_beatsPerBar);
+                        m_resultBeats.begin() + beatStart + m_beatsPerBar));
                 double measureBpm = medianTempo(splittedAtMeasure);
                 beatsWithNewTempo[beatStart] = measureBpm;
                 fixedBeats << calculateFixedTempoGrid(
                         splittedAtMeasure, measureBpm, false);
                 beatStart += m_beatsPerBar;
             }
-            int beatsLeftOut = beatEnd - beatStart;
-            qDebug() << beatsLeftOut << beatStart;
         } else {
             // here we have only one bpm for whole segment
-            QVector<double> splittedAtTempoChange(
-            m_resultBeats.begin() + beatStart, m_resultBeats.begin() + beatEnd);
+            auto splittedAtTempoChange = QVector<double>::fromStdVector(std::vector<double>(
+            m_resultBeats.begin() + beatStart, m_resultBeats.begin() + beatEnd));
+
             double bpm = calculateBpm(splittedAtTempoChange);
             fixedBeats << calculateFixedTempoGrid(splittedAtTempoChange, bpm, true);
             beatsWithNewTempo[beatStart] = bpm;
