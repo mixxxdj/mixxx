@@ -397,24 +397,18 @@ void PlaylistDAO::removeHiddenTracks(const int playlistId) {
     ScopedTransaction transaction(m_database);
     // This query deletes all tracks marked as deleted and all
     // phantom track_ids with no match in the library table
-    QString queryString =
-            QStringLiteral(
-                    "SELECT position FROM PlaylistTracks "
-                    "WHERE PlaylistTracks.id NOT IN ("
-                    "SELECT PlaylistTracks.id FROM PlaylistTracks "
-                    "INNER JOIN library ON library.id = PlaylistTracks.track_id "
-                    "WHERE PlaylistTracks.playlist_id = %1 "
-                    "AND library.mixxx_deleted = 0 ) "
-                    "AND PlaylistTracks.playlist_id = %1")
-                    .arg(playlistId);
-
     QSqlQuery query(m_database);
-    if (!query.prepare(queryString)) {
-        LOG_FAILED_QUERY(query);
-        return;
-    }
-
+    query.prepare(QStringLiteral(
+            "SELECT p1.position FROM PlaylistTracks AS p1"
+            "WHERE p1.id NOT IN ("
+            "SELECT p2.id FROM PlaylistTracks AS p2"
+            "INNER JOIN library ON library.id = p2.track_id "
+            "WHERE p2.playlist_id = p1.playlist_id "
+            "AND library.mixxx_deleted = 0 ) "
+            "AND p1.playlist_id=:id"));
+    query.bindValue(":id", playlistId);
     query.setForwardOnly(true);
+
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return;
@@ -502,7 +496,7 @@ void PlaylistDAO::removeTracksFromPlaylistInner(int playlistId, int position) {
     // Delete the track from the playlist.
     query.prepare(QStringLiteral(
             "DELETE FROM PlaylistTracks "
-            "WHERE playlist_id=:id AND position= :position"));
+            "WHERE playlist_id=:id AND position=:position"));
     query.bindValue(":id", playlistId);
     query.bindValue(":position", position);
 
@@ -511,12 +505,13 @@ void PlaylistDAO::removeTracksFromPlaylistInner(int playlistId, int position) {
         return;
     }
 
-    QString queryString =
-            QStringLiteral(
-                    "UPDATE PlaylistTracks SET position=position-1 "
-                    "WHERE position>=%1 AND playlist_id=%2")
-                    .arg(position, playlistId);
-    if (!query.exec(queryString)) {
+    query.prepare(QStringLiteral(
+            "UPDATE PlaylistTracks SET position=position-1 "
+            "WHERE position>=:position AND playlist_id=:id"));
+    query.bindValue(":id", playlistId);
+    query.bindValue(":position", position);
+
+    if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
 
@@ -537,14 +532,14 @@ bool PlaylistDAO::insertTrackIntoPlaylist(TrackId trackId, const int playlistId,
     }
 
     // Move all the tracks in the playlist up by one
-    QString queryString =
-            QStringLiteral(
-                    "UPDATE PlaylistTracks SET position=position+1 "
-                    "WHERE position>=%1 AND playlist_id=%2")
-                    .arg(position, playlistId);
-
     QSqlQuery query(m_database);
-    if (!query.exec(queryString)) {
+    query.prepare(QStringLiteral(
+            "UPDATE PlaylistTracks SET position=position+1 "
+            "WHERE position>=:position AND playlist_id=:id"));
+    query.bindValue(":id", playlistId);
+    query.bindValue(":position", position);
+
+    if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return false;
     }
@@ -599,9 +594,10 @@ int PlaylistDAO::insertTracksIntoPlaylist(const QList<TrackId>& trackIds,
         // TODO(XXX) We could do this in one query before the for loop.
         query.prepare(QStringLiteral(
                 "UPDATE PlaylistTracks SET position=position+1 "
-                "WHERE position>=%1 AND "
-                "playlist_id=%2")
-                              .arg(insertPositon, playlistId));
+                "WHERE position>=:position AND "
+                "playlist_id=:id"));
+        query.bindValue(":id", playlistId);
+        query.bindValue(":position", insertPositon);
 
         if (!query.exec()) {
             LOG_FAILED_QUERY(query);
@@ -819,36 +815,47 @@ void PlaylistDAO::moveTrack(const int playlistId, const int oldPosition, const i
     //   2) Decrement position where pos > source AND pos <= dest
     //   3) Set position=dest where pos=-1 -- Move that track from dummy pos to final destination
 
-    QString queryString;
-
     // Move moved track to dummy position -1
-    queryString = QStringLiteral(
+    query.prepare(QStringLiteral(
             "UPDATE PlaylistTracks SET position=-1 "
-            "WHERE position=%1 AND "
-            "playlist_id=%2")
-                          .arg(oldPosition, playlistId);
-    query.exec(queryString);
+            "WHERE position=:position AND "
+            "playlist_id=:id"));
+    query.bindValue(":position", oldPosition);
+    query.bindValue(":id", playlistId);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
 
     if (newPosition < oldPosition) {
-        queryString = QStringLiteral(
+        query.prepare(QStringLiteral(
                 "UPDATE PlaylistTracks SET position=position+1 "
-                "WHERE position >= %1 AND position < %2 AND "
-                "playlist_id=%3")
-                              .arg(newPosition, oldPosition, playlistId);
+                "WHERE position >= :new_position AND position < :old_position AND "
+                "playlist_id=:id"));
+        query.bindValue(":new_position", newPosition);
+        query.bindValue(":old_position", oldPosition);
+        query.bindValue(":id", playlistId);
     } else {
-        queryString = QStringLiteral(
+        query.prepare(QStringLiteral(
                 "UPDATE PlaylistTracks SET position=position-1 "
-                "WHERE position>%1 AND position<=%2 AND "
-                "playlist_id=%3")
-                              .arg(oldPosition, newPosition, playlistId);
+                "WHERE position > :old_position AND position <= :new_position AND "
+                "playlist_id=:id"));
+        query.bindValue(":new_position", newPosition);
+        query.bindValue(":old_position", oldPosition);
+        query.bindValue(":id", playlistId);
     }
-    query.exec(queryString);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
 
-    query.exec(QStringLiteral(
-            "UPDATE PlaylistTracks SET position = %1 "
+    query.prepare(QStringLiteral(
+            "UPDATE PlaylistTracks SET position=:new_position "
             "WHERE position=-1 AND "
-            "playlist_id=%2")
-                       .arg(newPosition, playlistId));
+            "playlist_id=:id"));
+    query.bindValue(":new_position", newPosition);
+    query.bindValue(":id", playlistId);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
 
     transaction.commit();
 
@@ -883,7 +890,6 @@ void PlaylistDAO::shuffleTracks(const int playlistId,
         const QList<int>& positions,
         const QHash<int, TrackId>& allIds) {
     ScopedTransaction transaction(m_database);
-    QSqlQuery query(m_database);
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
     // Seed the randomness generator
@@ -1044,15 +1050,31 @@ void PlaylistDAO::shuffleTracks(const int playlistId,
                 newPositions.indexOf(trackBPosition));
 #endif
 
-        QString swapQuery = QStringLiteral(
-                "UPDATE PlaylistTracks SET position=%1 "
-                "WHERE position=%2 AND playlist_id=%3");
-        query.exec(swapQuery.arg(-1, trackAPosition, playlistId));
-        query.exec(swapQuery.arg(trackAPosition, trackBPosition, playlistId));
-        query.exec(swapQuery.arg(trackBPosition, -1, playlistId));
+        QSqlQuery query(m_database);
+        query.prepare(QStringLiteral(
+                "UPDATE PlaylistTracks SET position=:new_position "
+                "WHERE position=:old_position AND playlist_id=:id"));
 
-        if (query.lastError().isValid())
-            qDebug() << query.lastError();
+        query.bindValue(":new_position", -1);
+        query.bindValue(":old_position", trackAPosition);
+        query.bindValue(":id", playlistId);
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+        }
+
+        query.bindValue(":new_position", trackAPosition);
+        query.bindValue(":old_position", trackBPosition);
+        query.bindValue(":id", playlistId);
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+        }
+
+        query.bindValue(":new_position", trackBPosition);
+        query.bindValue(":old_position", -1);
+        query.bindValue(":id", playlistId);
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+        }
     }
 
     transaction.commit();
