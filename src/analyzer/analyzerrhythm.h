@@ -33,7 +33,7 @@ class AnalyzerRhythm : public Analyzer {
     bool shouldAnalyze(TrackPointer pTrack) const;
 
     // beats and bpms methods
-    
+
     // beats are in detection function increments
     std::vector<double> computeBeats();
 
@@ -75,6 +75,6 @@ class AnalyzerRhythm : public Analyzer {
     mixxx::DownmixAndOverlapHelper m_processor;
     int m_windowSize;
     int m_stepSize;
-    std::vector<double> m_detectionResults;
+    std::vector<DFresults> m_detectionResults;
     
 };
