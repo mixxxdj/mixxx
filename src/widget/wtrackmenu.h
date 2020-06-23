@@ -125,7 +125,7 @@ class WTrackMenu : public QMenu {
   private:
     // This getter verifies that m_pTrackModel is set when
     // invoked.
-    QModelIndexList getTrackIndices() const;
+    const QModelIndexList& getTrackIndices() const;
 
     TrackIdList getTrackIds() const;
     QList<TrackRef> getTrackRefs() const;

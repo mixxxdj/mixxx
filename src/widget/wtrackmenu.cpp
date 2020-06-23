@@ -791,7 +791,7 @@ TrackPointer WTrackMenu::getFirstTrackPointer() const {
     }
 }
 
-QModelIndexList WTrackMenu::getTrackIndices() const {
+const QModelIndexList& WTrackMenu::getTrackIndices() const {
     // Indices are associated with a TrackModel. Can only be obtained
     // if a TrackModel is available.
     DEBUG_ASSERT(m_pTrackModel);
