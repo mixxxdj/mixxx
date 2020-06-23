@@ -17,7 +17,6 @@ endif()
 if(POLICY CMP0025)
   cmake_policy(SET CMP0025 NEW)
 endif()
-set(CMAKE_POLICY_WARNING_CMP0025 ON)
 
 #######################################################################
 # Compilers and toolchains
