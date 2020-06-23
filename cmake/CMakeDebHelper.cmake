@@ -29,8 +29,7 @@ IF(CPACK_DEBIAN_FAKEROOT AND CPACK_DEBIAN_DEBHELPER)
 	if( NOT CPACK_DEBIAN_PACKAGE_NAME )
 		string( TOLOWER "${CPACK_PACKAGE_NAME}" CPACK_DEBIAN_PACKAGE_NAME )
 	endif()
-	file( WRITE ${CMAKE_CURRENT_BINARY_DIR}/control "Package: ${CPACK_DEBIAN_PACKAGE_NAME}\nArchitecture: any\n" )
-
+	file( WRITE ${CMAKE_CURRENT_BINARY_DIR}/control "Source: ${CPACK_DEBIAN_PACKAGE_NAME}\n\nPackage: ${CPACK_DEBIAN_PACKAGE_NAME}\nArchitecture: any\n" )
 
 	# Compose a string with a semicolon-seperated list of debhelpers
 	foreach( _DH ${DH_RUN} )
