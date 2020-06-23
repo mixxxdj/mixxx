@@ -290,11 +290,14 @@ TEST_F(CueControlTest, DontSeekOnLoadMainCue) {
     TrackPointer pTrack = createTestTrack();
     pTrack->setCuePoint(CuePosition(100.0));
 
-    // The Track should not follow if the cue point has been set manually in between.
+    // The Track should not follow if the track has been manual set manually in between.
     loadTrack(pTrack);
 
     EXPECT_DOUBLE_EQ(100.0, m_pCuePoint->get());
     EXPECT_DOUBLE_EQ(100.0, getCurrentSample());
+
+    // Manually seek  the track
+    setCurrentSample(200.0);
 
     // Move cue like silence analysis does and check if track is following it
     pTrack->setCuePoint(CuePosition(400.0));
@@ -302,7 +305,7 @@ TEST_F(CueControlTest, DontSeekOnLoadMainCue) {
     ProcessBuffer();
 
     EXPECT_DOUBLE_EQ(400.0, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(100.0, getCurrentSample());
+    EXPECT_DOUBLE_EQ(200.0, getCurrentSample());
 }
 
 TEST_F(CueControlTest, SeekOnLoadDefault_CueInPreroll) {
@@ -310,9 +313,10 @@ TEST_F(CueControlTest, SeekOnLoadDefault_CueInPreroll) {
             ConfigValue(static_cast<int>(SeekOnLoadMode::MainCue)));
     TrackPointer pTrack = createTestTrack();
     loadTrack(pTrack);
+    pTrack->setCuePoint(CuePosition(-100.0));
 
-    EXPECT_DOUBLE_EQ(0.0, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(0.0, getCurrentSample());
+    EXPECT_DOUBLE_EQ(-100.0, m_pCuePoint->get());
+    EXPECT_DOUBLE_EQ(-100.0, getCurrentSample());
 
     // Move cue like silence analysis does and check if track is following it
     pTrack->setCuePoint(CuePosition(-200.0));
