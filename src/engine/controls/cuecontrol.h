@@ -203,6 +203,7 @@ class CueControl : public EngineControl {
     ControlObject* m_pQuantizeEnabled;
     ControlObject* m_pClosestBeat;
     bool m_bypassCueSetByPlay;
+    ControlValueAtomic<double> m_oldSeekOnLoadPosition;
 
     const int m_iNumHotCues;
     QList<HotcueControl*> m_hotcueControls;

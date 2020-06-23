@@ -356,6 +356,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         m_pOutroEndEnabled->forceSet(0.0);
         m_pHotcueFocus->set(Cue::kNoHotCue);
         m_pLoadedTrack.reset();
+        m_oldSeekOnLoadPosition.setValue(0.0);
     }
 
     if (!pNewTrack) {
@@ -418,8 +419,13 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         break;
     case SeekOnLoadMode::FirstSound: {
         CuePointer pAudibleSound = pNewTrack->findCueByType(mixxx::CueType::AudibleSound);
-        if (pAudibleSound && pAudibleSound->getPosition() != Cue::kNoPosition) {
-            seekExact(pAudibleSound->getPosition());
+        double audibleSoundPosition = Cue::kNoPosition;
+        if (pAudibleSound) {
+            audibleSoundPosition = pAudibleSound->getPosition();
+        }
+        if (audibleSoundPosition != Cue::kNoPosition) {
+            m_oldSeekOnLoadPosition.setValue(audibleSoundPosition);
+            seekExact(audibleSoundPosition);
         } else {
             seekExact(0.0);
         }
@@ -432,6 +438,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         // This prevents jumps when track analysis finishes while quantization is enabled.
         double cuePoint = m_pCuePoint->get();
         if (cuePoint != Cue::kNoPosition) {
+            m_oldSeekOnLoadPosition.setValue(cuePoint);
             seekExact(cuePoint);
         } else {
             seekExact(0.0);
@@ -441,6 +448,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     case SeekOnLoadMode::IntroStart: {
         double introStart = m_pIntroStartPosition->get();
         if (introStart != Cue::kNoPosition) {
+            m_oldSeekOnLoadPosition.setValue(introStart);
             seekExact(introStart);
         } else {
             seekExact(0.0);
@@ -448,6 +456,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         break;
     }
     default:
+        DEBUG_ASSERT(!"Unknown enum value");
         seekExact(0.0);
         break;
     }
@@ -570,8 +579,8 @@ void CueControl::trackAnalyzed() {
     }
 
     SampleOfTrack sampleOfTrack = getSampleOfTrack();
-    if (sampleOfTrack.current) {
-        // the track is already cued, don't re-cue
+    if (sampleOfTrack.current != m_oldSeekOnLoadPosition.getValue()) {
+        // the track is already manual cued, don't re-cue
         return;
     }
 
@@ -581,11 +590,13 @@ void CueControl::trackAnalyzed() {
     if (seekOnLoadMode == SeekOnLoadMode::MainCue) {
         double cue = m_pCuePoint->get();
         if (cue != Cue::kNoPosition) {
+            m_oldSeekOnLoadPosition.setValue(cue);
             seekExact(cue);
         }
     } else if (seekOnLoadMode == SeekOnLoadMode::IntroStart) {
         double intro = m_pIntroStartPosition->get();
         if (intro != Cue::kNoPosition) {
+            m_oldSeekOnLoadPosition.setValue(intro);
             seekExact(intro);
         }
     }
