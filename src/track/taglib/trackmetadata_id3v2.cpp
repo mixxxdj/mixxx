@@ -46,12 +46,12 @@ bool checkHeaderVersionSupported(
 }
 
 // Preferred picture types for cover art sorted by priority
-const std::array<TagLib::ID3v2::AttachedPictureFrame::Type, 4> kPreferredPictureTypes = {
+const std::array<TagLib::ID3v2::AttachedPictureFrame::Type, 4> kPreferredPictureTypes{{
         TagLib::ID3v2::AttachedPictureFrame::FrontCover,   // Front cover image of the album
         TagLib::ID3v2::AttachedPictureFrame::Media,        // Image from the album itself
         TagLib::ID3v2::AttachedPictureFrame::Illustration, // Illustration related to the track
         TagLib::ID3v2::AttachedPictureFrame::Other,
-};
+}};
 
 // http://id3.org/id3v2.3.0
 // "TYER: The 'Year' frame is a numeric string with a year of the
