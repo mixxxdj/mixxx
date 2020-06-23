@@ -78,5 +78,5 @@ class AnalyzerRhythm : public Analyzer {
     mixxx::DownmixAndOverlapHelper m_processor;
     int m_windowSize;
     int m_stepSize;
-    std::vector<double> m_detectionResults;
+    std::vector<DFresults> m_detectionResults;
 };

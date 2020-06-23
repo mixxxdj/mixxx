@@ -156,8 +156,6 @@ std::tuple<QVector<mixxx::audio::FramePos>, QMap<int, double>> AnalyzerRhythm::F
                         splittedAtMeasure, measureBpm, false);
                 beatStart += m_beatsPerBar;
             }
-            int beatsLeftOut = beatEnd - beatStart;
-            qDebug() << beatsLeftOut << beatStart;
         } else {
             // here we have only one bpm for whole segment
             auto splittedAtTempoChange =
@@ -165,6 +163,7 @@ std::tuple<QVector<mixxx::audio::FramePos>, QMap<int, double>> AnalyzerRhythm::F
                             std::vector<mixxx::audio::FramePos>(
                                     m_resultBeats.begin() + beatStart,
                                     m_resultBeats.begin() + beatEnd));
+
             double bpm = calculateBpm(splittedAtTempoChange);
             fixedBeats << calculateFixedTempoGrid(
                     splittedAtTempoChange, bpm, true);

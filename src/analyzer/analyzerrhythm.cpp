@@ -5,14 +5,13 @@
 #include <QVector>
 #include <QtDebug>
 
+#include "analyzer/analyzerrhythmstats.h"
 #include "analyzer/constants.h"
+#include "engine/engine.h" // Included to get mixxx::kEngineChannelCount
+#include "engine/engine.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
-#include "track/beatutils.h"
 #include "track/track.h"
-// Included to get mixxx::kEngineChannelCount
-#include "analyzer/analyzerrhythmstats.h"
-#include "engine/engine.h"
 
 namespace {
 
@@ -28,15 +27,17 @@ constexpr float kStepSecs = 0.01161f;
 // results in 43 Hz @ 44.1 kHz / 47 Hz @ 48 kHz / 47 Hz @ 96 kHz
 constexpr int kMaximumBinSizeHz = 50; // Hz
 // This is a quick hack to make a beatmap with only downbeats - will affect the bpm
-constexpr bool useDownbeatOnly = true;
+constexpr bool useDownbeatOnly = false;
 // The range of bpbs considered for detection, lower is included, higher excluded [)
 constexpr int kLowerBeatsPerBar = 4;
 constexpr int kHigherBeatsPerBar = 5;
+// The number of types of detection functions
+constexpr int kDfTypes = 5;
 
 DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
     // These are the defaults for the VAMP beat tracker plugin
     DFConfig config;
-    config.DFType = DF_COMPLEXSD;
+    config.DFType = dfAll;
     config.stepSize = stepSize;
     config.frameLength = windowSize;
     config.dbRise = 3;
@@ -45,6 +46,7 @@ DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
     config.whiteningFloor = -1;
     return config;
 }
+
 } // namespace
 
 AnalyzerRhythm::AnalyzerRhythm(UserSettingsPointer pConfig)
@@ -121,31 +123,60 @@ void AnalyzerRhythm::cleanup() {
 }
 
 std::vector<double> AnalyzerRhythm::computeBeats() {
-    int nonZeroCount = m_detectionResults.size();
-    while (nonZeroCount > 0 && m_detectionResults.at(nonZeroCount - 1) <= 0.0) {
-        --nonZeroCount;
+    std::vector<std::vector<double>> allBeats;
+    allBeats.reserve(kDfTypes);
+    for (int dfType = 0; dfType < kDfTypes; dfType += 1) {
+        int nonZeroCount = m_detectionResults.size();
+        while (nonZeroCount > 0 && m_detectionResults.at(nonZeroCount - 1).results[dfType] <= 0.0) {
+            --nonZeroCount;
+        }
+
+        std::vector<double> noteOnsets;
+        std::vector<double> beatPeriod;
+        std::vector<double> tempi;
+        const auto required_size = std::max(0, nonZeroCount - 2);
+        noteOnsets.reserve(required_size);
+        beatPeriod.reserve(required_size);
+
+        // skip first 2 results as it might have detect noise as onset
+        // that's how vamp does and seems works best this way
+        for (int i = 2; i < nonZeroCount; ++i) {
+            noteOnsets.push_back(m_detectionResults.at(i).results[dfType]);
+            beatPeriod.push_back(0.0);
+        }
+
+        TempoTrackV2 tt(m_sampleRate, m_stepSize);
+        tt.calculateBeatPeriod(noteOnsets, beatPeriod, tempi);
+
+        std::vector<double> beats;
+        tt.calculateBeats(noteOnsets, beatPeriod, beats);
+        allBeats.push_back(beats);
     }
-
-    std::vector<double> df;
-    std::vector<double> beatPeriod;
-    std::vector<double> tempi;
-    const auto required_size = std::max(0, nonZeroCount - 2);
-    df.reserve(required_size);
-    beatPeriod.reserve(required_size);
-
-    // skip first 2 results as it might have detect noise as onset
-    // that's how vamp does and seems works best this way
-    for (int i = 2; i < nonZeroCount; ++i) {
-        df.push_back(m_detectionResults.at(i));
-        beatPeriod.push_back(0.0);
+    // Let's compare all beats positions and use the "best" one
+    // TODO(Cristiano) Derive a % from maxAgreement that we can
+    // use as an estimative in our confidence of the beat detection
+    int maxAgreement = 0;
+    int maxAgreementIndex = 0;
+    for (int thisOne = 0; thisOne < kDfTypes; thisOne += 1) {
+        int agreement = 0;
+        for (int theOther = 0; theOther < kDfTypes; theOther += 1) {
+            if (thisOne == theOther) {
+                continue;
+            }
+            for (size_t beat = 0; beat < allBeats[thisOne].size() ||
+                    beat < allBeats[theOther].size();
+                    beat += 1) {
+                if (allBeats[thisOne][beat] == allBeats[theOther][beat]) {
+                    agreement += 1;
+                }
+            }
+        }
+        if (agreement > maxAgreement) {
+            maxAgreement = agreement;
+            maxAgreementIndex = thisOne;
+        }
     }
-
-    TempoTrackV2 tt(m_sampleRate, m_stepSize);
-    tt.calculateBeatPeriod(df, beatPeriod, tempi);
-
-    std::vector<double> beats;
-    tt.calculateBeats(df, beatPeriod, beats);
-    return beats;
+    return allBeats[maxAgreementIndex];
 }
 
 std::vector<double> AnalyzerRhythm::computeBeatsSpectralDifference(std::vector<double>& beats) {
