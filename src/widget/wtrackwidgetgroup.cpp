@@ -11,7 +11,7 @@
 
 namespace {
 
-int kDefaultTrackColorAplha = 255;
+int kDefaultTrackColorAlpha = 255;
 
 const WTrackMenu::Features kTrackMenuFeatures =
         WTrackMenu::Feature::Playlist |
@@ -32,7 +32,7 @@ WTrackWidgetGroup::WTrackWidgetGroup(QWidget* pParent,
         : WWidgetGroup(pParent),
           m_group(group),
           m_pConfig(pConfig),
-          m_trackColorAlpha(kDefaultTrackColorAplha),
+          m_trackColorAlpha(kDefaultTrackColorAlpha),
           m_pTrackMenu(make_parented<WTrackMenu>(
                   this, pConfig, pTrackCollectionManager, kTrackMenuFeatures)) {
     setAcceptDrops(true);

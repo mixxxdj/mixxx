@@ -272,7 +272,7 @@ void WCoverArt::mouseReleaseEvent(QMouseEvent* event) {
 }
 
 void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
-    if ((event->buttons() & Qt::LeftButton) && m_loadedTrack) {
+    if ((event->buttons().testFlag(Qt::LeftButton)) && m_loadedTrack) {
         DragAndDropHelper::dragTrack(m_loadedTrack, this, m_group);
     }
 }
