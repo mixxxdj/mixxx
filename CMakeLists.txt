@@ -590,16 +590,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/searchqueryparser.cpp
   src/library/serato/seratofeature.cpp
   src/library/serato/seratoplaylistmodel.cpp
-  src/library/trackset/baseplaylistfeature.cpp
-  src/library/trackset/basetracksetfeature.cpp
-  src/library/trackset/crate/cratefeature.cpp
-  src/library/trackset/crate/cratefeaturehelper.cpp
-  src/library/trackset/crate/cratestorage.cpp
-  src/library/trackset/crate/cratetablemodel.cpp
-  src/library/trackset/playlistfeature.cpp
-  src/library/trackset/setlogfeature.cpp
-  src/library/trackset/tracksettablemodel.cpp
-  src/library/traktor/traktorfeature.cpp
   src/library/sidebarmodel.cpp
   src/library/songdownloader.cpp
   src/library/stardelegate.cpp
@@ -612,6 +602,15 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/trackloader.cpp
   src/library/trackmodeliterator.cpp
   src/library/trackprocessing.cpp
+  src/library/trackset/baseplaylistfeature.cpp
+  src/library/trackset/basetracksetfeature.cpp
+  src/library/trackset/crate/cratefeature.cpp
+  src/library/trackset/crate/cratefeaturehelper.cpp
+  src/library/trackset/crate/cratestorage.cpp
+  src/library/trackset/crate/cratetablemodel.cpp
+  src/library/trackset/playlistfeature.cpp
+  src/library/trackset/setlogfeature.cpp
+  src/library/trackset/tracksettablemodel.cpp
   src/library/traktor/traktorfeature.cpp
   src/library/treeitem.cpp
   src/library/treeitemmodel.cpp
