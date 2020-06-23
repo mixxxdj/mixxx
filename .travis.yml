@@ -73,8 +73,8 @@ jobs:
       compiler: gcc
       cache: ccache
       # Ubuntu Bionic build prerequisites
-      # TODO for Ubuntu Focal: "-DFAAD=OFF -DFFMPEG=ON"
-      env: CMAKEFLAGS_EXTRA="-DFAAD=ON -DFFMPEG=OFF -DHSS1394=OFF -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON -DWARNINGS_FATAL=ON"
+      # TODO for Ubuntu Focal: Replace "-DFAAD=ON" with "-DFFMPEG=ON"
+      env: CMAKEFLAGS_EXTRA="-DFAAD=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON -DWARNINGS_FATAL=ON"
       before_install:
         - export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
         - export CTEST_PARALLEL_LEVEL="$(nproc)"
@@ -173,7 +173,7 @@ jobs:
             - ccache
       env: >-
         MIXXX_ENVPATH="${HOME}/buildenv"
-        CMAKEFLAGS_EXTRA="-DCOREAUDIO=ON -DFAAD=OFF -DFFMPEG=OFF -DHSS1394=ON -DLOCALECOMPARE=OFF -DMAD=OFF -DMODPLUG=OFF -DWAVPACK=OFF"
+        CMAKEFLAGS_EXTRA="-DCOREAUDIO=ON -DHSS1394=ON"
         PATH="/usr/local/opt/ccache/bin:$PATH"
         DISPLAY=:99.0
         CMAKE_BUILD_PARALLEL_LEVEL=4
