@@ -4,10 +4,10 @@
 #include "widget/wwidgetstack.h"
 
 WidgetStackControlListener::WidgetStackControlListener(QObject* pParent,
-                                                       ControlObject* pControl,
-                                                       int index)
+        ControlObject* pControl,
+        int index)
         : QObject(pParent),
-          m_control(pControl ? pControl->getKey() : ConfigKey(), this),
+          m_control(pControl ? pControl->getKey() : ConfigKey(), this, ControlFlag::AllowEmptyKey),
           m_index(index) {
     m_control.connectValueChanged(this, &WidgetStackControlListener::slotValueChanged);
 }
