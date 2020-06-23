@@ -65,7 +65,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
           m_pCONumAuxiliaries(new ControlObject(
                   ConfigKey("[Master]", "num_auxiliaries"), true, true)),
           m_pAutoDjEnabled(make_parented<ControlProxy>(
-                  "[AutoDJ]", "enabled", this, ControlFlag::NoWarnIfMissing)),
+                  "[AutoDJ]", "enabled", this, ControlFlag::InitializeLater)),
           m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
     m_pCONumDecks->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumDecks, Qt::DirectConnection);
