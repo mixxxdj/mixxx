@@ -312,8 +312,9 @@ TEST_F(CueControlTest, SeekOnLoadDefault_CueInPreroll) {
     config()->set(ConfigKey("[Controls]", "CueRecall"),
             ConfigValue(static_cast<int>(SeekOnLoadMode::MainCue)));
     TrackPointer pTrack = createTestTrack();
-    loadTrack(pTrack);
     pTrack->setCuePoint(CuePosition(-100.0));
+
+    loadTrack(pTrack);
 
     EXPECT_DOUBLE_EQ(-100.0, m_pCuePoint->get());
     EXPECT_DOUBLE_EQ(-100.0, getCurrentSample());
