@@ -326,11 +326,11 @@ bool NumericFilterNode::match(const TrackPointer& pTrack) const {
 
         double dValue = value.toDouble();
         if (m_bOperatorQuery) {
-            if ((m_operator == "=" && dValue == m_dOperatorArgument) ||
-                (m_operator == "<" && dValue < m_dOperatorArgument) ||
-                (m_operator == ">" && dValue > m_dOperatorArgument) ||
-                (m_operator == "<=" && dValue <= m_dOperatorArgument) ||
-                (m_operator == ">=" && dValue >= m_dOperatorArgument)) {
+            if ((m_operator == "=" && qFuzzyCompare(dValue, m_dOperatorArgument)) ||
+                    (m_operator == "<" && dValue < m_dOperatorArgument) ||
+                    (m_operator == ">" && dValue > m_dOperatorArgument) ||
+                    (m_operator == "<=" && dValue <= m_dOperatorArgument) ||
+                    (m_operator == ">=" && dValue >= m_dOperatorArgument)) {
                 return true;
             }
         } else if (m_bRangeQuery && dValue >= m_dRangeLow &&
