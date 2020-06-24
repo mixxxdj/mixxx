@@ -180,7 +180,6 @@ mixxx::Bpm BeatUtils::calculateBpm(
      * beats. We then sort the averages and take the middle to find the median
      * BPM.
      */
-
     if (sDebug) {
         qDebug() << "Analysis data(Frame numbers):" << beats;
     }

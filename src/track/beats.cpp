@@ -487,12 +487,10 @@ Bpm Beats::getBpmAroundPosition(FramePos curFrame, int n) const {
     }
 
     // If we hit the end of the beat map, recalculate the lower bound.
-    //double upper_bound = findNthBeat(lower_bound, n * 2);
-    FramePos upper_bound = findNthBeat(lower_bound, n);
+    FramePos upper_bound = findNthBeat(lower_bound, n * 2);
     if (upper_bound == FramePos(-1)) {
         upper_bound = FramePos(m_beats.last().frame_position());
-        //lower_bound = findNthBeat(upper_bound, n * -2);
-        lower_bound = findNthBeat(upper_bound, n * -1);
+        lower_bound = findNthBeat(upper_bound, n * -2);
         // Super edge-case -- the track doesn't have n beats!  Do the best
         // we can.
         if (lower_bound == FramePos(-1)) {
