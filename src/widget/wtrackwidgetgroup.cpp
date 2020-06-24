@@ -49,7 +49,7 @@ void WTrackWidgetGroup::setup(const QDomNode& node, const SkinContext& context) 
             node,
             QStringLiteral("TrackColorAlpha"),
             &ok);
-    if (ok) {
+    if (ok && trackColorAlpha >= 0 && trackColorAlpha <= 255) {
         m_trackColorAlpha = trackColorAlpha;
     }
 }
