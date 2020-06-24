@@ -5,7 +5,7 @@ namespace mixxx {
 /*static*/ constexpr double Bpm::kValueUndefined;
 /*static*/ constexpr double Bpm::kValueMin;
 
-double mixxx::Bpm::valueFromString(QString str, bool* pValid) {
+double Bpm::valueFromString(const QString& str, bool* pValid) {
     if (pValid) {
         *pValid = false;
     }
