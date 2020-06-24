@@ -290,7 +290,8 @@ TEST_F(CueControlTest, DontSeekOnLoadMainCue) {
     TrackPointer pTrack = createTestTrack();
     pTrack->setCuePoint(CuePosition(100.0));
 
-    // The Track should not follow if the track has been manual set manually in between.
+    // The Track should not follow cue changes due to the analyzer if the
+    // track has been manual seeked before.
     loadTrack(pTrack);
 
     EXPECT_DOUBLE_EQ(100.0, m_pCuePoint->get());
