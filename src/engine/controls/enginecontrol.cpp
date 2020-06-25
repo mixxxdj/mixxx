@@ -7,6 +7,12 @@
 #include "engine/sync/enginesync.h"
 #include "mixer/playermanager.h"
 
+namespace {
+inline mixxx::FramePos samplePosToFramePos(double samplePos) {
+    return mixxx::FramePos(samplePos / mixxx::kEngineChannelCount);
+}
+} // namespace
+
 EngineControl::EngineControl(QString group,
                              UserSettingsPointer pConfig)
         : m_group(group),
@@ -114,4 +120,12 @@ EngineBuffer* EngineControl::pickSyncTarget() {
         return pSyncable->getChannel()->getEngineBuffer();
     }
     return nullptr;
+}
+
+EngineControl::FrameOfTrack EngineControl::getFrameOfTrack() const {
+    FrameOfTrack frameOfTrack{
+            samplePosToFramePos(getSampleOfTrack().current),
+            samplePosToFramePos(getSampleOfTrack().total),
+            getSampleOfTrack().rate};
+    return frameOfTrack;
 }

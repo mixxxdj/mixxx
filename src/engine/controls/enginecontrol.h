@@ -76,10 +76,16 @@ class EngineControl : public QObject {
         double total;
         double rate;
     };
+    struct FrameOfTrack {
+        mixxx::FramePos currentFrame;
+        mixxx::FramePos totalFrames;
+        double sampleRate;
+    };
 
     SampleOfTrack getSampleOfTrack() const {
         return m_sampleOfTrack.getValue();
     }
+    FrameOfTrack getFrameOfTrack() const;
     void seek(double fractionalPosition);
     void seekAbs(double sample);
     // Seek to an exact sample and don't allow quantizing adjustment.
