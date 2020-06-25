@@ -198,7 +198,7 @@ class Beats final : public QObject {
     friend QDebug operator<<(QDebug dbg, const BeatsPointer& arg);
 
   private:
-    void onBeatlistChanged();
+    void updateCachedBpm();
     void scaleDouble();
     void scaleTriple();
     void scaleQuadruple();

@@ -36,7 +36,7 @@ Beats::Beats(const Track* track, const QVector<FramePos>& beats)
                 previous_beatpos = beat;
             }
         }
-        onBeatlistChanged();
+        updateCachedBpm();
     }
 }
 
@@ -51,7 +51,7 @@ Beats::Beats(const Track* track, const QByteArray& byteArray)
         const track::io::Beat& beat = beatsProto.beat(i);
         m_beats.append(beat);
     }
-    onBeatlistChanged();
+    updateCachedBpm();
 }
 
 Beats::Beats(const Track* track)
@@ -141,7 +141,7 @@ void Beats::setGrid(Bpm dBpm, FramePos firstBeatFrame) {
         m_beats.push_back(beat);
     }
 
-    onBeatlistChanged();
+    updateCachedBpm();
 }
 
 FramePos Beats::findNBeatsFromFrame(FramePos fromFrame, double beats) const {
@@ -182,7 +182,7 @@ FramePos Beats::findNBeatsFromFrame(FramePos fromFrame, double beats) const {
     return nthBeat;
 };
 
-void Beats::onBeatlistChanged() {
+void Beats::updateCachedBpm() {
     if (!isValid()) {
         m_dCachedBpm = Bpm();
         return;
@@ -523,7 +523,7 @@ void Beats::addBeat(FramePos beatFrame) {
     }
 
     m_beats.insert(it, beat);
-    onBeatlistChanged();
+    updateCachedBpm();
     locker.unlock();
     emit updated();
 }
@@ -541,7 +541,7 @@ void Beats::removeBeat(FramePos beatFrame) {
     while (it->frame_position() == beat.frame_position()) {
         it = m_beats.erase(it);
     }
-    onBeatlistChanged();
+    updateCachedBpm();
     locker.unlock();
     emit updated();
 }
@@ -627,7 +627,7 @@ void Beats::setDownBeat(FramePos frame) {
 
         beat_counter++;
     }
-    onBeatlistChanged();
+    updateCachedBpm();
     locker.unlock();
     emit(updated());
 }
@@ -647,7 +647,7 @@ void Beats::translate(FrameDiff_t numFrames) {
             it = m_beats.erase(it);
         }
     }
-    onBeatlistChanged();
+    updateCachedBpm();
     locker.unlock();
     emit updated();
 }
@@ -695,7 +695,7 @@ void Beats::scale(enum BPMScale scale) {
         DEBUG_ASSERT(!"scale value invalid");
         return;
     }
-    onBeatlistChanged();
+    updateCachedBpm();
     locker.unlock();
     emit updated();
 }
