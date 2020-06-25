@@ -186,7 +186,7 @@ void ColorPaletteEditor::slotTableViewDoubleClicked(const QModelIndex& index) {
 }
 
 void ColorPaletteEditor::slotAddColor() {
-    m_pModel->appendRow(kDefaultPaletteColor);
+    m_pModel->appendRow(kDefaultPaletteColor, {});
     m_pTableView->scrollToBottom();
     m_pTableView->setCurrentIndex(
             m_pModel->index(m_pModel->rowCount() - 1, 0));

@@ -1,5 +1,13 @@
 #include "preferences/colorpaletteeditormodel.h"
 
+#include <util/assert.h>
+
+#include <QList>
+#include <QMap>
+#include <QMultiMap>
+#include <QRegularExpression>
+#include <algorithm>
+
 #include "moc_colorpaletteeditormodel.cpp"
 
 namespace {
@@ -8,6 +16,16 @@ QIcon toQIcon(const QColor& color) {
     QPixmap pixmap(50, 50);
     pixmap.fill(color);
     return QIcon(pixmap);
+}
+
+const QRegularExpression hotcueListMatchingRegex(QStringLiteral("(\\d+)[ ,]*"));
+
+HotcueIndexListItem* toHotcueIndexListItem(QStandardItem* from) {
+    VERIFY_OR_DEBUG_ASSERT(from->type() == QStandardItem::UserType) {
+        // does std::optional make sense for pointers?
+        return nullptr;
+    }
+    return static_cast<HotcueIndexListItem*>(from);
 }
 
 } // namespace
@@ -51,27 +69,45 @@ bool ColorPaletteEditorModel::dropMimeData(const QMimeData* data, Qt::DropAction
 }
 
 bool ColorPaletteEditorModel::setData(const QModelIndex& modelIndex, const QVariant& value, int role) {
-    setDirty(true);
     if (modelIndex.isValid() && modelIndex.column() == 1) {
-        bool ok;
-        int hotcueIndex = value.toInt(&ok);
+        const auto rollbackData = itemFromIndex(modelIndex)->data(role);
 
-        // Make sure that the value is valid
-        if (!ok || hotcueIndex <= 0 || hotcueIndex > rowCount()) {
-            return QStandardItemModel::setData(modelIndex, QVariant(), role);
+        // parse and validate in color-context
+        const bool initialAttemptSuccessful = QStandardItemModel::setData(modelIndex, value, role);
+
+        QList<int> allHotcueIndicies;
+        allHotcueIndicies.reserve(rowCount());
+
+        for (int i = 0; i < rowCount(); ++i) {
+            auto* hotcueIndexListItem = toHotcueIndexListItem(item(i, 1));
+
+            if (hotcueIndexListItem) {
+                allHotcueIndicies.append(hotcueIndexListItem->getHotcueIndexList());
+            }
         }
 
-        // Make sure there is no other row with the same hotcue index
-        for (int i = 0; i < rowCount(); i++) {
-            QModelIndex otherModelIndex = index(i, 1);
-            QVariant otherValue = data(otherModelIndex);
-            int otherHotcueIndex = otherValue.toInt(&ok);
-            if (ok && otherHotcueIndex == hotcueIndex) {
-                QStandardItemModel::setData(otherModelIndex, QVariant(), role);
-            }
+        // validate hotcueindicies in palette context
+        // checks for duplicates and validates largest index
+
+        const int preDedupLen = allHotcueIndicies.length();
+
+        std::sort(allHotcueIndicies.begin(), allHotcueIndicies.end());
+        const auto end = std::unique(allHotcueIndicies.begin(), allHotcueIndicies.end());
+        allHotcueIndicies.erase(end, allHotcueIndicies.end());
+
+        const bool isOutsidePalette = allHotcueIndicies.last() > rowCount();
+
+        if (preDedupLen != allHotcueIndicies.length() || isOutsidePalette) {
+            // checks failed!
+            // rollback cell content to previous hotcue index list
+            return QStandardItemModel::setData(modelIndex, rollbackData, role);
+        } else {
+            setDirty(true);
+            return initialAttemptSuccessful;
         }
     }
 
+    setDirty(true);
     return QStandardItemModel::setData(modelIndex, value, role);
 }
 
@@ -84,21 +120,18 @@ void ColorPaletteEditorModel::setColor(int row, const QColor& color) {
     setDirty(true);
 }
 
-void ColorPaletteEditorModel::appendRow(const QColor& color, int hotcueIndex) {
+void ColorPaletteEditorModel::appendRow(
+        const QColor& color, const QList<int>& hotcueIndicies) {
     QStandardItem* pColorItem = new QStandardItem(toQIcon(color), color.name());
     pColorItem->setEditable(false);
     pColorItem->setDropEnabled(false);
 
-    QString hotcueIndexStr;
-    if (hotcueIndex >= 0) {
-        hotcueIndexStr = QString::number(hotcueIndex + 1);
-    }
-
-    QStandardItem* pHotcueIndexItem = new QStandardItem(hotcueIndexStr);
+    QStandardItem* pHotcueIndexItem = new HotcueIndexListItem(hotcueIndicies);
     pHotcueIndexItem->setEditable(true);
     pHotcueIndexItem->setDropEnabled(false);
 
-    QStandardItemModel::appendRow(QList<QStandardItem*>{pColorItem, pHotcueIndexItem});
+    QStandardItemModel::appendRow(
+            QList<QStandardItem*>{pColorItem, pHotcueIndexItem});
 }
 
 void ColorPaletteEditorModel::setColorPalette(const ColorPalette& palette) {
@@ -106,7 +139,7 @@ void ColorPaletteEditorModel::setColorPalette(const ColorPalette& palette) {
     removeRows(0, rowCount());
 
     // Make a map of hotcue indices
-    QMap<int, int> hotcueColorIndicesMap;
+    QMultiMap<int, int> hotcueColorIndicesMap;
     QList<int> colorIndicesByHotcue = palette.getIndicesByHotcue();
     for (int i = 0; i < colorIndicesByHotcue.size(); i++) {
         int colorIndex = colorIndicesByHotcue.at(i);
@@ -115,31 +148,86 @@ void ColorPaletteEditorModel::setColorPalette(const ColorPalette& palette) {
 
     for (int i = 0; i < palette.size(); i++) {
         QColor color = mixxx::RgbColor::toQColor(palette.at(i));
-        int colorIndex = hotcueColorIndicesMap.value(i, kNoHotcueIndex);
+        QList<int> colorIndex = hotcueColorIndicesMap.values(i);
         appendRow(color, colorIndex);
     }
 
     setDirty(false);
 }
 
-ColorPalette ColorPaletteEditorModel::getColorPalette(const QString& name) const {
+ColorPalette ColorPaletteEditorModel::getColorPalette(
+        const QString& name) const {
     QList<mixxx::RgbColor> colors;
     QMap<int, int> hotcueColorIndices;
     for (int i = 0; i < rowCount(); i++) {
         QStandardItem* pColorItem = item(i, 0);
-        QStandardItem* pHotcueIndexItem = item(i, 1);
-        mixxx::RgbColor::optional_t color = mixxx::RgbColor::fromQString(pColorItem->text());
+
+        auto* pHotcueIndexItem = toHotcueIndexListItem(item(i, 1));
+        if (!pHotcueIndexItem)
+            continue;
+
+        mixxx::RgbColor::optional_t color =
+                mixxx::RgbColor::fromQString(pColorItem->text());
+
         if (color) {
+            QList<int> hotcueIndexes = pHotcueIndexItem->getHotcueIndexList();
             colors << *color;
 
-            bool ok;
-            int hotcueIndex = pHotcueIndexItem->text().toInt(&ok);
-            if (ok) {
-                hotcueColorIndices.insert(hotcueIndex - 1, colors.size() - 1);
+            for (int index : qAsConst(hotcueIndexes)) {
+                hotcueColorIndices.insert(index - 1, colors.size() - 1);
             }
         }
     }
     // If we have a non consequitive list of hotcue indexes, indexes are shifted down
     // due to the sorting nature of QMap. This is intended, this way we have a color for every hotcue.
     return ColorPalette(name, colors, hotcueColorIndices.values());
+}
+
+HotcueIndexListItem::HotcueIndexListItem(const QList<int>& hotcueList)
+        : QStandardItem(), m_hotcueIndexList(hotcueList) {
+    std::sort(m_hotcueIndexList.begin(), m_hotcueIndexList.end());
+}
+QVariant HotcueIndexListItem::data(int role) const {
+    switch (role) {
+    case Qt::DisplayRole:
+    case Qt::EditRole: {
+        QString serializedIndexStrings;
+        for (int i = 0; i < m_hotcueIndexList.size(); ++i) {
+            serializedIndexStrings += QString::number(m_hotcueIndexList.at(i));
+            if (i < m_hotcueIndexList.size() - 1) {
+                serializedIndexStrings += QStringLiteral(", ");
+            }
+        }
+        return QVariant(serializedIndexStrings);
+        break;
+    }
+    default:
+        return QStandardItem::data(role);
+        break;
+    }
+}
+
+void HotcueIndexListItem::setData(const QVariant& value, int role) {
+    switch (role) {
+    case Qt::EditRole: {
+        m_hotcueIndexList.clear();
+        QRegularExpressionMatchIterator regexResults =
+                hotcueListMatchingRegex.globalMatch(value.toString());
+        while (regexResults.hasNext()) {
+            QRegularExpressionMatch match = regexResults.next();
+            bool ok;
+            const int hotcueIndex = match.captured(1).toInt(&ok);
+            if (ok && !m_hotcueIndexList.contains(hotcueIndex)) {
+                m_hotcueIndexList.append(hotcueIndex);
+            }
+        }
+        std::sort(m_hotcueIndexList.begin(), m_hotcueIndexList.end());
+
+        emitDataChanged();
+        break;
+    }
+    default:
+        QStandardItem::setData(value, role);
+        break;
+    }
 }
