@@ -959,10 +959,11 @@ double BpmControl::getBeatMatchPosition(
     return dNewPlaypos;
 }
 
-double BpmControl::getPhaseOffset(double dThisPosition) {
+mixxx::FrameDiff_t BpmControl::getPhaseOffset(mixxx::FramePos thisPosition) {
     // This does not respect looping
-    double dNewPlaypos = getNearestPositionInPhase(dThisPosition, false, false);
-    return dNewPlaypos - dThisPosition;
+    double dNewPlayposSamples = getNearestPositionInPhase(
+            thisPosition.getValue() * kSamplesPerFrame, false, false);
+    return dNewPlayposSamples / kSamplesPerFrame - thisPosition.getValue();
 }
 
 void BpmControl::slotUpdateEngineBpm(double value) {
@@ -1024,8 +1025,8 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
         // otherwise it will always return 0 if master sync is active.
         m_dUserOffset.setValue(0.0);
 
-        mixxx::FrameDiff_t offsetFrames =
-                samplesToFrames(getPhaseOffset(getSampleOfTrack().current));
+        mixxx::FrameDiff_t offsetFrames = getPhaseOffset(getFrameOfTrack().currentFrame);
+        qWarning() << offsetFrames;
         m_pBeats->translate(-offsetFrames);
     }
 }

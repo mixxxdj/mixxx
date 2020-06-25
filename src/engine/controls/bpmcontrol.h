@@ -39,7 +39,7 @@ class BpmControl : public EngineControl {
     // Get the phase offset from the specified position.
     double getNearestPositionInPhase(double dThisPosition, bool respectLoops, bool playing);
     double getBeatMatchPosition(double dThisPosition, bool respectLoops, bool playing);
-    double getPhaseOffset(double dThisPosition);
+    mixxx::FrameDiff_t getPhaseOffset(mixxx::FramePos thisPosition);
     /// getBeatDistance is adjusted to include the user offset so it's
     /// transparent to other decks.
     double getBeatDistance(double dThisPosition) const;
