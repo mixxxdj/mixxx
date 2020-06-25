@@ -1013,10 +1013,7 @@ void BpmControl::slotBeatsTranslate(double v) {
     if (v > 0 && m_pBeats) {
         mixxx::FramePos currentFrame = getFrameOfTrack().currentFrame;
         mixxx::FramePos closestBeat = m_pBeats->findClosestBeat(currentFrame);
-        int delta = currentFrame.getValue() - closestBeat.getValue();
-        if (delta % 2 != 0) {
-            delta--;
-        }
+        mixxx::FrameDiff_t delta = currentFrame - closestBeat;
         m_pBeats->translate(delta);
     }
 }
