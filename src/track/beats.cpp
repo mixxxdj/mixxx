@@ -136,7 +136,7 @@ void Beats::setGrid(Bpm dBpm, FramePos firstBeatFrame) {
     track::io::Beat beat;
     beat.set_frame_position(firstBeatFrame.getValue());
     for (FramePos frame = firstBeatFrame; frame.getValue() <= trackLength;
-            frame += getSampleRate() * (60 / dBpm.getValue())) {
+            frame += getBeatLengthFrames(dBpm, getSampleRate())) {
         beat.set_frame_position(frame.getValue());
         m_beats.push_back(beat);
     }
@@ -806,13 +806,14 @@ SINT Beats::getSampleRate() const {
 }
 
 QDebug operator<<(QDebug dbg, const BeatsPointer& arg) {
-    dbg << "Beats State\n";
-    dbg << "\tm_subVersion:" << arg->m_subVersion << "\n";
-    dbg << "\tm_dCachedBpm:" << arg->m_dCachedBpm << "\n";
-    dbg << "Beats content(size: " << arg->m_beats.size() << ":\n";
+    QVector<FramePos> beatFramePositions;
     for (auto beat : arg->m_beats) {
-        dbg << "pos:" << beat.frame_position() << "\n";
+        beatFramePositions.append(FramePos(beat.frame_position()));
     }
+    dbg << "["
+        << "Cached BPM:" << arg->m_dCachedBpm << "|"
+        << "Number of beats:" << arg->m_beats.size() << "|"
+        << "Beats:" << beatFramePositions << "]";
     return dbg;
 }
 
