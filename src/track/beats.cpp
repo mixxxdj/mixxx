@@ -26,7 +26,6 @@ Beats::Beats(const Track* track, const QVector<FramePos>& beats)
         track::io::Beat protoBeat;
 
         for (auto beat : beats) {
-            beat.setValue(beat.getValue());
             if (beat <= previous_beatpos || beat < FramePos(0)) {
                 qDebug() << "kBeatMap::createFromVector: beats not in increasing order or negative";
                 qDebug() << "discarding beat " << beat;
