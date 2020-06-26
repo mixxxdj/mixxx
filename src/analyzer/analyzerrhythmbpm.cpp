@@ -9,7 +9,7 @@
 #include "util/math.h"
 
 namespace {
-constexpr bool sDebug = true;
+constexpr bool sDebug = false;
 constexpr int kHistogramDecimalPlaces = 2;
 constexpr double kCorrectBeatLocalBpmEpsilon = 0.05; // 0.2;
 const double kHistogramDecimalScale = pow(10.0, kHistogramDecimalPlaces);
@@ -59,7 +59,12 @@ QMap<int, double> AnalyzerRhythm::findTempoChanges() {
             computeRawTemposAndFrequency(m_resultBeats);
     auto sortedTempoList = m_rawTempos;
     std::sort(sortedTempoList.begin(), sortedTempoList.end());
-    // we use the median as a guess first and last tempo
+    // we have to make sure we have odd numbers
+    if (!(sortedTempoList.size() % 2)) {
+        sortedTempoList.pop_back();
+    }
+    // because we use the median as a guess first and last tempo
+    // and it has to be in m_rawTempos
     const double median = BeatStatistics::computeSampleMedian(sortedTempoList);
     // The analyzer sometimes detect false beats that generate outliers
     // values for the tempo so we use a median filter to remove them
