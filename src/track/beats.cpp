@@ -22,7 +22,7 @@ inline FrameDiff_t getBeatLengthFrames(Bpm bpm, double sampleRate) {
 Beats::Beats(const Track* track, const QVector<FramePos>& beats)
         : Beats(track) {
     if (beats.size() > 0) {
-        FramePos previous_beatpos = FramePos(-1);
+        FramePos previous_beatpos = kInvalidFramePos;
         track::io::Beat protoBeat;
 
         for (auto beat : beats) {
@@ -77,7 +77,7 @@ int Beats::numBeatsInRange(FramePos startFrame, FramePos endFrame) {
     int iBeatsCounter;
     for (iBeatsCounter = 1; lastCountedBeat < endFrame; iBeatsCounter++) {
         lastCountedBeat = findNthBeat(startFrame, iBeatsCounter);
-        if (lastCountedBeat.getValue() == -1) {
+        if (lastCountedBeat == kInvalidFramePos) {
             break;
         }
     }
@@ -165,14 +165,14 @@ FramePos Beats::findNBeatsFromFrame(FramePos fromFrame, double beats) const {
         nthBeat = findNthBeat(prevBeat, fullBeats - 1);
     }
 
-    if (nthBeat == FramePos(-1)) {
+    if (nthBeat == kInvalidFramePos) {
         return fromFrame;
     }
 
     // Add the fraction of the beat
     if (fractionBeats != 0) {
         nextBeat = findNthBeat(nthBeat, 2);
-        if (nextBeat == FramePos(-1)) {
+        if (nextBeat == kInvalidFramePos) {
             return fromFrame;
         }
         nthBeat += (nextBeat - nthBeat) * fractionBeats;
@@ -232,8 +232,8 @@ bool Beats::findPrevNextBeats(FramePos frame,
     QMutexLocker locker(&m_mutex);
 
     if (!isValid()) {
-        pPrevBeatFrame->setValue(-1);
-        pNextBeatFrame->setValue(-1);
+        *pPrevBeatFrame = kInvalidFramePos;
+        *pNextBeatFrame = kInvalidFramePos;
         return false;
     }
 
@@ -286,8 +286,8 @@ bool Beats::findPrevNextBeats(FramePos frame,
         next_beat = on_beat + 1;
     }
 
-    pPrevBeatFrame->setValue(-1);
-    pNextBeatFrame->setValue(-1);
+    *pPrevBeatFrame = kInvalidFramePos;
+    *pNextBeatFrame = kInvalidFramePos;
 
     for (; next_beat != m_beats.end(); ++next_beat) {
         if (!next_beat->enabled()) {
@@ -309,21 +309,21 @@ bool Beats::findPrevNextBeats(FramePos frame,
             }
         }
     }
-    return pPrevBeatFrame->getValue() != -1 && pNextBeatFrame->getValue() != -1;
+    return *pPrevBeatFrame != kInvalidFramePos && *pNextBeatFrame != kInvalidFramePos;
 }
 
 FramePos Beats::findClosestBeat(FramePos frame) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid()) {
-        return FramePos(-1);
+        return kInvalidFramePos;
     }
     FramePos prevBeat;
     FramePos nextBeat;
     findPrevNextBeats(frame, &prevBeat, &nextBeat);
-    if (prevBeat.getValue() == -1) {
-        // If both values are -1, we correctly return -1.
+    if (prevBeat == kInvalidFramePos) {
+        // If both values are invalid, we correctly return kInvalidFramePos.
         return nextBeat;
-    } else if (nextBeat.getValue() == -1) {
+    } else if (nextBeat == kInvalidFramePos) {
         return prevBeat;
     }
     return (nextBeat - frame > frame - prevBeat) ? prevBeat : nextBeat;
@@ -333,7 +333,7 @@ FramePos Beats::findNthBeat(FramePos frame, int n) const {
     QMutexLocker locker(&m_mutex);
 
     if (!isValid() || n == 0) {
-        return FramePos(-1);
+        return kInvalidFramePos;
     }
 
     track::io::Beat beat;
@@ -412,7 +412,7 @@ FramePos Beats::findNthBeat(FramePos frame, int n) const {
             }
         }
     }
-    return FramePos(-1);
+    return kInvalidFramePos;
 }
 
 std::unique_ptr<Beats::iterator> Beats::findBeats(FramePos startFrame, FramePos stopFrame) const {
@@ -479,20 +479,20 @@ Bpm Beats::getBpmAroundPosition(FramePos curFrame, int n) const {
 
     // To make sure we are always counting n beats, iterate backward to the
     // lower bound, then iterate forward from there to the upper bound.
-    // a value of -1 indicates we went off the map -- count from the beginning.
+    // kInvalidFramePos indicates we went off the map -- count from the beginning.
     FramePos lower_bound = findNthBeat(curFrame, -n);
-    if (lower_bound == FramePos(-1)) {
+    if (lower_bound == kInvalidFramePos) {
         lower_bound = FramePos(m_beats.first().frame_position());
     }
 
     // If we hit the end of the beat map, recalculate the lower bound.
     FramePos upper_bound = findNthBeat(lower_bound, n * 2);
-    if (upper_bound == FramePos(-1)) {
+    if (upper_bound == kInvalidFramePos) {
         upper_bound = FramePos(m_beats.last().frame_position());
         lower_bound = findNthBeat(upper_bound, n * -2);
         // Super edge-case -- the track doesn't have n beats!  Do the best
         // we can.
-        if (lower_bound == FramePos(-1)) {
+        if (lower_bound == kInvalidFramePos) {
             lower_bound = FramePos(m_beats.first().frame_position());
         }
     }
@@ -789,11 +789,11 @@ void Beats::setBpm(Bpm dBpm) {
 }
 
 FramePos Beats::getFirstBeatPosition() const {
-    return FramePos((m_beats.size() == 0) ? -1 : m_beats.front().frame_position());
+    return m_beats.size() == 0 ? kInvalidFramePos : FramePos(m_beats.front().frame_position());
 }
 
 FramePos Beats::getLastBeatPosition() const {
-    return FramePos((m_beats.size() == 0) ? -1 : m_beats.back().frame_position());
+    return m_beats.size() == 0 ? kInvalidFramePos : FramePos(m_beats.back().frame_position());
 }
 
 SINT Beats::getSampleRate() const {

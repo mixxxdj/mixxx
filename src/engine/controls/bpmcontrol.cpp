@@ -596,7 +596,7 @@ bool BpmControl::getBeatContextNoLookup(
         mixxx::FramePos pNextBeat,
         mixxx::FrameDiff_t* dpBeatLength,
         double* dpBeatPercentage) {
-    if (pPrevBeat == mixxx::FramePos(-1) || pNextBeat == mixxx::FramePos(-1)) {
+    if (pPrevBeat == mixxx::kInvalidFramePos || pNextBeat == mixxx::kInvalidFramePos) {
         return false;
     }
 
@@ -706,8 +706,6 @@ mixxx::FramePos BpmControl::getNearestPositionInPhase(
         }
     }
 
-    qWarning() << "dOtherBeatFraction" << dOtherBeatFraction;
-
     bool this_near_next =
             thisNextBeat - thisPosition <= thisPosition - thisPrevBeat;
     bool other_near_next = dOtherBeatFraction >= 0.5;
@@ -729,11 +727,8 @@ mixxx::FramePos BpmControl::getNearestPositionInPhase(
     // infinite beatgrids because the assumption that findNthBeat(-2) always
     // works will be wrong then.
 
-    qWarning() << "dThisBeatLengthFrames" << dThisBeatLengthFrames;
-    qWarning() << "m_dUserOffset" << m_dUserOffset.getValue();
     mixxx::FramePos newPlaypos = mixxx::FramePos(dThisBeatLengthFrames) *
             (dOtherBeatFraction + m_dUserOffset.getValue());
-    qWarning() << "first calculated" << newPlaypos;
     if (this_near_next == other_near_next) {
         newPlaypos += thisPrevBeat.getValue();
     } else if (this_near_next && !other_near_next) {
@@ -821,8 +816,8 @@ mixxx::FramePos BpmControl::getBeatMatchPosition(
     mixxx::FrameDiff_t dThisBeatLengthFrames = -1;
 
     // Look up the next beat and beat length for the new position
-    if (thisNextBeat == mixxx::FramePos(-1) || thisPosition > thisNextBeat ||
-            (thisPrevBeat != mixxx::FramePos(-1) && thisPosition < thisPrevBeat)) {
+    if (thisNextBeat == mixxx::kInvalidFramePos || thisPosition > thisNextBeat ||
+            (thisPrevBeat != mixxx::kInvalidFramePos && thisPosition < thisPrevBeat)) {
         if (kLogger.traceEnabled()) {
             kLogger.trace() << "BpmControl::getBeatMatchPosition out of date"
                             << thisPrevBeat << thisPosition << thisNextBeat;
@@ -836,7 +831,7 @@ mixxx::FramePos BpmControl::getBeatMatchPosition(
                 &dThisBeatLengthFrames,
                 nullptr);
         // now we either have a useful next beat or there is none
-        if (thisNextBeat == mixxx::FramePos(-1)) {
+        if (thisNextBeat == mixxx::kInvalidFramePos) {
             // We can't match the next beat, give up.
             return thisPosition;
         }
@@ -865,8 +860,8 @@ mixxx::FramePos BpmControl::getBeatMatchPosition(
 
     mixxx::FramePos otherPosition = samplePosToFramePos(pOtherEngineBuffer->getExactPlayPos());
 
-    mixxx::FramePos otherPrevBeat = mixxx::FramePos(-1);
-    mixxx::FramePos otherNextBeat = mixxx::FramePos(-1);
+    mixxx::FramePos otherPrevBeat = mixxx::kInvalidFramePos;
+    mixxx::FramePos otherNextBeat = mixxx::kInvalidFramePos;
     mixxx::FrameDiff_t dOtherBeatLength = -1;
     double dOtherBeatFraction = -1;
     if (!BpmControl::getBeatContext(otherBeats,
@@ -964,7 +959,6 @@ mixxx::FrameDiff_t BpmControl::getPhaseOffset(mixxx::FramePos thisPosition) {
     // This does not respect looping
     mixxx::FramePos newPlayposFrames = getNearestPositionInPhase(
             thisPosition, false, false);
-    qWarning() << "new play pos samples" << newPlayposFrames;
     return newPlayposFrames - thisPosition;
 }
 
