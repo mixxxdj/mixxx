@@ -63,13 +63,7 @@ AnalyzerRhythm::AnalyzerRhythm(UserSettingsPointer pConfig)
 bool AnalyzerRhythm::initialize(const AnalyzerTrack& track,
         mixxx::audio::SampleRate sampleRate,
         SINT totalSamples) {
-    if (totalSamples == 0) {
-        return false;
-    }
-
-    bool bpmLock = track.getTrack()->isBpmLocked();
-    if (bpmLock) {
-        qDebug() << "Track is BpmLocked: Beat calculation will not start";
+    if (totalSamples == 0 or !shouldAnalyze(track.getTrack())) {
         return false;
     }
 
@@ -96,6 +90,7 @@ bool AnalyzerRhythm::initialize(const AnalyzerTrack& track,
                 m_downbeat->pushAudioBlock(reinterpret_cast<float*>(pWindow));
                 return true;
             });
+
     return true;
 }
 
@@ -105,7 +100,25 @@ bool AnalyzerRhythm::shouldAnalyze(TrackPointer pTrack) const {
         qDebug() << "Track is BpmLocked: Beat calculation will not start";
         return false;
     }
-    return true;
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (!pBeats) {
+        return true;
+    }
+    if (!pBeats->getBpmInRange(mixxx::audio::kStartFramePos,
+                       mixxx::audio::FramePos{
+                               pTrack->getDuration() * pBeats->getSampleRate()})
+                    .isValid()) {
+        // Tracks with an invalid bpm <= 0 should be re-analyzed,
+        // independent of the preference settings. We expect that
+        // all tracks have a bpm > 0 when analyzed. Users that want
+        // to keep their zero bpm tracks could lock them to prevent
+        // this re-analysis (see the check above).
+        qDebug() << "Re-analyzing track with invalid BPM despite preference settings.";
+        return true;
+    }
+
+    qDebug() << "Track already has beats, and won't re-analyze";
+    return false;
 }
 
 bool AnalyzerRhythm::processSamples(const CSAMPLE* pIn, SINT iLen) {
