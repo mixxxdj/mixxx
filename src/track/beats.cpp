@@ -639,12 +639,8 @@ void Beats::translate(FrameDiff_t numFrames) {
 
     for (BeatList::iterator it = m_beats.begin(); it != m_beats.end();) {
         FramePos newpos = FramePos(it->frame_position()) + numFrames;
-        if (newpos >= FramePos(0)) {
-            it->set_frame_position(newpos.getValue());
-            ++it;
-        } else {
-            it = m_beats.erase(it);
-        }
+        it->set_frame_position(newpos.getValue());
+        ++it;
     }
     updateCachedBpm();
     locker.unlock();
