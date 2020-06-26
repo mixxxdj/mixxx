@@ -569,22 +569,23 @@ bool BpmControl::getBeatContext(const mixxx::BeatsPointer& pBeats,
         return false;
     }
 
+    mixxx::FramePos pPrevBeatInner, pNextBeatInner;
     if (!pBeats->findPrevNextBeats(
-                position, pPrevBeat, pNextBeat)) {
+                position, &pPrevBeatInner, &pNextBeatInner)) {
         return false;
     }
-    /*
-    if (pPrevBeat != NULL) {
-        *dpPrevBeat = prevBeat.getValue() * kSamplesPerFrame;
+
+    if (pPrevBeat != nullptr) {
+        *pPrevBeat = pPrevBeatInner;
     }
 
-    if (dpNextBeat != NULL) {
-        *dpNextBeat = nextBeat.getValue() * kSamplesPerFrame;
-    }*/
+    if (pNextBeat != nullptr) {
+        *pNextBeat = pNextBeatInner;
+    }
 
     return getBeatContextNoLookup(position,
-            *pPrevBeat,
-            *pNextBeat,
+            pPrevBeatInner,
+            pNextBeatInner,
             dpBeatLength,
             dpBeatPercentage);
 }

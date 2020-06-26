@@ -10,8 +10,6 @@ class BeatsTranslateTest : public MockedEngineBackendTest {
 TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     const mixxx::Bpm bpm = Bpm(60.0);
     const FramePos firstBeat(0.0);
-    const FramePos baseOffset(30123);
-    const FrameDiff_t delta = 2222.0;
 
     // Set up Beats for decks 1 and 2.
     auto beats1 = std::make_shared<Beats>(m_pTrack1.get());
@@ -23,19 +21,20 @@ TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     m_pTrack2->setBeats(beats2);
     ASSERT_DOUBLE_EQ(firstBeat.getValue(), beats2->findClosestBeat(firstBeat).getValue());
 
-    // Seek deck 1 forward baseOffset+delta frames
-    // Seek deck 2 forward baseOffset frames
-    m_pChannel1->getEngineBuffer()->slotControlSeekAbs((baseOffset + delta).getValue());
-    m_pChannel2->getEngineBuffer()->slotControlSeekAbs(baseOffset.getValue());
+    const FrameDiff_t deltaFrames = 1111.0;
+    // Seek deck 1 forward a bit
+    m_pChannel1->getEngineBuffer()->slotControlSeekAbs(deltaFrames * 2);
     ProcessBuffer();
-    ASSERT_DOUBLE_EQ(m_pChannel1->getEngineBuffer()->getExactPlayPos(),
-            (baseOffset + delta).getValue());
-    ASSERT_DOUBLE_EQ(m_pChannel2->getEngineBuffer()->getExactPlayPos(), baseOffset.getValue());
+    EXPECT_TRUE(m_pChannel1->getEngineBuffer()->getVisualPlayPos() > 0);
+    ASSERT_DOUBLE_EQ(m_pChannel1->getEngineBuffer()->getExactPlayPos(), deltaFrames * 2);
 
     // Make both decks playing.
     ControlObject::getControl(m_sGroup1, "play", true)->set(1.0);
     ControlObject::getControl(m_sGroup2, "play", true)->set(1.0);
     ProcessBuffer();
+    ASSERT_DOUBLE_EQ(m_pChannel1->getEngineBuffer()->getExactPlayPos(),
+            m_pChannel2->getEngineBuffer()->getExactPlayPos() +
+                    deltaFrames * 2);
 
     // TODO(XXX) Manually set the "bpm" control... I would like to figure out
     // why this doesn't get set naturally, but this will do for now.
@@ -55,6 +54,5 @@ TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     // Deck 2 was left at 0.
     // We translated grid 2 so that it is also +delta away from its closest beat
     // So that beat should be at deck 1 position -delta.
-    ASSERT_DOUBLE_EQ((beats1->findClosestBeat(baseOffset) - delta).getValue(),
-            beats2->findClosestBeat(baseOffset).getValue());
+    ASSERT_DOUBLE_EQ(-deltaFrames, beats2->findClosestBeat(FramePos(0)).getValue());
 }

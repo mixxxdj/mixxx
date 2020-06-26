@@ -230,13 +230,15 @@ bool Beats::findPrevNextBeats(FramePos frame,
         FramePos* pPrevBeatFrame,
         FramePos* pNextBeatFrame) const {
     QMutexLocker locker(&m_mutex);
+    if (pPrevBeatFrame == nullptr || pNextBeatFrame == nullptr) {
+        return false;
+    }
 
     if (!isValid()) {
         *pPrevBeatFrame = kInvalidFramePos;
         *pNextBeatFrame = kInvalidFramePos;
         return false;
     }
-
     track::io::Beat beat;
     beat.set_frame_position(frame.getValue());
 
