@@ -1275,7 +1275,7 @@ void LoopingControl::slotLoopMove(double beats) {
     }
 
     if (BpmControl::getBeatContext(pBeats,
-                m_currentSample.getValue(),
+                mixxx::FramePos(m_currentSample.getValue() / mixxx::kEngineChannelCount),
                 nullptr,
                 nullptr,
                 nullptr,

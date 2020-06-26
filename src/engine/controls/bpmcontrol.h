@@ -37,8 +37,10 @@ class BpmControl : public EngineControl {
     // out of sync.
     double calcSyncedRate(double userTweak);
     // Get the phase offset from the specified position.
-    double getNearestPositionInPhase(double dThisPosition, bool respectLoops, bool playing);
-    double getBeatMatchPosition(double dThisPosition, bool respectLoops, bool playing);
+    mixxx::FramePos getNearestPositionInPhase(
+            mixxx::FramePos thisPosition, bool respectLoops, bool playing);
+    mixxx::FramePos getBeatMatchPosition(
+            mixxx::FramePos thisPosition, bool respectLoops, bool playing);
     mixxx::FrameDiff_t getPhaseOffset(mixxx::FramePos thisPosition);
     /// getBeatDistance is adjusted to include the user offset so it's
     /// transparent to other decks.
@@ -59,20 +61,20 @@ class BpmControl : public EngineControl {
     // lies within the current beat). Returns false if a previous or next beat
     // does not exist. NULL arguments are safe and ignored.
     static bool getBeatContext(const mixxx::BeatsPointer& pBeats,
-            const double dPosition,
-            double* dpPrevBeat,
-            double* dpNextBeat,
-            double* dpBeatLength,
+            const mixxx::FramePos position,
+            mixxx::FramePos* pPrevBeat,
+            mixxx::FramePos* pNextBeat,
+            mixxx::FrameDiff_t* dpBeatLength,
             double* dpBeatPercentage);
 
     // Alternative version that works if the next and previous beat positions
     // are already known.
     static bool getBeatContextNoLookup(
-                               const double dPosition,
-                               const double dPrevBeat,
-                               const double dNextBeat,
-                               double* dpBeatLength,
-                               double* dpBeatPercentage);
+            const mixxx::FramePos position,
+            mixxx::FramePos pPrevBeat,
+            mixxx::FramePos pNextBeat,
+            mixxx::FrameDiff_t* dpBeatLength,
+            double* dpBeatPercentage);
 
     // Returns the shortest change in percentage needed to achieve
     // target_percentage.

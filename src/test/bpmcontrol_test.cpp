@@ -40,11 +40,17 @@ TEST_F(BpmControlTest, BeatContext_BeatGrid) {
     pBeats->setGrid(bpm);
 
     // On a beat.
-    double prevBeat, nextBeat, beatLength, beatPercentage;
-    EXPECT_TRUE(BpmControl::getBeatContext(pBeats, 0.0, &prevBeat, &nextBeat,
-                                           &beatLength, &beatPercentage));
-    EXPECT_DOUBLE_EQ(0.0, prevBeat);
-    EXPECT_DOUBLE_EQ(beatLength, nextBeat);
+    mixxx::FramePos prevBeat, nextBeat;
+    mixxx::FrameDiff_t beatLength;
+    double beatPercentage;
+    EXPECT_TRUE(BpmControl::getBeatContext(pBeats,
+            mixxx::FramePos(0),
+            &prevBeat,
+            &nextBeat,
+            &beatLength,
+            &beatPercentage));
+    EXPECT_DOUBLE_EQ(0.0, prevBeat.getValue());
+    EXPECT_DOUBLE_EQ(beatLength, nextBeat.getValue());
     EXPECT_DOUBLE_EQ(expectedBeatLengthFrames, beatLength);
     EXPECT_DOUBLE_EQ(0.0, beatPercentage);
 }
