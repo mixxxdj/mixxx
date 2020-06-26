@@ -60,13 +60,7 @@ AnalyzerRhythm::AnalyzerRhythm(UserSettingsPointer pConfig)
 }
 
 bool AnalyzerRhythm::initialize(TrackPointer pTrack, int sampleRate, int totalSamples) {
-    if (totalSamples == 0) {
-        return false;
-    }
-
-    bool bpmLock = pTrack->isBpmLocked();
-    if (bpmLock) {
-        qDebug() << "Track is BpmLocked: Beat calculation will not start";
+    if (totalSamples == 0 or !shouldAnalyze(pTrack)) {
         return false;
     }
 
@@ -93,6 +87,7 @@ bool AnalyzerRhythm::initialize(TrackPointer pTrack, int sampleRate, int totalSa
                 m_downbeat->pushAudioBlock(reinterpret_cast<float*>(pWindow));
                 return true;
             });
+    
     return true;
 }
 
@@ -100,6 +95,17 @@ bool AnalyzerRhythm::shouldAnalyze(TrackPointer pTrack) const {
     bool bpmLock = pTrack->isBpmLocked();
     if (bpmLock) {
         qDebug() << "Track is BpmLocked: Beat calculation will not start";
+        return true;
+    }
+    mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (!pBeats) {
+        return true;
+    }
+    else if (!mixxx::Bpm::isValidValue(pBeats->getBpm())) {
+        qDebug() << "Re-analyzing track with invalid BPM despite preference settings.";
+        return true;
+    } else {
+        qDebug() << "Track already has beats, and won't re-analyze";
         return false;
     }
     return true;
