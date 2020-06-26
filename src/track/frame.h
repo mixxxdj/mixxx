@@ -1,5 +1,7 @@
 #pragma once
 
+#include <float.h>
+
 #include <QDebug>
 
 namespace mixxx {
@@ -105,4 +107,6 @@ inline QDebug operator<<(QDebug dbg, FramePos arg) {
     dbg << arg.getValue();
     return dbg;
 }
+
+const FramePos kInvalidFramePos = FramePos(-DBL_MAX);
 } // namespace mixxx
