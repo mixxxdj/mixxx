@@ -22,7 +22,7 @@ namespace {
 // TODO: kStepSecs and the waveform sample rate of 441
 // (defined in AnalyzerWaveform::initialize) do not align well and thus
 // generate interference. Currently we are at this odd factor: 441 * 0.01161 = 5.12.
-// This should be adjusted to be an integer.
+// This should be adjusted to be an integer.0.0113378684807
 constexpr float kStepSecs = 0.01161f;
 // results in 43 Hz @ 44.1 kHz / 47 Hz @ 48 kHz / 47 Hz @ 96 kHz
 constexpr int kMaximumBinSizeHz = 50; // Hz
@@ -40,7 +40,7 @@ DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
     config.DFType = dfAll;
     config.stepSize = stepSize;
     config.frameLength = windowSize;
-    config.dbRise = 3;
+    config.dbRise = 11;
     config.adaptiveWhitening = 0;
     config.whiteningRelaxCoeff = -1;
     config.whiteningFloor = -1;
@@ -136,8 +136,7 @@ void AnalyzerRhythm::cleanup() {
 }
 
 std::vector<double> AnalyzerRhythm::computeBeats() {
-    std::vector<std::vector<double>> allBeats;
-    allBeats.reserve(kDfTypes);
+    std::vector<std::vector<double>> allBeats(kDfTypes);
     for (int dfType = 0; dfType < kDfTypes; dfType += 1) {
         int nonZeroCount = m_detectionResults.size();
         while (nonZeroCount > 0 && m_detectionResults.at(nonZeroCount - 1).results[dfType] <= 0.0) {
@@ -161,31 +160,31 @@ std::vector<double> AnalyzerRhythm::computeBeats() {
         TempoTrackV2 tt(m_sampleRate, m_stepSize);
         tt.calculateBeatPeriod(noteOnsets, beatPeriod, tempi);
 
-        std::vector<double> beats;
-        tt.calculateBeats(noteOnsets, beatPeriod, beats);
-        allBeats.push_back(beats);
+        tt.calculateBeats(noteOnsets, beatPeriod, allBeats[dfType]);
     }
     // Let's compare all beats positions and use the "best" one
-    // TODO(Cristiano) Derive a % from maxAgreement that we can
-    // use as an estimative in our confidence of the beat detection
-    int maxAgreement = 0;
+    double maxAgreement = 0.0;
     int maxAgreementIndex = 0;
     for (int thisOne = 0; thisOne < kDfTypes; thisOne += 1) {
+        double agreementPercentage;
         int agreement = 0;
+        int maxPossibleAgreement = 1;
+        std::unordered_set<double> thisOneAsSet(allBeats[thisOne].begin(), allBeats[thisOne].end());
         for (int theOther = 0; theOther < kDfTypes; theOther += 1) {
             if (thisOne == theOther) {
                 continue;
             }
-            for (size_t beat = 0; beat < allBeats[thisOne].size() ||
-                    beat < allBeats[theOther].size();
-                    beat += 1) {
-                if (allBeats[thisOne][beat] == allBeats[theOther][beat]) {
+            for (size_t beat = 0; beat < allBeats[theOther].size(); beat += 1) {
+                if (thisOneAsSet.find(allBeats[theOther][beat]) != thisOneAsSet.end()) {
                     agreement += 1;
                 }
+                maxPossibleAgreement += 1;
             }
         }
-        if (agreement > maxAgreement) {
-            maxAgreement = agreement;
+        agreementPercentage = agreement / static_cast<double>(maxPossibleAgreement);
+        qDebug() << thisOne << "agreementPercentage is" << agreementPercentage;
+        if (agreementPercentage > maxAgreement) {
+            maxAgreement = agreementPercentage;
             maxAgreementIndex = thisOne;
         }
     }
