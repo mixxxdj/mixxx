@@ -1,8 +1,7 @@
 #pragma once
 
-#include <float.h>
-
 #include <QDebug>
+#include <limits>
 
 namespace mixxx {
 /// FrameDiff_t can be used to store the difference in position between
@@ -108,5 +107,5 @@ inline QDebug operator<<(QDebug dbg, FramePos arg) {
     return dbg;
 }
 
-const FramePos kInvalidFramePos = FramePos(-DBL_MAX);
+const FramePos kInvalidFramePos = FramePos(std::numeric_limits<double>::lowest());
 } // namespace mixxx
