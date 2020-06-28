@@ -11,6 +11,15 @@
 #include "engine/controls/enginecontrol.h"
 #include "util/assert.h"
 
+namespace {
+inline mixxx::FramePos samplePosToFramePos(double samplePos) {
+    return mixxx::FramePos(samplePos / mixxx::kEngineChannelCount);
+}
+inline double framePosToSamplePos(mixxx::FramePos framePos) {
+    return framePos.getValue() * mixxx::kEngineChannelCount;
+}
+} // namespace
+
 QuantizeControl::QuantizeControl(QString group,
                                  UserSettingsPointer pConfig)
         : EngineControl(group, pConfig) {
@@ -82,9 +91,9 @@ void QuantizeControl::lookupBeatPositions(double dCurrentSample) {
     mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
         mixxx::FramePos prevBeat, nextBeat;
-        pBeats->findPrevNextBeats(mixxx::FramePos(dCurrentSample / 2.0), &prevBeat, &nextBeat);
-        m_pCOPrevBeat->set(prevBeat.getValue() * 2.0);
-        m_pCONextBeat->set(nextBeat.getValue() * 2.0);
+        pBeats->findPrevNextBeats(samplePosToFramePos(dCurrentSample), &prevBeat, &nextBeat);
+        m_pCOPrevBeat->set(framePosToSamplePos(prevBeat));
+        m_pCONextBeat->set(framePosToSamplePos(nextBeat));
     }
 }
 
