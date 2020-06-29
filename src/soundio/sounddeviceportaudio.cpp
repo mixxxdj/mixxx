@@ -43,6 +43,10 @@
 
 Q_LOGGING_CATEGORY(mixxxLogDevicePortAudio, MIXXX_LOGGING_CATEGORY_DEVICE_PORTAUDIO)
 
+// Enable verbose trace logs temporarily for debugging.
+//
+// DISABLE TRACE LOGGING BEFORE COMITTING ANY CHANGES!
+// Logging in real-time code is strictly forbidden.
 #define ENABLE_TRACE_LOG false
 
 namespace {
