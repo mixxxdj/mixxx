@@ -7,8 +7,9 @@
 #include "preferences/usersettings.h"
 #include "recording/recordingmanagerbase.h"
 
-#define MAX_MACRO_SIZE 1000
-#define NO_DECK nullptr
+namespace {
+constexpr size_t kMaxMacroSize = 1000;
+}
 
 struct MacroAction {
     MacroAction(){};
@@ -20,12 +21,11 @@ struct MacroAction {
 
 struct Macro {
     int length = 0;
-    MacroAction actions[MAX_MACRO_SIZE];
-    QString deck = NO_DECK;
+    QString deck = QString();
+    MacroAction actions[kMaxMacroSize];
 
     Macro() {
-        qDebug() << "Constructing Macro";
-        std::fill_n(actions, MAX_MACRO_SIZE, MacroAction());
+        std::fill_n(actions, kMaxMacroSize, MacroAction());
     }
 
     void appendHotcueJump(double origin, double target) {
@@ -45,7 +45,7 @@ struct Macro {
     void clear() {
         qDebug() << "Clearing Macro";
         length = 0;
-        deck = NO_DECK;
+        deck = QString();
     }
 };
 
@@ -71,5 +71,5 @@ class MacroManager : public RecordingManagerBase {
     ControlObject* m_pCORecStatus;
     ControlPushButton* m_pToggleRecording;
 
-    Macro* m_pRecordedMacro = new Macro();
+    Macro* m_pRecordedMacro;
 };
