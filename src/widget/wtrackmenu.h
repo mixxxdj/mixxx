@@ -7,6 +7,7 @@
 #include "library/dao/playlistdao.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
+#include "track/trackref.h"
 
 class ControlProxy;
 class DlgTagFetcher;
@@ -124,14 +125,17 @@ class WTrackMenu : public QMenu {
   private:
     // This getter verifies that m_pTrackModel is set when
     // invoked.
-    QModelIndexList getTrackIndices() const;
+    const QModelIndexList& getTrackIndices() const;
 
     TrackIdList getTrackIds() const;
+    QList<TrackRef> getTrackRefs() const;
 
     // TODO: This function desperately needs to be replaced
     // by an iterator pattern that loads (and drops) tracks
     // lazily one-by-one during the traversal!!
-    TrackPointerList getTrackPointers(int maxSize = -1) const;
+    TrackPointerList getTrackPointers() const;
+
+    TrackPointer getFirstTrackPointer() const;
 
     bool isEmpty() const {
         return getTrackCount() == 0;
