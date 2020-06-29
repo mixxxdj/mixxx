@@ -1,5 +1,6 @@
 #include "engine/controls/cuecontrol.h"
 
+#include <QDebug>
 #include <QMutexLocker>
 
 #include "control/controlindicator.h"
@@ -9,6 +10,7 @@
 #include "preferences/colorpalettesettings.h"
 #include "util/color/color.h"
 #include "util/color/predefinedcolorpalettes.h"
+#include "util/logging/loggingcategories.h"
 #include "util/sample.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
@@ -1886,6 +1888,7 @@ void HotcueControl::slotHotcueGotoAndStop(double v) {
 }
 
 void HotcueControl::slotHotcueActivate(double v) {
+    qCDebug(mixxxlog::macros) << "hotcue" << m_iHotcueNumber + 1 << "activated:" << v;
     emit hotcueActivate(this, v);
 }
 
