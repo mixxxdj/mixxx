@@ -9,7 +9,7 @@
 #include "track/trackref.h"
 #include "util/assert.h"
 #include "util/color/color.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 
 namespace {
 

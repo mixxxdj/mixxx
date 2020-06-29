@@ -2,23 +2,24 @@
 #include "console.h"
 
 #include <stdio.h>
+
 #include <QtDebug>
+
 #include "util/version.h"
 
 #ifdef __WINDOWS__
+#include <conio.h>
 #include <io.h> // Debug Console
 #include <string.h>
-#include <conio.h>
 #include <strsafe.h>
 
 typedef BOOL(WINAPI* pfGetCurrentConsoleFontEx)(HANDLE, BOOL, PCONSOLE_FONT_INFOEX);
 typedef BOOL(WINAPI* pfSetCurrentConsoleFontEx)(HANDLE, BOOL, PCONSOLE_FONT_INFOEX);
 
 Console::Console()
-     : m_shouldResetCodePage(false),
-       m_shouldResetConsoleTitle(false),
-       m_shouldFreeConsole(false) {
-
+        : m_shouldResetCodePage(false),
+          m_shouldResetConsoleTitle(false),
+          m_shouldFreeConsole(false) {
     // Unlike Linux and MacOS Windows does not support windows and console
     // applications at the same time.
     //
@@ -80,10 +81,10 @@ Console::Console()
         HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
         if (kernel32_dll && hStdOut != INVALID_HANDLE_VALUE) {
             pfGetCurrentConsoleFontEx pfGCCFX =
-                    (pfGetCurrentConsoleFontEx) GetProcAddress(kernel32_dll,
+                    (pfGetCurrentConsoleFontEx)GetProcAddress(kernel32_dll,
                             "GetCurrentConsoleFontEx"); // Supported from Windows Vista
             pfSetCurrentConsoleFontEx pfSCCFX =
-                    (pfSetCurrentConsoleFontEx) GetProcAddress(kernel32_dll,
+                    (pfSetCurrentConsoleFontEx)GetProcAddress(kernel32_dll,
                             "SetCurrentConsoleFontEx"); // Supported from Windows Vista
             bool setFont = true;
             if (pfGCCFX) {
@@ -110,8 +111,8 @@ Console::Console()
                     pfSCCFX(hStdOut, FALSE, &newFont);
                 } else {
                     // This happens on Windows XP
-                    qWarning() << "The console font may not support non ANSI characters." <<
-                                  "In case of character issues switch to font \"Lucida Console\"";
+                    qWarning() << "The console font may not support non ANSI characters."
+                               << "In case of character issues switch to font \"Lucida Console\"";
                 }
             }
 
@@ -120,11 +121,17 @@ Console::Console()
             if (GetConsoleTitle(m_oldTitle, MAX_PATH)) {
                 // Build new console title string.
 #ifdef UNICODE
-                StringCchPrintf(szNewTitle, MAX_PATH, TEXT("%s : %s"),
-                        m_oldTitle,  Version::applicationTitle().utf16());
+                StringCchPrintf(szNewTitle,
+                        MAX_PATH,
+                        TEXT("%s : %s"),
+                        m_oldTitle,
+                        Version::applicationTitle().utf16());
 #else
-                StringCchPrintf(szNewTitle, MAX_PATH, TEXT("%s : %s"),
-                        m_oldTitle,  Version::applicationTitle().toLocal8Bit().data());
+                StringCchPrintf(szNewTitle,
+                        MAX_PATH,
+                        TEXT("%s : %s"),
+                        m_oldTitle,
+                        Version::applicationTitle().toLocal8Bit().data());
 #endif
                 // Set console title to new title
                 if (SetConsoleTitle(szNewTitle)) {
@@ -151,9 +158,9 @@ Console::Console()
         // set console to the default ANSI Code Page
         UINT defaultCodePage;
         if (GetLocaleInfo(LOCALE_USER_DEFAULT,
-                          LOCALE_RETURN_NUMBER | LOCALE_IDEFAULTANSICODEPAGE,
-                          reinterpret_cast<LPWSTR>(&defaultCodePage),
-                          sizeof(defaultCodePage)) != 0) {
+                    LOCALE_RETURN_NUMBER | LOCALE_IDEFAULTANSICODEPAGE,
+                    reinterpret_cast<LPWSTR>(&defaultCodePage),
+                    sizeof(defaultCodePage)) != 0) {
             SetConsoleOutputCP(defaultCodePage);
         } else {
             qWarning() << "GetLocaleInfo failed. Error code:" << GetLastError();

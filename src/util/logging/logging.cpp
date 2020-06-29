@@ -1,4 +1,4 @@
-#include "util/logging.h"
+#include "logging.h"
 
 #include <signal.h>
 #include <stdio.h>

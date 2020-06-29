@@ -2,12 +2,10 @@
 
 #include <QMetaMethod>
 #include <QThread>
-
 #include <mutex>
 
 #include "library/trackcollectionmanager.h"
-#include "util/logger.h"
-
+#include "util/logging/logger.h"
 
 namespace mixxx {
 

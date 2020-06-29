@@ -1,7 +1,7 @@
 #include "track/taglib/trackmetadata_ape.h"
 
 #include "track/tracknumbers.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 
 namespace mixxx {
 

@@ -1,12 +1,11 @@
-#include "library/coverartdelegate.h"
-
 #include <QPainter>
 #include <algorithm>
 
 #include "library/coverartcache.h"
+#include "library/coverartdelegate.h"
 #include "library/dao/trackschema.h"
 #include "library/trackmodel.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 #include "widget/wlibrarytableview.h"
 
 namespace {

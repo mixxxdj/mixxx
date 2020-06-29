@@ -15,7 +15,7 @@
 #include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/datetime.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
 

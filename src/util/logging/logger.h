@@ -1,19 +1,17 @@
 #ifndef MIXXX_UTIL_LOGGER_H
 #define MIXXX_UTIL_LOGGER_H
 
-
 #include <QByteArray>
 #include <QLatin1String>
 #include <QtDebug>
 
-#include "util/logging.h"
+#include "logging.h"
 #include "util/performancetimer.h"
-
 
 namespace mixxx {
 
 class Logger final {
-public:
+  public:
     Logger() = default;
     explicit Logger(const char* logContext);
     explicit Logger(const QLatin1String& logContext);
@@ -70,11 +68,10 @@ public:
         return log(qCritical());
     }
 
-private:
+  private:
     QByteArray m_preambleChars;
 };
 
-}  // namespace mixxx
-
+} // namespace mixxx
 
 #endif /* MIXXX_UTIL_LOGGER_H */

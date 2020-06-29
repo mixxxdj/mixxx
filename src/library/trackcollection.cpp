@@ -1,13 +1,13 @@
-#include <QApplication>
-
 #include "library/trackcollection.h"
+
+#include <QApplication>
 
 #include "library/basetrackcache.h"
 #include "track/globaltrackcache.h"
 #include "util/assert.h"
 #include "util/db/sqltransaction.h"
 #include "util/dnd.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 
 namespace {
 

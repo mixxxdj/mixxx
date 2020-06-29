@@ -1,10 +1,10 @@
 #include "sources/soundsourcemp3.h"
-#include "sources/mp3decoding.h"
-
-#include "util/logger.h"
-#include "util/math.h"
 
 #include <id3tag.h>
+
+#include "sources/mp3decoding.h"
+#include "util/logging/logger.h"
+#include "util/math.h"
 
 namespace mixxx {
 

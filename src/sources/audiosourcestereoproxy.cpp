@@ -1,6 +1,6 @@
 #include "sources/audiosourcestereoproxy.h"
 
-#include "util/logger.h"
+#include "util/logging/logger.h"
 #include "util/sample.h"
 
 namespace mixxx {

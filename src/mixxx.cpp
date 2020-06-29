@@ -66,7 +66,7 @@
 #include "util/debug.h"
 #include "util/experiment.h"
 #include "util/font.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 #include "util/math.h"
 #include "util/sandbox.h"
 #include "util/screensaver.h"

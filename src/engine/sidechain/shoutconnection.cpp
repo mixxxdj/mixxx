@@ -1,5 +1,4 @@
-// shoutconnection.cpp
-// Created July 4th 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
+#include "engine/sidechain/shoutconnection.h"
 
 #include <QUrl>
 
@@ -25,13 +24,12 @@
 #ifdef __OPUS__
 #include "encoder/encoderopus.h"
 #endif
+
 #include "mixer/playerinfo.h"
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
 #include "track/track.h"
-#include "util/logger.h"
-
-#include <engine/sidechain/shoutconnection.h>
+#include "util/logging/logger.h"
 
 namespace {
 

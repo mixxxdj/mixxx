@@ -1,10 +1,10 @@
 #include "sources/soundsourceffmpeg.h"
 
-#include "util/logger.h"
-#include "util/sample.h"
-
 #include <limits>
 #include <mutex>
+
+#include "util/logging/logger.h"
+#include "util/sample.h"
 
 #define ENABLE_TRACING false
 

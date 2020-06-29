@@ -3,7 +3,7 @@
 #include <QtEndian>
 
 #include "track/serato/tags.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 
 namespace {
 

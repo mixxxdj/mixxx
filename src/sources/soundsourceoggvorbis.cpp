@@ -1,8 +1,8 @@
-#include <QFile>
-
 #include "sources/soundsourceoggvorbis.h"
 
-#include "util/logger.h"
+#include <QFile>
+
+#include "util/logging/logger.h"
 
 namespace mixxx {
 

@@ -1,8 +1,8 @@
 #include "sources/soundsourcecoreaudio.h"
-#include "sources/mp3decoding.h"
 
 #include "engine/engine.h"
-#include "util/logger.h"
+#include "sources/mp3decoding.h"
+#include "util/logging/logger.h"
 #include "util/math.h"
 
 namespace mixxx {

@@ -2,7 +2,7 @@
 
 #include <QtEndian>
 
-#include "util/logger.h"
+#include "util/logging/logger.h"
 
 namespace {
 

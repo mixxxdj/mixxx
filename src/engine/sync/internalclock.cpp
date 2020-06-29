@@ -7,7 +7,7 @@
 #include "control/controlpushbutton.h"
 #include "engine/sync/enginesync.h"
 #include "preferences/usersettings.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 
 namespace {
 const mixxx::Logger kLogger("InternalClock");

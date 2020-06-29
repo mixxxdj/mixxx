@@ -2,10 +2,9 @@
 
 #include <QSqlRecord>
 
-#include "util/performancetimer.h"
-#include "util/logger.h"
 #include "util/assert.h"
-
+#include "util/logging/logger.h"
+#include "util/performancetimer.h"
 
 namespace {
 

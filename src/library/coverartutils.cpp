@@ -6,7 +6,7 @@
 
 #include "sources/soundsourceproxy.h"
 #include "util/compatibility.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 #include "util/regex.h"
 
 

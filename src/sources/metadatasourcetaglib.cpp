@@ -1,14 +1,13 @@
 #include "sources/metadatasourcetaglib.h"
 
-#include "track/taglib/trackmetadata.h"
-
-#include "util/logger.h"
-#include "util/memory.h"
+#include <taglib/vorbisfile.h>
 
 #include <QFile>
 #include <QFileInfo>
 
-#include <taglib/vorbisfile.h>
+#include "track/taglib/trackmetadata.h"
+#include "util/logging/logger.h"
+#include "util/memory.h"
 #if (TAGLIB_HAS_OPUSFILE)
 #include <taglib/opusfile.h>
 #endif

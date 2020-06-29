@@ -12,7 +12,7 @@
 #endif // __EXTRA_METADATA__
 
 #include "track/tracknumbers.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 
 namespace mixxx {
 

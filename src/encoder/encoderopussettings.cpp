@@ -1,12 +1,10 @@
-// encoderopussettings.cpp
-// Create on August 15th 2017 by Palakis
+#include "encoder/encoderopussettings.h"
 
 #include <QMap>
 
-#include "encoder/encoderopussettings.h"
 #include "recording/defs_recording.h"
-#include "util/logger.h"
 #include "util/compatibility.h"
+#include "util/logging/logger.h"
 
 namespace {
 const int kDefaultQualityIndex = 6;

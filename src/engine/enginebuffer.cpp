@@ -33,7 +33,7 @@
 #include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/defs.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 #include "util/math.h"
 #include "util/sample.h"
 #include "util/timer.h"

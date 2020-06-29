@@ -1,16 +1,14 @@
-#include <QtDebug>
+#include "engine/cachingreader/cachingreader.h"
+
 #include <QFileInfo>
 
-#include "engine/cachingreader/cachingreader.h"
 #include "control/controlobject.h"
 #include "track/track.h"
 #include "util/assert.h"
-#include "util/counter.h"
-#include "util/math.h"
-#include "util/sample.h"
-#include "util/logger.h"
 #include "util/compatibility.h"
-
+#include "util/counter.h"
+#include "util/logging/logger.h"
+#include "util/sample.h"
 
 namespace {
 

@@ -1,5 +1,4 @@
-#include "util/logger.h"
-
+#include "logger.h"
 
 // NOTE(uklotzde): The initialization of Logger must not depend on any
 // static data, because Logger instances are usually instantiated as
@@ -26,11 +25,11 @@ inline QByteArray preambleChars(const QLatin1String& logContext) {
 namespace mixxx {
 
 Logger::Logger(const char* logContext)
-    : m_preambleChars(preambleChars(QLatin1String(logContext))) {
+        : m_preambleChars(preambleChars(QLatin1String(logContext))) {
 }
 
 Logger::Logger(const QLatin1String& logContext)
-    : m_preambleChars(preambleChars(logContext)) {
+        : m_preambleChars(preambleChars(logContext)) {
 }
 
-}  // namespace mixxx
+} // namespace mixxx

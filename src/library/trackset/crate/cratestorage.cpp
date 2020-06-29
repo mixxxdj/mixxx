@@ -6,7 +6,7 @@
 #include "util/db/dbconnection.h"
 #include "util/db/fwdsqlquery.h"
 #include "util/db/sqllikewildcards.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 
 namespace {
 

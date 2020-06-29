@@ -13,7 +13,7 @@
 #include "util/assert.h"
 #include "util/color/rgbcolor.h"
 #include "util/db/fwdsqlquery.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 #include "util/performancetimer.h"
 
 namespace {

@@ -743,7 +743,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/color/color.cpp
   src/util/color/colorpalette.cpp
   src/util/color/predefinedcolorpalettes.cpp
-  src/util/console.cpp
+  src/util/logging/console.cpp
   src/util/db/dbconnection.cpp
   src/util/db/dbconnectionpool.cpp
   src/util/db/dbconnectionpooled.cpp
@@ -762,8 +762,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/file.cpp
   src/util/imageutils.cpp
   src/util/indexrange.cpp
-  src/util/logger.cpp
-  src/util/logging.cpp
+  src/util/logging/logger.cpp
+  src/util/logging/logging.cpp
   src/util/mac.cpp
   src/util/movinginterquartilemean.cpp
   src/util/performancetimer.cpp

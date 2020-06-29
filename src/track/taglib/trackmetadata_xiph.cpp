@@ -5,7 +5,7 @@
 #include <array>
 
 #include "track/tracknumbers.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 
 // TagLib has support for XiphComment::pictureList() since version 1.11
 #define TAGLIB_HAS_VORBIS_COMMENT_PICTURES \

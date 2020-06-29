@@ -1,7 +1,7 @@
 #include "sources/soundsourceopus.h"
 
 #include "audio/streaminfo.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 
 namespace mixxx {
 

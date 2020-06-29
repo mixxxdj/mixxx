@@ -21,7 +21,7 @@
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/defs.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 #include "util/sleepableqthread.h"
 #include "util/stat.h"
 

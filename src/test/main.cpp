@@ -2,7 +2,7 @@
 
 #include "errordialoghandler.h"
 #include "mixxxtest.h"
-#include "util/logging.h"
+#include "util/logging/logging.h"
 
 int main(int argc, char **argv) {
     // We never want to popup error dialogs when running tests.

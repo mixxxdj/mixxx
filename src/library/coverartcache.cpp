@@ -7,7 +7,7 @@
 
 #include "library/coverartutils.h"
 #include "util/compatibility.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 #include "util/thread_affinity.h"
 
 namespace {

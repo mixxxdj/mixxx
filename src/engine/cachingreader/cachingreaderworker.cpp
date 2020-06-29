@@ -1,15 +1,14 @@
-#include <QtDebug>
+#include "engine/cachingreader/cachingreaderworker.h"
+
 #include <QFileInfo>
 #include <QMutexLocker>
+#include <QtDebug>
 
 #include "control/controlobject.h"
-
-#include "engine/cachingreader/cachingreaderworker.h"
 #include "sources/soundsourceproxy.h"
 #include "util/compatibility.h"
 #include "util/event.h"
-#include "util/logger.h"
-
+#include "util/logging/logger.h"
 
 namespace {
 

@@ -35,7 +35,7 @@
 #include "recording/recordingmanager.h"
 #include "util/assert.h"
 #include "util/db/dbconnectionpooled.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 #include "util/sandbox.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"

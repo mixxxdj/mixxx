@@ -1,13 +1,11 @@
 #pragma once
 
+#include <QThread>
 #include <atomic>
 #include <condition_variable>
 #include <mutex>
 
-#include <QThread>
-
-#include "util/logger.h"
-
+#include "util/logging/logger.h"
 
 /// A worker thread without an event loop.
 ///

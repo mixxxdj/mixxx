@@ -1,9 +1,4 @@
-// encoderopus.cpp
-// Create on August 15th 2017 by Palakis
-
 #include "encoder/encoderopus.h"
-
-#include <stdlib.h>
 
 #include <QByteArray>
 #include <QMapIterator>
@@ -15,7 +10,7 @@
 
 #include "encoder/encoderopussettings.h"
 #include "engine/sidechain/enginesidechain.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 
 namespace {
 // From libjitsi's Opus encoder:

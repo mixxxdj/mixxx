@@ -25,7 +25,7 @@
 #include "engine/sync/internalclock.h"
 #include "util/assert.h"
 #include "util/defs.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 
 namespace {
 const mixxx::Logger kLogger("EngineSync");

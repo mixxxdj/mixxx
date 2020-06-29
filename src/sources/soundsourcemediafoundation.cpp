@@ -4,7 +4,7 @@
 #include <mferror.h>
 #include <propvarutil.h>
 
-#include "util/logger.h"
+#include "util/logging/logger.h"
 #include "util/sample.h"
 
 namespace {

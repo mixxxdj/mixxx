@@ -5,7 +5,7 @@
 #include "engine/filters/enginefilterbutterworth8.h"
 #include "library/trackcollection.h"
 #include "track/track.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 #include "waveform/waveformfactory.h"
 
 namespace {

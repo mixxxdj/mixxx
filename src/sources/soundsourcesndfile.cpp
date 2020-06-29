@@ -1,8 +1,8 @@
-#include <QDir>
-
 #include "sources/soundsourcesndfile.h"
 
-#include "util/logger.h"
+#include <QDir>
+
+#include "util/logging/logger.h"
 
 namespace mixxx {
 

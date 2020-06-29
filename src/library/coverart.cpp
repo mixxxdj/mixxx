@@ -4,7 +4,7 @@
 
 #include "library/coverartutils.h"
 #include "util/debug.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 
 namespace {
 

@@ -1,11 +1,10 @@
 #include "database/schemamanager.h"
 
+#include "util/assert.h"
 #include "util/db/fwdsqlquery.h"
 #include "util/db/sqltransaction.h"
+#include "util/logging/logger.h"
 #include "util/xml.h"
-#include "util/logger.h"
-#include "util/assert.h"
-
 
 const QString SchemaManager::SETTINGS_VERSION_STRING = "mixxx.schema.version";
 const QString SchemaManager::SETTINGS_MINCOMPATIBLE_STRING = "mixxx.schema.min_compatible_version";

@@ -9,9 +9,8 @@
 #include "engine/channels/enginechannel.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
-#include "util/assert.h"
 #include "util/duration.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 #include "util/math.h"
 #include "waveform/visualplayposition.h"
 

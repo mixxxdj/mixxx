@@ -1,8 +1,7 @@
 #include "util/db/sqltransaction.h"
 
-#include "util/logger.h"
 #include "util/assert.h"
-
+#include "util/logging/logger.h"
 
 namespace {
 

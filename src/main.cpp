@@ -15,21 +15,19 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QThread>
-#include <QDir>
-#include <QtDebug>
 #include <QApplication>
-#include <QStringList>
+#include <QDir>
 #include <QString>
 #include <QTextCodec>
+#include <QThread>
 
+#include "errordialoghandler.h"
 #include "mixxx.h"
 #include "mixxxapplication.h"
 #include "sources/soundsourceproxy.h"
-#include "errordialoghandler.h"
 #include "util/cmdlineargs.h"
-#include "util/console.h"
-#include "util/logging.h"
+#include "util/logging/console.h"
+#include "util/logging/logging.h"
 #include "util/version.h"
 
 #ifdef Q_OS_LINUX

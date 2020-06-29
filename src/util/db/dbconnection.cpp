@@ -5,13 +5,11 @@
 #include <sqlite3.h>
 #endif // __SQLITE3__
 
-#include "util/db/dbconnection.h"
-
-#include "util/db/sqllikewildcards.h"
-#include "util/memory.h"
-#include "util/logger.h"
 #include "util/assert.h"
-
+#include "util/db/dbconnection.h"
+#include "util/db/sqllikewildcards.h"
+#include "util/logging/logger.h"
+#include "util/memory.h"
 
 // Originally from public domain code:
 // http://www.archivum.info/qt-interest@trolltech.com/2008-12/00584/Re-%28Qt-interest%29-Qt-Sqlite-UserDefinedFunction.html

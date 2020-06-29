@@ -1,15 +1,14 @@
+#include "wsearchlineedit.h"
+
 #include <QFont>
 #include <QShortcut>
 #include <QStyle>
 
-#include "wsearchlineedit.h"
+#include "skin/skincontext.h"
+#include "util/assert.h"
+#include "util/logging/logger.h"
 #include "wskincolor.h"
 #include "wwidget.h"
-
-#include "skin/skincontext.h"
-
-#include "util/assert.h"
-#include "util/logger.h"
 
 #define ENABLE_TRACE_LOG false
 

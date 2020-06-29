@@ -1,11 +1,10 @@
 #include "musicbrainz/musicbrainzxml.h"
 
+#include <QTextCodec>
 #include <QTextStream>
 #include <QXmlStreamReader>
-#include <QTextCodec>
 
-#include "util/logger.h"
-
+#include "util/logging/logger.h"
 
 namespace mixxx {
 

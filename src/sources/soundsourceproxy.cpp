@@ -39,7 +39,7 @@
 #include "library/coverartutils.h"
 #include "track/globaltrackcache.h"
 #include "util/cmdlineargs.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 #include "util/regex.h"
 
 //Static memory allocation

@@ -4,8 +4,8 @@
 
 #include "control/control.h"
 #include "util/cmdlineargs.h"
+#include "util/logging/logging.h"
 #include "util/statsmanager.h"
-#include "util/logging.h"
 
 DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
                                      UserSettingsPointer pConfig)

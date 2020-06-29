@@ -3,8 +3,8 @@
 #define CONSOLE_H_
 
 #ifdef __WINDOWS__
-#include <windows.h>
 #include <tchar.h>
+#include <windows.h>
 #endif
 
 class Console {

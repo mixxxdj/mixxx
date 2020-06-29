@@ -5,7 +5,7 @@
 
 #include "util/assert.h"
 #include "util/counter.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 #include "util/thread_affinity.h"
 
 namespace mixxx {

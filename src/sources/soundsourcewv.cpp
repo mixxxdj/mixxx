@@ -1,9 +1,10 @@
-#include <wavpack/wavpack.h>
-#include <QFile>
-
 #include "sources/soundsourcewv.h"
 
-#include "util/logger.h"
+#include <wavpack/wavpack.h>
+
+#include <QFile>
+
+#include "util/logging/logger.h"
 
 namespace mixxx {
 

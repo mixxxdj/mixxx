@@ -1,7 +1,6 @@
 #include "util/db/dbconnectionpooler.h"
 
-#include "util/logger.h"
-
+#include "util/logging/logger.h"
 
 namespace mixxx {
 

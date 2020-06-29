@@ -2,12 +2,11 @@
 
 #include <QtDebug>
 
-#include "sources/audiosourcestereoproxy.h"
 #include "engine/engine.h"
+#include "sources/audiosourcestereoproxy.h"
+#include "util/logging/logger.h"
 #include "util/math.h"
 #include "util/sample.h"
-#include "util/logger.h"
-
 
 namespace {
 

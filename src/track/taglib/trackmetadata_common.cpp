@@ -5,7 +5,7 @@
 #include "track/tracknumbers.h"
 #include "util/assert.h"
 #include "util/duration.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 
 // TagLib has support for length in milliseconds since version 1.10
 #define TAGLIB_HAS_LENGTH_IN_MILLISECONDS \

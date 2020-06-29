@@ -1,12 +1,11 @@
-#ifndef CMDLINEARGS_H
-#define CMDLINEARGS_H
+#pragma once
 
+#include <QDesktopServices>
+#include <QDir>
 #include <QList>
 #include <QString>
-#include <QDir>
-#include <QDesktopServices>
 
-#include "util/logging.h"
+#include "util/logging/logging.h"
 
 // A structure to store the parsed command-line arguments
 class CmdlineArgs final {
@@ -56,5 +55,3 @@ class CmdlineArgs final {
     QString m_pluginPath;
     QString m_timelinePath;
 };
-
-#endif /* CMDLINEARGS_H */

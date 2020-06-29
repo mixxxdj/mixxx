@@ -34,7 +34,7 @@
 #include "util/db/sqlstringformatter.h"
 #include "util/db/sqltransaction.h"
 #include "util/file.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 #include "util/math.h"
 #include "util/timer.h"
 

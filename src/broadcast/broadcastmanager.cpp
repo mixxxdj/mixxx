@@ -1,3 +1,5 @@
+#include "broadcast/broadcastmanager.h"
+
 // shout.h checks for WIN32 to see if we are on Windows.
 #ifdef WIN64
 #define WIN32
@@ -12,9 +14,7 @@
 #include "engine/sidechain/enginenetworkstream.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "soundio/soundmanager.h"
-#include "util/logger.h"
-
-#include "broadcast/broadcastmanager.h"
+#include "util/logging/logger.h"
 
 namespace {
 const mixxx::Logger kLogger("BroadcastManager");

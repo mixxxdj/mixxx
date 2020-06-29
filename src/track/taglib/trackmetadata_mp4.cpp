@@ -1,7 +1,7 @@
 #include "track/taglib/trackmetadata_mp4.h"
 
 #include "track/tracknumbers.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 
 // TagLib has support for MP4::File::hasMP4Tag() and MP4::Tag::isEmpty() version 1.10
 #define TAGLIB_HAS_MP4TAG_CHECK_AND_IS_EMPTY \

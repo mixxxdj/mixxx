@@ -8,7 +8,7 @@
 #include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
 #include "util/assert.h"
-#include "util/logger.h"
+#include "util/logging/logger.h"
 #include "util/math.h"
 
 const double kTrackPositionMasterHandoff = 0.99;
