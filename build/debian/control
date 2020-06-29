@@ -51,6 +51,7 @@ Build-Depends: debhelper (>= 9),
                liblilv-dev,
                libmodplug-dev,
                libmp3lame-dev,
+               libebur128-dev,
 # for running mixxx-test
                xvfb
 Standards-Version: 3.9.8
