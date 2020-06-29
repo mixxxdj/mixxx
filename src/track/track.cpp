@@ -281,10 +281,10 @@ double Track::setBpm(double bpmValue) {
     if (!m_pBeats) {
         // No beat grid available -> create and initialize
         double cue = getCuePoint().getPosition();
-        m_pBeats = std::make_shared<mixxx::Beats>(this);
+        mixxx::BeatsPointer pBeats = std::make_shared<mixxx::Beats>(this);
         // setGrid accepts frames, but cue is in samples.
-        m_pBeats->setGrid(mixxx::Bpm(bpmValue), mixxx::FramePos(cue / 2.0));
-        setBeatsAndUnlock(&lock, m_pBeats);
+        pBeats->setGrid(mixxx::Bpm(bpmValue), mixxx::FramePos(cue / mixxx::kEngineChannelCount));
+        setBeatsAndUnlock(&lock, pBeats);
         return bpmValue;
     }
 
