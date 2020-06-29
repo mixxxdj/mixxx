@@ -65,14 +65,9 @@ class MacroManager : public RecordingManagerBase {
     void startMacroRecording(Macro* pMacro);
     void stopMacroRecording();
 
-  private slots:
-    void slotHotcueActivate(double v);
-
   private:
-    ControlProxy* m_pCPHotcueActivate;
     UserSettingsPointer m_pConfig;
 
-    ControlProxy* m_pCPRecStatus;
     ControlObject* m_pCORecStatus;
     ControlPushButton* m_pToggleRecording;
 

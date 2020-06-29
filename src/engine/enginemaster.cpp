@@ -1,21 +1,18 @@
 #include "engine/enginemaster.h"
 
-#include <QtDebug>
 #include <QList>
 #include <QPair>
+#include <QtDebug>
+#include <QtQml/QtQml>
 
-#include "preferences/usersettings.h"
-#include "control/controlaudiotaperpot.h"
 #include "control/controlaudiotaperpot.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 #include "effects/effectsmanager.h"
 #include "engine/channelmixer.h"
+#include "engine/channels/enginechannel.h"
 #include "engine/effects/engineeffectsmanager.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginebuffer.h"
-#include "engine/channels/enginechannel.h"
-#include "engine/channels/enginedeck.h"
 #include "engine/enginedelay.h"
 #include "engine/enginetalkoverducking.h"
 #include "engine/enginevumeter.h"
@@ -24,6 +21,7 @@
 #include "engine/sidechain/enginesidechain.h"
 #include "engine/sync/enginesync.h"
 #include "mixer/playermanager.h"
+#include "preferences/usersettings.h"
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/timer.h"
@@ -271,12 +269,12 @@ const CSAMPLE* EngineMaster::getSidechainBuffer() const {
 }
 
 void EngineMaster::slotStartMacroRecording(Macro* pMacro) {
-    qDebug() << "ENGINEMASTER MACRO START!";
+    qCDebug(QLoggingCategory("macros")) << "ENGINEMASTER START!";
     m_pMacroRecording = pMacro;
 }
 
 void EngineMaster::slotStopMacroRecording() {
-    qDebug() << "ENGINEMASTER MACRO STOP!";
+    qCDebug(QLoggingCategory("macros")) << "ENGINEMASTER STOP!";
     m_pMacroRecording = nullptr;
 }
 
