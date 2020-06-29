@@ -78,8 +78,8 @@ void PlaylistTableModel::setTableModel(int playlistId) {
             << PLAYLISTTRACKSTABLE_DATETIMEADDED
             << "'' AS " + LIBRARYTABLE_PREVIEW
             // For sorting the cover art column we give LIBRARYTABLE_COVERART
-            // the same value as the cover hash.
-            << LIBRARYTABLE_COVERART_HASH + " AS " + LIBRARYTABLE_COVERART;
+            // the same value as the cover digest.
+            << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART;
 
     QString queryString = QString(
             "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
@@ -257,37 +257,36 @@ bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
     return BaseSqlTableModel::isColumnHiddenByDefault(column);
 }
 
-TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
-    TrackModel::CapabilitiesFlags caps =
-            TRACKMODELCAPS_RECEIVEDROPS |
-            TRACKMODELCAPS_REORDER |
-            TRACKMODELCAPS_ADDTOCRATE |
-            TRACKMODELCAPS_ADDTOPLAYLIST |
-            TRACKMODELCAPS_EDITMETADATA |
-            TRACKMODELCAPS_LOADTODECK |
-            TRACKMODELCAPS_LOADTOSAMPLER |
-            TRACKMODELCAPS_LOADTOPREVIEWDECK |
-            TRACKMODELCAPS_RESETPLAYED;
+TrackModel::Capabilities PlaylistTableModel::getCapabilities() const {
+    TrackModel::Capabilities caps =
+            Capability::ReceiveDrops |
+            Capability::Reorder |
+            Capability::AddToTrackSet |
+            Capability::EditMetadata |
+            Capability::LoadToDeck |
+            Capability::LoadToSampler |
+            Capability::LoadToPreviewDeck |
+            Capability::ResetPlayed;
 
     if (m_iPlaylistId !=
             m_pTrackCollectionManager->internalCollection()
                     ->getPlaylistDAO()
                     .getPlaylistIdFromName(AUTODJ_TABLE)) {
         // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
-        caps |= TRACKMODELCAPS_ADDTOAUTODJ | TRACKMODELCAPS_REMOVE_PLAYLIST;
+        caps |= Capability::AddToAutoDJ | Capability::RemovePlaylist;
     } else {
-        caps |= TRACKMODELCAPS_REMOVE;
+        caps |= Capability::Remove;
     }
     if (PlaylistDAO::PLHT_SET_LOG ==
             m_pTrackCollectionManager->internalCollection()
                     ->getPlaylistDAO()
                     .getHiddenType(m_iPlaylistId)) {
         // Disable track reordering for history playlists
-        caps &= ~(TRACKMODELCAPS_REORDER | TRACKMODELCAPS_REMOVE_PLAYLIST);
+        caps &= ~(Capability::Reorder | Capability::RemovePlaylist);
     }
     bool locked = m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId);
     if (locked) {
-        caps |= TRACKMODELCAPS_LOCKED;
+        caps |= Capability::Locked;
     }
 
     return caps;

@@ -25,7 +25,7 @@ SkinLoader::SkinLoader(UserSettingsPointer pConfig) :
 }
 
 SkinLoader::~SkinLoader() {
-    LegacySkinParser::freeChannelStrings();
+    LegacySkinParser::clearSharedGroupStrings();
 }
 
 QList<QDir> SkinLoader::getSkinSearchPaths() const {

@@ -352,26 +352,99 @@ void TrackDAO::addTracksPrepare() {
 
     m_pQueryTrackLocationSelect->prepare("SELECT id FROM track_locations WHERE location=:location");
 
-    m_pQueryLibraryInsert->prepare("INSERT INTO library "
+    m_pQueryLibraryInsert->prepare(
+            "INSERT INTO library "
             "("
-            "artist,title,album,album_artist,year,genre,tracknumber,tracktotal,composer,"
-            "grouping,filetype,location,color,comment,url,rating,key,key_id,"
-            "cuepoint,bpm,replaygain,replaygain_peak,wavesummaryhex,"
-            "timesplayed,played,mixxx_deleted,header_parsed,"
-            "channels,samplerate,bitrate,duration,"
-            "beats_version,beats_sub_version,beats,bpm_lock,"
-            "keys_version,keys_sub_version,keys,"
-            "coverart_source,coverart_type,coverart_location,coverart_hash,"
+            "artist,"
+            "title,"
+            "album,"
+            "album_artist,"
+            "year,"
+            "genre,"
+            "tracknumber,"
+            "tracktotal,"
+            "composer,"
+            "grouping,"
+            "filetype,"
+            "location,"
+            "color,"
+            "comment,"
+            "url,"
+            "rating,"
+            "key,"
+            "key_id,"
+            "cuepoint,"
+            "bpm,"
+            "replaygain,"
+            "replaygain_peak,"
+            "wavesummaryhex,"
+            "timesplayed,"
+            "played,"
+            "mixxx_deleted,"
+            "header_parsed,"
+            "channels,"
+            "samplerate,"
+            "bitrate,"
+            "duration,"
+            "beats_version,"
+            "beats_sub_version,"
+            "beats,"
+            "bpm_lock,"
+            "keys_version,"
+            "keys_sub_version,"
+            "keys,"
+            "coverart_source,"
+            "coverart_type,"
+            "coverart_location,"
+            "coverart_color,"
+            "coverart_digest,"
+            "coverart_hash,"
             "datetime_added"
             ") VALUES ("
-            ":artist,:title,:album,:album_artist,:year,:genre,:tracknumber,:tracktotal,:composer,"
-            ":grouping,:filetype,:location,:color,:comment,:url,:rating,:key,:key_id,"
-            ":cuepoint,:bpm,:replaygain,:replaygain_peak,:wavesummaryhex,"
-            ":timesplayed,:played,:mixxx_deleted,:header_parsed,"
-            ":channels,:samplerate,:bitrate,:duration,"
-            ":beats_version,:beats_sub_version,:beats,:bpm_lock,"
-            ":keys_version,:keys_sub_version,:keys,"
-            ":coverart_source,:coverart_type,:coverart_location,:coverart_hash,"
+            ":artist,"
+            ":title,"
+            ":album,"
+            ":album_artist,"
+            ":year,"
+            ":genre,"
+            ":tracknumber,"
+            ":tracktotal,"
+            ":composer,"
+            ":grouping,"
+            ":filetype,"
+            ":location,"
+            ":color,"
+            ":comment,"
+            ":url,"
+            ":rating,"
+            ":key,"
+            ":key_id,"
+            ":cuepoint,"
+            ":bpm,"
+            ":replaygain,"
+            ":replaygain_peak,"
+            ":wavesummaryhex,"
+            ":timesplayed,"
+            ":played,"
+            ":mixxx_deleted,"
+            ":header_parsed,"
+            ":channels,"
+            ":samplerate,"
+            ":bitrate,"
+            ":duration,"
+            ":beats_version,"
+            ":beats_sub_version,"
+            ":beats,"
+            ":bpm_lock,"
+            ":keys_version,"
+            ":keys_sub_version,"
+            ":keys,"
+            ":coverart_source,"
+            ":coverart_type,"
+            ":coverart_location,"
+            ":coverart_color,"
+            ":coverart_digest,"
+            ":coverart_hash,"
             ":datetime_added"
             ")");
 
@@ -471,7 +544,9 @@ void bindTrackLibraryValues(
     pTrackLibraryQuery->bindValue(":coverart_source", coverInfo.source);
     pTrackLibraryQuery->bindValue(":coverart_type", coverInfo.type);
     pTrackLibraryQuery->bindValue(":coverart_location", coverInfo.coverLocation);
-    pTrackLibraryQuery->bindValue(":coverart_hash", coverInfo.hash);
+    pTrackLibraryQuery->bindValue(":coverart_color", mixxx::RgbColor::toQVariant(coverInfo.color));
+    pTrackLibraryQuery->bindValue(":coverart_digest", coverInfo.imageDigest());
+    pTrackLibraryQuery->bindValue(":coverart_hash", coverInfo.legacyHash());
 
     QByteArray beatsBlob;
     QString beatsVersion;
@@ -1141,7 +1216,10 @@ bool setTrackCoverInfo(const QSqlRecord& record, const int column,
             record.value(column + 1).toInt(&ok));
     if (!ok) coverInfo.type = CoverInfo::NONE;
     coverInfo.coverLocation = record.value(column + 2).toString();
-    coverInfo.hash = record.value(column + 3).toUInt();
+    coverInfo.color = mixxx::RgbColor::fromQVariant(record.value(column + 3));
+    coverInfo.setImageDigest(
+            record.value(column + 4).toByteArray(),
+            record.value(column + 5).toUInt());
     pTrack->setCoverInfo(coverInfo);
     return false;
 }
@@ -1174,59 +1252,61 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     QSqlQuery query(m_database);
 
     ColumnPopulator columns[] = {
-        // Location must be first.
-        { "track_locations.location", nullptr },
-        { "artist", setTrackArtist },
-        { "title", setTrackTitle },
-        { "album", setTrackAlbum },
-        { "album_artist", setTrackAlbumArtist },
-        { "year", setTrackYear },
-        { "genre", setTrackGenre },
-        { "composer", setTrackComposer },
-        { "grouping", setTrackGrouping },
-        { "tracknumber", setTrackNumber },
-        { "tracktotal", setTrackTotal },
-        { "filetype", setTrackFiletype },
-        { "rating", setTrackRating },
-        { "color", setTrackColor },
-        { "comment", setTrackComment },
-        { "url", setTrackUrl },
-        { "cuepoint", setTrackCuePoint },
-        { "replaygain", setTrackReplayGainRatio },
-        { "replaygain_peak", setTrackReplayGainPeak },
-        { "timesplayed", setTrackTimesPlayed },
-        { "played", setTrackPlayed },
-        { "datetime_added", setTrackDateAdded },
-        { "header_parsed", setTrackMetadataSynchronized },
+            // Location must be first.
+            {"track_locations.location", nullptr},
+            {"artist", setTrackArtist},
+            {"title", setTrackTitle},
+            {"album", setTrackAlbum},
+            {"album_artist", setTrackAlbumArtist},
+            {"year", setTrackYear},
+            {"genre", setTrackGenre},
+            {"composer", setTrackComposer},
+            {"grouping", setTrackGrouping},
+            {"tracknumber", setTrackNumber},
+            {"tracktotal", setTrackTotal},
+            {"filetype", setTrackFiletype},
+            {"rating", setTrackRating},
+            {"color", setTrackColor},
+            {"comment", setTrackComment},
+            {"url", setTrackUrl},
+            {"cuepoint", setTrackCuePoint},
+            {"replaygain", setTrackReplayGainRatio},
+            {"replaygain_peak", setTrackReplayGainPeak},
+            {"timesplayed", setTrackTimesPlayed},
+            {"played", setTrackPlayed},
+            {"datetime_added", setTrackDateAdded},
+            {"header_parsed", setTrackMetadataSynchronized},
 
-        // Audio properties are set together at once. Do not change the
-        // ordering of these columns or put other columns in between them!
-        { "channels", setTrackAudioProperties },
-        { "samplerate", nullptr },
-        { "bitrate", nullptr },
-        { "duration", nullptr },
+            // Audio properties are set together at once. Do not change the
+            // ordering of these columns or put other columns in between them!
+            {"channels", setTrackAudioProperties},
+            {"samplerate", nullptr},
+            {"bitrate", nullptr},
+            {"duration", nullptr},
 
-        // Beat detection columns are handled by setTrackBeats. Do not change
-        // the ordering of these columns or put other columns in between them!
-        { "bpm", setTrackBeats },
-        { "beats_version", nullptr },
-        { "beats_sub_version", nullptr },
-        { "beats", nullptr },
-        { "bpm_lock", nullptr },
+            // Beat detection columns are handled by setTrackBeats. Do not change
+            // the ordering of these columns or put other columns in between them!
+            {"bpm", setTrackBeats},
+            {"beats_version", nullptr},
+            {"beats_sub_version", nullptr},
+            {"beats", nullptr},
+            {"bpm_lock", nullptr},
 
-        // Beat detection columns are handled by setTrackKey. Do not change the
-        // ordering of these columns or put other columns in between them!
-        { "key", setTrackKey },
-        { "keys_version", nullptr },
-        { "keys_sub_version", nullptr },
-        { "keys", nullptr },
+            // Beat detection columns are handled by setTrackKey. Do not change the
+            // ordering of these columns or put other columns in between them!
+            {"key", setTrackKey},
+            {"keys_version", nullptr},
+            {"keys_sub_version", nullptr},
+            {"keys", nullptr},
 
-        // Cover art columns are handled by setTrackCoverInfo. Do not change the
-        // ordering of these columns or put other columns in between them!
-        { "coverart_source", setTrackCoverInfo },
-        { "coverart_type", nullptr },
-        { "coverart_location", nullptr },
-        { "coverart_hash", nullptr }
+            // Cover art columns are handled by setTrackCoverInfo. Do not change the
+            // ordering of these columns or put other columns in between them!
+            {"coverart_source", setTrackCoverInfo},
+            {"coverart_type", nullptr},
+            {"coverart_location", nullptr},
+            {"coverart_color", nullptr},
+            {"coverart_digest", nullptr},
+            {"coverart_hash", nullptr},
     };
 
     QString columnsStr;
@@ -1325,7 +1405,7 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     }
 
     // Validate and refresh cover image hash values if needed.
-    pTrack->refreshCoverImageHash();
+    pTrack->refreshCoverImageDigest();
 
     // Listen to signals from Track objects and forward them to
     // receivers. TrackDAO works as a relay for selected track signals
@@ -1417,7 +1497,8 @@ bool TrackDAO::updateTrack(Track* pTrack) const {
     QSqlQuery query(m_database);
 
     // Update everything but "location", since that's what we identify the track by.
-    query.prepare("UPDATE library SET "
+    query.prepare(
+            "UPDATE library SET "
             "artist=:artist,"
             "title=:title,"
             "album=:album,"
@@ -1457,6 +1538,8 @@ bool TrackDAO::updateTrack(Track* pTrack) const {
             "coverart_source=:coverart_source,"
             "coverart_type=:coverart_type,"
             "coverart_location=:coverart_location,"
+            "coverart_color=:coverart_color,"
+            "coverart_digest=:coverart_digest,"
             "coverart_hash=:coverart_hash "
             "WHERE id=:track_id");
 
@@ -1911,13 +1994,14 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
 
     QSqlQuery updateQuery(m_database);
     updateQuery.prepare(
-        "UPDATE library SET "
-        "coverart_type=:coverart_type,"
-        "coverart_source=:coverart_source,"
-        "coverart_location=:coverart_location, "
-        "coverart_hash=:coverart_hash "
-        "WHERE id=:track_id");
-
+            "UPDATE library SET "
+            "coverart_type=:coverart_type,"
+            "coverart_source=:coverart_source,"
+            "coverart_location=:coverart_location,"
+            "coverart_color=:coverart_color,"
+            "coverart_digest=:coverart_digest,"
+            "coverart_hash=:coverart_hash "
+            "WHERE id=:track_id");
 
     CoverInfoGuesser coverInfoGuesser;
     for (const auto& track: tracksWithoutCover) {
@@ -1953,7 +2037,9 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
         updateQuery.bindValue(":coverart_source",
                               static_cast<int>(coverInfo.source));
         updateQuery.bindValue(":coverart_location", coverInfo.coverLocation);
-        updateQuery.bindValue(":coverart_hash", coverInfo.hash);
+        updateQuery.bindValue(":coverart_color", mixxx::RgbColor::toQVariant(coverInfo.color));
+        updateQuery.bindValue(":coverart_digest", coverInfo.imageDigest());
+        updateQuery.bindValue(":coverart_hash", coverInfo.legacyHash());
 
         if (!updateQuery.exec()) {
             LOG_FAILED_QUERY(updateQuery) << "failed to write file or none cover";

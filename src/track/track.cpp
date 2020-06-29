@@ -1161,15 +1161,15 @@ void Track::setCoverInfo(const CoverInfoRelative& coverInfo) {
     }
 }
 
-bool Track::refreshCoverImageHash(
+bool Track::refreshCoverImageDigest(
         const QImage& loadedImage) {
     QMutexLocker lock(&m_qMutex);
     auto coverInfo = CoverInfo(
             m_record.getCoverInfo(),
             m_fileInfo.location());
-    if (!coverInfo.refreshImageHash(
-            loadedImage,
-            m_pSecurityToken)) {
+    if (!coverInfo.refreshImageDigest(
+                loadedImage,
+                m_pSecurityToken)) {
         return false;
     }
     if (!compareAndSet(
@@ -1178,7 +1178,7 @@ bool Track::refreshCoverImageHash(
         return false;
     }
     kLogger.info()
-            << "Refreshed cover image hash"
+            << "Refreshed cover image digest"
             << m_fileInfo.location();
     markDirtyAndUnlock(&lock);
     emit coverArtUpdated();
@@ -1193,11 +1193,6 @@ CoverInfoRelative Track::getCoverInfo() const {
 CoverInfo Track::getCoverInfoWithLocation() const {
     QMutexLocker lock(&m_qMutex);
     return CoverInfo(m_record.getCoverInfo(), m_fileInfo.location());
-}
-
-quint16 Track::getCoverHash() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_record.getCoverInfo().hash;
 }
 
 ExportTrackMetadataResult Track::exportMetadata(

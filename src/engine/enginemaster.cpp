@@ -29,8 +29,9 @@
 #include "util/timer.h"
 #include "util/trace.h"
 
-EngineMaster::EngineMaster(UserSettingsPointer pConfig,
-        const char* group,
+EngineMaster::EngineMaster(
+        UserSettingsPointer pConfig,
+        const QString& group,
         EffectsManager* pEffectsManager,
         ChannelHandleFactoryPointer pChannelHandleFactory,
         bool bEnableSidechain)

@@ -35,7 +35,7 @@ jobs:
         directories:
           - $HOME/.cache/pre-commit
       before_install:
-        - pip install pre-commit==2.0.1
+        - pip install pre-commit==2.5.1
       script:
         - pre-commit run --all-files
       addons: []
@@ -48,9 +48,11 @@ jobs:
         directories:
           - $HOME/.cache/pre-commit
       before_install:
-        - pip install pre-commit==2.0.1
+        - pip install pre-commit==2.5.1
       script:
-        - pre-commit run --origin HEAD --source origin/HEAD --show-diff-on-failure
+        # HEAD is the not yet integrated PR merge commit +refs/pull/xxxx/merge
+        # HEAD^1 is the PR target branch and HEAD^2 is the HEAD of the source branch
+        - pre-commit run --from-ref HEAD^1 --to-ref HEAD --show-diff-on-failure
       addons: []
 
     - name: Ubuntu/gcc/SCons build
@@ -70,7 +72,7 @@ jobs:
       compiler: gcc
       cache: ccache
       # Ubuntu Bionic build prerequisites
-      env: CMAKEFLAGS_EXTRA="-DLOCALECOMPARE=ON -DFAAD=ON -DWAVPACK=ON -DMAD=ON -DMODPLUG=ON"
+      env: CMAKEFLAGS_EXTRA="-DLOCALECOMPARE=ON -DFAAD=ON -DWAVPACK=ON -DMAD=ON -DMODPLUG=ON -DWARNINGS_FATAL=ON"
       before_install:
         - export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
         - export CTEST_PARALLEL_LEVEL="$(nproc)"
@@ -224,6 +226,7 @@ addons:
       - portaudio19-dev
       - protobuf-compiler
       - qt5-default
+      - qtdeclarative5-dev
       - qtscript5-dev
       - qt5keychain-dev
   homebrew:

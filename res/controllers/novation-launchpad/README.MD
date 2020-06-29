@@ -3,7 +3,7 @@
 **Flexible and (soon) customizable controller mapping for Launchpad. Make DJing
 with Mixxx fun on Launchpad!**
 
-[![Build status](https://img.shields.io/circleci/project/github/szdavid92/mixxx-launchpad.svg)](https://circleci.com/gh/szdavid92/mixxx-launchpad)
+[![Build status](https://img.shields.io/circleci/project/github/dszakallas/mixxx-launchpad.svg)](https://circleci.com/gh/dszakallas/mixxx-launchpad)
 
 There's already a Launchpad mapping shipping with Mixxx however it
 has several quirks and limitations:
@@ -34,6 +34,12 @@ So I decided to make one that is more stable, flexible and customizable!
  - trigger-like controls are favored - no clumsy mixers and faders ✨
  - library navigation 🦄
  - LED lights mimic Mixxx UI ✨
+
+## Supported controllers
+
+ - Launchpad Pro (Experimental)
+ - Launchpad Mk2
+ - Launchpad Mk1
 
 ## How to get started
 
@@ -199,8 +205,8 @@ Feedback
   - **bright yellow**: while nudging with primary speed
   - **dim yellow**: while nudging with secondary speed
   - **bright red**: while permanently changing pitch with primary speed
-  - **dim red**: while permanently changing pitch with primary speed
-  - **dim amber**: while not pressing, and pitch has been altered in that direction
+  - **dim red**: while permanently changing pitch with secondary speed
+  - **dim orange**: while not pressing, and pitch has been altered in that direction
 
 #### CUE
 
@@ -258,7 +264,7 @@ Feedback
 
 #### KEY SHIFTS
 
-Buttons for temporarily changing pitch, bound left to right, bottom to top. While pressed, they modify the key of
+Buttons for temporarily chaning pitch, bound left to right, bottom to top. While pressed, they modify the key of
 the track. When pressing multiple, the one later pressed *steals* the modification.
 
 #### LOAD/EJECT
@@ -360,7 +366,44 @@ Feedback
 - **bright green**: loop on
 - **dim green**: loop off
 
-## Technical details
+## For developers
+
+### Build
+
+To build you need to have a make, Node (>=8), bash (>=4.0) and `jq`. Watch tasks require `fswatch`.
+
+The multi-project build is managed with [lerna.js]. You need to  install it
+globally to make it available on the command line.  First clone the repo and
+install the dependencies:
+
+```
+git clone https://github.com/szdavid92/mixxx-launchpad
+cd mixxx-launchpad
+npm install
+```
+You can also invoke lerna commands through npm like `npm run lerna -- --version`.
+To compile the sources run
+
+```
+make -j 4
+```
+
+(`-j 4` will enable 4 jobs to be executed in parallel which makes the build significantly faster)
+
+Afterward the `dist` folder will contain the files that need to be
+copied the Mixxx's controller folder.
+
+```
+make -j 4 install
+```
+does this for you on macOS and Linux.
+
+These two tasks have watch counterparts making them rerun automatically on file changes. This is handy during development:
+
+```
+make watch
+make watch_install
+```
 
 ### JavaScript
 
@@ -377,36 +420,6 @@ name. This works, because the same name is specified in the MIDI mapping XML fil
 The controller mapping is generated from a template like
 [this][mapping-template] with [ejs]. The mapping reuses config from the package
 description and [buttons.js].
-
-### Build
-
-To build you need to have make, a recent Node (>=4), npm and jq.
-
-The multi-project build is managed with [lerna.js]. You need to  install it
-globally to make it available on the command line.  First clone the repo and
-install the dependencies:
-
-```
-git clone https://github.com/szdavid92/mixxx-launchpad
-cd mixxx-launchpad
-npm i --global lerna
-lerna bootstrap
-npm install
-```
-
-To compile the sources run
-
-```
-make compile
-```
-
-Afterward the `dist` folder will contain the files that need to be
-copied the Mixxx's controller folder.
-
-```
-make install
-```
-does this for you on macOS and Linux.
 
 ### Known Issues
 

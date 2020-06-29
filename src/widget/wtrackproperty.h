@@ -21,7 +21,7 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
             QWidget* pParent,
             UserSettingsPointer pConfig,
             TrackCollectionManager* pTrackCollectionManager,
-            const char* group);
+            const QString& group);
     ~WTrackProperty() override;
 
     void setup(const QDomNode& node, const SkinContext& context) override;
@@ -45,7 +45,7 @@ signals:
 
     void updateLabel();
 
-    const char* m_pGroup;
+    const QString m_group;
     const UserSettingsPointer m_pConfig;
     TrackPointer m_pCurrentTrack;
     QString m_property;

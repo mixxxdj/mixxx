@@ -27,8 +27,8 @@ void CrateTableModel::selectCrate(CrateId crateId) {
     columns << LIBRARYTABLE_ID
             << "'' AS " + LIBRARYTABLE_PREVIEW
             // For sorting the cover art column we give LIBRARYTABLE_COVERART
-            // the same value as the cover hash.
-            << LIBRARYTABLE_COVERART_HASH + " AS " + LIBRARYTABLE_COVERART;
+            // the same value as the cover digest.
+            << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART;
     // We hide files that have been explicitly deleted in the library
     // (mixxx_deleted = 0) from the view.
     // They are kept in the database, because we treat crate membership as a
@@ -97,13 +97,17 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     return true;
 }
 
-TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
-    CapabilitiesFlags caps = TRACKMODELCAPS_RECEIVEDROPS |
-            TRACKMODELCAPS_ADDTOPLAYLIST | TRACKMODELCAPS_ADDTOCRATE |
-            TRACKMODELCAPS_ADDTOAUTODJ | TRACKMODELCAPS_EDITMETADATA |
-            TRACKMODELCAPS_LOADTODECK | TRACKMODELCAPS_LOADTOSAMPLER |
-            TRACKMODELCAPS_LOADTOPREVIEWDECK | TRACKMODELCAPS_REMOVE_CRATE |
-            TRACKMODELCAPS_RESETPLAYED;
+TrackModel::Capabilities CrateTableModel::getCapabilities() const {
+    Capabilities caps =
+            Capability::ReceiveDrops |
+            Capability::AddToTrackSet |
+            Capability::AddToAutoDJ |
+            Capability::EditMetadata |
+            Capability::LoadToDeck |
+            Capability::LoadToSampler |
+            Capability::LoadToPreviewDeck |
+            Capability::RemoveCrate |
+            Capability::ResetPlayed;
 
     if (m_selectedCrate.isValid()) {
         Crate crate;
@@ -111,7 +115,7 @@ TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
                         ->crates()
                         .readCrateById(m_selectedCrate, &crate)) {
             if (crate.isLocked()) {
-                caps |= TRACKMODELCAPS_LOCKED;
+                caps |= Capability::Locked;
             }
         } else {
             qWarning() << "Failed to read create" << m_selectedCrate;

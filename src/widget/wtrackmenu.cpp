@@ -22,7 +22,6 @@
 #include "mixer/playermanager.h"
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
-#include "track/trackref.h"
 #include "util/desktophelper.h"
 #include "util/parented_ptr.h"
 #include "widget/wcolorpickeraction.h"
@@ -337,13 +336,13 @@ void WTrackMenu::setupActions() {
     }
 
     if (featureIsEnabled(Feature::Remove)) {
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Remove)) {
             addAction(m_pRemoveAct);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::RemovePlaylist)) {
             addAction(m_pRemovePlaylistAct);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_CRATE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::RemoveCrate)) {
             addAction(m_pRemoveCrateAct);
         }
     }
@@ -414,13 +413,13 @@ void WTrackMenu::setupActions() {
 
     addSeparator();
     if (featureIsEnabled(Feature::HideUnhidePurge)) {
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_HIDE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
             addAction(m_pHideAct);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Unhide)) {
             addAction(m_pUnhideAct);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_PURGE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Purge)) {
             addAction(m_pPurgeAct);
         }
     }
@@ -513,13 +512,27 @@ CoverInfo WTrackMenu::getCoverInfoOfLastTrack() const {
                                 m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_TYPE))
                         .data()
                         .toInt());
-        coverInfo.hash =
+        coverInfo.color = mixxx::RgbColor::fromQVariant(
+                lastIndex
+                        .sibling(
+                                lastIndex.row(),
+                                m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_COLOR))
+                        .data());
+        const auto imageDigest =
+                lastIndex
+                        .sibling(
+                                lastIndex.row(),
+                                m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_DIGEST))
+                        .data()
+                        .toByteArray();
+        const auto legacyHash =
                 lastIndex
                         .sibling(
                                 lastIndex.row(),
                                 m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_HASH))
                         .data()
                         .toUInt();
+        coverInfo.setImageDigest(imageDigest, legacyHash);
         coverInfo.coverLocation =
                 lastIndex
                         .sibling(
@@ -597,14 +610,14 @@ void WTrackMenu::updateMenus() {
     }
 
     if (featureIsEnabled(Feature::Remove)) {
-        bool locked = m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
+        bool locked = m_pTrackModel->hasCapabilities(TrackModel::Capability::Locked);
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Remove)) {
             m_pRemoveAct->setEnabled(!locked);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::RemovePlaylist)) {
             m_pRemovePlaylistAct->setEnabled(!locked);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_CRATE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::RemoveCrate)) {
             m_pRemoveCrateAct->setEnabled(!locked);
         }
     }
@@ -654,14 +667,14 @@ void WTrackMenu::updateMenus() {
     }
 
     if (featureIsEnabled(Feature::HideUnhidePurge)) {
-        bool locked = m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_HIDE)) {
+        bool locked = m_pTrackModel->hasCapabilities(TrackModel::Capability::Locked);
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
             m_pHideAct->setEnabled(!locked);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Unhide)) {
             m_pUnhideAct->setEnabled(!locked);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_PURGE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Purge)) {
             m_pPurgeAct->setEnabled(!locked);
         }
     }
@@ -729,17 +742,40 @@ TrackIdList WTrackMenu::getTrackIds() const {
     return trackIds;
 }
 
-TrackPointerList WTrackMenu::getTrackPointers(
-        int maxSize) const {
+QList<TrackRef> WTrackMenu::getTrackRefs() const {
+    QList<TrackRef> trackRefs;
+    if (m_pTrackModel) {
+        trackRefs.reserve(m_trackIndexList.size());
+        for (const auto& index : m_trackIndexList) {
+            auto trackRef = TrackRef::fromFileInfo(
+                    m_pTrackModel->getTrackLocation(index),
+                    m_pTrackModel->getTrackId(index));
+            if (!trackRef.isValid()) {
+                // Skip unavailable tracks
+                continue;
+            }
+            trackRefs.push_back(std::move(trackRef));
+        }
+    } else {
+        trackRefs.reserve(m_trackPointerList.size());
+        for (const auto& pTrack : m_trackPointerList) {
+            DEBUG_ASSERT(pTrack);
+            auto trackRef = TrackRef::fromFileInfo(
+                    pTrack->getLocation(),
+                    pTrack->getId());
+            trackRefs.push_back(std::move(trackRef));
+        }
+    }
+    return trackRefs;
+}
+
+TrackPointerList WTrackMenu::getTrackPointers() const {
     if (!m_pTrackModel) {
         return m_trackPointerList;
     }
     TrackPointerList trackPointers;
     trackPointers.reserve(m_trackIndexList.size());
     for (const auto& index : m_trackIndexList) {
-        if (maxSize >= 0 && maxSize <= trackPointers.size()) {
-            return trackPointers;
-        }
         const auto pTrack = m_pTrackModel->getTrack(index);
         if (!pTrack) {
             // Skip unavailable tracks
@@ -750,7 +786,26 @@ TrackPointerList WTrackMenu::getTrackPointers(
     return trackPointers;
 }
 
-QModelIndexList WTrackMenu::getTrackIndices() const {
+TrackPointer WTrackMenu::getFirstTrackPointer() const {
+    if (m_pTrackModel) {
+        for (const auto& index : m_trackIndexList) {
+            const auto pTrack = m_pTrackModel->getTrack(index);
+            if (pTrack) {
+                return pTrack;
+            }
+            // Skip unavailable tracks
+        }
+        return TrackPointer();
+    } else {
+        if (m_trackPointerList.isEmpty()) {
+            return TrackPointer();
+        }
+        DEBUG_ASSERT(m_trackPointerList.first());
+        return m_trackPointerList.first();
+    }
+}
+
+const QModelIndexList& WTrackMenu::getTrackIndices() const {
     // Indices are associated with a TrackModel. Can only be obtained
     // if a TrackModel is available.
     DEBUG_ASSERT(m_pTrackModel);
@@ -758,11 +813,11 @@ QModelIndexList WTrackMenu::getTrackIndices() const {
 }
 
 void WTrackMenu::slotOpenInFileBrowser() {
-    const auto trackPointers = getTrackPointers();
+    const auto trackRefs = getTrackRefs();
     QStringList locations;
-    locations.reserve(trackPointers.size());
-    for (const auto& pTrack : trackPointers) {
-        locations << pTrack->getLocation();
+    locations.reserve(trackRefs.size());
+    for (const auto& trackRef : trackRefs) {
+        locations << trackRef.getLocation();
     }
     mixxx::DesktopHelper::openInFileBrowser(locations);
 }
@@ -795,18 +850,8 @@ void WTrackMenu::slotUpdateExternalTrackCollection(
     VERIFY_OR_DEBUG_ASSERT(externalTrackCollection) {
         return;
     }
-    auto trackPointers = getTrackPointers();
 
-    QList<TrackRef> trackRefs;
-    trackRefs.reserve(trackPointers.size());
-    for (const auto& pTrack : trackPointers) {
-        trackRefs.append(
-                TrackRef::fromFileInfo(
-                        pTrack->getLocation(),
-                        pTrack->getId()));
-    }
-
-    externalTrackCollection->updateTracks(std::move(trackRefs));
+    externalTrackCollection->updateTracks(getTrackRefs());
 }
 
 void WTrackMenu::slotPopulatePlaylistMenu() {
@@ -1044,12 +1089,11 @@ void WTrackMenu::slotColorPicked(mixxx::RgbColor::optional_t color) {
 }
 
 void WTrackMenu::loadSelectionToGroup(QString group, bool play) {
-    const auto trackPointers = getTrackPointers(1);
-    if (trackPointers.empty()) {
+    TrackPointer pTrack = getFirstTrackPointer();
+    if (!pTrack) {
         return;
     }
-    // Only the first track was requested
-    DEBUG_ASSERT(trackPointers.size() == 1);
+
     // If the track load override is disabled, check to see if a track is
     // playing before trying to load it
     if (!(m_pConfig->getValueString(
@@ -1062,12 +1106,9 @@ void WTrackMenu::loadSelectionToGroup(QString group, bool play) {
         }
     }
 
-    TrackPointer pTrack = trackPointers.at(0);
-    if (pTrack) {
-        // TODO: load track from this class without depending on
-        // external slot to load track
-        emit loadTrackToPlayer(pTrack, group, play);
-    }
+    // TODO: load track from this class without depending on
+    // external slot to load track
+    emit loadTrackToPlayer(pTrack, group, play);
 }
 
 //slot for reset played count, sets count to 0 of one or more tracks
@@ -1155,6 +1196,7 @@ void WTrackMenu::slotShowTrackInfo() {
     if (isEmpty()) {
         return;
     }
+    // Method getFirstTrackPointer() is not applicable here!
     if (m_pTrackModel) {
         m_pTrackInfo->loadTrack(m_trackIndexList.at(0));
     } else {
@@ -1167,6 +1209,7 @@ void WTrackMenu::slotShowDlgTagFetcher() {
     if (isEmpty()) {
         return;
     }
+    // Method getFirstTrackPointer() is not applicable here!
     if (m_pTrackModel) {
         m_pTagFetcher->loadTrack(m_trackIndexList.at(0));
     } else {
@@ -1257,44 +1300,43 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
 
     switch (flag) {
     case Feature::AutoDJ:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::AddToAutoDJ);
     case Feature::LoadTo:
         return m_pTrackModel->hasCapabilities(
-                       TrackModel::TRACKMODELCAPS_LOADTODECK) ||
+                       TrackModel::Capability::LoadToDeck) ||
                 m_pTrackModel->hasCapabilities(
-                        TrackModel::TRACKMODELCAPS_LOADTOSAMPLER) ||
+                        TrackModel::Capability::LoadToSampler) ||
                 m_pTrackModel->hasCapabilities(
-                        TrackModel::TRACKMODELCAPS_LOADTOPREVIEWDECK);
+                        TrackModel::Capability::LoadToPreviewDeck);
     case Feature::Playlist:
-        return m_pTrackModel->hasCapabilities(
-                TrackModel::TRACKMODELCAPS_ADDTOPLAYLIST);
     case Feature::Crate:
         return m_pTrackModel->hasCapabilities(
-                TrackModel::TRACKMODELCAPS_ADDTOCRATE);
+                TrackModel::Capability::AddToTrackSet);
     case Feature::Remove:
         return m_pTrackModel->hasCapabilities(
-                       TrackModel::TRACKMODELCAPS_REMOVE) ||
+                       TrackModel::Capability::Remove) ||
                 m_pTrackModel->hasCapabilities(
-                        TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST) ||
+                        TrackModel::Capability::RemovePlaylist) ||
                 m_pTrackModel->hasCapabilities(
-                        TrackModel::TRACKMODELCAPS_REMOVE_CRATE);
+                        TrackModel::Capability::RemoveCrate);
     case Feature::Metadata:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
     case Feature::Reset:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA) &&
-                m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_RESETPLAYED);
+        return m_pTrackModel->hasCapabilities(
+                TrackModel::Capability::EditMetadata |
+                TrackModel::Capability::ResetPlayed);
     case Feature::BPM:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
     case Feature::Color:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
     case Feature::HideUnhidePurge:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_HIDE) ||
-                m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE) ||
-                m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_PURGE);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::Hide) ||
+                m_pTrackModel->hasCapabilities(TrackModel::Capability::Unhide) ||
+                m_pTrackModel->hasCapabilities(TrackModel::Capability::Purge);
     case Feature::FileBrowser:
         return true;
     case Feature::Properties:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
     default:
         DEBUG_ASSERT(!"unreachable");
         return true;
