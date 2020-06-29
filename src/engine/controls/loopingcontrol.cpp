@@ -18,6 +18,21 @@
 #include "track/track.h"
 #include "track/beats.h"
 
+namespace {
+inline mixxx::FrameDiff_t samplesToFrames(double samples) {
+    return samples / mixxx::kEngineChannelCount;
+}
+inline double framesToSamples(mixxx::FrameDiff_t frames) {
+    return frames * mixxx::kEngineChannelCount;
+}
+inline mixxx::FramePos samplePosToFramePos(double samplePos) {
+    return mixxx::FramePos(samplePos / mixxx::kEngineChannelCount);
+}
+inline double framePosToSamplePos(mixxx::FramePos framePos) {
+    return framePos.getValue() * mixxx::kEngineChannelCount;
+}
+} // namespace
+
 double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5,
                                           1, 2, 4, 8, 16, 32, 64, 128, 256, 512 };
 
@@ -1058,7 +1073,7 @@ void LoopingControl::slotBeatLoop(
     // give start and end defaults so we can detect problems
     LoopSamples newloopSamples = {kNoTrigger, kNoTrigger, false};
     LoopSamples loopSamples = m_loopSamples.getValue();
-    double currentSample = m_currentSample.getValue();
+    mixxx::FramePos currentFramePos = getFrameOfTrack().currentFrame;
 
     // Start from the current position/closest beat and
     // create the loop around X beats from there.
@@ -1066,7 +1081,7 @@ void LoopingControl::slotBeatLoop(
         if (loopSamples.start != kNoTrigger) {
             newloopSamples.start = loopSamples.start;
         } else {
-            newloopSamples.start = currentSample;
+            newloopSamples.start = framePosToSamplePos(currentFramePos);
         }
     } else {
         // loop_in is set to the closest beat if quantize is on and the loop size is >= 1 beat.
@@ -1074,18 +1089,16 @@ void LoopingControl::slotBeatLoop(
         mixxx::FramePos prevBeat;
         mixxx::FramePos nextBeat;
         pBeats->findPrevNextBeats(
-                mixxx::FramePos(currentSample / 2.0), &prevBeat, &nextBeat);
+                currentFramePos, &prevBeat, &nextBeat);
 
         if (m_pQuantizeEnabled->toBool() && prevBeat.getValue() != -1) {
-            double beatLength = (nextBeat.getValue() - prevBeat.getValue()) * 2;
-            double loopLength = beatLength * beats;
+            mixxx::FrameDiff_t beatLengthFrames = nextBeat - prevBeat;
+            mixxx::FrameDiff_t loopLengthFrames = beatLengthFrames * beats;
 
-            double closestBeat =
-                    pBeats->findClosestBeat(mixxx::FramePos(currentSample / 2.0))
-                            .getValue() *
-                    2.0;
+            mixxx::FramePos closestBeatFramePos =
+                    pBeats->findClosestBeat(currentFramePos);
             if (beats >= 1.0) {
-                newloopSamples.start = closestBeat;
+                newloopSamples.start = framePosToSamplePos(currentFramePos);
             } else {
                 // In case of beat length less then 1 beat:
                 // (| - beats, ^ - current track's position):
@@ -1094,20 +1107,21 @@ void LoopingControl::slotBeatLoop(
                 //
                 // If we press 1/2 beatloop we want loop from 50% to 100%,
                 // If I press 1/4 beatloop, we want loop from 50% to 75% etc
-                double samplesSinceLastBeat =
-                        currentSample - prevBeat.getValue() * 2;
+                mixxx::FrameDiff_t framesSinceLastBeat =
+                        currentFramePos - prevBeat;
 
                 // find the previous beat fraction and check if the current position is closer to this or the next one
                 // place the new loop start to the closer one
-                double previousFractionBeat = prevBeat.getValue() * 2 +
-                        floor(samplesSinceLastBeat / loopLength) * loopLength;
-                double samplesSinceLastFractionBeat =
-                        currentSample - previousFractionBeat;
+                mixxx::FramePos previousFractionBeatFramePos = prevBeat +
+                        floor(framesSinceLastBeat / loopLengthFrames) * loopLengthFrames;
+                mixxx::FrameDiff_t framesSinceLastFractionBeat =
+                        currentFramePos - previousFractionBeatFramePos;
 
-                if (samplesSinceLastFractionBeat <= (loopLength / 2.0)) {
-                    newloopSamples.start = previousFractionBeat;
+                if (framesSinceLastFractionBeat <= (loopLengthFrames / 2.0)) {
+                    newloopSamples.start = framePosToSamplePos(previousFractionBeatFramePos);
                 } else {
-                    newloopSamples.start = previousFractionBeat + loopLength;
+                    newloopSamples.start = framePosToSamplePos(
+                            previousFractionBeatFramePos + loopLengthFrames);
                 }
             }
 
@@ -1118,18 +1132,17 @@ void LoopingControl::slotBeatLoop(
                 reverse = m_pRateControl->isReverseButtonPressed();
             }
             if (reverse) {
-                newloopSamples.start -= loopLength;
+                newloopSamples.start -= framesToSamples(loopLengthFrames);
             }
         } else {
-            newloopSamples.start = currentSample;
+            newloopSamples.start = framePosToSamplePos(currentFramePos);
         }
     }
 
     newloopSamples.end =
-            pBeats->findNBeatsFromFrame(
-                          mixxx::FramePos(newloopSamples.start / 2.0), beats)
-                    .getValue() *
-            2;
+            framePosToSamplePos(pBeats->findNBeatsFromFrame(
+                    samplePosToFramePos(newloopSamples.start), beats));
+
     if (newloopSamples.start >=
                     newloopSamples.end // happens when the call above fails
             || newloopSamples.end >
@@ -1139,13 +1152,12 @@ void LoopingControl::slotBeatLoop(
         // the end of the track, let beatloop_size be set to
         // a smaller size, but not get larger.
         double previousBeatloopSize = m_pCOBeatLoopSize->get();
-        double previousBeatloopOutPoint =
+        mixxx::FramePos previousBeatloopOutPointFramePos =
                 pBeats->findNBeatsFromFrame(
-                              mixxx::FramePos(newloopSamples.start / 2.0),
-                              previousBeatloopSize)
-                        .getValue() *
-                2.0;
-        if (previousBeatloopOutPoint < newloopSamples.start &&
+                        samplePosToFramePos(newloopSamples.start),
+                        previousBeatloopSize);
+
+        if (framePosToSamplePos(previousBeatloopOutPointFramePos) < newloopSamples.start &&
                 beats < previousBeatloopSize) {
             m_pCOBeatLoopSize->setAndConfirm(beats);
         }
