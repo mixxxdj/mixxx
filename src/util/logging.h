@@ -3,6 +3,19 @@
 #include <QDir>
 #include <QLoggingCategory>
 
+/// Enable/disable verbose debug logging globally.
+///
+/// Verbose debug logging is only needed temporarily during
+/// development and probably cause performance degressions.
+/// IT SHOULD BE KEPT DISABLED IN REGULAR BUILDS!
+///
+/// After switching the default log level from Debug to Info
+/// this #define might be enabled permanently and could then
+/// finally be removed from the code.
+///
+/// Example for verbose debug logs: SoundSourceFFmpeg
+#define VERBOSE_DEBUG_LOG false
+
 /// Macro for composing parent/child logging category names
 ///
 /// Use this macro to compose a new child logging category from a

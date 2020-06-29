@@ -5,9 +5,6 @@
 #include <limits>
 #include <mutex>
 
-// Enable trace logs for analyzing errors (temporarily only during development!)
-#define ENABLE_TRACE_LOG false
-
 Q_LOGGING_CATEGORY(mixxxLogSourceFFmpeg, MIXXX_LOGGING_CATEGORY_SOURCE_FFMPEG)
 
 namespace mixxx {
@@ -79,7 +76,7 @@ inline int64_t getStreamStartTime(const AVStream& avStream) {
     auto start_time = avStream.start_time;
     if (start_time == AV_NOPTS_VALUE) {
         // This case is not unlikely, e.g. happens when decoding WAV files.
-#if ENABLE_TRACE_LOG
+#if VERBOSE_DEBUG_LOG
         qCDebug(mixxxLogSourceFFmpeg)
                 << "Unknown start time -> using default value"
                 << kavMinStartTime;
@@ -180,7 +177,7 @@ QString formatErrorMessage(int errnum) {
     }
 }
 
-#if ENABLE_TRACE_LOG
+#if VERBOSE_DEBUG_LOG
 inline void avTrace(const char* preamble, const AVPacket& avPacket) {
     qCDebug(mixxxLogSourceFFmpeg) << preamble
                     << "{ stream_index" << avPacket.stream_index
@@ -204,7 +201,7 @@ inline void avTrace(const char* preamble, const AVFrame& avFrame) {
                     << "| nb_samples" << avFrame.nb_samples
                     << '}';
 }
-#endif // ENABLE_TRACE_LOG
+#endif // VERBOSE_DEBUG_LOG
 
 AVFormatContext* openInputFile(
         const QString& fileName) {
@@ -625,7 +622,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     // in the stream out of the box. Depending on the actual codec we need
     // to account for this and start decoding before the target position.
     m_seekPrerollFrameCount = getStreamSeekPrerollFrameCount(*m_pavStream);
-#if ENABLE_TRACE_LOG
+#if VERBOSE_DEBUG_LOG
     qCDebug(mixxxLogSourceFFmpeg) << "Seek preroll frame count:" << m_seekPrerollFrameCount;
 #endif
 
@@ -667,7 +664,7 @@ bool SoundSourceFFmpeg::initResampling(
     if ((resampledChannelCount != streamChannelCount) ||
             (avResampledChannelLayout != avStreamChannelLayout) ||
             (avResampledSampleFormat != avStreamSampleFormat)) {
-#if ENABLE_TRACE_LOG
+#if VERBOSE_DEBUG_LOG
         qCDebug(mixxxLogSourceFFmpeg)
                 << "Decoded stream needs to be resampled"
                 << ": channel count =" << resampledChannelCount
@@ -748,7 +745,7 @@ SINT readNextPacket(
                 return kFrameIndexInvalid;
             }
         }
-#if ENABLE_TRACE_LOG
+#if VERBOSE_DEBUG_LOG
         avTrace("Packet read from stream", *pavPacket);
 #endif
         DEBUG_ASSERT(pavPacket->data);
@@ -804,7 +801,7 @@ WritableSampleFrames SoundSourceFFmpeg::consumeSampleBuffer(
     m_curFrameIndex += skippableRange.length();
 
     // Consume buffered samples
-#if ENABLE_TRACE_LOG
+#if VERBOSE_DEBUG_LOG
     qCDebug(mixxxLogSourceFFmpeg) << "Consuming buffered samples" << consumableRange;
 #endif
     DEBUG_ASSERT(m_curFrameIndex == consumableRange.start());
@@ -912,14 +909,14 @@ bool SoundSourceFFmpeg::consumeNextPacket(
     auto pavNextPacket = *ppavNextPacket;
 
     // Consume raw packet data
-#if ENABLE_TRACE_LOG
+#if VERBOSE_DEBUG_LOG
     avTrace("Sending packet to decoder", *pavNextPacket);
 #endif
     const auto avcodec_send_packet_result =
             avcodec_send_packet(m_pavCodecContext, pavNextPacket);
     if (avcodec_send_packet_result == 0) {
         // Packet has been consumed completely
-#if ENABLE_TRACE_LOG
+#if VERBOSE_DEBUG_LOG
         qCDebug(mixxxLogSourceFFmpeg) << "Packet has been consumed by decoder";
 #endif
         // Release ownership on packet
@@ -929,7 +926,7 @@ bool SoundSourceFFmpeg::consumeNextPacket(
         // Packet has not been consumed or only partially
         if (avcodec_send_packet_result == AVERROR(EAGAIN)) {
             // Keep and resend this packet to the decoder during the next round
-#if ENABLE_TRACE_LOG
+#if VERBOSE_DEBUG_LOG
             qCDebug(mixxxLogSourceFFmpeg) << "Packet needs to be sent again to decoder";
 #endif
         } else {
@@ -957,7 +954,7 @@ const CSAMPLE* SoundSourceFFmpeg::resampleDecodedFrame() {
             // Sometimes the channel layout is undefined.
             m_pavDecodedFrame->channel_layout = m_avStreamChannelLayout;
         }
-#if ENABLE_TRACE_LOG
+#if VERBOSE_DEBUG_LOG
         avTrace("Resampling decoded frame", *m_pavDecodedFrame);
 #endif
         const auto swr_convert_frame_result =
@@ -973,7 +970,7 @@ const CSAMPLE* SoundSourceFFmpeg::resampleDecodedFrame() {
             av_frame_unref(m_pavDecodedFrame);
             return nullptr;
         }
-#if ENABLE_TRACE_LOG
+#if VERBOSE_DEBUG_LOG
         avTrace("Received resampled frame", *m_pavResampledFrame);
 #endif
         DEBUG_ASSERT(m_pavDecodedFrame->pts = m_pavResampledFrame->pts);
@@ -1029,7 +1026,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
             consumeNextPacket(&avPacket, &pavNextPacket)) {
         int avcodec_receive_frame_result;
         do {
-#if ENABLE_TRACE_LOG
+#if VERBOSE_DEBUG_LOG
             qCDebug(mixxxLogSourceFFmpeg)
                     << "m_curFrameIndex" << m_curFrameIndex
                     << "readFrameIndex" << readFrameIndex
@@ -1047,7 +1044,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                     m_pavCodecContext,
                     m_pavDecodedFrame);
             if (avcodec_receive_frame_result == 0) {
-#if ENABLE_TRACE_LOG
+#if VERBOSE_DEBUG_LOG
                 avTrace("Received decoded frame", *m_pavDecodedFrame);
 #endif
                 DEBUG_ASSERT(m_pavDecodedFrame->pts != AV_NOPTS_VALUE);
@@ -1060,7 +1057,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                     readFrameIndex = decodedFrameRange.start();
                 }
             } else if (avcodec_receive_frame_result == AVERROR(EAGAIN)) {
-#if ENABLE_TRACE_LOG
+#if VERBOSE_DEBUG_LOG
                 qCDebug(mixxxLogSourceFFmpeg) << "No more frames available until decoder is fed with more packets from stream";
 #endif
                 DEBUG_ASSERT(!pavNextPacket);
@@ -1106,7 +1103,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                 break;
             }
 
-#if ENABLE_TRACE_LOG
+#if VERBOSE_DEBUG_LOG
             qCDebug(mixxxLogSourceFFmpeg)
                     << "After receiving decoded frame:"
                     << "m_curFrameIndex" << m_curFrameIndex
@@ -1170,7 +1167,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                 missingFrameCount = decodedFrameRange.start() - readFrameIndex;
             }
 
-#if ENABLE_TRACE_LOG
+#if VERBOSE_DEBUG_LOG
             qCDebug(mixxxLogSourceFFmpeg)
                     << "Before resampling:"
                     << "m_curFrameIndex" << m_curFrameIndex
@@ -1238,7 +1235,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
             readFrameIndex += preskipDecodedFrameCount;
             m_curFrameIndex = readFrameIndex;
 
-#if ENABLE_TRACE_LOG
+#if VERBOSE_DEBUG_LOG
             qCDebug(mixxxLogSourceFFmpeg)
                     << "Before writing:"
                     << "m_curFrameIndex" << m_curFrameIndex
@@ -1291,7 +1288,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                 m_curFrameIndex = readFrameIndex;
             }
 
-#if ENABLE_TRACE_LOG
+#if VERBOSE_DEBUG_LOG
             qCDebug(mixxxLogSourceFFmpeg)
                     << "Before buffering:"
                     << "m_curFrameIndex" << m_curFrameIndex
