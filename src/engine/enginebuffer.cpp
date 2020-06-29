@@ -593,7 +593,7 @@ void EngineBuffer::slotControlSeek(double fractionalPos) {
 void EngineBuffer::slotControlSeekAbs(double playPosition) {
     auto pMacro = m_pEngineMaster->m_pMacroRecording;
     if (pMacro != nullptr) {
-        if (pMacro->deck == NO_DECK) {
+        if (pMacro->deck.isNull()) {
             pMacro->deck = this->getGroup();
         }
         if (pMacro->deck == this->getGroup()) {

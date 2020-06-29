@@ -6,7 +6,8 @@ MacroManager::MacroManager(
         UserSettingsPointer pConfig,
         EngineMaster* pEngine,
         PlayerManager* pPlayerManager)
-        : m_pConfig(pConfig) {
+        : m_pConfig(pConfig),
+          m_pRecordedMacro(new Macro()) {
     qDebug() << "MacroManager init";
 
     m_pToggleRecording = new ControlPushButton(
