@@ -105,14 +105,24 @@ for:
     - export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
     - mkdir cmake_build
     - cd cmake_build
+    # TODO: Set -DDEBUG_ASSERTIONS_FATAL=OFF before deploying CI builds as releases!!!
     - cmake
       -L
+      -DCMAKE_BUILD_TYPE=Release
+      -DWARNINGS_FATAL=ON
+      -DDEBUG_ASSERTIONS_FATAL=ON
+      -DBATTERY=ON
+      -DBROADCAST=ON
+      -DBULK=ON
       -DFFMPEG=ON
-      -DHSS1394=OFF
+      -DHID=ON
+      -DLILV=ON
       -DLOCALECOMPARE=ON
       -DMAD=ON
       -DMODPLUG=ON
       -DOPUS=ON
+      -DQTKEYCHAIN=ON
+      -DVINYLCONTROL=ON
       -DWAVPACK=ON
       ..
     - cmake --build .
@@ -199,15 +209,25 @@ for:
   build_script:
     - mkdir cmake_build
     - cd cmake_build
+    # TODO: Set -DDEBUG_ASSERTIONS_FATAL=OFF before deploying CI builds as releases!!!
     - cmake
       -L
       -DCPACK_PACKAGE_FILE_NAME=%MIXXX_PACKAGE_NAME%
       -DCMAKE_BUILD_TYPE=Release
       -DCMAKE_INSTALL_PREFIX=C:\mixxx
       -DCMAKE_PREFIX_PATH=%WINLIB_PATH%;%QT_PATH%
+      -DDEBUG_ASSERTIONS_FATAL=ON
+      -DBATTERY=ON
+      -DBROADCAST=ON
+      -DBULK=ON
+      -DHID=ON
+      -DHSS1394=ON
+      -DLOCALECOMPARE=ON
+      -DMAD=ON
       -DMEDIAFOUNDATION=ON
       -DOPUS=ON
-      -DLOCALECOMPARE=ON
+      -DQTKEYCHAIN=ON
+      -DVINYLCONTROL=ON
       -DSTATIC_DEPS=ON
       -G "Ninja"
       ..
