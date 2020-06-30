@@ -142,10 +142,10 @@ class TrackModel {
         Q_UNUSED(pParent);
         return NULL;
     }
-    virtual TrackModel::Capabilities getCapabilities() const {
+    virtual Capabilities getCapabilities() const {
         return Capability::None;
     }
-    /*non-virtual*/ bool hasCapabilities(TrackModel::CapabilitiesFlags caps) const {
+    /*non-virtual*/ bool hasCapabilities(Capabilities caps) const {
         return (getCapabilities() & caps) == caps;
     }
     virtual QString getModelSetting(QString name) {
