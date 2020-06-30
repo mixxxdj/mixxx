@@ -1,9 +1,8 @@
-// cuecontrol.cpp
-// Created 11/5/2009 by RJ Ryan (rryan@mit.edu)
-
 #include "engine/controls/cuecontrol.h"
 
+#include <QDebug>
 #include <QMutexLocker>
+#include <QtCore>
 
 #include "control/controlindicator.h"
 #include "control/controlobject.h"
@@ -1889,7 +1888,7 @@ void HotcueControl::slotHotcueGotoAndStop(double v) {
 }
 
 void HotcueControl::slotHotcueActivate(double v) {
-    qDebug() << "HOTCUE ACTIVATED:" << toDebugString(v);
+    qCDebug(QLoggingCategory("macros")) << "hotcue" << m_iHotcueNumber + 1 << "activated:" << v;
     emit hotcueActivate(this, v);
 }
 

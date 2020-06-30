@@ -1,6 +1,8 @@
 #pragma once
 
+#include <QDebug>
 #include <QObject>
+#include <QtCore>
 
 #include "engine/enginemaster.h"
 #include "mixer/playermanager.h"
@@ -9,6 +11,7 @@
 
 namespace {
 constexpr size_t kMaxMacroSize = 1000;
+const QLoggingCategory macros("macros");
 }
 
 struct MacroAction {
@@ -29,7 +32,7 @@ struct Macro {
     }
 
     void appendHotcueJump(double origin, double target) {
-        qDebug() << "Macro: Appending jump";
+        qCDebug(macros) << "Appending jump from" << origin << "to" << target;
         actions[length].position = origin;
         actions[length].target = target;
         length++;
@@ -38,12 +41,12 @@ struct Macro {
     void dump() {
         for (int i = 0; i < length; ++i) {
             auto action = actions[i];
-            qDebug() << "Jump from " << action.position << " to " << action.target;
+            qCDebug(macros) << "Jump from " << action.position << " to " << action.target;
         }
     }
 
     void clear() {
-        qDebug() << "Clearing Macro";
+        qCDebug(macros) << "Clearing Macro";
         length = 0;
         deck = QString();
     }

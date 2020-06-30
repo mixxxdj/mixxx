@@ -8,7 +8,7 @@ MacroManager::MacroManager(
         PlayerManager* pPlayerManager)
         : m_pConfig(pConfig),
           m_pRecordedMacro(new Macro()) {
-    qDebug() << "MacroManager init";
+    qCDebug(macros) << "MacroManager construct";
 
     m_pToggleRecording = new ControlPushButton(
             ConfigKey(MACRORECORDING_PREF_KEY, "recording_toggle"));
@@ -31,14 +31,13 @@ MacroManager::MacroManager(
 }
 
 MacroManager::~MacroManager() {
-    qDebug() << "Delete MacroManager";
-
+    qCDebug(macros) << "MacroManager deconstruct";
     delete m_pCORecStatus;
     delete m_pToggleRecording;
 }
 
 void MacroManager::startRecording() {
-    qDebug() << "MacroManager start recording";
+    qCDebug(macros) << "MacroManager recording start";
     m_bRecording = true;
     m_pCORecStatus->set(1);
     m_pRecordedMacro->clear();
@@ -46,7 +45,7 @@ void MacroManager::startRecording() {
 }
 
 void MacroManager::stopRecording() {
-    qDebug() << "MacroManager stop recording";
+    qCDebug(macros) << "MacroManager recording stop";
     m_bRecording = false;
     m_pCORecStatus->set(0);
     emit stopMacroRecording();
