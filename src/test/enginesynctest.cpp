@@ -413,7 +413,7 @@ TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
     ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.0));
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     auto pBeats2 = BeatsPointer(new Beats(m_pTrack2.get()));
-    pBeats2->setGrid(mixxx::Bpm(30));
+    pBeats2->setGrid(mixxx::Bpm(130));
     m_pTrack2->setBeats(pBeats2);
     ControlObject::set(ConfigKey(m_sGroup2, "rate"), getRateSliderValue(1.0));
     ControlObject::set(ConfigKey(m_sGroup2, "play"), 0.0);
