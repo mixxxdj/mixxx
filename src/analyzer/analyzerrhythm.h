@@ -45,7 +45,8 @@ class AnalyzerRhythm : public Analyzer {
     std::tuple<QVector<mixxx::audio::FramePos>, QMap<int, double>> FixBeatsPositions();
     std::tuple<QList<double>, QMap<double, int>> computeRawTemposAndFrequency(
             const QVector<mixxx::audio::FramePos>& beats, const int beatWindow = 2);
-    double medianTempo(const QVector<mixxx::audio::FramePos>& beats);
+    double tempoMedian(const QVector<mixxx::audio::FramePos>& beats, const int beatWindow = 2);
+    double tempoMode(const QVector<mixxx::audio::FramePos>& beats, const int beatWindow = 2);
     QMap<int, double> findTempoChanges();
     QVector<mixxx::audio::FramePos> calculateFixedTempoGrid(
             const QVector<mixxx::audio::FramePos>& rawbeats,
@@ -53,7 +54,7 @@ class AnalyzerRhythm : public Analyzer {
             bool correctFirst = true);
     mixxx::audio::FramePos findFirstCorrectBeat(
             const QVector<mixxx::audio::FramePos> rawbeats, const double global_bpm);
-    double calculateBpm(const QVector<mixxx::audio::FramePos>& beats);
+    double calculateBpm(const QVector<mixxx::audio::FramePos>& beats, bool tryToRound = true);
     std::tuple<double, QMap<double, int>> computeFilteredWeightedAverage(
             const QMap<double, int>& tempoFrequency, const double filterCenter);
 

@@ -3,6 +3,7 @@
 #include <QString>
 #include <QtDebug>
 #include <algorithm>
+#include <array>
 
 #include "analyzer/analyzerrhythm.h"
 #include "analyzer/analyzerrhythmstats.h"
@@ -11,26 +12,47 @@
 namespace {
 constexpr bool sDebug = false;
 constexpr int kHistogramDecimalPlaces = 2;
-constexpr double kCorrectBeatLocalBpmEpsilon = 0.05; // 0.2;
 const double kHistogramDecimalScale = pow(10.0, kHistogramDecimalPlaces);
+// We look for the first beat whitin this to be the first beat
+constexpr double kCorrectBeatLocalBpmEpsilon = 0.05; // 0.2;
+// We use a filter to compute the tempo values +- 1 from the median
+// This way we considers and weights the results that have jitter
 constexpr double kBpmFilterTolerance = 1.0;
+// Just to demonstrate how you would count the beats manually
+//    Beat numbers:   1  2  3  4   5  6  7  8    9
+//    Beat positions: ?  ?  ?  ?  |?  ?  ?  ?  | ?
+// Usually one measures the time of N beats. One stops the timer just before
+// the (N+1)th beat begins.  The BPM is then computed by 60*N/<time needed
+// to count N beats (in seconds)>
+// This value of 12 was taken from old beatutils class and was manually derived
 constexpr int kBeatsToCountTempo = 12;
+// This is the max error we allow for rounding the bpm to a integer
 constexpr double kMaxBpmError = 0.06;
-
+// This is the max error we allow for comparing if two tempos are equal
+constexpr double kMaxBpmCompareError = 0.24;
+// a constant tempo will have most of the values equal the mode
+// while on a unsteady it should be more uniformally distributed
+// this value was empirical derived to determine if tempo is unsteady
+constexpr double kMaxModePercentage = 0.4;
 } // namespace
 
-double AnalyzerRhythm::medianTempo(const QVector<mixxx::audio::FramePos>& beats) {
+double AnalyzerRhythm::tempoMedian(const QVector<mixxx::audio::FramePos>& beats, int beatWindow) {
     if (beats.size() < 2) {
         return 0;
     }
-    auto [tempoList, tempoFrequencyTable] = computeRawTemposAndFrequency(beats);
+    auto [tempoList, tempoFrequencyTable] = computeRawTemposAndFrequency(beats, beatWindow);
     // Get the median BPM.
     std::sort(tempoList.begin(), tempoList.end());
-    const double medianBpm = BeatStatistics::computeSampleMedian(tempoList);
-    const double roundedBpm = floor(medianBpm + 0.5);
-    const double bpmDiff = fabs(roundedBpm - medianBpm);
-    bool performRounding = (bpmDiff <= kMaxBpmError);
-    return performRounding ? roundedBpm : medianBpm;
+    return BeatStatistics::median(tempoList);
+}
+
+double AnalyzerRhythm::tempoMode(const QVector<mixxx::audio::FramePos>& beats, int beatWindow) {
+    if (beats.size() < 2) {
+        return 0;
+    }
+    auto [tempoList, tempoFrequencyTable] = computeRawTemposAndFrequency(beats, beatWindow);
+    QMapIterator<double, int> tempo(tempoFrequencyTable);
+    return BeatStatistics::mode(tempoFrequencyTable);
 }
 
 std::tuple<QList<double>, QMap<double, int>> AnalyzerRhythm::computeRawTemposAndFrequency(
@@ -56,35 +78,38 @@ std::tuple<QList<double>, QMap<double, int>> AnalyzerRhythm::computeRawTemposAnd
 
 QMap<int, double> AnalyzerRhythm::findTempoChanges() {
     std::tie(m_rawTempos, m_rawTemposFrenquency) =
-            computeRawTemposAndFrequency(m_resultBeats);
+            computeRawTemposAndFrequency(m_resultBeats, 2);
     auto sortedTempoList = m_rawTempos;
     std::sort(sortedTempoList.begin(), sortedTempoList.end());
     // we have to make sure we have odd numbers
     if (!(sortedTempoList.size() % 2)) {
         sortedTempoList.pop_back();
     }
-    // because we use the median as a guess first and last tempo
-    // and it has to be in m_rawTempos
-    const double median = BeatStatistics::computeSampleMedian(sortedTempoList);
+    // because we use the median as a guess for the first and last
+    // tempo and it can not have an outlier from m_rawTempos.
+    const double median = BeatStatistics::median(sortedTempoList);
+    // The analyzer has a lot of noise so let's smooth it first
     // The analyzer sometimes detect false beats that generate outliers
     // values for the tempo so we use a median filter to remove them
-    MovingMedian filterTempo(kBeatsToCountTempo / 2 + 1); // odd samples for a precise median
+    MovingMedian filterTempo(kBeatsToCountTempo + 1); // odd samples for a precise median
     // The outliers values are eliminated by the median, but they might have made the tempo
     // to drift towards then, and thus we dont have a stable middle value, so we find the mode
     MovingMode stabilizeTempo(kBeatsToCountTempo * 2); // larger window to keep drift out
     int currentBeat = 0, lastBeatChange = 0;
     QMap<int, double> stableTemposAndPositions;
     stableTemposAndPositions[lastBeatChange] = median;
-    // Here we are going to track the tempo changes over the track
     int nextDownbeatIndex = 0;
     double nextDownbeat = m_downbeats[nextDownbeatIndex];
+    // Here we are going to track the changes over the smooth tempo
     for (double tempo : m_rawTempos) {
         double newStableTempo = stabilizeTempo(filterTempo(tempo));
-        // The analyzer has some jitter that causes a steady beat to fluctuate around
-        // the correct value so we don't consider tempos +-1 from the median as changes
         if (newStableTempo == stableTemposAndPositions.last()) {
-            ;
-        } else if (stableTemposAndPositions.last() !=
+            ; // no-op - change only case else
+        }
+        // The analyzer has some jitter that causes a steady beat to fluctuate
+        // around the correct value so we also don't consider tempos +-1 away as
+        // changes
+        else if (stableTemposAndPositions.last() !=
                         m_rawTemposFrenquency.lastKey() and
                 newStableTempo ==
                         (m_rawTemposFrenquency.find(
@@ -122,7 +147,11 @@ std::tuple<QVector<mixxx::audio::FramePos>, QMap<int, double>> AnalyzerRhythm::F
     m_stableTemposAndPositions = findTempoChanges();
     QVector<mixxx::audio::FramePos> fixedBeats;
     QMap<int, double> beatsWithNewTempo;
-    // here we only care about where the change happened
+    // here we have only the borders of where the tempo
+    // has significant changes, but inside each block we
+    // don't know if the tempo is constant, or is slowing
+    // in|de-creasing, or if the drummer is not keeping up
+    // with the beat, so let's find out
     auto tempoChanges = m_stableTemposAndPositions.keys();
     for (int lastTempoChage = 0;
             lastTempoChage < tempoChanges.count() - 1;
@@ -130,9 +159,10 @@ std::tuple<QVector<mixxx::audio::FramePos>, QMap<int, double>> AnalyzerRhythm::F
         int beatStart = tempoChanges[lastTempoChage];
         int beatEnd = tempoChanges[lastTempoChage + 1];
         int partLenght = beatEnd - beatStart;
+        double leftRighDiff = 0.0;
+        double modePercentage = 1.0;
         // here we detect if the segment has a constant tempo or not
-        double bpmDiff = 0;
-        if (partLenght >= m_beatsPerBar * 2) {
+        if (partLenght > m_beatsPerBar * 2) {
             int middle = partLenght / 2;
             auto beatsAtLeft = QVector<mixxx::audio::FramePos>::fromStdVector(
                     std::vector<mixxx::audio::FramePos>(
@@ -142,12 +172,35 @@ std::tuple<QVector<mixxx::audio::FramePos>, QMap<int, double>> AnalyzerRhythm::F
                     std::vector<mixxx::audio::FramePos>(
                             m_resultBeats.begin() + beatStart + middle,
                             m_resultBeats.begin() + beatEnd));
-            double beginBpm = medianTempo(beatsAtLeft);
-            double endBpm = medianTempo(beatsAtRight);
-            bpmDiff = fabs(beginBpm - endBpm);
+
+            auto [temposLeft, temposFrequenciesLeft] =
+                    computeRawTemposAndFrequency(beatsAtLeft, kBeatsToCountTempo);
+            auto [temposRight, temposFrequenciesRight] =
+                    computeRawTemposAndFrequency(beatsAtRight, kBeatsToCountTempo);
+            double modeAtLeft = BeatStatistics::mode(temposFrequenciesLeft);
+            double modeAtRight = BeatStatistics::mode(temposFrequenciesRight);
+            // here we detect if the tempo is in|de-creassing
+            leftRighDiff = fabs(modeAtLeft - modeAtRight);
+
+            // here we detect if the tempo is unsteady
+            int totalFrequenciesAtLeft = 0;
+            for (auto freq : temposFrequenciesLeft) {
+                totalFrequenciesAtLeft += freq;
+            }
+            int totalFrequenciesAtRight = 0;
+            for (auto freq : temposFrequenciesRight) {
+                totalFrequenciesAtRight += freq;
+            }
+            int modeFrequencyAtLeft = temposFrequenciesLeft[modeAtLeft];
+            int modeFrequencyAtRight = temposFrequenciesLeft[modeAtRight];
+            modePercentage = (modeFrequencyAtLeft + modeFrequencyAtRight) /
+                    static_cast<double>(
+                            totalFrequenciesAtLeft + totalFrequenciesAtRight);
         }
-        // here we handle ramping or unsteady values by making a beatgrid for each bar
-        if (bpmDiff >= kMaxBpmError) {
+        // we are gently enough to triple it so each can vector can have
+        // kMaxBpmError and one more for measuring mistake
+        if (leftRighDiff > kMaxBpmCompareError || modePercentage < kMaxModePercentage) {
+            // it's not constant, we make a beat for each bar
             while (beatStart <= beatEnd - m_beatsPerBar) {
                 auto splittedAtMeasure =
                         QVector<mixxx::audio::FramePos>::fromStdVector(
@@ -155,23 +208,25 @@ std::tuple<QVector<mixxx::audio::FramePos>, QMap<int, double>> AnalyzerRhythm::F
                                         m_resultBeats.begin() + beatStart,
                                         m_resultBeats.begin() + beatStart +
                                                 m_beatsPerBar));
-                double measureBpm = medianTempo(splittedAtMeasure);
+                double measureBpm = calculateBpm(splittedAtMeasure);
                 beatsWithNewTempo[beatStart] = measureBpm;
                 fixedBeats << calculateFixedTempoGrid(
                         splittedAtMeasure, measureBpm, false);
                 beatStart += m_beatsPerBar;
             }
         } else {
-            // here we have only one bpm for whole segment
+            // here the bpm is constant for whole segment
             auto splittedAtTempoChange =
                     QVector<mixxx::audio::FramePos>::fromStdVector(
                             std::vector<mixxx::audio::FramePos>(
                                     m_resultBeats.begin() + beatStart,
                                     m_resultBeats.begin() + beatEnd));
-
             double bpm = calculateBpm(splittedAtTempoChange);
-            fixedBeats << calculateFixedTempoGrid(
-                    splittedAtTempoChange, bpm, true);
+            if (splittedAtTempoChange.size() > kBeatsToCountTempo) {
+                fixedBeats << calculateFixedTempoGrid(splittedAtTempoChange, bpm, true);
+            } else {
+                fixedBeats << calculateFixedTempoGrid(splittedAtTempoChange, bpm, false);
+            }
             beatsWithNewTempo[beatStart] = bpm;
         }
     }
@@ -232,13 +287,7 @@ mixxx::audio::FramePos AnalyzerRhythm::findFirstCorrectBeat(
     return !rawbeats.empty() ? rawbeats.first() : mixxx::audio::FramePos(0.0);
 }
 
-double AnalyzerRhythm::calculateBpm(const QVector<mixxx::audio::FramePos>& beats) {
-    // Just to demonstrate how you would count the beats manually
-    //    Beat numbers:   1  2  3  4   5  6  7  8    9
-    //    Beat positions: ?  ?  ?  ?  |?  ?  ?  ?  | ?
-    // Usually one measures the time of N beats. One stops the timer just before
-    // the (N+1)th beat begins.  The BPM is then computed by 60*N/<time needed
-    // to count N beats (in seconds)>
+double AnalyzerRhythm::calculateBpm(const QVector<mixxx::audio::FramePos>& beats, bool tryToRound) {
     if (beats.size() < 2) {
         return 0;
     }
@@ -248,11 +297,13 @@ double AnalyzerRhythm::calculateBpm(const QVector<mixxx::audio::FramePos>& beats
         return 60.0 * (beats.size() - 1) * m_sampleRate / (beats.last() - beats.first());
     }
     auto [tempoList, tempoFrequency] = computeRawTemposAndFrequency(beats, kBeatsToCountTempo);
-    double median;
-    // Okay, let's consider the median an estimation of the BPM. To not solely
-    // rely on the median, we build the average weighted value of all bpm values
-    // being at most +-1 BPM from the median away.
-    median = medianTempo(beats);
+    auto sortedTempo = tempoList;
+    std::sort(sortedTempo.begin(), sortedTempo.end());
+
+    double median = BeatStatistics::median(sortedTempo);
+    // Okay, let's consider the median an estimation of the BPM.
+    // We know that the jitter of the analyzer will regularly detect
+    // a beat to be a bit shifted to left or the right so we use them
     auto [filterWeightedAverageBpm, filtered_bpm_frequency_table] =
             computeFilteredWeightedAverage(tempoFrequency, median);
     if (sDebug) {
@@ -260,82 +311,22 @@ double AnalyzerRhythm::calculateBpm(const QVector<mixxx::audio::FramePos>& beats
         qDebug() << "Weighted Avg of BPM values +- 1BPM from the media"
                  << filterWeightedAverageBpm;
     }
-    // Although we have a minimal deviation of about +- 0.05 BPM units compared
-    // to Traktor, this deviation may cause the beat grid to look unaligned,
-    // especially at the end of a track.  Let's try to get the BPM 'perfect' :-)
-
-    // Idea: Iterate over the original beat set where some detected beats may be
-    // wrong. The beat is considered 'correct' if the beat position is within
-    // epsilon of a beat grid obtained by the global BPM.
-
-    // If the beat turns out correct, we can compute the error in BPM units.
-    // E.g., we can check the original beat position after 60 seconds. Ideally,
-    // the approached beat is just a couple of samples away, i.e., not worse
-    // than 0.05 BPM units.  The distance between these two samples can be used
-    // for BPM error correction
-    double perfect_bpm = 0;
-    mixxx::audio::FramePos firstCorrectBeatSample = beats.first();
-    bool foundFirstCorrectBeat = false;
-    int counter = 0;
-    int perfectBeats = 0;
-    for (int i = kBeatsToCountTempo; i < beats.size(); i += 1) {
-        // get start and end sample of the beats
-        mixxx::audio::FramePos beat_start = beats.at(i - kBeatsToCountTempo);
-        mixxx::audio::FramePos beat_end = beats.at(i);
-        // Time needed to count a bar (N beats)
-        double time = (beat_end - beat_start) / m_sampleRate;
-        if (time == 0)
-            continue;
-        double local_bpm = 60.0 * kBeatsToCountTempo / time;
-        // round BPM to have two decimal places
-        local_bpm = floor(local_bpm * kHistogramDecimalScale + 0.5) / kHistogramDecimalScale;
-        // qDebug() << "Local BPM beat " << i << ": " << local_bpm;
-        if (!foundFirstCorrectBeat and
-                filtered_bpm_frequency_table.contains(local_bpm) and
-                fabs(local_bpm - filterWeightedAverageBpm) < kMaxBpmError) {
-            firstCorrectBeatSample = beat_start;
-            foundFirstCorrectBeat = true;
-            if (sDebug) {
-                qDebug() << "Beat #" << (i - kBeatsToCountTempo)
-                         << "is considered as reference beat with BPM:"
-                         << local_bpm;
-            }
-        }
-        if (foundFirstCorrectBeat) {
-            if (counter == 0) {
-                counter = kBeatsToCountTempo;
-            } else {
-                counter += 1;
-            }
-            double time2 = (beat_end - firstCorrectBeatSample) / m_sampleRate;
-            double correctedBpm = 60 * counter / time2;
-            if (fabs(correctedBpm - filterWeightedAverageBpm) <= kMaxBpmError) {
-                perfect_bpm += correctedBpm;
-                perfectBeats += 1;
-                if (sDebug) {
-                    qDebug() << "Beat #" << (i - kBeatsToCountTempo)
-                             << "is considered as correct -->BPM improved to:"
-                             << correctedBpm;
-                }
-            }
-        }
-    }
-    const double perfectAverageBpm = perfectBeats > 0
-            ? perfect_bpm / perfectBeats
-            : filterWeightedAverageBpm;
+    auto perfectAverageBpm = filterWeightedAverageBpm;
     // Round values that are within BPM_ERROR of a whole number.
     const double rounded_bpm = floor(perfectAverageBpm + 0.5);
     const double bpm_diff = fabs(rounded_bpm - perfectAverageBpm);
     bool perform_rounding = (bpm_diff <= kMaxBpmError);
     // Finally, restrict the BPM to be within min_bpm and max_bpm.
-    const double maybeRoundedBpm = perform_rounding ? rounded_bpm : perfectAverageBpm;
+    const double maybeRoundedBpm = (perform_rounding && tryToRound)
+            ? rounded_bpm
+            : perfectAverageBpm;
     if (sDebug) {
         qDebug() << "SampleMedianBpm=" << median;
         qDebug() << "FilterWeightedAverageBpm=" << filterWeightedAverageBpm;
         qDebug() << "Perfect BPM=" << perfectAverageBpm;
         qDebug() << "Rounded Perfect BPM=" << rounded_bpm;
         qDebug() << "Rounded difference=" << bpm_diff;
-        qDebug() << "Perform rounding=" << perform_rounding;
+        qDebug() << "Perform rounding=" << (perform_rounding && tryToRound);
     }
     return maybeRoundedBpm;
 }

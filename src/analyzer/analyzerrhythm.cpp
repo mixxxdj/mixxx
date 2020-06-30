@@ -4,8 +4,8 @@
 #include <QString>
 #include <QVector>
 #include <QtDebug>
+#include <unordered_set>
 
-#include "analyzer/analyzerrhythmstats.h"
 #include "analyzer/constants.h"
 #include "engine/engine.h" // Included to get mixxx::kEngineChannelCount
 #include "engine/engine.h"
@@ -18,12 +18,7 @@ namespace {
 // This determines the resolution of the resulting BeatMap.
 // ~12 ms (86 Hz) is a fair compromise between accuracy and analysis speed,
 // also matching the preferred window/step sizes from BeatTrack VAMP.
-// For a 44.1 kHz track, we go in 512 sample steps
-// TODO: kStepSecs and the waveform sample rate of 441
-// (defined in AnalyzerWaveform::initialize) do not align well and thus
-// generate interference. Currently we are at this odd factor: 441 * 0.01161 = 5.12.
-// This should be adjusted to be an integer.0.0113378684807
-constexpr float kStepSecs = 0.01161f;
+constexpr float kStepSecs = 0.0113378684807f;
 // results in 43 Hz @ 44.1 kHz / 47 Hz @ 48 kHz / 47 Hz @ 96 kHz
 constexpr int kMaximumBinSizeHz = 50; // Hz
 // This is a quick hack to make a beatmap with only downbeats - will affect the bpm
@@ -37,10 +32,10 @@ constexpr int kDfTypes = 5;
 DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
     // These are the defaults for the VAMP beat tracker plugin
     DFConfig config;
-    config.DFType = dfAll;
+    config.DFType = dfAll - dfBroadBand;
     config.stepSize = stepSize;
     config.frameLength = windowSize;
-    config.dbRise = 11;
+    config.dbRise = 3;
     config.adaptiveWhitening = 0;
     config.whiteningRelaxCoeff = -1;
     config.whiteningFloor = -1;

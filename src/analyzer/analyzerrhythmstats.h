@@ -46,7 +46,9 @@ class WindowedStatistics {
 };
 class BeatStatistics {
   public:
-    static double computeSampleMedian(QList<double> sortedItems);
+    static double median(QList<double> sortedItems);
+    static double mode(QMap<double, int> tempoFrequency);
+    static double stddev(QVector<double> const& tempos);
 };
 
 class MovingMode : public WindowedStatistics {
