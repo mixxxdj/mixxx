@@ -1,7 +1,7 @@
 /**
 * MidiDispatcher routes incoming MIDI messages to registered callbacks. Register callbacks with
 * the setInputCallback method in your controller script module's init function and call
-* MidiDispatcher's receiveData method in your controller script module's receiveData function.
+* MidiDispatcher's receiveMidiData method in your controller script module's receiveData function.
 *
 * This class is not designed to handle System Exclusive or MIDI Clock messages. For those, implement logic
 * specific to your controller in the controller module's receiveData function before calling
@@ -58,7 +58,7 @@ export class MidiDispatcher {
      * @param {Array} data - The incoming MIDI data.
      * @param {number} timestamp - The timestamp that Mixxx received the MIDI data at.
      */
-    receiveData(data, timestamp) {
+    receiveMidiData(data, timestamp) {
         let key;
         // MIDI messages starting with 0xC (program change) or 0xD (aftertouch) messages are only
         // two bytes long and distinguished by their first byte.
