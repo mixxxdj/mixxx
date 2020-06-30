@@ -2,6 +2,11 @@
 
 #define MACRORECORDING_PREF_KEY "[MacroRecording]"
 
+// TODO(xerus) handle track eject while recording
+// TODO(xerus) write tests
+// TODO(xerus) consider how to record the first jump
+
+/// The MacroManager handles the recording of Macros and the [MacroRecording] controls.
 MacroManager::MacroManager(
         UserSettingsPointer pConfig,
         EngineMaster* pEngine,
@@ -49,5 +54,6 @@ void MacroManager::stopRecording() {
     m_bRecording = false;
     m_pCORecStatus->set(0);
     emit stopMacroRecording();
+    // TODO(xerus) wait until stopped
     m_pRecordedMacro->dump();
 }

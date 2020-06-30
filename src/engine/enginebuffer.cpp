@@ -1204,6 +1204,8 @@ void EngineBuffer::processSeek(bool paused) {
                     << "EngineBuffer::processSeek seek info: " << m_filepos_play
                     << " -> " << position;
     }
+    // TODO(xerus) unset hotcueRecording even when no jump is performed
+    // Also, how to handle the case of jumping back to a cue after release?
     if (position != m_filepos_play) {
         if (kLogger.traceEnabled())
             kLogger.trace() << "EngineBuffer::processSeek Seek to" << position;
