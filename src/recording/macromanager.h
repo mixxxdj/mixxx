@@ -9,6 +9,8 @@
 #include "preferences/usersettings.h"
 #include "recording/recordingmanagerbase.h"
 
+#define MACRORECORDING_PREF_KEY "[MacroRecording]"
+
 namespace {
 constexpr size_t kMaxMacroSize = 1000;
 const QLoggingCategory macros("macros");
@@ -69,8 +71,9 @@ class MacroManager : public RecordingManagerBase {
   private:
     UserSettingsPointer m_pConfig;
 
-    ControlObject* m_pCORecStatus;
     ControlPushButton* m_pToggleRecording;
+    ControlObject* m_pCORecStatus;
+    ControlObject* m_pCODeck;
 
     Macro* m_pRecordedMacro;
 };

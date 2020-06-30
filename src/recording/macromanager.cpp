@@ -1,7 +1,5 @@
 #include "macromanager.h"
 
-#define MACRORECORDING_PREF_KEY "[MacroRecording]"
-
 // TODO(xerus) handle track eject while recording
 // TODO(xerus) write tests
 // TODO(xerus) consider how to record the first jump
@@ -21,9 +19,10 @@ MacroManager::MacroManager(
             &ControlPushButton::valueChanged,
             this,
             &MacroManager::slotToggleRecording);
-    m_pCORecStatus = new ControlObject(ConfigKey(MACRORECORDING_PREF_KEY, "recording_status"));
+    m_pCORecStatus = new ControlObject(
+            ConfigKey(MACRORECORDING_PREF_KEY, "recording_status"));
 
-    //m_deckCO = new ControlObject(ConfigKey(MACRORECORDING_PREF_KEY, "deck"));
+    m_pCODeck = new ControlObject(ConfigKey(MACRORECORDING_PREF_KEY, "deck"));
 
     connect(this,
             &MacroManager::startMacroRecording,
@@ -55,5 +54,6 @@ void MacroManager::stopRecording() {
     m_pCORecStatus->set(0);
     emit stopMacroRecording();
     // TODO(xerus) wait until stopped
+    qCDebug(macros) << "Recorded Macro for deck" << m_pCODeck->get();
     m_pRecordedMacro->dump();
 }
