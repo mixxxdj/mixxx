@@ -48,6 +48,7 @@ class DlgPrefAutoDJ;
 class DlgPrefBroadcast;
 class DlgPrefRecord;
 class DlgPrefBeats;
+class DlgPrefRhythm;
 class DlgPrefKey;
 class DlgPrefReplayGain;
 #ifdef __LILV__
