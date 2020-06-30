@@ -443,7 +443,7 @@ void EngineBuffer::seekCloneBuffer(EngineBuffer* pOtherBuffer) {
 // the engine callback!
 void EngineBuffer::setNewPlaypos(double newpos) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << m_group << "EngineBuffer::setNewPlaypos" << newpos;
+        kLogger.trace() << getGroup() << "EngineBuffer::setNewPlaypos" << newpos;
     }
 
     m_filepos_play = newpos;
@@ -592,9 +592,13 @@ void EngineBuffer::slotControlSeek(double fractionalPos) {
 // WARNING: This method runs from SyncWorker and Engine Worker
 void EngineBuffer::slotControlSeekAbs(double playPosition) {
     uint8_t expected = 1;
-    if (m_hotcueRecording == 1 ||
-            m_pEngineMaster->m_pMacroState->compare_exchange_weak(expected, 2)) {
+    if (m_hotcueRecording == 1) {
         m_hotcueRecording = 2;
+    } else if (m_pEngineMaster->m_pMacroState->compare_exchange_weak(expected, 2)) {
+        m_hotcueRecording = 2;
+        // TODO(xerus) obtain correct deck
+        ControlProxy(ConfigKey(MACRORECORDING_PREF_KEY, "deck"))
+                .set(this->m_pEngineMaster->getChannel(m_group)->getHandle().handle());
     }
     doSeekPlayPos(playPosition, SEEK_STANDARD);
 }
@@ -1204,22 +1208,24 @@ void EngineBuffer::processSeek(bool paused) {
                     << "EngineBuffer::processSeek seek info: " << m_filepos_play
                     << " -> " << position;
     }
-    // TODO(xerus) unset hotcueRecording even when no jump is performed
-    // Also, how to handle the case of jumping back to a cue after release?
     if (position != m_filepos_play) {
         if (kLogger.traceEnabled())
             kLogger.trace() << "EngineBuffer::processSeek Seek to" << position;
         if (m_hotcueRecording == 2) {
-            DEBUG_ASSERT(m_pEngineMaster->m_pMacroRecording != nullptr);
-            uint8_t expected = 3;
-            if (m_pEngineMaster->m_pMacroState->compare_exchange_weak(expected, 0)) {
-                m_hotcueRecording = 0;
-            } else {
-                m_hotcueRecording = 1;
+            VERIFY_OR_DEBUG_ASSERT(m_pEngineMaster->m_pMacroRecording != nullptr) {
+                return;
             }
             m_pEngineMaster->m_pMacroRecording->appendHotcueJump(m_filepos_play, position);
         }
         setNewPlaypos(position);
+    }
+    if (m_hotcueRecording == 2) {
+        uint8_t expected = 3;
+        if (m_pEngineMaster->m_pMacroState->compare_exchange_weak(expected, 0)) {
+            m_hotcueRecording = 0;
+        } else {
+            m_hotcueRecording = 1;
+        }
     }
     m_iSeekQueued.storeRelease(SEEK_NONE);
 }
