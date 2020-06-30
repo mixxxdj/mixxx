@@ -9,6 +9,13 @@
 #include "util/db/dbconnection.h"
 #include "util/db/sqllikewildcards.h"
 
+namespace {
+constexpr int kRoundToDecimal = 10;
+inline double reducePrecision(double num) {
+    return round(num * pow(10, kRoundToDecimal)) / pow(10, kRoundToDecimal);
+}
+} // namespace
+
 QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column) {
     if (column == LIBRARYTABLE_ARTIST) {
         return pTrack->getArtist();
@@ -324,13 +331,34 @@ bool NumericFilterNode::match(const TrackPointer& pTrack) const {
             continue;
         }
 
-        double dValue = value.toDouble();
+        const double dValue = value.toDouble();
+
+        // We are reducing the precision of double since an operation on Beats: getBpm
+        // has changed recently. It is dynamically calculated instead of using a stored
+        // precise value thus leading to a slight double precision error on comparison
+        // operations.
+        // The original functionality can be restored with the implementation of beat
+        // markers since a beat marker stores BPM explicitly.
+        // TODO(hacksdump): Restore original functionality with BeatMarker implementation.
+        const double dValueReducedPrecision = reducePrecision(dValue);
+        const double dOperatorArgumentReducedPrecision = reducePrecision(m_dOperatorArgument);
+
         if (m_bOperatorQuery) {
-            if ((m_operator == "=" && qFuzzyCompare(dValue, m_dOperatorArgument)) ||
-                    (m_operator == "<" && dValue < m_dOperatorArgument) ||
-                    (m_operator == ">" && dValue > m_dOperatorArgument) ||
-                    (m_operator == "<=" && dValue <= m_dOperatorArgument) ||
-                    (m_operator == ">=" && dValue >= m_dOperatorArgument)) {
+            if ((m_operator == "=" &&
+                        dValueReducedPrecision ==
+                                dOperatorArgumentReducedPrecision) ||
+                    (m_operator == "<" &&
+                            dValueReducedPrecision <
+                                    dOperatorArgumentReducedPrecision) ||
+                    (m_operator == ">" &&
+                            dValueReducedPrecision >
+                                    dOperatorArgumentReducedPrecision) ||
+                    (m_operator == "<=" &&
+                            dValueReducedPrecision <=
+                                    dOperatorArgumentReducedPrecision) ||
+                    (m_operator == ">=" &&
+                            dValueReducedPrecision >=
+                                    dOperatorArgumentReducedPrecision)) {
                 return true;
             }
         } else if (m_bRangeQuery && dValue >= m_dRangeLow &&
