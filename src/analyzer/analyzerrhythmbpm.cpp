@@ -197,8 +197,6 @@ std::tuple<QVector<mixxx::audio::FramePos>, QMap<int, double>> AnalyzerRhythm::F
                     static_cast<double>(
                             totalFrequenciesAtLeft + totalFrequenciesAtRight);
         }
-        // we are gently enough to triple it so each can vector can have
-        // kMaxBpmError and one more for measuring mistake
         if (leftRighDiff > kMaxBpmCompareError || modePercentage < kMaxModePercentage) {
             // it's not constant, we make a beat for each bar
             while (beatStart <= beatEnd - m_beatsPerBar) {
