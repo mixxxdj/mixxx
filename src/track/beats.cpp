@@ -345,9 +345,9 @@ FramePos Beats::findNthBeat(FramePos frame, int n) const {
     BeatList::const_iterator it =
             std::lower_bound(m_beats.cbegin(), m_beats.cend(), beat, BeatLessThan);
 
-    // If the position is within 1/10th of a second of the next or previous
-    // beat, pretend we are on that beat.
-    const double kFrameEpsilon = 0.1 * getSampleRate();
+    // If the position is within 1/10th of the average beat length,
+    // pretend we are on that beat.
+    const double kFrameEpsilon = 0.1 * 60 * getSampleRate() / getBpm().getValue();
 
     // Back-up by one.
     if (it != m_beats.begin()) {
