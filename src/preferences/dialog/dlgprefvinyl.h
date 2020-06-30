@@ -18,12 +18,13 @@
 #ifndef DLGPREFVINYL_H
 #define DLGPREFVINYL_H
 
+#include <QSpinBox>
 #include <QWidget>
 
 #include "preferences/dialog/ui_dlgprefvinyldlg.h"
+#include "preferences/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
 #include "vinylcontrol/vinylcontrolsignalwidget.h"
-#include "preferences/dlgpreferencepage.h"
 
 class ControlProxy;
 class VinylControlManager;
@@ -60,7 +61,7 @@ class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
     void setDeck2WidgetsVisible(bool visible);
     void setDeck3WidgetsVisible(bool visible);
     void setDeck4WidgetsVisible(bool visible);
-    void verifyAndSaveLeadInTime(QLineEdit* widget, QString group, QString vinyl_type);
+    void verifyAndSaveLeadInTime(QSpinBox* widget, QString group, QString vinyl_type);
     int getDefaultLeadIn(QString vinyl_type) const;
 
 
