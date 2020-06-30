@@ -154,7 +154,10 @@ QString AudioPath::getStringFromType(AudioPathType type) {
         // handle this -- bkgood
         return QStringLiteral("Invalid");
     case MASTER:
-        return QStringLiteral("Main");
+        // This was renamed to "Main" in the GUI, but keep "Master" here to avoid
+        // making users reconfigure the output when upgrading.
+        // https://mixxx.org/news/2020-06-29-black-lives-matter/
+        return QStringLiteral("Master");
     case BOOTH:
         return QStringLiteral("Booth");
     case HEADPHONES:
