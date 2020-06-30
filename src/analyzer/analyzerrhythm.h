@@ -43,13 +43,14 @@ class AnalyzerRhythm : public Analyzer {
     std::tuple<QVector<double>, QMap<int, double>> FixBeatsPositions();
     std::tuple<QList<double>, QMap<double, int>> computeRawTemposAndFrequency(
             const QVector<double>& beats, const int beatWindow = 2);
-    double medianTempo(const QVector<double>& beats);
+    double tempoMedian(const QVector<double>& beats, const int beatWindow = 2);
+    double tempoMode(const QVector<double>& beats, const int beatWindow = 2);
     QMap<int, double> findTempoChanges();
     QVector<double> calculateFixedTempoGrid(const QVector<double>& rawbeats, 
             const double localBpm, bool correctFirst = true);
     double findFirstCorrectBeat(
             const QVector<double> rawbeats, const double global_bpm);
-    double calculateBpm(const QVector<double>& beats);
+    double calculateBpm(const QVector<double>& beats, bool tryToRound = true);
     std::tuple<double, QMap<double, int>> computeFilteredWeightedAverage(
             const QMap<double, int>& tempoFrequency, const double filterCenter);
 
