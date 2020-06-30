@@ -145,9 +145,8 @@ class TrackModel {
     virtual TrackModel::Capabilities getCapabilities() const {
         return Capability::None;
     }
-    virtual bool hasCapabilities(TrackModel::Capabilities caps) const {
-        Q_UNUSED(caps);
-        return false;
+    /*non-virtual*/ bool hasCapabilities(TrackModel::CapabilitiesFlags caps) const {
+        return (getCapabilities() & caps) == caps;
     }
     virtual QString getModelSetting(QString name) {
         SettingsDAO settings(m_db);
