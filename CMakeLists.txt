@@ -2417,7 +2417,6 @@ if(WAVPACK)
 endif()
 
 # Packaging
-set(CPACK_PACKAGE_NAME "mixxx")
 set(CPACK_PACKAGE_VENDOR "Mixxx Project")
 set(CPACK_PACKAGE_CONTACT "RJ Skerry-Ryan <rryan@mixxx.org>")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack_package_description.txt")
