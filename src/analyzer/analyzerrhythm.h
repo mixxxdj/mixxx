@@ -33,6 +33,8 @@ class AnalyzerRhythm : public Analyzer {
   private:
     // general methods
     bool shouldAnalyze(TrackPointer pTrack) const;
+    int stepSize();
+    int windowSize();
 
     // beats and bpms methods
 
@@ -77,7 +79,5 @@ class AnalyzerRhythm : public Analyzer {
     std::unique_ptr<DetectionFunction> m_pDetectionFunction;
     std::unique_ptr<DownBeat> m_downbeat;
     mixxx::DownmixAndOverlapHelper m_processor;
-    int m_windowSize;
-    int m_stepSize;
     std::vector<DFresults> m_detectionResults;
 };

@@ -50,9 +50,15 @@ AnalyzerRhythm::AnalyzerRhythm(UserSettingsPointer pConfig)
           m_iCurrentSample(0),
           m_iMinBpm(0),
           m_iMaxBpm(9999),
-          m_beatsPerBar(4),
-          m_windowSize(0),
-          m_stepSize(0) {
+          m_beatsPerBar(4) {
+}
+
+inline int AnalyzerRhythm::stepSize() {
+    return static_cast<int>(m_sampleRate * kStepSecs);
+}
+
+inline int AnalyzerRhythm::windowSize() {
+    return MathUtilities::nextPowerOfTwo(m_sampleRate / kMaximumBinSizeHz);
 }
 
 bool AnalyzerRhythm::initialize(const AnalyzerTrack& track,
@@ -67,19 +73,17 @@ bool AnalyzerRhythm::initialize(const AnalyzerTrack& track,
     m_iMaxSamplesToProcess = m_iTotalSamples;
     m_iCurrentSample = 0;
 
-    m_stepSize = static_cast<int>(m_sampleRate * kStepSecs);
-    m_windowSize = MathUtilities::nextPowerOfTwo(m_sampleRate / kMaximumBinSizeHz);
     m_pDetectionFunction = std::make_unique<DetectionFunction>(
-            makeDetectionFunctionConfig(m_stepSize, m_windowSize));
+            makeDetectionFunctionConfig(stepSize(), windowSize()));
     // decimation factor aims at resampling to c. 3KHz; must be power of 2
     int factor = MathUtilities::nextPowerOfTwo(m_sampleRate / 3000);
     m_downbeat = std::make_unique<DownBeat>(
-            m_sampleRate, factor, m_stepSize);
+            m_sampleRate, factor, stepSize());
 
-    qDebug() << "input sample rate is " << m_sampleRate << ", step size is " << m_stepSize;
+    qDebug() << "input sample rate is " << m_sampleRate << ", step size is " << stepSize();
 
     m_processor.initialize(
-            m_windowSize, m_stepSize, [this](double* pWindow, size_t) {
+            windowSize(), stepSize(), [this](double* pWindow, size_t) {
                 m_detectionResults.push_back(
                         m_pDetectionFunction->processTimeDomain(pWindow));
                 m_downbeat->pushAudioBlock(reinterpret_cast<float*>(pWindow));
@@ -152,7 +156,7 @@ std::vector<double> AnalyzerRhythm::computeBeats() {
             beatPeriod.push_back(0.0);
         }
 
-        TempoTrackV2 tt(m_sampleRate, m_stepSize);
+        TempoTrackV2 tt(m_sampleRate, stepSize());
         tt.calculateBeatPeriod(noteOnsets, beatPeriod, tempi);
 
         tt.calculateBeats(noteOnsets, beatPeriod, allBeats[dfType]);
@@ -249,8 +253,8 @@ void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
     size_t nextDownbeat = firstDownbeat;
     // convert beats positions from df increments to frams
     for (size_t i = 0; i < beats.size(); ++i) {
-        auto result = mixxx::audio::FramePos((beats.at(i) * m_stepSize) -
-                m_stepSize / mixxx::kEngineChannelCount);
+        auto result = mixxx::audio::FramePos((beats.at(i) * stepSize()) -
+                stepSize() / mixxx::kEngineChannelCount);
         if (i == nextDownbeat) {
             m_downbeats.push_back(i);
             nextDownbeat += bpb;
