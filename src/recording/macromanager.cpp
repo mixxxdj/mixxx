@@ -5,12 +5,8 @@
 // TODO(xerus) consider how to record the first jump
 
 /// The MacroManager handles the recording of Macros and the [MacroRecording] controls.
-MacroManager::MacroManager(
-        UserSettingsPointer pConfig,
-        EngineMaster* pEngine,
-        PlayerManager* pPlayerManager)
-        : m_pConfig(pConfig),
-          m_pRecordedMacro(new Macro()) {
+MacroManager::MacroManager(EngineMaster* pEngine)
+        : m_pRecordedMacro(new Macro()) {
     qCDebug(macros) << "MacroManager construct";
 
     m_pToggleRecording = new ControlPushButton(

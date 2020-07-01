@@ -55,10 +55,7 @@ struct Macro {
 class MacroManager : public RecordingManagerBase {
     Q_OBJECT
   public:
-    MacroManager(
-            UserSettingsPointer pConfig,
-            EngineMaster* pMaster,
-            PlayerManager* pPlayerManager);
+    MacroManager(EngineMaster* pMaster);
     ~MacroManager() override;
 
     void startRecording();
