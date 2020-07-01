@@ -18,15 +18,17 @@
 #ifndef ENGINEBUFFER_H
 #define ENGINEBUFFER_H
 
-#include <QMutex>
-#include <QAtomicInt>
 #include <gtest/gtest_prod.h>
 
-#include "engine/cachingreader/cachingreader.h"
-#include "preferences/usersettings.h"
+#include <QAtomicInt>
+#include <QMutex>
+
 #include "control/controlvalue.h"
+#include "engine/cachingreader/cachingreader.h"
+#include "engine/enginemaster.h"
 #include "engine/engineobject.h"
 #include "engine/sync/syncable.h"
+#include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/rotary.h"
 #include "util/types.h"
@@ -52,7 +54,6 @@ class ControlObject;
 class ControlProxy;
 class ControlPushButton;
 class ControlIndicator;
-class ControlBeat;
 class ControlTTRotary;
 class ControlPotmeter;
 class EngineBufferScale;
@@ -62,7 +63,6 @@ class EngineBufferScaleRubberBand;
 class EngineSync;
 class EngineWorkerScheduler;
 class VisualPlayPosition;
-class EngineMaster;
 
 /// Length of audio beat marks in samples
 const int audioBeatMarkLen = 40;
@@ -264,8 +264,8 @@ class EngineBuffer : public EngineObject {
     FRIEND_TEST(EngineSyncTest, BeatMapQantizePlay);
     FRIEND_TEST(EngineBufferTest, ScalerNoTransport);
     EngineMaster* m_pEngineMaster;
-    /// 0=disabled, 1=active, 2=hotcue pending
-    uint8_t m_hotcueRecording;
+    // Armed=Cue jump is pending, Recording=Awaiting cue jumps
+    MacroState m_macroRecordingState;
     EngineSync* m_pEngineSync;
     SyncControl* m_pSyncControl;
     VinylControlControl* m_pVinylControlControl;

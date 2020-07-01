@@ -591,11 +591,12 @@ void EngineBuffer::slotControlSeek(double fractionalPos) {
 
 // WARNING: This method runs from SyncWorker and Engine Worker
 void EngineBuffer::slotControlSeekAbs(double playPosition) {
-    uint8_t expected = 1;
-    if (m_hotcueRecording == 1) {
-        m_hotcueRecording = 2;
-    } else if (m_pEngineMaster->m_pMacroState->compare_exchange_weak(expected, 2)) {
-        m_hotcueRecording = 2;
+    MacroState expected = MacroState::Armed;
+    if (m_macroRecordingState == MacroState::Recording) {
+        m_macroRecordingState = MacroState::Armed;
+    } else if (m_pEngineMaster->m_pMacroState
+                       ->compare_exchange_weak(expected, MacroState::Recording)) {
+        m_macroRecordingState = MacroState::Armed;
         // TODO(xerus) obtain correct deck
         ControlProxy(ConfigKey(MACRORECORDING_PREF_KEY, "deck"))
                 .set(this->m_pEngineMaster->getChannel(m_group)->getHandle().handle());
@@ -1211,7 +1212,7 @@ void EngineBuffer::processSeek(bool paused) {
     if (position != m_filepos_play) {
         if (kLogger.traceEnabled())
             kLogger.trace() << "EngineBuffer::processSeek Seek to" << position;
-        if (m_hotcueRecording == 2) {
+        if (m_macroRecordingState == MacroState::Armed) {
             VERIFY_OR_DEBUG_ASSERT(m_pEngineMaster->m_pMacroRecording != nullptr) {
                 return;
             }
@@ -1219,12 +1220,12 @@ void EngineBuffer::processSeek(bool paused) {
         }
         setNewPlaypos(position);
     }
-    if (m_hotcueRecording == 2) {
-        uint8_t expected = 3;
-        if (m_pEngineMaster->m_pMacroState->compare_exchange_weak(expected, 0)) {
-            m_hotcueRecording = 0;
+    if (m_macroRecordingState == MacroState::Armed) {
+        MacroState expected = MacroState::Stopping;
+        if (m_pEngineMaster->m_pMacroState->compare_exchange_weak(expected, MacroState::Disabled)) {
+            m_macroRecordingState = MacroState::Disabled;
         } else {
-            m_hotcueRecording = 1;
+            m_macroRecordingState = MacroState::Recording;
         }
     }
     m_iSeekQueued.storeRelease(SEEK_NONE);
