@@ -233,6 +233,8 @@ class EngineMaster : public QObject, public AudioSource {
                              sizeof(long double)];
     };
 
+    /// 0=disabled, 1=armed, 2=recording, 3=stopping
+    std::atomic_uint8_t* m_pMacroState;
     Macro* m_pMacroRecording;
 
   public slots:

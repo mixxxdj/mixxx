@@ -23,8 +23,7 @@ struct MacroAction {
 };
 
 struct Macro {
-    int length = 0;
-    QString deck = QString();
+    int m_length = 0;
     MacroAction actions[kMaxMacroSize];
 
     Macro() {
@@ -33,13 +32,13 @@ struct Macro {
 
     void appendHotcueJump(double origin, double target) {
         qCDebug(macros) << "Appending jump from" << origin << "to" << target;
-        actions[length].position = origin;
-        actions[length].target = target;
-        length++;
+        actions[m_length].position = origin;
+        actions[m_length].target = target;
+        m_length++;
     };
 
     void dump() {
-        for (int i = 0; i < length; ++i) {
+        for (int i = 0; i < m_length; ++i) {
             auto action = actions[i];
             qCDebug(macros) << "Jump from " << action.position << " to " << action.target;
         }
@@ -47,8 +46,7 @@ struct Macro {
 
     void clear() {
         qCDebug(macros) << "Clearing Macro";
-        length = 0;
-        deck = QString();
+        m_length = 0;
     }
 };
 

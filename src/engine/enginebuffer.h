@@ -264,7 +264,8 @@ class EngineBuffer : public EngineObject {
     FRIEND_TEST(EngineSyncTest, BeatMapQantizePlay);
     FRIEND_TEST(EngineBufferTest, ScalerNoTransport);
     EngineMaster* m_pEngineMaster;
-    bool m_bHotcueJumpPending;
+    /// 0=disabled, 1=active, 2=hotcue pending
+    uint8_t m_hotcueRecording;
     EngineSync* m_pEngineSync;
     SyncControl* m_pSyncControl;
     VinylControlControl* m_pVinylControlControl;
