@@ -321,7 +321,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addPreviewDeck();
 
-    m_pMacroManager = new MacroManager(pConfig, m_pEngine, m_pPlayerManager);
+    m_pMacroManager = new MacroManager(m_pEngine);
 
     launchProgress(30);
 
