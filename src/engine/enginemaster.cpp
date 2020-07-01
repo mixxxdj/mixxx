@@ -35,7 +35,7 @@ EngineMaster::EngineMaster(
         bool bEnableSidechain)
         : m_pChannelHandleFactory(pChannelHandleFactory),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
-          m_pMacroState(new std::atomic_uint8_t(0u)),
+          m_pMacroState(new std::atomic(MacroState::Disabled)),
           m_masterGainOld(0.0),
           m_boothGainOld(0.0),
           m_headphoneMasterGainOld(0.0),
@@ -272,12 +272,12 @@ const CSAMPLE* EngineMaster::getSidechainBuffer() const {
 void EngineMaster::slotStartMacroRecording(Macro* pMacro) {
     qCDebug(QLoggingCategory("macros")) << "ENGINEMASTER START!";
     m_pMacroRecording = pMacro;
-    m_pMacroState->store(1);
+    m_pMacroState->store(MacroState::Armed);
 }
 
 void EngineMaster::slotStopMacroRecording() {
     qCDebug(QLoggingCategory("macros")) << "ENGINEMASTER STOP!";
-    m_pMacroState->store(3);
+    m_pMacroState->store(MacroState::Stopping);
 }
 
 void EngineMaster::processChannels(int iBufferSize) {
