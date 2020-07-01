@@ -64,8 +64,6 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                   ConfigKey("[Master]", "num_microphones"), true, true)),
           m_pCONumAuxiliaries(new ControlObject(
                   ConfigKey("[Master]", "num_auxiliaries"), true, true)),
-          m_pAutoDjEnabled(make_parented<ControlProxy>(
-                  "[AutoDJ]", "enabled", this, ControlFlag::InitializeLater)),
           m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
     m_pCONumDecks->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumDecks, Qt::DirectConnection);
@@ -603,8 +601,8 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bo
     // button repeatedly.
     // AutoDJProcessor is initialized after PlayerManager, so check that the
     // ControlProxy is pointing to the real ControlObject.
-    if (!m_pAutoDjEnabled->valid()) {
-        m_pAutoDjEnabled->initialize();
+    if (!m_pAutoDjEnabled) {
+        m_pAutoDjEnabled = make_parented<ControlProxy>("[AutoDJ]", "enabled", this);
     }
     bool autoDjSkipClone = m_pAutoDjEnabled->get() && (pPlayer == m_decks.at(0) || pPlayer == m_decks.at(1));
 

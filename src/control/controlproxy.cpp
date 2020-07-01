@@ -17,7 +17,7 @@ ControlProxy::ControlProxy(const ConfigKey& key, QObject* pParent, ControlFlags 
     DEBUG_ASSERT(!key.isNull() || flags.testFlag(ControlFlag::AllowEmptyKey));
     m_key = key;
 
-    if (!m_key.isNull() && !flags.testFlag(ControlFlag::InitializeLater)) {
+    if (!m_key.isNull()) {
         initialize(flags);
     }
 }
