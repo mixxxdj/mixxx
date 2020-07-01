@@ -510,43 +510,6 @@ Bpm Beats::getBpmAroundPosition(FramePos curFrame, int n) const {
     return calculateBpm(startBeat, stopBeat);
 }
 
-void Beats::addBeat(FramePos beatFrame) {
-    QMutexLocker locker(&m_mutex);
-    track::io::Beat beat;
-    beat.set_frame_position(beatFrame.getValue());
-    BeatList::iterator it = std::lower_bound(
-            m_beats.begin(), m_beats.end(), beat, BeatLessThan);
-
-    // Don't insert a duplicate beat. TODO(XXX) determine what epsilon to
-    // consider a beat identical to another.
-    if (it != m_beats.end() && it->frame_position() == beat.frame_position()) {
-        return;
-    }
-
-    m_beats.insert(it, beat);
-    updateCachedBpm();
-    locker.unlock();
-    emit updated();
-}
-
-void Beats::removeBeat(FramePos beatFrame) {
-    QMutexLocker locker(&m_mutex);
-    track::io::Beat beat;
-    beat.set_frame_position(beatFrame.getValue());
-    BeatList::iterator it = std::lower_bound(
-            m_beats.begin(), m_beats.end(), beat, BeatLessThan);
-
-    // In case there are duplicates, remove every instance of dBeatSample
-    // TODO(XXX) add invariant checks against this
-    // TODO(XXX) determine what epsilon to consider a beat identical to another
-    while (it->frame_position() == beat.frame_position()) {
-        it = m_beats.erase(it);
-    }
-    updateCachedBpm();
-    locker.unlock();
-    emit updated();
-}
-
 TimeSignature Beats::getSignature(FramePos frame) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid()) {

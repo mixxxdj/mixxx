@@ -2322,16 +2322,14 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
 }
 
 TEST_F(EngineSyncTest, BeatMapQantizePlay) {
-    // This test demonstates https://bugs.launchpad.net/mixxx/+bug/1874918
+    // This test demonstrates https://bugs.launchpad.net/mixxx/+bug/1874918
     auto pBeats1 = BeatsPointer(new Beats(m_pTrack2.get()));
     pBeats1->setGrid(mixxx::Bpm(120));
     m_pTrack1->setBeats(pBeats1);
 
     auto pBeats2 = BeatsPointer(new Beats(m_pTrack2.get()));
-    // Add two beats at 120 Bpm
-    pBeats2->addBeat(FramePos(44100 / 2));
-    pBeats2->addBeat(FramePos(44100));
-    m_pTrack2->setBeats(pBeats2);
+    // Set second track's BPM to be the same.
+    m_pTrack2->setBpm(120);
 
     ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup2, "quantize"), 1.0);

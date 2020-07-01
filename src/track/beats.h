@@ -163,12 +163,6 @@ class Beats final : public QObject {
     /// Sets the nearest beat as a downbeat
     void setDownBeat(FramePos frame = FramePos());
 
-    /// Add a beat at location frame.
-    void addBeat(FramePos frame);
-
-    /// Remove a beat at location frame.
-    void removeBeat(FramePos frame);
-
     /// Translate all beats in the song by numFrames. Beats that lie
     /// before the start of the track or after the end of the track are not
     /// removed.
