@@ -51,7 +51,7 @@ class Beats final : public QObject {
     using iterator = BeatIterator;
 
     // TODO(JVC) Is a copy constructor needed? of we can force a move logic??
-    Beats(const Beats&);
+    Beats(const mixxx::Beats& other);
 
     enum BPMScale {
         DOUBLE,

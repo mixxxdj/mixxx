@@ -66,11 +66,10 @@ Beats::Beats(const Track* track)
 
 // TODO(JVC) Do we really need a copy constructor??
 Beats::Beats(const Beats& other)
-        : m_mutex(QMutex::Recursive),
-          m_track(other.m_track),
-          m_subVersion(other.m_subVersion),
-          m_dCachedBpm(other.m_dCachedBpm),
-          m_beats(other.m_beats) {
+        : Beats(other.m_track) {
+    m_subVersion = other.m_subVersion;
+    m_dCachedBpm = other.m_dCachedBpm;
+    m_beats = other.m_beats;
     moveToThread(m_track->thread());
 }
 
