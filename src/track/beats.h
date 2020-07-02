@@ -179,16 +179,16 @@ class Beats final : public QObject {
         return m_beats.size();
     }
 
-    /// Prints debuging information in stderr
-    void printDebugInfo() const;
     /// Returns the frame number for the first beat, -1 is no beats
     FramePos getFirstBeatPosition() const;
+
     /// Returns the frame number for the last beat, -1 if no beats
     FramePos getLastBeatPosition() const;
+
     /// Return the sample rate
     SINT getSampleRate() const;
 
-    /// Prints debuging information in stderr
+    /// Prints debugging information in stderr
     friend QDebug operator<<(QDebug dbg, const BeatsPointer& arg);
 
   private:
