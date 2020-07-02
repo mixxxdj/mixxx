@@ -1084,7 +1084,7 @@ void LoopingControl::slotBeatLoop(
             mixxx::FramePos closestBeatFramePos =
                     pBeats->findClosestBeat(currentFramePos);
             if (beats >= 1.0) {
-                newloopSamples.start = framePosToSamplePos(currentFramePos);
+                newloopSamples.start = framePosToSamplePos(closestBeatFramePos);
             } else {
                 // In case of beat length less then 1 beat:
                 // (| - beats, ^ - current track's position):
