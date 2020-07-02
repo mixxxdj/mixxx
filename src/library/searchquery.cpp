@@ -334,11 +334,11 @@ bool NumericFilterNode::match(const TrackPointer& pTrack) const {
         const double dValue = value.toDouble();
 
         // We are reducing the precision of double since an operation on Beats: getBpm
-        // has changed recently. It is dynamically calculated instead of using a stored
-        // precise value thus leading to a slight double precision error on comparison
+        // results in a BPM that is dynamically calculated instead of using a stored
+        // precise value thus leading to a slight double precision error with comparison
         // operations.
-        // The original functionality can be restored with the implementation of beat
-        // markers since a beat marker stores BPM explicitly.
+        // This approximation can be removed with an implementation of beats
+        // that stores the BPM explicitly.
         // TODO(hacksdump): Restore original functionality with BeatMarker implementation.
         const double dValueReducedPrecision = reducePrecision(dValue);
         const double dOperatorArgumentReducedPrecision = reducePrecision(m_dOperatorArgument);
