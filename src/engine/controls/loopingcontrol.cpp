@@ -11,11 +11,11 @@
 #include "engine/controls/bpmcontrol.h"
 #include "engine/controls/enginecontrol.h"
 #include "engine/enginebuffer.h"
-#include "engine/frameadapterutil.h"
 #include "preferences/usersettings.h"
 #include "track/beats.h"
 #include "track/track.h"
 #include "util/compatibility.h"
+#include "util/frameadapter.h"
 #include "util/math.h"
 #include "util/sample.h"
 

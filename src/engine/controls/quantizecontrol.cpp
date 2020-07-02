@@ -9,9 +9,9 @@
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "engine/controls/enginecontrol.h"
-#include "engine/frameadapterutil.h"
 #include "preferences/usersettings.h"
 #include "util/assert.h"
+#include "util/frameadapter.h"
 
 QuantizeControl::QuantizeControl(QString group,
                                  UserSettingsPointer pConfig)

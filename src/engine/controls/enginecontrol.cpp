@@ -5,9 +5,9 @@
 
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
-#include "engine/frameadapterutil.h"
 #include "engine/sync/enginesync.h"
 #include "mixer/playermanager.h"
+#include "util/frameadapter.h"
 
 EngineControl::EngineControl(QString group,
                              UserSettingsPointer pConfig)
