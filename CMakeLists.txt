@@ -1269,6 +1269,7 @@ add_executable(mixxx-test
   src/test/libraryscannertest.cpp
   src/test/librarytest.cpp
   src/test/looping_control_test.cpp
+  src/test/macromanager_test.cpp
   src/test/main.cpp
   src/test/mathutiltest.cpp
   src/test/metadatatest.cpp
