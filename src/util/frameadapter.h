@@ -5,8 +5,7 @@
 // These should only be used to convert between legacy Control Object data
 // which is a double value for sample position and frame position which is
 // an object of the class mixxx::FramePos
-// For example, the sample position is double of the frame position for a
-// stereo track.
+// The legacy use of samples for positions assumed interleaved stereo buffers.
 
 // This file can be removed when Control Objects are entirely migrated
 // to using frames instead of samples.
