@@ -53,15 +53,35 @@ public:
 
     void setBeatsPerBar(int bpb);
 
-    
-    // Return the beat spectral difference function. The returned
-    // vector contains one value for each of the beats, less one.
-    // Each value contains the spectral difference between region prior
-    // to the beat's nominal position and the region following it.    
-    
-    std::vector<double> beatsSD(const float *audio, // downsampled
+    /**
+     * Estimate which beats are down-beats.
+     * 
+     * audio contains the input audio stream after downsampling, and
+     * audioLength contains the number of samples in this downsampled
+     * stream.
+     *
+     * beats contains a series of beat positions expressed in
+     * multiples of the df increment at the audio's original sample
+     * rate, as described to the constructor.
+     *
+     * The returned downbeat array contains a series of indices to the
+     * beats array.
+     */
+    void findDownBeats(const float *audio, // downsampled
                        size_t audioLength, // after downsampling
-                       const std::vector<double> &beats);
+                       const std::vector<double> &beats,
+                       std::vector<int> &downbeats);
+
+    /**
+     * Return the beat spectral difference function.  This is
+     * calculated during findDownBeats, so this function can only be
+     * meaningfully called after that has completed.  The returned
+     * vector contains one value for each of the beat times passed in
+     * to findDownBeats, less one.  Each value contains the spectral
+     * difference between region prior to the beat's nominal position
+     * and the region following it.
+     */
+    void getBeatSD(std::vector<double> &beatsd) const;
     
     /**
      * For your downsampling convenience: call this function

@@ -22,7 +22,7 @@ constexpr float kStepSecs = 0.0113378684807f;
 // results in 43 Hz @ 44.1 kHz / 47 Hz @ 48 kHz / 47 Hz @ 96 kHz
 constexpr int kMaximumBinSizeHz = 50; // Hz
 // This is a quick hack to make a beatmap with only downbeats - will affect the bpm
-constexpr bool useDownbeatOnly = false;
+constexpr bool useDownbeatOnly = true;
 // The range of bpbs considered for detection, lower is included, higher excluded [)
 constexpr int kLowerBeatsPerBar = 4;
 constexpr int kHigherBeatsPerBar = 5;
@@ -193,7 +193,11 @@ std::vector<double> AnalyzerRhythm::computeBeats() {
 std::vector<double> AnalyzerRhythm::computeBeatsSpectralDifference(std::vector<double>& beats) {
     size_t downLength = 0;
     const float* downsampled = m_downbeat->getBufferedAudio(downLength);
-    return m_downbeat->beatsSD(downsampled, downLength, beats);
+    std::vector<int> downbeats;
+    m_downbeat->findDownBeats(downsampled, downLength, beats, downbeats);
+    std::vector<double> beatsSpecDiff;
+    m_downbeat->getBeatSD(beatsSpecDiff);
+    return beatsSpecDiff;
 }
 
 // This naive approach for bpb did't work
@@ -246,8 +250,8 @@ std::tuple<int, int> AnalyzerRhythm::computeMeter(std::vector<double>& beatsSD) 
 void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
     m_processor.finalize();
     std::vector<double> beats = computeBeats();
-    auto beatsSD = computeBeatsSpectralDifference(beats);
-    auto [bpb, firstDownbeat] = computeMeter(beatsSD);
+    auto beatsSpecDiff = computeBeatsSpectralDifference(beats);
+    auto [bpb, firstDownbeat] = computeMeter(beatsSpecDiff);
 
     m_beatsPerBar = bpb;
     size_t nextDownbeat = firstDownbeat;

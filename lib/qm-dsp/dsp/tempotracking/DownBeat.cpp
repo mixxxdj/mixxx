@@ -134,10 +134,11 @@ DownBeat::resetAudioBuffer()
     m_bufsiz = 0;
 }
 
-std::vector<double>
-DownBeat::beatsSD(const float *audio,
+void
+DownBeat::findDownBeats(const float *audio,
                         size_t audioLength,
-                        const d_vec_t &beats)
+                        const d_vec_t &beats,
+                        i_vec_t &downbeats)
 {
     // FIND DOWNBEATS BY PARTITIONING THE INPUT AUDIO FILE INTO BEAT SEGMENTS
     // WHERE THE AUDIO FRAMES ARE DOWNSAMPLED  BY A FACTOR OF 16 (fs ~= 2700Hz)
@@ -152,7 +153,7 @@ DownBeat::beatsSD(const float *audio,
 
     m_beatsd.clear();
 
-    if (audioLength == 0) return m_beatsd;
+    if (audioLength == 0) return;
 
     for (size_t i = 0; i + 1 < beats.size(); ++i) {
 
@@ -206,7 +207,38 @@ DownBeat::beatsSD(const float *audio,
             oldspec[j] = newspec[j];
         }
     }
-    return m_beatsd;
+
+    // We now have all spectral difference measures in specdiff
+
+    int timesig = m_bpb;
+    if (timesig == 0) timesig = 4;
+
+    d_vec_t dbcand(timesig); // downbeat candidates
+
+    for (int beat = 0; beat < timesig; ++beat) {
+        dbcand[beat] = 0;
+    }
+
+   // look for beat transition which leads to greatest spectral change
+   for (int beat = 0; beat < timesig; ++beat) {
+       int count = 0;
+       for (int example = beat-1; example < (int)m_beatsd.size(); example += timesig) {
+           if (example < 0) continue;
+           dbcand[beat] += (m_beatsd[example]) / timesig;
+           ++count;
+       }
+       if (count > 0) {
+           dbcand[beat] /= count;
+       }
+   }
+
+    // first downbeat is beat at index of maximum value of dbcand
+    int dbind = MathUtilities::getMax(dbcand);
+
+    // remaining downbeats are at timesig intervals from the first
+    for (int i = dbind; i < (int)beats.size(); i += timesig) {
+        downbeats.push_back(i);
+    }
 }
 
 double
@@ -256,3 +288,12 @@ DownBeat::measureSpecDiff(d_vec_t oldspec, d_vec_t newspec)
     
     return SD;
 }
+
+void
+DownBeat::getBeatSD(vector<double> &beatsd) const
+{
+    for (int i = 0; i < (int)m_beatsd.size(); ++i) {
+        beatsd.push_back(m_beatsd[i]);
+    }
+}
+
