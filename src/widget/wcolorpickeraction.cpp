@@ -7,9 +7,11 @@ WColorPickerAction::WColorPickerAction(WColorPicker::Options options, const Colo
 
     QHBoxLayout* pLayout = new QHBoxLayout();
     pLayout->addWidget(m_pColorPicker);
+    pLayout->setSizeConstraint(QLayout::SetFixedSize);
 
     QWidget* pWidget = new QWidget();
     pWidget->setLayout(pLayout);
+    pWidget->setSizePolicy(QSizePolicy());
     setDefaultWidget(pWidget);
 }
 
@@ -23,4 +25,9 @@ void WColorPickerAction::setSelectedColor(mixxx::RgbColor::optional_t color) {
 
 void WColorPickerAction::setColorPalette(const ColorPalette& palette) {
     m_pColorPicker->setColorPalette(palette);
+    QWidget* pWidget = defaultWidget();
+    VERIFY_OR_DEBUG_ASSERT(pWidget) {
+        return;
+    }
+    pWidget->adjustSize();
 }

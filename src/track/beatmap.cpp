@@ -30,6 +30,8 @@ bool BeatLessThan(const Beat& beat1, const Beat& beat2) {
     return beat1.frame_position() < beat2.frame_position();
 }
 
+namespace mixxx {
+
 class BeatMapIterator : public BeatIterator {
   public:
     BeatMapIterator(BeatList::const_iterator start, BeatList::const_iterator end)
@@ -463,8 +465,9 @@ void BeatMap::addBeat(double dBeatSample) {
 
     // Don't insert a duplicate beat. TODO(XXX) determine what epsilon to
     // consider a beat identical to another.
-    if (it->frame_position() == beat.frame_position())
+    if (it != m_beats.end() && it->frame_position() == beat.frame_position()) {
         return;
+    }
 
     m_beats.insert(it, beat);
     onBeatlistChanged();
@@ -722,3 +725,5 @@ double BeatMap::calculateBpm(const Beat& startBeat, const Beat& stopBeat) const 
 
     return BeatUtils::calculateBpm(beatvect, m_iSampleRate, 0, 9999);
 }
+
+} // namespace mixxx

@@ -25,7 +25,7 @@ SkinLoader::SkinLoader(UserSettingsPointer pConfig) :
 }
 
 SkinLoader::~SkinLoader() {
-    LegacySkinParser::freeChannelStrings();
+    LegacySkinParser::clearSharedGroupStrings();
 }
 
 QList<QDir> SkinLoader::getSkinSearchPaths() const {
@@ -59,7 +59,6 @@ QString SkinLoader::getSkinPath(const QString& skinName) const {
 }
 
 QPixmap SkinLoader::getSkinPreview(const QString& skinName, const QString& schemeName) const {
-    qDebug() << "schemeName =" << schemeName;
     QPixmap preview;
     if (!schemeName.isEmpty()) {
         QString schemeNameUnformatted = schemeName;
@@ -103,7 +102,7 @@ QString SkinLoader::getConfiguredSkinPath() const {
 }
 
 QString SkinLoader::getDefaultSkinName() const {
-    return "Deere";
+    return "LateNight";
 }
 
 QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,

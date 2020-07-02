@@ -54,20 +54,26 @@ void addTrack(
 
 } // anonymous namespace
 
-DlgTagFetcher::DlgTagFetcher(QWidget* parent)
+DlgTagFetcher::DlgTagFetcher(QWidget* parent, const TrackModel* trackModel)
         : QDialog(parent),
           m_tagFetcher(parent),
-          m_networkResult(NetworkResult::Ok) {
+          m_networkResult(NetworkResult::Ok),
+          m_pTrackModel(trackModel) {
     init();
 }
 
 void DlgTagFetcher::init() {
     setupUi(this);
 
+    if (m_pTrackModel) {
+        connect(btnPrev, &QPushButton::clicked, this, &DlgTagFetcher::slotPrev);
+        connect(btnNext, &QPushButton::clicked, this, &DlgTagFetcher::slotNext);
+    } else {
+        btnNext->hide();
+        btnPrev->hide();
+    }
     connect(btnApply, &QPushButton::clicked, this, &DlgTagFetcher::apply);
     connect(btnQuit, &QPushButton::clicked, this, &DlgTagFetcher::quit);
-    connect(btnPrev, &QPushButton::clicked, this, &DlgTagFetcher::previous);
-    connect(btnNext, &QPushButton::clicked, this, &DlgTagFetcher::next);
     connect(results, &QTreeWidget::currentItemChanged, this, &DlgTagFetcher::resultSelected);
 
     connect(&m_tagFetcher, &TagFetcher::resultAvailable, this, &DlgTagFetcher::fetchTagFinished);
@@ -83,12 +89,30 @@ void DlgTagFetcher::init() {
     results->setColumnWidth(5, 160); // Artist column
 }
 
-void DlgTagFetcher::loadTrack(const TrackPointer& track) {
-    if (track == NULL) {
+void DlgTagFetcher::slotNext() {
+    QModelIndex nextRow = m_currentTrackIndex.sibling(
+            m_currentTrackIndex.row() + 1, m_currentTrackIndex.column());
+    if (nextRow.isValid()) {
+        loadTrack(nextRow);
+        emit next();
+    }
+}
+
+void DlgTagFetcher::slotPrev() {
+    QModelIndex prevRow = m_currentTrackIndex.sibling(
+            m_currentTrackIndex.row() - 1, m_currentTrackIndex.column());
+    if (prevRow.isValid()) {
+        loadTrack(prevRow);
+        emit previous();
+    }
+}
+
+void DlgTagFetcher::loadTrackInternal(const TrackPointer& track) {
+    if (!track) {
         return;
     }
     results->clear();
-    disconnect(track.get(),
+    disconnect(m_track.get(),
             &Track::changed,
             this,
             &DlgTagFetcher::slotTrackChanged);
@@ -96,14 +120,31 @@ void DlgTagFetcher::loadTrack(const TrackPointer& track) {
     m_track = track;
     m_data = Data();
     m_networkResult = NetworkResult::Ok;
-    m_tagFetcher.startFetch(m_track);
 
-    connect(track.get(),
+    connect(m_track.get(),
             &Track::changed,
             this,
             &DlgTagFetcher::slotTrackChanged);
 
+    m_tagFetcher.startFetch(m_track);
+
     updateStack();
+}
+
+void DlgTagFetcher::loadTrack(const TrackPointer& track) {
+    VERIFY_OR_DEBUG_ASSERT(!m_pTrackModel) {
+        return;
+    }
+    loadTrackInternal(track);
+}
+
+void DlgTagFetcher::loadTrack(const QModelIndex& index) {
+    VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
+        return;
+    }
+    TrackPointer pTrack = m_pTrackModel->getTrack(index);
+    m_currentTrackIndex = index;
+    loadTrackInternal(pTrack);
 }
 
 void DlgTagFetcher::slotTrackChanged(TrackId trackId) {
@@ -176,7 +217,12 @@ void DlgTagFetcher::apply() {
                 trackRelease.releaseGroupId);
     }
 #endif // __EXTRA_METADATA__
-    m_track->importMetadata(std::move(trackMetadata));
+    m_track->importMetadata(
+            std::move(trackMetadata),
+            // Prevent re-import of outdated metadata from file tags
+            // by explicitly setting the synchronization time stamp
+            // to the current time.
+            QDateTime::currentDateTimeUtc());
 }
 
 void DlgTagFetcher::quit() {

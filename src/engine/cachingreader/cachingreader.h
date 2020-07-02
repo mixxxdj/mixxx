@@ -1,22 +1,21 @@
 // cachingreader.h
 // Created 7/9/2009 by RJ Ryan (rryan@mit.edu)
 
-#ifndef ENGINE_CACHINGREADER_H
-#define ENGINE_CACHINGREADER_H
+#pragma once
 
 #include <QAtomicInt>
 #include <QHash>
-#include <QLinkedList>
 #include <QList>
 #include <QVarLengthArray>
 #include <QVector>
+#include <list>
 
-#include "util/types.h"
+#include "engine/cachingreader/cachingreaderworker.h"
+#include "engine/engineworker.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
-#include "engine/engineworker.h"
 #include "util/fifo.h"
-#include "engine/cachingreader/cachingreaderworker.h"
+#include "util/types.h"
 
 // A Hint is an indication to the CachingReader that a certain section of a
 // SoundSource will be used 'soon' and so it should be brought into memory by
@@ -164,7 +163,7 @@ class CachingReader : public QObject {
 
     // List of free chunks. Linked list so that we have constant time insertions
     // and deletions. Iteration is not necessary.
-    QLinkedList<CachingReaderChunkForOwner*> m_freeChunks;
+    std::list<CachingReaderChunkForOwner*> m_freeChunks;
 
     // Keeps track of what CachingReaderChunks we've allocated and indexes them based on what
     // chunk number they are allocated to.
@@ -182,6 +181,3 @@ class CachingReader : public QObject {
 
     CachingReaderWorker m_worker;
 };
-
-
-#endif /* ENGINE_CACHINGREADER_H */

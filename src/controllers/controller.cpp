@@ -6,27 +6,29 @@
 */
 
 #include <QApplication>
-#include <QScriptValue>
+#include <QJSValue>
 
 #include "controllers/controller.h"
 #include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
 #include "util/screensaver.h"
 
-Controller::Controller(UserSettingsPointer pConfig)
-        : QObject(),
-          m_pEngine(NULL),
+Controller::Controller()
+        : m_pEngine(nullptr),
           m_bIsOutputDevice(false),
           m_bIsInputDevice(false),
           m_bIsOpen(false),
-          m_bLearning(false),
-          m_pConfig(pConfig) {
+          m_bLearning(false) {
     m_userActivityInhibitTimer.start();
 }
 
 Controller::~Controller() {
     // Don't close the device here. Sub-classes should close the device in their
     // destructors.
+}
+
+ControllerJSProxy* Controller::jsProxy() {
+    return new ControllerJSProxy(this);
 }
 
 void Controller::startEngine()
@@ -36,7 +38,7 @@ void Controller::startEngine()
         qWarning() << "Controller: Engine already exists! Restarting:";
         stopEngine();
     }
-    m_pEngine = new ControllerEngine(this, m_pConfig);
+    m_pEngine = new ControllerEngine(this);
 }
 
 void Controller::stopEngine() {
@@ -50,7 +52,7 @@ void Controller::stopEngine() {
     m_pEngine = NULL;
 }
 
-bool Controller::applyPreset(QList<QString> scriptPaths, bool initializeScripts) {
+bool Controller::applyPreset(bool initializeScripts) {
     qDebug() << "Applying controller preset...";
 
     const ControllerPreset* pPreset = preset();
@@ -61,14 +63,15 @@ bool Controller::applyPreset(QList<QString> scriptPaths, bool initializeScripts)
         return false;
     }
 
-    if (pPreset->scripts.isEmpty()) {
+    QList<ControllerPreset::ScriptFileInfo> scriptFiles = pPreset->getScriptFiles();
+    if (scriptFiles.isEmpty()) {
         qWarning() << "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
         return true;
     }
 
-    bool success = m_pEngine->loadScriptFiles(scriptPaths, pPreset->scripts);
-    if (initializeScripts) {
-        m_pEngine->initializeScripts(pPreset->scripts);
+    bool success = m_pEngine->loadScriptFiles(scriptFiles);
+    if (success && initializeScripts) {
+        m_pEngine->initializeScripts(scriptFiles);
     }
     return success;
 }
@@ -137,9 +140,7 @@ void Controller::receive(const QByteArray data, mixxx::Duration timestamp) {
             continue;
         }
         function.append(".incomingData");
-        QScriptValue incomingData = m_pEngine->wrapFunctionCode(function, 2);
-        if (!m_pEngine->execute(incomingData, data, timestamp)) {
-            qWarning() << "Controller: Invalid script function" << function;
-        }
+        QJSValue incomingDataFunction = m_pEngine->wrapFunctionCode(function, 2);
+        m_pEngine->executeFunction(incomingDataFunction, data);
     }
 }

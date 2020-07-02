@@ -17,7 +17,6 @@
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPainter>
-#include <QPixmap>
 #include <QUrl>
 #include <QtDebug>
 
@@ -35,13 +34,14 @@
 #include "util/math.h"
 #include "util/painterscope.h"
 #include "util/timer.h"
+#include "util/widgethelper.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/controlwidgetconnection.h"
 #include "wskincolor.h"
 
 WOverview::WOverview(
-        const char* group,
+        const QString& group,
         PlayerManager* pPlayerManager,
         UserSettingsPointer pConfig,
         QWidget* parent)
@@ -54,6 +54,7 @@ WOverview::WOverview(
           m_group(group),
           m_pConfig(pConfig),
           m_endOfTrack(false),
+          m_bPassthroughEnabled(false),
           m_pCueMenuPopup(make_parented<WCueMenuPopup>(pConfig, this)),
           m_bShowCueTimes(true),
           m_iPosSeconds(0),
@@ -61,7 +62,6 @@ WOverview::WOverview(
           m_iPickupPos(0),
           m_iPlayPos(0),
           m_pHoveredMark(nullptr),
-          m_bHotcueMenuShowing(false),
           m_bTimeRulerActive(false),
           m_orientation(Qt::Horizontal),
           m_iLabelFontSize(10),
@@ -80,6 +80,11 @@ WOverview::WOverview(
     m_trackSamplesControl =
             new ControlProxy(m_group, "track_samples", this);
     m_playpositionControl = new ControlProxy(m_group, "playposition", this);
+    m_pPassthroughControl =
+            new ControlProxy(m_group, "passthrough", this);
+    m_pPassthroughControl->connectValueChanged(this, &WOverview::onPassthroughChange);
+    onPassthroughChange(m_pPassthroughControl->get());
+
     setAcceptDrops(true);
 
     setMouseTracking(true);
@@ -88,6 +93,18 @@ WOverview::WOverview(
             this, &WOverview::onTrackAnalyzerProgress);
 
     connect(m_pCueMenuPopup.get(), &WCueMenuPopup::aboutToHide, this, &WOverview::slotCueMenuPopupAboutToHide);
+
+    m_pPassthroughLabel = new QLabel(this);
+    m_pPassthroughLabel->setObjectName("PassthroughLabel");
+    m_pPassthroughLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    // Shown on the overview waveform when vinyl passthrough is enabled
+    m_pPassthroughLabel->setText(tr("Passthrough"));
+    m_pPassthroughLabel->hide();
+    QVBoxLayout *pPassthroughLayout = new QVBoxLayout(this);
+    pPassthroughLayout->setContentsMargins(0,0,0,0);
+    pPassthroughLayout->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    pPassthroughLayout->addWidget(m_pPassthroughLabel);
+    setLayout(pPassthroughLayout);
 }
 
 void WOverview::setup(const QDomNode& node, const SkinContext& context) {
@@ -128,6 +145,8 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
         m_endOfTrackColor.setNamedColor(endOfTrackColorName);
         m_endOfTrackColor = WSkinColor::getCorrectColor(m_endOfTrackColor);
     }
+
+    m_passthroughOverlayColor = m_signalColors.getPlayedOverlayColor();
 
     // setup hotcues and cue and loop(s)
     m_marks.setup(m_group, node, context, m_signalColors);
@@ -236,6 +255,7 @@ void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
 
 void WOverview::slotWaveformSummaryUpdated() {
     //qDebug() << "WOverview::slotWaveformSummaryUpdated()";
+
     TrackPointer pTrack(m_pCurrentTrack);
     if (!pTrack) {
         return;
@@ -288,8 +308,10 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
     //qDebug() << this << "WOverview::slotLoadingTrack" << pNewTrack.get() << pOldTrack.get();
     DEBUG_ASSERT(m_pCurrentTrack == pOldTrack);
     if (m_pCurrentTrack != nullptr) {
-        disconnect(m_pCurrentTrack.get(), SIGNAL(waveformSummaryUpdated()),
-                   this, SLOT(slotWaveformSummaryUpdated()));
+        disconnect(m_pCurrentTrack.get(),
+                &Track::waveformSummaryUpdated,
+                this,
+                &WOverview::slotWaveformSummaryUpdated);
     }
 
     m_waveformSourceImage = QImage();
@@ -304,11 +326,12 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
         m_pCurrentTrack = pNewTrack;
         m_pWaveform = pNewTrack->getWaveformSummary();
 
-        connect(pNewTrack.get(), SIGNAL(waveformSummaryUpdated()),
-                this, SLOT(slotWaveformSummaryUpdated()));
+        connect(pNewTrack.get(),
+                &Track::waveformSummaryUpdated,
+                this,
+                &WOverview::slotWaveformSummaryUpdated);
         slotWaveformSummaryUpdated();
-        connect(pNewTrack.get(), SIGNAL(cuesUpdated()),
-                this, SLOT(receiveCuesUpdated()));
+        connect(pNewTrack.get(), &Track::cuesUpdated, this, &WOverview::receiveCuesUpdated);
     } else {
         m_pCurrentTrack.reset();
         m_pWaveform.clear();
@@ -339,6 +362,17 @@ void WOverview::onMarkRangeChange(double v) {
 
 void WOverview::onRateRatioChange(double v) {
     Q_UNUSED(v);
+    update();
+}
+
+void WOverview::onPassthroughChange(double v) {
+    m_bPassthroughEnabled = static_cast<bool>(v);
+
+    if (!m_bPassthroughEnabled) {
+        slotWaveformSummaryUpdated();
+    }
+
+    // Always call this to trigger a repaint even if not track is loaded
     update();
 }
 
@@ -409,9 +443,7 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
     }
 
     m_pHoveredMark.clear();
-    // Without some padding, the user would only have a single pixel width that
-    // would count as hovering over the WaveformMark.
-    float lineHoverPadding = 5.0;
+
     // Non-hotcue marks (intro/outro cues, main cue, loop in/out) are sorted
     // before hotcues in m_marksToRender so if there is a hotcue in the same
     // location, the hotcue gets rendered on top. When right clicking, the
@@ -420,16 +452,7 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
     // reverse and the loop breaks as soon as m_pHoveredMark is set.
     for (int i = m_marksToRender.size() - 1; i >= 0; --i) {
         WaveformMarkPointer pMark = m_marksToRender.at(i);
-        int hoveredPosition;
-        if (m_orientation == Qt::Horizontal) {
-            hoveredPosition = e->x();
-        } else {
-            hoveredPosition = e->y();
-        }
-        bool lineHovered =
-                pMark->m_linePosition >= hoveredPosition - lineHoverPadding && pMark->m_linePosition <= hoveredPosition + lineHoverPadding;
-
-        if (pMark->m_label.area().contains(e->pos()) || lineHovered) {
+        if (pMark->contains(e->pos(), m_orientation)) {
             m_pHoveredMark = pMark;
             break;
         }
@@ -475,6 +498,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
         if (m_pHoveredMark != nullptr) {
             dValue = m_pHoveredMark->getSamplePosition() / m_trackSamplesControl->get();
             m_iPickupPos = valueToPosition(dValue);
+            m_iPlayPos = m_iPickupPos;
             setControlParameterUp(dValue);
             m_bLeftClickDragging = false;
         } else {
@@ -506,22 +530,24 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
             }
             if (pHoveredCue != nullptr) {
                 m_pCueMenuPopup->setTrackAndCue(m_pCurrentTrack, pHoveredCue);
-                m_pCueMenuPopup->popup(e->globalPos());
-                m_bHotcueMenuShowing = true;
+                QPoint cueMenuTopLeft = mixxx::widgethelper::mapPopupToScreen(
+                        *this,
+                        e->globalPos(),
+                        m_pCueMenuPopup->size());
+                m_pCueMenuPopup->popup(cueMenuTopLeft);
             }
         }
     }
 }
 
 void WOverview::slotCueMenuPopupAboutToHide() {
-    m_bHotcueMenuShowing = false;
     m_pHoveredMark.clear();
     update();
 }
 
 void WOverview::leaveEvent(QEvent* pEvent) {
     Q_UNUSED(pEvent);
-    if (!m_bHotcueMenuShowing) {
+    if (!m_pCueMenuPopup->isVisible()) {
         m_pHoveredMark.clear();
     }
     m_bLeftClickDragging = false;
@@ -561,7 +587,15 @@ void WOverview::paintEvent(QPaintEvent* pEvent) {
             drawMarkLabels(&painter, offset, gain);
         }
     }
+
+    if (m_bPassthroughEnabled) {
+        drawPassthroughOverlay(&painter);
+        m_pPassthroughLabel->show();
+    } else {
+        m_pPassthroughLabel->hide();
+    }
 }
+
 void WOverview::drawEndOfTrackBackground(QPainter* pPainter) {
     if (m_endOfTrack) {
         PainterScope painterScope(pPainter);
@@ -796,7 +830,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                 }
             }
             // Sometimes QFontMetrics::elidedText turns the QString into just an
-            // elipsis character, so always show at least the hotcue number if
+            // ellipsis character, so always show at least the hotcue number if
             // the label does not fit.
             if ((text.isEmpty() || text == "…") && pMark->getHotCue() != Cue::kNoHotCue) {
                 text = QString::number(pMark->getHotCue() + 1);
@@ -1046,6 +1080,13 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
                 markRange.m_durationLabel.draw(pPainter);
             }
         }
+    }
+}
+
+void WOverview::drawPassthroughOverlay(QPainter* pPainter) {
+    if (!m_waveformSourceImage.isNull() && m_passthroughOverlayColor.alpha() > 0) {
+        // Overlay the entire overview-waveform with a skin defined color
+        pPainter->fillRect(rect(), m_passthroughOverlayColor);
     }
 }
 

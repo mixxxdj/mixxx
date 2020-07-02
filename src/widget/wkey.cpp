@@ -2,7 +2,7 @@
 #include "track/keys.h"
 #include "track/keyutils.h"
 
-WKey::WKey(const char* group, QWidget* pParent)
+WKey::WKey(const QString& group, QWidget* pParent)
         : WLabel(pParent),
           m_dOldValue(0),
           m_keyNotation("[Library]", "key_notation", this),

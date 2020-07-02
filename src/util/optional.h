@@ -7,6 +7,10 @@
 
 #else
 
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Winvalid-constexpr"
+#endif
+
 #include <experimental/optional>
 
 namespace std {
@@ -22,3 +26,14 @@ using std::experimental::optional;
 } // namespace std
 
 #endif
+
+#include <QtDebug>
+
+template<typename T>
+QDebug operator<<(QDebug dbg, std::optional<T> arg) {
+    if (arg) {
+        return dbg << *arg;
+    } else {
+        return dbg << "nullopt";
+    }
+}

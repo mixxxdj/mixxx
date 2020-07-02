@@ -363,12 +363,10 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     }
     m_pLoadedTrack = pNewTrack;
 
+    connect(m_pLoadedTrack.get(), &Track::analyzed, this, &CueControl::trackAnalyzed, Qt::DirectConnection);
+
     connect(m_pLoadedTrack.get(), &Track::cuesUpdated,
             this, &CueControl::trackCuesUpdated,
-            Qt::DirectConnection);
-
-    connect(m_pLoadedTrack.get(), &Track::beatsUpdated,
-            this, &CueControl::trackBeatsUpdated,
             Qt::DirectConnection);
 
     CuePointer pMainCue;
@@ -410,12 +408,6 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     // Seek track according to SeekOnLoadMode.
     SeekOnLoadMode seekOnLoadMode = getSeekOnLoadPreference();
 
-    CuePointer pAudibleSound = pNewTrack->findCueByType(mixxx::CueType::AudibleSound);
-    double firstSound = Cue::kNoPosition;
-    if (pAudibleSound) {
-        firstSound = pAudibleSound->getPosition();
-    }
-
     switch (seekOnLoadMode) {
     case SeekOnLoadMode::Beginning:
         // This allows users to load tracks and have the needle-drop be maintained.
@@ -424,20 +416,28 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
             seekExact(0.0);
         }
         break;
-    case SeekOnLoadMode::FirstSound:
-        if (firstSound != Cue::kNoPosition) {
-            seekExact(firstSound);
+    case SeekOnLoadMode::FirstSound: {
+        CuePointer pAudibleSound = pNewTrack->findCueByType(mixxx::CueType::AudibleSound);
+        if (pAudibleSound && pAudibleSound->getPosition() != Cue::kNoPosition) {
+            seekExact(pAudibleSound->getPosition());
         } else {
             seekExact(0.0);
         }
         break;
-    case SeekOnLoadMode::MainCue:
-        if (mainCuePoint.getPosition() != Cue::kNoPosition) {
-            seekExact(mainCuePoint.getPosition());
+    }
+    case SeekOnLoadMode::MainCue: {
+        // Take main cue position from CO instead of cue point list because
+        // value in CO will be quantized if quantization is enabled
+        // while value in cue point list will never be quantized.
+        // This prevents jumps when track analysis finishes while quantization is enabled.
+        double cuePoint = m_pCuePoint->get();
+        if (cuePoint != Cue::kNoPosition) {
+            seekExact(cuePoint);
         } else {
             seekExact(0.0);
         }
         break;
+    }
     case SeekOnLoadMode::IntroStart: {
         double introStart = m_pIntroStartPosition->get();
         if (introStart != Cue::kNoPosition) {
@@ -467,21 +467,34 @@ void CueControl::loadCuesFromTrack() {
         return;
 
     for (const CuePointer& pCue: m_pLoadedTrack->getCuePoints()) {
-        if (pCue->getType() == mixxx::CueType::MainCue) {
+        switch (pCue->getType()) {
+        case mixxx::CueType::MainCue:
             DEBUG_ASSERT(!pLoadCue); // There should be only one MainCue cue
             pLoadCue = pCue;
-        } else if (pCue->getType() == mixxx::CueType::Intro) {
+            break;
+        case mixxx::CueType::Intro:
             DEBUG_ASSERT(!pIntroCue); // There should be only one Intro cue
             pIntroCue = pCue;
-        } else if (pCue->getType() == mixxx::CueType::Outro) {
+            break;
+        case mixxx::CueType::Outro:
             DEBUG_ASSERT(!pOutroCue); // There should be only one Outro cue
             pOutroCue = pCue;
-        } else if (pCue->getType() == mixxx::CueType::HotCue && pCue->getHotCue() != Cue::kNoHotCue) {
+            break;
+        case mixxx::CueType::HotCue:
+        case mixxx::CueType::Loop: {
+            // FIXME: While it's not possible to save Loops in Mixxx yet, we do
+            // support importing them from Serato and Rekordbox. For the time
+            // being we treat them like regular hotcues and ignore their end
+            // position until #2194 has been merged.
+            if (pCue->getHotCue() == Cue::kNoHotCue) {
+                continue;
+            }
+
             int hotcue = pCue->getHotCue();
             HotcueControl* pControl = m_hotcueControls.value(hotcue, NULL);
 
             // Cue's hotcue doesn't have a hotcue control.
-            if (pControl == NULL) {
+            if (pControl == nullptr) {
                 continue;
             }
 
@@ -498,6 +511,10 @@ void CueControl::loadCuesFromTrack() {
             }
             // Add the hotcue to the list of active hotcues
             active_hotcues.insert(hotcue);
+            break;
+        }
+        default:
+            break;
         }
     }
 
@@ -547,17 +564,15 @@ void CueControl::loadCuesFromTrack() {
     }
 }
 
-void CueControl::reloadCuesFromTrack() {
-    if (!m_pLoadedTrack)
+void CueControl::trackAnalyzed() {
+    if (!m_pLoadedTrack) {
         return;
+    }
 
-    // Determine current playing position of the track.
-    TrackAt trackAt = getTrackAt();
-    bool wasTrackAtZeroPos = isTrackAtZeroPos();
-    bool wasTrackAtIntroCue = isTrackAtIntroCue();
-
-    // Update COs with cues from track.
-    loadCuesFromTrack();
+    // if we are playing (no matter what reason for) do not seek
+    if (m_pPlay->toBool()) {
+        return;
+    }
 
     // Retrieve current position of cues from COs.
     double cue = m_pCuePoint->get();
@@ -567,28 +582,49 @@ void CueControl::reloadCuesFromTrack() {
     SeekOnLoadMode seekOnLoadMode = getSeekOnLoadPreference();
 
     if (seekOnLoadMode == SeekOnLoadMode::MainCue) {
-        if ((trackAt == TrackAt::Cue || wasTrackAtZeroPos) && cue != Cue::kNoPosition) {
+        if (cue != Cue::kNoPosition) {
             seekExact(cue);
         }
     } else if (seekOnLoadMode == SeekOnLoadMode::IntroStart) {
-        if ((wasTrackAtIntroCue || wasTrackAtZeroPos) && intro != Cue::kNoPosition) {
+        if (intro != Cue::kNoPosition) {
             seekExact(intro);
         }
     }
 }
 
 void CueControl::trackCuesUpdated() {
-    reloadCuesFromTrack();
+    loadCuesFromTrack();
 }
 
-void CueControl::trackBeatsUpdated() {
-    reloadCuesFromTrack();
+void CueControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
+    Q_UNUSED(pBeats);
+    loadCuesFromTrack();
 }
 
 void CueControl::quantizeChanged(double v) {
     Q_UNUSED(v);
 
-    reloadCuesFromTrack();
+    // check if we were at the cue point before
+    bool wasTrackAtCue = getTrackAt() == TrackAt::Cue;
+    bool wasTrackAtIntro = isTrackAtIntroCue();
+
+    loadCuesFromTrack();
+
+    // if we are playing (no matter what reason for) do not seek
+    if (m_pPlay->toBool()) {
+        return;
+    }
+
+    // Retrieve new cue pos and follow
+    double cue = m_pCuePoint->get();
+    if (wasTrackAtCue && cue != Cue::kNoPosition) {
+        seekExact(cue);
+    }
+    // Retrieve new intro start pos and follow
+    double intro = m_pIntroStartPosition->get();
+    if (wasTrackAtIntro && intro != Cue::kNoPosition) {
+        seekExact(intro);
+    }
 }
 
 void CueControl::hotcueSet(HotcueControl* pControl, double v) {
@@ -615,12 +651,16 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     pCue->setLabel();
     pCue->setType(mixxx::CueType::HotCue);
 
-    ConfigKey autoHotcueColorsKey("[Controls]", "auto_hotcue_colors");
-    if (getConfig()->getValue(autoHotcueColorsKey, false)) {
-        auto hotcueColorPalette = m_colorPaletteSettings.getHotcueColorPalette();
+    const ColorPalette hotcueColorPalette =
+            m_colorPaletteSettings.getHotcueColorPalette();
+    if (getConfig()->getValue(ConfigKey("[Controls]", "auto_hotcue_colors"), false)) {
         pCue->setColor(hotcueColorPalette.colorForHotcueIndex(hotcue));
     } else {
-        pCue->setColor(mixxx::PredefinedColorPalettes::kDefaultCueColor);
+        int hotcueDefaultColorIndex = m_pConfig->getValue(ConfigKey("[Controls]", "HotcueDefaultColorIndex"), -1);
+        if (hotcueDefaultColorIndex < 0 || hotcueDefaultColorIndex >= hotcueColorPalette.size()) {
+            hotcueDefaultColorIndex = hotcueColorPalette.size() - 1; // default to last color (orange)
+        }
+        pCue->setColor(hotcueColorPalette.at(hotcueDefaultColorIndex));
     }
 
     // TODO(XXX) deal with spurious signals
@@ -1659,7 +1699,7 @@ double CueControl::quantizeCuePoint(double cuePos) {
         return cuePos;
     }
 
-    BeatsPointer pBeats = m_pLoadedTrack->getBeats();
+    mixxx::BeatsPointer pBeats = m_pLoadedTrack->getBeats();
     if (!pBeats) {
         return cuePos;
     }
@@ -1672,10 +1712,6 @@ double CueControl::quantizeCuePoint(double cuePos) {
     }
 
     return cuePos;
-}
-
-bool CueControl::isTrackAtZeroPos() {
-    return (fabs(getSampleOfTrack().current) < 1.0f);
 }
 
 bool CueControl::isTrackAtIntroCue() {

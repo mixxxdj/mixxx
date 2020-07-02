@@ -14,12 +14,14 @@ namespace {
     double kMaxBpm = 500;
 }
 
+namespace mixxx {
+
 class Beats;
 typedef QSharedPointer<Beats> BeatsPointer;
 
 class BeatIterator {
   public:
-    virtual ~BeatIterator() {}
+    virtual ~BeatIterator() = default;
     virtual bool hasNext() const = 0;
     virtual double next() = 0;
 };
@@ -31,7 +33,7 @@ class Beats : public QObject {
     Q_OBJECT
   public:
     Beats() { }
-    virtual ~Beats() { }
+    ~Beats() override = default;
 
     enum Capabilities {
         BEATSCAP_NONE          = 0x0000,
@@ -171,4 +173,5 @@ class Beats : public QObject {
     void updated();
 };
 
+} // namespace mixxx
 #endif /* BEATS_H */

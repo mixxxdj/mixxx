@@ -45,7 +45,7 @@ class HSS1394(Feature):
 
 class HID(Feature):
     INTERNAL_LINK = False
-    HIDAPI_INTERNAL_PATH = 'lib/hidapi-0.8.0-rc1'
+    HIDAPI_INTERNAL_PATH = 'lib/hidapi'
 
     def description(self):
         return "HID controller support"
@@ -100,6 +100,7 @@ class HID(Feature):
 
     def sources(self, build):
         sources = ['src/controllers/hid/hidcontroller.cpp',
+                   'src/controllers/hid/hidcontrollerpreset.cpp',
                    'src/controllers/hid/hidenumerator.cpp',
                    'src/controllers/hid/hidcontrollerpresetfilehandler.cpp']
 
@@ -156,7 +157,8 @@ class Bulk(Feature):
                    'src/controllers/bulk/bulkenumerator.cpp']
         if not int(build.flags['hid']):
             sources.append(
-                'src/controllers/hid/hidcontrollerpresetfilehandler.cpp')
+                ['src/controllers/hid/hidcontrollerpresetfilehandler.cpp',
+                 'src/controllers/hid/hidcontrollerpreset.cpp'])
         return sources
 
 
@@ -707,7 +709,7 @@ class LiveBroadcasting(Feature):
             # https://bugs.launchpad.net/mixxx/+bug/1833225
             if not conf.CheckForPKG('shout', '2.4.4'):
                 self.INTERNAL_LINK = True
- 
+
         if not self.INTERNAL_LINK:
             self.INTERNAL_LINK = not conf.CheckLib(['libshout', 'shout'])
 
@@ -727,6 +729,7 @@ class LiveBroadcasting(Feature):
             # Clone our main environment so we don't change any settings in the
             # Mixxx environment
             libshout_env = build.env.Clone()
+            libshout_env['LIB_OUTPUT'] = '#lib/libshout/lib'
 
             if build.toolchain_is_gnu:
                 libshout_env.Append(CCFLAGS='-pthread')
@@ -738,9 +741,14 @@ class LiveBroadcasting(Feature):
             env = libshout_env
             SCons.Export('env')
             SCons.Export('build')
-            env.SConscript(env.File('SConscript', libshout_dir))
+            env.SConscript(
+                env.File('SConscript', libshout_dir),
+                variant_dir="lib/libshout2",
+                duplicate=0,
+                exports=['build'])
 
-            build.env.Append(LIBPATH=libshout_dir)
+            build.env.Append(CPPPATH="#lib/libshout/include")
+            build.env.Append(LIBPATH='#lib/libshout/lib')
             build.env.Append(LIBS=['shout_mixxx', 'ogg', 'vorbis', 'theora', 'speex', 'ssl', 'crypto'])
 
         depends.Qt.uic(build)('src/preferences/dialog/dlgprefbroadcastdlg.ui')
@@ -1051,17 +1059,10 @@ class Optimize(Feature):
                 self.status = self.build_status(
                     optimize_level, "tuned for this CPU (%s)" % build.machine)
                 build.env.Append(CCFLAGS='-march=native')
-                # http://en.chys.info/2010/04/what-exactly-marchnative-means/
                 # Note: requires gcc >= 4.2.0
                 # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
                 # are set automatically
-                if build.architecture_is_x86 and not build.machine_is_64bit:
-                    # For 32 bit builds using gcc < 5.0, the mfpmath=sse is
-                    # not set by default (not supported on arm builds)
-                    # If -msse is not implicitly set, it falls back to mfpmath=387
-                    # and a compiler warning is issued (tested with gcc 4.8.4)
-                    build.env.Append(CCFLAGS='-mfpmath=sse')
-                elif build.architecture_is_arm:
+                if build.architecture_is_arm:
                     self.status = self.build_status(optimize_level)
                     build.env.Append(CCFLAGS='-mfloat-abi=hard')
                     build.env.Append(CCFLAGS='-mfpu=neon')
@@ -1212,7 +1213,7 @@ class QtKeychain(Feature):
         return "Secure credentials storage support for Live Broadcasting profiles"
 
     def enabled(self, build):
-        build.flags['qtkeychain'] = util.get_flags(build.env, 'qtkeychain', 0)
+        build.flags['qtkeychain'] = util.get_flags(build.env, 'qtkeychain', 1)
         if int(build.flags['qtkeychain']):
             return True
         return False

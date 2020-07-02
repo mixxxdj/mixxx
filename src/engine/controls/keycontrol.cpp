@@ -1,11 +1,11 @@
-#include <QtDebug>
-#include <QPair>
-
 #include "engine/controls/keycontrol.h"
 
+#include <QPair>
+#include <QtDebug>
+
 #include "control/controlobject.h"
-#include "control/controlpushbutton.h"
 #include "control/controlpotmeter.h"
+#include "control/controlpushbutton.h"
 #include "engine/enginebuffer.h"
 #include "track/keyutils.h"
 
@@ -348,7 +348,8 @@ bool KeyControl::syncKey(EngineBuffer* pOtherEngineBuffer) {
     double dKey = ControlObject::get(ConfigKey(pOtherEngineBuffer->getGroup(), "key"));
     mixxx::track::io::key::ChromaticKey otherKey =
             KeyUtils::keyFromNumericValue(dKey);
-    double otherDistance = ControlObject::get(ConfigKey(pOtherEngineBuffer->getGroup(), "visual_key_distance"));
+    double otherDistance = ControlObject::get(
+            ConfigKey(pOtherEngineBuffer->getGroup(), "visual_key_distance"));
 
     if (thisFileKey == mixxx::track::io::key::INVALID ||
         otherKey == mixxx::track::io::key::INVALID) {

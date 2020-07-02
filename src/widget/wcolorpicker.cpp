@@ -46,6 +46,9 @@ WColorPicker::WColorPicker(Options options, const ColorPalette& palette, QWidget
     pLayout->setMargin(0);
     pLayout->setContentsMargins(0, 0, 0, 0);
 
+    pLayout->setSizeConstraint(QLayout::SetFixedSize);
+    setSizePolicy(QSizePolicy());
+
     // Unfortunately, not all styles supported by Qt support setting a
     // background color for QPushButtons (see
     // https://bugreports.qt.io/browse/QTBUG-11089). For example, when using
@@ -57,7 +60,10 @@ WColorPicker::WColorPicker(Options options, const ColorPalette& palette, QWidget
     // from the rest of the application (when not styled via QSS), but that's
     // better than having buttons without any colors (which would make the
     // color picker unusable).
-    m_pStyle = QStyleFactory::create(QString("fusion"));
+    QStyle* pStyle = QStyleFactory::create(QString("fusion"));
+    pStyle->setParent(this);
+    m_pStyle = parented_ptr<QStyle>(pStyle);
+
     setLayout(pLayout);
     addColorButtons();
 
@@ -77,6 +83,7 @@ void WColorPicker::removeColorButtons() {
     if (m_pCustomColorButton) {
         pLayout->removeWidget(m_pCustomColorButton);
         delete m_pCustomColorButton;
+        m_pCustomColorButton = nullptr;
     }
 
     while (!m_colorButtons.isEmpty()) {
@@ -88,6 +95,7 @@ void WColorPicker::removeColorButtons() {
     if (m_pNoColorButton) {
         pLayout->removeWidget(m_pNoColorButton);
         delete m_pNoColorButton;
+        m_pNoColorButton = nullptr;
     }
 }
 
@@ -128,6 +136,8 @@ void WColorPicker::addColorButtons() {
         addCustomColorButton(pLayout, row, column);
         column++;
     }
+
+    adjustSize();
 }
 
 void WColorPicker::addColorButton(mixxx::RgbColor color, QGridLayout* pLayout, int row, int column) {

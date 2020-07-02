@@ -265,7 +265,11 @@ void WMainMenuBar::initialize() {
     QString fullScreenTitle = tr("&Full Screen");
     QString fullScreenText = tr("Display Mixxx using the full screen");
     auto pViewFullScreen = new QAction(fullScreenTitle, this);
-    pViewFullScreen->setShortcut(QKeySequence(QKeySequence::FullScreen));
+    QList<QKeySequence> shortcuts;
+    shortcuts << QKeySequence::FullScreen;
+    shortcuts << QKeySequence("F11");
+
+    pViewFullScreen->setShortcuts(shortcuts);
     pViewFullScreen->setShortcutContext(Qt::ApplicationShortcut);
     pViewFullScreen->setCheckable(true);
     pViewFullScreen->setChecked(false);
@@ -543,8 +547,9 @@ void WMainMenuBar::initialize() {
     auto pHelpShortcuts = new QAction(shortcutsTitle, this);
     pHelpShortcuts->setStatusTip(shortcutsText);
     pHelpShortcuts->setWhatsThis(buildWhatsThis(shortcutsTitle, shortcutsText));
-    connect(pHelpShortcuts, &QAction::triggered,
-            this, [this] { slotVisitUrl(MIXXX_SHORTCUTS_URL); });
+    connect(pHelpShortcuts, &QAction::triggered, this, [this] {
+        slotVisitUrl(MIXXX_MANUAL_SHORTCUTS_URL);
+    });
     pHelpMenu->addAction(pHelpShortcuts);
 
     QString feedbackTitle = tr("Send Us &Feedback") + externalLinkSuffix;

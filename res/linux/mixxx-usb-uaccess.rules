@@ -12,6 +12,9 @@
 
 # Allen + Heath Ltd.
 SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="22f0", TAG+="uaccess"
+# Allen + Heath Xone 23C hardware mixer with USB audio interface
+# This is required so all 4 input and all 4 output channels of the audio interface are available.
+ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="22f0", ATTR{idProduct}=="0008", ATTR{bConfigurationValue}="2"
 # Arturia
 SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="1c75", TAG+="uaccess"
 # BEHRINGER International GmbH
@@ -34,6 +37,8 @@ SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="17cc", TAG+="uac
 SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="057e", TAG+="uaccess"
 # Pioneer Corp.
 SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="08e4", TAG+="uaccess"
+# AlphaTheta Corp.
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="2b73", TAG+="uaccess"
 # Rane
 SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="13e5", TAG+="uaccess"
 # Reloop

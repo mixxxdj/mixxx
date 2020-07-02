@@ -1,15 +1,16 @@
 #ifndef DLGPREFLIBRARY_H
 #define DLGPREFLIBRARY_H
 
+#include <QFont>
 #include <QStandardItemModel>
 #include <QWidget>
-#include <QFont>
 
-#include "preferences/dialog/ui_dlgpreflibrarydlg.h"
-#include "preferences/usersettings.h"
+#include "defs_urls.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
+#include "preferences/dialog/ui_dlgpreflibrarydlg.h"
 #include "preferences/dlgpreferencepage.h"
+#include "preferences/usersettings.h"
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -29,6 +30,8 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
             UserSettingsPointer pConfig,
             Library* pLibrary);
     ~DlgPrefLibrary() override {}
+
+    QUrl helpUrl() const override;
 
   public slots:
     // Common preference page slots.

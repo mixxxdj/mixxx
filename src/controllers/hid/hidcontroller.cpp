@@ -16,9 +16,14 @@
 #include "controllers/controllerdebug.h"
 #include "util/time.h"
 
-HidController::HidController(const hid_device_info& deviceInfo, UserSettingsPointer pConfig)
-        : Controller(pConfig),
+ControllerJSProxy* HidController::jsProxy() {
+    return new HidControllerJSProxy(this);
+}
+
+HidController::HidController(const hid_device_info& deviceInfo)
+        : Controller(),
           m_pHidDevice(NULL) {
+
     // Copy required variables from deviceInfo, which will be freed after
     // this class is initialized by caller.
     hid_vendor_id = deviceInfo.vendor_id;
@@ -99,11 +104,6 @@ void HidController::visit(const HidControllerPreset* preset) {
     m_preset = *preset;
     // Emit presetLoaded with a clone of the preset.
     emit presetLoaded(getPreset());
-}
-
-bool HidController::savePreset(const QString fileName) const {
-    HidControllerPresetFileHandler handler;
-    return handler.save(m_preset, getName(), fileName);
 }
 
 bool HidController::matchPreset(const PresetInfo& preset) {

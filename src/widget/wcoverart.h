@@ -42,7 +42,7 @@ class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
             const QObject* pRequestor,
             const CoverInfo& coverInfo,
             const QPixmap& pixmap,
-            quint16 requestedHash,
+            mixxx::cache_key_t requestedCacheKey,
             bool coverInfoUpdated);
     void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
@@ -62,7 +62,7 @@ class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
   private:
     QPixmap scaledCoverArt(const QPixmap& normal);
 
-    QString m_group;
+    const QString m_group;
     UserSettingsPointer m_pConfig;
     bool m_bEnable;
     WCoverArtMenu* m_pMenu;
