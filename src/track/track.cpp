@@ -5,10 +5,10 @@
 #include <atomic>
 
 #include "engine/engine.h"
-#include "track/beatfactory.h"
 #include "track/trackref.h"
 #include "util/assert.h"
 #include "util/color/color.h"
+#include "util/frameadapter.h"
 #include "util/logger.h"
 
 namespace {
@@ -280,10 +280,10 @@ double Track::setBpm(double bpmValue) {
     // TODO(JVC) A track must always have a Beats even if it's empty
     if (!m_pBeats) {
         // No beat grid available -> create and initialize
-        double cue = getCuePoint().getPosition();
+        mixxx::FramePos cue = samplePosToFramePos(getCuePoint().getPosition());
         mixxx::BeatsPointer pBeats = std::make_shared<mixxx::Beats>(this);
         // setGrid accepts frames, but cue is in samples.
-        pBeats->setGrid(mixxx::Bpm(bpmValue), mixxx::FramePos(cue / mixxx::kEngineChannelCount));
+        pBeats->setGrid(mixxx::Bpm(bpmValue), cue);
         setBeatsAndUnlock(&lock, pBeats);
         return bpmValue;
     }
