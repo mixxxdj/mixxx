@@ -9,6 +9,7 @@
 #include "engine/channels/enginechannel.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
+#include "engine/frameadapterutil.h"
 #include "util/assert.h"
 #include "util/duration.h"
 #include "util/logger.h"
@@ -35,13 +36,6 @@ constexpr int kBpmTapFilterLength = 5;
 // The local_bpm is calculated forward and backward this number of beats, so
 // the actual number of beats is this x2.
 constexpr int kLocalBpmSpan = 4;
-constexpr SINT kSamplesPerFrame = 2;
-inline mixxx::FrameDiff_t samplesToFrames(double samples) {
-    return samples / kSamplesPerFrame;
-}
-inline mixxx::FramePos samplePosToFramePos(double samplePos) {
-    return mixxx::FramePos(samplePos / kSamplesPerFrame);
-}
 constexpr double kSlightBeatsTranslateFactor = 0.01;
 }
 

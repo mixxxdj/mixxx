@@ -2,36 +2,22 @@
 // Created on Sep 23, 2008
 // Author: asantoni, rryan
 
+#include "engine/controls/loopingcontrol.h"
+
 #include <QtDebug>
 
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "engine/controls/bpmcontrol.h"
 #include "engine/controls/enginecontrol.h"
-#include "engine/controls/loopingcontrol.h"
 #include "engine/enginebuffer.h"
+#include "engine/frameadapterutil.h"
 #include "preferences/usersettings.h"
+#include "track/beats.h"
+#include "track/track.h"
 #include "util/compatibility.h"
 #include "util/math.h"
 #include "util/sample.h"
-
-#include "track/track.h"
-#include "track/beats.h"
-
-namespace {
-inline mixxx::FrameDiff_t samplesToFrames(double samples) {
-    return samples / mixxx::kEngineChannelCount;
-}
-inline double framesToSamples(mixxx::FrameDiff_t frames) {
-    return frames * mixxx::kEngineChannelCount;
-}
-inline mixxx::FramePos samplePosToFramePos(double samplePos) {
-    return mixxx::FramePos(samplePos / mixxx::kEngineChannelCount);
-}
-inline double framePosToSamplePos(mixxx::FramePos framePos) {
-    return framePos.getValue() * mixxx::kEngineChannelCount;
-}
-} // namespace
 
 double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5,
                                           1, 2, 4, 8, 16, 32, 64, 128, 256, 512 };

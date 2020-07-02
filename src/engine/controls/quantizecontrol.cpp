@@ -2,23 +2,16 @@
 // Created on Sat 5, 2011
 // Author: pwhelan
 
+#include "engine/controls/quantizecontrol.h"
+
 #include <QtDebug>
 
 #include "control/controlobject.h"
-#include "preferences/usersettings.h"
 #include "control/controlpushbutton.h"
-#include "engine/controls/quantizecontrol.h"
 #include "engine/controls/enginecontrol.h"
+#include "engine/frameadapterutil.h"
+#include "preferences/usersettings.h"
 #include "util/assert.h"
-
-namespace {
-inline mixxx::FramePos samplePosToFramePos(double samplePos) {
-    return mixxx::FramePos(samplePos / mixxx::kEngineChannelCount);
-}
-inline double framePosToSamplePos(mixxx::FramePos framePos) {
-    return framePos.getValue() * mixxx::kEngineChannelCount;
-}
-} // namespace
 
 QuantizeControl::QuantizeControl(QString group,
                                  UserSettingsPointer pConfig)
