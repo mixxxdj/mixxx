@@ -2,10 +2,8 @@
 
 #include <QStringList>
 
-#include "control/controllinpotmeter.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
-#include "control/controlpushbutton.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"

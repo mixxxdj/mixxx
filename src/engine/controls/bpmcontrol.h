@@ -3,16 +3,16 @@
 
 #include <gtest/gtest_prod.h>
 
+#include "control/controllinpotmeter.h"
 #include "control/controlobject.h"
+#include "control/controlpushbutton.h"
 #include "engine/controls/enginecontrol.h"
 #include "engine/sync/syncable.h"
 #include "util/parented_ptr.h"
 #include "util/tapfilter.h"
 
 class ControlObject;
-class ControlLinPotmeter;
 class ControlProxy;
-class ControlPushButton;
 class EngineBuffer;
 class SyncControl;
 
