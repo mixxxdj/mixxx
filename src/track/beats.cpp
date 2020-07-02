@@ -13,9 +13,11 @@ namespace {
 inline bool BeatLessThan(const track::io::Beat& beat1, const track::io::Beat& beat2) {
     return beat1.frame_position() < beat2.frame_position();
 }
+constexpr int kSecondsPerMinute = 60;
+constexpr double kBeatVicinityFactor = 0.1;
 
 inline FrameDiff_t getBeatLengthFrames(Bpm bpm, double sampleRate) {
-    return 60.0 * sampleRate / bpm.getValue();
+    return kSecondsPerMinute * sampleRate / bpm.getValue();
 }
 } // namespace
 
@@ -246,9 +248,10 @@ bool Beats::findPrevNextBeats(FramePos frame,
     BeatList::const_iterator it =
             std::lower_bound(m_beats.cbegin(), m_beats.cend(), beat, BeatLessThan);
 
-    // If the position is within 1/10th of a second of the next or previous
-    // beat, pretend we are on that beat.
-    const double kFrameEpsilon = 0.1 * getSampleRate();
+    // If the position is within 1/10th of the average beat length,
+    // pretend we are on that beat.
+    const double kFrameEpsilon = kBeatVicinityFactor * kSecondsPerMinute *
+            getSampleRate() / getBpm().getValue();
 
     // Back-up by one.
     if (it != m_beats.begin()) {
@@ -311,7 +314,8 @@ bool Beats::findPrevNextBeats(FramePos frame,
             }
         }
     }
-    return *pPrevBeatFrame != kInvalidFramePos && *pNextBeatFrame != kInvalidFramePos;
+    return *pPrevBeatFrame != kInvalidFramePos &&
+            *pNextBeatFrame != kInvalidFramePos;
 }
 
 FramePos Beats::findClosestBeat(FramePos frame) const {
@@ -342,12 +346,13 @@ FramePos Beats::findNthBeat(FramePos frame, int n) const {
     beat.set_frame_position(frame.getValue());
 
     // it points at the first occurrence of beat or the next largest beat
-    BeatList::const_iterator it =
-            std::lower_bound(m_beats.cbegin(), m_beats.cend(), beat, BeatLessThan);
+    BeatList::const_iterator it = std::lower_bound(
+            m_beats.cbegin(), m_beats.cend(), beat, BeatLessThan);
 
     // If the position is within 1/10th of the average beat length,
     // pretend we are on that beat.
-    const double kFrameEpsilon = 0.1 * 60 * getSampleRate() / getBpm().getValue();
+    const double kFrameEpsilon = kBeatVicinityFactor * kSecondsPerMinute *
+            getSampleRate() / getBpm().getValue();
 
     // Back-up by one.
     if (it != m_beats.begin()) {
