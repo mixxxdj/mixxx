@@ -7869,8 +7869,7 @@ var NovationLaunchpadMK2 = (function () {
 
             var spec = flatMap(jumps, function (j, i) {
               return [[j, -1], [j, 1]];
-            }); // FIXME: flatMap is incorrectly typed see https://github.com/flow-typed/flow-typed/issues/2463
-
+            });
             spec.forEach(function (_ref4, i) {
               var _ref5 = _slicedToArray(_ref4, 2),
                   jump = _ref5[0],
@@ -8185,23 +8184,39 @@ var NovationLaunchpadMK2 = (function () {
     };
   });
 
+  var SMALL_SAMPLES = 125;
   var loopIo = (function (gridPosition) {
     return function (deck) {
       return function (modifier) {
         return function (device) {
+          var loopName = {
+            "in": 'loop_in',
+            out: 'loop_out'
+          };
+          var loopPosName = {
+            "in": 'loop_start_position',
+            out: 'loop_end_position'
+          };
+
           var onMidi = function onMidi(dir) {
             return function (_ref, _ref2) {
               var value = _ref.value;
               var bindings = _ref2.bindings;
               modes(modifier.getState(), function () {
                 if (value) {
-                  // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
-                  deck["loop_".concat(dir)].setValue(1);
-                  bindings[dir].button.sendColor(device.colors.hi_green);
-                } else {
-                  // TODO: remove unsafe cast once flow supports https://github.com/facebook/flow/issues/3637
-                  deck["loop_".concat(dir)].setValue(0);
-                  bindings[dir].button.sendColor(device.colors.black);
+                  var ctrl = loopName[dir];
+                  deck[ctrl].setValue(1);
+                  deck[ctrl].setValue(0);
+                }
+              }, function () {
+                if (value) {
+                  var ctrl = loopPosName[dir];
+                  deck[ctrl].setValue(deck[ctrl].getValue() - SMALL_SAMPLES);
+                }
+              }, function () {
+                if (value) {
+                  var ctrl = loopPosName[dir];
+                  deck[ctrl].setValue(deck[ctrl].getValue() + SMALL_SAMPLES);
                 }
               });
             };
