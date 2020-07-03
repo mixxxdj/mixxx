@@ -598,7 +598,7 @@ void EngineBuffer::slotControlSeekAbs(double playPosition) {
                        ->compare_exchange_weak(expected, MacroState::Recording)) {
         m_macroRecordingState = MacroState::Armed;
         // TODO(xerus) obtain correct deck
-        ControlProxy(ConfigKey(MACRORECORDING_PREF_KEY, "deck"))
+        ControlProxy(ConfigKey(kMacroRecordingKey, "deck"))
                 .set(this->m_pEngineMaster->getChannel(m_group)->getHandle().handle());
     }
     doSeekPlayPos(playPosition, SEEK_STANDARD);
@@ -1199,19 +1199,22 @@ void EngineBuffer::processSeek(bool paused) {
     }
 
     if (!paused && (seekType & SEEK_PHASE)) {
-        if (kLogger.traceEnabled())
+        if (kLogger.traceEnabled()) {
             kLogger.trace() << "EngineBuffer::processSeek Seeking phase";
+        }
         double requestedPosition = position;
         double syncPosition = m_pBpmControl->getBeatMatchPosition(position, true, true);
         position = m_pLoopingControl->getSyncPositionInsideLoop(requestedPosition, syncPosition);
-        if (kLogger.traceEnabled())
+        if (kLogger.traceEnabled()) {
             kLogger.trace()
                     << "EngineBuffer::processSeek seek info: " << m_filepos_play
                     << " -> " << position;
+        }
     }
     if (position != m_filepos_play) {
-        if (kLogger.traceEnabled())
+        if (kLogger.traceEnabled()) {
             kLogger.trace() << "EngineBuffer::processSeek Seek to" << position;
+        }
         if (m_macroRecordingState == MacroState::Armed) {
             VERIFY_OR_DEBUG_ASSERT(m_pEngineMaster->m_pMacroRecording != nullptr) {
                 return;
