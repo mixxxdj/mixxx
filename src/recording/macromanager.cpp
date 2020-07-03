@@ -2,23 +2,19 @@
 
 // TODO(xerus) handle track eject while recording
 // TODO(xerus) write tests
-// TODO(xerus) consider how to record the first jump
 
 /// The MacroManager handles the recording of Macros and the [MacroRecording] controls.
 MacroManager::MacroManager(EngineMaster* pEngine)
-        : m_pRecordedMacro(new Macro()) {
+        : m_COToggleRecording(ControlPushButton(ConfigKey(kMacroRecordingKey, "recording_toggle"))),
+          m_CORecStatus(ControlObject(ConfigKey(kMacroRecordingKey, "recording_status"))),
+          m_CODeck(ControlObject(ConfigKey(kMacroRecordingKey, "deck"))),
+          m_pRecordedMacro(new Macro()) {
     qCDebug(macros) << "MacroManager construct";
 
-    m_pToggleRecording = new ControlPushButton(
-            ConfigKey(kMacroRecordingKey, "recording_toggle"));
-    connect(m_pToggleRecording,
+    connect(&m_COToggleRecording,
             &ControlPushButton::valueChanged,
             this,
             &MacroManager::slotToggleRecording);
-    m_pCORecStatus = new ControlObject(
-            ConfigKey(kMacroRecordingKey, "recording_status"));
-
-    m_pCODeck = new ControlObject(ConfigKey(kMacroRecordingKey, "deck"));
 
     connect(this,
             &MacroManager::startMacroRecording,
@@ -30,16 +26,10 @@ MacroManager::MacroManager(EngineMaster* pEngine)
             &EngineMaster::slotStopMacroRecording);
 }
 
-MacroManager::~MacroManager() {
-    qCDebug(macros) << "MacroManager deconstruct";
-    delete m_pCORecStatus;
-    delete m_pToggleRecording;
-}
-
 void MacroManager::startRecording() {
     qCDebug(macros) << "MacroManager recording start";
     m_bRecording = true;
-    m_pCORecStatus->set(1);
+    m_CORecStatus.set(1);
     m_pRecordedMacro->clear();
     emit startMacroRecording(m_pRecordedMacro);
 }
@@ -47,9 +37,9 @@ void MacroManager::startRecording() {
 void MacroManager::stopRecording() {
     qCDebug(macros) << "MacroManager recording stop";
     m_bRecording = false;
-    m_pCORecStatus->set(0);
+    m_CORecStatus.set(0);
     emit stopMacroRecording();
     // TODO(xerus) wait until stopped
-    qCDebug(macros) << "Recorded Macro for deck" << m_pCODeck->get();
+    qCDebug(macros) << "Recorded Macro for deck" << m_CODeck.get();
     m_pRecordedMacro->dump();
 }
