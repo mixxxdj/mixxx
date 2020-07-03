@@ -3,11 +3,20 @@
 Deck::Deck(QObject* pParent,
         UserSettingsPointer pConfig,
         EngineMaster* pMixingEngine,
+        MacroManager* pMacroManager,
         EffectsManager* pEffectsManager,
         VisualsManager* pVisualsManager,
         EngineChannel::ChannelOrientation defaultOrientation,
         const QString& group)
-        : BaseTrackPlayerImpl(pParent, pConfig, pMixingEngine, pEffectsManager, pVisualsManager, defaultOrientation, group, /*defaultMaster*/ true,
+        : BaseTrackPlayerImpl(pParent,
+                  pConfig,
+                  pMixingEngine,
+                  pMacroManager,
+                  pEffectsManager,
+                  pVisualsManager,
+                  defaultOrientation,
+                  group,
+                  /*defaultMaster*/ true,
                   /*defaultHeadphones*/ false,
                   /*primaryDeck*/ true) {
 }

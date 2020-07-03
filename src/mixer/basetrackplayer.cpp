@@ -41,6 +41,7 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent, const QString& group)
 BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
         UserSettingsPointer pConfig,
         EngineMaster* pMixingEngine,
+        MacroManager* pMacroManager,
         EffectsManager* pEffectsManager,
         VisualsManager* pVisualsManager,
         EngineChannel::ChannelOrientation defaultOrientation,
@@ -56,7 +57,13 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
           m_pChannelToCloneFrom(nullptr) {
     ChannelHandleAndGroup channelGroup =
             pMixingEngine->registerChannelGroup(group);
-    m_pChannel = new EngineDeck(channelGroup, pConfig, pMixingEngine, pEffectsManager, defaultOrientation, primaryDeck);
+    m_pChannel = new EngineDeck(channelGroup,
+            pConfig,
+            pMixingEngine,
+            pMacroManager,
+            pEffectsManager,
+            defaultOrientation,
+            primaryDeck);
 
     m_pInputConfigured = make_parented<ControlProxy>(group, "input_configured", this);
 #ifdef __VINYLCONTROL__

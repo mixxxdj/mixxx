@@ -34,6 +34,8 @@ class RecordingManager : public RecordingManagerBase {
     // The method computes the filename based on date/time information.
     void startRecording() override;
     void stopRecording() override;
+    bool isRecordingActive() override;
+
     void setRecordingDir();
     QString& getRecordingDir();
     // Returns the currently recording file
@@ -75,6 +77,7 @@ class RecordingManager : public RecordingManagerBase {
     // Absolute file
     QString m_recordingLocation;
 
+    bool m_bRecording;
     bool m_dfSilence;
     qint64 m_dfCounter;
 

@@ -1,22 +1,4 @@
-/***************************************************************************
-                          enginedeck.h  -  description
-                             -------------------
-    begin                : Sun Apr 28 2002
-    copyright            : (C) 2002 by
-    email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef ENGINEDECK_H
-#define ENGINEDECK_H
+#pragma once
 
 #include <QScopedPointer>
 
@@ -29,13 +11,14 @@
 
 #include "soundio/soundmanagerutil.h"
 
+class ControlPushButton;
 class EngineBuffer;
 class EnginePregain;
 class EngineBuffer;
 class EngineMaster;
 class EngineVuMeter;
 class EngineEffectsManager;
-class ControlPushButton;
+class MacroManager;
 
 class EngineDeck : public EngineChannel, public AudioDestination {
     Q_OBJECT
@@ -43,6 +26,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     EngineDeck(const ChannelHandleAndGroup& handle_group,
             UserSettingsPointer pConfig,
             EngineMaster* pMixingEngine,
+            MacroManager* pMacroManager,
             EffectsManager* pEffectsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
             bool primaryDeck);
@@ -95,5 +79,3 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     bool m_bPassthroughWasActive;
     bool m_wasActive;
 };
-
-#endif

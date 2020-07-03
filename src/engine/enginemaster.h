@@ -27,22 +27,10 @@ class EngineVuMeter;
 class EngineSideChain;
 class EngineWorkerScheduler;
 class GuiTick;
-struct Macro;
 
 // The number of channels to pre-allocate in various structures in the
 // engine. Prevents memory allocation in EngineMaster::addChannel.
 static const int kPreallocatedChannels = 64;
-
-enum MacroState : uint8_t {
-    /// Nothing is going on
-    Disabled,
-    /// Intermediate state, awaiting recording
-    Armed,
-    /// Actively recording
-    Recording,
-    /// Intermediate state, awaiting stop confirmation
-    Stopping
-};
 
 class EngineMaster : public QObject, public AudioSource {
     Q_OBJECT
@@ -243,13 +231,6 @@ class EngineMaster : public QObject, public AudioSource {
         long double m_buffer[(CAPACITY * sizeof(T) + sizeof(long double) - 1) /
                              sizeof(long double)];
     };
-
-    std::atomic<MacroState>* m_pMacroState;
-    Macro* m_pMacroRecording;
-
-  public slots:
-    void slotStartMacroRecording(Macro* pMacro);
-    void slotStopMacroRecording();
 
   protected:
     // The master buffer is protected so it can be accessed by test subclasses.

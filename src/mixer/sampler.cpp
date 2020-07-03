@@ -9,7 +9,15 @@ Sampler::Sampler(QObject* pParent,
         VisualsManager* pVisualsManager,
         EngineChannel::ChannelOrientation defaultOrientation,
         QString group)
-        : BaseTrackPlayerImpl(pParent, pConfig, pMixingEngine, pEffectsManager, pVisualsManager, defaultOrientation, group, /*defaultMaster*/ true,
+        : BaseTrackPlayerImpl(pParent,
+                  pConfig,
+                  pMixingEngine,
+                  nullptr,
+                  pEffectsManager,
+                  pVisualsManager,
+                  defaultOrientation,
+                  group,
+                  /*defaultMaster*/ true,
                   /*defaultHeadphones*/ false,
                   /*primaryDeck*/ false) {
 }

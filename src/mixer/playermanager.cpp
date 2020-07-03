@@ -40,30 +40,33 @@ QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumSamplers;
 QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
 
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
-                             SoundManager* pSoundManager,
-                             EffectsManager* pEffectsManager,
-                             VisualsManager* pVisualsManager,
-                             EngineMaster* pEngine) :
-        m_mutex(QMutex::Recursive),
-        m_pConfig(pConfig),
-        m_pSoundManager(pSoundManager),
-        m_pEffectsManager(pEffectsManager),
-        m_pVisualsManager(pVisualsManager),
-        m_pEngine(pEngine),
-        // NOTE(XXX) LegacySkinParser relies on these controls being Controls
-        // and not ControlProxies.
-        m_pCONumDecks(new ControlObject(
-                ConfigKey("[Master]", "num_decks"), true, true)),
-        m_pCONumSamplers(new ControlObject(
-                ConfigKey("[Master]", "num_samplers"), true, true)),
-        m_pCONumPreviewDecks(new ControlObject(
-                ConfigKey("[Master]", "num_preview_decks"), true, true)),
-        m_pCONumMicrophones(new ControlObject(
-                ConfigKey("[Master]", "num_microphones"), true, true)),
-        m_pCONumAuxiliaries(new ControlObject(
-                ConfigKey("[Master]", "num_auxiliaries"), true, true)),
-        m_pAutoDjEnabled(make_parented<ControlProxy>("[AutoDJ]", "enabled", this)),
-        m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
+        SoundManager* pSoundManager,
+        EngineMaster* pEngine,
+        MacroManager* pMacroManager,
+        EffectsManager* pEffectsManager,
+        VisualsManager* pVisualsManager)
+        : m_mutex(QMutex::Recursive),
+          m_pConfig(pConfig),
+          m_pSoundManager(pSoundManager),
+          m_pEffectsManager(pEffectsManager),
+          m_pVisualsManager(pVisualsManager),
+          m_pEngine(pEngine),
+          m_pMacroManager(pMacroManager),
+          // NOTE(XXX) LegacySkinParser relies on these controls being Controls
+          // and not ControlProxies.
+          m_pCONumDecks(new ControlObject(
+                  ConfigKey("[Master]", "num_decks"), true, true)),
+          m_pCONumSamplers(new ControlObject(
+                  ConfigKey("[Master]", "num_samplers"), true, true)),
+          m_pCONumPreviewDecks(new ControlObject(
+                  ConfigKey("[Master]", "num_preview_decks"), true, true)),
+          m_pCONumMicrophones(new ControlObject(
+                  ConfigKey("[Master]", "num_microphones"), true, true)),
+          m_pCONumAuxiliaries(new ControlObject(
+                  ConfigKey("[Master]", "num_auxiliaries"), true, true)),
+          m_pAutoDjEnabled(
+                  make_parented<ControlProxy>("[AutoDJ]", "enabled", this)),
+          m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
     m_pCONumDecks->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumDecks, Qt::DirectConnection);
     m_pCONumSamplers->connectValueChangeRequest(this,
@@ -373,6 +376,7 @@ void PlayerManager::addDeckInner() {
     Deck* pDeck = new Deck(this,
             m_pConfig,
             m_pEngine,
+            m_pMacroManager,
             m_pEffectsManager,
             m_pVisualsManager,
             orientation,
