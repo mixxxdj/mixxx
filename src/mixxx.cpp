@@ -339,7 +339,15 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addPreviewDeck();
 
-    m_pMacroManager = new MacroManager(m_pEngine);
+    m_pMacroManager = new MacroManager();
+    connect(m_pMacroManager,
+            &MacroManager::startMacroRecording,
+            m_pEngine,
+            &EngineMaster::slotStartMacroRecording);
+    connect(m_pMacroManager,
+            &MacroManager::stopMacroRecording,
+            m_pEngine,
+            &EngineMaster::slotStopMacroRecording);
 
     launchProgress(30);
 
