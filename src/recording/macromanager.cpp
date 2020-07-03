@@ -4,7 +4,7 @@
 // TODO(xerus) write tests
 
 /// The MacroManager handles the recording of Macros and the [MacroRecording] controls.
-MacroManager::MacroManager(EngineMaster* pEngine)
+MacroManager::MacroManager()
         : m_COToggleRecording(ControlPushButton(ConfigKey(kMacroRecordingKey, "recording_toggle"))),
           m_CORecStatus(ControlObject(ConfigKey(kMacroRecordingKey, "recording_status"))),
           m_CODeck(ControlObject(ConfigKey(kMacroRecordingKey, "deck"))),
@@ -15,15 +15,6 @@ MacroManager::MacroManager(EngineMaster* pEngine)
             &ControlPushButton::valueChanged,
             this,
             &MacroManager::slotToggleRecording);
-
-    connect(this,
-            &MacroManager::startMacroRecording,
-            pEngine,
-            &EngineMaster::slotStartMacroRecording);
-    connect(this,
-            &MacroManager::stopMacroRecording,
-            pEngine,
-            &EngineMaster::slotStopMacroRecording);
 }
 
 void MacroManager::startRecording() {

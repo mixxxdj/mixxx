@@ -57,10 +57,10 @@ struct Macro {
 class MacroManager : public RecordingManagerBase {
     Q_OBJECT
   public:
-    MacroManager(EngineMaster* pMaster);
+    MacroManager();
 
-    void startRecording();
-    void stopRecording();
+    void startRecording() override;
+    void stopRecording() override;
 
   signals:
     void startMacroRecording(Macro* pMacro);
