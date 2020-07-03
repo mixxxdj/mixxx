@@ -10,15 +10,15 @@ MacroManager::MacroManager(EngineMaster* pEngine)
     qCDebug(macros) << "MacroManager construct";
 
     m_pToggleRecording = new ControlPushButton(
-            ConfigKey(MACRORECORDING_PREF_KEY, "recording_toggle"));
+            ConfigKey(kMacroRecordingKey, "recording_toggle"));
     connect(m_pToggleRecording,
             &ControlPushButton::valueChanged,
             this,
             &MacroManager::slotToggleRecording);
     m_pCORecStatus = new ControlObject(
-            ConfigKey(MACRORECORDING_PREF_KEY, "recording_status"));
+            ConfigKey(kMacroRecordingKey, "recording_status"));
 
-    m_pCODeck = new ControlObject(ConfigKey(MACRORECORDING_PREF_KEY, "deck"));
+    m_pCODeck = new ControlObject(ConfigKey(kMacroRecordingKey, "deck"));
 
     connect(this,
             &MacroManager::startMacroRecording,

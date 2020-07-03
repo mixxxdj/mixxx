@@ -9,12 +9,11 @@
 #include "preferences/usersettings.h"
 #include "recording/recordingmanagerbase.h"
 
-#define MACRORECORDING_PREF_KEY "[MacroRecording]"
-
 namespace {
 constexpr size_t kMaxMacroSize = 1000;
+const QString kMacroRecordingKey = QStringLiteral("[MacroRecording]");
 const QLoggingCategory macros("macros");
-}
+} // namespace
 
 struct MacroAction {
     MacroAction(){};
@@ -25,7 +24,7 @@ struct MacroAction {
 };
 
 struct Macro {
-    int m_length = 0;
+    size_t m_length = 0;
     MacroAction actions[kMaxMacroSize];
 
     Macro() {
@@ -33,6 +32,9 @@ struct Macro {
     }
 
     void appendHotcueJump(double origin, double target) {
+        VERIFY_OR_DEBUG_ASSERT(m_length < kMaxMacroSize) {
+            return;
+        }
         qCDebug(macros) << "Appending jump from" << origin << "to" << target;
         actions[m_length].position = origin;
         actions[m_length].target = target;
@@ -40,7 +42,7 @@ struct Macro {
     };
 
     void dump() {
-        for (int i = 0; i < m_length; ++i) {
+        for (size_t i = 0; i < m_length; ++i) {
             auto action = actions[i];
             qCDebug(macros) << "Jump from " << action.position << " to " << action.target;
         }
@@ -66,8 +68,6 @@ class MacroManager : public RecordingManagerBase {
     void stopMacroRecording();
 
   private:
-    UserSettingsPointer m_pConfig;
-
     ControlPushButton* m_pToggleRecording;
     ControlObject* m_pCORecStatus;
     ControlObject* m_pCODeck;
