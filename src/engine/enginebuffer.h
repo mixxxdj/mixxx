@@ -11,6 +11,7 @@
 #include "engine/engineobject.h"
 #include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
+#include "recording/macromanager.h"
 #include "track/track.h"
 #include "util/rotary.h"
 #include "util/types.h"
@@ -21,17 +22,9 @@
 #include <QTextStream>
 #endif
 
-class EngineChannel;
-class EngineControl;
 class BpmControl;
-class KeyControl;
-class RateControl;
-class SyncControl;
-class VinylControlControl;
-class LoopingControl;
 class ClockControl;
 class CueControl;
-class ReadAheadManager;
 class ControlObject;
 class ControlProxy;
 class ControlPushButton;
@@ -44,6 +37,14 @@ class EngineBufferScaleST;
 class EngineBufferScaleRubberBand;
 class EngineSync;
 class EngineWorkerScheduler;
+class EngineChannel;
+class EngineControl;
+class KeyControl;
+class LoopingControl;
+class RateControl;
+class ReadAheadManager;
+class SyncControl;
+class VinylControlControl;
 class VisualPlayPosition;
 
 /// Length of audio beat marks in samples
@@ -88,8 +89,11 @@ class EngineBuffer : public EngineObject {
         KEYLOCK_ENGINE_COUNT,
     };
 
-    EngineBuffer(const QString& group, UserSettingsPointer pConfig,
-                 EngineChannel* pChannel, EngineMaster* pMixingEngine);
+    EngineBuffer(const QString& group,
+            UserSettingsPointer pConfig,
+            EngineChannel* pChannel,
+            EngineMaster* pMixingEngine,
+            MacroManager* pMacroManager);
     virtual ~EngineBuffer();
 
     void bindWorkers(EngineWorkerScheduler* pWorkerScheduler);
@@ -245,9 +249,11 @@ class EngineBuffer : public EngineObject {
     FRIEND_TEST(EngineSyncTest, UserTweakPreservedInSeek);
     FRIEND_TEST(EngineSyncTest, BeatMapQantizePlay);
     FRIEND_TEST(EngineBufferTest, ScalerNoTransport);
-    EngineMaster* m_pEngineMaster;
-    // Armed=Cue jump is pending, Recording=Awaiting cue jumps
-    MacroState m_macroRecordingState;
+
+    int m_channel;
+    bool m_bHotcueJumpPending;
+    MacroManager* m_pMacroManager;
+
     EngineSync* m_pEngineSync;
     SyncControl* m_pSyncControl;
     VinylControlControl* m_pVinylControlControl;

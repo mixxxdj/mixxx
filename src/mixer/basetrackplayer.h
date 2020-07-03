@@ -1,5 +1,4 @@
-#ifndef MIXER_BASETRACKPLAYER_H
-#define MIXER_BASETRACKPLAYER_H
+#pragma once
 
 #include <QObject>
 #include <QScopedPointer>
@@ -13,11 +12,12 @@
 #include "util/memory.h"
 #include "util/parented_ptr.h"
 
-class EngineMaster;
 class ControlObject;
 class ControlPotmeter;
 class ControlProxy;
 class EffectsManager;
+class EngineMaster;
+class MacroManager;
 class VisualsManager;
 
 // Interface for not leaking implementation details of BaseTrackPlayer into the
@@ -55,6 +55,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     BaseTrackPlayerImpl(QObject* pParent,
             UserSettingsPointer pConfig,
             EngineMaster* pMixingEngine,
+            MacroManager* pMacroManager,
             EffectsManager* pEffectsManager,
             VisualsManager* pVisualsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
@@ -155,5 +156,3 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     parented_ptr<ControlProxy> m_pVinylControlEnabled;
     parented_ptr<ControlProxy> m_pVinylControlStatus;
 };
-
-#endif // MIXER_BASETRACKPLAYER_H

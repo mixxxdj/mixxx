@@ -11,13 +11,14 @@
 
 #include "soundio/soundmanagerutil.h"
 
+class ControlPushButton;
 class EngineBuffer;
 class EnginePregain;
 class EngineBuffer;
 class EngineMaster;
 class EngineVuMeter;
 class EngineEffectsManager;
-class ControlPushButton;
+class MacroManager;
 
 class EngineDeck : public EngineChannel, public AudioDestination {
     Q_OBJECT
@@ -26,6 +27,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
             const ChannelHandleAndGroup& handleGroup,
             UserSettingsPointer pConfig,
             EngineMaster* pMixingEngine,
+            MacroManager* pMacroManager,
             EffectsManager* pEffectsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
             bool primaryDeck);

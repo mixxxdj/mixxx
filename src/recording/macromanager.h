@@ -15,6 +15,17 @@ const QString kMacroRecordingKey = QStringLiteral("[MacroRecording]");
 const QLoggingCategory macros("macros");
 } // namespace
 
+enum MacroState : uint8_t {
+    /// Nothing is going on
+    Disabled,
+    /// Intermediate state, awaiting recording
+    Armed,
+    /// Actively recording
+    Recording,
+    /// Intermediate state, awaiting stop confirmation
+    Stopping
+};
+
 struct MacroAction {
     MacroAction(){};
     MacroAction(double position, double target)
@@ -61,15 +72,16 @@ class MacroManager : public RecordingManagerBase {
 
     void startRecording() override;
     void stopRecording() override;
+    bool isRecordingActive() override;
 
-  signals:
-    void startMacroRecording(Macro* pMacro);
-    void stopMacroRecording();
+    void appendHotcueJump(int channel, double origin, double target);
 
   private:
     ControlPushButton m_COToggleRecording;
     ControlObject m_CORecStatus;
-    ControlObject m_CODeck;
 
-    Macro* m_pRecordedMacro;
+    int m_activeChannel;
+    std::atomic<MacroState> m_macroRecordingState;
+
+    Macro m_recordedMacro;
 };

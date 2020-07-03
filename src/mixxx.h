@@ -139,6 +139,7 @@ class MixxxMainWindow : public QMainWindow {
     SoundManager* m_pSoundManager;
 
     PlayerManager* m_pPlayerManager;
+
     MacroManager* m_pMacroManager;
     RecordingManager* m_pRecordingManager;
 #ifdef __BROADCAST__

@@ -286,9 +286,15 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pVCManager = NULL;
 #endif
 
+    m_pMacroManager = new MacroManager();
+
     // Create the player manager (long)
-    m_pPlayerManager = new PlayerManager(pConfig, m_pSoundManager,
-            m_pEffectsManager, m_pVisualsManager, m_pEngine);
+    m_pPlayerManager = new PlayerManager(pConfig,
+            m_pSoundManager,
+            m_pEngine,
+            m_pMacroManager,
+            m_pEffectsManager,
+            m_pVisualsManager);
     connect(m_pPlayerManager,
             &PlayerManager::noMicrophoneInputConfigured,
             this,
@@ -320,16 +326,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addPreviewDeck();
-
-    m_pMacroManager = new MacroManager();
-    connect(m_pMacroManager,
-            &MacroManager::startMacroRecording,
-            m_pEngine,
-            &EngineMaster::slotStartMacroRecording);
-    connect(m_pMacroManager,
-            &MacroManager::stopMacroRecording,
-            m_pEngine,
-            &EngineMaster::slotStopMacroRecording);
 
     launchProgress(30);
 

@@ -22,6 +22,7 @@ RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pE
           m_recording_base_file(""),
           m_recordingFile(""),
           m_recordingLocation(""),
+          m_bRecording(false),
           m_iNumberOfBytesRecorded(0),
           m_iNumberOfBytesRecordedSplit(0),
           m_split_size(0),
@@ -269,6 +270,10 @@ void RecordingManager::slotIsRecording(bool isRecordingActive, bool error) {
                        +"</p></html>");
         ErrorDialogHandler::instance()->requestErrorDialog(props);
     }
+}
+
+bool RecordingManager::isRecordingActive() {
+    return m_bRecording;
 }
 
 const QString& RecordingManager::getRecordingFile() const {

@@ -57,10 +57,14 @@ const SINT kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
 EngineBuffer::EngineBuffer(const QString& group,
         UserSettingsPointer pConfig,
         EngineChannel* pChannel,
-        EngineMaster* pMixingEngine)
+        EngineMaster* pMixingEngine,
+        MacroManager* pMacroManager)
         : m_group(group),
           m_pConfig(pConfig),
           m_pLoopingControl(nullptr),
+          m_channel(pChannel->getHandle().handle()),
+          m_bHotcueJumpPending(false),
+          m_pMacroManager(pMacroManager),
           m_pSyncControl(nullptr),
           m_pVinylControlControl(nullptr),
           m_pRateControl(nullptr),
@@ -358,7 +362,6 @@ double EngineBuffer::getLocalBpm() {
 }
 
 void EngineBuffer::setEngineMaster(EngineMaster* pEngineMaster) {
-    m_pEngineMaster = pEngineMaster;
     for (const auto& pControl: qAsConst(m_engineControls)) {
         pControl->setEngineMaster(pEngineMaster);
     }
@@ -591,16 +594,7 @@ void EngineBuffer::slotControlSeek(double fractionalPos) {
 
 // WARNING: This method runs from SyncWorker and Engine Worker
 void EngineBuffer::slotControlSeekAbs(double playPosition) {
-    MacroState expected = MacroState::Armed;
-    if (m_macroRecordingState == MacroState::Recording) {
-        m_macroRecordingState = MacroState::Armed;
-    } else if (m_pEngineMaster->m_pMacroState
-                       ->compare_exchange_weak(expected, MacroState::Recording)) {
-        m_macroRecordingState = MacroState::Armed;
-        // TODO(xerus) obtain correct deck
-        ControlProxy(ConfigKey(kMacroRecordingKey, "deck"))
-                .set(this->m_pEngineMaster->getChannel(m_group)->getHandle().handle());
-    }
+    m_bHotcueJumpPending = true;
     doSeekPlayPos(playPosition, SEEK_STANDARD);
 }
 
@@ -1215,22 +1209,12 @@ void EngineBuffer::processSeek(bool paused) {
         if (kLogger.traceEnabled()) {
             kLogger.trace() << "EngineBuffer::processSeek Seek to" << position;
         }
-        if (m_macroRecordingState == MacroState::Armed) {
-            VERIFY_OR_DEBUG_ASSERT(m_pEngineMaster->m_pMacroRecording != nullptr) {
-                return;
-            }
-            m_pEngineMaster->m_pMacroRecording->appendHotcueJump(m_filepos_play, position);
+        if (m_bHotcueJumpPending && m_pMacroManager != nullptr) {
+            m_pMacroManager->appendHotcueJump(m_channel, m_filepos_play, position);
         }
         setNewPlaypos(position);
     }
-    if (m_macroRecordingState == MacroState::Armed) {
-        MacroState expected = MacroState::Stopping;
-        if (m_pEngineMaster->m_pMacroState->compare_exchange_weak(expected, MacroState::Disabled)) {
-            m_macroRecordingState = MacroState::Disabled;
-        } else {
-            m_macroRecordingState = MacroState::Recording;
-        }
-    }
+    m_bHotcueJumpPending = false;
     m_iSeekQueued.storeRelease(SEEK_NONE);
 }
 

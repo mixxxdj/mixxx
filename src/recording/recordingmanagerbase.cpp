@@ -18,7 +18,3 @@ void RecordingManagerBase::slotToggleRecording(double value) {
         }
     }
 }
-
-bool RecordingManagerBase::isRecordingActive() const {
-    return m_bRecording;
-}

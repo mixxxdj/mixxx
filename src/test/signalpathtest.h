@@ -60,7 +60,7 @@ class BaseSignalPathTest : public MixxxTest {
         m_pGuiTick = std::make_unique<GuiTick>();
         m_pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
         m_pNumDecks = new ControlObject(ConfigKey(m_sMasterGroup, "num_decks"));
-        m_pEffectsManager = new EffectsManager(NULL, config(), m_pChannelHandleFactory);
+        m_pEffectsManager = new EffectsManager(nullptr, config(), m_pChannelHandleFactory);
         m_pVisualsManager = new VisualsManager();
         m_pEngineMaster = new TestEngineMaster(m_pConfig,
                 m_sMasterGroup,
@@ -71,6 +71,7 @@ class BaseSignalPathTest : public MixxxTest {
         m_pMixerDeck1 = new Deck(nullptr,
                 m_pConfig,
                 m_pEngineMaster,
+                nullptr,
                 m_pEffectsManager,
                 m_pVisualsManager,
                 EngineChannel::CENTER,
@@ -78,6 +79,7 @@ class BaseSignalPathTest : public MixxxTest {
         m_pMixerDeck2 = new Deck(nullptr,
                 m_pConfig,
                 m_pEngineMaster,
+                nullptr,
                 m_pEffectsManager,
                 m_pVisualsManager,
                 EngineChannel::CENTER,
@@ -85,6 +87,7 @@ class BaseSignalPathTest : public MixxxTest {
         m_pMixerDeck3 = new Deck(nullptr,
                 m_pConfig,
                 m_pEngineMaster,
+                nullptr,
                 m_pEffectsManager,
                 m_pVisualsManager,
                 EngineChannel::CENTER,
