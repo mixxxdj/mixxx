@@ -58,7 +58,6 @@ class MacroManager : public RecordingManagerBase {
     Q_OBJECT
   public:
     MacroManager(EngineMaster* pMaster);
-    ~MacroManager() override;
 
     void startRecording();
     void stopRecording();
@@ -68,9 +67,9 @@ class MacroManager : public RecordingManagerBase {
     void stopMacroRecording();
 
   private:
-    ControlPushButton* m_pToggleRecording;
-    ControlObject* m_pCORecStatus;
-    ControlObject* m_pCODeck;
+    ControlPushButton m_COToggleRecording;
+    ControlObject m_CORecStatus;
+    ControlObject m_CODeck;
 
     Macro* m_pRecordedMacro;
 };
