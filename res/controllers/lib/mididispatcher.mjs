@@ -58,7 +58,7 @@ export class MidiDispatcher {
      * @param {Array} data - The incoming MIDI data.
      * @param {number} timestamp - The timestamp that Mixxx received the MIDI data at.
      */
-    receiveMidiData(data, timestamp) {
+    handleMidiInput(data, timestamp) {
         let key;
         // MIDI messages starting with 0xC (program change) or 0xD (aftertouch) messages are only
         // two bytes long and distinguished by their first byte.
