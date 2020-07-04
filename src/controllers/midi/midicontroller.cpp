@@ -206,7 +206,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
     byteArray.append(status);
     byteArray.append(control);
     byteArray.append(value);
-    getEngine()->receiveData(byteArray, timestamp);
+    getEngine()->handleInput(byteArray, timestamp);
     // legacy stuff below
 
     // The rest of this function is for legacy mappings
@@ -477,7 +477,7 @@ double MidiController::computeValue(
 
 void MidiController::receive(QByteArray data, mixxx::Duration timestamp) {
     controllerDebug(MidiUtils::formatSysexMessage(getName(), data, timestamp));
-    getEngine()->receiveData(data, timestamp);
+    getEngine()->handleInput(data, timestamp);
     // legacy stuff below
 
     MidiKey mappingKey(data.at(0), 0xFF);

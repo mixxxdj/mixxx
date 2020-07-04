@@ -148,5 +148,5 @@ void Controller::receive(const QByteArray data, mixxx::Duration timestamp) {
         m_pEngine->executeFunction(incomingDataFunction, data);
     }
 
-    m_pEngine->receiveData(data, timestamp);
+    m_pEngine->handleInput(data, timestamp);
 }

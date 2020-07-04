@@ -247,13 +247,13 @@ void ControllerEngine::loadModule(QFileInfo moduleFileInfo) {
     QJSValue initFunction = mod.property("init");
     executeFunction(initFunction, QJSValueList{});
 
-    QJSValue receiveDataFunction = mod.property("receiveData");
-    if (receiveDataFunction.isCallable()) {
-        m_receiveDataFunction = receiveDataFunction;
+    QJSValue handleInputFunction = mod.property("handleInput");
+    if (handleInputFunction.isCallable()) {
+        m_handleInputFunction = handleInputFunction;
     } else {
         scriptErrorDialog(
-                "Controller JavaScript module exports no receiveData function.",
-                QStringLiteral("receiveData"),
+                "Controller JavaScript module exports no handleInput function.",
+                QStringLiteral("handleInput"),
                 true);
     }
 
@@ -265,12 +265,12 @@ void ControllerEngine::loadModule(QFileInfo moduleFileInfo) {
     }
 }
 
-void ControllerEngine::receiveData(QByteArray data, mixxx::Duration timestamp) {
-    if (m_receiveDataFunction.isCallable()) {
+void ControllerEngine::handleInput(QByteArray data, mixxx::Duration timestamp) {
+    if (m_handleInputFunction.isCallable()) {
         QJSValueList args;
         args << byteArrayToScriptValue(data);
         args << timestamp.toDoubleNanos();
-        executeFunction(m_receiveDataFunction, args);
+        executeFunction(m_handleInputFunction, args);
     }
 }
 
