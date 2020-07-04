@@ -194,6 +194,8 @@ void ControllerEngine::initializeScriptEngine() {
     // Create the Script Engine
     m_pScriptEngine = new QJSEngine(this);
 
+    m_pScriptEngine->installExtensions(QJSEngine::ConsoleExtension);
+
     // Make this ControllerEngine instance available to scripts as 'engine'.
     QJSValue engineGlobalObject = m_pScriptEngine->globalObject();
     ControllerEngineJSProxy* proxy = new ControllerEngineJSProxy(this);
