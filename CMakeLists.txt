@@ -1576,7 +1576,7 @@ endif()
 target_include_directories(mixxx-lib PUBLIC lib/rigtorp/SPSCQueue/include)
 
 # Qt
-find_package(Qt5
+find_package(Qt5 5.12.0
   COMPONENTS
     Concurrent
     Core
