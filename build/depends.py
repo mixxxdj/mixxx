@@ -1048,6 +1048,9 @@ class MixxxCore(Feature):
                    "src/library/coverart.cpp",
                    "src/library/coverartcache.cpp",
                    "src/library/coverartutils.cpp",
+                   "src/library/trackcollectioniterator.cpp",
+                   "src/library/trackmodeliterator.cpp",
+                   "src/library/trackprocessing.cpp",
 
                    "src/library/crate/cratestorage.cpp",
                    "src/library/crate/cratefeature.cpp",
