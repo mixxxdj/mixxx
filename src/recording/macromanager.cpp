@@ -4,7 +4,6 @@
 // TODO(xerus) write tests
 // TODO(xerus) make recording button blink when state is armed
 
-/// The MacroManager handles the recording of Macros and the [MacroRecording] controls.
 MacroManager::MacroManager()
         : m_COToggleRecording(ControlPushButton(ConfigKey(kMacroRecordingKey, "recording_toggle"))),
           m_CORecStatus(ControlObject(ConfigKey(kMacroRecordingKey, "recording_status"))),
@@ -19,14 +18,25 @@ MacroManager::MacroManager()
             &MacroManager::slotToggleRecording);
 }
 
-void MacroManager::appendHotcueJump(int channel, double origin, double target) {
-    auto armed = MacroState::Armed;
+bool MacroManager::notifyCueJump(int channel, double origin, double target) {
+    if (claimRecording(channel)) {
+        m_recordedMacro.appendJump(origin, target);
+        return true;
+    }
+    return false;
+}
+
+bool MacroManager::claimRecording(int channel) {
     if (m_activeChannel == channel) {
-        m_recordedMacro.appendHotcueJump(origin, target);
+        return true;
+    } else {
+        auto armed = MacroState::Armed;
+        if (m_macroRecordingState.compare_exchange_weak(armed, MacroState::Recording)) {
+            m_activeChannel = channel;
+            return true;
+        }
     }
-    if (m_macroRecordingState.compare_exchange_weak(armed, MacroState::Recording)) {
-        m_activeChannel = channel;
-    }
+    return false;
 }
 
 void MacroManager::startRecording() {

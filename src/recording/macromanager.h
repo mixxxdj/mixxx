@@ -26,6 +26,9 @@ enum MacroState : uint8_t {
     Stopping
 };
 
+/// A MacroAction is the smallest piece of a Macro.
+/// It contains a position as well as the action to be taken at that position
+/// (currently only jumps to a target position are available).
 struct MacroAction {
     MacroAction(){};
     MacroAction(double position, double target)
@@ -34,6 +37,8 @@ struct MacroAction {
     double target;
 };
 
+/// A Macro stores a list of actions.
+/// The action list is pre-populated at construction so that it can be written to in real-time code.
 struct Macro {
     size_t m_length = 0;
     MacroAction actions[kMaxMacroSize];
@@ -42,7 +47,9 @@ struct Macro {
         std::fill_n(actions, kMaxMacroSize, MacroAction());
     }
 
-    void appendHotcueJump(double origin, double target) {
+    /// Append a jump action to this Macro by assigning the next available slot.
+    /// Only called from RT.
+    void appendJump(double origin, double target) {
         VERIFY_OR_DEBUG_ASSERT(m_length < kMaxMacroSize) {
             return;
         }
@@ -52,6 +59,7 @@ struct Macro {
         m_length++;
     };
 
+    /// For debugging - dump all saved actions to debug output.
     void dump() {
         for (size_t i = 0; i < m_length; ++i) {
             auto action = actions[i];
@@ -59,12 +67,14 @@ struct Macro {
         }
     }
 
+    /// Clears the contents of this Macro by setting its length to 0.
     void clear() {
         qCDebug(macros) << "Clearing Macro";
         m_length = 0;
     }
 };
 
+/// The MacroManager handles the recording of Macros and the [MacroRecording] controls.
 class MacroManager : public RecordingManagerBase {
     Q_OBJECT
   public:
@@ -74,9 +84,19 @@ class MacroManager : public RecordingManagerBase {
     void stopRecording() override;
     bool isRecordingActive() override;
 
-    void appendHotcueJump(int channel, double origin, double target);
+    /// Tries to append this cue jump to the currently recorded Macro.
+    /// Returns true if the currently recorded Macro was changed - so only if
+    /// recording is active and the channel handle matches.
+    /// Only called from RT.
+    bool notifyCueJump(int channel, double origin, double target);
 
   private:
+    /// Tries to claim the active recording for the current channel.
+    /// Returns true if recording is active and the recorded channel matches
+    /// the given one, or none was set and it was claimed.
+    /// Only called from RT.
+    bool claimRecording(int channel);
+
     ControlPushButton m_COToggleRecording;
     ControlObject m_CORecStatus;
 

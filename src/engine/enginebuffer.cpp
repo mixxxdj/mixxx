@@ -1210,7 +1210,7 @@ void EngineBuffer::processSeek(bool paused) {
             kLogger.trace() << "EngineBuffer::processSeek Seek to" << position;
         }
         if (m_bHotcueJumpPending && m_pMacroManager != nullptr) {
-            m_pMacroManager->appendHotcueJump(m_channel, m_filepos_play, position);
+            m_pMacroManager->notifyCueJump(m_channel, m_filepos_play, position);
         }
         setNewPlaypos(position);
     }
