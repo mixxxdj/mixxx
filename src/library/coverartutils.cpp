@@ -223,20 +223,6 @@ void guessTrackCoverInfoConcurrently(
     }
 }
 
-void guessTrackCoverInfoConcurrently(
-        QList<TrackPointer> tracks) {
-    if (tracks.isEmpty()) {
-        return;
-    }
-    if (s_enableConcurrentGuessingOfTrackCoverInfo) {
-        QtConcurrent::run([tracks] {
-            CoverInfoGuesser().guessAndSetCoverInfoForTracks(tracks);
-        });
-    } else {
-        CoverInfoGuesser().guessAndSetCoverInfoForTracks(tracks);
-    }
-}
-
 void disableConcurrentGuessingOfTrackCoverInfoDuringTests() {
     s_enableConcurrentGuessingOfTrackCoverInfo = false;
 }
