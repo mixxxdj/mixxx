@@ -1305,6 +1305,7 @@ class MixxxCore(Feature):
                    "src/util/file.cpp",
                    "src/util/mac.cpp",
                    "src/util/task.cpp",
+                   "src/util/taskmonitor.cpp",
                    "src/util/experiment.cpp",
                    "src/util/xml.cpp",
                    "src/util/tapfilter.cpp",

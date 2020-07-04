@@ -7,6 +7,7 @@
 
 #include "track/trackiterator.h"
 #include "util/duration.h"
+#include "util/taskmonitor.h"
 
 class TrackCollectionManager;
 
@@ -19,22 +20,10 @@ namespace mixxx {
 /// period. This avoids that an open context menu gets closed
 /// while processing only a few tracks.
 class ModalTrackBatchProcessor
-        : public QObject {
+        : public Task {
     Q_OBJECT
 
   public:
-    /// Default minimum duration that needs to pass before showing
-    /// the progress dialog.
-    ///
-    /// For short tasks no progress dialog is shown. Only if their
-    /// processing time exceeds the minimum duration the modal
-    /// progress dialog is shown. As a side-effect this closes
-    /// any open context menu. We want to prevent this distraction
-    /// whenever possible while still providing progress feedback
-    /// for long running tasks.
-    static constexpr Duration kDefaultMinimumProgressDuration =
-            Duration::fromMillis(2000);
-
     virtual ~ModalTrackBatchProcessor() = default;
 
     /// Subsequently load and process a list of tracks.
@@ -48,9 +37,9 @@ class ModalTrackBatchProcessor
   protected:
     explicit ModalTrackBatchProcessor(
             Duration minimumProgressDuration =
-                    kDefaultMinimumProgressDuration,
+                    TaskMonitor::kDefaultMinimumProgressDuration,
             QObject* parent = nullptr)
-            : QObject(parent),
+            : Task(parent),
               m_minimumProgressDuration(minimumProgressDuration) {
     }
 
@@ -59,6 +48,11 @@ class ModalTrackBatchProcessor
         ContinueProcessing,
         SaveTrackAndContinueProcessing,
     };
+
+  private slots:
+    void slotAbortTask() override {
+        m_bAborted = true;
+    }
 
   private:
     ModalTrackBatchProcessor(const ModalTrackBatchProcessor&) = delete;
@@ -69,6 +63,8 @@ class ModalTrackBatchProcessor
             const TrackPointer& pTrack) = 0;
 
     const Duration m_minimumProgressDuration;
+
+    bool m_bAborted;
 };
 
 /// Apply an operation on individual track pointers.
@@ -124,7 +120,7 @@ class ModalTrackBatchOperationProcessor
             const TrackPointerOperation* pTrackPointerOperation,
             Mode mode,
             Duration minimumProgressDuration =
-                    kDefaultMinimumProgressDuration,
+                    TaskMonitor::kDefaultMinimumProgressDuration,
             QObject* parent = nullptr);
     ~ModalTrackBatchOperationProcessor() override = default;
 

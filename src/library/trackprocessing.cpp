@@ -1,6 +1,5 @@
 #include "library/trackprocessing.h"
 
-#include <QProgressDialog>
 #include <QThread>
 
 #include "library/trackcollection.h"
@@ -26,15 +25,12 @@ int ModalTrackBatchProcessor::processTracks(
     int trackCount = 0;
     int estimatedTotalCount =
             pTrackPointerIterator->estimateItemsRemaining().value_or(trackCount);
-    QProgressDialog progressDlg(
+    m_bAborted = false;
+    TaskMonitor taskMonitor(
             progressLabelText,
-            tr("Abort"),
-            trackCount,
-            estimatedTotalCount);
-    progressDlg.setWindowModality(
-            Qt::ApplicationModal);
-    progressDlg.setMinimumDuration(
-            m_minimumProgressDuration.toIntegerMillis());
+            m_minimumProgressDuration,
+            this);
+    taskMonitor.registerTask(this);
     while (auto nextTrackPointer = pTrackPointerIterator->nextItem()) {
         const auto pTrack = *nextTrackPointer;
         VERIFY_OR_DEBUG_ASSERT(pTrack) {
@@ -43,7 +39,7 @@ int ModalTrackBatchProcessor::processTracks(
                     << "failed to load next track for processing";
             continue;
         }
-        if (progressDlg.wasCanceled()) {
+        if (m_bAborted) {
             kLogger.info()
                     << "Aborting"
                     << progressLabelText
@@ -74,10 +70,15 @@ int ModalTrackBatchProcessor::processTracks(
         if (trackCount > estimatedTotalCount) {
             estimatedTotalCount =
                     pTrackPointerIterator->estimateItemsRemaining().value_or(trackCount);
-            DEBUG_ASSERT(trackCount <= estimatedTotalCount);
-            progressDlg.setMaximum(estimatedTotalCount);
         }
-        progressDlg.setValue(trackCount);
+        taskMonitor.reportTaskProgress(
+                this,
+                kPercentageOfCompletionMin +
+                        (kPercentageOfCompletionMax -
+                                kPercentageOfCompletionMin) *
+                                trackCount /
+                                static_cast<PercentageOfCompletion>(
+                                        estimatedTotalCount));
     }
     return trackCount;
 }
