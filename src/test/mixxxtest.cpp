@@ -2,6 +2,7 @@
 
 #include "library/coverartutils.h"
 #include "sources/soundsourceproxy.h"
+#include "util/logging.h"
 
 namespace {
 
@@ -23,6 +24,7 @@ MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
     s_pApplication.reset(new MixxxApplication(argc, argv));
 
     SoundSourceProxy::registerSoundSourceProviders();
+    mixxx::Logging::initialize(QDir::temp(), mixxx::LogLevel::Debug, mixxx::LogLevel::Debug, true);
 
     // All guessing of cover art should be done synchronously
     // in the same thread during tests to prevent test failures
@@ -31,6 +33,7 @@ MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
 }
 
 MixxxTest::ApplicationScope::~ApplicationScope() {
+    mixxx::Logging::shutdown();
     DEBUG_ASSERT(s_pApplication);
     s_pApplication.reset();
 }
