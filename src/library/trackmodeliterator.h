@@ -1,5 +1,5 @@
 /// Utilities for iterating through a selection or collection
-/// of tracks.
+/// of tracks identified by QModelIndex.
 
 #pragma once
 
@@ -11,7 +11,7 @@ class TrackModel;
 
 namespace mixxx {
 
-/// Iterate over selected and valid(!) track ids in a TrackModel.
+/// Iterate over selected, valid track ids in a TrackModel.
 /// Invalid track ids are skipped silently.
 class TrackIdModelIterator final
         : public virtual TrackIdIterator {
@@ -40,7 +40,7 @@ class TrackIdModelIterator final
     ListItemIterator<QModelIndex> m_modelIndexListIter;
 };
 
-/// Iterate over selected and valid(!) track pointers in a TrackModel.
+/// Iterate over selected, valid track pointers in a TrackModel.
 /// Invalid (= nullptr) track pointers are skipped silently.
 class TrackPointerModelIterator final
         : public virtual TrackPointerIterator {
