@@ -269,7 +269,7 @@ void ControllerEngine::handleInput(QByteArray data, mixxx::Duration timestamp) {
     if (m_handleInputFunction.isCallable()) {
         QJSValueList args;
         args << byteArrayToScriptValue(data);
-        args << timestamp.toDoubleNanos();
+        args << timestamp.toDoubleMillis();
         executeFunction(m_handleInputFunction, args);
     }
 }
