@@ -36,6 +36,7 @@ class AnalyzerRhythm : public Analyzer {
 
     // beats are in detection function increments
     std::vector<double> computeBeats();
+    std::vector<double> computeSnapGrid();
 
     // these methods are defined at analyzerrhythmbpm
     // TODO(Cristiano) Hide these!! Maybe a friend class?
@@ -77,5 +78,4 @@ class AnalyzerRhythm : public Analyzer {
     int m_windowSize;
     int m_stepSize;
     std::vector<DFresults> m_detectionResults;
-    
 };

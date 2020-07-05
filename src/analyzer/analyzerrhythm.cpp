@@ -5,13 +5,14 @@
 #include <QVector>
 #include <QtDebug>
 #include <unordered_set>
+#include <vector>
 
+#include "analyzer/analyzerrhythmstats.h"
 #include "analyzer/constants.h"
+#include "engine/engine.h" // Included to get mixxx::kEngineChannelCount
 #include "track/beatfactory.h"
 #include "track/beatmap.h"
 #include "track/track.h"
-#include "engine/engine.h" // Included to get mixxx::kEngineChannelCount
-#include "analyzer/analyzerrhythmstats.h"
 
 namespace {
 
@@ -28,6 +29,8 @@ constexpr int kLowerBeatsPerBar = 4;
 constexpr int kHigherBeatsPerBar = 5;
 // The number of types of detection functions
 constexpr int kDfTypes = 5;
+
+constexpr double thresshold_smoothing = 0.05;
 
 DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
     // These are the defaults for the VAMP beat tracker plugin
@@ -177,6 +180,73 @@ std::vector<double> AnalyzerRhythm::computeBeats() {
     return allBeats[maxAgreementIndex];
 }
 
+std::vector<double> AnalyzerRhythm::computeSnapGrid() {
+    int size = m_detectionResults.size();
+
+    for (int i = 0; i < size; ++i) {
+        qDebug() << i
+                 << m_detectionResults[i].results[0]
+                 << m_detectionResults[i].results[1]
+                 << m_detectionResults[i].results[2]
+                 << m_detectionResults[i].results[3]
+                 << m_detectionResults[i].results[4];
+    }
+
+    int dfType = 3; // ComplexSD
+
+    std::vector<double> complexSdMinDiff;
+    std::vector<double> minWindow;
+    std::vector<double> maxWindow;
+    complexSdMinDiff.reserve(size);
+
+    // Calculate the change from the minimum of three previous SDs
+    // This ensures we find the beat start and not the noisiest place within the beat.
+    for (int i = 0; i < size; ++i) {
+        double result = m_detectionResults[i].results[3];
+        double min = result;
+        for (int j = i - 3; j < i; ++j) {
+            if (j >= 0) {
+                double value = m_detectionResults[j].results[3];
+                if (value < min) {
+                    min = value;
+                }
+            }
+        }
+        complexSdMinDiff.push_back(result - min);
+    }
+
+    std::vector<double> allBeats;
+    allBeats.reserve(size / 10);
+
+    // This is a dynamic threshold that defines which SD is considered as a beat.
+    double threshold = 0;
+
+    // Find peak beats within a window of 9 SDs (100 ms)
+    // This limits the detection result to 600 BPM
+    for (int i = 0; i < size; ++i) {
+        double result = complexSdMinDiff[i];
+        if (result > threshold) {
+            double max = result;
+            for (int j = i - 4; j < i + 4; ++j) {
+                if (j >= 0 && j < size) {
+                    double value = complexSdMinDiff[j];
+                    if (value > max) {
+                        max = value;
+                    }
+                }
+            }
+            if (max == result) {
+                // Beat found
+                threshold = max;
+                allBeats.push_back(i);
+            }
+        }
+        threshold = threshold * (1 - thresshold_smoothing) + result * thresshold_smoothing;
+    }
+
+    return allBeats;
+}
+
 std::vector<double> AnalyzerRhythm::computeBeatsSpectralDifference(std::vector<double> &beats) {
     size_t downLength = 0;
     const float *downsampled = m_downbeat->getBufferedAudio(downLength);
@@ -232,7 +302,8 @@ std::tuple<int, int> AnalyzerRhythm::computeMeter(std::vector<double> &beatsSD) 
 
 void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
     m_processor.finalize();
-    auto beats = this->computeBeats();
+    //auto beats = this->computeBeats();
+    auto beats = computeSnapGrid();
     auto beatsSD = this->computeBeatsSpectralDifference(beats);
     auto [bpb, firstDownbeat] = this->computeMeter(beatsSD);
 
@@ -247,6 +318,8 @@ void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
         }
         m_resultBeats.push_back(result);
     }
+
+    /*
     QMap<int, double> beatsWithNewTempo;
     std::tie(m_resultBeats, beatsWithNewTempo) = FixBeatsPositions();
     //quick hack for manual testing of downbeats
@@ -261,6 +334,7 @@ void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
         }
         m_resultBeats = downbeats;
     }
+    */
     // TODO(Cristiano&Harshit) THIS IS WHERE A BEAT VECTOR IS CREATED
     auto pBeatMap = new mixxx::BeatMap(*pTrack, m_iSampleRate, m_resultBeats);
     auto pBeats = mixxx::BeatsPointer(pBeatMap, &BeatFactory::deleteBeats);
