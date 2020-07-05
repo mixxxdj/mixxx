@@ -162,6 +162,8 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
         if (pMark->isValid()) {
             pMark->connectSamplePositionChanged(this,
                     &WOverview::onMarkChanged);
+            pMark->connectSampleLengthChanged(this,
+                    &WOverview::onMarkChanged);
         }
         if (pMark->hasVisible()) {
             pMark->connectVisibleChanged(this,

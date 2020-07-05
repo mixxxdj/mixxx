@@ -56,14 +56,20 @@ WaveformMark::WaveformMark(const QString& group,
                            const WaveformSignalColors& signalColors,
                            int hotCue)
         : m_iHotCue(hotCue) {
-    QString control;
+    QString positionControl;
+    QString lengthControl;
     if (hotCue != Cue::kNoHotCue) {
-        control = "hotcue_" + QString::number(hotCue + 1) + "_position";
+        positionControl = "hotcue_" + QString::number(hotCue + 1) + "_position";
+        lengthControl = "hotcue_" + QString::number(hotCue + 1) + "_length";
     } else {
-        control = context.selectString(node, "Control");
+        positionControl = context.selectString(node, "Control");
     }
-    if (!control.isEmpty()) {
-        m_pPointCos = std::make_unique<ControlProxy>(group, control);
+
+    if (!positionControl.isEmpty()) {
+        m_pPointCos = std::make_unique<ControlProxy>(group, positionControl);
+    }
+    if (!lengthControl.isEmpty()) {
+        m_pLengthCos = std::make_unique<ControlProxy>(group, lengthControl);
     }
 
     QString visibilityControl = context.selectString(node, "VisibilityControl");

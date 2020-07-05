@@ -37,7 +37,19 @@ class WaveformMark {
     void connectSamplePositionChanged(Receiver receiver, Slot slot) const {
         m_pPointCos->connectValueChanged(receiver, slot, Qt::AutoConnection);
     };
+    template <typename Receiver, typename Slot>
+    void connectSampleLengthChanged(Receiver receiver, Slot slot) const {
+        if (m_pLengthCos) {
+            m_pLengthCos->connectValueChanged(receiver, slot, Qt::AutoConnection);
+        }
+    };
     double getSamplePosition() const { return m_pPointCos->get(); }
+    double getSampleLength() const {
+        if (m_pLengthCos) {
+            return m_pLengthCos->get();
+        }
+        return 0;
+    }
     QString getItem() const { return m_pPointCos->getKey().item; }
 
     // The m_pVisibleCos related function
@@ -80,6 +92,7 @@ class WaveformMark {
 
   private:
     std::unique_ptr<ControlProxy> m_pPointCos;
+    std::unique_ptr<ControlProxy> m_pLengthCos;
     std::unique_ptr<ControlProxy> m_pVisibleCos;
     int m_iHotCue;
     QImage m_image;
