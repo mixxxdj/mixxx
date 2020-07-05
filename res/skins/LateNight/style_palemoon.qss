@@ -2735,7 +2735,7 @@ WEffectSelector,
   WEffectSelector {
     /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
         names start getting cut off. Adding explicit padding improves this. */
-    padding: 3px 0px 2px 5px;
+    padding: 3px 0px 1px 5px;
     margin: 0px;
   }
   #fadeModeCombobox {
