@@ -3,7 +3,7 @@ version: ~> 1.0
 
 # Default build environment
 os: linux
-dist: bionic
+dist: focal
 
 # Default programming language
 language: cpp
