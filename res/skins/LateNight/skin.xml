@@ -36,49 +36,62 @@
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
-      <!-- Set skin defaults -->
-      <!-- Decks -->
+    <!-- Set skin defaults -->
       <attribute config_key="[Master],num_decks">4</attribute>
       <attribute config_key="[Master],num_samplers">8</attribute>
-
       <attribute persist="true" config_key="[Skin],show_waveforms">1</attribute>
+      <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
+      <attribute config_key="[Master],skin_settings">0</attribute>
+
+    <!-- Decks -->
+      <!-- general -->
       <attribute persist="true" config_key="[Skin],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Skin],show_8_hotcues">1</attribute>
-      <attribute persist="true" config_key="[LateNight],deck_size_without_mixer">1</attribute>
       <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_spinnies">1</attribute>
       <attribute persist="true" config_key="[Skin],show_coverart">1</attribute>
       <attribute persist="true" config_key="[Skin],show_big_spinny_coverart">0</attribute>
+      <!-- ToDo: deck-independent vinyl controls? -->
       <attribute persist="true" config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
+      <!-- Deck variant that is shown as soon as the mixer is hidden, see deck.xm
+          and /helpers/skin_helper_deck_size.xml
+          0=mini 1=compact (default) 2=full deck -->
+      <attribute persist="true" config_key="[LateNight],deck_size_without_mixer">1</attribute>
+      <!-- Full deck -->
       <attribute persist="true" config_key="[Skin],show_rate_controls">1</attribute>
       <attribute persist="true" config_key="[Skin],show_rate_control_buttons">1</attribute>
-      <attribute persist="true" config_key="[Skin],show_rate_key_controls_compact">1</attribute>
       <attribute persist="true" config_key="[Skin],show_beatgrid_controls">1</attribute>
-      <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
-      <!-- Mixer -->
+      <!-- Compact deck -->
+      <attribute persist="true" config_key="[Skin],show_rate_controls_compact">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_loopjump_controls_compact">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_sync_button_compact">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_key_controls_compact">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_vumeters_compact">1</attribute>
+
+    <!-- Mixer -->
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Skin],show_master_head_mixer">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_knobs">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_kill_buttons">1</attribute>
       <attribute persist="true" config_key="[Skin],show_xfader">1</attribute>
       <attribute persist="true" config_key="[LateNight],show_vumeters_compact">1</attribute>
-      <!-- Effects -->
+    <!-- Effects -->
       <attribute persist="true" config_key="[EffectRack1],show">1</attribute>
       <attribute persist="true" config_key="[Skin],show_4effectunits">0</attribute>
       <attribute persist="true" config_key="[Skin],show_superknobs">0</attribute>
-      <!-- Samplers -->
+    <!-- Samplers -->
       <attribute persist="true" config_key="[Samplers],show_samplers">1</attribute>
       <attribute persist="true" config_key="[Skin],8_samplers">1</attribute>
       <attribute persist="true" config_key="[Skin],expand_samplers">0</attribute>
-      <!-- Library -->
+    <!-- Mic / Aux -->
+      <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
+    <!-- Library -->
       <attribute config_key="[Master],maximize_library">0</attribute>
       <attribute persist="true" config_key="[LateNight],max_lib_show_decks">1</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
 
-      <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
-      <attribute config_key="[Master],skin_settings">0</attribute>
-      <!-- Disable hidden effect routing Buttons -->
+    <!-- Disable hidden effect routing Buttons -->
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MasterOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusLeft]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusCenter]_enable">0</attribute>
