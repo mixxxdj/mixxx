@@ -110,12 +110,12 @@ class ControlDoublePrivate : public QObject {
         return m_defaultValue.getValue();
     }
 
-    inline ControlObject* getCreatorCO() const {
-        return m_pCreatorCO;
+    ControlObject* getCreatorCO() const {
+        return m_pCreatorCO.loadAcquire();
     }
 
-    inline void removeCreatorCO() {
-        m_pCreatorCO = NULL;
+    bool resetCreatorCO(ControlObject* pCreatorCO) {
+        return m_pCreatorCO.testAndSetOrdered(pCreatorCO, nullptr);
     }
 
     inline ConfigKey getKey() {
@@ -180,7 +180,7 @@ class ControlDoublePrivate : public QObject {
 
     QSharedPointer<ControlNumericBehavior> m_pBehavior;
 
-    ControlObject* m_pCreatorCO;
+    QAtomicPointer<ControlObject> m_pCreatorCO;
 
     // Hack to implement persistent controls. This is a pointer to the current
     // user configuration object (if one exists). In general, we do not want the

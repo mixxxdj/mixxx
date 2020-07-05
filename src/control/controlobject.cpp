@@ -54,7 +54,7 @@ ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack,
 
 ControlObject::~ControlObject() {
     if (m_pControl) {
-        m_pControl->removeCreatorCO();
+        m_pControl->resetCreatorCO(this);
     }
 }
 
