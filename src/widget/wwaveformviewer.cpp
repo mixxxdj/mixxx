@@ -31,16 +31,16 @@ WWaveformViewer::WWaveformViewer(
           m_waveformWidget(nullptr) {
     setMouseTracking(true);
     setAcceptDrops(true);
-    m_pZoom = new ControlProxy(group, "waveform_zoom", this);
+    m_pZoom = new ControlProxy(group, "waveform_zoom", this, ControlFlag::NoAssertIfMissing);
     m_pZoom->connectValueChanged(this, &WWaveformViewer::onZoomChange);
 
     m_pScratchPositionEnable = new ControlProxy(
-            group, "scratch_position_enable", this);
+            group, "scratch_position_enable", this, ControlFlag::NoAssertIfMissing);
     m_pScratchPosition = new ControlProxy(
-            group, "scratch_position", this);
+            group, "scratch_position", this, ControlFlag::NoAssertIfMissing);
     m_pWheel = new ControlProxy(
-            group, "wheel", this);
-    m_pPlayEnabled = new ControlProxy(group, "play", this);
+            group, "wheel", this, ControlFlag::NoAssertIfMissing);
+    m_pPlayEnabled = new ControlProxy(group, "play", this, ControlFlag::NoAssertIfMissing);
 
     setAttribute(Qt::WA_OpaquePaintEvent);
 }

@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<MixxxControllerPreset mixxxVersion="2.2.3" schemaVersion="1">
+<MixxxControllerPreset mixxxVersion="2.3" schemaVersion="1">
     <info>
     	<name>Denon MC7000</name>
     	<author>OsZ</author>
-    	<description>Denon MC7000 mapping for testing. Check your Linux Kernel version to get the Audio Interface working - see WIKI page.</description>
+    	<description>Denon MC7000 mapping. Check your Linux Kernel version to get the Audio Interface working - see WIKI page.</description>
     	<forums>https://www.mixxx.org/forums/</forums>
     	<wiki>https://www.mixxx.org/wiki/doku.php/denon_mc7000</wiki>
     </info>
@@ -2122,6 +2122,46 @@
                 <midino>0x0F</midino>
                 <options>
                     <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>MC7000.sortLibrary</key>
+                <description>BPM</description>
+                <status>0x9F</status>
+                <midino>0x13</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>MC7000.sortLibrary</key>
+                <description>KEY</description>
+                <status>0x9F</status>
+                <midino>0x20</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>MC7000.sortLibrary</key>
+                <description>Artist</description>
+                <status>0x9F</status>
+                <midino>0x14</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>MC7000.sortLibrary</key>
+                <description>Title</description>
+                <status>0x9F</status>
+                <midino>0x12</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
 <!-- EFFECTS -->

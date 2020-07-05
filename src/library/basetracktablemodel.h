@@ -89,9 +89,6 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     TrackPointer getTrackByRef(
             const TrackRef& trackRef) const override;
 
-    bool hasCapabilities(
-            TrackModel::Capabilities caps) const final;
-
   protected:
     static constexpr int defaultColumnWidth() {
         return 50;

@@ -21,6 +21,35 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <widget class="QGroupBox" name="groupMetaKnobOption">
+     <property name="title">
+      <string>Effect load behavior</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayoutMetaKnob">
+      <item>
+       <widget class="QRadioButton" name="radioButtonKeepMetaknobPosition">
+        <property name="text">
+         <string>Keep metaknob position</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroupEffectLoadBehavior</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioButtonMetaknobLoadDefault">
+        <property name="text">
+         <string>Reset metaknob to effect default</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroupEffectLoadBehavior</string>
+        </attribute>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <widget class="QTabWidget" name="effectsTabs">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Ignored" vsizetype="Expanding">

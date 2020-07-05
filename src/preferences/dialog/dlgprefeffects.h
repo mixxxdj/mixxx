@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QButtonGroup>
+
 #include "preferences/dialog/ui_dlgprefeffectsdlg.h"
 #include "preferences/dlgpreferencepage.h"
 #include "preferences/effectmanifesttablemodel.h"

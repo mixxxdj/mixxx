@@ -13,7 +13,7 @@ ControlWidgetConnection::ControlWidgetConnection(
         ValueTransformer* pTransformer)
         : m_pWidget(pBaseWidget),
           m_pValueTransformer(pTransformer) {
-    m_pControl = new ControlProxy(key, this);
+    m_pControl = new ControlProxy(key, this, ControlFlag::NoAssertIfMissing);
     m_pControl->connectValueChanged(this, &ControlWidgetConnection::slotControlValueChanged);
 }
 
