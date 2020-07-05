@@ -161,16 +161,20 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
 
 // static
 void ControlDoublePrivate::getControls(
-        QList<QSharedPointer<ControlDoublePrivate> >* pControlList) {
-    s_qCOHashMutex.lock();
+        QList<QSharedPointer<ControlDoublePrivate> >* pControlList,
+        bool detachLeakedControls) {
     pControlList->clear();
+    MMutexLocker locker(&s_qCOHashMutex);
+    pControlList->reserve(s_qCOHash.size());
     for (auto it = s_qCOHash.constBegin(); it != s_qCOHash.constEnd(); ++it) {
-        QSharedPointer<ControlDoublePrivate> pControl = it.value();
-        if (!pControl.isNull()) {
+        auto pControl = it.value().lock();
+        if (pControl) {
             pControlList->push_back(pControl);
         }
     }
-    s_qCOHashMutex.unlock();
+    if (detachLeakedControls) {
+        s_qCOHash.clear();
+    }
 }
 
 // static

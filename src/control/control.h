@@ -52,7 +52,9 @@ class ControlDoublePrivate : public QObject {
             double defaultValue = 0.0);
 
     // Adds all ControlDoublePrivate that currently exist to pControlList
-    static void getControls(QList<QSharedPointer<ControlDoublePrivate> >* pControlsList);
+    static void getControls(
+            QList<QSharedPointer<ControlDoublePrivate> >* pControlsList,
+            bool detachLeakedControls = false);
 
     static QHash<ConfigKey, ConfigKey> getControlAliases();
 

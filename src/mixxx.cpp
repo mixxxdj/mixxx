@@ -781,7 +781,7 @@ void MixxxMainWindow::finalize() {
     QList<QSharedPointer<ControlDoublePrivate> > leakedControls;
     QList<ConfigKey> leakedConfigKeys;
 
-    ControlDoublePrivate::getControls(&leakedControls);
+    ControlDoublePrivate::getControls(&leakedControls, true);
 
     if (leakedControls.size() > 0) {
         qDebug() << "WARNING: The following" << leakedControls.size()
