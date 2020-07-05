@@ -968,13 +968,17 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
     CuePointer pCue(pControl->getCue());
 
     if (v) {
-        if (pCue && pCue->getPosition() != Cue::kNoPosition) {
+        if (pCue && pCue->getPosition() != Cue::kNoPosition &&
+                pCue->getType() != mixxx::CueType::Invalid) {
             m_iCurrentlyPreviewingHotcues++;
             double position = pCue->getPosition();
             m_bypassCueSetByPlay = true;
             m_pPlay->set(1.0);
-            pControl->setPreviewing(true);
+            pControl->setPreviewingType(pCue->getType());
             pControl->setPreviewingPosition(position);
+            if (pCue->getType() == mixxx::CueType::Loop) {
+                setCurrentSavedLoop(pCue);
+            }
 
             // Need to unlock before emitting any signals to prevent deadlock.
             lock.unlock();
@@ -984,10 +988,11 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
     } else if (m_iCurrentlyPreviewingHotcues) {
         // This is a activate release and we are previewing at least one
         // hotcue. If this hotcue is previewing:
-        if (pControl->isPreviewing()) {
+        mixxx::CueType cueType = pControl->getPreviewingType();
+        if (cueType != mixxx::CueType::Invalid) {
             // Mark this hotcue as not previewing.
             double position = pControl->getPreviewingPosition();
-            pControl->setPreviewing(false);
+            pControl->setPreviewingType(mixxx::CueType::Invalid);
             pControl->setPreviewingPosition(Cue::kNoPosition);
 
             // If this is the last hotcue to leave preview.
@@ -995,6 +1000,9 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
                 m_pPlay->set(0.0);
                 // Need to unlock before emitting any signals to prevent deadlock.
                 lock.unlock();
+                if (cueType == mixxx::CueType::Loop) {
+                    m_pLoopEnabled->set(0);
+                }
                 seekExact(position);
             }
         }
@@ -2054,7 +2062,7 @@ HotcueControl::HotcueControl(QString group, int i)
         : m_group(group),
           m_iHotcueNumber(i),
           m_pCue(NULL),
-          m_bPreviewing(false),
+          m_previewingType(mixxx::CueType::Invalid),
           m_previewingPosition(-1) {
     m_hotcuePosition = new ControlObject(keyForControl(i, "position"));
     connect(m_hotcuePosition, &ControlObject::valueChanged,

@@ -69,11 +69,11 @@ class HotcueControl : public QObject {
     mixxx::RgbColor::optional_t getColor() const;
 
     // Used for caching the preview state of this hotcue control.
-    inline bool isPreviewing() {
-        return m_bPreviewing;
+    inline mixxx::CueType getPreviewingType() {
+        return m_previewingType;
     }
-    inline void setPreviewing(bool bPreviewing) {
-        m_bPreviewing = bPreviewing;
+    inline void setPreviewingType(mixxx::CueType type) {
+        m_previewingType = type;
     }
     inline double getPreviewingPosition() {
         return m_previewingPosition;
@@ -146,7 +146,7 @@ class HotcueControl : public QObject {
     ControlObject* m_hotcueActivatePreview;
     ControlObject* m_hotcueClear;
 
-    bool m_bPreviewing;
+    mixxx::CueType m_previewingType;
     double m_previewingPosition;
 };
 
