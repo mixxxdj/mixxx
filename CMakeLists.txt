@@ -954,12 +954,16 @@ endif()
 
 option(DEBUG_ASSERTIONS_FATAL "Fail if debug become true assertions" OFF)
 if(DEBUG_ASSERTIONS_FATAL)
-  target_compile_definitions(mixxx-lib PUBLIC MIXXX_DEBUG_ASSERTIONS_FATAL)
+  target_compile_definitions(mixxx-lib PUBLIC MIXXX_DEBUG_ASSERTIONS_FATAL MIXXX_DEBUG_ASSERTIONS_ENABLED)
+  if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message(STATUS "DEBUG_ASSERT statements have been enabled because DEBUG_ASSERTIONS_FATAL is ON.")
+  endif()
 endif()
 
 target_compile_definitions(mixxx-lib PUBLIC
   "${CMAKE_SYSTEM_PROCESSOR}"
   $<$<CONFIG:Debug>:MIXXX_BUILD_DEBUG>
+  $<$<CONFIG:Debug>:MIXXX_DEBUG_ASSERTIONS_ENABLED>
   $<$<NOT:$<CONFIG:Debug>>:MIXXX_BUILD_RELEASE>
   # Disable assert.h assertions in release mode. Some libraries use
   # this as a signal for when to enable code that should be disabled
