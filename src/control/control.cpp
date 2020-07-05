@@ -112,39 +112,51 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
     VERIFY_OR_DEBUG_ASSERT(!key.isEmpty()) {
         qWarning() << "ControlDoublePrivate::getControl returning NULL"
                    << "for empty ConfigKey.";
-        return QSharedPointer<ControlDoublePrivate>();
+        return nullptr;
     }
 
-    QSharedPointer<ControlDoublePrivate> pControl;
-    // Scope for MMutexLocker.
     {
-        MMutexLocker locker(&s_qCOHashMutex);
-        auto it = s_qCOHash.constFind(key);
-        if (it != s_qCOHash.constEnd()) {
-            if (pCreatorCO) {
-                qWarning() << "ControlObject" << key.group << key.item << "already created";
-                DEBUG_ASSERT(!"ControlObject already created");
+        const MMutexLocker locker(&s_qCOHashMutex);
+        const auto it = s_qCOHash.find(key);
+        if (it != s_qCOHash.end()) {
+            auto pControl = it.value().lock();
+            if (pControl) {
+                // Control object already exists
+                VERIFY_OR_DEBUG_ASSERT(!pCreatorCO) {
+                    qWarning()
+                            << "ControlObject"
+                            << key.group << key.item
+                            << "already created";
+                    return nullptr;
+                }
+                return pControl;
             } else {
-                pControl = it.value();
+                // The weak pointer has become invalid and can be cleaned up
+                s_qCOHash.erase(it);
             }
         }
     }
 
-    if (pControl == NULL) {
-        if (pCreatorCO) {
-            pControl = QSharedPointer<ControlDoublePrivate>(
-                    new ControlDoublePrivate(key, pCreatorCO, bIgnoreNops,
-                                             bTrack, bPersist, defaultValue));
-            MMutexLocker locker(&s_qCOHashMutex);
-            //qDebug() << "ControlDoublePrivate::s_qCOHash.insert(" << key.group << "," << key.item << ")";
-            s_qCOHash.insert(key, pControl);
-        } else if (!flags.testFlag(ControlFlag::NoWarnIfMissing)) {
-            qWarning() << "ControlDoublePrivate::getControl returning NULL for ("
-                       << key.group << "," << key.item << ")";
-            DEBUG_ASSERT(flags.testFlag(ControlFlag::NoAssertIfMissing));
-        }
+    if (pCreatorCO) {
+        auto pControl = QSharedPointer<ControlDoublePrivate>(
+                new ControlDoublePrivate(key,
+                        pCreatorCO,
+                        bIgnoreNops,
+                        bTrack,
+                        bPersist,
+                        defaultValue));
+        const MMutexLocker locker(&s_qCOHashMutex);
+        //qDebug() << "ControlDoublePrivate::s_qCOHash.insert(" << key.group << "," << key.item << ")";
+        s_qCOHash.insert(key, pControl);
+        return pControl;
     }
-    return pControl;
+
+    if (!flags.testFlag(ControlFlag::NoWarnIfMissing)) {
+        qWarning() << "ControlDoublePrivate::getControl returning NULL for ("
+                   << key.group << "," << key.item << ")";
+        DEBUG_ASSERT(flags.testFlag(ControlFlag::NoAssertIfMissing));
+    }
+    return nullptr;
 }
 
 // static
