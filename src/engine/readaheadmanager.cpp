@@ -156,7 +156,10 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
 
         // do crossfade from the current buffer into the new loop beginning
         if (samples_from_reader != 0) { // avoid division by zero
-            SampleUtil::linearCrossfadeBuffers(pOutput, pOutput, m_pCrossFadeBuffer, samples_from_reader);
+            SampleUtil::linearCrossfadeBuffersOut(
+                    pOutput,
+                    m_pCrossFadeBuffer,
+                    samples_from_reader);
         }
     }
 

@@ -1,10 +1,12 @@
 #ifndef DLGPREFEFFECTS_H
 #define DLGPREFEFFECTS_H
 
-#include "preferences/usersettings.h"
+#include <QButtonGroup>
+
 #include "preferences/dialog/ui_dlgprefeffectsdlg.h"
 #include "preferences/dlgpreferencepage.h"
 #include "preferences/effectsettingsmodel.h"
+#include "preferences/usersettings.h"
 
 class EffectsManager;
 

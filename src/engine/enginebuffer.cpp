@@ -988,8 +988,10 @@ void EngineBuffer::processTrackLocked(
         // callback and the m_filepos_play is advanced behind the end of the track.
 
         if (m_bCrossfadeReady) {
-           SampleUtil::linearCrossfadeBuffers(
-                    pOutput, m_pCrossfadeBuffer, pOutput, iBufferSize);
+            // Bring pOutput with the new parameters in and fade out the old one,
+            // stored with the old parameters in m_pCrossfadeBuffer
+            SampleUtil::linearCrossfadeBuffersIn(
+                    pOutput, m_pCrossfadeBuffer, iBufferSize);
         }
         // Note: we do not fade here if we pass the end or the start of
         // the track in reverse direction

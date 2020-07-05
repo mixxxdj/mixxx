@@ -37,7 +37,10 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
 
     setFocusPolicy(Qt::NoFocus);
 
-    m_pCoColor = make_parented<ControlProxy>(createConfigKey(QStringLiteral("color")), this);
+    m_pCoColor = make_parented<ControlProxy>(
+            createConfigKey(QStringLiteral("color")),
+            this,
+            ControlFlag::NoAssertIfMissing);
     m_pCoColor->connectValueChanged(this, &WHotcueButton::slotColorChanged);
     slotColorChanged(m_pCoColor->get());
 

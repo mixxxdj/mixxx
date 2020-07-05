@@ -55,11 +55,13 @@ repos:
   - id: check-xml
   - id: check-yaml
   - id: end-of-file-fixer
+    exclude: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|mm|proto|vert)$
     stages:
     - commit
     - manual
   - id: mixed-line-ending
   - id: trailing-whitespace
+    exclude: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|mm|proto|vert)$
     stages:
     - commit
     - manual
@@ -76,7 +78,7 @@ repos:
   hooks:
   - id: clang-format
     name: clang-format
-    entry: git clang-format
+    entry: tools/clang_format_wrapper.py
     require_serial: true
     stages:
     - commit
@@ -85,16 +87,17 @@ repos:
     files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|mm|proto|vert)$
     additional_dependencies:
     - clang-format
--   repo: https://github.com/psf/black
-    rev: stable
-    hooks:
-    -   id: black
-        files: ^tools/.*$
--   repo: https://gitlab.com/pycqa/flake8
-    rev: '3.8.3'
-    hooks:
-    -   id: flake8
-        files: ^tools/.*$
+- repo: https://github.com/psf/black
+  rev: stable
+  hooks:
+  - id: black
+    files: ^tools/.*$
+- repo: https://gitlab.com/pycqa/flake8
+  rev: '3.8.3'
+  hooks:
+  - id: flake8
+    files: ^tools/.*$
+    types: [text, python]
 - repo: local
   hooks:
   - id: qsscheck
@@ -110,7 +113,6 @@ repos:
     files: ^.*\.qss$
     stages:
     - commit
-    - push
     - manual
 - repo: local
   hooks:
@@ -120,6 +122,6 @@ repos:
     entry: ./tools/line_length.py
     stages:
     - commit
-    - push
+    - manual
     language: python
     files: \.(c|cpp|h)$
