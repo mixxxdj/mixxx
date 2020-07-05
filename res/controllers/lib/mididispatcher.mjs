@@ -65,7 +65,6 @@ export class MidiDispatcher {
         // https://www.midi.org/specifications-old/item/table-2-expanded-messages-list-status-bytes
         if ((data[0] & 0xF0) == 0xC0 || (data[0] & 0xF0) === 0xD0) {
             key = JSON.stringify([data[0]]);
-            print('SINGLE ' + data);
         } else {
             key = JSON.stringify([data[0], data[1]]);
         }
