@@ -87,13 +87,15 @@ class MacroManager : public RecordingManagerBase {
     /// Returns true if the currently recorded Macro was changed - so only if
     /// recording is active and the channel handle matches.
     /// Only called from RT.
-    void notifyCueJump(ChannelHandle channel, double origin, double target);
+    void notifyCueJump(ChannelHandle& channel, double origin, double target);
+
+    Macro getMacro();
 
   private:
     /// Checks if ths channel is recording, otherwise tries to claim it.
     /// Returns true if this channel is recording.
     /// Called from RT.
-    bool checkOrClaimRecording(ChannelHandle channel);
+    bool checkOrClaimRecording(ChannelHandle& channel);
 
     /// Tries to claim the active recording for the current channel.
     /// Returns true if recording was armed and successfully assigned to the
