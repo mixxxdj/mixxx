@@ -1,46 +1,37 @@
-#include <QtDebug>
-#include <QSharedPointer>
-
 #include "control/control.h"
 
 #include "util/stat.h"
 
-// Static member variable definition
+//static
 UserSettingsPointer ControlDoublePrivate::s_pUserConfig;
 
-QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > ControlDoublePrivate::s_qCOHash
-GUARDED_BY(ControlDoublePrivate::s_qCOHashMutex);
+//static
+QHash<ConfigKey, QWeakPointer<ControlDoublePrivate>> ControlDoublePrivate::s_qCOHash
+        GUARDED_BY(ControlDoublePrivate::s_qCOHashMutex);
 
+//static
 QHash<ConfigKey, ConfigKey> ControlDoublePrivate::s_qCOAliasHash
-GUARDED_BY(ControlDoublePrivate::s_qCOHashMutex);
+        GUARDED_BY(ControlDoublePrivate::s_qCOHashMutex);
 
+//static
 MMutex ControlDoublePrivate::s_qCOHashMutex;
 
-/*
-ControlDoublePrivate::ControlDoublePrivate()
-        : m_bIgnoreNops(true),
-          m_bTrack(false),
-          m_trackType(Stat::UNSPECIFIED),
-          m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
-                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
-          m_confirmRequired(false) {
-    initialize();
-}
-*/
-
-ControlDoublePrivate::ControlDoublePrivate(ConfigKey key,
-                                           ControlObject* pCreatorCO,
-                                           bool bIgnoreNops, bool bTrack,
-                                           bool bPersist, double defaultValue)
+ControlDoublePrivate::ControlDoublePrivate(
+        ConfigKey key,
+        ControlObject* pCreatorCO,
+        bool bIgnoreNops,
+        bool bTrack,
+        bool bPersist,
+        double defaultValue)
         : m_key(key),
+          m_pCreatorCO(pCreatorCO),
           m_bPersistInConfiguration(bPersist),
           m_bIgnoreNops(bIgnoreNops),
           m_bTrack(bTrack),
           m_trackType(Stat::UNSPECIFIED),
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
-                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
-          m_confirmRequired(false),
-          m_pCreatorCO(pCreatorCO) {
+                  Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
+          m_confirmRequired(false) {
     initialize(defaultValue);
 }
 
@@ -161,7 +152,7 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
 
 // static
 void ControlDoublePrivate::getControls(
-        QList<QSharedPointer<ControlDoublePrivate> >* pControlList,
+        QList<QSharedPointer<ControlDoublePrivate>>* pControlList,
         bool detachLeakedControls) {
     pControlList->clear();
     MMutexLocker locker(&s_qCOHashMutex);

@@ -1,10 +1,10 @@
-#ifndef CONTROL_H
-#define CONTROL_H
+#pragma once
 
-#include <QHash>
-#include <QString>
-#include <QObject>
 #include <QAtomicPointer>
+#include <QHash>
+#include <QObject>
+#include <QSharedPointer>
+#include <QString>
 
 #include "control/controlbehavior.h"
 #include "control/controlvalue.h"
@@ -26,7 +26,7 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(ControlFlags)
 class ControlDoublePrivate : public QObject {
     Q_OBJECT
   public:
-    virtual ~ControlDoublePrivate();
+    ~ControlDoublePrivate() override;
 
     // Used to implement control persistence. All controls that are marked
     // "persist in user config" get and set their value on creation/deletion
@@ -43,9 +43,10 @@ class ControlDoublePrivate : public QObject {
     // Gets the ControlDoublePrivate matching the given ConfigKey. If pCreatorCO
     // is non-NULL, allocates a new ControlDoublePrivate for the ConfigKey if
     // one does not exist.
-    static QSharedPointer<ControlDoublePrivate> getControl(const ConfigKey& key,
+    static QSharedPointer<ControlDoublePrivate> getControl(
+            const ConfigKey& key,
             ControlFlags flags = ControlFlag::None,
-            ControlObject* pCreatorCO = NULL,
+            ControlObject* pCreatorCO = nullptr,
             bool bIgnoreNops = true,
             bool bTrack = false,
             bool bPersist = false,
@@ -80,7 +81,7 @@ class ControlDoublePrivate : public QObject {
     // ValueChangeRequest slot.
     void setAndConfirm(double value, QObject* pSender);
     // Gets the control value.
-    inline double get() const {
+    double get() const {
         return m_value.getValue();
     }
     // Resets the control value to its default.
@@ -88,8 +89,10 @@ class ControlDoublePrivate : public QObject {
 
     // Set the behavior to be used when setting values and translating between
     // parameter and value space. Returns the previously set behavior (if any).
-    // The caller must not delete the behavior at any time. The memory is managed
-    // by this function.
+    // Callers must allocate the passed behavior using new and ownership to this
+    // memory is passed with the function call!!
+    // TODO: Pass a std::unique_ptr instead of a plain pointer to ensure this
+    // transfer of ownership.
     void setBehavior(ControlNumericBehavior* pBehavior);
 
     void setParameter(double dParam, QObject* pSender);
@@ -100,15 +103,15 @@ class ControlDoublePrivate : public QObject {
     void setValueFromMidi(MidiOpCode opcode, double dParam);
     double getMidiParameter() const;
 
-    inline bool ignoreNops() const {
+    bool ignoreNops() const {
         return m_bIgnoreNops;
     }
 
-    inline void setDefaultValue(double dValue) {
+    void setDefaultValue(double dValue) {
         m_defaultValue.setValue(dValue);
     }
 
-    inline double defaultValue() const {
+    double defaultValue() const {
         return m_defaultValue.getValue();
     }
 
@@ -120,7 +123,7 @@ class ControlDoublePrivate : public QObject {
         return m_pCreatorCO.testAndSetOrdered(pCreatorCO, nullptr);
     }
 
-    inline ConfigKey getKey() {
+    ConfigKey getKey() {
         return m_key;
     }
 
@@ -146,24 +149,24 @@ class ControlDoublePrivate : public QObject {
     void valueChangeRequest(double value);
 
   private:
-    ControlDoublePrivate(ConfigKey key, ControlObject* pCreatorCO,
-                         bool bIgnoreNops, bool bTrack, bool bPersist,
-                         double defaultValue);
+    ControlDoublePrivate(
+            ConfigKey key,
+            ControlObject* pCreatorCO,
+            bool bIgnoreNops,
+            bool bTrack,
+            bool bPersist,
+            double defaultValue);
     void initialize(double defaultValue);
     void setInner(double value, QObject* pSender);
 
-    ConfigKey m_key;
+    const ConfigKey m_key;
+
+    QAtomicPointer<ControlObject> m_pCreatorCO;
 
     // Whether the control should persist in the Mixxx user configuration. The
     // value is loaded from configuration when the control is created and
     // written to the configuration when the control is deleted.
     bool m_bPersistInConfiguration;
-
-    // User-visible, i18n name for what the control is.
-    QString m_name;
-
-    // User-visible, i18n description for what the control does.
-    QString m_description;
 
     // Whether to ignore sets which would have no effect.
     bool m_bIgnoreNops;
@@ -175,14 +178,18 @@ class ControlDoublePrivate : public QObject {
     int m_trackFlags;
     bool m_confirmRequired;
 
+    // User-visible, i18n name for what the control is.
+    QString m_name;
+
+    // User-visible, i18n description for what the control does.
+    QString m_description;
+
     // The control value.
     ControlValueAtomic<double> m_value;
     // The default control value.
     ControlValueAtomic<double> m_defaultValue;
 
     QSharedPointer<ControlNumericBehavior> m_pBehavior;
-
-    QAtomicPointer<ControlObject> m_pCreatorCO;
 
     // Hack to implement persistent controls. This is a pointer to the current
     // user configuration object (if one exists). In general, we do not want the
@@ -193,7 +200,8 @@ class ControlDoublePrivate : public QObject {
     static UserSettingsPointer s_pUserConfig;
 
     // Hash of ControlDoublePrivate instantiations.
-    static QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > s_qCOHash;
+    static QHash<ConfigKey, QWeakPointer<ControlDoublePrivate>> s_qCOHash;
+
     // Hash of aliases between ConfigKeys. Solely used for looking up the first
     // alias associated with a key.
     static QHash<ConfigKey, ConfigKey> s_qCOAliasHash;
@@ -201,6 +209,3 @@ class ControlDoublePrivate : public QObject {
     // Mutex guarding access to s_qCOHash and s_qCOAliasHash.
     static MMutex s_qCOHashMutex;
 };
-
-
-#endif /* CONTROL_H */
