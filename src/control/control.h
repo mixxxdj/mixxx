@@ -156,6 +156,11 @@ class ControlDoublePrivate : public QObject {
             bool bTrack,
             bool bPersist,
             double defaultValue);
+    ControlDoublePrivate(ControlDoublePrivate&&) = delete;
+    ControlDoublePrivate(const ControlDoublePrivate&) = delete;
+    ControlDoublePrivate& operator=(ControlDoublePrivate&&) = delete;
+    ControlDoublePrivate& operator=(const ControlDoublePrivate&) = delete;
+
     void initialize(double defaultValue);
     void setInner(double value, QObject* pSender);
 
