@@ -1,5 +1,8 @@
 #include "macromanager.h"
 
+#include "preferences/configobject.h"
+#include "util/assert.h"
+
 // TODO(xerus) handle track eject while recording
 // TODO(xerus) write tests
 // TODO(xerus) make recording button blink when state is armed
@@ -19,9 +22,10 @@ MacroManager::MacroManager()
 }
 
 void MacroManager::notifyCueJump(ChannelHandle channel, double origin, double target) {
-    qCDebug(macros) << "Checking jump for" << channel.handle();
+    qCDebug(macros) << "Jump in channel" << channel.handle();
     if (checkOrClaimRecording(channel)) {
         m_recordedMacro.appendJump(origin, target);
+        qCDebug(macros) << "Recorded jump in channel" << channel.handle();
     }
 }
 
@@ -30,7 +34,7 @@ bool MacroManager::checkOrClaimRecording(ChannelHandle channel) {
         return m_activeChannel->handle() == channel.handle();
     } else if (claimRecording()) {
         m_activeChannel = &channel;
-        qCDebug(macros) << "Claimed recording for" << channel.handle();
+        qCDebug(macros) << "Claimed recording for channel" << channel.handle();
         return true;
     }
     return false;
