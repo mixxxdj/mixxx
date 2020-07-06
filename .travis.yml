@@ -20,6 +20,8 @@ env:
     - CMAKEFLAGS="-DCMAKE_BUILD_TYPE=Release -DBATTERY=ON -DBROADCAST=ON -DBULK=ON -DDEBUG_ASSERTIONS_FATAL=ON -DHID=ON -DLILV=ON -DOPUS=ON -DQTKEYCHAIN=ON -DVINYLCONTROL=ON"
     - GTEST_COLOR=1
     - CTEST_OUTPUT_ON_FAILURE=1
+    # Render analyzer waveform tests to an offscreen buffer
+    - QT_QPA_PLATFORM=offscreen
 
 jobs:
   include:
@@ -127,11 +129,9 @@ jobs:
             - taglib
       # Workaround for bug in libopus's opus.h including <opus_multistream.h>
       # instead of <opus/opus_multistream.h>.
-      # Virtual X (Xvfb) is needed for analyzer waveform tests
       env: >-
         CFLAGS="-isystem /usr/local/include/opus"
         CXXFLAGS="-isystem /usr/local/include/opus"
-        DISPLAY=:99.0
       before_install:
       - brew install scons
       - export QTDIR="$(find /usr/local/Cellar/qt -d 1 | tail -n 1)"
@@ -175,7 +175,6 @@ jobs:
         MIXXX_ENVPATH="${HOME}/buildenv"
         CMAKEFLAGS_EXTRA="-DCOREAUDIO=ON -DHSS1394=ON"
         PATH="/usr/local/opt/ccache/bin:$PATH"
-        DISPLAY=:99.0
         CMAKE_BUILD_PARALLEL_LEVEL=4
         CTEST_PARALLEL_LEVEL=1
       before_install:
@@ -211,10 +210,6 @@ jobs:
 
 git:
   depth: 1
-
-services:
-  # Virtual X is needed for analyzer waveform tests
-  - xvfb
 
 # Common Addons
 addons:

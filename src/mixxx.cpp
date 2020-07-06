@@ -811,7 +811,7 @@ void MixxxMainWindow::finalize() {
                 // A deletion early in the list may trigger a destructor
                 // for a control later in the list, so we check for a null
                 // pointer each time.
-                ControlObject* pCo = ControlObject::getControl(key, false);
+                ControlObject* pCo = ControlObject::getControl(key, ControlFlag::NoAssertIfMissing);
                 if (pCo) {
                     delete pCo;
                 }

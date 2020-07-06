@@ -131,8 +131,9 @@ for:
 
   test_script:
     - export CTEST_OUTPUT_ON_FAILURE=1
-    - xvfb-run -- ctest -T test --no-compress-output
-    - xvfb-run -- cmake --build . --target benchmark
+    - export QT_QPA_PLATFORM=offscreen
+    - ctest -T test --no-compress-output
+    - cmake --build . --target benchmark
 
   after_test:
     - xsltproc -o ctest-to-junit-results.xml ../cmake/ctest-to-junit.xsl Testing/*/Test.xml
