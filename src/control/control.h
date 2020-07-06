@@ -127,6 +127,7 @@ class ControlDoublePrivate : public QObject {
     bool resetCreatorCO(ControlObject* pCreatorCO) {
         return m_pCreatorCO.testAndSetOrdered(pCreatorCO, nullptr);
     }
+    void deleteCreatorCO();
 
     ConfigKey getKey() {
         return m_key;

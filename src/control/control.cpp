@@ -1,5 +1,6 @@
 #include "control/control.h"
 
+#include "control/controlobject.h"
 #include "util/stat.h"
 
 //static
@@ -167,6 +168,10 @@ void ControlDoublePrivate::getControls(
     if (detachLeakedControls) {
         s_qCOHash.clear();
     }
+}
+
+void ControlDoublePrivate::deleteCreatorCO() {
+    delete m_pCreatorCO.fetchAndStoreOrdered(nullptr);
 }
 
 void ControlDoublePrivate::reset() {
