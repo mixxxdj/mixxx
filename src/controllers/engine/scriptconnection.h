@@ -6,6 +6,7 @@
 #include "preferences/configobject.h"
 
 class ControllerEngine;
+class ControllerEngineJSProxy;
 
 /// ScriptConnection is a connection between a ControlObject and a
 /// script callback function that gets executed when the value
@@ -15,6 +16,7 @@ class ScriptConnection {
     ConfigKey key;
     QUuid id;
     QJSValue callback;
+    ControllerEngineJSProxy* engineJSProxy;
     ControllerEngine* controllerEngine;
 
     void executeCallback(double value) const;

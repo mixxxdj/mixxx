@@ -1,10 +1,15 @@
-#ifndef CONTROLLERENGINEJSPROXY_H
-#define CONTROLLERENGINEJSPROXY_H
+#pragma once
 
 #include <QJSValue>
 #include <QObject>
 
+#include "controllers/softtakeover.h"
+#include "util/alphabetafilter.h"
+
 class ControllerEngine;
+class ControlObjectScript;
+class ScriptConnection;
+class ConfigKey;
 
 // An object of this class gets exposed to the JS engine, so the methods of this class
 // constitute the api that is provided to scripts under "engine" object.
@@ -47,8 +52,35 @@ class ControllerEngineJSProxy : public QObject {
     Q_INVOKABLE void spinback(int deck, bool activate, double factor = 1.8, double rate = -10.0);
     Q_INVOKABLE void softStart(int deck, bool activate, double factor = 1.0);
 
+    bool removeScriptConnection(const ScriptConnection conn);
+    /// Execute a ScriptConnection's JS callback
+    void triggerScriptConnection(const ScriptConnection conn);
+
+    /// Handler for timers that scripts set.
+    virtual void timerEvent(QTimerEvent* event);
+
   private:
+    QHash<ConfigKey, ControlObjectScript*> m_controlCache;
+    ControlObjectScript* getControlObjectScript(const QString& group, const QString& name);
+
+    SoftTakeoverCtrl m_st;
+
+    struct TimerInfo {
+        QJSValue callback;
+        bool oneShot;
+    };
+    QHash<int, TimerInfo> m_timers;
+
+    QVarLengthArray<int> m_intervalAccumulator;
+    QVarLengthArray<mixxx::Duration> m_lastMovement;
+    QVarLengthArray<double> m_dx, m_rampTo, m_rampFactor;
+    QVarLengthArray<bool> m_ramp, m_brakeActive, m_softStartActive;
+    QVarLengthArray<AlphaBetaFilter*> m_scratchFilters;
+    QHash<int, int> m_scratchTimers;
+    /// Applies the accumulated movement to the track speed
+    void scratchProcess(int timerId);
+    bool isDeckPlaying(const QString& group);
+    double getDeckRate(const QString& group);
+
     ControllerEngine* m_pEngine;
 };
-
-#endif // CONTROLLERENGINEJSPROXY_H
