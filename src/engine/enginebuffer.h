@@ -250,7 +250,7 @@ class EngineBuffer : public EngineObject {
     FRIEND_TEST(EngineSyncTest, BeatMapQantizePlay);
     FRIEND_TEST(EngineBufferTest, ScalerNoTransport);
 
-    int m_channel;
+    ChannelHandle m_channel;
     bool m_bHotcueJumpPending;
     MacroManager* m_pMacroManager;
 

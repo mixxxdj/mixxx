@@ -5,11 +5,11 @@
 // TODO(xerus) make recording button blink when state is armed
 
 MacroManager::MacroManager()
-        : m_COToggleRecording(ControlPushButton(ConfigKey(kMacroRecordingKey, "recording_toggle"))),
-          m_CORecStatus(ControlObject(ConfigKey(kMacroRecordingKey, "recording_status"))),
-          m_activeChannel(-1),
+        : m_COToggleRecording(ConfigKey(kMacroRecordingKey, "recording_toggle")),
+          m_CORecStatus(ConfigKey(kMacroRecordingKey, "recording_status")),
+          m_activeChannel(nullptr),
           m_macroRecordingState(MacroState::Disabled),
-          m_recordedMacro(Macro()) {
+          m_recordedMacro() {
     qCDebug(macros) << "MacroManager construct";
 
     connect(&m_COToggleRecording,
@@ -18,25 +18,27 @@ MacroManager::MacroManager()
             &MacroManager::slotToggleRecording);
 }
 
-bool MacroManager::notifyCueJump(int channel, double origin, double target) {
-    if (claimRecording(channel)) {
+void MacroManager::notifyCueJump(ChannelHandle channel, double origin, double target) {
+    qCDebug(macros) << "Checking jump for" << channel.handle();
+    if (checkOrClaimRecording(channel)) {
         m_recordedMacro.appendJump(origin, target);
+    }
+}
+
+bool MacroManager::checkOrClaimRecording(ChannelHandle channel) {
+    if (m_activeChannel != nullptr) {
+        return m_activeChannel->handle() == channel.handle();
+    } else if (claimRecording()) {
+        m_activeChannel = &channel;
+        qCDebug(macros) << "Claimed recording for" << channel.handle();
         return true;
     }
     return false;
 }
 
-bool MacroManager::claimRecording(int channel) {
-    if (m_activeChannel == channel) {
-        return true;
-    } else {
-        auto armed = MacroState::Armed;
-        if (m_macroRecordingState.compare_exchange_weak(armed, MacroState::Recording)) {
-            m_activeChannel = channel;
-            return true;
-        }
-    }
-    return false;
+bool MacroManager::claimRecording() {
+    auto armed = MacroState::Armed;
+    return m_macroRecordingState.compare_exchange_weak(armed, MacroState::Recording);
 }
 
 void MacroManager::startRecording() {
@@ -51,7 +53,7 @@ void MacroManager::stopRecording() {
     m_CORecStatus.set(0);
     m_macroRecordingState.store(MacroState::Disabled);
     qCDebug(macros) << "Recorded Macro for channel" << m_activeChannel;
-    m_activeChannel = -1;
+    m_activeChannel = nullptr;
     // TODO(xerus) wait until stopped, use stopping state
     m_recordedMacro.dump();
 }
