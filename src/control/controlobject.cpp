@@ -122,7 +122,15 @@ void ControlObject::setParameterFrom(double v, QObject* pSender) {
 void ControlObject::set(const ConfigKey& key, const double& value) {
     QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(key);
     if (pCop) {
-        pCop->set(value, NULL);
+        pCop->set(value, nullptr);
+    }
+}
+
+void ControlObject::toggle(const ConfigKey& key) {
+    QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(key);
+    if (pCop) {
+        pCop->set(1, nullptr);
+        pCop->set(0, nullptr);
     }
 }
 
