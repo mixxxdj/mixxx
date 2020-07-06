@@ -153,21 +153,35 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
 }
 
 // static
-void ControlDoublePrivate::getControls(
-        QList<QSharedPointer<ControlDoublePrivate>>* pControlList,
-        bool detachLeakedControls) {
-    pControlList->clear();
+QList<QSharedPointer<ControlDoublePrivate>> ControlDoublePrivate::getAllInstances() {
+    QList<QSharedPointer<ControlDoublePrivate>> result;
     MMutexLocker locker(&s_qCOHashMutex);
-    pControlList->reserve(s_qCOHash.size());
-    for (auto it = s_qCOHash.constBegin(); it != s_qCOHash.constEnd(); ++it) {
+    result.reserve(s_qCOHash.size());
+    for (auto it = s_qCOHash.begin(); it != s_qCOHash.end(); ++it) {
         auto pControl = it.value().lock();
         if (pControl) {
-            pControlList->push_back(pControl);
+            result.append(std::move(pControl));
+        } else {
+            // The weak pointer has become invalid and can be cleaned up
+            s_qCOHash.erase(it);
         }
     }
-    if (detachLeakedControls) {
-        s_qCOHash.clear();
+    return result;
+}
+
+// static
+QList<QSharedPointer<ControlDoublePrivate>> ControlDoublePrivate::takeAllInstances() {
+    QList<QSharedPointer<ControlDoublePrivate>> result;
+    MMutexLocker locker(&s_qCOHashMutex);
+    result.reserve(s_qCOHash.size());
+    for (auto it = s_qCOHash.begin(); it != s_qCOHash.end(); ++it) {
+        auto pControl = it.value().lock();
+        if (pControl) {
+            result.append(std::move(pControl));
+        }
     }
+    s_qCOHash.clear();
+    return result;
 }
 
 void ControlDoublePrivate::deleteCreatorCO() {

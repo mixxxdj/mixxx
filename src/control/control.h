@@ -52,12 +52,10 @@ class ControlDoublePrivate : public QObject {
             bool bPersist = false,
             double defaultValue = 0.0);
 
-    // Adds all ControlDoublePrivate that currently exist to pControlList
-    static void getControls(
-            QList<QSharedPointer<ControlDoublePrivate> >* pControlsList,
-            bool detachLeakedControls = false);
-
-    static QHash<ConfigKey, ConfigKey> getControlAliases();
+    // Returns a list of all existing instances.
+    static QList<QSharedPointer<ControlDoublePrivate>> getAllInstances();
+    // Clears all existing instances and returns them as a list.
+    static QList<QSharedPointer<ControlDoublePrivate>> takeAllInstances();
 
     static QHash<ConfigKey, ConfigKey> getControlAliases() {
         // Implicitly shared classes can safely be copied across threads
