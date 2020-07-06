@@ -116,6 +116,16 @@ DFresults DetectionFunction::processFrequencyDomain(const double *reals,
 
 void DetectionFunction::whiten()
 {
+    static int count = 0;
+
+    if (count == 5145 || count == 5126) {
+        for (int i = 0; i < m_halfLength; ++i) {
+                double m = m_magnitude[i];
+                std::cout << m << " ";
+        }
+        std::cout << "\n";
+    }
+
     for (int i = 0; i < m_halfLength; ++i) {
         double m = m_magnitude[i];
         if (m < m_magPeaks[i]) {
@@ -125,6 +135,8 @@ void DetectionFunction::whiten()
         m_magPeaks[i] = m;
         m_magnitude[i] /= m;
     }
+
+    count++;
 }
 
 DFresults DetectionFunction::runDF()
