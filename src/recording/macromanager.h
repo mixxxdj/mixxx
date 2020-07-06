@@ -1,5 +1,7 @@
 #pragma once
 
+#include <gtest/gtest_prod.h>
+
 #include <QDebug>
 #include <QObject>
 #include <QtCore>
@@ -92,6 +94,8 @@ class MacroManager : public RecordingManagerBase {
     Macro getMacro();
 
   private:
+    FRIEND_TEST(MacroManagerTest, claimRecording);
+
     /// Checks if ths channel is recording, otherwise tries to claim it.
     /// Returns true if this channel is recording.
     /// Called from RT.
