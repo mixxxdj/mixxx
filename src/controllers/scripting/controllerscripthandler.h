@@ -4,17 +4,11 @@
 #include <QJSEngine>
 #include <QJSValue>
 #include <QMessageBox>
-#include <QTimerEvent>
-#include <QtScript>
 
 #include "controllers/controllerpreset.h"
-#include "controllers/softtakeover.h"
-#include "preferences/usersettings.h"
-#include "util/alphabetafilter.h"
 #include "util/duration.h"
 
 class Controller;
-class ControllerScriptHandler;
 class ControllerScriptInterface;
 class EvaluationException;
 class ScriptConnection;

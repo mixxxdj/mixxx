@@ -1,14 +1,7 @@
-/**
-  * @file controllermanager.h
-  * @author Sean Pappalardo spappalardo@mixxx.org
-  * @date Sat Apr 30 2011
-  * @brief Manages creation/enumeration/deletion of hardware controllers.
-  */
-
-#ifndef CONTROLLERMANAGER_H
-#define CONTROLLERMANAGER_H
+#pragma once
 
 #include <QSharedPointer>
+#include <QTimer>
 
 #include "controllers/controllerenumerator.h"
 #include "controllers/controllerpreset.h"
@@ -23,7 +16,7 @@ class ControllerLearningEventFilter;
 // Function to sort controllers by name
 bool controllerCompare(Controller *a, Controller *b);
 
-/** Manages enumeration/operation/deletion of hardware controllers. */
+/// Manages enumeration/operation/deletion of hardware controllers.
 class ControllerManager : public QObject {
     Q_OBJECT
   public:
@@ -86,5 +79,3 @@ class ControllerManager : public QObject {
     QSharedPointer<PresetInfoEnumerator> m_pMainThreadSystemPresetEnumerator;
     bool m_skipPoll;
 };
-
-#endif  // CONTROLLERMANAGER_H

@@ -1,10 +1,10 @@
-#ifndef MIXXX_UTIL_TRANSLATIONS_H
-#define MIXXX_UTIL_TRANSLATIONS_H
+#pragma once
 
 #include <QCoreApplication>
+#include <QLibraryInfo>
 #include <QLocale>
-#include <QTranslator>
 #include <QString>
+#include <QTranslator>
 #include <QtDebug>
 
 #include "preferences/usersettings.h"
@@ -100,6 +100,3 @@ class Translations {
 };
 
 }  // namespace mixxx
-
-
-#endif /* MIXXX_UTIL_TRANSLATIONS_H */

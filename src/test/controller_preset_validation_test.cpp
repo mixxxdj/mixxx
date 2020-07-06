@@ -1,5 +1,7 @@
 #include "test/controller_preset_validation_test.h"
 
+#include <QUrl>
+
 #include "controllers/defs_controllers.h"
 
 FakeControllerJSProxy::FakeControllerJSProxy()
