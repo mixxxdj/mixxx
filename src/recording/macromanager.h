@@ -20,7 +20,7 @@ enum MacroState : uint8_t {
     Disabled,
     /// Intermediate state, awaiting recording
     Armed,
-    /// Actively recording
+    /// Recording is active and claimed to a particular channel
     Recording,
     /// Intermediate state, awaiting stop confirmation
     Stopping
@@ -88,19 +88,24 @@ class MacroManager : public RecordingManagerBase {
     /// Returns true if the currently recorded Macro was changed - so only if
     /// recording is active and the channel handle matches.
     /// Only called from RT.
-    bool notifyCueJump(int channel, double origin, double target);
+    void notifyCueJump(ChannelHandle channel, double origin, double target);
 
   private:
+    /// Checks if ths channel is recording, otherwise tries to claim it.
+    /// Returns true if this channel is recording.
+    /// Called from RT.
+    bool checkOrClaimRecording(ChannelHandle channel);
+
     /// Tries to claim the active recording for the current channel.
-    /// Returns true if recording is active and the recorded channel matches
-    /// the given one, or none was set and it was claimed.
-    /// Only called from RT.
-    bool claimRecording(int channel);
+    /// Returns true if recording was armed and successfully assigned to the
+    /// given channel.
+    /// Called from RT.
+    bool claimRecording();
 
     ControlPushButton m_COToggleRecording;
     ControlObject m_CORecStatus;
 
-    int m_activeChannel;
+    ChannelHandle* m_activeChannel;
     std::atomic<MacroState> m_macroRecordingState;
 
     Macro m_recordedMacro;

@@ -62,7 +62,7 @@ EngineBuffer::EngineBuffer(const QString& group,
         : m_group(group),
           m_pConfig(pConfig),
           m_pLoopingControl(nullptr),
-          m_channel(pChannel->getHandle().handle()),
+          m_channel(pChannel->getHandle()),
           m_bHotcueJumpPending(false),
           m_pMacroManager(pMacroManager),
           m_pSyncControl(nullptr),
@@ -1210,7 +1210,9 @@ void EngineBuffer::processSeek(bool paused) {
             kLogger.trace() << "EngineBuffer::processSeek Seek to" << position;
         }
         if (m_bHotcueJumpPending && m_pMacroManager != nullptr) {
-            m_pMacroManager->notifyCueJump(m_channel, m_filepos_play, position);
+            m_pMacroManager->notifyCueJump(m_channel,
+                    m_filepos_play / mixxx::kEngineChannelCount,
+                    position / mixxx::kEngineChannelCount);
         }
         setNewPlaypos(position);
     }
