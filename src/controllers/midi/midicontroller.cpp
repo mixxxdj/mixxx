@@ -206,7 +206,12 @@ void MidiController::receive(unsigned char status, unsigned char control,
     byteArray.append(status);
     byteArray.append(control);
     byteArray.append(value);
-    getEngine()->handleInput(byteArray, timestamp);
+
+    ControllerEngine* pEngine = getEngine();
+    // pEngine is nullptr in tests.
+    if (pEngine) {
+        pEngine->handleInput(byteArray, timestamp);
+    }
     // legacy stuff below
 
     // The rest of this function is for legacy mappings
