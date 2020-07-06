@@ -790,8 +790,9 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
         WaveformMarkPointer pMark = m_marksToRender.at(i);
         PainterScope painterScope(pPainter);
 
+        double samplePosition = m_marksToRender.at(i)->getSamplePosition();
         const qreal markPosition = math_clamp(
-                offset + m_marksToRender.at(i)->getSamplePosition() * gain,
+                offset + samplePosition * gain,
                 0.0,
                 static_cast<qreal>(width()));
         pMark->m_linePosition = markPosition;
@@ -804,11 +805,33 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
         } else {
             line.setLine(0.0, markPosition, width(), markPosition);
         }
+
+        QRectF rect;
+        double sampleLength = m_marksToRender.at(i)->getSampleLength();
+        if (sampleLength > 0) {
+            const qreal markEndPosition = math_clamp(
+                    offset + (samplePosition + sampleLength) * gain,
+                    0.0,
+                    static_cast<qreal>(width()));
+
+            if (m_orientation == Qt::Horizontal) {
+                rect.setCoords(markPosition, 0, markEndPosition, 5);
+            } else {
+                rect.setCoords(0, markPosition, 5, markEndPosition);
+            }
+        }
+
         pPainter->setPen(shadowPen);
         pPainter->drawLine(line);
+        if (rect.isValid()) {
+            pPainter->drawRect(rect);
+        }
 
         pPainter->setPen(pMark->fillColor());
         pPainter->drawLine(line);
+        if (rect.isValid()) {
+            pPainter->fillRect(rect, pMark->fillColor());
+        }
 
         if (!pMark->m_text.isEmpty()) {
             Qt::Alignment halign = pMark->m_align & Qt::AlignHorizontal_Mask;
