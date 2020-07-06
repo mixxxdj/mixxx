@@ -2,7 +2,7 @@
 
 #include <QObject>
 
-#include "controllers/engine/scriptconnection.h"
+#include "controllers/scripting/legacy/scriptconnection.h"
 
 /// ScriptConnectionJSProxy provides scripts with an interface to ScriptConnection.
 class ScriptConnectionJSProxy : public QObject {

@@ -6,25 +6,19 @@
 #include "controllers/softtakeover.h"
 #include "util/alphabetafilter.h"
 
-class ControllerEngine;
+class ControllerScriptHandler;
 class ControlObjectScript;
 class ScriptConnection;
 class ConfigKey;
 
-// An object of this class gets exposed to the JS engine, so the methods of this class
-// constitute the api that is provided to scripts under "engine" object.
-//
-// The implementation simply forwards its method calls to the ControllerEngine.
-// We cannot expose ControllerEngine directly to the JS engine because the JS engine would take
-// ownership of ControllerEngine. This is problematic when we reload a script file, because we
-// destroy the existing JS engine to create a new one. Then, since the JS engine owns ControllerEngine
-// it will try to delete it. See this Qt bug: https://bugreports.qt.io/browse/QTBUG-41171
-class ControllerEngineJSProxy : public QObject {
+/// ControllerScriptInterface is the legacy API for controller scripts to interact
+/// with Mixxx. It is inserted into the JS environment as the "engine" object.
+class ControllerScriptInterface : public QObject {
     Q_OBJECT
   public:
-    ControllerEngineJSProxy(ControllerEngine* m_pEngine);
+    ControllerScriptInterface(ControllerScriptHandler* m_pEngine);
 
-    virtual ~ControllerEngineJSProxy();
+    virtual ~ControllerScriptInterface();
 
     Q_INVOKABLE double getValue(QString group, QString name);
     Q_INVOKABLE void setValue(QString group, QString name, double newValue);
@@ -82,5 +76,5 @@ class ControllerEngineJSProxy : public QObject {
     bool isDeckPlaying(const QString& group);
     double getDeckRate(const QString& group);
 
-    ControllerEngine* m_pEngine;
+    ControllerScriptHandler* m_pEngine;
 };

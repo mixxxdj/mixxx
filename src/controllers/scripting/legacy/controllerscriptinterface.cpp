@@ -1,10 +1,10 @@
-#include "controllerenginejsproxy.h"
+#include "controllerscriptinterface.h"
 
 #include "control/controlobject.h"
 #include "control/controlobjectscript.h"
 #include "controllers/controllerdebug.h"
-#include "controllers/engine/controllerengine.h"
-#include "controllers/engine/scriptconnectionjsproxy.h"
+#include "controllers/scripting/controllerscripthandler.h"
+#include "controllers/scripting/legacy/scriptconnectionjsproxy.h"
 #include "mixer/playermanager.h"
 #include "util/math.h"
 #include "util/time.h"
@@ -18,7 +18,7 @@ const int kScratchTimerMs = 1;
 const double kAlphaBetaDt = kScratchTimerMs / 1000.0;
 } // anonymous namespace
 
-ControllerEngineJSProxy::ControllerEngineJSProxy(ControllerEngine* m_pEngine)
+ControllerScriptInterface::ControllerScriptInterface(ControllerScriptHandler* m_pEngine)
         : m_pEngine(m_pEngine) {
     // Pre-allocate arrays for average number of virtual decks
     m_intervalAccumulator.resize(kDecks);
@@ -38,7 +38,7 @@ ControllerEngineJSProxy::ControllerEngineJSProxy(ControllerEngine* m_pEngine)
     }
 }
 
-ControllerEngineJSProxy::~ControllerEngineJSProxy() {
+ControllerScriptInterface::~ControllerScriptInterface() {
     // Stop all timers
     QMutableHashIterator<int, TimerInfo> i(m_timers);
     while (i.hasNext()) {
@@ -81,7 +81,7 @@ ControllerEngineJSProxy::~ControllerEngineJSProxy() {
     }
 }
 
-ControlObjectScript* ControllerEngineJSProxy::getControlObjectScript(
+ControlObjectScript* ControllerScriptInterface::getControlObjectScript(
         const QString& group, const QString& name) {
     ConfigKey key = ConfigKey(group, name);
     ControlObjectScript* coScript = m_controlCache.value(key, nullptr);
@@ -98,20 +98,20 @@ ControlObjectScript* ControllerEngineJSProxy::getControlObjectScript(
     return coScript;
 }
 
-double ControllerEngineJSProxy::getValue(QString group, QString name) {
+double ControllerScriptInterface::getValue(QString group, QString name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
-        qWarning() << "ControllerEngine: Unknown control" << group << name
+        qWarning() << "ControllerScriptInterface: Unknown control" << group << name
                    << ", returning 0.0";
         return 0.0;
     }
     return coScript->get();
 }
 
-void ControllerEngineJSProxy::setValue(
+void ControllerScriptInterface::setValue(
         QString group, QString name, double newValue) {
     if (isnan(newValue)) {
-        qWarning() << "ControllerEngine: script setting [" << group << ","
+        qWarning() << "ControllerScriptInterface: script setting [" << group << ","
                    << name << "] to NotANumber, ignoring.";
         return;
     }
@@ -129,20 +129,20 @@ void ControllerEngineJSProxy::setValue(
     }
 }
 
-double ControllerEngineJSProxy::getParameter(QString group, QString name) {
+double ControllerScriptInterface::getParameter(QString group, QString name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
-        qWarning() << "ControllerEngine: Unknown control" << group << name
+        qWarning() << "ControllerScriptInterface: Unknown control" << group << name
                    << ", returning 0.0";
         return 0.0;
     }
     return coScript->getParameter();
 }
 
-void ControllerEngineJSProxy::setParameter(
+void ControllerScriptInterface::setParameter(
         QString group, QString name, double newParameter) {
     if (isnan(newParameter)) {
-        qWarning() << "ControllerEngine: script setting [" << group << ","
+        qWarning() << "ControllerScriptInterface: script setting [" << group << ","
                    << name << "] to NotANumber, ignoring.";
         return;
     }
@@ -158,10 +158,10 @@ void ControllerEngineJSProxy::setParameter(
     }
 }
 
-double ControllerEngineJSProxy::getParameterForValue(
+double ControllerScriptInterface::getParameterForValue(
         QString group, QString name, double value) {
     if (isnan(value)) {
-        qWarning() << "ControllerEngine: script setting [" << group << ","
+        qWarning() << "ControllerScriptInterface: script setting [" << group << ","
                    << name << "] to NotANumber, ignoring.";
         return 0.0;
     }
@@ -169,7 +169,7 @@ double ControllerEngineJSProxy::getParameterForValue(
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript == nullptr) {
-        qWarning() << "ControllerEngine: Unknown control" << group << name
+        qWarning() << "ControllerScriptInterface: Unknown control" << group << name
                    << ", returning 0.0";
         return 0.0;
     }
@@ -177,18 +177,18 @@ double ControllerEngineJSProxy::getParameterForValue(
     return coScript->getParameterForValue(value);
 }
 
-void ControllerEngineJSProxy::reset(QString group, QString name) {
+void ControllerScriptInterface::reset(QString group, QString name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript != nullptr) {
         coScript->reset();
     }
 }
 
-double ControllerEngineJSProxy::getDefaultValue(QString group, QString name) {
+double ControllerScriptInterface::getDefaultValue(QString group, QString name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript == nullptr) {
-        qWarning() << "ControllerEngine: Unknown control" << group << name
+        qWarning() << "ControllerScriptInterface: Unknown control" << group << name
                    << ", returning 0.0";
         return 0.0;
     }
@@ -196,12 +196,12 @@ double ControllerEngineJSProxy::getDefaultValue(QString group, QString name) {
     return coScript->getDefault();
 }
 
-double ControllerEngineJSProxy::getDefaultParameter(
+double ControllerScriptInterface::getDefaultParameter(
         QString group, QString name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript == nullptr) {
-        qWarning() << "ControllerEngine: Unknown control" << group << name
+        qWarning() << "ControllerScriptInterface: Unknown control" << group << name
                    << ", returning 0.0";
         return 0.0;
     }
@@ -209,7 +209,7 @@ double ControllerEngineJSProxy::getDefaultParameter(
     return coScript->getParameterForValue(coScript->getDefault());
 }
 
-QJSValue ControllerEngineJSProxy::makeConnection(
+QJSValue ControllerScriptInterface::makeConnection(
         QString group, QString name, const QJSValue callback) {
     QJSEngine* pScriptEngine = m_pEngine->scriptEngine();
     VERIFY_OR_DEBUG_ASSERT(pScriptEngine) {
@@ -222,7 +222,7 @@ QJSValue ControllerEngineJSProxy::makeConnection(
         // existing during tests is okay.
         if (!m_pEngine->isTesting()) {
             m_pEngine->throwJSError(
-                    "ControllerEngine: script tried to connect to "
+                    "ControllerScriptInterface: script tried to connect to "
                     "ControlObject (" +
                     group + ", " + name + ") which is non-existent.");
         }
@@ -252,7 +252,7 @@ QJSValue ControllerEngineJSProxy::makeConnection(
     return QJSValue();
 }
 
-bool ControllerEngineJSProxy::removeScriptConnection(
+bool ControllerScriptInterface::removeScriptConnection(
         const ScriptConnection connection) {
     ControlObjectScript* coScript =
             getControlObjectScript(connection.key.group, connection.key.item);
@@ -264,7 +264,7 @@ bool ControllerEngineJSProxy::removeScriptConnection(
     return coScript->removeScriptConnection(connection);
 }
 
-void ControllerEngineJSProxy::triggerScriptConnection(
+void ControllerScriptInterface::triggerScriptConnection(
         const ScriptConnection connection) {
     VERIFY_OR_DEBUG_ASSERT(m_pEngine->scriptEngine()) {
         return;
@@ -286,8 +286,8 @@ void ControllerEngineJSProxy::triggerScriptConnection(
 // are removed. If a ScriptConnectionInvokableWrapper is passed instead of a callback,
 // it is disconnected.
 // WARNING: These behaviors are quirky and confusing, so if you change this function,
-// be sure to run the ControllerEngineTest suite to make sure you do not break old scripts.
-QJSValue ControllerEngineJSProxy::connectControl(
+// be sure to run the ControllerScriptInterfaceTest suite to make sure you do not break old scripts.
+QJSValue ControllerScriptInterface::connectControl(
         QString group, QString name, QJSValue passedCallback, bool disconnect) {
     // The passedCallback may or may not actually be a function, so when
     // the actual callback function is found, store it in this variable.
@@ -312,12 +312,12 @@ QJSValue ControllerEngineJSProxy::connectControl(
         if (!m_pEngine->isTesting()) {
             if (disconnect) {
                 m_pEngine->throwJSError(
-                        "ControllerEngine: script tried to disconnect from "
+                        "ControllerScriptInterface: script tried to disconnect from "
                         "ControlObject (" +
                         group + ", " + name + ") which is non-existent.");
             } else {
                 m_pEngine->throwJSError(
-                        "ControllerEngine: script tried to connect to "
+                        "ControllerScriptInterface: script tried to connect to "
                         "ControlObject (" +
                         group + ", " + name + ") which is non-existent.");
             }
@@ -403,17 +403,17 @@ QJSValue ControllerEngineJSProxy::connectControl(
     return makeConnection(group, name, actualCallbackFunction);
 }
 
-void ControllerEngineJSProxy::trigger(QString group, QString name) {
+void ControllerScriptInterface::trigger(QString group, QString name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript != nullptr) {
         coScript->emitValueChanged();
     }
 }
 
-void ControllerEngineJSProxy::log(QString message) {
+void ControllerScriptInterface::log(QString message) {
     controllerDebug(message);
 }
-int ControllerEngineJSProxy::beginTimer(
+int ControllerScriptInterface::beginTimer(
         int intervalMillis, QJSValue timerCallback, bool oneShot) {
     if (timerCallback.isString()) {
         timerCallback = m_pEngine->evaluateCodeString(timerCallback.toString());
@@ -453,7 +453,7 @@ int ControllerEngineJSProxy::beginTimer(
     return timerId;
 }
 
-void ControllerEngineJSProxy::stopTimer(int timerId) {
+void ControllerScriptInterface::stopTimer(int timerId) {
     if (!m_timers.contains(timerId)) {
         qWarning() << "Killing timer" << timerId
                    << ": That timer does not exist!";
@@ -464,7 +464,7 @@ void ControllerEngineJSProxy::stopTimer(int timerId) {
     m_timers.remove(timerId);
 }
 
-void ControllerEngineJSProxy::timerEvent(QTimerEvent* event) {
+void ControllerScriptInterface::timerEvent(QTimerEvent* event) {
     int timerId = event->timerId();
 
     // See if this is a scratching timer
@@ -492,7 +492,7 @@ void ControllerEngineJSProxy::timerEvent(QTimerEvent* event) {
     m_pEngine->executeFunction(timerTarget.callback, QJSValueList());
 }
 
-void ControllerEngineJSProxy::softTakeover(
+void ControllerScriptInterface::softTakeover(
         QString group, QString name, bool set) {
     ControlObject* pControl = ControlObject::getControl(
             ConfigKey(group, name), ControlFlag::NoAssertIfMissing);
@@ -506,7 +506,7 @@ void ControllerEngineJSProxy::softTakeover(
     }
 }
 
-void ControllerEngineJSProxy::softTakeoverIgnoreNextValue(
+void ControllerScriptInterface::softTakeoverIgnoreNextValue(
         QString group, const QString name) {
     ControlObject* pControl = ControlObject::getControl(
             ConfigKey(group, name), ControlFlag::NoAssertIfMissing);
@@ -517,7 +517,7 @@ void ControllerEngineJSProxy::softTakeoverIgnoreNextValue(
     m_st.ignoreNext(pControl);
 }
 
-double ControllerEngineJSProxy::getDeckRate(const QString& group) {
+double ControllerScriptInterface::getDeckRate(const QString& group) {
     double rate = 0.0;
     ControlObjectScript* pRateRatio =
             getControlObjectScript(group, "rate_ratio");
@@ -533,7 +533,7 @@ double ControllerEngineJSProxy::getDeckRate(const QString& group) {
     return rate;
 }
 
-bool ControllerEngineJSProxy::isDeckPlaying(const QString& group) {
+bool ControllerScriptInterface::isDeckPlaying(const QString& group) {
     ControlObjectScript* pPlay = getControlObjectScript(group, "play");
 
     if (pPlay == nullptr) {
@@ -545,7 +545,7 @@ bool ControllerEngineJSProxy::isDeckPlaying(const QString& group) {
     return pPlay->get() > 0.0;
 }
 
-void ControllerEngineJSProxy::scratchEnable(int deck,
+void ControllerScriptInterface::scratchEnable(int deck,
         int intervalsPerRev,
         double rpm,
         double alpha,
@@ -621,12 +621,12 @@ void ControllerEngineJSProxy::scratchEnable(int deck,
     }
 }
 
-void ControllerEngineJSProxy::scratchTick(int deck, int interval) {
+void ControllerScriptInterface::scratchTick(int deck, int interval) {
     m_lastMovement[deck] = mixxx::Time::elapsed();
     m_intervalAccumulator[deck] += interval;
 }
 
-void ControllerEngineJSProxy::scratchProcess(int timerId) {
+void ControllerScriptInterface::scratchProcess(int timerId) {
     int deck = m_scratchTimers[timerId];
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
@@ -709,7 +709,7 @@ void ControllerEngineJSProxy::scratchProcess(int timerId) {
     }
 }
 
-void ControllerEngineJSProxy::scratchDisable(int deck, bool ramp) {
+void ControllerScriptInterface::scratchDisable(int deck, bool ramp) {
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
 
@@ -733,18 +733,18 @@ void ControllerEngineJSProxy::scratchDisable(int deck, bool ramp) {
     m_ramp[deck] = true; // Activate the ramping in scratchProcess()
 }
 
-bool ControllerEngineJSProxy::isScratching(int deck) {
+bool ControllerScriptInterface::isScratching(int deck) {
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
     return getValue(group, "scratch2_enable") > 0;
 }
 
-void ControllerEngineJSProxy::spinback(int deck, bool activate, double factor, double rate) {
+void ControllerScriptInterface::spinback(int deck, bool activate, double factor, double rate) {
     // defaults for args set in header file
     brake(deck, activate, factor, rate);
 }
 
-void ControllerEngineJSProxy::brake(int deck, bool activate, double factor, double rate) {
+void ControllerScriptInterface::brake(int deck, bool activate, double factor, double rate) {
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
 
@@ -807,7 +807,7 @@ void ControllerEngineJSProxy::brake(int deck, bool activate, double factor, doub
     }
 }
 
-void ControllerEngineJSProxy::softStart(int deck, bool activate, double factor) {
+void ControllerScriptInterface::softStart(int deck, bool activate, double factor) {
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
 

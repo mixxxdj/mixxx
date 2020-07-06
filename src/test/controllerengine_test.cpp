@@ -4,7 +4,7 @@
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
 #include "controllers/controllerdebug.h"
-#include "controllers/engine/controllerengine.h"
+#include "controllers/scripting/controllerscripthandler.h"
 #include "controllers/softtakeover.h"
 #include "preferences/usersettings.h"
 #include "test/mixxxtest.h"
@@ -18,7 +18,7 @@ class ControllerEngineTest : public MixxxTest {
         mixxx::Time::setTestMode(true);
         mixxx::Time::setTestElapsedTime(mixxx::Duration::fromMillis(10));
         QThread::currentThread()->setObjectName("Main");
-        cEngine = new ControllerEngine(nullptr);
+        cEngine = new ControllerScriptHandler(nullptr);
         ControllerDebug::enable();
     }
 
@@ -40,7 +40,7 @@ class ControllerEngineTest : public MixxxTest {
         return !cEngine->evaluateCodeString(code).isError();
     }
 
-    ControllerEngine *cEngine;
+    ControllerScriptHandler* cEngine;
 };
 
 TEST_F(ControllerEngineTest, commonScriptHasNoErrors) {

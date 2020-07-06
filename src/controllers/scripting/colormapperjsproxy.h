@@ -2,7 +2,7 @@
 #include <QJSValue>
 #include <memory>
 
-#include "controllers/engine/colormapper.h"
+#include "controllers/scripting/colormapper.h"
 
 /// ColorMapperJSProxy is a wrapper class that exposes ColorMapper via the
 /// QJSEngine and makes it possible to create and use ColorMapper object from

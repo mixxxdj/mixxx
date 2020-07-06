@@ -1,6 +1,6 @@
-#include "controllers/engine/scriptconnectionjsproxy.h"
+#include "controllers/scripting/legacy/scriptconnectionjsproxy.h"
 
-#include "controllers/engine/controllerenginejsproxy.h"
+#include "controllers/scripting/legacy/controllerscriptinterface.h"
 
 bool ScriptConnectionJSProxy::disconnect() {
     // if the removeScriptConnection succeeded, the connection has been successfully disconnected

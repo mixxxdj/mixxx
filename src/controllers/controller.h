@@ -17,7 +17,7 @@
 #include "controllers/controllerpresetinfo.h"
 #include "controllers/controllerpresetvisitor.h"
 #include "controllers/controllervisitor.h"
-#include "controllers/engine/controllerengine.h"
+#include "controllers/scripting/controllerscripthandler.h"
 #include "util/duration.h"
 
 class ControllerJSProxy;
@@ -122,8 +122,8 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // To be called when receiving events
     void triggerActivity();
 
-    inline ControllerEngine* getEngine() const {
-        return m_pEngine;
+    inline ControllerScriptHandler* getScriptHandler() const {
+        return m_pScriptHandler;
     }
     inline void setDeviceName(QString deviceName) {
         m_sDeviceName = deviceName;
@@ -160,7 +160,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.
     virtual ControllerPreset* preset() = 0;
-    ControllerEngine* m_pEngine;
+    ControllerScriptHandler* m_pScriptHandler;
 
     // Verbose and unique device name suitable for display.
     QString m_sDeviceName;

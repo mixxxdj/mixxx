@@ -1,4 +1,4 @@
-#include "controllers/engine/colormapperjsproxy.h"
+#include "controllers/scripting/colormapperjsproxy.h"
 
 ColorMapperJSProxy::ColorMapperJSProxy(QVariantMap availableColors)
         : m_pColorMapper(nullptr) {

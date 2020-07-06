@@ -14,16 +14,17 @@
 #include "util/duration.h"
 
 class Controller;
-class ControllerEngine;
-class ControllerEngineJSProxy;
+class ControllerScriptHandler;
+class ControllerScriptInterface;
 class EvaluationException;
 class ScriptConnection;
 
-class ControllerEngine : public QObject {
+/// ControllerScriptHandler loads and executes script files for controller mappings
+class ControllerScriptHandler : public QObject {
     Q_OBJECT
   public:
-    ControllerEngine(Controller* controller);
-    virtual ~ControllerEngine();
+    ControllerScriptHandler(Controller* controller);
+    virtual ~ControllerScriptHandler();
 
     void handleInput(QByteArray data, mixxx::Duration timestamp);
 
@@ -102,7 +103,7 @@ class ControllerEngine : public QObject {
     bool m_bTesting;
 
     friend class ScriptConnection;
-    friend class ControllerEngineJSProxy;
+    friend class ControllerScriptInterface;
     friend class ColorJSProxy;
     friend class ColorMapperJSProxy;
     friend class ControllerEngineTest;

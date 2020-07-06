@@ -374,12 +374,12 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/controllers/dlgprefcontrollerdlg.ui
   src/controllers/dlgprefcontrollers.cpp
   src/controllers/dlgprefcontrollersdlg.ui
-  src/controllers/engine/controllerengine.cpp
-  src/controllers/engine/controllerenginejsproxy.cpp
-  src/controllers/engine/colormapper.cpp
-  src/controllers/engine/colormapperjsproxy.cpp
-  src/controllers/engine/scriptconnection.cpp
-  src/controllers/engine/scriptconnectionjsproxy.cpp
+  src/controllers/scripting/controllerscripthandler.cpp
+  src/controllers/scripting/colormapper.cpp
+  src/controllers/scripting/colormapperjsproxy.cpp
+  src/controllers/scripting/legacy/controllerscriptinterface.cpp
+  src/controllers/scripting/legacy/scriptconnection.cpp
+  src/controllers/scripting/legacy/scriptconnectionjsproxy.cpp
   src/controllers/keyboard/keyboardeventfilter.cpp
   src/controllers/learningutils.cpp
   src/controllers/midi/midicontroller.cpp

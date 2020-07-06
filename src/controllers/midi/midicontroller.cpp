@@ -207,7 +207,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
     byteArray.append(control);
     byteArray.append(value);
 
-    ControllerEngine* pEngine = getEngine();
+    ControllerScriptHandler* pEngine = getScriptHandler();
     // pEngine is nullptr in tests.
     if (pEngine) {
         pEngine->handleInput(byteArray, timestamp);
@@ -261,7 +261,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
     unsigned char opCode = MidiUtils::opCodeFromStatus(status);
 
     if (mapping.options.script) {
-        ControllerEngine* pEngine = getEngine();
+        ControllerScriptHandler* pEngine = getScriptHandler();
         if (pEngine == NULL) {
             return;
         }
@@ -482,7 +482,7 @@ double MidiController::computeValue(
 
 void MidiController::receive(QByteArray data, mixxx::Duration timestamp) {
     controllerDebug(MidiUtils::formatSysexMessage(getName(), data, timestamp));
-    getEngine()->handleInput(data, timestamp);
+    getScriptHandler()->handleInput(data, timestamp);
     // legacy stuff below
 
     MidiKey mappingKey(data.at(0), 0xFF);
@@ -514,7 +514,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
                                          mixxx::Duration timestamp) {
     // Custom script handler
     if (mapping.options.script) {
-        ControllerEngine* pEngine = getEngine();
+        ControllerScriptHandler* pEngine = getScriptHandler();
         if (pEngine == NULL) {
             return;
         }
