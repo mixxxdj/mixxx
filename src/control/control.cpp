@@ -106,6 +106,7 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         return nullptr;
     }
 
+    // Scope for MMutexLocker.
     {
         const MMutexLocker locker(&s_qCOHashMutex);
         const auto it = s_qCOHash.find(key);
