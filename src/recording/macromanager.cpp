@@ -21,7 +21,7 @@ MacroManager::MacroManager()
             &MacroManager::slotToggleRecording);
 }
 
-void MacroManager::notifyCueJump(ChannelHandle channel, double origin, double target) {
+void MacroManager::notifyCueJump(ChannelHandle& channel, double origin, double target) {
     qCDebug(macros) << "Jump in channel" << channel.handle();
     if (checkOrClaimRecording(channel)) {
         m_recordedMacro.appendJump(origin, target);
@@ -29,7 +29,7 @@ void MacroManager::notifyCueJump(ChannelHandle channel, double origin, double ta
     }
 }
 
-bool MacroManager::checkOrClaimRecording(ChannelHandle channel) {
+bool MacroManager::checkOrClaimRecording(ChannelHandle& channel) {
     if (m_activeChannel != nullptr) {
         return m_activeChannel->handle() == channel.handle();
     } else if (claimRecording()) {
@@ -64,4 +64,8 @@ void MacroManager::stopRecording() {
 
 bool MacroManager::isRecordingActive() {
     return m_macroRecordingState.load() != MacroState::Disabled;
+}
+
+Macro MacroManager::getMacro() {
+    return m_recordedMacro;
 }
