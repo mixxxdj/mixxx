@@ -3,7 +3,7 @@
 #include "control/controlobject.h"
 #include "control/controlobjectscript.h"
 #include "controllers/controllerdebug.h"
-#include "controllers/scripting/controllerscripthandler.h"
+#include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "controllers/scripting/legacy/scriptconnectionjsproxy.h"
 #include "mixer/playermanager.h"
 #include "util/math.h"
@@ -18,8 +18,8 @@ const int kScratchTimerMs = 1;
 const double kAlphaBetaDt = kScratchTimerMs / 1000.0;
 } // anonymous namespace
 
-ControllerScriptInterface::ControllerScriptInterface(ControllerScriptHandler* m_pEngine)
-        : m_pEngine(m_pEngine) {
+ControllerScriptInterface::ControllerScriptInterface(ControllerScriptEngineLegacy* m_pEngine)
+        : m_pScriptEngineLegacy(m_pEngine) {
     // Pre-allocate arrays for average number of virtual decks
     m_intervalAccumulator.resize(kDecks);
     m_lastMovement.resize(kDecks);
@@ -211,8 +211,8 @@ double ControllerScriptInterface::getDefaultParameter(
 
 QJSValue ControllerScriptInterface::makeConnection(
         QString group, QString name, const QJSValue callback) {
-    QJSEngine* pScriptEngine = m_pEngine->scriptEngine();
-    VERIFY_OR_DEBUG_ASSERT(pScriptEngine) {
+    QJSEngine* jsEngine = m_pScriptEngineLegacy->jsEngine();
+    VERIFY_OR_DEBUG_ASSERT(jsEngine) {
         return QJSValue();
     }
 
@@ -220,8 +220,8 @@ QJSValue ControllerScriptInterface::makeConnection(
     if (coScript == nullptr) {
         // The test setups do not run all of Mixxx, so ControlObjects not
         // existing during tests is okay.
-        if (!m_pEngine->isTesting()) {
-            m_pEngine->throwJSError(
+        if (!m_pScriptEngineLegacy->isTesting()) {
+            m_pScriptEngineLegacy->throwJSError(
                     "ControllerScriptInterface: script tried to connect to "
                     "ControlObject (" +
                     group + ", " + name + ") which is non-existent.");
@@ -230,7 +230,7 @@ QJSValue ControllerScriptInterface::makeConnection(
     }
 
     if (!callback.isCallable()) {
-        m_pEngine->throwJSError("Tried to connect (" + group + ", " + name +
+        m_pScriptEngineLegacy->throwJSError("Tried to connect (" + group + ", " + name +
                 ")" +
                 " to an invalid callback. Make sure that your code contains no "
                 "syntax errors.");
@@ -240,12 +240,12 @@ QJSValue ControllerScriptInterface::makeConnection(
     ScriptConnection connection;
     connection.key = ConfigKey(group, name);
     connection.engineJSProxy = this;
-    connection.controllerEngine = m_pEngine;
+    connection.controllerEngine = m_pScriptEngineLegacy;
     connection.callback = callback;
     connection.id = QUuid::createUuid();
 
     if (coScript->addScriptConnection(connection)) {
-        return pScriptEngine->newQObject(
+        return jsEngine->newQObject(
                 new ScriptConnectionJSProxy(connection));
     }
 
@@ -257,7 +257,7 @@ bool ControllerScriptInterface::removeScriptConnection(
     ControlObjectScript* coScript =
             getControlObjectScript(connection.key.group, connection.key.item);
 
-    if (m_pEngine->scriptEngine() == nullptr || coScript == nullptr) {
+    if (m_pScriptEngineLegacy->jsEngine() == nullptr || coScript == nullptr) {
         return false;
     }
 
@@ -266,7 +266,7 @@ bool ControllerScriptInterface::removeScriptConnection(
 
 void ControllerScriptInterface::triggerScriptConnection(
         const ScriptConnection connection) {
-    VERIFY_OR_DEBUG_ASSERT(m_pEngine->scriptEngine()) {
+    VERIFY_OR_DEBUG_ASSERT(m_pScriptEngineLegacy->jsEngine()) {
         return;
     }
 
@@ -301,7 +301,7 @@ QJSValue ControllerScriptInterface::connectControl(
         actualCallbackFunction = passedCallback;
     }
 
-    QJSEngine* pScriptEngine = m_pEngine->scriptEngine();
+    QJSEngine* pScriptEngine = m_pScriptEngineLegacy->jsEngine();
 
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     // This check is redundant with makeConnection, but the
@@ -309,14 +309,14 @@ QJSValue ControllerScriptInterface::connectControl(
     if (coScript == nullptr) {
         // The test setups do not run all of Mixxx, so ControlObjects not
         // existing during tests is okay.
-        if (!m_pEngine->isTesting()) {
+        if (!m_pScriptEngineLegacy->isTesting()) {
             if (disconnect) {
-                m_pEngine->throwJSError(
+                m_pScriptEngineLegacy->throwJSError(
                         "ControllerScriptInterface: script tried to disconnect from "
                         "ControlObject (" +
                         group + ", " + name + ") which is non-existent.");
             } else {
-                m_pEngine->throwJSError(
+                m_pScriptEngineLegacy->throwJSError(
                         "ControllerScriptInterface: script tried to connect to "
                         "ControlObject (" +
                         group + ", " + name + ") which is non-existent.");
@@ -335,7 +335,7 @@ QJSValue ControllerScriptInterface::connectControl(
         }
 
         actualCallbackFunction =
-                m_pEngine->evaluateCodeString(passedCallback.toString());
+                pScriptEngine->evaluate(passedCallback.toString());
 
         if (!actualCallbackFunction.isCallable()) {
             QString sErrorMessage(
@@ -344,7 +344,7 @@ QJSValue ControllerScriptInterface::connectControl(
             if (actualCallbackFunction.isError()) {
                 sErrorMessage.append("\n" + actualCallbackFunction.toString());
             }
-            m_pEngine->throwJSError(sErrorMessage);
+            m_pScriptEngineLegacy->throwJSError(sErrorMessage);
             return QJSValue(false);
         }
 
@@ -416,7 +416,7 @@ void ControllerScriptInterface::log(QString message) {
 int ControllerScriptInterface::beginTimer(
         int intervalMillis, QJSValue timerCallback, bool oneShot) {
     if (timerCallback.isString()) {
-        timerCallback = m_pEngine->evaluateCodeString(timerCallback.toString());
+        timerCallback = m_pScriptEngineLegacy->jsEngine()->evaluate(timerCallback.toString());
     } else if (!timerCallback.isCallable()) {
         QString sErrorMessage(
                 "Invalid timer callback provided to engine.beginTimer. Valid "
@@ -425,7 +425,7 @@ int ControllerScriptInterface::beginTimer(
         if (timerCallback.isError()) {
             sErrorMessage.append("\n" + timerCallback.toString());
         }
-        m_pEngine->throwJSError(sErrorMessage);
+        m_pScriptEngineLegacy->throwJSError(sErrorMessage);
         return 0;
     }
 
@@ -489,7 +489,7 @@ void ControllerScriptInterface::timerEvent(QTimerEvent* event) {
         stopTimer(timerId);
     }
 
-    m_pEngine->executeFunction(timerTarget.callback, QJSValueList());
+    m_pScriptEngineLegacy->executeFunction(timerTarget.callback, QJSValueList());
 }
 
 void ControllerScriptInterface::softTakeover(
@@ -538,7 +538,7 @@ bool ControllerScriptInterface::isDeckPlaying(const QString& group) {
 
     if (pPlay == nullptr) {
         QString error = QString("Could not getControlObjectScript()");
-        m_pEngine->scriptErrorDialog(error, error);
+        m_pScriptEngineLegacy->scriptErrorDialog(error, error);
         return false;
     }
 

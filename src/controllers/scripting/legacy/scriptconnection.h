@@ -5,7 +5,7 @@
 
 #include "preferences/configobject.h"
 
-class ControllerScriptHandler;
+class ControllerScriptEngineLegacy;
 class ControllerScriptInterface;
 
 /// ScriptConnection is a connection between a ControlObject and a
@@ -17,7 +17,7 @@ class ScriptConnection {
     QUuid id;
     QJSValue callback;
     ControllerScriptInterface* engineJSProxy;
-    ControllerScriptHandler* controllerEngine;
+    ControllerScriptEngineLegacy* controllerEngine;
 
     void executeCallback(double value) const;
 

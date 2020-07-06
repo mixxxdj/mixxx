@@ -30,7 +30,7 @@ FakeController::FakeController()
         : m_bMidiPreset(false),
           m_bHidPreset(false) {
     startEngine();
-    getScriptHandler()->setTesting(true);
+    getScriptEngine()->setTesting(true);
 }
 
 FakeController::~FakeController() {

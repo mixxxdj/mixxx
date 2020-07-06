@@ -6,7 +6,7 @@
 #include "controllers/softtakeover.h"
 #include "util/alphabetafilter.h"
 
-class ControllerScriptHandler;
+class ControllerScriptEngineLegacy;
 class ControlObjectScript;
 class ScriptConnection;
 class ConfigKey;
@@ -16,7 +16,7 @@ class ConfigKey;
 class ControllerScriptInterface : public QObject {
     Q_OBJECT
   public:
-    ControllerScriptInterface(ControllerScriptHandler* m_pEngine);
+    ControllerScriptInterface(ControllerScriptEngineLegacy* m_pEngine);
 
     virtual ~ControllerScriptInterface();
 
@@ -76,5 +76,5 @@ class ControllerScriptInterface : public QObject {
     bool isDeckPlaying(const QString& group);
     double getDeckRate(const QString& group);
 
-    ControllerScriptHandler* m_pEngine;
+    ControllerScriptEngineLegacy* m_pScriptEngineLegacy;
 };

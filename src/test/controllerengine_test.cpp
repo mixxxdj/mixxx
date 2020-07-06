@@ -4,7 +4,7 @@
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
 #include "controllers/controllerdebug.h"
-#include "controllers/scripting/controllerscripthandler.h"
+#include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "controllers/softtakeover.h"
 #include "preferences/usersettings.h"
 #include "test/mixxxtest.h"
@@ -18,12 +18,12 @@ class ControllerEngineTest : public MixxxTest {
         mixxx::Time::setTestMode(true);
         mixxx::Time::setTestElapsedTime(mixxx::Duration::fromMillis(10));
         QThread::currentThread()->setObjectName("Main");
-        cEngine = new ControllerScriptHandler(nullptr);
+        cEngine = new ControllerScriptEngineLegacy(nullptr);
+        cEngine->initialize();
         ControllerDebug::enable();
     }
 
     void TearDown() override {
-        cEngine->gracefulShutdown();
         delete cEngine;
         mixxx::Time::setTestMode(false);
     }
@@ -33,14 +33,14 @@ class ControllerEngineTest : public MixxxTest {
     }
 
     QJSValue evaluate(const QString& code) {
-        return cEngine->evaluateCodeString(code);
+        return cEngine->jsEngine()->evaluate(code);
     }
 
     bool evaluateAndAssert(const QString& code) {
-        return !cEngine->evaluateCodeString(code).isError();
+        return !evaluate(code).isError();
     }
 
-    ControllerScriptHandler* cEngine;
+    ControllerScriptEngineLegacy* cEngine;
 };
 
 TEST_F(ControllerEngineTest, commonScriptHasNoErrors) {
