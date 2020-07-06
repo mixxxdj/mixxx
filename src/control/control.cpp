@@ -168,12 +168,6 @@ void ControlDoublePrivate::getControls(
     }
 }
 
-// static
-QHash<ConfigKey, ConfigKey> ControlDoublePrivate::getControlAliases() {
-    MMutexLocker locker(&s_qCOHashMutex);
-    return s_qCOAliasHash;
-}
-
 void ControlDoublePrivate::reset() {
     double defaultValue = m_defaultValue.getValue();
     // NOTE: pSender = NULL is important. The originator of this action does

@@ -59,6 +59,11 @@ class ControlDoublePrivate : public QObject {
 
     static QHash<ConfigKey, ConfigKey> getControlAliases();
 
+    static QHash<ConfigKey, ConfigKey> getControlAliases() {
+        // Implicitly shared classes can safely be copied across threads
+        return s_qCOAliasHash;
+    }
+
     const QString& name() const {
         return m_name;
     }
