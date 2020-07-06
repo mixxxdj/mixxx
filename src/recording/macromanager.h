@@ -4,9 +4,8 @@
 #include <QObject>
 #include <QtCore>
 
-#include "engine/enginemaster.h"
-#include "mixer/playermanager.h"
-#include "preferences/usersettings.h"
+#include "control/controlpushbutton.h"
+#include "engine/channelhandle.h"
 #include "recording/recordingmanagerbase.h"
 
 namespace {
@@ -53,7 +52,7 @@ struct Macro {
         VERIFY_OR_DEBUG_ASSERT(m_length < kMaxMacroSize) {
             return;
         }
-        qCDebug(macros) << "Appending jump from" << origin << "to" << target;
+        qCDebug(macros) << "Appending jump from position" << origin << "to" << target;
         actions[m_length].position = origin;
         actions[m_length].target = target;
         m_length++;
