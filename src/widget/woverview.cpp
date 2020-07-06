@@ -392,7 +392,9 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
             }
 
             int hotcueNumber = currentCue->getHotCue();
-            if (currentCue->getType() == mixxx::CueType::HotCue && hotcueNumber != Cue::kNoHotCue) {
+            if ((currentCue->getType() == mixxx::CueType::HotCue ||
+                        currentCue->getType() == mixxx::CueType::Loop) &&
+                    hotcueNumber != Cue::kNoHotCue) {
                 // Prepend the hotcue number to hotcues' labels
                 QString newLabel = currentCue->getLabel();
                 if (newLabel.isEmpty()) {
