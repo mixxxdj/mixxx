@@ -745,6 +745,9 @@ void MixxxMainWindow::finalize() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting RecordingManager";
     delete m_pRecordingManager;
 
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting MacroManager";
+    delete m_pMacroManager;
+
 #ifdef __BROADCAST__
     // BroadcastManager depends on config, engine
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting BroadcastManager";
