@@ -19,8 +19,7 @@ class ConstControllerPresetVisitor;
 class ControllerPreset {
   public:
     ControllerPreset()
-            : m_bDirty(false),
-              m_iControllerEngineVersion(0) {
+            : m_bDirty(false) {
     }
     virtual ~ControllerPreset() = default;
 
@@ -177,7 +176,6 @@ class ControllerPreset {
     QString m_wikilink;
     QString m_schemaVersion;
     QString m_mixxxVersion;
-    int m_iControllerEngineVersion;
 
     QList<ScriptFileInfo> m_scripts;
 };

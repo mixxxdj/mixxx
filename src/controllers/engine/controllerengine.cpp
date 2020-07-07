@@ -493,7 +493,8 @@ void ControllerEngine::setValue(QString group, QString name, double newValue) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript != nullptr) {
-        ControlObject* pControl = ControlObject::getControl(coScript->getKey());
+        ControlObject* pControl = ControlObject::getControl(
+                coScript->getKey(), ControlFlag::NoAssertIfMissing);
         if (pControl && !m_st.ignore(pControl, coScript->getParameterForValue(newValue))) {
             coScript->slotSet(newValue);
         }
@@ -519,7 +520,8 @@ void ControllerEngine::setParameter(QString group, QString name, double newParam
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript != nullptr) {
-        ControlObject* pControl = ControlObject::getControl(coScript->getKey());
+        ControlObject* pControl = ControlObject::getControl(
+                coScript->getKey(), ControlFlag::NoAssertIfMissing);
         if (pControl && !m_st.ignore(pControl, newParameter)) {
             coScript->setParameter(newParameter);
         }
@@ -896,7 +898,8 @@ void ControllerEngine::timerEvent(QTimerEvent* event) {
 }
 
 void ControllerEngine::softTakeover(QString group, QString name, bool set) {
-    ControlObject* pControl = ControlObject::getControl(ConfigKey(group, name));
+    ControlObject* pControl = ControlObject::getControl(
+            ConfigKey(group, name), ControlFlag::NoAssertIfMissing);
     if (!pControl) {
         return;
     }
@@ -908,7 +911,8 @@ void ControllerEngine::softTakeover(QString group, QString name, bool set) {
 }
 
 void ControllerEngine::softTakeoverIgnoreNextValue(QString group, const QString name) {
-    ControlObject* pControl = ControlObject::getControl(ConfigKey(group, name));
+    ControlObject* pControl = ControlObject::getControl(
+            ConfigKey(group, name), ControlFlag::NoAssertIfMissing);
     if (!pControl) {
         return;
     }
