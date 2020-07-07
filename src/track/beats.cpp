@@ -33,7 +33,7 @@ Beats::Beats(const Track* track, const QVector<FramePos>& beats)
                 qDebug() << "discarding beat " << beat;
             } else {
                 protoBeat.set_frame_position(beat.getValue());
-                m_beats.append(protoBeat);
+                m_beatsInternal.m_beats.append(protoBeat);
                 previous_beatpos = beat;
             }
         }
@@ -50,15 +50,14 @@ Beats::Beats(const Track* track, const QByteArray& byteArray)
     }
     for (int i = 0; i < beatsProto.beat_size(); ++i) {
         const track::io::Beat& beat = beatsProto.beat(i);
-        m_beats.append(beat);
+        m_beatsInternal.m_beats.append(beat);
     }
     updateCachedBpm();
 }
 
 Beats::Beats(const Track* track)
         : m_mutex(QMutex::Recursive),
-          m_track(track),
-          m_dCachedBpm(0) {
+          m_track(track) {
     // BeatMap should live in the same thread as the track it is associated
     // with.
     moveToThread(track->thread());
@@ -67,9 +66,9 @@ Beats::Beats(const Track* track)
 // TODO(JVC) Do we really need a copy constructor??
 Beats::Beats(const Beats& other)
         : Beats(other.m_track) {
-    m_subVersion = other.m_subVersion;
-    m_dCachedBpm = other.m_dCachedBpm;
-    m_beats = other.m_beats;
+    m_beatsInternal.m_subVersion = other.m_beatsInternal.m_subVersion;
+    m_beatsInternal.m_bpm = other.m_beatsInternal.m_bpm;
+    m_beatsInternal.m_beats = other.m_beatsInternal.m_beats;
     moveToThread(m_track->thread());
 }
 
@@ -91,8 +90,8 @@ QByteArray Beats::toProtobuf() const {
     // items in adjacent memory locations.
     track::io::Beats beatsProto;
 
-    for (int i = 0; i < m_beats.size(); ++i) {
-        beatsProto.add_beat()->CopyFrom(m_beats[i]);
+    for (int i = 0; i < m_beatsInternal.m_beats.size(); ++i) {
+        beatsProto.add_beat()->CopyFrom(m_beatsInternal.m_beats[i]);
     }
 
     std::string output;
@@ -114,7 +113,7 @@ QString Beats::getVersion() const {
 
 QString Beats::getSubVersion() const {
     QMutexLocker locker(&m_mutex);
-    return m_subVersion;
+    return m_beatsInternal.m_subVersion;
 }
 
 FramePos Beats::findNextBeat(FramePos frame) const {
@@ -122,7 +121,7 @@ FramePos Beats::findNextBeat(FramePos frame) const {
 }
 
 void Beats::setSubVersion(QString subVersion) {
-    m_subVersion = subVersion;
+    m_beatsInternal.m_subVersion = subVersion;
 }
 
 void Beats::setGrid(Bpm dBpm, FramePos firstBeatFrame) {
@@ -131,14 +130,14 @@ void Beats::setGrid(Bpm dBpm, FramePos firstBeatFrame) {
     auto trackDuration = m_track->getDuration();
     auto trackLength = trackDuration * getSampleRate();
 
-    m_beats.clear();
+    m_beatsInternal.m_beats.clear();
 
     track::io::Beat beat;
     beat.set_frame_position(firstBeatFrame.getValue());
     for (FramePos frame = firstBeatFrame; frame.getValue() <= trackLength;
             frame += getBeatLengthFrames(dBpm, getSampleRate())) {
         beat.set_frame_position(frame.getValue());
-        m_beats.push_back(beat);
+        m_beatsInternal.m_beats.push_back(beat);
     }
 
     updateCachedBpm();
@@ -184,16 +183,16 @@ FramePos Beats::findNBeatsFromFrame(FramePos fromFrame, double beats) const {
 
 void Beats::updateCachedBpm() {
     if (!isValid()) {
-        m_dCachedBpm = Bpm();
+        m_beatsInternal.m_bpm = Bpm();
         return;
     }
-    track::io::Beat startBeat = m_beats.first();
-    track::io::Beat stopBeat = m_beats.last();
-    m_dCachedBpm = calculateBpm(startBeat, stopBeat);
+    track::io::Beat startBeat = m_beatsInternal.m_beats.first();
+    track::io::Beat stopBeat = m_beatsInternal.m_beats.last();
+    m_beatsInternal.m_bpm = calculateBpm(startBeat, stopBeat);
 }
 
 bool Beats::isValid() const {
-    return getSampleRate() > 0 && m_beats.size() > 0;
+    return getSampleRate() > 0 && m_beatsInternal.m_beats.size() > 0;
 }
 
 Bpm Beats::calculateBpm(const track::io::Beat& startBeat,
@@ -203,10 +202,10 @@ Bpm Beats::calculateBpm(const track::io::Beat& startBeat,
     }
 
     BeatList::const_iterator curBeat =
-            std::lower_bound(m_beats.cbegin(), m_beats.cend(), startBeat, BeatLessThan);
+            std::lower_bound(m_beatsInternal.m_beats.cbegin(), m_beatsInternal.m_beats.cend(), startBeat, BeatLessThan);
 
     BeatList::const_iterator lastBeat =
-            std::upper_bound(m_beats.cbegin(), m_beats.cend(), stopBeat, BeatLessThan);
+            std::upper_bound(m_beatsInternal.m_beats.cbegin(), m_beatsInternal.m_beats.cend(), stopBeat, BeatLessThan);
 
     QVector<double> beatvect;
     for (; curBeat != lastBeat; ++curBeat) {
@@ -245,7 +244,7 @@ bool Beats::findPrevNextBeats(FramePos frame,
 
     // it points at the first occurrence of beat or the next largest beat
     BeatList::const_iterator it =
-            std::lower_bound(m_beats.cbegin(), m_beats.cend(), beat, BeatLessThan);
+            std::lower_bound(m_beatsInternal.m_beats.cbegin(), m_beatsInternal.m_beats.cend(), beat, BeatLessThan);
 
     // If the position is within 1/10th of the average beat length,
     // pretend we are on that beat.
@@ -253,15 +252,15 @@ bool Beats::findPrevNextBeats(FramePos frame,
             getSampleRate() / getBpm().getValue();
 
     // Back-up by one.
-    if (it != m_beats.begin()) {
+    if (it != m_beatsInternal.m_beats.begin()) {
         --it;
     }
 
     // Scan forward to find whether we are on a beat.
-    BeatList::const_iterator on_beat = m_beats.cend();
-    BeatList::const_iterator previous_beat = m_beats.cend();
-    BeatList::const_iterator next_beat = m_beats.cend();
-    for (; it != m_beats.end(); ++it) {
+    BeatList::const_iterator on_beat = m_beatsInternal.m_beats.cend();
+    BeatList::const_iterator previous_beat = m_beatsInternal.m_beats.cend();
+    BeatList::const_iterator next_beat = m_beatsInternal.m_beats.cend();
+    for (; it != m_beatsInternal.m_beats.end(); ++it) {
         qint32 delta = it->frame_position() - beat.frame_position();
 
         // We are "on" this beat.
@@ -285,7 +284,7 @@ bool Beats::findPrevNextBeats(FramePos frame,
 
     // If we are within epsilon samples of a beat then the immediately next and
     // previous beats are the beat we are on.
-    if (on_beat != m_beats.end()) {
+    if (on_beat != m_beatsInternal.m_beats.end()) {
         previous_beat = on_beat;
         next_beat = on_beat + 1;
     }
@@ -293,14 +292,14 @@ bool Beats::findPrevNextBeats(FramePos frame,
     *pPrevBeatFrame = kInvalidFramePos;
     *pNextBeatFrame = kInvalidFramePos;
 
-    for (; next_beat != m_beats.end(); ++next_beat) {
+    for (; next_beat != m_beatsInternal.m_beats.end(); ++next_beat) {
         if (!next_beat->enabled()) {
             continue;
         }
         pNextBeatFrame->setValue(next_beat->frame_position());
         break;
     }
-    if (previous_beat != m_beats.end()) {
+    if (previous_beat != m_beatsInternal.m_beats.end()) {
         for (; true; --previous_beat) {
             if (previous_beat->enabled()) {
                 pPrevBeatFrame->setValue(previous_beat->frame_position());
@@ -308,7 +307,7 @@ bool Beats::findPrevNextBeats(FramePos frame,
             }
 
             // Don't step before the start of the list.
-            if (previous_beat == m_beats.begin()) {
+            if (previous_beat == m_beatsInternal.m_beats.begin()) {
                 break;
             }
         }
@@ -346,7 +345,7 @@ FramePos Beats::findNthBeat(FramePos frame, int n) const {
 
     // it points at the first occurrence of beat or the next largest beat
     BeatList::const_iterator it = std::lower_bound(
-            m_beats.cbegin(), m_beats.cend(), beat, BeatLessThan);
+            m_beatsInternal.m_beats.cbegin(), m_beatsInternal.m_beats.cend(), beat, BeatLessThan);
 
     // If the position is within 1/10th of the average beat length,
     // pretend we are on that beat.
@@ -354,15 +353,15 @@ FramePos Beats::findNthBeat(FramePos frame, int n) const {
             getSampleRate() / getBpm().getValue();
 
     // Back-up by one.
-    if (it != m_beats.begin()) {
+    if (it != m_beatsInternal.m_beats.begin()) {
         --it;
     }
 
     // Scan forward to find whether we are on a beat.
-    BeatList::const_iterator on_beat = m_beats.cend();
-    BeatList::const_iterator previous_beat = m_beats.cend();
-    BeatList::const_iterator next_beat = m_beats.cend();
-    for (; it != m_beats.end(); ++it) {
+    BeatList::const_iterator on_beat = m_beatsInternal.m_beats.cend();
+    BeatList::const_iterator previous_beat = m_beatsInternal.m_beats.cend();
+    BeatList::const_iterator next_beat = m_beatsInternal.m_beats.cend();
+    for (; it != m_beatsInternal.m_beats.end(); ++it) {
         qint32 delta = it->frame_position() - beat.frame_position();
 
         // We are "on" this beat.
@@ -386,13 +385,13 @@ FramePos Beats::findNthBeat(FramePos frame, int n) const {
 
     // If we are within epsilon frames of a beat then the immediately next and
     // previous beats are the beat we are on.
-    if (on_beat != m_beats.end()) {
+    if (on_beat != m_beatsInternal.m_beats.end()) {
         next_beat = on_beat;
         previous_beat = on_beat;
     }
 
     if (n > 0) {
-        for (; next_beat != m_beats.end(); ++next_beat) {
+        for (; next_beat != m_beatsInternal.m_beats.end(); ++next_beat) {
             if (!next_beat->enabled()) {
                 continue;
             }
@@ -402,7 +401,7 @@ FramePos Beats::findNthBeat(FramePos frame, int n) const {
             }
             --n;
         }
-    } else if (n < 0 && previous_beat != m_beats.end()) {
+    } else if (n < 0 && previous_beat != m_beatsInternal.m_beats.end()) {
         for (; true; --previous_beat) {
             if (previous_beat->enabled()) {
                 if (n == -1) {
@@ -413,7 +412,7 @@ FramePos Beats::findNthBeat(FramePos frame, int n) const {
             }
 
             // Don't step before the start of the list.
-            if (previous_beat == m_beats.begin()) {
+            if (previous_beat == m_beatsInternal.m_beats.begin()) {
                 break;
             }
         }
@@ -432,12 +431,12 @@ std::unique_ptr<Beats::iterator> Beats::findBeats(FramePos startFrame, FramePos 
     stopBeat.set_frame_position(stopFrame.getValue());
 
     BeatList::const_iterator firstBeat =
-            std::lower_bound(m_beats.cbegin(), m_beats.cend(), startBeat, BeatLessThan);
+            std::lower_bound(m_beatsInternal.m_beats.cbegin(), m_beatsInternal.m_beats.cend(), startBeat, BeatLessThan);
 
     BeatList::const_iterator lastBeat =
-            std::upper_bound(m_beats.cbegin(), m_beats.cend(), stopBeat, BeatLessThan);
-    if (lastBeat >= m_beats.cbegin()) {
-        lastBeat = m_beats.cend() - 1;
+            std::upper_bound(m_beatsInternal.m_beats.cbegin(), m_beatsInternal.m_beats.cend(), stopBeat, BeatLessThan);
+    if (lastBeat >= m_beatsInternal.m_beats.cbegin()) {
+        lastBeat = m_beatsInternal.m_beats.cend() - 1;
     }
 
     if (firstBeat >= lastBeat) {
@@ -464,7 +463,7 @@ Bpm Beats::getBpm() const {
     if (!isValid()) {
         return Bpm();
     }
-    return m_dCachedBpm;
+    return m_beatsInternal.m_bpm;
 }
 double Beats::getBpmRange(FramePos startFrame, FramePos stopFrame) const {
     QMutexLocker locker(&m_mutex);
@@ -488,18 +487,18 @@ Bpm Beats::getBpmAroundPosition(FramePos curFrame, int n) const {
     // kInvalidFramePos indicates we went off the map -- count from the beginning.
     FramePos lower_bound = findNthBeat(curFrame, -n);
     if (lower_bound == kInvalidFramePos) {
-        lower_bound = FramePos(m_beats.first().frame_position());
+        lower_bound = FramePos(m_beatsInternal.m_beats.first().frame_position());
     }
 
     // If we hit the end of the beat map, recalculate the lower bound.
     FramePos upper_bound = findNthBeat(lower_bound, n * 2);
     if (upper_bound == kInvalidFramePos) {
-        upper_bound = FramePos(m_beats.last().frame_position());
+        upper_bound = FramePos(m_beatsInternal.m_beats.last().frame_position());
         lower_bound = findNthBeat(upper_bound, n * -2);
         // Super edge-case -- the track doesn't have n beats!  Do the best
         // we can.
         if (lower_bound == kInvalidFramePos) {
-            lower_bound = FramePos(m_beats.first().frame_position());
+            lower_bound = FramePos(m_beatsInternal.m_beats.first().frame_position());
         }
     }
 
@@ -524,15 +523,15 @@ TimeSignature Beats::getSignature(FramePos frame) const {
 
     // Special case, when looking for initial TimeSignature
     if (frame == FramePos(0)) {
-        auto beat = m_beats.cbegin();
+        auto beat = m_beatsInternal.m_beats.cbegin();
         if (beat->has_signature()) {
             result.setTimeSignature(beat->signature().beats_per_bar(),
                     beat->signature().note_value());
         }
     } else {
         // Scans the list of beats to find the last time signature change before the sample
-        for (auto beat = m_beats.begin();
-                beat != m_beats.end() && FramePos(beat->frame_position()) < frame;
+        for (auto beat = m_beatsInternal.m_beats.begin();
+                beat != m_beatsInternal.m_beats.end() && FramePos(beat->frame_position()) < frame;
                 beat++) {
             if (beat->has_signature()) {
                 result.setTimeSignature(beat->signature().beats_per_bar(),
@@ -550,17 +549,17 @@ void Beats::setSignature(TimeSignature sig, FramePos frame) {
     }
 
     // Moves to the beat before the sample
-    BeatList::iterator beat = m_beats.begin();
-    for (; beat != m_beats.end() && FramePos(beat->frame_position()) < frame; ++beat)
+    BeatList::iterator beat = m_beatsInternal.m_beats.begin();
+    for (; beat != m_beatsInternal.m_beats.end() && FramePos(beat->frame_position()) < frame; ++beat)
         ;
 
     // If at the end, change nothing
-    if (beat == m_beats.end()) {
+    if (beat == m_beatsInternal.m_beats.end()) {
         return;
     }
 
     // Adjust position if not at the first beat
-    if (beat != m_beats.begin()) {
+    if (beat != m_beatsInternal.m_beats.begin()) {
         beat--;
     }
 
@@ -582,7 +581,7 @@ void Beats::setDownBeat(FramePos frame) {
     // Set the proper type for the remaining beats on the track or to the next phrasebeat
     int beat_counter = 0;
     std::unique_ptr<Beats::iterator> it = findBeats(
-            closestFrame, FramePos(m_beats.last().frame_position() - 1));
+            closestFrame, FramePos(m_beatsInternal.m_beats.last().frame_position() - 1));
     while (it->hasNext()) {
         auto beat = it->next();
         if (beat.type() == track::io::PHRASE) {
@@ -606,7 +605,7 @@ void Beats::translate(FrameDiff_t numFrames) {
         return;
     }
 
-    for (BeatList::iterator it = m_beats.begin(); it != m_beats.end();) {
+    for (BeatList::iterator it = m_beatsInternal.m_beats.begin(); it != m_beatsInternal.m_beats.end();) {
         FramePos newpos = FramePos(it->frame_position()) + numFrames;
         it->set_frame_position(newpos.getValue());
         ++it;
@@ -618,7 +617,7 @@ void Beats::translate(FrameDiff_t numFrames) {
 
 void Beats::scale(enum BPMScale scale) {
     QMutexLocker locker(&m_mutex);
-    if (!isValid() || m_beats.isEmpty()) {
+    if (!isValid() || m_beatsInternal.m_beats.isEmpty()) {
         return;
     }
 
@@ -689,17 +688,17 @@ void Beats::scaleFourth() {
 }
 
 void Beats::scaleMultiple(uint multiple) {
-    track::io::Beat prevBeat = m_beats.first();
+    track::io::Beat prevBeat = m_beatsInternal.m_beats.first();
     // Skip the first beat to preserve the first beat in a measure
-    BeatList::iterator it = m_beats.begin() + 1;
-    for (; it != m_beats.end(); ++it) {
+    BeatList::iterator it = m_beatsInternal.m_beats.begin() + 1;
+    for (; it != m_beatsInternal.m_beats.end(); ++it) {
         // Need to not accrue fractional frames.
         int distance = it->frame_position() - prevBeat.frame_position();
         track::io::Beat beat;
         for (uint i = 1; i <= multiple - 1; i++) {
             beat.set_frame_position(
                     prevBeat.frame_position() + distance * i / multiple);
-            it = m_beats.insert(it, beat);
+            it = m_beatsInternal.m_beats.insert(it, beat);
             ++it;
         }
         prevBeat = it[0];
@@ -708,11 +707,11 @@ void Beats::scaleMultiple(uint multiple) {
 
 void Beats::scaleFraction(uint fraction) {
     // Skip the first beat to preserve the first beat in a measure
-    BeatList::iterator it = m_beats.begin() + 1;
-    for (; it != m_beats.end(); ++it) {
+    BeatList::iterator it = m_beatsInternal.m_beats.begin() + 1;
+    for (; it != m_beatsInternal.m_beats.end(); ++it) {
         for (uint i = 1; i <= fraction - 1; i++) {
-            it = m_beats.erase(it);
-            if (it == m_beats.end()) {
+            it = m_beatsInternal.m_beats.erase(it);
+            if (it == m_beatsInternal.m_beats.end()) {
                 return;
             }
         }
@@ -730,7 +729,7 @@ void Beats::setBpm(Bpm dBpm) {
     // TODO(hacksdump): A check for preferences will be added to only allow setting bpm
     // when "Assume Constant Tempo" is checked.
     // TODO(hacksdump): Tests depending on setBpm are still failing due to double precision.
-    setGrid(dBpm, FramePos(m_beats.first().frame_position()));
+    setGrid(dBpm, FramePos(m_beatsInternal.m_beats.first().frame_position()));
 
     /*
      * One of the problems of beattracking algorithms is the so called "octave error"
@@ -758,11 +757,11 @@ void Beats::setBpm(Bpm dBpm) {
 }
 
 FramePos Beats::getFirstBeatPosition() const {
-    return m_beats.size() == 0 ? kInvalidFramePos : FramePos(m_beats.front().frame_position());
+    return m_beatsInternal.m_beats.size() == 0 ? kInvalidFramePos : FramePos(m_beatsInternal.m_beats.front().frame_position());
 }
 
 FramePos Beats::getLastBeatPosition() const {
-    return m_beats.size() == 0 ? kInvalidFramePos : FramePos(m_beats.back().frame_position());
+    return m_beatsInternal.m_beats.size() == 0 ? kInvalidFramePos : FramePos(m_beatsInternal.m_beats.back().frame_position());
 }
 
 SINT Beats::getSampleRate() const {
@@ -770,13 +769,18 @@ SINT Beats::getSampleRate() const {
 }
 
 QDebug operator<<(QDebug dbg, const BeatsPointer& arg) {
+    dbg << arg->m_beatsInternal;
+    return dbg;
+}
+
+QDebug operator<<(QDebug dbg, const BeatsInternal& arg) {
     QVector<FramePos> beatFramePositions;
-    for (auto beat : arg->m_beats) {
+    for (const auto& beat : arg.m_beats) {
         beatFramePositions.append(FramePos(beat.frame_position()));
     }
     dbg << "["
-        << "Cached BPM:" << arg->m_dCachedBpm << "|"
-        << "Number of beats:" << arg->m_beats.size() << "|"
+        << "Cached BPM:" << arg.m_bpm << "|"
+        << "Number of beats:" << arg.m_beats.size() << "|"
         << "Beats:" << beatFramePositions << "]";
     return dbg;
 }

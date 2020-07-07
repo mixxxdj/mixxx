@@ -27,6 +27,17 @@ using BeatList = QList<track::io::Beat>;
 class Track;
 
 namespace mixxx {
+/// This is an intermediate class which encapsulates the beats into a
+/// plain copyable, movable object.
+class BeatsInternal {
+  private:
+    QString m_subVersion;
+    Bpm m_bpm;
+    BeatList m_beats;
+    friend class Beats;
+    friend QDebug operator<<(QDebug dbg, const BeatsInternal& arg);
+};
+
 /// Beats is a class for BPM and beat management classes.
 /// It stores beats information including beats position, down beats position,
 /// phrase beat position and changes in tempo.
@@ -176,7 +187,7 @@ class Beats final : public QObject {
 
     /// Returns the number of beats
     inline int size() {
-        return m_beats.size();
+        return m_beatsInternal.m_beats.size();
     }
 
     /// Returns the frame number for the first beat, -1 is no beats
@@ -204,10 +215,7 @@ class Beats final : public QObject {
 
     mutable QMutex m_mutex;
     const Track* m_track;
-    QString m_subVersion;
-    Bpm m_dCachedBpm;
-    BeatList m_beats;
-
+    BeatsInternal m_beatsInternal;
   signals:
     void updated();
 };
