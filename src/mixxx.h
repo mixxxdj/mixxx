@@ -23,13 +23,14 @@
 #include <QString>
 
 #include "preferences/configobject.h"
-#include "preferences/usersettings.h"
 #include "preferences/constants.h"
+#include "preferences/usersettings.h"
+#include "soundio/sounddeviceerror.h"
 #include "track/track.h"
 #include "util/cmdlineargs.h"
-#include "util/timer.h"
 #include "util/db/dbconnectionpool.h"
-#include "soundio/sounddeviceerror.h"
+#include "util/parented_ptr.h"
+#include "util/timer.h"
 
 class ChannelHandleFactory;
 class ControlPushButton;
@@ -142,7 +143,7 @@ class MixxxMainWindow : public QMainWindow {
     QWidget* m_pWidgetParent;
     LaunchImage* m_pLaunchImage;
 
-    SettingsManager* m_pSettingsManager;
+    parented_ptr<SettingsManager> m_pSettingsManager;
 
     // The effects processing system
     EffectsManager* m_pEffectsManager;

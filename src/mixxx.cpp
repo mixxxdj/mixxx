@@ -177,7 +177,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         StatsManager::createInstance();
     }
 
-    m_pSettingsManager = new SettingsManager(this, args.getSettingsPath());
+    m_pSettingsManager = make_parented<SettingsManager>(this, args.getSettingsPath());
 
     initializeKeyboard();
 
@@ -777,39 +777,6 @@ void MixxxMainWindow::finalize() {
     delete m_pGuiTick;
     delete m_pVisualsManager;
 
-    QList<ConfigKey> leakedConfigKeys;
-
-    // Check for leaked ControlObjects and give warnings.
-    QList<QSharedPointer<ControlDoublePrivate>> leakedControls =
-            ControlDoublePrivate::takeAllInstances();
-    if (leakedControls.size() > 0) {
-        qDebug() << "WARNING: The following" << leakedControls.size()
-                 << "controls were leaked:";
-        leakedConfigKeys.reserve(leakedControls.size());
-        foreach (QSharedPointer<ControlDoublePrivate> pCDP, leakedControls) {
-            ConfigKey key = pCDP->getKey();
-            qDebug() << key.group << key.item << pCDP->getCreatorCO();
-            leakedConfigKeys.append(key);
-        }
-
-        // Deleting leaked objects helps to satisfy valgrind.
-        // These delete calls could cause crashes if a destructor for a control
-        // we thought was leaked is triggered after this one exits.
-        // So, only delete so if developer mode is on.
-        if (CmdlineArgs::Instance().getDeveloper()) {
-            foreach (ConfigKey key, leakedConfigKeys) {
-                // A deletion early in the list may trigger a destructor
-                // for a control later in the list, so we check for a null
-                // pointer each time.
-                ControlObject* pCo = ControlObject::getControl(key, ControlFlag::NoAssertIfMissing);
-                if (pCo) {
-                    delete pCo;
-                }
-            }
-        }
-        leakedControls.clear();
-    }
-
     // Delete the track collections after all internal track pointers
     // in other components have been released by deleting those components
     // beforehand!
@@ -825,6 +792,30 @@ void MixxxMainWindow::finalize() {
     // a precaution. The earlier one can be removed when stuff is more stable
     // at exit.
     m_pSettingsManager->save();
+
+    // Check for leaked ControlObjects and give warnings.
+    {
+        QList<QSharedPointer<ControlDoublePrivate>> leakedControls =
+                ControlDoublePrivate::takeAllInstances();
+        VERIFY_OR_DEBUG_ASSERT(leakedControls.isEmpty()) {
+            qWarning()
+                    << "The following"
+                    << leakedControls.size()
+                    << "controls were leaked:";
+            for (auto pCDP : leakedControls) {
+                ConfigKey key = pCDP->getKey();
+                qWarning() << key.group << key.item << pCDP->getCreatorCO();
+                // Deleting leaked objects helps to satisfy valgrind.
+                // These delete calls could cause crashes if a destructor for a control
+                // we thought was leaked is triggered after this one exits.
+                // So, only delete so if developer mode is on.
+                if (CmdlineArgs::Instance().getDeveloper()) {
+                    pCDP->deleteCreatorCO();
+                }
+            }
+        }
+        // Finally drop all shared pointers by exiting this scope
+    }
 
     Sandbox::shutdown();
 
