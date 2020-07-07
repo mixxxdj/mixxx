@@ -142,7 +142,6 @@ const int MixxxMainWindow::kAuxiliaryCount = 4;
 MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         : m_pWidgetParent(nullptr),
           m_pLaunchImage(nullptr),
-          m_pSettingsManager(nullptr),
           m_pEffectsManager(nullptr),
           m_pEngine(nullptr),
           m_pSkinLoader(nullptr),
@@ -820,6 +819,11 @@ void MixxxMainWindow::finalize() {
     Sandbox::shutdown();
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting SettingsManager";
+    {
+        auto* pSettingsManager = m_pSettingsManager.get();
+        m_pSettingsManager = nullptr; // reset parented_ptr
+        delete pSettingsManager;
+    }
 
     delete m_pKeyboard;
     delete m_pKbdConfig;
