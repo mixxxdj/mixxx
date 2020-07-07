@@ -1,14 +1,11 @@
 #include "recording/macromanager.h"
 
-#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <QDebug>
 
 #include "mixxxtest.h"
-
-class MacroManagerTest : protected MixxxTest {
-};
+#include "signalpathtest.h"
 
 TEST(MacrosTest, CreateMacro) {
     auto macro = new Macro();
@@ -48,4 +45,41 @@ TEST(MacroManagerTest, RecordingToggleControl) {
     EXPECT_EQ(mgr.isRecordingActive(), true);
     ControlObject::set(ConfigKey(kMacroRecordingKey, "recording_toggle"), 1);
     EXPECT_EQ(mgr.isRecordingActive(), false);
+}
+
+class MacroManagerE2ETest : public SignalPathTest {
+  public:
+    MacroManagerE2ETest()
+            : SignalPathTest(new MacroManager()) {
+    }
+};
+
+TEST_F(MacroManagerE2ETest, RecordSeek) {
+    auto mgr = m_pMacroManager;
+    ControlObject::toggle(ConfigKey(kMacroRecordingKey, "recording_toggle"));
+    ASSERT_EQ(mgr->isRecordingActive(), true);
+    m_pChannel1->getEngineBuffer()->slotControlSeekExact(50 * mixxx::kEngineChannelCount);
+    ProcessBuffer();
+    EXPECT_EQ(mgr->getMacro().m_length, 0);
+    m_pChannel1->getEngineBuffer()->slotControlSeekAbs(10 * mixxx::kEngineChannelCount);
+    ProcessBuffer();
+    EXPECT_EQ(mgr->getMacro().m_length, 1);
+    EXPECT_EQ(mgr->getMacro().actions[0].position, 50);
+    EXPECT_EQ(mgr->getMacro().actions[0].target, 10);
+}
+
+TEST_F(MacroManagerE2ETest, RecordHotcueActivation) {
+    auto mgr = m_pMacroManager;
+    ControlObject::toggle(ConfigKey(kMacroRecordingKey, "recording_toggle"));
+    ASSERT_EQ(mgr->isRecordingActive(), true);
+    ControlObject::toggle(ConfigKey("[Channel1]", "hotcue_1_activate"));
+    ProcessBuffer();
+    m_pChannel1->getEngineBuffer()->slotControlSeekExact(100 * mixxx::kEngineChannelCount);
+    ProcessBuffer();
+    EXPECT_EQ(mgr->getMacro().m_length, 0);
+    ControlObject::toggle(ConfigKey("[Channel1]", "hotcue_1_activate"));
+    ProcessBuffer();
+    EXPECT_EQ(mgr->getMacro().m_length, 1);
+    EXPECT_EQ(mgr->getMacro().actions[0].position, 100);
+    EXPECT_EQ(mgr->getMacro().actions[0].target, 0);
 }

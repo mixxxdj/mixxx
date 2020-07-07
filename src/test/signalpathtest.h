@@ -14,7 +14,6 @@
 #include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
-#include "engine/sync/enginesync.h"
 #include "mixer/deck.h"
 #include "mixer/previewdeck.h"
 #include "mixer/sampler.h"
@@ -26,6 +25,9 @@
 #include "util/types.h"
 #include "waveform/guitick.h"
 #include "waveform/visualsmanager.h"
+
+class EngineSync;
+class MacroManager;
 
 using ::testing::_;
 using ::testing::Return;
@@ -56,7 +58,7 @@ class TestEngineMaster : public EngineMaster {
 
 class BaseSignalPathTest : public MixxxTest {
   protected:
-    BaseSignalPathTest()
+    explicit BaseSignalPathTest(MacroManager* pMacroManager = nullptr)
             : m_pChannelHandleFactory(std::make_shared<ChannelHandleFactory>()),
               m_pNumDecks(new ControlObject(
                       ConfigKey("[Master]", "num_decks"))),
@@ -64,6 +66,7 @@ class BaseSignalPathTest : public MixxxTest {
               m_pVisualsManager(new VisualsManager()),
               m_pEffectsManager(new EffectsManager(
                       nullptr, config(), m_pChannelHandleFactory)),
+              m_pMacroManager(pMacroManager),
               m_pEngineMaster(new TestEngineMaster(
                       m_pConfig,
                       "[Master]",
@@ -73,7 +76,7 @@ class BaseSignalPathTest : public MixxxTest {
         m_pMixerDeck1 = new Deck(nullptr,
                 m_pConfig,
                 m_pEngineMaster,
-                nullptr,
+                pMacroManager,
                 m_pEffectsManager,
                 m_pVisualsManager,
                 EngineChannel::CENTER,
@@ -81,7 +84,7 @@ class BaseSignalPathTest : public MixxxTest {
         m_pMixerDeck2 = new Deck(nullptr,
                 m_pConfig,
                 m_pEngineMaster,
-                nullptr,
+                pMacroManager,
                 m_pEffectsManager,
                 m_pVisualsManager,
                 EngineChannel::CENTER,
@@ -89,7 +92,7 @@ class BaseSignalPathTest : public MixxxTest {
         m_pMixerDeck3 = new Deck(nullptr,
                 m_pConfig,
                 m_pEngineMaster,
-                nullptr,
+                pMacroManager,
                 m_pEffectsManager,
                 m_pVisualsManager,
                 EngineChannel::CENTER,
@@ -137,6 +140,7 @@ class BaseSignalPathTest : public MixxxTest {
         delete m_pEffectsManager;
         delete m_pVisualsManager;
         delete m_pNumDecks;
+        delete m_pMacroManager;
     }
 
     void addDeck(EngineDeck* pDeck) {
@@ -234,6 +238,7 @@ class BaseSignalPathTest : public MixxxTest {
 
     VisualsManager* m_pVisualsManager;
     EffectsManager* m_pEffectsManager;
+    MacroManager* m_pMacroManager;
 
     EngineSync* m_pEngineSync;
     TestEngineMaster* m_pEngineMaster;
@@ -256,7 +261,8 @@ class BaseSignalPathTest : public MixxxTest {
 
 class SignalPathTest : public BaseSignalPathTest {
   protected:
-    SignalPathTest() {
+    SignalPathTest(MacroManager* pMacroManager = nullptr)
+            : BaseSignalPathTest(pMacroManager) {
         const QString kTrackLocationTest = QDir::currentPath() + "/src/test/sine-30.wav";
         TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
 
