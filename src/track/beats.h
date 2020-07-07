@@ -30,10 +30,23 @@ namespace mixxx {
 /// This is an intermediate class which encapsulates the beats into a
 /// plain copyable, movable object.
 class BeatsInternal {
+  public:
+    BeatsInternal();
+    FramePos findNthBeat(FramePos frame, int offset) const;
+    Bpm getBpm() const;
+    bool isValid() const;
+    void setSampleRate(int sampleRate) {
+        m_iSampleRate = sampleRate;
+    }
+    void setDurationSeconds(double duration) {
+        m_dDurationSeconds = duration;
+    }
   private:
     QString m_subVersion;
     Bpm m_bpm;
     BeatList m_beats;
+    int m_iSampleRate;
+    double m_dDurationSeconds;
     friend class Beats;
     friend QDebug operator<<(QDebug dbg, const BeatsInternal& arg);
 };
@@ -197,8 +210,10 @@ class Beats final : public QObject {
     /// Prints debugging information in stderr
     friend QDebug operator<<(QDebug dbg, const BeatsPointer& arg);
 
+  private slots:
+    void slotTrackBeatsUpdated();
   private:
-    void updateCachedBpm();
+    void updateBpm();
     void scaleDouble();
     void scaleTriple();
     void scaleQuadruple();

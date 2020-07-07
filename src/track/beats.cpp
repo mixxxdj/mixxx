@@ -37,7 +37,7 @@ Beats::Beats(const Track* track, const QVector<FramePos>& beats)
                 previous_beatpos = beat;
             }
         }
-        updateCachedBpm();
+        updateBpm();
     }
 }
 
@@ -52,7 +52,7 @@ Beats::Beats(const Track* track, const QByteArray& byteArray)
         const track::io::Beat& beat = beatsProto.beat(i);
         m_beatsInternal.m_beats.append(beat);
     }
-    updateCachedBpm();
+    updateBpm();
 }
 
 Beats::Beats(const Track* track)
@@ -60,6 +60,9 @@ Beats::Beats(const Track* track)
           m_track(track) {
     // BeatMap should live in the same thread as the track it is associated
     // with.
+    slotTrackBeatsUpdated();
+    connect(m_track, &Track::beatsUpdated, this, &Beats::slotTrackBeatsUpdated);
+    connect(m_track, &Track::changed, this, &Beats::slotTrackBeatsUpdated);
     moveToThread(track->thread());
 }
 
@@ -138,7 +141,7 @@ void Beats::setGrid(Bpm dBpm, FramePos firstBeatFrame) {
         m_beatsInternal.m_beats.push_back(beat);
     }
 
-    updateCachedBpm();
+    updateBpm();
 }
 
 FramePos Beats::findNBeatsFromFrame(FramePos fromFrame, double beats) const {
@@ -179,7 +182,7 @@ FramePos Beats::findNBeatsFromFrame(FramePos fromFrame, double beats) const {
     return nthBeat;
 };
 
-void Beats::updateCachedBpm() {
+void Beats::updateBpm() {
     if (!isValid()) {
         m_beatsInternal.m_bpm = Bpm();
         return;
@@ -190,7 +193,7 @@ void Beats::updateCachedBpm() {
 }
 
 bool Beats::isValid() const {
-    return getSampleRate() > 0 && m_beatsInternal.m_beats.size() > 0;
+    return m_beatsInternal.isValid();
 }
 
 Bpm Beats::calculateBpm(const track::io::Beat& startBeat,
@@ -333,89 +336,7 @@ FramePos Beats::findClosestBeat(FramePos frame) const {
 
 FramePos Beats::findNthBeat(FramePos frame, int n) const {
     QMutexLocker locker(&m_mutex);
-
-    if (!isValid() || n == 0) {
-        return kInvalidFramePos;
-    }
-
-    track::io::Beat beat;
-    beat.set_frame_position(frame.getValue());
-
-    // it points at the first occurrence of beat or the next largest beat
-    BeatList::const_iterator it = std::lower_bound(
-            m_beatsInternal.m_beats.cbegin(), m_beatsInternal.m_beats.cend(), beat, BeatLessThan);
-
-    // If the position is within 1/10th of the average beat length,
-    // pretend we are on that beat.
-    const double kFrameEpsilon = kBeatVicinityFactor * kSecondsPerMinute *
-            getSampleRate() / getBpm().getValue();
-
-    // Back-up by one.
-    if (it != m_beatsInternal.m_beats.begin()) {
-        --it;
-    }
-
-    // Scan forward to find whether we are on a beat.
-    BeatList::const_iterator on_beat = m_beatsInternal.m_beats.cend();
-    BeatList::const_iterator previous_beat = m_beatsInternal.m_beats.cend();
-    BeatList::const_iterator next_beat = m_beatsInternal.m_beats.cend();
-    for (; it != m_beatsInternal.m_beats.end(); ++it) {
-        qint32 delta = it->frame_position() - beat.frame_position();
-
-        // We are "on" this beat.
-        if (abs(delta) < kFrameEpsilon) {
-            on_beat = it;
-            break;
-        }
-
-        if (delta < 0) {
-            // If we are not on the beat and delta < 0 then this beat comes
-            // before our current position.
-            previous_beat = it;
-        } else {
-            // If we are past the beat and we aren't on it then this beat comes
-            // after our current position.
-            next_beat = it;
-            // Stop because we have everything we need now.
-            break;
-        }
-    }
-
-    // If we are within epsilon frames of a beat then the immediately next and
-    // previous beats are the beat we are on.
-    if (on_beat != m_beatsInternal.m_beats.end()) {
-        next_beat = on_beat;
-        previous_beat = on_beat;
-    }
-
-    if (n > 0) {
-        for (; next_beat != m_beatsInternal.m_beats.end(); ++next_beat) {
-            if (!next_beat->enabled()) {
-                continue;
-            }
-            if (n == 1) {
-                // Return a sample offset
-                return FramePos(next_beat->frame_position());
-            }
-            --n;
-        }
-    } else if (n < 0 && previous_beat != m_beatsInternal.m_beats.end()) {
-        for (; true; --previous_beat) {
-            if (previous_beat->enabled()) {
-                if (n == -1) {
-                    // Return a sample offset
-                    return FramePos(previous_beat->frame_position());
-                }
-                ++n;
-            }
-
-            // Don't step before the start of the list.
-            if (previous_beat == m_beatsInternal.m_beats.begin()) {
-                break;
-            }
-        }
-    }
-    return kInvalidFramePos;
+    return m_beatsInternal.findNthBeat(frame, n);
 }
 
 std::unique_ptr<Beats::iterator> Beats::findBeats(FramePos startFrame, FramePos stopFrame) const {
@@ -458,11 +379,9 @@ bool Beats::hasBeatInRange(FramePos startFrame,
 
 Bpm Beats::getBpm() const {
     QMutexLocker locker(&m_mutex);
-    if (!isValid()) {
-        return Bpm();
-    }
-    return m_beatsInternal.m_bpm;
+    return m_beatsInternal.getBpm();
 }
+
 double Beats::getBpmRange(FramePos startFrame, FramePos stopFrame) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid()) {
@@ -592,7 +511,7 @@ void Beats::setDownBeat(FramePos frame) {
 
         beat_counter++;
     }
-    updateCachedBpm();
+    updateBpm();
     locker.unlock();
     emit(updated());
 }
@@ -608,7 +527,7 @@ void Beats::translate(FrameDiff_t numFrames) {
         it->set_frame_position(newpos.getValue());
         ++it;
     }
-    updateCachedBpm();
+    updateBpm();
     locker.unlock();
     emit updated();
 }
@@ -656,7 +575,7 @@ void Beats::scale(enum BPMScale scale) {
         DEBUG_ASSERT(!"scale value invalid");
         return;
     }
-    updateCachedBpm();
+    updateBpm();
     locker.unlock();
     emit updated();
 }
@@ -781,6 +700,106 @@ QDebug operator<<(QDebug dbg, const BeatsInternal& arg) {
         << "Number of beats:" << arg.m_beats.size() << "|"
         << "Beats:" << beatFramePositions << "]";
     return dbg;
+}
+FramePos BeatsInternal::findNthBeat(FramePos frame, int n) const {
+    if (!isValid() || n == 0) {
+        return kInvalidFramePos;
+    }
+
+    track::io::Beat beat;
+    beat.set_frame_position(frame.getValue());
+
+    // it points at the first occurrence of beat or the next largest beat
+    BeatList::const_iterator it = std::lower_bound(
+            m_beats.cbegin(), m_beats.cend(), beat, BeatLessThan);
+
+    // If the position is within 1/10th of the average beat length,
+    // pretend we are on that beat.
+    const double kFrameEpsilon = kBeatVicinityFactor * kSecondsPerMinute *
+                                 m_iSampleRate / getBpm().getValue();
+
+    // Back-up by one.
+    if (it != m_beats.begin()) {
+        --it;
+    }
+
+    // Scan forward to find whether we are on a beat.
+    BeatList::const_iterator on_beat = m_beats.cend();
+    BeatList::const_iterator previous_beat = m_beats.cend();
+    BeatList::const_iterator next_beat = m_beats.cend();
+    for (; it != m_beats.end(); ++it) {
+        qint32 delta = it->frame_position() - beat.frame_position();
+
+        // We are "on" this beat.
+        if (abs(delta) < kFrameEpsilon) {
+            on_beat = it;
+            break;
+        }
+
+        if (delta < 0) {
+            // If we are not on the beat and delta < 0 then this beat comes
+            // before our current position.
+            previous_beat = it;
+        } else {
+            // If we are past the beat and we aren't on it then this beat comes
+            // after our current position.
+            next_beat = it;
+            // Stop because we have everything we need now.
+            break;
+        }
+    }
+
+    // If we are within epsilon frames of a beat then the immediately next and
+    // previous beats are the beat we are on.
+    if (on_beat != m_beats.end()) {
+        next_beat = on_beat;
+        previous_beat = on_beat;
+    }
+
+    if (n > 0) {
+        for (; next_beat != m_beats.end(); ++next_beat) {
+            if (!next_beat->enabled()) {
+                continue;
+            }
+            if (n == 1) {
+                // Return a sample offset
+                return FramePos(next_beat->frame_position());
+            }
+            --n;
+        }
+    } else if (n < 0 && previous_beat != m_beats.end()) {
+        for (; true; --previous_beat) {
+            if (previous_beat->enabled()) {
+                if (n == -1) {
+                    // Return a sample offset
+                    return FramePos(previous_beat->frame_position());
+                }
+                ++n;
+            }
+
+            // Don't step before the start of the list.
+            if (previous_beat == m_beats.begin()) {
+                break;
+            }
+        }
+    }
+    return kInvalidFramePos;
+}
+Bpm BeatsInternal::getBpm() const {
+    if (!isValid()) {
+        return Bpm();
+    }
+    return m_bpm;
+}
+bool BeatsInternal::isValid() const {
+    return m_iSampleRate > 0 && !m_beats.empty();
+}
+BeatsInternal::BeatsInternal(): m_iSampleRate(0), m_dDurationSeconds(0) {
+
+}
+void Beats::slotTrackBeatsUpdated() {
+    m_beatsInternal.setSampleRate(m_track->getSampleRate());
+    m_beatsInternal.setDurationSeconds(m_track->getDuration());
 }
 
 } // namespace mixxx
