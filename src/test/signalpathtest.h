@@ -56,19 +56,20 @@ class TestEngineMaster : public EngineMaster {
 
 class BaseSignalPathTest : public MixxxTest {
   protected:
-    BaseSignalPathTest() {
-        m_pGuiTick = std::make_unique<GuiTick>();
-        m_pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
-        m_pNumDecks = new ControlObject(ConfigKey("[Master]", "num_decks"));
-        m_pEffectsManager = new EffectsManager(nullptr, config(), m_pChannelHandleFactory);
-        m_pVisualsManager = new VisualsManager();
-        m_pEngineMaster = new TestEngineMaster(
-                m_pConfig,
-                "[Master]",
-                m_pEffectsManager,
-                m_pChannelHandleFactory,
-                false);
-
+    BaseSignalPathTest()
+            : m_pChannelHandleFactory(std::make_shared<ChannelHandleFactory>()),
+              m_pNumDecks(new ControlObject(
+                      ConfigKey("[Master]", "num_decks"))),
+              m_pGuiTick(std::make_unique<GuiTick>()),
+              m_pVisualsManager(new VisualsManager()),
+              m_pEffectsManager(new EffectsManager(
+                      nullptr, config(), m_pChannelHandleFactory)),
+              m_pEngineMaster(new TestEngineMaster(
+                      m_pConfig,
+                      "[Master]",
+                      m_pEffectsManager,
+                      m_pChannelHandleFactory,
+                      false)) {
         m_pMixerDeck1 = new Deck(nullptr,
                 m_pConfig,
                 m_pEngineMaster,
@@ -233,6 +234,7 @@ class BaseSignalPathTest : public MixxxTest {
 
     VisualsManager* m_pVisualsManager;
     EffectsManager* m_pEffectsManager;
+
     EngineSync* m_pEngineSync;
     TestEngineMaster* m_pEngineMaster;
     Deck *m_pMixerDeck1, *m_pMixerDeck2, *m_pMixerDeck3;
