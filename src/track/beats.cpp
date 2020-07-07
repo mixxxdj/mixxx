@@ -5,9 +5,9 @@
 
 namespace mixxx {
 
-const QString Beats::BEAT_MAP_VERSION = "BeatMap-1.0";
-const QString Beats::BEAT_GRID_1_VERSION = "BeatGrid-1.0";
-const QString Beats::BEAT_GRID_2_VERSION = "BeatGrid-2.0";
+const QString BeatsInternal::BEAT_MAP_VERSION = "BeatMap-1.0";
+const QString BeatsInternal::BEAT_GRID_1_VERSION = "BeatGrid-1.0";
+const QString BeatsInternal::BEAT_GRID_2_VERSION = "BeatGrid-2.0";
 
 namespace {
 inline bool BeatLessThan(const track::io::Beat& beat1, const track::io::Beat& beat2) {
@@ -66,7 +66,6 @@ Beats::Beats(const Track* track)
     moveToThread(track->thread());
 }
 
-// TODO(JVC) Do we really need a copy constructor??
 Beats::Beats(const Beats& other)
         : Beats(other.m_track) {
     m_beatsInternal = other.m_beatsInternal;
@@ -74,47 +73,26 @@ Beats::Beats(const Beats& other)
 }
 
 int Beats::numBeatsInRange(FramePos startFrame, FramePos endFrame) {
-    FramePos lastCountedBeat(0.0);
-    int iBeatsCounter;
-    for (iBeatsCounter = 1; lastCountedBeat < endFrame; iBeatsCounter++) {
-        lastCountedBeat = findNthBeat(startFrame, iBeatsCounter);
-        if (lastCountedBeat == kInvalidFramePos) {
-            break;
-        }
-    }
-    return iBeatsCounter - 2;
+    return m_beatsInternal.numBeatsInRange(startFrame, endFrame);
 };
 
 QByteArray Beats::toProtobuf() const {
     QMutexLocker locker(&m_mutex);
-    // No guarantees BeatLists are made of a data type which located adjacent
-    // items in adjacent memory locations.
-    track::io::Beats beatsProto;
-
-    for (int i = 0; i < m_beatsInternal.m_beats.size(); ++i) {
-        beatsProto.add_beat()->CopyFrom(m_beatsInternal.m_beats[i]);
-    }
-
-    std::string output;
-    beatsProto.SerializeToString(&output);
-    return QByteArray(output.data(), output.length());
+    return m_beatsInternal.toProtobuf();
 }
 
 BeatsPointer Beats::clone() const {
     QMutexLocker locker(&m_mutex);
-    // TODO(JVC)
     BeatsPointer other(new Beats(*this));
     return other;
 }
 
 QString Beats::getVersion() const {
-    QMutexLocker locker(&m_mutex);
-    return BEAT_MAP_VERSION;
+    return m_beatsInternal.getVersion();
 }
 
 QString Beats::getSubVersion() const {
-    QMutexLocker locker(&m_mutex);
-    return m_beatsInternal.m_subVersion;
+    return m_beatsInternal.getSubVersion();
 }
 
 FramePos Beats::findNextBeat(FramePos frame) const {
@@ -122,7 +100,7 @@ FramePos Beats::findNextBeat(FramePos frame) const {
 }
 
 void Beats::setSubVersion(QString subVersion) {
-    m_beatsInternal.m_subVersion = subVersion;
+    m_beatsInternal.setSubVersion(subVersion);
 }
 
 void Beats::setGrid(Bpm dBpm, FramePos firstBeatFrame) {
@@ -802,4 +780,39 @@ void Beats::slotTrackBeatsUpdated() {
     m_beatsInternal.setDurationSeconds(m_track->getDuration());
 }
 
+int BeatsInternal::numBeatsInRange(FramePos startFrame, FramePos endFrame) const {
+    FramePos lastCountedBeat(0.0);
+    int iBeatsCounter;
+    for (iBeatsCounter = 1; lastCountedBeat < endFrame; iBeatsCounter++) {
+        lastCountedBeat = findNthBeat(startFrame, iBeatsCounter);
+        if (lastCountedBeat == kInvalidFramePos) {
+            break;
+        }
+    }
+    return iBeatsCounter - 2;
+}
+
+QByteArray BeatsInternal::toProtobuf() const {
+    // No guarantees BeatLists are made of a data type which located adjacent
+    // items in adjacent memory locations.
+    track::io::Beats beatsProto;
+
+    for (int i = 0; i < m_beats.size(); ++i) {
+        beatsProto.add_beat()->CopyFrom(m_beats[i]);
+    }
+
+    std::string output;
+    beatsProto.SerializeToString(&output);
+    return QByteArray(output.data(), output.length());
+}
+
+void BeatsInternal::setSubVersion(const QString& subVersion) {
+    m_subVersion = subVersion;
+}
+QString BeatsInternal::getVersion() const {
+    return BEAT_MAP_VERSION;
+}
+QString BeatsInternal::getSubVersion() const {
+    return m_subVersion;
+}
 } // namespace mixxx

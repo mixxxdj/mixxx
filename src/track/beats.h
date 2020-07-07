@@ -31,6 +31,11 @@ namespace mixxx {
 /// plain copyable, movable object.
 class BeatsInternal {
   public:
+    // TODO(hacksdump): These versions are retained for backward compatibility.
+    // In future, There will be no versions at all.
+    static const QString BEAT_MAP_VERSION;
+    static const QString BEAT_GRID_1_VERSION;
+    static const QString BEAT_GRID_2_VERSION;
     BeatsInternal();
     FramePos findNthBeat(FramePos frame, int offset) const;
     Bpm getBpm() const;
@@ -41,6 +46,11 @@ class BeatsInternal {
     void setDurationSeconds(double duration) {
         m_dDurationSeconds = duration;
     }
+    int numBeatsInRange(FramePos startFrame, FramePos endFrame) const;
+    QByteArray toProtobuf() const;
+    QString getVersion() const;
+    QString getSubVersion() const;
+    void setSubVersion(const QString& subVersion);
   private:
     QString m_subVersion;
     Bpm m_bpm;
@@ -80,12 +90,6 @@ class Beats final : public QObject {
         FOURTHIRDS,
         THREEHALVES,
     };
-
-    // TODO(hacksdump): These versions are retained for backward compatibility.
-    // In future, There will be no versions at all.
-    static const QString BEAT_MAP_VERSION;
-    static const QString BEAT_GRID_1_VERSION;
-    static const QString BEAT_GRID_2_VERSION;
 
     /// Serializes into a protobuf.
     QByteArray toProtobuf() const;
@@ -229,5 +233,4 @@ class Beats final : public QObject {
   signals:
     void updated();
 };
-
 } // namespace mixxx
