@@ -41,11 +41,6 @@ class BeatsInternal {
 /// Beats is a class for BPM and beat management classes.
 /// It stores beats information including beats position, down beats position,
 /// phrase beat position and changes in tempo.
-// TODO(JVC) To make it final
-// TODO(XXX): Split into 2 classes:
-// - Beats: Final, no base class, no mutex, copyable/movable
-// - BeatsObject: Derived from QObject, with mutex, not copyable/movable
-// TODO(XXX): Remove cyclic dependency on Track object, probably not necessary
 class Beats final : public QObject {
     Q_OBJECT
   public:

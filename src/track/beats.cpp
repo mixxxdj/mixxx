@@ -66,9 +66,7 @@ Beats::Beats(const Track* track)
 // TODO(JVC) Do we really need a copy constructor??
 Beats::Beats(const Beats& other)
         : Beats(other.m_track) {
-    m_beatsInternal.m_subVersion = other.m_beatsInternal.m_subVersion;
-    m_beatsInternal.m_bpm = other.m_beatsInternal.m_bpm;
-    m_beatsInternal.m_beats = other.m_beatsInternal.m_beats;
+    m_beatsInternal = other.m_beatsInternal;
     moveToThread(m_track->thread());
 }
 
