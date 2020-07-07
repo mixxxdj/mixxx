@@ -176,7 +176,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         StatsManager::createInstance();
     }
 
-    m_pSettingsManager = make_parented<SettingsManager>(this, args.getSettingsPath());
+    m_pSettingsManager = std::make_unique<SettingsManager>(args.getSettingsPath());
 
     initializeKeyboard();
 
@@ -284,10 +284,10 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     m_pRecordingManager = new RecordingManager(pConfig, m_pEngine);
 
-
 #ifdef __BROADCAST__
-    m_pBroadcastManager = new BroadcastManager(m_pSettingsManager,
-                                               m_pSoundManager);
+    m_pBroadcastManager = new BroadcastManager(
+            m_pSettingsManager.get(),
+            m_pSoundManager);
 #endif
 
     launchProgress(11);
@@ -470,9 +470,17 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     }
 
     // Initialize preference dialog
-    m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
-                                    m_pControllerManager, m_pVCManager, pLV2Backend, m_pEffectsManager,
-                                    m_pSettingsManager, m_pLibrary);
+    m_pPrefDlg = new DlgPreferences(
+            this,
+            m_pSkinLoader,
+            m_pSoundManager,
+            m_pPlayerManager,
+            m_pControllerManager,
+            m_pVCManager,
+            pLV2Backend,
+            m_pEffectsManager,
+            m_pSettingsManager.get(),
+            m_pLibrary);
     m_pPrefDlg->setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     m_pPrefDlg->setHidden(true);
 
@@ -819,11 +827,7 @@ void MixxxMainWindow::finalize() {
     Sandbox::shutdown();
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting SettingsManager";
-    {
-        auto* pSettingsManager = m_pSettingsManager.get();
-        m_pSettingsManager = nullptr; // reset parented_ptr
-        delete pSettingsManager;
-    }
+    m_pSettingsManager.reset();
 
     delete m_pKeyboard;
     delete m_pKbdConfig;
