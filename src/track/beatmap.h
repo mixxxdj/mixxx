@@ -18,6 +18,8 @@
 
 typedef QList<mixxx::track::io::Beat> BeatList;
 
+namespace mixxx {
+
 class BeatMap final : public Beats {
   public:
     // Construct a BeatMap. iSampleRate may be provided if a more accurate
@@ -109,4 +111,5 @@ class BeatMap final : public Beats {
     BeatList m_beats;
 };
 
+} // namespace mixxx
 #endif /* BEATMAP_H_ */

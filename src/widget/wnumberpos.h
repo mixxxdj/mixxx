@@ -14,7 +14,7 @@ class WNumberPos : public WNumber {
     Q_OBJECT
 
   public:
-    explicit WNumberPos(const char *group, QWidget *parent=nullptr);
+    explicit WNumberPos(const QString& group, QWidget* parent = nullptr);
 
   protected:
     void mousePressEvent(QMouseEvent* pEvent) override;

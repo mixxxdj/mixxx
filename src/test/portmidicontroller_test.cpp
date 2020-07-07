@@ -18,13 +18,11 @@ class MockPortMidiController : public PortMidiController {
     MockPortMidiController(const PmDeviceInfo* inputDeviceInfo,
             const PmDeviceInfo* outputDeviceInfo,
             int inputDeviceIndex,
-            int outputDeviceIndex,
-            UserSettingsPointer pConfig)
+            int outputDeviceIndex)
             : PortMidiController(inputDeviceInfo,
                       outputDeviceInfo,
                       inputDeviceIndex,
-                      outputDeviceIndex,
-                      pConfig) {
+                      outputDeviceIndex) {
     }
     ~MockPortMidiController() override {
     }
@@ -76,7 +74,7 @@ class PortMidiControllerTest : public MixxxTest {
         m_outputDeviceInfo.opened = 0;
 
         m_pController.reset(new MockPortMidiController(
-                &m_inputDeviceInfo, &m_outputDeviceInfo, 0, 0, config()));
+                &m_inputDeviceInfo, &m_outputDeviceInfo, 0, 0));
         m_pController->setPortMidiInputDevice(m_mockInput);
         m_pController->setPortMidiOutputDevice(m_mockOutput);
     }

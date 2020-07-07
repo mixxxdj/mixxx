@@ -495,4 +495,13 @@ METADATA
       UPDATE cues SET color = (color &amp; 0xFFFFFF) WHERE color > 0xFFFFFF;
     </sql>
   </revision>
+  <revision version="33" min_compatible="3">
+    <description>
+      Add cover art image digest and (background) color
+    </description>
+    <sql>
+      ALTER TABLE library ADD COLUMN coverart_color INTEGER;
+      ALTER TABLE library ADD COLUMN coverart_digest BLOB;
+    </sql>
+  </revision>
 </schema>

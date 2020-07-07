@@ -4,6 +4,8 @@
 #include "track/beatmap.h"
 #include "util/memory.h"
 
+using namespace mixxx;
+
 namespace {
 
 class BeatMapTest : public testing::Test {

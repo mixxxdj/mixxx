@@ -457,14 +457,18 @@ WWidgetGroup {
 #BeatgridSlower,
 #BeatgridFaster,
 #BeatgridEarlier,
-#BeatgridLater {
+#BeatgridLater,
+#HotcuesEarlier,
+#HotcuesLater {
   background-color: #333;
   }
   #BeatgridCurpos:hover,
   #BeatgridSlower:hover,
   #BeatgridFaster:hover,
   #BeatgridEarlier:hover,
-  #BeatgridLater:hover {
+  #BeatgridLater:hover,
+  #HotcuesEarlier:hover,
+  #HotcuesLater:hover {
     background-color: #0f0f0f;
   }
   #BeatgridCurpos {
@@ -482,7 +486,12 @@ WWidgetGroup {
   #BeatgridLater {
     image: url(skin:/buttons/btn_beats_later.svg) no-repeat center center;
   }
-
+  #HotcuesEarlier {
+    image: url(skin:/buttons/btn_hotcues_earlier.svg) no-repeat center center;
+  }
+  #HotcuesLater {
+    image: url(skin:/buttons/btn_hotcues_later.svg) no-repeat center center;
+  }
 
 /*################################################################
  ######  Mic & Aux  #############################################
@@ -876,13 +885,9 @@ WLabel#TrackComment {
 
 /* Actual Play button. Receives click events, turns red
   when playing regularly, not from Cue or HotCue */
-#PlayCue[displayValue="0"] {
-  background-color: transparent;  /*
-  image: url(skin:/buttons/btn_play.svg) no-repeat center center; */
-  }
-  #PlayCue[displayValue="0"]:hover {
-    background-color: transparent;  /*
-    image: url(skin:/buttons/btn_play_hover.svg) no-repeat center center; */
+#PlayCue[displayValue="0"],
+#PlayCue[displayValue="0"]:hover {
+  background-color: transparent;
   }
 
 #SamplerPlayCue[displayValue="0"] {
@@ -921,7 +926,8 @@ WLabel#TrackComment {
 #SamplerPlayCue[displayValue="1"] { /*
   image: url(skin:/buttons/btn_pause.svg) no-repeat center center;  */
 }
-#PlayCue[displayValue="1"],
+#PlayCue[value="1"],
+#PlayIndicator[value="1"],
 #SamplerPlayCue[displayValue="1"],
 #MicTalkover[displayValue="1"],
 #AuxEnable[displayValue="1"],
@@ -973,7 +979,8 @@ WLabel#TrackComment {
   }
   #SpecialCueButton[displayValue="0"],
   #HotcueButton[displayValue="0"],
-  #CueUnderlay {
+  #CueUnderlay,
+  #PlayIndicator[value="0"] {
     color: #888;
     background-color: #333;
     }

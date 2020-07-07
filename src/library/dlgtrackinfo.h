@@ -74,7 +74,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
             const QObject* pRequestor,
             const CoverInfo& info,
             const QPixmap& pixmap,
-            quint16 requestedHash,
+            mixxx::cache_key_t requestedCacheKey,
             bool coverInfoUpdated);
     void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
@@ -90,7 +90,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void clear();
     void init();
     TrackPointer m_pLoadedTrack;
-    BeatsPointer m_pBeatsClone;
+    mixxx::BeatsPointer m_pBeatsClone;
     Keys m_keysClone;
     bool m_trackHasBeatMap;
 

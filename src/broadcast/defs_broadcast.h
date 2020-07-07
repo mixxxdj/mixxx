@@ -23,9 +23,8 @@
 #define BROADCAST_BITRATE_48KBPS 48
 #define BROADCAST_BITRATE_32KBPS 32
 
-#define BROADCAST_FORMAT_MP3 "MP3"
-#define BROADCAST_FORMAT_OV "OggVorbis"
-#define BROADCAST_FORMAT_OPUS "Opus"
+// This code is intended just for fixing old settings. Use formats from defs_recording.h instead.
+#define BROADCAST_FORMAT_OV_LEGACY "OggVorbis"
 
 // EngineNetworkStream can't use locking mechanisms to protect its
 // internal worker list against concurrency issues, as it is used by

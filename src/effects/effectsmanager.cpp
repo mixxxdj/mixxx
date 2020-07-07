@@ -19,9 +19,9 @@ const QString kGroupClose = "]";
 const unsigned int kEffectMessagPipeFifoSize = 2048;
 } // anonymous namespace
 
-
-EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig,
-                               ChannelHandleFactory* pChannelHandleFactory)
+EffectsManager::EffectsManager(QObject* pParent,
+        UserSettingsPointer pConfig,
+        ChannelHandleFactoryPointer pChannelHandleFactory)
         : QObject(pParent),
           m_pChannelHandleFactory(pChannelHandleFactory),
           m_pEffectChainManager(new EffectChainManager(pConfig, this)),

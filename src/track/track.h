@@ -9,6 +9,7 @@
 #include "sources/metadatasource.h"
 #include "track/beats.h"
 #include "track/cue.h"
+#include "track/cueinfoimporter.h"
 #include "track/trackfile.h"
 #include "track/trackrecord.h"
 #include "util/memory.h"
@@ -73,6 +74,8 @@ class Track : public QObject {
     Q_PROPERTY(QString durationFormatted READ getDurationTextSeconds STORED false)
     Q_PROPERTY(QString durationFormattedCentiseconds READ getDurationTextCentiseconds STORED false)
     Q_PROPERTY(QString durationFormattedMilliseconds READ getDurationTextMilliseconds STORED false)
+    Q_PROPERTY(QString info READ getInfo STORED false)
+    Q_PROPERTY(QString titleInfo READ getTitleInfo STORED false)
 
     TrackFile getFileInfo() const {
         // Copying TrackFile/QFileInfo is thread-safe (implicit sharing), no locking needed.
@@ -232,8 +235,17 @@ class Track : public QObject {
     // Set URL for track
     void setURL(const QString& url);
 
-    // Output a formatted string with artist and title.
+    /// Separator between artist and title string that is
+    /// used for composing the track info.
+    static const QString kArtistTitleSeparator;
+
+    /// Formatted string with artist and title, separated by
+    /// kArtistTitleSeparator.
     QString getInfo() const;
+
+    /// The filename if BOTH artist AND title are empty, e.g. for tracks without
+    /// any metadata in file tags. Otherwise just the title (even if it is empty).
+    QString getTitleInfo() const;
 
     ConstWaveformPointer getWaveform() const;
     void setWaveform(ConstWaveformPointer pWaveform);
@@ -245,6 +257,8 @@ class Track : public QObject {
     CuePosition getCuePoint() const;
     // Set the track's main cue point
     void setCuePoint(CuePosition cue);
+    /// Shift all cues by a constant offset
+    void shiftCuePositionsMillis(double milliseconds);
     // Call when analysis is done.
     void analysisFinished();
 
@@ -268,16 +282,16 @@ class Track : public QObject {
     /// If the list is empty it tries to complete any pending
     /// import and returns the corresponding status.
     CueImportStatus importCueInfos(
-            const QList<mixxx::CueInfo>& cueInfos = {});
+            mixxx::CueInfoImporterPointer pCueInfoImporter);
     CueImportStatus getCueImportStatus() const;
 
     bool isDirty();
 
     // Get the track's Beats list
-    BeatsPointer getBeats() const;
+    mixxx::BeatsPointer getBeats() const;
 
     // Set the track's Beats
-    void setBeats(BeatsPointer beats);
+    void setBeats(mixxx::BeatsPointer beats);
 
     void resetKeys();
     void setKeys(const Keys& keys);
@@ -296,10 +310,8 @@ class Track : public QObject {
     // If the corresponding image has already been loaded it
     // could be provided as a parameter to avoid reloading
     // if actually needed.
-    bool refreshCoverImageHash(
+    bool refreshCoverImageDigest(
             const QImage& loadedImage = QImage());
-
-    quint16 getCoverHash() const;
 
     // Set/get track metadata and cover art (optional) all at once.
     void importMetadata(
@@ -374,7 +386,7 @@ class Track : public QObject {
     void markDirtyAndUnlock(QMutexLocker* pLock, bool bDirty = true);
     void setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty);
 
-    void setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats);
+    void setBeatsAndUnlock(QMutexLocker* pLock, mixxx::BeatsPointer pBeats);
 
     void afterKeysUpdated(QMutexLocker* pLock);
 
@@ -427,13 +439,13 @@ class Track : public QObject {
     QList<CuePointer> m_cuePoints;
 
     // Storage for the track's beats
-    BeatsPointer m_pBeats;
+    mixxx::BeatsPointer m_pBeats;
 
     //Visual waveform data
     ConstWaveformPointer m_waveform;
     ConstWaveformPointer m_waveformSummary;
 
-    QList<mixxx::CueInfo> m_importCueInfosPending;
+    mixxx::CueInfoImporterPointer m_pCueInfoImporterPending;
 
     friend class TrackDAO;
     friend class GlobalTrackCache;

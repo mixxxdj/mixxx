@@ -62,8 +62,7 @@ class PortMidiController : public MidiController {
     PortMidiController(const PmDeviceInfo* inputDeviceInfo,
             const PmDeviceInfo* outputDeviceInfo,
             int inputDeviceIndex,
-            int outputDeviceIndex,
-            UserSettingsPointer pConfig);
+            int outputDeviceIndex);
     ~PortMidiController() override;
 
   private slots:

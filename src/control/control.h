@@ -13,6 +13,16 @@
 
 class ControlObject;
 
+enum class ControlFlag {
+    None = 0,
+    AllowEmptyKey = 1,
+    NoAssertIfMissing = 1 << 1,
+    NoWarnIfMissing = (1 << 2) | NoAssertIfMissing,
+};
+
+Q_DECLARE_FLAGS(ControlFlags, ControlFlag)
+Q_DECLARE_OPERATORS_FOR_FLAGS(ControlFlags)
+
 class ControlDoublePrivate : public QObject {
     Q_OBJECT
   public:
@@ -33,10 +43,13 @@ class ControlDoublePrivate : public QObject {
     // Gets the ControlDoublePrivate matching the given ConfigKey. If pCreatorCO
     // is non-NULL, allocates a new ControlDoublePrivate for the ConfigKey if
     // one does not exist.
-    static QSharedPointer<ControlDoublePrivate> getControl(
-            const ConfigKey& key, bool warn = true,
-            ControlObject* pCreatorCO = NULL, bool bIgnoreNops = true, bool bTrack = false,
-            bool bPersist = false, double defaultValue = 0.0);
+    static QSharedPointer<ControlDoublePrivate> getControl(const ConfigKey& key,
+            ControlFlags flags = ControlFlag::None,
+            ControlObject* pCreatorCO = NULL,
+            bool bIgnoreNops = true,
+            bool bTrack = false,
+            bool bPersist = false,
+            double defaultValue = 0.0);
 
     // Adds all ControlDoublePrivate that currently exist to pControlList
     static void getControls(QList<QSharedPointer<ControlDoublePrivate> >* pControlsList);

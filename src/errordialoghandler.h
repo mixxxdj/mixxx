@@ -143,7 +143,7 @@ class ErrorDialogHandler : public QObject {
     }
     static void setEnabled(bool enabled);
 
-    virtual ~ErrorDialogHandler();
+    ~ErrorDialogHandler() override;
     // Call this to get a new instance of ErrorDialogProperties to populate with
     // data
     ErrorDialogProperties* newDialogProperties();

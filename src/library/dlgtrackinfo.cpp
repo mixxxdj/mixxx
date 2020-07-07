@@ -237,7 +237,7 @@ void DlgTrackInfo::loadPrevTrack() {
 }
 
 void DlgTrackInfo::populateFields(const Track& track) {
-    setWindowTitle(track.getArtist() % " - " % track.getTitle());
+    setWindowTitle(track.getInfo());
 
     // Editable fields
     txtTrackName->setText(track.getTitle());
@@ -272,7 +272,7 @@ void DlgTrackInfo::populateFields(const Track& track) {
 }
 
 void DlgTrackInfo::reloadTrackBeats(const Track& track) {
-    BeatsPointer pBeats = track.getBeats();
+    mixxx::BeatsPointer pBeats = track.getBeats();
     if (pBeats) {
         spinBpm->setValue(pBeats->getBpm());
         m_pBeatsClone = pBeats->clone();
@@ -280,7 +280,7 @@ void DlgTrackInfo::reloadTrackBeats(const Track& track) {
         m_pBeatsClone.clear();
         spinBpm->setValue(0.0);
     }
-    m_trackHasBeatMap = pBeats && !(pBeats->getCapabilities() & Beats::BEATSCAP_SETBPM);
+    m_trackHasBeatMap = pBeats && !(pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM);
     bpmConst->setChecked(!m_trackHasBeatMap);
     bpmConst->setEnabled(m_trackHasBeatMap); // We cannot make turn a BeatGrid to a BeatMap
     spinBpm->setEnabled(!m_trackHasBeatMap); // We cannot change bpm continuously or tab them
@@ -333,9 +333,9 @@ void DlgTrackInfo::slotCoverFound(
         const QObject* pRequestor,
         const CoverInfo& coverInfo,
         const QPixmap& pixmap,
-        quint16 requestedHash,
+        mixxx::cache_key_t requestedCacheKey,
         bool coverInfoUpdated) {
-    Q_UNUSED(requestedHash);
+    Q_UNUSED(requestedCacheKey);
     Q_UNUSED(coverInfoUpdated);
     if (pRequestor == this &&
             m_pLoadedTrack &&
@@ -461,42 +461,42 @@ void DlgTrackInfo::clear() {
 }
 
 void DlgTrackInfo::slotBpmDouble() {
-    m_pBeatsClone->scale(Beats::DOUBLE);
+    m_pBeatsClone->scale(mixxx::Beats::DOUBLE);
     // read back the actual value
     double newValue = m_pBeatsClone->getBpm();
     spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmHalve() {
-    m_pBeatsClone->scale(Beats::HALVE);
+    m_pBeatsClone->scale(mixxx::Beats::HALVE);
     // read back the actual value
     double newValue = m_pBeatsClone->getBpm();
     spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmTwoThirds() {
-    m_pBeatsClone->scale(Beats::TWOTHIRDS);
+    m_pBeatsClone->scale(mixxx::Beats::TWOTHIRDS);
     // read back the actual value
     double newValue = m_pBeatsClone->getBpm();
     spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmThreeFourth() {
-    m_pBeatsClone->scale(Beats::THREEFOURTHS);
+    m_pBeatsClone->scale(mixxx::Beats::THREEFOURTHS);
     // read back the actual value
     double newValue = m_pBeatsClone->getBpm();
     spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmFourThirds() {
-    m_pBeatsClone->scale(Beats::FOURTHIRDS);
+    m_pBeatsClone->scale(mixxx::Beats::FOURTHIRDS);
     // read back the actual value
     double newValue = m_pBeatsClone->getBpm();
     spinBpm->setValue(newValue);
 }
 
 void DlgTrackInfo::slotBpmThreeHalves() {
-    m_pBeatsClone->scale(Beats::THREEHALVES);
+    m_pBeatsClone->scale(mixxx::Beats::THREEHALVES);
     // read back the actual value
     double newValue = m_pBeatsClone->getBpm();
     spinBpm->setValue(newValue);
@@ -566,7 +566,7 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
         return;
     }
 
-    if (m_pBeatsClone->getCapabilities() & Beats::BEATSCAP_SETBPM) {
+    if (m_pBeatsClone->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM) {
         m_pBeatsClone->setBpm(value);
     }
 

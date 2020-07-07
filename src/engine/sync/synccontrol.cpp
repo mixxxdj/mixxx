@@ -75,6 +75,9 @@ SyncControl::SyncControl(const QString& group, UserSettingsPointer pConfig,
 
     m_pQuantize = new ControlProxy(group, "quantize", this);
 
+    // Adopt an invalid to not ignore the first call setLocalBpm()
+    m_prevLocalBpm.setValue(-1);
+
     // BPMControl and RateControl will be initialized later.
 }
 
@@ -239,7 +242,7 @@ void SyncControl::setMasterParams(
         double beatDistance, double baseBpm, double bpm) {
     double masterBpmAdjustFactor = determineBpmMultiplier(fileBpm(), baseBpm);
     if (isMaster(getSyncMode())) {
-        // In Master mode we adjust the incomming Bpm for the inital sync.
+        // In Master mode we adjust the incoming Bpm for the initial sync.
         bpm *= masterBpmAdjustFactor;
         m_masterBpmAdjustFactor = kBpmUnity;
     } else {
@@ -322,14 +325,14 @@ void SyncControl::reportTrackPosition(double fractionalPlaypos) {
 
 // called from an engine worker thread
 void SyncControl::trackLoaded(TrackPointer pNewTrack) {
-    BeatsPointer pBeats;
+    mixxx::BeatsPointer pBeats;
     if (pNewTrack) {
         pBeats = pNewTrack->getBeats();
     }
     trackBeatsUpdated(pBeats);
 }
 
-void SyncControl::trackBeatsUpdated(BeatsPointer pBeats) {
+void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     // This slot is fired by a new file is loaded or if the user
     // has adjusted the beatgrid.
     if (kLogger.traceEnabled()) {
@@ -337,7 +340,7 @@ void SyncControl::trackBeatsUpdated(BeatsPointer pBeats) {
     }
 
     VERIFY_OR_DEBUG_ASSERT(m_pLocalBpm) {
-        // object not initalized
+        // object not initialized
         return;
     }
 
@@ -393,30 +396,20 @@ void SyncControl::slotSyncModeChangeRequest(double state) {
 }
 
 void SyncControl::slotSyncMasterEnabledChangeRequest(double state) {
-    SyncMode mode = getSyncMode();
     if (state > 0.0) {
-        if (mode == SYNC_MASTER_EXPLICIT) {
+        if (isMaster(getSyncMode())) {
             // Already master.
-            return;
-        }
-        if (mode == SYNC_MASTER_SOFT) {
-            // user request: make master explicite
-            m_pSyncMode->setAndConfirm(SYNC_MASTER_EXPLICIT);
             return;
         }
         if (m_pPassthroughEnabled->get()) {
             qDebug() << "Disallowing enabling of sync mode when passthrough active";
             return;
         }
-        m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_MASTER_EXPLICIT);
-    } else {
-        // Turning off master goes back to follower mode.
-        if (mode == SYNC_FOLLOWER) {
-            // Already not master.
-            return;
-        }
-        m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
     }
+    // TODO(owilliams): Because SYNC_MASTER_EXPLICIT has issues, for now we
+    // actually just enable follower mode even when they ask for master. This
+    // is equivalent to the behavior in 2.2
+    m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
 }
 
 void SyncControl::slotSyncEnabledChangeRequest(double enabled) {
@@ -452,7 +445,7 @@ void SyncControl::setLocalBpm(double local_bpm) {
         m_pEngineSync->requestBpmUpdate(this, bpm);
     } else {
         DEBUG_ASSERT(isMaster(syncMode));
-        // We might have adopted an adjust factor when becomming master.
+        // We might have adopted an adjust factor when becoming master.
         // Keep it when reporting our bpm.
         m_pEngineSync->notifyBpmChanged(this, bpm / m_masterBpmAdjustFactor);
     }
@@ -491,7 +484,7 @@ void SyncControl::notifySeek(double dNewPlaypos) {
 }
 
 double SyncControl::fileBpm() const {
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
         return pBeats->getBpm();
     }

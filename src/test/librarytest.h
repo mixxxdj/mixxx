@@ -38,4 +38,5 @@ class LibraryTest : public MixxxTest {
     const MixxxDb m_mixxxDb;
     const mixxx::DbConnectionPooler m_dbConnectionPooler;
     const std::unique_ptr<TrackCollectionManager> m_pTrackCollectionManager;
+    ControlObject m_keyNotationCO;
 };

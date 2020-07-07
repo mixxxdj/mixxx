@@ -24,12 +24,15 @@ namespace taglib {
 namespace {
 
 // Preferred picture types for cover art sorted by priority
-const std::array<TagLib::FLAC::Picture::Type, 4> kPreferredPictureTypes = {
+const std::array<TagLib::FLAC::Picture::Type, 4> kPreferredPictureTypes{{
         TagLib::FLAC::Picture::FrontCover,   // Front cover image of the album
         TagLib::FLAC::Picture::Media,        // Image from the album itself
         TagLib::FLAC::Picture::Illustration, // Illustration related to the track
         TagLib::FLAC::Picture::Other,
-};
+}};
+
+const TagLib::String kCommentFieldKeySeratoMarkers2FLAC = "SERATO_MARKERS_V2";
+const TagLib::String kCommentFieldKeySeratoMarkers2Ogg = "SERATO_MARKERS2";
 
 bool readCommentField(
         const TagLib::Ogg::XiphComment& tag,
@@ -250,7 +253,8 @@ bool importCoverImageFromTag(
 
 void importTrackMetadataFromTag(
         TrackMetadata* pTrackMetadata,
-        const TagLib::Ogg::XiphComment& tag) {
+        const TagLib::Ogg::XiphComment& tag,
+        FileType fileType) {
     if (!pTrackMetadata) {
         return; // nothing to do
     }
@@ -461,11 +465,28 @@ void importTrackMetadataFromTag(
         pTrackMetadata->refTrackInfo().setEncoderSettings(encoderSettings);
     }
 #endif // __EXTRA_METADATA__
+
+    // Serato tags
+    //
+    // FIXME: We're only parsing FLAC tags for now, since the Ogg format is
+    // different we don't support it yet.
+    if (fileType == FileType::FLAC) {
+        TagLib::String seratoMarkers2Data;
+        if (readCommentField(tag,
+                    kCommentFieldKeySeratoMarkers2FLAC,
+                    &seratoMarkers2Data)) {
+            parseSeratoMarkers2(
+                    pTrackMetadata,
+                    seratoMarkers2Data,
+                    fileType);
+        }
+    }
 }
 
 bool exportTrackMetadataIntoTag(
         TagLib::Ogg::XiphComment* pTag,
-        const TrackMetadata& trackMetadata) {
+        const TrackMetadata& trackMetadata,
+        FileType fileType) {
     if (!pTag) {
         return false;
     }
@@ -568,6 +589,23 @@ bool exportTrackMetadataIntoTag(
     writeCommentField(
             pTag, "DISCNUMBER", toTString(trackMetadata.getTrackInfo().getDiscNumber()));
 #endif // __EXTRA_METADATA__
+
+    // Export of Serato markers is disabled, because Mixxx
+    // does not modify them.
+#if defined(__EXPORT_SERATO_MARKERS__)
+    // Serato tags
+    //
+    // FIXME: We're only dumping FLAC tags for now, since the Ogg format is
+    // different we don't support it yet.
+    if (fileType == FileType::FLAC) {
+        writeCommentField(
+                pTag,
+                kCommentFieldKeySeratoMarkers2FLAC,
+                dumpSeratoMarkers2(trackMetadata, fileType));
+    }
+#else
+    Q_UNUSED(fileType);
+#endif // __EXPORT_SERATO_MARKERS__
 
     return true;
 }

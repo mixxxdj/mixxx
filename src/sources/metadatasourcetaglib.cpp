@@ -173,7 +173,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         if (taglib::hasXiphComment(file)) {
             TagLib::Ogg::XiphComment* pTag = file.xiphComment();
             DEBUG_ASSERT(pTag);
-            taglib::xiph::importTrackMetadataFromTag(pTrackMetadata, *pTag);
+            taglib::xiph::importTrackMetadataFromTag(pTrackMetadata, *pTag, taglib::FileType::FLAC);
             coverImageImported = taglib::xiph::importCoverImageFromTag(pCoverImage, *pTag);
             importSucceeded = true;
         } else if (taglib::hasID3v2Tag(file)) {
@@ -206,7 +206,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         }
         TagLib::Ogg::XiphComment* pTag = file.tag();
         if (pTag) {
-            taglib::xiph::importTrackMetadataFromTag(pTrackMetadata, *pTag);
+            taglib::xiph::importTrackMetadataFromTag(pTrackMetadata, *pTag, taglib::FileType::OGG);
             taglib::xiph::importCoverImageFromTag(pCoverImage, *pTag);
             return afterImport(ImportResult::Succeeded);
         }
@@ -220,7 +220,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         }
         TagLib::Ogg::XiphComment* pTag = file.tag();
         if (pTag) {
-            taglib::xiph::importTrackMetadataFromTag(pTrackMetadata, *pTag);
+            taglib::xiph::importTrackMetadataFromTag(pTrackMetadata, *pTag, taglib::FileType::OPUS);
             taglib::xiph::importCoverImageFromTag(pCoverImage, *pTag);
             return afterImport(ImportResult::Succeeded);
         }
@@ -301,8 +301,7 @@ namespace {
 // and variants of this function in derived subclasses.
 class TagSaver {
   public:
-    virtual ~TagSaver() {
-    }
+    virtual ~TagSaver() = default;
 
     virtual bool hasModifiedTags() const = 0;
 
@@ -412,7 +411,8 @@ class FlacTagSaver : public TagSaver {
                 // Get or create VorbisComment tag
                 pXiphComment = pFile->xiphComment(true);
             }
-            modifiedTags |= taglib::xiph::exportTrackMetadataIntoTag(pXiphComment, trackMetadata);
+            modifiedTags |= taglib::xiph::exportTrackMetadataIntoTag(
+                    pXiphComment, trackMetadata, taglib::FileType::FLAC);
         }
         return modifiedTags;
     }
@@ -439,20 +439,23 @@ class OggTagSaver : public TagSaver {
     }
 
   private:
-    static bool exportTrackMetadata(TagLib::Ogg::Vorbis::File* pFile, const TrackMetadata& trackMetadata) {
-#if (TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION == 11) && (TAGLIB_PATCH_VERSION == 1)
+    static bool exportTrackMetadata(TagLib::Ogg::Vorbis::File* pFile,
+            const TrackMetadata& trackMetadata) {
+#if (TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION == 11) && \
+        (TAGLIB_PATCH_VERSION == 1)
         // TagLib 1.11.1 suffers from a serious bug that corrupts OGG files
         // when writing tags: https://github.com/taglib/taglib/issues/864
         // Launchpad issue: https://bugs.launchpad.net/mixxx/+bug/1833190
         Q_UNUSED(pFile);
         Q_UNUSED(trackMetadata);
-        kLogger.warning()
-                << "Skipping export of metadata into Ogg file due to serious bug in TagLib 1.11.1"
-                << "(https://github.com/taglib/taglib/issues/864)";
+        kLogger.warning() << "Skipping export of metadata into Ogg file due to "
+                             "serious bug in TagLib 1.11.1 "
+                             "(https://github.com/taglib/taglib/issues/864)";
         return false;
 #else
         return pFile->isOpen() &&
-                taglib::xiph::exportTrackMetadataIntoTag(pFile->tag(), trackMetadata);
+                taglib::xiph::exportTrackMetadataIntoTag(
+                        pFile->tag(), trackMetadata, taglib::FileType::OGG);
 #endif
     }
 
@@ -479,8 +482,11 @@ class OpusTagSaver : public TagSaver {
     }
 
   private:
-    static bool exportTrackMetadata(TagLib::Ogg::Opus::File* pFile, const TrackMetadata& trackMetadata) {
-        return pFile->isOpen() && taglib::xiph::exportTrackMetadataIntoTag(pFile->tag(), trackMetadata);
+    static bool exportTrackMetadata(TagLib::Ogg::Opus::File* pFile,
+            const TrackMetadata& trackMetadata) {
+        return pFile->isOpen() &&
+                taglib::xiph::exportTrackMetadataIntoTag(
+                        pFile->tag(), trackMetadata, taglib::FileType::OPUS);
     }
 
     TagLib::Ogg::Opus::File m_file;

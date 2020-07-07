@@ -30,7 +30,7 @@ class LoadToGroupController : public QObject {
     void slotLoadToGroupAndPlay(double v);
 
   private:
-    QString m_group;
+    const QString m_group;
     std::unique_ptr<ControlObject> m_pLoadControl;
     std::unique_ptr<ControlObject> m_pLoadAndPlayControl;
 };
@@ -46,7 +46,7 @@ class LibraryControl : public QObject {
     void bindSearchboxWidget(WSearchLineEdit* pSearchbox);
 
   signals:
-    void clearSearch();
+    void clearSearchIfClearButtonHasFocus();
 
   public slots:
     // Deprecated navigation slots

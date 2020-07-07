@@ -36,7 +36,7 @@ class BaseCoverArtDelegate : public TableItemDelegate {
     // (background) color is painted.
     //
     // It is useful to handle cases when the user scroll down
-    // very fast or when they hold an arrow key. In thise case
+    // very fast or when they hold an arrow key. In this case
     // it is NOT desirable to start multiple expensive file
     // system operations in worker threads for loading and
     // scaling cover images that are not even displayed after
@@ -49,7 +49,7 @@ class BaseCoverArtDelegate : public TableItemDelegate {
             const QObject* pRequestor,
             const CoverInfo& coverInfo,
             const QPixmap& pixmap,
-            mixxx::cache_key_t requestedImageHash,
+            mixxx::cache_key_t requestedCacheKey,
             bool coverInfoUpdated);
 
   protected:
@@ -71,5 +71,5 @@ class BaseCoverArtDelegate : public TableItemDelegate {
     // We need to record rows in paint() (which is const) so
     // these are marked mutable.
     mutable QList<int> m_cacheMissRows;
-    mutable QHash<mixxx::cache_key_t, int> m_pendingCacheRows;
+    mutable QMultiHash<mixxx::cache_key_t, int> m_pendingCacheRows;
 };

@@ -18,11 +18,11 @@ void ControllerOutputMappingTableModel::apply() {
     if (m_pMidiPreset != NULL) {
         // Clear existing output mappings and insert all the output mappings in
         // the table into the preset.
-        QHash<ConfigKey, MidiOutputMapping> mappings;
-        foreach (const MidiOutputMapping& mapping, m_midiOutputMappings) {
-            // Use insertMulti because we support multiple outputs from the same
-            // control.
-            mappings.insertMulti(mapping.controlKey, mapping);
+        QMultiHash<ConfigKey, MidiOutputMapping> mappings;
+        for (const MidiOutputMapping& mapping : m_midiOutputMappings) {
+            // There can be multiple output mappings for the same output
+            // control, so we need to use a QMultiHash here.
+            mappings.insert(mapping.controlKey, mapping);
         }
         m_pMidiPreset->setOutputMappings(mappings);
     }

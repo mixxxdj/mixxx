@@ -18,9 +18,9 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
 
   public:
     explicit BaseTrackTableModel(
-            const char* settingsNamespace,
+            QObject* parent,
             TrackCollectionManager* const pTrackCollectionManager,
-            QObject* parent);
+            const char* settingsNamespace);
     ~BaseTrackTableModel() override = default;
 
     ///////////////////////////////////////////////////////
@@ -88,9 +88,6 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
 
     TrackPointer getTrackByRef(
             const TrackRef& trackRef) const override;
-
-    bool hasCapabilities(
-            TrackModel::CapabilitiesFlags capabilities) const final;
 
   protected:
     static constexpr int defaultColumnWidth() {

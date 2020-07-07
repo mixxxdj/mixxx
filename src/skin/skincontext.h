@@ -7,8 +7,8 @@
 #include <QDomNode>
 #include <QDomElement>
 #include <QScriptEngine>
-#include <QDir>
 #include <QScriptEngineDebugger>
+#include <QDir>
 #include <QtDebug>
 #include <QRegExp>
 
@@ -32,7 +32,7 @@ class SkinContext {
             const SkinContext* parent);
     virtual ~SkinContext();
 
-    // Not copyable
+    // Not copiable
     SkinContext(const SkinContext&) = delete;
     SkinContext& operator=(const SkinContext&) = delete;
 
@@ -235,7 +235,6 @@ class SkinContext {
     bool hasUncaughtScriptException() const {
         return m_pSharedState->scriptEngine.hasUncaughtException();
     }
-    void enableDebugger(bool state) const;
 
     QDebug logWarning(const char* file, const int line, const QDomNode& node) const;
 

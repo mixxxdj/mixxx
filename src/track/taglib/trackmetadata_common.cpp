@@ -144,11 +144,35 @@ bool parseAlbumPeak(
 
 bool parseSeratoMarkers(
         TrackMetadata* pTrackMetadata,
-        const QByteArray& data) {
+        const QByteArray& data,
+        FileType fileType) {
     DEBUG_ASSERT(pTrackMetadata);
 
     SeratoTags seratoTags(pTrackMetadata->getTrackInfo().getSeratoTags());
-    bool isValid = seratoTags.parseMarkers(data);
+    bool isValid = seratoTags.parseMarkers(data, fileType);
+    if (isValid) {
+        pTrackMetadata->refTrackInfo().setSeratoTags(seratoTags);
+    }
+    return isValid;
+}
+
+bool parseSeratoMarkers(
+        TrackMetadata* pTrackMetadata,
+        const TagLib::String& data,
+        FileType fileType) {
+    const TagLib::ByteVector byteVec =
+            data.data(TagLib::String::UTF8);
+    return parseSeratoMarkers(pTrackMetadata, toQByteArrayRaw(byteVec), fileType);
+}
+
+bool parseSeratoMarkers2(
+        TrackMetadata* pTrackMetadata,
+        const QByteArray& data,
+        FileType fileType) {
+    DEBUG_ASSERT(pTrackMetadata);
+
+    SeratoTags seratoTags(pTrackMetadata->getTrackInfo().getSeratoTags());
+    bool isValid = seratoTags.parseMarkers2(data, fileType);
     if (isValid) {
         pTrackMetadata->refTrackInfo().setSeratoTags(seratoTags);
     }
@@ -157,15 +181,31 @@ bool parseSeratoMarkers(
 
 bool parseSeratoMarkers2(
         TrackMetadata* pTrackMetadata,
-        const QByteArray& data) {
-    DEBUG_ASSERT(pTrackMetadata);
+        const TagLib::String& data,
+        FileType fileType) {
+    const TagLib::ByteVector byteVec =
+            data.data(TagLib::String::UTF8);
+    return parseSeratoMarkers2(pTrackMetadata, toQByteArrayRaw(byteVec), fileType);
+}
 
-    SeratoTags seratoTags(pTrackMetadata->getTrackInfo().getSeratoTags());
-    bool isValid = seratoTags.parseMarkers2(data);
-    if (isValid) {
-        pTrackMetadata->refTrackInfo().setSeratoTags(seratoTags);
-    }
-    return isValid;
+TagLib::String dumpSeratoMarkers(
+        const TrackMetadata& trackMetadata,
+        FileType fileType) {
+    const QByteArray utf8Data =
+            trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers(fileType);
+    return TagLib::String(
+            utf8Data.constData(),
+            TagLib::String::UTF8);
+}
+
+TagLib::String dumpSeratoMarkers2(
+        const TrackMetadata& trackMetadata,
+        FileType fileType) {
+    const QByteArray utf8Data =
+            trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2(fileType);
+    return TagLib::String(
+            utf8Data.constData(),
+            TagLib::String::UTF8);
 }
 
 void importTrackMetadataFromTag(

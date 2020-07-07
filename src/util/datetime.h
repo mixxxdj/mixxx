@@ -28,7 +28,7 @@ inline QDateTime convertVariantToDateTime(
 /// application's locale settings.
 inline QString displayLocalDateTime(
         const QDateTime& dt) {
-    return dt.toString(Qt::DefaultLocaleShortDate);
+    return QLocale().toString(dt, QLocale::ShortFormat);
 }
 
 } // namespace mixxx

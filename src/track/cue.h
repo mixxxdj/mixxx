@@ -18,13 +18,24 @@ class Cue : public QObject {
     Q_OBJECT
 
   public:
+    /// A position value for the cue that signals its position is not set
     static constexpr double kNoPosition = -1.0;
+    /// A value for #m_iHotCue signaling it is not a hotcue
     static constexpr int kNoHotCue = -1;
 
     Cue();
     Cue(
             const mixxx::CueInfo& cueInfo,
             mixxx::audio::SampleRate sampleRate);
+    Cue(
+            int id,
+            TrackId trackId,
+            mixxx::CueType type,
+            double position,
+            double length,
+            int hotCue,
+            QString label,
+            mixxx::RgbColor color);
     ~Cue() override = default;
 
     bool isDirty() const;
@@ -39,6 +50,7 @@ class Cue : public QObject {
             double samplePosition = kNoPosition);
     void setEndPosition(
             double samplePosition = kNoPosition);
+    void shiftPositionFrames(double frameOffset);
 
     double getLength() const;
 
@@ -62,16 +74,6 @@ class Cue : public QObject {
     void updated();
 
   private:
-    Cue(
-            int id,
-            TrackId trackId,
-            mixxx::CueType type,
-            double position,
-            double length,
-            int hotCue,
-            QString label,
-            mixxx::RgbColor color);
-
     void setDirty(bool dirty);
 
     void setId(int id);

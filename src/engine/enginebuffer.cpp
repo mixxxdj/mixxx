@@ -967,8 +967,10 @@ void EngineBuffer::processTrackLocked(
         // callback and the m_filepos_play is advanced behind the end of the track.
 
         if (m_bCrossfadeReady) {
-           SampleUtil::linearCrossfadeBuffers(
-                    pOutput, m_pCrossfadeBuffer, pOutput, iBufferSize);
+            // Bring pOutput with the new parameters in and fade out the old one,
+            // stored with the old parameters in m_pCrossfadeBuffer
+            SampleUtil::linearCrossfadeBuffersIn(
+                    pOutput, m_pCrossfadeBuffer, iBufferSize);
         }
         // Note: we do not fade here if we pass the end or the start of
         // the track in reverse direction
@@ -1198,7 +1200,9 @@ void EngineBuffer::processSeek(bool paused) {
         double syncPosition = m_pBpmControl->getBeatMatchPosition(position, true, true);
         position = m_pLoopingControl->getSyncPositionInsideLoop(requestedPosition, syncPosition);
         if (kLogger.traceEnabled()) {
-            kLogger.trace() << "EngineBuffer::processSeek seek info: " << m_filepos_play << " " << position;
+            kLogger.trace()
+                    << "EngineBuffer::processSeek seek info: " << m_filepos_play
+                    << " -> " << position;
         }
     }
     if (position != m_filepos_play) {
@@ -1361,7 +1365,7 @@ double EngineBuffer::getExactPlayPos() {
         return getVisualPlayPos() * getTrackSamples();
     } else {
         // Track was just loaded and the first buffer was not processed yet.
-        // asume it is at 0:00
+        // assume it is at 0:00
         return 0.0;
     }
 }

@@ -21,7 +21,7 @@ class ControllerPreset {
     ControllerPreset()
             : m_bDirty(false) {
     }
-    virtual ~ControllerPreset() {}
+    virtual ~ControllerPreset() = default;
 
     struct ScriptFileInfo {
         ScriptFileInfo()
@@ -161,7 +161,6 @@ class ControllerPreset {
     virtual void accept(ConstControllerPresetVisitor* visitor) const = 0;
     virtual bool isMappable() const = 0;
 
-    QList<ScriptFileInfo> scripts;
     // Optional list of controller device match details
     QList< QHash<QString,QString> > m_productMatches;
 

@@ -6,8 +6,9 @@
 
 #include "mixer/playerinfo.h"
 
-WHotcueButton::WHotcueButton(QWidget* pParent)
+WHotcueButton::WHotcueButton(const QString& group, QWidget* pParent)
         : WPushButton(pParent),
+          m_group(group),
           m_hotcue(Cue::kNoHotCue),
           m_hoverCueColor(false),
           m_pCoColor(nullptr),
@@ -20,7 +21,6 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
     // Setup parent class.
     WPushButton::setup(node, context);
 
-    m_group = context.selectString(node, QStringLiteral("Group"));
     bool ok;
     int hotcue = context.selectInt(node, QStringLiteral("Hotcue"), &ok);
     if (ok && hotcue > 0) {
@@ -37,7 +37,10 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
 
     setFocusPolicy(Qt::NoFocus);
 
-    m_pCoColor = make_parented<ControlProxy>(createConfigKey(QStringLiteral("color")), this);
+    m_pCoColor = make_parented<ControlProxy>(
+            createConfigKey(QStringLiteral("color")),
+            this,
+            ControlFlag::NoAssertIfMissing);
     m_pCoColor->connectValueChanged(this, &WHotcueButton::slotColorChanged);
     slotColorChanged(m_pCoColor->get());
 

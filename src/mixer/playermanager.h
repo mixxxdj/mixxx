@@ -32,7 +32,7 @@ class VisualsManager;
 // For mocking PlayerManager.
 class PlayerManagerInterface {
   public:
-    virtual ~PlayerManagerInterface() {};
+    virtual ~PlayerManagerInterface() = default;
 
     // Get a BaseTrackPlayer (i.e. a Deck or a Sampler) by its group
     virtual BaseTrackPlayer* getPlayer(QString group) const = 0;
@@ -65,7 +65,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
                   EffectsManager* pEffectsManager,
                   VisualsManager* pVisualsManager,
                   EngineMaster* pEngine);
-    virtual ~PlayerManager();
+    ~PlayerManager() override;
 
     // Add a deck to the PlayerManager
     // (currently unused, kept for consistency with other types)

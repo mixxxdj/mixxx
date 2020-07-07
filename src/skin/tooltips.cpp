@@ -396,6 +396,18 @@ void Tooltips::addStandardTooltips() {
             << tempoDisplay
             << tr("When tapped repeatedly, adjusts the BPM to match the tapped BPM.");
 
+    add("shift_cues_earlier")
+            << tr("Shift cues earlier")
+            << tr("Shift cues imported from Serato or Rekordbox if they are slightly off time.")
+            << tr("Left click: shift 10 milliseconds earlier")
+            << tr("Right click: shift 1 millisecond earlier");
+
+    add("shift_cues_later")
+            << tr("Shift cues later")
+            << tr("Shift cues imported from Serato or Rekordbox if they are slightly off time.")
+            << tr("Left click: shift 10 milliseconds later")
+            << tr("Right click: shift 1 millisecond later");
+
     add("show_spinny")
             << tr("Spinning Vinyl")
             << tr("Show/hide the spinning vinyl section.");
@@ -432,19 +444,28 @@ void Tooltips::addStandardTooltips() {
             << QString("%1: %2").arg(leftClick, tr("Starts playing from the beginning of the track."))
             << QString("%1: %2").arg(rightClick, tr("Jumps to the beginning of the track and stops."));
 
-    // Currently used for decks
+    QString whilePlaying = tr("(while playing)");
+    QString whileStopped = tr("(while stopped)");
     QString cueSet = tr("Places a cue point at the current position on the waveform.");
+    QString cueWhilePlaying = tr("Stops track at cue point, OR go to cue point and play after release (CUP mode).");
+    QString cueWhileStopped = tr("Set cue point (Pioneer/Mixxx/Numark mode), set cue point and play after release (CUP mode) "
+            "OR preview from it (Denon mode).");
+    QString cueHint = tr("Hint: Change the default cue mode in Preferences -> Interface.");
+
+    // Currently used for decks
     add("play_cue_set")
             << tr("Play/Pause")
             << QString("%1: %2").arg(leftClick, tr("Plays or pauses the track."))
             << QString("%1: %2").arg(rightClick, cueSet);
 
-    QString whilePlaying = tr("(while playing)");
-    QString whileStopped = tr("(while stopped)");
-    QString cueWhilePlaying = tr("Stops track at cue point, OR go to cue point and play after release (CUP mode).");
-    QString cueWhileStopped = tr("Set cue point (Pioneer/Mixxx/Numark mode), set cue point and play after release (CUP mode) "
-            "OR preview from it (Denon mode).");
-    QString cueHint = tr("Hint: Change the default cue mode in Preferences -> Interface.");
+    // Currently used for minimal decks
+    add("play_cue_default")
+            << tr("Play/Pause")
+            << QString("%1: %2").arg(leftClick, tr("Plays or pauses the track."))
+            << QString("%1 %2: %3").arg(rightClick, whilePlaying, cueWhilePlaying)
+            << QString("%1 %2: %3").arg(rightClick, whileStopped, cueWhileStopped)
+            << cueHint
+            << quantizeSnap;
     add("cue_default_cue_gotoandstop")
             << tr("Cue")
             << QString("%1 %2: %3").arg(leftClick, whilePlaying, cueWhilePlaying)
@@ -462,8 +483,8 @@ void Tooltips::addStandardTooltips() {
 
       add("pfl")
             << tr("Headphone")
-            << tr("Sends the selected channel's audio to the headphone output,")
-            << tr("selected in Preferences -> Sound Hardware.");
+            << tr("Sends the selected channel's audio to the headphone output, "
+                  "selected in Preferences -> Sound Hardware.");
 
     add("mute")
             << tr("Mute")
@@ -471,8 +492,8 @@ void Tooltips::addStandardTooltips() {
 
     add("master_enable")
             << tr("Master enable")
-            << tr("Hold or short click for latching to")
-            << tr("mix this input into the master output.");
+            << tr("Hold or short click for latching to "
+                  "mix this input into the master output.");
 
     add("back_start")
             << tr("Fast Rewind")

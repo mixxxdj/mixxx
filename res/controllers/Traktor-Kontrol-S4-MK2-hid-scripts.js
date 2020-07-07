@@ -1405,7 +1405,7 @@ TraktorS4MK2.callbackBrowse = function(field) {
     engine.setValue("[Playlist]", "SelectPlaylist", delta);
   }
   else {
-    engine.setValue("[Playlist]", "SelectTrackKnob", delta);
+    engine.setValue("[Library]", "MoveVertical", delta);
   }
 }
 

@@ -34,13 +34,14 @@
 #include "util/math.h"
 #include "util/painterscope.h"
 #include "util/timer.h"
+#include "util/widgethelper.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/controlwidgetconnection.h"
 #include "wskincolor.h"
 
 WOverview::WOverview(
-        const char* group,
+        const QString& group,
         PlayerManager* pPlayerManager,
         UserSettingsPointer pConfig,
         QWidget* parent)
@@ -61,7 +62,6 @@ WOverview::WOverview(
           m_iPickupPos(0),
           m_iPlayPos(0),
           m_pHoveredMark(nullptr),
-          m_bHotcueMenuShowing(false),
           m_bTimeRulerActive(false),
           m_orientation(Qt::Horizontal),
           m_iLabelFontSize(10),
@@ -71,17 +71,20 @@ WOverview::WOverview(
           m_trackLoaded(false),
           m_scaleFactor(1.0) {
     m_endOfTrackControl = new ControlProxy(
-            m_group, "end_of_track", this);
+            m_group, "end_of_track", this, ControlFlag::NoAssertIfMissing);
     m_endOfTrackControl->connectValueChanged(this, &WOverview::onEndOfTrackChange);
-    m_pRateRatioControl = new ControlProxy(m_group, "rate_ratio", this);
+    m_pRateRatioControl = new ControlProxy(
+            m_group, "rate_ratio", this, ControlFlag::NoAssertIfMissing);
     // Needed to recalculate range durations when rate slider is moved without the deck playing
-    m_pRateRatioControl->connectValueChanged(this, &WOverview::onRateRatioChange);
-    m_trackSampleRateControl = new ControlProxy(m_group, "track_samplerate", this);
-    m_trackSamplesControl =
-            new ControlProxy(m_group, "track_samples", this);
-    m_playpositionControl = new ControlProxy(m_group, "playposition", this);
+    m_pRateRatioControl->connectValueChanged(
+            this, &WOverview::onRateRatioChange);
+    m_trackSampleRateControl = new ControlProxy(
+            m_group, "track_samplerate", this, ControlFlag::NoAssertIfMissing);
+    m_trackSamplesControl = new ControlProxy(m_group, "track_samples", this);
+    m_playpositionControl = new ControlProxy(
+            m_group, "playposition", this, ControlFlag::NoAssertIfMissing);
     m_pPassthroughControl =
-            new ControlProxy(m_group, "passthrough", this);
+            new ControlProxy(m_group, "passthrough", this, ControlFlag::NoAssertIfMissing);
     m_pPassthroughControl->connectValueChanged(this, &WOverview::onPassthroughChange);
     onPassthroughChange(m_pPassthroughControl->get());
 
@@ -308,8 +311,10 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
     //qDebug() << this << "WOverview::slotLoadingTrack" << pNewTrack.get() << pOldTrack.get();
     DEBUG_ASSERT(m_pCurrentTrack == pOldTrack);
     if (m_pCurrentTrack != nullptr) {
-        disconnect(m_pCurrentTrack.get(), SIGNAL(waveformSummaryUpdated()),
-                   this, SLOT(slotWaveformSummaryUpdated()));
+        disconnect(m_pCurrentTrack.get(),
+                &Track::waveformSummaryUpdated,
+                this,
+                &WOverview::slotWaveformSummaryUpdated);
     }
 
     m_waveformSourceImage = QImage();
@@ -324,11 +329,12 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
         m_pCurrentTrack = pNewTrack;
         m_pWaveform = pNewTrack->getWaveformSummary();
 
-        connect(pNewTrack.get(), SIGNAL(waveformSummaryUpdated()),
-                this, SLOT(slotWaveformSummaryUpdated()));
+        connect(pNewTrack.get(),
+                &Track::waveformSummaryUpdated,
+                this,
+                &WOverview::slotWaveformSummaryUpdated);
         slotWaveformSummaryUpdated();
-        connect(pNewTrack.get(), SIGNAL(cuesUpdated()),
-                this, SLOT(receiveCuesUpdated()));
+        connect(pNewTrack.get(), &Track::cuesUpdated, this, &WOverview::receiveCuesUpdated);
     } else {
         m_pCurrentTrack.reset();
         m_pWaveform.clear();
@@ -440,9 +446,7 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
     }
 
     m_pHoveredMark.clear();
-    // Without some padding, the user would only have a single pixel width that
-    // would count as hovering over the WaveformMark.
-    float lineHoverPadding = 5.0;
+
     // Non-hotcue marks (intro/outro cues, main cue, loop in/out) are sorted
     // before hotcues in m_marksToRender so if there is a hotcue in the same
     // location, the hotcue gets rendered on top. When right clicking, the
@@ -451,16 +455,7 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
     // reverse and the loop breaks as soon as m_pHoveredMark is set.
     for (int i = m_marksToRender.size() - 1; i >= 0; --i) {
         WaveformMarkPointer pMark = m_marksToRender.at(i);
-        int hoveredPosition;
-        if (m_orientation == Qt::Horizontal) {
-            hoveredPosition = e->x();
-        } else {
-            hoveredPosition = e->y();
-        }
-        bool lineHovered =
-                pMark->m_linePosition >= hoveredPosition - lineHoverPadding && pMark->m_linePosition <= hoveredPosition + lineHoverPadding;
-
-        if (pMark->m_label.area().contains(e->pos()) || lineHovered) {
+        if (pMark->contains(e->pos(), m_orientation)) {
             m_pHoveredMark = pMark;
             break;
         }
@@ -506,6 +501,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
         if (m_pHoveredMark != nullptr) {
             dValue = m_pHoveredMark->getSamplePosition() / m_trackSamplesControl->get();
             m_iPickupPos = valueToPosition(dValue);
+            m_iPlayPos = m_iPickupPos;
             setControlParameterUp(dValue);
             m_bLeftClickDragging = false;
         } else {
@@ -537,22 +533,24 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
             }
             if (pHoveredCue != nullptr) {
                 m_pCueMenuPopup->setTrackAndCue(m_pCurrentTrack, pHoveredCue);
-                m_pCueMenuPopup->popup(e->globalPos());
-                m_bHotcueMenuShowing = true;
+                QPoint cueMenuTopLeft = mixxx::widgethelper::mapPopupToScreen(
+                        *this,
+                        e->globalPos(),
+                        m_pCueMenuPopup->size());
+                m_pCueMenuPopup->popup(cueMenuTopLeft);
             }
         }
     }
 }
 
 void WOverview::slotCueMenuPopupAboutToHide() {
-    m_bHotcueMenuShowing = false;
     m_pHoveredMark.clear();
     update();
 }
 
 void WOverview::leaveEvent(QEvent* pEvent) {
     Q_UNUSED(pEvent);
-    if (!m_bHotcueMenuShowing) {
+    if (!m_pCueMenuPopup->isVisible()) {
         m_pHoveredMark.clear();
     }
     m_bLeftClickDragging = false;
@@ -835,7 +833,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                 }
             }
             // Sometimes QFontMetrics::elidedText turns the QString into just an
-            // elipsis character, so always show at least the hotcue number if
+            // ellipsis character, so always show at least the hotcue number if
             // the label does not fit.
             if ((text.isEmpty() || text == "…") && pMark->getHotCue() != Cue::kNoHotCue) {
                 text = QString::number(pMark->getHotCue() + 1);

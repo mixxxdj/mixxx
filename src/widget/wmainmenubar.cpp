@@ -265,7 +265,11 @@ void WMainMenuBar::initialize() {
     QString fullScreenTitle = tr("&Full Screen");
     QString fullScreenText = tr("Display Mixxx using the full screen");
     auto pViewFullScreen = new QAction(fullScreenTitle, this);
-    pViewFullScreen->setShortcut(QKeySequence(QKeySequence::FullScreen));
+    QList<QKeySequence> shortcuts;
+    shortcuts << QKeySequence::FullScreen;
+    shortcuts << QKeySequence("F11");
+
+    pViewFullScreen->setShortcuts(shortcuts);
     pViewFullScreen->setShortcutContext(Qt::ApplicationShortcut);
     pViewFullScreen->setCheckable(true);
     pViewFullScreen->setChecked(false);
@@ -675,7 +679,6 @@ VisibilityControlConnection::VisibilityControlConnection(
         : QObject(pParent),
           m_key(key),
           m_pAction(pAction) {
-    slotReconnectControl();
     connect(m_pAction, SIGNAL(triggered(bool)),
             this, SLOT(slotActionToggled(bool)));
 }
@@ -686,8 +689,7 @@ void VisibilityControlConnection::slotClearControl() {
 }
 
 void VisibilityControlConnection::slotReconnectControl() {
-    m_pControl.reset(new ControlProxy(this));
-    m_pControl->initialize(m_key, false);
+    m_pControl.reset(new ControlProxy(m_key, this, ControlFlag::NoAssertIfMissing));
     m_pControl->connectValueChanged(this, &VisibilityControlConnection::slotControlChanged);
     m_pAction->setEnabled(m_pControl->valid());
     slotControlChanged();

@@ -125,7 +125,7 @@ void AnalyzerThread::doRun() {
     mixxx::AudioSource::OpenParams openParams;
     openParams.setChannelCount(mixxx::kAnalysisChannels);
 
-    while (waitUntilWorkItemsFetched()) {
+    while (awaitWorkItemsFetched()) {
         DEBUG_ASSERT(m_currentTrack);
         kLogger.debug() << "Analyzing" << m_currentTrack->getFileInfo();
 
@@ -203,7 +203,7 @@ bool AnalyzerThread::submitNextTrack(TrackPointer nextTrack) {
     return false;
 }
 
-WorkerThread::FetchWorkResult AnalyzerThread::tryFetchWorkItems() {
+WorkerThread::TryFetchWorkItemsResult AnalyzerThread::tryFetchWorkItems() {
     DEBUG_ASSERT(!m_currentTrack);
     TrackPointer* pFront = m_nextTrack.front();
     if (pFront) {
@@ -212,10 +212,10 @@ WorkerThread::FetchWorkResult AnalyzerThread::tryFetchWorkItems() {
         kLogger.debug()
                 << "Dequeued next track"
                 << m_currentTrack->getId();
-        return FetchWorkResult::Ready;
+        return TryFetchWorkItemsResult::Ready;
     } else {
         emitProgress(AnalyzerThreadState::Idle);
-        return FetchWorkResult::Idle;
+        return TryFetchWorkItemsResult::Idle;
     }
 }
 

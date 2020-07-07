@@ -1,0 +1,11 @@
+[ignore]
+.*/node_modules/
+
+[include]
+.*/mk1/
+.*/mk2/
+.*/pro/
+.*/app/
+
+
+[options]

@@ -33,7 +33,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     // Setting Encoder
     bool found = false;
     QString prefformat = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Encoding"));
-    for ( const Encoder::Format format : EncoderFactory::getFactory().getFormats()) {
+    for (const Encoder::Format& format : EncoderFactory::getFactory().getFormats()) {
         QRadioButton* button = new QRadioButton(format.label, this);
         button->setObjectName(format.internalName);
         connect(button, SIGNAL(clicked()), this, SLOT(slotFormatChanged()));
@@ -154,7 +154,7 @@ void DlgPrefRecord::slotUpdate()
     LineEditRecordings->setText(recordingsPath);
 
     QString prefformat = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Encoding"));
-    for ( const Encoder::Format format : EncoderFactory::getFactory().getFormats()) {
+    for (const Encoder::Format& format : EncoderFactory::getFactory().getFormats()) {
         if (prefformat == format.internalName) {
             m_selFormat = format;
             break;

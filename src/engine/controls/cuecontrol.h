@@ -95,7 +95,7 @@ class HotcueControl : public QObject {
   private:
     ConfigKey keyForControl(int hotcue, const char* name);
 
-    QString m_group;
+    const QString m_group;
     int m_iHotcueNumber;
     CuePointer m_pCue;
 
@@ -132,7 +132,7 @@ class CueControl : public EngineControl {
     bool getPlayFlashingAtPause();
     SeekOnLoadMode getSeekOnLoadPreference();
     void trackLoaded(TrackPointer pNewTrack) override;
-    void trackBeatsUpdated(BeatsPointer pBeats) override;
+    void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
   private slots:
     void quantizeChanged(double v);

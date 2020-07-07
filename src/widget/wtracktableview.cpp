@@ -1,7 +1,6 @@
 #include "widget/wtracktableview.h"
 
 #include <QDrag>
-#include <QLinkedList>
 #include <QModelIndex>
 #include <QScrollBar>
 #include <QShortcut>
@@ -291,7 +290,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
     // this.)
     setDragEnabled(true);
 
-    if (trackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_RECEIVEDROPS)) {
+    if (trackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
         setDragDropMode(QAbstractItemView::DragDrop);
         setDropIndicatorShown(true);
         setAcceptDrops(true);
@@ -342,24 +341,24 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex& index) {
                     doubleClickActionConfigValue);
 
     auto trackModel = getTrackModel();
+    VERIFY_OR_DEBUG_ASSERT(trackModel) {
+        return;
+    }
+
     if (doubleClickAction == DlgPrefLibrary::LOAD_TO_DECK &&
             trackModel->hasCapabilities(
-                    TrackModel::TRACKMODELCAPS_LOADTODECK)) {
-        VERIFY_OR_DEBUG_ASSERT(trackModel) {
-            return;
-        }
-
+                    TrackModel::Capability::LoadToDeck)) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
             emit loadTrack(pTrack);
         }
     } else if (doubleClickAction == DlgPrefLibrary::ADD_TO_AUTODJ_BOTTOM &&
             trackModel->hasCapabilities(
-                    TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
+                    TrackModel::Capability::AddToAutoDJ)) {
         addToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
     } else if (doubleClickAction == DlgPrefLibrary::ADD_TO_AUTODJ_TOP &&
             trackModel->hasCapabilities(
-                    TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
+                    TrackModel::Capability::AddToAutoDJ)) {
         addToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
     }
 }
@@ -493,7 +492,7 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
     //qDebug() << "dragEnterEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls()) {
         if (event->source() == this) {
-            if (trackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
+            if (trackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
                 event->acceptProposedAction();
                 return;
             }
@@ -518,7 +517,7 @@ void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
     if (event->mimeData()->hasUrls())
     {
         if (event->source() == this) {
-            if (trackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
+            if (trackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
                 event->acceptProposedAction();
             } else {
                 event->ignore();
@@ -566,7 +565,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
 
     // Drag and drop within this widget (track reordering)
     if (event->source() == this &&
-            trackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
+            trackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
         // Note the above code hides an ambiguous case when a
         // playlist is empty. For that reason, we can't factor that
         // code out to be common for both internal reordering
@@ -706,7 +705,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
 
         // Create the selection, but only if the track model supports
         // reordering. (eg. crates don't support reordering/indexes)
-        if (trackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
+        if (trackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
             for (int i = selectionStartRow; i < selectionStartRow + numNewRows; i++) {
                 this->selectionModel()->select(model()->index(i, 0),
                                                QItemSelectionModel::Select |
@@ -812,19 +811,18 @@ void WTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
     }
 
     for (const auto& trackId : trackIds) {
-        const QLinkedList<int> gts = pTrackModel->getTrackRows(trackId);
+        const auto gts = pTrackModel->getTrackRows(trackId);
 
-        QLinkedList<int>::const_iterator i;
-        for (i = gts.constBegin(); i != gts.constEnd(); ++i) {
-            pSelectionModel->select(model()->index(*i, 0),
-                                    QItemSelectionModel::Select | QItemSelectionModel::Rows);
+        for (int trackRow : gts) {
+            pSelectionModel->select(model()->index(trackRow, 0),
+                    QItemSelectionModel::Select | QItemSelectionModel::Rows);
         }
     }
 }
 
 void WTrackTableView::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     auto trackModel = getTrackModel();
-    if (!trackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
+    if (!trackModel->hasCapabilities(TrackModel::Capability::AddToAutoDJ)) {
         return;
     }
 
@@ -868,7 +866,7 @@ void WTrackTableView::doSortByColumn(int headerSection, Qt::SortOrder sortOrder)
         // the TrackModel. This will allow the playlist table model to use the
         // table index as the unique id instead of this code stupidly using
         // trackid.
-        QLinkedList<int> rows = trackModel->getTrackRows(trackId);
+        const auto rows = trackModel->getTrackRows(trackId);
         for (int row : rows) {
             // Restore sort order by rows, so the following commands will act as expected
             selectedRows.insert(row, 0);
