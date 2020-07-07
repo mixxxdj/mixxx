@@ -1176,7 +1176,23 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                     << "writableRange" << writableRange
                     << "missingFrameCount" << missingFrameCount;
 #endif
+            // readFrameIndex
+            //       |
+            //       v
+            //       | missingFrameCount |<- decodedFrameRange ->|
             DEBUG_ASSERT(readFrameIndex <= decodedFrameRange.start());
+            if (readFrameIndex < decodedFrameRange.start()) {
+                // The decoder has skipped some sample data that needs to
+                // be filled with silence to continue decoding! This is supposed
+                // to occur only at the beginning of a stream for the very first
+                // decoded frame with a lead-in due to start_time > 0. But not all
+                // encoded streams seem to account for this by correctly setting
+                // the start_time property.
+                qCWarning(mixxxLogSourceFFmpeg)
+                        << "Generating silence for unavailable sample data"
+                        << IndexRange::between(readFrameIndex, decodedFrameRange.start());
+            }
+
             // NOTE: Decoding might start at a negative position for the first
             // frame of the file! In this case readFrameIndex < decodedFrameRange().start(),
             // i.e. the decoded frame starts outside of the track's valid range!
@@ -1191,22 +1207,10 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                 break;
             }
 
-            // readFrameIndex
-            //       |
-            //       v
-            //       | missingFrameCount |<- decodedFrameRange ->|
-
-            if (readFrameIndex > writableRange.start()) {
-                // The decoder has skipped some sample data that needs to
-                // be filled with silence to continue decoding!
-                const auto missingRange = IndexRange::between(writableRange.start(), readFrameIndex);
-                // This should only happen at the beginning of a stream
-                // with a lead-in due to start_time > 0.
-                VERIFY_OR_DEBUG_ASSERT(intersect(missingRange, getStreamFrameIndexRange(*m_pavStream)).empty()) {
-                    qCWarning(mixxxLogSourceFFmpeg)
-                            << "Missing sample data within decoded stream"
-                            << intersect(missingRange, getStreamFrameIndexRange(*m_pavStream));
-                }
+            if (writableRange.start() < readFrameIndex) {
+                const auto missingRange = IndexRange::between(
+                        writableRange.start(),
+                        readFrameIndex);
                 const auto clearRange = intersect(missingRange, writableRange);
                 if (clearRange.length() > 0) {
                     const auto clearSampleCount =
@@ -1220,6 +1224,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                     writableRange.shrinkFront(clearRange.length());
                 }
             }
+            DEBUG_ASSERT(writableRange.start() >= readFrameIndex);
 
             // Skip all missing and decoded ranges that do not overlap
             // with writableRange, i.e. that precede writableRange.

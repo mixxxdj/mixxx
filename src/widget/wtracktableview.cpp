@@ -341,13 +341,13 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex& index) {
                     doubleClickActionConfigValue);
 
     auto trackModel = getTrackModel();
+    VERIFY_OR_DEBUG_ASSERT(trackModel) {
+        return;
+    }
+
     if (doubleClickAction == DlgPrefLibrary::LOAD_TO_DECK &&
             trackModel->hasCapabilities(
                     TrackModel::Capability::LoadToDeck)) {
-        VERIFY_OR_DEBUG_ASSERT(trackModel) {
-            return;
-        }
-
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
             emit loadTrack(pTrack);
