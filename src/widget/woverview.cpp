@@ -815,22 +815,22 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                     static_cast<qreal>(width()));
 
             if (m_orientation == Qt::Horizontal) {
-                rect.setCoords(markPosition, 0, markEndPosition, 5);
+                rect.setCoords(markPosition, 0, markEndPosition, height());
             } else {
-                rect.setCoords(0, markPosition, 5, markEndPosition);
+                rect.setCoords(0, markPosition, width(), markEndPosition);
             }
         }
 
         pPainter->setPen(shadowPen);
         pPainter->drawLine(line);
-        if (rect.isValid()) {
-            pPainter->drawRect(rect);
-        }
 
         pPainter->setPen(pMark->fillColor());
         pPainter->drawLine(line);
+
         if (rect.isValid()) {
-            pPainter->fillRect(rect, pMark->fillColor());
+            QColor loopColor = pMark->fillColor();
+            loopColor.setAlphaF(0.5);
+            pPainter->fillRect(rect, loopColor);
         }
 
         if (!pMark->m_text.isEmpty()) {
