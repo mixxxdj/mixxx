@@ -283,7 +283,7 @@ function EKSOtusController() {
     }
 
     // Volume slider scaling for 0..1..5 scaling
-    this,volumeScaler = function(group,name,value) {
+    this.volumeScaler = function(group,name,value) {
         return script.absoluteNonLin(value, 0, 1, 5, 0, 65536);
     }
 
