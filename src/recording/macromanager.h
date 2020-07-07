@@ -94,7 +94,8 @@ class MacroManager : public RecordingManagerBase {
     Macro getMacro();
 
   private:
-    FRIEND_TEST(MacroManagerTest, claimRecording);
+    FRIEND_TEST(MacroManagerTest, ClaimRecording);
+    FRIEND_TEST(MacroManagerTest, RecordCueJump);
 
     /// Checks if ths channel is recording, otherwise tries to claim it.
     /// Returns true if this channel is recording.
