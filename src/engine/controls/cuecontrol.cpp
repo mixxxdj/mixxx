@@ -2052,7 +2052,7 @@ void CueControl::slotLoopUpdated(double startPosition, double endPosition) {
 
     DEBUG_ASSERT(startPosition != Cue::kNoPosition);
     DEBUG_ASSERT(endPosition != Cue::kNoPosition);
-    DEBUG_ASSERT(startPosition > endPosition);
+    DEBUG_ASSERT(startPosition < endPosition);
 
     m_pCurrentSavedLoop->setStartPosition(startPosition);
     m_pCurrentSavedLoop->setEndPosition(endPosition);
