@@ -76,7 +76,7 @@
                     <ArcThickness><Variable name="ArcThickness"/></ArcThickness>
                     <ArcColor><Variable name="ArcColorEq"/></ArcColor>
                     <ArcRoundCaps><Variable name="ArcRoundCaps"/></ArcRoundCaps>
-                    <KnobCenterYOffset>1.598</KnobCenterYOffset>
+                    <KnobCenterYOffset>1.998</KnobCenterYOffset>
                     <Connection>
                       <ConfigKey><Variable name="EqEffect"/>,parameter<Variable name="EqParameter"/></ConfigKey>
                     </Connection>
