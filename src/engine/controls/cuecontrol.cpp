@@ -1046,8 +1046,9 @@ void CueControl::hotcuePositionChanged(HotcueControl* pControl, double newPositi
 
 void CueControl::hotcueLengthChanged(HotcueControl* pControl, double newLength) {
     QMutexLocker lock(&m_mutex);
-    if (!m_pLoadedTrack)
+    if (!m_pLoadedTrack) {
         return;
+    }
 
     CuePointer pCue(pControl->getCue());
     if (pCue) {
