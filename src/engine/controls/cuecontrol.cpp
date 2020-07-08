@@ -809,7 +809,7 @@ void CueControl::hotcueGotoAndPlay(HotcueControl* pControl, double v) {
         if (position != Cue::kNoPosition) {
             seekAbs(position);
             if (!isPlayingByPlayButton()) {
-                // cueGoto is processed asynchrony.
+                // cueGoto is processed asynchronously.
                 // avoid a wrong cue set if seek by cueGoto is still pending
                 m_bPreviewing = false;
                 m_iCurrentlyPreviewingHotcues = 0;
@@ -856,7 +856,7 @@ void CueControl::hotcueGotoAndLoop(HotcueControl* pControl, double v) {
     }
 
     if (!isPlayingByPlayButton()) {
-        // cueGoto is processed asynchrony.
+        // cueGoto is processed asynchronously.
         // avoid a wrong cue set if seek by cueGoto is still pending
         m_bPreviewing = false;
         m_iCurrentlyPreviewingHotcues = 0;
@@ -1168,7 +1168,7 @@ void CueControl::cueGotoAndPlay(double v)
     QMutexLocker lock(&m_mutex);
     // Start playing if not already
     if (!isPlayingByPlayButton()) {
-        // cueGoto is processed asynchrony.
+        // cueGoto is processed asynchronously.
         // avoid a wrong cue set if seek by cueGoto is still pending
         m_bPreviewing = false;
         m_iCurrentlyPreviewingHotcues = 0;
