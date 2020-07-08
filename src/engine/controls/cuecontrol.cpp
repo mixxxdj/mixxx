@@ -677,21 +677,11 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v, HotcueMode mode) {
     double cueEndPosition = Cue::kNoPosition;
     mixxx::CueType cueType = mixxx::CueType::Invalid;
 
-    switch (mode) {
-    case HotcueMode::Auto: {
-        if (m_pLoopEnabled->get()) {
-            // If a loop is enabled, the hotcue will be a saved loop
-            cueStartPosition = m_pLoopStartPosition->get();
-            cueEndPosition = m_pLoopEndPosition->get();
-            cueType = mixxx::CueType::Loop;
-        } else {
-            // If no loop is enabled, just store regular jump cue
-            cueStartPosition = getQuantizedCurrentPosition();
-            cueEndPosition = Cue::kNoPosition;
-            cueType = mixxx::CueType::HotCue;
-        }
-        break;
+    if (mode == HotcueMode::Auto) {
+        mode = m_pLoopEnabled->get() ? HotcueMode::Loop : HotcueMode::Cue;
     }
+
+    switch (mode) {
     case HotcueMode::Cue: {
         // If no loop is enabled, just store regular jump cue
         cueStartPosition = getQuantizedCurrentPosition();
@@ -706,6 +696,8 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v, HotcueMode mode) {
         cueType = mixxx::CueType::Loop;
         break;
     }
+    default:
+        DEBUG_ASSERT(!"Invalid HotcueMode");
     }
 
     VERIFY_OR_DEBUG_ASSERT(cueType != mixxx::CueType::Invalid) {
