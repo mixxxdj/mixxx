@@ -23,8 +23,6 @@ enum MacroState : uint8_t {
     Armed,
     /// Recording is active and claimed to a particular channel
     Recording,
-    /// Intermediate state, awaiting stop confirmation
-    Stopping
 };
 
 /// A MacroAction is the smallest piece of a Macro.
@@ -34,6 +32,7 @@ struct MacroAction {
     MacroAction(){};
     MacroAction(double position, double target)
             : position(position), target(target){};
+    /// TODO(xerus) use FramePos once https://github.com/mixxxdj/mixxx/pull/2861 is merged
     double position;
     double target;
 };
