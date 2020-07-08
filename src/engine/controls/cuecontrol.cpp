@@ -656,8 +656,9 @@ void CueControl::quantizeChanged(double v) {
 void CueControl::hotcueSet(HotcueControl* pControl, double v, HotcueMode mode) {
     //qDebug() << "CueControl::hotcueSet" << v;
 
-    if (!v)
+    if (!v) {
         return;
+    }
 
     QMutexLocker lock(&m_mutex);
     if (!m_pLoadedTrack)
@@ -751,8 +752,9 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v, HotcueMode mode) {
 }
 
 void CueControl::hotcueGoto(HotcueControl* pControl, double v) {
-    if (!v)
+    if (!v) {
         return;
+    }
 
     QMutexLocker lock(&m_mutex);
     if (!m_pLoadedTrack) {
@@ -773,8 +775,9 @@ void CueControl::hotcueGoto(HotcueControl* pControl, double v) {
 }
 
 void CueControl::hotcueGotoAndStop(HotcueControl* pControl, double v) {
-    if (!v)
+    if (!v) {
         return;
+    }
 
     QMutexLocker lock(&m_mutex);
     if (!m_pLoadedTrack)
@@ -795,8 +798,9 @@ void CueControl::hotcueGotoAndStop(HotcueControl* pControl, double v) {
 }
 
 void CueControl::hotcueGotoAndPlay(HotcueControl* pControl, double v) {
-    if (!v)
+    if (!v) {
         return;
+    }
 
     QMutexLocker lock(&m_mutex);
     if (!m_pLoadedTrack) {
@@ -826,8 +830,9 @@ void CueControl::hotcueGotoAndPlay(HotcueControl* pControl, double v) {
 }
 
 void CueControl::hotcueGotoAndLoop(HotcueControl* pControl, double v) {
-    if (!v)
+    if (!v) {
         return;
+    }
 
     QMutexLocker lock(&m_mutex);
     if (!m_pLoadedTrack) {
@@ -870,8 +875,9 @@ void CueControl::hotcueGotoAndLoop(HotcueControl* pControl, double v) {
 }
 
 void CueControl::hotcueLoopToggle(HotcueControl* pControl, double v) {
-    if (!v)
+    if (!v) {
         return;
+    }
 
     QMutexLocker lock(&m_mutex);
     if (!m_pLoadedTrack) {
@@ -1010,8 +1016,9 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
 }
 
 void CueControl::hotcueClear(HotcueControl* pControl, double v) {
-    if (!v)
+    if (!v) {
         return;
+    }
 
     QMutexLocker lock(&m_mutex);
     if (!m_pLoadedTrack) {
@@ -1109,8 +1116,9 @@ void CueControl::hintReader(HintVector* pHintList) {
 // Moves the cue point to current position or to closest beat in case
 // quantize is enabled
 void CueControl::cueSet(double v) {
-    if (!v)
+    if (!v) {
         return;
+    }
 
     QMutexLocker lock(&m_mutex);
 
@@ -1142,8 +1150,9 @@ void CueControl::cueClear(double v) {
 
 void CueControl::cueGoto(double v)
 {
-    if (!v)
+    if (!v) {
         return;
+    }
 
     QMutexLocker lock(&m_mutex);
     // Seek to cue point
@@ -1173,8 +1182,9 @@ void CueControl::cueGotoAndPlay(double v)
 
 void CueControl::cueGotoAndStop(double v)
 {
-    if (!v)
+    if (!v) {
         return;
+    }
 
     QMutexLocker lock(&m_mutex);
     m_pPlay->set(0.0);
