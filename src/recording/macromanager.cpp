@@ -49,23 +49,35 @@ void MacroManager::startRecording() {
     qCDebug(macros) << "MacroManager recording start";
     m_CORecStatus.set(1);
     m_recordedMacro.clear();
-    m_macroRecordingState.store(MacroState::Armed);
+    setState(MacroState::Armed);
 }
 
 void MacroManager::stopRecording() {
     qCDebug(macros) << "MacroManager recording stop";
     m_CORecStatus.set(0);
-    m_macroRecordingState.store(MacroState::Disabled);
+    setState(MacroState::Disabled);
     qCDebug(macros) << "Recorded Macro for channel" << m_activeChannel;
     m_activeChannel = nullptr;
     // TODO(xerus) wait until stopped, use stopping state
     m_recordedMacro.dump();
 }
 
-bool MacroManager::isRecordingActive() {
-    return m_macroRecordingState.load() != MacroState::Disabled;
-}
-
 Macro MacroManager::getMacro() {
     return m_recordedMacro;
+}
+
+ChannelHandle* MacroManager::getActiveChannel() {
+    return m_activeChannel;
+}
+
+bool MacroManager::isRecordingActive() {
+    return getState() != MacroState::Disabled;
+}
+
+MacroState MacroManager::getState() {
+    return m_macroRecordingState.load();
+}
+
+void MacroManager::setState(MacroState state) {
+    m_macroRecordingState.store(state);
 }

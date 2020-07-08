@@ -40,8 +40,8 @@ struct MacroAction {
 
 /// A Macro stores a list of actions.
 /// The action list is pre-populated at construction so that it can be written to in real-time code.
-struct Macro {
-    size_t m_length = 0;
+class Macro {
+  public:
     MacroAction actions[kMaxMacroSize];
 
     Macro() {
@@ -58,7 +58,18 @@ struct Macro {
         actions[m_length].position = origin;
         actions[m_length].target = target;
         m_length++;
-    };
+    }
+
+    /// The amount of saved Actions
+    int getLength() {
+        return m_length;
+    }
+
+    /// Clears the contents of this Macro by setting its length to 0.
+    void clear() {
+        qCDebug(macros) << "Clearing Macro";
+        m_length = 0;
+    }
 
     /// For debugging - dump all saved actions to debug output.
     void dump() {
@@ -68,11 +79,8 @@ struct Macro {
         }
     }
 
-    /// Clears the contents of this Macro by setting its length to 0.
-    void clear() {
-        qCDebug(macros) << "Clearing Macro";
-        m_length = 0;
-    }
+  private:
+    size_t m_length = 0;
 };
 
 /// The MacroManager handles the recording of Macros and the [MacroRecording] controls.
@@ -92,6 +100,8 @@ class MacroManager : public RecordingManagerBase {
     void notifyCueJump(ChannelHandle& channel, double origin, double target);
 
     Macro getMacro();
+    MacroState getState();
+    ChannelHandle* getActiveChannel();
 
   private:
     FRIEND_TEST(MacroManagerTest, ClaimRecording);
@@ -107,6 +117,8 @@ class MacroManager : public RecordingManagerBase {
     /// given channel.
     /// Called from RT.
     bool claimRecording();
+
+    void setState(MacroState state);
 
     ControlPushButton m_COToggleRecording;
     ControlObject m_CORecStatus;
