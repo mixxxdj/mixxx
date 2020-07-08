@@ -1061,7 +1061,7 @@ void CueControl::hotcueLengthChanged(HotcueControl* pControl, double newLength) 
     if (pCue) {
         // Setting the length to Cue::kNoPosition is the same as calling hotcue_x_clear
         if (newLength == Cue::kNoPosition) {
-            pCue->setHotCue(-1);
+            pCue->setHotCue(Cue::kNoHotCue);
             detachCue(pControl);
         } else {
             if (newLength >= 0) {
@@ -1081,7 +1081,7 @@ void CueControl::hotcueTypeChanged(HotcueControl* pControl, double newType) {
         // Setting the type to 0 or -1 is the same as calling hotcue_x_clear
         int iType = static_cast<int>(newType);
         if (iType <= 0 || iType > static_cast<int>(mixxx::CueType::AudibleSound)) {
-            pCue->setHotCue(-1);
+            pCue->setHotCue(Cue::kNoHotCue);
             detachCue(pControl);
         } else {
             pCue->setType(static_cast<mixxx::CueType>(iType));
