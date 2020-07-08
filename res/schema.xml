@@ -148,7 +148,7 @@ METADATA
   </revision>
   <revision version="6">
     <description>
-                    Added a ReplayGain Column.
+      Added a ReplayGain Column.
     </description>
     <sql>
         ALTER TABLE library ADD COLUMN replaygain float DEFAULT 0;
@@ -490,8 +490,7 @@ METADATA
       <!-- White -->
       UPDATE cues SET color=0xF2F2FF WHERE color=8;
       <!-- Remove alpha channel from cues that were updated by
-           previous, in-development schema migrations
-        -->
+           previous, in-development schema migrations -->
       UPDATE cues SET color = (color &amp; 0xFFFFFF) WHERE color > 0xFFFFFF;
     </sql>
   </revision>
