@@ -262,22 +262,22 @@ void WTrackMenu::createActions() {
         m_pBpmThreeHalvesAction = new QAction(tr("3/2 BPM"), m_pBPMMenu);
 
         connect(m_pBpmDoubleAction, &QAction::triggered, this, [this] {
-            slotScaleBpm(mixxx::Beats::DOUBLE);
+            slotScaleBpm(mixxx::BeatsInternal::DOUBLE);
         });
         connect(m_pBpmHalveAction, &QAction::triggered, this, [this] {
-            slotScaleBpm(mixxx::Beats::HALVE);
+            slotScaleBpm(mixxx::BeatsInternal::HALVE);
         });
         connect(m_pBpmTwoThirdsAction, &QAction::triggered, this, [this] {
-            slotScaleBpm(mixxx::Beats::TWOTHIRDS);
+            slotScaleBpm(mixxx::BeatsInternal::TWOTHIRDS);
         });
         connect(m_pBpmThreeFourthsAction, &QAction::triggered, this, [this] {
-            slotScaleBpm(mixxx::Beats::THREEFOURTHS);
+            slotScaleBpm(mixxx::BeatsInternal::THREEFOURTHS);
         });
         connect(m_pBpmFourThirdsAction, &QAction::triggered, this, [this] {
-            slotScaleBpm(mixxx::Beats::FOURTHIRDS);
+            slotScaleBpm(mixxx::BeatsInternal::FOURTHIRDS);
         });
         connect(m_pBpmThreeHalvesAction, &QAction::triggered, this, [this] {
-            slotScaleBpm(mixxx::Beats::THREEHALVES);
+            slotScaleBpm(mixxx::BeatsInternal::THREEHALVES);
         });
 
         m_pBpmResetAction = new QAction(tr("Reset BPM"), m_pBPMMenu);
@@ -1068,7 +1068,7 @@ void WTrackMenu::slotScaleBpm(int scale) {
         if (!pBeats) {
             continue;
         }
-        pBeats->scale(static_cast<mixxx::Beats::BPMScale>(scale));
+        pBeats->scale(static_cast<mixxx::BeatsInternal::BPMScale>(scale));
     }
 }
 

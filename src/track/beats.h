@@ -31,12 +31,22 @@ namespace mixxx {
 /// plain copyable, movable object.
 class BeatsInternal {
   public:
+    BeatsInternal();
+
+    enum BPMScale {
+        DOUBLE,
+        HALVE,
+        TWOTHIRDS,
+        THREEFOURTHS,
+        FOURTHIRDS,
+        THREEHALVES,
+    };
+
     // TODO(hacksdump): These versions are retained for backward compatibility.
     // In future, There will be no versions at all.
     static const QString BEAT_MAP_VERSION;
     static const QString BEAT_GRID_1_VERSION;
     static const QString BEAT_GRID_2_VERSION;
-    BeatsInternal();
     FramePos findNthBeat(FramePos frame, int offset) const;
     Bpm getBpm() const;
     bool isValid() const;
@@ -51,7 +61,21 @@ class BeatsInternal {
     QString getVersion() const;
     QString getSubVersion() const;
     void setSubVersion(const QString& subVersion);
+    Bpm calculateBpm(const track::io::Beat& startBeat,
+            const track::io::Beat& stopBeat) const;
+    void scale(enum BPMScale scale);
+
   private:
+    void updateBpm();
+    void scaleDouble();
+    void scaleTriple();
+    void scaleQuadruple();
+    void scaleHalve();
+    void scaleThird();
+    void scaleFourth();
+    void scaleMultiple(uint multiple);
+    void scaleFraction(uint fraction);
+
     QString m_subVersion;
     Bpm m_bpm;
     BeatList m_beats;
@@ -81,15 +105,6 @@ class Beats final : public QObject {
 
     // TODO(JVC) Is a copy constructor needed? of we can force a move logic??
     Beats(const mixxx::Beats& other);
-
-    enum BPMScale {
-        DOUBLE,
-        HALVE,
-        TWOTHIRDS,
-        THREEFOURTHS,
-        FOURTHIRDS,
-        THREEHALVES,
-    };
 
     /// Serializes into a protobuf.
     QByteArray toProtobuf() const;
@@ -192,7 +207,7 @@ class Beats final : public QObject {
     void translate(FrameDiff_t numFrames);
 
     /// Scale the position of every beat in the song by dScalePercentage.
-    void scale(enum BPMScale scale);
+    void scale(enum BeatsInternal::BPMScale scale);
 
     /// Adjust the beats so the global average BPM matches dBpm.
     void setBpm(Bpm dBpm);
@@ -218,14 +233,6 @@ class Beats final : public QObject {
     void slotTrackBeatsUpdated();
   private:
     void updateBpm();
-    void scaleDouble();
-    void scaleTriple();
-    void scaleQuadruple();
-    void scaleHalve();
-    void scaleThird();
-    void scaleFourth();
-    void scaleMultiple(uint multiple);
-    void scaleFraction(uint fraction);
 
     mutable QMutex m_mutex;
     const Track* m_track;

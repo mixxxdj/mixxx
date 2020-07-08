@@ -66,22 +66,22 @@ TEST_F(BeatsTest, Scale) {
     // Initially must be the base value
     EXPECT_EQ(m_bpm, m_pBeats1->getBpm());
 
-    m_pBeats1->scale(Beats::DOUBLE);
+    m_pBeats1->scale(BeatsInternal::DOUBLE);
     EXPECT_EQ(m_bpm * 2, m_pBeats1->getBpm());
 
-    m_pBeats1->scale(Beats::HALVE);
+    m_pBeats1->scale(BeatsInternal::HALVE);
     EXPECT_EQ(m_bpm, m_pBeats1->getBpm());
 
-    m_pBeats1->scale(Beats::TWOTHIRDS);
+    m_pBeats1->scale(BeatsInternal::TWOTHIRDS);
     EXPECT_EQ(m_bpm * 2 / 3, m_pBeats1->getBpm());
 
-    m_pBeats1->scale(Beats::THREEHALVES);
+    m_pBeats1->scale(BeatsInternal::THREEHALVES);
     EXPECT_EQ(m_bpm, m_pBeats1->getBpm());
 
-    m_pBeats1->scale(Beats::THREEFOURTHS);
+    m_pBeats1->scale(BeatsInternal::THREEFOURTHS);
     EXPECT_EQ(m_bpm * 3 / 4, m_pBeats1->getBpm());
 
-    m_pBeats1->scale(Beats::FOURTHIRDS);
+    m_pBeats1->scale(BeatsInternal::FOURTHIRDS);
     EXPECT_EQ(m_bpm, m_pBeats1->getBpm());
 }
 

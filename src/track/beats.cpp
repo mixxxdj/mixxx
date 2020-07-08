@@ -161,13 +161,7 @@ FramePos Beats::findNBeatsFromFrame(FramePos fromFrame, double beats) const {
 };
 
 void Beats::updateBpm() {
-    if (!isValid()) {
-        m_beatsInternal.m_bpm = Bpm();
-        return;
-    }
-    track::io::Beat startBeat = m_beatsInternal.m_beats.first();
-    track::io::Beat stopBeat = m_beatsInternal.m_beats.last();
-    m_beatsInternal.m_bpm = calculateBpm(startBeat, stopBeat);
+    m_beatsInternal.updateBpm();
 }
 
 bool Beats::isValid() const {
@@ -176,29 +170,7 @@ bool Beats::isValid() const {
 
 Bpm Beats::calculateBpm(const track::io::Beat& startBeat,
         const track::io::Beat& stopBeat) const {
-    if (startBeat.frame_position() > stopBeat.frame_position()) {
-        return Bpm();
-    }
-
-    BeatList::const_iterator curBeat =
-            std::lower_bound(m_beatsInternal.m_beats.cbegin(), m_beatsInternal.m_beats.cend(), startBeat, BeatLessThan);
-
-    BeatList::const_iterator lastBeat =
-            std::upper_bound(m_beatsInternal.m_beats.cbegin(), m_beatsInternal.m_beats.cend(), stopBeat, BeatLessThan);
-
-    QVector<double> beatvect;
-    for (; curBeat != lastBeat; ++curBeat) {
-        const track::io::Beat& beat = *curBeat;
-        if (beat.enabled()) {
-            beatvect.append(beat.frame_position());
-        }
-    }
-
-    if (beatvect.isEmpty()) {
-        return Bpm();
-    }
-
-    return BeatUtils::calculateBpm(beatvect, getSampleRate(), 0, 9999);
+    return m_beatsInternal.calculateBpm(startBeat, stopBeat);
 }
 
 FramePos Beats::findPrevBeat(FramePos frame) const {
@@ -510,107 +482,11 @@ void Beats::translate(FrameDiff_t numFrames) {
     emit updated();
 }
 
-void Beats::scale(enum BPMScale scale) {
+void Beats::scale(enum BeatsInternal::BPMScale scale) {
     QMutexLocker locker(&m_mutex);
-    if (!isValid() || m_beatsInternal.m_beats.isEmpty()) {
-        return;
-    }
-
-    switch (scale) {
-    case DOUBLE:
-        // introduce a new beat into every gap
-        scaleDouble();
-        break;
-    case HALVE:
-        // remove every second beat
-        scaleHalve();
-        break;
-    case TWOTHIRDS:
-        // introduce a new beat into every gap
-        scaleDouble();
-        // remove every second and third beat
-        scaleThird();
-        break;
-    case THREEFOURTHS:
-        // introduce two beats into every gap
-        scaleTriple();
-        // remove every second third and forth beat
-        scaleFourth();
-        break;
-    case FOURTHIRDS:
-        // introduce three beats into every gap
-        scaleQuadruple();
-        // remove every second third and forth beat
-        scaleThird();
-        break;
-    case THREEHALVES:
-        // introduce two beats into every gap
-        scaleTriple();
-        // remove every second beat
-        scaleHalve();
-        break;
-    default:
-        DEBUG_ASSERT(!"scale value invalid");
-        return;
-    }
-    updateBpm();
+    m_beatsInternal.scale(scale);
     locker.unlock();
     emit updated();
-}
-
-void Beats::scaleDouble() {
-    scaleMultiple(2);
-}
-
-void Beats::scaleTriple() {
-    scaleMultiple(3);
-}
-
-void Beats::scaleQuadruple() {
-    scaleMultiple(4);
-}
-
-void Beats::scaleHalve() {
-    scaleFraction(2);
-}
-
-void Beats::scaleThird() {
-    scaleFraction(3);
-}
-
-void Beats::scaleFourth() {
-    scaleFraction(4);
-}
-
-void Beats::scaleMultiple(uint multiple) {
-    track::io::Beat prevBeat = m_beatsInternal.m_beats.first();
-    // Skip the first beat to preserve the first beat in a measure
-    BeatList::iterator it = m_beatsInternal.m_beats.begin() + 1;
-    for (; it != m_beatsInternal.m_beats.end(); ++it) {
-        // Need to not accrue fractional frames.
-        int distance = it->frame_position() - prevBeat.frame_position();
-        track::io::Beat beat;
-        for (uint i = 1; i <= multiple - 1; i++) {
-            beat.set_frame_position(
-                    prevBeat.frame_position() + distance * i / multiple);
-            it = m_beatsInternal.m_beats.insert(it, beat);
-            ++it;
-        }
-        prevBeat = it[0];
-    }
-}
-
-void Beats::scaleFraction(uint fraction) {
-    // Skip the first beat to preserve the first beat in a measure
-    BeatList::iterator it = m_beatsInternal.m_beats.begin() + 1;
-    for (; it != m_beatsInternal.m_beats.end(); ++it) {
-        for (uint i = 1; i <= fraction - 1; i++) {
-            it = m_beatsInternal.m_beats.erase(it);
-            if (it == m_beatsInternal.m_beats.end()) {
-                return;
-            }
-        }
-    }
 }
 
 // TODO(JVC) If we use a Beatmap we can't just set the BPM
@@ -815,4 +691,140 @@ QString BeatsInternal::getVersion() const {
 QString BeatsInternal::getSubVersion() const {
     return m_subVersion;
 }
+void BeatsInternal::scale(BeatsInternal::BPMScale scale) {
+    if (!isValid()) {
+        return;
+    }
+
+    switch (scale) {
+    case DOUBLE:
+        // introduce a new beat into every gap
+        scaleDouble();
+        break;
+    case HALVE:
+        // remove every second beat
+        scaleHalve();
+        break;
+    case TWOTHIRDS:
+        // introduce a new beat into every gap
+        scaleDouble();
+        // remove every second and third beat
+        scaleThird();
+        break;
+    case THREEFOURTHS:
+        // introduce two beats into every gap
+        scaleTriple();
+        // remove every second third and forth beat
+        scaleFourth();
+        break;
+    case FOURTHIRDS:
+        // introduce three beats into every gap
+        scaleQuadruple();
+        // remove every second third and forth beat
+        scaleThird();
+        break;
+    case THREEHALVES:
+        // introduce two beats into every gap
+        scaleTriple();
+        // remove every second beat
+        scaleHalve();
+        break;
+    default:
+        DEBUG_ASSERT(!"scale value invalid");
+        return;
+    }
+    updateBpm();
+}
+
+void BeatsInternal::scaleDouble() {
+    scaleMultiple(2);
+}
+
+void BeatsInternal::scaleTriple() {
+    scaleMultiple(3);
+}
+
+void BeatsInternal::scaleQuadruple() {
+    scaleMultiple(4);
+}
+
+void BeatsInternal::scaleHalve() {
+    scaleFraction(2);
+}
+
+void BeatsInternal::scaleThird() {
+    scaleFraction(3);
+}
+
+void BeatsInternal::scaleFourth() {
+    scaleFraction(4);
+}
+
+void BeatsInternal::scaleMultiple(uint multiple) {
+    track::io::Beat prevBeat = m_beats.first();
+    // Skip the first beat to preserve the first beat in a measure
+    BeatList::iterator it = m_beats.begin() + 1;
+    for (; it != m_beats.end(); ++it) {
+        // Need to not accrue fractional frames.
+        int distance = it->frame_position() - prevBeat.frame_position();
+        track::io::Beat beat;
+        for (uint i = 1; i <= multiple - 1; i++) {
+            beat.set_frame_position(
+                    prevBeat.frame_position() + distance * i / multiple);
+            it = m_beats.insert(it, beat);
+            ++it;
+        }
+        prevBeat = it[0];
+    }
+}
+
+void BeatsInternal::scaleFraction(uint fraction) {
+    // Skip the first beat to preserve the first beat in a measure
+    BeatList::iterator it = m_beats.begin() + 1;
+    for (; it != m_beats.end(); ++it) {
+        for (uint i = 1; i <= fraction - 1; i++) {
+            it = m_beats.erase(it);
+            if (it == m_beats.end()) {
+                return;
+            }
+        }
+    }
+}
+
+void BeatsInternal::updateBpm() {
+    if (!isValid()) {
+        m_bpm = Bpm();
+        return;
+    }
+    track::io::Beat startBeat = m_beats.first();
+    track::io::Beat stopBeat = m_beats.last();
+    m_bpm = calculateBpm(startBeat, stopBeat);
+}
+Bpm BeatsInternal::calculateBpm(const track::io::Beat& startBeat,
+        const track::io::Beat& stopBeat) const {
+    if (startBeat.frame_position() > stopBeat.frame_position()) {
+        return Bpm();
+    }
+
+    BeatList::const_iterator curBeat =
+            std::lower_bound(m_beats.cbegin(), m_beats.cend(), startBeat, BeatLessThan);
+
+    BeatList::const_iterator lastBeat =
+            std::upper_bound(m_beats.cbegin(), m_beats.cend(), stopBeat, BeatLessThan);
+
+    QVector<double> beatvect;
+    for (; curBeat != lastBeat; ++curBeat) {
+        const track::io::Beat& beat = *curBeat;
+        if (beat.enabled()) {
+            beatvect.append(beat.frame_position());
+        }
+    }
+
+    if (beatvect.isEmpty()) {
+        return Bpm();
+    }
+
+    return BeatUtils::calculateBpm(beatvect, m_iSampleRate, 0, 9999);
+}
+
 } // namespace mixxx
