@@ -4,7 +4,6 @@
 #include "util/assert.h"
 
 // TODO(xerus) handle track eject while recording
-// TODO(xerus) write tests
 // TODO(xerus) make recording button blink when state is armed
 
 MacroManager::MacroManager()
