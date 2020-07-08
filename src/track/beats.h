@@ -42,12 +42,16 @@ class BeatsInternal {
         THREEHALVES,
     };
 
+    using iterator = BeatIterator;
+
     // TODO(hacksdump): These versions are retained for backward compatibility.
     // In future, There will be no versions at all.
     static const QString BEAT_MAP_VERSION;
     static const QString BEAT_GRID_1_VERSION;
     static const QString BEAT_GRID_2_VERSION;
     FramePos findNthBeat(FramePos frame, int offset) const;
+    FramePos findNextBeat(FramePos frame) const;
+    FramePos findPrevBeat(FramePos frame) const;
     Bpm getBpm() const;
     bool isValid() const;
     void setSampleRate(int sampleRate) {
@@ -64,6 +68,29 @@ class BeatsInternal {
     Bpm calculateBpm(const track::io::Beat& startBeat,
             const track::io::Beat& stopBeat) const;
     void scale(enum BPMScale scale);
+    FramePos findNBeatsFromFrame(FramePos fromFrame, double beats) const;
+    bool findPrevNextBeats(FramePos frame,
+            FramePos* pPrevBeatFrame,
+            FramePos* pNextBeatFrame) const;
+    void setGrid(Bpm dBpm, FramePos firstBeatFrame = FramePos());
+    FramePos findClosestBeat(FramePos frame) const;
+    std::unique_ptr<BeatsInternal::iterator> findBeats(FramePos startFrame,
+            FramePos stopFrame) const;
+    bool hasBeatInRange(FramePos startFrame,
+            FramePos stopFrame) const;
+    double getBpmRange(FramePos startFrame,
+            FramePos stopFrame) const;
+    Bpm getBpmAroundPosition(FramePos curFrame, int n) const;
+    TimeSignature getSignature(FramePos frame = FramePos()) const;
+    void setSignature(TimeSignature signature, FramePos frame = FramePos());
+    void setDownBeat(FramePos frame = FramePos());
+    void translate(FrameDiff_t numFrames);
+    void setBpm(Bpm bpm);
+    inline int size() {
+        return m_beats.size();
+    }
+    FramePos getFirstBeatPosition() const;
+    FramePos getLastBeatPosition() const;
 
   private:
     void updateBpm();
@@ -117,7 +144,7 @@ class Beats final : public QObject {
     /// Return a string that represent the preferences used to generate
     /// the beats object.
     QString getSubVersion() const;
-    void setSubVersion(QString subVersion);
+    void setSubVersion(const QString& subVersion);
     bool isValid() const;
     /// Calculates the BPM between two beat positions.
     Bpm calculateBpm(const track::io::Beat& startBeat,
@@ -210,11 +237,11 @@ class Beats final : public QObject {
     void scale(enum BeatsInternal::BPMScale scale);
 
     /// Adjust the beats so the global average BPM matches dBpm.
-    void setBpm(Bpm dBpm);
+    void setBpm(Bpm bpm);
 
     /// Returns the number of beats
     inline int size() {
-        return m_beatsInternal.m_beats.size();
+        return m_beatsInternal.size();
     }
 
     /// Returns the frame number for the first beat, -1 is no beats
