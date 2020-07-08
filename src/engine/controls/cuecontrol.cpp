@@ -2016,7 +2016,7 @@ void CueControl::setCurrentSavedLoop(CuePointer pCue) {
     }
 
     if (m_pCurrentSavedLoop) {
-        qDebug() << "CueControl::setLoop" << pCue->getPosition() << pCue->getEndPosition() << true;
+        qDebug() << "CueControl::setLoop" << pCue->getPosition() << pCue->getEndPosition();
         setLoop(pCue->getPosition(), pCue->getEndPosition(), true);
         pCue->activate();
     }
