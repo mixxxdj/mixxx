@@ -180,6 +180,11 @@ class ControlObject : public QObject {
     void readOnlyHandler(double v);
 
   private:
+    ControlObject(ControlObject&&) = delete;
+    ControlObject(const ControlObject&) = delete;
+    ControlObject& operator=(ControlObject&&) = delete;
+    ControlObject& operator=(const ControlObject&) = delete;
+
     inline bool ignoreNops() const {
         return m_pControl ? m_pControl->ignoreNops() : true;
     }
