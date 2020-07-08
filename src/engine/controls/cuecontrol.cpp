@@ -927,10 +927,15 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double v, HotcueMode mo
                 hotcueSet(pControl, v, mode);
             } else {
                 if (isPlayingByPlayButton()) {
-                    if (pCue->getLength() > 0) {
-                        hotcueLoopToggle(pControl, v);
-                    } else {
+                    switch (pCue->getType()) {
+                    case mixxx::CueType::HotCue:
                         hotcueGoto(pControl, v);
+                        break;
+                    case mixxx::CueType::Loop:
+                        hotcueLoopToggle(pControl, v);
+                        break;
+                    default:
+                        DEBUG_ASSERT(!"Invalid CueType!");
                     }
                 } else {
                     hotcueActivatePreview(pControl, v);
