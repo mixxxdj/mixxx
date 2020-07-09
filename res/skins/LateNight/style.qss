@@ -28,6 +28,10 @@ WTrackMenu QMenu,
 WOverview /* Hotcue labels in the overview */,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
+#ComboBoxAutoDjCalcTransitionPeriod,
+#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea,
+#ComboBoxAutoDjTransitionUnit,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
 WLibrary QRadioButton {
@@ -62,6 +66,8 @@ WOverview #PassthroughLabel,
 #DlgAnalysis > QPushButton,
 #labelRecFilename,
 WEffectSelector,
+#ComboBoxAutoDjCalcTransitionPeriod,
+#ComboBoxAutoDjTransitionUnit,
 #fadeModeCombobox,
 WOverview #PassthroughLabel {
   font-weight: bold;
@@ -136,6 +142,10 @@ WKey,
 #DurationText,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
+#ComboBoxAutoDjCalcTransitionPeriod,
+#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea,
+#ComboBoxAutoDjTransitionUnit,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
 #labelRecPrefix,
@@ -476,6 +486,8 @@ WEffectSelector {
   /* The 3D frame on the combo box becomes flat when you give it a border
   border-radius: 3px; */
   }
+#ComboBoxAutoDjCalcTransitionPeriod,
+#ComboBoxAutoDjTransitionUnit,
 #fadeModeCombobox {
   height: 18px;
   margin: 0px 0px 3px 1px;
@@ -483,6 +495,8 @@ WEffectSelector {
   }
 
   WEffectSelector QAbstractScrollArea,
+  #ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea,
+  #ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
   #fadeModeCombobox QAbstractScrollArea {
     width: 142px;
     /* padding-left: 6px; */
@@ -496,6 +510,8 @@ WEffectSelector {
   }
   /* selected item */
   WEffectSelector::checked,
+  #ComboBoxAutoDjCalcTransitionPeriod::checked,
+  #ComboBoxAutoDjTransitionUnit::checked,
   #fadeModeCombobox::checked {
     /* not applied
     padding-left: 5px;	*/
@@ -505,6 +521,8 @@ WEffectSelector {
   }
   /* hovered items */
   WEffectSelector::item:selected,
+  #ComboBoxAutoDjCalcTransitionPeriod::item:selected,
+  #ComboBoxAutoDjTransitionUnit::item:selected,
   #fadeModeCombobox::item:selected {
     background-color: #333;
   /* Already one of those properties destroys font config and
@@ -516,6 +534,8 @@ WEffectSelector {
     border: 0; */
   }
   WEffectSelector::indicator,
+  #ComboBoxAutoDjCalcTransitionPeriod::indicator,
+  #ComboBoxAutoDjTransitionUnit::indicator,
   #fadeModeCombobox::indicator {
   /* This is sufficient to completely hide the tick mark, but
     this alone would show an empty, shadowed box instead of tick mark

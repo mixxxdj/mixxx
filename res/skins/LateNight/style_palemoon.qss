@@ -803,6 +803,8 @@ WEffectSelector {
   /* The 3D frame on the combo box becomes flat when you give it a border
   border-radius: 3px; */
   }
+#ComboBoxAutoDjCalcTransitionPeriod,
+#ComboBoxAutoDjTransitionUnit,
 #fadeModeCombobox {
   height: 18px;
   margin: 0px 0px 3px 1px;
@@ -810,6 +812,8 @@ WEffectSelector {
   }
 
   WEffectSelector QAbstractScrollArea,
+  #ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea,
+  #ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
   #fadeModeCombobox QAbstractScrollArea {
     width: 142px;
     /* padding-left: 6px; */
@@ -823,6 +827,8 @@ WEffectSelector {
   }
   /* selected item */
   WEffectSelector::checked,
+  #ComboBoxAutoDjCalcTransitionPeriod::checked,
+  #ComboBoxAutoDjTransitionUnit::checked,
   #fadeModeCombobox::checked {
     /* not applied
     padding-left: 5px;  */
@@ -832,6 +838,8 @@ WEffectSelector {
   }
   /* hovered items */
   WEffectSelector::item:selected,
+  #ComboBoxAutoDjCalcTransitionPeriod::item:selected,
+  #ComboBoxAutoDjTransitionUnit::item:selected,
   #fadeModeCombobox::item:selected {
     background-color: #333;
   /* Already of those two destroys font config and puts tick mark behind text:
@@ -842,6 +850,8 @@ WEffectSelector {
     border: 0; */
   }
   WEffectSelector::indicator,
+  #ComboBoxAutoDjCalcTransitionPeriod::indicator,
+  #ComboBoxAutoDjTransitionUnit::indicator,
   #fadeModeCombobox::indicator {
   /* This is sufficient to completely hide the tick mark, but
     this alone would show an empty, shadowed box instead of tick mark
@@ -1058,6 +1068,8 @@ WPushButton#FxSuperLinkInvertButton {
 #FxUnit4 #FxUnitLabel,
 #MicAuxLabelUnconfigured,
 WEffectSelector,
+#ComboBoxAutoDjCalcTransitionPeriod,
+#ComboBoxAutoDjTransitionUnit,
 #fadeModeCombobox {
   font-weight: 500;
 }
@@ -1125,6 +1137,8 @@ WTrackMenu QMenu QCheckBox {
     color: #988f86;
   }
 WEffectSelector,
+#ComboBoxAutoDjCalcTransitionPeriod,
+#ComboBoxAutoDjTransitionUnit,
 #fadeModeCombobox {
   color: #918273;
   font-size: 14px;
@@ -1187,6 +1201,8 @@ WEffectSelector,
 #MasterControls #FxAssignButtons WPushButton[displayValue="0"],
 #PreviewLabel,
 WEffectSelector QAbstractScrollArea,
+#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
 #GuiToggleButton[displayValue="0"],
 #RecDuration[highlight="0"],
@@ -1283,6 +1299,8 @@ WEffectSelector,
 #DlgAutoDJ > QPushButton:enabled,
 #DlgRecording > QPushButton:enabled,
 #DlgAnalysis > QPushButton:enabled,
+#ComboBoxAutoDjCalcTransitionPeriod,
+#ComboBoxAutoDjTransitionUnit,
 #fadeModeCombobox,
 #CueDeleteButton,
 #LibraryContainer WBeatSpinBox {
@@ -1347,6 +1365,8 @@ WEffectSelector,
   QPushButton#pushButtonRepeatPlaylist:checked,
   #DlgAnalysis > QPushButton:checked,
   QPushButton#pushButtonRecording:checked,
+  #ComboBoxAutoDjCalcTransitionPeriod:on,
+  #ComboBoxAutoDjTransitionUnit:on,
   #fadeModeCombobox:on,
   WEffectSelector:on,
   #CueDeleteButton[pressed="true"] {
@@ -1466,6 +1486,8 @@ WBeatSpinBox::down-button {
   #MixModeButton[displayValue="0"],
   #MixModeButton[displayValue="1"],
   WEffectSelector,
+  #ComboBoxAutoDjCalcTransitionPeriod,
+  #ComboBoxAutoDjTransitionUnit,
   #fadeModeCombobox,
   #SamplerContainer #SyncSampler[displayValue="0"],
   #SamplerContainer #PflButton[displayValue="0"],
@@ -2677,6 +2699,8 @@ WLibrary QRadioButton::indicator:unchecked {
 /************** common styles for WEffectSelector ******************************
 *************** QSpinBox, QMenu, QToolTip *************************************/
 WEffectSelector QAbstractScrollArea,
+#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
 QToolTip,
 WBeatSpinBox QMenu,
@@ -2720,13 +2744,19 @@ WTrackMenu QMenu QCheckBox,
 #SkinSettings,
 WSearchLineEdit,
 WEffectSelector QAbstractScrollArea,
+#ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
 WEffectSelector::item,
+#ComboBoxAutoDjCalcTransitionPeriod::item,
+#ComboBoxAutoDjTransitionUnit::item,
 #fadeModeCombobox::item {
   background-color: #0f0f0f;
 }
   /* hovered items */
   WEffectSelector::item:selected,
+  #ComboBoxAutoDjCalcTransitionPeriod::item:selected,
+  #ComboBoxAutoDjTransitionUnit::item:selected,
   #fadeModeCombobox::item:selected,
   WBeatSpinBox QMenu::item:selected,
   #LibraryContainer QMenu::item:selected,
@@ -2754,6 +2784,8 @@ WEffectSelector::item,
   }
   /* hover over checked effect */
   WEffectSelector::item:checked:selected,
+  #ComboBoxAutoDjCalcTransitionPeriod::item:checked:selected,
+  #ComboBoxAutoDjTransitionUnit::item:checked:selected,
   #fadeModeCombobox::item:checked:selected {
     background-color: #0a2329;
     color: #fff;
@@ -2761,6 +2793,8 @@ WEffectSelector::item,
 
 
 WEffectSelector,
+#ComboBoxAutoDjCalcTransitionPeriod,
+#ComboBoxAutoDjTransitionUnit,
 #fadeModeCombobox {
   /* The 3D frame on the combo box becomes flat when you give it a border
   border-radius: 3px; */
@@ -2771,6 +2805,8 @@ WEffectSelector,
     padding: 3px 0px 2px 5px;
     margin: 0px;
   }
+  #ComboBoxAutoDjCalcTransitionPeriod,
+  #ComboBoxAutoDjTransitionUnit,
   #fadeModeCombobox {
     min-height: 17px;
     max-height: 17px;
@@ -2778,6 +2814,8 @@ WEffectSelector,
     margin: 0px 1px 4px 1px;
   }
   WEffectSelector::down-arrow,
+  #ComboBoxAutoDjCalcTransitionPeriod::down-arrow,
+  #ComboBoxAutoDjTransitionUnit::down-arrow,
   #fadeModeCombobox::down-arrow {
     image: url(skin:/palemoon/buttons/btn__fx_selector_down.svg);
     border: 0;
@@ -2788,10 +2826,14 @@ WEffectSelector,
   WEffectSelector QAbstractScrollArea {
     min-width: 160px;
   }
+  #ComboBoxAutoDjCalcTransitionPeriod QAbstractScrollArea,
+  #ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
   #fadeModeCombobox QAbstractScrollArea {
     min-width: 185px;
   }
   WEffectSelector::indicator:checked,
+  #ComboBoxAutoDjCalcTransitionPeriod::indicator:checked,
+  #ComboBoxAutoDjTransitionUnit::indicator:checked,
   #fadeModeCombobox::indicator:checked {
     /* checkbox container is 28 x 22px
       use margin + border to create a square checkbox sized like kill buttons */
@@ -2802,6 +2844,14 @@ WEffectSelector,
   WEffectSelector::indicator, /* checkbox, tick mark */
   WEffectSelector::drop-down,
   WEffectSelector::indicator:!checked,
+  #ComboBoxAutoDjCalcTransitionPeriod::checked, /* selected mode */
+  #ComboBoxAutoDjCalcTransitionPeriod::indicator, /* checkbox, tick mark */
+  #ComboBoxAutoDjCalcTransitionPeriod::drop-down,
+  #ComboBoxAutoDjCalcTransitionPeriod::indicator:!checked,
+  #ComboBoxAutoDjTransitionUnit::checked, /* selected mode */
+  #ComboBoxAutoDjTransitionUnit::indicator, /* checkbox, tick mark */
+  #ComboBoxAutoDjTransitionUnit::drop-down,
+  #ComboBoxAutoDjTransitionUnit::indicator:!checked,
   #fadeModeCombobox::checked, /* selected mode */
   #fadeModeCombobox::indicator, /* checkbox, tick mark */
   #fadeModeCombobox::drop-down,
