@@ -25,12 +25,13 @@ void MacroManager::notifyCueJump(ChannelHandle& channel, double origin, double t
     if (checkOrClaimRecording(channel)) {
         m_recordedMacro.appendJump(origin, target);
         qCDebug(macros) << "Recorded jump in channel" << channel.handle();
+        setState(MacroState::Armed);
     }
 }
 
 bool MacroManager::checkOrClaimRecording(ChannelHandle& channel) {
     if (m_activeChannel != nullptr) {
-        return m_activeChannel->handle() == channel.handle();
+        return m_activeChannel->handle() == channel.handle() && claimRecording();
     } else if (claimRecording()) {
         m_activeChannel = &channel;
         qCDebug(macros) << "Claimed recording for channel" << channel.handle();
@@ -54,10 +55,11 @@ void MacroManager::startRecording() {
 void MacroManager::stopRecording() {
     qCDebug(macros) << "MacroManager recording stop";
     m_CORecStatus.set(0);
-    setState(MacroState::Disabled);
+    auto armed = MacroState::Armed;
+    while (!m_macroRecordingState.compare_exchange_weak(armed, MacroState::Disabled))
+        QThread::yieldCurrentThread();
     qCDebug(macros) << "Recorded Macro for channel" << m_activeChannel;
     m_activeChannel = nullptr;
-    // TODO(xerus) wait until stopped, use stopping state
     m_recordedMacro.dump();
 }
 

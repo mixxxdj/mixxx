@@ -19,9 +19,9 @@ const QLoggingCategory macros("macros");
 enum MacroState : uint8_t {
     /// Nothing is going on
     Disabled,
-    /// Intermediate state, awaiting recording
+    /// Recording is active, but nothing currently going on
     Armed,
-    /// Recording is active and claimed to a particular channel
+    /// An Action is currently being recorded
     Recording,
 };
 
