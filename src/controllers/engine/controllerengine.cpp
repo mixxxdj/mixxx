@@ -230,6 +230,7 @@ void ControllerEngine::uninitializeScriptEngine() {
 }
 
 void ControllerEngine::loadModule(QFileInfo moduleFileInfo) {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     m_moduleFileInfo = moduleFileInfo;
 
     QJSValue mod = m_pScriptEngine->importModule(moduleFileInfo.absoluteFilePath());
@@ -263,6 +264,7 @@ void ControllerEngine::loadModule(QFileInfo moduleFileInfo) {
     } else {
         qDebug() << "Module exports no shutdown function.";
     }
+#endif
 }
 
 void ControllerEngine::handleInput(QByteArray data, mixxx::Duration timestamp) {
