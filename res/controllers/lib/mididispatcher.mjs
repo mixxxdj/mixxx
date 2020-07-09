@@ -45,8 +45,12 @@ export class MidiDispatcher {
      * Program change (starting with 0xC) and aftertouch (starting with 0xD) messages are distinguished by only
      * their first byte, so in those cases the Array should only have one number.
      *
-     * @param {function} callback - The callback that will be called by the receiveData method when a MIDI message
-     * matching midiBytes is received from the controller.
+     * @param {MidiInputHandler} callback - The callback that will be called by the handleMidiInput method
+     * when a MIDI message matching midiBytes is received from the controller.
+     *
+     * @callback MidiInputHandler
+     * @param {Array} data - incoming MIDI data
+     * @param {number} timestamp - The timestamp that Mixxx received the MIDI data at (milliseconds)
      */
     setInputCallback(midiBytes, callback) {
         if (!Array.isArray(midiBytes)) {
@@ -72,7 +76,7 @@ export class MidiDispatcher {
      * Receive incoming MIDI data from a controller and execute the callback registered to that
      * MIDI message.
      * @param {Array} data - The incoming MIDI data.
-     * @param {number} timestamp - The timestamp that Mixxx received the MIDI data at.
+     * @param {number} timestamp - The timestamp that Mixxx received the MIDI data at (milliseconds)
      */
     handleMidiInput(data, timestamp) {
         const key = hashMidiBytes(data);
