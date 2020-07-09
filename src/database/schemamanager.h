@@ -6,9 +6,11 @@
 #include "library/dao/settingsdao.h"
 
 /// The SchemaManager reads the database schema from the schemaFile
-/// (res/schema.xml in development) and is responsible for checking
-/// compatibility as well as upgrading the database if necessary.
+/// (res/schema.xml) and is responsible for checking compatibility as well as
+/// upgrading the database if necessary.
 /// It also caches some information about the current version in a SettingsDAO.
+/// Note: If a version has no min_compatible information, it is assumed to have
+/// no backwards compatibility.
 class SchemaManager {
   public:
     static const QString SETTINGS_VERSION_STRING;
@@ -29,15 +31,13 @@ class SchemaManager {
         return m_currentVersion;
     }
 
-    /// If the current version has no backwards compatibility info, it is
-    /// assumed that it is only compatible with itself.
-    ///
-    /// Returns true if the targetVersion is greater or equal to the
-    /// minimum compatible version of the current schema
+    /// Checks if the current schema version is backwards compatible with the
+    /// given targetVersion.
     bool isBackwardsCompatibleWithVersion(int targetVersion) const;
 
-    /// Does nothing if the versions are incompatible or the targetVersion is
-    /// older than the current one.
+    /// Tries to update the database schema to targetVersion.
+    /// Pending changes are rolled back upon failure.
+    /// No-op if the versions are incompatible or the targetVersion is older.
     Result upgradeToSchemaVersion(
             const QString& schemaFilename,
             int targetVersion);
