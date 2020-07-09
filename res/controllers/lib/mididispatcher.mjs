@@ -7,6 +7,24 @@
 * specific to your controller in the controller module's receiveData function before calling
 * MidiDispatcher.receiveData.
 */
+
+// MIDI messages starting with 0xC (program change) or 0xD (aftertouch) messages are only
+// two bytes long and distinguished by their first byte.
+// https://www.midi.org/specifications-old/item/table-2-expanded-messages-list-status-bytes
+const identifiedByFirstByte = (midiBytes) => {
+    return (midiBytes[0] & 0xF0) == 0xC0 || (midiBytes[0] & 0xF0) === 0xD0;
+}
+
+// JavaScript is broken and believes [1,2] === [1,2] is false, so
+// this function turns an array of MIDI bytes into a unique hashable key.
+// This function does not work for system exclusive messages; that is out of scope.
+const hashMidiBytes = (midiBytes) => {
+    if (identifiedByFirstByte(midiBytes)) {
+        return midiBytes[0];
+    }
+    return midiBytes[0] + (midiBytes[1] << 8);
+}
+
 export class MidiDispatcher {
     /**
      * @param {bool} noteOff - When setting the callback for a Note On message, also map the corresponding Note Off
@@ -40,15 +58,13 @@ export class MidiDispatcher {
         if (typeof callback !== 'function') {
             throw new Error('MidiDispatcher.setInputCallback callback must be a function, received ' + callback);
         }
-        // JavaScript is broken and believes [1,2] === [1,2] is false, so
-        // JSONify the Array to make it usable as a Map key.
-        const key = JSON.stringify(midiBytes);
+        const key = hashMidiBytes(midiBytes);
         this.inputMap.set(key, callback);
         // If passed a Note On message, also map the corresponding Note Off
         // message to the same callback.
         if (this.noteOff === true && ((midiBytes[0] & 0xF0) === 0x90)) {
             const noteOffBytes = [midiBytes[0] - 0x10, midiBytes[1]];
-            const noteOffKey = JSON.stringify(noteOffBytes);
+            const noteOffKey = hashMidiBytes(noteOffBytes);
             this.inputMap.set(noteOffKey, callback);
         }
     }
@@ -59,16 +75,7 @@ export class MidiDispatcher {
      * @param {number} timestamp - The timestamp that Mixxx received the MIDI data at.
      */
     handleMidiInput(data, timestamp) {
-        let key;
-        // MIDI messages starting with 0xC (program change) or 0xD (aftertouch) messages are only
-        // two bytes long and distinguished by their first byte.
-        // https://www.midi.org/specifications-old/item/table-2-expanded-messages-list-status-bytes
-        if ((data[0] & 0xF0) == 0xC0 || (data[0] & 0xF0) === 0xD0) {
-            key = JSON.stringify([data[0]]);
-        } else {
-            key = JSON.stringify([data[0], data[1]]);
-        }
-
+        const key = hashMidiBytes(data);
         const callback = this.inputMap.get(key);
         if (typeof callback === 'function') {
             callback(data, timestamp);
