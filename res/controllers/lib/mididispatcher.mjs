@@ -77,7 +77,8 @@ export class MidiDispatcher {
     handleMidiInput(data, timestamp) {
         const key = hashMidiBytes(data);
         const callback = this.inputMap.get(key);
-        if (typeof callback === 'function') {
+        // This assumes a script has not modified this.inputMap directly without this.setInputCallback.
+        if (callback !== undefined && callback !== null) {
             callback(data, timestamp);
         }
     }
