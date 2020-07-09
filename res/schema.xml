@@ -504,15 +504,15 @@ METADATA
       ALTER TABLE library ADD COLUMN coverart_digest BLOB;
     </sql>
   </revision>
-  <revision version="34" min_compatbile="1">
+  <revision version="34" min_compatible="1">
     <description>Add Macros</description>
     <sql>
-      CREATE TABLE macros (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+      CREATE TABLE IF NOT EXISTS macros (
+        id INTEGER PRIMARY KEY,
         track_id INTEGER NOT NULL REFERENCES library(id),
-        label TEXT DEFAULT '' NOT NULL,
-        state INTEGER DEFAULT 0 NOT NULL,
-        content BLOB NOT NULL);
+        state INTEGER,
+        label TEXT,
+        content BLOB);
     </sql>
   </revision>
 </schema>
