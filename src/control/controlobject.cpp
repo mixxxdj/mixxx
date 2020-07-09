@@ -54,7 +54,9 @@ ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack,
 
 ControlObject::~ControlObject() {
     if (m_pControl) {
-        m_pControl->removeCreatorCO();
+        const bool success = m_pControl->resetCreatorCO(this);
+        Q_UNUSED(success);
+        DEBUG_ASSERT(success);
     }
 }
 

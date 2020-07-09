@@ -13,7 +13,6 @@
 #include "track/track.h"
 #include "util/dnd.h"
 #include "util/math.h"
-#include "util/widgethelper.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 
@@ -88,11 +87,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
             auto cueAtClickPos = getCuePointerFromCueMark(m_pHoveredMark);
             if (cueAtClickPos) {
                 m_pCueMenuPopup->setTrackAndCue(currentTrack, cueAtClickPos);
-                QPoint cueMenuTopLeft = mixxx::widgethelper::mapPopupToScreen(
-                        *this,
-                        event->globalPos(),
-                        m_pCueMenuPopup->size());
-                m_pCueMenuPopup->popup(cueMenuTopLeft);
+                m_pCueMenuPopup->popup(event->globalPos());
             }
         } else {
             // If we are scratching then disable and reset because the two shouldn't

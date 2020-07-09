@@ -16,6 +16,14 @@ QPoint mapPopupToScreen(
         const QPoint& popupUpperLeft,
         const QSize& popupSize);
 
+/// Obtains the corresponding window for the given widget.
+///
+/// Might return nullptr if no window could be determined.
+///
+/// Adopted from windowForWidget() in qtbase/src/widgets/kernel/qapplication_p.h
+QWindow* getWindow(
+        const QWidget& widget);
+
 } // namespace widgethelper
 
 } // namespace mixxx
