@@ -29,8 +29,6 @@ class SchemaManager {
         return m_currentVersion;
     }
 
-    /// Check if the current version is backwards compatible with the given targetVersion.
-    ///
     /// If the current version has no backwards compatibility info, it is
     /// assumed that it is only compatible with itself.
     ///
@@ -38,9 +36,8 @@ class SchemaManager {
     /// minimum compatible version of the current schema
     bool isBackwardsCompatibleWithVersion(int targetVersion) const;
 
-    /// Tries to upgrade the database schema to the given targetVersion.
-    /// First checks for version compatibility and whether the current version
-    /// already suffices the target and potentially aborts with the appropriate Result.
+    /// Does nothing if the versions are incompatible or the targetVersion is
+    /// older than the current one.
     Result upgradeToSchemaVersion(
             const QString& schemaFilename,
             int targetVersion);
