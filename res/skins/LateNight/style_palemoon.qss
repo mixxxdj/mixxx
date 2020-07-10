@@ -2492,56 +2492,55 @@ WSearchLineEdit {
     border: 2px solid #257b82;
     border-radius: 0px;
   }
-  WSearchLineEdit[active="false"],
-  WSearchLineEdit:disabled {
+  /* Dunno when this is true */
+  WSearchLineEdit[active="false"] {
     color: #999;
   }
   WSearchLineEdit:disabled {
-    background-color: #191919;
+    background-color: #161617;
+    color: #161617;
   }
   /* Clear button: see /skins/default.qss */
 
 /************ splitters ***********************/
-/* HorizontalSplitter
-  (the splitter itself is horizontal)
-  Used to split
-  - Waveforms & Decks/FX/etc
-  - Library feature & Coverart */
+/* HorizontalSplitter (the splitter itself is horizontal)
+  splits
+  - Waveforms / Decks/FX/etc
+  - Library sidebar / Lib Coverart */
 #HorizontalSplitter {
   padding: 0px;
   margin: 0px;
   }
   #HorizontalSplitter::handle {
       image: url(skin:/palemoon/style/splitter_handle_horizontal_unchecked.png);
+      height: 9px;
     }
     #HorizontalSplitter::handle:pressed,
+    /* doesn't catch hover state */
     #HorizontalSplitter::handle:hover {
       image: url(skin:/palemoon/style/splitter_handle_horizontal_checked.png);
     }
-  #HorizontalSplitter::handle:vertical {
-    height: 9px;
-  }
 
-/* VerticalSplitter
-  (the splitter itself is vertical)
-  Used to split Library sidebar & Tracks table */
+/* VerticalSplitter (the splitter itself is vertical)
+  splits
+  * Library sidebar / Tracks table */
 #VerticalSplitter {
   }
   #VerticalSplitter::handle {
     image: url(skin:/palemoon/style/splitter_handle_vertical_unchecked.png);
-  }
-  #VerticalSplitter::handle:pressed,
-  #VerticalSplitter::handle:hover {
-    image: url(skin:/palemoon/style/splitter_handle_vertical_checked.png);
-  }
-  #VerticalSplitter::handle:vertical {
     /* 'height' works although it's actually the width of the handle */
     height: 6px;
+  }
+  #VerticalSplitter::handle:pressed,
+    /* doesn't catch hover state */
+  #VerticalSplitter::handle:hover {
+    image: url(skin:/palemoon/style/splitter_handle_vertical_checked.png);
   }
 /************ splitters ***********************/
 
 
-/* Extra declaration for QRadioButton otherwise it shows up with wrong colors in Linux with Gnome */
+/* Extra declaration for QRadioButton otherwise it shows up with wrong colors in
+   Linux with Gnome */
 WLibrary QLabel, WLibrary QRadioButton {
   background: transparent;
 }
@@ -2608,7 +2607,8 @@ WLibrary QRadioButton::indicator:unchecked {
 /* closed */
 #LibraryContainer QTreeView::branch:closed:has-children:!has-siblings:!selected,
 #LibraryContainer QTreeView::branch:closed:has-children:has-siblings:!selected {
-/*  Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588 */
+/*  Suppresses that selected sidebar items branch indicator shows wrong color when
+    out of focus ; lp:880588 */
   border-image: none;
     image: url(skin:/palemoon/style/library_branch_closed_grey.png);
   }
