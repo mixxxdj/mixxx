@@ -247,12 +247,10 @@
         </Children>
       </WidgetGroup><!-- /Recording button & recording duration label -->
 
-      <WidgetGroup><!-- Macro Recording stuff -->
-        <ObjectName>MacroRecBox</ObjectName>
+      <WidgetGroup><!-- Macro Recording Dot -->
+        <ObjectName>RecBox</ObjectName>
         <Layout>stacked</Layout>
         <Size>72f,20f</Size>
-        <!-- minus 1px border
-            = 70x18 available for text -->
         <Children>
           <!-- invisible Rec button -->
           <Template src="skin:/controls/button_2state.xml">
@@ -262,7 +260,7 @@
             <SetVariable name="ConfigKey">[MacroRecording],recording_toggle</SetVariable>
           </Template>
 
-          <WidgetGroup><!-- Rec dot + RecDuration -->
+          <WidgetGroup><!-- Dot with Status highlight -->
             <Layout>horizontal</Layout>
             <Size>68f,20f</Size>
             <Children>
@@ -274,8 +272,19 @@
                   <BindProperty>highlight</BindProperty>
                 </Connection>
               </Label>
+
+              <Label>
+                <ObjectName>RecName</ObjectName>
+                <Size>53f,20f</Size>
+                <Text>Macro</Text>
+                <Alignment>center</Alignment>
+                <Connection>
+                  <ConfigKey>[MacroRecording],recording_status</ConfigKey>
+                  <BindProperty>highlight</BindProperty>
+                </Connection>
+              </Label>
             </Children>
-          </WidgetGroup><!-- /Rec dot + RecDuration -->
+          </WidgetGroup><!-- /Dot with Status highlight -->
 
           <!-- Rec feedback color -->
           <Template src="skin:/controls/button_3state_display.xml">
@@ -286,7 +295,7 @@
             <SetVariable name="ConfigKeyDisp">[MacroRecording],recording_status</SetVariable>
           </Template>
         </Children>
-      </WidgetGroup><!-- /Recording button & recording duration label -->
+      </WidgetGroup><!-- /Macro Recording Dot -->
 
       <PushButton>
         <Size>82f,20f</Size>

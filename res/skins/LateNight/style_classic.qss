@@ -1066,8 +1066,10 @@ WLibrary QLabel, WLibrary QRadioButton {
 #GuiToggleButton[displayValue="1"],
 #GuiToggleButton[displayValue="2"],
 #BroadcastButton[displayValue="1"], /* connecting: yellow */
-#RecDuration[highlight="1"],
-#RecDuration[highlight="2"],
+#RecDuration[highlight="1"],  /* initializing */
+#RecDuration[highlight="2"],  /* recording */
+#RecName[highlight="1"],  /* armed */
+#RecName[highlight="2"],  /* recording */
 #SkinSettingsToggle[displayValue="1"],
 QPushButton#pushButtonAutoDJ:checked,
 QPushButton#pushButtonRepeatPlaylist:checked,

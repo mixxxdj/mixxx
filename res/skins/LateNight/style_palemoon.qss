@@ -1190,6 +1190,7 @@ WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
 #GuiToggleButton[displayValue="0"],
 #RecDuration[highlight="0"],
+#RecName[highlight="0"],
 #BroadcastButton[displayValue="0"],
 #SkinSettingsToggle[displayValue="0"],
 WLibrary QLabel {
@@ -1228,6 +1229,8 @@ WLibrary QLabel {
 #BroadcastButton[displayValue="3"], /* failure */
 #RecDuration[highlight="1"],  /* initializing */
 #RecDuration[highlight="2"],  /* recording */
+#RecName[highlight="1"],  /* armed */
+#RecName[highlight="2"],  /* recording */
 #SkinSettingsToggle[displayValue="1"],
 QPushButton#pushButtonAutoDJ:checked,
 QPushButton#pushButtonRepeatPlaylist:checked,
