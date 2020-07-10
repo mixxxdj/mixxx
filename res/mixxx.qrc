@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>../LICENSE</file>
-        <file>controllers/lib/mididispatcher.mjs</file>
         <file>images/library/ic_library_drag_and_drop.svg</file>
       <!-- open/closed lock icons for BPM button -->
         <file>images/library/ic_library_locked.svg</file>
