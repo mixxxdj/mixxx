@@ -13,9 +13,9 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
           m_pConfig(pConfig) {
     setupUi(this);
 
-    QList<QSharedPointer<ControlDoublePrivate> > controlsList;
-    ControlDoublePrivate::getControls(&controlsList);
-    QHash<ConfigKey, ConfigKey> controlAliases =
+    const QList<QSharedPointer<ControlDoublePrivate>> controlsList =
+            ControlDoublePrivate::getAllInstances();
+    const QHash<ConfigKey, ConfigKey> controlAliases =
             ControlDoublePrivate::getControlAliases();
 
     for (auto it = controlsList.constBegin();
@@ -144,8 +144,8 @@ void DlgDeveloperTools::slotControlDump() {
         return;
     }
 
-    QList<QSharedPointer<ControlDoublePrivate> > controlsList;
-    ControlDoublePrivate::getControls(&controlsList);
+    const QList<QSharedPointer<ControlDoublePrivate>> controlsList =
+            ControlDoublePrivate::getAllInstances();
     for (auto it = controlsList.constBegin(); it != controlsList.constEnd(); ++it) {
         const QSharedPointer<ControlDoublePrivate>& pControl = *it;
         if (pControl) {
