@@ -1,10 +1,12 @@
 #include "macromanager.h"
 
+#include <QtConcurrentRun>
+
+#include "control/controlproxy.h"
 #include "preferences/configobject.h"
 #include "util/assert.h"
 
 // TODO(xerus) handle track eject while recording
-// TODO(xerus) make recording button blink when state is armed
 
 MacroManager::MacroManager()
         : m_COToggleRecording(ConfigKey(kMacroRecordingKey, "recording_toggle")),
@@ -45,17 +47,30 @@ bool MacroManager::claimRecording() {
     return m_macroRecordingState.compare_exchange_weak(armed, MacroState::Recording);
 }
 
+void pollRecordingStart(MacroManager* pMacroManager) {
+    while (pMacroManager->getActiveChannel() == nullptr) {
+        QThread::msleep(300);
+        if (pMacroManager->getState() == MacroState::Disabled) {
+            return;
+        }
+    }
+    // TODO(xerus) add test
+    ControlProxy(ConfigKey(kMacroRecordingKey, "recording_status")).set(2);
+}
+
 void MacroManager::startRecording() {
     qCDebug(macros) << "MacroManager recording start";
     m_CORecStatus.set(1);
     m_recordedMacro.clear();
     setState(MacroState::Armed);
+    QtConcurrent::run(pollRecordingStart, this);
 }
 
 void MacroManager::stopRecording() {
     qCDebug(macros) << "MacroManager recording stop";
     m_CORecStatus.set(0);
     auto armed = MacroState::Armed;
+    // TODO(xerus) add concurrency test
     while (!m_macroRecordingState.compare_exchange_weak(armed, MacroState::Disabled))
         QThread::yieldCurrentThread();
     qCDebug(macros) << "Recorded Macro for channel" << m_activeChannel;
