@@ -22,9 +22,13 @@ int ModalTrackBatchProcessor::processTracks(
     DEBUG_ASSERT(pTrackPointerIterator);
     DEBUG_ASSERT(QThread::currentThread() ==
             pTrackCollectionManager->thread());
-    int trackCount = 0;
+    int finishedTrackCount = 0;
+    // The total count is initialized with the remaining count
+    // before starting the iteration. If the this value is unknown
+    // we use 0 as the default until an estimation is available
+    // (see update below).
     int estimatedTotalCount =
-            pTrackPointerIterator->estimateItemsRemaining().value_or(trackCount);
+            pTrackPointerIterator->estimateItemsRemaining().value_or(0);
     m_bAborted = false;
     TaskMonitor taskMonitor(
             progressLabelText,
@@ -44,43 +48,48 @@ int ModalTrackBatchProcessor::processTracks(
                     << "Aborting"
                     << progressLabelText
                     << "after processing"
-                    << trackCount
+                    << finishedTrackCount
                     << "of"
                     << estimatedTotalCount
                     << "track(s)";
-            return trackCount;
+            return finishedTrackCount;
         }
         switch (doProcessNextTrack(pTrack)) {
         case ProcessNextTrackResult::AbortProcessing:
             kLogger.info()
                     << progressLabelText
                     << "aborted while processing"
-                    << trackCount + 1
+                    << finishedTrackCount + 1
                     << "of"
                     << estimatedTotalCount
                     << "track(s)";
-            return trackCount;
+            return finishedTrackCount;
         case ProcessNextTrackResult::ContinueProcessing:
             break;
         case ProcessNextTrackResult::SaveTrackAndContinueProcessing:
             pTrackCollectionManager->saveTrack(pTrack);
             break;
         }
-        ++trackCount;
-        if (trackCount > estimatedTotalCount) {
-            estimatedTotalCount =
-                    pTrackPointerIterator->estimateItemsRemaining().value_or(trackCount);
+        ++finishedTrackCount;
+        if (finishedTrackCount > estimatedTotalCount) {
+            // Update the total count which cannot be less than the
+            // number of already finished items plus the estimated number
+            // of remaining items.
+            auto estimatedRemainingCount =
+                    pTrackPointerIterator->estimateItemsRemaining().value_or(0);
+            estimatedTotalCount = finishedTrackCount + estimatedRemainingCount;
         }
+        DEBUG_ASSERT(finishedTrackCount <= estimatedTotalCount);
         taskMonitor.reportTaskProgress(
                 this,
                 kPercentageOfCompletionMin +
                         (kPercentageOfCompletionMax -
                                 kPercentageOfCompletionMin) *
-                                trackCount /
+                                finishedTrackCount /
                                 static_cast<PercentageOfCompletion>(
                                         estimatedTotalCount));
     }
-    return trackCount;
+    return finishedTrackCount;
 }
 
 ModalTrackBatchOperationProcessor::ModalTrackBatchOperationProcessor(
