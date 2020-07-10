@@ -1735,7 +1735,7 @@ WPushButton#RecButton[displayValue="1"],
 #Hotcue1 WPushButton[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__1.svg) no-repeat center center;
   }
-  #Hotcue1 WPushButton[displayValue="1"] {
+  #Hotcue1 WPushButton[displayValue="1"][dark="false"] {
     image: url(skin:/palemoon/buttons/btn__1_active.svg) no-repeat center center;
   }
   #Hotcue1 WPushButton[displayValue="1"][dark="true"] {
