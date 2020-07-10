@@ -1263,9 +1263,9 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                 // outro of the fromDeck track is longer than the whole toDeck
                 // track
                 outroLength = pToDeck->fadeBeginPos - introStart;
-                VERIFY_OR_DEBUG_ASSERT(outroLength > 0) {
+                VERIFY_OR_DEBUG_ASSERT(outroLength >= 0) {
                     // We seek to intro start above in this case so this never happens
-                    outroLength = 1;
+                    outroLength = 0;
                 }
                 pFromDeck->fadeBeginPos = outroEnd - outroLength;
             }
@@ -1319,9 +1319,9 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                 // outro of the fromDeck track is longer than the whole toDeck
                 // track
                 outroLength = pToDeck->fadeBeginPos - introStart;
-                VERIFY_OR_DEBUG_ASSERT(outroLength > 0) {
+                VERIFY_OR_DEBUG_ASSERT(outroLength >= 0) {
                     // We seek to intro start above in this case so this never happens
-                    outroLength = 1;
+                    outroLength = 0;
                 }
                 pFromDeck->fadeBeginPos = outroStart;
                 pFromDeck->fadeEndPos = outroStart + outroLength;
