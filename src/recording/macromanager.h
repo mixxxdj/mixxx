@@ -102,6 +102,9 @@ class MacroManager : public RecordingManagerBase {
     MacroState getState();
     ChannelHandle* getActiveChannel();
 
+  signals:
+    void saveMacro(ChannelHandle channel, Macro macro);
+
   private:
     FRIEND_TEST(MacroManagerTest, ClaimRecording);
     FRIEND_TEST(MacroManagerTest, RecordCueJump);
