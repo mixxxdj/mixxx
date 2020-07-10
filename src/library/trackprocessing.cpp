@@ -24,7 +24,7 @@ int ModalTrackBatchProcessor::processTracks(
             pTrackCollectionManager->thread());
     int finishedTrackCount = 0;
     // The total count is initialized with the remaining count
-    // before starting the iteration. If the this value is unknown
+    // before starting the iteration. If this value is unknown
     // we use 0 as the default until an estimation is available
     // (see update below).
     int estimatedTotalCount =
