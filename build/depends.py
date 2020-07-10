@@ -1221,6 +1221,7 @@ class MixxxCore(Feature):
                    "src/track/beatgrid.cpp",
                    "src/track/beatmap.cpp",
                    "src/track/beatutils.cpp",
+                   "src/track/beatstats.cpp",
                    "src/track/beats.cpp",
                    "src/track/bpm.cpp",
                    "src/track/cue.cpp",

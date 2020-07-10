@@ -47,6 +47,12 @@ class BeatUtils {
      */
     static double calculateBpm(const QVector<double>& beats, int SampleRate,
                                int min_bpm, int max_bpm);
+
+    // Remove jitter and false beats noise from the beats that make a beatmap
+    static QVector<double> FixBeatmap(
+            QVector<double>& rawBeats, int SampleRate, double minBpm, double maxBpm);
+
+    
     static double findFirstCorrectBeat(const QVector<double> rawBeats,
                                        const int SampleRate, const double global_bpm);
 
@@ -75,6 +81,10 @@ class BeatUtils {
         const double filterCenter,
         const double filterTolerance,
         QMap<double, int>* filteredFrequencyTable);
+    static QMap<int, double> findTempoChanges(
+            QMap<double, int> tempoFrequency, QList<double> tempoList);
+    static QVector<double> calculateFixedTempoBeatMap(
+        const QVector<double> &rawbeats, const int sampleRate, const double globalBpm);
     static QList<double> computeWindowedBpmsAndFrequencyHistogram(
         const QVector<double> beats, const int windowSize, const int windowStep,
         const int sampleRate, QMap<double, int>* frequencyHistogram);

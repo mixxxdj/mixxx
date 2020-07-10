@@ -712,6 +712,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/beatmap.cpp
   src/track/beats.cpp
   src/track/beatutils.cpp
+  src/track/beatstats.cpp
   src/track/bpm.cpp
   src/track/cue.cpp
   src/track/cueinfo.cpp

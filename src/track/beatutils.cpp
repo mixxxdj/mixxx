@@ -12,15 +12,17 @@
 #include <QMap>
 
 #include "track/beatutils.h"
+#include "track/beatstats.h"
 #include "util/math.h"
 
 // we are generous and assume the global_BPM to be at most 0.05 BPM far away
 // from the correct one
-#define BPM_ERROR 0.05
+constexpr double kBpmError = 0.05;
+constexpr double kMaxPhaseError = 0.025; //25ms
 
 // the raw beatgrid is divided into blocks of size N from which the local bpm is
 // computed. Tweaked from 8 to 12 which improves the BPM accuracy for 'problem songs'.
-#define N 12
+constexpr int kBeatsToCountTempo = 12;
 
 static bool sDebug = false;
 
@@ -29,20 +31,177 @@ const int kHistogramDecimalPlaces = 2;
 const double kHistogramDecimalScale = pow(10.0, kHistogramDecimalPlaces);
 const double kBpmFilterTolerance = 1.0;
 
+QMap<int, double> BeatUtils::findTempoChanges(
+    QMap<double, int> tempoFrequency, QList<double> tempoList) {
+
+    auto sortedTempoList = tempoList;
+    std::sort(sortedTempoList.begin(), sortedTempoList.end());
+    // We have to make sure we have odd numbers
+    if (!(sortedTempoList.size() % 2) and sortedTempoList.size() > 1) {
+        sortedTempoList.pop_back();
+    }
+    // Since we use the median as a guess first and last tempo
+    // And it can not have values outside from tempoFrequency
+    const double median = computeSampleMedian(sortedTempoList);
+    // The analyzer sometimes detect false beats that generate outliers
+    // values for the tempo so we use a median filter to remove them
+    MovingMedian filterTempo(5); // 5 is the lenght our window
+    int currentBeat = 0, lastBeatChange = 0;
+    QMap<int, double> stableTemposAndPositions;
+    stableTemposAndPositions[lastBeatChange] = median;
+    // Here we are going to track the tempo changes over the track
+    for (double tempo : tempoList) {
+        double newStableTempo = filterTempo(tempo);
+        // The analyzer has some jitter that causes a steady beat to fluctuate around
+        // the correct value so we don't consider tempos +-1 from that as changes
+        if (newStableTempo == stableTemposAndPositions.last()) {
+            ; // no-op - action only in else
+        } else if (stableTemposAndPositions.last() != tempoFrequency.lastKey() and
+                newStableTempo == (tempoFrequency.find(stableTemposAndPositions.last()) + 1).key()) {
+            ;
+        } else if (stableTemposAndPositions.last() != tempoFrequency.firstKey() and
+                newStableTempo == (tempoFrequency.find(stableTemposAndPositions.last()) - 1).key()) {
+            ;
+        } else {
+            // this may not be case when our median window is even, we can't use it
+            // because find will return an iterator pointing to end that we will *
+            if (tempoFrequency.contains(newStableTempo)) {
+                lastBeatChange = currentBeat - filterTempo.lag();
+                stableTemposAndPositions[lastBeatChange] = newStableTempo;
+            }
+        }
+        currentBeat += 1;
+    }
+    stableTemposAndPositions[tempoList.count()] = median;
+    return stableTemposAndPositions;
+}
+
+
+QVector<double> BeatUtils::FixBeatmap(
+        QVector<double>& rawBeats, int sampleRate, double minBpm, double maxBpm) {
+    
+    QMap<double, int> tempoFrequency;
+    QList<double> tempoList = computeWindowedBpmsAndFrequencyHistogram(
+            rawBeats, 2, 1, sampleRate, &tempoFrequency);
+    QMap<int, double> stableTemposAndPositions = BeatUtils::findTempoChanges(
+        tempoFrequency, tempoList);
+    QVector<double> fixedBeats;
+    // We only care about where the changes happened
+    auto tempoChanges = stableTemposAndPositions.keys();    
+    for (int lastTempoChage = 0; 
+                lastTempoChage < tempoChanges.count() -1;
+                lastTempoChage++) {
+
+        int beatStart = tempoChanges[lastTempoChage];
+        int beatEnd = tempoChanges[lastTempoChage + 1];
+        auto splittedAtTempoChange = QVector<double>::fromStdVector(std::vector<double>(
+                rawBeats.begin() + beatStart, rawBeats.begin() + beatEnd));
+        double bpm = calculateBpm(splittedAtTempoChange, sampleRate, minBpm, maxBpm);
+        fixedBeats << calculateFixedTempoBeatMap(splittedAtTempoChange, sampleRate, bpm);
+    }
+    // When correcting the phase of the beats we might have accidentally
+    // computed the beats at the edges two times so now we fix that
+    auto tempoValues = stableTemposAndPositions.values();
+    std::sort(tempoValues.begin(), tempoValues.end());
+    auto highestTempo = tempoValues.last();
+    // Since highestTempo was filtered and not avaraged let's add a 5% margin
+    highestTempo += highestTempo * 0.05;
+    // Length of a beat at highestTempo in mono samples.
+    double smallestBeat = floor(((60.0 * sampleRate) / highestTempo) + 0.5);
+    // Any beat shorter than smallestBeat was mistakenly added
+    for (int i = 0; i < fixedBeats.size()-1; i+=1) {
+        double beatLenght = fixedBeats[i+1] - fixedBeats[i];
+        if (beatLenght < smallestBeat) {
+            fixedBeats.removeAt(i);
+        }
+    }
+    return fixedBeats;
+}
+
+QVector<double> BeatUtils::calculateFixedTempoBeatMap(
+        const QVector<double> &rawbeats, const int sampleRate,
+        const double globalBpm) {
+    
+    if (rawbeats.size() < kBeatsToCountTempo) {
+        return rawbeats;
+    }
+    QMap<double, int> tempoFrequency; 
+    QList<double> tempoList = computeWindowedBpmsAndFrequencyHistogram(
+            rawbeats, kBeatsToCountTempo, 1, sampleRate, &tempoFrequency);
+    int longestSequence = 0;
+    int longestSequenceEnd = 0;
+    int sequence = 0;
+    // we look for the longest sequence of beats that have the same tempo
+    // and consider them to have the right phase, might not be true if
+    // a tshack was detect instead of a boom - but there is nothing we can do
+    for (int i = 0; i < tempoList.size() - 1; i+=1) {
+        if (tempoList[i] == tempoList[i+1]) {
+            sequence += 1;
+        } else {
+            sequence = 0;
+        }
+        if (sequence > longestSequence) {
+            longestSequence = sequence;
+            longestSequenceEnd = i;
+        }
+    }
+    // Length of a beat at globalBpm in mono samples.
+    const double beatLength = floor(((60.0 * sampleRate) / globalBpm) + 0.5);
+    // We start building a fixed beat grid at globalBpm
+    // that matches that beat phase
+    double beatOffset = rawbeats[longestSequenceEnd];
+    int leftIndex = longestSequenceEnd;
+    double secondsPerSample = 1 / static_cast<double>(sampleRate);
+    qDebug() << secondsPerSample;
+    QVector<double> fixedBeats;
+    // we add all the beats to the left of our correct beat
+    while (beatOffset > rawbeats.first() - beatLength) {
+        double phaseError = secondsPerSample * fabs(beatOffset - rawbeats[leftIndex]);
+        if (phaseError > kMaxPhaseError) {
+            beatOffset = rawbeats[leftIndex];
+        }
+        fixedBeats << beatOffset;
+        if (leftIndex > 0) {
+            leftIndex -= 1;
+        }
+        beatOffset -= beatLength;
+    }
+    
+    std::reverse(fixedBeats.begin(), fixedBeats.end());
+    beatOffset = rawbeats[longestSequenceEnd];
+    beatOffset += beatLength;
+    int rightIndex = longestSequenceEnd + 1;
+
+    // we add all the beats to the right of our correct beat
+    while (beatOffset < rawbeats.last() + beatLength) {
+        double phaseError = secondsPerSample * fabs(beatOffset - rawbeats[rightIndex]);
+        if (phaseError > kMaxPhaseError) {
+            beatOffset = rawbeats[rightIndex];
+        }
+        if (rightIndex < rawbeats.size() - 1) {
+            rightIndex += 1;
+        }
+        fixedBeats << beatOffset;
+        beatOffset += beatLength;
+    }
+
+    return fixedBeats;    
+}
+
 void BeatUtils::printBeatStatistics(const QVector<double>& beats, int SampleRate) {
     if (!sDebug) {
         return;
     }
     QMap<double, int> frequency;
 
-    for (int i = N; i < beats.size(); i += 1) {
-        double beat_start = beats.at(i - N);
+    for (int i = kBeatsToCountTempo; i < beats.size(); i += 1) {
+        double beat_start = beats.at(i - kBeatsToCountTempo);
         double beat_end = beats.at(i);
 
         // Time needed to count a bar (N beats)
         const double time = (beat_end - beat_start) / SampleRate;
         if (time == 0) continue;
-        double local_bpm = 60.0 * N / time;
+        double local_bpm = 60.0 * kBeatsToCountTempo / time;
 
         qDebug() << "Beat" << i << "local BPM:" << local_bpm;
 
@@ -85,20 +244,22 @@ QList<double> BeatUtils::computeWindowedBpmsAndFrequencyHistogram(
         const QVector<double> beats, const int windowSize, const int windowStep,
         const int sampleRate, QMap<double, int>* frequencyHistogram) {
     QList<double> averageBpmList;
-    for (int i = windowSize; i < beats.size(); i += windowStep) {
+    for (int i = 0; i < beats.size()-1; i += windowStep) {
         //get start and end sample of the beats
-        double start_sample = beats.at(i - windowSize);
-        double end_sample = beats.at(i);
-
-        // Time needed to count a bar (4 beats)
-        double time = (end_sample - start_sample) / sampleRate;
+        double firstBeat = beats[i];
+        double lastBeat;
+        if (i + windowSize < beats.size()) {
+            lastBeat = beats[i + windowSize];
+        } else {
+            lastBeat = beats[beats.size()-1];
+        }
+        // Time needed to count kbeats
+        double time = (lastBeat - firstBeat) / sampleRate;
         if (time == 0) continue;
         double localBpm = 60.0 * windowSize / time;
-
         // round BPM to have two decimal places
         double roundedBpm = floor(localBpm * kHistogramDecimalScale + 0.5) /
                 kHistogramDecimalScale;
-
         // add to local BPM to list and increment frequency count
         averageBpmList << roundedBpm;
         (*frequencyHistogram)[roundedBpm] += 1;
@@ -183,13 +344,13 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate,
 
     // If we don't have enough beats for our regular approach, just divide the #
     // of beats by the duration in minutes.
-    if (beats.size() <= N) {
+    if (beats.size() <= kBeatsToCountTempo) {
         return 60.0 * (beats.size()-1) * SampleRate / (beats.last() - beats.first());
     }
 
     QMap<double, int> frequency_table;
     QList<double> average_bpm_list = computeWindowedBpmsAndFrequencyHistogram(
-        beats, N, 1, SampleRate, &frequency_table);
+        beats, kBeatsToCountTempo, 1, SampleRate, &frequency_table);
 
     // Get the median BPM.
     std::sort(average_bpm_list.begin(), average_bpm_list.end());
@@ -243,44 +404,44 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate,
 
      int counter = 0;
      int perfectBeats = 0;
-     for (int i = N; i < beats.size(); i += 1) {
+     for (int i = kBeatsToCountTempo; i < beats.size(); i += 1) {
          // get start and end sample of the beats
-         double beat_start = beats.at(i-N);
+         double beat_start = beats.at(i-kBeatsToCountTempo);
          double beat_end = beats.at(i);
 
          // Time needed to count a bar (N beats)
          double time = (beat_end - beat_start) / SampleRate;
          if (time == 0) continue;
-         double local_bpm = 60.0 * N / time;
+         double local_bpm = 60.0 * kBeatsToCountTempo / time;
          // round BPM to have two decimal places
          local_bpm = floor(local_bpm * kHistogramDecimalScale + 0.5) / kHistogramDecimalScale;
 
          //qDebug() << "Local BPM beat " << i << ": " << local_bpm;
          if (!foundFirstCorrectBeat &&
              filtered_bpm_frequency_table.contains(local_bpm) &&
-             fabs(local_bpm - filterWeightedAverageBpm) < BPM_ERROR) {
+             fabs(local_bpm - filterWeightedAverageBpm) < kBpmError) {
              firstCorrectBeatSample = beat_start;
              foundFirstCorrectBeat = true;
              if (sDebug) {
-                 qDebug() << "Beat #" << (i - N)
+                 qDebug() << "Beat #" << (i - kBeatsToCountTempo)
                           << "is considered as reference beat with BPM:"
                           << local_bpm;
              }
          }
          if (foundFirstCorrectBeat) {
              if (counter == 0) {
-                 counter = N;
+                 counter = kBeatsToCountTempo;
              } else {
                  counter += 1;
              }
              double time2 = (beat_end - firstCorrectBeatSample) / SampleRate;
              double correctedBpm = 60 * counter / time2;
 
-             if (fabs(correctedBpm - filterWeightedAverageBpm) <= BPM_ERROR) {
+             if (fabs(correctedBpm - filterWeightedAverageBpm) <= kBpmError) {
                  perfect_bpm += correctedBpm;
                  ++perfectBeats;
                  if (sDebug) {
-                     qDebug() << "Beat #" << (i-N)
+                     qDebug() << "Beat #" << (i-kBeatsToCountTempo)
                               << "is considered as correct -->BPM improved to:"
                               << correctedBpm;
                  }
@@ -294,7 +455,7 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate,
      // Round values that are within BPM_ERROR of a whole number.
      const double rounded_bpm = floor(perfectAverageBpm + 0.5);
      const double bpm_diff = fabs(rounded_bpm - perfectAverageBpm);
-     bool perform_rounding = (bpm_diff <= BPM_ERROR);
+     bool perform_rounding = (bpm_diff <= kBpmError);
 
      // Finally, restrict the BPM to be within min_bpm and max_bpm.
      const double maybeRoundedBpm = perform_rounding ? rounded_bpm : perfectAverageBpm;
@@ -356,16 +517,16 @@ double BeatUtils::calculateOffset(
 
 double BeatUtils::findFirstCorrectBeat(const QVector<double> rawbeats,
                                        const int SampleRate, const double global_bpm) {
-    for (int i = N; i < rawbeats.size(); i++) {
+    for (int i = kBeatsToCountTempo; i < rawbeats.size(); i++) {
         // get start and end sample of the beats
-        double start_sample = rawbeats.at(i-N);
+        double start_sample = rawbeats.at(i-kBeatsToCountTempo);
         double end_sample = rawbeats.at(i);
 
         // The time in seconds represented by this sample range.
         double time = (end_sample - start_sample)/SampleRate;
 
         // Average BPM within this sample range.
-        double avg_bpm = 60.0 * N / time;
+        double avg_bpm = 60.0 * kBeatsToCountTempo / time;
 
         //qDebug() << "Local BPM between beat " << (i-N) << " and " << i << " is " << avg_bpm;
 
