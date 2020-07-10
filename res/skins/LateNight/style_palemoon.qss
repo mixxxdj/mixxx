@@ -141,6 +141,9 @@ WSearchLineEdit {
   border-bottom: 1px solid #1e1e1e;
   border-right: 1px solid #222;
   }
+  #LibraryContainer QTextBrowser {
+    padding: 5px 0px 0px 8px;
+  }
   #WaveformsFrame,
   #OverviewBox,
   #OverviewBoxMini,
