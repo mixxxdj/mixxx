@@ -829,6 +829,7 @@ class MixxxCore(Feature):
                    "src/effects/builtin/autopaneffect.cpp",
                    "src/effects/builtin/phasereffect.cpp",
                    "src/effects/builtin/metronomeeffect.cpp",
+                   "src/effects/builtin/whitenoiseeffect.cpp",
                    "src/effects/builtin/tremoloeffect.cpp",
 
                    "src/engine/effects/engineeffectsmanager.cpp",
