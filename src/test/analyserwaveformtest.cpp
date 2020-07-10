@@ -84,29 +84,4 @@ TEST_F(AnalyzerWaveformTest, canary) {
     }
 }
 
-//Test to make sure that if an incorrect totalSamples is passed to
-//initialize(..) and process(..) is told to process more samples than that,
-//that we don't step out of bounds.
-TEST_F(AnalyzerWaveformTest, wrongTotalSamples) {
-    aw.initialize(tio, tio->getSampleRate(), BIGBUF_SIZE / 2);
-    // Deliver double the expected samples
-    int wrongTotalSamples = BIGBUF_SIZE;
-    int blockSize = 2 * 32768;
-    for (int i = CANARY_SIZE; i < CANARY_SIZE + wrongTotalSamples; i += blockSize) {
-        aw.processSamples(&canaryBigBuf[i], blockSize);
-    }
-    aw.storeResults(tio);
-    aw.cleanup();
-    //Ensure the source buffer is intact
-    for (int i = CANARY_SIZE; i < BIGBUF_SIZE; i++) {
-        EXPECT_FLOAT_EQ(canaryBigBuf[i], MAGIC_FLOAT);
-    }
-    //Make sure our canaries are still OK
-    for (int i = 0; i < CANARY_SIZE; i++) {
-        EXPECT_FLOAT_EQ(canaryBigBuf[i], CANARY_FLOAT);
-    }
-    for (int i = CANARY_SIZE + BIGBUF_SIZE; i < 2 * CANARY_SIZE + BIGBUF_SIZE; i++) {
-        EXPECT_FLOAT_EQ(canaryBigBuf[i], CANARY_FLOAT);
-    }
-}
 } // namespace
