@@ -825,6 +825,7 @@ class MixxxCore(Feature):
                    "src/effects/backends/builtin/phasereffect.cpp",
                    "src/effects/backends/builtin/metronomeeffect.cpp",
                    "src/effects/backends/builtin/tremoloeffect.cpp",
+                   "src/effects/backends/builtin/whitenoiseeffect.cpp",
 
                    "src/effects/presets/effectpreset.cpp",
                    "src/effects/presets/effectchainpreset.cpp",

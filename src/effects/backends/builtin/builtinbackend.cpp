@@ -17,12 +17,13 @@
 #ifndef __MACAPPSTORE__
 #include "effects/backends/builtin/reverbeffect.h"
 #endif
-#include "effects/backends/builtin/echoeffect.h"
 #include "effects/backends/builtin/autopaneffect.h"
-#include "effects/backends/builtin/phasereffect.h"
+#include "effects/backends/builtin/echoeffect.h"
 #include "effects/backends/builtin/loudnesscontoureffect.h"
 #include "effects/backends/builtin/metronomeeffect.h"
+#include "effects/backends/builtin/phasereffect.h"
 #include "effects/backends/builtin/tremoloeffect.h"
+#include "effects/backends/builtin/whitenoiseeffect.h"
 
 BuiltInBackend::BuiltInBackend() {
     // Keep this list in a reasonable order
@@ -40,6 +41,7 @@ BuiltInBackend::BuiltInBackend() {
     registerEffect<FilterEffect>();
     registerEffect<MoogLadder4FilterEffect>();
     registerEffect<BitCrusherEffect>();
+    registerEffect<WhiteNoiseEffect>();
     registerEffect<BalanceEffect>();
     // Fancy effects
     registerEffect<FlangerEffect>();
