@@ -264,6 +264,8 @@ void ControllerEngine::loadModule(QFileInfo moduleFileInfo) {
     } else {
         qDebug() << "Module exports no shutdown function.";
     }
+#else
+    Q_UNUSED(moduleFileInfo);
 #endif
 }
 
