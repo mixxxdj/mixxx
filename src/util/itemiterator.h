@@ -34,76 +34,49 @@ class ItemIterator {
     virtual std::optional<T> nextItem() = 0;
 };
 
-/// Generic class for iterating over QList.
+/// Generic class for iterating over an indexed Qt collection
+/// of known size.
 template<typename T>
-class ListItemIterator final
-        : public virtual ItemIterator<T> {
+class IndexedCollectionIterator final
+        : public virtual ItemIterator<typename T::value_type> {
   public:
-    explicit ListItemIterator(
-            const QList<T>& itemList)
-            : m_itemList(itemList),
+    explicit IndexedCollectionIterator(
+            const T& itemCollection)
+            : m_itemCollection(itemCollection),
               m_nextIndex(0) {
     }
-    ~ListItemIterator() override = default;
+    ~IndexedCollectionIterator() override = default;
 
     void reset() override {
         m_nextIndex = 0;
     }
 
     std::optional<int> estimateItemsRemaining() override {
-        DEBUG_ASSERT(m_nextIndex <= m_itemList.size());
+        DEBUG_ASSERT(m_nextIndex <= m_itemCollection.size());
         return std::make_optional(
-                m_itemList.size() - m_nextIndex);
+                m_itemCollection.size() - m_nextIndex);
     }
 
-    std::optional<T> nextItem() override {
-        DEBUG_ASSERT(m_nextIndex <= m_itemList.size());
-        if (m_nextIndex < m_itemList.size()) {
-            return std::make_optional(m_itemList[m_nextIndex++]);
+    std::optional<typename T::value_type> nextItem() override {
+        DEBUG_ASSERT(m_nextIndex <= m_itemCollection.size());
+        if (m_nextIndex < m_itemCollection.size()) {
+            return std::make_optional(m_itemCollection[m_nextIndex++]);
         } else {
             return std::nullopt;
         }
     }
 
   private:
-    const QList<T> m_itemList;
+    const T m_itemCollection;
     int m_nextIndex;
 };
+
+/// Generic class for iterating over QList.
+template<typename T>
+using ListItemIterator = IndexedCollectionIterator<QList<T>>;
 
 /// Generic class for iterating over QVector.
 template<typename T>
-class VectorItemIterator final
-        : public virtual ItemIterator<T> {
-  public:
-    explicit VectorItemIterator(
-            const QVector<T>& itemVector)
-            : m_itemVector(itemVector),
-              m_nextIndex(0) {
-    }
-    ~VectorItemIterator() override = default;
-
-    void reset() override {
-        m_nextIndex = 0;
-    }
-
-    std::optional<int> estimateItemsRemaining() override {
-        DEBUG_ASSERT(m_nextIndex <= m_itemVector.size());
-        return std::make_optional(
-                m_itemVector.size() - m_nextIndex);
-    }
-
-    std::optional<T> nextItem() override {
-        DEBUG_ASSERT(m_nextIndex <= m_itemVector.size());
-        if (m_nextIndex < m_itemVector.size()) {
-            return std::make_optional(m_itemVector[m_nextIndex++]);
-        } else {
-            return std::nullopt;
-        }
-    }
-
-  private:
-    const QVector<T> m_itemVector;
-    int m_nextIndex;
-};
+using VectorItemIterator = IndexedCollectionIterator<QVector<T>>;
 
 } // namespace mixxx
