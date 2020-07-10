@@ -8,6 +8,11 @@
 * MidiDispatcher.receiveData.
 */
 
+/**
+* A time in milliseconds when Mixxx received the MIDI message
+* @typedef {number} Timestamp
+*/
+
 // MIDI messages starting with 0xC (program change) or 0xD (aftertouch) messages are only
 // two bytes long and distinguished by their first byte.
 // https://www.midi.org/specifications-old/item/table-2-expanded-messages-list-status-bytes
@@ -27,7 +32,7 @@ const hashMidiBytes = (midiBytes) => {
 
 export class MidiDispatcher {
     /**
-     * @param {bool} noteOff - When setting the callback for a Note On message, also map the corresponding Note Off
+     * @param {boolean} noteOff - When setting the callback for a Note On message, also map the corresponding Note Off
      * message to the same callback. Defaults to true.
      */
     constructor(noteOff) {
@@ -39,7 +44,7 @@ export class MidiDispatcher {
     }
     /**
      * Set the callback for an incoming MIDI message.
-     * @param {Array} midiBytes - Array of numbers indicating the beginning of the MIDI messages. In most cases,
+     * @param {Uint8Array} midiBytes - Array of numbers indicating the beginning of the MIDI messages. In most cases,
      * this should be the first two bytes of the MIDI messages, for example [0x93, 0x27]
      *
      * Program change (starting with 0xC) and aftertouch (starting with 0xD) messages are distinguished by only
@@ -49,8 +54,9 @@ export class MidiDispatcher {
      * when a MIDI message matching midiBytes is received from the controller.
      *
      * @callback MidiInputHandler
-     * @param {Array} data - incoming MIDI data
-     * @param {number} timestamp - The timestamp that Mixxx received the MIDI data at (milliseconds)
+     * @param {Uint8Array} data - incoming MIDI data
+     * @param {Timestamp} timestamp - The timestamp that Mixxx received the MIDI data at (milliseconds)
+     * @returns {void}
      */
     setInputCallback(midiBytes, callback) {
         if (!Array.isArray(midiBytes)) {
@@ -75,8 +81,8 @@ export class MidiDispatcher {
     /**
      * Receive incoming MIDI data from a controller and execute the callback registered to that
      * MIDI message.
-     * @param {Array} data - The incoming MIDI data.
-     * @param {number} timestamp - The timestamp that Mixxx received the MIDI data at (milliseconds)
+     * @param {Uint8Array} data - The incoming MIDI data.
+     * @param {Timestamp} timestamp - The timestamp that Mixxx received the MIDI data at (milliseconds)
      */
     handleMidiInput(data, timestamp) {
         const key = hashMidiBytes(data);
