@@ -73,9 +73,13 @@ void MacroManager::stopRecording() {
     // TODO(xerus) add concurrency test
     while (!m_macroRecordingState.compare_exchange_weak(armed, MacroState::Disabled))
         QThread::yieldCurrentThread();
-    qCDebug(macros) << "Recorded Macro for channel" << m_activeChannel;
+    if (m_activeChannel == nullptr)
+        return;
+    auto channel = m_activeChannel;
     m_activeChannel = nullptr;
+    qCDebug(macros) << "Recorded Macro for channel" << channel->handle();
     m_recordedMacro.dump();
+    emit saveMacro(*channel, m_recordedMacro);
 }
 
 Macro MacroManager::getMacro() {
