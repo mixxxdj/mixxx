@@ -12,9 +12,9 @@ WHotcueButton::WHotcueButton(const QString& group, QWidget* pParent)
           m_hotcue(Cue::kNoHotCue),
           m_hoverCueColor(false),
           m_pCoColor(nullptr),
-          m_cueColorDimmed(false),
-          m_isCueColorLight(false),
-          m_isCueColorDark(false) {
+          m_bCueColorDimmed(false),
+          m_bCueColorIsLight(false),
+          m_bCueColorIsDark(false) {
 }
 
 void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
@@ -111,7 +111,7 @@ void WHotcueButton::slotColorChanged(double color) {
         return;
     }
     QColor cueColor = QColor::fromRgb(color);
-    m_cueColorDimmed = Color::isDimmColor(cueColor);
+    m_bCueColorDimmed = Color::isDimColor(cueColor);
 
     QString style =
             QStringLiteral("WWidget[displayValue=\"1\"] { background-color: ") +
@@ -121,7 +121,7 @@ void WHotcueButton::slotColorChanged(double color) {
     if (m_hoverCueColor) {
         style +=
                 QStringLiteral("WWidget[displayValue=\"1\"]:hover { background-color: ") +
-                cueColor.lighter(m_cueColorDimmed ? 120 : 80).name() +
+                cueColor.lighter(m_bCueColorDimmed ? 120 : 80).name() +
                 QStringLiteral("; }");
     }
 
@@ -132,13 +132,13 @@ void WHotcueButton::slotColorChanged(double color) {
 void WHotcueButton::restyleAndRepaint() {
     if (readDisplayValue()) {
         // Adjust properties for Qss file
-        m_isCueColorLight = !m_cueColorDimmed;
-        m_isCueColorDark = m_cueColorDimmed;
+        m_bCueColorIsLight = !m_bCueColorDimmed;
+        m_bCueColorIsDark = m_bCueColorDimmed;
     } else {
         // We are now at the background set by qss.
         // Since we don't know the color reset both
-        m_isCueColorLight = false;
-        m_isCueColorDark = false;
+        m_bCueColorIsLight = false;
+        m_bCueColorIsDark = false;
     }
     WPushButton::restyleAndRepaint();
 }
