@@ -250,8 +250,7 @@ FramePos BeatsInternal::findNthBeat(FramePos frame, int n) const {
 
     // If the position is within 1/10th of the average beat length,
     // pretend we are on that beat.
-    const double kFrameEpsilon = kBeatVicinityFactor * kSecondsPerMinute *
-            m_iSampleRate / getBpm().getValue();
+    const double kFrameEpsilon = kBeatVicinityFactor * getBeatLengthFrames(getBpm(), m_iSampleRate);
 
     // Back-up by one.
     if (it != m_beats.begin()) {
@@ -565,8 +564,7 @@ bool BeatsInternal::findPrevNextBeats(FramePos frame,
 
     // If the position is within 1/10th of the average beat length,
     // pretend we are on that beat.
-    const double kFrameEpsilon = kBeatVicinityFactor * kSecondsPerMinute *
-            m_iSampleRate / getBpm().getValue();
+    const double kFrameEpsilon = kBeatVicinityFactor * getBeatLengthFrames(getBpm(), m_iSampleRate);
 
     // Back-up by one.
     if (it != m_beats.begin()) {
