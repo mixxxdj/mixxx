@@ -12,6 +12,7 @@ MacroRecorder::MacroRecorder()
           m_CORecStatus(ConfigKey(kMacroRecordingKey, "recording_status")),
           m_activeChannel(nullptr),
           m_macroRecordingState(MacroState::Disabled),
+          m_pStartRecordingTimer(new QTimer()),
           m_recordedMacro() {
     qCDebug(macros) << "MacroRecorder construct";
 
@@ -19,6 +20,10 @@ MacroRecorder::MacroRecorder()
             &ControlPushButton::valueChanged,
             this,
             &MacroRecorder::slotToggleRecording);
+    connect(m_pStartRecordingTimer,
+            &QTimer::timeout,
+            this,
+            &MacroRecorder::pollRecordingStart);
 }
 
 void MacroRecorder::notifyCueJump(ChannelHandle& channel, double origin, double target) {
@@ -46,23 +51,24 @@ bool MacroRecorder::claimRecording() {
     return m_macroRecordingState.compare_exchange_weak(armed, MacroState::Recording);
 }
 
-void pollRecordingStart(MacroRecorder* pMacroRecorder) {
-    while (pMacroRecorder->getActiveChannel() == nullptr) {
-        QThread::msleep(300);
-        if (pMacroRecorder->getState() == MacroState::Disabled) {
+void MacroRecorder::pollRecordingStart() {
+    qCDebug(macros) << "Polling for recording start";
+    if (getState() != MacroState::Disabled) {
+        if (getActiveChannel() == nullptr) {
             return;
+        } else {
+            ControlProxy(ConfigKey(kMacroRecordingKey, "recording_status")).set(2);
         }
     }
-    // TODO(xerus) add test
-    ControlProxy(ConfigKey(kMacroRecordingKey, "recording_status")).set(2);
+    m_pStartRecordingTimer->stop();
 }
 
 void MacroRecorder::startRecording() {
-    qCDebug(macros) << "MacroRecorder recording start";
+    qCDebug(macros) << "MacroRecorder recording armed";
     m_CORecStatus.set(1);
     m_recordedMacro.clear();
     setState(MacroState::Armed);
-    QtConcurrent::run(pollRecordingStart, this);
+    m_pStartRecordingTimer->start(300);
 }
 
 void MacroRecorder::stopRecording() {
