@@ -4,7 +4,6 @@
 
 #include "control/controlproxy.h"
 #include "preferences/configobject.h"
-#include "util/assert.h"
 
 // TODO(xerus) handle track eject while recording
 
