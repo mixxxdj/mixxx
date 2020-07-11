@@ -16,7 +16,7 @@ constexpr AVSampleFormat kavSampleFormat = AV_SAMPLE_FMT_FLT;
 
 constexpr uint64_t kavChannelLayoutUndefined = 0;
 
-constexpr int64_t kavMinStartTime = 0;
+constexpr int64_t kavDefaultStreamStartTime = 0;
 
 // Use 0-based sample frame indexing
 constexpr SINT kMinFrameIndex = 0;
@@ -82,25 +82,17 @@ inline int64_t getStreamStartTime(const AVStream& avStream) {
 #if ENABLE_TRACING
         kLogger.trace()
                 << "Unknown start time -> using default value"
-                << kavMinStartTime;
+                << kavDefaultStreamStartTime;
 #endif
-        start_time = kavMinStartTime;
-    }
-    VERIFY_OR_DEBUG_ASSERT(start_time >= kavMinStartTime) {
-        kLogger.warning()
-                << "Adjusting start time:"
-                << start_time
-                << "->"
-                << kavMinStartTime;
-        return kavMinStartTime;
+        start_time = kavDefaultStreamStartTime;
     }
     return start_time;
 }
 
 inline int64_t getStreamEndTime(const AVStream& avStream) {
-    // The duration is the actually the end time of the stream,
-    // i.e. pts always starts at 0 independent of the start_time!
-    DEBUG_ASSERT(avStream.duration >= getStreamStartTime(avStream));
+    // The "duration" contains actually the end time of the
+    // stream.
+    DEBUG_ASSERT(getStreamStartTime(avStream) <= avStream.duration);
     return avStream.duration;
 }
 
@@ -108,17 +100,18 @@ inline SINT convertStreamTimeToFrameIndex(const AVStream& avStream, int64_t pts)
     // getStreamStartTime(avStream) -> 1st audible frame at kMinFrameIndex
     return kMinFrameIndex +
             av_rescale_q(
-                    pts,
+                    pts - getStreamStartTime(avStream),
                     avStream.time_base,
                     (AVRational){1, avStream.codecpar->sample_rate});
 }
 
 inline int64_t convertFrameIndexToStreamTime(const AVStream& avStream, SINT frameIndex) {
     // Inverse mapping of convertStreamTimeToFrameIndex()
-    return av_rescale_q(
-            frameIndex - kMinFrameIndex,
-            (AVRational){1, avStream.codecpar->sample_rate},
-            avStream.time_base);
+    return getStreamStartTime(avStream) +
+            av_rescale_q(
+                    frameIndex - kMinFrameIndex,
+                    (AVRational){1, avStream.codecpar->sample_rate},
+                    avStream.time_base);
 }
 
 IndexRange getStreamFrameIndexRange(const AVStream& avStream) {
@@ -594,24 +587,21 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     }
     const auto streamFrameIndexRange =
             getStreamFrameIndexRange(*m_pavStream);
-    // The nominal frame index range includes the lead-in that
-    // is filled with silence during decoding. This is required
-    // for both for backward compatibility and for interoperability
-    // with external applications!
-    // See also the discussion regarding cue point shift/offset:
-    // https://mixxx.zulipchat.com/#narrow/stream/109171-development/topic/Cue.20shift.2Foffset
-    VERIFY_OR_DEBUG_ASSERT(kMinFrameIndex <= streamFrameIndexRange.start()) {
+    VERIFY_OR_DEBUG_ASSERT(streamFrameIndexRange.start() <= streamFrameIndexRange.end()) {
         kLogger.warning()
                 << "Stream with unsupported or invalid frame index range"
                 << streamFrameIndexRange;
         return OpenResult::Failed;
     }
-    if (kMinFrameIndex < streamFrameIndexRange.start()) {
-        kLogger.debug()
-                << "Lead-in frames"
-                << IndexRange::between(kMinFrameIndex, streamFrameIndexRange.start());
-    }
-    const auto frameIndexRange = IndexRange::between(kMinFrameIndex, streamFrameIndexRange.end());
+
+    // Decoding MP3/AAC files manually into WAV using the ffmpeg CLI and
+    // comparing the audio data revealed that we need to map the nominal
+    // range of the stream onto our internal range starting at kMinFrameIndex.
+    // See also the discussion regarding cue point shift/offset:
+    // https://mixxx.zulipchat.com/#narrow/stream/109171-development/topic/Cue.20shift.2Foffset
+    const auto frameIndexRange = IndexRange::forward(
+            kMinFrameIndex,
+            streamFrameIndexRange.length());
     if (!initFrameIndexRangeOnce(frameIndexRange)) {
         kLogger.warning()
                 << "Failed to initialize frame index range"
@@ -637,7 +627,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     kLogger.trace() << "Seek preroll frame count:" << m_seekPrerollFrameCount;
 #endif
 
-    m_curFrameIndex = kMinFrameIndex;
+    m_curFrameIndex = kFrameIndexUnknown;
 
     return OpenResult::Succeeded;
 }
@@ -1061,8 +1051,11 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                 DEBUG_ASSERT(m_pavDecodedFrame->pts != AV_NOPTS_VALUE);
                 const auto decodedFrameCount = m_pavDecodedFrame->nb_samples;
                 DEBUG_ASSERT(decodedFrameCount > 0);
+                const auto streamFrameIndex =
+                        convertStreamTimeToFrameIndex(
+                                *m_pavStream, m_pavDecodedFrame->pts);
                 decodedFrameRange = IndexRange::forward(
-                        convertStreamTimeToFrameIndex(*m_pavStream, m_pavDecodedFrame->pts),
+                        streamFrameIndex,
                         decodedFrameCount);
                 if (readFrameIndex == kFrameIndexUnknown) {
                     readFrameIndex = decodedFrameRange.start();
