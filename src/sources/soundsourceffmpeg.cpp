@@ -772,67 +772,64 @@ WritableSampleFrames SoundSourceFFmpeg::consumeSampleBuffer(
     // The current position must be valid
     DEBUG_ASSERT(frameIndexRange().containsIndex(m_curFrameIndex));
 
-    const auto bufferedRange =
+    const auto bufferedFrameRange =
             IndexRange::forward(
                     m_curFrameIndex,
                     getSignalInfo().samples2frames(m_sampleBuffer.readableLength()));
-    DEBUG_ASSERT(m_curFrameIndex == bufferedRange.clampIndex(m_curFrameIndex));
-    DEBUG_ASSERT(bufferedRange <= frameIndexRange());
-    auto writableRange = writableSampleFrames.frameIndexRange();
-    const auto consumableRange = intersect(bufferedRange, writableRange);
-    DEBUG_ASSERT(consumableRange <= writableRange);
-    if (consumableRange.empty() ||
-            (consumableRange.start() != writableRange.start())) {
+    DEBUG_ASSERT(m_curFrameIndex == bufferedFrameRange.clampIndex(m_curFrameIndex));
+    DEBUG_ASSERT(bufferedFrameRange <= frameIndexRange());
+    auto writableFrameRange = writableSampleFrames.frameIndexRange();
+    const auto consumableFrameRange = intersect(bufferedFrameRange, writableFrameRange);
+    DEBUG_ASSERT(consumableFrameRange <= writableFrameRange);
+    if (consumableFrameRange.empty() ||
+            (consumableFrameRange.start() != writableFrameRange.start())) {
         // Discard (= skip) all buffered sample data
-        m_curFrameIndex += bufferedRange.length();
+        m_curFrameIndex += bufferedFrameRange.length();
         m_sampleBuffer.clear();
         return writableSampleFrames;
     }
 
     // Drop and skip preceding buffered samples
-    DEBUG_ASSERT(m_curFrameIndex <= consumableRange.start());
+    DEBUG_ASSERT(m_curFrameIndex <= consumableFrameRange.start());
     const auto skippableRange =
             IndexRange::between(
                     m_curFrameIndex,
-                    consumableRange.start());
+                    consumableFrameRange.start());
     m_sampleBuffer.shrinkForReading(
             getSignalInfo().frames2samples(skippableRange.length()));
     m_curFrameIndex += skippableRange.length();
 
     // Consume buffered samples
 #if VERBOSE_DEBUG_LOG
-    kLogger.debug() << "Consuming buffered samples" << consumableRange;
+    kLogger.debug() << "Consuming buffered samples" << consumableFrameRange;
 #endif
-    DEBUG_ASSERT(m_curFrameIndex == consumableRange.start());
+    DEBUG_ASSERT(m_curFrameIndex == consumableFrameRange.start());
     const SampleBuffer::ReadableSlice consumableSlice =
             m_sampleBuffer.shrinkForReading(
-                    getSignalInfo().frames2samples(consumableRange.length()));
-    DEBUG_ASSERT(consumableSlice.length() == getSignalInfo().frames2samples(consumableRange.length()));
+                    getSignalInfo().frames2samples(consumableFrameRange.length()));
+    DEBUG_ASSERT(consumableSlice.length() ==
+            getSignalInfo().frames2samples(consumableFrameRange.length()));
     CSAMPLE* pOutputSampleBuffer = writableSampleFrames.writableData();
     if (pOutputSampleBuffer) {
-        SampleUtil::copy(
-                pOutputSampleBuffer,
+        SampleUtil::copy(pOutputSampleBuffer,
                 consumableSlice.data(),
                 consumableSlice.length());
         pOutputSampleBuffer += consumableSlice.length();
     }
-    writableRange.shrinkFront(consumableRange.length());
-    m_curFrameIndex += consumableRange.length();
+    writableFrameRange.shrinkFront(consumableFrameRange.length());
+    m_curFrameIndex += consumableFrameRange.length();
     // Either the resulting output buffer or the sample buffer is
     // empty after returning from this function! Remaining data in
     // the sample buffer is kept until the next read operation.
-    DEBUG_ASSERT(writableRange.empty() || m_sampleBuffer.empty());
+    DEBUG_ASSERT(writableFrameRange.empty() || m_sampleBuffer.empty());
 
     // Return the remaining output buffer for decoding
-    return WritableSampleFrames(
-            writableRange,
+    return WritableSampleFrames(writableFrameRange,
             SampleBuffer::WritableSlice(
-                    pOutputSampleBuffer,
-                    writableRange.length()));
+                    pOutputSampleBuffer, writableFrameRange.length()));
 }
 
-bool SoundSourceFFmpeg::adjustCurrentPosition(
-        SINT startIndex) {
+bool SoundSourceFFmpeg::adjustCurrentPosition(SINT startIndex) {
     if (m_curFrameIndex == startIndex) {
         // Nothing to do
         return true;
@@ -849,7 +846,8 @@ bool SoundSourceFFmpeg::adjustCurrentPosition(
             math_max(kMinFrameIndex, startIndex - m_seekPrerollFrameCount);
     // Seek to codec frame boundaries if the frame size is fixed and known
     if (m_pavStream->codecpar->frame_size > 0) {
-        seekFrameIndex -= (seekFrameIndex - kMinFrameIndex) % m_pavCodecContext->frame_size;
+        seekFrameIndex -=
+                (seekFrameIndex - kMinFrameIndex) % m_pavCodecContext->frame_size;
     }
     DEBUG_ASSERT(seekFrameIndex >= kMinFrameIndex);
     DEBUG_ASSERT(seekFrameIndex <= startIndex);
@@ -864,8 +862,7 @@ bool SoundSourceFFmpeg::adjustCurrentPosition(
         // Seek to new position
         const int64_t seekTimestamp =
                 convertFrameIndexToStreamTime(*m_pavStream, seekFrameIndex);
-        int av_seek_frame_result = av_seek_frame(
-                m_pavInputFormatContext,
+        int av_seek_frame_result = av_seek_frame(m_pavInputFormatContext,
                 m_pavStream->index,
                 seekTimestamp,
                 AVSEEK_FLAG_BACKWARD);
@@ -873,7 +870,9 @@ bool SoundSourceFFmpeg::adjustCurrentPosition(
             // Unrecoverable seek error: Invalidate the current position and abort
             kLogger.warning()
                     << "av_seek_frame() failed:"
-                    << formatErrorMessage(av_seek_frame_result).toLocal8Bit().constData();
+                    << formatErrorMessage(av_seek_frame_result)
+                               .toLocal8Bit()
+                               .constData();
             m_curFrameIndex = kFrameIndexInvalid;
             return false;
         }
@@ -886,18 +885,15 @@ bool SoundSourceFFmpeg::adjustCurrentPosition(
 }
 
 bool SoundSourceFFmpeg::consumeNextPacket(
-        AVPacket* pavPacket,
-        AVPacket** ppavNextPacket) {
+        AVPacket* pavPacket, AVPacket** ppavNextPacket) {
     DEBUG_ASSERT(pavPacket);
     DEBUG_ASSERT(ppavNextPacket);
     if (!*ppavNextPacket) {
         // Read next packet from stream
-        const SINT packetFrameIndex =
-                readNextPacket(
-                        m_pavInputFormatContext,
-                        m_pavStream,
-                        pavPacket,
-                        m_curFrameIndex);
+        const SINT packetFrameIndex = readNextPacket(m_pavInputFormatContext,
+                m_pavStream,
+                pavPacket,
+                m_curFrameIndex);
         if (packetFrameIndex == kFrameIndexInvalid) {
             // Invalidate current position and abort reading
             m_curFrameIndex = kFrameIndexInvalid;
@@ -931,7 +927,9 @@ bool SoundSourceFFmpeg::consumeNextPacket(
         } else {
             kLogger.warning()
                     << "avcodec_send_packet() failed:"
-                    << formatErrorMessage(avcodec_send_packet_result).toLocal8Bit().constData();
+                    << formatErrorMessage(avcodec_send_packet_result)
+                               .toLocal8Bit()
+                               .constData();
             // Release ownership on packet
             av_packet_unref(pavNextPacket);
             *ppavNextPacket = nullptr;
@@ -956,15 +954,14 @@ const CSAMPLE* SoundSourceFFmpeg::resampleDecodedFrame() {
 #if VERBOSE_DEBUG_LOG
         avTrace("Resampling decoded frame", *m_pavDecodedFrame);
 #endif
-        const auto swr_convert_frame_result =
-                swr_convert_frame(
-                        m_pSwrContext,
-                        m_pavResampledFrame,
-                        m_pavDecodedFrame);
+        const auto swr_convert_frame_result = swr_convert_frame(
+                m_pSwrContext, m_pavResampledFrame, m_pavDecodedFrame);
         if (swr_convert_frame_result != 0) {
             kLogger.warning()
                     << "swr_convert_frame() failed:"
-                    << formatErrorMessage(swr_convert_frame_result).toLocal8Bit().constData();
+                    << formatErrorMessage(swr_convert_frame_result)
+                               .toLocal8Bit()
+                               .constData();
             // Discard decoded frame and abort after unrecoverable error
             av_frame_unref(m_pavDecodedFrame);
             return nullptr;
@@ -973,7 +970,8 @@ const CSAMPLE* SoundSourceFFmpeg::resampleDecodedFrame() {
         avTrace("Received resampled frame", *m_pavResampledFrame);
 #endif
         DEBUG_ASSERT(m_pavDecodedFrame->pts = m_pavResampledFrame->pts);
-        DEBUG_ASSERT(m_pavDecodedFrame->nb_samples = m_pavResampledFrame->nb_samples);
+        DEBUG_ASSERT(m_pavDecodedFrame->nb_samples =
+                             m_pavResampledFrame->nb_samples);
         return reinterpret_cast<const CSAMPLE*>(
                 m_pavResampledFrame->extended_data[0]);
     } else {
@@ -984,29 +982,27 @@ const CSAMPLE* SoundSourceFFmpeg::resampleDecodedFrame() {
 
 ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
         WritableSampleFrames writableSampleFrames) {
-    const SINT readableStartIndex = writableSampleFrames.frameIndexRange().start();
+    const SINT readableStartIndex =
+            writableSampleFrames.frameIndexRange().start();
     const CSAMPLE* readableData = writableSampleFrames.writableData();
 
     // Consume all buffered sample data before decoding any new data
     writableSampleFrames = consumeSampleBuffer(writableSampleFrames);
 
     // Skip decoding if all data has been read
-    auto writableRange = writableSampleFrames.frameIndexRange();
-    DEBUG_ASSERT(writableRange <= frameIndexRange());
-    if (writableRange.empty()) {
-        auto readableRange =
-                IndexRange::between(
-                        readableStartIndex,
-                        writableRange.start());
-        return ReadableSampleFrames(
-                readableRange,
-                SampleBuffer::ReadableSlice(
-                        readableData,
-                        getSignalInfo().frames2samples(readableRange.length())));
+    auto writableFrameRange = writableSampleFrames.frameIndexRange();
+    DEBUG_ASSERT(writableFrameRange <= frameIndexRange());
+    if (writableFrameRange.empty()) {
+        auto readableRange = IndexRange::between(
+                readableStartIndex, writableFrameRange.start());
+        return ReadableSampleFrames(readableRange,
+                SampleBuffer::ReadableSlice(readableData,
+                        getSignalInfo().frames2samples(
+                                readableRange.length())));
     }
 
     // Adjust the current position
-    if (!adjustCurrentPosition(writableRange.start())) {
+    if (!adjustCurrentPosition(writableFrameRange.start())) {
         // Abort reading on seek errors
         return ReadableSampleFrames();
     }
@@ -1021,7 +1017,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
     AVPacket* pavNextPacket = nullptr;
     auto readFrameIndex = m_curFrameIndex;
     while ((m_curFrameIndex != kFrameIndexInvalid) &&
-            (pavNextPacket || !writableRange.empty()) &&
+            (pavNextPacket || !writableFrameRange.empty()) &&
             consumeNextPacket(&avPacket, &pavNextPacket)) {
         int avcodec_receive_frame_result;
         do {
@@ -1029,19 +1025,17 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
             kLogger.debug()
                     << "m_curFrameIndex" << m_curFrameIndex
                     << "readFrameIndex" << readFrameIndex
-                    << "writableRange" << writableRange
-                    << "m_sampleBuffer.readableLength()" << m_sampleBuffer.readableLength();
+                    << "writableFrameRange" << writableFrameRange
+                    << "m_sampleBuffer.readableLength()"
+                    << m_sampleBuffer.readableLength();
 #endif
 
-            DEBUG_ASSERT(writableRange.empty() || m_sampleBuffer.empty());
-
-            SINT missingFrameCount = 0;
+            DEBUG_ASSERT(writableFrameRange.empty() || m_sampleBuffer.empty());
 
             // Decode next frame
             IndexRange decodedFrameRange;
-            avcodec_receive_frame_result = avcodec_receive_frame(
-                    m_pavCodecContext,
-                    m_pavDecodedFrame);
+            avcodec_receive_frame_result =
+                    avcodec_receive_frame(m_pavCodecContext, m_pavDecodedFrame);
             if (avcodec_receive_frame_result == 0) {
 #if VERBOSE_DEBUG_LOG
                 avTrace("Received decoded frame", *m_pavDecodedFrame);
@@ -1060,15 +1054,16 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                 }
             } else if (avcodec_receive_frame_result == AVERROR(EAGAIN)) {
 #if VERBOSE_DEBUG_LOG
-                kLogger.debug() << "No more frames available until decoder is "
-                                   "fed with more packets from stream";
+                kLogger.debug()
+                        << "No more frames available until decoder is fed with "
+                           "more packets from stream";
 #endif
                 DEBUG_ASSERT(!pavNextPacket);
                 break;
             } else if (avcodec_receive_frame_result == AVERROR_EOF) {
                 DEBUG_ASSERT(!pavNextPacket);
-                if (!writableRange.empty()) {
-                    DEBUG_ASSERT(readFrameIndex < writableRange.end());
+                if (!writableFrameRange.empty()) {
+                    DEBUG_ASSERT(readFrameIndex < writableFrameRange.end());
                     DEBUG_ASSERT(m_sampleBuffer.empty());
                     // Due to the lead-in with a start_time > 0 some encoded
                     // files are shorter then actually reported. This may vary
@@ -1085,14 +1080,14 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                             << frameIndexRange().end()
                             << "-> padding with silence";
                     const auto clearSampleCount =
-                            getSignalInfo().frames2samples(writableRange.length());
+                            getSignalInfo().frames2samples(
+                                    writableFrameRange.length());
                     if (pOutputSampleBuffer) {
                         SampleUtil::clear(
-                                pOutputSampleBuffer,
-                                clearSampleCount);
+                                pOutputSampleBuffer, clearSampleCount);
                         pOutputSampleBuffer += clearSampleCount;
                     }
-                    writableRange.shrinkFront(writableRange.length());
+                    writableFrameRange.shrinkFront(writableFrameRange.length());
                 }
                 // Invalidate current position and abort reading
                 m_curFrameIndex = kFrameIndexInvalid;
@@ -1100,7 +1095,9 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
             } else {
                 kLogger.warning()
                         << "avcodec_receive_frame() failed:"
-                        << formatErrorMessage(avcodec_receive_frame_result).toLocal8Bit().constData();
+                        << formatErrorMessage(avcodec_receive_frame_result)
+                                   .toLocal8Bit()
+                                   .constData();
                 // Invalidate current position and abort reading
                 m_curFrameIndex = kFrameIndexInvalid;
                 break;
@@ -1109,21 +1106,18 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
 #if VERBOSE_DEBUG_LOG
             kLogger.debug()
                     << "After receiving decoded frame:"
-                    << "m_curFrameIndex" << m_curFrameIndex
-                    << "readFrameIndex" << readFrameIndex
-                    << "decodedFrameRange" << decodedFrameRange
-                    << "writableRange" << writableRange
-                    << "missingFrameCount" << missingFrameCount;
+                    << "m_curFrameIndex" << m_curFrameIndex << "readFrameIndex"
+                    << readFrameIndex << "decodedFrameRange"
+                    << decodedFrameRange << "writableFrameRange"
+                    << writableFrameRange;
 #endif
             DEBUG_ASSERT(readFrameIndex != kFrameIndexInvalid);
             DEBUG_ASSERT(readFrameIndex != kFrameIndexUnknown);
 
             if (decodedFrameRange.start() < readFrameIndex) {
                 // The next frame starts BEFORE the current position
-                const auto overlapRange =
-                        IndexRange::between(
-                                decodedFrameRange.start(),
-                                readFrameIndex);
+                const auto overlapRange = IndexRange::between(
+                        decodedFrameRange.start(), readFrameIndex);
                 // NOTE(2019-02-08, uklotzde): Overlapping frames at the
                 // beginning of an audio stream before the first readable
                 // sample frame at kMinFrameIndex are expected. For example
@@ -1135,14 +1129,14 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                             << "Overlapping sample frames in the stream:"
                             << overlapRange;
                 }
-                const auto consumedRange =
-                        IndexRange::between(
-                                writableSampleFrames.frameIndexRange().start(),
-                                // We might still be decoding samples in preroll mode, i.e.
-                                // readFrameIndex < writableSampleFrames.frameIndexRange().start()
-                                math_max(readFrameIndex, writableSampleFrames.frameIndexRange().start()));
-                auto rewindRange =
-                        intersect(overlapRange, consumedRange);
+                const auto consumedRange = IndexRange::between(
+                        writableSampleFrames.frameIndexRange().start(),
+                        // We might still be decoding samples in preroll mode, i.e.
+                        // readFrameIndex < writableSampleFrames.frameIndexRange().start()
+                        math_max(readFrameIndex,
+                                writableSampleFrames.frameIndexRange()
+                                        .start()));
+                auto rewindRange = intersect(overlapRange, consumedRange);
                 if (!rewindRange.empty()) {
                     DEBUG_ASSERT(rewindRange.end() == readFrameIndex);
                     kLogger.warning()
@@ -1153,14 +1147,17 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                     // Rewind internally buffered samples first...
                     const auto rewindSampleLength =
                             m_sampleBuffer.shrinkAfterWriting(
-                                    getSignalInfo().frames2samples(rewindRange.length()));
+                                    getSignalInfo().frames2samples(
+                                            rewindRange.length()));
                     rewindRange.shrinkBack(
                             getSignalInfo().samples2frames(rewindSampleLength));
                     // ...then rewind remaining samples from the output buffer
                     if (pOutputSampleBuffer) {
-                        pOutputSampleBuffer -= getSignalInfo().frames2samples(rewindRange.length());
+                        pOutputSampleBuffer -= getSignalInfo().frames2samples(
+                                rewindRange.length());
                     }
-                    writableRange = IndexRange::between(rewindRange.start(), writableRange.end());
+                    writableFrameRange = IndexRange::between(
+                            rewindRange.start(), writableFrameRange.end());
                 }
                 // Adjust read position
                 readFrameIndex = decodedFrameRange.start();
@@ -1173,11 +1170,9 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
 #if VERBOSE_DEBUG_LOG
             kLogger.debug()
                     << "Before resampling:"
-                    << "m_curFrameIndex" << m_curFrameIndex
                     << "readFrameIndex" << readFrameIndex
                     << "decodedFrameRange" << decodedFrameRange
-                    << "writableRange" << writableRange
-                    << "missingFrameCount" << missingFrameCount;
+                    << "writableFrameRange" << writableFrameRange;
 #endif
             // readFrameIndex
             //       |
@@ -1210,33 +1205,34 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                 break;
             }
 
-            if (writableRange.start() < readFrameIndex) {
+            if (writableFrameRange.start() < readFrameIndex) {
                 const auto missingRange = IndexRange::between(
-                        writableRange.start(),
+                        writableFrameRange.start(),
                         readFrameIndex);
-                const auto clearRange = intersect(missingRange, writableRange);
-                if (clearRange.length() > 0) {
+                const auto clearFrameRange = intersect(missingRange, writableFrameRange);
+                if (clearFrameRange.length() > 0) {
                     const auto clearSampleCount =
-                            getSignalInfo().frames2samples(clearRange.length());
+                            getSignalInfo().frames2samples(clearFrameRange.length());
                     if (pOutputSampleBuffer) {
                         SampleUtil::clear(
                                 pOutputSampleBuffer,
                                 clearSampleCount);
                         pOutputSampleBuffer += clearSampleCount;
                     }
-                    writableRange.shrinkFront(clearRange.length());
+                    writableFrameRange.shrinkFront(clearFrameRange.length());
                 }
             }
 
             // Skip all missing and decoded ranges that do not overlap
-            // with writableRange, i.e. that precede writableRange.
+            // with writableFrameRange, i.e. that precede writableFrameRange.
             DEBUG_ASSERT(pDecodedSampleData);
             const auto preskipMissingFrameCount =
-                    math_min(missingFrameCount, writableRange.start() - readFrameIndex);
+                    math_min(missingFrameCount, writableFrameRange.start() - readFrameIndex);
             missingFrameCount -= preskipMissingFrameCount;
             readFrameIndex += preskipMissingFrameCount;
             const auto preskipDecodedFrameCount =
-                    math_min(decodedFrameRange.length(), writableRange.start() - readFrameIndex);
+                    math_min(decodedFrameRange.length(),
+                            writableFrameRange.start() - readFrameIndex);
             pDecodedSampleData += getSignalInfo().frames2samples(preskipDecodedFrameCount);
             decodedFrameRange.shrinkFront(preskipDecodedFrameCount);
             readFrameIndex += preskipDecodedFrameCount;
@@ -1244,19 +1240,17 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
 
 #if VERBOSE_DEBUG_LOG
             kLogger.debug()
-                    << "Before writing:"
-                    << "m_curFrameIndex" << m_curFrameIndex
+                    << "Before consuming:"
                     << "readFrameIndex" << readFrameIndex
                     << "decodedFrameRange" << decodedFrameRange
-                    << "writableRange" << writableRange
-                    << "missingFrameCount" << missingFrameCount;
+                    << "writableFrameRange" << writableFrameRange;
 #endif
 
             // Consume all sample data from missing and decoded ranges
-            // that overlap with writableRange.
-            if (readFrameIndex == writableRange.start()) {
+            // that overlap with writableFrameRange.
+            if (readFrameIndex == writableFrameRange.start()) {
                 const auto writeMissingFrameCount =
-                        math_min(missingFrameCount, writableRange.length());
+                        math_min(missingFrameCount, writableFrameRange.length());
                 if (writeMissingFrameCount > 0) {
                     // Fill the gap until the first decoded frame with silence
                     const auto clearSampleCount =
@@ -1268,12 +1262,12 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                         pOutputSampleBuffer += clearSampleCount;
                     }
                     missingFrameCount -= writeMissingFrameCount;
-                    writableRange.shrinkFront(writeMissingFrameCount);
+                    writableFrameRange.shrinkFront(writeMissingFrameCount);
                     readFrameIndex += writeMissingFrameCount;
                 }
-                DEBUG_ASSERT((missingFrameCount == 0) || writableRange.empty());
+                DEBUG_ASSERT((missingFrameCount == 0) || writableFrameRange.empty());
                 const auto writeDecodedFrameCount =
-                        math_min(decodedFrameRange.length(), writableRange.length());
+                        math_min(decodedFrameRange.length(), writableFrameRange.length());
                 if (writeDecodedFrameCount > 0) {
                     // Copy the decoded samples into the output buffer
                     const auto copySampleCount =
@@ -1287,11 +1281,11 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                     }
                     pDecodedSampleData += copySampleCount;
                     decodedFrameRange.shrinkFront(writeDecodedFrameCount);
-                    writableRange.shrinkFront(writeDecodedFrameCount);
+                    writableFrameRange.shrinkFront(writeDecodedFrameCount);
                     readFrameIndex += writeDecodedFrameCount;
                 }
-                DEBUG_ASSERT(decodedFrameRange.empty() || writableRange.empty());
-                DEBUG_ASSERT(readFrameIndex == writableRange.start());
+                DEBUG_ASSERT(decodedFrameRange.empty() || writableFrameRange.empty());
+                DEBUG_ASSERT(readFrameIndex == writableFrameRange.start());
                 m_curFrameIndex = readFrameIndex;
             }
 
@@ -1301,8 +1295,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                     << "m_curFrameIndex" << m_curFrameIndex
                     << "readFrameIndex" << readFrameIndex
                     << "decodedFrameRange" << decodedFrameRange
-                    << "writableRange" << writableRange
-                    << "missingFrameCount" << missingFrameCount;
+                    << "writableFrameRange" << writableFrameRange;
 #endif
 
             // Buffer remaining unread sample data from
@@ -1349,16 +1342,16 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
             }
             DEBUG_ASSERT(m_curFrameIndex ==
                     frameIndexRange().clampIndex(m_curFrameIndex));
-            const auto bufferedRange =
+            const auto bufferedFrameRange =
                     IndexRange::forward(
                             m_curFrameIndex,
                             getSignalInfo().samples2frames(m_sampleBuffer.readableLength()));
-            if (frameIndexRange().end() < bufferedRange.end()) {
+            if (frameIndexRange().end() < bufferedFrameRange.end()) {
                 // NOTE(2019-09-08, uklotzde): For some files (MP3 VBR) FFmpeg may
                 // decode a few more samples than expected! Simply discard those
                 // trailing samples.
                 const auto overflowFrameCount =
-                        bufferedRange.end() - frameIndexRange().end();
+                        bufferedFrameRange.end() - frameIndexRange().end();
                 kLogger.info()
                         << "Discarding"
                         << overflowFrameCount
@@ -1370,14 +1363,15 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
             // Housekeeping before next decoding iteration
             av_frame_unref(m_pavDecodedFrame);
             av_frame_unref(m_pavResampledFrame);
-        } while ((avcodec_receive_frame_result == 0) && (m_curFrameIndex != kFrameIndexInvalid));
+        } while ((avcodec_receive_frame_result == 0) &&
+                (m_curFrameIndex != kFrameIndexInvalid));
     }
     DEBUG_ASSERT(!pavNextPacket);
 
     auto readableRange =
             IndexRange::between(
                     readableStartIndex,
-                    writableRange.start());
+                    writableFrameRange.start());
     return ReadableSampleFrames(
             readableRange,
             SampleBuffer::ReadableSlice(
