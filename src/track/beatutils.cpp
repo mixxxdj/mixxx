@@ -18,7 +18,7 @@
 // we are generous and assume the global_BPM to be at most 0.05 BPM far away
 // from the correct one
 constexpr double kBpmError = 0.05;
-constexpr double kMaxPhaseError = 0.025; //25ms
+constexpr double kMaxSecsPhaseError = 0.025; //25ms
 
 // the raw beatgrid is divided into blocks of size N from which the local bpm is
 // computed. Tweaked from 8 to 12 which improves the BPM accuracy for 'problem songs'.
@@ -46,22 +46,24 @@ QMap<int, double> BeatUtils::findTempoChanges(
     // The analyzer sometimes detect false beats that generate outliers
     // values for the tempo so we use a median filter to remove them
     MovingMedian filterTempo(5); // 5 is the lenght our window
-    int currentBeat = 0, lastBeatChange = 0;
+    int currentBeat = -1;
+    int lastBeatChange = 0;
     QMap<int, double> stableTemposAndPositions;
     stableTemposAndPositions[lastBeatChange] = median;
     // Here we are going to track the tempo changes over the track
     for (double tempo : tempoList) {
+        currentBeat += 1;
         double newStableTempo = filterTempo(tempo);
         // The analyzer has some jitter that causes a steady beat to fluctuate around
         // the correct value so we don't consider tempos +-1 from that as changes
         if (newStableTempo == stableTemposAndPositions.last()) {
-            ; // no-op - action only in else
+            continue;
         } else if (stableTemposAndPositions.last() != tempoFrequency.lastKey() and
                 newStableTempo == (tempoFrequency.find(stableTemposAndPositions.last()) + 1).key()) {
-            ;
+            continue;
         } else if (stableTemposAndPositions.last() != tempoFrequency.firstKey() and
                 newStableTempo == (tempoFrequency.find(stableTemposAndPositions.last()) - 1).key()) {
-            ;
+            continue;
         } else {
             // this may not be case when our median window is even, we can't use it
             // because find will return an iterator pointing to end that we will *
@@ -70,7 +72,6 @@ QMap<int, double> BeatUtils::findTempoChanges(
                 stableTemposAndPositions[lastBeatChange] = newStableTempo;
             }
         }
-        currentBeat += 1;
     }
     stableTemposAndPositions[tempoList.count()] = median;
     return stableTemposAndPositions;
@@ -147,17 +148,18 @@ QVector<double> BeatUtils::calculateFixedTempoBeatMap(
     }
     // Length of a beat at globalBpm in mono samples.
     const double beatLength = floor(((60.0 * sampleRate) / globalBpm) + 0.5);
-    // We start building a fixed beat grid at globalBpm
-    // that matches that beat phase
+    // We build a fixed beat grid at globalBpm that matches that
+    // beat phase and keep going until we reach our max phase error
+    // in that case we reset the phase but keep the grid at globalBpm
+    // but since we moved one beat we change the bpm at that point
     double beatOffset = rawbeats[longestSequenceEnd];
     int leftIndex = longestSequenceEnd;
     double secondsPerSample = 1 / static_cast<double>(sampleRate);
-    qDebug() << secondsPerSample;
     QVector<double> fixedBeats;
-    // we add all the beats to the left of our correct beat
+    // We add all the beats to the left of our correct beat
     while (beatOffset > rawbeats.first() - beatLength) {
         double phaseError = secondsPerSample * fabs(beatOffset - rawbeats[leftIndex]);
-        if (phaseError > kMaxPhaseError) {
+        if (phaseError > kMaxSecsPhaseError) {
             beatOffset = rawbeats[leftIndex];
         }
         fixedBeats << beatOffset;
@@ -166,16 +168,16 @@ QVector<double> BeatUtils::calculateFixedTempoBeatMap(
         }
         beatOffset -= beatLength;
     }
-    
+
     std::reverse(fixedBeats.begin(), fixedBeats.end());
     beatOffset = rawbeats[longestSequenceEnd];
     beatOffset += beatLength;
     int rightIndex = longestSequenceEnd + 1;
 
-    // we add all the beats to the right of our correct beat
+    // We add all the beats to the right of our correct beat
     while (beatOffset < rawbeats.last() + beatLength) {
         double phaseError = secondsPerSample * fabs(beatOffset - rawbeats[rightIndex]);
-        if (phaseError > kMaxPhaseError) {
+        if (phaseError > kMaxSecsPhaseError) {
             beatOffset = rawbeats[rightIndex];
         }
         if (rightIndex < rawbeats.size() - 1) {
@@ -184,7 +186,6 @@ QVector<double> BeatUtils::calculateFixedTempoBeatMap(
         fixedBeats << beatOffset;
         beatOffset += beatLength;
     }
-
     return fixedBeats;    
 }
 

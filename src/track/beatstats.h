@@ -3,8 +3,8 @@
 #include <QQueue>
 #include "util/assert.h"
 
-// These classes are used to compute statistics descriptors
-// of a series of tempo values and are called from analyzerrhythm
+/// These classes are used to compute statistics descriptors
+/// of a series of tempo values and are called from beatutils
 
 class WindowedStatistics {
 
@@ -31,26 +31,24 @@ class WindowedStatistics {
 
     private:
 
-      QQueue<double> m_window;
-      int m_period;
-
-      double updateWindow(double newValue) {
-          m_window.enqueue(newValue);
-          if (m_window.count() > m_period) {
-              return m_window.dequeue();
-          } else {
-              return std::nan("");
-          }
-    }
-    virtual double compute() = 0;
-    virtual void update(double newValue, double oldValue) = 0;
-
+        double updateWindow(double newValue) {
+                m_window.enqueue(newValue);
+            if (m_window.count() > m_period) {
+                return m_window.dequeue();
+            } else {
+                return std::nan("");
+            }
+        }
+        virtual double compute() = 0;
+        virtual void update(double newValue, double oldValue) = 0;
+        QQueue<double> m_window;
+        int m_period;
 };
+
 class BeatStatistics {
   public:
     static double median(QList<double> sortedItems);
 };
-
 
 class MovingMedian : public WindowedStatistics {
     QList<double> m_sortedValues;

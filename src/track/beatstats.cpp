@@ -14,6 +14,7 @@ void MovingMedian::update(double newValue, double oldValue) {
         m_sortedValues.removeAt(m_sortedValues.indexOf(oldValue));
     }
 }
+
 double MovingMedian::compute() {
     return BeatStatistics::median(m_sortedValues);
 }
