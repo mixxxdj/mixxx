@@ -1,10 +1,10 @@
 #include "sources/soundsourceffmpeg.h"
 
-#include "util/logger.h"
-#include "util/sample.h"
-
 #include <limits>
 #include <mutex>
+
+#include "util/logger.h"
+#include "util/sample.h"
 
 #define ENABLE_TRACING false
 
@@ -183,29 +183,31 @@ QString formatErrorMessage(int errnum) {
 #if ENABLE_TRACING
 inline void avTrace(const char* preamble, const AVPacket& avPacket) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << preamble
-                        << "{ stream_index" << avPacket.stream_index
-                        << "| pos" << avPacket.pos
-                        << "| size" << avPacket.size
-                        << "| dst" << avPacket.dts
-                        << "| pts" << avPacket.pts
-                        << "| duration" << avPacket.duration
-                        << '}';
+        kLogger.trace()
+                << preamble
+                << "{ stream_index" << avPacket.stream_index
+                << "| pos" << avPacket.pos
+                << "| size" << avPacket.size
+                << "| dst" << avPacket.dts
+                << "| pts" << avPacket.pts
+                << "| duration" << avPacket.duration
+                << '}';
     }
 }
 
 inline void avTrace(const char* preamble, const AVFrame& avFrame) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << preamble
-                        << "{ channels" << avFrame.channels
-                        << "| channel_layout" << avFrame.channel_layout
-                        << "| format" << avFrame.format
-                        << "| sample_rate" << avFrame.sample_rate
-                        << "| pkt_dts" << avFrame.pkt_dts
-                        << "| pkt_duration" << avFrame.pkt_duration
-                        << "| pts" << avFrame.pts
-                        << "| nb_samples" << avFrame.nb_samples
-                        << '}';
+        kLogger.trace()
+                << preamble
+                << "{ channels" << avFrame.channels
+                << "| channel_layout" << avFrame.channel_layout
+                << "| format" << avFrame.format
+                << "| sample_rate" << avFrame.sample_rate
+                << "| pkt_dts" << avFrame.pkt_dts
+                << "| pkt_duration" << avFrame.pkt_duration
+                << "| pts" << avFrame.pts
+                << "| nb_samples" << avFrame.nb_samples
+                << '}';
     }
 }
 #endif // ENABLE_TRACING
