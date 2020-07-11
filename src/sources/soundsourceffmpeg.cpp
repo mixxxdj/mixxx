@@ -122,7 +122,7 @@ inline int64_t convertFrameIndexToStreamTime(const AVStream& avStream, SINT fram
 }
 
 IndexRange getStreamFrameIndexRange(const AVStream& avStream) {
-    return IndexRange::forward(
+    return IndexRange::between(
             convertStreamTimeToFrameIndex(avStream, getStreamStartTime(avStream)),
             convertStreamTimeToFrameIndex(avStream, getStreamEndTime(avStream)));
 }
