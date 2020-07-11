@@ -12,7 +12,7 @@
 EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
         UserSettingsPointer pConfig,
         EngineMaster* pMixingEngine,
-        MacroManager* pMacroManager,
+        MacroRecorder* pMacroRecorder,
         EffectsManager* pEffectsManager,
         EngineChannel::ChannelOrientation defaultOrientation,
         bool primaryDeck)
@@ -40,7 +40,7 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
             Qt::DirectConnection);
 
     m_pPregain = new EnginePregain(getGroup());
-    m_pBuffer = new EngineBuffer(getGroup(), pConfig, this, pMixingEngine, pMacroManager);
+    m_pBuffer = new EngineBuffer(getGroup(), pConfig, this, pMixingEngine, pMacroRecorder);
 }
 
 EngineDeck::~EngineDeck() {

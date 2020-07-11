@@ -17,7 +17,7 @@ class ControlPotmeter;
 class ControlProxy;
 class EffectsManager;
 class EngineMaster;
-class MacroManager;
+class MacroRecorder;
 class VisualsManager;
 
 // Interface for not leaking implementation details of BaseTrackPlayer into the
@@ -55,7 +55,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     BaseTrackPlayerImpl(QObject* pParent,
             UserSettingsPointer pConfig,
             EngineMaster* pMixingEngine,
-            MacroManager* pMacroManager,
+            MacroRecorder* pMacroRecorder,
             EffectsManager* pEffectsManager,
             VisualsManager* pVisualsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
