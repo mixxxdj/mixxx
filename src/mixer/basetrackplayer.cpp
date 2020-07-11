@@ -38,7 +38,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
         QObject* pParent,
         UserSettingsPointer pConfig,
         EngineMaster* pMixingEngine,
-        MacroManager* pMacroManager,
+        MacroRecorder* pMacroRecorder,
         EffectsManager* pEffectsManager,
         VisualsManager* pVisualsManager,
         EngineChannel::ChannelOrientation defaultOrientation,
@@ -55,7 +55,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     m_pChannel = new EngineDeck(handleGroup,
             pConfig,
             pMixingEngine,
-            pMacroManager,
+            pMacroRecorder,
             pEffectsManager,
             defaultOrientation,
             primaryDeck);

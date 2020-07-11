@@ -1,4 +1,4 @@
-#include "macromanager.h"
+#include "macrorecorder.h"
 
 #include <QtConcurrentRun>
 
@@ -7,21 +7,21 @@
 
 // TODO(xerus) handle track eject while recording
 
-MacroManager::MacroManager()
+MacroRecorder::MacroRecorder()
         : m_COToggleRecording(ConfigKey(kMacroRecordingKey, "recording_toggle")),
           m_CORecStatus(ConfigKey(kMacroRecordingKey, "recording_status")),
           m_activeChannel(nullptr),
           m_macroRecordingState(MacroState::Disabled),
           m_recordedMacro() {
-    qCDebug(macros) << "MacroManager construct";
+    qCDebug(macros) << "MacroRecorder construct";
 
     connect(&m_COToggleRecording,
             &ControlPushButton::valueChanged,
             this,
-            &MacroManager::slotToggleRecording);
+            &MacroRecorder::slotToggleRecording);
 }
 
-void MacroManager::notifyCueJump(ChannelHandle& channel, double origin, double target) {
+void MacroRecorder::notifyCueJump(ChannelHandle& channel, double origin, double target) {
     qCDebug(macros) << "Jump in channel" << channel.handle();
     if (checkOrClaimRecording(channel)) {
         m_recordedMacro.appendJump(origin, target);
@@ -30,7 +30,7 @@ void MacroManager::notifyCueJump(ChannelHandle& channel, double origin, double t
     }
 }
 
-bool MacroManager::checkOrClaimRecording(ChannelHandle& channel) {
+bool MacroRecorder::checkOrClaimRecording(ChannelHandle& channel) {
     if (m_activeChannel != nullptr) {
         return m_activeChannel->handle() == channel.handle() && claimRecording();
     } else if (claimRecording()) {
@@ -41,15 +41,15 @@ bool MacroManager::checkOrClaimRecording(ChannelHandle& channel) {
     return false;
 }
 
-bool MacroManager::claimRecording() {
+bool MacroRecorder::claimRecording() {
     auto armed = MacroState::Armed;
     return m_macroRecordingState.compare_exchange_weak(armed, MacroState::Recording);
 }
 
-void pollRecordingStart(MacroManager* pMacroManager) {
-    while (pMacroManager->getActiveChannel() == nullptr) {
+void pollRecordingStart(MacroRecorder* pMacroRecorder) {
+    while (pMacroRecorder->getActiveChannel() == nullptr) {
         QThread::msleep(300);
-        if (pMacroManager->getState() == MacroState::Disabled) {
+        if (pMacroRecorder->getState() == MacroState::Disabled) {
             return;
         }
     }
@@ -57,16 +57,16 @@ void pollRecordingStart(MacroManager* pMacroManager) {
     ControlProxy(ConfigKey(kMacroRecordingKey, "recording_status")).set(2);
 }
 
-void MacroManager::startRecording() {
-    qCDebug(macros) << "MacroManager recording start";
+void MacroRecorder::startRecording() {
+    qCDebug(macros) << "MacroRecorder recording start";
     m_CORecStatus.set(1);
     m_recordedMacro.clear();
     setState(MacroState::Armed);
     QtConcurrent::run(pollRecordingStart, this);
 }
 
-void MacroManager::stopRecording() {
-    qCDebug(macros) << "MacroManager recording stop";
+void MacroRecorder::stopRecording() {
+    qCDebug(macros) << "MacroRecorder recording stop";
     m_CORecStatus.set(0);
     auto armed = MacroState::Armed;
     // TODO(xerus) add concurrency test
@@ -81,22 +81,22 @@ void MacroManager::stopRecording() {
     emit saveMacro(*channel, m_recordedMacro);
 }
 
-Macro MacroManager::getMacro() {
+Macro MacroRecorder::getMacro() {
     return m_recordedMacro;
 }
 
-ChannelHandle* MacroManager::getActiveChannel() {
+ChannelHandle* MacroRecorder::getActiveChannel() {
     return m_activeChannel;
 }
 
-bool MacroManager::isRecordingActive() {
+bool MacroRecorder::isRecordingActive() {
     return getState() != MacroState::Disabled;
 }
 
-MacroState MacroManager::getState() {
+MacroState MacroRecorder::getState() {
     return m_macroRecordingState.load();
 }
 
-void MacroManager::setState(MacroState state) {
+void MacroRecorder::setState(MacroState state) {
     m_macroRecordingState.store(state);
 }

@@ -24,11 +24,11 @@ enum MacroState : uint8_t {
     Recording,
 };
 
-/// The MacroManager handles the recording of Macros and the [MacroRecording] controls.
-class MacroManager : public RecordingManagerBase {
+/// The MacroRecorder handles the recording of Macros and the [MacroRecording] controls.
+class MacroRecorder : public RecordingManagerBase {
     Q_OBJECT
   public:
-    MacroManager();
+    MacroRecorder();
 
     void startRecording() override;
     void stopRecording() override;

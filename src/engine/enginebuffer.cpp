@@ -26,7 +26,7 @@
 #include "engine/readaheadmanager.h"
 #include "engine/sync/enginesync.h"
 #include "engine/sync/synccontrol.h"
-#include "macros/macromanager.h"
+#include "macros/macrorecorder.h"
 #include "preferences/usersettings.h"
 #include "track/beatfactory.h"
 #include "track/keyutils.h"
@@ -58,13 +58,13 @@ EngineBuffer::EngineBuffer(const QString& group,
         UserSettingsPointer pConfig,
         EngineChannel* pChannel,
         EngineMaster* pMixingEngine,
-        MacroManager* pMacroManager)
+        MacroRecorder* pMacroRecorder)
         : m_group(group),
           m_pConfig(pConfig),
           m_pLoopingControl(nullptr),
           m_channel(pChannel->getHandle()),
           m_bHotcueJumpPending(false),
-          m_pMacroManager(pMacroManager),
+          m_pMacroRecorder(pMacroRecorder),
           m_pSyncControl(nullptr),
           m_pVinylControlControl(nullptr),
           m_pRateControl(nullptr),
@@ -1209,8 +1209,8 @@ void EngineBuffer::processSeek(bool paused) {
         if (kLogger.traceEnabled()) {
             kLogger.trace() << "EngineBuffer::processSeek Seek to" << position;
         }
-        if (m_bHotcueJumpPending && m_pMacroManager != nullptr) {
-            m_pMacroManager->notifyCueJump(m_channel,
+        if (m_bHotcueJumpPending && m_pMacroRecorder != nullptr) {
+            m_pMacroRecorder->notifyCueJump(m_channel,
                     m_filepos_play / mixxx::kEngineChannelCount,
                     position / mixxx::kEngineChannelCount);
         }

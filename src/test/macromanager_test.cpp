@@ -1,9 +1,8 @@
-#include "macros/macromanager.h"
-
 #include <gtest/gtest.h>
 
 #include <QDebug>
 
+#include "macros/macrorecorder.h"
 #include "mixxxtest.h"
 #include "signalpathtest.h"
 
@@ -13,7 +12,7 @@ TEST(MacrosTest, CreateMacro) {
 }
 
 TEST(MacroManagerTest, ClaimRecording) {
-    MacroManager macroManager;
+    MacroRecorder macroManager;
     EXPECT_EQ(macroManager.isRecordingActive(), false);
     macroManager.claimRecording();
     EXPECT_EQ(macroManager.isRecordingActive(), false);
@@ -23,7 +22,7 @@ TEST(MacroManagerTest, ClaimRecording) {
 }
 
 TEST(MacroManagerTest, RecordCueJump) {
-    MacroManager macroManager;
+    MacroRecorder macroManager;
     ChannelHandle handle = ChannelHandleFactory().getOrCreateHandle("");
     EXPECT_EQ(macroManager.getState(), MacroState::Disabled);
     macroManager.notifyCueJump(handle, 0, 1);
@@ -38,7 +37,7 @@ TEST(MacroManagerTest, RecordCueJump) {
 }
 
 TEST(MacroManagerTest, RecordingToggleControl) {
-    MacroManager macroManager;
+    MacroRecorder macroManager;
     ControlObject::set(ConfigKey(kMacroRecordingKey, "recording_toggle"), 1);
     EXPECT_EQ(macroManager.isRecordingActive(), true);
     ControlObject::set(ConfigKey(kMacroRecordingKey, "recording_toggle"), 0);
@@ -50,12 +49,12 @@ TEST(MacroManagerTest, RecordingToggleControl) {
 class MacroManagerE2ETest : public SignalPathTest {
   public:
     MacroManagerE2ETest()
-            : SignalPathTest(new MacroManager()) {
+            : SignalPathTest(new MacroRecorder()) {
     }
 };
 
 TEST_F(MacroManagerE2ETest, RecordSeek) {
-    auto mgr = m_pMacroManager;
+    auto mgr = m_pMacroRecorder;
     ControlObject::toggle(ConfigKey(kMacroRecordingKey, "recording_toggle"));
     ASSERT_EQ(mgr->isRecordingActive(), true);
     m_pChannel1->getEngineBuffer()->slotControlSeekExact(50 * mixxx::kEngineChannelCount);
@@ -69,7 +68,7 @@ TEST_F(MacroManagerE2ETest, RecordSeek) {
 }
 
 TEST_F(MacroManagerE2ETest, RecordHotcueActivation) {
-    auto mgr = m_pMacroManager;
+    auto mgr = m_pMacroRecorder;
     ControlObject::toggle(ConfigKey(kMacroRecordingKey, "recording_toggle"));
     ASSERT_EQ(mgr->isRecordingActive(), true);
     ControlObject::toggle(ConfigKey("[Channel1]", "hotcue_1_activate"));

@@ -10,7 +10,7 @@
 #include "engine/enginemaster.h"
 #include "engine/engineobject.h"
 #include "engine/sync/syncable.h"
-#include "macros/macromanager.h"
+#include "macros/macrorecorder.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/rotary.h"
@@ -93,7 +93,7 @@ class EngineBuffer : public EngineObject {
             UserSettingsPointer pConfig,
             EngineChannel* pChannel,
             EngineMaster* pMixingEngine,
-            MacroManager* pMacroManager);
+            MacroRecorder* pMacroRecorder);
     virtual ~EngineBuffer();
 
     void bindWorkers(EngineWorkerScheduler* pWorkerScheduler);
@@ -252,7 +252,7 @@ class EngineBuffer : public EngineObject {
 
     ChannelHandle m_channel;
     bool m_bHotcueJumpPending;
-    MacroManager* m_pMacroManager;
+    MacroRecorder* m_pMacroRecorder;
 
     EngineSync* m_pEngineSync;
     SyncControl* m_pSyncControl;
