@@ -1235,7 +1235,6 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                     writableRange.shrinkFront(clearRange.length());
                 }
             }
-            DEBUG_ASSERT(writableRange.start() >= readFrameIndex);
 
             // Skip all missing and decoded ranges that do not overlap
             // with writableRange, i.e. that precede writableRange.
