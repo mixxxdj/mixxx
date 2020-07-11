@@ -47,6 +47,9 @@ class MacroRecorder : public RecordingManagerBase {
   signals:
     void saveMacro(ChannelHandle channel, Macro macro);
 
+  private slots:
+    void pollRecordingStart();
+
   private:
     FRIEND_TEST(MacroRecordingTest, ClaimRecording);
     FRIEND_TEST(MacroRecordingTest, RecordCueJump);
@@ -69,6 +72,7 @@ class MacroRecorder : public RecordingManagerBase {
 
     ChannelHandle* m_activeChannel;
     std::atomic<MacroState> m_macroRecordingState;
+    QTimer* m_pStartRecordingTimer;
 
     Macro m_recordedMacro;
 };
