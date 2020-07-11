@@ -1438,6 +1438,71 @@ if(WIN32)
   target_link_libraries(mixxx-lib PUBLIC FFTW::FFTW)
 endif()
 
+# libdjinterop (enabled only on UNIX for now)
+cmake_dependent_option(DJINTEROP "Use djinterop library" ON "UNIX;NOT APPLE" OFF)
+if(DJINTEROP)
+  message(STATUS "Enabling djinterop support...")
+  target_compile_definitions(mixxx-lib PUBLIC __DJINTEROP__)
+
+  # Look for an existing installation of libdjinterop and use that if available.
+  # Otherwise, download and build from GitHub.
+  find_package(DjInterop)
+  if(DjInterop_FOUND)
+    # An existing installation of djinterop is available.
+    message(STATUS "Linking dynamically to existing installation of libdjinterop")
+    target_include_directories(mixxx-lib PUBLIC ${DjInterop_INCLUDE_DIRS})
+    target_link_libraries(mixxx-lib PUBLIC DjInterop::DjInterop)
+  else()
+    # Fetch djinterop sources from GitHub and build them statically.
+    message(STATUS "Linking statically to libdjinterop fetched from GitHub")
+
+    # Meson is the preferred build system for libdjinterop, but may not be
+    # available to all developers wishing to merely compile Mixxx.  However,
+    # libdjinterop provides a minimal CMake build too for use with in-tree
+    # builds like this one, which we will default to.
+    option(DJINTEROP_MESON_BUILD "Build djinterop library with meson" OFF)
+
+    set(DJINTEROP_GIT_REPO_URL https://github.com/xsco/libdjinterop.git)
+    set(DJINTEROP_GIT_TAG tags/0.11.0)
+    set(DJINTEROP_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libdjinterop-install")
+    if(DJINTEROP_MESON_BUILD)
+      # Note this requires meson 0.54 or later.
+      ExternalProject_Add(libdjinterop
+        GIT_REPOSITORY ${DJINTEROP_GIT_REPO_URL}
+        GIT_TAG ${DJINTEROP_GIT_TAG}
+        CONFIGURE_COMMAND meson setup --prefix ${DJINTEROP_INSTALL_DIR} --libdir lib --includedir include build <SOURCE_DIR>
+        BUILD_COMMAND meson compile -C build
+        INSTALL_COMMAND meson install -C build
+        EXCLUDE_FROM_ALL TRUE
+      )
+    else()
+      ExternalProject_Add(libdjinterop
+        GIT_REPOSITORY ${DJINTEROP_GIT_REPO_URL}
+        GIT_TAG ${DJINTEROP_GIT_TAG}
+        INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
+        CMAKE_ARGS "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+        EXCLUDE_FROM_ALL TRUE
+      )
+    endif()
+
+    # Assemble a library based on the external project.
+    add_library(mixxx-libdjinterop STATIC IMPORTED)
+    add_dependencies(mixxx-libdjinterop libdjinterop)
+    set(DJINTEROP_INCLUDE_DIR "${DJINTEROP_INSTALL_DIR}/include")
+    set(DJINTEROP_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}djinterop${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    set(DJINTEROP_LIBRARY_DIR "${DJINTEROP_INSTALL_DIR}/${DJINTEROP_LIBRARY}")
+    set_target_properties(mixxx-libdjinterop PROPERTIES IMPORTED_LOCATION "${DJINTEROP_LIBRARY_DIR}")
+    target_include_directories(mixxx-lib PUBLIC ${DJINTEROP_INCLUDE_DIR})
+    target_link_libraries(mixxx-lib PUBLIC mixxx-libdjinterop)
+
+    # libdjinterop depends on zlib and sqlite3.
+    # Mixxx already has a dependency on sqlite3, but not zlib, which we add now.
+    find_package(ZLIB 1.2.8 REQUIRED)
+    target_include_directories(mixxx-lib PUBLIC ${ZLIB_INCLUDE_DIRS})
+    target_link_libraries(mixxx-lib PUBLIC ${ZLIB_LIBRARIES})
+  endif()
+endif()
+
 # Ebur128
 find_package(Ebur128)
 cmake_dependent_option(EBUR128_STATIC "Link libebur128 statically" OFF "Ebur128_FOUND" ON)
