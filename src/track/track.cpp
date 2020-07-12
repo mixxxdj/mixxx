@@ -692,7 +692,7 @@ void Track::initId(TrackId id) {
                 << m_record.getId() << "to" << id;
         return; // abort
     }
-    m_record.setId(std::move(id));
+    m_record.setId(id);
     for (const auto pCue : qAsConst(m_cuePoints)) {
         pCue->setTrackId(id);
     }
