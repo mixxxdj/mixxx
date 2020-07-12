@@ -877,11 +877,6 @@ void Track::removeCuesOfType(mixxx::CueType type) {
     }
 }
 
-QList<CuePointer> Track::getCuePoints() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_cuePoints;
-}
-
 void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
     // While this method could be called from any thread,
     // associated Cue objects should always live on the
