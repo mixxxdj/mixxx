@@ -130,7 +130,7 @@ class LibraryControl : public QObject {
     // Control to choose the currently selected item in focused widget (double click)
     std::unique_ptr<ControlObject> m_pGoToItem;
 
-    // Add to Auto-Dj Cueue
+    // Add to Auto-Dj Queue
     std::unique_ptr<ControlObject> m_pAutoDjAddTop;
     std::unique_ptr<ControlObject> m_pAutoDjAddBottom;
     std::unique_ptr<ControlObject> m_pAutoDjAddReplace;
