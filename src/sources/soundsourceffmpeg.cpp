@@ -12,11 +12,13 @@ namespace mixxx {
 
 namespace {
 
+// FFmpeg constants
+
 constexpr AVSampleFormat kavSampleFormat = AV_SAMPLE_FMT_FLT;
 
 constexpr uint64_t kavChannelLayoutUndefined = 0;
 
-constexpr int64_t kavDefaultStreamStartTime = 0;
+constexpr int64_t kavStreamDefaultStartTime = 0;
 
 // Use 0-based sample frame indexing
 constexpr SINT kMinFrameIndex = 0;
@@ -82,9 +84,9 @@ inline int64_t getStreamStartTime(const AVStream& avStream) {
 #if ENABLE_TRACING
         kLogger.trace()
                 << "Unknown start time -> using default value"
-                << kavDefaultStreamStartTime;
+                << kavStreamDefaultStartTime;
 #endif
-        start_time = kavDefaultStreamStartTime;
+        start_time = kavStreamDefaultStartTime;
     }
     return start_time;
 }
