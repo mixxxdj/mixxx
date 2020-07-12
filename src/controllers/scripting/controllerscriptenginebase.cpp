@@ -36,7 +36,6 @@ bool ControllerScriptEngineBase::initialize() {
     // Create the Script Engine
     m_pJSEngine = new QJSEngine(this);
 
-    // Make this ControllerScriptHandlerBase instance available to scripts as 'engine'.
     QJSValue engineGlobalObject = m_pJSEngine->globalObject();
 
     QJSValue mapper = m_pJSEngine->newQMetaObject(
