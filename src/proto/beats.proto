@@ -28,8 +28,6 @@ message Bpm {
 }
 
 message Beat {
-  // The frame position should always be explicitly set
-  // otherwise serialization would lead to SIGABRT.
   optional double frame_position = 1 [ default = 0 ];
   optional bool enabled = 2 [ default = true ];
   optional Source source = 3 [ default = ANALYZER ];
@@ -39,4 +37,20 @@ message Beat {
 
 message Beats {
   repeated Beat beat = 1;
+}
+
+// These are legacy data structures for migrating between Mixxx versions
+message LegacyBeat {
+  optional int32 frame_position = 1;
+  optional bool enabled = 2 [ default = true ];
+  optional Source source = 3 [ default = ANALYZER ];
+}
+
+message LegacyBeatMap {
+  repeated LegacyBeat beat = 1;
+}
+
+message LegacyBeatGrid {
+  optional Bpm bpm = 1;
+  optional LegacyBeat first_beat = 2;
 }
