@@ -64,10 +64,6 @@ GLSLWaveformWidget::GLSLWaveformWidget(
     m_initSuccess = init();
 }
 
-GLSLWaveformWidget::~GLSLWaveformWidget() {
-    makeCurrent();
-}
-
 void GLSLWaveformWidget::castToQWidget() {
     m_widget = static_cast<QWidget*>(static_cast<QGLWidget*>(this));
 }
