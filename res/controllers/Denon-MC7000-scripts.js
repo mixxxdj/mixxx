@@ -23,7 +23,7 @@
  * the MC7000 internal audio interface is not available out-of-the-box for
  * older Linux Kernels. You should upgrade your Kernel to minimum versions
  * LTS: 4.19.105 or 5.4.21, stable branch 5.5.5 or current 5.6 (2020-Feb-19).
- * Newer Kernels will surely also provide native audio support for this controller.
+ * Newer Kernels will provide native audio support for this controller.
 **/
 
 var MC7000 = {};
@@ -37,8 +37,8 @@ var MC7000 = {};
 // can be true or false (recommended: false)
 MC7000.needleSearchPlay = false;
 
-// Possible pitchfader rateranges given in percent.
-// can be cycled through be the RANGE buttons.
+// Possible pitchfader rate ranges given in percent.
+// can be cycled through by the RANGE buttons.
 MC7000.rateRanges = [
     4/100,  // default: 4/100
     6/100,  // default: 6/100
@@ -142,7 +142,7 @@ MC7000.padColor = {
 MC7000.init = function() {
 
     // set default Master Volume to 85% to give a little head room for mixing
-    // engine.setValue("[Master]", "gain", 0.85);
+    engine.setValue("[Master]", "gain", 0.85);
 
     // The SysEx message to send to the controller to force the midi controller
     // to send the status of every item on the control surface.
@@ -207,8 +207,13 @@ MC7000.init = function() {
         }
     };
 
-    // Activate Softtakeover for Pitch Faders
-    for (i = 1; i <= 4; i++) {
+    // Activate Timer for Softtakeover to avoid conflicts with ControllerStatusSysex
+    engine.beginTimer(2000, "MC7000.delayedSoftTakeover", true);
+};
+
+// Activate Softtakeover for Pitch Faders
+MC7000.delayedSoftTakeover = function() {
+    for (var i = 1; i <= 4; i++) {
         engine.softTakeover("[Channel" + i + "]", "rate", true);
     }
 };
@@ -704,12 +709,12 @@ MC7000.censor = function(channel, control, value, status, group) {
         -15); // start at a rate of -15 and decrease by "factor"
 };
 
-/* SET CROSSFADER CURVE */
+// SET CROSSFADER CURVE
 MC7000.crossFaderCurve = function(control, value) {
     script.crossfaderCurve(value);
 };
 
-/* Set FX wet/dry value */
+// Set FX wet/dry value
 MC7000.fxWetDry = function(midichan, control, value, status, group) {
     var numTicks = (value < 0x64) ? value: (value - 128);
     var newVal = engine.getValue(group, "mix") + numTicks/64*2;
@@ -718,10 +723,9 @@ MC7000.fxWetDry = function(midichan, control, value, status, group) {
 
 };
 
+// Sort the library for Artist, Title, BPM and Key
 MC7000.sortLibrary = function(channel, control, value) {
-    if (value === 0) {
-        return;
-    }
+    if (value === 0) return;
 
     var sortColumn;
     switch (control) {
@@ -744,8 +748,8 @@ MC7000.sortLibrary = function(channel, control, value) {
 /* LEDs for VuMeter */
 // VuMeters only for Channel 1-4 / Master is on Hardware
 MC7000.VuMeter = function(value, group) {
-    var VULevelOutValue = engine.getValue(group, "PeakIndicator") ? MC7000.VuMeterLEDPeakValue : value*value*value*value*0x69,
-        deckNumber = script.deckFromGroup(group);
+    var deckNumber = script.deckFromGroup(group),
+        VULevelOutValue = engine.getValue(group, "PeakIndicator") ? MC7000.VuMeterLEDPeakValue : value*value*value*value*MC7000.VuMeterLEDPeakValue -1;
 
     midi.sendShortMsg(0xB0 + deckNumber - 1, 0x1F, VULevelOutValue);
 };
