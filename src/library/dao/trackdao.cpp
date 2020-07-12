@@ -585,6 +585,10 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
             trackId = TrackId(m_pQueryLibrarySelect->value(m_queryLibraryIdColumn));
             DEBUG_ASSERT(trackId.isValid());
         }
+        VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
+            return TrackId();
+        }
+        pTrack->initId(trackId);
         // Track already included in library, but maybe marked as deleted
         bool mixxx_deleted = m_pQueryLibrarySelect->value(m_queryLibraryMixxxDeletedColumn).toBool();
         if (unremove && mixxx_deleted) {
@@ -630,6 +634,7 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
         VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
             return TrackId();
         }
+        pTrack->initId(trackId);
         pTrack->setDateAdded(trackDateAdded);
 
         m_analysisDao.saveTrackAnalyses(
