@@ -57,7 +57,7 @@ void PresetInfoEnumerator::loadSupportedPresets() {
     m_bulkPresets.clear();
 
     for (const QString& dirPath : m_controllerDirPaths) {
-        QDirIterator it(dirPath);
+        QDirIterator it(dirPath, QDirIterator::Subdirectories);
         while (it.hasNext()) {
             it.next();
             const QString path = it.filePath();
