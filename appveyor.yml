@@ -115,6 +115,7 @@ for:
       -DBATTERY=ON
       -DBROADCAST=ON
       -DBULK=ON
+      -DDJINTEROP=ON
       -DFFMPEG=ON
       -DHID=ON
       -DLILV=ON

@@ -1438,8 +1438,8 @@ if(WIN32)
   target_link_libraries(mixxx-lib PUBLIC FFTW::FFTW)
 endif()
 
-# libdjinterop (enabled only on UNIX for now)
-cmake_dependent_option(DJINTEROP "Use djinterop library" ON "UNIX;NOT APPLE" OFF)
+# libdjinterop (must be enabled explicitly to use)
+option(DJINTEROP "Use djinterop library" OFF)
 if(DJINTEROP)
   message(STATUS "Enabling djinterop support...")
   target_compile_definitions(mixxx-lib PUBLIC __DJINTEROP__)
@@ -1470,6 +1470,7 @@ if(DJINTEROP)
       ExternalProject_Add(libdjinterop
         GIT_REPOSITORY ${DJINTEROP_GIT_REPO_URL}
         GIT_TAG ${DJINTEROP_GIT_TAG}
+        GIT_SHALLOW TRUE
         CONFIGURE_COMMAND meson setup --prefix ${DJINTEROP_INSTALL_DIR} --libdir lib --includedir include build <SOURCE_DIR>
         BUILD_COMMAND meson compile -C build
         INSTALL_COMMAND meson install -C build
@@ -1479,6 +1480,7 @@ if(DJINTEROP)
       ExternalProject_Add(libdjinterop
         GIT_REPOSITORY ${DJINTEROP_GIT_REPO_URL}
         GIT_TAG ${DJINTEROP_GIT_TAG}
+        GIT_SHALLOW TRUE
         INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
         CMAKE_ARGS "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
         EXCLUDE_FROM_ALL TRUE
