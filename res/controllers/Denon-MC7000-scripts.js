@@ -142,7 +142,7 @@ MC7000.padColor = {
 MC7000.init = function() {
 
     // set default Master Volume to 85% to give a little head room for mixing
-    engine.setValue("[Master]", "gain", 0.85);
+    // engine.setValue("[Master]", "gain", 0.85);
 
     // The SysEx message to send to the controller to force the midi controller
     // to send the status of every item on the control surface.
@@ -748,8 +748,8 @@ MC7000.sortLibrary = function(channel, control, value) {
 /* LEDs for VuMeter */
 // VuMeters only for Channel 1-4 / Master is on Hardware
 MC7000.VuMeter = function(value, group) {
-    var deckNumber = script.deckFromGroup(group),
-        VULevelOutValue = engine.getValue(group, "PeakIndicator") ? MC7000.VuMeterLEDPeakValue : value*value*value*value*MC7000.VuMeterLEDPeakValue -1;
+    var VULevelOutValue = engine.getValue(group, "PeakIndicator") ? MC7000.VuMeterLEDPeakValue : value*value*value*value*MC7000.VuMeterLEDPeakValue -1,
+        deckNumber = script.deckFromGroup(group);
 
     midi.sendShortMsg(0xB0 + deckNumber - 1, 0x1F, VULevelOutValue);
 };
