@@ -75,7 +75,6 @@ class InternalClock : public QObject, public Clock, public Syncable {
     int m_iOldSampleRate;
     double m_dOldBpm;
     double m_dBaseBpm;
-    QAtomicInteger<bool> m_bClockUpdated;
 
     // The internal clock rate is stored in terms of samples per beat.
     // Fractional values are allowed.

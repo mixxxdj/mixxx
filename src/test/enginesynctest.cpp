@@ -1508,6 +1508,60 @@ TEST_F(EngineSyncTest, ZeroLatencyRateDiffQuant) {
                     ->get());
 }
 
+TEST_F(EngineSyncTest, ActivatingSyncDoesNotCauseDrifting) {
+    mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 150, 0.0);
+    m_pTrack1->setBeats(pBeats1);
+    mixxx::BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 150, 0.0);
+    m_pTrack2->setBeats(pBeats2);
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(0.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "quantize"))->set(1.0);
+
+    // In this test, we set play *first* and then turn on master sync.
+    // This exercises a slightly different ordering of signals that we
+    // need to check.
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+
+    ProcessBuffer();
+
+    // make sure we aren't out-of-sync from the start
+    EXPECT_EQ(ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))
+                      ->get(),
+            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))
+                    ->get());
+
+    // engage first sync-master
+    qDebug() << "turn on sync for deck 1";
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))
+            ->set(SYNC_FOLLOWER);
+
+    // engage second Sync-master
+    qDebug() << "turn on sync for deck 2";
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))
+            ->set(SYNC_FOLLOWER);
+
+    // let track drift apart
+    qDebug() << "processess";
+
+    for (int i = 0; i < 25; ++i) {
+        qDebug() << "process iter " << i;
+        ProcessBuffer();
+    }
+    // Make sure we're actually going somewhere!
+    EXPECT_GT(ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))
+                      ->get(),
+            0);
+
+    // Buffers should be in sync.
+    // if this fails, the tracks have driven away from each other
+    // solely because sync-master was engaged.
+    EXPECT_EQ(ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))
+                      ->get(),
+            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))
+                    ->get());
+}
+
 TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
     mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 70, 0.0);
     m_pTrack1->setBeats(pBeats1);

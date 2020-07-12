@@ -272,6 +272,7 @@ const CSAMPLE* EngineMaster::getSidechainBuffer() const {
 
 void EngineMaster::processChannels(int iBufferSize) {
     // Update internal master sync rate.
+    qDebug() << "---------------------------- process!";
     m_pMasterSync->onCallbackStart(m_iSampleRate, m_iBufferSize);
 
     m_activeBusChannels[EngineChannel::LEFT].clear();
