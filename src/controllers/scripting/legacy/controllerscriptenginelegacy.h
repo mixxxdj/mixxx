@@ -23,17 +23,12 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
 
     bool initialize() override;
 
-    bool executeIncomingDataFunction(QJSValue functionObject, const QByteArray& data);
+    bool handleIncomingData(const QByteArray& data);
 
     /// Wrap a string of JS code in an anonymous function. This allows any JS
     /// string that evaluates to a function to be used in MIDI mapping XML files
     /// and ensures the function is executed with the correct 'this' object.
     QJSValue wrapFunctionCode(const QString& codeSnippet, int numberOfArgs);
-
-    /// Look up registered script function prefixes
-    const QList<QString>& getScriptFunctionPrefixes() {
-        return m_scriptFunctionPrefixes;
-    };
 
     // There is lots of tight coupling between ControllerScriptEngineLegacy
     // and ControllerScriptInterface. This is probably not worth improving in legacy code.
@@ -58,6 +53,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
             bool bFatalError = false);
 
     QList<QString> m_scriptFunctionPrefixes;
+    QList<QJSValue> m_incomingDataFunctions;
     QHash<QString, QJSValue> m_scriptWrappedFunctionCache;
     QList<ControllerPreset::ScriptFileInfo> m_scriptFiles;
 

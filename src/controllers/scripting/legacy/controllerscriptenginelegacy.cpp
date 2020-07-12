@@ -100,6 +100,14 @@ bool ControllerScriptEngineLegacy::initialize() {
         m_scriptWatcher.addPath(script.file.absoluteFilePath());
     }
 
+    for (QString functionName : m_scriptFunctionPrefixes) {
+        if (functionName.isEmpty()) {
+            continue;
+        }
+        functionName.append(QStringLiteral(".incomingData"));
+        m_incomingDataFunctions.append(wrapFunctionCode(functionName, 2));
+    }
+
     QJSValueList args;
     if (m_pController) {
         args << QJSValue(m_pController->getName());
@@ -118,21 +126,27 @@ bool ControllerScriptEngineLegacy::initialize() {
 void ControllerScriptEngineLegacy::shutdown() {
     callFunctionOnObjects(m_scriptFunctionPrefixes, "shutdown");
     m_scriptWrappedFunctionCache.clear();
+    m_incomingDataFunctions.clear();
     m_scriptFunctionPrefixes.clear();
     ControllerScriptEngineBase::shutdown();
 }
 
-bool ControllerScriptEngineLegacy::executeIncomingDataFunction(
-        QJSValue functionObject, const QByteArray& data) {
+bool ControllerScriptEngineLegacy::handleIncomingData(const QByteArray& data) {
     // This function is called from outside the controller engine, so we can't
     // use VERIFY_OR_DEBUG_ASSERT here
     if (!m_pJSEngine) {
         return false;
     }
+
     QJSValueList args;
     args << byteArrayToScriptValue(data);
     args << QJSValue(data.size());
-    return ControllerScriptEngineBase::executeFunction(functionObject, args);
+
+    for (const QJSValue& function : m_incomingDataFunctions) {
+        ControllerScriptEngineBase::executeFunction(function, args);
+    }
+
+    return true;
 }
 
 bool ControllerScriptEngineLegacy::evaluateScriptFile(const QFileInfo& scriptFile) {

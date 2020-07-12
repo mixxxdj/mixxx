@@ -136,12 +136,5 @@ void Controller::receive(const QByteArray data, mixxx::Duration timestamp) {
         controllerDebug(message);
     }
 
-    foreach (QString function, m_pScriptEngineLegacy->getScriptFunctionPrefixes()) {
-        if (function == "") {
-            continue;
-        }
-        function.append(".incomingData");
-        QJSValue incomingDataFunction = m_pScriptEngineLegacy->wrapFunctionCode(function, 2);
-        m_pScriptEngineLegacy->executeIncomingDataFunction(incomingDataFunction, data);
-    }
+    m_pScriptEngineLegacy->handleIncomingData(data);
 }

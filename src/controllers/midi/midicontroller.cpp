@@ -504,11 +504,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
         if (pEngine == NULL) {
             return;
         }
-        QJSValue function = pEngine->wrapFunctionCode(mapping.control.item, 2);
-        if (!pEngine->executeIncomingDataFunction(function, data)) {
-            qDebug() << "MidiController: Invalid script function"
-                     << mapping.control.item;
-        }
+        pEngine->handleIncomingData(data);
         return;
     }
     qWarning() << "MidiController: No script function specified for"
