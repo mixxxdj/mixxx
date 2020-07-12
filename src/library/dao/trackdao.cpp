@@ -702,8 +702,12 @@ TrackPointer TrackDAO::addTracksAddFile(const TrackFile& trackFile, bool unremov
         // GlobalTrackCache will be unlocked implicitly
         return TrackPointer();
     }
-    cacheResolver.initTrackIdAndUnlockCache(newTrackId);
+    // The track object has already been initialized with the
+    // database id, but the cache is not aware of this yet.
+    // Re-initializing the track object with the same id again
+    // from within the cache scope is allowed.
     DEBUG_ASSERT(pTrack->getId() == newTrackId);
+    cacheResolver.initTrackIdAndUnlockCache(newTrackId);
     // Only newly inserted tracks must be marked as clean!
     // Existing or unremoved tracks have not been added to
     // m_tracksAddedSet and will keep their dirty flag unchanged.

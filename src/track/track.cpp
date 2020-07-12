@@ -681,9 +681,13 @@ TrackId Track::getId() const {
 
 void Track::initId(TrackId id) {
     QMutexLocker lock(&m_qMutex);
+    DEBUG_ASSERT(id.isValid());
+    if (m_record.getId() == id) {
+        return;
+    }
     // The track's id must be set only once and immediately after
     // the object has been created.
-    VERIFY_OR_DEBUG_ASSERT(!m_record.getId().isValid() || (m_record.getId() == id)) {
+    VERIFY_OR_DEBUG_ASSERT(!m_record.getId().isValid()) {
         kLogger.warning() << "Cannot change id from"
                 << m_record.getId() << "to" << id;
         return; // abort
