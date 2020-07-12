@@ -839,6 +839,18 @@ void WTrackTableView::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     playlistDao.addTracksToAutoDJQueue(trackIds, loc);
 }
 
+void WTrackTableView::slotAddToAutoDJBottom() {
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::BOTTOM);
+}
+
+void WTrackTableView::slotAddToAutoDJTop() {
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::TOP);
+}
+
+void WTrackTableView::slotAddToAutoDJReplace() {
+    addToAutoDJ(PlaylistDAO::AutoDJSendLoc::REPLACE);
+}
+
 void WTrackTableView::doSortByColumn(int headerSection, Qt::SortOrder sortOrder) {
     TrackModel* trackModel = getTrackModel();
     QAbstractItemModel* itemModel = model();
