@@ -11,7 +11,7 @@
 
 namespace {
 
-int kDefaultTrackColorAlpha = 255;
+constexpr int kDefaultTrackColorAlpha = 255;
 
 const WTrackMenu::Features kTrackMenuFeatures =
         WTrackMenu::Feature::Playlist |
