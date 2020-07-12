@@ -45,13 +45,7 @@ MixxxTest::MixxxTest() {
 MixxxTest::~MixxxTest() {
     // Mixxx leaks a ton of COs normally. To make new tests not affected by
     // previous tests, we clear our all COs after every MixxxTest completion.
-    QList<QSharedPointer<ControlDoublePrivate>> leakedControls;
-    ControlDoublePrivate::getControls(&leakedControls);
-    foreach (QSharedPointer<ControlDoublePrivate> pCDP, leakedControls) {
-        if (pCDP.isNull()) {
-            continue;
-        }
-        ConfigKey key = pCDP->getKey();
-        delete pCDP->getCreatorCO();
+    for (auto pControl : ControlDoublePrivate::takeAllInstances()) {
+        pControl->deleteCreatorCO();
     }
 }
