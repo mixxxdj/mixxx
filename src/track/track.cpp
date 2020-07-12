@@ -703,6 +703,9 @@ void Track::initId(TrackId id) {
 void Track::resetId() {
     QMutexLocker lock(&m_qMutex);
     m_record.setId(TrackId());
+    for (const auto pCue : qAsConst(m_cuePoints)) {
+        pCue->setTrackId(TrackId());
+    }
 }
 
 void Track::setURL(const QString& url) {
