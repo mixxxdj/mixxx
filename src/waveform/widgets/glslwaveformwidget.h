@@ -1,5 +1,4 @@
-#ifndef GLWAVEFORMWIDGETSHADER_H
-#define GLWAVEFORMWIDGETSHADER_H
+#pragma once
 
 #include <QGLWidget>
 
@@ -14,7 +13,7 @@ class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
             const QString& group,
             QWidget* parent,
             bool rgbRenderer);
-    ~GLSLWaveformWidget() override;
+    ~GLSLWaveformWidget() override = default;
 
     void resize(int width, int height) override;
 
@@ -59,6 +58,3 @@ class GLSLRGBWaveformWidget : public GLSLWaveformWidget {
     static inline bool useOpenGLShaders() { return true; }
     static inline bool developerOnly() { return false; }
 };
-
-
-#endif // GLWAVEFORMWIDGETSHADER_H
