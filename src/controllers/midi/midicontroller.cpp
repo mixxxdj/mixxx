@@ -200,8 +200,10 @@ void MidiController::commitTemporaryInputMappings() {
     m_temporaryInputMappings.clear();
 }
 
-void MidiController::receive(unsigned char status, unsigned char control,
-                             unsigned char value, mixxx::Duration timestamp) {
+void MidiController::receiveShortMessage(unsigned char status,
+        unsigned char control,
+        unsigned char value,
+        mixxx::Duration timestamp) {
     // The rest of this function is for legacy mappings
     unsigned char channel = MidiUtils::channelFromStatus(status);
     unsigned char opCode = MidiUtils::opCodeFromStatus(status);

@@ -149,7 +149,7 @@ bool PortMidiController::poll() {
 
         if ((status & 0xF8) == 0xF8) {
             // Handle real-time MIDI messages at any time
-            receive(status, 0, 0, timestamp);
+            receiveShortMessage(status, 0, 0, timestamp);
             continue;
         }
 
@@ -163,7 +163,7 @@ bool PortMidiController::poll() {
                 //unsigned char channel = status & 0x0F;
                 unsigned char note = Pm_MessageData1(m_midiBuffer[i].message);
                 unsigned char velocity = Pm_MessageData2(m_midiBuffer[i].message);
-                receive(status, note, velocity, timestamp);
+                receiveShortMessage(status, note, velocity, timestamp);
             }
         }
 

@@ -112,8 +112,10 @@ int Hss1394Controller::open() {
     m_pChannelListener = new DeviceChannelListener(this, getName());
     connect(m_pChannelListener, SIGNAL(incomingData(QByteArray, mixxx::Duration)),
             this, SLOT(receive(QByteArray, mixxx::Duration)));
-    connect(m_pChannelListener, SIGNAL(incomingData(unsigned char, unsigned char, unsigned char, mixxx::Duration)),
-            this, SLOT(receive(unsigned char, unsigned char, unsigned char, mixxx::Duration)));
+    connect(m_pChannelListener,
+            &DeviceChannelListener::incomingData,
+            this,
+            &Hss1394Controller::receiveShortMessage);
 
     if (!m_pChannel->InstallChannelListener(m_pChannelListener)) {
         qDebug() << "HSS1394 channel listener could not be installed for device" << getName();
