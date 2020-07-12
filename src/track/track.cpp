@@ -841,16 +841,18 @@ CuePointer Track::findCueById(int id) const {
 }
 
 void Track::removeCue(const CuePointer& pCue) {
-    if (pCue == nullptr) {
+    if (!pCue) {
         return;
     }
 
     QMutexLocker lock(&m_qMutex);
+    DEBUG_ASSERT(pCue->getTrackId() == m_record.getId());
     disconnect(pCue.get(), 0, this, 0);
     m_cuePoints.removeOne(pCue);
     if (pCue->getType() == mixxx::CueType::MainCue) {
         m_record.setCuePoint(CuePosition());
     }
+    pCue->setTrackId(TrackId());
     markDirtyAndUnlock(&lock);
     emit cuesUpdated();
 }
@@ -864,6 +866,7 @@ void Track::removeCuesOfType(mixxx::CueType type) {
         // FIXME: Why does this only work for the Hotcue Type?
         if (pCue->getType() == type) {
             disconnect(pCue.get(), 0, this, 0);
+            pCue->setTrackId(TrackId());
             it.remove();
             dirty = true;
         }
@@ -949,6 +952,7 @@ void Track::setCuePointsMarkDirtyAndUnlock(
     // disconnect existing cue points
     for (const auto& pCue: m_cuePoints) {
         disconnect(pCue.get(), 0, this, 0);
+        pCue->setTrackId(TrackId());
     }
     m_cuePoints = cuePoints;
     // connect new cue points
