@@ -52,8 +52,9 @@ void BulkReader::run() {
         if (result >= 0) {
             Trace process("BulkReader process packet");
             //qDebug() << "Read" << result << "bytes, pointer:" << data;
-            QByteArray outData((char*)data, transferred);
-            emit incomingData(outData, mixxx::Time::elapsed());
+            QByteArray byteArray = QByteArray::fromRawData(
+                    reinterpret_cast<char*>(data), transferred);
+            emit incomingData(byteArray, mixxx::Time::elapsed());
         }
     }
     qDebug() << "Stopped Reader";

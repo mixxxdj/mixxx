@@ -21,7 +21,7 @@ class BulkReader : public QThread {
     void stop();
 
   signals:
-    void incomingData(QByteArray data, mixxx::Duration timestamp);
+    void incomingData(const QByteArray& data, mixxx::Duration timestamp);
 
   protected:
     void run();
