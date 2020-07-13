@@ -99,12 +99,12 @@ class EngineBuffer : public EngineObject {
     void bindWorkers(EngineWorkerScheduler* pWorkerScheduler);
 
     // Return the current rate (not thread-safe)
-    double getSpeed();
-    bool getScratching();
+    double getSpeed() const;
+    bool getScratching() const;
     // Returns current bpm value (not thread-safe)
-    double getBpm();
+    double getBpm() const;
     // Returns the BPM of the loaded track around the current position (not thread-safe)
-    double getLocalBpm();
+    double getLocalBpm() const;
     // Sets pointer to other engine buffer/channel
     void setEngineMaster(EngineMaster*);
 
@@ -120,8 +120,8 @@ class EngineBuffer : public EngineObject {
     void processSlip(int iBufferSize);
     void postProcess(const int iBufferSize);
 
-    QString getGroup();
-    bool isTrackLoaded();
+    QString getGroup() const;
+    bool isTrackLoaded() const;
     // return true if a seek is currently cueued but not yet processed, false otherwise
     // if no seek was queued, the seek position is set to -1
     bool getQueuedSeekPosition(double* pSeekPosition);
