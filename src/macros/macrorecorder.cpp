@@ -16,7 +16,7 @@ MacroRecorder::MacroRecorder()
           m_macroRecordingState(MacroRecordingState::Disabled),
           m_pStartRecordingTimer(this),
           m_recordedMacro() {
-    qCDebug(macros) << "MacroRecorder construct";
+    qCDebug(macroLoggingCategory) << "MacroRecorder construct";
 
     connect(&m_COToggleRecording,
             &ControlPushButton::valueChanged,
@@ -29,10 +29,10 @@ MacroRecorder::MacroRecorder()
 }
 
 void MacroRecorder::notifyCueJump(ChannelHandle& channel, double origin, double target) {
-    qCDebug(macros) << "Jump in channel" << channel.handle();
+    qCDebug(macroLoggingCategory) << "Jump in channel" << channel.handle();
     if (checkOrClaimRecording(channel)) {
         m_recordedMacro.appendJump(origin, target);
-        qCDebug(macros) << "Recorded jump in channel" << channel.handle();
+        qCDebug(macroLoggingCategory) << "Recorded jump in channel" << channel.handle();
         setState(MacroRecordingState::Armed);
     }
 }
@@ -42,7 +42,7 @@ bool MacroRecorder::checkOrClaimRecording(ChannelHandle& channel) {
         return m_activeChannel->handle() == channel.handle() && claimRecording();
     } else if (claimRecording()) {
         m_activeChannel = &channel;
-        qCDebug(macros) << "Claimed recording for channel" << channel.handle();
+        qCDebug(macroLoggingCategory) << "Claimed recording for channel" << channel.handle();
         return true;
     }
     return false;
@@ -54,7 +54,7 @@ bool MacroRecorder::claimRecording() {
 }
 
 void MacroRecorder::pollRecordingStart() {
-    qCDebug(macros) << "Polling for recording start";
+    qCDebug(macroLoggingCategory) << "Polling for recording start";
     if (getState() != MacroRecordingState::Disabled) {
         if (getActiveChannel() == nullptr) {
             return;
@@ -66,7 +66,7 @@ void MacroRecorder::pollRecordingStart() {
 }
 
 void MacroRecorder::startRecording() {
-    qCDebug(macros) << "MacroRecorder recording armed";
+    qCDebug(macroLoggingCategory) << "MacroRecorder recording armed";
     m_CORecStatus.set(1);
     m_recordedMacro.clear();
     setState(MacroRecordingState::Armed);
@@ -74,7 +74,7 @@ void MacroRecorder::startRecording() {
 }
 
 void MacroRecorder::stopRecording() {
-    qCDebug(macros) << "MacroRecorder recording stop";
+    qCDebug(macroLoggingCategory) << "MacroRecorder recording stop";
     m_CORecStatus.set(0);
     auto armed = MacroRecordingState::Armed;
     // TODO(xerus) add concurrency test
@@ -86,7 +86,7 @@ void MacroRecorder::stopRecording() {
     }
     auto channel = m_activeChannel;
     m_activeChannel = nullptr;
-    qCDebug(macros) << "Recorded Macro for channel" << channel->handle();
+    qCDebug(macroLoggingCategory) << "Recorded Macro for channel" << channel->handle();
     m_recordedMacro.dump();
     emit saveMacro(*channel, m_recordedMacro);
 }

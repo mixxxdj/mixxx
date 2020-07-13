@@ -3,9 +3,7 @@
 #include <QDebug>
 #include <QtCore>
 
-namespace {
-const QLoggingCategory macros("macros");
-} // namespace
+const QLoggingCategory macroLoggingCategory("macros");
 
 /// A MacroAction is the smallest piece of a Macro.
 /// It contains a position as well as the action to be taken at that position
