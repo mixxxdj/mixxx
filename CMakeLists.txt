@@ -1336,7 +1336,7 @@ include(GoogleTest)
 enable_testing()
 gtest_add_tests(
   TARGET mixxx-test
-  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+  WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
   TEST_LIST testsuite
 )
 set_tests_properties(${testsuite} PROPERTIES TIMEOUT 30)
