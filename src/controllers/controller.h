@@ -82,7 +82,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // Handles packets of raw bytes and passes them to an ".incomingData" script
     // function that is assumed to exist. (Sub-classes may want to reimplement
     // this if they have an alternate way of handling such data.)
-    virtual void receive(const QByteArray data, mixxx::Duration timestamp);
+    virtual void receive(const QByteArray& data, mixxx::Duration timestamp);
 
     /// Apply the preset to the controller.
     /// @brief Initializes both controller engine and static output mappings.

@@ -111,7 +111,7 @@ void Controller::triggerActivity()
         m_userActivityInhibitTimer.start();
     }
 }
-void Controller::receive(const QByteArray data, mixxx::Duration timestamp) {
+void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
     if (m_pScriptEngineLegacy == nullptr) {
         //qWarning() << "Controller::receive called with no active engine!";
         // Don't complain, since this will always show after closing a device as

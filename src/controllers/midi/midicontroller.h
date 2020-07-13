@@ -74,7 +74,7 @@ class MidiController : public Controller {
             unsigned char value,
             mixxx::Duration timestamp);
     // For receiving System Exclusive messages
-    void receive(const QByteArray data, mixxx::Duration timestamp) override;
+    void receive(const QByteArray& data, mixxx::Duration timestamp) override;
     int close() override;
 
   private slots:

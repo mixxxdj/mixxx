@@ -37,7 +37,7 @@ class MockPortMidiController : public PortMidiController {
 
     MOCK_METHOD4(receiveShortMessage,
             void(unsigned char, unsigned char, unsigned char, mixxx::Duration));
-    MOCK_METHOD2(receive, void(const QByteArray, mixxx::Duration));
+    MOCK_METHOD2(receive, void(const QByteArray&, mixxx::Duration));
 };
 
 class MockPortMidiDevice : public PortMidiDevice {
