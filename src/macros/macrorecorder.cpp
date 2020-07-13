@@ -86,8 +86,6 @@ void MacroRecorder::stopRecording() {
     }
     auto channel = m_activeChannel;
     m_activeChannel = nullptr;
-    qCDebug(macroLoggingCategory) << "Recorded Macro for channel" << channel->handle();
-    m_recordedMacro.dump();
     emit saveMacro(*channel, m_recordedMacro);
 }
 

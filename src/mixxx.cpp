@@ -286,7 +286,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pVCManager = NULL;
 #endif
 
-    m_pMacroManager = new MacroManager();
+    m_pMacroManager = new MacroManager(m_pDbConnectionPool);
 
     // Create the player manager (long)
     m_pPlayerManager = new PlayerManager(pConfig,
