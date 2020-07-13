@@ -6,6 +6,7 @@ protobuf_generate_cpp(
   beats.proto
   headers.proto
   keys.proto
+  macro.proto
   skin.proto
   waveform.proto
 )

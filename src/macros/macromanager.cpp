@@ -28,7 +28,7 @@ void MacroManager::saveMacro(ChannelHandle channel, Macro macro) {
     query.bindValue(":trackId", 1);
     query.bindValue(":state", 0);
     query.bindValue(":label", QString("testch%1").arg(QString::number(channel.handle())));
-    query.bindValue(":content", QByteArrayLiteral("0011"));
+    query.bindValue(":content", macro.serialize());
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return;
