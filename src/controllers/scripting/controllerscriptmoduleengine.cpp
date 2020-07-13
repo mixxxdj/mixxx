@@ -24,7 +24,7 @@ bool ControllerScriptModuleEngine::initialize() {
 
     QJSValue handleInputFunction = mod.property("handleInput");
     if (handleInputFunction.isCallable()) {
-        m_handleInputFunction = wrapArrayBufferCallback(handleInputFunction);
+        m_handleInputFunction = handleInputFunction;
     } else {
         scriptErrorDialog(
                 "Controller JavaScript module exports no handleInput function.",
