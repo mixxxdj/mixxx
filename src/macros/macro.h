@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QDebug>
 #include <QtCore>
 
 const QLoggingCategory macroLoggingCategory("macros");
