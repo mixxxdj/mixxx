@@ -5,7 +5,17 @@
 
 TEST(MacrosTest, CreateMacro) {
     Macro macro;
-    ASSERT_EQ(macro.getLength(), 0);
+    EXPECT_EQ(macro.getLength(), 0);
+    macro.appendJump(0, 1);
+    EXPECT_EQ(macro.getLength(), 1);
+    QString filename(QDir::currentPath() % "/src/test/macro-proto-test");
+    ASSERT_TRUE(QFile::exists(filename));
+    QFile file(filename);
+    file.open(QIODevice::OpenModeFlag::ReadOnly);
+    QByteArray content = file.readAll();
+    QByteArray serialized = macro.serialize();
+    EXPECT_EQ(serialized.length(), content.length());
+    EXPECT_EQ(serialized, content);
 }
 
 TEST(MacroRecordingTest, ClaimRecording) {

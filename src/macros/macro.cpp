@@ -1,5 +1,7 @@
 #include "macro.h"
 
+#include <QDebug>
+
 #include "proto/macro.pb.h"
 #include "util/assert.h"
 
@@ -28,10 +30,13 @@ void Macro::dump() const {
     }
 }
 
+using namespace mixxx::track;
 QByteArray Macro::serialize() const {
-    mixxx::track::io::Macro macroProto;
-    for (auto action : actions) {
-        auto newAction = macroProto.add_actions();
+    io::Macro macroProto;
+    size_t c = 0;
+    while (c < m_length) {
+        MacroAction action = actions[c++];
+        io::Macro_Action* newAction = macroProto.add_actions();
         // TODO(xerus) add type enum
         newAction->set_type(1);
         newAction->set_origin(action.position);
