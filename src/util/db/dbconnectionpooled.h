@@ -1,11 +1,8 @@
-#ifndef MIXXX_DBCONNECTIONPOOLED_H
-#define MIXXX_DBCONNECTIONPOOLED_H
-
+#pragma once
 
 #include <QSqlDatabase>
 
 #include "util/db/dbconnectionpool.h"
-
 
 namespace mixxx {
 
@@ -15,7 +12,7 @@ class DbConnectionPooled final {
   public:
     explicit DbConnectionPooled(
             DbConnectionPoolPtr pDbConnectionPool = DbConnectionPoolPtr())
-        : m_pDbConnectionPool(std::move(pDbConnectionPool)) {
+            : m_pDbConnectionPool(std::move(pDbConnectionPool)) {
     }
 
     // Checks if this instance actually references a connection pool
@@ -40,6 +37,3 @@ class DbConnectionPooled final {
 };
 
 } // namespace mixxx
-
-
-#endif // MIXXX_DBCONNECTIONPOOLED_H

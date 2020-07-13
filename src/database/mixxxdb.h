@@ -1,13 +1,9 @@
-#ifndef MIXXXDB_H
-#define MIXXXDB_H
-
+#pragma once
 
 #include <QSqlDatabase>
 
 #include "preferences/usersettings.h"
-
 #include "util/db/dbconnectionpool.h"
-
 
 class MixxxDb : public QObject {
     Q_OBJECT
@@ -33,6 +29,3 @@ class MixxxDb : public QObject {
   private:
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
 };
-
-
-#endif //  MIXXXDB_H

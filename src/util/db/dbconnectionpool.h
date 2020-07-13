@@ -1,14 +1,11 @@
-#ifndef MIXXX_DBCONNECTIONPOOL_H
-#define MIXXX_DBCONNECTIONPOOL_H
-
+#pragma once
 
 #include <QAtomicInt>
 #include <QThreadStorage>
 
+#include "util/assert.h"
 #include "util/db/dbconnection.h"
 #include "util/memory.h"
-#include "util/assert.h"
-
 
 namespace mixxx {
 
@@ -61,10 +58,6 @@ class DbConnectionPool final {
     QAtomicInt m_connectionCounter;
 
     QThreadStorage<DbConnection*> m_threadLocalConnections;
-
 };
 
 } // namespace mixxx
-
-
-#endif // MIXXX_DBCONNECTIONPOOL_H
