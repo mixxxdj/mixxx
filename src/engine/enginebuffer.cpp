@@ -353,11 +353,11 @@ void EngineBuffer::enableIndependentPitchTempoScaling(bool bEnable,
     }
 }
 
-double EngineBuffer::getBpm() {
+double EngineBuffer::getBpm() const {
     return m_pBpmControl->getBpm();
 }
 
-double EngineBuffer::getLocalBpm() {
+double EngineBuffer::getLocalBpm() const {
     return m_pBpmControl->getLocalBpm();
 }
 
@@ -471,15 +471,15 @@ void EngineBuffer::setNewPlaypos(double newpos) {
     verifyPlay(); // verify or update play button and indicator
 }
 
-QString EngineBuffer::getGroup() {
+QString EngineBuffer::getGroup() const {
     return m_group;
 }
 
-double EngineBuffer::getSpeed() {
+double EngineBuffer::getSpeed() const {
     return m_speed_old;
 }
 
-bool EngineBuffer::getScratching() {
+bool EngineBuffer::getScratching() const {
     return m_scratching_old;
 }
 
@@ -1337,7 +1337,7 @@ void EngineBuffer::bindWorkers(EngineWorkerScheduler* pWorkerScheduler) {
     m_pReader->setScheduler(pWorkerScheduler);
 }
 
-bool EngineBuffer::isTrackLoaded() {
+bool EngineBuffer::isTrackLoaded() const {
     if (m_pCurrentTrack) {
         return true;
     }
