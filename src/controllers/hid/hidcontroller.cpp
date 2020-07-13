@@ -253,8 +253,8 @@ bool HidController::poll() {
         return false;
     } else if (result > 0) {
         Trace process("HidController process packet");
-        QByteArray outData(reinterpret_cast<char*>(m_pPollData), result);
-        receive(outData, mixxx::Time::elapsed());
+        QByteArray data = QByteArray::fromRawData(reinterpret_cast<char*>(m_pPollData), result);
+        receive(data, mixxx::Time::elapsed());
     }
 
     return true;
