@@ -11,6 +11,8 @@
 #include "macros/macro.h"
 #include "recording/recordingmanagerbase.h"
 
+// TODO(xerus) add enum for recording_status
+
 enum MacroRecordingState : uint8_t {
     /// Nothing is going on
     Disabled,

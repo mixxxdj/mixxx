@@ -1,5 +1,6 @@
 #include "macro.h"
 
+#include "proto/macro.pb.h"
 #include "util/assert.h"
 
 void Macro::appendJump(double origin, double target) {
@@ -11,7 +12,6 @@ void Macro::appendJump(double origin, double target) {
     actions[m_length].target = target;
     m_length++;
 }
-
 
 void Macro::clear() {
     qCDebug(macroLoggingCategory) << "Clearing Macro";
@@ -26,4 +26,17 @@ void Macro::dump() const {
         auto action = actions[i];
         qCDebug(macroLoggingCategory) << "Jump from " << action.position << " to " << action.target;
     }
+}
+
+QByteArray Macro::serialize() const {
+    mixxx::track::io::Macro macroProto;
+    for (auto action : actions) {
+        auto newAction = macroProto.add_actions();
+        // TODO(xerus) add type enum
+        newAction->set_type(1);
+        newAction->set_origin(action.position);
+        newAction->set_target(action.target);
+    }
+    auto string = macroProto.SerializeAsString();
+    return QByteArray(string.data(), string.length());
 }

@@ -35,6 +35,8 @@ class Macro {
     /// Number of saved Actions.
     int getLength() const;
 
+    QByteArray serialize() const;
+
     /// For debugging - dump all saved actions to debug output.
     void dump() const;
 

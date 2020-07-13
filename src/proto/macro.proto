@@ -1,6 +1,6 @@
 syntax = "proto2";
 
-package mixx.track.io;
+package mixxx.track.io;
 
 option optimize_for = LITE_RUNTIME;
 
@@ -8,7 +8,7 @@ message Macro {
   message Action {
     optional uint32 type = 1;
     optional uint64 origin = 2;
-    optional bytes data = 3;
+    optional uint64 target = 3;
   }
   repeated Action actions = 1;
 }
