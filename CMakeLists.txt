@@ -680,6 +680,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/settingsmanager.cpp
   src/preferences/upgrade.cpp
   src/macros/macro.cpp
+  src/macros/macromanager.cpp
   src/macros/macrorecorder.cpp
   src/recording/recordingmanager.cpp
   src/recording/recordingmanagerbase.cpp

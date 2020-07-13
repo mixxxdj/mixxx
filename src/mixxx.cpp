@@ -51,7 +51,7 @@
 #include "library/library_preferences.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
-#include "macros/macrorecorder.h"
+#include "macros/macromanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "preferences/settingsmanager.h"
@@ -91,9 +91,10 @@
 #endif
 
 #if defined(Q_OS_LINUX)
-#include <QtX11Extras/QX11Info>
 #include <X11/Xlib.h>
 #include <X11/Xlibint.h>
+
+#include <QtX11Extras/QX11Info>
 // Xlibint.h predates C++ and defines macros which conflict
 // with references to std::max and std::min
 #undef max
@@ -304,13 +305,13 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pVCManager = NULL;
 #endif
 
-    m_pMacroManager = new MacroRecorder();
+    m_pMacroManager = new MacroManager();
 
     // Create the player manager (long)
     m_pPlayerManager = new PlayerManager(pConfig,
             m_pSoundManager,
             m_pEngine,
-            m_pMacroManager,
+            m_pMacroManager->getRecorder(),
             m_pEffectsManager,
             m_pVisualsManager);
     connect(m_pPlayerManager,
