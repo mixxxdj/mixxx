@@ -8,6 +8,7 @@ namespace mixxx {
 const QString BeatsInternal::BEAT_MAP_VERSION = "BeatMap-1.0";
 const QString BeatsInternal::BEAT_GRID_1_VERSION = "BeatGrid-1.0";
 const QString BeatsInternal::BEAT_GRID_2_VERSION = "BeatGrid-2.0";
+const QString BeatsInternal::BEATS_VERSION = "Beats-1.0";
 
 namespace {
 inline bool BeatLessThan(const track::io::Beat& beat1, const track::io::Beat& beat2) {
@@ -366,7 +367,7 @@ void BeatsInternal::setSubVersion(const QString& subVersion) {
     m_subVersion = subVersion;
 }
 QString BeatsInternal::getVersion() const {
-    return BEAT_MAP_VERSION;
+    return BEATS_VERSION;
 }
 QString BeatsInternal::getSubVersion() const {
     return m_subVersion;

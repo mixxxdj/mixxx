@@ -44,11 +44,10 @@ class BeatsInternal {
 
     using iterator = BeatIterator;
 
-    // TODO(hacksdump): These versions are retained for backward compatibility.
-    // In future, There will be no versions at all.
     static const QString BEAT_MAP_VERSION;
     static const QString BEAT_GRID_1_VERSION;
     static const QString BEAT_GRID_2_VERSION;
+    static const QString BEATS_VERSION;
     FramePos findNthBeat(FramePos frame, int offset) const;
     FramePos findNextBeat(FramePos frame) const;
     FramePos findPrevBeat(FramePos frame) const;
