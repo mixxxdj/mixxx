@@ -3,14 +3,19 @@
 #include <QObject>
 
 #include "macrorecorder.h"
+#include "util/db/dbconnectionpool.h"
 
 class MacroManager : public QObject {
     Q_OBJECT
   public:
-    MacroManager();
+    MacroManager(mixxx::DbConnectionPoolPtr pDbConnectionPool);
 
     MacroRecorder* getRecorder();
 
+  public slots:
+    void saveMacro(ChannelHandle channel, Macro macro);
+
   private:
     std::unique_ptr<MacroRecorder> m_pMacroRecorder;
+    QSqlDatabase m_database;
 };
