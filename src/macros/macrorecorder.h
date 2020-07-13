@@ -11,11 +11,7 @@
 #include "macros/macro.h"
 #include "recording/recordingmanagerbase.h"
 
-namespace {
-const QString kMacroRecordingKey = QStringLiteral("[MacroRecording]");
-} // namespace
-
-enum MacroState : uint8_t {
+enum MacroRecordingState : uint8_t {
     /// Nothing is going on
     Disabled,
     /// Recording is active, but nothing currently going on
@@ -28,11 +24,13 @@ enum MacroState : uint8_t {
 class MacroRecorder : public RecordingManagerBase {
     Q_OBJECT
   public:
+    static const QString kControlsGroup;
+
     MacroRecorder();
 
     void startRecording() override;
     void stopRecording() override;
-    bool isRecordingActive() override;
+    bool isRecordingActive() const override;
 
     /// Tries to append this cue jump to the currently recorded Macro.
     /// Returns true if the currently recorded Macro was changed - so only if
@@ -40,9 +38,9 @@ class MacroRecorder : public RecordingManagerBase {
     /// Only called from RT.
     void notifyCueJump(ChannelHandle& channel, double origin, double target);
 
-    Macro getMacro();
-    MacroState getState();
-    ChannelHandle* getActiveChannel();
+    Macro getMacro() const;
+    MacroRecordingState getState() const;
+    ChannelHandle* getActiveChannel() const;
 
   signals:
     void saveMacro(ChannelHandle channel, Macro macro);
@@ -59,20 +57,18 @@ class MacroRecorder : public RecordingManagerBase {
     /// Called from RT.
     bool checkOrClaimRecording(ChannelHandle& channel);
 
-    /// Tries to claim the active recording for the current channel.
-    /// Returns true if recording was armed and successfully assigned to the
-    /// given channel.
+    /// Claims the recording if it is Armed.
     /// Called from RT.
     bool claimRecording();
 
-    void setState(MacroState state);
+    void setState(MacroRecordingState state);
 
     ControlPushButton m_COToggleRecording;
     ControlObject m_CORecStatus;
 
     ChannelHandle* m_activeChannel;
-    std::atomic<MacroState> m_macroRecordingState;
-    QTimer* m_pStartRecordingTimer;
+    std::atomic<MacroRecordingState> m_macroRecordingState;
+    QTimer m_pStartRecordingTimer;
 
     Macro m_recordedMacro;
 };

@@ -273,7 +273,7 @@ void RecordingManager::slotIsRecording(bool isRecordingActive, bool error) {
     }
 }
 
-bool RecordingManager::isRecordingActive() {
+bool RecordingManager::isRecordingActive() const {
     return m_bRecording;
 }
 

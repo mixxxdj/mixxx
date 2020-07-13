@@ -10,7 +10,7 @@ class RecordingManagerBase : public QObject {
   public:
     virtual void startRecording() = 0;
     virtual void stopRecording() = 0;
-    virtual bool isRecordingActive() = 0;
+    virtual bool isRecordingActive() const = 0;
 
   public slots:
     void slotSetRecording(bool recording);

@@ -8,10 +8,9 @@ class MacroManager : public QObject {
     Q_OBJECT
   public:
     MacroManager();
-    ~MacroManager();
 
     MacroRecorder* getRecorder();
 
   private:
-    MacroRecorder* m_pMacroRecorder;
+    std::unique_ptr<MacroRecorder> m_pMacroRecorder;
 };

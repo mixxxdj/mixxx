@@ -4,7 +4,6 @@
 #include <QtCore>
 
 namespace {
-constexpr size_t kMaxMacroSize = 1000;
 const QLoggingCategory macros("macros");
 } // namespace
 
@@ -20,28 +19,26 @@ struct MacroAction {
     double target;
 };
 
-/// A Macro stores a list of actions.
-/// The action list is pre-populated at construction so that it can be written to in real-time code.
+/// A Macro stores a list of MacroActions.
+/// The maximum size is fixed at a generous kMaxSize to prevent resizing in RT.
 class Macro {
   public:
-    MacroAction actions[kMaxMacroSize];
+    static const int kMaxSize = 1000;
 
-    Macro() {
-        std::fill_n(actions, kMaxMacroSize, MacroAction());
-    }
+    MacroAction actions[kMaxSize];
 
     /// Append a jump action to this Macro by assigning the next available slot.
     /// Only called from RT.
     void appendJump(double origin, double target);
 
-    /// The amount of saved Actions
-    int getLength();
-
     /// Clears the contents of this Macro by setting its length to 0.
     void clear();
 
+    /// Number of saved Actions.
+    int getLength() const;
+
     /// For debugging - dump all saved actions to debug output.
-    void dump();
+    void dump() const;
 
   private:
     size_t m_length = 0;
