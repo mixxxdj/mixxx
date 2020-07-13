@@ -7,7 +7,6 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <QtDebug>
 #include <string>
 
 #include "control/controlobject.h"
@@ -1532,20 +1531,15 @@ TEST_F(EngineSyncTest, ActivatingSyncDoesNotCauseDrifting) {
                     ->get());
 
     // engage first sync-master
-    qDebug() << "turn on sync for deck 1";
     ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))
             ->set(SYNC_FOLLOWER);
 
     // engage second Sync-master
-    qDebug() << "turn on sync for deck 2";
     ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))
             ->set(SYNC_FOLLOWER);
 
-    // let track drift apart
-    qDebug() << "processess";
-
+    // Run for a number of buffers
     for (int i = 0; i < 25; ++i) {
-        qDebug() << "process iter " << i;
         ProcessBuffer();
     }
     // Make sure we're actually going somewhere!
@@ -1554,8 +1548,6 @@ TEST_F(EngineSyncTest, ActivatingSyncDoesNotCauseDrifting) {
             0);
 
     // Buffers should be in sync.
-    // if this fails, the tracks have driven away from each other
-    // solely because sync-master was engaged.
     EXPECT_EQ(ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))
                       ->get(),
             ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))
@@ -1596,7 +1588,6 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
 
     // Do lots of processing to make sure we get over the 0.5 beat_distance barrier.
     for (int i = 0; i < 50; ++i) {
-        qDebug() << "bpm test loop iter" << i;
         ProcessBuffer();
         // The beat distances are NOT as simple as x2 or /2.  Use the built-in functions
         // to do the proper conversion.

@@ -1222,9 +1222,7 @@ void EngineBuffer::postProcess(const int iBufferSize) {
         kLogger.trace() << getGroup() << "EngineBuffer::postProcess";
     }
     double local_bpm = m_pBpmControl->updateLocalBpm();
-    qDebug() << getGroup() << "new local bpm" << local_bpm;
     double beat_distance = m_pBpmControl->updateBeatDistance();
-    qDebug() << getGroup() << "new beat dist" << beat_distance;
     m_pSyncControl->setLocalBpm(local_bpm);
     SyncMode mode = m_pSyncControl->getSyncMode();
     if (isMaster(mode)) {

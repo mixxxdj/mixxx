@@ -100,7 +100,6 @@ void InternalClock::setMasterBeatDistance(double beatDistance) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "InternalClock::setMasterBeatDistance" << beatDistance;
     }
-    qDebug() << "!!!!!!!!!!!!!!!!!1 clock updated";
     m_dClockPosition = beatDistance * m_dBeatLength;
     m_pClockBeatDistance->set(beatDistance);
     // Make sure followers have an up-to-date beat distance.
@@ -201,13 +200,10 @@ void InternalClock::updateBeatLength(int sampleRate, double bpm) {
 void InternalClock::onCallbackStart(int sampleRate, int bufferSize) {
     Q_UNUSED(sampleRate)
     Q_UNUSED(bufferSize)
-    qDebug() << "InternalClock::onCallbackStart";
-    qDebug() << "our bpm is" << getBpm();
     m_pEngineSync->notifyInstantaneousBpmChanged(this, getBpm());
 }
 
 void InternalClock::onCallbackEnd(int sampleRate, int bufferSize) {
-    qDebug() << "InternalClock::onCallbackEnd";
     updateBeatLength(sampleRate, m_pClockBpm->get());
 
     // stereo samples, so divide by 2
@@ -225,7 +221,6 @@ void InternalClock::onCallbackEnd(int sampleRate, int bufferSize) {
     }
 
     double beat_distance = getBeatDistance();
-    qDebug() << "beat distance" << beat_distance;
     m_pClockBeatDistance->set(beat_distance);
     m_pEngineSync->notifyBeatDistanceChanged(this, beat_distance);
 }
