@@ -1507,6 +1507,10 @@ TEST_F(EngineSyncTest, ZeroLatencyRateDiffQuant) {
                     ->get());
 }
 
+// In this test, we set play *first* and then turn on master sync.
+// This exercises a slightly different ordering of signals that we
+// need to check. The Sync feature is unfortunately brittle.
+// This test exercises https://bugs.launchpad.net/mixxx/+bug/1884324
 TEST_F(EngineSyncTest, ActivatingSyncDoesNotCauseDrifting) {
     mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 150, 0.0);
     m_pTrack1->setBeats(pBeats1);
@@ -1516,9 +1520,6 @@ TEST_F(EngineSyncTest, ActivatingSyncDoesNotCauseDrifting) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(0.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "quantize"))->set(1.0);
 
-    // In this test, we set play *first* and then turn on master sync.
-    // This exercises a slightly different ordering of signals that we
-    // need to check.
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
 
