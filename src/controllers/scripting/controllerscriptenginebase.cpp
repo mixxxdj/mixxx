@@ -57,8 +57,20 @@ bool ControllerScriptEngineBase::initialize() {
                 "midi", m_pJSEngine->newQObject(controllerProxy));
     }
 
-    m_byteArrayToScriptValueJSFunction = m_pJSEngine->evaluate(
-            "(function(arg1) { return new Uint8Array(arg1) })");
+    // Binary data is passed from the Controller as a QByteArray, which
+    // QJSEngine::toScriptValue converts to an ArrayBuffer in JavaScript.
+    // ArrayBuffer cannot be accessed with the [] operator in JS; it needs
+    // to be converted to a typed array (Uint8Array in this case) first.
+    // This function generates a wrapper function from a JS callback to do
+    // that conversion automatically.
+    m_makeArrayBufferWrapperFunction = m_pJSEngine->evaluate(QStringLiteral(
+            // arg2 is the timestamp for ControllerScriptModuleEngine.
+            // In ControllerScriptEngineLegacy it is the length of the array.
+            "(function(callback) {"
+            "    return function(arrayBuffer, arg2) {"
+            "        callback(new Uint8Array(arrayBuffer), arg2);"
+            "    };"
+            "})"));
 
     return true;
 }
@@ -235,16 +247,6 @@ void ControllerScriptEngineBase::throwJSError(const QString& message) {
 #endif
 }
 
-QJSValue ControllerScriptEngineBase::byteArrayToScriptValue(
-        const QByteArray& byteArray) {
-    // The QJSEngine converts the QByteArray to an ArrayBuffer object.
-    QJSValue arrayBuffer = m_pJSEngine->toScriptValue(byteArray);
-    // Convert the ArrayBuffer to a Uint8 typed array so scripts can access its bytes
-    // with the [] operator.
-    QJSValue result =
-            m_byteArrayToScriptValueJSFunction.call(QJSValueList{arrayBuffer});
-    if (result.isError()) {
-        showScriptExceptionDialog(result);
-    }
-    return result;
+QJSValue ControllerScriptEngineBase::wrapArrayBufferCallback(const QJSValue& callback) {
+    return m_makeArrayBufferWrapperFunction.call(QJSValueList{callback});
 }

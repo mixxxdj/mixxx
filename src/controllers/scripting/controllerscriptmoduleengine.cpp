@@ -24,7 +24,7 @@ bool ControllerScriptModuleEngine::initialize() {
 
     QJSValue handleInputFunction = mod.property("handleInput");
     if (handleInputFunction.isCallable()) {
-        m_handleInputFunction = handleInputFunction;
+        m_handleInputFunction = wrapArrayBufferCallback(handleInputFunction);
     } else {
         scriptErrorDialog(
                 "Controller JavaScript module exports no handleInput function.",
@@ -52,7 +52,7 @@ void ControllerScriptModuleEngine::shutdown() {
 void ControllerScriptModuleEngine::handleInput(
         QByteArray data, mixxx::Duration timestamp) {
     QJSValueList args;
-    args << byteArrayToScriptValue(data);
+    args << m_pJSEngine->toScriptValue(data);
     args << timestamp.toDoubleMillis();
     executeFunction(m_handleInputFunction, args);
 }

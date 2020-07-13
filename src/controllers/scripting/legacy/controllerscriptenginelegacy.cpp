@@ -105,7 +105,9 @@ bool ControllerScriptEngineLegacy::initialize() {
             continue;
         }
         functionName.append(QStringLiteral(".incomingData"));
-        m_incomingDataFunctions.append(wrapFunctionCode(functionName, 2));
+        m_incomingDataFunctions.append(
+                wrapArrayBufferCallback(
+                        wrapFunctionCode(functionName, 2)));
     }
 
     QJSValueList args;
@@ -139,7 +141,7 @@ bool ControllerScriptEngineLegacy::handleIncomingData(const QByteArray& data) {
     }
 
     QJSValueList args;
-    args << byteArrayToScriptValue(data);
+    args << m_pJSEngine->toScriptValue(data);
     args << QJSValue(data.size());
 
     for (const QJSValue& function : m_incomingDataFunctions) {
