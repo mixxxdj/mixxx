@@ -142,7 +142,6 @@ const int MixxxMainWindow::kAuxiliaryCount = 4;
 MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         : m_pWidgetParent(nullptr),
           m_pLaunchImage(nullptr),
-          m_pSettingsManager(nullptr),
           m_pEffectsManager(nullptr),
           m_pEngine(nullptr),
           m_pSkinLoader(nullptr),
@@ -177,7 +176,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         StatsManager::createInstance();
     }
 
-    m_pSettingsManager = new SettingsManager(this, args.getSettingsPath());
+    m_pSettingsManager = std::make_unique<SettingsManager>(args.getSettingsPath());
 
     initializeKeyboard();
 
@@ -285,10 +284,10 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     m_pRecordingManager = new RecordingManager(pConfig, m_pEngine);
 
-
 #ifdef __BROADCAST__
-    m_pBroadcastManager = new BroadcastManager(m_pSettingsManager,
-                                               m_pSoundManager);
+    m_pBroadcastManager = new BroadcastManager(
+            m_pSettingsManager.get(),
+            m_pSoundManager);
 #endif
 
     launchProgress(11);
@@ -471,9 +470,17 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     }
 
     // Initialize preference dialog
-    m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
-                                    m_pControllerManager, m_pVCManager, pLV2Backend, m_pEffectsManager,
-                                    m_pSettingsManager, m_pLibrary);
+    m_pPrefDlg = new DlgPreferences(
+            this,
+            m_pSkinLoader,
+            m_pSoundManager,
+            m_pPlayerManager,
+            m_pControllerManager,
+            m_pVCManager,
+            pLV2Backend,
+            m_pEffectsManager,
+            m_pSettingsManager.get(),
+            m_pLibrary);
     m_pPrefDlg->setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     m_pPrefDlg->setHidden(true);
 
@@ -777,42 +784,6 @@ void MixxxMainWindow::finalize() {
     delete m_pGuiTick;
     delete m_pVisualsManager;
 
-    // Check for leaked ControlObjects and give warnings.
-    QList<QSharedPointer<ControlDoublePrivate> > leakedControls;
-    QList<ConfigKey> leakedConfigKeys;
-
-    ControlDoublePrivate::getControls(&leakedControls);
-
-    if (leakedControls.size() > 0) {
-        qDebug() << "WARNING: The following" << leakedControls.size()
-                 << "controls were leaked:";
-        foreach (QSharedPointer<ControlDoublePrivate> pCDP, leakedControls) {
-            if (pCDP.isNull()) {
-                continue;
-            }
-            ConfigKey key = pCDP->getKey();
-            qDebug() << key.group << key.item << pCDP->getCreatorCO();
-            leakedConfigKeys.append(key);
-        }
-
-        // Deleting leaked objects helps to satisfy valgrind.
-        // These delete calls could cause crashes if a destructor for a control
-        // we thought was leaked is triggered after this one exits.
-        // So, only delete so if developer mode is on.
-        if (CmdlineArgs::Instance().getDeveloper()) {
-            foreach (ConfigKey key, leakedConfigKeys) {
-                // A deletion early in the list may trigger a destructor
-                // for a control later in the list, so we check for a null
-                // pointer each time.
-                ControlObject* pCo = ControlObject::getControl(key, false);
-                if (pCo) {
-                    delete pCo;
-                }
-            }
-        }
-        leakedControls.clear();
-    }
-
     // Delete the track collections after all internal track pointers
     // in other components have been released by deleting those components
     // beforehand!
@@ -829,9 +800,34 @@ void MixxxMainWindow::finalize() {
     // at exit.
     m_pSettingsManager->save();
 
+    // Check for leaked ControlObjects and give warnings.
+    {
+        QList<QSharedPointer<ControlDoublePrivate>> leakedControls =
+                ControlDoublePrivate::takeAllInstances();
+        VERIFY_OR_DEBUG_ASSERT(leakedControls.isEmpty()) {
+            qWarning()
+                    << "The following"
+                    << leakedControls.size()
+                    << "controls were leaked:";
+            for (auto pCDP : leakedControls) {
+                ConfigKey key = pCDP->getKey();
+                qWarning() << key.group << key.item << pCDP->getCreatorCO();
+                // Deleting leaked objects helps to satisfy valgrind.
+                // These delete calls could cause crashes if a destructor for a control
+                // we thought was leaked is triggered after this one exits.
+                // So, only delete so if developer mode is on.
+                if (CmdlineArgs::Instance().getDeveloper()) {
+                    pCDP->deleteCreatorCO();
+                }
+            }
+        }
+        // Finally drop all shared pointers by exiting this scope
+    }
+
     Sandbox::shutdown();
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting SettingsManager";
+    m_pSettingsManager.reset();
 
     delete m_pKeyboard;
     delete m_pKbdConfig;

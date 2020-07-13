@@ -189,35 +189,35 @@ void WSpinny::setup(const QDomNode& node, const SkinContext& context) {
 #endif
 
     m_pPlayPos = new ControlProxy(
-            m_group, "playposition", this);
+            m_group, "playposition", this, ControlFlag::NoAssertIfMissing);
     m_pVisualPlayPos = VisualPlayPosition::getVisualPlayPosition(m_group);
     m_pTrackSamples = new ControlProxy(
-            m_group, "track_samples", this);
+            m_group, "track_samples", this, ControlFlag::NoAssertIfMissing);
     m_pTrackSampleRate = new ControlProxy(
-            m_group, "track_samplerate", this);
+            m_group, "track_samplerate", this, ControlFlag::NoAssertIfMissing);
 
     m_pScratchToggle = new ControlProxy(
-            m_group, "scratch_position_enable", this);
+            m_group, "scratch_position_enable", this, ControlFlag::NoAssertIfMissing);
     m_pScratchPos = new ControlProxy(
-            m_group, "scratch_position", this);
+            m_group, "scratch_position", this, ControlFlag::NoAssertIfMissing);
 
     m_pSlipEnabled = new ControlProxy(
-            m_group, "slip_enabled", this);
+            m_group, "slip_enabled", this, ControlFlag::NoAssertIfMissing);
     m_pSlipEnabled->connectValueChanged(this, &WSpinny::updateSlipEnabled);
 
 #ifdef __VINYLCONTROL__
     m_pVinylControlSpeedType = new ControlProxy(
-            m_group, "vinylcontrol_speed_type", this);
+            m_group, "vinylcontrol_speed_type", this, ControlFlag::NoAssertIfMissing);
     // Initialize the rotational speed.
     updateVinylControlSpeed(m_pVinylControlSpeedType->get());
 
     m_pVinylControlEnabled = new ControlProxy(
-            m_group, "vinylcontrol_enabled", this);
+            m_group, "vinylcontrol_enabled", this, ControlFlag::NoAssertIfMissing);
     m_pVinylControlEnabled->connectValueChanged(this,
             &WSpinny::updateVinylControlEnabled);
 
     m_pSignalEnabled = new ControlProxy(
-            m_group, "vinylcontrol_signal_enabled", this);
+            m_group, "vinylcontrol_signal_enabled", this, ControlFlag::NoAssertIfMissing);
     m_pSignalEnabled->connectValueChanged(this,
             &WSpinny::updateVinylControlSignalEnabled);
 

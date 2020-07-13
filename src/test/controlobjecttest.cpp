@@ -32,7 +32,8 @@ TEST_F(ControlObjectTest, getControl) {
     EXPECT_EQ(ControlObject::getControl(ck1), co1.get());
     EXPECT_EQ(ControlObject::getControl(ck2), co2.get());
     co2.reset();
-    EXPECT_EQ(ControlObject::getControl(ck2), (ControlObject*)nullptr);
+    EXPECT_EQ(ControlObject::getControl(ck2, ControlFlag::NoAssertIfMissing),
+            (ControlObject*)nullptr);
 }
 
 TEST_F(ControlObjectTest, AliasRetrieval) {
