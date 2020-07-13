@@ -81,7 +81,9 @@ void WTrackWidgetGroup::slotTrackChanged(TrackId trackId) {
 void WTrackWidgetGroup::updateColor() {
     if (m_pCurrentTrack) {
         m_trackColor = mixxx::RgbColor::toQColor(m_pCurrentTrack->getColor());
-        m_trackColor.setAlpha(m_trackColorAlpha);
+        if (m_trackColor.isValid()) {
+            m_trackColor.setAlpha(m_trackColorAlpha);
+        }
     } else {
         m_trackColor = QColor();
     }
