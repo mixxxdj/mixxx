@@ -1438,11 +1438,10 @@ if(WIN32)
   target_link_libraries(mixxx-lib PUBLIC FFTW::FFTW)
 endif()
 
-# libdjinterop (must be enabled explicitly to use)
-option(DJINTEROP "Use djinterop library" OFF)
-if(DJINTEROP)
-  message(STATUS "Enabling djinterop support...")
-  target_compile_definitions(mixxx-lib PUBLIC __DJINTEROP__)
+# Denon Engine Prime library export support (using libdjinterop)
+option(ENGINEPRIME "Support for library export to Denon Engine Prime" OFF)
+if(ENGINEPRIME)
+  target_compile_definitions(mixxx-lib PUBLIC __ENGINEPRIME__)
 
   # Look for an existing installation of libdjinterop and use that if available.
   # Otherwise, download and build from GitHub.
