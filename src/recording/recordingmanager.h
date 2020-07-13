@@ -34,7 +34,7 @@ class RecordingManager : public RecordingManagerBase {
     // The method computes the filename based on date/time information.
     void startRecording() override;
     void stopRecording() override;
-    bool isRecordingActive() override;
+    bool isRecordingActive() const override;
 
     void setRecordingDir();
     QString& getRecordingDir();

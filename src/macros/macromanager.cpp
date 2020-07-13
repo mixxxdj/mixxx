@@ -1,13 +1,9 @@
 #include "macromanager.h"
 
 MacroManager::MacroManager()
-        : m_pMacroRecorder(new MacroRecorder()) {
-}
-
-MacroManager::~MacroManager() {
-    delete m_pMacroRecorder;
+        : m_pMacroRecorder(std::make_unique<MacroRecorder>()) {
 }
 
 MacroRecorder* MacroManager::getRecorder() {
-    return m_pMacroRecorder;
+    return m_pMacroRecorder.get();
 }
