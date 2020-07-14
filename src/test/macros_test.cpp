@@ -8,6 +8,8 @@ TEST(MacrosTest, CreateMacro) {
     EXPECT_EQ(macro.getLength(), 0);
     macro.appendJump(0, 1);
     EXPECT_EQ(macro.getLength(), 1);
+    EXPECT_EQ(macro.actions[0], MacroAction(0, 1));
+
     QString filename(QDir::currentPath() % "/src/test/macro-proto-test");
     ASSERT_TRUE(QFile::exists(filename));
     QFile file(filename);
@@ -16,6 +18,9 @@ TEST(MacrosTest, CreateMacro) {
     QByteArray serialized = macro.serialize();
     EXPECT_EQ(serialized.length(), content.length());
     EXPECT_EQ(serialized, content);
+    Macro deserialized(serialized);
+    EXPECT_EQ(deserialized.getLength(), macro.getLength());
+    EXPECT_EQ(deserialized, macro);
 }
 
 TEST(MacroRecordingTest, ClaimRecording) {
