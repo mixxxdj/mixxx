@@ -28,7 +28,7 @@ void WRateDisplay::setValue() {
     double range = m_pRateRangeControl->get();
     double direction = m_pRateDirControl->get();
 
-    if(nodePosition == VerticalPosition::Top) {
+    if (nodePosition == VerticalPosition::Top) {
         qDebug() << "Position: TOP";
     }
     if(nodePosition == VerticalPosition::Bottom) {
