@@ -18,7 +18,7 @@ void WRateDisplay::setup(const QDomNode& node, const SkinContext& context) {
     WNumber::setup(node, context);
 
     QDomElement rateDisplayPosition = context.selectElement(node, "Position");
-    WRateDisplay::nodePosition = rateDisplayPosition.text() == "Top" ? VerticalPosition::Top : VerticalPosition::Bottom;
+    m_nodePosition = rateDisplayPosition.text() == "Top" ? VerticalPosition::Top : VerticalPosition::Bottom;
 
     // Initialize the widget (overrides the base class initial value.
     setValue();
