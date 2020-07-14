@@ -51,7 +51,7 @@ void WRateDisplay::setValue() {
     }
 
     setText(sign
-        .append("%1").arg(range * 100)
+        .append(QString::number(range * 100))
         .append("\%")
     );
 }
