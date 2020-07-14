@@ -527,24 +527,30 @@ double LoopingControl::getSyncPositionInsideLoop(double dRequestedPlaypos, doubl
     return dSyncedPlayPos;
 }
 
+void LoopingControl::setBeatLoop(double startPosition, bool enabled) {
+    VERIFY_OR_DEBUG_ASSERT(startPosition != Cue::kNoPosition) {
+        return;
+    }
+
+    mixxx::BeatsPointer pBeats = m_pBeats;
+    if (!pBeats) {
+        return;
+    }
+
+    double beatloopSize = m_pCOBeatLoopSize->get();
+    double endPosition = pBeats->findNBeatsFromSample(startPosition, beatloopSize);
+
+    setLoop(startPosition, endPosition, enabled);
+}
+
 void LoopingControl::setLoop(double startPosition, double endPosition, bool enabled) {
     VERIFY_OR_DEBUG_ASSERT(startPosition != Cue::kNoPosition &&
-            (startPosition < endPosition || endPosition == Cue::kNoPosition)) {
+            endPosition != Cue::kNoPosition && startPosition < endPosition) {
         return;
     }
     qDebug() << "LoopingControl::setLoop" << startPosition << endPosition << enabled;
 
     LoopSamples loopSamples = m_loopSamples.getValue();
-    if (endPosition == Cue::kNoPosition) {
-        mixxx::BeatsPointer pBeats = m_pBeats;
-        if (!pBeats) {
-            return;
-        }
-
-        double beatloopSize = m_pCOBeatLoopSize->get();
-        endPosition = pBeats->findNBeatsFromSample(startPosition, beatloopSize);
-    }
-
     if (loopSamples.start != startPosition || loopSamples.end != endPosition) {
         // Copy saved loop parameters to active loop
         loopSamples.start = startPosition;

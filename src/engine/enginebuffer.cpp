@@ -373,6 +373,10 @@ double EngineBuffer::getLocalBpm() {
     return m_pBpmControl->getLocalBpm();
 }
 
+void EngineBuffer::setBeatLoop(double startPosition, bool enabled) {
+    return m_pLoopingControl->setBeatLoop(startPosition, enabled);
+}
+
 void EngineBuffer::setLoop(double startPosition, double endPositon, bool enabled) {
     return m_pLoopingControl->setLoop(startPosition, endPositon, enabled);
 }

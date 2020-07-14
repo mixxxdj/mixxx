@@ -52,6 +52,7 @@ class LoopingControl : public EngineControl {
 
     void notifySeek(double dNewPlaypos) override;
 
+    void setBeatLoop(double startPosition, bool enabled);
     void setLoop(double startPosition, double endPosition, bool enabled);
     void setRateControl(RateControl* rateControl);
     bool isLoopingEnabled();

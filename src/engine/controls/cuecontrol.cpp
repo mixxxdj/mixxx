@@ -850,7 +850,7 @@ void CueControl::hotcueGotoAndLoop(HotcueControl* pControl, double v) {
         setCurrentSavedLoop(pCue);
     } else if (pCue->getType() == mixxx::CueType::HotCue) {
         hotcueGoto(pControl, v);
-        setLoop(pCue->getPosition(), Cue::kNoPosition, true);
+        setBeatLoop(pCue->getPosition(), true);
     } else {
         return;
     }
@@ -900,7 +900,7 @@ void CueControl::hotcueLoopToggle(HotcueControl* pControl, double v) {
         double startPosition = pCue->getPosition();
         bool enabled = startPosition != m_pLoopStartPosition->get() ||
                 !m_pLoopEnabled->get();
-        setLoop(startPosition, Cue::kNoPosition, enabled);
+        setBeatLoop(startPosition, enabled);
         break;
     }
     default:

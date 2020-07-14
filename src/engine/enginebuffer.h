@@ -123,6 +123,8 @@ class EngineBuffer : public EngineObject {
     double getBpm();
     // Returns the BPM of the loaded track around the current position (not thread-safe)
     double getLocalBpm();
+    /// Sets a beatloop for the loaded track (not thread safe)
+    void setBeatLoop(double startPosition, bool enabled);
     /// Sets a loop for the loaded track (not thread safe)
     void setLoop(double startPosition, double endPositon, bool enabled);
     // Sets pointer to other engine buffer/channel
