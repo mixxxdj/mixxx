@@ -2419,6 +2419,7 @@ endif()
 # Packaging
 set(CPACK_PACKAGE_VENDOR "Mixxx Project")
 set(CPACK_PACKAGE_CONTACT "RJ Skerry-Ryan <rryan@mixxx.org>")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Mixxx, powerfull features for all DJs")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/build/CPackPackageDescription.txt")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "Mixxx")
 set(CPACK_PACKAGE_EXECUTABLES "mixxx;Mixxx")
@@ -2439,15 +2440,9 @@ set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5sql5-sqlite, pulseaudio-utils")
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 set(CPACK_DEBIAN_PACKAGE_VERSION "2.4.0~alpha~pre-ppa1~master~git7371~bionic")
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "${CPACK_PACKAGE_HOMEPAGE_URL}")
-set(CPACK_DEBIAN_PACKAGE_DESCRIPTION
-"Digital Disc Jockey Application
- Mixxx is a digital DJ system, where Wave, Ogg, FLAC and MP3 files can be
- mixed on a computer for use in live performances. Filters, crossfader, and
- speed control are provided. Mixxx can sync the 4 decks automatically, using
- an algorithm to detect the beat.
- .
- Mixxx works with ALSA or Jack, can be controlled from the GUI or from external
- controllers, including MIDI devices and joysticks, and supports skins.")
+file(READ ${CPACK_PACKAGE_DESCRIPTION_FILE} CPACK_DEBIAN_PACKAGE_DESCRIPTION)
+string(REPLACE "\n\n" "\n.\n" CPACK_DEBIAN_PACKAGE_DESCRIPTION "${CPACK_DEBIAN_PACKAGE_DESCRIPTION}")
+string(REPLACE "\n" "\n " CPACK_DEBIAN_PACKAGE_DESCRIPTION "${CPACK_DEBIAN_PACKAGE_DESCRIPTION}")
 
 set(CPACK_WIX_UPGRADE_GUID "921DC99C-4DCF-478D-B950-50685CB9E6BE")
 set(CPACK_WIX_LICENSE_RTF "${CMAKE_CURRENT_SOURCE_DIR}/build/wix/LICENSE.rtf")
