@@ -29,8 +29,8 @@ TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     ASSERT_DOUBLE_EQ(m_pChannel1->getEngineBuffer()->getExactPlayPos(), deltaFrames * 2);
 
     // Make both decks playing.
-    ControlObject::getControl(m_sGroup1, "play", true)->set(1.0);
-    ControlObject::getControl(m_sGroup2, "play", true)->set(1.0);
+    ControlObject::getControl(m_sGroup1, "play")->set(1.0);
+    ControlObject::getControl(m_sGroup2, "play")->set(1.0);
     ProcessBuffer();
     ASSERT_DOUBLE_EQ(m_pChannel1->getEngineBuffer()->getExactPlayPos(),
             m_pChannel2->getEngineBuffer()->getExactPlayPos() +
