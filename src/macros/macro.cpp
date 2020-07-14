@@ -5,10 +5,10 @@
 #include "proto/macro.pb.h"
 #include "util/assert.h"
 
-using namespace mixxx::track;
+namespace proto = mixxx::track::io;
 
 Macro::Macro(QByteArray serialized) {
-    io::Macro macroProto = io::Macro();
+    proto::Macro macroProto = proto::Macro();
     macroProto.ParseFromArray(serialized.data(), serialized.length());
     for (auto action : macroProto.actions()) {
         appendJump(action.origin(), action.target());
@@ -44,10 +44,10 @@ void Macro::dump() const {
 }
 
 QByteArray Macro::serialize() const {
-    io::Macro macroProto;
+    proto::Macro macroProto;
     for (size_t i = 0; i < m_length; ++i) {
         MacroAction action = actions[i];
-        io::Macro_Action* newAction = macroProto.add_actions();
+        proto::Macro_Action* newAction = macroProto.add_actions();
         // TODO(xerus) add type enum
         newAction->set_type(1);
         newAction->set_origin(action.position);
