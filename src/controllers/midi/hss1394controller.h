@@ -33,9 +33,12 @@ class DeviceChannelListener : public QObject, public hss1394::ChannelListener {
     void Disconnected();
     void Reconnected();
   signals:
-    void incomingData(unsigned char status, unsigned char control, unsigned char value,
-                      mixxx::Duration timestamp);
-    void incomingData(QByteArray data, mixxx::Duration timestamp);
+    void receiveShortMessage(unsigned char status,
+            unsigned char control,
+            unsigned char value,
+            mixxx::Duration timestamp);
+    void receiveSysex(const QByteArray& data, mixxx::Duration timestamp);
+
   private:
     QString m_sName;
 };

@@ -40,7 +40,7 @@ void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint
                 if (i + 2 < uBufferSize) {
                     note = pBuffer[i+1];
                     velocity = pBuffer[i+2];
-                    emit incomingData(status, note, velocity, timestamp);
+                    emit receiveShortMessage(status, note, velocity, timestamp);
                 } else {
                     qWarning() << "Buffer underflow in DeviceChannelListener::Process()";
                 }
@@ -48,8 +48,8 @@ void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint
                 break;
             default:
                 // Handle platter messages and any others that are not 3 bytes
-                QByteArray outArray((char*)pBuffer,uBufferSize);
-                emit incomingData(outArray, timestamp);
+                QByteArray outArray = QByteArray::fromRawData((char*)pBuffer, uBufferSize);
+                emit receiveSysex(outArray, timestamp);
                 i = uBufferSize;
                 break;
         }
@@ -110,12 +110,14 @@ int Hss1394Controller::open() {
     }
 
     m_pChannelListener = new DeviceChannelListener(this, getName());
-    connect(m_pChannelListener, SIGNAL(incomingData(QByteArray, mixxx::Duration)),
-            this, SLOT(receive(QByteArray, mixxx::Duration)));
     connect(m_pChannelListener,
-            &DeviceChannelListener::incomingData,
+            &DeviceChannelListener::receiveShortMessage,
             this,
             &Hss1394Controller::receiveShortMessage);
+    connect(m_pChannelListener,
+            &DeviceChannelListener::receiveSysex,
+            this,
+            &Hss1394Controller::receive);
 
     if (!m_pChannel->InstallChannelListener(m_pChannelListener)) {
         qDebug() << "HSS1394 channel listener could not be installed for device" << getName();
@@ -150,10 +152,14 @@ int Hss1394Controller::close() {
         return -1;
     }
 
-    disconnect(m_pChannelListener, SIGNAL(incomingData(QByteArray, mixxx::Duration)),
-               this, SLOT(receive(QByteArray, mixxx::Duration)));
-    disconnect(m_pChannelListener, SIGNAL(incomingData(unsigned char, unsigned char, unsigned char, mixxx::Duration)),
-               this, SLOT(receive(unsigned char, unsigned char, unsigned char, mixxx::Duration)));
+    disconnect(m_pChannelListener,
+            &DeviceChannelListener::receiveShortMessage,
+            this,
+            &Hss1394Controller::receiveShortMessage);
+    disconnect(m_pChannelListener,
+            &DeviceChannelListener::receiveSysex,
+            this,
+            &Hss1394Controller::receive);
 
     stopEngine();
     MidiController::close();
