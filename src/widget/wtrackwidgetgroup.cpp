@@ -38,6 +38,8 @@ WTrackWidgetGroup::WTrackWidgetGroup(QWidget* pParent,
     setAcceptDrops(true);
 }
 
+WTrackWidgetGroup::~WTrackWidgetGroup() = default;
+
 void WTrackWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
     WWidgetGroup::setup(node, context);
 

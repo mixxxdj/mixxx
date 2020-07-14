@@ -16,7 +16,7 @@ class WTrackWidgetGroup : public WWidgetGroup, public TrackDropTarget {
             UserSettingsPointer pConfig,
             TrackCollectionManager* pTrackCollectionManager,
             const QString& group);
-    ~WTrackWidgetGroup() override = default;
+    ~WTrackWidgetGroup() override;
     void setup(const QDomNode& node, const SkinContext& context) override;
 
   signals:
