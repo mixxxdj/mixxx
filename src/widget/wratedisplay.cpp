@@ -46,11 +46,8 @@ void WRateDisplay::setValue() {
         sign = '+';
     }
 
-    if(nodePosition == VerticalPosition::Bottom) {
-        sign = '-';
-        if(direction < 0) {
-            sign = '+';
-        }
+    if (nodePosition == VerticalPosition::Bottom && direction < 0) {
+        sign = '+';
     }
 
     setText(sign
