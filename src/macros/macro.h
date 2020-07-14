@@ -16,6 +16,14 @@ struct MacroAction {
     /// TODO(xerus) use FramePos once https://github.com/mixxxdj/mixxx/pull/2861 is merged
     double position;
     double target;
+
+    bool operator==(const MacroAction& other) const {
+        return position == other.position && target == other.target;
+    }
+
+    inline bool operator!=(const MacroAction& other) const {
+        return !operator==(other);
+    }
 };
 
 /// A Macro stores a list of MacroActions.
@@ -23,6 +31,9 @@ struct MacroAction {
 class Macro {
   public:
     static const int kMaxSize = 1000;
+
+    Macro() = default;
+    Macro(QByteArray serialized);
 
     MacroAction actions[kMaxSize];
 
@@ -40,6 +51,19 @@ class Macro {
 
     /// For debugging - dump all saved actions to debug output.
     void dump() const;
+
+    bool operator==(const Macro& other) const {
+        if (m_length != other.m_length)
+            return false;
+        size_t c = 0;
+        while (c < m_length) {
+            if (actions[c] != other.actions[c]) {
+                return false;
+            }
+            c++;
+        }
+        return true;
+    }
 
   private:
     size_t m_length = 0;
