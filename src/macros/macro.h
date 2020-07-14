@@ -38,8 +38,8 @@ class Macro {
     MacroAction actions[kMaxSize];
 
     /// Append a jump action to this Macro by assigning the next available slot.
-    /// Only called from RT.
-    void appendJump(double origin, double target);
+    /// Only called in realtime code.
+    void appendJump(double sourceFramePos, double destFramePos);
 
     /// Clears the contents of this Macro by setting its length to 0.
     void clear();

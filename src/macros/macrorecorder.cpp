@@ -28,21 +28,22 @@ MacroRecorder::MacroRecorder()
             &MacroRecorder::pollRecordingStart);
 }
 
-void MacroRecorder::notifyCueJump(ChannelHandle& channel, double origin, double target) {
-    qCDebug(macroLoggingCategory) << "Jump in channel" << channel.handle();
+void MacroRecorder::notifyCueJump(
+        ChannelHandle* channel, double sourceFramePos, double destFramePos) {
+    qCDebug(macroLoggingCategory) << "Jump in channel" << channel->handle();
     if (checkOrClaimRecording(channel)) {
-        m_recordedMacro.appendJump(origin, target);
-        qCDebug(macroLoggingCategory) << "Recorded jump in channel" << channel.handle();
+        m_recordedMacro.appendJump(sourceFramePos, destFramePos);
+        qCDebug(macroLoggingCategory) << "Recorded jump in channel" << channel->handle();
         setState(MacroRecordingState::Armed);
     }
 }
 
-bool MacroRecorder::checkOrClaimRecording(ChannelHandle& channel) {
+bool MacroRecorder::checkOrClaimRecording(ChannelHandle* channel) {
     if (m_activeChannel != nullptr) {
-        return m_activeChannel->handle() == channel.handle() && claimRecording();
+        return m_activeChannel->handle() == channel->handle() && claimRecording();
     } else if (claimRecording()) {
-        m_activeChannel = &channel;
-        qCDebug(macroLoggingCategory) << "Claimed recording for channel" << channel.handle();
+        m_activeChannel = channel;
+        qCDebug(macroLoggingCategory) << "Claimed recording for channel" << channel->handle();
         return true;
     }
     return false;

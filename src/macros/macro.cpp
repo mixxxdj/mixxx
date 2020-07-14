@@ -15,15 +15,15 @@ Macro::Macro(QByteArray serialized) {
     }
 }
 
-void Macro::appendJump(double origin, double target) {
+void Macro::appendJump(double sourceFramePos, double destFramePos) {
     VERIFY_OR_DEBUG_ASSERT(m_length < kMaxSize) {
         return;
     }
     qCDebug(macroLoggingCategory)
             << "Length" << m_length
-            << ": Appending jump from position" << origin << "to" << target;
-    actions[m_length].position = origin;
-    actions[m_length].target = target;
+            << ": Appending jump from position" << sourceFramePos << "to" << destFramePos;
+    actions[m_length].position = sourceFramePos;
+    actions[m_length].target = destFramePos;
     m_length++;
 }
 

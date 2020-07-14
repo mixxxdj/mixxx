@@ -38,14 +38,14 @@ class MacroRecorder : public RecordingManagerBase {
     /// Returns true if the currently recorded Macro was changed - so only if
     /// recording is active and the channel handle matches.
     /// Only called from RT.
-    void notifyCueJump(ChannelHandle& channel, double origin, double target);
+    void notifyCueJump(ChannelHandle* channel, double sourceFramePos, double destFramePos);
 
     Macro getMacro() const;
     MacroRecordingState getState() const;
     ChannelHandle* getActiveChannel() const;
 
   signals:
-    void saveMacro(ChannelHandle channel, Macro macro);
+    void saveMacro(const ChannelHandle channel, const Macro macro);
 
   private slots:
     void pollRecordingStart();
@@ -56,11 +56,11 @@ class MacroRecorder : public RecordingManagerBase {
 
     /// Checks if ths channel is recording, otherwise tries to claim it.
     /// Returns true if this channel is recording.
-    /// Called from RT.
-    bool checkOrClaimRecording(ChannelHandle& channel);
+    /// Called in realtime code.
+    bool checkOrClaimRecording(ChannelHandle* channel);
 
     /// Claims the recording if it is Armed.
-    /// Called from RT.
+    /// Called in realtime code.
     bool claimRecording();
 
     void setState(MacroRecordingState state);
