@@ -6,7 +6,7 @@
 #include "util/assert.h"
 
 void Macro::appendJump(double origin, double target) {
-    VERIFY_OR_DEBUG_ASSERT(m_length < Macro::kMaxSize) {
+    VERIFY_OR_DEBUG_ASSERT(m_length < kMaxSize) {
         return;
     }
     qCDebug(macroLoggingCategory) << "Appending jump from position" << origin << "to" << target;
@@ -19,6 +19,7 @@ void Macro::clear() {
     qCDebug(macroLoggingCategory) << "Clearing Macro";
     m_length = 0;
 }
+
 int Macro::getLength() const {
     return m_length;
 }

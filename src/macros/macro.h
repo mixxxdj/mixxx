@@ -4,9 +4,11 @@
 
 const QLoggingCategory macroLoggingCategory("macros");
 
-/// A MacroAction is the smallest piece of a Macro.
-/// It contains a position as well as the action to be taken at that position
-/// (currently only jumps to a target position are available).
+/// A MacroAction is the building block of a Macro.
+/// It contains a position as well as the action to be taken at that position.
+///
+/// Note that currently only jumps to a target position are available, but that
+/// is subject to change.
 struct MacroAction {
     MacroAction(){};
     MacroAction(double position, double target)
@@ -17,7 +19,7 @@ struct MacroAction {
 };
 
 /// A Macro stores a list of MacroActions.
-/// The maximum size is fixed at a generous kMaxSize to prevent resizing in RT.
+/// The maximum size is fixed at a generous kMaxSize to prevent resizing in realtime code.
 class Macro {
   public:
     static const int kMaxSize = 1000;
