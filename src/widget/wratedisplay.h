@@ -22,5 +22,5 @@ class WRateDisplay : public WNumber {
   private:
     ControlProxy* m_pRateRangeControl;
     ControlProxy* m_pRateDirControl;
-    VerticalPosition nodePosition;
+    VerticalPosition m_nodePosition;
 };
