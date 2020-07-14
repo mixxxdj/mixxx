@@ -20,7 +20,7 @@ void WRateDisplay::setup(const QDomNode& node, const SkinContext& context) {
     QDomElement rateDisplayPosition = context.selectElement(node, "Position");
     m_nodePosition = rateDisplayPosition.text() == "Top" ? VerticalPosition::Top : VerticalPosition::Bottom;
 
-    // Initialize the widget (overrides the base class initial value.
+    // Initialize the widget (overrides the base class initial value).
     setValue();
 }
 
