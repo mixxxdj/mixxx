@@ -1209,8 +1209,8 @@ void EngineBuffer::processSeek(bool paused) {
         if (kLogger.traceEnabled()) {
             kLogger.trace() << "EngineBuffer::processSeek Seek to" << position;
         }
-        if (m_bHotcueJumpPending && m_pMacroRecorder != nullptr) {
-            m_pMacroRecorder->notifyCueJump(m_channel,
+        if (m_pMacroRecorder && m_bHotcueJumpPending) {
+            m_pMacroRecorder->notifyCueJump(&m_channel,
                     m_filepos_play / mixxx::kEngineChannelCount,
                     position / mixxx::kEngineChannelCount);
         }

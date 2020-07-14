@@ -40,19 +40,19 @@ TEST(MacroRecordingTest, RecordCueJump) {
     ChannelHandle handle = factory.getOrCreateHandle("test-one");
     EXPECT_EQ(recorder.getState(), MacroRecordingState::Disabled);
 
-    recorder.notifyCueJump(handle, 0, 1);
+    recorder.notifyCueJump(&handle, 0, 1);
     EXPECT_EQ(recorder.getActiveChannel(), nullptr);
     EXPECT_EQ(recorder.getMacro().getLength(), 0);
 
     recorder.startRecording();
-    recorder.notifyCueJump(handle, 0, 1);
+    recorder.notifyCueJump(&handle, 0, 1);
     EXPECT_EQ(recorder.getActiveChannel()->handle(), handle.handle());
     EXPECT_EQ(recorder.getMacro().actions[0].position, 0);
     EXPECT_EQ(recorder.getMacro().actions[0].target, 1);
 
     auto handle2 = factory.getOrCreateHandle("test-two");
-    EXPECT_EQ(recorder.checkOrClaimRecording(handle2), false);
-    EXPECT_EQ(recorder.checkOrClaimRecording(handle), true);
+    EXPECT_EQ(recorder.checkOrClaimRecording(&handle2), false);
+    EXPECT_EQ(recorder.checkOrClaimRecording(&handle), true);
 
     recorder.pollRecordingStart();
     EXPECT_EQ(ControlProxy(MacroRecorder::kControlsGroup, "recording_status").get(), 2);
