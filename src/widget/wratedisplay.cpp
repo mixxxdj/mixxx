@@ -28,10 +28,10 @@ void WRateDisplay::setValue() {
     double range = m_pRateRangeControl->get();
     double direction = m_pRateDirControl->get();
 
-    if (nodePosition == VerticalPosition::Top) {
+    if (m_nodePosition == VerticalPosition::Top) {
         qDebug() << "Position: TOP";
     }
-    if(nodePosition == VerticalPosition::Bottom) {
+    if(m_nodePosition == VerticalPosition::Bottom) {
         qDebug() << "Position: BOTTOM";
     }
     if(direction > 0) {
@@ -42,11 +42,11 @@ void WRateDisplay::setValue() {
     }
 
     QString sign('-');
-    if(nodePosition == VerticalPosition::Top && direction > 0) {
+    if(m_nodePosition == VerticalPosition::Top && direction > 0) {
         sign = '+';
     }
 
-    if (nodePosition == VerticalPosition::Bottom && direction < 0) {
+    if (m_nodePosition == VerticalPosition::Bottom && direction < 0) {
         sign = '+';
     }
 
