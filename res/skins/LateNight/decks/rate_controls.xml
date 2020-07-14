@@ -82,20 +82,6 @@
                 <SetVariable name="ConfigKey"><Variable name="Group"/>,sync_enabled</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beatsync_tempo</SetVariable>
               </Template>
-              <RateDisplay>
-                <TooltipId>rate_range_display</TooltipId>
-                <ObjectName>RateText</ObjectName>
-                <Channel><Variable name="ChanNum" /></Channel>
-                <NumberOfDigits>1</NumberOfDigits>
-                <Position>Top</Position>
-              </RateDisplay>
-              <RateDisplay>
-                <TooltipId>rate_range_display</TooltipId>
-                <ObjectName>RateText</ObjectName>
-                <Channel><Variable name="ChanNum" /></Channel>
-                <NumberOfDigits>1</NumberOfDigits>
-                <Position>Bottom</Position>
-              </RateDisplay>
             </Children>
           </WidgetGroup>
 
@@ -108,7 +94,33 @@
             <Children>
               <WidgetGroup>
                 <ObjectName></ObjectName>
-                <Size>50f,113f</Size>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,me</SizePolicy>
+                <Children>
+                  <RateDisplay>
+                    <TooltipId>rate_range_display</TooltipId>
+                    <ObjectName>RateDisplayTop</ObjectName>
+                    <Channel><Variable name="ChanNum" /></Channel>
+                    <NumberOfDigits>1</NumberOfDigits>
+                    <Position>Top</Position>
+                  </RateDisplay>
+                  <WidgetGroup>
+                    <ObjectName></ObjectName>
+                    <SizePolicy>min,me</SizePolicy>
+                    <Layout>vertical</Layout>
+                  </WidgetGroup>
+                  <RateDisplay>
+                    <TooltipId>rate_range_display</TooltipId>
+                    <ObjectName>RateDisplayBottom</ObjectName>
+                    <Channel><Variable name="ChanNum" /></Channel>
+                    <NumberOfDigits>1</NumberOfDigits>
+                    <Position>Bottom</Position>
+                  </RateDisplay>
+                </Children>
+              </WidgetGroup>
+              <WidgetGroup>
+                <ObjectName></ObjectName>
+                <Size>40f,113f</Size>
                 <Children>
                   <Label>
                     <ObjectName>RateCenter</ObjectName>

@@ -33,8 +33,10 @@ void WNumberRate::setValue(double dValue) {
     double vsign = dValue - 1;
 
     char sign = '+';
-    if (vsign < -0.00000001) {
+    if (vsign < 0) {
         sign = '-';
+    } else if(dValue == 0) {
+        sign = '';
     }
 
     setText(QString(m_skinText).append(sign)
