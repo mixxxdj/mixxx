@@ -14,12 +14,44 @@ mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const TrackPointer& trac
     // Now that the serialized representation is the same for BeatGrids and BeatMaps,
     // they can be deserialized in a common function.
     if (beatsVersion == mixxx::BeatsInternal::BEAT_GRID_1_VERSION ||
-            beatsVersion == mixxx::BeatsInternal::BEAT_GRID_2_VERSION ||
-            beatsVersion == mixxx::BeatsInternal::BEAT_MAP_VERSION) {
-        mixxx::Beats* pMap = new mixxx::Beats(track.get(), beatsSerialized);
+            beatsVersion == mixxx::BeatsInternal::BEAT_GRID_2_VERSION) {
+        mixxx::track::io::LegacyBeatGrid legacyBeatGridProto;
+        if (!legacyBeatGridProto.ParseFromArray(
+                    beatsSerialized.constData(), beatsSerialized.size())) {
+            qDebug()
+                    << "ERROR: Could not parse BeatGrid from QByteArray of size"
+                    << beatsSerialized.size();
+            return mixxx::BeatsPointer();
+        }
+        mixxx::Beats* pGrid = new mixxx::Beats(track.get());
+        pGrid->setGrid(mixxx::Bpm(legacyBeatGridProto.bpm().bpm()),
+                mixxx::FramePos(
+                        legacyBeatGridProto.first_beat().frame_position()));
+        pGrid->setSubVersion(beatsSubVersion);
+        qDebug() << "Successfully deserialized Beats";
+        return mixxx::BeatsPointer(pGrid, &BeatFactory::deleteBeats);
+    } else if (beatsVersion == mixxx::BeatsInternal::BEAT_MAP_VERSION) {
+        mixxx::track::io::LegacyBeatMap legacyBeatMapProto;
+        if (!legacyBeatMapProto.ParseFromArray(
+                    beatsSerialized.constData(), beatsSerialized.size())) {
+            qDebug() << "ERROR: Could not parse BeatMap from QByteArray of size"
+                     << beatsSerialized.size();
+            return mixxx::BeatsPointer();
+        }
+        QVector<mixxx::FramePos> beatVector;
+        for (int i = 0; i < legacyBeatMapProto.beat_size(); ++i) {
+            const mixxx::track::io::LegacyBeat& beat = legacyBeatMapProto.beat(i);
+            beatVector.append(mixxx::FramePos(beat.frame_position()));
+        }
+        mixxx::Beats* pMap = new mixxx::Beats(track.get(), beatVector);
         pMap->setSubVersion(beatsSubVersion);
         qDebug() << "Successfully deserialized Beats";
         return mixxx::BeatsPointer(pMap, &BeatFactory::deleteBeats);
+    } else if (beatsVersion == mixxx::BeatsInternal::BEATS_VERSION) {
+        mixxx::Beats* pBeats = new mixxx::Beats(track.get(), beatsSerialized);
+        pBeats->setSubVersion(beatsSubVersion);
+        qDebug() << "Successfully deserialized Beats";
+        return mixxx::BeatsPointer(pBeats, &BeatFactory::deleteBeats);
     }
     qDebug() << "BeatFactory::loadBeatsFromByteArray could not parse serialized beats.";
     // TODO(JVC) May be launching a reanalysis to fix the data?
