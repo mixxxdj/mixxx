@@ -29,7 +29,6 @@ Variables:
         <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
         <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
         <BeatColor>#ffffff</BeatColor>
-        <BarColor>#ffff00</BarColor>
         <PlayPosColor>#FF4300</PlayPosColor>
         <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
         <DefaultMark>
@@ -161,28 +160,6 @@ Variables:
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
-
-              <WidgetGroup><!-- Set Bar and Phrase beat -->
-                <Layout>vertical</Layout>
-                <SizePolicy>f,f</SizePolicy>
-                <Children>
-                  <Template src="skin:button_1state.xml">
-                    <SetVariable name="TooltipId">beats_set_downbeat</SetVariable>
-                    <SetVariable name="ObjectName">BeatgridSetBarBeat</SetVariable>
-                    <SetVariable name="Size">28f,24f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="group"/>,beats_set_downbeat</SetVariable>
-                  </Template>
-
-                  <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
-
-                  <Template src="skin:button_1state.xml">
-                    <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
-                    <SetVariable name="ObjectName">BeatgridFaster</SetVariable>
-                    <SetVariable name="Size">28f,24f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="group"/>,beats_adjust_faster</SetVariable>
-                  </Template>
-                </Children>
-              </WidgetGroup><!-- Set Bar and Phrase beat -->
 
               <WidgetGroup>
                 <Layout>vertical</Layout>

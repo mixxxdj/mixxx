@@ -14,6 +14,7 @@
 
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererAbstract(waveformWidgetRenderer) {
+    m_beats.resize(128);
 }
 
 WaveformRenderBeat::~WaveformRenderBeat() {
@@ -22,8 +23,6 @@ WaveformRenderBeat::~WaveformRenderBeat() {
 void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context) {
     m_beatColor.setNamedColor(context.selectString(node, "BeatColor"));
     m_beatColor = WSkinColor::getCorrectColor(m_beatColor).toRgb();
-    m_barColor.setNamedColor(context.selectString(node, "BarColor"));
-    m_barColor = WSkinColor::getCorrectColor(m_barColor).toRgb();
 }
 
 void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
@@ -52,8 +51,6 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
             m_waveformRenderer->getLastDisplayedPosition();
 
     // qDebug() << "trackSamples" << trackSamples
-    //         << "track begin" << trackBeats->getFirstBeatPosition()
-    //         << "track end" << trackBeats->getLastBeatPosition()
     //         << "firstDisplayedPosition" << firstDisplayedPosition
     //         << "lastDisplayedPosition" << lastDisplayedPosition;
 
@@ -72,15 +69,13 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     QPen beatPen(m_beatColor);
     beatPen.setWidthF(std::max(1.0, scaleFactor()));
-    QPen barPen(m_barColor);
-    barPen.setWidthF(std::max(1.0, scaleFactor()));
-
-    // Bar Pen is currently intentionally kept inactive
     painter->setPen(beatPen);
 
     const Qt::Orientation orientation = m_waveformRenderer->getOrientation();
     const float rendererWidth = m_waveformRenderer->getWidth();
     const float rendererHeight = m_waveformRenderer->getHeight();
+
+    int beatCount = 0;
 
     while (it->hasNext()) {
         // Beats->next returns Frame number and we need Sample number
@@ -90,10 +85,18 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
         xBeatPoint = qRound(xBeatPoint);
 
+        // If we don't have enough space, double the size.
+        if (beatCount >= m_beats.size()) {
+            m_beats.resize(m_beats.size() * 2);
+        }
+
         if (orientation == Qt::Horizontal) {
-            painter->drawLine(xBeatPoint, 0.0f, xBeatPoint, rendererHeight);
+            m_beats[beatCount++].setLine(xBeatPoint, 0.0f, xBeatPoint, rendererHeight);
         } else {
-            painter->drawLine(0.0f, xBeatPoint, rendererWidth, xBeatPoint);
+            m_beats[beatCount++].setLine(0.0f, xBeatPoint, rendererWidth, xBeatPoint);
         }
     }
+
+    // Make sure to use constData to prevent detaches!
+    painter->drawLines(m_beats.constData(), beatCount);
 }
