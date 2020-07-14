@@ -27,7 +27,7 @@ void WRateDisplay::setValue() {
     double direction = m_pRateDirControl->get();
 
     QString sign('-');
-    if(m_nodePosition == VerticalPosition::Top && direction > 0) {
+    if (m_nodePosition == VerticalPosition::Top && direction > 0) {
         sign = '+';
     }
 
