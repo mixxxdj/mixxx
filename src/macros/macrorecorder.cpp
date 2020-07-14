@@ -55,12 +55,11 @@ bool MacroRecorder::claimRecording() {
 
 void MacroRecorder::pollRecordingStart() {
     qCDebug(macroLoggingCategory) << "Polling for recording start";
+    if (getActiveChannel() == nullptr) {
+        return;
+    }
     if (getState() != MacroRecordingState::Disabled) {
-        if (getActiveChannel() == nullptr) {
-            return;
-        } else {
-            ControlProxy(ConfigKey(kControlsGroup, "recording_status")).set(2);
-        }
+        m_CORecStatus.set(2);
     }
     m_pStartRecordingTimer.stop();
 }
