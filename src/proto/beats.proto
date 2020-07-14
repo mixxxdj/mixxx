@@ -39,7 +39,7 @@ message Beats {
   repeated Beat beat = 1;
 }
 
-// These are legacy data structures for migrating between Mixxx versions
+// These are legacy data structures for upgrading from Mixxx < 2.4
 message LegacyBeat {
   optional int32 frame_position = 1;
   optional bool enabled = 2 [ default = true ];

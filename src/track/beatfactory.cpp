@@ -19,7 +19,7 @@ mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const TrackPointer& trac
         if (!legacyBeatGridProto.ParseFromArray(
                     beatsSerialized.constData(), beatsSerialized.size())) {
             qDebug()
-                    << "ERROR: Could not parse BeatGrid from QByteArray of size"
+                    << "ERROR: Could not parse legacy" << beatsVersion << "from QByteArray of size"
                     << beatsSerialized.size();
             return mixxx::BeatsPointer();
         }
@@ -28,16 +28,17 @@ mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const TrackPointer& trac
                 mixxx::FramePos(
                         legacyBeatGridProto.first_beat().frame_position()));
         pGrid->setSubVersion(beatsSubVersion);
-        qDebug() << "Successfully deserialized Beats";
+        qDebug() << "Successfully deserialized Beats from legacy data in format" << beatsVersion;
         return mixxx::BeatsPointer(pGrid, &BeatFactory::deleteBeats);
     } else if (beatsVersion == mixxx::BeatsInternal::BEAT_MAP_VERSION) {
         mixxx::track::io::LegacyBeatMap legacyBeatMapProto;
         if (!legacyBeatMapProto.ParseFromArray(
                     beatsSerialized.constData(), beatsSerialized.size())) {
-            qDebug() << "ERROR: Could not parse BeatMap from QByteArray of size"
+            qDebug() << "ERROR: Could not parse legacy" << beatsVersion << "from QByteArray of size"
                      << beatsSerialized.size();
             return mixxx::BeatsPointer();
         }
+        // Generate intermediate data from the old serialized representation.
         QVector<mixxx::FramePos> beatVector;
         for (int i = 0; i < legacyBeatMapProto.beat_size(); ++i) {
             const mixxx::track::io::LegacyBeat& beat = legacyBeatMapProto.beat(i);
@@ -45,7 +46,7 @@ mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const TrackPointer& trac
         }
         mixxx::Beats* pMap = new mixxx::Beats(track.get(), beatVector);
         pMap->setSubVersion(beatsSubVersion);
-        qDebug() << "Successfully deserialized Beats";
+        qDebug() << "Successfully deserialized Beats from legacy data in format" << beatsVersion;
         return mixxx::BeatsPointer(pMap, &BeatFactory::deleteBeats);
     } else if (beatsVersion == mixxx::BeatsInternal::BEATS_VERSION) {
         mixxx::Beats* pBeats = new mixxx::Beats(track.get(), beatsSerialized);
