@@ -9,7 +9,7 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-
+    
 #include "widget/wnumberrate.h"
 
 #include "control/controlobject.h"

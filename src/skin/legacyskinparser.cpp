@@ -63,6 +63,7 @@
 #include "widget/wnumberdb.h"
 #include "widget/wnumberpos.h"
 #include "widget/wnumberrate.h"
+#include "widget/wratedisplay.h"
 #include "widget/woverviewhsv.h"
 #include "widget/woverviewlmh.h"
 #include "widget/woverviewrgb.h"
@@ -528,6 +529,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseBeatSpinBox(node));
     } else if (nodeName == "NumberRate") {
         result = wrapWidget(parseNumberRate(node));
+    } else if (nodeName == "RateDisplay") {
+        result = wrapWidget(parseRateDisplay(node));
     } else if (nodeName == "NumberPos") {
         result = wrapWidget(parseNumberPos(node));
     } else if (nodeName == "Number" || nodeName == "NumberBpm") {
@@ -1080,6 +1083,24 @@ QWidget* LegacySkinParser::parseStarRating(const QDomElement& node) {
 }
 
 
+
+QWidget* LegacySkinParser::parseRateDisplay(const QDomElement& node) {
+    QString group = lookupNodeGroup(node);
+    QColor c(255,255,255);
+    QString cStr;
+    if (m_pContext->hasNodeSelectString(node, "BgColor", &cStr)) {
+        c.setNamedColor(cStr);
+    }
+
+    QPalette palette;
+    palette.setBrush(QPalette::Button, Qt::NoBrush);
+
+    WRateDisplay* p = new WRateDisplay(group, m_pParent);
+    setupLabelWidget(node, p);
+    p->setPalette(palette);
+
+    return p;
+}
 
 QWidget* LegacySkinParser::parseNumberRate(const QDomElement& node) {
     QString group = lookupNodeGroup(node);
