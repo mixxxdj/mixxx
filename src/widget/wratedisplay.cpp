@@ -1,5 +1,3 @@
-#include <QDebug>
-
 #include "widget/wratedisplay.h"
 
 #include "control/controlobject.h"
@@ -27,19 +25,6 @@ void WRateDisplay::setup(const QDomNode& node, const SkinContext& context) {
 void WRateDisplay::setValue() {
     double range = m_pRateRangeControl->get();
     double direction = m_pRateDirControl->get();
-
-    if (m_nodePosition == VerticalPosition::Top) {
-        qDebug() << "Position: TOP";
-    }
-    if(m_nodePosition == VerticalPosition::Bottom) {
-        qDebug() << "Position: BOTTOM";
-    }
-    if(direction > 0) {
-        qDebug() << "Direction > 0";
-    }
-    if(direction < 0) {
-        qDebug() << "Direction < 0";
-    }
 
     QString sign('-');
     if(m_nodePosition == VerticalPosition::Top && direction > 0) {
