@@ -75,12 +75,15 @@ void MacroRecorder::startRecording() {
 
 void MacroRecorder::stopRecording() {
     qCDebug(macroLoggingCategory) << "MacroRecorder recording stop";
-    m_CORecStatus.set(0);
-    auto armed = MacroRecordingState::Armed;
     // TODO(xerus) add concurrency test
-    while (!m_macroRecordingState.compare_exchange_weak(armed, MacroRecordingState::Disabled)) {
+    auto armed = MacroRecordingState::Armed;
+    while (!m_macroRecordingState.compare_exchange_strong(armed, MacroRecordingState::Disabled)) {
         QThread::yieldCurrentThread();
+        if (getState() == MacroRecordingState::Disabled) {
+            return;
+        }
     }
+    m_CORecStatus.set(0);
     if (m_activeChannel == nullptr) {
         return;
     }
