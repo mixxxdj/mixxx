@@ -82,6 +82,11 @@ WLibrary, QAbstractScrollArea::corner {
   border-radius: 1px;
   background-color: #151517;
   }
+  #FxUnitHeaderCollapsed[highlight="1"],
+  #FxUnitHeaderExpanded[highlight="1"] {
+    border-top: 1px solid #257b82;
+    border-right: 1px solid #257b82;
+  }
   #WaveformsContainer {
     border-width: 1px 0px;
     border-radius: 0px;
@@ -748,13 +753,15 @@ WBeatSpinBox::down-button,
 
 /************** Effects *************************************************/
 
-#FxUnitHeaderCollapsed {
+#FxUnitHeaderCollapsed[highlight="0"],
+#FxUnitHeaderCollapsed[highlight="1"] {
   padding: 0px;
   border-left: 0px;
   border-top-left-radius: 0px;
   border-bottom-left-radius: 0px;
   }
-  #FxUnitHeaderExpanded {
+  #FxUnitHeaderExpanded[highlight="0"],
+  #FxUnitHeaderExpanded[highlight="1"] {
     padding: 0px;
     border-bottom-left-radius: 0px;
     border-left: 0px;

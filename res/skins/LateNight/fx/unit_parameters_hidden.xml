@@ -116,6 +116,10 @@
             <ObjectName>FxUnit<Variable name="FxUnit"/>_Header</ObjectName>
           </SingletonContainer>
         </Children>
+        <Connection>
+          <ConfigKey><Variable name="FxRack_FxUnit"/>,controller_input_active</ConfigKey>
+          <BindProperty>highlight</BindProperty>
+        </Connection>
       </WidgetGroup>
 
     </Children>

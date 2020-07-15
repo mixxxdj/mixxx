@@ -84,6 +84,7 @@
                   </PushButton>
                 </Children>
               </WidgetGroup><!-- Fx label & icon -->
+
             </Children>
           </WidgetGroup><!-- transparent expand button on top of Fx label & icon -->
         </Children>

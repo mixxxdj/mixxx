@@ -707,12 +707,14 @@ WLibrary,
 
 /************** Fx *********************************************************/
 
-#FxUnitHeaderCollapsed {
+#FxUnitHeaderCollapsed[highlight="0"],
+#FxUnitHeaderCollapsed[highlight="1"] {
   border-left: 0px;
   border-top-left-radius: 0px;
   border-bottom-left-radius: 0px;
   }
-  #FxUnitHeaderExpanded {
+  #FxUnitHeaderExpanded[highlight="0"],
+  #FxUnitHeaderExpanded[highlight="1"] {
     border-bottom-left-radius: 0px;
   }
   #FxUnitHeader {
@@ -1900,7 +1902,12 @@ WLibrary,
 #LibraryContainer QTreeView:focus,
 #LibraryContainer QTextBrowser:focus {
   border: 1px solid #d09300;
-}
+  }
+  #FxUnitHeaderCollapsed[highlight="1"],
+  #FxUnitHeaderExpanded[highlight="1"] {
+    border-top: 1px solid #d09300;
+    border-right: 1px solid #d09300;
+  }
 
 #LibraryContainer QTreeView {
   show-decoration-selected: 0;
