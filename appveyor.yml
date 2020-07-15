@@ -115,6 +115,7 @@ for:
       -DBATTERY=ON
       -DBROADCAST=ON
       -DBULK=ON
+      -DENGINEPRIME=ON
       -DFFMPEG=ON
       -DHID=ON
       -DLILV=ON
