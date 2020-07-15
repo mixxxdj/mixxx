@@ -270,7 +270,7 @@ void Tooltips::addStandardTooltips() {
 
     add("maximize_library")
             << tr("Maximize Library")
-            << tr("Maximize the track library to take up all the available screen space.");
+            << tr("Hide all skin sections except the decks to have more screen space for the track library.");
 
     add("show_mixer")
             << tr("Toggle Mixer")
@@ -303,15 +303,17 @@ void Tooltips::addStandardTooltips() {
     add("talkover_duck_mode")
             << tr("Microphone Talkover Mode")
             << tr("Off: Do not reduce music volume")
-            << tr("Auto: Automatically reduce music volume when microphones are in use. Adjust the amount the music volume is reduced with the Strength knob.")
-            << tr("Manual: Reduce music volume by a fixed amount set by the Strength knob.");
+            << tr("Auto: Automatically reduce music volume when microphone volume rises above threshold.")
+            << tr("Manual: Reduce music volume by a fixed amount set by the Strength knob.")
+            << tr("Adjust the amount the music volume is reduced with the Strength knob.");
 
     add("talkover_duck_strength")
             << tr("Microphone Talkover Ducking Strength")
+            << tr("Adjust the amount the music volume is reduced with the Strength knob.")
             << tr("Behavior depends on Microphone Talkover Mode:")
             << tr("Off: Does nothing")
-            << tr("Auto: Sets how much to reduce the music volume when microphones are in use.")
-            << tr("Manual: Sets how much to reduce the music volume, regardless of volume of microphone inputs.");
+            << tr("Auto: Sets how much to reduce the music volume when the volume of active microphones rises above threshold.")
+            << tr("Manual: Sets how much to reduce the music volume, when talkover is activated regardless of volume of microphone inputs.");
 
     QString changeAmount = tr("Change the step-size in the Preferences -> Interface menu.");
     add("rate_perm_up_rate_perm_up_small")
