@@ -608,8 +608,12 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/starrating.cpp
   src/library/tableitemdelegate.cpp
   src/library/trackcollection.cpp
+  src/library/trackcollectioniterator.cpp
   src/library/trackcollectionmanager.cpp
   src/library/trackloader.cpp
+  src/library/trackmodeliterator.cpp
+  src/library/trackprocessing.cpp
+  src/library/traktor/traktorfeature.cpp
   src/library/treeitem.cpp
   src/library/treeitemmodel.cpp
   src/mixer/auxiliary.cpp
@@ -789,6 +793,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/statsmanager.cpp
   src/util/tapfilter.cpp
   src/util/task.cpp
+  src/util/taskmonitor.cpp
   src/util/threadcputimer.cpp
   src/util/time.cpp
   src/util/timer.cpp
@@ -1033,8 +1038,8 @@ target_link_libraries(mixxx PUBLIC mixxx-lib)
 #
 set(MIXXX_INSTALL_BINDIR ".")
 set(MIXXX_INSTALL_DATADIR ".")
-set(MIXXX_INSTALL_DOCDIR ".")
-set(MIXXX_INSTALL_LICENSEDIR ".")
+set(MIXXX_INSTALL_DOCDIR "./doc")
+set(MIXXX_INSTALL_LICENSEDIR "./doc")
 if (UNIX)
   include(GNUInstallDirs)
   set(MIXXX_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}")
@@ -1083,6 +1088,22 @@ install(
   FILES_MATCHING PATTERN
     "*.qm"
 )
+if(WIN32)
+install(
+  # I haven't seen a way to determine where the translations dir is, so I am making
+  # some assumptions here, and assuming that Qt5_DIR points to Qt-5.14.2/lib/cmake/Qt5
+  # which is what my configuration tells me.
+  DIRECTORY
+    "${Qt5_DIR}/../../../translations"
+  DESTINATION
+    "${MIXXX_INSTALL_DATADIR}"
+  # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
+  # contain just shortcuts to load the qtbase, qtmultimedia etc files.
+  FILES_MATCHING REGEX
+    "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
+)
+endif()
+
 # Font files
 install(
   DIRECTORY
@@ -1446,6 +1467,52 @@ if(WIN32)
    # Chromaprint is always built statically and needs fftw.
   find_package(FFTW REQUIRED)
   target_link_libraries(mixxx-lib PUBLIC FFTW::FFTW)
+endif()
+
+# Denon Engine Prime library export support (using libdjinterop)
+option(ENGINEPRIME "Support for library export to Denon Engine Prime" OFF)
+if(ENGINEPRIME)
+  target_compile_definitions(mixxx-lib PUBLIC __ENGINEPRIME__)
+
+  # Look for an existing installation of libdjinterop and use that if available.
+  # Otherwise, download and build from GitHub.
+  find_package(DjInterop)
+  if(DjInterop_FOUND)
+    # An existing installation of djinterop is available.
+    message(STATUS "Linking dynamically to existing installation of libdjinterop")
+    target_include_directories(mixxx-lib PUBLIC ${DjInterop_INCLUDE_DIRS})
+    target_link_libraries(mixxx-lib PUBLIC DjInterop::DjInterop)
+  else()
+    # Fetch djinterop sources from GitHub and build them statically.
+    message(STATUS "Linking statically to libdjinterop fetched from GitHub")
+
+    set(DJINTEROP_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libdjinterop-install")
+    ExternalProject_Add(libdjinterop
+      GIT_REPOSITORY https://github.com/xsco/libdjinterop.git
+      GIT_TAG tags/0.11.0
+      GIT_SHALLOW TRUE
+      INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
+      CMAKE_ARGS "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+      EXCLUDE_FROM_ALL TRUE
+    )
+
+    # Assemble a library based on the external project.
+    add_library(mixxx-libdjinterop STATIC IMPORTED)
+    add_dependencies(mixxx-libdjinterop libdjinterop)
+    set(DJINTEROP_INCLUDE_DIR "${DJINTEROP_INSTALL_DIR}/include")
+    set(DJINTEROP_LIBRARY "${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}djinterop${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    set(DJINTEROP_LIBRARY_DIR "${DJINTEROP_INSTALL_DIR}/${DJINTEROP_LIBRARY}")
+    set_target_properties(mixxx-libdjinterop PROPERTIES IMPORTED_LOCATION "${DJINTEROP_LIBRARY_DIR}")
+    target_include_directories(mixxx-lib PUBLIC ${DJINTEROP_INCLUDE_DIR})
+    target_link_libraries(mixxx-lib PUBLIC mixxx-libdjinterop)
+
+    # Since we have built libdjinterop from sources as a static library, its
+    # transitive dependencies are not automatically recognised.  libdjinterop
+    # depends on zlib and sqlite3.  Mixxx already has a dependency on sqlite3,
+    # but not zlib, so we explicitly add that here.
+    find_package(ZLIB 1.2.8 REQUIRED)
+    target_link_libraries(mixxx-lib PUBLIC ${ZLIB_LIBRARIES})
+  endif()
 endif()
 
 # Ebur128
