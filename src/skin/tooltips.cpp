@@ -70,6 +70,10 @@ void Tooltips::addStandardTooltips() {
             << dropTracksHere
             << tr("If Vinyl control is enabled, displays time-coded vinyl signal quality (see Preferences -> Vinyl Control).");
 
+    add("big_spinny_coverart")
+            << tr("Big Spinny/Cover Art")
+            << tr("Show a big version of the Spinny or track cover art if enabled.");
+
     add("pregain")
             << tr("Gain")
             << tr("Adjusts the pre-fader gain of the track (to avoid clipping).")
@@ -242,9 +246,19 @@ void Tooltips::addStandardTooltips() {
             << tr("Cover Art")
             << tr("Show/hide Cover Art.");
 
+    add("show_library_coverart")
+            << tr("Cover Art")
+            << tr("Show/hide Cover Art of the selected track in the library.");
+
     add("toggle_4decks")
             << tr("Toggle 4 Decks")
             << tr("Switches between showing 2 decks and 4 decks.");
+
+    add("show_waveforms")
+            << tr("Show/hide the scrolling waveforms");
+
+    add("show_beatgrid_controls")
+            << tr("Show/hide the beatgrid controls section");
 
     add("show_library")
             << tr("Show Library")
@@ -261,6 +275,10 @@ void Tooltips::addStandardTooltips() {
     add("show_mixer")
             << tr("Toggle Mixer")
             << tr("Show or hide the mixer.");
+
+    add("show_vumeters")
+            << tr("Volume Meters")
+            << tr("Show/hide volume meters for channels and master output.");
 
     add("microphone_volume")
             << tr("Microphone Volume")
