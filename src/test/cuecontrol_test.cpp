@@ -269,12 +269,11 @@ TEST_F(CueControlTest, SeekOnLoadMainCue) {
     config()->set(ConfigKey("[Controls]", "CueRecall"),
             ConfigValue(static_cast<int>(SeekOnLoadMode::MainCue)));
     TrackPointer pTrack = createTestTrack();
-    pTrack->setCuePoint(CuePosition(100.0));
-
     loadTrack(pTrack);
 
-    EXPECT_DOUBLE_EQ(100.0, m_pCuePoint->get());
-    EXPECT_DOUBLE_EQ(100.0, getCurrentSample());
+    // We expect a cue point at the very beginning
+    EXPECT_DOUBLE_EQ(0.0, m_pCuePoint->get());
+    EXPECT_DOUBLE_EQ(0.0, getCurrentSample());
 
     // Move cue like silence analysis does and check if track is following it
     pTrack->setCuePoint(CuePosition(200.0));
@@ -282,6 +281,31 @@ TEST_F(CueControlTest, SeekOnLoadMainCue) {
     ProcessBuffer();
 
     EXPECT_DOUBLE_EQ(200.0, m_pCuePoint->get());
+    EXPECT_DOUBLE_EQ(200.0, getCurrentSample());
+}
+
+TEST_F(CueControlTest, DontSeekOnLoadMainCue) {
+    config()->set(ConfigKey("[Controls]", "CueRecall"),
+            ConfigValue(static_cast<int>(SeekOnLoadMode::MainCue)));
+    TrackPointer pTrack = createTestTrack();
+    pTrack->setCuePoint(CuePosition(100.0));
+
+    // The Track should not follow cue changes due to the analyzer if the
+    // track has been manual seeked before.
+    loadTrack(pTrack);
+
+    EXPECT_DOUBLE_EQ(100.0, m_pCuePoint->get());
+    EXPECT_DOUBLE_EQ(100.0, getCurrentSample());
+
+    // Manually seek  the track
+    setCurrentSample(200.0);
+
+    // Move cue like silence analysis does and check if track is following it
+    pTrack->setCuePoint(CuePosition(400.0));
+    pTrack->analysisFinished();
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(400.0, m_pCuePoint->get());
     EXPECT_DOUBLE_EQ(200.0, getCurrentSample());
 }
 
