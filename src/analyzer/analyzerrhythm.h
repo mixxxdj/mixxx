@@ -71,13 +71,14 @@ class AnalyzerRhythm : public Analyzer {
     int m_beatsPerBar;
 
     QVector<mixxx::audio::FramePos> m_resultBeats;
-    QVector<double> m_downbeats;
+    std::vector<int> m_downbeats;
     QList<double> m_rawTempos;
     QMap<double, int> m_rawTemposFrenquency;
     QMap<int, double> m_stableTemposAndPositions;
 
     std::unique_ptr<DetectionFunction> m_pDetectionFunction;
     std::unique_ptr<DownBeat> m_downbeat;
-    mixxx::DownmixAndOverlapHelper m_processor;
+    mixxx::DownmixAndOverlapHelper m_onsetsProcessor;
+    mixxx::DownmixAndOverlapHelper m_downbeatsProcessor;
     std::vector<DFresults> m_detectionResults;
 };
