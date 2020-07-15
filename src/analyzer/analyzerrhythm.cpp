@@ -22,7 +22,7 @@ constexpr float kStepSecs = 0.0113378684807;
 // results in 43 Hz @ 44.1 kHz / 47 Hz @ 48 kHz / 47 Hz @ 96 kHz
 constexpr int kMaximumBinSizeHz = 50; // Hz
 // This is a quick hack to make a beatmap with only downbeats - will affect the bpm
-constexpr bool useDownbeatOnly = true;
+constexpr bool useDownbeatOnly = false;
 // The range of bpbs considered for detection, lower is included, higher excluded [)
 constexpr int kLowerBeatsPerBar = 4;
 constexpr int kHigherBeatsPerBar = 5;
@@ -81,10 +81,15 @@ bool AnalyzerRhythm::initialize(TrackPointer pTrack, int sampleRate, int totalSa
 
     qDebug() << "input sample rate is " << m_iSampleRate << ", step size is " << stepSize();
 
-    m_processor.initialize(
+    m_onsetsProcessor.initialize(
             windowSize(), stepSize(), [this](double* pWindow, size_t) {
                 m_detectionResults.push_back(
                         m_pDetectionFunction->processTimeDomain(pWindow));
+                return true;
+            });
+
+    m_downbeatsProcessor.initialize(
+            windowSize(), stepSize(), [this](double* pWindow, size_t) {
                 m_downbeat->pushAudioBlock(reinterpret_cast<float*>(pWindow));
                 return true;
             });
@@ -118,7 +123,9 @@ bool AnalyzerRhythm::processSamples(const CSAMPLE *pIn, const int iLen) {
     if (m_iCurrentSample > m_iMaxSamplesToProcess) {
         return true; // silently ignore all remaining samples
     }
-    return m_processor.processStereoSamples(pIn, iLen);;
+    bool onsetReturn = m_onsetsProcessor.processStereoSamples(pIn, iLen);
+    bool downbeatsReturn = m_downbeatsProcessor.processStereoSamples(pIn, iLen);
+    return onsetReturn & downbeatsReturn;
 }
 
 void AnalyzerRhythm::cleanup() {
@@ -186,8 +193,9 @@ std::vector<double> AnalyzerRhythm::computeBeats() {
 std::vector<double> AnalyzerRhythm::computeBeatsSpectralDifference(std::vector<double> &beats) {
     size_t downLength = 0;
     const float *downsampled = m_downbeat->getBufferedAudio(downLength);
+
     std::vector<int> downbeats;
-    m_downbeat->findDownBeats(downsampled, downLength, beats, downbeats);
+    m_downbeat->findDownBeats(downsampled, downLength, beats, m_downbeats);
     std::vector<double> beatsSpecDiff;
     m_downbeat->getBeatSD(beatsSpecDiff);
     return beatsSpecDiff;
@@ -241,7 +249,8 @@ std::tuple<int, int> AnalyzerRhythm::computeMeter(std::vector<double> &beatsSD) 
 }
 
 void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
-    m_processor.finalize();
+    m_onsetsProcessor.finalize();
+    m_downbeatsProcessor.finalize();
     auto beats = computeBeats();
     auto beatsSpecDiff = computeBeatsSpectralDifference(beats);
     auto [bpb, firstDownbeat] = computeMeter(beatsSpecDiff);
@@ -251,10 +260,6 @@ void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
     // convert beats positions from df increments to frams
     for (size_t i = 0; i < beats.size(); ++i) {
         double result = (beats.at(i) * stepSize()) - stepSize() / mixxx::kEngineChannelCount;
-        if (i == nextDownbeat) {
-            m_downbeats.push_back(i);
-            nextDownbeat += bpb;
-        }
         m_resultBeats.push_back(result);
     }
     QMap<int, double> beatsWithNewTempo;
