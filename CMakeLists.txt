@@ -1336,6 +1336,7 @@ include(GoogleTest)
 enable_testing()
 gtest_add_tests(
   TARGET mixxx-test
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
   TEST_LIST testsuite
 )
 set_tests_properties(${testsuite} PROPERTIES TIMEOUT 30)
@@ -1343,6 +1344,7 @@ set_tests_properties(${testsuite} PROPERTIES TIMEOUT 30)
 # Benchmarking
 add_custom_target(mixxx-benchmark
   COMMAND $<TARGET_FILE:mixxx-test> --benchmark
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
   COMMENT "Mixxx Benchmarks"
   VERBATIM
 )
