@@ -1107,25 +1107,6 @@ void CueControl::hotcueEndPositionChanged(
     }
 }
 
-void CueControl::hotcueTypeChanged(HotcueControl* pControl, double newType) {
-    QMutexLocker lock(&m_mutex);
-    if (!m_pLoadedTrack)
-        return;
-
-    CuePointer pCue(pControl->getCue());
-    if (pCue) {
-        // Setting the type to 0 or -1 is the same as calling hotcue_x_clear
-        int iType = static_cast<int>(newType);
-        if (iType <= 0 ||
-                iType > static_cast<int>(mixxx::CueType::AudibleSound)) {
-            pCue->setHotCue(Cue::kNoHotCue);
-            detachCue(pControl);
-        } else {
-            pCue->setType(static_cast<mixxx::CueType>(iType));
-        }
-    }
-}
-
 void CueControl::hintReader(HintVector* pHintList) {
     Hint cue_hint;
     double cuePoint = m_pCuePoint->get();
@@ -2153,11 +2134,7 @@ HotcueControl::HotcueControl(QString group, int i)
     m_hotcueEnabled->setReadOnly();
 
     m_hotcueType = new ControlObject(keyForControl(i, "type"));
-    connect(m_hotcueType,
-            &ControlObject::valueChanged,
-            this,
-            &HotcueControl::slotHotcueTypeChanged,
-            Qt::DirectConnection);
+    m_hotcueType->setReadOnly();
 
     // The rgba value  of the color assigned to this color.
     m_hotcueColor = new ControlObject(keyForControl(i, "color"));
@@ -2320,10 +2297,6 @@ void HotcueControl::slotHotcueEndPositionChanged(double newEndPosition) {
     emit hotcueEndPositionChanged(this, newEndPosition);
 }
 
-void HotcueControl::slotHotcueTypeChanged(double newType) {
-    emit hotcueTypeChanged(this, newType);
-}
-
 void HotcueControl::slotHotcueColorChangeRequest(double color) {
     if (color < 0 || color > 0xFFFFFF) {
         qWarning() << "slotHotcueColorChanged got invalid value:" << color;
@@ -2392,7 +2365,7 @@ void HotcueControl::setEndPosition(double endPosition) {
 }
 
 void HotcueControl::setType(mixxx::CueType type) {
-    m_hotcueType->set(static_cast<double>(type));
+    m_hotcueType->forceSet(static_cast<double>(type));
 }
 
 void HotcueControl::setStatus(mixxx::CueStatus status) {

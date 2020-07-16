@@ -98,7 +98,6 @@ class HotcueControl : public QObject {
     void slotHotcueClear(double v);
     void slotHotcueEndPositionChanged(double newPosition);
     void slotHotcuePositionChanged(double newPosition);
-    void slotHotcueTypeChanged(double newType);
     void slotHotcueColorChangeRequest(double newColor);
     void slotHotcueColorChanged(double newColor);
 
@@ -114,7 +113,6 @@ class HotcueControl : public QObject {
     void hotcueClear(HotcueControl* pHotcue, double v);
     void hotcuePositionChanged(HotcueControl* pHotcue, double newPosition);
     void hotcueEndPositionChanged(HotcueControl* pHotcue, double newEndPosition);
-    void hotcueTypeChanged(HotcueControl* pHotcue, double newType);
     void hotcueColorChanged(HotcueControl* pHotcue, double newColor);
     void hotcuePlay(double v);
 
@@ -190,7 +188,6 @@ class CueControl : public EngineControl {
     void hotcueClear(HotcueControl* pControl, double v);
     void hotcuePositionChanged(HotcueControl* pControl, double newPosition);
     void hotcueEndPositionChanged(HotcueControl* pControl, double newEndPosition);
-    void hotcueTypeChanged(HotcueControl* pControl, double newType);
 
     void hotcueFocusColorNext(double v);
     void hotcueFocusColorPrev(double v);
