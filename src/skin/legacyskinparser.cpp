@@ -39,12 +39,11 @@
 #include "widget/wcoverart.h"
 #include "widget/wdisplay.h"
 #include "widget/weffect.h"
-#include "widget/weffectbuttonparameter.h"
+#include "widget/weffectbuttonparametername.h"
 #include "widget/weffectchain.h"
 #include "widget/weffectchainpresetbutton.h"
 #include "widget/weffectchainpresetselector.h"
-#include "widget/weffectparameter.h"
-#include "widget/weffectparameterbase.h"
+#include "widget/weffectknobparametername.h"
 #include "widget/weffectparameterknob.h"
 #include "widget/weffectparameterknobcomposed.h"
 #include "widget/weffectpushbutton.h"
@@ -1649,13 +1648,13 @@ QWidget* LegacySkinParser::parseEffectPushButton(const QDomElement& element) {
 }
 
 QWidget* LegacySkinParser::parseEffectParameterName(const QDomElement& node) {
-    WEffectParameterBase* pEffectParameter = new WEffectParameter(m_pParent, m_pEffectsManager);
+    WEffectParameterNameBase* pEffectParameter = new WEffectKnobParameterName(m_pParent, m_pEffectsManager);
     setupLabelWidget(node, pEffectParameter);
     return pEffectParameter;
 }
 
 QWidget* LegacySkinParser::parseEffectButtonParameterName(const QDomElement& node) {
-    WEffectParameterBase* pEffectButtonParameter = new WEffectButtonParameter(m_pParent, m_pEffectsManager);
+    WEffectParameterNameBase* pEffectButtonParameter = new WEffectButtonParameterName(m_pParent, m_pEffectsManager);
     setupLabelWidget(node, pEffectButtonParameter);
     return pEffectButtonParameter;
 }

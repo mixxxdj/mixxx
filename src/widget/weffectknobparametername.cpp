@@ -1,14 +1,14 @@
 #include <QtDebug>
 
-#include "widget/weffectbuttonparameter.h"
+#include "widget/weffectknobparametername.h"
 #include "effects/effectsmanager.h"
 #include "widget/effectwidgetutils.h"
 
-WEffectButtonParameter::WEffectButtonParameter(QWidget* pParent, EffectsManager* pEffectsManager)
-        : WEffectParameterBase(pParent, pEffectsManager) {
+WEffectKnobParameterName::WEffectKnobParameterName(QWidget* pParent, EffectsManager* pEffectsManager)
+        : WEffectParameterNameBase(pParent, pEffectsManager) {
 }
 
-void WEffectButtonParameter::setup(const QDomNode& node, const SkinContext& context) {
+void WEffectKnobParameterName::setup(const QDomNode& node, const SkinContext& context) {
     WLabel::setup(node, context);
     // EffectWidgetUtils propagates NULLs so this is all safe.
     EffectChainSlotPointer pChainSlot = EffectWidgetUtils::getEffectChainSlotFromNode(
@@ -16,11 +16,11 @@ void WEffectButtonParameter::setup(const QDomNode& node, const SkinContext& cont
     EffectSlotPointer pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(
             node, context, pChainSlot);
     EffectParameterSlotBasePointer pParameterSlot =
-            EffectWidgetUtils::getButtonParameterSlotFromNode(
+            EffectWidgetUtils::getParameterSlotFromNode(
                     node, context, pEffectSlot);
     VERIFY_OR_DEBUG_ASSERT(pParameterSlot) {
         SKIN_WARNING(node, context)
-                << "EffectButtonParameter node could not attach to effect parameter";
+                << "EffectParameter node could not attach to effect parameter";
     }
     setEffectParameterSlot(pParameterSlot);
 }

@@ -1,5 +1,4 @@
-#ifndef WEFFECTPARAMETERBASE_H
-#define WEFFECTPARAMETERBASE_H
+#pragma once
 
 #include <QDomNode>
 
@@ -9,10 +8,10 @@
 
 class EffectsManager;
 
-class WEffectParameterBase : public WLabel {
+class WEffectParameterNameBase : public WLabel {
     Q_OBJECT
   public:
-    WEffectParameterBase(QWidget* pParent, EffectsManager* pEffectsManager);
+    WEffectParameterNameBase(QWidget* pParent, EffectsManager* pEffectsManager);
 
     void setup(const QDomNode& node, const SkinContext& context) override = 0;
 
@@ -27,5 +26,3 @@ class WEffectParameterBase : public WLabel {
     EffectsManager* m_pEffectsManager;
     EffectParameterSlotBasePointer m_pEffectParameterSlot;
 };
-
-#endif /* WEFFECTPARAMETERBASE_H */

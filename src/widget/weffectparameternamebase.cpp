@@ -1,27 +1,27 @@
 #include <QtDebug>
 
-#include "widget/weffectparameterbase.h"
+#include "widget/weffectparameternamebase.h"
 #include "effects/effectsmanager.h"
 
-WEffectParameterBase::WEffectParameterBase(QWidget* pParent, EffectsManager* pEffectsManager)
+WEffectParameterNameBase::WEffectParameterNameBase(QWidget* pParent, EffectsManager* pEffectsManager)
         : WLabel(pParent),
           m_pEffectsManager(pEffectsManager) {
     parameterUpdated();
 }
 
-void WEffectParameterBase::setEffectParameterSlot(
+void WEffectParameterNameBase::setEffectParameterSlot(
         EffectParameterSlotBasePointer pEffectKnobParameterSlot) {
     m_pEffectParameterSlot = pEffectKnobParameterSlot;
     if (m_pEffectParameterSlot) {
         connect(m_pEffectParameterSlot.data(),
                 &EffectParameterSlotBase::updated,
                 this,
-                &WEffectParameterBase::parameterUpdated);
+                &WEffectParameterNameBase::parameterUpdated);
     }
     parameterUpdated();
 }
 
-void WEffectParameterBase::parameterUpdated() {
+void WEffectParameterNameBase::parameterUpdated() {
     if (m_pEffectParameterSlot) {
         if (!m_pEffectParameterSlot->shortName().isEmpty()) {
             setText(m_pEffectParameterSlot->shortName());
