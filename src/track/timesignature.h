@@ -17,6 +17,10 @@ class TimeSignature final {
         setTimeSignature(beatsPerBar, noteValue);
     }
 
+    explicit TimeSignature(track::io::TimeSignature timeSignatureProto) {
+        m_timeSignature = timeSignatureProto;
+    }
+
     ~TimeSignature() = default;
 
     void setBeatsPerBar(int beatsPerBar) {

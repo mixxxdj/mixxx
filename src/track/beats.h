@@ -32,6 +32,8 @@ namespace mixxx {
 class BeatsInternal {
   public:
     BeatsInternal();
+    BeatsInternal(const QByteArray& byteArray);
+    BeatsInternal(const QVector<FramePos>& beats);
 
     enum BPMScale {
         DOUBLE,
@@ -53,9 +55,7 @@ class BeatsInternal {
     FramePos findPrevBeat(FramePos frame) const;
     Bpm getBpm() const;
     bool isValid() const;
-    void setSampleRate(int sampleRate) {
-        m_iSampleRate = sampleRate;
-    }
+    void setSampleRate(int sampleRate);
     void setDurationSeconds(double duration) {
         m_dDurationSeconds = duration;
     }
@@ -80,9 +80,8 @@ class BeatsInternal {
     double getBpmRange(FramePos startFrame,
             FramePos stopFrame) const;
     Bpm getBpmAroundPosition(FramePos curFrame, int n) const;
-    TimeSignature getSignature(FramePos frame = FramePos()) const;
-    void setSignature(TimeSignature signature, FramePos frame = FramePos());
-    void setDownBeat(FramePos frame = FramePos());
+    TimeSignature getSignature(int beatIndex) const;
+    void setSignature(const TimeSignature& signature, int beatIndex);
     void translate(FrameDiff_t numFrames);
     void setBpm(Bpm bpm);
     inline int size() {
@@ -101,13 +100,15 @@ class BeatsInternal {
     void scaleFourth();
     void scaleMultiple(uint multiple);
     void scaleFraction(uint fraction);
+    bool isDownbeat(int beatIndex);
+    bool hasTimeSignatureMarkerBefore(int beatIndex);
 
     QString m_subVersion;
     Bpm m_bpm;
     BeatList m_beats;
+    QList<track::io::TimeSignatureMarker> m_timeSignatureMarkers;
     int m_iSampleRate;
     double m_dDurationSeconds;
-    friend class Beats;
     friend QDebug operator<<(QDebug dbg, const BeatsInternal& arg);
 };
 
@@ -219,13 +220,12 @@ class Beats final : public QObject {
     Bpm getBpmAroundPosition(FramePos curFrame, int n) const;
 
     /// Sets the track signature at the nearest frame
-    void setSignature(TimeSignature signature, FramePos frame = FramePos());
+    void setSignature(TimeSignature sig, int beatIndex);
 
     /// Return the track signature at the given frame position
-    TimeSignature getSignature(FramePos frame = FramePos()) const;
+    TimeSignature getSignature(int beatIndex) const;
 
     /// Sets the nearest beat as a downbeat
-    void setDownBeat(FramePos frame = FramePos());
 
     /// Translate all beats in the song by numFrames. Beats that lie
     /// before the start of the track or after the end of the track are not
@@ -258,8 +258,6 @@ class Beats final : public QObject {
   private slots:
     void slotTrackBeatsUpdated();
   private:
-    void updateBpm();
-
     mutable QMutex m_mutex;
     const Track* m_track;
     BeatsInternal m_beatsInternal;

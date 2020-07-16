@@ -91,13 +91,6 @@ BpmControl::BpmControl(QString group,
             this,
             &BpmControl::slotTranslateBeatsLater,
             Qt::DirectConnection);
-    m_pBeatsSetDownbeat = std::make_unique<ControlPushButton>(
-            ConfigKey(group, "beats_set_downbeat"));
-    connect(m_pBeatsSetDownbeat.get(),
-            &ControlObject::valueChanged,
-            this,
-            &BpmControl::slotSetDownbeatOnClosestBeat,
-            Qt::DirectConnection);
 
     // Pick a wide range (kBpmRangeMin to kBpmRangeMax) and allow out of bounds sets. This lets you
     // map a soft-takeover MIDI knob to the BPM. This also creates bpm_up and
@@ -212,12 +205,6 @@ void BpmControl::slotTranslateBeatsLater(double v) {
         const mixxx::FrameDiff_t translateDistFrames = samplesToFrames(
                 getSampleOfTrack().rate * kSlightBeatsTranslateFactor);
         m_pBeats->translate(translateDistFrames);
-    }
-}
-
-void BpmControl::slotSetDownbeatOnClosestBeat(double v) {
-    if (v > 0 && m_pBeats) {
-        m_pBeats->setDownBeat(getFrameOfTrack().currentFrame);
     }
 }
 

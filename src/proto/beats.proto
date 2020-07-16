@@ -11,15 +11,34 @@ enum Source {
   USER = 2;
 }
 
-enum Type {
-  BEAT = 0;
-  BAR = 1;
-  PHRASE = 2;
+enum SectionType {
+  INTRO = 0;
+  INNER = 1;
+  OUTRO = 2;
 }
 
 message TimeSignature {
   optional int32 beats_per_bar = 1 [ default = 4];
   optional int32 note_value = 2 [ default = 4 ];
+}
+
+message TimeSignatureMarker {
+  optional int32 beat_index = 1 [ default = 0 ];
+  optional TimeSignature time_signature = 2;
+}
+
+message PhraseMarker {
+  optional int32 beat_index = 1 [ default = 0 ];
+}
+
+message Section {
+  optional string name = 1 [ default = "UNNAMED"];
+  optional SectionType type = 2 [ default = INNER ];
+}
+
+message SectionMarker {
+  optional int32 beat_index = 1 [default = 0];
+  optional Section section = 2;
 }
 
 message Bpm {
@@ -31,12 +50,13 @@ message Beat {
   optional double frame_position = 1 [ default = 0 ];
   optional bool enabled = 2 [ default = true ];
   optional Source source = 3 [ default = ANALYZER ];
-  optional Type type = 4 [ default = BEAT ];
-  optional TimeSignature signature = 5;
 }
 
 message Beats {
   repeated Beat beat = 1;
+  repeated TimeSignatureMarker time_signature_markers = 3;
+  repeated PhraseMarker phrase_markers = 4;
+  repeated SectionMarker section_markers = 5;
 }
 
 // These are legacy data structures for upgrading from Mixxx < 2.4

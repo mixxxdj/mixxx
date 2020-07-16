@@ -100,7 +100,6 @@ class BpmControl : public EngineControl {
     void slotUpdateEngineBpm(double v = 0.0);
     void slotBeatsTranslate(double);
     void slotBeatsTranslateMatchAlignment(double);
-    void slotSetDownbeatOnClosestBeat(double);
 
   private:
     SyncMode getSyncMode() const {

@@ -253,9 +253,9 @@ TEST_F(BeatsTest, BpmAround) {
     const int numBeats = 64;
 
     // Constant BPM, constructed in BeatsTest
-    //     for (unsigned int i = 0; i < 100; i++) {
-    //         EXPECT_EQ(Bpm(60), m_pBeats1->getBpmAroundPosition(FramePos(i), 5));
-    //     }
+    for (unsigned int i = 0; i < 100; i++) {
+        EXPECT_EQ(Bpm(60), m_pBeats1->getBpmAroundPosition(FramePos(i), 5));
+    }
 
     // Prepare a new Beats to test the behavior for variable BPM
     QVector<FramePos> beats;
@@ -291,42 +291,42 @@ TEST_F(BeatsTest, BpmAround) {
 
 TEST_F(BeatsTest, Signature) {
     // Undefined time signature must be default
-    EXPECT_EQ(m_pBeats1->getSignature(),
+    EXPECT_EQ(m_pBeats1->getSignature(0),
             TimeSignature())
             << "If no Time Signature defined, it must be default(4/4)";
 
+    const auto timeSignatureInitial = TimeSignature(3, 4);
+    const auto timeSignatureIntermediate = TimeSignature(4, 4);
+    const auto timeSignatureLater = TimeSignature(5, 4);
+
     // Add time signature to the beginning
-    m_pBeats1->setSignature(TimeSignature(3, 4));
-    FramePos firstSwitchPos(1000);
-    FramePos secondSwitchPos(5000);
-    FramePos wayBeyondEndOfTrack(1000000000);
+    m_pBeats1->setSignature(timeSignatureInitial, 0);
+    int firstSwitchBeatIndex = 3 * 4;
+    int secondSwitchBeatIndex = firstSwitchBeatIndex + 4 * 4;
 
     // Add time signature in beats not at the beginning
-    m_pBeats1->setSignature(TimeSignature(5, 4), firstSwitchPos);
-    m_pBeats1->setSignature(TimeSignature(5, 3), secondSwitchPos);
+    m_pBeats1->setSignature(timeSignatureIntermediate, firstSwitchBeatIndex);
+    m_pBeats1->setSignature(timeSignatureLater, secondSwitchBeatIndex);
 
-    TimeSignature test = m_pBeats1->getSignature();
-    EXPECT_EQ(m_pBeats1->getSignature(),
+    EXPECT_EQ(m_pBeats1->getSignature(0),
+            timeSignatureInitial)
+            << "Starting Time Signature must be"
+            << "3/4";
+    EXPECT_EQ(m_pBeats1->getSignature(firstSwitchBeatIndex / 2),
             TimeSignature(3, 4))
-            << "Starting Time Signature must be 3/4";
-    EXPECT_EQ(m_pBeats1->getSignature(firstSwitchPos / 2),
-            TimeSignature(3, 4))
-            << "Time Signature at " << firstSwitchPos.getValue() / 2 << " must be 3/4";
-    EXPECT_EQ(m_pBeats1->getSignature(firstSwitchPos),
-            TimeSignature(5, 4))
-            << "Time Signature at " << firstSwitchPos.getValue() << " must be 5/4";
-    EXPECT_EQ(m_pBeats1->getSignature(secondSwitchPos),
-            TimeSignature(5, 3))
-            << "Time Signature at " << secondSwitchPos.getValue() << " must be 5/3";
-    EXPECT_EQ(m_pBeats1->getSignature(wayBeyondEndOfTrack),
-            TimeSignature(5, 3))
-            << "Time Signature at " << wayBeyondEndOfTrack.getValue() << " must be 5/3";
+            << "Time Signature at " << firstSwitchBeatIndex / 2 << " must be"
+            << "3/4";
+    EXPECT_EQ(m_pBeats1->getSignature(firstSwitchBeatIndex),
+            timeSignatureIntermediate)
+            << "Time Signature at " << firstSwitchBeatIndex << " must be"
+            << "4/4";
+    EXPECT_EQ(m_pBeats1->getSignature(secondSwitchBeatIndex),
+            timeSignatureLater)
+            << "Time Signature at " << secondSwitchBeatIndex << " must be"
+            << "5/4";
 
     // Add a signature past the end of the track, must have no effect, and check
-    m_pBeats1->setSignature(TimeSignature(6, 4), wayBeyondEndOfTrack);
-    EXPECT_EQ(m_pBeats1->getSignature(wayBeyondEndOfTrack),
-            TimeSignature(5, 3))
-            << "setSignature after the end of track must have no effect";
+    // TODO(hacksdump): Implement this check in main source.
 }
 
 TEST_F(BeatsTest, Iterator) {
