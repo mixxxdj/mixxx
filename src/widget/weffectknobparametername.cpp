@@ -14,14 +14,14 @@ void WEffectKnobParameterName::setup(const QDomNode& node, const SkinContext& co
     // EffectWidgetUtils propagates NULLs so this is all safe.
     EffectChainSlotPointer pChainSlot = EffectWidgetUtils::getEffectChainSlotFromNode(
             node, context, m_pEffectsManager);
-    EffectSlotPointer pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(
+    m_pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(
             node, context, pChainSlot);
-    EffectParameterSlotBasePointer pParameterSlot =
+    m_pParameterSlot =
             EffectWidgetUtils::getParameterSlotFromNode(
-                    node, context, pEffectSlot);
-    VERIFY_OR_DEBUG_ASSERT(pParameterSlot) {
+                    node, context, m_pEffectSlot);
+    VERIFY_OR_DEBUG_ASSERT(m_pParameterSlot) {
         SKIN_WARNING(node, context)
                 << "EffectParameter node could not attach to effect parameter";
     }
-    setEffectParameterSlot(pParameterSlot);
+    setEffectParameterSlot(m_pParameterSlot);
 }

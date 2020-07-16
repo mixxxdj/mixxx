@@ -15,6 +15,10 @@ class WEffectParameterNameBase : public WLabel {
 
     void setup(const QDomNode& node, const SkinContext& context) override = 0;
 
+    void mousePressEvent(QMouseEvent* event) override;
+    void dragEnterEvent(QDragEnterEvent* event) override;
+    void dropEvent(QDropEvent* event) override;
+
   protected slots:
     void parameterUpdated();
 
@@ -22,5 +26,9 @@ class WEffectParameterNameBase : public WLabel {
     void setEffectParameterSlot(EffectParameterSlotBasePointer pEffectKnobParameterSlot);
 
     EffectsManager* m_pEffectsManager;
-    EffectParameterSlotBasePointer m_pEffectParameterSlot;
+    EffectSlotPointer m_pEffectSlot;
+    EffectParameterSlotBasePointer m_pParameterSlot;
+
+  private:
+    const QString mimeTextIdentifier() const;
 };
