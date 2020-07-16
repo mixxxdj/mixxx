@@ -58,11 +58,11 @@ class HotcueControl : public QObject {
     inline int getHotcueNumber() { return m_iHotcueNumber; }
     inline CuePointer getCue() { return m_pCue; }
     double getPosition() const;
-    double getLength() const;
+    double getEndPosition() const;
     void setCue(CuePointer pCue);
     void resetCue();
     void setPosition(double position);
-    void setLength(double length);
+    void setEndPosition(double endPosition);
     void setType(mixxx::CueType type);
     void setStatus(mixxx::CueStatus status);
     void setColor(mixxx::RgbColor::optional_t newColor);
@@ -96,7 +96,7 @@ class HotcueControl : public QObject {
     void slotHotcueActivateLoop(double v);
     void slotHotcueActivatePreview(double v);
     void slotHotcueClear(double v);
-    void slotHotcueLengthChanged(double newPosition);
+    void slotHotcueEndPositionChanged(double newPosition);
     void slotHotcuePositionChanged(double newPosition);
     void slotHotcueTypeChanged(double newType);
     void slotHotcueColorChangeRequest(double newColor);
@@ -113,7 +113,7 @@ class HotcueControl : public QObject {
     void hotcueActivatePreview(HotcueControl* pHotcue, double v);
     void hotcueClear(HotcueControl* pHotcue, double v);
     void hotcuePositionChanged(HotcueControl* pHotcue, double newPosition);
-    void hotcueLengthChanged(HotcueControl* pHotcue, double newLength);
+    void hotcueEndPositionChanged(HotcueControl* pHotcue, double newEndPosition);
     void hotcueTypeChanged(HotcueControl* pHotcue, double newType);
     void hotcueColorChanged(HotcueControl* pHotcue, double newColor);
     void hotcuePlay(double v);
@@ -127,7 +127,7 @@ class HotcueControl : public QObject {
 
     // Hotcue state controls
     ControlObject* m_hotcuePosition;
-    ControlObject* m_hotcueLength;
+    ControlObject* m_hotcueEndPosition;
     ControlObject* m_hotcueEnabled;
     ControlObject* m_hotcueType;
     ControlObject* m_hotcueColor;
@@ -189,7 +189,7 @@ class CueControl : public EngineControl {
     void hotcueActivatePreview(HotcueControl* pControl, double v);
     void hotcueClear(HotcueControl* pControl, double v);
     void hotcuePositionChanged(HotcueControl* pControl, double newPosition);
-    void hotcueLengthChanged(HotcueControl* pControl, double newLength);
+    void hotcueEndPositionChanged(HotcueControl* pControl, double newEndPosition);
     void hotcueTypeChanged(HotcueControl* pControl, double newType);
 
     void hotcueFocusColorNext(double v);

@@ -58,10 +58,10 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
         }
 
         double samplePosition = pMark->getSamplePosition();
-        if (samplePosition != -1.0) {
+        if (samplePosition != Cue::kNoPosition) {
             double currentMarkPoint =
                     m_waveformRenderer->transformSamplePositionInRendererWorld(samplePosition);
-            double sampleLength = pMark->getSampleLength();
+            double sampleEndPosition = pMark->getSampleEndPosition();
             if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
                 // NOTE: vRince I guess image width is odd to display the center on the exact line !
                 // external image should respect that ...
@@ -72,11 +72,19 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                 if (currentMarkPoint > -markHalfWidth && currentMarkPoint < m_waveformRenderer->getWidth() + markHalfWidth) {
                     int drawOffset = currentMarkPoint - markHalfWidth;
                     painter->drawImage(QPoint(drawOffset, 0), pMark->m_image);
-                    if (sampleLength > 0) {
-                        double currentMarkEndPoint = m_waveformRenderer->transformSamplePositionInRendererWorld(samplePosition + sampleLength);
-                        painter->fillRect(QRect(
-                                    QPoint(currentMarkPoint, m_waveformRenderer->getHeight() - 5),
-                                    QPoint(currentMarkEndPoint, m_waveformRenderer->getHeight())),
+                    if (sampleEndPosition != Cue::kNoPosition) {
+                        DEBUG_ASSERT(samplePosition < sampleEndPosition);
+                        double currentMarkEndPoint =
+                                m_waveformRenderer
+                                        ->transformSamplePositionInRendererWorld(
+                                                sampleEndPosition);
+                        painter->fillRect(
+                                QRect(QPoint(currentMarkPoint,
+                                              m_waveformRenderer->getHeight() -
+                                                      5),
+                                        QPoint(currentMarkEndPoint,
+                                                m_waveformRenderer
+                                                        ->getHeight())),
                                 pMark->fillColor());
                     }
                     marksOnScreen[pMark] = drawOffset;
@@ -89,8 +97,12 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                                         markHalfHeight) {
                     int drawOffset = currentMarkPoint - markHalfHeight;
                     painter->drawImage(QPoint(0, drawOffset), pMark->m_image);
-                    if (sampleLength > 0) {
-                        double currentMarkEndPoint = m_waveformRenderer->transformSamplePositionInRendererWorld(samplePosition + sampleLength);
+                    if (sampleEndPosition != Cue::kNoPosition) {
+                        DEBUG_ASSERT(samplePosition < sampleEndPosition);
+                        double currentMarkEndPoint =
+                                m_waveformRenderer
+                                        ->transformSamplePositionInRendererWorld(
+                                                sampleEndPosition);
                         painter->fillRect(QRect(
                                     QPoint(m_waveformRenderer->getWidth() - 5, currentMarkPoint),
                                     QPoint(m_waveformRenderer->getWidth(), currentMarkEndPoint)),

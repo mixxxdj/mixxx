@@ -161,7 +161,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
         if (pMark->isValid()) {
             pMark->connectSamplePositionChanged(this,
                     &WOverview::onMarkChanged);
-            pMark->connectSampleLengthChanged(this,
+            pMark->connectSampleEndPositionChanged(this,
                     &WOverview::onMarkChanged);
         }
         if (pMark->hasVisible()) {
@@ -802,10 +802,10 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
         }
 
         QRectF rect;
-        double sampleLength = m_marksToRender.at(i)->getSampleLength();
-        if (sampleLength > 0) {
+        double sampleEndPosition = m_marksToRender.at(i)->getSampleEndPosition();
+        if (sampleEndPosition > 0) {
             const qreal markEndPosition = math_clamp(
-                    offset + (samplePosition + sampleLength) * gain,
+                    offset + sampleEndPosition * gain,
                     0.0,
                     static_cast<qreal>(width()));
 
