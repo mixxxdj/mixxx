@@ -1759,19 +1759,20 @@ decks, samplers, mic, aux, fx */
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
   margin-right: 1px;
   }
-  #FxParameterButtonOverlay[displayValue="0"]:hover {
+  #FxParameterPushButton[displayValue="0"]:hover {
     border: 1px solid #888;
   }
-  #FxParameterButtonOverlay[displayValue="1"]:hover {
+  #FxParameterPushButton[displayValue="1"]:hover {
     border: 1px solid #eeeeee;
   }
 
-  #FxParameterButtonUnderlay[displayValue="0"] {
+  #FxParameterPushButton[displayValue="0"] {
     background-color: #4b4b4b;
   }
-  #FxParameterButtonUnderlay[displayValue="1"] {
+  #FxParameterPushButton[displayValue="1"] {
     background-color: #006596;
   }
+
   #FxParameterButtonName_inactive,
   #FxParameterButtonName_active {
     font-size: 10px/10px;

@@ -44,7 +44,7 @@ Variables:
                 </Connection>
               </EffectParameterKnobComposed>
 
-              <Template src="skin:fx_button.xml">
+              <Template src="skin:eq_button.xml">
                 <SetVariable name="ObjectName">EQKilledUnderlay</SetVariable>
                 <SetVariable name="Size">30f,26f</SetVariable>
               </Template>
@@ -56,7 +56,7 @@ Variables:
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:fx_button.xml">
+              <Template src="skin:eq_button.xml">
                 <SetVariable name="ObjectName">EQKillButton</SetVariable>
                 <SetVariable name="Size">12f,30f</SetVariable>
               </Template>
