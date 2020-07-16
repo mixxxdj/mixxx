@@ -73,19 +73,45 @@ bool AnalyzerRhythm::initialize(const AnalyzerTrack& track,
     m_iMaxSamplesToProcess = m_iTotalSamples;
     m_iCurrentSample = 0;
 
-    m_pDetectionFunction = std::make_unique<DetectionFunction>(
-            makeDetectionFunctionConfig(stepSize(), windowSize()));
     // decimation factor aims at resampling to c. 3KHz; must be power of 2
     int factor = MathUtilities::nextPowerOfTwo(m_sampleRate / 3000);
     m_downbeat = std::make_unique<DownBeat>(
             m_sampleRate, factor, stepSize());
 
+    CQConfig constQParams;
+    constQParams.FS = m_sampleRate; // sample rate
+    constQParams.min = 50.0;        // minimum frequency
+    constQParams.max = 12000.0;     // maximum frequency
+    constQParams.BPO = 4.0;         // bins per octave
+    constQParams.CQThresh = 0.0054; // (??) same value used by qm segmenter
+    m_constQ = std::make_unique<ConstantQ>(constQParams);
+
+    const int fftSize = m_constQ->getFFTLength();
+    const int constQNumberOfBins = m_constQ->getK();
+
+    m_constQRealOut = new double[constQNumberOfBins];
+    m_constQImagOut = new double[constQNumberOfBins];
+
+    m_fft = std::make_unique<FFTReal>(fftSize);
+    m_fftRealOut = new double[fftSize];
+    m_fftImagOut = new double[fftSize];
+    m_constQ->sparsekernel();
+
+    m_window = new Window<double>(HammingWindow, fftSize);
+    m_pDetectionFunction = std::make_unique<DetectionFunction>(
+            makeDetectionFunctionConfig(stepSize(), fftSize));
+
     qDebug() << "input sample rate is " << m_sampleRate << ", step size is " << stepSize();
 
     m_onsetsProcessor.initialize(
-            windowSize(), stepSize(), [this](double* pWindow, size_t) {
-                m_detectionResults.push_back(
-                        m_pDetectionFunction->processTimeDomain(pWindow));
+            fftSize, stepSize(), [this](double* pWindow, size_t) {
+                DFresults onsets;
+                m_window->cut(pWindow);
+                m_fft->forward(pWindow, m_fftRealOut, m_fftImagOut);
+                m_constQ->process(m_fftRealOut, m_fftImagOut, m_constQRealOut, m_constQImagOut);
+                onsets = m_pDetectionFunction->processFrequencyDomain(
+                        m_constQRealOut, m_constQImagOut);
+                m_detectionResults.push_back(onsets);
                 return true;
             });
 
@@ -139,6 +165,11 @@ void AnalyzerRhythm::cleanup() {
     m_resultBeats.clear();
     m_detectionResults.clear();
     m_pDetectionFunction.reset();
+    delete m_window;
+    delete[] m_constQImagOut;
+    delete[] m_constQRealOut;
+    delete[] m_fftImagOut;
+    delete[] m_fftRealOut;
 }
 
 std::vector<double> AnalyzerRhythm::computeBeats() {
@@ -261,28 +292,21 @@ void AnalyzerRhythm::storeResults(TrackPointer pTrack) {
     std::vector<double> beats = computeBeats();
     auto beatsSpecDiff = computeBeatsSpectralDifference(beats);
     auto [bpb, firstDownbeat] = computeMeter(beatsSpecDiff);
+    int counter = 0;
+    for (auto onset : m_detectionResults) {
+        qDebug() << counter;
+        qDebug() << onset.t.hiFrequency;
+        qDebug() << onset.t.specDiff;
+        qDebug() << onset.t.phaseDev;
+        qDebug() << onset.t.complexSpecDiff;
+        qDebug() << "----------";
+    }
 
-    m_beatsPerBar = bpb;
-    size_t nextDownbeat = firstDownbeat;
     // convert beats positions from df increments to frams
     for (size_t i = 0; i < beats.size(); ++i) {
         auto result = mixxx::audio::FramePos((beats.at(i) * stepSize()) -
-                stepSize() / mixxx::kEngineChannelCount);
+                (stepSize() / mixxx::kEngineChannelCount));
         m_resultBeats.push_back(result);
-    }
-    QMap<int, double> beatsWithNewTempo;
-    std::tie(m_resultBeats, beatsWithNewTempo) = FixBeatsPositions();
-    // quick hack for manual testing of downbeats
-    if (useDownbeatOnly) {
-        QVector<mixxx::audio::FramePos> downbeats;
-        auto dbIt = m_downbeats.begin();
-        for (int i = 0; i < m_resultBeats.size(); i++) {
-            if (i == *dbIt) {
-                downbeats.push_back(m_resultBeats[i]);
-                dbIt += 1;
-            }
-        }
-        m_resultBeats = downbeats;
     }
     //  TODO(Cristiano&Harshit) THIS IS WHERE A BEAT VECTOR IS CREATED
     mixxx::BeatsPointer pBeats = BeatFactory::makePreferredBeats(

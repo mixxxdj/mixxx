@@ -1,8 +1,11 @@
 #pragma once
 
+#include <base/Window.h>
+#include <dsp/chromagram/ConstantQ.h>
 #include <dsp/onsets/DetectionFunction.h>
 #include <dsp/tempotracking/DownBeat.h>
 #include <dsp/tempotracking/TempoTrackV2.h>
+#include <dsp/transforms/FFT.h>
 
 #include <QHash>
 #include <QList>
@@ -81,4 +84,11 @@ class AnalyzerRhythm : public Analyzer {
     mixxx::DownmixAndOverlapHelper m_onsetsProcessor;
     mixxx::DownmixAndOverlapHelper m_downbeatsProcessor;
     std::vector<DFresults> m_detectionResults;
+    std::unique_ptr<FFTReal> m_fft;
+    std::unique_ptr<ConstantQ> m_constQ;
+    Window<double>* m_window;
+    double* m_fftRealOut;
+    double* m_fftImagOut;
+    double* m_constQRealOut;
+    double* m_constQImagOut;
 };
