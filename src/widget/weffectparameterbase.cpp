@@ -9,7 +9,7 @@ WEffectParameterBase::WEffectParameterBase(QWidget* pParent, EffectsManager* pEf
     parameterUpdated();
 }
 
-void WEffectParameterBase::setEffectKnobParameterSlot(
+void WEffectParameterBase::setEffectParameterSlot(
         EffectParameterSlotBasePointer pEffectKnobParameterSlot) {
     m_pEffectParameterSlot = pEffectKnobParameterSlot;
     if (m_pEffectParameterSlot) {
