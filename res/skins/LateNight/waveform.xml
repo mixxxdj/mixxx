@@ -53,15 +53,15 @@
             </MarkRange>
             <Mark>
               <Control>loop_start_position</Control>
-              <!--Text>IN</Text-->
-              <Align>bottom|right</Align>
+              <Text>IN</Text>
+              <Align>top|left</Align>
               <Color><Variable name="LoopColor"/></Color>
               <TextColor>#FFFFFF</TextColor>
             </Mark>
             <Mark>
               <Control>loop_end_position</Control>
-              <!--Text>OUT</Text-->
-              <Align>bottom|right</Align>
+              <Text>OUT</Text>
+              <Align>top|right</Align>
               <Color><Variable name="LoopColor"/></Color>
               <TextColor>#FFFFFF</TextColor>
             </Mark>
