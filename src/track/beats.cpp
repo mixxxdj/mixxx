@@ -315,8 +315,7 @@ BeatsInternal::BeatsInternal()
         : m_iSampleRate(0), m_dDurationSeconds(0) {
 }
 
-BeatsInternal::BeatsInternal(const QByteArray& byteArray)
-        : BeatsInternal() {
+BeatsInternal::BeatsInternal(const QByteArray& byteArray) {
     track::io::Beats beatsProto;
     if (!beatsProto.ParseFromArray(byteArray.constData(), byteArray.size())) {
         qDebug() << "ERROR: Could not parse kBeatMap from QByteArray of size"
@@ -336,8 +335,7 @@ BeatsInternal::BeatsInternal(const QByteArray& byteArray)
     updateBpm();
 }
 
-BeatsInternal::BeatsInternal(const QVector<FramePos>& beats)
-        : BeatsInternal() {
+BeatsInternal::BeatsInternal(const QVector<FramePos>& beats) {
     FramePos previousBeatPos = kInvalidFramePos;
     track::io::Beat protoBeat;
 
