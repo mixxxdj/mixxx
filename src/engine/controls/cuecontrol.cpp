@@ -520,8 +520,9 @@ void CueControl::loadCuesFromTrack() {
     QSet<int> active_hotcues;
     CuePointer pLoadCue, pIntroCue, pOutroCue;
 
-    if (!m_pLoadedTrack)
+    if (!m_pLoadedTrack) {
         return;
+    }
 
     for (const CuePointer& pCue : m_pLoadedTrack->getCuePoints()) {
         switch (pCue->getType()) {
@@ -694,8 +695,9 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v, HotcueMode mode) {
     }
 
     QMutexLocker lock(&m_mutex);
-    if (!m_pLoadedTrack)
+    if (!m_pLoadedTrack) {
         return;
+    }
 
     int hotcue = pControl->getHotcueNumber();
     // Note: the cue is just detached from the hotcue control
@@ -806,8 +808,9 @@ void CueControl::hotcueGotoAndStop(HotcueControl* pControl, double v) {
     }
 
     QMutexLocker lock(&m_mutex);
-    if (!m_pLoadedTrack)
+    if (!m_pLoadedTrack) {
         return;
+    }
 
     CuePointer pCue(pControl->getCue());
 
@@ -1069,8 +1072,9 @@ void CueControl::hotcueClear(HotcueControl* pControl, double v) {
 void CueControl::hotcuePositionChanged(
         HotcueControl* pControl, double newPosition) {
     QMutexLocker lock(&m_mutex);
-    if (!m_pLoadedTrack)
+    if (!m_pLoadedTrack) {
         return;
+    }
 
     CuePointer pCue(pControl->getCue());
     if (pCue) {
@@ -1182,8 +1186,10 @@ void CueControl::cueGoto(double v) {
 }
 
 void CueControl::cueGotoAndPlay(double v) {
-    if (!v)
+    if (!v) {
         return;
+    }
+
     cueGoto(v);
     QMutexLocker lock(&m_mutex);
     // Start playing if not already
