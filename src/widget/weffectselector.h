@@ -18,6 +18,7 @@ class WEffectSelector : public QComboBox, public WBaseWidget {
     void slotEffectUpdated();
     void slotEffectSelected(int newIndex);
     void populate();
+    bool event(QEvent* pEvent) override;
 
   private:
     int m_iEffectSlotIndex;

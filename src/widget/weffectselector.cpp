@@ -114,3 +114,14 @@ void WEffectSelector::slotEffectUpdated() {
         setBaseTooltip(itemData(newIndex, Qt::ToolTipRole).toString());
     }
 }
+
+bool WEffectSelector::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    } else if (pEvent->type() == QEvent::Wheel && !hasFocus()) {
+        // don't change effect by scrolling hovered effect selector
+        return false;
+    }
+
+    return QComboBox::event(pEvent);
+}
