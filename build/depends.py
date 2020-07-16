@@ -829,6 +829,7 @@ class MixxxCore(Feature):
                    "src/effects/builtin/autopaneffect.cpp",
                    "src/effects/builtin/phasereffect.cpp",
                    "src/effects/builtin/metronomeeffect.cpp",
+                   "src/effects/builtin/whitenoiseeffect.cpp",
                    "src/effects/builtin/tremoloeffect.cpp",
 
                    "src/engine/effects/engineeffectsmanager.cpp",
@@ -1045,6 +1046,9 @@ class MixxxCore(Feature):
                    "src/library/coverart.cpp",
                    "src/library/coverartcache.cpp",
                    "src/library/coverartutils.cpp",
+                   "src/library/trackcollectioniterator.cpp",
+                   "src/library/trackmodeliterator.cpp",
+                   "src/library/trackprocessing.cpp",
 
                    "src/library/trackset/basetracksetfeature.cpp",
                    "src/library/trackset/baseplaylistfeature.cpp",
@@ -1300,6 +1304,7 @@ class MixxxCore(Feature):
                    "src/util/file.cpp",
                    "src/util/mac.cpp",
                    "src/util/task.cpp",
+                   "src/util/taskmonitor.cpp",
                    "src/util/experiment.cpp",
                    "src/util/xml.cpp",
                    "src/util/tapfilter.cpp",

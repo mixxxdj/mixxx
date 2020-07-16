@@ -95,7 +95,6 @@ class CoverInfoGuesser {
 // metadata and folders for image files. All I/O is done in a separate
 // thread.
 void guessTrackCoverInfoConcurrently(TrackPointer pTrack);
-void guessTrackCoverInfoConcurrently(QList<TrackPointer> tracks);
 
 // Concurrent guessing of track covers during short running
 // tests may cause spurious test failures due to timing issues.

@@ -26,6 +26,8 @@ class ControllerEngine : public QObject {
     ControllerEngine(Controller* controller);
     virtual ~ControllerEngine();
 
+    void handleInput(QByteArray data, mixxx::Duration timestamp);
+
     bool executeFunction(QJSValue functionObject, QJSValueList arguments);
     bool executeFunction(QJSValue functionObject, const QByteArray& data);
 
@@ -103,6 +105,7 @@ class ControllerEngine : public QObject {
     virtual void timerEvent(QTimerEvent* event);
 
   public slots:
+    void loadModule(QFileInfo moduleFileInfo);
     bool loadScriptFiles(const QList<ControllerPreset::ScriptFileInfo>& scripts);
     void initializeScripts(const QList<ControllerPreset::ScriptFileInfo>& scripts);
     void gracefulShutdown();
@@ -146,6 +149,8 @@ class ControllerEngine : public QObject {
     double getDeckRate(const QString& group);
 
     Controller* m_pController;
+    QJSValue m_handleInputFunction;
+    QJSValue m_shutdownFunction;
     QList<QString> m_scriptFunctionPrefixes;
     QHash<ConfigKey, ControlObjectScript*> m_controlCache;
     struct TimerInfo {
@@ -166,6 +171,7 @@ class ControllerEngine : public QObject {
     QJSValue m_byteArrayToScriptValueJSFunction;
     // Filesystem watcher for script auto-reload
     QFileSystemWatcher m_scriptWatcher;
+    QFileInfo m_moduleFileInfo;
     QList<ControllerPreset::ScriptFileInfo> m_lastScriptFiles;
 
     bool m_bTesting;
