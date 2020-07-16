@@ -237,6 +237,11 @@ Variables:
             <SetVariable name="ConfigKey">[EffectRack1_EffectUnit<Variable name="FxUnit"/>],mix_mode</SetVariable>
           </Template>
 
+          <EffectChainPresetButton>
+            <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+            <Size>30f,30f</Size>
+          </EffectChainPresetButton>
+
           <Template src="skin:knob_textless.xml">
             <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>

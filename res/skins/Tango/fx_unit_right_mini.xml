@@ -104,6 +104,11 @@ Variables:
             <SetVariable name="Color">red</SetVariable>
           </Template>
 
+          <EffectChainPresetButton>
+            <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+            <Size>30f,30f</Size>
+          </EffectChainPresetButton>
+
           <Template src="skin:button_2state_persist.xml">
             <SetVariable name="ObjectName">MixModeButton</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_mix_mode</SetVariable>
